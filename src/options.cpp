@@ -8821,12 +8821,10 @@ void options::DoOnPageChange(size_t page) {
       if(g_pi_manager)
           g_pi_manager->SetListPanelPtr(m_pPlugInCtrl);
 
-#ifndef __OCPN__ANDROID__      
       m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
       m_PluginCatalogMgrPanel->SetListPanelPtr(m_pPlugInCtrl);
       
       itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel, 0, wxEXPAND | wxALL, 4);
-#endif      
       itemBoxSizerPanelPlugins->Layout();
 
       //  Update the PlugIn page to reflect the state of individual selections

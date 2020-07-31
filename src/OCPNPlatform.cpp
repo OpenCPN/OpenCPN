@@ -432,7 +432,11 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
         detail->osd_arch = std::string("armhf");
 #endif    
     
-    
+#ifdef __OCPN__ANDROID__
+    detail->osd_arch = std::string("arm64");
+    if(arch == wxARCH_32)
+        detail->osd_arch = std::string("armhf");
+#endif    
      
     return true;
 }    

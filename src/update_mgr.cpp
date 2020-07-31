@@ -293,7 +293,14 @@ class PluginTextPanel: public wxPanel
             auto flags = wxSizerFlags().Border();
 
             auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
-            m_summary = staticText(plugin->summary);
+            m_widthDescription = g_options->GetSize().x / 2;
+
+            //m_summary = staticText(plugin->summary);
+            m_summary = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1)/*, wxST_NO_AUTORESIZE*/ );
+            m_summaryText = wxString(plugin->summary.c_str());
+            m_summary->SetLabel( m_summaryText );
+            m_summary->Wrap( m_widthDescription );
+ 
             sum_hbox->Add(m_summary);
             sum_hbox->AddSpacer(10);
             m_more = staticText("");
@@ -304,7 +311,6 @@ class PluginTextPanel: public wxPanel
             SetSizer(vbox);
             auto name = staticText(plugin->name + "    " + plugin->version);
 
-            m_widthDescription = g_options->GetSize().x / 2;
             m_descr = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1)/*, wxST_NO_AUTORESIZE*/ );
             m_descText = wxString(plugin->description.c_str());
             m_descr->SetLabel( m_descText );
@@ -354,6 +360,7 @@ class PluginTextPanel: public wxPanel
         CandidateButtonsPanel* m_buttons;
         int m_widthDescription;
         wxString m_descText;
+        wxString m_summaryText;
 };
 
 

@@ -5084,7 +5084,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( this, wxID_ANY, _("Plugin Catalog") );
      wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static, wxVERTICAL );
      topSizer->Add( itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2 );
-
+#ifndef __OCPN__ANDROID__
      // First line
      m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
      itemStaticBoxSizer4->Add( m_catalogText, 1, wxALIGN_LEFT );
@@ -5145,7 +5145,69 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
          m_tcCustomURL->Hide();
          m_customText->Hide();
      }
+#else
+     // First line
+     m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
+     itemStaticBoxSizer4->Add( m_catalogText, 0, wxALIGN_LEFT );
+     m_catalogText->SetLabel(GetCatalogText(false));
+
+     // Next line
+     m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
+     itemStaticBoxSizer4->Add( m_updateButton, 1, wxALIGN_LEFT );
+     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
+
+     // Next line
+     wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
+     itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
+
+     wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
+     rowSizer2->Add( tchannels, 0, wxALIGN_RIGHT | wxALL, 5 );
+
+     wxArrayString channels;
+     channels.Add(_T( "Master" ));
+     channels.Add(_T( "Beta" ));
+     pConfig->SetPath( _T("/PlugIns/") );
+     wxString expert = pConfig->Read( "CatalogExpert", "0");
+     if(expert.IsSameAs(_T("1"))){
+        channels.Add(_T( "Alpha" ));
+        channels.Add(_T( "Custom..." ));
+     }
      
+     m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
+     rowSizer2->Add( m_choiceChannel, 0, wxALIGN_RIGHT );
+     m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
+     int selection = GetChannelIndex(&channels);
+     if(!expert){
+         if(selection > 1) selection = 0;
+     }
+     m_choiceChannel->SetSelection( selection );
+
+     // Next line
+     m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
+     itemStaticBoxSizer4->Add( m_tarballButton, 0, wxALIGN_LEFT );
+     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
+
+     // Next line
+     wxBoxSizer* rowSizer3 = new wxBoxSizer( wxHORIZONTAL );
+     itemStaticBoxSizer4->Add( rowSizer3, 0, wxEXPAND | wxALL, 4 );
+     
+     m_customText = new wxStaticText( this, wxID_STATIC, _T("Custom url"));
+     rowSizer3->Add( m_customText, 0, wxALIGN_LEFT | wxRIGHT, 2 * GetCharWidth() );
+     m_tcCustomURL = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+     rowSizer3->Add( m_tcCustomURL, 1, wxEXPAND  );
+
+     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom"))){
+         m_tcCustomURL->Show();
+         m_customText->Show();
+     }
+     else{
+         m_tcCustomURL->Hide();
+         m_customText->Hide();
+     }
+
+     SetUpdateButtonLabel();
+
+#endif
      SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
      Fit();
 
@@ -5281,6 +5343,9 @@ static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
         else if( !strcmp(element.name(), "target-version") ){
             plugin.target_version = element.first_child().value();
         }
+        else if( !strcmp(element.name(), "target-arch") ){
+            plugin.target_arch = element.first_child().value();
+        }
         else if( !strcmp(element.name(), "tarball-url") ){
             plugin.tarball_url = element.first_child().value();
         }
@@ -5330,6 +5395,9 @@ static void populatePluginNode(pugi::xml_node &pluginNode, PluginMetadata &worki
     child = pluginNode.append_child("target-version");
     child.append_child(pugi::node_pcdata).set_value(workingMetadata.target_version.c_str());
    
+    child = pluginNode.append_child("target-arch");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.target_arch.c_str());
+
     child = pluginNode.append_child("tarball-url");
     child.append_child(pugi::node_pcdata).set_value(workingMetadata.tarball_url.c_str());
 
@@ -6033,10 +6101,10 @@ void PluginPanel::SetSelected( bool selected )
        // If so, as a special case...
        //  We show the version from the metadata, thus handling managed plugins with API < 117 
         
-       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion) )
+       if( m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion )
             m_pVersion->SetLabel( m_pPlugin->m_ManagedMetadata.version );
 
-       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledUpdateAvailable) )
+       if( m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledUpdateAvailable )
             m_pVersion->SetLabel( wxString(m_pPlugin->m_InstalledManagedVersion) );
 
     }
@@ -6179,9 +6247,9 @@ void PluginPanel::SetSelected( bool selected )
     // Android (wxQT) sizers have troubles...
     // So we set some layout factors to avoid re-sizing on select/deselect.
 //    m_rgSizer->Show(true);
-    m_pButtons->Show(true);
-    m_pButtonAction->Hide();
-    m_pButtonUninstall->Hide();
+    //m_pButtons->Show(true);
+    //m_pButtonAction->Hide();
+    //m_pButtonUninstall->Hide();
 
     Fit();
     m_PluginListPanel->m_pitemBoxSizer01->Layout();
@@ -6241,14 +6309,30 @@ void PluginPanel::SetEnabled( bool enabled )
         m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
         m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
         m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+#ifdef x__OCPN__ANDROID__
+        m_pName->Disable();
+        m_pVersion->Disable();
+        m_pDescription->Disable();
+#endif
     }
     else
     {
         m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
         m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
         m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+#ifdef x__OCPN__ANDROID__
+        m_pName->Enable();
+        m_pVersion->Enable();
+        m_pDescription->Enable();
+#endif
     }
-    
+
+#ifdef __OCPN__ANDROID__
+        m_pName->Enable( enabled || m_bSelected );
+        m_pVersion->Enable( enabled || m_bSelected );
+        m_pDescription->Enable( enabled || m_bSelected );
+#endif
+
     if(m_bSelected) {
         wxString description = m_pPlugin->m_long_description;
         if(description.IsEmpty())
