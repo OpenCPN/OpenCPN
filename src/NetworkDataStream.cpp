@@ -364,7 +364,9 @@ void NetworkDataStream::OnSocketEvent(wxSocketEvent& event)
                     break;
                 }
                 wxDateTime now = wxDateTime::Now();
-                wxTimeSpan since_connect = now - GetConnectTime();
+                wxTimeSpan since_connect(0, 0, 10);             // ten secs assumed, if connect time is uninitialized
+                if( GetConnectTime().IsValid() )
+                    since_connect = now - GetConnectTime();
 
                 int retry_time = 5000;          // default
 
