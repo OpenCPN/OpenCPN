@@ -1080,8 +1080,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 							}
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
 								m_twaangle, m_twaunit);
+
                             if (mPriWDN >= 4) {
-                                mPriWDN = 4;
                                 //MWV has wind angle relative to the bow. Wind history use angle relative to north.
                                 //If no TWD with higher priority is present and true heading is available calculate it.
                                 if (g_dHDT < 361. && g_dHDT >= 0.0) {
@@ -1089,6 +1089,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                     if (g_dCalWdir > 360.) { g_dCalWdir = g_dCalWdir - 360; }
                                     else if (g_dCalWdir < 0.) { g_dCalWdir = 360 - g_dCalWdir; }
                                     SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir, _T("\u00B0T"));
+                                    mPriWDN = 4;
                                     mWDN_Watchdog = gps_watchdog_timeout_ticks;
                                 }
                             }
@@ -1612,6 +1613,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 if (std::isnan(m_twaangle)) return;
 
                 m_twaangle = GEODESIC_RAD2DEG(m_twaangle);
+                double m_twaangle_raw = m_twaangle; // for wind history
                 wxString m_twaunit = _T("\u00B0R");
                 if (m_twaangle < 0) {
                     m_twaunit = _T("\u00B0L");
@@ -1620,6 +1622,19 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
                 mPriTWA = 1; // Set prio only here. No need to catch speed if no angle.
                 mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+
+                if (mPriWDN >= 3) {
+                    //m_twaangle_raw has wind angle relative to the bow. Wind history use angle relative to north.
+                    //If no TWD with higher priority is present and true heading is available calculate it.
+                    if (g_dHDT < 361. && g_dHDT >= 0.0) {
+                        double g_dCalWdir = (m_twaangle_raw) + g_dHDT;
+                        if (g_dCalWdir > 360.) { g_dCalWdir = g_dCalWdir - 360; }
+                        else if (g_dCalWdir < 0.) { g_dCalWdir = 360 - g_dCalWdir; }
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir, _T("\u00B0T"));
+                        mPriWDN = 3;
+                        mWDN_Watchdog = gps_watchdog_timeout_ticks;
+                    }
+                }
             }
         }
         else if ((update_path == _T("environment.wind.speedTrue")
