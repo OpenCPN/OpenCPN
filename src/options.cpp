@@ -1571,6 +1571,10 @@ For more info, see the file LINUX_DEVICES.md in the distribution docs.
 void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
    // Microsoft compiler 19.14.26433 requires rightfully std=c++-17 for this.
 
+#ifdef __OCPN__ANDROID__
+   return;
+#endif
+   
 #ifndef __linux__
    return;
 #else
