@@ -9,13 +9,17 @@
 #include <wx/fileconf.h>
 #include <wx/window.h>
 
+
 namespace ocpn {
 
+
+/** Return address as printable string. */
 std::string ptr_key(const void* ptr);
 
-/*
- *  Helper class, not for public consumption. Basically a singleton
- *  pattern where singletons are managed by key, one for each key value.
+
+/**
+ *  Helper class, not for public consumption. Basically a singleton map of
+ *  listeners where singletons are managed by key, one for each key value.
  */
 class SingletonVar
 {
@@ -30,9 +34,7 @@ class SingletonVar
 };
 
 
-/*
- *  The observable notify/listen basic nuts and bolts.
- */
+/**  The observable notify/listen basic nuts and bolts.  */
 class ObservedVar
 {
     public:
@@ -40,8 +42,10 @@ class ObservedVar
             :singleton(SingletonVar::getInstance(key))
         {}
 
+        /** Set object to send ev_type to listener on variable changes. */
         void listen(wxWindow* listener, wxEventType ev_type);
 
+        /** Notify all listeners about variable change. */
         const void notify();
 
     private:
@@ -50,15 +54,14 @@ class ObservedVar
 
 
 /**
- *
  *  Wrapper for configuration variables which lives in the global wxFileConfig
- *  object. Supports int, bool, std::string and wxString. Besides basic
- *  set()/get() also provides notification events when value changes.
+ *  object. Supports int, bool, double, std::string and wxString. Besides
+ *  basic set()/get() also provides notification events when value changes.
  *
  *  Client usage, reading and setting a value:
  *
  *     ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
- *     bool old_value = expert.get();
+ *     bool old_value = expert.get(false);
  *     expert.set(false);
  *
  *  Client usage, listening to value changes:
@@ -77,12 +80,9 @@ template <typename T = std::string>
 class ConfigVar: public ObservedVar
 {
     public:
-        ConfigVar(const std::string& _section,
-                  const std::string& _key,
-                  wxConfigBase* cb)
-            : ObservedVar(_section  + "/" + _key),
-            section(_section), key(_key), config(cb)
-        {}
+        ConfigVar(const std::string& section_,
+                  const std::string& key_,
+                  wxConfigBase* cb);
 
         void set(const T& arg);
 
@@ -98,7 +98,6 @@ class ConfigVar: public ObservedVar
 
 
 /**
- *
  *  Wrapper for global variable, supports notification events when value
  *  changes.
  *
@@ -106,6 +105,12 @@ class ConfigVar: public ObservedVar
  *
  *     ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
  *     compat_os.set("ubuntu-gtk3-x86_64");
+ *
+ *  Client usage, modifying a value + notifying listeners:
+ *
+ *     ocpn::GlobalVar<wxString> plugin_array_var(&plugin__array);
+ *     plugin_array.Add(new_pic);
+ *     plugin_array_var.notify();
  *
  *  Client usage, listening to value changes:
  *

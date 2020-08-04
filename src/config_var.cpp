@@ -2,6 +2,7 @@
 
 #include "config_var.h"
 
+
 namespace ocpn {
 
 
@@ -24,6 +25,8 @@ SingletonVar* SingletonVar::getInstance(const std::string& key)
 }
 
 
+/* ObservedVar implementation. */
+
 void ObservedVar::listen(wxWindow* listener, wxEventType ev_type)
 {
     singleton->listeners[listener] = ev_type;
@@ -33,21 +36,24 @@ void ObservedVar::listen(wxWindow* listener, wxEventType ev_type)
 const void ObservedVar::notify()
 {
     auto& listeners = singleton->listeners;
-    for(auto l = listeners.begin(); l != listeners.end(); l++) {
+    for (auto l = listeners.begin(); l != listeners.end(); l++) {
         wxCommandEvent ev(l->second);
         wxPostEvent(l->first, ev);
     }
 }
 
 
-/** Add >> support for wxString, for some reason missing in wxWidgets 3.0 */
-std::istream& operator >> (std::istream &input, wxString& ws)
-{
-    std::string s;
-    input >> s;
-    ws.Append(s);
-    return input;
-}
+/* ConfigVar implementation. */
+
+template <typename T>
+ConfigVar<T>::ConfigVar(const std::string& section_,
+                        const std::string& key_,
+                        wxConfigBase* cb)
+    : ObservedVar(section_  + "/" + key_),
+    section(section_),
+    key(key_),
+    config(cb)
+{}
 
 
 template <typename T>
@@ -82,8 +88,22 @@ void ConfigVar<T>::set(const T& arg)
 }
 
 
+/**
+ * Add >> support for wxString, for some reason missing in wxWidgets 3.0,
+ * required by ConfigVar::get()
+ */
+std::istream& operator >> (std::istream &input, wxString& ws)
+{
+    std::string s;
+    input >> s;
+    ws.Append(s);
+    return input;
+}
+
+
 /* Explicitly instantiate the types we support. */
 template class ConfigVar<bool>;
+template class ConfigVar<double>;
 template class ConfigVar<int>;
 template class ConfigVar<std::string>;
 template class ConfigVar<wxString>;
