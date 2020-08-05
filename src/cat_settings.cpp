@@ -52,7 +52,7 @@ class CustomCatalogCtrl: public wxTextCtrl
         {
             SetValue(g_catalog_custom_url);
             Bind(wxEVT_TEXT,
-                 [&](wxCommandEvent&) {g_catalog_custom_url = GetValue(); });
+                 [&](wxCommandEvent&) { g_catalog_custom_url = GetValue(); });
         }
 };
 
@@ -120,7 +120,7 @@ class CatalogChoice: public wxChoice
         CatalogChoice(wxWindow* parent, wxTextCtrl* custom_ctrl)
             : wxChoice(), m_custom_ctrl(custom_ctrl)
         {
-            std::vector<std::string>
+            static const std::vector<std::string>
                 labels({"master", "beta", "alpha", "custom"});
             wxArrayString wxLabels;
             for (const auto& l: labels) wxLabels.Add(l);
