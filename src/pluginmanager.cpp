@@ -804,8 +804,11 @@ class StatusIconPanel: public wxPanel
             m_stat = pic->m_pluginStatus; //::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
-
-            SetBackgroundColour(GetGlobalColor(_T("DILG0")));
+            
+            m_penWidthUnselected = g_Platform->GetDisplayDPmm() * .25;
+            m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
+            
+            //SetBackgroundColour(GetGlobalColor(_T("DILG0")));
             auto size = GetClientSize();
             auto minsize = GetTextExtent("OpenCPNOpenCPNOpenCPNOpenCPN");
             SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
@@ -813,21 +816,39 @@ class StatusIconPanel: public wxPanel
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
             Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
 
+            
        }
 
         void OnPaint(wxPaintEvent& event)
         {
             auto size = GetClientSize();
-            int minsize = wxMin(size.GetHeight(), size.GetWidth());
+//             int minsize = wxMin(size.GetHeight(), size.GetWidth());
+            int minsize = GetCharWidth() * 3;
             auto offset = minsize / 4;
-
-            LoadIcon(m_icon_name.c_str(), m_bitmap,   wxMax(1, minsize / 3));
+            
+            LoadIcon(m_icon_name.c_str(), m_bitmap,   wxMax(1, minsize));
             wxPaintDC dc(this);
             if (!m_bitmap.IsOk()) {
                 wxLogMessage("StatusPluginPanel: bitmap is not OK!");
                 return;
             }
+            
+            wxString color = "DILG0";
+            int penWidth = m_penWidthUnselected;
+            
+            if(m_parent->GetSelected()){
+                color = "DILG1";
+                penWidth = m_penWidthSelected;
+            }
+            
+            wxBrush b(GetGlobalColor(color), wxSOLID);
+            dc.SetBrush(b);
+            dc.SetPen( wxPen(*wxBLACK, penWidth ));
+
+            dc.DrawRoundedRectangle(-20, 5, GetSize().x-5, GetSize().y-10, 5);
             dc.DrawBitmap(m_bitmap, offset, offset, true);
+            
+            
             //dc.DrawText(_T("PluginStatus"), 0, 0);
             //dc.DrawText(literalstatus_by_status[m_stat], 4 * GetCharWidth(), GetCharHeight());
          }
@@ -853,7 +874,9 @@ class StatusIconPanel: public wxPanel
         std::string m_icon_name;
         PluginStatus m_stat;
         PluginPanel *m_parent;
-        
+        int m_penWidthUnselected;
+        int m_penWidthSelected;
+
         void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
         {
             wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
@@ -870,7 +893,7 @@ class StatusIconPanel: public wxPanel
 
             if (!ok) {
                 auto style = g_StyleManager->GetCurrentStyle();
-                bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
+                bitmap = wxBitmap(style->GetIcon( _T("default_pi"), size, size));
                 wxLogMessage("Icon: %s not found.", path.GetFullPath());
             }
         }
@@ -1217,7 +1240,7 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
             if(pic->m_pplugin)
             {
                 plugin_array.Add(pic);
-                    
+                
                 //    The common name is available without initialization and startup of the PlugIn
                 pic->m_common_name = pic->m_pplugin->GetCommonName();
                 pic->m_plugin_filename = plugin_file;
@@ -1519,6 +1542,7 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_version_minor = 0;
 
             plugin_array.Add(new_pic);
+
         }
         // Match found, so merge the info and determine the plugin status        
         else{
@@ -1702,17 +1726,19 @@ wxString PlugInManager::GetPluginOrder()
 
 bool PlugInManager::UpdateConfig()
 {
-    pConfig->SetPath( _T("/PlugIns/") );
-    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
+//    pConfig->SetPath( _T("/PlugIns/") );
+//    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
 
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array[i];
 
-        wxString config_section = ( _T ( "/PlugIns/" ) );
-        config_section += pic->m_plugin_filename;
-        pConfig->SetPath ( config_section );
-        pConfig->Write ( _T ( "bEnabled" ), pic->m_bEnabled );
+        if(pic){
+            wxString config_section = ( _T ( "/PlugIns/" ) );
+            config_section += pic->m_plugin_filename;
+            pConfig->SetPath ( config_section );
+            pConfig->Write ( _T ( "bEnabled" ), pic->m_bEnabled );
+        }
     }
 
     return true;
@@ -5146,13 +5172,17 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
          m_customText->Hide();
      }
 #else
-     // First line
-     m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
-     itemStaticBoxSizer4->Add( m_catalogText, 0, wxALIGN_LEFT );
-     m_catalogText->SetLabel(GetCatalogText(false));
+     SetBackgroundColour(wxColour(200, 200, 220));              // light blue
+     wxString expert = pConfig->Read( "CatalogExpert", "0");
 
+     // First line
+     m_catalogText = new wxStaticText( this, wxID_STATIC, GetCatalogText(false));
+     itemStaticBoxSizer4->Add( m_catalogText, 0, wxALIGN_LEFT );
+     if(expert.IsSameAs(_T("0")))
+        m_catalogText->Hide();
+     
      // Next line
-     m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
+     m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog:Master"), wxDefaultPosition, wxDefaultSize, 0 );
      itemStaticBoxSizer4->Add( m_updateButton, 1, wxALIGN_LEFT );
      m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
 
@@ -5161,26 +5191,29 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
 
      wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
-     rowSizer2->Add( tchannels, 0, wxALIGN_RIGHT | wxALL, 5 );
+     rowSizer2->Add( tchannels, 1, wxALIGN_RIGHT | wxALL, 5 );
+     if(expert.IsSameAs(_T("0")))
+        tchannels->Hide();
 
      wxArrayString channels;
      channels.Add(_T( "Master" ));
      channels.Add(_T( "Beta" ));
      pConfig->SetPath( _T("/PlugIns/") );
-     wxString expert = pConfig->Read( "CatalogExpert", "0");
      if(expert.IsSameAs(_T("1"))){
         channels.Add(_T( "Alpha" ));
         channels.Add(_T( "Custom..." ));
      }
      
      m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
-     rowSizer2->Add( m_choiceChannel, 0, wxALIGN_RIGHT );
+     rowSizer2->Add( m_choiceChannel, 1, wxALIGN_RIGHT );
      m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
      int selection = GetChannelIndex(&channels);
      if(!expert){
          if(selection > 1) selection = 0;
      }
      m_choiceChannel->SetSelection( selection );
+     if(expert.IsSameAs(_T("0")))
+        m_choiceChannel->Hide();
 
      // Next line
      m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
@@ -5248,7 +5281,7 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     
     std::string message;
     if (status != CatalogHandler::ServerStatus::OK) {
-        message = _("Cannot download data from url");
+        message = _("Cannot dpownload data from url");
         OCPNMessageBox(this, message, _("OpenCPN Catalog update"), wxICON_ERROR);
         return;
     }
@@ -5721,55 +5754,9 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
     m_PluginSelected(0)
 {
     SetSizer(new wxBoxSizer(wxVERTICAL));
-
-    m_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
-    m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
-    m_panel->SetSizer(m_pitemBoxSizer01);
-    
-    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
-    
+    m_panel = 0;
     ReloadPluginPanels(pPluginArray);
     //SetScrollRate(0, 1);
-}
-
-/**
- * Clear m_PluginsItems and remove everything in this instance besides:
- *   - The empty m_pitemBoxSizer01.
- *   - The AddPluginPanel
- */
-void PluginListPanel::Clear()
-{
-/*    
-    int count = 0;
-    int numChildren = GetChildren().GetCount();
-    while (auto it = GetChildren().GetFirst()) {
-        count = count + 1;
-        auto pData = it->GetData();
-        if (pData)
-            pData->Destroy();
-        if (count > numChildren)
-            break;
-    }
-    wxASSERT(count == numChildren);
-*/    
-    for(unsigned int i=0 ; i < m_PluginItems.GetCount(); i++){
-        delete m_PluginItems[i];    //->Destroy();
-    }
-    m_PluginItems.Clear();
-
-    // Remove the wxStaticLines, also
-    wxWindowList kids = m_panel->GetChildren();
-    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item(i);
-        wxWindow *win = node->GetData();
-
-        if (win->IsKindOf(CLASSINFO(wxStaticLine)) )
-            delete win;
-    } 
-    
-    m_pitemBoxSizer01->Clear();
-    
-    Scroll(0,0);
 }
 
 void PluginListPanel::SelectByName(wxString &name)
@@ -5790,17 +5777,24 @@ void PluginListPanel::SelectByName(wxString &name)
 void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
 {
     m_pPluginArray = plugins;
-    Hide();
-    Clear();
+    delete m_panel;
+    m_PluginItems.Clear();
+    
+    m_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
+    m_panel->SetSizer(m_pitemBoxSizer01);
+    
+    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
+
     m_PluginSelected = 0;
     for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
-        AddPlugin(m_pPluginArray->Item(i - 1));
+        PlugInContainer* pic = m_pPluginArray->Item(i - 1);
+        AddPlugin(pic);
     }
-    //int dy = ComputePluginSpace(m_PluginItems, m_pitemBoxSizer01);
-    //m_pitemBoxSizer01->AddSpacer(dy);
     Layout();
-    Show();
     Refresh(true);
+    
+    Scroll(0,0);
 }
 
 
@@ -5811,8 +5805,11 @@ void PluginListPanel::AddPlugin(PlugInContainer* pic)
     m_pitemBoxSizer01->Add( pPluginPanel, wxSizerFlags().Expand());
     m_PluginItems.Add( pPluginPanel );
 
-    wxStaticLine* itemStaticLine = new wxStaticLine( m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-    m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
+    m_pluginSpacer = g_Platform->GetDisplayDPmm() * 1.0;
+    m_pitemBoxSizer01->AddSpacer(m_pluginSpacer);
+    
+//    wxStaticLine* itemStaticLine = new wxStaticLine( m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+//    m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
 }
 
 //    When a child Panel is selected, its size grows to include "Preferences"
@@ -5887,7 +5884,22 @@ void PluginListPanel::SelectPlugin( PluginPanel *pi )
     wxSize size = GetBestVirtualSize();
     SetVirtualSize( size );
 
-    
+    //  Measure, and ensure that the selected item is fully visible in the vertical scroll box.
+    int htop = 0;
+    for(unsigned int i=0 ; i < m_PluginItems.GetCount() ; i++) {
+        PluginPanel *pPluginPanel = m_PluginItems[i];
+        int yd = pPluginPanel->GetSize().y;
+        htop += yd;
+        htop += m_pluginSpacer;
+        if(pPluginPanel == pi){
+            int piBottom = htop - (ys*g_options->GetScrollRate());
+            if(piBottom > GetClientSize().y){
+                ys += (piBottom - GetClientSize().y)/g_options->GetScrollRate();
+            }
+            break;
+        }
+    }
+ 
     Scroll(xs, ys);
 }
 
@@ -5945,6 +5957,9 @@ static bool canUninstall(std::string name)
     return false;
 }
 
+BEGIN_EVENT_TABLE( PluginPanel, wxPanel )
+    EVT_PAINT ( PluginPanel::OnPaint )
+END_EVENT_TABLE()
 
 PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin)
     :wxPanel(parent, id, pos, size, wxBORDER_NONE)
@@ -5955,6 +5970,8 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     
     m_pPlugin = p_plugin;
     m_bSelected = false;
+    m_penWidthUnselected = g_Platform->GetDisplayDPmm() * .25;
+    m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
 
     wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(topSizer);
@@ -5963,6 +5980,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     topSizer->Add(itemBoxSizer01, 0, wxEXPAND);
     Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
+    double iconSize = GetCharWidth() * 4;
     wxImage plugin_icon;
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
     if (m_pPlugin->m_bitmap) {
@@ -5970,17 +5988,21 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     }
     wxBitmap bitmap;
     if (plugin_icon.IsOk()) {
-        bitmap = wxBitmap(plugin_icon.Copy());
+        int nowSize = plugin_icon.GetWidth();
+        if( (nowSize > iconSize) || ((iconSize / nowSize) > 1.5) ) 
+            plugin_icon.Rescale( iconSize, iconSize, wxIMAGE_QUALITY_HIGH);
+        bitmap = wxBitmap(plugin_icon);
     }
     else if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        wxFileName path(g_Platform->GetSharedDataDir(), "package-x-generic");
+        wxFileName path(g_Platform->GetSharedDataDir(), "packageBox.svg");
         path.AppendDir("uidata");
-        path.SetExt("png");
-        bitmap.LoadFile(path.GetFullPath(), wxBITMAP_TYPE_PNG);
+        path.AppendDir("traditional");
+        wxImage img = LoadSVGIcon(path.GetFullPath(), iconSize, iconSize);
+        bitmap = wxBitmap(img);
     }
     else {
-        bitmap =  wxBitmap(style->GetIcon( _T("default_pi")));
+        bitmap =  wxBitmap(style->GetIcon( _T("default_pi"), iconSize, iconSize));
     }
     m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
         
@@ -5990,37 +6012,89 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
 
-    wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
-    itemBoxSizer03->AddGrowableCol(2);
-    itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
+    // Calculate character width available
+    int nChars = g_options->GetSize().x / GetCharWidth();
     
-    m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
-    m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    if(nChars < 60){                    // Arbitrary, detecting mobile devices in portrait mode.
     
-    // Avoid known bug in wxGTK3
-#ifndef __WXGTK3__    
-    wxFont font = GetFont();
-    font.SetWeight(wxFONTWEIGHT_BOLD);
-    m_pName->SetFont(font);
-#endif    
-    
-    itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
+        // Might need to shorten the Plugin name string
+        wxString nameString = m_pPlugin->m_common_name;
+        int maxWidth  = g_Platform->getDisplaySize().x * 3 / 10;
+        wxScreenDC dc;
+        int nameWidth;
+        dc.GetTextExtent( m_pPlugin->m_common_name, &nameWidth, NULL);
+        if(nameWidth > maxWidth){
+            nameString = wxControl::Ellipsize(m_pPlugin->m_common_name, dc, wxELLIPSIZE_END, maxWidth); 
+        }       
+        m_pName = new wxStaticText( this, wxID_ANY, nameString );
+        m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        itemBoxSizer02->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
 
-    m_pVersion = new wxStaticText( this, wxID_ANY, _T("") /*p_plugin->GetVersion().to_string()*/ );
-    itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
-    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
-        m_pVersion->Hide();
+        wxFlexGridSizer* sl1 = new wxFlexGridSizer(2,0,0);
+        sl1->AddGrowableCol(1);
+        itemBoxSizer02->Add(sl1, 0, wxEXPAND);
+
+        m_pVersion = new wxStaticText( this, wxID_ANY, _T("X.YY.ZZ.AA") ); 
+        sl1->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
+        if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+            m_pVersion->Hide();
+        }
+        m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+
+        m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+        sl1->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
+        m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+        
+        // Might need to shorten the Plugin description string
+        wxString descriptionString = m_pPlugin->m_short_description;
+        int maxDescriptionWidth  = g_Platform->getDisplaySize().x  - (iconSize * 4);
+        int descriptionWidth;
+        dc.GetTextExtent( m_pPlugin->m_short_description, &descriptionWidth, NULL);
+        if(descriptionWidth > maxDescriptionWidth)
+            descriptionString = wxControl::Ellipsize(m_pPlugin->m_short_description, dc, wxELLIPSIZE_END, maxDescriptionWidth); 
+
+        // This invocation has the effect of setting the minimum width of the descriptor field.
+        m_pDescription = new wxStaticText( this, wxID_ANY, descriptionString, wxDefaultPosition, wxSize( maxDescriptionWidth, -1), wxST_NO_AUTORESIZE );
+        itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
+        m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+
     }
-    m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    else{
+        wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
+        itemBoxSizer03->AddGrowableCol(2);
+        itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
+    
+        wxString nameString = m_pPlugin->m_common_name;
+        m_pName = new wxStaticText( this, wxID_ANY, nameString );
+        m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        
+        // Avoid known bug in wxGTK3
+    #ifndef __WXGTK3__    
+        wxFont font = GetFont();
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+        m_pName->SetFont(font);
+    #endif    
+        
+        itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
 
-    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
-    itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
-    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+        m_pVersion = new wxStaticText( this, wxID_ANY, _T("X.YY.ZZ.AA") ); 
+        itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
+        if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+            m_pVersion->Hide();
+        }
+        m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
-    // This invocation has the effect of setting the minimum width of the descriptor field.
-    m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
-    itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
-    m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+        itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
+        m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+        
+       // This invocation has the effect of setting the minimum width of the descriptor field.
+        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
+        itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
+        m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+
+    }
+    
 
     m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
     m_info_btn->Hide();
@@ -6031,7 +6105,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
     
-    m_pButtonAction = new wxButton( this, wxID_ANY, _("Action"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_pButtonAction = new wxButton( this, wxID_ANY, "REINSTALL", wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
     
     m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -6041,10 +6115,13 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
     itemBoxSizer01->Add(m_status_icon, 0, wxEXPAND);
 
+    itemBoxSizer02->AddSpacer( GetCharWidth() );
+
     m_pButtonPreferences->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
     m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUninstall, this);
     m_pButtonAction->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginAction, this);
 
+    
     SetSelected( m_bSelected );
     SetAutoLayout(true);
     //FitInside();
@@ -6255,6 +6332,27 @@ void PluginPanel::SetSelected( bool selected )
     m_PluginListPanel->m_pitemBoxSizer01->Layout();
 #endif
 
+
+}
+
+void PluginPanel::OnPaint(wxPaintEvent &event)
+{
+    wxPaintDC dc( this );
+    
+    wxString color = "DILG0";
+    
+    int penWidth = m_penWidthUnselected;
+    if(m_bSelected){
+        color = "DILG1";
+        penWidth = m_penWidthSelected;
+    }
+        
+    wxBrush b(GetGlobalColor(color), wxSOLID);
+    dc.SetBrush(b);
+    dc.SetPen( wxPen(*wxBLACK, penWidth) );
+ 
+    dc.DrawRoundedRectangle( 5, 5, GetSize().x - 10, GetSize().y - 10, 5);
+    //dc.DrawLine( 5, 5, 1000, 5 ); 
 
 }
 
