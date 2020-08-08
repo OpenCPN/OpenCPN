@@ -11670,6 +11670,14 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 {
 #ifdef __OCPN__ANDROID__
     androidDisableRotation();
+
+    auto dlg = new wxMessageDialog(parent, message, caption,  wxOK | wxCENTRE | wxICON_ERROR);
+    dlg->ShowModal();
+    dlg->Destroy();
+
+    androidEnableRotation();
+    return wxID_OK;
+    
 #endif
     int ret =  wxID_OK;
 
