@@ -3,6 +3,7 @@ Date: Sun, 19 Jul 2020 18:36:19 +0200
 Subject: debian: patches: Update appstream installation path (#1989).
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/1989
+Applied-Upstream: https://github.com/OpenCPN/OpenCPN/commit/4625ffa2a8
 ---
  CMakeLists.txt | 1 +
  1 file changed, 1 insertion(+)

@@ -5,6 +5,7 @@ Subject: Remove bogus svg file (#1990)
 Remove what looks like a copy of settings.svg added by accident.
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/1990
+Applied_Upstream: https://github.com/OpenCPN/OpenCPN/commit/d3231024c
 ---
  data/svg/traditional/settings.svgo | 785 -------------------------------------
  1 file changed, 785 deletions(-)

@@ -5,6 +5,7 @@ Subject: CMakeLists: Adjust udev rule install path (#1988).
 Move udev rule from /etc/udev to /lib/udev.
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/1988
+Applied-Upstream: https://github.com/OpenCPN/OpenCPN/commit/0e574866f63c
 ---
  CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
