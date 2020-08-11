@@ -701,25 +701,34 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
     switch (panel->GetAction()){
         case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
         {
-            wxLogMessage("Installing managed plugin: %s", actionPIC->m_ManagedMetadata.name.c_str());
-            auto downloader = new GuiDownloader(plugin_list_panel,
-                                                actionPIC->m_ManagedMetadata);
+            // capture the plugin name
+            std::string pluginName = actionPIC->m_ManagedMetadata.name;
+            
+            // dynamically deactivate the legacy plugin, making way for the upgrade.
+            wxLogMessage("Unloading legacy plugin: %s", pluginName.c_str());
+            for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
+                if (pluginName == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
+                    g_pi_manager->UnLoadPlugIn(i);
+                    break;
+                }
+            }
+
+            wxLogMessage("Installing managed plugin: %s", pluginName.c_str());
+            auto downloader = new GuiDownloader(plugin_list_panel, actionPIC->m_ManagedMetadata);
             downloader->run(plugin_list_panel);
 
-            
             // Provisional error check
-            std::string manifestPath =
-                PluginHandler::fileListPath(actionPIC->m_ManagedMetadata.name);
+            std::string manifestPath = PluginHandler::fileListPath(pluginName);
             if(isRegularFile(manifestPath.c_str())) {
 
-                // dynamically deactivate the legacy plugin, making way for the upgrade.
+ /*               // dynamically deactivate the legacy plugin, making way for the upgrade.
                 for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
                     if (actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
                         g_pi_manager->UnLoadPlugIn(i);
                         break;
                     }
                 }
-            
+ */           
                 //  Reload all plugins, which will bring in the new, managed version.
                 g_pi_manager->LoadAllPlugIns( false );
             }
@@ -1520,7 +1529,7 @@ void PlugInManager::UpdateManagedPlugins()
     
     //  Now merge and update from the catalog
     for (auto plugin: available) {
-    
+
         PlugInContainer *pic = NULL;
         // Search for an exact name match in the existing plugin array
         bool bfound = false;
