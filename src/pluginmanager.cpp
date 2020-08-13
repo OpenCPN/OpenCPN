@@ -1210,6 +1210,7 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                 }
             }
         }
+        
         if(loaded)
             continue;
 
@@ -1296,6 +1297,37 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
         }
     }
     
+    // Scrub the plugin array...
+    // Here, looking for duplicates caused by new installation of a plugin
+    // We want to remove the previous entry representing the uninstalled packaged plugin metadata
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++){
+        PlugInContainer *pic = plugin_array[i];
+        for(unsigned int j=i+1; j < plugin_array.GetCount() ; j++){
+            PlugInContainer *pict= plugin_array[j];
+            
+            if(pic->m_common_name == pict->m_common_name){
+                if(pic->m_plugin_file.IsEmpty())
+                    plugin_array.Item(i)->m_pluginStatus = PluginStatus::PendingListRemoval;
+                else
+                    plugin_array.Item(j)->m_pluginStatus = PluginStatus::PendingListRemoval;
+            }
+        }
+    }
+
+    //  Remove any list items marked
+    size_t i=0;
+    while( (i >= 0) && (i <  plugin_array.GetCount())){
+        PlugInContainer *pict = plugin_array.Item(i);
+        if(pict->m_pluginStatus == PluginStatus::PendingListRemoval){
+            plugin_array.RemoveAt(i);
+            i=0;
+        }
+        else
+            i++;
+    }
+
+
+/*    
     std::map<int, PlugInContainer*> ap;
     for( unsigned int i = 0; i < plugin_array.GetCount(); i++ )
     {
@@ -1313,7 +1345,8 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
         plugin_array.Insert( iter->second, 0 );
     }
     ap.clear();
-    
+  */
+
     UpDateChartDataTypes();
 
     // Inform plugins of the current color scheme
