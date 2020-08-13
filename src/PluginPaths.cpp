@@ -186,13 +186,16 @@ void PluginPaths::initAndroidPaths()
     using namespace std;
 
     const string platform_dir = g_Platform->GetPluginDir().ToStdString();
-    m_libdirs.push_back(expand(platform_dir));
-    m_bindirs = m_libdirs;
     
-    m_userLibdir = platform_dir; //("/data/user/0/org.opencpn.opencpn");
-    m_userBindir = platform_dir; //("/data/user/0/org.opencpn.opencpn");
+    m_userLibdir = platform_dir + "/manPlug"; //("/data/user/0/org.opencpn.opencpn");
+    m_userBindir = platform_dir + "/manPlug"; //("/data/user/0/org.opencpn.opencpn");
     m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString(); //( "/storage/emulated/0/android/data/org.opencpn.opencpn/files");
     
+    m_libdirs.push_back(m_userLibdir);          // Load managed plugins first...
+    m_libdirs.push_back(expand(platform_dir));
+
+    m_bindirs = m_libdirs;
+
 }
 
 
