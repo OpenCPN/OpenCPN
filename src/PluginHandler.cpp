@@ -162,8 +162,8 @@ static std::string dirListPath(std::string name)
 
 std::string PluginHandler::fileListPath(std::string name)
 {
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    return pluginsConfigDir() + SEP + name + ".files";
+    std::string name_lower = ocpn::tolower(name);
+    return pluginsConfigDir() + SEP + name_lower + ".files";
 }
 
 
