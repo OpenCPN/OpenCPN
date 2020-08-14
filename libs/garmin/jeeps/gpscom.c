@@ -28,6 +28,10 @@
 #include <stdio.h>
 #include <float.h>
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
 
 /* @func GPS_Command_Off ***********************************************
 **

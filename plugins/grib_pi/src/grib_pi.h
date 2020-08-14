@@ -134,6 +134,9 @@ private:
       bool LoadConfig(void);
       bool SaveConfig(void);
 
+      bool DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex);
+      bool DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
+
       wxFileConfig     *m_pconfig;
       wxWindow         *m_parent_window;
 

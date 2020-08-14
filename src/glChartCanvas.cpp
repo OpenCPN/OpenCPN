@@ -138,7 +138,6 @@ extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern bool             g_bShowChartBar;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
-extern std::vector<int> g_quilt_noshow_index_array;
 
 GLenum       g_texture_rectangle_format;
 
@@ -2134,9 +2133,13 @@ extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&Min
 extern wxString CalcGridText( float latlon, float spacing, bool bPostfix );
 void glChartCanvas::GridDraw( )
 {
+    
     if( !m_pParentCanvas->m_bDisplayGrid ) return;
 
     ViewPort &vp = m_pParentCanvas->GetVP();
+    
+    if(!vp.IsValid() || !vp.GetBBox().GetValid())
+        return;
 
     // TODO: make minor grid work all the time
     bool minorgrid = fabs( vp.rotation ) < 0.0001 &&
@@ -2726,29 +2729,29 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 dc.SetPen( ppPen );
                 dc.SetBrush( ppBrush );
 
-                shipPoints[0].x = 0; shipPoints[0].y = -28;
-                shipPoints[1].x = 11; shipPoints[1].y = -28;
-                shipPoints[2].x = 11; shipPoints[2].y = 42;
-                shipPoints[3].x = 0; shipPoints[3].y = 42;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, scale_factor_x, icon_rad - PI/2 );
+                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -28*scale_factor_y;
+                shipPoints[1].x = 11*scale_factor_x; shipPoints[1].y = -28*scale_factor_y;
+                shipPoints[2].x = 11*scale_factor_x; shipPoints[2].y = 42*scale_factor_y;
+                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = 42*scale_factor_y;
+                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
                 
-                shipPoints[0].x = 0; shipPoints[0].y = -42;
-                shipPoints[1].x = 5; shipPoints[1].y = -42;
-                shipPoints[2].x = 11; shipPoints[2].y = -28;
-                shipPoints[3].x = 0; shipPoints[3].y = -28;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, scale_factor_x, icon_rad - PI/2 );
+                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -42*scale_factor_y;
+                shipPoints[1].x = 5*scale_factor_x; shipPoints[1].y = -42*scale_factor_y;
+                shipPoints[2].x = 11*scale_factor_x; shipPoints[2].y = -28*scale_factor_y;
+                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = -28*scale_factor_y;
+                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
                 
-                shipPoints[0].x = 0; shipPoints[0].y = -28;
-                shipPoints[1].x = -11; shipPoints[1].y = -28;
-                shipPoints[2].x = -11; shipPoints[2].y = 42;
-                shipPoints[3].x = 0; shipPoints[3].y = 42;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, scale_factor_x, icon_rad - PI/2 );
+                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -28*scale_factor_y;
+                shipPoints[1].x = -11*scale_factor_x; shipPoints[1].y = -28*scale_factor_y;
+                shipPoints[2].x = -11*scale_factor_x; shipPoints[2].y = 42*scale_factor_y;
+                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = 42*scale_factor_y;
+                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
 
-                shipPoints[0].x = 0; shipPoints[0].y = -42;
-                shipPoints[1].x = -5; shipPoints[1].y = -42;
-                shipPoints[2].x = -11; shipPoints[2].y = -28;
-                shipPoints[3].x = 0; shipPoints[3].y = -28;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, scale_factor_x, icon_rad - PI/2 );
+                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -42*scale_factor_y;
+                shipPoints[1].x = -5*scale_factor_x; shipPoints[1].y = -42*scale_factor_y;
+                shipPoints[2].x = -11*scale_factor_x; shipPoints[2].y = -28*scale_factor_y;
+                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = -28*scale_factor_y;
+                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
  
                 // draw with cross
                 double p1x = -11 * scale_factor_x;
@@ -2763,8 +2766,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
                 p1x = 0;
                 p2x = 0;
-                p1y = -42 * scale_factor_x;
-                p2y =  42 * scale_factor_x;
+                p1y = -42 * scale_factor_y;
+                p2y =  42 * scale_factor_y;
                 p1xr = ((p1x) * cos(icon_rad - PI/2)) - ((p1y) * sin(icon_rad - PI/2));
                 p2xr = ((p2x) * cos(icon_rad - PI/2)) - ((p2y) * sin(icon_rad - PI/2));
                 p1yr = ((p1y) * cos(icon_rad - PI/2)) + ((p1x) * sin(icon_rad - PI/2));
@@ -4897,10 +4900,26 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
         std::vector<int> tiles_to_show;
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
-            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
-                continue;
-            }
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
+                if(m_pParentCanvas->IsTileOverlayIndexInNoShow(stackIndexArray[is])){
+                // Turn off the piano highlite
+                    std::vector<int>  piano_active_array_tiles = m_pParentCanvas->m_Piano->GetActiveKeyArray();
+                    bool bfound = false;
+    
+                    for( unsigned int i = 0; i < piano_active_array_tiles.size(); i++ ) {
+                        if( piano_active_array_tiles[i] == stackIndexArray[is] ){ 
+                            piano_active_array_tiles.erase(piano_active_array_tiles.begin() + i );  // erase it
+                            bfound = true;
+                            break;
+                        }
+                    }
+
+                    if(bfound)
+                        m_pParentCanvas->m_Piano->SetActiveKeyArray( piano_active_array_tiles );
+                
+                    continue;
+                }
+                
                 tiles_to_show.push_back(stackIndexArray[is]);
                 if(!regionVPBuilt){
                     screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
@@ -4914,7 +4933,6 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
 
                     regionVPBuilt = true;
                 }
-    
             }
         }
     
@@ -4922,6 +4940,30 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
         for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
                             rit != tiles_to_show.rend(); ++rit) {
             ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
+        
+            // Chart may have been prevented from initial loading due to size, or some other reason...
+            if(chart == NULL)
+                continue;
+            
+            wxFileName tileFile(chart->GetFullPath());
+            wxULongLong tileSize = tileFile.GetSize();
+        
+            if(!ChartData->CheckAnyCanvasExclusiveTileGroup() || (tileSize > 5e9)){
+                // Check to see if the tile has been "clicked".
+                // If so, do not add to no-show array again.
+                if(!m_pParentCanvas->IsTileOverlayIndexInYesShow(*rit)){
+                    if(!m_pParentCanvas->IsTileOverlayIndexInNoShow(*rit)){
+                        m_pParentCanvas->m_tile_noshow_index_array.push_back( *rit );
+                    }
+                }
+            }
+
+        
+            // This test catches the case where the chart is added to no_show list when first loaded by OpenChartFromDBAndLock
+            if(m_pParentCanvas->IsTileOverlayIndexInNoShow(*rit)){
+                continue;
+            }
+            
             ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
             if(pcmbt){
                 pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
@@ -4939,6 +4981,39 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
                     m_pParentCanvas->m_Piano->SetActiveKeyArray( piano_active_array_tiles );
                 }
             }
+        }
+        
+        // Render the HiLite on piano rollover
+        LLRegion hiregion = m_pParentCanvas->m_pQuilt->GetHiliteRegion();
+
+        if( !hiregion.Empty() ) {
+            glEnable( GL_BLEND );
+
+            double hitrans;
+            switch( global_color_scheme ) {
+            case GLOBAL_COLOR_SCHEME_DAY:
+                hitrans = .4;
+                break;
+            case GLOBAL_COLOR_SCHEME_DUSK:
+                hitrans = .2;
+                break;
+            case GLOBAL_COLOR_SCHEME_NIGHT:
+                hitrans = .1;
+                break;
+            default:
+                hitrans = .4;
+                break;
+            }
+
+#ifndef USE_ANDROID_GLES2
+            glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
+#else
+            s_regionColor = wxColor(204, 102, 102, hitrans * 256);
+#endif
+
+            DrawRegion(VPoint, hiregion);
+
+            glDisable( GL_BLEND );
         }
     }
 }
@@ -5514,38 +5589,38 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
 //     }
 //    else
     {
-    m_nStep = 20; 
-    m_nTotal = 100;
-    
-    m_nStep = 10; 
-    m_nTotal = 40;
-    
-    m_nRun = 0;
-    
-    float perStep = m_nStep / m_nTotal;
-    
- 
-    if(zoomTimer.IsRunning()){
-        m_offsetxStep = (m_fbo_offsetx - m_runoffsetx) * perStep;
-        m_offsetyStep = (m_fbo_offsety - m_runoffsety) * perStep;
-        m_swidthStep = (m_fbo_swidth - m_runswidth) * perStep;
-        m_sheightStep = (m_fbo_sheight - m_runsheight) * perStep;
+        m_nStep = 20; 
+        m_nTotal = 100;
         
-    }
-    else{
-        m_offsetxStep = (m_fbo_offsetx - m_lastfbo_offsetx) * perStep;
-        m_offsetyStep = (m_fbo_offsety - m_lastfbo_offsety) * perStep;
-        m_swidthStep = (m_fbo_swidth - m_lastfbo_swidth) * perStep;
-        m_sheightStep = (m_fbo_sheight - m_lastfbo_sheight) * perStep;
-
-        m_runoffsetx = m_lastfbo_offsetx;
-        m_runoffsety = m_lastfbo_offsety;
-        m_runswidth = m_lastfbo_swidth;
-        m_runsheight = m_lastfbo_sheight;
-    }
-
-    if(!zoomTimer.IsRunning())
-        zoomTimer.Start(m_nStep);
+        m_nStep = 10; 
+        m_nTotal = 40;
+        
+        m_nRun = 0;
+        
+        float perStep = m_nStep / m_nTotal;
+        
+     
+        if(zoomTimer.IsRunning()){
+            m_offsetxStep = (m_fbo_offsetx - m_runoffsetx) * perStep;
+            m_offsetyStep = (m_fbo_offsety - m_runoffsety) * perStep;
+            m_swidthStep = (m_fbo_swidth - m_runswidth) * perStep;
+            m_sheightStep = (m_fbo_sheight - m_runsheight) * perStep;
+            
+        }
+        else{
+            m_offsetxStep = (m_fbo_offsetx - m_lastfbo_offsetx) * perStep;
+            m_offsetyStep = (m_fbo_offsety - m_lastfbo_offsety) * perStep;
+            m_swidthStep = (m_fbo_swidth - m_lastfbo_swidth) * perStep;
+            m_sheightStep = (m_fbo_sheight - m_lastfbo_sheight) * perStep;
+    
+            m_runoffsetx = m_lastfbo_offsetx;
+            m_runoffsety = m_lastfbo_offsety;
+            m_runswidth = m_lastfbo_swidth;
+            m_runsheight = m_lastfbo_sheight;
+        }
+    
+        if(!zoomTimer.IsRunning())
+            zoomTimer.Start(m_nStep);
         m_zoomFinal = false;
     }
 }

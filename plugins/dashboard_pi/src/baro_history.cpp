@@ -266,7 +266,10 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   col=wxColour(61,61,204,255); //blue, opaque
   dc->SetFont(*g_pFontData);
   dc->SetTextForeground(col);
-  WindSpeed=wxString::Format(_T("hPa %3.1f  "), m_Press);
+  if ( !std::isnan(m_Press) )
+      WindSpeed=wxString::Format(_T("hPa %3.1f  "), m_Press);
+  else
+      WindSpeed = wxString::Format(_T("hPa ---  "));
   dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, g_pFontData);
   dc->DrawText(WindSpeed, m_LeftLegend+3, m_TopLineHeight-degh);
   dc->SetFont(*g_pFontLabel);

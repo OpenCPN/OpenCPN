@@ -18,7 +18,12 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
 
  */
+
+#ifndef _garmingusb_h
+#define _garmingusb_h
+
 #include <stdio.h>
+#include "gpsdevice.h"
 
 /* This structure is a bit funny looking to avoid variable length
  * arrays which aren't present in C89.   This contains the visible
@@ -46,7 +51,7 @@ union {
  * OS implementation.
  */
 #define GUSB_MAX_UNITS 20
-struct garmin_unit_info {
+extern struct garmin_unit_info {
 	unsigned long serial_number;
 	unsigned long unit_id;
 	unsigned long unit_version;
@@ -65,3 +70,5 @@ int gusb_close(gpsdevh *);
 #define GUSB_SESSION_START 5	/* We request units attention */
 #define GUSB_SESSION_ACK   6	/* Unit responds that we have its attention */
 #define GUSB_REQUEST_BULK  2	/* Unit requests we read from bulk pipe */
+
+#endif

@@ -19,8 +19,8 @@ sudo systemctl disable --now dnf-makecache.timer
 sudo dnf clean all
 
 # Install required packages
-su -c "dnf install -y sudo dnf-plugins-core"
-sudo dnf install -y flatpak-builder ccrypt make rsync gnupg2
+su -c "dnf install -y -q sudo dnf-plugins-core"
+sudo dnf install -q -y appstream flatpak-builder ccrypt make rsync gnupg2 
 
 test -d /opencpn-ci && cd /opencpn-ci || :
 
@@ -30,23 +30,49 @@ flatpak --user remote-add --if-not-exists \
 flatpak --user install -y org.freedesktop.Platform//18.08
 flatpak --user install -y org.freedesktop.Sdk//18.08
 
-# Patch to use official master branch from github and build
+# Patch to use official master branch from github and build + build number.
 cd flatpak
-sed -i '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
+sed -i -e '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
+    -e "/BUILD_NUMBER/s/0/$BUILD_NUMBER/" \
     org.opencpn.OpenCPN.yaml
-make build
+
+test -d ../build || mkdir ../build
+cd ../build
+make -f ../flatpak/Makefile build
+flatpak list
 
 # Decrypt and unpack gpg keys, sign and install into website/
-ccdecrypt --envvar FLATPAK_KEY ../ci/gpg.tar.gz.cpt
-tar xf ../ci/gpg.tar.gz
+ccat --envvar FLATPAK_KEY ../ci/gpg.tar.gz.cpt > gpg.tar.gz
+tar xf gpg.tar.gz
 chmod 500 opencpn-gpg
-make GPG_HOMEDIR=opencpn-gpg sign
-make GPG_HOMEDIR=opencpn-gpg install
-rm -rf ../ci/gpg.tar.gz opencpn-gpg
+make -f ../flatpak/Makefile install
+make GPG_HOMEDIR=opencpn-gpg -f ../flatpak/Makefile sign
+rm -rf gpg.tar.gz opencpn-gpg
+
+# Debug: show version in local repo.
+flatpak remote-add  \
+    --user --gpg-import=website/opencpn.key local $PWD/website/repo
+flatpak update --appstream local
+flatpak remote-ls local
 
 # Deploy website/ to deployment server.
-ccdecrypt --envvar FLATPAK_KEY ../ci/amazon-ec2.pem.cpt
-rsync_host="ec2-user@ec2-18-219-5-218.us-east-2.compute.amazonaws.com"
-rsync -av --rsh="ssh -o 'StrictHostKeyChecking no' -i ../ci/amazon-ec2.pem" \
-    website/ $rsync_host:/var/www/ocpn-website-beta/website
-rm -f ../ci/amazon-ec2.pem
+cp ../ci/id_opencpn.tar.cpt .
+ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
+tar -xf id_opencpn.tar
+chmod 600 .ssh/id_opencpn
+
+rsync -a --info=stats --delete-after \
+    --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
+    website/ opencpn@mumin.crabdance.com:/var/www/ocpn-flatpak/website
+rm -f .ssh/id_opencpn*
+
+# Restore the patched file so the caching works.
+git checkout ../flatpak/org.opencpn.OpenCPN.yaml
+
+# Debug: show version in remote repo.
+flatpak remote-add --user opencpn $PWD/website/opencpn.flatpakrepo
+flatpak update --appstream opencpn
+flatpak remote-ls opencpn
+
+# Validate the appstream data:
+appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml

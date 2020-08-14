@@ -216,23 +216,23 @@ enum {
 
 /* Define an int bit field for dialog return value
  * to indicate which types of settings have changed */
-#define GENERIC_CHANGED 1
-#define S52_CHANGED 2
-#define FONT_CHANGED 4
-#define FORCE_UPDATE 8
-#define VISIT_CHARTS 16
-#define LOCALE_CHANGED 32
-#define TOOLBAR_CHANGED 64
-#define CHANGE_CHARTS 128
-#define SCAN_UPDATE 256
-#define GROUPS_CHANGED 512
-#define STYLE_CHANGED 1024
-#define TIDES_CHANGED 2048
-#define GL_CHANGED 4096
-#define REBUILD_RASTER_CACHE 8192
-#define NEED_NEW_OPTIONS 16384
-#define PARSE_ENC 32768
-#define CONFIG_CHANGED 8192 * 2
+#define GENERIC_CHANGED                 1
+#define S52_CHANGED                     1 << 1
+#define FONT_CHANGED                    1 << 2
+#define FORCE_UPDATE                    1 << 3
+#define VISIT_CHARTS                    1 << 4
+#define LOCALE_CHANGED                  1 << 5
+#define TOOLBAR_CHANGED                 1 << 6
+#define CHANGE_CHARTS                   1 << 7
+#define SCAN_UPDATE                     1 << 8
+#define GROUPS_CHANGED                  1 << 9
+#define STYLE_CHANGED                   1 << 10
+#define TIDES_CHANGED                   1 << 11
+#define GL_CHANGED                      1 << 12
+#define REBUILD_RASTER_CACHE            1 << 13
+#define NEED_NEW_OPTIONS                1 << 14
+#define PARSE_ENC                       1 << 15
+#define CONFIG_CHANGED                  1 << 16
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -327,7 +327,8 @@ class options : private Uncopyable,
   void OnButtonSetStd(wxCommandEvent& event);
       
   void OnPageChange(wxListbookEvent &event);
-  void OnNBPageChange(wxNotebookEvent &event);
+  void OnTopNBPageChange(wxNotebookEvent &event);
+  void OnSubNBPageChange(wxNotebookEvent &event);
   void DoOnPageChange(size_t page);
 
   void OnButtonSelectSound(wxCommandEvent &event);
@@ -360,6 +361,9 @@ class options : private Uncopyable,
   void OnConfigMouseSelected( wxMouseEvent &event);
 
   void SetSelectedConnectionPanel( ConnectionParamsPanel *panel );
+  
+  bool GetNeedNew(){ return m_bneedNew; }
+  void SetNeedNew( bool bnew ){ m_bneedNew =bnew; }
   
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -400,7 +404,7 @@ class options : private Uncopyable,
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
-  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor;
+  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
   // LIVE ETA OPTION
@@ -475,6 +479,7 @@ class options : private Uncopyable,
   void EnableConnection( ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event); 
   void UpdateDiscoverStatus( wxString stat);
+  void OnAISRolloverClick(wxCommandEvent &event);
   
   void OnCanvasConfigSelectClick( int ID, bool selected);
   
@@ -514,7 +519,7 @@ class options : private Uncopyable,
   wxStaticBoxSizer *activeSizer;
   wxBoxSizer *chartPanel;
   wxTextCtrl *pSelCtl;
-  wxListBox *pActiveChartsList;
+  wxListCtrl *pActiveChartsList;
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
   wxButton *pParseENCButton;
@@ -540,6 +545,7 @@ class options : private Uncopyable,
   wxTextCtrl *m_pText_Mark_Lost, *m_pText_Remove_Lost, *m_pText_COG_Predictor;
   wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed, *m_pText_Scale_Priority;
   wxTextCtrl *m_pText_ACK_Timeout, *m_pText_Show_Target_Name_Scale;
+  wxTextCtrl *m_pText_RealtPred_Speed;
 
   // For Display->Configs page...
   wxScrolledWindow *m_DisplayConfigsPage;
@@ -596,6 +602,8 @@ class options : private Uncopyable,
   wxCheckBox *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
+  wxStaticText* pStatic_CallSign;
+
 #if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL  
 #ifdef __WXGTK__
@@ -641,7 +649,7 @@ class options : private Uncopyable,
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
   int m_returnChanges;
-  wxListBox *tcDataSelected;
+  wxListCtrl *tcDataSelected;
   std::vector<int> marinersStdXref;
   ChartGroupsUI *groupsPanel;
   wxImageList *m_topImgList;
@@ -697,6 +705,7 @@ class options : private Uncopyable,
   wxSize  m_colourPickerDefaultSize;
 
   wxSize m_sliderSize;
+  bool m_bneedNew;
   
   DECLARE_EVENT_TABLE()
 };

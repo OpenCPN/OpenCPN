@@ -345,16 +345,27 @@ Serial::SerialImpl::waitByteTimes (size_t /*count*/)
 size_t
 Serial::SerialImpl::read (uint8_t *buf, size_t size)
 {
+  stringstream ss;
+  DWORD errCode;
+
   if (!is_open_) {
     throw PortNotOpenedException ("Serial::read");
   }
   DWORD bytes_read;
   if (!fWaitingOnRead) {
     if (!ReadFile(fd_, buf, static_cast<DWORD>(size), &bytes_read, &osReader)) {
-      if (GetLastError() == ERROR_IO_PENDING) {  // read delayed?
+      errCode = GetLastError();  
+      if (errCode == ERROR_IO_PENDING) {  // read delayed?
         fWaitingOnRead = TRUE;
       }
-      else {    // read completed immediately
+      else if (errCode != 0)    // Some error on read, so trigger retry logic
+      {
+        bytes_read = 0;
+        ss << "Error while reading from the serial port: " << errCode;
+        THROW (IOException, ss.str().c_str());
+      }
+      else
+      {    // read completed immediately without error
         return (size_t) (bytes_read);
       }
     }
@@ -372,13 +383,18 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
                     if (GetOverlappedResult(fd_, &osReader, &bytes_read, FALSE)) {
                          // read completed successfully
                       //if (bytes_read)
-                        fWaitingOnRead = FALSE;
+                        fWaitingOnRead = FALSE; 
                     }
-                    
+                    else{
+                        errCode = GetLastError();   
+                        fWaitingOnRead = FALSE;
+                    }                        
                     break;
                     
                 case WAIT_TIMEOUT:
                     bytes_read = 0;
+                    ss << "Error while reading from the serial port: " << GetLastError();
+                    THROW (IOException, ss.str().c_str());
                     break;                       
                     
                 default:                // error of some kind with handles
@@ -388,11 +404,11 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
             }
   }
    
-//  if (!ReadFile(fd_, buf, static_cast<DWORD>(size), &bytes_read, NULL)) {
-//    stringstream ss;
-//    ss << "Error while reading from the serial port: " << GetLastError();
-//    THROW (IOException, ss.str().c_str());
-//  }
+//   if (!ReadFile(fd_, buf, static_cast<DWORD>(size), &bytes_read, NULL)) {
+//     stringstream ss;
+//     ss << "Error while reading from the serial port: " << GetLastError();
+//     THROW (IOException, ss.str().c_str());
+//   }
   return (size_t) (bytes_read);
 }
 

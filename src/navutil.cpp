@@ -229,6 +229,7 @@ extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bDrawAISRealtime;
+extern double           g_AIS_RealtPred_Kts;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
@@ -417,6 +418,8 @@ extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
 extern int              g_ShipScaleFactor;
 extern float            g_ShipScaleFactorExp;
+extern int              g_ENCSoundingScaleFactor;
+
 
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
@@ -837,6 +840,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
     Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
+    Read( _T ( "ENCSoundingScaleFactor" ), &g_ENCSoundingScaleFactor );
 
     // Plugin catalog handler persistent variables.
     Read( "CatalogCustomURL", &g_catalog_custom_url);
@@ -1124,6 +1128,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
     Read( _T ( "bDrawAISRealtime" ), &g_bDrawAISRealtime );
     Read( _T ( "bShowAISName" ), &g_bShowAISName );
+    Read( _T ( "AISRealtimeMinSpeedKnots" ), &g_AIS_RealtPred_Kts, 0.7 );
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     Read( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
     Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition );
@@ -1531,6 +1536,10 @@ void MyConfig::LoadS57Config()
 
     Read( _T ( "bShowNationalText" ), &read_int, 0 );
     ps52plib->m_bShowNationalTexts = !( read_int == 0 );
+    
+    Read( _T ( "ENCSoundingScaleFactor" ), &read_int, 0 );
+    ps52plib->m_nSoundingFactor = read_int;
+
 
     if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 3.0 ) ) {
         S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
@@ -2088,6 +2097,7 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
         Read( _T ( "canvasbFollow" ), &cConfig->bFollow, 0 );
     
         Read( _T ( "canvasCourseUp" ), &cConfig->bCourseUp, 0 );
+        Read( _T ( "canvasHeadUp" ), &cConfig->bHeadUp, 0 );
         Read( _T ( "canvasLookahead" ), &cConfig->bLookahead, 0 );
     }
 
@@ -2228,7 +2238,8 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
         Write( _T ( "canvasENCShowLightDescriptions" ), cConfig->canvas->GetShowENCLightDesc() );
         Write( _T ( "canvasENCShowLights" ), cConfig->canvas->GetShowENCLights() );
         
-        Write( _T ( "canvasCourseUp" ), cConfig->canvas->GetCourseUP() );
+        Write( _T ( "canvasCourseUp" ), cConfig->canvas->GetUpMode() == COURSE_UP_MODE );
+        Write( _T ( "canvasHeadUp" ), cConfig->canvas->GetUpMode() == HEAD_UP_MODE );
         Write( _T ( "canvasLookahead" ), cConfig->canvas->GetLookahead() );
         
         
@@ -2307,6 +2318,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
     Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
     Write( _T ( "ShipScaleFactor" ), g_ShipScaleFactor );
+    Write( _T ( "ENCSoundingScaleFactor" ), g_ENCSoundingScaleFactor );
 
     // Plugin catalog persistent values.
     Write( _T( "CatalogCustomURL"), g_catalog_custom_url);
@@ -2556,6 +2568,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
     Write( _T ( "bDrawAISRealtime" ), g_bDrawAISRealtime );
+    Write( _T ( "AISRealtimeMinSpeedKnots" ), g_AIS_RealtPred_Kts );
     Write( _T ( "bShowAISName" ), g_bShowAISName );
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
     Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
@@ -2617,6 +2630,7 @@ void MyConfig::UpdateSettings()
         Write( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) );
         Write( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ) );
         Write( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
+        Write( _T ( "ENCSoundingScaleFactor" ), g_ENCSoundingScaleFactor );
     }
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "S57DataLocation" ), _T("") );
@@ -3068,6 +3082,9 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
             if( g_InvisibleLayers.Contains( l->m_LayerName ) )
                 bLayerViz = false;
             l->m_bIsVisibleOnChart = bLayerViz;
+
+            // Default for new layers is "Names visible"
+            l->m_bHasVisibleNames = wxCHK_CHECKED;
 
             wxString laymsg;
             laymsg.Printf( wxT("New layer %d: %s"), l->m_LayerID, l->m_LayerName.c_str() );

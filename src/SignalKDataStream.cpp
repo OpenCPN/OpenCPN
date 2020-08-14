@@ -1,6 +1,28 @@
-//
-// Created by balp on 2018-07-28.
-//
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  PlugIn Manager Object
+ * Author:   David Register
+ *
+ ***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
+ //Originally by balp on 2018-07-28.
 
 #ifdef __MINGW32__
 #undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
@@ -164,6 +186,11 @@ void SignalKDataStream::Open(void) {
                 wxLogDebug(wxString::Format(_T("SK server autodiscovery finds WebSocket service: %s:%d"), discoveredIP.c_str(), discoveredPort));
                 m_addr.Hostname(discoveredIP);
                 m_addr.Service(discoveredPort);
+                
+                // Update the connection params, by pointer to item in global params array
+                ConnectionParams *params = (ConnectionParams *)m_params;        // non-const
+                params->NetworkAddress = discoveredIP;
+                params->NetworkPort = discoveredPort;
             }
             else
                 wxLogDebug(_T("SK server autodiscovery finds no WebSocket server."));
@@ -304,7 +331,7 @@ void SignalKDataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
         if(m_useWebSocket){
             wxLogMessage( wxString::Format(_T("    WebSocket SignalKDataStream watchdog timeout: %s"), GetPort().c_str()) );
         
-            printf("DOGTIME  %d\n", sdogval);
+            //printf("DOGTIME  %d\n", sdogval);
             CloseWebSocket();
             OpenWebSocket();
             SetWatchdog( N_DOG_TIMEOUT_RECONNECT );
@@ -540,34 +567,31 @@ void *WebSocketThread::Entry()
     
     // Craft the address string
     std::stringstream wsAddress;
-    wsAddress << "ws://" << host.mb_str()  << ":" << port << "/signalk/v1/stream?subscribe=all" ; 
+    wsAddress << "ws://" << host.mb_str()  << ":" << port << "/signalk/v1/stream?subscribe=all&sendCachedValues=false" ;
 
     WebSocket::pointer ws = WebSocket::from_url(wsAddress.str());
     if(ws == NULL){
-        printf("No Connect\n");
+        //printf("No Connect\n");
         m_parentStream->SetThreadRunning(false);
         return 0;
     }
     while (true) {
         if(TestDestroy()){
-            printf("receiving delete\n");
-            break;
+            //printf("receiving delete\n");
+	    ws->close();
         }
         
+        if(ws->getReadyState() == WebSocket::CLOSED){
+	    //printf("closed\n");
+	    break;
+	}
+    	ws->poll(10);
         if(ws->getReadyState() == WebSocket::OPEN){
-            ws->poll(10);
-            if(ws->getReadyState() == WebSocket::CLOSED){
-                printf("closed\n");
-                break;
-            }
             ws->dispatch(HandleMessage);
         }
-        else
-            wxThread::Sleep(1);
     }
     
-    printf("ws close\n");
-    ws->close();
+    //printf("ws delete\n");
     delete ws; 
 
     m_parentStream->SetThreadRunning(false);
@@ -589,7 +613,7 @@ void WebSocketThread::HandleMessage(const std::string & message)
 
 void SignalKDataStream::OpenWebSocket()
 {
-    printf("OpenWebSocket\n");
+    //printf("OpenWebSocket\n");
     wxLogMessage(wxString::Format(_T("Opening Signal K WebSocket client: %s"),
             m_params->GetDSPort().c_str()));
     
@@ -612,7 +636,7 @@ void SignalKDataStream::CloseWebSocket()
 {
     if(m_wsThread){
         if(IsThreadRunning()){
-            printf("sending delete\n");
+            //printf("sending delete\n");
             m_wsThread->Delete();
             wxMilliSleep(100);
             
@@ -620,7 +644,7 @@ void SignalKDataStream::CloseWebSocket()
             while(IsThreadRunning() && (++nDeadman < 200)){   // spin for max 2 secs.
                 wxMilliSleep(10);
             }
-            printf("Closed in %d\n", nDeadman);
+            //printf("Closed in %d\n", nDeadman);
             wxMilliSleep(100);
         }
     }

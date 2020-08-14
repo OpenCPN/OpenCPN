@@ -247,6 +247,7 @@ private:
     void EmptyCandidateArray( void );
     void SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp );
     int GetNewRefChart( void );
+    const LLRegion &GetTilesetRegion( int dbIndex);
 
     
     bool IsChartS57Overlay( int db_index );

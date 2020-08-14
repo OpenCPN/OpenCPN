@@ -267,6 +267,8 @@ public:
 
 private:
     void Open();
+    bool SendSentence( const wxString &sentence );
+
 };
 
 class NullDataStream : public DataStream {

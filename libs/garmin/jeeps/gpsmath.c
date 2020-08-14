@@ -2547,7 +2547,7 @@ int32 GPS_Lookup_Datum_Index(const char *n)
 	return -1;
 }
 
-char *
+const char *
 GPS_Math_Get_Datum_Name(const int datum_index)
 {
 	return GPS_Datum[datum_index].name;

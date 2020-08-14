@@ -107,6 +107,13 @@ static bool RecordIsWind(GribRecord *rec)
          rec->getDataType()==GRB_WIND_DIR || rec->getDataType()==GRB_WIND_SPEED;
 }
 
+//---------------------------------------------------------------------------------
+static bool RecordIsGust(GribRecord *rec)
+{
+  return rec->getDataType()==GRB_WIND_GUST_VX || rec->getDataType()==GRB_WIND_GUST_VY ||
+		 rec->getDataType()==GRB_WIND_GUST;
+}
+
 static bool RecordIsCurrent(GribRecord *rec)
 {
   return rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD ||
@@ -193,8 +200,7 @@ void GribReader::readAllGribRecords()
                ) )
             storeRecordInMap(rec);
 
-        else if( (rec->getDataType()==GRB_WIND_GUST
-                    && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
+        else if( (RecordIsGust(rec) && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
             storeRecordInMap(rec);
 
         else if( RecordIsWind(rec) && rec->getLevelType()==LV_GND_SURF)
@@ -440,45 +446,59 @@ void GribReader::readGribFileContent()
 
     createListDates();
 //    hoursBetweenRecords = computeHoursBeetweenGribRecords();
+	// XXX should it be done after reading all files, rather than per file?
+	if ( getNumberOfGribRecords(GRB_WIND_GUST, LV_GND_SURF, 0) == 0) {
+		for (auto date :setAllDates ) {
+			GribRecord *recX = getGribRecord(GRB_WIND_GUST_VX, LV_GND_SURF, 0, date);
+			if (recX == nullptr)
+				continue;
 
-
+			GribRecord *recY = getGribRecord(GRB_WIND_GUST_VY, LV_GND_SURF, 0, date);
+			if (recY == nullptr)
+			    continue;
+			GribRecord *rec = GribRecord::MagnitudeRecord(*recX, *recY);
+			rec->setDataType(GRB_WIND_GUST);
+			storeRecordInMap(rec);
+		}
+    }
 	//-----------------------------------------------------
 	// Are dewpoint data in file ?
 	// If no, compute it with Magnus-Tetens formula, if possible.
 	//-----------------------------------------------------
 	dewpointDataStatus = DATA_IN_FILE;
-	if (getNumberOfGribRecords(GRB_DEWPOINT, LV_ABOV_GND, 2) == 0)
+	if ( getNumberOfGribRecords(GRB_DEWPOINT, LV_ABOV_GND, 2) != 0)
+	    return;
+
+    dewpointDataStatus = NO_DATA_IN_FILE;
+    if ( getNumberOfGribRecords(GRB_HUMID_REL, LV_ABOV_GND, 2) == 0
+		   || getNumberOfGribRecords(GRB_TEMP, LV_ABOV_GND, 2) == 0)
+		return;
+
+	dewpointDataStatus = COMPUTED_DATA;
+	for (auto iter :setAllDates )
 	{
-		dewpointDataStatus = NO_DATA_IN_FILE;
-		if (  getNumberOfGribRecords(GRB_HUMID_REL, LV_ABOV_GND, 2) > 0
-		   && getNumberOfGribRecords(GRB_TEMP, LV_ABOV_GND, 2) > 0)
+		time_t date = iter;
+		GribRecord *recModel = getGribRecord(GRB_TEMP,LV_ABOV_GND,2,date);
+		if (recModel == nullptr)
+		    continue;
+
+        // Crée un GribRecord avec les dewpoints calculés
+		GribRecord *recDewpoint = new GribRecord(*recModel);
+        recDewpoint->setDataType(GRB_DEWPOINT);
+		for (zuint i=0; i<(zuint)recModel->getNi(); i++)
 		{
-			dewpointDataStatus = COMPUTED_DATA;
-			std::set<time_t>::iterator iter;
-			for (iter=setAllDates.begin(); iter!=setAllDates.end(); iter++)
+		    for (zuint j=0; j<(zuint)recModel->getNj(); j++)
 			{
-				time_t date = *iter;
-				GribRecord *recModel = getGribRecord(GRB_TEMP,LV_ABOV_GND,2,date);
-				if (recModel != NULL)
-				{
-					// Crée un GribRecord avec les dewpoints calculés
-					GribRecord *recDewpoint = new GribRecord(*recModel);
-                                        recDewpoint->setDataType(GRB_DEWPOINT);
-					for (zuint i=0; i<(zuint)recModel->getNi(); i++)
-					    for (zuint j=0; j<(zuint)recModel->getNj(); j++)
-					    {
-					        double x, y;
-					        recModel->getXY(i, j, &x, &y);
-						double dp = computeDewPoint(x, y, date);
-						recDewpoint->setValue(i, j, dp);
-                                            }
-                                        storeRecordInMap(recDewpoint);
-				}
-			}
+			    double x, y;
+			    recModel->getXY(i, j, &x, &y);
+				double dp = computeDewPoint(x, y, date);
+				recDewpoint->setValue(i, j, dp);
+            }
 		}
+        storeRecordInMap(recDewpoint);
 	}
-	//-----------------------------------------------------
 }
+
 
 //---------------------------------------------------
 int GribReader::getDewpointDataStatus(int /*levelType*/,int /*levelValue*/)

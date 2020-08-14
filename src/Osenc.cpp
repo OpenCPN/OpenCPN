@@ -1457,7 +1457,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
 
     m_FullPath000 = FullPath000;
     
-    m_senc_file_create_version = 200;
+    m_senc_file_create_version = 201;
     
     if(!m_poRegistrar){
         m_poRegistrar = new S57ClassRegistrar();

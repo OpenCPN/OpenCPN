@@ -88,6 +88,9 @@ Elément de base d'un fichier GRIB
 
 #define GRB_TSEC          171   /* "Seconds prior to initial reference time (defined in bytes 18-20)" */
 #define GRB_WIND_GUST     180   /* m/s "wind gust */
+#define GRB_WIND_GUST_VX  181   /* m/s */
+#define GRB_WIND_GUST_VY  182   /* m/s */
+
 #define GRB_USCT          190   /* Scatterometer estimated U Wind, NCEP Center 7  */
 #define GRB_VSCT          191   /* Scatterometer estimated V Wind, NCEP Center 7  */
 
@@ -101,6 +104,7 @@ Elément de base d'un fichier GRIB
 #define LV_ISOTHERM0   4
 #define LV_ISOBARIC  100
 #define LV_MSL       102
+#define LV_ABOV_MSL  103
 #define LV_ABOV_GND  105
 #define LV_SIGMA     107
 #define LV_ATMOS_ENT  10
@@ -114,6 +118,9 @@ enum DataCenterModel {
     FNMOC_WW3_GLB,
     FNMOC_WW3_MED,
     NORWAY_METNO,
+    ECMWF_ERA5,
+    KNMI_HIRLAM,
+    KNMI_HARMONIE_AROME,
     OTHER_DATA_CENTER
 };
 

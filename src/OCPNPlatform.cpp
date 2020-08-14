@@ -58,6 +58,9 @@
 #include "Select.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
+#include "PluginPaths.h"
+#include <string>
+#include <vector>
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -159,15 +162,11 @@ extern double                    g_ShowMoored_Kts;
 extern bool                      g_bShowAreaNotices;
 extern bool                      g_bDrawAISSize;
 extern bool                      g_bDrawAISRealtime;
+extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
 
 extern int                       gps_watchdog_timeout_ticks;
-
-
-
-
-
-
+extern wxString                  *pInit_Chart_Dir;
 
 extern double                    g_config_display_size_mm;
 extern bool                      g_config_display_size_manual;
@@ -237,6 +236,7 @@ extern int                        g_n_ownship_min_mm;
 
 extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
+extern int                        g_FlushNavobjChangesTimeout;
 
 static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -380,8 +380,16 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                     if(val.Length())  detail->osd_version = std::string(val.mb_str());
                 }
                 else if(str.StartsWith(_T("ID_LIKE"))){
-                    val = str.AfterFirst('=');
-                    if(val.Length())  detail->osd_name_like = std::string(val.mb_str());
+                    if(val.StartsWith('"')){
+                        val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
+                    }
+                    else{
+                        val = str.AfterFirst('=');
+                    }
+                        
+                    if(val.Length()){
+                        detail->osd_name_like = ocpn::split(val.mb_str(), " ");
+                    }
                 }
 
             }
@@ -410,18 +418,18 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
 #endif
 
     //  Set the default processor architecture
-    detail->osd_arch = std::string("X86_64");
+    detail->osd_arch = std::string("x86_64");
     
     // then see what is actually running.
     wxPlatformInfo platformInfo = wxPlatformInfo::Get();
     wxArchitecture arch = platformInfo.GetArchitecture();
     if(arch == wxARCH_32)
-        detail->osd_arch = std::string("X86_32");
+        detail->osd_arch = std::string("i386");
     
 #ifdef ocpnARM
-    detail->osd_arch = std::string("ARM64");
+    detail->osd_arch = std::string("arm64");
     if(arch == wxARCH_32)
-        detail->osd_arch = std::string("ARMHF");
+        detail->osd_arch = std::string("armhf");
 #endif    
     
     
@@ -661,7 +669,13 @@ void OCPNPlatform::Initialize_2( void )
     
     //  Set a global toolbar scale factor
     g_toolbar_scalefactor = GetToolbarScaleFactor( g_GUIScaleFactor );
-    
+    auto configdir = wxFileName(GetPrivateDataDir());
+    if (!configdir.DirExists()) {
+        if (!configdir.Mkdir()) {
+	     auto msg = std::string("Cannot create config directory: ");
+             wxLogWarning(msg + configdir.GetFullPath());
+        }
+    }
 }
 
 //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
@@ -708,6 +722,8 @@ void OCPNPlatform::Initialize_3( void )
         if (!g_bRollover)  //Not explicit set before
             g_bRollover = g_btouch ? false : true;
     }
+    
+    g_FlushNavobjChangesTimeout = 300;          // Seconds, so 5 minutes
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -855,8 +871,15 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
     // Add a new prefixes for search order.
     #if defined(__WINDOWS__)
 
+    // Legacy and system plugin location
     wxString locale_location = GetSharedDataDir();
-    locale_location += _T("share/locale");
+    locale_location += _T("share\\locale");
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+
+    // Managed plugin location
+    wxFileName usrShare(GetWinPluginBaseDir() + wxFileName::GetPathSeparator()); 
+    usrShare.RemoveLastDir();
+    locale_location = usrShare.GetFullPath() + ("share\\locale");
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 
     #elif defined(__OCPN__ANDROID__)
@@ -880,8 +903,18 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
     locale_location = location.GetFullPath();
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 
+    // And then for managed plugins
+    std::string dir = PluginPaths::getInstance()->UserDatadir();
+    wxString managed_locale_location(dir + "/locale");
+    wxLocale::AddCatalogLookupPathPrefix( managed_locale_location );
     #endif
 
+    #ifdef __WXOSX__
+    std::string macDir = PluginPaths::getInstance()->Homedir() + "/Library/Application Support/OpenCPN/Contents/Resources";
+    wxString Mac_managed_locale_location(macDir);
+    wxLocale::AddCatalogLookupPathPrefix( Mac_managed_locale_location );
+    #endif
+    
 #endif
 }
 
@@ -1098,6 +1131,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
     g_bDrawAISRealtime = false;
+    g_AIS_RealtPred_Kts = 0.7;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     g_bPreserveScaleOnX = true;
@@ -1207,7 +1241,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_bRollover = true;
-    g_bShowMuiZoomButtons = false;
+    g_bShowMuiZoomButtons = true;
 
     g_GUIScaleFactor = 0;               // nominal
     g_ChartNotRenderScaleFactor = 2.0;
@@ -1293,7 +1327,7 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
     
         qDebug() << "Upgrade check" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
 
-        if( androidGetVersionCode() > g_AndroidVersionCode ){            // upgrade
+        if(androidGetVersionCode() > g_AndroidVersionCode ){            // upgrade
             qDebug() << "Upgrade detected" << "from VC: " << g_AndroidVersionCode << " to VC: " << androidGetVersionCode();
             
             // Set some S52/S57 options
@@ -1312,11 +1346,20 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
             g_default_font_facename = _T("Roboto");
         
             FontMgr::Get().Shutdown();      // Restart the font manager
+            
+            // Reshow the zoom buttons
+            g_bShowMuiZoomButtons = true;
+            
+            // Clear the default chart storage location
+            // Will get set to e.g. "/storage/emulated/0" later
+            pInit_Chart_Dir->Clear();
+
         }
         
         // Set track default color to magenta
         g_colourTrackLineColour.Set(197,69,195);
-        
+
+
  
         // This is ugly hack
         // TODO
@@ -1481,6 +1524,17 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         
 #ifdef __WXMSW__
         m_PrivateDataDir = GetHomeDir();                     // should be {Documents and Settings}\......
+#elif defined FLATPAK
+        std::string config_home;
+        if (getenv("XDG_CONFIG_HOME")) {
+            config_home = getenv("XDG_CONFIG_HOME");
+        }
+        else {
+          config_home = getenv("HOME");
+          config_home += "/.var/app/org.opencpn.OpenCPN/config";
+        }
+        m_PrivateDataDir = config_home + "/opencpn";
+
 #elif defined __WXOSX__
         m_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
         appendOSDirSlash(&m_PrivateDataDir);
@@ -1545,7 +1599,7 @@ wxString OCPNPlatform::GetPluginDataPath()
     wxString dirs("");
     auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
     if (g_Platform->isFlatpacked()) {
-        dirs="~/.var/app/org.opencpn.OpenCPN/data";
+        dirs="~/.var/app/org.opencpn.OpenCPN/data/opencpn/plugins";
     }
     else if (osSystemId & wxOS_UNIX_LINUX) {
         dirs = GetLinuxDataPath();
@@ -1700,6 +1754,10 @@ wxString &OCPNPlatform::GetConfigFileName()
         m_config_file_name.Append(_T("opencpn"));
         appendOSDirSlash(&m_config_file_name);
         m_config_file_name.Append(_T("opencpn.ini"));
+#elif defined FLATPAK
+        m_config_file_name = GetPrivateDataDir();
+        m_config_file_name.Append(_T("/opencpn.conf"));
+            // Usually ~/.var/app/org.opencpn.OpenCPN/config/opencpn.conf
 #else
         m_config_file_name = std_path.GetUserDataDir(); // should be ~/.opencpn
         appendOSDirSlash(&m_config_file_name);
@@ -1905,6 +1963,10 @@ bool OCPNPlatform::InitializeLogFile( void )
         // TODO Remove this behaviour on Release
         ::wxRemoveFile( mlog_file );
     }
+
+    if(wxLog::GetLogLevel() > wxLOG_User)
+        wxLog::SetLogLevel(wxLOG_Info);
+
 #endif
     g_logger = new OcpnLog(mlog_file.mb_str());
     m_Oldlogger = wxLog::SetActiveTarget( g_logger );
@@ -2800,6 +2862,12 @@ void OCPNPlatform::platformLaunchDefaultBrowser( wxString URL )
 // OCPNColourPickerCtrl implementation
 // ============================================================================
 
+BEGIN_EVENT_TABLE(OCPNColourPickerCtrl, wxButton)
+#ifdef __WXMSW__
+    EVT_PAINT(OCPNColourPickerCtrl::OnPaint)
+#endif    
+END_EVENT_TABLE()
+
 // ----------------------------------------------------------------------------
 // OCPNColourPickerCtrl
 // ----------------------------------------------------------------------------
@@ -2891,6 +2959,10 @@ void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
 
 void OCPNColourPickerCtrl::UpdateColour()
 {
+#ifndef __OCPN__ANDROID__
+    SetBitmapLabel(wxBitmap());
+#endif    
+    
     wxMemoryDC dc(m_bitmap);
     dc.SetPen( *wxTRANSPARENT_PEN );
     dc.SetBrush( wxBrush(m_colour) );
@@ -2932,5 +3004,18 @@ wxSize OCPNColourPickerCtrl::DoGetBestSize() const
     return sz;
 }
 
+void OCPNColourPickerCtrl::OnPaint(wxPaintEvent &event)
+{
 
+    wxPaintDC dc(this) ;
+
+    int offset_x = (GetSize().x - m_bitmap.GetWidth()) / 2;
+    int offset_y = (GetSize().y - m_bitmap.GetHeight()) / 2;
+    
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.SetBrush( wxBrush(m_colour) );
+    dc.DrawRectangle( offset_x, offset_y, m_bitmap.GetWidth(), m_bitmap.GetHeight() );
+
+    event.Skip() ;
+}
 

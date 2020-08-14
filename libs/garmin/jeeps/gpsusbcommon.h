@@ -23,6 +23,12 @@
  * The 'low level ops' are registered by the OS layer (win32, libusb, etc.)
  * to provide gruntwork features for the common USB layer.
  */
+
+#ifndef gpsusb_common_h
+#define gpsusb_common_h
+
+#include "garminusb.h"
+
 typedef int (*gusb_llop_get)(garmin_usb_packet *ibuf, size_t sz);
 typedef int (*gusb_llop_send)(const garmin_usb_packet *opkt, size_t sz);
 typedef int (*gusb_llop_close) (gpsdevh *dh);
@@ -43,3 +49,4 @@ void gusb_list_units(void);
 /* Provided by the OS layers */
 // int gusb_init(const char *portname, gpsdev **dh);
 
+#endif

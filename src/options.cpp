@@ -200,6 +200,7 @@ extern bool g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool g_bShowAreaNotices;
 extern bool g_bDrawAISSize;
 extern bool g_bDrawAISRealtime;
+extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
 extern bool g_bWplIsAprsPosition;
@@ -326,6 +327,7 @@ extern float g_ChartScaleFactorExp;
 extern bool g_bRollover;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
+extern int g_ENCSoundingScaleFactor;
 extern bool  g_bShowMuiZoomButtons;
 
 extern double g_config_display_size_mm;
@@ -345,6 +347,9 @@ extern bool     g_bShowMuiZoomButtons;
 
 extern "C" bool CheckSerialAccess(void);
 extern  wxString GetShipNameFromFile(int);
+
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
+extern arrayofCanvasPtr   g_canvasArray;
 
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
@@ -1352,9 +1357,21 @@ options::~options(void) {
                                     NULL, this);
         
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
+  delete groupsPanel;
+  
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
+  
+  // Take care of the plugin manager...
+ 
+  delete m_pPlugInCtrl;
+  if(g_pi_manager)
+    g_pi_manager->SetListPanelPtr( NULL );
+#ifndef __OCPN__ANDROID__      
+  delete m_PluginCatalogMgrPanel;
+#endif
+  
 }
 
 // with AIS it's called very often
@@ -1471,6 +1488,7 @@ void options::Init(void) {
   b_oldhaveWMM = b_haveWMM;
   
   lastPage = 0;
+  m_bneedNew =false;
 
   m_cs = (ColorScheme) 0;
   
@@ -1605,7 +1623,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
     m_pListbook->RemovePage(parent + 1);
     wxString previoustitle = page->GetName();
     page->Reparent(nb);
-    nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(options::OnNBPageChange), NULL,  this);
+    nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(options::OnSubNBPageChange), NULL,  this);
 
     nb->AddPage(page, previoustitle);
     /* wxNotebookPage is hidden under wxGTK after RemovePage/Reparent
@@ -3522,20 +3540,17 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   activeSizer = new wxStaticBoxSizer(loadedBox, wxHORIZONTAL);
   chartPanel->Add(activeSizer, 1, wxALL | wxEXPAND, border_size);
 
-  wxString* pListBoxStrings = NULL;
-
-  pActiveChartsList =
-      new wxListBox(chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxDefaultSize,
-                    0, pListBoxStrings, wxLB_MULTIPLE);
-
+  pActiveChartsList = new wxListCtrl( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxSize(100, -1),
+                                       wxLC_REPORT | wxLC_NO_HEADER );
 #ifdef __OCPN__ANDROID__
-  pActiveChartsList->GetHandle()->setStyleSheet( getScrollBarsStyleSheet() );
-#endif
-
+    pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+#endif    
+ 
+    
   activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
 
   pActiveChartsList->Connect(
-      wxEVT_COMMAND_LISTBOX_SELECTED,
+      wxEVT_COMMAND_LIST_ITEM_SELECTED,
       wxCommandEventHandler(options::OnChartDirListSelect), NULL, this);
 
   wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
@@ -3544,11 +3559,24 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   // Currently loaded chart dirs
   wxString dirname;
   if (pActiveChartsList) {
-    pActiveChartsList->Clear();
-    int nDir = m_CurrentDirList.GetCount();
-    for (int i = 0; i < nDir; i++) {
-      dirname = m_CurrentDirList[i].fullpath;
-      if (!dirname.IsEmpty()) pActiveChartsList->Append(dirname);
+    pActiveChartsList->DeleteAllItems();
+
+    // Add first column       
+    wxListItem col0;
+    col0.SetId(0);
+    col0.SetText( _("") );
+    col0.SetAlign(wxLIST_FORMAT_LEFT);
+    col0.SetWidth(500);
+    pActiveChartsList->InsertColumn(0, col0);
+
+    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+        wxString dirname = m_CurrentDirList[i].fullpath;
+        wxListItem li;
+        li.SetId( i );
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
+        long idx = pActiveChartsList->InsertItem( li );
     }
   }
 
@@ -4415,6 +4443,8 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     itemButtonSetStd = new wxButton(ps57Ctl, ID_SETSTDLIST, _("Reset to STANDARD"));
     btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow2);
+    
+
   }
 
   else {                // compact
@@ -4628,15 +4658,30 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   wxStaticBoxSizer* tcSizer = new wxStaticBoxSizer(tcBox, wxHORIZONTAL);
   mainHBoxSizer->Add(tcSizer, 1, wxALL | wxEXPAND, border_size);
 
-  tcDataSelected =
-      new wxListBox(tcPanel, ID_TIDESELECTED, wxDefaultPosition, wxDefaultSize);
+  tcDataSelected =  new wxListCtrl(tcPanel, ID_TIDESELECTED, wxDefaultPosition, wxSize(100, -1), wxLC_REPORT | wxLC_NO_HEADER);
 
   tcSizer->Add(tcDataSelected, 1, wxALL | wxEXPAND, border_size);
 
   //  Populate Selection List Control with the contents
   //  of the Global static array
+  tcDataSelected->DeleteAllItems();
+
+    // Add first column       
+  wxListItem col0;
+  col0.SetId(0);
+  col0.SetText( _("") );
+  col0.SetWidth(500);
+  col0.SetAlign(wxLIST_FORMAT_LEFT);
+
+  tcDataSelected->InsertColumn(0, col0);
+
   for (unsigned int id = 0; id < TideCurrentDataSet.Count(); id++) {
-    tcDataSelected->Append(TideCurrentDataSet[id]);
+        wxListItem li;
+        li.SetId( id );
+        long idx = tcDataSelected->InsertItem( li );
+
+        wxString setName = TideCurrentDataSet[id];
+        tcDataSelected->SetItem(id, 0, setName);
   }
 
   //    Add the "Insert/Remove" buttons
@@ -5520,7 +5565,15 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
+  
+  m_pCheck_Draw_Realtime_Prediction = new wxCheckBox(
+      panelAIS, -1, _("Draw AIS realtime prediction, target speed min (kn)"));
+  pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL, group_item_spacing);
 
+  m_pText_RealtPred_Speed = new wxTextCtrl(panelAIS, -1);
+  pDisplayGrid->Add(m_pText_RealtPred_Speed, 1, wxALL | wxALIGN_RIGHT,
+      group_item_spacing);
+    
   m_pCheck_Scale_Priority = new wxCheckBox(
       panelAIS, -1, _("Allow attenuation of less critical targets if more than ... targets"));
   pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
@@ -5542,13 +5595,6 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   wxStaticText* pStatic_Dummy6 = new wxStaticText(panelAIS, -1, _T(""));
   pDisplayGrid->Add(pStatic_Dummy6, 1, wxALL, group_item_spacing);
-
-  m_pCheck_Draw_Realtime_Prediction =
-      new wxCheckBox(panelAIS, -1, _("Draw AIS realtime prediction"));
-  pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL, group_item_spacing);
-  
-  wxStaticText* pStatic_Dummy6a = new wxStaticText(panelAIS, -1, _T(""));
-  pDisplayGrid->Add(pStatic_Dummy6a, 1, wxALL, group_item_spacing);
 
   m_pCheck_Show_Target_Name = new wxCheckBox(
       panelAIS, -1, _("Show names with AIS targets at scale greater than 1:"));
@@ -5574,9 +5620,13 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxStaticBoxSizer(rolloverBox, wxVERTICAL);
   aisSizer->Add(rolloverSizer, 0, wxALL | wxEXPAND, border_size);
 
-  wxStaticText* pStatic_Dummy4 =
-      new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
-  rolloverSizer->Add(pStatic_Dummy4, 1, wxALL, 2 * group_item_spacing);
+  pRollover = new wxCheckBox(panelAIS, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
+  rolloverSizer->Add(pRollover, 1, wxALL, 2 * group_item_spacing);
+
+  pRollover->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED,  wxCommandEventHandler(options::OnAISRolloverClick), NULL, this);
+   
+  pStatic_CallSign = new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
+  rolloverSizer->Add(pStatic_CallSign, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_Class =
       new wxCheckBox(panelAIS, -1, _("[Class] Type (Status)"));
@@ -5845,9 +5895,6 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pResponsive->Hide();
 #endif
 
-  pRollover = new wxCheckBox(itemPanelFont, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
-  miscOptions->Add(pRollover, 0, wxALL, border_size);
-  
   pZoomButtons = new wxCheckBox(itemPanelFont, ID_ZOOMBUTTONS, _("Show Zoom buttons"));
   miscOptions->Add(pZoomButtons, 0, wxALL, border_size);
 #ifndef __OCPN__ANDROID__
@@ -5894,8 +5941,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
   m_pSlider_Chart_Factor->Hide();
   sliderSizer->Add(
-      new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
-      inputFlags);
+      new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags);
   sliderSizer->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
@@ -5906,14 +5952,25 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   m_pSlider_Ship_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,  m_sliderSize, SLIDER_STYLE);
   m_pSlider_Ship_Factor->Hide();
   sliderSizer->Add(
-      new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")),
-                   inputFlags);
+      new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")), inputFlags);
   sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
   m_pSlider_Ship_Factor->Show();
   
 #ifdef __OCPN__ANDROID__
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
+  
+  m_pSlider_Text_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,  m_sliderSize, SLIDER_STYLE);
+  m_pSlider_Text_Factor->Hide();
+  sliderSizer->Add(
+      new wxStaticText(itemPanelFont, wxID_ANY, _("ENC Sounding factor")), inputFlags);
+  sliderSizer->Add(m_pSlider_Text_Factor, 0, wxALL, border_size);
+  m_pSlider_Text_Factor->Show();
+  
+#ifdef __OCPN__ANDROID__
+  m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
+
   miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );
   miscOptions->AddSpacer(20);
 }
@@ -6120,7 +6177,7 @@ void options::CreateControls(void) {
   m_pListbook = new wxNotebook(itemDialog1, ID_NOTEBOOK, wxDefaultPosition,
                                wxSize(-1, -1), flags);
   m_pListbook->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                       wxNotebookEventHandler(options::OnNBPageChange), NULL,
+                       wxNotebookEventHandler(options::OnTopNBPageChange), NULL,
                        this);
 #endif
 
@@ -6236,7 +6293,15 @@ void options::CreateControls(void) {
   SetColorScheme(static_cast<ColorScheme>(0));
 
   // Set the maximum size of the entire settings dialog
-  SetSizeHints(-1, -1, width - 100, height - 100);
+  // leaving a slightly larger border for larger displays.
+  int marginx = 10;
+  int marginy = 40;
+  if(width > 800){
+      marginx = 100;
+      marginy = 100;
+  }
+  
+  SetSizeHints(-1, -1, width - marginx, height - marginy);
 
   //  The s57 chart panel is the one which controls the minimum width required
   //  to avoid horizontal scroll bars
@@ -6286,6 +6351,15 @@ void options::SetColorScheme(ColorScheme cs) {
 #endif
 }
 
+void options::OnAISRolloverClick(wxCommandEvent &event)
+{
+    m_pCheck_Rollover_Class->Enable(event.IsChecked());
+    m_pCheck_Rollover_COG->Enable(event.IsChecked());
+    m_pCheck_Rollover_CPA->Enable(event.IsChecked());
+    pStatic_CallSign->Enable(event.IsChecked());
+}
+
+
 void options::OnCanvasConfigSelectClick( int ID, bool selected)
 {
     switch(ID){
@@ -6332,15 +6406,18 @@ void options::SetInitialSettings(void) {
   m_screenConfig = g_canvasConfig;
           
   // ChartsLoad
-  int nDir = m_CurrentDirList.GetCount();
 
   if (pActiveChartsList) {
-    pActiveChartsList->Clear();
-    for (int i = 0; i < nDir; ++i) {
+    pActiveChartsList->DeleteAllItems();
+
+    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
         wxString dirname = m_CurrentDirList[i].fullpath;
-        if (!dirname.IsEmpty() && pActiveChartsList) {
-            pActiveChartsList->Append(dirname);
-        }
+        wxListItem li;
+        li.SetId( i );
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
+        long idx = pActiveChartsList->InsertItem( li );
     }
   }
 
@@ -6376,6 +6453,12 @@ void options::SetInitialSettings(void) {
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
   pRollover->SetValue(g_bRollover);
+  m_pCheck_Rollover_Class->Enable(g_bRollover);
+  m_pCheck_Rollover_COG->Enable(g_bRollover);
+  m_pCheck_Rollover_CPA->Enable(g_bRollover);
+  pStatic_CallSign->Enable(g_bRollover);
+
+ 
   pZoomButtons->SetValue( g_bShowMuiZoomButtons );
 
   //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
@@ -6575,6 +6658,11 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%4.1f"), g_ShowMoored_Kts);
   m_pText_Moored_Speed->SetValue(s);
+
+  m_pCheck_Draw_Realtime_Prediction->SetValue(g_bDrawAISRealtime);
+
+  s.Printf(_T("%4.1f"), g_AIS_RealtPred_Kts);
+  m_pText_RealtPred_Speed->SetValue(s);
   
   m_pCheck_Scale_Priority->SetValue(g_bAllowShowScaled);
   
@@ -6614,6 +6702,7 @@ void options::SetInitialSettings(void) {
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
   m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
+  m_pSlider_Text_Factor->SetValue(g_ENCSoundingScaleFactor);
   wxString screenmm;
 
   if (!g_config_display_size_manual) {
@@ -6768,10 +6857,22 @@ void options::SetInitialVectorSettings(void)
         
         if(pDispCat)
             pDispCat->SetSelection(nset);
+
+        // Enable the UserStandard object list if either canvas is in MARINERS_STANDARD display category
+        bool benableMarStd = false;
+        // .. for each canvas...
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc){
+                if(cc->GetENCDisplayCategory() == MARINERS_STANDARD)
+                    benableMarStd = true;
+            }
+        }
+
         
-        bool benableMarStd = MARINERS_STANDARD == ps52plib->GetDisplayCategory();
-        if(g_useMUI)
-            benableMarStd = true;
+//        if(g_useMUI)
+//           benableMarStd = true;
+        
         
         if( ps57CtlListBox )
             ps57CtlListBox->Enable(benableMarStd);
@@ -7009,9 +7110,9 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
 #endif
 }
 
-void options::OnChartDirListSelect(wxCommandEvent& event) {
-    wxArrayInt sel;
-    bool selected = pActiveChartsList->GetSelections(sel);
+void options::OnChartDirListSelect(wxCommandEvent& event)
+{
+    bool selected = (pActiveChartsList->GetSelectedItemCount() > 0);
     m_removeBtn->Enable(selected);
     if(m_compressBtn)
         m_compressBtn->Enable(selected);
@@ -7077,43 +7178,58 @@ void options::OnButtonaddClick(wxCommandEvent& event) {
 }
 
 void options::AddChartDir(const wxString& dir) {
-  wxFileName dirname = wxFileName(dir);
-  pInit_Chart_Dir->Empty();
+   wxFileName dirname = wxFileName(dir);
+   pInit_Chart_Dir->Empty();
+ 
+   wxString dirAdd;
+   if (g_bportable) {
+     wxFileName f(dir);
+     f.MakeRelativeTo(g_Platform->GetHomeDir());
+     dirAdd = f.GetFullPath();
+   } else {
+     pInit_Chart_Dir->Append(dirname.GetPath());
+     dirAdd = dir;
+   }
 
-  if (g_bportable) {
-    wxFileName f(dir);
-    f.MakeRelativeTo(g_Platform->GetHomeDir());
-    pActiveChartsList->Append(f.GetFullPath());
-  } else {
-    pInit_Chart_Dir->Append(dirname.GetPath());
-    pActiveChartsList->Append(dir);
-  }
+   wxListItem li;
+   int id = pActiveChartsList->GetItemCount();      // next index
+   li.SetId( id );
+   li.SetAlign(wxLIST_FORMAT_LEFT);
+   li.SetText(dirAdd);
+   li.SetColumn(0);
 
-  k_charts |= CHANGE_CHARTS;
+   long idx = pActiveChartsList->InsertItem( li );
 
-  pScanCheckBox->Disable();
+   k_charts |= CHANGE_CHARTS;
+ 
+   pScanCheckBox->Disable();
 }
 
 void options::UpdateDisplayedChartDirList(ArrayOfCDI p) {
-  wxString dirname;
-  if (pActiveChartsList) {
-    pActiveChartsList->Clear();
-    int nDir = p.GetCount();
-    for (int i = 0; i < nDir; i++) {
-      dirname = p[i].fullpath;
-      if (!dirname.IsEmpty()) pActiveChartsList->Append(dirname);
-    }
-  }
+   if (pActiveChartsList) {
+       pActiveChartsList->DeleteAllItems();
+       for (size_t i = 0; i < p.GetCount(); i++) {
+            wxString dirname = p[i].fullpath;
+            wxListItem li;
+            li.SetId( i );
+            li.SetAlign(wxLIST_FORMAT_LEFT);
+            li.SetText(dirname);
+            li.SetColumn(0);
+            long idx = pActiveChartsList->InsertItem( li );
+        }
+   }
 }
 
 void options::UpdateWorkArrayFromTextCtl(void) {
-  wxString dirname;
 
-  int n = pActiveChartsList->GetCount();
+   wxString dirname;
+
+  int n = pActiveChartsList->GetItemCount();
   if (m_pWorkDirList) {
     m_pWorkDirList->Clear();
     for (int i = 0; i < n; i++) {
-      dirname = pActiveChartsList->GetString(i);
+        
+      dirname = pActiveChartsList->GetItemText(i);
       if (!dirname.IsEmpty()) {
         //    This is a fix for OSX, which appends EOL to results of
         //    GetLineText()
@@ -7147,6 +7263,7 @@ void options::UpdateWorkArrayFromTextCtl(void) {
       }
     }
   }
+  
 }
 
 ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
@@ -7249,7 +7366,10 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
-  CheckDeviceAccess(pConnectionParams->Port);
+  
+  if( (pConnectionParams->Type != INTERNAL_GPS) && (pConnectionParams->Type != INTERNAL_BT) )
+    CheckDeviceAccess(pConnectionParams->Port);
+  
   pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;
@@ -7690,6 +7810,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bHideMoored = m_pCheck_Hide_Moored->GetValue();
   m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 
+  g_bDrawAISRealtime = m_pCheck_Draw_Realtime_Prediction->GetValue();
+  m_pText_RealtPred_Speed->GetValue().ToDouble(&g_AIS_RealtPred_Kts);
+
   g_bAllowShowScaled = m_pCheck_Scale_Priority->GetValue();
   long l;
   m_pText_Scale_Priority->GetValue().ToLong(&l);
@@ -7697,7 +7820,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
   
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
-  g_bDrawAISRealtime = m_pCheck_Draw_Realtime_Prediction->GetValue();
   g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
   long ais_name_scale = 5000;
   m_pText_Show_Target_Name_Scale->GetValue().ToLong(&ais_name_scale);
@@ -7726,6 +7848,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
   g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
   g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
+  g_ENCSoundingScaleFactor =  m_pSlider_Text_Factor->GetValue();
+
   
   //  Only reload the icons if user has actually visted the UI page    
   //if(m_bVisitLang)    
@@ -7814,6 +7938,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_nBoundaryStyle = pBoundStyle->GetSelection() == 0
                                      ? PLAIN_BOUNDARIES
                                      : SYMBOLIZED_BOUNDARIES;
+    ps52plib->m_nSoundingFactor = m_pSlider_Text_Factor->GetValue();
 
     S52_setMarinerParam(S52_MAR_TWO_SHADES, (p24Color->GetSelection() == 0) ? 1.0 : 0.0);
 
@@ -7911,15 +8036,15 @@ void options::OnApplyClick(wxCommandEvent& event) {
   m_returnChanges |= GENERIC_CHANGED | k_vectorcharts | k_charts |
                      m_groups_changed | k_plugins | k_tides;
 
-  // Pick up all the entries in the DataSelected control
+  // Pick up all the entries in the Tide/current DataSelected control
   // and update the global static array
   TideCurrentDataSet.Clear();
-  int nEntry = tcDataSelected->GetCount();
-
-  for (int i = 0; i < nEntry; i++)
-    TideCurrentDataSet.Add(tcDataSelected->GetString(i));
-
-  // Canvas configuration
+  int nEntry = tcDataSelected->GetItemCount();
+  for (int i = 0; i < nEntry; i++) {
+      wxString setName = tcDataSelected->GetItemText(i);
+      TideCurrentDataSet.Add(setName);
+  }
+  
   if (event.GetId() != ID_APPLY)                // only on ID_OK
     g_canvasConfig = m_screenConfig;
     
@@ -7935,6 +8060,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
     gFrame->RefreshAllCanvas();
   }
 
+  // Some layout changes requiring a new options instance?
+  if(m_bneedNew)
+    m_returnChanges |= NEED_NEW_OPTIONS;
   
   //  Record notice of any changes to last applied template
   UpdateTemplateTitleText();
@@ -7969,34 +8097,31 @@ void options::Finish(void) {
   EndModal(m_returnChanges);
 }
 
-void options::OnButtondeleteClick(wxCommandEvent& event) {
-  wxString dirname;
-
-#ifndef __WXQT__  // Multi selection is not implemented in wxQT
-  wxArrayInt pListBoxSelections;
-  pActiveChartsList->GetSelections(pListBoxSelections);
-  int nSelections = pListBoxSelections.GetCount();
-  for (int i = 0; i < nSelections; i++) {
-    pActiveChartsList->Delete(pListBoxSelections.Item((nSelections - i) - 1));
+void options::OnButtondeleteClick(wxCommandEvent& event)
+{
+  long item = -1;
+  for ( ;; )
+  {
+      item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      if ( item == -1 )
+          break;
+      pActiveChartsList->DeleteItem( item );
+      item = -1;      // Restart
   }
-#else
-  unsigned int n = pActiveChartsList->GetSelection();
-  if( n < pActiveChartsList->GetCount())        // Protect against invalid index
-  pActiveChartsList->Delete(n);
-#endif
 
   UpdateWorkArrayFromTextCtl();
 
   if (m_pWorkDirList) {
-    pActiveChartsList->Clear();
-
-    int nDir = m_pWorkDirList->GetCount();
-    for (int id = 0; id < nDir; id++) {
-      dirname = m_pWorkDirList->Item(id).fullpath;
-      if (!dirname.IsEmpty()) {
-        pActiveChartsList->Append(dirname);
-      }
-    }
+      pActiveChartsList->DeleteAllItems();
+      for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
+        wxString dirname = m_pWorkDirList->Item(id).fullpath;
+        wxListItem li;
+        li.SetId( id );
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
+        long idx = pActiveChartsList->InsertItem( li );
+     }
   }
 
   k_charts |= CHANGE_CHARTS;
@@ -8004,6 +8129,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
   pScanCheckBox->Disable();
 
   event.Skip();
+  
 }
 
 void options::OnButtonParseENC(wxCommandEvent &event)
@@ -8206,18 +8332,19 @@ static bool CompressChart(wxString in, wxString out)
     return false;
 }
 
-void options::OnButtoncompressClick(wxCommandEvent& event) {
-  wxString dirname;
-
+void options::OnButtoncompressClick(wxCommandEvent& event)
+{
   wxArrayInt pListBoxSelections;
-#ifndef __WXQT__  // Multi selection is not implemented in wxQT
-  pActiveChartsList->GetSelections(pListBoxSelections);
-  int nSelections = pListBoxSelections.GetCount();
-#else
-  int nSelections = 1;
-  int n = pActiveChartsList->GetSelection();
-  pListBoxSelections.Add( n );
-#endif
+  long item = -1;
+  for ( ;; )
+  {
+      item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      if ( item == -1 )
+          break;
+      pListBoxSelections.Add((int)item);
+      item = -1;      // Restart
+  }
+  
 
     if(OCPNMessageBox( this, _("Compression will alter chart files on disk.\n\
 This may make them incompatible with other programs or older versions of OpenCPN.\n\
@@ -8248,7 +8375,7 @@ They can be decompressed again using unxz or 7 zip programs."),
 
   wxArrayString charts;
   for(unsigned int i=0; i<pListBoxSelections.GetCount(); i++) {
-      dirname = pActiveChartsList->GetString(pListBoxSelections[i]);
+      wxString dirname = pActiveChartsList->GetItemText( pListBoxSelections[i] );
       if (dirname.IsEmpty())
           continue;
       //    This is a fix for OSX, which appends EOL to results of
@@ -8320,24 +8447,27 @@ They can be decompressed again using unxz or 7 zip programs."),
       _("OpenCPN Info"));
   
   UpdateWorkArrayFromTextCtl();
-
+  
   if (m_pWorkDirList) {
-    pActiveChartsList->Clear();
-
-    int nDir = m_pWorkDirList->GetCount();
-    for (int id = 0; id < nDir; id++) {
-      dirname = m_pWorkDirList->Item(id).fullpath;
-      if (!dirname.IsEmpty()) {
-        pActiveChartsList->Append(dirname);
-      }
-    }
+      pActiveChartsList->DeleteAllItems();
+      for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
+        wxString dirname = m_pWorkDirList->Item(id).fullpath;
+        wxListItem li;
+        li.SetId( id );
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
+        long idx = pActiveChartsList->InsertItem( li );
+     }
   }
+
 
   k_charts |= CHANGE_CHARTS;
 
   pScanCheckBox->Disable();
 
   event.Skip();
+  
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
@@ -8379,6 +8509,11 @@ void options::OnFontChoice(wxCommandEvent& event) {
 }
 
 void options::OnChooseFont(wxCommandEvent& event) {
+    
+#ifdef __OCPN__ANDROID__
+    androidDisableRotation();
+#endif  
+    
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
   wxFontData font_data;
 
@@ -8430,6 +8565,10 @@ void options::OnChooseFont(wxCommandEvent& event) {
     OnFontChoice(event);
   }
 
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif  
+
   event.Skip();
 }
 
@@ -8443,6 +8582,8 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
 
 #ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+
   unsigned int cco = 0;
   cco |= 0xff;  cco  = cco << 8;
   cco |= init_color.Red(); cco = cco << 8; 
@@ -8461,7 +8602,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   pParent->UpdateAllFonts();
   m_bfontChanged = true;
   
-  
+  androidEnableRotation();
 #else  
   wxScrolledWindow *sw = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxSize(400, 400));
   
@@ -8520,7 +8661,7 @@ void options::OnPageChange(wxListbookEvent& event) {
   DoOnPageChange(event.GetSelection());
 }
 
-void options::OnNBPageChange(wxNotebookEvent& event) {
+void options::OnSubNBPageChange(wxNotebookEvent& event) {
   // In the case where wxNotebooks are nested, we need to identify the subpage
   // But otherwise do nothing
   if(event.GetEventObject()){
@@ -8538,7 +8679,9 @@ void options::OnNBPageChange(wxNotebookEvent& event) {
 
       }
   }
-  // Must be top level notebook
+}
+
+void options::OnTopNBPageChange(wxNotebookEvent& event) {
   DoOnPageChange(event.GetSelection());
 }
 
@@ -8950,6 +9093,8 @@ ChartGroupsUI::ChartGroupsUI(wxWindow* parent)
 
 ChartGroupsUI::~ChartGroupsUI(void) {
   m_DirCtrlArray.Clear();
+  m_GroupNB->Disconnect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(ChartGroupsUI::OnGroupPageChange), NULL, this);
+
   delete iFont;
 }
 
@@ -9348,7 +9493,11 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
 #endif
 
   if (response == wxID_OK) {
-    tcDataSelected->Append(g_Platform->NormalizePath(sel_file));
+    wxListItem li;
+   int id = tcDataSelected->GetItemCount();      // next index
+   li.SetId( id );
+   long idx = tcDataSelected->InsertItem( li );
+   tcDataSelected->SetItem(id, 0, g_Platform->NormalizePath(sel_file));
 
     //    Record the currently selected directory for later use
     wxFileName fn(sel_file);
@@ -9357,24 +9506,17 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
   }
 }
 
-void options::OnRemoveTideDataLocation(wxCommandEvent& event) {
-#ifndef __WXQT__  // Multi selection is not implemented in wxQT
-  wxArrayInt sels;
-  int nSel = tcDataSelected->GetSelections(sels);
-  wxArrayString a;
-  for (int i = 0; i < nSel; i++) {
-    a.Add(tcDataSelected->GetString(sels[i]));
+void options::OnRemoveTideDataLocation(wxCommandEvent& event)
+{
+  long item = -1;
+  for ( ;; )
+  {
+      item = tcDataSelected->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      if ( item == -1 )
+          break;
+      tcDataSelected->DeleteItem( item );
+      item = -1;      // Restart
   }
-
-  for (unsigned int i = 0; i < a.Count(); i++) {
-    int b = tcDataSelected->FindString(a[i]);
-    wxCharBuffer buf = a[i].ToUTF8();
-    tcDataSelected->Delete(b);
-  }
-#else
-  int iSel = tcDataSelected->GetSelection();
-  tcDataSelected->Delete(iSel);
-#endif
 }
 
 void options::OnValChange(wxCommandEvent& event) { event.Skip(); }
@@ -9487,6 +9629,8 @@ void options::OnUploadFormatChange(wxCommandEvent& event) {
     m_cbFurunoGP3X->SetValue(FALSE);
   else if (event.GetEventObject() == m_cbFurunoGP3X && event.IsChecked())
     m_cbGarminUploadHost->SetValue(FALSE);
+ 
+  OnConnValChange(event);
   event.Skip();
 }
 
@@ -9572,6 +9716,10 @@ void options::ShowNMEABT(bool visible) {
     if (m_stBTPairs) m_stBTPairs->Hide();
     if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
   }
+  m_tcOutputStc->Show(visible);
+  m_btnOutputStcList->Show(visible);
+  m_cbOutput->Show(visible);
+
 }
 
 void options::SetNMEAFormToSerial(void) {
@@ -9612,6 +9760,7 @@ void options::SetNMEAFormToGPS(void) {
 }
 
 void options::SetNMEAFormToBT(void) {
+  m_rbNetProtoUDP->SetValue( true );
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
@@ -9736,7 +9885,7 @@ void options::SetDSFormRWStates(void) {
     m_btnOutputStcList->Enable(FALSE);
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(_T("8375"));
+      m_tNetPort->SetValue(_T("3000"));
     m_cbInput->SetValue(TRUE);
     m_cbInput->Enable(FALSE);
     m_cbOutput->SetValue(FALSE);

@@ -83,7 +83,7 @@
  * New
  *
  */
-
+#include <algorithm>
 #include "iso8211.h"
 #include "gdal/cpl_conv.h"
 
@@ -133,7 +133,7 @@ void DDFField::Dump( FILE * fp )
     fprintf( fp, "      Data = \n" );
     
     int il = 0;
-    for( int i = 0; i < MIN(nDataSize,1000); i++ )
+    for( int i = 0; i < std::min(nDataSize,1000); i++ )
     {
         //if( pachData[i] < 32 || pachData[i] > 126 )
             fprintf( fp, "\\%02X", ((unsigned char *) pachData)[i] );

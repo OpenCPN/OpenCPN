@@ -49,6 +49,9 @@
 #include <wx/hashset.h>
 #include <wx/hashmap.h>
 #include <wx/uri.h>
+#include <wx/zipstrm.h>
+#include <wx/zstream.h>
+#include <wx/tarstrm.h>
 
 #ifndef __WXMSW__
 #include <cxxabi.h>
@@ -66,6 +69,10 @@
 #include <string>
 #include <set>
 #include <iostream>
+
+#include <archive.h>
+#include <archive_entry.h>
+typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 
 #ifdef ocpnUSE_SVG
 #include <wxSVG/svg.h>
@@ -257,7 +264,7 @@ icon_by_status({
     {PluginStatus::Unknown,   "emblem-default.svg" },
     {PluginStatus::LegacyUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
-    {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-default.svg" },
+    {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstalledCurrentVersion,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledDowngradeAvailable,   "emblem-default.svg" },
     {PluginStatus::PendingListRemoval,   "emblem-default.svg" }
@@ -406,6 +413,7 @@ static void run_update_dialog(PluginListPanel* parent,
                               bool uninstall,
                               const char* name = 0)
 {
+    wxString pluginName = pic->m_common_name;
     const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
     auto updates = getUpdates(plugin);
     auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent->GetParent());
@@ -415,8 +423,10 @@ static void run_update_dialog(PluginListPanel* parent,
     if (status != wxID_OK) {
         return;
     }
+    
     auto update = dialog.GetUpdate();
     if (uninstall) {
+        g_Platform->ShowBusySpinner();
         g_pi_manager->DeactivatePlugIn(pic);
         pic->m_bEnabled = false;
         g_pi_manager->UpdatePlugIns();
@@ -424,6 +434,8 @@ static void run_update_dialog(PluginListPanel* parent,
         wxLogMessage("Uninstalling %s", plugin);
         PluginHandler::getInstance()->uninstall(plugin);
         g_pi_manager->UpdatePlugIns();
+        g_Platform->HideBusySpinner();
+
     }
 
     wxLogMessage("Installing %s", update.name.c_str());
@@ -432,6 +444,9 @@ static void run_update_dialog(PluginListPanel* parent,
     bool cacheResult = pluginHandler->installPluginFromCache( update );
             
     if(!cacheResult){
+        g_Platform->ShowBusySpinner();          // Will be cancelled in downloader->run()
+        wxYield();
+        
         auto downloader = new GuiDownloader(parent_dlg, update);
         std::string tempTarballPath = downloader->run(parent_dlg);
         
@@ -441,7 +456,7 @@ static void run_update_dialog(PluginListPanel* parent,
             PluginHandler::fileListPath(update.name);
         if(!isRegularFile(manifestPath.c_str())) {
             wxLogMessage("Installation of %s failed",  update.name.c_str());
-            PluginHandler::cleanup(manifestPath, update.name);
+            PluginHandler::cleanupFiles(manifestPath, update.name);
             bOK = false;
         }
 
@@ -473,9 +488,56 @@ static void run_update_dialog(PluginListPanel* parent,
             }
         }
     }
-            
-        //  Reload all plugins, which will bring in the action results.
+    
+    //  Check the library compatibility of the installed plugin
+    // Find the first dll/so/dylib file
+#ifdef __WXMSW__
+    wxString pispec = _T(".dll");
+#elif defined(__WXOSX__)
+    wxString pispec = _T(".dylib");
+#else
+    wxString pispec = _T(".so");
+#endif
+
+    std::string manifestPath = PluginHandler::fileListPath(update.name);
+    wxTextFile manifest_file(manifestPath);
+    if( manifest_file.Open()){
+        wxString val;
+        for ( wxString str = manifest_file.GetFirstLine(); !manifest_file.Eof() ; str = manifest_file.GetNextLine() ){
+            if(str.Contains(pispec)){
+                if (getenv("OCPN_KEEP_PLUGINS")) {
+                    // Undocumented debug hook
+                    continue;
+                }
+                if( !g_pi_manager->CheckPluginCompatibility(str)){
+                    wxString msg = _("The plugin is not compatible with this version of OpenCPN, and will be uninstalled.");
+                    OCPNMessageBox( NULL, msg, wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
+                    
+                    PluginHandler::cleanupFiles(manifestPath, update.name);
+                }
+                break;
+            }
+        }
+    }
+
+    
+    //  Reload all plugins, which will bring in the action results.
     g_pi_manager->LoadAllPlugIns( false );
+    
+    // Check to see if this plugin needs an options instance reload
+    if(g_options){
+        bool b_newOptions = false;
+        for(unsigned int i = 0 ; i < g_pi_manager->GetPlugInArray()->GetCount() ; i++)
+        {
+            PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
+            wxString cname = pic->m_common_name;
+            if(pic->m_bInitState && (pluginName == cname)) {
+                if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE))
+                    g_options->SetNeedNew( true );
+            }
+        }
+    }
+
     parent->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
     //wxString name(plugin);
     //g_pi_manager->GetListPanelPtr()->SelectByName(name);
@@ -662,7 +724,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
                 g_pi_manager->LoadAllPlugIns( false );
             }
             else {
-                PluginHandler::cleanup(manifestPath,
+                PluginHandler::cleanupFiles(manifestPath,
                                        actionPIC->m_ManagedMetadata.name);
             }
             plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
@@ -737,6 +799,8 @@ class StatusIconPanel: public wxPanel
         StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
             :wxPanel(parent)
         {
+            m_parent = wxDynamicCast(parent, PluginPanel);
+
             m_stat = pic->m_pluginStatus; //::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
@@ -747,6 +811,8 @@ class StatusIconPanel: public wxPanel
             SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
             Layout();
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
+            Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
+
        }
 
         void OnPaint(wxPaintEvent& event)
@@ -773,13 +839,21 @@ class StatusIconPanel: public wxPanel
             m_icon_name = icon_by_status[m_stat];
             Refresh();
          }
-             
+          
+         void OnIconSelected( wxMouseEvent &event )
+         {
+             if(m_parent){
+                 m_parent->OnPluginSelected(event);
+             }
+         }
+
 
     protected:
         wxBitmap m_bitmap;
         std::string m_icon_name;
         PluginStatus m_stat;
-
+        PluginPanel *m_parent;
+        
         void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
         {
             wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
@@ -1441,6 +1515,8 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_common_name = wxString(plugin.name.c_str());
             new_pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
             new_pic->m_ManagedMetadata = plugin;
+            new_pic->m_version_major = 0;
+            new_pic->m_version_minor = 0;
 
             plugin_array.Add(new_pic);
         }
@@ -1457,6 +1533,7 @@ void PlugInManager::UpdateManagedPlugins()
                     stream.open(path, std::ifstream::in);
                     stream >> installed;
                 }
+                pic->m_InstalledManagedVersion = installed;
                 auto installedVersion = SemanticVersion::parse(installed);
                 
                 //Compare to the version reported in metadata
@@ -1558,8 +1635,10 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
         if(pic->m_bInitState){
             
             // Unload chart cache if this plugin is responsible for any charts
-            if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))
-                ChartData->PurgeCache();
+            if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)){
+                ChartData->PurgeCachePlugins();
+                gFrame->InvalidateAllQuilts();
+            }
 
             pic->m_bInitState = false;
             pic->m_pplugin->DeInit();
@@ -1907,28 +1986,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
 #if defined(__WXGTK__) || defined(__WXQT__)
-#if 0
-    wxString cmd = _T("ldd ") + plugin_file + _T(" 2>&1");
-    FILE *ldd = popen( cmd.mb_str(), "r" );
-    if (ldd != NULL)
-    {
-        char buf[1024];
-        
-        char strver[22]; //Enough space even for very big integers...
-        sprintf( strver, "%i.%i", wxMAJOR_VERSION, wxMINOR_VERSION );
-
-        while( fscanf(ldd, "%s", buf) != EOF )
-        {
-            if( strstr(buf, "libwx") != NULL )
-            {
-                if(  strstr(buf, strver) == NULL )
-                    b_compat = false;
-                break;
-            }
-        }
-        fclose(ldd);
-    }
-#elif defined(USE_LIBELF)
+#if defined(USE_LIBELF)
 
     static bool b_own_info_queried = false;
     static bool b_own_info_usable = false;
@@ -1942,11 +2000,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         if( app.argc && !app.argv[0].IsEmpty())
         {
             wxString app_path( app.argv[0] );
-#if defined(USE_LIBELF)
             b_own_info_usable = ReadModuleInfoFromELF( app_path, dependencies, own_info );
-#else
-#error No support for other executable formats is implemented.
-#endif
         }
         else
         {
@@ -1959,18 +2013,19 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     {
         bool b_pi_info_usable = false;
         ModuleInfo pi_info;
-#if defined(USE_LIBELF)
         b_pi_info_usable = ReadModuleInfoFromELF( plugin_file, dependencies, pi_info );
-#else
-#error No support for other executable formats is implemented.
-#endif
         if( b_pi_info_usable )
         {
             b_compat = ( pi_info.type_magic == own_info.type_magic );
+            if(g_Platform->isFlatpacked()){             // Ignore specific difference in OSABI field on flatpak builds
+                    if( (pi_info.type_magic ^ own_info.type_magic) == 0x00030000)
+                        b_compat = true;
+            }
             if( !b_compat )
             {
                 pi_info.dependencies.clear();
                 wxLogError( wxString::Format( _T("    Plugin \"%s\" is of another binary flavor than the main module."), plugin_file ) );
+                wxLogDebug("host magic: %.8x, plugin magic: %.8x", own_info.type_magic, pi_info.type_magic);
             }
             for( ModuleInfo::DependencyMap::const_iterator own_dependency = own_info.dependencies.begin(); own_dependency != own_info.dependencies.end(); ++own_dependency )
             {
@@ -1995,23 +2050,30 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         b_compat = true;
     }
 
-#else
-    // this is 3x faster than the other method
+    wxLogMessage("Plugin is compatible by elf library scan: %s", b_compat ? "true" : "false");
+    return b_compat;
+
+#endif  // LIBELF
+
     
     //  But Android Plugins do not include the wxlib specification in their ELF file.
     //  So we assume Android Plugins are compatible....
 #ifdef __OCPN__ANDROID__
     return true;
 #endif
+
+    // If libelf is not available, then we must use a simplistic file scan method.
+    // This is easily fooled if the wxWidgets version in use is not exactly recognized.
+    // File scan is 3x faster than the ELF scan method
     
     FILE *f = fopen(plugin_file, "r");
     char strver[26]; //Enough space even for very big integers...
 
     sprintf( strver,
-#if defined(__WXGTK20__)
-             "libwx_gtk2u_core-%i.%i"
-#elif defined(__WXGTK3__)
+#if defined(__WXGTK3__)
              "libwx_gtk3u_core-%i.%i"
+#elif defined(__WXGTK20__)
+             "libwx_gtk2u_core-%i.%i"
 #elif defined(__WXQT__)
              "libwx_qtu_core-%i.%i"
 #else
@@ -2031,8 +2093,8 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
             pos = 0;
     }
     fclose(f);
-#endif
-#endif // __WXGTK__
+#endif // __WXGTK__ or __WXQT__
+   
     wxLogMessage("Plugin is compatible: %s", b_compat ? "true" : "false");
     return b_compat;
 }
@@ -5051,8 +5113,10 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      rowSizer2->Add( m_updateButton, 0, wxALIGN_LEFT );
      m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
 
+     rowSizer2->AddSpacer( 4 * GetCharWidth() );
+
      wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
-     rowSizer2->Add( tchannels, 0, wxALIGN_RIGHT | wxLEFT, 4 * GetCharWidth() );
+     rowSizer2->Add( tchannels, 0, wxALIGN_RIGHT | wxALL, 5 );
 
      wxArrayString channels;
      channels.Add(_T( "Master" ));
@@ -5072,6 +5136,10 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
          if(selection > 1) selection = 0;
      }
      m_choiceChannel->SetSelection( selection );
+
+     m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
+     rowSizer2->Add( m_tarballButton, 0, wxALIGN_LEFT | wxLEFT, 2 * GetCharWidth() );
+     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
 
      SetUpdateButtonLabel();
 
@@ -5101,6 +5169,8 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
 CatalogMgrPanel::~CatalogMgrPanel()
 {
      m_updateButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
+     m_tarballButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
+
 }
 
 static const char* const DOWNLOAD_REPO_PROTO = "https://raw.githubusercontent.com/OpenCPN/plugins/@branch@/ocpn-plugins.xml";
@@ -5124,7 +5194,11 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     std::string filePath = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
 
     auto catalogHdlr = CatalogHandler::getInstance();
+    
+    g_Platform->ShowBusySpinner();
     auto status = catalogHdlr->DownloadCatalog( filePath, url);
+    g_Platform->HideBusySpinner();
+    
     std::string message;
     if (status != CatalogHandler::ServerStatus::OK) {
         message = _("Cannot download data from url");
@@ -5182,6 +5256,343 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     OCPNMessageBox(this, _("Catalog update successful"), _("OpenCPN Catalog update"), wxICON_INFORMATION  | wxOK);
 
 }
+
+static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
+{
+    for (pugi::xml_node element = pluginRoot.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name") ){
+            plugin.name = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "version") ){
+            plugin.version = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "release") ){
+            plugin.release = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "summary") ){
+            plugin.summary = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "api-version") ){
+            plugin.api_version = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "open-source") ){
+            plugin.openSource = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "author") ){
+            plugin.author = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "source") ){
+            plugin.source = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "info-url") ){
+            plugin.info_url = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "description") ){
+            plugin.description = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "target") ){
+            plugin.target = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "target-version") ){
+            plugin.target_version = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "tarball-url") ){
+            plugin.tarball_url = element.first_child().value();
+        }
+    }
+
+    return true;
+}
+
+static void populatePluginNode(pugi::xml_node &pluginNode, PluginMetadata &workingMetadata)
+{
+    pugi::xml_node child;
+ 
+    child = pluginNode.append_child("name");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.name.c_str());
+    
+    child = pluginNode.append_child("version");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.version.c_str());
+
+    child = pluginNode.append_child("release");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.release.c_str());
+    
+    child = pluginNode.append_child("summary");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.summary.c_str());
+    
+    child = pluginNode.append_child("api-version");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.api_version.c_str());
+    
+    child = pluginNode.append_child("open-source");
+    char b[2]; sprintf(b, "%1d", workingMetadata.openSource);
+    child.append_child(pugi::node_pcdata).set_value(b);
+    
+    child = pluginNode.append_child("author");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.author.c_str());
+    
+    child = pluginNode.append_child("source");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.source.c_str());
+    
+    child = pluginNode.append_child("info-url");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.info_url.c_str());
+    
+    child = pluginNode.append_child("description");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.description.c_str());
+   
+    child = pluginNode.append_child("target");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.target.c_str());
+   
+    child = pluginNode.append_child("target-version");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.target_version.c_str());
+   
+    child = pluginNode.append_child("tarball-url");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.tarball_url.c_str());
+
+}
+
+
+void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
+{
+    // Present a file selector dialog to get the file name..
+    wxString tarballPath;
+   int response = g_Platform->DoFileSelectorDialog( this, &tarballPath, _( "Select tarball file" ),
+                                                      g_Platform->GetPrivateDataDir(), wxEmptyString, wxT ( "*.tar.gz" ));
+ 
+    if( response == wxID_OK )
+    {
+        // Traverse the tarball to find the required "metadata.xml file
+        
+        // Store the metadata file in temp location
+        wxString tmpMetadata = wxFileName::CreateTempFileName("meta");
+         
+        struct archive* src = archive_read_new();
+        archive_read_support_filter_gzip(src);
+        archive_read_support_format_tar(src);
+        int r = archive_read_open_filename(src, tarballPath.ToStdString().c_str(), 10240);
+        if (r != ARCHIVE_OK) {
+            std::ostringstream os;
+            //os << "Cannot read installation tarball: " << path;
+            wxLogWarning(os.str().c_str());
+            //last_error_msg = os.str();
+            return;
+        }
+        
+        struct archive* dest = archive_write_disk_new();
+        archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
+        
+        bool bFoundMetadata = false;
+        struct archive_entry* entry = 0;
+        while (true) {
+            int r = archive_read_next_header(src, &entry);
+            if (r == ARCHIVE_EOF) {
+                break;
+            }
+            if(r < ARCHIVE_OK){
+                break;
+            }
+            
+            //  Find the file "metadata.xml"
+            std::string path = archive_entry_pathname(entry);
+            if(std::string::npos != path.find("metadata.xml")){
+                bFoundMetadata = true;
+                archive_entry_set_pathname(entry, tmpMetadata.mb_str());
+           
+            
+                if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
+                    const void* buff;
+                    size_t size;
+                    la_int64_t offset;
+
+                    r = archive_write_header(dest, entry);
+                    if( r < ARCHIVE_OK){
+                        break;
+                    }
+                        
+                    while (true) {
+                        r = archive_read_data_block(src, &buff, &size, &offset);
+                        if (r == ARCHIVE_EOF){
+                            break;
+                        }
+                        if (r < ARCHIVE_OK){
+                            break;
+                        }
+                        r = archive_write_data_block(dest, buff, size, offset);
+                        if (r < ARCHIVE_OK) {
+                            wxLogWarning("Error copying install data: %s",
+                                    archive_error_string(dest));
+
+                            break;
+                        }
+                    }
+                    if (r < ARCHIVE_OK){
+                        break;
+                    }
+                    
+                    r = archive_write_finish_entry(dest);
+                    if( r < ARCHIVE_OK){
+                        break;
+                    }
+                }
+            }
+            else{
+                continue;
+            }
+
+        }
+        archive_read_free(src);
+        archive_write_free(dest);
+        
+       
+        // Any tarball extraction problem?
+        if( r < ARCHIVE_OK ){
+            OCPNMessageBox(this,_("Error extracting import plugin tarball."), _("OpenCPN Plugin Import Error"));
+            return;
+        }
+
+        // Found the metadata?
+        if(!bFoundMetadata){
+            OCPNMessageBox(this,_("Error, import plugin tarball does not contain required metadata."), _("OpenCPN Plugin Import Error"));
+            return;
+        }
+ 
+        // Parse the import metadata
+        PluginMetadata importPlugin;
+        
+        pugi::xml_document doc;
+        bool ret = doc.load_file( tmpMetadata.mb_str() );
+        if( ret ){
+            pugi::xml_node pluginRoot = doc.first_child();
+
+            if(!parsePluginNode( pluginRoot, importPlugin)){
+                OCPNMessageBox(this,_("Error processing import plugin metadata."), _("OpenCPN Plugin Import Error"));
+                return;
+            }
+        }
+        
+        //  TODO Validate the metadata, in some simplistic way...
+        if (!PluginHandler::isCompatible(importPlugin)) {
+            OCPNMessageBox(this,_("Incompatible import plugin detected."), _("OpenCPN Plugin Import Error"));
+            return;
+        }
+        
+        // Load and parse a working copy of the currently active catalog...
+        std::vector<PluginMetadata> pluginArray;
+        
+        pugi::xml_document catalog;
+        wxString currentCatalog = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml");
+        ret = catalog.load_file( currentCatalog.mb_str() );
+        if( !ret ){
+            OCPNMessageBox(this,_("Cannot access current catalog."), _("OpenCPN Plugin Import Error"));
+            return;
+        }
+       
+        pugi::xml_node catalogRoot = catalog.first_child();
+        for (pugi::xml_node element = catalogRoot.first_child(); element; element = element.next_sibling()){
+            if( !strcmp(element.name(), "plugin") ){
+                PluginMetadata catalogPlugin;
+                parsePluginNode( element, catalogPlugin);
+                pluginArray.push_back( catalogPlugin );
+            }
+        }
+ 
+        //  Merge the import plugin metadata with the current catalog
+        //  By merge, we mean this:
+        //  1.  If the import metadata does not exist in the catalog, append it
+        //  2.  If the import metadata does exist (name, target, and target-version match), then..
+        //      update the catalog version with the import version
+        bool bmerge = false;
+        for(size_t i=0 ; i < pluginArray.size(); i++){
+            PluginMetadata candidate = pluginArray[i];
+            if( importPlugin.name == candidate.name){
+                if(importPlugin.target == candidate.target){
+                    if(importPlugin.target_version == candidate.target_version){
+                        bmerge = true;
+                        pluginArray[i].version = importPlugin.version;
+                        pluginArray[i].release = importPlugin.release;
+                        pluginArray[i].summary = importPlugin.summary;
+                        pluginArray[i].description = importPlugin.description;
+                        pluginArray[i].tarball_url = importPlugin.tarball_url;
+                        break;
+                    }
+                }
+            }
+        }
+        // If there was no exact merge, then simply add the importPlugin metadata (case 1)
+        if(!bmerge)
+            pluginArray.push_back( importPlugin );
+                    
+        // Write out the newly merged catalog, replacing the currently active catalog
+        pugi::xml_document newCatalog;
+        pugi::xml_node pluginsNode = newCatalog.append_child("plugins");
+        
+        pugi::xml_node childT = pluginsNode.append_child("version");
+        childT.append_child(pugi::node_pcdata).set_value("0.0.0");
+        childT = pluginsNode.append_child("date");
+        wxDateTime now = wxDateTime::GetTimeNow();
+        wxString timeFormat = now.FormatISOCombined(' ');
+        childT.append_child(pugi::node_pcdata).set_value(timeFormat.mb_str());
+
+        for(size_t i=0 ; i < pluginArray.size(); i++){
+            PluginMetadata workingMetadata = pluginArray[i];
+            
+            pugi::xml_node pluginNode = pluginsNode.append_child("plugin");
+            pugi::xml_attribute version = pluginNode.append_attribute( "version" );
+            version.set_value( "1" );
+            
+            populatePluginNode(pluginNode, workingMetadata);
+        }
+    
+        wxString catalogName = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml");
+        newCatalog.save_file( catalogName.mb_str(), "  ");
+       
+        // Copy the metadata to the tarball cache
+        wxString sep = wxFileName::GetPathSeparator();
+        wxString cacheDir = g_Platform->GetPrivateDataDir() + sep + _T("plugins");
+        if( !wxDirExists(cacheDir) )
+            wxMkdir( cacheDir);
+        cacheDir += sep + wxString(_T("cache"));
+        if( !wxDirExists(cacheDir) )
+            wxMkdir( cacheDir);
+        cacheDir += sep + wxString(_T("tarballs"));
+        if( !wxDirExists(cacheDir) )
+             wxMkdir( cacheDir);
+        
+        wxFileName fn(tarballPath);
+        wxString destination = cacheDir + sep + fn.GetFullName();
+        if(wxFileExists(wxString( tarballPath.c_str()))){
+            wxLogMessage("Copying %s to local cache",  tarballPath.ToStdString().c_str());
+            wxCopyFile( tarballPath, destination);
+        }
+
+        // Ready to load an process the merged catalog...
+        
+        // Reset the PluginHandler catalog file source.
+        // This will cause the Handler to find, load, and parse the just-merged catalog
+        // as copied to g_Platform->GetPrivateDataDir()...
+        auto pluginHandler = PluginHandler::getInstance();
+        pluginHandler->setMetadata("");
+
+        //  Reload all plugins, which will also update the status fields
+        g_pi_manager->LoadAllPlugIns( false );
+
+        // Update this Panel, and the entire list.
+        if(m_PluginListPanel)
+            m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+
+        
+        
+        // Success!
+        wxString msg = _("Plugin imported successfully");
+        msg += _T("\n");
+        msg += _("Active catalog updated.");
+        msg += _T("\n");
+        msg += _("Plugin may be installed or updated now.");
+        OCPNMessageBox(this, msg, _("OpenCPN Plugin Import Successful"));
+        
+        
+    }
+}
+
 
 wxString CatalogMgrPanel::GetCatalogText(bool updated)
 {
@@ -5526,25 +5937,36 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
 
-    wxBoxSizer* itemBoxSizer03 = new wxBoxSizer(wxHORIZONTAL);
-    itemBoxSizer02->Add(itemBoxSizer03);
+    wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
+    itemBoxSizer03->AddGrowableCol(2);
+    itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
+    
     m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
     m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-    wxFont font = *wxNORMAL_FONT;
+    
+    // Avoid known bug in wxGTK3
+#ifndef __WXGTK3__    
+    wxFont font = GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pName->SetFont(font);
-    itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
+#endif    
+    
+    itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
 
     m_pVersion = new wxStaticText( this, wxID_ANY, _T("") /*p_plugin->GetVersion().to_string()*/ );
-    itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
+    itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
         m_pVersion->Hide();
     }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
+    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+    itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
+    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+
     // This invocation has the effect of setting the minimum width of the descriptor field.
     m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
-    itemBoxSizer02->Add( m_pDescription, 1, wxEXPAND|wxALL, 5 );
+    itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
     m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
     m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
@@ -5561,10 +5983,6 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     
     m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
-
-    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
-    itemBoxSizer02->Add(m_cbEnable, 0, wxALIGN_RIGHT|wxRIGHT, 2 * GetCharWidth());
-    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
 
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
@@ -5632,6 +6050,10 @@ void PluginPanel::SetSelected( bool selected )
         
        if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion) )
             m_pVersion->SetLabel( m_pPlugin->m_ManagedMetadata.version );
+
+       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledUpdateAvailable) )
+            m_pVersion->SetLabel( wxString(m_pPlugin->m_InstalledManagedVersion) );
+
     }
     
 
@@ -5675,7 +6097,8 @@ void PluginPanel::SetSelected( bool selected )
                 break;
                 
             case PluginStatus::ManagedInstalledUpdateAvailable:
-                label = _("Update...");
+                label = _("Update to ");
+                label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
                 m_action = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
@@ -5743,19 +6166,28 @@ void PluginPanel::SetSelected( bool selected )
     
     Layout();
 
+    bool bUseSysColors = false;
 #ifdef __WXOSX__
-    // StaticText color change upon selection
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) )
+        bUseSysColors = true;
+#endif
+#ifdef __WXGTK__
+    bUseSysColors= true;
+#endif    
+
+    if(bUseSysColors){
         wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
+        if( bg.Red() < 128 ) {          // is Dark...
             if(selected) {
                 SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
             } else {
                 SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
+                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
             }
         }
     }
-#endif
+
     SetEnabled( m_pPlugin->m_bEnabled );
 
 #ifdef __OCPN__ANDROID__

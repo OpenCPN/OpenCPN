@@ -49,15 +49,16 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #undef Yield                 // from win.h, conflicts with mingw headers
 #endif
 
-#include "Downloader.h"
-#include "OCPNPlatform.h"
-#include "PluginHandler.h"
-#include "PluginPaths.h"
-#include "pluginmanager.h"
-#include "navutil.h"
-#include "ocpn_utils.h"
 #include "catalog_parser.h"
 #include "catalog_handler.h"
+#include "Downloader.h"
+#include "logger.h"
+#include "navutil.h"
+#include "OCPNPlatform.h"
+#include "ocpn_utils.h"
+#include "PluginHandler.h"
+#include "pluginmanager.h"
+#include "PluginPaths.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -171,13 +172,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 
 {
     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
-
-    //  First special case
-    //  TODO
-    //  We support no managed plugins for ARM64 platform.
-    //  So, if detected, we can bail immediately
-    if(os_detail->osd_arch.compare("ARM64") == 0)
-        return false;
     
     // Get the specified system definition,
     //   or the baked in (build system) values,
@@ -206,7 +200,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     compatOsVersion = ocpn::tolower(compatOsVersion);
     
     //  Compare to the required values in the metadata
-    
     std::string plugin_os = ocpn::tolower(metadata.target);
 
     // msvc is simple...
@@ -214,32 +207,81 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         return (plugin_os == "msvc");
     }
 
+    // And so is MacOS...
+    if (compatOS == "darwin") {
+        return (plugin_os == "darwin");
+    }
 
+    //  For linux variants....
+    // If the plugin architecture is defined, we can eliminate incompatible plugins immediately
+    if(metadata.target_arch.size()){
+        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch))
+            return false;
+    }
+
+    std::string compatOS_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
+
+    wxLogDebug(wxString::Format(_T("Plugin compatibility check1: %s  OS:%s  Plugin:%s"), metadata.name.c_str(), compatOS_ARCH.c_str(), plugin_os.c_str()));
+
+    bool rv = false;
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
+    
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
 
-    if (compatOS  == plugin_os) {
+    if (compatOS_ARCH  == plugin_os) {
         //  OS matches so far, so must compare versions
 
-        if (plugin_os == "ubuntu") {
-            return plugin_os_version == compatOsVersion;            // Full version comparison required
+        if (ocpn::startswith(plugin_os, "ubuntu")){
+            if(plugin_os_version == compatOsVersion)            // Full version comparison required
+                rv = true;
         }
-
-        auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-        return meta_vers == target_vers;
+        else{
+            auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+            if( meta_vers == target_vers )
+                rv = true;;
+        }
     }
     else{
         // running OS may be "like" some known OS
-        if( os_detail->osd_name_like  == plugin_os){
-            if (plugin_os == "ubuntu") {
-                return plugin_os_version == os_detail->osd_version;            // Full version comparison required
+        for(unsigned int i=0 ; i < os_detail->osd_name_like.size(); i++){
+            std::string osd_like_arch = os_detail->osd_name_like[i] + "-" + os_detail->osd_arch;
+            if( osd_like_arch  == plugin_os){
+                if (ocpn::startswith(plugin_os, "ubuntu")){
+                    if( plugin_os_version == os_detail->osd_version )            // Full version comparison required
+                        rv = true;
+                }
+                else{
+                    auto target_vers = ocpn::split(os_detail->osd_version.c_str(), ".")[0];
+                    if( meta_vers == target_vers )
+                        rv = true;
+                }
             }
-            auto target_vers = ocpn::split(os_detail->osd_version.c_str(), ".")[0];
-            return meta_vers == target_vers;
         }
     }
     
-    return false;
+    // Special case tests for vanilla debian, which can use some variants of Ubuntu plugins
+    if(!rv){
+
+        if (ocpn::startswith(compatOS_ARCH, "debian-x86_64")){
+            auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+            if(target_vers == std::string("9") ){        // Stretch
+                if( (plugin_os == std::string("ubuntu-x86_64")) && (plugin_os_version == std::string("16.04")) )
+                    rv = true;
+            }
+            else if(target_vers == std::string("11") ){        // Sid
+                if( (plugin_os == std::string("ubuntu-gtk3-x86_64")) && (plugin_os_version == std::string("20.04")) )
+                    rv = true;
+            }
+        }
+    }
+
+    std::string status("REJECTED");
+    if(rv)
+        status = "ACCEPTED";
+    wxLogDebug(wxString::Format(_T("Plugin compatibility checkFinal %s: %s  PluginOS:%s  PluginVersion: %s"), status.c_str(), metadata.name.c_str(), plugin_os.c_str(), plugin_os_version.c_str()));
+       
+
+    return rv;
 }
 
 
@@ -347,9 +389,17 @@ static void win_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+    if (ocpn::startswith(path, "./")) {
+        path = path.substr(1);
+    }
 
     // Remove top-level directory part
     int slashpos = path.find_first_of('/', 1);
+    if(slashpos < 0){
+        archive_entry_set_pathname(entry, "");
+        return;
+    }
+        
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
 
@@ -390,6 +440,9 @@ static void flatpak_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+    if (ocpn::startswith(path, "./")) {
+        path = path.substr(2);
+    }
     int slashpos = path.find_first_of('/', 1);
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
@@ -418,7 +471,11 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+
     int slashpos = path.find_first_of('/', 1);
+    if(ocpn::startswith(path, "./"))
+        slashpos = path.find_first_of('/', 2);  // skip the './'
+
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
     if (ocpn::startswith(path, "usr/")) {
@@ -465,7 +522,10 @@ static void apple_entry_set_install_path(struct archive_entry* entry,
     const string base = PluginPaths::getInstance()->Homedir()
         + "/Library/Application Support/OpenCPN";
 
-    const string path = archive_entry_pathname(entry);
+    string path = archive_entry_pathname(entry);
+    if(ocpn::startswith(path, "./"))
+        path = path.substr(2);
+
     string dest("");
     size_t slashes = count(path.begin(), path.end(), '/');
     if (slashes < 3) {
@@ -520,8 +580,7 @@ static void entry_set_install_path(struct archive_entry* entry,
     }
     const std::string dest = archive_entry_pathname(entry);
     if(dest.size()){
-        std::cout << "Installing " << src << " into " << dest << std::endl;
-        wxLogMessage( _T("Installing ") + wxString(src.c_str()) + _T(" into ") + wxString(dest.c_str()));
+        DEBUG_LOG << "Installing " << src << " into " << dest << std::endl;
     }
 }
 
@@ -703,12 +762,22 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
+void PluginHandler::cleanupFiles(const std::string& manifestFile,
+                                 const std::string& plugname)
+{
+    std::ifstream diskfiles(manifestFile);
+    if (diskfiles.is_open()) {
+        std::stringstream buffer;
+        buffer << diskfiles.rdbuf();
+        PluginHandler::cleanup(buffer.str(), plugname);
+    }
+}
+
+
 void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
-    if(!wxFileExists( wxString(filelist.c_str())))
-        return;
     
     std::istringstream files(filelist);
     while (!files.eof()) {
@@ -727,7 +796,7 @@ void PluginHandler::cleanup(const std::string& filelist,
     int iloop = 0;
     while(!done && (iloop < 6) ){
         done = true;
-        std::ifstream dirs(filelist.c_str());
+        std::istringstream dirs(filelist);
         while (!dirs.eof()) {
             char line[256];
             dirs.getline(line, sizeof(line));
@@ -741,8 +810,6 @@ void PluginHandler::cleanup(const std::string& filelist,
                 }
             }
         }
-        dirs.close();
-        
         iloop++;
     }
 
@@ -832,20 +899,6 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
     saveVersion(plugin.name, plugin.version);
 
     return true;
-#if 0    
-    int before = g_pi_manager->GetPlugInArray()->GetCount();
-    g_pi_manager->LoadAllPlugIns(false);
-    int after = g_pi_manager->GetPlugInArray()->GetCount();
-    wxLogMessage("install: Reloading plugins, before: %d, after:  %d",
-                 before, after);
-    if (before >= after) {
-        last_error_msg = "Cannot load the installed plugin";
-        PluginHandler::cleanup(filelist, plugin.name);
-    }
-    //std::cout << "Installed: " << plugin.name << std::endl;
-
-    return after > before;
-#endif    
 }
 
 
@@ -862,7 +915,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin)
     path = std::string(fname);
     std::ofstream stream;
     stream.open(path.c_str(), std::ios::out|std::ios::binary|std::ios::trunc);
-    std::cout << "Downloading: " << plugin.name << std::endl;
+    DEBUG_LOG << "Downloading: " << plugin.name << std::endl;
     auto downloader = Downloader(plugin.tarball_url);
     downloader.download(&stream);
 

@@ -88,7 +88,7 @@ struct LINKDATA
 #define pA010 10
 #define pA011 11
 
-int32 gps_device_command;
+extern int32 gps_device_command;
 
 
 struct COMMANDDATA
@@ -127,20 +127,20 @@ struct COMMANDDATA
  * Waypoint Transfer Protocol
  */
 #define pA100 100
-int32 gps_waypt_transfer;
+extern int32 gps_waypt_transfer;
 
 /*
  * Waypoint category transfer protocol
  */
 #define pA101 101
-int32 gps_category_transfer;
+extern int32 gps_category_transfer;
 
 /*
  * Route Transfer Protocol
  */
 #define pA200 200
 #define pA201 201
-int32 gps_route_transfer;
+extern int32 gps_route_transfer;
 
 /*
  * Track Log Transfer Protocol
@@ -149,26 +149,26 @@ int32 gps_route_transfer;
 #define pA301 301
 #define pA302 302
 #define pA304 304
-int32 gps_trk_transfer;
+extern int32 gps_trk_transfer;
 
 /*
  *  Proximity Waypoint Transfer Protocol
  */
 #define pA400 400
-int32 gps_prx_waypt_transfer;
+extern int32 gps_prx_waypt_transfer;
 
 /*
  *  Almanac Transfer Protocol
  */
 #define pA500 500
-int32 gps_almanac_transfer;
+extern int32 gps_almanac_transfer;
 
 
 /*
  *  Date Time Transfer
  */
 #define pA600 600
-int32 gps_date_time_transfer;
+extern int32 gps_date_time_transfer;
 
 /*
  *  FlightBook Transfer Protocol
@@ -180,42 +180,42 @@ int32 gps_date_time_transfer;
  *  Position
  */
 #define pA700 700
-int32 gps_position_transfer;
+extern int32 gps_position_transfer;
 
 
 /*
  *  Pvt
  */
 #define pA800 800
-int32 gps_pvt_transfer;
+extern int32 gps_pvt_transfer;
 
 /*
  * Lap Data Transfer
  */
 #define pA906 906
-int32 gps_lap_transfer;
+extern int32 gps_lap_transfer;
 
 /*
  * Various fitness related
  */
 #define pA1000 1000
-int32 gps_run_transfer;
+extern int32 gps_run_transfer;
 #define pA1002 1002
-int32 gps_workout_transfer;
+extern int32 gps_workout_transfer;
 #define pA1004 1004
-int32 gps_user_profile_transfer;
+extern int32 gps_user_profile_transfer;
 #define pA1005 1005
-int32 gps_workout_limits_transfer;
+extern int32 gps_workout_limits_transfer;
 #define pA1006 1006
-int32 gps_course_transfer;
+extern int32 gps_course_transfer;
 #define pA1007 1007
-int32 gps_course_lap_transfer;
+extern int32 gps_course_lap_transfer;
 #define pA1008 1008
-int32 gps_course_point_transfer;
+extern int32 gps_course_point_transfer;
 #define pA1009 1009
-int32 gps_course_limits_transfer;
+extern int32 gps_course_limits_transfer;
 #define pA1012 1012
-int32 gps_course_trk_transfer;
+extern int32 gps_course_trk_transfer;
 
 /*
  * Waypoint D Type
@@ -237,14 +237,14 @@ int32 gps_course_trk_transfer;
 #define pD154 154
 #define pD155 155
 
-int32 gps_rte_type;
-int32 gps_waypt_type;
+extern int32 gps_rte_type;
+extern int32 gps_waypt_type;
 
 /*
  * Waypoint category types
  */
 #define pD120 120
-int32 gps_category_type;
+extern int32 gps_category_type;
 
 /*
  * Rte Header Type
@@ -252,14 +252,14 @@ int32 gps_category_type;
 #define pD200 200
 #define pD201 201
 #define pD202 202
-int32 gps_rte_hdr_type;
+extern int32 gps_rte_hdr_type;
 
 
 /*
  * Rte Link Type
  */
 #define pD210 210
-int32 gps_rte_link_type;
+extern int32 gps_rte_link_type;
 
 
 /*
@@ -270,8 +270,8 @@ int32 gps_rte_link_type;
 #define pD302 302
 #define pD303 303
 #define pD304 304
-int32 gps_trk_type;
-int32 gps_run_crs_trk_type;
+extern int32 gps_trk_type;
+extern int32 gps_run_crs_trk_type;
 
 
 /*
@@ -280,8 +280,8 @@ int32 gps_run_crs_trk_type;
 #define pD310 310
 #define pD311 311
 #define pD312 312
-int32 gps_trk_hdr_type;
-int32 gps_run_crs_trk_hdr_type;
+extern int32 gps_trk_hdr_type;
+extern int32 gps_run_crs_trk_hdr_type;
 
 
 
@@ -292,7 +292,7 @@ int32 gps_run_crs_trk_hdr_type;
 #define pD403 403
 #define pD450 450
 
-int32 gps_prx_waypt_type;
+extern int32 gps_prx_waypt_type;
 
 
 /*
@@ -303,7 +303,7 @@ int32 gps_prx_waypt_type;
 #define pD550 550
 #define pD551 551
 
-int32 gps_almanac_type;
+extern int32 gps_almanac_type;
 
 
 /*
@@ -311,7 +311,7 @@ int32 gps_almanac_type;
  */
 #define pD600 600
 
-int32 gps_date_time_type;
+extern int32 gps_date_time_type;
 
 
 
@@ -320,7 +320,7 @@ int32 gps_date_time_type;
  */
 #define pD700 700
 
-int32 gps_position_type;
+extern int32 gps_position_type;
 
 
 
@@ -329,7 +329,7 @@ int32 gps_position_type;
  */
 #define pD800 800
 
-int32 gps_pvt_type;
+extern int32 gps_pvt_type;
 
 /*
  * Lap Data Type
@@ -339,7 +339,7 @@ int32 gps_pvt_type;
 #define pD1011 1011
 #define pD1015 1015
 
-int32 gps_lap_type;
+extern int32 gps_lap_type;
 
 /*
  * Various fitness related
@@ -347,24 +347,24 @@ int32 gps_lap_type;
 #define pD1000 1000
 #define pD1009 1009
 #define pD1010 1010
-int32 gps_run_type;
+extern int32 gps_run_type;
 #define pD1002 1002
 #define pD1008 1008
-int32 gps_workout_type;
+extern int32 gps_workout_type;
 #define pD1003 1003
-int32 gps_workout_occurrence_type;
+extern int32 gps_workout_occurrence_type;
 #define pD1004 1004
-int32 gps_user_profile_type;
+extern int32 gps_user_profile_type;
 #define pD1005 1005
-int32 gps_workout_limits_type;
+extern int32 gps_workout_limits_type;
 #define pD1006 1006
-int32 gps_course_type;
+extern int32 gps_course_type;
 #define pD1007 1007
-int32 gps_course_lap_type;
+extern int32 gps_course_lap_type;
 #define pD1012 1012
-int32 gps_course_point_type;
+extern int32 gps_course_point_type;
 #define pD1013 1013
-int32 gps_course_limits_type;
+extern int32 gps_course_limits_type;
 
 /*
  * Link protocol type
@@ -373,7 +373,7 @@ int32 gps_course_limits_type;
 #define pL001 1
 #define pL002 2
 
-int32 gps_link_type;
+extern int32 gps_link_type;
 
 
 

@@ -39,6 +39,7 @@
 #include <wx/colordlg.h>
 
 #include <stdio.h>
+#include <vector>
 
 class MyConfig;
 class ArrayOfCDI;
@@ -55,10 +56,10 @@ public:
     OCPN_OSDetail() {};
     ~OCPN_OSDetail() {};
 
-    std::string         osd_name;
-    std::string         osd_version;
-    std::string         osd_name_like;
-    std::string         osd_arch;
+    std::string                 osd_name;
+    std::string                 osd_version;
+    std::vector<std::string>    osd_name_like;
+    std::string                 osd_arch;
 
 };
  
@@ -285,6 +286,10 @@ public:
 protected:
     virtual void UpdateColour();
     wxSize DoGetBestSize() const;
+
+    void OnPaint(wxPaintEvent &event) ;
+
+    DECLARE_EVENT_TABLE() ;
 
 private:
     wxBitmap m_bitmap;

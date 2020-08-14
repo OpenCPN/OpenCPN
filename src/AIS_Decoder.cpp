@@ -76,6 +76,7 @@ extern double   g_AckTimeout_Mins;
 extern bool     g_bShowAreaNotices;
 extern bool     g_bDrawAISSize;
 extern bool     g_bDrawAISRealtime;
+extern double   g_AIS_RealtPred_Kts;
 extern bool     g_bShowAISName;
 extern int      g_Show_Target_Name_Scale;
 extern bool     g_bAllowShowScaled;
@@ -96,8 +97,9 @@ extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
 extern TrackList *pTrackList;
 extern OCPNPlatform     *g_Platform;
-extern PlugInManager             *g_pi_manager;
+extern PlugInManager    *g_pi_manager;
 extern Multiplexer      *g_pMUX;
+extern AIS_Decoder      *g_pAIS;
 
 extern wxString g_CmdSoundString;
 
@@ -129,9 +131,9 @@ extern bool g_bquiting;
 static void onSoundFinished(void* ptr)
 {
     if (!g_bquiting) {
-        auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
+        //auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
         wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-        wxPostEvent(aisDecoder, ev);
+        wxPostEvent(g_pAIS, ev);
     }
 }
 
@@ -490,28 +492,14 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 now.MakeUTC();
                 double lat = value[_T("latitude")].AsDouble();
                 double lon = value[_T("longitude")].AsDouble();
-                if( !bnewtarget ) {
-                    int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
-                    if ( age_of_last > 0 ) {
-                        ll_gc_ll_reverse( pTargetData->Lat,
-                                          pTargetData->Lon,
-                                          lat,
-                                          lon,
-                                          &pTargetData->COG,
-                                          &pTargetData->SOG );
-                        pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
-                    }
-                }
-//                wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: PositionReportTicks %d"),
-//                        now.GetTicks()));
                 pTargetData->PositionReportTicks = now.GetTicks();
                 pTargetData->StaticReportTicks = now.GetTicks();
                 pTargetData->Lat = lat;
                 pTargetData->Lon = lon;
                 pTargetData->b_positionOnceValid = true;
                 pTargetData->b_positionDoubtful = false;
-
             }
+
             if ( value.HasMember(_T("altitude")) ) { 
                 pTargetData->altitude = value[_T("altitude ")].AsInt(); }
         } else if (update_path == _T("navigation.speedOverGround")) {
@@ -653,9 +641,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                         pTargetData->b_SarAircraftPosnReport = true;
                     }
 
-                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);                                            
-                    
-                    (*AISTargetList)[pTargetData->MMSI] = pTargetData; // update the hash table entry
+                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
                 }
             }
         } else {
@@ -1779,7 +1765,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
 
             ptd->SOG = 0.1 * ( bstr->GetInt( 47, 10 ) );
 
-            int lon = bstr->GetInt( 58, 28 );
+	    int lon = bstr->GetInt( 58, 28 );
             if( lon & 0x08000000 )                    // negative?
             lon |= 0xf0000000;
             double lon_tentative = lon / 600000.;
@@ -1853,6 +1839,88 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
 
             break;
         }
+
+
+        case 27: {
+            // Long-range automatic identification system broadcast message
+            // This message is used for long-range detection of AIS Class A and Class B vessels (typically by satellite).
+            
+            // Define the constant to do the covertion from the internal encoded
+            // position in message 27. The position is less accuate :  1/10 minute position resolution.
+            int bitCorrection = 10;
+            int resolution = 10;
+
+             // Default aout of bounce values.
+            double lon_tentative = 181.;
+            double lat_tentative = 91.;
+
+            #ifdef AIS_DEBUG
+                printf("AIS Message 27 - received:\r\n");
+                printf("MMSI      : %i\r\n", ptd->MMSI );
+            #endif
+
+            // It can be both a CLASS A and a CLASS B vessel - We have decided for CLASS A
+            // TODO: Lookup to see if we have seen it as a CLASS B, and adjust.
+            ptd->Class = AIS_CLASS_A;
+
+            ptd->NavStatus = bstr->GetInt( 39, 4 );
+
+            int  lon = bstr->GetInt( 45,18 ) ;
+            int lat = bstr->GetInt( 63, 17 );
+
+            lat_tentative = lat;
+            lon_tentative = lon;
+
+            // Negative latitude?
+            if( lat >= (0x4000000 >> bitCorrection)) {
+                lat_tentative = (0x8000000 >> bitCorrection) - lat;
+                lat_tentative *= -1;
+            }
+
+            // Negative longitude?
+            if(lon >= (0x8000000 >> bitCorrection)) {
+                lon_tentative = (0x10000000 >> bitCorrection) - lon;
+                lon_tentative *= -1;
+            }
+	      
+            // Decode the internal position format.
+            lat_tentative = lat_tentative / resolution / 60.0;
+            lon_tentative = lon_tentative / resolution / 60.0;
+
+            #ifdef AIS_DEBUG
+                printf("Latitude  : %f\r\n", lat_tentative  );
+                printf("Longitude : %f\r\n", lon_tentative  );
+            #endif
+
+            // Get the latency of the position report.
+            int positionLatency = bstr->GetInt( 95, 1 );
+
+            if ((lon_tentative <= 180.) && (lat_tentative <= 90.)) // Ship does not report Lat or Lon "unavailable"
+            {
+                ptd->Lon = lon_tentative;
+                ptd->Lat = lat_tentative;
+                ptd->b_positionDoubtful = false;
+                ptd->b_positionOnceValid = true;          // Got the position at least once
+                if( positionLatency == 0 )
+                {
+                    // The position is less than 5 seconds old.
+                    #ifdef AIS_DEBUG
+                        printf("Low latency position report.\r\n");
+                    #endif
+                    ptd->PositionReportTicks = now.GetTicks();
+                }
+            }
+            else
+                ptd->b_positionDoubtful = true;
+
+            ptd->SOG = 1.0 * (bstr->GetInt( 80, 6 ));
+            ptd->COG = 1.0 * (bstr->GetInt( 85, 9 ));
+
+            b_posn_report = true;
+            parse_result = true;
+            break;
+        }
+      
 
         case 5: {
             n_msg5++;

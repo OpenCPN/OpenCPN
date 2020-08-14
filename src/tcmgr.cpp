@@ -4515,7 +4515,7 @@ static NV_BOOL read_tide_db_header ()
     NV_INT32            temp_int;
     NV_CHAR             varin[ONELINER_LENGTH], *info;
     NV_U_INT32          utemp, i, j, pos, size, key_count;
-    NV_U_BYTE           *buf, checksum_c[4];
+    NV_U_BYTE           *buf, checksum_c[5];
     TIDE_RECORD         rec;
 
     if (!fp) {

@@ -50,16 +50,10 @@ wxString GetLastGarminError(void)
 int Garmin_GPS_Init( const wxString &port_name)
 {
       int ret;
-#ifdef GPS_DEBUG0
-//      if (getenv("OPENCPN_GPS_ERROR") != NULL)
-	GPS_Enable_Error();
-//      if (getenv("OPENCPN_GPS_WARNING") != NULL)
-	GPS_Enable_Warning();
-//      if (getenv("OPENCPN_GPS_USER") != NULL)
-	GPS_Enable_User();
-//      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
-	GPS_Enable_Diagnose();
-#endif
+      GPS_Enable_Error();
+      GPS_Enable_Warning();
+      GPS_Enable_User();
+      GPS_Enable_Diagnose();
       char m[1];
       m[0] = '\0';
 
@@ -286,6 +280,7 @@ int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgre
       if((gps_rte_hdr_type == pD200) || (gps_rte_hdr_type == pD201))
       {
       //    Retrieve <ALL> routes from the device
+            GPS_Diag("Garmin: trying to get free route number");
             GPS_PWay *pprouteway;
             int32 npacks = GPS_A200_Get(port_name.mb_str(), &pprouteway);
             if(npacks < 0)
@@ -326,13 +321,14 @@ int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgre
                         break;
                   }
             }
+            GPS_Diag("Using route number: %d", route_number);
 
             //  Ask the user if it is all right to overwrite
             if(!bfound_empty)
             {
                   int rv = OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),
                                           _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
-                  if(rv != wxOK)
+                  if(rv != wxID_OK)
                         return 0;
             }
 

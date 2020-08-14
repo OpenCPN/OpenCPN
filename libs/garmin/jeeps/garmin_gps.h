@@ -298,9 +298,9 @@ typedef int (*pcb_fn) (int, struct GPS_SWay **);
 #include "gpsinput.h"
 #include "gpsproj.h"
 
-time_t gps_save_time;
-double gps_save_lat;
-double gps_save_lon;
+extern time_t gps_save_time;
+extern double gps_save_lat;
+extern double gps_save_lon;
 extern int32  gps_save_id;
 extern double gps_save_version;
 extern char   gps_save_string[GPS_ARB_LEN];

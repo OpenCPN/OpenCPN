@@ -506,7 +506,10 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
     dir=m_WindDir;
     while(dir > 360) dir-=360;
     while(dir <0 ) dir+=360;
-    WindAngle=wxString::Format(_T("TWD %3.0f"), dir)+DEGREE_SIGN;
+    if ( !std::isnan(dir) )
+        WindAngle=wxString::Format(_T("TWD %3.0f"), dir)+DEGREE_SIGN;
+    else
+        WindAngle = wxString::Format(_T("TWD ---")) + DEGREE_SIGN;
   }
   dc->GetTextExtent(WindAngle, &degw, &degh, 0, 0, g_pFontData);
   dc->DrawText(WindAngle, m_WindowRect.width-degw-m_RightLegend-3, m_TopLineHeight-degh);
@@ -557,7 +560,11 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
   col=wxColour(61,61,204,255); //blue, opaque
   dc->SetFont(*g_pFontData);
   dc->SetTextForeground(col);
-  WindSpeed=wxString::Format(_T("TWS %3.1f %s "), m_WindSpd, m_WindSpeedUnit.c_str());
+  if ( !std::isnan(m_WindSpd))
+      WindSpeed=wxString::Format(_T("TWS %3.1f %s "), m_WindSpd, m_WindSpeedUnit.c_str());
+  else
+      WindSpeed = wxString::Format(_T("TWS --- %s "), m_WindSpeedUnit.c_str());
+
   dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, g_pFontData);
   dc->DrawText(WindSpeed, m_LeftLegend+3, m_TopLineHeight-degh);
   dc->SetFont(*g_pFontLabel);
