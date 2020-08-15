@@ -420,6 +420,7 @@ static void run_update_dialog(PluginListPanel* parent,
     wxASSERT(parent_dlg != 0);
     UpdateDialog dialog(parent_dlg, updates);
     auto status = dialog.ShowModal();
+    status = dialog.GetReturnCode();
     if (status != wxID_OK) {
         return;
     }
@@ -704,15 +705,6 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             // capture the plugin name
             std::string pluginName = actionPIC->m_ManagedMetadata.name;
             
-            // dynamically deactivate the legacy plugin, making way for the upgrade.
-            wxLogMessage("Unloading legacy plugin: %s", pluginName.c_str());
-            for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
-                if (pluginName == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
-                    g_pi_manager->UnLoadPlugIn(i);
-                    break;
-                }
-            }
-
             wxLogMessage("Installing managed plugin: %s", pluginName.c_str());
             auto downloader = new GuiDownloader(plugin_list_panel, actionPIC->m_ManagedMetadata);
             downloader->run(plugin_list_panel);
@@ -721,15 +713,15 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             std::string manifestPath = PluginHandler::fileListPath(pluginName);
             if(isRegularFile(manifestPath.c_str())) {
 
- /*               // dynamically deactivate the legacy plugin, making way for the upgrade.
+                // dynamically deactivate the legacy plugin, making way for the upgrade.
                 for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
                     if (actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
                         g_pi_manager->UnLoadPlugIn(i);
                         break;
                     }
                 }
- */           
-                //  Reload all plugins, which will bring in the new, managed version.
+
+            //  Reload all plugins, which will bring in the new, managed version.
                 g_pi_manager->LoadAllPlugIns( false );
             }
             else {
@@ -5215,6 +5207,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      }
 #else
      SetBackgroundColour(wxColour(200, 200, 220));              // light blue
+     pConfig->SetPath( _T("/PlugIns/") );
      wxString expert = pConfig->Read( "CatalogExpert", "0");
 
      // First line
@@ -5240,7 +5233,6 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      wxArrayString channels;
      channels.Add(_T( "Master" ));
      channels.Add(_T( "Beta" ));
-     pConfig->SetPath( _T("/PlugIns/") );
      if(expert.IsSameAs(_T("1"))){
         channels.Add(_T( "Alpha" ));
         channels.Add(_T( "Custom..." ));
@@ -5261,6 +5253,8 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
      itemStaticBoxSizer4->Add( m_tarballButton, 0, wxALIGN_LEFT );
      m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
+     if(expert.IsSameAs(_T("0")))
+        m_tarballButton->Hide();
 
      // Next line
      wxBoxSizer* rowSizer3 = new wxBoxSizer( wxHORIZONTAL );
@@ -6056,8 +6050,11 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
 
     // Calculate character width available
     int nChars = g_options->GetSize().x / GetCharWidth();
+    bool bCompact = false;
+    if(nChars < 60)                    // Arbitrary, detecting mobile devices in portrait mode.
+        bCompact = true;
     
-    if(nChars < 60){                    // Arbitrary, detecting mobile devices in portrait mode.
+    if(bCompact){
     
         // Might need to shorten the Plugin name string
         wxString nameString = m_pPlugin->m_common_name;
@@ -6138,21 +6135,48 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     }
     
 
-    m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
-    m_info_btn->Hide();
-    itemBoxSizer02->Add(m_info_btn, 0);
+    if(!bCompact){
+        m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+        m_info_btn->Hide();
+        itemBoxSizer02->Add(m_info_btn, 0);
 
-    m_pButtons = new wxBoxSizer(wxHORIZONTAL);
-    itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
-    m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
+        m_pButtons = new wxBoxSizer(wxHORIZONTAL);
+        itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
+        m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
+ 
+        m_pButtons->AddSpacer(3 * GetCharWidth());
     
-    m_pButtonAction = new wxButton( this, wxID_ANY, "REINSTALL", wxDefaultPosition, wxDefaultSize, 0 );
-    m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
+        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version ", wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
     
-    m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
+        m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
+    }
+    else{
+        m_pButtons = new wxBoxSizer(wxVERTICAL);
+        itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
+        
+        wxBoxSizer *tline = new wxBoxSizer(wxHORIZONTAL);
+        m_pButtons->Add( tline, 0,wxALL, 2);
 
+        m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
+        tline->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 0);
+ 
+        tline->AddSpacer(3 * GetCharWidth());
+        
+        m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+        m_info_btn->Hide();
+        tline->Add(m_info_btn, 0);
+
+        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version ", wxDefaultPosition, wxDefaultSize );
+        m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
+    
+        m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
+        
+    }
+    
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
     itemBoxSizer01->Add(m_status_icon, 0, wxEXPAND);
@@ -6256,7 +6280,7 @@ void PluginPanel::SetSelected( bool selected )
         SemanticVersion newVersion;
         switch(m_pPlugin->m_pluginStatus){
             case PluginStatus::LegacyUpdateAvailable:
-                label = _("Upgrade to managed Version ");
+                label = _("Upgrade to Version ");
                 label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
                 m_action = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
                 m_pButtonAction->Enable();
