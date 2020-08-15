@@ -630,7 +630,7 @@ void GuiDownloader::showErrorDialog(const char* msg)
                     m_parent,
                     "",
                     _("Installation error"),
-                    wxOK | wxCENTRE | wxICON_ERROR);
+                    wxOK | wxICON_ERROR);
             auto last_error_msg = last_error();
             std::string text = msg;
             if (last_error_msg != "") {
