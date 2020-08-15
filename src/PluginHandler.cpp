@@ -623,17 +623,16 @@ static void android_entry_set_install_path(struct archive_entry* entry,
 static void entry_set_install_path(struct archive_entry* entry,
                                    pathmap_t installPaths)
 {
-    const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
     const std::string src = archive_entry_pathname(entry);
+#ifdef __OCPN__ANDROID__
+    android_entry_set_install_path(entry, installPaths);
+#else
+    const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
     if (g_Platform->isFlatpacked()) {
         flatpak_entry_set_install_path(entry, installPaths);
     }
     else if (osSystemId & wxOS_UNIX_LINUX) {
-#ifdef __OCPN__ANDROID__
-        android_entry_set_install_path(entry, installPaths);
-#else
         linux_entry_set_install_path(entry, installPaths);
-#endif        
     }
     else if (osSystemId & wxOS_WINDOWS) {
         win_entry_set_install_path(entry, installPaths);
@@ -645,6 +644,7 @@ static void entry_set_install_path(struct archive_entry* entry,
         wxLogMessage("set_install_path() invoked, unsupported platform %s",
                      wxPlatformInfo::Get().GetOperatingSystemDescription());
     }
+#endif
     const std::string dest = archive_entry_pathname(entry);
     if(dest.size()){
         MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
