@@ -203,6 +203,8 @@ extern arrayofCanvasPtr  g_canvasArray;
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
+void NotifySetupOptionsPlugin( PlugInContainer *pic );
+
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -533,8 +535,11 @@ static void run_update_dialog(PluginListPanel* parent,
             PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
             wxString cname = pic->m_common_name;
             if(pic->m_bInitState && (pluginName == cname)) {
-                if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE))
+                if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)){
                     g_options->SetNeedNew( true );
+
+                    NotifySetupOptionsPlugin(pic);
+                }
             }
         }
     }
@@ -1252,13 +1257,19 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                 {
                     wxStopWatch sw;
                     pic->m_cap_flag = pic->m_pplugin->Init();
+                    pic->m_bInitState = true;
+                    if(g_options){
+                        if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)){
+                            if(!pic->m_bToolboxPanel)
+                                NotifySetupOptionsPlugin( pic );
+                        }
+                    }
 #ifdef __WXGTK__ // 10 milliseconds is very slow at least on linux
                     if(sw.Time() > 10)
                         wxLogMessage(_T("PlugInManager: ") + pic->m_common_name
                                      + _T(" has loaded very slowly: %ld ms"),
                                      sw.Time());
 #endif
-                    pic->m_bInitState = true;
                 }
                 std::string found_version;
                 for (auto p: PluginHandler::getInstance()->getInstalled()) {
