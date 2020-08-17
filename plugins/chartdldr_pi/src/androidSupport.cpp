@@ -347,3 +347,46 @@ bool AndroidSecureCopyFile(wxString in, wxString out)
     
     return bret;
 }
+
+bool b_androidBusyShown;
+void androidShowBusyIcon()
+{
+    if(b_androidBusyShown)
+        return;
+
+    //qDebug() << "ShowBusy";
+        
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if ( !activity.isValid() ){
+        //qDebug() << "Activity is not valid";
+        return;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("showBusyCircle", "()Ljava/lang/String;");
+    
+    b_androidBusyShown = true;
+}
+
+void androidHideBusyIcon()
+{
+    if(!b_androidBusyShown)
+        return;
+    
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        //qDebug() << "Activity is not valid";
+        return;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("hideBusyCircle", "()Ljava/lang/String;");
+
+    b_androidBusyShown = false;
+}
+
