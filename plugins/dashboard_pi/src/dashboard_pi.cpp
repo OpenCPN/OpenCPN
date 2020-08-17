@@ -537,6 +537,7 @@ double GetJsonDouble(wxJSONValue &value) {
         int i_ret = value.AsInt();
         return d_ret = i_ret;
     }
+    return NAN;
 }
 
 void dashboard_pi::Notify()
