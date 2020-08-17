@@ -1179,7 +1179,12 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     // Check to see if this MMSI has been configured to be ignored completely...
                     if(props->m_bignore)
                         return AIS_NoError;
-                    // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
+                    // Check to see if we want to persist it's track
+                    if( props->TrackType == TRACKTYPE_ALWAYS){
+                        UpdateOneTrack(pTargetData);
+                        break;
+                    }
+                    // Check to see if this MMSI wants VDM translated to VDO
                     else if (props->m_bVDM){
                         
                         //Only single line VDM messages to be translated
