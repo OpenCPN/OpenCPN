@@ -525,7 +525,7 @@ if (QT_ANDROID)
         "-Wno-overloaded-virtual"
         "-Wno-unused-command-line-argument"
         "-Wno-unknown-pragmas"
-        "-O3"
+        "-O0"
         "-fPIC"
   )
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
@@ -562,10 +562,13 @@ set(
 # Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
 # to avoid multilib plugin paths. After all, we do not install any
 # "real" libraries.
+message(STATUS "CMAKE_INSTALL_LIBDIR1 ${CMAKE_INSTALL_LIBDIR}")
 if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
 endif ()
+message(STATUS "CMAKE_INSTALL_LIBDIR2 ${CMAKE_INSTALL_LIBDIR}")
 include(GNUInstallDirs)
+message(STATUS "CMAKE_INSTALL_LIBDIR3 ${CMAKE_INSTALL_LIBDIR}")
 
 set(PREFIX_BIN ${CMAKE_INSTALL_BINDIR})
 set(PREFIX_INCLUDE ${CMAKE_INSTALL_INCLUDEDIR})
