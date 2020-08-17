@@ -563,7 +563,7 @@ set(
 # to avoid multilib plugin paths. After all, we do not install any
 # "real" libraries.
 message(STATUS "CMAKE_INSTALL_LIBDIR1 ${CMAKE_INSTALL_LIBDIR}")
-if (EXISTS /etc/debian_version )
+if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
 endif ()
 message(STATUS "CMAKE_INSTALL_LIBDIR2 ${CMAKE_INSTALL_LIBDIR}")
