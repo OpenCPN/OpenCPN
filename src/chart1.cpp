@@ -6187,6 +6187,10 @@ int MyFrame::DoOptionsDialog()
     options_lastWindowSize = g_options->lastWindowSize;
 
     if( 1/*b_sub*/ ) {          // always surface toolbar, and restart the timer if needed
+#ifdef __OCPN__ANDROID__
+      g_MainToolbar-> SetDockX( -1 );
+      g_MainToolbar-> SetDockY( -1 );
+#endif        
         g_MainToolbar->Surface();
         SurfaceAllCanvasToolbars();
         GetPrimaryCanvas()->SetFocus();
