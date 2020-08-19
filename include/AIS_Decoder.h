@@ -93,6 +93,7 @@ private:
     void UpdateAllAlarms(void);
     void UpdateAllTracks(void);
     void UpdateOneTrack(AIS_Target_Data *ptarget);
+    void ApplyMMSIproperties(AIS_Target_Data *ptarget);
     void BuildERIShipTypeHash(void);
     AIS_Target_Data *ProcessDSx( const wxString& str, bool b_take_dsc = false );
     void SendJSONMsg( AIS_Target_Data *pTarget );

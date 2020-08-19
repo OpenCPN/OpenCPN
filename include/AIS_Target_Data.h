@@ -117,6 +117,7 @@ public:
     bool                      b_NoTrack;
     bool                      b_OwnShip;
     bool                      b_PersistTrack;
+    bool                      b_Ignore;
 
     int                       m_utc_hour;
     int                       m_utc_min;
