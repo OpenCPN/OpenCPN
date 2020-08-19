@@ -961,9 +961,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 if (mPriATMP >= 3) {
                     mPriATMP = 3;
                     SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP,
-					                             toUsrTemp_Plugin(m_NMEA0183.Mta.Temperature,
+                                                 toUsrTemp_Plugin(m_NMEA0183.Mta.Temperature,
                                                                   g_iDashTempUnit),
-					                             getUsrTempUnit_Plugin(g_iDashTempUnit));
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
                     mATMP_Watchdog = gps_watchdog_timeout_ticks;
                 }
             }
@@ -989,9 +989,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 if (mPriWTP >= 3) {
                     mPriWTP = 3;
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TMP,
-					                             toUsrTemp_Plugin(m_NMEA0183.Mtw.Temperature,
+                                                 toUsrTemp_Plugin(m_NMEA0183.Mtw.Temperature,
                                                                   g_iDashTempUnit),
-					                             getUsrTempUnit_Plugin(g_iDashTempUnit));
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
                     mWTP_Watchdog = gps_watchdog_timeout_ticks;
                 }
             }
@@ -1341,8 +1341,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         if (mPriATMP >= 2) {
                             mPriATMP = 2;
                             SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP,
-								                         toUsrTemp_Plugin(xdrdata, g_iDashTempUnit),
-								                         getUsrTempUnit_Plugin(g_iDashTempUnit));
+                                                         toUsrTemp_Plugin(xdrdata, g_iDashTempUnit),
+                                                         getUsrTempUnit_Plugin(g_iDashTempUnit));
                             mATMP_Watchdog = gps_watchdog_timeout_ticks;
                         }
                     }
@@ -1392,9 +1392,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         if (mPriWTP >= 2) {
                             mPriWTP = 2;
                             SendSentenceToAllInstruments(OCPN_DBP_STC_TMP,
-								toUsrTemp_Plugin(m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,
-                                                 g_iDashTempUnit),
-								getUsrTempUnit_Plugin(g_iDashTempUnit));
+                                                         toUsrTemp_Plugin(m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,
+                                                                          g_iDashTempUnit),
+                                                         getUsrTempUnit_Plugin(g_iDashTempUnit));
                             mWTP_Watchdog = gps_watchdog_timeout_ticks;
                         }
                     }
@@ -1697,7 +1697,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 
                 m_wtemp = KELVIN2C(m_wtemp);
                 if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
-                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_wtemp, "C");
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP,
+                                                 toUsrTemp_Plugin(m_wtemp,
+                                                                  g_iDashTempUnit),
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
                     mPriWTP = 1;
                     mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
                 }
@@ -1754,7 +1757,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
 
                 m_airtemp = KELVIN2C(m_airtemp);
                 if ( m_airtemp > -60 && m_airtemp < 100 ) {
-                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_airtemp, "C");
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP,
+                                                 toUsrTemp_Plugin(m_airtemp,
+                                                                  g_iDashTempUnit),
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
                     mPriATMP = 1;
                     mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
                 }
