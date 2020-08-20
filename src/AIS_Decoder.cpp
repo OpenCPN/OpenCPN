@@ -45,6 +45,7 @@
 #include <multiplexer.h>
 #include "config.h"
 #include <cstdio>
+#include "chart1.h"
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
@@ -84,6 +85,8 @@ extern bool     g_bShowScaled;
 extern bool     g_bInlandEcdis;
 extern int      g_iSoundDeviceIndex;
 extern bool     g_bWplIsAprsPosition;
+extern bool     g_own_ship_sog_cog_calc;
+extern int      gGPS_Watchdog;
 extern double gLat;
 extern double gLon;
 extern double gCog;
@@ -431,7 +434,7 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
         pTargetData->MMSI = mmsi;
         // A SART can send wo any values first transmits. Detect class already here.
         if ( 97 == mmsi / 10000000 ) { pTargetData->Class = AIS_SART; }
-        pTargetData->b_OwnShip = false;
+        //pTargetData->b_OwnShip = false;
         ( *AISTargetList )[pTargetData->MMSI] = pTargetData;
     }
 }
@@ -460,16 +463,20 @@ void AIS_Decoder::handleUpdate(AIS_Target_Data *pTargetData,
     // pTargetData->NavStatus = 15; // undefined
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
+    
+    if ( ApplyMMSIproperties(pTargetData) ) return;
 
-    if( pTargetData->b_positionOnceValid ) {
-        long mmsi_long = pTargetData->MMSI;
-        SelectItem *pSel = pSelectAIS->AddSelectablePoint( pTargetData->Lat,
-                                                           pTargetData->Lon,
-                                                           (void *) mmsi_long,
-                                                           SELTYPE_AISTARGET );
-        pSel->SetUserData( pTargetData->MMSI );
+    if( !pTargetData->b_OwnShip  || !pTargetData->b_Ignore) {
+        if( pTargetData->b_positionOnceValid ) {
+            long mmsi_long = pTargetData->MMSI;
+            SelectItem *pSel = pSelectAIS->AddSelectablePoint( pTargetData->Lat,
+                                                            pTargetData->Lon,
+                                                            (void *) mmsi_long,
+                                                            SELTYPE_AISTARGET );
+            pSel->SetUserData( pTargetData->MMSI );
+        }
     }
-    ApplyMMSIproperties(pTargetData);
+    
     UpdateOneCPA(pTargetData);
     if( pTargetData->b_show_track )
         UpdateOneTrack( pTargetData );
@@ -1355,6 +1362,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->b_NoTrack = false;                
             }
 
+if ( ApplyMMSIproperties(pTargetData) ) return ret;
             //  If the message was decoded correctly
             //  Update the AIS Target information
             if( bdecode_result ) { 
@@ -1366,16 +1374,17 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     if( it == AIS_AreaNotice_Sources->end() )
                         ( *AIS_AreaNotice_Sources ) [pTargetData->MMSI] = pTargetData;
                 }
-ApplyMMSIproperties(pTargetData);
+
 
                 //  If this is not an ownship message, update the AIS Target in the Selectable list, and update the CPA info
                 if( !pTargetData->b_OwnShip  || !pTargetData->b_Ignore) {
                     if( pTargetData->b_positionOnceValid ) {
                         long mmsi_long = pTargetData->MMSI;
-                        SelectItem *pSel = pSelectAIS->AddSelectablePoint( pTargetData->Lat,
+                        SelectItem *pSel = pSelectAIS->AddSelectablePoint( 
+                                pTargetData->Lat,
                                 pTargetData->Lon, (void *) mmsi_long, SELTYPE_AISTARGET );
                         pSel->SetUserData( pTargetData->MMSI );
-                    }
+                    } 
                     
 
                     //    Calculate CPA info for this target immediately
@@ -2410,75 +2419,50 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
     }
 }
 
-void AIS_Decoder::ApplyMMSIproperties(AIS_Target_Data *ptarget)
+bool AIS_Decoder::ApplyMMSIproperties(AIS_Target_Data *ptarget)
 {
     for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
     MMSIProperties *props =  g_MMSI_Props_Array[i];
-    if(ptarget->MMSI == props->MMSI){
-        // Check to see if this MMSI has been configured to be ignored completely...
-        if(props->m_bignore){
-            ptarget->b_Ignore = true;
-            //return AIS_NoError;            
+        if(ptarget->MMSI == props->MMSI){
+            // Check to see if this MMSI has been configured to be ignored completely...
+            if(props->m_bignore){
+                ptarget->b_Ignore = true;
+                return true;            
+            }
+            if(props->m_bVDM){
+                ptarget->b_OwnShip = true;
+                ptarget->b_show_track = false;
+                if( !std::isnan(ptarget->Lat) ) gLat = ptarget->Lat;
+                if( !std::isnan(ptarget->Lon) ) gLon = ptarget->Lon;
+                if( !std::isnan(ptarget->COG) ) gCog = ptarget->COG;
+                if( !std::isnan(ptarget->SOG) ) gSog = ptarget->SOG;
+                if( !std::isnan(ptarget->HDG) ) gHdt = ptarget->HDG;
+                gGPS_Watchdog = 60;//watchdog_timeout_ticks;
+                bGPSValid = true;
+                long mmsi_long = ptarget->MMSI;
+                pSelectAIS->DeleteSelectablePoint(
+                        (void *) mmsi_long,
+                        SELTYPE_AISTARGET );
+                return true;
+            }
+            // Check if a track is wanted, and if the track should be persistent
+            if(props->TrackType == TRACKTYPE_DEFAULT ){
+                ptarget->b_NoTrack = false;
+                ptarget->b_PersistTrack = false;
+            }
+            if(props->TrackType == TRACKTYPE_ALWAYS ){
+                ptarget->b_NoTrack = false;
+                ptarget->b_show_track = true;
+                if(props->m_bPersistentTrack)
+                    ptarget->b_PersistTrack = true;
+            }else if(props->TrackType == TRACKTYPE_NEVER ){
+                ptarget->b_NoTrack = true;
+                ptarget->b_show_track = false;
+                ptarget->b_PersistTrack = false;
+            }
         }
-        // Check if a track is wanted, and if the track should be persistent
-        if(props->TrackType == TRACKTYPE_DEFAULT ){
-            ptarget->b_NoTrack = false;
-            ptarget->b_PersistTrack = false;
-        }
-        if(props->TrackType == TRACKTYPE_ALWAYS ){
-            ptarget->b_NoTrack = false;
-            ptarget->b_show_track = true;
-            if(props->m_bPersistentTrack)
-                ptarget->b_PersistTrack = true;
-        }else if(props->TrackType == TRACKTYPE_NEVER ){
-            ptarget->b_NoTrack = true;
-            ptarget->b_show_track = false;
-            ptarget->b_PersistTrack = false;
-        }
-        std::cout << ptarget->MMSI << "  " << props->TrackType <<  "  " << ptarget->b_PersistTrack << std::endl;
     }
-        
-        
-//         // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
-//         else if (props->m_bVDM){
-//             
-//             //Only single line VDM messages to be translated
-//             if( str.Mid( 3, 9 ).IsSameAs( wxT("VDM,1,1,,") ) )  
-//             {  
-//                 int message_ID = strbit.GetInt( 1, 6 );        // Parse on message ID
-//                 // Only translate the dynamic positionreport messages (1, 2, 3 or 18)
-//                 if ( (message_ID <= 3) || (message_ID == 18) )
-//                 {
-//                     // set OwnShip to prevent target from being drawn
-//                     pTargetData->b_OwnShip = true;
-//                     //Rename nmea sentence to AIVDO and calc a new checksum
-//                     wxString aivdostr = str;
-//                     aivdostr.replace(1, 5, "AIVDO");
-//                     unsigned char calculated_checksum = 0;
-//                     wxString::iterator i;
-//                     for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
-//                         calculated_checksum ^= static_cast<unsigned char> (*i);
-//                     // if i is not at least 3 positons befoere end, there is no checksum added
-//                     // so also no need to add one now.
-//                     if ( i <= aivdostr.end()-3 )
-//                         aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
-// 
-//                     gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
-//                     //add the changed sentence into nmea stream
-//                     OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
-//                     std::string s = std::string( aivdostr.mb_str() );
-//                     event.SetNMEAString( s );
-//                     event.SetStream( NULL );
-//                     g_pMUX->AddPendingEvent( event ); 
-//                 }
-//             }
-//             return AIS_NoError;
-//         }
-//         else
-//             break;
-
-    }        
-
+    return false;
 }
 
 void AIS_Decoder::DeletePersistentTrack( Track *track )
