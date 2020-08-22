@@ -1587,8 +1587,9 @@ static  wxString GetLinuxDataPath()
 
 wxString OCPNPlatform::GetPluginDataPath()
 {
+    const wxString sep = wxFileName::GetPathSeparator();
+
     if(g_bportable){
-        wxString sep = wxFileName::GetPathSeparator();
         wxString ret = GetPrivateDataDir() + sep + _T("plugins");
         return ret;
     }
@@ -1613,13 +1614,13 @@ wxString OCPNPlatform::GetPluginDataPath()
             "~/Library/Application Support/OpenCPN/Contents/SharedSupport/plugins";
     }
     m_pluginDataPath = ExpandPaths(dirs, this);
-    if (m_pluginDataPath != "") {
-        m_pluginDataPath += ";";
+
+    auto const sharedDataDir = GetSharedDataDir();
+    if (!sharedDataDir.IsEmpty ())
+    {
+        m_pluginDataPath += ";" + sharedDataDir + sep + "plugins";
     }
-    m_pluginDataPath += GetPluginDir();
-    if (m_pluginDataPath.EndsWith(wxFileName::GetPathSeparator())) {
-	m_pluginDataPath.RemoveLast();
-    }
+
     wxLogMessage("Using plugin data path: %s",
                  m_pluginDataPath.mb_str().data());
     return m_pluginDataPath;
