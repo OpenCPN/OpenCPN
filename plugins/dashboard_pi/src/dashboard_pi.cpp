@@ -2766,7 +2766,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxStaticText* itemStaticText0c = new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Temperature units:"),
 		    wxDefaultPosition, wxDefaultSize, 0);
 	itemFlexGridSizer04->Add(itemStaticText0c, 0, wxEXPAND | wxALL, border_size);
-	wxString m_TempUnitChoices[] = { _("C"), _("F"), _("K") };
+	wxString m_TempUnitChoices[] = { _("Celsius"), _("Fahrenheit"), _("Kelvin") };
 	int m_TempUnitNChoices = sizeof(m_TempUnitChoices) / sizeof(wxString);
 	m_pChoiceTempUnit = new wxChoice(itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_TempUnitNChoices, m_TempUnitChoices, 0);
 	m_pChoiceTempUnit->SetSelection(g_iDashTempUnit);
