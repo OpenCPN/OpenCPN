@@ -8084,6 +8084,13 @@ void options::OnButtondeleteClick(wxCommandEvent& event)
       if ( item == -1 )
           break;
       pActiveChartsList->DeleteItem( item );
+
+      // On Android, there is some trouble with wxLIST_STATE_SELECTED.
+      // So, only allow deletion of one item per click.
+#ifdef __OCPN__ANDROID__
+      break;
+#endif
+      
       item = -1;      // Restart
   }
 
