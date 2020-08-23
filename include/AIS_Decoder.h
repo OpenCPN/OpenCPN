@@ -32,6 +32,8 @@
 #define TRACKTYPE_DEFAULT       0
 #define TRACKTYPE_ALWAYS        1
 #define TRACKTYPE_NEVER         2
+#define GPS_TIMEOUT_SECONDS_AISCONVERT  96
+
 
 class MMSIProperties
 {

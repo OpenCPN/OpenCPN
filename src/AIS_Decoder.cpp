@@ -68,6 +68,7 @@ extern double   g_MarkLost_Mins;
 extern bool     g_bRemoveLost;
 extern double   g_RemoveLost_Mins;
 extern double   g_AISShowTracks_Mins;
+extern bool     g_bAISShowTracks;
 extern bool     g_bHideMoored;
 extern double   g_ShowMoored_Kts;
 extern wxString g_sAIS_Alert_Sound_File;
@@ -87,6 +88,7 @@ extern int      g_iSoundDeviceIndex;
 extern bool     g_bWplIsAprsPosition;
 extern bool     g_own_ship_sog_cog_calc;
 extern int      gGPS_Watchdog;
+extern int      gHDT_Watchdog;
 extern double gLat;
 extern double gLon;
 extern double gCog;
@@ -2383,41 +2385,53 @@ AIS_Error AIS_Decoder::ApplyMMSIproperties(AIS_Target_Data *ptarget)
             if(props->m_bignore){
                 ptarget->b_Ignore = true;
                 return AIS_NOTHING_LEFT_TO_DO;            
-            }
-            
+            }            
                 
             if(props->m_bVDM){
                 ptarget->b_OwnShip = true;
                 ptarget->b_show_track = false;
-                
                 // construct a nmea RMC sentece to inject target position as ownship position into OpenCPN
                 // This way we can use all valid checks already build in.
-                gps_watchdog_timeout_ticks = 60; // increase timeout as ais fixes come further apart
-                wxString rmc = wxString::Format(_("$ECRMC,%02d%02d%02d.0,A,%02d%05.2f,%s,%03d%05.2f,%s,%5.2f,%05.1f,,,"),
-                 ptarget->m_utc_hour, ptarget->m_utc_min, ptarget->m_utc_sec,                 (int)abs(ptarget->Lat), (abs(ptarget->Lat)-(int)abs(ptarget->Lat))*60, ptarget->Lat < 0 ? "S":"N", (int)abs(ptarget->Lon), (abs(ptarget->Lon)-(int)abs(ptarget->Lon))*60, ptarget->Lon < 0 ? "W":"E", ptarget->SOG, ptarget->COG );
-                OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
-                event.SetNMEAString( rmc.ToStdString() );
-                event.SetStream( NULL );
-                g_pMUX->AddPendingEvent( event );
-                // if we have a valid heading also send a HDT nmea sentence
-                if( ptarget->HDG <= 360.0 ){
-                    wxString hdt = wxString::Format(
-                    _("$ECHDT,%05.1f,T"), ptarget->HDG );                    
-                    OCPN_DataStreamEvent eventh( wxEVT_OCPN_DATASTREAM, 0 );
-                    eventh.SetNMEAString( hdt.ToStdString() );
-                    eventh.SetStream( NULL );
-                    g_pMUX->AddPendingEvent( eventh );
+                // After injection of the RMC we increase the gpstimeout. (The RMC will reset it to GPS_TIMEOUT_SECONDS)
+
+                if (gGPS_Watchdog < GPS_TIMEOUT_SECONDS){
+                    wxString logm;
+                    logm.Printf(_("Ais as own-ship, Gps timeout temp. increased to %d seconds"), GPS_TIMEOUT_SECONDS_AISCONVERT);
+                    wxLogMessage(logm);
                 }
+                wxString rmc = wxString::Format(_("$ECRMC,%02d%02d%02d,A,%02d%05.2f,%s,%03d%05.2f,%s,%5.2f,%05.1f,,,"),
+                  ptarget->m_utc_hour, ptarget->m_utc_min, ptarget->m_utc_sec,
+                  (int)abs(ptarget->Lat), (abs(ptarget->Lat)-(int)abs(ptarget->Lat))*60,
+                  ptarget->Lat < 0 ? "S":"N", 
+                  (int)abs(ptarget->Lon), (abs(ptarget->Lon)-(int)abs(ptarget->Lon))*60, 
+                  ptarget->Lon < 0 ? "W":"E", 
+                  ptarget->SOG, 
+                  ptarget->COG );
+                OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
+                event.SetNMEAString( rmc.ToStdString() ); 
+                gFrame->OnEvtOCPN_NMEA(event);
                 
+                //increase the gps watchdog timeout for a single shot. Normal setting is not changed
+                gGPS_Watchdog = GPS_TIMEOUT_SECONDS_AISCONVERT;
+                // If a heading is available also send a nmea HDT
+                if( ptarget->HDG <= 360.0 ){
+                    wxString hdt = wxString::Format(_("$ECHDT,%05.1f,T"), ptarget->HDG );                    
+                    event.SetNMEAString( hdt.ToStdString() );
+                    gFrame->OnEvtOCPN_NMEA(event);
+                    gHDT_Watchdog = GPS_TIMEOUT_SECONDS_AISCONVERT;
+                }                
+
                 long mmsi_long = ptarget->MMSI;
                 pSelectAIS->DeleteSelectablePoint(
                         (void *) mmsi_long,
                         SELTYPE_AISTARGET );
+
                 return AIS_NOTHING_LEFT_TO_DO;
-            }
+            } //props->m_bVDM
+            
             // Check if a track is wanted, and if the track should be persistent
             if(props->TrackType == TRACKTYPE_DEFAULT ){
-                ptarget->b_NoTrack = false;
+                ptarget->b_NoTrack = g_bAISShowTracks;
                 ptarget->b_PersistTrack = props->m_bPersistentTrack;
             }
             if(props->TrackType == TRACKTYPE_ALWAYS ){
@@ -2430,7 +2444,7 @@ AIS_Error AIS_Decoder::ApplyMMSIproperties(AIS_Target_Data *ptarget)
                 ptarget->b_PersistTrack = false;
             }
         }
-    }
+    }                
     return AIS_NoError;
 }
 
