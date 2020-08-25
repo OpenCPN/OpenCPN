@@ -6174,6 +6174,7 @@ int MyFrame::DoOptionsDialog()
     androidEnableBackButton( true );
     androidEnableOptionsMenu( true );
     androidRestoreFullScreen();
+    androidEnableRotation();
     #endif
     
 
