@@ -6435,9 +6435,14 @@ void PluginPanel::OnPaint(wxPaintEvent &event)
 
 void PluginPanel::OnPluginPreferences( wxCommandEvent& event )
 {
-    if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) )
-    {
+    if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) ){
+#ifdef __OCPN__ANDROID__ 
+        androidDisableRotation();
+        m_pPlugin->m_pplugin->ShowPreferencesDialog( GetGrandParent() ); // GrandParent will be the entire list panel, not the plugin panel
+                                                                         // Ensures better centering on small screens        
+#else        
         m_pPlugin->m_pplugin->ShowPreferencesDialog( this );
+#endif        
     }
 }
 
