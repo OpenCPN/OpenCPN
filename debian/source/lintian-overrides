@@ -4,5 +4,11 @@ testsuite-autopkgtest-missing
 # Used to work around #831870
 debian-rules-contains-unnecessary-get-orig-source-target
 
-# False positive: Patch contains a valid dep-3 Bug: line.
-send-patch debian/patches/0002-debian-patches-Update-appstream-installation-path.patch
+# Upstream does not publish checksums
+debian-watch-does-not-check-gpg-signature
+
+# False positive as of #965119,fixed but not trickled down yet.
+patch-not-forwarded-upstream
+
+# False positive as of #965119, fixed but not trickled down yet.
+send-patch

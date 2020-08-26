@@ -10,7 +10,7 @@ opencpn (5.2.0+dfsg-1) unstable; urgency=medium
   * Add metadata installation patch (#1989).
   * Remove bogus svg file (#1990).
   * Fix cmake parallel execution problem (#1991).
-  * Add two plugin compatiblity patches (#1997).
+  * Add two plugin compatibility patches (#1997).
   * Handle some lintian informational warnings.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 19 Jul 2020 15:53:34 +0200
