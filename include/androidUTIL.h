@@ -100,8 +100,9 @@ extern bool androidSendBTMessage( wxString &payload );
 
 
 extern wxArrayString *androidGetSerialPortsArray( void );
-extern bool androidStartUSBSerial(wxString &portname, wxString& baudRate, wxEvtHandler *consumer);
+extern bool androidStartUSBSerial(wxString &portname, wxString baudRate, wxEvtHandler *consumer);
 extern bool androidStopUSBSerial(wxString &portname);
+extern bool androidWriteSerial(wxString &portname, wxString& message);
 
 extern bool DoAndroidPreferences( void );
 extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,

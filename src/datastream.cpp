@@ -315,6 +315,16 @@ void DataStream::Close()
 #endif
     }
     
+    wxString port =  m_portstring.AfterFirst(':');      // strip "Serial:"
+    
+#ifdef __OCPN__ANDROID__
+    if(port.Contains(_T("AUSBSerial"))){
+        androidStopUSBSerial(port);
+        SetOk(false);
+    }
+#endif        
+
+    
         
 }
 

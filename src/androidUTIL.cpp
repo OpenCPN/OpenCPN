@@ -3179,7 +3179,7 @@ wxArrayString *androidGetSerialPortsArray( void )
     return pret_array;
 }
 
-bool androidStartUSBSerial(wxString &portname, wxString& baudRate, wxEvtHandler *consumer)
+bool androidStartUSBSerial(wxString &portname, wxString baudRate, wxEvtHandler *consumer)
 {
     wxString result = callActivityMethod_s2s("startSerialPort", portname, baudRate);
     
@@ -3202,7 +3202,12 @@ bool androidStopUSBSerial(wxString &portname)
     return true;
 }
 
-
+bool androidWriteSerial(wxString &portname, wxString& message)
+{
+    wxString result = callActivityMethod_s2s("writeSerialPort", portname, message);
+    return true;
+}
+   
 
 int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
                         const wxString &suggestion, const wxString &wildcard, bool dirOnly, bool addFile)
