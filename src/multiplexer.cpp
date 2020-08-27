@@ -557,6 +557,9 @@ ret_point:
                                                     DS_TYPE_INPUT_OUTPUT,
                                                     0, false);
 
+#ifdef __OCPN__ANDROID__
+            wxMilliSleep(1000);
+#else
             //  Wait up to 5 seconds for Datastream secondary thread to come up
             int timeout = 0;
             while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
@@ -573,6 +576,7 @@ ret_point:
                 dstr->Close();
                 goto ret_point_1;
             }
+#endif
 
             SENTENCE snt;
             NMEA0183 oNMEA0183;
@@ -1112,6 +1116,9 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
                                             0, false);
 
 
+#ifdef __OCPN__ANDROID__
+        wxMilliSleep(1000);
+#else
     //  Wait up to 1 seconds for Datastream secondary thread to come up
     int timeout = 0;
     while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
@@ -1128,6 +1135,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         dstr->Close();
         goto ret_point;
     }
+#endif
 
 
 

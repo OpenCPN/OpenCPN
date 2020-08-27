@@ -639,7 +639,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             MenuAppend1( menuRoute, ID_RT_MENU_DELETE, _( "Delete" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_REVERSE, _( "Reverse..." ) );
 
-#ifndef __OCPN__ANDROID__
+//#ifndef __OCPN__ANDROID__
             wxString port = parent->FindValidUploadPort();
             parent->m_active_upload_port = port;
             wxString item = _( "Send to GPS" );
@@ -654,7 +654,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 wxString item = _( "Send to new GPS" );
                 MenuAppend1( menuRoute, ID_RT_MENU_SENDTONEWGPS, item );
             }
-#endif                
+//#endif                
 		}
         //Eventually set this menu as the "focused context menu"
 		if (menuFocus != menuAIS)
@@ -728,7 +728,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
-#ifndef __OCPN__ANDROID__
+//#ifndef __OCPN__ANDROID__
             wxString port = parent->FindValidUploadPort();
             parent->m_active_upload_port = port;
             wxString item = _( "Send to GPS" );
@@ -743,7 +743,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 wxString item = _( "Send to new GPS" );
                 MenuAppend1( menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item );
             }
-#endif            
+//#endif            
             
         }
         //Eventually set this menu as the "focused context menu"
@@ -779,7 +779,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
-#ifndef __OCPN__ANDROID__            
+//#ifndef __OCPN__ANDROID__            
             wxString port = parent->FindValidUploadPort();
             parent->m_active_upload_port = port;
             wxString item = _( "Send to GPS" );
@@ -789,7 +789,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 item.Append(_T(" )") );
             }
             MenuAppend1( menuWaypoint, ID_WPT_MENU_SENDTOGPS, item );
-#endif
+//#endif
 
             if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
