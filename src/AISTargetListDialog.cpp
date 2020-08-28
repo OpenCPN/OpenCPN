@@ -1154,9 +1154,8 @@ void AISTargetListDialog::UpdateNVAISTargetList( void )
         else
             m_pListCtrlAISTargets->DeleteAllItems();
 
-//        wxString count;
-//        count.Printf( "%d", m_pMMSI_array->GetCount() );
-        wxString count = wxString::Format( "%d", m_pMMSI_array->GetCount() );
+        wxString count;
+        count.Printf( _T("%lu"), (unsigned long)m_pMMSI_array->GetCount() );
         m_pTextTargetCount->ChangeValue( count );
 
 #ifdef __WXMSW__
