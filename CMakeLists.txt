@@ -520,7 +520,7 @@ if (QT_ANDROID)
         "-Wno-overloaded-virtual"
         "-Wno-unused-command-line-argument"
         "-Wno-unknown-pragmas"
-        "-O0"
+        "-O3"
         "-fPIC"
   )
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
