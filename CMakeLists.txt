@@ -148,8 +148,13 @@ set(
 IF(DEFINED _wx_selected_config)
   MESSAGE (STATUS "selected config ${_wx_selected_config}")
   IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Building for wxQt-Android")
+    MESSAGE (STATUS "Building for wxQt-Android, ANDROID_ARCH: ${ANDROID_ARCH}")
     SET(QT_ANDROID "ON")
+    if(ANDROID_ARCH MATCHES "arm64")
+      add_definitions("-DANDROID_ARM64")
+    else ()
+      add_definitions("-DANDROID_ARMHF")
+    endif ()
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
@@ -344,7 +349,7 @@ endmacro (USE_BUNDLED_LIB)
 
 include(GetArch)
 getarch()
-message(STATUS "*** Build Architecture is ${ARCH}")
+message(STATUS "*** Host Build Architecture is ${ARCH}")
 
 set(CMAKE_CXX_STANDARD 11)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
@@ -1383,7 +1388,7 @@ if (OCPN_USE_CURL)
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
     target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/libcurl.a)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ANDROID_ARCH}/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -1512,7 +1517,7 @@ if (QT_ANDROID)
   target_include_directories(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
   target_link_libraries(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/libarchive.a)
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ANDROID_ARCH}/libarchive.a)
 elseif ( APPLE )
     #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment 
     target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
@@ -2223,6 +2228,7 @@ if (NOT APPLE)
     install(
       FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
       DESTINATION ${PREFIX_DATA}/metainfo
+      RENAME opencpn.metainfo.xml
     )
     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
