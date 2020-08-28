@@ -290,7 +290,6 @@
     <string name="install_status_ready">Hazır</string>
     <string name="install_button_select_new">Grafik yükleme konumu seçin</string>
     <string name="install_browser_title">Grafik yükleme konumu seçin</string>
-    <string name="install_createdir_error">Cannot create new directory here due to file system permissions.\n\nPlease choose another location to install new charts.</string>
     <string name="install_complete">Kurulum tamamlandı</string>
     <string name="install_ready_to_install">OpenCPN yeni grafikleri yüklemeye hazır.\n Lütfen varsayılan kurulumun konumunu onaylayın yada şimdi başka bir konum seçin.</string>
     <string name="install_root_di">Yeni Grafik Kök dizin Adı:</string>
