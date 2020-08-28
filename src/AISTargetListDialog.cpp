@@ -767,8 +767,12 @@ void AISTargetListDialog::Shutdown( void )
         Disconnect_decoder();
         pane.Show(false);
         m_pAuiManager->Update();
+#ifdef __OCPN__ANDROID__
+        GetParent()->Refresh( true );
+#endif        
         Destroy();
     }
+    
 }
 
 
@@ -1150,8 +1154,9 @@ void AISTargetListDialog::UpdateNVAISTargetList( void )
         else
             m_pListCtrlAISTargets->DeleteAllItems();
 
-        wxString count;
-        count.Printf( _T("%d"), m_pMMSI_array->GetCount() );
+//        wxString count;
+//        count.Printf( "%d", m_pMMSI_array->GetCount() );
+        wxString count = wxString::Format( "%d", m_pMMSI_array->GetCount() );
         m_pTextTargetCount->ChangeValue( count );
 
 #ifdef __WXMSW__
