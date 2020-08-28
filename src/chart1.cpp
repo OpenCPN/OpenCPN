@@ -4826,6 +4826,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_CMD_APPLY_SETTINGS:{
             applySettingsString(event.GetString());
+#ifdef __OCPN__ANDROID__            
+            androidRestoreFullScreen( );
+#endif            
+
             break;
         }
 
