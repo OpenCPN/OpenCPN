@@ -346,8 +346,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             pane.Dockable( false );
             
             wxSize screen_size = ::wxGetDisplaySize();
-            pane.FloatingSize(screen_size.x * 6/10, screen_size.y * 8/10);
-            pane.FloatingPosition(screen_size.x * 2/10, screen_size.y * 1/10);
+            pane.FloatingSize(screen_size.x * 8/10, screen_size.y * 8/10);
+            pane.FloatingPosition(screen_size.x * 1/10, screen_size.y * 1/10);
             m_pAuiManager->Update();
         }
         
