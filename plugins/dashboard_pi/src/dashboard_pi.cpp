@@ -1381,16 +1381,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         }
                         // XDR Rudder Angle
                         else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("RUDDER")) {
-                            if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                                xdrunit = _T("\u00B0 (\u003E") + _("Stbd)");
-                            }
-                            else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                                xdrunit = _T("\u00B0 (\u003C") + _("Port)");
-                            }
-                            else {
-                                xdrunit = _T("\u00B0");
-                            }
-                            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,xdrdata,xdrunit);
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,xdrdata,_T("\u00B0"));
                             mRSA_Watchdog = gps_watchdog_timeout_ticks;
                         }
                     }
