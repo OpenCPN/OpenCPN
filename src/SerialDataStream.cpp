@@ -161,7 +161,7 @@ bool SerialDataStream::SendSentenceSerial(const wxString &sentence)
         {
             int retry = 10;
             while( retry ) {
-                if( GetSecondaryThread()->SetOutMsg( payload ))
+                if( GetSecondaryThread()->SetOutMsg( sentence ))
                     return true;
                 else
                     retry--;
