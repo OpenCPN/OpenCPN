@@ -166,12 +166,7 @@ extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
 
 extern int                       gps_watchdog_timeout_ticks;
-
-
-
-
-
-
+extern wxString                  *pInit_Chart_Dir;
 
 extern double                    g_config_display_size_mm;
 extern bool                      g_config_display_size_manual;
@@ -241,6 +236,7 @@ extern int                        g_n_ownship_min_mm;
 
 extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
+extern int                        g_FlushNavobjChangesTimeout;
 
 static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -382,10 +378,6 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                 else if(str.StartsWith(_T("VERSION_ID"))){
                     val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
                     if(val.Length())  detail->osd_version = std::string(val.mb_str());
-                }
-                else if(str.StartsWith(_T("ID="))){
-                    val = str.AfterFirst('=');
-                    if(val.Length())  detail->osd_ID = ocpn::split(val.mb_str(), " ")[0];
                 }
                 else if(str.StartsWith(_T("ID_LIKE"))){
                     if(val.StartsWith('"')){
@@ -734,6 +726,8 @@ void OCPNPlatform::Initialize_3( void )
         if (!g_bRollover)  //Not explicit set before
             g_bRollover = g_btouch ? false : true;
     }
+    
+    g_FlushNavobjChangesTimeout = 300;          // Seconds, so 5 minutes
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -1251,7 +1245,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_bRollover = true;
-    g_bShowMuiZoomButtons = false;
+    g_bShowMuiZoomButtons = true;
 
     g_GUIScaleFactor = 0;               // nominal
     g_ChartNotRenderScaleFactor = 2.0;
@@ -1356,6 +1350,14 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
             g_default_font_facename = _T("Roboto");
         
             FontMgr::Get().Shutdown();      // Restart the font manager
+            
+            // Reshow the zoom buttons
+            g_bShowMuiZoomButtons = true;
+            
+            // Clear the default chart storage location
+            // Will get set to e.g. "/storage/emulated/0" later
+            pInit_Chart_Dir->Clear();
+
         }
         
         // Set track default color to magenta
@@ -1964,6 +1966,10 @@ bool OCPNPlatform::InitializeLogFile( void )
         // TODO Remove this behaviour on Release
         ::wxRemoveFile( mlog_file );
     }
+
+    if(wxLog::GetLogLevel() > wxLOG_User)
+        wxLog::SetLogLevel(wxLOG_Info);
+
 #endif
     g_logger = new OcpnLog(mlog_file.mb_str());
     m_Oldlogger = wxLog::SetActiveTarget( g_logger );

@@ -262,6 +262,7 @@ void InternalGPSDataStream::Open(void)
 
 }
 
+ 
 
 DataStream::~DataStream()
 {

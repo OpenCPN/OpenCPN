@@ -7343,7 +7343,9 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
-  CheckDeviceAccess(pConnectionParams->Port);
+  
+  if( (pConnectionParams->Type != INTERNAL_GPS) && (pConnectionParams->Type != INTERNAL_BT) )
+    CheckDeviceAccess(pConnectionParams->Port);
   pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;
@@ -8494,6 +8496,11 @@ void options::OnFontChoice(wxCommandEvent& event) {
 }
 
 void options::OnChooseFont(wxCommandEvent& event) {
+    
+#ifdef __OCPN__ANDROID__
+    androidDisableRotation();
+#endif  
+    
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
   wxFontData font_data;
 
@@ -8545,6 +8552,10 @@ void options::OnChooseFont(wxCommandEvent& event) {
     OnFontChoice(event);
   }
 
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif  
+
   event.Skip();
 }
 
@@ -8558,6 +8569,8 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
 
 #ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+
   unsigned int cco = 0;
   cco |= 0xff;  cco  = cco << 8;
   cco |= init_color.Red(); cco = cco << 8; 
@@ -8576,7 +8589,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   pParent->UpdateAllFonts();
   m_bfontChanged = true;
   
-  
+  androidEnableRotation();
 #else  
   wxScrolledWindow *sw = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxSize(400, 400));
   
@@ -9688,6 +9701,10 @@ void options::ShowNMEABT(bool visible) {
     if (m_stBTPairs) m_stBTPairs->Hide();
     if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
   }
+  m_tcOutputStc->Show(visible);
+  m_btnOutputStcList->Show(visible);
+  m_cbOutput->Show(visible);
+
 }
 
 void options::SetNMEAFormToSerial(void) {
@@ -9728,6 +9745,7 @@ void options::SetNMEAFormToGPS(void) {
 }
 
 void options::SetNMEAFormToBT(void) {
+  m_rbNetProtoUDP->SetValue( true );
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);

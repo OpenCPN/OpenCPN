@@ -135,9 +135,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
     DrawMarkers(bdc);
     DrawBackground(bdc);
     DrawData(bdc, m_MainValue, m_MainValueUnit, m_MainValueFormat, m_MainValueOption);
-#ifndef __OCPN__ANDROID__    
     DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat, m_ExtraValueOption);
-#endif    
     DrawForeground(bdc);
 }
 
