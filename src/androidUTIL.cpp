@@ -3150,6 +3150,13 @@ wxArrayString androidGetBluetoothScanResults()
     return ret_array;
 }
 
+bool androidSendBTMessage( wxString &payload )
+{
+    wxString result = callActivityMethod_ss("sendBTMessage", payload);
+
+    return true;
+}
+
 bool androidCheckOnline()
 {
     wxString val = callActivityMethod_vs("isNetworkAvailable");
