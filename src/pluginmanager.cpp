@@ -5334,12 +5334,18 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     }
     
     //TODO Validate xml using xsd here....
-    
+#ifdef __OCPN__ANDROID__
+    if(!AndroidSecureCopyFile (wxString(filePath.c_str()), g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
+        OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR);
+        return;
+    }
+#else
     // Copy the downloaded file to proper local location
     if(!wxCopyFile (wxString(filePath.c_str()), g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
         OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR);
         return;
     }
+#endif    
     
     // If this is the "master" catalog, also copy to plugin cache
     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Master"))){
@@ -5355,10 +5361,17 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
         if(!wxDirExists( metaCache ))
             wxMkdir( metaCache );
             
+#ifdef __OCPN__ANDROID__
+        if(!AndroidSecureCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
+            OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
+            return;
+        }
+#else
         if(!wxCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
             OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
             return;
         }
+#endif
     }       
 
     // Record in the config file the name of the catalog downloaded
