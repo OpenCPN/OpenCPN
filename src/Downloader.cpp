@@ -122,6 +122,8 @@ long Downloader::get_filesize()
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, throw_cb);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
+    // FIXME -- Add correct certificates on host.
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 
     int r = curl_easy_perform(curl);
     if (r == CURLE_OK) {
