@@ -5328,7 +5328,7 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     
     std::string message;
     if (status != CatalogHandler::ServerStatus::OK) {
-        message = _("Cannot dpownload data from url");
+        message = _("Cannot download data from url");
         OCPNMessageBox(this, message, _("OpenCPN Catalog update"), wxICON_ERROR);
         return;
     }
