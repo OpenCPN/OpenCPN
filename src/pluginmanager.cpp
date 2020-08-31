@@ -6040,7 +6040,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     topSizer->Add(itemBoxSizer01, 0, wxEXPAND);
     Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
-    double iconSize = GetCharWidth() * 4;
+    double iconSize = GetCharWidth() * 35 / 10;
     wxImage plugin_icon;
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
     if (m_pPlugin->m_bitmap) {
@@ -6066,9 +6066,9 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     }
     m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
         
-    itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
+    itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 10);
     m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-    
+
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
 
@@ -6123,6 +6123,8 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
 
     }
     else{
+        itemBoxSizer02->AddSpacer(GetCharHeight() / 2);
+
         wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
         itemBoxSizer03->AddGrowableCol(2);
         itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
