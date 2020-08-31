@@ -174,12 +174,22 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
     
     // Get the specified system definition,
-    //   or the baked in (build system) values,
+    //   From the OCPN_OSDetail structure probed at startup.
     //   or the environment override,
     //   or the config file override
-    
+    //   or the baked in (build system) values.  Not too useful in cross-build environments...
+
     std::string compatOS(os);
     std::string compatOsVersion(os_version);
+
+    // Handle the most common cross-compile, safely
+#ifdef ocpnARM 
+    if(os_detail->osd_ID.size())
+        compatOS = os_detail->osd_ID;
+    if(os_detail->osd_version.size())
+        compatOsVersion = os_detail->osd_version;
+#endif    
+
     if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
         // Undocumented test hook.
         compatOS = getenv("OPENCPN_COMPAT_TARGET");
