@@ -4014,8 +4014,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
 
     itemBoxSizerUI->Add(
-        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("CM93 Detail level")),
-        labelFlags);
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("CM93 Detail level")), inputFlags);
     m_pSlider_CM93_Zoom = new wxSlider( m_ChartDisplayPage, ID_CM93ZOOM, 0,
                            -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
                            wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
