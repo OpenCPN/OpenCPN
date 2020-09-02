@@ -1273,8 +1273,9 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
-        pConfig->Write ( _T ( "ShowIcon" ), false );
-   
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
+  
         pConfig->SetPath( _T ( "/PlugIns/libgrib_pi.so" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
         
@@ -1357,7 +1358,10 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
             // Clear the default chart storage location
             // Will get set to e.g. "/storage/emulated/0" later
             pInit_Chart_Dir->Clear();
-
+            
+            pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+            pConfig->Write ( _T ( "ShowIcon" ), true );
+            pConfig->Write ( _T ( "ShowLiveIcon" ), true );
         }
         
         // Set track default color to magenta
