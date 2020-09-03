@@ -6173,7 +6173,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
  
         m_pButtons->AddSpacer(3 * GetCharWidth());
     
-        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version ", wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version XX.XX.XX", wxDefaultPosition, wxDefaultSize, 0 );
         m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
     
         m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -6195,7 +6195,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         m_info_btn->Hide();
         tline->Add(m_info_btn, 0);
 
-        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version ", wxDefaultPosition, wxDefaultSize );
+        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version XX.XX.XX", wxDefaultPosition, wxDefaultSize );
         m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
     
         m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
