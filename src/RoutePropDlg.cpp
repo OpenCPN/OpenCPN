@@ -15,6 +15,11 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
+BEGIN_EVENT_TABLE ( RoutePropDlg, wxFrame )
+#ifdef __OCPN__ANDROID__
+    EVT_CHAR(RoutePropDlg::OnKeyChar)
+#endif
+END_EVENT_TABLE()
 
 RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
@@ -461,4 +466,10 @@ RoutePropDlg::~RoutePropDlg()
 
 	delete m_menuLink;
 	delete m_menuLinks;
+}
+
+void RoutePropDlg::OnKeyChar( wxKeyEvent &event )
+{
+    int key_char = event.GetKeyCode();
+    int yyp = 4;
 }
