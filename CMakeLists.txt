@@ -2321,7 +2321,7 @@ macro (GETTEXT_BUILD_MO _poFile _lang)
     COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} --check -o ${_gmoFile} ${_absFile}
     COMMAND
       ${CMAKE_COMMAND} -E copy ${_gmoFile}
-      ${CMAKE_CURRENT_BINARY_DIR}/Resources/${PACKAGE_NAME}_${_lang}.lproj/${PACKAGE_NAME}.mo
+      ${CMAKE_CURRENT_BINARY_DIR}/Resources/opencpn_${_lang}.lproj/opencpn.mo
     DEPENDS ${_absFile}
     COMMENT "i18n [${_poBasename}]: Created mo file."
   )
