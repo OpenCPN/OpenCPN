@@ -4618,11 +4618,11 @@ wxString formatAngle(double angle)
 {
     wxString out;
     if( g_bShowMag && g_bShowTrue ) {
-        out.Printf(wxT("%.0f \u00B0T (%.0f \u00B0M)"), angle, gFrame->GetMag(angle));
+        out.Printf(wxT("%03.0f \u00B0T (%.0f \u00B0M)"), angle, gFrame->GetMag(angle));
     } else if( g_bShowTrue ) {
-        out.Printf(wxT("%.0f \u00B0T"), angle);
+        out.Printf(wxT("%03.0f \u00B0T"), angle);
     } else {
-        out.Printf(wxT("%.0f \u00B0M"), gFrame->GetMag(angle));
+        out.Printf(wxT("%03.0f \u00B0M"), gFrame->GetMag(angle));
     }
     return out;
 }
