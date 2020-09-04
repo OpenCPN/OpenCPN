@@ -72,6 +72,8 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	wxWrapSizer* wSizerParams;
 	wSizerParams = new wxWrapSizer( wxHORIZONTAL, wxEXTEND_LAST_ON_EACH_LINE|wxREMOVE_LEADING_SPACES|wxWRAPSIZER_DEFAULT_FLAGS );
 
+        int maxFieldSize = GetCharWidth() * 10;
+        
 	wxBoxSizer* bSizerDistance;
 	bSizerDistance = new wxBoxSizer( wxVERTICAL );
 
@@ -80,7 +82,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerDistance->Add( m_stDistTotal, 0, wxALL, 5 );
 
 	m_tcDistance = new wxTextCtrl( m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
-	m_tcDistance->SetMaxSize( wxSize( 80,-1 ) );
+	m_tcDistance->SetMaxSize( wxSize( maxFieldSize,-1 ) );
 
 	bSizerDistance->Add( m_tcDistance, 0, wxALL|wxEXPAND, 5 );
 
@@ -95,7 +97,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerSpeed->Add( m_stPlanSpeed, 0, wxALL, 5 );
 
 	m_tcPlanSpeed = new wxTextCtrl( m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
-	m_tcPlanSpeed->SetMaxSize( wxSize( 80,-1 ) );
+	m_tcPlanSpeed->SetMaxSize( wxSize( maxFieldSize,-1 ) );
 
 	bSizerSpeed->Add( m_tcPlanSpeed, 0, wxALL, 5 );
 
@@ -110,7 +112,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerEnroute->Add( m_stEnroute, 0, wxALL, 5 );
 
 	m_tcEnroute = new wxTextCtrl( m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
-	m_tcEnroute->SetMaxSize( wxSize( 80,-1 ) );
+	m_tcEnroute->SetMaxSize( wxSize( maxFieldSize,-1 ) );
 
 	bSizerEnroute->Add( m_tcEnroute, 0, wxALL, 5 );
 
@@ -138,9 +140,9 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
         m_tpDepartureTime = new wxTimePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
 #endif
         bSizerDepartureTS->Add( m_tpDepartureTime, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-#endif
 
 	wSizerParams->Add( bSizerDeparture, 1, wxEXPAND, 0 );
+#endif
 
 	wxBoxSizer* bSizerTime;
 	bSizerTime = new wxBoxSizer( wxVERTICAL );
@@ -153,7 +155,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	int m_choiceTimezoneNChoices = sizeof( m_choiceTimezoneChoices ) / sizeof( wxString );
 	m_choiceTimezone = new wxChoice( m_pnlBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceTimezoneNChoices, m_choiceTimezoneChoices, 0 );
 	m_choiceTimezone->SetSelection( 0 );
-	m_choiceTimezone->SetMaxSize( wxSize( 100,-1 ) );
+	m_choiceTimezone->SetMaxSize( wxSize( GetCharWidth() * 12, -1 ) );
 
 	bSizerTime->Add( m_choiceTimezone, 0, wxALL, 5 );
 
