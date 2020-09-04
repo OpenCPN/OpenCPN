@@ -315,8 +315,12 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
     if( m_pAuiManager ) {
         wxAuiPaneInfo paneproto =
-                wxAuiPaneInfo().Name( _T("AISTargetList") ).CaptionVisible( true ).Float().FloatingPosition( 50, 50 )
-                .FloatingSize(400, 200).BestSize(700, GetCharHeight() * 10);
+                wxAuiPaneInfo().Name( _T("AISTargetList") )
+                .CaptionVisible( true )
+                .Float()
+                .FloatingPosition( 50, 50 )
+                .FloatingSize(400, 200)
+                .BestSize(700, GetCharHeight() * 10);
                 
  
         //      Force and/or override any perspective information that is not applicable
@@ -337,7 +341,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
             m_pAuiManager->Update();
         }
-
+        
         pane = m_pAuiManager->GetPane(_T("AISTargetList"));     // Refresh the reference
         
         //  Some special setup for touch screens
@@ -345,7 +349,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             pane.Float();
             pane.Dockable( false );
             
-            wxSize screen_size = ::wxGetDisplaySize();
+            wxSize screen_size = gFrame->GetClientSize();
             pane.FloatingSize(screen_size.x * 8/10, screen_size.y * 8/10);
             pane.FloatingPosition(screen_size.x * 1/10, screen_size.y * 1/10);
             m_pAuiManager->Update();
