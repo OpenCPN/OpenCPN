@@ -5707,7 +5707,11 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         wxString destination = cacheDir + sep + fn.GetFullName();
         if(wxFileExists(wxString( tarballPath.c_str()))){
             wxLogMessage("Copying %s to local cache",  tarballPath.ToStdString().c_str());
+#ifdef __OCPN__ANDROID__            
+            AndroidSecureCopyFile (tarballPath, destination);
+#else                
             wxCopyFile( tarballPath, destination);
+#endif            
         }
 
         // Ready to load an process the merged catalog...

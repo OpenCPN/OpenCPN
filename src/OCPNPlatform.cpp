@@ -1624,6 +1624,11 @@ wxString OCPNPlatform::GetPluginDataPath()
         dirs +=
             "~/Library/Application Support/OpenCPN/Contents/SharedSupport/plugins";
     }
+#ifdef __OCPN__ANDROID__
+    wxString pluginDir = GetPrivateDataDir() + "/plugins";
+    dirs += pluginDir;
+#endif
+    
     m_pluginDataPath = ExpandPaths(dirs, this);
     if (m_pluginDataPath != "") {
         m_pluginDataPath += ";";
