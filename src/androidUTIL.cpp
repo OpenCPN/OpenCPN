@@ -31,6 +31,7 @@
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
 #include <wx/fontpicker.h>
+#include <wx/filepicker.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -425,6 +426,8 @@ androidUtilHandler::androidUtilHandler()
     wxRegion a(0,0,1,1);
     wxRegion b(0,0,2,2);
     bool c = a.IsEqual(b);
+    
+    wxFilePickerCtrl *pfpc = new wxFilePickerCtrl();
     
 }
 
