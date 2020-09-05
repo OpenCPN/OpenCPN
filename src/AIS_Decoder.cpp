@@ -1658,6 +1658,8 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
     bool b_posn_report = false;
 
     wxDateTime now = wxDateTime::Now();
+    double prev_hdg;
+    time_t prev_ticks;
     now.MakeGMT( );                    
     int message_ID = bstr->GetInt( 1, 6 );        // Parse on message ID
     ptd->MID = message_ID;
@@ -1688,24 +1690,36 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                 ptd->Lat = lat_tentative;
                 ptd->b_positionDoubtful = false;
                 ptd->b_positionOnceValid = true;          // Got the position at least once
+                prev_ticks = ptd->PositionReportTicks;
                 ptd->PositionReportTicks = now.GetTicks();
             } else
                 ptd->b_positionDoubtful = true;
 
             //    decode balance of message....
             ptd->COG = 0.1 * ( bstr->GetInt( 117, 12 ) );
+            prev_hdg = ptd->HDG;
             ptd->HDG = 1.0 * ( bstr->GetInt( 129, 9 ) );
-
-            ptd->ROTAIS = bstr->GetInt( 43, 8 );
+               
+            ptd->ROTAIS = bstr->GetInt( 43, 8, true );
             double rot_dir = 1.0;
-
             if( ptd->ROTAIS == 128 ) ptd->ROTAIS = -128;              // not available codes as -128
-            else if( ( ptd->ROTAIS & 0x80 ) == 0x80 ) {
-                ptd->ROTAIS = ptd->ROTAIS - 256;       // convert to twos complement
+            if( ptd->ROTAIS < 0){ // was ( ptd->ROTAIS & 0x80 ) == 0x80 ) , but this wil change value of ROTAIS
                 rot_dir = -1.0;
             }
-
-            ptd->ROTIND = wxRound( rot_dir * pow( ( ( (double) ptd->ROTAIS ) / 4.733 ), 2 ) ); // Convert to indicated ROT
+            if ( abs(ptd->ROTAIS) < 127 ){ // +-127 is only a hard turn direction > 5 degr/30s 
+                ptd->ROTIND = wxRound( rot_dir * pow( ( ( (double) ptd->ROTAIS ) / 4.733 ), 2 ) ); // Convert to indicated ROT
+            }
+            else if ( (abs(ptd->ROTAIS < 128) ) && (ptd->HDG < 360.0) && (prev_hdg < 360.0) ){ //calc rot from delta heading
+                double r = 0;
+                if (ptd->PositionReportTicks != prev_ticks)
+                    r = (ptd->HDG - prev_hdg) * 60/(ptd->PositionReportTicks - prev_ticks); 
+                if ( (ptd->PositionReportTicks - prev_ticks) < 15 ){
+                    ptd->ROTIND = (ptd->ROTIND + r)/2; // at short intervals do some smoothing
+                }
+                else{
+                    ptd->ROTAIS = r;
+                }                
+            }
 
             ptd->m_utc_sec = bstr->GetInt( 138, 6 );
 
@@ -1781,6 +1795,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                 ptd->Lat = lat_tentative;
                 ptd->b_positionDoubtful = false;
                 ptd->b_positionOnceValid = true;          // Got the position at least once
+                prev_ticks = ptd->PositionReportTicks;
                 ptd->PositionReportTicks = now.GetTicks();
             } else
                 ptd->b_positionDoubtful = true;
@@ -1794,6 +1809,19 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
 
             parse_result = true;                // so far so good
             b_posn_report = true;
+            
+            //calc rot from delta heading
+            if (ptd->SOG > g_ShowMoored_Kts *2 ){
+                double r = 0;
+                if (ptd->PositionReportTicks != prev_ticks)
+                    r = (ptd->HDG - prev_hdg) * 60/(ptd->PositionReportTicks - prev_ticks); 
+                if ( (ptd->PositionReportTicks - prev_ticks) < 15 ){
+                    ptd->ROTIND = (ptd->ROTIND + r)/2; // at short intervals do some smoothing
+                }
+                else{
+                    ptd->ROTAIS = r;
+                }
+            }
 
             break;
         }

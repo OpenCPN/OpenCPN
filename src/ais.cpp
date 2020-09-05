@@ -936,7 +936,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
     //    Calculate AIS target Position Predictor, using global static variable for length of vector
 
-    float pred_lat, pred_lon;
+    float pred_lat, pred_lon;//, rot_pred_lat, rot_pred_lon, rot_center_lat, rot_center_lon;
+    
     spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * g_ShowCOG_Mins / 60., &pred_lat, &pred_lon );
 
     //    Is predicted point in the VPoint?
@@ -1272,7 +1273,6 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         int pixy = TargetPoint.y;
         int pixx1 = PredPoint.x;
         int pixy1 = PredPoint.y;
-
         //  Don't draw the COG line  and predictor point if zoomed far out.... or if target lost/inactive
         float l = sqrtf( powf( (float) ( PredPoint.x - TargetPoint.x ), 2 )
                          + powf( (float) ( PredPoint.y - TargetPoint.y ), 2 ) );
@@ -1281,25 +1281,59 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             ClipResult res = cohen_sutherland_line_clip_i( &pixx, &pixy, &pixx1, &pixy1, 0,
                                                            vp.pix_width, 0, vp.pix_height );
 
-            if( res != Invisible ) {
+            if( res != Invisible ) {                    
                     //    Draw a wider coloured line
                     if (targetscale >= 75){
                         wxPen wide_pen( target_brush.GetColour(), AIS_width_cogpredictor_base );
+                        wxBrush tt = dc.GetBrush();
                         dc.SetPen( wide_pen );
-                        dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
                     }
+                        
+                    if (( abs(td->ROTIND) > 0) && ( abs(td->ROTIND) < 710) ){ // we do have a rate of RateOfTurn                            
+                        wxPoint C, RotPredPoint ;
+                        float rot_center_lat, rot_center_lon, rot_pred_lat, rot_pred_lon;
+                        double circumf = td->SOG/60 * 360/abs(td->ROTIND);
+                        float radius = circumf / 2 / PI;
+                        float CrsToCenter = td->COG + (td->ROTIND > 0 ? 90: -90);
+                        float Angle = td->ROTIND * g_ShowCOG_Mins;
+                        float CrsCtoPredPt = CrsToCenter+180 + Angle;//td->ROTIND *g_ShowCOG_Mins;
+                        spherical_ll_gc_ll( td->Lat, td->Lon, CrsToCenter, radius, &rot_center_lat, &rot_center_lon );
+                        spherical_ll_gc_ll( rot_center_lat, rot_center_lon, CrsCtoPredPt, radius, &rot_pred_lat, &rot_pred_lon );
+                        GetCanvasPointPix(vp, cp, rot_center_lat, rot_center_lon, &C );
+                        GetCanvasPointPix(vp, cp, rot_pred_lat, rot_pred_lon, &RotPredPoint );
+                        
+                        PredPoint = RotPredPoint;
+                        pixx1 = PredPoint.x;
+                        pixy1 = PredPoint.y;                            
 
-                    if( AIS_width_cogpredictor_base > 1 ) {
-                        //    Draw narrow black line
-                        wxPen narrow_pen( UBLCK, AIS_width_cogpredictor_line );
-                        if( targetscale < 75 ){
-                            narrow_pen.SetWidth(1);
-                            narrow_pen.SetStyle(wxPENSTYLE_DOT);
+                        dc.DrawArc(TargetPoint,  C , Angle);
+                            if( AIS_width_cogpredictor_base > 1 ) {
+                            //    Draw narrow black line
+                            wxPen narrow_pen( UBLCK, AIS_width_cogpredictor_line );
+                            if( targetscale < 75 ){
+                                narrow_pen.SetWidth(1);
+                                narrow_pen.SetStyle(wxPENSTYLE_DOT);
+                            }
+                            dc.SetPen( narrow_pen );
+                            dc.DrawArc(TargetPoint,  C , Angle);
                         }
-                        dc.SetPen( narrow_pen );
+                    }                    
+                    else{ // No valid ROT
                         dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
+                        if( AIS_width_cogpredictor_base > 1 ) {
+                            //    Draw narrow black line
+                            wxPen narrow_pen( UBLCK, AIS_width_cogpredictor_line );
+                            if( targetscale < 75 ){
+                                narrow_pen.SetWidth(1);
+                                narrow_pen.SetStyle(wxPENSTYLE_DOT);
+                            }
+                            dc.SetPen( narrow_pen );
+                            dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
+                        }
                     }
+                    
 
+                            
                     if(dc.GetDC()) {      
                         dc.SetBrush( target_brush );
                         if (targetscale >= 75)
@@ -1346,10 +1380,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 #endif                        
 #endif                    
                     }
+//                     target_brush.SetStyle(tempBS );
             }
 
             //      Draw RateOfTurn Vector
-            if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && (!g_bShowScaled) ) {
+            // Draw only if there is a 'hard' indcation of turning but no change of heading
+            if( ( abs(td->ROTAIS) == 127 ) && (!g_bShowScaled) && (td->ROTIND == 0) ) {
                 float cog_angle = td->COG *PI/180.;
                 
                 float theta2 = theta;           // ownship drawn angle
@@ -1891,8 +1927,8 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
                 && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) )
         {
             AISDrawTarget( td, dc, vp, cp ); // yes this is a doubling of code;(
-            if( td->importance > 0 )
-            AISDrawTarget( td, dc, vp, cp );
+//             if( td->importance > 0 )
+//             AISDrawTarget( td, dc, vp, cp );
         }           
     }
 

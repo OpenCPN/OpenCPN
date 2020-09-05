@@ -1264,6 +1264,33 @@ void ocpnDC::StrokeCircle( wxCoord x, wxCoord y, wxCoord radius )
         DrawCircle( x, y, radius );
 }
 
+void ocpnDC::DrawArc(const wxPoint &start, const wxPoint &center, const double &Angle)
+{
+    if(dc){
+        wxBrush tb = GetBrush();
+        wxBrush t = GetBrush();
+        t.SetStyle(wxBRUSHSTYLE_TRANSPARENT);
+        SetBrush( t );
+
+        double radius = sqrt( pow(start.x - center.x, 2) + pow(start.y - center.y, 2)) ;
+        
+        double sa = fmod( atan2( center.y - start.y, start.x - center.x ) *180 / PI + 360, 360);
+        
+        double ea = sa - Angle;        
+
+        if (Angle < 0) std::swap(sa, ea);
+        dc->DrawEllipticArc(
+            (wxCoord)wxRound(center.x - radius),
+            (wxCoord)wxRound(center.y - radius),
+            2*radius,
+            2*radius,
+            sa,
+            ea);
+        SetBrush( tb );  
+    }
+    
+}
+
 void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
 {
     if( dc )
