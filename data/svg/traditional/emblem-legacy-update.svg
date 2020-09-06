@@ -29,8 +29,8 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="true"
-     inkscape:zoom="15.3125"
-     inkscape:cx="14.106122"
+     inkscape:zoom="7.65625"
+     inkscape:cx="3.4938771"
      inkscape:cy="24"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -65,7 +65,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title>Luca Ferretti</dc:title>
@@ -130,12 +130,12 @@
        id="path4144"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:bevel;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-rule:evenodd;stroke:#00ff00;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:bevel;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="m 24.644549,35.657142 -0.130612,-22.595918 8.816326,8.75102"
        id="path4165"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:bevel;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-rule:evenodd;stroke:#00ff00;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:bevel;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="m 24.706298,35.606499 0.130612,-22.595918 -8.816327,8.75102"
        id="path4165-3"
        inkscape:connector-curvature="0" />
