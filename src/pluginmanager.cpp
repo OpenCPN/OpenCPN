@@ -852,7 +852,7 @@ class StatusIconPanel: public wxPanel
             dc.SetPen( wxPen(*wxBLACK, penWidth ));
 
             dc.DrawRoundedRectangle(-20, 5, GetSize().x-5, GetSize().y-10, 5);
-            dc.DrawBitmap(m_bitmap, offset, offset, true);
+            dc.DrawBitmap(m_bitmap, offset, offset*2, true);
             
             
             //dc.DrawText(_T("PluginStatus"), 0, 0);
