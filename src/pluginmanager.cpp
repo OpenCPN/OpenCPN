@@ -5217,7 +5217,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
          m_customText->Hide();
      }
 #else
-     SetBackgroundColour(wxColour(200, 200, 220));              // light blue
+     SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));              // light blue
      pConfig->SetPath( _T("/PlugIns/") );
      wxString expert = pConfig->Read( "CatalogExpert", "0");
 
