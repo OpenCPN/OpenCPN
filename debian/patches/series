@@ -6,3 +6,4 @@
 0006-Correct-managed-plugin-compatibility-test-in-cross-b.patch
 0007-Allow-vanilla-debian-host-to-use-Ubuntu-managed-plug.patch
 0008-pluginmanager-conditional-warning-for-plugin-binary-.patch
+0009-PluginHandler-isCompatible-Fix-Debian-10-compatibili.patch

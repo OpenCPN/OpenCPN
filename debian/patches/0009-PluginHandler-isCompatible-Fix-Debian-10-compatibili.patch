@@ -1,0 +1,21 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 9 Sep 2020 22:08:54 +0200
+Subject: PluginHandler: isCompatible(): Fix Debian sid compatibility.
+
+---
+ src/PluginHandler.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/PluginHandler.cpp b/src/PluginHandler.cpp
+index 52f0e69..946e7ef 100644
+--- a/src/PluginHandler.cpp
++++ b/src/PluginHandler.cpp
+@@ -278,7 +278,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
+                 if( (plugin_os == std::string("ubuntu-x86_64")) && (plugin_os_version == std::string("16.04")) )
+                     rv = true;
+             }
+-            else if(target_vers == std::string("11") ){        // Sid
++            else if (target_vers == "11"  || target_vers == "sid"){        // Sid
+                 if( (plugin_os == std::string("ubuntu-gtk3-x86_64")) && (plugin_os_version == std::string("20.04")) )
+                     rv = true;
+             }

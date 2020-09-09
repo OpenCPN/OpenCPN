@@ -10,8 +10,8 @@ from source on Debian servers.
  config.h.in           |  2 +-
  src/chart1.cpp        |  1 +
  src/navutil.cpp       |  9 +++++++++
- src/pluginmanager.cpp | 36 +++++++++++++++++++++++++++++++++++-
- 5 files changed, 53 insertions(+), 3 deletions(-)
+ src/pluginmanager.cpp | 38 +++++++++++++++++++++++++++++++++++++-
+ 5 files changed, 55 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 2cde27d..66511e1 100644
@@ -99,7 +99,7 @@ index eed3bd6..78e82c2 100644
      Write( _T ( "ShowFPS" ), g_bShowFPS );
      
 diff --git a/src/pluginmanager.cpp b/src/pluginmanager.cpp
-index 2882ab3..a534f39 100644
+index 2882ab3..df9f2f1 100644
 --- a/src/pluginmanager.cpp
 +++ b/src/pluginmanager.cpp
 @@ -159,6 +159,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
@@ -119,8 +119,8 @@ index 2882ab3..a534f39 100644
 +  " by Debian. Downloaded plugins are also not vetted in the Debian \n"
 +  " review process. Continue?"
 +);
- 
 +
+ 
 +/**
 + * Display a warning for binary plugin contents if
 + * g_pluginContentsWarned is not set. Set it to avoid
@@ -132,7 +132,7 @@ index 2882ab3..a534f39 100644
 +static bool check_plugin_contents_warned()
 +{
 +    if (g_pluginContentsWarned) {
-+        return true; 
++        return true;
 +    }
 +    if (!g_pluginContentsWarned) {
 +        wxMessageDialog dlg(gFrame, PLUGIN_CONTENTS_WARN_MSG,
@@ -151,12 +151,21 @@ index 2882ab3..a534f39 100644
  /**
   * Return number of existing files named filename in the list of
   * dirs.
-@@ -437,7 +471,7 @@ static void run_update_dialog(PluginListPanel* parent,
+@@ -424,6 +458,9 @@ static void run_update_dialog(PluginListPanel* parent,
+         return;
+     }
+     
++    if (!check_plugin_contents_warned()) {
++        return;
++    }
+     auto update = dialog.GetUpdate();
+     if (uninstall) {
+         g_Platform->ShowBusySpinner();
+@@ -437,7 +474,6 @@ static void run_update_dialog(PluginListPanel* parent,
          g_Platform->HideBusySpinner();
  
      }
 -
-+    check_plugin_contents_warned();
      wxLogMessage("Installing %s", update.name.c_str());
      
      auto pluginHandler = PluginHandler::getInstance();
