@@ -90,7 +90,7 @@ License: Expat
 
 Files: include/GL/glext.h
 Copyright: 2007-2012, The Khronos Group Inc.
-License: Khronos
+License: Expat
 
 Files: include/GL/glu.h
 Copyright: 1991-2000, Silicon Graphics, Inc.
@@ -349,7 +349,7 @@ License: GPL-2+
 
 Files: libs/glshim/include/*
 Copyright: 2007-2012, The Khronos Group Inc.
-License: Khronos
+License: Expat
 
 Files: libs/glshim/include/GL/*
 Copyright: 1999-2007, Brian Paul
@@ -379,7 +379,7 @@ License: GPL-2+
 Files: libs/glshim/include/GL/glext.h
   libs/glshim/include/GL/glxext.h
 Copyright: 2007-2012, The Khronos Group Inc.
-License: Khronos
+License: Expat
 
 Files: libs/glshim/include/GL/glu.h
 Copyright: 1991-2000, Silicon Graphics, Inc.
@@ -390,7 +390,10 @@ Copyright: 1995-1998, Brian Paul
 License: LGPL-2+
 
 Files: libs/glshim/include/GL/internal/*
-Copyright: IBM Corporation 2004, / 2007-2008, Red Hat, Inc. / 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
+Copyright: 
+  2004 IBM Corporation
+  2007-2008, Red Hat, Inc.
+  1998-1999, Precision Insight, Inc., Cedar Park, Texas.
 License: GPL-2+
 
 Files: libs/glshim/include/GLES/*
@@ -427,7 +430,7 @@ License: GPL-2+
 
 Files: libs/glshim/include/GLES/gl3.h
 Copyright: 2007-2012, The Khronos Group Inc.
-License: Khronos
+License: Expat
 
 Files: libs/glshim/spec/*
 Copyright: 2011, 2014, Pavel Kalian
@@ -854,7 +857,7 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/GeomagnetismLibrary.c
-Copyright: protection. / ed works consisting predominantly of the material produced by
+Copyright: No copyright
 License: public-domain
  The WMM source code is in the public domain and not licensed or under copyright.
  The information and software may be used freely by the public. As required by 17 U.S.C. 403,
@@ -1053,9 +1056,6 @@ License: GPL-3+
  On Debian systems, the full text of the GNU General Public
  License version 3 can be found in the file
  `/usr/share/common-licenses/GPL-3'.
-
-License: Khronos
- Please fill license Khronos from header of include/GL/glext.h
 
 License: LGPL-2+
  This library is free software; you can redistribute it and/or
