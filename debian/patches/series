@@ -5,3 +5,4 @@
 0005-Build-Fix-cmake-missing-NDEBUG-flag-1991.patch
 0006-Correct-managed-plugin-compatibility-test-in-cross-b.patch
 0007-Allow-vanilla-debian-host-to-use-Ubuntu-managed-plug.patch
+0008-pluginmanager-conditional-warning-for-plugin-binary-.patch
