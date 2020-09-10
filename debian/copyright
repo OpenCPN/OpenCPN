@@ -390,7 +390,7 @@ Copyright: 1995-1998, Brian Paul
 License: LGPL-2+
 
 Files: libs/glshim/include/GL/internal/*
-Copyright: 
+Copyright:
   2004 IBM Corporation
   2007-2008, Red Hat, Inc.
   1998-1999, Precision Insight, Inc., Cedar Park, Texas.
@@ -967,7 +967,9 @@ License: Expat
 Comment: https://geographiclib.sourceforge.io/
 
 Files: src/gshhs.cpp
-Copyright: zUGrib: meteorologic GRIB file data viewer / 2012, David S. Register / 2008, - Jacques Zaninetti - http:www.zygrib.org
+Copyright:
+  2012, David S. Register
+  2008, Jacques Zaninetti
 License: GPL-2+
 
 Files: src/macutils.c
