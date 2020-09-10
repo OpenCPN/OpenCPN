@@ -145,12 +145,11 @@ Files: include/scrollingdialog.h
 Copyright: Julian Smart
 License: GPL-2+
 
-Files: include/zeroconf-detail.hpp
-  include/zeroconf-util.hpp
+Files: include/zeroconf-util.hpp
   include/zeroconf.hpp
+  include/zeroconf-detail.hpp
 Copyright: 2016, Yuri Yakovlev <yvzmail@gmail.com>
-License: GPL
- Please fill license GPL from header of include/zeroconf-detail.hpp include/zeroconf-util.hpp include/zeroconf.hpp
+License: GPL-3
 
 Files: libs/SQLiteCpp/*
 Copyright: 2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
@@ -1048,6 +1047,15 @@ License: GPL-2+
  On Debian systems, the full text of the GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/GPL-2'.
+
+License: GPL-3
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation version 3
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 3 can be found in the file
+ `/usr/share/common-licenses/GPL-3'.
 
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
