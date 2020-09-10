@@ -6,6 +6,7 @@ opencpn (5.2.0+dfsg-1) unstable; urgency=medium
   * Update debian/copyright due to new upstream source layout.
   * Bump Standards-Version to 4.5.0, no changes.
   * Drop upstreamed patches and rebase remaining one.
+  * Add a warning for downloaded, binary plugin contents.
   * Add udev rule installation patch.
   * Add metadata installation patch.
   * Remove bogus svg file.
