@@ -5,6 +5,11 @@ Subject: pluginmanager: conditional warning for plugin binary contents.
 Downstream distros, notably Debian, has a need to present a
 warning to user when downloading binary content not built
 from source on Debian servers.
+
+Patch should be fine in Debian, but needs some work before being applied
+upstream.
+
+Forwarded: no
 ---
  CMakeLists.txt        |  8 +++++++-
  config.h.in           |  2 +-
