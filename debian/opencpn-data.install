@@ -26,3 +26,7 @@ usr/share/opencpn/sounds/*bells.wav
 usr/share/opencpn/tcdata/HARMONIC.IDX
 usr/share/opencpn/tcdata/HARMONIC
 usr/share/opencpn/uidata
+usr/share/opencpn/doc/help_web.html
+usr/share/opencpn/LINUX_DEVICES.md usr/share/opencpn/doc/LINUX_DEVICES.md
+usr/share/opencpn/sounds/README.bells usr/share/opencpn/doc/README.bells
+usr/share/opencpn/tcdata/README.harmonics usr/share/opencpn/doc/README.harmonics
