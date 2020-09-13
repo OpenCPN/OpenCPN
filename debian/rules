@@ -29,18 +29,6 @@ override_dh_auto_install:
 	   debian/tmp/usr/share/opencpn/sounds/README.bells \
 	   debian/tmp/usr/share/opencpn/tcdata/README.harmonics \
 	       debian/tmp/usr/share/doc/opencpn
-	# Use existing license files instead of bundled copy
-	ln -sf /usr/share/common-licenses/GPL-2 \
-	    debian/tmp/usr/share/doc/opencpn/license.txt
-	ln -sf /usr/share/common-licenses/GPL-2 \
-	    debian/tmp/usr/share/opencpn/COPYING.gplv2
-	ln -sf /usr/share/common-licenses/GPL-3 \
-	    debian/tmp/usr/share/opencpn/COPYING.gplv3
-	ln -sf /usr/share/common-licenses/LGPL-2 \
-	    debian/tmp/usr/share/opencpn/COPYING.lgplv2
-	ln -sf /usr/share/common-licenses/LGPL-3 \
-	    debian/tmp/usr/share/opencpn/COPYING.lgplv3
-
 
 override_dh_missing:
 	dh_missing --fail-missing
