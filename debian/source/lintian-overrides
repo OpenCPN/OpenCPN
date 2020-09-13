@@ -1,14 +1,2 @@
-# Package does not define a testsuite.
-testsuite-autopkgtest-missing
-
 # Used to work around #831870
 debian-rules-contains-unnecessary-get-orig-source-target
-
-# Upstream does not publish checksums
-debian-watch-does-not-check-gpg-signature
-
-# False positive as of #965119,fixed but not trickled down yet.
-patch-not-forwarded-upstream
-
-# False positive as of #965119, fixed but not trickled down yet.
-send-patch

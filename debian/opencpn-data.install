@@ -7,9 +7,6 @@ usr/share/opencpn/license.txt
 usr/share/opencpn/ocpn-plugins.xml
 usr/share/opencpn/opencpn.png
 usr/share/opencpn/gshhs
-usr/share/opencpn/plugins/chartdldr_pi/data/doc/advanced.html usr/share/doc/opencpn-data/chartdldr_pi
-usr/share/opencpn/plugins/chartdldr_pi/data/doc/basic.html usr/share/doc/opencpn-data/chartdldr_pi
-usr/share/opencpn/plugins/chartdldr_pi/data/doc/index.html usr/share/doc/opencpn-data/chartdldr_pi
 usr/share/opencpn/plugins
 usr/share/opencpn/s57data
 usr/share/opencpn/sounds/*bells.wav
