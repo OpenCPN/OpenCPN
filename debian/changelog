@@ -3,18 +3,25 @@ opencpn (5.2.0+dfsg1-1) unstable; urgency=medium
   * New upstream release including plugin downloader. Closes: #948702
   * Add Build-Depends libdrm-dev. Closes: #962213
   * Adjust libcurl b-d, add libcurl4-openssl-dev alternative.
+  * Update Replace/Break to match actual release.
   * Update debian/copyright due to new upstream source layout.
+  * Drop opencpn-plugins transition package.
   * Bump Standards-Version to 4.5.0, no changes.
+  * Replace override_dh_install with declarative stuff.
+  * Move debian source hosting to https://gitlab.com/leamas/opencpn.
   * Drop upstreamed patches and rebase remaining one.
   * New patches:
-      - Add a warning for downloaded, binary plugin contents.
+      - Add a warning for downloaded, binary plugin contents --
+        0008-pluginmanager-conditional-warning-for-plugin-binary-.patch
       - Add udev rule installation patch  - opencpn#1988.
       - Add metadata installation patch - opencpn#1989.
       - Remove bogus svg file - opencpn#1990.
       - Fix cmake parallel execution problem - opencpn#1991.
       - Add two plugin compatibility patches - opencpn#1997.
+      - Drop pdf file without source --
+        0010-build-Drop-CoC-909_2013-InlandECDIS_20170308s.pdf.patch
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 13 Sep 2020 04:50:27 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 13 Sep 2020 21:51:16 +0200
 
 opencpn (5.0.0+dfsg-1) unstable; urgency=medium
 
