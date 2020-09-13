@@ -20,16 +20,6 @@ override_dh_auto_configure:
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
             -DOCPN_FORCE_GTK3=ON
 
-override_dh_auto_install:
-	dh_auto_install
-	# Remove generated files without source.
-	rm -rf debian/tmp/usr/share/opencpn/doc/opencpn
-	# Move documentation to proper location
-	mv debian/tmp/usr/share/opencpn/LINUX_DEVICES.md \
-	   debian/tmp/usr/share/opencpn/sounds/README.bells \
-	   debian/tmp/usr/share/opencpn/tcdata/README.harmonics \
-	       debian/tmp/usr/share/doc/opencpn
-
 override_dh_missing:
 	dh_missing --fail-missing
 

@@ -4,9 +4,7 @@ usr/lib/opencpn/*.so
 usr/share/applications/opencpn.desktop
 usr/share/icons/hicolor/*/apps/opencpn.*
 usr/share/metainfo/opencpn.metainfo.xml
-usr/share/doc/opencpn/changelog
-usr/share/doc/opencpn/copyright
-usr/share/doc/opencpn/license.txt
-usr/share/doc/opencpn/README.harmonics
-usr/share/doc/opencpn/README.bells
-usr/share/doc/opencpn/LINUX_DEVICES.md
+usr/share/doc/opencpn/changelog usr/share/doc/opencpn/
+usr/share/opencpn/tcdata/README.harmonics usr/share/doc/opencpn/
+usr/share/opencpn/sounds/README.bells usr/share/doc/opencpn/
+usr/share/opencpn/LINUX_DEVICES.md usr/share/doc/opencpn/
