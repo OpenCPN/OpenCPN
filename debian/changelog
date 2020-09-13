@@ -1,4 +1,4 @@
-opencpn (5.2.0+dfsg-1) unstable; urgency=medium
+opencpn (5.2.0+dfsg1-1) unstable; urgency=medium
 
   * New upstream release including plugin downloader. Closes: #948702
   * Add Build-Depends libdrm-dev. Closes: #962213
