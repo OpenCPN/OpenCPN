@@ -2,7 +2,7 @@ OpenCPN source -- repacked tarball.
 -----------------------------------
 
 The original upstream sources contains files which for various reasons
-(binaries without source, licensing, bundled libraries) cannot go into 
+(binaries without source, licensing, bundled libraries) cannot go into
 the source tarball used by debian. This is documented in the
 Files-Excluded stanza in debian/copyright.
 
