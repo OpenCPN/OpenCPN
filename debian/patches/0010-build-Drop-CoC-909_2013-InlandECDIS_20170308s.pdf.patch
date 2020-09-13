@@ -1,0 +1,38 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 13 Sep 2020 20:44:34 +0200
+Subject: build: Drop CoC-909_2013-InlandECDIS_20170308s.pdf.
+
+Remove references to pdf file without sources which is
+excluded from upstream sources in d/copyright
+
+Not acceptable upstream.
+
+Forwarded: not-ńeeded
+
+---
+ CMakeLists.txt | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 66511e1..5551c53 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2068,7 +2068,6 @@ if (APPLE)
+     data/authors.html
+     data/opencpn.png
+     data/ocpn-plugins.xml
+-    data/CoC-909_2013-InlandECDIS_20170308s.pdf
+     ${SOUND_FILES}
+     buildosx/opencpn.icns
+     buildosx/MainMenu.xib
+@@ -2181,10 +2180,6 @@ if (NOT APPLE)
+   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
+   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
+ 
+-  install(
+-    FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf
+-    DESTINATION ${PREFIX_PKGDATA}
+-  )
+   install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
+ 
+   install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
