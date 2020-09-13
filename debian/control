@@ -35,8 +35,8 @@ Depends: opencpn-data (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
 Recommends: wx3.0-i18n
-Breaks: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
-Replaces: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
+Breaks: opencpn-plugins (<< 4.8.8~)
+Replaces: opencpn-plugins (<< 4.8.8~)
 Suggests: binutils
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
@@ -62,9 +62,3 @@ Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
  Application has language support in 20+ languages.
  .
  This package contains architecture independent data files.
-
-Package: opencpn-plugins
-Architecture: all
-Depends: opencpn (>= ${source:Version}), ${misc:Depends}
-Description: Open Source Chartplotter and Marine GPS Navigation Software (transition)
- This package is a transitional, empty package.
