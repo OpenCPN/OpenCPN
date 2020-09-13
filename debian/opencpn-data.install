@@ -1,26 +1,15 @@
-# NOT INSTALLED:
-# usr/share/opencpn/doc/help_web.html # would have been deleted in override_dh_auto_install
-# usr/share/opencpn/LICENSING # this is covered by usr/share/doc/$package/copyright
-# usr/share/opencpn/sounds/README.bells  # not installed in opencpn-data
-# usr/share/opencpn/tcdata/README.harmonics # not installed in opencpn-data
-# usr/share/opencpn/CoC-909_2013-InlandECDIS_20170308s.pdf # file without source. Needs in File-Exluded!
-# usr/share/opencpn/authors.html # this is covered by usr/share/doc/$package/copyright. not referenced in code (grep says…)
 
-# The below rules also exclude:
-#  usr/share/opencpn/sounds/README.bells
-#  usr/share/opencpn/tcdata/README.harmonics
-# because they are installed in opencpn's /usr/share/doc.
 
-### ^^^ this is just rationales, remove those comments
-### ^^^ before final upload! (Please check if it makes sense, too)
-
-# license.html is referenced in the code.
+# license.html and license.txt is referenced in the code.
 usr/share/locale/*/LC_MESSAGES/*.mo
 usr/share/opencpn/license.html
 usr/share/opencpn/license.txt
 usr/share/opencpn/ocpn-plugins.xml
 usr/share/opencpn/opencpn.png
 usr/share/opencpn/gshhs
+usr/share/opencpn/plugins/chartdldr_pi/data/doc/advanced.html usr/share/doc/opencpn-data/chartdldr_pi
+usr/share/opencpn/plugins/chartdldr_pi/data/doc/basic.html usr/share/doc/opencpn-data/chartdldr_pi
+usr/share/opencpn/plugins/chartdldr_pi/data/doc/index.html usr/share/doc/opencpn-data/chartdldr_pi
 usr/share/opencpn/plugins
 usr/share/opencpn/s57data
 usr/share/opencpn/sounds/*bells.wav
@@ -28,7 +17,6 @@ usr/share/opencpn/tcdata/HARMONIC.IDX
 usr/share/opencpn/tcdata/HARMONIC
 usr/share/opencpn/uidata
 usr/share/opencpn/doc/help_web.html
-usr/share/opencpn/LINUX_DEVICES.md usr/share/opencpn/doc/LINUX_DEVICES.md
-usr/share/opencpn/sounds/README.bells usr/share/opencpn/doc/README.bells
-usr/share/opencpn/tcdata/README.harmonics usr/share/opencpn/doc/README.harmonics
-
+usr/share/opencpn/LINUX_DEVICES.md usr/share/doc/opencpn-data
+usr/share/opencpn/sounds/README.bells usr/share/doc/opencpn-data
+usr/share/opencpn/tcdata/README.harmonics usr/share/doc/opencpn-data
