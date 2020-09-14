@@ -34,9 +34,6 @@ IF(WIN32)
 
   SET(CPACK_NSIS_PACKAGE_NAME "${PACKAGE_NAME}")
 
-  # Let cmake find NSIS.template.in
-  SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/buildwin")
-
 #  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
 #  SET(CPACK_NSIS_INSTALLED_ICON_NAME "${PACKAGE_NAME}")
 SET(CPACK_NSIS_DISPLAY_NAME "OpenCPN ${PACKAGE_NAME}")

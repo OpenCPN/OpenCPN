@@ -23,5 +23,4 @@ buildwin/*.crt
 ci/opencpn_rsa
 src/opencpn.rc
 .DS_Store
-NSIS.template.in
 version?git
