@@ -45,6 +45,7 @@
 #include "Downloader.h"
 #include "OCPNPlatform.h"
 #include "PluginHandler.h"
+#include "plugin_cache.h"
 #include "pluginmanager.h"
 #include "semantic_vers.h"
 #include "styles.h"
@@ -517,30 +518,12 @@ GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             { }
 
         
-std::string GuiDownloader::CheckCache()
-{
-    // Look in the cache
-    wxURI uri( wxString(m_plugin.tarball_url.c_str()));
-    wxFileName fn(uri.GetPath());
-    wxString tarballFile = fn.GetFullName();
-    wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
-    wxString sep = _T("/");
-    cacheDir += sep + wxString(_T("cache"));
-    cacheDir += sep + wxString(_T("tarballs"));
-    wxString cacheCopy = cacheDir +sep + tarballFile;
-    if(wxFileExists( cacheCopy ))
-        return cacheCopy.ToStdString();
-    else
-        return std::string("");
-}
-        
- 
-
 std::string GuiDownloader::run(wxWindow* parent)
 {
             bool ok;
             bool downloaded = false;
-            std::string path = CheckCache();
+            std::string path =
+                ocpn::lookup_tarball(m_plugin.tarball_url.c_str());
             if(!path.size()){
                 long size = get_filesize();
                 std::string label(_("Downloading "));
@@ -584,24 +567,10 @@ std::string GuiDownloader::run(wxWindow* parent)
                 // Cache the tarball from the tmp location to the plugin cache.
                 wxURI uri( wxString(m_plugin.tarball_url.c_str()));
                 wxFileName fn(uri.GetPath());
-                wxString tarballFile = fn.GetFullName();
-                wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
-                wxString sep = _T("/");
-                if( !wxDirExists(cacheDir) )
-                    wxMkdir( cacheDir);
-                cacheDir += sep + wxString(_T("cache"));
-                if( !wxDirExists(cacheDir) )
-                    wxMkdir( cacheDir);
-                cacheDir += sep + wxString(_T("tarballs"));
-                if( !wxDirExists(cacheDir) )
-                    wxMkdir( cacheDir);
-        
-                wxString destination = cacheDir + _T("/") + tarballFile;
-                wxLogMessage(" Trying to copy %s ",  path.c_str());
-                
-                if(wxFileExists(wxString( path.c_str()))){
-                    wxLogMessage("Copying %s to local cache",  tarballFile.c_str());
-                    wxCopyFile( wxString( path.c_str()), destination);
+                auto basename = fn.GetFullName().ToStdString();
+                if (ocpn::store_tarball(path.c_str(), basename.c_str())) {
+                    wxLogMessage("Copied %s to local cache at %s",
+                                 path.c_str(), basename.c_str());
                 }
             }
 

@@ -59,8 +59,6 @@ class GuiDownloader: public Downloader
         std::string run(wxWindow* parent);
         void on_chunk(const char* buff, unsigned bytes) override;
         void showErrorDialog(const char* msg);
-        std::string CheckCache();
-
 };
 
 
