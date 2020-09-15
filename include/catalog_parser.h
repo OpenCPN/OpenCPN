@@ -62,6 +62,7 @@ struct PluginMetadata {
     std::string target_arch;
     std::string info_url;
     std::string meta_url;
+    std::string checksum;
 
     bool openSource;
 
