@@ -947,6 +947,7 @@ set(
   include/ocpn_utils.h
   include/options.h
   include/piano.h
+  include/plugin_cache.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -1080,6 +1081,7 @@ set(
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
+  src/plugin_cache.cpp
   src/printtable.cpp
   src/pugixml.cpp
   src/Quilt.cpp
