@@ -25,6 +25,7 @@
 
 #include "config.h"
 
+#include <fstream>
 #include <set>
 #include <sstream>
 
@@ -44,6 +45,7 @@
 #include "download_mgr.h"
 #include "Downloader.h"
 #include "OCPNPlatform.h"
+#include "picosha2.h"
 #include "PluginHandler.h"
 #include "plugin_cache.h"
 #include "pluginmanager.h"
@@ -64,6 +66,40 @@ wxDEFINE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
 
 namespace download_mgr {
 
+/**
+ * Check if sha256sum of a tarball matches checksum in metadata.
+ */
+static bool checksum_ok(const std::string& path,
+                        const PluginMetadata& metadata)
+{
+
+    wxLogDebug("Checksum test on %s", metadata.name.c_str());
+    if (metadata.checksum == "") {
+        wxLogDebug("No metadata checksum, aborting check,");
+        return true;
+    }
+    std::ifstream f(path, std::ios::binary);
+    picosha2::hash256_one_by_one hasher;
+    while (!f.eof()) {
+        char buff[2048];
+        f.read(buff, sizeof(buff));
+        const std::string block(buff, f.gcount());
+        hasher.process(block.begin(), block.end());
+    }
+    hasher.finish();
+    std::string tarball_hash;
+    picosha2::get_hash_hex_string(hasher, tarball_hash);
+
+    if (tarball_hash == metadata.checksum) {
+        wxLogDebug("Checksum ok: %s", tarball_hash.c_str());
+        return true;
+    }
+    wxLogMessage("Checksum fail on %s, tarball: %s, metadata: %s",
+                 metadata.name.c_str(),
+                 tarball_hash.c_str(),
+                 metadata.checksum.c_str());
+    return false;
+}
 
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
@@ -550,6 +586,11 @@ std::string GuiDownloader::run(wxWindow* parent)
                     return "";
                 } else {
                     delete m_dialog;
+                }
+
+                if (!download_mgr::checksum_ok(path, m_plugin)) {
+                    showErrorDialog("Checksum error");
+                    return "";
                 }
 
                 m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
