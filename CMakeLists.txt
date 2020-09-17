@@ -1208,6 +1208,9 @@ find_package(Gettext REQUIRED)
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 
+add_subdirectory(libs/picosha2)
+target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
+
 #
 # Linux: set up GTK
 #
