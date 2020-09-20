@@ -2899,21 +2899,18 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 //      This patch will allow the audio alert to occur, and the visual alert will pop up soon
 //      after the user selects the OCPN icon from the taskbar. (on the next timer tick, probably)
             
-//#ifdef __WXMSW__            
-         if( gFrame->IsIconized() || !gFrame->IsActive() )
+#ifndef __OCPN__ANDROID__
+            if( gFrame->IsIconized() || !gFrame->IsActive() )
                 gFrame->RequestUserAttention();
-//#endif
+#endif  
             
-//#ifdef __WXMSW__            
-            if( !gFrame->IsIconized() )
-//#endif                
-            {
+            if( !gFrame->IsIconized() ){
                 AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
                 pAISAlertDialog->Create( palert_target->MMSI, m_parent_frame, this,
                                          b_jumpto, b_createWP, b_ack,
                                          -1, _("AIS Alert"));
                 g_Platform->PositionAISAlert(pAISAlertDialog);
-                
+               
                 g_pais_alert_dialog_active = pAISAlertDialog;
                 pAISAlertDialog->Show();                     // Show modeless, so it stays on the screen
             }
