@@ -335,7 +335,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
         wxAuiPaneInfo &pane = m_pAuiManager->GetPane(_T("AISTargetList"));
         
         if(g_AisTargetList_perspective.IsEmpty()){
-            RecalculateSize();
+            if(!g_btouch)
+                RecalculateSize();
         }
         else{
             m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
