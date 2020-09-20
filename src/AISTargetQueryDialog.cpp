@@ -460,13 +460,14 @@ void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
         yb = m_createWptBtn->GetSize().y * 4;
     
     wxSize szyv = m_pQueryTextCtl->GetVirtualSize();
-    int csz = g_Platform->getDisplaySize().y * 8 / 10;
+    int csz = g_Platform->getDisplaySize().y * 85 / 100;
     if((szyv.y + yb) < csz){
         if(szyv.y > m_pQueryTextCtl->GetSize().y)
             target_y = (szyv.y * 11 / 10) + yb;
     }
-    else{
+    else{                       // Probably going to be a vertical scroll bar, so adjust width slightly
         target_y = csz;
+        target_x = szyv.x * 11/10;
     }
 
     
