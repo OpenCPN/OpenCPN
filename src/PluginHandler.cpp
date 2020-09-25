@@ -880,9 +880,11 @@ void PluginHandler::cleanup(const std::string& filelist,
             wxFileName wxFile(line);
             if(wxFile.IsDir() && wxFile.DirExists()){
                 wxDir dir(wxFile.GetFullPath());
-                if(!dir.HasFiles() && !dir.HasSubDirs()){
-                    wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
-                    done = false;
+                if(dir.IsOpened()){
+                    if(!dir.HasFiles() && !dir.HasSubDirs()){
+                        wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
+                        done = false;
+                    }
                 }
             }
         }
@@ -1040,9 +1042,11 @@ bool PluginHandler::uninstall(const std::string plugin_name)
             wxFileName wxFile(line);
             if(wxFile.IsDir() && wxFile.DirExists()){
                 wxDir dir(wxFile.GetFullPath());
-                if(!dir.HasFiles() && !dir.HasSubDirs()){
-                    wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
-                    done = false;
+                if(dir.IsOpened()){
+                    if(!dir.HasFiles() && !dir.HasSubDirs()){
+                        wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
+                        done = false;
+                    }
                 }
             }
         }
