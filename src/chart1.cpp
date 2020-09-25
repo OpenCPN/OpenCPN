@@ -7129,9 +7129,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             //g_options->SetColorScheme(global_color_scheme);
             //applyDarkAppearanceToWindow(g_options->MacGetTopLevelWindowRef());
 
-            if( g_MainToolbar )
-                g_MainToolbar->EnableTool( ID_SETTINGS, true );
-
             // needed to ensure that the chart window starts with keyboard focus
             SurfaceAllCanvasToolbars();
             
@@ -7199,6 +7196,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             androidEnableBackButton( true );
             androidEnableRotation();
 #endif
+
+            if( g_MainToolbar )
+                g_MainToolbar->EnableTool( ID_SETTINGS, true );
 
             break;
         }
