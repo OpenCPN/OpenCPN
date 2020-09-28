@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:19-0400\n"
-"PO-Revision-Date: 2020-08-28 14:53\n"
+"PO-Revision-Date: 2020-09-28 03:06\n"
 "Last-Translator: \n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -2567,7 +2567,7 @@ msgstr "Autosortera"
 
 #: src/AISTargetListDialog.cpp:692
 msgid "Limit range: NM"
-msgstr "Maximal räckvidd: NM"
+msgstr "Max avstånd: NM"
 
 #: src/AISTargetListDialog.cpp:705
 msgid "Target Count"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:19-0400\n"
-"PO-Revision-Date: 2020-08-28 14:51\n"
+"PO-Revision-Date: 2020-09-28 03:05\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -2719,7 +2719,7 @@ msgstr "CM93 : Gestion des réglages ..."
 
 #: src/canvasMenu.cpp:507 src/options.cpp:4712 src/options.cpp:4770
 msgid "Chart Groups"
-msgstr "Groupes de cartes"
+msgstr "Groupes"
 
 #: src/canvasMenu.cpp:515
 msgid "temporary"
@@ -2983,7 +2983,7 @@ msgstr "Désolé, une instance existante d'OpenCPN peut être trop occupée.\n"
 
 #: src/chart1.cpp:2008 src/chart1.cpp:2014
 msgid "Failed to initialize the user interface. "
-msgstr "Echec de l'initialisation de l'interface utilisateur"
+msgstr "Interface utilisateur : Echec de l'initialisation"
 
 #: src/chart1.cpp:2009
 msgid "OpenCPN cannot start. "
@@ -3653,7 +3653,7 @@ msgstr "Valeur de la console"
 
 #: src/concanv.cpp:214
 msgid "Full Route"
-msgstr "Route complète"
+msgstr "Route entière"
 
 #: src/concanv.cpp:215
 msgid "Show Highway"
@@ -4766,7 +4766,7 @@ msgstr "Confirmer la suppression des routes et traces"
 
 #: src/options.cpp:3536
 msgid "Chart Files"
-msgstr "Dossiers des cartes"
+msgstr "Dossiers"
 
 #: src/options.cpp:3542
 msgid "Directories"
@@ -4916,7 +4916,7 @@ msgstr "Carte graphique"
 
 #: src/options.cpp:4262
 msgid "Vector Chart Display"
-msgstr "Cartes vectorielles"
+msgstr "Vectorielles"
 
 #: src/options.cpp:4281 src/options.cpp:4464 src/CanvasOptions.cpp:240
 msgid "Display Category"
@@ -5052,7 +5052,7 @@ msgstr "Réinitialiser à \"Standard\""
 
 #: src/options.cpp:4655
 msgid "Tides && Currents"
-msgstr "Marées et courants"
+msgstr "Marées-Courants"
 
 #: src/options.cpp:4660
 msgid "Active Datasets"
@@ -5392,7 +5392,7 @@ msgstr "Indicateurs, Nord de la carte/état du GPS : Voir"
 
 #: src/options.cpp:5788
 msgid "Enable Toolbar auto-hide"
-msgstr "Barre d'icônes : Cacher auto.. "
+msgstr "Barre d'icônes : Cacher auto... "
 
 #: src/options.cpp:5804
 msgid "Play Ships Bells"
@@ -5412,11 +5412,11 @@ msgstr "Périphérique son"
 
 #: src/options.cpp:5863
 msgid "Enable Touchscreen interface"
-msgstr "Activer l'interface pour écran tactile"
+msgstr "Ecran tactile : Activer l'interface"
 
 #: src/options.cpp:5867
 msgid "Enable Scaled Graphics interface"
-msgstr "Interface utilisateur : Facteur d'échelle"
+msgstr "Interface utilisateur : Zoom"
 
 #: src/options.cpp:5876
 msgid "Show Zoom buttons"
@@ -5432,11 +5432,11 @@ msgstr "Utilisez l'aspect de fenêtre sombre"
 
 #: src/options.cpp:5909
 msgid "User Interface scale factor"
-msgstr "Facteur d'échelle de l'interface utilisateur"
+msgstr "Interface utilisateur : Zoom"
 
 #: src/options.cpp:5922
 msgid "Chart Object scale factor"
-msgstr "Facteur d'échelle des objets affichables"
+msgstr "Objets affichables : Zoom"
 
 #: src/options.cpp:5933
 msgid "Ship scale factor"
@@ -5444,7 +5444,7 @@ msgstr "Agrandissement du bateau"
 
 #: src/options.cpp:5944
 msgid "ENC Sounding factor"
-msgstr "Facteur d'échelle des sondes (cartes ENC)"
+msgstr "Cartes vectorielles, sondes : Zoom"
 
 #: src/options.cpp:6179 src/options.cpp:6240
 msgid "Connections"
@@ -5991,7 +5991,7 @@ msgstr "Supprimer"
 #: src/routemanagerdialog.cpp:429 src/routemanagerdialog.cpp:528
 #: src/routemanagerdialog.cpp:632
 msgid "&Export selected..."
-msgstr "Exporter la sélection"
+msgstr "Choix : Exporter"
 
 #: src/routemanagerdialog.cpp:434 src/routemanagerdialog.cpp:637
 msgid "&Send to GPS"
@@ -6790,11 +6790,11 @@ msgstr "10 pixels"
 
 #: src/TrackPropDlg.cpp:490 src/TrackPropDlg.cpp:825
 msgid "To route"
-msgstr "Vers la route"
+msgstr "Route : Créer"
 
 #: src/TrackPropDlg.cpp:600
 msgid "Display parameters"
-msgstr "Afficher les paramètres"
+msgstr "Paramètres d'affichage"
 
 #: src/TrackPropDlg.cpp:643
 msgid "Statistics"
@@ -6987,7 +6987,7 @@ msgstr "Appliquer ce modèle pour retourner à une configuration sécurisée con
 
 #: src/CanvasOptions.cpp:110
 msgid "Chart Panel Options"
-msgstr "Panneau d'affichage des cartes"
+msgstr "Cartes, options d'affichage"
 
 #: src/CanvasOptions.cpp:144
 msgid "Heading Up"

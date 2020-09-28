@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:19-0400\n"
-"PO-Revision-Date: 2020-08-28 14:52\n"
+"PO-Revision-Date: 2020-09-28 03:06\n"
 "Last-Translator: \n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -1473,7 +1473,7 @@ msgstr "Wysokość"
 
 #: src/AIS_Target_Data.cpp:792 src/AIS_Target_Data.cpp:796
 msgid " COG Unavailable"
-msgstr "COG niedostępny"
+msgstr "KDD niedostępny"
 
 #: src/AIS_Target_Data.cpp:802 src/navutil.cpp:4292
 msgid "in"
@@ -2527,7 +2527,7 @@ msgstr "Namiar"
 
 #: src/AISTargetListDialog.cpp:577
 msgid "CoG"
-msgstr "COG"
+msgstr "KDD"
 
 #: src/AISTargetListDialog.cpp:585
 msgid "SoG"
@@ -2682,7 +2682,7 @@ msgstr "Zorientowanie wg KDD"
 
 #: src/canvasMenu.cpp:426
 msgid "Heading Up Mode"
-msgstr "Wg kursu"
+msgstr "Zorientowanie wg KR"
 
 #: src/canvasMenu.cpp:429 src/canvasMenu.cpp:436 src/chart1.cpp:5370
 #: src/chart1.cpp:5687 src/chart1.cpp:7951
@@ -3072,7 +3072,7 @@ msgstr "dnia "
 
 #: src/chart1.cpp:5146
 msgid "1.0 NM along COG"
-msgstr "1,0 Mm wzdłuż COG"
+msgstr "1,0 Mm wzdłuż KDD"
 
 #: src/chart1.cpp:5157
 msgid "Temporary MOB Route"
@@ -3109,7 +3109,7 @@ msgstr "Automatyczne podążanie "
 
 #: src/chart1.cpp:5689
 msgid "Head Up Mode"
-msgstr "Wg kursu"
+msgstr "Zorientowanie wg KR"
 
 #: src/chart1.cpp:5692 src/chart1.cpp:5695 src/toolbar.cpp:1297
 msgid "Zoom In"
@@ -4253,7 +4253,7 @@ msgstr "ustawienia ogólne"
 
 #: src/options.cpp:1711
 msgid "Filter NMEA COG/SOG"
-msgstr "Filtr NMEA COG/SOG"
+msgstr "Filtr NMEA KDD/SOG"
 
 #: src/options.cpp:1721 src/options.cpp:2336
 msgid "Filter period (sec)"
@@ -4583,7 +4583,7 @@ msgstr "Opcje wyświetlania mapy"
 
 #: src/options.cpp:3071
 msgid "COG Predictor Length (min)"
-msgstr "Długość wektora przewidywanego COG (min.):"
+msgstr "Długość wektora przewidywanego KDD (min.):"
 
 #: src/options.cpp:3078
 msgid "Heading Predictor Length (NMi)"
@@ -4707,7 +4707,7 @@ msgstr "Przeliczanie wartości"
 
 #: src/options.cpp:3260
 msgid "Calculate SOG and COG from position changes"
-msgstr "Przelicz SOG i COG ze zmieniającej się pozycji"
+msgstr "Przelicz SOG i KDD ze zmieniającej się pozycji"
 
 #: src/options.cpp:3264
 msgid "Min seconds between updates"
@@ -5265,7 +5265,7 @@ msgstr "Usuń stracone obiekty po (min):"
 
 #: src/options.cpp:5524
 msgid "Show target COG predictor arrow, length (min)"
-msgstr "Pokaż przewidywane wektory COG obiektów (min) "
+msgstr "Pokaż przewidywane wektory KDD (min) "
 
 #: src/options.cpp:5532
 msgid "Show target tracks, length (min)"
@@ -5317,7 +5317,7 @@ msgstr "[Klasa] Typ (Status)"
 
 #: src/options.cpp:5613
 msgid "SOG COG"
-msgstr "SOG COG"
+msgstr "SOG KDD"
 
 #: src/options.cpp:5616
 msgid "CPA TCPA"
@@ -5875,7 +5875,7 @@ msgstr ""
 
 #: src/pluginmanager.cpp:5722
 msgid "Plugin may be installed or updated now."
-msgstr ""
+msgstr "Wtyczka może być teraz zainstalowana lub zaktualizowana."
 
 #: src/pluginmanager.cpp:5723
 msgid "OpenCPN Plugin Import Successful"

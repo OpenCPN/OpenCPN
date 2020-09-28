@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2020-08-28 14:51\n"
+"PO-Revision-Date: 2020-09-28 03:05\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -212,11 +212,11 @@ msgstr "Alla"
 
 #: src/dashboard_pi.cpp:1358 src/dashboard_pi.cpp:1712
 msgid "Stbd"
-msgstr ""
+msgstr "p/p"
 
 #: src/dashboard_pi.cpp:1361 src/dashboard_pi.cpp:1714
 msgid "Port"
-msgstr ""
+msgstr "v/p"
 
 #: src/dashboard_pi.cpp:2299
 msgid "Dashboard preferences"
@@ -373,7 +373,7 @@ msgstr "tuulekiiruse ühikud:"
 
 #: src/dashboard_pi.cpp:2657
 msgid "Use SignalK true wind data over ground. (Instead of through water)"
-msgstr ""
+msgstr "Kasuta SignalK tegeliku tuule andmeid põhja suhtes. (vee suhtes asemel)"
 
 #: src/dashboard_pi.cpp:2931
 msgid "Add instrument"
@@ -389,7 +389,7 @@ msgstr "Eelistused..."
 
 #: src/dashboard_pi.cpp:3365
 msgid "Resize..."
-msgstr ""
+msgstr "Muuda suurust..."
 
 #: src/dashboard_pi.cpp:3375
 msgid "Undock"
@@ -397,7 +397,7 @@ msgstr "Vabasta"
 
 #: src/dashboard_pi.cpp:3849
 msgid "Choose font"
-msgstr ""
+msgstr "Vali täht"
 
 #: src/dial.cpp:529 src/wind.cpp:66 src/wind_history.cpp:439
 msgid "NE"
