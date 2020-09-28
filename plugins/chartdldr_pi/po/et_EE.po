@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:22-0400\n"
-"PO-Revision-Date: 2020-08-28 14:51\n"
+"PO-Revision-Date: 2020-09-28 03:05\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -78,7 +78,7 @@ msgstr "Vali uued"
 #: src/chartdldr_pi.cpp:684
 #, c-format
 msgid "Charts: %s"
-msgstr ""
+msgstr "Kaardid: %s"
 
 #: src/chartdldr_pi.cpp:690 src/chartdldrgui.cpp:285
 msgid "Charts"
@@ -239,7 +239,9 @@ msgstr "Viimased"
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
-msgstr ""
+msgstr "Kas sa tõesti tahad kõrvaldada kaartide algallika? \n"
+"Kohalikke kaardifaile ei eemaldata,\n"
+"kuid sa ei ole enam võimeline kaarte uuendama."
 
 #: src/chartdldr_pi.cpp:1604
 msgid "Edit Chart Source"
@@ -254,7 +256,7 @@ msgstr "%s tee ei tundu su konfigureeritud kaartide kataloogidega hõlmatud olem
 
 #: src/chartdldr_pi.cpp:1736
 msgid "Installing charts."
-msgstr ""
+msgstr "Kaarte paigaldamas."
 
 #: src/chartdldr_pi.cpp:2356 src/chartdldr_pi.cpp:2359
 msgid "You must select one of the predefined chart sources or create one of your own.\n"

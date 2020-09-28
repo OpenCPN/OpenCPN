@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2020-08-28 14:51\n"
+"PO-Revision-Date: 2020-09-28 03:05\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -45,7 +45,7 @@ msgstr "WMM-plugin"
 
 #: src/wmm_pi.cpp:167
 msgid "WMM_Live_Overlay"
-msgstr ""
+msgstr "WMM reaalaja ülekate"
 
 #: src/wmm_pi.cpp:225 src/wmm_pi.cpp:313 src/WmmUIDialog.h:87
 msgid "WMM"
@@ -64,7 +64,13 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
+msgstr "World Magnetic Model plugin OpenCPN'i jaoks\n"
+"Kasutab NOAA maailma magnetilist mudelit\n"
+"Rohkem informatsiooni: https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
+"Kaasa pandud WMM2020-mudel kaotab kehtivuse 31. detsembril 2025.\n"
+"Pärast seda, kui plugina uut versiooni õigeaegselt\n"
+"ei väljastata, hangi NOAA'lt uus WMM.COF ja pane ta asukohta,\n"
+"mida sa näed OpenCPN'i logifailis."
 
 #: src/wmm_pi.cpp:535 src/wmm_pi.cpp:675
 msgid "Error, see log."

@@ -30,7 +30,7 @@
     <string name="ocpn_prefs_header_display">Afficher</string>
     <string name="ocpn_prefs_header_charts">Cartes</string>
     <string name="ocpn_prefs_header_connections">Connexions</string>
-    <string name="ocpn_prefs_header_summary_display">Options d\'affichage de la carte</string>
+    <string name="ocpn_prefs_header_summary_display">Carte : Options d\'affichage</string>
     <string name="ocpn_prefs_header_summary_charts">Sources et options de la carte</string>
     <string name="ocpn_prefs_header_summary_connections">Options de localisation GPS / AIS</string>
     <!-- Display Preferences -->

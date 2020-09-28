@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:22-0400\n"
-"PO-Revision-Date: 2020-08-28 14:51\n"
+"PO-Revision-Date: 2020-09-28 03:05\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -53,7 +53,7 @@ msgstr "Le complément Téléchargeur de cartes pour OpenCPN\n"
 #: src/chartdldr_pi.cpp:1448 src/chartdldr_pi.cpp:1451 src/chartdldr_pi.cpp:1544
 #: src/chartdldr_pi.cpp:1639 src/chartdldr_pi.cpp:2395
 msgid "Chart Downloader"
-msgstr "Télécharger des cartes"
+msgstr "Télécharger"
 
 #: src/chartdldr_pi.cpp:613 src/chartdldr_pi.cpp:635
 msgid "Select all"
@@ -73,7 +73,7 @@ msgstr "Sélectionner les mises à jour"
 
 #: src/chartdldr_pi.cpp:629 src/chartdldr_pi.cpp:639
 msgid "Select new"
-msgstr "Sélectionner les nouvelles cartes"
+msgstr "Nouvelles cartes : Choisir"
 
 #: src/chartdldr_pi.cpp:684
 #, c-format
@@ -210,7 +210,7 @@ msgstr "Téléchargement cartes %u sur %u (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1442 src/chartdldrgui.cpp:306
 msgid "Download selected charts"
-msgstr "Cartes sélectionnées : Télécharger"
+msgstr "Cartes choisies : Télécharger"
 
 #: src/chartdldr_pi.cpp:1451
 msgid "Chart download cancelled."
@@ -317,7 +317,7 @@ msgstr "Choisir le dossier du fichier de carte"
 
 #: src/chartdldrgui.cpp:230
 msgid "Select Catalog..."
-msgstr "Catalogue : Sélectionner ..."
+msgstr "Catalogue : Choisir ..."
 
 #: src/chartdldrgui.cpp:235
 msgid "Chart Catalogs Available"
@@ -357,7 +357,7 @@ msgstr "Tout mettre à jour"
 
 #: src/chartdldrgui.cpp:279
 msgid "Download Charts..."
-msgstr "Cartes : Télécharger"
+msgstr "Cartes : Télécharger ..."
 
 #: src/chartdldrgui.cpp:309
 #, c-format

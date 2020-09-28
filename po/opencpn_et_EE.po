@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:19-0400\n"
-"PO-Revision-Date: 2020-08-28 14:51\n"
+"PO-Revision-Date: 2020-09-28 03:05\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -5807,11 +5807,11 @@ msgstr "Impordi plugin..."
 
 #: src/pluginmanager.cpp:5231
 msgid "Update Plugin Catalog:Master"
-msgstr ""
+msgstr "Uuenda plugina kataloogi: Peamine"
 
 #: src/pluginmanager.cpp:5331
 msgid "Cannot dpownload data from url"
-msgstr ""
+msgstr "Ei suuda andmeid alla laadida, url"
 
 #: src/pluginmanager.cpp:5332 src/pluginmanager.cpp:5340
 #: src/pluginmanager.cpp:5359 src/pluginmanager.cpp:5383
@@ -5902,7 +5902,7 @@ msgstr "Eemalda"
 
 #: src/pluginmanager.cpp:6294
 msgid "Upgrade to Version "
-msgstr ""
+msgstr "Uuenda versioonini "
 
 #: src/pluginmanager.cpp:6301
 msgid "Install..."

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2020-08-28 14:51\n"
+"PO-Revision-Date: 2020-09-28 03:05\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -178,7 +178,7 @@ msgstr "j/kg"
 
 #: src/GribSettingsDialog.cpp:39
 msgid "dBZ"
-msgstr ""
+msgstr "dBZ"
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:418
 #: src/GribUIDialogBase.cpp:927 src/GribUIDialogBase.cpp:1867
@@ -271,7 +271,7 @@ msgstr "Kuva iso-CAPE"
 
 #: src/GribSettingsDialog.cpp:811
 msgid "Display Comp. Reflectivity"
-msgstr ""
+msgstr "Kuva komp.peegeldust"
 
 #: src/GribSettingsDialog.cpp:818 src/GribSettingsDialog.cpp:889
 #: src/GribUIDialogBase.cpp:837
@@ -375,11 +375,11 @@ msgstr "Soojusjuhtiv saadaval olev potentsiaalne energia"
 
 #: src/GribUIDialogBase.cpp:557
 msgid "Comp. Refl."
-msgstr ""
+msgstr "Komp.peegeldus"
 
 #: src/GribUIDialogBase.cpp:561
 msgid "Composite Reflectivity"
-msgstr ""
+msgstr "Komposiitpeegeldus"
 
 #: src/GribUIDialogBase.cpp:570 src/CursorData.cpp:241
 msgid "Altitude"
@@ -611,7 +611,7 @@ msgstr "GKL"
 #: src/GribUIDialogBase.cpp:1331 src/GribUIDialogBase.cpp:1468
 #: src/GribUIDialogBase.cpp:2000
 msgid "Cancel"
-msgstr ""
+msgstr "Loobu"
 
 #: src/GribUIDialogBase.cpp:1414 src/GribUIDialogBase.cpp:1510
 msgid "General Options"
@@ -683,7 +683,7 @@ msgstr "Aja valikud"
 
 #: src/GribUIDialogBase.cpp:1499
 msgid "GRIB PlugIn Preferences"
-msgstr ""
+msgstr "GRIB-plugIna eelistused"
 
 #: src/GribUIDialogBase.cpp:1590
 msgid "Profile"
@@ -807,7 +807,7 @@ msgstr "Õhu temperattur (2 m)"
 
 #: src/GribUIDialogBase.cpp:1889
 msgid "Comp. Reflect."
-msgstr ""
+msgstr "Komp.peegeldus"
 
 #: src/GribUIDialogBase.cpp:1892
 msgid "Sea Temperature(surf.)"
@@ -995,7 +995,7 @@ msgstr "Mere temp."
 
 #: src/GribTable.cpp:194
 msgid "C. Reflect."
-msgstr ""
+msgstr "K.peegeldus"
 
 #: src/GribTable.cpp:206
 msgid "Current,Dir"
@@ -1166,5 +1166,5 @@ msgstr "Lühendatud isobaari numbrid"
 
 #: src/CursorData.cpp:534
 msgid "Display Iso Reflectivity"
-msgstr ""
+msgstr "Kuva iso-peegeldust"
 
