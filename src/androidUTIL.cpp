@@ -32,6 +32,7 @@
 #include <wx/aui/aui.h>
 #include <wx/fontpicker.h>
 #include <wx/filepicker.h>
+#include <wx/zipstrm.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -404,6 +405,8 @@ class androidUtilHandler : public wxEvtHandler
     DECLARE_EVENT_TABLE()
 };
 
+const char  wxMessageBoxCaptionStr [] = "Message";
+
 
 BEGIN_EVENT_TABLE ( androidUtilHandler, wxEvtHandler )
 EVT_TIMER ( ANDROID_EVENT_TIMER, androidUtilHandler::onTimerEvent )
@@ -428,6 +431,8 @@ androidUtilHandler::androidUtilHandler()
     bool c = a.IsEqual(b);
     
     wxFilePickerCtrl *pfpc = new wxFilePickerCtrl();
+    
+    wxZipEntry *entry = new wxZipEntry();
     
 }
 
