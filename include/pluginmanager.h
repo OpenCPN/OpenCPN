@@ -526,6 +526,9 @@ public:
       ~PluginPanel();
 
       void OnPluginSelected( wxMouseEvent &event );
+      void OnPluginSelectedUp( wxMouseEvent &event );
+      void DoPluginSelect();
+
       void SetSelected( bool selected );
       void OnPluginPreferences( wxCommandEvent& event );
       void OnPluginEnableToggle( wxCommandEvent& event );

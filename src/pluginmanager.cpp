@@ -6043,6 +6043,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     wxBoxSizer* itemBoxSizer01 = new wxBoxSizer(wxHORIZONTAL);
     topSizer->Add(itemBoxSizer01, 0, wxEXPAND);
     Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
     double iconSize = GetCharWidth() * 35 / 10;
     wxImage plugin_icon;
@@ -6072,6 +6073,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         
     itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 10);
     m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    m_itemStaticBitmap->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
@@ -6095,6 +6097,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         }       
         m_pName = new wxStaticText( this, wxID_ANY, nameString );
         m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pName->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
         itemBoxSizer02->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
 
         wxFlexGridSizer* sl1 = new wxFlexGridSizer(2,0,0);
@@ -6107,6 +6110,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
             m_pVersion->Hide();
         }
         m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pVersion->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
         m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
         sl1->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
@@ -6124,6 +6128,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         m_pDescription = new wxStaticText( this, wxID_ANY, descriptionString, wxDefaultPosition, wxSize( maxDescriptionWidth, -1), wxST_NO_AUTORESIZE );
         itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
         m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
     }
     else{
@@ -6136,7 +6141,8 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         wxString nameString = m_pPlugin->m_common_name;
         m_pName = new wxStaticText( this, wxID_ANY, nameString );
         m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-        
+        m_pName->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+
         // Avoid known bug in wxGTK3
     #ifndef __WXGTK3__    
         wxFont font = GetFont();
@@ -6152,6 +6158,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
             m_pVersion->Hide();
         }
         m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pVersion->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
         m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
         itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
@@ -6161,6 +6168,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
         itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
         m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
     }
     
@@ -6244,7 +6252,35 @@ void PluginPanel::SetActionLabel( wxString &label)
     Refresh();
 }
 
+static         wxStopWatch swclick;
+static  int downx, downy;
+
 void PluginPanel::OnPluginSelected( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__    
+    swclick.Start();
+    event.GetPosition( &downx, &downy );
+#else
+    DoPluginSelect();
+#endif    
+}
+
+void PluginPanel::OnPluginSelectedUp( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__    
+    qDebug() << swclick.Time();
+    if(swclick.Time() < 200){
+        int upx, upy;
+        event.GetPosition(&upx, &upy);
+        if( (fabs(upx-downx) < GetCharWidth()) && (fabs(upy-downy) < GetCharWidth()) ){
+            DoPluginSelect();
+        }
+    }
+    swclick.Start();
+#endif    
+}
+
+void PluginPanel::DoPluginSelect( )
 {
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
