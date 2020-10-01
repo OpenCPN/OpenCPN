@@ -156,6 +156,7 @@ extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, flo
 
 extern double           g_ChartNotRenderScaleFactor;
 extern double           gLat, gLon, gCog, gSog, gHdt;
+extern double           gRot;
 //extern double           vLat, vLon;
 extern ChartDB          *ChartData;
 extern bool             bDBUpdateInProgress;
@@ -5625,21 +5626,46 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
             wxPen ppPen2( cPred, g_cog_predictor_width, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
-            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                               lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+            double Angle = 0;
+            if ( abs(gRot) > 0.2 ){
+                                std::cout << gRot << std::endl;
+                wxPoint C, RotPredPoint ;
+                double rot_center_lat, rot_center_lon, rot_pred_lat, rot_pred_lon;
+                double circumf = gSog/60 * 360/abs(gRot);
+                double radius = circumf / 2 / PI;
+                double CrsToCenter = gCog + (gRot > 0 ? 90: -90);
+                Angle = gRot * g_ownship_predictor_minutes;
+                double CrsCtoPredPt = CrsToCenter + 180 + Angle;
+                //ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+                //GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
                 
-            if( g_cog_predictor_width > 1 ) {
-                float line_width = g_cog_predictor_width/3.;
-                    
-                 wxDash dash_long3[2];
-                 dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
-                 dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
-                    
-                 wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), wxMax(1, line_width), wxPENSTYLE_USER_DASH );
-                 ppPen3.SetDashes( 2, dash_long3 );
-                 dc.SetPen( ppPen3 );
-                 dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                               lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+                ll_gc_ll( gLat, gLon, CrsToCenter, radius, &rot_center_lat, &rot_center_lon );
+                ll_gc_ll( rot_center_lat, rot_center_lon, CrsCtoPredPt, radius, &rot_pred_lat, &rot_pred_lon );
+                C = VPoint.GetPixFromLL(rot_center_lat, rot_center_lon);
+                RotPredPoint = VPoint.GetPixFromLL(rot_pred_lat, rot_pred_lon);
+                dc.DrawArc( wxPoint(lGPSPoint.x, lGPSPoint.y), C, Angle);
+               ///* PredPoint = RotPredPoint;
+                lPredPoint.x = RotPredPoint.x;
+                lPredPoint.y = RotPredPoint.y;
+    //std::cout << "draw curved prediction ownship  " << gRot <<  "  " << Angle <<std::endl;
+            }
+            else{
+                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+                
+                if( g_cog_predictor_width > 1 ) {
+                    float line_width = g_cog_predictor_width/3.;
+                        
+                    wxDash dash_long3[2];
+                    dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
+                    dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
+                        
+                    wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), wxMax(1, line_width), wxPENSTYLE_USER_DASH );
+                    ppPen3.SetDashes( 2, dash_long3 );
+                    dc.SetPen( ppPen3 );
+                    dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+                }
             }
                 
                 
@@ -5651,8 +5677,9 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
             wxPoint icon[4];
                 
             float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
-                                    (float) ( lPredPoint.x - lShipMidPoint.x ) );
-            cog_rad += (float)PI;
+                                    (float) ( lPredPoint.x - lShipMidPoint.x ) )
+                                    + Angle/(2*PI);
+            cog_rad = (float) fmod(cog_rad+100*PI,2*PI);
                 
             for( int i = 0; i < 4; i++ ) {
                 int j = i * 2;
@@ -5691,8 +5718,11 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
             ppPen2.SetDashes( 2, dash_short );
             
             dc.SetPen( ppPen2 );
-            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                     std::cout << gRot << std::endl;       
+            
+                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                            lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y );
+            
             
             wxPen ppPen1( cPred, g_cog_predictor_width/3, wxPENSTYLE_SOLID );
             dc.SetPen( ppPen1 );

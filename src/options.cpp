@@ -349,7 +349,8 @@ extern  wxString GetShipNameFromFile(int);
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr   g_canvasArray;
-
+extern Kalman   KalmanROT;
+extern bool     g_b_UseRot;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 static int lang_list[] = {
@@ -3073,6 +3074,33 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   m_pText_OSCOG_Predictor = new wxTextCtrl(itemPanelShip, wxID_ANY);
   dispOptionsGrid->Add(m_pText_OSCOG_Predictor, 0, wxALIGN_RIGHT);
+ 
+  
+  
+  
+
+  pUseRot = new wxCheckBox(itemPanelShip, wxNewId(),
+                               _("Use rotation for ships predictionline"));
+  
+  
+  dispOptionsGrid->Add(pUseRot, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
+  wxBoxSizer* rotsizer = new wxBoxSizer(wxHORIZONTAL);
+  dispOptionsGrid->Add(rotsizer, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
+  wxStaticText* ProcessNoiceTxt =
+      new wxStaticText(itemPanelShip, wxID_ANY, _("     ProcessNoice"));
+  rotsizer->Add(ProcessNoiceTxt,0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);    
+  p_ProcessNoice = new wxTextCtrl( itemPanelShip, wxID_ANY);
+  p_ProcessNoice->SetValue( wxString::Format(wxT("%5f"), KalmanROT.getProcessNoise() ) );
+  rotsizer->Add(p_ProcessNoice,0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
+  wxStaticText* SensorNoiceTxt =
+      new wxStaticText(itemPanelShip, wxID_ANY, _("    SensorNoice"));
+  rotsizer->Add(SensorNoiceTxt,0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);    
+  p_SensorNoice = new wxTextCtrl( itemPanelShip, wxID_ANY);
+  p_SensorNoice->SetValue( wxString::Format(wxT("%5f"), KalmanROT.getSensorNoise() ) );
+  rotsizer->Add(p_SensorNoice,0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
+  rotsizer->Add( 0, 0, 1, wxEXPAND, 0 );
+  
+  
 
   wxStaticText* pStatic_OSHDT_Predictor = new wxStaticText(
       itemPanelShip, wxID_ANY, _("Heading Predictor Length (NMi)"));
@@ -7679,7 +7707,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
   m_pText_OSHDT_Predictor->GetValue().ToDouble(&g_ownship_HDTpredictor_miles);
-
+  
+  
+  double temp11, temp12;  
+      p_ProcessNoice->GetValue().ToDouble(&temp11);
+      p_SensorNoice->GetValue().ToDouble(&temp12);
+      KalmanROT.setParameters(temp11, temp12);
+  g_b_UseRot = pUseRot->GetValue();    
   double temp_dbl;
   g_iNavAidRadarRingsNumberVisible =
       pNavAidRadarRingsNumberVisible->GetSelection();

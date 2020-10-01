@@ -90,6 +90,7 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Xte );
    response_table.Append( (RESPONSE *) &Mwd );
    response_table.Append( (RESPONSE *) &Mwv );
+   response_table.Append( (RESPONSE *) &Rot );
    
 
 /*

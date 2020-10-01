@@ -4929,4 +4929,22 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
     }
 }
 
-
+// InputSmoothing::InputSmoothing()
+// {
+//     StartTicks = 0;
+//     StartSeconds = 0;
+// }
+// InputSmoothing::InputSmoothing(const int seconds, const int FilterArt)
+// {
+//     EndSeconds = seconds;    
+//     ArtOfFilter = FilterArt;
+// }
+// 
+// double InputSmoothing::Input( const double inp)
+// {
+//     int Ticks= wxDateTime::Now().GetTicks();
+//     if (StartTicks == 0) StartTicks = Ticks;
+//     Mem.push_back(inp);
+//     
+//     return 0.1;
+// }

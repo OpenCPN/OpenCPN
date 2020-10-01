@@ -93,6 +93,7 @@ public:
      void DrawCircle(const wxPoint &pt, wxCoord radius) { DrawCircle(pt.x, pt.y, radius); }
      void StrokeCircle(wxCoord x, wxCoord y, wxCoord radius);
      void DrawArc(const wxPoint &start, const wxPoint &center, const double &Angle);
+     void DrawEllipticArc( wxCoord x, wxCoord y, wxCoord width, wxCoord height, float StartAngle, float EndAngle );
 
      void DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height);
      void DrawPolygon(int n, wxPoint points[], wxCoord xoffset = 0, wxCoord yoffset = 0, float scale =1.0, float angle = 0.0);

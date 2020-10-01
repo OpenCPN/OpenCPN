@@ -104,7 +104,7 @@
 #include "xte.hpp"
 #include "mwd.hpp"
 #include "mwv.hpp"
-
+#include "rot.hpp"
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
@@ -201,6 +201,7 @@ class NMEA0183
        XTE Xte;
        MWD Mwd;
        MWV Mwv;
+       ROT Rot;
  /*
       ROT Rot;
       RPM Rpm;

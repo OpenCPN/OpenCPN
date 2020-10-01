@@ -1289,7 +1289,32 @@ void ocpnDC::DrawArc(const wxPoint &start, const wxPoint &center, const double &
         SetBrush( tb );  
     }
     
+    
 }
+void ocpnDC::DrawEllipticArc( wxCoord x, wxCoord y, wxCoord width, wxCoord height, float StartAngle, float EndAngle )
+{
+    // Angle is drawn anticlockwise from StartAngle(degrees 0 = top)
+    if(dc){
+        wxBrush tb = GetBrush();
+        wxBrush t = GetBrush();
+        t.SetStyle(wxBRUSHSTYLE_TRANSPARENT);
+        SetBrush( t );
+
+        dc->DrawEllipticArc(
+            (wxCoord)wxRound(x - width/2),
+            (wxCoord)wxRound(y - height/2),
+            width,
+            height,
+            StartAngle+90,
+            EndAngle+90);
+        SetBrush( tb );  
+    }
+
+}
+// wxPoint ocpnDC::DrawPrediction(wxCoord x, wxCoord x, double cog, double sog, double rot, bool rot_valid)
+// {
+//     
+// }
 
 void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
 {

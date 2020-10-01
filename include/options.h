@@ -563,13 +563,14 @@ class options : private Uncopyable,
   wxFlexGridSizer *realSizes;
   wxTextCtrl *m_pOSLength, *m_pOSWidth, *m_pOSGPSOffsetX, *m_pOSGPSOffsetY;
   wxTextCtrl *m_pOSMinSize, *m_pText_ACRadius;
+  wxTextCtrl *p_ProcessNoice, *p_SensorNoice;
   wxStaticBoxSizer *dispOptions, *dispWaypointOptions;
   wxScrolledWindow *itemPanelShip, *itemPanelRoutes;
   wxBoxSizer *ownShip, *Routes;
 
   OCPNIconCombo *pWaypointDefaultIconChoice;
   OCPNIconCombo *pRoutepointDefaultIconChoice;
-  wxCheckBox    *pScaMinChckB, *pScaMinOverruleChckB;
+  wxCheckBox    *pScaMinChckB, *pScaMinOverruleChckB, *pUseRot;
   wxTextCtrl*   m_pText_ScaMin;
   
   // For the font page

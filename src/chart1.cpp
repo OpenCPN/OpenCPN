@@ -253,6 +253,8 @@ RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
 
 double                    gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
+double                    gRot;
+bool                      g_b_UseRot;
 wxString                  gRmcDate, gRmcTime;
 double                    vLat, vLon;
 double                    initial_scale_ppm, initial_rotation;
@@ -381,9 +383,11 @@ int                       sat_watchdog_timeout_ticks;
 int                       gGPS_Watchdog;
 bool                      bGPSValid;
 
+wxDateTime                gHdx_LastUpdate;
 int                       gHDx_Watchdog;
 int                       gHDT_Watchdog;
 int                       gVAR_Watchdog;
+int                       gRot_Watchdog;
 bool                      g_bHDT_Rx;
 bool                      g_bVAR_Rx;
 
@@ -428,6 +432,10 @@ S57ClassRegistrar         *g_poRegistrar;
 s57RegistrarMgr           *m_pRegistrarMan;
 
 CM93OffsetDialog          *g_pCM93OffsetDialog;
+Kalman                    KalmanHDG = Kalman(0.125,32,1023,0);
+Kalman                    KalmanHDT = Kalman(0.125,32,1023,0);
+Kalman                    KalmanHDM = Kalman(0.125,32,1023,0);
+Kalman                    KalmanROT = Kalman(0.125,32,1023,0);
 
 #ifdef __WXOSX__
 #include "macutils.h"
@@ -2481,6 +2489,7 @@ extern ocpnGLOptions g_GLOptions;
     gHDT_Watchdog = 2;
     gSAT_Watchdog = 2;
     gVAR_Watchdog = 2;
+    gRot_Watchdog = 2;
 
     //  Most likely installations have no ownship heading information
     g_bHDT_Rx = false;
@@ -7457,7 +7466,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if( g_nNMEADebug && ( gSAT_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***SAT Watchdog timeout...") );
     }
-
+    gRot_Watchdog--;
     //    Build and send a Position Fix event to PlugIns
     if( g_pi_manager )
     {
@@ -9014,9 +9023,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
     if( m_NMEA0183.PreParse() )
     {
-        wxString IDs[] = {_T("RMC"), _T("HDT"), _T("HDG"), _T("HDM"),
+        wxString IDs[] = {_T("RMC"), _T("HDT"), _T("HDG"), _T("HDM"), _T("ROT"),
                           _T("VTG"), _T("GSV"), _T("GGA"), _T("GLL")};
-        enum {RMC, HDT, HDG, HDM, VTG, GSV, GGA, GLL, ID_NUM };
+        enum {RMC, HDT, HDG, HDM, ROT, VTG, GSV, GGA, GLL, ID_NUM };
 
         int id;
         int num = g_bUseGLL ? ID_NUM : GLL;
@@ -9069,7 +9078,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case HDT:
-                gHdt = m_NMEA0183.Hdt.DegreesTrue;
+                gHdt = KalmanHDG.getFilteredValue( m_NMEA0183.Hdt.DegreesTrue);
                 if( !std::isnan(m_NMEA0183.Hdt.DegreesTrue) )
                 {
                     g_bHDT_Rx = true;
@@ -9078,7 +9087,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case HDG:
-                gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                gHdm = KalmanHDG.getFilteredValue( m_NMEA0183.Hdg.MagneticSensorHeadingDegrees);
                 if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
 
@@ -9098,9 +9107,17 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case HDM:
-                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+                gHdm = KalmanHDG.getFilteredValue(m_NMEA0183.Hdm.DegreesMagnetic);
                 if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) )
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                break;
+            case ROT:
+                if (g_b_UseRot)
+                    gRot = KalmanROT.getFilteredValue( m_NMEA0183.Rot.RotSensorDegreesMinute);
+                else
+                    gRot = m_NMEA0183.Rot.RotSensorDegreesMinute;
+                if( !std::isnan(m_NMEA0183.Rot.RotSensorDegreesMinute) )
+                    gRot_Watchdog = gps_watchdog_timeout_ticks;
                 break;
 
             case VTG:
