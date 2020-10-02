@@ -123,6 +123,7 @@ extern GLuint g_raster_format;
 #include "ConfigMgr.h"
 
 #include "SignalKDataStream.h"
+#include "config_var.h"
 
 #if !defined(__WXOSX__)  
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
@@ -274,6 +275,7 @@ extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
 extern wxString g_GPS_Ident;
 extern bool g_bGarminHostUpload;
+extern wxString  g_compatOS;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale* plocale_def_lang;
@@ -8841,6 +8843,16 @@ void options::DoOnPageChange(size_t page) {
       m_pPlugInCtrl->UpdateSelections();
 
       ::wxEndBusyCursor();
+
+      wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
+      ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+      compat_os.listen(this, EVT_COMPAT_OS_CHANGE);
+      Bind(EVT_COMPAT_OS_CHANGE,
+           [&](wxCommandEvent&) {
+               g_pi_manager->LoadAllPlugIns(false);
+               auto plugins = g_pi_manager->GetPlugInArray();
+               m_pPlugInCtrl->ReloadPluginPanels(plugins);
+           });
     }
 
     k_plugins = TOOLBAR_CHANGED;

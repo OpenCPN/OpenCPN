@@ -160,27 +160,29 @@ static std::string dirListPath(std::string name)
 }
 
 
-std::string PluginHandler::fileListPath(std::string name)
+CompatOs* CompatOs::getInstance()
 {
-    std::string name_lower = ocpn::tolower(name);
-    return pluginsConfigDir() + SEP + name_lower + ".files";
+    static std::string last_global_os("");
+    static CompatOs* instance = 0;
+
+    if (!instance || last_global_os != g_compatOS) {
+        instance = new(CompatOs);
+        last_global_os = g_compatOS;
+    }
+    return instance;
 }
 
 
-bool PluginHandler::isCompatible(const PluginMetadata& metadata,
-                                 const char* os, const char* os_version)
-
+CompatOs::CompatOs(): _name(PKG_TARGET), _version(PKG_TARGET_VERSION)
 {
-    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
-    
     // Get the specified system definition,
     //   From the OCPN_OSDetail structure probed at startup.
     //   or the environment override,
     //   or the config file override
     //   or the baked in (build system) values.  Not too useful in cross-build environments...
 
-    std::string compatOS(os);
-    std::string compatOsVersion(os_version);
+    std::string compatOS(_name);
+    std::string compatOsVersion(_version);
 
     // Handle the most common cross-compile, safely
 #ifdef ocpnARM 
@@ -191,24 +193,43 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 #endif    
 
     if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
-        // Undocumented test hook.
-        compatOS = getenv("OPENCPN_COMPAT_TARGET");
-        if (compatOS.find(':') != std::string::npos) {
-            auto tokens = ocpn::split(compatOS.c_str(), ":");
-            compatOS = tokens[0];
-            compatOsVersion = tokens[1];
+        _name = getenv("OPENCPN_COMPAT_TARGET");
+        if (_name.find(':') != std::string::npos) {
+            auto tokens = ocpn::split(_name.c_str(), ":");
+            _name = tokens[0];
+            _version = tokens[1];
         }
     }
     else if (g_compatOS != "") {
         // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
-        compatOS = g_compatOS;
+        _name = g_compatOS;
         if (g_compatOsVersion != ""){
-            compatOsVersion = g_compatOsVersion;
+            _version = g_compatOsVersion;
         }
     }
-    compatOS = ocpn::tolower(compatOS);
-    compatOsVersion = ocpn::tolower(compatOsVersion);
-    
+    _name = ocpn::tolower(_name);
+    _version = ocpn::tolower(_version);
+}
+
+
+std::string PluginHandler::fileListPath(std::string name)
+{
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    return pluginsConfigDir() + SEP + name + ".files";
+}
+
+
+bool PluginHandler::isCompatible(const PluginMetadata& metadata,
+                                 const char* os, const char* os_version)
+
+{
+    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
+
+
+    auto compat_os = CompatOs::getInstance();
+    std::string compatOS(compat_os->name());
+    std::string compatOsVersion(compat_os->version());
+
     //  Compare to the required values in the metadata
     std::string plugin_os = ocpn::tolower(metadata.target);
 
@@ -837,6 +858,26 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
     ParseCatalog(xml, &ctx);
 }
 
+const std::map<std::string, int> PluginHandler::getCountByTarget()
+{
+    auto plugins = getInstalled();
+    auto a = getAvailable();
+    plugins.insert(plugins.end(), a.begin(), a.end());
+    std::map<std::string, int> count_by_target;
+    for (const auto& p: plugins) {
+        if (p.target == "") {
+            continue;    // Built-in plugins like  dashboard et. al.
+        }
+        auto key = p.target + ":" + p.target_version;
+        if (count_by_target.find(key) == count_by_target.end()) {
+            count_by_target[key] = 1;
+        }
+        else {
+            count_by_target[key] += 1;
+        }
+    }
+    return count_by_target;
+}
 
 void PluginHandler::cleanupFiles(const std::string& manifestFile,
                                  const std::string& plugname)
@@ -924,6 +965,9 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable()
         file.close();
         auto status = catalogHandler->DoParseCatalog(xml, &ctx);
         if (status == CatalogHandler::ServerStatus::OK) {
+            catalogData.undef = false;
+            catalogData.version = ctx.version;
+            catalogData.date = ctx.date;
         }
     }
 
