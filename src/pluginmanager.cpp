@@ -5164,6 +5164,8 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( this, wxID_ANY, _("Plugin Catalog") );
      wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static, wxVERTICAL );
      topSizer->Add( itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2 );
+     
+#ifndef __OCPN__ANDROID__     
      // First line
      m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
      itemStaticBoxSizer4->Add(m_catalogText,
@@ -5182,61 +5184,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer2->Add( m_tarballButton, 0, wxALIGN_LEFT | wxLEFT, 2 * GetCharWidth() );
      m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
-#if 0     
-<<<<<<< HEAD
 
-     SetUpdateButtonLabel();
-
-     // Next line
-     wxBoxSizer* rowSizer3 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer3, 0, wxEXPAND | wxALL, 4 );
-     
-     m_customText = new wxStaticText( this, wxID_STATIC, _T("Custom url"));
-     rowSizer3->Add( m_customText, 0, wxALIGN_LEFT | wxRIGHT, 2 * GetCharWidth() );
-     m_tcCustomURL = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
-     rowSizer3->Add( m_tcCustomURL, 1, wxEXPAND  );
-
-     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom"))){
-         m_tcCustomURL->Show();
-         m_customText->Show();
-     }
-     else{
-         m_tcCustomURL->Hide();
-         m_customText->Hide();
-     }
-//#else
-     SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));              // light blue
-     pConfig->SetPath( _T("/PlugIns/") );
-     wxString expert = pConfig->Read( "CatalogExpert", "0");
-
-     // First line
-     m_catalogText = new wxStaticText( this, wxID_STATIC, GetCatalogText(false));
-     itemStaticBoxSizer4->Add( m_catalogText, 0, wxALIGN_LEFT );
-     if(expert.IsSameAs(_T("0")))
-        m_catalogText->Hide();
-     
-     // Next line
-     m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog:Master"), wxDefaultPosition, wxDefaultSize, 0 );
-     itemStaticBoxSizer4->Add( m_updateButton, 1, wxALIGN_LEFT );
-     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
-
-     // Next line
-     wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
-
-     wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
-     rowSizer2->Add( tchannels, 1, wxALIGN_RIGHT | wxALL, 5 );
-     if(expert.IsSameAs(_T("0")))
-        tchannels->Hide();
-
-     wxArrayString channels;
-     channels.Add(_T( "Master" ));
-     channels.Add(_T( "Beta" ));
-     if(expert.IsSameAs(_T("1"))){
-        channels.Add(_T( "Alpha" ));
-        channels.Add(_T( "Custom..." ));
-//=======
-#endif
      rowSizer2->AddSpacer( 4 * GetCharWidth() );
      m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                                  wxDefaultPosition, wxDefaultSize, 0 );
@@ -5245,7 +5193,6 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
          m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                             &CatalogMgrPanel::OnPluginSettingsButton,
                             this);
-//>>>>>>> 2103e357eaf039202d984afe061ab7fc6e86843c
      }
      else {
          m_adv_button->Bind(
@@ -5272,6 +5219,39 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      catalog.listen(this, EVT_CATALOG_CHANGE);
      Bind(EVT_CATALOG_CHANGE,
           [&](wxCommandEvent&) { SetUpdateButtonLabel(); });
+
+#else           // Android
+    SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));              // light blue
+    ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+    if (expert.get(false)){
+        m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_updateButton, 0, wxALIGN_LEFT );
+        m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
+        SetUpdateButtonLabel();
+    }
+    else{
+             // First line
+        m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
+        itemStaticBoxSizer4->Add(m_catalogText, wxSizerFlags().Border().Proportion(1));
+        m_catalogText->SetLabel(GetCatalogText(false));
+
+        m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_updateButton, 0, wxALIGN_LEFT );
+        m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
+        SetUpdateButtonLabel();
+        
+        // Next line
+        m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_adv_button, 0, wxALIGN_LEFT );
+        m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnPluginSettingsButton,this);
+        
+        // Next line
+        m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_tarballButton, 0, wxALIGN_LEFT | wxLEFT, 2 * GetCharWidth() );
+        m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
+    }
+
+#endif     
 }
 
 CatalogMgrPanel::~CatalogMgrPanel()
