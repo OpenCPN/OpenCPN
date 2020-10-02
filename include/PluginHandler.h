@@ -59,6 +59,7 @@
 #include "config.h"
 
 #include <string>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -68,10 +69,22 @@
 
 #include "catalog_parser.h"
 
+
 bool isRegularFile(const char* path);
 
 
+class CompatOs {
 
+    public:
+        static CompatOs* getInstance();
+        std::string name()  { return _name; }
+        std::string version() { return _version; }
+
+    private:
+        CompatOs();
+        std::string _name;
+        std::string _version;
+};
 
 
 class PluginHandler {
@@ -104,6 +117,9 @@ class PluginHandler {
 
         /** Return list of available, not installed plugins. */
         const std::vector<PluginMetadata> getAvailable();
+        
+        /** Map of available plugin targets -> number of occurences. */
+        const std::map<std::string, int> getCountByTarget();
 
         /** Return path to metadata XML file. */
         std::string getMetadataPath();
