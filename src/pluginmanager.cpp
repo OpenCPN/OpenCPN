@@ -2092,7 +2092,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         if( b_pi_info_usable )
         {
             b_compat = ( pi_info.type_magic == own_info.type_magic );
-            if(g_Platform->isFlatpacked()){             // Ignore specific difference in OSABI field on flatpak builds
+            if(1/*g_Platform->isFlatpacked()*/){             // Ignore specific difference in OSABI field on flatpak builds
                     if( (pi_info.type_magic ^ own_info.type_magic) == 0x00030000)
                         b_compat = true;
             }
