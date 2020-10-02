@@ -13,6 +13,18 @@ std::string ptr_key(const void* ptr)
     return oss.str();
 }
 
+/**
+ * Add >> support for wxString, for some reason missing in wxWidgets 3.0,
+ * required by ConfigVar::get()
+ */
+std::istream& operator >> (std::istream &input, wxString& ws)
+{
+    std::string s;
+    input >> s;
+    ws.Append(s);
+    return input;
+}
+
 
 SingletonVar* SingletonVar::getInstance(const std::string& key)
 {
@@ -88,17 +100,6 @@ void ConfigVar<T>::set(const T& arg)
 }
 
 
-/**
- * Add >> support for wxString, for some reason missing in wxWidgets 3.0,
- * required by ConfigVar::get()
- */
-std::istream& operator >> (std::istream &input, wxString& ws)
-{
-    std::string s;
-    input >> s;
-    ws.Append(s);
-    return input;
-}
 
 
 /* Explicitly instantiate the types we support. */
