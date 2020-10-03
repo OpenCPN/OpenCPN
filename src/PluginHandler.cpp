@@ -299,7 +299,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
                 if( (plugin_os == std::string("ubuntu-x86_64")) && (plugin_os_version == std::string("16.04")) )
                     rv = true;
             }
-            else if(target_vers == std::string("11") ){        // Sid
+            else if (target_vers == "11"  || target_vers == "sid"){        // Sid
                 if( (plugin_os == std::string("ubuntu-gtk3-x86_64")) && (plugin_os_version == std::string("20.04")) )
                     rv = true;
             }
