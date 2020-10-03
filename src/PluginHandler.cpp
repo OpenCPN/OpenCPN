@@ -181,6 +181,8 @@ CompatOs::CompatOs(): _name(PKG_TARGET), _version(PKG_TARGET_VERSION)
     //   or the config file override
     //   or the baked in (build system) values.  Not too useful in cross-build environments...
 
+    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
+
     std::string compatOS(_name);
     std::string compatOsVersion(_version);
 
