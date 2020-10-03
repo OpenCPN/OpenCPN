@@ -150,8 +150,8 @@ void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) cons
 }
 
 void SignalKEventHandler::updateNavigationPosition(wxJSONValue &value, const wxString &sfixtime) const {
-    if(value.HasMember("latitude")
-       && value.HasMember("longitude")) {
+    if ((value.HasMember("latitude" && value["latitude"].IsDouble()))
+        && (value.HasMember("longitude") && value["longitude"].IsDouble())) {
         //wxLogMessage(_T(" ***** Position Update"));
         m_frame->setPosition(value["latitude"].AsDouble(),
                              value["longitude"].AsDouble());
