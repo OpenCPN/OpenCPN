@@ -25,13 +25,13 @@
  ***************************************************************************
  */
 
-
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <assert.h>
 #include <cmath>
 // xw 2.8
 #include <wx/filename.h>
