@@ -9319,7 +9319,10 @@ void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxStrin
     //    but only if NMEA HDT sentence is not being received
 
     if( !g_bHDT_Rx ) {
-        if( !std::isnan(gVar) && !std::isnan(gHdm)) {
+        if( !std::isnan(gHdm)) {
+            //Set gVar if needed from manual entry. gVar will be overwritten if 
+            // WMM plugin is available
+            if( std::isnan(gVar) && (g_UserVar != 0.0) ) gVar = g_UserVar; 
             gHdt = gHdm + gVar;
             if (gHdt < 0)
                 gHdt += 360.0;
