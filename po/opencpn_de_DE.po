@@ -171,7 +171,7 @@ msgstr "OpenCPN Info"
 
 #: src/ais.cpp:118
 msgid "Underway"
-msgstr "in Fahrt befindlich"
+msgstr "in Fahrt unter Maschine"
 
 #: src/ais.cpp:119
 msgid "At Anchor"
@@ -199,11 +199,11 @@ msgstr "auf Grund gelaufen"
 
 #: src/ais.cpp:125
 msgid "Engaged in Fishing"
-msgstr "Fischendes Fahrzeug"
+msgstr "am Fischen"
 
 #: src/ais.cpp:126
 msgid "Under way sailing"
-msgstr "in Fahrt"
+msgstr "in Fahrt unter Segeln"
 
 #: src/ais.cpp:127 src/ais.cpp:156
 msgid "High Speed Craft"
@@ -410,7 +410,7 @@ msgstr "Bake, Einzelgefahrenstelle"
 
 #: src/ais.cpp:186
 msgid "Beacon, Safe Water"
-msgstr "Bake, sicheres Wasser"
+msgstr "Bake, sicheres Wasser (Ansteuertonne)"
 
 #: src/ais.cpp:187
 msgid "Beacon, Special Mark"
@@ -606,11 +606,11 @@ msgstr "Kard. W"
 
 #: src/ais.cpp:247
 msgid "Port"
-msgstr "Hafen"
+msgstr "Bb."
 
 #: src/ais.cpp:248
 msgid "Stbd"
-msgstr "Stb."
+msgstr "Stbd."
 
 #: src/ais.cpp:249 src/ais.cpp:250 src/ais.cpp:260 src/ais.cpp:261
 msgid "Pref. Chnl"

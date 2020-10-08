@@ -212,11 +212,11 @@ msgstr "runter"
 
 #: src/dashboard_pi.cpp:1358 src/dashboard_pi.cpp:1712
 msgid "Stbd"
-msgstr "Stb."
+msgstr "Steuerbord"
 
 #: src/dashboard_pi.cpp:1361 src/dashboard_pi.cpp:1714
 msgid "Port"
-msgstr "Bbord"
+msgstr "Backbord"
 
 #: src/dashboard_pi.cpp:2299
 msgid "Dashboard preferences"
