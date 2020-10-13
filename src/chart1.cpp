@@ -8874,7 +8874,6 @@ void MyFrame::setCourseOverGround(double cog)
     if(!g_own_ship_sog_cog_calc) {
         wxLogDebug(wxString::Format(_T("COG: %f"), cog));
         gCog = cog;
-        gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
 }
 
@@ -8883,7 +8882,6 @@ void MyFrame::setSpeedOverGround(double sog)
     if(!g_own_ship_sog_cog_calc) {
         wxLogDebug(wxString::Format(_T("SOG: %f"), sog));
         gSog = sog;
-        gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
 }
 
