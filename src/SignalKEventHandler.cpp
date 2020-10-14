@@ -39,7 +39,7 @@
 
 extern PlugInManager    *g_pi_manager;
 wxString                g_ownshipMMSI_SK;
-extern bool             bGPSValid;
+bool             bGPSValid_SK;
 
 void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
@@ -115,10 +115,10 @@ void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) cons
         wxJSONValue &value = item["value"];
         if(update_path == _T("navigation.position")) {
             updateNavigationPosition(value, sfixtime);
-        } else if(update_path == _T("navigation.speedOverGround") && bGPSValid)
+        } else if(update_path == _T("navigation.speedOverGround") && bGPSValid_SK)
         {
             updateNavigationSpeedOverGround(value, sfixtime);
-        } else if(update_path == _T("navigation.courseOverGroundTrue") && bGPSValid)
+        } else if(update_path == _T("navigation.courseOverGroundTrue") && bGPSValid_SK)
         {
             updateNavigationCourseOverGround(value, sfixtime);
         } else if(update_path == _T("navigation.courseOverGroundMagnetic"))
@@ -157,6 +157,10 @@ void SignalKEventHandler::updateNavigationPosition(wxJSONValue &value, const wxS
         m_frame->setPosition(value["latitude"].AsDouble(),
                              value["longitude"].AsDouble());
         m_frame->PostProcessNMEA(true, false, sfixtime);
+        bGPSValid_SK = true;
+    }
+    else {
+        bGPSValid_SK = false;
     }
 }
 
@@ -181,8 +185,7 @@ void SignalKEventHandler::updateNavigationCourseOverGround(wxJSONValue &value,
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,
                                                const wxString &sfixtime) const
 {
-    int sats = value.AsInt();
-    if (sats > 0) m_frame->setSatelitesInView(sats);
+    m_frame->setSatelitesInView(value.AsInt());
 }
 
 void SignalKEventHandler::updateHeadingTrue(wxJSONValue &value,
