@@ -100,4 +100,4 @@ workflows:
             branches:
               only:
                 - flatpak
-                - v5.2.x
+           
