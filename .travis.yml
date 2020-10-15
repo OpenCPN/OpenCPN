@@ -76,7 +76,7 @@ deploy:
   skip_cleanup: true
   script: ci/generic-upload.sh
   on:
-    branch: master
+    branch: v5.2.x
     tags: false
 notifications:
   email: false
