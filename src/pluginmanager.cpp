@@ -5783,11 +5783,13 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
     
     GetSizer()->Add(m_panel, wxSizerFlags().Expand());
 
+    m_panel->Hide();
     m_PluginSelected = 0;
     for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
         PlugInContainer* pic = m_pPluginArray->Item(i - 1);
         AddPlugin(pic);
     }
+    m_panel->Show();
     Layout();
     Refresh(true);
     
@@ -6004,7 +6006,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     }
     m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
         
-    itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
+    itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 10);
     m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
     m_itemStaticBitmap->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
@@ -6081,10 +6083,10 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         m_pName->SetFont(font);
     #endif    
         
-        itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
+        itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 10);
 
         m_pVersion = new wxStaticText( this, wxID_ANY, _T("X.YY.ZZ.AA") ); 
-        itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
+        itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 10);
         if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
             m_pVersion->Hide();
         }
@@ -6092,7 +6094,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         m_pVersion->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
         m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
-        itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
+        itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 10);
         m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
         
        // This invocation has the effect of setting the minimum width of the descriptor field.
