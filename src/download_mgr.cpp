@@ -78,6 +78,11 @@ static bool checksum_ok(const std::string& path,
         wxLogDebug("No metadata checksum, aborting check,");
         return true;
     }
+    const size_t pos = metadata.checksum.find(':');
+    std::string checksum(metadata.checksum);
+    if (pos == std::string::npos) {
+        checksum = std::string("sha256:") + checksum;
+    }
     std::ifstream f(path, std::ios::binary);
     picosha2::hash256_one_by_one hasher;
     while (!f.eof()) {
@@ -87,17 +92,17 @@ static bool checksum_ok(const std::string& path,
         hasher.process(block.begin(), block.end());
     }
     hasher.finish();
-    std::string tarball_hash;
-    picosha2::get_hash_hex_string(hasher, tarball_hash);
+    std::string tarball_hash =
+        std::string("sha256:") + picosha2::get_hash_hex_string(hasher);
 
-    if (tarball_hash == metadata.checksum) {
+    if (tarball_hash == checksum) {
         wxLogDebug("Checksum ok: %s", tarball_hash.c_str());
         return true;
     }
     wxLogMessage("Checksum fail on %s, tarball: %s, metadata: %s",
                  metadata.name.c_str(),
                  tarball_hash.c_str(),
-                 metadata.checksum.c_str());
+                 checksum.c_str());
     return false;
 }
 
