@@ -493,16 +493,17 @@ public:
       void SelectByName(wxString &name);
 
       wxBoxSizer         *m_pitemBoxSizer01;
-      wxPanel            *m_panel;
 private:
       void AddPlugin(PlugInContainer* pic);
       int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
-      void Clear();
+      //void Clear();
 
+      wxPanel            *m_panel;
       ArrayOfPlugIns     *m_pPluginArray;
       ArrayOfPluginPanel  m_PluginItems;
       PluginPanel        *m_PluginSelected;
       wxString            m_selectedName;
+      int                 m_pluginSpacer;
 };
 
 /** Invokes client browser on plugin info_url when clicked. */
@@ -518,11 +519,16 @@ class WebsiteButton: public wxPanel
 
 class PluginPanel: public wxPanel
 {
+      DECLARE_EVENT_TABLE()
+
 public:
       PluginPanel( wxPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin );
       ~PluginPanel();
 
       void OnPluginSelected( wxMouseEvent &event );
+      void OnPluginSelectedUp( wxMouseEvent &event );
+      void DoPluginSelect();
+
       void SetSelected( bool selected );
       void OnPluginPreferences( wxCommandEvent& event );
       void OnPluginEnableToggle( wxCommandEvent& event );
@@ -536,6 +542,7 @@ public:
       void SetActionLabel( wxString &label);
       ActionVerb GetAction() { return m_action; }
       PlugInContainer* GetPlugin() { return m_pPlugin; }
+      void OnPaint(wxPaintEvent &event);
 
 private:
       PluginListPanel *m_PluginListPanel;
@@ -553,6 +560,8 @@ private:
       wxCheckBox      *m_cbEnable;
       WebsiteButton   *m_info_btn;
       ActionVerb      m_action;
+      int              m_penWidthUnselected, m_penWidthSelected;
+
 };
 
 

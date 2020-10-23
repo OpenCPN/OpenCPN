@@ -40,6 +40,8 @@
  bool AndroidUnzip(wxString zipFile, wxString destDir, int nStrip, bool bRemoveZip);
  wxString AndroidGetCacheDir();
  bool AndroidSecureCopyFile(wxString in, wxString out);
- 
+ void androidShowBusyIcon();
+ void androidHideBusyIcon();
+
  #endif
   

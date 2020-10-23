@@ -255,6 +255,16 @@ namespace Zeroconf
                         reinterpret_cast<sockaddr*>(&item.peer), 
                         &salen);
 #else
+
+#ifdef ANDROID_ARM64
+                    auto cb = recvfrom(
+                        fd, 
+                        reinterpret_cast<char*>(&item.data[0]), 
+                        item.data.size(), 
+                        0, 
+                        reinterpret_cast<sockaddr*>(&item.peer), 
+                        (unsigned int *)&salen);
+#else
                     auto cb = recvfrom(
                         fd, 
                         reinterpret_cast<char*>(&item.data[0]), 
@@ -262,6 +272,8 @@ namespace Zeroconf
                         0, 
                         reinterpret_cast<sockaddr*>(&item.peer), 
                         (int *)&salen);
+#endif                    
+                        
 #endif                    
                     if (cb < 0)
                     {
@@ -273,7 +285,6 @@ namespace Zeroconf
                     result->push_back(item);
                 }
             }
-
             return true;
         }
 

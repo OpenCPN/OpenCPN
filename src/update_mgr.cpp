@@ -40,6 +40,7 @@
 #include <wx/progdlg.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>
+#include <wx/textwrapper.h>
 
 #include "catalog_mgr.h"
 #include "update_mgr.h"
@@ -60,6 +61,35 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
 #undef major                // walk around gnu's major() and minor() macros.
 #undef minor
+
+class HardBreakWrapper : public wxTextWrapper
+    {
+    public:
+        HardBreakWrapper(wxWindow *win, const wxString& text, int widthMax)
+        {
+            m_lineCount = 0;
+            Wrap(win, text, widthMax);
+        }
+        wxString const& GetWrapped() const { return m_wrapped; }
+        int const GetLineCount() const { return m_lineCount; }
+    protected:
+        virtual void OnOutputLine(const wxString& line)
+        {
+            m_wrapped += line;
+        }
+        virtual void OnNewLine()
+        {
+            m_wrapped += '\n';
+            m_lineCount++;
+        }
+    private:
+        wxString m_wrapped;
+        int m_lineCount;
+    };
+
+//    HardBreakWrapper wrapper(win, text, widthMax);
+//    return wrapper.GetWrapped();
+
 
 namespace update_mgr {
 
@@ -139,7 +169,7 @@ class PluginIconPanel: public wxPanel
             int minsize = wxMin(size.GetHeight(), size.GetWidth());
             auto offset = minsize / 10;
 
-            LoadIcon("package-x-generic", m_bitmap,  2 * minsize / 3);
+            LoadIcon("packageBox.svg", m_bitmap,  2 * minsize / 3);
             wxPaintDC dc(this);
             if (!m_bitmap.IsOk()) {
                 wxLogMessage("AddPluginPanel: bitmap is not OK!");
@@ -156,6 +186,25 @@ class PluginIconPanel: public wxPanel
         {
             wxFileName path(g_Platform->GetSharedDataDir(), plugin_name);
             path.AppendDir("uidata");
+            path.AppendDir("traditional");
+            bool ok = false;
+            
+
+            if (path.IsFileReadable()) {
+                wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
+                bitmap = wxBitmap(img);
+                ok = bitmap.IsOk();
+            }
+
+            if (!ok) {
+                auto style = g_StyleManager->GetCurrentStyle();
+                bitmap = wxBitmap(style->GetIcon( _T("default_pi"), size, size));
+                wxLogMessage("Icon: %s not found.", path.GetFullPath());
+            }
+
+/*            
+            wxFileName path(g_Platform->GetSharedDataDir(), plugin_name);
+            path.AppendDir("uidata");
             bool ok = false;
             path.SetExt("png");
             if (path.IsFileReadable()) {
@@ -166,6 +215,7 @@ class PluginIconPanel: public wxPanel
                 auto style = g_StyleManager->GetCurrentStyle();
                 bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
             }
+*/            
         }
 };
 
@@ -293,7 +343,17 @@ class PluginTextPanel: public wxPanel
             auto flags = wxSizerFlags().Border();
 
             auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
-            m_summary = staticText(plugin->summary);
+            m_widthDescription = g_options->GetSize().x / 2;
+
+            //m_summary = staticText(plugin->summary);
+            m_summary = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1)/*, wxST_NO_AUTORESIZE*/ );
+            m_summaryText = wxString(plugin->summary.c_str());
+            m_summary->SetLabel( m_summaryText );
+            m_summary->Wrap( m_widthDescription );
+    
+            HardBreakWrapper wrapper(this, m_summaryText, m_widthDescription);
+            m_summaryLineCount = wrapper.GetLineCount() + 1;
+
             sum_hbox->Add(m_summary);
             sum_hbox->AddSpacer(10);
             m_more = staticText("");
@@ -304,7 +364,6 @@ class PluginTextPanel: public wxPanel
             SetSizer(vbox);
             auto name = staticText(plugin->name + "    " + plugin->version);
 
-            m_widthDescription = g_options->GetSize().x / 2;
             m_descr = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1)/*, wxST_NO_AUTORESIZE*/ );
             m_descText = wxString(plugin->description.c_str());
             m_descr->SetLabel( m_descText );
@@ -338,6 +397,7 @@ class PluginTextPanel: public wxPanel
 //             GetParent()->GetParent()->GetParent()->Update();
         }
 
+        int m_summaryLineCount;
     protected:
         const char* const MORE = _("<span foreground='blue'>More...</span>");
         const char* const LESS = _("<span foreground='blue'>Less...</span>");
@@ -354,6 +414,7 @@ class PluginTextPanel: public wxPanel
         CandidateButtonsPanel* m_buttons;
         int m_widthDescription;
         wxString m_descText;
+        wxString m_summaryText;
 };
 
 
@@ -401,6 +462,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
             auto flags = wxSizerFlags();
             grid->SetCols(3);
             grid->AddGrowableCol(2);
+            m_TextLineCount = 0;
             for (auto plugin: m_updates) {
                 grid->Add(
                     new PluginIconPanel(this, plugin.name), flags.Expand());
@@ -413,6 +475,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
+                m_TextLineCount += tpanel->m_summaryLineCount;
             }
         }
 
@@ -428,6 +491,8 @@ class OcpnScrolledWindow : public wxScrolledWindow
         }
 
         int m_twidth;
+        int m_TextLineCount;
+        
     private:
         const std::vector<PluginMetadata> m_updates;
         wxFlexGridSizer* m_grid;
@@ -443,24 +508,31 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
               wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
+    SetSizer(vbox);
+    
     auto scrwin = new update_mgr::OcpnScrolledWindow(this, updates);
     vbox->Add(scrwin, wxSizerFlags(1).Expand());
 
     // The list has no natural height. Allocate 8 lines of text so some
     // items are displayed initially in Layout()
-    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 10;
-
+    int min_height = GetCharHeight() * 6;
+    min_height = GetCharHeight() * (scrwin->m_TextLineCount + 9);
+    
     // There seem to be no way have dynamic, wrapping text:
     // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
     //int width = GetParent()->GetClientSize().GetWidth();
   //  SetMinClientSize(wxSize(width, min_height));
     int width = scrwin->m_twidth * 2;
     width = wxMin(width, g_Platform->getDisplaySize().x);
-    SetMinSize(wxSize(width, min_height));
+    scrwin->SetMinSize(wxSize(width, min_height));
  
     SetMaxSize(g_Platform->getDisplaySize());
     
-    SetSizer(vbox);
+#ifdef __OCPN__ANDROID__
+    SetMinSize(g_Platform->getDisplaySize());
+#endif    
+    
     Fit();
     Layout();
+    Center();
 }

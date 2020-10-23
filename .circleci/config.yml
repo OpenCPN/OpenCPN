@@ -82,18 +82,22 @@ workflows:
             branches:
               only:
                 - master
+                - v5.2.x
       - build-trusty:
           filters:
             branches:
               only:
                 - master
+                - v5.2.x
       - build-mingw:
           filters:
             branches:
               only:
                 - master
+                - v5.2.x
       - build-flatpak:
           filters:
             branches:
               only:
                 - flatpak
+           

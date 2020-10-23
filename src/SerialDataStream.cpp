@@ -63,6 +63,9 @@
 #include "OCP_DataStreamInput_Thread.h"
 #include "GarminProtocolHandler.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -105,6 +108,14 @@ void SerialDataStream::Open(void)
 
     wxString port_uc = GetPort().Upper();
 
+#ifdef __OCPN__ANDROID__
+    if(comx.Contains(_T("AUSBSerial"))){
+        androidStartUSBSerial(comx, GetBaudRate(), GetConsumer());
+        SetOk(true);
+        return;
+    }
+#endif            
+
     if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
         SetGarminProtocolHandler(new GarminProtocolHandler(this, GetConsumer(), true));
     }
@@ -130,14 +141,27 @@ void SerialDataStream::Open(void)
 }
 
 
-bool SerialDataStream::SendSentenceSerial(const wxString &payload)
+bool SerialDataStream::SendSentenceSerial(const wxString &sentence)
 {
+#ifdef __OCPN__ANDROID__
+    wxString payload = sentence;
+    if( !sentence.EndsWith(_T("\r\n")) )
+        payload += _T("\r\n");
+    
+    if(IsOk()){
+        wxString port = GetPort().AfterFirst(':');
+        androidWriteSerial( port, payload );
+        return IsOk();
+    }
+    else
+        return false;
+#endif
     if( GetSecondaryThread() ) {
         if( IsSecThreadActive() )
         {
             int retry = 10;
             while( retry ) {
-                if( GetSecondaryThread()->SetOutMsg( payload ))
+                if( GetSecondaryThread()->SetOutMsg( sentence ))
                     return true;
                 else
                     retry--;

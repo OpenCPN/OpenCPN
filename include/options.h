@@ -363,6 +363,7 @@ class options : private Uncopyable,
   
   bool GetNeedNew(){ return m_bneedNew; }
   void SetNeedNew( bool bnew ){ m_bneedNew =bnew; }
+  int GetScrollRate(){ return m_scrollRate; }
   
   // Should we show tooltips?
   static bool ShowToolTips(void);

@@ -59,8 +59,6 @@ include/ocpn_pixel.h
 include/OCPNPlatform.h
 include/ocpn_plugin.h
 include/OCPNRegion.h
-include/SoundFileLoader.h
-include/OCPN_Sound.h
 include/ocpn_types.h
 include/options.h
 include/Osenc.h
@@ -104,7 +102,6 @@ include/TexFont.h
 include/thumbwin.h
 include/tide_time.h
 include/timers.h
-include/tinyxml.h
 include/toolbar.h
 include/TrackPropDlg.h
 include/TTYScroll.h
@@ -172,8 +169,6 @@ src/OCPNListCtrl.cpp
 src/ocpn_pixel.cpp
 src/OCPNPlatform.cpp
 src/OCPNRegion.cpp
-src/OCPN_Sound.cpp
-src/SoundFileLoader.cpp
 src/options.cpp
 src/Osenc.cpp
 src/pluginmanager.cpp
@@ -210,9 +205,6 @@ src/tcmgr.cpp
 src/TCWin.cpp
 src/TexFont.cpp
 src/thumbwin.cpp
-src/tinyxml.cpp
-src/tinyxmlerror.cpp
-src/tinyxmlparser.cpp
 src/toolbar.cpp
 src/TrackPropDlg.cpp
 src/TTYScroll.cpp
@@ -220,8 +212,8 @@ src/TTYWindow.cpp
 src/undo.cpp
 src/viewport.cpp
 src/wificlient.cpp
-src/wxcurl/dialog.cpp
-src/wxcurl/panel.cpp
+libs/wxcurl/src/dialog.cpp
+libs/wxcurl/src/panel.cpp
 src/ConfigMgr.cpp
 src/CanvasOptions.cpp
 src/MarkInfo.cpp

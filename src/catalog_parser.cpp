@@ -24,8 +24,6 @@
 
 #include <cstring>
 
-#include <expat.h>
-
 #include <wx/log.h>
 
 
@@ -37,126 +35,94 @@
 #include "ocpn_utils.h"
 #include "catalog_handler.h"
 #include "Downloader.h"
+#include "pugixml.hpp"
 
 #include <fstream>
 #include <sstream>
 #include <iterator>
 
-#ifdef XML_LARGE_SIZE
-#  if defined(XML_USE_MSC_EXTENSIONS) && _MSC_VER < 1400
-#    define XML_FMT_INT_MOD "I64"
-#  else
-#    define XML_FMT_INT_MOD "ll"
-#  endif
-#else
-#  define XML_FMT_INT_MOD "l"
-#endif
-
-#ifdef XML_UNICODE_WCHAR_T
-# include <wchar.h>
-# define XML_FMT_STR "ls"
-#else
-# define XML_FMT_STR "s"
-#endif
-
-
-static void XMLCALL elementData(void* userData, const XML_Char* s, int len)
-{
-    catalog_ctx* ctx = static_cast<catalog_ctx*>(userData);
-    ctx->buff.append(s, len);
-}
-
-
-static void XMLCALL
-startElement(void* userData, const XML_Char* name, const XML_Char** atts)
-{
-    catalog_ctx* ctx = static_cast<catalog_ctx*>(userData);
-    ctx->buff = "";
-    if (strcmp(name, "plugin") == 0) {
-        ctx->plugin = std::unique_ptr<PluginMetadata>(new PluginMetadata);
-        ctx->depth += 1;
-    }
-}
-
-
-static void XMLCALL endElement(void* userData, const XML_Char* name)
-{
-    catalog_ctx* ctx = static_cast<catalog_ctx*>(userData);
-    std::string buff = ctx->buff;
-    if (ctx->depth <= 0)  {
-        if (strcmp(name, "version") == 0 && ctx->version == "") {
-            ctx->version = ocpn::trim(buff);
-        }
-        else if (strcmp(name, "date")  == 0 && ctx->date == "") {
-            ctx->date = ocpn::trim(buff);
-        }
-    }
-    else if (strcmp(name, "meta-url") == 0) {
-        auto url = ocpn::trim(buff);
-        ctx->meta_url = url;
-    }
-    else if (strcmp(name, "name") == 0) {
-       ctx->plugin->name = ocpn::trim(buff);
-    } else if (strcmp(name, "version") == 0) {
-        ctx->plugin->version = ocpn::trim(buff);
-    } else if (strcmp(name, "release") == 0) {
-        ctx->plugin->release = ocpn::trim(buff);
-    } else if (strcmp(name, "summary") == 0) {
-        ctx->plugin->summary = ocpn::trim(buff);
-    } else if (strcmp(name, "api_version") == 0) {
-        ctx->plugin->api_version = ocpn::trim(buff);
-    } else if (strcmp(name, "author") == 0) {
-        ctx->plugin->author = ocpn::trim(buff);
-    } else if (strcmp(name, "description") == 0) {
-        ctx->plugin->description = ocpn::trim(buff);
-    } else if (strcmp(name, "git-commit") == 0) {
-        ctx->plugin->git_commit = ocpn::trim(buff);
-    } else if (strcmp(name, "git-date") == 0) {
-        ctx->plugin->git_date = ocpn::trim(buff);
-    } else if (strcmp(name, "source") == 0) {
-        ctx->plugin->source = ocpn::trim(buff);
-    } else if (strcmp(name, "tarball-url") == 0) {
-        ctx->plugin->tarball_url = ocpn::trim(buff);
-    } else if (strcmp(name, "info-url") == 0) {
-        ctx->plugin->info_url = ocpn::trim(buff);
-    } else if (strcmp(name, "target") == 0) {
-        ctx->plugin->target = ocpn::trim(buff);
-    } else if (strcmp(name, "target-version") == 0) {
-        ctx->plugin->target_version = ocpn::trim(buff);
-    } else if (strcmp(name, "target-arch") == 0) {
-        ctx->plugin->target_arch = ocpn::trim(buff);
-    } else if (strcmp(name, "open-source") == 0) {
-        ctx->plugin->openSource = ocpn::trim(buff) == "yes";
-    } else if (strcmp(name, "plugin") == 0) {
-        if (ctx->meta_url != "") {
-            ctx->meta_urls.push_back(ctx->meta_url);
-            ctx->meta_url = "";
-        }  
-        else {
-            ctx->plugins.push_back(*ctx->plugin);
-        }
-        ctx->depth -= 1;
-    }
-}
-
-
 bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
 {
     bool ok = true;
-    XML_Parser parser = XML_ParserCreate(NULL);
-    ctx->buff.clear();
-    ctx->depth = 0;
+    PluginMetadata *plugin = 0;
 
-    XML_SetUserData(parser, ctx);
-    XML_SetElementHandler(parser, startElement, endElement);
-    XML_SetCharacterDataHandler(parser, elementData);
+    pugi::xml_document doc;
+    doc.load_string(xml.c_str());
+    
+    pugi::xml_node elements = doc.child("plugins");
+    for (pugi::xml_node element = elements.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "version") && ctx->version == "" ){
+            ctx->version = ocpn::trim(element.first_child().value());
+        }
+        else if (strcmp(element.name(), "date")  == 0 && ctx->date == "") {
+            ctx->date = ocpn::trim(element.first_child().value());
+        }
+        else if (strcmp(element.name(), "meta-url")  == 0 ) {
+            ctx->meta_url = ocpn::trim(element.first_child().value());
+        }
+        else if( !strcmp(element.name(), "plugin") ){
+            if (ctx->meta_url != "") {
+                ctx->meta_urls.push_back(ctx->meta_url);
+                ctx->meta_url = "";
+            }
+            else{
+                if(plugin)
+                    ctx->plugins.push_back(*plugin);
+                plugin = new PluginMetadata;
+            }
 
-    if (XML_Parse(parser, xml.c_str(), xml.size(), true) == XML_STATUS_ERROR) {
-        wxLogWarning("%" XML_FMT_STR " at line %" XML_FMT_INT_MOD "u\n",
-                     XML_ErrorString(XML_GetErrorCode(parser)),
-                     XML_GetCurrentLineNumber(parser));
-        ok = false;
+            for (pugi::xml_node plugin_element = element.first_child(); plugin_element; plugin_element = plugin_element.next_sibling()){
+                if (strcmp(plugin_element.name(), "meta-url") == 0) {
+                    auto url = ocpn::trim(plugin_element.first_child().value());
+                    ctx->meta_url = url;
+                }
+                else if (strcmp(plugin_element.name(), "name") == 0) {
+                    plugin->name = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "version") == 0) {
+                    plugin->version = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "release") == 0) {
+                    plugin->release = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "summary") == 0) {
+                    plugin->summary = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "api_version") == 0) {
+                    plugin->api_version = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "author") == 0) {
+                    plugin->author = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "description") == 0) {
+                    plugin->description = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "git-commit") == 0) {
+                    plugin->git_commit = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "git-date") == 0) {
+                    plugin->git_date = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "source") == 0) {
+                    plugin->source = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "tarball-url") == 0) {
+                    plugin->tarball_url = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "info-url") == 0) {
+                    plugin->info_url = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "target") == 0) {
+                    plugin->target = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "target-version") == 0) {
+                    plugin->target_version = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "target-arch") == 0) {
+                    plugin->target_arch = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "open-source") == 0) {
+                    plugin->openSource = ocpn::trim(plugin_element.first_child().value()) == "yes";
+                }
+            }
+        }
     }
-    XML_ParserFree(parser);
-    return ok;
+
+    // capture last plugin
+    if(plugin)
+        ctx->plugins.push_back(*plugin);
+    else{
+        if (ctx->meta_url != "") {
+            ctx->meta_urls.push_back(ctx->meta_url);
+            ctx->meta_url = "";
+        }
+    }
+
+ 
+    return true;
 }

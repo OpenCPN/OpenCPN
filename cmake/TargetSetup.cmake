@@ -25,6 +25,19 @@ elseif (APPLE)
     set(PKG_TARGET "darwin")
     execute_process(COMMAND "sw_vers" "-productVersion"
                     OUTPUT_VARIABLE PKG_TARGET_VERSION)
+
+elseif(_wx_selected_config MATCHES "androideabi-qt")
+     #Android is cross built, so set wxWidgets dependies directly, elsewhere
+     set(PKG_TARGET "Android-ARM64")
+     set(PKG_TARGET_VERSION 16)
+     if(ANDROID_ARCH MATCHES "arm64")
+        set(ARCH arm64)
+        set(PKG_TARGET "Android")
+     else(ANDROID_ARCH MATCHES "arm64")
+        set(ARCH armhf)
+        set(PKG_TARGET "Android")
+     endif(ANDROID_ARCH MATCHES "arm64")
+        
 elseif (UNIX)
     find_program(LSB_RELEASE NAMES lsb_release)
     if (NOT LSB_RELEASE)

@@ -1571,6 +1571,10 @@ For more info, see the file LINUX_DEVICES.md in the distribution docs.
 void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
    // Microsoft compiler 19.14.26433 requires rightfully std=c++-17 for this.
 
+#ifdef __OCPN__ANDROID__
+   return;
+#endif
+   
 #ifndef __linux__
    return;
 #else
@@ -3083,9 +3087,9 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   wxString iconTypes[] = {_("Default"), _("Real Scale Bitmap"),
                           _("Real Scale Vector")};
+                          
   m_pShipIconType =
-      new wxChoice(itemPanelShip, ID_SHIPICONTYPE, wxDefaultPosition,
-                   wxDefaultSize, 3, iconTypes);
+      new wxChoice(itemPanelShip, ID_SHIPICONTYPE, wxDefaultPosition, wxSize(GetCharWidth() * 20, GetCharHeight() * 2), 3, iconTypes);
   dispOptionsGrid->Add(m_pShipIconType, 0,
                        wxALIGN_RIGHT | wxLEFT | wxRIGHT | wxTOP,
                        group_item_spacing);
@@ -4010,8 +4014,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
 
     itemBoxSizerUI->Add(
-        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("CM93 Detail level")),
-        labelFlags);
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("CM93 Detail level")), inputFlags);
     m_pSlider_CM93_Zoom = new wxSlider( m_ChartDisplayPage, ID_CM93ZOOM, 0,
                            -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
                            wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
@@ -7339,7 +7342,9 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
-  CheckDeviceAccess(pConnectionParams->Port);
+  
+  if( (pConnectionParams->Type != INTERNAL_GPS) && (pConnectionParams->Type != INTERNAL_BT) )
+    CheckDeviceAccess(pConnectionParams->Port);
   pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;
@@ -7603,6 +7608,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
         pds_existing = g_pMUX->FindStream(cp->GetPortStr());
         if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
     }
+
+    // Internal BlueTooth driver stacks commonly need a time delay to purge their buffers, etc.
+    // before restating with new parameters...
+    if(cp->Type == INTERNAL_BT)
+        wxSleep(1);
 
     if (!cp->bEnabled) continue;
     g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
@@ -8075,6 +8085,13 @@ void options::OnButtondeleteClick(wxCommandEvent& event)
       if ( item == -1 )
           break;
       pActiveChartsList->DeleteItem( item );
+
+      // On Android, there is some trouble with wxLIST_STATE_SELECTED.
+      // So, only allow deletion of one item per click.
+#ifdef __OCPN__ANDROID__
+      break;
+#endif
+      
       item = -1;      // Restart
   }
 
@@ -8478,6 +8495,11 @@ void options::OnFontChoice(wxCommandEvent& event) {
 }
 
 void options::OnChooseFont(wxCommandEvent& event) {
+    
+#ifdef __OCPN__ANDROID__
+    androidDisableRotation();
+#endif  
+    
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
   wxFontData font_data;
 
@@ -8529,6 +8551,10 @@ void options::OnChooseFont(wxCommandEvent& event) {
     OnFontChoice(event);
   }
 
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif  
+
   event.Skip();
 }
 
@@ -8542,6 +8568,8 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
 
 #ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+
   unsigned int cco = 0;
   cco |= 0xff;  cco  = cco << 8;
   cco |= init_color.Red(); cco = cco << 8; 
@@ -8560,7 +8588,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   pParent->UpdateAllFonts();
   m_bfontChanged = true;
   
-  
+  androidEnableRotation();
 #else  
   wxScrolledWindow *sw = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxSize(400, 400));
   
@@ -8802,12 +8830,10 @@ void options::DoOnPageChange(size_t page) {
       if(g_pi_manager)
           g_pi_manager->SetListPanelPtr(m_pPlugInCtrl);
 
-#ifndef __OCPN__ANDROID__      
       m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
       m_PluginCatalogMgrPanel->SetListPanelPtr(m_pPlugInCtrl);
       
       itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel, 0, wxEXPAND | wxALL, 4);
-#endif      
       itemBoxSizerPanelPlugins->Layout();
 
       //  Update the PlugIn page to reflect the state of individual selections
@@ -9674,6 +9700,10 @@ void options::ShowNMEABT(bool visible) {
     if (m_stBTPairs) m_stBTPairs->Hide();
     if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
   }
+  m_tcOutputStc->Show(visible);
+  m_btnOutputStcList->Show(visible);
+  m_cbOutput->Show(visible);
+
 }
 
 void options::SetNMEAFormToSerial(void) {
@@ -9714,6 +9744,7 @@ void options::SetNMEAFormToGPS(void) {
 }
 
 void options::SetNMEAFormToBT(void) {
+  m_rbNetProtoUDP->SetValue( true );
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);

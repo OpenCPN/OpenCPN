@@ -257,27 +257,9 @@ void AISTargetQueryDialog::SetMMSI(int mmsi)
 
 void AISTargetQueryDialog::RecalculateSize()
 {
-    // Reset all the required member elements to cause a resize on next display
-    
-    //Set the maximum size of the entire settings dialog
-    wxSize sz = g_Platform->getDisplaySize();
-    SetSizeHints( 50, 50, sz.x-20, sz.y-40 );
-
-    m_bsize_set = false;
-
-    wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
-    int font_size = wxMax(8, dFont->GetPointSize());
-    wxString face = dFont->GetFaceName();
-    #ifdef __WXGTK__
-    face = _T("Monospace");
-    #endif
-    m_basefont = FontMgr::Get().FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
-                                                  wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
-    
-    SetFont( *m_basefont );
-    m_adjustedFontSize = dFont->GetPointSize();
-    m_control_font_size = dFont->GetPointSize();
-    
+    AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
+    AdjustBestSize( td );
+    return;
 }
 
 
@@ -478,10 +460,14 @@ void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
         yb = m_createWptBtn->GetSize().y * 4;
     
     wxSize szyv = m_pQueryTextCtl->GetVirtualSize();
-    int csz = g_Platform->getDisplaySize().y * 8 / 10;
+    int csz = g_Platform->getDisplaySize().y * 85 / 100;
     if((szyv.y + yb) < csz){
         if(szyv.y > m_pQueryTextCtl->GetSize().y)
             target_y = (szyv.y * 11 / 10) + yb;
+    }
+    else{                       // Probably going to be a vertical scroll bar, so adjust width slightly
+        target_y = csz;
+        target_x = szyv.x * 11/10;
     }
 
     

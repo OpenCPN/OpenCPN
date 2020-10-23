@@ -9691,15 +9691,11 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, const wxString &first, 
 
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 {
-    if( (m_routeState >= 2) ||
-        (m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 )) ) {
-
         Route* route = 0;
-        if( m_pMeasureRoute ) {
+    if( m_routeState >= 2)
+        route = m_pMouseRoute;
+    if(m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 ) )
             route = m_pMeasureRoute;
-        } else {
-            route = m_pMouseRoute;
-        }
         
         if(!route)
             return;
@@ -9707,7 +9703,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         double render_lat = m_cursor_lat;
         double render_lon = m_cursor_lon;
         
-        if(route){
             int np = route->GetnPoints();
             if(np){
                 if(g_btouch && (np > 1))
@@ -9716,10 +9711,15 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
                 render_lat = rp.m_lat;
                 render_lon = rp.m_lon;
             }
-        }
                 
-        double rhumbBearing, rhumbDist, gcBearing, gcBearing2, gcDist;
+    double rhumbBearing, rhumbDist;
         DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
+    double brg = rhumbBearing;
+    double dist = rhumbDist;
+
+    // Skip GreatCircle rubberbanding on touch devices.
+    if(!g_btouch){
+        double gcBearing, gcBearing2, gcDist;
         Geodesic::GreatCircleDistBear( render_lon, render_lat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
         double gcDistm = gcDist / 1852.0;
 
@@ -9727,9 +9727,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         wxPoint destPoint, lastPoint;
 
-
-        double brg = rhumbBearing;
-        double dist = rhumbDist;
         route->m_NextLegGreatCircle = false;
         int milesDiff = rhumbDist - gcDistm;
         if( milesDiff > 1 ) {
@@ -9738,7 +9735,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             route->m_NextLegGreatCircle = true;
         }
 
-        if( 1/*!g_btouch*/) {
             route->DrawPointWhich( dc, this, route->m_lastMousePointIndex, &lastPoint );
 
             if( route->m_NextLegGreatCircle ) {
@@ -9794,7 +9790,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         RouteLegInfo( dc, r_rband, routeInfo, s0 );
 
         m_brepaint_piano = true;
-    }
 }
 
 void ChartCanvas::WarpPointerDeferred( int x, int y )
