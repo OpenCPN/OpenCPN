@@ -19,10 +19,10 @@ Forwarded: no
  5 files changed, 55 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2cde27d..66511e1 100644
+index a72e629..4e01422 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -299,7 +299,7 @@ set(
+@@ -304,7 +304,7 @@ set(
      STRING
      "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
  )
@@ -31,7 +31,7 @@ index 2cde27d..66511e1 100644
  option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
  option(OCPN_USE_CURL "Use Curl libraries" ON)
  option(OCPN_USE_SVG "Use SVG graphics" ON)
-@@ -631,6 +631,12 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+@@ -639,6 +639,12 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
    add_definitions(-DocpnARM)
  endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
  
@@ -58,10 +58,10 @@ index 4cd9ac7..a0cda3c 100644
  #cmakedefine HAVE_PORTAUDIO
  #cmakedefine HAVE_SYSTEM_CMD_SOUND
 diff --git a/src/chart1.cpp b/src/chart1.cpp
-index 93d546d..f1da276 100644
+index 32d33f3..dbfea42 100644
 --- a/src/chart1.cpp
 +++ b/src/chart1.cpp
-@@ -501,6 +501,7 @@ double                    g_COGAvg;
+@@ -503,6 +503,7 @@ double                    g_COGAvg;
  bool                      g_bLookAhead;
  bool                      g_bskew_comp;
  bool                      g_bopengl;
@@ -70,7 +70,7 @@ index 93d546d..f1da276 100644
  bool                      g_bShowFPS;
  bool                      g_bsmoothpanzoom;
 diff --git a/src/navutil.cpp b/src/navutil.cpp
-index eed3bd6..78e82c2 100644
+index f1b5c2a..5be9c6a 100644
 --- a/src/navutil.cpp
 +++ b/src/navutil.cpp
 @@ -310,6 +310,9 @@ extern wxString         g_localeOverride;
@@ -104,7 +104,7 @@ index eed3bd6..78e82c2 100644
      Write( _T ( "ShowFPS" ), g_bShowFPS );
      
 diff --git a/src/pluginmanager.cpp b/src/pluginmanager.cpp
-index 2882ab3..df9f2f1 100644
+index 07a1228..0ed7df0 100644
 --- a/src/pluginmanager.cpp
 +++ b/src/pluginmanager.cpp
 @@ -159,6 +159,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
@@ -115,7 +115,7 @@ index 2882ab3..df9f2f1 100644
  extern Routeman        *g_pRouteMan;
  extern WayPointman     *pWayPointMan;
  extern Select          *pSelect;
-@@ -372,7 +373,40 @@ static std::vector<PluginMetadata> getUpdates(const char* name)
+@@ -374,7 +375,40 @@ static std::vector<PluginMetadata> getUpdates(const char* name)
      return updates;
  }
  
@@ -156,7 +156,7 @@ index 2882ab3..df9f2f1 100644
  /**
   * Return number of existing files named filename in the list of
   * dirs.
-@@ -424,6 +458,9 @@ static void run_update_dialog(PluginListPanel* parent,
+@@ -427,6 +461,9 @@ static void run_update_dialog(PluginListPanel* parent,
          return;
      }
      
@@ -166,7 +166,7 @@ index 2882ab3..df9f2f1 100644
      auto update = dialog.GetUpdate();
      if (uninstall) {
          g_Platform->ShowBusySpinner();
-@@ -437,7 +474,6 @@ static void run_update_dialog(PluginListPanel* parent,
+@@ -440,7 +477,6 @@ static void run_update_dialog(PluginListPanel* parent,
          g_Platform->HideBusySpinner();
  
      }

@@ -8,7 +8,7 @@ Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2043
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/PluginHandler.cpp b/src/PluginHandler.cpp
-index 52f0e69..946e7ef 100644
+index 532c402..0b88a2a 100644
 --- a/src/PluginHandler.cpp
 +++ b/src/PluginHandler.cpp
 @@ -278,7 +278,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
