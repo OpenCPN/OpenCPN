@@ -1,6 +1,9 @@
-opencpn (5.2.4+dfsg-1) UNRELEASED; urgency=medium
+opencpn (5.2.4+dfsg-1) unstable; urgency=medium
 
-  * Provisionary new version entry
+  * New upstream maintenance release
+  * Drop upstreamed patches
+  * d/copyright update
+  * Add patch for undefined function return value.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 Oct 2020 12:21:43 +0200
 
