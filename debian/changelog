@@ -1,3 +1,9 @@
+opencpn (5.2.4+dfsg-1) UNRELEASED; urgency=medium
+
+  * Provisionary new version entry
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 Oct 2020 12:21:43 +0200
+
 opencpn (5.2.0+dfsg1-1) unstable; urgency=medium
 
   * New upstream release including plugin downloader. Closes: #948702
