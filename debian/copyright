@@ -120,10 +120,6 @@ Files: include/gshhs.h
 Copyright: zUGrib: meteorologic GRIB file data viewer / 2012, David S. Register / 2008, - Jacques Zaninetti - http:www.zygrib.org
 License: GPL-2+
 
-Files: include/macutils.h
-Copyright: 2007
-License: GPL-2+
-
 Files: include/ogr_s57.h
   include/s57.h
 Copyright: 1998-2003, Frank Warmerdam
@@ -146,28 +142,17 @@ Files: include/scrollingdialog.h
 Copyright: Julian Smart
 License: GPL-2+
 
-Files: include/zeroconf-util.hpp
+Files: include/zeroconf-detail.hpp
+  include/zeroconf-util.hpp
   include/zeroconf.hpp
-  include/zeroconf-detail.hpp
 Copyright: 2016, Yuri Yakovlev <yvzmail@gmail.com>
 License: GPL-3
+Comment: https://github.com/yvz/zeroconf
 
 Files: libs/SQLiteCpp/*
 Copyright: 2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
-License: Expat
-
-Files: libs/SQLiteCpp/include/SQLiteCpp/Backup.h
-Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
   2015, Shibao HONG (shibaohong@outlook.com)
-License: Expat
-
-Files: libs/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
-Copyright: 2016-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
   2016, Paul Dreik (github@pauldreik.se)
-License: Expat
-
-Files: libs/SQLiteCpp/src/Backup.cpp
-Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
   2015, Shibao HONG (shibaohong@outlook.com)
 License: Expat
 
@@ -281,38 +266,14 @@ License: LGPL-2+
 
 Files: libs/gdal/*
 Copyright: 1998-2003, Frank Warmerdam
+   1998, Daniel Morissette
+   2003, Andrey Kiselev <dron@remotesensing.org>
+   1998, Daniel Morissette
+   1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
+   1999, Les Technologies SoftMap Inc.
+   1999, Les Technologies SoftMap Inc.
 License: Expat
 
-Files: libs/gdal/include/gdal/cpl_error.h
-  libs/gdal/include/gdal/cpl_string.h
-Copyright: 1998, Daniel Morissette
-License: Expat
-
-Files: libs/gdal/include/gdal/cpl_list.h
-Copyright: 2003, Andrey Kiselev <dron@remotesensing.org>
-License: Expat
-
-Files: libs/gdal/include/gdal/ogr_attrind.h
-Copyright: 1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
-License: Expat
-
-Files: libs/gdal/include/gdal/ogr_feature.h
-  libs/gdal/include/gdal/ogr_spatialref.h
-  libs/gdal/include/gdal/ogrsf_frmts.h
-Copyright: 1999, Les Technologies SoftMap Inc.
-License: Expat
-
-Files: libs/gdal/src/cpl_error.cpp
-  libs/gdal/src/cpl_string.cpp
-Copyright: 1998, Daniel Morissette
-License: Expat
-
-Files: libs/gdal/src/ogrfeature.cpp
-  libs/gdal/src/ogrfeaturedefn.cpp
-  libs/gdal/src/ogrfielddefn.cpp
-  libs/gdal/src/ogrlayer.cpp
-Copyright: 1999, Les Technologies SoftMap Inc.
-License: Expat
 
 Files: libs/glshim/*
 Copyright: 2011, 2014, Pavel Kalian
@@ -972,10 +933,6 @@ Copyright:
   2008, Jacques Zaninetti
 License: GPL-2+
 
-Files: src/macutils.c
-Copyright: 2007
-License: GPL-2+
-
 Files: src/ocpnhelper.c
 Copyright: 2006, dsr
 License: GPL-2+
@@ -1039,6 +996,15 @@ License: Expat
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
 
+License: GPL-3
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation version 3
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 3 can be found in the file
+ `/usr/share/common-licenses/GPL-3'.
+
 License: GPL-2+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1048,15 +1014,6 @@ License: GPL-2+
  On Debian systems, the full text of the GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/GPL-2'.
-
-License: GPL-3
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation version 3
- .
- On Debian systems, the full text of the GNU General Public
- License version 3 can be found in the file
- `/usr/share/common-licenses/GPL-3'.
 
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
