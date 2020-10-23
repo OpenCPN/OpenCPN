@@ -3937,6 +3937,7 @@ static void *SYMINS01(void *param)
     char symins[80] = {'\0'};
     GetStringAttr(obj, "SYMINS", symins, 79);
 
+    strcat(symins, "\037");
     char *r = (char *)malloc(strlen(symins) + 1);
     strcpy(r, symins);
 

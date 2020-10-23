@@ -9,8 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48px"
-   height="48px"
+   viewBox="0 0 48 48"
    id="svg1307"
    sodipodi:version="0.32"
    inkscape:version="0.91 r13725"
@@ -30,8 +29,8 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="true"
-     inkscape:zoom="15.3125"
-     inkscape:cx="14.106122"
+     inkscape:zoom="5.4137863"
+     inkscape:cx="-36.423991"
      inkscape:cy="24"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -66,7 +65,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title>Luca Ferretti</dc:title>
@@ -103,20 +102,12 @@
      inkscape:groupmode="layer">
     <rect
        ry="5.1466022"
-       y="4"
-       x="4"
+       y="-12.254797"
+       x="-73.210289"
        height="40"
        width="40"
        id="rect2190"
-       style="fill:white;fill-opacity:1;fill-rule:evenodd;stroke:white;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <rect
-       style="fill:black;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="rect1315"
-       width="40"
-       height="40"
-       x="4"
-       y="4"
-       ry="5.1466022" />
+       style="fill:#ffffff;fill-opacity:0.01052629;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <rect
        ry="2.9927754"
        y="8"
@@ -130,5 +121,30 @@
        d=""
        id="path4144"
        inkscape:connector-curvature="0" />
+    <ellipse
+       style="opacity:0;fill:#ff00ff;fill-opacity:1;stroke:#808080;stroke-width:0.69999999;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4138"
+       cx="-53.551022"
+       cy="12.212245"
+       rx="7.053061"
+       ry="7.8367348" />
+    <path
+       style="opacity:0;fill:#ff00ff;fill-opacity:0.00526315;stroke:#808080;stroke-width:0.69999999;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4140"
+       sodipodi:type="arc"
+       sodipodi:cx="-41.273468"
+       sodipodi:cy="29.322449"
+       sodipodi:rx="5.7469387"
+       sodipodi:ry="21.55102"
+       sodipodi:start="0"
+       sodipodi:end="6.2767646"
+       d="m -35.526529,29.322449 a 5.7469387,21.55102 0 0 1 -5.737714,21.550992 5.7469387,21.55102 0 0 1 -5.756134,-21.481806 5.7469387,21.55102 0 0 1 5.719235,-21.6199561 5.7469387,21.55102 0 0 1 5.774494,21.4123981 l -5.74682,0.138372 z" />
+    <ellipse
+       style="opacity:0.88399999;fill:#ababab;fill-opacity:0.96842107;stroke:#646465;stroke-width:3.9000001;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4156"
+       cx="24.659267"
+       cy="23.710161"
+       rx="18.009577"
+       ry="18.563719" />
   </g>
 </svg>

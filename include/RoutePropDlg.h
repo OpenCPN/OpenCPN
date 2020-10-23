@@ -157,6 +157,10 @@ class RoutePropDlg : public wxFrame
 		{
 			m_scrolledWindowLinks->PopupMenu( m_menuLinks, event.GetPosition() );
 		}
+		
+		void OnKeyChar( wxKeyEvent &event );
+
+DECLARE_EVENT_TABLE()
 
 };
 

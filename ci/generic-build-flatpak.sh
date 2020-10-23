@@ -75,4 +75,4 @@ flatpak update --appstream opencpn
 flatpak remote-ls opencpn
 
 # Validate the appstream data:
-appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml
+appstreamcli validate app/files/share/metainfo/opencpn.appdata.xml

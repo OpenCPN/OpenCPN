@@ -1718,6 +1718,31 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
         return ret;
     }
 #endif
+
+#ifdef __OCPN__ANDROID__
+    else if( aFile.Lower().EndsWith(_T("tar")) ||
+            aFile.Lower().EndsWith(_T("gz")) ||
+            aFile.Lower().EndsWith(_T("bz2")) ||
+            aFile.Lower().EndsWith(_T("lzma")) ||
+            aFile.Lower().EndsWith(_T("7z")) ||
+            aFile.Lower().EndsWith(_T("xz"))
+            )
+    {
+        int nStrip = 0;
+        if(aStripPath)
+            nStrip = 1;
+    
+        if(m_dldrpanel)
+            m_dldrpanel->m_stCatalogInfo->SetLabel( _("Installing charts."));
+        
+        androidShowBusyIcon();
+        bool ret = AndroidUnzip(aFile, aTargetDir, nStrip, true);
+        androidHideBusyIcon();
+        
+        return ret;
+    }
+#endif        
+
     else //Uncompressed
     {
         wxFileName fn(aFile);
@@ -1743,6 +1768,7 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
 }
 
 #ifdef DLDR_USE_LIBARCHIVE
+#ifndef __OCPN__ANDROID__    
 static int copy_data(struct archive *ar, struct archive *aw)
 {
     int r;
@@ -1764,9 +1790,11 @@ static int copy_data(struct archive *ar, struct archive *aw)
         }
     }
 }
+#endif    
 
 bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveArchive)
 {
+#ifndef __OCPN__ANDROID__    
     struct archive *a;
     struct archive *ext;
     struct archive_entry *entry;
@@ -1788,8 +1816,9 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wx
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
-    if ((r = archive_read_open_filename(a, aArchiveFile.c_str(), 10240)))
+    if ((r = archive_read_open_filename(a, aArchiveFile.c_str(), 10240))){
         return false;
+    }
     for (;;) {
         r = archive_read_next_header(a, &entry);
         if (r == ARCHIVE_EOF)
@@ -1825,6 +1854,7 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wx
                 return false;
         }
         r = archive_write_finish_entry(ext);
+
         if (r < ARCHIVE_OK)
             //fprintf(stderr, "%s\n", archive_error_string(ext));
             wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(ext)));
@@ -1838,8 +1868,13 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wx
 
     if( aRemoveArchive )
         wxRemoveFile(aArchiveFile);
-
     return true;
+
+#else
+
+    return rv;
+    
+#endif          // Android    
 }
 #endif
 

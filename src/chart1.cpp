@@ -284,6 +284,8 @@ wxString                  g_VisiNameinLayers;
 wxString                  g_InVisiNameinLayers;
 
 bool                      g_bcompression_wait;
+bool                      g_FlushNavobjChanges;
+int                       g_FlushNavobjChangesTimeout;
 
 wxString                  g_uploadConnection;
 
@@ -2177,7 +2179,7 @@ bool MyApp::OnInit()
 #ifndef __OCPN__ANDROID__
         pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
 #else
-        pInit_Chart_Dir->Append( g_Platform->GetPrivateDataDir() );
+        pInit_Chart_Dir->Append( androidGetExtStorageDir() );
 #endif
     }
 
@@ -4667,6 +4669,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         {
  #ifdef __OCPN__ANDROID__
             ///LoadS57();
+            androidDisableFullScreen();
             g_MainToolbar->HideTooltip();
             DoAndroidPreferences();
  #else
@@ -4826,6 +4829,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_CMD_APPLY_SETTINGS:{
             applySettingsString(event.GetString());
+#ifdef __OCPN__ANDROID__            
+            androidRestoreFullScreen( );
+#endif            
+
             break;
         }
 
@@ -5229,6 +5236,7 @@ void MyFrame::TrackOn( void )
     v[_T("GUID")] = g_pActiveTrack->m_GUID;
     wxString msg_id( _T("OCPN_TRK_ACTIVATED") );
     g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    g_FlushNavobjChangesTimeout = 30;           //Every thirty seconds, consider flushing navob changes
 }
 
 Track *MyFrame::TrackOff( bool do_add_point )
@@ -5278,6 +5286,8 @@ Track *MyFrame::TrackOff( bool do_add_point )
     #ifdef __OCPN__ANDROID__
     androidSetTrackTool(false);
     #endif
+
+    g_FlushNavobjChangesTimeout = 600;           //Revert to checking/flushing navob changes every 5 minutes
 
     return return_val;
 }
@@ -6164,6 +6174,7 @@ int MyFrame::DoOptionsDialog()
     androidEnableBackButton( true );
     androidEnableOptionsMenu( true );
     androidRestoreFullScreen();
+    androidEnableRotation();
     #endif
     
 
@@ -6177,6 +6188,10 @@ int MyFrame::DoOptionsDialog()
     options_lastWindowSize = g_options->lastWindowSize;
 
     if( 1/*b_sub*/ ) {          // always surface toolbar, and restart the timer if needed
+#ifdef __OCPN__ANDROID__
+      g_MainToolbar-> SetDockX( -1 );
+      g_MainToolbar-> SetDockY( -1 );
+#endif        
         g_MainToolbar->Surface();
         SurfaceAllCanvasToolbars();
         GetPrimaryCanvas()->SetFocus();
@@ -7114,9 +7129,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             //g_options->SetColorScheme(global_color_scheme);
             //applyDarkAppearanceToWindow(g_options->MacGetTopLevelWindowRef());
 
-            if( g_MainToolbar )
-                g_MainToolbar->EnableTool( ID_SETTINGS, true );
-
             // needed to ensure that the chart window starts with keyboard focus
             SurfaceAllCanvasToolbars();
             
@@ -7184,6 +7196,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             androidEnableBackButton( true );
             androidEnableRotation();
 #endif
+
+            if( g_MainToolbar )
+                g_MainToolbar->EnableTool( ID_SETTINGS, true );
 
             break;
         }
@@ -7743,13 +7758,16 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     // Update the navobj file on a fixed schedule (5 minutes)
     // This will do nothing if the navobj.changes file is empty and clean
-    if((g_tick % 300) == 0){
+    if(((g_tick % g_FlushNavobjChangesTimeout) == 0) || g_FlushNavobjChanges){
         if(pConfig && pConfig->IsChangesFileDirty()){
+            androidShowBusyIcon();
             wxStopWatch update_sw;
             pConfig->UpdateNavObj( true );
             wxString msg = wxString::Format(_T("OpenCPN periodic navobj update took %ld ms."), update_sw.Time());
             wxLogMessage( msg );
             qDebug() << msg.mb_str();
+            g_FlushNavobjChanges = false;
+            androidHideBusyIcon();
         }
     }
 
@@ -8856,7 +8874,6 @@ void MyFrame::setCourseOverGround(double cog)
     if(!g_own_ship_sog_cog_calc) {
         wxLogDebug(wxString::Format(_T("COG: %f"), cog));
         gCog = cog;
-        gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
 }
 
@@ -8865,7 +8882,6 @@ void MyFrame::setSpeedOverGround(double sog)
     if(!g_own_ship_sog_cog_calc) {
         wxLogDebug(wxString::Format(_T("SOG: %f"), sog));
         gSog = sog;
-        gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
 }
 
@@ -11657,14 +11673,29 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 {
 #ifdef __OCPN__ANDROID__
     androidDisableRotation();
-#endif
+    int style_mod = style;
+
+    auto dlg = new wxMessageDialog(parent, message, caption,  style_mod);
+    int ret = dlg->ShowModal();
+    qDebug() << "OCPNMB-1 ret" << ret;
+
+    //int ret= dlg->GetReturnCode();
+
+    //  Not sure why we need this, maybe on wx3?
+    if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
+        ret = wxID_YES;
+
+    dlg->Destroy();
+
+    androidEnableRotation();
+    qDebug() << "OCPNMB-2 ret" << ret;
+    return ret;
+    
+#else
     int ret =  wxID_OK;
 
     TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
     ret = tbox.GetRetVal() ;
-
-#ifdef __OCPN__ANDROID__
-    androidEnableRotation();
 #endif
 
     return ret;

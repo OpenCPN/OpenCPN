@@ -203,6 +203,8 @@ extern arrayofCanvasPtr  g_canvasArray;
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
+void NotifySetupOptionsPlugin( PlugInContainer *pic );
+
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -420,6 +422,7 @@ static void run_update_dialog(PluginListPanel* parent,
     wxASSERT(parent_dlg != 0);
     UpdateDialog dialog(parent_dlg, updates);
     auto status = dialog.ShowModal();
+    status = dialog.GetReturnCode();
     if (status != wxID_OK) {
         return;
     }
@@ -532,8 +535,11 @@ static void run_update_dialog(PluginListPanel* parent,
             PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
             wxString cname = pic->m_common_name;
             if(pic->m_bInitState && (pluginName == cname)) {
-                if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE))
+                if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)){
                     g_options->SetNeedNew( true );
+
+                    NotifySetupOptionsPlugin(pic);
+                }
             }
         }
     }
@@ -701,15 +707,15 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
     switch (panel->GetAction()){
         case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
         {
-            wxLogMessage("Installing managed plugin: %s", actionPIC->m_ManagedMetadata.name.c_str());
-            auto downloader = new GuiDownloader(plugin_list_panel,
-                                                actionPIC->m_ManagedMetadata);
+            // capture the plugin name
+            std::string pluginName = actionPIC->m_ManagedMetadata.name;
+            
+            wxLogMessage("Installing managed plugin: %s", pluginName.c_str());
+            auto downloader = new GuiDownloader(plugin_list_panel, actionPIC->m_ManagedMetadata);
             downloader->run(plugin_list_panel);
 
-            
             // Provisional error check
-            std::string manifestPath =
-                PluginHandler::fileListPath(actionPIC->m_ManagedMetadata.name);
+            std::string manifestPath = PluginHandler::fileListPath(pluginName);
             if(isRegularFile(manifestPath.c_str())) {
 
                 // dynamically deactivate the legacy plugin, making way for the upgrade.
@@ -719,8 +725,8 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
                         break;
                     }
                 }
-            
-                //  Reload all plugins, which will bring in the new, managed version.
+
+            //  Reload all plugins, which will bring in the new, managed version.
                 g_pi_manager->LoadAllPlugIns( false );
             }
             else {
@@ -804,8 +810,11 @@ class StatusIconPanel: public wxPanel
             m_stat = pic->m_pluginStatus; //::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
-
-            SetBackgroundColour(GetGlobalColor(_T("DILG0")));
+            
+            m_penWidthUnselected = g_Platform->GetDisplayDPmm() * .25;
+            m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
+            
+            //SetBackgroundColour(GetGlobalColor(_T("DILG0")));
             auto size = GetClientSize();
             auto minsize = GetTextExtent("OpenCPNOpenCPNOpenCPNOpenCPN");
             SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
@@ -813,21 +822,39 @@ class StatusIconPanel: public wxPanel
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
             Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
 
+            
        }
 
         void OnPaint(wxPaintEvent& event)
         {
             auto size = GetClientSize();
-            int minsize = wxMin(size.GetHeight(), size.GetWidth());
+//             int minsize = wxMin(size.GetHeight(), size.GetWidth());
+            int minsize = GetCharWidth() * 3;
             auto offset = minsize / 4;
-
-            LoadIcon(m_icon_name.c_str(), m_bitmap,   wxMax(1, minsize / 3));
+            
+            LoadIcon(m_icon_name.c_str(), m_bitmap,   wxMax(1, minsize));
             wxPaintDC dc(this);
             if (!m_bitmap.IsOk()) {
                 wxLogMessage("StatusPluginPanel: bitmap is not OK!");
                 return;
             }
-            dc.DrawBitmap(m_bitmap, offset, offset, true);
+            
+            wxString color = "DILG0";
+            int penWidth = m_penWidthUnselected;
+            
+            if(m_parent->GetSelected()){
+                color = "DILG1";
+                penWidth = m_penWidthSelected;
+            }
+            
+            wxBrush b(GetGlobalColor(color), wxSOLID);
+            dc.SetBrush(b);
+            dc.SetPen( wxPen(*wxBLACK, penWidth ));
+
+            dc.DrawRoundedRectangle(-20, 5, GetSize().x-5, GetSize().y-10, 5);
+            dc.DrawBitmap(m_bitmap, offset, offset*2, true);
+            
+            
             //dc.DrawText(_T("PluginStatus"), 0, 0);
             //dc.DrawText(literalstatus_by_status[m_stat], 4 * GetCharWidth(), GetCharHeight());
          }
@@ -853,7 +880,9 @@ class StatusIconPanel: public wxPanel
         std::string m_icon_name;
         PluginStatus m_stat;
         PluginPanel *m_parent;
-        
+        int m_penWidthUnselected;
+        int m_penWidthSelected;
+
         void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
         {
             wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
@@ -870,7 +899,7 @@ class StatusIconPanel: public wxPanel
 
             if (!ok) {
                 auto style = g_StyleManager->GetCurrentStyle();
-                bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
+                bitmap = wxBitmap(style->GetIcon( _T("default_pi"), size, size));
                 wxLogMessage("Icon: %s not found.", path.GetFullPath());
             }
         }
@@ -1178,6 +1207,7 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                 }
             }
         }
+        
         if(loaded)
             continue;
 
@@ -1217,7 +1247,7 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
             if(pic->m_pplugin)
             {
                 plugin_array.Add(pic);
-                    
+                
                 //    The common name is available without initialization and startup of the PlugIn
                 pic->m_common_name = pic->m_pplugin->GetCommonName();
                 pic->m_plugin_filename = plugin_file;
@@ -1227,13 +1257,19 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                 {
                     wxStopWatch sw;
                     pic->m_cap_flag = pic->m_pplugin->Init();
+                    pic->m_bInitState = true;
+                    if(g_options){
+                        if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)){
+                            if(!pic->m_bToolboxPanel)
+                                NotifySetupOptionsPlugin( pic );
+                        }
+                    }
 #ifdef __WXGTK__ // 10 milliseconds is very slow at least on linux
                     if(sw.Time() > 10)
                         wxLogMessage(_T("PlugInManager: ") + pic->m_common_name
                                      + _T(" has loaded very slowly: %ld ms"),
                                      sw.Time());
 #endif
-                    pic->m_bInitState = true;
                 }
                 std::string found_version;
                 for (auto p: PluginHandler::getInstance()->getInstalled()) {
@@ -1264,6 +1300,37 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
         }
     }
     
+    // Scrub the plugin array...
+    // Here, looking for duplicates caused by new installation of a plugin
+    // We want to remove the previous entry representing the uninstalled packaged plugin metadata
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++){
+        PlugInContainer *pic = plugin_array[i];
+        for(unsigned int j=i+1; j < plugin_array.GetCount() ; j++){
+            PlugInContainer *pict= plugin_array[j];
+            
+            if(pic->m_common_name == pict->m_common_name){
+                if(pic->m_plugin_file.IsEmpty())
+                    plugin_array.Item(i)->m_pluginStatus = PluginStatus::PendingListRemoval;
+                else
+                    plugin_array.Item(j)->m_pluginStatus = PluginStatus::PendingListRemoval;
+            }
+        }
+    }
+
+    //  Remove any list items marked
+    size_t i=0;
+    while( (i >= 0) && (i <  plugin_array.GetCount())){
+        PlugInContainer *pict = plugin_array.Item(i);
+        if(pict->m_pluginStatus == PluginStatus::PendingListRemoval){
+            plugin_array.RemoveAt(i);
+            i=0;
+        }
+        else
+            i++;
+    }
+
+
+/*    
     std::map<int, PlugInContainer*> ap;
     for( unsigned int i = 0; i < plugin_array.GetCount(); i++ )
     {
@@ -1281,7 +1348,8 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
         plugin_array.Insert( iter->second, 0 );
     }
     ap.clear();
-    
+  */
+
     UpDateChartDataTypes();
 
     // Inform plugins of the current color scheme
@@ -1497,7 +1565,7 @@ void PlugInManager::UpdateManagedPlugins()
     
     //  Now merge and update from the catalog
     for (auto plugin: available) {
-    
+
         PlugInContainer *pic = NULL;
         // Search for an exact name match in the existing plugin array
         bool bfound = false;
@@ -1519,6 +1587,7 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_version_minor = 0;
 
             plugin_array.Add(new_pic);
+
         }
         // Match found, so merge the info and determine the plugin status        
         else{
@@ -1702,17 +1771,19 @@ wxString PlugInManager::GetPluginOrder()
 
 bool PlugInManager::UpdateConfig()
 {
-    pConfig->SetPath( _T("/PlugIns/") );
-    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
+//    pConfig->SetPath( _T("/PlugIns/") );
+//    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
 
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array[i];
 
-        wxString config_section = ( _T ( "/PlugIns/" ) );
-        config_section += pic->m_plugin_filename;
-        pConfig->SetPath ( config_section );
-        pConfig->Write ( _T ( "bEnabled" ), pic->m_bEnabled );
+        if(pic){
+            wxString config_section = ( _T ( "/PlugIns/" ) );
+            config_section += pic->m_plugin_filename;
+            pConfig->SetPath ( config_section );
+            pConfig->Write ( _T ( "bEnabled" ), pic->m_bEnabled );
+        }
     }
 
     return true;
@@ -5084,7 +5155,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( this, wxID_ANY, _("Plugin Catalog") );
      wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static, wxVERTICAL );
      topSizer->Add( itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2 );
-
+#ifndef __OCPN__ANDROID__
      // First line
      m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
      itemStaticBoxSizer4->Add( m_catalogText, 1, wxALIGN_LEFT );
@@ -5145,7 +5216,78 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
          m_tcCustomURL->Hide();
          m_customText->Hide();
      }
+#else
+     SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));              // light blue
+     pConfig->SetPath( _T("/PlugIns/") );
+     wxString expert = pConfig->Read( "CatalogExpert", "0");
+
+     // First line
+     m_catalogText = new wxStaticText( this, wxID_STATIC, GetCatalogText(false));
+     itemStaticBoxSizer4->Add( m_catalogText, 0, wxALIGN_LEFT );
+     if(expert.IsSameAs(_T("0")))
+        m_catalogText->Hide();
      
+     // Next line
+     m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog:Master"), wxDefaultPosition, wxDefaultSize, 0 );
+     itemStaticBoxSizer4->Add( m_updateButton, 1, wxALIGN_LEFT );
+     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
+
+     // Next line
+     wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
+     itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
+
+     wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
+     rowSizer2->Add( tchannels, 1, wxALIGN_RIGHT | wxALL, 5 );
+     if(expert.IsSameAs(_T("0")))
+        tchannels->Hide();
+
+     wxArrayString channels;
+     channels.Add(_T( "Master" ));
+     channels.Add(_T( "Beta" ));
+     if(expert.IsSameAs(_T("1"))){
+        channels.Add(_T( "Alpha" ));
+        channels.Add(_T( "Custom..." ));
+     }
+     
+     m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
+     rowSizer2->Add( m_choiceChannel, 1, wxALIGN_RIGHT );
+     m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
+     int selection = GetChannelIndex(&channels);
+     if(!expert){
+         if(selection > 1) selection = 0;
+     }
+     m_choiceChannel->SetSelection( selection );
+     if(expert.IsSameAs(_T("0")))
+        m_choiceChannel->Hide();
+
+     // Next line
+     m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
+     itemStaticBoxSizer4->Add( m_tarballButton, 0, wxALIGN_LEFT );
+     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
+     if(expert.IsSameAs(_T("0")))
+        m_tarballButton->Hide();
+
+     // Next line
+     wxBoxSizer* rowSizer3 = new wxBoxSizer( wxHORIZONTAL );
+     itemStaticBoxSizer4->Add( rowSizer3, 0, wxEXPAND | wxALL, 4 );
+     
+     m_customText = new wxStaticText( this, wxID_STATIC, _T("Custom url"));
+     rowSizer3->Add( m_customText, 0, wxALIGN_LEFT | wxRIGHT, 2 * GetCharWidth() );
+     m_tcCustomURL = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+     rowSizer3->Add( m_tcCustomURL, 1, wxEXPAND  );
+
+     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom"))){
+         m_tcCustomURL->Show();
+         m_customText->Show();
+     }
+     else{
+         m_tcCustomURL->Hide();
+         m_customText->Hide();
+     }
+
+     SetUpdateButtonLabel();
+
+#endif
      SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
      Fit();
 
@@ -5192,12 +5334,18 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     }
     
     //TODO Validate xml using xsd here....
-    
+#ifdef __OCPN__ANDROID__
+    if(!AndroidSecureCopyFile (wxString(filePath.c_str()), g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
+        OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR);
+        return;
+    }
+#else
     // Copy the downloaded file to proper local location
     if(!wxCopyFile (wxString(filePath.c_str()), g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
         OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR);
         return;
     }
+#endif    
     
     // If this is the "master" catalog, also copy to plugin cache
     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Master"))){
@@ -5213,10 +5361,17 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
         if(!wxDirExists( metaCache ))
             wxMkdir( metaCache );
             
+#ifdef __OCPN__ANDROID__
+        if(!AndroidSecureCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
+            OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
+            return;
+        }
+#else
         if(!wxCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
             OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
             return;
         }
+#endif
     }       
 
     // Record in the config file the name of the catalog downloaded
@@ -5281,6 +5436,9 @@ static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
         else if( !strcmp(element.name(), "target-version") ){
             plugin.target_version = element.first_child().value();
         }
+        else if( !strcmp(element.name(), "target-arch") ){
+            plugin.target_arch = element.first_child().value();
+        }
         else if( !strcmp(element.name(), "tarball-url") ){
             plugin.tarball_url = element.first_child().value();
         }
@@ -5330,6 +5488,9 @@ static void populatePluginNode(pugi::xml_node &pluginNode, PluginMetadata &worki
     child = pluginNode.append_child("target-version");
     child.append_child(pugi::node_pcdata).set_value(workingMetadata.target_version.c_str());
    
+    child = pluginNode.append_child("target-arch");
+    child.append_child(pugi::node_pcdata).set_value(workingMetadata.target_arch.c_str());
+
     child = pluginNode.append_child("tarball-url");
     child.append_child(pugi::node_pcdata).set_value(workingMetadata.tarball_url.c_str());
 
@@ -5546,7 +5707,11 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         wxString destination = cacheDir + sep + fn.GetFullName();
         if(wxFileExists(wxString( tarballPath.c_str()))){
             wxLogMessage("Copying %s to local cache",  tarballPath.ToStdString().c_str());
+#ifdef __OCPN__ANDROID__            
+            AndroidSecureCopyFile (tarballPath, destination);
+#else                
             wxCopyFile( tarballPath, destination);
+#endif            
         }
 
         // Ready to load an process the merged catalog...
@@ -5653,55 +5818,9 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
     m_PluginSelected(0)
 {
     SetSizer(new wxBoxSizer(wxVERTICAL));
-
-    m_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
-    m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
-    m_panel->SetSizer(m_pitemBoxSizer01);
-    
-    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
-    
+    m_panel = 0;
     ReloadPluginPanels(pPluginArray);
     //SetScrollRate(0, 1);
-}
-
-/**
- * Clear m_PluginsItems and remove everything in this instance besides:
- *   - The empty m_pitemBoxSizer01.
- *   - The AddPluginPanel
- */
-void PluginListPanel::Clear()
-{
-/*    
-    int count = 0;
-    int numChildren = GetChildren().GetCount();
-    while (auto it = GetChildren().GetFirst()) {
-        count = count + 1;
-        auto pData = it->GetData();
-        if (pData)
-            pData->Destroy();
-        if (count > numChildren)
-            break;
-    }
-    wxASSERT(count == numChildren);
-*/    
-    for(unsigned int i=0 ; i < m_PluginItems.GetCount(); i++){
-        delete m_PluginItems[i];    //->Destroy();
-    }
-    m_PluginItems.Clear();
-
-    // Remove the wxStaticLines, also
-    wxWindowList kids = m_panel->GetChildren();
-    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item(i);
-        wxWindow *win = node->GetData();
-
-        if (win->IsKindOf(CLASSINFO(wxStaticLine)) )
-            delete win;
-    } 
-    
-    m_pitemBoxSizer01->Clear();
-    
-    Scroll(0,0);
 }
 
 void PluginListPanel::SelectByName(wxString &name)
@@ -5722,17 +5841,26 @@ void PluginListPanel::SelectByName(wxString &name)
 void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
 {
     m_pPluginArray = plugins;
-    Hide();
-    Clear();
+    delete m_panel;
+    m_PluginItems.Clear();
+    
+    m_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
+    m_panel->SetSizer(m_pitemBoxSizer01);
+    
+    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
+
+    m_panel->Hide();
     m_PluginSelected = 0;
     for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
-        AddPlugin(m_pPluginArray->Item(i - 1));
+        PlugInContainer* pic = m_pPluginArray->Item(i - 1);
+        AddPlugin(pic);
     }
-    //int dy = ComputePluginSpace(m_PluginItems, m_pitemBoxSizer01);
-    //m_pitemBoxSizer01->AddSpacer(dy);
+    m_panel->Show();
     Layout();
-    Show();
     Refresh(true);
+    
+    Scroll(0,0);
 }
 
 
@@ -5743,8 +5871,11 @@ void PluginListPanel::AddPlugin(PlugInContainer* pic)
     m_pitemBoxSizer01->Add( pPluginPanel, wxSizerFlags().Expand());
     m_PluginItems.Add( pPluginPanel );
 
-    wxStaticLine* itemStaticLine = new wxStaticLine( m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-    m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
+    m_pluginSpacer = g_Platform->GetDisplayDPmm() * 1.0;
+    m_pitemBoxSizer01->AddSpacer(m_pluginSpacer);
+    
+//    wxStaticLine* itemStaticLine = new wxStaticLine( m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+//    m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
 }
 
 //    When a child Panel is selected, its size grows to include "Preferences"
@@ -5819,7 +5950,22 @@ void PluginListPanel::SelectPlugin( PluginPanel *pi )
     wxSize size = GetBestVirtualSize();
     SetVirtualSize( size );
 
-    
+    //  Measure, and ensure that the selected item is fully visible in the vertical scroll box.
+    int htop = 0;
+    for(unsigned int i=0 ; i < m_PluginItems.GetCount() ; i++) {
+        PluginPanel *pPluginPanel = m_PluginItems[i];
+        int yd = pPluginPanel->GetSize().y;
+        htop += yd;
+        htop += m_pluginSpacer;
+        if(pPluginPanel == pi){
+            int piBottom = htop - (ys*g_options->GetScrollRate());
+            if(piBottom > GetClientSize().y){
+                ys += (piBottom - GetClientSize().y)/g_options->GetScrollRate();
+            }
+            break;
+        }
+    }
+ 
     Scroll(xs, ys);
 }
 
@@ -5877,6 +6023,9 @@ static bool canUninstall(std::string name)
     return false;
 }
 
+BEGIN_EVENT_TABLE( PluginPanel, wxPanel )
+    EVT_PAINT ( PluginPanel::OnPaint )
+END_EVENT_TABLE()
 
 PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin)
     :wxPanel(parent, id, pos, size, wxBORDER_NONE)
@@ -5887,6 +6036,8 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     
     m_pPlugin = p_plugin;
     m_bSelected = false;
+    m_penWidthUnselected = g_Platform->GetDisplayDPmm() * .25;
+    m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
 
     wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(topSizer);
@@ -5894,7 +6045,9 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     wxBoxSizer* itemBoxSizer01 = new wxBoxSizer(wxHORIZONTAL);
     topSizer->Add(itemBoxSizer01, 0, wxEXPAND);
     Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
+    double iconSize = GetCharWidth() * 4;
     wxImage plugin_icon;
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
     if (m_pPlugin->m_bitmap) {
@@ -5902,81 +6055,177 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     }
     wxBitmap bitmap;
     if (plugin_icon.IsOk()) {
-        bitmap = wxBitmap(plugin_icon.Copy());
+        int nowSize = plugin_icon.GetWidth();
+        if( (nowSize > iconSize) || ((iconSize / nowSize) > 1.5) ) 
+            plugin_icon.Rescale( iconSize, iconSize, wxIMAGE_QUALITY_HIGH);
+        bitmap = wxBitmap(plugin_icon);
     }
     else if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        wxFileName path(g_Platform->GetSharedDataDir(), "package-x-generic");
+        wxFileName path(g_Platform->GetSharedDataDir(), "packageBox.svg");
         path.AppendDir("uidata");
-        path.SetExt("png");
-        bitmap.LoadFile(path.GetFullPath(), wxBITMAP_TYPE_PNG);
+        path.AppendDir("traditional");
+        wxImage img = LoadSVGIcon(path.GetFullPath(), iconSize, iconSize);
+        bitmap = wxBitmap(img);
     }
     else {
-        bitmap =  wxBitmap(style->GetIcon( _T("default_pi")));
+        bitmap =  wxBitmap(style->GetIcon( _T("default_pi"), iconSize, iconSize));
     }
     m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
         
-    itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
+    itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 10);
     m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-    
+    m_itemStaticBitmap->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
 
-    wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
-    itemBoxSizer03->AddGrowableCol(2);
-    itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
+    // Calculate character width available
+    int nChars = g_options->GetSize().x / GetCharWidth();
+    bool bCompact = false;
+    if(nChars < 60)                    // Arbitrary, detecting mobile devices in portrait mode.
+        bCompact = true;
     
-    m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
-    m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    if(bCompact){
     
-    // Avoid known bug in wxGTK3
-#ifndef __WXGTK3__    
-    wxFont font = GetFont();
-    font.SetWeight(wxFONTWEIGHT_BOLD);
-    m_pName->SetFont(font);
-#endif    
-    
-    itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
+        // Might need to shorten the Plugin name string
+        wxString nameString = m_pPlugin->m_common_name;
+        int maxWidth  = g_Platform->getDisplaySize().x * 3 / 10;
+        wxScreenDC dc;
+        int nameWidth;
+        dc.GetTextExtent( m_pPlugin->m_common_name, &nameWidth, NULL);
+        if(nameWidth > maxWidth){
+            nameString = wxControl::Ellipsize(m_pPlugin->m_common_name, dc, wxELLIPSIZE_END, maxWidth); 
+        }       
+        m_pName = new wxStaticText( this, wxID_ANY, nameString );
+        m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pName->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+        itemBoxSizer02->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
 
-    m_pVersion = new wxStaticText( this, wxID_ANY, _T("") /*p_plugin->GetVersion().to_string()*/ );
-    itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
-    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
-        m_pVersion->Hide();
+        wxFlexGridSizer* sl1 = new wxFlexGridSizer(2,0,0);
+        sl1->AddGrowableCol(1);
+        itemBoxSizer02->Add(sl1, 0, wxEXPAND);
+
+        m_pVersion = new wxStaticText( this, wxID_ANY, _T("X.YY.ZZ.AA") ); 
+        sl1->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
+        if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+            m_pVersion->Hide();
+        }
+        m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pVersion->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+
+        m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+        sl1->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
+        m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+        
+        // Might need to shorten the Plugin description string
+        wxString descriptionString = m_pPlugin->m_short_description;
+        int maxDescriptionWidth  = g_Platform->getDisplaySize().x  - (iconSize * 4);
+        int descriptionWidth;
+        dc.GetTextExtent( m_pPlugin->m_short_description, &descriptionWidth, NULL);
+        if(descriptionWidth > maxDescriptionWidth)
+            descriptionString = wxControl::Ellipsize(m_pPlugin->m_short_description, dc, wxELLIPSIZE_END, maxDescriptionWidth); 
+
+        // This invocation has the effect of setting the minimum width of the descriptor field.
+        m_pDescription = new wxStaticText( this, wxID_ANY, descriptionString, wxDefaultPosition, wxSize( maxDescriptionWidth, -1), wxST_NO_AUTORESIZE );
+        itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
+        m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+
     }
-    m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-
-    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
-    itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
-    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
-
-    // This invocation has the effect of setting the minimum width of the descriptor field.
-    m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
-    itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
-    m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-
-    m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
-    m_info_btn->Hide();
-    itemBoxSizer02->Add(m_info_btn, 0);
-
-    m_pButtons = new wxBoxSizer(wxHORIZONTAL);
-    itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
-    m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
+    else{
+        wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
+        itemBoxSizer03->AddGrowableCol(2);
+        itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
     
-    m_pButtonAction = new wxButton( this, wxID_ANY, _("Action"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
-    
-    m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
+        wxString nameString = m_pPlugin->m_common_name;
+        m_pName = new wxStaticText( this, wxID_ANY, nameString );
+        m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pName->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
+        // Avoid known bug in wxGTK3
+    #ifndef __WXGTK3__    
+        wxFont font = GetFont();
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+        m_pName->SetFont(font);
+    #endif    
+        
+        itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 10);
+
+        m_pVersion = new wxStaticText( this, wxID_ANY, _T("X.YY.ZZ.AA") ); 
+        itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 10);
+        if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+            m_pVersion->Hide();
+        }
+        m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pVersion->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+
+        m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+        itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 10);
+        m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+        
+       // This invocation has the effect of setting the minimum width of the descriptor field.
+        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
+        itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
+        m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+        m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+
+    }
+    
+
+    if(!bCompact){
+        m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+        m_info_btn->Hide();
+        itemBoxSizer02->Add(m_info_btn, 0);
+
+        m_pButtons = new wxBoxSizer(wxHORIZONTAL);
+        itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
+        m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
+ 
+        m_pButtons->AddSpacer(3 * GetCharWidth());
+    
+        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version XX.XX.XX", wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
+    
+        m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
+    }
+    else{
+        m_pButtons = new wxBoxSizer(wxVERTICAL);
+        itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
+        
+        wxBoxSizer *tline = new wxBoxSizer(wxHORIZONTAL);
+        m_pButtons->Add( tline, 0,wxALL, 2);
+
+        m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
+        tline->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 0);
+ 
+        tline->AddSpacer(3 * GetCharWidth());
+        
+        m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+        m_info_btn->Hide();
+        tline->Add(m_info_btn, 0);
+
+        m_pButtonAction = new wxButton( this, wxID_ANY, "Upgrade to Version XX.XX.XX", wxDefaultPosition, wxDefaultSize );
+        m_pButtons->Add( m_pButtonAction, 0, wxALIGN_LEFT|wxALL, 2);
+    
+        m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
+        
+    }
+    
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
     itemBoxSizer01->Add(m_status_icon, 0, wxEXPAND);
+
+    itemBoxSizer02->AddSpacer( GetCharWidth() );
 
     m_pButtonPreferences->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
     m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUninstall, this);
     m_pButtonAction->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginAction, this);
 
+    
     SetSelected( m_bSelected );
     SetAutoLayout(true);
     //FitInside();
@@ -6003,7 +6252,35 @@ void PluginPanel::SetActionLabel( wxString &label)
     Refresh();
 }
 
+static         wxStopWatch swclick;
+static  int downx, downy;
+
 void PluginPanel::OnPluginSelected( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__    
+    swclick.Start();
+    event.GetPosition( &downx, &downy );
+#else
+    DoPluginSelect();
+#endif    
+}
+
+void PluginPanel::OnPluginSelectedUp( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__    
+    qDebug() << swclick.Time();
+    if(swclick.Time() < 200){
+        int upx, upy;
+        event.GetPosition(&upx, &upy);
+        if( (fabs(upx-downx) < GetCharWidth()) && (fabs(upy-downy) < GetCharWidth()) ){
+            DoPluginSelect();
+        }
+    }
+    swclick.Start();
+#endif    
+}
+
+void PluginPanel::DoPluginSelect( )
 {
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
@@ -6033,10 +6310,10 @@ void PluginPanel::SetSelected( bool selected )
        // If so, as a special case...
        //  We show the version from the metadata, thus handling managed plugins with API < 117 
         
-       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion) )
+       if( m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion )
             m_pVersion->SetLabel( m_pPlugin->m_ManagedMetadata.version );
 
-       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledUpdateAvailable) )
+       if( m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledUpdateAvailable )
             m_pVersion->SetLabel( wxString(m_pPlugin->m_InstalledManagedVersion) );
 
     }
@@ -6069,7 +6346,7 @@ void PluginPanel::SetSelected( bool selected )
         SemanticVersion newVersion;
         switch(m_pPlugin->m_pluginStatus){
             case PluginStatus::LegacyUpdateAvailable:
-                label = _("Upgrade to managed Version ");
+                label = _("Upgrade to Version ");
                 label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
                 m_action = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
                 m_pButtonAction->Enable();
@@ -6179,9 +6456,9 @@ void PluginPanel::SetSelected( bool selected )
     // Android (wxQT) sizers have troubles...
     // So we set some layout factors to avoid re-sizing on select/deselect.
 //    m_rgSizer->Show(true);
-    m_pButtons->Show(true);
-    m_pButtonAction->Hide();
-    m_pButtonUninstall->Hide();
+    //m_pButtons->Show(true);
+    //m_pButtonAction->Hide();
+    //m_pButtonUninstall->Hide();
 
     Fit();
     m_PluginListPanel->m_pitemBoxSizer01->Layout();
@@ -6190,11 +6467,37 @@ void PluginPanel::SetSelected( bool selected )
 
 }
 
+void PluginPanel::OnPaint(wxPaintEvent &event)
+{
+    wxPaintDC dc( this );
+    
+    wxString color = "DILG0";
+    
+    int penWidth = m_penWidthUnselected;
+    if(m_bSelected){
+        color = "DILG1";
+        penWidth = m_penWidthSelected;
+    }
+        
+    wxBrush b(GetGlobalColor(color), wxSOLID);
+    dc.SetBrush(b);
+    dc.SetPen( wxPen(*wxBLACK, penWidth) );
+ 
+    dc.DrawRoundedRectangle( 5, 5, GetSize().x - 10, GetSize().y - 10, 5);
+    //dc.DrawLine( 5, 5, 1000, 5 ); 
+
+}
+
 void PluginPanel::OnPluginPreferences( wxCommandEvent& event )
 {
-    if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) )
-    {
+    if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) ){
+#ifdef __OCPN__ANDROID__ 
+        androidDisableRotation();
+        m_pPlugin->m_pplugin->ShowPreferencesDialog( GetGrandParent() ); // GrandParent will be the entire list panel, not the plugin panel
+                                                                         // Ensures better centering on small screens        
+#else        
         m_pPlugin->m_pplugin->ShowPreferencesDialog( this );
+#endif        
     }
 }
 
@@ -6241,14 +6544,30 @@ void PluginPanel::SetEnabled( bool enabled )
         m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
         m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
         m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+#ifdef x__OCPN__ANDROID__
+        m_pName->Disable();
+        m_pVersion->Disable();
+        m_pDescription->Disable();
+#endif
     }
     else
     {
         m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
         m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
         m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+#ifdef x__OCPN__ANDROID__
+        m_pName->Enable();
+        m_pVersion->Enable();
+        m_pDescription->Enable();
+#endif
     }
-    
+
+#ifdef __OCPN__ANDROID__
+        m_pName->Enable( enabled || m_bSelected );
+        m_pVersion->Enable( enabled || m_bSelected );
+        m_pDescription->Enable( enabled || m_bSelected );
+#endif
+
     if(m_bSelected) {
         wxString description = m_pPlugin->m_long_description;
         if(description.IsEmpty())

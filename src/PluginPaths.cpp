@@ -185,16 +185,17 @@ void PluginPaths::initAndroidPaths()
 {
     using namespace std;
 
-    // Initial Android implementation cannot use new PluginManager scheme
-    // So we default to standard R/O location as used by system plugins.
-
-    //m_userLibdir = m_home + "/.local/lib";
-    //m_userBindir = m_home + "/.local/bin";
-    //m_userDatadir = m_home + "/.local/share";
-    //m_unknownPathDir = m_home + "/.local/share/opencpn/unknown-prefix";
-
     const string platform_dir = g_Platform->GetPluginDir().ToStdString();
+    
+    m_userLibdir = platform_dir + "/manPlug"; //("/data/user/0/org.opencpn.opencpn");
+    m_userBindir = platform_dir + "/manPlug"; //("/data/user/0/org.opencpn.opencpn");
+    m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString(); //( "/storage/emulated/0/android/data/org.opencpn.opencpn/files");
+    
+    m_libdirs.push_back(m_userLibdir);          // Load managed plugins first...
     m_libdirs.push_back(expand(platform_dir));
+
+    m_bindirs = m_libdirs;
+
 }
 
 
@@ -214,7 +215,11 @@ PluginPaths::PluginPaths()
         initFlatpackPaths();
     }
     else if (osSystemId & wxOS_UNIX_LINUX) {
+#ifdef __OCPN__ANDROID__
+        initAndroidPaths();
+#else
         initLinuxPaths();
+#endif        
     }
     else if (osSystemId & wxOS_MAC) {
         initApplePaths();

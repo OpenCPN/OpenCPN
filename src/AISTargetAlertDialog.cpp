@@ -297,30 +297,19 @@ void AISTargetAlertDialog::RecalculateSize( void )
 //    SetSize(esize);
 
     int height = m_pAlertTextCtl->GetInternalRepresentation()->GetHeight();
-    int adj_height = height + (GetCharHeight() * 4);
+    int adj_height = height + (GetCharHeight() * 6);
     m_adj_height = wxMax(m_adj_height, adj_height);
     
     esize.y = wxMin(esize.y, m_adj_height);
-///  SetClientSize(esize);
     
-/*    
-    wxSize dsize = GetParent()->GetClientSize();
-    
-    wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y - (1 * GetCharHeight()));
-    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
-    SetSize(fsize);
-    */
+    Fit();          // Sets the horizontal size OK, with respect to the buttons
 
-    
-    if(!m_bsizeSet){
-        Fit();          // Sets the horizontal size OK
-        m_bsizeSet = true;
-    }
-
+    // If there is only one button shown, the resulting Fit() size may be too narrow.
+    // Adjust it, considering the size of the rendered HTML text content.
+    int textWidth = m_pAlertTextCtl->GetInternalRepresentation()->GetWidth();
         wxSize gSize = GetClientSize();
-        if(gSize.y != esize.y)
-            SetClientSize(gSize.x, esize.y);
+    int adjustedWidth = wxMax(GetClientSize().x, textWidth  + GetCharHeight() * 2);
+    SetClientSize(adjustedWidth, esize.y);
         
     
     g_Platform->PositionAISAlert( this );
