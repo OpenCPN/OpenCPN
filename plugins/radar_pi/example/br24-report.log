@@ -1,0 +1,6 @@
+18:10:02 CEST: BR24radar_pi: Radar range=525, angle=1 hdg=-28108 12 bytes:  18 02 80 09 00 44 0D 0E 01 00 34 92
+18:10:02 CEST: BR24radar_pi: Radar received BR24 report 16 bytes:  0F F5 D9 1A 00 00 BD 0F 00 00 CA 09 00 00 14 00
+18:10:05 CEST: BR24radar_pi: Radar range=525, angle=1 hdg=-28108 12 bytes:  18 02 80 01 00 44 0D 0E 01 00 34 92
+18:10:06 CEST: BR24radar_pi: Radar received BR24 report 16 bytes:  0F F5 EC 1A 00 00 C9 0F 00 00 D2 09 00 00 14 00
+18:10:06 CEST: BR24radar_pi: Radar received familiar report 10 bytes:  12 F5 DD AC E2 67 03 00 00 00
+18:10:07 CEST: BR24radar_pi: Radar received familiar report 46 bytes:  13 F5 7C 5B 4C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 34 21 00 00 34 21 00 00 00 00 00 00 38 20 0F 00 00 00 00 00

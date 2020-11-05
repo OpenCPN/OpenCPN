@@ -9229,3 +9229,67 @@ void ZeroXTE() {
     g_pRouteMan->ZeroCurrentXTEToActivePoint();
   }
 }
+
+bool AddPlugInRoute2( PlugIn_Route *proute, const wxString& linecolor,const int& linewidth,const wxPenStyle& linestyle,bool b_permanent )
+{
+
+    Route *route = new Route();
+    route->m_Colour = linecolor;
+    route->m_width = linewidth;
+    route->m_style = linestyle;
+
+    PlugIn_Waypoint *pwp;
+    RoutePoint *pWP_src;
+    int ip = 0;
+    wxDateTime plannedDeparture;
+
+    wxPlugin_WaypointListNode *pwpnode = proute->pWaypointList->GetFirst();
+    while( pwpnode ) {
+        pwp = pwpnode->GetData();
+
+        RoutePoint *pWP = new RoutePoint( pwp->m_lat, pwp->m_lon,
+                                          pwp->m_IconName, pwp->m_MarkName,
+                                          pwp->m_GUID );
+
+        //  Transcribe (clone) the html HyperLink List, if present
+        cloneHyperlinkList(pWP, pwp);
+        pWP->m_MarkDescription = pwp->m_MarkDescription;
+        pWP->m_bShowName = false;
+        pWP->SetCreateTime(pwp->m_CreateTime);
+
+        route->AddPoint( pWP );
+
+
+        pSelect->AddSelectableRoutePoint( pWP->m_lat, pWP->m_lon, pWP );
+
+        if(ip > 0)
+            pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
+                                            pWP->m_lon, pWP_src, pWP, route );
+        else
+            plannedDeparture = pwp->m_CreateTime;
+        ip++;
+        pWP_src = pWP;
+
+        pwpnode = pwpnode->GetNext(); //PlugInWaypoint
+    }
+
+    route->m_PlannedDeparture = plannedDeparture;
+
+    route->m_RouteNameString = proute->m_NameString;
+    route->m_RouteStartString = proute->m_StartString;
+    route->m_RouteEndString = proute->m_EndString;
+    if (!proute->m_GUID.IsEmpty()) {
+        route->m_GUID = proute->m_GUID;
+    }
+    route->m_btemp = (b_permanent == false);
+
+    pRouteList->Append( route );
+
+    if(b_permanent)
+        pConfig->AddNewRoute( route );
+
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        pRouteManagerDialog->UpdateRouteListCtrl();
+
+    return true;
+}

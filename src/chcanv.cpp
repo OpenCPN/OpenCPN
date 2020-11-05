@@ -7931,7 +7931,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     GetCanvasPixPoint( x, y, new_cursor_lat, new_cursor_lon );
                 
                 // update the point itself
-                if( g_btouch ) {
+                /* if( g_btouch ) {
                     //m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, new_cursor_lat, new_cursor_lon);
                     m_pRoutePointEditTarget->SetPointFromDraghandlePoint(this, mouse_x, mouse_y);
                     // update the Drag Handle entry in the pSelect list
@@ -7945,7 +7945,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     m_pRoutePointEditTarget->m_wpBBox.Invalidate();
                     m_pFoundPoint->m_slat = new_cursor_lat;             // update the SelectList entry
                     m_pFoundPoint->m_slon = new_cursor_lon;
-                }
+                } */
                 
                 
                 //    Update the MarkProperties Dialog, if currently shown

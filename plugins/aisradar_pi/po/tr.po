@@ -1,0 +1,100 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-23 14:30-0600\n"
+"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /plugins/aisradar_pi/po/aisradar_pi.pot\n"
+
+#: src/aisradar_pi.cpp:92 src/aisradar_pi.cpp:137 src/aisradar_pi.cpp:217
+msgid "AIS Radar view"
+msgstr "AIS Radarı"
+
+#: src/aisradar_pi.cpp:142
+msgid "AIS Radar view PlugIn"
+msgstr "AIS Radar eklentisi"
+
+#: src/aisradar_pi.cpp:147
+msgid "Radar PlugIn for OpenCPN\n"
+"Shows AIS targets in a radar style view \n\n"
+msgstr "OpenCPN Radar eklentisi\n"
+"Radar görünümünde AIS hedeflerini gösterir\n\n"
+
+#: src/aisradar_pi.cpp:155
+msgid "AIS Radar"
+msgstr "AIS Radarı"
+
+#: src/aisradar_pi.cpp:168
+msgid "Radar Preferences"
+msgstr "Radar Ayarları"
+
+#: src/aisradar_pi.cpp:179 src/aisradar_pi.cpp:201
+msgid "Radar"
+msgstr "Radar"
+
+#: src/aisradar_pi.cpp:183
+msgid "Show RADAR icon:"
+msgstr "Radar simgesini göster:"
+
+#: src/aisradar_pi.cpp:187
+msgid "Use AIS as radar source:"
+msgstr "AIS'i radar kaynağı olarak kullan:"
+
+#: src/aisradar.cpp:116
+msgid "Controls"
+msgstr "Denetimler"
+
+#: src/aisradar.cpp:118 src/aisradar.cpp:347
+msgid "Range"
+msgstr "Menzil"
+
+#: src/aisradar.cpp:133
+msgid "Miles"
+msgstr "Mil"
+
+#: src/aisradar.cpp:136 src/aisradar.cpp:352
+msgid "North Up"
+msgstr "Kuzey Yukarı"
+
+#: src/aisradar.cpp:140
+msgid "EBL"
+msgstr "EBL"
+
+#: src/aisradar.cpp:348
+msgid "Ring "
+msgstr "Halka "
+
+#: src/aisradar.cpp:355
+msgid "N"
+msgstr "K"
+
+#: src/aisradar.cpp:356
+msgid "S"
+msgstr "G"
+
+#: src/aisradar.cpp:357
+msgid "W"
+msgstr "B"
+
+#: src/aisradar.cpp:358
+msgid "E"
+msgstr "D"
+
+#: src/aisradar.cpp:360
+msgid "Course Up"
+msgstr "Rota Yukarı"
+
+#: src/aisradar.h:102
+msgid "Radar Display"
+msgstr "Radar Görüntüsü"
+

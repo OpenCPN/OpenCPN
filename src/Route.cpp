@@ -577,19 +577,21 @@ void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
     glColor3ub(col.Red(), col.Green(), col.Blue());
     DrawGLLines(vp, NULL, canvas);
 #endif
+    if(m_Colour != "DarkRed")
+    {
+        glDisable (GL_LINE_STIPPLE);
 
-    glDisable (GL_LINE_STIPPLE);
-
-    /* direction arrows.. could probably be further optimized for opengl */
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
-    wxPoint rpt1, rpt2;
-    while(node) {
-        RoutePoint *prp = node->GetData();
-        canvas->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-        if(node != pRoutePointList->GetFirst())
-            RenderSegmentArrowsGL( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
-        rpt1 = rpt2;
-        node = node->GetNext();
+        /* direction arrows.. could probably be further optimized for opengl */
+        wxRoutePointListNode *node = pRoutePointList->GetFirst();
+        wxPoint rpt1, rpt2;
+        while(node) {
+            RoutePoint *prp = node->GetData();
+            canvas->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
+            if(node != pRoutePointList->GetFirst())
+                RenderSegmentArrowsGL( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
+            rpt1 = rpt2;
+            node = node->GetNext();
+        }
     }
     #endif
 }
@@ -639,20 +641,20 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
             dc.StrokeLine( x0, y0, x1, y1 );
     }
 
-    if( bdraw_arrow ) {
+    if( bdraw_arrow && (m_Colour != "DarkRed")) {
         //    Draw a direction arrow
 
         double theta = atan2( (double) ( yb - ya ), (double) ( xb - xa ) );
         theta -= PI / 2.;
 
         wxPoint icon[10];
-        double icon_scale_factor = 100 * vp.view_scale_ppm;
-        icon_scale_factor = fmin ( icon_scale_factor, 1.5 );              // Sets the max size
-        icon_scale_factor = fmax ( icon_scale_factor, .10 );
+        double icon_scale_factor = 50 * vp.view_scale_ppm;
+        icon_scale_factor = fmin ( icon_scale_factor, 1.1 );              // Sets the max size
+        icon_scale_factor = fmax ( icon_scale_factor, .09 );
 
         //    Get the absolute line length
         //    and constrain the arrow to be no more than xx% of the line length
-        double nom_arrow_size = 20.;
+        double nom_arrow_size = 14.;
         double max_arrow_to_leg = .20;
         double lpp = sqrt( pow( (double) ( xa - xb ), 2 ) + pow( (double) ( ya - yb ), 2 ) );
 
@@ -685,13 +687,13 @@ void Route::RenderSegmentArrowsGL( ocpnDC &dc, int xa, int ya, int xb, int yb, V
 {
 #ifdef ocpnUSE_GL
     //    Draw a direction arrow        
-    float icon_scale_factor = 100 * vp.view_scale_ppm;
-    icon_scale_factor = fmin ( icon_scale_factor, 1.5 );              // Sets the max size
-    icon_scale_factor = fmax ( icon_scale_factor, .10 );
+    float icon_scale_factor = 50 * vp.view_scale_ppm;
+    icon_scale_factor = fmin ( icon_scale_factor, 1.1 );              // Sets the max size
+    icon_scale_factor = fmax ( icon_scale_factor, .09 );
     
     //    Get the absolute line length
     //    and constrain the arrow to be no more than xx% of the line length
-    float nom_arrow_size = 20.;
+    float nom_arrow_size = 14.;
     float max_arrow_to_leg = (float).20;
     float lpp = sqrtf( powf( (float) (xa - xb), 2) + powf( (float) (ya - yb), 2) );
     
