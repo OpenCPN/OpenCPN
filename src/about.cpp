@@ -1,5 +1,5 @@
 /******************************************************************************
- *111111
+ *11
  * Project:  OpenCPN
  * Purpose:  About Dialog
  * Author:   David Register
