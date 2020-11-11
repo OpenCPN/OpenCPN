@@ -1197,7 +1197,8 @@ void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
     wxString strA = _("The ScaMin value for new waypoints is set to");
     wxString strB = _("but current chartscale is");
     wxString strC = _("Therefore the new waypoint will not be visible at this zoom level.");
-    wxString MessStr = wxString::Format(_T("%s %i,\n %s %i.\n%s"),strA, (int)GetScaMin(), strB, canvas->GetScaleValue(), strC);
+    wxString MessStr = wxString::Format(_T("%s %li,\n %s %.0f.\n%s"),
+             strA, GetScaMin(), strB, canvas->GetScaleValue(), strC); 
     OCPNMessageBox( canvas, MessStr);
 }
 
