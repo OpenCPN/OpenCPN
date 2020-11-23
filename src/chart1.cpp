@@ -9476,9 +9476,9 @@ void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxStrin
                 a = gRmcDate.Mid( 4, 2 );
                 if( a.ToLong( &b ) ) Fix_Time.SetYear(b+2000);//TODO fix this before the year 2100
                 wxString msg;
-                wxString CommandStr("sudo /bin/date  --utc --set=\"");
+                wxString CommandStr("sudo /bin/date --utc --set=\"");
                 CommandStr.Append( Fix_Time.Format("%D %T\"") );
-                msg.Printf(_T("Linux command is: %s"), CommandStr );
+                msg.Printf(_T("Set Date/Time, Linux command is: %s"), CommandStr );
                 wxLogMessage(msg);
                 wxExecute(CommandStr, wxEXEC_ASYNC);     
 #endif // !__WXMSW__
