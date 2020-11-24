@@ -54,6 +54,7 @@
 #include "Track.h"
 #include "Route.h"
 #include "chcanv.h"
+#include "nmea_sync.h"
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -436,6 +437,11 @@ void RouteManagerDialog::Create()
     btnRteSendToGPS->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler(RouteManagerDialog::OnRteSendToGPSClick), NULL, this );
     
+    btnRteSendToOCPN = new wxButton( winr, -1, _("&Send to OpenCPN") );
+    bsRouteButtonsInner->Add( btnRteSendToOCPN, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnRteSendToOCPN->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+                              wxCommandEventHandler(RouteManagerDialog::OnRteSendToOCPNClick), NULL, this );
+    
     bsRouteButtonsInner->AddSpacer( 10 );
     
     btnRteDeleteAll = new wxButton( winr, -1, _("&Delete All") );
@@ -534,6 +540,11 @@ void RouteManagerDialog::Create()
     bsTrkButtonsInner->Add( btnTrkRouteFromTrack, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnTrkRouteFromTrack->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                    wxCommandEventHandler(RouteManagerDialog::OnTrkRouteFromTrackClick), NULL, this );
+    
+    btnTrkSendToOpenCPN = new wxButton( wint, -1, _("Send to OpenCPN") );
+    bsTrkButtonsInner->Add( btnTrkSendToOpenCPN, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnTrkSendToOpenCPN->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+                                   wxCommandEventHandler(RouteManagerDialog::OnTrkSendToOpenCPNClick), NULL, this );
     
     bsTrkButtonsInner->AddSpacer( 10 );
     
@@ -638,6 +649,11 @@ void RouteManagerDialog::Create()
     bsWptButtonsInner->Add( btnWptSendToGPS, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnWptSendToGPS->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler(RouteManagerDialog::OnWptSendToGPSClick), NULL, this );
+    
+    btnWptSendToOpenCPN = new wxButton( winw, -1, _("&Send to OpenCPN") );
+    bsWptButtonsInner->Add( btnWptSendToOpenCPN, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnWptSendToOpenCPN->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+                              wxCommandEventHandler(RouteManagerDialog::OnWptSendToOpenCPNClick), NULL, this );
     
     bsWptButtonsInner->AddSpacer( 10 );
     
@@ -817,12 +833,14 @@ RouteManagerDialog::~RouteManagerDialog()
     delete btnRteActivate;
     delete btnRteReverse;
     delete btnRteSendToGPS;
+    delete btnRteSendToOCPN;
     delete btnRteDeleteAll;
     delete btnTrkNew;
     delete btnTrkProperties;
     delete btnTrkDelete;
     delete btnTrkExport;
     delete btnTrkRouteFromTrack;
+    delete btnTrkSendToOpenCPN;
     delete btnTrkDeleteAll;
     delete btnWptNew;
     delete btnWptProperties;
@@ -831,6 +849,7 @@ RouteManagerDialog::~RouteManagerDialog()
     delete btnWptGoTo;
     delete btnWptExport;
     delete btnWptSendToGPS;
+    delete btnWptSendToOpenCPN;
     delete btnWptDeleteAll;
     delete btnLayNew;
     //delete btnLayProperties;
@@ -999,6 +1018,7 @@ void RouteManagerDialog::UpdateRteButtons()
     btnRteReverse->Enable( enable1 );
     btnRteExport->Enable( enablemultiple );
     btnRteSendToGPS->Enable( enable1 );
+    btnRteSendToOCPN->Enable();
     btnRteDeleteAll->Enable( enablemultiple );
 
     // set activate button text
@@ -1415,6 +1435,31 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
     pdlg->Destroy();
 }
 
+void RouteManagerDialog::OnRteSendToOCPNClick( wxCommandEvent &event )
+{
+    RouteList list;
+
+    wxString suggested_name = _T("routes");
+
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+
+        Route *proute_to_export = (Route*) m_pRouteListCtrl->GetItemData( item );
+
+        if( proute_to_export ) {
+            list.Append( proute_to_export );
+            if( proute_to_export->m_RouteNameString != wxEmptyString )
+                suggested_name = proute_to_export->m_RouteNameString;
+        }
+    }
+    SendGpxMessage SendObj;
+    SendObj.SendRoute(&list);
+}
+
 void RouteManagerDialog::OnRteDefaultAction( wxListEvent &event )
 {
     wxCommandEvent evt;
@@ -1709,6 +1754,7 @@ void RouteManagerDialog::UpdateTrkButtons()
     btnTrkProperties->Enable( items == 1 );
     btnTrkDelete->Enable( items >= 1 );
     btnTrkExport->Enable( items >= 1 );
+    btnTrkSendToOpenCPN->Enable( items >= 1);
     btnTrkRouteFromTrack->Enable( items == 1 );
     btnTrkDeleteAll->Enable( items >= 1 );
 }
@@ -1870,6 +1916,30 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
     TrackToRoute( track );
     
     UpdateRouteListCtrl();
+}
+
+void RouteManagerDialog::OnTrkSendToOpenCPNClick( wxCommandEvent &event )
+{
+    TrackList list;
+    wxString suggested_name = _T("tracks");
+
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+
+        Track *ptrack_to_export = (Track*)m_pTrkListCtrl->GetItemData( item );
+
+        if( ptrack_to_export ) {
+            list.Append( ptrack_to_export );
+            if( ptrack_to_export->GetName() != wxEmptyString )
+                suggested_name = ptrack_to_export->GetName();
+        }
+    }
+    SendGpxMessage SendObj;
+    SendObj.SendTrack(&list);
 }
 
 void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
@@ -2086,6 +2156,7 @@ void RouteManagerDialog::UpdateWptButtons()
     btnWptGoTo->Enable( enable1 );
     btnWptExport->Enable( enablemultiple );
     btnWptSendToGPS->Enable( enable1 );
+    btnWptSendToOpenCPN->Enable( enable1 );
 }
 
 void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
@@ -2348,6 +2419,31 @@ void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
 #endif
     
     delete pdlg;
+}
+
+void RouteManagerDialog::OnWptSendToOpenCPNClick( wxCommandEvent &event )
+{
+    RoutePointList list;
+
+    wxString suggested_name = _T("waypoints");
+
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+
+        RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( item );
+
+        if( wp && !wp->m_bIsInLayer) {
+            list.Append( wp );
+            if( wp->GetName() != wxEmptyString )
+                suggested_name = wp->GetName();
+        }
+    }
+    SendGpxMessage SendObj;
+    SendObj.SendPoint(&list);
 }
 
 void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )

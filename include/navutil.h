@@ -87,6 +87,10 @@ void DimeControl(wxWindow* ctrl);
 void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd, wxColour gridline);
 
 extern double fromDMM(wxString sdms);
+extern wxString StringToZip( wxString s, int level=-1, const wxString dict=wxEmptyString);
+extern bool ToCompressedBuffer(wxString& in_xmlText, char*& out_buffer, size_t& out_numBytes);
+extern bool FromCompressedBuffer(wxString& OutText, char*& in_buffer, size_t& in_numBytes);
+wxFileName exportFileName(wxWindow* parent, const wxString suggestedName );
 
 class Route;
 class NavObjectCollection;

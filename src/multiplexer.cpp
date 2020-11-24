@@ -31,6 +31,7 @@
 #include "NMEALogWindow.h"
 #include "OCPN_DataStreamEvent.h"
 #include "Route.h"
+#include "nmea_sync.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -52,13 +53,14 @@ extern bool             g_bserial_access_checked;
 extern bool             g_b_legacy_input_filter_behaviour;
 extern int              g_maxWPNameLength;
 extern wxString         g_TalkerIdText;
-
+extern RxMessages       *g_pNmeaSync;
 extern "C" bool CheckSerialAccess( void );
 
 Multiplexer::Multiplexer() : params_save(NULL)
 {
     m_aisconsumer = NULL;
     m_gpsconsumer = NULL;
+    m_nmeasyncconsumer = NULL;
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
     Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &Multiplexer::OnEvtSignalK );
 
@@ -240,6 +242,11 @@ void Multiplexer::SetAISHandler(wxEvtHandler *handler)
     m_aisconsumer = handler;
 }
 
+void Multiplexer::SetNmeaSyncHandler(wxEvtHandler *handler)
+{
+    m_nmeasyncconsumer = handler;
+}
+
 void Multiplexer::SetGPSHandler(wxEvtHandler *handler)
 {
     m_gpsconsumer = handler;
@@ -248,7 +255,6 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler)
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
     wxString message = event.ProcessNMEA4Tags();
-    
     DataStream *stream = event.GetStream();
     wxString port(_T("Virtual:"));
     if( stream )
@@ -274,6 +280,14 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             {
                 if( m_aisconsumer )
                     m_aisconsumer->AddPendingEvent(event);
+            }
+            else if( message.Mid(0,6).IsSameAs( wxString( _GPX_NMEA_ID ) ) ) {                
+                if( m_nmeasyncconsumer )
+                    m_nmeasyncconsumer->AddPendingEvent(event);
+                // prevent resending a message form another instance of O
+                // end don't get a nmea loop.
+                if ( !port.IsSameAs(_T("Virtual:") ) )
+                    return;
             }
             else
             {
@@ -318,7 +332,6 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 }
                     
             }
-
            //Send to all the other outputs
             for (size_t i = 0; i < m_pdatastreams->Count(); i++)
             {

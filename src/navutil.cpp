@@ -53,6 +53,7 @@
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
+#include <wx/zstream.h>
 
 #include "config.h"
 #include "chart1.h"
@@ -2782,7 +2783,7 @@ void MyConfig::UpdateNavObj( bool bRecreate )
 
 }
 
-static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName )
+wxFileName exportFileName(wxWindow* parent, const wxString suggestedName )
 {
     wxFileName ret;
     wxString path;
@@ -4933,4 +4934,77 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
     }
 }
 
+wxString StringToZip( wxString s, int level, wxString dict)
+{
+    wxMemoryOutputStream memstream;    
+    wxZlibOutputStream* zoutput = new wxZlibOutputStream(memstream, level);
+    if (!dict.IsEmpty() ){
+        const char *cdic = dict.c_str();        
+        zoutput->SetDictionary(cdic, dict.length());
+    }
+    size_t len = strlen( s.mb_str(wxConvUTF8));
+    zoutput->Write( s.mb_str(wxConvUTF8), len);
 
+    delete zoutput;
+
+        // Copy to out_buffer
+    size_t streamSize = memstream.GetSize();
+    char* out_buffer = new char[streamSize];
+    size_t numCopied = memstream.CopyTo(out_buffer, streamSize);
+    wxString out = out_buffer;
+    std::cout << out_buffer << std::endl;
+    std::cout << "streamSize=" << streamSize << "  wxStringLen=" << out.Length() << std::endl; 
+    return  out;
+}
+
+bool ToCompressedBuffer(wxString& in_xmlText, char*& out_buffer, size_t& out_numBytes)
+{
+    wxMemoryOutputStream memstream;    
+    wxZlibOutputStream* zoutput = new wxZlibOutputStream(memstream);        // Write the string to the zlib stream
+    size_t len = strlen(in_xmlText.mb_str(wxConvUTF8));
+    zoutput->Write(in_xmlText.mb_str(wxConvUTF8), len);
+
+    // Make sure we were successful
+    size_t numWritten = zoutput->LastWrite();
+    if (numWritten != len)
+    {
+        delete zoutput;
+        return false;
+    }
+
+    // IMPORTANT: Force flush and zip finalization to our memory buffer stream
+    delete zoutput;
+
+        // Copy to out_buffer
+    size_t streamSize = memstream.GetSize();
+    out_buffer = new char[streamSize];
+    size_t numCopied = memstream.CopyTo(out_buffer, streamSize);
+
+    if (numCopied != streamSize)
+    {
+        delete [] out_buffer;
+        out_buffer = 0;
+        return false;
+    }
+     else
+    {
+        out_numBytes = numCopied;
+    }
+
+    return true;
+}
+
+bool FromCompressedBuffer(wxString& OutText, char*& in_buffer, size_t& in_numBytes)
+{
+    wxMemoryInputStream memstream(in_buffer, in_numBytes);    
+    wxZlibInputStream* zinput = new wxZlibInputStream(memstream);        // Write the 
+        // Copy to out_buffer
+    size_t streamSize = zinput->GetSize();
+    char* out_buffer = new char[streamSize];
+    zinput->Read(out_buffer, streamSize);
+ delete zinput;
+
+ std::cout << "out_buffersize= " << streamSize << std::endl;
+OutText = wxString::FromUTF8(out_buffer);
+    return true;
+}

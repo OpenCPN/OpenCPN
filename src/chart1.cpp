@@ -138,6 +138,7 @@
 #include "SoundFactory.h"
 #include "PluginHandler.h"
 #include "SignalKEventHandler.h"
+#include "nmea_sync.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -457,6 +458,7 @@ double                    last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_
 Multiplexer               *g_pMUX;
 
 AIS_Decoder               *g_pAIS;
+extern  RxMessages        *g_pNmeaSync;
 bool                      g_bAIS_CPA_Alert;
 bool                      g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog      *g_pais_alert_dialog_active;
@@ -2873,8 +2875,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_pMUX = new Multiplexer();
 
     g_pAIS = new AIS_Decoder( this );
-
+    g_pNmeaSync = new RxMessages (this);
     g_pMUX->SetAISHandler(g_pAIS);
+    g_pMUX->SetNmeaSyncHandler(g_pNmeaSync);
     g_pMUX->SetGPSHandler(this);
     //  Create/connect a dynamic event handler slot
     wxLogMessage(" **** Connect stuff");

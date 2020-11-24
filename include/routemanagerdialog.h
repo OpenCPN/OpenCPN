@@ -106,6 +106,7 @@ class RouteManagerDialog : public wxFrame {
             void OnRteDeleteAllClick(wxCommandEvent &event);
             void OnRteSelected(wxListEvent &event);
             void OnRteSendToGPSClick(wxCommandEvent &event);
+            void OnRteSendToOCPNClick(wxCommandEvent &event);
             void OnRteDefaultAction(wxListEvent &event);
             void OnRteColumnClicked(wxListEvent &event);
             void OnTrkDefaultAction(wxListEvent &event);
@@ -114,6 +115,7 @@ class RouteManagerDialog : public wxFrame {
             void OnTrkDeleteClick(wxCommandEvent &event);
             void OnTrkExportClick(wxCommandEvent &event);
             void OnTrkRouteFromTrackClick(wxCommandEvent &event);
+            void OnTrkSendToOpenCPNClick(wxCommandEvent &event);
             void OnTrkDeleteAllClick(wxCommandEvent &event);
             void OnTrkSelected(wxListEvent &event);
             void OnTrkToggleVisibility(wxMouseEvent &event);
@@ -128,6 +130,7 @@ class RouteManagerDialog : public wxFrame {
             void OnWptGoToClick(wxCommandEvent &event);
             void OnWptExportClick(wxCommandEvent &event);
             void OnWptSendToGPSClick(wxCommandEvent &event);
+            void OnWptSendToOpenCPNClick( wxCommandEvent &event );
             void OnWptDeleteAllClick(wxCommandEvent &event);
             void OnWptSelected(wxListEvent &event);
             void OnWptToggleVisibility(wxMouseEvent &event);
@@ -175,12 +178,14 @@ class RouteManagerDialog : public wxFrame {
             wxButton *btnRteDelete;
             wxButton *btnRteExport;
             wxButton *btnRteSendToGPS;
+            wxButton *btnRteSendToOCPN;
             wxButton *btnRteDeleteAll;
             wxButton *btnTrkNew;
             wxButton *btnTrkProperties;
             wxButton *btnTrkDelete;
             wxButton *btnTrkExport;
             wxButton *btnTrkRouteFromTrack;
+            wxButton *btnTrkSendToOpenCPN;
             wxButton *btnTrkDeleteAll;
             wxButton *btnWptNew;
             wxButton *btnWptProperties;
@@ -189,6 +194,7 @@ class RouteManagerDialog : public wxFrame {
             wxButton *btnWptGoTo;
             wxButton *btnWptExport;
             wxButton *btnWptSendToGPS;
+            wxButton *btnWptSendToOpenCPN;
             wxButton *btnWptDeleteAll;
             wxButton *btnLayNew;
             wxButton *btnPerLayNew;

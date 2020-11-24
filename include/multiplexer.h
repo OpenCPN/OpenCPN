@@ -61,6 +61,7 @@ class Multiplexer : public wxEvtHandler
 
         void SendNMEAMessage(const wxString &msg);
         void SetAISHandler(wxEvtHandler *handler);
+        void SetNmeaSyncHandler(wxEvtHandler *handler);
         void SetGPSHandler(wxEvtHandler *handler);
 
         int SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints, wxGauge *pProgress);
@@ -77,6 +78,7 @@ class Multiplexer : public wxEvtHandler
         wxArrayOfDataStreams *m_pdatastreams;
 
         wxEvtHandler        *m_aisconsumer;
+        wxEvtHandler        *m_nmeasyncconsumer;
         wxEvtHandler        *m_gpsconsumer;
 
         //      A set of temporarily saved parameters for a DataStream

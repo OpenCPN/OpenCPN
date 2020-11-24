@@ -919,6 +919,7 @@ set(
   include/LinkPropDlg.h
   include/LLRegion.h
   include/logger.h
+  include/nmea_sync.h
   include/MarkIcon.h
   include/MarkInfo.h
   include/mbtiles.h
@@ -1056,6 +1057,7 @@ set(
   src/NavObjectCollection.cpp
   src/navutil.cpp
   src/NetworkDataStream.cpp
+  src/nmea_sync.cpp
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
   src/OCP_DataStreamInput_Thread.cpp
