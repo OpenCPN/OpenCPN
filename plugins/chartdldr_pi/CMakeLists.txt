@@ -194,11 +194,8 @@ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
 )
 ELSE (NOT QT_ANDROID )
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
-    ocpn::wxjson 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+    ocpn::wxjson
+    Qt5::Gui
     ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
     "-lz" 
   )

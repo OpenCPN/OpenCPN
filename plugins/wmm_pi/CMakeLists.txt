@@ -86,14 +86,19 @@ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
     ocpn::opencpn 
 )
 ELSE (NOT QT_ANDROID )
+
+  #find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+  #message(STATUS "Qt5 Core Include directories: ${Qt5Core_INCLUDE_DIRS}")
+  #message(STATUS "Qt5 Widgets Include directories: ${Qt5Widgets_INCLUDE_DIRS}")
+
+  #include_directories(${Qt5Core_INCLUDE_DIRS})
+  #include_directories(${Qt5Widgets_INCLUDE_DIRS})
+
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
     ocpn::wxjson 
     "-lGLESv1_CM"
     "-lGLESv2"
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+    Qt5::Gui 
     ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
   )
   

@@ -120,6 +120,9 @@ if (POLICY CMP0077)
   cmake_policy(SET CMP0077 NEW)
 endif ()
 
+#SET(CMAKE_CXX_FLAGS="-fuse-ld=lld")
+SET(CMAKE_C_FLAGS="-fuse-ld=lld")
+
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set(OpenGL_GL_PREFERENCE "LEGACY")
 
@@ -518,14 +521,15 @@ if (QT_ANDROID)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2 -fuse-ld=lld")
 
   add_compile_options("-Wno-inconsistent-missing-override"
         "-Wno-potentially-evaluated-expression"
         "-Wno-overloaded-virtual"
         "-Wno-unused-command-line-argument"
         "-Wno-unknown-pragmas"
-        "-O3"
+        "-O0"
+        "-Wno-#warnings"
         "-fPIC"
   )
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
@@ -661,6 +665,8 @@ ENDIF(DEFINED _wx_selected_config)
 
 if ((_wx_selected_config MATCHES "qt-armv7"))
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
+elseif ((_wx_selected_config MATCHES "androideabi-qt"))
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base)
 elseif (OCPN_USE_WEBVIEW)
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 else ()
@@ -709,7 +715,7 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
 
 endif ()
 
-if (NOT QT_ANDROID)
+#if (NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins. These
   # options can be used to set the linux widgets build type
   set(wxWidgets_USE_DEBUG OFF)
@@ -789,7 +795,7 @@ if (NOT QT_ANDROID)
   set(wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES})
 
   message(STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
-endif (NOT QT_ANDROID)
+#endif (NOT QT_ANDROID)
 
 # Handle #1500: Force NDEBUG on gtk3 for wxwidgets < 3.2 (all builds)
 if (GTK3_FOUND)
@@ -817,49 +823,22 @@ if (GTK3_FOUND)
   endif ()
 endif ()
 
-IF(QT_ANDROID)
-  SET( wxWidgets_LIBRARIES
-
-    # Link order is critical to avoid circular dependencies
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
-
-  )
-ENDIF(QT_ANDROID)
-
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
 IF(QT_ANDROID)
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
-
-  INCLUDE_DIRECTORIES(
-      "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
+  SET(TARGET_SUPPORTS_SHARED_LIBS TRUE)
+  SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+  
+  find_package(Qt5 COMPONENTS Core Widgets Gui AndroidExtras REQUIRED)
+  message(STATUS "Qt5 Core Include directories: ${Qt5Core_INCLUDE_DIRS}")
+  message(STATUS "Qt5 Widgets Include directories: ${Qt5Widgets_INCLUDE_DIRS}")
+  message(STATUS "Qt5 Widgets Libraries:${Qt5Core_LIBRARIES}")
+  
+  include_directories(${Qt5Core_INCLUDE_DIRS})
+  include_directories(${Qt5Widgets_INCLUDE_DIRS})
   include_directories("${CMAKE_SOURCE_DIR}/include")
 
   add_definitions(-DQT_WIDGETS_LIB)
@@ -1516,6 +1495,14 @@ set(OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 if (OCPN_VERBOSE)
   message(STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 endif ()
+
+IF(QT_ANDROID)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE Qt5::AndroidExtras)
+  #qt5_use_modules(${PACKAGE_NAME} Widgets)
+  #qt5_use_modules(${PACKAGE_NAME} Core)
+  #qt5_use_modules(${PACKAGE_NAME} Test)
+ENDIF(QT_ANDROID)
+
 
 if (QT_ANDROID)
   target_include_directories(${PACKAGE_NAME}
