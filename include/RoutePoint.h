@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -48,7 +48,7 @@ public:
       RoutePoint( RoutePoint* orig );
       RoutePoint();
       virtual ~RoutePoint(void);
-      void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL, bool boverride_viz = false);
+      void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL, bool boverride_viz = false, bool bwptVizOverride = false);
       void ReLoadIcon(void);
       
       void SetPosition(double lat, double lon);
@@ -182,7 +182,7 @@ public:
       
 
 #ifdef ocpnUSE_GL
-      void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false, bool bVizOverride=false );
+      void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false, bool bVizOverride=false, bool bwptVizOverride = false );
       unsigned int m_iTextTexture;
       int m_iTextTextureWidth, m_iTextTextureHeight;
 

@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -483,8 +483,10 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
     wxString DescString;
     bool b_propviz = false;
     bool b_propSWPviz =false;
+    bool b_propWPNviz = false;
     bool b_viz = true;
     bool swpViz = false;
+    bool WPNviz = false;
     Route *pTentRoute = NULL;
     
     wxString Name = wxString::FromUTF8( wpt_node.name() );
@@ -524,6 +526,12 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                                 wxString viz = wxString::FromUTF8(ext_child.first_child().value());
                                 b_propSWPviz = true;
                                 swpViz = ( viz == _T("1") );
+                    }
+                    else
+                    if( ext_name == _T ( "opencpn:WPNviz" ) ) {
+                                wxString viz = wxString::FromUTF8(ext_child.first_child().value());
+                                b_propWPNviz = true;
+                                WPNviz = ( viz == _T("1") );
                     }
                     else
                     if( ext_name == _T ( "opencpn:style" ) ) {
@@ -666,7 +674,10 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
         
         if( b_propSWPviz)
             pTentRoute->SetSharedWPViz( swpViz );
- 
+
+        if( b_propWPNviz)
+            pTentRoute->SetOverrideWPNViz(WPNviz);
+
         if( b_layer ){
             pTentRoute->SetVisible( b_layerviz );
             pTentRoute->m_bIsInLayer = true;
@@ -1034,6 +1045,12 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     if(pRoute->ContainsSharedWP()){
         child = child_ext.append_child("opencpn:sharedWPviz");
         child.append_child(pugi::node_pcdata).set_value(pRoute->GetSharedWPViz() == true ? "1" : "0");
+
+    }
+
+    if(pRoute->GetOverrideWPNViz()){
+        child = child_ext.append_child("opencpn:WPNviz");
+        child.append_child(pugi::node_pcdata).set_value("1");
 
     }
  

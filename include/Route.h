@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -106,6 +106,8 @@ public:
       bool ContainsSharedWP();
       void SetSharedWPViz( bool sharedWPVIZ){ m_bsharedWPViz = sharedWPVIZ; }
       bool GetSharedWPViz(){ return m_bsharedWPViz; }
+      void SetOverrideWPNViz( bool OverrideWPNViz){ m_OverrideWPNViz = OverrideWPNViz; }
+      bool GetOverrideWPNViz(){ return m_OverrideWPNViz; }
       
       int SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress);
 
@@ -157,6 +159,7 @@ private:
       bool        m_bListed;
       double      m_ArrivalRadius;
       bool        m_bsharedWPViz;
+      bool        m_OverrideWPNViz;  //should the way point names be always shown?
 };
 
 WX_DECLARE_LIST(Route, RouteList); // establish class Route as list member

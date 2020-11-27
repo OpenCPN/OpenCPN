@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  CanvasMenuHandler
@@ -155,6 +155,7 @@ enum
     ID_PASTE_TRACK,
     ID_RT_MENU_DELETE,
     ID_RT_MENU_REVERSE,
+    ID_RT_MENU_CHECK_WPTNVIZ,
     ID_RT_MENU_DELPOINT,
     ID_RT_MENU_ACTPOINT,
     ID_RT_MENU_DEACTPOINT,
@@ -257,7 +258,7 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
 
 void MenuAppend1( wxMenu *menu, int id, wxString label)
 {
-    wxMenuItem *item = new wxMenuItem(menu, id, label);
+        wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
    
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
@@ -640,7 +641,18 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             MenuAppend1( menuRoute, ID_RT_MENU_COPY, _( "Copy as KML" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_DELETE, _( "Delete" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_REVERSE, _( "Reverse..." ) );
-
+            //Is there at least one wpt name not set visible
+            wxRoutePointListNode *node = m_pSelectedRoute->pRoutePointList->GetFirst();
+            while(node) {
+                RoutePoint *prp = node->GetData();
+                if( prp && !prp->m_bShowName ){
+                    MenuAppend1( menuRoute, ID_RT_MENU_CHECK_WPTNVIZ,
+                                 m_pSelectedRoute->GetOverrideWPNViz()?
+                                _( "Hide Wpt Names" ): _( "Show All Wpt Names" ) );
+                    break;
+                }
+                node = node->GetNext();
+            }
 //#ifndef __OCPN__ANDROID__
             wxString port = parent->FindValidUploadPort();
             parent->m_active_upload_port = port;
@@ -1314,7 +1326,15 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
     }
-
+    case ID_RT_MENU_CHECK_WPTNVIZ: {
+        if( m_pSelectedRoute->GetOverrideWPNViz() )
+            m_pSelectedRoute->SetOverrideWPNViz(false);
+        else
+             m_pSelectedRoute->SetOverrideWPNViz(true);
+        gFrame->InvalidateAllGL();
+        gFrame->RefreshAllCanvas();
+        break;
+    }
     case ID_RT_MENU_DELETE: {
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {

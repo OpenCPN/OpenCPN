@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -90,6 +90,7 @@ Route::Route()
     m_HyperlinkList = new HyperlinkList;
     
     m_bsharedWPViz = false;
+    m_OverrideWPNViz = false;
 }
 
 Route::~Route()
@@ -186,7 +187,7 @@ RoutePoint *Route::GetPoint( const wxString &guid )
 void Route::DrawPointWhich( ocpnDC& dc, ChartCanvas *canvas, int iPoint, wxPoint *rpn )
 {
     if( iPoint <= GetnPoints() )
-        GetPoint( iPoint )->Draw( dc, canvas, rpn );
+        GetPoint( iPoint )->Draw( dc, canvas, rpn, false, m_OverrideWPNViz );
 }
 
 void Route::DrawSegment( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow )
@@ -264,9 +265,9 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 
         RoutePoint *prp2 = node->GetData();
         if ( !m_bVisible && prp2->m_bKeepXRoute )
-            prp2->Draw( dc, canvas, &rpt2, sharedVizOveride );
+            prp2->Draw( dc, canvas, &rpt2, sharedVizOveride, m_OverrideWPNViz );
         else if (m_bVisible)
-            prp2->Draw( dc, canvas, &rpt2 );
+            prp2->Draw( dc, canvas, &rpt2, false, m_OverrideWPNViz );
 
         if ( m_bVisible )
         {
@@ -509,9 +510,9 @@ void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
         //  Maybe better to use the mark's drawn box, once it is known.
         if(vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)){
             if ( !m_bVisible && prp->m_bKeepXRoute )
-                prp->DrawGL( vp, canvas, false, bVizOverride );
+                prp->DrawGL( vp, canvas, false, bVizOverride, m_OverrideWPNViz );
             else if (m_bVisible)
-                prp->DrawGL( vp, canvas );
+                prp->DrawGL( vp, canvas, false, false, m_OverrideWPNViz );
         }
     }
     
@@ -1000,7 +1001,7 @@ void Route::CalculateDCRect( wxDC& dc_route, ChartCanvas *canvas, wxRect *prect 
             bool blink_save = prp2->m_bBlink;
             prp2->m_bBlink = false;
             ocpnDC odc_route( dc_route );
-            prp2->Draw( odc_route, canvas, NULL );
+            prp2->Draw( odc_route, canvas, NULL, false, m_OverrideWPNViz );
             prp2->m_bBlink = blink_save;
 
             wxRect r =  prp2->CurrentRect_in_DC ;

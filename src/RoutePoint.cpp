@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -538,7 +538,7 @@ bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz)
     return true;
 }
 
-void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn, bool boverride_viz )
+void RoutePoint::Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn, bool boverride_viz , bool bwptVizOverride)
 {
     wxPoint r;
     wxRect hilitebox;
@@ -591,7 +591,7 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn, bool bover
 //    Calculate the mark drawing extents
     wxRect r1( r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2 );           // the bitmap extents
 
-    if( m_bShowName ) {
+    if( m_bShowName || (bwptVizOverride && !m_bPtIsSelected) ) {
         if( 0 == m_pMarkFont ) {
             m_pMarkFont = FontMgr::Get().GetFont( _( "Marks" ) );
             m_FontColor = FontMgr::Get().GetFontColor( _( "Marks" ) );
@@ -644,7 +644,7 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn, bool bover
         dc.CalcBoundingBox( r.x + sx2, r.y + sy2 );
     }
 
-    if( m_bShowName ) {
+    if( m_bShowName || (bwptVizOverride && !m_bPtIsSelected) ) {
         if( m_pMarkFont ) {
             dc.SetFont( *m_pMarkFont );
             dc.SetTextForeground( m_FontColor );
@@ -695,7 +695,7 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn, bool bover
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords, bool bVizOverride )
+void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords, bool bVizOverride, bool bwptVizOverride )
 {
     if ( !IsVisibleSelectable(canvas, bVizOverride) ) return;
     
@@ -758,7 +758,7 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
     wxRect r1( r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2 );           // the bitmap extents
 
     wxRect r3 = r1;
-    if( m_bShowName ) {
+    if( m_bShowName || (bwptVizOverride && !m_bPtIsSelected) ) {
         if( !m_pMarkFont ) {
             m_pMarkFont = FontMgr::Get().GetFont( _( "Marks" ) );
             m_FontColor = FontMgr::Get().GetFontColor( _( "Marks" ) );
@@ -890,7 +890,7 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         glDisable(GL_TEXTURE_2D);
     }
 
-    if( m_bShowName && m_pMarkFont ) {
+    if( (m_bShowName || (bwptVizOverride && !m_bPtIsSelected)) && m_pMarkFont ) {
         int w = m_NameExtents.x, h = m_NameExtents.y;
         if(!m_iTextTexture && w && h) {
             wxBitmap tbm(w, h); /* render text on dc */
