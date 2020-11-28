@@ -42,7 +42,7 @@
 
 
 // Compatability defines
-#ifdef __APPLE__
+#if defined (__APPLE__) || defined(__FREEBSD__)
 #ifndef IPV6_ADD_MEMBERSHIP
 #define IPV6_ADD_MEMBERSHIP IPV6_JOIN_GROUP
 #define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
