@@ -99,7 +99,11 @@ void OpenCPN_OGR_OSENC_ErrorHandler( CPLErr eErrClass, int nError, const char * 
 
 #ifndef __WXMSW__    
     if( eErrClass == CE_Fatal ) {
+  #ifdef __FreeBSD__
+        siglongjmp( env_osenc_ogrf, 1 );                  // jump back to the setjmp() point
+  #else
         longjmp( env_osenc_ogrf, 1 );                  // jump back to the setjmp() point
+  #endif
     }
 #endif
     
