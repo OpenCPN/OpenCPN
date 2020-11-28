@@ -40,14 +40,21 @@ elseif(_wx_selected_config MATCHES "androideabi-qt")
         
 elseif (UNIX)
     find_program(LSB_RELEASE NAMES lsb_release)
-    if (NOT LSB_RELEASE)
-        message(FATAL_ERROR
+    if (LSB_RELEASE)
+    	execute_process(COMMAND ${LSB_RELEASE} "-is"
+                    OUTPUT_VARIABLE PKG_TARGET)
+    	execute_process(COMMAND ${LSB_RELEASE} "-rs"
+                    OUTPUT_VARIABLE PKG_TARGET_VERSION)
+    elseif (${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+	execute_process(COMMAND "uname -i"
+                    OUTPUT_VARIABLE PKG_TARGET)
+    	execute_process(COMMAND "uname -r"
+                    OUTPUT_VARIABLE PKG_TARGET_VERSION)
+    else()
+    	message(FATAL_ERROR
                 "Cannot find the lsb_release program, please install.")
     endif ()
-    execute_process(COMMAND ${LSB_RELEASE} "-is"
-                    OUTPUT_VARIABLE PKG_TARGET)
-    execute_process(COMMAND ${LSB_RELEASE} "-rs"
-                    OUTPUT_VARIABLE PKG_TARGET_VERSION)
+    
 else ()
     set(PKG_TARGET "unknown")
     set(PKG_TARGET_VERSION 1)
