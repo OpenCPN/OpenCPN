@@ -43,8 +43,12 @@ enum wxCurlThreadError
 };
 
 //! The stack size for wxCurl threads.
+// solce crash on download at least on FreeBSD
+#ifdef __FreeBSD__
 #define wxCURL_THREAD_STACK_SIZE            2048
-
+else
+#define wxCURL_THREAD_STACK_SIZE            2048
+#endif
 
 // ----------------------------------------------------------------------------
 // wxCurlBaseThread
