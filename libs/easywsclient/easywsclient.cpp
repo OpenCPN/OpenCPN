@@ -56,6 +56,9 @@
     #include <unistd.h>
     #include <stdint.h>
     #include <netinet/tcp.h>
+    #ifdef __FreeBSD__
+        #include <netinet.in.h>
+    #endif
     #include <arpa/inet.h>
 
     #ifndef _SOCKET_T_DEFINED
