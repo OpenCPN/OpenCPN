@@ -793,6 +793,11 @@ endif (NOT QT_ANDROID)
 
 # Handle #1500: Force NDEBUG on gtk3 for wxwidgets < 3.2 (all builds)
 if (GTK3_FOUND)
+if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+    set (WXCONFIG "wx-config")
+else()
+    set (WXCONFIG "wxgtk3u-3.1-config")
+endif()
   set( _VERSPROG [=[
     #include <stdio.h>
     #include <wx/version.h>
@@ -801,7 +806,7 @@ if (GTK3_FOUND)
     }
   ]=])
   set (TRY_COMPILE
-    "echo '${_VERSPROG}' > wx-32.c; cc $(wx-config --cflags) wx-32.c; ./a.out")
+    "echo '${_VERSPROG}' > wx-32.c; cc $('${WXCONFIG}' --cflags) wx-32.c; ./a.out")
   execute_process(
     COMMAND "/bin/sh" "-c" "${TRY_COMPILE}"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
