@@ -20,10 +20,12 @@
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #else
-    #ifndef __WXOSX__
-        #include <error.h>
+    #ifdef __WXOSX__
+        #include <mach/error.h>
     #else    
-        #include <mach/error.h> 
+        #ifndef __FreeBSD__
+          #include <error.h>
+     #endif 
 #endif
 
 #include <string.h>
