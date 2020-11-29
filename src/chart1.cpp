@@ -8244,8 +8244,12 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 #endif
 
 #ifdef __WXGTK__
-#include <malloc.h>
-#endif
+  #ifndef __FreeBSD__
+	#include <malloc.h>
+  #else
+	#include <stdlib.h>
+  #endif /*__FreeBSD__*/
+#endif /*__WXGTK__*/
 
 #if defined(__linux__)
 #include "sys/types.h"
@@ -10382,10 +10386,17 @@ void MyPrintout::GenerateGLbmp( )
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 extern "C" int wait(int *);                     // POSIX wait() for process
 
+#ifdef __FreeBSD__
+#include <sys/param.h>
+#include <fcntl.h>
+#endif
+
 #include <termios.h>
 #include <sys/ioctl.h>
 #ifdef __linux__
 #include <linux/serial.h>
+#else
+#include <termios.h>
 #endif
 
 #endif
@@ -10452,32 +10463,41 @@ int paternFilter (const struct dirent * dir) {
 
 int isTTYreal(const char *dev)
 {
-#ifdef __NetBSD__
+#if defined (__NetBSD__) || defined (__FreeBSD__)
+ 	            wxLogMessage( _T("FreeBSD") );
     if (strncmp("/dev/tty0", dev, 9) == 0)
-	return 1;
+		return 1;
     if (strncmp("/dev/ttyU", dev, 9) == 0)
-	return 1;
+		return 1;
     if (strcmp("/dev/gps", dev) == 0)
-	return 1;
+		return 1;
     return 0;
-#else /* !NetBSD */
+#else
+#ifdef __FreeBSD__
+    struct termios termAttr;
+#else
     struct serial_struct serinfo;
+#endif    
     int ret = 0;
 
     int fd = open(dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
 
     // device name is pointing to a real device
     if(fd >= 0) {
+#ifdef __FreeBSD__
+        if (tcgetattr(fd, &termAttr) == 0) {
+#else
         if (ioctl(fd, TIOCGSERIAL, &serinfo)==0) {
             // If device type is no PORT_UNKNOWN we accept the port
             if (serinfo.type != PORT_UNKNOWN)
+#endif
                 ret = 1;
         }
         close (fd);
     }
 
     return ret;
-#endif /* !NetBSD */
+#endif
 }
 
 
@@ -10521,10 +10541,17 @@ wxArrayString *EnumerateSerialPorts( void )
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
+#ifdef __FreeBSD__
+        paternAdd ( "ttyU" );
+        paternAdd ( "ttyu" );
+        paternAdd ( "ttyd" );
+        paternAdd ( "gps" );
+#else
         paternAdd ( "ttyUSB" );
         paternAdd ( "ttyACM" );
         paternAdd ( "ttyGPS" );
         paternAdd ( "refcom" );
+#endif
     }
 
  //  Looking for user privilege openable devices in /dev
@@ -11012,13 +11039,20 @@ bool CheckSerialAccess( void )
     bret = false;
 
     wxArrayString result1;
+#ifndef __FreeBSD__
     wxExecute(_T("stat -c %G /dev/ttyS0"), result1);
     if(!result1.size())
         wxExecute(_T("stat -c %G /dev/ttyUSB0"), result1);
 
     if(!result1.size())
         wxExecute(_T("stat -c %G /dev/ttyACM0"), result1);
+#else
+    if(!result1.size())
+        wxExecute(_T("stat -f %Sg /dev/ttyu0"), result1);
 
+    if(!result1.size())
+        wxExecute(_T("stat -f %Sg /dev/ttyU0"), result1);
+#endif
     wxString msg1 = _("OpenCPN requires access to serial ports to use serial NMEA data.\n");
     if(!result1.size()) {
         wxString msg = msg1 + _("No Serial Ports can be found on this system.\n\
