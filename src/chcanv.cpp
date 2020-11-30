@@ -4557,47 +4557,25 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     }
 
     double new_scale = GetVPScale() * (GetVP().chart_scale / proposed_scale_onscreen);
-    if( b_do_zoom ) {
-        if( can_zoom_to_cursor && g_bEnableZoomToCursor) {
+
+    if (b_do_zoom) {
+        if (can_zoom_to_cursor && g_bEnableZoomToCursor) {
             //  Arrange to combine the zoom and pan into one operation for smoother appearance
-            SetVPScale( new_scale, false );   // adjust, but deferred refresh
- 
+            SetVPScale (new_scale, false);   // adjust, but deferred refresh
+
             wxPoint r;
-            GetCanvasPointPix( zlat, zlon, &r );
-            PanCanvas( r.x - mouse_x, r.y - mouse_y );  // this will give the Refresh()
-
-            //ClearbFollow();      // update the follow flag
+            GetCanvasPointPix (zlat, zlon, &r);
+            PanCanvas (r.x - mouse_x, r.y - mouse_y);  // this will give the Refresh()
         }
-        else{
-            if(m_bFollow){      //  Adjust the Viewpoint to keep ownship at the same pixel point on-screen
-                double offx, offy;
-                toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
+        else {
+            SetVPScale (new_scale);
 
-                double offset_angle = atan2(offy, offx);
-                double offset_distance = sqrt((offy * offy) + (offx * offx));
-                double chart_angle =  GetVPRotation() ;
-                double target_angle = chart_angle - offset_angle;
-                double d_east_mod = offset_distance * cos( target_angle );
-                double d_north_mod = offset_distance * sin( target_angle );
-
-                m_OSoffsetx = d_east_mod * old_ppm;
-                m_OSoffsety = -d_north_mod * old_ppm;
-
-                double d_east_mods = d_east_mod / new_scale;
-                double d_north_mods = d_north_mod / new_scale;
-
-                double nlat, nlon;
-                fromSM( d_east_mods, d_north_mods, gLat, gLon, &nlat, &nlon );
-                SetViewPoint( nlat, nlon, new_scale, GetVP().skew, GetVP().rotation);
-                DoCanvasUpdate();
-            }
-            else
-                SetVPScale( new_scale );
+            if (m_bFollow) 
+                DoCanvasUpdate ();
         }
     }
     
     m_bzooming = false;
-    
 }
 
 void ChartCanvas::RotateCanvas( double dir )
