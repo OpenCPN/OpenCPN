@@ -171,6 +171,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
                                  const char* os, const char* os_version)
 
 {
+    wxLogMessage("Plugin compatibility check");
+    wxLogMessage("name: %s, target: %s, target_arch: %s", metadata.name, metadata.target, metadata.target_arch);
     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
     
     // Get the specified system definition,
@@ -222,37 +224,50 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         return (plugin_os == "darwin");
     }
 
-    //  For linux variants....
+    //  For linux variants....compatibility check1
     // If the plugin architecture is defined, we can eliminate incompatible plugins immediately
     if(metadata.target_arch.size()){
-        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch))
+        wxLogMessage("target_arch: %s, osd_arch: %s, osd_build_arch: %s", ocpn::tolower(metadata.target_arch), ocpn::tolower(os_detail->osd_arch), ocpn::tolower(os_detail->osd_build_arch));
+        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch) && ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_build_arch)) {
+            wxLogMessage("Not compatible");
             return false;
+        }
     }
 
     std::string compatOS_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
+    std::string compatOS_Build_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_build_arch);
 
-    wxLogDebug(wxString::Format(_T("Plugin compatibility check1: %s  OS:%s  Plugin:%s"), metadata.name.c_str(), compatOS_ARCH.c_str(), plugin_os.c_str()));
+    wxLogDebug(wxString::Format(_T("Plugin compatibility check1: %s  OS:%s Build OS:%s Plugin:%s"), metadata.name.c_str(), compatOS_ARCH.c_str(), compatOS_Build_ARCH.c_str(), plugin_os.c_str()));
 
     bool rv = false;
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
     
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
 
-    if (compatOS_ARCH  == plugin_os) {
+    wxLogMessage("compatOS_ARCH: %s, compatOS_Build_ARCH: %s, plugin_os: %s", compatOS_ARCH, compatOS_Build_ARCH, plugin_os);
+    if (compatOS_ARCH  == plugin_os || compatOS_Build_ARCH == plugin_os) {
         //  OS matches so far, so must compare versions
+        wxLogMessage("OK so far");
 
         if (ocpn::startswith(plugin_os, "ubuntu")){
-            if(plugin_os_version == compatOsVersion)            // Full version comparison required
+            wxLogMessage("plugin_os_version: %s, CompatOsVersion: %s, osd_build_version: %s", plugin_os_version, compatOsVersion, os_detail->osd_build_version);
+            if(plugin_os_version == compatOsVersion || plugin_os_version == os_detail->osd_build_version) {           // Full version comparison required
+                wxLogMessage("Good to go");
                 rv = true;
+            }
         }
         else{
             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-            if( meta_vers == target_vers )
-                rv = true;;
+            wxLogMessage("meta_vers: %s, target_vers: %s, osd_build_version: %s, version: %s", meta_vers, target_vers, os_detail->osd_build_version, metadata.version);
+            if( meta_vers == target_vers || os_detail->osd_build_version == metadata.version) {
+                wxLogMessage("Good to go 1");
+                rv = true;
+            }
         }
     }
     else{
         // running OS may be "like" some known OS
+        wxLogMessage("See if OS maybe 'like' some other OS");
         for(unsigned int i=0 ; i < os_detail->osd_name_like.size(); i++){
             std::string osd_like_arch = os_detail->osd_name_like[i] + "-" + os_detail->osd_arch;
             if( osd_like_arch  == plugin_os){
@@ -271,7 +286,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     
     // Special case tests for vanilla debian, which can use some variants of Ubuntu plugins
     if(!rv){
-
+        wxLogMessage("Checking for debian and ubuntu");
         if (ocpn::startswith(compatOS_ARCH, "debian-x86_64")){
             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
             if(target_vers == std::string("9") ){        // Stretch
