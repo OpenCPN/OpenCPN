@@ -951,7 +951,8 @@ ChartCanvas::~ChartCanvas()
     // wx tries to deliver events to this canvas during destroy.
     MUIBar *muiBar = m_muiBar;
     m_muiBar = 0;
-    delete muiBar;
+    if(muiBar)
+        muiBar->Destroy();
     delete m_pQuilt;
 }
 
@@ -1038,6 +1039,13 @@ void ChartCanvas::SetupGlCanvas( )
     }
 #endif
 
+}
+
+void ChartCanvas::ShowMUIBar( bool bshow )
+{
+    if(g_useMUI && m_muiBar){
+        m_muiBar->Show( bshow );
+    }
 }
  
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
@@ -4569,30 +4577,10 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             //ClearbFollow();      // update the follow flag
         }
         else{
-            if(m_bFollow){      //  Adjust the Viewpoint to keep ownship at the same pixel point on-screen
-                double offx, offy;
-                toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
+            SetVPScale( new_scale );
 
-                double offset_angle = atan2(offy, offx);
-                double offset_distance = sqrt((offy * offy) + (offx * offx));
-                double chart_angle =  GetVPRotation() ;
-                double target_angle = chart_angle - offset_angle;
-                double d_east_mod = offset_distance * cos( target_angle );
-                double d_north_mod = offset_distance * sin( target_angle );
-
-                m_OSoffsetx = d_east_mod * old_ppm;
-                m_OSoffsety = -d_north_mod * old_ppm;
-
-                double d_east_mods = d_east_mod / new_scale;
-                double d_north_mods = d_north_mod / new_scale;
-
-                double nlat, nlon;
-                fromSM( d_east_mods, d_north_mods, gLat, gLon, &nlat, &nlon );
-                SetViewPoint( nlat, nlon, new_scale, GetVP().skew, GetVP().rotation);
+            if(m_bFollow)
                 DoCanvasUpdate();
-            }
-            else
-                SetVPScale( new_scale );
         }
     }
     
@@ -6639,11 +6627,13 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 
 void ChartCanvas::ProcessNewGUIScale()
 {
-    m_muiBar->Hide();
-    delete m_muiBar;
-    m_muiBar = 0;
+    if(g_useMUI){
+        m_muiBar->Hide();
+        delete m_muiBar;
+        m_muiBar = 0;
     
-    CreateMUIBar();
+        CreateMUIBar();
+    }
 }
 
 

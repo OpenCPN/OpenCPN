@@ -2322,6 +2322,9 @@ bool MyApp::OnInit()
     g_pauimgr->SetDockSizeConstraint(.9, .9);
 
     //g_pauimgr->SetFlags(g_pauimgr->GetFlags() | wxAUI_MGR_LIVE_RESIZE);
+#ifdef __OCPN__ANDROID__
+    g_pauimgr->SetFlags(g_pauimgr->GetFlags() & !wxAUI_MGR_TRANSPARENT_HINT);
+#endif
     
     g_grad_default = g_pauidockart->GetMetric(wxAUI_DOCKART_GRADIENT_TYPE);
     g_border_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_BORDER_COLOUR );
@@ -3914,13 +3917,12 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         if(cc)
             cc->DestroyToolbar();
     }
-        
+
     if(g_MainToolbar)
         g_MainToolbar->Destroy();
     g_MainToolbar = NULL;
-#endif    
+#endif
 
-   
     if(g_iENCToolbar){
         wxPoint locn = g_iENCToolbar->GetPosition();
         g_iENCToolbarPosY = locn.y;
@@ -4065,6 +4067,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     this->Destroy();
     gFrame = NULL;
+
 
 #ifdef __OCPN__ANDROID__
 #ifndef USE_ANDROID_GLES2
@@ -4852,6 +4855,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_PREPARE_SHUTDOWN:{
+            g_Platform->prepareShutdown();
+            break;
+        }
+        
         case ID_CMD_POST_JSON_TO_PLUGINS:{
             
             // Extract the Message ID which is embedded in the JSON string passed in the event
@@ -6138,6 +6146,7 @@ int MyFrame::DoOptionsDialog()
     androidEnableBackButton( false );
     androidEnableOptionsMenu( false );
     androidDisableFullScreen();
+    g_options->Raise();
 #endif
         
     // Record current canvas config
@@ -7208,6 +7217,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         InitTimer.Start( 100, wxTIMER_ONE_SHOT );
 
     RefreshAllCanvas( true );
+    
 }
 
 //    Manage the application memory footprint on a periodic schedule

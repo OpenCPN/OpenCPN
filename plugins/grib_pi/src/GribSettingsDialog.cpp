@@ -67,7 +67,8 @@ enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_ABBR, ISO_LINE_VISI, ISO_LINE_SHOR
                         NUMBERS, PARTICLES};
 
 #ifdef __OCPN__ANDROID__
-
+#include <QWidget>
+                        
 QString qtStyleSheet = "QScrollBar:horizontal {\
 border: 0px solid grey;\
 background-color: rgb(240, 240, 240);\

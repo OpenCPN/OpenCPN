@@ -784,7 +784,7 @@ void RouteManagerDialog::Create()
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
 
 #ifdef __OCPN__ANDROID__    
-    m_pRouteListCtrl->GetHandle() ->setIconSize(QSize(imageRefSize, imageRefSize));
+    //m_pRouteListCtrl->GetHandle() ->setIconSize(QSize(imageRefSize, imageRefSize));
 #endif
 
    

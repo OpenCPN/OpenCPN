@@ -37,6 +37,7 @@
 class ArrayOfCDI;
 
 #include <QString>
+#include <QWidget>
 
 // Enumerators for OCPN menu actions requested by Android UI
 #define OCPN_ACTION_FOLLOW              0x1000
@@ -53,6 +54,8 @@ class ArrayOfCDI;
 #define OCPN_ACTION_TRACK_OFF           0x100b
 #define OCPN_ACTION_ENCSOUNDINGS_TOGGLE 0x100c
 #define OCPN_ACTION_ENCLIGHTS_TOGGLE    0x100d
+#define OCPN_ACTION_PREPARE_SHUTDOWN    0x100e
+
 
 #define GPS_OFF                         0
 #define GPS_ON                          1
@@ -153,6 +156,8 @@ bool androidInstallPlaystoreHelp();
 
 void androidLaunchBrowser( wxString URL );
 bool androidCheckOnline();
+
+void androidPrepareShutdown();
 
 unsigned int androidColorPicker( unsigned int initialColor);
 

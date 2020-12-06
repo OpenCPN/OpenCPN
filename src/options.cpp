@@ -109,9 +109,6 @@ extern GLuint g_raster_format;
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
-#endif
-
-#ifdef __OCPN__ANDROID__
 #include <QtWidgets/QScroller>
 #endif
 
@@ -3972,7 +3969,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     //  Course Up display update period
     wxStaticText *crat = new wxStaticText(m_ChartDisplayPage, wxID_ANY,  _("Chart Rotation Averaging Time"));
     crat->Wrap(-1);
-    wrapperSizer->Add(crat, 0, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
+    wrapperSizer->Add(crat, 0, wxALL | wxEXPAND | wxALIGN_LEFT , group_item_spacing);
 
 
     wxBoxSizer* pCOGUPFilterRow = new wxBoxSizer(wxHORIZONTAL);
@@ -3980,7 +3977,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     pCOGUPUpdateSecs =
         new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(sz.x / 5, -1), wxTE_RIGHT);
-    pCOGUPFilterRow->Add(pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
+    pCOGUPFilterRow->Add(pCOGUPUpdateSecs, 0, wxALL, group_item_spacing);
 
     pCOGUPFilterRow->Add( new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("seconds")), inputFlags);
 
@@ -3990,7 +3987,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     // Chart Zoom Scale Weighting
     wxStaticText* zoomTextHead =  new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Zoom/Scale Weighting"));
      zoomTextHead->Wrap(-1);
-     itemBoxSizerUI->Add(zoomTextHead, 0, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
+     itemBoxSizerUI->Add(zoomTextHead, 0, wxALL | wxEXPAND | wxALIGN_LEFT, group_item_spacing);
      itemBoxSizerUI->Add(0, border_size * 1);
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), inputFlags);
@@ -4048,7 +4045,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(pmmRow, 0, wxEXPAND);
 
     pScreenMM = new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(sz.x / 5, -1), wxTE_RIGHT);
-    pmmRow->Add(pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
+    pmmRow->Add(pScreenMM, 0, wxALL, group_item_spacing);
 
     pmmRow->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("mm")), inputFlags);
 
@@ -6090,9 +6087,11 @@ void options::CreateControls(void) {
 
   // Check the display size.
   // If "small", adjust some factors to squish out some more white space
-  int width, height;
-  ::wxDisplaySize(&width, &height);
-
+  wxSize sz = g_Platform->getDisplaySize();
+  int width = sz.x;
+  int height = sz.y;
+  
+  
   if (!g_bresponsive && height <= 800) {
     border_size = 2;
     group_item_spacing = 1;
@@ -6102,7 +6101,7 @@ void options::CreateControls(void) {
                    .Align(wxALIGN_RIGHT)
                    .Border(wxALL, group_item_spacing);
   inputFlags = wxSizerFlags(0)
-                   .Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL)
+                   .Align(wxALIGN_LEFT)
                    .Border(wxALL, group_item_spacing);
   verticleInputFlags = wxSizerFlags(0)
                    .Align(wxALIGN_LEFT)

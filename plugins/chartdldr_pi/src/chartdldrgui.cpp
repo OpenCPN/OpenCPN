@@ -10,6 +10,12 @@
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
 
+#ifdef __OCPN__ANDROID__
+#include <QtWidgets/QScroller>
+#include "qdebug.h"
+#include <QWidget>
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 
 #ifdef __OCPN__ANDROID__
@@ -75,10 +81,6 @@ height: 30px;\
 
 #endif
 
-#ifdef __OCPN__ANDROID__
-#include <QtWidgets/QScroller>
-#include "qdebug.h"
-#endif
 
 void AddSourceDlg::applyStyle()
 {
@@ -114,7 +116,7 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
         m_treeCtrlPredefSrcs = new wxTreeCtrl( m_panelPredefined, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_HIDE_ROOT|wxTR_HAS_BUTTONS );
 	bSizerPredefTree->Add( m_treeCtrlPredefSrcs, 1, wxALL|wxEXPAND, 5 );
 #ifdef __OCPN__ANDROID__
-        m_treeCtrlPredefSrcs->SetScrollRate(0,1);
+        //m_treeCtrlPredefSrcs->SetScrollRate(0,1);
 #endif
 	m_panelPredefined->SetSizer( bSizerPredefTree );
         m_panelPredefined->Layout();

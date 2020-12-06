@@ -35,6 +35,9 @@
 #include <wx/zipstrm.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
+#include <QWidget>
+#include <QMenu>
+#include <QApplication>
 
 #include "config.h"
 #include "dychart.h"
@@ -72,6 +75,7 @@
 #include "routeman.h"
 #include "CanvasOptions.h"
 #include "SerialDataStream.h"
+#include <wchar.h>
 
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
@@ -407,6 +411,27 @@ class androidUtilHandler : public wxEvtHandler
 
 const char  wxMessageBoxCaptionStr [] = "Message";
 
+char *fgets_unlocked(char *s, int n, FILE *stream)
+{
+    return 0;
+}
+
+size_t fwrite_unlocked(const void *ptr, size_t size, size_t n, FILE *stream)
+{
+    return 0;
+}
+
+double wcstod_l(const wchar_t* s, wchar_t** end_ptr, locale_t) {
+  return wcstod(s, end_ptr);
+}
+
+long wcstol_l(const wchar_t* s, wchar_t** end_ptr, int base, locale_t) {
+  return wcstol(s, end_ptr, base);
+}
+
+unsigned long wcstoul_l(const wchar_t* s, wchar_t** end_ptr, int base, locale_t) {
+  return wcstoul(s, end_ptr, base);
+}
 
 BEGIN_EVENT_TABLE ( androidUtilHandler, wxEvtHandler )
 EVT_TIMER ( ANDROID_EVENT_TIMER, androidUtilHandler::onTimerEvent )
@@ -433,6 +458,10 @@ androidUtilHandler::androidUtilHandler()
     wxFilePickerCtrl *pfpc = new wxFilePickerCtrl();
     
     wxZipEntry *entry = new wxZipEntry();
+    
+    wxRadioBox *box = new wxRadioBox();
+    delete box;
+
     
 }
 
@@ -907,6 +936,17 @@ bool androidUtilInit( void )
     }
     
     return true;
+}
+
+void androidPrepareShutdown()
+{
+    // This method is called just before the android Java side activity 
+    // posts a final "BACK" button key to the Qt subsystem.
+    // Provides a way to configure the running app for a clean shutdown.
+    
+    if(gFrame->GetPrimaryCanvas()){
+        gFrame->GetPrimaryCanvas()->ShowMUIBar(false);
+    }
 }
 
 
@@ -1488,6 +1528,11 @@ extern "C"{
                 
             case OCPN_ACTION_ENCLIGHTS_TOGGLE:
                 evt.SetId( ID_MENU_ENC_LIGHTS );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_PREPARE_SHUTDOWN:
+                evt.SetId( ID_MENU_PREPARE_SHUTDOWN );
                 gFrame->GetEventHandler()->AddPendingEvent(evt);
                 break;
                 
@@ -2797,13 +2842,13 @@ wxSize getAndroidDisplayDimensions( void )
         
         token = tk.GetNextToken();
         long a = 1000;
-        if(token.ToLong( &a ))
-            sz_ret.x = a;
+        token.ToLong( &a );
+        sz_ret.x = a;
         
         token = tk.GetNextToken();
         long b = 1000;        
-        if(token.ToLong( &b ))
-            sz_ret.y = b;
+        token.ToLong( &b );
+        sz_ret.y = b;
         
         token = tk.GetNextToken();              
         token = tk.GetNextToken();
@@ -2813,15 +2858,10 @@ wxSize getAndroidDisplayDimensions( void )
         
         long abh = 0;
         token = tk.GetNextToken();              //  ActionBar height, if shown
-        if(token.ToLong( &abh ))
-            sz_ret.y -= abh;
-            
-        
-        
+        token.ToLong( &abh );
+        sz_ret.y -= abh;
     }
 
-//    qDebug() << sz_ret.x << sz_ret.y;
-    
     return sz_ret;
     
 }
@@ -4533,7 +4573,7 @@ void setChoiceStyleSheet( wxChoice *win, int refDim)
     
     //qDebug() << styleString;
     
-    win->GetHandle()->setView(new QListView());         // Magic
+    //win->GetHandle()->setView(new QListView());         // Magic
     win->GetHandle()->setStyleSheet(styleString);
  
     

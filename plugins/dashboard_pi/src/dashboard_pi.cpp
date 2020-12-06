@@ -66,6 +66,7 @@ static const long long lNaN = 0xfff8000000000000;
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
+#include <QWidget>
 #endif
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -3455,11 +3456,11 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
     
     // add stuff
     wxMenuItem *item1 = new wxMenuItem(contextMenu, ID_DASH_PREFS, _("Preferences..."));
-    item1->SetFont(*pf);
+    //item1->SetFont(*pf);
     contextMenu->Append(item1);
 
     wxMenuItem *item2 = new wxMenuItem(contextMenu, ID_DASH_RESIZE, _("Resize..."));
-    item2->SetFont(*pf);
+    //item2->SetFont(*pf);
     contextMenu->Append(item2);
     
      

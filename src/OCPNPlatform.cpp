@@ -136,6 +136,7 @@ extern bool                      g_bUIexpert;
 
 extern bool                      g_bshowToolbar;
 extern bool                      g_bBasicMenus;
+extern bool                      g_bShowChartBar;
 
 extern bool                      g_bShowOutlines;
 extern int                       g_nAWDefault;
@@ -164,6 +165,7 @@ extern bool                      g_bDrawAISSize;
 extern bool                      g_bDrawAISRealtime;
 extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
+extern bool                      g_useMUI;
 
 extern int                       gps_watchdog_timeout_ticks;
 extern wxString                  *pInit_Chart_Dir;
@@ -246,6 +248,8 @@ static const char PATH_SEP = ';';
 #else
 static const char PATH_SEP = ':';
 #endif
+
+static bool        m_deferredEnableChartBar;
 
 static bool checkIfFlatpacked()
 {
@@ -673,6 +677,8 @@ void OCPNPlatform::Initialize_2( void )
 {
 #ifdef __OCPN__ANDROID__
     wxLogMessage(androidGetDeviceInfo());
+    m_deferredEnableChartBar = g_bShowChartBar;
+    g_bShowChartBar = false;
 #endif    
     
     //  Set a global toolbar scale factor
@@ -741,6 +747,9 @@ void OCPNPlatform::Initialize_4( void )
     if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
+    
+    g_bShowChartBar = m_deferredEnableChartBar;
+
 #endif
 
 #ifdef __WXMAC__
@@ -750,6 +759,13 @@ void OCPNPlatform::Initialize_4( void )
     options_lastPage = 1;
 #endif
     
+}
+
+void OCPNPlatform::prepareShutdown()
+{
+#ifdef __OCPN__ANDROID__
+    androidPrepareShutdown();
+#endif
 }
 
 void OCPNPlatform::OnExit_1( void ){
@@ -2762,6 +2778,7 @@ QString g_qtStyleSheet;
 
 bool LoadQtStyleSheet(wxString &sheet_file)
 {
+#if 0    
     if(wxFileExists( sheet_file )){
         //        QApplication qApp = getqApp();
         if(qApp){
@@ -2778,6 +2795,8 @@ bool LoadQtStyleSheet(wxString &sheet_file)
     }
     else
         return false;
+#endif
+    return true;
 }
 
 QString getQtStyleSheet( void )
@@ -2796,7 +2815,7 @@ bool OCPNPlatform::isPlatformCapable( int flag){
     return true;
 #else
     if(flag == PLATFORM_CAP_PLUGINS){
-        long platver;
+        long platver = 0;
         wxString tsdk(android_plat_spc.msdk);
         if(tsdk.ToLong(&platver)){
             if(platver >= 11)
@@ -2804,7 +2823,7 @@ bool OCPNPlatform::isPlatformCapable( int flag){
         }
     }
     else if(flag == PLATFORM_CAP_FASTPAN){
-        long platver;
+        long platver = 0;
         wxString tsdk(android_plat_spc.msdk);
         if(tsdk.ToLong(&platver)){
             if(platver >= 14)

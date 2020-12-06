@@ -218,6 +218,7 @@ public:
     wxString GetAdjustedAppLocale();
     wxString ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale);
 #endif
+    void prepareShutdown();
     
     
 //--------------------------------------------------------------------------

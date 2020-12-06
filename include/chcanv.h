@@ -474,7 +474,7 @@ public:
       void SetMUIBarPosition();
       void DestroyMuiBar();
       void CreateMUIBar();
-      
+      void ShowMUIBar( bool bshow );
       
       void ToggleChartOutlines(void);
       void ToggleCanvasQuiltMode( void );

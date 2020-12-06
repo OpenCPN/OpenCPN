@@ -70,6 +70,7 @@
 
 #ifdef __OCPN__ANDROID__
 #include "androidSupport.h"
+#include <QWidget>
 #endif    
 
 #ifdef __WXMAC__
@@ -611,23 +612,23 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
     
     // add stuff
     wxMenuItem *item1 = new wxMenuItem(&menu, ID_MNU_SELALL, _("Select all"));
-    item1->SetFont(*pf);
+    //item1->SetFont(*pf);
     menu.Append(item1);
     
     wxMenuItem *item2 = new wxMenuItem(&menu, ID_MNU_DELALL, _("Deselect all"));
-    item2->SetFont(*pf);
+    //item2->SetFont(*pf);
     menu.Append(item2);
     
     wxMenuItem *item3 = new wxMenuItem(&menu, ID_MNU_INVSEL, _("Invert selection"));
-    item3->SetFont(*pf);
+    //item3->SetFont(*pf);
     menu.Append(item3);
     
     wxMenuItem *item4 = new wxMenuItem(&menu, ID_MNU_SELUPD, _("Select updated"));
-    item4->SetFont(*pf);
+    //item4->SetFont(*pf);
     menu.Append(item4);
     
     wxMenuItem *item5 = new wxMenuItem(&menu, ID_MNU_SELNEW, _("Select new"));
-    item5->SetFont(*pf);
+    //item5->SetFont(*pf);
     menu.Append(item5);
     
 #else    
@@ -932,9 +933,9 @@ void ChartDldrPanelImpl::AppendCatalog( ChartSource *cs )
             m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
             m_lbChartSources->SetItem(id, 2, path);
 #ifdef __OCPN__ANDROID__
-            m_lbChartSources->GetHandle()->resizeColumnToContents(0);
-            m_lbChartSources->GetHandle()->resizeColumnToContents(1);
-            m_lbChartSources->GetHandle()->resizeColumnToContents(2);
+            //m_lbChartSources->GetHandle()->resizeColumnToContents(0);
+            //m_lbChartSources->GetHandle()->resizeColumnToContents(1);
+            //m_lbChartSources->GetHandle()->resizeColumnToContents(2);
 #endif            
         }
     }
@@ -2133,7 +2134,7 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     im4.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
     p_buttonIconList->Add(im4);
     
-    m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
+    //m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
 #else
     p_iconList = new wxImageList(w, h);
 
