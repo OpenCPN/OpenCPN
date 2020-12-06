@@ -132,8 +132,8 @@ bool RMB::Parse( const SENTENCE& sentence )
    IsDataValid = mode_valid ? sentence.Boolean( 1 ) : NFalse;
    CrossTrackError                 = sentence.Double( 2 );
    DirectionToSteer                = sentence.LeftOrRight( 3 );
-   From                            = sentence.Field( 4 );
-   To                              = sentence.Field( 5 );
+   To                              = sentence.Field( 4 );
+   From                            = sentence.Field( 5 );
    DestinationPosition.Parse( 6, 7, 8, 9, sentence );
    RangeToDestinationNauticalMiles = sentence.Double( 10 );
    BearingToDestinationDegreesTrue = sentence.Double( 11 );
@@ -159,8 +159,8 @@ bool RMB::Write( SENTENCE& sentence )
    else
        sentence += _T("R");
 
-   sentence += From;
    sentence += To;
+   sentence += From;
    sentence += DestinationPosition;
    sentence += RangeToDestinationNauticalMiles;
    sentence += BearingToDestinationDegreesTrue;
@@ -181,8 +181,8 @@ const RMB& RMB::operator = ( const RMB& source )
    IsDataValid                     = source.IsDataValid;
    CrossTrackError                 = source.CrossTrackError;
    DirectionToSteer                = source.DirectionToSteer;
-   From                            = source.From;
    To                              = source.To;
+   From                            = source.From;
    DestinationPosition             = source.DestinationPosition;
    RangeToDestinationNauticalMiles = source.RangeToDestinationNauticalMiles;
    BearingToDestinationDegreesTrue = source.BearingToDestinationDegreesTrue;
