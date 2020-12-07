@@ -41,7 +41,7 @@ jobs:
        - run: ci/generic-upload.sh
    build-mingw:
      docker:
-         - image: fedora:31
+         - image: fedora:33
            auth:
              username: $DOCKER_USER
              password: $DOCKER_PW
