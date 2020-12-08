@@ -42,7 +42,7 @@ for pkg in pixman cairo cmake libexif python3 wget xz; do
     fi
 done
 
-brew cask install packages
+brew install --cask packages
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
