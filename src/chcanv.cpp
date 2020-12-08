@@ -877,6 +877,12 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_pianoFrozen = false;
     
     SetMinSize(wxSize(200,200));
+    
+#ifdef __OCPN__ANDROID__
+    EnableTouchEvents( wxTOUCH_PRESS_GESTURES );
+    Connect(wxEVT_LONG_PRESS, (wxObjectEventFunction)(wxEventFunction)&ChartCanvas::onLongPress);
+#endif
+    
 }
 
 ChartCanvas::~ChartCanvas()
@@ -955,6 +961,19 @@ ChartCanvas::~ChartCanvas()
         muiBar->Destroy();
     delete m_pQuilt;
 }
+
+void ChartCanvas::onLongPress(wxLongPressEvent &event)
+{
+    wxMouseEvent ev( wxEVT_RIGHT_DOWN );
+    ev.m_x = event.GetPosition().x;
+    ev.m_y = event.GetPosition().y;
+
+    wxEvtHandler *evthp = GetEventHandler();
+
+    ::wxPostEvent( evthp, ev );
+
+}
+
 
 void ChartCanvas::CanvasApplyLocale()
 {

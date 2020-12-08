@@ -165,6 +165,9 @@ public:
       void OnKillFocus( wxFocusEvent& WXUNUSED(event) );
       void OnSetFocus( wxFocusEvent& WXUNUSED(event) );
       
+      //  Touch event support
+      void onLongPress(wxLongPressEvent &event);
+
       void PopupMenuHandler(wxCommandEvent& event);
       bool IsPrimaryCanvas(){ return (m_canvasIndex == 0); }
       
