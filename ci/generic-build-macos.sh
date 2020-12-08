@@ -48,7 +48,8 @@ make
 make install
 cd ..
 
-wget -q http://opencpn.navnux.org/build_deps/wx312B_opencpn50_macos109.tar.xz
+# download build_deps/wx312B_opencpn50_macos109.tar.xz
+wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download
 tar xJf wx312B_opencpn50_macos109.tar.xz -C /tmp
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
