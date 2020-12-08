@@ -32,9 +32,18 @@ fi
 set -o pipefail
 
 for pkg in pixman cairo cmake libexif python3 wget xz; do
-    brew list $pkg 2>/dev/null | head -10 || brew install $pkg
+    # Dont install cmake for travis
+    if [ "$pkg" = "cmake" ]; then
+        if [ -n "$CIRCLCI" ]; then
+            brew list $pkg 2>/dev/null | head -10 || brew install $pkg
+        fi
+    else
+        brew list $pkg 2>/dev/null | head -10 || brew install $pkg
+    fi
 done
 
+if [ -n "$TRAVIS" ]; then
+   brew upgrade
 brew cask install packages
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
