@@ -42,8 +42,6 @@ for pkg in pixman cairo cmake libexif python3 wget xz; do
     fi
 done
 
-if [ -n "$TRAVIS" ]; then
-   brew upgrade
 brew cask install packages
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
