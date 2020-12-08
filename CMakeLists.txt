@@ -433,9 +433,9 @@ if (NOT WIN32 AND NOT APPLE)
       "-Wno-deprecated-declarations"
     )
   endif ()
-  if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  #if (CMAKE_BUILD_TYPE MATCHES "Debug")
     add_compile_options("-O0")
-  endif ()
+  #endif ()
 
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof ADD_COMPILE_OPTIONS( -pg ) SET(CMAKE_EXE_LINKER_FLAGS
@@ -532,9 +532,8 @@ if (QT_ANDROID)
         "-Wno-#warnings"
         "-fPIC"
   )
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
+  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--hash-style=both ")
 endif (QT_ANDROID)
-
 
 #
 # Installation directory setup
@@ -1498,6 +1497,7 @@ endif ()
 
 IF(QT_ANDROID)
   target_link_libraries(${PACKAGE_NAME} PRIVATE Qt5::AndroidExtras)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE GL)
   #qt5_use_modules(${PACKAGE_NAME} Widgets)
   #qt5_use_modules(${PACKAGE_NAME} Core)
   #qt5_use_modules(${PACKAGE_NAME} Test)
@@ -2476,7 +2476,7 @@ if (MINGW)
 endif ()
 
 if (NOT SKIP_PLUGINS)
-  add_subdirectory(plugins)
+  #add_subdirectory(plugins)
 endif ()
 
 
