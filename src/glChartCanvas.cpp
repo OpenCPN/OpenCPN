@@ -631,6 +631,12 @@ void glChartCanvas::Init()
 
     if( !g_glTextureManager)
         g_glTextureManager = new glTextureManager;
+    
+#ifdef __OCPN__ANDROID__
+    EnableTouchEvents( wxTOUCH_PAN_GESTURES );
+    Connect(wxEVT_GESTURE_PAN, (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::onPanEvent);
+#endif
+
 }
 
 glChartCanvas::~glChartCanvas()
@@ -638,6 +644,39 @@ glChartCanvas::~glChartCanvas()
 #ifdef __OCPN__ANDROID__    
     unloadShaders();
 #endif    
+}
+
+void glChartCanvas::onPanEvent(wxPanGestureEvent &event)
+{
+    int state = 1;
+    if(event.IsGestureStart())
+        state = 0;
+    if(event.IsGestureEnd())
+        state = 2;
+    
+    qDebug() << "onPanEvent()" << state << -event.GetDelta().x << event.GetDelta().y << event.GetPosition().x << event.GetPosition().y;
+    qDebug();
+    
+    wxQT_PanGestureEvent ev(wxEVT_QT_PANGESTURE);
+    ev.SetOffset( wxPoint(event.GetDelta().x, event.GetDelta().y ) );
+    ev.SetLastOffset( wxPoint(0,0) );
+
+    ev.SetCursorPos( event.GetPosition() );
+    ev.SetState( (wxGestureState)state);
+
+    wxEvtHandler *evthp = GetEventHandler();
+    ::wxPostEvent( evthp, ev );
+
+    return;
+    
+//     wxMouseEvent ev( wxEVT_RIGHT_DOWN );
+//     ev.m_x = event.GetPosition().x;
+//     ev.m_y = event.GetPosition().y;
+// 
+//     wxEvtHandler *evthp = GetEventHandler();
+// 
+//     ::wxPostEvent( evthp, ev );
+
 }
 
 void glChartCanvas::FlushFBO( void ) 
@@ -5633,7 +5672,6 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 {
     //qDebug() << "OnEvtPanGesture" << m_pParentCanvas->m_canvasIndex << event.cursor_pos.x;
 
-   
     if( m_pParentCanvas->isRouteEditing() || m_pParentCanvas->isMarkEditing() )
         return;
     
@@ -5650,6 +5688,8 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
     
     int dx = lx - x;
     int dy = y - ly;
+
+    qDebug() << "OnEvtPanGe()" << event.GetState() << dx << dy << event.GetCursorPos().x << event.GetCursorPos().y; 
     
     switch(event.GetState()){
         case GestureStarted:

@@ -193,6 +193,9 @@ public:
     void onGestureFinishTimerEvent(wxTimerEvent &event);
 #endif
     
+    //  Touch event support
+    void onPanEvent(wxPanGestureEvent &event);
+
     void onZoomTimerEvent(wxTimerEvent &event);
     
     wxString GetRendererString(){ return m_renderer; }
