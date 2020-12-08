@@ -3,44 +3,44 @@ language: cpp
 matrix:
   # https://github.com/travis-ci/travis-conditions
   include:
-#  - if: branch IN (v5.2.x)
-#    env:
-#    - OCPN_TARGET=focal-gtk3
-#    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
-#    dist: focal
-#    compiler: gcc
-#    script:
-#    - "./ci/generic-build-debian.sh"
-#  - if: branch IN (v5.2.x)
-#    env:
-#    - OCPN_TARGET=bionic
-#    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=OFF"
-#    dist: bionic
-#    compiler: gcc
-#    script:
-#    - "./ci/generic-build-debian.sh"
-#  - if: branch IN (v5.2.x)
-#    env:
-#    - OCPN_TARGET=bionic-gtk3
-#    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
-#    dist: bionic
-#    compiler: gcc
-#    script:
-#    - "./ci/generic-build-debian.sh"
-#  - if: branch IN (v5.2.x)
-#    env:
-#    - OCPN_TARGET=xenial
-#    dist: xenial
-#    compiler: gcc
-#    script:
-#    - "./ci/generic-build-debian.sh"
-#  - if: branch IN (v5.2.x)
-#    env:
-#    - OCPN_TARGET=trusty
-#    dist: trusty
-#    compiler: gcc
-#    script:
-#    - "./ci/generic-build-debian.sh"
+  - if: branch IN (v5.2.x)
+    env:
+    - OCPN_TARGET=focal-gtk3
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
+    dist: focal
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (v5.2.x)
+    env:
+    - OCPN_TARGET=bionic
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=OFF"
+    dist: bionic
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (v5.2.x)
+    env:
+    - OCPN_TARGET=bionic-gtk3
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
+    dist: bionic
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (v5.2.x)
+    env:
+    - OCPN_TARGET=xenial
+    dist: xenial
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (v5.2.x)
+    env:
+    - OCPN_TARGET=trusty
+    dist: trusty
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
   - if: branch IN (v5.2.x)
     env:
     - OCPN_TARGET=osx
@@ -49,20 +49,20 @@ matrix:
     compiler: clang
     script:
     - "./ci/generic-build-macos.sh"
-##  - if: branch IN (master, plugins, plugins-build)
+#  - if: branch IN (master, plugins, plugins-build)
 #    env:
 #    - OCPN_TARGET=mingw
 #    services:
 #    - docker
 #    script:
 #    - "./ci/travis-build-mingw.sh"
-#  - if: branch = flatpak
-#    env:
-#    - OCPN_TARGET=flatpak
-#    services:
-#    - docker
-#    script:
-#    - "./ci/circleci-build-flatpak.sh"
+  - if: branch = flatpak
+    env:
+    - OCPN_TARGET=flatpak
+    services:
+    - docker
+    script:
+    - "./ci/circleci-build-flatpak.sh"
 
 
 before_install:
