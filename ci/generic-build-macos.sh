@@ -19,7 +19,7 @@ cd ..
 rm -rf yaml-0.2.2 yaml-0.2.2.tar.gz
 
 # Fix broken ruby on the CircleCI image:
-if [ -n "$CI" ]; then
+if [ -n "$CIRCLECI" ]; then
     curl -fsSL \
         https://raw.githubusercontent.com/Homebrew/install/master/uninstall \
         > uninstall
