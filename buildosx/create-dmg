@@ -340,7 +340,18 @@ EOS
 	fi
 }
 
-applescript_source | sed -e "s/WINX/$WINX/g" -e "s/WINY/$WINY/g" -e "s/WINW/$WINW/g" -e "s/WINH/$WINH/g" -e "s/BACKGROUND_CLAUSE/$BACKGROUND_CLAUSE/g" -e "s/REPOSITION_HIDDEN_FILES_CLAUSE/$REPOSITION_HIDDEN_FILES_CLAUSE/g" -e "s/ICON_SIZE/$ICON_SIZE/g" -e "s/TEXT_SIZE/$TEXT_SIZE/g" | perl -pe  "s/POSITION_CLAUSE/$POSITION_CLAUSE/g" | perl -pe "s/QL_CLAUSE/$QL_CLAUSE/g" | perl -pe "s/APPLICATION_CLAUSE/$APPLICATION_CLAUSE/g" | perl -pe "s/HIDING_CLAUSE/$HIDING_CLAUSE/" >"$APPLESCRIPT"
+applescript_source | \
+    sed -e "s/WINX/$WINX/g" -e "s/WINY/$WINY/g" \
+      -e "s/WINW/$WINW/g" -e "s/WINH/$WINH/g" \
+      -e "s/BACKGROUND_CLAUSE/$BACKGROUND_CLAUSE/g" \
+      -e "s/REPOSITION_HIDDEN_FILES_CLAUSE/$REPOSITION_HIDDEN_FILES_CLAUSE/g" \
+      -e "s/ICON_SIZE/$ICON_SIZE/g" \
+      -e "s/TEXT_SIZE/$TEXT_SIZE/g" \
+    | perl -pe  "s/POSITION_CLAUSE/$POSITION_CLAUSE/g" \
+    | perl -pe "s/QL_CLAUSE/$QL_CLAUSE/g" \
+    | perl -pe "s/APPLICATION_CLAUSE/$APPLICATION_CLAUSE/g" \
+    | perl -pe "s/HIDING_CLAUSE/$HIDING_CLAUSE/" \
+    >"$APPLESCRIPT"
 sleep 2 # pause to workaround occasional "Can’t get disk" (-1728) issues  
 echo "Running Applescript: /usr/bin/osascript \"${APPLESCRIPT}\" \"${VOLUME_NAME}\""
 "/usr/bin/osascript" "${APPLESCRIPT}" "${VOLUME_NAME}" || true
@@ -348,6 +359,7 @@ echo "Done running the applescript..."
 sleep 4
 
 rm "$APPLESCRIPT"
+
 
 # make sure it's not world writeable
 echo "Fixing permissions..."
@@ -393,7 +405,8 @@ fi
 if [ ! -z "${NOINTERNET}" -a "${NOINTERNET}" == 1 ]; then
 	echo "not setting 'internet-enable' on the dmg"
 else
-	hdiutil internet-enable -yes "${DMG_DIR}/${DMG_NAME}"
+	hdiutil internet-enable -yes "${DMG_DIR}/${DMG_NAME}" || \
+            echo "Warning: hdiutil internet-enable: not supported (ignored)"
 fi
 
 echo "Disk image done"

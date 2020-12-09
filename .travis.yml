@@ -43,27 +43,22 @@ matrix:
     - "./ci/generic-build-debian.sh"
   - if: branch IN (master, plugins, plugins-build)
     env:
-    - OCPN_TARGET=osx
-    os: osx
-    osx_image: xcode10.2
-    compiler: clang
-    script:
-    - "./ci/generic-build-macos.sh"
-  - if: branch IN (master, plugins, plugins-build)
-    env:
     - OCPN_TARGET=mingw
     services:
     - docker
+    before_install:
+    - "./ci/docker-auth.sh"
     script:
     - "./ci/travis-build-mingw.sh"
   - if: branch = flatpak
     env:
     - OCPN_TARGET=flatpak
+    before_install:
+    - "./ci/docker-auth.sh"
     services:
     - docker
     script:
     - "./ci/circleci-build-flatpak.sh"
-
 
 before_install:
 - |

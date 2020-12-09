@@ -24,6 +24,14 @@ case "$OCPN_TARGET" in
             echo "Renaming $old to $new"
         done
         ;;
+    macos)
+        for src in $(expand *.dmg); do
+            old=$(basename $src)
+            new=$(echo $old | sed "s/rw\.//")
+            sudo mv $old $new
+            echo "Renaming $old to $new"
+        done
+        ;;
 esac
 
 if [ -n "$TRAVIS_BUILD_NR" ]; then

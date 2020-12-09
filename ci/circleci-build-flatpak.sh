@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Build the travis flatpak artifacts. Uses docker to run Fedora
-# in the Travis ubuntu VM; the actual build is done in the Fedora
-# container.
+# Build the travis flatpak artifacts.
 #
 
 # bailout on errors and echo commands.

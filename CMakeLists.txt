@@ -1314,6 +1314,16 @@ if (UNIX)
       # should probably replace it with pugixml completely anyway...
       find_package(TinyXML)
     endif (NOT APPLE)
+    if (APPLE)
+      find_package(Freetype REQUIRED)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE Freetype::Freetype)
+      find_package(Fontconfig REQUIRED)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE Fontconfig::Fontconfig)
+      find_package(PNG REQUIRED)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE PNG::PNG)
+      find_package(Pixman REQUIRED)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE Pixman::Pixman)
+    endif ()
   endif (NOT QT_ANDROID)
 endif (UNIX)
 
@@ -2723,7 +2733,7 @@ if (APPLE)
   set(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 
   set(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
-  set(DIRS "")
+  set(DIRS "/usr/local/lib")
 
   # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
   install(
@@ -2749,10 +2759,13 @@ if (APPLE)
     "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib"
     "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib"
   )
-  install(CODE "
-    include(BundleUtilities)
-    fixup_bundle(\"${APPS}\"   \"${LIBS}\"   \"${DIRS}\")
-    " COMPONENT Runtime)
+install(CODE "
+  include(BundleUtilities)
+  set(BU_CHMOD_BUNDLE_ITEMS TRUE)
+  fixup_bundle(\"${APPS}\"  \"${LIBS}\"  \"${DIRS}\")
+  "
+  COMPONENT Runtime
+)
 
   #Build standard MacOS installer package
   #  Copy a few generic files so the Packages installer builder can find them relative to ${CMAKE_CURRENT_BINARY_DIR}
