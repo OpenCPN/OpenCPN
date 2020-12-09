@@ -58,9 +58,11 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
-make create-dmg
+make create-pkg
 
-test -z  "$BUILD_PKG" || make create-pkg
+#make create-dmg
+
+#test -z  "$BUILD_PKG" || make create-pkg
 
 # Install the stuff needed by upload.
 pip3 install -q cloudsmith-cli
