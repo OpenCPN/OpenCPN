@@ -224,7 +224,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         return (plugin_os == "darwin");
     }
 
-    //  For linux variants....compatibility check1
+    //  For linux variants.....compatibility check1
     // If the plugin architecture is defined, we can eliminate incompatible plugins immediately
     if(metadata.target_arch.size()){
         wxLogMessage("target_arch: %s, osd_arch: %s, osd_build_arch: %s", ocpn::tolower(metadata.target_arch), ocpn::tolower(os_detail->osd_arch), ocpn::tolower(os_detail->osd_build_arch));
