@@ -7,6 +7,9 @@ set -xe
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
+# Return latest installed brew version of given package
+pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
+
 #
 # Check if the cache is with us. If not, re-install brew.
 brew list --versions libexif || {
@@ -24,7 +27,7 @@ for pkg in cairo cmake libarchive libexif pixman python3 wget xz; do
 done
 
 # Make sure cmake finds libarchive
-version=$(brew list --versions libarchive | tail -1 | awk '{print $2}')
+version=$(pkg_version libarchive)
 pushd /usr/local/include
     ln -sf /usr/local/Cellar/libarchive/$version/include/archive.h .
     ln -sf /usr/local/Cellar/libarchive/$version/include/archive_entry.h .
@@ -33,7 +36,15 @@ pushd /usr/local/include
     ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.dylib .
 popd
 
-brew list --cask --versions packages || brew install --cask packages
+if brew list --cask --versions packages; then
+    version=$(pkg_version packages '--cask')
+    sudo installer \
+        -pkg /usr/local/Caskroom/packages/$version/packages/Packages.pkg \
+        -target /
+else
+    brew install --cask packages
+fi
+
 
 wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
     -O /tmp/wx312B_opencpn50_macos109.tar.xz
@@ -59,10 +70,7 @@ make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
 make create-pkg
-
-#make create-dmg
-
-#test -z  "$BUILD_PKG" || make create-pkg
+make create-dmg
 
 # Install the stuff needed by upload.
 pip3 install -q cloudsmith-cli
