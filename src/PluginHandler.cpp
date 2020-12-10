@@ -225,6 +225,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
                                  const char* os, const char* os_version)
 
 {
+    wxLogDebug("Plugin compatibility check");
+    wxLogDebug("name: %s, target: %s, target_arch: %s", metadata.name, metadata.target, metadata.target_arch);
     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
 
 
@@ -248,8 +250,11 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     //  For linux variants....
     // If the plugin architecture is defined, we can eliminate incompatible plugins immediately
     if(metadata.target_arch.size()){
-        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch))
+        wxLogDebug("target_arch: %s, osd_arch: %s, osd_build_arch: %s", ocpn::tolower(metadata.target_arch), ocpn::tolower(os_detail->osd_arch), ocpn::tolower(os_detail->osd_build_arch));
+        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch) && ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_build_arch)) {
+            wxLogDebug("Not compatible");
             return false;
+        }
     }
 
     std::string compatOS_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
@@ -258,19 +263,22 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 
     bool rv = false;
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
-    
+
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
 
-    if (compatOS_ARCH  == plugin_os) {
+    wxLogDebug("compatOS_ARCH: %s, compatOS_Build_ARCH: %s, build target: %s, plugin_os: %s, plugin build target: %s", compatOS_ARCH, os_detail->osd_build_arch, PKG_BUILD_TARGET, plugin_os, metadata.build_target);
+    if (compatOS_ARCH  == plugin_os || os_detail->osd_build_arch == metadata.target_arch) {
         //  OS matches so far, so must compare versions
 
         if (ocpn::startswith(plugin_os, "ubuntu")){
-            if(plugin_os_version == compatOsVersion)            // Full version comparison required
+            wxLogDebug("plugin_os_version: %s, CompatOsVersion: %s, osd_build_version: %s", plugin_os_version, compatOsVersion, os_detail->osd_build_version);
+            if(plugin_os_version == compatOsVersion || plugin_os_version == os_detail->osd_build_version)            // Full version comparison required
                 rv = true;
         }
         else{
             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-            if( meta_vers == target_vers )
+            wxLogDebug("meta_vers: %s, target_vers: %s, osd_build_version: %s, version: %s", meta_vers, target_vers, os_detail->osd_build_version, metadata.version);
+            if( meta_vers == target_vers || os_detail->osd_build_version == metadata.version)
                 rv = true;;
         }
     }
@@ -294,7 +302,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     
     // Special case tests for vanilla debian, which can use some variants of Ubuntu plugins
     if(!rv){
-
+        wxLogDebug("Checking for debian and ubuntu");
         if (ocpn::startswith(compatOS_ARCH, "debian-x86_64")){
             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
             if(target_vers == std::string("9") ){        // Stretch
