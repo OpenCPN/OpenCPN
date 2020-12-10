@@ -5388,6 +5388,10 @@ static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
         else if( !strcmp(element.name(), "target") ){
             plugin.target = element.first_child().value();
         }
+        else if( !strcmp(element.name(), "build-target") ){
+            plugin.build_target = element.first_child().value();
+            wxLogMessage("Found build-target: %s", plugin.build_target);
+        }
         else if( !strcmp(element.name(), "target-version") ){
             plugin.target_version = element.first_child().value();
         }
@@ -5396,6 +5400,9 @@ static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
         }
         else if( !strcmp(element.name(), "tarball-url") ){
             plugin.tarball_url = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "build-gtk") ){
+            plugin.build_gtk = element.first_child().value();
         }
     }
 
