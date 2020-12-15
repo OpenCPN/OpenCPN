@@ -41,6 +41,7 @@
 												<dict>
 													<key>CHILDREN</key>
 													<array>
+${LIBARCHIVE_COMMENT_START}
 														<dict>
 															<key>CHILDREN</key>
 															<array/>
@@ -57,6 +58,7 @@
 															<key>UID</key>
 															<integer>0</integer>
 														</dict>
+${LIBARCHIVE_COMMENT_END}
 														<dict>
 															<key>CHILDREN</key>
 															<array/>
