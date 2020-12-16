@@ -962,6 +962,7 @@ ChartCanvas::~ChartCanvas()
     delete m_pQuilt;
 }
 
+#if wxCHECK_VERSION(3, 1, 4)      
 void ChartCanvas::onLongPress(wxLongPressEvent &event)
 {
     wxMouseEvent ev( wxEVT_RIGHT_DOWN );
@@ -971,9 +972,8 @@ void ChartCanvas::onLongPress(wxLongPressEvent &event)
     wxEvtHandler *evthp = GetEventHandler();
 
     ::wxPostEvent( evthp, ev );
-
 }
-
+#endif
 
 void ChartCanvas::CanvasApplyLocale()
 {
@@ -1247,7 +1247,7 @@ void ChartCanvas::ShowTides(bool bShow)
 {
     gFrame->LoadHarmonics();
     
-    if( ptcmgr->IsReady() ) {
+    if( ptcmgr && ptcmgr->IsReady() ) {
         SetbShowTide( bShow );
         if( m_toolBar )
             m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, bShow );
@@ -1283,7 +1283,7 @@ void ChartCanvas::ShowCurrents(bool bShow)
 {
     gFrame->LoadHarmonics();
     
-    if( ptcmgr->IsReady() ) {
+    if( ptcmgr && ptcmgr->IsReady() ) {
         SetbShowCurrent( bShow );
         if( m_toolBar )
             m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, bShow );

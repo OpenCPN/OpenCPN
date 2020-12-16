@@ -187,15 +187,14 @@ public:
     void RenderCanvasBackingChart( ocpnDC &dc, OCPNRegion chart_get_region);
     
 #ifdef __OCPN__ANDROID__    
-    void OnEvtPanGesture( wxQT_PanGestureEvent &event);
-    void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
+    //  Touch event support
+    void ProcessPanGesture( wxPanGestureEvent &event);
+    void ProcessPinchGesture( wxZoomGestureEvent &event);
+
     void onGestureTimerEvent(wxTimerEvent &event);
     void onGestureFinishTimerEvent(wxTimerEvent &event);
 #endif
     
-    //  Touch event support
-    void onPanEvent(wxPanGestureEvent &event);
-
     void onZoomTimerEvent(wxTimerEvent &event);
     
     wxString GetRendererString(){ return m_renderer; }
@@ -266,6 +265,7 @@ protected:
     
     void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
     
+
     void RendertoTexture(GLint tex);
     
     void fboFade(GLint tex0, GLint tex1);
@@ -361,6 +361,8 @@ protected:
     int          m_currentTexWidth;
     int          m_currentTexHeight;
     
+    float        m_total_zoom_calc;
+
     DECLARE_EVENT_TABLE()
 };
 
