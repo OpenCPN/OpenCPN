@@ -398,7 +398,7 @@ void about::CreateControls( void )
     SetSizer( mainSizer );
     wxStaticText *pST1 = new wxStaticText( this, -1,
         _("The Open Source Chart Plotter/Navigator"), wxDefaultPosition,
-        wxSize( -1, 50 /* 500, 30 */ ), wxALIGN_CENTRE /* | wxALIGN_CENTER_VERTICAL */ );
+        wxSize( -1, 50 /* 500, 30 */ ), wxALIGN_CENTRE  );
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     
@@ -428,7 +428,7 @@ void about::CreateControls( void )
     pNotebook->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(about::OnNBPageChange), NULL,   this);
     
     pNotebook->InheritAttributes();
-    mainSizer->Add( pNotebook, 1, (orient ? wxALIGN_CENTER_VERTICAL : 0) | wxEXPAND | wxALL, 5 );
+    mainSizer->Add( pNotebook, 1, wxEXPAND | wxALL, 5 );
 
     //  About Panel
     itemPanelAbout = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
@@ -440,7 +440,7 @@ void about::CreateControls( void )
                                 wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pAboutHTMLCtl->SetBorders( 5 );
     wxBoxSizer* aboutSizer = new wxBoxSizer( wxVERTICAL );
-    aboutSizer->Add( pAboutHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    aboutSizer->Add( pAboutHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelAbout->SetSizer( aboutSizer );
 
     //  Authors Panel
@@ -454,7 +454,7 @@ void about::CreateControls( void )
                                     wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pAuthorHTMLCtl->SetBorders( 5 );
     wxBoxSizer* authorSizer = new wxBoxSizer( wxVERTICAL );
-    authorSizer->Add( pAuthorHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    authorSizer->Add( pAuthorHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelAuthors->SetSizer( authorSizer );
     
     //  License Panel
@@ -467,7 +467,7 @@ void about::CreateControls( void )
                                       wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pLicenseHTMLCtl->SetBorders( 5 );
     wxBoxSizer* licenseSizer = new wxBoxSizer( wxVERTICAL );
-    licenseSizer->Add( pLicenseHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    licenseSizer->Add( pLicenseHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelLicense->SetSizer( licenseSizer );
 
     //  Help Panel
