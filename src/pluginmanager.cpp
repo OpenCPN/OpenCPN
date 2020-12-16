@@ -843,17 +843,17 @@ class StatusIconPanel: public wxPanel
                 return;
             }
             
-            wxString color = "DILG0";
             int penWidth = m_penWidthUnselected;
+            wxColour border = GetDialogColor(DLG_UNSELECTED_ACCENT);
             
             if(m_parent->GetSelected()){
-                color = "DILG1";
                 penWidth = m_penWidthSelected;
+                border = GetDialogColor(DLG_SELECTED_ACCENT);
             }
             
-            wxBrush b(GetGlobalColor(color), wxSOLID);
+            wxBrush b(m_parent->GetBackgroundColour(), wxSOLID);
             dc.SetBrush(b);
-            dc.SetPen( wxPen(*wxBLACK, penWidth ));
+            dc.SetPen( wxPen(border, penWidth) );
 
             dc.DrawRoundedRectangle(-20, 5, GetSize().x-5, GetSize().y-10, 5);
             dc.DrawBitmap(m_bitmap, offset, offset*2, true);
@@ -6260,8 +6260,8 @@ void PluginPanel::SetSelected( bool selected )
     
 
     if (selected) {
-        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG1")));
-        SetBackgroundColour(GetGlobalColor(_T("DILG1")));
+        m_status_icon->SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
+        SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
         m_pButtons->Show(true);
         bool unInstallPossible = canUninstall(m_pPlugin->m_common_name.ToStdString());
         
@@ -6337,8 +6337,8 @@ void PluginPanel::SetSelected( bool selected )
         Layout();
     }
     else {
-        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-        SetBackgroundColour(GetGlobalColor(_T("DILG0")));
+        m_status_icon->SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
+        SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
         //m_pDescription->SetLabel( m_pPlugin->m_short_description );
 #ifndef __WXQT__
         //m_pButtons->Show(false);
@@ -6368,26 +6368,15 @@ void PluginPanel::SetSelected( bool selected )
     
     Layout();
 
-    bool bUseSysColors = false;
-#ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) )
-        bUseSysColors = true;
-#endif
-#ifdef __WXGTK__
-    bUseSysColors= true;
-#endif    
 
-    if(bUseSysColors){
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {          // is Dark...
-            if(selected) {
-                SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-            } else {
-                SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
-                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
-            }
-        }
+
+
+    if(selected) {
+                SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
+                m_status_icon->SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
+    } else {
+                SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
+                m_status_icon->SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
     }
 
     SetEnabled( m_pPlugin->m_bEnabled );
@@ -6411,17 +6400,19 @@ void PluginPanel::OnPaint(wxPaintEvent &event)
 {
     wxPaintDC dc( this );
     
-    wxString color = "DILG0";
-    
     int penWidth = m_penWidthUnselected;
-    if(m_bSelected){
-        color = "DILG1";
+    wxColour color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
+    wxColour border = GetDialogColor(DLG_UNSELECTED_ACCENT);
+    
+    if(m_bSelected) {
         penWidth = m_penWidthSelected;
+        color = GetDialogColor(DLG_SELECTED_BACKGROUND);
+        border = GetDialogColor(DLG_SELECTED_ACCENT);
     }
-        
-    wxBrush b(GetGlobalColor(color), wxSOLID);
+
+    wxBrush b(color, wxSOLID);
     dc.SetBrush(b);
-    dc.SetPen( wxPen(*wxBLACK, penWidth) );
+    dc.SetPen( wxPen(border, penWidth) );
  
     dc.DrawRoundedRectangle( 5, 5, GetSize().x - 10, GetSize().y - 10, 5);
     //dc.DrawLine( 5, 5, 1000, 5 ); 
