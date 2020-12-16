@@ -58,6 +58,7 @@ cd build
 test -n "$TRAVIS_TAG" && CI_BUILD=OFF || CI_BUILD=ON
 cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_USE_LIBCPP=ON \
+  -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
   -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx312B_opencpn50_macos109/bin/wx-config \
   -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx312B_opencpn50_macos109" \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \

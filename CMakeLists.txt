@@ -311,6 +311,7 @@ option(OCPN_USE_SVG "Use SVG graphics" ON)
 option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
+option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the system on MacOS" ON)
 
 option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
@@ -1533,9 +1534,19 @@ if (QT_ANDROID)
   target_link_libraries(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ANDROID_ARCH}/libarchive.a)
 elseif ( APPLE )
-    #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment 
-    target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE /usr/local/lib/libarchive.dylib)
+    if (OCPN_USE_SYSTEM_LIBARCHIVE)
+        list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+        find_package(LibArchive REQUIRED)
+        target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+        target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+        # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
+        set(LIBARCHIVE_COMMENT_START "<!--")
+        set(LIBARCHIVE_COMMENT_END "-->")
+    else()
+        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment 
+        target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE /usr/local/lib/libarchive.dylib)
+    endif()
 else ()
   find_package(LibArchive REQUIRED)
   target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
