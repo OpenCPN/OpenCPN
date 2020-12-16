@@ -1610,7 +1610,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
   wxNotebook* nb;
   wxScrolledWindow* sw;
 
-  int style = wxVSCROLL | wxTAB_TRAVERSAL;
+  int style = wxVSCROLL | wxTAB_TRAVERSAL | wxHSCROLL;
   if ((nb = dynamic_cast<wxNotebook*>(page))) {
     sw = new wxScrolledWindow(page, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                               style);
@@ -1964,6 +1964,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
       new wxChoice(m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                    m_choiceBaudRateNChoices, m_choiceBaudRateChoices, 0);
   m_choiceBaudRate->SetSelection(0);
+
   fgSizer1->Add(m_choiceBaudRate, 1, wxEXPAND | wxTOP, 5);
 
   m_stSerProtocol = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Protocol"),
