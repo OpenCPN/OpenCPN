@@ -1,0 +1,439 @@
+From 5a12554855fd35743531a0e40be08fdff77df6c5 Mon Sep 17 00:00:00 2001
+From: dsr <bdbcat@yahoo.com>
+Date: Wed, 16 Dec 2020 11:24:48 -0500
+Subject: [PATCH] Enable wxGestureEvent support for Qt
+
+---
+ include/wx/qt/glcanvas.h         |  23 +++++++
+ include/wx/qt/private/winevent.h | 125 ++++++++++++++++++++++++++++++++++
+ include/wx/qt/window.h           |   1 +
+ src/qt/glcanvas.cpp              | 140 +++++++++++++++++++++++++++++++++++++++
+ src/qt/window.cpp                |  58 ++++++++++++++++
+ 5 files changed, 347 insertions(+)
+
+diff --git a/include/wx/qt/glcanvas.h b/include/wx/qt/glcanvas.h
+index 20e0312..7fd9025 100644
+--- a/include/wx/qt/glcanvas.h
++++ b/include/wx/qt/glcanvas.h
+@@ -87,4 +87,27 @@ private:
+     wxDECLARE_CLASS(wxGLCanvas);
+ };
+ 
++#include <QtWidgets/QGestureRecognizer>
++#include <QtWidgets/QGestureEvent>
++
++class PanGestureRecognizer : public QGestureRecognizer
++{
++private:
++   static const int MINIMUM_DISTANCE = 10;
++
++   typedef QGestureRecognizer parent;
++
++   bool IsValidMove(int dx, int dy);
++
++   virtual QGesture* create(QObject* pTarget);
++
++   virtual QGestureRecognizer::Result recognize(QGesture* pGesture, QObject *pWatched, QEvent *pEvent);
++
++   void reset (QGesture *pGesture);
++
++   uint m_started;
++   QPointF m_startPoint;
++   QPointF m_lastPoint;
++};
++
+ #endif // _WX_GLCANVAS_H_
+diff --git a/include/wx/qt/private/winevent.h b/include/wx/qt/private/winevent.h
+index 21f0e50..dd85010 100644
+--- a/include/wx/qt/private/winevent.h
++++ b/include/wx/qt/private/winevent.h
+@@ -19,6 +19,9 @@
+ #include "wx/qt/private/converter.h"
+ #include "wx/qt/private/utils.h"
+ 
++#include <QtWidgets/QGestureEvent>
++#include <QtGui/QCursor>
++
+ class QPaintEvent;
+ 
+ template< typename Handler >
+@@ -327,6 +330,128 @@ protected:
+     virtual bool winEvent ( MSG * message, long * result ) { }
+     virtual bool x11Event ( XEvent * event ) { } */
+ 
++    virtual bool event(QEvent *event)
++    {
++        if (event->type() == QEvent::Gesture){
++            return gestureEvent(static_cast<QGestureEvent*>(event), event);
++        }
++
++        return Widget::event(event);
++    }
++
++    bool gestureEvent(QGestureEvent *gesture, QEvent *event)
++    {
++
++       if (QGesture *tah = gesture->gesture(Qt::TapAndHoldGesture)){
++            //  Set the policy so that accepted gestures are taken by the first window that gets them
++            tah->setGestureCancelPolicy ( QGesture::CancelAllInContext );
++            tapandholdTriggered(static_cast<QTapAndHoldGesture *>(tah), event);
++        }
++
++        if (QGesture *pan = gesture->gesture(Qt::PanGesture)){
++            panTriggered(static_cast<QPanGesture *>(pan), event);
++        }
++
++        if (QGesture *pinch = gesture->gesture(Qt::PinchGesture)){
++            pinchTriggered(static_cast<QPinchGesture *>(pinch), event);
++        }
++
++
++        return true;
++    }
++
++    void tapandholdTriggered(QTapAndHoldGesture *gesture, QEvent *event)
++    {
++        wxWindow *win = wxWindow::QtRetrieveWindowPointer( this );
++
++        if (gesture->state() == Qt::GestureFinished) {
++            if(win){
++              wxLongPressEvent ev(win->GetId());
++              ev.SetPosition( wxQtConvertPoint( gesture->position().toPoint() ) );
++
++              ev.SetGestureEnd();
++              win->ProcessWindowEvent( ev );
++              event->accept();
++            }
++
++        }
++        else if (gesture->state() == Qt::GestureStarted) {
++            event->accept();
++        }
++
++        else {
++            event->accept();
++        }
++
++
++    }
++
++    void panTriggered(QPanGesture *gesture, QEvent *event)
++    {
++        wxWindow *win = wxWindow::QtRetrieveWindowPointer( this );
++
++        if(win){
++            wxPanGestureEvent evp(win->GetId());
++            QPoint pos = QCursor::pos();
++            evp.SetPosition( wxQtConvertPoint( pos ) );
++ 
++            QPoint offset = gesture->offset().toPoint();
++            QPoint offset_last = gesture->lastOffset().toPoint();
++            QPoint delta(offset.x() - offset_last.x(), offset.y() - offset_last.y());
++            
++            evp.SetDelta( wxQtConvertPoint( delta ) );
++            
++            switch(gesture->state()){
++              case Qt::GestureStarted:
++                evp.SetGestureStart();
++                break;
++              case Qt::GestureFinished:
++              case Qt::GestureCanceled:
++                evp.SetGestureEnd();
++                break;
++              default:
++                break;
++            }
++                
++            win->ProcessWindowEvent( evp );
++            
++            event->accept();
++        }
++    }
++
++    void pinchTriggered(QPinchGesture *gesture, QEvent *event)
++    {
++        wxWindow *win = wxWindow::QtRetrieveWindowPointer( this );
++        if(win){
++
++            qreal this_sf = gesture->scaleFactor();
++            QPoint center_point = gesture->centerPoint().toPoint();
++            
++            wxZoomGestureEvent evp(win->GetId());
++            evp.SetPosition( wxQtConvertPoint( center_point ) );
++            evp.SetZoomFactor( this_sf);
++            
++            switch(gesture->state()){
++              case Qt::GestureStarted:
++                evp.SetGestureStart();
++                break;
++              case Qt::GestureFinished:
++              case Qt::GestureCanceled:
++                evp.SetGestureEnd();
++                break;
++              default:
++                break;
++            }
++
++            win->ProcessWindowEvent( evp );
++            
++            event->accept();
++
++        }
++    }
++
++
++
+ };
+ 
+ #endif
+diff --git a/include/wx/qt/window.h b/include/wx/qt/window.h
+index a426af9..fbaadb3 100644
+--- a/include/wx/qt/window.h
++++ b/include/wx/qt/window.h
+@@ -221,6 +221,7 @@ protected:
+     // itself.
+     virtual QWidget* QtGetParentWidget() const { return GetHandle(); }
+ 
++    virtual bool EnableTouchEvents(int eventsMask);
+ 
+     QWidget *m_qtWindow;
+ 
+diff --git a/src/qt/glcanvas.cpp b/src/qt/glcanvas.cpp
+index eed8703..85de618 100644
+--- a/src/qt/glcanvas.cpp
++++ b/src/qt/glcanvas.cpp
+@@ -421,6 +421,10 @@ bool wxGLCanvas::Create(wxWindow *parent,
+         return false;
+ 
+     m_qtWindow = new wxQtGLWidget(parent, this, format);
++    
++    QGestureRecognizer* pPanRecognizer = new PanGestureRecognizer();
++    QGestureRecognizer::registerRecognizer(pPanRecognizer);
++
+ 
+     return wxWindow::Create( parent, id, pos, size, style, name );
+ }
+@@ -582,4 +586,140 @@ bool wxGLApp::InitGLVisual(const int *attribList)
+     return false;
+ }
+ 
++
++// -----------------------------------------------------------------------------------------
++//  We want a private pan gesture recognizer for GL canvas,
++//  since the Qt standard recognizers do not function well for this window.
++// -----------------------------------------------------------------------------------------
++
++
++bool
++PanGestureRecognizer::IsValidMove(int dx, int dy)
++{
++   // The moved distance is to small to count as not just a glitch.
++   if ((qAbs(dx) < MINIMUM_DISTANCE) && (qAbs(dy) < MINIMUM_DISTANCE)) {
++      return false;
++   }
++
++   return true;
++}
++
++
++// virtual
++QGesture*
++PanGestureRecognizer::create(QObject* pTarget)
++{
++   QGesture *pGesture = new QPanGesture(pTarget);
++   return pGesture;
++}
++
++
++// virtual
++QGestureRecognizer::Result
++PanGestureRecognizer::recognize(QGesture* pGesture, QObject *pWatched, QEvent *pEvent)
++{
++  wxUnusedVar(pWatched);
++   QGestureRecognizer::Result result = QGestureRecognizer::Ignore;
++   QPanGesture *pPan = static_cast<QPanGesture*>(pGesture);
++
++   const QTouchEvent *ev = static_cast<const QTouchEvent *>(pEvent);
++
++   switch(pEvent->type()) {
++      case QEvent::TouchBegin: {
++          if(1/*!m_started*/){
++            QTouchEvent::TouchPoint p1 = ev->touchPoints().at(0);
++            m_startPoint = p1.startScreenPos().toPoint();
++            m_lastPoint = m_startPoint;
++
++            pPan->setLastOffset(QPointF(0,0));
++            pPan->setOffset(QPointF(0,0));
++
++            result = QGestureRecognizer::MayBeGesture;
++            m_started = 1;
++          }
++      }
++      break;
++      case QEvent::TouchEnd: {
++
++         QTouchEvent::TouchPoint p1 = ev->touchPoints().at(0);
++         QPointF endPoint = p1.screenPos().toPoint();
++
++         pPan->setLastOffset(pPan->offset());
++         pPan->setOffset(QPointF(p1.pos().x() - p1.startPos().x(), p1.pos().y() - p1.startPos().y()));
++
++         pPan->setHotSpot(p1.startScreenPos());
++
++         // process distance and direction
++         int dx = endPoint.x() - m_startPoint.x();
++         int dy = endPoint.y() - m_startPoint.y();
++
++
++         if (!IsValidMove(dx, dy)) {
++            // Just a click, so no gesture.
++            result = QGestureRecognizer::Ignore;
++         } else {
++            result = QGestureRecognizer::FinishGesture;
++         }
++         m_started = 0;
++         
++      }
++      break;
++
++     case QEvent::TouchUpdate: {
++
++        QTouchEvent::TouchPoint p1 = ev->touchPoints().at(0);
++        QPointF upPoint = p1.screenPos().toPoint();
++
++        pPan->setLastOffset(pPan->offset());
++        pPan->setOffset(QPointF(p1.pos().x() - p1.startPos().x(), p1.pos().y() - p1.startPos().y()));
++
++        pPan->setHotSpot(p1.startScreenPos());
++
++        int dx = upPoint.x() - m_lastPoint.x();
++        int dy = upPoint.y() - m_lastPoint.y();
++
++
++        if( (dx > 2) || (dx < -2) || (dy > 2) || (dy < -2)){
++           result = QGestureRecognizer::TriggerGesture;
++
++        } else {
++           result = QGestureRecognizer::Ignore;
++        }
++
++        m_lastPoint = upPoint;
++
++        break;
++    }
++
++
++
++      default:
++        break;
++   }
++
++   return result;
++}
++
++
++
++
++
++
++
++
++
++
++
++
++void
++PanGestureRecognizer::reset(QGesture *pGesture)
++{
++   pGesture->setProperty("startPoint", QVariant(QVariant::Invalid));
++   m_started = 0;
++//   qDebug("Swipe recognize reset");
++   parent::reset(pGesture);
++}
++
++
++
+ #endif // wxUSE_GLCANVAS
+diff --git a/src/qt/window.cpp b/src/qt/window.cpp
+index 2fa8759..8e8c8dd 100644
+--- a/src/qt/window.cpp
++++ b/src/qt/window.cpp
+@@ -88,6 +88,31 @@ bool wxQtScrollArea::event(QEvent *e)
+                 break;
+         }
+     }
++
++    //  QGesture events arrive without mouse capture
++    else if( handler )
++    {
++        switch ( e->type() )
++        {
++             case QEvent::Gesture:
++             {
++                 QScrollArea::event(e);
++
++                 QScrollBar *vBar = verticalScrollBar();
++                 if(vBar)
++                    vBar->triggerAction( QAbstractSlider::SliderMove );
++                 QScrollBar *hBar = horizontalScrollBar();
++                 if(hBar)
++                    hBar->triggerAction( QAbstractSlider::SliderMove );
++
++                 return true;
++                 break;
++             }
++            default:
++              break;
++        }
++    }
++      
+     return QScrollArea::event(e);
+ }
+ 
+@@ -345,6 +370,11 @@ bool wxWindowQt::Create( wxWindowQt * parent, wxWindowID id, const wxPoint & pos
+                 QtSetScrollBar( wxHORIZONTAL );
+             if ( style & wxVSCROLL )
+                 QtSetScrollBar( wxVERTICAL );
++
++            //  Allow processing of QGesture events, if generated upstream.
++            m_qtWindow->setAttribute(Qt::WA_AcceptTouchEvents);
++            m_qtWindow->grabGesture(Qt::PanGesture);
++
+         }
+         else
+             m_qtWindow = new wxQtWidget( parent, this );
+@@ -1690,3 +1720,31 @@ QPainter *wxWindowQt::QtGetPainter()
+ {
+     return m_qtPainter.get();
+ }
++
++bool wxWindowQt::EnableTouchEvents(int eventsMask)
++{
++    if(GetHandle()){
++      if(eventsMask == wxTOUCH_NONE){
++        m_qtWindow->setAttribute(Qt::WA_AcceptTouchEvents, false);
++        return true;
++      }
++
++      if(eventsMask & wxTOUCH_PRESS_GESTURES){
++        m_qtWindow->setAttribute(Qt::WA_AcceptTouchEvents, true);
++        m_qtWindow->grabGesture(Qt::TapAndHoldGesture);
++        QTapAndHoldGesture::setTimeout ( 1000 );
++      }
++      if(eventsMask & wxTOUCH_PAN_GESTURES){
++        m_qtWindow->setAttribute(Qt::WA_AcceptTouchEvents, true);
++        m_qtWindow->grabGesture(Qt::PanGesture);
++      }
++      if(eventsMask & wxTOUCH_ZOOM_GESTURE){
++        m_qtWindow->setAttribute(Qt::WA_AcceptTouchEvents, true);
++        m_qtWindow->grabGesture(Qt::PinchGesture);
++      }
++
++      return true;
++    }
++    else
++      return false;
++}
+-- 
+2.7.4
+

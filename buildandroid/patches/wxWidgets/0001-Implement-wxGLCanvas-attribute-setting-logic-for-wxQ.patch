@@ -1,0 +1,44 @@
+From 33db62ef3f4052a24d71c083ef197a641eaee5ed Mon Sep 17 00:00:00 2001
+From: dsr <bdbcat@yahoo.com>
+Date: Fri, 4 Dec 2020 22:46:56 -0500
+Subject: [PATCH] Implement wxGLCanvas attribute setting logic for wxQt
+
+---
+ src/qt/glcanvas.cpp | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/src/qt/glcanvas.cpp b/src/qt/glcanvas.cpp
+index 0bd3cc8..85c85d4 100644
+--- a/src/qt/glcanvas.cpp
++++ b/src/qt/glcanvas.cpp
+@@ -427,7 +427,7 @@ bool wxGLCanvas::ConvertWXAttrsToQtGL(const int *wxattrs, QGLFormat &format)
+ {
+     if (!wxattrs)
+         return true;
+-    return true;
++    //return true;
+ 
+     // set default parameters to false
+     format.setDoubleBuffer(false);
+@@ -435,6 +435,18 @@ bool wxGLCanvas::ConvertWXAttrsToQtGL(const int *wxattrs, QGLFormat &format)
+     format.setAlpha(false);
+     format.setStencil(false);
+ 
++    // Enable multisampling aka MSAA
++
++    format.setSampleBuffers( true );
++    format.setSamples( 4 );
++
++    //  We don't have the option of setting OpenGLES version defined in the
++    //  attribute list Enum.
++
++    // So, just force it here.
++    //format.setVersion ( 1,1 );
++   format.setVersion ( 2,0 );
++
+     for ( int arg = 0; wxattrs[arg] != 0; arg++ )
+     {
+         // indicates whether we have a boolean attribute
+-- 
+2.7.4
+

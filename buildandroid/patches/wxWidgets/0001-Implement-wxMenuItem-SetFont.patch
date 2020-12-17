@@ -1,0 +1,44 @@
+From f4332f6bdb431bddff0e8be990ce06b2064b2f80 Mon Sep 17 00:00:00 2001
+From: dsr <bdbcat@yahoo.com>
+Date: Sun, 6 Dec 2020 21:57:37 -0500
+Subject: [PATCH] Implement wxMenuItem::SetFont()
+
+---
+ include/wx/qt/menuitem.h | 2 ++
+ src/qt/menuitem.cpp      | 7 +++++++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/include/wx/qt/menuitem.h b/include/wx/qt/menuitem.h
+index 24e5e27..149d441 100644
+--- a/include/wx/qt/menuitem.h
++++ b/include/wx/qt/menuitem.h
+@@ -40,6 +40,8 @@ public:
+ 
+     virtual QAction *GetHandle() const;
+ 
++    virtual void SetFont(const wxFont& font);
++    
+ private:
+     // Qt is using an action instead of a menu item.
+     wxQtAction *m_qtAction;
+diff --git a/src/qt/menuitem.cpp b/src/qt/menuitem.cpp
+index a2f8482..aaa9d1f 100644
+--- a/src/qt/menuitem.cpp
++++ b/src/qt/menuitem.cpp
+@@ -128,6 +128,13 @@ void wxMenuItem::SetBitmap(const wxBitmap& bitmap)
+     }
+ }
+ 
++
++void wxMenuItem::SetFont(const wxFont& font)
++{
++    m_qtAction->setFont(font.GetHandle());
++}
++
++
+ QAction *wxMenuItem::GetHandle() const
+ {
+     return m_qtAction;
+-- 
+2.7.4
+

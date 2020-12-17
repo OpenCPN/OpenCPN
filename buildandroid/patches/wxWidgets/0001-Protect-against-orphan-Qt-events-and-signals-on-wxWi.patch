@@ -1,0 +1,69 @@
+From 2de742bccab1afd39a871ac43629a03c25eab729 Mon Sep 17 00:00:00 2001
+From: dsr <bdbcat@yahoo.com>
+Date: Sun, 6 Dec 2020 21:55:18 -0500
+Subject: [PATCH] Protect against orphan Qt events and signals on wxWindow and
+ wxGLCanvas DTOR.
+
+---
+ include/wx/qt/glcanvas.h | 2 ++
+ src/qt/glcanvas.cpp      | 9 +++++++++
+ src/qt/window.cpp        | 9 ++++++++-
+ 3 files changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/include/wx/qt/glcanvas.h b/include/wx/qt/glcanvas.h
+index 08fc13b..20e0312 100644
+--- a/include/wx/qt/glcanvas.h
++++ b/include/wx/qt/glcanvas.h
+@@ -57,6 +57,8 @@ public:
+                const wxString& name = wxGLCanvasName,
+                const wxPalette& palette = wxNullPalette);
+ 
++    ~wxGLCanvas();
++
+     bool Create(wxWindow *parent,
+                 const wxGLAttributes& dispAttrs,
+                 wxWindowID id = wxID_ANY,
+diff --git a/src/qt/glcanvas.cpp b/src/qt/glcanvas.cpp
+index 85c85d4..eed8703 100644
+--- a/src/qt/glcanvas.cpp
++++ b/src/qt/glcanvas.cpp
+@@ -380,6 +380,15 @@ wxGLCanvas::wxGLCanvas(wxWindow *parent,
+     Create(parent, id, pos, size, style, name, attribList, palette);
+ }
+ 
++wxGLCanvas::~wxGLCanvas()
++{
++        // Avoid sending further signals (i.e. if deleting the current page)
++        m_qtWindow->blockSignals(true);
++        // Reset the pointer to avoid handling pending event and signals
++        //QtStoreWindowPointer( GetHandle(), NULL );
++
++}
++
+ bool wxGLCanvas::Create(wxWindow *parent,
+                         const wxGLAttributes& dispAttrs,
+                         wxWindowID id,
+diff --git a/src/qt/window.cpp b/src/qt/window.cpp
+index e2ac004..2fa8759 100644
+--- a/src/qt/window.cpp
++++ b/src/qt/window.cpp
+@@ -315,8 +315,15 @@ wxWindowQt::~wxWindowQt()
+ #if wxUSE_DRAG_AND_DROP
+     SetDropTarget(NULL);
+ #endif
++     if (m_qtWindow)
++     {
++         QtStoreWindowPointer( GetHandle(), NULL );   //new
++         
++         // Delete QWidget when control return to event loop (safer)
++         m_qtWindow->deleteLater();
++         m_qtWindow = NULL;
+ 
+-    delete m_qtWindow;
++    }
+ }
+ 
+ 
+-- 
+2.7.4
+
