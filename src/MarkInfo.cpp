@@ -125,6 +125,31 @@ WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 #define EXTENDED_PROP_PAGE 2 // Index of the extended properties page
 
 
+wxBEGIN_EVENT_TABLE(OCPNIconComboPopup, wxVListBoxComboPopup)
+    //EVT_MOTION(OCPNIconComboPopup::OnMouseMove)
+    //EVT_KEY_DOWN(OCPNIconComboPopup::OnKey)
+    //EVT_CHAR(OCPNIconComboPopup::OnChar)
+    EVT_LEFT_UP(OCPNIconComboPopup::OnLeftUp)
+    EVT_LEFT_DOWN(OCPNIconComboPopup::OnLeftDown)
+wxEND_EVENT_TABLE()
+
+OCPNIconComboPopup::~OCPNIconComboPopup()
+{
+}
+void OCPNIconComboPopup::OnLeftUp(wxMouseEvent& event)
+{
+     int yup = event.GetPosition().y;
+     int ydn = m_downY;
+     if( abs(event.GetPosition().y - m_downY) < 5)
+        DismissWithEvent();
+}
+
+void OCPNIconComboPopup::OnLeftDown(wxMouseEvent& event)
+{
+    m_downY = event.GetPosition().y;
+}
+
+
 OCPNIconCombo::OCPNIconCombo (wxWindow* parent, wxWindowID id, const wxString& value,
                                   const wxPoint& pos, const wxSize& size, int n, const wxString choices[],
                                   long style, const wxValidator& validator, const wxString& name)
@@ -133,12 +158,19 @@ OCPNIconCombo::OCPNIconCombo (wxWindow* parent, wxWindowID id, const wxString& v
     double fontHeight = GetFont().GetPointSize() / g_Platform->getFontPointsperPixel();
     itemHeight = (int)wxRound(fontHeight);
     
+    //Create the custom popup
+    
+#ifdef __OCPN__ANDROID__
+    OCPNIconComboPopup* popup = new OCPNIconComboPopup();
+    SetPopupControl(popup);
+#endif    
+    
+
 }
 
 OCPNIconCombo::~OCPNIconCombo ()
 {
 }
-
 void OCPNIconCombo::OnDrawItem( wxDC& dc,
                                        const wxRect& rect,
                                        int item,
@@ -240,7 +272,11 @@ void LatLonTextCtrl::OnKillFocus( wxFocusEvent& event )
 //    Mark Information Dialog Implementation
 //
 //-------------------------------------------------------------------------------
+#ifdef __OCPN__ANDROID__
+BEGIN_EVENT_TABLE( MarkInfoDlg, wxDialog )
+#else
 BEGIN_EVENT_TABLE( MarkInfoDlg, wxFrame )
+#endif
      EVT_BUTTON( wxID_OK, MarkInfoDlg::OnMarkInfoOKClick)
      EVT_BUTTON( wxID_CANCEL, MarkInfoDlg::OnMarkInfoCancelClick)
      EVT_BUTTON( ID_BTN_DESC_BASIC, MarkInfoDlg::OnExtDescriptionClick)
@@ -264,7 +300,11 @@ END_EVENT_TABLE()
 
 MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
 {
+#ifdef __OCPN__ANDROID__
+    wxDialog::Create( parent, id, title, pos, size, style );
+#else
     wxFrame::Create( parent, id, title, pos, size, style );
+#endif    
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );

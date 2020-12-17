@@ -141,6 +141,25 @@ class SaveDefaultsDialog;
  * OCPNIconCombo class declaration
  */
 
+class OCPNIconComboPopup : public wxVListBoxComboPopup
+{
+        friend class wxOwnerDrawnComboBox;
+public:
+
+    // init and dtor
+    OCPNIconComboPopup() : wxVListBoxComboPopup() { }
+    virtual ~OCPNIconComboPopup();
+
+    void OnLeftUp(wxMouseEvent& event);
+    void OnLeftDown(wxMouseEvent& event);
+
+    wxDECLARE_EVENT_TABLE();
+
+private:
+    int m_downY;
+};
+
+
 class  OCPNIconCombo : public wxOwnerDrawnComboBox
 {
 public:
@@ -160,7 +179,7 @@ public:
     
     int Append(const wxString& item, wxBitmap bmp);
     void Clear( void );
-    
+
 private:
     int         itemHeight;
     ArrayOfBitmaps  bmpArray;
@@ -197,7 +216,11 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MarkInfoDef
 ///////////////////////////////////////////////////////////////////////////////
+#ifdef __OCPN__ANDROID__
+class MarkInfoDlg : public wxDialog
+#else
 class MarkInfoDlg : public wxFrame
+#endif
 {
     DECLARE_EVENT_TABLE()
     friend class SaveDefaultsDialog;
