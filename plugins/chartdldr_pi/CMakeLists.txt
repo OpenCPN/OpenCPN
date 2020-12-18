@@ -196,12 +196,12 @@ ELSE (NOT QT_ANDROID )
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
     ocpn::wxjson
     Qt5::Gui
+    Qt5::AndroidExtras
     ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
     "-lz" 
   )
   
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
-  #SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
+  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so -Wl,--hash-style=both ")
 ENDIF(NOT QT_ANDROID)
 
 IF( APPLE )
