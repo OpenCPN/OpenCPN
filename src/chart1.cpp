@@ -623,7 +623,8 @@ bool                      g_bDrawAISRealtime;
 double                    g_AIS_RealtPred_Kts;
 bool                      g_bShowAISName;
 int                       g_Show_Target_Name_Scale;
-bool                      g_bWplIsAprsPosition;
+bool                      g_bWplUsePosition;
+int                       g_WplAction;
 
 int                       g_nAIS_activity_timer;
 

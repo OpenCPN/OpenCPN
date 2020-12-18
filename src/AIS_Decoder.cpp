@@ -40,6 +40,9 @@
 #include "OCPN_DataStreamEvent.h"
 #include "OCPN_SignalKEvent.h"
 #include "OCPNPlatform.h"
+#include "routemanagerdialog.h"
+#include "RoutePoint.h"
+#include "chcanv.h"
 #include "pluginmanager.h"
 #include "Track.h"
 #include <multiplexer.h>
@@ -83,7 +86,8 @@ extern bool     g_bAllowShowScaled;
 extern bool     g_bShowScaled;
 extern bool     g_bInlandEcdis;
 extern int      g_iSoundDeviceIndex;
-extern bool     g_bWplIsAprsPosition;
+extern bool     g_bWplUsePosition;
+extern int      g_WplAction;
 extern double gLat;
 extern double gLon;
 extern double gCog;
@@ -95,6 +99,8 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern Route    *pAISMOBRoute;
 extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
+extern wxString g_default_wp_icon;
+extern RouteManagerDialog *pRouteManagerDialog;
 extern TrackList *pTrackList;
 extern OCPNPlatform     *g_Platform;
 extern PlugInManager    *g_pi_manager;
@@ -347,7 +353,7 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
             message.Mid( 3, 3 ).IsSameAs( _T("TLL") ) ||
             message.Mid( 3, 3 ).IsSameAs( _T("TTM") ) ||
             message.Mid( 3, 3 ).IsSameAs( _T("OSD") ) ||
-            ( g_bWplIsAprsPosition && message.Mid( 3, 3 ).IsSameAs( _T("WPL") ) ) )
+            ( g_bWplUsePosition && message.Mid( 3, 3 ).IsSameAs( _T("WPL") ) ) )
         {
                 nr = Decode( message );
                 if( nr == AIS_NoError ) {
@@ -1003,6 +1009,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         //7) Vessel Set, degrees True - Manually entered
         //8) Vessel drift (speed) - Manually entered
         //9) Speed Units K = km/h; N = Knots; S = statute miles/h
+
     } else if( str.Mid( 3, 3 ).IsSameAs( _T("WPL") ) ) {
     //** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
         wxString string( str );
@@ -1027,18 +1034,34 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         if( token.Mid( 0, 1 ).Contains( _T("W") ) == true || token.Mid( 0, 1 ).Contains( _T("w") ) == true )
             aprs_lon = 0. - aprs_lon;
         token = tkz.GetNextToken(); //5) Target name
-        int len = wxMin(token.Length(),20);
-        int i, hash = 0;
-        strncpy( aprs_name_str, token.mb_str(), len );
-        aprs_name_str[len] = 0;
-        hash = 0;
-        for( i = 0; i < len; i++ ) {
-            hash = hash * 10;
-            hash += (int) ( aprs_name_str[i] );
-            while( hash >= 100000 )
-                hash = hash / 100000;
+        int len = wxMin(token.Length(), 20);
+        strncpy( aprs_name_str, token.mb_str(), len + 1  );
+        if( 0 == g_WplAction ) {  // APRS position reports
+            int i, hash = 0;
+            aprs_name_str[len] = 0;
+            for (i = 0; i < len; i++) {
+                hash = hash * 10;
+                hash += (int)(aprs_name_str[i]);
+                while (hash >= 100000)
+                    hash = hash / 100000;
+            }
+            mmsi = aprs_mmsi = 199300000 + hash; // 199 is INMARSAT-A MID, should not occur ever in AIS stream + we make sure we are out of the hashes for GPSGate buddies and ARPA by being above 1993*
         }
-        mmsi = aprs_mmsi = 199300000 + hash; // 199 is INMARSAT-A MID, should not occur ever in AIS stream + we make sure we are out of the hashes for GPSGate buddies and ARPA by being above 1993*
+        else if( 1 == g_WplAction ) {  // Create mark
+            RoutePoint *pWP = new RoutePoint (aprs_lat, aprs_lon, g_default_wp_icon, 
+                                              aprs_name_str, wxEmptyString);
+            pWP->m_bIsolatedMark = true;       // This is an isolated mark
+            pSelect->AddSelectableRoutePoint (aprs_lat, aprs_lon, pWP);
+            pConfig->AddNewWayPoint (pWP, -1); // , -1 use auto next num
+            if (pRouteManagerDialog && pRouteManagerDialog->IsShown ())
+                pRouteManagerDialog->UpdateWptListCtrl ();
+            if (gFrame->GetPrimaryCanvas ()) {
+                gFrame->GetPrimaryCanvas ()->undo->BeforeUndoableAction (Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
+                gFrame->GetPrimaryCanvas ()->undo->AfterUndoableAction (NULL);
+                gFrame->RefreshAllCanvas (false);
+                gFrame->InvalidateAllGL ();
+            }
+        }
     } else if( str.Mid( 1, 5 ).IsSameAs( _T("FRPOS") ) ) {
         // parse a GpsGate Position message            $FRPOS,.....
 
