@@ -166,9 +166,11 @@ Serial::SerialImpl::reconfigurePort ()
 
   struct termios options; // The options for the file descriptor
 
+#ifndef __OCPN__ANDROID__
   if (tcgetattr(fd_, &options) == -1) {
     THROW (IOException, "::tcgetattr");
   }
+#endif  
 
   // set up raw mode / no echo / binary
   options.c_cflag |= (tcflag_t)  (CLOCAL | CREAD);

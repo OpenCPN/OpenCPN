@@ -1226,13 +1226,15 @@ bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString &msg)
 
 int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, int baud_rate)
 {
+    int com_fd = 0;
+
+#ifndef __OCPN__ANDROID__    
 
     // Declare the termios data structures
     termios ttyset_old;
     termios ttyset;
 
     // Open the serial port.
-    int com_fd;
     if ((com_fd = open(com_name.mb_str(), O_RDWR|O_NONBLOCK|O_NOCTTY)) < 0)
         return com_fd;
 
@@ -1325,6 +1327,7 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
         tcflush(com_fd, TCIOFLUSH);
     }
 
+#endif    
     return com_fd;
 }
 
