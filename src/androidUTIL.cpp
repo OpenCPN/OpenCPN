@@ -312,6 +312,7 @@ extern RoutePoint       *pAnchorWatchPoint2;
 extern bool             g_bAutoAnchorMark;
 extern wxAuiManager     *g_pauimgr;
 extern wxString         g_AisTargetList_perspective;
+extern wxLog            *g_logger;
 
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
@@ -411,15 +412,44 @@ class androidUtilHandler : public wxEvtHandler
 
 const char  wxMessageBoxCaptionStr [] = "Message";
 
+#define _GNU_SOURCE 1
+extern "C" const char* __gnu_basename(const char* path) {
+  const char* last_slash = strrchr(path, '/');
+  return (last_slash != nullptr) ? last_slash + 1 : path;
+}
+
+extern "C" char* __gnu_strerror_r(int error_number, char* buf, size_t buf_len) {
+ // ErrnoRestorer errno_restorer; // The glibc strerror_r doesn't set errno if it truncates...
+  //strerror_r(error_number, buf, buf_len);
+  strncpy(buf, strerror(errno), buf_len-1);  
+  return buf; // ...and just returns whatever fit.
+}
+
+extern "C" int __register_atfork(void (*prepare) (void), void (*parent) (void), void (*child) (void), void *dso_handle)
+{
+    return pthread_atfork(prepare,parent,child);
+}
+
+
 char *fgets_unlocked(char *s, int n, FILE *stream)
 {
-    return 0;
+    return fgets(s, n, stream);
 }
 
 size_t fwrite_unlocked(const void *ptr, size_t size, size_t n, FILE *stream)
 {
     return 0;
 }
+size_t fread_unlocked(void *ptr, size_t size, size_t n, FILE *stream)
+{
+    return 0;
+}
+
+int fputc_unlocked(int c, FILE *stream)
+{
+    return 0;
+}
+
 
 double wcstod_l(const wchar_t* s, wchar_t** end_ptr, locale_t) {
   return wcstod(s, end_ptr);
@@ -1289,7 +1319,8 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStart";
-        wxLogMessage(_T("onStart"));
+        if(g_logger)
+            wxLogMessage(_T("onStart"));
         
         if(g_bstress1) ShowNavWarning();
         
@@ -1319,7 +1350,8 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onResume(JNIEnv *env, jobject obj)
     {
         qDebug() << "onResume";
-        wxLogMessage(_T("onResume"));
+        if(g_logger)
+            wxLogMessage(_T("onResume"));
         
         int ret = 96;
         
@@ -4894,4 +4926,619 @@ extern "C"{
 }       
 
 
+#define REPLACE_NL_LANGINFO 0
 
+/* nl_langinfo() replacement: query locale dependent information.
+   Copyright (C) 2007-2012 Free Software Foundation, Inc.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3 of the License, or
+   (at your option) any later version.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+#include <config.h>
+/* Specification.  */
+#include <langinfo.h>
+#if REPLACE_NL_LANGINFO
+/* Override nl_langinfo with support for added nl_item values.  */
+# include <locale.h>
+# include <string.h>
+# undef nl_langinfo
+char *
+rpl_nl_langinfo (nl_item item)
+{
+  switch (item)
+    {
+# if GNULIB_defined_CODESET
+    case CODESET:
+      {
+        const char *locale;
+        static char buf[2 + 10 + 1];
+        locale = setlocale (LC_CTYPE, NULL);
+        if (locale != NULL && locale[0] != '\0')
+          {
+            /* If the locale name contains an encoding after the dot, return
+               it.  */
+            const char *dot = strchr (locale, '.');
+            if (dot != NULL)
+              {
+                const char *modifier;
+                dot++;
+                /* Look for the possible @... trailer and remove it, if any.  */
+                modifier = strchr (dot, '@');
+                if (modifier == NULL)
+                  return dot;
+                if (modifier - dot < sizeof (buf))
+                  {
+                    memcpy (buf, dot, modifier - dot);
+                    buf [modifier - dot] = '\0';
+                    return buf;
+                  }
+              }
+          }
+        return "";
+      }
+# endif
+# if GNULIB_defined_T_FMT_AMPM
+    case T_FMT_AMPM:
+      return "%I:%M:%S %p";
+# endif
+# if GNULIB_defined_ERA
+    case ERA:
+      /* The format is not standardized.  In glibc it is a sequence of strings
+         of the form "direction:offset:start_date:end_date:era_name:era_format"
+         with an empty string at the end.  */
+      return "";
+    case ERA_D_FMT:
+      /* The %Ex conversion in strftime behaves like %x if the locale does not
+         have an alternative time format.  */
+      item = D_FMT;
+      break;
+    case ERA_D_T_FMT:
+      /* The %Ec conversion in strftime behaves like %c if the locale does not
+         have an alternative time format.  */
+      item = D_T_FMT;
+      break;
+    case ERA_T_FMT:
+      /* The %EX conversion in strftime behaves like %X if the locale does not
+         have an alternative time format.  */
+      item = T_FMT;
+      break;
+    case ALT_DIGITS:
+      /* The format is not standardized.  In glibc it is a sequence of 10
+         strings, appended in memory.  */
+      return "\0\0\0\0\0\0\0\0\0\0";
+# endif
+# if GNULIB_defined_YESEXPR || !FUNC_NL_LANGINFO_YESEXPR_WORKS
+    case YESEXPR:
+      return "^[yY]";
+    case NOEXPR:
+      return "^[nN]";
+# endif
+    default:
+      break;
+    }
+  return nl_langinfo (item);
+}
+#else
+/* Provide nl_langinfo from scratch.  */
+# if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+/* Native Windows platforms.  */
+#  define WIN32_LEAN_AND_MEAN  /* avoid including junk */
+#  include <windows.h>
+#  include <stdio.h>
+# else
+/* An old Unix platform without locales, such as Linux libc5 or BeOS.  */
+# endif
+# include <locale.h>
+extern "C" 
+char *
+nl_langinfo (nl_item item)
+{
+  switch (item)
+    {
+    /* nl_langinfo items of the LC_CTYPE category */
+    case CODESET:
+# if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+      {
+        static char buf[2 + 10 + 1];
+        /* The Windows API has a function returning the locale's codepage as
+           a number.  */
+        sprintf (buf, "CP%u", GetACP ());
+        return buf;
+      }
+# elif defined __BEOS__
+      return "UTF-8";
+# else
+      return (char *)"ISO-8859-1";
+# endif
+    /* nl_langinfo items of the LC_NUMERIC category */
+    case RADIXCHAR:
+      return localeconv () ->decimal_point;
+    case THOUSEP:
+      return localeconv () ->thousands_sep;
+    /* nl_langinfo items of the LC_TIME category.
+       TODO: Really use the locale.  */
+    case D_T_FMT:
+    case ERA_D_T_FMT:
+      return (char *)"%a %b %e %H:%M:%S %Y";
+    case D_FMT:
+    case ERA_D_FMT:
+      return (char *)"%m/%d/%y";
+    case T_FMT:
+    case ERA_T_FMT:
+      return (char *)"%H:%M:%S";
+    case T_FMT_AMPM:
+      return (char *)"%I:%M:%S %p";
+    case AM_STR:
+      return (char *)"AM";
+    case PM_STR:
+      return (char *)"PM";
+    case DAY_1:
+      return (char *)"Sunday";
+    case DAY_2:
+      return (char *)"Monday";
+    case DAY_3:
+      return (char *)"Tuesday";
+    case DAY_4:
+      return (char *)"Wednesday";
+    case DAY_5:
+      return (char *)"Thursday";
+    case DAY_6:
+      return (char *)"Friday";
+    case DAY_7:
+      return (char *)"Saturday";
+    case ABDAY_1:
+      return (char *)"Sun";
+    case ABDAY_2:
+      return (char *)"Mon";
+    case ABDAY_3:
+      return (char *)"Tue";
+    case ABDAY_4:
+      return (char *)"Wed";
+    case ABDAY_5:
+      return (char *)"Thu";
+    case ABDAY_6:
+      return (char *)"Fri";
+    case ABDAY_7:
+      return (char *)"Sat";
+    case MON_1:
+      return (char *)"January";
+    case MON_2:
+      return (char *)"February";
+    case MON_3:
+      return (char *)"March";
+    case MON_4:
+      return (char *)"April";
+    case MON_5:
+      return (char *)"May";
+    case MON_6:
+      return (char *)"June";
+    case MON_7:
+      return (char *)"July";
+    case MON_8:
+      return (char *)"August";
+    case MON_9:
+      return (char *)"September";
+    case MON_10:
+      return (char *)"October";
+    case MON_11:
+      return (char *)"November";
+    case MON_12:
+      return (char *)"December";
+    case ABMON_1:
+      return (char *)"Jan";
+    case ABMON_2:
+      return (char *)"Feb";
+    case ABMON_3:
+      return (char *)"Mar";
+    case ABMON_4:
+      return (char *)"Apr";
+    case ABMON_5:
+      return (char *)"May";
+    case ABMON_6:
+      return (char *)"Jun";
+    case ABMON_7:
+      return (char *)"Jul";
+    case ABMON_8:
+      return (char *)"Aug";
+    case ABMON_9:
+      return (char *)"Sep";
+    case ABMON_10:
+      return (char *)"Oct";
+    case ABMON_11:
+      return (char *)"Nov";
+    case ABMON_12:
+      return (char *)"Dec";
+    case ERA:
+      return (char *)"";
+    case ALT_DIGITS:
+      return (char *)"\0\0\0\0\0\0\0\0\0\0";
+    /* nl_langinfo items of the LC_MONETARY category
+       TODO: Really use the locale. */
+    case CRNCYSTR:
+      return (char *)"-";
+    /* nl_langinfo items of the LC_MESSAGES category
+       TODO: Really use the locale. */
+    case YESEXPR:
+      return (char *)"^[yY]";
+    case NOEXPR:
+      return (char *)"^[nN]";
+    default:
+      return (char *)"";
+    }
+}
+#endif
+
+/* 
+ * Copyright (C) 2014, Galois, Inc.
+ * This sotware is distributed under a standard, three-clause BSD license.
+ * Please see the file LICENSE, distributed with this software, for specific
+ * terms and conditions.
+ */
+#include <stdlib.h>
+
+#define isdigit(c) (c >= '0' && c <= '9')
+
+double atof(const char *s)
+{
+  // This function stolen from either Rolf Neugebauer or Andrew Tolmach. 
+  // Probably Rolf.
+  double a = 0.0;
+  int e = 0;
+  int c;
+  while ((c = *s++) != '\0' && isdigit(c)) {
+    a = a*10.0 + (c - '0');
+  }
+  if (c == '.') {
+    while ((c = *s++) != '\0' && isdigit(c)) {
+      a = a*10.0 + (c - '0');
+      e = e-1;
+    }
+  }
+  if (c == 'e' || c == 'E') {
+    int sign = 1;
+    int i = 0;
+    c = *s++;
+    if (c == '+')
+      c = *s++;
+    else if (c == '-') {
+      c = *s++;
+      sign = -1;
+    }
+    while (isdigit(c)) {
+      i = i*10 + (c - '0');
+      c = *s++;
+    }
+    e += i*sign;
+  }
+  while (e > 0) {
+    a *= 10.0;
+    e--;
+  }
+  while (e < 0) {
+    a *= 0.1;
+    e++;
+  }
+  return a;
+}
+
+#if 0
+// The methods below are required to link correctly on Android devices running API 19/20
+//  This will, of course, require a separate APK build to support API 19/20 (Android Version 4.4, KitKat)
+//  OpenCPN is not supported for API < 19
+
+long long int wcstoll (const wchar_t* str, wchar_t** endptr, int base){
+    return 0;
+}
+
+unsigned long long wcstoull( const wchar_t* str, wchar_t** str_end, int base ){
+    return 0;
+}
+
+unsigned long wcstoul( const wchar_t* str, wchar_t** str_end, int base ){
+    return 0;
+}
+
+long wcstol( const wchar_t* str, wchar_t** str_end, int base ){
+    return 0;
+}
+
+/*-
+ * Copyright (c) 2002 Tim J. Robbins
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+#include <sys/cdefs.h>
+//__FBSDID("$FreeBSD$");
+
+#include <stdlib.h>
+#include <wchar.h>
+#include <wctype.h>
+
+/*
+ * Convert a string to a double-precision number.
+ *
+ * This is the wide-character counterpart of strtod(). So that we do not
+ * have to duplicate the code of strtod() here, we convert the supplied
+ * wide character string to multibyte and call strtod() on the result.
+ * This assumes that the multibyte encoding is compatible with ASCII
+ * for at least the digits, radix character and letters.
+ */
+double
+wcstod(const wchar_t * __restrict nptr, wchar_t ** __restrict endptr)
+{
+        static /*const*/ mbstate_t initial;
+        mbstate_t mbs;
+        double val;
+        char *buf, *end;
+        const wchar_t *wcp;
+        size_t len;
+
+        while (iswspace(*nptr))
+                nptr++;
+
+        /*
+         * Convert the supplied numeric wide char. string to multibyte.
+         *
+         * We could attempt to find the end of the numeric portion of the
+         * wide char. string to avoid converting unneeded characters but
+         * choose not to bother; optimising the uncommon case where
+         * the input string contains a lot of text after the number
+         * duplicates a lot of strtod()'s functionality and slows down the
+         * most common cases.
+         */
+        wcp = nptr;
+        mbs = initial;
+        if ((len = wcsrtombs(NULL, &wcp, 0, &mbs)) == (size_t)-1) {
+                if (endptr != NULL)
+                        *endptr = (wchar_t *)nptr;
+                return (0.0);
+        }
+        if ((buf = (char *)malloc(len + 1)) == NULL)
+                return (0.0);
+        mbs = initial;
+        wcsrtombs(buf, &wcp, len + 1, &mbs);
+
+        /* Let strtod() do most of the work for us. */
+        val = strtod(buf, &end);
+
+        /*
+         * We only know where the number ended in the _multibyte_
+         * representation of the string. If the caller wants to know
+         * where it ended, count multibyte characters to find the
+         * corresponding position in the wide char string.
+         */
+        if (endptr != NULL)
+                /* XXX Assume each wide char is one byte. */
+                *endptr = (wchar_t *)nptr + (end - buf);
+
+        free(buf);
+
+        return (val);
+}
+
+int vswscanf (const wchar_t* ws, const wchar_t* format, va_list arg){
+    return 1;
+}
+
+extern "C" int rand() {
+  return 0; //random();
+}
+extern "C" void srand(unsigned int seed) {
+  return; // srandom(seed);
+}
+
+
+
+// extern "C" struct lconv* localeconv (void)
+// {
+//     
+//     return 0;
+// }
+
+/* Copyright (C) 1991-2019 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+#include <locale.h>
+//#include "localeinfo.h"
+/* Return monetary and numeric information about the current locale.  */
+extern "C"
+struct lconv *
+localeconv (void)
+{
+  static struct lconv result;
+  result.decimal_point = (char *) "."; //_NL_CURRENT (LC_NUMERIC, DECIMAL_POINT);
+#if 0
+  result.thousands_sep = (char *) _NL_CURRENT (LC_NUMERIC, THOUSANDS_SEP);
+  result.grouping = (char *) _NL_CURRENT (LC_NUMERIC, GROUPING);
+  if (*result.grouping == '\177' || *result.grouping == '\377')
+    result.grouping = (char *) "";
+  result.int_curr_symbol = (char *) _NL_CURRENT (LC_MONETARY, INT_CURR_SYMBOL);
+  result.currency_symbol = (char *) _NL_CURRENT (LC_MONETARY, CURRENCY_SYMBOL);
+  result.mon_decimal_point = (char *) _NL_CURRENT (LC_MONETARY,
+                                                   MON_DECIMAL_POINT);
+  result.mon_thousands_sep = (char *) _NL_CURRENT (LC_MONETARY,
+                                                   MON_THOUSANDS_SEP);
+  result.mon_grouping = (char *) _NL_CURRENT (LC_MONETARY, MON_GROUPING);
+  if (*result.mon_grouping == '\177' || *result.mon_grouping == '\377')
+    result.mon_grouping = (char *) "";
+  result.positive_sign = (char *) _NL_CURRENT (LC_MONETARY, POSITIVE_SIGN);
+  result.negative_sign = (char *) _NL_CURRENT (LC_MONETARY, NEGATIVE_SIGN);
+#define INT_ELEM(member, element) \
+  result.member = *(char *) _NL_CURRENT (LC_MONETARY, element);                      \
+  if (result.member == '\377') result.member = CHAR_MAX
+  INT_ELEM (int_frac_digits, INT_FRAC_DIGITS);
+  INT_ELEM (frac_digits, FRAC_DIGITS);
+  INT_ELEM (p_cs_precedes, P_CS_PRECEDES);
+  INT_ELEM (p_sep_by_space, P_SEP_BY_SPACE);
+  INT_ELEM (n_cs_precedes, N_CS_PRECEDES);
+  INT_ELEM (n_sep_by_space, N_SEP_BY_SPACE);
+  INT_ELEM (p_sign_posn, P_SIGN_POSN);
+  INT_ELEM (n_sign_posn, N_SIGN_POSN);
+  INT_ELEM (int_p_cs_precedes, INT_P_CS_PRECEDES);
+  INT_ELEM (int_p_sep_by_space, INT_P_SEP_BY_SPACE);
+  INT_ELEM (int_n_cs_precedes, INT_N_CS_PRECEDES);
+  INT_ELEM (int_n_sep_by_space, INT_N_SEP_BY_SPACE);
+  INT_ELEM (int_p_sign_posn, INT_P_SIGN_POSN);
+  INT_ELEM (int_n_sign_posn, INT_N_SIGN_POSN);
+#endif  
+  return &result;
+}
+
+locale_t newlocale(int category_mask, const char *locale, locale_t base){
+    return (locale_t)0;
+}
+
+void freelocale(locale_t locobj){
+    return;
+}
+
+char *setlocale(int category, const char *locale){
+    return (char *)"";
+}
+
+
+#undef _FORTIFY_SOURCE
+#include <sys/select.h>
+
+extern "C" int __FD_ISSET_chk(int fd, const fd_set* set, size_t s) {
+  return FD_ISSET(fd, set);
+}
+
+extern "C" void __FD_SET_chk(int fd, fd_set* set, size_t s) {
+  FD_SET(fd, set);
+}
+
+extern "C" void __FD_CLR_chk(int fd, fd_set* set, size_t s) {
+  FD_CLR(fd, set);
+}
+
+int sigismember(const sigset_t *set, int signum) {
+  /* Signal numbers start at 1, but bit positions start at 0. */
+  int bit = signum - 1;
+  const unsigned long *local_set = (const unsigned long *)set;
+  if (set == NULL || bit < 0 || bit >= (int)(8 * sizeof(sigset_t))) {
+    errno = EINVAL;
+    return -1;
+  }
+  return (int)((local_set[bit / LONG_BIT] >> (bit % LONG_BIT)) & 1);
+}
+
+int sigaddset(sigset_t *set, int signum) {
+  /* Signal numbers start at 1, but bit positions start at 0. */
+  int bit = signum - 1;
+  unsigned long *local_set = (unsigned long *)set;
+  if (set == NULL || bit < 0 || bit >= (int)(8 * sizeof(sigset_t))) {
+    errno = EINVAL;
+    return -1;
+  }
+  local_set[bit / LONG_BIT] |= 1UL << (bit % LONG_BIT);
+  return 0;
+}
+
+int sigdelset(sigset_t *set, int signum) {
+  /* Signal numbers start at 1, but bit positions start at 0. */
+  int bit = signum - 1;
+  unsigned long *local_set = (unsigned long *)set;
+  if (set == NULL || bit < 0 || bit >= (int)(8 * sizeof(sigset_t))) {
+    errno = EINVAL;
+    return -1;
+  }
+  local_set[bit / LONG_BIT] &= ~(1UL << (bit % LONG_BIT));
+  return 0;
+}
+
+int sigemptyset(sigset_t *set) {
+  if (set == NULL) {
+    errno = EINVAL;
+    return -1;
+  }
+  memset(set, 0, sizeof(sigset_t));
+  return 0;
+}
+
+extern "C" int
+pthread_mutex_timedlock (pthread_mutex_t *mutex,  const struct timespec *timeout)
+{
+ struct timeval timenow;
+ struct timespec sleepytime;
+ int retcode;
+ 
+ /* This is just to avoid a completely busy wait */
+ sleepytime.tv_sec = 0;
+ sleepytime.tv_nsec = 10000000; /* 10ms */
+ 
+ while ((retcode = pthread_mutex_trylock (mutex)) == EBUSY) {
+  gettimeofday (&timenow, NULL);
+  
+  if (timenow.tv_sec >= timeout->tv_sec &&
+      (timenow.tv_usec * 1000) >= timeout->tv_nsec) {
+   return ETIMEDOUT;
+  }
+  
+  nanosleep (&sleepytime, NULL);
+ }
+ 
+ return retcode;
+}
+
+FILE *stderr = (FILE *)2;
+FILE *stdout = (FILE *)1;
+
+#define MAP_FAILED      ((void *)-1)
+
+extern "C" void* mmap64(void* __addr, size_t __size, int __prot, int __flags, int __fd,  off64_t __offset) {
+  const int __mmap2_shift = 12; // 2**12 == 4096
+  if (__offset < 0 || (__offset & ((1UL << __mmap2_shift) - 1)) != 0) {
+    errno = EINVAL;
+    return MAP_FAILED;
+  }
+
+  // prevent allocations large enough for `end - start` to overflow
+  size_t __rounded = __BIONIC_ALIGN(__size, PAGE_SIZE);
+  if (__rounded < __size || __rounded > PTRDIFF_MAX) {
+    errno = ENOMEM;
+    return MAP_FAILED;
+  }
+
+  extern void* __mmap2(void* __addr, size_t __size, int __prot, int __flags, int __fd, size_t __offset);
+  return __mmap2(__addr, __size, __prot, __flags, __fd, __offset >> __mmap2_shift);
+}
+
+#endif
