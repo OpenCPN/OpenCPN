@@ -433,9 +433,9 @@ if (NOT WIN32 AND NOT APPLE)
       "-Wno-deprecated-declarations"
     )
   endif ()
-  #if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  if (CMAKE_BUILD_TYPE MATCHES "Debug")
     add_compile_options("-O0")
-  #endif ()
+  endif ()
 
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof ADD_COMPILE_OPTIONS( -pg ) SET(CMAKE_EXE_LINKER_FLAGS
@@ -528,7 +528,7 @@ if (QT_ANDROID)
         "-Wno-overloaded-virtual"
         "-Wno-unused-command-line-argument"
         "-Wno-unknown-pragmas"
-        "-O0"
+        "-O3"
         "-Wno-#warnings"
         "-fPIC"
   )
@@ -2476,7 +2476,7 @@ if (MINGW)
 endif ()
 
 if (NOT SKIP_PLUGINS)
-  #add_subdirectory(plugins)
+  add_subdirectory(plugins)
 endif ()
 
 
