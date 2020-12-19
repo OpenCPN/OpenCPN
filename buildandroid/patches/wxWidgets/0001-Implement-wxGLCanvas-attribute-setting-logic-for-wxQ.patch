@@ -1,7 +1,7 @@
 From 33db62ef3f4052a24d71c083ef197a641eaee5ed Mon Sep 17 00:00:00 2001
 From: dsr <bdbcat@yahoo.com>
 Date: Fri, 4 Dec 2020 22:46:56 -0500
-Subject: [PATCH] Implement wxGLCanvas attribute setting logic for wxQt
+Subject: [PATCH 1/6] Implement wxGLCanvas attribute setting logic for wxQt
 
 ---
  src/qt/glcanvas.cpp | 14 +++++++++++++-

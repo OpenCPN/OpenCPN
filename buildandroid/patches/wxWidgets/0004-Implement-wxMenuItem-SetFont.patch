@@ -1,7 +1,7 @@
 From f4332f6bdb431bddff0e8be990ce06b2064b2f80 Mon Sep 17 00:00:00 2001
 From: dsr <bdbcat@yahoo.com>
 Date: Sun, 6 Dec 2020 21:57:37 -0500
-Subject: [PATCH] Implement wxMenuItem::SetFont()
+Subject: [PATCH 4/6] Implement wxMenuItem::SetFont()
 
 ---
  include/wx/qt/menuitem.h | 2 ++

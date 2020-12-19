@@ -1,7 +1,7 @@
 From 5a12554855fd35743531a0e40be08fdff77df6c5 Mon Sep 17 00:00:00 2001
 From: dsr <bdbcat@yahoo.com>
 Date: Wed, 16 Dec 2020 11:24:48 -0500
-Subject: [PATCH] Enable wxGestureEvent support for Qt
+Subject: [PATCH 6/6] Enable wxGestureEvent support for Qt
 
 ---
  include/wx/qt/glcanvas.h         |  23 +++++++

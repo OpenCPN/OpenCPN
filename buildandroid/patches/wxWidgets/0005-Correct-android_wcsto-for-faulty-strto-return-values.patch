@@ -1,7 +1,7 @@
 From 5a9154baa9ff839c663763133016031d3a7b0d7b Mon Sep 17 00:00:00 2001
 From: dsr <bdbcat@yahoo.com>
 Date: Sun, 6 Dec 2020 22:02:36 -0500
-Subject: [PATCH] Correct android_wcsto* for faulty strto* return values.
+Subject: [PATCH 5/6] Correct android_wcsto* for faulty strto* return values.
 
 ---
  src/common/wxcrt.cpp | 16 ++++++++--------

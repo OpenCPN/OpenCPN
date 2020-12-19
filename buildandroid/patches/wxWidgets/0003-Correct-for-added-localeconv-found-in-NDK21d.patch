@@ -1,7 +1,7 @@
 From c80f8548e349d19cdfb2f556826df6dfed46f39f Mon Sep 17 00:00:00 2001
 From: dsr <bdbcat@yahoo.com>
 Date: Sun, 6 Dec 2020 21:56:57 -0500
-Subject: [PATCH] Correct for added localeconv() found in NDK21d
+Subject: [PATCH 3/6] Correct for added localeconv() found in NDK21d
 
 ---
  src/common/intl.cpp | 5 +++--

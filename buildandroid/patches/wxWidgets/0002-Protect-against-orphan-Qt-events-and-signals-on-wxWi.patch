@@ -1,8 +1,8 @@
 From 2de742bccab1afd39a871ac43629a03c25eab729 Mon Sep 17 00:00:00 2001
 From: dsr <bdbcat@yahoo.com>
 Date: Sun, 6 Dec 2020 21:55:18 -0500
-Subject: [PATCH] Protect against orphan Qt events and signals on wxWindow and
- wxGLCanvas DTOR.
+Subject: [PATCH 2/6] Protect against orphan Qt events and signals on wxWindow
+ and wxGLCanvas DTOR.
 
 ---
  include/wx/qt/glcanvas.h | 2 ++
