@@ -879,8 +879,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     SetMinSize(wxSize(200,200));
     
 #ifdef __OCPN__ANDROID__
-    EnableTouchEvents( wxTOUCH_PRESS_GESTURES );
-    Connect(wxEVT_LONG_PRESS, (wxObjectEventFunction)(wxEventFunction)&ChartCanvas::onLongPress);
+//    EnableTouchEvents( wxTOUCH_PRESS_GESTURES );
+//    Connect(wxEVT_LONG_PRESS, (wxObjectEventFunction)(wxEventFunction)&ChartCanvas::onLongPress);
 #endif
     
 }
