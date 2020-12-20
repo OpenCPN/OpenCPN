@@ -1610,21 +1610,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
         vpLon = m_vLon;
         
     }
-    
-    // Calculate change in VP, in pixels, using a simple SM projection
-    // if change in pixels is smaller than 2% of screen size, do not change the VP
-    // This will avoid "jitters" at large scale.
-    if(GetVP().view_scale_ppm > 1.0){ 
-        double easting, northing;
-        toSM( GetVP().clat, GetVP().clon, vpLat, vpLon,  &easting, &northing );
-        if( (fabs(easting * GetVP().view_scale_ppm) < (GetVP().pix_width * 2 / 100)) ||
-            (fabs(northing * GetVP().view_scale_ppm) < (GetVP().pix_height * 2 / 100)) ){
-            vpLat = GetVP().clat;
-            vpLon = GetVP().clon;
-        }
-    }
-    
-    
+        
     if( GetQuiltMode() ) {
         int current_db_index = -1;
         if( m_pCurrentStack )
