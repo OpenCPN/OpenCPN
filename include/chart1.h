@@ -58,6 +58,18 @@ wxFont GetOCPNGUIScaledFont( wxString item );
 
 wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
+enum DialogColor
+{
+    DLG_BACKGROUND,
+    DLG_SELECTED_BACKGROUND,
+    DLG_UNSELECTED_BACKGROUND,
+    DLG_ACCENT,
+    DLG_SELECTED_ACCENT,
+    DLG_UNSELECTED_ACCENT,
+    DLG_TEXT,
+    DLG_HIGHLIGHT
+};
+wxColour GetDialogColor(DialogColor color);
 
 int GetApplicationMemoryUse(void);
 
