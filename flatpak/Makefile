@@ -27,6 +27,7 @@ install: .phony
 	rm -rf $(DESTDIR); mkdir $(DESTDIR)
 	cp ../flatpak/repo/*flat* ../flatpak/repo/index.html $(DESTDIR)
 	cp -ar repo $(DESTDIR)
+	rm -f $(DESTDIR)/repo/.lock
 
 sign:   .phony
 	@test -d $(GPG_HOMEDIR) || { \
