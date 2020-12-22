@@ -64,9 +64,19 @@ ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
 tar -xf id_opencpn.tar
 chmod 600 .ssh/id_opencpn
 
+# Old, published channel
 rsync -a --info=stats --delete-after \
     --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
     website/ opencpn@mumin.crabdance.com:/var/www/ocpn-flatpak/website
+
+# Seed the two masters in the opencpn cloud with new build
+rsync -a  --info=stats --rsh="ssh" website/ \
+    --delete-after \
+    rsync@mumin.crabdance.com:/home/rsync/flatpak/website
+rsync -a  --info=stats --rsh="ssh -p 2222" website/ \
+    --delete-after \
+    rsync@gafsan.crabdance.com:/home/rsync/flatpak/website
+
 rm -f .ssh/id_opencpn*
 
 # Restore the patched file so the caching works.

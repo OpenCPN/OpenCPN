@@ -60,4 +60,12 @@ publish:
 	    --delete-after \
 	    $(RSYNC_HOST):/var/www/ocpn-flatpak/website
 
+cloud-publish:
+	rsync -a  --info=stats --rsh="ssh" website/ \
+	    --delete-after \
+	    rsync@mumin.crabdance.com:/home/rsync/flatpak/website
+	rsync -a  --info=stats --rsh="ssh -p 2222" website/ \
+	    --delete-after \
+	    rsync@gafsan.crabdance.com:/home/rsync/flatpak/website
+
 .phony:
