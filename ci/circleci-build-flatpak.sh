@@ -58,7 +58,7 @@ flatpak remote-add  \
 flatpak update --appstream local
 flatpak remote-ls local
 
-# Deploy website/ to deployment server.
+# Deploy website/ to deployment servers.
 cp ../ci/id_opencpn.tar.cpt .
 ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
 tar -xf id_opencpn.tar
@@ -70,12 +70,12 @@ rsync -a --info=stats --delete-after \
     website/ opencpn@mumin.crabdance.com:/var/www/ocpn-flatpak/website
 
 # Seed the two masters in the opencpn cloud with new build
-rsync -a  --info=stats --rsh="ssh" website/ \
-    --delete-after \
-    rsync@mumin.crabdance.com:/home/rsync/flatpak/website
-rsync -a  --info=stats --rsh="ssh -p 2222" website/ \
-    --delete-after \
-    rsync@gafsan.crabdance.com:/home/rsync/flatpak/website
+rsync -a --info=stats --delete-after \
+    --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
+    website/ rsync@mumin.crabdance.com:/home/rsync/flatpak/website
+rsync -a --info=stats --delete-after \
+    --rsh="ssh -p 2222 -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
+    website/ rsync@gafsan.crabdance.com:/home/rsync/flatpak/website
 
 rm -f .ssh/id_opencpn*
 
@@ -83,7 +83,7 @@ rm -f .ssh/id_opencpn*
 git checkout ../flatpak/org.opencpn.OpenCPN.yaml
 
 # Debug: show version in remote repo.
-flatpak remote-add --user opencpn $PWD/website/opencpn.flatpakrepo
+flatpak remote-add --user --no-gpg-verify opencpn $PWD/website/repo
 flatpak update --appstream opencpn
 flatpak remote-ls opencpn
 
