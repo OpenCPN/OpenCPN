@@ -6,7 +6,6 @@
 #   cd build; make -f ../flatpak/Makefile ...
 #
 
-BRANCH          ?= master
 GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
@@ -18,6 +17,7 @@ all: build sign
 
 build:
 	flatpak-builder --repo=$(CURDIR)/repo --force-clean \
+	    --default-branch=devel \
 	    app ../flatpak/org.opencpn.OpenCPN.yaml
 	-flatpak uninstall --user -y org.opencpn.OpenCPN.Locale
 	flatpak install -y --user --reinstall \
