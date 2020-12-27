@@ -81,8 +81,8 @@ jobs:
      environment:
        - OCPN_TARGET:  flatpak
      steps:
+       - run: cd ~; git clone "$CIRCLE_REPOSITORY_URL" -b "$CIRCLE_BRANCH"
        - run: ci/docker-auth.sh
-       - run: cd ~; git clone https://github.com/OpenCPN/OpenCPN.git
        - restore_cache:
            keys:
               - fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
