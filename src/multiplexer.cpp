@@ -74,6 +74,7 @@ Multiplexer::~Multiplexer()
     Disconnect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
     ClearStreams();
     delete m_pdatastreams;
+    if (g_pNmeaSync) delete g_pNmeaSync;
 }
 
 void Multiplexer::AddStream(DataStream *stream)

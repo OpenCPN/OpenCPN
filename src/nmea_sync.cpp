@@ -94,9 +94,8 @@ void SendGpxMessage::SendMessage( std::string Message8b)
 {
     char* buffer;
     size_t buf_size; 
-    
-    srand((int) time(0));
-    int MessId = rand() % 4096;
+ 
+    int MessId = GetRandomNumber(0, 4095);
     if ( !g_pNmeaSync )
         g_pNmeaSync = new RxMessages(NULL);
     //check if number is in use already
@@ -212,6 +211,20 @@ void SendGpxMessage::AddComputeChecksum( std::string &str  )
     wxString cs = wxString::Format(_("*%02X"), checksum_value);
     str.append(cs.mb_str() );
 }
+int SendGpxMessage::GetRandomNumber(int range_min, int range_max)
+{
+    long u = (long)wxRound(((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) + range_min);
+    return (int)u;
+}
+
+void SendGpxMessage::SeedRandom()
+{
+    /* Fill with random. Miliseconds hopefully good enough for our usage, reading /dev/random would be much better on linux and system guid function on Windows as well */
+    wxDateTime x = wxDateTime::UNow();
+    long seed = x.GetMillisecond();
+    seed *= x.GetTicks();
+    srand(seed);
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -228,7 +241,12 @@ RxMessages::RxMessages(wxFrame *parent)
     MyTimer.Connect( wxEVT_TIMER, wxTimerEventHandler(RxMessages::OnTimer), NULL, this);
 }
 RxMessages::~RxMessages()
-{}
+{
+    for(std::map<int, RxMessage*>::iterator ci=RxMessMap.begin(); ci!=RxMessMap.end(); ++ci)
+        delete ci->second;
+    RxMessMap.clear();
+    
+}
 void RxMessages::MessageReceived(std::string message, RxMessage* RxM)
 {
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
@@ -372,11 +390,6 @@ int RxMessages::DecodeInt(const std::string str)
     ret = xx;
     return ret;
 } 
-
-bool RxMessages::IsOwnMessage( wxString message)
-{
-    
-}
 
 void RxMessages::OnTimer(wxTimerEvent & event)
 {

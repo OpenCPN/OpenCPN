@@ -59,6 +59,8 @@ protected:
     std::string EncodeStr(std::string byte8str, bool ZipIt=false);
     std::string EncodeInt(const int x);
     void AddComputeChecksum( std::string &str ) ;
+    static void SeedRandom();
+    static int GetRandomNumber(int min, int max);
     NavObjectCollection1 pgpx;
 };
 
@@ -72,7 +74,6 @@ public:
     int DecodeInt(const std::string str);
     std::string DecodeStr(std::string byte6str,bool IsZipped=false);
     void SaveSentece( int ID, int LineNr, std::string str);
-    bool IsOwnMessage( wxString message);
     std::map<int, RxMessage*> RxMessMap;
 private:
     unsigned char ais2ascii (unsigned char a){ return (a > 96) ? a - 57: a - 48;}
