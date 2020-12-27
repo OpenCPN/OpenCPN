@@ -1018,7 +1018,7 @@ void RouteManagerDialog::UpdateRteButtons()
     btnRteReverse->Enable( enable1 );
     btnRteExport->Enable( enablemultiple );
     btnRteSendToGPS->Enable( enable1 );
-    btnRteSendToOCPN->Enable();
+    btnRteSendToOCPN->Enable(enablemultiple);
     btnRteDeleteAll->Enable( enablemultiple );
 
     // set activate button text
@@ -2155,7 +2155,7 @@ void RouteManagerDialog::UpdateWptButtons()
     btnWptDelete->Enable( b_delete_enable && enablemultiple );
     btnWptGoTo->Enable( enable1 );
     btnWptExport->Enable( enablemultiple );
-    btnWptSendToGPS->Enable( enable1 );
+    btnWptSendToGPS->Enable( enablemultiple );
     btnWptSendToOpenCPN->Enable( enable1 );
 }
 

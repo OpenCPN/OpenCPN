@@ -44,10 +44,12 @@
 #include <OCPN_DataStreamEvent.h>
 #include <multiplexer.h>
 #include <iostream>
+#include <routemanagerdialog.h>
 
-extern Multiplexer      *g_pMUX;
-RxMessages        *g_pNmeaSync;
-//RxMessages      *g_pNmeaSync;
+extern Multiplexer        *g_pMUX;
+extern RouteManagerDialog *pRouteManagerDialog;
+RxMessages                *g_pNmeaSync;
+
 
 /* Routes, waypoints and tracks are send as nmea sentences. In princip we do take a gpx file as string, remove the header part (we add it again after receiving, but no need to send static data). The gpx string is transferred to base64 alla ais and spread over as much sentences as needed.
 There are two kinds of nmea sentences used:
@@ -278,7 +280,8 @@ void RxMessages::MessageReceived(std::string message, RxMessage* RxM)
             pgpx->LoadAllGPXObjects( !pgpx->IsOpenCPN(), wpt_dups );
             if(wpt_dups > 0) {
                 OCPNMessageBox(parentt, wxString::Format(_T("%d ")+_("duplicate waypoints detected during import and ignored."), wpt_dups), _("OpenCPN Info"), wxICON_INFORMATION|wxOK, 10);
-            }            
+            } 
+            if ( pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateLists();
             break;}         
         default:
             break;
