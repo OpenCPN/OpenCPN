@@ -258,6 +258,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
     wxString message = event.ProcessNMEA4Tags();
     DataStream *stream = event.GetStream();
     wxString port(_T("Virtual:"));
+    bool DoNotResend = false;
     if( stream )
         port = wxString(stream->GetPort());
 
@@ -288,7 +289,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 // prevent resending a message form another instance of O
                 // end don't get a nmea loop.
                 if ( !port.IsSameAs(_T("Virtual:") ) )
-                    return;
+                    DoNotResend=true;
             }
             else
             {
@@ -318,8 +319,8 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             }
             LogInputMessage( fmsg, port, !bpass, b_error );
         }
-
-        if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
+        //if ( DoNotResend ) return;
+        if (((g_b_legacy_input_filter_behaviour && !bpass) || bpass) && !DoNotResend ) {
 
             //Send to plugins
             if ( g_pi_manager ){

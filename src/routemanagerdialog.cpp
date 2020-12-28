@@ -2156,7 +2156,7 @@ void RouteManagerDialog::UpdateWptButtons()
     btnWptGoTo->Enable( enable1 );
     btnWptExport->Enable( enablemultiple );
     btnWptSendToGPS->Enable( enablemultiple );
-    btnWptSendToOpenCPN->Enable( enable1 );
+    btnWptSendToOpenCPN->Enable( enablemultiple );
 }
 
 void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )

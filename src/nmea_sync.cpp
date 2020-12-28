@@ -261,12 +261,13 @@ void RxMessages::MessageReceived(std::string message, RxMessage* RxM)
             pgpx->m_gpx_root.append_copy(*it);
         }
  
-    RxAcceptDlg* RxADlg = new RxAcceptDlg(NULL);
+    RxAcceptDlg* RxADlg = new RxAcceptDlg(parentt, wxID_ANY, _T("Message Received"), wxDefaultPosition, wxDefaultSize, wxSTAY_ON_TOP );
     
     RxADlg->m_SenderText->SetLabel( RxADlg->m_SenderText->GetLabel().Append(
         RxM->SenderUserName ) );
     RxADlg->m_SenderComputerText->SetLabel( RxADlg->m_SenderComputerText->GetLabel().Append(
-        RxM->SenderComputerName ) );    
+        RxM->SenderComputerName ) ); 
+    RxADlg->CenterOnParent();
 
     switch( RxADlg->ShowModal() ){
         case wxID_SAVE:
@@ -280,13 +281,15 @@ void RxMessages::MessageReceived(std::string message, RxMessage* RxM)
             pgpx->LoadAllGPXObjects( !pgpx->IsOpenCPN(), wpt_dups );
             if(wpt_dups > 0) {
                 OCPNMessageBox(parentt, wxString::Format(_T("%d ")+_("duplicate waypoints detected during import and ignored."), wpt_dups), _("OpenCPN Info"), wxICON_INFORMATION|wxOK, 10);
-            } 
-            if ( pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateLists();
+            }
+            if ( pRouteManagerDialog )
+                if ( pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateLists();
             break;}         
         default:
             break;
-        break;    
-    }    
+        break;
+    }
+    delete RxADlg;
 }
 //----------------------------------------------------------------------------------
 //     Handle events from Nmea SYNC DataStream
