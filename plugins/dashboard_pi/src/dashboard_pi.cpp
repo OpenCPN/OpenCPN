@@ -880,7 +880,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mSatsInView = m_NMEA0183.Gsv.SatsInView;
                     SendSentenceToAllInstruments (OCPN_DBP_STC_SAT, m_NMEA0183.Gsv.SatsInView, _T (""));
                 }
-                SendSatInfoToAllInstruments (mSatsInView,       //m_NMEA0183.Gsv.SatsInView,
+                SendSatInfoToAllInstruments (mSatsInView, 
                                              m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.Gsv.SatInfo);
                 mGPS_Watchdog = gps_watchdog_timeout_ticks;
             }
