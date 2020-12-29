@@ -857,12 +857,14 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") ) {
             if( m_NMEA0183.Parse() ) {
-                mSatsInView = m_NMEA0183.Gsv.SatsInView;
                 // m_NMEA0183.Gsv.NumberOfMessages;
-                SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, m_NMEA0183.Gsv.SatsInView, _T("") );
-                SendSatInfoToAllInstruments( m_NMEA0183.Gsv.SatsInView,
-                        m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.Gsv.SatInfo );
-
+                if (m_NMEA0183.Gsv.MessageNumber == 1) { 
+                    //Some GNSS print SatsInView in message #1 only
+                    mSatsInView = m_NMEA0183.Gsv.SatsInView;
+                    SendSentenceToAllInstruments (OCPN_DBP_STC_SAT, m_NMEA0183.Gsv.SatsInView, _T (""));
+                }
+                SendSatInfoToAllInstruments (mSatsInView,       //m_NMEA0183.Gsv.SatsInView,
+                                             m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.Gsv.SatInfo);
                 mGPS_Watchdog = gps_watchdog_timeout_ticks;
             }
         }

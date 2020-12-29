@@ -9175,7 +9175,10 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case GSV:
-                setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
+                if (m_NMEA0183.Gsv.MessageNumber == 1) {
+                    // Some GNSS print SatsInView in message #1 only
+                    setSatelitesInView (m_NMEA0183.Gsv.SatsInView);
+                }
                 break;
 
             case GGA:
