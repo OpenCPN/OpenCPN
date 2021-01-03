@@ -121,7 +121,7 @@ class CatalogChoice: public wxChoice
             : wxChoice(), m_custom_ctrl(custom_ctrl)
         {
             static const std::vector<std::string>
-                labels({"master", "beta", "alpha", "custom"});
+                labels({"master", "Beta", "Alpha", "custom"});
             wxArrayString wxLabels;
             for (const auto& l: labels) wxLabels.Add(l);
             Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLabels);

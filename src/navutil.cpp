@@ -231,7 +231,8 @@ extern bool             g_bDrawAISRealtime;
 extern double           g_AIS_RealtPred_Kts;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
-extern bool             g_bWplIsAprsPosition;
+extern bool             g_bWplUsePosition;
+extern int              g_WplAction;
 extern bool             g_benableAISNameCache;
 extern bool             g_bUseOnlyConfirmedAISName;
 extern int              g_ScaledNumWeightSOG;
@@ -630,7 +631,8 @@ int MyConfig::LoadMyConfig()
     g_ScaledNumWeightSizeOfT = 25;
     g_ScaledSizeMinimal = 50;
     g_Show_Target_Name_Scale = 250000;
-    g_bWplIsAprsPosition = 1;
+    g_bWplUsePosition = 0;
+    g_WplAction = 0;
     g_ais_cog_predictor_width = 3;
     g_ais_alert_dialog_sx = 200;
     g_ais_alert_dialog_sy = 200;
@@ -1129,7 +1131,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "AISRealtimeMinSpeedKnots" ), &g_AIS_RealtPred_Kts, 0.7 );
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     Read( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
-    Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition );
+    Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplUsePosition );
+    Read( _T ( "WplSelAction"), &g_WplAction);
     Read( _T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
@@ -2568,7 +2571,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AISRealtimeMinSpeedKnots" ), g_AIS_RealtPred_Kts );
     Write( _T ( "bShowAISName" ), g_bShowAISName );
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
-    Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
+    Write( _T ( "bWplIsAprsPositionReport" ), g_bWplUsePosition );
+    Write( _T ( "WplSelAction" ), g_WplAction );
     Write( _T ( "AISCOGPredictorWidth" ), g_ais_cog_predictor_width );
     Write( _T ( "bShowScaledTargets" ), g_bAllowShowScaled );
     Write( _T ( "AISScaledNumber" ), g_ShowScaled_Num );    

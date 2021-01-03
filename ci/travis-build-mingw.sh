@@ -16,16 +16,16 @@ echo "DOCKER_OPTS=\"-H tcp://127.0.0.1:2375 -H $DOCKER_SOCK -s devicemapper\"" \
     | sudo tee /etc/default/docker > /dev/null
 sudo service docker restart;
 sleep 5;
-sudo docker pull fedora:31;
+sudo docker pull fedora:33;
 
 docker run --privileged -d -ti -e "container=docker"  \
     -v /sys/fs/cgroup:/sys/fs/cgroup \
     -v $(pwd):/opencpn-ci:rw \
-    fedora:31   /bin/bash
+    fedora:33   /bin/bash
 DOCKER_CONTAINER_ID=$(docker ps | grep fedora | awk '{print $1}')
 docker logs $DOCKER_CONTAINER_ID
 docker exec -ti $DOCKER_CONTAINER_ID /bin/bash -xec \
-    "bash -xe /opencpn-ci/ci/generic-build-mingw.sh 31;
+    "bash -xe /opencpn-ci/ci/generic-build-mingw.sh;
          echo -ne \"------\nEND OPENCPN-CI BUILD\n\";"
 docker ps -a
 docker stop $DOCKER_CONTAINER_ID
