@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  About Dialog
+ * Purpose:  Convert gpx-string to a base64 string and send is as nmea sentences
  * Author:   David Register / Dirk Smits
  *
  ***************************************************************************
@@ -48,6 +48,7 @@
 
 extern Multiplexer        *g_pMUX;
 extern RouteManagerDialog *pRouteManagerDialog;
+extern MyFrame            *gFrame;
 RxMessages                *g_pNmeaSync;
 
 
@@ -97,51 +98,49 @@ void SendGpxMessage::SendMessage( std::string Message8b)
     char* buffer;
     size_t buf_size; 
  
-    int MessId = GetRandomNumber(0, 4095);
+    SeedRandom();
+    int MessId;
     if ( !g_pNmeaSync )
-        g_pNmeaSync = new RxMessages(NULL);
-    //check if number is in use already
-    while ( g_pNmeaSync->RxMessMap.find(MessId) != g_pNmeaSync->RxMessMap.end() )
-        MessId= (MessId +1)% 4096;
-    // Add ID as negative to reckognize self send messages
+        g_pNmeaSync = new RxMessages(gFrame);
+    // Generate a new random ID that is not in use
+    do {
+        MessId = GetRandomNumber(0, 4095);
+    }
+    while ( ( g_pNmeaSync->RxMessMap.find(-MessId) != g_pNmeaSync->RxMessMap.end() ) &&
+            ( g_pNmeaSync->RxMessMap.find(MessId) != g_pNmeaSync->RxMessMap.end() ) );
+        
+    // Add MessId as negative to recognize a self send messages later
     g_pNmeaSync->RxMessMap[-MessId] = nullptr;
     
     //todo also check for usen rx id's
 
     std::string Message6b = EncodeStr(Message8b, true);
     int i = 1;
-    size_t SentenceIdx = 0;
+    size_t Message6bIndex = 0;
     
-    while ( SentenceIdx <  Message6b.length() )
+    while ( Message6bIndex <  Message6b.length() )
     {
         std::string Sentencedata = _GPX_NMEA_ID  ;
         Sentencedata.append(",");
-        Sentencedata.append( EncodeInt( MessId ) );
-        Sentencedata.append(",");        
-        Sentencedata.append(EncodeInt(i));
-        Sentencedata.append(",");
+        Sentencedata.append( EncodeInt( MessId ) ).append(",");        
+        Sentencedata.append(EncodeInt(i)).append(",");
         int maxDataLenght = ((int)(82 - 3 - Sentencedata.length())/4)*4;
-        Sentencedata.append( Message6b.substr(SentenceIdx, maxDataLenght ));
+        Sentencedata.append( Message6b.substr(Message6bIndex, maxDataLenght ));
         AddComputeChecksum(Sentencedata);
         OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );;
         event.SetNMEAString( Sentencedata);
         g_pMUX->AddPendingEvent( event );
-        SentenceIdx += maxDataLenght;
+        Message6bIndex += maxDataLenght;
         i++;
     }
     //MessageNo 0, $OPCPN, MessID, MessNo, NumberOfLines, SizeOfMessage(bytes), UserName, UserComputerName *FF
     std::string Sentencedata0  =  _GPX_NMEA_ID ;
     Sentencedata0.append(",");
-    Sentencedata0.append( EncodeInt( MessId ) );
-    Sentencedata0.append(",");
-    Sentencedata0.append(EncodeInt(0));
-    Sentencedata0.append(",");
-    Sentencedata0.append(EncodeInt(i));
-    Sentencedata0.append(",");
-    Sentencedata0.append(EncodeInt(Message8b.length()));
-    Sentencedata0.append(",");
-    Sentencedata0.append(EncodeStr( wxGetUserName().ToStdString() ));
-    Sentencedata0.append(",");
+    Sentencedata0.append( EncodeInt( MessId ) ).append(",");
+    Sentencedata0.append(EncodeInt(0)).append(",");
+    Sentencedata0.append(EncodeInt(i)).append(",");
+    Sentencedata0.append(EncodeInt(Message8b.length())).append(",");
+    Sentencedata0.append(EncodeStr( wxGetUserName().ToStdString() )).append(",");
     Sentencedata0.append(EncodeStr( wxGetHostName().ToStdString() ));
     AddComputeChecksum(Sentencedata0);
     OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );;
@@ -150,9 +149,9 @@ void SendGpxMessage::SendMessage( std::string Message8b)
 }
 
 std::string SendGpxMessage::EncodeInt(const int x)
-{
+{   // only for integers < 16515073 
     std::string ret;
-    int xx = x;
+    long xx = x;
     if (xx & 0x0fc0000 ) ret.push_back( ascii2ais((xx >> 18) & 0x0000003f) );
     if (xx & 0x0fff000 ) ret.push_back( ascii2ais((xx >> 12) & 0x0000003f) );
     if (xx & 0x0ffffc0 ) ret.push_back( ascii2ais((xx >> 6 ) & 0x0000003f) ); 
@@ -228,9 +227,9 @@ void SendGpxMessage::SeedRandom()
     srand(seed);
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////
+// Receive Messages
+///////////////////////////////////////////////////////////////////////////////
 
 RxMessages::RxMessages(wxFrame *parent)
 {
@@ -247,8 +246,8 @@ RxMessages::~RxMessages()
     for(std::map<int, RxMessage*>::iterator ci=RxMessMap.begin(); ci!=RxMessMap.end(); ++ci)
         delete ci->second;
     RxMessMap.clear();
-    
 }
+
 void RxMessages::MessageReceived(std::string message, RxMessage* RxM)
 {
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
@@ -271,7 +270,7 @@ void RxMessages::MessageReceived(std::string message, RxMessage* RxM)
 
     switch( RxADlg->ShowModal() ){
         case wxID_SAVE:
-        {   wxString SugName = wxDateTime::Now().FormatISOCombined(' ').Append(".gpx");
+        {   wxString SugName = wxDateTime::Now().FormatISOCombined(' ').Append("From ").Append(RxM->SenderComputerName).Append(".gpx");
             wxFileName fn = exportFileName(parentt, SugName );
             if (fn.IsOk())
                 pgpx->SaveFile(fn.GetFullPath());
@@ -286,76 +285,66 @@ void RxMessages::MessageReceived(std::string message, RxMessage* RxM)
                 if ( pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateLists();
             break;}         
         default:
+            
             break;
         break;
     }
+    RxM->AllLinesReceived = true;
     delete RxADlg;
 }
-//----------------------------------------------------------------------------------
-//     Handle events from Nmea SYNC DataStream
-//----------------------------------------------------------------------------------
+
+//     Handle events from muliplexer DataStream
 void RxMessages::OnEvtSYNC( OCPN_DataStreamEvent& event )
 {
     event.Skip();
     int messageID, SentenceNr, NrOfLines, SizeOfMessage ;
     wxString message = event.ProcessNMEA4Tags();
-    std::string s, UserName, UserComputerName, mess;
+    std::string UserName, UserComputerName, mess;
 
     if( !message.IsEmpty() )
     {
         if( message.Left( wxString( _GPX_NMEA_ID ).length() ).IsSameAs( wxString( _GPX_NMEA_ID ) ) )
         {
-            wxString message = event.ProcessNMEA4Tags();            
-            wxString string( message );
-            wxStringTokenizer tkz( string, _T(",*") );
-            wxString token;
-            token = tkz.GetNextToken(); //Sentence (OPCPN)
+            wxStringTokenizer tkz( message, _T(",*") );
+            wxString token = tkz.GetNextToken(); //Sentence (OPCPN)
             token = tkz.GetNextToken(); //1) messageID
             messageID=DecodeInt( std::string(token.mb_str()) );
-            if (RxMessMap.find(-messageID) != RxMessMap.end() ){
-                return;
+            if (RxMessMap.find(-messageID) != RxMessMap.end() )
+                return; // this is a self send messageID
+            else{ // check if a record is made already and make on if needed
+                if (RxMessMap.find(messageID) == RxMessMap.end() ){                
+                    RxMessMap.insert(std::make_pair(messageID, new RxMessage(this) ) );
+                }
             }
-            
+            std::map<int, RxMessage*>::const_iterator it = RxMessMap.find(messageID);
             token = tkz.GetNextToken(); // 2)sentence nr.
             SentenceNr=DecodeInt( std::string(token.mb_str()) );
             if (SentenceNr !=0){
                 token = tkz.GetNextToken(); // 3 message payload
-                SaveSentece( messageID, SentenceNr, std::string(token.mb_str() ) );
-            }else{
+                it->second->AddSentence( SentenceNr, std::string(token.mb_str()) );
+            }
+            else{ //Sentence Nr is 0
                 token = tkz.GetNextToken(); // 3 NrOfLines.
                 NrOfLines=DecodeInt( std::string(token.mb_str()) );
                 token = tkz.GetNextToken(); // 4 SizeOfMessage.(bytes)
                 SizeOfMessage=DecodeInt( std::string(token.mb_str()) );
                 token = tkz.GetNextToken();
-                UserName = DecodeStr( std::string(token.mb_str() ), false ); // 4 UserName (Sender)
+                UserName = DecodeStr( std::string(token.mb_str() )); // 4 UserName (Sender)
                 token = tkz.GetNextToken();
                 UserComputerName = DecodeStr( std::string(token.mb_str() ) ); // 4 UserComputerName (Sender)
-                std::map<int, RxMessage*>::const_iterator it;
-                it = RxMessMap.find(messageID);
-                it->second->AddSentence(SentenceNr, NrOfLines, SizeOfMessage, UserName, UserComputerName);
+                it->second->AddSentence0( NrOfLines, SizeOfMessage, UserName, UserComputerName);
+            }
+            if ( it->second->AllLinesReceived ){
+                RxMessMap.erase(it);
             }
         }
-    }
-}
- 
-
-void RxMessages::SaveSentece( int ID, int LineNr, std::string str)
-{
-    std::map<int, RxMessage*>::const_iterator it;
-    // First check if this message was send by ourselve
-    if (  RxMessMap.find(-ID) == RxMessMap.end() ){ 
-        it = RxMessMap.find(ID);
-        if ( ( it == RxMessMap.end() ) || (RxMessMap.size() == 0) ) {
-            RxMessMap.insert(std::make_pair(ID, new RxMessage(this) ) );
-            SaveSentece( ID, LineNr, str);
-        } else
-            it->second->AddSentence( LineNr, str);
     }
 }
 
 std::string RxMessages::DecodeStr(std::string input6, bool IsZipped)
 {    
     std::vector<char> out;
+    std::string Ret;
     for (size_t i=0; i < input6.length(); i+=4){
         unsigned long int x = 0;
         for (size_t j = i; j < i+4; j++){
@@ -367,15 +356,12 @@ std::string RxMessages::DecodeStr(std::string input6, bool IsZipped)
         if (( x & 0x000000ff ) || i+2 < input6.length()) out.push_back((char) x & 0x000000ff);
         }
     out.push_back(0); // Make sure the array is properly null terminated
-
-    std::string Ret;
+    
     if (IsZipped){
-        //Ret = memunzlib( &out[0], out.size());
         wxMemoryInputStream in(&out[0], out.size());
         wxZlibInputStream zlib(in, wxZLIB_NO_HEADER);
         char data[256];
         size_t n;
-
         while ((n = zlib.Read(data, sizeof(data)).LastRead()) > 0){
             Ret.append(data, n);
         }
@@ -398,64 +384,68 @@ int RxMessages::DecodeInt(const std::string str)
 } 
 
 void RxMessages::OnTimer(wxTimerEvent & event)
-{
+{ // delete Rx objects if there is 5 minutes or more no activity
     for (auto it = RxMessMap.begin(); it != RxMessMap.end(); ++it){
         if( it->second != NULL ){
             if ( (it->second->TicksLastUpdate + 300) < wxDateTime::Now().GetTicks() ){
                 delete it->second;
-                it->second = NULL;
+                wxLogMessage( _("incomplete message deleted") );
             }
         }
     }
 }
 
- 
- //****************************************************************
- RxMessage::RxMessage( RxMessages* p)
- {
+//////////////////////////////////////////////////////////////////////////////
+// Single Rx message
+//////////////////////////////////////////////////////////////////////////////
+RxMessage::RxMessage( RxMessages* p)
+{
     TotalLines= -1;
     TotalSize = -1;
     SenderUserName = "";
     SenderComputerName = "";
+    AllLinesReceived = false;
     parent = p;
- }
- RxMessage::~RxMessage()
- {
-     SentencesMap.empty();
- }
- //MessageNo 0, $OPCPN, MessID, MessNo, NumberOfLines, SizeOfMessage(bytes), UserName, UserComputerName *FF
- void RxMessage::AddSentence(int sNr, int NrOfLines, int Size, std::string UserName, std::string UserComputerName )
- {
+}
+RxMessage::~RxMessage()
+{
+    SentencesMap.empty();
+}
+
+//MessageNo 0, $OPCPN, MessID, MessNo, NumberOfLines, SizeOfMessage(bytes), UserName, UserComputerName *FF
+void RxMessage::AddSentence0(int NrOfLines, int Size, std::string UserName, std::string UserComputerName )
+{
     TotalLines= NrOfLines;
     TotalSize = Size;
     SenderUserName = UserName;
     SenderComputerName = UserComputerName;
     if ( IsComplete() ) DecodeFinish();
- }
+}
+ 
 void RxMessage::AddSentence(int sNr, std::string s)
 {
     SentencesMap.insert( make_pair(sNr, s) );
     if ( IsComplete() ) DecodeFinish();
 }
 
-// void RxMessage::AddSentence(std::string s)
-// {
-//     SentencesMap.insert( make_pair(sNr, s) );
-//     if ( IsComplete() ) DecodeFinish();
-// }
-
 bool RxMessage::IsComplete()
 {
     TicksLastUpdate = wxDateTime::Now().GetTicks();
-    bool ret = false;
     if ( TotalLines )
-        if ((int)SentencesMap.size() == TotalLines-1)
-            ret = true;
-    return ret;
+        if ((int)SentencesMap.size() == TotalLines-1){
+            std::map<int, std::string>::iterator it;
+            for ( int i=1; i < TotalLines; i++){
+                if ( SentencesMap.find(i) == SentencesMap.end() )
+                    return false;
+            }
+            return true;
+        }
+    return false;
 }
 
 void RxMessage::DecodeFinish()
 {
+    if (AllLinesReceived) return; //A hack to prevent multiple messages if there is a double connection somehow
     std::string message;
     std::map<int, std::string>::iterator it;
     for ( int i=1; i < TotalLines; i++){
@@ -466,7 +456,7 @@ void RxMessage::DecodeFinish()
             return;
         }
     }
-
+    AllLinesReceived = true;
     message = parent->DecodeStr( message, true);
     parent->MessageReceived(message, this);
 }
@@ -503,14 +493,11 @@ RxAcceptDlg::RxAcceptDlg( wxWindow* parent, wxWindowID id, const wxString& title
 	m_AcceptBtn = new wxButton( this, wxID_ANY, wxT("Accept"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer1->Add( m_AcceptBtn, 0, wxALL, 5 );
 
-
 	fgSizer1->Add( bSizer1, 1, wxALIGN_BOTTOM|wxALIGN_RIGHT|wxEXPAND|wxRIGHT, 5 );
-
 
 	this->SetSizer( fgSizer1 );
 	this->Layout();
 	fgSizer1->Fit( this );
-
 	this->Centre( wxBOTH );
 
 	// Connect Events
@@ -525,6 +512,4 @@ RxAcceptDlg::~RxAcceptDlg()
 	m_RejectBtn->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler( RxAcceptDlg::m_RejectBtnOnLeftDown ), NULL, this );
 	m_SaveBtn->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler( RxAcceptDlg::m_SaveBtnOnLeftDown ), NULL, this );
 	m_AcceptBtn->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler( RxAcceptDlg::m_AcceptBtnOnLeftDown ), NULL, this );
-
 }
-

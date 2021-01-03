@@ -320,7 +320,8 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             LogInputMessage( fmsg, port, !bpass, b_error );
         }
         //if ( DoNotResend ) return;
-        if (((g_b_legacy_input_filter_behaviour && !bpass) || bpass) && !DoNotResend ) {
+        if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass)
+            if  ( !DoNotResend ){
 
             //Send to plugins
             if ( g_pi_manager ){
