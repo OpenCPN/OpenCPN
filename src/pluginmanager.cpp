@@ -5502,7 +5502,7 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
     // Present a file selector dialog to get the file name..
     wxString tarballPath;
    int response = g_Platform->DoFileSelectorDialog( this, &tarballPath, _( "Select tarball file" ),
-                                                      g_Platform->GetPrivateDataDir(), wxEmptyString, wxT ( "*.tar.gz" ));
+                                                      g_Platform->GetPrivateDataDir(), wxEmptyString, wxT ( "tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*" ));
  
     if( response == wxID_OK )
     {
