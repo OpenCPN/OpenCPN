@@ -70,6 +70,15 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
+#  A truly awful hack...
+#  fixup_bundle (part of MacOS install step) seems to somehow miss the required copy of libpixman
+#  Or the second install kills it...
+#  So we do it explicitely.
+rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
+cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
+
+sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
+
 make create-pkg
 make create-dmg
 
