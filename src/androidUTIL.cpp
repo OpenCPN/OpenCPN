@@ -365,6 +365,8 @@ int doAndroidPersistState();
 bool            bInConfigChange;
 AudioDoneCallback s_soundCallBack;
 
+bool            g_detect_smt590;
+
 //      Some dummy devices to ensure plugins have static access to these classes not used elsewhere
 wxFontPickerEvent       g_dummy_wxfpe;
 
@@ -401,6 +403,7 @@ class androidUtilHandler : public wxEvtHandler
     wxTimer     m_resizeTimer;
     int         timer_sequence;
     int         m_bskipConfirm;
+    
     DECLARE_EVENT_TABLE()
 };
 
@@ -432,13 +435,13 @@ androidUtilHandler::androidUtilHandler()
     wxFilePickerCtrl *pfpc = new wxFilePickerCtrl();
     
     wxZipEntry *entry = new wxZipEntry();
-    
+
 }
 
        
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 {
-//    qDebug() << "onTimerEvent";
+    qDebug() << "onTimerEvent" << m_action;
 
     switch(m_action){
         case ACTION_RESIZE_PERSISTENTS:            //  Handle rotation/resizing of persistent dialogs
@@ -560,7 +563,11 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     g_pAboutDlgLegacy->Show();
                 }
             }
-            
+
+            if(g_options){
+                g_options->RecalculateSize();
+            }
+
             bInConfigChange = false;
             
             break;
@@ -916,6 +923,7 @@ wxSize getAndroidConfigSize()
 
 void resizeAndroidPersistents()
 {
+    qDebug() << "resizeAndroidPersistents()";
     
      if(g_androidUtilHandler){
          g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
@@ -1269,7 +1277,7 @@ extern "C"{
 
         if(!g_btrackContinuous)
             androidGPSService( GPS_OFF );
-        
+ 
         return 97;
     }
 }
@@ -1279,7 +1287,7 @@ extern "C"{
     {
         qDebug() << "onResume";
         wxLogMessage(_T("onResume"));
-        
+
         int ret = 96;
         
         g_bSleep = false;
@@ -2195,6 +2203,9 @@ void androidDisplayToast(wxString message)
 
 void androidEnableRotation( void )
 {
+    if(g_detect_smt590)
+        return;
+    
     callActivityMethod_vs("EnableRotation");
 }
 
@@ -2202,6 +2213,7 @@ void androidDisableRotation( void )
 {
     callActivityMethod_vs("DisableRotation");
 }
+
 
 bool androidShowDisclaimer( wxString title, wxString msg )
 {
@@ -2416,6 +2428,15 @@ wxString androidGetDeviceInfo()
         if(wxNOT_FOUND != s1.Find(_T("opencpn"))){
             strcpy(&android_plat_spc.hn[0], s1.c_str());
         }
+ 
+        // Look for some specific device identifiers, for special processing as implemented.
+        
+        // (1) Samsung SM-T590 running Android/10{29}
+        if(wxNOT_FOUND != s1.Find(_T("SM-T590"))){
+            if( !strncmp(android_plat_spc.msdk, "29", 2))       // Assumes API comes before Model/Product.
+                g_detect_smt590 = true;
+        }
+        
     }
     
     return g_deviceInfo;
@@ -2803,7 +2824,6 @@ wxSize getAndroidDisplayDimensions( void )
         long b = 1000;        
         if(token.ToLong( &b ))
             sz_ret.y = b;
-        
         token = tk.GetNextToken();              
         token = tk.GetNextToken();
         
@@ -2819,7 +2839,12 @@ wxSize getAndroidDisplayDimensions( void )
         
     }
 
-//    qDebug() << sz_ret.x << sz_ret.y;
+    // Samsung sm-t590/Android 10 has some display problems.....
+    if(g_detect_smt590){
+        sz_ret.y = 1650;
+    }
+    
+    //qDebug() << "getAndroidDisplayDimensions" << sz_ret.x << sz_ret.y;
     
     return sz_ret;
     
