@@ -300,6 +300,10 @@ extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
 extern double           g_n_arrival_circle_radius;
 
+extern bool             g_bShowShipToActive;
+extern int              g_shipToActiveStyle;
+extern int         g_shipToActiveColor;
+
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bsimplifiedScalebar;
 
@@ -982,6 +986,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm );
     Read( _T ( "OwnShipSogCogCalc" ), &g_own_ship_sog_cog_calc );
     Read( _T ( "OwnShipSogCogCalcDampSec"), &g_own_ship_sog_cog_calc_damp_sec );
+    Read( _T ( "ShowDirectRouteLine"), &g_bShowShipToActive );
+    Read( _T ( "DirectRouteLineStyle"), &g_shipToActiveStyle );
+    Read( _T( "DirectRouteLineColor" ), &g_shipToActiveColor );
 
     wxString racr;
     Read( _T ( "RouteArrivalCircleRadius" ), &racr );
@@ -2382,6 +2389,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "OwnShipMinSize" ), g_n_ownship_min_mm );
     Write( _T ( "OwnShipSogCogCalc" ), g_own_ship_sog_cog_calc );
     Write( _T ( "OwnShipSogCogCalcDampSec"), g_own_ship_sog_cog_calc_damp_sec );
+    Write( _T ( "ShowDirectRouteLine"), g_bShowShipToActive );
+    Write( _T ( "DirectRouteLineStyle"), g_shipToActiveStyle );
+    Write( _T ( "DirectRouteLineColor" ), g_shipToActiveColor );
 
     wxString racr;
  //   racr.Printf( _T ( "%g" ), g_n_arrival_circle_radius );

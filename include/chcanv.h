@@ -658,6 +658,7 @@ private:
       void RenderAllChartOutlines(ocpnDC &dc, ViewPort& vp);
       void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort& vp);
       void RenderRouteLegs ( ocpnDC &dc );
+      void RenderShipToActive ( ocpnDC &dc , bool Use_Opengl );
 
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 

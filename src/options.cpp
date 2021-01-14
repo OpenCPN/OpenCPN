@@ -216,6 +216,9 @@ extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
 extern wxColour g_colourOwnshipRangeRingsColour;
+extern bool  g_bShowShipToActive;
+extern int  g_shipToActiveStyle;
+extern int g_shipToActiveColor;
 
 extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
@@ -3152,6 +3155,8 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   rrSelect->Add(pNavAidRadarRingsNumberVisible, 0, wxALIGN_RIGHT | wxALL,
                 group_item_spacing);
 
+
+
   radarGrid = new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
   radarGrid->AddGrowableCol(1);
   dispOptions->Add(radarGrid, 0, wxLEFT | wxEXPAND, 30);
@@ -3181,7 +3186,43 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   m_colourOwnshipRangeRingColour = new OCPNColourPickerCtrl( itemPanelShip, wxID_ANY, *wxRED,
                   wxDefaultPosition, m_colourPickerDefaultSize, 0,  wxDefaultValidator, _T( "ID_COLOUROSRANGECOLOUR" ));
   radarGrid->Add(m_colourOwnshipRangeRingColour, 0, wxALIGN_RIGHT, border_size);
-  
+
+  //ship to active
+  wxFlexGridSizer* shipToActiveGrid =
+      new wxFlexGridSizer(1, 5, group_item_spacing, group_item_spacing);
+  shipToActiveGrid->AddGrowableCol(1);
+  dispOptions->Add(shipToActiveGrid, 0, wxALL | wxEXPAND, border_size);
+  pShowshipToActive = new wxCheckBox(itemPanelShip, wxID_ANY,
+                               _("Show direct route from Own ship to Active point"));
+  shipToActiveGrid->Add(pShowshipToActive, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
+
+  wxStaticText* shipToActiveText1 =
+      new wxStaticText( itemPanelShip, wxID_STATIC, _("Style"));
+  shipToActiveGrid->Add(shipToActiveText1, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
+
+  wxString LineStyleChoices[] =
+      { _("Default"), _("Solid"), _("Dot"), _("Long dash"), _("Short dash"), _("Dot dash") };
+  int LineStyleNChoices = sizeof( LineStyleChoices ) / sizeof( wxString );
+  m_shipToActiveStyle =
+      new wxChoice( itemPanelShip, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      LineStyleNChoices, LineStyleChoices, 0 );
+  m_shipToActiveStyle->SetSelection(0);
+  shipToActiveGrid->Add( m_shipToActiveStyle, 0, wxALL, 5 );
+
+  wxStaticText* shipToActiveText2 =
+      new wxStaticText( itemPanelShip, wxID_STATIC, _("Color"));
+  shipToActiveGrid->Add(shipToActiveText2, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
+
+  wxString m_LineColorChoices[] = { ("Default color"), _("Black"), _("Dark Red"), _("Dark Green"),
+      _("Dark Yellow"), _("Dark Blue"), _("Dark Magenta"), _("Dark Cyan"), _("Light Gray"),
+      _("Dark Gray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };
+  int LineColorNChoices = sizeof( m_LineColorChoices ) / sizeof( wxString );
+  m_shipToActiveColor =
+      new wxChoice( itemPanelShip, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      LineColorNChoices, m_LineColorChoices, 0 );
+  m_shipToActiveColor->SetSelection( 0 );
+  shipToActiveGrid->Add( m_shipToActiveColor, 0, wxALL, 5 );
+
   //  Tracks
   wxStaticBox* trackText =
       new wxStaticBox(itemPanelShip, wxID_ANY, _("Tracks"));
@@ -6555,6 +6596,9 @@ void options::SetInitialSettings(void) {
   m_itemWaypointRangeRingsUnits->SetSelection(g_iWaypointRangeRingsStepUnits);
   m_colourWaypointRangeRingsColour->SetColour(g_colourWaypointRangeRingsColour);
   OnWaypointRangeRingSelect(eDummy);
+  pShowshipToActive->SetValue( g_bShowShipToActive );
+  m_shipToActiveStyle->SetSelection( g_shipToActiveStyle );
+  m_shipToActiveColor->SetSelection(g_shipToActiveColor);
 
   pWayPointPreventDragging->SetValue(g_bWayPointPreventDragging);
   pConfirmObjectDeletion->SetValue(g_bConfirmObjectDelete);
@@ -6587,7 +6631,6 @@ void options::SetInitialSettings(void) {
   pTrackRotateComputerTime->SetValue(g_track_rotate_time_type == TIME_TYPE_COMPUTER);
   pTrackHighlite->SetValue(g_bHighliteTracks);
   m_colourTrackLineColour->SetColour(g_colourTrackLineColour);
-  
   pTrackPrecision->SetSelection(g_nTrackPrecision);
 
   //    AIS Parameters
@@ -7432,6 +7475,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
     g_n_ownship_min_mm = static_cast<int>(n_ownship_min_mm);
   }
   g_OwnShipIconType = m_pShipIconType->GetSelection();
+  g_bShowShipToActive = pShowshipToActive->GetValue();
+  g_shipToActiveStyle = m_shipToActiveStyle->GetSelection();
+  g_shipToActiveColor = m_shipToActiveColor->GetSelection();
 
   m_pText_ACRadius->GetValue().ToDouble(&g_n_arrival_circle_radius);
   g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6); // Correct abnormally
