@@ -532,12 +532,14 @@ double GetJsonDouble(wxJSONValue &value) {
     double d_ret =0;
     if (value.IsDouble()) {
         d_ret = value.AsDouble();
+        return d_ret;
     }
     else if (value.IsLong()) {
         int i_ret = value.AsLong();
         d_ret = i_ret;
+        return d_ret;
     }
-    return d_ret;
+    return nan("");
 }
 
 void dashboard_pi::Notify()
