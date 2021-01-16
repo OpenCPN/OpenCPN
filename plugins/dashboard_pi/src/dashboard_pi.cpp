@@ -529,14 +529,15 @@ bool dashboard_pi::DeInit( void )
 }
 
 double GetJsonDouble(wxJSONValue &value) {
-    double d_ret;
+    double d_ret =0;
     if (value.IsDouble()) {
-        return d_ret = value.AsDouble();
+        d_ret = value.AsDouble();
     }
-    else if (value.IsInt()) {
-        int i_ret = value.AsInt();
-        return d_ret = i_ret;
+    else if (value.IsLong()) {
+        int i_ret = value.AsLong();
+        d_ret = i_ret;
     }
+    return d_ret;
 }
 
 void dashboard_pi::Notify()
@@ -1494,6 +1495,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
        && item.HasMember("value")) {
         const wxString &update_path = item["path"].AsString();
         wxJSONValue &value = item["value"];
+        
         if(update_path == _T("navigation.position")) {
             if (mPriPosition >= 2) {
                 if (value["latitude"].IsDouble() && value["longitude"].IsDouble()) {
