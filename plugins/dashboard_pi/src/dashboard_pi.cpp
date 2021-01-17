@@ -552,7 +552,21 @@ void dashboard_pi::Notify()
     SendUtcTimeToAllInstruments( mUTCDateTime );
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
         DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) dashboard_window->Refresh();
+        if( dashboard_window ){
+            dashboard_window->Refresh();
+#ifdef __OCPN__ANDROID__            
+            wxWindowList list = dashboard_window->GetChildren();
+            wxWindowListNode *node = list.GetFirst();
+            for( size_t i = 0; i < list.GetCount(); i++ ) {
+                wxWindow *win = node->GetData();
+//                qDebug() << "Refresh Dash child:" << i;
+                win->Refresh();
+                node = node->GetNext();
+            }
+#endif            
+
+            
+        }
     }
     //  Manage the watchdogs
 

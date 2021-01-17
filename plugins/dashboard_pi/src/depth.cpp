@@ -166,6 +166,35 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       double ratioH = 100.0 / m_MaxDepth; // 140-40=100
       double ratioW = double(size.x-6) / (DEPTH_RECORD_COUNT-1);
       wxPoint points[DEPTH_RECORD_COUNT+2];
+#ifdef __OCPN__ANDROID__
+      int px = 3;
+      points[0].x = px;
+      points[0].y = 140;
+
+      for (int idx = 0; idx < DEPTH_RECORD_COUNT - 1; idx++)
+      {
+            points[1].x = points[0].x;
+            if (m_ArrayDepth[idx])
+                  points[1].y = 40 + m_ArrayDepth[idx] * ratioH;
+            else
+                  points[1].y = 140;
+            
+            points[2].x = points[1].x + ratioW;
+            if (m_ArrayDepth[idx + 1])
+                  points[2].y = 40 + m_ArrayDepth[idx + 1] * ratioH;
+            else
+                  points[2].y = 140;
+
+            points[3].x = points[2].x;
+            points[3].y = 140;
+            dc->DrawPolygon( 4, points);
+            
+            points[0].x = points[2].x;
+            points[0].y = 140;
+
+      }
+
+#else      
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
       {
             points[idx].x = idx * ratioW + 3;
@@ -179,6 +208,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       points[DEPTH_RECORD_COUNT+1].x = 3;
       points[DEPTH_RECORD_COUNT+1].y = 140;
       dc->DrawPolygon(DEPTH_RECORD_COUNT+2, points);
+#endif
       
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground( cl );
