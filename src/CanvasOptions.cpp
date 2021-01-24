@@ -130,7 +130,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     wxStaticBoxSizer* boxNavMode = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Navigation Mode")), wxVERTICAL);
     generalSizer->Add(boxNavMode, 0, wxALL | wxEXPAND, border_size);
     
-    wxBoxSizer* rowOrientation = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* rowOrientation = new wxBoxSizer(wxHORIZONTAL);
     boxNavMode->Add(rowOrientation);
 
     pCBNorthUp = new wxRadioButton(pDisplayPanel, wxID_ANY, _("North Up"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
