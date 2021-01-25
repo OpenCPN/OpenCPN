@@ -53,7 +53,8 @@ class GSV : public RESPONSE
       ** Data
       */
 
-      int   SatsInView;
+      int MessageNumber;
+      int SatsInView;
 
       /*
       ** Methods
