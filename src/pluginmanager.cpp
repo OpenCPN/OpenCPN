@@ -5228,7 +5228,9 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
         m_catalogText->Hide();
      
      // Next line
-     m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog:Master"), wxDefaultPosition, wxDefaultSize, 0 );
+     wxString label = _("Update Plugin Catalog");
+     label += _T(": Master");
+     m_updateButton = new wxButton(  this, wxID_ANY, label, wxDefaultPosition, wxDefaultSize, 0 );
      itemStaticBoxSizer4->Add( m_updateButton, 0, wxALIGN_LEFT );
      m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
 
