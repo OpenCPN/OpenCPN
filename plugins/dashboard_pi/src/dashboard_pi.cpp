@@ -876,7 +876,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     if (m_NMEA0183.Gsv.MessageNumber == 1) {
                         //Some GNSS print SatsInView in message #1 only
                         mSatsInView = m_NMEA0183.Gsv.SatsInView;
-                        SendSentenceToAllInstruments (OCPN_DBP_STC_SAT, 
+                        SendSentenceToAllInstruments (OCPN_DBP_STC_SAT,
                                       m_NMEA0183.Gsv.SatsInView, _T (""));
                     }
                     SendSatInfoToAllInstruments (mSatsInView, 

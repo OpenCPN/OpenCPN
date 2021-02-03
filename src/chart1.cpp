@@ -398,6 +398,7 @@ bool                      g_bHDT_Rx;
 bool                      g_bVAR_Rx;
 
 int                       gSAT_Watchdog;
+int                       g_priSats;
 int                       g_SatsInView;
 bool                      g_bSatValid;
 
@@ -2496,6 +2497,8 @@ extern ocpnGLOptions g_GLOptions;
     gHDT_Watchdog = 2;
     gSAT_Watchdog = 2;
     gVAR_Watchdog = 2;
+    
+    g_priSats = 99;
 
     //  Most likely installations have no ownship heading information
     g_bHDT_Rx = false;
@@ -7472,11 +7475,12 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if( g_nNMEADebug && ( gVAR_Watchdog == 0 ) ) wxLogMessage(
             _T("   ***VAR Watchdog timeout...") );
     }
-    //  Update and check watchdog timer for GSV (Satellite data)
+    //  Update and check watchdog timer for GSV, GGA and SignalK (Satellite data)
     gSAT_Watchdog--;
     if( gSAT_Watchdog <= 0 ) {
         g_bSatValid = false;
         g_SatsInView = 0;
+        g_priSats = 99;
         if( g_nNMEADebug && ( gSAT_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***SAT Watchdog timeout...") );
     }
@@ -9197,9 +9201,12 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case GSV:
-                if (m_NMEA0183.Gsv.MessageNumber == 1) {
-                    // Some GNSS print SatsInView in message #1 only
-                    setSatelitesInView (m_NMEA0183.Gsv.SatsInView);
+                if (g_priSats >= 2) {
+                    if (m_NMEA0183.Gsv.MessageNumber == 1) {
+                        // Some GNSS print SatsInView in message #1 only
+                        setSatelitesInView (m_NMEA0183.Gsv.SatsInView);
+                        g_priSats = 2;
+                    }
                 }
                 break;
 
@@ -9208,7 +9215,10 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
                     sfixtime = m_NMEA0183.Gga.UTCTime;
-                    setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
+                    if (g_priSats >= 1) {
+                        setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
+                        g_priSats = 1;
+                    }
                 }
                 break;
 
