@@ -239,7 +239,7 @@ wxString getInstrumentCaption( unsigned int id )
         case ID_DBP_D_RSA:
             return _("Rudder Angle");
         case ID_DBP_I_SAT:
-            return _("GNSS in View");
+            return _("GNSS in use");
         case ID_DBP_D_GPS:
             return _("GNSS Status");
         case ID_DBP_I_PTR:
@@ -427,11 +427,13 @@ int dashboard_pi::Init( void )
     mPriDepth = 99;
     mPriSTW = 99;
     mPriWTP = 99;
-    mPriSats = 99;
+    mPriSatStatus = 99;
+    mPriSatUsed = 99;
     m_config_version = -1;
     mHDx_Watchdog = 2;
     mHDT_Watchdog = 2;
-    mGPS_Watchdog = 2;
+    mSatsUsed_Wdog = 2;
+    mSatStatus_Wdog = 2;
     mVar_Watchdog = 2;
     mMWVA_Watchdog = 2;
     mMWVT_Watchdog = 2;
@@ -573,8 +575,16 @@ void dashboard_pi::Notify()
         mVar_Watchdog = gps_watchdog_timeout_ticks;
     }
 
-    mGPS_Watchdog--;
-    if( mGPS_Watchdog <= 0 ) {
+    mSatsUsed_Wdog--;
+    if (mSatsUsed_Wdog <= 0) {
+        mPriSatUsed = 99;
+        mSatsInView = 0;
+        SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, NAN, _T(""));
+        mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
+    }
+    
+    mSatStatus_Wdog--;
+    if( mSatStatus_Wdog <= 0 ) {
         SAT_INFO sats[4];
         for(int i=0 ; i < 4 ; i++) {
             sats[i].SatNumber = 0;
@@ -583,10 +593,8 @@ void dashboard_pi::Notify()
         SendSatInfoToAllInstruments( 0, 1, wxEmptyString, sats );
         SendSatInfoToAllInstruments( 0, 2, wxEmptyString, sats );
         SendSatInfoToAllInstruments( 0, 3, wxEmptyString, sats );
-        mPriSats = 99;
-        mSatsInView = 0;
-        SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, NAN, _T("") );
-        mGPS_Watchdog = gps_watchdog_timeout_ticks;
+        mPriSatStatus = 99;
+        mSatStatus_Wdog = gps_watchdog_timeout_ticks;
     }
 
     mMWVA_Watchdog--;
@@ -803,35 +811,42 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         }
 // TODO: GBS - GPS Satellite fault detection
         else if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") ) {
-            if( m_NMEA0183.Parse() ) {
-                if( m_NMEA0183.Gga.GPSQuality > 0 ) {
-                    if( mPriPosition >= 4 ) {
-                        mPriPosition = 4;
-                        double lat, lon;
-                        float llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
-                        int lat_deg_int = (int) ( llt / 100 );
-                        float lat_deg = lat_deg_int;
-                        float lat_min = llt - ( lat_deg * 100 );
-                        lat = lat_deg + ( lat_min / 60. );
-                        if( m_NMEA0183.Gga.Position.Latitude.Northing == South ) lat = -lat;
-                        SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, lat, _T("SDMM") );
+            if (mPriPosition >= 4 || mPriSatUsed >= 3) {
+                if (m_NMEA0183.Parse()) {
+                    if (m_NMEA0183.Gga.GPSQuality > 0) {
+                        if (mPriPosition >= 4) {
+                            mPriPosition = 4;
+                            double lat, lon;
+                            float llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
+                            int lat_deg_int = (int)(llt / 100);
+                            float lat_deg = lat_deg_int;
+                            float lat_min = llt - (lat_deg * 100);
+                            lat = lat_deg + (lat_min / 60.);
+                            if (m_NMEA0183.Gga.Position.Latitude.Northing == South) lat = -lat;
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
 
-                        float lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
-                        int lon_deg_int = (int) ( lln / 100 );
-                        float lon_deg = lon_deg_int;
-                        float lon_min = lln - ( lon_deg * 100 );
-                        lon = lon_deg + ( lon_min / 60. );
-                        if( m_NMEA0183.Gga.Position.Longitude.Easting == West ) lon = -lon;
-                        SendSentenceToAllInstruments( OCPN_DBP_STC_LON, lon, _T("SDMM") );
+                            float lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
+                            int lon_deg_int = (int)(lln / 100);
+                            float lon_deg = lon_deg_int;
+                            float lon_min = lln - (lon_deg * 100);
+                            lon = lon_deg + (lon_min / 60.);
+                            if (m_NMEA0183.Gga.Position.Longitude.Easting == West) lon = -lon;
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
+                        }
+                        if (mPriSatUsed >= 3) {
+                            mSatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
+                            SendSentenceToAllInstruments (OCPN_DBP_STC_SAT,
+                                                          mSatsInView, _T (""));
+                            mPriSatUsed = 3;
+                            mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
+                        }
+
+                        //if( mPriDateTime >= 4 ) {
+                        //    // Not in use, we need the date too.
+                        //    //mPriDateTime = 4;
+                        //    //mUTCDateTime.ParseFormat( m_NMEA0183.Gga.UTCTime.c_str(), _T("%H%M%S") );
+                        //}
                     }
-
-                    //if( mPriDateTime >= 4 ) {
-                    //    // Not in use, we need the date too.
-                    //    //mPriDateTime = 4;
-                    //    //mUTCDateTime.ParseFormat( m_NMEA0183.Gga.UTCTime.c_str(), _T("%H%M%S") );
-                    //}
-
-                    mSatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
                 }
             }
         }
@@ -870,21 +885,27 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         }
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") ) {
-            if (mPriSats >= 2) {
+            if (mPriSatStatus >= 2 || mPriSatUsed >= 4) {
                 if (m_NMEA0183.Parse ()) {
-                    // m_NMEA0183.Gsv.NumberOfMessages;
+                    
                     if (m_NMEA0183.Gsv.MessageNumber == 1) {
-                        //Some GNSS print SatsInView in message #1 only
+                        //NMEA0183 recommend to not repeat SatsInView in subsequent messages
                         mSatsInView = m_NMEA0183.Gsv.SatsInView;
-                        SendSentenceToAllInstruments (OCPN_DBP_STC_SAT,
-                                      m_NMEA0183.Gsv.SatsInView, _T (""));
+                        if (mPriSatUsed >= 4) {
+                            SendSentenceToAllInstruments (OCPN_DBP_STC_SAT,
+                                       m_NMEA0183.Gsv.SatsInView, _T (""));
+                            mPriSatUsed = 4;
+                            mSatsUsed_Wdog = gps_watchdog_timeout_ticks; 
+                        }
                     }
-                    SendSatInfoToAllInstruments (mSatsInView, 
-                                      m_NMEA0183.Gsv.MessageNumber,
-                                      m_NMEA0183.TalkerID,
-                                      m_NMEA0183.Gsv.SatInfo);
-                    mPriSats = 2;
-                    mGPS_Watchdog = gps_watchdog_timeout_ticks;
+                    if (mPriSatStatus >= 2) {
+                        SendSatInfoToAllInstruments (mSatsInView,
+                                                     m_NMEA0183.Gsv.MessageNumber,
+                                                     m_NMEA0183.TalkerID,
+                                                     m_NMEA0183.Gsv.SatInfo);
+                        mPriSatStatus = 2;
+                        mSatStatus_Wdog = gps_watchdog_timeout_ticks;
+                    }
                 }
             }
         }
@@ -1734,14 +1755,15 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             mRSA_Watchdog = gps_watchdog_timeout_ticks;
         }
         else if (update_path == _T("navigation.satellitesInView")) { //GNSS satellites
-            if (mPriSats >= 1) {
+            if (mPriSatUsed >= 2) {
                 if (value.HasMember ("count") && value["count"].IsInt ()) {
                     double m_SK_SatsInView = (value["count"].AsInt ());
-                    mSatsInView = m_SK_SatsInView;
                     SendSentenceToAllInstruments (OCPN_DBP_STC_SAT, m_SK_SatsInView, _T (""));
-                    mPriSats = 1;
-                    mGPS_Watchdog = gps_watchdog_timeout_ticks;
+                    mPriSatStatus = 2;
+                    mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
                 }
+            }
+            if (mPriSatStatus >= 1) {
                 if (value.HasMember ("satellites") && value["satellites"].IsArray ()) {
                     // Update satellites data.                                
                     int iNumSats = value[_T ("satellites")].Size ();
@@ -1778,8 +1800,14 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                                 SK_SatInfo[idx].AzimuthDegreesTrue = GEODESIC_RAD2DEG(dAzimRad);
                                 SK_SatInfo[idx].SignalToNoiseRatio = iSNR;
                             }
-                            if (idx > 0) SendSatInfoToAllInstruments (
-                                iNumSats, iMesNum + 1, wxEmptyString, SK_SatInfo);
+                            if (idx > 0) {
+                                //TODO. Add talkerID to talk when SignalK has incorporated that.
+                                SendSatInfoToAllInstruments (
+                                    iNumSats, iMesNum + 1, wxEmptyString, SK_SatInfo);
+                                mPriSatStatus = 1;
+                                mSatStatus_Wdog = gps_watchdog_timeout_ticks;
+                            }
+
                             if (iID < 1) break;
                         }
                     }
@@ -1916,8 +1944,14 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         mUTCDateTime = mUTCDateTime.ToUTC();
         mUTC_Watchdog = gps_watchdog_timeout_ticks;
     }
-    mSatsInView = pfix.nSats;
-//    SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, mSatsInView, _T("") );
+    if (mPriSatUsed >= 1) {
+        mSatsInView = pfix.nSats;
+        if (mSatsInView > 0) {
+            SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, mSatsInView, _T(""));
+            mPriSatUsed = 1;
+            mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
+        }
+    }
 
 }
 

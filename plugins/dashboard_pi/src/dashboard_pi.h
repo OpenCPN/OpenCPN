@@ -193,17 +193,19 @@ private:
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
       short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT; 
       short                mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
-      short                mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSats;
+      short                mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
+      short                mPriSatUsed;
       double               mVar;
       // FFU
-      double               mSatsInView;
+      int                  mSatsInView;
       double               mHdm;
       wxDateTime           mUTCDateTime;
       int                  m_config_version;
       wxString             m_VDO_accumulator;
       int                  mHDx_Watchdog;
       int                  mHDT_Watchdog;
-      int                  mGPS_Watchdog;
+      int                  mSatsUsed_Wdog;
+      int                  mSatStatus_Wdog;
       int                  mVar_Watchdog;
       int                  mMWVA_Watchdog;
       int                  mMWVT_Watchdog;
