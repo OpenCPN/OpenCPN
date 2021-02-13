@@ -809,8 +809,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "DebugS57" ), &g_bDebugS57 );         // Show LUP and Feature info in object query
     Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug );
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD );
-    Read(_T("MaxZoomScale"), &g_maxzoomin);
-    g_maxzoomin = wxMax( g_maxzoomin, 50 );
+    Read( _T ( "MaxZoomScale" ), &g_maxzoomin);
+        g_maxzoomin = wxMax( g_maxzoomin, 50 );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size );
     Read( _T ( "DefaultFontFacename"), &g_default_font_facename );
