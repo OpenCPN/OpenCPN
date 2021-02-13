@@ -364,6 +364,7 @@ wxColour                  g_colourOwnshipRangeRingsColour;
 int                       g_iWpt_ScaMin;
 bool                      g_bUseWptScaMin;
 bool                      g_bShowWptName;
+int                       g_maxzoomin;
 
 // Set default color scheme
 ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
