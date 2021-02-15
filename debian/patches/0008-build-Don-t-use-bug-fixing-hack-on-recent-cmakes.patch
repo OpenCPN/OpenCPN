@@ -1,0 +1,29 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 15 Feb 2021 12:59:10 +0100
+Subject: build: Don't use bug-fixing hack on recent cmakes.
+
+---
+ CMakeLists.txt | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a5de793..b23be5a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -769,10 +769,12 @@ if (NOT QT_ANDROID)
+   # As of cmake 3.11.2, these libraries are missing in list despite that we
+   # looked for them. This is a nasty fix which might fail miserably. Assumption:
+   # All builds using GTK uses unicode and wxWidgets 3.0
+-  if (GTK3_FOUND)
+-    list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
+-    if (OPENGL_FOUND)
+-      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
++  if (CMAKE_VERSION VERSION_LESS 3.12)
++    if (GTK3_FOUND)
++      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
++      if (OPENGL_FOUND)
++        list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
++      endif ()
+     endif ()
+   endif ()
+ 
