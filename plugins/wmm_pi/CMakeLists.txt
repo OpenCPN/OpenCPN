@@ -118,6 +118,25 @@ ENDIF(APPLE)
 
 #target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
 
+# Copy shared library to execution folder for debugging if not CI build
+if (NOT OCPN_CI_BUILD)
+  if (MSVC)
+    add_custom_command(
+      TARGET ${PACKAGE_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$(TargetPath)" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      COMMAND ${CMAKE_COMMAND} -E copy "$(TargetPath)" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+    )
+      if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        add_custom_command(
+          COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+          COMMAND ${CMAKE_COMMAND} -E echo "$(OutputPath)/$(TargetName).pdb" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+          COMMAND ${CMAKE_COMMAND} -E copy "$(OutputPath)/$(TargetName).pdb" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+        )
+      endif (CMAKE_BUILD_TYPE)
+  endif (MSVC)
+endif (NOT OCPN_CI_BUILD)
+
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
 INCLUDE("cmake/PluginPackage.cmake")
