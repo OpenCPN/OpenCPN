@@ -15,7 +15,7 @@ override_dh_auto_configure:
             -DBUILD_SHARED_LIBS=OFF \
 	    -DOCPN_BUNDLE_DOCS=OFF \
             -DOCPN_BUNDLE_TCDATA=ON \
-            -DOCPN_USE_BUNDLED_LIBS=wxsvg \
+            -DOCPN_USE_BUNDLED_LIBS=OFF \
             -DOCPN_USE_NEWSERIAL=OFF \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
             -DOCPN_FORCE_GTK3=ON
