@@ -660,7 +660,13 @@ IF(DEFINED _wx_selected_config)
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
-if ((_wx_selected_config MATCHES "qt-armv7"))
+if (APPLE)
+  # Bundle all of wxWidgets as a courtesy for plugins, see #2153
+  set(wxWidgets_FIND_COMPONENTS
+    net xml html adv aui core base media propgrid qa ribbon richtext
+    webview stc xrc
+  )
+elseif ((_wx_selected_config MATCHES "qt-armv7"))
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 elseif (OCPN_USE_WEBVIEW)
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
@@ -1726,7 +1732,7 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u" AND PKG_TARGET STREQUAL "ubuntu")
   set(PKG_TARGET "${PKG_TARGET}-gtk3")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-configure_file(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
+configure_file(${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 
 if (NOT APPLE AND NOT QT_ANDROID)

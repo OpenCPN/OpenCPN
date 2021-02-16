@@ -364,6 +364,7 @@ wxColour                  g_colourOwnshipRangeRingsColour;
 int                       g_iWpt_ScaMin;
 bool                      g_bUseWptScaMin;
 bool                      g_bShowWptName;
+int                       g_maxzoomin;
 
 // Set default color scheme
 ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
@@ -9175,7 +9176,10 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case GSV:
-                setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
+                if (m_NMEA0183.Gsv.MessageNumber == 1) {
+                    // Some GNSS print SatsInView in message #1 only
+                    setSatelitesInView (m_NMEA0183.Gsv.SatsInView);
+                }
                 break;
 
             case GGA:

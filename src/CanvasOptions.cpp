@@ -97,8 +97,8 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     int group_item_spacing = 0;
     int interGroupSpace = border_size * 2;
     
-    wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Expand().Border(wxALL, group_item_spacing);
-    wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
+    wxSizerFlags verticalInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Expand().Border(wxALL, group_item_spacing);
+    wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
     
     wxScrolledWindow *pDisplayPanel = m_sWindow;
 
@@ -120,7 +120,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
 //    generalSizer->Add(boxCont, 0, wxALL | wxEXPAND, border_size);
     
 //     pCBToolbar = new wxCheckBox(pDisplayPanel, ID_TOOLBARCHECKBOX, _("Show Toolbar"));
-//     boxCont->Add(pCBToolbar, verticleInputFlags);
+//     boxCont->Add(pCBToolbar, verticalInputFlags);
 //     pCBToolbar->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
 // 
 //     // spacer
@@ -138,15 +138,15 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     pCBNorthUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
 
     pCBCourseUp = new wxRadioButton(pDisplayPanel, IDCO_COURSEUPCHECKBOX, _("Course Up"));
-    rowOrientation->Add(pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing * 2));
+    rowOrientation->Add(pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxLEFT, group_item_spacing * 2));
     pCBCourseUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
  
     pCBHeadUp = new wxRadioButton(pDisplayPanel, IDCO_HEADUPCHECKBOX, _("Heading Up"));
-    rowOrientation->Add(pCBHeadUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing * 2));
+    rowOrientation->Add(pCBHeadUp, wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxLEFT, group_item_spacing * 2));
     pCBHeadUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
  
     pCBLookAhead = new wxCheckBox(pDisplayPanel, IDCO_CHECK_LOOKAHEAD, _("Look Ahead Mode"));
-    boxNavMode->Add(pCBLookAhead, verticleInputFlags);
+    boxNavMode->Add(pCBLookAhead, verticalInputFlags);
     pCBLookAhead->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     // spacer
@@ -158,19 +158,19 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     generalSizer->Add(boxDisp, 0, wxALL | wxEXPAND, border_size);
     
     pCDOQuilting = new wxCheckBox(pDisplayPanel, IDCO_QUILTCHECKBOX1, _("Enable Chart Quilting"));
-    boxDisp->Add(pCDOQuilting, verticleInputFlags);
+    boxDisp->Add(pCDOQuilting, verticalInputFlags);
     pCDOQuilting->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     pSDisplayGrid = new wxCheckBox(pDisplayPanel, IDCO_CHECK_DISPLAYGRID, _("Show Grid"));
-    boxDisp->Add(pSDisplayGrid, verticleInputFlags);
+    boxDisp->Add(pSDisplayGrid, verticalInputFlags);
     pSDisplayGrid->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     pCDOOutlines = new wxCheckBox(pDisplayPanel, IDCO_OUTLINECHECKBOX1, _("Show Chart Outlines"));
-    boxDisp->Add(pCDOOutlines, verticleInputFlags);
+    boxDisp->Add(pCDOOutlines, verticalInputFlags);
     pCDOOutlines->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     pSDepthUnits = new wxCheckBox(pDisplayPanel, IDCO_SHOWDEPTHUNITSBOX1, _("Show Depth Units"));
-    boxDisp->Add(pSDepthUnits, verticleInputFlags);
+    boxDisp->Add(pSDepthUnits, verticalInputFlags);
     pSDepthUnits->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
 
     // AIS Options
@@ -178,11 +178,11 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     generalSizer->Add(boxAIS, 0, wxALL | wxEXPAND, border_size);
     
     pCBShowAIS = new wxCheckBox(pDisplayPanel, IDCO_SHOW_AIS_CHECKBOX, _("Show AIS targets"));
-    boxAIS->Add(pCBShowAIS, verticleInputFlags);
+    boxAIS->Add(pCBShowAIS, verticalInputFlags);
     pCBShowAIS->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     pCBAttenAIS = new wxCheckBox(pDisplayPanel, IDCO_ATTEN_AIS_CHECKBOX, _("Minimize less critical targets"));
-    boxAIS->Add(pCBAttenAIS, verticleInputFlags);
+    boxAIS->Add(pCBAttenAIS, verticalInputFlags);
     pCBAttenAIS->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     
@@ -195,11 +195,11 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     generalSizer->Add(boxTC, 0, wxALL | wxEXPAND, border_size);
     
     pCDOTides = new wxCheckBox(pDisplayPanel, IDCO_TIDES_CHECKBOX, _("Show Tide stations"));
-    boxTC->Add(pCDOTides, verticleInputFlags);
+    boxTC->Add(pCDOTides, verticalInputFlags);
     pCDOTides->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     pCDOCurrents = new wxCheckBox(pDisplayPanel, IDCO_CURRENTS_CHECKBOX, _("Show Currents"));
-    boxTC->Add(pCDOCurrents, verticleInputFlags);
+    boxTC->Add(pCDOCurrents, verticalInputFlags);
     pCDOCurrents->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     // spacer
@@ -210,37 +210,37 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     generalSizer->Add(boxENC, 0, wxALL | wxEXPAND, border_size);
     
     pCDOENCText = new wxCheckBox(pDisplayPanel, IDCO_ENCTEXT_CHECKBOX1, _("Show text"));
-    boxENC->Add(pCDOENCText, verticleInputFlags);
+    boxENC->Add(pCDOENCText, verticalInputFlags);
     pCDOENCText->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
 
     pCBENCDepth = new wxCheckBox(pDisplayPanel, IDCO_ENCDEPTH_CHECKBOX1, _("Show depths"));
-    boxENC->Add(pCBENCDepth, verticleInputFlags);
+    boxENC->Add(pCBENCDepth, verticalInputFlags);
     pCBENCDepth->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     pCBENCBuoyLabels = new wxCheckBox(pDisplayPanel, IDCO_ENCBUOYLABEL_CHECKBOX1, _("Buoy/Light Labels"));
-    boxENC->Add(pCBENCBuoyLabels, verticleInputFlags);
+    boxENC->Add(pCBENCBuoyLabels, verticalInputFlags);
     pCBENCBuoyLabels->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
  
     pCBENCLights = new wxCheckBox(pDisplayPanel, IDCO_ENCBUOYLABEL_CHECKBOX1, _("Lights"));
-    boxENC->Add(pCBENCLights, verticleInputFlags);
+    boxENC->Add(pCBENCLights, verticalInputFlags);
     pCBENCLights->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
  
     pCBENCLightDesc = new wxCheckBox(pDisplayPanel, IDCO_ENCBUOY_CHECKBOX1, _("Light Descriptions"));
-    boxENC->Add(pCBENCLightDesc, verticleInputFlags);
+    boxENC->Add(pCBENCLightDesc, verticalInputFlags);
     pCBENCLightDesc->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     pCBENCAnchorDetails = new wxCheckBox(pDisplayPanel, IDCO_ENCANCHOR_CHECKBOX1, _("Anchoring Info"));
-    boxENC->Add(pCBENCAnchorDetails, verticleInputFlags);
+    boxENC->Add(pCBENCAnchorDetails, verticalInputFlags);
     pCBENCAnchorDetails->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
         // spacer
     boxENC->Add(0, interGroupSpace);
 
     // display category
-    boxENC->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Category")), verticleInputFlags);
+    boxENC->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Category")), verticalInputFlags);
     wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("User Standard")};
     m_pDispCat = new wxChoice(pDisplayPanel, ID_CODISPCAT, wxDefaultPosition,  wxDefaultSize, 4, pDispCatStrings);
-    boxENC->Add(m_pDispCat, 0, wxLEFT, 4*GetCharWidth());
+    boxENC->Add(m_pDispCat, 0, wxALIGN_CENTER_HORIZONTAL, 0);
     m_pDispCat->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
 #ifdef __OCPN__ANDROID__
