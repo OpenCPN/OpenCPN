@@ -1,0 +1,12 @@
+Package: opencpn-dbgsym
+Source: opencpn
+Version: 5.2.4-0.1+dfsg.210213gitcad0d456
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: Alec Leamas <leamas.alec@gmail.com>
+Installed-Size: 47413
+Depends: opencpn (= 5.2.4-0.1+dfsg.210213gitcad0d456)
+Section: debug
+Priority: optional
+Description: debug symbols for opencpn
+Build-Ids: 25758777249c4c2087654b1ee1a0e00af1039512 4010591e5f287ed67c7c5fffb1f8ee671372dbc4 682438be8e086fcdfe8ac20b4cae8c7e13113458 d5b4514422ded37b00824424a4ca50a6760e44b6 ec8551b70909f61aa674de1d68489eff787549f3
