@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Build the travis flatpak artifacts. Uses docker to run Fedora
-# in the Travis ubuntu VM; the actual build is done in the Fedora
-# container.
+# Build the travis flatpak artifacts.
 #
 
 # bailout on errors and echo commands.
@@ -15,7 +13,15 @@ fi
 
 set -xe
 
-test -d /opencpn-ci && cd /opencpn-ci || :
+# The flatpak manifest is setup to build the master branch. If we are
+# on another branch, make it match the manifest. However, unless 
+# FP_BUILD_ORIGINAL_BRANCH is set, this is not used anyway since the
+# default master branch from main github repo is used then.
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$current_branch" != "master" ]; then
+    git branch -m $current_branch master
+fi
 
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
     | sudo apt-key add -
@@ -35,12 +41,17 @@ flatpak --user remote-add --if-not-exists \
 flatpak --user install -y org.freedesktop.Platform//18.08
 flatpak --user install -y org.freedesktop.Sdk//18.08
 
-# Patch to use official master branch from github and build + build number.
 cd flatpak
-sed -i -e '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
-    -e "/BUILD_NUMBER/s/0/$BUILD_NUMBER/" \
-    org.opencpn.OpenCPN.yaml
+# By default, script packages master branch from main github repo, as a
+# proper packagoing branch should do. Setting FP_BUILD_ORIGINAL_BRANCH
+# makes it build same branch as the script instead, for testing.
+if [ -z "$FP_BUILD_ORIGINAL_BRANCH" ]; then
+    sed -i -e '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
+        -e "/BUILD_NUMBER/s/0/$BUILD_NUMBER/" \
+        org.opencpn.OpenCPN.yaml
+fi
 
+# The build heavy lifting
 test -d ../build || mkdir ../build
 cd ../build
 make -f ../flatpak/Makefile build
@@ -60,22 +71,34 @@ flatpak remote-add  \
 flatpak update --appstream local
 flatpak remote-ls local
 
-# Deploy website/ to deployment server.
+# Deploy website/ to deployment servers.
 cp ../ci/id_opencpn.tar.cpt .
 ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
 tar -xf id_opencpn.tar
 chmod 600 .ssh/id_opencpn
 
+# Old, published channel
 rsync -a --info=stats --delete-after \
     --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
     website/ opencpn@mumin.crabdance.com:/var/www/ocpn-flatpak/website
-rm -f .ssh/id_opencpn*
+
+# Seed the two masters in the opencpn cloud with new build
+if [ -n "$OCPN_CLOUD_TEST" ]; then
+    rsync -a --info=stats --delete-after \
+        --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
+        website/ rsync@mumin.crabdance.com:/home/rsync/flatpak/website
+    rsync -a --info=stats --delete-after \
+        --rsh="ssh -p 2222 -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
+        website/ rsync@gafsan.crabdance.com:/home/rsync/flatpak/website
+    
+    rm -f .ssh/id_opencpn*
+fi
 
 # Restore the patched file so the caching works.
 git checkout ../flatpak/org.opencpn.OpenCPN.yaml
 
 # Debug: show version in remote repo.
-flatpak remote-add --user opencpn $PWD/website/opencpn.flatpakrepo
+flatpak remote-add --user --no-gpg-verify opencpn $PWD/website/repo
 flatpak update --appstream opencpn
 flatpak remote-ls opencpn
 

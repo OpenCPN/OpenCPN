@@ -307,10 +307,10 @@ void AISTargetAlertDialog::RecalculateSize( void )
     // If there is only one button shown, the resulting Fit() size may be too narrow.
     // Adjust it, considering the size of the rendered HTML text content.
     int textWidth = m_pAlertTextCtl->GetInternalRepresentation()->GetWidth();
-        wxSize gSize = GetClientSize();
+    wxSize gSize = GetClientSize();
     int adjustedWidth = wxMax(GetClientSize().x, textWidth  + GetCharHeight() * 2);
     SetClientSize(adjustedWidth, esize.y);
-        
+      
     
     g_Platform->PositionAISAlert( this );
     

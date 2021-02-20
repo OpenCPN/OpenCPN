@@ -94,8 +94,8 @@ class Helpers
 class CatalogUpdate: public wxDialog, Helpers
 {
     protected:
-        class UrlEdit; //forward
-        class ActiveCatalogGrid; //forward
+        struct UrlEdit; //forward
+        struct ActiveCatalogGrid; //forward
 
     public:
         CatalogUpdate(wxWindow* parent)
@@ -504,7 +504,7 @@ class CatalogLoad: public wxPanel, public Helpers
 {
     public:
 
-        class DialogGrid; // forward
+        struct DialogGrid; // forward
 
         CatalogLoad(wxWindow* parent, bool use_latest = false)
             :wxPanel(parent), Helpers(this), m_simple(use_latest)

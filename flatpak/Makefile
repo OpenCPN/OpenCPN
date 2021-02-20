@@ -6,7 +6,6 @@
 #   cd build; make -f ../flatpak/Makefile ...
 #
 
-BRANCH          ?= master
 GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
@@ -18,6 +17,7 @@ all: build sign
 
 build:
 	flatpak-builder --repo=$(CURDIR)/repo --force-clean \
+	    --default-branch=devel \
 	    app ../flatpak/org.opencpn.OpenCPN.yaml
 	-flatpak uninstall --user -y org.opencpn.OpenCPN.Locale
 	flatpak install -y --user --reinstall \
@@ -27,6 +27,7 @@ install: .phony
 	rm -rf $(DESTDIR); mkdir $(DESTDIR)
 	cp ../flatpak/repo/*flat* ../flatpak/repo/index.html $(DESTDIR)
 	cp -ar repo $(DESTDIR)
+	rm -f $(DESTDIR)/repo/.lock
 
 sign:   .phony
 	@test -d $(GPG_HOMEDIR) || { \
@@ -58,5 +59,13 @@ publish:
 	rsync -a  --info=stats --rsh="$(RSYNC_RSH)" $(DESTDIR)/ \
 	    --delete-after \
 	    $(RSYNC_HOST):/var/www/ocpn-flatpak/website
+
+cloud-publish:
+	rsync -a  --info=stats --rsh="ssh" website/ \
+	    --delete-after \
+	    rsync@mumin.crabdance.com:/home/rsync/flatpak/website
+	rsync -a  --info=stats --rsh="ssh -p 2222" website/ \
+	    --delete-after \
+	    rsync@gafsan.crabdance.com:/home/rsync/flatpak/website
 
 .phony:

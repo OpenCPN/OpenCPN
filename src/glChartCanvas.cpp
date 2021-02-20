@@ -4946,9 +4946,10 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
                 continue;
             
             wxFileName tileFile(chart->GetFullPath());
-            wxULongLong tileSize = tileFile.GetSize();
+            //Size test for 5 GByte
+            wxULongLong tileSizeMB = tileFile.GetSize() >> 20;
         
-            if(!ChartData->CheckAnyCanvasExclusiveTileGroup() || (tileSize > 5e9)){
+            if(!ChartData->CheckAnyCanvasExclusiveTileGroup() || (tileSizeMB.GetLo() > 5000)){
                 // Check to see if the tile has been "clicked".
                 // If so, do not add to no-show array again.
                 if(!m_pParentCanvas->IsTileOverlayIndexInYesShow(*rit)){

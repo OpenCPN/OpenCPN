@@ -80,7 +80,7 @@ bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 int ChartStack::GetCurrentEntrydbIndex(void)
 {
-      if(nEntry /*&& b_valid*/)
+      if(nEntry && (CurrentStackEntry >= 0)/*&& b_valid*/)
             return DBIndex[CurrentStackEntry];
       else
             return -1;
@@ -1518,8 +1518,10 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                         //   then allow immediate opening.  Otherwise, add this chart to the "no-show" array for each chart.
                         if(chart_type == CHART_TYPE_MBTILES){
                             wxFileName tileFile(ChartFullPath);
-                            wxULongLong tileSize = tileFile.GetSize();
-                            if(!CheckAnyCanvasExclusiveTileGroup() || (tileSize > 5e9)){
+                            //Size test for 5 GByte
+                            wxULongLong tileSizeMB = tileFile.GetSize() >> 20;
+
+                            if(!CheckAnyCanvasExclusiveTileGroup() || (tileSizeMB.GetLo() > 5000)){
                                 // Check to see if the tile has been "clicked" in either canvas.
                                 // If so, do not add to no-show array again.
                                 bool b_clicked = false;

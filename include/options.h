@@ -540,7 +540,8 @@ class options : private Uncopyable,
   wxCheckBox *m_pCheck_Ack_Timout, *m_pCheck_Show_Area_Notices;
   wxCheckBox *m_pCheck_Draw_Target_Size, *m_pCheck_Draw_Realtime_Prediction;
   wxCheckBox *m_pCheck_Show_Target_Name;
-  wxCheckBox *m_pCheck_Wpl_Aprs, *m_pCheck_ShowAllCPA;
+  wxChoice   *m_pWplAction;
+  wxCheckBox *m_pCheck_use_Wpl, *m_pCheck_ShowAllCPA;
   wxTextCtrl *m_pText_CPA_Max, *m_pText_CPA_Warn, *m_pText_CPA_WarnT;
   wxTextCtrl *m_pText_Mark_Lost, *m_pText_Remove_Lost, *m_pText_COG_Predictor;
   wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed, *m_pText_Scale_Priority;

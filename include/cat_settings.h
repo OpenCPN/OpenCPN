@@ -1,11 +1,9 @@
-/***************************************************************************
+/******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  NMEA0183 Support Classes
- * Author:   Samuel R. Blackburn, David S. Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by Samuel R. Blackburn, David S Register           *
+ *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,55 +18,27 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- *
- *   S Blackburn's original source license:                                *
- *         "You can use it any way you like."                              *
- *   More recent (2010) license statement:                                 *
- *         "It is BSD license, do with it what you will"                   *
- */
-
-
-#if ! defined( GSV_CLASS_HEADER )
-#define GSV_CLASS_HEADER
-
-/*
-** Author: Samuel R. Blackburn
-** CI$: 76300,326
-** Internet: sammy@sed.csc.com
-**
-** You can use it any way you like.
 */
 
-class GSV : public RESPONSE
+
+#ifndef PLUG_SETTINGS_H_
+#define PLUG_SETTINGS_H_
+
+
+#include <wx/dialog.h>
+#include <wx/window.h>
+
+/**
+ * Modal dialog, displays settings for plugin catalog.
+ */
+class CatalogSettingsDialog: public wxDialog
 {
+    public:
+        CatalogSettingsDialog(wxWindow* parent);
 
-   public:
 
-      GSV();
-     ~GSV();
-
-      /*
-      ** Data
-      */
-
-      int MessageNumber;
-      int SatsInView;
-
-      /*
-      ** Methods
-      */
-
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const GSV& operator = ( const GSV& source );
 };
 
-#endif // GSV_CLASS_HEADER
+#endif // PLUG_SETTINGS_H

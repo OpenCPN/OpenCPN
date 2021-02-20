@@ -218,6 +218,7 @@ extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowChartBar;
 extern bool             g_bInlandEcdis;
 extern int              g_ENCSoundingScaleFactor;
+extern int              g_maxzoomin;
 
 
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -1610,21 +1611,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
         vpLon = m_vLon;
         
     }
-    
-    // Calculate change in VP, in pixels, using a simple SM projection
-    // if change in pixels is smaller than 2% of screen size, do not change the VP
-    // This will avoid "jitters" at large scale.
-    if(GetVP().view_scale_ppm > 1.0){ 
-        double easting, northing;
-        toSM( GetVP().clat, GetVP().clon, vpLat, vpLon,  &easting, &northing );
-        if( (fabs(easting * GetVP().view_scale_ppm) < (GetVP().pix_width * 2 / 100)) ||
-            (fabs(northing * GetVP().view_scale_ppm) < (GetVP().pix_height * 2 / 100)) ){
-            vpLat = GetVP().clat;
-            vpLon = GetVP().clon;
-        }
-    }
-    
-    
+        
     if( GetQuiltMode() ) {
         int current_db_index = -1;
         if( m_pCurrentStack )
@@ -4489,7 +4476,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 //             proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
             
             //  Query the chart to determine the appropriate zoom range
-            double min_allowed_scale = 800;    // Roughly, latitude dependent for mercator charts
+            double min_allowed_scale = g_maxzoomin;    // Roughly, latitude dependent for mercator charts
             
             if( proposed_scale_onscreen < min_allowed_scale ) {
                 if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
@@ -4501,7 +4488,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
         }
         else {
-            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 800.);
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, g_maxzoomin);
         }
             
         
@@ -4557,47 +4544,25 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     }
 
     double new_scale = GetVPScale() * (GetVP().chart_scale / proposed_scale_onscreen);
-    if( b_do_zoom ) {
-        if( can_zoom_to_cursor && g_bEnableZoomToCursor) {
+
+    if (b_do_zoom) {
+        if (can_zoom_to_cursor && g_bEnableZoomToCursor) {
             //  Arrange to combine the zoom and pan into one operation for smoother appearance
-            SetVPScale( new_scale, false );   // adjust, but deferred refresh
- 
+            SetVPScale (new_scale, false);   // adjust, but deferred refresh
+
             wxPoint r;
-            GetCanvasPointPix( zlat, zlon, &r );
-            PanCanvas( r.x - mouse_x, r.y - mouse_y );  // this will give the Refresh()
-
-            //ClearbFollow();      // update the follow flag
+            GetCanvasPointPix (zlat, zlon, &r);
+            PanCanvas (r.x - mouse_x, r.y - mouse_y);  // this will give the Refresh()
         }
-        else{
-            if(m_bFollow){      //  Adjust the Viewpoint to keep ownship at the same pixel point on-screen
-                double offx, offy;
-                toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
+        else {
+            SetVPScale (new_scale);
 
-                double offset_angle = atan2(offy, offx);
-                double offset_distance = sqrt((offy * offy) + (offx * offx));
-                double chart_angle =  GetVPRotation() ;
-                double target_angle = chart_angle - offset_angle;
-                double d_east_mod = offset_distance * cos( target_angle );
-                double d_north_mod = offset_distance * sin( target_angle );
-
-                m_OSoffsetx = d_east_mod * old_ppm;
-                m_OSoffsety = -d_north_mod * old_ppm;
-
-                double d_east_mods = d_east_mod / new_scale;
-                double d_north_mods = d_north_mod / new_scale;
-
-                double nlat, nlon;
-                fromSM( d_east_mods, d_north_mods, gLat, gLon, &nlat, &nlon );
-                SetViewPoint( nlat, nlon, new_scale, GetVP().skew, GetVP().rotation);
-                DoCanvasUpdate();
-            }
-            else
-                SetVPScale( new_scale );
+            if (m_bFollow) 
+                DoCanvasUpdate ();
         }
     }
     
     m_bzooming = false;
-    
 }
 
 void ChartCanvas::RotateCanvas( double dir )
@@ -7478,7 +7443,6 @@ void ChartCanvas::CallPopupMenu(int x, int y)
     // Seth: Is this refresh needed?
     Refresh( false );            // needed for MSW, not GTK  Why??
 }
-
 bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
 {
     // For now just bail out completely if the point clicked is not on the chart
@@ -9691,29 +9655,29 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, const wxString &first, 
 
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 {
-        Route* route = 0;
+    Route* route = 0;
     if( m_routeState >= 2)
         route = m_pMouseRoute;
     if(m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 ) )
-            route = m_pMeasureRoute;
-        
-        if(!route)
-            return;
+        route = m_pMeasureRoute;
     
-        double render_lat = m_cursor_lat;
-        double render_lon = m_cursor_lon;
+    if(!route)
+        return;
+    
+    double render_lat = m_cursor_lat;
+    double render_lon = m_cursor_lon;
         
-            int np = route->GetnPoints();
-            if(np){
-                if(g_btouch && (np > 1))
-                    np --;
-                RoutePoint rp = route->GetPoint(np);
-                render_lat = rp.m_lat;
-                render_lon = rp.m_lon;
-            }
-                
+    int np = route->GetnPoints();
+    if(np){
+        if(g_btouch && (np > 1))
+            np --;
+        RoutePoint rp = route->GetPoint(np);
+        render_lat = rp.m_lat;
+        render_lon = rp.m_lon;
+    }
+
     double rhumbBearing, rhumbDist;
-        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
+    DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
     double brg = rhumbBearing;
     double dist = rhumbDist;
 
@@ -9735,61 +9699,60 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             route->m_NextLegGreatCircle = true;
         }
 
-            route->DrawPointWhich( dc, this, route->m_lastMousePointIndex, &lastPoint );
+        route->DrawPointWhich( dc, this, route->m_lastMousePointIndex, &lastPoint );
 
-            if( route->m_NextLegGreatCircle ) {
-                for( int i=1; i<=milesDiff; i++ ) {
-                    double p = (double)i * (1.0/(double)milesDiff);
-                    double pLat, pLon;
-                    Geodesic::GreatCircleTravel( render_lon, render_lat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
-                    destPoint = VPoint.GetPixFromLL( pLat, pLon );
-                    route->DrawSegment( dc, this, &lastPoint, &destPoint, GetVP(), false );
-                    lastPoint = destPoint;
-                }
+        if( route->m_NextLegGreatCircle ) {
+            for( int i=1; i<=milesDiff; i++ ) {
+                double p = (double)i * (1.0/(double)milesDiff);
+                double pLat, pLon;
+                Geodesic::GreatCircleTravel( render_lon, render_lat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
+                destPoint = VPoint.GetPixFromLL( pLat, pLon );
+                route->DrawSegment( dc, this, &lastPoint, &destPoint, GetVP(), false );
+                lastPoint = destPoint;
             }
-            else {
-                if (r_rband.x && r_rband.y) {    // RubberBand disabled?
-                    route->DrawSegment(dc, this, &lastPoint, &r_rband, GetVP(), false);
+        }
+        else {
+            if (r_rband.x && r_rband.y) {    // RubberBand disabled?
+                route->DrawSegment(dc, this, &lastPoint, &r_rband, GetVP(), false);
+                if (m_bMeasure_DistCircle) {
+                    double distanceRad = sqrtf(powf((float)(r_rband.x - lastPoint.x), 2) +
+                        powf((float)(r_rband.y - lastPoint.y), 2));
 
-                    if (m_bMeasure_DistCircle) {
-                        double distanceRad = sqrtf(powf((float)(r_rband.x - lastPoint.x), 2) +
-                            powf((float)(r_rband.y - lastPoint.y), 2));
-
-                        dc.SetPen(*g_pRouteMan->GetRoutePen());
-                        dc.SetBrush(*wxTRANSPARENT_BRUSH);
-                        dc.StrokeCircle(lastPoint.x, lastPoint.y, distanceRad);
-                    }
+                    dc.SetPen(*g_pRouteMan->GetRoutePen());
+                    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+                    dc.StrokeCircle(lastPoint.x, lastPoint.y, distanceRad);
                 }
             }
         }
-
-        wxString routeInfo;
-        if( g_bShowTrue )
-            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-        if( g_bShowMag ){
-            double latAverage = (m_cursor_lat + render_lat)/2;
-            double lonAverage = (m_cursor_lon + render_lon)/2;
-            double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
+    }
+        
+    wxString routeInfo;
+    if( g_bShowTrue )
+        routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
+    if( g_bShowMag ){
+        double latAverage = (m_cursor_lat + render_lat)/2;
+        double lonAverage = (m_cursor_lon + render_lon)/2;
+        double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
             
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
-        }
+        routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+    }
 
-        routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
+    routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
 
-        wxString s0;
-        if( !route->m_bIsInLayer )
-            s0.Append( _("Route") + _T(": ") );
-        else
-            s0.Append( _("Layer Route: ") );
+    wxString s0;
+    if( !route->m_bIsInLayer )
+        s0.Append( _("Route") + _T(": ") );
+    else
+        s0.Append( _("Layer Route: ") );
 
-        double disp_length = route->m_route_length;
-        if( !g_btouch)
-            disp_length += dist;                // Add in the to-be-created leg.
-        s0 += FormatDistanceAdaptive( disp_length );
+    double disp_length = route->m_route_length;
+    if( !g_btouch)
+        disp_length += dist;                // Add in the to-be-created leg.
+    s0 += FormatDistanceAdaptive( disp_length );
 
-        RouteLegInfo( dc, r_rband, routeInfo, s0 );
+    RouteLegInfo( dc, r_rband, routeInfo, s0 );
 
-        m_brepaint_piano = true;
+    m_brepaint_piano = true;
 }
 
 void ChartCanvas::WarpPointerDeferred( int x, int y )
