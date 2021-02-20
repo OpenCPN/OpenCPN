@@ -37,8 +37,17 @@
 // The os compatible plugins are are built for
 #define PKG_TARGET "${PKG_TARGET}"
 
+// The os compatible plugins should be built for
+#define PKG_BUILD_TARGET "${PKG_BUILD_TARGET}"
+
 // The os version compatible plugins are are built for
 #define PKG_TARGET_VERSION "${PKG_TARGET_VERSION}"
+
+// The architecture compatible plugins are built for
+#define PKG_TARGET_ARCH "${ARCH}"
+
+// The version of gtk that has been used in the plugin build
+#define PKG_BUILD_GTK "${PKG_BUILD_GTK}"
 
 // Command line to play a sound in system(3), like "aplay %s".
 #define SYSTEM_SOUND_CMD  ${SYSTEM_SOUND_CMD}

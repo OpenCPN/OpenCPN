@@ -123,7 +123,7 @@ void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) cons
             updateNavigationCourseOverGround(value, sfixtime);
         } else if(update_path == _T("navigation.courseOverGroundMagnetic"))
         {  // Ignore magnetic COG as OpenCPN don't handle yet.
-        } else if(update_path == _T("navigation.gnss.satellites"))
+        } else if(update_path == _T("navigation.satellitesInView"))
         {
             updateGnssSatellites(value, sfixtime);
         } else if(update_path == _T("navigation.headingTrue"))
@@ -184,8 +184,9 @@ void SignalKEventHandler::updateNavigationCourseOverGround(wxJSONValue &value,
 
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,
                                                const wxString &sfixtime) const
-{
-    m_frame->setSatelitesInView(value.AsInt());
+{   
+    if ((value.HasMember("count") && value["count"].IsInt()) )
+        m_frame->setSatelitesInView(value["count"].AsInt());
 }
 
 void SignalKEventHandler::updateHeadingTrue(wxJSONValue &value,

@@ -402,6 +402,22 @@ ChartPanel::ChartPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, cons
     wxString Descriptor = Name + _T("\n    ") + stat + _T("   ") + latest;
     wxColour bColor;
     GetGlobalColor(_T("DILG0"), &bColor);
+    bool bUseSysColors = false;
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) )
+        bUseSysColors = true;
+#endif
+#ifdef __WXGTK__
+    bUseSysColors= true;
+#endif
+
+    if(bUseSysColors) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if(bg.Red() < 128) {
+            bColor = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        }
+    }
+
     SetBackgroundColour( bColor );
     
     wxBoxSizer* m_sizer = new wxBoxSizer(wxVERTICAL);

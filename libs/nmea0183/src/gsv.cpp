@@ -55,6 +55,7 @@ GSV::~GSV()
 
 void GSV::Empty( void )
 {
+   MessageNumber = 0;
    SatsInView = 0;
 }
 
@@ -101,7 +102,7 @@ Where:
    ** Ignore the checksum...
    */
 
-
+   MessageNumber = sentence.Integer( 2 );
    SatsInView = sentence.Integer( 3 );
 
    return( TRUE );

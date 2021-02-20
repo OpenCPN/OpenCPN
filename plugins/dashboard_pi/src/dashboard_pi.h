@@ -174,7 +174,7 @@ private:
       
       void ApplyConfig(void);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
-      void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
+      void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments( wxDateTime value );
 
       void ParseSignalK( wxString &msg);
@@ -191,8 +191,9 @@ private:
       int               m_hide_id;
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
-      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
-      short                mPriSTW, mPriWTP, mPriATMP, mPriWDN;
+      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT; 
+      short                mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
+      short                mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSats;
       double               mVar;
       // FFU
       double               mSatsInView;
@@ -328,7 +329,7 @@ public:
     bool isInstrumentListEqual( const wxArrayInt& list );
     void SetInstrumentList( wxArrayInt list );
     void SendSentenceToAllInstruments( int st, double value, wxString unit );
-    void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
+    void SendSatInfoToAllInstruments( int cnt, int seq, wxString talk, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( wxDateTime value );
     void ChangePaneOrientation( int orient, bool updateAUImgr );
 /*TODO: OnKeyPress pass event to main window or disable focus*/

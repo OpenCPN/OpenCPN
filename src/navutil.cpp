@@ -231,7 +231,8 @@ extern bool             g_bDrawAISRealtime;
 extern double           g_AIS_RealtPred_Kts;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
-extern bool             g_bWplIsAprsPosition;
+extern bool             g_bWplUsePosition;
+extern int              g_WplAction;
 extern bool             g_benableAISNameCache;
 extern bool             g_bUseOnlyConfirmedAISName;
 extern int              g_ScaledNumWeightSOG;
@@ -298,6 +299,7 @@ extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
 extern double           g_n_arrival_circle_radius;
+extern int              g_maxzoomin;
 
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bsimplifiedScalebar;
@@ -630,7 +632,8 @@ int MyConfig::LoadMyConfig()
     g_ScaledNumWeightSizeOfT = 25;
     g_ScaledSizeMinimal = 50;
     g_Show_Target_Name_Scale = 250000;
-    g_bWplIsAprsPosition = 1;
+    g_bWplUsePosition = 0;
+    g_WplAction = 0;
     g_ais_cog_predictor_width = 3;
     g_ais_alert_dialog_sx = 200;
     g_ais_alert_dialog_sy = 200;
@@ -652,6 +655,7 @@ int MyConfig::LoadMyConfig()
     gLon = START_LON;
     initial_scale_ppm = .0003;        // decent initial value
     initial_rotation = 0;
+    g_maxzoomin = 800;
 
     g_iNavAidRadarRingsNumberVisible = 0;
     g_fNavAidRadarRingsStep = 1.0;
@@ -805,6 +809,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "DebugS57" ), &g_bDebugS57 );         // Show LUP and Feature info in object query
     Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug );
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD );
+    Read( _T ( "MaxZoomScale" ), &g_maxzoomin);
+        g_maxzoomin = wxMax( g_maxzoomin, 50 );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size );
     Read( _T ( "DefaultFontFacename"), &g_default_font_facename );
@@ -1129,7 +1135,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "AISRealtimeMinSpeedKnots" ), &g_AIS_RealtPred_Kts, 0.7 );
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     Read( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
-    Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition );
+    Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplUsePosition );
+    Read( _T ( "WplSelAction"), &g_WplAction);
     Read( _T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
@@ -2568,7 +2575,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AISRealtimeMinSpeedKnots" ), g_AIS_RealtPred_Kts );
     Write( _T ( "bShowAISName" ), g_bShowAISName );
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
-    Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
+    Write( _T ( "bWplIsAprsPositionReport" ), g_bWplUsePosition );
+    Write( _T ( "WplSelAction" ), g_WplAction );
     Write( _T ( "AISCOGPredictorWidth" ), g_ais_cog_predictor_width );
     Write( _T ( "bShowScaledTargets" ), g_bAllowShowScaled );
     Write( _T ( "AISScaledNumber" ), g_ShowScaled_Num );    

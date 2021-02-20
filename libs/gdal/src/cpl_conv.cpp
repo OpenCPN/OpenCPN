@@ -849,7 +849,7 @@ char *CPLPrintDouble( char *pszBuffer, const char *pszFormat,
  * printing. Be aware that it may be unsuitable to use current locale for
  * printing time, because all names will be printed in your native language,
  * as well as time format settings also may be ajusted differently from the
- * C/POSIX defaults. To solve these problems this option was introdiced.
+ * C/POSIX defaults. To solve these problems this option was introduced.
  *
  * @return Pointer to the destination not NULL terminated buffer.
  */

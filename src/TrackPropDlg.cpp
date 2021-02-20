@@ -172,9 +172,9 @@ TrackPropDlg::~TrackPropDlg()
             wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
     
     if(!m_bcompact){
-    m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
+        m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
-    m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
+        m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
             wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
     }
 

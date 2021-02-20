@@ -132,6 +132,8 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "catalog_handler.h"
 #include "semantic_vers.h"
 #include "update_mgr.h"
+#include "cat_settings.h"
+#include "config_var.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -196,6 +198,8 @@ extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
 extern bool       g_bquiting;
 extern wxString          g_ownshipMMSI_SK;
+extern wxString          g_catalog_channel;
+extern wxString          g_catalog_custom_url;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr  g_canvasArray;
@@ -839,17 +843,17 @@ class StatusIconPanel: public wxPanel
                 return;
             }
             
-            wxString color = "DILG0";
             int penWidth = m_penWidthUnselected;
+            wxColour border = GetDialogColor(DLG_UNSELECTED_ACCENT);
             
             if(m_parent->GetSelected()){
-                color = "DILG1";
                 penWidth = m_penWidthSelected;
+                border = GetDialogColor(DLG_SELECTED_ACCENT);
             }
             
-            wxBrush b(GetGlobalColor(color), wxSOLID);
+            wxBrush b(m_parent->GetBackgroundColour(), wxSOLID);
             dc.SetBrush(b);
-            dc.SetPen( wxPen(*wxBLACK, penWidth ));
+            dc.SetPen( wxPen(border, penWidth) );
 
             dc.DrawRoundedRectangle(-20, 5, GetSize().x-5, GetSize().y-10, 5);
             dc.DrawBitmap(m_bitmap, offset, offset*2, true);
@@ -2088,7 +2092,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         if( b_pi_info_usable )
         {
             b_compat = ( pi_info.type_magic == own_info.type_magic );
-            if(g_Platform->isFlatpacked()){             // Ignore specific difference in OSABI field on flatpak builds
+            if(1/*g_Platform->isFlatpacked()*/){             // Ignore specific difference in OSABI field on flatpak builds
                     if( (pi_info.type_magic ^ own_info.type_magic) == 0x00030000)
                         b_compat = true;
             }
@@ -5140,6 +5144,11 @@ static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
 }
 
 
+#define DISABLED_SETTINGS_MSG \
+    _("These settings might destabilize OpenCPN and are by default disabled." \
+    " To despite the dangers enable them manually add a CatalogExpert=1" \
+    " line in the [PlugIns] section in the configuration file.")
+
 /*
  * Panel with buttons to control plugin catalog management.
  */
@@ -5155,168 +5164,114 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( this, wxID_ANY, _("Plugin Catalog") );
      wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static, wxVERTICAL );
      topSizer->Add( itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2 );
-#ifndef __OCPN__ANDROID__
+     
+#ifndef __OCPN__ANDROID__     
      // First line
      m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
-     itemStaticBoxSizer4->Add( m_catalogText, 1, wxALIGN_LEFT );
+     itemStaticBoxSizer4->Add(m_catalogText,
+                              wxSizerFlags().Border().Proportion(1));
      m_catalogText->SetLabel(GetCatalogText(false));
 
      // Next line
      wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
+     itemStaticBoxSizer4->Add(rowSizer2,
+                              wxSizerFlags().Expand().Border().Proportion(1));
 
      m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer2->Add( m_updateButton, 0, wxALIGN_LEFT );
      m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
-
      rowSizer2->AddSpacer( 4 * GetCharWidth() );
-
-     wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
-     rowSizer2->Add( tchannels, 0, wxALIGN_RIGHT | wxALL, 5 );
-
-     wxArrayString channels;
-     channels.Add(_T( "Master" ));
-     channels.Add(_T( "Beta" ));
-     pConfig->SetPath( _T("/PlugIns/") );
-     wxString expert = pConfig->Read( "CatalogExpert", "0");
-     if(expert.IsSameAs(_T("1"))){
-        channels.Add(_T( "Alpha" ));
-        channels.Add(_T( "Custom..." ));
-     }
-     
-     m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
-     rowSizer2->Add( m_choiceChannel, 0, wxALIGN_RIGHT );
-     m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
-     int selection = GetChannelIndex(&channels);
-     if(!expert){
-         if(selection > 1) selection = 0;
-     }
-     m_choiceChannel->SetSelection( selection );
-
      m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer2->Add( m_tarballButton, 0, wxALIGN_LEFT | wxLEFT, 2 * GetCharWidth() );
      m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
 
+     rowSizer2->AddSpacer( 4 * GetCharWidth() );
+     m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
+                                 wxDefaultPosition, wxDefaultSize, 0 );
+     ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+     if (expert.get(false)) {
+         m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                            &CatalogMgrPanel::OnPluginSettingsButton,
+                            this);
+     }
+     else {
+         m_adv_button->Bind(
+             wxEVT_COMMAND_BUTTON_CLICKED,
+             [&](wxCommandEvent&) {
+                 wxMessageBox(DISABLED_SETTINGS_MSG, _("Disabled"));
+             }
+         );
+     }
+     rowSizer2->AddSpacer( 4 * GetCharWidth() );
+     rowSizer2->Add( m_adv_button, 0, wxALIGN_LEFT );
+
      SetUpdateButtonLabel();
 
      // Next line
      wxBoxSizer* rowSizer3 = new wxBoxSizer( wxHORIZONTAL );
      itemStaticBoxSizer4->Add( rowSizer3, 0, wxEXPAND | wxALL, 4 );
      
-     m_customText = new wxStaticText( this, wxID_STATIC, _T("Custom url"));
-     rowSizer3->Add( m_customText, 0, wxALIGN_LEFT | wxRIGHT, 2 * GetCharWidth() );
-     m_tcCustomURL = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
-     rowSizer3->Add( m_tcCustomURL, 1, wxEXPAND  );
-
-     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom"))){
-         m_tcCustomURL->Show();
-         m_customText->Show();
-     }
-     else{
-         m_tcCustomURL->Hide();
-         m_customText->Hide();
-     }
-#else
-     SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));              // light blue
-     pConfig->SetPath( _T("/PlugIns/") );
-     wxString expert = pConfig->Read( "CatalogExpert", "0");
-
-     // First line
-     m_catalogText = new wxStaticText( this, wxID_STATIC, GetCatalogText(false));
-     itemStaticBoxSizer4->Add( m_catalogText, 0, wxALIGN_LEFT );
-     if(expert.IsSameAs(_T("0")))
-        m_catalogText->Hide();
-     
-     // Next line
-     m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog:Master"), wxDefaultPosition, wxDefaultSize, 0 );
-     itemStaticBoxSizer4->Add( m_updateButton, 1, wxALIGN_LEFT );
-     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
-
-     // Next line
-     wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
-
-     wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
-     rowSizer2->Add( tchannels, 1, wxALIGN_RIGHT | wxALL, 5 );
-     if(expert.IsSameAs(_T("0")))
-        tchannels->Hide();
-
-     wxArrayString channels;
-     channels.Add(_T( "Master" ));
-     channels.Add(_T( "Beta" ));
-     if(expert.IsSameAs(_T("1"))){
-        channels.Add(_T( "Alpha" ));
-        channels.Add(_T( "Custom..." ));
-     }
-     
-     m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
-     rowSizer2->Add( m_choiceChannel, 1, wxALIGN_RIGHT );
-     m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
-     int selection = GetChannelIndex(&channels);
-     if(!expert){
-         if(selection > 1) selection = 0;
-     }
-     m_choiceChannel->SetSelection( selection );
-     if(expert.IsSameAs(_T("0")))
-        m_choiceChannel->Hide();
-
-     // Next line
-     m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
-     itemStaticBoxSizer4->Add( m_tarballButton, 0, wxALIGN_LEFT );
-     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
-     if(expert.IsSameAs(_T("0")))
-        m_tarballButton->Hide();
-
-     // Next line
-     wxBoxSizer* rowSizer3 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer3, 0, wxEXPAND | wxALL, 4 );
-     
-     m_customText = new wxStaticText( this, wxID_STATIC, _T("Custom url"));
-     rowSizer3->Add( m_customText, 0, wxALIGN_LEFT | wxRIGHT, 2 * GetCharWidth() );
-     m_tcCustomURL = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
-     rowSizer3->Add( m_tcCustomURL, 1, wxEXPAND  );
-
-     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom"))){
-         m_tcCustomURL->Show();
-         m_customText->Show();
-     }
-     else{
-         m_tcCustomURL->Hide();
-         m_customText->Hide();
-     }
-
-     SetUpdateButtonLabel();
-
-#endif
      SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
      Fit();
 
+     ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+     wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+     catalog.listen(this, EVT_CATALOG_CHANGE);
+     Bind(EVT_CATALOG_CHANGE,
+          [&](wxCommandEvent&) { SetUpdateButtonLabel(); });
+
+#else           // Android
+    SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));              // light blue
+    ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+    if (expert.get(false)){
+        m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_updateButton, 0, wxALIGN_LEFT );
+        m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
+        SetUpdateButtonLabel();
+    }
+    else{
+             // First line
+        m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
+        itemStaticBoxSizer4->Add(m_catalogText, wxSizerFlags().Border().Proportion(1));
+        m_catalogText->SetLabel(GetCatalogText(false));
+
+        m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_updateButton, 0, wxALIGN_LEFT );
+        m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
+        SetUpdateButtonLabel();
+        
+        // Next line
+        m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_adv_button, 0, wxALIGN_LEFT );
+        m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnPluginSettingsButton,this);
+        
+        // Next line
+        m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
+        itemStaticBoxSizer4->Add( m_tarballButton, 0, wxALIGN_LEFT | wxLEFT, 2 * GetCharWidth() );
+        m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
+    }
+
+#endif     
 }
 
 CatalogMgrPanel::~CatalogMgrPanel()
 {
      m_updateButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
      m_tarballButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
-
 }
 
-static const char* const DOWNLOAD_REPO_PROTO = "https://raw.githubusercontent.com/OpenCPN/plugins/@branch@/ocpn-plugins.xml";
+static const char* const DOWNLOAD_REPO_PROTO
+    = "https://raw.githubusercontent.com/OpenCPN/plugins/@branch@/ocpn-plugins.xml";
 
 void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
 {
-    std::string url;
-    
     // Craft the url
-    if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom")))
-        url = m_tcCustomURL->GetValue();
-    else{
+    std::string catalog(g_catalog_channel == "" ? "master" : g_catalog_channel);
+    std::string url(g_catalog_custom_url);
+    if (catalog != "custom") {
         url = std::string(DOWNLOAD_REPO_PROTO);
-        if(m_choiceChannel->GetSelection() == 0)        // Master-->master
-            ocpn::replace(url, "@branch@", m_choiceChannel->GetString(m_choiceChannel->GetSelection()).Lower().ToStdString());
-        else
-            ocpn::replace(url, "@branch@", m_choiceChannel->GetString(m_choiceChannel->GetSelection()).ToStdString());
+        ocpn::replace(url, "@branch@", catalog);
     }
-
     // Download to a temp file
     std::string filePath = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
 
@@ -5348,7 +5303,7 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
 #endif    
     
     // If this is the "master" catalog, also copy to plugin cache
-    if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Master"))){
+    if (catalog == "master") {
         wxString metaCache = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("plugins");
         if(!wxDirExists( metaCache ))
             wxMkdir( metaCache );
@@ -5376,7 +5331,7 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
 
     // Record in the config file the name of the catalog downloaded
     pConfig->SetPath( _T("/PlugIns/") );
-    pConfig->Write( _T("LatestCatalogDownloaded"), m_choiceChannel->GetString(m_choiceChannel->GetSelection()) );
+    pConfig->Write( "LatestCatalogDownloaded", catalog.c_str() );
     pConfig->Flush();
 
     // Reset the PluginHandler catalog file source.
@@ -5433,6 +5388,10 @@ static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
         else if( !strcmp(element.name(), "target") ){
             plugin.target = element.first_child().value();
         }
+        else if( !strcmp(element.name(), "build-target") ){
+            plugin.build_target = element.first_child().value();
+            wxLogMessage("Found build-target: %s", plugin.build_target);
+        }
         else if( !strcmp(element.name(), "target-version") ){
             plugin.target_version = element.first_child().value();
         }
@@ -5441,6 +5400,9 @@ static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
         }
         else if( !strcmp(element.name(), "tarball-url") ){
             plugin.tarball_url = element.first_child().value();
+        }
+        else if( !strcmp(element.name(), "build-gtk") ){
+            plugin.build_gtk = element.first_child().value();
         }
     }
 
@@ -5497,12 +5459,19 @@ static void populatePluginNode(pugi::xml_node &pluginNode, PluginMetadata &worki
 }
 
 
+void CatalogMgrPanel::OnPluginSettingsButton( wxCommandEvent &event)
+{
+    auto dialog = new CatalogSettingsDialog(this);
+    dialog->ShowModal();
+}
+
+
 void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
 {
     // Present a file selector dialog to get the file name..
     wxString tarballPath;
    int response = g_Platform->DoFileSelectorDialog( this, &tarballPath, _( "Select tarball file" ),
-                                                      g_Platform->GetPrivateDataDir(), wxEmptyString, wxT ( "*.tar.gz" ));
+                                                      g_Platform->GetPrivateDataDir(), wxEmptyString, wxT ( "tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*" ));
  
     if( response == wxID_OK )
     {
@@ -5758,49 +5727,20 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated)
     //  Get the version from the currently active catalog, by which we mean
     //  the latest catalog parsed.
     auto pluginHandler = PluginHandler::getInstance();
-    std::string version = pluginHandler->GetCatalogData()->version;
+    std::string date = pluginHandler->GetCatalogData()->date;
     
-    catalog += _T("  ");
-    catalog += _("Version");
-    catalog += _T(" ");
-    catalog += wxString(version.c_str());
+    catalog += wxString("  ") + _("Last change: ") + " " + date;
     if (!updated) catalog += _T("  : ") + _("Please Update Plugin Catalog.");
     
     return catalog;
 }
-    
-void CatalogMgrPanel::OnChannelSelected(wxCommandEvent &event)
-{
-    SetUpdateButtonLabel();
-    if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom"))){
-        m_tcCustomURL->Show();
-        m_customText->Show();
-    }
-    else{
-        m_tcCustomURL->Hide();
-        m_customText->Hide();
-    }
-
-    Layout();
-    Fit();
-    g_options->itemBoxSizerPanelPlugins->Layout();
-
-
-}
-
-unsigned int CatalogMgrPanel::GetChannelIndex(const wxArrayString* channels)
-{
-    wxString current =
-        pConfig->Read( "LatestCatalogDownloaded", "default");
-    int ix = channels->Index(current);
-    return  ix == -1 ? 0 : ix;
- }
+   
 
 void CatalogMgrPanel::SetUpdateButtonLabel()
 {
     wxString label = _("Update Plugin Catalog");
     label += _T(": ");
-    label += m_choiceChannel->GetString(m_choiceChannel->GetSelection());
+    label += g_catalog_channel == "" ? "master" : g_catalog_channel;
     m_updateButton->SetLabel(label);
     Layout();
 }
@@ -6320,15 +6260,15 @@ void PluginPanel::SetSelected( bool selected )
     
 
     if (selected) {
-        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG1")));
-        SetBackgroundColour(GetGlobalColor(_T("DILG1")));
+        m_status_icon->SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
+        SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
         m_pButtons->Show(true);
         bool unInstallPossible = canUninstall(m_pPlugin->m_common_name.ToStdString());
         
         //Directly mark Legacy and system plugins as "not uninstallable"
-        if( (m_pPlugin->m_pluginStatus == PluginStatus::LegacyUpdateAvailable) ||
-                (m_pPlugin->m_pluginStatus == PluginStatus::Unmanaged) ||
-                (m_pPlugin->m_pluginStatus == PluginStatus::System) )
+        if (m_pPlugin->m_pluginStatus == PluginStatus::LegacyUpdateAvailable ||
+                m_pPlugin->m_pluginStatus == PluginStatus::Unmanaged ||
+                m_pPlugin->m_pluginStatus == PluginStatus::System )
             unInstallPossible = false;
             
         m_pButtonUninstall->Show(unInstallPossible);
@@ -6397,8 +6337,8 @@ void PluginPanel::SetSelected( bool selected )
         Layout();
     }
     else {
-        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-        SetBackgroundColour(GetGlobalColor(_T("DILG0")));
+        m_status_icon->SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
+        SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
         //m_pDescription->SetLabel( m_pPlugin->m_short_description );
 #ifndef __WXQT__
         //m_pButtons->Show(false);
@@ -6428,26 +6368,15 @@ void PluginPanel::SetSelected( bool selected )
     
     Layout();
 
-    bool bUseSysColors = false;
-#ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) )
-        bUseSysColors = true;
-#endif
-#ifdef __WXGTK__
-    bUseSysColors= true;
-#endif    
 
-    if(bUseSysColors){
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {          // is Dark...
-            if(selected) {
-                SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-            } else {
-                SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
-                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
-            }
-        }
+
+
+    if(selected) {
+                SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
+                m_status_icon->SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
+    } else {
+                SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
+                m_status_icon->SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
     }
 
     SetEnabled( m_pPlugin->m_bEnabled );
@@ -6471,17 +6400,19 @@ void PluginPanel::OnPaint(wxPaintEvent &event)
 {
     wxPaintDC dc( this );
     
-    wxString color = "DILG0";
-    
     int penWidth = m_penWidthUnselected;
-    if(m_bSelected){
-        color = "DILG1";
+    wxColour color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
+    wxColour border = GetDialogColor(DLG_UNSELECTED_ACCENT);
+    
+    if(m_bSelected) {
         penWidth = m_penWidthSelected;
+        color = GetDialogColor(DLG_SELECTED_BACKGROUND);
+        border = GetDialogColor(DLG_SELECTED_ACCENT);
     }
-        
-    wxBrush b(GetGlobalColor(color), wxSOLID);
+
+    wxBrush b(color, wxSOLID);
     dc.SetBrush(b);
-    dc.SetPen( wxPen(*wxBLACK, penWidth) );
+    dc.SetPen( wxPen(border, penWidth) );
  
     dc.DrawRoundedRectangle( 5, 5, GetSize().x - 10, GetSize().y - 10, 5);
     //dc.DrawLine( 5, 5, 1000, 5 ); 

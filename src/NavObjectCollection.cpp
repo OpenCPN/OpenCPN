@@ -1428,7 +1428,7 @@ void NavObjectCollection1::SetRootGPXNode(void)
         m_gpx_root.append_attribute( "xmlns:xsi" ) = "http://www.w3.org/2001/XMLSchema-instance";
         m_gpx_root.append_attribute( "xmlns" ) = "http://www.topografix.com/GPX/1/1";
         m_gpx_root.append_attribute( "xmlns:gpxx" ) =  "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
-        m_gpx_root.append_attribute( "xsi:schemaLocation" ) = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd";
+        m_gpx_root.append_attribute( "xsi:schemaLocation" ) = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd";	  
         m_gpx_root.append_attribute( "xmlns:opencpn" ) = "http://www.opencpn.org";
     }
 }
