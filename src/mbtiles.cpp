@@ -386,7 +386,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
             const char* colMinZoom = query.getColumn(0);
             const char* colMaxZoom = query.getColumn(1);
             
-            int min_zoom, max_zoom;
+            int min_zoom=0, max_zoom=0;
             sscanf( colMinZoom, "%i", &min_zoom );
             m_minZoom = wxMax(m_minZoom, min_zoom);
             sscanf( colMaxZoom, "%i", &max_zoom );
