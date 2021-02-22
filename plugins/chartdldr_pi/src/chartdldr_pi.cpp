@@ -1197,6 +1197,11 @@ void ChartDldrPanelImpl::DisableForDownload( bool enabled )
     m_bUpdateAllCharts->Enable( enabled );
     m_bUpdateChartList->Enable( enabled );
     m_lbChartSources->Enable( enabled );
+#if defined(CHART_LIST)
+    m_bSelectNew->Enable( enabled );
+    m_bSelectUpdated->Enable( enabled );
+    m_bSelectAll->Enable( enabled );
+#endif /* CHART_LIST */
 }
 
 void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
