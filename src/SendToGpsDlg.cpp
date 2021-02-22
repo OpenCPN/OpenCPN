@@ -28,8 +28,10 @@
 #include "Route.h"
 #include "RoutePoint.h"
 #include "chart1.h"
+#include "OCPNPlatform.h"
 
 extern wxString g_uploadConnection;
+extern OCPNPlatform              *g_Platform;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToGpsDlg, wxDialog)
 
@@ -101,6 +103,25 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
 
     delete pSerialArray;
 
+    if(g_Platform){
+        g_Platform->startBluetoothScan();
+        wxSleep(2);
+        wxArrayString btscanResults = g_Platform->getBluetoothScanResults();
+
+        unsigned int i = 1;
+        while ((i + 1) < btscanResults.GetCount()) {
+            wxString item1 = btscanResults[i] + _T(";");
+            wxString item2 = btscanResults.Item(i + 1);
+            wxString port = item1 + item2;
+            port.Prepend(_T("Bluetooth:"));
+            m_itemCommListBox->Append(port);
+
+            i += 2;
+        }
+
+         g_Platform->stopBluetoothScan();
+    }
+    
     //    Make the proper inital selection
     if( !g_uploadConnection.IsEmpty() )
         m_itemCommListBox->SetValue( g_uploadConnection );
@@ -146,9 +167,13 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     wxString src = m_itemCommListBox->GetValue();
     g_uploadConnection = src;                   // save for persistence
 
+    wxString destPort = src.BeforeFirst(' ');               // Serial:
+    if(src.Find(_T("Bluetooth")) != wxNOT_FOUND)
+        destPort = src;
+        
     //    And send it out
-    if( m_pRoute ) m_pRoute->SendToGPS( src.BeforeFirst(' '), true, m_pgauge );
-    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src.BeforeFirst(' '), m_pgauge );
+    if( m_pRoute ) m_pRoute->SendToGPS( destPort, true, m_pgauge );
+    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( destPort, m_pgauge );
 
 //    Show( false );
 //    event.Skip();

@@ -25,6 +25,8 @@
 
 #include "wx/wx.h"
 
+#include "wx/tokenzr.h"
+
 #include "config.h"
 #include "multiplexer.h"
 #include "navutil.h"
@@ -101,7 +103,11 @@ DataStream *Multiplexer::FindStream(const wxString & port)
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
         DataStream *stream = m_pdatastreams->Item(i);
-        if( stream && stream->GetPort() == port )
+        if( stream && stream->GetConnectionType() == INTERNAL_BT){
+            if( stream->GetPort() == port.AfterFirst(';'))
+                return stream;
+        }
+        else if( stream && stream->GetPort() == port )
             return stream;
     }
     return NULL;
@@ -393,11 +399,17 @@ int Multiplexer::SendRouteToGPS(Route *pr,
         wxGauge *pProgress)
 {
     int ret_val = 0;
+    bool bUseNewStream = false;
     DataStream *old_stream = FindStream( com_name );
-    if( old_stream ) {
+    
+    // No need to reset connection for Bluetooth
+    if( old_stream && old_stream->GetConnectionType() != INTERNAL_BT ){
         SaveStreamProperties( old_stream );
         StopAndRemoveStream( old_stream );
+        bUseNewStream = true;
     }
+    if(!old_stream)
+        bUseNewStream = true;
 
 #ifdef USE_GARMINHOST         
 #ifdef __WXMSW__
@@ -541,42 +553,66 @@ ret_point:
 
             //  If the port was temporarily closed, reopen as I/O type
             //  Otherwise, open another port using default properties
-            wxString baud;
+            DataStream *dstr = NULL;
+            
+            if(com_name.Find("Serial") != wxNOT_FOUND){
+                wxString baud;
 
-            if( old_stream ) {
-                baud = wxString::Format(wxT("%i"), params_save->Baudrate);
-            }
-            else {
-                baud = _T("4800");
-            }
+                if( old_stream && bUseNewStream ) {
+                    baud = wxString::Format(wxT("%i"), params_save->Baudrate);;
+                }
+                else {
+                    baud = _T("4800");
+                }
 
-            DataStream *dstr = makeSerialDataStream(this,
-                                                    SERIAL,
-                                                    com_name,
-                                                    baud,
-                                                    DS_TYPE_INPUT_OUTPUT,
-                                                    0, false);
+                dstr = makeSerialDataStream(this,
+                                            SERIAL,
+                                            com_name,
+                                            baud,
+                                            DS_TYPE_INPUT_OUTPUT,
+                                            0, false);
 
 #ifdef __OCPN__ANDROID__
-            wxMilliSleep(1000);
+                wxMilliSleep(1000);
 #else
-            //  Wait up to 5 seconds for Datastream secondary thread to come up
-            int timeout = 0;
-            while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
-                wxMilliSleep(100);
-                timeout++;
-            }
+                //  Wait up to 5 seconds for Datastream secondary thread to come up
+                int timeout = 0;
+                while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
+                    wxMilliSleep(100);
+                    timeout++;
+                }
 
-            if( !dstr-> IsSecThreadActive() ){
-                wxString msg(_T("-->GPS Port:"));
-                msg += com_name;
-                msg += _T(" ...Could not be opened for writing");
-                wxLogMessage(msg);
+                if( !dstr-> IsSecThreadActive() ){
+                    wxString msg(_T("-->GPS Port:"));
+                    msg += com_name;
+                    msg += _T(" ...Could not be opened for writing");
+                    wxLogMessage(msg);
 
-                dstr->Close();
-                goto ret_point_1;
+                    dstr->Close();
+                    goto ret_point_1;
+                }
+    #endif
             }
-#endif
+            else if(com_name.Find("Bluetooth") != wxNOT_FOUND){
+                if(bUseNewStream){
+                ConnectionParams *pConnectionParams = new ConnectionParams();
+                pConnectionParams->Type = INTERNAL_BT;
+                wxStringTokenizer tkz(com_name, _T(";"));
+                wxString name = tkz.GetNextToken();
+                wxString mac = tkz.GetNextToken();
+
+                pConnectionParams->NetworkAddress = name;
+                pConnectionParams->Port = mac;
+                pConnectionParams->NetworkPort = 0;
+                pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+                pConnectionParams->Baudrate = 0;
+
+                dstr = makeDataStream( this, pConnectionParams );
+                }
+                else
+                dstr = old_stream;
+
+            }
 
             SENTENCE snt;
             NMEA0183 oNMEA0183;
@@ -947,7 +983,8 @@ ret_point:
             ret_val = 0;
 
             //  All finished with the temp port
-            dstr->Close();
+            if(bUseNewStream)
+                dstr->Close();
             
             if(g_GPS_Ident == _T("FurunoGP3X"))
                 g_TalkerIdText = talker_save;
@@ -957,7 +994,7 @@ ret_point:
 
 ret_point_1:
 
-    if( old_stream )
+    if( old_stream && bUseNewStream)
         CreateAndRestoreSavedStreamProperties();
 
     return ret_val;
@@ -967,11 +1004,17 @@ ret_point_1:
 int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wxGauge *pProgress)
 {
     int ret_val = 0;
+    bool bUseNewStream = false;
     DataStream *old_stream = FindStream( com_name );
-    if( old_stream ) {
+    
+    // No need to reset connection for Bluetooth
+    if( old_stream && old_stream->GetConnectionType() != INTERNAL_BT ){
         SaveStreamProperties( old_stream );
         StopAndRemoveStream( old_stream );
+        bUseNewStream = true;
     }
+    if(!old_stream)
+        bUseNewStream = true;
 
 #ifdef USE_GARMINHOST 
 #ifdef __WXMSW__
@@ -1096,46 +1139,71 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
 #endif //USE_GARMINHOST
 
     { // Standard NMEA mode
+        
+        //  If the port was temporarily closed, reopen as I/O type
+        //  Otherwise, open another port using default properties
+        DataStream *dstr = NULL;
+        
+        if(com_name.Find("Serial") != wxNOT_FOUND){
+            wxString baud;
 
-    //  If the port was temporarily closed, reopen as I/O type
-    //  Otherwise, open another port using default properties
-    wxString baud;
+            if( old_stream && bUseNewStream ) {
+                baud = wxString::Format(wxT("%i"), params_save->Baudrate);;
+            }
+            else {
+                baud = _T("4800");
+            }
 
-    if( old_stream ) {
-        baud = wxString::Format(wxT("%i"), params_save->Baudrate);;
-    }
-    else {
-        baud = _T("4800");
-    }
-
-    DataStream *dstr = makeSerialDataStream(this,
-                                            SERIAL,
-                                            com_name,
-                                            baud,
-                                            DS_TYPE_INPUT_OUTPUT,
-                                            0, false);
+            dstr = makeSerialDataStream(this,
+                                        SERIAL,
+                                        com_name,
+                                        baud,
+                                        DS_TYPE_INPUT_OUTPUT,
+                                        0, false);
 
 
 #ifdef __OCPN__ANDROID__
-        wxMilliSleep(1000);
+            wxMilliSleep(1000);
 #else
-    //  Wait up to 1 seconds for Datastream secondary thread to come up
-    int timeout = 0;
-    while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
-        wxMilliSleep(100);
-        timeout++;
-    }
+            //  Wait up to 1 seconds for Datastream secondary thread to come up
+            int timeout = 0;
+            while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
+                wxMilliSleep(100);
+                timeout++;
+            }
 
-    if( !dstr-> IsSecThreadActive() ){
-        wxString msg(_T("-->GPS Port:"));
-        msg += com_name;
-        msg += _T(" ...Could not be opened for writing");
-        wxLogMessage(msg);
+            if( !dstr-> IsSecThreadActive() ){
+                wxString msg(_T("-->GPS Port:"));
+                msg += com_name;
+                msg += _T(" ...Could not be opened for writing");
+                wxLogMessage(msg);
 
-        dstr->Close();
-        goto ret_point;
-    }
+                dstr->Close();
+                goto ret_point;
+            }
 #endif
+        }
+        else if(com_name.Find("Bluetooth") != wxNOT_FOUND){
+            if(bUseNewStream){
+              ConnectionParams *pConnectionParams = new ConnectionParams();
+              pConnectionParams->Type = INTERNAL_BT;
+              wxStringTokenizer tkz(com_name, _T(";"));
+              wxString name = tkz.GetNextToken();
+              wxString mac = tkz.GetNextToken();
+
+              pConnectionParams->NetworkAddress = name;
+              pConnectionParams->Port = mac;
+              pConnectionParams->NetworkPort = 0;
+              pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+              pConnectionParams->Baudrate = 0;
+
+              dstr = makeDataStream( this, pConnectionParams );
+            }
+            else
+              dstr = old_stream;
+
+        }
+        
 
 
 
@@ -1222,14 +1290,15 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         wxMilliSleep ( 500 );
 
         //  All finished with the temp port
-        dstr->Close();
+        if(bUseNewStream)
+            dstr->Close();
 
         ret_val = 0;
     }
 
 ret_point:
 
-    if( old_stream )
+    if( old_stream && bUseNewStream)
         CreateAndRestoreSavedStreamProperties();
 
     return ret_val;
