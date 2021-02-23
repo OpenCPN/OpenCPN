@@ -244,7 +244,9 @@ class InstallButton: public wxPanel
         }
 
         void OnClick(wxCommandEvent& event) {
-            if (m_remove) {
+            auto path =
+                ocpn::lookup_tarball(m_metadata.tarball_url.c_str());
+            if (m_remove && path != "") {
                 wxLogMessage("Uninstalling %s", m_metadata.name.c_str());
                 PluginHandler::getInstance()->uninstall(m_metadata.name);
             }
@@ -255,7 +257,7 @@ class InstallButton: public wxPanel
             
             if(!cacheResult){
                 auto downloader = new GuiDownloader(this, m_metadata);
-                downloader->run(this);
+                downloader->run(this, m_remove);
                 auto pic = PlugInByName(m_metadata.name,
                                         g_pi_manager->GetPlugInArray());
                 if (!pic) {
@@ -559,7 +561,7 @@ GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             { }
 
         
-std::string GuiDownloader::run(wxWindow* parent)
+std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
 {
             bool ok;
             bool downloaded = false;
@@ -603,6 +605,10 @@ std::string GuiDownloader::run(wxWindow* parent)
             }
 
             auto pluginHandler = PluginHandler::getInstance();
+            if (remove_current) {
+                 wxLogMessage("Uninstalling %s", m_plugin.name.c_str());
+                 pluginHandler->uninstall(m_plugin.name);
+            }
             ok = pluginHandler->installPlugin(m_plugin, path);
             if (!ok) {
                 showErrorDialog("Installation error");

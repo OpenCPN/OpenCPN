@@ -414,6 +414,21 @@ static PluginMetadata getLatestUpdate()
     return updates[0];
 }
 
+/** Remove plugin and update GUI elements. */
+static void gui_uninstall(PlugInContainer* pic, const char* plugin)
+{
+    g_Platform->ShowBusySpinner();
+    g_pi_manager->DeactivatePlugIn(pic);
+    pic->m_bEnabled = false;
+    g_pi_manager->UpdatePlugIns();
+
+    wxLogMessage("Uninstalling %s", plugin);
+    PluginHandler::getInstance()->uninstall(plugin);
+    g_pi_manager->UpdatePlugIns();
+    g_Platform->HideBusySpinner();
+
+}
+
 
 static void run_update_dialog(PluginListPanel* parent,
                               PlugInContainer* pic,
@@ -433,22 +448,14 @@ static void run_update_dialog(PluginListPanel* parent,
     }
     
     auto update = dialog.GetUpdate();
-    if (uninstall) {
-        g_Platform->ShowBusySpinner();
-        g_pi_manager->DeactivatePlugIn(pic);
-        pic->m_bEnabled = false;
-        g_pi_manager->UpdatePlugIns();
-
-        wxLogMessage("Uninstalling %s", plugin);
-        PluginHandler::getInstance()->uninstall(plugin);
-        g_pi_manager->UpdatePlugIns();
-        g_Platform->HideBusySpinner();
-
-    }
 
     wxLogMessage("Installing %s", update.name.c_str());
-    
+
     auto pluginHandler = PluginHandler::getInstance();
+    auto path = ocpn::lookup_tarball(update.tarball_url.c_str());
+    if (uninstall && path != "") {
+        gui_uninstall(pic, update.name.c_str());
+    }
     bool cacheResult = pluginHandler->installPluginFromCache( update );
             
     if(!cacheResult){
@@ -456,7 +463,7 @@ static void run_update_dialog(PluginListPanel* parent,
         wxYield();
         
         auto downloader = new GuiDownloader(parent_dlg, update);
-        std::string tempTarballPath = downloader->run(parent_dlg);
+        std::string tempTarballPath = downloader->run(parent_dlg, uninstall);
         
         // Provisional error check
         bool bOK = true;
@@ -705,7 +712,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             
             wxLogMessage("Installing managed plugin: %s", pluginName.c_str());
             auto downloader = new GuiDownloader(plugin_list_panel, actionPIC->m_ManagedMetadata);
-            downloader->run(plugin_list_panel);
+            downloader->run(plugin_list_panel, false);
 
             // Provisional error check
             std::string manifestPath = PluginHandler::fileListPath(pluginName);
