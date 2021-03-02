@@ -1932,7 +1932,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
 #ifdef ocpnUSE_GL
     // If a new chart, need to invalidate gl viewport for refresh
     // so the fbo gets flushed
-    if(m_glcc && g_bopengl & bNewChart)
+    if(m_glcc && g_bopengl && bNewChart)
         GetglCanvas()->Invalidate();
 #endif
         

@@ -81,7 +81,7 @@ addons:
   coverity_scan:
     project:
       name: OpenCPN/OpenCPN
-    notification_email: pavel@kalian.cz
+    notification_email: spam.plusminus@gmail.com
     build_command_prepend: mkdir -p build; cd build; cmake ..; make clean
     build_command: make
     branch_pattern: coverity_scan
