@@ -218,6 +218,7 @@ extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowChartBar;
 extern bool             g_bInlandEcdis;
 extern int              g_ENCSoundingScaleFactor;
+extern int              g_maxzoomin;
 
 
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -1931,7 +1932,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
 #ifdef ocpnUSE_GL
     // If a new chart, need to invalidate gl viewport for refresh
     // so the fbo gets flushed
-    if(m_glcc && g_bopengl & bNewChart)
+    if(m_glcc && g_bopengl && bNewChart)
         GetglCanvas()->Invalidate();
 #endif
         
@@ -4475,7 +4476,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 //             proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
             
             //  Query the chart to determine the appropriate zoom range
-            double min_allowed_scale = 800;    // Roughly, latitude dependent for mercator charts
+            double min_allowed_scale = g_maxzoomin;    // Roughly, latitude dependent for mercator charts
             
             if( proposed_scale_onscreen < min_allowed_scale ) {
                 if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
@@ -4487,7 +4488,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
         }
         else {
-            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 800.);
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, g_maxzoomin);
         }
             
         

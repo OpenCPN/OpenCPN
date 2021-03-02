@@ -299,6 +299,7 @@ extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
 extern double           g_n_arrival_circle_radius;
+extern int              g_maxzoomin;
 
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bsimplifiedScalebar;
@@ -654,6 +655,7 @@ int MyConfig::LoadMyConfig()
     gLon = START_LON;
     initial_scale_ppm = .0003;        // decent initial value
     initial_rotation = 0;
+    g_maxzoomin = 800;
 
     g_iNavAidRadarRingsNumberVisible = 0;
     g_fNavAidRadarRingsStep = 1.0;
@@ -807,6 +809,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "DebugS57" ), &g_bDebugS57 );         // Show LUP and Feature info in object query
     Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug );
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD );
+    Read( _T ( "MaxZoomScale" ), &g_maxzoomin);
+        g_maxzoomin = wxMax( g_maxzoomin, 50 );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size );
     Read( _T ( "DefaultFontFacename"), &g_default_font_facename );

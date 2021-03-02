@@ -660,7 +660,13 @@ IF(DEFINED _wx_selected_config)
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
-if ((_wx_selected_config MATCHES "qt-armv7"))
+if (APPLE)
+  # Bundle all of wxWidgets as a courtesy for plugins, see #2153
+  set(wxWidgets_FIND_COMPONENTS
+    net xml html adv aui core base media propgrid qa ribbon richtext
+    webview stc xrc
+  )
+elseif ((_wx_selected_config MATCHES "qt-armv7"))
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 elseif (OCPN_USE_WEBVIEW)
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)

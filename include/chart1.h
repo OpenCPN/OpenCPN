@@ -521,6 +521,7 @@ class MyFrame: public wxFrame
     wxMenuBar           *m_pMenuBar;
     int                 nBlinkerTick;
     bool                m_bTimeIsSet;
+    bool                m_bDateIsSet;
 
     wxTimer             InitTimer;
     int                 m_iInitCount;
