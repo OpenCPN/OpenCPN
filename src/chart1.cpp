@@ -1739,7 +1739,7 @@ bool MyApp::OnInit()
 #ifndef __OCPN__ANDROID__
     //  On Windows
     //  We allow only one instance unless the portable option is used
-    if(!g_bportable) {
+    if(!g_bportable && wxDirExists(g_Platform->GetPrivateDataDir())) {
         wxChar separator = wxFileName::GetPathSeparator();
         wxString service_name = g_Platform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
 
