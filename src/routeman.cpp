@@ -1027,7 +1027,7 @@ void Routeman::DeleteTrack( Track *pTrack )
             pprog->Centre();
             
         }
-        if( pTrackPropDialog && ( pTrackPropDialog->IsShown()) && (pTrack == pTrackPropDialog->GetTrack()) ) {
+        if( TrackPropDlg::getInstanceFlag() && pTrackPropDialog && ( pTrackPropDialog->IsShown()) && (pTrack == pTrackPropDialog->GetTrack()) ) {
                 pTrackPropDialog->Hide();
         }
 
