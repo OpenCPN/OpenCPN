@@ -583,8 +583,9 @@ void MarkInfoDlg::Create()
     gbRRExtProperties->Add(m_ChoiceWaypointRangeRingsNumber, 0, wxALL|wxEXPAND, 5);
     m_textWaypointRangeRingsStep = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("0.05"), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_textWaypointRangeRingsStep, 0, wxALL|wxEXPAND, 5);
-    m_staticTextRR3 = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrDistanceUnit());
-    gbRRExtProperties->Add(m_staticTextRR3, 0, wxALIGN_CENTRE_VERTICAL|wxALIGN_LEFT, 0);
+    
+    m_RangeRingUnits = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrDistanceUnit());
+    gbRRExtProperties->Add(m_RangeRingUnits, 0, wxALIGN_CENTRE_VERTICAL|wxALIGN_LEFT, 0);
     
     m_PickColor = new wxColourPickerCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxColour(0,0,0), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_PickColor, 0, wxALL|wxEXPAND, 5);
@@ -852,7 +853,7 @@ void MarkInfoDlg::SetRoutePoint( RoutePoint *pRP )
         m_Description_save = m_pRoutePoint->m_MarkDescription;
         m_bUseScaMin_save = m_pRoutePoint->GetUseSca();
         m_iScaminVal_save = m_pRoutePoint->GetScaMin();
-        
+
         if( m_pMyLinkList )
             delete m_pMyLinkList;
         m_pMyLinkList = new HyperlinkList();
@@ -1421,7 +1422,6 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         m_textScaMin->SetValue( wxString::Format(wxT("%i"), (int)m_pRoutePoint->GetScaMin()) );
         m_textCtrlGuid->SetValue( m_pRoutePoint->m_GUID );
         m_ChoiceWaypointRangeRingsNumber->SetSelection( m_pRoutePoint->GetWaypointRangeRingsNumber() );
-        m_staticTextRR3->SetLabel( getUsrDistanceUnit() );
         wxString buf;
         buf.Printf( _T("%.3f"), toUsrDistance( m_pRoutePoint->GetWaypointRangeRingsStep(), -1) );
         m_textWaypointRangeRingsStep->SetValue( buf );
@@ -1429,6 +1429,21 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         buf.Printf( _T("%.3f"), toUsrDistance(m_pRoutePoint->GetWaypointArrivalRadius(), -1) );
         m_textArrivalRadius->SetValue(buf);
 
+        int nUnits = m_pRoutePoint->GetWaypointRangeRingsStepUnits();
+        wxString units(getUsrDistanceUnit());
+        switch(nUnits){
+            case 0:
+                units = _("NMi");
+                break;
+            case 1:
+                units = _("km");
+                break;
+            default:
+                break;
+        }
+                
+        m_RangeRingUnits->SetLabel(units);
+        
         wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
         m_PickColor->SetColour(col);
 
