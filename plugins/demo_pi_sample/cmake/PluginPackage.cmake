@@ -34,9 +34,6 @@ IF(WIN32)
 
   SET(CPACK_NSIS_PACKAGE_NAME "${PACKAGE_NAME}")
 
-  # Let cmake find NSIS.template.in
-  SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/buildwin")
-
 #  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
 #  SET(CPACK_NSIS_INSTALLED_ICON_NAME "${PACKAGE_NAME}")
 SET(CPACK_NSIS_DISPLAY_NAME "OpenCPN ${PACKAGE_NAME}")
@@ -111,7 +108,7 @@ endif ()
 ENDIF(UNIX AND NOT APPLE)
 
 IF(TWIN32 AND NOT UNIX)
-# configure_file(${PROJECT_SOURCE_DIR}/src/opencpn.rc.in ${PROJECT_SOURCE_DIR}/src/opencpn.rc)
+  # configure_file(${PROJECT_SOURCE_DIR}/src/opencpn.rc.in ${PROJECT_BINARY_DIR}/src/opencpn.rc)
  configure_file("${PROJECT_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in" "${PROJECT_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_GERMAN.nsh" @ONLY)
  configure_file("${PROJECT_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FRENCH.nsh.in" "${PROJECT_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FRENCH.nsh" @ONLY)
  configure_file("${PROJECT_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_CZECH.nsh.in" "${PROJECT_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_CZECH.nsh" @ONLY)
