@@ -110,6 +110,8 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
                     plugin->target_version = ocpn::trim(plugin_element.first_child().value());
                 } else if (strcmp(plugin_element.name(), "target-arch") == 0) {
                     plugin->target_arch = ocpn::trim(plugin_element.first_child().value());
+                } else if (strcmp(plugin_element.name(), "tarball-checksum") == 0) {
+                    plugin->checksum = ocpn::trim(plugin_element.first_child().value());
                 } else if (strcmp(plugin_element.name(), "open-source") == 0) {
                     plugin->openSource = ocpn::trim(plugin_element.first_child().value()) == "yes";
                 }
@@ -127,6 +129,6 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
         }
     }
 
- 
+
     return true;
 }
