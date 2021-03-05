@@ -947,6 +947,7 @@ set(
   include/ocpn_utils.h
   include/options.h
   include/piano.h
+  include/plugin_cache.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -1080,6 +1081,7 @@ set(
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
+  src/plugin_cache.cpp
   src/printtable.cpp
   src/pugixml.cpp
   src/Quilt.cpp
@@ -1205,6 +1207,9 @@ find_package(Gettext REQUIRED)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
+
+add_subdirectory(libs/picosha2)
+target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
 
 #
 # Linux: set up GTK

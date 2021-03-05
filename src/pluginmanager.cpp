@@ -91,6 +91,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "SoundFactory.h"
 #include "dychart.h"
 #include "PluginHandler.h"
+#include "plugin_cache.h"
 #include "pluginmanager.h"
 #include "navutil.h"
 #include "ais.h"
@@ -413,6 +414,21 @@ static PluginMetadata getLatestUpdate()
     return updates[0];
 }
 
+/** Remove plugin and update GUI elements. */
+static void gui_uninstall(PlugInContainer* pic, const char* plugin)
+{
+    g_Platform->ShowBusySpinner();
+    g_pi_manager->DeactivatePlugIn(pic);
+    pic->m_bEnabled = false;
+    g_pi_manager->UpdatePlugIns();
+
+    wxLogMessage("Uninstalling %s", plugin);
+    PluginHandler::getInstance()->uninstall(plugin);
+    g_pi_manager->UpdatePlugIns();
+    g_Platform->HideBusySpinner();
+
+}
+
 
 static void run_update_dialog(PluginListPanel* parent,
                               PlugInContainer* pic,
@@ -432,22 +448,14 @@ static void run_update_dialog(PluginListPanel* parent,
     }
     
     auto update = dialog.GetUpdate();
-    if (uninstall) {
-        g_Platform->ShowBusySpinner();
-        g_pi_manager->DeactivatePlugIn(pic);
-        pic->m_bEnabled = false;
-        g_pi_manager->UpdatePlugIns();
-
-        wxLogMessage("Uninstalling %s", plugin);
-        PluginHandler::getInstance()->uninstall(plugin);
-        g_pi_manager->UpdatePlugIns();
-        g_Platform->HideBusySpinner();
-
-    }
 
     wxLogMessage("Installing %s", update.name.c_str());
-    
+
     auto pluginHandler = PluginHandler::getInstance();
+    auto path = ocpn::lookup_tarball(update.tarball_url.c_str());
+    if (uninstall && path != "") {
+        gui_uninstall(pic, update.name.c_str());
+    }
     bool cacheResult = pluginHandler->installPluginFromCache( update );
             
     if(!cacheResult){
@@ -455,7 +463,7 @@ static void run_update_dialog(PluginListPanel* parent,
         wxYield();
         
         auto downloader = new GuiDownloader(parent_dlg, update);
-        std::string tempTarballPath = downloader->run(parent_dlg);
+        std::string tempTarballPath = downloader->run(parent_dlg, uninstall);
         
         // Provisional error check
         bool bOK = true;
@@ -469,28 +477,16 @@ static void run_update_dialog(PluginListPanel* parent,
 
         //  On successful installation, copy the temp tarball to the local cache
         if(bOK){
-            wxLogMessage("Installation of %s successful",  update.name.c_str());
-            
+            wxLogMessage("Installation of %s successful", update.name.c_str());
             wxURI uri( wxString(update.tarball_url.c_str()));
             wxFileName fn(uri.GetPath());
-            wxString tarballFile = fn.GetFullName();
-            wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
-            wxString sep = _T("/");
-            if( !wxDirExists(cacheDir) )
-                wxMkdir( cacheDir);
-            cacheDir += sep + wxString(_T("cache"));
-            if( !wxDirExists(cacheDir) )
-                wxMkdir( cacheDir);
-            cacheDir += sep + wxString(_T("tarballs"));
-            if( !wxDirExists(cacheDir) )
-                wxMkdir( cacheDir);
-    
-            wxString destination = cacheDir + _T("/") + tarballFile;
-            wxLogMessage(" Trying to copy %s ",  tempTarballPath.c_str());
-            
-            if(wxFileExists(wxString( tempTarballPath.c_str()))){
-                wxLogMessage("Copying %s to local cache",  tarballFile.c_str());
-                wxCopyFile( wxString( tempTarballPath.c_str()), destination);
+            std::string basename = fn.GetFullName().ToStdString();
+
+            if (ocpn::store_tarball(tempTarballPath.c_str(),
+                                       basename.c_str()))
+            {
+                wxLogDebug("Copied %s to local cache at %s",
+                           tempTarballPath.c_str(), basename);
                 remove(tempTarballPath.c_str());
             }
         }
@@ -716,7 +712,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             
             wxLogMessage("Installing managed plugin: %s", pluginName.c_str());
             auto downloader = new GuiDownloader(plugin_list_panel, actionPIC->m_ManagedMetadata);
-            downloader->run(plugin_list_panel);
+            downloader->run(plugin_list_panel, false);
 
             // Provisional error check
             std::string manifestPath = PluginHandler::fileListPath(pluginName);
@@ -5304,29 +5300,13 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     
     // If this is the "master" catalog, also copy to plugin cache
     if (catalog == "master") {
-        wxString metaCache = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("plugins");
-        if(!wxDirExists( metaCache ))
-            wxMkdir( metaCache );
-        metaCache += wxFileName::GetPathSeparator();
-        metaCache += _T("cache");
-        if(!wxDirExists( metaCache ))
-            wxMkdir( metaCache );
-        metaCache += wxFileName::GetPathSeparator();
-        metaCache += _T("metadata");
-        if(!wxDirExists( metaCache ))
-            wxMkdir( metaCache );
-            
-#ifdef __OCPN__ANDROID__
-        if(!AndroidSecureCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
-            OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
+       if (!ocpn::store_metadata(filePath.c_str())) {
+            OCPNMessageBox(this,
+                           _("Unable to copy catalog file to cache"),
+                           _("OpenCPN Catalog update"),
+                           wxICON_ERROR);
             return;
         }
-#else
-        if(!wxCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
-            OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
-            return;
-        }
-#endif
     }       
 
     // Record in the config file the name of the catalog downloaded
@@ -5661,30 +5641,17 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         newCatalog.save_file( catalogName.mb_str(), "  ");
        
         // Copy the metadata to the tarball cache
-        wxString sep = wxFileName::GetPathSeparator();
-        wxString cacheDir = g_Platform->GetPrivateDataDir() + sep + _T("plugins");
-        if( !wxDirExists(cacheDir) )
-            wxMkdir( cacheDir);
-        cacheDir += sep + wxString(_T("cache"));
-        if( !wxDirExists(cacheDir) )
-            wxMkdir( cacheDir);
-        cacheDir += sep + wxString(_T("tarballs"));
-        if( !wxDirExists(cacheDir) )
-             wxMkdir( cacheDir);
-        
+         
         wxFileName fn(tarballPath);
-        wxString destination = cacheDir + sep + fn.GetFullName();
-        if(wxFileExists(wxString( tarballPath.c_str()))){
-            wxLogMessage("Copying %s to local cache",  tarballPath.ToStdString().c_str());
-#ifdef __OCPN__ANDROID__            
-            AndroidSecureCopyFile (tarballPath, destination);
-#else                
-            wxCopyFile( tarballPath, destination);
-#endif            
+        if (ocpn::store_tarball(tarballPath.ToStdString().c_str(),
+                                   fn.GetFullName().ToStdString().c_str())) 
+        {
+            wxLogMessage("Copied %s to local cache",
+                          tarballPath.ToStdString().c_str());
         }
-
-        // Ready to load an process the merged catalog...
         
+        // Ready to load and process the merged catalog...
+
         // Reset the PluginHandler catalog file source.
         // This will cause the Handler to find, load, and parse the just-merged catalog
         // as copied to g_Platform->GetPrivateDataDir()...

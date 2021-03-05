@@ -23,43 +23,34 @@
 */
 
 
-#ifndef DOWNLOAD_MGR_H__
-#define DOWNLOAD_MGR_H__
+#ifndef PLUGIN_CACHE_H__
+#define PLUGIN_CACHE_H__
 
-#include <wx/dialog.h>
-#include <wx/window.h>
+#include <string>
 
-#include "Downloader.h"
-#include "catalog_parser.h"
+namespace ocpn {
 
-// Accepted by PluginDownloadDialog, reloads plugin list.
-wxDECLARE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
+std::string get_basename(const char* path);
 
-class PluginDownloadDialog: public wxDialog
-{
-    public:
-        PluginDownloadDialog(wxWindow* parent);
+/** Store metadata in metadata cache, return success/fail. */
+bool store_metadata(const char* path);
 
-        wxWindow* GetRealParent() { return  m_parent; }
+/**
+ * Get metadata path for a given name defaulting to ocpn-plugins.xml)
+ * @return Path to cached metadata or "" if not found
+ */
+std::string lookup_metadata(const char* name= 0);
 
-};
+/** Store a tarball in tarball cache, return success/fail. */
+bool store_tarball(const char* path, const char* basename);
 
-/** Add progress and final message dialogs to the basic Downloader. */
+/**
+ * Get path to tarball in cache for given filename
+ * @return Path to cached metadata or "" if not found
+ */
+std::string lookup_tarball(const char* basename);
 
-class GuiDownloader: public Downloader
-{
-    private:
-        long m_downloaded;
-        wxProgressDialog* m_dialog;
-        PluginMetadata m_plugin;
-        wxWindow* m_parent;
-
-    public:
-        GuiDownloader(wxWindow* parent, PluginMetadata plugin);
-        std::string run(wxWindow* parent, bool remove_current);
-        void on_chunk(const char* buff, unsigned bytes) override;
-        void showErrorDialog(const char* msg);
-};
+}  // namespace
+#endif
 
 
-#endif // DOWNLOAD_MGR_H__

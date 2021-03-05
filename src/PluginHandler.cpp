@@ -57,6 +57,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "OCPNPlatform.h"
 #include "ocpn_utils.h"
 #include "PluginHandler.h"
+#include "plugin_cache.h"
 #include "pluginmanager.h"
 #include "PluginPaths.h"
 
@@ -831,19 +832,18 @@ std::string PluginHandler::getMetadataPath()
         metadataPath = path;
         return path;
     }
-    
+
     // If default location for composit plugin metadata is not found, 
     //  we look in the plugin cache directory, which will normally contain the last "master" catalog downloaded
-    path = g_Platform->GetPrivateDataDir().ToStdString();
-    path += SEP;
-    path += "plugins" + SEP + "cache" + SEP + "metadata" + SEP + "ocpn-plugins.xml";
-    if (ocpn::exists(path)) {
+
+    path = ocpn::lookup_metadata();
+    if (path != "") {
         metadataPath = path;
         return path;
     }
     
     // And if that does not work, use the empty metadata file found in the distribution "data" directory
-    metadataPath = g_Platform->GetSharedDataDir().ToStdString();
+    metadataPath = g_Platform->GetSharedDataDir();
     metadataPath += SEP ;
     metadataPath += "ocpn-plugins.xml";
     if (!ocpn::exists(metadataPath)) {
@@ -942,8 +942,8 @@ void PluginHandler::cleanup(const std::string& filelist,
         iloop++;
     }
 
-    
-    
+
+
     std::string path = PluginHandler::fileListPath(plugname);
     if (ocpn::exists(path)) {
         remove(path.c_str());
@@ -1125,14 +1125,11 @@ bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
     wxURI uri( wxString(plugin.tarball_url.c_str()));
     wxFileName fn(uri.GetPath());
     wxString tarballFile = fn.GetFullName();
-    wxString sep = _T("/");
-    wxString cacheFile = g_Platform->GetPrivateDataDir() + sep + _T("plugins")
-                            + sep + _T("cache") + sep + _T("tarballs")
-                            +sep + tarballFile;
+    auto cacheFile = ocpn::lookup_tarball(tarballFile);
  
-   if(wxFileExists( cacheFile)){
+    if (cacheFile != "") {
         wxLogMessage("Installing %s from local cache",  tarballFile.c_str());
-        bool bOK = installPlugin( plugin, cacheFile.ToStdString());
+        bool bOK = installPlugin( plugin, cacheFile);
         if(!bOK){
             wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
              wxString message = _("Please check system log for more info.");
