@@ -343,7 +343,8 @@ void RoutePropDlgImpl::UpdatePoints()
         wxString desc = pnode->GetData()->GetDescription();
         wxString etd;
         if( pnode->GetData()->GetManualETD().IsValid() ) {
-            etd = toUsrDateTime(pnode->GetData()->GetManualETD(), m_tz_selection, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR);
+            // GetManualETD() returns time in UTC, always. So use it as such.
+            etd = toUsrDateTime(pnode->GetData()->GetManualETD(), 0/*m_tz_selection*/, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR);
             if( pnode->GetData()->GetManualETD().IsValid() && pnode->GetData()->GetETA().IsValid() && pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA() ) {
                 etd.Prepend(_T("!! ")); // Manually entered ETD is before we arrive here!
             }

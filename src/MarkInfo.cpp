@@ -644,7 +644,7 @@ void MarkInfoDlg::Create()
     gbSizerInnerExtProperties1->Add(m_staticTextPlSpeedUnits, 0, wxALIGN_CENTRE_VERTICAL, 0);
     
 #ifndef __OCPN__ANDROID__
-    m_staticTextEta = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("ETD") );
+    m_staticTextEta = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("ETD (UTC)") );
     gbSizerInnerExtProperties1->Add(m_staticTextEta, 0, wxALIGN_CENTRE_VERTICAL, 0);
     wxBoxSizer* bsTimestamp = new wxBoxSizer(wxHORIZONTAL);
     m_cbEtaPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString);
