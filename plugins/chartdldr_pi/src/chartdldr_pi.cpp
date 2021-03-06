@@ -1602,8 +1602,10 @@ void ChartDldrPanelImpl::DoEditSource()
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
     dialog->SetSourceEdit(pPlugIn->m_pChartSources->Item(cat));
     dialog->SetTitle(_("Edit Chart Source"));
-    
-    dialog->ShowWindowModalThenDo([this,dialog,cat](int retcode){
+
+    dialog->ShowModal();
+    int retcode = dialog->GetReturnCode();
+    {
         if ( retcode == wxID_OK ) {
             pPlugIn->m_pChartSources->Item(cat)->SetName(dialog->m_tSourceName->GetValue());
             pPlugIn->m_pChartSources->Item(cat)->SetUrl(dialog->m_tChartSourceUrl->GetValue());
@@ -1641,7 +1643,7 @@ void ChartDldrPanelImpl::DoEditSource()
             pPlugIn->SaveConfig();
             SetSource(cat);
         }
-    });
+    }
 }
 
 void ChartDldrPanelImpl::EditSource( wxCommandEvent& event )
