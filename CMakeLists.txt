@@ -1778,7 +1778,7 @@ endif (UNIX)
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
 if (MSVC)
-  target_sources(${PACKAGE_NAME} PRIVATE src/opencpn.rc)
+  target_sources(${PACKAGE_NAME} PRIVATE ${CMAKE_BINARY_DIR}/opencpn.rc)
 endif ()
 
 if (OCPN_BUNDLE_GSHHS)
@@ -2530,7 +2530,7 @@ endif ()
 #
 if (MINGW)
   set(
-    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
+    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in > ${CMAKE_BINARY_DIR}/NSIS.template.in"
   )
   file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
   add_custom_target(
@@ -2543,7 +2543,7 @@ if (MINGW)
 else ()
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in COPYONLY
+    ${CMAKE_BINARY_DIR}/NSIS.template.in COPYONLY
   )
 endif ()
 
@@ -2587,7 +2587,7 @@ set(
 if (WIN32 AND NOT UNIX)
   if (NOT SKIP_VERSION_CONFIG)
     configure_file(
-      ${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc
+      ${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_BINARY_DIR}/opencpn.rc
     )
     configure_file(
       "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in"
