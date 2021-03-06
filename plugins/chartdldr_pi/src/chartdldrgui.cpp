@@ -103,6 +103,9 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_nbChoice = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
         sbSizerSourceSel->Add( m_nbChoice, 1, wxEXPAND | wxALL, 5 );
         m_nbChoice->SetMinSize( wxSize( -1, 6 * GetCharHeight() ) );
+#ifdef __WXOSX__
+        m_nbChoice->SetMinSize( wxSize( -1, 8 * GetCharHeight() ) );
+#endif        
 
 
 	m_panelPredefined = new wxPanel( m_nbChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -143,7 +146,6 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_tChartSourceUrl = new wxTextCtrl( m_panelCustom, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), 0 );
 	m_tChartSourceUrl->SetMaxLength( 0 );
 	fgSizerSourceSel->Add( m_tChartSourceUrl, 0, wxALL|wxEXPAND, 5 );
-
 
 	m_panelCustom->SetSizer( fgSizerSourceSel );
 	m_panelCustom->Layout();
