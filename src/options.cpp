@@ -5631,7 +5631,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pCheck_AlertDialog = new wxCheckBox(panelAIS, ID_AISALERTDIALOG,
                                         _("Show CPA/TCPA Alert Dialog"));
   pAlertGrid->Add(m_pCheck_AlertDialog, 0, wxALL, group_item_spacing);
-
+ 
   wxButton* m_SelSound =
       new wxButton(panelAIS, ID_AISALERTSELECTSOUND, _("Select Alert Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
@@ -5641,6 +5641,8 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       panelAIS, ID_AISALERTAUDIO,
       _("Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."));
   pAlertGrid->Add(m_pCheck_AlertAudio, 0, wxALL, group_item_spacing);
+
+  m_pCheck_AlertDialog->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(options::OnAlertEnableButtonClick), NULL, this);
 
   wxButton* m_pPlay_Sound =
       new wxButton(panelAIS, ID_AISALERTTESTSOUND, _("Test Alert Sound"),
@@ -5953,6 +5955,14 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
 
   miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );
   miscOptions->AddSpacer(20);
+}
+
+void options::OnAlertEnableButtonClick(wxCommandEvent &event)
+{
+    if(event.IsChecked())
+        m_pCheck_AlertAudio->Enable();
+    else
+        m_pCheck_AlertAudio->Disable();
 }
 
 void options::CreateListbookIcons()
@@ -6664,6 +6674,15 @@ void options::SetInitialSettings(void) {
 
   // Alerts
   m_pCheck_AlertDialog->SetValue(g_bAIS_CPA_Alert);
+  if( m_pCheck_AlertDialog->GetValue() ){
+      m_pCheck_AlertAudio->Enable();
+      m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
+  }
+  else{
+      m_pCheck_AlertAudio->Disable();
+      m_pCheck_AlertAudio->SetValue( false );
+  }      
+      
   m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
   m_pCheck_Alert_Moored->SetValue(g_bAIS_CPA_Alert_Suppress_Moored);
 
