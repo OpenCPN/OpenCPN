@@ -4367,7 +4367,14 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
     cloneHyperlinkList(pWP, pwaypoint);
 
     pWP->m_MarkDescription = pwaypoint->m_MarkDescription;
-    pWP->SetCreateTime(pwaypoint->m_CreateTime);
+
+    if(pwaypoint->m_CreateTime.IsValid())
+        pWP->SetCreateTime(pwaypoint->m_CreateTime);
+    else{
+        wxDateTime dtnow(wxDateTime::Now());
+        pWP->SetCreateTime( dtnow );
+    }
+        
     pWP->m_btemp = (b_permanent == false);
 
     pSelect->AddSelectableRoutePoint( pwaypoint->m_lat, pwaypoint->m_lon, pWP );
@@ -4417,8 +4424,9 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
         prp->SetIconName( pwaypoint->m_IconName );
         prp->SetName( pwaypoint->m_MarkName );
         prp->m_MarkDescription = pwaypoint->m_MarkDescription;
-		prp->SetVisible(pwaypoint->m_IsVisible);
-		prp->SetCreateTime(pwaypoint->m_CreateTime);
+        prp->SetVisible(pwaypoint->m_IsVisible);
+        if(pwaypoint->m_CreateTime.IsValid())
+            prp->SetCreateTime(pwaypoint->m_CreateTime);
 
         //  Transcribe (clone) the html HyperLink List, if present
 
@@ -4441,6 +4449,9 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
             }
         }
 
+        if(prp)
+            prp->ReLoadIcon();
+        
         SelectItem *pFind = pSelect->FindSelection( gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT );
         if( pFind ) {
             pFind->m_slat = pwaypoint->m_lat;             // update the SelectList entry
