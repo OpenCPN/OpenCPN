@@ -900,12 +900,15 @@ bool Routeman::DeleteRoute( Route *pRoute )
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (pRoute == pRoutePropDialog->GetRoute()) ) {
             pRoutePropDialog->Hide();
         }
-            
+        
         pConfig->DeleteConfigRoute( pRoute );
 
         //    Remove the route from associated lists
         pSelect->DeleteAllSelectableRouteSegments( pRoute );
         pRouteList->DeleteObject( pRoute );
+
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            pRouteManagerDialog->UpdateRouteListCtrl();
 
         // walk the route, tentatively deleting/marking points used only by this route
         wxRoutePointListNode *pnode = ( pRoute->pRoutePointList )->GetFirst();
