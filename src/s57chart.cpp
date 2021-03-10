@@ -5335,7 +5335,7 @@ wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString Attr
 bool s57chart::CompareLights( const S57Light* l1, const S57Light* l2 )
 {
     int positionDiff = l1->position.Cmp( l2->position );
-    if( positionDiff != 0 ) return true;
+    if( positionDiff < 0 ) return true;
 
 
     int attrIndex1 = l1->attributeNames.Index( _T("SECTR1") );
