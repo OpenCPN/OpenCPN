@@ -26,7 +26,7 @@
 #include "AboutFrameImpl.h"
 #include "config.h"
 #include "OCPNPlatform.h"
-#include "chart1.h"
+#include "gui_lib.h"
 
 #ifdef __WXMSW__
 #define EXTEND_WIDTH 70

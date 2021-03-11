@@ -41,6 +41,7 @@
 #include "chcanv.h"
 #include "CanvasOptions.h"
 #include "OCPNPlatform.h"
+#include "gui_lib.h"
 
 #ifdef ocpnUSE_SVG
 #include "wxSVG/svg.h"

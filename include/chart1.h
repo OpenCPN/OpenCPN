@@ -53,10 +53,6 @@
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
 
-wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
-wxFont GetOCPNGUIScaledFont( wxString item );
-
-wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
 enum DialogColor
 {
@@ -279,24 +275,6 @@ class DataStream;
 class AIS_Target_Data;
 
 bool isSingleChart(ChartBase *chart);
-
-class  OCPNMessageDialog: public wxDialog
-{
-    
-public:
-    OCPNMessageDialog(wxWindow *parent, const wxString& message,
-                      const wxString& caption = wxMessageBoxCaptionStr,
-                      long style = wxOK|wxCENTRE, const wxPoint& pos = wxDefaultPosition);
-    
-    void OnYes(wxCommandEvent& event);
-    void OnNo(wxCommandEvent& event);
-    void OnCancel(wxCommandEvent& event);
-    void OnClose( wxCloseEvent& event );
-    
-private:
-    int m_style;
-    DECLARE_EVENT_TABLE()
-};
 
 //      A class to contain NMEA messages, their receipt time, and their source priority
 class NMEA_Msg_Container
@@ -690,7 +668,7 @@ enum {
     TIMER_AIS1,
     TIMER_DSC,
     TIMER_AISAUDIO,
-    AIS_SOCKET_ID,
+    AIS_SOCKET_Isa,
     FRAME_TIMER_DOG,
     FRAME_TC_TIMER,
     FRAME_COG_TIMER,
@@ -721,12 +699,6 @@ public:
 };
 
 
-extern int OCPNMessageBox(wxWindow *parent,
-                          const wxString& message,
-                          const wxString& caption = _T("Message"),
-                          int style = wxOK,  int timout_sec = -1, int x = -1, int y = -1);
-
-
 //----------------------------------------------------------------------------
 // Generic Auto Timed Window
 // Belongs to the creator, not deleted automatically on application close
@@ -754,33 +726,5 @@ private:
     
     DECLARE_EVENT_TABLE()
 };
-
-class  OCPN_TimedHTMLMessageDialog: public wxDialog
-{
-    
-public:
-    OCPN_TimedHTMLMessageDialog(wxWindow *parent, const wxString& message,
-                           const wxString& caption = wxMessageBoxCaptionStr,
-                           int tSeconds = -1,
-                           long style = wxOK|wxCENTRE,  
-                           bool bFixedFont = false,
-                           const wxPoint& pos = wxDefaultPosition);
-    
-    void OnYes(wxCommandEvent& event);
-    void OnNo(wxCommandEvent& event);
-    void OnCancel(wxCommandEvent& event);
-    void OnClose( wxCloseEvent& event );
-    void OnTimer(wxTimerEvent &evt);
-    void RecalculateSize( void );
-    
-    
-private:
-    int m_style;
-    wxTimer m_timer;
-    wxHtmlWindow *msgWindow;
-    
-    DECLARE_EVENT_TABLE()
-};
-
 
 #endif

@@ -41,7 +41,7 @@
 #include <config.h>
 
 #include "about.h"
-#include "chart1.h"
+#include "gui_lib.h"
 #include "chcanv.h"
 #include "styles.h"
 #include "OCPNPlatform.h"

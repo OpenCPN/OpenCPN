@@ -164,6 +164,7 @@ endif( QT_ANDROID )
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
+include(CheckSymbolExists)
 
 #
 # Options
@@ -208,6 +209,8 @@ set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 option(OCPN_USE_GL "Enable OpenGL support" ON)
 option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
+option(OCPN_USE_UDEV_PORTS "Use udev to enumerate serial ports" ON)
+option(OCPN_USE_SYSFS_PORTS "Use sysfs to enumerate serial ports" OFF)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -916,6 +919,7 @@ set(
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
+  include/gui_lib.h
   include/gshhs.h
   include/Hyperlink.h
   include/IDX_entry.h
@@ -1047,6 +1051,7 @@ set(
   src/geodesic.cpp
   src/georef.cpp
   src/GoToPositionDialog.cpp
+  src/gui_lib.cpp
   src/gshhs.cpp
   src/Hyperlink.cpp
   src/IDX_entry.cpp
@@ -1100,6 +1105,7 @@ set(
   src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
   src/SerialDataStream.cpp
+  src/ser_ports.cpp
   src/SignalKDataStream.cpp
   src/SignalKEventHandler.cpp
   src/Station_Data.cpp
@@ -1210,6 +1216,31 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 
 add_subdirectory(libs/picosha2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
+
+find_package(Libudev)
+if (UDEV_FOUND)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libudev)
+  set(HAVE_LIBUDEV 1)
+endif ()
+
+if (OCPN_USE_SYSFS_PORTS)
+  set(USE_SYSFS_PORTS 1)
+endif ()
+
+find_path(HAVE_UNISTD_H NAMES unistd.h)
+find_path(HAVE_LIBGEN_H NAMES libgen.h)
+find_path(HAVE_DIRENT_H NAMES dirent.h)
+find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
+find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
+find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
+find_path(HAVE_FCNTL_H  NAMES fcntl.h)
+if (NOT HAVE_FCNTL_H)
+  find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
+endif ()
+find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
+
+check_symbol_exists(readlink unistd.h HAVE_READLINK)
+
 
 #
 # Linux: set up GTK

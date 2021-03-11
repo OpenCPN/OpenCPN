@@ -63,11 +63,13 @@
 #include <setjmp.h>
 #endif
 
+#include "chart1.h"
 #include "routeprintout.h"
 #include "printtable.h"
 #include "wx28compat.h"
 #include "Track.h"
 #include "Route.h"
+#include "gui_lib.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1

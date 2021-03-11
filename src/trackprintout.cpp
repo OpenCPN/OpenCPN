@@ -58,6 +58,7 @@ using namespace std;
 #include "trackprintout.h"
 #include "printtable.h"
 #include "Track.h"
+#include "gui_lib.h"
 
 enum {PRINT_POSITION, PRINT_DISTANCE, PRINT_BEARING, PRINT_TIME, PRINT_SPEED};
 

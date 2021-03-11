@@ -48,6 +48,7 @@
 
 #include "mygeom.h"
 #include "georef.h"
+#include "gui_lib.h"
 #include <mutex>
 
 extern s57RegistrarMgr          *m_pRegistrarMan;

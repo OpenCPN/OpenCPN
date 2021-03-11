@@ -63,6 +63,7 @@
 #include "Osenc.h"
 #include "chcanv.h"
 #include "SencManager.h"
+#include "gui_lib.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC

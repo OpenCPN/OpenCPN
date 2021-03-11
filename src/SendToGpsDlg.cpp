@@ -27,7 +27,7 @@
 #include "SendToGpsDlg.h"
 #include "Route.h"
 #include "RoutePoint.h"
-#include "chart1.h"
+#include "ser_ports.h"
 
 extern wxString g_uploadConnection;
 
@@ -144,6 +144,13 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
 {
     //    Get the selected comm port
     wxString src = m_itemCommListBox->GetValue();
+    int tail = src.Find(" - ") ;
+    if (tail != wxNOT_FOUND) {
+        src = src.SubString(0, tail);
+    }
+    if (!src.Lower().StartsWith("serial") && !src.Lower().StartsWith("Usb:")) {
+        src = src.Prepend("Serial:");
+    }
     g_uploadConnection = src;                   // save for persistence
 
     //    And send it out
