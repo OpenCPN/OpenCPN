@@ -38,7 +38,7 @@
 #include "OCPNPlatform.h"
 #include "glChartCanvas.h"
 #include "Select.h"
-#include "chart1.h"
+#include "gui_lib.h"
 
 extern WayPointman  *pWayPointMan;
 extern bool         g_bIsNewLayer;

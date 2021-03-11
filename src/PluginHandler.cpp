@@ -54,6 +54,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "Downloader.h"
 #include "logger.h"
 #include "navutil.h"
+#include "gui_lib.h"
 #include "OCPNPlatform.h"
 #include "ocpn_utils.h"
 #include "PluginHandler.h"

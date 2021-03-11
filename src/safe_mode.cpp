@@ -8,7 +8,7 @@
 
 #include "OCPNPlatform.h"
 #include "ocpn_utils.h"
-#include "chart1.h"
+#include "gui_lib.h"
 
 #include "safe_mode.h"
 
