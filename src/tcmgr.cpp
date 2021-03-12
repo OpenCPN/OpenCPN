@@ -1049,6 +1049,8 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx)
         }
         p = q;
         ret = GetTideOrCurrent(*tm, idx, tcvalue[0],  dir);
+        if( !ret )
+            return 0;                   // Harmonics file error, data not available
         q = tcvalue[0];
         *tm += 60;
     }
