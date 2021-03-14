@@ -364,7 +364,6 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
     detail->osd_name = std::string(PKG_TARGET);
     detail->osd_version = std::string(PKG_TARGET_VERSION);
     detail->osd_build_name = std::string(PKG_TARGET);
-    detail->osd_build_target = std::string(PKG_BUILD_TARGET);
     detail->osd_build_version = std::string(PKG_TARGET_VERSION);
     detail->osd_build_arch = std::string(PKG_TARGET_ARCH);
     detail->osd_build_gtk = std::string(PKG_BUILD_GTK);

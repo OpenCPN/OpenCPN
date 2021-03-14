@@ -56,7 +56,6 @@ struct PluginMetadata {
     std::string source;
     std::string tarball_url;
     std::string target;
-    std::string build_target;
     std::string build_gtk;
     std::string target_version;
     std::string target_arch;

@@ -296,7 +296,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
 
-    wxLogDebug("compatOS_ARCH: %s, compatOS_Build_ARCH: %s, build target: %s, plugin_os: %s, plugin build target: %s", compatOS_ARCH, os_detail->osd_build_arch, PKG_BUILD_TARGET, plugin_os, metadata.build_target);
+    wxLogDebug("compatOS_ARCH: %s, compatOS_Build_ARCH: %s, build target: %s, plugin_os: %s", compatOS_ARCH, os_detail->osd_build_arch, PKG_TARGET, plugin_os);
     if (compatOS_ARCH  == plugin_os || os_detail->osd_build_arch == metadata.target_arch) {
         //  OS matches so far, so must compare versions
 
