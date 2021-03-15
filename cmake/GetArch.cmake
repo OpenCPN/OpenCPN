@@ -9,8 +9,8 @@
 
 # Based on code from nohal
 function(GetArch)
-  if (NOT "${OCPN_TARGET_TUPLE}" STREQUAL "")
-    list(GET ${OCPN_TARGET_TUPLE} 2 ARCH)
+  if (NOT OCPN_TARGET_TUPLE STREQUAL "")
+    list(GET OCPN_TARGET_TUPLE 2 ARCH)
   elseif (WIN32)
     # Should really be i386 since we are on win32. However, it's x86_64 for now,
     # see #2027
@@ -44,6 +44,9 @@ function(GetArch)
       endif ()
     elseif (EXISTS /etc/gentoo-release)
       set (LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
+    endif ()
+    if (OCPN_FLATPAK AND ARCH STREQUAL "arm64")
+      set(ARCH "aarch64")
     endif ()
   endif ()
   set (LIB_INSTALL_DIR ${LIB_INSTALL_DIR} PARENT_SCOPE)

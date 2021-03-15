@@ -1,9 +1,9 @@
 #
 # Export variables used in plugin setup: PKG_TARGET, PKG_TARGET_VERSION.
 
-if (NOT "${OCPN_TARGET_TUPLE}" STREQUAL "")
-    list(GET ${_target} 0 PKG_TARGET)
-    list(GET ${_target} 1 PKG_TARGET_VERSION)
+if (NOT OCPN_TARGET_TUPLE STREQUAL "")
+    list(GET OCPN_TARGET_TUPLE 0 PKG_TARGET)
+    list(GET OCPN_TARGET_TUPLE 1 PKG_TARGET_VERSION)
 elseif (OCPN_FLATPAK)
     set(PKG_TARGET "flatpak")
     set(manifest_path "${PROJECT_SOURCE_DIR}/flatpak/org.opencpn.OpenCPN.yaml")

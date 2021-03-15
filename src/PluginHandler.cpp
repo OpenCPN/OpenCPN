@@ -162,6 +162,102 @@ static std::string dirListPath(std::string name)
 }
 
 
+/** Plugin ABI encapsulation. */
+class Plugin {
+    public:
+        Plugin(const PluginMetadata& metadata) {
+            wxLogDebug("Plugin: setting up name: %s", metadata.name);
+            m_abi = metadata.target;
+            m_abi_version = metadata.target_version;
+            m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
+            wxLogDebug("Plugin: init: abi: %s, abi_version: %s, major ver: %s",
+                       m_abi, m_abi_version, m_major_version);
+
+        }
+        const std::string& abi() const { return m_abi; }
+        const std::string& abi_version() const { return m_abi_version; }
+        const std::string& major_version() const { return m_major_version; }
+        const std::string& name() const { return m_name; }
+
+    private:
+        std::string m_abi;
+        std::string m_abi_version;
+        std::string m_major_version;
+        std::string m_name;
+};
+
+
+/** Host ABI encapsulation and plugin compatibility checks. */
+class Host {
+    public:
+        Host(CompatOs* compatOs) {
+            m_abi = compatOs->name();
+            m_abi_version = compatOs->version();
+            m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
+            wxLogDebug("Host: init: abi: %s, abi_version: %s, major ver: %s",
+                       m_abi, m_abi_version, m_major_version);
+        }
+
+        bool is_version_compatible(const Plugin& plugin) const {
+            if (ocpn::startswith(plugin.abi(), "ubuntu")) {
+                return plugin.abi_version() == m_abi_version;
+            }
+            return plugin.major_version() == m_major_version;
+        }
+
+        // Test if plugin abi is a Debian version compatible with hosts's
+        // ubuntu version.
+        bool is_debian_plugin_compatible(const Plugin& plugin) const {
+            static const std::vector<std::string> debian_versions = {
+                "9;ubuntu-x86_64;16.04",
+                "11;ubuntu-gtk3-x86_64;20.04"
+                "sid;ubuntu-gtk3-x86_64;20.04"
+            };
+            if (ocpn::startswith(m_abi, "debian-x86_64")) {
+                wxLogDebug("Checking for debian and ubuntu");
+                const std::string host_version =
+                    m_major_version + ";" + plugin.abi() + ";"
+                    + plugin.abi_version();
+                for (auto& v: debian_versions) {
+                    if (host_version == v) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Plugin and host abi differs. Check if plugin is compatible anyway
+        // by comparing the plugin abi with the list of abis similar to the
+        // host abi. Typically a host on a Ubuntu derivative which might be
+        // compatible with a plugin built for the derivative's Ubuntu base.
+        bool is_similar_plugin_compatible(const Plugin& plugin) const {
+            OCPN_OSDetail* os_detail = g_Platform->GetOSDetail();
+            for (auto& name_like: os_detail->osd_names_like) {
+                const std::string osd_abi =
+                    name_like + "-" + os_detail->osd_arch;
+                if (osd_abi == plugin.abi()) {
+                    if (is_version_compatible(plugin)) {
+                        return true; 
+                    }
+                }
+            }
+            return false;
+        }
+ 
+        const std::string& abi() const { return m_abi; }
+
+        const std::string& abi_version() const { return m_abi_version; }
+
+        const std::string& major_version() const { return m_major_version; }
+
+    private:
+        std::string m_abi;
+        std::string m_abi_version;
+        std::string m_major_version;
+};
+
+
 CompatOs* CompatOs::getInstance()
 {
     static std::string last_global_os("");
@@ -172,29 +268,18 @@ CompatOs* CompatOs::getInstance()
         last_global_os = g_compatOS;
     }
     return instance;
-}
+};
 
 
 CompatOs::CompatOs(): _name(PKG_TARGET), _version(PKG_TARGET_VERSION)
 {
     // Get the specified system definition,
-    //   From the OCPN_OSDetail structure probed at startup.
-    //   or the environment override,
+    //   from the environment override,
     //   or the config file override
-    //   or the baked in (build system) values.  Not too useful in cross-build environments...
-
-    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
+    //   or the baked in (build system) values.
 
     std::string compatOS(_name);
     std::string compatOsVersion(_version);
-
-    // Handle the most common cross-compile, safely
-#ifdef ocpnARM 
-    if(os_detail->osd_ID.size())
-        compatOS = os_detail->osd_ID;
-    if(os_detail->osd_version.size())
-        compatOsVersion = os_detail->osd_version;
-#endif    
 
     if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
         _name = getenv("OPENCPN_COMPAT_TARGET");
@@ -222,154 +307,38 @@ std::string PluginHandler::fileListPath(std::string name)
     return pluginsConfigDir() + SEP + name + ".files";
 }
 
+
 bool PluginHandler::isCompatible(const PluginMetadata& metadata,
                                  const char* os, const char* os_version)
-
 {
-    wxLogDebug("Plugin compatibility check");
-    wxLogDebug("name: %s, target: %s, target_arch: %s",
-               metadata.name, metadata.target, metadata.target_arch);
-    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
-    
-    // Get the specified system definition,
-    //   From the OCPN_OSDetail structure probed at startup.
-    //   or the environment override,
-    //   or the config file override
-    //   or the baked in (build system) values.  Not too useful in cross-build environments...
- 
-    std::string compatOS(os);
-    std::string compatOsVersion(os_version);
+    auto compatOS = CompatOs::getInstance();
+    Host host(compatOS);
+    Plugin plugin(metadata);
 
-    // Handle the most common cross-compile, safely
-#ifdef ocpnARM 
-    if(os_detail->osd_ID.size())
-        compatOS = os_detail->osd_ID;
-    if(os_detail->osd_version.size())
-        compatOsVersion = os_detail->osd_version;
-#endif    
-
-    if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
-        // Undocumented test hook.
-        compatOS = getenv("OPENCPN_COMPAT_TARGET");
-        if (compatOS.find(':') != std::string::npos) {
-            auto tokens = ocpn::split(compatOS.c_str(), ":");
-            compatOS = tokens[0];
-            compatOsVersion = tokens[1];
-        }
-    }
-    else if (g_compatOS != "") {
-        // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
-        compatOS = g_compatOS;
-        if (g_compatOsVersion != ""){
-            compatOsVersion = g_compatOsVersion;
-        }
-    }
-    compatOS = ocpn::tolower(compatOS);
-    compatOsVersion = ocpn::tolower(compatOsVersion);
-    
-    //  Compare to the required values in the metadata
-    std::string plugin_os = ocpn::tolower(metadata.target);
-
-    // msvc is simple...
-    if (compatOS == "msvc") {
-        return (plugin_os == "msvc");
-    }
-
-    // And so is MacOS...
-    if (compatOS == "darwin") {
-        return (plugin_os == "darwin");
-    }
-
-    const std::string compatOS_ARCH =
-        compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
-    DEBUG_LOG << "Plugin compatibility check1: " <<  metadata.name
-              << " OS: " << compatOS_ARCH <<  " Plugin: " << plugin_os;
-
-    bool rv = false;
-    std::string plugin_os_version = ocpn::tolower(metadata.target_version);
-
-    auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
-    DEBUG_LOG << "compatOS_ARCH: " << compatOS_ARCH
-        <<  " compatOS_Build_ARCH: " << os_detail->osd_build_arch
-        <<  " build target: " << PKG_TARGET << "plugin_os: "  << plugin_os;
-    if (compatOS_ARCH  == plugin_os
-        || os_detail->osd_build_arch == metadata.target_arch
+    if (plugin.abi() == "msvc"
+        || plugin.abi() == "darwin"
+        || plugin.abi() == "android-armeabi-v7a"
+        || plugin.abi() == "android-arm64-v8a"
     ) {
-        //  OS matches so far, so must compare versions
-
-        if (ocpn::startswith(plugin_os, "ubuntu")){
-            DEBUG_LOG
-                << "plugin_os_version: " << plugin_os_version
-                << " CompatOsVersion: " << compatOsVersion
-                << " osd_build_version: " << os_detail->osd_build_version;
-            if (plugin_os_version == compatOsVersion
-                || plugin_os_version == os_detail->osd_build_version
-            ) {
-                // Full version comparison required
-                rv = true;
-            }
-        }
-        else{
-            auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-            DEBUG_LOG << "meta_vers: " << meta_vers
-                      << " target_vers; " << target_vers
-                      << " osd_build_version: " << os_detail->osd_build_version
-                      << "  version: " << metadata.version;
-            if (meta_vers == target_vers
-                    || os_detail->osd_build_version == metadata.version
-            ) {
-                rv = true;;
-            }
-        }
+        bool ok = plugin.abi() == host.abi();
+        wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"),  host.abi());
+        return ok;
     }
-    else {
-        // running OS may be "like" some known OS
-        for(unsigned int i=0 ; i < os_detail->osd_name_like.size(); i++) {
-            std::string osd_like_arch =
-                os_detail->osd_name_like[i] + "-" + os_detail->osd_arch;
-            if( osd_like_arch  == plugin_os){
-                if (ocpn::startswith(plugin_os, "ubuntu")){
-                    if( plugin_os_version == os_detail->osd_version ) {
-                        // Full version comparison required
-                        rv = true;
-                    }
-                }
-                else{
-                    auto target_vers =
-                        ocpn::split(os_detail->osd_version.c_str(), ".")[0];
-                    if( meta_vers == target_vers )
-                        rv = true;
-                }
-            }
-        }
+    bool rv = false;
+    if (host.abi() == plugin.abi() && host.is_version_compatible(plugin)) {
+        rv = true;
+        wxLogDebug("Found matching abi version %s", plugin.abi_version());
     }
-    
-    // Special case tests for vanilla debian, which can use some variants
-    // x of Ubuntu plugins
-    if (!rv){
-        wxLogDebug("Checking for debian and ubuntu");
-        if (ocpn::startswith(compatOS_ARCH, "debian-x86_64")){
-            auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-            if (target_vers == std::string("9") ){        // Stretch
-                if (plugin_os == std::string("ubuntu-x86_64")
-                        && plugin_os_version == std::string("16.04")
-                ) {
-                    rv = true;
-                }
-            }
-            else if (target_vers == "11"  || target_vers == "sid") {
-                if (plugin_os == std::string("ubuntu-gtk3-x86_64")
-                        && plugin_os_version == std::string("20.04")
-                ) {
-                    rv = true;
-                }
-            }
-        }
+    else if (host.is_similar_plugin_compatible(plugin)) {
+        rv = true;
+        wxLogDebug("Found similar abi");
     }
-    DEBUG_LOG << "Plugin compatibility checkFinal: "
-        << (rv ? "ACCEPTED" : "REJECTED") << ":" << metadata.name
-        << " PluginOS: " <<  plugin_os
-        << " PluginVersion: " << plugin_os_version;
+    else if (host.is_debian_plugin_compatible(plugin)) {
+        rv = true;
+        wxLogDebug("Found Ubuntu version matching Debian host");
+    }
+    DEBUG_LOG << "Plugin compatibility check Final: "
+        << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
     return rv;
 }
 

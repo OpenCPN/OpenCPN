@@ -396,7 +396,7 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                     }
                         
                     if(val.Length()){
-                        detail->osd_name_like = ocpn::split(val.mb_str(), " ");
+                        detail->osd_names_like = ocpn::split(val.mb_str(), " ");
                     }
                 }
 
