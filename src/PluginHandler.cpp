@@ -222,20 +222,48 @@ std::string PluginHandler::fileListPath(std::string name)
     return pluginsConfigDir() + SEP + name + ".files";
 }
 
-
 bool PluginHandler::isCompatible(const PluginMetadata& metadata,
                                  const char* os, const char* os_version)
 
 {
-    wxLogDebug("Plugin compatibility check");
-    wxLogDebug("name: %s, target: %s, target_arch: %s", metadata.name, metadata.target, metadata.target_arch);
     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
+    
+    // Get the specified system definition,
+    //   From the OCPN_OSDetail structure probed at startup.
+    //   or the environment override,
+    //   or the config file override
+    //   or the baked in (build system) values.  Not too useful in cross-build environments...
+ 
+    std::string compatOS(os);
+    std::string compatOsVersion(os_version);
 
+    // Handle the most common cross-compile, safely
+#ifdef ocpnARM 
+    if(os_detail->osd_ID.size())
+        compatOS = os_detail->osd_ID;
+    if(os_detail->osd_version.size())
+        compatOsVersion = os_detail->osd_version;
+#endif    
 
-    auto compat_os = CompatOs::getInstance();
-    std::string compatOS(compat_os->name());
-    std::string compatOsVersion(compat_os->version());
-
+    if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
+        // Undocumented test hook.
+        compatOS = getenv("OPENCPN_COMPAT_TARGET");
+        if (compatOS.find(':') != std::string::npos) {
+            auto tokens = ocpn::split(compatOS.c_str(), ":");
+            compatOS = tokens[0];
+            compatOsVersion = tokens[1];
+        }
+    }
+    else if (g_compatOS != "") {
+        // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
+        compatOS = g_compatOS;
+        if (g_compatOsVersion != ""){
+            compatOsVersion = g_compatOsVersion;
+        }
+    }
+    compatOS = ocpn::tolower(compatOS);
+    compatOsVersion = ocpn::tolower(compatOsVersion);
+    
     //  Compare to the required values in the metadata
     std::string plugin_os = ocpn::tolower(metadata.target);
 
@@ -304,7 +332,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     
     // Special case tests for vanilla debian, which can use some variants of Ubuntu plugins
     if(!rv){
-        wxLogDebug("Checking for debian and ubuntu");
+
         if (ocpn::startswith(compatOS_ARCH, "debian-x86_64")){
             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
             if(target_vers == std::string("9") ){        // Stretch
