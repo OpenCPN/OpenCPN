@@ -166,10 +166,11 @@ static std::string dirListPath(std::string name)
 class Plugin {
     public:
         Plugin(const PluginMetadata& metadata) {
-            wxLogDebug("Plugin: setting up name: %s", metadata.name);
             m_abi = metadata.target;
             m_abi_version = metadata.target_version;
             m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
+            m_name = metadata.name;
+            wxLogDebug("Plugin: setting up, name: %s", m_name);
             wxLogDebug("Plugin: init: abi: %s, abi_version: %s, major ver: %s",
                        m_abi, m_abi_version, m_major_version);
 
