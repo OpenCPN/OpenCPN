@@ -342,6 +342,7 @@ extern SENCThreadManager *g_SencThreadManager;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
+extern double           gLat, gLat;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -509,7 +510,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_pQuilt = new Quilt( this );
     SetQuiltMode(true);
     SetAlertString(_T(""));
-    
+    m_sector_glat = 200;
+    m_sector_glon = 200;
+
     SetupGlCanvas( );
 /*
 #ifdef ocpnUSE_GL
@@ -1118,6 +1121,7 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_encShowLightDesc = pcc->bShowENCLightDescriptions;
     m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
     m_encShowLights = pcc->bShowENCLights;
+    m_bShowVisibleSectors = pcc->bShowENCVisibleSectorLights;
     
     bool courseUp = pcc->bCourseUp;
     bool headUp = pcc->bHeadUp;
@@ -9755,6 +9759,23 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
     m_brepaint_piano = true;
 }
 
+void ChartCanvas::RenderVisibleSectorLights( ocpnDC &dc )
+{
+    if(!m_bShowVisibleSectors)
+        return;
+
+    if(g_bDeferredInitDone){
+        // need to re-evaluate sectors?
+        if((m_sector_glat != gLat) || (m_sector_glon != gLon)){
+            s57_GetVisibleLightSectors( this, gLat, gLon, GetVP(), m_sectorlegsVisible );
+            m_sector_glat = gLat;
+            m_sector_glon = gLon;
+        }
+        s57_DrawExtendedLightSectors( dc, VPoint, m_sectorlegsVisible );
+    }
+}
+
+
 void ChartCanvas::WarpPointerDeferred( int x, int y )
 {
     warp_x = x;
@@ -10860,6 +10881,8 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     ShipDraw( dc );
     AlertDraw( dc );
 
+    RenderVisibleSectorLights( dc );
+    
     RenderAllChartOutlines( dc, GetVP() );
     RenderRouteLegs( dc );
     ScaleBarDraw( dc );

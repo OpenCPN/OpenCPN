@@ -50,11 +50,13 @@
 #include "viewport.h"
 #include "SencManager.h"
 #include <memory>
+#include "ocpn_plugin.h"
 
-class ChartCanvas;
+
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
+class ChartCanvas;
 
 
 // ----------------------------------------------------------------------------
@@ -64,6 +66,7 @@ extern "C" bool s57_GetChartExtent(const wxString& FullPath, Extent *pext);
 
 void s57_DrawExtendedLightSectors( ocpnDC& temp_dc, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
 bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
+bool s57_GetVisibleLightSectors( ChartCanvas *cc, double lat, double lon, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs );
 
 //----------------------------------------------------------------------------
 // Constants
@@ -93,6 +96,7 @@ class S57Obj;
 class VE_Element;
 class VC_Element;
 class connector_segment;
+class ChartPlugInWrapper;
 
 #include <wx/dynarray.h>
 
@@ -160,6 +164,8 @@ public:
                                                         ViewPort *VPoint, int selection_mask = MASK_ALL);
       bool DoesLatLonSelectObject(float lat, float lon, float select_radius, S57Obj *obj);
       bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);
+      virtual ListOfObjRazRules *GetLightsObjRuleListVisibleAtLatLon( float lat, float lon, ViewPort *VPoint );
+
       wxString GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName );
       static wxString GetAttributeValueAsString( S57attVal *pAttrVal, wxString AttrName );
       static bool CompareLights( const S57Light* l1, const S57Light* l2 );
@@ -290,6 +296,10 @@ private:
       
       void ChangeThumbColor(ColorScheme cs);
       void LoadThumb();
+bool s57_ProcessExtendedLightSectors( ChartCanvas *cc, ChartPlugInWrapper *target_plugin_chart, s57chart *Chs57,
+                                      ListOfObjRazRules* rule_list, ListOfPI_S57Obj* pi_rule_list,
+                                      std::vector<s57Sector_t>& sectorlegs );
+
       
  // Private Data
       char        *hdr_buf;

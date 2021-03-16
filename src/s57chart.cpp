@@ -4566,6 +4566,110 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
     // TODO really should make the dynamic LUPs belong to the chart class that created them
 }
 
+ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon( float lat, float lon, ViewPort *VPoint )
+{
+    ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+
+//    Iterate thru the razRules array, by object/rule type
+
+    ObjRazRules *top;
+    char *curr_att = NULL;
+    int n_attr = 0;
+    wxArrayOfS57attVal *attValArray = NULL;
+    bool bleading_attribute = false;
+
+    for( int i = 0; i < PRIO_NUM; ++i ) {
+
+        {
+            // Points by type, array indices [0..1]
+
+            int point_type = ( ps52plib->m_nSymbolStyle == SIMPLIFIED ) ? 0 : 1;
+            top = razRules[i][point_type];
+
+            while( top != NULL ) {
+                if( top->obj->npt == 1 ){
+                    if( !strncmp( top->obj->FeatureName, "LIGHTS", 6 ) ) {
+                        double sectrTest;
+                        bool hasSectors = GetDoubleAttr( top->obj, "SECTR1", sectrTest );
+                        if(hasSectors){
+                            if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
+                                
+                                int attrCounter;
+                                double valnmr = -1;
+                                wxString curAttrName;
+                                curr_att = top->obj->att_array;
+                                n_attr = top->obj->n_attr;
+                                attValArray = top->obj->attVal;
+
+
+                                if( curr_att ) {
+                                    bool bviz = true;
+
+                                    attrCounter = 0;
+                                    int noAttr = 0;
+
+                                    bleading_attribute = false;
+
+                                    while( attrCounter < n_attr ) {
+                                        curAttrName = wxString(curr_att, wxConvUTF8, 6 );
+                                        noAttr++;
+
+                                        S57attVal *pAttrVal = NULL;
+                                        if( attValArray ){
+                                            //if(Chs57)
+                                                pAttrVal = attValArray->Item(attrCounter);
+                                        //else if( target_plugin_chart )
+                                            //pAttrVal = attValArray->Item(attrCounter);
+                                        }
+                                        wxString value = s57chart::GetAttributeValueAsString( pAttrVal, curAttrName );
+
+                                        if( curAttrName == _T("LITVIS") ){
+                                            if(value.StartsWith(_T("obsc")) )
+                                            bviz = false;
+                                        }
+                                        else if( curAttrName == _T("VALNMR") )
+                                            value.ToDouble( &valnmr );
+
+                                        
+                                        attrCounter++;
+                                        curr_att += 6;
+                                    }
+                                    
+                                    if(bviz && (valnmr > 0.1)){
+                                        // As a quick check, compare the mercator-manhattan distance
+                                        double olon, olat;
+                                        fromSM( ( top->obj->x * top->obj->x_rate ) + top->obj->x_origin,
+                                            ( top->obj->y * top->obj->y_rate ) + top->obj->y_origin, ref_lat, ref_lon, &olat,
+                                            &olon );
+
+                                        double dlat = lat - olat;
+                                        double dy = dlat  * 60 / cos(olat * PI/180.);
+                                        double dlon = lon - olon;
+                                        double dx = dlon * 60;
+                                        double manhat= abs(dy) + abs(dx);
+                                        if( 1/*(abs(dy) + abs(dx)) < valnmr*/){
+                                            // close...Check precisely
+                                            double br, dd;
+                                            DistanceBearingMercator( lat, lon, olat, olon, &br, &dd );
+                                            if(dd < valnmr){
+                                                ret_ptr->Append( top );
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                top = top->next;
+            }
+        }
+    }
+
+    return ret_ptr;
+}
+
 
 ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float select_radius,
         ViewPort *VPoint, int selection_mask )
@@ -6139,35 +6243,10 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
     }
 }
 
-bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs )
+bool s57_ProcessExtendedLightSectors( ChartCanvas *cc, ChartPlugInWrapper *target_plugin_chart, s57chart *Chs57,
+                                      ListOfObjRazRules* rule_list, ListOfPI_S57Obj* pi_rule_list,
+                                      std::vector<s57Sector_t>& sectorlegs )
 {
-    if( !cc )
-        return false;
-    
-    double cursor_lat, cursor_lon;
-    static float lastLat, lastLon;
-
-    if( !ps52plib || !ps52plib->m_bExtendLightSectors )
-        return false;
-
-    ChartPlugInWrapper *target_plugin_chart = NULL;
-    s57chart *Chs57 = NULL;
-
-    ChartBase *target_chart = cc->GetChartAtCursor();
-    if( target_chart ){
-        if( (target_chart->GetChartType() == CHART_TYPE_PLUGIN) && (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR) )
-            target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
-        else
-            Chs57 = dynamic_cast<s57chart*>( target_chart );
-    }
-
-
-    cc->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
-
-    if( lastLat == cursor_lat && lastLon == cursor_lon ) return false;
-
-    lastLat = cursor_lat;
-    lastLon = cursor_lon;
     bool newSectorsNeedDrawing = false;
 
     bool bhas_red_green = false;
@@ -6180,21 +6259,8 @@ bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& v
     int yOpacity = (float)opacity*1.3; // Matched perception of white/yellow with red/green
 
     if( target_plugin_chart || Chs57  ) {
-        // Go get the array of all objects at the cursor lat/lon
-        float selectRadius = 16 / ( viewport.view_scale_ppm * 1852 * 60 );
-
-        ListOfObjRazRules* rule_list = NULL;
-        ListOfPI_S57Obj* pi_rule_list = NULL;
-        if( Chs57 )
-            rule_list = Chs57->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport, MASK_POINT );
-        else if( target_plugin_chart )
-            pi_rule_list = g_pi_manager->GetPlugInObjRuleListAtLatLon( target_plugin_chart,
-                                                                       cursor_lat, cursor_lon, selectRadius, viewport );
-
-
         sectorlegs.clear();
 
-        wxPoint2DDouble lightPosD(0,0);
         wxPoint2DDouble objPos;
 
         char *curr_att = NULL;
@@ -6212,7 +6278,8 @@ bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& v
 
         while(1) {
 
-            bool is_light = false;
+           wxPoint2DDouble lightPosD(0,0);
+           bool is_light = false;
             if(Chs57) {
                 if(!snode)
                     break;
@@ -6369,7 +6436,62 @@ bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& v
                 pnode = pnode->GetPrevious();
 
         }               // end of while
+    }
 
+//  Work with the sector legs vector to identify  and mark "Leading Lights"
+//  Sectors with CATLIT "Leading" or "Directional" attribute set have already been marked
+    for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
+
+        if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15) ) {
+            if( sectorlegs[i].iswhite && bhas_red_green )
+                sectorlegs[i].isleading = true;
+        }
+    }
+
+    return newSectorsNeedDrawing;
+}
+
+bool s57_GetVisibleLightSectors( ChartCanvas *cc, double lat, double lon, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs )
+{
+    if( !cc )
+        return false;
+    
+    static float lastLat, lastLon;
+
+    if( !ps52plib)
+        return false;
+
+    ChartPlugInWrapper *target_plugin_chart = NULL;
+    s57chart *Chs57 = NULL;
+
+    ChartBase *target_chart = cc->GetChartAtCursor();
+    if( target_chart ){
+        if( (target_chart->GetChartType() == CHART_TYPE_PLUGIN) && (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR) )
+            target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
+        else
+            Chs57 = dynamic_cast<s57chart*>( target_chart );
+    }
+
+
+    bool newSectorsNeedDrawing = false;
+
+    if( target_plugin_chart || Chs57  ) {
+        ListOfObjRazRules* rule_list = NULL;
+        ListOfPI_S57Obj* pi_rule_list = NULL;
+
+        // Go get the array of all objects at the cursor lat/lon
+        float selectRadius = 16 / ( viewport.view_scale_ppm * 1852 * 60 );
+
+        if( Chs57 )
+            rule_list = Chs57->GetLightsObjRuleListVisibleAtLatLon( lat, lon, &viewport );
+#if 0        
+        else if( target_plugin_chart )
+            pi_rule_list = g_pi_manager->GetLightsObjRuleListVisibleAtLatLon( target_plugin_chart, lat, lon, &viewport );
+#endif
+        newSectorsNeedDrawing = s57_ProcessExtendedLightSectors( cc, target_plugin_chart, Chs57,
+                                      rule_list, pi_rule_list,
+                                      sectorlegs );
+        
         if(rule_list) {
             rule_list->Clear();
             delete rule_list;
@@ -6381,48 +6503,68 @@ bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& v
         }
     }
 
-#if 0
-    //  Work with the sector legs vector to identify  and mark "Leading Lights"
-    int ns = sectorlegs.size();
-    if( sectorlegs.size() > 0 ) {
-        for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
-            if( fabs( sectorlegs[i].sector1 - sectorlegs[i].sector2 ) < 0.5 )
-                continue;
 
-            if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15)  && sectorlegs[i].iswhite ) {
-                //      Check to see if this sector has a visible range greater than any other white light
+    return newSectorsNeedDrawing;
+}
 
-                if( sectorlegs.size() > 1 ) {
-                    bool bleading = true;
-                    for( unsigned int j=0; j<sectorlegs.size(); j++ ) {
-                        if(i == j)
-                            continue;
-                        if((sectorlegs[j].iswhite) && (sectorlegs[i].range <= sectorlegs[j].range) ){
-                            if((sectorlegs[j].sector2 - sectorlegs[j].sector1) >= 15){  // test sector should not be a leading light
-                                bleading = false;    // cannot be a sector, since its range is <= another white light
-                                break;
-                            }
-                        }
-                    }
+bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs )
+{
+    if( !cc )
+        return false;
+    
+    double cursor_lat, cursor_lon;
+    static float lastLat, lastLon;
 
-                    if(bleading)
-                        sectorlegs[i].isleading = true;
-                }
-            }
-            else
-                sectorlegs[i].isleading = false;
+    if( !ps52plib || !ps52plib->m_bExtendLightSectors )
+        return false;
 
-        }
+    ChartPlugInWrapper *target_plugin_chart = NULL;
+    s57chart *Chs57 = NULL;
+
+    ChartBase *target_chart = cc->GetChartAtCursor();
+    if( target_chart ){
+        if( (target_chart->GetChartType() == CHART_TYPE_PLUGIN) && (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR) )
+            target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
+        else
+            Chs57 = dynamic_cast<s57chart*>( target_chart );
     }
-#endif
 
-//  Work with the sector legs vector to identify  and mark "Leading Lights"
-//  Sectors with CATLIT "Leading" or "Directional" attribute set have already been marked
-    for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
 
-        if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15) ) {
-            if( sectorlegs[i].iswhite && bhas_red_green )
-                sectorlegs[i].isleading = true;
+    cc->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
+
+    if( lastLat == cursor_lat && lastLon == cursor_lon ) return false;
+
+    lastLat = cursor_lat;
+    lastLon = cursor_lon;
+    bool newSectorsNeedDrawing = false;
+
+    if( target_plugin_chart || Chs57  ) {
+        ListOfObjRazRules* rule_list = NULL;
+        ListOfPI_S57Obj* pi_rule_list = NULL;
+
+        // Go get the array of all objects at the cursor lat/lon
+        float selectRadius = 16 / ( viewport.view_scale_ppm * 1852 * 60 );
+
+        if( Chs57 )
+            rule_list = Chs57->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport, MASK_POINT );
+#if 0
+        else if( target_plugin_chart )
+            pi_rule_list = g_pi_manager->GetPlugInObjRuleListAtLatLon( target_plugin_chart,
+                                                                       cursor_lat, cursor_lon, selectRadius, &viewport );
+#endif                                                                       
+
+        newSectorsNeedDrawing = s57_ProcessExtendedLightSectors( cc, target_plugin_chart, Chs57,
+                                      rule_list, pi_rule_list,
+                                      sectorlegs );
+
+        if(rule_list) {
+            rule_list->Clear();
+            delete rule_list;
+        }
+
+        if(pi_rule_list) {
+            pi_rule_list->Clear();
+            delete pi_rule_list;
         }
     }
 
