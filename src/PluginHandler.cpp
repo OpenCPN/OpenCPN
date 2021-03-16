@@ -210,6 +210,8 @@ class Host {
         bool is_debian_plugin_compatible(const Plugin& plugin) const {
             static const std::vector<std::string> debian_versions = {
                 "9;ubuntu-x86_64;16.04",
+                // Assuming Debian 10 users sticks to gtk2:
+                "10;ubuntu-x86_64;18.04",
                 "11;ubuntu-gtk3-x86_64;20.04",
                 "sid;ubuntu-gtk3-x86_64;20.04"
             };
