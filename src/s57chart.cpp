@@ -6547,11 +6547,9 @@ bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& v
 
         if( Chs57 )
             rule_list = Chs57->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport, MASK_POINT );
-#if 0
         else if( target_plugin_chart )
             pi_rule_list = g_pi_manager->GetPlugInObjRuleListAtLatLon( target_plugin_chart,
-                                                                       cursor_lat, cursor_lon, selectRadius, &viewport );
-#endif                                                                       
+                                                                       cursor_lat, cursor_lon, selectRadius, viewport );
 
         newSectorsNeedDrawing = s57_ProcessExtendedLightSectors( cc, target_plugin_chart, Chs57,
                                       rule_list, pi_rule_list,
