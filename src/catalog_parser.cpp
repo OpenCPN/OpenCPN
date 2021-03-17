@@ -102,8 +102,6 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
                     plugin->info_url = ocpn::trim(plugin_element.first_child().value());
                 } else if (strcmp(plugin_element.name(), "target") == 0) {
                     plugin->target = ocpn::trim(plugin_element.first_child().value());
-                } else if (strcmp(plugin_element.name(), "build-target") == 0) {
-                    plugin->build_target = ocpn::trim(plugin_element.first_child().value());
                 } else if (strcmp(plugin_element.name(), "build-gtk") == 0) {
                     plugin->build_gtk = ocpn::trim(plugin_element.first_child().value());
                 } else if (strcmp(plugin_element.name(), "target-version") == 0) {

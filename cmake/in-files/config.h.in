@@ -51,9 +51,6 @@
 // The os compatible plugins are are built for
 #define PKG_TARGET "${PKG_TARGET}"
 
-// The os compatible plugins should be built for
-#define PKG_BUILD_TARGET "${PKG_BUILD_TARGET}"
-
 // The os version compatible plugins are are built for
 #define PKG_TARGET_VERSION "${PKG_TARGET_VERSION}"
 

@@ -20,6 +20,7 @@
 # - Free Software Foundation, Inc.,                                       *
 # - 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 # ***************************************************************************
+
 #[[
 
 Configuring opencpn
@@ -145,22 +146,17 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-IF(DEFINED _wx_selected_config)
-  MESSAGE (STATUS "selected config ${_wx_selected_config}")
-  IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Building for wxQt-Android, ANDROID_ARCH: ${ANDROID_ARCH}")
-    SET(QT_ANDROID "ON")
-    if(ANDROID_ARCH MATCHES "arm64")
-      add_definitions("-DANDROID_ARM64")
-    else ()
-      add_definitions("-DANDROID_ARMHF")
-    endif ()
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
-ENDIF(DEFINED _wx_selected_config)
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
+   message(STATUS "Building for wxQt-Android")
+   set(QT_ANDROID "ON")
+   if(PKG_ARCH STREQUAL "arm64")
+     add_definitions("-DANDROID_ARM64")
+   else ()
+     add_definitions("-DANDROID_ARMHF")
+   endif ()
+   set(PACKAGE_NAME gorp)
+endif ()
 
-if( QT_ANDROID )
-  set(PACKAGE_NAME gorp)
-endif( QT_ANDROID )
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
@@ -211,6 +207,10 @@ option(OCPN_USE_GL "Enable OpenGL support" ON)
 option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
 option(OCPN_USE_UDEV_PORTS "Use udev to enumerate serial ports" ON)
 option(OCPN_USE_SYSFS_PORTS "Use sysfs to enumerate serial ports" OFF)
+
+set(OCPN_TARGET_TUPLE "" CACHE STRING
+  "List of target;version;arch like flatpak;20.08;aarch64 [\"\"]"
+)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -1445,7 +1445,7 @@ if (OCPN_USE_CURL)
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
     target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ANDROID_ARCH}/libcurl.a)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -1574,7 +1574,7 @@ if (QT_ANDROID)
   target_include_directories(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
   target_link_libraries(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ANDROID_ARCH}/libarchive.a)
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
 elseif ( APPLE )
     if (OCPN_USE_SYSTEM_LIBARCHIVE)
         list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")

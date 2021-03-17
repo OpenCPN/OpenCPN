@@ -9,8 +9,14 @@
 
 # Based on code from nohal
 function(GetArch)
-  if (NOT WIN32)
-    # default
+  if (NOT OCPN_TARGET_TUPLE STREQUAL "")
+    list(GET OCPN_TARGET_TUPLE 2 ARCH)
+  elseif (WIN32)
+    # Should really be i386 since we are on win32. However, it's x86_64 for now,
+    # see #2027
+    set (ARCH "x86_64")
+  else ()
+    # Defaults:
     set (ARCH "x86_64")
     set (LIB_INSTALL_DIR "lib")
     if (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
@@ -31,18 +37,18 @@ function(GetArch)
       set (LIB_INSTALL_DIR "lib64")
       if (ARCH STREQUAL "arm64")
         set (ARCH "aarch64")
-      endif()
+      endif ()
     elseif (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
       if (ARCH STREQUAL "arm64")
          set (ARCH "aarch64")
-      endif()
+      endif ()
     elseif (EXISTS /etc/gentoo-release)
       set (LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
     endif ()
-  else (NOT WIN32)
-    # On WIN32 probably CMAKE_SIZEOF_VOID_P EQUAL 8, but we don't use it at all now...
-    set (ARCH "i386")
-  endif (NOT WIN32)
+    if (OCPN_FLATPAK AND ARCH STREQUAL "arm64")
+      set(ARCH "aarch64")
+    endif ()
+  endif ()
   set (LIB_INSTALL_DIR ${LIB_INSTALL_DIR} PARENT_SCOPE)
   set (ARCH ${ARCH} PARENT_SCOPE)
   set (PACKAGE_FORMAT ${PACKAGE_FORMAT} PARENT_SCOPE)

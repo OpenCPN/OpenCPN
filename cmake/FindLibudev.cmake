@@ -36,7 +36,7 @@ find_path(UDEV_INCLUDE_DIR
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
-  UDEV DEFAULT_MSG UDEV_LIBRARY UDEV_INCLUDE_DIR
+  Libudev DEFAULT_MSG UDEV_LIBRARY UDEV_INCLUDE_DIR
 )
 
 if(UDEV_FOUND)

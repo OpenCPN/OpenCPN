@@ -77,8 +77,8 @@ class CompatOs {
 
     public:
         static CompatOs* getInstance();
-        std::string name()  { return _name; }
-        std::string version() { return _version; }
+        std::string name()  const { return _name; }
+        std::string version() const { return _version; }
 
     private:
         CompatOs();
