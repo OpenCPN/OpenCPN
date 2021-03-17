@@ -1764,8 +1764,8 @@ endif (UNIX AND NOT APPLE)
 
 # Finalize config.h setup and deploy it.
 include(TargetSetup)
-if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u" AND PKG_TARGET STREQUAL "ubuntu")
-  set(PKG_TARGET "${PKG_TARGET}-gtk3")
+if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
+  string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
 configure_file(${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
