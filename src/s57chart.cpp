@@ -4592,7 +4592,7 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon( float lat, flo
                         double sectrTest;
                         bool hasSectors = GetDoubleAttr( top->obj, "SECTR1", sectrTest );
                         if(hasSectors){
-                            if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
+                            if( ps52plib->ObjectRenderCheckCat( top, VPoint ) ) {
                                 
                                 int attrCounter;
                                 double valnmr = -1;
