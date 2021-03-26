@@ -5457,9 +5457,12 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
 {
     // Present a file selector dialog to get the file name..
     wxString tarballPath;
-   int response = g_Platform->DoFileSelectorDialog( this, &tarballPath, _( "Select tarball file" ),
-                                                      g_Platform->GetPrivateDataDir(), wxEmptyString, wxT ( "tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*" ));
- 
+    int response = g_Platform->DoFileSelectorDialog( this, &tarballPath,
+                                                   _( "Select tarball file" ),
+                                                   GetImportInitDir(),
+                                                   wxEmptyString,
+                                                   wxT ( "tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*" ));
+      
     if( response == wxID_OK )
     {
         // Traverse the tarball to find the required "metadata.xml file
@@ -5672,8 +5675,15 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         if(m_PluginListPanel)
             m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
 
-        
-        
+        // Record the path to the last import file for next time
+        wxFileName f = tarballPath;
+        wxString used_path = f.GetPath(wxPATH_GET_VOLUME | wxPATH_NO_SEPARATOR);
+        if (used_path != wxEmptyString) {
+            pConfig->SetPath(_T("/PlugIns/"));
+            pConfig->Write("LatestImportDir", used_path);
+            pConfig->Flush();
+        }
+
         // Success!
         wxString msg = _("Plugin imported successfully");
         msg += _T("\n");
@@ -5718,8 +5728,19 @@ void CatalogMgrPanel::SetUpdateButtonLabel()
     m_updateButton->SetLabel(label);
     Layout();
 }
-    
 
+wxString CatalogMgrPanel::GetImportInitDir()
+{
+    // Check the config file for the last Import path.
+    pConfig->SetPath( _T("/PlugIns/") );
+    wxString lastImportDir;
+    lastImportDir = pConfig->Read(_T("LatestImportDir"),
+                    g_Platform->GetWritableDocumentsDir());
+    if ( wxDirExists(lastImportDir) ) {
+        return lastImportDir;
+    }
+    return ( g_Platform->GetWritableDocumentsDir() );
+}
 
 BEGIN_EVENT_TABLE( PluginListPanel, wxScrolledWindow )
 //EVT_BUTTON( ID_CMD_BUTTON_PERFORM_ACTION, PluginListPanel::OnPluginPanelAction )
