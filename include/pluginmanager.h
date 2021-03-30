@@ -461,6 +461,7 @@ class CatalogMgrPanel: public wxPanel
     protected:
         wxString GetCatalogText(bool);
         void SetUpdateButtonLabel();
+        wxString GetImportInitDir();
 
         wxButton *m_updateButton, *m_advancedButton, *m_tarballButton;
         wxButton* m_adv_button;
