@@ -314,6 +314,11 @@ static OcpnSound* _bells_sounds[]  = {SoundFactory(), SoundFactory()};
 std::vector<OcpnSound*>   bells_sound(_bells_sounds, _bells_sounds + 2  );
 
 OcpnSound*                g_anchorwatch_sound = SoundFactory();
+wxString                  g_anchorwatch_sound_file;
+wxString                  g_DSC_sound_file;
+wxString                  g_SART_sound_file;
+wxString                  g_AIS_sound_file;
+
 
 RoutePoint                *pAnchorWatchPoint1;
 RoutePoint                *pAnchorWatchPoint2;
@@ -762,6 +767,11 @@ double                    gQueryVar = 361.0;
 char bells_sound_file_name[2][12] = { "1bells.wav", "2bells.wav" };
 
 int                       portaudio_initialized;
+
+bool                      g_bAIS_GCPA_Alert_Audio;
+bool                      g_bAIS_SART_Alert_Audio;
+bool                      g_bAIS_DSC_Alert_Audio;
+bool                      g_bAnchor_Alert_Audio;
 
 static char nmea_tick_chars[] = { '|', '/', '-', '\\', '|', '/', '-', '\\' };
 static int tick_idx;

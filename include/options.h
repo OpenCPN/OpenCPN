@@ -88,11 +88,7 @@ class OCPNColourPickerCtrl;
 #define SYMBOL_OPTIONS_POSITION wxDefaultPosition
 
 enum {
-  ID_AISALERTAUDIO = 10000,
-  ID_AISALERTDIALOG,
-  ID_AISALERTSELECTSOUND,
-  ID_AISALERTTESTSOUND,
-  ID_APPLY,
+  ID_APPLY =10000,
   ID_ATONTEXTCHECKBOX,
   ID_AUTOANCHORMARKBOX1,
   ID_BELLSCHECKBOX,
@@ -210,7 +206,23 @@ enum {
   ID_CONFIGEDIT_OK,
   ID_CONFIGEDIT_CANCEL,
   ID_ZOOMBUTTONS,
-  ID_RASTERZOOM
+  ID_RASTERZOOM,
+  ID_ANCHORSELECTSOUND,
+  ID_ANCHORTESTSOUND,
+  ID_ANCHORALERTAUDIO,
+  ID_AISALERTAUDIO,
+  ID_AISSELECTSOUND,
+  ID_AISTESTSOUND,
+  ID_SARTALERTAUDIO,
+  ID_SARTELECTSOUND,
+  ID_SARTTESTSOUND,
+  ID_DSCALERTAUDIO,
+  ID_DSCSELECTSOUND,
+  ID_DSCTESTSOUND,
+  ID_AISALERTDIALOG,
+  ID_AISALERTSELECTSOUND,
+  ID_AISALERTTESTSOUND,
+
 };
 
 /* Define an int bit field for dialog return value
@@ -330,8 +342,18 @@ class options : private Uncopyable,
   void OnSubNBPageChange(wxNotebookEvent &event);
   void DoOnPageChange(size_t page);
 
+  wxString SelectSoundFile();
   void OnButtonSelectSound(wxCommandEvent &event);
   void OnButtonTestSound(wxCommandEvent &event);
+  void OnButtonSelectAnchorSound(wxCommandEvent& event);
+  void OnButtonTestAnchorSound(wxCommandEvent& event);
+  void OnButtonSelectAISSound(wxCommandEvent& event);
+  void OnButtonTestAISSound(wxCommandEvent& event);
+  void OnButtonSelectSARTSound(wxCommandEvent& event);
+  void OnButtonTestSARTSound(wxCommandEvent& event);
+  void OnButtonSelectDSCSound(wxCommandEvent& event);
+  void OnButtonTestDSCSound(wxCommandEvent& event);
+
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void OnZTCCheckboxClick(wxCommandEvent &event);
   void OnRadarringSelect(wxCommandEvent &event);
@@ -629,6 +651,10 @@ class options : private Uncopyable,
 
   int k_plugins;
 
+  // Sounds panel
+  wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio, *m_pCheck_DSCAudio; 
+  wxStaticText *m_anchorAudioFileNameText, *m_aisAudioFileNameText, *m_sartAudioFileNameText, *m_dscAudioFileNameText;
+  
  private:
   void Init(void);
   void CreatePanel_MMSI(size_t parent, int border_size, int group_item_spacing);
@@ -643,11 +669,13 @@ class options : private Uncopyable,
   void CreatePanel_Display(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_UI(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Units(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Sounds(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Advanced(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Routes(size_t parent, int border_size, int group_item_spacing);
 
   void OnAlertEnableButtonClick(wxCommandEvent &event);
+  void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
