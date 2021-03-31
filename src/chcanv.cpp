@@ -249,6 +249,7 @@ extern double           g_ownship_HDTpredictor_miles;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
+extern wxString         g_anchorwatch_sound_file;
 
 extern PlugInManager    *g_pi_manager;
 
@@ -6344,7 +6345,7 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
 
     if( play_sound && !bAnchorSoundPlaying) {
         g_anchorwatch_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8) );
-        g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
+        g_anchorwatch_sound->Load( g_anchorwatch_sound_file );
         if ( g_anchorwatch_sound->IsOk( ) ) {
             bAnchorSoundPlaying = true;
             g_anchorwatch_sound->SetFinishedCallback( onSoundFinished, NULL );

@@ -133,6 +133,9 @@ static double arpa_ref_hdg = NAN;
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
 extern int              gps_watchdog_timeout_ticks;
 extern bool g_bquiting;
+extern wxString   g_DSC_sound_file;
+extern wxString   g_SART_sound_file;
+extern wxString   g_AIS_sound_file;
 
 static void onSoundFinished(void* ptr)
 {
@@ -2850,6 +2853,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //    Scan all targets, looking for SART, DSC Distress, and CPA incursions
     //    In the case of multiple targets of the same type, select the shortest range or shortest TCPA
     AIS_Target_Data *palert_target = NULL;
+    int audioType = AISAUDIO_NONE; 
     
     if( NULL == g_pais_alert_dialog_active ) {
         pAISMOBRoute = NULL;                // Reset the AISMOB auto route.
@@ -2896,14 +2900,19 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
         //    Which of multiple targets?
         //    Give priority to SART targets, then DSC Distress, then CPA incursion
-        
         palert_target = palert_target_cpa;
+        if(palert_target)
+            audioType = AISAUDIO_CPA;
 
-        if( palert_target_sart )
+        if( palert_target_sart ){
             palert_target = palert_target_sart;
+            audioType = AISAUDIO_SART;
+        }
         
-        if( palert_target_dsc )
+        if( palert_target_dsc ){
             palert_target = palert_target_dsc;
+            audioType = AISAUDIO_DSC;
+        }
         
 
         //    Show the alert
@@ -3025,7 +3034,21 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         if ( !AIS_AlertPlaying() ) {
             m_bAIS_AlertPlaying = true;
             m_AIS_Sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
-            m_AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+            wxString soundFile;
+            switch (audioType){
+                case AISAUDIO_CPA:
+                default:
+                    soundFile = g_AIS_sound_file;
+                    break;
+                case AISAUDIO_DSC:
+                    soundFile = g_DSC_sound_file;
+                    break;
+                case AISAUDIO_SART:
+                    soundFile = g_SART_sound_file;
+                    break;
+            }                    
+            
+            m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
             if ( m_AIS_Sound->IsOk( ) ) {
                 m_AIS_Sound->SetFinishedCallback( onSoundFinished, this );
                 if ( !m_AIS_Sound->Play( ) )
