@@ -357,6 +357,10 @@ void RouteManagerDialog::Create()
     bSizerRteContents->Add( fgSizerFilterRte, 0, wxEXPAND, 5 );
     m_tFilterRte->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
 
+    m_cbShowAllRte = new wxCheckBox(m_pPanelRte, wxID_ANY, _("Show all routes"));
+    bSizerRteContents->Add(m_cbShowAllRte, 0, wxEXPAND | wxLEFT, 5);
+    m_cbShowAllRte->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( RouteManagerDialog::OnShowAllRteCBClicked ), NULL, this );
+  
     m_pRouteListCtrl = new wxListCtrl( m_pPanelRte, -1, wxDefaultPosition, wxSize(-1, -1),
                                        wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
                                        | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
@@ -469,6 +473,10 @@ void RouteManagerDialog::Create()
     bSizerTrkContents->Add( fgSizerFilterTrk, 0, wxEXPAND, 5 );
     m_tFilterTrk->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
     
+    m_cbShowAllTrk = new wxCheckBox(m_pPanelTrk, wxID_ANY, _("Show all tracks"));
+    bSizerTrkContents->Add(m_cbShowAllTrk, 0, wxEXPAND | wxLEFT, 5);
+    m_cbShowAllTrk->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( RouteManagerDialog::OnShowAllTrkCBClicked ), NULL, this );
+  
     m_pTrkListCtrl = new wxListCtrl( m_pPanelTrk, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     
@@ -568,6 +576,10 @@ void RouteManagerDialog::Create()
     bSizerWptContents->Add( fgSizerFilterWpt, 0, wxEXPAND, 5 );
 	m_tFilterWpt->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
 
+    m_cbShowAllWP = new wxCheckBox(m_pPanelWpt, wxID_ANY, _("Show all waypoints"));
+    bSizerWptContents->Add(m_cbShowAllWP, 0, wxEXPAND | wxLEFT, 5);
+    m_cbShowAllWP->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( RouteManagerDialog::OnShowAllWpCBClicked ), NULL, this );
+  
     m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
@@ -697,6 +709,10 @@ void RouteManagerDialog::Create()
     bSizerLayContents->Add( fgSizerFilterLay, 0, wxEXPAND, 5 );
     m_tFilterLay->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
     
+    m_cbShowAllLay = new wxCheckBox(m_pPanelLay, wxID_ANY, _("Show all layers"));
+    bSizerLayContents->Add(m_cbShowAllLay, 0, wxEXPAND | wxLEFT, 5);
+    m_cbShowAllLay->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( RouteManagerDialog::OnShowAllLayCBClicked ), NULL, this );
+  
     m_pLayListCtrl = new wxListCtrl( m_pPanelLay, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
                                      | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
@@ -905,6 +921,96 @@ void RouteManagerDialog::SetColorScheme()
     DimeControl( this );
 }
 
+void RouteManagerDialog::OnShowAllRteCBClicked(wxCommandEvent& event)
+{
+    bool viz = m_cbShowAllRte->GetValue();
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+        if ( item == -1 )
+            break;
+        
+        Route *pR = (Route *)m_pRouteListCtrl->GetItemData(item);
+        
+        pR->SetVisible( viz, viz );
+        pR->SetSharedWPViz( viz );
+        
+        m_pRouteListCtrl->SetItemImage( item, !viz );      // visible
+
+        pConfig->UpdateRoute( pR );
+    }
+    
+    gFrame->RefreshAllCanvas();
+
+}
+
+void RouteManagerDialog::OnShowAllWpCBClicked(wxCommandEvent& event)
+{
+    bool viz = m_cbShowAllWP->GetValue();
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+        if ( item == -1 )
+            break;
+       
+        RoutePoint *pRP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+
+        pRP->SetVisible( viz );
+        m_pWptListCtrl->SetItemImage( item,
+                                      pRP->IsVisible() ? pWayPointMan->GetIconImageListIndex( pRP->GetIconBitmap() )
+                                                      : pWayPointMan->GetXIconImageListIndex( pRP->GetIconBitmap() ) );
+
+        pConfig->UpdateWayPoint( pRP );
+    }
+    
+    gFrame->RefreshAllCanvas();
+}
+
+void RouteManagerDialog::OnShowAllTrkCBClicked(wxCommandEvent& event)
+{
+    bool viz = m_cbShowAllTrk->GetValue();
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+        if ( item == -1 )
+            break;
+        
+        Track *track = (Track *)m_pTrkListCtrl->GetItemData(item);
+
+        track->SetVisible( viz );
+        m_pTrkListCtrl->SetItemImage( item, track->IsVisible() ? 0 : 1 );
+ 
+    }
+    
+    gFrame->RefreshAllCanvas();
+}
+
+void RouteManagerDialog::OnShowAllLayCBClicked(wxCommandEvent& event)
+{
+    bool viz = m_cbShowAllLay->GetValue();
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pLayListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+        if ( item == -1 )
+            break;
+        
+        Layer *layer = (Layer *)m_pLayListCtrl->GetItemData(item);
+        
+        layer->SetVisibleOnChart( viz );
+        m_pLayListCtrl->SetItemImage( item, layer->IsVisibleOnChart() ? 0 : 1 );
+
+        ToggleLayerContentsOnChart( layer );
+
+    }
+    
+    gFrame->RefreshAllCanvas();
+}
+
+
 void RouteManagerDialog::UpdateRouteListCtrl()
 {
     // if an item was selected, make it selected again if it still exist
@@ -921,6 +1027,8 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     RouteList::iterator it;
     int index = 0;
     int list_index = 0;
+    bool bpartialViz = false;
+    
     for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
         if( !( *it )->IsListed() ) continue;
         
@@ -961,6 +1069,10 @@ void RouteManagerDialog::UpdateRouteListCtrl()
         lic.SetColumn(2);
         lic.SetAlign(wxLIST_FORMAT_LEFT);
         m_pRouteListCtrl->SetItem( lic );
+       
+        // Keep track if any are invisible
+        if(!( *it )->IsVisible())
+            bpartialViz = true;
         
         list_index++;
     }
@@ -981,6 +1093,9 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     if( (m_lastRteItem >= 0) && (m_pRouteListCtrl->GetItemCount()) )
         m_pRouteListCtrl->EnsureVisible( m_lastRteItem );
     UpdateRteButtons();
+    
+    //  If any route is invisible, then "show all" cb must be clear.
+    m_cbShowAllRte->SetValue(!bpartialViz);     
 }
 
 void RouteManagerDialog::UpdateRteButtons()
@@ -1321,6 +1436,24 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         if( has_shared_wpts )
             UpdateWptListCtrlViz();
 
+        // Manage "show all" checkbox
+        bool viz = true;
+        long item = -1;
+        for ( ;; )
+        {
+            item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+            if ( item == -1 )
+                break;
+        
+            Route *pR = (Route *)m_pRouteListCtrl->GetItemData(item);
+        
+            if(!pR->IsVisible()){
+                viz = false;
+                break;
+            }
+        }
+        m_cbShowAllRte->SetValue( viz );
+
         ::wxEndBusyCursor();
 
     }
@@ -1613,8 +1746,13 @@ void RouteManagerDialog::UpdateTrkListCtrl()
     TrackList::iterator it;
     int index = 0;
     int list_index = 0;
+    bool bpartialViz = false;
+
     for( it = ( *pTrackList ).begin(); it != ( *pTrackList ).end(); ++it, ++index ) {;
         Track *trk = *it;
+        if(!trk->IsVisible())
+            bpartialViz = true;
+        
         if( !trk->IsListed() ) continue;
         
         if( !trk->GetName(true).Upper().Contains(m_tFilterTrk->GetValue().Upper()) ) {
@@ -1676,6 +1814,8 @@ void RouteManagerDialog::UpdateTrkListCtrl()
 
     if( (m_lastTrkItem >= 0 ) && (m_pTrkListCtrl->GetItemCount()) )
         m_pTrkListCtrl->EnsureVisible( m_lastTrkItem );
+    
+    m_cbShowAllTrk->SetValue( !bpartialViz );
     UpdateTrkButtons();
 }
 
@@ -1728,6 +1868,24 @@ void RouteManagerDialog::OnTrkToggleVisibility( wxMouseEvent &event )
             m_pTrkListCtrl->SetItemImage( clicked_index, track->IsVisible() ? 0 : 1 );
         }
         
+        // Manage "show all" checkbox
+        bool viz = true;
+        long item = -1;
+        for ( ;; )
+        {
+            item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+            if ( item == -1 )
+                break;
+        
+            Track *track = (Track *)m_pTrkListCtrl->GetItemData(item);
+        
+            if(!track->IsVisible()){
+                viz = false;
+                break;
+            }
+        }
+        m_cbShowAllTrk->SetValue( viz );
+
         gFrame->RefreshAllCanvas();
     }
 
@@ -1917,6 +2075,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
 
     int index = 0;
+    bool b_anyHidden = false;
     while( node ) {
         RoutePoint *rp = node->GetData();
         if( rp && rp->IsListed() ) {
@@ -1965,6 +2124,9 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
             lic.SetAlign(wxLIST_FORMAT_LEFT);
             m_pWptListCtrl->SetItem( lic );
         
+            if(!rp->IsVisible())
+                b_anyHidden = true;
+            
             index++;
         }
 
@@ -2001,6 +2163,8 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     }
     
     UpdateWptButtons();
+    
+    m_cbShowAllWP->SetValue(!b_anyHidden);
 }
 
 void RouteManagerDialog::UpdateWptListCtrlViz( )
@@ -2104,7 +2268,26 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
                                       wp->IsVisible() ? pWayPointMan->GetIconImageListIndex( wp->GetIconBitmap() )
                                                       : pWayPointMan->GetXIconImageListIndex( wp->GetIconBitmap() ) );
 
+
         pConfig->UpdateWayPoint( wp );
+
+        // Manage "show all" checkbox
+        bool viz = true;
+        long item = -1;
+        for ( ;; )
+        {
+            item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+            if ( item == -1 )
+                break;
+        
+            RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+        
+            if(!wp->IsVisible()){
+                viz = false;
+                break;
+            }
+        }
+        m_cbShowAllWP->SetValue( viz );
 
         gFrame->RefreshAllCanvas();
     }
@@ -2440,6 +2623,24 @@ void RouteManagerDialog::OnLayToggleVisibility( wxMouseEvent &event )
 
         layer->SetVisibleOnChart( !layer->IsVisibleOnChart() );
         m_pLayListCtrl->SetItemImage( clicked_index, layer->IsVisibleOnChart() ? 0 : 1 );
+
+        // Manage "show all" checkbox
+        bool viz = true;
+        long item = -1;
+        for ( ;; )
+        {
+            item = m_pLayListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+            if ( item == -1 )
+                break;
+        
+            Layer *layer = (Layer *)m_pLayListCtrl->GetItemData(item);
+        
+            if(!layer->IsVisibleOnChart()){
+                viz = false;
+                break;
+            }
+        }
+        m_cbShowAllLay->SetValue( viz );
 
         ToggleLayerContentsOnChart( layer );
     }
@@ -2778,6 +2979,7 @@ void RouteManagerDialog::UpdateLayListCtrl()
     // then add routes to the listctrl
     LayerList::iterator it;
     int index = 0;
+    bool b_anyHidden = false;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
         Layer *lay = (Layer *) ( *it );
         
@@ -2818,6 +3020,9 @@ void RouteManagerDialog::UpdateLayListCtrl()
         lic.SetAlign(wxLIST_FORMAT_LEFT);
         m_pLayListCtrl->SetItem( lic );
         
+        if(!lay->IsVisibleOnChart())
+            b_anyHidden = true;
+        
     }
 
     m_pLayListCtrl->SortItems( SortLayersOnName, reinterpret_cast<wxIntPtr>( m_pLayListCtrl ));
@@ -2831,6 +3036,8 @@ void RouteManagerDialog::UpdateLayListCtrl()
         m_pLayListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
     UpdateLayButtons();
+    
+    m_cbShowAllLay->SetValue(!b_anyHidden);
 }
 
 void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
