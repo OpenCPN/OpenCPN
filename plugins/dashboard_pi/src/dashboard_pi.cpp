@@ -1754,7 +1754,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
             mRSA_Watchdog = gps_watchdog_timeout_ticks;
         }
-        else if (update_path == _T("navigation.satellitesInView")) { //GNSS satellites
+        else if (update_path == _T("navigation.gnss.satellitesInView")) { //GNSS satellites
             if (mPriSatUsed >= 2) {
                 if (value.HasMember ("count") && value["count"].IsInt ()) {
                     double m_SK_SatsInView = (value["count"].AsInt ());
