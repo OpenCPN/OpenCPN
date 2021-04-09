@@ -885,25 +885,25 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         }
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") ) {
-            if (mPriSatStatus >= 2 || mPriSatUsed >= 4) {
+            if (mPriSatStatus >= 1 || mPriSatUsed >= 5) {
                 if (m_NMEA0183.Parse ()) {
                     
                     if (m_NMEA0183.Gsv.MessageNumber == 1) {
                         //NMEA0183 recommend to not repeat SatsInView in subsequent messages
                         mSatsInView = m_NMEA0183.Gsv.SatsInView;
-                        if (mPriSatUsed >= 4) {
+                        if (mPriSatUsed >= 5) {
                             SendSentenceToAllInstruments (OCPN_DBP_STC_SAT,
                                        m_NMEA0183.Gsv.SatsInView, _T (""));
-                            mPriSatUsed = 4;
+                            mPriSatUsed = 5;
                             mSatsUsed_Wdog = gps_watchdog_timeout_ticks; 
                         }
                     }
-                    if (mPriSatStatus >= 2) {
+                    if (mPriSatStatus >= 1) {
                         SendSatInfoToAllInstruments (mSatsInView,
                                                      m_NMEA0183.Gsv.MessageNumber,
                                                      m_NMEA0183.TalkerID,
                                                      m_NMEA0183.Gsv.SatInfo);
-                        mPriSatStatus = 2;
+                        mPriSatStatus = 1;
                         mSatStatus_Wdog = gps_watchdog_timeout_ticks;
                     }
                 }
@@ -1754,16 +1754,24 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
             mRSA_Watchdog = gps_watchdog_timeout_ticks;
         }
-        else if (update_path == _T("navigation.gnss.satellitesInView")) { //GNSS satellites
+        else if (update_path == _T("navigation.gnss.satellites")) { //GNSS satellites in use (GGA)
             if (mPriSatUsed >= 2) {
+                int usedSats = (value).AsInt();
+                SendSentenceToAllInstruments (OCPN_DBP_STC_SAT, usedSats, _T (""));
+                mPriSatUsed = 2;
+                mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
+            }
+        }
+        else if (update_path == _T("navigation.gnss.satellitesInView")) { //GNSS satellites in view
+            if (mPriSatUsed >= 4 || mPriSatStatus >= 2) {
                 if (value.HasMember ("count") && value["count"].IsInt ()) {
                     double m_SK_SatsInView = (value["count"].AsInt ());
                     SendSentenceToAllInstruments (OCPN_DBP_STC_SAT, m_SK_SatsInView, _T (""));
-                    mPriSatStatus = 2;
+                    mPriSatUsed = 4;
                     mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
                 }
             }
-            if (mPriSatStatus >= 1) {
+            if (mPriSatStatus >= 2) {
                 if (value.HasMember ("satellites") && value["satellites"].IsArray ()) {
                     // Update satellites data.                                
                     int iNumSats = value[_T ("satellites")].Size ();
@@ -1804,7 +1812,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                                 //TODO. Add talkerID to talk when SignalK has incorporated that.
                                 SendSatInfoToAllInstruments (
                                     iNumSats, iMesNum + 1, wxEmptyString, SK_SatInfo);
-                                mPriSatStatus = 1;
+                                mPriSatStatus = 2;
                                 mSatStatus_Wdog = gps_watchdog_timeout_ticks;
                             }
 
