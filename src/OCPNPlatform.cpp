@@ -1383,7 +1383,29 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         
-#endif    
+#endif
+        
+        // Verify some default directories, create if necessary
+        
+        // UserIcons
+        wxString UserIconPath = GetPrivateDataDir();
+        wxChar sep = wxFileName::GetPathSeparator();
+        if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
+        UserIconPath.Append( _T("UserIcons") );
+
+        if(!::wxDirExists(UserIconPath)){
+            ::wxMkdir( UserIconPath );
+        }
+
+        // layers
+        wxString LayersPath = GetPrivateDataDir();
+        if( LayersPath.Last() != sep ) LayersPath.Append( sep );
+        LayersPath.Append( _T("layers") );
+
+        if(!::wxDirExists(LayersPath)){
+            ::wxMkdir( LayersPath );
+        }
+
 }
 
 
