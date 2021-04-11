@@ -105,7 +105,7 @@ static bool openStream(PaStream** stream,
     outputParameters.device = deviceIx;
     outputParameters.channelCount = soundLoader->GetChannelCount();
     outputParameters.sampleFormat = paInt16;
-    outputParameters.suggestedLatency = 0;
+    outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultHighOutputLatency;; //0;
     outputParameters.hostApiSpecificStreamInfo = NULL;
     PaError err = Pa_OpenStream(stream,
                                 NULL, /* no input channels */
