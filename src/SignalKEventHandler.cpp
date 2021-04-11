@@ -40,6 +40,7 @@
 extern PlugInManager    *g_pi_manager;
 wxString                g_ownshipMMSI_SK;
 bool             bGPSValid_SK;
+extern int              g_priSats;
 
 void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
@@ -109,22 +110,28 @@ void SignalKEventHandler::handleUpdate(wxJSONValue &update) const {
 }
 
 void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) const {
-    if(item.HasMember("path")
-       && item.HasMember("value")) {
+    if (item.HasMember("path")
+        && item.HasMember("value")) {
         const wxString &update_path = item["path"].AsString();
         wxJSONValue &value = item["value"];
-        if(update_path == _T("navigation.position")) {
+        if (update_path == _T("navigation.position")) {
             updateNavigationPosition(value, sfixtime);
-        } else if(update_path == _T("navigation.speedOverGround") && bGPSValid_SK)
-        {
+        }
+        else if (update_path == _T("navigation.speedOverGround") && bGPSValid_SK) {
             updateNavigationSpeedOverGround(value, sfixtime);
-        } else if(update_path == _T("navigation.courseOverGroundTrue") && bGPSValid_SK)
-        {
+        }
+        else if (update_path == _T("navigation.courseOverGroundTrue") && bGPSValid_SK) {
             updateNavigationCourseOverGround(value, sfixtime);
-        } else if(update_path == _T("navigation.courseOverGroundMagnetic"))
-        {  // Ignore magnetic COG as OpenCPN don't handle yet.
-        } else if(update_path == _T("navigation.gnss.satellitesInView"))
+        }
+        else if (update_path == _T("navigation.courseOverGroundMagnetic")) {         
+        }   // Ignore magnetic COG as OpenCPN don't handle yet.
+        else if (update_path == _T("navigation.gnss.satellites")) //From GGA sats in use
         {
+            if (g_priSats >= 2)
+            updateGnssSatellites(value, sfixtime);
+        } else if(update_path == _T("navigation.gnss.satellitesInView")) //From GSV sats in view
+        {
+            if (g_priSats >= 3)
             updateGnssSatellites(value, sfixtime);
         } else if(update_path == _T("navigation.headingTrue"))
         {
@@ -183,11 +190,17 @@ void SignalKEventHandler::updateNavigationCourseOverGround(wxJSONValue &value,
 }
 
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,
-                                               const wxString &sfixtime) const
-{   
-    if ((value.HasMember("count") && value["count"].IsInt()) )
+                                 const wxString &sfixtime) const {
+    if (value.IsInt()) {
+        m_frame->setSatelitesInView(value.AsInt());
+        g_priSats = 2;
+    }
+    else if ((value.HasMember("count") && value["count"].IsInt())) {
         m_frame->setSatelitesInView(value["count"].AsInt());
+        g_priSats = 3;
+    }
 }
+
 
 void SignalKEventHandler::updateHeadingTrue(wxJSONValue &value,
                                             const wxString &sfixtime) const
