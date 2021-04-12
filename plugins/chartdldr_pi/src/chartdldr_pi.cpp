@@ -6,8 +6,8 @@
  * Author:   Pavel Kalian
  *
  ***************************************************************************
- *   Copyright (C) 2011 by Pavel Kalian   *
- *   $EMAIL$   *
+ *   Copyright (C) 2011 by Pavel Kalian                                    *
+ *   $EMAIL$                                                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -48,6 +48,8 @@
 #include <wx/wfstream.h>
 #include <memory>
 #include <wx/regex.h>
+#include <wx/debug.h>
+
 #ifdef DLDR_USE_LIBARCHIVE
   #include <archive.h>
   #include <archive_entry.h>
@@ -60,17 +62,19 @@
 
 #include <wx/arrimpl.cpp>
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
+#if !defined( CHART_LIST )
     WX_DEFINE_OBJARRAY(ArrayOfChartPanels);
+#endif /* CHART_LIST */
 
-#ifdef __OCPN__ANDROID__    
-#define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS    
+#ifdef __OCPN__ANDROID__
+#define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS
 #endif
 
 #include <fstream>
 
 #ifdef __OCPN__ANDROID__
 #include "androidSupport.h"
-#endif    
+#endif
 
 #ifdef __WXMAC__
 #define CATALOGS_NAME_WIDTH 300
@@ -81,17 +85,17 @@
 #define CHARTS_DATE_WIDTH 120
 #else
     #ifdef __OCPN__ANDROID__
-    
+
     #define CATALOGS_NAME_WIDTH 350
     #define CATALOGS_DATE_WIDTH 230
     #define CATALOGS_PATH_WIDTH 1000
     #define CHARTS_NAME_WIDTH 520
     #define CHARTS_STATUS_WIDTH 150
     #define CHARTS_DATE_WIDTH 200
-    
-    
+
+
     #else
-    
+
     #define CATALOGS_NAME_WIDTH 200
     #define CATALOGS_DATE_WIDTH 130
     #define CATALOGS_PATH_WIDTH 250
@@ -105,17 +109,17 @@
 #ifdef __OCPN__ANDROID__
     #include <QtAndroidExtras/QAndroidJniObject>
     #include "qdebug.h"
-    
+
     extern JavaVM *java_vm;         // found in androidUtil.cpp, accidentally exported....
     JNIEnv* jenv;
-    
-#endif    
+
+#endif
 
     bool getDisplayMetrics();
-    
+
 #define CHART_DIR "Charts"
 
-    
+
 void write_file( const wxString extract_file, char *data, unsigned long datasize )
 {
     wxFileName fn(extract_file);
@@ -179,7 +183,7 @@ chartdldr_pi::chartdldr_pi( void *ppimgr ) : opencpn_plugin_113( ppimgr )
     m_dldrpanel = NULL;
     m_leftclick_tool_id = -1;
     m_schartdldr_sources = wxEmptyString;
-    
+
     g_pi = this;
 }
 
@@ -202,7 +206,7 @@ int chartdldr_pi::Init( void )
     LoadConfig();
 
     getDisplayMetrics();
-    
+
     wxStringTokenizer st(m_schartdldr_sources, _T("|"), wxTOKEN_DEFAULT);
     while( st.HasMoreTokens() )
     {
@@ -222,7 +226,7 @@ int chartdldr_pi::Init( void )
 bool chartdldr_pi::DeInit( void )
 {
     wxLogMessage(_T("chartdldr_pi: DeInit"));
-    
+
     m_pChartSources->Clear();
     wxDELETE(m_pChartSources);
     wxDELETE(m_pChartCatalog);
@@ -326,11 +330,11 @@ bool chartdldr_pi::LoadConfig( void )
 //        wxFileName fn(wxStandardPaths::Get().GetDocumentsDir(), wxEmptyString);
         wxFileName fn(GetWritableDocumentsDir(), wxEmptyString);
         fn.AppendDir(_T(CHART_DIR));
-        
+
         pConf->Read ( _T ( "BaseChartDir" ), &m_base_chart_dir,  fn.GetPath() );
         wxLogMessage( _T ( "chartdldr_pi: " ) + m_base_chart_dir );
         wxLogMessage( _T ( "chartdldr_pi: " ) + fn.GetPath() );
-        
+
         pConf->Read ( _T ( "PreselectNew" ), &m_preselect_new, true );
         pConf->Read ( _T ( "PreselectUpdated" ), &m_preselect_updated, true );
         pConf->Read ( _T ( "AllowBulkUpdate" ), &m_allow_bulk_update, false );
@@ -375,43 +379,43 @@ void SetBackColor( wxWindow* ctrl, wxColour col)
 
         ctrl->SetBackgroundColour( col );
     }
-    
+
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
         wxWindowListNode *node = kids.Item( i );
         wxWindow *win = node->GetData();
-        
+
         if( win->IsKindOf( CLASSINFO(wxListBox) ) )
             ( (wxListBox*) win )->SetBackgroundColour( col );
-        
+
         else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
             ( (wxTextCtrl*) win )->SetBackgroundColour( col );
-        
+
         //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
             //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
                 ( (wxChoice*) win )->SetBackgroundColour( col );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
                 ( (wxComboBox*) win )->SetBackgroundColour( col );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
                 ( (wxRadioButton*) win )->SetBackgroundColour( col );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
                 ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
             }
-            
-            
+
+
             else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
                 ( (wxButton*) win )->SetBackgroundColour( col );
             }
-            
+
             else {
                 ;
             }
-            
+
             if( win->GetChildren().GetCount() > 0 ) {
                 depth++;
                 wxWindow * w = win;
@@ -428,24 +432,24 @@ void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
 
     wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
     dialog->SetFont(fo);
-    
+
 #ifdef __OCPN__ANDROID__
     if( m_parent_window ){
         int xmax = m_parent_window->GetSize().GetWidth();
         int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
         dialog->SetSize( xmax, ymax );
         dialog->Layout();
-        
+
         dialog->Move(0,0);
     }
-    
+
     wxColour cl = wxColour(214,218,222);
     SetBackColor( dialog, cl );
 #endif
-    
+
     dialog->SetPath(m_base_chart_dir);
     dialog->SetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
-    
+
     dialog->ShowModal();
     dialog->Destroy();
 }
@@ -468,17 +472,17 @@ bool getDisplayMetrics()
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
-    
+
     if ( !activity.isValid() ){
         return false;
     }
-    
+
     //  Call the desired method
     QAndroidJniObject data = activity.callObjectMethod("getDisplayMetrics", "()Ljava/lang/String;");
-    
+
     wxString return_string;
     jstring s = data.object<jstring>();
-    
+
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
@@ -487,65 +491,65 @@ bool getDisplayMetrics()
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
         return_string = wxString(ret_string, wxConvUTF8);
     }
-    
+
     //  Return string may have commas instead of periods, if using Euro locale
     //  We just fix it here...
     return_string.Replace( _T(","), _T(".") );
 
-    
+
 //     wxLogMessage(_T("Metrics:") + return_string);
 //     wxSize screen_size = ::wxGetDisplaySize();
 //     wxString msg;
 //     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
 //     wxLogMessage(msg);
-    
+
     double density = 1.0;
     wxStringTokenizer tk(return_string, _T(";"));
     if( tk.HasMoreTokens() ){
         wxString token = tk.GetNextToken();     // xdpi
         token = tk.GetNextToken();              // density
-        
-        long b = ::wxGetDisplaySize().y;        
+
+        long b = ::wxGetDisplaySize().y;
         token.ToDouble( &density );
-        
+
         token = tk.GetNextToken();              // ldpi
-        
+
         token = tk.GetNextToken();              // width
         token = tk.GetNextToken();              // height - statusBarHeight
         token = tk.GetNextToken();              // width
         token = tk.GetNextToken();              // height
         token = tk.GetNextToken();              // dm.widthPixels
         token = tk.GetNextToken();              // dm.heightPixels
-        
+
         token = tk.GetNextToken();              // actionBarHeight
         long abh;
         token.ToLong( &abh );
 //        g_ActionBarHeight = wxMax(abh, 50);
-        
+
         //        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
-        
+
     }
-    
+
     double ldpi = 160. * density;
-    
+
 //    double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
 //    ret = (maxDim / ldpi) * 25.4;
-    
+
 //    msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
 //    wxLogMessage(msg);
-    
+
     //  Save some items as global statics for convenience
     g_androidDPmm = ldpi / 25.4;
 //    g_androidDensity = density;
-    
+
     //qDebug() << "PI Metrics" << g_androidDPmm << density;
     return true;
 #else
-    
+
     return true;
-#endif    
-    
-    
+#endif
+
+
 }
 
 ChartSource::ChartSource( wxString name, wxString url, wxString localdir )
@@ -600,46 +604,46 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
 
 void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
 {
-    
+
     wxMenu menu;
 
     wxPoint mouseScreen = wxGetMousePosition();
     wxPoint mouseClient = ScreenToClient(mouseScreen);
 
-#ifdef __OCPN__ANDROID__    
+#ifdef __OCPN__ANDROID__
     wxFont *pf = OCPNGetFont(_T("Menu"), 0);
-    
+
     // add stuff
     wxMenuItem *item1 = new wxMenuItem(&menu, ID_MNU_SELALL, _("Select all"));
     item1->SetFont(*pf);
     menu.Append(item1);
-    
+
     wxMenuItem *item2 = new wxMenuItem(&menu, ID_MNU_DELALL, _("Deselect all"));
     item2->SetFont(*pf);
     menu.Append(item2);
-    
+
     wxMenuItem *item3 = new wxMenuItem(&menu, ID_MNU_INVSEL, _("Invert selection"));
     item3->SetFont(*pf);
     menu.Append(item3);
-    
+
     wxMenuItem *item4 = new wxMenuItem(&menu, ID_MNU_SELUPD, _("Select updated"));
     item4->SetFont(*pf);
     menu.Append(item4);
-    
+
     wxMenuItem *item5 = new wxMenuItem(&menu, ID_MNU_SELNEW, _("Select new"));
     item5->SetFont(*pf);
     menu.Append(item5);
-    
-#else    
-    
+
+#else
+
      menu.Append(ID_MNU_SELALL, _("Select all"), wxT(""));
      menu.Append(ID_MNU_DELALL, _("Deselect all"), wxT(""));
      menu.Append(ID_MNU_INVSEL, _("Invert selection"), wxT(""));
      menu.Append(ID_MNU_SELUPD, _("Select updated"), wxT(""));
      menu.Append(ID_MNU_SELNEW, _("Select new"), wxT(""));
-     
-#endif    
-     
+
+#endif
+
     menu.Connect(wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&ChartDldrPanelImpl::OnPopupClick, NULL, this);
     // and then display
     PopupMenu(&menu, mouseClient.x, mouseClient.y);
@@ -675,13 +679,16 @@ void ChartDldrPanelImpl::SetSource( int id )
     if( id >= 0 && id < (int)pPlugIn->m_pChartSources->Count() )
     {
         ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
-        wxYield();
+//        wxYield();
         ChartSource *cs = pPlugIn->m_pChartSources->Item(id);
         cs->LoadUpdateData();
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
         FillFromFile(cs->GetUrl(), cs->GetDir(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
-        m_chartsLabel->SetLabel(wxString::Format(_("Charts: %s"), cs->GetName().c_str()));
+        wxURI url(cs->GetUrl());
+        m_chartsLabel->SetLabel(wxString::Format(_("Charts: %s"), (cs->GetName() + _(" from ")
+                                                                 + url.BuildURI() + _T(" -> ")
+                                                                 + cs->GetDir()).c_str()));
         if (::wxIsBusy()) ::wxEndBusyCursor();
     }
     else
@@ -693,7 +700,9 @@ void ChartDldrPanelImpl::SetSource( int id )
 
 void ChartDldrPanelImpl::SelectSource( wxListEvent& event )
 {
-    SetSource(GetSelectedCatalog());
+    int i = GetSelectedCatalog();
+    if (i >= 0)
+        SetSource(i);
     event.Skip();
 }
 
@@ -707,13 +716,11 @@ void ChartDldrPanelImpl::SetBulkUpdate( bool bulk_update )
 
 void ChartDldrPanelImpl::CleanForm()
 {
-#ifdef NEW_LIST
-    m_scrollWinChartList->ClearBackground();
+#if defined(CHART_LIST)
+    clearChartList();
 #else
-    m_clCharts->Freeze();
-    m_clCharts->DeleteAllItems();
-    m_clCharts->Thaw();
-#endif    
+    m_scrollWinChartList->ClearBackground();
+#endif /* CHART_LIST */
     //m_stCatalogInfo->Show( false );
 }
 
@@ -736,19 +743,19 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
         pPlugIn->m_pChartCatalog->LoadFromFile(path);
 //            m_tChartSourceInfo->SetValue(pPlugIn->m_pChartCatalog->GetDescription());
         //fill in the rest of the form
-        
-#ifdef NEW_LIST
-        size_t updated_charts = 0;
-        size_t new_charts = 0;
-        
+
+        m_updatedCharts = 0;
+        m_newCharts = 0;
+
+#if !defined( CHART_LIST )
         // Clear any existing panels
         for(unsigned int i = 0 ; i < m_panelArray.GetCount() ; i++){
             delete m_panelArray.Item(i);
         }
         m_panelArray.Clear();
-        
         m_scrollWinChartList->ClearBackground();
-        
+#endif /* CHART_LIST */
+
         for( size_t i = 0; i < pPlugIn->m_pChartCatalog->charts.Count(); i++ )
         {
             wxString status;
@@ -757,7 +764,7 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename(true);
             if( !pPlugIn->m_pChartSource->ExistsLocaly(pPlugIn->m_pChartCatalog->charts.Item(i).number, file) )
             {
-                new_charts++;
+                m_newCharts++;
                 status = _("New");
                 if (selnew)
                     bcheck = true;
@@ -766,8 +773,8 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             {
                 if( pPlugIn->m_pChartSource->IsNewerThanLocal(pPlugIn->m_pChartCatalog->charts.Item(i).number, file, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime()) )
                 {
-                    updated_charts++;
-                    status = _("Update available");
+                    m_updatedCharts++;
+                    status = _("Out of date");
                     if (selupd)
                         bcheck = true;
                 }
@@ -777,75 +784,47 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
                 }
             }
             latest =  pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d"));
-            
-            ChartPanel *pC = new ChartPanel(m_scrollWinChartList, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), 
+
+#if defined( CHART_LIST )
+            wxVector<wxVariant> data;
+            data.push_back(wxVariant(bcheck));
+            data.push_back(wxVariant(status));
+            data.push_back(wxVariant(latest));
+            data.push_back(wxVariant(pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle()));
+            getChartList()->AppendItem(data);
+#else
+            ChartPanel *pC = new ChartPanel(m_scrollWinChartList, wxID_ANY, wxDefaultPosition, wxSize(-1, -1),
                                             pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle(), status, latest, this, bcheck );
             pC->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
-            
+
             m_boxSizerCharts->Add( pC, 0, wxEXPAND | wxLEFT | wxRIGHT, 2 );
             m_panelArray.Add( pC );
+#endif /* CHART_LIST */
         }
-        
-        
+
+
+#if !defined( CHART_LIST )  // wxDataViewListCtrl handles all of this AFAIK: Dan
         m_scrollWinChartList->ClearBackground();
         m_scrollWinChartList->FitInside();
         m_scrollWinChartList->GetSizer()->Layout();
-        
         Layout();
         m_scrollWinChartList->ClearBackground();
-        
-        
-#else        
-        m_clCharts->Freeze();
-        m_clCharts->DeleteAllItems();
-        size_t updated_charts = 0;
-        size_t new_charts = 0;
-        for( size_t i = 0; i < pPlugIn->m_pChartCatalog->charts.Count(); i++ )
-        {
-            wxListItem li;
-            li.SetId(i);
-            li.SetText(pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle());
-            long x = m_clCharts->InsertItem(li);
-            m_clCharts->SetItem(x, 0, pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle());
-            wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename(true);
-            if( !pPlugIn->m_pChartSource->ExistsLocaly(pPlugIn->m_pChartCatalog->charts.Item(i).number, file) )
-            {
-                new_charts++;
-                m_clCharts->SetItem(x, 1, _("New"));
-                if (selnew)
-                    m_clCharts->Check(x, true);
-            }
-            else
-            {
-                if( pPlugIn->m_pChartSource->IsNewerThanLocal(pPlugIn->m_pChartCatalog->charts.Item(i).number, file, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime()) )
-                {
-                    updated_charts++;
-                    m_clCharts->SetItem(x, 1, _("Update available"));
-                    if (selupd)
-                        m_clCharts->Check(x, true);
-                }
-                else
-                {
-                    m_clCharts->SetItem(x, 1, _("Up to date"));
-                }
-            }
-            m_clCharts->SetItem(x, 2, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d %H:%M")));
-        }
-        m_clCharts->Thaw();
-#endif
-
-        m_stCatalogInfo->SetLabel( wxString::Format( _("%lu charts total, %lu updated, %lu new"), pPlugIn->m_pChartCatalog->charts.Count(), updated_charts, new_charts ) );
-        m_stCatalogInfo->Show( true );
+        SetChartInfo(wxString::Format(_("%lu charts total, %lu updated, %lu new"),
+            pPlugIn->m_pChartCatalog->charts.Count(), m_updatedCharts, m_newCharts));
+#else
+        SetChartInfo(wxString::Format(_("%lu charts total, %lu updated, %lu new, %lu selected"),
+            pPlugIn->m_pChartCatalog->charts.Count(), m_updatedCharts, m_newCharts, GetCheckedChartCount()));
+#endif /* CHART_LIST */
     }
 }
 
 bool ChartSource::ExistsLocaly( wxString chart_number, wxString filename )
 {
     wxASSERT(this);
-    
+
     wxStringTokenizer tk(filename, _T("."));
     wxString file = tk.GetNextToken().MakeLower();
-    
+
     if( !m_update_data.empty() )
     {
         return m_update_data.find(std::string(chart_number.Lower().mb_str())) != m_update_data.end() || m_update_data.find(std::string(file.mb_str())) != m_update_data.end();
@@ -935,7 +914,7 @@ void ChartDldrPanelImpl::AppendCatalog( ChartSource *cs )
             m_lbChartSources->GetHandle()->resizeColumnToContents(0);
             m_lbChartSources->GetHandle()->resizeColumnToContents(1);
             m_lbChartSources->GetHandle()->resizeColumnToContents(2);
-#endif            
+#endif
         }
     }
 }
@@ -1023,10 +1002,10 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     }
 
     bool bok = false;
-    
+
 #ifdef __OCPN__ANDROID__
     wxString file_URI = _T("file://") + fn.GetFullPath();
-    
+
 //     wxFile testFile(tfn.GetFullPath().c_str(), wxFile::write);
 //     if(!testFile.IsOpened()){
 //         wxMessageBox(this, wxString::Format(_("File  %s can't be written. \nChoose a writable folder for Chart Downloader file storage."), tfn.GetFullPath().c_str()), _("Chart Downloader"));
@@ -1041,8 +1020,8 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
                                  OCPN_DLDS_ELAPSED_TIME|OCPN_DLDS_ESTIMATED_TIME|OCPN_DLDS_REMAINING_TIME|OCPN_DLDS_SPEED|OCPN_DLDS_SIZE|OCPN_DLDS_URL|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_AUTO_CLOSE,
                                  10);
     bok = true;
-    
-    
+
+
 #else
     wxFileName tfn = wxFileName::CreateTempFileName( fn.GetFullPath() );
     wxString file_URI = tfn.GetFullPath();
@@ -1057,9 +1036,9 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     wxRemoveFile ( tfn.GetFullPath() );
 
 #endif
-    
+
 //    wxLogMessage(_T("chartdldr_pi:  OCPN_downloadFile done:"));
-    
+
     switch( ret )
     {
         case OCPN_DL_NO_ERROR:
@@ -1068,11 +1047,11 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
             {
                 long id = GetSelectedCatalog();
                 SetSource(id);
-                
+
                 m_lbChartSources->SetItem(id, 0, pPlugIn->m_pChartCatalog->title);
                 m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
                 m_lbChartSources->SetItem(id, 2, cs->GetDir());
-                
+
             }
             else
                 OCPNMessageBox_PlugIn(this, wxString::Format( _("Failed to Find New Catalog: %s "), url.BuildURI().c_str() ),
@@ -1085,20 +1064,20 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
                     _("Chart Downloader"), wxOK | wxICON_ERROR);
             break;
         }
-        
+
         case OCPN_DL_USER_TIMEOUT:
         case OCPN_DL_ABORTED:
         {
             cancelled = true;
             break;
         }
-        
+
         case OCPN_DL_UNKNOWN:
         case OCPN_DL_STARTED:
         {
             break;
         }
-        
+
         default:
             wxASSERT( false );  // This should never happen because we handle all possible cases of ret
     }
@@ -1192,11 +1171,11 @@ void ChartSource::SaveUpdateData()
     }
 
     outfile.close();
-    
+
 #ifdef __OCPN__ANDROID__
     AndroidSecureCopyFile(fn, GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME));
 #endif
-    
+
 }
 
 void ChartSource::ChartUpdated( wxString chart_number, time_t timestamp )
@@ -1217,10 +1196,12 @@ void ChartDldrPanelImpl::DisableForDownload( bool enabled )
     m_bEditSource->Enable( enabled );
     m_bUpdateAllCharts->Enable( enabled );
     m_bUpdateChartList->Enable( enabled );
-#ifndef NEW_LIST    
-    m_clCharts->Enable( enabled );
-#endif	/* NEW_LIST */
     m_lbChartSources->Enable( enabled );
+#if defined(CHART_LIST)
+    m_bSelectNew->Enable( enabled );
+    m_bSelectUpdated->Enable( enabled );
+    m_bSelectAll->Enable( enabled );
+#endif /* CHART_LIST */
 }
 
 void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
@@ -1232,83 +1213,160 @@ void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
     }
     DownloadCharts();
 }
+#if defined( CHART_LIST )
+void ChartDldrPanelImpl::OnSelectChartItem(wxCommandEvent& event)
+{
+    if (!m_bInfoHold)
+        SetChartInfo(wxString::Format(_("%lu charts total, %lu updated, %lu new, %lu selected"),
+            pPlugIn->m_pChartCatalog->charts.Count(), m_updatedCharts, m_newCharts, GetCheckedChartCount()));
+    else
+        event.Skip();
+}
+#endif /* CHART_LIST */
+#if defined( CHART_LIST )
+void ChartDldrPanelImpl::OnSelectNewCharts(wxCommandEvent& event)
+{
+    CheckNewCharts(true);
+}
+#endif /* CHART_LIST */
+
+#if defined( CHART_LIST )
+void ChartDldrPanelImpl::OnSelectUpdatedCharts(wxCommandEvent& event)
+{
+    CheckUpdatedCharts(true);
+}
+#endif /* CHART_LIST */
+
+#if defined( CHART_LIST )
+void ChartDldrPanelImpl::OnSelectAllCharts(wxCommandEvent& event)
+{
+    if (m_bSelectAll->GetLabel() == _("Select All"))
+    {
+        CheckAllCharts(true);
+        m_bSelectAll->SetLabel(_("Select None"));
+        m_bSelectAll->SetToolTip(_("De-select all charts in the list."));
+    }
+    else
+    {
+        CheckAllCharts(false);
+        m_bSelectAll->SetLabel(_("Select All"));
+        m_bSelectAll->SetToolTip(_("Select all charts in the list."));
+
+    }
+}
+#endif /* CHART_LIST */
 
 int ChartDldrPanelImpl::GetChartCount()
 {
-#ifndef NEW_LIST
-    return m_clCharts->GetItemCount();
+#if defined( CHART_LIST )
+    return getChartList()->GetItemCount();
 #else
     return m_panelArray.GetCount();
-#endif	/* NEW_LIST */
+#endif /* CHART_LIST*/
 }
 
 int ChartDldrPanelImpl::GetCheckedChartCount()
 {
-#ifndef NEW_LIST
-    return m_lbChartSources->GetSelectedItemCount();
+#if defined( CHART_LIST )
+    int cnt = 0;
+    int chartCnt = GetChartCount();
+    for (int i = 0; i < chartCnt; i++)
+        if (isChartChecked(i))
+            cnt++;
 #else
     int cnt = 0;
     for( int i=0 ; i < GetChartCount() ; i++){
         if(m_panelArray.Item(i)->GetCB()->IsChecked())
             cnt++;
     }
+#endif /* CHART_LIST*/
     return cnt;
-#endif	/* NEW_LIST */
 }
 
 bool ChartDldrPanelImpl::isChartChecked( int i )
 {
-#ifndef NEW_LIST
-    return m_clCharts->IsChecked(i);
+    wxASSERT_MSG(i >= 0, wxT("This function should be called with non-negative index."));
+    if (i <= GetChartCount())
+#if defined( CHART_LIST )
+        return getChartList()->GetToggleValue(i, 0);
 #else
-    if(i <= GetChartCount())
         return m_panelArray.Item(i)->GetCB()->IsChecked();
+#endif /* CHART_LIST*/
     else
         return false;
-#endif	/* NEW_LIST */
 }
 
 void ChartDldrPanelImpl::CheckAllCharts( bool value )
 {
-#ifndef NEW_LIST
-    m_clCharts->CheckAll(value);
+#if defined( CHART_LIST )
+    m_bInfoHold = true;
+#endif /* CHART_LIST */
 
+    for (int i = 0; i < GetChartCount(); i++) {
+#if defined( CHART_LIST )
+        getChartList()->SetToggleValue(value, i, 0);
 #else
-    for( int i=0 ; i < GetChartCount() ; i++){
-        m_panelArray.Item(i)->GetCB()->SetValue( value );
+        m_panelArray.Item(i)->GetCB()->SetValue(value);
+#endif  /* CHART_LIST*/
     }
-#endif	/* NEW_LIST */
+#if defined( CHART_LIST )
+    SetChartInfo(wxString::Format(_("%lu charts total, %lu updated, %lu new, %lu selected"),
+        pPlugIn->m_pChartCatalog->charts.Count(), m_updatedCharts, m_newCharts, GetCheckedChartCount()));
+    m_bInfoHold = false;
+#endif /* CHART_LIST */
 }
 
 void ChartDldrPanelImpl::CheckNewCharts(bool value)
 {
     for (int i = 0; i < GetChartCount(); i++) {
+#if defined( CHART_LIST )
+        if (isNew(i))
+            getChartList()->SetToggleValue(true, i, 0);
+#else
         if (m_panelArray.Item(i)->isNew())
             m_panelArray.Item(i)->GetCB()->SetValue(value);
+#endif  /* CHART_LIST*/
     }
+#if defined( CHART_LIST )
+    SetChartInfo(wxString::Format(_("%lu charts total, %lu updated, %lu new, %lu selected"),
+        pPlugIn->m_pChartCatalog->charts.Count(), m_updatedCharts, m_newCharts, GetCheckedChartCount()));
+#endif /* CHART_LIST */
 }
 
 void ChartDldrPanelImpl::CheckUpdatedCharts(bool value)
 {
     for (int i = 0; i < GetChartCount(); i++) {
+#if defined ( CHART_LIST )
+        if (isUpdated(i))
+            getChartList()->SetToggleValue(value, i, 0);
+#else
         if (m_panelArray.Item(i)->isUpdated())
             m_panelArray.Item(i)->GetCB()->SetValue(value);
+#endif /* CHART_LIST */
     }
+#if defined( CHART_LIST )
+    SetChartInfo(wxString::Format(_("%lu charts total, %lu updated, %lu new, %lu selected"),
+        pPlugIn->m_pChartCatalog->charts.Count(), m_updatedCharts, m_newCharts, GetCheckedChartCount()));
+#endif /* CHART_LIST */
 }
 
 void ChartDldrPanelImpl::InvertCheckAllCharts( )
 {
-#ifndef NEW_LIST
+#if defined( CHART_LIST )
+    m_bInfoHold = true;
+#endif /* CHART_LIST */
     for (int i = 0; i < GetChartCount(); i++)
-        m_clCharts->Check(i, !m_clCharts->IsChecked(i));
-    
+#if defined( CHART_LIST )
+        getChartList()->SetToggleValue(!isChartChecked(i), i, 0);
 #else
-        for (int i = 0; i < GetChartCount(); i++)
-            m_panelArray.Item(i)->GetCB()->SetValue( !isChartChecked(i) );
-#endif	/* NEW_LIST */
+        m_panelArray.Item(i)->GetCB()->SetValue( !isChartChecked(i) );
+#endif /* CHART_LIST */
+#if defined( CHART_LIST )
+    m_bInfoHold = false;
+    SetChartInfo(wxString::Format(_("%lu charts total, %lu updated, %lu new, %lu selected"),
+        pPlugIn->m_pChartCatalog->charts.Count(), m_updatedCharts, m_newCharts, GetCheckedChartCount()));
+#endif /* CHART_LIST */
 }
-
-
 
 void ChartDldrPanelImpl::DownloadCharts()
 {
@@ -1316,7 +1374,7 @@ void ChartDldrPanelImpl::DownloadCharts()
         Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
         m_bconnected = true;
     }
-    
+
     if( !GetCheckedChartCount() && !updatingAll )
     {
         OCPNMessageBox_PlugIn(this, _("No charts selected for download."));
@@ -1338,30 +1396,30 @@ void ChartDldrPanelImpl::DownloadCharts()
 
     for( int i = 0; i < GetChartCount() && to_download; i++ )
     {
+        int index = i;
         if( cancelled )
             break;
         //Prepare download queues
         if( !isChartChecked(i) )
             continue;
-
         m_bTransferComplete = false;
         m_bTransferSuccess = true;
         m_totalsize = _("Unknown");
         m_transferredsize = _T("0");
         m_downloading++;
-        if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
+        if( pPlugIn->m_pChartCatalog->charts.Item(index).NeedsManualDownload() )
         {
-            if( wxID_YES == OCPNMessageBox_PlugIn(this, 
+            if( wxID_YES == OCPNMessageBox_PlugIn(this,
                             wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
-After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
+After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(index).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
             {
-                wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
+                wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(index).GetManualDownloadUrl() );
             }
             continue;
         }
 
         //download queue
-        wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
+        wxURI url(pPlugIn->m_pChartCatalog->charts.Item(index).GetDownloadLocation());
         if( url.IsReference() )
         {
             OCPNMessageBox_PlugIn(this, wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
@@ -1370,14 +1428,14 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
             return;
         }
         //construct local file path
-        wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
+        wxString file = pPlugIn->m_pChartCatalog->charts.Item(index).GetChartFilename();
         wxFileName fn;
         fn.SetFullName(file);
         fn.SetPath(cs->GetDir());
         wxString path = fn.GetFullPath();
         if( wxFileExists( path ) )
             wxRemoveFile( path );
-        wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
+        wxString title = pPlugIn->m_pChartCatalog->charts.Item(index).GetChartTitle();
 
         //  Ready to start download
 #ifdef __OCPN__ANDROID__
@@ -1385,15 +1443,15 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
 #else
         wxString file_path = fn.GetFullPath();
 #endif
-        
+
         long handle;
         OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
 
         if (idx >= 0) {
-            pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
+            pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
                                       pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
 
-            cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number, 
+            cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number,
                                       pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
             idx = -1;
         }
@@ -1401,11 +1459,11 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
         while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
         {
             if(m_failed_downloads)
-            m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+                SetChartInfo( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
                                                          m_downloading, to_download, m_failed_downloads,
                                                          m_transferredsize.c_str(), m_totalsize.c_str() ) );
             else
-                m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u (%s / %s)"),
+                SetChartInfo( wxString::Format( _("Downloading chart %u of %u (%s / %s)"),
                                                                      m_downloading, to_download,
                                                                      m_transferredsize.c_str(), m_totalsize.c_str() ) );
 
@@ -1414,15 +1472,15 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
             wxYield();
             wxMilliSleep(30);
         }
-        
+
         if(cancelled){
             idx = -1;
             OCPN_cancelDownloadFileBackground( handle );
         }
-            
+
         if( m_bTransferSuccess && !cancelled )
         {
-            idx = i;
+            idx = index;
             downloaded_p = path;
         } else {
             idx = -1;
@@ -1432,10 +1490,10 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
         }
     }
     if (idx >= 0) {
-        pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
+        pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
                                       pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
 
-        cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number, 
+        cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number,
                                       pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
     }
     DisableForDownload( true );
@@ -1446,10 +1504,10 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
         OCPNMessageBox_PlugIn( this, wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
                 , m_failed_downloads, m_downloading ),
                 _("Chart Downloader"), wxOK | wxICON_ERROR );
-        
+
     if( cancelled )
         OCPNMessageBox_PlugIn( this, _("Chart download cancelled."), _("Chart Downloader"), wxOK | wxICON_INFORMATION );
-        
+
     if( (m_downloading - m_failed_downloads > 0) && !updatingAll )
         ForceChartDBUpdate();
 }
@@ -1458,21 +1516,19 @@ ChartDldrPanelImpl::~ChartDldrPanelImpl()
 {
     Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
     m_bconnected = false;
-    
+
 #ifndef __OCPN__ANDROID__
     OCPN_cancelDownloadFileBackground( 0 ); //Stop the thread, is something like this needed on Android as well?
 #endif
-    
-#ifndef NEW_LIST
-    m_lbChartSources->ClearAll();
-    ((wxListCtrl *)m_clCharts)->DeleteAllItems();
+#if defined ( CHART_LIST )
+    clearChartList();
 #else
     for(unsigned int i = 0 ; i < m_panelArray.GetCount() ; i++){
         delete m_panelArray.Item(i);
     }
     m_panelArray.Clear();
-    
-#endif    
+
+#endif /* CHART_LIST */
 }
 
 ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style )
@@ -1485,14 +1541,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     m_lbChartSources->InsertColumn (1, _("Released"), wxLIST_FORMAT_LEFT, CATALOGS_DATE_WIDTH);
     m_lbChartSources->InsertColumn (2, _("Local path"), wxLIST_FORMAT_LEFT, CATALOGS_PATH_WIDTH);
     m_lbChartSources->Enable();
-    
-#ifndef NEW_LIST    
-    // Add columns
-    ((wxListCtrl *)m_clCharts)->InsertColumn(0, _("Title"), wxLIST_FORMAT_LEFT, CHARTS_NAME_WIDTH);
-    ((wxListCtrl *)m_clCharts)->InsertColumn(1, _("Status"), wxLIST_FORMAT_LEFT, CHARTS_STATUS_WIDTH);
-    ((wxListCtrl *)m_clCharts)->InsertColumn(2, _("Latest"), wxLIST_FORMAT_LEFT, CHARTS_DATE_WIDTH);
-#endif    
-
+    m_bInfoHold = false;
     downloadInProgress = false;
     cancelled = true;
     to_download = -1;
@@ -1502,10 +1551,10 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     m_populated = false;
     DownloadIsCancel = false;
     m_failed_downloads = 0;
-    m_stCatalogInfo->SetLabel( wxEmptyString );
+    SetChartInfo( wxEmptyString );
     m_bTransferComplete = true;
     m_bTransferSuccess = true;
-    
+
     Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
     m_bconnected = true;
 
@@ -1529,9 +1578,6 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
 #ifdef __WXMAC__
     // Mojave does not paint the controls correctly without this.
     m_lbChartSources->Refresh(true);
-#ifndef NEW_LIST
-    m_clCharts->Refresh(true);
-#endif    
 #endif
     event.Skip();
 }
@@ -1556,15 +1602,15 @@ void ChartDldrPanelImpl::DeleteSource( wxCommandEvent& event )
 
 void ChartDldrPanelImpl::AddSource( wxCommandEvent& event )
 {
-    
+
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
-    
-//#ifdef __OCPN__ANDROID__    
+
+//#ifdef __OCPN__ANDROID__
     wxSize sz = GetParent()->GetGrandParent()->GetSize();          // This is the options panel true size
     dialog->SetSize(sz.GetWidth(), sz.GetHeight());
     dialog->Center();
-//#endif    
+//#endif
 
     dialog->ShowWindowModalThenDo([this,dialog](int retcode){
         if ( retcode == wxID_OK ) {
@@ -1733,17 +1779,17 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
         int nStrip = 0;
         if(aStripPath)
             nStrip = 1;
-    
+
         if(m_dldrpanel)
-            m_dldrpanel->m_stCatalogInfo->SetLabel( _("Installing charts."));
-        
+            m_dldrpanel->SetChartInfo( _("Installing charts."));
+
         androidShowBusyIcon();
         bool ret = AndroidUnzip(aFile, aTargetDir, nStrip, true);
         androidHideBusyIcon();
-        
+
         return ret;
     }
-#endif        
+#endif
 
     else //Uncompressed
     {
@@ -1770,7 +1816,7 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
 }
 
 #ifdef DLDR_USE_LIBARCHIVE
-#ifndef __OCPN__ANDROID__    
+#ifndef __OCPN__ANDROID__
 static int copy_data(struct archive *ar, struct archive *aw)
 {
     int r;
@@ -1787,16 +1833,16 @@ static int copy_data(struct archive *ar, struct archive *aw)
         r = archive_write_data_block(aw, buff, size, offset);
         if (r < ARCHIVE_OK) {
             //fprintf(stderr, "%s\n", archive_error_string(aw));
-            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(aw))); 
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(aw)));
             return (r);
         }
     }
 }
-#endif    
+#endif
 
 bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveArchive)
 {
-#ifndef __OCPN__ANDROID__    
+#ifndef __OCPN__ANDROID__
     struct archive *a;
     struct archive *ext;
     struct archive_entry *entry;
@@ -1875,8 +1921,8 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wx
 #else
 
     return rv;
-    
-#endif          // Android    
+
+#endif          // Android
 }
 #endif
 
@@ -1997,7 +2043,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
     int nStrip = 0;
     if(aStripPath)
         nStrip = 1;
-    
+
     ret = AndroidUnzip(aZipFile, aTargetDir, nStrip, true);
 #else
     std::unique_ptr<wxZipEntry> entry(new wxZipEntry());
@@ -2105,10 +2151,10 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     fn.AppendDir(_T("plugins"));
     fn.AppendDir(_T("chartdldr_pi"));
     fn.AppendDir(_T("data"));
- 
+
     int w = 16;                 // default for desktop
     int h = 16;
-    
+
 #ifdef __OCPN__ANDROID__
     w = 6 * g_androidDPmm;      // mm nominal size
     h = w;
@@ -2119,7 +2165,7 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     wxImage im1(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
     im1.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
     p_buttonIconList->Add(im1);
-    
+
     fn.SetFullName(_T("button_right.png"));
     wxImage im2(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
     im2.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
@@ -2129,12 +2175,12 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     wxImage im3(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
     im3.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
     p_buttonIconList->Add(im3);
-    
+
     fn.SetFullName(_T("button_down.png"));
     wxImage im4(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
     im4.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
     p_buttonIconList->Add(im4);
-    
+
     m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
 #else
     p_iconList = new wxImageList(w, h);
@@ -2153,13 +2199,13 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
 #endif    /* __OCPN__ANDROID__ */
 
     m_treeCtrlPredefSrcs->SetIndent( w );
-    
+
     m_base_path = wxEmptyString;
     m_last_path = wxEmptyString;
     LoadSources();
     m_nbChoice->SetSelection(0);
     //m_treeCtrlPredefSrcs->ExpandAll();
-    
+
     Fit();
 
     applyStyle();
@@ -2186,7 +2232,7 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
         }
     }
     wxString path = fn.GetFullPath();
-    
+
     pugi::xml_document *doc = new pugi::xml_document;
     bool ret = doc->load_file( path.mb_str() );
     if( ret )
@@ -2209,7 +2255,7 @@ bool ChartDldrGuiAddSourceDlg::LoadSections( const wxTreeItemId &root, pugi::xml
         if( !strcmp(element.name(), "section") ){
             LoadSection(root, element);
         }
-    } 
+    }
     return true;
 }
 
@@ -2228,7 +2274,7 @@ bool ChartDldrGuiAddSourceDlg::LoadSection( const wxTreeItemId &root, pugi::xml_
         if( !strcmp(element.name(), "catalogs") )
             LoadCatalogs(item, element);
 
-    } 
+    }
 
     return true;
 }
@@ -2258,7 +2304,7 @@ bool ChartDldrGuiAddSourceDlg::LoadCatalog( const wxTreeItemId &root, pugi::xml_
     }
     ChartSource *cs = new ChartSource(name, location, dir);
     wxTreeItemId id = m_treeCtrlPredefSrcs->AppendItem(root, name, 1, 1, cs);
-    
+
     wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
     if( pFont ) m_treeCtrlPredefSrcs->SetItemFont( id, *pFont );
 
@@ -2390,7 +2436,7 @@ void ChartDldrGuiAddSourceDlg::OnCancelClick( wxCommandEvent& event )
 
 void ChartDldrPrefsDlgImpl::OnOkClick( wxCommandEvent& event )
 {
-    
+
     if( !wxDirExists(m_tcDefaultDir->GetValue()) ){
         if( !wxFileName::Mkdir(m_tcDefaultDir->GetValue(), 0755, wxPATH_MKDIR_FULL) )
         {
@@ -2398,11 +2444,11 @@ void ChartDldrPrefsDlgImpl::OnOkClick( wxCommandEvent& event )
             return;
         }
     }
-    
+
     if(g_pi){
         g_pi->UpdatePrefs(this);
     }
-    
+
     event.Skip();
     EndModal( wxID_OK );
 
@@ -2442,28 +2488,21 @@ static wxString FormatBytes(double bytes)
 void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev)
 {
 //    wxString msg;
-//    msg.Printf(_T("onDLEvent  %d %d"),ev.getDLEventCondition(), ev.getDLEventStatus()); 
+//    msg.Printf(_T("onDLEvent  %d %d"),ev.getDLEventCondition(), ev.getDLEventStatus());
 //    wxLogMessage(msg);
-    
+
     switch(ev.getDLEventCondition()){
         case OCPN_DL_EVENT_TYPE_END:
             m_bTransferComplete = true;
             m_bTransferSuccess = (ev.getDLEventStatus() == OCPN_DL_NO_ERROR) ? true : false;
             break;
-            
+
         case OCPN_DL_EVENT_TYPE_PROGRESS:
             m_totalsize = FormatBytes( ev.getTotal() );
             m_transferredsize = FormatBytes( ev.getTransferred() );
-                    
+
             break;
         default:
             break;
     }
 }
-
-
-
-
-
-
-
