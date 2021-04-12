@@ -305,6 +305,7 @@ void RoutePropDlgImpl::UpdatePoints()
     int in = 0;
     wxString slen, eta, ete;
     double bearing, distance, speed;
+    double totalDistance = 0;
     wxDateTime eta_dt = wxInvalidDateTime;
     while( pnode ) {
         speed = pnode->GetData()->GetPlannedSpeed();
@@ -336,6 +337,7 @@ void RoutePropDlgImpl::UpdatePoints()
                 eta = wxEmptyString;
             }
             ete = pnode->GetData()->GetETE();
+            totalDistance += distance;
         }
         wxString name = pnode->GetData()->GetName();
         double lat = pnode->GetData()->GetLatitude();
@@ -376,6 +378,8 @@ void RoutePropDlgImpl::UpdatePoints()
         slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance) );
         data.push_back( wxVariant(schar + slen + schar) ); // Distance
         data.push_back( wxVariant(schar + formatAngle(bearing)) ); // Bearing
+        slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(totalDistance) );
+        data.push_back( wxVariant(schar + slen + schar) ); // Total Distance
         data.push_back( wxVariant(schar + ::toSDMM( 1, lat, FALSE) + schar) ); // Lat
         data.push_back( wxVariant(schar + ::toSDMM( 2, lon, FALSE) + schar) ); // Lon
         data.push_back( wxVariant(schar + ete + schar) ); // ETE

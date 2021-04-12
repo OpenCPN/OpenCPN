@@ -89,6 +89,7 @@ class RoutePropDlg : public wxFrame
 		wxDataViewColumn* m_dataViewListColumnToWpt;
 		wxDataViewColumn* m_dataViewListColumnDistance;
 		wxDataViewColumn* m_dataViewListColumnBearing;
+                wxDataViewColumn* m_dataViewListColumnTotalDistance;
 		wxDataViewColumn* m_dataViewListColumnLat;
 		wxDataViewColumn* m_dataViewListColumnLon;
 		wxDataViewColumn* m_dataViewListColumnETE;
