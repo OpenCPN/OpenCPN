@@ -854,6 +854,15 @@ IF(QT_ANDROID)
   )
 ENDIF(QT_ANDROID)
 
+#  Make sure that the variable "wxWidgets_VERSION_STRING" is set, even on older CMake versions
+#  Seems safe to set to "3.0", since OCPN does not support earlier wxWidgets versions
+if( wxWidgets_VERSION_STRING)
+    message(STATUS "Found wxWidgets_VERSION_STRING: ${wxWidgets_VERSION_STRING}")
+else( wxWidgets_VERSION_STRING)
+    message(STATUS "Forcing wxWidgets_VERSION_STRING: ${wxWidgets_VERSION_STRING}")
+    set(wxWidgets_VERSION_STRING "3.0")
+endif( wxWidgets_VERSION_STRING)
+  
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
