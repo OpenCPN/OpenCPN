@@ -42,8 +42,8 @@ SET(SRC_CHARTDLDR
             src/icons.cpp
             src/chartdldrgui.h
             src/chartdldrgui.cpp
-            src/checkedlistctrl.cpp
-            src/checkedlistctrl.h
+#            src/checkedlistctrl.cpp
+#            src/checkedlistctrl.h
             src/base64.h
             src/chartcatalog.cpp
             src/chartcatalog.h
@@ -112,6 +112,20 @@ IF(CMAKE_HOST_WIN32)
   LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
   LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin")
 ENDIF()
+
+OPTION(OCPN_USE_CHART_LIST "Use wxDATAVIEWLISTCTRL for chart downloader" OFF)
+IF(MSVC)
+  set(OCPN_USE_CHART_LIST ON)
+ENDIF(MSVC)
+
+IF (wxWidgets_VERSION_STRING GREATER_EQUAL 3.0)
+  IF (OCPN_USE_CHART_LIST)
+    ADD_DEFINITIONS(-DCHART_LIST)
+    message(STATUS "chartdldr_pi: Building with wxDATAVIEWLISTCTRL chart listing")
+  ELSE(wxWidgets_VERSION_STRING GREATER_EQUAL 3.0)
+    message(STATUS "chartdldr_pi: Building without wxDATAVIEWLISTCTRL chart listing")
+  ENDIF (OCPN_USE_CHART_LIST)
+ENDIF(wxWidgets_VERSION_STRING GREATER_EQUAL 3.0)
 
 OPTION(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives instead of libarchive" ON)
 IF(CHARTDLDR_USE_UNARR)
@@ -216,6 +230,25 @@ IF( APPLE )
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
+
+# Copy shared library to execution folder for debugging if not CI build
+if (NOT OCPN_CI_BUILD)
+  if (MSVC)
+    add_custom_command(
+      TARGET ${PACKAGE_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$(TargetPath)" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      COMMAND ${CMAKE_COMMAND} -E copy "$(TargetPath)" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+    )
+      if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        add_custom_command(
+          COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+          COMMAND ${CMAKE_COMMAND} -E echo "$(OutputPath)/$(TargetName).pdb" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+          COMMAND ${CMAKE_COMMAND} -E copy "$(OutputPath)/$(TargetName).pdb" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+        )
+      endif (CMAKE_BUILD_TYPE)
+  endif (MSVC)
+endif (NOT OCPN_CI_BUILD)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
