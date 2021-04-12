@@ -9201,11 +9201,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case GSV:
-                if (g_priSats >= 2) {
+                if (g_priSats >= 4) {
                     if (m_NMEA0183.Gsv.MessageNumber == 1) {
                         // Some GNSS print SatsInView in message #1 only
                         setSatelitesInView (m_NMEA0183.Gsv.SatsInView);
-                        g_priSats = 2;
+                        g_priSats = 4;
                     }
                 }
                 break;
