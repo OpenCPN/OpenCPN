@@ -492,14 +492,14 @@ static void run_update_dialog(PluginListPanel* parent,
         }
     }
     
-    //  Check the library compatibility of the installed plugin
-    // Find the first dll/so/dylib file
+    //  Check the library compatibility of the subject plugin
+    //  Find the plugin library file, looking for "_pi.{dll/so/dylib file}
 #ifdef __WXMSW__
-    wxString pispec = _T(".dll");
+    wxString pispec = _T("_pi.dll");
 #elif defined(__WXOSX__)
-    wxString pispec = _T(".dylib");
+    wxString pispec = _T("_pi.dylib");
 #else
-    wxString pispec = _T(".so");
+    wxString pispec = _T("_pi.so");
 #endif
 
     std::string manifestPath = PluginHandler::fileListPath(update.name);
