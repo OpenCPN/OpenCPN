@@ -73,9 +73,12 @@ static std::string do_readlink(const char* link) {
     const char* colon = strchr(link, ':');    // Strip possible Serial: or Usb: prefix.
     const char* path  = colon ? colon + 1 : link;
     int r = readlink(path, target, sizeof(target));
-    if (r == -1 && errno == EINVAL) {
+    if (r == -1 ){
         return path;
     }
+    int eos = std::min((size_t)r, (size_t)PATH_MAX);
+    target[eos] = 0;
+    
     if (*target == '/') {
         return target;
     }
