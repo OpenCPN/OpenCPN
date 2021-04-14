@@ -5769,9 +5769,9 @@ void MyFrame::RegisterGlobalMenuItems()
 
     view_menu->AppendSeparator();
 #ifdef __WXOSX__
-    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("RawCtrl-Ctrl-F")) );
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Toggle Full Screen"), _T("RawCtrl-Ctrl-F")) );
 #else
-    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Toggle Full Screen"), _T("F11")) );
 #endif
     m_pMenuBar->Append( view_menu, _("&View") );
 
