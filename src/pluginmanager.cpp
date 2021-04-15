@@ -268,7 +268,7 @@ icon_by_status({
     {PluginStatus::Managed,   "emblem-default.svg" },
     {PluginStatus::Unmanaged, "emblem-unmanaged.svg" },
     {PluginStatus::Ghost,     "ghost.svg" },
-    {PluginStatus::Unknown,   "emblem-default.svg" },
+    {PluginStatus::Unknown,   "emblem-unmanaged.svg" },
     {PluginStatus::LegacyUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-legacy-update.svg" },
@@ -1612,6 +1612,25 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_ManagedMetadata = plugin;
             new_pic->m_version_major = 0;
             new_pic->m_version_minor = 0;
+
+            // In safe mode, check to see if the plugin appears to be installed
+            // If so, set the status to "ManagedInstalledCurrentVersion", thus enabling the "uninstall" button.
+            if (safe_mode::get_mode()) {
+                std::string installed;
+                if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
+                    //Get the installed version from the manifest
+                    std::string path = PluginHandler::versionPath(plugin.name);
+                    if (path != "" && wxFileName::IsFileReadable(path)) {
+                        std::ifstream stream;
+                        stream.open(path, std::ifstream::in);
+                        stream >> installed;
+                    }
+                }
+                if(!installed.empty())
+                    new_pic->m_pluginStatus = PluginStatus::ManagedInstalledCurrentVersion;
+                else
+                    new_pic->m_pluginStatus = PluginStatus::Unknown;
+            }
 
             plugin_array.Add(new_pic);
 
@@ -5986,7 +6005,10 @@ static bool canUninstall(std::string name)
 
     for (auto plugin: pluginHandler->getInstalled()) {
         if (plugin.name == name) {
-            return !plugin.readonly;
+            if (safe_mode::get_mode()) 
+                return true;
+            else
+                return !plugin.readonly;
         }
     }
     return false;
