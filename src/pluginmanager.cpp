@@ -1286,6 +1286,18 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                 pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
 
                 ret = true;
+                
+                if( !pic->m_bEnabled && pic->m_destroy_fn ){
+                    wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(
+                       wxRect(0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+                    pic->m_bitmap = pbm;
+                    pic->m_destroy_fn(pic->m_pplugin);
+                    pic->m_destroy_fn = NULL;
+                    pic->m_pplugin = NULL;
+                    if(pic->m_library.IsLoaded())
+                        pic->m_library.Unload();
+                }
+                    
             }
             else        // not loaded
             {
@@ -1477,10 +1489,20 @@ bool PlugInManager::UpdatePlugIns()
         PlugInContainer *pic = plugin_array[i];
 
         // Installed and loaded?
-        if(!pic->m_pplugin)
-            continue;
+        if(!pic->m_pplugin){            // Needs a reload?
+            if(pic->m_bEnabled){
+                PluginStatus stat = pic->m_pluginStatus;
+                PlugInContainer *newpic = LoadPlugIn(pic->m_plugin_file, pic);
+                if(newpic){
+                    pic->m_pluginStatus = stat;
+                    pic->m_bEnabled = true;
+                }
+            }
+            else
+                continue;
+        }
         
-        if(pic->m_bEnabled && !pic->m_bInitState)
+        if(pic->m_bEnabled && !pic->m_bInitState && pic->m_pplugin)
         {
             wxString msg(_T("PlugInManager: Initializing PlugIn: "));
             msg += pic->m_plugin_file;
@@ -1500,7 +1522,12 @@ bool PlugInManager::UpdatePlugIns()
         else if(!pic->m_bEnabled && pic->m_bInitState)
         {
             bret = DeactivatePlugIn(pic);
-
+            if(pic->m_pplugin)
+                pic->m_destroy_fn(pic->m_pplugin);
+            if(pic->m_library.IsLoaded())
+                pic->m_library.Unload();
+            pic->m_pplugin = NULL;
+            pic->m_bitmap = NULL;
         }
     }
 
@@ -2227,16 +2254,27 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 {
+    PlugInContainer *pic = new PlugInContainer;
+    if(!LoadPlugIn( plugin_file, pic))
+        return NULL;
+    else
+        return pic;
+}
+
+PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file, PlugInContainer *pic)
+{
     wxString msg(_T("PlugInManager: Loading PlugIn: "));
     msg += plugin_file;
     wxLogMessage(msg);
 
-    PlugInContainer *pic = new PlugInContainer;
     pic->m_plugin_file = plugin_file;
     pic->m_pluginStatus = PluginStatus::Unmanaged;      // Status is updated later, if necessary
 
     // load the library
 
+    if(pic->m_library.IsLoaded())
+        pic->m_library.Unload();
+    
     pic->m_library.Load(plugin_file);
     
     if( m_benable_blackdialog && !wxIsReadable(plugin_file) )
@@ -2289,7 +2327,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         msg += plugin_file;
         msg += _T(" ");
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2301,7 +2338,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load symbol create_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2311,7 +2347,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load symbol destroy_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2329,7 +2364,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     SemanticVersion pi_ver(pi_major, pi_minor, -1);
     
     if ( CheckBlacklistedPlugin(plug_in) ) {
-        delete pic;
         return NULL;
     }
 
