@@ -68,25 +68,24 @@ extern wxString         g_TalkerIdText;
 
 
 static std::string do_readlink(const char* link) {
-    char target[PATH_MAX + 1] = {0};
-    char buff[PATH_MAX + 1];
-
     // Strip possible Serial: or Usb: prefix:
     const char* colon = strchr(link, ':');
     const char* path  = colon ? colon + 1 : link;
+
+    char target[PATH_MAX + 1] = {0};
     int r = readlink(path, target, sizeof(target));
-    if (r == -1  && errno == EINVAL){
+    if (r == -1  && (errno == EINVAL || errno == ENOENT)) {
         // Not a a symlink
         return path;
     }
-    else if (errno == -1) {
+    if (r  == -1) {
         wxLogDebug("Error reading device link %s: %s", path, strerror(errno));
         return path;
     }
-
     if (*target == '/') {
         return target;
     }
+    char buff[PATH_MAX + 1];
     memcpy(buff, path, std::min(strlen(path) + 1, (size_t)PATH_MAX));
     return std::string(dirname(buff)) + "/" + target;
 }
