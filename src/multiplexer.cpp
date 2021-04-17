@@ -41,6 +41,7 @@
 #include "OCPN_DataStreamEvent.h"
 #include "Route.h"
 #include "ser_ports.h"
+#include "gui_lib.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -447,6 +448,22 @@ int Multiplexer::SendRouteToGPS(Route *pr,
         wxGauge *pProgress)
 {
     int ret_val = 0;
+    
+    if(g_GPS_Ident == _T("FurunoGP3X")){
+        if(pr->pRoutePointList->GetCount() > 30){
+                long style = wxOK;
+                auto dlg = new OCPN_TimedHTMLMessageDialog(0,
+                                               _T("Routes containing more than 30 waypoints must be split before uploading."),
+                                               _("Route Upload"),
+                                               10,
+                                               style,
+                                               false,
+                                               wxDefaultPosition);
+                int reply = dlg->ShowModal();
+                return 1; 
+        }
+    }
+
     DataStream *old_stream = FindStream( com_name );
     wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
     if( old_stream ) {
@@ -592,6 +609,8 @@ ret_point:
 #endif //USE_GARMINHOST
 
     {
+           
+
         { // Standard NMEA mode
 
             //  If the port was temporarily closed, reopen as I/O type
@@ -750,7 +769,8 @@ ret_point:
             //  Furuno GPS can only accept 5 (five) waypoint linkage sentences....
             //  So, we need to compact a few more points into each link sentence.
             if(g_GPS_Ident == _T("FurunoGP3X")){
-                max_wp = 6;
+                max_wp = 8;
+                max_length = 80;
             }
 
             //  Furuno has its own talker ID, so do not allow the global override
@@ -826,6 +846,7 @@ ret_point:
                 tNMEA0183.Rte.Write ( tsnt );
 
                 unsigned int tare_length = tsnt.Sentence.Len();
+                tare_length -= 3;        //Drop the checksum, for length calculations
 
                 wxArrayString sentence_array;
 
@@ -862,7 +883,10 @@ ret_point:
                         }
                         else
                         {
-                            sent_len += name_len + 1;   // with comma
+                            if(wp_count == max_wp)
+                                sent_len += name_len;   // with comma
+                            else    
+                                sent_len += name_len + 1;   // with comma
                             wp_count++;
                             node = node->GetNext();
                         }
@@ -976,13 +1000,32 @@ ret_point:
 
             if(g_GPS_Ident == _T("FurunoGP3X"))
             {
+                wxString name = pr->GetName();
+                if(name.IsEmpty())
+                    name = _T("RTECOMMENT");
+                wxString rte;
+                rte.Printf(_T("$PFEC,GPrtc,01,"));
+                rte += name.Left(16);
+                wxString rtep;
+                rtep.Printf(_T(",%c%c"), 0x0d, 0x0a);
+                rte += rtep;
+                if( dstr->SendSentence( rte ) )
+                    LogOutputMessage( rte, dstr->GetPort(), false );
+
+                wxString msg(_T("-->GPS Port:"));
+                msg += com_name;
+                msg += _T(" Sentence: ");
+                msg += rte;
+                msg.Trim();
+                wxLogMessage(msg);
+ 
                 wxString term;
                 term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
                 if( dstr->SendSentence( term ) )
                     LogOutputMessage( term, dstr->GetPort(), false );
 
-                wxString msg(_T("-->GPS Port:"));
+                msg=wxString(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
                 msg += term;
