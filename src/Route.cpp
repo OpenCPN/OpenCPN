@@ -116,7 +116,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
                     psourcepoint->GetIconName(), psourcepoint->GetName(), wxEmptyString, false );
-
+			ptargetpoint->m_bShowName = psourcepoint->m_bShowName; //do not change new wpt's name visibility
             AddPoint( ptargetpoint, false );
         }
     }
