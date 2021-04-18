@@ -136,6 +136,9 @@ extern bool g_bquiting;
 extern wxString   g_DSC_sound_file;
 extern wxString   g_SART_sound_file;
 extern wxString   g_AIS_sound_file;
+extern bool g_bAIS_GCPA_Alert_Audio;
+extern bool g_bAIS_SART_Alert_Audio;
+extern bool g_bAIS_DSC_Alert_Audio;
 
 static void onSoundFinished(void* ptr)
 {
@@ -3038,13 +3041,16 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             switch (audioType){
                 case AISAUDIO_CPA:
                 default:
-                    soundFile = g_AIS_sound_file;
+                    if(g_bAIS_GCPA_Alert_Audio)
+                        soundFile = g_AIS_sound_file;
                     break;
                 case AISAUDIO_DSC:
-                    soundFile = g_DSC_sound_file;
+                    if(g_bAIS_DSC_Alert_Audio)
+                        soundFile = g_DSC_sound_file;
                     break;
                 case AISAUDIO_SART:
-                    soundFile = g_SART_sound_file;
+                    if(g_bAIS_SART_Alert_Audio)
+                        soundFile = g_SART_sound_file;
                     break;
             }                    
             
