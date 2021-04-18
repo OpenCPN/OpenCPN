@@ -105,6 +105,9 @@ public:
       Route             *m_pSelectedRoute;
       Track             *m_pSelectedTrack;
       RoutePoint        *m_pFoundRoutePoint;
+	  Route				*m_pHead;			//for split function
+	  Route				*m_pTail;
+	  int				m_SelectedIdx;
       int               m_FoundAIS_MMSI;
       void *            m_pIDXCandidate;
       

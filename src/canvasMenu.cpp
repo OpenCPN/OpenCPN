@@ -146,6 +146,8 @@ enum
     ID_RT_MENU_INSERT,
     ID_RT_MENU_APPEND,
     ID_RT_MENU_COPY,
+	ID_RT_MENU_SPLIT_LEG,
+	ID_RT_MENU_SPLIT_WPT,
     ID_TK_MENU_COPY,
     ID_WPT_MENU_COPY,
     ID_WPT_MENU_SENDTOGPS,
@@ -637,6 +639,11 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             }
             MenuAppend1( menuRoute, ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
             MenuAppend1( menuRoute, ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
+			if (!(seltype & SELTYPE_ROUTEPOINT) && m_pSelectedRoute) {
+				m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
+				if (m_SelectedIdx > 1 && m_SelectedIdx < m_pSelectedRoute->GetnPoints() - 1)
+					MenuAppend1(menuRoute, ID_RT_MENU_SPLIT_LEG, _("Split around Leg") );
+			}
             MenuAppend1( menuRoute, ID_RT_MENU_COPY, _( "Copy as KML" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_DELETE, _( "Delete" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_REVERSE, _( "Reverse..." ) );
@@ -723,7 +730,13 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 }
             }
             if( m_pSelectedRoute && m_pSelectedRoute->GetnPoints() > 2 )
+			{
                 MenuAppend1( menuWaypoint, ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
+
+				m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
+				if (m_SelectedIdx > 1 && m_SelectedIdx < m_pSelectedRoute->GetnPoints())
+					MenuAppend1(menuWaypoint, ID_RT_MENU_SPLIT_WPT, _("Split Route at Waypoint"));
+			}
 
             MenuAppend1( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
@@ -964,6 +977,9 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     wxPoint r;
     double zlat, zlon;
+
+	int splitMode = 0;				//variables for split
+	bool dupFirstWpt = true, showRPD;
 
     parent->GetCanvasPixPoint( popx, popy, zlat, zlon );
 
@@ -1432,6 +1448,41 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->HideGlobalToolbar();
         
         break;
+
+	case ID_RT_MENU_SPLIT_LEG:		//split route around a leg
+		splitMode++;
+		dupFirstWpt = false;
+	case ID_RT_MENU_SPLIT_WPT:		//split route at a wpt
+
+		showRPD = (pRoutePropDialog && pRoutePropDialog->IsShown());
+
+		m_pHead = new Route();
+		m_pTail = new Route();
+		m_pHead->CloneRoute(m_pSelectedRoute, 1, m_SelectedIdx, _("_A"));
+		m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + splitMode, m_pSelectedRoute->GetnPoints(), _("_B"), dupFirstWpt);
+		pRouteList->Append(m_pHead);
+		pConfig->AddNewRoute(m_pHead);
+
+		pRouteList->Append(m_pTail);
+		pConfig->AddNewRoute(m_pTail);
+
+		pConfig->DeleteConfigRoute(m_pSelectedRoute);
+
+		pSelect->DeleteAllSelectableRoutePoints(m_pSelectedRoute);
+		pSelect->DeleteAllSelectableRouteSegments(m_pSelectedRoute);
+		g_pRouteMan->DeleteRoute(m_pSelectedRoute);
+		pSelect->AddAllSelectableRouteSegments(m_pTail);
+		pSelect->AddAllSelectableRoutePoints(m_pTail);
+		pSelect->AddAllSelectableRouteSegments(m_pHead);
+		pSelect->AddAllSelectableRoutePoints(m_pHead);
+
+		if (showRPD) {
+			pRoutePropDialog->SetRouteAndUpdate(m_pHead);
+			pRoutePropDialog->Show();
+		}
+		if (RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog && (pRouteManagerDialog->IsShown()))
+			pRouteManagerDialog->UpdateRouteListCtrl();
+		break;
 
     case ID_RT_MENU_COPY:
         if( m_pSelectedRoute ) Kml::CopyRouteToClipboard( m_pSelectedRoute );
