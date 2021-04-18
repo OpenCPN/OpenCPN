@@ -91,6 +91,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "SoundFactory.h"
 #include "dychart.h"
 #include "PluginHandler.h"
+#include "plugin_cache.h"
 #include "pluginmanager.h"
 #include "navutil.h"
 #include "ais.h"
@@ -267,7 +268,7 @@ icon_by_status({
     {PluginStatus::Managed,   "emblem-default.svg" },
     {PluginStatus::Unmanaged, "emblem-unmanaged.svg" },
     {PluginStatus::Ghost,     "ghost.svg" },
-    {PluginStatus::Unknown,   "emblem-default.svg" },
+    {PluginStatus::Unknown,   "emblem-unmanaged.svg" },
     {PluginStatus::LegacyUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-legacy-update.svg" },
@@ -413,6 +414,21 @@ static PluginMetadata getLatestUpdate()
     return updates[0];
 }
 
+/** Remove plugin and update GUI elements. */
+static void gui_uninstall(PlugInContainer* pic, const char* plugin)
+{
+    g_Platform->ShowBusySpinner();
+    g_pi_manager->DeactivatePlugIn(pic);
+    pic->m_bEnabled = false;
+    g_pi_manager->UpdatePlugIns();
+
+    wxLogMessage("Uninstalling %s", plugin);
+    PluginHandler::getInstance()->uninstall(plugin);
+    g_pi_manager->UpdatePlugIns();
+    g_Platform->HideBusySpinner();
+
+}
+
 
 static void run_update_dialog(PluginListPanel* parent,
                               PlugInContainer* pic,
@@ -432,22 +448,14 @@ static void run_update_dialog(PluginListPanel* parent,
     }
     
     auto update = dialog.GetUpdate();
-    if (uninstall) {
-        g_Platform->ShowBusySpinner();
-        g_pi_manager->DeactivatePlugIn(pic);
-        pic->m_bEnabled = false;
-        g_pi_manager->UpdatePlugIns();
-
-        wxLogMessage("Uninstalling %s", plugin);
-        PluginHandler::getInstance()->uninstall(plugin);
-        g_pi_manager->UpdatePlugIns();
-        g_Platform->HideBusySpinner();
-
-    }
 
     wxLogMessage("Installing %s", update.name.c_str());
-    
+
     auto pluginHandler = PluginHandler::getInstance();
+    auto path = ocpn::lookup_tarball(update.tarball_url.c_str());
+    if (uninstall && path != "") {
+        gui_uninstall(pic, update.name.c_str());
+    }
     bool cacheResult = pluginHandler->installPluginFromCache( update );
             
     if(!cacheResult){
@@ -455,7 +463,7 @@ static void run_update_dialog(PluginListPanel* parent,
         wxYield();
         
         auto downloader = new GuiDownloader(parent_dlg, update);
-        std::string tempTarballPath = downloader->run(parent_dlg);
+        std::string tempTarballPath = downloader->run(parent_dlg, uninstall);
         
         // Provisional error check
         bool bOK = true;
@@ -469,41 +477,29 @@ static void run_update_dialog(PluginListPanel* parent,
 
         //  On successful installation, copy the temp tarball to the local cache
         if(bOK){
-            wxLogMessage("Installation of %s successful",  update.name.c_str());
-            
+            wxLogMessage("Installation of %s successful", update.name.c_str());
             wxURI uri( wxString(update.tarball_url.c_str()));
             wxFileName fn(uri.GetPath());
-            wxString tarballFile = fn.GetFullName();
-            wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
-            wxString sep = _T("/");
-            if( !wxDirExists(cacheDir) )
-                wxMkdir( cacheDir);
-            cacheDir += sep + wxString(_T("cache"));
-            if( !wxDirExists(cacheDir) )
-                wxMkdir( cacheDir);
-            cacheDir += sep + wxString(_T("tarballs"));
-            if( !wxDirExists(cacheDir) )
-                wxMkdir( cacheDir);
-    
-            wxString destination = cacheDir + _T("/") + tarballFile;
-            wxLogMessage(" Trying to copy %s ",  tempTarballPath.c_str());
-            
-            if(wxFileExists(wxString( tempTarballPath.c_str()))){
-                wxLogMessage("Copying %s to local cache",  tarballFile.c_str());
-                wxCopyFile( wxString( tempTarballPath.c_str()), destination);
+            std::string basename = fn.GetFullName().ToStdString();
+
+            if (ocpn::store_tarball(tempTarballPath.c_str(),
+                                       basename.c_str()))
+            {
+                wxLogDebug("Copied %s to local cache at %s",
+                           tempTarballPath.c_str(), basename);
                 remove(tempTarballPath.c_str());
             }
         }
     }
     
-    //  Check the library compatibility of the installed plugin
-    // Find the first dll/so/dylib file
+    //  Check the library compatibility of the subject plugin
+    //  Find the plugin library file, looking for "_pi.{dll/so/dylib file}
 #ifdef __WXMSW__
-    wxString pispec = _T(".dll");
+    wxString pispec = _T("_pi.dll");
 #elif defined(__WXOSX__)
-    wxString pispec = _T(".dylib");
+    wxString pispec = _T("_pi.dylib");
 #else
-    wxString pispec = _T(".so");
+    wxString pispec = _T("_pi.so");
 #endif
 
     std::string manifestPath = PluginHandler::fileListPath(update.name);
@@ -716,7 +712,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             
             wxLogMessage("Installing managed plugin: %s", pluginName.c_str());
             auto downloader = new GuiDownloader(plugin_list_panel, actionPIC->m_ManagedMetadata);
-            downloader->run(plugin_list_panel);
+            downloader->run(plugin_list_panel, false);
 
             // Provisional error check
             std::string manifestPath = PluginHandler::fileListPath(pluginName);
@@ -1290,6 +1286,18 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                 pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
 
                 ret = true;
+                
+                if( !pic->m_bEnabled && pic->m_destroy_fn ){
+                    wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(
+                       wxRect(0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+                    pic->m_bitmap = pbm;
+                    pic->m_destroy_fn(pic->m_pplugin);
+                    pic->m_destroy_fn = NULL;
+                    pic->m_pplugin = NULL;
+                    if(pic->m_library.IsLoaded())
+                        pic->m_library.Unload();
+                }
+                    
             }
             else        // not loaded
             {
@@ -1481,10 +1489,20 @@ bool PlugInManager::UpdatePlugIns()
         PlugInContainer *pic = plugin_array[i];
 
         // Installed and loaded?
-        if(!pic->m_pplugin)
-            continue;
+        if(!pic->m_pplugin){            // Needs a reload?
+            if(pic->m_bEnabled){
+                PluginStatus stat = pic->m_pluginStatus;
+                PlugInContainer *newpic = LoadPlugIn(pic->m_plugin_file, pic);
+                if(newpic){
+                    pic->m_pluginStatus = stat;
+                    pic->m_bEnabled = true;
+                }
+            }
+            else
+                continue;
+        }
         
-        if(pic->m_bEnabled && !pic->m_bInitState)
+        if(pic->m_bEnabled && !pic->m_bInitState && pic->m_pplugin)
         {
             wxString msg(_T("PlugInManager: Initializing PlugIn: "));
             msg += pic->m_plugin_file;
@@ -1504,7 +1522,12 @@ bool PlugInManager::UpdatePlugIns()
         else if(!pic->m_bEnabled && pic->m_bInitState)
         {
             bret = DeactivatePlugIn(pic);
-
+            if(pic->m_pplugin)
+                pic->m_destroy_fn(pic->m_pplugin);
+            if(pic->m_library.IsLoaded())
+                pic->m_library.Unload();
+            pic->m_pplugin = NULL;
+            pic->m_bitmap = NULL;
         }
     }
 
@@ -1589,6 +1612,25 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_ManagedMetadata = plugin;
             new_pic->m_version_major = 0;
             new_pic->m_version_minor = 0;
+
+            // In safe mode, check to see if the plugin appears to be installed
+            // If so, set the status to "ManagedInstalledCurrentVersion", thus enabling the "uninstall" button.
+            if (safe_mode::get_mode()) {
+                std::string installed;
+                if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
+                    //Get the installed version from the manifest
+                    std::string path = PluginHandler::versionPath(plugin.name);
+                    if (path != "" && wxFileName::IsFileReadable(path)) {
+                        std::ifstream stream;
+                        stream.open(path, std::ifstream::in);
+                        stream >> installed;
+                    }
+                }
+                if(!installed.empty())
+                    new_pic->m_pluginStatus = PluginStatus::ManagedInstalledCurrentVersion;
+                else
+                    new_pic->m_pluginStatus = PluginStatus::Unknown;
+            }
 
             plugin_array.Add(new_pic);
 
@@ -2231,16 +2273,27 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 {
+    PlugInContainer *pic = new PlugInContainer;
+    if(!LoadPlugIn( plugin_file, pic))
+        return NULL;
+    else
+        return pic;
+}
+
+PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file, PlugInContainer *pic)
+{
     wxString msg(_T("PlugInManager: Loading PlugIn: "));
     msg += plugin_file;
     wxLogMessage(msg);
 
-    PlugInContainer *pic = new PlugInContainer;
     pic->m_plugin_file = plugin_file;
     pic->m_pluginStatus = PluginStatus::Unmanaged;      // Status is updated later, if necessary
 
     // load the library
 
+    if(pic->m_library.IsLoaded())
+        pic->m_library.Unload();
+    
     pic->m_library.Load(plugin_file);
     
     if( m_benable_blackdialog && !wxIsReadable(plugin_file) )
@@ -2293,7 +2346,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         msg += plugin_file;
         msg += _T(" ");
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2305,7 +2357,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load symbol create_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2315,7 +2366,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load symbol destroy_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2333,7 +2383,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     SemanticVersion pi_ver(pi_major, pi_minor, -1);
     
     if ( CheckBlacklistedPlugin(plug_in) ) {
-        delete pic;
         return NULL;
     }
 
@@ -4371,7 +4420,14 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
     cloneHyperlinkList(pWP, pwaypoint);
 
     pWP->m_MarkDescription = pwaypoint->m_MarkDescription;
-    pWP->SetCreateTime(pwaypoint->m_CreateTime);
+
+    if(pwaypoint->m_CreateTime.IsValid())
+        pWP->SetCreateTime(pwaypoint->m_CreateTime);
+    else{
+        wxDateTime dtnow(wxDateTime::Now());
+        pWP->SetCreateTime( dtnow );
+    }
+        
     pWP->m_btemp = (b_permanent == false);
 
     pSelect->AddSelectableRoutePoint( pwaypoint->m_lat, pwaypoint->m_lon, pWP );
@@ -4421,8 +4477,9 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
         prp->SetIconName( pwaypoint->m_IconName );
         prp->SetName( pwaypoint->m_MarkName );
         prp->m_MarkDescription = pwaypoint->m_MarkDescription;
-		prp->SetVisible(pwaypoint->m_IsVisible);
-		prp->SetCreateTime(pwaypoint->m_CreateTime);
+        prp->SetVisible(pwaypoint->m_IsVisible);
+        if(pwaypoint->m_CreateTime.IsValid())
+            prp->SetCreateTime(pwaypoint->m_CreateTime);
 
         //  Transcribe (clone) the html HyperLink List, if present
 
@@ -4445,6 +4502,9 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
             }
         }
 
+        if(prp)
+            prp->ReLoadIcon();
+        
         SelectItem *pFind = pSelect->FindSelection( gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT );
         if( pFind ) {
             pFind->m_slat = pwaypoint->m_lat;             // update the SelectList entry
@@ -5304,29 +5364,13 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     
     // If this is the "master" catalog, also copy to plugin cache
     if (catalog == "master") {
-        wxString metaCache = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("plugins");
-        if(!wxDirExists( metaCache ))
-            wxMkdir( metaCache );
-        metaCache += wxFileName::GetPathSeparator();
-        metaCache += _T("cache");
-        if(!wxDirExists( metaCache ))
-            wxMkdir( metaCache );
-        metaCache += wxFileName::GetPathSeparator();
-        metaCache += _T("metadata");
-        if(!wxDirExists( metaCache ))
-            wxMkdir( metaCache );
-            
-#ifdef __OCPN__ANDROID__
-        if(!AndroidSecureCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
-            OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
+       if (!ocpn::store_metadata(filePath.c_str())) {
+            OCPNMessageBox(this,
+                           _("Unable to copy catalog file to cache"),
+                           _("OpenCPN Catalog update"),
+                           wxICON_ERROR);
             return;
         }
-#else
-        if(!wxCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
-            OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
-            return;
-        }
-#endif
     }       
 
     // Record in the config file the name of the catalog downloaded
@@ -5387,10 +5431,6 @@ static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
         }
         else if( !strcmp(element.name(), "target") ){
             plugin.target = element.first_child().value();
-        }
-        else if( !strcmp(element.name(), "build-target") ){
-            plugin.build_target = element.first_child().value();
-            wxLogMessage("Found build-target: %s", plugin.build_target);
         }
         else if( !strcmp(element.name(), "target-version") ){
             plugin.target_version = element.first_child().value();
@@ -5470,9 +5510,12 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
 {
     // Present a file selector dialog to get the file name..
     wxString tarballPath;
-   int response = g_Platform->DoFileSelectorDialog( this, &tarballPath, _( "Select tarball file" ),
-                                                      g_Platform->GetPrivateDataDir(), wxEmptyString, wxT ( "tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*" ));
- 
+    int response = g_Platform->DoFileSelectorDialog( this, &tarballPath,
+                                                   _( "Select tarball file" ),
+                                                   GetImportInitDir(),
+                                                   wxEmptyString,
+                                                   wxT ( "tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*" ));
+      
     if( response == wxID_OK )
     {
         // Traverse the tarball to find the required "metadata.xml file
@@ -5661,30 +5704,17 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         newCatalog.save_file( catalogName.mb_str(), "  ");
        
         // Copy the metadata to the tarball cache
-        wxString sep = wxFileName::GetPathSeparator();
-        wxString cacheDir = g_Platform->GetPrivateDataDir() + sep + _T("plugins");
-        if( !wxDirExists(cacheDir) )
-            wxMkdir( cacheDir);
-        cacheDir += sep + wxString(_T("cache"));
-        if( !wxDirExists(cacheDir) )
-            wxMkdir( cacheDir);
-        cacheDir += sep + wxString(_T("tarballs"));
-        if( !wxDirExists(cacheDir) )
-             wxMkdir( cacheDir);
-        
+         
         wxFileName fn(tarballPath);
-        wxString destination = cacheDir + sep + fn.GetFullName();
-        if(wxFileExists(wxString( tarballPath.c_str()))){
-            wxLogMessage("Copying %s to local cache",  tarballPath.ToStdString().c_str());
-#ifdef __OCPN__ANDROID__            
-            AndroidSecureCopyFile (tarballPath, destination);
-#else                
-            wxCopyFile( tarballPath, destination);
-#endif            
+        if (ocpn::store_tarball(tarballPath.ToStdString().c_str(),
+                                   fn.GetFullName().ToStdString().c_str())) 
+        {
+            wxLogMessage("Copied %s to local cache",
+                          tarballPath.ToStdString().c_str());
         }
-
-        // Ready to load an process the merged catalog...
         
+        // Ready to load and process the merged catalog...
+
         // Reset the PluginHandler catalog file source.
         // This will cause the Handler to find, load, and parse the just-merged catalog
         // as copied to g_Platform->GetPrivateDataDir()...
@@ -5698,8 +5728,15 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         if(m_PluginListPanel)
             m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
 
-        
-        
+        // Record the path to the last import file for next time
+        wxFileName f = tarballPath;
+        wxString used_path = f.GetPath(wxPATH_GET_VOLUME | wxPATH_NO_SEPARATOR);
+        if (used_path != wxEmptyString) {
+            pConfig->SetPath(_T("/PlugIns/"));
+            pConfig->Write("LatestImportDir", used_path);
+            pConfig->Flush();
+        }
+
         // Success!
         wxString msg = _("Plugin imported successfully");
         msg += _T("\n");
@@ -5744,8 +5781,19 @@ void CatalogMgrPanel::SetUpdateButtonLabel()
     m_updateButton->SetLabel(label);
     Layout();
 }
-    
 
+wxString CatalogMgrPanel::GetImportInitDir()
+{
+    // Check the config file for the last Import path.
+    pConfig->SetPath( _T("/PlugIns/") );
+    wxString lastImportDir;
+    lastImportDir = pConfig->Read(_T("LatestImportDir"),
+                    g_Platform->GetWritableDocumentsDir());
+    if ( wxDirExists(lastImportDir) ) {
+        return lastImportDir;
+    }
+    return ( g_Platform->GetWritableDocumentsDir() );
+}
 
 BEGIN_EVENT_TABLE( PluginListPanel, wxScrolledWindow )
 //EVT_BUTTON( ID_CMD_BUTTON_PERFORM_ACTION, PluginListPanel::OnPluginPanelAction )
@@ -5957,7 +6005,10 @@ static bool canUninstall(std::string name)
 
     for (auto plugin: pluginHandler->getInstalled()) {
         if (plugin.name == name) {
-            return !plugin.readonly;
+            if (safe_mode::get_mode()) 
+                return true;
+            else
+                return !plugin.readonly;
         }
     }
     return false;
@@ -9038,7 +9089,31 @@ std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& GUID)
 std::unique_ptr<PlugIn_Track> GetTrack_Plugin( const wxString& GUID)
 {
    std::unique_ptr<PlugIn_Track> t;
-   return t;
+    //  Find the Track
+    Track *pTrack = g_pRouteMan->FindTrackByGUID( GUID );
+    if(!pTrack)
+        return t;
+    
+    std::unique_ptr<PlugIn_Track>tk = std::unique_ptr<PlugIn_Track>(new PlugIn_Track);
+    PlugIn_Track *dst_track = tk.get();
+    dst_track->m_NameString = pTrack->GetName();
+    dst_track->m_StartString = pTrack->m_TrackStartString;
+    dst_track->m_EndString = pTrack->m_TrackEndString;
+    dst_track->m_GUID = pTrack->m_GUID;
+
+    for(int i = 0; i < pTrack->GetnPoints(); i++){
+        TrackPoint *ptp = pTrack->GetPoint( i );
+
+        PlugIn_Waypoint *dst_wp = new PlugIn_Waypoint();
+        
+        dst_wp->m_lat = ptp->m_lat;
+        dst_wp->m_lon = ptp->m_lon;
+        dst_wp->m_CreateTime = ptp->GetCreateTime(); // not const
+        
+        dst_track->pWaypointList->Append( dst_wp );
+    }
+    
+   return tk;
 }
 
 wxWindow* PluginGetFocusCanvas()

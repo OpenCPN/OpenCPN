@@ -29,6 +29,7 @@
 #include <wx/checkbox.h>
 
 #define ID_AIS_TARGET_LIST    10003
+#define ID_RCLK_UNDOCK        7035
 
 class OCPNListCtrl;
 class AIS_Decoder;
@@ -88,6 +89,9 @@ class AISTargetListDialog: public wxPanel
             void OnLimitRange( wxCommandEvent& event );
             void OnCloseButton( wxCommandEvent& event );
             void OnAutosortCB( wxCommandEvent &event );
+            void OnRightClickContext( wxCommandEvent& event );
+            void OnContextUndock( wxCommandEvent& event );
+
             
             wxWindow          *m_pparent;
             wxAuiManager      *m_pAuiManager;

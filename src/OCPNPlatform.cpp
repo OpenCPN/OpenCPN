@@ -45,7 +45,7 @@
 
 #include "dychart.h"
 #include "OCPNPlatform.h"
-#include "chart1.h"
+#include "gui_lib.h"
 #include "cutil.h"
 #include "logger.h"
 #include "styles.h"
@@ -364,7 +364,6 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
     detail->osd_name = std::string(PKG_TARGET);
     detail->osd_version = std::string(PKG_TARGET_VERSION);
     detail->osd_build_name = std::string(PKG_TARGET);
-    detail->osd_build_target = std::string(PKG_BUILD_TARGET);
     detail->osd_build_version = std::string(PKG_TARGET_VERSION);
     detail->osd_build_arch = std::string(PKG_TARGET_ARCH);
     detail->osd_build_gtk = std::string(PKG_BUILD_GTK);
@@ -397,7 +396,7 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                     }
                         
                     if(val.Length()){
-                        detail->osd_name_like = ocpn::split(val.mb_str(), " ");
+                        detail->osd_names_like = ocpn::split(val.mb_str(), " ");
                     }
                 }
 
@@ -1384,7 +1383,29 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         
-#endif    
+#endif
+        
+        // Verify some default directories, create if necessary
+        
+        // UserIcons
+        wxString UserIconPath = GetPrivateDataDir();
+        wxChar sep = wxFileName::GetPathSeparator();
+        if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
+        UserIconPath.Append( _T("UserIcons") );
+
+        if(!::wxDirExists(UserIconPath)){
+            ::wxMkdir( UserIconPath );
+        }
+
+        // layers
+        wxString LayersPath = GetPrivateDataDir();
+        if( LayersPath.Last() != sep ) LayersPath.Append( sep );
+        LayersPath.Append( _T("layers") );
+
+        if(!::wxDirExists(LayersPath)){
+            ::wxMkdir( LayersPath );
+        }
+
 }
 
 

@@ -25,6 +25,7 @@
 
 #include "config.h"
 
+#include <fstream>
 #include <set>
 #include <sstream>
 
@@ -44,7 +45,9 @@
 #include "download_mgr.h"
 #include "Downloader.h"
 #include "OCPNPlatform.h"
+#include "picosha2.h"
 #include "PluginHandler.h"
+#include "plugin_cache.h"
 #include "pluginmanager.h"
 #include "semantic_vers.h"
 #include "styles.h"
@@ -63,6 +66,45 @@ wxDEFINE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
 
 namespace download_mgr {
 
+/**
+ * Check if sha256sum of a tarball matches checksum in metadata.
+ */
+static bool checksum_ok(const std::string& path,
+                        const PluginMetadata& metadata)
+{
+
+    wxLogDebug("Checksum test on %s", metadata.name.c_str());
+    if (metadata.checksum == "") {
+        wxLogDebug("No metadata checksum, aborting check,");
+        return true;
+    }
+    const size_t pos = metadata.checksum.find(':');
+    std::string checksum(metadata.checksum);
+    if (pos == std::string::npos) {
+        checksum = std::string("sha256:") + checksum;
+    }
+    std::ifstream f(path, std::ios::binary);
+    picosha2::hash256_one_by_one hasher;
+    while (!f.eof()) {
+        char buff[2048];
+        f.read(buff, sizeof(buff));
+        const std::string block(buff, f.gcount());
+        hasher.process(block.begin(), block.end());
+    }
+    hasher.finish();
+    std::string tarball_hash =
+        std::string("sha256:") + picosha2::get_hash_hex_string(hasher);
+
+    if (tarball_hash == checksum) {
+        wxLogDebug("Checksum ok: %s", tarball_hash.c_str());
+        return true;
+    }
+    wxLogMessage("Checksum fail on %s, tarball: %s, metadata: %s",
+                 metadata.name.c_str(),
+                 tarball_hash.c_str(),
+                 checksum.c_str());
+    return false;
+}
 
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
@@ -202,7 +244,9 @@ class InstallButton: public wxPanel
         }
 
         void OnClick(wxCommandEvent& event) {
-            if (m_remove) {
+            auto path =
+                ocpn::lookup_tarball(m_metadata.tarball_url.c_str());
+            if (m_remove && path != "") {
                 wxLogMessage("Uninstalling %s", m_metadata.name.c_str());
                 PluginHandler::getInstance()->uninstall(m_metadata.name);
             }
@@ -213,7 +257,7 @@ class InstallButton: public wxPanel
             
             if(!cacheResult){
                 auto downloader = new GuiDownloader(this, m_metadata);
-                downloader->run(this);
+                downloader->run(this, m_remove);
                 auto pic = PlugInByName(m_metadata.name,
                                         g_pi_manager->GetPlugInArray());
                 if (!pic) {
@@ -517,30 +561,12 @@ GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             { }
 
         
-std::string GuiDownloader::CheckCache()
-{
-    // Look in the cache
-    wxURI uri( wxString(m_plugin.tarball_url.c_str()));
-    wxFileName fn(uri.GetPath());
-    wxString tarballFile = fn.GetFullName();
-    wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
-    wxString sep = _T("/");
-    cacheDir += sep + wxString(_T("cache"));
-    cacheDir += sep + wxString(_T("tarballs"));
-    wxString cacheCopy = cacheDir +sep + tarballFile;
-    if(wxFileExists( cacheCopy ))
-        return cacheCopy.ToStdString();
-    else
-        return std::string("");
-}
-        
- 
-
-std::string GuiDownloader::run(wxWindow* parent)
+std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
 {
             bool ok;
             bool downloaded = false;
-            std::string path = CheckCache();
+            std::string path =
+                ocpn::lookup_tarball(m_plugin.tarball_url.c_str());
             if(!path.size()){
                 long size = get_filesize();
                 std::string label(_("Downloading "));
@@ -569,11 +595,20 @@ std::string GuiDownloader::run(wxWindow* parent)
                     delete m_dialog;
                 }
 
+                if (!download_mgr::checksum_ok(path, m_plugin)) {
+                    showErrorDialog("Checksum error");
+                    return "";
+                }
+
                 m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
                 downloaded = true;
             }
 
             auto pluginHandler = PluginHandler::getInstance();
+            if (remove_current) {
+                 wxLogMessage("Uninstalling %s", m_plugin.name.c_str());
+                 pluginHandler->uninstall(m_plugin.name);
+            }
             ok = pluginHandler->installPlugin(m_plugin, path);
             if (!ok) {
                 showErrorDialog("Installation error");
@@ -584,24 +619,10 @@ std::string GuiDownloader::run(wxWindow* parent)
                 // Cache the tarball from the tmp location to the plugin cache.
                 wxURI uri( wxString(m_plugin.tarball_url.c_str()));
                 wxFileName fn(uri.GetPath());
-                wxString tarballFile = fn.GetFullName();
-                wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
-                wxString sep = _T("/");
-                if( !wxDirExists(cacheDir) )
-                    wxMkdir( cacheDir);
-                cacheDir += sep + wxString(_T("cache"));
-                if( !wxDirExists(cacheDir) )
-                    wxMkdir( cacheDir);
-                cacheDir += sep + wxString(_T("tarballs"));
-                if( !wxDirExists(cacheDir) )
-                    wxMkdir( cacheDir);
-        
-                wxString destination = cacheDir + _T("/") + tarballFile;
-                wxLogMessage(" Trying to copy %s ",  path.c_str());
-                
-                if(wxFileExists(wxString( path.c_str()))){
-                    wxLogMessage("Copying %s to local cache",  tarballFile.c_str());
-                    wxCopyFile( wxString( path.c_str()), destination);
+                auto basename = fn.GetFullName().ToStdString();
+                if (ocpn::store_tarball(path.c_str(), basename.c_str())) {
+                    wxLogMessage("Copied %s to local cache at %s",
+                                 path.c_str(), basename.c_str());
                 }
             }
 

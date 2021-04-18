@@ -20,6 +20,7 @@
 # - Free Software Foundation, Inc.,                                       *
 # - 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 # ***************************************************************************
+
 #[[
 
 Configuring opencpn
@@ -145,25 +146,21 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-IF(DEFINED _wx_selected_config)
-  MESSAGE (STATUS "selected config ${_wx_selected_config}")
-  IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Building for wxQt-Android, ANDROID_ARCH: ${ANDROID_ARCH}")
-    SET(QT_ANDROID "ON")
-    if(ANDROID_ARCH MATCHES "arm64")
-      add_definitions("-DANDROID_ARM64")
-    else ()
-      add_definitions("-DANDROID_ARMHF")
-    endif ()
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
-ENDIF(DEFINED _wx_selected_config)
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
+   message(STATUS "Building for wxQt-Android")
+   set(QT_ANDROID "ON")
+   if(PKG_ARCH STREQUAL "arm64")
+     add_definitions("-DANDROID_ARM64")
+   else ()
+     add_definitions("-DANDROID_ARMHF")
+   endif ()
+   set(PACKAGE_NAME gorp)
+endif ()
 
-if( QT_ANDROID )
-  set(PACKAGE_NAME gorp)
-endif( QT_ANDROID )
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
+include(CheckSymbolExists)
 
 #
 # Options
@@ -208,6 +205,12 @@ set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 option(OCPN_USE_GL "Enable OpenGL support" ON)
 option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
+option(OCPN_USE_UDEV_PORTS "Use udev to enumerate serial ports" ON)
+option(OCPN_USE_SYSFS_PORTS "Use sysfs to enumerate serial ports" OFF)
+
+set(OCPN_TARGET_TUPLE "" CACHE STRING
+  "List of target;version;arch like flatpak;20.08;aarch64 [\"\"]"
+)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -851,6 +854,15 @@ IF(QT_ANDROID)
   )
 ENDIF(QT_ANDROID)
 
+#  Make sure that the variable "wxWidgets_VERSION_STRING" is set, even on older CMake versions
+#  Seems safe to set to "3.0", since OCPN does not support earlier wxWidgets versions
+if( wxWidgets_VERSION_STRING)
+    message(STATUS "Found wxWidgets_VERSION_STRING: ${wxWidgets_VERSION_STRING}")
+else( wxWidgets_VERSION_STRING)
+    message(STATUS "Forcing wxWidgets_VERSION_STRING: ${wxWidgets_VERSION_STRING}")
+    set(wxWidgets_VERSION_STRING "3.0")
+endif( wxWidgets_VERSION_STRING)
+  
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
@@ -916,6 +928,7 @@ set(
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
+  include/gui_lib.h
   include/gshhs.h
   include/Hyperlink.h
   include/IDX_entry.h
@@ -947,6 +960,7 @@ set(
   include/ocpn_utils.h
   include/options.h
   include/piano.h
+  include/plugin_cache.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -1046,6 +1060,7 @@ set(
   src/geodesic.cpp
   src/georef.cpp
   src/GoToPositionDialog.cpp
+  src/gui_lib.cpp
   src/gshhs.cpp
   src/Hyperlink.cpp
   src/IDX_entry.cpp
@@ -1080,6 +1095,7 @@ set(
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
+  src/plugin_cache.cpp
   src/printtable.cpp
   src/pugixml.cpp
   src/Quilt.cpp
@@ -1098,6 +1114,7 @@ set(
   src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
   src/SerialDataStream.cpp
+  src/ser_ports.cpp
   src/SignalKDataStream.cpp
   src/SignalKEventHandler.cpp
   src/Station_Data.cpp
@@ -1205,6 +1222,34 @@ find_package(Gettext REQUIRED)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
+
+add_subdirectory(libs/picosha2)
+target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
+
+find_package(Libudev)
+if (UDEV_FOUND)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libudev)
+  set(HAVE_LIBUDEV 1)
+endif ()
+
+if (OCPN_USE_SYSFS_PORTS)
+  set(USE_SYSFS_PORTS 1)
+endif ()
+
+find_path(HAVE_UNISTD_H NAMES unistd.h)
+find_path(HAVE_LIBGEN_H NAMES libgen.h)
+find_path(HAVE_DIRENT_H NAMES dirent.h)
+find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
+find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
+find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
+find_path(HAVE_FCNTL_H  NAMES fcntl.h)
+if (NOT HAVE_FCNTL_H)
+  find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
+endif ()
+find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
+
+check_symbol_exists(readlink unistd.h HAVE_READLINK)
+
 
 #
 # Linux: set up GTK
@@ -1409,7 +1454,7 @@ if (OCPN_USE_CURL)
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
     target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ANDROID_ARCH}/libcurl.a)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -1538,7 +1583,7 @@ if (QT_ANDROID)
   target_include_directories(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
   target_link_libraries(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ANDROID_ARCH}/libarchive.a)
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
 elseif ( APPLE )
     if (OCPN_USE_SYSTEM_LIBARCHIVE)
         list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
@@ -1728,8 +1773,8 @@ endif (UNIX AND NOT APPLE)
 
 # Finalize config.h setup and deploy it.
 include(TargetSetup)
-if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u" AND PKG_TARGET STREQUAL "ubuntu")
-  set(PKG_TARGET "${PKG_TARGET}-gtk3")
+if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
+  string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
 configure_file(${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
@@ -1773,7 +1818,7 @@ endif (UNIX)
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
 if (MSVC)
-  target_sources(${PACKAGE_NAME} PRIVATE src/opencpn.rc)
+  target_sources(${PACKAGE_NAME} PRIVATE ${CMAKE_BINARY_DIR}/opencpn.rc)
 endif ()
 
 if (OCPN_BUNDLE_GSHHS)
@@ -2525,7 +2570,7 @@ endif ()
 #
 if (MINGW)
   set(
-    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
+    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in > ${CMAKE_BINARY_DIR}/NSIS.template.in"
   )
   file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
   add_custom_target(
@@ -2538,7 +2583,7 @@ if (MINGW)
 else ()
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in COPYONLY
+    ${CMAKE_BINARY_DIR}/NSIS.template.in COPYONLY
   )
 endif ()
 
@@ -2582,7 +2627,7 @@ set(
 if (WIN32 AND NOT UNIX)
   if (NOT SKIP_VERSION_CONFIG)
     configure_file(
-      ${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc
+      ${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_BINARY_DIR}/opencpn.rc
     )
     configure_file(
       "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in"

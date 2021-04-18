@@ -148,7 +148,11 @@ class RouteManagerDialog : public wxFrame {
             void OnExportVizClick(wxCommandEvent &event);
             void OnFilterChanged( wxCommandEvent& event );
             void OnKey( wxKeyEvent& ke );
-
+            void OnShowAllRteCBClicked(wxCommandEvent& event);
+            void OnShowAllWpCBClicked(wxCommandEvent& event);
+            void OnShowAllTrkCBClicked(wxCommandEvent& event);
+            void OnShowAllLayCBClicked(wxCommandEvent& event);
+            
             // properties
             wxNotebook *m_pNotebook;
             wxPanel    *m_pPanelRte;
@@ -200,6 +204,11 @@ class RouteManagerDialog : public wxFrame {
             wxButton *btnImport;
             wxButton *btnExport;
             wxButton *btnExportViz;
+            wxCheckBox *m_cbShowAllRte;
+            wxCheckBox *m_cbShowAllWP;
+            wxCheckBox *m_cbShowAllTrk;
+            wxCheckBox *m_cbShowAllLay;
+
             
             bool m_bPossibleClick;    // do
             bool m_bCtrlDown;         // record control key state for some action buttons

@@ -287,6 +287,9 @@ public:
       bool  GetbShowCurrent(){ return m_bShowCurrent;}
       void  SetbShowTide(bool f){ m_bShowTide = f;}
       bool  GetbShowTide(){ return m_bShowTide;}
+      void  SetShowVisibleSectors( bool val){ m_bShowVisibleSectors = val; }
+      bool  GetShowVisibleSectors(){ return m_bShowVisibleSectors; }
+
       double GetPixPerMM(){ return m_pix_per_mm;}
 
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
@@ -658,6 +661,7 @@ private:
       void RenderAllChartOutlines(ocpnDC &dc, ViewPort& vp);
       void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort& vp);
       void RenderRouteLegs ( ocpnDC &dc );
+      void RenderVisibleSectorLights( ocpnDC &dc );
 
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 
@@ -903,7 +907,11 @@ private:
       bool         m_bShowCompassWin;
       bool         m_pianoFrozen;
 
-
+      double       m_sector_glat, m_sector_glon;
+      std::vector<s57Sector_t> m_sectorlegsVisible;
+      bool         m_bShowVisibleSectors;
+      
+      
 DECLARE_EVENT_TABLE()
 };
 

@@ -39,9 +39,9 @@
 #include "ocpn_types.h"
 #include "navutil.h"
 #include "printtable.h"
-#include "chart1.h"
 
 class MyRoutePrintout : public MyPrintout {
+
 public:
     MyRoutePrintout( std::vector<bool> _toPrintOut,
                      Route*            route,

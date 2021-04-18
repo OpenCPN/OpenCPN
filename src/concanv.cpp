@@ -41,7 +41,7 @@
 #include <time.h>
 #include "wx/datetime.h"
 
-#include "chart1.h"
+#include "gui_lib.h"
 #include "concanv.h"
 #include "styles.h"
 #include "routeman.h"

@@ -33,6 +33,14 @@
 #define TRACKTYPE_ALWAYS        1
 #define TRACKTYPE_NEVER         2
 
+enum AISAudioSoundType
+{
+    AISAUDIO_NONE,
+    AISAUDIO_CPA,
+    AISAUDIO_SART,
+    AISAUDIO_DSC
+};
+
 class MMSIProperties
 {
 public:

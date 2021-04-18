@@ -22,6 +22,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include "config.h"
+
 #include <memory>
 
 #ifdef __MINGW32__
@@ -138,6 +140,8 @@
 #include "SoundFactory.h"
 #include "PluginHandler.h"
 #include "SignalKEventHandler.h"
+#include "gui_lib.h"
+#include "ser_ports.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -310,6 +314,11 @@ static OcpnSound* _bells_sounds[]  = {SoundFactory(), SoundFactory()};
 std::vector<OcpnSound*>   bells_sound(_bells_sounds, _bells_sounds + 2  );
 
 OcpnSound*                g_anchorwatch_sound = SoundFactory();
+wxString                  g_anchorwatch_sound_file;
+wxString                  g_DSC_sound_file;
+wxString                  g_SART_sound_file;
+wxString                  g_AIS_sound_file;
+
 
 RoutePoint                *pAnchorWatchPoint1;
 RoutePoint                *pAnchorWatchPoint2;
@@ -389,6 +398,7 @@ bool                      g_bHDT_Rx;
 bool                      g_bVAR_Rx;
 
 int                       gSAT_Watchdog;
+int                       g_priSats;
 int                       g_SatsInView;
 bool                      g_bSatValid;
 
@@ -759,6 +769,11 @@ char bells_sound_file_name[2][12] = { "1bells.wav", "2bells.wav" };
 
 int                       portaudio_initialized;
 
+bool                      g_bAIS_GCPA_Alert_Audio;
+bool                      g_bAIS_SART_Alert_Audio;
+bool                      g_bAIS_DSC_Alert_Audio;
+bool                      g_bAnchor_Alert_Audio;
+
 static char nmea_tick_chars[] = { '|', '/', '-', '\\', '|', '/', '-', '\\' };
 static int tick_idx;
 
@@ -851,8 +866,6 @@ void appendOSDirSlash( wxString* pString );
 static void InitializeUserColors( void );
 static void DeInitializeUserColors( void );
 static void SetSystemColors( ColorScheme cs );
-
-extern "C" bool CheckSerialAccess( void );
 
 #if 0
 // Refresh the Piano Bar
@@ -1739,7 +1752,7 @@ bool MyApp::OnInit()
 #ifndef __OCPN__ANDROID__
     //  On Windows
     //  We allow only one instance unless the portable option is used
-    if(!g_bportable) {
+    if(!g_bportable && wxDirExists(g_Platform->GetPrivateDataDir())) {
         wxChar separator = wxFileName::GetPathSeparator();
         wxString service_name = g_Platform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
 
@@ -2484,6 +2497,8 @@ extern ocpnGLOptions g_GLOptions;
     gHDT_Watchdog = 2;
     gSAT_Watchdog = 2;
     gVAR_Watchdog = 2;
+    
+    g_priSats = 99;
 
     //  Most likely installations have no ownship heading information
     g_bHDT_Rx = false;
@@ -5754,9 +5769,9 @@ void MyFrame::RegisterGlobalMenuItems()
 
     view_menu->AppendSeparator();
 #ifdef __WXOSX__
-    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("RawCtrl-Ctrl-F")) );
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Toggle Full Screen"), _T("RawCtrl-Ctrl-F")) );
 #else
-    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Toggle Full Screen"), _T("F11")) );
 #endif
     m_pMenuBar->Append( view_menu, _("&View") );
 
@@ -6969,7 +6984,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
             }
 
-            // Import Layer-wise any .gpx files from /Layers directory
+            // Import Layer-wise any .gpx files from /layers directory
             wxString layerdir = g_Platform->GetPrivateDataDir();
             appendOSDirSlash( &layerdir );
             layerdir.Append( _T("layers") );
@@ -7460,11 +7475,12 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if( g_nNMEADebug && ( gVAR_Watchdog == 0 ) ) wxLogMessage(
             _T("   ***VAR Watchdog timeout...") );
     }
-    //  Update and check watchdog timer for GSV (Satellite data)
+    //  Update and check watchdog timer for GSV, GGA and SignalK (Satellite data)
     gSAT_Watchdog--;
     if( gSAT_Watchdog <= 0 ) {
         g_bSatValid = false;
         g_SatsInView = 0;
+        g_priSats = 99;
         if( g_nNMEADebug && ( gSAT_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***SAT Watchdog timeout...") );
     }
@@ -9185,9 +9201,12 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case GSV:
-                if (m_NMEA0183.Gsv.MessageNumber == 1) {
-                    // Some GNSS print SatsInView in message #1 only
-                    setSatelitesInView (m_NMEA0183.Gsv.SatsInView);
+                if (g_priSats >= 4) {
+                    if (m_NMEA0183.Gsv.MessageNumber == 1) {
+                        // Some GNSS print SatsInView in message #1 only
+                        setSatelitesInView (m_NMEA0183.Gsv.SatsInView);
+                        g_priSats = 4;
+                    }
                 }
                 break;
 
@@ -9196,7 +9215,10 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
                     sfixtime = m_NMEA0183.Gga.UTCTime;
-                    setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
+                    if (g_priSats >= 1) {
+                        setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
+                        g_priSats = 1;
+                    }
                 }
                 break;
 
@@ -10459,628 +10481,9 @@ int paternFilter (const struct dirent * dir) {
   return 0;
 }
 
-int isTTYreal(const char *dev)
-{
-#ifdef __NetBSD__
-    if (strncmp("/dev/tty0", dev, 9) == 0)
-	return 1;
-    if (strncmp("/dev/ttyU", dev, 9) == 0)
-	return 1;
-    if (strcmp("/dev/gps", dev) == 0)
-	return 1;
-    return 0;
-#else /* !NetBSD */
-    struct serial_struct serinfo;
-    int ret = 0;
-
-    int fd = open(dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
-
-    // device name is pointing to a real device
-    if(fd >= 0) {
-        if (ioctl(fd, TIOCGSERIAL, &serinfo)==0) {
-            // If device type is no PORT_UNKNOWN we accept the port
-            if (serinfo.type != PORT_UNKNOWN)
-                ret = 1;
-        }
-        close (fd);
-    }
-
-    return ret;
-#endif /* !NetBSD */
-}
-
 
 #endif
 
-#ifdef __MINGW32__ // do I need this because of mingw, or because I am running mingw under wine?
-# ifndef GUID_CLASS_COMPORT
-DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
-# endif
-#endif
-
-wxArrayString *EnumerateSerialPorts( void )
-{
-    wxArrayString *preturn = new wxArrayString;
-#ifdef OCPN_USE_NEWSERIAL
-    std::vector<serial::PortInfo> ports = serial::list_ports();
-    for(std::vector<serial::PortInfo>::iterator it = ports.begin(); it != ports.end(); ++it) {
-        wxString port((*it).port);
-        if( (*it).description.length() > 0 && (*it).description != "n/a" ) {
-            port.Append(_T(" - "));
-            wxString s_description = wxString::FromUTF8( ((*it).description).c_str());
-            port.Append( s_description );
-        }
-        preturn->Add(port);
-    }
-#ifdef __WXMSW__
-    //    Search for Garmin device driver on Windows platforms
-    HDEVINFO hdeviceinfo = INVALID_HANDLE_VALUE;
-    hdeviceinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_DETECT_GUID, NULL, NULL,
-                                      DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
-    if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
-        
-        if(GarminProtocolHandler::IsGarminPlugged()){
-            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
-            preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
-        }
-    }
-#endif // __WXMSW__
-#else
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-
-    //Initialize the pattern table
-    if( devPatern[0] == NULL ) {
-        paternAdd ( "ttyUSB" );
-        paternAdd ( "ttyACM" );
-        paternAdd ( "ttyGPS" );
-        paternAdd ( "refcom" );
-    }
-
- //  Looking for user privilege openable devices in /dev
- //  Fulup use scandir to improve user experience and support new generation of AIS devices.
-
-      wxString sdev;
-      int ind, fcount;
-      struct dirent **filelist = {0};
-
-      // scan directory filter is applied automatically by this call
-      fcount = scandir("/dev", &filelist, paternFilter, alphasort);
-
-      for(ind = 0; ind < fcount; ind++)  {
-       wxString sdev (filelist[ind]->d_name, wxConvUTF8);
-       sdev.Prepend (_T("/dev/"));
-
-       preturn->Add (sdev);
-       free(filelist[ind]);
-      }
-
-      free(filelist);
-
-//        We try to add a few more, arbitrarily, for those systems that have fixed, traditional COM ports
-
-#ifdef __linux__
-    if( isTTYreal("/dev/ttyS0") )
-        preturn->Add( _T("/dev/ttyS0") );
-
-    if( isTTYreal("/dev/ttyS1") )
-        preturn->Add( _T("/dev/ttyS1") );
-#endif /* linux */
-
-
-#endif
-
-#ifdef PROBE_PORTS__WITH_HELPER
-
-    /*
-     *     For modern Linux/(Posix??) systems, we may use
-     *     the system files /proc/tty/driver/serial
-     *     and /proc/tty/driver/usbserial to identify
-     *     available serial ports.
-     *     A complicating factor is that most (all??) linux
-     *     systems require root privileges to access these files.
-     *     We will use a helper program method here, despite implied vulnerability.
-     */
-
-    char buf[256]; // enough to hold one line from serial devices list
-    char left_digit;
-    char right_digit;
-    int port_num;
-    FILE *f;
-
-    pid_t pID = vfork();
-
-    if (pID == 0)// child
-    {
-//    Temporarily gain root privileges
-        seteuid(file_user_id);
-
-//  Execute the helper program
-        execlp("ocpnhelper", "ocpnhelper", "-SB", NULL);
-
-//  Return to user privileges
-        seteuid(user_user_id);
-
-        wxLogMessage(_T("Warning: ocpnhelper failed...."));
-        _exit(0);// If exec fails then exit forked process.
-    }
-
-    wait(NULL);                  // for the child to quit
-
-//    Read and parse the files
-
-    /*
-     * see if we have any traditional ttySx ports available
-     */
-    f = fopen("/var/tmp/serial", "r");
-
-    if (f != NULL)
-    {
-        wxLogMessage(_T("Parsing copy of /proc/tty/driver/serial..."));
-
-        /* read in each line of the file */
-        while(fgets(buf, sizeof(buf), f) != NULL)
-        {
-            wxString sm(buf, wxConvUTF8);
-            sm.Prepend(_T("   "));
-            sm.Replace(_T("\n"), _T(" "));
-            wxLogMessage(sm);
-
-            /* if the line doesn't start with a number get the next line */
-            if (buf[0] < '0' || buf[0] > '9')
-            continue;
-
-            /*
-             * convert digits to an int
-             */
-            left_digit = buf[0];
-            right_digit = buf[1];
-            if (right_digit < '0' || right_digit > '9')
-            port_num = left_digit - '0';
-            else
-            port_num = (left_digit - '0') * 10 + right_digit - '0';
-
-            /* skip if "unknown" in the string */
-            if (strstr(buf, "unknown") != NULL)
-            continue;
-
-            /* upper limit of 15 */
-            if (port_num > 15)
-            continue;
-
-            /* create string from port_num  */
-
-            wxString s;
-            s.Printf(_T("/dev/ttyS%d"), port_num);
-
-            /*  add to the output array  */
-            preturn->Add(wxString(s));
-
-        }
-
-        fclose(f);
-    }
-
-    /*
-     * Same for USB ports
-     */
-    f = fopen("/var/tmp/usbserial", "r");
-
-    if (f != NULL)
-    {
-        wxLogMessage(_T("Parsing copy of /proc/tty/driver/usbserial..."));
-
-        /* read in each line of the file */
-        while(fgets(buf, sizeof(buf), f) != NULL)
-        {
-
-            wxString sm(buf, wxConvUTF8);
-            sm.Prepend(_T("   "));
-            sm.Replace(_T("\n"), _T(" "));
-            wxLogMessage(sm);
-
-            /* if the line doesn't start with a number get the next line */
-            if (buf[0] < '0' || buf[0] > '9')
-            continue;
-
-            /*
-             * convert digits to an int
-             */
-            left_digit = buf[0];
-            right_digit = buf[1];
-            if (right_digit < '0' || right_digit > '9')
-            port_num = left_digit - '0';
-            else
-            port_num = (left_digit - '0') * 10 + right_digit - '0';
-
-            /* skip if "unknown" in the string */
-            if (strstr(buf, "unknown") != NULL)
-            continue;
-
-            /* upper limit of 15 */
-            if (port_num > 15)
-            continue;
-
-            /* create string from port_num  */
-
-            wxString s;
-            s.Printf(_T("/dev/ttyUSB%d"), port_num);
-
-            /*  add to the output array  */
-            preturn->Add(wxString(s));
-
-        }
-
-        fclose(f);
-    }
-
-    //    As a fallback, in case seteuid doesn't work....
-    //    provide some defaults
-    //    This is currently the case for GTK+, which
-    //    refuses to run suid.  sigh...
-
-    if(preturn->IsEmpty())
-    {
-        preturn->Add( _T("/dev/ttyS0"));
-        preturn->Add( _T("/dev/ttyS1"));
-        preturn->Add( _T("/dev/ttyUSB0"));
-        preturn->Add( _T("/dev/ttyUSB1"));
-        preturn->Add( _T("/dev/ttyACM0"));
-        preturn->Add( _T("/dev/ttyACM1"));
-    }
-
-//    Clean up the temporary files created by helper.
-    pid_t cpID = vfork();
-
-    if (cpID == 0)// child
-    {
-//    Temporarily gain root privileges
-        seteuid(file_user_id);
-
-//  Execute the helper program
-        execlp("ocpnhelper", "ocpnhelper", "-U", NULL);
-
-//  Return to user privileges
-        seteuid(user_user_id);
-        _exit(0);// If exec fails then exit forked process.
-    }
-
-#endif      // __WXGTK__
-#ifdef __WXOSX__
-#include "macutils.h"
-    char* paPortNames[MAX_SERIAL_PORTS];
-    int iPortNameCount;
-
-    memset(paPortNames,0x00,sizeof(paPortNames));
-    iPortNameCount = FindSerialPortNames(&paPortNames[0],MAX_SERIAL_PORTS);
-    for (int iPortIndex=0; iPortIndex<iPortNameCount; iPortIndex++)
-    {
-        wxString sm(paPortNames[iPortIndex], wxConvUTF8);
-        preturn->Add(sm);
-        free(paPortNames[iPortIndex]);
-    }
-#endif      //__WXOSX__
-#ifdef __WXMSW__
-    /*************************************************************************
-     * Windows provides no system level enumeration of available serial ports
-     * There are several ways of doing this.
-     *
-     *************************************************************************/
-
-#include <windows.h>
-
-    //    Method 1:  Use GetDefaultCommConfig()
-    // Try first {g_nCOMPortCheck} possible COM ports, check for a default configuration
-    //  This method will not find some Bluetooth SPP ports
-    for( int i = 1; i < g_nCOMPortCheck; i++ ) {
-        wxString s;
-        s.Printf( _T("COM%d"), i );
-
-        COMMCONFIG cc;
-        DWORD dwSize = sizeof(COMMCONFIG);
-        if( GetDefaultCommConfig( s.fn_str(), &cc, &dwSize ) )
-            preturn->Add( wxString( s ) );
-    }
-
-#if 0
-    // Method 2:  Use FileOpen()
-    // Try all 255 possible COM ports, check to see if it can be opened, or if
-    // not, that an expected error is returned.
-
-    BOOL bFound;
-    for (int j=1; j<256; j++)
-    {
-        char s[20];
-        sprintf(s, "\\\\.\\COM%d", j);
-
-        // Open the port tentatively
-        BOOL bSuccess = FALSE;
-        HANDLE hComm = ::CreateFile(s, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-
-        //  Check for the error returns that indicate a port is there, but not currently useable
-        if (hComm == INVALID_HANDLE_VALUE)
-        {
-            DWORD dwError = GetLastError();
-
-            if (dwError == ERROR_ACCESS_DENIED ||
-                    dwError == ERROR_GEN_FAILURE ||
-                    dwError == ERROR_SHARING_VIOLATION ||
-                    dwError == ERROR_SEM_TIMEOUT)
-            bFound = TRUE;
-        }
-        else
-        {
-            bFound = TRUE;
-            CloseHandle(hComm);
-        }
-
-        if (bFound)
-        preturn->Add(wxString(s));
-    }
-#endif
-
-    // Method 3:  WDM-Setupapi
-    //  This method may not find XPort virtual ports,
-    //  but does find Bluetooth SPP ports
-
-    GUID *guidDev = (GUID*) &GUID_CLASS_COMPORT;
-
-    HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
-
-    hDevInfo = SetupDiGetClassDevs( guidDev,
-                                     NULL,
-                                     NULL,
-                                     DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
-
-    if(hDevInfo != INVALID_HANDLE_VALUE) {
-
-        BOOL bOk = TRUE;
-        SP_DEVICE_INTERFACE_DATA ifcData;
-
-        ifcData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-        for (DWORD ii=0; bOk; ii++) {
-            bOk = SetupDiEnumDeviceInterfaces(hDevInfo, NULL, guidDev, ii, &ifcData);
-            if (bOk) {
-            // Got a device. Get the details.
-
-                SP_DEVINFO_DATA devdata = {sizeof(SP_DEVINFO_DATA)};
-                bOk = SetupDiGetDeviceInterfaceDetail(hDevInfo,
-                                                      &ifcData, NULL, 0, NULL, &devdata);
-
-                //      We really only need devdata
-                if( !bOk ) {
-                    if( GetLastError() == 122)  //ERROR_INSUFFICIENT_BUFFER, OK in this case
-                        bOk = true;
-                }
-
-                //      We could get friendly name and/or description here
-                TCHAR fname[256] = {0};
-                TCHAR desc[256] ={0};
-                if (bOk) {
-                    BOOL bSuccess = SetupDiGetDeviceRegistryProperty(
-                        hDevInfo, &devdata, SPDRP_FRIENDLYNAME, NULL,
-                        (PBYTE)fname, sizeof(fname), NULL);
-
-                    bSuccess = bSuccess && SetupDiGetDeviceRegistryProperty(
-                        hDevInfo, &devdata, SPDRP_DEVICEDESC, NULL,
-                        (PBYTE)desc, sizeof(desc), NULL);
-                }
-
-                //  Get the "COMn string from the registry key
-                if(bOk) {
-                    bool bFoundCom = false;
-                    TCHAR dname[256];
-                    HKEY hDeviceRegistryKey = SetupDiOpenDevRegKey(hDevInfo, &devdata,
-                                                                   DICS_FLAG_GLOBAL, 0,
-                                                                   DIREG_DEV, KEY_QUERY_VALUE);
-                    if(INVALID_HANDLE_VALUE != hDeviceRegistryKey) {
-                            DWORD RegKeyType;
-                            wchar_t    wport[80];
-                            LPCWSTR cstr = wport;
-                            MultiByteToWideChar( 0, 0, "PortName", -1, wport, 80);
-                            DWORD len = sizeof(dname);
-
-                            int result = RegQueryValueEx(hDeviceRegistryKey, cstr,
-                                                        0, &RegKeyType, (PBYTE)dname, &len );
-                            if( result == 0 )
-                                bFoundCom = true;
-                    }
-
-                    if( bFoundCom ) {
-                        wxString port( dname, wxConvUTF8 );
-
-                        //      If the port has already been found, remove the prior entry
-                        //      in favor of this entry, which will have descriptive information appended
-                        for( unsigned int n=0 ; n < preturn->GetCount() ; n++ ) {
-                            if((preturn->Item(n)).IsSameAs(port)){
-                                preturn->RemoveAt( n );
-                                break;
-                            }
-                        }
-                        wxString desc_name( desc, wxConvUTF8 );         // append "description"
-                        port += _T(" ");
-                        port += desc_name;
-
-                        preturn->Add( port );
-                    }
-                }
-            }
-        }//for
-    }// if
-
-
-//    Search for Garmin device driver on Windows platforms
-
-    HDEVINFO hdeviceinfo = INVALID_HANDLE_VALUE;
-
-    hdeviceinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_DETECT_GUID, NULL, NULL,
-            DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
-
-    if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
-
-        if(GarminProtocolHandler::IsGarminPlugged()){
-            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
-            preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
-        }
-    }
-
-#if 0
-    SP_DEVICE_INTERFACE_DATA deviceinterface;
-    deviceinterface.cbSize = sizeof(deviceinterface);
-
-    if (SetupDiEnumDeviceInterfaces(hdeviceinfo,
-                    NULL,
-                    (GUID *) &GARMIN_DETECT_GUID,
-                    0,
-                    &deviceinterface))
-    {
-        wxLogMessage(_T("Found Garmin Device."));
-
-        preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
-    }
-#endif
-
-#endif      //__WXMSW__
-
-#ifdef __OCPN__ANDROID__
-    preturn = androidGetSerialPortsArray();
-#endif  // __OCPN__ANDROID__
-    
-#endif //OCPN_USE_NEWSERIAL
-    return preturn;
-}
-
-
-bool CheckSerialAccess( void )
-{
-    bool bret = true;
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
-
-#if 0
-    termios ttyset_old;
-    termios ttyset;
-    termios ttyset_check;
-
-    // Get a list of the ports
-    wxArrayString *ports = EnumerateSerialPorts();
-    if( ports->GetCount() == 0 )
-        bret = false;
-
-    for(unsigned int i=0 ; i < ports->GetCount() ; i++){
-        wxCharBuffer buf = ports->Item(i).ToUTF8();
-
-        //      For the first real port found, try to open it, write some config, and
-        //      be sure it reads back correctly.
-        if( isTTYreal( buf.data() ) ){
-            int fd = open(buf.data(), O_RDWR | O_NONBLOCK | O_NOCTTY);
-
-            // device name is pointing to a real device
-            if(fd > 0) {
-
-                if (isatty(fd) != 0)
-                {
-                    /* Save original terminal parameters */
-                    tcgetattr(fd,&ttyset_old);
-                    // Write some data
-                    memcpy(&ttyset, &ttyset_old, sizeof(termios));
-
-                    ttyset.c_cflag &=~ CSIZE;
-                    ttyset.c_cflag |= CSIZE & CS7;
-
-                    tcsetattr(fd, TCSANOW, &ttyset);
-
-                    // Read it back
-                    tcgetattr(fd, &ttyset_check);
-                    if(( ttyset_check.c_cflag & CSIZE) != CS7 ){
-                        bret = false;
-                    }
-                    else {
-                            // and again
-                        ttyset.c_cflag &=~ CSIZE;
-                        ttyset.c_cflag |= CSIZE & CS8;
-
-                        tcsetattr(fd, TCSANOW, &ttyset);
-
-                            // Read it back
-                        tcgetattr(fd, &ttyset_check);
-                        if(( ttyset_check.c_cflag & CSIZE) != CS8 ){
-                            bret = false;
-                        }
-                    }
-
-                    tcsetattr(fd, TCSANOW, &ttyset_old);
-                }
-
-                close (fd);
-            }   // if open
-        }
-    }
-
-#endif  // 0
-
-    //  Who owns /dev/ttyS0?
-    bret = false;
-
-    wxArrayString result1;
-    wxExecute(_T("stat -c %G /dev/ttyS0"), result1);
-    if(!result1.size())
-        wxExecute(_T("stat -c %G /dev/ttyUSB0"), result1);
-
-    if(!result1.size())
-        wxExecute(_T("stat -c %G /dev/ttyACM0"), result1);
-
-    wxString msg1 = _("OpenCPN requires access to serial ports to use serial NMEA data.\n");
-    if(!result1.size()) {
-        wxString msg = msg1 + _("No Serial Ports can be found on this system.\n\
-You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n");
-
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
-        return false;
-    }
-
-    //  Is the current user in this group?
-    wxString user = wxGetUserId(), group = result1[0];
-
-    wxArrayString result2;
-    wxExecute(_T("groups ") + user, result2);
-
-    if(result2.size()) {
-        wxString user_groups = result2[0];
-
-        if(user_groups.Find(group) != wxNOT_FOUND)
-            bret = true;
-    }
-
-#ifdef FLATPAK
-    return bret;
-#endif
-
-    if(!bret){
-
-        wxString msg = msg1 + _("\
-You do currently not have permission to access the serial ports on this system.\n\n\
-It is suggested that you exit OpenCPN now,\n\
-and add yourself to the correct group to enable serial port access.\n\n\
-You may do so by executing the following command from the linux command line:\n\n\
-                sudo usermod -a -G ");
-
-        msg += group;
-        msg += _T(" ");
-        msg += user;
-        msg += _T("\n");
-
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
-    }
-
-#endif  // (__UNIX__) && !defined(__OCPN__ANDROID__)
-
-    return bret;
-}
-
-void appendOSDirSlash( wxString* pString )
-{
-    wxChar sep = wxFileName::GetPathSeparator();
-    if( pString->Last() != sep ) pString->Append( sep );
-}
 
 /*************************************************************************
  * Global color management routines
@@ -11498,92 +10901,6 @@ wxColor GetDimColor(wxColor c)
     return wxColor( nrgb.red, nrgb.green, nrgb.blue );
 }
 
-BEGIN_EVENT_TABLE(OCPNMessageDialog, wxDialog)
-EVT_BUTTON(wxID_YES, OCPNMessageDialog::OnYes)
-EVT_BUTTON(wxID_NO, OCPNMessageDialog::OnNo)
-EVT_BUTTON(wxID_CANCEL, OCPNMessageDialog::OnCancel)
-EVT_CLOSE(OCPNMessageDialog::OnClose)
-END_EVENT_TABLE()
-
-
-OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
-                                                const wxString& message,
-                                                const wxString& caption,
-                                                long style,
-                                                const wxPoint& pos)
-: wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
-{
-    m_style = style;
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    SetFont( *qFont );
-
-    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
-
-    wxBoxSizer *icon_text = new wxBoxSizer( wxHORIZONTAL );
-
-    #if wxUSE_STATBMP
-    // 1) icon
-    if (style & wxICON_MASK)
-    {
-        wxBitmap bitmap;
-        switch ( style & wxICON_MASK )
-        {
-            default:
-                wxFAIL_MSG(_T("incorrect log style"));
-                // fall through
-
-            case wxICON_ERROR:
-                bitmap = wxArtProvider::GetIcon(wxART_ERROR, wxART_MESSAGE_BOX);
-                break;
-
-            case wxICON_INFORMATION:
-                bitmap = wxArtProvider::GetIcon(wxART_INFORMATION, wxART_MESSAGE_BOX);
-                break;
-
-            case wxICON_WARNING:
-                bitmap = wxArtProvider::GetIcon(wxART_WARNING, wxART_MESSAGE_BOX);
-                break;
-
-            case wxICON_QUESTION:
-                bitmap = wxArtProvider::GetIcon(wxART_QUESTION, wxART_MESSAGE_BOX);
-                break;
-        }
-        wxStaticBitmap *icon = new wxStaticBitmap(this, wxID_ANY, bitmap);
-        icon_text->Add( icon, 0, wxCENTER );
-    }
-    #endif // wxUSE_STATBMP
-
-    #if wxUSE_STATTEXT
-    // 2) text
-    icon_text->Add( CreateTextSizer( message ), 0, wxALIGN_CENTER | wxLEFT, 10 );
-
-    topsizer->Add( icon_text, 1, wxCENTER | wxLEFT|wxRIGHT|wxTOP, 10 );
-    #endif // wxUSE_STATTEXT
-
-    // 3) buttons
-    int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
-    int center_flag = wxEXPAND;
-    if (style & wxYES_NO)
-        center_flag = wxALIGN_CENTRE;
-    wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
-    if ( sizerBtn )
-        topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
-
-    SetAutoLayout( true );
-    SetSizer( topsizer );
-
-    topsizer->SetSizeHints( this );
-    topsizer->Fit( this );
-    wxSize size( GetSize() );
-    if (size.x < size.y*3/2)
-    {
-        size.x = size.y*3/2;
-        SetSize( size );
-    }
-
-    Centre( wxBOTH | wxCENTER_FRAME);
-}
-
 wxColour GetDialogColor(DialogColor color)
 {
     wxColour col = *wxRED;
@@ -11659,132 +10976,6 @@ wxColour GetDialogColor(DialogColor color)
             break;
     }
     return col;
-}
-
-void OCPNMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_YES);
-    EndModal( wxID_YES );
-}
-
-void OCPNMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_NO);
-    EndModal( wxID_NO );
-}
-
-void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
-{
-    // Allow cancellation via ESC/Close button except if
-    // only YES and NO are specified.
-    if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
-    {
-        SetReturnCode(wxID_CANCEL);
-        EndModal( wxID_CANCEL );
-    }
-}
-
-void OCPNMessageDialog::OnClose( wxCloseEvent& event )
-{
-    SetReturnCode(wxID_CANCEL);
-    EndModal( wxID_CANCEL );
-}
-
-
-
-
-class TimedMessageBox:wxEvtHandler
-{
-public:
-    TimedMessageBox(wxWindow* parent, const wxString& message,
-                    const wxString& caption = _T("Message box"), long style = wxOK | wxCANCEL,
-                    int timeout_sec = -1, const wxPoint& pos = wxDefaultPosition );
-    ~TimedMessageBox();
-    int GetRetVal(void){ return ret_val; }
-    void OnTimer(wxTimerEvent &evt);
-
-    wxTimer     m_timer;
-    OCPNMessageDialog *dlg;
-    int         ret_val;
-
-    DECLARE_EVENT_TABLE()
-};
-
-BEGIN_EVENT_TABLE(TimedMessageBox, wxEvtHandler)
-EVT_TIMER(-1, TimedMessageBox::OnTimer)
-END_EVENT_TABLE()
-
-TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
-                                 const wxString& caption, long style, int timeout_sec, const wxPoint& pos )
-{
-    ret_val = 0;
-    m_timer.SetOwner( this, -1 );
-
-    if(timeout_sec > 0)
-        m_timer.Start( timeout_sec * 1000, wxTIMER_ONE_SHOT );
-
-    dlg = new OCPNMessageDialog( parent, message, caption, style, pos );
-    dlg->ShowModal();
-
-    int ret= dlg->GetReturnCode();
-
-    //  Not sure why we need this, maybe on wx3?
-    if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
-        ret = wxID_YES;
-
-    delete dlg;
-    dlg = NULL;
-
-    ret_val = ret;
-}
-
-
-TimedMessageBox::~TimedMessageBox()
-{
-}
-
-void TimedMessageBox::OnTimer(wxTimerEvent &evt)
-{
-    if( dlg )
-        dlg->EndModal( wxID_CANCEL );
-}
-
-
-
-
-
-
-int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
-                    int timeout_sec, int x, int y  )
-{
-#ifdef __OCPN__ANDROID__
-    androidDisableRotation();
-    int style_mod = style;
-
-    auto dlg = new wxMessageDialog(parent, message, caption,  style_mod);
-    int ret = dlg->ShowModal();
-    qDebug() << "OCPNMB-1 ret" << ret;
-
-    //int ret= dlg->GetReturnCode();
-
-    //  Not sure why we need this, maybe on wx3?
-    if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
-        ret = wxID_YES;
-
-    dlg->Destroy();
-
-    androidEnableRotation();
-    qDebug() << "OCPNMB-2 ret" << ret;
-    return ret;
-    
-#else
-    int ret =  wxID_OK;
-
-    TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
-    ret = tbox.GetRetVal() ;
-#endif
-
-    return ret;
 }
 
 //               A helper function to check for proper parameters of anchor watch
@@ -11950,60 +11141,6 @@ bool TestGLCanvas(wxString prog_dir)
 }
 #endif
 
-
-
-wxFont *GetOCPNScaledFont( wxString item, int default_size )
-{
-    wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
-    int req_size = dFont->GetPointSize();
-
-    if( g_bresponsive ){
-        //      Adjust font size to be no smaller than xx mm actual size
-        double scaled_font_size = dFont->GetPointSize();
-
-        {
-
-            double points_per_mm  = g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
-            double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
-            int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
-
-            if(req_size >= nscaled_font_size)
-                return dFont;
-            else{
-                wxFont *qFont = FontMgr::Get().FindOrCreateFont( nscaled_font_size,
-                                                             dFont->GetFamily(),
-                                                             dFont->GetStyle(),
-                                                             dFont->GetWeight());
-                return qFont;
-            }
-        }
-    }
-    return dFont;
-}
-
-wxFont GetOCPNGUIScaledFont( wxString item )
-{
-    wxFont *dFont = FontMgr::Get().GetFont( item, 0 );
-    int req_size = dFont->GetPointSize();
-    wxFont qFont = *dFont;
-
-    if( g_bresponsive ){
-       double postmult =  exp( g_GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-       double scaled_font_size = dFont->GetPointSize() * postmult;
-
-       double points_per_mm  = g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
-       double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
-       int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
-
-//        wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
-//                                                                  dFont->GetFamily(),
-//                                                                  dFont->GetStyle(),
-//                                                                  dFont->GetWeight());
-       qFont.SetPointSize(nscaled_font_size);
-    }
-
-    return qFont;
-}
 
 OCPN_ThreadMessageEvent::OCPN_ThreadMessageEvent(wxEventType commandType, int id)
 :wxEvent(id, commandType)
@@ -12551,140 +11688,9 @@ void ApplyLocale()
     }
 }
 
-
-BEGIN_EVENT_TABLE(OCPN_TimedHTMLMessageDialog, wxDialog)
-EVT_BUTTON(wxID_YES, OCPN_TimedHTMLMessageDialog::OnYes)
-EVT_BUTTON(wxID_NO, OCPN_TimedHTMLMessageDialog::OnNo)
-EVT_BUTTON(wxID_CANCEL, OCPN_TimedHTMLMessageDialog::OnCancel)
-EVT_CLOSE(OCPN_TimedHTMLMessageDialog::OnClose)
-EVT_TIMER(-1, OCPN_TimedHTMLMessageDialog::OnTimer)
-
-END_EVENT_TABLE()
-
-
-OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
-                                                    const wxString& message,
-                                                    const wxString& caption,
-                                                    int tSeconds,
-                                                    long style,
-                                                    bool bFixedFont,
-                                                    const wxPoint& pos)
-: wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
+void appendOSDirSlash( wxString* pString )
 {
-    m_style = style;
-    if(bFixedFont){
-        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
-        double font_size = dFont->GetPointSize();
-        wxFont *qFont = wxTheFontList->FindOrCreateFont( font_size,wxFONTFAMILY_TELETYPE, dFont->GetStyle(), dFont->GetWeight());
-        SetFont( *qFont );
-    }
-    
-    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
-    
-    msgWindow = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                                wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
-    msgWindow->SetBorders( 30 );
-    
-    topsizer->Add( msgWindow, 1, wxEXPAND, 5 );
-    
-    wxString html;
-    html << message;
-    
-    wxCharBuffer buf = html.ToUTF8();
-    if( buf.data() )                            // string OK?
-       msgWindow->SetPage( html );
-    
-    // 3) buttons
-       int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
-       int center_flag = wxEXPAND;
-       if (style & wxYES_NO)
-           center_flag = wxALIGN_CENTRE;
-       wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
-       if ( sizerBtn )
-           topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
-       
-       SetSizer( topsizer );
-       
-       topsizer->Fit( this );
-       
-       RecalculateSize();
-//       wxSize szyv = msgWindow->GetVirtualSize();
-       
-//       SetClientSize(szyv.x + 20, szyv.y + 20); 
-       
-       CentreOnScreen();
-       
-       //msgWindow->SetBackgroundColour(wxColour(191, 183, 180));
-       msgWindow->SetBackgroundColour(GetBackgroundColour());
-       
-       m_timer.SetOwner( this, -1 );
-       
-       if(tSeconds > 0)
-           m_timer.Start( tSeconds * 1000, wxTIMER_ONE_SHOT );
-       
-}
-
-void OCPN_TimedHTMLMessageDialog::RecalculateSize( void )
-{
-    wxSize esize;
-    esize.x = GetCharWidth() * 60;
-    int sx, sy;
-    ::wxDisplaySize(&sx, &sy);
-    esize.x = wxMin(esize.x, sx * 6 / 10);
-    esize.y = -1;
-    SetClientSize(esize);     // This will force a recalc of internal representation
-    
-    int height1 = msgWindow->GetInternalRepresentation()->GetHeight();
-    
-    int client_size_y = wxMin(::wxGetDisplaySize().y - 100, height1 + 70);    // Must fit on screen
-    
-    SetClientSize(wxSize(esize.x, client_size_y ));   // constant is 2xBorders + a little slop.
-    
-}
-
-void OCPN_TimedHTMLMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_YES);
-    if(IsModal())
-        EndModal( wxID_YES );
-    else
-        Hide();
-}
-
-void OCPN_TimedHTMLMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_NO);
-    if(IsModal())
-        EndModal( wxID_NO );
-    else
-        Hide();
-}
-
-void OCPN_TimedHTMLMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
-{
-    // Allow cancellation via ESC/Close button except if
-    // only YES and NO are specified.
-    if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
-    {
-        SetReturnCode(wxID_CANCEL);
-        EndModal( wxID_CANCEL );
-    }
-}
-
-void OCPN_TimedHTMLMessageDialog::OnClose( wxCloseEvent& event )
-{
-    SetReturnCode(wxID_CANCEL);
-    if(IsModal())
-        EndModal( wxID_CANCEL );
-    else
-        Hide();
-}
-
-void OCPN_TimedHTMLMessageDialog::OnTimer(wxTimerEvent &evt)
-{
-    if(IsModal())
-        EndModal( m_style & wxNO_DEFAULT ? wxID_NO :  wxID_YES );
-    else
-        Hide();
+    wxChar sep = wxFileName::GetPathSeparator();
+    if( pString->Last() != sep ) pString->Append( sep );
 }
 

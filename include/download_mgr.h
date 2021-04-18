@@ -56,11 +56,9 @@ class GuiDownloader: public Downloader
 
     public:
         GuiDownloader(wxWindow* parent, PluginMetadata plugin);
-        std::string run(wxWindow* parent);
+        std::string run(wxWindow* parent, bool remove_current);
         void on_chunk(const char* buff, unsigned bytes) override;
         void showErrorDialog(const char* msg);
-        std::string CheckCache();
-
 };
 
 

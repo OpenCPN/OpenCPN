@@ -285,6 +285,8 @@ public:
       bool UpdateConfig();
 
       PlugInContainer *LoadPlugIn(wxString plugin_file);
+      PlugInContainer *LoadPlugIn(wxString plugin_file, PlugInContainer *pic);
+
       ArrayOfPlugIns *GetPlugInArray(){ return &plugin_array; }
 
       bool RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp, int canvasIndex);
@@ -461,6 +463,7 @@ class CatalogMgrPanel: public wxPanel
     protected:
         wxString GetCatalogText(bool);
         void SetUpdateButtonLabel();
+        wxString GetImportInitDir();
 
         wxButton *m_updateButton, *m_advancedButton, *m_tarballButton;
         wxButton* m_adv_button;

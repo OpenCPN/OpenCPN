@@ -249,6 +249,7 @@ extern double           g_ownship_HDTpredictor_miles;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
+extern wxString         g_anchorwatch_sound_file;
 
 extern PlugInManager    *g_pi_manager;
 
@@ -342,6 +343,7 @@ extern SENCThreadManager *g_SencThreadManager;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
+extern double           gLat, gLat;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -509,7 +511,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_pQuilt = new Quilt( this );
     SetQuiltMode(true);
     SetAlertString(_T(""));
-    
+    m_sector_glat = 200;
+    m_sector_glon = 200;
+
     SetupGlCanvas( );
 /*
 #ifdef ocpnUSE_GL
@@ -1118,6 +1122,7 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_encShowLightDesc = pcc->bShowENCLightDescriptions;
     m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
     m_encShowLights = pcc->bShowENCLights;
+    m_bShowVisibleSectors = pcc->bShowENCVisibleSectorLights;
     
     bool courseUp = pcc->bCourseUp;
     bool headUp = pcc->bHeadUp;
@@ -6340,7 +6345,7 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
 
     if( play_sound && !bAnchorSoundPlaying) {
         g_anchorwatch_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8) );
-        g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
+        g_anchorwatch_sound->Load( g_anchorwatch_sound_file );
         if ( g_anchorwatch_sound->IsOk( ) ) {
             bAnchorSoundPlaying = true;
             g_anchorwatch_sound->SetFinishedCallback( onSoundFinished, NULL );
@@ -9755,6 +9760,23 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
     m_brepaint_piano = true;
 }
 
+void ChartCanvas::RenderVisibleSectorLights( ocpnDC &dc )
+{
+    if(!m_bShowVisibleSectors)
+        return;
+
+    if(g_bDeferredInitDone){
+        // need to re-evaluate sectors?
+        if((m_sector_glat != gLat) || (m_sector_glon != gLon)){
+            s57_GetVisibleLightSectors( this, gLat, gLon, GetVP(), m_sectorlegsVisible );
+            m_sector_glat = gLat;
+            m_sector_glon = gLon;
+        }
+        s57_DrawExtendedLightSectors( dc, VPoint, m_sectorlegsVisible );
+    }
+}
+
+
 void ChartCanvas::WarpPointerDeferred( int x, int y )
 {
     warp_x = x;
@@ -10860,6 +10882,8 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     ShipDraw( dc );
     AlertDraw( dc );
 
+    RenderVisibleSectorLights( dc );
+    
     RenderAllChartOutlines( dc, GetVP() );
     RenderRouteLegs( dc );
     ScaleBarDraw( dc );

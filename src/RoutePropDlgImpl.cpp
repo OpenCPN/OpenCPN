@@ -33,6 +33,7 @@
 #include "chcanv.h"
 #include "tcmgr.h"
 #include "ocpn_plugin.h"
+#include "gui_lib.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP   7014
@@ -304,6 +305,7 @@ void RoutePropDlgImpl::UpdatePoints()
     int in = 0;
     wxString slen, eta, ete;
     double bearing, distance, speed;
+    double totalDistance = 0;
     wxDateTime eta_dt = wxInvalidDateTime;
     while( pnode ) {
         speed = pnode->GetData()->GetPlannedSpeed();
@@ -335,6 +337,7 @@ void RoutePropDlgImpl::UpdatePoints()
                 eta = wxEmptyString;
             }
             ete = pnode->GetData()->GetETE();
+            totalDistance += distance;
         }
         wxString name = pnode->GetData()->GetName();
         double lat = pnode->GetData()->GetLatitude();
@@ -343,7 +346,8 @@ void RoutePropDlgImpl::UpdatePoints()
         wxString desc = pnode->GetData()->GetDescription();
         wxString etd;
         if( pnode->GetData()->GetManualETD().IsValid() ) {
-            etd = toUsrDateTime(pnode->GetData()->GetManualETD(), m_tz_selection, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR);
+            // GetManualETD() returns time in UTC, always. So use it as such.
+            etd = toUsrDateTime(pnode->GetData()->GetManualETD(), 0/*m_tz_selection*/, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR);
             if( pnode->GetData()->GetManualETD().IsValid() && pnode->GetData()->GetETA().IsValid() && pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA() ) {
                 etd.Prepend(_T("!! ")); // Manually entered ETD is before we arrive here!
             }
@@ -374,6 +378,8 @@ void RoutePropDlgImpl::UpdatePoints()
         slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance) );
         data.push_back( wxVariant(schar + slen + schar) ); // Distance
         data.push_back( wxVariant(schar + formatAngle(bearing)) ); // Bearing
+        slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(totalDistance) );
+        data.push_back( wxVariant(schar + slen + schar) ); // Total Distance
         data.push_back( wxVariant(schar + ::toSDMM( 1, lat, FALSE) + schar) ); // Lat
         data.push_back( wxVariant(schar + ::toSDMM( 2, lon, FALSE) + schar) ); // Lon
         data.push_back( wxVariant(schar + ete + schar) ); // ETE
@@ -1015,6 +1021,9 @@ bool RoutePropDlgImpl::IsThisRouteExtendable()
 
 wxString RoutePropDlgImpl::MakeTideInfo( wxString stationName, double lat, double lon, wxDateTime utcTime )
 {
+    if(stationName.Find("lind") != wxNOT_FOUND)
+        int yyp = 4;
+    
     if( stationName.IsEmpty() ) {
         return wxEmptyString;
     }
@@ -1037,7 +1046,10 @@ wxString RoutePropDlgImpl::MakeTideInfo( wxString stationName, double lat, doubl
         tide_form.Append( _T("LW: ") );
     } else if( ev == 2 ) {
         tide_form.Append( _T("HW: ") );
+    } else if( ev == 0 ) {
+        tide_form.Append( _("Unavailable: ") );
     }
+    
     
     int offset = ptcmgr->GetStationTimeOffset((IDX_entry*)ptcmgr->GetIDX_entry(stationID));
     

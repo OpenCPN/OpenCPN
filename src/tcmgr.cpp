@@ -33,7 +33,7 @@
 #include <math.h>
 #include <time.h>
 
-#include "chart1.h"
+#include "gui_lib.h"
 #include "dychart.h"
 #include "tcmgr.h"
 #include "georef.h"
@@ -1049,6 +1049,8 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx)
         }
         p = q;
         ret = GetTideOrCurrent(*tm, idx, tcvalue[0],  dir);
+        if( !ret )
+            return 0;                   // Harmonics file error, data not available
         q = tcvalue[0];
         *tm += 60;
     }

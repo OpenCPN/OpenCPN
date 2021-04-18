@@ -34,6 +34,7 @@
 #include "georef.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
+#include "gui_lib.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;

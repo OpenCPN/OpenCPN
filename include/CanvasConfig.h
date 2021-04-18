@@ -73,6 +73,7 @@ public:
     bool bShowENCBuoyLabels;
     bool bShowENCLightDescriptions;
     bool bShowENCLights;
+    bool bShowENCVisibleSectorLights;
     
     
      

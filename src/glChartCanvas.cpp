@@ -57,7 +57,7 @@ private:
 
 #if defined(__OCPN__ANDROID__)
 #include "androidUTIL.h"
-#elif defined(__WXQT__)
+#elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glx.h>
 #endif
 
@@ -2828,6 +2828,8 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     AISDraw( dc, m_pParentCanvas->GetVP(), m_pParentCanvas );
     ShipDraw( dc );
     m_pParentCanvas->AlertDraw( dc );
+
+    m_pParentCanvas->RenderVisibleSectorLights( dc );
 
     m_pParentCanvas->RenderRouteLegs( dc );
     m_pParentCanvas->ScaleBarDraw( dc );

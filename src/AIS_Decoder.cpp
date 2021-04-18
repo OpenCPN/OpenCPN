@@ -133,6 +133,9 @@ static double arpa_ref_hdg = NAN;
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
 extern int              gps_watchdog_timeout_ticks;
 extern bool g_bquiting;
+extern wxString   g_DSC_sound_file;
+extern wxString   g_SART_sound_file;
+extern wxString   g_AIS_sound_file;
 
 static void onSoundFinished(void* ptr)
 {
@@ -2850,6 +2853,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //    Scan all targets, looking for SART, DSC Distress, and CPA incursions
     //    In the case of multiple targets of the same type, select the shortest range or shortest TCPA
     AIS_Target_Data *palert_target = NULL;
+    int audioType = AISAUDIO_NONE; 
     
     if( NULL == g_pais_alert_dialog_active ) {
         pAISMOBRoute = NULL;                // Reset the AISMOB auto route.
@@ -2896,14 +2900,19 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
         //    Which of multiple targets?
         //    Give priority to SART targets, then DSC Distress, then CPA incursion
-        
         palert_target = palert_target_cpa;
+        if(palert_target)
+            audioType = AISAUDIO_CPA;
 
-        if( palert_target_sart )
+        if( palert_target_sart ){
             palert_target = palert_target_sart;
+            audioType = AISAUDIO_SART;
+        }
         
-        if( palert_target_dsc )
+        if( palert_target_dsc ){
             palert_target = palert_target_dsc;
+            audioType = AISAUDIO_DSC;
+        }
         
 
         //    Show the alert
@@ -2932,6 +2941,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 pAISAlertDialog->Create( palert_target->MMSI, m_parent_frame, this,
                                          b_jumpto, b_createWP, b_ack,
                                          -1, _("AIS Alert"));
+                wxTimeSpan alertLifeTime(0,1,0,0);                      // Alert default lifetime, 1 minute.
+                palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime; 
                 g_Platform->PositionAISAlert(pAISAlertDialog);
                
                 g_pais_alert_dialog_active = pAISAlertDialog;
@@ -2946,14 +2957,56 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //    The AIS Alert dialog is already shown.  If the  dialog MMSI number is still alerted, update the dialog
     //    otherwise, destroy the dialog
     else {
+        
+        // Find the target with shortest CPA, ignoring DSC and SART targets
+       double tcpa_min = 1e6;             // really long
+       AIS_Target_Data *palert_target_lowestcpa = NULL;
+  
+       for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
+            AIS_Target_Data *td = it->second;
+            if( td ) {
+                if( (td->Class != AIS_SART) &&  (td->Class != AIS_DSC) ) {
+
+                    if( g_bAIS_CPA_Alert && td->b_active ) {
+                        if( ( AIS_ALERT_SET == td->n_alert_state ) && !td->b_in_ack_timeout ) {
+                            if( td->TCPA < tcpa_min ) {
+                                tcpa_min = td->TCPA;
+                                palert_target_lowestcpa = td;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get the target currently displayed
         palert_target = Get_Target_Data_From_MMSI( g_pais_alert_dialog_active->Get_Dialog_MMSI() );
+        
+        //  If the currently displayed target is not alerted, it must be in "expiry delay"
+        //  We should cancel that alert display now, and pick up the more critical CPA target on the next timer tick
+        if( palert_target ) {
+            if( AIS_NO_ALERT == palert_target->n_alert_state){
+                if(palert_target_lowestcpa ){
+                    palert_target = NULL;
+                }
+            }
+        }
 
         if( palert_target ) {
+            wxDateTime now = wxDateTime::Now();
             if( ( ( AIS_ALERT_SET == palert_target->n_alert_state )
                     && !palert_target->b_in_ack_timeout )
                     || ( palert_target->Class == AIS_SART ) ) {
                 g_pais_alert_dialog_active->UpdateText();
-            } else {
+                // Retrigger the alert expiry timeout if alerted now
+                wxTimeSpan alertLifeTime(0,1,0,0);                      // Alert default lifetime, 1 minute.
+                palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime; 
+            } 
+            //  In "expiry delay"?
+            else if(!palert_target->b_in_ack_timeout && (now.IsEarlierThan(palert_target->dtAlertExpireTime))){
+                 g_pais_alert_dialog_active->UpdateText();
+            }
+            else {
                 g_pais_alert_dialog_active->Close();
                 m_bAIS_Audio_Alert_On = false;
             }
@@ -2981,7 +3034,21 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         if ( !AIS_AlertPlaying() ) {
             m_bAIS_AlertPlaying = true;
             m_AIS_Sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
-            m_AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+            wxString soundFile;
+            switch (audioType){
+                case AISAUDIO_CPA:
+                default:
+                    soundFile = g_AIS_sound_file;
+                    break;
+                case AISAUDIO_DSC:
+                    soundFile = g_DSC_sound_file;
+                    break;
+                case AISAUDIO_SART:
+                    soundFile = g_SART_sound_file;
+                    break;
+            }                    
+            
+            m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
             if ( m_AIS_Sound->IsOk( ) ) {
                 m_AIS_Sound->SetFinishedCallback( onSoundFinished, this );
                 if ( !m_AIS_Sound->Play( ) )

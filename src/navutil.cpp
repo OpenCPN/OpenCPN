@@ -216,6 +216,15 @@ extern int              g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int              g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
 extern wxString         g_sAIS_Alert_Sound_File;
+extern wxString         g_anchorwatch_sound_file;
+extern wxString         g_DSC_sound_file;
+extern wxString         g_SART_sound_file;
+extern wxString         g_AIS_sound_file;
+extern bool             g_bAIS_GCPA_Alert_Audio;
+extern bool             g_bAIS_SART_Alert_Audio;
+extern bool             g_bAIS_DSC_Alert_Audio;
+extern bool             g_bAnchor_Alert_Audio;
+
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
@@ -611,7 +620,7 @@ int MyConfig::LoadMyConfig()
     g_ownship_predictor_minutes = 5;
     g_cog_predictor_width = 3;
     g_ownship_HDTpredictor_miles = 1;
-    g_n_ownship_min_mm = 5;
+    g_n_ownship_min_mm = 2;
     g_own_ship_sog_cog_calc_damp_sec = 1;
     g_bFullScreenQuilt = 1;
     g_track_rotate_time_type =  TIME_TYPE_COMPUTER;
@@ -722,7 +731,8 @@ int MyConfig::LoadMyConfig()
             g_detailslider_dialog_y =  5;
         
         g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
-        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 5);
+        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 2);
+        
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
         g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
@@ -1064,6 +1074,29 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
         g_nDepthUnitDisplay = read_int;
     }
     
+    // Sounds
+    SetPath( _T ( "/Settings/Audio" ) );
+    
+    // Set reasonable defaults
+    wxString sound_dir = g_Platform->GetSharedDataDir();
+    sound_dir.Append(_T("sounds"));
+    sound_dir.Append(wxFileName::GetPathSeparator());
+
+    g_AIS_sound_file = sound_dir + _T("beep_ssl.wav");
+    g_DSC_sound_file = sound_dir + _T("phonering1.wav");
+    g_SART_sound_file = sound_dir + _T("beep3.wav");
+    g_anchorwatch_sound_file = sound_dir + _T("beep1.wav");
+    
+    Read( _T ( "AISAlertSoundFile" ), &g_AIS_sound_file );
+    Read( _T ( "DSCAlertSoundFile" ), &g_DSC_sound_file );
+    Read( _T ( "SARTAlertSoundFile" ), &g_SART_sound_file );
+    Read( _T ( "AnchorAlarmSoundFile" ), &g_anchorwatch_sound_file );
+
+    Read( _T ( "bAIS_GCPA_AlertAudio" ), &g_bAIS_GCPA_Alert_Audio );
+    Read( _T ( "bAIS_SART_AlertAudio" ), &g_bAIS_SART_Alert_Audio );
+    Read( _T ( "bAIS_DSC_AlertAudio" ), &g_bAIS_DSC_Alert_Audio );
+    Read( _T ( "bAnchorAlertAudio" ), &g_bAnchor_Alert_Audio );
+   
     //    AIS
     wxString s;
     SetPath( _T ( "/Settings/AIS" ) );
@@ -2133,6 +2166,7 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
     Read( _T ( "canvasENCShowBuoyLabels" ), &cConfig->bShowENCBuoyLabels, 1 );
     Read( _T ( "canvasENCShowLightDescriptions" ), &cConfig->bShowENCLightDescriptions, 1 );
     Read( _T ( "canvasENCShowLights" ), &cConfig->bShowENCLights, 1 );
+    Read( _T ( "canvasENCShowVisibleSectorLights" ), &cConfig->bShowENCVisibleSectorLights, 0 );
     
     
     int sx, sy;
@@ -2242,6 +2276,7 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
         Write( _T ( "canvasENCShowBuoyLabels" ), cConfig->canvas->GetShowENCBuoyLabels() );
         Write( _T ( "canvasENCShowLightDescriptions" ), cConfig->canvas->GetShowENCLightDesc() );
         Write( _T ( "canvasENCShowLights" ), cConfig->canvas->GetShowENCLights() );
+        Write( _T ( "canvasENCShowVisibleSectorLights" ), cConfig->canvas->GetShowVisibleSectors() );
         
         Write( _T ( "canvasCourseUp" ), cConfig->canvas->GetUpMode() == COURSE_UP_MODE );
         Write( _T ( "canvasHeadUp" ), cConfig->canvas->GetUpMode() == HEAD_UP_MODE );
@@ -2544,6 +2579,18 @@ void MyConfig::UpdateSettings()
     Write( _T( "RoutePropPosX" ), g_route_prop_x );
     Write( _T( "RoutePropPosY" ), g_route_prop_y );
     
+    // Sounds
+    SetPath( _T ( "/Settings/Audio" ) );
+    Write( _T ( "AISAlertSoundFile" ), g_AIS_sound_file );
+    Write( _T ( "DSCAlertSoundFile" ), g_DSC_sound_file );
+    Write( _T ( "SARTAlertSoundFile" ), g_SART_sound_file );
+    Write( _T ( "AnchorAlarmSoundFile" ), g_anchorwatch_sound_file );
+
+    Write( _T ( "bAIS_GCPA_AlertAudio" ), g_bAIS_GCPA_Alert_Audio );
+    Write( _T ( "bAIS_SART_AlertAudio" ), g_bAIS_SART_Alert_Audio );
+    Write( _T ( "bAIS_DSC_AlertAudio" ), g_bAIS_DSC_Alert_Audio );
+    Write( _T ( "bAnchorAlertAudio" ), g_bAnchor_Alert_Audio );
+
     //    AIS
     SetPath( _T ( "/Settings/AIS" ) );
 
@@ -2567,6 +2614,7 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "bAISAlertDialog" ), g_bAIS_CPA_Alert );
     Write( _T ( "bAISAlertAudio" ), g_bAIS_CPA_Alert_Audio );
+    
     Write( _T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File );
     Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );

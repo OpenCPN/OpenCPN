@@ -22,6 +22,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include "config.h"
+
+#ifdef HAVE_LIBGEN_H
+#include <libgen.h>
+#endif
+
+#if defined(HAVE_READLINK) && !defined(HAVE_LIBGEN_H)
+#error Using readlink(3) requires libgen.h which cannot be found.
+#endif
 
 #include "wx/wx.h"
 
@@ -31,6 +40,8 @@
 #include "NMEALogWindow.h"
 #include "OCPN_DataStreamEvent.h"
 #include "Route.h"
+#include "ser_ports.h"
+#include "gui_lib.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -53,7 +64,50 @@ extern bool             g_b_legacy_input_filter_behaviour;
 extern int              g_maxWPNameLength;
 extern wxString         g_TalkerIdText;
 
-extern "C" bool CheckSerialAccess( void );
+
+#ifdef HAVE_READLINK
+
+
+static std::string do_readlink(const char* link) {
+    // Strip possible Serial: or Usb: prefix:
+    const char* colon = strchr(link, ':');
+    const char* path  = colon ? colon + 1 : link;
+
+    char target[PATH_MAX + 1] = {0};
+    int r = readlink(path, target, sizeof(target));
+    if (r == -1  && (errno == EINVAL || errno == ENOENT)) {
+        // Not a a symlink
+        return path;
+    }
+    if (r  == -1) {
+        wxLogDebug("Error reading device link %s: %s", path, strerror(errno));
+        return path;
+    }
+    if (*target == '/') {
+        return target;
+    }
+    char buff[PATH_MAX + 1];
+    memcpy(buff, path, std::min(strlen(path) + 1, (size_t)PATH_MAX));
+    return std::string(dirname(buff)) + "/" + target;
+}
+
+
+static bool is_same_device(const char* port1, const char* port2) {
+
+    std::string dev1 = do_readlink(port1);
+    std::string dev2 = do_readlink(port2);
+    return dev1 == dev2;
+}
+
+#else  // HAVE_READLINK
+
+static bool inline is_same_device(const char* port1, const char* port2) {
+    return strcmp(port1, port2) == 0;
+}
+
+#endif  // HAVE_READLINK
+
+
 
 Multiplexer::Multiplexer() : params_save(NULL)
 {
@@ -101,7 +155,7 @@ DataStream *Multiplexer::FindStream(const wxString & port)
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
         DataStream *stream = m_pdatastreams->Item(i);
-        if( stream && stream->GetPort() == port )
+        if (stream && is_same_device(stream->GetPort(), port ))
             return stream;
     }
     return NULL;
@@ -393,7 +447,24 @@ int Multiplexer::SendRouteToGPS(Route *pr,
         wxGauge *pProgress)
 {
     int ret_val = 0;
+    
+    if(g_GPS_Ident == _T("FurunoGP3X")){
+        if(pr->pRoutePointList->GetCount() > 30){
+                long style = wxOK;
+                auto dlg = new OCPN_TimedHTMLMessageDialog(0,
+                                               _T("Routes containing more than 30 waypoints must be split before uploading."),
+                                               _("Route Upload"),
+                                               10,
+                                               style,
+                                               false,
+                                               wxDefaultPosition);
+                int reply = dlg->ShowModal();
+                return 1; 
+        }
+    }
+
     DataStream *old_stream = FindStream( com_name );
+    wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
     if( old_stream ) {
         SaveStreamProperties( old_stream );
         StopAndRemoveStream( old_stream );
@@ -537,6 +608,8 @@ ret_point:
 #endif //USE_GARMINHOST
 
     {
+           
+
         { // Standard NMEA mode
 
             //  If the port was temporarily closed, reopen as I/O type
@@ -695,7 +768,8 @@ ret_point:
             //  Furuno GPS can only accept 5 (five) waypoint linkage sentences....
             //  So, we need to compact a few more points into each link sentence.
             if(g_GPS_Ident == _T("FurunoGP3X")){
-                max_wp = 6;
+                max_wp = 8;
+                max_length = 80;
             }
 
             //  Furuno has its own talker ID, so do not allow the global override
@@ -771,6 +845,7 @@ ret_point:
                 tNMEA0183.Rte.Write ( tsnt );
 
                 unsigned int tare_length = tsnt.Sentence.Len();
+                tare_length -= 3;        //Drop the checksum, for length calculations
 
                 wxArrayString sentence_array;
 
@@ -807,7 +882,10 @@ ret_point:
                         }
                         else
                         {
-                            sent_len += name_len + 1;   // with comma
+                            if(wp_count == max_wp)
+                                sent_len += name_len;   // with comma
+                            else    
+                                sent_len += name_len + 1;   // with comma
                             wp_count++;
                             node = node->GetNext();
                         }
@@ -921,13 +999,32 @@ ret_point:
 
             if(g_GPS_Ident == _T("FurunoGP3X"))
             {
+                wxString name = pr->GetName();
+                if(name.IsEmpty())
+                    name = _T("RTECOMMENT");
+                wxString rte;
+                rte.Printf(_T("$PFEC,GPrtc,01,"));
+                rte += name.Left(16);
+                wxString rtep;
+                rtep.Printf(_T(",%c%c"), 0x0d, 0x0a);
+                rte += rtep;
+                if( dstr->SendSentence( rte ) )
+                    LogOutputMessage( rte, dstr->GetPort(), false );
+
+                wxString msg(_T("-->GPS Port:"));
+                msg += com_name;
+                msg += _T(" Sentence: ");
+                msg += rte;
+                msg.Trim();
+                wxLogMessage(msg);
+ 
                 wxString term;
                 term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
                 if( dstr->SendSentence( term ) )
                     LogOutputMessage( term, dstr->GetPort(), false );
 
-                wxString msg(_T("-->GPS Port:"));
+                msg=wxString(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
                 msg += term;
