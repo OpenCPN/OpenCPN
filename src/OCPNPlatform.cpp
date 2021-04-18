@@ -237,6 +237,7 @@ extern int                        g_n_ownship_min_mm;
 extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
 extern int                        g_FlushNavobjChangesTimeout;
+extern wxString                   g_CmdSoundString;
 
 static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -1405,6 +1406,15 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         if(!::wxDirExists(LayersPath)){
             ::wxMkdir( LayersPath );
         }
+
+        // Force a generally useable sound command, overriding any previous user's selection
+        // That may not be available on new build.
+#ifdef SYSTEM_SOUND_CMD
+        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+        pConfig->SetPath( _T ( "/Settings" ) );
+        pConfig->Write( _T( "CmdSoundString" ), g_CmdSoundString );
+#endif /* SYSTEM_SOUND_CMD */
+ 
 
 }
 

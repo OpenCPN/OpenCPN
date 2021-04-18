@@ -30,15 +30,15 @@
 #undef HAVE_SYSTEM_CMD_SOUND
 #endif
 
-#ifdef HAVE_PORTAUDIO
-#include "PortAudioSound.h"
-
-OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
-
-#elif defined(HAVE_SYSTEM_CMD_SOUND)
+#if defined(HAVE_SYSTEM_CMD_SOUND)
 #include "SystemCmdSound.h"
 
 OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
+
+#elif defined def HAVE_PORTAUDIO
+#include "PortAudioSound.h"
+
+OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
 
 #elif defined(__OCPN__ANDROID__)
 #include "AndroidSound.h"
