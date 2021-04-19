@@ -6484,10 +6484,9 @@ bool s57_GetVisibleLightSectors( ChartCanvas *cc, double lat, double lon, ViewPo
 
         if( Chs57 )
             rule_list = Chs57->GetLightsObjRuleListVisibleAtLatLon( lat, lon, &viewport );
-#if 0        
         else if( target_plugin_chart )
-            pi_rule_list = g_pi_manager->GetLightsObjRuleListVisibleAtLatLon( target_plugin_chart, lat, lon, &viewport );
-#endif
+            pi_rule_list = g_pi_manager->GetLightsObjRuleListVisibleAtLatLon( target_plugin_chart, lat, lon, viewport );
+
         newSectorsNeedDrawing = s57_ProcessExtendedLightSectors( cc, target_plugin_chart, Chs57,
                                       rule_list, pi_rule_list,
                                       sectorlegs );

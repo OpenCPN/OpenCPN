@@ -369,6 +369,10 @@ public:
       pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
       void SetListPanelPtr( PluginListPanel *ptr ) { m_listPanel = ptr; }
       bool CheckPluginCompatibility(wxString plugin_file);
+      
+      ListOfPI_S57Obj *GetLightsObjRuleListVisibleAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
+                                                            const ViewPort& vp );
+
 
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
