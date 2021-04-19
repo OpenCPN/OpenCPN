@@ -164,6 +164,12 @@ extern bool                      g_bDrawAISSize;
 extern bool                      g_bDrawAISRealtime;
 extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
+extern bool                      g_bAIS_GCPA_Alert_Audio;
+extern bool                      g_bAIS_SART_Alert_Audio;
+extern bool                      g_bAIS_DSC_Alert_Audio;
+extern bool                      g_bAIS_CPA_Alert_Audio;
+extern bool                      g_bCPAWarn;
+extern bool                      g_bAIS_CPA_Alert;
 
 extern int                       gps_watchdog_timeout_ticks;
 extern wxString                  *pInit_Chart_Dir;
@@ -1415,6 +1421,18 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         pConfig->Write( _T( "CmdSoundString" ), g_CmdSoundString );
 #endif /* SYSTEM_SOUND_CMD */
  
+
+    // Force AIS sound effects ON
+    g_bAIS_GCPA_Alert_Audio = true;
+    g_bAIS_SART_Alert_Audio = true;
+    g_bAIS_DSC_Alert_Audio = true;
+    
+    g_bAIS_CPA_Alert_Audio = true;
+
+    // And force 2 mile CPA alert dialog.
+    g_bCPAWarn = true;
+    g_CPAWarn_NM = 2.0;
+    g_bAIS_CPA_Alert = true;
 
 }
 
