@@ -150,11 +150,22 @@ unsigned char SENTENCE::ComputeChecksum( void ) const
 double SENTENCE::Double( int field_number ) const
 {
  //  ASSERT_VALID( this );
-    wxCharBuffer abuf = Field( field_number).ToUTF8();
-    if( !abuf.data() || strlen(abuf.data()) == 0 )                            // badly formed sentence?
+    wxCharBuffer abuf = Field(field_number).ToUTF8();
+    if( !abuf.data() || (abuf.length() == 0) )                            // badly formed sentence?
         return (NAN);
     else
-        return( ::atof( abuf.data() ));
+    { // Handle case where extra or misplaced '-' character is embedded in a float field
+       std::string bbuf(abuf.data());
+       auto mpos = bbuf.find_first_of('-', 0);
+       double sign = 1;
+       while ( mpos != std::string::npos )
+       { // Remove any extra '-' characters from string
+          sign = -1;
+          bbuf.erase(bbuf.begin() + mpos);
+          mpos = bbuf.find_first_of('-', mpos);
+       }
+       return( sign * ::atof(bbuf.c_str()) );
+    }
 }
 
 
