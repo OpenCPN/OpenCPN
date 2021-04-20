@@ -1744,10 +1744,11 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
 
     if(pic)
     {
-        wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
-        msg += pic->m_plugin_file;
-        wxLogMessage(msg);
         if(pic->m_bInitState){
+            
+            wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
+            msg += pic->m_plugin_file;
+            wxLogMessage(msg);
             
             // Unload chart cache if this plugin is responsible for any charts
             if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)){
