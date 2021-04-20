@@ -1391,48 +1391,45 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         
         
 #endif
+
+        // Check for upgrade....
+        if( !vOld.IsSameAs(vNew) ){            // upgrade
         
-        // Verify some default directories, create if necessary
-        
-        // UserIcons
-        wxString UserIconPath = GetPrivateDataDir();
-        wxChar sep = wxFileName::GetPathSeparator();
-        if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
-        UserIconPath.Append( _T("UserIcons") );
+            // Verify some default directories, create if necessary
+            
+            // UserIcons
+            wxString UserIconPath = GetPrivateDataDir();
+            wxChar sep = wxFileName::GetPathSeparator();
+            if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
+            UserIconPath.Append( _T("UserIcons") );
 
-        if(!::wxDirExists(UserIconPath)){
-            ::wxMkdir( UserIconPath );
-        }
+            if(!::wxDirExists(UserIconPath)){
+                ::wxMkdir( UserIconPath );
+            }
 
-        // layers
-        wxString LayersPath = GetPrivateDataDir();
-        if( LayersPath.Last() != sep ) LayersPath.Append( sep );
-        LayersPath.Append( _T("layers") );
+            // layers
+            wxString LayersPath = GetPrivateDataDir();
+            if( LayersPath.Last() != sep ) LayersPath.Append( sep );
+            LayersPath.Append( _T("layers") );
 
-        if(!::wxDirExists(LayersPath)){
-            ::wxMkdir( LayersPath );
-        }
+            if(!::wxDirExists(LayersPath)){
+                ::wxMkdir( LayersPath );
+            }
 
-        // Force a generally useable sound command, overriding any previous user's selection
-        // That may not be available on new build.
+            // Force a generally useable sound command, overriding any previous user's selection
+            //  that may not be available on new build.
 #ifdef SYSTEM_SOUND_CMD
-        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
-        pConfig->SetPath( _T ( "/Settings" ) );
-        pConfig->Write( _T( "CmdSoundString" ), g_CmdSoundString );
+            g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+            pConfig->SetPath( _T ( "/Settings" ) );
+            pConfig->Write( _T( "CmdSoundString" ), g_CmdSoundString );
 #endif /* SYSTEM_SOUND_CMD */
- 
-
-    // Force AIS sound effects ON
-    g_bAIS_GCPA_Alert_Audio = true;
-    g_bAIS_SART_Alert_Audio = true;
-    g_bAIS_DSC_Alert_Audio = true;
     
-    g_bAIS_CPA_Alert_Audio = true;
 
-    // And force 2 mile CPA alert dialog.
-    g_bCPAWarn = true;
-    g_CPAWarn_NM = 2.0;
-    g_bAIS_CPA_Alert = true;
+            // Force AIS specific sound effects ON, leaving the master control (g_bAIS_CPA_Alert_Audio) as configured
+            g_bAIS_GCPA_Alert_Audio = true;
+            g_bAIS_SART_Alert_Audio = true;
+            g_bAIS_DSC_Alert_Audio = true;
+        }
 
 }
 

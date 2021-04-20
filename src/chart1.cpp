@@ -2009,8 +2009,6 @@ bool MyApp::OnInit()
     if(b_initial_load)
         g_Platform->SetDefaultOptions();
 
-    g_Platform->SetUpgradeOptions(g_vs, g_config_version_string);
-    
     g_Platform->applyExpertMode(g_bUIexpert);
 
     // Now initialize UI Style.
@@ -2114,6 +2112,8 @@ bool MyApp::OnInit()
     wxString vs =
         wxString("Version ") +  VERSION_FULL + " Build " + VERSION_DATE;
     g_bUpgradeInProcess = (vs != g_config_version_string);
+
+    g_Platform->SetUpgradeOptions(vs, g_config_version_string);
     
     //  log deferred log restart message, if it exists.
     if( !g_Platform->GetLargeLogMessage().IsEmpty() )
