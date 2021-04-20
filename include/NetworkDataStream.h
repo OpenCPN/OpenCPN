@@ -90,6 +90,35 @@ public:
 
         Open();
     }
+
+    NetworkDataStream(wxEvtHandler *input_consumer, NetworkProtocol protocol, wxString address, int port)
+            : DataStream(input_consumer,
+               NETWORK, 
+               _T(""),
+               _T(""),
+               DS_TYPE_OUTPUT,
+               0,
+               false,
+               DS_EOS_CRLF,
+               DS_HANDSHAKE_NONE)
+              
+    {
+        m_net_port = wxString::Format(wxT("%i"), port);
+        m_net_protocol = protocol;
+        m_sock = NULL;
+        m_tsock = NULL;
+        m_socket_server = NULL;
+        m_is_multicast = false;
+        m_txenter = 0;
+        m_addr.Hostname(address);
+        m_addr.Service(port);
+
+        m_socket_timer.SetOwner(this, TIMER_SOCKET);
+        m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
+
+        Open();
+    }
+    
     ~NetworkDataStream() {
         Close();
     }

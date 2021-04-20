@@ -107,7 +107,7 @@ void NetworkDataStream::Open(void) {
     unsigned int addr = inet_addr(GetAddr().IPAddress().mb_str());
 #endif
     // Create the socket
-    switch(GetConnectionParams()->NetProtocol){
+    switch(m_net_protocol){
         case GPSD: {
             OpenNetworkGPSD();
             break;

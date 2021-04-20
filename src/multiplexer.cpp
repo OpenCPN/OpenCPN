@@ -33,7 +33,7 @@
 #endif
 
 #include "wx/wx.h"
-
+#include <wx/tokenzr.h>
 #include "config.h"
 #include "multiplexer.h"
 #include "navutil.h"
@@ -42,6 +42,7 @@
 #include "Route.h"
 #include "ser_ports.h"
 #include "gui_lib.h"
+#include "NetworkDataStream.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -463,11 +464,22 @@ int Multiplexer::SendRouteToGPS(Route *pr,
         }
     }
 
-    DataStream *old_stream = FindStream( com_name );
-    wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
-    if( old_stream ) {
-        SaveStreamProperties( old_stream );
-        StopAndRemoveStream( old_stream );
+    bool b_restoreStream = false;
+    bool btempStream = false;
+    DataStream *dstr = NULL;
+    DataStream *old_stream = NULL;
+    
+    if(com_name.Lower().StartsWith("serial")){
+        old_stream = FindStream( com_name );
+        wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
+        if( old_stream ) {
+            SaveStreamProperties( old_stream );
+            StopAndRemoveStream( old_stream );
+            b_restoreStream = true;
+        }
+    }
+    else{
+        dstr = FindStream(com_name);
     }
 
 #ifdef USE_GARMINHOST         
@@ -612,44 +624,67 @@ ret_point:
 
         { // Standard NMEA mode
 
-            //  If the port was temporarily closed, reopen as I/O type
-            //  Otherwise, open another port using default properties
-            wxString baud;
+            if(com_name.Lower().StartsWith("serial") ){
+                //  If the port was temporarily closed, reopen as I/O type
+                //  Otherwise, open another port using default properties
+                wxString baud;
 
-            if( old_stream ) {
-                baud = wxString::Format(wxT("%i"), params_save->Baudrate);
-            }
-            else {
-                baud = _T("4800");
-            }
+                if( old_stream ) {
+                    baud = wxString::Format(wxT("%i"), params_save->Baudrate);
+                }
+                else {
+                    baud = _T("4800");
+                }
 
-            DataStream *dstr = makeSerialDataStream(this,
+                dstr = makeSerialDataStream(this,
                                                     SERIAL,
                                                     com_name,
                                                     baud,
                                                     DS_TYPE_INPUT_OUTPUT,
                                                     0, false);
+                btempStream = true;
+
 
 #ifdef __OCPN__ANDROID__
-            wxMilliSleep(1000);
+                wxMilliSleep(1000);
 #else
-            //  Wait up to 5 seconds for Datastream secondary thread to come up
-            int timeout = 0;
-            while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
-                wxMilliSleep(100);
-                timeout++;
-            }
+                //  Wait up to 5 seconds for Datastream secondary thread to come up
+                int timeout = 0;
+                while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
+                    wxMilliSleep(100);
+                    timeout++;
+                }
 
-            if( !dstr-> IsSecThreadActive() ){
-                wxString msg(_T("-->GPS Port:"));
-                msg += com_name;
-                msg += _T(" ...Could not be opened for writing");
-                wxLogMessage(msg);
+                if( !dstr-> IsSecThreadActive() ){
+                    wxString msg(_T("-->GPS Port:"));
+                    msg += com_name;
+                    msg += _T(" ...Could not be opened for writing");
+                    wxLogMessage(msg);
 
-                dstr->Close();
-                goto ret_point_1;
-            }
+                    dstr->Close();
+                    goto ret_point_1;
+                }
 #endif
+            }
+            else if( com_name.Lower().StartsWith("udp") || com_name.Lower().StartsWith("tcp") ){
+                if(dstr == NULL){
+                    NetworkProtocol protocol = UDP;
+                    if(com_name.Lower().StartsWith("tcp"))
+                        protocol = TCP;
+                    wxStringTokenizer tkz(com_name, _T(":"));
+                    wxString token = tkz.GetNextToken();
+                    wxString address = tkz.GetNextToken();
+                    token = tkz.GetNextToken();
+                    long port;
+                    token.ToLong(&port);
+
+                    NetworkDataStream *streamNew = new NetworkDataStream(this, protocol, address, port );
+                    if(streamNew->IsOk())
+                        dstr = (DataStream *)streamNew;
+                    btempStream = true;
+                }
+            }
+            
 
             SENTENCE snt;
             NMEA0183 oNMEA0183;
@@ -1044,7 +1079,8 @@ ret_point:
             ret_val = 0;
 
             //  All finished with the temp port
-            dstr->Close();
+            if(btempStream)
+                dstr->Close();
             
             if(g_GPS_Ident == _T("FurunoGP3X"))
                 g_TalkerIdText = talker_save;
@@ -1054,8 +1090,10 @@ ret_point:
 
 ret_point_1:
 
-    if( old_stream )
-        CreateAndRestoreSavedStreamProperties();
+    if(b_restoreStream){
+        if( old_stream )
+            CreateAndRestoreSavedStreamProperties();
+    }
 
     return ret_val;
 }
@@ -1064,10 +1102,23 @@ ret_point_1:
 int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wxGauge *pProgress)
 {
     int ret_val = 0;
-    DataStream *old_stream = FindStream( com_name );
-    if( old_stream ) {
-        SaveStreamProperties( old_stream );
-        StopAndRemoveStream( old_stream );
+    
+    bool b_restoreStream = false;
+    bool btempStream = false;
+    DataStream *dstr = NULL;
+    DataStream *old_stream = NULL;
+    
+    if(com_name.Lower().StartsWith("serial")){
+        old_stream = FindStream( com_name );
+        wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
+        if( old_stream ) {
+            SaveStreamProperties( old_stream );
+            StopAndRemoveStream( old_stream );
+            b_restoreStream = true;
+        }
+    }
+    else{
+        dstr = FindStream(com_name);
     }
 
 #ifdef USE_GARMINHOST 
@@ -1193,47 +1244,67 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
 #endif //USE_GARMINHOST
 
     { // Standard NMEA mode
+        if( com_name.Lower().StartsWith("serial")  ){
 
-    //  If the port was temporarily closed, reopen as I/O type
-    //  Otherwise, open another port using default properties
-    wxString baud;
+        //  If the port was temporarily closed, reopen as I/O type
+        //  Otherwise, open another port using default properties
+            wxString baud;
 
-    if( old_stream ) {
-        baud = wxString::Format(wxT("%i"), params_save->Baudrate);;
-    }
-    else {
-        baud = _T("4800");
-    }
+            if( old_stream ) {
+                baud = wxString::Format(wxT("%i"), params_save->Baudrate);;
+            }
+            else {
+                baud = _T("4800");
+            }
 
-    DataStream *dstr = makeSerialDataStream(this,
+            DataStream *dstr = makeSerialDataStream(this,
                                             SERIAL,
                                             com_name,
                                             baud,
                                             DS_TYPE_INPUT_OUTPUT,
                                             0, false);
+            btempStream = true;
 
 
 #ifdef __OCPN__ANDROID__
-        wxMilliSleep(1000);
+            wxMilliSleep(1000);
 #else
     //  Wait up to 1 seconds for Datastream secondary thread to come up
-    int timeout = 0;
-    while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
-        wxMilliSleep(100);
-        timeout++;
-    }
+            int timeout = 0;
+            while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
+                wxMilliSleep(100);
+                timeout++;
+            }
 
-    if( !dstr-> IsSecThreadActive() ){
-        wxString msg(_T("-->GPS Port:"));
-        msg += com_name;
-        msg += _T(" ...Could not be opened for writing");
-        wxLogMessage(msg);
+            if( !dstr-> IsSecThreadActive() ){
+                wxString msg(_T("-->GPS Port:"));
+                msg += com_name;
+                msg += _T(" ...Could not be opened for writing");
+                wxLogMessage(msg);
 
-        dstr->Close();
-        goto ret_point;
-    }
+                dstr->Close();
+                goto ret_point;
+            }
 #endif
+        }
+        else if( com_name.Lower().StartsWith("udp") || com_name.Lower().StartsWith("tcp") ){
+            if(dstr == NULL){
+                    NetworkProtocol protocol = UDP;
+                    if(com_name.Lower().StartsWith("tcp"))
+                        protocol = TCP;
+                    wxStringTokenizer tkz(com_name, _T(":"));
+                    wxString token = tkz.GetNextToken();
+                    wxString address = tkz.GetNextToken();
+                    token = tkz.GetNextToken();
+                    long port;
+                    token.ToLong(&port);
 
+                    NetworkDataStream *streamNew = new NetworkDataStream(this, protocol, address, port );
+                    if(streamNew->IsOk())
+                        dstr = (DataStream *)streamNew;
+                    btempStream = true;
+            }
+        }
 
 
         SENTENCE snt;
@@ -1319,15 +1390,17 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         wxMilliSleep ( 500 );
 
         //  All finished with the temp port
-        dstr->Close();
+        if(btempStream)
+            dstr->Close();
 
         ret_val = 0;
     }
 
 ret_point:
-
-    if( old_stream )
-        CreateAndRestoreSavedStreamProperties();
+    if(b_restoreStream){
+        if( old_stream )
+            CreateAndRestoreSavedStreamProperties();
+    }
 
     return ret_val;
 }

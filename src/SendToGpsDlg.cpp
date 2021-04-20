@@ -28,8 +28,10 @@
 #include "Route.h"
 #include "RoutePoint.h"
 #include "ser_ports.h"
+#include "ConnectionParams.h"
 
 extern wxString g_uploadConnection;
+extern wxArrayOfConnPrm         *g_pConnectionParams;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToGpsDlg, wxDialog)
 
@@ -101,6 +103,23 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
 
     delete pSerialArray;
 
+    // Add any defined Network connections supporting "output"
+    if( g_pConnectionParams ) {
+        for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
+            ConnectionParams *cp = g_pConnectionParams->Item( i );
+            wxString netident;
+            
+            if( (cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK && (cp->NetProtocol == TCP) ){
+                netident << _T("TCP:") << cp->NetworkAddress << _T(":") << cp->NetworkPort;
+                m_itemCommListBox->Append( netident );
+            }
+            if( (cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK && (cp->NetProtocol == UDP) ){
+                netident << _T("UDP:") << cp->NetworkAddress << _T(":") << cp->NetworkPort;
+                m_itemCommListBox->Append( netident );
+            }
+        }
+    }
+
     //    Make the proper inital selection
     if( !g_uploadConnection.IsEmpty() )
         m_itemCommListBox->SetValue( g_uploadConnection );
@@ -148,8 +167,10 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     if (tail != wxNOT_FOUND) {
         src = src.SubString(0, tail);
     }
-    if (!src.Lower().StartsWith("serial") && !src.Lower().StartsWith("Usb:")) {
-        src = src.Prepend("Serial:");
+    if ( !src.Lower().StartsWith("tcp") && 
+         !src.Lower().StartsWith("udp") &&
+         !src.Lower().StartsWith("serial") && !src.Lower().StartsWith("Usb:")) {
+            src = src.Prepend("Serial:");
     }
     g_uploadConnection = src;                   // save for persistence
 
