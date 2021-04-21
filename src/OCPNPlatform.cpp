@@ -1374,8 +1374,8 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
  
         // This is ugly hack
         // TODO
-        pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );
-        pConfig->Write( _T ( "bEnabled" ), true );
+        //pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );
+        //pConfig->Write( _T ( "bEnabled" ), true );
         
         
 #endif    
