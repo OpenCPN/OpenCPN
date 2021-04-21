@@ -263,7 +263,7 @@ icon_by_status({
     {PluginStatus::Managed,   "emblem-default.svg" },
     {PluginStatus::Unmanaged, "emblem-unmanaged.svg" },
     {PluginStatus::Ghost,     "ghost.svg" },
-    {PluginStatus::Unknown,   "emblem-default.svg" },
+    {PluginStatus::Unknown,   "emblem-unmanaged.svg" },
     {PluginStatus::LegacyUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-legacy-update.svg" },
@@ -492,14 +492,14 @@ static void run_update_dialog(PluginListPanel* parent,
         }
     }
     
-    //  Check the library compatibility of the installed plugin
-    // Find the first dll/so/dylib file
+    //  Check the library compatibility of the subject plugin
+    //  Find the plugin library file, looking for "_pi.{dll/so/dylib file}
 #ifdef __WXMSW__
-    wxString pispec = _T(".dll");
+    wxString pispec = _T("_pi.dll");
 #elif defined(__WXOSX__)
-    wxString pispec = _T(".dylib");
+    wxString pispec = _T("_pi.dylib");
 #else
-    wxString pispec = _T(".so");
+    wxString pispec = _T("_pi.so");
 #endif
 
     std::string manifestPath = PluginHandler::fileListPath(update.name);
@@ -1286,6 +1286,18 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                 pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
 
                 ret = true;
+                
+                if( !pic->m_bEnabled && pic->m_destroy_fn ){
+                    wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(
+                       wxRect(0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+                    pic->m_bitmap = pbm;
+                    pic->m_destroy_fn(pic->m_pplugin);
+                    pic->m_destroy_fn = NULL;
+                    pic->m_pplugin = NULL;
+                    if(pic->m_library.IsLoaded())
+                        pic->m_library.Unload();
+                }
+                    
             }
             else        // not loaded
             {
@@ -1477,10 +1489,20 @@ bool PlugInManager::UpdatePlugIns()
         PlugInContainer *pic = plugin_array[i];
 
         // Installed and loaded?
-        if(!pic->m_pplugin)
+        if(!pic->m_pplugin){            // Needs a reload?
+            if(pic->m_bEnabled){
+                PluginStatus stat = pic->m_pluginStatus;
+                PlugInContainer *newpic = LoadPlugIn(pic->m_plugin_file, pic);
+                if(newpic){
+                    pic->m_pluginStatus = stat;
+                    pic->m_bEnabled = true;
+                }
+            }
+            else
             continue;
+        }
         
-        if(pic->m_bEnabled && !pic->m_bInitState)
+        if(pic->m_bEnabled && !pic->m_bInitState && pic->m_pplugin)
         {
             wxString msg(_T("PlugInManager: Initializing PlugIn: "));
             msg += pic->m_plugin_file;
@@ -1500,7 +1522,12 @@ bool PlugInManager::UpdatePlugIns()
         else if(!pic->m_bEnabled && pic->m_bInitState)
         {
             bret = DeactivatePlugIn(pic);
-
+            if(pic->m_pplugin)
+                pic->m_destroy_fn(pic->m_pplugin);
+            if(pic->m_library.IsLoaded())
+                pic->m_library.Unload();
+            pic->m_pplugin = NULL;
+            pic->m_bitmap = NULL;
         }
     }
 
@@ -1585,6 +1612,25 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_ManagedMetadata = plugin;
             new_pic->m_version_major = 0;
             new_pic->m_version_minor = 0;
+
+            // In safe mode, check to see if the plugin appears to be installed
+            // If so, set the status to "ManagedInstalledCurrentVersion", thus enabling the "uninstall" button.
+            if (safe_mode::get_mode()) {
+                std::string installed;
+                if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
+                    //Get the installed version from the manifest
+                    std::string path = PluginHandler::versionPath(plugin.name);
+                    if (path != "" && wxFileName::IsFileReadable(path)) {
+                        std::ifstream stream;
+                        stream.open(path, std::ifstream::in);
+                        stream >> installed;
+                    }
+                }
+                if(!installed.empty())
+                    new_pic->m_pluginStatus = PluginStatus::ManagedInstalledCurrentVersion;
+                else
+                    new_pic->m_pluginStatus = PluginStatus::Unknown;
+            }
 
             plugin_array.Add(new_pic);
 
@@ -1698,10 +1744,11 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
 
     if(pic)
     {
+        if(pic->m_bInitState){
+            
         wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
         msg += pic->m_plugin_file;
         wxLogMessage(msg);
-        if(pic->m_bInitState){
             
             // Unload chart cache if this plugin is responsible for any charts
             if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)){
@@ -2227,16 +2274,27 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 {
+    PlugInContainer *pic = new PlugInContainer;
+    if(!LoadPlugIn( plugin_file, pic))
+        return NULL;
+    else
+        return pic;
+}
+
+PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file, PlugInContainer *pic)
+{
     wxString msg(_T("PlugInManager: Loading PlugIn: "));
     msg += plugin_file;
     wxLogMessage(msg);
 
-    PlugInContainer *pic = new PlugInContainer;
     pic->m_plugin_file = plugin_file;
     pic->m_pluginStatus = PluginStatus::Unmanaged;      // Status is updated later, if necessary
 
     // load the library
 
+    if(pic->m_library.IsLoaded())
+        pic->m_library.Unload();
+    
     pic->m_library.Load(plugin_file);
     
     if( m_benable_blackdialog && !wxIsReadable(plugin_file) )
@@ -2301,7 +2359,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load symbol create_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2311,7 +2368,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load symbol destroy_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete pic;
         return NULL;
     }
 
@@ -2329,7 +2385,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     SemanticVersion pi_ver(pi_major, pi_minor, -1);
     
     if ( CheckBlacklistedPlugin(plug_in) ) {
-        delete pic;
         return NULL;
     }
 
@@ -5397,6 +5452,8 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
 
     OCPNMessageBox(this, _("Catalog update successful"), _("OpenCPN Catalog update"), wxICON_INFORMATION  | wxOK);
 
+    g_options->itemBoxSizerPanelPlugins->Layout();
+
 }
 
 static bool parsePluginNode( pugi::xml_node &pluginRoot, PluginMetadata &plugin)
@@ -5861,7 +5918,9 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
     m_panel->Show();
     Layout();
     Refresh(true);
-    
+    wxSize size = GetBestVirtualSize();
+    SetVirtualSize( size );
+
     Scroll(0,0);
 }
 
@@ -6019,6 +6078,9 @@ static bool canUninstall(std::string name)
 
     for (auto plugin: pluginHandler->getInstalled()) {
         if (plugin.name == name) {
+            if (safe_mode::get_mode()) 
+                return true;
+            else
             return !plugin.readonly;
         }
     }

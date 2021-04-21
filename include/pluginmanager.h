@@ -285,6 +285,8 @@ public:
       bool UpdateConfig();
 
       PlugInContainer *LoadPlugIn(wxString plugin_file);
+      PlugInContainer *LoadPlugIn(wxString plugin_file, PlugInContainer *pic);
+
       ArrayOfPlugIns *GetPlugInArray(){ return &plugin_array; }
 
       bool RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp, int canvasIndex);
