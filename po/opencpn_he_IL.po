@@ -2921,7 +2921,7 @@ msgid "\n"
 "OpenCPN must only be used in conjunction with approved paper charts and traditional methods of navigation.\n\n"
 "DO NOT rely upon OpenCPN for safety of life or property.\n\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\\ n OpenCPN מופץ בתקווה שזה יהיה שימושי, אך ללא כל אחריות; בלי אפילו האחריות המשתמעת של סחירות או כושר למטרה מסוימת. \\ n \\ n ראה את הרישיון הציבורי הכללי של GNU לפרטים נוספים. \\ n \\ n יש להשתמש ב- OpenCPN רק בשילוב עם תרשימי נייר מאושרים ושיטות ניווט מסורתיות. \\ n \\ n אל תסמוך על OpenCPN ליתר ביטחון חיים או רכוש. \\ n \\ n אנא לחץ על \"אישור\" כדי להסכים ולהמשיך, \"בטל\" כדי לצאת. \\ n"
+msgstr "\n OpenCPN מופץ בתקווה שזה יהיה שימושי, אך ללא כל אחריות; בלי אפילו האחריות המשתמעת של סחירות או כושר למטרה מסוימת. \n\n ראה את הרישיון הציבורי הכללי של GNU לפרטים נוספים. \n \n יש להשתמש ב- OpenCPN רק בשילוב עם תרשימי נייר מאושרים ושיטות ניווט מסורתיות. \n\n אל תסמוך על OpenCPN ליתר ביטחון חיים או רכוש. \n\n אנא לחץ על \"אישור\" כדי להסכים ולהמשיך, \"בטל\" כדי לצאת. \n"
 
 #: src/chart1.cpp:1036
 msgid "OpenCPN for Android"
@@ -3325,8 +3325,8 @@ msgstr "OpenCPN דורש גישה ליציאות טוריות כדי להשתמ�
 #: src/chart1.cpp:11026
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "לא ניתן למצוא יציאות טוריות על מערכת זו. \\ N עליך להתקין יציאה טורית (מודול ליבה הנכון של Modprobe) או חבר התקן סידורי USB\n"
-" . \\ N"
+msgstr "לא ניתן למצוא יציאות טוריות על מערכת זו. \n עליך להתקין יציאה טורית (מודול ליבה הנכון של Modprobe) או חבר התקן סידורי USB\n"
+" . \n"
 
 #: src/chart1.cpp:11052
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
@@ -3335,13 +3335,13 @@ msgid "You do currently not have permission to access the serial ports on this s
 "You may do so by executing the following command from the linux command line:\n\n"
 "                sudo usermod -a -G "
 msgstr "כרגע אין לך הרשאה לגשת ליציאות הטוריות במערכת זו.\n"
-"\\ n \\ n\n"
+"\n\n\n"
 "מומלץ לך לצאת מ- Opencpn עכשיו,\n"
-"\\ N.\n"
+"\n\n"
 "ולהוסיף את עצמך לקבוצה הנכונה כדי לאפשר גישה טורית יציאה.\n"
-"\\ n \\ n\n"
+"\n\n"
 "אתה יכול לעשות זאת על ידי ביצוע הפקודה הבאה משורת הפקודה לינוקס:\n"
-"\\ n \\ n\n"
+"\n\n\n"
 " sudo usermod -a -G"
 
 #: src/chartdbs.cpp:1358
@@ -3498,7 +3498,7 @@ msgstr "For this leg the Great Circle route is "
 #: src/chcanv.cpp:7732 src/chcanv.cpp:8181
 msgid " shorter than rhumbline.\n\n"
 msgstr "קצר יותר מאשר rhumbline.\n"
-" \\ n \\ n"
+"\n\n"
 
 #: src/chcanv.cpp:7733 src/chcanv.cpp:8182
 msgid "Would you like include the Great Circle routing points for this leg?"
@@ -3521,7 +3521,7 @@ msgstr "שכבה"
 
 #: src/chcanv.cpp:9101
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
-msgstr "יש נקודת ציון קיימת באותו מיקום שאתה מדביק. האם אתה רוצה למזג את הנתונים? \\ N \\ n"
+msgstr "יש נקודת ציון קיימת באותו מיקום שאתה מדביק. האם אתה רוצה למזג את הנתונים? \n\n"
 
 #: src/chcanv.cpp:9102
 msgid "Answering 'No' will create a new waypoint at the same location."
@@ -3533,7 +3533,7 @@ msgstr "מזג נקודות ציון?"
 
 #: src/chcanv.cpp:9159
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
-msgstr "יש נקודות ציון קיימות באותו מיקום כמו כמה אלה שאתה מדביק. האם אתה רוצה רק למזג את הנתונים? \\ N \\ N"
+msgstr "יש נקודות ציון קיימות באותו מיקום כמו כמה אלה שאתה מדביק. האם אתה רוצה רק למזג את הנתונים? \n\n"
 
 #: src/chcanv.cpp:9160
 msgid "Answering 'No' will create all new waypoints for this route."
@@ -4086,6 +4086,7 @@ msgid "Create a private configuration template based on current settings.\n"
 "               "
 msgstr "צור תבנית תצורה פרטית המבוססת על ההגדרות הנוכחיות. \n"
 " תבנית זו תישמר וניתן יהיה לבחור בה לשימוש נוסף בכל עת. \n"
+"               "
 
 #: src/options.cpp:713
 msgid "MMSI Extended Properties"
@@ -5718,7 +5719,7 @@ msgstr "מחיקה הושלמה"
 #: src/pluginmanager.cpp:1232
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
-msgstr "התוסף אינו תואם לגירסה הנוכחית של OpenCPN, אנא עדכן את התוסף לגירסתו האחרונה"
+msgstr "%s התוסף אינו תואם לגירסה הנוכחית של OpenCPN, אנא עדכן את התוסף לגירסתו האחרונה"
 
 #: src/pluginmanager.cpp:2204
 #, c-format
