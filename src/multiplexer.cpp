@@ -514,7 +514,7 @@ int Multiplexer::SendRouteToGPS(Route *pr,
             wxLogMessage(msg);
 
             wxLogMessage(_T("Sending Routes..."));
-            int ret1 = Garmin_GPS_SendRoute(wxString(_T("usb:")), pr, pProgress);
+            int ret1 = Garmin_GPS_SendRoute(wxString(_T("usb:")), pr, dialog->GetProgressGauge());
 
             if(ret1 != 1)
             {
