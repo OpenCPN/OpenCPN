@@ -105,6 +105,7 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
     delete pSerialArray;
 
     // Add any defined Network connections supporting "output"
+    wxArrayString netconns;
     if( g_pConnectionParams ) {
         for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
             ConnectionParams *cp = g_pConnectionParams->Item( i );
@@ -113,17 +114,32 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
             if( (cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK && (cp->NetProtocol == TCP) ){
                 netident << _T("TCP:") << cp->NetworkAddress << _T(":") << cp->NetworkPort;
                 m_itemCommListBox->Append( netident );
+                netconns.Add(netident);
             }
             if( (cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK && (cp->NetProtocol == UDP) ){
                 netident << _T("UDP:") << cp->NetworkAddress << _T(":") << cp->NetworkPort;
                 m_itemCommListBox->Append( netident );
+                netconns.Add(netident);
             }
         }
     }
 
-    //    Make the proper inital selection
-    if( !g_uploadConnection.IsEmpty() )
-        m_itemCommListBox->SetValue( g_uploadConnection );
+    //    Make the proper initial selection
+    if( !g_uploadConnection.IsEmpty() ){
+        if(g_uploadConnection.Lower().StartsWith("tcp") || g_uploadConnection.Lower().StartsWith("udp") ){
+            bool b_connExists = false;
+            for(unsigned int i=0 ; i < netconns.GetCount() ; i++){
+                if(g_uploadConnection.IsSameAs(netconns[i])){
+                    b_connExists = true;
+                    break;
+                }
+            }
+            if(b_connExists)
+                m_itemCommListBox->SetValue( g_uploadConnection );
+        }
+        else                
+            m_itemCommListBox->SetValue( g_uploadConnection );
+    }
     else
         m_itemCommListBox->SetSelection( 0 );
 
