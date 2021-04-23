@@ -47,6 +47,7 @@ const int WidthValues[] = { -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 class ocpnDC;
 class ChartCanvas;
 class HyperlinkList;
+class SendToGpsDlg;
 
 class Route : public wxObject
 {
@@ -107,7 +108,7 @@ public:
       void SetSharedWPViz( bool sharedWPVIZ){ m_bsharedWPViz = sharedWPVIZ; }
       bool GetSharedWPViz(){ return m_bsharedWPViz; }
       
-      int SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress);
+      int SendToGPS(const wxString & com_name, bool bsend_waypoints, SendToGpsDlg *dialog);
 
       double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
       void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}

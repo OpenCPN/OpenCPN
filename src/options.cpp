@@ -9569,6 +9569,9 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   } else if (lang_canonical == _T("vi_VN")) {
     dir_suffix = _T("vi_VN");
     return_string = wxString("Vietnamese", wxConvUTF8);
+  } else if (lang_canonical == _T("he_IL")) {
+    dir_suffix = _T("he_IL");
+    return_string = wxString("Hebrew", wxConvUTF8);
   } else {
     dir_suffix = lang_canonical;
     const wxLanguageInfo* info = wxLocale::FindLanguageInfo(lang_canonical);

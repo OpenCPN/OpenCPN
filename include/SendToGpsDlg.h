@@ -70,7 +70,9 @@ class SendToGpsDlg : public wxDialog
                     long style = SYMBOL_STG_STYLE);
        void SetRoute(Route *pRoute){m_pRoute = pRoute;}
        void SetWaypoint(RoutePoint *pRoutePoint){m_pRoutePoint = pRoutePoint;}
-
+       wxGauge *GetProgressGauge(){ return m_pgauge; }
+       void SetMessage( wxString message );
+       
 private:
       void CreateControls(const wxString& hint);
 
@@ -83,6 +85,7 @@ private:
       wxGauge     *m_pgauge;
       wxButton    *m_CancelButton;
       wxButton    *m_SendButton;
+      wxStaticText *premtext;
 
 };
 

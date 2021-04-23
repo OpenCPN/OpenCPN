@@ -37,6 +37,7 @@
 
 class RoutePoint;
 class Route;
+class SendToGpsDlg;
 
 WX_DEFINE_ARRAY(DataStream *, wxArrayOfDataStreams);
 
@@ -63,8 +64,8 @@ class Multiplexer : public wxEvtHandler
         void SetAISHandler(wxEvtHandler *handler);
         void SetGPSHandler(wxEvtHandler *handler);
 
-        int SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints, wxGauge *pProgress);
-        int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wxGauge *pProgress);
+        int SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints, SendToGpsDlg *dialog);
+        int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, SendToGpsDlg *dialog);
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
         void OnEvtSignalK(OCPN_SignalKEvent& event);

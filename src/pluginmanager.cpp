@@ -1744,10 +1744,11 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
 
     if(pic)
     {
-        wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
-        msg += pic->m_plugin_file;
-        wxLogMessage(msg);
         if(pic->m_bInitState){
+            
+            wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
+            msg += pic->m_plugin_file;
+            wxLogMessage(msg);
             
             // Unload chart cache if this plugin is responsible for any charts
             if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)){
@@ -6822,6 +6823,38 @@ void PlugInChartBaseExtended::ClearPLIBTextList()
 }
 
 // ----------------------------------------------------------------------------
+// PlugInChartBaseExtendedPlus2 Implementation
+//  
+// ----------------------------------------------------------------------------
+
+PlugInChartBaseExtendedPlus2::PlugInChartBaseExtendedPlus2()
+{}
+
+PlugInChartBaseExtendedPlus2::~PlugInChartBaseExtendedPlus2()
+{}
+
+ListOfPI_S57Obj *PlugInChartBaseExtendedPlus2::GetLightsObjRuleListVisibleAtLatLon( float lat, float lon, PlugIn_ViewPort *VPoint )
+{
+    return NULL;
+}
+
+// ----------------------------------------------------------------------------
+// PlugInChartBaseGLPlus2 Implementation
+//  
+// ----------------------------------------------------------------------------
+
+PlugInChartBaseGLPlus2::PlugInChartBaseGLPlus2()
+{}
+
+PlugInChartBaseGLPlus2::~PlugInChartBaseGLPlus2()
+{}
+
+ListOfPI_S57Obj *PlugInChartBaseGLPlus2::GetLightsObjRuleListVisibleAtLatLon( float lat, float lon, PlugIn_ViewPort *VPoint )
+{
+    return NULL;
+}
+
+// ----------------------------------------------------------------------------
 // ChartPlugInWrapper Implementation
 //    This class is a wrapper/interface to PlugIn charts(PlugInChartBase)
 // ----------------------------------------------------------------------------
@@ -9234,4 +9267,29 @@ void ZeroXTE() {
   if (g_pRouteMan) {
     g_pRouteMan->ZeroCurrentXTEToActivePoint();
   }
+}
+
+ListOfPI_S57Obj *PlugInManager::GetLightsObjRuleListVisibleAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon, const ViewPort& vp )
+{
+    ListOfPI_S57Obj *list = NULL;
+    if(target) {
+        PlugInChartBaseGLPlus2 *picbgl = dynamic_cast <PlugInChartBaseGLPlus2 *>(target->GetPlugInChart());
+        if(picbgl){
+            PlugIn_ViewPort pi_vp = CreatePlugInViewport( vp );
+            list = picbgl->GetLightsObjRuleListVisibleAtLatLon(zlat, zlon, &pi_vp);
+
+            return list;
+        }
+        PlugInChartBaseExtendedPlus2 *picbx = dynamic_cast <PlugInChartBaseExtendedPlus2 *>(target->GetPlugInChart());
+        if(picbx){
+            PlugIn_ViewPort pi_vp = CreatePlugInViewport( vp );
+            list = picbx->GetLightsObjRuleListVisibleAtLatLon(zlat, zlon, &pi_vp);
+            
+            return list;
+        }
+        else
+            return list;
+    }
+    else
+        return list;
 }

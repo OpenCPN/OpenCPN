@@ -869,6 +869,20 @@ public:
     
 };
 
+// ----------------------------------------------------------------------------
+// PlugInChartBaseGLPlus2
+//  Derived from PlugInChartBaseGL, add additional chart management methods
+// ----------------------------------------------------------------------------
+
+class DECL_EXP PlugInChartBaseGLPlus2 : public PlugInChartBaseGL
+{
+public:
+    PlugInChartBaseGLPlus2();
+    virtual ~PlugInChartBaseGLPlus2();
+    
+    virtual ListOfPI_S57Obj *GetLightsObjRuleListVisibleAtLatLon( float lat, float lon, PlugIn_ViewPort *VPoint );
+};
+
 
 // ----------------------------------------------------------------------------
 // PlugInChartBaseExtended
@@ -906,6 +920,21 @@ public:
 };
 
 
+// ----------------------------------------------------------------------------
+// PlugInChartBaseExtendedPlus2
+//  Derived from PlugInChartBaseExtended, add additional extended chart support methods
+// ----------------------------------------------------------------------------
+
+class DECL_EXP PlugInChartBaseExtendedPlus2 : public PlugInChartBaseExtended
+{
+public:
+    PlugInChartBaseExtendedPlus2();
+    virtual ~PlugInChartBaseExtendedPlus2();
+
+    virtual ListOfPI_S57Obj *GetLightsObjRuleListVisibleAtLatLon( float lat, float lon, PlugIn_ViewPort *VPoint );
+
+    
+};
 
 
 

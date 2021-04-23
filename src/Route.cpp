@@ -116,7 +116,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
                     psourcepoint->GetIconName(), psourcepoint->GetName(), wxEmptyString, false );
-
+			ptargetpoint->m_bShowName = psourcepoint->m_bShowName; //do not change new wpt's name visibility
             AddPoint( ptargetpoint, false );
         }
     }
@@ -1190,13 +1190,13 @@ void Route::RenameRoutePoints( void )
     }
 }
 
-int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress )
+int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, SendToGpsDlg *dialog )
 {
     int result = 0;
 
     if( g_pMUX ) {
         ::wxBeginBusyCursor();
-         result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
+         result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, dialog );
         ::wxEndBusyCursor();
     }
 

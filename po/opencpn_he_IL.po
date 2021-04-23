@@ -1,0 +1,7106 @@
+#: src/options.cpp:3570 src/options.cpp:4675 src/pluginmanager.cpp:240
+#: src/pluginmanager.cpp:252 src/pluginmanager.cpp:254 src/TCWin.cpp:156
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-25 22:19-0400\n"
+"PO-Revision-Date: 2021-04-22 13:19\n"
+"Last-Translator: \n"
+"Language-Team: Hebrew\n"
+"Language: he_IL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3;\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Project-ID: 49843\n"
+"X-Crowdin-Language: he\n"
+"X-Crowdin-File: /po/opencpn.pot\n"
+"X-Crowdin-File-ID: 102\n"
+
+#: include/AboutFrame.h:89 include/AboutFrameImpl.h:55 src/chart1.cpp:5796
+#: src/chart1.cpp:10063 src/toolbar.cpp:1410
+msgid "About OpenCPN"
+msgstr "אודות OpenCPN"
+
+#: include/AISTargetAlertDialog.h:52 src/routemanagerdialog.cpp:1071
+#: src/routemanagerdialog.cpp:1120 src/routemanagerdialog.cpp:1771
+#: src/routemanagerdialog.cpp:1878 src/routemanagerdialog.cpp:2197
+#: src/routemanagerdialog.cpp:2230 src/routemanagerdialog.cpp:2369
+#: src/routemanagerdialog.cpp:2518 src/toolbar.cpp:3210
+msgid "OpenCPN Alert"
+msgstr "התראות OpenCPN"
+
+#: include/AISTargetAlertDialog.h:76
+msgid "OpenCPN AIS Alert"
+msgstr "OpenCPN התראת AIS"
+
+#: include/AISTargetQueryDialog.h:48 include/AISTargetQueryDialog.h:60
+#: include/S57QueryDialog.h:44 include/S57QueryDialog.h:54
+#: src/canvasMenu.cpp:390 src/canvasMenu.cpp:396 src/chcanv.cpp:8904
+msgid "Object Query"
+msgstr "שאילתת אובייקט"
+
+#: include/GoToPositionDialog.h:40 src/AISTargetListDialog.cpp:646
+#: src/canvasMenu.cpp:419
+msgid "Center view"
+msgstr "מרכוז"
+
+#: include/LinkPropDlg.h:72 include/LinkPropDlg.h:84
+msgid "Link Properties"
+msgstr "הגדרות קישור"
+
+#: include/options.h:85 src/chart1.cpp:5786 src/chart1.cpp:6055
+#: src/chart1.cpp:7128 src/chart1.cpp:10024 src/options.cpp:4244
+#: src/toolbar.cpp:1339
+msgid "Options"
+msgstr "אפשרויות"
+
+#: include/routeprintout.h:91 src/routeprintout.cpp:361
+msgid "Print Route Selection"
+msgstr "הדפסת מסלול נבחר"
+
+#: include/RoutePropDlg.h:147 include/RoutePropDlgImpl.h:83
+#: src/canvasMenu.cpp:1567 src/chcanv.cpp:7599 src/RoutePropDlgImpl.cpp:452
+msgid "Route Properties"
+msgstr "מאפייני מסלול"
+
+#: include/S57QueryDialog.h:94 include/S57QueryDialog.h:100
+#: src/S57QueryDialog.cpp:212
+msgid "Extra Object Info"
+msgstr "מידע נוסף על אובייקט"
+
+#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:647 src/canvasMenu.cpp:736
+#: src/canvasMenu.cpp:787 src/canvasMenu.cpp:1458 src/canvasMenu.cpp:1469
+#: src/canvasMenu.cpp:1482 src/canvasMenu.cpp:1494
+#: src/routemanagerdialog.cpp:1403 src/routemanagerdialog.cpp:2340
+msgid "Send to GPS"
+msgstr "שלח ל-GPS"
+
+#: include/TrackPropDlg.h:188 src/TrackPropDlg.cpp:1066
+#: src/TrackPropDlg.cpp:1079
+msgid "Track properties"
+msgstr "הגדרות נתיב"
+
+#: src/AboutFrame.cpp:35
+msgid "< Back"
+msgstr "חזרה"
+
+#: src/AboutFrame.cpp:49 src/options.cpp:8001
+msgid "OpenCPN"
+msgstr "OpenCPN"
+
+#: src/AboutFrame.cpp:64
+msgid "(c) 2000-2019"
+msgstr "(c) 2000-2019"
+
+#: src/AboutFrame.cpp:68
+msgid "The OpenCPN Authors"
+msgstr " יוצרים של  OpenCPN:"
+
+#: src/AboutFrame.cpp:76
+msgid "OpenCPN is a Free Software project, built by sailors.\n"
+"It is freely available to download and distribute without charge."
+msgstr "OpenCPN הינה תוכנה מבוססת קוד פתוח, נבנתה על ידי ימאים והיא חינמית לחלוטין להורדה ולשימוש ללא תשלום נוסף."
+
+#: src/AboutFrame.cpp:83
+msgid "Want to help?"
+msgstr "צריך עזרה?"
+
+#: src/AboutFrame.cpp:87
+msgid "Donate"
+msgstr "תרומה"
+
+#: src/AboutFrame.cpp:92
+msgid "or"
+msgstr "או"
+
+#: src/AboutFrame.cpp:96
+msgid "get involved!"
+msgstr "תצטרף אלינו!"
+
+#: src/AboutFrame.cpp:107
+msgid "Logfile:"
+msgstr "יומן:"
+
+#: src/AboutFrame.cpp:122
+msgid "Config file:"
+msgstr "קובץ קונפיגורציה:"
+
+#: src/AboutFrame.cpp:128
+msgid "Copy to clipboard"
+msgstr "העתק ללוח"
+
+#: src/AboutFrame.cpp:136
+msgid "Plugin API: "
+msgstr ":פלאגין API"
+
+#: src/AboutFrame.cpp:177
+msgid "OpenCPN Website"
+msgstr "אתר של OpenCPN"
+
+#: src/AboutFrame.cpp:184
+msgid "Help"
+msgstr "עזרה"
+
+#: src/AboutFrame.cpp:191
+msgid "License"
+msgstr "רישיון"
+
+#: src/AboutFrameImpl.cpp:78
+msgid "OpenCPN Help documentation is not available locally."
+msgstr "מדריך למשתמש לא זמין כעת ל-OpenCPN."
+
+#: src/AboutFrameImpl.cpp:79
+msgid "Would you like to visit the opencpn.org website for more information?"
+msgstr "האם תרצה לבקר באתר opencpn.org למידע נוסף?"
+
+#: src/AboutFrameImpl.cpp:81 src/AISTargetQueryDialog.cpp:191
+#: src/chart1.cpp:2996 src/chart1.cpp:6433 src/chart1.cpp:11029
+#: src/chart1.cpp:11064 src/LinkPropDlg.cpp:129 src/navutil.cpp:3134
+#: src/options.cpp:847 src/options.cpp:3842 src/options.cpp:8398
+#: src/options.cpp:8435 src/options.cpp:10416 src/pluginmanager.cpp:517
+#: src/pluginmanager.cpp:1232 src/pluginmanager.cpp:2176
+#: src/pluginmanager.cpp:2218 src/pluginmanager.cpp:2247
+#: src/pluginmanager.cpp:2281 src/Route.cpp:1211 src/RoutePoint.cpp:1132
+#: src/tcmgr.cpp:763 src/MarkInfo.cpp:1783
+msgid "OpenCPN Info"
+msgstr "מידע OpenCPN"
+
+#: src/ais.cpp:118
+msgid "Underway"
+msgstr "בתנועה"
+
+#: src/ais.cpp:119
+msgid "At Anchor"
+msgstr "עוגן"
+
+#: src/ais.cpp:120
+msgid "Not Under Command"
+msgstr "לא בפיקוד"
+
+#: src/ais.cpp:121
+msgid "Restricted Manoeuvrability"
+msgstr "מוגבל בכושר תמרון"
+
+#: src/ais.cpp:122
+msgid "Constrained by draught"
+msgstr "מוגבל על-ידי משיכה"
+
+#: src/ais.cpp:123
+msgid "Moored"
+msgstr "עגינה"
+
+#: src/ais.cpp:124
+msgid "Aground"
+msgstr "על שרטון"
+
+#: src/ais.cpp:125
+msgid "Engaged in Fishing"
+msgstr "מתנגש באזור דייג"
+
+#: src/ais.cpp:126
+msgid "Under way sailing"
+msgstr "כלי שיט בתנועה"
+
+#: src/ais.cpp:127 src/ais.cpp:156
+msgid "High Speed Craft"
+msgstr "כלי שיט ממונע"
+
+#: src/ais.cpp:128
+msgid "Wing In Ground Effect"
+msgstr "אפקט כנף בקרקע"
+
+#: src/ais.cpp:129
+msgid "Power-driven vessel towing astern (regional use)"
+msgstr "חללית מונעת כוח גוררת אסטרן (שימוש אזורי)"
+
+#: src/ais.cpp:130
+msgid "Power-driven vessel pushing ahead or towing alongside (regional use)"
+msgstr "ספינה מונעת כוח דוחפת קדימה או גוררת לצד (שימוש אזורי)"
+
+#: src/ais.cpp:131
+msgid "Reserved 13"
+msgstr "שמור 13"
+
+#: src/ais.cpp:132
+msgid "Reserved 14"
+msgstr "שמור 14"
+
+#: src/ais.cpp:133 src/AIS_Target_Data.cpp:405 src/ConnectionParams.cpp:206
+#: src/ConnectionParams.cpp:514 src/ConnectionParams.cpp:611
+#: src/ConnectionParams.cpp:836 src/ConnectionParams.cpp:860
+msgid "Undefined"
+msgstr "לא מוגדר"
+
+#: src/ais.cpp:134
+msgid "AtoN Virtual"
+msgstr "AtoN וירטואלי"
+
+#: src/ais.cpp:135
+msgid "AtoN Virtual (On Position)"
+msgstr "AtoN וירטואלי (מיקום פעיל)"
+
+#: src/ais.cpp:136
+msgid "AtoN Virtual (Off Position)"
+msgstr "AtoN וירטואלי (מיקום כבוי)"
+
+#: src/ais.cpp:137
+msgid "AtoN Real"
+msgstr "AtoN אמיתי"
+
+#: src/ais.cpp:138
+msgid "AtoN Real (On Position)"
+msgstr "AtoN אמיתי (מיקום פעיל)"
+
+#: src/ais.cpp:139
+msgid "AtoN Real(Off Position)"
+msgstr "AtoN אמיתי (מיקום כבוי)"
+
+#: src/ais.cpp:148
+msgid "Vessel Fishing"
+msgstr "כלי שיט לדיג"
+
+#: src/ais.cpp:149
+msgid "Vessel Towing"
+msgstr "כלי שיט גוררת"
+
+#: src/ais.cpp:150
+msgid "Vessel Towing, Long"
+msgstr "כלי שיט גוררת ,ארוכה"
+
+#: src/ais.cpp:151
+msgid "Vessel Dredging"
+msgstr "כלי שיט מיועד לחפירה"
+
+#: src/ais.cpp:152
+msgid "Vessel Diving"
+msgstr "כלי שיט לצוללנים"
+
+#: src/ais.cpp:153
+msgid "Military Vessel"
+msgstr "כלי שיט צבאי"
+
+#: src/ais.cpp:154
+msgid "Sailing Vessel"
+msgstr "כלי שיט מפרשית"
+
+#: src/ais.cpp:155
+msgid "Pleasure craft"
+msgstr "כלי שיט לתענוגות"
+
+#: src/ais.cpp:157
+msgid "Pilot Vessel"
+msgstr "כלי שייט פילוט"
+
+#: src/ais.cpp:158
+msgid "Search and Rescue Vessel"
+msgstr "כלי שיט חילוץ והצלה"
+
+#: src/ais.cpp:159 src/ais.cpp:224
+msgid "Tug"
+msgstr "גוררת"
+
+#: src/ais.cpp:160
+msgid "Port Tender"
+msgstr "מצופי רציף שמאליים"
+
+#: src/ais.cpp:161
+msgid "Pollution Control Vessel"
+msgstr "כלי שייט למניעת זיהום"
+
+#: src/ais.cpp:162
+msgid "Law Enforcement Vessel"
+msgstr "כלי שיט משמר החוק (משטרה ימית)"
+
+#: src/ais.cpp:163
+msgid "Medical Transport"
+msgstr "תחבורה רפואית"
+
+#: src/ais.cpp:164
+msgid "Passenger Ship"
+msgstr "אוניית נוסעים"
+
+#: src/ais.cpp:165
+msgid "Cargo Ship"
+msgstr "אוניית משא"
+
+#: src/ais.cpp:166 src/AIS_Decoder.cpp:326
+msgid "Tanker"
+msgstr "אוניית מיכל"
+
+#: src/ais.cpp:167 src/AIS_Target_Data.cpp:391 src/AIS_Target_Data.cpp:678
+#: src/AIS_Target_Data.cpp:740 src/AIS_Target_Data.cpp:914 src/chartdbs.cpp:1455
+msgid "Unknown"
+msgstr "לא ידוע"
+
+#: src/ais.cpp:168
+msgid "Unspecified"
+msgstr "לא צוין"
+
+#: src/ais.cpp:169
+msgid "Reference Point"
+msgstr "נקודת ייחוס"
+
+#: src/ais.cpp:170 src/ais.cpp:236
+msgid "RACON"
+msgstr "RACON"
+
+#: src/ais.cpp:171
+msgid "Fixed Structure"
+msgstr "מבנה קבוע"
+
+#: src/ais.cpp:172
+msgid "Spare"
+msgstr "חלופי"
+
+#: src/ais.cpp:173
+msgid "Light"
+msgstr "אור"
+
+#: src/ais.cpp:174
+msgid "Light w/Sectors"
+msgstr "תאיר סקטורים"
+
+#: src/ais.cpp:175
+msgid "Leading Light Front"
+msgstr "תאורה מובילה חזיתית"
+
+#: src/ais.cpp:176
+msgid "Leading Light Rear"
+msgstr "תאורה מובילה אחורית"
+
+#: src/ais.cpp:177
+msgid "Cardinal N Beacon"
+msgstr "קרדינל צפון עם משואה"
+
+#: src/ais.cpp:178
+msgid "Cardinal E Beacon"
+msgstr "קרדינל מזרח עם משואה"
+
+#: src/ais.cpp:179
+msgid "Cardinal S Beacon"
+msgstr "קרדינל דרומי עם משואה"
+
+#: src/ais.cpp:180
+msgid "Cardinal W Beacon"
+msgstr "קרדינל מערבי עם משואה"
+
+#: src/ais.cpp:181
+msgid "Beacon, Port Hand"
+msgstr "ביקון, יד שמאל"
+
+#: src/ais.cpp:182
+msgid "Beacon, Starboard Hand"
+msgstr "ביקון, יד ימין"
+
+#: src/ais.cpp:183
+msgid "Beacon, Preferred Channel Port Hand"
+msgstr "ביקון, יד נמל ערוץ מועדף"
+
+#: src/ais.cpp:184
+msgid "Beacon, Preferred Channel Starboard Hand"
+msgstr "ביקון, ערוץ מועדף יד ימין"
+
+#: src/ais.cpp:185
+msgid "Beacon, Isolated Danger"
+msgstr "ביקון, סכנה מבודדת"
+
+#: src/ais.cpp:186
+msgid "Beacon, Safe Water"
+msgstr "ביקון, מים בטוחים"
+
+#: src/ais.cpp:187
+msgid "Beacon, Special Mark"
+msgstr "ביקון, סימן מיוחד"
+
+#: src/ais.cpp:188
+msgid "Cardinal Mark N"
+msgstr "סימון קרדינלי צפון N"
+
+#: src/ais.cpp:189
+msgid "Cardinal Mark E"
+msgstr "סימון קרדינלי מזרח E"
+
+#: src/ais.cpp:190
+msgid "Cardinal Mark S"
+msgstr "סימון קרדינלי דרום S"
+
+#: src/ais.cpp:191
+msgid "Cardinal Mark W"
+msgstr "סימון קרדינלי מעכב W"
+
+#: src/ais.cpp:192
+msgid "Port Hand Mark"
+msgstr "סימון לצד השמאל"
+
+#: src/ais.cpp:193
+msgid "Starboard Hand Mark"
+msgstr "סימון לצד הימין"
+
+#: src/ais.cpp:194
+msgid "Preferred Channel Port Hand"
+msgstr "ערוץ מומלץ לצד השמאל"
+
+#: src/ais.cpp:195
+msgid "Preferred Channel Starboard Hand"
+msgstr "ערוץ מומלץ לצד הימין "
+
+#: src/ais.cpp:196
+msgid "Isolated Danger"
+msgstr "סכנה מבודדת"
+
+#: src/ais.cpp:197 src/ais.cpp:252 src/ais.cpp:263
+msgid "Safe Water"
+msgstr "מים בטוחים"
+
+#: src/ais.cpp:198
+msgid "Special Mark"
+msgstr "סימון מיוחד"
+
+#: src/ais.cpp:199
+msgid "Light Vessel/Rig"
+msgstr "כלי שיט קל"
+
+#: src/ais.cpp:200
+msgid "GpsGate Buddy"
+msgstr "GPSGate באדי"
+
+#: src/ais.cpp:201
+msgid "Position Report"
+msgstr "דיווח מיקום"
+
+#: src/ais.cpp:202 src/ais.cpp:268
+msgid "Distress"
+msgstr "מצוקה"
+
+#: src/ais.cpp:203
+msgid "ARPA radar target"
+msgstr "מטרת מכ\"ם ARPA "
+
+#: src/ais.cpp:204 src/AIS_Target_Data.cpp:911
+msgid "APRS Position Report"
+msgstr "דיווח מיקום ARPA "
+
+#: src/ais.cpp:213
+msgid "F/V"
+msgstr "F/V"
+
+#: src/ais.cpp:214
+msgid "Tow"
+msgstr "לגרור"
+
+#: src/ais.cpp:215
+msgid "Long Tow"
+msgstr "גרירה ארוכה"
+
+#: src/ais.cpp:216
+msgid "Dredge"
+msgstr "לגרוף"
+
+#: src/ais.cpp:217
+msgid "D/V"
+msgstr "D/V"
+
+#: src/ais.cpp:218
+msgid "Mil/V"
+msgstr "Mil/V"
+
+#: src/ais.cpp:219
+msgid "S/V"
+msgstr "S/V"
+
+#: src/ais.cpp:220
+msgid "Yat"
+msgstr "Yat"
+
+#: src/ais.cpp:221
+msgid "HSC"
+msgstr "HSC"
+
+#: src/ais.cpp:222
+msgid "P/V"
+msgstr "P/V"
+
+#: src/ais.cpp:223
+msgid "SAR/V"
+msgstr "SAR/V"
+
+#: src/ais.cpp:225
+msgid "Tender"
+msgstr "ספינת שירות"
+
+#: src/ais.cpp:226
+msgid "PC/V"
+msgstr "PC/V"
+
+#: src/ais.cpp:227
+msgid "LE/V"
+msgstr "LE/V"
+
+#: src/ais.cpp:228
+msgid "Med/V"
+msgstr "Med/V"
+
+#: src/ais.cpp:229
+msgid "Pass/V"
+msgstr "Pass/V"
+
+#: src/ais.cpp:230
+msgid "M/V"
+msgstr "M/V"
+
+#: src/ais.cpp:231
+msgid "M/T"
+msgstr "M/T"
+
+#: src/ais.cpp:232 src/ais.cpp:238
+msgid "?"
+msgstr ""
+
+#: src/ais.cpp:234 src/AIS_Target_Data.cpp:896
+msgid "AtoN"
+msgstr "AtoN"
+
+#: src/ais.cpp:235
+msgid "Ref. Pt"
+msgstr "Ref. Pt"
+
+#: src/ais.cpp:237
+msgid "Fix.Struct."
+msgstr "Fix.Struct."
+
+#: src/ais.cpp:239
+msgid "Lt"
+msgstr "Lt"
+
+#: src/ais.cpp:240
+msgid "Lt sect."
+msgstr "Lt sect."
+
+#: src/ais.cpp:241
+msgid "Ldg Lt Front"
+msgstr "Ldg Lt Front"
+
+#: src/ais.cpp:242
+msgid "Ldg Lt Rear"
+msgstr "Ldg Lt Rear"
+
+#: src/ais.cpp:243 src/ais.cpp:254
+msgid "Card. N"
+msgstr "Card. N"
+
+#: src/ais.cpp:244 src/ais.cpp:255
+msgid "Card. E"
+msgstr "Card. E"
+
+#: src/ais.cpp:245 src/ais.cpp:256
+msgid "Card. S"
+msgstr "Card. S"
+
+#: src/ais.cpp:246 src/ais.cpp:257
+msgid "Card. W"
+msgstr "Card. W"
+
+#: src/ais.cpp:247
+msgid "Port"
+msgstr "נמל"
+
+#: src/ais.cpp:248
+msgid "Stbd"
+msgstr "Stbd"
+
+#: src/ais.cpp:249 src/ais.cpp:250 src/ais.cpp:260 src/ais.cpp:261
+msgid "Pref. Chnl"
+msgstr "Pref. Chnl"
+
+#: src/ais.cpp:251 src/ais.cpp:262
+msgid "Isol. Dngr"
+msgstr "Isol. Dngr"
+
+#: src/ais.cpp:253 src/ais.cpp:264
+msgid "Special"
+msgstr "מיוחד"
+
+#: src/ais.cpp:258
+msgid "Port Hand"
+msgstr "Port Hand"
+
+#: src/ais.cpp:259
+msgid "Stbd Hand"
+msgstr "Stbd Hand"
+
+#: src/ais.cpp:265
+msgid "LtV/Rig"
+msgstr "LtV/Rig"
+
+#: src/ais.cpp:266 src/AIS_Target_Data.cpp:900
+msgid "Buddy"
+msgstr "חבר"
+
+#: src/ais.cpp:267 src/AIS_Target_Data.cpp:903 src/AIS_Target_Data.cpp:905
+msgid "DSC"
+msgstr "DSC"
+
+#: src/ais.cpp:269 src/AIS_Target_Data.cpp:909
+msgid "ARPA"
+msgstr "ARPA"
+
+#: src/ais.cpp:270 src/AIS_Target_Data.cpp:911
+msgid "APRS"
+msgstr "APRS"
+
+#: src/ais.cpp:277
+msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
+msgstr "זהירות באזור בית הגידול של יונקים ימיים (מרמז על לווייתנים שלא נצפו)"
+
+#: src/ais.cpp:278
+msgid "Caution Area: Marine mammals in area - reduce speed"
+msgstr "אזהרה : יונקים ימיים בסביבה - האט"
+
+#: src/ais.cpp:279
+msgid "Caution Area: Marine mammals in area - stay clear"
+msgstr "אזהרה : יונקים ימיים בסביבה - שמור מרחק"
+
+#: src/ais.cpp:280
+msgid "Caution Area: Marine mammals in area - report sightings"
+msgstr "אזהרה : יונקים ימיים בסביבה - דיווח תצפית"
+
+#: src/ais.cpp:281
+msgid "Caution Area: Protected habitat - reduce speed"
+msgstr "זהירות אזור בית גידול מוגן - להפחית את המהירות"
+
+#: src/ais.cpp:282
+msgid "Caution Area: Protected habitat - stay clear"
+msgstr "אזור זהירות בית גידול מוגן - הישאר ברור"
+
+#: src/ais.cpp:283
+msgid "Caution Area: Protected habitat - no fishing or anchoring"
+msgstr "אזור זהירות בית גידול מוגן - ללא דיג או עיגון"
+
+#: src/ais.cpp:284
+msgid "Caution Area: Derelicts (drifting objects)"
+msgstr "אזור זהירות derelicts נסחף אובייקטים"
+
+#: src/ais.cpp:285
+msgid "Caution Area: Traffic congestion"
+msgstr "זהירות באזור עומסי תנועה"
+
+#: src/ais.cpp:286
+msgid "Caution Area: Marine event"
+msgstr "זהירות באזור האירוע הימי"
+
+#: src/ais.cpp:287
+msgid "Caution Area: Divers down"
+msgstr "זהירות אזור צוללנים למטה"
+
+#: src/ais.cpp:288
+msgid "Caution Area: Swim area"
+msgstr "אזור זהירות אזור שחייה"
+
+#: src/ais.cpp:289
+msgid "Caution Area: Dredge operations"
+msgstr "פעולות חפירה באזור זהירות"
+
+#: src/ais.cpp:290
+msgid "Caution Area: Survey operations"
+msgstr "פעולות סקר אזור זהירות"
+
+#: src/ais.cpp:291
+msgid "Caution Area: Underwater operation"
+msgstr "זהירות באזור פעולה מתחת למים"
+
+#: src/ais.cpp:292
+msgid "Caution Area: Seaplane operations"
+msgstr "זהירות בפעולות מטוס ימי באזור"
+
+#: src/ais.cpp:293
+msgid "Caution Area: Fishery - nets in water"
+msgstr "זהירות באזור הדיג - רשתות במים"
+
+#: src/ais.cpp:294
+msgid "Caution Area: Cluster of fishing vessels"
+msgstr "זהירות אזור מקבץ של ספינות דיג"
+
+#: src/ais.cpp:295
+msgid "Caution Area: Fairway closed"
+msgstr "אזור זהירות נסגר"
+
+#: src/ais.cpp:296
+msgid "Caution Area: Harbour closed"
+msgstr "זהירות אזור נמל סגור"
+
+#: src/ais.cpp:297
+msgid "Caution Area: Risk (define in Associated text field)"
+msgstr "הגדרת סיכון אזור זהירות (בשדה טקסט משויך)"
+
+#: src/ais.cpp:298
+msgid "Caution Area: Underwater vehicle operation"
+msgstr "זהירות באזור פעולת רכב תת ימי"
+
+#: src/ais.cpp:299 src/ais.cpp:308 src/ais.cpp:316 src/ais.cpp:323
+#: src/ais.cpp:324 src/ais.cpp:325 src/ais.cpp:326 src/ais.cpp:327
+#: src/ais.cpp:328 src/ais.cpp:329 src/ais.cpp:330 src/ais.cpp:331
+#: src/ais.cpp:332 src/ais.cpp:336 src/ais.cpp:337 src/ais.cpp:338
+#: src/ais.cpp:339 src/ais.cpp:340 src/ais.cpp:354 src/ais.cpp:355
+#: src/ais.cpp:356 src/ais.cpp:363 src/ais.cpp:364 src/ais.cpp:386
+#: src/ais.cpp:387 src/ais.cpp:388 src/ais.cpp:390 src/ais.cpp:392
+#: src/ais.cpp:393 src/ais.cpp:394 src/ais.cpp:395 src/ais.cpp:396
+#: src/ais.cpp:400 src/ais.cpp:401
+msgid "(reserved for future use)"
+msgstr "(שמור לשימוש עתידי)"
+
+#: src/ais.cpp:300
+msgid "Environmental Caution Area: Storm front (line squall)"
+msgstr "אזור זהירות סביבתית: חזית סערה (סערת קו)"
+
+#: src/ais.cpp:301
+msgid "Environmental Caution Area: Hazardous sea ice"
+msgstr "אזור זהירות סביבתית קרח ים מסוכן"
+
+#: src/ais.cpp:302
+msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
+msgstr "אזור זהירות סביבתית: אזהרת סערה (תא סערה או קו סערות)"
+
+#: src/ais.cpp:303
+msgid "Environmental Caution Area: High wind"
+msgstr "אזור זהירות סביבתית רוח גבוהה"
+
+#: src/ais.cpp:304
+msgid "Environmental Caution Area: High waves"
+msgstr "אזור זהירות סביבתית גלים גבוהים"
+
+#: src/ais.cpp:305
+msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
+msgstr "אזור זהירות סביבתית הגביל את ראות (גשם הערפל וכו '.)"
+
+#: src/ais.cpp:306
+msgid "Environmental Caution Area: Strong currents"
+msgstr "אזור זהירות סביבתית זרמים חזקים"
+
+#: src/ais.cpp:307
+msgid "Environmental Caution Area: Heavy icing"
+msgstr "אזור זהירות סביבתית: ציפוי כבד"
+
+#: src/ais.cpp:309
+msgid "Restricted Area: Fishing prohibited"
+msgstr "דיג באזור מוגבל אסור"
+
+#: src/ais.cpp:310
+msgid "Restricted Area: No anchoring."
+msgstr "אזור מוגבל ללא עיגון."
+
+#: src/ais.cpp:311
+msgid "Restricted Area: Entry approval required prior to transit"
+msgstr "נדרש אישור כניסה לאזור מוגבל לפני המעבר"
+
+#: src/ais.cpp:312
+msgid "Restricted Area: Entry prohibited"
+msgstr "כניסה מוגבלת לאזור אסורה"
+
+#: src/ais.cpp:313
+msgid "Restricted Area: Active military OPAREA"
+msgstr "אזור מוגבל צבאית פעילה OPAREA"
+
+#: src/ais.cpp:314
+msgid "Restricted Area: Firing - danger area."
+msgstr "אזור מוגבל : שטח אש -מסוכן."
+
+#: src/ais.cpp:315
+msgid "Restricted Area: Drifting Mines"
+msgstr "אזור מוגבל : מוקשים צפים"
+
+#: src/ais.cpp:317
+msgid "Anchorage Area: Anchorage open"
+msgstr "אזור עיגון : עגינה מאופשרת"
+
+#: src/ais.cpp:318
+msgid "Anchorage Area: Anchorage closed"
+msgstr "אזור עיגון: עגינה לא מאופשרת"
+
+#: src/ais.cpp:319
+msgid "Anchorage Area: Anchoring prohibited"
+msgstr "אזור עיגון : איסור מוחלט"
+
+#: src/ais.cpp:320
+msgid "Anchorage Area: Deep draft anchorage"
+msgstr "אזור עיגון :משיכה עמוקה בעגינה"
+
+#: src/ais.cpp:321
+msgid "Anchorage Area: Shallow draft anchorage"
+msgstr "אזור עיגון : משיכה קלה בעגינה"
+
+#: src/ais.cpp:322
+msgid "Anchorage Area: Vessel transfer operations"
+msgstr "אזור עיגון : כלי שיט להעברת משאבים"
+
+#: src/ais.cpp:333
+msgid "Security Alert - Level 1"
+msgstr "התראת אבטחה רמה 1"
+
+#: src/ais.cpp:334
+msgid "Security Alert - Level 2"
+msgstr "התראת אבטחה רמה 2"
+
+#: src/ais.cpp:335
+msgid "Security Alert - Level 3"
+msgstr "התראת אבטחה רמה 3"
+
+#: src/ais.cpp:341
+msgid "Distress Area: Vessel disabled and adrift"
+msgstr "אזור מצוקה : כלי שיט מושבת ונסחף"
+
+#: src/ais.cpp:342
+msgid "Distress Area: Vessel sinking"
+msgstr "אזור מצוקה : כלי שיט טובע  "
+
+#: src/ais.cpp:343
+msgid "Distress Area: Vessel abandoning ship"
+msgstr "אזור מצוקה : כלי שיט נטוש"
+
+#: src/ais.cpp:344
+msgid "Distress Area: Vessel requests medical assistance"
+msgstr "אזור מצוקה : כלי שיט מבקש סיוע רפואי"
+
+#: src/ais.cpp:345
+msgid "Distress Area: Vessel flooding"
+msgstr "אזור מצוקה :כלי שיט מוצף"
+
+#: src/ais.cpp:346
+msgid "Distress Area: Vessel fire/explosion"
+msgstr "אזור מצוקה : כלי שיט עולה באש\\התפוצץ"
+
+#: src/ais.cpp:347
+msgid "Distress Area: Vessel grounding"
+msgstr "אזור מצוקה : כלי שיט מקורקע"
+
+#: src/ais.cpp:348
+msgid "Distress Area: Vessel collision"
+msgstr "אזור מצוקה : כלי שיט התנגש"
+
+#: src/ais.cpp:349
+msgid "Distress Area: Vessel listing/capsizing"
+msgstr "אזור מצוקה : כלי שיט התהפך"
+
+#: src/ais.cpp:350
+msgid "Distress Area: Vessel under assault"
+msgstr "אזור מצוקה : כלי שיט תחת מתקפה"
+
+#: src/ais.cpp:351
+msgid "Distress Area: Person overboard"
+msgstr "אזור מצוקה : אדם הגזים על הסיפון"
+
+#: src/ais.cpp:352
+msgid "Distress Area: SAR area"
+msgstr "אזור מצוקה : איזור SAR"
+
+#: src/ais.cpp:353
+msgid "Distress Area: Pollution response area"
+msgstr "אזור מצוקה : איזור מזוהם"
+
+#: src/ais.cpp:357
+msgid "Instruction: Contact VTS at this point/juncture"
+msgstr "הוראות: צרו קשר עם ה- VTS בנקודה / צומת זה"
+
+#: src/ais.cpp:358
+msgid "Instruction: Contact Port Administration at this point/juncture"
+msgstr "הוראות: צרו קשר עם מינהל הנמלים בנקודה / נקודה זו"
+
+#: src/ais.cpp:359
+msgid "Instruction: Do not proceed beyond this point/juncture"
+msgstr "הוראות: אל תמשיך מעבר לנקודה / צומת זה"
+
+#: src/ais.cpp:360
+msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
+msgstr "הוראות: המתן להוראות לפני שתמשיך מעבר לנקודה / צומת זה"
+
+#: src/ais.cpp:361
+msgid "Proceed to this location - await instructions"
+msgstr "המשך למיקום זה - המתן להוראות"
+
+#: src/ais.cpp:362
+msgid "Clearance granted - proceed to berth"
+msgstr "האישור הוענק - המשך לעגן"
+
+#: src/ais.cpp:365
+msgid "Information: Pilot boarding position"
+msgstr "מידע: נקודת חבירה של נתב"
+
+#: src/ais.cpp:366
+msgid "Information: Icebreaker waiting area"
+msgstr "מידע: אזור המתנה לשובר קרח"
+
+#: src/ais.cpp:367
+msgid "Information: Places of refuge"
+msgstr "מידע: מקומות מקלט"
+
+#: src/ais.cpp:368
+msgid "Information: Position of icebreakers"
+msgstr "מידע: מיקום שוברי הקרח"
+
+#: src/ais.cpp:369
+msgid "Information: Location of response units"
+msgstr "מידע: מיקום יחידות התגובה"
+
+#: src/ais.cpp:370
+msgid "VTS active target"
+msgstr "יעד פעיל VTS"
+
+#: src/ais.cpp:371
+msgid "Rogue or suspicious vessel"
+msgstr "כלי נוכל או חשוד"
+
+#: src/ais.cpp:372
+msgid "Vessel requesting non-distress assistance"
+msgstr "כלי שיט המבקש סיוע ללא מצוקה"
+
+#: src/ais.cpp:373
+msgid "Chart Feature: Sunken vessel"
+msgstr "תכונת תרשים: עמדת כלי שקועה"
+
+#: src/ais.cpp:374
+msgid "Chart Feature: Submerged object"
+msgstr "תכונת תרשים: אובייקט שקוע"
+
+#: src/ais.cpp:375
+msgid "Chart Feature: Semi-submerged object"
+msgstr "תכונת תרשים: אובייקט שקוע למחצה"
+
+#: src/ais.cpp:376
+msgid "Chart Feature: Shoal area"
+msgstr "תכונת תרשים: אזור צירים"
+
+#: src/ais.cpp:377
+msgid "Chart Feature: Shoal area due north"
+msgstr "תכונת תרשים: אזור הצירים צפונה"
+
+#: src/ais.cpp:378
+msgid "Chart Feature: Shoal area due east"
+msgstr "מאפיין תרשים: אזור שואלים ממזרח"
+
+#: src/ais.cpp:379
+msgid "Chart Feature: Shoal area due south"
+msgstr "מאפיין תרשים: אזור צירים צפוי לדרום"
+
+#: src/ais.cpp:380
+msgid "Chart Feature: Shoal area due west"
+msgstr "מאפיין תרשים: אזור שואלים ממערב"
+
+#: src/ais.cpp:381
+msgid "Chart Feature: Channel obstruction"
+msgstr "תכונת תרשים: חסימת ערוץ"
+
+#: src/ais.cpp:382
+msgid "Chart Feature: Reduced vertical clearance"
+msgstr "תכונת התרשים: פינוי אנכי מופחת"
+
+#: src/ais.cpp:383
+msgid "Chart Feature: Bridge closed"
+msgstr "תכונת התרשים: הגשר נסגר"
+
+#: src/ais.cpp:384
+msgid "Chart Feature: Bridge partially open"
+msgstr "תכונת תרשים: גשר פתוח חלקית"
+
+#: src/ais.cpp:385
+msgid "Chart Feature: Bridge fully open"
+msgstr "תכונת תרשים: גשר פתוח לחלוטין"
+
+#: src/ais.cpp:389
+msgid "Report from ship: Icing info"
+msgstr "דיווח מהספינה: מידע על ציפוי"
+
+#: src/ais.cpp:391
+msgid "Report from ship: Miscellaneous information - define in Associated text field"
+msgstr "דוח מהספינה: מידע משויך - הגדרה בשדה טקסט משויך"
+
+#: src/ais.cpp:397
+msgid "Route: Recommended route"
+msgstr "נתב נתיב מומלץ"
+
+#: src/ais.cpp:398
+msgid "Route: Alternative route"
+msgstr "נתב לנתיב חלופי"
+
+#: src/ais.cpp:399
+msgid "Route: Recommended route through ice"
+msgstr "נתב לנתיב המומלץ דרך קרח"
+
+#: src/ais.cpp:402
+msgid "Other - Define in associated text field"
+msgstr "אחר - הגדרה בשדה טקסט משויך"
+
+#: src/ais.cpp:403
+msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr "ביטול - ביטול אזור כפי שזוהה על-ידי מזהה קישור הודעה"
+
+#: src/ais.cpp:404
+msgid "Undefined (default)"
+msgstr "לא מוגדר"
+
+#: src/ais.cpp:1709 src/ais.cpp:1710
+msgid "AIS Target Name"
+msgstr "שם יעד של ais"
+
+#: src/AIS_Decoder.cpp:263
+msgid "Vessel, type unknown"
+msgstr "סוג כלי שיט לא ידוע"
+
+#: src/AIS_Decoder.cpp:264
+msgid "Freightbarge"
+msgstr "Freightbarge"
+
+#: src/AIS_Decoder.cpp:265
+msgid "Tankbarge"
+msgstr "גוררת מכלית"
+
+#: src/AIS_Decoder.cpp:266
+msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
+msgstr "Tankbarge, מטען יבש כאילו נוזל (למשל מלט)"
+
+#: src/AIS_Decoder.cpp:267
+msgid "Service vessel, police patrol, port service"
+msgstr "שירותי נמל, סיור משטרתי, ספינת שירות"
+
+#: src/AIS_Decoder.cpp:268 src/AIS_Decoder.cpp:314
+msgid "Pushboat, single"
+msgstr "סירת דחיפה אחת"
+
+#: src/AIS_Decoder.cpp:269
+msgid "Object, not otherwise specified"
+msgstr "לא צוין אחרת אובייקט"
+
+#: src/AIS_Decoder.cpp:270
+msgid "Object, towed, not otherwise specified"
+msgstr "אובייקט שנגרר לא צוין אחרת"
+
+#: src/AIS_Decoder.cpp:271
+msgid "Bunkership"
+msgstr "ספינת בונקר"
+
+#: src/AIS_Decoder.cpp:272
+msgid "Motor freighter"
+msgstr "ספינת משא"
+
+#: src/AIS_Decoder.cpp:273
+msgid "Motor tanker"
+msgstr "מכלית מנוע"
+
+#: src/AIS_Decoder.cpp:274
+msgid "Motor tanker, liquid cargo, type N"
+msgstr "מנוע מנוע, מטען נוזלי, סוג n"
+
+#: src/AIS_Decoder.cpp:275
+msgid "Motor tanker, liquid cargo, type C"
+msgstr "מנוע מנוע, מטען נוזלי, סוג C"
+
+#: src/AIS_Decoder.cpp:276
+msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
+msgstr "מנוע מנוע, מטען יבש כאילו נוזלי (למשל)"
+
+#: src/AIS_Decoder.cpp:277
+msgid "Container vessel"
+msgstr "כלי מכיל"
+
+#: src/AIS_Decoder.cpp:278
+msgid "Gas tanker"
+msgstr "מכלית גז"
+
+#: src/AIS_Decoder.cpp:279
+msgid "Motor freighter, tug"
+msgstr "משיכת משא מוטורית"
+
+#: src/AIS_Decoder.cpp:280
+msgid "Motor tanker, tug"
+msgstr "משיכת מכליות מנוע"
+
+#: src/AIS_Decoder.cpp:281
+msgid "Motor freighter with one or more ships alongside"
+msgstr "ספינת משא עם אוניות אחת או יותר לצידה"
+
+#: src/AIS_Decoder.cpp:282
+msgid "Motor freighter with tanker"
+msgstr "ספינת משא עם מכלית"
+
+#: src/AIS_Decoder.cpp:283
+msgid "Motor freighter pushing one or more freighters"
+msgstr "ספינת משא דוחפת ספינת משא אחת או יותר"
+
+#: src/AIS_Decoder.cpp:284
+msgid "Motor freighter pushing at least one tank-ship"
+msgstr "ספינת משא דוחפת לפחות ספינת טנקים אחת"
+
+#: src/AIS_Decoder.cpp:285
+msgid "Tug, freighter"
+msgstr "ספינה גוררת"
+
+#: src/AIS_Decoder.cpp:286
+msgid "Tug, tanker"
+msgstr "מכלית משיכה"
+
+#: src/AIS_Decoder.cpp:287
+msgid "Tug freighter, coupled"
+msgstr "ספינת משא משיכה יחד"
+
+#: src/AIS_Decoder.cpp:288
+msgid "Tug, freighter/tanker, coupled"
+msgstr "משיכה, מטנדרי / מכלית, יחד"
+
+#: src/AIS_Decoder.cpp:289
+msgid "Tankbarge, liquid cargo, type N"
+msgstr "טנקברג, מטען נוזלי, סוג n"
+
+#: src/AIS_Decoder.cpp:290
+msgid "Tankbarge, liquid cargo, type C"
+msgstr "טנקברג, מטען נוזלי, סוג C"
+
+#: src/AIS_Decoder.cpp:291
+msgid "Freightbarge with containers"
+msgstr "Freightbarge עם מכולות"
+
+#: src/AIS_Decoder.cpp:292
+msgid "Tankbarge, gas"
+msgstr "טנקברג ', גז"
+
+#: src/AIS_Decoder.cpp:293
+msgid "Pushtow, one cargo barge"
+msgstr "פושטוב, מטען אחד"
+
+#: src/AIS_Decoder.cpp:294
+msgid "Pushtow, two cargo barges"
+msgstr "Pushtow, שני ברזים מטענים"
+
+#: src/AIS_Decoder.cpp:295
+msgid "Pushtow, three cargo barges"
+msgstr "Pushtow, שלושה ברזים מטענים"
+
+#: src/AIS_Decoder.cpp:296
+msgid "Pushtow, four cargo barges"
+msgstr "Pushtow, ארבעה מטענים"
+
+#: src/AIS_Decoder.cpp:297
+msgid "Pushtow, five cargo barges"
+msgstr "Pushtow, חמישה מוטות מטענים"
+
+#: src/AIS_Decoder.cpp:298
+msgid "Pushtow, six cargo barges"
+msgstr "Pushtow, שישה מטענים"
+
+#: src/AIS_Decoder.cpp:299
+msgid "Pushtow, seven cargo barges"
+msgstr "Pushtow, שבעה מטענים"
+
+#: src/AIS_Decoder.cpp:300
+msgid "Pushtow, eight cargo barges"
+msgstr "Pushtow, שמונה מטענים"
+
+#: src/AIS_Decoder.cpp:301
+msgid "Pushtow, nine or more barges"
+msgstr "Pushtow, תשע או יותר barges"
+
+#: src/AIS_Decoder.cpp:302
+msgid "Pushtow, one tank/gas barge"
+msgstr "Pushtow, טנק אחד / גז"
+
+#: src/AIS_Decoder.cpp:303
+msgid "Pushtow, two barges at least one tanker or gas barge"
+msgstr "Pushtow, שני דוברים לפחות מיכל אחד או דארג גז"
+
+#: src/AIS_Decoder.cpp:304
+msgid "Pushtow, three barges at least one tanker or gas barge"
+msgstr "Pushtow, שלוש דוברות לפחות מכלית אחת או דוברת גז"
+
+#: src/AIS_Decoder.cpp:305
+msgid "Pushtow, four barges at least one tanker or gas barge"
+msgstr "Pushtow, ארבעה דוברות לפחות מכלית אחת או דוברת גז"
+
+#: src/AIS_Decoder.cpp:306
+msgid "Pushtow, five barges at least one tanker or gas barge"
+msgstr "Pushtow, חמש דוברות לפחות מכלית אחת או דוברת גז"
+
+#: src/AIS_Decoder.cpp:307
+msgid "Pushtow, six barges at least one tanker or gas barge"
+msgstr "Pushtow, שש דוברות לפחות מכלית אחת או דוברת גז"
+
+#: src/AIS_Decoder.cpp:308
+msgid "Pushtow, seven barges at least one tanker or gas barge"
+msgstr "Pushtow, שבעה דוברות לפחות מכלית אחת של דוברת גז"
+
+#: src/AIS_Decoder.cpp:309
+msgid "Pushtow, eight barges at least one tanker or gas barge"
+msgstr "Pushtow, שמונה דוברות לפחות מכלית אחת של דוברת גז"
+
+#: src/AIS_Decoder.cpp:310
+msgid "Pushtow, nine or more barges at least one tanker or gas barge"
+msgstr "Pushtow, תשע או יותר דוברות לפחות מכלית אחת של דוברת גז"
+
+#: src/AIS_Decoder.cpp:311
+msgid "Tug, single"
+msgstr "משיכה, בודדת"
+
+#: src/AIS_Decoder.cpp:312
+msgid "Tug, one or more tows"
+msgstr "משיכה, גרירה אחת או יותר"
+
+#: src/AIS_Decoder.cpp:313
+msgid "Tug, assisting a vessel or linked combination"
+msgstr "משיכה, סיוע לכלי או שילוב מקושר"
+
+#: src/AIS_Decoder.cpp:315
+msgid "Passenger ship, ferry, cruise ship, red cross ship"
+msgstr "ספינת נוסעים, מעבורת, ספינת תענוגות, ספינת צלב אדום"
+
+#: src/AIS_Decoder.cpp:316
+msgid "Ferry"
+msgstr "מַעבּוֹרֶת"
+
+#: src/AIS_Decoder.cpp:317
+msgid "Red cross ship"
+msgstr "ספינת הצלב האדום"
+
+#: src/AIS_Decoder.cpp:318
+msgid "Cruise ship"
+msgstr "ספינת תענוגות"
+
+#: src/AIS_Decoder.cpp:319
+msgid "Passenger ship without accommodation"
+msgstr "ספינת נוסעים ללא לינה"
+
+#: src/AIS_Decoder.cpp:320
+msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+msgstr "כלי שיט, מלאכת תחזוקת עבודה, דריק צף, ספינת כבלים, ספינת מצוף, מחפר"
+
+#: src/AIS_Decoder.cpp:321
+msgid "Fishing boat"
+msgstr "סירת דייג"
+
+#: src/AIS_Decoder.cpp:322
+msgid "Barge, tanker, chemical"
+msgstr "דוברה, מכלית, כימית"
+
+#: src/AIS_Decoder.cpp:323
+msgid "General cargo Vessel maritime"
+msgstr "מטען כללי ספינת ים"
+
+#: src/AIS_Decoder.cpp:324
+msgid "Unit carrier maritime"
+msgstr "נושאת היחידה הימית"
+
+#: src/AIS_Decoder.cpp:325
+msgid "Bulk carrier maritime"
+msgstr "נושאת בתפזורת ימית"
+
+#: src/AIS_Decoder.cpp:327
+msgid "Liquified gas tanker"
+msgstr "מכלית גז נוזלית"
+
+#: src/AIS_Decoder.cpp:328
+msgid "Pleasure craft, longer than 20 metres"
+msgstr "מלאכת תענוגות, ארוכה מ -20 מטר"
+
+#: src/AIS_Decoder.cpp:329
+msgid "Fast ship"
+msgstr "ספינה מהירה"
+
+#: src/AIS_Decoder.cpp:330
+msgid "Hydrofoil"
+msgstr "רַחֶפֶת"
+
+#: src/AIS_Decoder.cpp:1204
+#, c-format
+msgid "%02X"
+msgstr "%02X"
+
+#: src/AIS_Decoder.cpp:2914
+msgid "AIS Alert"
+msgstr "התראת AIS "
+
+#: src/AISTargetAlertDialog.cpp:162 src/AISTargetAlertDialog.cpp:253
+msgid "AISTargetAlert"
+msgstr "התראת יעד AIS"
+
+#: src/AISTargetAlertDialog.cpp:204
+msgid "&Silence Alert"
+msgstr "&והתראה שקטה"
+
+#: src/AISTargetAlertDialog.cpp:211
+msgid "&Acknowledge"
+msgstr "&ידיעה"
+
+#: src/AISTargetAlertDialog.cpp:217
+msgid "&Jump To"
+msgstr "&לקפוץ ל-"
+
+#: src/AISTargetAlertDialog.cpp:223 src/AISTargetQueryDialog.cpp:302
+#: src/undo.cpp:82
+msgid "Create Waypoint"
+msgstr "צור נקודת דרך"
+
+#: src/AIS_Target_Data.cpp:341 src/AIS_Target_Data.cpp:721
+#: src/OCPNListCtrl.cpp:123
+msgid "SAR Helicopter"
+msgstr "מסוק SAR"
+
+#: src/AIS_Target_Data.cpp:341 src/AIS_Target_Data.cpp:721
+#: src/OCPNListCtrl.cpp:123
+msgid "SAR Aircraft"
+msgstr "מטוסי SAR"
+
+#: src/AIS_Target_Data.cpp:346 src/AIS_Target_Data.cpp:355
+#: src/AISTargetListDialog.cpp:529 src/options.cpp:718 src/options.cpp:1041
+msgid "MMSI"
+msgstr "MMSI"
+
+#: src/AIS_Target_Data.cpp:347 src/AIS_Target_Data.cpp:356
+#: src/AISTargetListDialog.cpp:537
+msgid "Class"
+msgstr "מחלקה"
+
+#: src/AIS_Target_Data.cpp:348
+msgid "IMO"
+msgstr "IMO"
+
+#: src/AIS_Target_Data.cpp:362
+msgid "Nation"
+msgstr "לאום"
+
+#: src/AIS_Target_Data.cpp:362
+msgid "Flag"
+msgstr "דגל"
+
+#: src/AIS_Target_Data.cpp:373 src/AIS_Target_Data.cpp:758
+#: src/AISTargetListDialog.cpp:145 src/AISTargetListDialog.cpp:157
+#: src/OCPNListCtrl.cpp:138
+msgid "Active"
+msgstr "פעיל"
+
+#: src/AIS_Target_Data.cpp:374 src/AIS_Target_Data.cpp:759
+#: src/AISTargetListDialog.cpp:146 src/AISTargetListDialog.cpp:158
+#: src/OCPNListCtrl.cpp:139
+msgid "Testing"
+msgstr "בודק"
+
+#: src/AIS_Target_Data.cpp:421
+msgid "Safety Broadcast Message"
+msgstr "הודעת תדריך בטיחות"
+
+#: src/AIS_Target_Data.cpp:494
+msgid " (Last Known)"
+msgstr "(ידוע לאחרונה)"
+
+#: src/AIS_Target_Data.cpp:502 src/GoToPositionDialog.cpp:113
+#: src/routeprintout.cpp:109 src/routeprintout.cpp:394
+msgid "Position"
+msgstr "מיקום"
+
+#: src/AIS_Target_Data.cpp:503
+msgid "Report Age"
+msgstr "דיווח"
+
+#: src/AIS_Target_Data.cpp:524
+msgid "Report as of"
+msgstr "דווח כ-"
+
+#: src/AIS_Target_Data.cpp:531 src/RoutePropDlgImpl.cpp:732
+#: src/TrackPropDlg.cpp:285 src/TrackPropDlg.cpp:1193
+msgid "Destination"
+msgstr "יעד"
+
+#: src/AIS_Target_Data.cpp:533
+msgid "ETA (UTC)"
+msgstr "ETA (UTC)"
+
+#: src/AIS_Target_Data.cpp:590 src/AIS_Target_Data.cpp:593
+msgid "Right"
+msgstr "ימינה"
+
+#: src/AIS_Target_Data.cpp:591 src/AIS_Target_Data.cpp:594
+msgid "Left"
+msgstr "שמאל"
+
+#: src/AIS_Target_Data.cpp:626 src/options.cpp:5216 src/options.cpp:5332
+#: src/RoutePropDlg.cpp:267 src/TrackPropDlg.cpp:229 src/TrackPropDlg.cpp:1195
+msgid "Speed"
+msgstr "מהירות"
+
+#: src/AIS_Target_Data.cpp:627 src/routeprintout.cpp:112
+#: src/routeprintout.cpp:401 src/RoutePropDlg.cpp:273
+msgid "Course"
+msgstr "טיול"
+
+#: src/AIS_Target_Data.cpp:629
+msgid "Heading"
+msgstr "לכיוון"
+
+#: src/AIS_Target_Data.cpp:640
+msgid "Turn Rate"
+msgstr "קצב פנייה"
+
+#: src/AIS_Target_Data.cpp:643 src/AISTargetListDialog.cpp:569
+msgid "Range"
+msgstr "טווח"
+
+#: src/AIS_Target_Data.cpp:644 src/RoutePropDlg.cpp:257 src/TrackPropDlg.cpp:224
+msgid "Bearing"
+msgstr "מֵסַב"
+
+#: src/AIS_Target_Data.cpp:656
+msgid "in "
+msgstr "בתוך"
+
+#: src/AIS_Target_Data.cpp:658 src/AIS_Target_Data.cpp:801
+#: src/AISTargetListDialog.cpp:592
+msgid "CPA"
+msgstr "CPA"
+
+#: src/AIS_Target_Data.cpp:665 src/AIS_Target_Data.cpp:668
+msgid "Inland Blue Flag"
+msgstr "פנים הארץ"
+
+#: src/AIS_Target_Data.cpp:666
+msgid "Clear"
+msgstr "נקה"
+
+#: src/AIS_Target_Data.cpp:669
+msgid "Set"
+msgstr "קבע"
+
+#: src/AIS_Target_Data.cpp:680
+msgid "Altitude"
+msgstr "גובה"
+
+#: src/AIS_Target_Data.cpp:792 src/AIS_Target_Data.cpp:796
+msgid " COG Unavailable"
+msgstr "COG לא זמין"
+
+#: src/AIS_Target_Data.cpp:802 src/navutil.cpp:4292
+msgid "in"
+msgstr "ב-"
+
+#: src/AIS_Target_Data.cpp:803
+msgid "min"
+msgstr "דקות"
+
+#: src/AIS_Target_Data.cpp:892
+msgid "A"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:894
+msgid "B"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:896
+msgid "Aid to Navigation"
+msgstr "סיוע לניווט"
+
+#: src/AIS_Target_Data.cpp:898 src/options.cpp:4282 src/options.cpp:4465
+#: src/CanvasOptions.cpp:241
+msgid "Base"
+msgstr "בסיס"
+
+#: src/AIS_Target_Data.cpp:898
+msgid "Base Station"
+msgstr "תחנת בסיס"
+
+#: src/AIS_Target_Data.cpp:900
+msgid "GPSGate Buddy"
+msgstr "GPSGate באדי"
+
+#: src/AIS_Target_Data.cpp:903
+msgid "DSC Distress"
+msgstr "מצוקת DSC"
+
+#: src/AIS_Target_Data.cpp:905
+msgid "DSC Position Report"
+msgstr "דוח עמדת DSC"
+
+#: src/AIS_Target_Data.cpp:907
+msgid "SART"
+msgstr "SART"
+
+#: src/AIS_Target_Data.cpp:914
+msgid "Unk"
+msgstr "לא בסדר"
+
+#: src/AIS_Target_Data.cpp:945
+msgid "Albania"
+msgstr "אלבניה"
+
+#: src/AIS_Target_Data.cpp:946
+msgid "Andorra"
+msgstr "אנדורה"
+
+#: src/AIS_Target_Data.cpp:947
+msgid "Austria"
+msgstr "אוסטריה"
+
+#: src/AIS_Target_Data.cpp:948
+msgid "Azores"
+msgstr "האיים האזורים"
+
+#: src/AIS_Target_Data.cpp:949
+msgid "Belgium"
+msgstr "בלגיה"
+
+#: src/AIS_Target_Data.cpp:950
+msgid "Belarus"
+msgstr "בלארוס"
+
+#: src/AIS_Target_Data.cpp:951
+msgid "Bulgaria"
+msgstr "בולגריה"
+
+#: src/AIS_Target_Data.cpp:952
+msgid "Vatican City State"
+msgstr "עיר ווטיקן"
+
+#: src/AIS_Target_Data.cpp:954 src/AIS_Target_Data.cpp:956
+msgid "Cyprus"
+msgstr "קפריסין"
+
+#: src/AIS_Target_Data.cpp:955 src/AIS_Target_Data.cpp:961
+msgid "Germany"
+msgstr "גרמניה"
+
+#: src/AIS_Target_Data.cpp:957
+msgid "Georgia"
+msgstr "גאורגיה"
+
+#: src/AIS_Target_Data.cpp:958
+msgid "Moldova"
+msgstr "מולדובה"
+
+#: src/AIS_Target_Data.cpp:959 src/AIS_Target_Data.cpp:969
+#: src/AIS_Target_Data.cpp:989 src/AIS_Target_Data.cpp:996
+msgid "Malta"
+msgstr "מלטה"
+
+#: src/AIS_Target_Data.cpp:960
+msgid "Armenia"
+msgstr "ארמניה"
+
+#: src/AIS_Target_Data.cpp:963
+msgid "Denmark"
+msgstr "דנמרק"
+
+#: src/AIS_Target_Data.cpp:964 src/AIS_Target_Data.cpp:965
+msgid "Spain"
+msgstr "ספרד"
+
+#: src/AIS_Target_Data.cpp:968
+msgid "France"
+msgstr "צרפת"
+
+#: src/AIS_Target_Data.cpp:970
+msgid "Finland"
+msgstr "פינלנד"
+
+#: src/AIS_Target_Data.cpp:971
+msgid "Faroe Islands"
+msgstr "האיים פארו"
+
+#: src/AIS_Target_Data.cpp:975
+msgid "Great Britain"
+msgstr "בריטניה הגדולה"
+
+#: src/AIS_Target_Data.cpp:976
+msgid "Gibraltar"
+msgstr "גיברלטר"
+
+#: src/AIS_Target_Data.cpp:977 src/AIS_Target_Data.cpp:981
+msgid "Greece"
+msgstr "יוון"
+
+#: src/AIS_Target_Data.cpp:978
+msgid "Croatia"
+msgstr "קרואטיה"
+
+#: src/AIS_Target_Data.cpp:982
+msgid "Morocco"
+msgstr "מרוקו"
+
+#: src/AIS_Target_Data.cpp:983
+msgid "Hungary"
+msgstr "הונגריה"
+
+#: src/AIS_Target_Data.cpp:986
+msgid "Netherlands"
+msgstr "הולנד"
+
+#: src/AIS_Target_Data.cpp:987
+msgid "Italy"
+msgstr "איטליה"
+
+#: src/AIS_Target_Data.cpp:990
+msgid "Ireland"
+msgstr "אירלנד"
+
+#: src/AIS_Target_Data.cpp:991
+msgid "Iceland"
+msgstr "איסלנד"
+
+#: src/AIS_Target_Data.cpp:992
+msgid "Liechtenstein"
+msgstr "ליכטנשטיין"
+
+#: src/AIS_Target_Data.cpp:993
+msgid "Luxembourg"
+msgstr "לוקסמבורג"
+
+#: src/AIS_Target_Data.cpp:994
+msgid "Monaco"
+msgstr "מונאקו"
+
+#: src/AIS_Target_Data.cpp:995
+msgid "Madeira"
+msgstr "מאדריה"
+
+#: src/AIS_Target_Data.cpp:999
+msgid "Norway"
+msgstr "נורבגיה"
+
+#: src/AIS_Target_Data.cpp:1000
+msgid "Poland"
+msgstr "פולין"
+
+#: src/AIS_Target_Data.cpp:1001
+msgid "Montenegro"
+msgstr "מונטנגרו"
+
+#: src/AIS_Target_Data.cpp:1002
+msgid "Portugal"
+msgstr "פורטוגל"
+
+#: src/AIS_Target_Data.cpp:1003
+msgid "Romania"
+msgstr "רומניה"
+
+#: src/AIS_Target_Data.cpp:1005
+msgid "Sweden"
+msgstr "שוודיה"
+
+#: src/AIS_Target_Data.cpp:1006
+msgid "Slovak Republic"
+msgstr "הרפובליקה הסלובקית"
+
+#: src/AIS_Target_Data.cpp:1007
+msgid "San Marino"
+msgstr "סאן מרינו"
+
+#: src/AIS_Target_Data.cpp:1008
+msgid "Switzerland"
+msgstr "שוויץ"
+
+#: src/AIS_Target_Data.cpp:1009
+msgid "Czech Republic"
+msgstr "הרפובליקה הצ'כית"
+
+#: src/AIS_Target_Data.cpp:1010
+msgid "Turkey"
+msgstr "טורקיה"
+
+#: src/AIS_Target_Data.cpp:1011
+msgid "Ukraine"
+msgstr "אוקראינה"
+
+#: src/AIS_Target_Data.cpp:1012
+msgid "Russian"
+msgstr "רוסית"
+
+#: src/AIS_Target_Data.cpp:1013
+msgid "Macedonia"
+msgstr "מקדוניה"
+
+#: src/AIS_Target_Data.cpp:1014
+msgid "Latvia"
+msgstr "לטביה"
+
+#: src/AIS_Target_Data.cpp:1015
+msgid "Estonia"
+msgstr "אסטוניה"
+
+#: src/AIS_Target_Data.cpp:1016
+msgid "Lithuania"
+msgstr "ליטא"
+
+#: src/AIS_Target_Data.cpp:1017
+msgid "Slovenia"
+msgstr "סלובניה"
+
+#: src/AIS_Target_Data.cpp:1018
+msgid "Serbia"
+msgstr "סרביה"
+
+#: src/AIS_Target_Data.cpp:1019
+msgid "Anguilla"
+msgstr "אנגווילה"
+
+#: src/AIS_Target_Data.cpp:1020
+msgid "Alaska"
+msgstr "אלסקה"
+
+#: src/AIS_Target_Data.cpp:1022
+msgid "Antigua and Barbuda"
+msgstr "אנטיגואה וברבודה"
+
+#: src/AIS_Target_Data.cpp:1023
+msgid "Antilles"
+msgstr "האיים האנטילים"
+
+#: src/AIS_Target_Data.cpp:1024
+msgid "Aruba"
+msgstr "ארובה"
+
+#: src/AIS_Target_Data.cpp:1026 src/AIS_Target_Data.cpp:1028
+msgid "Bahamas"
+msgstr "איי בהאמה"
+
+#: src/AIS_Target_Data.cpp:1027
+msgid "Bermuda"
+msgstr "ברמודה"
+
+#: src/AIS_Target_Data.cpp:1029
+msgid "Belize"
+msgstr "בליז"
+
+#: src/AIS_Target_Data.cpp:1030
+msgid "Barbados"
+msgstr "ברבדוס"
+
+#: src/AIS_Target_Data.cpp:1031
+msgid "Canada"
+msgstr "קנדה"
+
+#: src/AIS_Target_Data.cpp:1032
+msgid "Cayman Islands"
+msgstr "איי קיימן"
+
+#: src/AIS_Target_Data.cpp:1033
+msgid "Costa Rica"
+msgstr "קוסטה ריקה"
+
+#: src/AIS_Target_Data.cpp:1034
+msgid "Cuba"
+msgstr "קובה"
+
+#: src/AIS_Target_Data.cpp:1035
+msgid "Dominica"
+msgstr "דומיניקה"
+
+#: src/AIS_Target_Data.cpp:1036
+msgid "Dominican Republic"
+msgstr "הרפובליקה הדומיניקנית"
+
+#: src/AIS_Target_Data.cpp:1037
+msgid "Guadeloupe"
+msgstr "גוואדלופ"
+
+#: src/AIS_Target_Data.cpp:1038
+msgid "Grenada"
+msgstr "גרנדה"
+
+#: src/AIS_Target_Data.cpp:1039
+msgid "Greenland"
+msgstr "גרינלנד"
+
+#: src/AIS_Target_Data.cpp:1040
+msgid "Guatemala"
+msgstr "גואטמלה"
+
+#: src/AIS_Target_Data.cpp:1041
+msgid "Honduras"
+msgstr "הונדורס"
+
+#: src/AIS_Target_Data.cpp:1042
+msgid "Haiti"
+msgstr "האיטי"
+
+#: src/AIS_Target_Data.cpp:1043 src/AIS_Target_Data.cpp:1066
+msgid "United States of America"
+msgstr "ארצות הברית"
+
+#: src/AIS_Target_Data.cpp:1044
+msgid "Jamaica"
+msgstr "ג'מייקה"
+
+#: src/AIS_Target_Data.cpp:1045
+msgid "Saint Kitts and Nevis"
+msgstr "סנט קיטס ונוויס"
+
+#: src/AIS_Target_Data.cpp:1046
+msgid "Saint Lucia"
+msgstr "סנט לוסיה"
+
+#: src/AIS_Target_Data.cpp:1047
+msgid "Mexico"
+msgstr "מקסיקו"
+
+#: src/AIS_Target_Data.cpp:1048
+msgid "Martinique"
+msgstr "מרטיניק"
+
+#: src/AIS_Target_Data.cpp:1049
+msgid "Montserrat"
+msgstr "מונטסראט"
+
+#: src/AIS_Target_Data.cpp:1050
+msgid "Nicaragua"
+msgstr "ניקרגואה"
+
+#: src/AIS_Target_Data.cpp:1057 src/AIS_Target_Data.cpp:1071
+msgid "Panama"
+msgstr "פנמה"
+
+#: src/AIS_Target_Data.cpp:1058
+msgid "Puerto Rico"
+msgstr "פוארטו ריקו"
+
+#: src/AIS_Target_Data.cpp:1059
+msgid "El Salvador"
+msgstr "המושיע"
+
+#: src/AIS_Target_Data.cpp:1060
+msgid "Saint Pierre and Miquelon"
+msgstr "סנט פייר ומיקלון"
+
+#: src/AIS_Target_Data.cpp:1061
+msgid "Trinidad and Tobago"
+msgstr "טרינידד וטובגו"
+
+#: src/AIS_Target_Data.cpp:1062
+msgid "Turks and Caicos Islands"
+msgstr "איי טורקס וקאיקוס"
+
+#: src/AIS_Target_Data.cpp:1074
+msgid "Saint Vincent and the Grenadines"
+msgstr "וינסנט הקדוש ו ה - גרנידיים"
+
+#: src/AIS_Target_Data.cpp:1075
+msgid "British Virgin Islands"
+msgstr "איי בתולה בריטיים"
+
+#: src/AIS_Target_Data.cpp:1076
+msgid "United States Virgin Islands"
+msgstr "איי הבתולה של ארצות הברית"
+
+#: src/AIS_Target_Data.cpp:1077
+msgid "Afghanistan"
+msgstr "אפגניסטן"
+
+#: src/AIS_Target_Data.cpp:1078
+msgid "Saudi Arabia"
+msgstr "ערב הסעודית"
+
+#: src/AIS_Target_Data.cpp:1079
+msgid "Bangladesh"
+msgstr "בנגלדש"
+
+#: src/AIS_Target_Data.cpp:1080
+msgid "Bahrain"
+msgstr "בחריין"
+
+#: src/AIS_Target_Data.cpp:1081
+msgid "Bhutan"
+msgstr "בהוטן"
+
+#: src/AIS_Target_Data.cpp:1084
+msgid "China"
+msgstr "סִין "
+
+#: src/AIS_Target_Data.cpp:1085
+msgid "Taiwan"
+msgstr "טייוואן"
+
+#: src/AIS_Target_Data.cpp:1086
+msgid "Sri Lanka"
+msgstr "סרי לנקה"
+
+#: src/AIS_Target_Data.cpp:1087
+msgid "India"
+msgstr "הודו"
+
+#: src/AIS_Target_Data.cpp:1088
+msgid "Iran"
+msgstr "איראן"
+
+#: src/AIS_Target_Data.cpp:1089
+msgid "Azerbaijani Republic"
+msgstr "הרפובליקה של אזרביג'אני"
+
+#: src/AIS_Target_Data.cpp:1090
+msgid "Iraq"
+msgstr "עִירַאק"
+
+#: src/AIS_Target_Data.cpp:1091
+msgid "Israel"
+msgstr "ישראל"
+
+#: src/AIS_Target_Data.cpp:1092 src/AIS_Target_Data.cpp:1093
+msgid "Japan"
+msgstr "יפן"
+
+#: src/AIS_Target_Data.cpp:1094
+msgid "Turkmenistan"
+msgstr "טורקמניסטן"
+
+#: src/AIS_Target_Data.cpp:1095
+msgid "Kazakhstan"
+msgstr "קזחסטן"
+
+#: src/AIS_Target_Data.cpp:1096
+msgid "Uzbekistan"
+msgstr "אוזבקיסטן"
+
+#: src/AIS_Target_Data.cpp:1097
+msgid "Jordan"
+msgstr "ירדן"
+
+#: src/AIS_Target_Data.cpp:1099
+msgid "Korea"
+msgstr "קוריאה"
+
+#: src/AIS_Target_Data.cpp:1100
+msgid "Palestine"
+msgstr "פלסטין"
+
+#: src/AIS_Target_Data.cpp:1101
+msgid "People's Rep. of Korea"
+msgstr "נציג העם של קוריאה"
+
+#: src/AIS_Target_Data.cpp:1102
+msgid "Kuwait"
+msgstr "כוויית"
+
+#: src/AIS_Target_Data.cpp:1103
+msgid "Lebanon"
+msgstr "לבנון"
+
+#: src/AIS_Target_Data.cpp:1104
+msgid "Kyrgyz Republic"
+msgstr "הרפובליקה הקירגיזית"
+
+#: src/AIS_Target_Data.cpp:1105
+msgid "Macao"
+msgstr "מקאו"
+
+#: src/AIS_Target_Data.cpp:1106
+msgid "Maldives"
+msgstr "האיים המלדיביים"
+
+#: src/AIS_Target_Data.cpp:1107
+msgid "Mongolia"
+msgstr "מונגוליה"
+
+#: src/AIS_Target_Data.cpp:1108
+msgid "Nepal"
+msgstr "נפאל"
+
+#: src/AIS_Target_Data.cpp:1109
+msgid "Oman"
+msgstr "עומן"
+
+#: src/AIS_Target_Data.cpp:1110
+msgid "Pakistan"
+msgstr "פקיסטן"
+
+#: src/AIS_Target_Data.cpp:1111
+msgid "Qatar"
+msgstr "קטר"
+
+#: src/AIS_Target_Data.cpp:1112
+msgid "Syrian Arab Republic"
+msgstr "הרפובליקה הערבית הסורית"
+
+#: src/AIS_Target_Data.cpp:1114
+msgid "United Arab Emirates"
+msgstr "איחוד האמירויות הערביות"
+
+#: src/AIS_Target_Data.cpp:1115
+msgid "Tajikistan"
+msgstr "טג'יקיסטן"
+
+#: src/AIS_Target_Data.cpp:1117
+msgid "Yemen"
+msgstr "תימן"
+
+#: src/AIS_Target_Data.cpp:1118
+msgid "Hong Kong"
+msgstr "הונג קונג"
+
+#: src/AIS_Target_Data.cpp:1119
+msgid "Bosnia and Herzegovina"
+msgstr "בוסניה והרצגובינה"
+
+#: src/AIS_Target_Data.cpp:1120
+msgid "Adelie Land"
+msgstr "ארץ אדלי"
+
+#: src/AIS_Target_Data.cpp:1121
+msgid "Australia"
+msgstr "אוסטרליה"
+
+#: src/AIS_Target_Data.cpp:1122
+msgid "Myanmar"
+msgstr "מיאנמר"
+
+#: src/AIS_Target_Data.cpp:1123
+msgid "Brunei Darussalam"
+msgstr "ברוניי דרוסלאם"
+
+#: src/AIS_Target_Data.cpp:1124
+msgid "Micronesia"
+msgstr "מיקרונזיה"
+
+#: src/AIS_Target_Data.cpp:1125
+msgid "Palau"
+msgstr "פלאו"
+
+#: src/AIS_Target_Data.cpp:1126
+msgid "New Zealand"
+msgstr "ניו זילנד"
+
+#: src/AIS_Target_Data.cpp:1128
+msgid "Cambodia"
+msgstr "קמבודיה"
+
+#: src/AIS_Target_Data.cpp:1129
+msgid "Christmas Island"
+msgstr "איי חג המולד"
+
+#: src/AIS_Target_Data.cpp:1130
+msgid "Cook Islands"
+msgstr "איי קוק"
+
+#: src/AIS_Target_Data.cpp:1131
+msgid "Fiji"
+msgstr "פיג'י"
+
+#: src/AIS_Target_Data.cpp:1132
+msgid "Cocos (Keeling) Islands"
+msgstr "איי קוקוס (קילינג)"
+
+#: src/AIS_Target_Data.cpp:1133
+msgid "Indonesia"
+msgstr "אינדונזיה"
+
+#: src/AIS_Target_Data.cpp:1134
+msgid "Kiribati"
+msgstr "קיריבאטי"
+
+#: src/AIS_Target_Data.cpp:1135
+msgid "Lao People's Dem. Rep."
+msgstr "Lao People's Dem. Rep."
+
+#: src/AIS_Target_Data.cpp:1136
+msgid "Malaysia"
+msgstr "מלזיה"
+
+#: src/AIS_Target_Data.cpp:1137
+msgid "Northern Mariana Islands"
+msgstr "איי מריאנה הצפוניים"
+
+#: src/AIS_Target_Data.cpp:1138
+msgid "Marshall Islands"
+msgstr "איי מרשל"
+
+#: src/AIS_Target_Data.cpp:1139
+msgid "New Caledonia"
+msgstr "קלדוניה החדשה"
+
+#: src/AIS_Target_Data.cpp:1140
+msgid "Niue"
+msgstr "ניואה"
+
+#: src/AIS_Target_Data.cpp:1141
+msgid "Nauru"
+msgstr "נאורו"
+
+#: src/AIS_Target_Data.cpp:1142
+msgid "French Polynesia"
+msgstr "פולינזיה הצרפתית"
+
+#: src/AIS_Target_Data.cpp:1143
+msgid "Philippines"
+msgstr "הפיליפינים"
+
+#: src/AIS_Target_Data.cpp:1144
+msgid "Papua New Guinea"
+msgstr "פפואה גינאה החדשה"
+
+#: src/AIS_Target_Data.cpp:1145
+msgid "Pitcairn Island"
+msgstr "האי פיטקרן"
+
+#: src/AIS_Target_Data.cpp:1146
+msgid "Solomon Islands"
+msgstr "איי סולומון"
+
+#: src/AIS_Target_Data.cpp:1147
+msgid "American Samoa"
+msgstr "סמואה האמריקנית"
+
+#: src/AIS_Target_Data.cpp:1148
+msgid "Samoa"
+msgstr "סמואה"
+
+#: src/AIS_Target_Data.cpp:1152
+msgid "Singapore"
+msgstr "סינגפור"
+
+#: src/AIS_Target_Data.cpp:1153
+msgid "Thailand"
+msgstr "תאילנד"
+
+#: src/AIS_Target_Data.cpp:1154
+msgid "Tonga"
+msgstr "טונגה"
+
+#: src/AIS_Target_Data.cpp:1155
+msgid "Tuvalu"
+msgstr "טובאלו"
+
+#: src/AIS_Target_Data.cpp:1156
+msgid "Viet Nam"
+msgstr "וייטנאם"
+
+#: src/AIS_Target_Data.cpp:1158
+msgid "Vanuatu"
+msgstr "ונואטו"
+
+#: src/AIS_Target_Data.cpp:1159
+msgid "Wallis and Futuna Islands"
+msgstr "איי ווליס ופוטונה"
+
+#: src/AIS_Target_Data.cpp:1160
+msgid "South Africa"
+msgstr "דרום אפריקה"
+
+#: src/AIS_Target_Data.cpp:1161
+msgid "Angola"
+msgstr "אנגולה"
+
+#: src/AIS_Target_Data.cpp:1162
+msgid "Algeria"
+msgstr "אלג'יריה"
+
+#: src/AIS_Target_Data.cpp:1163
+msgid "Saint Paul"
+msgstr "סנט פול"
+
+#: src/AIS_Target_Data.cpp:1164
+msgid "Ascension Island"
+msgstr "האי אסנשן"
+
+#: src/AIS_Target_Data.cpp:1165
+msgid "Burundi"
+msgstr "בורונדי"
+
+#: src/AIS_Target_Data.cpp:1166
+msgid "Benin"
+msgstr "בנין"
+
+#: src/AIS_Target_Data.cpp:1167
+msgid "Botswana"
+msgstr "בוטסואנה"
+
+#: src/AIS_Target_Data.cpp:1168
+msgid "Central African Republic"
+msgstr "הרפובליקה המרכז אפריקאית"
+
+#: src/AIS_Target_Data.cpp:1169
+msgid "Cameroon"
+msgstr "קמרון"
+
+#: src/AIS_Target_Data.cpp:1170
+msgid "Congo"
+msgstr "קונגו"
+
+#: src/AIS_Target_Data.cpp:1171
+msgid "Comoros"
+msgstr "איי קומורו"
+
+#: src/AIS_Target_Data.cpp:1172
+msgid "Capo Verde"
+msgstr "כף ורדה"
+
+#: src/AIS_Target_Data.cpp:1173
+msgid "Crozet Archipelago"
+msgstr "ארכיפלג קרוזט"
+
+#: src/AIS_Target_Data.cpp:1174
+msgid "Ivory Coast"
+msgstr "חוף השנהב"
+
+#: src/AIS_Target_Data.cpp:1175
+msgid "Comoros (Union of the)"
+msgstr "קומורו (האיחוד של)"
+
+#: src/AIS_Target_Data.cpp:1176
+msgid "Djibouti"
+msgstr "ג׳יבוטי"
+
+#: src/AIS_Target_Data.cpp:1177
+msgid "Egypt"
+msgstr "מצרים"
+
+#: src/AIS_Target_Data.cpp:1178
+msgid "Ethiopia"
+msgstr "אתיופיה"
+
+#: src/AIS_Target_Data.cpp:1179
+msgid "Eritrea"
+msgstr "אריתריאה"
+
+#: src/AIS_Target_Data.cpp:1180
+msgid "Gabonese Republic"
+msgstr "הרפובליקה הגבונית"
+
+#: src/AIS_Target_Data.cpp:1181
+msgid "Ghana"
+msgstr "גאנה"
+
+#: src/AIS_Target_Data.cpp:1182
+msgid "Gambia"
+msgstr "גמביה"
+
+#: src/AIS_Target_Data.cpp:1183
+msgid "Guinea-Bissau"
+msgstr "גינאה ביסאו"
+
+#: src/AIS_Target_Data.cpp:1184
+msgid "Equatorial Guinea"
+msgstr "גינאה המשוונית"
+
+#: src/AIS_Target_Data.cpp:1185
+msgid "Guinea"
+msgstr "גינאה"
+
+#: src/AIS_Target_Data.cpp:1186
+msgid "Burkina Faso"
+msgstr "בורקינה פאסו"
+
+#: src/AIS_Target_Data.cpp:1187
+msgid "Kenya"
+msgstr "קניה"
+
+#: src/AIS_Target_Data.cpp:1188
+msgid "Kerguelen Islands"
+msgstr "איי קרגואלן"
+
+#: src/AIS_Target_Data.cpp:1190
+msgid "Liberia"
+msgstr "ליבריה"
+
+#: src/AIS_Target_Data.cpp:1191
+msgid "South Sudan (Republic of)"
+msgstr "דרום סודאן (הרפובליקה של)"
+
+#: src/AIS_Target_Data.cpp:1192
+msgid "Libya"
+msgstr "לוב"
+
+#: src/AIS_Target_Data.cpp:1193
+msgid "Lesotho"
+msgstr "לסוטו"
+
+#: src/AIS_Target_Data.cpp:1194
+msgid "Mauritius"
+msgstr "מאוריציוס"
+
+#: src/AIS_Target_Data.cpp:1195
+msgid "Madagascar"
+msgstr "מדגסקר"
+
+#: src/AIS_Target_Data.cpp:1196
+msgid "Mali"
+msgstr "מאלי"
+
+#: src/AIS_Target_Data.cpp:1197
+msgid "Mozambique"
+msgstr "מוזמביק"
+
+#: src/AIS_Target_Data.cpp:1198
+msgid "Mauritania"
+msgstr "מאוריטניה"
+
+#: src/AIS_Target_Data.cpp:1199
+msgid "Malawi"
+msgstr "מלאווי"
+
+#: src/AIS_Target_Data.cpp:1200
+msgid "Niger"
+msgstr "ניז'ר"
+
+#: src/AIS_Target_Data.cpp:1201
+msgid "Nigeria"
+msgstr "ניגריה"
+
+#: src/AIS_Target_Data.cpp:1202
+msgid "Namibia"
+msgstr "נמיביה"
+
+#: src/AIS_Target_Data.cpp:1203
+msgid "Reunion"
+msgstr "איחוד מחדש"
+
+#: src/AIS_Target_Data.cpp:1204
+msgid "Rwanda"
+msgstr "רואנדה"
+
+#: src/AIS_Target_Data.cpp:1205
+msgid "Sudan"
+msgstr "סודאן"
+
+#: src/AIS_Target_Data.cpp:1206
+msgid "Senegal"
+msgstr "סנגל"
+
+#: src/AIS_Target_Data.cpp:1207
+msgid "Seychelles"
+msgstr "סיישל"
+
+#: src/AIS_Target_Data.cpp:1208
+msgid "Saint Helena"
+msgstr "סנט הלנה"
+
+#: src/AIS_Target_Data.cpp:1209
+msgid "Somali Democratic Republic"
+msgstr "סומלי הרפובליקה הדמוקרטית"
+
+#: src/AIS_Target_Data.cpp:1210
+msgid "Sierra Leone"
+msgstr "סיירה לאונה."
+
+#: src/AIS_Target_Data.cpp:1211
+msgid "Sao Tome and Principe"
+msgstr "סאו טומה ופרינסיפה"
+
+#: src/AIS_Target_Data.cpp:1212
+msgid "Eswatini"
+msgstr "אסוואטיני"
+
+#: src/AIS_Target_Data.cpp:1213
+msgid "Chad"
+msgstr "צ ' אד"
+
+#: src/AIS_Target_Data.cpp:1214
+msgid "Togolese Republic"
+msgstr "הרפובליקה הגבונית"
+
+#: src/AIS_Target_Data.cpp:1215
+msgid "Tunisia"
+msgstr "תוניסיה"
+
+#: src/AIS_Target_Data.cpp:1216 src/AIS_Target_Data.cpp:1219
+msgid "Tanzania"
+msgstr "טנזניה"
+
+#: src/AIS_Target_Data.cpp:1217
+msgid "Uganda"
+msgstr "אוגנדה"
+
+#: src/AIS_Target_Data.cpp:1218
+msgid "Dem Rep.of the Congo"
+msgstr "Dem Rep.of the Congo"
+
+#: src/AIS_Target_Data.cpp:1220
+msgid "Zambia"
+msgstr "זמביה"
+
+#: src/AIS_Target_Data.cpp:1221
+msgid "Zimbabwe"
+msgstr "זימבבואה"
+
+#: src/AIS_Target_Data.cpp:1222
+msgid "Argentine Republic"
+msgstr "הרפובליקה דאגסטן"
+
+#: src/AIS_Target_Data.cpp:1223
+msgid "Brazil"
+msgstr "ברזיל"
+
+#: src/AIS_Target_Data.cpp:1224
+msgid "Bolivia"
+msgstr "בוליביה"
+
+#: src/AIS_Target_Data.cpp:1225
+msgid "Chile"
+msgstr "צ'ילה"
+
+#: src/AIS_Target_Data.cpp:1226
+msgid "Colombia"
+msgstr "קולומביה"
+
+#: src/AIS_Target_Data.cpp:1227
+msgid "Ecuador"
+msgstr "אקוודור"
+
+#: src/AIS_Target_Data.cpp:1228
+msgid "Falkland Islands"
+msgstr "איי פאלקלנד"
+
+#: src/AIS_Target_Data.cpp:1229
+msgid "France - Guiana"
+msgstr "גיאנה הצרפתית"
+
+#: src/AIS_Target_Data.cpp:1230
+msgid "Guyana"
+msgstr "גויאנה"
+
+#: src/AIS_Target_Data.cpp:1231
+msgid "Paraguay"
+msgstr "פרגוואי"
+
+#: src/AIS_Target_Data.cpp:1232
+msgid "Peru"
+msgstr "פרו"
+
+#: src/AIS_Target_Data.cpp:1233
+msgid "Suriname"
+msgstr "סורינאם"
+
+#: src/AIS_Target_Data.cpp:1234
+msgid "Uruguay"
+msgstr "אורוגוואי"
+
+#: src/AIS_Target_Data.cpp:1235
+msgid "Venezuela"
+msgstr "ונצואלה"
+
+#: src/AISTargetListDialog.cpp:150 src/AISTargetListDialog.cpp:162
+#: src/OCPNListCtrl.cpp:88 src/OCPNListCtrl.cpp:97 src/OCPNListCtrl.cpp:131
+#: src/OCPNListCtrl.cpp:145 src/OCPNListCtrl.cpp:150 src/OCPNListCtrl.cpp:162
+#: src/OCPNListCtrl.cpp:168 src/OCPNListCtrl.cpp:180 src/OCPNListCtrl.cpp:188
+#: src/OCPNListCtrl.cpp:196 src/OCPNListCtrl.cpp:205
+msgid "-"
+msgstr ""
+
+#: src/AISTargetListDialog.cpp:305 src/chart1.cpp:1588 src/chart1.cpp:6746
+#: src/chart1.cpp:11510 src/chart1.cpp:12492 src/chcanv.cpp:10975
+#: src/chcanv.cpp:11006 src/ChInfoWin.cpp:56 src/cm93.cpp:6833
+#: src/concanv.cpp:103 src/ConnectionParams.cpp:330 src/ConnectionParams.cpp:424
+#: src/ConnectionParams.cpp:907 src/glChartCanvas.cpp:4041
+#: src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1876 src/OCPNPlatform.cpp:2313
+#: src/OCPNPlatform.cpp:2353 src/options.cpp:1010 src/options.cpp:1509
+#: src/options.cpp:2434 src/options.cpp:9077 src/options.cpp:9294
+#: src/options.cpp:10451 src/options.cpp:10595 src/Osenc.cpp:1663
+#: src/routemanagerdialog.cpp:291 src/RoutePropDlg.cpp:21 src/TCWin.cpp:83
+#: src/TCWin.cpp:204 src/toolbar.cpp:3308 src/TrackPropDlg.cpp:104
+#: src/TrackPropDlg.cpp:248 src/TrackPropDlg.cpp:544 src/CanvasOptions.cpp:81
+#: src/MarkInfo.cpp:269 src/MarkInfo.cpp:313
+msgid "Dialog"
+msgstr "תיבת דו שיח"
+
+#: src/AISTargetListDialog.cpp:323 src/canvasMenu.cpp:589 src/chart1.cpp:5762
+msgid "AIS target list"
+msgstr "AIS רשימת מטרות"
+
+#: src/AISTargetListDialog.cpp:505
+msgid "Trk"
+msgstr "Trk"
+
+#: src/AISTargetListDialog.cpp:513 src/routeprintout.cpp:386
+#: src/RoutePropDlg.cpp:37 src/RoutePropDlgImpl.cpp:730 src/TrackPropDlg.cpp:265
+#: src/TrackPropDlg.cpp:570 src/TrackPropDlg.cpp:1191 src/MarkInfo.cpp:380
+msgid "Name"
+msgstr "שם"
+
+#: src/AISTargetListDialog.cpp:521
+msgid "Call"
+msgstr "שיחה"
+
+#: src/AISTargetListDialog.cpp:545 src/ConnectionParams.cpp:462
+#: src/ConnectionParams.cpp:557 src/ConnectionParams.cpp:653
+#: src/ConnectionParams.cpp:737 src/options.cpp:2259 src/options.cpp:2962
+msgid "Type"
+msgstr "סוג"
+
+#: src/AISTargetListDialog.cpp:553
+msgid "Nav Status"
+msgstr "מצב ניווט"
+
+#: src/AISTargetListDialog.cpp:561
+msgid "Brg"
+msgstr "Brg"
+
+#: src/AISTargetListDialog.cpp:577
+msgid "CoG"
+msgstr "CoG"
+
+#: src/AISTargetListDialog.cpp:585
+msgid "SoG"
+msgstr "SoG"
+
+#: src/AISTargetListDialog.cpp:599
+msgid "TCPA"
+msgstr "TCPA"
+
+#: src/AISTargetListDialog.cpp:639
+msgid "Target info"
+msgstr "מידע על הנקודה"
+
+#: src/AISTargetListDialog.cpp:652
+msgid "Create WPT"
+msgstr "צור WPT"
+
+#: src/AISTargetListDialog.cpp:658
+msgid "Hide All Tracks"
+msgstr "הסתר את כול המסלולים"
+
+#: src/AISTargetListDialog.cpp:664
+msgid "Show All Tracks"
+msgstr "הצג את כל המסלולים"
+
+#: src/AISTargetListDialog.cpp:670
+msgid "Toggle track"
+msgstr "הפעל מסלול"
+
+#: src/AISTargetListDialog.cpp:676
+msgid "Copy MMSI"
+msgstr "העתק MMSI"
+
+#: src/AISTargetListDialog.cpp:682
+msgid "AutoSort"
+msgstr "סינון אוטומטי"
+
+#: src/AISTargetListDialog.cpp:692
+msgid "Limit range: NM"
+msgstr "הגבל מרחק : NM"
+
+#: src/AISTargetListDialog.cpp:705
+msgid "Target Count"
+msgstr "כמות המסומנים"
+
+#: src/AISTargetListDialog.cpp:715 libs/wxcurl/src/dialog.cpp:399
+msgid "Close"
+msgstr "סגור"
+
+#: src/AISTargetQueryDialog.cpp:156 src/AISTargetQueryDialog.cpp:305
+#: src/AISTargetQueryDialog.cpp:337
+msgid "Record Track"
+msgstr "הקלטת מסלול"
+
+#: src/AISTargetQueryDialog.cpp:190
+msgid "The recently captured track of this target has been recorded.\n"
+"Do you want to continue recording until the end of the current OpenCPN session?"
+msgstr "לאחרונה מעקב מסלול הוקלט. האם אתה רוצה להמשיך במסלול עד סיום תרגיל בOpenCPN"
+
+#: src/AISTargetQueryDialog.cpp:219
+msgid "AISTargetQuery"
+msgstr "AISTargetQuery"
+
+#: src/AISTargetQueryDialog.cpp:309 src/cm93.cpp:6897
+#: src/GoToPositionDialog.cpp:146 src/options.cpp:662 src/options.cpp:768
+#: src/options.cpp:6200 src/routeprintout.cpp:431 src/TCWin.cpp:162
+#: src/TCWin.cpp:173 src/toolbar.cpp:3372 src/TrackPropDlg.cpp:505
+#: src/TrackPropDlg.cpp:840
+msgid "OK"
+msgstr "אישור"
+
+#: src/AISTargetQueryDialog.cpp:335
+msgid "Stop Tracking"
+msgstr "הפסק מעקב"
+
+#: src/androidUTIL.cpp:2162
+msgid "OpenCPN Help is not installed.\n"
+"Would you like to install from Google PlayStore now?"
+msgstr "אפשרות עזרה לא מותקנת בOpenCPN\n"
+"האם תרצה להתקין את זה עכשיו מחנות האפליקציות של גוגל פליי?"
+
+#: src/androidUTIL.cpp:2996
+msgid "Your android device has an internal GPS, but it is disabled.\n"
+"                       Please visit android Settings/Location dialog to enable GPS"
+msgstr "מכשיר האנדרואיד יש GPS מובנה, אבל הוא מבוטל \n"
+"בבקשה בקר בדרך ההגדרות במכשיר בלשונית מיקום והפעל את הGPS מיקום"
+
+#: src/androidUTIL.cpp:3148
+msgid "Nothing found"
+msgstr "לא נמצא כלום"
+
+#: src/androidUTIL.cpp:4756 src/chart1.cpp:3861
+msgid "Anchorage created "
+msgstr "מעגן נוצר"
+
+#: src/canvasMenu.cpp:263 src/canvasMenu.cpp:280 src/options.cpp:961
+msgid "Menu"
+msgstr "תפריט"
+
+#: src/canvasMenu.cpp:301
+msgid "End Route"
+msgstr "סיים מסלול"
+
+#: src/canvasMenu.cpp:306
+msgid "Measure Off"
+msgstr "ללא מדד"
+
+#: src/canvasMenu.cpp:308
+msgid "Measure"
+msgstr "מדד"
+
+#: src/canvasMenu.cpp:315
+msgid "Undo"
+msgstr "להחזיר לקדמותו"
+
+#: src/canvasMenu.cpp:321
+msgid "Redo"
+msgstr "לעשות שוב"
+
+#: src/canvasMenu.cpp:384
+msgid "Max Detail Here"
+msgstr "פירוט מקסימלי כאן"
+
+#: src/canvasMenu.cpp:385 src/canvasMenu.cpp:400
+msgid "Scale In"
+msgstr "קנה מידה קרוב"
+
+#: src/canvasMenu.cpp:386 src/canvasMenu.cpp:401
+msgid "Scale Out"
+msgstr "קנה מידה רחוק"
+
+#: src/canvasMenu.cpp:408
+msgid "Drop Mark"
+msgstr "סמן"
+
+#: src/canvasMenu.cpp:409
+msgid "New Route..."
+msgstr "נתיב חדש..."
+
+#: src/canvasMenu.cpp:412
+msgid "Move Boat Here"
+msgstr "הזז סירה לכאן"
+
+#: src/canvasMenu.cpp:416
+msgid "Navigate To Here"
+msgstr "נווט לכאן"
+
+#: src/canvasMenu.cpp:424 src/chart1.cpp:5688
+msgid "Course Up Mode"
+msgstr "מצב Course Up"
+
+#: src/canvasMenu.cpp:426
+msgid "Heading Up Mode"
+msgstr "Heading Up מצב"
+
+#: src/canvasMenu.cpp:429 src/canvasMenu.cpp:436 src/chart1.cpp:5370
+#: src/chart1.cpp:5687 src/chart1.cpp:7951
+msgid "North Up Mode"
+msgstr "North Up מצב"
+
+#: src/canvasMenu.cpp:434
+msgid "Chart Up Mode"
+msgstr "Chart Up מצב"
+
+#: src/canvasMenu.cpp:444 src/canvasMenu.cpp:451
+msgid "Toggle Full Screen"
+msgstr "הפעל/הפסק מצב מסך מלא"
+
+#: src/canvasMenu.cpp:456 src/canvasMenu.cpp:615 src/canvasMenu.cpp:632
+msgid "Zero XTE"
+msgstr "Zero XTE"
+
+#: src/canvasMenu.cpp:463
+msgid "Paste Waypoint"
+msgstr "הדבק נקודת ציון"
+
+#: src/canvasMenu.cpp:467 src/canvasMenu.cpp:475
+msgid "Paste Route"
+msgstr "הדבק מסלול"
+
+#: src/canvasMenu.cpp:471 src/canvasMenu.cpp:476
+msgid "Paste Track"
+msgstr "הדבק נתיב"
+
+#: src/canvasMenu.cpp:484
+msgid "CM93 Offset Dialog..."
+msgstr "דיאלוג קיזוז CM93 ..."
+
+#: src/canvasMenu.cpp:507 src/options.cpp:4712 src/options.cpp:4770
+msgid "Chart Groups"
+msgstr "קבוצת מפות"
+
+#: src/canvasMenu.cpp:515
+msgid "temporary"
+msgstr "זמני"
+
+#: src/canvasMenu.cpp:518
+msgid "All Active Charts"
+msgstr "כול המפות הפעילות"
+
+#: src/canvasMenu.cpp:554 src/CanvasOptions.cpp:177
+msgid "AIS"
+msgstr "AIS"
+
+#: src/canvasMenu.cpp:555
+msgid "Target Query..."
+msgstr "שאילתת יעד ..."
+
+#: src/canvasMenu.cpp:558
+msgid "Hide Target CPA"
+msgstr "הסתר מחיר יעד לרכישה"
+
+#: src/canvasMenu.cpp:560
+msgid "Show Target CPA"
+msgstr "הצג מחיר יעד לרכישה"
+
+#: src/canvasMenu.cpp:562
+msgid "Target List..."
+msgstr "רשימת יעדים ..."
+
+#: src/canvasMenu.cpp:565
+msgid "Hide Target Track"
+msgstr "הסתר מסלול יעד"
+
+#: src/canvasMenu.cpp:567
+msgid "Show Target Track"
+msgstr "הצג מסלול יעד"
+
+#: src/canvasMenu.cpp:570
+msgid "Copy Target MMSI"
+msgstr "העתק את MMSI היעד"
+
+#: src/canvasMenu.cpp:575 src/canvasMenu.cpp:581
+msgid "Object Query..."
+msgstr "שאילתת אובייקט ..."
+
+#: src/canvasMenu.cpp:597
+msgid "Unnamed Route"
+msgstr "מסלול ללא שם"
+
+#: src/canvasMenu.cpp:606
+msgid "Layer Route"
+msgstr "שכבת מסלול"
+
+#: src/canvasMenu.cpp:607 src/canvasMenu.cpp:624 src/canvasMenu.cpp:678
+#: src/canvasMenu.cpp:682 src/canvasMenu.cpp:705 src/canvasMenu.cpp:712
+#: src/canvasMenu.cpp:770 src/canvasMenu.cpp:774 src/options.cpp:1799
+#: src/MarkInfo.cpp:358
+msgid "Properties"
+msgstr "מאפיינים"
+
+#: src/canvasMenu.cpp:612 src/canvasMenu.cpp:629 src/canvasMenu.cpp:722
+msgid "Activate Next Waypoint"
+msgstr "הפעל את נקודת ציון הבאה"
+
+#: src/canvasMenu.cpp:614 src/canvasMenu.cpp:631 src/routemanagerdialog.cpp:1016
+msgid "Deactivate"
+msgstr "השבת"
+
+#: src/canvasMenu.cpp:618 src/canvasMenu.cpp:635 src/canvasMenu.cpp:708
+#: src/canvasMenu.cpp:715 src/routemanagerdialog.cpp:1010
+msgid "Activate"
+msgstr "הפעל"
+
+#: src/canvasMenu.cpp:623 src/chcanv.cpp:3843 src/chcanv.cpp:9779
+#: src/concanv.cpp:142 src/concanv.cpp:161 src/concanv.cpp:203
+msgid "Route"
+msgstr "מסלול"
+
+#: src/canvasMenu.cpp:638
+msgid "Insert Waypoint"
+msgstr "הכנס נקודת ציון"
+
+#: src/canvasMenu.cpp:639 src/undo.cpp:91
+msgid "Append Waypoint"
+msgstr "הוסף נקודת ציון"
+
+#: src/canvasMenu.cpp:640 src/canvasMenu.cpp:683 src/canvasMenu.cpp:728
+#: src/canvasMenu.cpp:779
+msgid "Copy as KML"
+msgstr "העתק כקובץ KML"
+
+#: src/canvasMenu.cpp:641 src/canvasMenu.cpp:684 src/canvasMenu.cpp:731
+#: src/canvasMenu.cpp:782 src/options.cpp:957 src/options.cpp:10300
+#: src/RoutePropDlg.cpp:320 src/TrackPropDlg.cpp:752 src/MarkInfo.cpp:488
+#: src/MarkInfo.cpp:1075 src/MarkInfo.cpp:1113
+msgid "Delete"
+msgstr "מחיקה"
+
+#: src/canvasMenu.cpp:642
+msgid "Reverse..."
+msgstr "הפוך.."
+
+#: src/canvasMenu.cpp:656 src/canvasMenu.cpp:745
+msgid "Send to new GPS"
+msgstr "שלח ל-GPS"
+
+#: src/canvasMenu.cpp:677
+msgid "Layer Track"
+msgstr "שכבת מסלול"
+
+#: src/canvasMenu.cpp:681 src/chcanv.cpp:3991
+msgid "Track"
+msgstr "מסלול"
+
+#: src/canvasMenu.cpp:695 src/canvasMenu.cpp:760
+msgid "Unnamed Waypoint"
+msgstr "שרטוט ללא שם"
+
+#: src/canvasMenu.cpp:704 src/canvasMenu.cpp:769
+msgid "Layer Waypoint"
+msgstr "שכבת נקודת ציון"
+
+#: src/canvasMenu.cpp:711 src/canvasMenu.cpp:773
+msgid "Waypoint"
+msgstr "נקודת ציון"
+
+#: src/canvasMenu.cpp:726
+msgid "Remove from Route"
+msgstr "הסר מהמסלול"
+
+#: src/canvasMenu.cpp:777
+msgid "Navigate To This"
+msgstr "נווט לכאן"
+
+#: src/canvasMenu.cpp:797
+msgid "Clear Anchor Watch"
+msgstr "נקה שעון עגינה"
+
+#: src/canvasMenu.cpp:807
+msgid "Set Anchor Watch"
+msgstr "קבע שעון עגינה"
+
+#: src/canvasMenu.cpp:845
+msgid "Main Menu"
+msgstr "תפריט ראשי"
+
+#: src/canvasMenu.cpp:857
+msgid "Show Tide Information"
+msgstr "הראה מידע על גאות"
+
+#: src/canvasMenu.cpp:863
+msgid "Show Current Information"
+msgstr "הצג מידע נוכחי"
+
+#: src/canvasMenu.cpp:1025
+msgid "Temporary GOTO Route"
+msgstr "מסלול GOTO זמני"
+
+#: src/canvasMenu.cpp:1026 src/canvasMenu.cpp:1090
+#: src/routemanagerdialog.cpp:2289
+msgid "Here"
+msgstr "כאן"
+
+#: src/canvasMenu.cpp:1028
+msgid "There"
+msgstr "שם"
+
+#: src/canvasMenu.cpp:1086 src/routemanagerdialog.cpp:1947
+#: src/routemanagerdialog.cpp:2285
+msgid "(Unnamed Waypoint)"
+msgstr "(נקודת דרך ללא שם)"
+
+#: src/canvasMenu.cpp:1087 src/routemanagerdialog.cpp:2286
+msgid "Go to "
+msgstr "לך אל."
+
+#: src/canvasMenu.cpp:1298 src/routemanagerdialog.cpp:1206
+msgid "Rename Waypoints?"
+msgstr "לשנות שם לנקודת ציון?"
+
+#: src/canvasMenu.cpp:1321
+msgid "Are you sure you want to delete this route?"
+msgstr "האם אתה בטוח שברצונך למחוק נתיב זה?"
+
+#: src/canvasMenu.cpp:1322
+msgid "OpenCPN Route Delete"
+msgstr "מחק נתיב OpenCPN"
+
+#: src/canvasMenu.cpp:1579
+msgid "Are you sure you want to delete this track?"
+msgstr "האם אתה בטוח שברצונך למחוק מסלול זה?"
+
+#: src/canvasMenu.cpp:1580 src/routeman.cpp:1023
+msgid "OpenCPN Track Delete"
+msgstr "מחק מסלול OpenCPN"
+
+#: src/chart1.cpp:1020
+msgid "\n"
+"OpenCPN is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+"See the GNU General Public License for more details.\n\n"
+"OpenCPN must only be used in conjunction with approved paper charts and traditional methods of navigation.\n\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr "\n OpenCPN מופץ בתקווה שזה יהיה שימושי, אך ללא כל אחריות; בלי אפילו האחריות המשתמעת של סחירות או כושר למטרה מסוימת. \n\n ראה את הרישיון הציבורי הכללי של GNU לפרטים נוספים. \n \n יש להשתמש ב- OpenCPN רק בשילוב עם תרשימי נייר מאושרים ושיטות ניווט מסורתיות. \n\n אל תסמוך על OpenCPN ליתר ביטחון חיים או רכוש. \n\n אנא לחץ על \"אישור\" כדי להסכים ולהמשיך, \"בטל\" כדי לצאת. \n"
+
+#: src/chart1.cpp:1036
+msgid "OpenCPN for Android"
+msgstr "OpenCPN לאנדרואיד"
+
+#: src/chart1.cpp:1052
+msgid "Welcome to OpenCPN"
+msgstr "ברוך הבא לOpenCPN"
+
+#: src/chart1.cpp:1111
+msgid "Show usage syntax."
+msgstr "הצג שימוש syntax."
+
+#: src/chart1.cpp:1112
+msgid "Run in portable mode."
+msgstr "תפעל במצב נייד"
+
+#: src/chart1.cpp:1113
+msgid "Switch to full screen mode on start."
+msgstr "שנה למצב מסך מלא בהפעלה"
+
+#: src/chart1.cpp:1114
+msgid "Disable OpenGL video acceleration. This setting will be remembered."
+msgstr "תבטל האצת OpenGL . ההגדרה הזו תישמר."
+
+#: src/chart1.cpp:1117
+msgid "Amount of logging: error, warning, message, info, debug or trace"
+msgstr "כמות לוח האירועים: שגיאות,אזהרות, הודעות,מידע,באגים או מעקב."
+
+#: src/chart1.cpp:1118
+msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
+msgstr "הצג מצגות של <מספר> מפות ולאחר-מיכן תצא. אפס אם נגדיב <מספר> מראה על אין סוף"
+
+#: src/chart1.cpp:1591
+msgid "OpenCPN ENC Prepare"
+msgstr "תכין OpenCPN ENC"
+
+#: src/chart1.cpp:1621
+#, c-format
+msgid "Distance from Ownship:  %4.0f NMi"
+msgstr " Ownship:  %4.0f NMi מרחק מ- "
+
+#: src/chart1.cpp:1652
+msgid "ENC Completed."
+msgstr "ENC הושלם."
+
+#: src/chart1.cpp:1783
+msgid "Sorry, an existing instance of OpenCPN may be too busy too respond.\n"
+"Please retry."
+msgstr "מצטערים, התוכנה OpenCPN כבר פתוחה ברקע כנראה עסוקה מידי כיד להגיב, /n נסה שנית."
+
+#: src/chart1.cpp:2008 src/chart1.cpp:2014
+msgid "Failed to initialize the user interface. "
+msgstr "נכשל בטעינת ממשק משתמש."
+
+#: src/chart1.cpp:2009
+msgid "OpenCPN cannot start. "
+msgstr "OpenCPN אינו יכול לפעול."
+
+#: src/chart1.cpp:2010
+msgid "The necessary configuration files were not found. "
+msgstr "קבצי הגדרה הכרחים לא נמצאו."
+
+#: src/chart1.cpp:2011
+msgid "See the log file at "
+msgstr "הסתכל בקובץ יומן תנועות ב-"
+
+#: src/chart1.cpp:2011
+msgid " for details."
+msgstr "לפרטים"
+
+#: src/chart1.cpp:2300
+msgid " -- [Portable(-p) executing from "
+msgstr " -- [Portable(-p) executing from "
+
+#: src/chart1.cpp:2382
+msgid "Retrieving initial Chart Directory set from Windows Registry"
+msgstr "מקבל מידע מסט תיקיית המפות מרישום בחלונות (וינדוס) "
+
+#: src/chart1.cpp:2566
+#, c-format
+msgid "OpenCPN Initialized in %ld ms."
+msgstr "OpenCPN אותחל ב- %ld ms."
+
+#: src/chart1.cpp:2994
+msgid "OpenCPN needs to update the chart database from config file entries...."
+msgstr "OpenCPN צריך לעדכן את מסד הנתונים של התרשים מערכי קובץ תצורה...."
+
+#: src/chart1.cpp:3003
+msgid "Rebuilding chart database from configuration file entries..."
+msgstr "בונה מחדש מסד נתונים של תרשים מערכי קבצי תצורה..."
+
+#: src/chart1.cpp:3006
+msgid "Elapsed time : "
+msgstr "הזמן שחלף:"
+
+#: src/chart1.cpp:3007
+msgid "Estimated time : "
+msgstr "זמן משוער:"
+
+#: src/chart1.cpp:3008
+msgid "Remaining time : "
+msgstr "זמן שנותר"
+
+#: src/chart1.cpp:3009 src/chart1.cpp:6741 src/chart1.cpp:6749
+msgid "OpenCPN Chart Update"
+msgstr "עדכון מפה OpenCPN"
+
+#: src/chart1.cpp:3214 src/chcanv.cpp:11926
+msgid "AIS Target Query"
+msgstr "AIS Target Query"
+
+#: src/chart1.cpp:4305 src/chart1.cpp:4321 src/chcanv.cpp:5454
+#: src/OCPNPlatform.cpp:2083
+msgid "StatusBar"
+msgstr "שורת המצב"
+
+#: src/chart1.cpp:4795 src/chart1.cpp:4907
+msgid "Show Toolbar"
+msgstr "הצג את סרגל הכלים"
+
+#: src/chart1.cpp:4797 src/chart1.cpp:4909 src/chart1.cpp:10017
+msgid "Hide Toolbar"
+msgstr "הסתר את סרגל הכלים"
+
+#: src/chart1.cpp:5125 src/chart1.cpp:5185
+msgid "MAN OVERBOARD"
+msgstr "אדם על הסיפון"
+
+#: src/chart1.cpp:5126 src/chart1.cpp:9619
+msgid " at "
+msgstr " ב"
+
+#: src/chart1.cpp:5128 src/chart1.cpp:9621
+msgid " on "
+msgstr " מופעל "
+
+#: src/chart1.cpp:5146
+msgid "1.0 NM along COG"
+msgstr "1.0 NM along COG"
+
+#: src/chart1.cpp:5157
+msgid "Temporary MOB Route"
+msgstr "מסלול MOB זמני"
+
+#: src/chart1.cpp:5158
+msgid "Assumed 1 Mile Point"
+msgstr "הנחת נקודת מייל אחת"
+
+#: src/chart1.cpp:5186 src/chart1.cpp:9673 src/chart1.cpp:9717
+msgid " Time: "
+msgstr " זמן: "
+
+#: src/chart1.cpp:5188
+msgid "  Position: "
+msgstr "  מיקום: "
+
+#: src/chart1.cpp:5208
+msgid "Disable Tracking"
+msgstr "לבטל מעקב"
+
+#: src/chart1.cpp:5233 src/chart1.cpp:8570 src/chart1.cpp:8699
+msgid "(Unnamed Track)"
+msgstr "(ללא שם מסלול)"
+
+#: src/chart1.cpp:5283 src/chart1.cpp:5685 src/chart1.cpp:10042
+#: src/toolbar.cpp:1393
+msgid "Enable Tracking"
+msgstr "הפעל מעקב"
+
+#: src/chart1.cpp:5684 src/toolbar.cpp:1332
+msgid "Auto Follow"
+msgstr "מעקב אוטומטי"
+
+#: src/chart1.cpp:5689
+msgid "Head Up Mode"
+msgstr "Heading Up מצב"
+
+#: src/chart1.cpp:5692 src/chart1.cpp:5695 src/toolbar.cpp:1297
+msgid "Zoom In"
+msgstr "הגדל"
+
+#: src/chart1.cpp:5693 src/chart1.cpp:5696 src/toolbar.cpp:1303
+msgid "Zoom Out"
+msgstr "הקטן"
+
+#: src/chart1.cpp:5699
+msgid "Larger Scale Chart"
+msgstr "מפה בקנה מידה גדול יותר"
+
+#: src/chart1.cpp:5700
+msgid "Smaller Scale Chart"
+msgstr "מפה בקנה מידה קטן יותר"
+
+#: src/chart1.cpp:5703
+msgid "Exit OpenCPN"
+msgstr "יציאה OpenCPN"
+
+#: src/chart1.cpp:5705
+msgid "&Navigate"
+msgstr "נווט"
+
+#: src/chart1.cpp:5710 src/chart1.cpp:5713 src/options.cpp:4887
+#: src/options.cpp:5057 src/CanvasOptions.cpp:160
+msgid "Enable Chart Quilting"
+msgstr "הפעל תרשים Quilting."
+
+#: src/chart1.cpp:5711 src/chart1.cpp:5714 src/options.cpp:4931
+#: src/options.cpp:5105 src/CanvasOptions.cpp:168
+msgid "Show Chart Outlines"
+msgstr "הצג גבולות מפה"
+
+#: src/chart1.cpp:5716 src/options.cpp:5775
+msgid "Show Chart Bar"
+msgstr "הצג תרשים"
+
+#: src/chart1.cpp:5720 src/chart1.cpp:5727 src/toolbar.cpp:1352
+msgid "Show ENC text"
+msgstr "הצג טקסט ENC"
+
+#: src/chart1.cpp:5721 src/chart1.cpp:5728
+msgid "Show ENC Lights"
+msgstr "הצג ENC אורות"
+
+#: src/chart1.cpp:5722 src/chart1.cpp:5729
+msgid "Show ENC Soundings"
+msgstr "הצג ENC סביבה"
+
+#: src/chart1.cpp:5723 src/chart1.cpp:5730
+msgid "Show ENC Anchoring Info"
+msgstr "הצג ENC מידע עגינה"
+
+#: src/chart1.cpp:5724 src/chart1.cpp:5731
+msgid "Show ENC Data Quality"
+msgstr "הצג ENC מידע איכותי"
+
+#: src/chart1.cpp:5725 src/chart1.cpp:5732
+msgid "Show Navobjects"
+msgstr "הצג נקודות ניווט"
+
+#: src/chart1.cpp:5735 src/chcanv.cpp:1227 src/toolbar.cpp:1374
+msgid "Show Tides"
+msgstr "הצג גלים"
+
+#: src/chart1.cpp:5736 src/chcanv.cpp:1263 src/toolbar.cpp:1368
+#: src/CanvasOptions.cpp:201
+msgid "Show Currents"
+msgstr "הצג דף נוכחי"
+
+#: src/chart1.cpp:5739 src/chart1.cpp:5741 src/chart1.cpp:10047
+#: src/toolbar.cpp:1400
+msgid "Change Color Scheme"
+msgstr "שנה מחלוקת צבע"
+
+#: src/chart1.cpp:5746 src/chart1.cpp:5748
+msgid "Enter Full Screen"
+msgstr "עבור למסך מלא"
+
+#: src/chart1.cpp:5750
+msgid "&View"
+msgstr "&תצוגה"
+
+#: src/chart1.cpp:5754 src/toolbar.cpp:1456
+msgid "Show AIS Targets"
+msgstr "הצג AIS מטרות"
+
+#: src/chart1.cpp:5755 src/chcanv.cpp:12350 src/toolbar.cpp:1447
+msgid "Attenuate less critical AIS targets"
+msgstr "הנחת יעדי AIS פחות קריטיים"
+
+#: src/chart1.cpp:5757
+msgid "Hide Moored AIS Targets"
+msgstr "הסתר יעדי AIS מעוגנת"
+
+#: src/chart1.cpp:5758
+msgid "Show AIS Target Tracks"
+msgstr "הצג מסלולי יעד AIS"
+
+#: src/chart1.cpp:5759
+msgid "Show CPA Alert Dialogs"
+msgstr "הצג דיאלוגים התראה של CPA"
+
+#: src/chart1.cpp:5760
+msgid "Sound CPA Alarms"
+msgstr "צליל אזעקות CPA "
+
+#: src/chart1.cpp:5763
+msgid "&AIS"
+msgstr "&AIS"
+
+#: src/chart1.cpp:5767 src/chart1.cpp:5769
+msgid "Measure Distance"
+msgstr "מדד מרחק"
+
+#: src/chart1.cpp:5773
+msgid "Route && Mark Manager..."
+msgstr "ניהול נתיב & וסימונים "
+
+#: src/chart1.cpp:5774 src/chart1.cpp:10030 src/toolbar.cpp:1325
+msgid "Create Route"
+msgstr "צור מסלול"
+
+#: src/chart1.cpp:5776
+msgid "Drop Mark at Boat"
+msgstr "סימון על הסירה"
+
+#: src/chart1.cpp:5777
+msgid "Drop Mark at Cursor"
+msgstr "סימון על העכבר"
+
+#: src/chart1.cpp:5780 src/chart1.cpp:5784 src/chart1.cpp:10072
+#: src/toolbar.cpp:1419
+msgid "Drop MOB Marker"
+msgstr "סימון MOB "
+
+#: src/chart1.cpp:5782 src/pluginmanager.cpp:6156 src/pluginmanager.cpp:6174
+msgid "Preferences"
+msgstr "העדפות"
+
+#: src/chart1.cpp:5788
+msgid "&Tools"
+msgstr "כלים"
+
+#: src/chart1.cpp:5792
+msgid "&Window"
+msgstr "חלון"
+
+#: src/chart1.cpp:5797
+msgid "OpenCPN Help"
+msgstr "עזרה OpenCPN "
+
+#: src/chart1.cpp:5798
+msgid "&Help"
+msgstr "&עזרה"
+
+#: src/chart1.cpp:6432
+msgid "Please restart OpenCPN to activate language or style changes."
+msgstr "בבקשה הפעל מחדש OpenCPN  כדי להחיל שפה וסגנון ששונו."
+
+#: src/chart1.cpp:7944
+msgid "Rotated Mode"
+msgstr "מצב סיבוב"
+
+#: src/chart1.cpp:8437 src/routeprintout.cpp:494
+msgid "There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr "הייתה בעיה בדפוס. \\ N אולי המדפסת הנוכחית שלך אינה מוגדרת כהלכה?"
+
+#: src/chart1.cpp:8619 src/chart1.cpp:8680 src/routemanagerdialog.cpp:947
+msgid "(Unnamed Route)"
+msgstr "(מסלול ללא שם)"
+
+#: src/chart1.cpp:9365
+msgid " Ship "
+msgstr "סירה"
+
+#: src/chart1.cpp:9618 src/chart1.cpp:9672
+msgid "AIS MAN OVERBOARD"
+msgstr "AIS אדם על הסיפון "
+
+#: src/chart1.cpp:9634 src/options.cpp:3054
+msgid "Own ship"
+msgstr "סירה שלי"
+
+#: src/chart1.cpp:9645
+msgid "Temporary AISMOB Route"
+msgstr "זמני AISMOB מסלול"
+
+#: src/chart1.cpp:9646
+msgid "Present own ship"
+msgstr "עכשווי סירה שלי"
+
+#: src/chart1.cpp:9675 src/chart1.cpp:9719
+msgid "  Ownship Position: "
+msgstr "סירה שלי מיקום:"
+
+#: src/chart1.cpp:9679 src/chart1.cpp:9723
+msgid "  MOB Position: "
+msgstr "מיקום MOB:"
+
+#: src/chart1.cpp:9716
+msgid "AIS MAN OVERBOARD UPDATE"
+msgstr "AIS אדם על הסיפון עידכון"
+
+#: src/chart1.cpp:10036 src/routemanagerdialog.cpp:288 src/toolbar.cpp:1386
+msgid "Route & Mark Manager"
+msgstr "ניהול נתיב & וסימונים "
+
+#: src/chart1.cpp:10058 src/toolbar.cpp:1380
+msgid "Print Chart"
+msgstr "הדפס מפה"
+
+#: src/chart1.cpp:10072 src/toolbar.cpp:1419
+msgid " (Ctrl-Space)"
+msgstr " (Ctrl-Space)"
+
+#: src/chart1.cpp:11024
+msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
+msgstr "OpenCPN דורש גישה ליציאות טוריות כדי להשתמש בנתוני NMEA סידורי. \n"
+
+#: src/chart1.cpp:11026
+msgid "No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
+msgstr "לא ניתן למצוא יציאות טוריות על מערכת זו. \n עליך להתקין יציאה טורית (מודול ליבה הנכון של Modprobe) או חבר התקן סידורי USB\n"
+" . \n"
+
+#: src/chart1.cpp:11052
+msgid "You do currently not have permission to access the serial ports on this system.\n\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n\n"
+"You may do so by executing the following command from the linux command line:\n\n"
+"                sudo usermod -a -G "
+msgstr "כרגע אין לך הרשאה לגשת ליציאות הטוריות במערכת זו.\n"
+"\n\n\n"
+"מומלץ לך לצאת מ- Opencpn עכשיו,\n"
+"\n\n"
+"ולהוסיף את עצמך לקבוצה הנכונה כדי לאפשר גישה טורית יציאה.\n"
+"\n\n"
+"אתה יכול לעשות זאת על ידי ביצוע הפקודה הבאה משורת הפקודה לינוקס:\n"
+"\n\n\n"
+" sudo usermod -a -G"
+
+#: src/chartdbs.cpp:1358
+msgid " ChartFile:  "
+msgstr "שם המפה:"
+
+#: src/chartdbs.cpp:1381
+msgid " Name:  "
+msgstr "שם:"
+
+#: src/chartdbs.cpp:1409 src/chartdbs.cpp:1411 src/chcanv.cpp:5414
+#: src/chcanv.cpp:5416 src/chcanv.cpp:5419 src/chcanv.cpp:5423
+#: src/chcanv.cpp:5426 src/chcanv.cpp:5463 src/routemanagerdialog.cpp:591
+msgid "Scale"
+msgstr "קנה מידה"
+
+#: src/chartdbs.cpp:1421
+msgid " ID:  "
+msgstr " ID:  "
+
+#: src/chartdbs.cpp:1429
+msgid " Depth Units:  "
+msgstr "יחידות עומק:"
+
+#: src/chartdbs.cpp:1437
+msgid " Soundings:  "
+msgstr "סביבה:"
+
+#: src/chartdbs.cpp:1445
+msgid " Datum:  "
+msgstr "נקודת דאטום"
+
+#: src/chartdbs.cpp:1453
+msgid " Projection:  "
+msgstr "הקרנה:"
+
+#: src/chartdbs.cpp:1457
+msgid "Mercator"
+msgstr "Mercator"
+
+#: src/chartdbs.cpp:1459
+msgid "Transverse Mercator"
+msgstr "Transverse Mercator"
+
+#: src/chartdbs.cpp:1461
+msgid "Polyconic"
+msgstr "Polyconic"
+
+#: src/chartdbs.cpp:1463
+msgid "Web Mercator (EPSG:3857)"
+msgstr "Web Mercator (EPSG:3857)"
+
+#: src/chartdbs.cpp:1472
+msgid " Source Edition:  "
+msgstr " Source Edition:  "
+
+#: src/chartdbs.cpp:1480
+msgid " Updated:  "
+msgstr "מעודכן:"
+
+#: src/chartdbs.cpp:1718
+msgid "OpenCPN Chart Scan...."
+msgstr " OpenCPN סריקת מפות.."
+
+#: src/chartdbs.cpp:1759
+msgid "OpenCPN Directory Scan...."
+msgstr "OpenCPN סריקת תיקייה..."
+
+#: src/chartdbs.cpp:2132
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN הוספת מפה...."
+
+#: src/chcanv.cpp:1229
+msgid "Hide Tides"
+msgstr "הסתר גלים"
+
+#: src/chcanv.cpp:1265
+msgid "Hide Currents"
+msgstr "הסתר Currents"
+
+#: src/chcanv.cpp:1365 src/chcanv.cpp:1380
+msgid "Group \""
+msgstr "קבוצה \""
+
+#: src/chcanv.cpp:1370
+msgid "\" is empty."
+msgstr "הוא ריק"
+
+#: src/chcanv.cpp:1372 src/chcanv.cpp:1387
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN קבוצה התראה"
+
+#: src/chcanv.cpp:1385
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr "\"זה ריק, מעביר לקבוצת\" כל המפות הפעילות \"."
+
+#: src/chcanv.cpp:3845 src/chcanv.cpp:9781
+msgid "Layer Route: "
+msgstr "שכבת מסלול: "
+
+#: src/chcanv.cpp:3847 src/chcanv.cpp:3996
+msgid "(unnamed)"
+msgstr "(ללא שם)"
+
+#: src/chcanv.cpp:3851
+msgid "Total Length: "
+msgstr "אורך כולל:"
+
+#: src/chcanv.cpp:3852
+msgid "Leg: from "
+msgstr "Leg: from "
+
+#: src/chcanv.cpp:3853
+msgid " to "
+msgstr " אל "
+
+#: src/chcanv.cpp:3895
+msgid "From Ship To"
+msgstr "מהספינה אל"
+
+#: src/chcanv.cpp:3907 src/concanv.cpp:404
+msgid "%Dd %H:%M"
+msgstr "%Dd %H:%M"
+
+#: src/chcanv.cpp:3907 src/TrackPropDlg.cpp:1022
+msgid "%H:%M"
+msgstr "%H:%M"
+
+#: src/chcanv.cpp:3993
+msgid "Layer Track: "
+msgstr "שכבת מסלול: "
+
+#: src/chcanv.cpp:4000
+msgid "Total Track: "
+msgstr "המסלול כולל:"
+
+#: src/chcanv.cpp:4008
+msgid "Segment Created: "
+msgstr "סגמנט נוצר:"
+
+#: src/chcanv.cpp:7685 src/chcanv.cpp:8134
+msgid "Use nearby waypoint?"
+msgstr "השתמש בנקודת ציון קרובה?"
+
+#: src/chcanv.cpp:7686 src/chcanv.cpp:7738 src/chcanv.cpp:8135
+#: src/chcanv.cpp:8186
+msgid "OpenCPN Route Create"
+msgstr "צור נתיב OpenCPN"
+
+#: src/chcanv.cpp:7731 src/chcanv.cpp:8180
+msgid "For this leg the Great Circle route is "
+msgstr "For this leg the Great Circle route is "
+
+#: src/chcanv.cpp:7732 src/chcanv.cpp:8181
+msgid " shorter than rhumbline.\n\n"
+msgstr "קצר יותר מאשר rhumbline.\n"
+"\n\n"
+
+#: src/chcanv.cpp:7733 src/chcanv.cpp:8182
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr "האם אתה רוצה לכלול את ה-Great Circle נקודות ניווט עבור ה-leg הזה?"
+
+#: src/chcanv.cpp:8900 src/chcanv.cpp:8908 src/S57QueryDialog.cpp:90
+#: src/S57QueryDialog.cpp:259
+msgid "ObjectQuery"
+msgstr "ObjectQuery"
+
+#: src/chcanv.cpp:9015 src/chcanv.cpp:9018 src/routemanagerdialog.cpp:2169
+#: src/routemanagerdialog.cpp:2172 src/RoutePropDlgImpl.cpp:810
+msgid "Waypoint Properties"
+msgstr "הגדרות נקודת-ציון&"
+
+#: src/chcanv.cpp:9015 src/routemanagerdialog.cpp:2169
+#: src/RoutePropDlgImpl.cpp:456
+msgid "Layer"
+msgstr "שכבה"
+
+#: src/chcanv.cpp:9101
+msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
+msgstr "יש נקודת ציון קיימת באותו מיקום שאתה מדביק. האם אתה רוצה למזג את הנתונים? \n\n"
+
+#: src/chcanv.cpp:9102
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr "בחירה 'לא' תיצור נקודת ציון חדשה באותו מיקום."
+
+#: src/chcanv.cpp:9103
+msgid "Merge waypoint?"
+msgstr "מזג נקודות ציון?"
+
+#: src/chcanv.cpp:9159
+msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
+msgstr "יש נקודות ציון קיימות באותו מיקום כמו כמה אלה שאתה מדביק. האם אתה רוצה רק למזג את הנתונים? \n\n"
+
+#: src/chcanv.cpp:9160
+msgid "Answering 'No' will create all new waypoints for this route."
+msgstr "מענה 'לא' תיצור את כל נקודות הציון החדשות עבור מסלול זה."
+
+#: src/chcanv.cpp:9161
+msgid "Merge waypoints?"
+msgstr "מזג נקודות ציון?"
+
+#: src/chcanv.cpp:9653 src/chcanv.cpp:9684 src/RolloverWin.cpp:135
+#: src/RolloverWin.cpp:235 src/RolloverWin.cpp:374
+msgid "RouteLegInfoRollover"
+msgstr "RouteLegInfoRollover"
+
+#: src/chcanv.cpp:10347
+msgid "MBTile requires OpenGL to be enabled"
+msgstr "MBTile דורש OpenGL להיות פעיל"
+
+#: src/chcanv.cpp:10992 src/options.cpp:5232 src/options.cpp:5345
+msgid "Feet"
+msgstr "Feet"
+
+#: src/chcanv.cpp:10993 src/options.cpp:5205 src/options.cpp:5232
+#: src/options.cpp:5324 src/options.cpp:5345
+msgid "Meters"
+msgstr "מטרים"
+
+#: src/chcanv.cpp:10994 src/options.cpp:5232 src/options.cpp:5345
+msgid "Fathoms"
+msgstr "  לַחדוֹר לְעוֹמֶק"
+
+#: src/chcanv.cpp:10997
+msgid "OverZoom"
+msgstr "אובר זום"
+
+#: src/chcanv.cpp:11388 src/chcanv.cpp:11389
+msgid "ExtendedTideIcon"
+msgstr "ExtendedTideIcon"
+
+#: src/chcanv.cpp:11697
+msgid "CurrentValue"
+msgstr "ערך_נוכחי"
+
+#: src/chcanv.cpp:12349
+msgid "Show all AIS Targets"
+msgstr "הצג את כול מטרות AIS"
+
+#: src/chcanv.cpp:12351 src/toolbar.cpp:1361 src/toolbar.cpp:1449
+#: src/toolbar.cpp:1452
+msgid "Hide AIS Targets"
+msgstr "הסתר AIS מטרות"
+
+#: src/chcanv.cpp:13024
+msgid "Show This Chart"
+msgstr "הצג מפה זו"
+
+#: src/chcanv.cpp:13029
+msgid "Hide This Chart"
+msgstr "הסתר את המפה הזו"
+
+#: src/cm93.cpp:6831
+msgid "OpenCPN CM93 Cell Offset Adjustments"
+msgstr "OpenCPN CM93 Cell Offset Adjustments"
+
+#: src/cm93.cpp:6857
+msgid "Cell"
+msgstr "תא"
+
+#: src/cm93.cpp:6860
+msgid "M_COVR ID"
+msgstr ""
+
+#: src/cm93.cpp:6863
+msgid "Cell Scale"
+msgstr "שינוי קנה מידה של תא"
+
+#: src/cm93.cpp:6866
+msgid "wgsox"
+msgstr ""
+
+#: src/cm93.cpp:6869
+msgid "wgsoy"
+msgstr ""
+
+#: src/cm93.cpp:6872 src/cm93.cpp:6883
+msgid "User X Offset"
+msgstr "User X Offset"
+
+#: src/cm93.cpp:6875 src/cm93.cpp:6890
+msgid "User Y Offset"
+msgstr "User Y Offset"
+
+#: src/cm93.cpp:6883 src/cm93.cpp:6890 src/options.cpp:4400 src/options.cpp:4410
+#: src/options.cpp:4420 src/options.cpp:4595 src/options.cpp:4602
+#: src/options.cpp:4609 src/options.cpp:6911
+msgid "meters"
+msgstr "מטרים"
+
+#: src/concanv.cpp:98 src/concanv.cpp:144 src/concanv.cpp:163
+#: src/concanv.cpp:205 src/concanv.cpp:213
+msgid "This Leg"
+msgstr "This Leg"
+
+#: src/concanv.cpp:110 src/concanv.cpp:114 src/concanv.cpp:118
+#: src/concanv.cpp:122 src/concanv.cpp:126 src/concanv.cpp:573
+msgid "Console Legend"
+msgstr "מקרא מסוף"
+
+#: src/concanv.cpp:110 src/concanv.cpp:114 src/concanv.cpp:118
+#: src/concanv.cpp:122 src/concanv.cpp:126 src/concanv.cpp:574
+msgid "Console Value"
+msgstr "ערך מסוף"
+
+#: src/concanv.cpp:214
+msgid "Full Route"
+msgstr "מסלול מלא"
+
+#: src/concanv.cpp:215
+msgid "Show Highway"
+msgstr "הצג כביש מהיר"
+
+#: src/concanv.cpp:338
+msgid "XTE         L"
+msgstr "XTE         L"
+
+#: src/concanv.cpp:340
+msgid "XTE         R"
+msgstr "XTE         R"
+
+#: src/concanv.cpp:356 src/concanv.cpp:429
+msgid "TTG  @VMG"
+msgstr "TTG  @VMG"
+
+#: src/concanv.cpp:358 src/concanv.cpp:432
+msgid "TTG  @SOG"
+msgstr "TTG  @SOG"
+
+#: src/concanv.cpp:430
+msgid "ETA  @VMG"
+msgstr "ETA  @VMG"
+
+#: src/concanv.cpp:433
+msgid "ETA  @SOG"
+msgstr "ETA  @SOG"
+
+#: src/ConnectionParams.cpp:167 src/ConnectionParams.cpp:491
+#: src/ConnectionParams.cpp:839 src/options.cpp:1808 src/options.cpp:2455
+msgid "Serial"
+msgstr "מספר סידורי"
+
+#: src/ConnectionParams.cpp:169 src/ConnectionParams.cpp:586
+#: src/ConnectionParams.cpp:865 src/options.cpp:1813 src/options.cpp:2460
+msgid "Network"
+msgstr "רשת"
+
+#: src/ConnectionParams.cpp:171
+msgid "GPS"
+msgstr "GPS"
+
+#: src/ConnectionParams.cpp:173
+msgid "BT"
+msgstr "בלוטוס"
+
+#: src/ConnectionParams.cpp:186
+msgid "Internal"
+msgstr "פנימי"
+
+#: src/ConnectionParams.cpp:198 src/options.cpp:1894 src/options.cpp:2542
+msgid "TCP"
+msgstr "TCP"
+
+#: src/ConnectionParams.cpp:200 src/options.cpp:1900 src/options.cpp:2548
+msgid "UDP"
+msgstr "UDP"
+
+#: src/ConnectionParams.cpp:202 src/options.cpp:1906 src/options.cpp:2554
+msgid "GPSD"
+msgstr "GPSD"
+
+#: src/ConnectionParams.cpp:204 src/options.cpp:1911 src/options.cpp:2559
+msgid "Signal K"
+msgstr "אות K"
+
+#: src/ConnectionParams.cpp:229
+msgid "Input"
+msgstr "קלט"
+
+#: src/ConnectionParams.cpp:231
+msgid "Output"
+msgstr "פלט"
+
+#: src/ConnectionParams.cpp:233
+msgid "In/Out"
+msgstr "בפנים/בחוץ"
+
+#: src/ConnectionParams.cpp:240
+msgid "Reject"
+msgstr "דחה"
+
+#: src/ConnectionParams.cpp:242
+msgid "Accept"
+msgstr "קבל"
+
+#: src/ConnectionParams.cpp:246
+msgid "Drop"
+msgstr "השלכה"
+
+#: src/ConnectionParams.cpp:248 src/SendToGpsDlg.cpp:136
+msgid "Send"
+msgstr "שלח"
+
+#: src/ConnectionParams.cpp:270
+msgid "In"
+msgstr "פנימה"
+
+#: src/ConnectionParams.cpp:275
+msgid "In: None"
+msgstr "בפנים: כלום"
+
+#: src/ConnectionParams.cpp:279
+msgid "Out"
+msgstr "החוצה"
+
+#: src/ConnectionParams.cpp:284
+msgid ", Out: None"
+msgstr ", החוצה: כלום"
+
+#: src/ConnectionParams.cpp:442 src/options.cpp:2962
+msgid "Enable"
+msgstr "פעיל"
+
+#: src/ConnectionParams.cpp:470 src/ConnectionParams.cpp:565
+#: src/ConnectionParams.cpp:661 src/ConnectionParams.cpp:745
+msgid "Direction"
+msgstr "כיוון"
+
+#: src/ConnectionParams.cpp:474 src/ConnectionParams.cpp:569
+#: src/options.cpp:1884 src/options.cpp:1970 src/options.cpp:2533
+#: src/options.cpp:2630
+msgid "Protocol"
+msgstr "פרוטוקול"
+
+#: src/ConnectionParams.cpp:478
+msgid "Serial Port"
+msgstr "יציאה טורית"
+
+#: src/ConnectionParams.cpp:482 src/options.cpp:1953 src/options.cpp:2613
+msgid "Baudrate"
+msgstr "Baudrate"
+
+#: src/ConnectionParams.cpp:486 src/ConnectionParams.cpp:581
+#: src/ConnectionParams.cpp:677 src/ConnectionParams.cpp:761
+#: src/options.cpp:1986 src/options.cpp:2646 src/options.cpp:2963
+msgid "Priority"
+msgstr "עדיפות"
+
+#: src/ConnectionParams.cpp:544 src/ConnectionParams.cpp:641
+#: src/ConnectionParams.cpp:725 src/ConnectionParams.cpp:809
+#: src/ConnectionParams.cpp:846 src/ConnectionParams.cpp:872
+#: src/ConnectionParams.cpp:876 src/ConnectionParams.cpp:881
+msgid "Comment: "
+msgstr "הערה"
+
+#: src/ConnectionParams.cpp:573
+msgid "Network Address"
+msgstr "כתובת הרשת"
+
+#: src/ConnectionParams.cpp:577
+msgid "Network Port"
+msgstr "פורט הרשת"
+
+#: src/ConnectionParams.cpp:682 src/options.cpp:1819 src/options.cpp:2466
+msgid "Built-in GPS"
+msgstr "מיקום GPS מובנה"
+
+#: src/ConnectionParams.cpp:766 src/options.cpp:1828
+msgid "Built-in Bluetooth"
+msgstr "קישורית בלוטוס מובנה"
+
+#: src/DetailSlider.cpp:91
+msgid "CM93 Detail Level"
+msgstr "רמת פירוט CM93"
+
+#: src/DetailSlider.cpp:95
+msgid "Rasterchart Zoom/Scale Weighting"
+msgstr "Rasterchart Zoom/Scale Weighting"
+
+#: src/DetailSlider.cpp:99
+msgid "Vectorchart Zoom/Scale Weighting"
+msgstr "Vectorchart Zoom/Scale Weighting"
+
+#: src/glChartCanvas.cpp:2156 src/s52plib.cpp:2293 src/s52plib.cpp:2318
+#: src/s52plib.cpp:2426 src/s52plib.cpp:2605
+msgid "ChartTexts"
+msgstr "טקסט מפה"
+
+#: src/glChartCanvas.cpp:4824
+msgid "Waiting for raster chart compression thread exit."
+msgstr "ממתין ל-raster chart דחיסת יציאה."
+
+#: src/GoToPositionDialog.cpp:119 src/RoutePropDlg.cpp:259
+#: src/TrackPropDlg.cpp:225 src/MarkInfo.cpp:426
+msgid "Latitude"
+msgstr "קו רוחב"
+
+#: src/GoToPositionDialog.cpp:129 src/RoutePropDlg.cpp:261
+#: src/TrackPropDlg.cpp:226 src/MarkInfo.cpp:433
+msgid "Longitude"
+msgstr "קו אורך"
+
+#: src/GoToPositionDialog.cpp:142 src/LinkPropDlg.cpp:76 src/navutil.cpp:3747
+#: src/options.cpp:659 src/options.cpp:765 src/options.cpp:6204
+#: src/options.cpp:10304 src/options.cpp:10513 src/routeprintout.cpp:427
+#: src/RoutePropDlg.cpp:388 src/SendToGpsDlg.cpp:132 src/toolbar.cpp:3368
+#: src/TrackPropDlg.cpp:501 src/TrackPropDlg.cpp:836 src/MarkInfo.cpp:683
+#: src/MarkInfo.cpp:1754
+msgid "Cancel"
+msgstr "ביטול"
+
+#: src/kml.cpp:444
+msgid "OpenCPN Route"
+msgstr "נתיב OpenCPN "
+
+#: src/kml.cpp:489
+msgid "OpenCPN Track"
+msgstr "מסלול OpenCPN "
+
+#: src/kml.cpp:537
+msgid "OpenCPN Waypoint"
+msgstr "נקודת ציון OpenCPN "
+
+#: src/kml.cpp:608
+msgid "Choose Format for Copy"
+msgstr "תבחר פורמט להעתקה"
+
+#: src/kml.cpp:615
+msgid "KML Standard (Google Earth and others)"
+msgstr "KML סטנדרטי (Google Earth ואחר)"
+
+#: src/kml.cpp:618
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr "KML עם הרחבת מידע נקודת ציון  (QtVlm)"
+
+#: src/LinkPropDlg.cpp:46
+msgid "Link"
+msgstr "קישור"
+
+#: src/LinkPropDlg.cpp:49
+msgid "Link description"
+msgstr "תיאור קישור"
+
+#: src/LinkPropDlg.cpp:58
+msgid "URL"
+msgstr "כתובת URL"
+
+#: src/LinkPropDlg.cpp:67
+msgid "Local file..."
+msgstr "קובץ מקומי."
+
+#: src/LinkPropDlg.cpp:118
+msgid "Choose a file"
+msgstr "בחר קובץ"
+
+#: src/LinkPropDlg.cpp:129
+msgid "Link not complete, can't be saved."
+msgstr "הקישור לא מלא ,אין אפשרות לשמור."
+
+#: src/navutil.cpp:1721 src/navutil.cpp:3103 src/options.cpp:743
+#: src/options.cpp:904
+msgid "Persistent"
+msgstr "קבוע"
+
+#: src/navutil.cpp:2791 src/navutil.cpp:2903
+msgid "Export GPX file"
+msgstr "ייצוא קובץ GPX"
+
+#: src/navutil.cpp:2804
+msgid "Overwrite existing file?"
+msgstr "האם לדרוס קובץ קיים?"
+
+#: src/navutil.cpp:3005 src/navutil.cpp:3039
+msgid "Import GPX file"
+msgstr "יבוא קובץ GPX"
+
+#: src/navutil.cpp:3103
+msgid "Temporary"
+msgstr "זמני"
+
+#: src/navutil.cpp:3134
+msgid "duplicate waypoints detected during import and ignored."
+msgstr "שכפל נקודות ציון אותרו והוכנסו אך התעלם."
+
+#: src/navutil.cpp:3652
+msgid "&Font family:"
+msgstr "סוג הגופן:"
+
+#: src/navutil.cpp:3658 src/navutil.cpp:3660
+msgid "The font family."
+msgstr "משפחת הגופן"
+
+#: src/navutil.cpp:3665
+msgid "&Style:"
+msgstr "&סגנון:"
+
+#: src/navutil.cpp:3669 src/navutil.cpp:3671
+msgid "The font style."
+msgstr "סגנון הגופן של הטקסט."
+
+#: src/navutil.cpp:3676
+msgid "&Weight:"
+msgstr "משקל:"
+
+#: src/navutil.cpp:3680 src/navutil.cpp:3682
+msgid "The font weight."
+msgstr "סגנון הגופן."
+
+#: src/navutil.cpp:3689
+msgid "C&olour:"
+msgstr "צבע"
+
+#: src/navutil.cpp:3699 src/navutil.cpp:3701
+msgid "The font colour."
+msgstr "צבע הגופן."
+
+#: src/navutil.cpp:3707
+msgid "&Point size:"
+msgstr "גודל סמן"
+
+#: src/navutil.cpp:3712 src/navutil.cpp:3714
+msgid "The font point size."
+msgstr "גודל נקודת גופן."
+
+#: src/navutil.cpp:3721
+msgid "&Underline"
+msgstr "קו תחתון"
+
+#: src/navutil.cpp:3724 src/navutil.cpp:3726
+msgid "Whether the font is underlined."
+msgstr "קביעה אם הגופן מודגש בקו תחתון."
+
+#: src/navutil.cpp:3733
+msgid "Preview:"
+msgstr "תצוגה מקדימה:"
+
+#: src/navutil.cpp:3738 src/navutil.cpp:3740
+msgid "Shows the font preview."
+msgstr "הצגת התצוגה המקדימה של הגופן."
+
+#: src/navutil.cpp:3750
+msgid "Click to cancel the font selection."
+msgstr "לחץ כדי לבטל את בחירת הגופן."
+
+#: src/navutil.cpp:3753
+msgid "&OK"
+msgstr "&אישור"
+
+#: src/navutil.cpp:3755 src/navutil.cpp:3757
+msgid "Click to confirm the font selection."
+msgstr "לחץ לאתר בחירה של גופן"
+
+#: src/navutil.cpp:4274
+msgid "NMi"
+msgstr "NMi"
+
+#: src/navutil.cpp:4277
+msgid "mi"
+msgstr "mi"
+
+#: src/navutil.cpp:4280
+msgid "km"
+msgstr "ק\"מ"
+
+#: src/navutil.cpp:4283
+msgid "m"
+msgstr "m"
+
+#: src/navutil.cpp:4286
+msgid "ft"
+msgstr "ft"
+
+#: src/navutil.cpp:4289
+msgid "fa"
+msgstr "fa"
+
+#: src/navutil.cpp:4295
+msgid "cm"
+msgstr "ס\"מ"
+
+#: src/navutil.cpp:4363
+msgid "kts"
+msgstr "kts"
+
+#: src/navutil.cpp:4366
+msgid "mph"
+msgstr "מייל לשעה"
+
+#: src/navutil.cpp:4369 src/options.cpp:5218 src/options.cpp:5334
+msgid "km/h"
+msgstr "קמ\"ש"
+
+#: src/navutil.cpp:4372 src/options.cpp:5218 src/options.cpp:5334
+msgid "m/s"
+msgstr "מי\"ש"
+
+#: src/navutil.cpp:4389
+#, c-format
+msgid "%dd "
+msgstr "%dd"
+
+#: src/navutil.cpp:4390
+#, c-format
+msgid "%2dH %2dM"
+msgstr "%2dH %2dM"
+
+#: src/navutil.cpp:4391
+#, c-format
+msgid "%2dM %2dS"
+msgstr "%2dM %2dS"
+
+#: src/navutil.cpp:4404 src/RoutePropDlgImpl.cpp:320
+#: src/RoutePropDlgImpl.cpp:325
+msgid "N/A"
+msgstr "לא זמין"
+
+#: src/NMEALogWindow.cpp:71
+msgid "NMEA Debug Window"
+msgstr "NMEA מסך בדיקת באגים"
+
+#: src/OCPNListCtrl.cpp:90
+msgid "Yes"
+msgstr "כן"
+
+#: src/OCPNListCtrl.cpp:92
+msgid "No"
+msgstr "לא"
+
+#: src/options.cpp:634 src/ConfigMgr.cpp:577
+msgid "Title"
+msgstr "נושא"
+
+#: src/options.cpp:641 src/routeprintout.cpp:118 src/routeprintout.cpp:415
+#: src/RoutePropDlg.cpp:271 src/RoutePropDlg.cpp:289 src/TrackPropDlg.cpp:731
+#: src/ConfigMgr.cpp:582 src/MarkInfo.cpp:441 src/MarkInfo.cpp:522
+msgid "Description"
+msgstr "תיאור"
+
+#: src/options.cpp:649
+msgid "Create a private configuration template based on current settings.\n"
+"This template will be saved, and may be selected for further use at any time.\n"
+"               "
+msgstr "צור תבנית תצורה פרטית המבוססת על ההגדרות הנוכחיות. \n"
+" תבנית זו תישמר וניתן יהיה לבחור בה לשימוש נוסף בכל עת. \n"
+"               "
+
+#: src/options.cpp:713
+msgid "MMSI Extended Properties"
+msgstr "MMSI מאפיינים מורחבים"
+
+#: src/options.cpp:727
+msgid "Tracking"
+msgstr "מעקב"
+
+#: src/options.cpp:732
+msgid "Default tracking"
+msgstr "מעקב ברירת מחדל"
+
+#: src/options.cpp:737
+msgid "Always track"
+msgstr "תמיד עקוב"
+
+#: src/options.cpp:740
+msgid " Never track"
+msgstr "לעולם אל תעקוב"
+
+#: src/options.cpp:749
+msgid "Ignore this MMSI"
+msgstr "התעלם מMMSI הזה"
+
+#: src/options.cpp:753
+msgid "Handle this MMSI as SART/PLB(AIS) MOB."
+msgstr "Handle this MMSI as SART/PLB(AIS) MOB."
+
+#: src/options.cpp:756
+msgid "Convert AIVDM to AIVDO for this MMSI"
+msgstr "המר AIVDM ל-AIVDO  בשביל MMSI"
+
+#: src/options.cpp:759
+msgid "This MMSI is my Follower - No CPA Alert"
+msgstr "MMSI הזה הוא עוקב שלי - לי התראת CPN"
+
+#: src/options.cpp:847
+msgid "An MMSI Id is generally a number of nine digits.\n"
+"Please check your entries and cancel if necessary."
+msgstr "מזהה MMSI הוא בדרך כלל מספר של תשע ספרות.\n"
+" נא בדוק את הערכים שלך ובטל במידת הצורך."
+
+#: src/options.cpp:892 src/options.cpp:3088 src/RoutePropDlg.cpp:181
+#: src/RoutePropDlg.cpp:197 src/TrackPropDlg.cpp:397 src/TrackPropDlg.cpp:415
+#: src/TrackPropDlg.cpp:623 src/TrackPropDlg.cpp:633
+msgid "Default"
+msgstr "ברירת מחדל"
+
+#: src/options.cpp:895 src/routemanagerdialog.cpp:1942
+#: src/routemanagerdialog.cpp:2118
+msgid "Always"
+msgstr "תמיד"
+
+#: src/options.cpp:898
+msgid "Never"
+msgstr "לעולם לא"
+
+#: src/options.cpp:935 src/options.cpp:983
+msgid "Edit MMSI Properties"
+msgstr "ערוך הגדרות MMSI"
+
+#: src/options.cpp:952 src/options.cpp:5421 src/options.cpp:5428
+msgid "MMSI Properties"
+msgstr "הגדרות MMSI"
+
+#: src/options.cpp:954 src/RoutePropDlg.cpp:312 src/RoutePropDlg.cpp:336
+#: src/TrackPropDlg.cpp:746 src/TrackPropDlg.cpp:771 src/MarkInfo.cpp:492
+#: src/MarkInfo.cpp:1076 src/MarkInfo.cpp:1119
+msgid "Edit"
+msgstr "ערוך"
+
+#: src/options.cpp:1049
+msgid "Track Mode"
+msgstr "מצב מסלול"
+
+#: src/options.cpp:1057
+msgid "Ignore"
+msgstr "התעלם"
+
+#: src/options.cpp:1066
+msgid "MOB"
+msgstr "MOB"
+
+#: src/options.cpp:1074
+msgid "VDM->VDO"
+msgstr "VDM->VDO"
+
+#: src/options.cpp:1082
+msgid "Ship name"
+msgstr "שם הסירה"
+
+#: src/options.cpp:1090
+msgid "Follower"
+msgstr "עוקב"
+
+#: src/options.cpp:1094
+msgid "New..."
+msgstr "חדש.."
+
+#: src/options.cpp:1117
+msgid "Add MMSI Properties"
+msgstr "הוסף הגדרות MMSI"
+
+#: src/options.cpp:1544
+msgid "The device selected is not accessible; opencpn will likely not be able\n"
+"to use this device as-is. You might want to exit OpenCPN, reboot and\n"
+"retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
+"with the following contents:\n\n"
+"            KERNEL==\"ttyUSB*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
+"For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
+msgstr "The device selected is not accessible; opencpn will likely not be able\n"
+"to use this device as-is. You might want to exit OpenCPN, reboot and\n"
+"retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
+"with the following contents:\n\n"
+"            KERNEL==\"ttyUSB*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
+"For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
+
+#: src/options.cpp:1556
+msgid "\n"
+"The device selected is not accessible; opencpn will likely not be able\n"
+"to use this device as-is. You might want to exit OpenCPN, reboot and\n"
+"retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
+"with the following contents:\n\n"
+"            KERNEL==\"ttyUSB*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
+"For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
+msgstr "\n"
+"The device selected is not accessible; opencpn will likely not be able\n"
+"to use this device as-is. You might want to exit OpenCPN, reboot and\n"
+"retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
+"with the following contents:\n\n"
+"            KERNEL==\"ttyUSB*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"
+"            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
+"For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
+
+#: src/options.cpp:1586 src/options.cpp:8341 src/routeman.cpp:885
+#: src/routeman.cpp:966
+msgid "OpenCPN Warning"
+msgstr "אזהרת OpenCPN"
+
+#: src/options.cpp:1692 src/options.cpp:2308
+msgid "NMEA"
+msgstr "NMEA"
+
+#: src/options.cpp:1702 src/options.cpp:2318 src/options.cpp:4832
+msgid "General"
+msgstr "כללי"
+
+#: src/options.cpp:1711
+msgid "Filter NMEA COG/SOG"
+msgstr "סנן NMEA COG/SOG"
+
+#: src/options.cpp:1721 src/options.cpp:2336
+msgid "Filter period (sec)"
+msgstr "תקופת סינון (שניות)"
+
+#: src/options.cpp:1742 src/options.cpp:2356
+msgid "Show NMEA Debug Window"
+msgstr "הצג חלון איתור באגים של NMEA"
+
+#: src/options.cpp:1748
+msgid "Use Furuno GP3X for uploads"
+msgstr "השתמש ב- Furuno GP3X להעלאות"
+
+#: src/options.cpp:1754
+msgid "Use GRMN for uploads"
+msgstr "השתמש ב- GRMN להעלאות"
+
+#: src/options.cpp:1760 src/options.cpp:2375
+msgid "Use magnetic bearings in output sentence ECAPB"
+msgstr "השתמש במסבים מגנטיים במשפט פלט ECAPB"
+
+#: src/options.cpp:1771 src/options.cpp:2386
+msgid "Data Connections"
+msgstr "חיבור נתונים"
+
+#: src/options.cpp:1785 src/options.cpp:4755 src/options.cpp:10299
+#: src/RoutePropDlg.cpp:333 src/TrackPropDlg.cpp:768
+msgid "Add"
+msgstr "הוסף"
+
+#: src/options.cpp:1789
+msgid "Remove"
+msgstr "הסר"
+
+#: src/options.cpp:1832 src/options.cpp:2479 src/options.cpp:9575
+msgid "BT Scan"
+msgstr "סריקת בלוטוס"
+
+#: src/options.cpp:1840
+msgid "BT Sources"
+msgstr "מקורות בלוטוס"
+
+#: src/options.cpp:1921 src/options.cpp:2566
+msgid "Address"
+msgstr "כתובת"
+
+#: src/options.cpp:1929 src/options.cpp:1944 src/options.cpp:2575
+#: src/options.cpp:2604 src/options.cpp:2962
+msgid "DataPort"
+msgstr "פורט DATA"
+
+#: src/options.cpp:1959 src/options.cpp:2619
+msgid "150"
+msgstr ""
+
+#: src/options.cpp:1959 src/options.cpp:2619
+msgid "300"
+msgstr ""
+
+#: src/options.cpp:1959 src/options.cpp:2619
+msgid "600"
+msgstr ""
+
+#: src/options.cpp:1959 src/options.cpp:2619
+msgid "1200"
+msgstr ""
+
+#: src/options.cpp:1959 src/options.cpp:2619
+msgid "2400"
+msgstr ""
+
+#: src/options.cpp:1960 src/options.cpp:2620
+msgid "4800"
+msgstr ""
+
+#: src/options.cpp:1960 src/options.cpp:2620
+msgid "9600"
+msgstr ""
+
+#: src/options.cpp:1960 src/options.cpp:2620
+msgid "19200"
+msgstr ""
+
+#: src/options.cpp:1960 src/options.cpp:2620
+msgid "38400"
+msgstr ""
+
+#: src/options.cpp:1960 src/options.cpp:2620
+msgid "57600"
+msgstr ""
+
+#: src/options.cpp:1961 src/options.cpp:2621
+msgid "115200"
+msgstr ""
+
+#: src/options.cpp:1961 src/options.cpp:2621
+msgid "230400"
+msgstr ""
+
+#: src/options.cpp:1961 src/options.cpp:2621
+msgid "460800"
+msgstr ""
+
+#: src/options.cpp:1961 src/options.cpp:2621
+msgid "921600"
+msgstr ""
+
+#: src/options.cpp:1975 src/options.cpp:2635
+msgid "NMEA 0183"
+msgstr "NMEA 0183"
+
+#: src/options.cpp:1975 src/options.cpp:2635
+msgid "NMEA 2000"
+msgstr "NMEA 2000"
+
+#: src/options.cpp:1976 src/options.cpp:2636
+msgid "Seatalk"
+msgstr "Seatalk"
+
+#: src/options.cpp:1991 src/options.cpp:2651
+msgid "0"
+msgstr ""
+
+#: src/options.cpp:1991 src/options.cpp:2651
+msgid "1"
+msgstr ""
+
+#: src/options.cpp:1991 src/options.cpp:2651
+msgid "2"
+msgstr ""
+
+#: src/options.cpp:1991 src/options.cpp:2651
+msgid "3"
+msgstr ""
+
+#: src/options.cpp:1991 src/options.cpp:2651
+msgid "4"
+msgstr ""
+
+#: src/options.cpp:1992 src/options.cpp:2652
+msgid "5"
+msgstr ""
+
+#: src/options.cpp:1992 src/options.cpp:2652
+msgid "6"
+msgstr ""
+
+#: src/options.cpp:1992 src/options.cpp:2652
+msgid "7"
+msgstr ""
+
+#: src/options.cpp:1992 src/options.cpp:2652
+msgid "8"
+msgstr ""
+
+#: src/options.cpp:1992 src/options.cpp:2652
+msgid "9"
+msgstr ""
+
+#: src/options.cpp:2003 src/options.cpp:2678
+msgid "Control checksum"
+msgstr "ביקורת checksum"
+
+#: src/options.cpp:2007 src/options.cpp:2682
+msgid "If checked, only the sentences with a valid checksum are passed through"
+msgstr "אם מסומן, רק המשפטים עם בדיקת checksum  חוקית מועברים דרך"
+
+#: src/options.cpp:2011
+msgid "Use GRMN mode for input"
+msgstr "השתמש במצב GRMN עבור קלט"
+
+#: src/options.cpp:2020 src/options.cpp:2695
+msgid "Receive Input on this Port"
+msgstr "קבל קלט ביציאה זו"
+
+#: src/options.cpp:2024 src/options.cpp:2701
+msgid "Output on this port"
+msgstr "פלט ביציאה זו"
+
+#: src/options.cpp:2032 src/options.cpp:2706
+msgid "Talker ID"
+msgstr "מזהה דברן"
+
+#: src/options.cpp:2043 src/options.cpp:2717
+msgid "APB bearing precision"
+msgstr "דיוק מיסב APB"
+
+#: src/options.cpp:2064 src/options.cpp:2753
+msgid "Input filtering"
+msgstr "סינון קלט"
+
+#: src/options.cpp:2070 src/options.cpp:2759 src/options.cpp:10348
+msgid "Accept only sentences"
+msgstr "קבל רק משפטים"
+
+#: src/options.cpp:2074 src/options.cpp:2763 src/options.cpp:10348
+msgid "Ignore sentences"
+msgstr "התעלם ממשפטים"
+
+#: src/options.cpp:2097 src/options.cpp:2787
+msgid "Output filtering"
+msgstr "סינון פלט"
+
+#: src/options.cpp:2104 src/options.cpp:2794 src/options.cpp:10346
+msgid "Transmit sentences"
+msgstr "שידור משפטים"
+
+#: src/options.cpp:2108 src/options.cpp:2798 src/options.cpp:10346
+msgid "Drop sentences"
+msgstr "ירידה במשפטים"
+
+#: src/options.cpp:2259
+msgid "On"
+msgstr "מופעל"
+
+#: src/options.cpp:2259
+msgid "Data Port"
+msgstr "יציאת נתונים"
+
+#: src/options.cpp:2259
+msgid "Prio"
+msgstr "פריו."
+
+#: src/options.cpp:2260
+msgid "Parm"
+msgstr "פארם"
+
+#: src/options.cpp:2260
+msgid "I/O"
+msgstr "I / O"
+
+#: src/options.cpp:2260 src/options.cpp:2964
+msgid "Filters"
+msgstr "מסננים"
+
+#: src/options.cpp:2330
+msgid "Filter NMEA Course and Speed data"
+msgstr "מסנן NMEA קורס ונתוני מהירות"
+
+#: src/options.cpp:2362
+msgid "Format uploads for Furuno GP3X"
+msgstr "פורמט העלאות עבור Furuno GP3X"
+
+#: src/options.cpp:2368
+msgid "Use Garmin GRMN (Host) mode for uploads"
+msgstr ""
+
+#: src/options.cpp:2421
+msgid "Add Connection"
+msgstr "הוסף חיבור"
+
+#: src/options.cpp:2425
+msgid "Remove Connection"
+msgstr "הסר חיבור"
+
+#: src/options.cpp:2444 src/options.cpp:10191
+msgid "Edit Selected Connection"
+msgstr "עריכת חיבור נבחר"
+
+#: src/options.cpp:2475
+msgid "Built-in Bluetooth SPP"
+msgstr ""
+
+#: src/options.cpp:2489
+msgid "Bluetooth Data Sources"
+msgstr ""
+
+#: src/options.cpp:2585 src/options.cpp:2669
+msgid "User Comment"
+msgstr "הערות משתמש"
+
+#: src/options.cpp:2686
+msgid "Use Garmin (GRMN) mode for input"
+msgstr ""
+
+#: src/options.cpp:2701
+msgid "as autopilot or NMEA repeater"
+msgstr ""
+
+#: src/options.cpp:2706
+msgid "blank = default ID"
+msgstr ""
+
+#: src/options.cpp:2723
+msgid "x"
+msgstr ""
+
+#: src/options.cpp:2723
+msgid "x.x"
+msgstr ""
+
+#: src/options.cpp:2723
+msgid "x.xx"
+msgstr ""
+
+#: src/options.cpp:2724
+msgid "x.xxx"
+msgstr ""
+
+#: src/options.cpp:2724
+msgid "x.xxxx"
+msgstr ""
+
+#: src/options.cpp:2734
+msgid "Automatic server discovery"
+msgstr ""
+
+#: src/options.cpp:2737
+msgid "If checked, signal K server will be discovered automatically"
+msgstr ""
+
+#: src/options.cpp:2741
+msgid "Discover now..."
+msgstr ""
+
+#: src/options.cpp:2963
+msgid "Parameters"
+msgstr "פרמטרים"
+
+#: src/options.cpp:2963
+msgid "Connection"
+msgstr "חיבור"
+
+#: src/options.cpp:3061 src/CanvasOptions.cpp:157
+msgid "Display Options"
+msgstr "אפשרויות תצוגה"
+
+#: src/options.cpp:3071
+msgid "COG Predictor Length (min)"
+msgstr ""
+
+#: src/options.cpp:3078
+msgid "Heading Predictor Length (NMi)"
+msgstr ""
+
+#: src/options.cpp:3085
+msgid "Ship Icon Type"
+msgstr "סוג סמל הסירה"
+
+#: src/options.cpp:3088
+msgid "Real Scale Bitmap"
+msgstr ""
+
+#: src/options.cpp:3089
+msgid "Real Scale Vector"
+msgstr ""
+
+#: src/options.cpp:3103
+msgid "Length Over All (m)"
+msgstr ""
+
+#: src/options.cpp:3109
+msgid "Width Over All (m)"
+msgstr ""
+
+#: src/options.cpp:3115
+msgid "GPS Offset from Bow (m)"
+msgstr ""
+
+#: src/options.cpp:3121
+msgid "GPS Offset from Midship (m)"
+msgstr ""
+
+#: src/options.cpp:3127
+msgid "Minimum Screen Size (mm)"
+msgstr ""
+
+#: src/options.cpp:3139
+msgid "Show range rings"
+msgstr ""
+
+#: src/options.cpp:3142 src/options.cpp:3284 src/options.cpp:3643
+#: src/MarkInfo.cpp:577
+msgid "None"
+msgstr "ללא"
+
+#: src/options.cpp:3156 src/options.cpp:3421
+msgid "Distance between rings"
+msgstr ""
+
+#: src/options.cpp:3165 src/options.cpp:3432
+msgid "Distance Unit"
+msgstr "יחידת מרחק"
+
+#: src/options.cpp:3168 src/options.cpp:3282 src/options.cpp:5204
+#: src/options.cpp:5323
+msgid "Nautical miles"
+msgstr "מייל ימי"
+
+#: src/options.cpp:3168 src/options.cpp:3282 src/options.cpp:5205
+#: src/options.cpp:5324
+msgid "Kilometers"
+msgstr "קילומטרים"
+
+#: src/options.cpp:3174
+msgid "Range Ring Colour"
+msgstr ""
+
+#: src/options.cpp:3183 src/routemanagerdialog.cpp:451
+msgid "Tracks"
+msgstr "מסלולים"
+
+#: src/options.cpp:3189
+msgid "Automatic Daily Tracks at midnight"
+msgstr ""
+
+#: src/options.cpp:3197
+msgid "Automatic Daily Tracks at"
+msgstr ""
+
+#: src/options.cpp:3207
+msgid "Computer"
+msgstr "מחשב"
+
+#: src/options.cpp:3210 src/RoutePropDlg.cpp:147 src/TrackPropDlg.cpp:359
+#: src/TrackPropDlg.cpp:366 src/TrackPropDlg.cpp:687
+msgid "UTC"
+msgstr "UTC"
+
+#: src/options.cpp:3213
+msgid "LMT"
+msgstr "LMT"
+
+#: src/options.cpp:3224
+msgid "Highlight Tracks"
+msgstr ""
+
+#: src/options.cpp:3227
+msgid "Track Colour"
+msgstr ""
+
+#: src/options.cpp:3241
+msgid "Tracking Precision"
+msgstr ""
+
+#: src/options.cpp:3244
+msgid "Low"
+msgstr "נמוך"
+
+#: src/options.cpp:3244
+msgid "Medium"
+msgstr "בינוני"
+
+#: src/options.cpp:3244
+msgid "High"
+msgstr "גבוהה"
+
+#: src/options.cpp:3251
+msgid "Calculate values"
+msgstr "חשב ערכים"
+
+#: src/options.cpp:3260
+msgid "Calculate SOG and COG from position changes"
+msgstr ""
+
+#: src/options.cpp:3264
+msgid "Min seconds between updates"
+msgstr ""
+
+#: src/options.cpp:3276
+msgid "Routes/Points"
+msgstr ""
+
+#: src/options.cpp:3290
+msgid "New Routes"
+msgstr "נתיבים חדשים"
+
+#: src/options.cpp:3304 src/options.cpp:3363
+msgid "Waypoint default icon"
+msgstr ""
+
+#: src/options.cpp:3307 src/options.cpp:3366 src/MarkInfo.cpp:405
+msgid "Combo!"
+msgstr ""
+
+#: src/options.cpp:3328
+msgid "Waypoint Arrival Circle Radius (NMi)"
+msgstr ""
+
+#: src/options.cpp:3337
+msgid "Advance route waypoint on arrival only"
+msgstr ""
+
+#: src/options.cpp:3348
+msgid "New Waypoints"
+msgstr "נקודות ציון חדשות"
+
+#: src/options.cpp:3386
+msgid "Show waypoints only at a chartscale greater than 1 :"
+msgstr ""
+
+#: src/options.cpp:3394
+msgid "Override the settings for chartscale based visibility and show always"
+msgstr ""
+
+#: src/options.cpp:3406
+msgid "Waypoint range rings"
+msgstr ""
+
+#: src/options.cpp:3443
+msgid "Waypoint Range Ring Colours"
+msgstr ""
+
+#: src/options.cpp:3462
+msgid "Control Options"
+msgstr ""
+
+#: src/options.cpp:3471
+msgid "Lock Waypoints (Unless waypoint property dialog visible)"
+msgstr ""
+
+#: src/options.cpp:3477
+msgid "Confirm deletion of tracks and routes"
+msgstr ""
+
+#: src/options.cpp:3536
+msgid "Chart Files"
+msgstr "קבצי מפות"
+
+#: src/options.cpp:3542
+msgid "Directories"
+msgstr "תיקיות"
+
+#: src/options.cpp:3587
+msgid "Add Directory..."
+msgstr "הוסף תיקייה.."
+
+#: src/options.cpp:3591 src/options.cpp:4694 src/RoutePropDlgImpl.cpp:814
+msgid "Remove Selected"
+msgstr "מחק מסומן"
+
+#: src/options.cpp:3597
+msgid "Compress Selected"
+msgstr "כווץ מסומן"
+
+#: src/options.cpp:3605
+msgid "Update Control"
+msgstr "עידכון שליטה"
+
+#: src/options.cpp:3613
+msgid "Scan Charts and Update Database"
+msgstr "עדכן מפות וקובץ מסד נתונים"
+
+#: src/options.cpp:3616
+msgid "Force Full Database Rebuild"
+msgstr "אלץ בנייה מחדש של מסד נתונים"
+
+#: src/options.cpp:3619
+msgid "Prepare all ENC Charts"
+msgstr "הכן את כל מפות ENC"
+
+#: src/options.cpp:3639
+msgid " [Modified]"
+msgstr "[נערך]"
+
+#: src/options.cpp:3649
+msgid "Templates"
+msgstr "תבניות"
+
+#: src/options.cpp:3661
+msgid "Template Status"
+msgstr "סטטוס תבנית"
+
+#: src/options.cpp:3668
+msgid "Last Applied Template Title:"
+msgstr "כותרת תבנית שחלה לאחרונה:"
+
+#: src/options.cpp:3680
+msgid "Saved Templates"
+msgstr "תבניות שמורות"
+
+#: src/options.cpp:3703
+msgid "Create Config..."
+msgstr "צור קונפיגורציה.."
+
+#: src/options.cpp:3711
+msgid "Delete Selected Config..."
+msgstr "מחק קונפיגורציה מסומנת.."
+
+#: src/options.cpp:3715
+msgid "Apply Selected Config"
+msgstr "החל קונפיגורציה נבחרת"
+
+#: src/options.cpp:3783
+msgid "Create Config"
+msgstr "בנה קונפיגורציה"
+
+#: src/options.cpp:3842
+msgid "Problem applying selected configuration."
+msgstr "בעיה בהחלת קונפיגורציה נבחרת."
+
+#: src/options.cpp:3921 src/RoutePropDlg.cpp:366 src/TrackPropDlg.cpp:785
+msgid "Advanced"
+msgstr "מתקדם"
+
+#: src/options.cpp:3941
+msgid "De-skew Raster Charts"
+msgstr ""
+
+#: src/options.cpp:3952 src/options.cpp:4235
+msgid "Use Accelerated Graphics (OpenGL)"
+msgstr "השתמש בהאצת גרפית (OpenGL)"
+
+#: src/options.cpp:3958
+msgid "OpenGL Options"
+msgstr "הגדרות OpenGL"
+
+#: src/options.cpp:3971 src/options.cpp:4111
+msgid "Chart Rotation Averaging Time"
+msgstr ""
+
+#: src/options.cpp:3983 src/options.cpp:4124 src/options.cpp:5797
+msgid "seconds"
+msgstr "שניות"
+
+#: src/options.cpp:3989 src/options.cpp:4132
+msgid "Chart Zoom/Scale Weighting"
+msgstr ""
+
+#: src/options.cpp:3994 src/options.cpp:4155
+msgid "Raster"
+msgstr ""
+
+#: src/options.cpp:4005 src/options.cpp:4164
+msgid "Vector"
+msgstr "ווקטור"
+
+#: src/options.cpp:4017 src/options.cpp:4178
+msgid "CM93 Detail level"
+msgstr "רמת פירוט CM93"
+
+#: src/options.cpp:4036 src/options.cpp:4196
+msgid "Physical Screen Width"
+msgstr "רוחב פיזי של מסך"
+
+#: src/options.cpp:4040 src/options.cpp:4201
+msgid "Auto"
+msgstr "אוטומטי"
+
+#: src/options.cpp:4043 src/options.cpp:4205
+msgid "Manual:"
+msgstr "ידני:"
+
+#: src/options.cpp:4052 src/options.cpp:4213
+msgid "mm"
+msgstr "מ\"מ"
+
+#: src/options.cpp:4082 src/options.cpp:4881 src/options.cpp:5051
+msgid "Chart Display"
+msgstr "הצגת מפה"
+
+#: src/options.cpp:4088
+msgid "Show Skewed Raster Charts as North-Up"
+msgstr ""
+
+#: src/options.cpp:4140
+msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
+"With a higher value, the same zoom level shows a more detailed chart."
+msgstr ""
+
+#: src/options.cpp:4229
+msgid "Graphics"
+msgstr "גרפיקה"
+
+#: src/options.cpp:4262
+msgid "Vector Chart Display"
+msgstr "הצגת ווקטור על גבי המפה"
+
+#: src/options.cpp:4281 src/options.cpp:4464 src/CanvasOptions.cpp:240
+msgid "Display Category"
+msgstr "הצגת קטגוריה"
+
+#: src/options.cpp:4282 src/options.cpp:4465 src/CanvasOptions.cpp:241
+msgid "Standard"
+msgstr "רגיל"
+
+#: src/options.cpp:4282 src/options.cpp:4465 src/CanvasOptions.cpp:241
+msgid "All"
+msgstr "הכל"
+
+#: src/options.cpp:4282 src/options.cpp:4465
+msgid "Mariner's Standard"
+msgstr ""
+
+#: src/options.cpp:4294 src/options.cpp:5515 src/options.cpp:6210
+msgid "Display"
+msgstr "תצוגה"
+
+#: src/options.cpp:4300 src/options.cpp:4481
+msgid "Depth Soundings"
+msgstr "עומק בסביבה"
+
+#: src/options.cpp:4305 src/options.cpp:4486
+msgid "Chart Information Objects"
+msgstr ""
+
+#: src/options.cpp:4311
+msgid "Buoys/Lights"
+msgstr ""
+
+#: src/options.cpp:4316 src/options.cpp:4494 src/CanvasOptions.cpp:220
+msgid "Buoy/Light Labels"
+msgstr ""
+
+#: src/options.cpp:4320 src/options.cpp:4499 src/CanvasOptions.cpp:228
+msgid "Light Descriptions"
+msgstr ""
+
+#: src/options.cpp:4324 src/options.cpp:4503
+msgid "Extended Light Sectors"
+msgstr ""
+
+#: src/options.cpp:4329
+msgid "Chart Texts"
+msgstr ""
+
+#: src/options.cpp:4334 src/options.cpp:4511
+msgid "National text on chart"
+msgstr ""
+
+#: src/options.cpp:4339 src/options.cpp:4516
+msgid "Important Text Only"
+msgstr ""
+
+#: src/options.cpp:4344 src/options.cpp:4521
+msgid "De-Cluttered Text"
+msgstr ""
+
+#: src/options.cpp:4348
+msgid "Chart Detail"
+msgstr "פירוט המפה"
+
+#: src/options.cpp:4351 src/options.cpp:4526
+msgid "Reduced Detail at Small Scale"
+msgstr "הפחת פירוט בקנה מידה קטן"
+
+#: src/options.cpp:4360 src/options.cpp:4542
+msgid "Graphics Style"
+msgstr "סגנון הגרפיקה"
+
+#: src/options.cpp:4363 src/options.cpp:4544
+msgid "Paper Chart"
+msgstr "מפת נייר"
+
+#: src/options.cpp:4363 src/options.cpp:4544
+msgid "Simplified"
+msgstr "פישוט"
+
+#: src/options.cpp:4369 src/options.cpp:4554
+msgid "Boundaries"
+msgstr "גבולות"
+
+#: src/options.cpp:4372 src/options.cpp:4556
+msgid "Plain"
+msgstr "פשוט"
+
+#: src/options.cpp:4372 src/options.cpp:4556
+msgid "Symbolized"
+msgstr ""
+
+#: src/options.cpp:4378 src/options.cpp:4566
+msgid "Colors"
+msgstr "צבעים"
+
+#: src/options.cpp:4381 src/options.cpp:4569
+msgid "2 Color"
+msgstr "2 צבעים"
+
+#: src/options.cpp:4381 src/options.cpp:4569
+msgid "4 Color"
+msgstr "4 צבעים"
+
+#: src/options.cpp:4392 src/options.cpp:4590
+msgid "Shallow Depth"
+msgstr ""
+
+#: src/options.cpp:4403 src/options.cpp:4598
+msgid "Safety Depth"
+msgstr ""
+
+#: src/options.cpp:4413 src/options.cpp:4605
+msgid "Deep Depth"
+msgstr ""
+
+#: src/options.cpp:4429 src/options.cpp:4621
+msgid "User Standard Objects"
+msgstr ""
+
+#: src/options.cpp:4439 src/options.cpp:4627 src/options.cpp:10297
+msgid "Select All"
+msgstr "בחר הכל"
+
+#: src/options.cpp:4441 src/options.cpp:4629 src/options.cpp:10298
+msgid "Clear All"
+msgstr "נקה הכל"
+
+#: src/options.cpp:4446 src/options.cpp:4634
+msgid "Reset to STANDARD"
+msgstr ""
+
+#: src/options.cpp:4655
+msgid "Tides && Currents"
+msgstr ""
+
+#: src/options.cpp:4660
+msgid "Active Datasets"
+msgstr ""
+
+#: src/options.cpp:4692
+msgid "Add Dataset..."
+msgstr ""
+
+#: src/options.cpp:4739
+msgid "All Available Charts"
+msgstr "כול המפות הפעילות"
+
+#: src/options.cpp:4757
+msgid "Remove Chart"
+msgstr "מחק מפה"
+
+#: src/options.cpp:4786
+msgid "All Charts"
+msgstr "כול המפות"
+
+#: src/options.cpp:4803
+msgid "New Group..."
+msgstr "קבוצה חדשה.."
+
+#: src/options.cpp:4804
+msgid "Delete Group"
+msgstr "מחק קבוצה"
+
+#: src/options.cpp:4854 src/options.cpp:5024 src/CanvasOptions.cpp:130
+msgid "Navigation Mode"
+msgstr "מצב ניווט"
+
+#: src/options.cpp:4862 src/options.cpp:5032 src/CanvasOptions.cpp:136
+msgid "North Up"
+msgstr ""
+
+#: src/options.cpp:4865 src/options.cpp:5035 src/CanvasOptions.cpp:140
+msgid "Course Up"
+msgstr ""
+
+#: src/options.cpp:4872 src/options.cpp:5042 src/CanvasOptions.cpp:148
+msgid "Look Ahead Mode"
+msgstr ""
+
+#: src/options.cpp:4891 src/options.cpp:5061
+msgid "Preserve scale when switching charts"
+msgstr ""
+
+#: src/options.cpp:4900 src/options.cpp:5070
+msgid "Controls"
+msgstr "פקדים"
+
+#: src/options.cpp:4906 src/options.cpp:5076
+msgid "Smooth Panning / Zooming"
+msgstr ""
+
+#: src/options.cpp:4910 src/options.cpp:5079
+msgid "Zoom to Cursor"
+msgstr "זום לעכבר"
+
+#: src/options.cpp:4921 src/options.cpp:5095
+msgid "Display Features"
+msgstr "הצגת פיצ'רים"
+
+#: src/options.cpp:4927 src/options.cpp:5101 src/CanvasOptions.cpp:164
+msgid "Show Grid"
+msgstr "הצגה רישתית"
+
+#: src/options.cpp:4935 src/options.cpp:5109 src/CanvasOptions.cpp:172
+msgid "Show Depth Units"
+msgstr "הצגת נקודות עומק"
+
+#: src/options.cpp:4951
+msgid "Status Bar Option"
+msgstr "הגדרות שורת מצב"
+
+#: src/options.cpp:4957 src/options.cpp:5131
+msgid "Live ETA at Cursor"
+msgstr "שידור חיי של הזמן הגעה משוער על הסמן"
+
+#: src/options.cpp:4964 src/options.cpp:5138
+msgid "Default Boat Speed "
+msgstr ""
+
+#: src/options.cpp:4977 src/options.cpp:5150
+msgid "Canvas Layout"
+msgstr ""
+
+#: src/options.cpp:5125
+msgid "Status Bar"
+msgstr "שורת מצב"
+
+#: src/options.cpp:5183
+msgid "Units"
+msgstr "יחידות"
+
+#: src/options.cpp:5202 src/options.cpp:5321 src/routeprintout.cpp:115
+#: src/routeprintout.cpp:408 src/RoutePropDlg.cpp:73 src/RoutePropDlg.cpp:255
+#: src/TrackPropDlg.cpp:223 src/MarkInfo.cpp:571
+msgid "Distance"
+msgstr "מרחק"
+
+#: src/options.cpp:5204 src/options.cpp:5323
+msgid "Statute miles"
+msgstr ""
+
+#: src/options.cpp:5218 src/options.cpp:5334
+msgid "Knots"
+msgstr "קשר"
+
+#: src/options.cpp:5218 src/options.cpp:5334
+msgid "Mph"
+msgstr "Mph"
+
+#: src/options.cpp:5229 src/options.cpp:5342
+msgid "Depth"
+msgstr "עומק"
+
+#: src/options.cpp:5247 src/options.cpp:5357
+msgid "Lat/Long"
+msgstr "רוחב/ ואורך"
+
+#: src/options.cpp:5249 src/options.cpp:5359
+msgid "Degrees, Decimal Minutes"
+msgstr ""
+
+#: src/options.cpp:5250 src/options.cpp:5360
+msgid "Decimal Degrees"
+msgstr ""
+
+#: src/options.cpp:5251 src/options.cpp:5361
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
+
+#: src/options.cpp:5266 src/options.cpp:5373
+msgid "Bearings"
+msgstr ""
+
+#: src/options.cpp:5271
+msgid "Show true"
+msgstr ""
+
+#: src/options.cpp:5275
+msgid "Show magnetic"
+msgstr ""
+
+#: src/options.cpp:5288
+msgid "Assumed magnetic variation"
+msgstr ""
+
+#: src/options.cpp:5300 src/options.cpp:5404
+msgid "deg (-W, +E)"
+msgstr ""
+
+#: src/options.cpp:5381
+msgid "Show true bearings and headings"
+msgstr ""
+
+#: src/options.cpp:5384
+msgid "Show magnetic bearings and headings."
+msgstr ""
+
+#: src/options.cpp:5395 src/options.cpp:6457
+msgid "WMM Plugin calculated magnetic variation"
+msgstr ""
+
+#: src/options.cpp:5409
+msgid " To set the magnetic variation manually,\n"
+" you must disable the WMM plugin."
+msgstr ""
+
+#: src/options.cpp:5444
+msgid "AIS Targets"
+msgstr "AIS נקודות"
+
+#: src/options.cpp:5451
+msgid "CPA Calculation"
+msgstr "חישוב CPA "
+
+#: src/options.cpp:5461
+msgid "No (T)CPA Alerts if target range is greater than (NMi)"
+msgstr ""
+
+#: src/options.cpp:5468
+msgid "Warn if CPA less than (NMi)"
+msgstr ""
+
+#: src/options.cpp:5480
+msgid "...and TCPA is less than (min)"
+msgstr ""
+
+#: src/options.cpp:5488
+msgid "Lost Targets"
+msgstr ""
+
+#: src/options.cpp:5497
+msgid "Mark targets as lost after (min)"
+msgstr ""
+
+#: src/options.cpp:5504
+msgid "Remove lost targets after (min)"
+msgstr ""
+
+#: src/options.cpp:5524
+msgid "Show target COG predictor arrow, length (min)"
+msgstr ""
+
+#: src/options.cpp:5532
+msgid "Show target tracks, length (min)"
+msgstr ""
+
+#: src/options.cpp:5540
+msgid "Suppress anchored/moored targets, speed max (kn)"
+msgstr ""
+
+#: src/options.cpp:5548
+msgid "Draw AIS realtime prediction, target speed min (kn)"
+msgstr ""
+
+#: src/options.cpp:5556
+msgid "Allow attenuation of less critical targets if more than ... targets"
+msgstr ""
+
+#: src/options.cpp:5564
+msgid "Show area notices (from AIS binary messages)"
+msgstr ""
+
+#: src/options.cpp:5571
+msgid "Show AIS targets real size"
+msgstr ""
+
+#: src/options.cpp:5578
+msgid "Show names with AIS targets at scale greater than 1:"
+msgstr ""
+
+#: src/options.cpp:5586
+msgid "Treat WPL sentences as APRS position reports"
+msgstr ""
+
+#: src/options.cpp:5596
+msgid "Rollover"
+msgstr ""
+
+#: src/options.cpp:5601
+msgid "Enable route/AIS info block"
+msgstr ""
+
+#: src/options.cpp:5606
+msgid "\"Ship Name\" MMSI (Call Sign)"
+msgstr ""
+
+#: src/options.cpp:5610
+msgid "[Class] Type (Status)"
+msgstr ""
+
+#: src/options.cpp:5613
+msgid "SOG COG"
+msgstr "SOG COG"
+
+#: src/options.cpp:5616
+msgid "CPA TCPA"
+msgstr "CPA TCPA"
+
+#: src/options.cpp:5621
+msgid "CPA/TCPA Alerts"
+msgstr "CPA/TCPA התראות"
+
+#: src/options.cpp:5630
+msgid "Show CPA/TCPA Alert Dialog"
+msgstr "הצג CPA/TCPA התראה דיאלוג"
+
+#: src/options.cpp:5634
+msgid "Select Alert Sound"
+msgstr "בחר צליל התראה"
+
+#: src/options.cpp:5640
+msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
+msgstr ""
+
+#: src/options.cpp:5644
+msgid "Test Alert Sound"
+msgstr "בדוק צליל התראה"
+
+#: src/options.cpp:5649
+msgid "Suppress Alerts for anchored/moored targets"
+msgstr ""
+
+#: src/options.cpp:5656
+msgid "Enable Target Alert Acknowledge timeout (min)"
+msgstr ""
+
+#: src/options.cpp:5668
+msgid "General Options"
+msgstr "אפשרויות כלליות"
+
+#: src/options.cpp:5676
+msgid "Language"
+msgstr "שפה"
+
+#: src/options.cpp:5688
+msgid "Fonts"
+msgstr "גופנים"
+
+#: src/options.cpp:5721
+msgid "Choose Font..."
+msgstr "בחר גופן."
+
+#: src/options.cpp:5726
+msgid "Choose Font Color..."
+msgstr "שינוי צבע הגופן."
+
+#: src/options.cpp:5730
+msgid "Sample"
+msgstr "דוגמה"
+
+#: src/options.cpp:5737
+msgid "Toolbar and Window Style"
+msgstr ""
+
+#: src/options.cpp:5755
+msgid "Interface Options"
+msgstr "הגדרות ממשק"
+
+#: src/options.cpp:5761
+msgid "Show Status Bar"
+msgstr "הצגת שורת המצב"
+
+#: src/options.cpp:5766
+msgid "Show Menu Bar"
+msgstr "הצג שורת תפריט"
+
+#: src/options.cpp:5780
+msgid "Show Compass/GPS Status Window"
+msgstr ""
+
+#: src/options.cpp:5788
+msgid "Enable Toolbar auto-hide"
+msgstr "הפעל הסתרה אוטומטית בשורה"
+
+#: src/options.cpp:5804
+msgid "Play Ships Bells"
+msgstr "השמע צלילי סירות"
+
+#: src/options.cpp:5815
+msgid "Audio Play command:"
+msgstr "פקודת הפעל קולית:"
+
+#: src/options.cpp:5834
+msgid "Unknown device :"
+msgstr "מכשיר לא ידוע:"
+
+#: src/options.cpp:5851
+msgid "Sound Device"
+msgstr "התקן שמע"
+
+#: src/options.cpp:5863
+msgid "Enable Touchscreen interface"
+msgstr "הפעל ממשק למסכי מגע"
+
+#: src/options.cpp:5867
+msgid "Enable Scaled Graphics interface"
+msgstr "הפעלת ממשק גרפי מורחב"
+
+#: src/options.cpp:5876
+msgid "Show Zoom buttons"
+msgstr "הצג לחצני שליטה בזום"
+
+#: src/options.cpp:5882
+msgid "Use Inland ECDIS V2.3"
+msgstr "השתמש Inland ECDIS V2.3"
+
+#: src/options.cpp:5891
+msgid "Use dark window decorations"
+msgstr "השתמש בעיצוב כהה לחלון"
+
+#: src/options.cpp:5909
+msgid "User Interface scale factor"
+msgstr ""
+
+#: src/options.cpp:5922
+msgid "Chart Object scale factor"
+msgstr ""
+
+#: src/options.cpp:5933
+msgid "Ship scale factor"
+msgstr ""
+
+#: src/options.cpp:5944
+msgid "ENC Sounding factor"
+msgstr ""
+
+#: src/options.cpp:6179 src/options.cpp:6240
+msgid "Connections"
+msgstr "חיבורים"
+
+#: src/options.cpp:6207
+msgid "Apply"
+msgstr "החל"
+
+#: src/options.cpp:6216
+msgid "Charts"
+msgstr "מפות"
+
+#: src/options.cpp:6250
+msgid "Ships"
+msgstr "סירות"
+
+#: src/options.cpp:6259
+msgid "User Interface"
+msgstr "ממשק משתמש"
+
+#: src/options.cpp:6262 src/options.cpp:6263
+msgid "Plugins"
+msgstr "תוספים"
+
+#: src/options.cpp:6463
+msgid "User set magnetic variation"
+msgstr ""
+
+#: src/options.cpp:6911
+msgid "feet"
+msgstr "feet"
+
+#: src/options.cpp:6911
+msgid "fathoms"
+msgstr ""
+
+#: src/options.cpp:7150
+msgid "Add a directory containing chart files"
+msgstr ""
+
+#: src/options.cpp:7406
+msgid "\n"
+" - your ship's length must be > 0"
+msgstr ""
+
+#: src/options.cpp:7408
+msgid "\n"
+" - your ship's beam must be > 0"
+msgstr ""
+
+#: src/options.cpp:7411
+msgid "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr ""
+
+#: src/options.cpp:7415
+msgid "\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr ""
+
+#: src/options.cpp:7417
+msgid "\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr ""
+
+#: src/options.cpp:7419
+msgid "The settings for own ship real size are not correct:"
+msgstr ""
+
+#: src/options.cpp:7420 src/routemanagerdialog.cpp:1497
+msgid "OpenCPN info"
+msgstr "מידע OpenCPN"
+
+#: src/options.cpp:8000
+msgid "The changes to the window decorations will take full effect the next time you start OpenCPN."
+msgstr ""
+
+#: src/options.cpp:8337
+msgid "Compression will alter chart files on disk.\n"
+"This may make them incompatible with other programs or older versions of OpenCPN.\n"
+"Compressed charts may take slightly longer to load and display on some systems.\n"
+"They can be decompressed again using unxz or 7 zip programs."
+msgstr ""
+
+#: src/options.cpp:8354 src/options.cpp:8405
+msgid "OpenCPN Compress Charts"
+msgstr ""
+
+#: src/options.cpp:8397
+msgid "No charts found to compress."
+msgstr ""
+
+#: src/options.cpp:8431
+#, c-format
+msgid "compressed %ld charts\n"
+"from %.1fMB to %.1fMB\n"
+"saved %.1fMB (%.1f%%)"
+msgstr ""
+
+#: src/options.cpp:8891 src/options.cpp:8902
+msgid "Select Sound File"
+msgstr "בחר קובץ קולי"
+
+#: src/options.cpp:9297
+msgid "Enter Group Name"
+msgstr "הזן שם קבוצה"
+
+#: src/options.cpp:9297
+msgid "New Chart Group"
+msgstr "קבוצת מפות חדשה"
+
+#: src/options.cpp:9462 src/options.cpp:9476
+msgid "Select Tide/Current Data"
+msgstr ""
+
+#: src/options.cpp:9521
+msgid "Stop Scan"
+msgstr "עצירת הסריקה"
+
+#: src/options.cpp:10120
+msgid "Configure new connection"
+msgstr ""
+
+#: src/options.cpp:10217
+msgid "Signal K server available."
+msgstr ""
+
+#: src/options.cpp:10220
+msgid "Signal K server not found."
+msgstr ""
+
+#: src/options.cpp:10285
+msgid "Sentence Filter"
+msgstr ""
+
+#: src/options.cpp:10393
+msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
+msgstr ""
+
+#: src/options.cpp:10394
+msgid "Enter the NMEA sentence"
+msgstr ""
+
+#: src/options.cpp:10411
+msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
+"           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
+"           The whole sentences then looks like GPGGA or AITXT.\n"
+"           You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
+"           The filter accepts just these three formats."
+msgstr ""
+
+#: src/options.cpp:10458
+msgid "Texture Compression"
+msgstr "דחיסת טקסטורות"
+
+#: src/options.cpp:10459
+msgid "Texture Compression with Caching"
+msgstr "דחיסת טקסטורות עם זיכרון מטמון."
+
+#: src/options.cpp:10461
+msgid "Texture Compression Caching"
+msgstr "דחיסת מטמון טקסטורות"
+
+#: src/options.cpp:10463
+msgid "Texture Memory Size (MB)"
+msgstr "גדול זיכרון של טקסטורה (ב-מגה בייט MB)"
+
+#: src/options.cpp:10467 src/options.cpp:10640
+msgid "Size: "
+msgstr "גודל"
+
+#: src/options.cpp:10469
+msgid "Rebuild Texture Cache"
+msgstr "תייצר מטמון טקסטורה"
+
+#: src/options.cpp:10471
+msgid "Clear Texture Cache"
+msgstr "נקה מטמון טקסטורה"
+
+#: src/options.cpp:10475
+msgid "Show FPS"
+msgstr "הצג FPS"
+
+#: src/options.cpp:10476
+msgid "Polygon Smoothing"
+msgstr "מריחת פוליגונים"
+
+#: src/options.cpp:10477
+msgid "Line Smoothing"
+msgstr "מריחת קווים"
+
+#: src/options.cpp:10479
+msgid "Software OpenGL (restart OpenCPN)"
+msgstr "תוכנה OpenGL (דרוש הפעלה מחדש של התוכנה)"
+
+#: src/options.cpp:10481
+msgid "Use Accelerated Panning"
+msgstr "השתמש בקירוב מואץ"
+
+#: src/options.cpp:10483
+msgid "Texture Settings"
+msgstr "הגדרות טקסטורות"
+
+#: src/options.cpp:10490
+msgid "Texture Cache"
+msgstr "מטמון טקסטורות"
+
+#: src/options.cpp:10497
+msgid "Miscellaneous"
+msgstr "שונות"
+
+#: src/Osenc.cpp:1171
+msgid "S57 Cell Update failed.\n"
+"ENC features may be incomplete or inaccurate.\n\n"
+"Check the logfile for details."
+msgstr ""
+
+#: src/Osenc.cpp:1172 src/Osenc.cpp:1179 src/s57chart.cpp:3811
+msgid "OpenCPN Create SENC Warning"
+msgstr ""
+
+#: src/Osenc.cpp:1178
+msgid "S57 Cell Update failed.\n"
+"No updates could be applied.\n"
+"ENC features may be incomplete or inaccurate.\n\n"
+"Check the logfile for details."
+msgstr ""
+
+#: src/Osenc.cpp:1652
+msgid "OpenCPN S57 SENC File Create..."
+msgstr ""
+
+#: src/pluginmanager.cpp:234
+msgid "Plugin is a standard system plugin"
+msgstr ""
+
+#: src/pluginmanager.cpp:236
+msgid "Plugin is managed by OpenCPN"
+msgstr "התוסף מנוהל על ידי OpenCPN"
+
+#: src/pluginmanager.cpp:238
+msgid "Plugin is not managed by OpenCPN"
+msgstr "התוסף לא מנוהל על ידי OpenCPN"
+
+#: src/pluginmanager.cpp:242
+msgid "Plugin status unknown"
+msgstr "סטטוס תוסף לא ידוע"
+
+#: src/pluginmanager.cpp:244
+msgid "Update to managed Plugin is available"
+msgstr "עדכן לתוסף מנוהל הוא זמין"
+
+#: src/pluginmanager.cpp:246
+msgid "New managed Plugin installation available"
+msgstr "עדכון חדש לתוסף מנוהל זמין"
+
+#: src/pluginmanager.cpp:248
+msgid "Update to installed Plugin is available"
+msgstr "עדכון לתוסף מותקן זמין"
+
+#: src/pluginmanager.cpp:250
+msgid "Plugin is latest available"
+msgstr "תוסף זמין בגירסה האחרונה"
+
+#: src/pluginmanager.cpp:516
+msgid "The plugin is not compatible with this version of OpenCPN, and will be uninstalled."
+msgstr "התוסף אינו תואם לגירסה הנוכחית של OpenCPN, והוא ימחק."
+
+#: src/pluginmanager.cpp:768
+msgid "successfully un-installed"
+msgstr "מחיקה הושלמה בהצלחה"
+
+#: src/pluginmanager.cpp:778
+msgid "Un-Installation complete"
+msgstr "מחיקה הושלמה"
+
+#: src/pluginmanager.cpp:1232
+#, c-format
+msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
+msgstr "%s התוסף אינו תואם לגירסה הנוכחית של OpenCPN, אנא עדכן את התוסף לגירסתו האחרונה"
+
+#: src/pluginmanager.cpp:2204
+#, c-format
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable and will not be loaded.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr ""
+
+#: src/pluginmanager.cpp:2205 src/pluginmanager.cpp:2211
+msgid "Blacklisted plugin detected..."
+msgstr ""
+
+#: src/pluginmanager.cpp:2210
+#, c-format
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr ""
+
+#: src/pluginmanager.cpp:2244
+msgid "Unreadable PlugIn library detected, check the file permissions:\n"
+msgstr ""
+
+#: src/pluginmanager.cpp:2270
+msgid "Incompatible plugin detected"
+msgstr "חוסר תאימות בתוסף התגלה"
+
+#: src/pluginmanager.cpp:2273
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+
+#: src/pluginmanager.cpp:2278
+msgid ", and all previous versions,"
+msgstr ""
+
+#: src/pluginmanager.cpp:2279
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+
+#: src/pluginmanager.cpp:5155
+msgid "Plugin Catalog"
+msgstr "קטלוג תוספים"
+
+#: src/pluginmanager.cpp:5168 src/pluginmanager.cpp:5784
+msgid "Update Plugin Catalog"
+msgstr "עדכן קטלוג תוספים"
+
+#: src/pluginmanager.cpp:5174 src/pluginmanager.cpp:5239
+msgid "Choose Remote Catalog"
+msgstr "תבחר קטלוג מרוחק"
+
+#: src/pluginmanager.cpp:5196 src/pluginmanager.cpp:5264
+msgid "Import plugin..."
+msgstr "הוסף תוסף חיצוני.."
+
+#: src/pluginmanager.cpp:5231
+msgid "Update Plugin Catalog:Master"
+msgstr "עדכן קטלוג תוספים"
+
+#: src/pluginmanager.cpp:5331
+msgid "Cannot dpownload data from url"
+msgstr ""
+
+#: src/pluginmanager.cpp:5332 src/pluginmanager.cpp:5340
+#: src/pluginmanager.cpp:5359 src/pluginmanager.cpp:5383
+msgid "OpenCPN Catalog update"
+msgstr ""
+
+#: src/pluginmanager.cpp:5340
+msgid "Unable to copy catalog file"
+msgstr "מוגבל להעתיק קובץ מהקטלוג"
+
+#: src/pluginmanager.cpp:5359
+msgid "Unable to copy catalog file to cache"
+msgstr "מוגבל להעתיק מהקטלוג לזיכרון המטמון"
+
+#: src/pluginmanager.cpp:5383
+msgid "Catalog update successful"
+msgstr ""
+
+#: src/pluginmanager.cpp:5491
+msgid "Select tarball file"
+msgstr ""
+
+#: src/pluginmanager.cpp:5581
+msgid "Error extracting import plugin tarball."
+msgstr ""
+
+#: src/pluginmanager.cpp:5581 src/pluginmanager.cpp:5587
+#: src/pluginmanager.cpp:5600 src/pluginmanager.cpp:5607
+#: src/pluginmanager.cpp:5618
+msgid "OpenCPN Plugin Import Error"
+msgstr "שגיאה בהוספת תוסף לOpenCPN"
+
+#: src/pluginmanager.cpp:5587
+msgid "Error, import plugin tarball does not contain required metadata."
+msgstr ""
+
+#: src/pluginmanager.cpp:5600
+msgid "Error processing import plugin metadata."
+msgstr "שגיאה בעת עיבוד מטה מידע בתוסף"
+
+#: src/pluginmanager.cpp:5607
+msgid "Incompatible import plugin detected."
+msgstr "חוסר תאימות בתוסף התגלה."
+
+#: src/pluginmanager.cpp:5618
+msgid "Cannot access current catalog."
+msgstr "אין גישה לקטלוג כרגע."
+
+#: src/pluginmanager.cpp:5718
+msgid "Plugin imported successfully"
+msgstr "הוספת תוסף התבצעה בהצלחה"
+
+#: src/pluginmanager.cpp:5720
+msgid "Active catalog updated."
+msgstr "קטלוג פעיל עודכן"
+
+#: src/pluginmanager.cpp:5722
+msgid "Plugin may be installed or updated now."
+msgstr "התוסף כנראה הותקן או התעדכן עכשיו."
+
+#: src/pluginmanager.cpp:5723
+msgid "OpenCPN Plugin Import Successful"
+msgstr "הוספת תוסף ל-OpenCPN התבצעה בהצלחה "
+
+#: src/pluginmanager.cpp:5733
+msgid "Active Catalog"
+msgstr "קטלוג פעיל"
+
+#: src/pluginmanager.cpp:5733
+msgid "Last Catalog"
+msgstr "קטלוג קודם"
+
+#: src/pluginmanager.cpp:5747
+msgid "Version"
+msgstr "גירסה"
+
+#: src/pluginmanager.cpp:5750
+msgid "Please Update Plugin Catalog."
+msgstr "בבקשה עדכן קטלוג תוספים."
+
+#: src/pluginmanager.cpp:6094 src/pluginmanager.cpp:6137
+msgid "Enabled"
+msgstr "אפשר"
+
+#: src/pluginmanager.cpp:6164 src/pluginmanager.cpp:6186
+msgid "Uninstall"
+msgstr "הסר התקנה"
+
+#: src/pluginmanager.cpp:6294
+msgid "Upgrade to Version "
+msgstr "שדרוג גרסה."
+
+#: src/pluginmanager.cpp:6301
+msgid "Install..."
+msgstr "התקן."
+
+#: src/pluginmanager.cpp:6307
+msgid "Update to "
+msgstr "עדכן ל-"
+
+#: src/pluginmanager.cpp:6314
+msgid "Reinstall"
+msgstr "התקן מחדש"
+
+#: src/pluginmanager.cpp:6320
+msgid "Downgrade"
+msgstr "שנמך"
+
+#: src/pluginmanager.cpp:6555
+msgid "Website"
+msgstr "אתר אינטרנט"
+
+#: src/RolloverWin.cpp:132 src/RolloverWin.cpp:232 src/RolloverWin.cpp:365
+msgid "AISRollover"
+msgstr "AISRollover"
+
+#: src/RolloverWin.cpp:133 src/RolloverWin.cpp:233 src/RolloverWin.cpp:369
+msgid "TideCurrentGraphRollover"
+msgstr ""
+
+#: src/Route.cpp:1204
+msgid "Route Transmitted."
+msgstr ""
+
+#: src/Route.cpp:1207
+msgid "Error on Route Upload.  Garmin GPS not connected"
+msgstr ""
+
+#: src/Route.cpp:1209
+msgid "Error on Route Upload.  Please check logfiles..."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:327
+msgid "Routes"
+msgstr "מסלולים"
+
+#: src/routemanagerdialog.cpp:350 src/routemanagerdialog.cpp:462
+#: src/routemanagerdialog.cpp:561 src/routemanagerdialog.cpp:690
+#: src/TTYWindow.cpp:63
+msgid "Filter"
+msgstr "סינון"
+
+#: src/routemanagerdialog.cpp:383 src/routemanagerdialog.cpp:497
+msgid "Show"
+msgstr "הצג"
+
+#: src/routemanagerdialog.cpp:384
+msgid "Route Name"
+msgstr "שם נתיב "
+
+#: src/routemanagerdialog.cpp:385
+msgid "From <-> To"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:400 src/routemanagerdialog.cpp:518
+#: src/routemanagerdialog.cpp:612
+msgid "&Properties"
+msgstr "&מאפיינים"
+
+#: src/routemanagerdialog.cpp:405
+msgid "&Activate"
+msgstr "&הפעל"
+
+#: src/routemanagerdialog.cpp:412 src/routemanagerdialog.cpp:617
+msgid "&Center View"
+msgstr "&מרכוז"
+
+#: src/routemanagerdialog.cpp:419
+msgid "&Reverse"
+msgstr "הפוך"
+
+#: src/routemanagerdialog.cpp:424 src/routemanagerdialog.cpp:523
+#: src/routemanagerdialog.cpp:622 src/routemanagerdialog.cpp:747
+msgid "&Delete"
+msgstr "&מחיקה"
+
+#: src/routemanagerdialog.cpp:429 src/routemanagerdialog.cpp:528
+#: src/routemanagerdialog.cpp:632
+msgid "&Export selected..."
+msgstr "ייצא נבחרים ..."
+
+#: src/routemanagerdialog.cpp:434 src/routemanagerdialog.cpp:637
+msgid "&Send to GPS"
+msgstr "&שלח ל-GPS"
+
+#: src/routemanagerdialog.cpp:441 src/routemanagerdialog.cpp:540
+msgid "&Delete All"
+msgstr "&מחק הכל"
+
+#: src/routemanagerdialog.cpp:498
+msgid "Track Name"
+msgstr "שם מסלול"
+
+#: src/routemanagerdialog.cpp:499
+msgid "Length"
+msgstr "אורך"
+
+#: src/routemanagerdialog.cpp:513
+msgid "&Start Track"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:533
+msgid "Route from Track"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:550 src/TrackPropDlg.cpp:426
+msgid "Waypoints"
+msgstr "נקודות ציון"
+
+#: src/routemanagerdialog.cpp:590 src/MarkInfo.cpp:401 src/MarkInfo.cpp:1720
+msgid "Icon"
+msgstr "סמל"
+
+#: src/routemanagerdialog.cpp:592
+msgid "Waypoint Name"
+msgstr "שם נקודת ציון"
+
+#: src/routemanagerdialog.cpp:593
+msgid "Distance from own ship"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:607
+msgid "&New"
+msgstr "&חדש"
+
+#: src/routemanagerdialog.cpp:627
+msgid "&Go To"
+msgstr "עבור/י אל"
+
+#: src/routemanagerdialog.cpp:644
+msgid "Delete All"
+msgstr "מחק הכל"
+
+#: src/routemanagerdialog.cpp:655
+msgid "I&mport GPX..."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:665
+msgid "Export All Visible..."
+msgstr "ייצא כול הנראים..."
+
+#: src/routemanagerdialog.cpp:679
+msgid "Layers"
+msgstr "שכבות"
+
+#: src/routemanagerdialog.cpp:721
+msgid "Layer Name"
+msgstr "שם השכבה"
+
+#: src/routemanagerdialog.cpp:722
+msgid "No. of items"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:723
+msgid "Layer type"
+msgstr "סוג השכבה"
+
+#: src/routemanagerdialog.cpp:737
+msgid "Create Temporary layer"
+msgstr "צור שכבה זמנית"
+
+#: src/routemanagerdialog.cpp:742
+msgid "Create Persistent layer"
+msgstr "צור שכבה קבועה"
+
+#: src/routemanagerdialog.cpp:752 src/TrackPropDlg.cpp:296
+#: src/TrackPropDlg.cpp:603 src/MarkInfo.cpp:547
+msgid "Show on chart"
+msgstr "הצג על המפה"
+
+#: src/routemanagerdialog.cpp:756
+msgid "Show WPT names"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:761
+msgid "List contents"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:952 src/routemanagerdialog.cpp:1217
+msgid " - "
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1071 src/routemanagerdialog.cpp:1771
+#: src/routemanagerdialog.cpp:2197
+msgid "Are you sure you want to delete the selected object(s)"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1119
+msgid "Are you sure you want to delete <ALL> routes?"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1307
+msgid "Do you also want to make the shared waypoints being part of this route invisible?"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1307
+msgid "Question"
+msgstr "שאלה"
+
+#: src/routemanagerdialog.cpp:1433
+msgid "&Merge Selected Tracks"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1435
+msgid "Reduce Data..."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1437
+msgid "&Copy as text"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1467
+msgid "Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1468
+msgid "Reduce Data Precision"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1495
+#, c-format
+msgid "The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1590
+msgid "The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1844
+msgid "OpenCPN Converting Track to Route...."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1845
+msgid "Processing Waypoints..."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:1855
+msgid "Done."
+msgstr "סיום."
+
+#: src/routemanagerdialog.cpp:1877
+msgid "Are you sure you want to delete <ALL> tracks?"
+msgstr "האם אתה בטוח שברצונך למחוק את כל מסלולים?"
+
+#: src/routemanagerdialog.cpp:1943
+msgid "Overruled"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:2230
+msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:2359
+msgid "Are you sure you want to delete <ALL> waypoints?"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:2365
+msgid "There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:2510
+msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
+msgstr ""
+
+#: src/routemanagerdialog.cpp:2514
+msgid "The file will also be deleted from OpenCPN's layer directory."
+msgstr ""
+
+#: src/routemanagerdialog.cpp:2802
+msgid "(Unnamed Layer)"
+msgstr ""
+
+#: src/routeman.cpp:885 src/routeman.cpp:966
+msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
+msgstr ""
+
+#: src/routeman.cpp:1117
+msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
+msgstr ""
+
+#: src/RoutePoint.cpp:596 src/RoutePoint.cpp:597 src/RoutePoint.cpp:763
+#: src/RoutePoint.cpp:764
+msgid "Marks"
+msgstr "סימונים"
+
+#: src/RoutePoint.cpp:1124
+msgid "Waypoint(s) Transmitted."
+msgstr ""
+
+#: src/RoutePoint.cpp:1127
+msgid "Error on Waypoint Upload.  Garmin GPS not connected"
+msgstr ""
+
+#: src/RoutePoint.cpp:1129
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr ""
+
+#: src/RoutePoint.cpp:1197
+msgid "The ScaMin value for new waypoints is set to"
+msgstr ""
+
+#: src/RoutePoint.cpp:1198
+msgid "but current chartscale is"
+msgstr ""
+
+#: src/RoutePoint.cpp:1199
+msgid "Therefore the new waypoint will not be visible at this zoom level."
+msgstr ""
+
+#: src/routeprintout.cpp:103 src/RoutePropDlg.cpp:251 src/TrackPropDlg.cpp:222
+msgid "Leg"
+msgstr ""
+
+#: src/routeprintout.cpp:106
+msgid "To Waypoint"
+msgstr "לנקודת ציון"
+
+#: src/routeprintout.cpp:378
+msgid "Elements to print..."
+msgstr ""
+
+#: src/routeprintout.cpp:391
+msgid "Show Waypoint name."
+msgstr ""
+
+#: src/routeprintout.cpp:398
+msgid "Show Waypoint position."
+msgstr ""
+
+#: src/routeprintout.cpp:405
+msgid "Show course from each Waypoint to the next one. "
+msgstr ""
+
+#: src/routeprintout.cpp:412
+msgid "Show Distance from each Waypoint to the next one."
+msgstr ""
+
+#: src/routeprintout.cpp:419
+msgid "Show Waypoint description."
+msgstr ""
+
+#: src/routeprintout.cpp:484
+msgid "Route Print"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:50 src/TrackPropDlg.cpp:583
+msgid "From"
+msgstr "מאת"
+
+#: src/RoutePropDlg.cpp:57 src/TrackPropDlg.cpp:590
+msgid "To"
+msgstr "אל"
+
+#: src/RoutePropDlg.cpp:88
+msgid "Plan speed"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:103
+msgid "Enroute"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:118
+msgid "Departure"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:143
+msgid "Time"
+msgstr "זמן"
+
+#: src/RoutePropDlg.cpp:147
+msgid "Local@PC"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:147
+msgid "LMT@Location"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:161 src/TrackPropDlg.cpp:379 src/TrackPropDlg.cpp:606
+#: src/MarkInfo.cpp:574
+msgid "Color"
+msgstr "צבע"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:383 src/TrackPropDlg.cpp:610
+msgid "Default color"
+msgstr "צבע ברירת מחדל"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:383 src/TrackPropDlg.cpp:610
+msgid "Black"
+msgstr "שחור"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:383 src/TrackPropDlg.cpp:610
+msgid "Dark Red"
+msgstr "אדום כהה"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:383 src/TrackPropDlg.cpp:610
+msgid "Dark Green"
+msgstr "ירוק כהה"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:384 src/TrackPropDlg.cpp:611
+msgid "Dark Yellow"
+msgstr "צהוב כהה"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:384 src/TrackPropDlg.cpp:611
+msgid "Dark Blue"
+msgstr "כחול כהה"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:384 src/TrackPropDlg.cpp:611
+msgid "Dark Magenta"
+msgstr "מג'נטה כהה"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:384 src/TrackPropDlg.cpp:611
+msgid "Dark Cyan"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:385 src/TrackPropDlg.cpp:612
+msgid "Light Gray"
+msgstr "אפור בהיר"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:385 src/TrackPropDlg.cpp:612
+msgid "Dark Gray"
+msgstr "אפור כהה"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:385 src/TrackPropDlg.cpp:612
+msgid "Red"
+msgstr "אדום"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:385 src/TrackPropDlg.cpp:612
+msgid "Green"
+msgstr "ירוק"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:385 src/TrackPropDlg.cpp:612
+msgid "Yellow"
+msgstr "צהוב"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:385 src/TrackPropDlg.cpp:612
+msgid "Blue"
+msgstr "כחול"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:386 src/TrackPropDlg.cpp:613
+msgid "Magenta"
+msgstr "מגנטה"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:386 src/TrackPropDlg.cpp:613
+msgid "Cyan"
+msgstr "ציאן"
+
+#: src/RoutePropDlg.cpp:165 src/TrackPropDlg.cpp:386 src/TrackPropDlg.cpp:613
+msgid "White"
+msgstr "לבן"
+
+#: src/RoutePropDlg.cpp:177 src/TrackPropDlg.cpp:393 src/TrackPropDlg.cpp:619
+msgid "Style"
+msgstr "סגנון"
+
+#: src/RoutePropDlg.cpp:181 src/TrackPropDlg.cpp:397 src/TrackPropDlg.cpp:623
+msgid "Solid"
+msgstr "מלא"
+
+#: src/RoutePropDlg.cpp:181 src/TrackPropDlg.cpp:397 src/TrackPropDlg.cpp:623
+msgid "Dot"
+msgstr "נקודה"
+
+#: src/RoutePropDlg.cpp:181 src/TrackPropDlg.cpp:397 src/TrackPropDlg.cpp:623
+msgid "Long dash"
+msgstr "מקף ארוך"
+
+#: src/RoutePropDlg.cpp:181 src/TrackPropDlg.cpp:398 src/TrackPropDlg.cpp:623
+msgid "Short dash"
+msgstr "מקף קצר"
+
+#: src/RoutePropDlg.cpp:181 src/TrackPropDlg.cpp:398 src/TrackPropDlg.cpp:623
+msgid "Dot dash"
+msgstr "נקודה מקף"
+
+#: src/RoutePropDlg.cpp:193 src/TrackPropDlg.cpp:411 src/TrackPropDlg.cpp:629
+msgid "Width"
+msgstr "רוחב"
+
+#: src/RoutePropDlg.cpp:197
+msgid "1 px"
+msgstr "1 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "2px"
+msgstr "2px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "3 px"
+msgstr "3 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "4 px"
+msgstr "4 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "5 px"
+msgstr "5 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "6 px"
+msgstr "6 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "7 px"
+msgstr "7 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "8 px"
+msgstr "8 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "9 px"
+msgstr "9 px"
+
+#: src/RoutePropDlg.cpp:197
+msgid "10 px"
+msgstr "10 px"
+
+#: src/RoutePropDlg.cpp:253
+msgid "To waypoint"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:263
+msgid "ETE"
+msgstr "ETE"
+
+#: src/RoutePropDlg.cpp:265
+msgid "ETA"
+msgstr "זמן הגעה משוער ETA"
+
+#: src/RoutePropDlg.cpp:269
+msgid "Next tide event"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:275 src/MarkInfo.cpp:646
+msgid "ETD"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:284 src/TrackPropDlg.cpp:531 src/MarkInfo.cpp:351
+msgid "Basic"
+msgstr "בסיסי"
+
+#: src/RoutePropDlg.cpp:297 src/TrackPropDlg.cpp:738 src/MarkInfo.cpp:464
+#: src/MarkInfo.cpp:474
+msgid "Links"
+msgstr "קישורים"
+
+#: src/RoutePropDlg.cpp:306 src/TrackPropDlg.cpp:744
+msgid "wxFB Website"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:316 src/RoutePropDlg.cpp:352 src/TrackPropDlg.cpp:749
+#: src/MarkInfo.cpp:496 src/MarkInfo.cpp:501
+msgid "Add new"
+msgstr ""
+
+#: src/RoutePropDlg.cpp:339 src/RoutePropDlgImpl.cpp:1186
+#: src/TrackPropDlg.cpp:774 src/TrackPropDlg.cpp:1478
+msgid "Links are opened in the default browser."
+msgstr "קישורים יפתחו דפדפן ברירת מחדל."
+
+#: src/RoutePropDlg.cpp:373 src/TrackPropDlg.cpp:473 src/TrackPropDlg.cpp:808
+msgid "Print"
+msgstr "הדפס"
+
+#: src/RoutePropDlg.cpp:376 src/TrackPropDlg.cpp:486
+msgid "Extend"
+msgstr "הרחב"
+
+#: src/RoutePropDlg.cpp:379 src/TrackPropDlg.cpp:481 src/TrackPropDlg.cpp:816
+msgid "Split"
+msgstr "פצל"
+
+#: src/RoutePropDlgImpl.cpp:87
+msgid "MoTwilight"
+msgstr "MoTwilight"
+
+#: src/RoutePropDlgImpl.cpp:89
+msgid "Sunrise"
+msgstr "זריחה"
+
+#: src/RoutePropDlgImpl.cpp:91
+msgid "Daytime"
+msgstr "בשעות היום"
+
+#: src/RoutePropDlgImpl.cpp:93
+msgid "Sunset"
+msgstr "שקיעה"
+
+#: src/RoutePropDlgImpl.cpp:95
+msgid "EvTwilight"
+msgstr "EvTwilight"
+
+#: src/RoutePropDlgImpl.cpp:97
+msgid "Nighttime"
+msgstr "זמן לילה"
+
+#: src/RoutePropDlgImpl.cpp:358
+msgid "Arrived"
+msgstr "הגעה"
+
+#: src/RoutePropDlgImpl.cpp:731 src/TrackPropDlg.cpp:275
+#: src/TrackPropDlg.cpp:1192
+msgid "Depart From"
+msgstr "לצאת מ-"
+
+#: src/RoutePropDlgImpl.cpp:733 src/TrackPropDlg.cpp:307
+#: src/TrackPropDlg.cpp:649 src/TrackPropDlg.cpp:1194
+msgid "Total distance"
+msgstr "סה\"כ מרחק"
+
+#: src/RoutePropDlgImpl.cpp:734
+msgid "Speed (Kts)"
+msgstr "מהירות (קשר)"
+
+#: src/RoutePropDlgImpl.cpp:735 src/TrackPropDlg.cpp:1196
+msgid "Departure Time"
+msgstr "זמן יציאה"
+
+#: src/RoutePropDlgImpl.cpp:736 src/TrackPropDlg.cpp:663
+#: src/TrackPropDlg.cpp:1197
+msgid "Time enroute"
+msgstr "זמן enroute"
+
+#: src/RoutePropDlgImpl.cpp:776
+msgid "Are you sure you want to remove this waypoint?"
+msgstr "אתה בטוח שברצונך להסיר נקודת ציון זו?"
+
+#: src/RoutePropDlgImpl.cpp:777
+msgid "OpenCPN Remove Waypoint"
+msgstr "מחק נקודת-ציון OpenCPN"
+
+#: src/RoutePropDlgImpl.cpp:818
+msgid "&Waypoint Properties..."
+msgstr "הגדרות נקודת-ציון&"
+
+#: src/RoutePropDlgImpl.cpp:819
+msgid "&Remove Selected"
+msgstr "&מחק מסומן"
+
+#: src/RoutePropDlgImpl.cpp:825 src/TrackPropDlg.cpp:1244
+msgid "&Copy all as text"
+msgstr "העתק הכול כטקסט"
+
+#: src/RoutePropDlgImpl.cpp:903 src/TrackPropDlg.cpp:1160
+msgid "_A"
+msgstr ""
+
+#: src/RoutePropDlgImpl.cpp:904 src/TrackPropDlg.cpp:1161
+msgid "_B"
+msgstr ""
+
+#: src/RoutePropDlgImpl.cpp:947 src/TrackPropDlg.cpp:1135
+msgid "_plus"
+msgstr "פלוס_"
+
+#: src/RoutePropDlgImpl.cpp:1018
+msgid "Invalid date/time!"
+msgstr "תאריך\\שעה לא טובים!"
+
+#: src/RoutePropDlgImpl.cpp:1022
+msgid "Unknown station!"
+msgstr "תחנה לא מוכרת!"
+
+#: src/RoutePropDlgImpl.cpp:1042
+msgid "Local"
+msgstr "מקומי"
+
+#: src/RoutePropDlgImpl.cpp:1184 src/TrackPropDlg.cpp:1476
+msgid "Links are opened for editing."
+msgstr "קישור נפתח לעריכה"
+
+#: src/s57chart.cpp:3810
+msgid "S57 Cell Update chain incomplete.\n"
+"ENC features may be incomplete or inaccurate.\n"
+"Check the logfile for details."
+msgstr ""
+
+#: src/s57chart.cpp:5555
+msgid "this file is not available"
+msgstr "הקובץ לא זמין"
+
+#: src/s57chart.cpp:5580
+msgid "Period ends: "
+msgstr "סיום תקופה:"
+
+#: src/s57chart.cpp:5581
+msgid "Period starts: "
+msgstr "תחילת תקופה:"
+
+#: src/s57chart.cpp:5582
+msgid "Date ending: "
+msgstr "סיום תאריך:"
+
+#: src/s57chart.cpp:5583
+msgid "Date starting: "
+msgstr "התחלה תאריך:"
+
+#: src/s57chart.cpp:5692
+msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
+msgstr "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
+
+#: src/SendToGpsDlg.cpp:86
+msgid "GPS/Plotter Port"
+msgstr "פורט של GPS \\פלוטר"
+
+#: src/SendToGpsDlg.cpp:116
+msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+msgstr ""
+
+#: src/SendToGpsDlg.cpp:120
+msgid "Progress..."
+msgstr "התקדמות:"
+
+#: src/tcmgr.cpp:762
+msgid "It seems you have no tide/current harmonic data installed."
+msgstr ""
+
+#: src/TCWin.cpp:93
+msgid "Tide"
+msgstr "גל"
+
+#: src/TCWin.cpp:98
+msgid "Current"
+msgstr "נוכחי"
+
+#: src/TCWin.cpp:176
+msgid "Prev"
+msgstr "הקודם"
+
+#: src/TCWin.cpp:191
+msgid "Next"
+msgstr "הבא"
+
+#: src/TCWin.cpp:267
+msgid "Reference Station :"
+msgstr ""
+
+#: src/TCWin.cpp:282
+msgid "Data Source :"
+msgstr "מקור הנתונים:"
+
+#: src/TCWin.cpp:570
+msgid "HW"
+msgstr "HW"
+
+#: src/TCWin.cpp:570
+msgid "LW"
+msgstr "LW"
+
+#: src/TCWin.cpp:766
+msgid "Today"
+msgstr "היום"
+
+#: src/TCWin.cpp:767 src/TCWin.cpp:772
+msgid "Tomorrow"
+msgstr "מחר"
+
+#: src/toolbar.cpp:1309
+msgid "Shift to Larger Scale Chart"
+msgstr ""
+
+#: src/toolbar.cpp:1317
+msgid "Shift to Smaller Scale Chart"
+msgstr ""
+
+#: src/toolbar.cpp:1350
+msgid "Hide ENC text"
+msgstr "הסתר טקסט ENC"
+
+#: src/toolbar.cpp:1699 src/toolbar.cpp:1714 src/toolbar.cpp:1730
+msgid "ToolTips"
+msgstr "רמזים"
+
+#: src/toolbar.cpp:3217
+msgid "No, I don't want to hide it."
+msgstr "לא, אני לא רוצה להסתיר את זה."
+
+#: src/toolbar.cpp:3220
+msgid "No, and permanently remove the option to hide it."
+msgstr "לא, ותמחק לצמיתות את האפשרות להסתיר את זה."
+
+#: src/toolbar.cpp:3223
+msgid "Yes, hide it."
+msgstr "כן,הסתר את זה."
+
+#: src/toolbar.cpp:3229
+msgid "The Man Over Board button could be an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr ""
+
+#: src/toolbar.cpp:3325
+msgid "Choose Toolbar Icons"
+msgstr "שנה כפתורי שורה"
+
+#: src/TrackPropDlg.cpp:228
+msgid "Timestamp"
+msgstr "חותם זמן"
+
+#: src/TrackPropDlg.cpp:320 src/TrackPropDlg.cpp:656
+msgid "Avg. speed"
+msgstr "מהירות ממוצעת"
+
+#: src/TrackPropDlg.cpp:334
+msgid "Time Enroute"
+msgstr ""
+
+#: src/TrackPropDlg.cpp:359 src/TrackPropDlg.cpp:369 src/TrackPropDlg.cpp:690
+msgid "Local @ PC"
+msgstr "מקומי @ מחשב-אישי"
+
+#: src/TrackPropDlg.cpp:359 src/TrackPropDlg.cpp:372
+msgid "LMT @ Location"
+msgstr "LMT @ Location"
+
+#: src/TrackPropDlg.cpp:361 src/TrackPropDlg.cpp:683
+msgid "Time shown as"
+msgstr ""
+
+#: src/TrackPropDlg.cpp:415 src/TrackPropDlg.cpp:633
+msgid "1 pixel"
+msgstr "פיקסל 1"
+
+#: src/TrackPropDlg.cpp:415 src/TrackPropDlg.cpp:633
+msgid "2 pixels"
+msgstr "פיקסלים 2"
+
+#: src/TrackPropDlg.cpp:415 src/TrackPropDlg.cpp:633
+msgid "3 pixels"
+msgstr "פיקסלים 3"
+
+#: src/TrackPropDlg.cpp:416 src/TrackPropDlg.cpp:634
+msgid "4 pixels"
+msgstr "פיקסלים 4"
+
+#: src/TrackPropDlg.cpp:416 src/TrackPropDlg.cpp:634
+msgid "5 pixels"
+msgstr "פיקסלים 5"
+
+#: src/TrackPropDlg.cpp:416 src/TrackPropDlg.cpp:634
+msgid "6 pixels"
+msgstr "פיקסלים 6"
+
+#: src/TrackPropDlg.cpp:416 src/TrackPropDlg.cpp:634
+msgid "7 pixels"
+msgstr "פיקסלים 7"
+
+#: src/TrackPropDlg.cpp:416 src/TrackPropDlg.cpp:634
+msgid "8 pixels"
+msgstr "פיקסלים 8"
+
+#: src/TrackPropDlg.cpp:417 src/TrackPropDlg.cpp:635
+msgid "9 pixels"
+msgstr "פיקסלים 9"
+
+#: src/TrackPropDlg.cpp:417 src/TrackPropDlg.cpp:635
+msgid "10 pixels"
+msgstr "פיקסלים 10"
+
+#: src/TrackPropDlg.cpp:490 src/TrackPropDlg.cpp:825
+msgid "To route"
+msgstr ""
+
+#: src/TrackPropDlg.cpp:600
+msgid "Display parameters"
+msgstr "תציג פרמטרים"
+
+#: src/TrackPropDlg.cpp:643
+msgid "Statistics"
+msgstr "סטטיסטיקה"
+
+#: src/TrackPropDlg.cpp:677
+msgid "Recorded points"
+msgstr "נקודות מוקלטות"
+
+#: src/TrackPropDlg.cpp:693
+msgid "LMT @ Track Start"
+msgstr ""
+
+#: src/TrackPropDlg.cpp:821
+msgid "Extend track"
+msgstr ""
+
+#: src/TrackPropDlg.cpp:829
+msgid "Export"
+msgstr "יצא"
+
+#: src/TrackPropDlg.cpp:1019
+msgid "%D Days, %H:%M"
+msgstr "%D Days, %H:%M"
+
+#: src/TrackPropDlg.cpp:1196
+msgid "(m/d/y h:m)"
+msgstr "(m/d/y h:m)"
+
+#: src/TrackPropDlg.cpp:1302
+msgid "track"
+msgstr "מסלול"
+
+#: src/TrackPropDlg.cpp:1731
+msgid "--"
+msgstr ""
+
+#: src/TTYWindow.cpp:71
+msgid "Legend"
+msgstr "מקרא"
+
+#: src/TTYWindow.cpp:82 src/TTYWindow.cpp:167 libs/wxcurl/src/dialog.cpp:250
+#: libs/wxcurl/src/dialog.cpp:420
+msgid "Pause"
+msgstr "השהה"
+
+#: src/TTYWindow.cpp:83 src/MarkInfo.cpp:1227
+msgid "Copy"
+msgstr "העתק"
+
+#: src/TTYWindow.cpp:84
+msgid "Copy NMEA Debug window to clipboard."
+msgstr ""
+
+#: src/TTYWindow.cpp:124
+msgid "Message accepted"
+msgstr "הודעה אושרה"
+
+#: src/TTYWindow.cpp:131
+msgid "Input message filtered, output message filtered and dropped"
+msgstr ""
+
+#: src/TTYWindow.cpp:138
+msgid "Input Message filtered and dropped"
+msgstr ""
+
+#: src/TTYWindow.cpp:145
+msgid "Output Message"
+msgstr ""
+
+#: src/TTYWindow.cpp:152
+msgid "Information Message or Message with errors"
+msgstr ""
+
+#: src/TTYWindow.cpp:162 libs/wxcurl/src/dialog.cpp:410
+msgid "Resume"
+msgstr "המשך"
+
+#: src/undo.cpp:85
+msgid "Delete Waypoint"
+msgstr "מחק נקודת דרך"
+
+#: src/undo.cpp:88
+msgid "Move Waypoint"
+msgstr "הזז נקודת ציון"
+
+#: libs/wxcurl/src/dialog.cpp:137
+msgid "Not available"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:168
+msgid "URL:"
+msgstr "כתובת URL:"
+
+#: libs/wxcurl/src/dialog.cpp:187
+msgid "Speed:"
+msgstr "מהירות:"
+
+#: libs/wxcurl/src/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "הזמן שחלף:"
+
+#: libs/wxcurl/src/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:243 libs/wxcurl/src/dialog.cpp:399
+msgid "Abort"
+msgstr "בטל"
+
+#: libs/wxcurl/src/dialog.cpp:245
+msgid "Settings"
+msgstr "הגדרות"
+
+#: libs/wxcurl/src/dialog.cpp:252
+msgid "Start"
+msgstr "התחל"
+
+#: libs/wxcurl/src/dialog.cpp:413
+msgid "0 (transfer paused)"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:461
+msgid "Connection settings"
+msgstr "הגדרות חיבור"
+
+#: libs/wxcurl/src/dialog.cpp:461
+msgid "Connection settings used for the transfer:"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:516
+msgid "0 (transfer completed)"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:537
+msgid "Downloaded:"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:585
+msgid "Uploaded:"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:111
+msgid "Username:"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:112
+msgid "Password:"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:120
+msgid "Port:"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:134
+msgid "Proxy settings"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:136
+msgid "Use proxy"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:141
+msgid "Proxy host:"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:142
+msgid "Proxy username:"
+msgstr "שם משתמש ה-proxy"
+
+#: libs/wxcurl/src/panel.cpp:143
+msgid "Proxy password:"
+msgstr "סיסמת Proxy"
+
+#: libs/wxcurl/src/panel.cpp:144
+msgid "Proxy port:"
+msgstr "יציאת Proxy"
+
+#: src/ConfigMgr.cpp:678
+msgid "Recovery Template"
+msgstr ""
+
+#: src/ConfigMgr.cpp:679
+msgid "Apply this template to return to a known safe configuration"
+msgstr ""
+
+#: src/CanvasOptions.cpp:110
+msgid "Chart Panel Options"
+msgstr ""
+
+#: src/CanvasOptions.cpp:144
+msgid "Heading Up"
+msgstr ""
+
+#: src/CanvasOptions.cpp:180
+msgid "Show AIS targets"
+msgstr ""
+
+#: src/CanvasOptions.cpp:184
+msgid "Minimize less critical targets"
+msgstr ""
+
+#: src/CanvasOptions.cpp:194
+msgid "Tides and Currents"
+msgstr ""
+
+#: src/CanvasOptions.cpp:197
+msgid "Show Tide stations"
+msgstr ""
+
+#: src/CanvasOptions.cpp:209
+msgid "Vector Charts"
+msgstr "מפות ווקטורים"
+
+#: src/CanvasOptions.cpp:212
+msgid "Show text"
+msgstr "הראה טקסט"
+
+#: src/CanvasOptions.cpp:216
+msgid "Show depths"
+msgstr ""
+
+#: src/CanvasOptions.cpp:224
+msgid "Lights"
+msgstr "אורות"
+
+#: src/CanvasOptions.cpp:232
+msgid "Anchoring Info"
+msgstr "מידע על עגינה"
+
+#: src/CanvasOptions.cpp:241
+msgid "User Standard"
+msgstr "סטנדרט משתמש"
+
+#: src/MarkInfo.cpp:371
+msgid "This waypoint is part of a layer and can't be edited"
+msgstr "נקודת ציון זו היא חלק משכבה ולא ניתן לערוך"
+
+#: src/MarkInfo.cpp:393
+msgid "Show name"
+msgstr "להציג שם"
+
+#: src/MarkInfo.cpp:537
+msgid "Extended"
+msgstr "הרחב"
+
+#: src/MarkInfo.cpp:539
+msgid "Extended Properties"
+msgstr "מאפיינים מורחבים"
+
+#: src/MarkInfo.cpp:553
+msgid "Show at scale > 1 :"
+msgstr "הצג בקנה מידה> 1:"
+
+#: src/MarkInfo.cpp:560
+msgid "Show waypoint name"
+msgstr "הצג שם נקודת ציון"
+
+#: src/MarkInfo.cpp:564 src/MarkInfo.cpp:1728
+msgid "Range rings"
+msgstr "טבעות טווח"
+
+#: src/MarkInfo.cpp:569
+msgid "Number"
+msgstr "מספר"
+
+#: src/MarkInfo.cpp:584
+msgid "0.05"
+msgstr "0.05"
+
+#: src/MarkInfo.cpp:598
+msgid "GUID"
+msgstr "GUID"
+
+#: src/MarkInfo.cpp:609
+msgid "Tide Station"
+msgstr "תחנת גאות"
+
+#: src/MarkInfo.cpp:627
+msgid "Arrival Radius"
+msgstr "רדיוס הגעה"
+
+#: src/MarkInfo.cpp:635
+msgid "Planned Speed"
+msgstr "מהירות מתוכננת"
+
+#: src/MarkInfo.cpp:1078 src/MarkInfo.cpp:1127
+msgid "Add New"
+msgstr "הוסף חדש"
+
+#: src/MarkInfo.cpp:1228
+msgid "Copy lat/long"
+msgstr "העתק lat/long"
+
+#: src/MarkInfo.cpp:1229
+msgid "Paste"
+msgstr "הדבק"
+
+#: src/MarkInfo.cpp:1230
+msgid "Paste lat/long"
+msgstr "הדבק lat/long"
+
+#: src/MarkInfo.cpp:1699
+msgid "Save some defaults"
+msgstr "שמור חלק כברירות מחדל"
+
+#: src/MarkInfo.cpp:1707
+msgid "Check which properties of current waypoint\n"
+" should be set as default for NEW waypoints."
+msgstr "בדוק אילו מאפיינים של נקודת ציון הנוכחית  \n"
+" צריך להיות מוגדר כברירת מחדל עבור נקודות ציון חדשות."
+
+#: src/MarkInfo.cpp:1712 src/MarkInfo.cpp:1727
+msgid "Do use"
+msgstr "תשתמש"
+
+#: src/MarkInfo.cpp:1712 src/MarkInfo.cpp:1727
+msgid "Don't use"
+msgstr "אל תשתמש"
+
+#: src/MarkInfo.cpp:1713
+msgid "Show Waypoint Name"
+msgstr "הצג שם נקודת ציון"
+
+#: src/MarkInfo.cpp:1735
+msgid "Arrival radius"
+msgstr "רדיוס הגעה"
+
+#: src/MarkInfo.cpp:1742
+msgid "Show only if"
+msgstr "הצג רק אם"
+
+#: src/MarkInfo.cpp:1743
+msgid "Show always"
+msgstr "הצג תמיד"
+
+#: src/MarkInfo.cpp:1744
+msgid "Show only at scale"
+msgstr "הצג רק בקנה מידה"
+
+#: src/MarkInfo.cpp:1780
+msgid "Tide Station not found"
+msgstr "תחנה לא נמצאה"
+

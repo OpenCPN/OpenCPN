@@ -164,6 +164,12 @@ extern bool                      g_bDrawAISSize;
 extern bool                      g_bDrawAISRealtime;
 extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
+extern bool                      g_bAIS_GCPA_Alert_Audio;
+extern bool                      g_bAIS_SART_Alert_Audio;
+extern bool                      g_bAIS_DSC_Alert_Audio;
+extern bool                      g_bAIS_CPA_Alert_Audio;
+extern bool                      g_bCPAWarn;
+extern bool                      g_bAIS_CPA_Alert;
 
 extern int                       gps_watchdog_timeout_ticks;
 extern wxString                  *pInit_Chart_Dir;
@@ -237,6 +243,7 @@ extern int                        g_n_ownship_min_mm;
 extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
 extern int                        g_FlushNavobjChangesTimeout;
+extern wxString                   g_CmdSoundString;
 
 static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -1384,26 +1391,44 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         
         
 #endif
+
+        // Check for upgrade....
+        if( !vOld.IsSameAs(vNew) ){            // upgrade
         
-        // Verify some default directories, create if necessary
-        
-        // UserIcons
-        wxString UserIconPath = GetPrivateDataDir();
-        wxChar sep = wxFileName::GetPathSeparator();
-        if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
-        UserIconPath.Append( _T("UserIcons") );
+            // Verify some default directories, create if necessary
+            
+            // UserIcons
+            wxString UserIconPath = GetPrivateDataDir();
+            wxChar sep = wxFileName::GetPathSeparator();
+            if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
+            UserIconPath.Append( _T("UserIcons") );
 
-        if(!::wxDirExists(UserIconPath)){
-            ::wxMkdir( UserIconPath );
-        }
+            if(!::wxDirExists(UserIconPath)){
+                ::wxMkdir( UserIconPath );
+            }
 
-        // layers
-        wxString LayersPath = GetPrivateDataDir();
-        if( LayersPath.Last() != sep ) LayersPath.Append( sep );
-        LayersPath.Append( _T("layers") );
+            // layers
+            wxString LayersPath = GetPrivateDataDir();
+            if( LayersPath.Last() != sep ) LayersPath.Append( sep );
+            LayersPath.Append( _T("layers") );
 
-        if(!::wxDirExists(LayersPath)){
-            ::wxMkdir( LayersPath );
+            if(!::wxDirExists(LayersPath)){
+                ::wxMkdir( LayersPath );
+            }
+
+            // Force a generally useable sound command, overriding any previous user's selection
+            //  that may not be available on new build.
+#ifdef SYSTEM_SOUND_CMD
+            g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+            pConfig->SetPath( _T ( "/Settings" ) );
+            pConfig->Write( _T( "CmdSoundString" ), g_CmdSoundString );
+#endif /* SYSTEM_SOUND_CMD */
+    
+
+            // Force AIS specific sound effects ON, leaving the master control (g_bAIS_CPA_Alert_Audio) as configured
+            g_bAIS_GCPA_Alert_Audio = true;
+            g_bAIS_SART_Alert_Audio = true;
+            g_bAIS_DSC_Alert_Audio = true;
         }
 
 }
