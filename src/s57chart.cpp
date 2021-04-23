@@ -3129,50 +3129,63 @@ bool s57chart::CreateHeaderDataFromENC( void )
     pFeat = GetChartFirstM_COVR( catcov );
 
     while( pFeat ) {
-                //    Get the next M_COVR feature, and create possible additional entries for COVR
-                OGRPolygon *poly = (OGRPolygon *) ( pFeat->GetGeometryRef() );
-                OGRLinearRing *xring = poly->getExteriorRing();
+        //    Get the next M_COVR feature, and create possible additional entries for COVR
+        OGRPolygon *poly = (OGRPolygon *) ( pFeat->GetGeometryRef() );
+        OGRLinearRing *xring = poly->getExteriorRing();
 
-                int npt = xring->getNumPoints();
+        int npt = xring->getNumPoints();
+        int usedpts = 0;
 
-                float *pf = NULL;
-
-                if( npt >= 3 ) {
-                    pf = (float *) malloc( 2 * npt * sizeof(float) );
-                    float *pfr = pf;
-
-                    for( int i = 0; i < npt; i++ ) {
-                        OGRPoint p;
-                        xring->getPoint( i, &p );
-
-                        if( catcov == 1 ) {
-                            LatMax = fmax(LatMax, p.getY());
-                            LatMin = fmin(LatMin, p.getY());
-                            LonMax = fmax(LonMax, p.getX());
-                            LonMin = fmin(LonMin, p.getX());
-                        }
-
-                        pfr[0] = p.getY();             // lat
-                        pfr[1] = p.getX();             // lon
-
-                        pfr += 2;
-                    }
-
-                    if( catcov == 1 ) {
-                        pAuxPtrArray->Add( pf );
-                        auxCntArray.push_back( npt );
-                    }
-                    else if( catcov == 2 ){
-                        pNoCovrPtrArray->Add( pf );
-                        noCovrCntArray.push_back( npt );
+        float *pf = NULL;
+        float *pfr = NULL;
+        
+        if( npt >= 3 ) {
+            //pf = (float *) malloc( 2 * sizeof(float) );
+            
+            OGRPoint last_p;
+            OGRPoint p;
+            for( int i = 0; i < npt; i++ ) {
+                xring->getPoint( i, &p );
+                if (i > 3) { // We need at least 3 points, so make sure the first 3 pass
+                    float xdelta = fmax(last_p.getX(), p.getX()) - fmin(last_p.getX(), p.getX());
+                    float ydelta = fmax(last_p.getY(), p.getY()) - fmin(last_p.getY(), p.getY());
+                    if (xdelta < 0.001 && ydelta < 0.001) { //Magic number, 0.001 degrees ~= 111 meters on the equator...
+                        continue;
                     }
                 }
+                last_p = p;
+                usedpts++;
+                pf = (float *) realloc(pf, 2 * usedpts * sizeof(float) );
+                pfr = &pf[2 * (usedpts - 1)];
+
+                if( catcov == 1 ) {
+                    LatMax = fmax(LatMax, p.getY());
+                    LatMin = fmin(LatMin, p.getY());
+                    LonMax = fmax(LonMax, p.getX());
+                    LonMin = fmin(LonMin, p.getX());
+                }
+
+                pfr[0] = p.getY();             // lat
+                pfr[1] = p.getX();             // lon
+            }
+
+            if( catcov == 1 ) {
+                pAuxPtrArray->Add( pf );
+                auxCntArray.push_back( usedpts );
+            }
+            else if( catcov == 2 ){
+                pNoCovrPtrArray->Add( pf );
+                noCovrCntArray.push_back( usedpts );
+            }
+        }
 
 
-            delete pFeat;
-            pFeat = GetChartNextM_COVR( catcov );
+        delete pFeat;
+        pFeat = GetChartNextM_COVR( catcov );
+        std::cout << "used" << usedpts << " points" << std::endl;
     }         // while
 
+    
     //    Allocate the storage
 
     m_nCOVREntries = auxCntArray.size();
