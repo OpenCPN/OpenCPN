@@ -1113,11 +1113,11 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
     return IsSame;
 }
 
-bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
+bool RoutePoint::SendToGPS(const wxString & com_name, SendToGpsDlg *dialog)
 {
     int result = 0;
     if( g_pMUX )
-        result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
+        result = g_pMUX->SendWaypointToGPS( this, com_name, dialog );
 
     wxString msg;
     if( 0 == result )

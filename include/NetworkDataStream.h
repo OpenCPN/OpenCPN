@@ -91,7 +91,7 @@ public:
         Open();
     }
 
-    NetworkDataStream(wxEvtHandler *input_consumer, NetworkProtocol protocol, wxString address, int port)
+    NetworkDataStream(wxEvtHandler *input_consumer, NetworkProtocol protocol, wxString &address, int port)
             : DataStream(input_consumer,
                NETWORK, 
                _T(""),
@@ -130,6 +130,9 @@ public:
         return SendSentenceNetwork(payload);
     }
     virtual void Close();
+    
+    wxSocketBase* GetSock() const { return m_sock; }
+
 private:
     wxString            m_net_port;
     NetworkProtocol     m_net_protocol;
@@ -168,8 +171,6 @@ private:
     NetworkProtocol GetProtocol() { return m_net_protocol; }
 
     void SetSock(wxSocketBase* sock) { m_sock = sock; }
-
-    wxSocketBase* GetSock() const { return m_sock; }
 
     void SetTSock(wxSocketBase* sock) { m_tsock = sock; }
 

@@ -40,6 +40,7 @@
 class ocpnDC;
 class wxDC;
 class ChartCanvas;
+class SendToGpsDlg;
 
 class RoutePoint
 {
@@ -110,7 +111,7 @@ public:
       long GetScaMax(){return m_ScaMax; };
       bool GetUseSca(){return b_UseScamin; };
       void SetUseSca( bool value ){ b_UseScamin = value; };
-      bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
+      bool SendToGPS(const wxString& com_name, SendToGpsDlg *dialog);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
       wxPoint2DDouble GetDragHandlePoint( ChartCanvas *canvas );

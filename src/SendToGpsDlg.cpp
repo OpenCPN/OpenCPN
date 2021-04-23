@@ -47,6 +47,7 @@ SendToGpsDlg::SendToGpsDlg()
     m_CancelButton = NULL;
     m_pRoute = NULL;
     m_pRoutePoint = NULL;
+    premtext = NULL;
 }
 
 SendToGpsDlg::SendToGpsDlg( wxWindow* parent, wxWindowID id, const wxString& caption,
@@ -131,7 +132,7 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
     //    Add a reminder text box
     itemBoxSizer2->AddSpacer( 20 );
 
-    wxStaticText *premtext = new wxStaticText( this, -1,
+    premtext = new wxStaticText( this, -1,
             _("Prepare GPS for Route/Waypoint upload and press Send...") );
     itemBoxSizer2->Add( premtext, 0, wxEXPAND | wxALL, 10 );
 
@@ -159,6 +160,14 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
 
 }
 
+void SendToGpsDlg::SetMessage( wxString msg )
+{
+    if(premtext){
+        premtext->SetLabel(msg);
+        premtext->Refresh(true);
+    }
+}
+
 void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
 {
     //    Get the selected comm port
@@ -175,8 +184,8 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     g_uploadConnection = src;                   // save for persistence
 
     //    And send it out
-    if( m_pRoute ) m_pRoute->SendToGPS( src.BeforeFirst(' '), true, m_pgauge );
-    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src.BeforeFirst(' '), m_pgauge );
+    if( m_pRoute ) m_pRoute->SendToGPS( src.BeforeFirst(' '), true, this );
+    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src.BeforeFirst(' '), this );
 
 //    Show( false );
 //    event.Skip();

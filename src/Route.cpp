@@ -1190,13 +1190,13 @@ void Route::RenameRoutePoints( void )
     }
 }
 
-int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress )
+int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, SendToGpsDlg *dialog )
 {
     int result = 0;
 
     if( g_pMUX ) {
         ::wxBeginBusyCursor();
-         result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
+         result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, dialog );
         ::wxEndBusyCursor();
     }
 

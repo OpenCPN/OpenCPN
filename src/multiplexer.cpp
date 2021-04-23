@@ -43,6 +43,7 @@
 #include "ser_ports.h"
 #include "gui_lib.h"
 #include "NetworkDataStream.h"
+#include "SendToGpsDlg.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -445,7 +446,7 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
 int Multiplexer::SendRouteToGPS(Route *pr,
         const wxString &com_name,
         bool bsend_waypoints,
-        wxGauge *pProgress)
+        SendToGpsDlg *dialog)
 {
     int ret_val = 0;
     
@@ -539,11 +540,11 @@ int Multiplexer::SendRouteToGPS(Route *pr,
     if(g_bGarminHostUpload)
     {
         int lret_val;
-        if ( pProgress )
+        if ( dialog && dialog->GetProgressGauge() )
         {
-            pProgress->SetValue ( 20 );
-            pProgress->Refresh();
-            pProgress->Update();
+            dialog->GetProgressGauge()->SetValue ( 20 );
+            dialog->GetProgressGauge()->Refresh();
+            dialog->GetProgressGauge()->Update();
         }
 
         wxString short_com = com_name.Mid(7);
@@ -576,14 +577,14 @@ int Multiplexer::SendRouteToGPS(Route *pr,
             wxLogMessage(msg);
         }
 
-        if ( pProgress )
+        if ( dialog && dialog->GetProgressGauge() )
         {
-            pProgress->SetValue ( 40 );
-            pProgress->Refresh();
-            pProgress->Update();
+            dialog->GetProgressGauge()->SetValue ( 40 );
+            dialog->GetProgressGauge()->Refresh();
+            dialog->GetProgressGauge()->Update();
         }
 
-        lret_val = Garmin_GPS_SendRoute(short_com, pr, pProgress);
+        lret_val = Garmin_GPS_SendRoute(short_com, pr, dialog->GetProgressGauge());
         if(lret_val != 1)
         {
             wxString msg(_T("Error Sending Route to Garmin GPS on port: "));
@@ -605,11 +606,11 @@ int Multiplexer::SendRouteToGPS(Route *pr,
 
 ret_point:
 
-        if ( pProgress )
+        if ( dialog && dialog->GetProgressGauge() )
         {
-            pProgress->SetValue ( 100 );
-            pProgress->Refresh();
-            pProgress->Update();
+            dialog->GetProgressGauge()->SetValue ( 100 );
+            dialog->GetProgressGauge()->Refresh();
+            dialog->GetProgressGauge()->Update();
         }
 
         wxMilliSleep ( 500 );
@@ -679,26 +680,60 @@ ret_point:
                     token.ToLong(&port);
 
                     NetworkDataStream *streamNew = new NetworkDataStream(this, protocol, address, port );
-                    if(streamNew->IsOk())
+                    if(streamNew->IsOk()){
                         dstr = (DataStream *)streamNew;
+                    }
                     btempStream = true;
                 }
             }
             
+            if( com_name.Lower().StartsWith("tcp") ){
+                // new tcp connections must wait for connect
+                wxString msg = _("Connecting to ");
+                msg += com_name;
+                dialog->SetMessage( msg );
+                dialog->GetProgressGauge()->Pulse();
+                 
+                NetworkDataStream *streamTest = (NetworkDataStream *)dstr;
+                int loopCount = 10;         // seconds
+                bool bconnected = false;
+                while(!bconnected &&(loopCount > 0)){
+                    if(streamTest->GetSock()->IsConnected()){
+                        bconnected = true;
+                        break;
+                    }
+                    dialog->GetProgressGauge()->Pulse();
+                    wxYield();
+                    wxSleep(1);
+                    loopCount--;
+                }
+                if(bconnected){
+                    msg = _("Connected to ");
+                    msg += com_name;
+                    dialog->SetMessage( msg );
+                }
+                else{
+                    if(btempStream){
+                        dstr->Close();
+                        delete dstr;
+                    }
+                    return 1;
+                }
+            }
 
             SENTENCE snt;
             NMEA0183 oNMEA0183;
             oNMEA0183.TalkerID = _T ( "EC" );
 
             int nProg = pr->pRoutePointList->GetCount() + 1;
-            if ( pProgress )
-                pProgress->SetRange ( 100 );
+            if ( dialog && dialog->GetProgressGauge() )
+                dialog->GetProgressGauge()->SetRange ( 100 );
 
             int progress_stall = 500;
             if(pr->pRoutePointList->GetCount() > 10)
                 progress_stall = 200;
 
-            if(!pProgress)
+            if(!dialog)
                 progress_stall = 200;   // 80 chars at 4800 baud is ~160 msec
 
             // Send out the waypoints, in order
@@ -780,11 +815,11 @@ ret_point:
                     msg.Trim();
                     wxLogMessage(msg);
 
-                    if ( pProgress )
+                    if ( dialog && dialog->GetProgressGauge() )
                     {
-                        pProgress->SetValue ( ( ip * 100 ) / nProg );
-                        pProgress->Refresh();
-                        pProgress->Update();
+                        dialog->GetProgressGauge()->SetValue ( ( ip * 100 ) / nProg );
+                        dialog->GetProgressGauge()->Refresh();
+                        dialog->GetProgressGauge()->Update();
                     }
 
                     wxMilliSleep ( progress_stall );
@@ -1067,11 +1102,11 @@ ret_point:
                 wxLogMessage(msg);
             }
 
-            if ( pProgress )
+            if ( dialog && dialog->GetProgressGauge() )
             {
-                pProgress->SetValue ( 100 );
-                pProgress->Refresh();
-                pProgress->Update();
+                dialog->GetProgressGauge()->SetValue ( 100 );
+                dialog->GetProgressGauge()->Refresh();
+                dialog->GetProgressGauge()->Update();
             }
 
             wxMilliSleep ( progress_stall );
@@ -1099,7 +1134,7 @@ ret_point_1:
 }
 
 
-int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wxGauge *pProgress)
+int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, SendToGpsDlg *dialog)
 {
     int ret_val = 0;
     
@@ -1304,15 +1339,50 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
                         dstr = (DataStream *)streamNew;
                     btempStream = true;
             }
+            
+            if( com_name.Lower().StartsWith("tcp") ){
+                // new tcp connections must wait for connect
+                wxString msg = _("Connecting to ");
+                msg += com_name;
+                dialog->SetMessage( msg );
+                dialog->GetProgressGauge()->Pulse();
+                 
+                NetworkDataStream *streamTest = (NetworkDataStream *)dstr;
+                int loopCount = 10;         // seconds
+                bool bconnected = false;
+                while(!bconnected &&(loopCount > 0)){
+                    if(streamTest->GetSock()->IsConnected()){
+                        bconnected = true;
+                        break;
+                    }
+                    dialog->GetProgressGauge()->Pulse();
+                    wxYield();
+                    wxSleep(1);
+                    loopCount--;
+                }
+                if(bconnected){
+                    msg = _("Connected to ");
+                    msg += com_name;
+                    dialog->SetMessage( msg );
+                }
+                else{
+                    if(btempStream){
+                        dstr->Close();
+                        delete dstr;
+                    }
+                    return 1;
+                }
+            }
         }
 
+        
 
         SENTENCE snt;
         NMEA0183 oNMEA0183;
         oNMEA0183.TalkerID = _T ( "EC" );
 
-        if ( pProgress )
-            pProgress->SetRange ( 100 );
+        if ( dialog && dialog->GetProgressGauge() )
+            dialog->GetProgressGauge()->SetRange ( 100 );
 
         if(g_GPS_Ident == _T("Generic"))
         {
@@ -1380,11 +1450,11 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
             wxLogMessage(msg);
         }
 
-        if ( pProgress )
+        if ( dialog && dialog->GetProgressGauge() )
         {
-            pProgress->SetValue ( 100 );
-            pProgress->Refresh();
-            pProgress->Update();
+            dialog->GetProgressGauge()->SetValue ( 100 );
+            dialog->GetProgressGauge()->Refresh();
+            dialog->GetProgressGauge()->Update();
         }
 
         wxMilliSleep ( 500 );
