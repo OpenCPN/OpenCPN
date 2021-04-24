@@ -1947,10 +1947,13 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         }
     }
     if (mPriDateTime >= 6) { //We prefer the GPS datetime
-        mPriDateTime = 6;
         mUTCDateTime.Set(pfix.FixTime);
-        mUTCDateTime = mUTCDateTime.ToUTC();
-        mUTC_Watchdog = gps_watchdog_timeout_ticks;
+        if (mUTCDateTime.IsValid())
+        {
+            mPriDateTime = 6;
+            mUTCDateTime = mUTCDateTime.ToUTC();
+            mUTC_Watchdog = gps_watchdog_timeout_ticks;
+        }
     }
     if (mPriSatUsed >= 1) {
         mSatsInView = pfix.nSats;
