@@ -919,6 +919,10 @@ void S57Reader::ApplyObjectClassAttributes( DDFRecord * poRecord,
             continue;
         }
 
+        // Guard against undefined fields
+        if( poFeature->GetFieldIndex(pszAcronym) < 0)
+            continue;
+
         const char *pszValue = poRecord->GetStringSubfield("NATF",0,"ATVL",iAttr);
         if( pszValue != NULL )
         {
