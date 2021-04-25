@@ -2437,7 +2437,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
             
         }
         
-        if (event.Dragging()) {
+        if (!g_btouch && event.Dragging()) {
             s_drag = true;
             wxPoint pos_old = GetScreenPosition();
             wxPoint pos_new = pos_old;
