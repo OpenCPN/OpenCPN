@@ -7433,6 +7433,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             wxString msg;
             msg.Printf( _T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat, gLon );
             wxLogMessage(msg);
+            // There is no valid fix, we need to invalidate the fix time
+            m_fixtime = -1;
         }
         gSog = NAN;
         gCog = NAN;

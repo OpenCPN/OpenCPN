@@ -71,10 +71,8 @@ void DashboardInstrument_Clock::SetData( int, double, wxString )
 
 void DashboardInstrument_Clock::SetUtcTime( wxDateTime data )
 {
-    if (data.IsValid()){
-        m_data = GetDisplayTime( data );
-        Refresh();
-    }
+    m_data = GetDisplayTime( data );
+    Refresh();
 }
 
 wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
