@@ -1898,6 +1898,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
         // We render string with "special" characters the old, hard way, since we don't necessarily have the glyphs in our font, 
         // or if we do we would need a hashmap to cache and extract them
         // And we also do this if the text is to be scaled up artificially.
+#ifdef __OCPN__ANDROID__
+        if(fabs(vp->rotation) > .01)
+            b_force_no_texture = true;
+#endif        
         if( (ptext->bspecial_char) || b_force_no_texture) {       
             if( !ptext->texobj ) // is texture ready?
             {
