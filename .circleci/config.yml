@@ -11,12 +11,6 @@ jobs:
        - OCPN_TARGET:  xenial
      steps:
        - checkout
-       - run: >
-           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ xenial main"
-           | sudo tee -a /etc/apt/sources.list
-       - run: >
-           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-updates main"
-           | sudo tee -a /etc/apt/sources.list
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
@@ -30,12 +24,6 @@ jobs:
        - OCPN_TARGET:  trusty
      steps:
        - checkout
-       - run: >
-           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ trusty main"
-           | sudo tee -a /etc/apt/sources.list
-       - run: >
-           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ trusty-updates main"
-           | sudo tee -a /etc/apt/sources.list
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
