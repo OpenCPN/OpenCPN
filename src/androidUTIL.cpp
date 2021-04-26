@@ -366,6 +366,7 @@ bool            bInConfigChange;
 AudioDoneCallback s_soundCallBack;
 
 bool            g_detect_smt590;
+int             g_orientation;
 
 //      Some dummy devices to ensure plugins have static access to these classes not used elsewhere
 wxFontPickerEvent       g_dummy_wxfpe;
@@ -742,14 +743,38 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
         timer_sequence++;
         //  This timer step needs to be long enough to allow Java induced size change to take effect
         //  in another thread.
+        //  The results will be checked in sequence 1.
         m_resizeTimer.Start(1000, wxTIMER_ONE_SHOT);
         return;
     }
 
 
-
     if(timer_sequence == 1){
-        qDebug() << "sequence 1" << config_size.x;
+        qDebug() << "sequence 1";
+        
+        qDebug() << "****config_size: " << config_size.x << config_size.y;
+        
+        wxSize szt = gFrame->GetSize();
+        qDebug() << "****Frame Size: " << szt.x << szt.y;
+
+        // Some Android devices do not correctly process the config change, and properly resize the app.
+        // A slower forced config change is then necessary, with lots of steps.
+        
+        // However, if we can detect the ones that do properly resize the app Frame, we can skip all this.
+
+        wxSize new_size = getAndroidDisplayDimensions();
+        qDebug() << "****NewSize: " << new_size.x << new_size.y;
+
+        if((g_orientation == 1) || (g_orientation == 3)){        // Portrait
+            if( szt.x < szt.y )                  // OK
+                return;
+        }
+        else if((g_orientation == 2) || (g_orientation == 4)){   // Landscape
+            if( szt.x > szt.y )                  // OK
+                return;
+        }
+         
+        qDebug() << "****Force config change"; 
         gFrame->SetSize(config_size);
         timer_sequence++;
         if(!m_bskipConfirm)
@@ -759,6 +784,7 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
     }
 
     if(timer_sequence == 2){
+        qDebug() << "sequence 2";
         timer_sequence++;
         m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
         return;
@@ -1173,8 +1199,9 @@ extern "C"{
 
 
 extern "C"{
-    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj, int orientation)
     {
+        g_orientation = orientation;
         qDebug() << "onConfigChange";
 
         wxLogMessage(_T("onConfigChange"));
@@ -2203,8 +2230,8 @@ void androidDisplayToast(wxString message)
 
 void androidEnableRotation( void )
 {
-    if(g_detect_smt590)
-        return;
+//    if(g_detect_smt590)
+//        return;
     
     callActivityMethod_vs("EnableRotation");
 }
@@ -2839,9 +2866,10 @@ wxSize getAndroidDisplayDimensions( void )
         
     }
 
-    // Samsung sm-t590/Android 10 has some display problems.....
+    // Samsung sm-t590/Android 10 has some display problems in portrait mode.....
     if(g_detect_smt590){
-        sz_ret.y = 1650;
+        if(sz_ret.x < sz_ret.y)
+            sz_ret.y = 1650;
     }
     
     //qDebug() << "getAndroidDisplayDimensions" << sz_ret.x << sz_ret.y;
