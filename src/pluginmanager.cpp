@@ -6156,8 +6156,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 10);
         m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
         
-       // This invocation has the effect of setting the minimum width of the descriptor field.
-        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
+        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( -1, -1), wxST_NO_AUTORESIZE );
         itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
         m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
         m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
@@ -6209,7 +6208,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
-    itemBoxSizer01->Add(m_status_icon, 0, wxEXPAND);
+    itemBoxSizer01->Add(m_status_icon, 0, wxALIGN_RIGHT | wxEXPAND);
 
     itemBoxSizer02->AddSpacer( GetCharWidth() );
 
