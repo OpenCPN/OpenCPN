@@ -16,14 +16,6 @@ case "$OCPN_TARGET" in
             echo "Renaming $old to $new"
         done
         ;;
-    mingw)
-        for src in $(expand *setup.exe); do
-            old=$(basename $src)
-            new=$(echo $old | sed "s/opencpn/opencpn-mingw/")
-            sudo mv $old $new
-            echo "Renaming $old to $new"
-        done
-        ;;
     macos)
         for src in $(expand *.dmg); do
             old=$(basename $src)

@@ -27,19 +27,6 @@ jobs:
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
-   build-mingw:
-     docker:
-         - image: fedora:33
-           auth:
-             username: $DOCKER_USER
-             password: $DOCKER_PW
-     environment:
-       - OCPN_TARGET:  mingw
-     steps:
-       - run: su -c "dnf install -q -y git openssh-clients openssh-server"
-       - checkout
-       - run: ci/generic-build-mingw.sh
-       - run: ci/generic-upload.sh
    build-macos:
      macos:
        xcode: "11.3.0"
@@ -95,11 +82,6 @@ workflows:
               only:
                 - master
       - build-trusty:
-          filters:
-            branches:
-              only:
-                - master
-      - build-mingw:
           filters:
             branches:
               only:
