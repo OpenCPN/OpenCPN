@@ -7251,7 +7251,7 @@ void MyFrame::CheckToolbarPosition()
         bMaximized = true;
         if(g_MainToolbar){
             g_MainToolbar->SetYAuxOffset(g_MainToolbar->GetToolSize().y * 15 / 10 );
-            g_MainToolbar->RePosition();
+            g_MainToolbar->SetDefaultPosition();
             g_MainToolbar->Realize();
         }
         PositionIENCToolbar();
@@ -7261,7 +7261,7 @@ void MyFrame::CheckToolbarPosition()
          if(g_MainToolbar){
             g_MainToolbar->SetYAuxOffset(0);
             g_MainToolbar->SetDockY( -1 );
-            g_MainToolbar->RePosition();
+            g_MainToolbar->SetDefaultPosition();
             g_MainToolbar->Realize();
         }
         PositionIENCToolbar();
