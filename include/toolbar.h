@@ -443,11 +443,13 @@ public:
       void DestroyToolBar();
       void ToggleOrientation();
       void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
-      void RePosition();
+      void SetDefaultPosition();
       void LockPosition(bool lock){ m_block = lock; }
       virtual void SetColorScheme( ColorScheme cs );
       ColorScheme GetColorScheme(){ return m_cs; }
       bool CheckSurfaceRequest( wxMouseEvent &event );
+      void GetFrameRelativePosition( int *x, int *y);
+      void RestoreRelativePosition( int x, int y );
       
       void SetGeometry(bool bAvoid, wxRect rectAvoid);
       void SetMinX( int offset ){ m_dock_min_x = offset; }

@@ -64,6 +64,9 @@ extern bool                       g_bmasterToolbarFull;
 extern bool                       g_useMUI;
 extern wxString                   g_toolbarConfig;
 extern double                     g_plus_minus_zoom_factor;
+extern int                        g_maintoolbar_x;
+extern int                        g_maintoolbar_y;
+
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
@@ -130,6 +133,8 @@ void GrabberWin::SetColorScheme( ColorScheme cs )
 
 void GrabberWin::MouseEvent( wxMouseEvent& event )
 {
+}
+#if 0
     static wxPoint s_gspt;
     int x, y;
 
@@ -213,6 +218,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 #endif
     
 }
+#endif
 
 class ocpnToolBarTool: public wxToolBarToolBase {
 public:
@@ -678,7 +684,27 @@ void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
     }
  }
 
-void ocpnFloatingToolbarDialog::RePosition()
+void ocpnFloatingToolbarDialog::GetFrameRelativePosition( int* x, int *y)
+{
+    wxPoint parentFramePos = m_pparent->GetPosition();
+    int myPosx, myPosy;
+    GetPosition(&myPosx, &myPosy);
+    
+    if(x)
+        *x = myPosx - parentFramePos.x;
+    if(y)
+        *y = myPosy - parentFramePos.y;
+}
+
+void ocpnFloatingToolbarDialog::RestoreRelativePosition( int x, int y )
+{
+    wxPoint parentFramePos = m_pparent->GetPosition();
+    wxPoint screenPos = wxPoint(parentFramePos.x + x, parentFramePos.y + y);
+    Move(wxPoint(screenPos));
+}
+
+
+void ocpnFloatingToolbarDialog::SetDefaultPosition()
 {
     if(m_block) return;
 
@@ -786,7 +812,7 @@ void ocpnFloatingToolbarDialog::Surface()
         Move( 0, 0 );
         #endif
 
-        RePosition();
+        RestoreRelativePosition( g_maintoolbar_x, g_maintoolbar_y );
         Show();
         if( m_ptoolbar )
             m_ptoolbar->EnableTooltips();
@@ -803,59 +829,11 @@ void ocpnFloatingToolbarDialog::Surface()
 
 bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
 {
-    if( m_bsubmerged ){
-        if( event.LeftUp() ){
-            int x,y;
-            event.GetPosition( &x, &y );
-            if( m_pRecoverwin ){
-                wxRect winRect = m_pRecoverwin->GetRect();
-                if( winRect.Contains( x, y ) ){
-                    SurfaceFromGrabber();
-                    return true;
-                }
-            }
-        }
-    }
-    
     return false;
 }
         
 void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 {
-    m_bsubmerged = false;
-    m_bsubmergedToGrabber = false;
-    
-#ifndef __WXOSX__
-    Hide();
-    Move( 0, 0 );
-#endif
-
-    if( m_ptoolbar )
-        m_ptoolbar->InvalidateBitmaps();
-    
-    RePosition();
-    Show();
-    m_ptoolbar->Refresh();              // Added to force redraw of all the tools
-    
-    if( m_ptoolbar )
-        m_ptoolbar->EnableTooltips();
-    
-    if( m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) ){
-        m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
-    }
-    
-#ifdef __WXQT__
-    wxSize s = gFrame->GetSize();               // check for rotation
-    //if(m_recoversize.x == s.x)
-      //  gFrame->TriggerResize(m_recoversize);
-    Raise();
-#endif
-    if(!m_destroyTimer.IsRunning()){
-        m_destroyGrabber = m_pRecoverwin;
-        m_pRecoverwin = NULL;
-        m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
-    }
-    
 }
 
 void ocpnFloatingToolbarDialog::DestroyTimerEvent( wxTimerEvent& event )
@@ -882,34 +860,6 @@ void ocpnFloatingToolbarDialog::ShowTooltips()
 
 void ocpnFloatingToolbarDialog::ToggleOrientation()
 {
-    if(!m_pGrabberwin)
-        return;
-    
-    if( m_orient == wxTB_HORIZONTAL )
-        m_orient = wxTB_VERTICAL;
-    else
-        m_orient = wxTB_HORIZONTAL;
-
-    m_style->SetOrientation( m_orient );
-
-    wxPoint old_screen_pos = m_pparent->ClientToScreen( m_position );
-    wxPoint grabber_point_abs = ClientToScreen( m_pGrabberwin->GetPosition() );
-
-    DestroyToolBar();
-    CreateMyToolbar();
-    RePosition();
-    SetColorScheme(m_cs);
-    Show();
-    
-    
-    wxPoint pos_abs = grabber_point_abs;
-    pos_abs.x -= m_pGrabberwin->GetPosition().x;
-    MoveDialogInScreenCoords( pos_abs, old_screen_pos );
-
-
-    Show();   // this seems to be necessary on GTK to kick the sizer into gear...(FS#553)
-    Refresh(true);
-    Raise();
 }
 
 void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
@@ -2447,6 +2397,9 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
             
             ocpnFloatingToolbarDialog * parentFloatingToolBar = dynamic_cast<ocpnFloatingToolbarDialog*>(GetParent());
             parentFloatingToolBar->MoveDialogInScreenCoords(pos_new, pos_old);
+            ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+            if(parent)
+                parent->GetFrameRelativePosition(&g_maintoolbar_x, &g_maintoolbar_y);
             s_pos_m_old = pos_m;
             return;            
         }

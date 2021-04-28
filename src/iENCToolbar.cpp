@@ -88,7 +88,7 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
     Realize();
     Hide();
     
-    RePosition();
+    SetDefaultPosition();
     Show(true);
     
     m_state_timer.SetOwner( this, STATE_TIMER );
