@@ -1331,6 +1331,7 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                     pic->m_destroy_fn(pic->m_pplugin);
                     pic->m_destroy_fn = NULL;
                     pic->m_pplugin = NULL;
+                    pic->m_bInitState = false;
                     if(pic->m_library.IsLoaded())
                         pic->m_library.Unload();
                 }
@@ -1574,6 +1575,7 @@ bool PlugInManager::UpdatePlugIns()
                 pic->m_library.Unload();
             pic->m_pplugin = NULL;
             pic->m_bitmap = NULL;
+            pic->m_bInitState = false;
         }
     }
 
