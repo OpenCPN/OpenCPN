@@ -1524,7 +1524,16 @@ bool PlugInManager::UpdatePlugIns()
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array[i];
-
+       
+        // Try to confirm that the m_pplugin member points to a valid plugin image...
+        if(pic->m_pplugin){
+            opencpn_plugin *ppl = dynamic_cast<opencpn_plugin*>(pic->m_pplugin);
+            if(!ppl){
+                pic->m_pplugin = NULL;
+                pic->m_bInitState = false;
+            }
+        }
+        
         // Installed and loaded?
         if(!pic->m_pplugin){            // Needs a reload?
             if(pic->m_bEnabled){
