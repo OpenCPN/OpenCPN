@@ -1475,6 +1475,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
         dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y );
 
+        //        Draw the inactive cross-out line
+        if (!td->b_active) {
+            dc.SetPen(wxPen(UBLCK, 3)); 
+            dc.StrokeLine(TargetPoint.x - 16, TargetPoint.y, TargetPoint.x + 16, TargetPoint.y);
+        }
+
     } else {         // ship class A or B or a Buddy or DSC
         wxPen target_pen( UBLCK, 1 );
         dc.SetPen( target_pen );
