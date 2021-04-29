@@ -5519,6 +5519,15 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
       
     if( response == wxID_OK )
     {
+        // Record the path to the last import file for next time
+        wxFileName f = tarballPath;
+        wxString used_path = f.GetPath(wxPATH_GET_VOLUME | wxPATH_NO_SEPARATOR);
+        if (used_path != wxEmptyString) {
+            pConfig->SetPath(_T("/PlugIns/"));
+            pConfig->Write("LatestImportDir", used_path);
+            pConfig->Flush();
+        }
+
         // Traverse the tarball to find the required "metadata.xml file
         
         // Store the metadata file in temp location
@@ -5729,14 +5738,6 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         if(m_PluginListPanel)
             m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
 
-        // Record the path to the last import file for next time
-        wxFileName f = tarballPath;
-        wxString used_path = f.GetPath(wxPATH_GET_VOLUME | wxPATH_NO_SEPARATOR);
-        if (used_path != wxEmptyString) {
-            pConfig->SetPath(_T("/PlugIns/"));
-            pConfig->Write("LatestImportDir", used_path);
-            pConfig->Flush();
-        }
 
         // Success!
         wxString msg = _("Plugin imported successfully");
