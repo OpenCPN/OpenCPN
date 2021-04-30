@@ -131,7 +131,7 @@ extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
 
-bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack );
+bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack, void *data );
 
 bool androidGetFullscreen();
 bool androidSetFullscreen( bool bFull );
