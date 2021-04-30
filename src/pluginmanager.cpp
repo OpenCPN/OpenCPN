@@ -685,6 +685,11 @@ PlugInContainer::PlugInContainer()
 
 SemanticVersion PlugInContainer::GetVersion() 
 {
+     if(m_ManagedMetadata.version.size()){
+         return SemanticVersion::parse(m_ManagedMetadata.version);
+     }
+    
+  
     if(!m_pplugin){
         return SemanticVersion(0,0,0);
     }
