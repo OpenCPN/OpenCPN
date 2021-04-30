@@ -365,6 +365,7 @@ int doAndroidPersistState();
 
 bool            bInConfigChange;
 AudioDoneCallback s_soundCallBack;
+void *          s_soundData;
 
 bool            g_detect_smt590;
 int             g_orientation;
@@ -861,7 +862,7 @@ void androidUtilHandler::OnScheduledEvent( wxCommandEvent& event )
         case ID_CMD_SOUND_FINISHED:
             //qDebug() << "Trigger SoundFinished";
             if(s_soundCallBack){
-               s_soundCallBack(0);              // No user data
+               s_soundCallBack( s_soundData );   // Wirh user data
                s_soundCallBack = 0;
             }
             break;
@@ -4157,10 +4158,11 @@ wxString getFontQtStylesheet(wxFont *font)
 
     
 
-bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack )
+bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack, void *data )
 {
     //qDebug() << "androidPlay";
-    s_soundCallBack = callBack;    
+    s_soundCallBack = callBack;
+    s_soundData = data;    
     wxString result = callActivityMethod_ss("playSound", soundfile);
     
     return true;

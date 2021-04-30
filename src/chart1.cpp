@@ -2793,8 +2793,10 @@ END_EVENT_TABLE()
 static void onBellsFinishedCB(void* ptr)
 {
    auto framePtr  = static_cast<MyFrame*>(ptr);
-   wxCommandEvent ev(BELLS_PLAYED_EVTYPE);
-   wxPostEvent(framePtr, ev);
+   if( framePtr){
+    wxCommandEvent ev(BELLS_PLAYED_EVTYPE);
+    wxPostEvent(framePtr, ev);
+   }
 }
 
 
