@@ -369,7 +369,6 @@ static pathmap_t getInstallPaths()
     pathmap["lib"] =  paths->UserLibdir();
     pathmap["lib64"] = paths->UserLibdir();
     pathmap["share"] =  paths->UserDatadir();
-    pathmap["unknown"] = paths->UserUnknownPrefixDir();
     return pathmap;
 }
 
@@ -442,7 +441,7 @@ static int copy_data(struct archive* ar, struct archive* aw)
 }
 
 
-static void win_entry_set_install_path(struct archive_entry* entry,
+static bool win_entry_set_install_path(struct archive_entry* entry,
                                        pathmap_t installPaths)
 {
     using namespace std;
@@ -453,7 +452,7 @@ static void win_entry_set_install_path(struct archive_entry* entry,
     int slashes = count(path.begin(), path.end(), '/');
     if (slashes < 1) {
         archive_entry_set_pathname(entry, "");
-        return;
+        return true;
     }
     if (ocpn::startswith(path, "./")) {
         path = path.substr(1);
@@ -463,7 +462,7 @@ static void win_entry_set_install_path(struct archive_entry* entry,
     int slashpos = path.find_first_of('/', 1);
     if(slashpos < 0){
         archive_entry_set_pathname(entry, "");
-        return;
+        return true;
     }
         
     string prefix = path.substr(0, slashpos);
@@ -486,16 +485,21 @@ static void win_entry_set_install_path(struct archive_entry* entry,
         path = installPaths["share"] + "\\" + path;
 
     } else if (archive_entry_filetype(entry) == AE_IFREG) {
-        path = installPaths["unknown"] + "\\" + path;
+        wxString msg(_T("PluginHandler::Invalid install path on file: "));
+        msg += wxString(path.c_str());
+        wxLogDebug(msg);
+        return false;
+
     }
     wxString s(path);
     s.Replace("/", "\\");      // std::regex_replace FTBS on gcc 4.8.4
     s.Replace("\\\\", "\\");
     archive_entry_set_pathname(entry, s.c_str());
+    return true;
 }
 
 
-static void flatpak_entry_set_install_path(struct archive_entry* entry,
+static bool flatpak_entry_set_install_path(struct archive_entry* entry,
                                            pathmap_t installPaths)
 {
     using namespace std;
@@ -504,7 +508,7 @@ static void flatpak_entry_set_install_path(struct archive_entry* entry,
     int slashes = count(path.begin(), path.end(), '/');
     if (slashes < 2) {
         archive_entry_set_pathname(entry, "");
-        return;
+        return true;
     }
     if (ocpn::startswith(path, "./")) {
         path = path.substr(2);
@@ -516,17 +520,22 @@ static void flatpak_entry_set_install_path(struct archive_entry* entry,
     string location = path.substr(0, slashpos);
     string suffix = path.substr(slashpos + 1);
     if (installPaths.find(location) == installPaths.end()
-        && archive_entry_filetype(entry) == AE_IFREG
-    ) {
-        location = "unknown";
+        && archive_entry_filetype(entry) == AE_IFREG) {
+        wxString msg(_T("PluginHandler::Invalid install path on file: "));
+        msg += wxString(path.c_str());
+        wxLogDebug(msg);
+        return false;
+
     }
     string dest = installPaths[location] + "/" + suffix;
     archive_entry_set_pathname(entry, dest.c_str());
+    
+    return true;
 }
 
 
 
-static void linux_entry_set_install_path(struct archive_entry* entry,
+static bool linux_entry_set_install_path(struct archive_entry* entry,
                                          pathmap_t installPaths)
 {
     using namespace std;
@@ -535,7 +544,7 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
     int slashes = count(path.begin(), path.end(), '/');
     if (slashes < 2) {
         archive_entry_set_pathname(entry, "");
-        return;
+        return true;
     }
 
     int slashpos = path.find_first_of('/', 1);
@@ -554,9 +563,11 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
     string location = path.substr(0, slashpos);
     string suffix = path.substr(slashpos + 1);
     if (installPaths.find(location) == installPaths.end()
-        && archive_entry_filetype(entry) == AE_IFREG
-    ){
-        location = "unknown";
+        && archive_entry_filetype(entry) == AE_IFREG){
+        wxString msg(_T("PluginHandler::Invalid install path on file: "));
+        msg += wxString(path.c_str());
+        wxLogDebug(msg);
+        return false;
     }
     
     string dest = installPaths[location] + "/" + suffix;
@@ -577,10 +588,11 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
     }
     
     archive_entry_set_pathname(entry, dest.c_str());
+    return true;
 }
 
 
-static void apple_entry_set_install_path(struct archive_entry* entry,
+static bool apple_entry_set_install_path(struct archive_entry* entry,
                                          pathmap_t installPaths)
 {
     using namespace std;
@@ -596,7 +608,7 @@ static void apple_entry_set_install_path(struct archive_entry* entry,
     size_t slashes = count(path.begin(), path.end(), '/');
     if (slashes < 3) {
         archive_entry_set_pathname(entry, "");
-        return;
+        return true;
     }
     auto parts = split(path, "Contents/Resources");
     if (parts.size() >= 2) {
@@ -615,13 +627,16 @@ static void apple_entry_set_install_path(struct archive_entry* entry,
         }
     }
     if (dest == "" && archive_entry_filetype(entry) == AE_IFREG) {
-        // Drop uninstalled directories.
-        dest = installPaths["unknown"] + "/" + path;
+        wxString msg(_T("PluginHandler::Invalid install path on file: "));
+        msg += wxString(path.c_str());
+        wxLogDebug(msg);
+        return false;
     }
     archive_entry_set_pathname(entry, dest.c_str());
+    return true;
 }
 
-static void android_entry_set_install_path(struct archive_entry* entry,
+static bool android_entry_set_install_path(struct archive_entry* entry,
                                          pathmap_t installPaths)
 {
     using namespace std;
@@ -630,12 +645,9 @@ static void android_entry_set_install_path(struct archive_entry* entry,
     int slashes = count(path.begin(), path.end(), '/');
     if (slashes < 2) {
         archive_entry_set_pathname(entry, "");
-        return;
+        return true;;
     }
 
-    if(path.find("/share") != string::npos)
-        int yyp = 4;
-    
     int slashpos = path.find_first_of('/', 1);
     if(ocpn::startswith(path, "./"))
         slashpos = path.find_first_of('/', 2);  // skip the './'
@@ -652,9 +664,11 @@ static void android_entry_set_install_path(struct archive_entry* entry,
     string location = path.substr(0, slashpos);
     string suffix = path.substr(slashpos + 1);
     if (installPaths.find(location) == installPaths.end()
-        && archive_entry_filetype(entry) == AE_IFREG
-    ){
-        location = "unknown";
+        && archive_entry_filetype(entry) == AE_IFREG){
+        wxString msg(_T("PluginHandler::Invalid install path on file: "));
+        msg += wxString(path.c_str());
+        wxLogDebug(msg);
+        return false;
     }
     
     if((location == "lib") && ocpn::startswith(suffix, "opencpn")){
@@ -673,28 +687,30 @@ static void android_entry_set_install_path(struct archive_entry* entry,
     string dest = installPaths[location] + "/" + suffix;
 
     archive_entry_set_pathname(entry, dest.c_str());
+    return true;
 }
 
 
-static void entry_set_install_path(struct archive_entry* entry,
+static bool entry_set_install_path(struct archive_entry* entry,
                                    pathmap_t installPaths)
 {
     const std::string src = archive_entry_pathname(entry);
+    bool rv;
 #ifdef __OCPN__ANDROID__
-    android_entry_set_install_path(entry, installPaths);
+    rv = android_entry_set_install_path(entry, installPaths);
 #else
     const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
     if (g_Platform->isFlatpacked()) {
-        flatpak_entry_set_install_path(entry, installPaths);
+        rv = flatpak_entry_set_install_path(entry, installPaths);
     }
     else if (osSystemId & wxOS_UNIX_LINUX) {
-        linux_entry_set_install_path(entry, installPaths);
+        rv = linux_entry_set_install_path(entry, installPaths);
     }
     else if (osSystemId & wxOS_WINDOWS) {
-        win_entry_set_install_path(entry, installPaths);
+        rv = win_entry_set_install_path(entry, installPaths);
     }
     else if (osSystemId & wxOS_MAC) {
-        apple_entry_set_install_path(entry, installPaths);
+        rv = apple_entry_set_install_path(entry, installPaths);
     }
     else {
         wxLogMessage("set_install_path() invoked, unsupported platform %s",
@@ -702,9 +718,12 @@ static void entry_set_install_path(struct archive_entry* entry,
     }
 #endif
     const std::string dest = archive_entry_pathname(entry);
-    if(dest.size()){
-        MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
+    if(rv){
+        if(dest.size()){
+            MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
+        }
     }
+    return rv;
 }
 
 
@@ -742,7 +761,8 @@ bool PluginHandler::explodeTarball(struct archive* src,
         if(std::string::npos != path.find("metadata.xml"))
             continue;
         
-        entry_set_install_path(entry, pathmap);
+        if(!entry_set_install_path(entry, pathmap))
+            continue;
         if (strlen(archive_entry_pathname(entry)) == 0) {
             continue;
         }

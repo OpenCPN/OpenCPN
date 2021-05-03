@@ -60,7 +60,6 @@ void PluginPaths::initWindowsPaths()
         m_bindirs = m_libdirs;
         m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins";
         m_datadirs.push_back(m_userDatadir);
-        m_unknownPathDir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins\\unknown-prefix";
         return;
     }
 
@@ -70,7 +69,6 @@ void PluginPaths::initWindowsPaths()
     m_userLibdir = winPluginBaseDir;
     m_userBindir = winPluginBaseDir;
     m_userDatadir = winPluginBaseDir;
-    m_unknownPathDir = winPluginBaseDir + "\\unknown-prefix";
 
     m_libdirs.push_back(m_userLibdir);
     m_libdirs.push_back(g_Platform->GetPluginDir().ToStdString());
@@ -89,7 +87,6 @@ void PluginPaths::initFlatpackPaths()
     m_userLibdir = flathome + "/lib";
     m_userBindir = flathome + "/bin";
     m_userDatadir = flathome + "/data";
-    m_unknownPathDir = flathome + "/unknown-prefix";
 
     m_libdirs.push_back(flathome + "/lib");
     m_libdirs.push_back("/app/extensions/lib/opencpn");
@@ -116,7 +113,6 @@ void PluginPaths::initLinuxPaths()
         m_bindirs = m_libdirs;
         m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/share";                       //m_home + "/.local/share";
         m_datadirs.push_back(m_userDatadir);
-        m_unknownPathDir = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/share/unknown-prefix";     //m_home + "/.local/share/opencpn/unknown-prefix";
         return;
     }
         
@@ -124,7 +120,6 @@ void PluginPaths::initLinuxPaths()
     m_userLibdir = m_home + "/.local/lib";
     m_userBindir = m_home + "/.local/bin";
     m_userDatadir = m_home + "/.local/share";
-    m_unknownPathDir = m_home + "/.local/share/opencpn/unknown-prefix";
 
     const string platform_dir = g_Platform->GetPluginDir().ToStdString();
     const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
@@ -167,7 +162,6 @@ void PluginPaths::initApplePaths()
     m_userLibdir = mac_home + "/Contents/PlugIns";
     m_userBindir = m_userLibdir;
     m_userDatadir = mac_home + "/Contents";
-    m_unknownPathDir = mac_home + "/Contents/unknown-paths";
 
     m_libdirs.push_back(m_userLibdir);
     wxFileName fn_exe(GetOCPN_ExePath());

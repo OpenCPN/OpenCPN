@@ -26,9 +26,6 @@ public:
      */
     std::string UserDatadir() { return m_userDatadir; }
 
-    /** Location used to store files with unknown prefix.  */
-    std::string UserUnknownPrefixDir() { return m_unknownPathDir; }
-
     /** List of directories from which we load plugins.*/
     std::vector<std::string> Libdirs()  { return m_libdirs; }
 
@@ -56,7 +53,6 @@ private:
     std::string m_userDatadir;
     std::string m_userBindir;
     std::string m_userLibdir;
-    std::string m_unknownPathDir;
     std::vector<std::string> m_libdirs;
     std::vector<std::string> m_bindirs;
     std::vector<std::string> m_datadirs;
