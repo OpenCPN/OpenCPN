@@ -715,6 +715,7 @@ static bool entry_set_install_path(struct archive_entry* entry,
     else {
         wxLogMessage("set_install_path() invoked, unsupported platform %s",
                      wxPlatformInfo::Get().GetOperatingSystemDescription());
+        rv = false;
     }
 #endif
     const std::string dest = archive_entry_pathname(entry);
