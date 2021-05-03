@@ -5345,20 +5345,20 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     std::string message;
     if (status != CatalogHandler::ServerStatus::OK) {
         message = _("Cannot download data from url");
-        OCPNMessageBox(this, message, _("OpenCPN Catalog update"), wxICON_ERROR);
+        OCPNMessageBox(this, message, _("OpenCPN Catalog update"), wxICON_ERROR | wxOK;
         return;
     }
     
     //TODO Validate xml using xsd here....
 #ifdef __OCPN__ANDROID__
     if(!AndroidSecureCopyFile (wxString(filePath.c_str()), g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
-        OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR);
+        OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR| wxOK);
         return;
     }
 #else
     // Copy the downloaded file to proper local location
     if(!wxCopyFile (wxString(filePath.c_str()), g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
-        OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR);
+        OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR| wxOK);
         return;
     }
 #endif    
@@ -5369,7 +5369,7 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
             OCPNMessageBox(this,
                            _("Unable to copy catalog file to cache"),
                            _("OpenCPN Catalog update"),
-                           wxICON_ERROR);
+                           wxICON_ERROR| wxOK);
             return;
         }
     }       
