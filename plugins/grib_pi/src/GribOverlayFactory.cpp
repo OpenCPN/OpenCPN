@@ -180,13 +180,13 @@ void LineBuffer::pushLine( float x0, float y0, float x1, float y1 )
 void LineBuffer::pushPetiteBarbule( int b, int l )
 {
     int tilt = (l * 100) / 250;
-    pushLine( b, 0, b + tilt,  l );
+    pushLine( b, 0, b + tilt,  -l );
 }
 
 void LineBuffer::pushGrandeBarbule( int b, int l )
 {
     int tilt = (l * 100) / 250;
-    pushLine( b, 0, b + tilt, l );
+    pushLine( b, 0, b + tilt, -l );
 }
 
 void LineBuffer::pushTriangle( int b, int l )
