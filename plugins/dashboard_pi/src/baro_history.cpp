@@ -88,7 +88,7 @@ wxSize DashboardInstrument_BaroHistory::GetSize( int orient, wxSize hint )
         return wxSize( wxMax(hint.x, DefaultWidth), wxMax(m_TitleHeight+140, hint.y) );
       }
 }
-void DashboardInstrument_BaroHistory::SetData(int st, double data, wxString unit)
+void DashboardInstrument_BaroHistory::SetData(DASH_CAP st, double data, wxString unit)
 {
     if (st == OCPN_DBP_STC_MDA) {
       m_Press = data;

@@ -107,13 +107,13 @@ class DashboardWindowContainer
 class DashboardInstrumentContainer
 {
       public:
-            DashboardInstrumentContainer(int id, DashboardInstrument *instrument, int capa){
+            DashboardInstrumentContainer(int id, DashboardInstrument *instrument, CapType capa){
                   m_ID = id; m_pInstrument = instrument; m_cap_flag = capa; }
             ~DashboardInstrumentContainer(){ delete m_pInstrument; }
 
             DashboardInstrument    *m_pInstrument;
             int                     m_ID;
-            int                     m_cap_flag;
+            CapType m_cap_flag;
 };
 
 //    Dynamic arrays of pointers need explicit macros in wx261
@@ -173,7 +173,7 @@ private:
       void LoadFont(wxFont **target, wxString native_info);
       
       void ApplyConfig(void);
-      void SendSentenceToAllInstruments(int st, double value, wxString unit);
+      void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments( wxDateTime value );
 
@@ -331,7 +331,7 @@ public:
     
     bool isInstrumentListEqual( const wxArrayInt& list );
     void SetInstrumentList( wxArrayInt list );
-    void SendSentenceToAllInstruments( int st, double value, wxString unit );
+    void SendSentenceToAllInstruments( DASH_CAP st, double value, wxString unit );
     void SendSatInfoToAllInstruments( int cnt, int seq, wxString talk, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( wxDateTime value );
     void ChangePaneOrientation( int orient, bool updateAUImgr );

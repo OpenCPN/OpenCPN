@@ -46,10 +46,10 @@
 class DashboardInstrument_FromOwnship : public DashboardInstrument
 {
 public:
-    DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_PLA, int cap_flag2=OCPN_DBP_STC_PLO,int cap_flag3=OCPN_DBP_STC_LAT,int cap_flag4=OCPN_DBP_STC_LON);
+    DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, DASH_CAP cap_flag1=OCPN_DBP_STC_PLA, DASH_CAP cap_flag2=OCPN_DBP_STC_PLO,DASH_CAP cap_flag3=OCPN_DBP_STC_LAT,DASH_CAP cap_flag4=OCPN_DBP_STC_LON);
     ~DashboardInstrument_FromOwnship(){}
 
-    void SetData(int st, double data, wxString unit);
+    void SetData(DASH_CAP st, double data, wxString unit);
     wxSize GetSize( int orient, wxSize hint );
       
 protected:

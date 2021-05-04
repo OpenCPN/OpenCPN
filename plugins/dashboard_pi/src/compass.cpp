@@ -41,7 +41,7 @@
     #include <wx/wx.h>
 #endif
 
-DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag) :
       DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
@@ -49,7 +49,7 @@ DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWi
       SetOptionMainValue( _T("%.0f"), DIAL_POSITION_INSIDE);
 }
 
-void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
+void DashboardInstrument_Compass::SetData(DASH_CAP st, double data, wxString unit)
 {
     double cdata = data;
     m_gpsWD = false;
