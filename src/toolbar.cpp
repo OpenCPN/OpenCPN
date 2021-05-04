@@ -2278,6 +2278,50 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
     }
 #endif
 
+    static wxPoint s_pos_m_old;
+    static bool s_drag;
+    
+    if ( tool && (s_drag || tool->GetId() == ID_MASTERTOGGLE)) {
+        
+        wxPoint pos_m = ClientToScreen(wxPoint(x, y));
+        if (event.LeftDown()) {
+            s_pos_m_old = pos_m;
+            
+        }
+        
+        if (!g_btouch && event.Dragging()) {
+            s_drag = true;
+            wxPoint pos_old = GetScreenPosition();
+            wxPoint pos_new = pos_old;
+ 
+            int dx = abs(pos_m.x - s_pos_m_old.x);
+            int dy = abs(pos_m.y - s_pos_m_old.y);
+            if( (dx < 10) && (dy < 10)){
+                //s_pos_m_old = pos_m;
+                //return;
+            }
+                
+ 
+            pos_new.x += pos_m.x - s_pos_m_old.x;
+            pos_new.y += pos_m.y - s_pos_m_old.y;
+            
+            ocpnFloatingToolbarDialog * parentFloatingToolBar = dynamic_cast<ocpnFloatingToolbarDialog*>(GetParent());
+            //if( (dx > 4) || (dy > 4))
+                parentFloatingToolBar->MoveDialogInScreenCoords(pos_new, pos_old);
+            ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+            if(parent)
+                parent->GetFrameRelativePosition(&g_maintoolbar_x, &g_maintoolbar_y);
+            s_pos_m_old = pos_m;
+            return;            
+        }
+        
+        if (event.LeftUp() && s_drag) {
+            s_drag = false;
+            return;    
+        }
+    }
+    
+
     if( tool && tool->IsButton() && IsShown() ) {
 
         if(m_btooltip_show){
@@ -2377,39 +2421,6 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         return;
     }
 
-    if (tool->GetId() == ID_MASTERTOGGLE) {
-        static wxPoint s_pos_m_old;
-        static bool s_drag;
-        
-        wxPoint pos_m = ClientToScreen(wxPoint(x, y));
-        if (event.LeftDown()) {
-            s_pos_m_old = pos_m;
-            
-        }
-        
-        if (!g_btouch && event.Dragging()) {
-            s_drag = true;
-            wxPoint pos_old = GetScreenPosition();
-            wxPoint pos_new = pos_old;
-            
-            pos_new.x += pos_m.x - s_pos_m_old.x;
-            pos_new.y += pos_m.y - s_pos_m_old.y;
-            
-            ocpnFloatingToolbarDialog * parentFloatingToolBar = dynamic_cast<ocpnFloatingToolbarDialog*>(GetParent());
-            parentFloatingToolBar->MoveDialogInScreenCoords(pos_new, pos_old);
-            ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
-            if(parent)
-                parent->GetFrameRelativePosition(&g_maintoolbar_x, &g_maintoolbar_y);
-            s_pos_m_old = pos_m;
-            return;            
-        }
-        
-        if (event.LeftUp() && s_drag) {
-            s_drag = false;
-            return;    
-        }
-    }
-    
     if( !event.IsButton() ) {
         if( tool->GetId() != m_currentTool ) {
             // If the left button is kept down and moved over buttons,
