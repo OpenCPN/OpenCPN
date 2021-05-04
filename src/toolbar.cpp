@@ -698,6 +698,11 @@ void ocpnFloatingToolbarDialog::GetFrameRelativePosition( int* x, int *y)
 
 void ocpnFloatingToolbarDialog::RestoreRelativePosition( int x, int y )
 {
+    if( (x < 0) || (y < 0) ){
+        SetDefaultPosition();
+        return;
+    }
+    
     wxPoint parentFramePos = m_pparent->GetPosition();
     wxPoint screenPos = wxPoint(parentFramePos.x + x, parentFramePos.y + y);
     Move(wxPoint(screenPos));
@@ -727,6 +732,9 @@ void ocpnFloatingToolbarDialog::SetDefaultPosition()
         m_position.y = wxMax(m_dock_min_y, m_position.y);
 
         m_position.y += m_auxOffsetY;
+        
+        g_maintoolbar_x = m_position.x;
+        g_maintoolbar_y = m_position.y;
 
         // take care of left docked instrument windows and don't blast the main toolbar on top of them, hinding instruments
         // this positions the main toolbar directly right of the left docked instruments onto the chart

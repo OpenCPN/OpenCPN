@@ -244,6 +244,8 @@ extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
 extern int                        g_FlushNavobjChangesTimeout;
 extern wxString                   g_CmdSoundString;
+extern int                        g_maintoolbar_x;
+extern int                        g_maintoolbar_y;
 
 static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -1429,7 +1431,11 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
             g_bAIS_GCPA_Alert_Audio = true;
             g_bAIS_SART_Alert_Audio = true;
             g_bAIS_DSC_Alert_Audio = true;
+            
+            // Force a recalculation of default main toolbar location
+            g_maintoolbar_x = -1;
         }
+
 
 }
 
