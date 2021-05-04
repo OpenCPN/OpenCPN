@@ -60,7 +60,7 @@ class DashboardInstrument_Single;
 class DashboardInstrument_Position;
 class DashboardInstrument_Sun;
 
-enum DASH_CAP : INT
+enum DASH_CAP
 {
     OCPN_DBP_STC_LAT = 0,
     OCPN_DBP_STC_LON,
@@ -92,8 +92,8 @@ enum DASH_CAP : INT
     OCPN_DBP_STC_VLW2,  // Sum Log
     OCPN_DBP_STC_MDA,  // Bareometic pressure
     OCPN_DBP_STC_MCOG,  // Magnetic Course over Ground
-	OCPN_DBP_STC_PITCH, //Pitch
-	OCPN_DBP_STC_HEEL,   //Heel
+    OCPN_DBP_STC_PITCH, //Pitch
+    OCPN_DBP_STC_HEEL,   //Heel
                         // Insert new instrument capability flags here
     OCPN_DBP_STC_LAST   // This should always be the last enum in this list
 };
