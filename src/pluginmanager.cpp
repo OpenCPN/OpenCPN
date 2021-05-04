@@ -816,9 +816,9 @@ class StatusIconPanel: public wxPanel
             
             //SetBackgroundColour(GetGlobalColor(_T("DILG0")));
             auto size = GetClientSize();
-            auto minsize = GetTextExtent("OpenCPNOpenCPNOpenCPNOpenCPN");
-            SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
-            Layout();
+            auto minsize = wxSize(GetCharWidth() * 10, GetCharWidth() * 10); 
+            SetSize(minsize);
+            SetMinSize(wxSize(GetCharWidth() * 10, -1));
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
             Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
 
@@ -828,7 +828,6 @@ class StatusIconPanel: public wxPanel
         void OnPaint(wxPaintEvent& event)
         {
             auto size = GetClientSize();
-//             int minsize = wxMin(size.GetHeight(), size.GetWidth());
             int minsize = GetCharWidth() * 3;
             auto offset = minsize / 4;
             
@@ -851,8 +850,8 @@ class StatusIconPanel: public wxPanel
             dc.SetBrush(b);
             dc.SetPen( wxPen(border, penWidth) );
 
-            dc.DrawRoundedRectangle(-20, 5, GetSize().x-5, GetSize().y-10, 5);
-            dc.DrawBitmap(m_bitmap, offset, offset*2, true);
+            dc.DrawRoundedRectangle(-20, 5, 20 + offset + (1.2 * m_bitmap.GetSize().x), GetSize().y-10, 5);
+            dc.DrawBitmap(m_bitmap, offset * 3 / 4, offset*3, true);
             
             
             //dc.DrawText(_T("PluginStatus"), 0, 0);
@@ -5838,7 +5837,6 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
     m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
     m_panel->SetSizer(m_pitemBoxSizer01);
     
-    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
 
     m_panel->Hide();
     m_PluginSelected = 0;
@@ -5846,6 +5844,8 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
         PlugInContainer* pic = m_pPluginArray->Item(i - 1);
         AddPlugin(pic);
     }
+
+    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
     m_panel->Show();
     Layout();
     Refresh(true);
@@ -5858,11 +5858,13 @@ void PluginListPanel::AddPlugin(PlugInContainer* pic)
 {
     auto  pPluginPanel = new PluginPanel(m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
     pPluginPanel->SetSelected(false);
-    m_pitemBoxSizer01->Add( pPluginPanel, wxSizerFlags().Expand());
+    m_pitemBoxSizer01->Add( pPluginPanel, 0, wxEXPAND);
     m_PluginItems.Add( pPluginPanel );
 
     m_pluginSpacer = g_Platform->GetDisplayDPmm() * 1.0;
     m_pitemBoxSizer01->AddSpacer(m_pluginSpacer);
+
+    m_panel->Layout();
     
 //    wxStaticLine* itemStaticLine = new wxStaticLine( m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
 //    m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
@@ -6127,7 +6129,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
 
     }
     else{
-        wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
+        wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(4,0,0);
         itemBoxSizer03->AddGrowableCol(2);
         itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
     
@@ -6156,9 +6158,11 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
         itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 10);
         m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+
+        itemBoxSizer03->Add(5 * GetCharWidth(), 1, 0, wxALIGN_RIGHT | wxTOP, 10);
         
         m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( -1, -1), wxST_NO_AUTORESIZE );
-        itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
+        itemBoxSizer02->Add( m_pDescription, 1, wxEXPAND|wxALL, 5 );
         m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
         m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
@@ -6210,7 +6214,6 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
     itemBoxSizer01->Add(m_status_icon, 0, wxALIGN_RIGHT | wxEXPAND);
-
     itemBoxSizer02->AddSpacer( GetCharWidth() );
 
     m_pButtonPreferences->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
@@ -6467,7 +6470,6 @@ void PluginPanel::OnPaint(wxPaintEvent &event)
     dc.SetPen( wxPen(border, penWidth) );
  
     dc.DrawRoundedRectangle( 5, 5, GetSize().x - 10, GetSize().y - 10, 5);
-    //dc.DrawLine( 5, 5, 1000, 5 ); 
 
 }
 
