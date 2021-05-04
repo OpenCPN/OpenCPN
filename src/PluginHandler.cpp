@@ -715,6 +715,7 @@ static bool entry_set_install_path(struct archive_entry* entry,
     else {
         wxLogMessage("set_install_path() invoked, unsupported platform %s",
                      wxPlatformInfo::Get().GetOperatingSystemDescription());
+        rv = false;
     }
 #endif
     const std::string dest = archive_entry_pathname(entry);
@@ -859,37 +860,45 @@ bool PluginHandler::isPluginWritable(std::string name)
 }
 
 
+static std::string computeMetadataPath(void)
+{
+    std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+    path += SEP;
+    path += "ocpn-plugins.xml";
+    if (ocpn::exists(path)) {
+        return path;
+    }
+
+    // If default location for composit plugin metadata is not found, 
+    // we look in the plugin cache directory, which will normally contain
+    // he last "master" catalog downloaded
+    path = ocpn::lookup_metadata();
+    if (path != "") {
+        return path;
+    }
+    
+    // And if that does not work, use the empty metadata file found in the
+    // distribution "data" directory
+    path = g_Platform->GetSharedDataDir();
+    path += SEP ;
+    path += "ocpn-plugins.xml";
+    if (!ocpn::exists(path)) {
+        wxLogWarning("Non-existing plugins file: %s", path);
+    }
+    return path;
+}
+
+
 std::string PluginHandler::getMetadataPath()
 {
     if( metadataPath.size() > 0) {
         return metadataPath;
     }
-    std::string path = g_Platform->GetPrivateDataDir().ToStdString();
-    path += SEP;
-    path += "ocpn-plugins.xml";
-    if (ocpn::exists(path)) {
-        metadataPath = path;
-        return path;
-    }
-
-    // If default location for composit plugin metadata is not found, 
-    //  we look in the plugin cache directory, which will normally contain the last "master" catalog downloaded
-
-    path = ocpn::lookup_metadata();
-    if (path != "") {
-        metadataPath = path;
-        return path;
-    }
-    
-    // And if that does not work, use the empty metadata file found in the distribution "data" directory
-    metadataPath = g_Platform->GetSharedDataDir();
-    metadataPath += SEP ;
-    metadataPath += "ocpn-plugins.xml";
-    if (!ocpn::exists(metadataPath)) {
-        wxLogWarning("Non-existing plugins file: %s", metadataPath);
-    }
+    metadataPath = computeMetadataPath();
+    wxLogDebug("Using metadata path: %s", metadataPath.c_str());
     return metadataPath;
 }
+
 
 static void parseMetadata(const std::string path, catalog_ctx& ctx)
 {
