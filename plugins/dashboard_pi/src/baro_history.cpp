@@ -283,7 +283,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   else {
     wxDateTime localTime( m_ArrayRecTime[i] );
     min = localTime.GetMinute( );
-    hour=localTime.GetMinute( );
+    hour = localTime.GetHour( );
   }
   m_ratioW = double(m_DrawAreaRect.width) / (BARO_RECORD_COUNT-1);
  // dc->DrawText(wxString::Format(_(" Max %.1f Min %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),m_MaxPress,m_MinPress,hour,min,m_TotalMaxPress,m_TotalMinPress), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
