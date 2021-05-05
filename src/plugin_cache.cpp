@@ -132,6 +132,7 @@ std::string lookup_tarball(const char* uri)
     return ocpn::exists(path) ? path : "";
 }
 
+
 uint cache_file_count()
 {
     wxFileName dirs(cache_path());
@@ -178,7 +179,22 @@ unsigned long cache_size()
 }
 
 /* mock up definitions.*/
-void cache_clear()  {};
+void cache_clear()
+{
+    wxFileName dirs(cache_path());
+    dirs.AppendDir("tarballs");
+    if (!dirs.DirExists()) {
+        return;
+    }
+    wxDir dir(dirs.GetFullPath());
+    wxString file;
+    bool cont = dir.GetFirst(&file);
+    while (cont) {
+        dirs.SetFullName(file);
+        wxRemoveFile(dirs.GetFullPath());;
+        cont = dir.GetNext(&file);
+    }
+}
 
 
 }  // namespace
