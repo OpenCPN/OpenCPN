@@ -36,6 +36,7 @@
 #include "cat_settings.h"
 #include "config_var.h"
 #include "ocpn_utils.h"
+#include "plugin_cache.h"
 #include "PluginHandler.h"
 
 extern wxString       g_catalog_channel;
@@ -208,6 +209,29 @@ class CompatSizer: public wxStaticBoxSizer
 };
 
 
+/* Cache panel, size feedback and clear button. */
+class CacheSizer: public wxStaticBoxSizer
+{
+    public:
+        CacheSizer(wxWindow* parent)
+           : wxStaticBoxSizer(wxHORIZONTAL, parent, _("Cache"))
+        {
+            auto flags = wxSizerFlags().Border();
+            char buf[128];
+            snprintf(buf, sizeof(buf), _("Size: %d MB in %d files"),
+                     ocpn::cache_size(), ocpn::cache_file_count());
+            Add(new wxStaticText(parent, wxID_ANY, buf),
+                flags.Center().Proportion(1));
+            Add(1, 1, 1, wxEXPAND);   // Expanding spacer
+            m_clear_button = new wxButton(parent, wxID_ANY, _("Clear cache"));
+            Add(m_clear_button, flags);
+        }
+    private:
+        wxButton* m_clear_button;
+};
+
+
+
 /** The Done button. */
 class ButtonsSizer: public wxStdDialogButtonSizer
 {
@@ -232,6 +256,7 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
 
     vbox->Add(new CatalogSizer(this), wxSizerFlags().Expand().DoubleBorder());
     vbox->Add(new CompatSizer(this), wxSizerFlags().Expand().DoubleBorder());
+    vbox->Add(new CacheSizer(this), wxSizerFlags().Expand().DoubleBorder());
     vbox->Add(new ButtonsSizer(this), wxSizerFlags().Expand().DoubleBorder());
 
     SetSizer(vbox);
