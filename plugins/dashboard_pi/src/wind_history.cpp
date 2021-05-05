@@ -47,8 +47,10 @@
 //************************************************************************************************************************
 
 DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument(parent, id, title, OCPN_DBP_STC_TWD | OCPN_DBP_STC_TWS)
-{     SetDrawSoloInPane(true);
+      DashboardInstrument(parent, id, title, OCPN_DBP_STC_TWD)
+{
+      m_cap_flag.set(OCPN_DBP_STC_TWS);
+      SetDrawSoloInPane(true);
       m_MaxWindDir = -1;
       m_WindDir = -1;
       m_WindDirRange=90;
@@ -91,7 +93,7 @@ wxSize DashboardInstrument_WindDirHistory::GetSize( int orient, wxSize hint )
         return wxSize( wxMax(hint.x, DefaultWidth), wxMax(m_TitleHeight+140, hint.y) );
       }
 }
-void DashboardInstrument_WindDirHistory::SetData(int st, double data, wxString unit)
+void DashboardInstrument_WindDirHistory::SetData(DASH_CAP st, double data, wxString unit)
 {
   if (st == OCPN_DBP_STC_TWD || st == OCPN_DBP_STC_TWS) {
     if (st == OCPN_DBP_STC_TWD) {

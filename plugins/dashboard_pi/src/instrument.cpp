@@ -45,11 +45,11 @@
 //
 //----------------------------------------------------------------
 
-DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag)
+DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, DASH_CAP cap_flag)
       :wxControl(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
       m_title = title;
-      m_cap_flag = cap_flag;
+      m_cap_flag.set(cap_flag);
 
       SetBackgroundStyle( wxBG_STYLE_CUSTOM );
       SetDrawSoloInPane(false);
@@ -85,7 +85,7 @@ void DashboardInstrument::MouseEvent( wxMouseEvent &event )
     }
 }
 
-int DashboardInstrument::GetCapacity()
+CapType DashboardInstrument::GetCapacity()
 {
       return m_cap_flag;
 }
@@ -182,7 +182,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 //
 //----------------------------------------------------------------
 
-DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag, wxString format)
+DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, DASH_CAP cap_flag, wxString format)
       :DashboardInstrument(pparent, id, title, cap_flag)
 {
       m_format = format;
@@ -235,9 +235,9 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc)
 
 }
 
-void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
+void DashboardInstrument_Single::SetData(DASH_CAP st, double data, wxString unit)
 {
-      if (m_cap_flag & st){
+      if (m_cap_flag.test(st)){
             if( !std::isnan(data) ){
                 if (unit == _T("C"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("C");
@@ -276,9 +276,10 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 //
 //----------------------------------------------------------------
 
-DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1, int cap_flag2)
-      :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2)
+DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, DASH_CAP cap_flag1, DASH_CAP cap_flag2)
+      :DashboardInstrument(pparent, id, title, cap_flag1)
 {
+      m_cap_flag.set(cap_flag2);
 
       m_data1 = _T("---");
       m_data2 = _T("---");
@@ -335,7 +336,7 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc)
 
 }
 
-void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
+void DashboardInstrument_Position::SetData(DASH_CAP st, double data, wxString unit)
 {
       if (std::isnan(data))
           return;

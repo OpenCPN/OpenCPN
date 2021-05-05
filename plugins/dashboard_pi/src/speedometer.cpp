@@ -43,7 +43,7 @@
 // Not much to do here most of the default dial values are fine.
 // Note the default AngleStart = 225 and AngleRange = 270 set here.
 
-DashboardInstrument_Speedometer::DashboardInstrument_Speedometer( wxWindow *parent, wxWindowID id, wxString title, int cap_flag,
+DashboardInstrument_Speedometer::DashboardInstrument_Speedometer( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag,
                         int s_value, int e_value) : DashboardInstrument_Dial( parent, id, title, cap_flag, 225, 270, s_value, e_value)
 {
       // We want the main value displayed inside the dial as well

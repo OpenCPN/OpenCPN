@@ -34,9 +34,12 @@ extern int g_iDashDistanceUnit;
 //    DashboardInstrument_FromOwnship Implementation
 //
 //----------------------------------------------------------------
-DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1, int cap_flag2 ,int cap_flag3,int cap_flag4)
-    :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2 | cap_flag3 | cap_flag4)
+DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, DASH_CAP cap_flag1, DASH_CAP cap_flag2 ,DASH_CAP cap_flag3,DASH_CAP cap_flag4)
+    :DashboardInstrument(pparent, id, title, cap_flag1)
 {
+    m_cap_flag.set(cap_flag2);
+    m_cap_flag.set(cap_flag3);
+    m_cap_flag.set(cap_flag4);
     m_data1 =_T("---");
     m_data2 =_T("---");
     m_cap_flag1 = cap_flag1;
@@ -60,7 +63,7 @@ void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc)
     dc->DrawText(m_data2, 10, m_TitleHeight + m_DataHeight);
 }
 
-void DashboardInstrument_FromOwnship::SetData(int st, double data, wxString unit)
+void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data, wxString unit)
 {
     if (st == m_cap_flag1)
     {
