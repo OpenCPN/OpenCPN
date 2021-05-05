@@ -131,5 +131,16 @@ std::string lookup_tarball(const char* uri)
     return ocpn::exists(path) ? path : "";
 }
 
+/* mock up definitions.*/
+uint cache_file_count() { return 1456; }
+
+uint cache_size() { return 122356; }
+
+void cache_clear()  {};
+
+
+
+
+
 
 }  // namespace
