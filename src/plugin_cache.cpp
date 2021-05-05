@@ -133,7 +133,7 @@ std::string lookup_tarball(const char* uri)
 }
 
 
-uint cache_file_count()
+unsigned cache_file_count()
 {
     wxFileName dirs(cache_path());
     dirs.AppendDir("tarballs");

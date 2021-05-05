@@ -51,7 +51,7 @@ bool store_tarball(const char* path, const char* basename);
 std::string lookup_tarball(const char* basename);
 
 /** Return number of files in cache */
-uint cache_file_count();
+unsigned cache_file_count();
 
 /** Return total size of files in cache in kbytes. */
 unsigned long cache_size();
