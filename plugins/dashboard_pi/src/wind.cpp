@@ -45,7 +45,7 @@
 // Display the arrow for MainValue (wind angle)
 // We also want the extra value (wind speed) displayed inside the dial
 
-DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag) :
       DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
@@ -59,7 +59,7 @@ void DashboardInstrument_Wind::DrawBackground(wxGCDC* dc)
     DrawBoat( dc, m_cx, m_cy, m_radius );
 }
 
-DashboardInstrument_WindCompass::DashboardInstrument_WindCompass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag ) :
+DashboardInstrument_WindCompass::DashboardInstrument_WindCompass( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag ) :
       DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360 )
 {
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
@@ -75,7 +75,7 @@ void DashboardInstrument_WindCompass::DrawBackground(wxGCDC* dc)
 // Display the arrow for MainValue (wind angle)
 // We also want the extra value (wind speed) displayed inside the dial
 
-DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag) :
       DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
@@ -93,7 +93,7 @@ void DashboardInstrument_TrueWindAngle::DrawBackground(wxGCDC* dc)
   Apparent & True wind angle combined in one dial instrument
   Author: Thomas Rauch
 ******************************************************************************/
-DashboardInstrument_AppTrueWindAngle::DashboardInstrument_AppTrueWindAngle(wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+DashboardInstrument_AppTrueWindAngle::DashboardInstrument_AppTrueWindAngle(wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag) :
 DashboardInstrument_Dial(parent, id, title, cap_flag, 0, 360, 0, 360)
 {
 	SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
@@ -107,7 +107,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawBackground(wxGCDC* dc)
 	DrawBoat(dc, m_cx, m_cy, m_radius);
 }
 
-void DashboardInstrument_AppTrueWindAngle::SetData(int st, double data, wxString unit)
+void DashboardInstrument_AppTrueWindAngle::SetData(DASH_CAP st, double data, wxString unit)
 {
 	if (st == OCPN_DBP_STC_TWA){
 		m_MainValueTrue = data;

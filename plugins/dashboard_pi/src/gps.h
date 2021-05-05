@@ -54,7 +54,7 @@ class DashboardInstrument_GPS: public DashboardInstrument
             ~DashboardInstrument_GPS(void){}
 
             wxSize GetSize( int orient, wxSize hint );
-            void SetData(int, double, wxString) {};
+            void SetData(DASH_CAP, double, wxString) {};
             void SetSatInfo(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
 
       private:

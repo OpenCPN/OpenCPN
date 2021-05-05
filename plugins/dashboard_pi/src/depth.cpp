@@ -44,8 +44,9 @@ extern int g_iDashDepthUnit;
 #endif
 
 DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument(parent, id, title, OCPN_DBP_STC_DPT | OCPN_DBP_STC_TMP)
+      DashboardInstrument(parent, id, title, OCPN_DBP_STC_DPT)
 {
+    m_cap_flag.set(OCPN_DBP_STC_TMP);
       m_MaxDepth = 0;
       m_Depth = 0;
       m_DepthUnit = getUsrDistanceUnit_Plugin( g_iDashDepthUnit );
@@ -68,7 +69,7 @@ wxSize DashboardInstrument_Depth::GetSize( int orient, wxSize hint )
       }
 }
 
-void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
+void DashboardInstrument_Depth::SetData(DASH_CAP st, double data, wxString unit)
 {
       if (st == OCPN_DBP_STC_DPT)
       {

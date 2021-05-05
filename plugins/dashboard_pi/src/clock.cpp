@@ -40,7 +40,7 @@
     #include <wx/wx.h>
 #endif
 
-DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title, int cap_flag, wxString format ) :
+DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag, wxString format ) :
       DashboardInstrument_Single( parent, id, title, cap_flag, format )
 {
     // if format contains the string "LCL" then display time in local TZ
@@ -64,7 +64,7 @@ wxSize DashboardInstrument_Clock::GetSize( int orient, wxSize hint )
       }
 }
 
-void DashboardInstrument_Clock::SetData( int, double, wxString )
+void DashboardInstrument_Clock::SetData( DASH_CAP, double, wxString )
 {
 // Nothing to do here but we want to override the default
 }
@@ -97,10 +97,13 @@ wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
 }
 
 DashboardInstrument_CPUClock::DashboardInstrument_CPUClock( wxWindow *parent, wxWindowID id, wxString title, wxString format ) :
-    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON | OCPN_DBP_STC_CLK, format )
-{ }
+    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT, format )
+{
+    m_cap_flag.set(OCPN_DBP_STC_LON);
+    m_cap_flag.set(OCPN_DBP_STC_CLK);
+}
 
-void DashboardInstrument_CPUClock::SetData( int, double, wxString )
+void DashboardInstrument_CPUClock::SetData( DASH_CAP, double, wxString )
 {
     // Nothing to do here but we want to override the default
 }
@@ -112,8 +115,9 @@ void DashboardInstrument_CPUClock::SetUtcTime( wxDateTime data )
 }
 
 DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title ) :
-      DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_CLK|OCPN_DBP_STC_LAT, _T("%i/4 %c") )
+      DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_CLK, _T("%i/4 %c") )
 {
+    m_cap_flag.set(OCPN_DBP_STC_LAT);
     m_phase = -1;
     m_radius = 14;
     m_hemisphere = _T("");
@@ -132,7 +136,7 @@ wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
       }
 }
 
-void DashboardInstrument_Moon::SetData( int st, double value, wxString format )
+void DashboardInstrument_Moon::SetData( DASH_CAP st, double value, wxString format )
 {
     if( st == OCPN_DBP_STC_LAT && !std::isnan(value)) {
         m_hemisphere = (value < 0 ? _T("S") : _T("N"));
@@ -275,8 +279,10 @@ wxDateTime convHrmn(double dhr) {
 };
 
 DashboardInstrument_Sun::DashboardInstrument_Sun( wxWindow *parent, wxWindowID id, wxString title, wxString format ) :
-    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT|OCPN_DBP_STC_LON|OCPN_DBP_STC_CLK, format )
+    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT, format )
 {
+    m_cap_flag.set(OCPN_DBP_STC_LON);
+    m_cap_flag.set(OCPN_DBP_STC_CLK);
     m_lat = m_lon = 999.9;
     m_dt = wxDateTime::Now().ToUTC();
     m_sunrise = _T("---");
@@ -333,7 +339,7 @@ void DashboardInstrument_Sun::SetUtcTime( wxDateTime data )
     }
 }
 
-void DashboardInstrument_Sun::SetData( int st, double data, wxString unit )
+void DashboardInstrument_Sun::SetData( DASH_CAP st, double data, wxString unit )
 {
     if(!std::isnan(data)){
         if (st == OCPN_DBP_STC_LAT)
