@@ -54,7 +54,7 @@ std::string lookup_tarball(const char* basename);
 uint cache_file_count();
 
 /** Return total size of files in cache in kbytes. */
-uint cache_size();
+unsigned long cache_size();
 
 /** Remove all files in cache: */
 void cache_clear();
