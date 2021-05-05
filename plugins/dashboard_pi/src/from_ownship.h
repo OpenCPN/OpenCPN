@@ -59,10 +59,10 @@ protected:
     double            c_lon;
     double            s_lat;
     double            s_lon;
-    int               m_cap_flag1;
-    int               m_cap_flag2;
-    int               m_cap_flag3;
-    int               m_cap_flag4;
+    DASH_CAP          m_cap_flag1;
+    DASH_CAP          m_cap_flag2;
+    DASH_CAP          m_cap_flag3;
+    DASH_CAP          m_cap_flag4;
     int               m_DataHeight;
 
     void Draw(wxGCDC* dc);

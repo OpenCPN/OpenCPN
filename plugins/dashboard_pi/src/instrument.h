@@ -90,7 +90,7 @@ enum DASH_CAP
     OCPN_DBP_STC_TWS2,
     OCPN_DBP_STC_VLW1, // Trip Log
     OCPN_DBP_STC_VLW2,  // Sum Log
-    OCPN_DBP_STC_MDA,  // Bareometic pressure
+    OCPN_DBP_STC_MDA,  // Barometic pressure
     OCPN_DBP_STC_MCOG,  // Magnetic Course over Ground
     OCPN_DBP_STC_PITCH, //Pitch
     OCPN_DBP_STC_HEEL,   //Heel
@@ -98,7 +98,7 @@ enum DASH_CAP
     OCPN_DBP_STC_LAST   // This should always be the last enum in this list
 };
 
-#define N_INSTRUMENTS OCPN_DBP_STC_LAST        // Number of instrument capability flags
+#define N_INSTRUMENTS ( (int) OCPN_DBP_STC_LAST )    // Number of instrument capability flags
 using CapType = std::bitset<N_INSTRUMENTS>;
 
 class DashboardInstrument : public wxControl
