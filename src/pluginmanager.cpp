@@ -52,6 +52,7 @@
 #include <wx/zipstrm.h>
 #include <wx/zstream.h>
 #include <wx/tarstrm.h>
+#include <wx/textwrapper.h>
 
 #ifndef __WXMSW__
 #include <cxxabi.h>
@@ -218,6 +219,35 @@ enum
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
+
+class PanelHardBreakWrapper : public wxTextWrapper
+    {
+    public:
+        PanelHardBreakWrapper(wxWindow *win, const wxString& text, int widthMax)
+        {
+            m_lineCount = 0;
+            Wrap(win, text, widthMax);
+        }
+        wxString const& GetWrapped() const { return m_wrapped; }
+        int const GetLineCount() const { return m_lineCount; }
+        wxArrayString GetLineArray(){ return m_array; }
+        
+    protected:
+        virtual void OnOutputLine(const wxString& line)
+        {
+            m_wrapped += line;
+            m_array.Add(line);
+        }
+        virtual void OnNewLine()
+        {
+            m_wrapped += '\n';
+            m_lineCount++;
+        }
+    private:
+        wxString m_wrapped;
+        int m_lineCount;
+        wxArrayString m_array;
+    };
 
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"
@@ -438,7 +468,7 @@ static void run_update_dialog(PluginListPanel* parent,
     wxString pluginName = pic->m_common_name;
     const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
     auto updates = getUpdates(plugin);
-    auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent->GetParent());
+    auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent);
     wxASSERT(parent_dlg != 0);
     UpdateDialog dialog(parent_dlg, updates);
     auto status = dialog.ShowModal();
@@ -464,6 +494,9 @@ static void run_update_dialog(PluginListPanel* parent,
         
         auto downloader = new GuiDownloader(parent_dlg, update);
         std::string tempTarballPath = downloader->run(parent_dlg, uninstall);
+        
+        if(!tempTarballPath.size())             // Error, dialog already presented
+            return;
         
         // Provisional error check
         bool bOK = true;
@@ -697,7 +730,7 @@ pluginUtilHandler::pluginUtilHandler()
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
     auto panel = static_cast<PluginPanel*>(event.GetClientData());
-    PluginListPanel *plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetGrandParent());
+    PluginListPanel *plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetParent());
     wxASSERT(plugin_list_panel != 0);
     
     auto actionPIC = panel->GetPlugin();
@@ -5830,24 +5863,25 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
 {
     m_pPluginArray = plugins;
     m_PluginItems.Clear();
-    GetSizer()->Clear();
     
-    wxWindowList kids = GetChildren();
-    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item(i);
-        wxWindow *win = node->GetData();
-        delete win;
-    }
+      wxWindowList kids = GetChildren();
+      for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+          wxWindowListNode *node = kids.Item(i);
+          wxWindow *win = node->GetData();
+          PluginPanel *pp = dynamic_cast<PluginPanel*>(win);
+          if(pp)
+            win->Destroy();
+      }
 
+    GetSizer()->Clear();
+
+    Hide();
     m_PluginSelected = 0;
-    int nadd = 0;
     for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
         PlugInContainer* pic = m_pPluginArray->Item(i - 1);
         AddPlugin(pic);
-//        if(nadd++ > 4)
-//            break;
     }
-
+    Show();
     Layout();
     Refresh(true);
     
@@ -6161,7 +6195,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
 
         itemBoxSizer03->Add(5 * GetCharWidth(), 1, 0, wxALIGN_RIGHT | wxTOP, 10);
         
-        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( -1, -1), wxST_NO_AUTORESIZE );
+        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( -1, -1)/*, wxST_NO_AUTORESIZE*/ );
         itemBoxSizer02->Add( m_pDescription, 1, wxEXPAND|wxALL, 5 );
         m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
         m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
@@ -6233,7 +6267,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
 
     
     m_itemStatusIconBitmap = new wxStaticBitmap(this, wxID_ANY, statusBitmap);
-    itemBoxSizer01->Add(m_itemStatusIconBitmap, 0,  wxALIGN_RIGHT | wxEXPAND|wxALL, 10);
+    itemBoxSizer01->Add(m_itemStatusIconBitmap, 0,  wxALIGN_RIGHT | wxEXPAND|wxALL, 20);
  
     itemBoxSizer02->AddSpacer( GetCharWidth() );
 
@@ -6300,9 +6334,10 @@ void PluginPanel::DoPluginSelect( )
 {
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        auto dialog = dynamic_cast<PluginListPanel*>(GetGrandParent());
-        wxASSERT(dialog != 0);
-        run_update_dialog(dialog, m_pPlugin, false);
+        //auto dialog = dynamic_cast<PluginListPanel*>(GetParent());
+        //auto dialog = dynamic_cast<PluginListPanel*>(m_parent);
+        //wxASSERT(dialog != 0);
+        run_update_dialog(m_PluginListPanel, m_pPlugin, false);
     }
     else if (m_bSelected){
         SetSelected(false);
@@ -6573,7 +6608,9 @@ void PluginPanel::SetEnabled( bool enabled )
         wxString description = m_pPlugin->m_long_description;
         if(description.IsEmpty())
             description = wxString(m_pPlugin->m_ManagedMetadata.description.c_str());
-        m_pDescription->SetLabel( description );
+        
+        PanelHardBreakWrapper wrapper(this, description, g_options->GetSize().x * 7 / 10);
+        m_pDescription->SetLabel( wrapper.GetWrapped() );
         if(m_pPlugin->m_ManagedMetadata.info_url.size()){
             m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
             m_info_btn->Show();
@@ -6583,7 +6620,8 @@ void PluginPanel::SetEnabled( bool enabled )
         wxString description = m_pPlugin->m_short_description;
         if(description.IsEmpty())
             description = wxString(m_pPlugin->m_ManagedMetadata.summary.c_str());
-        m_pDescription->SetLabel( description );
+        PanelHardBreakWrapper wrapper(this, description, g_options->GetSize().x * 7 / 10);
+        m_pDescription->SetLabel( wrapper.GetWrapped() );
 
     }        
         
