@@ -219,26 +219,31 @@ class CacheSizer: public wxStaticBoxSizer
             using CmdEvt = wxCommandEvent;
 
             auto flags = wxSizerFlags().Border();
-            char buf[128];
-            snprintf(buf, sizeof(buf), _("Size: %d MB in %d files"),
-                     ocpn::cache_size(), ocpn::cache_file_count());
-            Add(new wxStaticText(parent, wxID_ANY, buf),
-                flags.Center().Proportion(1));
+            m_label = new wxStaticText(parent, wxID_ANY, "");
+            update_label();
+            Add(m_label, flags.Center().Proportion(1));
+
             Add(1, 1, 1, wxEXPAND);   // Expanding spacer
             m_clear_button = new wxButton(parent, wxID_ANY, _("Clear cache"));
             Add(m_clear_button, flags);
             m_clear_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                                  [=](CmdEvt& e) { on_clear_btn_clicked(); });
         }
+
     private:
         wxButton* m_clear_button;
+        wxStaticText* m_label;
 
-        void on_clear_btn_clicked()
+        void on_clear_btn_clicked() { ocpn::cache_clear(); update_label(); }
+
+        void update_label()
         {
-            ocpn::cache_clear();
+            char buf[128];
+            snprintf(buf, sizeof(buf), _("Size: %d MB in %d files"),
+                     ocpn::cache_size(), ocpn::cache_file_count());
+            m_label->SetLabel(buf);
         }
 };
-
 
 
 /** The Done button. */
