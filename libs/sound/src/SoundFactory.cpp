@@ -35,7 +35,7 @@
 
 OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
 
-#elif defined def HAVE_PORTAUDIO
+#elif defined(HAVE_PORTAUDIO)
 #include "PortAudioSound.h"
 
 OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
