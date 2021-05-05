@@ -216,6 +216,8 @@ class CacheSizer: public wxStaticBoxSizer
         CacheSizer(wxWindow* parent)
            : wxStaticBoxSizer(wxHORIZONTAL, parent, _("Cache"))
         {
+            using CmdEvt = wxCommandEvent;
+
             auto flags = wxSizerFlags().Border();
             char buf[128];
             snprintf(buf, sizeof(buf), _("Size: %d MB in %d files"),
@@ -225,9 +227,16 @@ class CacheSizer: public wxStaticBoxSizer
             Add(1, 1, 1, wxEXPAND);   // Expanding spacer
             m_clear_button = new wxButton(parent, wxID_ANY, _("Clear cache"));
             Add(m_clear_button, flags);
+            m_clear_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                                 [=](CmdEvt& e) { on_clear_btn_clicked(); });
         }
     private:
         wxButton* m_clear_button;
+
+        void on_clear_btn_clicked()
+        {
+            ocpn::cache_clear();
+        }
 };
 
 
