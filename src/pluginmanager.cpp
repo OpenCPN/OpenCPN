@@ -52,6 +52,7 @@
 #include <wx/zipstrm.h>
 #include <wx/zstream.h>
 #include <wx/tarstrm.h>
+#include <wx/textwrapper.h>
 
 #ifndef __WXMSW__
 #include <cxxabi.h>
@@ -218,6 +219,35 @@ enum
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
+
+class PanelHardBreakWrapper : public wxTextWrapper
+    {
+    public:
+        PanelHardBreakWrapper(wxWindow *win, const wxString& text, int widthMax)
+        {
+            m_lineCount = 0;
+            Wrap(win, text, widthMax);
+        }
+        wxString const& GetWrapped() const { return m_wrapped; }
+        int const GetLineCount() const { return m_lineCount; }
+        wxArrayString GetLineArray(){ return m_array; }
+        
+    protected:
+        virtual void OnOutputLine(const wxString& line)
+        {
+            m_wrapped += line;
+            m_array.Add(line);
+        }
+        virtual void OnNewLine()
+        {
+            m_wrapped += '\n';
+            m_lineCount++;
+        }
+    private:
+        wxString m_wrapped;
+        int m_lineCount;
+        wxArrayString m_array;
+    };
 
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"
@@ -438,7 +468,7 @@ static void run_update_dialog(PluginListPanel* parent,
     wxString pluginName = pic->m_common_name;
     const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
     auto updates = getUpdates(plugin);
-    auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent->GetParent());
+    auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent);
     wxASSERT(parent_dlg != 0);
     UpdateDialog dialog(parent_dlg, updates);
     auto status = dialog.ShowModal();
@@ -464,6 +494,9 @@ static void run_update_dialog(PluginListPanel* parent,
         
         auto downloader = new GuiDownloader(parent_dlg, update);
         std::string tempTarballPath = downloader->run(parent_dlg, uninstall);
+        
+        if(!tempTarballPath.size())             // Error, dialog already presented
+            return;
         
         // Provisional error check
         bool bOK = true;
@@ -697,7 +730,7 @@ pluginUtilHandler::pluginUtilHandler()
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
     auto panel = static_cast<PluginPanel*>(event.GetClientData());
-    PluginListPanel *plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetGrandParent());
+    PluginListPanel *plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetParent());
     wxASSERT(plugin_list_panel != 0);
     
     auto actionPIC = panel->GetPlugin();
@@ -790,7 +823,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 
 
 
-
+#if 0
 /**
  * A svg status icon, scaled to about 1/3 of available space
  *
@@ -815,10 +848,9 @@ class StatusIconPanel: public wxPanel
             m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
             
             //SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-            auto size = GetClientSize();
-            auto minsize = wxSize(GetCharWidth() * 10, GetCharWidth() * 10); 
-            SetSize(minsize);
-            SetMinSize(wxSize(GetCharWidth() * 10, -1));
+            //auto minsize = wxSize(GetCharWidth() * 5, GetCharWidth() * 10); 
+            //SetSize(minsize);
+            SetMinSize(wxSize(GetCharWidth() * 5, -1));
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
             Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
 
@@ -850,7 +882,8 @@ class StatusIconPanel: public wxPanel
             dc.SetBrush(b);
             dc.SetPen( wxPen(border, penWidth) );
 
-            dc.DrawRoundedRectangle(-20, 5, 20 + offset + (1.2 * m_bitmap.GetSize().x), GetSize().y-10, 5);
+            dc.DrawRoundedRectangle(-20, 5, 20 + GetSize().x-10, GetSize().y-10, 5);
+            //dc.DrawRectangle(0, 0, GetSize().x, GetSize().y);
             dc.DrawBitmap(m_bitmap, offset * 3 / 4, offset*3, true);
             
             
@@ -903,7 +936,7 @@ class StatusIconPanel: public wxPanel
             }
         }
 };
-
+#endif
 
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
@@ -5807,7 +5840,6 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
     m_PluginSelected(0)
 {
     SetSizer(new wxBoxSizer(wxVERTICAL));
-    m_panel = 0;
     ReloadPluginPanels(pPluginArray);
     //SetScrollRate(0, 1);
 }
@@ -5830,23 +5862,26 @@ void PluginListPanel::SelectByName(wxString &name)
 void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
 {
     m_pPluginArray = plugins;
-    delete m_panel;
     m_PluginItems.Clear();
     
-    m_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
-    m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
-    m_panel->SetSizer(m_pitemBoxSizer01);
-    
+      wxWindowList kids = GetChildren();
+      for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+          wxWindowListNode *node = kids.Item(i);
+          wxWindow *win = node->GetData();
+          PluginPanel *pp = dynamic_cast<PluginPanel*>(win);
+          if(pp)
+            win->Destroy();
+      }
 
-    m_panel->Hide();
+    GetSizer()->Clear();
+
+    Hide();
     m_PluginSelected = 0;
     for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
         PlugInContainer* pic = m_pPluginArray->Item(i - 1);
         AddPlugin(pic);
     }
-
-    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
-    m_panel->Show();
+    Show();
     Layout();
     Refresh(true);
     
@@ -5856,15 +5891,14 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
 
 void PluginListPanel::AddPlugin(PlugInContainer* pic)
 {
-    auto  pPluginPanel = new PluginPanel(m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
+    auto  pPluginPanel = new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
     pPluginPanel->SetSelected(false);
-    m_pitemBoxSizer01->Add( pPluginPanel, 0, wxEXPAND);
+    GetSizer()->Add( pPluginPanel, 0, wxEXPAND);
     m_PluginItems.Add( pPluginPanel );
 
     m_pluginSpacer = g_Platform->GetDisplayDPmm() * 1.0;
-    m_pitemBoxSizer01->AddSpacer(m_pluginSpacer);
+    GetSizer()->AddSpacer(m_pluginSpacer);
 
-    m_panel->Layout();
     
 //    wxStaticLine* itemStaticLine = new wxStaticLine( m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
 //    m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
@@ -5937,7 +5971,7 @@ void PluginListPanel::SelectPlugin( PluginPanel *pi )
     
     m_PluginSelected = pi;
     
-    m_pitemBoxSizer01->Layout();
+    GetSizer()->Layout();
     Refresh(false);
     wxSize size = GetBestVirtualSize();
     SetVirtualSize( size );
@@ -5967,12 +6001,12 @@ void PluginListPanel::MoveUp( PluginPanel *pi )
     if( pos == 0 ) //The first one can't be moved further up
         return;
     m_PluginItems.RemoveAt(pos);
-    m_pitemBoxSizer01->Remove( pos * 2 + 1 );
-    m_pitemBoxSizer01->Remove( pos * 2 );
+    //m_pitemBoxSizer01->Remove( pos * 2 + 1 );
+    //m_pitemBoxSizer01->Remove( pos * 2 );
     m_PluginItems.Insert( pi, pos - 1 );
     wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-    m_pitemBoxSizer01->Insert( (pos - 1) * 2, itemStaticLine, 0, wxEXPAND|wxALL, 0 );
-    m_pitemBoxSizer01->Insert( (pos - 1) * 2, pi, 0, wxEXPAND|wxALL, 0 );
+    //m_pitemBoxSizer01->Insert( (pos - 1) * 2, itemStaticLine, 0, wxEXPAND|wxALL, 0 );
+    //m_pitemBoxSizer01->Insert( (pos - 1) * 2, pi, 0, wxEXPAND|wxALL, 0 );
 
     m_PluginSelected = pi;
 
@@ -5987,12 +6021,12 @@ void PluginListPanel::MoveDown( PluginPanel *pi )
     if( pos == (int)m_PluginItems.Count() - 1 ) //The last one can't be moved further down
         return;
     m_PluginItems.RemoveAt(pos);
-    m_pitemBoxSizer01->Remove( pos * 2 + 1 );
-    m_pitemBoxSizer01->Remove( pos * 2 );
+    //m_pitemBoxSizer01->Remove( pos * 2 + 1 );
+    //m_pitemBoxSizer01->Remove( pos * 2 );
     m_PluginItems.Insert( pi, pos + 1 );
     wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-    m_pitemBoxSizer01->Insert( (pos + 1) * 2 - 1, itemStaticLine, 0, wxEXPAND|wxALL, 0 );
-    m_pitemBoxSizer01->Insert( (pos + 1) * 2, pi, 0, wxEXPAND|wxALL, 0 );
+    //m_pitemBoxSizer01->Insert( (pos + 1) * 2 - 1, itemStaticLine, 0, wxEXPAND|wxALL, 0 );
+    //m_pitemBoxSizer01->Insert( (pos + 1) * 2, pi, 0, wxEXPAND|wxALL, 0 );
 
     m_PluginSelected = pi;
 
@@ -6025,8 +6059,8 @@ END_EVENT_TABLE()
 PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin)
     :wxPanel(parent, id, pos, size, wxBORDER_NONE)
 {
-    m_PluginListPanel = (PluginListPanel *)parent->GetParent();
-    m_PluginListPanel = dynamic_cast<PluginListPanel*>(parent->GetParent());
+    m_PluginListPanel = (PluginListPanel *)parent; //->GetParent();
+    m_PluginListPanel = dynamic_cast<PluginListPanel*>(parent/*->GetParent()*/);
     wxASSERT(m_PluginListPanel != 0);
     
     m_pPlugin = p_plugin;
@@ -6161,7 +6195,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
 
         itemBoxSizer03->Add(5 * GetCharWidth(), 1, 0, wxALIGN_RIGHT | wxTOP, 10);
         
-        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( -1, -1), wxST_NO_AUTORESIZE );
+        m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( -1, -1)/*, wxST_NO_AUTORESIZE*/ );
         itemBoxSizer02->Add( m_pDescription, 1, wxEXPAND|wxALL, 5 );
         m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
         m_pDescription->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
@@ -6211,9 +6245,30 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
         
     }
     
-    m_status_icon = new StatusIconPanel(this, m_pPlugin);
-    m_status_icon->SetStatus(p_plugin->m_pluginStatus);
-    itemBoxSizer01->Add(m_status_icon, 0, wxALIGN_RIGHT | wxEXPAND);
+    wxBitmap statusBitmap;
+    auto stat = p_plugin->m_pluginStatus;
+    auto icon_name = icon_by_status[stat];
+
+    wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
+    path.AppendDir("uidata");
+    path.AppendDir("traditional");
+    bool ok = false;
+    int bmsize = GetCharWidth() * 3;
+    if (path.IsFileReadable()) {
+        wxImage img = LoadSVGIcon(path.GetFullPath(), bmsize, bmsize);
+        statusBitmap = wxBitmap(img);
+        ok = statusBitmap.IsOk();
+    }
+    if (!ok) {
+        auto style = g_StyleManager->GetCurrentStyle();
+        statusBitmap = wxBitmap(style->GetIcon( _T("default_pi"), bmsize, bmsize));
+        wxLogMessage("Icon: %s not found.", path.GetFullPath());
+    }
+
+    
+    m_itemStatusIconBitmap = new wxStaticBitmap(this, wxID_ANY, statusBitmap);
+    itemBoxSizer01->Add(m_itemStatusIconBitmap, 0,  wxALIGN_RIGHT | wxEXPAND|wxALL, 20);
+ 
     itemBoxSizer02->AddSpacer( GetCharWidth() );
 
     m_pButtonPreferences->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
@@ -6279,9 +6334,10 @@ void PluginPanel::DoPluginSelect( )
 {
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        auto dialog = dynamic_cast<PluginListPanel*>(GetGrandParent());
-        wxASSERT(dialog != 0);
-        run_update_dialog(dialog, m_pPlugin, false);
+        //auto dialog = dynamic_cast<PluginListPanel*>(GetParent());
+        //auto dialog = dynamic_cast<PluginListPanel*>(m_parent);
+        //wxASSERT(dialog != 0);
+        run_update_dialog(m_PluginListPanel, m_pPlugin, false);
     }
     else if (m_bSelected){
         SetSelected(false);
@@ -6315,7 +6371,6 @@ void PluginPanel::SetSelected( bool selected )
     
 
     if (selected) {
-        m_status_icon->SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
         SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
         m_pButtons->Show(true);
         bool unInstallPossible = canUninstall(m_pPlugin->m_common_name.ToStdString());
@@ -6392,7 +6447,6 @@ void PluginPanel::SetSelected( bool selected )
         Layout();
     }
     else {
-        m_status_icon->SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
         SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
         //m_pDescription->SetLabel( m_pPlugin->m_short_description );
 #ifndef __WXQT__
@@ -6412,7 +6466,6 @@ void PluginPanel::SetSelected( bool selected )
     }
     
 
-    //m_status_icon->Show(!selected);    
     //m_pButtons->Show(selected);   // For most platforms, show buttons if selected
     //m_pButtonsUpDown->Show(selected);
 #ifdef __OCPN__ANDROID__
@@ -6428,10 +6481,8 @@ void PluginPanel::SetSelected( bool selected )
 
     if(selected) {
                 SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
-                m_status_icon->SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
     } else {
                 SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
-                m_status_icon->SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
     }
 
     SetEnabled( m_pPlugin->m_bEnabled );
@@ -6557,7 +6608,9 @@ void PluginPanel::SetEnabled( bool enabled )
         wxString description = m_pPlugin->m_long_description;
         if(description.IsEmpty())
             description = wxString(m_pPlugin->m_ManagedMetadata.description.c_str());
-        m_pDescription->SetLabel( description );
+        
+        PanelHardBreakWrapper wrapper(this, description, g_options->GetSize().x * 7 / 10);
+        m_pDescription->SetLabel( wrapper.GetWrapped() );
         if(m_pPlugin->m_ManagedMetadata.info_url.size()){
             m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
             m_info_btn->Show();
@@ -6567,7 +6620,8 @@ void PluginPanel::SetEnabled( bool enabled )
         wxString description = m_pPlugin->m_short_description;
         if(description.IsEmpty())
             description = wxString(m_pPlugin->m_ManagedMetadata.summary.c_str());
-        m_pDescription->SetLabel( description );
+        PanelHardBreakWrapper wrapper(this, description, g_options->GetSize().x * 7 / 10);
+        m_pDescription->SetLabel( wrapper.GetWrapped() );
 
     }        
         
