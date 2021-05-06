@@ -1125,6 +1125,8 @@ static void setLoadPath()
 bool PlugInManager::LoadAllPlugIns(bool load_enabled, bool b_enable_blackdialog)
 {
     using namespace std;
+    g_Platform->ShowBusySpinner();
+
     static const wxString sep = wxFileName::GetPathSeparator();
     vector<string> dirs = PluginPaths::getInstance()->Libdirs();
     wxLogMessage(_T("PlugInManager: loading plugins from %s"),
@@ -1142,6 +1144,9 @@ wxLogMessage("Loading plugins from dir: %s", wxdir.mb_str().data());
     // This only needs to happen when the entire universe (enabled and disabled) of plugins are loaded for management.
     if(!load_enabled)
         UpdateManagedPlugins();
+    
+    g_Platform->HideBusySpinner();
+
     return any_dir_loaded;
 }
 
