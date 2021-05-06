@@ -23,6 +23,7 @@
 */
 
 #include <fstream>
+#include <wx/dir.h>
 #include <wx/filename.h>
 #include <wx/filefn.h>
 
@@ -132,4 +133,69 @@ std::string lookup_tarball(const char* uri)
 }
 
 
+unsigned cache_file_count()
+{
+    wxFileName dirs(cache_path());
+    dirs.AppendDir("tarballs");
+    if (!dirs.DirExists()) {
+        return 0;
+    }
+    wxDir dir(dirs.GetFullPath());
+    wxString file;
+    unsigned count = 0;
+    bool cont = dir.GetFirst(&file);
+    while (cont) {
+        count += 1;
+        cont = dir.GetNext(&file);
+    }
+    return count;
+}
+
+
+unsigned long cache_size()
+{
+    wxFileName dirs(cache_path());
+    dirs.AppendDir("tarballs");
+    if (!dirs.DirExists()) {
+        return 0;
+    }
+    wxDir dir(dirs.GetFullPath());
+    wxString file;
+    wxULongLong total = 0;
+    bool cont = dir.GetFirst(&file);
+    while (cont) {
+        dirs.SetFullName(file);
+        auto size = wxFileName(dirs.GetFullPath()).GetSize();
+        if (size == wxInvalidSize) {
+            wxLogMessage("Cannot stat file %s",
+                         dirs.GetFullPath().ToStdString().c_str());
+            continue;
+        }
+        total += size;
+        cont = dir.GetNext(&file);
+    }
+    total /= (1024 * 1024);
+    return total.ToULong();
+}
+
+/* mock up definitions.*/
+void cache_clear()
+{
+    wxFileName dirs(cache_path());
+    dirs.AppendDir("tarballs");
+    if (!dirs.DirExists()) {
+        return;
+    }
+    wxDir dir(dirs.GetFullPath());
+    wxString file;
+    bool cont = dir.GetFirst(&file);
+    while (cont) {
+        dirs.SetFullName(file);
+        wxRemoveFile(dirs.GetFullPath());;
+        cont = dir.GetNext(&file);
+    }
+}
+
+
 }  // namespace
+
