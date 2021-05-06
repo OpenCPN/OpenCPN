@@ -165,13 +165,17 @@ unsigned long cache_size()
     bool cont = dir.GetFirst(&file);
     while (cont) {
         dirs.SetFullName(file);
-        auto size = wxFileName(dirs.GetFullPath()).GetSize();
-        if (size == wxInvalidSize) {
-            wxLogMessage("Cannot stat file %s",
+        wxFileName fn(dirs.GetFullPath());
+        if(fn.FileExists()){                     // Consider only regular files.  Should be no directories here, but one never knows...
+            auto size = fn.GetSize();
+            if (size == wxInvalidSize) {
+                wxLogMessage("Cannot stat file %s",
                          dirs.GetFullPath().ToStdString().c_str());
-            continue;
+                continue;
+            }
+            
+            total += size;
         }
-        total += size;
         cont = dir.GetNext(&file);
     }
     total /= (1024 * 1024);
