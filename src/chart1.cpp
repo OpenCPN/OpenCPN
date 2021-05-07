@@ -4058,6 +4058,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     this->Destroy();
     gFrame = NULL;
 
+    wxLogMessage(_T("gFrame destroyed."));
+    
 #ifdef __OCPN__ANDROID__
 #ifndef USE_ANDROID_GLES2
     qDebug() << "Calling OnExit()";
