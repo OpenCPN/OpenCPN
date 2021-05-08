@@ -6272,6 +6272,8 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
 
     
     m_itemStatusIconBitmap = new wxStaticBitmap(this, wxID_ANY, statusBitmap);
+    m_itemStatusIconBitmap-> SetToolTip(message_by_status[stat]);
+
     itemBoxSizer01->Add(m_itemStatusIconBitmap, 0,  wxEXPAND|wxALL, 20);
  
     itemBoxSizer02->AddSpacer( GetCharWidth() );
