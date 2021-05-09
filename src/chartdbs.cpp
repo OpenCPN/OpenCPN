@@ -2173,7 +2173,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) &&
                !file_name.Matches(lowerFileSpecXZ) && !file_name.Matches(filespecXZ) &&
                !b_found_cm93) {
-                wxLogMessage(_T("FileSpec test failed for:") + file_name);
+                //wxLogMessage(_T("FileSpec test failed for:") + file_name);
                 continue;
             }
 
