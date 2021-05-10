@@ -51,7 +51,14 @@ void  GribV1Record::translateDataType()
         if (levelType == LV_ATMOS_ENT) {
             levelType = LV_ATMOS_ALL;
         }
-                                                                                
+	}
+	//------------------------
+	// ICON DWD Saildoc
+	//------------------------
+	else if ( idCenter==78 && idModel==1 && idGrid==255) {
+        if (dataType == GRB_TEMP                        // ICON Water surface Temperature
+            && levelType == LV_GND_SURF
+            && levelValue == 0) dataType = GRB_WTMP;
 	}
 	//------------------------
 	// EMCF masquaraded as NOAA ?
