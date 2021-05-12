@@ -34,22 +34,6 @@ matrix:
     compiler: gcc
     script:
     - "./ci/generic-build-debian.sh"
-  - if: branch IN (master, plugins, plugins-build)
-    env:
-    - OCPN_TARGET=trusty
-    dist: trusty
-    compiler: gcc
-    script:
-    - "./ci/generic-build-debian.sh"
-  - if: branch IN (master, plugins, plugins-build)
-    env:
-    - OCPN_TARGET=mingw
-    services:
-    - docker
-    before_install:
-    - "./ci/docker-auth.sh"
-    script:
-    - "./ci/travis-build-mingw.sh"
   - if: branch = flatpak
     env:
     - OCPN_TARGET=flatpak

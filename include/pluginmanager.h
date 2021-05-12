@@ -164,7 +164,6 @@ enum ActionVerb {
 };
 
 // Fwd definitions
-class StatusIconPanel;
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -497,13 +496,11 @@ public:
       void ReloadPluginPanels(ArrayOfPlugIns* plugins);
       void SelectByName(wxString &name);
 
-      wxBoxSizer         *m_pitemBoxSizer01;
 private:
       void AddPlugin(PlugInContainer* pic);
       int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
       //void Clear();
 
-      wxPanel            *m_panel;
       ArrayOfPlugIns     *m_pPluginArray;
       ArrayOfPluginPanel  m_PluginItems;
       PluginPanel        *m_PluginSelected;
@@ -553,12 +550,12 @@ private:
       PluginListPanel *m_PluginListPanel;
       bool             m_bSelected;
       PlugInContainer *m_pPlugin;
-      StatusIconPanel *m_status_icon;
       wxStaticText    *m_pName;
       wxStaticText    *m_pVersion;
       wxStaticText    *m_pDescription;
       wxBoxSizer      *m_pButtons;
       wxStaticBitmap  *m_itemStaticBitmap;
+      wxStaticBitmap  *m_itemStatusIconBitmap;
       wxButton        *m_pButtonPreferences;
       wxButton        *m_pButtonAction, *m_pButtonUninstall;
       

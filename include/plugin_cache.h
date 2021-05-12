@@ -39,7 +39,7 @@ bool store_metadata(const char* path);
  * Get metadata path for a given name defaulting to ocpn-plugins.xml)
  * @return Path to cached metadata or "" if not found
  */
-std::string lookup_metadata(const char* name= 0);
+std::string lookup_metadata(const char* name = 0);
 
 /** Store a tarball in tarball cache, return success/fail. */
 bool store_tarball(const char* path, const char* basename);
@@ -49,6 +49,17 @@ bool store_tarball(const char* path, const char* basename);
  * @return Path to cached metadata or "" if not found
  */
 std::string lookup_tarball(const char* basename);
+
+/** Return number of files in cache */
+unsigned cache_file_count();
+
+/** Return total size of files in cache in kbytes. */
+unsigned long cache_size();
+
+/** Remove all files in cache: */
+void cache_clear();
+
+
 
 }  // namespace
 #endif

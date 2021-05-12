@@ -33,6 +33,8 @@
 
 #include "catalog_parser.h"
 
+class OcpnUpdateScrolledWindow;
+
 /**
  * Modal dialog, displays available updates (possibly just one) and lets
  * user select and eventually confirm update.
@@ -45,7 +47,10 @@ class UpdateDialog: public wxDialog
 
         PluginMetadata GetUpdate() { return update;  };
         void SetUpdate(const PluginMetadata md) { update = md; };
-   
+        void RecalculateSize();
+        
+        OcpnUpdateScrolledWindow *m_scrwin;
+
     private:
         PluginMetadata update;
 

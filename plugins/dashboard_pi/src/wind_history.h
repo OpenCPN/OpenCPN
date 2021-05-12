@@ -54,7 +54,7 @@ class DashboardInstrument_WindDirHistory: public DashboardInstrument
       public:
          DashboardInstrument_WindDirHistory( wxWindow *parent, wxWindowID id, wxString title);
          ~DashboardInstrument_WindDirHistory(void){}
-         void SetData(int, double, wxString);
+         void SetData(DASH_CAP, double, wxString);
          wxSize GetSize( int orient, wxSize hint );
 
     private:

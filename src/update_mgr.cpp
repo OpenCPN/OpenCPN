@@ -91,7 +91,7 @@ class HardBreakWrapper : public wxTextWrapper
 //    return wrapper.GetWrapped();
 
 
-namespace update_mgr {
+//namespace update_mgr {
 
 
 /**
@@ -279,10 +279,10 @@ class InstallButton: public wxPanel
 
 
 /** Invokes client browser on plugin info_url when clicked. */
-class WebsiteButton: public wxPanel
+class UpdateWebsiteButton: public wxPanel
 {
     public:
-        WebsiteButton(wxWindow* parent, const char* url)
+        UpdateWebsiteButton(wxWindow* parent, const char* url)
             :wxPanel(parent), m_url(url)
         {
             auto vbox = new wxBoxSizer(wxVERTICAL);
@@ -313,7 +313,7 @@ class CandidateButtonsPanel: public wxPanel
             vbox->Add(new InstallButton(this, *plugin),
                                         flags.DoubleBorder().Top().Right());
             vbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
-            m_info_btn = new WebsiteButton(this, plugin->info_url.c_str());
+            m_info_btn = new UpdateWebsiteButton(this, plugin->info_url.c_str());
             m_info_btn->Hide();
             vbox->Add(m_info_btn, flags.DoubleBorder().Bottom().Right());
             SetSizer(vbox);
@@ -327,7 +327,7 @@ class CandidateButtonsPanel: public wxPanel
         }
 
     private:
-        WebsiteButton* m_info_btn;
+        UpdateWebsiteButton* m_info_btn;
 };
 
 
@@ -341,7 +341,8 @@ class PluginTextPanel: public wxPanel
             : wxPanel(parent), m_descr(0), m_buttons(buttons)
         {
             auto flags = wxSizerFlags().Border();
-
+            m_isDesc = false;
+            
             auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
             m_widthDescription = g_options->GetSize().x / 2;
 
@@ -390,14 +391,14 @@ class PluginTextPanel: public wxPanel
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
             m_buttons->HideDetails(!m_descr->IsShown());
             
-            GetGrandParent()->SetSize(-1, asize.GetHeight() + 8 * GetCharHeight());
-//             GetParent()->SendSizeEvent();
-//             GetParent()->GetParent()->GetParent()->Layout();
-//             GetParent()->GetParent()->GetParent()->Refresh(true);
-//             GetParent()->GetParent()->GetParent()->Update();
+            UpdateDialog *swin = wxDynamicCast(GetGrandParent(), UpdateDialog);
+            if(swin){
+                swin->RecalculateSize();
+            }
         }
 
         int m_summaryLineCount;
+        bool m_isDesc;
     protected:
         const char* const MORE = _("<span foreground='blue'>More...</span>");
         const char* const LESS = _("<span foreground='blue'>Less...</span>");
@@ -422,16 +423,15 @@ class PluginTextPanel: public wxPanel
  * The list of download candidates in a scrolled window + OK and
  * Settings  button.
  */
-class OcpnScrolledWindow : public wxScrolledWindow
+class OcpnUpdateScrolledWindow : public wxScrolledWindow
 {
     public:
-        OcpnScrolledWindow(wxWindow* parent,
+        OcpnUpdateScrolledWindow(wxWindow* parent,
                            const std::vector<PluginMetadata>& updates)
             :wxScrolledWindow(parent),
             m_updates(updates),
             m_grid(new wxFlexGridSizer(3, 0, 0))
         {
-            m_twidth = 0;
             auto box = new wxBoxSizer(wxVERTICAL);
             populateGrid(m_grid);
             box->Add(m_grid, wxSizerFlags().Proportion(0).Expand());
@@ -443,8 +443,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
 
             SetSizer(box);
-            //FitInside();
-            // TODO: Compute size using wxWindow::GetEffectiveMinSize()
+            SetMinSize(GetEffectiveMinSize());
             SetScrollRate(1, 1);
         };
 
@@ -462,43 +461,27 @@ class OcpnScrolledWindow : public wxScrolledWindow
             auto flags = wxSizerFlags();
             grid->SetCols(3);
             grid->AddGrowableCol(2);
-            m_TextLineCount = 0;
             for (auto plugin: m_updates) {
                 grid->Add(
                     new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
                 PluginTextPanel *tpanel = new PluginTextPanel(this, &plugin, buttons);
+                tpanel->m_isDesc = true;
                 grid->Add(tpanel, flags.Proportion(1).Right());
-                wxSize tsize = tpanel->GetEffectiveMinSize();
-                m_twidth = wxMax(tsize.GetWidth(), m_twidth);
                 grid->Add(buttons, flags.DoubleBorder());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
-                m_TextLineCount += tpanel->m_summaryLineCount;
             }
         }
 
-        void Reload()
-        {
-            Hide();
-            m_grid->Clear();
-            populateGrid(m_grid);
-            Layout();
-            Show();
-            FitInside();
-            Refresh(true);
-        }
-
-        int m_twidth;
-        int m_TextLineCount;
-        
+       
     private:
         const std::vector<PluginMetadata> m_updates;
         wxFlexGridSizer* m_grid;
 };
 
-}  // namespace update_mgr
+//}  // namespace update_mgr
 
 /** Top-level install plugins dialog. */
 UpdateDialog::UpdateDialog(wxWindow* parent,
@@ -510,29 +493,46 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
     auto vbox = new wxBoxSizer(wxVERTICAL);
     SetSizer(vbox);
     
-    auto scrwin = new update_mgr::OcpnScrolledWindow(this, updates);
-    vbox->Add(scrwin, wxSizerFlags(1).Expand());
+    m_scrwin = new OcpnUpdateScrolledWindow(this, updates);
+    vbox->Add(m_scrwin, wxSizerFlags(1).Expand());
 
-    // The list has no natural height. Allocate 8 lines of text so some
-    // items are displayed initially in Layout()
-    int min_height = GetCharHeight() * 6;
-    min_height = GetCharHeight() * (scrwin->m_TextLineCount + 9);
+    RecalculateSize();
     
-    // There seem to be no way have dynamic, wrapping text:
-    // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
-    //int width = GetParent()->GetClientSize().GetWidth();
-  //  SetMinClientSize(wxSize(width, min_height));
-    int width = scrwin->m_twidth * 2;
-    width = wxMin(width, g_Platform->getDisplaySize().x);
-    scrwin->SetMinSize(wxSize(width, min_height));
- 
-    SetMaxSize(g_Platform->getDisplaySize());
+    Center();
+}
+
+void UpdateDialog::RecalculateSize()
+{
+    int calcHeight = 0;
+    int calcWidth = 0;
+    wxWindowList &kids = m_scrwin->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item(i);
+        wxWindow *win = node->GetData();
+
+        if( win && win->IsKindOf( CLASSINFO(PluginTextPanel) ) ) {
+            PluginTextPanel *panel = (PluginTextPanel*)win;
+            if(panel->m_isDesc){
+                wxSize tsize = win->GetEffectiveMinSize();
+                calcHeight += tsize.y  + GetCharHeight();
+                calcWidth = tsize.x * 2;
+            }
+        }
+    }
+    
+    calcHeight += 3 * GetCharHeight();      // "dismiss" button
+    calcWidth = wxMin(calcWidth, g_Platform->getDisplaySize().x);
+
+    m_scrwin->SetMinSize(wxSize(calcWidth, calcHeight));
     
 #ifdef __OCPN__ANDROID__
     SetMinSize(g_Platform->getDisplaySize());
 #endif    
-    
+
+    SetMaxSize(g_Platform->getDisplaySize());
+
     Fit();
     Layout();
-    Center();
+
 }
+

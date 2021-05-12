@@ -721,7 +721,7 @@ Provides navigation instrument display from NMEA source.");
 
 }
 
-void dashboard_pi::SendSentenceToAllInstruments( int st, double value, wxString unit )
+void dashboard_pi::SendSentenceToAllInstruments( DASH_CAP st, double value, wxString unit )
 {
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
         DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
@@ -1057,7 +1057,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mPriWDN = 3;
                     if (!std::isnan(m_NMEA0183.Mwd.WindAngleTrue)) { //if WindAngleTrue is available, use it ...
                         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleTrue,
-                                                     _T("\u00B0T"));
+                                                     _T("\u00B0"));
                         mWDN_Watchdog = gps_watchdog_timeout_ticks;
                     }
                     else if (!std::isnan(m_NMEA0183.Mwd.WindAngleMagnetic)) { //otherwise try WindAngleMagnetic ...
@@ -1127,13 +1127,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                                              m_twaangle, m_twaunit);
 
                                 if (mPriWDN >= 4) {
-                                    //MWV has wind angle relative to the bow. Wind history use angle relative to north.
-                                    //If no TWD with higher priority is present and true heading is available calculate it.
+                                    // MWV has wind angle relative to the bow. 
+                                    // Wind history use angle relative to north.
+                                    // If no TWD with higher priority is present
+                                    // and true heading is available calculate it.
                                     if (g_dHDT < 361. && g_dHDT >= 0.0) {
                                         double g_dCalWdir = (m_NMEA0183.Mwv.WindAngle) + g_dHDT;
-                                        if (g_dCalWdir > 360.) { g_dCalWdir = g_dCalWdir - 360; }
-                                        else if (g_dCalWdir < 0.) { g_dCalWdir = 360 - g_dCalWdir; }
-                                        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir, _T("\u00B0T"));
+                                        if (g_dCalWdir > 360.) { g_dCalWdir -= 360; }
+                                        else if (g_dCalWdir < 0.) { g_dCalWdir += 360; }
+                                        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir, _T("\u00B0"));
                                         mPriWDN = 4;
                                         mWDN_Watchdog = gps_watchdog_timeout_ticks;
                                     }
@@ -1664,13 +1666,17 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 mMWVT_Watchdog = gps_watchdog_timeout_ticks;
 
                 if (mPriWDN >= 3) {
-                    //m_twaangle_raw has wind angle relative to the bow. Wind history use angle relative to north.
-                    //If no TWD with higher priority is present and true heading is available calculate it.
+                    // m_twaangle_raw has wind angle relative to the bow.
+                    // Wind history use angle relative to north.
+                    // If no TWD with higher priority is present and 
+                    // true heading is available calculate it.
                     if (g_dHDT < 361. && g_dHDT >= 0.0) {
                         double g_dCalWdir = (m_twaangle_raw) + g_dHDT;
-                        if (g_dCalWdir > 360.) { g_dCalWdir = g_dCalWdir - 360; }
-                        else if (g_dCalWdir < 0.) { g_dCalWdir = 360 - g_dCalWdir; }
-                        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir, _T("\u00B0T"));
+                        if (g_dCalWdir > 360.) { g_dCalWdir -= 360; }
+                        else if (g_dCalWdir < 0.) { g_dCalWdir += 360; }
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir, _T("\u00B0"));
+                        mPriWDN = 3;
+                        mWDN_Watchdog = gps_watchdog_timeout_ticks;
                         mPriWDN = 3;
                         mWDN_Watchdog = gps_watchdog_timeout_ticks;
                     }
@@ -1848,24 +1854,24 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             }
         }
         else if (update_path == _T("environment.wind.directionTrue")) { //relative true north
-            if (mPriWDN >= 2) {
+            if (mPriWDN >= 1) {
                 double m_twdT = GetJsonDouble(value);
                 if (std::isnan(m_twdT)) return;
                         
                 m_twdT = GEODESIC_RAD2DEG(m_twdT);
-                SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0T"));
-                mPriWDN = 2;
+                SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
+                mPriWDN = 1;
                 mWDN_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
         else if (update_path == _T("environment.wind.directionMagnetic")) { //relative magn north
-            if (mPriWDN >= 1) {
+            if (mPriWDN >= 2) {
                 double m_twdM = GetJsonDouble(value);
                 if (std::isnan(m_twdM)) return;
                         
                 m_twdM = GEODESIC_RAD2DEG(m_twdM);
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, _T("\u00B0M"));
-                mPriWDN = 1;
+                mPriWDN = 2;
                 mWDN_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
@@ -1947,10 +1953,13 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         }
     }
     if (mPriDateTime >= 6) { //We prefer the GPS datetime
-        mPriDateTime = 6;
         mUTCDateTime.Set(pfix.FixTime);
-        mUTCDateTime = mUTCDateTime.ToUTC();
-        mUTC_Watchdog = gps_watchdog_timeout_ticks;
+        if (mUTCDateTime.IsValid())
+        {
+            mPriDateTime = 6;
+            mUTCDateTime = mUTCDateTime.ToUTC();
+            mUTC_Watchdog = gps_watchdog_timeout_ticks;
+        }
     }
     if (mPriSatUsed >= 1) {
         mSatsInView = pfix.nSats;
@@ -3810,12 +3819,15 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
 			case ID_DBP_D_AWA_TWA: //App/True Wind angle +-180° on boat axis
 				instrument = new DashboardInstrument_AppTrueWindAngle(this, wxID_ANY,
-					getInstrumentCaption(id), OCPN_DBP_STC_AWA | OCPN_DBP_STC_TWA);
+					getInstrumentCaption(id), OCPN_DBP_STC_AWA);
+                ((DashboardInstrument_Dial *)instrument)->SetCapFlag(OCPN_DBP_STC_TWA);
 				((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%.0f"),
 					DIAL_POSITION_NONE);
 				((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(
-					OCPN_DBP_STC_TWS | OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_NONE);
-				break;
+					OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_NONE);
+                ((DashboardInstrument_Dial*)instrument)->SetOptionExtraValue(
+                    OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_NONE);
+                break;
             case ID_DBP_D_TWD: //True Wind direction
                 instrument = new DashboardInstrument_WindCompass( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_TWD );
@@ -3988,10 +4000,10 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
     SetMinSize( itemBoxSizer->GetMinSize() );
 }
 
-void DashboardWindow::SendSentenceToAllInstruments( int st, double value, wxString unit )
+void DashboardWindow::SendSentenceToAllInstruments( DASH_CAP st, double value, wxString unit )
 {
     for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( m_ArrayOfInstrument.Item( i )->m_cap_flag & st ) m_ArrayOfInstrument.Item( i )->m_pInstrument->SetData(
+        if( m_ArrayOfInstrument.Item( i )->m_cap_flag.test(st) ) m_ArrayOfInstrument.Item( i )->m_pInstrument->SetData(
                 st, value, unit );
     }
 }
@@ -4000,7 +4012,7 @@ void DashboardWindow::SendSatInfoToAllInstruments(
                       int cnt, int seq, wxString talk, SAT_INFO sats[4] )
 {
     for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_GPS ) && 
+        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag.test(OCPN_DBP_STC_GPS) ) && 
                         m_ArrayOfInstrument.Item( i )->m_pInstrument->
                         IsKindOf( CLASSINFO(DashboardInstrument_GPS)) )
                     ((DashboardInstrument_GPS*)m_ArrayOfInstrument.Item(i)->
@@ -4011,7 +4023,7 @@ void DashboardWindow::SendSatInfoToAllInstruments(
 void DashboardWindow::SendUtcTimeToAllInstruments( wxDateTime value )
 {
     for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_CLK )
+        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag.test(OCPN_DBP_STC_CLK) )
                 && m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Clock ) ) )
 //                  || m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Sun ) )
 //                  || m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Moon ) ) ) )

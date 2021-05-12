@@ -1902,20 +1902,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
     }
     
     update_finish:
-    
-    //    Ask for a new tool bar if the stack is going to or coming from only one entry.
-     if(GetToolbar()){
-         if(m_pCurrentStack){
-            bool toolbar_scale_tools_show = m_pCurrentStack && m_pCurrentStack->b_valid && ( m_pCurrentStack->nEntry > 1 );
-            bool scale_tools_shown = m_toolBar->m_toolbar_scale_tools_shown;
-         
-            if( toolbar_scale_tools_show != scale_tools_shown){
-                if( !m_bFirstAuto )
-                    RequestNewCanvasToolbar( false );
-            }
-         }
-     }
-     
+
 //TODO
 //     if( bNewPiano ) UpdateControlBar();
                                                                     
@@ -6538,14 +6525,6 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Inform the parent Frame that I am being resized...
     gFrame->ProcessCanvasResize();
 
-    //  Adjust the toolbar, if necessary
-    if( m_toolBar ) {
-        m_toolBar->RePosition();
-        m_toolBar->SetGeometry(m_Compass->IsShown(), m_Compass->GetRect());
-        m_toolBar->Realize();
-        m_toolBar->RePosition();
-    }
-    
     //  if MUIBar is active, size the bar
 //     if(g_useMUI && !m_muiBar){                          // rebuild if necessary
 //         m_muiBar = new MUIBar(this, wxHORIZONTAL);
@@ -12223,55 +12202,7 @@ void ChartCanvas::DestroyToolbar()
 
 ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
 {
-    bool toolbar_scale_tools_shown = m_pCurrentStack && m_pCurrentStack->b_valid && ( m_pCurrentStack->nEntry > 1 );
-    
-    bool b_reshow = true;
-    if( m_toolBar ) {
-        b_reshow = m_toolBar->IsShown();
-        float ff = fabs(m_toolBar->GetScaleFactor() - m_toolbar_scalefactor);
-        if((ff > 0.01f) || bforcenew){
-            m_toolBar->DestroyToolBar();
-            delete m_toolBar;
-            m_toolBar = NULL;
-        }
-    }
-
-    if( !m_toolBar ) {
-        m_toolBar = new ocpnFloatingToolbarDialog( this, m_toolbarPosition, m_toolbarOrientation, m_toolbar_scalefactor );
-        m_toolBar->CreateConfigMenu();
-        
-        if(g_bDeferredInitDone){
-            m_toolBar->SetAutoHide(g_bAutoHideToolbar);
-            m_toolBar->SetAutoHideTimer(g_nAutoHideToolbar);
-        
-        }
-        // Adjust toolbar position if necessary
-        if(g_MainToolbar && IsPrimaryCanvas()){
-            wxRect masterToolbarRect = g_MainToolbar->GetRect();
-            m_toolBar->SetULDockPosition(wxPoint(masterToolbarRect.width + 8, -1));
-        }
-        
-     }
-
-    if( m_toolBar ) {
-        if( m_toolBar->IsToolbarShown() )
-            m_toolBar->DestroyToolBar();
-        
-
-        m_toolBar->m_toolbar_scale_tools_shown = toolbar_scale_tools_shown;
-        
-        m_toolBar->CreateMyToolbar();
-        if (m_toolBar->isSubmergedToGrabber()) {
-            m_toolBar->SubmergeToGrabber();
-        } else {
-            m_toolBar->RePosition();
-            m_toolBar->SetColorScheme(global_color_scheme);
-            m_toolBar->Show(b_reshow && m_bToolbarEnable);
-        }
-    }
-
-    return m_toolBar;
-
+    return NULL;
 }
 
 //      Update inplace the current toolbar with bitmaps corresponding to the current color scheme

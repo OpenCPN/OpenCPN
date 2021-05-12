@@ -698,9 +698,11 @@ ret_point:
                 int loopCount = 10;         // seconds
                 bool bconnected = false;
                 while(!bconnected &&(loopCount > 0)){
-                    if(streamTest->GetSock()->IsConnected()){
-                        bconnected = true;
-                        break;
+                    if( streamTest->GetSock() ){
+                        if(streamTest->GetSock()->IsConnected()){
+                            bconnected = true;
+                            break;
+                        }
                     }
                     dialog->GetProgressGauge()->Pulse();
                     wxYield();
