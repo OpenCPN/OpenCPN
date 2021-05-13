@@ -1169,6 +1169,36 @@ void Route::AssembleRoute( void )
 {
 }
 
+void Route::ShowWaypointNames( bool bshow )
+{
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+
+    while( node ) {
+        RoutePoint *prp = node->GetData();
+        prp->SetNameShown( bshow );
+
+        node = node->GetNext();
+    }
+
+}
+
+bool Route::AreWaypointNamesVisible( )
+{
+    bool bvis = false;
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+
+    while( node ) {
+        RoutePoint *prp = node->GetData();
+        if(prp->GetNameShown())
+            bvis = true;
+
+        node = node->GetNext();
+    }
+    
+    return bvis;
+
+}
+
 void Route::RenameRoutePoints( void )
 {
     //    iterate on the route points.
