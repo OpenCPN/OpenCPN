@@ -774,9 +774,12 @@ if (NOT QT_ANDROID)
   # looked for them. This is a nasty fix which might fail miserably. Assumption:
   # All builds using GTK uses unicode and wxWidgets 3.0
   if (GTK3_FOUND)
-    list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
-    if (OPENGL_FOUND)
-      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
+    if (NOT wxWidgets_VERSION_STRING VERSION_GREATER "3.0")
+      message (STATUS " Patching ${wxWidgets_LIBRARIES}")
+      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
+      if (OPENGL_FOUND)
+        list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
+      endif ()
     endif ()
   endif ()
 
