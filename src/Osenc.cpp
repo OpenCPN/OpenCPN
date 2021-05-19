@@ -62,13 +62,13 @@ using namespace std;
 #include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY( float*, MyFloatPtrArray );
 
+#define MAX_VECTOR_POINTS 1000
+
 #ifndef __WXMSW__
 sigjmp_buf env_osenc_ogrf;                    // the context saved by sigsetjmp();
 #endif
 
 std::mutex m;
-
-
 
 /************************************************************************/
 /*                       OpenCPN_OGRErrorHandler()                      */
@@ -2630,21 +2630,28 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( Osenc_outstream *stream, S57Read
         
        
         //  Transcribe points to a buffer
+            // We reduce the maximum number of points in the table to MAX_VECTOR_POINTS using a naive algorithm skipping the proportional part of them to avoid too deep a recursion and crash in DouglasPeucker later
+            int reduction_ratio = nPoints / MAX_VECTOR_POINTS + 1;
+            int reduced_points = 0;
         
-            double *ppd = (double *)malloc(nPoints * 2 *sizeof(double));
+            double *ppd = (double *)malloc((nPoints / reduction_ratio + 1) * 2 *sizeof(double));
             double *ppr = ppd;
             
             for( int i = 0; i < nPoints; i++ ) {
-                OGRPoint p;
-                pLS->getPoint( i, &p );
+                if ( i % reduction_ratio == 0 ) {
+                    OGRPoint p;
+                    pLS->getPoint( i, &p );
                 
-                //  Calculate SM from chart common reference point
-                double easting, northing;
-                toSM( p.getY(), p.getX(), m_ref_lat, m_ref_lon, &easting, &northing );
+                    //  Calculate SM from chart common reference point
+                    double easting, northing;
+                    toSM( p.getY(), p.getX(), m_ref_lat, m_ref_lon, &easting, &northing );
                 
-                *ppr++ = easting;
-                *ppr++ = northing;
+                    *ppr++ = easting;
+                    *ppr++ = northing;
+                    reduced_points++;
+                }
             }
+            nPoints = reduced_points;
             
             //      Reduce the LOD of this linestring
             std::vector<int> index_keep;
