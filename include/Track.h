@@ -59,6 +59,7 @@ public:
       void SetCreateTime( wxDateTime dt );
       void Draw(ChartCanvas *cc, ocpnDC& dc );
       const char *GetTimeString() { return m_timestring; }
+      bool HasValidTimestamp() { if (m_timestring == NULL || strlen(m_timestring) != strlen("YYYY-MM-DDTHH:MM:SSZ")) return false; return true; };
       
       double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
