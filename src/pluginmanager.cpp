@@ -1887,7 +1887,12 @@ bool PlugInManager::UnLoadPlugIn(size_t ix)
     if(pic->m_pplugin){
         pic->m_destroy_fn(pic->m_pplugin);
     }
-   
+
+#ifdef __WXMSW__
+    wxSleep(1);
+    pic->m_library.Unload();
+    wxSleep(1);
+#endif    
     delete pic;            // This will unload the PlugIn via DTOR of pic->m_library
     plugin_array.RemoveAt(ix);
     return true;
