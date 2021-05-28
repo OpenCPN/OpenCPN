@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Serial ports suppprt, notably enumeration
- * Author:   David Register
+ * Purpose:  Low-level USB device management
+ * Author:   Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2011 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,10 +22,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef SER_PORTS_H
-#define SER_PORTS_H
 
-wxArrayString *EnumerateSerialPorts(void);
-bool CheckSerialAccess( void );
+#include "linux_devices.h"
 
-#endif
+bool is_dongle_permissions_wrong() { return true; }
+bool is_device_permissions_ok(const char* dev_name) { return true; }
+

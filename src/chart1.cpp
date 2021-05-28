@@ -82,6 +82,7 @@
 #include "chart1.h"
 #include "chcanv.h"
 #include "chartdb.h"
+#include "linux_devices.h"
 #include "logger.h"
 #include "navutil.h"
 #include "styles.h"
@@ -94,6 +95,7 @@
 #include "safe_mode.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
+#include "udev_rule_mgr.h"
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "MarkInfo.h"
@@ -7135,6 +7137,11 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                         delete pSet;
                     }
                 }
+            }
+            if (is_dongle_permissions_wrong()) {
+                 auto dialog = new DongleRuleDialog(this);
+                 dialog->ShowModal();
+                 delete dialog;
             }
             break;
 

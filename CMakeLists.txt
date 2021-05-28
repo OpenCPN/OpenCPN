@@ -321,6 +321,10 @@ option(
   "Use aplay(1), afplay(1) etc. to play sounds if available" ON
 )
 
+if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
+  set(LINUX "1")
+endif ()
+
 IF (QT_ANDROID)
   SET(OCPN_NEW_SERIAL OFF)
   SET(OCPN_USE_NEWSERIAL OFF)
@@ -1071,6 +1075,7 @@ set(
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
+  src/linux_devices.cpp
   src/LLRegion.cpp
   src/logger.cpp
   src/MarkInfo.cpp
@@ -1146,6 +1151,7 @@ if (OCPN_USE_GARMINHOST)
   set(SRCS ${SRCS} src/garmin_wrapper.cpp)
 endif ()
 
+
 if (APPLE)
   if (DARWIN_VERSION LESS 16)
     message(
@@ -1156,6 +1162,11 @@ if (APPLE)
     add_definitions(-DOCPN_USE_DARKMODE)
   endif ()
 endif (APPLE)
+
+if (LINUX)
+  list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
+  list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
+endif ()
 
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   list(APPEND HDRS include/crashprint.h)

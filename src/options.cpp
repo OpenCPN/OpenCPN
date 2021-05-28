@@ -101,11 +101,13 @@ extern GLuint g_raster_format;
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
 
+#include "linux_devices.h"
 #include "navutil.h"
 
 #include "s52plib.h"
 #include "s52utils.h"
 #include "cm93.h"
+#include "udev_rule_mgr.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1603,7 +1605,7 @@ void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
    int r = access(path.mb_str(), R_OK | W_OK);
    if (r == 0)
       return;
-  OCPNMessageBox (this, BAD_ACCESS_MSG, wxString( _("OpenCPN Warning") ),
+  OCPNMessageBox (this, BAD_ACCESS_MSG, wxString( _("OpenCPN Warning") ),   // aND HERE
 		  wxICON_WARNING | wxOK, 60 );
 #endif
 
@@ -7788,7 +7790,12 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
     pConnectionParams->OutputSentenceListType = WHITELIST;
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
-  pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
+  pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');   // HERE...
+  if (!is_device_permissions_ok(pConnectionParams->Port)) {
+      auto dialog = new  DeviceRuleDialog(this, pConnectionParams->Port);
+      dialog->ShowModal();
+      delete dialog;
+  }
   
   if( (pConnectionParams->Type != INTERNAL_GPS) && (pConnectionParams->Type != INTERNAL_BT) )
     CheckDeviceAccess(pConnectionParams->Port);

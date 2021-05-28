@@ -1,11 +1,5 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Serial ports suppprt, notably enumeration
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ /**************************************************************************
+ *   Copyright (C) 2021 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,10 +16,34 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef SER_PORTS_H
-#define SER_PORTS_H
 
-wxArrayString *EnumerateSerialPorts(void);
-bool CheckSerialAccess( void );
+/* 
+ * Dialogs about missing udev rules and how to install them.
+ */
 
-#endif
+#ifndef UDEV_RULE_MGR_H__
+#define UDEV_RULE_MGR_H__
+
+#include <wx/dialog.h>
+#include <wx/window.h>
+
+
+class DongleRuleDialog: public wxDialog
+{
+    public:
+
+        /** * Handle missing udev rule for existing dongle.  */
+        DongleRuleDialog(wxWindow* parent);
+};
+
+class DeviceRuleDialog: public wxDialog
+{
+    public:
+
+        /** Handle missing udev rule for a device, a /dev path. */
+        DeviceRuleDialog(wxWindow* parent, const char* device_path);
+};
+
+
+
+#endif // UDEV_RULE_MGR_H__

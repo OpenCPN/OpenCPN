@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Serial ports suppprt, notably enumeration
- * Author:   David Register
+ * Purpose:  Low-level USB device management
+ * Author:   Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2011 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,10 +22,31 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef SER_PORTS_H
-#define SER_PORTS_H
+#ifndef LINUX_DEVICES_H
+#define LINUX_DEVICES_H
 
-wxArrayString *EnumerateSerialPorts(void);
-bool CheckSerialAccess( void );
+#include <string>
+
+#include "config.h"
+
+typedef struct usbdata {
+    std::string vendor_id;
+    std::string product_id;
+    std::string vendor;
+    std::string product;
+    std::string serial_nr;
+
+    usbdata(const std::string& v, const std::string& p, const char* s = 0)
+        :vendor_id(v), product_id(p), serial_nr(s ? s : "") {}
+    bool is_ok() { return vendor_id.length() > 0; }
+} usbdata;
+
+bool is_dongle_permissions_wrong();
+bool is_device_permissions_ok(const char* path);
+
+std::string get_dongle_rule();
+std::string make_udev_link();
+std::string get_device_rule(const char* device, const char* symlink);
+
 
 #endif
