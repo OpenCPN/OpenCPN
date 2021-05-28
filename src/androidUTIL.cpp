@@ -346,6 +346,8 @@ wxSize          config_size;
 bool            s_bdownloading;
 wxString        s_requested_url;
 wxEvtHandler    *s_download_evHandler;
+wxString        s_download_destination;
+
 bool            g_running;
 bool            g_bstress1;
 extern int      g_GUIScaleFactor;
@@ -1534,7 +1536,6 @@ extern "C"{
         return 73;
     }
 }
-
 
 extern "C"{
     JNIEXPORT jstring JNICALL Java_org_opencpn_OCPNNativeLib_getVPCorners(JNIEnv *env, jobject obj)
@@ -4011,6 +4012,17 @@ wxString doAndroidPOST( const wxString &url, wxString &parms, int timeoutMsec)
     return wxEmptyString;    
 }
     
+int validateAndroidWriteLocation( const wxString& destination )
+{
+        // validate the destination, as it might be on SDCard
+        wxString val_result = callActivityMethod_s2s2i("validateWriteLocation", destination, _T(""), OCPN_ACTION_DOWNLOAD_VALID, 0);
+        if( val_result.IsSameAs(_T("Pending")) )
+            return 0;           //  SAF Dialog is going to run
+        else
+            return 1;           // All well.
+}
+
+ 
     
 int startAndroidFileDownload( const wxString &url, const wxString& destination, wxEvtHandler *evh, long *dl_id )
 {
@@ -4019,7 +4031,8 @@ int startAndroidFileDownload( const wxString &url, const wxString& destination, 
         s_bdownloading = true;
         s_requested_url = url;
         s_download_evHandler = evh;
-    
+        s_download_destination = destination;
+        
         wxString result = callActivityMethod_s2s( "downloadFile", url, destination );
 
         androidShowBusyIcon();
@@ -4067,6 +4080,7 @@ void finishAndroidFileDownload( void )
     s_bdownloading = false;
     s_requested_url.Clear();
     s_download_evHandler = NULL;
+    s_download_destination.Clear();
     androidHideBusyIcon();
     
     return;

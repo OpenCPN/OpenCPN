@@ -8686,6 +8686,11 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     msg += url;  msg += _T(" to: ");  msg += outputFile;
     wxLogMessage(msg);
     
+    // Validate the write location
+    int vres = validateAndroidWriteLocation( outputFile );
+    if(vres == 0)               // Pending permission dialog
+        return OCPN_DL_ABORTED;
+    
     //  Create a single event handler to receive status events
     if(!g_piEventHandler)
         g_piEventHandler = new PI_DLEvtHandler;
