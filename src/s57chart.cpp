@@ -64,6 +64,7 @@
 #include "chcanv.h"
 #include "SencManager.h"
 #include "gui_lib.h"
+#include "logger.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -3182,7 +3183,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
         delete pFeat;
         pFeat = GetChartNextM_COVR( catcov );
-        std::cout << "used" << usedpts << " points" << std::endl;
+        DEBUG_LOG << "used " << usedpts << " points";
     }         // while
 
     
