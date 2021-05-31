@@ -1250,6 +1250,12 @@ if (OCPN_USE_SYSFS_PORTS)
   set(USE_SYSFS_PORTS 1)
 endif ()
 
+find_path(HAVE_LIBUSB_10 PATH_SUFFIXES libusb-1.0 NAMES libusb.h)
+if (HAVE_LIBUSB_10)
+  find_library(LIBUSB_10 NAMES usb-1.0 REQUIRED)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LIBUSB_10})
+endif ()
+
 find_path(HAVE_UNISTD_H NAMES unistd.h)
 find_path(HAVE_LIBGEN_H NAMES libgen.h)
 find_path(HAVE_DIRENT_H NAMES dirent.h)
