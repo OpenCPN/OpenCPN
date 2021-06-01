@@ -24,14 +24,19 @@
  **************************************************************************/
 #include "config.h"
 
-#ifdef HAVE_UNISTD_H
+#include <string>
+#include <sstream>
+#include <iostream>
+
 #include <unistd.h>
-#endif
+#include <libudev.h>
 
-#include <wx/log.h>
+#include <sys/sysmacros.h>
+#include <sys/stat.h>
 
-#include "logger.h"
 #include "linux_devices.h"
+#include "logger.h"
+#include "ocpn_utils.h"
 
 #ifndef HAVE_LIBUSB_10
 
@@ -109,3 +114,42 @@ bool is_device_permissions_ok(const char* path)
 }
 
 #endif
+
+usbdata get_device_usbdata(const char* path)
+{
+    struct stat st;
+    int r = stat(path, &st);
+    if (r < 0) {
+        MESSAGE_LOG << "Cannot stat: " << path << ": " << strerror(errno);
+        return usbdata(0, 0);
+    }
+    struct udev *udev;
+    udev = udev_new();
+    if (!udev) {
+        WARNING_LOG << "Cannot create udev context";
+        return usbdata(0, 0);
+    }
+    struct udev_device* root_dev;
+    std::stringstream id;
+    id << "c" << major(st.st_dev) << ":" << minor(st.st_dev);
+    root_dev = udev_device_new_from_device_id(udev, id.str().c_str());
+    if (!root_dev) {
+        WARNING_LOG <<  "Failed to get udev device for " << id.str();
+	udev_unref(udev);
+        return usbdata(0, 0);
+    }
+    const char* product = 0;
+    const char* vendor = 0;
+    struct udev_device* dev;
+    for (dev = root_dev; dev; dev = udev_device_get_parent(dev)) {
+        product = udev_device_get_sysattr_value(dev, "idProduct");
+        vendor = udev_device_get_sysattr_value(dev, "idVendor");
+        if (product || vendor) {
+            break;
+        }
+    }
+    usbdata rv(vendor, product);
+    udev_device_unref(dev);
+    udev_unref(udev);
+    return rv;
+}
