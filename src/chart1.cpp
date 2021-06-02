@@ -82,7 +82,6 @@
 #include "chart1.h"
 #include "chcanv.h"
 #include "chartdb.h"
-#include "linux_devices.h"
 #include "logger.h"
 #include "navutil.h"
 #include "styles.h"
@@ -161,6 +160,7 @@
 #include "s57chart.h"
 #include "gdal/cpl_csv.h"
 #include "s52utils.h"
+#include "usb_devices.h"
 
 #ifdef __WXMSW__
 //#define __MSVC__LEAK

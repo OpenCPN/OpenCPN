@@ -1015,6 +1015,7 @@ set(
   include/TTYWindow.h
   include/undo.h
   include/update_mgr.h
+  include/usb_devices.h
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
@@ -1075,7 +1076,6 @@ set(
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
-  src/linux_devices.cpp
   src/LLRegion.cpp
   src/logger.cpp
   src/MarkInfo.cpp

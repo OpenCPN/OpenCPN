@@ -33,18 +33,19 @@
 
 #include <sys/sysmacros.h>
 #include <sys/stat.h>
+#include <libusb-1.0/libusb.h>
 
 #include "linux_devices.h"
 #include "logger.h"
 #include "ocpn_utils.h"
 
 #ifndef HAVE_LIBUSB_10
+#error linux_devices requries libusb-1.0 to be available
+#endif
 
-bool is_dongle_permissions_wrong() { return false; }
-
-#else
-
-#include <libusb-1.0/libusb.h>
+#ifndef HAVE_UNISTD_H
+#error linux_devices requries unistad.h to be available
+#endif
 
 static const int dongle_vendor = 0x1547;
 static const int dongle_product = 0x1000;
@@ -92,9 +93,6 @@ bool is_dongle_permissions_wrong()
     return rc == LIBUSB_ERROR_ACCESS;
 }
 
-#endif
-
-#ifdef HAVE_UNISTD_H
 
 bool is_device_permissions_ok(const char* path) {
     int r = access(path, R_OK & W_OK);
@@ -105,15 +103,6 @@ bool is_device_permissions_ok(const char* path) {
     return r == 0;
 }
 
-#else
-
-bool is_device_permissions_ok(const char* path)
-{
-    WARNING_LOG << "Invoking linux-only function in non-linux context";
-    return true;
-}
-
-#endif
 
 usbdata get_device_usbdata(const char* path)
 {

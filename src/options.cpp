@@ -101,7 +101,7 @@ extern GLuint g_raster_format;
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
 
-#include "linux_devices.h"
+#include "usb_devices.h"
 #include "navutil.h"
 
 #include "s52plib.h"
