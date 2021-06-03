@@ -28,8 +28,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <stdlib.h>
 #include <unistd.h>
-#include <libudev.h>
 
 #include <sys/sysmacros.h>
 #include <sys/stat.h>
@@ -50,8 +50,11 @@
 static const int dongle_vendor = 0x1547;
 static const int dongle_product = 0x1000;
 
-static const char* const UDEV_RULE = R"""(
-ATTRS{idVendor}=="1547", ATTRS{idProduct}=="1000", MODE="666"
+static const char* const DONGLE_RULE =
+    R"""(ATTRS{idVendor}=="1547", ATTRS{idProduct}=="1000", MODE="666"
+)""";
+
+static const char* const DEVICE_RULE = R"""(
 ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", \
     MODE="666", SYMLINK+="@link@"
 )""";
@@ -62,13 +65,15 @@ static int try_open(int vendorId, int productId)
     libusb_context* ctx = 0;
     int r = libusb_init(&ctx);
     if (r != 0) {
-        WARNING_LOG << "Cannot initialize libusb: " << libusb_strerror(r);
+        auto e = static_cast<libusb_error>(r);
+        WARNING_LOG << "Cannot initialize libusb: " << libusb_strerror(e);
         return LIBUSB_ERROR_NOT_SUPPORTED;
     }
     libusb_device** device_list;
     ssize_t size = libusb_get_device_list(ctx, &device_list);
     if  (size < 0) {
-        DEBUG_LOG << "Cannot get usb devices list: " << libusb_strerror(size);
+        auto e = static_cast<libusb_error>(size);
+        DEBUG_LOG << "Cannot get usb devices list: " << libusb_strerror(e);
         return LIBUSB_ERROR_NOT_SUPPORTED;
     }
     r = LIBUSB_ERROR_INVALID_PARAM;
@@ -100,7 +105,8 @@ bool is_dongle_permissions_wrong()
 }
 
 
-bool is_device_permissions_ok(const char* path) {
+bool is_device_permissions_ok(const char* path)
+{
     int r = access(path, R_OK & W_OK);
     if (r < 0) {
         INFO_LOG << "access(3) fails on: " << path << ": " << strerror(errno);
@@ -110,43 +116,66 @@ bool is_device_permissions_ok(const char* path) {
 }
 
 
+static void fix_token(std::string& token)
+{
+    while (token.length() < 4) {
+        token.insert(0, "0");
+    }
+}
+
+
+static usbdata parse_uevent(std::istream& is)
+{
+    std::string line;
+    while (std::getline(is, line)) {
+        if (!ocpn::startswith(line, "PRODUCT")) {
+            continue;
+        }
+        line = line.substr(strlen("PRODUCT="));
+        auto tokens = ocpn::split(line.c_str(), "/");
+        if (tokens.size() == 3) {
+            tokens.insert(tokens.begin(), std::string("foo"));
+        }
+        fix_token(tokens[1]);
+        fix_token(tokens[2]);
+        return usbdata(tokens[1], tokens[2]);
+    }
+    return usbdata("", "");
+}
+
+
 usbdata get_device_usbdata(const char* path)
 {
+    // Get real path for node in /sys corresponding to path in /dev
     struct stat st;
     int r = stat(path, &st);
     if (r < 0) {
         MESSAGE_LOG << "Cannot stat: " << path << ": " << strerror(errno);
         return usbdata(0, 0);
     }
-    struct udev *udev;
-    udev = udev_new();
-    if (!udev) {
-        WARNING_LOG << "Cannot create udev context";
-        return usbdata(0, 0);
-    }
-    struct udev_device* root_dev;
-    std::stringstream id;
-    id << "c" << major(st.st_dev) << ":" << minor(st.st_dev);
-    root_dev = udev_device_new_from_device_id(udev, id.str().c_str());
-    if (!root_dev) {
-        WARNING_LOG <<  "Failed to get udev device for " << id.str();
-	udev_unref(udev);
-        return usbdata(0, 0);
-    }
-    const char* product = 0;
-    const char* vendor = 0;
-    struct udev_device* dev;
-    for (dev = root_dev; dev; dev = udev_device_get_parent(dev)) {
-        product = udev_device_get_sysattr_value(dev, "idProduct");
-        vendor = udev_device_get_sysattr_value(dev, "idVendor");
-        if (product || vendor) {
-            break;
+    std::stringstream syspath("/sys/dev/char/");
+    syspath << "/sys/dev/char/" << major(st.st_dev) << ":" << minor(st.st_dev);
+    char buff[PATH_MAX];
+    realpath(syspath.str().c_str(), buff);
+    std::string real_path(buff);
+
+    // Get the uevent file in each parent dir and parse it.
+    while (real_path.length() > 0) {
+        auto uevent_path = real_path + "/uevent";
+        if (access(uevent_path.c_str(), R_OK) < 0) {
+            continue;
         }
+        std::ifstream is(uevent_path);
+        auto data = parse_uevent(is);
+        if (data.is_ok()) {
+            return data; 
+        }
+        // Drop last part of filename
+        size_t last_slash = real_path.rfind('/');
+        last_slash = last_slash == std::string::npos ? 0 : last_slash;
+        real_path = real_path.substr(0, last_slash);
     }
-    usbdata rv(vendor, product);
-    udev_device_unref(dev);
-    udev_unref(udev);
-    return rv;
+    return usbdata("", "");
 }
 
 
@@ -157,7 +186,7 @@ std::string create_udev_rule(usbdata data, const char* device_path)
         link = link.substr(strlen("tty"));
     }
     link.insert(0, "opencpn-");
-    std::string rule(UDEV_RULE);
+    std::string rule(DEVICE_RULE);
     ocpn::replace(rule, "@vendor@", data.vendor_id);
     ocpn::replace(rule, "@product@", data.product_id);
     ocpn::replace(rule, "@link@", link);
