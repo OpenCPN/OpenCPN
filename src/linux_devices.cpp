@@ -50,6 +50,12 @@
 static const int dongle_vendor = 0x1547;
 static const int dongle_product = 0x1000;
 
+static const char* const UDEV_RULE = R"""(
+ATTRS{idVendor}=="1547", ATTRS{idProduct}=="1000", MODE="666"
+ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", \
+    MODE="666", SYMLINK+="@link@"
+)""";
+
 
 static int try_open(int vendorId, int productId)
 {
@@ -141,4 +147,36 @@ usbdata get_device_usbdata(const char* path)
     udev_device_unref(dev);
     udev_unref(udev);
     return rv;
+}
+
+
+std::string create_udev_rule(usbdata data, const char* device_path)
+{
+    std::string link(device_path);
+    if (ocpn::startswith(link, "tty")) {
+        link = link.substr(strlen("tty"));
+    }
+    link.insert(0, "opencpn-");
+    std::string rule(UDEV_RULE);
+    ocpn::replace(rule, "@vendor@", data.vendor_id);
+    ocpn::replace(rule, "@product@", data.product_id);
+    ocpn::replace(rule, "@link@", link);
+
+    char dirpath[128];
+    strcpy(dirpath, "udevXXXXXX");
+    if (!mkdtemp(dirpath)) {
+        WARNING_LOG << "Cannot create tempdir: " << strerror(errno);
+        MESSAGE_LOG << "Using /tmp";
+        strcpy(dirpath, "/tmp");
+    }
+    std::string path(dirpath);
+    path += "/rule";
+
+    std::ofstream of(path);
+    of << rule;
+    of.close();
+    if (of.bad()) {
+        WARNING_LOG << "Cannot write to temp rules files";
+    }
+    return path;
 }
