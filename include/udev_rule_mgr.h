@@ -44,6 +44,8 @@ class DeviceRuleDialog: public wxDialog
         DeviceRuleDialog(wxWindow* parent, const char* device_path);
 };
 
+bool CheckSerialAccess(wxWindow* parent, const std::string device);
+
 
 
 #endif // UDEV_RULE_MGR_H__

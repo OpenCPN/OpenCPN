@@ -94,7 +94,11 @@
 #include "safe_mode.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
+
+#ifdef __linux__
 #include "udev_rule_mgr.h"
+#endif
+
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "MarkInfo.h"
@@ -142,7 +146,10 @@
 #include "PluginHandler.h"
 #include "SignalKEventHandler.h"
 #include "gui_lib.h"
-#include "ser_ports.h"
+
+#ifdef __linux__
+#include "udev_rule_mgr.h"
+#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -6960,17 +6967,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             {
                 ConnectionParams *cp = g_pConnectionParams->Item(i);
                 if( cp->bEnabled ) {
-
-    #ifdef __unix__
-                    if( cp->GetDSPort().Contains(_T("Serial"))) {
-                        if( ! g_bserial_access_checked ){
-                            if( !CheckSerialAccess() ){
-                            }
-                            g_bserial_access_checked = true;
-                        }
-                    }
-    #endif
-
                     g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
                     cp->b_IsSetup = TRUE;
                 }
@@ -7138,11 +7134,13 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     }
                 }
             }
+#ifdef __linux__
             if (is_dongle_permissions_wrong()) {
                  auto dialog = new DongleRuleDialog(this);
                  dialog->ShowModal();
                  delete dialog;
             }
+#endif
             break;
 
         }
@@ -7181,6 +7179,21 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             androidEnableBackButton( true );
             androidEnableRotation();
 #endif
+#ifdef __linux__
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if( cp->bEnabled ) {
+                    if( cp->GetDSPort().Contains(_T("Serial"))) {
+                        if( ! g_bserial_access_checked ){
+                            CheckSerialAccess(this, cp->Port.ToStdString());
+                        }
+                    }
+                }
+            }
+            g_bserial_access_checked = true;
+#endif
+
 
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, true );

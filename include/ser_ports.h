@@ -26,6 +26,5 @@
 #define SER_PORTS_H
 
 wxArrayString *EnumerateSerialPorts(void);
-bool CheckSerialAccess( void );
 
 #endif

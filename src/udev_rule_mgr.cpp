@@ -73,6 +73,13 @@ where device names like @DEVICE@ might change.
 static const char* const
     HIDE_DIALOG_LABEL = _("Do not show this dialog next time");
 
+static const char* const RULE_SUCCESS_MSG = _(R"""(
+Rule successfully installed. To activate the new rule:
+- Exit opencpn.
+- Unplug and re-insert the USB device.
+- Restart opencpn
+)""");
+
 
 /** The "Dont show this message next time" checkbox. */
 struct HideCheckbox: public wxCheckBox
@@ -299,7 +306,7 @@ struct DongleButtons: public wxPanel
         int flags = wxOK | wxICON_WARNING;
         const char* msg = _("Errors encountered installing rule.");
         if (WIFEXITED(sts) && WEXITSTATUS(sts) == 0 ) {
-            msg = _("Rule installed successfully");
+            msg = RULE_SUCCESS_MSG;
             flags = wxOK | wxICON_INFORMATION;
         }
         OCPNMessageBox(this, msg, _("OpenCPN Info"), flags);
@@ -376,4 +383,15 @@ DeviceRuleDialog::DeviceRuleDialog(wxWindow* parent, const char* device_path)
     Fit();
     Layout();
     Show();
+}
+
+bool CheckSerialAccess(wxWindow* parent, const std::string device)
+{
+    int result = 0;
+    if (!is_device_permissions_ok(device.c_str())) {
+        auto dialog = new DeviceRuleDialog(parent, device.c_str());
+        result = dialog->ShowModal();
+        delete dialog;
+    }
+    return result == 0;
 }
