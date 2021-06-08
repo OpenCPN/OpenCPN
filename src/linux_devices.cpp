@@ -26,6 +26,7 @@
 
 #include <string>
 #include <sstream>
+#include <iomanip>
 #include <iostream>
 
 #include <stdlib.h>
@@ -47,20 +48,55 @@
 #error linux_devices requries unistad.h to be available
 #endif
 
-static const int dongle_vendor = 0x1547;
-static const int dongle_product = 0x1000;
 
-static const char* const DONGLE_RULE =
-    R"""(ATTRS{idVendor}=="1547", ATTRS{idProduct}=="1000", MODE="666"
+static const int DONGLE_VENDOR = 0x1547;
+static const int DONGLE_PRODUCT = 0x1000;
+
+static const char* const DONGLE_RULE = R"""(
+ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", TAG+="uaccess"
 )""";
 
 static const char* const DEVICE_RULE = R"""(
 ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", \
-    MODE="666", SYMLINK+="@link@"
+    TAG+="uaccess", SYMLINK+="@symlink@"
 )""";
 
+static const char* const DONGLE_RULE_NAME = "65-ocpn-dongle.rules";
 
-static int try_open(int vendorId, int productId)
+static void read_usbdata(libusb_device* dev,
+                         libusb_device_handle* handle,
+                         usbdata* data)
+{
+    struct libusb_device_descriptor desc;
+    libusb_get_device_descriptor(dev, &desc);
+
+    std::stringstream ss;
+    ss << std::setfill('0') << std::setw(4) << desc.idVendor;
+    data->vendor_id = std::string(ss.str());
+    ss.str("");
+    ss << std::setfill('0') << std::setw(4) << desc.idProduct;
+    data->vendor_id = std::string(ss.str());
+
+    unsigned char buff[256];
+    int r;
+    if (desc.iProduct) {
+        r = libusb_get_string_descriptor_ascii(handle, desc.iProduct,
+                                               buff, sizeof(buff));
+        if (r > 0) data->product = reinterpret_cast<char*>(buff);
+    }
+    if (desc.iManufacturer) {
+        r = libusb_get_string_descriptor_ascii(handle, desc.iManufacturer,
+                                               buff, sizeof(buff));
+        if (r > 0) data->vendor = reinterpret_cast<char*>(buff);  
+    }
+    if (desc.iSerialNumber) {
+        r = libusb_get_string_descriptor_ascii(handle, desc.iSerialNumber,
+                                               buff, sizeof(buff));
+        if (r > 0) data->serial_nr = reinterpret_cast<char*>(buff);
+    }
+}
+
+static int try_open(int vendorId, int productId, usbdata* data = 0)
 {
     libusb_context* ctx = 0;
     int r = libusb_init(&ctx);
@@ -86,6 +122,9 @@ static int try_open(int vendorId, int productId)
         libusb_device_handle* dev_handle;
         r =  libusb_open(*dev, &dev_handle);
         if (r >= 0) {
+            if (data) {
+                read_usbdata(*dev, dev_handle, data);
+            }
             libusb_close(dev_handle);
         }
         break;
@@ -96,10 +135,20 @@ static int try_open(int vendorId, int productId)
     return r;
 }
 
+static int try_open(const std::string vendorId,
+                    const std::string productId,
+                    usbdata* data = 0)
+{
+    int v;
+    int p;
+    std::istringstream(vendorId) >> std::hex >> v;
+    std::istringstream(productId) >> std::hex >> p;
+    return try_open(v, p, data);
+}
 
 bool is_dongle_permissions_wrong()
 {
-    int rc = try_open(dongle_vendor, dongle_product);
+    int rc = try_open(DONGLE_VENDOR, DONGLE_PRODUCT);
     DEBUG_LOG << "Probing dongle permissions, result: " << rc;
     return rc == LIBUSB_ERROR_ACCESS;
 }
@@ -107,42 +156,38 @@ bool is_dongle_permissions_wrong()
 
 bool is_device_permissions_ok(const char* path)
 {
-    int r = access(path, R_OK & W_OK);
+    int r = access(path, R_OK | W_OK);
     if (r < 0) {
         INFO_LOG << "access(3) fails on: " << path << ": " << strerror(errno);
-        return true;
     }
     return r == 0;
 }
 
-
-static void fix_token(std::string& token)
-{
-    while (token.length() < 4) {
-        token.insert(0, "0");
-    }
-}
-
-
+/** Look for vendorId/ProductId in uevent file. */
 static usbdata parse_uevent(std::istream& is)
 {
     std::string line;
     while (std::getline(is, line)) {
-        if (!ocpn::startswith(line, "PRODUCT")) {
+        if (line.find('=') ==  std::string::npos) {
             continue;
         }
-        line = line.substr(strlen("PRODUCT="));
-        auto tokens = ocpn::split(line.c_str(), "/");
-        if (tokens.size() == 3) {
-            tokens.insert(tokens.begin(), std::string("foo"));
+        auto tokens = ocpn::split(line.c_str(), "=");
+        if (tokens[0] != "PRODUCT") {
+            continue;
         }
-        fix_token(tokens[1]);
-        fix_token(tokens[2]);
-        return usbdata(tokens[1], tokens[2]);
+        if (line.find("/") == std::string::npos) {
+            INFO_LOG << "invalid product line: " << line << "(ignored)";
+            continue;
+        }
+        tokens = ocpn::split(tokens[1].c_str(), "/");
+        std::stringstream ss1;
+        ss1 << std::setfill('0') << std::setw(4) << tokens[0];
+        std::stringstream ss2;
+        ss2 << std::setfill('0') << std::setw(4) << tokens[1];
+        return usbdata(ss1.str(), ss2.str());
     }
     return usbdata("", "");
 }
-
 
 usbdata get_device_usbdata(const char* path)
 {
@@ -154,7 +199,8 @@ usbdata get_device_usbdata(const char* path)
         return usbdata(0, 0);
     }
     std::stringstream syspath("/sys/dev/char/");
-    syspath << "/sys/dev/char/" << major(st.st_dev) << ":" << minor(st.st_dev);
+    syspath <<
+        "/sys/dev/char/" << major(st.st_rdev) << ":" << minor(st.st_rdev);
     char buff[PATH_MAX];
     realpath(syspath.str().c_str(), buff);
     std::string real_path(buff);
@@ -162,13 +208,14 @@ usbdata get_device_usbdata(const char* path)
     // Get the uevent file in each parent dir and parse it.
     while (real_path.length() > 0) {
         auto uevent_path = real_path + "/uevent";
-        if (access(uevent_path.c_str(), R_OK) < 0) {
-            continue;
-        }
-        std::ifstream is(uevent_path);
-        auto data = parse_uevent(is);
-        if (data.is_ok()) {
-            return data; 
+        if (access(uevent_path.c_str(), R_OK) >= 0) {
+            std::ifstream is(uevent_path);
+            auto data = parse_uevent(is);
+            if (data.is_ok()) {
+                // Add missing pieces (descriptions...) using libusb
+                try_open(data.vendor_id, data.product_id, &data);
+                return data; 
+            }
         }
         // Drop last part of filename
         size_t last_slash = real_path.rfind('/');
@@ -179,33 +226,80 @@ usbdata get_device_usbdata(const char* path)
 }
 
 
-std::string create_udev_rule(usbdata data, const char* device_path)
+static std::string tmp_rule_path(const char* name)
 {
-    std::string link(device_path);
-    if (ocpn::startswith(link, "tty")) {
-        link = link.substr(strlen("tty"));
-    }
-    link.insert(0, "opencpn-");
-    std::string rule(DEVICE_RULE);
-    ocpn::replace(rule, "@vendor@", data.vendor_id);
-    ocpn::replace(rule, "@product@", data.product_id);
-    ocpn::replace(rule, "@link@", link);
-
-    char dirpath[128];
-    strcpy(dirpath, "udevXXXXXX");
+    char dirpath[128] =  "/tmp/udevXXXXXX";
     if (!mkdtemp(dirpath)) {
         WARNING_LOG << "Cannot create tempdir: " << strerror(errno);
         MESSAGE_LOG << "Using /tmp";
         strcpy(dirpath, "/tmp");
     }
     std::string path(dirpath);
-    path += "/rule";
+    path += "/";
+    path += name;
+    return path;
+}
 
+
+std::string make_udev_link()
+{
+    for (char ch: {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}) {
+        std::string path("/dev/opencpn");
+        path += ch;
+        if (!ocpn::exists(path))  {
+            ocpn::replace(path, "/dev/", "");
+            return path;
+        }
+    }
+    WARNING_LOG << "Too many opencpn devices found (10). Giving up.";
+    return "";
+}
+
+
+static std::string create_tmpfile(const std::string& contents,
+                                  const char* name)
+{
+    auto path = tmp_rule_path(name);
     std::ofstream of(path);
-    of << rule;
+    of << contents;
     of.close();
     if (of.bad()) {
-        WARNING_LOG << "Cannot write to temp rules files";
+        WARNING_LOG << "Cannot write to temp file: " << path;
     }
+    return path;
+}
+
+
+std::string create_udev_rule(usbdata data, const char* symlink)
+{
+    std::string rule(DEVICE_RULE);
+    ocpn::replace(rule, "@vendor@", data.vendor_id);
+    ocpn::replace(rule, "@product@", data.product_id);
+    ocpn::replace(rule, "@symlink@", symlink);
+   
+    std::string name(symlink);
+    name.insert(0, "65-");
+    name += ".rules";
+    return create_tmpfile(rule, name.c_str());
+}
+
+
+std::string get_dongle_rule()
+{
+    std::string rule(DONGLE_RULE);
+    std::ostringstream oss;
+
+    oss << std::setw(4) << std::setfill('0') << std::hex << DONGLE_VENDOR;
+    ocpn::replace(rule, "@vendor@", oss.str());
+    oss.str("");
+    oss << std::setw(4) << std::setfill('0') << std::hex << DONGLE_PRODUCT;
+    ocpn::replace(rule, "@product@", oss.str());
+    return create_tmpfile(rule, DONGLE_RULE_NAME);
+}
+
+std::string get_device_rule(const char* device, const char* symlink)
+{
+    usbdata data = get_device_usbdata(device);
+    auto path = create_udev_rule(data, symlink);
     return path;
 }
