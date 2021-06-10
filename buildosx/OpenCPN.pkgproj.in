@@ -193,7 +193,7 @@ ${LIBARCHIVE_COMMENT_END}
                                                                                                                         <key>GID</key>
                                                                                                                         <integer>20</integer>
                                                                                                                         <key>PATH</key>
-                                                                                                                        <string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libzstd.1.4.9.dylib</string>
+                                                                                                                        <string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libzstd.1.5.0.dylib</string>
                                                                                                                         <key>PATH_TYPE</key>
                                                                                                                         <integer>0</integer>
                                                                                                                         <key>PERMISSIONS</key>
