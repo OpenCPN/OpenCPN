@@ -329,7 +329,6 @@ extern wxArrayString TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern AIS_Decoder* g_pAIS;
-extern bool g_bserial_access_checked;
 
 options* g_pOptions;
 
@@ -10557,7 +10556,7 @@ void options::SetDefaultConnectionParams(void) {
   
   bool bserial = TRUE;
 #ifdef __WXGTK__
-  if (!g_bserial_access_checked) bserial = FALSE;
+  bserial = FALSE;
 #endif
 
 

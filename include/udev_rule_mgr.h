@@ -28,22 +28,7 @@
 #include <wx/window.h>
 
 
-class DongleRuleDialog: public wxDialog
-{
-    public:
-
-        /** * Handle missing udev rule for existing dongle.  */
-        DongleRuleDialog(wxWindow* parent);
-};
-
-class DeviceRuleDialog: public wxDialog
-{
-    public:
-
-        /** Handle missing udev rule for a device, a /dev path. */
-        DeviceRuleDialog(wxWindow* parent, const char* device_path);
-};
-
+bool CheckDongleAccess(wxWindow* parent);
 bool CheckSerialAccess(wxWindow* parent, const std::string device);
 
 

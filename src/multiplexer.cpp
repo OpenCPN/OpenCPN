@@ -65,7 +65,6 @@ extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 extern bool             g_bWplUsePosition;
 extern wxArrayOfConnPrm  *g_pConnectionParams;
-extern bool             g_bserial_access_checked;
 extern bool             g_b_legacy_input_filter_behaviour;
 extern int              g_maxWPNameLength;
 extern wxString         g_TalkerIdText;
@@ -195,7 +194,6 @@ void Multiplexer::StartAllStreams( void )
             cp->b_IsSetup = true;
         }
     }
-    g_bserial_access_checked = true;
 
 }
 

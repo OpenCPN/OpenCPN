@@ -353,6 +353,8 @@ bool                      g_bShowChartBar;
 bool                      g_bShowActiveRouteHighway;
 int                       g_nNMEADebug;
 int                       g_nAWDefault;
+bool                      g_hide_udev_dongle_dialog;
+bool                      g_hide_udev_device_dialog;
 int                       g_nAWMax;
 bool                      g_bPlayShipsBells;
 bool                      g_bFullscreenToolbar;
@@ -766,7 +768,6 @@ bool                      g_bDarkDecorations;
 //                        OpenGL Globals
 int                       g_GPU_MemSize;
 
-bool                      g_bserial_access_checked;
 wxString                  g_uiStyle;
 
 //      Values returned from WMM_PI for variation computation request
@@ -2626,7 +2627,21 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->InitTimer.Start( 5, wxTIMER_CONTINUOUS );
     
     g_pauimgr->Update();
-    
+
+#ifdef __linux__
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        if( cp->bEnabled ) {
+            if( cp->GetDSPort().Contains(_T("Serial"))) {
+                std::string port(cp->Port.ToStdString());
+                    CheckSerialAccess(gFrame, port);
+            }
+        }
+    }
+    CheckDongleAccess(gFrame);
+#endif
+ 
     return TRUE;
 }
 
@@ -7134,13 +7149,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     }
                 }
             }
-#ifdef __linux__
-            if (is_dongle_permissions_wrong()) {
-                 auto dialog = new DongleRuleDialog(this);
-                 dialog->ShowModal();
-                 delete dialog;
-            }
-#endif
             break;
 
         }
@@ -7179,21 +7187,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             androidEnableBackButton( true );
             androidEnableRotation();
 #endif
-#ifdef __linux__
-            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-            {
-                ConnectionParams *cp = g_pConnectionParams->Item(i);
-                if( cp->bEnabled ) {
-                    if( cp->GetDSPort().Contains(_T("Serial"))) {
-                        if( ! g_bserial_access_checked ){
-                            CheckSerialAccess(this, cp->Port.ToStdString());
-                        }
-                    }
-                }
-            }
-            g_bserial_access_checked = true;
-#endif
-
 
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, true );
@@ -7757,7 +7750,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
-    
+  
 #ifdef __OCPN__ANDROID__
 
     // Update the navobj file on a fixed schedule (5 minutes)

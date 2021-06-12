@@ -270,7 +270,6 @@ extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
 
 extern AIS_Decoder      *g_pAIS;
-extern bool             g_bserial_access_checked;
 
 extern options          *g_pOptions;
 

@@ -315,29 +315,28 @@ struct DongleButtons: public wxPanel
     std::string m_rule_path;
 };
 
-
-DongleRuleDialog::DongleRuleDialog(wxWindow* parent):
-    wxDialog(parent, wxID_ANY,
-             _("Manage dongle udev rule"), wxDefaultPosition , wxDefaultSize,
-             wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxSTAY_ON_TOP)
+class DongleRuleDialog: public wxDialog
 {
-    auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand().Border();
-    sizer->Add(new wxStaticText(this, wxID_ANY, DONGLE_INTRO), flags);
-    sizer->Add(new wxStaticLine(this), flags);
-    sizer->Add(new DongleInfoPanel(this), flags);
-    sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL,
-                             &g_hide_udev_dongle_dialog),
-               flags.Right());
-    sizer->Add(new wxStaticLine(this), flags);
-    sizer->Add(new DongleButtons(this, get_dongle_rule().c_str()), flags);
-
-    SetSizer(sizer);
-    SetAutoLayout(true);
-    Fit();
-    Layout();
-    Show();
-}
+    public:
+        DongleRuleDialog(wxWindow* parent):
+             wxDialog(parent, wxID_ANY, _("Manage dongle udev rule"))
+        {
+            auto sizer = new wxBoxSizer(wxVERTICAL);
+            auto flags = wxSizerFlags().Expand().Border();
+            sizer->Add(new wxStaticText(this, wxID_ANY, DONGLE_INTRO), flags);
+            sizer->Add(new wxStaticLine(this), flags);
+            sizer->Add(new DongleInfoPanel(this), flags);
+            sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL,
+                                     &g_hide_udev_dongle_dialog),
+                       flags.Right());
+            sizer->Add(new wxStaticLine(this), flags);
+            sizer->Add(new DongleButtons(this, get_dongle_rule().c_str()),
+                       flags);
+            SetSizer(sizer);
+            SetAutoLayout(true);
+            Fit();
+        }
+};
 
 
 static std::string get_device_intro(const char* device, std::string symlink)
@@ -359,39 +358,54 @@ static std::string get_device_intro(const char* device, std::string symlink)
     return intro;
 }
 
-
-DeviceRuleDialog::DeviceRuleDialog(wxWindow* parent, const char* device_path)
-    :wxDialog(parent, wxID_ANY, _("Manage device udev rule"))
+class DeviceRuleDialog: public wxDialog
 {
-    auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand().Border();
+    public:
+        DeviceRuleDialog(wxWindow* parent, const char* device_path)
+            :wxDialog(parent, wxID_ANY, _("Manage device udev rule"))
+        {
 
-    std::string symlink(make_udev_link());
-    auto intro = get_device_intro(device_path, symlink.c_str());
-    auto rule_path = get_device_rule(device_path, symlink.c_str());
-    sizer->Add(new wxStaticText(this, wxID_ANY, intro), flags);
-    sizer->Add(new wxStaticLine(this), flags);
-    sizer->Add(new DeviceInfoPanel(this, rule_path), flags);
-    sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL,
-                             &g_hide_udev_device_dialog),
-               flags.Right());
-    sizer->Add(new wxStaticLine(this), flags);
-    sizer->Add(new DongleButtons(this, rule_path.c_str()), flags);
+            auto sizer = new wxBoxSizer(wxVERTICAL);
+            auto flags = wxSizerFlags().Expand().Border();
+        
+            std::string symlink(make_udev_link());
+            auto intro = get_device_intro(device_path, symlink.c_str());
+            auto rule_path = get_device_rule(device_path, symlink.c_str());
+            sizer->Add(new wxStaticText(this, wxID_ANY, intro), flags);
+            sizer->Add(new wxStaticLine(this), flags);
+            sizer->Add(new DeviceInfoPanel(this, rule_path), flags);
+            sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL,
+                                     &g_hide_udev_device_dialog),
+                       flags.Right());
+            sizer->Add(new wxStaticLine(this), flags);
+            sizer->Add(new DongleButtons(this, rule_path.c_str()), flags);
+        
+            SetSizer(sizer);
+            SetAutoLayout(true);
+            Fit();
+        }
+};
 
-    SetSizer(sizer);
-    SetAutoLayout(true);
-    Fit();
-    Layout();
-    Show();
-}
 
 bool CheckSerialAccess(wxWindow* parent, const std::string device)
 {
     int result = 0;
     if (!is_device_permissions_ok(device.c_str())) {
         auto dialog = new DeviceRuleDialog(parent, device.c_str());
+        //auto dialog = new DongleRuleDialog(parent);
         result = dialog->ShowModal();
         delete dialog;
+    }
+    return result == 0;
+}
+
+bool CheckDongleAccess(wxWindow* parent)
+{
+    int result = 0;
+    if (is_dongle_permissions_wrong()) {
+         auto dialog = new DongleRuleDialog(parent);
+         result = dialog->ShowModal();
+         delete dialog;
     }
     return result == 0;
 }
