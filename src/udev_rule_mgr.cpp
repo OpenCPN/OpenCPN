@@ -386,13 +386,20 @@ class DeviceRuleDialog: public wxDialog
         }
 };
 
+static const char* const DEVICE_NOT_FOUND =
+    "The device @device@ can not be found (disconnected?)";
 
 bool CheckSerialAccess(wxWindow* parent, const std::string device)
 {
+    if (!ocpn::exists(device)) {
+        std::string msg(DEVICE_NOT_FOUND);
+        ocpn::replace(msg, "@device@", device);
+        OCPNMessageBox(parent, msg, _("OpenCPN device error"));
+        return false;
+    }
     int result = 0;
     if (!is_device_permissions_ok(device.c_str())) {
         auto dialog = new DeviceRuleDialog(parent, device.c_str());
-        //auto dialog = new DongleRuleDialog(parent);
         result = dialog->ShowModal();
         delete dialog;
     }
