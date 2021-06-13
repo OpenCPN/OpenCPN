@@ -109,6 +109,6 @@ modules:
       sources:
           - type: git
             url: ..
-            branch: master
+            branch: HEAD
           - type: patch
             path: ../flatpak/src/0008-flatpak-Add-a-shell-wrapper.patch
