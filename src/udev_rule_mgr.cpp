@@ -50,19 +50,19 @@ extern bool g_hide_udev_device_dialog;
 static const char* const DONGLE_INTRO = _(R"""(
 An OpenCPN dongle is detected but cannot be used due to missing permissions.
 
-This problem can be fixed by installing a udev rules file. I have created such
-a file for you. Once installed, it will ensure that the dongle permissions
-are OK.
+This problem can be fixed by installing a udev rules file. Once installed,
+it will ensure that the dongle permissions are OK.
 )""");
 
 static const char* const DEVICE_INTRO = _(R"""(
 The device @DEVICE@ exists but cannot be used due to missing permissions.
 
 This problem can be fixed by installing a udev rules file. Once installed,
-the rules file will fix the permissions problem. It  will also  create a
-new device called @SYMLINK@. Contrary to other names like @DEVICE@ the
-@SYMLINK@ name will always work. This solves possible problems on laptops
-where device names like @DEVICE@ might change.
+the rules file will fix the permissions problem.
+
+It will also create a new device called @SYMLINK@. It is recommended to use
+@SYMLINK@ instead of @DEVICE@ to avoid problems with changing device names,
+in particular on laptops.
 )""");
 
 
@@ -168,7 +168,8 @@ class ManualInstructions: public HideShowPanel
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
             vbox->Add(hbox);
-            vbox->Add(m_child, flags.Border(wxLEFT, 80));  // FIXME
+            vbox->Add(m_child,
+                      flags.Border(wxLEFT, 80).ReserveSpaceEvenIfHidden());  // FIXME
 
             SetSizer(vbox);
             SetAutoLayout(true);
@@ -208,8 +209,8 @@ class ReviewRule: public HideShowPanel
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
             vbox->Add(hbox);
-            vbox->Add(m_child, flags.Border(wxLEFT, 80));  // FIXME
-
+            vbox->Add(m_child,
+                      flags.Border(wxLEFT, 80).ReserveSpaceEvenIfHidden());  // FIXME
             SetSizer(vbox);
             SetAutoLayout(true);
             Show();
