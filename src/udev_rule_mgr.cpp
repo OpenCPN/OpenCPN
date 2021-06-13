@@ -273,9 +273,9 @@ class DeviceInfoPanel: public wxPanel
 
 
 /** Install/Quit buttons bottom-right */
-struct DongleButtons: public wxPanel
+struct Buttons: public wxPanel
 {
-    DongleButtons(wxWindow* parent, const char* rule_path):
+    Buttons(wxWindow* parent, const char* rule_path):
         wxPanel(parent), m_rule_path(rule_path)
     {
         auto sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -329,7 +329,7 @@ class DongleRuleDialog: public wxDialog
                                      &hide_dongle_dialog),
                        flags.Right());
             sizer->Add(new wxStaticLine(this), flags);
-            sizer->Add(new DongleButtons(this, get_dongle_rule().c_str()),
+            sizer->Add(new Buttons(this, get_dongle_rule().c_str()),
                        flags);
             SetSizer(sizer);
             SetAutoLayout(true);
@@ -373,7 +373,7 @@ class DeviceRuleDialog: public wxDialog
                                      &hide_device_dialog),
                        flags.Right());
             sizer->Add(new wxStaticLine(this), flags);
-            sizer->Add(new DongleButtons(this, rule_path.c_str()), flags);
+            sizer->Add(new Buttons(this, rule_path.c_str()), flags);
         
             SetSizer(sizer);
             SetAutoLayout(true);
