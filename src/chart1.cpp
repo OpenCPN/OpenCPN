@@ -353,8 +353,6 @@ bool                      g_bShowChartBar;
 bool                      g_bShowActiveRouteHighway;
 int                       g_nNMEADebug;
 int                       g_nAWDefault;
-bool                      g_hide_udev_dongle_dialog;
-bool                      g_hide_udev_device_dialog;
 int                       g_nAWMax;
 bool                      g_bPlayShipsBells;
 bool                      g_bFullscreenToolbar;

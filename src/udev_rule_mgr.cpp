@@ -44,8 +44,8 @@
 #include "ocpn_utils.h"
 
 
-extern bool g_hide_udev_dongle_dialog;
-extern bool g_hide_udev_device_dialog;
+static bool hide_dongle_dialog;
+static bool hide_device_dialog;
 
 static const char* const DONGLE_INTRO = _(R"""(
 An OpenCPN dongle is detected but cannot be used due to missing permissions.
@@ -326,7 +326,7 @@ class DongleRuleDialog: public wxDialog
             sizer->Add(new wxStaticLine(this), flags);
             sizer->Add(new DongleInfoPanel(this), flags);
             sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL,
-                                     &g_hide_udev_dongle_dialog),
+                                     &hide_dongle_dialog),
                        flags.Right());
             sizer->Add(new wxStaticLine(this), flags);
             sizer->Add(new DongleButtons(this, get_dongle_rule().c_str()),
@@ -370,7 +370,7 @@ class DeviceRuleDialog: public wxDialog
             sizer->Add(new wxStaticLine(this), flags);
             sizer->Add(new DeviceInfoPanel(this, rule_path), flags);
             sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL,
-                                     &g_hide_udev_device_dialog),
+                                     &hide_device_dialog),
                        flags.Right());
             sizer->Add(new wxStaticLine(this), flags);
             sizer->Add(new DongleButtons(this, rule_path.c_str()), flags);
@@ -386,6 +386,9 @@ static const char* const DEVICE_NOT_FOUND =
 
 bool CheckSerialAccess(wxWindow* parent, const std::string device)
 {
+    if (hide_device_dialog) {
+        return true;
+    }
     if (!ocpn::exists(device)) {
         std::string msg(DEVICE_NOT_FOUND);
         ocpn::replace(msg, "@device@", device);
@@ -404,7 +407,7 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device)
 bool CheckDongleAccess(wxWindow* parent)
 {
     int result = 0;
-    if (is_dongle_permissions_wrong()) {
+    if (is_dongle_permissions_wrong() && !hide_dongle_dialog) {
          auto dialog = new DongleRuleDialog(parent);
          result = dialog->ShowModal();
          delete dialog;
