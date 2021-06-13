@@ -198,7 +198,8 @@ class ReviewRule: public HideShowPanel
         ReviewRule(wxWindow* parent, const std::string& rule):
             HideShowPanel(parent, 0)
         {
-            m_child = new wxStaticText(this, wxID_ANY, rule);
+            int from = rule[0] == '\n' ? 1 : 0;
+            m_child = new wxStaticText(this, wxID_ANY, rule.substr(from));
             toggle();
 
             auto flags = wxSizerFlags().Expand().Border().Right();
