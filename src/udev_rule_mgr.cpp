@@ -157,7 +157,7 @@ class ManualInstructions: public HideShowPanel
         ManualInstructions(wxWindow* parent, const char* cmd)
             : HideShowPanel(parent, 0)
         {
-            m_child = get_cmd(cmd);
+            m_child = get_cmd(parent, cmd);
             toggle();
             auto flags = wxSizerFlags().Expand().Border().Right();
 
@@ -168,8 +168,9 @@ class ManualInstructions: public HideShowPanel
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
             vbox->Add(hbox);
-            vbox->Add(m_child,
-                      flags.Border(wxLEFT, 80).ReserveSpaceEvenIfHidden());  // FIXME
+            auto indent = parent->GetTextExtent("aaa").GetWidth();
+            flags = flags.Border(wxLEFT, indent);
+            vbox->Add(m_child, flags.ReserveSpaceEvenIfHidden());
 
             SetSizer(vbox);
             SetAutoLayout(true);
@@ -177,17 +178,16 @@ class ManualInstructions: public HideShowPanel
         }
 
     private:
-        wxTextCtrl* get_cmd(const char* tmpl)
+        wxTextCtrl* get_cmd(wxWindow* parent, const char* tmpl)
         {
             std::string cmd(tmpl);
             ocpn::replace(cmd, "@PATH@", get_dongle_rule());
-            cmd.insert(0, "        ");
             auto ctrl = new wxTextCtrl(this, wxID_ANY, cmd);
             ctrl->SetEditable(false);
-            wxClientDC dc(this);
-            ctrl->SetMinSize(dc.GetTextExtent(cmd));
+            ctrl->SetMinSize(parent->GetTextExtent(cmd + "aaa"));
             return ctrl;
         }
+        wxWindow* m_parent;
 };
 
 
@@ -209,8 +209,9 @@ class ReviewRule: public HideShowPanel
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
             vbox->Add(hbox);
-            vbox->Add(m_child,
-                      flags.Border(wxLEFT, 80).ReserveSpaceEvenIfHidden());  // FIXME
+            auto indent = parent->GetTextExtent("ABCDE").GetWidth();
+            flags = flags.Border(wxLEFT, indent);
+            vbox->Add(m_child, flags.ReserveSpaceEvenIfHidden());
             SetSizer(vbox);
             SetAutoLayout(true);
             Show();
