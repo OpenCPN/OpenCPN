@@ -43,23 +43,19 @@
 #include "gui_lib.h"
 #include "ocpn_utils.h"
 
-#ifdef _WIN32
-#define WIFEXITED(x) (x >=0)
-#define WEXITSTATUS(x) (x)
-#endif
 
 extern bool g_hide_udev_dongle_dialog;
 extern bool g_hide_udev_device_dialog;
 
-static const char* const DONGLE_INTRO = R"""(
+static const char* const DONGLE_INTRO = _(R"""(
 An OpenCPN dongle is detected but cannot be used due to missing permissions.
 
 This problem can be fixed by installing a udev rules file. I have created such
 a file for you. Once installed, it will ensure that the dongle permissions
 are OK.
-)""";
+)""");
 
-static const char* const DEVICE_INTRO = R"""(
+static const char* const DEVICE_INTRO = _(R"""(
 The device @DEVICE@ exists but cannot be used due to missing permissions.
 
 This problem can be fixed by installing a udev rules file. Once installed,
@@ -67,7 +63,7 @@ the rules file will fix the permissions problem. It  will also  create a
 new device called @SYMLINK@. Contrary to other names like @DEVICE@ the
 @SYMLINK@ name will always work. This solves possible problems on laptops
 where device names like @DEVICE@ might change.
-)""";
+)""");
 
 
 static const char* const
@@ -341,20 +337,16 @@ class DongleRuleDialog: public wxDialog
 
 static std::string get_device_intro(const char* device, std::string symlink)
 {
-    wxLogMessage("get_device_intro: Enter");
     std::string intro(DEVICE_INTRO);
     ocpn::replace(symlink, "/dev/", "");
-    wxLogMessage("Before symlink");
     while (intro.find("@SYMLINK@") != std::string::npos) {
         ocpn::replace(intro, "@SYMLINK@", symlink);
     }
     std::string dev_name(device);
     ocpn::replace(dev_name, "/dev/", "");
-    wxLogMessage("Before device");
     while (intro.find("@DEVICE@") != std::string::npos) {
         ocpn::replace(intro, "@DEVICE@", dev_name.c_str());
     }
-    wxLogMessage("Returning intro: %s", intro.c_str());
     return intro;
 }
 
@@ -387,7 +379,7 @@ class DeviceRuleDialog: public wxDialog
 };
 
 static const char* const DEVICE_NOT_FOUND =
-    "The device @device@ can not be found (disconnected?)";
+    _("The device @device@ can not be found (disconnected?)");
 
 bool CheckSerialAccess(wxWindow* parent, const std::string device)
 {
