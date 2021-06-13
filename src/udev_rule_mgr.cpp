@@ -76,6 +76,9 @@ Rule successfully installed. To activate the new rule:
 - Restart opencpn
 )""");
 
+static const char* const DEVICE_NOT_FOUND =
+    _("The device @device@ can not be found (disconnected?)");
+
 
 /** The "Dont show this message next time" checkbox. */
 struct HideCheckbox: public wxCheckBox
@@ -271,7 +274,6 @@ class DeviceInfoPanel: public wxPanel
 };
 
 
-
 /** Install/Quit buttons bottom-right */
 struct Buttons: public wxPanel
 {
@@ -314,6 +316,8 @@ struct Buttons: public wxPanel
     std::string m_rule_path;
 };
 
+
+/** Main, top-level Dongle udev rule dialog. */
 class DongleRuleDialog: public wxDialog
 {
     public:
@@ -338,6 +342,7 @@ class DongleRuleDialog: public wxDialog
 };
 
 
+/** Return an insto based on DEVICE_INTRO with proper substitutions. */
 static std::string get_device_intro(const char* device, std::string symlink)
 {
     std::string intro(DEVICE_INTRO);
@@ -353,6 +358,8 @@ static std::string get_device_intro(const char* device, std::string symlink)
     return intro;
 }
 
+
+/** Main, top-level device udev rule dialog. */
 class DeviceRuleDialog: public wxDialog
 {
     public:
@@ -381,8 +388,6 @@ class DeviceRuleDialog: public wxDialog
         }
 };
 
-static const char* const DEVICE_NOT_FOUND =
-    _("The device @device@ can not be found (disconnected?)");
 
 bool CheckSerialAccess(wxWindow* parent, const std::string device)
 {
@@ -403,6 +408,7 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device)
     }
     return result == 0;
 }
+
 
 bool CheckDongleAccess(wxWindow* parent)
 {
