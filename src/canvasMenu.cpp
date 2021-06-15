@@ -165,6 +165,8 @@ enum
     ID_RT_MENU_PROPERTIES,
     ID_RT_MENU_SENDTOGPS,
     ID_RT_MENU_SENDTONEWGPS,
+    ID_RT_MENU_SHOWNAMES,
+    ID_RT_MENU_RESEQUENCE,
     ID_WP_MENU_SET_ANCHORWATCH,
     ID_WP_MENU_CLEAR_ANCHORWATCH,
     ID_DEF_MENU_AISTARGETLIST,
@@ -647,6 +649,14 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             MenuAppend1( menuRoute, ID_RT_MENU_COPY, _( "Copy as KML" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_DELETE, _( "Delete" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+            if( m_pSelectedRoute ){
+                if(m_pSelectedRoute->AreWaypointNamesVisible())
+                    MenuAppend1( menuRoute, ID_RT_MENU_SHOWNAMES, _( "Hide Waypoint Names" ) );
+                else
+                    MenuAppend1( menuRoute, ID_RT_MENU_SHOWNAMES, _( "Show Waypoint Names" ) );
+            }
+            MenuAppend1( menuRoute, ID_RT_MENU_RESEQUENCE, _( "Resequence Waypoints..." ) );
+
 
 //#ifndef __OCPN__ANDROID__
             wxString port = parent->FindValidUploadPort();
@@ -1328,6 +1338,35 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
             gFrame->RefreshAllCanvas();
             
         }
+        break;
+    }
+
+    case ID_RT_MENU_SHOWNAMES: {
+        
+        if( m_pSelectedRoute ){
+            m_pSelectedRoute->ShowWaypointNames( !m_pSelectedRoute->AreWaypointNamesVisible() );
+        }
+        
+        break;
+    }
+ 
+     case ID_RT_MENU_RESEQUENCE: {
+        
+        if( m_pSelectedRoute ){
+            if( m_pSelectedRoute->m_bIsInLayer ) break;
+
+            int ask_return = OCPNMessageBox( parent, g_pRouteMan->GetRouteResequenceMessage(),
+                               _("Rename Waypoints?"), wxYES_NO | wxCANCEL );
+
+            if( ask_return != wxID_CANCEL ) {
+                m_pSelectedRoute->RenameRoutePoints();
+            }
+                
+            gFrame->InvalidateAllGL();
+            gFrame->RefreshAllCanvas();
+                
+            }
+
         break;
     }
 

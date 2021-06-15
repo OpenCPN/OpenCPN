@@ -897,7 +897,7 @@ void AISTargetListDialog::OnTargetScrollTo( wxCommandEvent& event )
     if( m_pdecoder ) pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI( m_pMMSI_array->Item( selItemID ) );
 
     if( pAISTarget )
-        gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), pAISTarget->Lat, pAISTarget->Lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
+        gFrame->JumpToPosition( gFrame->GetFocusCanvas(), pAISTarget->Lat, pAISTarget->Lon, gFrame->GetFocusCanvas()->GetVPScale() );
 }
 
 void AISTargetListDialog::OnTargetCreateWpt( wxCommandEvent& event )

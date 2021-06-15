@@ -849,10 +849,9 @@ static bool GPXCreateTrkpt( pugi::xml_node node, TrackPoint *pt, unsigned int fl
     s.Printf(_T("%.9f"), pt->m_lon);
     node.append_attribute("lon") = s.mb_str();
  
-    if(flags & OUT_TIME) {
+    if(flags & OUT_TIME && pt->HasValidTimestamp()) {
         child = node.append_child("time");
-        if( pt->GetTimeString() )
-            child.append_child(pugi::node_pcdata).set_value(pt->GetTimeString());
+        child.append_child(pugi::node_pcdata).set_value(pt->GetTimeString());
     }
     
     return true;

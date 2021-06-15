@@ -1121,6 +1121,12 @@ wxString Routeman::GetRouteReverseMessage( void )
             _("Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?") );
 }
 
+wxString Routeman::GetRouteResequenceMessage( void )
+{
+    return wxString(
+            _("Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?") );
+}
+
 Route *Routeman::FindRouteByGUID(const wxString &guid)
 {
     wxRouteListNode *node1 = pRouteList->GetFirst();

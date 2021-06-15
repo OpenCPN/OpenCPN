@@ -4920,7 +4920,10 @@ void MyFrame::ScheduleSettingsDialog()
 
 ChartCanvas *MyFrame::GetFocusCanvas()
 {
-    return g_focusCanvas;
+    if( (g_canvasConfig != 0) && g_focusCanvas )             // multi-canvas?
+        return g_focusCanvas;
+    else
+        return GetPrimaryCanvas();
 }
 
 void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )

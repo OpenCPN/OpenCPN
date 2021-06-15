@@ -4894,6 +4894,8 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
         }
 
         ctrl->SetBackgroundColour( window_back_color );
+        if(darkMode)
+            ctrl->SetForegroundColour( text_color );
 
 #if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
         // On macOS 10.12, enable dark mode at the window level if appropriate.

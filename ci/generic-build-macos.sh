@@ -75,9 +75,11 @@ make install # Dunno why the second is needed but it is, otherwise
 #  Or the second install kills it...
 #  So we do it explicitely.
 rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
-cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
+cp /usr/local/Cellar/pixman/0.*.*/lib/libpixman-1.0.*.*.dylib \
+    /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
 # and some dependencies which failed to get softlinks
-cp /usr/local/Cellar/zstd/1.4.9_1/lib/libzstd.1.4.9.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libzstd.1.dylib
+cp /usr/local/Cellar/zstd/1.[0-9].*/lib/libzstd.1.[0-9].*.dylib \
+    /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libzstd.1.dylib
 
 sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 

@@ -1887,7 +1887,7 @@ bool PlugInManager::UnLoadPlugIn(size_t ix)
     if(pic->m_pplugin){
         pic->m_destroy_fn(pic->m_pplugin);
     }
-   
+
     delete pic;            // This will unload the PlugIn via DTOR of pic->m_library
     plugin_array.RemoveAt(ix);
     return true;

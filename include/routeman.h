@@ -118,6 +118,7 @@ public:
       wxBrush * GetRoutePointBrush(void){return m_pRoutePointBrush;}
 
       wxString GetRouteReverseMessage(void);
+      wxString GetRouteResequenceMessage(void);
 
       bool        m_bDataValid;
 
