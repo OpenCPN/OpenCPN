@@ -34,7 +34,7 @@
 
 #include <sys/sysmacros.h>
 #include <sys/stat.h>
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 
 #include "linux_devices.h"
 #include "logger.h"
