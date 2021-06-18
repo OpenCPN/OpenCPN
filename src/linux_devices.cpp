@@ -189,7 +189,7 @@ static usbdata parse_uevent(std::istream& is)
     return usbdata("", "");
 }
 
-usbdata get_device_usbdata(const char* path)
+static usbdata get_device_usbdata(const char* path)
 {
     // Get real path for node in /sys corresponding to path in /dev
     struct stat st;
@@ -270,7 +270,7 @@ static std::string create_tmpfile(const std::string& contents,
 }
 
 
-std::string create_udev_rule(usbdata data, const char* symlink)
+static std::string create_udev_rule(usbdata data, const char* symlink)
 {
     std::string rule(DEVICE_RULE);
     ocpn::replace(rule, "@vendor@", data.vendor_id);
