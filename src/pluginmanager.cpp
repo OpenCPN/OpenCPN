@@ -5685,11 +5685,39 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         
         pugi::xml_document catalog;
         wxString currentCatalog = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml");
-        ret = catalog.load_file( currentCatalog.mb_str() );
-        if( !ret ){
-            OCPNMessageBox(this,_("Cannot access current catalog."), _("OpenCPN Plugin Import Error"));
-            return;
+        bool badCatalog = false;
+        if(!wxFileExists(currentCatalog)){
+            badCatalog = true;
         }
+        else{
+            ret = catalog.load_file( currentCatalog.mb_str() );
+            if( !ret ){
+                badCatalog = true;
+            }
+        }
+        
+        // If current default catalog is corrupt, or missing, 
+        // then create a new "stub" catalog
+        
+        if(badCatalog){
+            if(wxFileExists(currentCatalog))
+                wxRemoveFile(currentCatalog);
+            
+            wxTextFile stubCatalog(currentCatalog);
+            stubCatalog.Create();
+            stubCatalog.AddLine(_T("<?xml version=\"1.0\" ?>"));
+            stubCatalog.AddLine(_T("<plugins>"));
+            stubCatalog.AddLine(_T("<version>0.0.0</version>"));
+            stubCatalog.AddLine(_T("<date>2021-06-01 00:01</date>"));
+            stubCatalog.AddLine(_T("</plugins>"));
+            stubCatalog.Write();
+            stubCatalog.Close();
+            
+            catalog.load_file( currentCatalog.mb_str() );
+        }
+
+            
+            
        
         pugi::xml_node catalogRoot = catalog.first_child();
         for (pugi::xml_node element = catalogRoot.first_child(); element; element = element.next_sibling()){
