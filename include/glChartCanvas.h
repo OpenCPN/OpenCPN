@@ -357,6 +357,8 @@ protected:
     int          m_tideTexHeight;
     int          m_currentTexWidth;
     int          m_currentTexHeight;
+    int          m_displayScale;
+
     
     DECLARE_EVENT_TABLE()
 };

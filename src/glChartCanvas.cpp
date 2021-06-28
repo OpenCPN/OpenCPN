@@ -596,6 +596,8 @@ void glChartCanvas::Init()
 
     m_gldc.SetGLCanvas( this );
     
+    m_displayScale = GetContentScaleFactor(); 
+
     
 #ifdef __OCPN__ANDROID__    
     //  Create/connect a dynamic event handler slot for gesture and some timer events
@@ -821,8 +823,8 @@ bool glChartCanvas::buildFBOSize(int fboSize)
     m_cache_tex_y = wxMax(rb_x, rb_y);
 
 #else
-    m_cache_tex_x = GetSize().x;
-    m_cache_tex_y = GetSize().y;
+    m_cache_tex_x = GetSize().x * m_displayScale;
+    m_cache_tex_y = GetSize().y * m_displayScale;
 #endif
 
     int err = GL_NO_ERROR;
@@ -1142,7 +1144,10 @@ void glChartCanvas::BuildFBO( )
         return;
 
     
-    int initialSize = 2048;
+//    int initialSize = 2048;
+    int gl_width, gl_height;
+    m_pParentCanvas->GetClientSize( &gl_width, &gl_height );
+    int initialSize = NextPow2(gl_width * m_displayScale);
     
 #ifdef __OCPN__ANDROID__
     //  Some low mem-spec devices have trouble with 2048 FBO size.
@@ -1380,6 +1385,7 @@ void glChartCanvas::SetupOpenGL()
     
     g_GLOptions.m_bUseCanvasPanning = false;
 
+    //m_b_DisableFBO = true;
         
     //      Maybe build FBO(s)
 
@@ -4152,7 +4158,7 @@ void glChartCanvas::Render()
     
     OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
 
-    glViewport( 0, 0, (GLint) gl_width, (GLint) gl_height );
+    glViewport( 0, 0, (GLint) gl_width * m_displayScale, (GLint) gl_height * m_displayScale );
        
 #ifndef USE_ANDROID_GLES2
     glMatrixMode (GL_PROJECTION);
@@ -4258,8 +4264,8 @@ void glChartCanvas::Render()
                 || VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR )
                 && m_cache_vp.pix_height == VPoint.pix_height )
             {
-                wxPoint2DDouble c_old = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
-                wxPoint2DDouble c_new = m_cache_vp.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
+                wxPoint2DDouble c_old = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon ) * m_displayScale;
+                wxPoint2DDouble c_new = m_cache_vp.GetDoublePixFromLL( VPoint.clat, VPoint.clon ) * m_displayScale;
 
                 dy = wxRound(c_new.m_y - c_old.m_y);
                 dx = wxRound(c_new.m_x - c_old.m_x);
@@ -4295,19 +4301,21 @@ void glChartCanvas::Render()
                         ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                         g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
 
+                    float dxm = dx / m_displayScale;
+                    float dym = dy / m_displayScale;
                     //calculate the new regions to render
                     // add an extra pixel avoid coorindate rounding issues
                     OCPNRegion update_region;
 
-                    if( dy > 0 && dy < VPoint.pix_height)
-                        update_region.Union(wxRect( 0, VPoint.pix_height - dy, VPoint.pix_width, dy ));
-                    else if(dy < 0)
-                        update_region.Union(wxRect( 0, 0, VPoint.pix_width, -dy ));
+                    if( dym > 0 && dym < VPoint.pix_height)
+                        update_region.Union(wxRect( 0, VPoint.pix_height - dym, VPoint.pix_width, dym ));
+                    else if(dym < 0)
+                        update_region.Union(wxRect( 0, 0, VPoint.pix_width, -dym ));
                             
-                    if( dx > 0 && dx < VPoint.pix_width )
-                        update_region.Union(wxRect( VPoint.pix_width - dx, 0, dx, VPoint.pix_height ));
-                    else if (dx < 0)
-                        update_region.Union(wxRect( 0, 0, -dx, VPoint.pix_height ));
+                    if( dxm > 0 && dxm < VPoint.pix_width )
+                        update_region.Union(wxRect( VPoint.pix_width - dxm, 0, dxm, VPoint.pix_height ));
+                    else if (dxm < 0)
+                        update_region.Union(wxRect( 0, 0, -dxm, VPoint.pix_height ));
 
                     RenderCharts(m_gldc, update_region);
 
@@ -4320,17 +4328,17 @@ void glChartCanvas::Render()
                     // Render the cached texture as quad to FBO(m_blit_tex) with offsets
                     int x1, x2, y1, y2;
 
-                    int ow = VPoint.pix_width - abs( dx );
-                    int oh = VPoint.pix_height - abs( dy );
-                    if( dx > 0 )
-                        x1 = dx,  x2 = 0;
+                    int ow = VPoint.pix_width - abs( dxm );
+                    int oh = VPoint.pix_height - abs( dym );
+                    if( dxm > 0 )
+                        x1 = dxm,  x2 = 0;
                     else
-                        x1 = 0,   x2 = -dx;
+                        x1 = 0,   x2 = -dxm;
                             
-                    if( dy > 0 )
-                        y1 = dy,  y2 = 0;
+                    if( dym > 0 )
+                        y1 = dym,  y2 = 0;
                     else
-                        y1 = 0,   y2 = -dy;
+                        y1 = 0,   y2 = -dym;
 
                     // normalize to texture coordinates range from 0 to 1
                     float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = sy - (y1 + oh);
@@ -4355,8 +4363,8 @@ void glChartCanvas::Render()
                     
                     m_fbo_offsetx = 0;
                     m_fbo_offsety = 0;
-                    m_fbo_swidth = sx;
-                    m_fbo_sheight = sy;
+                    m_fbo_swidth = sx * m_displayScale;
+                    m_fbo_sheight = sy * m_displayScale;
                     wxRect rect(m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy);
                     RenderCharts(m_gldc, screen_region);
             }
