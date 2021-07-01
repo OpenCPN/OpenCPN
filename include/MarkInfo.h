@@ -355,7 +355,7 @@ class MarkInfoDlg : public wxFrame
         void OnAddLink( wxCommandEvent& event );
         
     public:
-        MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
+        MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = FRAME_WITH_LINKS_STYLE );
         ~MarkInfoDlg();
         void Create();
         void InitialFocus(void);
