@@ -1,8 +1,11 @@
 version=4
+
+# Explicitly prefer .zip until #831370 is fixed in tar.
+
 opts=\
-dversionmangle=s/\+(debian|dfsg|ds|deb)\.?\d*$//,\
-filenamemangle=s/_(Release|Beta|Alpha|v|V)//;s|^.*tags/|opencpn-|;,\
-uversionmangle=s/((Beta|Alpha|v|V|Release)[\.\-\+_]?)?//;,\
-repacksuffix=+dfsg \
-https://github.com/OpenCPN/OpenCPN/tags \
-archive/refs/tags/(Beta|OA|v|V|Release)_([\d\.]+).zip
+     downloadurlmangle=s|releases/tag|archive/refs/tags|;\
+                       s|$|.zip|,\
+     dversionmangle=auto,\
+     repacksuffix=+dfsg \
+https://github.com/OpenCPN/OpenCPN/releases \
+releases/tag/(?:Release|v)@ANY_VERSION@
