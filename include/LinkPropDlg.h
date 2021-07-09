@@ -44,6 +44,12 @@
 #include "scrollingdialog.h"
 #endif
 
+#ifdef __WXOSX__
+#define FRAME_WITH_LINKS_STYLE wxCAPTION|wxDEFAULT_FRAME_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER
+#else
+#define FRAME_WITH_LINKS_STYLE wxCAPTION|wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 /// Class LinkPropDlgDef
 ///////////////////////////////////////////////////////////////////////////////
