@@ -160,6 +160,7 @@ AIS_Target_Data::AIS_Target_Data()
     b_active = false;
     blue_paddle = 0;
     bCPA_Valid = false;
+    b_isFollower = false;
     ROTIND = 0;
     b_show_track = g_bAISShowTracks;
     b_SarAircraftPosnReport = false;

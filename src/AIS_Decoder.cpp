@@ -822,6 +822,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     int gpsg_mmsi = 0;
     int arpa_mmsi = 0;
     int aprs_mmsi = 0;
+    int follower_mmsi = 0;
     int mmsi = 0;
 
     long arpa_tgt_num = 0;
@@ -1243,6 +1244,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                         }
                         return AIS_NoError;
                     }
+                    else if(props->m_bFollower){
+                        follower_mmsi = mmsi;
+                    }
                     else
                         break;
                 }
@@ -1353,6 +1357,11 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 // The normal Plain-Old AIS target code path....
                 bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );       // Parse the new data
               }
+              
+              //  Catch followers, and set correct flag
+              if(follower_mmsi)
+                  pTargetData->b_isFollower = true;
+              
               //     Update the most recent report period
               pTargetData->RecentPeriod = pTargetData->PositionReportTicks - last_report_ticks;
             }

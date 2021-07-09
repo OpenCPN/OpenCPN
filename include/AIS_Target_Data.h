@@ -112,7 +112,8 @@ public:
     bool                      b_positionDoubtful;
     bool                      b_positionOnceValid;
     bool                      b_nameValid;
-
+    bool                      b_isFollower;
+    
     //                     MMSI Properties
     bool                      b_NoTrack;
     bool                      b_OwnShip;
