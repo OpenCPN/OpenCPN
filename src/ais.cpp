@@ -1095,8 +1095,10 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         }
 
         //   If this is an AIS Class B target, so symbolize it differently
-        if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;
-        else if( (td->Class == AIS_GPSG_BUDDY)  || (td->b_isFollower) ){
+        if( td->Class == AIS_CLASS_B )
+            ais_quad_icon[3].y = 0;
+        
+        if( (td->Class == AIS_GPSG_BUDDY)  || (td->b_isFollower) ){
             ais_quad_icon[0] = wxPoint(-5, -12);
             ais_quad_icon[1] = wxPoint(-3,  12);
             ais_quad_icon[2] = wxPoint( 3,  12);
