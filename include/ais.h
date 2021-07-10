@@ -142,6 +142,7 @@ typedef enum ais_alert_type
 {
       AIS_NO_ALERT = 0,
       AIS_ALERT_SET,
+      AIS_ALERT_NO_DIALOG_SET
 
 }_ais_alarm_type;
 

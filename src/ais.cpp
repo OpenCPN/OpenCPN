@@ -1163,6 +1163,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     if( ( td->n_alert_state == AIS_ALERT_SET ) && ( td->bCPA_Valid ) )
         target_brush = wxBrush( URED );
 
+    if( ( td->n_alert_state == AIS_ALERT_NO_DIALOG_SET ) && ( td->bCPA_Valid ) )
+        target_brush = wxBrush( URED );
+
     if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
     wxPen target_outline_pen( UBLCK, AIS_width_target_outline );

@@ -2524,13 +2524,6 @@ void AIS_Decoder::UpdateAllAlarms( void )
                     continue;
                 }
 
-                //    No alert for my Follower
-                if(td->b_isFollower){
-                    td->n_alert_state = AIS_NO_ALERT;
-                    continue;
-                }
-                    
-
                 //    Skip distant targets if requested
                 if( g_bCPAMax ) {
                     if( td->Range_NM > g_CPAMax_NM ) {
@@ -2541,9 +2534,18 @@ void AIS_Decoder::UpdateAllAlarms( void )
 
                 if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) && ( td->Class != AIS_BASE )) {
                     if( g_bTCPA_Max ) {
-                        if( td->TCPA < g_TCPA_Max ) this_alarm = AIS_ALERT_SET;
-                    } else
-                        this_alarm = AIS_ALERT_SET;
+                        if( td->TCPA < g_TCPA_Max ){ 
+                            if(td->b_isFollower)
+                                this_alarm = AIS_ALERT_NO_DIALOG_SET;
+                            else
+                                this_alarm = AIS_ALERT_SET;
+                        }
+                    } else{
+                        if(td->b_isFollower)
+                            this_alarm = AIS_ALERT_NO_DIALOG_SET;
+                        else
+                            this_alarm = AIS_ALERT_SET;
+                    }
                 }
             }
 
