@@ -13543,7 +13543,18 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam15</attrib-code>
-			<attrib-code index="1">COLOUR1,3</attrib-code>
+			<attrib-code index="1">COLOUR1,3,1,3</attrib-code>
+			<instruction>SY(BOYLAT26);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="1337" RCID="31389" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Simplified</table-name>
+			<attrib-code index="0">catlam15</attrib-code>
+			<attrib-code index="1">COLOUR3,1,3,1</attrib-code>
 			<instruction>SY(BOYLAT26);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
@@ -13554,7 +13565,18 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam16</attrib-code>
-			<attrib-code index="1">COLOUR1,4</attrib-code>
+			<attrib-code index="1">COLOUR1,4,1,4</attrib-code>
+			<instruction>SY(BOYLAT27);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="1338" RCID="31390" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Simplified</table-name>
+			<attrib-code index="0">catlam16</attrib-code>
+			<attrib-code index="1">COLOUR4,1,4,1</attrib-code>
 			<instruction>SY(BOYLAT27);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
