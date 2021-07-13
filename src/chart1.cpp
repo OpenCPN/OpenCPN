@@ -6130,8 +6130,10 @@ int MyFrame::DoOptionsDialog()
             cc1SizeBefore = g_canvasArray.Item(0)->GetSize();
     }
         
-    //  Capture the full path names of charts currently shown in all canvases
+    //  Capture the full path names and VPScale of charts currently shown in all canvases
     wxArrayString pathArray;
+    double restoreScale[4];
+    
     // ..For each canvas...
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
         ChartCanvas *cc = g_canvasArray.Item(i);
@@ -6146,6 +6148,7 @@ int MyFrame::DoOptionsDialog()
             }
             
             pathArray.Add(chart_file_name);
+            restoreScale[i] = cc->GetVPScale();
         }                
     }
     
@@ -6367,6 +6370,7 @@ int MyFrame::DoOptionsDialog()
 
     // If needed, refresh each canvas,
     // trying to reload the previously displayed chart by name as saved in pathArray
+    // Also, restoring the previous chart VPScale, if possible
     if(b_refresh){
     // ..For each canvas...
         for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -6376,11 +6380,12 @@ int MyFrame::DoOptionsDialog()
                 if( i < pathArray.GetCount())
                     index_hint = ChartData->FinddbIndex( pathArray.Item(i));
                 cc->canvasChartsRefresh( index_hint );
+                if(index_hint != -1)
+                    cc->SetVPScale( restoreScale[i] );
             }
         }
     }
 
-    
     
     g_boptionsactive = false;
     
