@@ -8415,7 +8415,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         if( !duplicate ) {
                             int dlg_return;
                         #ifndef __WXOSX__
-                            dlg_return = OCPNMessageBox( this, _("Replace this WayPoint by the nearby one?"),
+                            dlg_return = OCPNMessageBox( this, _("Replace this RoutePoint by the nearby isolated Waypoint?"),
                                        _("OpenCPN RoutePoint change"),
                                        (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
                             if( dlg_return == wxID_YES ) {
@@ -8548,7 +8548,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         if( !duplicate ) {
                             int dlg_return;
                         #ifndef __WXOSX__
-                            dlg_return = OCPNMessageBox( this, _("Replace this WayPoint by the nearby one?"),
+                            dlg_return = OCPNMessageBox( this, _("Replace this RoutePoint by the nearby isolated Waypoint?"),
                                        _("OpenCPN RoutePoint change"),
                                             (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
                             if( dlg_return == wxID_YES ) {
