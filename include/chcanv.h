@@ -658,7 +658,6 @@ private:
       void RenderAllChartOutlines(ocpnDC &dc, ViewPort& vp);
       void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort& vp);
       void RenderRouteLegs ( ocpnDC &dc );
-      void RenderShipToActive ( ocpnDC &dc , bool Use_Opengl );
 
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 
@@ -666,6 +665,7 @@ private:
       void ScaleBarDraw( ocpnDC& dc );
 
       void DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru );
+	  void RenderShipToActive(ocpnDC &dc, bool Use_Opengl);
 
       emboss_data *EmbossDepthScale();
       emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxString &str, ColorScheme cs);
