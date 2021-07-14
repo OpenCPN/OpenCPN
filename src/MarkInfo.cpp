@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 *
 * Project:  OpenCPN
 * Purpose:  MarkProperties Support
@@ -1678,6 +1678,10 @@ bool MarkInfoDlg::SaveChanges()
         if( m_pRoutePoint->m_bIsInRoute ) {
             bool b_name_is_numeric = true;
             for( unsigned int i = 0; i < m_pRoutePoint->GetName().Len(); i++ ) {
+                if( i < 2 && wxChar( 'N' ) == m_pRoutePoint->GetName()[0]
+                          && wxChar( 'M' ) == m_pRoutePoint->GetName()[1]
+                          && m_pRoutePoint->GetName().Len() > 2 )
+                    continue;
                 if( wxChar( '0' ) > m_pRoutePoint->GetName()[i] ) b_name_is_numeric = false;
                 if( wxChar( '9' ) < m_pRoutePoint->GetName()[i] ) b_name_is_numeric = false;
             }
