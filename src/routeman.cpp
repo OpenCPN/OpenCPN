@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Route Manager
@@ -2233,6 +2233,29 @@ RoutePoint *WayPointman::GetOtherNearbyWaypoint( double lat, double lon, double 
     }
     return NULL;
 
+}
+
+bool WayPointman::IsReallyVisible( RoutePoint* pWP )
+{
+    if( pWP->m_bIsolatedMark)
+                return pWP->IsVisible(); // isolated point
+    else {
+        wxRouteListNode *node = pRouteList->GetFirst();
+        while( node ) {
+            Route *proute = node->GetData();
+            if( proute && proute->pRoutePointList ) {
+                if( proute->pRoutePointList->IndexOf(pWP) != wxNOT_FOUND ){
+                    if(proute->IsVisible())
+                        return true;
+                }
+            }
+            node = node->GetNext();
+        }
+    }
+    if( pWP->m_bKeepXRoute ) // is not visible as part of route, but still exists as a waypoint
+        return pWP->IsVisible(); // so treat as isolated point
+
+    return false;
 }
 
 void WayPointman::ClearRoutePointFonts( void )

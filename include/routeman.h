@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Route Manager
@@ -181,6 +181,7 @@ public:
       wxString CreateGUID(RoutePoint *pRP);
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
       RoutePoint *GetOtherNearbyWaypoint(double lat, double lon, double radius_meters, const wxString &guid);
+      bool IsReallyVisible(RoutePoint* pWP );
       void SetColorScheme(ColorScheme cs);
       bool SharedWptsExist();
       void DeleteAllWaypoints(bool b_delete_used);
