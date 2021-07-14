@@ -58,6 +58,7 @@ int g_iUTCOffset;
 double g_dDashDBTOffset;
 bool g_iDashUsetruewinddata;
 double g_dHDT;
+double g_dSOG, g_dCOG;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -386,6 +387,7 @@ wxString MakeName()
 {
     return _T("DASH_") + GetUUID();
 }
+
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -729,6 +731,12 @@ void dashboard_pi::SendSentenceToAllInstruments( DASH_CAP st, double value, wxSt
     }
     if (st == OCPN_DBP_STC_HDT) {
         g_dHDT = value;
+    }
+    if (st == OCPN_DBP_STC_SOG) {
+        g_dSOG = value;
+    }
+    if (st == OCPN_DBP_STC_COG) {
+        g_dCOG = value;
     }
 }
 
@@ -1106,6 +1114,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                                              getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
                                 mMWVA_Watchdog = gps_watchdog_timeout_ticks;
                             }
+                            
+                            // If we have true HDT, COG, and SOG
+                            // then using simple vector math, we can calculate true wind direction and speed.
+                            // If there is no higher priority source for WDN, then do so here, and update the appropriate instruments.
+                            if (mPriWDN >= 5) {
+                                CalculateAndUpdateTWDS( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, m_NMEA0183.Mwv.WindAngle);
+                                mPriWDN = 5;
+                                mWDN_Watchdog = gps_watchdog_timeout_ticks;
+                            }
                         }
                         else if (m_NMEA0183.Mwv.Reference == _T("T")) // Theoretical (aka True)
                         {
@@ -1317,6 +1334,18 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             double m_NMEA0183.Vwr.WindSpeedKmh;
                             */
                     }
+                    
+                    // If we have true HDT, COG, and SOG
+                    // then using simple vector math, we can calculate true wind direction and speed.
+                    // If there is no higher priority source for WDN, then do so here, and update the appropriate instruments.
+                    if (mPriWDN >= 6) {
+                        double awa = m_NMEA0183.Vwr.WindDirectionMagnitude;
+                        if(m_NMEA0183.Vwr.DirectionOfWind == Left)
+                            awa = 360. - m_NMEA0183.Vwr.WindDirectionMagnitude;
+                        CalculateAndUpdateTWDS( m_NMEA0183.Vwr.WindSpeedKnots, awa );
+                        mPriWDN = 6;
+                        mWDN_Watchdog = gps_watchdog_timeout_ticks;
+                    }
                 }
             }
         }
@@ -1474,6 +1503,51 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         }
     }
 }
+
+/*      Calculate True Wind speed and direction from AWS and AWA
+ *      This algorithm requires HDT, SOG, and COG, which are maintained as globals elsewhere.
+ *      Also, update all instruments tagged with OCPN_DBP_STC_TWD, OCPN_DBP_STC_TWS, and OCPN_DBP_STC_TWS2
+ */
+void dashboard_pi::CalculateAndUpdateTWDS( double awsKnots, double awaDegrees)
+{
+    if( (!std::isnan(g_dSOG)) && (!std::isnan(g_dCOG)) && (!std::isnan(g_dHDT))){
+                                    
+        // Apparent wind velocity vector, relative to head-up
+        double awsx = awsKnots * cos(awaDegrees * PI / 180.);
+        double awsy = awsKnots * sin(awaDegrees * PI / 180.);
+                                    
+        // Ownship velocity vector, relative to head-up
+        double bsx = g_dSOG * cos((g_dCOG - g_dHDT) * PI / 180.);
+        double bsy = g_dSOG * sin((g_dCOG - g_dHDT) * PI / 180.);;
+                                    
+        // "True" wind is calculated by vector subtraction
+        double twdx = awsx - bsx;
+        double twdy = awsy - bsy;
+                                    
+        // Calculate the speed (magnitude of the vector)
+        double tws = pow(((twdx * twdx) + (twdy * twdy)), 0.5);
+                                    
+        // calculate the direction
+        double twd = atan2(twdy, twdx) * 180. / PI;
+                                    
+        // Re-orient to the ownship HDT
+        double twdc = twd + g_dHDT;
+                                    
+        // Normalize
+        if( twdc < 0 ) twdc +=360.;
+        if( twdc > 360.) twdc -= 360;
+ 
+        // Update the instruments
+        //printf("CALC: %4.0f %4.0f\n", tws, twdc);
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twdc, _T("\u00B0"));
+                                          
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,toUsrSpeed_Plugin(tws, g_iDashWindSpeedUnit),
+                                                    getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2, toUsrSpeed_Plugin(tws, g_iDashWindSpeedUnit),
+                                                    getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+    }
+}
+
 
 void dashboard_pi::ParseSignalK( wxString &msg)
 {

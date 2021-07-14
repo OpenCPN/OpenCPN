@@ -70,6 +70,10 @@
 #include "from_ownship.h"
 #include "iirfilter.h"
 
+#ifndef PI
+#define PI        3.1415926535897931160E0      /* pi */
+#endif
+
 class DashboardWindow;
 class DashboardWindowContainer;
 class DashboardInstrumentContainer;
@@ -176,6 +180,8 @@ private:
       void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments( wxDateTime value );
+
+      void CalculateAndUpdateTWDS( double awsKnots, double awaDegrees);
 
       void ParseSignalK( wxString &msg);
       void handleSKUpdate(wxJSONValue &update);
