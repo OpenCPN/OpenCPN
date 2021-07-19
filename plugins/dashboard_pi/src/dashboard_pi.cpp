@@ -1122,6 +1122,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                 CalculateAndUpdateTWDS( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, m_NMEA0183.Mwv.WindAngle);
                                 mPriWDN = 5;
                                 mWDN_Watchdog = gps_watchdog_timeout_ticks;
+                                mMWVT_Watchdog = gps_watchdog_timeout_ticks;
                             }
                         }
                         else if (m_NMEA0183.Mwv.Reference == _T("T")) // Theoretical (aka True)
@@ -1344,6 +1345,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             awa = 360. - m_NMEA0183.Vwr.WindDirectionMagnitude;
                         CalculateAndUpdateTWDS( m_NMEA0183.Vwr.WindSpeedKnots, awa );
                         mPriWDN = 6;
+                        mMWVT_Watchdog = gps_watchdog_timeout_ticks;
                         mWDN_Watchdog = gps_watchdog_timeout_ticks;
                     }
                 }
@@ -1510,15 +1512,19 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
  */
 void dashboard_pi::CalculateAndUpdateTWDS( double awsKnots, double awaDegrees)
 {
-    if( (!std::isnan(g_dSOG)) && (!std::isnan(g_dCOG)) && (!std::isnan(g_dHDT))){
+    if( !std::isnan(g_dHDT) ){
                                     
         // Apparent wind velocity vector, relative to head-up
         double awsx = awsKnots * cos(awaDegrees * PI / 180.);
         double awsy = awsKnots * sin(awaDegrees * PI / 180.);
                                     
         // Ownship velocity vector, relative to head-up
-        double bsx = g_dSOG * cos((g_dCOG - g_dHDT) * PI / 180.);
-        double bsy = g_dSOG * sin((g_dCOG - g_dHDT) * PI / 180.);;
+        double bsx = 0;
+        double bsy = 0;
+        if( (!std::isnan(g_dSOG)) && (!std::isnan(g_dCOG)) ){
+            bsx = g_dSOG * cos((g_dCOG - g_dHDT) * PI / 180.);
+            bsy = g_dSOG * sin((g_dCOG - g_dHDT) * PI / 180.);;
+        }
                                     
         // "True" wind is calculated by vector subtraction
         double twdx = awsx - bsx;
