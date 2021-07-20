@@ -83,6 +83,7 @@ extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
 extern void androidEnableBackButton(bool benable);
 extern void androidEnableBackButtonCheck(bool benable);
+extern void androidEnableOptionItems( bool benable );
 
 extern wxString androidGetSupplementalLicense( void );
 
