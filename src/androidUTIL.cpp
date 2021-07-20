@@ -2599,6 +2599,12 @@ void androidEnableBackButtonCheck(bool benable)
         androidEnableBackButton(benable);
 }
 
+void androidEnableOptionItems(bool benable)
+{
+    callActivityMethod_is("enableOptionItemAction", benable?1:0);
+}
+
+
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {

@@ -1733,6 +1733,7 @@ bool MyApp::OnInit()
     if( !wxApp::OnInit() ) return false;
 #ifdef __OCPN__ANDROID__
     androidEnableBackButton( false );
+    androidEnableOptionItems( false );
 #endif
 
     GpxDocument::SeedRandom();
@@ -7186,6 +7187,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 #ifdef __OCPN__ANDROID__
             androidEnableBackButton( true );
             androidEnableRotation();
+            androidEnableOptionItems( true );
 #endif
 
             if( g_MainToolbar )
