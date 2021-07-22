@@ -26,6 +26,7 @@
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
 
+
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
@@ -5487,8 +5488,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                   if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
                   {
-                        //    Save the current cm93 chart pointer for restoration later
-                        cm93chart *m_pcm93chart_save = m_pcm93chart_current;
+                        //    Save the current cm93 chart scale for restoration later
                         int cmscale_save = m_cmscale;
 
                         LLRegion region_vect[8];
@@ -5518,33 +5518,38 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         for( int i=0 ; i < 8 ; i++) {
                             if(!region_vect[i].Empty()){
                                 m_cmscale = PrepareChartScale ( vp, i, false );
-                                render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, region_vect[i] );
+                                if ( m_pcm93chart_current )
+                                    render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, region_vect[i] );
                             }
                         }
 
                         // restore the base chart pointer
-                        m_pcm93chart_current = m_pcm93chart_save;
                         m_cmscale = cmscale_save;
+                        m_pcm93chart_current = m_pcm93chart_array[m_cmscale];
                   }
 
                   //  Render the on-top Reference region/scale
                   if(m_pcm93chart_current){
-                  render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, Region );
-
-                  m_Name = m_pcm93chart_current->GetName();
+                    render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, Region );
+                    m_Name = m_pcm93chart_current->GetName();
                   }
 
             }
             else  // Single chart mode
             {
-                render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp, RectRegion, Region );
-                m_Name = m_pcm93chart_current->GetLastFileName();
+                if ( !m_pcm93chart_current ){
+                    render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp, RectRegion, Region );
+                    m_Name = m_pcm93chart_current->GetLastFileName();
+                }
             }
       }
 
       if(VPoint.m_projection_type != PROJECTION_MERCATOR)
           return render_return; // TODO: fix below for non-mercator
 
+      if ( !m_pcm93chart_current )
+          return render_return;
+      
       //    Render the cm93 cell's M_COVR outlines if called for
       if ( m_cell_index_special_outline )
       {
