@@ -9692,28 +9692,33 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, const wxString &first, 
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 {
         Route* route = 0;
-    if( m_routeState >= 2)
+    if( m_routeState >= 2 )
         route = m_pMouseRoute;
-    if(m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 ) )
-            route = m_pMeasureRoute;
-        
-        if(!route)
-            return;
     
-        double render_lat = m_cursor_lat;
-        double render_lon = m_cursor_lon;
+    if(m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 ) )
+        route = m_pMeasureRoute;
         
-            int np = route->GetnPoints();
-            if(np){
-                if(g_btouch && (np > 1))
-                    np --;
-                RoutePoint rp = route->GetPoint(np);
-                render_lat = rp.m_lat;
-                render_lon = rp.m_lon;
-            }
+    if(!route)
+        return;
+    
+    //      Validate route pointer
+    if( !g_pRouteMan->IsRouteValid(route) ) 
+        return;
+
+    double render_lat = m_cursor_lat;
+    double render_lon = m_cursor_lon;
+        
+    int np = route->GetnPoints();
+    if(np){
+        if(g_btouch && (np > 1))
+            np --;
+        RoutePoint rp = route->GetPoint(np);
+        render_lat = rp.m_lat;
+        render_lon = rp.m_lon;
+    }
                 
     double rhumbBearing, rhumbDist;
-        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
+    DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
     double brg = rhumbBearing;
     double dist = rhumbDist;
 
