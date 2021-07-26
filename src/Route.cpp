@@ -46,7 +46,7 @@ extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
 extern OCPNPlatform *g_Platform;
 extern wxString g_default_routepoint_icon;
-extern bool g_bShowShipToActive;
+extern bool g_bAllowShipToActive;;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -265,7 +265,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 
         RoutePoint *prp2 = node->GetData();
  
-		bool draw_arrow = !(prp2->m_bIsActive && g_bShowShipToActive);
+		bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
 
         if ( !m_bVisible && prp2->m_bKeepXRoute )
             prp2->Draw( dc, canvas, &rpt2, sharedVizOveride );
@@ -591,7 +591,7 @@ void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
         RoutePoint *prp = node->GetData();
         canvas->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
 		if (node != pRoutePointList->GetFirst()) {
-			if (!prp->m_bIsActive || !g_bShowShipToActive)
+			if (!prp->m_bIsActive || !g_bAllowShipToActive)
 				RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
 		}
         rpt1 = rpt2;

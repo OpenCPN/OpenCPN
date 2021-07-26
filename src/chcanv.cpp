@@ -220,6 +220,7 @@ extern bool             g_bInlandEcdis;
 extern int              g_ENCSoundingScaleFactor;
 
 extern float            g_GLMinSymbolLineWidth;
+bool					g_bAllowShipToActive;
 bool                    g_bShowShipToActive;
 int                     g_shipToActiveStyle;
 int                     g_shipToActiveColor;
@@ -9658,7 +9659,7 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, const wxString &first, 
 
 void ChartCanvas::RenderShipToActive ( ocpnDC &dc , bool Use_Opengl )
 {
-    if( !g_bShowShipToActive ) return;
+    if( !g_bAllowShipToActive) return;
 
     Route *rt = g_pRouteMan->GetpActiveRoute();
     if( !rt ) return;
