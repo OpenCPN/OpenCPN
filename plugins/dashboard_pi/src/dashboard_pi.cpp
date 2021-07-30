@@ -1881,10 +1881,14 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                             for (idx = 0; idx < 4; idx++) {
                                 arr = idx + 4 * iMesNum;                                
                                 try {
-                                    iID =  value["satellites"][arr]["id"].AsInt();
-                                    dElevRad = value["satellites"][arr]["elevation"].AsDouble();
-                                    dAzimRad = value["satellites"][arr]["azimuth"].AsDouble();
-                                    iSNR = value["satellites"][arr]["SNR"].AsInt();
+                                    if(value["satellites"][arr]["id"].IsInt())
+                                        iID =  value["satellites"][arr]["id"].AsInt();
+                                    if(value["satellites"][arr]["elevation"].IsDouble())
+                                        dElevRad = value["satellites"][arr]["elevation"].AsDouble();
+                                    if(value["satellites"][arr]["azimuth"].IsDouble())
+                                        dAzimRad = value["satellites"][arr]["azimuth"].AsDouble();
+                                    if(value["satellites"][arr]["SNR"].IsInt())
+                                        iSNR = value["satellites"][arr]["SNR"].AsInt();
                                 } catch (int e) {
                                     wxLogMessage(("_T(SignalK: Could not parse all satellite data: ") + e);
                                 }
