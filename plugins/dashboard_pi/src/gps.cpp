@@ -78,13 +78,14 @@ wxSize DashboardInstrument_GPS::GetSize( int orient, wxSize hint )
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      w = (12 * m_refDim); // Max 12 vertical bars
       if( orient == wxHORIZONTAL ) {
-          m_cx = DefaultWidth/2;
-          return wxSize( DefaultWidth, wxMax(hint.y, m_TitleHeight + m_refDim * 9) );
-      } else {
-          w = wxMax(hint.x, DefaultWidth);
           m_cx = w/2;
-          return wxSize( w, m_TitleHeight + m_refDim * 9);
+          return wxSize( w, wxMax(hint.y, m_TitleHeight + (m_refDim * 84/10)) );
+      } else {
+          w = wxMax(hint.x, w);
+          m_cx = w/2;
+          return wxSize( w, m_TitleHeight + (m_refDim * 84/10));
       }
 }
 
@@ -283,6 +284,8 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
       {
             if (m_SatInfo[idx].SatNumber)
                   tdc.DrawText(wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber), idx*pitch+offset, 0);
+            else
+                tdc.DrawText(" -", idx*pitch+offset, 0);
       }
       
       tdc.SelectObject( wxNullBitmap );
