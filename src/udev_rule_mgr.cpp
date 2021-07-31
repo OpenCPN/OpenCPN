@@ -121,7 +121,7 @@ struct HidePanel: wxPanel
 
 
 static const char* const
-    INSTRUCTIONS = "pkexec cp @PATH@ /etc/udev/rules.d";
+    INSTRUCTIONS = "@pkexec@ cp @PATH@ /etc/udev/rules.d";
 
 
 /** A clickable triangle which controls child window hide/show. */
@@ -251,6 +251,7 @@ class DongleInfoPanel: public wxPanel
             std::string cmd(INSTRUCTIONS);
             std::string rule_path(get_dongle_rule());
             ocpn::replace(cmd, "@PATH@", rule_path.c_str());
+            ocpn::replace(cmd, "@pkexec@", "sudo");
             auto vbox = new wxBoxSizer(wxVERTICAL);
             vbox->Add(new ManualInstructions(this, cmd.c_str()));
             std::string rule_text = get_rule(rule_path);
@@ -270,6 +271,7 @@ class DeviceInfoPanel: public wxPanel
         {
             std::string cmd(INSTRUCTIONS);
             ocpn::replace(cmd, "@PATH@", rule_path.c_str());
+            ocpn::replace(cmd, "@pkexec@", "sudo");
             auto vbox = new wxBoxSizer(wxVERTICAL);
             vbox->Add(new ManualInstructions(this, cmd.c_str()));
             vbox->Add(new ReviewRule(this, get_rule(rule_path)));
@@ -308,6 +310,7 @@ struct Buttons: public wxPanel
     {
         std::string cmd(INSTRUCTIONS);
         ocpn::replace(cmd, "@PATH@", m_rule_path);
+        ocpn::replace(cmd, "@pkexec@", "pkexec");
         int sts = system(cmd.c_str());
         int flags = wxOK | wxICON_WARNING;
         const char* msg = _("Errors encountered installing rule.");
