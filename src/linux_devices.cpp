@@ -228,7 +228,12 @@ static usbdata get_device_usbdata(const char* path)
 
 static std::string tmp_rule_path(const char* name)
 {
-    char dirpath[128] =  "/tmp/udevXXXXXX";
+    std::string tmpdir =
+        getenv("XDG_CACHE_HOME") ? getenv("XDG_CACHE_HOME") : "/tmp";
+    tmpdir += "/udevXXXXXX";
+
+    char dirpath[128] = {0};
+    strncpy(dirpath, tmpdir.c_str(), sizeof(dirpath) - 1);
     if (!mkdtemp(dirpath)) {
         WARNING_LOG << "Cannot create tempdir: " << strerror(errno);
         MESSAGE_LOG << "Using /tmp";
