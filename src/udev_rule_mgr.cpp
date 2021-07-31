@@ -54,6 +54,11 @@ This problem can be fixed by installing a udev rules file. Once installed,
 it will ensure that the dongle permissions are OK.
 )""");
 
+static const char* const FLATPAK_INTRO_TRAILER =_(R"""(
+
+On flatpak, this must be done using the manual command instructions below
+)""");
+
 static const char* const DEVICE_INTRO = _(R"""(
 The device @DEVICE@ exists but cannot be used due to missing permissions.
 
@@ -326,7 +331,11 @@ class DongleRuleDialog: public wxDialog
         {
             auto sizer = new wxBoxSizer(wxVERTICAL);
             auto flags = wxSizerFlags().Expand().Border();
-            sizer->Add(new wxStaticText(this, wxID_ANY, DONGLE_INTRO), flags);
+            std::string intro(DONGLE_INTRO);
+            if (getenv("FLATPAK_ID")) {
+                intro += FLATPAK_INTRO_TRAILER;
+            }
+            sizer->Add(new wxStaticText(this, wxID_ANY, intro), flags);
             sizer->Add(new wxStaticLine(this), flags);
             sizer->Add(new DongleInfoPanel(this), flags);
             sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL,
@@ -342,7 +351,7 @@ class DongleRuleDialog: public wxDialog
 };
 
 
-/** Return an insto based on DEVICE_INTRO with proper substitutions. */
+/** Return an intro based on DEVICE_INTRO with proper substitutions. */
 static std::string get_device_intro(const char* device, std::string symlink)
 {
     std::string intro(DEVICE_INTRO);
@@ -354,6 +363,9 @@ static std::string get_device_intro(const char* device, std::string symlink)
     ocpn::replace(dev_name, "/dev/", "");
     while (intro.find("@DEVICE@") != std::string::npos) {
         ocpn::replace(intro, "@DEVICE@", dev_name.c_str());
+    }
+    if (getenv("FLATPAK_ID")) {
+        intro += FLATPAK_INTRO_TRAILER;
     }
     return intro;
 }
