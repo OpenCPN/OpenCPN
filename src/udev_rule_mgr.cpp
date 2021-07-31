@@ -293,6 +293,7 @@ struct Buttons: public wxPanel
         auto install = new wxButton(this, wxID_ANY, _("Install rule"));
         install->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                       [&](wxCommandEvent& ev) { do_install(); });
+        install->Enable(getenv("FLATPAK_ID") == NULL);
         sizer->Add(install, flags);
         auto quit  = new wxButton(this, wxID_EXIT, _("Quit"));
         quit->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
