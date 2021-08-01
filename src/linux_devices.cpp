@@ -53,12 +53,12 @@ static const int DONGLE_VENDOR = 0x1547;
 static const int DONGLE_PRODUCT = 0x1000;
 
 static const char* const DONGLE_RULE = R"""(
-ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", TAG+="uaccess"
+ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", MODE="0666"
 )""";
 
 static const char* const DEVICE_RULE = R"""(
 ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", \
-    TAG+="uaccess", SYMLINK+="@symlink@"
+    MODE="0666", SYMLINK+="@symlink@"
 )""";
 
 static const char* const DONGLE_RULE_NAME = "65-ocpn-dongle.rules";
