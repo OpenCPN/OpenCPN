@@ -30,23 +30,38 @@
 #include <iostream>
 
 #include <stdlib.h>
+
+#ifndef HAVE_UNISTD_H
+#error linux_devices requires unistd.h to be available
+#endif
 #include <unistd.h>
 
 #include <sys/sysmacros.h>
 #include <sys/stat.h>
+
+#ifndef HAVE_LIBUSB_10
+#error linux_devices requires libusb-1.0 to be available
+#endif
 #include <libusb.h>
 
 #include "linux_devices.h"
 #include "logger.h"
 #include "ocpn_utils.h"
 
-#ifndef HAVE_LIBUSB_10
-#error linux_devices requries libusb-1.0 to be available
-#endif
 
-#ifndef HAVE_UNISTD_H
-#error linux_devices requries unistad.h to be available
-#endif
+
+
+typedef struct usbdata {
+    std::string vendor_id;
+    std::string product_id;
+    std::string vendor;
+    std::string product;
+    std::string serial_nr;
+
+    usbdata(const std::string& v, const std::string& p, const char* s = 0)
+        :vendor_id(v), product_id(p), serial_nr(s ? s : "") {}
+    bool is_ok() { return vendor_id.length() > 0; }
+} usbdata;
 
 
 static const int DONGLE_VENDOR = 0x1547;
