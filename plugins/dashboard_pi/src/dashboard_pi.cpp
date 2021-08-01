@@ -1449,8 +1449,13 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
                             mHEEL_Watchdog = gps_watchdog_timeout_ticks;
                         }
+                        // XDR Rudder Angle
+                        else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("RUDDER")) {
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,xdrdata,_T("\u00B0"));
+                            mRSA_Watchdog = gps_watchdog_timeout_ticks;
+                        }
                     }
-		     //Nasa style water temp
+                    //Nasa style water temp
                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
                         if (mPriWTP >= 2) {
                             mPriWTP = 2;
