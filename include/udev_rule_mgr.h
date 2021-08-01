@@ -24,7 +24,8 @@
 #ifndef UDEV_RULE_MGR_H__
 #define UDEV_RULE_MGR_H__
 
-#include <wx/dialog.h>
+#include <string>
+
 #include <wx/window.h>
 
 
