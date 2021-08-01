@@ -81,6 +81,14 @@ Rule successfully installed. To activate the new rule:
 - Restart opencpn
 )""");
 
+static const char* const FLATPAK_INSTALL_MSG = _(R"""(
+To do after installing the rule according to instructions:
+- Exit opencpn.
+- Unplug and re-insert the USB device.
+- Restart opencpn
+)""");
+
+
 static const char* const DEVICE_NOT_FOUND =
     _("The device @device@ can not be found (disconnected?)");
 
@@ -292,13 +300,19 @@ struct Buttons: public wxPanel
         sizer->Add(1, 1, 100, wxEXPAND);   // Expanding spacer
         auto install = new wxButton(this, wxID_ANY, _("Install rule"));
         install->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                      [&](wxCommandEvent& ev) { do_install(); });
+                      [&](wxCommandEvent& ev) { do_install(); }
+        );
         install->Enable(getenv("FLATPAK_ID") == NULL);
         sizer->Add(install, flags);
         auto quit  = new wxButton(this, wxID_EXIT, _("Quit"));
         quit->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                    [&](wxCommandEvent& ev) {
-                       dynamic_cast<wxDialog*>(GetParent())->EndModal(0);
+                        if (getenv("FLATPAK_ID")) {
+                            auto flags = wxOK | wxICON_INFORMATION;
+                            auto msg = FLATPAK_INSTALL_MSG;
+                            OCPNMessageBox(this, msg, _("OpenCPN"), flags);
+                        }
+                        dynamic_cast<wxDialog*>(GetParent())->EndModal(0);
                    }
         );
         sizer->Add(quit, flags);
