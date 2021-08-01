@@ -47,6 +47,7 @@ extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
 extern OCPNPlatform *g_Platform;
 extern wxString g_default_routepoint_icon;
+extern bool g_bAllowShipToActive;;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -264,6 +265,9 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
     while( node ) {
 
         RoutePoint *prp2 = node->GetData();
+ 
+		bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
+
         if ( !m_bVisible && prp2->m_bKeepXRoute )
             prp2->Draw( dc, canvas, &rpt2, sharedVizOveride );
         else if (m_bVisible)
@@ -276,7 +280,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
             bool b_1_on = vp.GetBBox().Contains( prp1->m_lat,  prp1->m_lon );
 
             //Simple case
-            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth ); // with arrows
+            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, draw_arrow, m_hiliteWidth ); // with arrows
 
             //    In the cases where one point is on, and one off
             //    we must decide which way to go in longitude
@@ -297,7 +301,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 
                 if( dp < dtest ) adder = 0;
 
-                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, vp, true, m_hiliteWidth );
+                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, vp, draw_arrow, m_hiliteWidth );
             } else
                 if( !b_1_on ) {
                     if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
@@ -310,7 +314,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
                     
                     if( dp < dtest ) adder = 0;
 
-                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth );
+                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, vp, draw_arrow, m_hiliteWidth );
                 }
         }
 
@@ -587,8 +591,10 @@ void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
     while(node) {
         RoutePoint *prp = node->GetData();
         canvas->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-        if(node != pRoutePointList->GetFirst())
-            RenderSegmentArrowsGL( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
+		if (node != pRoutePointList->GetFirst()) {
+			if (!prp->m_bIsActive || !g_bAllowShipToActive)
+				RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
+		}
         rpt1 = rpt2;
         node = node->GetNext();
     }

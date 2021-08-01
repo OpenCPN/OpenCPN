@@ -669,6 +669,7 @@ private:
       void ScaleBarDraw( ocpnDC& dc );
 
       void DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru );
+	  void RenderShipToActive(ocpnDC &dc, bool Use_Opengl);
 
       emboss_data *EmbossDepthScale();
       emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxString &str, ColorScheme cs);

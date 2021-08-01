@@ -220,6 +220,11 @@ extern bool             g_bInlandEcdis;
 extern int              g_ENCSoundingScaleFactor;
 extern int              g_maxzoomin;
 
+extern float            g_GLMinSymbolLineWidth;
+bool					g_bAllowShipToActive;
+bool                    g_bShowShipToActive;
+int                     g_shipToActiveStyle;
+int                     g_shipToActiveColor;
 
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
 extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
@@ -9788,6 +9793,58 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, const wxString &first, 
         dc.DrawText( second, xp, yp + h1 );
 }
 
+void ChartCanvas::RenderShipToActive ( ocpnDC &dc , bool Use_Opengl )
+{
+    if( !g_bAllowShipToActive) return;
+
+    Route *rt = g_pRouteMan->GetpActiveRoute();
+    if( !rt ) return;
+
+    if( RoutePoint *rp = g_pRouteMan->GetpActivePoint() ) {
+        wxPoint2DDouble pa, pb;
+        GetDoubleCanvasPointPix( gLat, gLon, &pa );
+        GetDoubleCanvasPointPix( rp->m_lat, rp->m_lon, &pb );
+
+        //set pen
+        int width = g_pRouteMan->GetRoutePen()->GetWidth(); //get default route pen with
+        if( rt->m_width != wxPENSTYLE_INVALID ) width = rt->m_width;    //set route pen style if any
+        wxPenStyle style = (wxPenStyle)::StyleValues[wxMin(g_shipToActiveStyle, 5)]; //get setting pen style
+        if( style == wxPENSTYLE_INVALID ) style = wxPENSTYLE_SOLID; //default style
+        wxColour color = g_shipToActiveColor > 0 ?
+                GpxxColors[wxMin(g_shipToActiveColor-1, 15)] :  //set setting route pen color
+                g_pRouteMan->GetActiveRoutePen()->GetColour();  //default color
+        wxPen *mypen = wxThePenList->FindOrCreatePen(color, width, style );
+
+        dc.SetPen( *mypen );
+        dc.SetBrush( wxBrush( color, wxBRUSHSTYLE_SOLID ) );
+
+        if(!Use_Opengl)
+            rt->RenderSegment( dc, (int)pa.m_x, (int)pa.m_y, (int)pb.m_x, (int)pb.m_y, GetVP(), true );
+
+#ifdef ocpnUSE_GL
+        else
+        {
+            glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
+            dc.SetGLStipple();
+
+#ifdef USE_ANDROID_GLES2
+            dc.DrawLine(pa.m_x, pa.m_y, pb.m_x, pb.m_y);
+#else
+            glColor3ub(color.Red(), color.Green(), color.Blue());
+            glBegin(GL_LINES);
+            glVertex2f(pa.m_x, pa.m_y);
+            glVertex2f(pb.m_x, pb.m_y);
+            glEnd();
+#endif
+            glDisable (GL_LINE_STIPPLE);
+
+            rt->RenderSegmentArrowsGL( dc, (int)pa.m_x, (int)pa.m_y, (int)pb.m_x, (int)pb.m_y, GetVP() );
+        }
+#endif
+    }
+
+}
+
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 {
     Route* route = 0;
@@ -11016,6 +11073,7 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     
     RenderAllChartOutlines( dc, GetVP() );
     RenderRouteLegs( dc );
+    RenderShipToActive( dc ,false );
     ScaleBarDraw( dc );
     s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
 

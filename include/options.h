@@ -589,6 +589,8 @@ class options : private Uncopyable,
   wxStaticBoxSizer *dispOptions, *dispWaypointOptions;
   wxScrolledWindow *itemPanelShip, *itemPanelRoutes;
   wxBoxSizer *ownShip, *Routes;
+  wxCheckBox *pShowshipToActive;
+  wxChoice *m_shipToActiveStyle, *m_shipToActiveColor;
 
   OCPNIconCombo *pWaypointDefaultIconChoice;
   OCPNIconCombo *pRoutepointDefaultIconChoice;
