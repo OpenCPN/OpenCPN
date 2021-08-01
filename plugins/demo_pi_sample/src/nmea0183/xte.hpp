@@ -2,7 +2,7 @@
  *
  * Project:  OpenCPN
  * Purpose:  NMEA0183 Support Classes
- * Author:   Samuel R. Blackburn, David S. Register
+ * Author:   Samuel R. Blackburn, David S. Register, Jon Gough
  *
  ***************************************************************************
  *   Copyright (C) 2010 by Samuel R. Blackburn, David S Register           *
@@ -20,9 +20,9 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- *
+ *                                                                         *
  *   S Blackburn's original source license:                                *
  *         "You can use it any way you like."                              *
  *   More recent (2010) license statement:                                 *
@@ -30,7 +30,8 @@
  */
 
 
-#include "nmea0183.h"
+#if ! defined( XTE_CLASS_HEADER )
+#define XTE_CLASS_HEADER
 
 /*
 ** Author: Samuel R. Blackburn
@@ -40,62 +41,37 @@
 ** You can use it any way you like.
 */
 
-//extern wxString g_TalkerIdText;
-
-RESPONSE::RESPONSE()
+class XTE : public RESPONSE
 {
-   Talker.Empty();
-   ErrorMessage.Empty();
-}
 
-RESPONSE::~RESPONSE()
-{
-   Mnemonic.Empty();
-   Talker.Empty();
-   ErrorMessage.Empty();
-}
 
-void RESPONSE::SetContainer( NMEA0183 *container )
-{
-   container_p = container;
-}
+   public:
 
-void RESPONSE::SetErrorMessage( const wxString& error_message )
-{
-   ErrorMessage  = Mnemonic;
-   ErrorMessage += _T(", ");
-   ErrorMessage += error_message;
-}
+      XTE();
+     ~XTE();
 
-bool RESPONSE::Write( SENTENCE& sentence )
-{
-   /*
-   ** All NMEA0183 sentences begin with the mnemonic...
-   */
+      /*
+      ** Data
+      */
 
-    sentence  = _T("$");
+      NMEA0183_BOOLEAN IsLoranBlinkOK;
+      NMEA0183_BOOLEAN IsLoranCCycleLockOK;
+      double           CrossTrackErrorDistance;
+      LEFTRIGHT        DirectionToSteer;
+      wxString          CrossTrackUnits;
 
-    if(NULL == container_p)
-          sentence.Sentence.Append(_T("--"));
-    else {
-      //  if ( g_TalkerIdText.length() == 0) {
-          sentence.Sentence.Append(container_p->TalkerID);
-      //  }
-      //  else {
-      //      sentence.Sentence.Append( g_TalkerIdText );
-      //  }
-    }
+      /*
+      ** Methods
+      */
 
-    sentence.Sentence.Append(Mnemonic);
+      virtual void Empty( void );
+      virtual bool Parse( const SENTENCE& sentence );
+      virtual bool Write( SENTENCE& sentence );
+      /*
+      ** Operators
+      */
 
-   return( TRUE );
-}
+      virtual const XTE& operator = ( const XTE& source );
+};
 
-const wxString& RESPONSE::PlainEnglish( void )
-{
-   static wxString return_string;
-
-   return_string.Empty();
-
-   return( return_string );
-}
+#endif // XTE_CLASS_HEADER

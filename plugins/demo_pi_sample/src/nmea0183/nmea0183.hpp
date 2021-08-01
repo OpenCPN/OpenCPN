@@ -100,7 +100,7 @@
 #include "gsv.hpp"
 #include "gga.hpp"
 #include "GPwpl.hpp"
-#include "apb.hpp"
+//#include "apb.hpp"
 #include "xte.hpp"
 /*
 #include "ROT.hpp"
@@ -150,7 +150,7 @@ class NMEA0183
       virtual ~NMEA0183();
 
       wxArrayString GetRecognizedArray(void);
-      
+
       /*
       ** NMEA 0183 Sentences we understand
       */
@@ -194,7 +194,7 @@ class NMEA0183
        GSV Gsv;
        GGA Gga;
        GPWPL GPwpl;
-       APB Apb;
+       //APB Apb;
        XTE Xte;
  /*
       ROT Rot;

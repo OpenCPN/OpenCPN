@@ -40,62 +40,89 @@
 ** You can use it any way you like.
 */
 
-//extern wxString g_TalkerIdText;
+//IMPLEMENT_DYNAMIC( GPWPL, RESPONSE )
 
-RESPONSE::RESPONSE()
+GPWPL::GPWPL()
 {
-   Talker.Empty();
-   ErrorMessage.Empty();
+   Mnemonic = _T("GPwpl");
+   Empty();
 }
 
-RESPONSE::~RESPONSE()
+GPWPL::~GPWPL()
 {
    Mnemonic.Empty();
-   Talker.Empty();
-   ErrorMessage.Empty();
+   Empty();
 }
 
-void RESPONSE::SetContainer( NMEA0183 *container )
+void GPWPL::Empty( void )
 {
-   container_p = container;
+
+   Position.Empty();
+   To.Empty();
 }
 
-void RESPONSE::SetErrorMessage( const wxString& error_message )
+bool GPWPL::Parse( const SENTENCE& sentence )
 {
-   ErrorMessage  = Mnemonic;
-   ErrorMessage += _T(", ");
-   ErrorMessage += error_message;
-}
 
-bool RESPONSE::Write( SENTENCE& sentence )
-{
    /*
-   ** All NMEA0183 sentences begin with the mnemonic...
+   ** WPL - Waypoint Location
+   **
+   **        +-------------------------------- 1) Latitude
+   **        |       +------------------------ 2) N or S (North or South)
+   **        |       | +---------------------- 3) Longitude
+   **        |       | |        +------------- 4) E or W (East or West)
+   **        |       | |        | +----------- 5) Waypoint name
+   **        |       | |        | |    +-------6) Checksum
+   **        |       | |        | |    |
+   ** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
    */
 
-    sentence  = _T("$");
+   /*
+   ** First we check the checksum...
+   */
 
-    if(NULL == container_p)
-          sentence.Sentence.Append(_T("--"));
-    else {
-      //  if ( g_TalkerIdText.length() == 0) {
-          sentence.Sentence.Append(container_p->TalkerID);
-      //  }
-      //  else {
-      //      sentence.Sentence.Append( g_TalkerIdText );
-      //  }
-    }
+   if ( sentence.IsChecksumBad( 6 ) == NTrue )
+   {
+      SetErrorMessage( _T("Invalid Checksum") );
+      return( FALSE );
+   }
 
-    sentence.Sentence.Append(Mnemonic);
+   Position.Parse( 1, 2, 3, 4, sentence );
+   To = sentence.Field( 5 );
 
    return( TRUE );
 }
 
-const wxString& RESPONSE::PlainEnglish( void )
+bool GPWPL::Write( SENTENCE& sentence )
 {
-   static wxString return_string;
+   /*
+   ** Let the parent do its thing
+   */
 
-   return_string.Empty();
+   RESPONSE::Write( sentence );
 
-   return( return_string );
+   sentence += Position;
+   sentence += To;
+   sentence += _T("");            // color = black
+   sentence += _T("@q");             // comment, minimum
+   sentence += _T("A");
+   sentence += _T("");
+   sentence += _T("");
+   sentence += _T("");
+
+   // No checksum required
+   wxString temp_string;
+   temp_string.Printf(_T("%c%c"), CARRIAGE_RETURN, LINE_FEED );
+   sentence += temp_string;
+
+   return( TRUE );
+}
+
+const GPWPL& GPWPL::operator = ( const GPWPL& source )
+{
+
+   Position = source.Position;
+   To       = source.To;
+
+   return( *this );
 }

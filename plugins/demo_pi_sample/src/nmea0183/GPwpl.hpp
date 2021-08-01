@@ -30,7 +30,8 @@
  */
 
 
-#include "nmea0183.h"
+#if ! defined( GPWPL_CLASS_HEADER )
+#define GPWPL_CLASS_HEADER
 
 /*
 ** Author: Samuel R. Blackburn
@@ -40,62 +41,34 @@
 ** You can use it any way you like.
 */
 
-//extern wxString g_TalkerIdText;
-
-RESPONSE::RESPONSE()
+class GPWPL : public RESPONSE
 {
-   Talker.Empty();
-   ErrorMessage.Empty();
-}
 
-RESPONSE::~RESPONSE()
-{
-   Mnemonic.Empty();
-   Talker.Empty();
-   ErrorMessage.Empty();
-}
+   public:
 
-void RESPONSE::SetContainer( NMEA0183 *container )
-{
-   container_p = container;
-}
+      GPWPL();
+     ~GPWPL();
 
-void RESPONSE::SetErrorMessage( const wxString& error_message )
-{
-   ErrorMessage  = Mnemonic;
-   ErrorMessage += _T(", ");
-   ErrorMessage += error_message;
-}
+      /*
+      ** Data
+      */
 
-bool RESPONSE::Write( SENTENCE& sentence )
-{
-   /*
-   ** All NMEA0183 sentences begin with the mnemonic...
-   */
+      LATLONG Position;
+      wxString To;
 
-    sentence  = _T("$");
+      /*
+      ** Methods
+      */
 
-    if(NULL == container_p)
-          sentence.Sentence.Append(_T("--"));
-    else {
-      //  if ( g_TalkerIdText.length() == 0) {
-          sentence.Sentence.Append(container_p->TalkerID);
-      //  }
-      //  else {
-      //      sentence.Sentence.Append( g_TalkerIdText );
-      //  }
-    }
+      virtual void Empty( void );
+      virtual bool Parse( const SENTENCE& sentence );
+      virtual bool Write( SENTENCE& sentence );
 
-    sentence.Sentence.Append(Mnemonic);
+      /*
+      ** Operators
+      */
 
-   return( TRUE );
-}
+      virtual const GPWPL& operator = ( const GPWPL& source );
+};
 
-const wxString& RESPONSE::PlainEnglish( void )
-{
-   static wxString return_string;
-
-   return_string.Empty();
-
-   return( return_string );
-}
+#endif // GPWPL_CLASS_HEADER
