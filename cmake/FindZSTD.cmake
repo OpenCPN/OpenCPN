@@ -13,11 +13,10 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
 )
 
 if (ZSTD_FOUND)
-  message(STATUS "Found Zstd: ${ZSTD_LIBRARY}")
   add_library(_zstd INTERFACE)
   target_link_libraries(_zstd INTERFACE ${ZSTD_LIBRARY})
   target_include_directories(_zstd INTERFACE ${ZSTD_INCLUDE_DIR})
-  add_library(ocpn::zstd ALIAS _zstd)
+  add_library(zstd::zstd ALIAS _zstd)
 endif()
 
 mark_as_advanced(ZSTD_INCLUDE_DIR ZSTD_LIBRARY)
