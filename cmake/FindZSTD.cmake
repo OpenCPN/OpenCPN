@@ -16,7 +16,7 @@ if (ZSTD_FOUND)
   message(STATUS "Found Zstd: ${ZSTD_LIBRARY}")
   add_library(_zstd INTERFACE)
   target_link_libraries(_zstd INTERFACE ${ZSTD_LIBRARY})
-  target_include_directories(_pixman INTERFACE ${ZSTD_INCLUDE_DIR})
+  target_include_directories(_zstd INTERFACE ${ZSTD_INCLUDE_DIR})
   add_library(ocpn::zstd ALIAS _zstd)
 endif()
 
