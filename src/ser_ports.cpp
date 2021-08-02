@@ -280,15 +280,17 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev)
     udev_enumerate_scan_devices(enumerate);
     struct udev_list_entry *devices = udev_enumerate_get_list_entry(enumerate);
 
-    const std::regex bad_ttys(".*tty[0-9][0-9]|^/dev/serial/.*");
+    const std::regex bad_ttys(".*tty[0-9][0-9]|^/dev/serial/.*|.*ttyS[0-9][0-9]");
     std::vector<struct device_data> items;
     struct udev_list_entry *entry;
     udev_list_entry_foreach(entry, devices) {
         const char* const path = udev_list_entry_get_name(entry);
         struct udev_device* device = udev_device_new_from_syspath(udev, path);
         const char* const devnode = udev_device_get_devnode(device);
-        if (!std::regex_search(devnode , bad_ttys) && isTTYreal(devnode)) {
-            struct device_data item(devnode, get_device_info(device));
+        struct device_data item(devnode, get_device_info(device));
+        if (!std::regex_search(devnode , bad_ttys) &&
+            (isTTYreal(path) || item.info.length() > 0))
+        {
             items.push_back(item);
             auto links = get_links(device, bad_ttys);
             items.insert(items.end(), links.begin(), links.end());
@@ -614,130 +616,3 @@ wxArrayString *EnumerateSerialPorts( void )
 }
 
 #endif   // outermost if - elif - else
-
-
-bool CheckSerialAccess( void )
-{
-    bool bret = true;
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
-
-#if 0
-    termios ttyset_old;
-    termios ttyset;
-    termios ttyset_check;
-
-    // Get a list of the ports
-    wxArrayString *ports = EnumerateSerialPorts();
-    if( ports->GetCount() == 0 )
-        bret = false;
-
-    for(unsigned int i=0 ; i < ports->GetCount() ; i++){
-        wxCharBuffer buf = ports->Item(i).ToUTF8();
-
-        //      For the first real port found, try to open it, write some config, and
-        //      be sure it reads back correctly.
-        if( isTTYreal( buf.data() ) ){
-            int fd = open(buf.data(), O_RDWR | O_NONBLOCK | O_NOCTTY);
-
-            // device name is pointing to a real device
-            if(fd > 0) {
-
-                if (isatty(fd) != 0)
-                {
-                    /* Save original terminal parameters */
-                    tcgetattr(fd,&ttyset_old);
-                    // Write some data
-                    memcpy(&ttyset, &ttyset_old, sizeof(termios));
-
-                    ttyset.c_cflag &=~ CSIZE;
-                    ttyset.c_cflag |= CSIZE & CS7;
-
-                    tcsetattr(fd, TCSANOW, &ttyset);
-
-                    // Read it back
-                    tcgetattr(fd, &ttyset_check);
-                    if(( ttyset_check.c_cflag & CSIZE) != CS7 ){
-                        bret = false;
-                    }
-                    else {
-                            // and again
-                        ttyset.c_cflag &=~ CSIZE;
-                        ttyset.c_cflag |= CSIZE & CS8;
-
-                        tcsetattr(fd, TCSANOW, &ttyset);
-
-                            // Read it back
-                        tcgetattr(fd, &ttyset_check);
-                        if(( ttyset_check.c_cflag & CSIZE) != CS8 ){
-                            bret = false;
-                        }
-                    }
-
-                    tcsetattr(fd, TCSANOW, &ttyset_old);
-                }
-
-                close (fd);
-            }   // if open
-        }
-    }
-
-#endif  // 0
-
-    //  Who owns /dev/ttyS0?
-    bret = false;
-
-    wxArrayString result1;
-    wxExecute(_T("stat -c %G /dev/ttyS0"), result1);
-    if(!result1.size())
-        wxExecute(_T("stat -c %G /dev/ttyUSB0"), result1);
-
-    if(!result1.size())
-        wxExecute(_T("stat -c %G /dev/ttyACM0"), result1);
-
-    wxString msg1 = _("OpenCPN requires access to serial ports to use serial NMEA data.\n");
-    if(!result1.size()) {
-        wxString msg = msg1 + _("No Serial Ports can be found on this system.\n\
-You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n");
-
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
-        return false;
-    }
-
-    //  Is the current user in this group?
-    wxString user = wxGetUserId(), group = result1[0];
-
-    wxArrayString result2;
-    wxExecute(_T("groups ") + user, result2);
-
-    if(result2.size()) {
-        wxString user_groups = result2[0];
-
-        if(user_groups.Find(group) != wxNOT_FOUND)
-            bret = true;
-    }
-
-#ifdef FLATPAK
-    return bret;
-#endif
-
-    if(!bret){
-
-        wxString msg = msg1 + _("\
-You do currently not have permission to access the serial ports on this system.\n\n\
-It is suggested that you exit OpenCPN now,\n\
-and add yourself to the correct group to enable serial port access.\n\n\
-You may do so by executing the following command from the linux command line:\n\n\
-                sudo usermod -a -G ");
-
-        msg += group;
-        msg += _T(" ");
-        msg += user;
-        msg += _T("\n");
-
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
-    }
-
-#endif  // (__UNIX__) && !defined(__OCPN__ANDROID__)
-
-    return bret;
-}

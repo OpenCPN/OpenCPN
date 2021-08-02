@@ -321,6 +321,10 @@ option(
   "Use aplay(1), afplay(1) etc. to play sounds if available" ON
 )
 
+if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
+  set(LINUX "1")
+endif ()
+
 IF (QT_ANDROID)
   SET(OCPN_NEW_SERIAL OFF)
   SET(OCPN_USE_NEWSERIAL OFF)
@@ -1011,6 +1015,7 @@ set(
   include/TTYWindow.h
   include/undo.h
   include/update_mgr.h
+  include/usb_devices.h
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
@@ -1146,6 +1151,7 @@ if (OCPN_USE_GARMINHOST)
   set(SRCS ${SRCS} src/garmin_wrapper.cpp)
 endif ()
 
+
 if (APPLE)
   if (DARWIN_VERSION LESS 16)
     message(
@@ -1156,6 +1162,11 @@ if (APPLE)
     add_definitions(-DOCPN_USE_DARKMODE)
   endif ()
 endif (APPLE)
+
+if (LINUX)
+  list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
+  list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
+endif ()
 
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   list(APPEND HDRS include/crashprint.h)
@@ -1237,6 +1248,18 @@ endif ()
 
 if (OCPN_USE_SYSFS_PORTS)
   set(USE_SYSFS_PORTS 1)
+endif ()
+
+find_package(LIBUSB)
+if (LIBUSB_FOUND)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
+    set(HAVE_LIBUSB_10 1)
+endif ()
+
+find_package(PANGO)
+if (PANGO_FOUND)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
+    set(HAVE_PANGO 1)
 endif ()
 
 find_path(HAVE_UNISTD_H NAMES unistd.h)

@@ -94,6 +94,11 @@
 #include "safe_mode.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
+
+#ifdef __linux__
+#include "udev_rule_mgr.h"
+#endif
+
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "MarkInfo.h"
@@ -141,7 +146,10 @@
 #include "PluginHandler.h"
 #include "SignalKEventHandler.h"
 #include "gui_lib.h"
-#include "ser_ports.h"
+
+#ifdef __linux__
+#include "udev_rule_mgr.h"
+#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -159,6 +167,7 @@
 #include "s57chart.h"
 #include "gdal/cpl_csv.h"
 #include "s52utils.h"
+#include "usb_devices.h"
 
 #ifdef __WXMSW__
 //#define __MSVC__LEAK
@@ -757,7 +766,6 @@ bool                      g_bDarkDecorations;
 //                        OpenGL Globals
 int                       g_GPU_MemSize;
 
-bool                      g_bserial_access_checked;
 wxString                  g_uiStyle;
 
 //      Values returned from WMM_PI for variation computation request
@@ -2617,7 +2625,21 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->InitTimer.Start( 5, wxTIMER_CONTINUOUS );
     
     g_pauimgr->Update();
-    
+
+#ifdef __linux__
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        if( cp->bEnabled ) {
+            if( cp->GetDSPort().Contains(_T("Serial"))) {
+                std::string port(cp->Port.ToStdString());
+                    CheckSerialAccess(gFrame, port);
+            }
+        }
+    }
+    CheckDongleAccess(gFrame);
+#endif
+ 
     return TRUE;
 }
 
@@ -6958,17 +6980,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             {
                 ConnectionParams *cp = g_pConnectionParams->Item(i);
                 if( cp->bEnabled ) {
-
-    #ifdef __unix__
-                    if( cp->GetDSPort().Contains(_T("Serial"))) {
-                        if( ! g_bserial_access_checked ){
-                            if( !CheckSerialAccess() ){
-                            }
-                            g_bserial_access_checked = true;
-                        }
-                    }
-    #endif
-
                     g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
                     cp->b_IsSetup = TRUE;
                 }
@@ -7737,7 +7748,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
-    
+  
 #ifdef __OCPN__ANDROID__
 
     // Update the navobj file on a fixed schedule (5 minutes)

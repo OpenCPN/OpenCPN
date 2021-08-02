@@ -1,11 +1,5 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Serial ports suppprt, notably enumeration
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ /**************************************************************************
+ *   Copyright (C) 2021 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,9 +16,22 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef SER_PORTS_H
-#define SER_PORTS_H
 
-wxArrayString *EnumerateSerialPorts(void);
+/* 
+ * Dialogs about missing udev rules and how to install them.
+ */
 
-#endif
+#ifndef UDEV_RULE_MGR_H__
+#define UDEV_RULE_MGR_H__
+
+#include <string>
+
+#include <wx/window.h>
+
+
+bool CheckDongleAccess(wxWindow* parent);
+bool CheckSerialAccess(wxWindow* parent, const std::string device);
+
+
+
+#endif // UDEV_RULE_MGR_H__

@@ -40,7 +40,11 @@
 #include "NMEALogWindow.h"
 #include "OCPN_DataStreamEvent.h"
 #include "Route.h"
-#include "ser_ports.h"
+
+#ifdef __linux__
+#include "udev_rule_mgr.h"
+#endif
+
 #include "gui_lib.h"
 #include "NetworkDataStream.h"
 #include "SendToGpsDlg.h"
@@ -61,7 +65,6 @@ extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 extern bool             g_bWplUsePosition;
 extern wxArrayOfConnPrm  *g_pConnectionParams;
-extern bool             g_bserial_access_checked;
 extern bool             g_b_legacy_input_filter_behaviour;
 extern int              g_maxWPNameLength;
 extern wxString         g_TalkerIdText;
@@ -182,16 +185,11 @@ void Multiplexer::StartAllStreams( void )
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if( cp->bEnabled ) {
 
-#ifdef __WXGTK__
+#ifdef __linux__
             if( cp->GetDSPort().Contains(_T("Serial"))) {
-                if( ! g_bserial_access_checked ){
-                    if( !CheckSerialAccess() ){
-                    }
-                    g_bserial_access_checked = true;
-                }
+                CheckSerialAccess(0, cp->Port.ToStdString());
             }
 #endif
-
             AddStream(makeDataStream(this, cp));
             cp->b_IsSetup = true;
         }

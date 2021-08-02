@@ -101,11 +101,16 @@ extern GLuint g_raster_format;
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
 
+#include "usb_devices.h"
 #include "navutil.h"
 
 #include "s52plib.h"
 #include "s52utils.h"
 #include "cm93.h"
+
+#ifdef __linux__
+#include "udev_rule_mgr.h"
+#endif
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -125,6 +130,10 @@ extern GLuint g_raster_format;
 #include "SignalKDataStream.h"
 #include "config_var.h"
 #include "ser_ports.h"
+
+#ifdef __linux__
+#include "udev_rule_mgr.h"
+#endif
 
 #if !defined(__WXOSX__)  
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
@@ -319,13 +328,10 @@ extern bool g_bGLexpert;
 //    Some constants
 #define ID_CHOICE_NMEA wxID_HIGHEST + 1
 
-extern wxArrayString* EnumerateSerialPorts(void);  // in chart1.cpp
-
 extern wxArrayString TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern AIS_Decoder* g_pAIS;
-extern bool g_bserial_access_checked;
 
 options* g_pOptions;
 
@@ -1591,26 +1597,7 @@ For more info, see the file LINUX_DEVICES.md in the distribution docs.
 
 #endif  // defined(__GNUC__) && __GNUC__ < 8
 
-void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
-   // Microsoft compiler 19.14.26433 requires rightfully std=c++-17 for this.
-
-#ifdef __OCPN__ANDROID__
-   return;
-#endif
-   
-#ifndef __linux__
-   return;
-#else
-   if(path.IsEmpty())
-       return;
-   int r = access(path.mb_str(), R_OK | W_OK);
-   if (r == 0)
-      return;
-  OCPNMessageBox (this, BAD_ACCESS_MSG, wxString( _("OpenCPN Warning") ),
-		  wxICON_WARNING | wxOK, 60 );
-#endif
-
-}
+void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {}
 
 size_t options::CreatePanel(const wxString& title) {
   size_t id = m_pListbook->GetPageCount();
@@ -7832,6 +7819,9 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
+#ifdef __linux__
+  CheckSerialAccess(this, pConnectionParams->Port.ToStdString());
+#endif
   
   if( (pConnectionParams->Type != INTERNAL_GPS) && (pConnectionParams->Type != INTERNAL_BT) )
     CheckDeviceAccess(pConnectionParams->Port);
@@ -10206,14 +10196,6 @@ void options::OnConnValChange(wxCommandEvent& event) {
 }
 
 void options::OnTypeSerialSelected(wxCommandEvent& event) {
-#ifdef __WXGTK__
-  if (!g_bserial_access_checked) {
-    if (!CheckSerialAccess()) {
-    }
-    g_bserial_access_checked = TRUE;
-  }
-#endif
-
   OnConnValChange(event);
   SetNMEAFormToSerial();
 }
@@ -10620,7 +10602,7 @@ void options::SetDefaultConnectionParams(void) {
   
   bool bserial = TRUE;
 #ifdef __WXGTK__
-  if (!g_bserial_access_checked) bserial = FALSE;
+  bserial = FALSE;
 #endif
 
 
