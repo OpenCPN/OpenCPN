@@ -14,19 +14,6 @@ jobs:
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
-   build-trusty:
-     docker:
-       - image: circleci/buildpack-deps:trusty-scm
-         auth:
-           username: $DOCKER_USER
-           password: $DOCKER_PW
-     environment:
-       - OCPN_TARGET:  trusty
-     steps:
-       - checkout
-       - run: cat /etc/apt/sources.list
-       - run: ci/generic-build-debian.sh
-       - run: ci/generic-upload.sh
    build-macos:
      macos:
        xcode: "11.3.0"
@@ -77,11 +64,6 @@ workflows:
   build_all:
     jobs:
       - build-xenial:
-          filters:
-            branches:
-              only:
-                - master
-      - build-trusty:
           filters:
             branches:
               only:
