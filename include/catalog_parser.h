@@ -87,6 +87,7 @@ struct catalog_ctx {
 
     // list meta-urls found when parsing last plugin.
     std::vector<std::string> meta_urls;
+    std::vector<std::string> parsed_metas;
 
     std::string version;
     std::string date;
