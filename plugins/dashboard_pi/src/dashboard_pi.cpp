@@ -1567,6 +1567,7 @@ void dashboard_pi::CalculateAndUpdateTWDS( double awsKnots, double awaDegrees)
         // Update the instruments
         //printf("CALC: %4.0f %4.0f\n", tws, twdc);
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twdc, _T("\u00B0"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, twdc, _T("\u00B0"));
                                           
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,toUsrSpeed_Plugin(tws, g_iDashWindSpeedUnit),
                                                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
