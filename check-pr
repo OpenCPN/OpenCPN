@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# Check a PR for whitespace errors
+#
+# Usage: check-pr <PR url>
+#
+# The PR url is as copied from the Github UI, something like
+# https://github.com/Github6am/OpenCPN/tree/opti_amerz
+
+url=${1%%OpenCPN/*}/OpenCPN
+branch=${1##*/tree/}
+
+# Set up the pr-tmp remote
+if git ls-remote --exit-code pr-tmp &>/dev/null; then
+    git remote remove pr-tmp
+fi
+
+git remote add pr-tmp  $url
+git remote update pr-tmp
+
+for f in $(git diff --name-only --diff-filter=ACM HEAD pr-tmp/$branch); do
+    git diff --check HEAD pr-tmp/$branch || :
+done
+
+git remote remove pr-tmp
+
+
+
