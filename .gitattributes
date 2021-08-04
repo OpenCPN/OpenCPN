@@ -87,6 +87,7 @@
 *.dat      binary
 *.cpt      binary
 *.enc      binary
+*.cmake    text
 
 
 # Text files where line endings should be preserved
