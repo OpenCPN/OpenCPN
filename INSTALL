@@ -33,7 +33,7 @@ For Debian Sid, packages to install:
          sudo apt install cmake gettext sqlite3 libsqlite3-dev libcurl4-openssl-dev libtinyxml-dev libexif-dev liblzma-dev liblz4-dev
 
 ------------------------
-Build OpenCPN 
+Build OpenCPN
 ------------------------
 
 Opencpn uses the cmake system, so...
@@ -119,14 +119,14 @@ Next build libz from source:
      cd zlib-1.2.8
      cmake -DCMAKE_TOOLCHAIN_FILE=../OpenCPN/Toolchain-mingw32.cmake .
      make
-     sudo cp libzlibstatic.a /usr/local/i686-w64-mingw32/lib/libz.a 
+     sudo cp libzlibstatic.a /usr/local/i686-w64-mingw32/lib/libz.a
 
 Now, edit /usr/share/cmake-2.8/Modules/FindwxWidgets.cmake:
 
 --- OldFindwxWidgets	2014-05-17 15:54:10.804384809 +0800
 +++ /usr/share/cmake-2.8/Modules/FindwxWidgets.cmake	2014-05-17 09:32:01.461864587 +0800
 @@ -201,10 +201,10 @@
- 
+
  #=====================================================================
  #=====================================================================
 -if(WIN32 AND NOT CYGWIN AND NOT MSYS)

@@ -2,10 +2,10 @@
 #
 # Build and publish flatpak to the beta repo inside the Fedora container.
 #
-# Uses the FLATPAK_KEY environment variable to decrypt 
-#  - ggp signing key -- gpg.tar.gz 
+# Uses the FLATPAK_KEY environment variable to decrypt
+#  - ggp signing key -- gpg.tar.gz
 #  - ssh deployment key -- amazon-ec2.pem
-# 
+#
 
 if [ -z "$FLATPAK_KEY" ]; then
     echo "Reguired \$FLATPAK_KEY not found, giving up"
@@ -20,7 +20,7 @@ sudo dnf clean all
 
 # Install required packages
 su -c "dnf install -y -q sudo dnf-plugins-core"
-sudo dnf install -q -y appstream flatpak-builder ccrypt make rsync gnupg2 
+sudo dnf install -q -y appstream flatpak-builder ccrypt make rsync gnupg2
 
 test -d /opencpn-ci && cd /opencpn-ci || :
 

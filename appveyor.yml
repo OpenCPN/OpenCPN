@@ -5,7 +5,7 @@ clone_depth: 10
 image:
 - Visual Studio 2017
 
-platform: 
+platform:
 # - x64
 - Win32
 
@@ -15,7 +15,7 @@ test: OFF
 install:
   # VS2015 and earlier version - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86'
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-  
+
   # set environment variables for wxWidgets
   - set WXWIN=C:\wxWidgets-3.1.2
   - set wxWidgets_ROOT_DIR=%WXWIN%
@@ -32,7 +32,7 @@ install:
   - cmd: nsis-3.04-setup.exe /S
 
   # Download and unzip wxwidgets, version 3.1.2
-  - ps: Start-FileDownload https://download.opencpn.org/s/E2p4nLDzeqx4SdX/download -FileName wxWidgets-3.1.2.7z 
+  - ps: Start-FileDownload https://download.opencpn.org/s/E2p4nLDzeqx4SdX/download -FileName wxWidgets-3.1.2.7z
   - cmd: 7z x wxWidgets-3.1.2.7z -o%WXWIN% > null
 
   # some debugging information
@@ -57,7 +57,7 @@ build_script:
   - cmake --build . --target opencpn --config RelWithDebInfo
   - cmake --build . --target package --config RelWithDebInfo
 
-deploy_script: 
+deploy_script:
   - |
       cd %APPVEYOR_BUILD_FOLDER%\ci
       "\Program Files\Git\bin\bash" appveyor-upload.sh
