@@ -31,7 +31,7 @@ public class BluetoothState {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
-    
+
     // Intent request codes
     public static final int REQUEST_CONNECT_DEVICE = 384;
     public static final int REQUEST_ENABLE_BT = 385;
@@ -40,11 +40,11 @@ public class BluetoothState {
     public static final String DEVICE_NAME = "device_name";
     public static final String DEVICE_ADDRESS = "device_address";
     public static final String TOAST = "toast";
-    
+
     public static final boolean DEVICE_ANDROID = true;
     public static final boolean DEVICE_OTHER = false;
-    
+
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
-    
+
 }

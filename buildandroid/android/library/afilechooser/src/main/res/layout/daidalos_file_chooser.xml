@@ -36,7 +36,7 @@
             android:layout_weight="1"
             android:drawableLeft="@drawable/add"
             android:text="@string/daidalos_new_file" />
-        
+
         <Button
             android:id="@+id/buttonOk"
             android:layout_width="match_parent"
@@ -44,6 +44,6 @@
             android:layout_weight="1"
             android:drawableLeft="@drawable/tick"
             android:text="@string/daidalos_ok" />
-        
+
     </LinearLayout>
 </LinearLayout>

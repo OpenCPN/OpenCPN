@@ -4,7 +4,7 @@
  *  This file is part of aFileDialog.
  *
  *  aFileDialog is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published 
+ *  it under the terms of the GNU Lesser General Public License as published
  *  by the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
@@ -29,21 +29,21 @@ interface FileChooser {
 
 	/**
 	 * Gets the root of the layout 'file_chooser.xml'.
-	 * 
+	 *
 	 * @return A linear layout.
 	 */
 	LinearLayout getRootLayout();
-	
+
 	/**
 	 * Set the name of the current folder.
-	 * 
+	 *
 	 * @param name The current folder's name.
 	 */
 	void setCurrentFolderName(String name);
-	
+
 	/**
 	 * Returns the current context of the file chooser.
-	 * 
+	 *
 	 * @return The current context.
 	 */
 	Context getContext();

@@ -38,10 +38,10 @@ import android.util.Log;
 public class BluetoothService {
     // Debugging
     private static final String TAG = "Bluetooth Service";
-    
+
     // Name for the SDP record when creating server socket
     private static final String NAME_SECURE = "Bluetooth Secure";
-    
+
     // Unique UUID for this application
     private static final UUID UUID_ANDROID_DEVICE =
             UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
@@ -55,7 +55,7 @@ public class BluetoothService {
     private ConnectedThread mConnectedThread;
     private int mState;
     private boolean isAndroid = BluetoothState.DEVICE_ANDROID;
-        
+
     // Constructor. Prepares a new BluetoothChat session
     // context : The UI Activity Context
     // handler : A Handler to send messages back to the UI Activity
@@ -65,24 +65,24 @@ public class BluetoothService {
         mHandler = handler;
     }
 
-    
+
     // Set the current state of the chat connection
     // state : An integer defining the current connection state
     private synchronized void setState(int state) {
         Log.d(TAG, "setState() " + mState + " -> " + state);
         mState = state;
-        
+
         // Give the new state to the Handler so the UI Activity can update
         mHandler.obtainMessage(BluetoothState.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
 
-    // Return the current connection state. 
+    // Return the current connection state.
     public synchronized int getState() {
         return mState;
     }
 
     // Start the chat service. Specifically start AcceptThread to begin a
-    // session in listening (server) mode. Called by the Activity onResume() 
+    // session in listening (server) mode. Called by the Activity onResume()
     public synchronized void start(boolean isAndroid) {
 
         //  Re-initalize the adapter, for good measure
@@ -92,11 +92,11 @@ public class BluetoothService {
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
-        
+
         Log.i("DEBUGGER_TAG", "Service:start()");
 
         setState(BluetoothState.STATE_LISTEN);
-        
+
         // Start the thread to listen on a BluetoothServerSocket
         if (mSecureAcceptThread == null) {
             mSecureAcceptThread = new AcceptThread(isAndroid);
@@ -380,7 +380,7 @@ public class BluetoothService {
             while (true) {
                 try {
                     int data = mmInStream.read();
-                    if(data == 0x0A) { 
+                    if(data == 0x0A) {
                     } else if(data == 0x0D) {
                         buffer = new byte[arr_byte.size()];
                         for(int i = 0 ; i < arr_byte.size() ; i++) {
@@ -407,7 +407,7 @@ public class BluetoothService {
         public void write(byte[] buffer) {
             try {/*
                 byte[] buffer2 = new byte[buffer.length + 2];
-                for(int i = 0 ; i < buffer.length ; i++) 
+                for(int i = 0 ; i < buffer.length ; i++)
                     buffer2[i] = buffer[i];
                 buffer2[buffer2.length - 2] = 0x0A;
                 buffer2[buffer2.length - 1] = 0x0D;*/
