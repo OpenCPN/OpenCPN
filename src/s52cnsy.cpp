@@ -565,7 +565,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
 {
     wxString udwhaz03str;
     int      danger         = FALSE;
-    int	     expsou = 0;
+    int      expsou = 0;
     double   safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
     bool     b_promote = false;
 
@@ -3462,15 +3462,15 @@ static void *WRECKS02 (void *param)
 
     if (quasouchar[0] == 0 || NULL == strpbrk(quasouchar, "\07"))
     {
-	    //Fixes FS 165   XXX where it is?
-	    // 7 is 'least depth unknown, safe clearance at value shown'
-		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules, &b_promote);
+        //Fixes FS 165   XXX where it is?
+        // 7 is 'least depth unknown, safe clearance at value shown'
+        udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules, &b_promote);
 
     }
-	else
-	{
+    else
+    {
         quasou = 7;
-		udwhaz03str = new wxString();
+        udwhaz03str = new wxString();
     }
     quapnt01str = CSQUAPNT01(obj);
 
@@ -3502,9 +3502,9 @@ static void *WRECKS02 (void *param)
                       wrecks02str = wxString(_T(";SY(DANGER51)"));
                 else
                       wrecks02str = wxString(_T(";SY(DANGER52)"));
-				wrecks02str.Append(_T(";TX('Wk',2,1,2,'15110',1,0,CHBLK,21)"));
-				if ( 7 == quasou ) //Fixes FS 165
-					wrecks02str.Append(_T(";SY(WRECKS07)"));
+                wrecks02str.Append(_T(";TX('Wk',2,1,2,'15110',1,0,CHBLK,21)"));
+                if ( 7 == quasou ) //Fixes FS 165
+                    wrecks02str.Append(_T(";SY(WRECKS07)"));
 
                 wrecks02str.Append(sndfrm02str);       // always show valsou depth
 ///////////////////////////////////////////

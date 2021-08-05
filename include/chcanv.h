@@ -578,7 +578,7 @@ private:
       bool        m_bDrawingRoute;
       bool        m_bRouteEditing;
       bool        m_bMarkEditing;
-	  bool		  m_bRoutePoinDragging;
+      bool        m_bRoutePoinDragging;
       bool        m_bIsInRadius;
       bool        m_bMayToggleMenuBar;
 
@@ -669,7 +669,7 @@ private:
       void ScaleBarDraw( ocpnDC& dc );
 
       void DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru );
-	  void RenderShipToActive(ocpnDC &dc, bool Use_Opengl);
+      void RenderShipToActive(ocpnDC &dc, bool Use_Opengl);
 
       emboss_data *EmbossDepthScale();
       emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxString &str, ColorScheme cs);
@@ -743,7 +743,7 @@ private:
       emboss_data *m_pEM_Fathoms;
 
       emboss_data *m_pEM_OverZoom;
-//      emboss_data *m_pEM_CM93Offset;	// Flav
+//      emboss_data *m_pEM_CM93Offset;  // Flav
 
 
 

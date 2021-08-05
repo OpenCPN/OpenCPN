@@ -87,7 +87,7 @@ To build for android, use something like:
         -D_wx_selected_config=androideabi-qt
         -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
         -DwxQt_Build=build_android_53
-       	-DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+        -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
         -DQt_Base /home/dsr/Qt/5.3)
         ..
 

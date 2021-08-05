@@ -221,7 +221,7 @@ extern int              g_ENCSoundingScaleFactor;
 extern int              g_maxzoomin;
 
 extern float            g_GLMinSymbolLineWidth;
-bool					g_bAllowShipToActive;
+bool                    g_bAllowShipToActive;
 bool                    g_bShowShipToActive;
 int                     g_shipToActiveStyle;
 int                     g_shipToActiveColor;
@@ -398,7 +398,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bDrawingRoute = false;
     m_bRouteEditing = false;
     m_bMarkEditing = false;
-	m_bRoutePoinDragging = false;
+    m_bRoutePoinDragging = false;
     m_bIsInRadius = false;
     m_bMayToggleMenuBar = true;
 
@@ -2868,9 +2868,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
         break;
     }
-	case WXK_DELETE:
-	case WXK_BACK:
-		if (m_bMeasure_Active) {
+    case WXK_DELETE:
+    case WXK_BACK:
+        if (m_bMeasure_Active) {
             if (m_nMeasureState > 2) {
                 m_pMeasureRoute->DeletePoint(m_pMeasureRoute->GetLastPoint());
                 m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
@@ -2881,8 +2881,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 CancelMeasureRoute();
                 StartMeasureRoute();
             }
-		}
-	break;
+        }
+    break;
     default:
         break;
 
@@ -3958,7 +3958,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                 showTrackRollover = true;
 
                 if( NULL == m_pTrackRolloverWin ) {
-		   m_pTrackRolloverWin = new RolloverWin( this, 10 );
+           m_pTrackRolloverWin = new RolloverWin( this, 10 );
                     m_pTrackRolloverWin->IsActive( false );
                 }
 
@@ -7035,8 +7035,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     if( bRoll )
     {
        if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) ||
-	   (m_pTrackRolloverWin && m_pTrackRolloverWin->IsActive()) ||
-	   (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) )
+       (m_pTrackRolloverWin && m_pTrackRolloverWin->IsActive()) ||
+       (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) )
             m_RolloverPopupTimer.Start( 10, wxTIMER_ONE_SHOT );               // faster response while the rollover is turned on
         else
             m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
@@ -7161,12 +7161,12 @@ void ChartCanvas::CallPopupMenu(int x, int y)
         RefreshRect( m_pFoundRoutePoint->CurrentRect_in_DC );
     }
 
-	/**in touch mode a route point could have been selected and draghandle icon shown so clear the selection*/
-	if (g_btouch && m_pRoutePointEditTarget) {
-		m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
-		m_pRoutePointEditTarget->m_bPtIsSelected = false;
-		m_pRoutePointEditTarget->EnableDragHandle(false);
-	}
+    /**in touch mode a route point could have been selected and draghandle icon shown so clear the selection*/
+    if (g_btouch && m_pRoutePointEditTarget) {
+        m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
+        m_pRoutePointEditTarget->m_bPtIsSelected = false;
+        m_pRoutePointEditTarget->EnableDragHandle(false);
+    }
 
     //      Get all the selectable things at the cursor
     pFindAIS = pSelectAIS->FindSelection( this, slat, slon, SELTYPE_AISTARGET );
@@ -7500,8 +7500,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             else {
                 m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
-				if (g_btouch)
-					m_pRoutePointEditTarget->EnableDragHandle(false);
+                if (g_btouch)
+                    m_pRoutePointEditTarget->EnableDragHandle(false);
                 wxRect wp_rect;
                 m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, this, &wp_rect );
                 m_pRoutePointEditTarget = NULL;         //cancel selection
@@ -8234,12 +8234,12 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 } else if( !g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging )
                     bSelectAllowed = false;
 
-				/*if this left up happens at the end of a route point dragging and if the cursor/thumb is on the
-				draghandle icon, not on the point iself a new selection will select nothing and the drag will never
-				be ended, so the legs around this point never selectable. At this step we don't need a new selection,
-				just keep the previoulsly selected and dragged point */
-				if (m_bRoutePoinDragging)
-					bSelectAllowed = false;
+                /*if this left up happens at the end of a route point dragging and if the cursor/thumb is on the
+                draghandle icon, not on the point iself a new selection will select nothing and the drag will never
+                be ended, so the legs around this point never selectable. At this step we don't need a new selection,
+                just keep the previoulsly selected and dragged point */
+                if (m_bRoutePoinDragging)
+                    bSelectAllowed = false;
 
                 if(bSelectAllowed){
 
@@ -8247,9 +8247,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 bool b_was_editing_route = m_bRouteEditing;
                 FindRoutePointsAtCursor( SelectRadius, true );    // Possibly selecting a point in a route for later dragging
 
-				/*route and a mark points in layer can't be dragged so should't be selected and no draghandle icon*/
-				if (m_pRoutePointEditTarget && m_pRoutePointEditTarget->m_bIsInLayer)
-					m_pRoutePointEditTarget = NULL;
+                /*route and a mark points in layer can't be dragged so should't be selected and no draghandle icon*/
+                if (m_pRoutePointEditTarget && m_pRoutePointEditTarget->m_bIsInLayer)
+                    m_pRoutePointEditTarget = NULL;
 
                 if( !b_was_editing_route ) {
                     if( m_pEditRouteArray ) {
@@ -8506,12 +8506,12 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             }
 
-			else if(  m_bMarkEditing ) {				// End of way point drag
-				if( m_pRoutePointEditTarget )
-					if( m_bRoutePoinDragging ) pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
-			}
+            else if(  m_bMarkEditing ) {                // End of way point drag
+                if( m_pRoutePointEditTarget )
+                    if( m_bRoutePoinDragging ) pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+            }
 
-			if( m_pRoutePointEditTarget )
+            if( m_pRoutePointEditTarget )
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
 
             if(!m_pRoutePointEditTarget){
@@ -8682,7 +8682,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
 
         }
-		 m_bRoutePoinDragging = false;
+         m_bRoutePoinDragging = false;
         }       // !btouch
 
         if(ret)
@@ -9246,7 +9246,7 @@ void pupHandler_PasteRoute() {
     int existingWaypointCounter = 0;
 
     for( int i = 1; i <= pasted->GetnPoints(); i++ ) {
-		curPoint = pasted->GetPoint( i ); // NB! n starts at 1 !
+        curPoint = pasted->GetPoint( i ); // NB! n starts at 1 !
         nearPoint = pWayPointMan->GetNearbyWaypoint( curPoint->m_lat,
                 curPoint->m_lon, nearby_radius_meters );
         if( nearPoint ) {
@@ -10877,8 +10877,8 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
     //      potentially getting another Refresh() in the popup timer handler.
     if( !m_RolloverPopupTimer.IsRunning() &&
         ((m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) ||
-	(m_pTrackRolloverWin && m_pTrackRolloverWin->IsActive()) ||
-	(m_pAISRolloverWin && m_pAISRolloverWin->IsActive())) )
+    (m_pTrackRolloverWin && m_pTrackRolloverWin->IsActive()) ||
+    (m_pAISRolloverWin && m_pAISRolloverWin->IsActive())) )
         m_RolloverPopupTimer.Start( 500, wxTIMER_ONE_SHOT );
 
 #ifdef ocpnUSE_GL
@@ -11706,12 +11706,12 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                         ltleve = val;
                                     }
 
-				    // draw the tide rectangle:
+                    // draw the tide rectangle:
 
-				    // tide icon rectangle has default pre-scaled width = 12 , height = 45
-				    int width = (int) (12 * scale_factor + 0.5);
-				    int height = (int) (45 * scale_factor + 0.5);
-				    int linew = wxMax(1, (int) (scale_factor));
+                    // tide icon rectangle has default pre-scaled width = 12 , height = 45
+                    int width = (int) (12 * scale_factor + 0.5);
+                    int height = (int) (45 * scale_factor + 0.5);
+                    int linew = wxMax(1, (int) (scale_factor));
                                     int xDraw = r.x - (width / 2);
                                     int yDraw = r.y - (height / 2);
 
@@ -11719,12 +11719,12 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     //process tide state  ( %height and flow sens )
                                     float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
                                     int hs = ( httime > lttime ) ? -4 : 4;
-				    hs *= (int) (scale_factor + 0.5);
+                    hs *= (int) (scale_factor + 0.5);
                                     if( ts > 0.995 || ts < 0.005 ) hs = 0;
                                     int ht_y = (int) ( height * ts );
 
-				    //draw yellow tide rectangle outlined in black
-				    pblack_pen->SetWidth(linew);
+                    //draw yellow tide rectangle outlined in black
+                    pblack_pen->SetWidth(linew);
                                     dc.SetPen( *pblack_pen );
                                     dc.SetBrush( *pyelo_brush );
                                     dc.DrawRectangle( xDraw, yDraw, width, height );
@@ -11733,7 +11733,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     dc.SetPen( *pblue_pen );
                                     dc.SetBrush( *pblue_brush );
                                     dc.DrawRectangle( (xDraw + 2*linew), yDraw + ht_y,
-						      (width - (4*linew)), height - ht_y );
+                              (width - (4*linew)), height - ht_y );
 
                                     //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
                                     int hl;
@@ -11741,8 +11741,8 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     arrow[0].x = xDraw + 2*linew;
                                     arrow[1].x = xDraw + width / 2;
                                     arrow[2].x = xDraw + width - 2*linew;
-				    pyelo_pen->SetWidth(linew);
-				    pblue_pen->SetWidth(linew);
+                    pyelo_pen->SetWidth(linew);
+                    pblue_pen->SetWidth(linew);
                                     if( ts > 0.35 || ts < 0.15 )      // one arrow at 3/4 hight tide
                                     {
                                         hl = (int) ( height * 0.25 ) + yDraw;
@@ -11750,9 +11750,9 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
                                         if( ts < 0.15 )
-					  dc.SetPen( *pyelo_pen );
+                      dc.SetPen( *pyelo_pen );
                                         else
-					  dc.SetPen( *pblue_pen );
+                      dc.SetPen( *pblue_pen );
                                         dc.DrawLines( 3, arrow );
                                     }
                                     if( ts > 0.60 || ts < 0.40 )       //one arrow at 1/2 hight tide
@@ -11762,9 +11762,9 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
                                         if( ts < 0.40 )
-					  dc.SetPen( *pyelo_pen );
+                      dc.SetPen( *pyelo_pen );
                                         else
-					  dc.SetPen( *pblue_pen );
+                      dc.SetPen( *pblue_pen );
                                         dc.DrawLines( 3, arrow );
                                     }
                                     if( ts < 0.65 || ts > 0.85 )       //one arrow at 1/4 Hight tide
@@ -11774,9 +11774,9 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
                                         if( ts < 0.65 )
-					  dc.SetPen( *pyelo_pen );
+                      dc.SetPen( *pyelo_pen );
                                         else
-					  dc.SetPen( *pblue_pen );
+                      dc.SetPen( *pblue_pen );
                                         dc.DrawLines( 3, arrow );
                                     }
                                     //draw tide level text
@@ -11951,7 +11951,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
 
                     if( 1 ) {
-		        pblack_pen->SetWidth( wxMax(2, (int) (scale_factor + 0.5)) );
+                pblack_pen->SetWidth( wxMax(2, (int) (scale_factor + 0.5)) );
                         dc.SetPen( *pblack_pen );
                         dc.SetBrush( *porange_brush );
                         dc.DrawPolygon( 4, d );
@@ -11979,7 +11979,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
 //    Adjust drawing size using logarithmic scale. tcvalue is current in knots
                                 double a1 = fabs( tcvalue ) * 10.;
-				// Current values <= 0.1 knot will have no arrow
+                // Current values <= 0.1 knot will have no arrow
                                 a1 = wxMax(1.0, a1);
                                 double a2 = log10( a1 );
 

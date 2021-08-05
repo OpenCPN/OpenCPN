@@ -98,43 +98,43 @@ void DashboardInstrument_WindDirHistory::SetData(DASH_CAP st, double data, wxStr
   if (st == OCPN_DBP_STC_TWD || st == OCPN_DBP_STC_TWS) {
     if (st == OCPN_DBP_STC_TWD) {
       m_WindDir = data;
-	  if (m_DirRecCnt <= 5){
-		  m_DirStartVal += data;
-		  m_DirRecCnt++;
-	  }
+      if (m_DirRecCnt <= 5){
+          m_DirStartVal += data;
+          m_DirRecCnt++;
+      }
     }
     if (st == OCPN_DBP_STC_TWS && (std::isnan(data) || data < 200.0)) {
       m_WindSpd = data;
-	  // if unit changes, reset everything ...
-	  if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("--")) {
-		  m_MaxWindDir = -1;
-		  m_WindDir = -1;
-		  m_WindDirRange = 90;
-		  m_MaxWindSpd = 0;
-		  m_TotalMaxWindSpd = 0;
-		  m_WindSpd = 0;
-		  m_SpdRecCnt = 0;
-		  m_DirRecCnt = 0;
-		  m_SpdStartVal = -1;
-		  m_DirStartVal = -1;
-		  m_IsRunning = false;
-		  m_SampleCount = 0;
-		  m_LeftLegend = 3;
-		  m_RightLegend = 3;
-		  for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
-			  m_ArrayWindDirHistory[idx] = -1;
-			  m_ArrayWindSpdHistory[idx] = -1;
-			  m_ExpSmoothArrayWindSpd[idx] = -1;
-			  m_ExpSmoothArrayWindDir[idx] = -1;
-			  m_ArrayRecTime[idx] = wxDateTime::Now().GetTm( );
-			  m_ArrayRecTime[idx].year = 999;
-		  }
-	  }
-	  m_WindSpeedUnit = unit;
-	  if (m_SpdRecCnt <= 5){
-		  m_SpdStartVal += data;
-		  m_SpdRecCnt++;
-	  }
+      // if unit changes, reset everything ...
+      if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("--")) {
+          m_MaxWindDir = -1;
+          m_WindDir = -1;
+          m_WindDirRange = 90;
+          m_MaxWindSpd = 0;
+          m_TotalMaxWindSpd = 0;
+          m_WindSpd = 0;
+          m_SpdRecCnt = 0;
+          m_DirRecCnt = 0;
+          m_SpdStartVal = -1;
+          m_DirStartVal = -1;
+          m_IsRunning = false;
+          m_SampleCount = 0;
+          m_LeftLegend = 3;
+          m_RightLegend = 3;
+          for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
+              m_ArrayWindDirHistory[idx] = -1;
+              m_ArrayWindSpdHistory[idx] = -1;
+              m_ExpSmoothArrayWindSpd[idx] = -1;
+              m_ExpSmoothArrayWindDir[idx] = -1;
+              m_ArrayRecTime[idx] = wxDateTime::Now().GetTm( );
+              m_ArrayRecTime[idx].year = 999;
+          }
+      }
+      m_WindSpeedUnit = unit;
+      if (m_SpdRecCnt <= 5){
+          m_SpdStartVal += data;
+          m_SpdRecCnt++;
+      }
     }
     if ( m_SpdRecCnt == 5 && m_DirRecCnt == 5) {
       m_WindSpd=  m_SpdStartVal/5;
@@ -330,11 +330,11 @@ void  DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc)
   //round maxWindSpd up to the next full knot; nicer view ...
   m_MaxWindSpdScale=(int)m_MaxWindSpd + 1;
   if(!m_IsRunning) {
- 	label1.Printf(_("--- %s"), m_WindSpeedUnit.c_str());
-	label2 = label1;
-	label3 = label1;
-	label4 = label1;
-	label5 = label1;
+    label1.Printf(_("--- %s"), m_WindSpeedUnit.c_str());
+    label2 = label1;
+    label3 = label1;
+    label4 = label1;
+    label5 = label1;
   }
   else {
 /*we round the speed up to the next full knot ==> the top and bottom line have full numbers as legend (e.g. 23 kn -- 0 kn)
@@ -343,38 +343,38 @@ void  DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc)
  The goal is to draw the legend with decimals only, if we really have them !
 */
     // top legend for max wind
-	label1.Printf(_T("%.0f %s"), m_MaxWindSpdScale,m_WindSpeedUnit.c_str());
+    label1.Printf(_T("%.0f %s"), m_MaxWindSpdScale,m_WindSpeedUnit.c_str());
     // 3/4 legend
     WindSpdScale=m_MaxWindSpdScale*3./4.;
     // do we need a decimal ?
     val1=(int)((WindSpdScale-(int)WindSpdScale)*100);
     if(val1==25 || val1==75)  // it's a .25 or a .75
-	  label2.Printf(_T("%.2f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
-	else if (val1 == 50)
-	  label2.Printf(_T("%.1f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+      label2.Printf(_T("%.2f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+    else if (val1 == 50)
+      label2.Printf(_T("%.1f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
     else
-	  label2.Printf(_T("%.0f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+      label2.Printf(_T("%.0f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
     // center legend
     WindSpdScale=m_MaxWindSpdScale/2.;
     // center line can either have a .0 or .5 value !
     if((int)(WindSpdScale*10) % 10 == 5)
-	  label3.Printf(_T("%.1f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+      label3.Printf(_T("%.1f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
     else
-	  label3.Printf(_T("%.0f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+      label3.Printf(_T("%.0f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
 
     // 1/4 legend
     WindSpdScale=m_MaxWindSpdScale/4.;
     // do we need a decimal ?
     val1=(int)((WindSpdScale-(int)WindSpdScale)*100);
     if(val1==25 || val1==75)
- 	  label4.Printf(_T("%.2f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
-	else if (val1 == 50)
-	  label4.Printf(_T("%.1f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
-	else
-	  label4.Printf(_T("%.0f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+      label4.Printf(_T("%.2f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+    else if (val1 == 50)
+      label4.Printf(_T("%.1f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
+    else
+      label4.Printf(_T("%.0f %s"), WindSpdScale, m_WindSpeedUnit.c_str());
 
     //bottom legend for min wind, always 0
-	label5.Printf(_T("%.0f %s"), 0.0, m_WindSpeedUnit.c_str());
+    label5.Printf(_T("%.0f %s"), 0.0, m_WindSpeedUnit.c_str());
   }
   dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, g_pFontSmall);
   dc->DrawText(label1, 4, (int)(m_TopLineHeight-height/2));

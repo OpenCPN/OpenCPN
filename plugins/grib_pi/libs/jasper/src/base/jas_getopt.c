@@ -92,78 +92,78 @@ char *jas_optarg = 0;
 
 static jas_opt_t *jas_optlookup(jas_opt_t *opts, char *name)
 {
-	jas_opt_t *opt;
+    jas_opt_t *opt;
 
-	for (opt = opts; opt->id >= 0 && opt->name; ++opt) {
-		if (!strcmp(opt->name, name)) {
-			return opt;
-		}
-	}
-	return 0;
+    for (opt = opts; opt->id >= 0 && opt->name; ++opt) {
+        if (!strcmp(opt->name, name)) {
+            return opt;
+        }
+    }
+    return 0;
 }
 
 int jas_getopt(int argc, char **argv, jas_opt_t *opts)
 {
-	char *cp;
-	int id;
-	int hasarg;
-	jas_opt_t *opt;
-	char *s;
+    char *cp;
+    int id;
+    int hasarg;
+    jas_opt_t *opt;
+    char *s;
 
-	if (!jas_optind) {
-		jas_optind = JAS_MIN(1, argc);
-	}
-	while (jas_optind < argc) {
-		s = cp = argv[jas_optind];
-		if (*cp == '-') {
-			/* We are processing an option. */
-			++jas_optind;
-			if (*++cp == '-') {
-				/* We are processing a long option. */
-				++cp;
-				if (*cp == '\0') {
-					/* This is the end of the options. */
-					return JAS_GETOPT_EOF;
-				}
-				if (!(opt = jas_optlookup(opts, cp))) {
-					if (jas_opterr) {
-						jas_eprintf("unknown long option %s\n", s);
-					}
-					return JAS_GETOPT_ERR;
-				}
-				hasarg = (opt->flags & JAS_OPT_HASARG) != 0;
-				id = opt->id;
-			} else {
-				/* We are processing a short option. */
-				if (strlen(cp) != 1 ||
-				  !(opt = jas_optlookup(opts, cp))) {
-					if (jas_opterr) {
-						jas_eprintf("unknown short option %s\n", s);
-					}
-					return JAS_GETOPT_ERR;
-				}
-				hasarg = (opt->flags & JAS_OPT_HASARG) != 0;
-				id = opt->id;
-			}
-			if (hasarg) {
-				/* The option has an argument. */
-				if (jas_optind >= argc) {
-					if (jas_opterr) {
-						jas_eprintf("missing argument for option %s\n", s);
-					}
-					return JAS_GETOPT_ERR;
-				}
-				jas_optarg = argv[jas_optind];
-				++jas_optind;
-			} else {
-				/* The option does not have an argument. */
-				jas_optarg = 0;
-			}
-			return id;
-		} else {
-			/* We are not processing an option. */
-			return JAS_GETOPT_EOF;
-		}
-	}
-	return JAS_GETOPT_EOF;
+    if (!jas_optind) {
+        jas_optind = JAS_MIN(1, argc);
+    }
+    while (jas_optind < argc) {
+        s = cp = argv[jas_optind];
+        if (*cp == '-') {
+            /* We are processing an option. */
+            ++jas_optind;
+            if (*++cp == '-') {
+                /* We are processing a long option. */
+                ++cp;
+                if (*cp == '\0') {
+                    /* This is the end of the options. */
+                    return JAS_GETOPT_EOF;
+                }
+                if (!(opt = jas_optlookup(opts, cp))) {
+                    if (jas_opterr) {
+                        jas_eprintf("unknown long option %s\n", s);
+                    }
+                    return JAS_GETOPT_ERR;
+                }
+                hasarg = (opt->flags & JAS_OPT_HASARG) != 0;
+                id = opt->id;
+            } else {
+                /* We are processing a short option. */
+                if (strlen(cp) != 1 ||
+                  !(opt = jas_optlookup(opts, cp))) {
+                    if (jas_opterr) {
+                        jas_eprintf("unknown short option %s\n", s);
+                    }
+                    return JAS_GETOPT_ERR;
+                }
+                hasarg = (opt->flags & JAS_OPT_HASARG) != 0;
+                id = opt->id;
+            }
+            if (hasarg) {
+                /* The option has an argument. */
+                if (jas_optind >= argc) {
+                    if (jas_opterr) {
+                        jas_eprintf("missing argument for option %s\n", s);
+                    }
+                    return JAS_GETOPT_ERR;
+                }
+                jas_optarg = argv[jas_optind];
+                ++jas_optind;
+            } else {
+                /* The option does not have an argument. */
+                jas_optarg = 0;
+            }
+            return id;
+        } else {
+            /* We are not processing an option. */
+            return JAS_GETOPT_EOF;
+        }
+    }
+    return JAS_GETOPT_EOF;
 }

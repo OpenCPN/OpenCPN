@@ -264,18 +264,18 @@ void datumParams(short datum, double *a, double *es)
 
 static int datumNameCmp(const char *n1, const char *n2)
 {
-	while(*n1 || *n2)
-	{
-		if (*n1 == ' ')
-			n1++;
-		else if (*n2 == ' ')
-			n2++;
-		else if (toupper(*n1) == toupper(*n2))
-			n1++, n2++;
-		else
-			return 1;	// No string match
-	}
-	return 0;	// String match
+    while(*n1 || *n2)
+    {
+        if (*n1 == ' ')
+            n1++;
+        else if (*n2 == ' ')
+            n2++;
+        else if (toupper(*n1) == toupper(*n2))
+            n1++, n2++;
+        else
+            return 1;   // No string match
+    }
+    return 0;   // String match
 }
 
 static int isWGS84(int i)
@@ -1337,7 +1337,7 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
     {
         double      th1,th2,thm,dthm,dlamm,dlam,sindlamm,costhm,sinthm,cosdthm,
         sindthm,L,E,cosd,d,X,Y,T,sind,D,A,B;
-	//double    tandlammp,u,v;
+    //double    tandlammp,u,v;
 
 
         /*   Stuff the WGS84 projection parameters as necessary

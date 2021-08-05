@@ -493,14 +493,14 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
         HyperlinkList *linklist = NULL;
 
         RoutePoint *pWp = NULL;
-		bool route_existing = false;
+        bool route_existing = false;
         pTentRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
 
         for( pugi::xml_node tschild = wpt_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
 
-			//load extentions first to determine if the route still exists
-			if( ChildName == _T ( "extensions" ) ) {
+            //load extentions first to determine if the route still exists
+            if( ChildName == _T ( "extensions" ) ) {
                 for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
                     wxString ext_name = wxString::FromUTF8( ext_child.name() );
 
@@ -567,45 +567,45 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                         }
                      }
                 }
-				if( !b_change) {
-					if( RouteExists(pTentRoute->m_GUID) ) { //we are loading a different route with the same guid so let's generate a new guid
-						pTentRoute->m_GUID = pWayPointMan->CreateGUID(NULL);
-						route_existing = true;
-					}
-				}
-			}//extension
-			else
+                if( !b_change) {
+                    if( RouteExists(pTentRoute->m_GUID) ) { //we are loading a different route with the same guid so let's generate a new guid
+                        pTentRoute->m_GUID = pWayPointMan->CreateGUID(NULL);
+                        route_existing = true;
+                    }
+                }
+            }//extension
+            else
             if( ChildName == _T ( "rtept" ) ) {
                 RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
                 RoutePoint *erp = NULL;
                 if(!b_layer)
                     erp = ::WaypointExists( tpWp->m_GUID );
-				// 1) if b_change is true, that means we are after crash - load the route and points as found in source file
-				// 2) if route_existing, we are loading a different route with the same guid. In this case load points as found in
-				//source file, changing the guid, but keep existing "isolated point" as found in the DB
-				// 3) in all other cases keep existing points if found and load new points if not found
-				bool new_wpt = true;
-				if( b_change )
-					pWp = tpWp;
+                // 1) if b_change is true, that means we are after crash - load the route and points as found in source file
+                // 2) if route_existing, we are loading a different route with the same guid. In this case load points as found in
+                //source file, changing the guid, but keep existing "isolated point" as found in the DB
+                // 3) in all other cases keep existing points if found and load new points if not found
+                bool new_wpt = true;
+                if( b_change )
+                    pWp = tpWp;
                 else {
-					if(  erp != NULL && (!route_existing || ( route_existing && tpWp->m_bKeepXRoute) ) ) {
-						pWp = erp;
-						new_wpt = false;
-					}
-					else {
-						if( route_existing )
-							tpWp->m_GUID = pWayPointMan->CreateGUID( NULL );
-						pWp = tpWp;
-					}
-				}
+                    if(  erp != NULL && (!route_existing || ( route_existing && tpWp->m_bKeepXRoute) ) ) {
+                        pWp = erp;
+                        new_wpt = false;
+                    }
+                    else {
+                        if( route_existing )
+                            tpWp->m_GUID = pWayPointMan->CreateGUID( NULL );
+                        pWp = tpWp;
+                    }
+                }
 
                 pTentRoute->AddPoint( pWp, false, true );          // defer BBox calculation
                 pWp->m_bIsInRoute = true;                      // Hack
 
                 if( new_wpt )
-					pWayPointMan->AddRoutePoint( pWp );
-				else
-					delete tpWp;
+                    pWayPointMan->AddRoutePoint( pWp );
+                else
+                    delete tpWp;
             }
             else
             if( ChildName == _T ( "name" ) ) {
@@ -1245,31 +1245,31 @@ static void UpdateRouteA( Route *pTentRoute )
 
     wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
     while( node ) {
-		RoutePoint *prp = node->GetData();
+        RoutePoint *prp = node->GetData();
 
-		//if some wpts have been not deleted, that meens they should be used in other routes
-		//or are isolated way points so need to be updated
-		RoutePoint *ex_rp = ::WaypointExists( prp->m_GUID );
-		if( ex_rp ) {
-			pSelect->DeleteSelectableRoutePoint(ex_rp);
-			ex_rp->m_lat = prp->m_lat;
-			ex_rp->m_lon = prp->m_lon;
-			ex_rp->SetIconName( prp->GetIconName() );
-			ex_rp->m_MarkDescription = prp->m_MarkDescription;
-			ex_rp->SetName( prp->GetName() );
+        //if some wpts have been not deleted, that meens they should be used in other routes
+        //or are isolated way points so need to be updated
+        RoutePoint *ex_rp = ::WaypointExists( prp->m_GUID );
+        if( ex_rp ) {
+            pSelect->DeleteSelectableRoutePoint(ex_rp);
+            ex_rp->m_lat = prp->m_lat;
+            ex_rp->m_lon = prp->m_lon;
+            ex_rp->SetIconName( prp->GetIconName() );
+            ex_rp->m_MarkDescription = prp->m_MarkDescription;
+            ex_rp->SetName( prp->GetName() );
             ex_rp->m_TideStation = prp->m_TideStation;
             ex_rp->SetPlannedSpeed(prp->GetPlannedSpeed());
-			pChangeRoute->AddPoint( ex_rp );
-			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, ex_rp);
+            pChangeRoute->AddPoint( ex_rp );
+            pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, ex_rp);
 
-		} else {
-			pChangeRoute->AddPoint( prp );
-			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
-		}
+        } else {
+            pChangeRoute->AddPoint( prp );
+            pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
+        }
 
         if( ip )
-			pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
-					prp->m_lon, prev_pConfPoint, prp, pChangeRoute );
+            pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
+                    prp->m_lon, prev_pConfPoint, prp, pChangeRoute );
         prev_rlat = prp->m_lat;
         prev_rlon = prp->m_lon;
         prev_pConfPoint = prp;
@@ -1277,8 +1277,8 @@ static void UpdateRouteA( Route *pTentRoute )
         ip++;
 
         node = node->GetNext();
-	}
-	//    Do the (deferred) calculation of BBox
+    }
+    //    Do the (deferred) calculation of BBox
     pChangeRoute->FinalizeForRendering();
 }
 

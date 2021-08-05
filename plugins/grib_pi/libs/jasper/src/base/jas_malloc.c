@@ -92,75 +92,75 @@
 
 #if !defined(DEBUG_MEMALLOC)
 
-#define MEMALLOC_ALIGNMENT	32
+#define MEMALLOC_ALIGNMENT  32
 #define MEMALLOC_ALIGN2
 #undef MEMALLOC_ALIGN2
 
 void *jas_malloc(size_t size)
 {
 #if defined(MEMALLOC_ALIGN2)
-	void *ptr;
+    void *ptr;
 abort();
-	if (posix_memalign(&ptr, MEMALLOC_ALIGNMENT, size)) {
-		return 0;
-	}
-	return ptr;
+    if (posix_memalign(&ptr, MEMALLOC_ALIGNMENT, size)) {
+        return 0;
+    }
+    return ptr;
 #endif
-	return malloc(size);
+    return malloc(size);
 }
 
 void jas_free(void *ptr)
 {
-	free(ptr);
+    free(ptr);
 }
 
 void *jas_realloc(void *ptr, size_t size)
 {
-	return ptr ? realloc(ptr, size) : malloc(size);
+    return ptr ? realloc(ptr, size) : malloc(size);
 }
 
 void *jas_realloc2(void *ptr, size_t nmemb, size_t size)
 {
-	if (!ptr)
-		return jas_alloc2(nmemb, size);
-	if (nmemb && SIZE_MAX / nmemb < size) {
-		errno = ENOMEM;
-		return NULL;
-	}
-	return jas_realloc(ptr, nmemb * size);
+    if (!ptr)
+        return jas_alloc2(nmemb, size);
+    if (nmemb && SIZE_MAX / nmemb < size) {
+        errno = ENOMEM;
+        return NULL;
+    }
+    return jas_realloc(ptr, nmemb * size);
 
 }
 
 void *jas_alloc2(size_t nmemb, size_t size)
 {
-	if (nmemb && SIZE_MAX / nmemb < size) {
-		errno = ENOMEM;
-		return NULL;
-	}
+    if (nmemb && SIZE_MAX / nmemb < size) {
+        errno = ENOMEM;
+        return NULL;
+    }
 
-	return jas_malloc(nmemb * size);
+    return jas_malloc(nmemb * size);
 }
 
 void *jas_alloc3(size_t a, size_t b, size_t c)
 {
-	size_t n;
+    size_t n;
 
-	if (a && SIZE_MAX / a < b) {
-		errno = ENOMEM;
-		return NULL;
-	}
+    if (a && SIZE_MAX / a < b) {
+        errno = ENOMEM;
+        return NULL;
+    }
 
-	return jas_alloc2(a*b, c);
+    return jas_alloc2(a*b, c);
 }
 
 void *jas_calloc(size_t nmemb, size_t size)
 {
-	void *ptr;
+    void *ptr;
 
-	ptr = jas_alloc2(nmemb, size);
-	if (ptr)
-		memset(ptr, 0, nmemb*size);
-	return ptr;
+    ptr = jas_alloc2(nmemb, size);
+    if (ptr)
+        memset(ptr, 0, nmemb*size);
+    return ptr;
 }
 
 #endif

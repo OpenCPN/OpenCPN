@@ -49,33 +49,33 @@ ZUFILE * zu_open(const char *fname, const char *mode, int type)
     f->pos = 0;
     f->fname = strdup(fname);
 
-	if (type == ZU_COMPRESS_AUTO)
-	{
-		char *p = strrchr(f->fname, '.');
-		int  i=0;
-		while (p!=NULL && *p !='\0' && i<4) {
-			buf[i] = tolower(*p);
-			i++;
-			p++;
-		}
-		buf[i] = '\0';
-		if (!strcmp(buf, ".gz")) {
-			f->type = ZU_COMPRESS_GZIP;
-			//fprintf(stderr,"ZU_COMPRESS_GZIP\n");
-		}
-		else if (!strcmp(buf, ".bz2") || !strcmp(buf, ".bz")) {
-			f->type = ZU_COMPRESS_BZIP;
-			//fprintf(stderr,"ZU_COMPRESS_BZIP\n");
-		}
-		else {
-			f->type = ZU_COMPRESS_NONE;
-			//fprintf(stderr,"ZU_COMPRESS_NONE\n");
-		}
-	}
-	else
-	{
-		f->type = type;
-	}
+    if (type == ZU_COMPRESS_AUTO)
+    {
+        char *p = strrchr(f->fname, '.');
+        int  i=0;
+        while (p!=NULL && *p !='\0' && i<4) {
+            buf[i] = tolower(*p);
+            i++;
+            p++;
+        }
+        buf[i] = '\0';
+        if (!strcmp(buf, ".gz")) {
+            f->type = ZU_COMPRESS_GZIP;
+            //fprintf(stderr,"ZU_COMPRESS_GZIP\n");
+        }
+        else if (!strcmp(buf, ".bz2") || !strcmp(buf, ".bz")) {
+            f->type = ZU_COMPRESS_BZIP;
+            //fprintf(stderr,"ZU_COMPRESS_BZIP\n");
+        }
+        else {
+            f->type = ZU_COMPRESS_NONE;
+            //fprintf(stderr,"ZU_COMPRESS_NONE\n");
+        }
+    }
+    else
+    {
+        f->type = type;
+    }
 
     switch(f->type) {
         case ZU_COMPRESS_NONE :

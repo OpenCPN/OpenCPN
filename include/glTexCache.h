@@ -127,7 +127,7 @@ public:
     bool BackgroundCompressionAsJob() const;
     void PurgeBackgroundCompressionPool();
     void SetLRUTime(int lru) { m_LRUtime = lru; }
-    int	 GetLRUTime() { return m_LRUtime; }
+    int  GetLRUTime() { return m_LRUtime; }
     void FreeSome( long target );
     void FreeIfCached();
 
@@ -168,7 +168,7 @@ private:
     bool        m_catalogOK;
     bool        m_newCatalog;
 
-    bool	m_catalogCorrupted;
+    bool    m_catalogCorrupted;
 
     wxFFile     *m_fs;
     uint32_t    m_chart_date_binary;
@@ -183,7 +183,7 @@ private:
     int         m_nx_tex;
     int         m_ny_tex;
 
-    int		m_LRUtime;
+    int     m_LRUtime;
 
     glTextureDescriptor  **m_td_array;
 

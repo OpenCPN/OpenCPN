@@ -322,7 +322,7 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent& event)
 
                 //    Start the pump
                 m_garmin_usb_thread = new GARMIN_USB_Thread(this, m_pparent,
-						m_pMainEventHandler, (wxIntPtr)m_usb_handle, m_max_tx_size);
+                        m_pMainEventHandler, (wxIntPtr)m_usb_handle, m_max_tx_size);
                 m_Thread_run_flag = 1;
                 m_garmin_usb_thread->Run();
             }
@@ -720,7 +720,7 @@ int GarminProtocolHandler::gusb_win_send(const garmin_usb_packet *opkt, size_t s
      * data in a single call to WriteFile if it spans buffers.
      */
     WriteFile(m_usb_handle, obuf, sz, &rsz, NULL);
-	int err = GetLastError();
+    int err = GetLastError();
 
     //    if (rsz != sz)
     //          fatal ("Error sending %d bytes.   Successfully sent %ld\n", sz, rsz);

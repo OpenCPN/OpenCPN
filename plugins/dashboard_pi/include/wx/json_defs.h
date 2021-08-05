@@ -51,7 +51,7 @@
     #define WXDLLIMPEXP_DATA_JSON(type)       WXIMPORT type
 #else // not making nor using DLL
     #define WXDLLIMPEXP_JSON
-    #define WXDLLIMPEXP_DATA_JSON(type)	    type
+    #define WXDLLIMPEXP_DATA_JSON(type)     type
 #endif
 
 //dsr
@@ -59,7 +59,7 @@
 #undef WXDLLIMPEXP_DATA_JSON
 
     #define WXDLLIMPEXP_JSON
-    #define WXDLLIMPEXP_DATA_JSON(type)	    type
+    #define WXDLLIMPEXP_DATA_JSON(type)     type
 
 //dsr
 
@@ -157,13 +157,13 @@
   #define ULONG_MAX       4294967295
 #endif
 #if !defined( SHORT_MAX )
-  #define SHORT_MAX	32767
+  #define SHORT_MAX 32767
 #endif
 #if !defined( SHORT_MIN )
-  #define SHORT_MIN	-32768
+  #define SHORT_MIN -32768
 #endif
 #if !defined( USHORT_MAX )
-  #define USHORT_MAX	65535
+  #define USHORT_MAX    65535
 #endif
 
 
@@ -175,16 +175,16 @@
 #if defined( wxJSON_NOABORT_ASSERT )
   #define wxJSON_ASSERT( cond )
 #else
-  #define wxJSON_ASSERT( cond )		wxASSERT( cond );
+  #define wxJSON_ASSERT( cond )     wxASSERT( cond );
 #endif
 
 
 //
 // the following macros are used by the wxJSONWriter::WriteStringValues()
 // when the wxJSONWRITER_SPLIT_STRING flag is set
-#define wxJSONWRITER_LAST_COL	50
-#define wxJSONWRITER_SPLIT_COL	75
-#define wxJSONWRITER_MIN_LENGTH	15
+#define wxJSONWRITER_LAST_COL   50
+#define wxJSONWRITER_SPLIT_COL  75
+#define wxJSONWRITER_MIN_LENGTH 15
 #define wxJSONWRITER_TAB_LENGTH  4
 
 

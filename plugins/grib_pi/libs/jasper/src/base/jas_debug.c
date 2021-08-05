@@ -83,22 +83,22 @@ static int jas_dbglevel = 0;
 /* Set the library debug level. */
 int jas_setdbglevel(int dbglevel)
 {
-	int olddbglevel;
+    int olddbglevel;
 
-	/* Save the old debug level. */
-	olddbglevel = jas_dbglevel;
+    /* Save the old debug level. */
+    olddbglevel = jas_dbglevel;
 
-	/* Change the debug level. */
-	jas_dbglevel = dbglevel;
+    /* Change the debug level. */
+    jas_dbglevel = dbglevel;
 
-	/* Return the old debug level. */
-	return olddbglevel;
+    /* Return the old debug level. */
+    return olddbglevel;
 }
 
 /* Get the library debug level. */
 int jas_getdbglevel()
 {
-	return jas_dbglevel;
+    return jas_dbglevel;
 }
 
 /******************************************************************************\
@@ -108,30 +108,30 @@ int jas_getdbglevel()
 /* Perform formatted output to standard error. */
 int jas_eprintf(const char *fmt, ...)
 {
-	int ret;
-	va_list ap;
+    int ret;
+    va_list ap;
 
-	va_start(ap, fmt);
-	ret = vfprintf(stderr, fmt, ap);
-	va_end(ap);
-	return ret;
+    va_start(ap, fmt);
+    ret = vfprintf(stderr, fmt, ap);
+    va_end(ap);
+    return ret;
 }
 
 /* Dump memory to a stream. */
 int jas_memdump(FILE *out, void *data, size_t len)
 {
-	size_t i;
-	size_t j;
-	uchar *dp;
-	dp = data;
-	for (i = 0; i < len; i += 16) {
-		fprintf(out, "%04zx:", i);
-		for (j = 0; j < 16; ++j) {
-			if (i + j < len) {
-				fprintf(out, " %02x", dp[i + j]);
-			}
-		}
-		fprintf(out, "\n");
-	}
-	return 0;
+    size_t i;
+    size_t j;
+    uchar *dp;
+    dp = data;
+    for (i = 0; i < len; i += 16) {
+        fprintf(out, "%04zx:", i);
+        for (j = 0; j < 16; ++j) {
+            if (i + j < len) {
+                fprintf(out, " %02x", dp[i + j]);
+            }
+        }
+        fprintf(out, "\n");
+    }
+    return 0;
 }

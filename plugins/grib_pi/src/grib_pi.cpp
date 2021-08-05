@@ -131,29 +131,29 @@ int grib_pi::Init(void)
 
 //      int m_height = GetChartbarHeight();
       //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled locally
-	  if (m_bGRIBShowIcon) {
-		  wxString shareLocn = *GetpSharedDataLocation() +
-			  _T("plugins") + wxFileName::GetPathSeparator() +
-			  _T("grib_pi") + wxFileName::GetPathSeparator()
-			  + _T("data") + wxFileName::GetPathSeparator();
+      if (m_bGRIBShowIcon) {
+          wxString shareLocn = *GetpSharedDataLocation() +
+              _T("plugins") + wxFileName::GetPathSeparator() +
+              _T("grib_pi") + wxFileName::GetPathSeparator()
+              + _T("data") + wxFileName::GetPathSeparator();
 
-		  wxString normalIcon = shareLocn + _T("grib.svg");
-		  wxString toggledIcon = shareLocn + _T("grib_toggled.svg");
-		  wxString rolloverIcon = shareLocn + _T("grib_rollover.svg");
+          wxString normalIcon = shareLocn + _T("grib.svg");
+          wxString toggledIcon = shareLocn + _T("grib_toggled.svg");
+          wxString rolloverIcon = shareLocn + _T("grib_rollover.svg");
 
-		  //  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
-		  if (GetActiveStyleName().Lower() != _T("traditional")){
-			  normalIcon = _T("");
-			  toggledIcon = _T("");
-			  rolloverIcon = _T("");
-		  }
+          //  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
+          if (GetActiveStyleName().Lower() != _T("traditional")){
+              normalIcon = _T("");
+              toggledIcon = _T("");
+              rolloverIcon = _T("");
+          }
 
-		  wxLogMessage(normalIcon);
-		  m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
-			  _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
+          wxLogMessage(normalIcon);
+          m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
+              _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
 
 
-	  }
+      }
 
       if( !QualifyCtrlBarPosition( m_CtrlBarxy, m_CtrlBar_Sizexy ) ) {
           m_CtrlBarxy = wxPoint( 20, 60 );   //reset to the default position
@@ -409,7 +409,7 @@ void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
     if (p.x + dialog->GetSize().GetX() > frame->GetClientSize().GetX())
         p.x = frame->GetClientSize().GetX() - dialog->GetSize().GetX();
     if (p.y + dialog->GetSize().GetY() > frame->GetClientSize().GetY())
-	p.y = frame->GetClientSize().GetY() - dialog->GetSize().GetY();
+    p.y = frame->GetClientSize().GetY() - dialog->GetSize().GetY();
 
 #ifdef __WXGTK__
     dialog->Move(0, 0);
@@ -435,7 +435,7 @@ void grib_pi::OnToolbarToolCallback(int id)
 #endif
         m_pGribCtrlBar = new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString, wxDefaultPosition,
                 wxDefaultSize, style, this);
-		m_pGribCtrlBar->SetScaledBitmap(scale_factor);
+        m_pGribCtrlBar->SetScaledBitmap(scale_factor);
 
         wxMenu* dummy = new wxMenu(_T("Plugin"));
         wxMenuItem* table = new wxMenuItem( dummy, wxID_ANY, wxString( _("Weather table") ), wxEmptyString, wxITEM_NORMAL );
@@ -519,7 +519,7 @@ void grib_pi::OnGribCtrlBarClose()
 
     RequestRefresh(m_parent_window); // refresh main window
 
-	if (::wxIsBusy()) ::wxEndBusyCursor();
+    if (::wxIsBusy()) ::wxEndBusyCursor();
 
 #ifdef __OCPN__ANDROID__
     m_DialogStyleChanged = true;       //  Force a delete of the control bar dialog

@@ -26,7 +26,7 @@
 #ifndef __CM93CHART_H__
 #define __CM93CHART_H__
 
-#include <wx/listctrl.h>			// Somehow missing from wx build
+#include <wx/listctrl.h>            // Somehow missing from wx build
 
 #include    "s57chart.h"
 #include    "cutil.h"               // for types

@@ -973,13 +973,13 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
                 wxExecute( cl );        // Async, so Fire and Forget...
             }
         }
-	}
-	else {
-		wxString url = event.GetLinkInfo().GetHref().c_str();
-		url.Replace(_T(" "), _T("%20"));
-		::wxLaunchDefaultBrowser(url);
-		event.Skip();
-	}
+    }
+    else {
+        wxString url = event.GetLinkInfo().GetHref().c_str();
+        url.Replace(_T(" "), _T("%20"));
+        ::wxLaunchDefaultBrowser(url);
+        event.Skip();
+    }
 #else
     wxString url = event.GetLinkInfo().GetHref().c_str();
     url.Replace(_T(" "), _T("%20") );
@@ -1169,14 +1169,14 @@ void MarkInfoDlg::OnAddLink( wxCommandEvent& event )
 void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )
 {
     switch(event.GetId()) {
- 		case ID_RCLK_MENU_DELETE_LINK:
+        case ID_RCLK_MENU_DELETE_LINK:
         {
             wxHyperlinkListNode* node = m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item);
             m_pRoutePoint->m_HyperlinkList->DeleteNode(node);
             UpdateHtmlList();
- 			break;
+            break;
         }
- 		case ID_RCLK_MENU_EDIT_LINK:
+        case ID_RCLK_MENU_EDIT_LINK:
         {
             Hyperlink *link = m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->GetData();
             LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
@@ -1191,7 +1191,7 @@ void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )
                     UpdateHtmlList();
                 }
             });
- 			break;
+            break;
         }
         case ID_RCLK_MENU_ADD_LINK:
         {
@@ -1216,7 +1216,7 @@ void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )
                     UpdateHtmlList();
                 }
             });
- 			break;
+            break;
         }
     }
     event.Skip();

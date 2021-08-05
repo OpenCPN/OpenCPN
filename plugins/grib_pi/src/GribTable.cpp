@@ -76,8 +76,8 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
         //populate time labels
         time = rsa->Item(i).m_Reference_Time;
         m_pGribTable->SetColLabelValue(i ,GetTimeRowsStrings( time, zone , 1)
-						.Append( _T("\n"))
-						.Append( GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0))
+                        .Append( _T("\n"))
+                        .Append( GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0))
                                         );
         nrows = -1;
         GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
@@ -209,7 +209,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
             m_pGribTable->SetNumericalRow( nrows, i, R_CURRENT, wdir );
 
             nrows++;
-			AddDataRow( nrows, i, _("Current,Speed"), datarow );
+            AddDataRow( nrows, i, _("Current,Speed"), datarow );
             m_pGribTable->SetCellValue(nrows, i, GetCurrent(RecordArray, 2, wdir));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
         }//current // populate grid
@@ -289,14 +289,14 @@ void GRIBTable::OnClose( wxCloseEvent& event )
 
 void GRIBTable::OnOKButton( wxCommandEvent& event )
 {
-		CloseDialog();
-		this->EndModal(wxID_OK);
+        CloseDialog();
+        this->EndModal(wxID_OK);
 }
 
 void GRIBTable::CloseDialog()
 {
     wxSize s = this->GetClientSize();
-	wxPoint p = GetOCPNCanvasWindow()->ScreenToClient( this->GetPosition() );
+    wxPoint p = GetOCPNCanvasWindow()->ScreenToClient( this->GetPosition() );
 
     wxFileConfig *pConf = GetOCPNConfigObject();
     if(pConf) {
@@ -349,11 +349,11 @@ wxString GRIBTable::GetWind(GribRecord **recordarray, int datatype, double& wdir
         double cvkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
         m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WIND, cvkn);
         skn.Printf( wxString::Format( _T("%2d bf"), (int)wxRound( m_pGDialog->m_OverlaySettings.GetmstobfFactor(vkn)* vkn )) );
-		if( datatype ==2 ) { //wind speed unit other than bf
+        if( datatype ==2 ) { //wind speed unit other than bf
             skn.Prepend(wxString::Format( _T("%2d ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int) wxRound( cvkn )) + _T(" - "));
         }
-	}
-	return skn;
+    }
+    return skn;
 }
 
 wxString GRIBTable::GetWindGust(GribRecord **recordarray, int datatype )
@@ -395,34 +395,34 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype, double& wdi
 {
     wxString skn(wxEmptyString);
     wdir = GRIB_NOTDEF;
-	switch (datatype ) {
-		case Idx_HTSIGW:
+    switch (datatype ) {
+        case Idx_HTSIGW:
             if( recordarray[Idx_HTSIGW] ) {
                 double height = recordarray[Idx_HTSIGW]->
-					getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+                    getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
                 if( height != GRIB_NOTDEF ) {
                     double cheight = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
                     skn.Printf( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), cheight ));
                     m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WAVE, cheight);
                 }
             }
-			break;
-		case Idx_WVDIR:
-			if( recordarray[Idx_WVDIR] ) {
-				double direction = recordarray[Idx_WVDIR]->
-							getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
+            break;
+        case Idx_WVDIR:
+            if( recordarray[Idx_WVDIR] ) {
+                double direction = recordarray[Idx_WVDIR]->
+                            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
                 wdir = direction;
                 return skn;
-			}
-			break;
-		case Idx_WVPER:
-			if( recordarray[Idx_WVPER] ) {
-				double period = recordarray[Idx_WVPER]->
-							getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-				if( period != GRIB_NOTDEF )
-					skn.Printf( wxString::Format( _T("%01ds") , (int) (period + 0.5)) );
-			}
-	}
+            }
+            break;
+        case Idx_WVPER:
+            if( recordarray[Idx_WVPER] ) {
+                double period = recordarray[Idx_WVPER]->
+                            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+                if( period != GRIB_NOTDEF )
+                    skn.Printf( wxString::Format( _T("%01ds") , (int) (period + 0.5)) );
+            }
+    }
     return skn;
 }
 
@@ -540,7 +540,7 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray, int datatype, double& w
         }
         vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
         skn.Printf( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
-		m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::CURRENT, vkn);
+        m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::CURRENT, vkn);
     }
     return skn;
 }
@@ -550,8 +550,8 @@ wxString GRIBTable::GetTimeRowsStrings( wxDateTime date_time, int time_zone, int
     wxDateTime t( date_time );
     switch( time_zone ) {
         case 0:
-			if( (wxDateTime::Now() == (wxDateTime::Now().ToGMT())) && t.IsDST() )  //bug in wxWingets 3.0 for UTC meridien ?
-				t.Add( wxTimeSpan( 1, 0, 0, 0 ) );
+            if( (wxDateTime::Now() == (wxDateTime::Now().ToGMT())) && t.IsDST() )  //bug in wxWingets 3.0 for UTC meridien ?
+                t.Add( wxTimeSpan( 1, 0, 0, 0 ) );
             switch( type ){
             case 0:
                 return t.Format( _T(" %H:%M  "), wxDateTime::Local ) + _T("LOC");

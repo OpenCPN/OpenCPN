@@ -90,105 +90,105 @@
 
 int jpc_atoaf(char *s, int *numvalues, double **values)
 {
-	static char delim[] = ", \t\n";
-	char buf[4096];
-	int n;
-	double *vs;
-	char *cp;
+    static char delim[] = ", \t\n";
+    char buf[4096];
+    int n;
+    double *vs;
+    char *cp;
 
-	strncpy(buf, s, sizeof(buf));
-	buf[sizeof(buf) - 1] = '\0';
-	n = 0;
-	if ((cp = strtok(buf, delim))) {
-		++n;
-		while ((cp = strtok(0, delim))) {
-			if (cp != NULL) {
-				++n;
-			}
-		}
-	}
+    strncpy(buf, s, sizeof(buf));
+    buf[sizeof(buf) - 1] = '\0';
+    n = 0;
+    if ((cp = strtok(buf, delim))) {
+        ++n;
+        while ((cp = strtok(0, delim))) {
+            if (cp != NULL) {
+                ++n;
+            }
+        }
+    }
 
-	if (n) {
-		if (!(vs = jas_alloc2(n, sizeof(double)))) {
-			return -1;
-		}
+    if (n) {
+        if (!(vs = jas_alloc2(n, sizeof(double)))) {
+            return -1;
+        }
 
-		strncpy(buf, s, sizeof(buf));
-		buf[sizeof(buf) - 1] = '\0';
-		n = 0;
-		if ((cp = strtok(buf, delim))) {
-			vs[n] = atof(cp);
-			++n;
-			while ((cp = strtok(0, delim))) {
-				if (cp != NULL) {
-					vs[n] = atof(cp);
-					++n;
-				}
-			}
-		}
-	} else {
-		vs = 0;
-	}
+        strncpy(buf, s, sizeof(buf));
+        buf[sizeof(buf) - 1] = '\0';
+        n = 0;
+        if ((cp = strtok(buf, delim))) {
+            vs[n] = atof(cp);
+            ++n;
+            while ((cp = strtok(0, delim))) {
+                if (cp != NULL) {
+                    vs[n] = atof(cp);
+                    ++n;
+                }
+            }
+        }
+    } else {
+        vs = 0;
+    }
 
-	*numvalues = n;
-	*values = vs;
+    *numvalues = n;
+    *values = vs;
 
-	return 0;
+    return 0;
 }
 
 jas_seq_t *jpc_seq_upsample(jas_seq_t *x, int m)
 {
-	jas_seq_t *z;
-	int i;
+    jas_seq_t *z;
+    int i;
 
-	if (!(z = jas_seq_create(jas_seq_start(x) * m, (jas_seq_end(x) - 1) * m + 1)))
-		return 0;
-	for (i = jas_seq_start(z); i < jas_seq_end(z); i++) {
-		*jas_seq_getref(z, i) = (!JAS_MOD(i, m)) ? jas_seq_get(x, i / m) :
-		  jpc_inttofix(0);
-	}
+    if (!(z = jas_seq_create(jas_seq_start(x) * m, (jas_seq_end(x) - 1) * m + 1)))
+        return 0;
+    for (i = jas_seq_start(z); i < jas_seq_end(z); i++) {
+        *jas_seq_getref(z, i) = (!JAS_MOD(i, m)) ? jas_seq_get(x, i / m) :
+          jpc_inttofix(0);
+    }
 
-	return z;
+    return z;
 }
 
 jpc_fix_t jpc_seq_norm(jas_seq_t *x)
 {
-	jpc_fix_t s;
-	int i;
+    jpc_fix_t s;
+    int i;
 
-	s = jpc_inttofix(0);
-	for (i = jas_seq_start(x); i < jas_seq_end(x); i++) {
-		s = jpc_fix_add(s, jpc_fix_mul(jas_seq_get(x, i), jas_seq_get(x, i)));
-	}
+    s = jpc_inttofix(0);
+    for (i = jas_seq_start(x); i < jas_seq_end(x); i++) {
+        s = jpc_fix_add(s, jpc_fix_mul(jas_seq_get(x, i), jas_seq_get(x, i)));
+    }
 
-	return jpc_dbltofix(sqrt(jpc_fixtodbl(s)));
+    return jpc_dbltofix(sqrt(jpc_fixtodbl(s)));
 }
 
 jas_seq_t *jpc_seq_conv(jas_seq_t *x, jas_seq_t *y)
 {
-	int i;
-	int j;
-	int k;
-	jas_seq_t *z;
-	jpc_fix_t s;
-	jpc_fix_t v;
+    int i;
+    int j;
+    int k;
+    jas_seq_t *z;
+    jpc_fix_t s;
+    jpc_fix_t v;
 
-	z = jas_seq_create(jas_seq_start(x) + jas_seq_start(y),
-	  jas_seq_end(x) + jas_seq_end(y) - 1);
-	assert(z);
-	for (i = jas_seq_start(z); i < jas_seq_end(z); i++) {
-		s = jpc_inttofix(0);
-		for (j = jas_seq_start(y); j < jas_seq_end(y); j++) {
-			k = i - j;
-			if (k < jas_seq_start(x) || k >= jas_seq_end(x)) {
-				v = JPC_FIX_ZERO;
-			} else {
-				v = jas_seq_get(x, k);
-			}
-			s = jpc_fix_add(s, jpc_fix_mul(jas_seq_get(y, j), v));
-		}
-		*jas_seq_getref(z, i) = s;
-	}
+    z = jas_seq_create(jas_seq_start(x) + jas_seq_start(y),
+      jas_seq_end(x) + jas_seq_end(y) - 1);
+    assert(z);
+    for (i = jas_seq_start(z); i < jas_seq_end(z); i++) {
+        s = jpc_inttofix(0);
+        for (j = jas_seq_start(y); j < jas_seq_end(y); j++) {
+            k = i - j;
+            if (k < jas_seq_start(x) || k >= jas_seq_end(x)) {
+                v = JPC_FIX_ZERO;
+            } else {
+                v = jas_seq_get(x, k);
+            }
+            s = jpc_fix_add(s, jpc_fix_mul(jas_seq_get(y, j), v));
+        }
+        *jas_seq_getref(z, i) = s;
+    }
 
-	return z;
+    return z;
 }

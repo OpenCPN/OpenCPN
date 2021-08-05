@@ -49,17 +49,17 @@ int main(int argc, char *argv[])
             {
                  inF = open("/proc/tty/driver/usb-serial", O_RDONLY);
                  if (inF == -1)
-            		inF = open("/proc/tty/driver/usbserial", O_RDONLY);
+                    inF = open("/proc/tty/driver/usbserial", O_RDONLY);
 
-		 if(inF != -1)
-		 {
-	                 if((ouF = open("/var/tmp/usbserial", O_WRONLY | O_CREAT | O_TRUNC, 0777)) != -1)
-        	         {
-                 		while((bytes = read(inF, line, sizeof(line))) > 0)
-                     			write(ouF, line, bytes);
+         if(inF != -1)
+         {
+                     if((ouF = open("/var/tmp/usbserial", O_WRONLY | O_CREAT | O_TRUNC, 0777)) != -1)
+                     {
+                        while((bytes = read(inF, line, sizeof(line))) > 0)
+                                write(ouF, line, bytes);
                                 close(ouF);
-			 }
-		         close(inF);
+             }
+                 close(inF);
                  }
                  break;
             }
@@ -68,15 +68,15 @@ int main(int argc, char *argv[])
             {
                  inF = open("/proc/tty/driver/serial", O_RDONLY);
 
-		 if(inF != -1)
-		 {
-	                 if((ouF = open("/var/tmp/serial", O_WRONLY | O_CREAT | O_TRUNC, 0777)) != -1)
-        	         {
-                 		while((bytes = read(inF, line, sizeof(line))) > 0)
-                     			write(ouF, line, bytes);
+         if(inF != -1)
+         {
+                     if((ouF = open("/var/tmp/serial", O_WRONLY | O_CREAT | O_TRUNC, 0777)) != -1)
+                     {
+                        while((bytes = read(inF, line, sizeof(line))) > 0)
+                                write(ouF, line, bytes);
                                 close(ouF);
-			 }
-		         close(inF);
+             }
+                 close(inF);
                  }
                  break;
              }
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
                 /*  Kill the helper files  */
                 unlink("/var/tmp/usbserial");
                 unlink("/var/tmp/serial");
-		break;
+        break;
             }
 
             case 'D':

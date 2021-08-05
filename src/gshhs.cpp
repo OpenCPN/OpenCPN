@@ -1088,22 +1088,22 @@ void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp )
 int GshhsPolygon::readInt4()
 {
     union {
-		unsigned int n;
-		unsigned char buf[4];
-	} res;
+        unsigned int n;
+        unsigned char buf[4];
+    } res;
 
-	unsigned char in[4];
+    unsigned char in[4];
 
     int nb = 0;
     nb += fread( &in, 1, 4, file );
-	res.buf[3] = in[0];
-	res.buf[2] = in[1];
-	res.buf[1] = in[2];
-	res.buf[0] = in[3];
+    res.buf[3] = in[0];
+    res.buf[2] = in[1];
+    res.buf[1] = in[2];
+    res.buf[0] = in[3];
 
     if( nb != 4 ) {
         ok = false;
-		res.n = 0;
+        res.n = 0;
     }
 
     return res.n;
@@ -1113,9 +1113,9 @@ int GshhsPolygon::readInt4()
 int GshhsPolygon::readInt2()
 {
     union {
-		unsigned int n;
-		unsigned char buf[4];
-	} v;
+        unsigned int n;
+        unsigned char buf[4];
+    } v;
 
     int nb = 0;
     nb += fread( &v.buf[0], 2, 1, file );

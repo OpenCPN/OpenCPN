@@ -85,9 +85,9 @@
  * Multicomponent transform IDs.
  */
 
-#define JPC_MCT_NONE	0
-#define JPC_MCT_ICT		1
-#define JPC_MCT_RCT		2
+#define JPC_MCT_NONE    0
+#define JPC_MCT_ICT     1
+#define JPC_MCT_RCT     2
 
 /******************************************************************************\
 * Functions.
