@@ -31,9 +31,9 @@ SET(CPACK_PACKAGE_CONTARCT "Pavel Kalian")
 
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ***")
 
-SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "0")
-SET(VERSION_PATCH "3")
+SET(VERSION_MAJOR "1")
+SET(VERSION_MINOR "0")
+SET(VERSION_PATCH "3")
 SET(VERSION_DATE "07/01/2018")
 
 IF( NOT CMAKE_BUILD_TYPE )
@@ -140,6 +140,6 @@ ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DEMO} ${SRC_NMEA0183} )
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn )
 
-INCLUDE("cmake/PluginInstall.cmake")
-INCLUDE("cmake/PluginLocalization.cmake")
+INCLUDE("cmake/PluginInstall.cmake")
+INCLUDE("cmake/PluginLocalization.cmake")
 INCLUDE("cmake/PluginPackage.cmake")
