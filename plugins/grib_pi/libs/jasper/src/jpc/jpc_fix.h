@@ -92,7 +92,7 @@ typedef int_fast32_t jpc_fix_t;
 typedef int_fast64_t jpc_fix_big_t;
 
 /* The number of bits used for the fractional part of a fixed-point number. */
-#define JPC_FIX_FRACBITS	13
+#define JPC_FIX_FRACBITS    13
 
 /******************************************************************************\
 * Instantiations of the generic fixed-point number macros for the
@@ -101,44 +101,44 @@ typedef int_fast64_t jpc_fix_big_t;
 * corresponding macros in the jasper/jas_fix.h header file.
 \******************************************************************************/
 
-#define	JPC_FIX_ZERO	JAS_FIX_ZERO(jpc_fix_t, JPC_FIX_FRACBITS)
-#define	JPC_FIX_ONE		JAS_FIX_ONE(jpc_fix_t, JPC_FIX_FRACBITS)
-#define	JPC_FIX_HALF	JAS_FIX_HALF(jpc_fix_t, JPC_FIX_FRACBITS)
+#define JPC_FIX_ZERO    JAS_FIX_ZERO(jpc_fix_t, JPC_FIX_FRACBITS)
+#define JPC_FIX_ONE     JAS_FIX_ONE(jpc_fix_t, JPC_FIX_FRACBITS)
+#define JPC_FIX_HALF    JAS_FIX_HALF(jpc_fix_t, JPC_FIX_FRACBITS)
 
-#define jpc_inttofix(x)	JAS_INTTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fixtoint(x)	JAS_FIXTOINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fixtodbl(x)	JAS_FIXTODBL(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_dbltofix(x)	JAS_DBLTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_inttofix(x) JAS_INTTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fixtoint(x) JAS_FIXTOINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fixtodbl(x) JAS_FIXTODBL(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_dbltofix(x) JAS_DBLTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
 
-#define	jpc_fix_add(x, y)	JAS_FIX_ADD(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_sub(x, y)	JAS_FIX_SUB(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_mul(x, y) \
-	JAS_FIX_MUL(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
-#define	jpc_fix_mulbyint(x, y) \
-	JAS_FIX_MULBYINT(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_div(x, y) \
-	JAS_FIX_DIV(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
-#define	jpc_fix_neg(x)		JAS_FIX_NEG(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_asl(x, n)	JAS_FIX_ASL(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
-#define	jpc_fix_asr(x, n)	JAS_FIX_ASR(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
+#define jpc_fix_add(x, y)   JAS_FIX_ADD(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_sub(x, y)   JAS_FIX_SUB(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_mul(x, y) \
+    JAS_FIX_MUL(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
+#define jpc_fix_mulbyint(x, y) \
+    JAS_FIX_MULBYINT(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_div(x, y) \
+    JAS_FIX_DIV(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
+#define jpc_fix_neg(x)      JAS_FIX_NEG(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_asl(x, n)   JAS_FIX_ASL(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
+#define jpc_fix_asr(x, n)   JAS_FIX_ASR(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
 
-#define jpc_fix_pluseq(x, y)	JAS_FIX_PLUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define jpc_fix_minuseq(x, y)	JAS_FIX_MINUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_muleq(x, y)	\
-	JAS_FIX_MULEQ(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
+#define jpc_fix_pluseq(x, y)    JAS_FIX_PLUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_minuseq(x, y)   JAS_FIX_MINUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_muleq(x, y) \
+    JAS_FIX_MULEQ(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
 
-#define	jpc_fix_abs(x)		JAS_FIX_ABS(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_isint(x)	JAS_FIX_ISINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fix_sgn(x)		JAS_FIX_SGN(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_round(x)	JAS_FIX_ROUND(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_floor(x)	JAS_FIX_FLOOR(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fix_trunc(x)	JAS_FIX_TRUNC(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_abs(x)      JAS_FIX_ABS(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_isint(x)    JAS_FIX_ISINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_sgn(x)      JAS_FIX_SGN(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_round(x)    JAS_FIX_ROUND(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_floor(x)    JAS_FIX_FLOOR(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_trunc(x)    JAS_FIX_TRUNC(jpc_fix_t, JPC_FIX_FRACBITS, x)
 
 /******************************************************************************\
 * Extra macros for convenience.
 \******************************************************************************/
 
 /* Compute the sum of three fixed-point numbers. */
-#define jpc_fix_add3(x, y, z)	jpc_fix_add(jpc_fix_add(x, y), z)
+#define jpc_fix_add3(x, y, z)   jpc_fix_add(jpc_fix_add(x, y), z)
 
 #endif

@@ -146,8 +146,8 @@ enum
     ID_RT_MENU_INSERT,
     ID_RT_MENU_APPEND,
     ID_RT_MENU_COPY,
-	ID_RT_MENU_SPLIT_LEG,
-	ID_RT_MENU_SPLIT_WPT,
+    ID_RT_MENU_SPLIT_LEG,
+    ID_RT_MENU_SPLIT_WPT,
     ID_TK_MENU_COPY,
     ID_WPT_MENU_COPY,
     ID_WPT_MENU_SENDTOGPS,
@@ -289,10 +289,10 @@ void SetMenuItemFont1(wxMenuItem *item)
 void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 {
     wxMenu* contextMenu = new wxMenu;
-	wxMenu* menuWaypoint = NULL;
-	wxMenu* menuRoute = NULL;
-	wxMenu* menuTrack = NULL;
-	wxMenu* menuAIS = NULL;
+    wxMenu* menuWaypoint = NULL;
+    wxMenu* menuRoute = NULL;
+    wxMenu* menuTrack = NULL;
+    wxMenu* menuAIS = NULL;
 
     wxMenu *subMenuChart = new wxMenu;
 
@@ -516,7 +516,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
     if( g_pGroupArray->GetCount() ) {
 
 #ifdef __WXMSW__
-		MenuAppend1(subMenuChart, wxID_CANCEL, _("temporary"));
+        MenuAppend1(subMenuChart, wxID_CANCEL, _("temporary"));
 #endif
           wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE ,
                   _("All Active Charts") );
@@ -542,21 +542,21 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
     //  This is the default context menu
     menuFocus = contextMenu;
 
-	wxString name;
+    wxString name;
     if( !g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE )) {
         if( g_pAIS ) {
             if( parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET) ) {
                 AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
-				if (!g_bBasicMenus && myptarget) {
-					name = myptarget->GetFullName();
-					if (name.IsEmpty())
-						 name.Printf(_T("%d"), m_FoundAIS_MMSI);
-					name.Prepend(_T(" ( ")).Append(_T(" )"));
-				}
-				else
-					name = wxEmptyString;
-				menuAIS = new wxMenu(_("AIS") + name);
-				MenuAppend1(menuAIS, ID_DEF_MENU_AIS_QUERY, _("Target Query..."));
+                if (!g_bBasicMenus && myptarget) {
+                    name = myptarget->GetFullName();
+                    if (name.IsEmpty())
+                         name.Printf(_T("%d"), m_FoundAIS_MMSI);
+                    name.Prepend(_T(" ( ")).Append(_T(" )"));
+                }
+                else
+                    name = wxEmptyString;
+                menuAIS = new wxMenu(_("AIS") + name);
+                MenuAppend1(menuAIS, ID_DEF_MENU_AIS_QUERY, _("Target Query..."));
                 if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alert_state != AIS_ALERT_SET) ) {
                     if( myptarget->b_show_AIS_CPA )
                         MenuAppend1( menuAIS, ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
@@ -589,25 +589,25 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 
                 menuFocus = menuAIS;
             }
-			else
-				MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST, _("AIS target list") + _T("..."));
+            else
+                MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST, _("AIS target list") + _T("..."));
         }
     }
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
-		if (!g_bBasicMenus && m_pSelectedRoute) {
-			name = m_pSelectedRoute->m_RouteNameString;
-			if (name.IsEmpty())
-				name = _("Unnamed Route");
-			name.Prepend(_T(" ( ")).Append(_T(" )"));
-		} else
-			name = wxEmptyString;
+        if (!g_bBasicMenus && m_pSelectedRoute) {
+            name = m_pSelectedRoute->m_RouteNameString;
+            if (name.IsEmpty())
+                name = _("Unnamed Route");
+            name.Prepend(_T(" ( ")).Append(_T(" )"));
+        } else
+            name = wxEmptyString;
         bool blay = false;
         if( m_pSelectedRoute && m_pSelectedRoute->m_bIsInLayer )
             blay = true;
 
         if( blay ){
-			menuRoute = new wxMenu(_("Layer Route") + name);
+            menuRoute = new wxMenu(_("Layer Route") + name);
             MenuAppend1( menuRoute, ID_RT_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
             if( m_pSelectedRoute ) {
                 if( m_pSelectedRoute->IsActive() ) {
@@ -624,7 +624,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             }
         }
         else {
-			menuRoute = new wxMenu(_("Route") + name);
+            menuRoute = new wxMenu(_("Route") + name);
             MenuAppend1( menuRoute, ID_RT_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
             if( m_pSelectedRoute ) {
                 if( m_pSelectedRoute->IsActive() ) {
@@ -641,11 +641,11 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             }
             MenuAppend1( menuRoute, ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
             MenuAppend1( menuRoute, ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
-			if (!(seltype & SELTYPE_ROUTEPOINT) && m_pSelectedRoute) {
-				m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
-				if (m_SelectedIdx > 1 && m_SelectedIdx < m_pSelectedRoute->GetnPoints() - 1)
-					MenuAppend1(menuRoute, ID_RT_MENU_SPLIT_LEG, _("Split around Leg") );
-			}
+            if (!(seltype & SELTYPE_ROUTEPOINT) && m_pSelectedRoute) {
+                m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
+                if (m_SelectedIdx > 1 && m_SelectedIdx < m_pSelectedRoute->GetnPoints() - 1)
+                    MenuAppend1(menuRoute, ID_RT_MENU_SPLIT_LEG, _("Split around Leg") );
+            }
             MenuAppend1( menuRoute, ID_RT_MENU_COPY, _( "Copy as KML" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_DELETE, _( "Delete" ) + _T( "..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_REVERSE, _( "Reverse..." ) );
@@ -674,58 +674,58 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 MenuAppend1( menuRoute, ID_RT_MENU_SENDTONEWGPS, item );
             }
 //#endif
-		}
+        }
         //Eventually set this menu as the "focused context menu"
-		if (menuFocus != menuAIS)
-			menuFocus = menuRoute;
+        if (menuFocus != menuAIS)
+            menuFocus = menuRoute;
     }
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
-		name = wxEmptyString;
-		if ( !g_bBasicMenus && m_pSelectedTrack)
-			name = _T(" ( ") + m_pSelectedTrack->GetName(true) + _T(" )");
-		else
-			name = wxEmptyString;
+        name = wxEmptyString;
+        if ( !g_bBasicMenus && m_pSelectedTrack)
+            name = _T(" ( ") + m_pSelectedTrack->GetName(true) + _T(" )");
+        else
+            name = wxEmptyString;
         bool blay = false;
         if( m_pSelectedTrack && m_pSelectedTrack->m_bIsInLayer )
             blay = true;
 
         if( blay ) {
-			menuTrack = new wxMenu(_("Layer Track") + name);
+            menuTrack = new wxMenu(_("Layer Track") + name);
             MenuAppend1( menuTrack, ID_TK_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
         }
         else {
-			menuTrack = new wxMenu(_("Track") + name);
+            menuTrack = new wxMenu(_("Track") + name);
             MenuAppend1( menuTrack, ID_TK_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
             MenuAppend1( menuTrack, ID_TK_MENU_COPY, _( "Copy as KML" ) );
             MenuAppend1( menuTrack, ID_TK_MENU_DELETE, _( "Delete" ) + _T( "..." ) );
         }
         //Eventually set this menu as the "focused context menu"
-		if ( menuFocus != menuAIS )
-			menuFocus = menuTrack;
+        if ( menuFocus != menuAIS )
+            menuFocus = menuTrack;
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
-		if ( !g_bBasicMenus && m_pFoundRoutePoint ) {
-			name = m_pFoundRoutePoint->GetName();
-			if ( name.IsEmpty() )
-				name = _("Unnamed Waypoint");
-			name.Prepend(_T(" ( ")).Append(_T(" )"));
-		} else
-			name = wxEmptyString;
+        if ( !g_bBasicMenus && m_pFoundRoutePoint ) {
+            name = m_pFoundRoutePoint->GetName();
+            if ( name.IsEmpty() )
+                name = _("Unnamed Waypoint");
+            name.Prepend(_T(" ( ")).Append(_T(" )"));
+        } else
+            name = wxEmptyString;
         bool blay = false;
         if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer )
             blay = true;
 
         if( blay ){
-			menuWaypoint = new wxMenu(_("Layer Waypoint") + name);
+            menuWaypoint = new wxMenu(_("Layer Waypoint") + name);
             MenuAppend1( menuWaypoint, ID_WP_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
 
             if( m_pSelectedRoute && m_pSelectedRoute->IsActive() )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_ACTPOINT, _( "Activate" ) );
         }
         else {
-			menuWaypoint = new wxMenu(_("Waypoint") + name);
+            menuWaypoint = new wxMenu(_("Waypoint") + name);
             MenuAppend1( menuWaypoint, ID_WP_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
             if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
                 if(m_pSelectedRoute->m_pRouteActivePoint != m_pFoundRoutePoint )
@@ -740,13 +740,13 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 }
             }
             if( m_pSelectedRoute && m_pSelectedRoute->GetnPoints() > 2 )
-			{
+            {
                 MenuAppend1( menuWaypoint, ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
-				m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
-				if (m_SelectedIdx > 1 && m_SelectedIdx < m_pSelectedRoute->GetnPoints())
-					MenuAppend1(menuWaypoint, ID_RT_MENU_SPLIT_WPT, _("Split Route at Waypoint"));
-			}
+                m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
+                if (m_SelectedIdx > 1 && m_SelectedIdx < m_pSelectedRoute->GetnPoints())
+                    MenuAppend1(menuWaypoint, ID_RT_MENU_SPLIT_WPT, _("Split Route at Waypoint"));
+            }
 
             MenuAppend1( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
@@ -772,28 +772,28 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 
         }
         //Eventually set this menu as the "focused context menu"
-		if (menuFocus != menuAIS)
-			menuFocus = menuWaypoint;
+        if (menuFocus != menuAIS)
+            menuFocus = menuWaypoint;
     }
 
     if( seltype & SELTYPE_MARKPOINT ) {
-		if (!g_bBasicMenus && m_pFoundRoutePoint) {
-			name = m_pFoundRoutePoint->GetName();
-			if (name.IsEmpty())
-				name = _("Unnamed Waypoint");
-			name.Prepend(_T(" ( ")).Append(_T(" )"));
-		} else
-			name = wxEmptyString;
+        if (!g_bBasicMenus && m_pFoundRoutePoint) {
+            name = m_pFoundRoutePoint->GetName();
+            if (name.IsEmpty())
+                name = _("Unnamed Waypoint");
+            name.Prepend(_T(" ( ")).Append(_T(" )"));
+        } else
+            name = wxEmptyString;
         bool blay = false;
         if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer )
             blay = true;
 
         if( blay ){
-			menuWaypoint = new wxMenu(_("Layer Waypoint") + name);
+            menuWaypoint = new wxMenu(_("Layer Waypoint") + name);
             MenuAppend1( menuWaypoint, ID_WP_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
         }
         else {
-			menuWaypoint = new wxMenu(_("Waypoint") + name);
+            menuWaypoint = new wxMenu(_("Waypoint") + name);
             MenuAppend1( menuWaypoint, ID_WP_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
 
             if( !g_pRouteMan->GetpActiveRoute() )
@@ -832,43 +832,43 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             }
         }
         //Eventually set this menu as the "focused context menu"
-		if (menuFocus != menuAIS)
-			menuFocus = menuWaypoint;
+        if (menuFocus != menuAIS)
+            menuFocus = menuWaypoint;
     }
-	/*add the relevant submenus*/
-	enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
-	int sub_menu = 0;
-	if ( !g_bBasicMenus && menuFocus != contextMenu) {
-		menuFocus->AppendSeparator();
-		wxMenuItem * subMenu1;
-		if ( menuWaypoint && menuFocus != menuWaypoint ) {
-			subMenu1 = menuFocus->AppendSubMenu(menuWaypoint, menuWaypoint->GetTitle());
-			SetMenuItemFont1(subMenu1);
-			sub_menu |= WPMENU;
+    /*add the relevant submenus*/
+    enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
+    int sub_menu = 0;
+    if ( !g_bBasicMenus && menuFocus != contextMenu) {
+        menuFocus->AppendSeparator();
+        wxMenuItem * subMenu1;
+        if ( menuWaypoint && menuFocus != menuWaypoint ) {
+            subMenu1 = menuFocus->AppendSubMenu(menuWaypoint, menuWaypoint->GetTitle());
+            SetMenuItemFont1(subMenu1);
+            sub_menu |= WPMENU;
 #ifdef __WXMSW__
-			menuWaypoint->SetTitle(wxEmptyString);
+            menuWaypoint->SetTitle(wxEmptyString);
 #endif
-		}
-		if ( menuTrack && menuFocus != menuTrack ) {
-			subMenu1 = menuFocus->AppendSubMenu(menuTrack, menuTrack->GetTitle());
-			SetMenuItemFont1(subMenu1);
-			sub_menu |= TKMENU;
+        }
+        if ( menuTrack && menuFocus != menuTrack ) {
+            subMenu1 = menuFocus->AppendSubMenu(menuTrack, menuTrack->GetTitle());
+            SetMenuItemFont1(subMenu1);
+            sub_menu |= TKMENU;
 #ifdef __WXMSW__
-			menuTrack->SetTitle(wxEmptyString);
+            menuTrack->SetTitle(wxEmptyString);
 #endif
-		}
-		if ( menuRoute && menuFocus != menuRoute ) {
-			subMenu1 = menuFocus->AppendSubMenu(menuRoute, menuRoute->GetTitle());
-			SetMenuItemFont1(subMenu1);
-			sub_menu |= RTMENU;
+        }
+        if ( menuRoute && menuFocus != menuRoute ) {
+            subMenu1 = menuFocus->AppendSubMenu(menuRoute, menuRoute->GetTitle());
+            SetMenuItemFont1(subMenu1);
+            sub_menu |= RTMENU;
 #ifdef __WXMSW__
-			menuRoute->SetTitle(wxEmptyString);
+            menuRoute->SetTitle(wxEmptyString);
 #endif
-		}
-		subMenu1 = menuFocus->AppendSubMenu(contextMenu, _("Main Menu"));
-		SetMenuItemFont1(subMenu1);
-		sub_menu |= MMMENU;
-	}
+        }
+        subMenu1 = menuFocus->AppendSubMenu(contextMenu, _("Main Menu"));
+        SetMenuItemFont1(subMenu1);
+        sub_menu |= MMMENU;
+    }
 
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 
@@ -971,13 +971,13 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 #endif
 
     /* Cleanup if necessary.
-	Do not delete menus witch are submenu as they will be deleted by their parent menu.
-	This could create a crash*/
-	delete menuAIS;
-	if (!(sub_menu & MMMENU) ) delete contextMenu;
-	if (!(sub_menu & RTMENU) ) delete menuRoute;
-	if (!(sub_menu & TKMENU) ) delete menuTrack;
-	if (!(sub_menu & WPMENU) ) delete menuWaypoint;
+    Do not delete menus witch are submenu as they will be deleted by their parent menu.
+    This could create a crash*/
+    delete menuAIS;
+    if (!(sub_menu & MMMENU) ) delete contextMenu;
+    if (!(sub_menu & RTMENU) ) delete menuRoute;
+    if (!(sub_menu & TKMENU) ) delete menuTrack;
+    if (!(sub_menu & WPMENU) ) delete menuWaypoint;
 }
 
 
@@ -988,8 +988,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     wxPoint r;
     double zlat, zlon;
 
-	int splitMode = 0;				//variables for split
-	bool dupFirstWpt = true, showRPD;
+    int splitMode = 0;              //variables for split
+    bool dupFirstWpt = true, showRPD;
 
     parent->GetCanvasPixPoint( popx, popy, zlat, zlon );
 
@@ -1007,7 +1007,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_SCALE_IN:
         parent->DoCanvasStackDelta( -1 );
-	break;
+    break;
 
     case ID_DEF_MENU_SCALE_OUT:
         parent->DoCanvasStackDelta( 1 );
@@ -1494,40 +1494,40 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
         break;
 
-	case ID_RT_MENU_SPLIT_LEG:		//split route around a leg
-		splitMode++;
-		dupFirstWpt = false;
-	case ID_RT_MENU_SPLIT_WPT:		//split route at a wpt
+    case ID_RT_MENU_SPLIT_LEG:      //split route around a leg
+        splitMode++;
+        dupFirstWpt = false;
+    case ID_RT_MENU_SPLIT_WPT:      //split route at a wpt
 
-		showRPD = (pRoutePropDialog && pRoutePropDialog->IsShown());
+        showRPD = (pRoutePropDialog && pRoutePropDialog->IsShown());
 
-		m_pHead = new Route();
-		m_pTail = new Route();
-		m_pHead->CloneRoute(m_pSelectedRoute, 1, m_SelectedIdx, _("_A"));
-		m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + splitMode, m_pSelectedRoute->GetnPoints(), _("_B"), dupFirstWpt);
-		pRouteList->Append(m_pHead);
-		pConfig->AddNewRoute(m_pHead);
+        m_pHead = new Route();
+        m_pTail = new Route();
+        m_pHead->CloneRoute(m_pSelectedRoute, 1, m_SelectedIdx, _("_A"));
+        m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + splitMode, m_pSelectedRoute->GetnPoints(), _("_B"), dupFirstWpt);
+        pRouteList->Append(m_pHead);
+        pConfig->AddNewRoute(m_pHead);
 
-		pRouteList->Append(m_pTail);
-		pConfig->AddNewRoute(m_pTail);
+        pRouteList->Append(m_pTail);
+        pConfig->AddNewRoute(m_pTail);
 
-		pConfig->DeleteConfigRoute(m_pSelectedRoute);
+        pConfig->DeleteConfigRoute(m_pSelectedRoute);
 
-		pSelect->DeleteAllSelectableRoutePoints(m_pSelectedRoute);
-		pSelect->DeleteAllSelectableRouteSegments(m_pSelectedRoute);
-		g_pRouteMan->DeleteRoute(m_pSelectedRoute);
-		pSelect->AddAllSelectableRouteSegments(m_pTail);
-		pSelect->AddAllSelectableRoutePoints(m_pTail);
-		pSelect->AddAllSelectableRouteSegments(m_pHead);
-		pSelect->AddAllSelectableRoutePoints(m_pHead);
+        pSelect->DeleteAllSelectableRoutePoints(m_pSelectedRoute);
+        pSelect->DeleteAllSelectableRouteSegments(m_pSelectedRoute);
+        g_pRouteMan->DeleteRoute(m_pSelectedRoute);
+        pSelect->AddAllSelectableRouteSegments(m_pTail);
+        pSelect->AddAllSelectableRoutePoints(m_pTail);
+        pSelect->AddAllSelectableRouteSegments(m_pHead);
+        pSelect->AddAllSelectableRoutePoints(m_pHead);
 
-		if (showRPD) {
-			pRoutePropDialog->SetRouteAndUpdate(m_pHead);
-			pRoutePropDialog->Show();
-		}
-		if (RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog && (pRouteManagerDialog->IsShown()))
-			pRouteManagerDialog->UpdateRouteListCtrl();
-		break;
+        if (showRPD) {
+            pRoutePropDialog->SetRouteAndUpdate(m_pHead);
+            pRoutePropDialog->Show();
+        }
+        if (RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog && (pRouteManagerDialog->IsShown()))
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        break;
 
     case ID_RT_MENU_COPY:
         if( m_pSelectedRoute ) Kml::CopyRouteToClipboard( m_pSelectedRoute );

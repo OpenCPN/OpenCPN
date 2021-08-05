@@ -567,7 +567,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     }
     if( m_Altitude ) {
         if( ! m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append(_T("\n"));
-		m_Message_Hiden.Append(_("Warning : Data at Geopotential Height")).Append(_T(" "))
+        m_Message_Hiden.Append(_("Warning : Data at Geopotential Height")).Append(_T(" "))
             .Append(m_Settings.GetAltitudeFromIndex(m_Altitude, m_Settings.Settings[GribOverlaySettings::PRESSURE].m_Units)).Append(_T(" "))
             .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
             .Append(_T(" ! "));
@@ -990,7 +990,7 @@ void GRIBOverlayFactory::InitColorsTable( )
     InitColor(SeaTempMap, (sizeof SeaTempMap) / (sizeof *SeaTempMap));
     InitColor(PrecipitationMap, (sizeof PrecipitationMap) / (sizeof *PrecipitationMap));
     InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
-	InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
+    InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
 }
 
 void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in, unsigned char &r, unsigned char &g, unsigned char &b)
@@ -1034,10 +1034,10 @@ void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in, unsigned c
         map = CloudMap;
         maplen = (sizeof CloudMap) / (sizeof *CloudMap);
         break;
-	case CAPE_GRAPHIC_INDEX:
-		map = CAPEMap;
-		maplen = (sizeof CAPEMap) / (sizeof *CAPEMap);
-		break;
+    case CAPE_GRAPHIC_INDEX:
+        map = CAPEMap;
+        maplen = (sizeof CAPEMap) / (sizeof *CAPEMap);
+        break;
     default:
         return;
     }
@@ -1487,7 +1487,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     }
 #endif
 
-    if( m_Settings.Settings[settings].m_bDirArrFixSpac ) {						//fixed spacing
+    if( m_Settings.Settings[settings].m_bDirArrFixSpac ) {                      //fixed spacing
 
         //Set spacing between arrows
         int space = adjustSpacing( m_Settings.Settings[settings].m_iDirArrSpacing );
@@ -1504,7 +1504,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                     if( dir == GRIB_NOTDEF || sh == GRIB_NOTDEF ) continue;
 
-                } else {	     // current arrows
+                } else {         // current arrows
                     if( !GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat) )
                         continue;
                     scale = wxMax(1.0, sh);             // Size depends on magnitude.
@@ -1522,7 +1522,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
             }
         }
 
-    } else {																//end fixed spacing -> minimum spacing
+    } else {                                                                //end fixed spacing -> minimum spacing
 
         //set minimum spacing between arrows
         double minspace = wxMax( m_Settings.Settings[settings].m_iDirArrSpacing, m_Settings.Settings[settings].m_iDirectionArrowSize * 1.2 );
@@ -1569,7 +1569,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                     if( PointInLLBox( vp, lon, lat ) ) {
                         double sh, dir, wdh;
                         double scale = 1.0;
-                        if(polar) {														//wave arrows
+                        if(polar) {                                                     //wave arrows
                             dir = pGRY->getValue( i, j );
                             sh = pGRX->getValue( i, j );
 
@@ -1735,92 +1735,92 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
         pGRA = pGRM;
     }
 
-	//set an arbitrary width for numbers
-	int wstring;
-	m_TexFontNumbers.GetTextExtent( _T("1234"), &wstring, NULL );
+    //set an arbitrary width for numbers
+    int wstring;
+    m_TexFontNumbers.GetTextExtent( _T("1234"), &wstring, NULL );
 
-	if( m_Settings.Settings[settings].m_bNumFixSpac ) {						//fixed spacing
+    if( m_Settings.Settings[settings].m_bNumFixSpac ) {                     //fixed spacing
 
-		//Set spacing between numbers
+        //Set spacing between numbers
                 int space = adjustSpacing( m_Settings.Settings[settings].m_iNumbersSpacing);
 
-		PlugIn_ViewPort uvp = *vp;
-		uvp.rotation = uvp.skew = 0;
+        PlugIn_ViewPort uvp = *vp;
+        uvp.rotation = uvp.skew = 0;
 
-		wxPoint ptl, pbr;
-		GetCanvasPixLL( &uvp, &ptl, wxMin(pGRA->getLatMax(), 89.0), pGRA->getLonMin() );	 //top left corner position
-		GetCanvasPixLL( &uvp, &pbr, wxMax(pGRA->getLatMin(), -89.0), pGRA->getLonMax() ); //bottom right corner position
-		if (ptl.x >= pbr.x) {
-		    // 360
-		    ptl.x = 0;
-		    pbr.x = m_ParentSize.GetWidth();
-		}
+        wxPoint ptl, pbr;
+        GetCanvasPixLL( &uvp, &ptl, wxMin(pGRA->getLatMax(), 89.0), pGRA->getLonMin() );     //top left corner position
+        GetCanvasPixLL( &uvp, &pbr, wxMax(pGRA->getLatMin(), -89.0), pGRA->getLonMax() ); //bottom right corner position
+        if (ptl.x >= pbr.x) {
+            // 360
+            ptl.x = 0;
+            pbr.x = m_ParentSize.GetWidth();
+        }
 
-		for( int i = wxMax(ptl.x, 0); i < wxMin(pbr.x, m_ParentSize.GetWidth() ) ; i+= (space + wstring) ) {
-			for( int j = wxMax(ptl.y, 0); j < wxMin(pbr.y, m_ParentSize.GetHeight() ); j+= (space + wstring) ) {
-				double lat, lon, val;
-				GetCanvasLLPix( vp, wxPoint( i, j ), &lat, &lon );
-				val = pGRA->getInterpolatedValue( lon, lat, true );
-				if( val != GRIB_NOTDEF ) {
-					double value = m_Settings.CalibrateValue(settings, val);
-					wxColour back_color = GetGraphicColor(settings, value);
+        for( int i = wxMax(ptl.x, 0); i < wxMin(pbr.x, m_ParentSize.GetWidth() ) ; i+= (space + wstring) ) {
+            for( int j = wxMax(ptl.y, 0); j < wxMin(pbr.y, m_ParentSize.GetHeight() ); j+= (space + wstring) ) {
+                double lat, lon, val;
+                GetCanvasLLPix( vp, wxPoint( i, j ), &lat, &lon );
+                val = pGRA->getInterpolatedValue( lon, lat, true );
+                if( val != GRIB_NOTDEF ) {
+                    double value = m_Settings.CalibrateValue(settings, val);
+                    wxColour back_color = GetGraphicColor(settings, value);
 
-					DrawNumbers( wxPoint(i, j), value, settings, back_color );
-				}
-			}
-		}
-	} else {
+                    DrawNumbers( wxPoint(i, j), value, settings, back_color );
+                }
+            }
+        }
+    } else {
 
-		//set minimum spacing between arrows
-		double minspace = wxMax( m_Settings.Settings[settings].m_iNumbersSpacing, wstring * 1.2 );
+        //set minimum spacing between arrows
+        double minspace = wxMax( m_Settings.Settings[settings].m_iNumbersSpacing, wstring * 1.2 );
                 double minspace2 = square(minspace);
 
-		//    Get the the grid
-		int imax = pGRA->getNi();                  // Longitude
-		int jmax = pGRA->getNj();                  // Latitude
+        //    Get the the grid
+        int imax = pGRA->getNi();                  // Longitude
+        int jmax = pGRA->getNj();                  // Latitude
 
-		wxPoint firstpx(-1000, -1000);
-		wxPoint oldpx(-1000, -1000);
-		wxPoint oldpy(-1000, -1000);
+        wxPoint firstpx(-1000, -1000);
+        wxPoint oldpx(-1000, -1000);
+        wxPoint oldpy(-1000, -1000);
 
-		for( int i = 0; i < imax; i++ ) {
-			double lonl, latl;
-			pGRA->getXY( i, pGRA->getNj()/2, &lonl, &latl );
+        for( int i = 0; i < imax; i++ ) {
+            double lonl, latl;
+            pGRA->getXY( i, pGRA->getNj()/2, &lonl, &latl );
 
-			wxPoint pl;
-			GetCanvasPixLL( vp, &pl, latl, lonl );
+            wxPoint pl;
+            GetCanvasPixLL( vp, &pl, latl, lonl );
 
-			if (pl.x <= firstpx.x && square( pl.x - firstpx.x) + square(pl.y - firstpx.y ) < minspace2/1.44)
-			    continue;
+            if (pl.x <= firstpx.x && square( pl.x - firstpx.x) + square(pl.y - firstpx.y ) < minspace2/1.44)
+                continue;
 
-			if( square( pl.x - oldpx.x) + square(pl.y - oldpx.y ) >= minspace2 ) {
-				oldpx = pl;
-				if (i == 0)
-				    firstpx = pl;
+            if( square( pl.x - oldpx.x) + square(pl.y - oldpx.y ) >= minspace2 ) {
+                oldpx = pl;
+                if (i == 0)
+                    firstpx = pl;
 
-				for( int j = 0; j < jmax; j++ ) {
-					double lon, lat;
-					pGRA->getXY( i, j, &lon, &lat );
+                for( int j = 0; j < jmax; j++ ) {
+                    double lon, lat;
+                    pGRA->getXY( i, j, &lon, &lat );
 
-					wxPoint p;
-					GetCanvasPixLL( vp, &p, lat, lon );
+                    wxPoint p;
+                    GetCanvasPixLL( vp, &p, lat, lon );
 
-					if( square( p.x - oldpy.x) + square(p.y - oldpy.y ) >= minspace2 ) {
-						oldpy = p;
+                    if( square( p.x - oldpy.x) + square(p.y - oldpy.y ) >= minspace2 ) {
+                        oldpy = p;
 
-						if(lon > 180)
-							lon -= 360;
+                        if(lon > 180)
+                            lon -= 360;
 
-						if( PointInLLBox( vp, lon, lat ) ) {
-							double mag = pGRA->getValue( i, j );
+                        if( PointInLLBox( vp, lon, lat ) ) {
+                            double mag = pGRA->getValue( i, j );
 
-							if( mag != GRIB_NOTDEF ) {
-								double value = m_Settings.CalibrateValue(settings, mag);
-								wxColour back_color = GetGraphicColor(settings, value);
+                            if( mag != GRIB_NOTDEF ) {
+                                double value = m_Settings.CalibrateValue(settings, mag);
+                                wxColour back_color = GetGraphicColor(settings, value);
 
-								DrawNumbers( p, value, settings, back_color );
-							}
-						}
+                                DrawNumbers( p, value, settings, back_color );
+                            }
+                        }
                     }
                 }
             }
@@ -1832,23 +1832,23 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
 void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxColour back_color )
 {
-	if( m_pdc ) {
-		wxImage &label = getLabel(value, settings, back_color);
+    if( m_pdc ) {
+        wxImage &label = getLabel(value, settings, back_color);
         //set alpha chanel
         int w = label.GetWidth(), h = label.GetHeight();
         for( int y = 0; y < h; y++ )
-			for( int x = 0; x < w; x++ )
-				label.SetAlpha( x, y, m_Settings.m_iOverlayTransparency );
+            for( int x = 0; x < w; x++ )
+                label.SetAlpha( x, y, m_Settings.m_iOverlayTransparency );
 
                 m_pdc->DrawBitmap(label, p.x, p.y, true);
     } else {
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
 
-		glEnable( GL_BLEND );
+        glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glColor4ub(back_color.Red(), back_color.Green(),
-					back_color.Blue(), m_Settings.m_iOverlayTransparency);
+                    back_color.Blue(), m_Settings.m_iOverlayTransparency);
 
         glLineWidth(1);
 
@@ -1913,7 +1913,7 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
 
 #endif
 #endif
-	}
+    }
 }
 
 void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
@@ -2375,8 +2375,8 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
 #if wxUSE_GRAPHICS_CONTEXT
-		if (m_hiDefGraphics && m_gdc)
-			m_gdc->SetPen(pen);
+        if (m_hiDefGraphics && m_gdc)
+            m_gdc->SetPen(pen);
 #endif
     } else {
         if(m_oDC){
@@ -2395,8 +2395,8 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
 #if wxUSE_GRAPHICS_CONTEXT
-		if (m_hiDefGraphics && m_gdc)
-			m_gdc->SetPen(pen);
+        if (m_hiDefGraphics && m_gdc)
+            m_gdc->SetPen(pen);
 #endif
     } else {
         if(m_oDC){

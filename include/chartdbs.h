@@ -243,7 +243,7 @@ struct ChartTableEntry
     LLRegion quilt_candidate_region;
 
     void        SetScale(int scale);
-    bool	Scale_eq( int b ) const { return abs ( Scale - b) <= rounding; }
+    bool    Scale_eq( int b ) const { return abs ( Scale - b) <= rounding; }
     bool        Scale_ge( int b ) const { return  Scale_eq( b ) || Scale > b; }
     bool        Scale_gt( int b ) const { return  Scale > b && !Scale_eq( b ); }
 
@@ -256,7 +256,7 @@ struct ChartTableEntry
     float       LonMax;
     float       LonMin;
     char        *pFullPath;
-    int		rounding;
+    int     rounding;
     int         Scale;
     time_t      edition_date;
     time_t      file_date;

@@ -86,206 +86,206 @@
 
 void jpc_rct(jas_matrix_t *c0, jas_matrix_t *c1, jas_matrix_t *c2)
 {
-	int numrows;
-	int numcols;
-	int i;
-	int j;
-	jpc_fix_t *c0p;
-	jpc_fix_t *c1p;
-	jpc_fix_t *c2p;
+    int numrows;
+    int numcols;
+    int i;
+    int j;
+    jpc_fix_t *c0p;
+    jpc_fix_t *c1p;
+    jpc_fix_t *c2p;
 
-	numrows = jas_matrix_numrows(c0);
-	numcols = jas_matrix_numcols(c0);
+    numrows = jas_matrix_numrows(c0);
+    numcols = jas_matrix_numcols(c0);
 
-	/* All three matrices must have the same dimensions. */
-	assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numcols(c1) == numcols
-	  && jas_matrix_numrows(c2) == numrows && jas_matrix_numcols(c2) == numcols);
+    /* All three matrices must have the same dimensions. */
+    assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numcols(c1) == numcols
+      && jas_matrix_numrows(c2) == numrows && jas_matrix_numcols(c2) == numcols);
 
-	for (i = 0; i < numrows; i++) {
-		c0p = jas_matrix_getref(c0, i, 0);
-		c1p = jas_matrix_getref(c1, i, 0);
-		c2p = jas_matrix_getref(c2, i, 0);
-		for (j = numcols; j > 0; --j) {
-			int r;
-			int g;
-			int b;
-			int y;
-			int u;
-			int v;
-			r = *c0p;
-			g = *c1p;
-			b = *c2p;
-			y = (r + (g << 1) + b) >> 2;
-			u = b - g;
-			v = r - g;
-			*c0p++ = y;
-			*c1p++ = u;
-			*c2p++ = v;
-		}
-	}
+    for (i = 0; i < numrows; i++) {
+        c0p = jas_matrix_getref(c0, i, 0);
+        c1p = jas_matrix_getref(c1, i, 0);
+        c2p = jas_matrix_getref(c2, i, 0);
+        for (j = numcols; j > 0; --j) {
+            int r;
+            int g;
+            int b;
+            int y;
+            int u;
+            int v;
+            r = *c0p;
+            g = *c1p;
+            b = *c2p;
+            y = (r + (g << 1) + b) >> 2;
+            u = b - g;
+            v = r - g;
+            *c0p++ = y;
+            *c1p++ = u;
+            *c2p++ = v;
+        }
+    }
 }
 
 /* Compute the inverse RCT. */
 
 void jpc_irct(jas_matrix_t *c0, jas_matrix_t *c1, jas_matrix_t *c2)
 {
-	int numrows;
-	int numcols;
-	int i;
-	int j;
-	jpc_fix_t *c0p;
-	jpc_fix_t *c1p;
-	jpc_fix_t *c2p;
+    int numrows;
+    int numcols;
+    int i;
+    int j;
+    jpc_fix_t *c0p;
+    jpc_fix_t *c1p;
+    jpc_fix_t *c2p;
 
-	numrows = jas_matrix_numrows(c0);
-	numcols = jas_matrix_numcols(c0);
+    numrows = jas_matrix_numrows(c0);
+    numcols = jas_matrix_numcols(c0);
 
-	/* All three matrices must have the same dimensions. */
-	assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numcols(c1) == numcols
-	  && jas_matrix_numrows(c2) == numrows && jas_matrix_numcols(c2) == numcols);
+    /* All three matrices must have the same dimensions. */
+    assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numcols(c1) == numcols
+      && jas_matrix_numrows(c2) == numrows && jas_matrix_numcols(c2) == numcols);
 
-	for (i = 0; i < numrows; i++) {
-		c0p = jas_matrix_getref(c0, i, 0);
-		c1p = jas_matrix_getref(c1, i, 0);
-		c2p = jas_matrix_getref(c2, i, 0);
-		for (j = numcols; j > 0; --j) {
-			int r;
-			int g;
-			int b;
-			int y;
-			int u;
-			int v;
-			y = *c0p;
-			u = *c1p;
-			v = *c2p;
-			g = y - ((u + v) >> 2);
-			r = v + g;
-			b = u + g;
-			*c0p++ = r;
-			*c1p++ = g;
-			*c2p++ = b;
-		}
-	}
+    for (i = 0; i < numrows; i++) {
+        c0p = jas_matrix_getref(c0, i, 0);
+        c1p = jas_matrix_getref(c1, i, 0);
+        c2p = jas_matrix_getref(c2, i, 0);
+        for (j = numcols; j > 0; --j) {
+            int r;
+            int g;
+            int b;
+            int y;
+            int u;
+            int v;
+            y = *c0p;
+            u = *c1p;
+            v = *c2p;
+            g = y - ((u + v) >> 2);
+            r = v + g;
+            b = u + g;
+            *c0p++ = r;
+            *c1p++ = g;
+            *c2p++ = b;
+        }
+    }
 }
 
 void jpc_ict(jas_matrix_t *c0, jas_matrix_t *c1, jas_matrix_t *c2)
 {
-	int numrows;
-	int numcols;
-	int i;
-	int j;
-	jpc_fix_t r;
-	jpc_fix_t g;
-	jpc_fix_t b;
-	jpc_fix_t y;
-	jpc_fix_t u;
-	jpc_fix_t v;
-	jpc_fix_t *c0p;
-	jpc_fix_t *c1p;
-	jpc_fix_t *c2p;
+    int numrows;
+    int numcols;
+    int i;
+    int j;
+    jpc_fix_t r;
+    jpc_fix_t g;
+    jpc_fix_t b;
+    jpc_fix_t y;
+    jpc_fix_t u;
+    jpc_fix_t v;
+    jpc_fix_t *c0p;
+    jpc_fix_t *c1p;
+    jpc_fix_t *c2p;
 
-	numrows = jas_matrix_numrows(c0);
-	assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numrows(c2) == numrows);
-	numcols = jas_matrix_numcols(c0);
-	assert(jas_matrix_numcols(c1) == numcols && jas_matrix_numcols(c2) == numcols);
-	for (i = 0; i < numrows; ++i) {
-		c0p = jas_matrix_getref(c0, i, 0);
-		c1p = jas_matrix_getref(c1, i, 0);
-		c2p = jas_matrix_getref(c2, i, 0);
-		for (j = numcols; j > 0; --j) {
-			r = *c0p;
-			g = *c1p;
-			b = *c2p;
-			y = jpc_fix_add3(jpc_fix_mul(jpc_dbltofix(0.299), r), jpc_fix_mul(jpc_dbltofix(0.587), g),
-			  jpc_fix_mul(jpc_dbltofix(0.114), b));
-			u = jpc_fix_add3(jpc_fix_mul(jpc_dbltofix(-0.16875), r), jpc_fix_mul(jpc_dbltofix(-0.33126), g),
-			  jpc_fix_mul(jpc_dbltofix(0.5), b));
-			v = jpc_fix_add3(jpc_fix_mul(jpc_dbltofix(0.5), r), jpc_fix_mul(jpc_dbltofix(-0.41869), g),
-			  jpc_fix_mul(jpc_dbltofix(-0.08131), b));
-			*c0p++ = y;
-			*c1p++ = u;
-			*c2p++ = v;
-		}
-	}
+    numrows = jas_matrix_numrows(c0);
+    assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numrows(c2) == numrows);
+    numcols = jas_matrix_numcols(c0);
+    assert(jas_matrix_numcols(c1) == numcols && jas_matrix_numcols(c2) == numcols);
+    for (i = 0; i < numrows; ++i) {
+        c0p = jas_matrix_getref(c0, i, 0);
+        c1p = jas_matrix_getref(c1, i, 0);
+        c2p = jas_matrix_getref(c2, i, 0);
+        for (j = numcols; j > 0; --j) {
+            r = *c0p;
+            g = *c1p;
+            b = *c2p;
+            y = jpc_fix_add3(jpc_fix_mul(jpc_dbltofix(0.299), r), jpc_fix_mul(jpc_dbltofix(0.587), g),
+              jpc_fix_mul(jpc_dbltofix(0.114), b));
+            u = jpc_fix_add3(jpc_fix_mul(jpc_dbltofix(-0.16875), r), jpc_fix_mul(jpc_dbltofix(-0.33126), g),
+              jpc_fix_mul(jpc_dbltofix(0.5), b));
+            v = jpc_fix_add3(jpc_fix_mul(jpc_dbltofix(0.5), r), jpc_fix_mul(jpc_dbltofix(-0.41869), g),
+              jpc_fix_mul(jpc_dbltofix(-0.08131), b));
+            *c0p++ = y;
+            *c1p++ = u;
+            *c2p++ = v;
+        }
+    }
 }
 
 void jpc_iict(jas_matrix_t *c0, jas_matrix_t *c1, jas_matrix_t *c2)
 {
-	int numrows;
-	int numcols;
-	int i;
-	int j;
-	jpc_fix_t r;
-	jpc_fix_t g;
-	jpc_fix_t b;
-	jpc_fix_t y;
-	jpc_fix_t u;
-	jpc_fix_t v;
-	jpc_fix_t *c0p;
-	jpc_fix_t *c1p;
-	jpc_fix_t *c2p;
+    int numrows;
+    int numcols;
+    int i;
+    int j;
+    jpc_fix_t r;
+    jpc_fix_t g;
+    jpc_fix_t b;
+    jpc_fix_t y;
+    jpc_fix_t u;
+    jpc_fix_t v;
+    jpc_fix_t *c0p;
+    jpc_fix_t *c1p;
+    jpc_fix_t *c2p;
 
-	numrows = jas_matrix_numrows(c0);
-	assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numrows(c2) == numrows);
-	numcols = jas_matrix_numcols(c0);
-	assert(jas_matrix_numcols(c1) == numcols && jas_matrix_numcols(c2) == numcols);
-	for (i = 0; i < numrows; ++i) {
-		c0p = jas_matrix_getref(c0, i, 0);
-		c1p = jas_matrix_getref(c1, i, 0);
-		c2p = jas_matrix_getref(c2, i, 0);
-		for (j = numcols; j > 0; --j) {
-			y = *c0p;
-			u = *c1p;
-			v = *c2p;
-			r = jpc_fix_add(y, jpc_fix_mul(jpc_dbltofix(1.402), v));
-			g = jpc_fix_add3(y, jpc_fix_mul(jpc_dbltofix(-0.34413), u),
-			  jpc_fix_mul(jpc_dbltofix(-0.71414), v));
-			b = jpc_fix_add(y, jpc_fix_mul(jpc_dbltofix(1.772), u));
-			*c0p++ = r;
-			*c1p++ = g;
-			*c2p++ = b;
-		}
-	}
+    numrows = jas_matrix_numrows(c0);
+    assert(jas_matrix_numrows(c1) == numrows && jas_matrix_numrows(c2) == numrows);
+    numcols = jas_matrix_numcols(c0);
+    assert(jas_matrix_numcols(c1) == numcols && jas_matrix_numcols(c2) == numcols);
+    for (i = 0; i < numrows; ++i) {
+        c0p = jas_matrix_getref(c0, i, 0);
+        c1p = jas_matrix_getref(c1, i, 0);
+        c2p = jas_matrix_getref(c2, i, 0);
+        for (j = numcols; j > 0; --j) {
+            y = *c0p;
+            u = *c1p;
+            v = *c2p;
+            r = jpc_fix_add(y, jpc_fix_mul(jpc_dbltofix(1.402), v));
+            g = jpc_fix_add3(y, jpc_fix_mul(jpc_dbltofix(-0.34413), u),
+              jpc_fix_mul(jpc_dbltofix(-0.71414), v));
+            b = jpc_fix_add(y, jpc_fix_mul(jpc_dbltofix(1.772), u));
+            *c0p++ = r;
+            *c1p++ = g;
+            *c2p++ = b;
+        }
+    }
 }
 
 jpc_fix_t jpc_mct_getsynweight(int mctid, int cmptno)
 {
-	jpc_fix_t synweight;
+    jpc_fix_t synweight;
 
-	synweight = JPC_FIX_ONE;
-	switch (mctid) {
-	case JPC_MCT_RCT:
-		switch (cmptno) {
-		case 0:
-			synweight = jpc_dbltofix(sqrt(3.0));
-			break;
-		case 1:
-			synweight = jpc_dbltofix(sqrt(0.6875));
-			break;
-		case 2:
-			synweight = jpc_dbltofix(sqrt(0.6875));
-			break;
-		}
-		break;
-	case JPC_MCT_ICT:
-		switch (cmptno) {
-		case 0:
-			synweight = jpc_dbltofix(sqrt(3.0000));
-			break;
-		case 1:
-			synweight = jpc_dbltofix(sqrt(3.2584));
-			break;
-		case 2:
-			synweight = jpc_dbltofix(sqrt(2.4755));
-			break;
-		}
-		break;
+    synweight = JPC_FIX_ONE;
+    switch (mctid) {
+    case JPC_MCT_RCT:
+        switch (cmptno) {
+        case 0:
+            synweight = jpc_dbltofix(sqrt(3.0));
+            break;
+        case 1:
+            synweight = jpc_dbltofix(sqrt(0.6875));
+            break;
+        case 2:
+            synweight = jpc_dbltofix(sqrt(0.6875));
+            break;
+        }
+        break;
+    case JPC_MCT_ICT:
+        switch (cmptno) {
+        case 0:
+            synweight = jpc_dbltofix(sqrt(3.0000));
+            break;
+        case 1:
+            synweight = jpc_dbltofix(sqrt(3.2584));
+            break;
+        case 2:
+            synweight = jpc_dbltofix(sqrt(2.4755));
+            break;
+        }
+        break;
 #if 0
-	default:
-		synweight = JPC_FIX_ONE;
-		break;
+    default:
+        synweight = JPC_FIX_ONE;
+        break;
 #endif
-	}
+    }
 
-	return synweight;
+    return synweight;
 }

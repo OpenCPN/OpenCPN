@@ -60,8 +60,8 @@
 // releasing the iterator when iteration is complete.
 static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
 {
-    kern_return_t			kernResult;
-    CFMutableDictionaryRef	classesToMatch;
+    kern_return_t           kernResult;
+    CFMutableDictionaryRef  classesToMatch;
 
 /*! @function IOServiceMatching
     @abstract Create a matching dictionary that specifies an IOService class match.
@@ -77,32 +77,32 @@ static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
     }
     else {
 /*!
-	@function CFDictionarySetValue
-	Sets the value of the key in the dictionary.
-	@param theDict The dictionary to which the value is to be set. If this
-		parameter is not a valid mutable CFDictionary, the behavior is
-		undefined. If the dictionary is a fixed-capacity dictionary and
-		it is full before this operation, and the key does not exist in
-		the dictionary, the behavior is undefined.
-	@param key The key of the value to set into the dictionary. If a key
-		which matches this key is already present in the dictionary, only
-		the value is changed ("add if absent, replace if present"). If
-		no key matches the given key, the key-value pair is added to the
-		dictionary. If added, the key is retained by the dictionary,
-		using the retain callback provided
-		when the dictionary was created. If the key is not of the sort
-		expected by the key retain callback, the behavior is undefined.
-	@param value The value to add to or replace into the dictionary. The value
-		is retained by the dictionary using the retain callback provided
-		when the dictionary was created, and the previous value if any is
-		released. If the value is not of the sort expected by the
-		retain or release callbacks, the behavior is undefined.
+    @function CFDictionarySetValue
+    Sets the value of the key in the dictionary.
+    @param theDict The dictionary to which the value is to be set. If this
+        parameter is not a valid mutable CFDictionary, the behavior is
+        undefined. If the dictionary is a fixed-capacity dictionary and
+        it is full before this operation, and the key does not exist in
+        the dictionary, the behavior is undefined.
+    @param key The key of the value to set into the dictionary. If a key
+        which matches this key is already present in the dictionary, only
+        the value is changed ("add if absent, replace if present"). If
+        no key matches the given key, the key-value pair is added to the
+        dictionary. If added, the key is retained by the dictionary,
+        using the retain callback provided
+        when the dictionary was created. If the key is not of the sort
+        expected by the key retain callback, the behavior is undefined.
+    @param value The value to add to or replace into the dictionary. The value
+        is retained by the dictionary using the retain callback provided
+        when the dictionary was created, and the previous value if any is
+        released. If the value is not of the sort expected by the
+        retain or release callbacks, the behavior is undefined.
 */
         CFDictionarySetValue(classesToMatch,
                              CFSTR(kIOSerialBSDTypeKey),
                              CFSTR(kIOSerialBSDRS232Type));
 
-		// Each serial device object has a property with key
+        // Each serial device object has a property with key
         // kIOSerialBSDTypeKey and a value that is one of kIOSerialBSDAllTypes,
         // kIOSerialBSDModemType, or kIOSerialBSDRS232Type. You can experiment with the
         // matching by changing the last parameter in the above call to CFDictionarySetValue.
@@ -125,7 +125,7 @@ static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
     if (KERN_SUCCESS != kernResult)
     {
         printf("IOServiceGetMatchingServices returned %d\n", kernResult);
-		goto exit;
+        goto exit;
     }
 
 exit:
@@ -136,11 +136,11 @@ exit:
 // If no serial ports are found the path name is set to an empty string.
 static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, int iMaxNames, CFIndex maxPathSize)
 {
-    io_object_t		modemService;
-//    kern_return_t	kernResult = KERN_FAILURE;
-    Boolean			modemFound = false;
+    io_object_t     modemService;
+//    kern_return_t kernResult = KERN_FAILURE;
+    Boolean         modemFound = false;
     char bsdPath[maxPathSize] ;
-	int				iCurrentNameIndex = 0 ;
+    int             iCurrentNameIndex = 0 ;
     // Initialize the returned path
     *bsdPath = '\0';
 
@@ -148,13 +148,13 @@ static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, in
 
     while ((modemService = IOIteratorNext(serialPortIterator)) && !modemFound)
     {
-        CFTypeRef	bsdPathAsCFString;
+        CFTypeRef   bsdPathAsCFString;
 
-		// Get the callout device's path (/dev/cu.xxxxx). The callout device should almost always be
-		// used: the dialin device (/dev/tty.xxxxx) would be used when monitoring a serial port for
-		// incoming calls, e.g. a fax listener.
+        // Get the callout device's path (/dev/cu.xxxxx). The callout device should almost always be
+        // used: the dialin device (/dev/tty.xxxxx) would be used when monitoring a serial port for
+        // incoming calls, e.g. a fax listener.
 
-		bsdPathAsCFString = IORegistryEntryCreateCFProperty(modemService,
+        bsdPathAsCFString = IORegistryEntryCreateCFProperty(modemService,
                                                             CFSTR(kIOCalloutDeviceKey),
                                                             kCFAllocatorDefault,
                                                             0);
@@ -163,23 +163,23 @@ static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, in
             Boolean result;
 
             // Convert the path from a CFString to a C (NUL-terminated) string for use
-			// with the POSIX open() call.
+            // with the POSIX open() call.
 
-			result = CFStringGetCString(bsdPathAsCFString,
+            result = CFStringGetCString(bsdPathAsCFString,
                                         bsdPath,
                                         maxPathSize,
                                         kCFStringEncodingUTF8);
             CFRelease(bsdPathAsCFString);
 
             if (result)
-			{
-				pNames[iCurrentNameIndex] = calloc(1,strlen(bsdPath)+1) ;
-				strncpy(pNames[iCurrentNameIndex],bsdPath,strlen(bsdPath)+1);
-				iCurrentNameIndex++ ;
+            {
+                pNames[iCurrentNameIndex] = calloc(1,strlen(bsdPath)+1) ;
+                strncpy(pNames[iCurrentNameIndex],bsdPath,strlen(bsdPath)+1);
+                iCurrentNameIndex++ ;
             }
         }
         // Release the io_service_t now that we are done with it.
-		(void) IOObjectRelease(modemService);
+        (void) IOObjectRelease(modemService);
 
     }
     return iCurrentNameIndex ;
@@ -187,46 +187,46 @@ static int GetSerialPortPath(io_iterator_t serialPortIterator, char** pNames, in
 
 int FindSerialPortNames(char** pNames, int iMaxNames)
 {
-	int iActiveNameCount = 0 ;
-    kern_return_t	kernResult; // on PowerPC this is an int (4 bytes)
+    int iActiveNameCount = 0 ;
+    kern_return_t   kernResult; // on PowerPC this is an int (4 bytes)
 
-    io_iterator_t	serialPortIterator;
+    io_iterator_t   serialPortIterator;
 
     kernResult = FindSerialPorts(&serialPortIterator);
 
     iActiveNameCount = GetSerialPortPath(serialPortIterator, pNames, iMaxNames, MAXPATHLEN);
 
-    IOObjectRelease(serialPortIterator);	// Release the iterator.
-	return iActiveNameCount ;
+    IOObjectRelease(serialPortIterator);    // Release the iterator.
+    return iActiveNameCount ;
 }
 
 bool ValidateSerialPortName(char* pPortName, int iMaxNamestoSearch)
 {
-	char* paPortNames[iMaxNamestoSearch] ;
-	int iPortNameCount ;
-	int iPortIndex ;
-	bool bPortFound = false ;
-	char* pPortSubName = index(pPortName,':') ;
-	// name is always valid if opetion is set to 'none'
-	if (0 == strcasecmp(pPortName,"NONE"))
-		return true ;
-	// if this name done not have a leading descriptor with a 'serial:', 'GPS:', etc, use the whole name
-	if (NULL == pPortSubName)
-		pPortSubName = pPortName ;
-	else
-		pPortSubName++ ;
+    char* paPortNames[iMaxNamestoSearch] ;
+    int iPortNameCount ;
+    int iPortIndex ;
+    bool bPortFound = false ;
+    char* pPortSubName = index(pPortName,':') ;
+    // name is always valid if opetion is set to 'none'
+    if (0 == strcasecmp(pPortName,"NONE"))
+        return true ;
+    // if this name done not have a leading descriptor with a 'serial:', 'GPS:', etc, use the whole name
+    if (NULL == pPortSubName)
+        pPortSubName = pPortName ;
+    else
+        pPortSubName++ ;
 
-	memset(paPortNames,0x00,sizeof(paPortNames)) ;
-	iPortNameCount = FindSerialPortNames(&paPortNames[0],iMaxNamestoSearch) ;
-	for ( iPortIndex=0;iPortIndex<iPortNameCount;iPortIndex++)
-	{
-		//stripoff leading 'serial:', etc based on iColonIndex
-		int iStrCompresult = strcmp(paPortNames[iPortIndex],pPortSubName)  ;
-		if (false == bPortFound )
-			bPortFound = (bool) ( 0 == iStrCompresult) ;
-		free(paPortNames[iPortIndex]) ;
-	}
-	return bPortFound ;
+    memset(paPortNames,0x00,sizeof(paPortNames)) ;
+    iPortNameCount = FindSerialPortNames(&paPortNames[0],iMaxNamestoSearch) ;
+    for ( iPortIndex=0;iPortIndex<iPortNameCount;iPortIndex++)
+    {
+        //stripoff leading 'serial:', etc based on iColonIndex
+        int iStrCompresult = strcmp(paPortNames[iPortIndex],pPortSubName)  ;
+        if (false == bPortFound )
+            bPortFound = (bool) ( 0 == iStrCompresult) ;
+        free(paPortNames[iPortIndex]) ;
+    }
+    return bPortFound ;
 }
 #endif
 

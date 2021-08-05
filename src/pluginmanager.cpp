@@ -600,13 +600,13 @@ wxString GetPluginDataDir(const char* plugin_name)
         bool more = tryDir.GetFirst(&next);
         while (more) {
             if (next == plugin_name) {
-		next = next.Prepend(tryDirName.GetFullPath() + sep);
+        next = next.Prepend(tryDirName.GetFullPath() + sep);
                 wxLogMessage(_T("PlugInManager: using data dir: %s"), next);
                 return next;
             }
             more = tryDir.GetNext(&next);
         }
-	tryDir.Close();
+    tryDir.Close();
     }
     wxLogMessage(_T("Warnińg: no data directory found, using \"\""));
     return "";
@@ -2644,7 +2644,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                             opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                             if (ppi116)
                                 b_rendered = ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, g_canvasConfig);
-			    break;
+                break;
                         }
                         default:
                         {
@@ -4644,13 +4644,13 @@ wxArrayString GetWaypointGUIDArray( void )
 
 wxArrayString GetIconNameArray(void)
 {
-	wxArrayString result;
+    wxArrayString result;
 
-	for (int i = 0; i < pWayPointMan->GetNumIcons(); i++) {
-		wxString *ps = pWayPointMan->GetIconKey(i);
-		result.Add(*ps);
-	}
-	return result;
+    for (int i = 0; i < pWayPointMan->GetNumIcons(); i++) {
+        wxString *ps = pWayPointMan->GetIconKey(i);
+        result.Add(*ps);
+    }
+    return result;
 }
 
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )

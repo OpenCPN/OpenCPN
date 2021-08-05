@@ -151,7 +151,7 @@ private:
     JobList             todo_list;
     int                 m_max_jobs;
 
-    int		m_prevMemUsed;
+    int     m_prevMemUsed;
 
     wxTimer     m_timer;
     size_t      m_ticks;

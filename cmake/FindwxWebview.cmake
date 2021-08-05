@@ -40,33 +40,33 @@
 
 if (WXWEBVIEW_LIBRARIES)
 # in cache already
-	set(wxWebview_FOUND TRUE)
+    set(wxWebview_FOUND TRUE)
 else (WXWEBVIEW_LIBRARIES)
-	find_library(WXWEBVIEW_LIBRARY
-	NAMES
-	wx_gtk2u_webview-3.0
-	PATHS
-	/usr/lib
-	/usr/local/lib
-	/opt/local/lib
-	/usr/lib/i386-linux-gnu
-	/sw/lib
-	)
+    find_library(WXWEBVIEW_LIBRARY
+    NAMES
+    wx_gtk2u_webview-3.0
+    PATHS
+    /usr/lib
+    /usr/local/lib
+    /opt/local/lib
+    /usr/lib/i386-linux-gnu
+    /sw/lib
+    )
 
-	set(WXWEBVIEW_LIBRARIES ${WXWEBVIEW_LIBRARY} )
+    set(WXWEBVIEW_LIBRARIES ${WXWEBVIEW_LIBRARY} )
 
-	if (WXWEBVIEW_LIBRARIES)
-		set(wxWebview_FOUND TRUE)
+    if (WXWEBVIEW_LIBRARIES)
+        set(wxWebview_FOUND TRUE)
 endif (WXWEBVIEW_LIBRARIES)
 
 if (wxWebview_FOUND)
-	if (NOT wxWebview_FIND_QUIETLY)
-		message(STATUS "Found wxWebview: ${WXWEBVIEW_LIBRARIES}")
-	endif (NOT wxWebview_FIND_QUIETLY)
+    if (NOT wxWebview_FIND_QUIETLY)
+        message(STATUS "Found wxWebview: ${WXWEBVIEW_LIBRARIES}")
+    endif (NOT wxWebview_FIND_QUIETLY)
 else (wxWebview_FOUND)
-	if (wxWebview_FIND_REQUIRED)
-		message(FATAL_ERROR "Could not find wxWebview")
-	endif (wxWebview_FIND_REQUIRED)
+    if (wxWebview_FIND_REQUIRED)
+        message(FATAL_ERROR "Could not find wxWebview")
+    endif (wxWebview_FIND_REQUIRED)
 endif (wxWebview_FOUND)
 
 # show the WXWEBVIEW_LIBRARIES variables only in the advanced view

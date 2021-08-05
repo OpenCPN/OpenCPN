@@ -349,7 +349,7 @@ protected:
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;
 
-    int		m_LRUtime;
+    int     m_LRUtime;
 
     GLuint       m_tideTex;
     GLuint       m_currentTex;

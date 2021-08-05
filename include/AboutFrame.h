@@ -39,56 +39,56 @@
 ///////////////////////////////////////////////////////////////////////////////
 class AboutFrame : public wxFrame
 {
-	private:
+    private:
 
-	protected:
-		wxStaticBitmap* m_bitmapLogo;
-		wxButton* m_btnBack;
-		wxScrolledWindow* m_scrolledWindowAbout;
-		wxStaticText* m_staticTextOCPN;
-		wxStaticText* m_staticTextVersion;
-		wxStaticText* m_staticTextCopyYears;
-		wxHyperlinkCtrl* m_hyperlinkAuthors;
-		wxStaticText* m_staticTextDescription;
-		wxStaticText* m_staticTextHelp;
-		wxHyperlinkCtrl* m_hyperlinkDonate;
-		wxStaticText* m_staticTextOr;
-		wxHyperlinkCtrl* m_hyperlinkGetInvolved;
-		wxStaticText* m_staticTextLogfile;
-		wxHyperlinkCtrl* m_hyperlinkLogFile;
-		wxStaticText* m_staticTextIniFile;
-		wxHyperlinkCtrl* m_hyperlinkIniFile;
-		wxHtmlWindow* m_htmlWinAuthors;
-		wxHtmlWindow* m_htmlWinLicense;
+    protected:
+        wxStaticBitmap* m_bitmapLogo;
+        wxButton* m_btnBack;
+        wxScrolledWindow* m_scrolledWindowAbout;
+        wxStaticText* m_staticTextOCPN;
+        wxStaticText* m_staticTextVersion;
+        wxStaticText* m_staticTextCopyYears;
+        wxHyperlinkCtrl* m_hyperlinkAuthors;
+        wxStaticText* m_staticTextDescription;
+        wxStaticText* m_staticTextHelp;
+        wxHyperlinkCtrl* m_hyperlinkDonate;
+        wxStaticText* m_staticTextOr;
+        wxHyperlinkCtrl* m_hyperlinkGetInvolved;
+        wxStaticText* m_staticTextLogfile;
+        wxHyperlinkCtrl* m_hyperlinkLogFile;
+        wxStaticText* m_staticTextIniFile;
+        wxHyperlinkCtrl* m_hyperlinkIniFile;
+        wxHtmlWindow* m_htmlWinAuthors;
+        wxHtmlWindow* m_htmlWinLicense;
 #if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
-		wxWebView* m_htmlWinHelp;
+        wxWebView* m_htmlWinHelp;
 #else
                 wxHtmlWindow* m_htmlWinHelp;
 #endif
-		wxPanel* m_panelMainLinks;
-		wxHyperlinkCtrl* m_hyperlinkWebsite;
-		wxHyperlinkCtrl* m_hyperlinkHelp;
-		wxHyperlinkCtrl* m_hyperlinkLicense;
+        wxPanel* m_panelMainLinks;
+        wxHyperlinkCtrl* m_hyperlinkWebsite;
+        wxHyperlinkCtrl* m_hyperlinkHelp;
+        wxHyperlinkCtrl* m_hyperlinkLicense;
 
-		// Virtual event handlers, overide them in your derived class
-		virtual void AboutFrameOnActivate( wxActivateEvent& event ) { event.Skip(); }
-		virtual void AboutFrameOnClose( wxCloseEvent& event ) { event.Skip(); }
-		virtual void m_btnBackOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnLinkAuthors( wxHyperlinkEvent& event ) { event.Skip(); }
-		virtual void OnLinkDonate( wxHyperlinkEvent& event ) { event.Skip(); }
-		virtual void OnLinkGetInvolved( wxHyperlinkEvent& event ) { event.Skip(); }
-		virtual void OnLinkLogfile( wxHyperlinkEvent& event ) { event.Skip(); }
-		virtual void OnLinkConfigfile( wxHyperlinkEvent& event ) { event.Skip(); }
-		virtual void m_htmlWinHelpOnHtmlLinkClicked( wxHtmlLinkEvent& event ) { event.Skip(); }
-		virtual void OnLinkHelp( wxHyperlinkEvent& event ) { event.Skip(); }
-		virtual void OnLinkLicense( wxHyperlinkEvent& event ) { event.Skip(); }
+        // Virtual event handlers, overide them in your derived class
+        virtual void AboutFrameOnActivate( wxActivateEvent& event ) { event.Skip(); }
+        virtual void AboutFrameOnClose( wxCloseEvent& event ) { event.Skip(); }
+        virtual void m_btnBackOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+        virtual void OnLinkAuthors( wxHyperlinkEvent& event ) { event.Skip(); }
+        virtual void OnLinkDonate( wxHyperlinkEvent& event ) { event.Skip(); }
+        virtual void OnLinkGetInvolved( wxHyperlinkEvent& event ) { event.Skip(); }
+        virtual void OnLinkLogfile( wxHyperlinkEvent& event ) { event.Skip(); }
+        virtual void OnLinkConfigfile( wxHyperlinkEvent& event ) { event.Skip(); }
+        virtual void m_htmlWinHelpOnHtmlLinkClicked( wxHtmlLinkEvent& event ) { event.Skip(); }
+        virtual void OnLinkHelp( wxHyperlinkEvent& event ) { event.Skip(); }
+        virtual void OnLinkLicense( wxHyperlinkEvent& event ) { event.Skip(); }
 
 
-	public:
+    public:
 
-		AboutFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About OpenCPN"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxFRAME_NO_TASKBAR|wxRESIZE_BORDER|wxTAB_TRAVERSAL );
+        AboutFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About OpenCPN"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxFRAME_NO_TASKBAR|wxRESIZE_BORDER|wxTAB_TRAVERSAL );
 
-		~AboutFrame();
+        ~AboutFrame();
 
 };
 

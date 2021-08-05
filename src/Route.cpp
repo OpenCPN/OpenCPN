@@ -117,7 +117,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
                     psourcepoint->GetIconName(), psourcepoint->GetName(), wxEmptyString, false );
-			ptargetpoint->m_bShowName = psourcepoint->m_bShowName; //do not change new wpt's name visibility
+            ptargetpoint->m_bShowName = psourcepoint->m_bShowName; //do not change new wpt's name visibility
             AddPoint( ptargetpoint, false );
         }
     }
@@ -266,7 +266,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 
         RoutePoint *prp2 = node->GetData();
 
-		bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
+        bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
 
         if ( !m_bVisible && prp2->m_bKeepXRoute )
             prp2->Draw( dc, canvas, &rpt2, sharedVizOveride );
@@ -591,10 +591,10 @@ void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
     while(node) {
         RoutePoint *prp = node->GetData();
         canvas->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-		if (node != pRoutePointList->GetFirst()) {
-			if (!prp->m_bIsActive || !g_bAllowShipToActive)
-				RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
-		}
+        if (node != pRoutePointList->GetFirst()) {
+            if (!prp->m_bIsActive || !g_bAllowShipToActive)
+                RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
+        }
         rpt1 = rpt2;
         node = node->GetNext();
     }

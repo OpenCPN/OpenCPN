@@ -71,7 +71,7 @@ int Kml::ParseCoordinates( TiXmlNode* node, dPointList& points ) {
     std::stringstream ss( e->GetText() );
     std::string txtCoord;
 
-	while(1) {
+    while(1) {
         if( ! std::getline( ss, txtCoord, ',' ) ) break;;
         if( txtCoord.length() == 0 ) break;
 
@@ -154,7 +154,7 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name 
         return KML_PASTE_INVALID;
     }
     wxString pointName = wxEmptyString;
-	TiXmlElement* e = node->Parent()->FirstChild( "name" )->ToElement();
+    TiXmlElement* e = node->Parent()->FirstChild( "name" )->ToElement();
     if( e ) pointName = wxString( e->GetText(), wxConvUTF8 );
 
     wxString pointDescr = wxEmptyString;
@@ -211,18 +211,18 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
 
     TiXmlDocument doc;
     if( ! doc.Parse( kmlText.mb_str( wxConvUTF8 ), 0, TIXML_ENCODING_UTF8 ) ) {
-		wxLogError( wxString( doc.ErrorDesc(), wxConvUTF8 ) );
-		return KML_PASTE_INVALID;
-	}
+        wxLogError( wxString( doc.ErrorDesc(), wxConvUTF8 ) );
+        return KML_PASTE_INVALID;
+    }
     if( 0 != strncmp( doc.RootElement()->Value(), "kml", 3 ) ) return KML_PASTE_INVALID;
 
     TiXmlHandle docHandle( doc.RootElement() );
 
-	// We may or may not have a <document> depending on what the user copied.
+    // We may or may not have a <document> depending on what the user copied.
     TiXmlElement* placemark = docHandle.FirstChild( "Document" ).FirstChild( "Placemark" ).ToElement();
     if( ! placemark ) {
         placemark = docHandle.FirstChild( "Placemark" ).ToElement();
-	}
+    }
     if( ! placemark ) {
         wxString msg( _T("KML Parser found no <Placemark> tag in the KML.") );
         wxLogMessage( msg );

@@ -693,7 +693,7 @@ void OCPNPlatform::Initialize_2( void )
     auto configdir = wxFileName(GetPrivateDataDir());
     if (!configdir.DirExists()) {
         if (!configdir.Mkdir()) {
-	     auto msg = std::string("Cannot create config directory: ");
+         auto msg = std::string("Cannot create config directory: ");
              wxLogWarning(msg + configdir.GetFullPath());
         }
     }
@@ -1514,10 +1514,10 @@ wxString &OCPNPlatform::GetHomeDir()
         m_homeDir =  androidGetHomeDir();
 #endif
 
-		if( g_bportable ) {
-			wxFileName path(GetExePath());
-			m_homeDir = path.GetPath();
-		}
+        if( g_bportable ) {
+            wxFileName path(GetExePath());
+            m_homeDir = path.GetPath();
+        }
 
 #ifdef  __WXOSX__
         appendOSDirSlash(&m_homeDir);
@@ -1693,7 +1693,7 @@ wxString OCPNPlatform::GetPluginDataPath()
     }
     m_pluginDataPath += GetPluginDir();
     if (m_pluginDataPath.EndsWith(wxFileName::GetPathSeparator())) {
-	m_pluginDataPath.RemoveLast();
+    m_pluginDataPath.RemoveLast();
     }
     wxLogMessage("Using plugin data path: %s",
                  m_pluginDataPath.mb_str().data());
@@ -1705,11 +1705,11 @@ wxString OCPNPlatform::GetWinPluginBaseDir()
 {
     if (g_winPluginDir != "") {
         wxLogMessage("winPluginDir: Using value from ini file.");
-	wxFileName fn(g_winPluginDir);
-	if (!fn.DirExists()) {
-	    wxLogWarning("Plugin dir %s does not exist",
+    wxFileName fn(g_winPluginDir);
+    if (!fn.DirExists()) {
+        wxLogWarning("Plugin dir %s does not exist",
                          fn.GetFullPath().mb_str().data());
-	}
+    }
         fn.Normalize();
         return fn.GetFullPath();
     }

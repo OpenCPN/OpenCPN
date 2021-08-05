@@ -164,7 +164,7 @@ enum {
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_GPSUTC, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
     ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_D_WDH, ID_DBP_I_VLW1, ID_DBP_I_VLW2, ID_DBP_D_MDA, ID_DBP_I_MDA,ID_DBP_D_BPH, ID_DBP_I_FOS,
-	ID_DBP_M_COG, ID_DBP_I_PITCH, ID_DBP_I_HEEL, ID_DBP_D_AWA_TWA, ID_DBP_I_GPSLCL, ID_DBP_I_CPULCL, ID_DBP_I_SUNLCL,
+    ID_DBP_M_COG, ID_DBP_I_PITCH, ID_DBP_I_HEEL, ID_DBP_D_AWA_TWA, ID_DBP_I_GPSLCL, ID_DBP_I_CPULCL, ID_DBP_I_SUNLCL,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -201,8 +201,8 @@ wxString getInstrumentCaption( unsigned int id )
         case ID_DBP_D_AW:
         case ID_DBP_D_AWA:
             return _("App. Wind Angle & Speed");
-		case ID_DBP_D_AWA_TWA:
-			return _("App & True Wind Angle");
+        case ID_DBP_D_AWA_TWA:
+            return _("App & True Wind Angle");
         case ID_DBP_I_AWS:
             return _("App. Wind Speed");
         case ID_DBP_D_AWS:
@@ -261,10 +261,10 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Sum Log");
         case ID_DBP_I_FOS:
             return _("From Ownship");
-		case ID_DBP_I_PITCH:
-			return _("Pitch");
-		case ID_DBP_I_HEEL:
-			return _("Heel");
+        case ID_DBP_I_PITCH:
+            return _("Pitch");
+        case ID_DBP_I_HEEL:
+            return _("Heel");
         case ID_DBP_I_GPSLCL:
             return _( "Local GNSS Clock" );
         case ID_DBP_I_CPULCL:
@@ -289,7 +289,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_HDM:
         case ID_DBP_I_AWS:
         case ID_DBP_I_DPT:
-    	case ID_DBP_I_MDA:
+        case ID_DBP_I_MDA:
         case ID_DBP_I_TMP:
         case ID_DBP_I_ATMP:
         case ID_DBP_I_TWA:
@@ -308,8 +308,8 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_VLW1:
         case ID_DBP_I_VLW2:
         case ID_DBP_I_FOS:
-		case ID_DBP_I_PITCH:
-		case ID_DBP_I_HEEL:
+        case ID_DBP_I_PITCH:
+        case ID_DBP_I_HEEL:
             item.SetImage( 0 );
             break;
         case ID_DBP_D_SOG:
@@ -318,10 +318,10 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_D_AWA:
         case ID_DBP_D_AWS:
         case ID_DBP_D_TW:
-		case ID_DBP_D_AWA_TWA:
+        case ID_DBP_D_AWA_TWA:
         case ID_DBP_D_TWD:
         case ID_DBP_D_DPT:
-    	case ID_DBP_D_MDA:
+        case ID_DBP_D_MDA:
         case ID_DBP_D_VMG:
         case ID_DBP_D_RSA:
         case ID_DBP_D_GPS:
@@ -3923,14 +3923,14 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
                         OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
                 break;
-			case ID_DBP_D_AWA_TWA: //App/True Wind angle +-180° on boat axis
-				instrument = new DashboardInstrument_AppTrueWindAngle(this, wxID_ANY,
-					getInstrumentCaption(id), OCPN_DBP_STC_AWA);
+            case ID_DBP_D_AWA_TWA: //App/True Wind angle +-180° on boat axis
+                instrument = new DashboardInstrument_AppTrueWindAngle(this, wxID_ANY,
+                    getInstrumentCaption(id), OCPN_DBP_STC_AWA);
                 ((DashboardInstrument_Dial *)instrument)->SetCapFlag(OCPN_DBP_STC_TWA);
-				((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%.0f"),
-					DIAL_POSITION_NONE);
-				((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(
-					OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_NONE);
+                ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%.0f"),
+                    DIAL_POSITION_NONE);
+                ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(
+                    OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_NONE);
                 ((DashboardInstrument_Dial*)instrument)->SetOptionExtraValue(
                     OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_NONE);
                 break;
@@ -4056,13 +4056,13 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 instrument = new DashboardInstrument_FromOwnship( this, wxID_ANY,
                         getInstrumentCaption( id ) );
                 break;
-			case ID_DBP_I_PITCH:
-				instrument = new DashboardInstrument_Single(this, wxID_ANY,
-					getInstrumentCaption(id), OCPN_DBP_STC_PITCH, _T("%2.1f"));
-				break;
-			case ID_DBP_I_HEEL:
-				instrument = new DashboardInstrument_Single(this, wxID_ANY,
-					getInstrumentCaption(id), OCPN_DBP_STC_HEEL, _T("%2.1f"));
+            case ID_DBP_I_PITCH:
+                instrument = new DashboardInstrument_Single(this, wxID_ANY,
+                    getInstrumentCaption(id), OCPN_DBP_STC_PITCH, _T("%2.1f"));
+                break;
+            case ID_DBP_I_HEEL:
+                instrument = new DashboardInstrument_Single(this, wxID_ANY,
+                    getInstrumentCaption(id), OCPN_DBP_STC_HEEL, _T("%2.1f"));
                 break;
              // any clock display with "LCL" in the format string is converted from UTC to local TZ
             case ID_DBP_I_SUNLCL:

@@ -114,8 +114,8 @@ extern Route            *pAISMOBRoute;
 extern bool             g_btouch;
 extern float            g_ChartScaleFactorExp;
 
-extern bool				g_bShowShipToActive;
-extern bool				g_bAllowShipToActive;
+extern bool             g_bShowShipToActive;
+extern bool             g_bAllowShipToActive;
 
 bool g_bPluginHandleAutopilotRoute;
 
@@ -301,7 +301,7 @@ RoutePoint *Routeman::FindBestActivatePoint( Route *pR, double lat, double lon, 
 
 bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
 {
-	g_bAllowShipToActive = false;
+    g_bAllowShipToActive = false;
     wxJSONValue v;
     v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
     v[_T("GUID")] = pRouteToActivate->m_GUID;
@@ -336,7 +336,7 @@ bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
 
 bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
 {
-	g_bAllowShipToActive = false;
+    g_bAllowShipToActive = false;
     wxJSONValue v;
     v[_T("GUID")] = pRP_target->m_GUID;
     v[_T("WP_activated")] = pRP_target->GetName();
@@ -413,7 +413,7 @@ bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
 
 bool Routeman::ActivateNextPoint( Route *pr, bool skipped )
 {
-	g_bAllowShipToActive = false;
+    g_bAllowShipToActive = false;
     wxJSONValue v;
     if( pActivePoint ) {
         pActivePoint->m_bBlink = false;
@@ -536,27 +536,27 @@ bool Routeman::UpdateProgress()
         else
             XTEDir = -1;
 
-		//Allow DirectShipToActivePoint line (distance XTE in mm is > 3 (arbitrary)
-		//or when active point is the first
-		if (g_bShowShipToActive) {
-			if (pActiveRoute->GetIndexOf(pActivePoint) == 1)
-				g_bAllowShipToActive = true;
-			else {
-				//compute XTE in pixels
-				double tlat, tlon;
-				wxPoint r, r1;
-				ll_gc_ll(gLat, gLon, CourseToRouteSegment,
-								(CurrentXTEToActivePoint / 1.852), &tlat, &tlon);
-				gFrame->GetFocusCanvas()->GetCanvasPointPix(gLat, gLon, &r1);
-				gFrame->GetFocusCanvas()->GetCanvasPointPix(tlat, tlon, &r);
-				double xtepix = sqrt(pow((double)(r1.x - r.x), 2) +
-								pow((double)(r1.y - r.y), 2));
-				//xte in mm
-				double xtemm = xtepix / gFrame->GetFocusCanvas()->GetPixPerMM();
-				//allow display (or not)
-				g_bAllowShipToActive = (xtemm > 3.0) ? true : false;
-			}
-		}
+        //Allow DirectShipToActivePoint line (distance XTE in mm is > 3 (arbitrary)
+        //or when active point is the first
+        if (g_bShowShipToActive) {
+            if (pActiveRoute->GetIndexOf(pActivePoint) == 1)
+                g_bAllowShipToActive = true;
+            else {
+                //compute XTE in pixels
+                double tlat, tlon;
+                wxPoint r, r1;
+                ll_gc_ll(gLat, gLon, CourseToRouteSegment,
+                                (CurrentXTEToActivePoint / 1.852), &tlat, &tlon);
+                gFrame->GetFocusCanvas()->GetCanvasPointPix(gLat, gLon, &r1);
+                gFrame->GetFocusCanvas()->GetCanvasPointPix(tlat, tlon, &r);
+                double xtepix = sqrt(pow((double)(r1.x - r.x), 2) +
+                                pow((double)(r1.y - r.y), 2));
+                //xte in mm
+                double xtemm = xtepix / gFrame->GetFocusCanvas()->GetPixPerMM();
+                //allow display (or not)
+                g_bAllowShipToActive = (xtemm > 3.0) ? true : false;
+            }
+        }
 
 //      Determine Arrival
 
@@ -715,7 +715,7 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
             m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
-			m_NMEA0183.Rmb.DestinationClosingVelocityKnots = r_Sog * cos( (r_Cog - CurrentBrgToActivePoint) * PI / 180.0 );
+            m_NMEA0183.Rmb.DestinationClosingVelocityKnots = r_Sog * cos( (r_Cog - CurrentBrgToActivePoint) * PI / 180.0 );
 
             if( m_bArrival ) m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
             else

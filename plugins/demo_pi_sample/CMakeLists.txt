@@ -47,7 +47,7 @@ MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 INCLUDE("cmake/PluginConfigure.cmake")
 
 IF (PREFIX)
-	SET(CMAKE_INSTALL_PREFIX ${PREFIX})
+    SET(CMAKE_INSTALL_PREFIX ${PREFIX})
 ENDIF (PREFIX)
 
 SET(PARENT opencpn)
@@ -94,46 +94,46 @@ FIND_PACKAGE(Gettext REQUIRED)
 
 SET(SRC_DEMO
         src/demo_pi.h
- 		src/demo_pi.cpp
- 	)
+        src/demo_pi.cpp
+    )
 
 SET(SRC_NMEA0183
-		src/nmea0183/LatLong.hpp
-		src/nmea0183/latlong.cpp
-		src/nmea0183/long.cpp
-		src/nmea0183/nmea0183.cpp
-		src/nmea0183/nmea0183.hpp
-		src/nmea0183/Response.hpp
-		src/nmea0183/response.cpp
-		src/nmea0183/RMB.hpp
-		src/nmea0183/rmb.cpp
-		src/nmea0183/Sentence.hpp
-		src/nmea0183/sentence.cpp
-		src/nmea0183/talkerid.cpp
-		src/nmea0183/RMC.HPP
-		src/nmea0183/rmc.cpp
-		src/nmea0183/hexvalue.cpp
-		src/nmea0183/lat.cpp
-		src/nmea0183/expid.cpp
-		src/nmea0183/wpl.hpp
-		src/nmea0183/wpl.cpp
-		src/nmea0183/rte.hpp
-		src/nmea0183/rte.cpp
-		src/nmea0183/hdt.hpp
-		src/nmea0183/hdt.cpp
-		src/nmea0183/hdg.hpp
-		src/nmea0183/hdg.cpp
-		src/nmea0183/hdm.hpp
-		src/nmea0183/hdm.cpp
-		src/nmea0183/gll.hpp
-		src/nmea0183/gll.cpp
-		src/nmea0183/vtg.hpp
-		src/nmea0183/vtg.cpp
-		src/nmea0183/gga.hpp
-		src/nmea0183/gga.cpp
-		src/nmea0183/gsv.hpp
-		src/nmea0183/gsv.cpp
-	)
+        src/nmea0183/LatLong.hpp
+        src/nmea0183/latlong.cpp
+        src/nmea0183/long.cpp
+        src/nmea0183/nmea0183.cpp
+        src/nmea0183/nmea0183.hpp
+        src/nmea0183/Response.hpp
+        src/nmea0183/response.cpp
+        src/nmea0183/RMB.hpp
+        src/nmea0183/rmb.cpp
+        src/nmea0183/Sentence.hpp
+        src/nmea0183/sentence.cpp
+        src/nmea0183/talkerid.cpp
+        src/nmea0183/RMC.HPP
+        src/nmea0183/rmc.cpp
+        src/nmea0183/hexvalue.cpp
+        src/nmea0183/lat.cpp
+        src/nmea0183/expid.cpp
+        src/nmea0183/wpl.hpp
+        src/nmea0183/wpl.cpp
+        src/nmea0183/rte.hpp
+        src/nmea0183/rte.cpp
+        src/nmea0183/hdt.hpp
+        src/nmea0183/hdt.cpp
+        src/nmea0183/hdg.hpp
+        src/nmea0183/hdg.cpp
+        src/nmea0183/hdm.hpp
+        src/nmea0183/hdm.cpp
+        src/nmea0183/gll.hpp
+        src/nmea0183/gll.cpp
+        src/nmea0183/vtg.hpp
+        src/nmea0183/vtg.cpp
+        src/nmea0183/gga.hpp
+        src/nmea0183/gga.cpp
+        src/nmea0183/gsv.hpp
+        src/nmea0183/gsv.cpp
+    )
 INCLUDE_DIRECTORIES(nmea0183)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DEMO} ${SRC_NMEA0183} )

@@ -943,11 +943,11 @@ wxConnectionBase *stServer::OnAcceptConnection(const wxString& topic)
     if (topic.Lower() == wxT("opencpn"))
     {
         // Check that there are no modal dialogs active
-	wxWindowList::Node* node = wxTopLevelWindows.GetFirst();
-	while (node) {
-	    wxDialog* dialog = wxDynamicCast(node->GetData(), wxDialog);
-	    if (dialog && dialog->IsModal()) {
-	        return 0;
+    wxWindowList::Node* node = wxTopLevelWindows.GetFirst();
+    while (node) {
+        wxDialog* dialog = wxDynamicCast(node->GetData(), wxDialog);
+        if (dialog && dialog->IsModal()) {
+            return 0;
             }
             node = node->GetNext();
         }
@@ -1770,19 +1770,19 @@ bool MyApp::OnInit()
         {
             stServer *m_server = new stServer;
             if ( !m_server->Create(service_name) ) {
-		wxLogDebug(wxT("Failed to create an IPC service."));
+        wxLogDebug(wxT("Failed to create an IPC service."));
             }
         }
         else {
-    	    wxLogNull logNull;
-    	    stClient* client = new stClient;
-    	    // ignored under DDE, host name in TCP/IP based classes
-    	    wxString hostName = wxT("localhost");
-    	    // Create the connection service, topic
-    	    wxConnectionBase* connection = client->MakeConnection(hostName, service_name, _T("OpenCPN"));
-    	    if (connection) {
-    	        // Ask the other instance to open a file or raise itself
-    	        if ( !g_params.empty() ) {
+            wxLogNull logNull;
+            stClient* client = new stClient;
+            // ignored under DDE, host name in TCP/IP based classes
+            wxString hostName = wxT("localhost");
+            // Create the connection service, topic
+            wxConnectionBase* connection = client->MakeConnection(hostName, service_name, _T("OpenCPN"));
+            if (connection) {
+                // Ask the other instance to open a file or raise itself
+                if ( !g_params.empty() ) {
                     for ( size_t n = 0; n < g_params.size(); n++ )
                     {
                         wxString path = g_params[n];
@@ -1793,8 +1793,8 @@ bool MyApp::OnInit()
                     }
                 }
                 connection->Execute(wxT(""));
-    	        connection->Disconnect();
-    	        delete connection;
+                connection->Disconnect();
+                delete connection;
             }
             else {
                 //  If we get here, it means that the wxWidgets single-instance-detect logic found the lock file,
@@ -2411,15 +2411,15 @@ bool MyApp::OnInit()
 
         }
 
-		if (g_bportable)
-		{
-			ChartDirInfo cdi;
-			cdi.fullpath =_T("charts");
-			cdi.fullpath.Prepend(g_Platform->GetSharedDataDir());
-			cdi.magic_number = _T("");
-			ChartDirArray.Add(cdi);
-			ndirs++;
-		}
+        if (g_bportable)
+        {
+            ChartDirInfo cdi;
+            cdi.fullpath =_T("charts");
+            cdi.fullpath.Prepend(g_Platform->GetSharedDataDir());
+            cdi.magic_number = _T("");
+            ChartDirArray.Add(cdi);
+            ndirs++;
+        }
 
         if( ndirs ) pConfig->UpdateChartDirs( ChartDirArray );
 
@@ -7693,10 +7693,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
                 if(g_bopengl) {
 #ifdef ocpnUSE_GL
-					if (cc->GetglCanvas()) {
-						if (m_fixtime - cc->GetglCanvas()->m_last_render_time > 0)
-							bnew_view = true;
-					}
+                    if (cc->GetglCanvas()) {
+                        if (m_fixtime - cc->GetglCanvas()->m_last_render_time > 0)
+                            bnew_view = true;
+                    }
 
                     if( AnyAISTargetsOnscreen( cc, cc->GetVP() ) )
                         bnew_view = true;
@@ -8272,14 +8272,14 @@ GetMemoryStatus( int *mem_total, int *mem_used )
             *mem_total = ( (uint64_t)sys_info.totalram * sys_info.mem_unit ) / 1024;
     }
 //      Use filesystem /proc/self/statm to determine memory status
-//	Provides information about memory usage, measured in pages.  The columns are:
-//	size       total program size (same as VmSize in /proc/[pid]/status)
-//	resident   resident set size (same as VmRSS in /proc/[pid]/status)
-//	share      shared pages (from shared mappings)
-//	text       text (code)
-//	lib        library (unused in Linux 2.6)
-//	data       data + stack
-//	dt         dirty pages (unused in Linux 2.6)
+//  Provides information about memory usage, measured in pages.  The columns are:
+//  size       total program size (same as VmSize in /proc/[pid]/status)
+//  resident   resident set size (same as VmRSS in /proc/[pid]/status)
+//  share      shared pages (from shared mappings)
+//  text       text (code)
+//  lib        library (unused in Linux 2.6)
+//  data       data + stack
+//  dt         dirty pages (unused in Linux 2.6)
 
     if(mem_used)
     {
@@ -8405,9 +8405,9 @@ GetMemoryStatus( int *mem_total, int *mem_used )
 #endif
 
     if (mem_used)
-	*mem_used = 0;
+    *mem_used = 0;
     if (mem_total)
-	*mem_total = 0;
+    *mem_total = 0;
     return false;
 }
 

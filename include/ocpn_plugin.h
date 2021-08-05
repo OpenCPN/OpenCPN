@@ -633,7 +633,7 @@ public:
     wxString          m_MarkName;
     wxString          m_MarkDescription;
     wxDateTime        m_CreateTime;
-	bool			  m_IsVisible;
+    bool              m_IsVisible;
 
     wxString          m_IconName;
 
