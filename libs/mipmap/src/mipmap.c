@@ -54,7 +54,7 @@ static void cpuid(int32_t out[4], int32_t x){
     );
 }
 
-#if !defined( __WXOSX__ ) 
+#if !defined( __WXOSX__ )
 #include <cpuid.h>
 #endif
 
@@ -68,7 +68,7 @@ void MipMap_24_generic( int width, int height, unsigned char *source, unsigned c
     int newwidth = width / 2;
     int newheight = height / 2;
     int stride = width * 3;
-    
+
     unsigned char *s = target;
     unsigned char *t = source;
     unsigned char *u = t+stride;
@@ -93,7 +93,7 @@ void MipMap_32_generic( int width, int height, unsigned char *source, unsigned c
     int newwidth = width / 2;
     int newheight = height / 2;
     int stride = width * 4;
-    
+
     unsigned char *s = target;
     unsigned char *t = source;
     unsigned char *u = t+stride;
@@ -104,11 +104,11 @@ void MipMap_32_generic( int width, int height, unsigned char *source, unsigned c
 #if defined(__ARM_ARCH)||(MIPMAP_32_ALPHA) // better to always work at 32bites on arm
             for( k = 0; k < 4; k++)
                 *s++ = ( t[k] + t[k+4] + u[k] + u[k+4] ) / 4;
-#else            
+#else
             for( k = 0; k < 3; k++)
                 *s++ = ( t[k] + t[k+4] + u[k] + u[k+4] ) / 4;
             s++;
-#endif            
+#endif
             t += 8;
             u += 8;
         }
@@ -126,7 +126,7 @@ void (*MipMap_32)( int width, int height, unsigned char *source, unsigned char *
 
 void MipMap_ResolveRoutines()
 {
-#if defined(__x86_64__) || defined(__i686__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700)) 
+#if defined(__x86_64__) || defined(__i686__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700))
     int info[4];
     cpuid(info, 0);
 
@@ -145,7 +145,7 @@ void MipMap_ResolveRoutines()
         if(info[2] & bit_SSSE3)
             MipMap_24 = MipMap_24_ssse3;
     }
-    
+
 #if defined(__AVX2__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700))
     if (nIds >= 0x00000007) {
         cpuid(info,0x00000007);
@@ -162,5 +162,5 @@ void MipMap_ResolveRoutines()
     MipMap_24 = MipMap_24_neon;
     MipMap_32 = MipMap_32_neon;
 #endif
-#endif    
+#endif
 }

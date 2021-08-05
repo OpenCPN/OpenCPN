@@ -59,7 +59,7 @@ GLdouble __gl_edgeEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
   GLdouble gapL, gapR;
 
   assert( VertLeq( u, v ) && VertLeq( v, w ));
-  
+
   gapL = v->s - u->s;
   gapR = w->s - v->s;
 
@@ -83,7 +83,7 @@ GLdouble __gl_edgeSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
   GLdouble gapL, gapR;
 
   assert( VertLeq( u, v ) && VertLeq( v, w ));
-  
+
   gapL = v->s - u->s;
   gapR = w->s - v->s;
 
@@ -114,7 +114,7 @@ GLdouble __gl_transEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
   GLdouble gapL, gapR;
 
   assert( TransLeq( u, v ) && TransLeq( v, w ));
-  
+
   gapL = v->t - u->t;
   gapR = w->t - v->t;
 
@@ -138,7 +138,7 @@ GLdouble __gl_transSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
   GLdouble gapL, gapR;
 
   assert( TransLeq( u, v ) && TransLeq( v, w ));
-  
+
   gapL = v->t - u->t;
   gapR = w->t - v->t;
 

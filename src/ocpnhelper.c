@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
                  inF = open("/proc/tty/driver/usb-serial", O_RDONLY);
                  if (inF == -1)
             		inF = open("/proc/tty/driver/usbserial", O_RDONLY);
- 
-		 if(inF != -1) 
+
+		 if(inF != -1)
 		 {
 	                 if((ouF = open("/var/tmp/usbserial", O_WRONLY | O_CREAT | O_TRUNC, 0777)) != -1)
         	         {
@@ -67,8 +67,8 @@ int main(int argc, char *argv[])
             case 'S':
             {
                  inF = open("/proc/tty/driver/serial", O_RDONLY);
- 
-		 if(inF != -1) 
+
+		 if(inF != -1)
 		 {
 	                 if((ouF = open("/var/tmp/serial", O_WRONLY | O_CREAT | O_TRUNC, 0777)) != -1)
         	         {
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
                 debuglevel = (int) strtol(optarg, 0, 0);
                 break;
             }
-             
+
             case 'V':
             {
                 (void)printf("ocpnhelper %s\n", VERSION);
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 
             case 'h': case '?':
             default:
-            { 
+            {
 //                usage();
                 exit(0);
             }
