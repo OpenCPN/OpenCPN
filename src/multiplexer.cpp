@@ -160,7 +160,11 @@ DataStream *Multiplexer::FindStream(const wxString & port)
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
         DataStream *stream = m_pdatastreams->Item(i);
-        if (stream && is_same_device(stream->GetPort(), port ))
+        if( stream && stream->GetConnectionType() == INTERNAL_BT){
+            if( is_same_device(stream->GetPort(), port.AfterFirst(';')))
+                return stream;
+        }
+        else if (stream && is_same_device(stream->GetPort(), port ))
             return stream;
     }
     return NULL;
@@ -665,6 +669,26 @@ ret_point:
                 }
 #endif
             }
+            else if(com_name.Find("Bluetooth") != wxNOT_FOUND){
+                if(dstr == NULL){
+                    ConnectionParams *pConnectionParams = new ConnectionParams();
+                    pConnectionParams->Type = INTERNAL_BT;
+                    wxStringTokenizer tkz(com_name, _T(";"));
+                    wxString name = tkz.GetNextToken();
+                    wxString mac = tkz.GetNextToken();
+
+                    pConnectionParams->NetworkAddress = name;
+                    pConnectionParams->Port = mac;
+                    pConnectionParams->NetworkPort = 0;
+                    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+                    pConnectionParams->Baudrate = 0;
+
+                    dstr = makeDataStream( this, pConnectionParams );
+
+                    btempStream = true;
+                }
+            }
+
             else if( com_name.Lower().StartsWith("udp") || com_name.Lower().StartsWith("tcp") ){
                 if(dstr == NULL){
                     NetworkProtocol protocol = UDP;
@@ -1322,6 +1346,26 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, Se
             }
 #endif
         }
+            else if(com_name.Find("Bluetooth") != wxNOT_FOUND){
+                if(dstr == NULL){
+                    ConnectionParams *pConnectionParams = new ConnectionParams();
+                    pConnectionParams->Type = INTERNAL_BT;
+                    wxStringTokenizer tkz(com_name, _T(";"));
+                    wxString name = tkz.GetNextToken();
+                    wxString mac = tkz.GetNextToken();
+
+                    pConnectionParams->NetworkAddress = name;
+                    pConnectionParams->Port = mac;
+                    pConnectionParams->NetworkPort = 0;
+                    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+                    pConnectionParams->Baudrate = 0;
+
+                    dstr = makeDataStream( this, pConnectionParams );
+
+                    btempStream = true;
+                }
+            }
+
         else if( com_name.Lower().StartsWith("udp") || com_name.Lower().StartsWith("tcp") ){
             if(dstr == NULL){
                     NetworkProtocol protocol = UDP;
@@ -1339,7 +1383,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, Se
                         dstr = (DataStream *)streamNew;
                     btempStream = true;
             }
-            
+
             if( com_name.Lower().StartsWith("tcp") ){
                 // new tcp connections must wait for connect
                 wxString msg = _("Connecting to ");

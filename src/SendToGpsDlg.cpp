@@ -29,7 +29,9 @@
 #include "RoutePoint.h"
 #include "ser_ports.h"
 #include "ConnectionParams.h"
+#include "OCPNPlatform.h"
 
+extern OCPNPlatform              *g_Platform;
 extern wxString g_uploadConnection;
 extern wxArrayOfConnPrm         *g_pConnectionParams;
 
@@ -124,6 +126,27 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
         }
     }
 
+    // Add Bluetooth, if the platform supports it natively
+    if(g_Platform){
+        if(g_Platform->startBluetoothScan()){
+            wxSleep(2);
+            wxArrayString btscanResults = g_Platform->getBluetoothScanResults();
+
+            unsigned int i = 1;
+            while ((i + 1) < btscanResults.GetCount()) {
+                wxString item1 = btscanResults[i] + _T(";");
+                wxString item2 = btscanResults.Item(i + 1);
+                wxString port = item1 + item2;
+                port.Prepend(_T("Bluetooth:"));
+                m_itemCommListBox->Append(port);
+
+                i += 2;
+            }
+
+            g_Platform->stopBluetoothScan();
+        }
+    }
+
     //    Make the proper initial selection
     if( !g_uploadConnection.IsEmpty() ){
         if(g_uploadConnection.Lower().StartsWith("tcp") || g_uploadConnection.Lower().StartsWith("udp") ){
@@ -194,14 +217,23 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     }
     if ( !src.Lower().StartsWith("tcp") && 
          !src.Lower().StartsWith("udp") &&
-         !src.Lower().StartsWith("serial") && !src.Lower().StartsWith("Usb:")) {
+         !src.Lower().StartsWith("serial") &&
+         !src.Lower().StartsWith("usb:")  &&
+         !src.Lower().StartsWith("bluetooth")){
             src = src.Prepend("Serial:");
     }
     g_uploadConnection = src;                   // save for persistence
 
+    wxString destPort = src.BeforeFirst(' ');               // Serial:
+
+    // For Bluetooth, we need the entire string
+    if(src.Lower().Find(_T("Bluetooth")) != wxNOT_FOUND)
+        destPort = src;
+
+
     //    And send it out
-    if( m_pRoute ) m_pRoute->SendToGPS( src.BeforeFirst(' '), true, this );
-    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src.BeforeFirst(' '), this );
+    if( m_pRoute ) m_pRoute->SendToGPS( destPort, true, this );
+    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( destPort, this );
 
 //    Show( false );
 //    event.Skip();
