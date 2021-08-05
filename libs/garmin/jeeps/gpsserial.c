@@ -245,14 +245,14 @@ int32 GPS_Serial_Flush(gpsdevh *fd)
 {
     unsigned char u;
     int n;
-    
+
     GPS_Diag("Flush:");
     n=0;
     while( (GPS_Serial_Chars_Ready(fd)) && (n < 1000))
     {
         GPS_Serial_Read(fd,&u,1);
         GPS_Diag("%02x ", u);
-        
+
         n++;
     }
     GPS_Diag("\r\n");

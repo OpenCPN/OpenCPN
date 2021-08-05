@@ -19,9 +19,9 @@
 
  */
 
-#include <stdio.h> 
-#include <ctype.h> 
-#include <malloc.h> 
+#include <stdio.h>
+#include <ctype.h>
+#include <malloc.h>
 #include <windows.h>
 #include <winioctl.h>
 #include <initguid.h>
@@ -39,11 +39,11 @@
 
 /* Constants from Garmin doc. */
 
-// {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0} 
+// {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
 DEFINE_GUID(GARMIN_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0xba, 0xe7, 0x22, 0xc0);
 
-#define GARMIN_USB_API_VERSION 1 
-#define GARMIN_USB_MAX_BUFFER_SIZE 4096 
+#define GARMIN_USB_API_VERSION 1
+#define GARMIN_USB_MAX_BUFFER_SIZE 4096
 #define GARMIN_USB_INTERRUPT_DATA_SIZE 64
 
 #define IOCTL_GARMIN_USB_API_VERSION CTL_CODE \
@@ -61,7 +61,7 @@ static HANDLE usb_handle = INVALID_HANDLE_VALUE;
 static int usb_tx_packet_size ;
 //dsr static const gdx_info *gdx;
 
-static int 
+static int
 gusb_win_close(gpsdevh *handle)
 {
 	if (usb_handle != INVALID_HANDLE_VALUE) {
@@ -80,8 +80,8 @@ gusb_win_get(garmin_usb_packet *ibuf, size_t sz)
 	int tsz=0;
 
 	while (sz) {
-		/* The driver wrongly (IMO) rejects reads smaller than 
-		 * GARMIN_USB_INTERRUPT_DATA_SIZE 
+		/* The driver wrongly (IMO) rejects reads smaller than
+		 * GARMIN_USB_INTERRUPT_DATA_SIZE
 		 */
 	if(!DeviceIoControl(usb_handle, IOCTL_GARMIN_USB_INTERRUPT_IN, NULL, 0,
 			buf, GARMIN_USB_INTERRUPT_DATA_SIZE, &rxed, NULL)) {
@@ -143,28 +143,28 @@ HANDLE garmin_usb_start(HDEVINFO* hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata)
 	PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
 	SP_DEVINFO_DATA devinfo;
 
-	SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata, 
+	SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
 			NULL, 0, &size, NULL);
 
 	pdd = (PSP_INTERFACE_DEVICE_DETAIL_DATA) malloc(size);
 	pdd->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
 
 	devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
-	if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata, 
+	if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
 		pdd, size, NULL, &devinfo)) {
 			GPS_Serial_Error("SetupDiGetDeviceInterfaceDetail");
 			return NULL;
 	}
 
 	/* Whew.  All that just to get something we can open... */
-	GPS_Diag("Windows GUID for interface is \n\t%s\n", 
+	GPS_Diag("Windows GUID for interface is \n\t%s\n",
 			pdd->DevicePath);
 
 	if (usb_handle != INVALID_HANDLE_VALUE) {
 		fatal("garmin_usb_start called while device already started.\n");
 	}
 
-	usb_handle = CreateFile(pdd->DevicePath, GENERIC_READ|GENERIC_WRITE, 
+	usb_handle = CreateFile(pdd->DevicePath, GENERIC_READ|GENERIC_WRITE,
 			0, NULL, OPEN_EXISTING, 0, NULL );
 	if (usb_handle == INVALID_HANDLE_VALUE) {
 		if (GetLastError() == ERROR_ACCESS_DENIED) {
@@ -176,8 +176,8 @@ HANDLE garmin_usb_start(HDEVINFO* hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata)
 		return NULL;
 	}
 
-	if(!DeviceIoControl(usb_handle, IOCTL_GARMIN_USB_BULK_OUT_PACKET_SIZE, 
-	    NULL, 0, &usb_tx_packet_size, GARMIN_USB_INTERRUPT_DATA_SIZE, 
+	if(!DeviceIoControl(usb_handle, IOCTL_GARMIN_USB_BULK_OUT_PACKET_SIZE,
+	    NULL, 0, &usb_tx_packet_size, GARMIN_USB_INTERRUPT_DATA_SIZE,
 	    &size, NULL)) {
                 fatal("Couldn't get USB packet size.\n");
         }
@@ -240,7 +240,7 @@ gusb_init(const char *pname, gpsdevh **dh)
 		}
 	}
 
-	hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL, 
+	hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL,
 			DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
 
 	if (hdevinfo == INVALID_HANDLE_VALUE) {
@@ -250,18 +250,18 @@ gusb_init(const char *pname, gpsdevh **dh)
 	}
 
 	devinterface.cbSize = sizeof(devinterface);
-	
+
 	if (req_unit_number >= 0) {
-		if (!SetupDiEnumDeviceInterfaces(hdevinfo, NULL, 
-				(GUID *) &GARMIN_GUID, 
+		if (!SetupDiEnumDeviceInterfaces(hdevinfo, NULL,
+				(GUID *) &GARMIN_GUID,
 				req_unit_number, &devinterface)) {
         // If there were zero matches, we may be trying to talk to a "GPX Mode" device.
-      
-   
+
+
 //dsr          char **dlist = get_garmin_mountpoints();
 //          gdx = gdx_find_file(dlist);
 //          if (gdx) return 1;
-       
+
 
          // Plan C.
 			GPS_Serial_Error("SetupDiEnumDeviceInterfaces");
@@ -273,22 +273,22 @@ gusb_init(const char *pname, gpsdevh **dh)
 		return 1;
 	}
 
-	/* 
+	/*
 	 * Out unit nunber  is less than zero, so loop over all units
 	 * and display them.
 	 */
 	for(match = 0;;match++) {
-		if (!SetupDiEnumDeviceInterfaces(hdevinfo, NULL, 
+		if (!SetupDiEnumDeviceInterfaces(hdevinfo, NULL,
 			(GUID *) &GARMIN_GUID, match, &devinterface)) {
 			if (GetLastError() == ERROR_NO_MORE_ITEMS) {
- 
+
 				break;
 			} else {
 
 				GPS_Serial_Error("SetupDiEnumDeviceInterfaces");
 //				warning("Is the Garmin USB unit number %d powered up and connected?", un);
 				return 0;
-			}	
+			}
 		}
 		/* We've matched.  Now start the specific unit. */
 		garmin_usb_start(&hdevinfo, &devinterface);

@@ -630,7 +630,7 @@ TESStesselator* tessNewTess( TESSalloc* alloc )
 	tess->bmax[1] = 0;
 
 	tess->reverseContours = 0;
-    
+
 	tess->windingRule = TESS_WINDING_ODD;
 	tess->processCDT = 0;
 
