@@ -1,4 +1,4 @@
-# 
+#
 # - Try to find libsndfile
 # Once done, this will define
 #
@@ -6,7 +6,7 @@
 #  LIBSNDFILE_INCLUDE_DIRS - the libsndfile include directories
 #  LIBSNDFILE_LIBRARIES - link these to use libsndfile
 #
-#  Copied from: 
+#  Copied from:
 #  https://github.com/neXyon/audaspace/blob/master/cmake/FindLibSndFile.cmake
 #
 #  Copyright (c) 2009-2015 Jörg Müller. All rights reserved.

@@ -17,7 +17,7 @@
 ## *   Free Software Foundation, Inc.,                                       *
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 ## ***************************************************************************
- 
+
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
@@ -88,7 +88,7 @@ INCLUDE(${wxWidgets_USE_FILE})
 
 FIND_PACKAGE(Gettext REQUIRED)
 
-# For convenience we define the sources as a variable. You can add 
+# For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
 

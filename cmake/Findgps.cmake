@@ -9,7 +9,7 @@
 # Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
 # Copyright 2006-2009 Kitware, Inc.
 # Copyright 2006 Alexander Neundorf <neundorf@kde.org>
-# Copyright 2010 David Register 
+# Copyright 2010 David Register
 #
 #
 # All rights reserved.
@@ -77,7 +77,7 @@ ENDIF (GPS_INCLUDE_DIR AND GPS_LIBRARY)
 
 FIND_PATH(GPS_INCLUDE_DIR gps.h /usr/include /usr/include/gps /usr/local/include/gps /opt/local/include)
 
-FIND_LIBRARY(GPS_LIBRARY NAMES gps PATH /usr/lib /usr/local/lib /opt/local/lib) 
+FIND_LIBRARY(GPS_LIBRARY NAMES gps PATH /usr/lib /usr/local/lib /opt/local/lib)
 
 IF (GPS_INCLUDE_DIR AND GPS_LIBRARY)
    SET(GPS_FOUND TRUE)

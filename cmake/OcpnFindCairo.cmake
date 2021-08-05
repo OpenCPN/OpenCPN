@@ -22,7 +22,7 @@ else (CMAKE_HOST_WIN32)
             PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/
             ${LOOK_OPTION})
 endif (CMAKE_HOST_WIN32)
-  
+
 if (CMAKE_HOST_WIN32)
   set(CAIRO_LIBRARIES
     ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
@@ -36,7 +36,7 @@ else (CMAKE_HOST_WIN32)
     set(LOOK_OPTION NO_DEFAULT_PATH)
   endif ()
   find_library(CAIRO_LIBRARIES
-      NAMES libcairo cairo 
+      NAMES libcairo cairo
       PATHS ${CAIRO_LIB_LOOK_PATHS}
       ${LOOK_OPTION}
   )

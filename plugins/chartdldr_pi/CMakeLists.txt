@@ -51,7 +51,7 @@ SET(SRC_CHARTDLDR
             src/pugixml.hpp
             src/pugixml.cpp
 )
-            
+
 IF(QT_ANDROID)
     SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
     SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
@@ -200,23 +200,23 @@ ENDIF(LibArchive_FOUND)
 #target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
 
 IF (NOT QT_ANDROID )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
     ${wxWidgets_LIBRARIES}
     ocpn::wxjson
     ocpn::wxsvg
-    ocpn::opencpn 
+    ocpn::opencpn
 )
 ELSE (NOT QT_ANDROID )
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
-    ocpn::wxjson 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so 
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
+    ocpn::wxjson
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
     ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
-    "-lz" 
+    "-lz"
   )
-  
+
   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
   #SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
 ENDIF(NOT QT_ANDROID)

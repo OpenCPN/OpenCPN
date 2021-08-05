@@ -46,10 +46,10 @@ add_library(SOUND STATIC ${SRC})
 add_library(ocpn::sound ALIAS SOUND)
 
 set_property(TARGET SOUND PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_include_directories(SOUND 
-    PUBLIC 
+target_include_directories(SOUND
+    PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE 
+    PRIVATE
         ${CMAKE_BINARY_DIR}/include
         ${wxWidgets_INCLUDE_DIRS}
         ${CMAKE_CURRENT_BINARY_DIR}/../../include
