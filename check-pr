@@ -16,8 +16,9 @@ if git ls-remote --exit-code pr-tmp &>/dev/null; then
 fi
 
 git remote add pr-tmp  $url
-git remote update pr-tmp
+git remote update pr-tmp |& sed '/new branch/d'
 
+echo "Using branch: $branch"
 for f in $(git diff --name-only --diff-filter=ACM HEAD pr-tmp/$branch); do
     git diff --check HEAD pr-tmp/$branch || :
 done
