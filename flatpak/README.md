@@ -3,11 +3,11 @@ OpenCPN flatpak packaging.
 
 What's here?
 ------------
-Necessary tools to create an OpenCPN flatpak. A flatpak is a distro-agnostic 
-format which basically can be installed on all major Linux distros. 
+Necessary tools to create an OpenCPN flatpak. A flatpak is a distro-agnostic
+format which basically can be installed on all major Linux distros.
 
 Pros:
-  
+
   - Works on all major linux distros.
   - Easy installation
   - Can be hosted by opencpn, no central repo required.
@@ -42,7 +42,7 @@ a file called *70-serial-opencpn.rules* like
     KERNEL=="ttyACM*", MODE="0666"
     KERNEL=="ttyS*", MODE="0666"
 
-and drop it into */etc/udev/rules.d*. A reboot might be needed for it to 
+and drop it into */etc/udev/rules.d*. A reboot might be needed for it to
 take effect. Normally, only one of the three lines is required depending
 on the device used - the rest could be dropped.
 
@@ -99,5 +99,5 @@ A raw, rsync publish command might look like (beta repository)
     $ rsync -a  --info=stats website/ --delete-after \
         mumin.crabdance.com:/var/www/ocpn-flatpak-beta
 
-There are multiple variables in the Makefile making it possible to tweak 
+There are multiple variables in the Makefile making it possible to tweak
 this workflow in various ways.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Build the OSX artifacts 
+# Build the OSX artifacts
 #
 set -xe
 
@@ -48,7 +48,7 @@ fi
 
 wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
     -O /tmp/wx312B_opencpn50_macos109.tar.xz
-tar -C /tmp -xJf /tmp/wx312B_opencpn50_macos109.tar.xz 
+tar -C /tmp -xJf /tmp/wx312B_opencpn50_macos109.tar.xz
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
 

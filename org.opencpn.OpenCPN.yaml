@@ -6,7 +6,7 @@
 # (at your option) any later version.
 #
 
-# This manifest is used to build the official flathub package. 
+# This manifest is used to build the official flathub package.
 
 
 app-id: org.opencpn.OpenCPN
