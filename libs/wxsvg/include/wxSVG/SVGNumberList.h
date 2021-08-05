@@ -17,7 +17,7 @@ class wxSVGNumberList: public wxSVGNumberListBase
 {
   public:
     wxSVGNumberList() {}
-    
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& value);
 };

@@ -195,7 +195,7 @@ static std::vector<struct symlink> get_all_links()
         if (r == -1) {
             wxLogDebug("get_all_links: Cannot stat %s: %s",
                        path.c_str(), strerror(errno));
-        }    
+        }
         else if (S_ISLNK(buf.st_mode)) {
             char buff[PATH_MAX + 1];
             readlink(path.c_str(), buff, PATH_MAX);
@@ -216,7 +216,7 @@ static wxArrayString *EnumerateSysfsSerialPorts( void )
     auto all_ports = get_device_candidates();
     wxLogDebug("Enumerate: found %d candidates", all_ports.size());
     for (auto p: all_ports) {
-        if (isTTYreal(p.c_str())) ports.push_back(p); 
+        if (isTTYreal(p.c_str())) ports.push_back(p);
     }
     wxLogDebug("Enumerate: found %d good ports", ports.size());
     const auto targets =
@@ -225,7 +225,7 @@ static wxArrayString *EnumerateSysfsSerialPorts( void )
     auto all_links = get_all_links();
     wxLogDebug("Enumerate: found %d links", all_links.size());
     for (auto l: all_links) {
-        if (targets.find(l.target) != targets.end()) ports.push_back(l.path); 
+        if (targets.find(l.target) != targets.end()) ports.push_back(l.path);
     }
     wxLogDebug("Enumerate: found %d devices", ports.size());
 
@@ -239,7 +239,7 @@ static wxArrayString *EnumerateSysfsSerialPorts( void )
 #endif  // HAVE_DIRENT_H && defined(HAVE_READLINK)
 
 
-#if defined(HAVE_LIBUDEV)  
+#if defined(HAVE_LIBUDEV)
 
 /** Return a single string of free-format device info, possibly empty. */
 static std::string get_device_info(struct udev_device* ud)

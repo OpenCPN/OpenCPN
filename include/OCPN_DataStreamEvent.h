@@ -42,7 +42,7 @@ public:
     void SetStream( DataStream *pDS ) { m_pDataStream = pDS; }
     std::string GetNMEAString() const { return m_NMEAstring; }
     DataStream *GetStream() const { return m_pDataStream; }
-    
+
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
 

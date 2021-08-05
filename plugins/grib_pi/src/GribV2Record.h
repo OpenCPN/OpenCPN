@@ -83,7 +83,7 @@ class GribV2Record : public GribRecord
        int gridTemplateNum;
        int dataCat;
        int dataNum;
-                                       
+
 
         zuint  fileOffset4;
         zuint  sectionSize4;

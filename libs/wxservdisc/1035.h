@@ -55,7 +55,7 @@ struct message
     // internal variables
     unsigned char *_buf, *_labels[20];
     int _len, _label;
-    
+
     // packet acts as padding, easier mem management
     unsigned char _packet[MAX_PACKET_LEN];
 };

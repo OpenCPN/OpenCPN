@@ -214,7 +214,7 @@ const char *S57ClassRegistrar::ReadLine( FILE * fp )
     else
         return NULL;
 
-/*    
+/*
     if( papszNextLine == NULL )
         return NULL;
 
@@ -225,7 +225,7 @@ const char *S57ClassRegistrar::ReadLine( FILE * fp )
     }
     else
         return *(papszNextLine++);
-*/    
+*/
 }
 
 /************************************************************************/
@@ -248,7 +248,7 @@ int S57ClassRegistrar::LoadInfo( const char * pszDirectory,
 
     pszRLBuffer = (char *) VSIRealloc(pszRLBuffer, 512);
     nRLBufferSize = 512;
-    
+
 /* -------------------------------------------------------------------- */
 /*      Skip the line defining the column titles.                       */
 /* -------------------------------------------------------------------- */

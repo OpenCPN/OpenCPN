@@ -98,7 +98,7 @@ wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
 }
 
 void DashboardInstrument_Dial::SetData(DASH_CAP st, double data, wxString unit)
-{      
+{
       if (st == m_MainValueCap)
       {
             m_MainValue = data;
@@ -146,10 +146,10 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
     GetGlobalColor( _T("DASHL"), &cl );
     dc->SetTextForeground( cl );
     dc->SetBrush( *wxTRANSPARENT_BRUSH);
-    
+
     int penwidth = 1 + size.x / 100;
     wxPen pen( cl, penwidth, wxPENSTYLE_SOLID );
-    
+
     if( m_MarkerOption == DIAL_MARKER_REDGREENBAR ) {
         pen.SetWidth( penwidth * 2 );
         GetGlobalColor( _T("DASHR"), &cl );
@@ -163,7 +163,7 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
         wxCoord x2 = m_cx + ( ( radi ) * cos( angle2 ) );
         wxCoord y2 = m_cy + ( ( radi ) * sin( angle2 ) );
         dc->DrawArc( x1, y1, x2, y2, m_cx, m_cy );
-        
+
         GetGlobalColor( _T("DASHG"), &cl );
         pen.SetColour( cl );
         dc->SetPen( pen );
@@ -181,17 +181,17 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
         pen.SetWidth( penwidth );
         pen.SetColour( cl );
         dc->SetPen( pen );
-        angle1 = deg2rad( 0 ); 
+        angle1 = deg2rad( 0 );
         angle2 = deg2rad( 180 );
         radi = m_radius - 1;
-        
+
         x1 = m_cx + ( ( radi ) * cos( angle1 ) );
         y1 = m_cy + ( ( radi ) * sin( angle1 ) );
         x2 = m_cx + ( ( radi ) * cos( angle2 ) );
         y2 = m_cy + ( ( radi ) * sin( angle2 ) );
         dc->DrawArc( x1, y1, x2, y2, m_cx, m_cy );
         dc->DrawArc( x2, y2, x1, y1, m_cx, m_cy );
-        
+
     }
     else{
         GetGlobalColor( _T("DASHF"), &cl );

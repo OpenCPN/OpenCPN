@@ -255,12 +255,12 @@ void PrintTable::AdjustCells( wxDC* dc, int marginX, int marginY )
 
     int w, h;
     dc->GetSize( &w, &h );
-    
+
     double scale_x, scale_y;
     dc->GetUserScale(&scale_x, &scale_y);
     w /= scale_x;
     h /= scale_y;
-    
+
     int width = w - 4 * marginX;
     header_height = -1;
     for ( size_t j = 0; j < header.size(); j++ ) {

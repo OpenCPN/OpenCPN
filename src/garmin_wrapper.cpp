@@ -84,7 +84,7 @@ int Garmin_GPS_PVT_Off( wxString &port_name )
 int Garmin_GPS_GetPVT(void *pvt)
 {
     return GPS_Serial_Command_Pvt_Get((GPS_PPvt_Data *)pvt );
-    
+
 }
 
 void Garmin_GPS_ClosePortVerify(void)

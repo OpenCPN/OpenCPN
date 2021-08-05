@@ -54,7 +54,7 @@ class Multiplexer : public wxEvtHandler
         void StopAllStreams();
         void ClearStreams();
         void StartAllStreams();
-        
+
         DataStream *FindStream(const wxString & port);
         void StopAndRemoveStream( DataStream *stream );
         void SaveStreamProperties( DataStream *stream );
@@ -69,7 +69,7 @@ class Multiplexer : public wxEvtHandler
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
         void OnEvtSignalK(OCPN_SignalKEvent& event);
-        
+
         void LogOutputMessage(const wxString &msg, wxString stream_name, bool b_filter);
         void LogOutputMessageColor(const wxString &msg, const wxString & stream_name, const wxString & color);
         void LogInputMessage(const wxString &msg, const wxString & stream_name, bool b_filter, bool b_error = false);

@@ -146,7 +146,7 @@ void CursorData::PopulateTrackingControls( bool vertical )
     }
     else
         m_fgTrackingControls->SetCols( 2 );
-    
+
     this->Fit();
     //Get text controls sizing data
     wxFont *font = OCPNGetFont(_("Dialog"), 10);
@@ -367,14 +367,14 @@ void CursorData::UpdateTrackingControls( void )
                                          RecordArray[Idx_SEACURRENT_VX],
                                          RecordArray[Idx_SEACURRENT_VY],
                                          m_cursor_lon, m_cursor_lat)) {
-       
-        // Current direction is generally reported as the "flow" direction, 
+
+        // Current direction is generally reported as the "flow" direction,
         // which is opposite from wind convention.
         // So, adjust.
         ang += 180;
         if(ang >= 360) ang -= 360;
         if( ang < 0 ) ang += 360;
-        
+
         vkn = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
 
         m_tcCurrentVelocity->SetValue( wxString::Format( _T("%4.1f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
@@ -442,7 +442,7 @@ void CursorData::UpdateTrackingControls( void )
 
         if( cape != GRIB_NOTDEF ) {
             cape = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::CAPE, cape);
-            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ") 
+            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ")
                 +m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CAPE), cape ) );
         } else
             m_tcCAPE->SetValue( _("N/A") );

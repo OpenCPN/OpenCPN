@@ -98,7 +98,7 @@ public:
     void Invalidate() { m_valid = false; }
 
     bool IntersectIn( const LLBBox &other ) const;
-    
+
     //  Add some epsilon to the equality measurement
     //  This class is concerned with lat/lon, in degrees
     //  So here we can arbitrarily establish epsilon as 1e-6 degrees,
@@ -122,7 +122,7 @@ public:
         return (minlon - 1e-6 > other.m_maxlon) || (maxlon + 1e-6 < other.m_minlon);
     }
     bool IntersectOutGetBias( const LLBBox &other, double bias ) const;
-    
+
     double GetMinLat() const {return m_minlat;};
     double GetMinLon() const {return m_minlon;};
     double GetMaxLat() const {return m_maxlat;};

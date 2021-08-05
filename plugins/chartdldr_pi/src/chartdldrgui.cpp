@@ -105,7 +105,7 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
         m_nbChoice->SetMinSize( wxSize( -1, 6 * GetCharHeight() ) );
 #ifdef __WXOSX__
         m_nbChoice->SetMinSize( wxSize( -1, 8 * GetCharHeight() ) );
-#endif        
+#endif
 
 
     m_panelPredefined = new wxPanel( m_nbChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );

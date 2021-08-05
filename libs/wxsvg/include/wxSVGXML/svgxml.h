@@ -134,17 +134,17 @@ public:
     // user-friendly creation:
     wxSvgXmlNode(wxSvgXmlNodeType type, const wxString& name,
               const wxString& content = wxEmptyString);
-	
+
     void AddChild(wxSvgXmlNode* child);
 	inline wxSvgXmlNode* AppendChild(wxSvgXmlNode* child)
 	{ AddChild(child); return child; }
-	
+
     void InsertChild(wxSvgXmlNode *child, wxSvgXmlNode *before_node);
 	inline wxSvgXmlNode* InsertBefore(wxSvgXmlNode *newChild, wxSvgXmlNode *refChild)
 	{ InsertChild(newChild, refChild); return newChild; }
-	
+
     bool RemoveChild(wxSvgXmlNode *child);
-	
+
     virtual void AddProperty(const wxString& name, const wxString& value);
     virtual bool DeleteProperty(const wxString& name);
 
@@ -157,14 +157,14 @@ public:
     wxSvgXmlNode *GetParent() const { return m_parent; }
     wxSvgXmlNode *GetNext() const { return m_next; }
     wxSvgXmlNode *GetChildren() const { return m_children; }
-    
+
     wxSvgXmlNode* GetParentNode() const { return m_parent; }
     wxSvgXmlNode* GetChildNodes() const { return m_children; }
     wxSvgXmlNode* GetFirstChild() const { return m_children; }
     wxSvgXmlNode* GetLastChild() const;
     wxSvgXmlNode* GetPreviousSibling() const;
     wxSvgXmlNode* GetNextSibling() const { return m_next; }
-    
+
     virtual wxSVGElement* GetSvgElement(){return NULL;}
 
     wxSvgXmlProperty *GetProperties() const { return m_properties; }
@@ -186,21 +186,21 @@ public:
 
 public: // W3C DOM Methods
 	virtual wxString GetAttribute(const wxString& name) const;
-	virtual wxString GetAttributeNS(const wxString& namespaceURI, 
+	virtual wxString GetAttributeNS(const wxString& namespaceURI,
 									const wxString& localName) const;
     virtual bool SetAttribute(const wxString& name, const wxString& value);
-	virtual bool SetAttributeNS(const wxString& namespaceURI, 
-								const wxString& qualifiedName, 
+	virtual bool SetAttributeNS(const wxString& namespaceURI,
+								const wxString& qualifiedName,
 								const wxString& value);
     virtual void RemoveAttribute(const wxString& name);
-    virtual void RemoveAttributeNS(const wxString& namespaceURI, 
+    virtual void RemoveAttributeNS(const wxString& namespaceURI,
 								 const wxString& localName);
     virtual bool HasAttribute(const wxString& name) const;
-    virtual bool HasAttributeNS(const wxString& namespaceURI, 
+    virtual bool HasAttributeNS(const wxString& namespaceURI,
 								const wxString& localName) const;
-    
+
     virtual wxSvgXmlAttrHash GetAttributes() const;
-                                
+
     void SetOwnerDocument(wxSvgXmlDocument* ownerDocument);
 
 private:
@@ -239,7 +239,7 @@ public:
               const wxString& encoding = wxT("UTF-8"));
     virtual bool Load(wxInputStream& stream,
               const wxString& encoding = wxT("UTF-8"));
-    
+
     // Saves document as .xml file.
     bool Save(const wxString& filename) const;
     bool Save(wxOutputStream& stream) const;
@@ -273,12 +273,12 @@ public: // W3C DOM Methods
 	virtual wxSvgXmlElement* CreateElement(const wxString& tagName);
 	virtual wxSvgXmlElement* CreateElementNS(const wxString& namespaceURI,
 										  const wxString& qualifiedName);
-										  
+
 	inline wxSvgXmlNode* AppendChild(wxSvgXmlNode* child)
 	{ if (!m_root) SetRoot(child); return child; }
 	inline wxSvgXmlNode* RemoveChild(wxSvgXmlNode* child)
 	{ if (m_root != child) return NULL; m_root = NULL; return child; }
-	
+
 	inline wxSvgXmlNode* GetFirstChild() { return m_root; }
 
 private:

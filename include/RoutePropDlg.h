@@ -75,7 +75,7 @@ class RoutePropDlg : public wxFrame
 #else
 		wxTimePickerCtrl* m_tpDepartureTime;
 #endif
-#endif                
+#endif
 		wxStaticText* m_stTimeZone;
 		wxChoice* m_choiceTimezone;
 		wxStaticText* m_staticTextColor;
@@ -158,7 +158,7 @@ class RoutePropDlg : public wxFrame
 		{
 			m_scrolledWindowLinks->PopupMenu( m_menuLinks, event.GetPosition() );
 		}
-		
+
 		void OnKeyChar( wxKeyEvent &event );
 
 DECLARE_EVENT_TABLE()

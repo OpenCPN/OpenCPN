@@ -5,7 +5,7 @@
 // a.out 1.4.6 7.8.9+deadbee
 
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
     SemanticVersion v1;
     SemanticVersion v2;

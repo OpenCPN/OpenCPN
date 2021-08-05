@@ -15,16 +15,16 @@ class wxSVGAnimatedInteger
   public:
     wxSVGAnimatedInteger(): m_baseVal(0), m_animVal(0) {}
 	wxSVGAnimatedInteger(long value): m_baseVal(value), m_animVal(value) {}
-	
+
     inline long GetBaseVal() const { return m_baseVal; };
 	inline void SetBaseVal(long value) { m_baseVal = m_animVal = value; }
-	
+
     inline long GetAnimVal() const { return m_animVal; }
 	inline void SetAnimVal(long value) { m_animVal = value; }
-    
+
   public:
     inline operator long() const { return GetAnimVal(); }
-    
+
   protected:
     long m_baseVal;
     long m_animVal;

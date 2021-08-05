@@ -1,24 +1,24 @@
-/* 
+/*
    wxServDisc.cpp: wxServDisc implementation
 
    This file is part of wxServDisc, a crossplatform wxWidgets
    Zeroconf service discovery module.
- 
+
    Copyright (C) 2008 Christian Beier <dontmind@freeshell.org>
- 
-   wxServDisc is free software; you can redistribute it and/or modify 
-   it under the terms of the GNU General Public License as published by 
-   the Free Software Foundation; either version 2 of the License, or 
-   (at your option) any later version. 
- 
-   wxServDisc is distributed in the hope that it will be useful, 
-   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-   GNU General Public License for more details. 
- 
-   You should have received a copy of the GNU General Public License 
-   along with this program; if not, write to the Free Software 
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+
+   wxServDisc is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   wxServDisc is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 
@@ -64,7 +64,7 @@ wxDEFINE_EVENT(wxServDiscNOTIFY, wxCommandEvent);
   private member functions
 
 */
-  
+
 
 wxThread::ExitCode wxServDisc::Entry()
 {
@@ -98,9 +98,9 @@ wxThread::ExitCode wxServDisc::Entry()
 
   while(!GetThread()->TestDestroy() && !exit)
     {
-      //printf("TopLoop...\n");  
+      //printf("TopLoop...\n");
       tv = mdnsd_sleep(d);
-    
+
       long msecs = 100; //tv->tv_sec == 0 ? 100 : tv->tv_sec*1000; // so that the while loop beneath gets executed once
       //printf("wxServDisc %p: scanthread waiting for data, timeout %i seconds\n", this, (int)tv->tv_sec);
 
@@ -110,7 +110,7 @@ wxThread::ExitCode wxServDisc::Entry()
       int datatoread = 0;
       while(msecs > 0 && !GetThread()->TestDestroy() && !datatoread)
 	{
-          //printf("loop...\n");  
+          //printf("loop...\n");
 	  // the select call leaves tv undefined, so re-set
 	  tv->tv_sec = 0;
 	  tv->tv_usec = 100000; // 100 ms
@@ -132,13 +132,13 @@ wxThread::ExitCode wxServDisc::Entry()
 
           //printf("out of select\n");
 	  if(!datatoread){ // this is a timeout
-            //printf("wxServDisc timeout %d\n", (int)msecs);  
+            //printf("wxServDisc timeout %d\n", (int)msecs);
 	    msecs-=100;
           }
 	  if(datatoread == -1)
 	    break;
 	}
-      
+
       //printf("wxServDisc %p: scanthread woke up, reason: incoming data(%i), timeout(%i), error(%i), deletion(%i)\n",
 	//	 this, datatoread>0, msecs<=0, datatoread==-1, GetThread()->TestDestroy() );
 
@@ -165,7 +165,7 @@ wxThread::ExitCode wxServDisc::Entry()
   if(mSock != INVALID_SOCKET)
     closesocket(mSock);
 
-    
+
   //printf("wxServDisc %p: scanthread exiting\n", this);
 
   return NULL;
@@ -177,15 +177,15 @@ wxThread::ExitCode wxServDisc::Entry()
 bool wxServDisc::sendm(struct message* m, SOCKET s, unsigned long int ip, unsigned short int port)
 {
   struct sockaddr_in to;
- 
+
   memset(&to, '\0', sizeof(to));
 
   to.sin_family = AF_INET;
   to.sin_port = port;
   to.sin_addr.s_addr = ip;
 
-  if(sendto(s, (char*)message_packet(m), message_packet_len(m), 0,(struct sockaddr *)&to,sizeof(struct sockaddr_in)) != message_packet_len(m))  
-    { 
+  if(sendto(s, (char*)message_packet(m), message_packet_len(m), 0,(struct sockaddr *)&to,sizeof(struct sockaddr_in)) != message_packet_len(m))
+    {
       err.Printf(_("Can't write to socket: %s\n"),strerror(errno));
       return false;
     }
@@ -197,7 +197,7 @@ bool wxServDisc::sendm(struct message* m, SOCKET s, unsigned long int ip, unsign
 
 
 
-int wxServDisc::recvm(struct message* m, SOCKET s, unsigned long int *ip, unsigned short int *port) 
+int wxServDisc::recvm(struct message* m, SOCKET s, unsigned long int *ip, unsigned short int *port)
 {
   struct sockaddr_in from;
   int bsize;
@@ -207,7 +207,7 @@ int wxServDisc::recvm(struct message* m, SOCKET s, unsigned long int *ip, unsign
 #else
   socklen_t ssize  = sizeof(struct sockaddr_in);
 #endif
- 
+
 
   if((bsize = recvfrom(s, (char*)buf, MAX_PACKET_LEN, 0, (struct sockaddr*)&from, &ssize)) > 0)
     {
@@ -219,7 +219,7 @@ int wxServDisc::recvm(struct message* m, SOCKET s, unsigned long int *ip, unsign
     }
 
 #ifdef __WIN32__
-  if(bsize < 0 && WSAGetLastError() != WSAEWOULDBLOCK) 
+  if(bsize < 0 && WSAGetLastError() != WSAEWOULDBLOCK)
 #else
     if(bsize < 0 && errno != EAGAIN)
 #endif
@@ -239,13 +239,13 @@ int wxServDisc::recvm(struct message* m, SOCKET s, unsigned long int *ip, unsign
 int wxServDisc::ans(mdnsda a, void *arg)
 {
   wxServDisc *moi = (wxServDisc*)arg;
-  
+
   wxString key;
   switch(a->type)
     {
     case QTYPE_PTR:
       // query result is key
-      key = wxString((char*)a->rdname, wxConvUTF8); 
+      key = wxString((char*)a->rdname, wxConvUTF8);
       break;
     case QTYPE_A:
     case QTYPE_SRV:
@@ -267,8 +267,8 @@ int wxServDisc::ans(mdnsda a, void *arg)
 
   struct in_addr ip;
   ip.s_addr =  ntohl(a->ip);
-  result.ip = wxString(inet_ntoa(ip), wxConvUTF8); 
- 
+  result.ip = wxString(inet_ntoa(ip), wxConvUTF8);
+
   result.port = a->srv.port;
 
 
@@ -280,8 +280,8 @@ int wxServDisc::ans(mdnsda a, void *arg)
     moi->results[key] = result;
 
   moi->post_notify();
-    
-  
+
+
   wxLogDebug(wxT("wxServDisc %p: got answer:"), moi);
   wxLogDebug(wxT("wxServDisc %p:    key:  %s"), moi, key.c_str());
   wxLogDebug(wxT("wxServDisc %p:    ttl:  %i"), moi, (int)a->ttl);
@@ -292,7 +292,7 @@ int wxServDisc::ans(mdnsda a, void *arg)
     wxLogDebug(wxT("wxServDisc %p:    port: %u"), moi, moi->results[key].port);
   }
   wxLogDebug(wxT("wxServDisc %p: answer end"),  moi);
-  
+
   return 1;
 }
 
@@ -301,7 +301,7 @@ int wxServDisc::ans(mdnsda a, void *arg)
 // create a multicast 224.0.0.251:5353 socket,
 // aproppriate for receiving and sending,
 // windows or unix style
-SOCKET wxServDisc::msock() 
+SOCKET wxServDisc::msock()
 {
   SOCKET sock;
 
@@ -318,7 +318,7 @@ SOCKET wxServDisc::msock()
 
   unsigned long block=1;
 
- 
+
 #ifdef __WIN32__
   /*
     Start up WinSock
@@ -334,9 +334,9 @@ SOCKET wxServDisc::msock()
     }
 #endif
 
-  
-  /* 
-     Resolve the multicast group address 
+
+  /*
+     Resolve the multicast group address
   */
   memset(&hints, 0, sizeof hints); // make sure the struct is empty
   hints.ai_family = PF_UNSPEC; // IPv4 or IPv6, we don't care
@@ -345,23 +345,23 @@ SOCKET wxServDisc::msock()
     err.Printf(_("Could not get multicast address: %s\n"), gai_strerror(status));
     return INVALID_SOCKET;
   }
- 
-  wxLogDebug(wxT("wxServDisc %p: Using %s"), this, multicastAddr->ai_family == PF_INET6 ? wxT("IPv6") : wxT("IPv4"));   
- 
 
-  /* 
-     Resolve a local address with the same family (IPv4 or IPv6) as our multicast group 
+  wxLogDebug(wxT("wxServDisc %p: Using %s"), this, multicastAddr->ai_family == PF_INET6 ? wxT("IPv6") : wxT("IPv4"));
+
+
+  /*
+     Resolve a local address with the same family (IPv4 or IPv6) as our multicast group
   */
   memset(&hints, 0, sizeof hints); // make sure the struct is empty
   hints.ai_family   = multicastAddr->ai_family;
   hints.ai_socktype = SOCK_DGRAM;
-  hints.ai_flags    = AI_NUMERICHOST|AI_PASSIVE; // no name resolving, wildcard address  
+  hints.ai_flags    = AI_NUMERICHOST|AI_PASSIVE; // no name resolving, wildcard address
   if ((status = getaddrinfo(NULL, mcPortStr, &hints, &localAddr)) != 0 ) {
     err.Printf(_("Could not get local address: %s\n"), gai_strerror(status));
     freeaddrinfo(multicastAddr);
     return INVALID_SOCKET;
   }
-   
+
 
 
 
@@ -412,11 +412,11 @@ SOCKET wxServDisc::msock()
 
 
 
-   /* 
+   /*
       Join the multicast group. We do this seperately depending on whether we
-      are using IPv4 or IPv6. 
+      are using IPv4 or IPv6.
    */
-  if ( multicastAddr->ai_family  == PF_INET &&  
+  if ( multicastAddr->ai_family  == PF_INET &&
        multicastAddr->ai_addrlen == sizeof(struct sockaddr_in) ) /* IPv4 */
     {
       struct ip_mreq multicastRequest;  // Multicast address join structure
@@ -434,7 +434,7 @@ SOCKET wxServDisc::msock()
 	err.Printf(_("Could not join multicast group: %s\n"), strerror(errno));
 	goto CompleteCleanUp;
       }
-	
+
     }
   else if ( multicastAddr->ai_family  == PF_INET6 &&
 	    multicastAddr->ai_addrlen == sizeof(struct sockaddr_in6) ) /* IPv6 */
@@ -459,11 +459,11 @@ SOCKET wxServDisc::msock()
     err.Printf(_("Neither IPv4 or IPv6"));
     goto CompleteCleanUp;
   }
- 
 
 
- 	
-  /* 
+
+
+  /*
      Set to nonblock
   */
 #ifdef _WIN32
@@ -475,24 +475,24 @@ SOCKET wxServDisc::msock()
 #endif
 
 
-	
+
   /*
     whooaa, that's it
   */
   freeaddrinfo(localAddr);
   freeaddrinfo(multicastAddr);
-  
+
   return sock;
 
 
 
  CompleteCleanUp:
-  
+
   closesocket(sock);
   freeaddrinfo(localAddr);
   freeaddrinfo(multicastAddr);
   return INVALID_SOCKET;
-  
+
 }
 
 
@@ -517,12 +517,12 @@ wxServDisc::wxServDisc(void* p, const wxString& what, int type)
   wxLogDebug(wxT(""));
   wxLogDebug(wxT("wxServDisc %p: about to query '%s'"), this, query.c_str());
 
-  if((mSock = msock()) == INVALID_SOCKET) { 
+  if((mSock = msock()) == INVALID_SOCKET) {
     wxLogDebug(wxT("Ouch, error creating socket: ") + err);
     return;
   }
 
-#if wxVERSION_NUMBER >= 2905 // 2.9.4 still has a bug here: http://trac.wxwidgets.org/ticket/14626  
+#if wxVERSION_NUMBER >= 2905 // 2.9.4 still has a bug here: http://trac.wxwidgets.org/ticket/14626
   if( CreateThread(wxTHREAD_DETACHED) != wxTHREAD_NO_ERROR )
 #else
   if( Create() != wxTHREAD_NO_ERROR )
@@ -530,7 +530,7 @@ wxServDisc::wxServDisc(void* p, const wxString& what, int type)
     err.Printf(_("Could not create scan thread!"));
   else
     if( GetThread()->Run() != wxTHREAD_NO_ERROR )
-      err.Printf(_("Could not start scan thread!")); 
+      err.Printf(_("Could not start scan thread!"));
 }
 
 
@@ -542,9 +542,9 @@ wxServDisc::~wxServDisc()
     GetThread()->Delete(); // blocks, this makes TestDestroy() return true and cleans up the thread
     wxMilliSleep(200);
   }
-    
+
   wxLogDebug(wxT("wxServDisc %p: scanthread deleted, wxServDisc destroyed, query was '%s', lifetime was %ld"), this, query.c_str(), mWallClock.Time());
-  wxLogDebug(wxT("")); 
+  wxLogDebug(wxT(""));
 }
 
 
@@ -580,7 +580,7 @@ void wxServDisc::post_notify()
       // new NOTIFY event, we got no window id
       wxCommandEvent event(wxServDiscNOTIFY, wxID_ANY);
       event.SetEventObject(this); // set sender
-      
+
       // Send it
       wxQueueEvent((wxEvtHandler*)parent, event.Clone());
     }

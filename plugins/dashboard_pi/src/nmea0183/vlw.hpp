@@ -55,7 +55,7 @@ class VLW : public RESPONSE
 
       double   TotalMileage;
       double   TripMileage;
-      
+
       /*
       ** Methods
       */

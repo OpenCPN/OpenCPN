@@ -73,7 +73,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	wSizerParams = new wxWrapSizer( wxHORIZONTAL, wxEXTEND_LAST_ON_EACH_LINE|wxREMOVE_LEADING_SPACES|wxWRAPSIZER_DEFAULT_FLAGS );
 
         int maxFieldSize = GetCharWidth() * 10;
-        
+
 	wxBoxSizer* bSizerDistance;
 	bSizerDistance = new wxBoxSizer( wxVERTICAL );
 
@@ -130,7 +130,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
         bSizerDepartureTS = new wxBoxSizer( wxHORIZONTAL );
         bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
 
-#ifndef __OCPN__ANDROID__        
+#ifndef __OCPN__ANDROID__
 	m_dpDepartureDate = new wxDatePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
 	bSizerDepartureTS->Add( m_dpDepartureDate, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
@@ -212,9 +212,9 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
         // wxDataViewListCtrl has some platform dependent variability
         // We account for this here...
-        
+
         wxString toLabel = _("To waypoint");
-        
+
 #ifdef __WXQT__                         // includes Android
         int columWidths[] = {
             wxCOL_WIDTH_AUTOSIZE,
@@ -235,7 +235,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
         };
         int colFlags = 0;
         toLabel = _("To WP");
-        
+
 #else
         int columWidths[] = {
             30,
@@ -254,9 +254,9 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
             120,
             -1
         };
-        int colFlags = wxDATAVIEW_COL_RESIZABLE; 
-       
-#endif        
+        int colFlags = wxDATAVIEW_COL_RESIZABLE;
+
+#endif
 
 	bSizerData->Add( wSizerParams, 0, wxEXPAND, 0 );
 
@@ -425,7 +425,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 #ifndef __OCPN__ANDROID__
 	m_dpDepartureDate->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
-#endif        
+#endif
 	m_choiceTimezone->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_CONTEXT_MENU, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemContextMenu ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );

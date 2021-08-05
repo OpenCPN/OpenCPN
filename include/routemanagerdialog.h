@@ -56,12 +56,12 @@ class RouteManagerDialog : public wxFrame {
 
       public:
             static RouteManagerDialog* getInstance(wxWindow *parent);
-            static bool getInstanceFlag(){ return instanceFlag; } 
+            static bool getInstanceFlag(){ return instanceFlag; }
             ~RouteManagerDialog();
-            
+
             void OnClose(wxCloseEvent& event);
             void OnOK(wxCommandEvent& event);
-            
+
             void SetColorScheme();
             void RecalculateSize();
             void UpdateRouteListCtrl();     // Rebuild route list
@@ -79,9 +79,9 @@ class RouteManagerDialog : public wxFrame {
       private:
             static bool instanceFlag;
             static RouteManagerDialog *single;
-            
+
             RouteManagerDialog(wxWindow *parent);
-            
+
             void Create();
             void UpdateRteButtons();           // Correct button state
             void MakeAllRoutesInvisible();  // Mark all routes as invisible. Does not flush settings.
@@ -152,7 +152,7 @@ class RouteManagerDialog : public wxFrame {
             void OnShowAllWpCBClicked(wxCommandEvent& event);
             void OnShowAllTrkCBClicked(wxCommandEvent& event);
             void OnShowAllLayCBClicked(wxCommandEvent& event);
-            
+
             // properties
             wxNotebook *m_pNotebook;
             wxPanel    *m_pPanelRte;
@@ -209,7 +209,7 @@ class RouteManagerDialog : public wxFrame {
             wxCheckBox *m_cbShowAllTrk;
             wxCheckBox *m_cbShowAllLay;
 
-            
+
             bool m_bPossibleClick;    // do
             bool m_bCtrlDown;         // record control key state for some action buttons
             bool m_bNeedConfigFlush;  // if true, update config in destructor
@@ -217,7 +217,7 @@ class RouteManagerDialog : public wxFrame {
             int m_lastWptItem;
             int m_lastTrkItem;
             int m_lastRteItem;
-            
+
             int m_charWidth;
             int m_listIconSize;
 };

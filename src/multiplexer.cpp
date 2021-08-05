@@ -206,7 +206,7 @@ void Multiplexer::LogOutputMessageColor(const wxString &msg, const wxString & st
         wxString ss;
 #ifndef __WXQT__        //  Date/Time on Qt are broken, at least for android
         ss = now.FormatISOTime();
-#endif        
+#endif
         ss.Prepend(_T("--> "));
         ss.Append( _T(" (") );
         ss.Append( stream_name );
@@ -235,7 +235,7 @@ void Multiplexer::LogInputMessage(const wxString &msg, const wxString & stream_n
         wxString ss;
 #ifndef __WXQT__        //  Date/Time on Qt are broken, at least for android
         ss = now.FormatISOTime();
-#endif        
+#endif
         ss.Append( _T(" (") );
         ss.Append( stream_name );
         ss.Append( _T(") ") );
@@ -302,7 +302,7 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler)
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
     wxString message = event.ProcessNMEA4Tags();
-    
+
     DataStream *stream = event.GetStream();
     wxString port(_T("Virtual:"));
     if( stream )
@@ -339,9 +339,9 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             //Send to the Debug Window, if open
             //  Special formatting for non-printable characters helps debugging NMEA problems
         if (NMEALogWindow::Get().Active()) {
-            std::string str= event.GetNMEAString();    
+            std::string str= event.GetNMEAString();
             wxString fmsg;
-            
+
             bool b_error = false;
             for ( std::string::iterator it=str.begin(); it!=str.end(); ++it){
                 if(isprint(*it))
@@ -353,7 +353,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                     if((*it != 0x0a) && (*it != 0x0d))
                         b_error = true;
                 }
-                
+
             }
             LogInputMessage( fmsg, port, !bpass, b_error );
         }
@@ -370,7 +370,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                     if( CheckSumCheck(event.GetNMEAString()) )
                         g_pi_manager->SendNMEASentenceToAllPlugIns( message );
                 }
-                    
+
             }
 
            //Send to all the other outputs
@@ -411,7 +411,7 @@ void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event)
         m_aisconsumer->AddPendingEvent(event);
     if( m_gpsconsumer )
         m_gpsconsumer->AddPendingEvent(event);
-    
+
     wxJSONReader jsonReader;
     wxJSONValue root;
 
@@ -447,7 +447,7 @@ int Multiplexer::SendRouteToGPS(Route *pr,
         SendToGpsDlg *dialog)
 {
     int ret_val = 0;
-    
+
     if(g_GPS_Ident == _T("FurunoGP3X")){
         if(pr->pRoutePointList->GetCount() > 30){
                 long style = wxOK;
@@ -459,7 +459,7 @@ int Multiplexer::SendRouteToGPS(Route *pr,
                                                false,
                                                wxDefaultPosition);
                 int reply = dlg->ShowModal();
-                return 1; 
+                return 1;
         }
     }
 
@@ -467,7 +467,7 @@ int Multiplexer::SendRouteToGPS(Route *pr,
     bool btempStream = false;
     DataStream *dstr = NULL;
     DataStream *old_stream = NULL;
-    
+
     if(com_name.Lower().StartsWith("serial")){
         old_stream = FindStream( com_name );
         wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
@@ -481,7 +481,7 @@ int Multiplexer::SendRouteToGPS(Route *pr,
         dstr = FindStream(com_name);
     }
 
-#ifdef USE_GARMINHOST         
+#ifdef USE_GARMINHOST
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
@@ -619,7 +619,7 @@ ret_point:
 #endif //USE_GARMINHOST
 
     {
-           
+
 
         { // Standard NMEA mode
 
@@ -684,14 +684,14 @@ ret_point:
                     btempStream = true;
                 }
             }
-            
+
             if( com_name.Lower().StartsWith("tcp") ){
                 // new tcp connections must wait for connect
                 wxString msg = _("Connecting to ");
                 msg += com_name;
                 dialog->SetMessage( msg );
                 dialog->GetProgressGauge()->Pulse();
-                 
+
                 NetworkDataStream *streamTest = (NetworkDataStream *)dstr;
                 int loopCount = 10;         // seconds
                 bool bconnected = false;
@@ -768,7 +768,7 @@ ret_point:
                         //  Furuno has its own talker ID, so do not allow the global override
                         wxString talker_save = g_TalkerIdText;
                         g_TalkerIdText.Clear();
-                        
+
                         oNMEA0183.TalkerID = _T ( "PFEC," );
 
                         if ( prp->m_lat < 0. )
@@ -787,7 +787,7 @@ ret_point:
                         oNMEA0183.GPwpl.To = name;
 
                         oNMEA0183.GPwpl.Write ( snt );
-                        
+
                         g_TalkerIdText = talker_save;
                     }
 
@@ -801,7 +801,7 @@ ret_point:
                     // This ensures that the gps  will get the waypoint and also allows us to send as many as we like
                     //
                     //  We need only send once for FurunoGP3X models
-                    
+
                     if( dstr->SendSentence( payload ) ) {
                         if(g_GPS_Ident != _T("FurunoGP3X"))
                             dstr->SendSentence( payload );
@@ -846,7 +846,7 @@ ret_point:
             wxString talker_save = g_TalkerIdText;
             if(g_GPS_Ident == _T("FurunoGP3X"))
                 g_TalkerIdText.Clear();
-            
+
             oNMEA0183.Rte.Empty();
             oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
@@ -954,7 +954,7 @@ ret_point:
                         {
                             if(wp_count == max_wp)
                                 sent_len += name_len;   // with comma
-                            else    
+                            else
                                 sent_len += name_len + 1;   // with comma
                             wp_count++;
                             node = node->GetNext();
@@ -1039,7 +1039,7 @@ ret_point:
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
                     wxString sentence = sentence_array[ii];
-                    
+
                     if(dstr->SendSentence( sentence ) )
                         LogOutputMessage( sentence, dstr->GetPort(), false );
 
@@ -1087,7 +1087,7 @@ ret_point:
                 msg += rte;
                 msg.Trim();
                 wxLogMessage(msg);
- 
+
                 wxString term;
                 term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
@@ -1116,10 +1116,10 @@ ret_point:
             //  All finished with the temp port
             if(btempStream)
                 dstr->Close();
-            
+
             if(g_GPS_Ident == _T("FurunoGP3X"))
                 g_TalkerIdText = talker_save;
-            
+
         }
     }
 
@@ -1137,12 +1137,12 @@ ret_point_1:
 int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, SendToGpsDlg *dialog)
 {
     int ret_val = 0;
-    
+
     bool b_restoreStream = false;
     bool btempStream = false;
     DataStream *dstr = NULL;
     DataStream *old_stream = NULL;
-    
+
     if(com_name.Lower().StartsWith("serial")){
         old_stream = FindStream( com_name );
         wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
@@ -1156,7 +1156,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, Se
         dstr = FindStream(com_name);
     }
 
-#ifdef USE_GARMINHOST 
+#ifdef USE_GARMINHOST
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
@@ -1339,14 +1339,14 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, Se
                         dstr = (DataStream *)streamNew;
                     btempStream = true;
             }
-            
+
             if( com_name.Lower().StartsWith("tcp") ){
                 // new tcp connections must wait for connect
                 wxString msg = _("Connecting to ");
                 msg += com_name;
                 dialog->SetMessage( msg );
                 dialog->GetProgressGauge()->Pulse();
-                 
+
                 NetworkDataStream *streamTest = (NetworkDataStream *)dstr;
                 int loopCount = 10;         // seconds
                 bool bconnected = false;
@@ -1375,7 +1375,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, Se
             }
         }
 
-        
+
 
         SENTENCE snt;
         NMEA0183 oNMEA0183;

@@ -90,7 +90,7 @@ void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data, wxString
         m_data1.Printf(_T("%03d ") + DEGREE_SIGN,(int)brg);
         m_data2.Printf(_T("%3.2f %s"), toUsrDistance_Plugin(dist, g_iDashDistanceUnit), getUsrDistanceUnit_Plugin(g_iDashDistanceUnit).c_str());
     }
-	  	
+
     Refresh(false);
 }
 
@@ -106,5 +106,5 @@ wxSize DashboardInstrument_FromOwnship::GetSize( int orient, wxSize hint )
       } else {
           return wxSize( wxMax(hint.x, w+10), m_TitleHeight+m_DataHeight*2 );
       }
-      
+
 }

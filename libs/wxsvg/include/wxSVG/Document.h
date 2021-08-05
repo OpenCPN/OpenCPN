@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        Document.h
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/04/28
 // RCS-ID:      $Id: Document.h,v 1.4 2010/08/17 08:00:29 ntalex Exp $

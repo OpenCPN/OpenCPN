@@ -65,7 +65,7 @@ static void init_level_by_name()
     }
 }
 
- 
+
 static std::string timeStamp()
 {
     wxDateTime now = wxDateTime::UNow();

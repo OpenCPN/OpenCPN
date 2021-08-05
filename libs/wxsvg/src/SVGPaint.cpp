@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGPaint.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/05/10
 // RCS-ID:      $Id: SVGPaint.cpp,v 1.4 2006/01/08 12:21:13 ntalex Exp $

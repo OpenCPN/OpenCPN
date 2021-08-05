@@ -28,7 +28,7 @@
 #include "OCPN_Sound.h"
 
 /**
- * Creates a OcpnSound instance based on configuration done by cmake 
+ * Creates a OcpnSound instance based on configuration done by cmake
  * enshrined in config.h.
  */
 

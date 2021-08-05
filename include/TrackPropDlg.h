@@ -87,8 +87,8 @@ private:
         static TrackPropDlg *single;
         TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& title,
                       const wxPoint& pos, const wxSize& size,
-                      long style ); 
-        
+                      long style );
+
         TrackPoint *m_pExtendPoint;
         Track      *m_pExtendTrack;
         TrackPoint *m_pEntrackPoint;
@@ -98,10 +98,10 @@ private:
         double      m_avgspeed;
 
         int         m_nSelected; // index of point selected in Properties dialog row
-        
+
         bool        IsThisTrackExtendable();
         bool        SaveChanges(void);
-        
+
         HyperlinkList   *m_pMyLinkList;
         void OnHyperLinkClick(wxHyperlinkEvent &event);
         wxHyperlinkCtrl *m_pEditedLink;
@@ -148,21 +148,21 @@ private:
         wxButton* m_sdbBtmBtnsSizerCancel;
         wxStaticBoxSizer* sbSizerLinks;
         wxBoxSizer* bSizerLinks;
-    
+
         wxButton* m_sdbBtmBtnsSizerPrint;
         wxButton* m_sdbBtmBtnsSizerSplit;
         wxButton* m_sdbBtmBtnsSizerExtend;
         wxButton* m_sdbBtmBtnsSizerToRoute;
         wxButton* m_sdbBtmBtnsSizerExport;
-        
+
         wxMenuItem* m_menuItemEdit;
         wxMenuItem* m_menuItemAdd;
         wxMenuItem* m_menuItemDelete;
 
-        
+
         wxScrolledWindow *itemDialog1;
         bool m_bcompact;
-        
+
 
         // Virtual event handlers, overide them in your derived class
         void OnCancelBtnClick( wxCommandEvent& event );
@@ -183,28 +183,28 @@ private:
         void OnShowTimeTZ( wxCommandEvent& event );
         void CreateControls( void );
         void CreateControlsCompact( void );
-        
+
 public:
         static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track properties"),
                                       const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
                                       long style = FRAME_WITH_LINKS_STYLE );
-        static bool getInstanceFlag(){ return instanceFlag; } 
+        static bool getInstanceFlag(){ return instanceFlag; }
         ~TrackPropDlg();
 
         void m_hyperlink1OnContextMenu( wxMouseEvent &event )
         {
             m_hyperlink1->PopupMenu( m_menuLink, event.GetPosition() );
         }
-        
+
         void SetTrackAndUpdate( Track *pt );
         bool UpdateProperties();
         void InitializeList();
         Track *GetTrack() { return m_pTrack; }
-        
+
         void RecalculateSize( void );
-        
+
         Track      *m_pTrack;
-        
+
         void m_hyperlinkContextMenu( wxMouseEvent &event );
 };
 

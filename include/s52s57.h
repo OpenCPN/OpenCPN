@@ -117,7 +117,7 @@ typedef enum _DisCat{
 #define MASK_ALL        MASK_POINT + MASK_LINE + MASK_AREA + MASK_MPS
 
 
-    
+
 typedef enum _Rules_t{
    RUL_NONE,                        // no rule type (init)
    RUL_TXT_TX,                      // TX
@@ -241,7 +241,7 @@ public:
     int         texobj;
     int         text_width;
     int         text_height;
-    
+
 };
 
 
@@ -302,9 +302,9 @@ typedef struct _chart_context{
     wxArrayPtrVoid          *pFloatingATONArray;
     wxArrayPtrVoid          *pRigidATONArray;
     s57chart                *chart;
-    double                  safety_contour; 
+    double                  safety_contour;
     float                   *vertex_buffer;
-    
+
 }chart_context;
 
 
@@ -339,10 +339,10 @@ public:
       ~S57Obj();
 
       S57Obj( const char* featureName );
-      
+
       wxString GetAttrValueAsString ( const char *attr );
       int GetAttributeIndex( const char *AttrSeek );
-      
+
       bool AddIntegerAttribute( const char *acronym, int val );
       bool AddIntegerListAttribute( const char *acronym, int *pval, int nValue );
       bool AddDoubleAttribute( const char *acronym, double val );
@@ -353,13 +353,13 @@ public:
       bool SetLineGeometry( LineGeometryDescriptor *pGeo, GeoPrim_t geoType, double ref_lat, double ref_lon);
       bool SetAreaGeometry( PolyTessGeo *ppg, double ref_lat, double ref_lon);
       bool SetMultipointGeometry( MultipointGeometryDescriptor *pGeo, double ref_lat, double ref_lon);
-      
-      
-          
+
+
+
       // Private Methods
 private:
       void Init();
-    
+
 public:
       // Instance Data
       char                    FeatureName[8];
@@ -376,9 +376,9 @@ public:
       double                  y;
       double                  z;
       int                     npt;                    // number of points as needed by arrays
-      
+
       pt                      *geoPt;                 // used for cm93 line feature select check
-      
+
       double                  *geoPtz;                // an array[3] for MultiPoint, SM with Z, i.e. depth
       double                  *geoPtMulti;            // an array[2] for MultiPoint, lat/lon to make bbox
                                                       // of decomposed points
@@ -406,7 +406,7 @@ public:
       int                     m_n_edge_max_points;
       line_segment_element    *m_ls_list;
       PI_line_segment_element *m_ls_list_legacy;
-      
+
       DisCat                  m_DisplayCat;
       int                     m_DPRI;                 // display priority, assigned from initial LUP
                                                       // May be adjusted by CS
@@ -419,13 +419,13 @@ public:
       double                  y_rate;                 // to be used in GetPointPix() and friends
       double                  x_origin;               // on a per-object basis if necessary
       double                  y_origin;
-      
+
       chart_context           *m_chart_context;       // per-chart constants, carried in each object for convenience
       int auxParm0;                                   // some per-object auxiliary parameters, used for OpenGL
       int auxParm1;
       int auxParm2;
       int auxParm3;
-      
+
       bool                    bBBObj_valid;
 };
 
@@ -496,7 +496,7 @@ public:
       int         max_priority;
       size_t      vbo_offset;
       LLBBox      edgeBBox;
-      
+
 };
 
 class VC_Element
@@ -525,7 +525,7 @@ public:
     int max_priority_cs;
     float               cs_lat_avg;                // segment centroid
     float               cs_lon_avg;
-    
+
 };
 
 class line_segment_element
@@ -536,7 +536,7 @@ public:
     VE_Element          *pedge;
     };
     SegmentType         ls_type;
-    
+
     line_segment_element *next;
 };
 
@@ -553,7 +553,7 @@ public:
     float               lon_min;
     int                 type;
     void                *private0;
-    
+
     line_segment_element *next;
 };
 
@@ -577,25 +577,25 @@ WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, 
 class connector_key
 {
 public:
-    connector_key() 
+    connector_key()
     {
       memset(k, 0 , sizeof k);
     }
-        
+
     connector_key(SegmentType t, int a, int b)
     {
       set(t,a,b);
-    }   
+    }
 
-    void set(SegmentType t, int a, int b) 
+    void set(SegmentType t, int a, int b)
     {
       memcpy(k, &a, sizeof a);
       memcpy(&k[sizeof a], &b, sizeof b);
-      k[sizeof (a) + sizeof (b)] = (unsigned char)t;      
+      k[sizeof (a) + sizeof (b)] = (unsigned char)t;
     }
 
     unsigned long hash() const;
- 
+
     unsigned char k[sizeof(int) + sizeof(int) + sizeof(char)];
 };
 
@@ -605,7 +605,7 @@ public:
   connHash() { }
   unsigned long operator()( const connector_key& k ) const
   { return k.hash(); }
-  
+
   connHash& operator=(const connHash&) { return *this; }
 };
 
@@ -616,7 +616,7 @@ public:
 connEqual() { }
 bool operator()( const connector_key& a, const connector_key& b ) const
 {
-  return memcmp(a.k, b.k, sizeof b.k) == 0; 
+  return memcmp(a.k, b.k, sizeof b.k) == 0;
 }
 
 connEqual& operator=(const connEqual&) { return *this; }

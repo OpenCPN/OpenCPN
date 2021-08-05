@@ -46,17 +46,17 @@ class wxSVGLength
     wxSVGLength(wxSVG_LENGTHTYPE unitType, double v): m_unitType(unitType) { SetValueInSpecifiedUnits(v); }
     wxSVGLength(const wxSVGLength& l): m_unitType(l.m_unitType), m_value(l.m_value), m_valueInSpecifiedUnits(l.m_valueInSpecifiedUnits) {}
     virtual ~wxSVGLength() {}
-    
+
     inline double GetValue() const { return m_value; }
     inline void SetValue(double n) { m_unitType = wxSVG_LENGTHTYPE_NUMBER; m_valueInSpecifiedUnits = n; m_value = n; }
     inline operator double() const { return GetValue(); }
-    
+
     double GetValueInSpecifiedUnits() const { return m_valueInSpecifiedUnits; }
     void SetValueInSpecifiedUnits(double n);
-    
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& n);
-    
+
     inline void ToViewportWidth(float viewportWidth) { m_value = m_valueInSpecifiedUnits*viewportWidth/100; }
 	inline void ToViewportHeight(float viewportHeight) { m_value = m_valueInSpecifiedUnits*viewportHeight/100; }
 	inline void ToViewportSize(float viewportWidth, float viewportHeight)

@@ -45,22 +45,22 @@ class s57RegistrarMgr
 public:
     s57RegistrarMgr(const wxString& csv_dir, FILE *flog);
     ~s57RegistrarMgr();
-   
+
     int getAttributeID(const char *pAttrName);
     std::string getAttributeAcronym(int nID);
     std::string getFeatureAcronym(int nID);
-    
+
 private:
-    
+
     bool s57_attr_init( const wxString& csv_dir );
     bool s57_feature_init( const wxString& csv_dir );
-    
+
     CSVHash1       m_attrHash1;
     CSVHash2       m_attrHash2;
 
     CSVHash1       m_featureHash1;
     CSVHash2       m_featureHash2;
-    
+
 };
 
 #endif

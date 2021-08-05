@@ -51,13 +51,13 @@ public:
       virtual ~RoutePoint(void);
       void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL, bool boverride_viz = false);
       void ReLoadIcon(void);
-      
+
       void SetPosition(double lat, double lon);
       double GetLatitude()  { return m_lat; };
       double GetLongitude() { return m_lon; };
       void CalculateDCRect(wxDC& dc, ChartCanvas *canvas, wxRect *prect);
       LLBBox &GetBBox(){ return m_wpBBox; }
-      
+
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
@@ -76,13 +76,13 @@ public:
       wxString GetIconName(void){ return m_IconName; }
       wxBitmap *GetIconBitmap(){ return m_pbmIcon; }
       void SetIconName( wxString name ){ m_IconName = name; }
-      
+
       void *GetSelectNode(void) { return m_SelectNode; }
       void SetSelectNode(void* node) { m_SelectNode = node; }
 
       void *GetManagerListNode(void) { return m_ManagerNode; }
       void SetManagerListNode(void* node) { m_ManagerNode = node; }
-      
+
       void SetName(const wxString & name);
       void CalculateNameExtents(void);
 
@@ -129,7 +129,7 @@ public:
       wxDateTime GetETA();
       wxString GetETE();
       void SetETE(wxLongLong secs);
-      
+
       double            m_lat, m_lon;
       double            m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
@@ -154,7 +154,7 @@ public:
       bool              m_bIsActive;
       wxString          m_MarkDescription;
       wxString          m_GUID;
-    
+
       wxString          m_TideStation;
 
       wxFont            *m_pMarkFont;
@@ -175,13 +175,13 @@ public:
       double            m_routeprop_distance;       // distance from this waypoint to the next waypoint if in a route.
 
       bool              m_btemp;
-      
+
       bool              m_bShowWaypointRangeRings;
       int               m_iWaypointRangeRingsNumber;
       float             m_fWaypointRangeRingsStep;
       int               m_iWaypointRangeRingsStepUnits;
       wxColour          m_wxcWaypointRangeRingsColour;
-      
+
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false, bool bVizOverride=false );
@@ -207,7 +207,7 @@ private:
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;
       wxString          m_IconName;
-      
+
       void              *m_SelectNode;
       void              *m_ManagerNode;
 
@@ -223,12 +223,12 @@ private:
       long              m_ScaMin;
       long              m_ScaMax;
       double            m_PlannedSpeed;
- 
+
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;
       int               m_dragIconTextureWidth, m_dragIconTextureHeight;
 #endif
-      
+
 };
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);// establish class as list member

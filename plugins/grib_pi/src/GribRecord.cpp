@@ -226,7 +226,7 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     ret->lonMin = Lo1, ret->lonMax = Lo2;
 
     ret->m_bfilled = false;
-    
+
     return ret;
 }
 
@@ -255,7 +255,7 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
        rec2x.Ni != rec2y.Ni ||rec2x.Nj != rec2y.Nj)
     {
         // could also make sure lat and lon min/max are the same...
-        // copy first 
+        // copy first
         rety = new GribRecord(rec1y);
 
         return new GribRecord(rec1x);
@@ -378,14 +378,14 @@ void GribRecord::Substract(const GribRecord &rec, bool pos)
 
     if (data == 0 || !isOk())
         return;
-        
-    if (Ni != rec.Ni || Nj != rec.Nj) 
+
+    if (Ni != rec.Ni || Nj != rec.Nj)
         return;
-        
+
     zuint size = Ni *Nj;
     for (zuint i=0; i<size; i++) {
         if (rec.data[i] == GRIB_NOTDEF)
-           continue; 
+           continue;
         if (data[i] == GRIB_NOTDEF) {
             data[i] = -rec.data[i];
             if (BMSbits != 0) {
@@ -400,7 +400,7 @@ void GribRecord::Substract(const GribRecord &rec, bool pos)
             // data type should be positive...
             data[i] = 0.;
         }
-    } 
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -575,10 +575,10 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
 
     if(i1 >= Ni)
         i1 = i0;
-    
+
     if(j1 >= Nj)
         j1 = j0;
-    
+
     // distances to 00
     double dx = pi-i0;
     double dy = pj-j0;
@@ -613,11 +613,11 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         nbval ++;
     if (getValue(i1, j1) != GRIB_NOTDEF)
         nbval ++;
-    
-    
-    
-    
-    
+
+
+
+
+
     if (nbval < 3)
         return GRIB_NOTDEF;
 

@@ -81,7 +81,7 @@ grib_pi::grib_pi(void *ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
-      
+
       wxString shareLocn = *GetpSharedDataLocation() +
                           _T("plugins") + wxFileName::GetPathSeparator() +
                           _T("grib_pi") + wxFileName::GetPathSeparator()
@@ -151,7 +151,7 @@ int grib_pi::Init(void)
 		  wxLogMessage(normalIcon);
 		  m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
 			  _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
-                  
+
 
 	  }
 
@@ -170,7 +170,7 @@ int grib_pi::Init(void)
 #endif
     g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
 #endif
-      
+
       return (WANTS_OVERLAY_CALLBACK |
               WANTS_OPENGL_OVERLAY_CALLBACK |
               WANTS_CURSOR_LATLON       |
@@ -300,7 +300,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->Show();
 #else
     Pref->ShowModal();
-#endif    
+#endif
 }
 
 void grib_pi::UpdatePrefs( GribPreferencesDialog* Pref )
@@ -399,11 +399,11 @@ void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
 {
     //  Use the application frame to bound the control bar position.
     wxApp *app = wxTheApp;
-    
+
     wxWindow *frame = app->GetTopWindow();   // or GetOCPNCanvasWindow()->GetParent();
     if(!frame)
         return;
-    
+
     wxPoint p = frame->ScreenToClient(position);
     //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
     if (p.x + dialog->GetSize().GetX() > frame->GetClientSize().GetX())
@@ -425,7 +425,7 @@ void grib_pi::OnToolbarToolCallback(int id)
 
     double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn();
     if( scale_factor != m_GUIScaleFactor ) starting = true;
-    
+
     if(!m_pGribCtrlBar)
     {
         starting = true;
@@ -436,7 +436,7 @@ void grib_pi::OnToolbarToolCallback(int id)
         m_pGribCtrlBar = new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString, wxDefaultPosition,
                 wxDefaultSize, style, this);
 		m_pGribCtrlBar->SetScaledBitmap(scale_factor);
-        
+
         wxMenu* dummy = new wxMenu(_T("Plugin"));
         wxMenuItem* table = new wxMenuItem( dummy, wxID_ANY, wxString( _("Weather table") ), wxEmptyString, wxITEM_NORMAL );
 #ifdef __WXMSW__
@@ -495,12 +495,12 @@ void grib_pi::OnToolbarToolCallback(int id)
         // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle updated
         // to actual status to ensure correct status upon CtrlBar rebuild
         SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
-        
+
         // Do an automatic "zoom-to-center" on the overlay canvas if set in Preferences
         if( m_pGribCtrlBar && m_bZoomToCenterAtInit){
            m_pGribCtrlBar->DoZoomToCenter();
         }
- 
+
         RequestRefresh(m_parent_window); // refresh main window
     } else
        m_pGribCtrlBar->Close();
@@ -521,9 +521,9 @@ void grib_pi::OnGribCtrlBarClose()
 
 	if (::wxIsBusy()) ::wxEndBusyCursor();
 
-#ifdef __OCPN__ANDROID__        
-    m_DialogStyleChanged = true;       //  Force a delete of the control bar dialog    
-#endif        
+#ifdef __OCPN__ANDROID__
+    m_DialogStyleChanged = true;       //  Force a delete of the control bar dialog
+#endif
 
     if( m_DialogStyleChanged ) {
         m_pGribCtrlBar->Destroy();
@@ -545,7 +545,7 @@ bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex)
         return false;
 
     m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
-    
+
     if((canvasIndex > 0) || (GetCanvasCount() == 1)){
         m_pGribCtrlBar->SetViewPort( vp );
         if( m_pGribCtrlBar->pReq_Dialog )
@@ -574,13 +574,13 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp, int 
         if( m_pGribCtrlBar->pReq_Dialog )
             m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
     }
-    
+
     if( ::wxIsBusy() ) ::wxEndBusyCursor();
-    
+
     #ifdef __OCPN__ANDROID__
     m_pGribCtrlBar->Raise();    // Control bar should always be visible
     #endif
-    
+
     return true;
 }
 
@@ -748,18 +748,18 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         delete m_pLastTimelineSet;
         m_pLastTimelineSet = set;
     }
-    
+
     else if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
     {
         wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
-        
+
         if(m_pGribCtrlBar){
             m_pGribCtrlBar->OpenFileFromJSON(message_body);
-            
+
             m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body);
             m_pGribCtrlBar->m_OverlaySettings.Write();
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
-            
+
         }
     }
 }
@@ -877,9 +877,9 @@ void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
 }
 
 void GribPreferencesDialog::OnOKClick(wxCommandEvent& event)
-{ 
+{
     if(g_pi)
         g_pi->UpdatePrefs( this );
     Close();
-    
+
 }

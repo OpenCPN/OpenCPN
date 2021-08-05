@@ -127,21 +127,21 @@ wxString wxSVGAElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAltGlyphDefElement
 wxString wxSVGAltGlyphDefElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAltGlyphElement
 wxString wxSVGAltGlyphElement::GetAttribute(const wxString& attrName) const {
@@ -153,51 +153,51 @@ wxString wxSVGAltGlyphElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTextPositioningElement::GetAttribute(attrName);
   else if (wxSVGURIReference::HasAttribute(attrName))
     return wxSVGURIReference::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAltGlyphItemElement
 wxString wxSVGAltGlyphItemElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAnimateColorElement
 wxString wxSVGAnimateColorElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGAnimationElement::HasAttribute(attrName))
     return wxSVGAnimationElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAnimateElement
 wxString wxSVGAnimateElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGAnimationElement::HasAttribute(attrName))
     return wxSVGAnimationElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAnimateMotionElement
 wxString wxSVGAnimateMotionElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGAnimationElement::HasAttribute(attrName))
     return wxSVGAnimationElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAnimateTransformElement
 wxString wxSVGAnimateTransformElement::GetAttribute(const wxString& attrName) const {
@@ -218,31 +218,31 @@ wxString wxSVGAnimateTransformElement::GetAttribute(const wxString& attrName) co
     }
   else if (wxSVGAnimationElement::HasAttribute(attrName))
     return wxSVGAnimationElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAnimatedPathData
 wxString wxSVGAnimatedPathData::GetAttribute(const wxString& attrName) const {
   if (attrName == wxT("d"))
     return m_pathSegList.GetValueAsString();
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAnimatedPoints
 wxString wxSVGAnimatedPoints::GetAttribute(const wxString& attrName) const {
   if (attrName == wxT("points"))
     return m_points.GetValueAsString();
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGAnimationElement
 wxString wxSVGAnimationElement::GetAttribute(const wxString& attrName) const {
@@ -297,7 +297,7 @@ wxString wxSVGAnimationElement::GetAttribute(const wxString& attrName) const {
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGCircleElement
 wxString wxSVGCircleElement::GetAttribute(const wxString& attrName) const {
@@ -319,11 +319,11 @@ wxString wxSVGCircleElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGClipPathElement
 wxString wxSVGClipPathElement::GetAttribute(const wxString& attrName) const {
@@ -341,11 +341,11 @@ wxString wxSVGClipPathElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGColorProfileElement
 wxString wxSVGColorProfileElement::GetAttribute(const wxString& attrName) const {
@@ -359,11 +359,11 @@ wxString wxSVGColorProfileElement::GetAttribute(const wxString& attrName) const 
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGURIReference::HasAttribute(attrName))
     return wxSVGURIReference::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGComponentTransferFunctionElement
 wxString wxSVGComponentTransferFunctionElement::GetAttribute(const wxString& attrName) const {
@@ -396,11 +396,11 @@ wxString wxSVGComponentTransferFunctionElement::GetAttribute(const wxString& att
     return wxString::Format(wxT("%g"), m_offset.GetBaseVal());
   else if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGCursorElement
 wxString wxSVGCursorElement::GetAttribute(const wxString& attrName) const {
@@ -416,21 +416,21 @@ wxString wxSVGCursorElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTests::GetAttribute(attrName);
   else if (wxSVGExternalResourcesRequired::HasAttribute(attrName))
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGDefinitionSrcElement
 wxString wxSVGDefinitionSrcElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGDefsElement
 wxString wxSVGDefsElement::GetAttribute(const wxString& attrName) const {
@@ -446,11 +446,11 @@ wxString wxSVGDefsElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGDescElement
 wxString wxSVGDescElement::GetAttribute(const wxString& attrName) const {
@@ -460,21 +460,21 @@ wxString wxSVGDescElement::GetAttribute(const wxString& attrName) const {
     return wxSVGLangSpace::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGElement
 wxString wxSVGElement::GetAttribute(const wxString& attrName) const {
   if (attrName == wxT("id"))
     return m_id;
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGEllipseElement
 wxString wxSVGEllipseElement::GetAttribute(const wxString& attrName) const {
@@ -498,21 +498,21 @@ wxString wxSVGEllipseElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGExternalResourcesRequired
 wxString wxSVGExternalResourcesRequired::GetAttribute(const wxString& attrName) const {
   if (attrName == wxT("externalResourcesRequired"))
     return wxString::Format(wxT("%d"), (bool) m_externalResourcesRequired.GetBaseVal());
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEBlendElement
 wxString wxSVGFEBlendElement::GetAttribute(const wxString& attrName) const {
@@ -539,11 +539,11 @@ wxString wxSVGFEBlendElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEColorMatrixElement
 wxString wxSVGFEColorMatrixElement::GetAttribute(const wxString& attrName) const {
@@ -568,11 +568,11 @@ wxString wxSVGFEColorMatrixElement::GetAttribute(const wxString& attrName) const
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEComponentTransferElement
 wxString wxSVGFEComponentTransferElement::GetAttribute(const wxString& attrName) const {
@@ -582,11 +582,11 @@ wxString wxSVGFEComponentTransferElement::GetAttribute(const wxString& attrName)
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFECompositeElement
 wxString wxSVGFECompositeElement::GetAttribute(const wxString& attrName) const {
@@ -623,11 +623,11 @@ wxString wxSVGFECompositeElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEConvolveMatrixElement
 wxString wxSVGFEConvolveMatrixElement::GetAttribute(const wxString& attrName) const {
@@ -658,11 +658,11 @@ wxString wxSVGFEConvolveMatrixElement::GetAttribute(const wxString& attrName) co
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEDiffuseLightingElement
 wxString wxSVGFEDiffuseLightingElement::GetAttribute(const wxString& attrName) const {
@@ -676,11 +676,11 @@ wxString wxSVGFEDiffuseLightingElement::GetAttribute(const wxString& attrName) c
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEDisplacementMapElement
 wxString wxSVGFEDisplacementMapElement::GetAttribute(const wxString& attrName) const {
@@ -720,11 +720,11 @@ wxString wxSVGFEDisplacementMapElement::GetAttribute(const wxString& attrName) c
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEDistantLightElement
 wxString wxSVGFEDistantLightElement::GetAttribute(const wxString& attrName) const {
@@ -734,11 +734,11 @@ wxString wxSVGFEDistantLightElement::GetAttribute(const wxString& attrName) cons
     return wxString::Format(wxT("%g"), m_elevation.GetBaseVal());
   else if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEFloodElement
 wxString wxSVGFEFloodElement::GetAttribute(const wxString& attrName) const {
@@ -748,51 +748,51 @@ wxString wxSVGFEFloodElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEFuncAElement
 wxString wxSVGFEFuncAElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGComponentTransferFunctionElement::HasAttribute(attrName))
     return wxSVGComponentTransferFunctionElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEFuncBElement
 wxString wxSVGFEFuncBElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGComponentTransferFunctionElement::HasAttribute(attrName))
     return wxSVGComponentTransferFunctionElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEFuncGElement
 wxString wxSVGFEFuncGElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGComponentTransferFunctionElement::HasAttribute(attrName))
     return wxSVGComponentTransferFunctionElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEFuncRElement
 wxString wxSVGFEFuncRElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGComponentTransferFunctionElement::HasAttribute(attrName))
     return wxSVGComponentTransferFunctionElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEGaussianBlurElement
 wxString wxSVGFEGaussianBlurElement::GetAttribute(const wxString& attrName) const {
@@ -808,7 +808,7 @@ wxString wxSVGFEGaussianBlurElement::GetAttribute(const wxString& attrName) cons
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEImageElement
 wxString wxSVGFEImageElement::GetAttribute(const wxString& attrName) const {
@@ -822,11 +822,11 @@ wxString wxSVGFEImageElement::GetAttribute(const wxString& attrName) const {
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEMergeElement
 wxString wxSVGFEMergeElement::GetAttribute(const wxString& attrName) const {
@@ -834,11 +834,11 @@ wxString wxSVGFEMergeElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEMergeNodeElement
 wxString wxSVGFEMergeNodeElement::GetAttribute(const wxString& attrName) const {
@@ -846,11 +846,11 @@ wxString wxSVGFEMergeNodeElement::GetAttribute(const wxString& attrName) const {
     return m_in1.GetBaseVal();
   else if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEMorphologyElement
 wxString wxSVGFEMorphologyElement::GetAttribute(const wxString& attrName) const {
@@ -869,11 +869,11 @@ wxString wxSVGFEMorphologyElement::GetAttribute(const wxString& attrName) const 
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEOffsetElement
 wxString wxSVGFEOffsetElement::GetAttribute(const wxString& attrName) const {
@@ -887,11 +887,11 @@ wxString wxSVGFEOffsetElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFEPointLightElement
 wxString wxSVGFEPointLightElement::GetAttribute(const wxString& attrName) const {
@@ -903,11 +903,11 @@ wxString wxSVGFEPointLightElement::GetAttribute(const wxString& attrName) const 
     return wxString::Format(wxT("%g"), m_z.GetBaseVal());
   else if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFESpecularLightingElement
 wxString wxSVGFESpecularLightingElement::GetAttribute(const wxString& attrName) const {
@@ -923,11 +923,11 @@ wxString wxSVGFESpecularLightingElement::GetAttribute(const wxString& attrName) 
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFESpotLightElement
 wxString wxSVGFESpotLightElement::GetAttribute(const wxString& attrName) const {
@@ -949,11 +949,11 @@ wxString wxSVGFESpotLightElement::GetAttribute(const wxString& attrName) const {
     return wxString::Format(wxT("%g"), m_limitingConeAngle.GetBaseVal());
   else if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFETileElement
 wxString wxSVGFETileElement::GetAttribute(const wxString& attrName) const {
@@ -963,11 +963,11 @@ wxString wxSVGFETileElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFETurbulenceElement
 wxString wxSVGFETurbulenceElement::GetAttribute(const wxString& attrName) const {
@@ -997,11 +997,11 @@ wxString wxSVGFETurbulenceElement::GetAttribute(const wxString& attrName) const 
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGFilterPrimitiveStandardAttributes::HasAttribute(attrName))
     return wxSVGFilterPrimitiveStandardAttributes::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFilterElement
 wxString wxSVGFilterElement::GetAttribute(const wxString& attrName) const {
@@ -1027,11 +1027,11 @@ wxString wxSVGFilterElement::GetAttribute(const wxString& attrName) const {
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFilterPrimitiveStandardAttributes
 wxString wxSVGFilterPrimitiveStandardAttributes::GetAttribute(const wxString& attrName) const {
@@ -1047,11 +1047,11 @@ wxString wxSVGFilterPrimitiveStandardAttributes::GetAttribute(const wxString& at
     return m_result.GetBaseVal();
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFitToViewBox
 wxString wxSVGFitToViewBox::GetAttribute(const wxString& attrName) const {
@@ -1059,11 +1059,11 @@ wxString wxSVGFitToViewBox::GetAttribute(const wxString& attrName) const {
     return m_viewBox.GetBaseVal().GetValueAsString();
   else if (attrName == wxT("preserveAspectRatio"))
     return m_preserveAspectRatio.GetBaseVal().GetValueAsString();
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFontElement
 wxString wxSVGFontElement::GetAttribute(const wxString& attrName) const {
@@ -1073,61 +1073,61 @@ wxString wxSVGFontElement::GetAttribute(const wxString& attrName) const {
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFontFaceElement
 wxString wxSVGFontFaceElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFontFaceFormatElement
 wxString wxSVGFontFaceFormatElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFontFaceNameElement
 wxString wxSVGFontFaceNameElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFontFaceSrcElement
 wxString wxSVGFontFaceSrcElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGFontFaceUriElement
 wxString wxSVGFontFaceUriElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGForeignObjectElement
 wxString wxSVGForeignObjectElement::GetAttribute(const wxString& attrName) const {
@@ -1151,11 +1151,11 @@ wxString wxSVGForeignObjectElement::GetAttribute(const wxString& attrName) const
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGGElement
 wxString wxSVGGElement::GetAttribute(const wxString& attrName) const {
@@ -1171,11 +1171,11 @@ wxString wxSVGGElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGGlyphElement
 wxString wxSVGGlyphElement::GetAttribute(const wxString& attrName) const {
@@ -1183,11 +1183,11 @@ wxString wxSVGGlyphElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGGlyphRefElement
 wxString wxSVGGlyphRefElement::GetAttribute(const wxString& attrName) const {
@@ -1209,11 +1209,11 @@ wxString wxSVGGlyphRefElement::GetAttribute(const wxString& attrName) const {
     return wxSVGURIReference::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGGradientElement
 wxString wxSVGGradientElement::GetAttribute(const wxString& attrName) const {
@@ -1246,21 +1246,21 @@ wxString wxSVGGradientElement::GetAttribute(const wxString& attrName) const {
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGHKernElement
 wxString wxSVGHKernElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGImageElement
 wxString wxSVGImageElement::GetAttribute(const wxString& attrName) const {
@@ -1288,11 +1288,11 @@ wxString wxSVGImageElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGLangSpace
 wxString wxSVGLangSpace::GetAttribute(const wxString& attrName) const {
@@ -1300,11 +1300,11 @@ wxString wxSVGLangSpace::GetAttribute(const wxString& attrName) const {
     return m_xmllang;
   else if (attrName == wxT("xml:space"))
     return m_xmlspace;
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGLineElement
 wxString wxSVGLineElement::GetAttribute(const wxString& attrName) const {
@@ -1328,11 +1328,11 @@ wxString wxSVGLineElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGLinearGradientElement
 wxString wxSVGLinearGradientElement::GetAttribute(const wxString& attrName) const {
@@ -1346,11 +1346,11 @@ wxString wxSVGLinearGradientElement::GetAttribute(const wxString& attrName) cons
     return m_y2.GetBaseVal().GetValueAsString();
   else if (wxSVGGradientElement::HasAttribute(attrName))
     return wxSVGGradientElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGMPathElement
 wxString wxSVGMPathElement::GetAttribute(const wxString& attrName) const {
@@ -1360,11 +1360,11 @@ wxString wxSVGMPathElement::GetAttribute(const wxString& attrName) const {
     return wxSVGURIReference::GetAttribute(attrName);
   else if (wxSVGExternalResourcesRequired::HasAttribute(attrName))
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGMarkerElement
 wxString wxSVGMarkerElement::GetAttribute(const wxString& attrName) const {
@@ -1395,11 +1395,11 @@ wxString wxSVGMarkerElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGFitToViewBox::HasAttribute(attrName))
     return wxSVGFitToViewBox::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGMaskElement
 wxString wxSVGMaskElement::GetAttribute(const wxString& attrName) const {
@@ -1425,21 +1425,21 @@ wxString wxSVGMaskElement::GetAttribute(const wxString& attrName) const {
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGMetadataElement
 wxString wxSVGMetadataElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGMissingGlyphElement
 wxString wxSVGMissingGlyphElement::GetAttribute(const wxString& attrName) const {
@@ -1447,11 +1447,11 @@ wxString wxSVGMissingGlyphElement::GetAttribute(const wxString& attrName) const 
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGPathElement
 wxString wxSVGPathElement::GetAttribute(const wxString& attrName) const {
@@ -1471,11 +1471,11 @@ wxString wxSVGPathElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTransformable::GetAttribute(attrName);
   else if (wxSVGAnimatedPathData::HasAttribute(attrName))
     return wxSVGAnimatedPathData::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGPatternElement
 wxString wxSVGPatternElement::GetAttribute(const wxString& attrName) const {
@@ -1507,11 +1507,11 @@ wxString wxSVGPatternElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGFitToViewBox::HasAttribute(attrName))
     return wxSVGFitToViewBox::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGPolygonElement
 wxString wxSVGPolygonElement::GetAttribute(const wxString& attrName) const {
@@ -1529,11 +1529,11 @@ wxString wxSVGPolygonElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTransformable::GetAttribute(attrName);
   else if (wxSVGAnimatedPoints::HasAttribute(attrName))
     return wxSVGAnimatedPoints::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGPolylineElement
 wxString wxSVGPolylineElement::GetAttribute(const wxString& attrName) const {
@@ -1551,11 +1551,11 @@ wxString wxSVGPolylineElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTransformable::GetAttribute(attrName);
   else if (wxSVGAnimatedPoints::HasAttribute(attrName))
     return wxSVGAnimatedPoints::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGRadialGradientElement
 wxString wxSVGRadialGradientElement::GetAttribute(const wxString& attrName) const {
@@ -1571,11 +1571,11 @@ wxString wxSVGRadialGradientElement::GetAttribute(const wxString& attrName) cons
     return m_fy.GetBaseVal().GetValueAsString();
   else if (wxSVGGradientElement::HasAttribute(attrName))
     return wxSVGGradientElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGRectElement
 wxString wxSVGRectElement::GetAttribute(const wxString& attrName) const {
@@ -1603,11 +1603,11 @@ wxString wxSVGRectElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGSVGElement
 wxString wxSVGSVGElement::GetAttribute(const wxString& attrName) const {
@@ -1637,11 +1637,11 @@ wxString wxSVGSVGElement::GetAttribute(const wxString& attrName) const {
     return wxSVGFitToViewBox::GetAttribute(attrName);
   else if (wxSVGZoomAndPan::HasAttribute(attrName))
     return wxSVGZoomAndPan::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGScriptElement
 wxString wxSVGScriptElement::GetAttribute(const wxString& attrName) const {
@@ -1653,21 +1653,21 @@ wxString wxSVGScriptElement::GetAttribute(const wxString& attrName) const {
     return wxSVGURIReference::GetAttribute(attrName);
   else if (wxSVGExternalResourcesRequired::HasAttribute(attrName))
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGSetElement
 wxString wxSVGSetElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGAnimationElement::HasAttribute(attrName))
     return wxSVGAnimationElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGStopElement
 wxString wxSVGStopElement::GetAttribute(const wxString& attrName) const {
@@ -1677,11 +1677,11 @@ wxString wxSVGStopElement::GetAttribute(const wxString& attrName) const {
     return wxSVGElement::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGStylable
 wxString wxSVGStylable::GetAttribute(const wxString& attrName) const {
@@ -1695,7 +1695,7 @@ wxString wxSVGStylable::GetAttribute(const wxString& attrName) const {
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGStyleElement
 wxString wxSVGStyleElement::GetAttribute(const wxString& attrName) const {
@@ -1709,11 +1709,11 @@ wxString wxSVGStyleElement::GetAttribute(const wxString& attrName) const {
     return m_title;
   else if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGSwitchElement
 wxString wxSVGSwitchElement::GetAttribute(const wxString& attrName) const {
@@ -1729,11 +1729,11 @@ wxString wxSVGSwitchElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGSymbolElement
 wxString wxSVGSymbolElement::GetAttribute(const wxString& attrName) const {
@@ -1747,21 +1747,21 @@ wxString wxSVGSymbolElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGFitToViewBox::HasAttribute(attrName))
     return wxSVGFitToViewBox::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTBreakElement
 wxString wxSVGTBreakElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTRefElement
 wxString wxSVGTRefElement::GetAttribute(const wxString& attrName) const {
@@ -1769,21 +1769,21 @@ wxString wxSVGTRefElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTextPositioningElement::GetAttribute(attrName);
   else if (wxSVGURIReference::HasAttribute(attrName))
     return wxSVGURIReference::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTSpanElement
 wxString wxSVGTSpanElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGTextPositioningElement::HasAttribute(attrName))
     return wxSVGTextPositioningElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTests
 wxString wxSVGTests::GetAttribute(const wxString& attrName) const {
@@ -1793,11 +1793,11 @@ wxString wxSVGTests::GetAttribute(const wxString& attrName) const {
     return m_requiredExtensions.GetValueAsString();
   else if (attrName == wxT("systemLanguage"))
     return m_systemLanguage.GetValueAsString();
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTextContentElement
 wxString wxSVGTextContentElement::GetAttribute(const wxString& attrName) const {
@@ -1822,11 +1822,11 @@ wxString wxSVGTextContentElement::GetAttribute(const wxString& attrName) const {
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTextElement
 wxString wxSVGTextElement::GetAttribute(const wxString& attrName) const {
@@ -1834,11 +1834,11 @@ wxString wxSVGTextElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTextPositioningElement::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTextPathElement
 wxString wxSVGTextPathElement::GetAttribute(const wxString& attrName) const {
@@ -1866,11 +1866,11 @@ wxString wxSVGTextPathElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTextContentElement::GetAttribute(attrName);
   else if (wxSVGURIReference::HasAttribute(attrName))
     return wxSVGURIReference::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTextPositioningElement
 wxString wxSVGTextPositioningElement::GetAttribute(const wxString& attrName) const {
@@ -1886,11 +1886,11 @@ wxString wxSVGTextPositioningElement::GetAttribute(const wxString& attrName) con
     return m_rotate.GetBaseVal().GetValueAsString();
   else if (wxSVGTextContentElement::HasAttribute(attrName))
     return wxSVGTextContentElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTitleElement
 wxString wxSVGTitleElement::GetAttribute(const wxString& attrName) const {
@@ -1900,31 +1900,31 @@ wxString wxSVGTitleElement::GetAttribute(const wxString& attrName) const {
     return wxSVGLangSpace::GetAttribute(attrName);
   else if (wxSVGStylable::HasAttribute(attrName))
     return wxSVGStylable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGTransformable
 wxString wxSVGTransformable::GetAttribute(const wxString& attrName) const {
   if (attrName == wxT("transform"))
     return m_transform.GetBaseVal().GetValueAsString();
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGURIReference
 wxString wxSVGURIReference::GetAttribute(const wxString& attrName) const {
   if (attrName == wxT("xlink:href"))
     return m_href.GetBaseVal();
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGUseElement
 wxString wxSVGUseElement::GetAttribute(const wxString& attrName) const {
@@ -1950,21 +1950,21 @@ wxString wxSVGUseElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGVKernElement
 wxString wxSVGVKernElement::GetAttribute(const wxString& attrName) const {
   if (wxSVGElement::HasAttribute(attrName))
     return wxSVGElement::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGVideoElement
 wxString wxSVGVideoElement::GetAttribute(const wxString& attrName) const {
@@ -1996,11 +1996,11 @@ wxString wxSVGVideoElement::GetAttribute(const wxString& attrName) const {
     return wxSVGStylable::GetAttribute(attrName);
   else if (wxSVGTransformable::HasAttribute(attrName))
     return wxSVGTransformable::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGViewElement
 wxString wxSVGViewElement::GetAttribute(const wxString& attrName) const {
@@ -2014,11 +2014,11 @@ wxString wxSVGViewElement::GetAttribute(const wxString& attrName) const {
     return wxSVGFitToViewBox::GetAttribute(attrName);
   else if (wxSVGZoomAndPan::HasAttribute(attrName))
     return wxSVGZoomAndPan::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGViewSpec
 wxString wxSVGViewSpec::GetAttribute(const wxString& attrName) const {
@@ -2026,11 +2026,11 @@ wxString wxSVGViewSpec::GetAttribute(const wxString& attrName) const {
     return wxSVGZoomAndPan::GetAttribute(attrName);
   else if (wxSVGFitToViewBox::HasAttribute(attrName))
     return wxSVGFitToViewBox::GetAttribute(attrName);
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 
 // wxSVGZoomAndPan
 wxString wxSVGZoomAndPan::GetAttribute(const wxString& attrName) const {
@@ -2043,9 +2043,9 @@ wxString wxSVGZoomAndPan::GetAttribute(const wxString& attrName) const {
     default:
       return wxT("");
     }
-  else 
+  else
     return wxT("");
 
   return wxT("");
-}      
+}
 

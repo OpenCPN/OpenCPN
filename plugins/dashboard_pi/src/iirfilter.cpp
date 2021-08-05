@@ -30,12 +30,12 @@ double iirfilter::filter(double data) {
                 unwrapDeg(data);
                 accum = accum * b1 + a0 * (oldDeg + 360.0*wraps);
                 break;
-                   
+
             case IIRFILTER_TYPE_RAD:
                 unwrapRad(data);
                 accum = accum * b1 + a0 * (oldRad + 2.0*M_PI*wraps);
                 break;
-                    
+
             default:
                 wxASSERT(false);
         }
@@ -90,7 +90,7 @@ double iirfilter::get(void) {
             while (res < 0) res += 360.0;
             while (res > 360) res -= 360.0;
             break;
-                
+
         case IIRFILTER_TYPE_RAD:
             while (res < 0) res += 2.0*M_PI;
             while (res > 2.0*M_PI) res -= 2.0*M_PI;

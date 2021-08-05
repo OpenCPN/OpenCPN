@@ -178,7 +178,7 @@ unsigned int wxSVGCanvas::GetGradientStops(const wxSVGSVGElement& svgElem, wxSVG
 
 	// Allocate enough stops
 	AllocateGradientStops(stop_count);
-	
+
 	// Fill the stops
 	stop_elem = (wxSVGStopElement*) gradElem->GetChildren();
 	int i = 0;
@@ -202,7 +202,7 @@ void wxSVGCanvas::GetLinearGradientVector(wxSVGPoint& p1, wxSVGPoint& p2, const 
 	p1.SetY(gradElem.GetY1().GetAnimVal());
 	p2.SetX(gradElem.GetX2().GetAnimVal());
 	p2.SetY(gradElem.GetY2().GetAnimVal());
-    
+
     if (gradElem.GetGradientUnits().GetAnimVal() == wxSVG_UNIT_TYPE_UNKNOWN ||
         gradElem.GetGradientUnits().GetAnimVal() == wxSVG_UNIT_TYPE_OBJECTBOUNDINGBOX)
     {
@@ -212,13 +212,13 @@ void wxSVGCanvas::GetLinearGradientVector(wxSVGPoint& p1, wxSVGPoint& p2, const 
         p2.SetX(bbox.GetX() + p2.GetX()*bbox.GetWidth());
         p2.SetY(bbox.GetY() + p2.GetY()*bbox.GetHeight());
     }
-    
+
 	// Compute gradient transformation matrix
     wxSVGMatrix lg_matrix;
 	const wxSVGTransformList& transforms =  gradElem.GetGradientTransform().GetAnimVal();
 	for (int i=0; i<(int)transforms.Count(); i++)
         lg_matrix = lg_matrix.Multiply(transforms[i].GetMatrix());
-	
+
 	p1 = p1.MatrixTransform(lg_matrix);
 	p2 = p2.MatrixTransform(lg_matrix);
 }
@@ -234,7 +234,7 @@ void wxSVGCanvas::GetRadialGradientTransform(wxSVGPoint& focus,
 	cy = gradElem.GetCy().GetAnimVal();
 	fx = gradElem.GetFx().GetAnimVal();
 	fy = gradElem.GetFy().GetAnimVal();
-    
+
     if (gradElem.GetGradientUnits().GetAnimVal() == wxSVG_UNIT_TYPE_UNKNOWN ||
         gradElem.GetGradientUnits().GetAnimVal() == wxSVG_UNIT_TYPE_OBJECTBOUNDINGBOX)
     {
@@ -250,12 +250,12 @@ void wxSVGCanvas::GetRadialGradientTransform(wxSVGPoint& focus,
 	const wxSVGTransformList& transforms =  gradElem.GetGradientTransform().GetAnimVal();
 	for (int i=0; i<(int)transforms.Count(); i++)
 		matrix = matrix.Multiply(transforms[i].GetMatrix());
-	
+
 	// Apply Gradient parameters to transformation
 	matrix = matrix.Translate(cx, cy); //.Scale(r);
     if (scale)
       matrix = matrix.Scale(r);
-	
+
 	// Change Focus reference to gradient reference
 	focus.SetX((fx - cx) / r);
 	focus.SetY((fy - cy) / r);

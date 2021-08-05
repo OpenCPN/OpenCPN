@@ -135,7 +135,7 @@ extern GLuint g_raster_format;
 #include "udev_rule_mgr.h"
 #endif
 
-#if !defined(__WXOSX__)  
+#if !defined(__WXOSX__)
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
 #else
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS
@@ -472,13 +472,13 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
     #ifdef ocpnUSE_SVG
 #ifdef __OCPN__ANDROID__
     return loadAndroidSVG( filename, width, height );
-#else    
+#else
     wxSVGDocument svgDoc;
     if( svgDoc.Load(filename) )
         return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
     else
         return wxBitmap(width, height);
-#endif    
+#endif
     #else
         return wxBitmap(width, height);
         #endif // ocpnUSE_SVG
@@ -584,10 +584,10 @@ unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable) {
   cb->Enable(benable);
   cb->SetValue(!benable);
   m_sizer->Add(cb);
-  m_sizer->Layout();  
-  
+  m_sizer->Layout();
+
   m_list.Append(cb);
-  
+
   return m_list.GetCount() - 1;
 }
 
@@ -642,25 +642,25 @@ ConfigCreateDialog::ConfigCreateDialog(wxWindow* parent,
     GetSizer()->SetSizeHints(this);
     Centre();
 }
-           
+
 ConfigCreateDialog::~ConfigCreateDialog(void)
 {
 }
-           
+
 void ConfigCreateDialog::CreateControls(void)
 {
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(mainSizer);
-    
+
     mainSizer->Add(new wxStaticText(this, wxID_STATIC, _("Title")), 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-    
+
     m_TitleCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,  wxDefaultPosition, wxSize(40 * GetCharHeight(), -1), 0);
     mainSizer->Add(m_TitleCtl, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
 
     mainSizer->AddSpacer(2 * GetCharHeight());
-    
+
     mainSizer->Add(new wxStaticText(this, wxID_STATIC, _("Description")), 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-    
+
     m_DescriptionCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,  wxDefaultPosition, wxSize(-1, 6 * GetCharHeight()), wxTE_MULTILINE);
     mainSizer->Add(m_DescriptionCtl, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
 
@@ -669,37 +669,37 @@ void ConfigCreateDialog::CreateControls(void)
     mainSizer->Add(new wxStaticText(this, wxID_STATIC,
                                     _("Create a private configuration template based on current settings.\n\
 This template will be saved, and may be selected for further use at any time.\n\
-               ")),            
+               ")),
                0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-    
+
     mainSizer->AddSpacer(2 * GetCharHeight());
-    
+
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     mainSizer->Add(btnSizer, 0, wxALIGN_RIGHT | wxALL, 5);
-    
+
     m_CancelButton = new wxButton(this, ID_CONFIGEDIT_CANCEL, _("Cancel"));
     btnSizer->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-    
+
     m_OKButton = new wxButton(this, ID_CONFIGEDIT_OK, _("OK"));
     btnSizer->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
     m_OKButton->SetDefault();
-    
+
 }
-               
+
 void ConfigCreateDialog::OnConfigEditCancelClick(wxCommandEvent& event)
 {
     EndModal(wxID_CANCEL);
 }
-               
+
 void ConfigCreateDialog::OnConfigEditOKClick(wxCommandEvent& event)
 {
     const wxString &title = m_TitleCtl->GetValue();
     const wxString &desc = m_DescriptionCtl->GetValue();
     m_createdTemplateGUID = ConfigMgr::Get().CreateNamedConfig(title, desc, _T(""));
     EndModal(wxID_OK);
-    
+
 }
-                   
+
 
 
 
@@ -769,7 +769,7 @@ void MMSIEditDialog::CreateControls(void) {
 
   m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
   mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
-  
+
   m_MOBButton = new wxCheckBox(this, wxID_ANY,
                                _("Handle this MMSI as SART/PLB(AIS) MOB."));
   mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
@@ -833,7 +833,7 @@ void MMSIEditDialog::Persist() {
         m_props->TrackType = TRACKTYPE_ALWAYS;
     else
         m_props->TrackType = TRACKTYPE_NEVER;
-    
+
     m_props->m_bignore = m_IgnoreButton->GetValue();
     m_props->m_bMOB = m_MOBButton->GetValue();
     m_props->m_bVDM = m_VDMButton->GetValue();
@@ -860,13 +860,13 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_MMSICtl->GetValue().ToLong(&nmmsi);
     m_props->MMSI = nmmsi;
     Persist();
-    
-      
+
+
     if (m_MMSICtl->GetValue().Length() != 9)
     {
         OCPNMessageDialog* dlg = new OCPNMessageDialog(this,
             _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."), _("OpenCPN Info"), wxOK | wxCANCEL);
-        
+
         dlg->ShowWindowModalThenDo([this,dlg](int retcode){
             if ( retcode == wxID_OK ) {
                 Persist();
@@ -995,7 +995,7 @@ void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
   int context_item = m_context_item;
   MMSIProperties* props = g_MMSI_Props_Array[context_item];
 
-  if (!props) 
+  if (!props)
       return;
 
   switch (event.GetId()) {
@@ -1060,7 +1060,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
     width = wxMin(width, dx * 13);
   }
   m_pListCtrlMMSI->InsertColumn(tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
-  
+
   s_width = tkz.GetNextToken();
   width = dx * 12;
   if (s_width.ToLong(&lwidth)) {
@@ -1103,13 +1103,13 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ship name"), wxLIST_FORMAT_CENTER, width);
 
   s_width = tkz.GetNextToken();
-  width = dx * 8;  
+  width = dx * 8;
   if (s_width.ToLong(&lwidth)) {
       width = wxMax(dx * 2, lwidth);
       width = wxMin(width, dx * 10);
   }
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER, width);  //Has
-  
+
   topSizer->Add(m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0);
 
   m_pButtonNew = new wxButton(this, wxID_ANY, _("New..."), wxDefaultPosition,
@@ -1187,34 +1187,34 @@ void MMSI_Props_Panel::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
 
 //WX_DECLARE_OBJARRAY(wxBitmap,      ArrayOfBitmaps);
-//#include <wx/arrimpl.cpp> 
+//#include <wx/arrimpl.cpp>
 //WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
 class  OCPNFatCombo : public wxOwnerDrawnComboBox
 {
 public:
-    
+
     OCPNFatCombo();
-    
+
     OCPNFatCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
                   const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
                   int n = 0, const wxString choices[] = NULL,
                   long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = _T("OCPNFatCombo") );
-    
-    
-    
+
+
+
     ~OCPNFatCombo ();
-    
+
     void OnDrawItem(wxDC& dc, const wxRect& rect, int item, int flags) const;
     wxCoord OnMeasureItem(size_t item) const;
     wxCoord OnMeasureItemWidth(size_t item) const;
     bool SetFont(const wxFont& font);
-    
+
     int Append(const wxString& item, wxBitmap bmp);
     void Clear( void );
- 
+
     const wxFont *dfont;
-    
+
 private:
     int         itemHeight;
     ArrayOfBitmaps  bmpArray;
@@ -1223,7 +1223,7 @@ private:
 
 OCPNFatCombo::OCPNFatCombo()
     :wxOwnerDrawnComboBox(){}
-    
+
 OCPNFatCombo::OCPNFatCombo (wxWindow* parent, wxWindowID id, const wxString& value,
                                   const wxPoint& pos, const wxSize& size, int n, const wxString choices[],
                                   long style, const wxValidator& validator, const wxString& name)
@@ -1249,7 +1249,7 @@ void OCPNFatCombo::OnDrawItem( wxDC& dc,
                                        int item,
                                        int flags ) const
 {
-    
+
     int offset_x =  10;
 //    dc.DrawBitmap(bmpArray.Item(item), rect.x, rect.y + (rect.height - bmpHeight)/2, true);
     dc.SetFont(*dfont);
@@ -1261,7 +1261,7 @@ void OCPNFatCombo::OnDrawItem( wxDC& dc,
     dc.DrawRectangle(0, 0, rect.width, rect.height);
     dc.SetBrush(sv);
     dc.SetTextForeground(wxColour(0, 0, 0));
-    
+
     if ( flags & wxODCB_PAINTING_CONTROL )
     {
         wxString text = GetValue();
@@ -1282,7 +1282,7 @@ wxCoord OCPNFatCombo::OnMeasureItem( size_t item ) const
 {
     if(item < bmpArray.GetCount())
         return wxMax(itemHeight, bmpArray.Item(item).GetHeight());
-    
+
     return itemHeight * 12 /10;
 }
 
@@ -1295,7 +1295,7 @@ int OCPNFatCombo::Append(const wxString& item, wxBitmap bmp)
 {
     bmpArray.Add(bmp);
     int idx = wxOwnerDrawnComboBox::Append(item);
-    
+
     return idx;
 }
 
@@ -1304,7 +1304,7 @@ void OCPNFatCombo::Clear( void )
     wxOwnerDrawnComboBox::Clear();
     bmpArray.Clear();
 }
-    
+
 
 
 
@@ -1377,39 +1377,39 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
 }
 
 options::~options(void) {
-    
+
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
     if (nb)
         nb->Disconnect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                                     wxListbookEventHandler(options::OnChartsPageChange),
                                     NULL, this);
-        
+
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
   delete groupsPanel;
-  
+
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
-  
+
   // Take care of the plugin manager...
- 
+
   delete m_pPlugInCtrl;
   if(g_pi_manager)
     g_pi_manager->SetListPanelPtr( NULL );
-#ifndef __OCPN__ANDROID__      
+#ifndef __OCPN__ANDROID__
   delete m_PluginCatalogMgrPanel;
 #endif
-  
+
 }
 
 // with AIS it's called very often
 #if wxCHECK_VERSION(3,0,0)
-bool options::SendIdleEvents(wxIdleEvent &event )  { 
+bool options::SendIdleEvents(wxIdleEvent &event )  {
     if (IsShown())
        return wxDialog::SendIdleEvents(event);
    return false;
 }
-#endif    
+#endif
 
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
@@ -1423,7 +1423,7 @@ void options::RecalculateSize(void) {
 
     Fit();
     m_nCharWidthMax = GetSize().x / GetCharWidth();
-    
+
     return;
   }
 
@@ -1442,7 +1442,7 @@ void options::RecalculateSize(void) {
   int xp = (canvas_size.x - fsize.x) / 2;
   int yp = (canvas_size.y - fsize.y) / 2;
   Move(screen_pos.x + xp, screen_pos.y + yp);
-  
+
   m_nCharWidthMax = GetSize().x / GetCharWidth();
 }
 
@@ -1464,7 +1464,7 @@ void options::Init(void) {
   k_plugins = 0;
   k_tides = 0;
   m_pConfig = NULL;
-  
+
   pSoundDeviceIndex = NULL;
 
   pCBNorthUp = NULL;
@@ -1479,7 +1479,7 @@ void options::Init(void) {
   pSDepthUnits = NULL;
   pSLiveETA = NULL;
   pSDefaultBoatSpeed = NULL;
-  
+
   activeSizer = NULL;
   itemActiveChartStaticBox = NULL;
 
@@ -1490,7 +1490,7 @@ void options::Init(void) {
   pCheck_ATONTEXT = NULL;
   pCheck_LDISTEXT = NULL;
   pCheck_XLSECTTEXT = NULL;
-  
+
   m_bVisitLang = FALSE;
   m_itemFontElementListBox = NULL;
   m_textSample = NULL;
@@ -1514,18 +1514,18 @@ void options::Init(void) {
 
   b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
   b_oldhaveWMM = b_haveWMM;
-  
+
   lastPage = 0;
   m_bneedNew =false;
 
   m_cs = (ColorScheme) 0;
-  
+
   // for deferred loading
   m_pPlugInCtrl = NULL;
   m_PluginCatalogMgrPanel = NULL;
   m_pNMEAForm = NULL;
   mSelectedConnection = NULL;
-  
+
 #ifdef __OCPN__ANDROID__
   m_scrollRate = 1;
 #else
@@ -1536,12 +1536,12 @@ void options::Init(void) {
   m_BTscanning = 0;
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
-  
+
   dialogFontPlus =  new wxFont(*dialogFont);  // we can't use Smaller() because wx2.8 doesn't support it
   dialogFontPlus->SetPointSize((dialogFontPlus->GetPointSize() * 1.2) +  0.5);  // + 0.5 to round instead of truncate
   dialogFontPlus->SetWeight(wxFONTWEIGHT_BOLD);
 
-  
+
   m_bVectorInit = false;
 
   // This variable is used by plugin callback function AddOptionsPage
@@ -1553,7 +1553,7 @@ void options::Init(void) {
   m_bcompact = true;
 #endif
   pCmdSoundString = NULL;
-  
+
   m_sconfigSelect_single = NULL;
   m_sconfigSelect_twovertical = NULL;
 
@@ -1682,7 +1682,7 @@ bool options::DeletePluginPage(wxScrolledWindow* page) {
             wxString toptitle = m_pListbook->GetPageText(i);
             m_pListbook->DeletePage(i);
             m_pListbook->InsertPage(i, spg, toptitle, FALSE, i);
-            return TRUE;    
+            return TRUE;
         }
       }
     } else if (pg == page) {
@@ -2256,7 +2256,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                            wxCommandEventHandler(options::OnValChange), NULL,
                            this);
 
-#if 0  
+#if 0
   m_lcSources->Connect(wxEVT_LEFT_DOWN,
                        wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
                        NULL, this);
@@ -2304,7 +2304,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_lcSources->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
 
   m_lcSources->Refresh();
-#endif  
+#endif
   FillSourceList();
 
   ShowNMEACommon(FALSE);
@@ -2396,9 +2396,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
       new wxStaticBox(m_pNMEAForm, wxID_ANY, _("Data Connections")),
       wxVERTICAL);
 
-  
-  
-/*  
+
+
+/*
   wxBoxSizer* bSizer17;
   bSizer17 = new wxBoxSizer(wxVERTICAL);
 
@@ -2409,21 +2409,21 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   wxPanel *cPanel = new wxPanel(m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBG_STYLE_ERASE );
   sbSizerLB->Add(cPanel, 0, wxALL|wxEXPAND, 5);
-  
+
   wxBoxSizer *boxSizercPanel = new wxBoxSizer(wxVERTICAL);
   cPanel->SetSizer(boxSizercPanel);
-    
+
   m_scrollWinConnections = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,80)), wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE );
   m_scrollWinConnections->SetScrollRate(5, 5);
   boxSizercPanel->Add(m_scrollWinConnections, 0, wxALL|wxEXPAND, 5);
-    
+
   boxSizerConnections = new wxBoxSizer(wxVERTICAL);
   m_scrollWinConnections->SetSizer(boxSizerConnections);
 
-  
+
   bSizerOuterContainer->Add(sbSizerLB, 0, wxEXPAND, 5);
 
-  
+
   wxBoxSizer* bSizer18;
   bSizer18 = new wxBoxSizer(wxHORIZONTAL);
   sbSizerLB->Add(bSizer18, 1, wxEXPAND, 5);
@@ -2436,24 +2436,24 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                                 wxDefaultPosition, wxDefaultSize, 0);
   m_buttonRemove->Enable(FALSE);
   bSizer18->Add(m_buttonRemove, 0, wxALL, 5);
-  
- 
+
+
 //   wxBoxSizer* bSizer19 = new wxBoxSizer(wxHORIZONTAL);
 //   sbSizerLB->Add(bSizer19, 1, wxEXPAND, 5);
-// 
+//
    wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
    double font_size = dFont->GetPointSize() * 17/16;
    wxFont *bFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(), dFont->GetStyle(), wxFONTWEIGHT_BOLD);
-// 
+//
 //   m_stEditCon = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Edit Selected Connection"));
 //   m_stEditCon->SetFont(*bFont);
 //   bSizer19->Add(m_stEditCon, 0, wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL, 5);
-// 
+//
 
   //  Connections Properties
   m_sbConnEdit = new wxStaticBox(m_pNMEAForm, wxID_ANY, _("Edit Selected Connection"));
   m_sbConnEdit->SetFont(*bFont);
-  
+
   sbSizerConnectionProps = new wxStaticBoxSizer( m_sbConnEdit, wxVERTICAL);
 
   wxBoxSizer* bSizer15;
@@ -2600,8 +2600,8 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_tNetComment = new wxTextCtrl(m_pNMEAForm, wxID_ANY, wxEmptyString,
                               wxDefaultPosition, wxDefaultSize, 0);
   gSizerNetProps->Add(m_tNetComment, 1, wxEXPAND | wxTOP, 5);
-  
-  
+
+
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
   gSizerSerProps = new wxGridSizer(0, 1, 0, 0);
@@ -2755,7 +2755,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   // signalK Server Status
   m_StaticTextSKServerStatus = new wxStaticText(m_pNMEAForm, wxID_ANY, _T(""),  wxDefaultPosition, wxDefaultSize, 0);
   fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 5);
- 
+
   sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
 
@@ -2906,7 +2906,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                         wxCommandEventHandler(options::OnConnValChange), NULL, this);
   m_ButtonSKDiscover->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(options::OnDiscoverButton), NULL, this);
-  
+
   m_rbIAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                        wxCommandEventHandler(options::OnRbAcceptInput), NULL,
                        this);
@@ -2959,7 +2959,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                          wxCommandEventHandler(options::OnConnValChange), NULL,
                          this);
 
-#if 0  
+#if 0
 //   m_lcSources->Connect(wxEVT_LEFT_DOWN,
 //                        wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
 //                        NULL, this);
@@ -3017,7 +3017,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   connectionsaved = TRUE;
 }
 
-#if 0    
+#if 0
 void options::EnableItem(const long index) {
   if (index == wxNOT_FOUND) {
     ClearNMEAForm();
@@ -3040,7 +3040,7 @@ void options::OnConnectionToggleEnable(wxListEvent& event) {
 }
 
 void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
-#if 0    
+#if 0
   int flags;
   long index = m_lcSources->HitTest(event.GetPosition(), flags);
   if (index == wxNOT_FOUND || event.GetX() < m_lcSources->GetColumnWidth(0))
@@ -3097,9 +3097,9 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   wxString iconTypes[] = {_("Default"), _("Real Scale Bitmap"),
                           _("Real Scale Vector")};
-                          
+
   m_pShipIconType =
-      new wxChoice(itemPanelShip, ID_SHIPICONTYPE, wxDefaultPosition, 
+      new wxChoice(itemPanelShip, ID_SHIPICONTYPE, wxDefaultPosition,
                    wxSize(GetCharWidth() * 20, GetCharHeight() * 2), 3, iconTypes);
   dispOptionsGrid->Add(m_pShipIconType, 0,
                        wxALIGN_RIGHT | wxLEFT | wxRIGHT | wxTOP,
@@ -3236,11 +3236,11 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   pTrackDaily = new wxCheckBox(itemPanelShip, ID_DAILYCHECKBOX,
                                _("Automatic Daily Tracks at midnight"));
-  
+
   trackSizer1->Add(pTrackDaily, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
-    
+
   trackSizer1->Add( 0, 0, 1, wxEXPAND, 0 );
-  
+
 #if wxCHECK_VERSION(2, 9, 0)
 #if  wxUSE_TIMEPICKCTRL
   pTrackDaily->SetLabel(_("Automatic Daily Tracks at"));
@@ -3252,18 +3252,18 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   trackSizer1->Add( pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
 #endif
 #endif
-    
+
   pTrackRotateComputerTime = new wxRadioButton( itemPanelShip, ID_TRACKROTATECOMPUTER, _("Computer"), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateComputerTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
-    
+
   pTrackRotateUTC = new wxRadioButton( itemPanelShip, ID_TRACKROTATEUTC, _("UTC"), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateUTC, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
-    
+
   pTrackRotateLMT = new wxRadioButton( itemPanelShip, ID_TRACKROTATELMT, _("LMT"), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateLMT, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
 
   trackSizer->Add(trackSizer1, 1, wxEXPAND | wxALL, border_size);
-    
+
   wxFlexGridSizer* hTrackGrid =
       new wxFlexGridSizer(1, 3, group_item_spacing, group_item_spacing);
   hTrackGrid->AddGrowableCol(1);
@@ -3312,7 +3312,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   wxStaticText* SogCogFromLLDampIntText = new wxStaticText(itemPanelShip, wxID_STATIC, _("Min seconds between updates"));
   dispOwnShipCalcOptionsGrid->Add(SogCogFromLLDampIntText, 1, wxEXPAND | wxALL, group_item_spacing);
-  
+
   pSogCogFromLLDampInterval = new wxSpinCtrl(itemPanelShip, ID_SOGCOGDAMPINTTEXTCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 0 );
 
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
@@ -3359,12 +3359,12 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                         group_item_spacing);
 
   pRoutepointDefaultIconChoice->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
-    
+
   //  Accomodate scaling of icon
    int min_size = GetCharHeight() * 2;
    min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
    pRoutepointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, min_size) );
-   
+
   routeSizer->AddSpacer(5);
 
 
@@ -3390,7 +3390,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   Routes->AddSpacer(8 * group_item_spacing);
   wxStaticLine *pln = new wxStaticLine( itemPanelRoutes, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
   Routes->Add(pln, 0, wxEXPAND);
-#endif  
+#endif
 
   //  Waypoints
   wxStaticBox* waypointText =
@@ -3418,14 +3418,14 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                         group_item_spacing);
 
   pWaypointDefaultIconChoice->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
-    
+
   //  Accomodate scaling of icon
    int rmin_size = GetCharHeight() * 2;
    min_size = wxMax( rmin_size, (32 *g_ChartScaleFactorExp) + 4 );
    pWaypointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, rmin_size) );
-   
+
   waypointSizer->AddSpacer(5);
-  // ScaMin 
+  // ScaMin
   wxFlexGridSizer* ScaMinSizer =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
   ScaMinSizer->AddGrowableCol(1);
@@ -3437,14 +3437,14 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1);
   ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
                   group_item_spacing);
-    
+
   //Overrule the Scamin settings
   pScaMinOverruleChckB = new wxCheckBox(itemPanelRoutes, wxID_ANY,
                      _("Override the settings for chartscale based visibility and show always") );
   waypointSizer->Add(pScaMinOverruleChckB, 0, wxALL, 5);
-  
+
   waypointSizer->AddSpacer(5);
-  //Range Rings  
+  //Range Rings
   wxFlexGridSizer* waypointrrSelect =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
   waypointrrSelect->AddGrowableCol(1);
@@ -3498,7 +3498,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
                          wxALIGN_RIGHT | wxALL, 1);
 
-  
+
   // Control Options
 
 #ifdef __WXGTK__
@@ -3506,7 +3506,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
     wxStaticLine *pln1 = new wxStaticLine( itemPanelRoutes, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
     Routes->Add(pln1, 0, wxEXPAND);
 #endif
-    
+
     wxStaticBox* waypointControl =
         new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Control Options"));
     wxStaticBoxSizer* ControlSizer =
@@ -3528,21 +3528,21 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
     ControlSizer->Add(pConfirmObjectDeletion, verticleInputFlags);
     ControlSizer->AddSpacer(5);
 
-  
+
   // Fill the default waypoint icon selector combo box
   pWaypointDefaultIconChoice->Clear();
   //      Iterate on the Icon Descriptions, filling in the combo control
   bool fillCombo = true;
-        
+
   if( fillCombo ){
       for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
           wxString *ps = pWayPointMan->GetIconDescription( i );
           wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
-                    
+
           pWaypointDefaultIconChoice->Append( *ps, bmp );
       }
   }
-                
+
   // find the correct item in the combo box
    int iconToSelect = -1;
    for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
@@ -3557,16 +3557,16 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   pRoutepointDefaultIconChoice->Clear();
   //      Iterate on the Icon Descriptions, filling in the combo control
   fillCombo = true;
-        
+
   if( fillCombo ){
       for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
           wxString *ps = pWayPointMan->GetIconDescription( i );
           wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
-                    
+
           pRoutepointDefaultIconChoice->Append( *ps, bmp );
       }
   }
-                
+
   // find the correct item in the combo box
    iconToSelect = -1;
    for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
@@ -3576,7 +3576,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
            break;
        }
    }
-  
+
   // DimeControl(itemPanelRoutes);
 }
 
@@ -3596,9 +3596,9 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
                                        wxLC_REPORT | wxLC_NO_HEADER );
 #ifdef __OCPN__ANDROID__
     pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
-#endif    
- 
-    
+#endif
+
+
   activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
 
   pActiveChartsList->Connect(
@@ -3613,7 +3613,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   if (pActiveChartsList) {
     pActiveChartsList->DeleteAllItems();
 
-    // Add first column       
+    // Add first column
     wxListItem col0;
     col0.SetId(0);
     col0.SetText( _("") );
@@ -3669,8 +3669,8 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   itemFlexGridSizerUpdate->Add(pParseENCButton, 1, wxALL, 5);
 
   itemStaticBoxSizerUpdate->Add( itemFlexGridSizerUpdate, 1, wxEXPAND, 5 );
-  
-  
+
+
   chartPanel->Layout();
 }
 
@@ -3678,11 +3678,11 @@ void options::UpdateTemplateTitleText()
 {
     if(!m_templateTitleText)
         return;
-    
+
     wxString activeTitle;
     if(!g_lastAppliedTemplateGUID.IsEmpty()){
         activeTitle = ConfigMgr::Get().GetTemplateTitle(g_lastAppliedTemplateGUID);
-        
+
         bool configCompare = ConfigMgr::Get().CheckTemplateGUID(g_lastAppliedTemplateGUID);
         if(!configCompare)
             activeTitle += _(" [Modified]");
@@ -3692,16 +3692,16 @@ void options::UpdateTemplateTitleText()
         m_templateTitleText->SetLabel(_("None"));
 }
 
-    
+
 void options::CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing)
 {
     m_DisplayConfigsPage = AddPage(parent, _("Templates"));
-    
+
     //if (m_bcompact) {
     //}
     //else
     {
-        
+
         wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
         m_DisplayConfigsPage->SetSizer(wrapperSizer);
 
@@ -3710,53 +3710,53 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         wxStaticBox* templateStatusBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Template Status"));
         m_templateStatusBoxSizer = new wxStaticBoxSizer(templateStatusBox, wxHORIZONTAL);
         wrapperSizer->Add(m_templateStatusBoxSizer, 1, wxALL | wxEXPAND, border_size);
-        
+
         wxBoxSizer* statSizer = new wxBoxSizer(wxVERTICAL);
         m_templateStatusBoxSizer->Add(statSizer, 0, wxALL | wxEXPAND, border_size);
-        
+
         m_staticTextLastAppled = new wxStaticText(m_DisplayConfigsPage, wxID_ANY, _("Last Applied Template Title:"));
         m_staticTextLastAppled->Hide();
-        
+
         statSizer->Add(m_staticTextLastAppled);
-        
+
         m_templateTitleText = new wxStaticText(m_DisplayConfigsPage, wxID_ANY, wxEmptyString);
         statSizer->Add(m_templateTitleText);
         m_templateTitleText->Hide();
-        
+
         UpdateTemplateTitleText();
-        
-        
+
+
         wxStaticBox* configsBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Saved Templates"));
         wxStaticBoxSizer* configSizer = new wxStaticBoxSizer(configsBox, wxHORIZONTAL);
         wrapperSizer->Add(configSizer, 4, wxALL | wxEXPAND, border_size);
-        
+
         wxPanel *cPanel = new wxPanel(m_DisplayConfigsPage, wxID_ANY );
         configSizer->Add(cPanel, 1, wxALL | wxEXPAND, border_size);
-        
+
         wxBoxSizer *boxSizercPanel = new wxBoxSizer(wxVERTICAL);
         cPanel->SetSizer(boxSizercPanel);
-         
+
         m_scrollWinConfigList = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED | wxVSCROLL );
         m_scrollWinConfigList->SetScrollRate(1, 1);
         boxSizercPanel->Add(m_scrollWinConfigList, 0, wxALL|wxEXPAND, border_size);
         m_scrollWinConfigList->SetMinSize(wxSize(-1,15 * GetCharHeight()));
-        
+
         m_boxSizerConfigs = new wxBoxSizer(wxVERTICAL);
         m_scrollWinConfigList->SetSizer(m_boxSizerConfigs);
-        
-        
+
+
         wxBoxSizer* btnSizer = new wxBoxSizer(wxVERTICAL);
         configSizer->Add(btnSizer);
-        
+
         //    Add the "Insert/Remove" buttons
         wxButton* createButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Create Config..."));
         btnSizer->Add(createButton, 1, wxALL | wxEXPAND, group_item_spacing);
         createButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnCreateConfig), NULL, this);
-        
+
         //wxButton* editButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Edit Config..."));
         //btnSizer->Add(editButton, 1, wxALL | wxEXPAND, group_item_spacing);
         //editButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnEditConfig), NULL, this);
-        
+
         m_configDeleteButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Delete Selected Config..."));
         btnSizer->Add(m_configDeleteButton, 1, wxALL | wxEXPAND, group_item_spacing);
         m_configDeleteButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnDeleteConfig), NULL, this);
@@ -3764,11 +3764,11 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         m_configApplyButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Apply Selected Config"));
         btnSizer->Add(m_configApplyButton, 1, wxALL | wxEXPAND, group_item_spacing);
         m_configApplyButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnApplyConfig), NULL, this);
-        
+
         // Populate the configs list from the ConfigMgr
         ClearConfigList();
         BuildConfigList();
-        
+
         SetConfigButtonState();
     }
 }
@@ -3795,14 +3795,14 @@ void options::ClearConfigList()
 void options::BuildConfigList()
 {
     wxArrayString configGUIDs = ConfigMgr::Get().GetConfigGUIDArray();
-    
+
     for(size_t i=0 ; i < configGUIDs.GetCount() ; i++){
         wxPanel *pp = ConfigMgr::Get().GetConfigPanel( m_scrollWinConfigList,configGUIDs[i]);
         if(pp){
         m_panelBackgroundUnselected = pp->GetBackgroundColour();
         m_boxSizerConfigs->Add(pp, 1, wxEXPAND);
         pp->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConfigMouseSelected), NULL, this);
-        
+
         //  Set mouse handler for children of the panel, too.
         wxWindowList kids = pp->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
@@ -3812,9 +3812,9 @@ void options::BuildConfigList()
         }
     }
     }
-    
+
     m_boxSizerConfigs->Layout();
-    
+
     m_selectedConfigPanelGUID = _T("");
     SetConfigButtonState();
 }
@@ -3825,7 +3825,7 @@ void options::SetConfigButtonState()
     if(m_selectedConfigPanelGUID.StartsWith(_T("11111111")))            // Cannot delete "Recovery" template
         m_configDeleteButton->Disable();
     m_configApplyButton->Enable(!m_selectedConfigPanelGUID.IsEmpty());
-}    
+}
 
 void options::OnCreateConfig( wxCommandEvent &event)
 {
@@ -3835,7 +3835,7 @@ void options::OnCreateConfig( wxCommandEvent &event)
         if ( retcode == wxID_OK ) {
             g_lastAppliedTemplateGUID = pd->GetCreatedTemplateGUID();
             UpdateTemplateTitleText();
-            
+
             ClearConfigList();
             BuildConfigList();
             m_DisplayConfigsPage->Layout();
@@ -3852,13 +3852,13 @@ void options::OnDeleteConfig( wxCommandEvent &event)
 {
     if(m_selectedConfigPanelGUID.IsEmpty())
         return;
-    
+
     ConfigMgr::Get().DeleteConfig( m_selectedConfigPanelGUID);
     m_selectedConfigPanelGUID = _T("");
-    
+
     ClearConfigList();
     BuildConfigList();
-    
+
     m_DisplayConfigsPage->Layout();
     SetConfigButtonState();
 }
@@ -3870,12 +3870,12 @@ void options::OnApplyConfig( wxCommandEvent &event)
 
     // Record a few special items
     wxString currentLocale = g_locale;
-        
+
     //  Apply any changed settings other than the target config template.
     wxCommandEvent evt;
     evt.SetId(ID_APPLY);
     OnApplyClick(evt);
-    
+
     // Then Apply the target config template
     bool bApplyStat = ConfigMgr::Get().ApplyConfigGUID( m_selectedConfigPanelGUID);
     if(bApplyStat){
@@ -3889,7 +3889,7 @@ void options::OnApplyConfig( wxCommandEvent &event)
     }
     else
         OCPNMessageBox(this, _("Problem applying selected configuration."), _("OpenCPN Info"), wxOK);
-    
+
     //  Clear all selections
     if(m_scrollWinConfigList){
         wxWindowList kids = m_scrollWinConfigList->GetChildren();
@@ -3906,12 +3906,12 @@ void options::OnApplyConfig( wxCommandEvent &event)
         }
     }
     m_selectedConfigPanelGUID = wxEmptyString;
-    
+
     m_returnChanges |= CONFIG_CHANGED;
-    
+
     if(!currentLocale.IsSameAs(g_locale))
         m_returnChanges |= LOCALE_CHANGED;
-    
+
     Finish();
 }
 
@@ -3935,7 +3935,7 @@ void options::OnConfigMouseSelected( wxMouseEvent &event)
                 }
             }
         }
-        
+
         if(m_scrollWinConfigList){
             wxWindowList kids = m_scrollWinConfigList->GetChildren();
             for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
@@ -3953,7 +3953,7 @@ void options::OnConfigMouseSelected( wxMouseEvent &event)
                 }
                 else
                     panel->SetBackgroundColour(m_panelBackgroundUnselected);
-                
+
                 panel->Refresh(true);
             }
         }
@@ -3963,7 +3963,7 @@ void options::OnConfigMouseSelected( wxMouseEvent &event)
     }
 }
 
-    
+
 
 void options::CreatePanel_Advanced(size_t parent, int border_size,
                                    int group_item_spacing) {
@@ -3972,7 +3972,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
   if (m_bcompact) {
     wxSize sz = g_Platform->getDisplaySize();
     double dpmm = g_Platform->GetDisplayDPmm();
-    
+
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     m_ChartDisplayPage->SetSizer(wrapperSizer);
 
@@ -4052,8 +4052,8 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), inputFlags);
-    
-    m_pSlider_Zoom_Vector = new wxSlider( m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, 
+
+    m_pSlider_Zoom_Vector = new wxSlider( m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5,
                                           wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
@@ -4067,7 +4067,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     m_pSlider_CM93_Zoom = new wxSlider( m_ChartDisplayPage, ID_CM93ZOOM, 0,
                            -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
                            wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
-    
+
 #ifdef __OCPN__ANDROID__
     prepareSlider(m_pSlider_CM93_Zoom);
 #endif
@@ -4075,12 +4075,12 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(m_pSlider_CM93_Zoom, 0, wxALL, border_size);
 
 
-    itemBoxSizerUI->Add(0, border_size * 3);    
+    itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
     //  Display size/DPI
-    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, 
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage,
         wxID_ANY, _("Physical Screen Width")), inputFlags);
     wxBoxSizer* pDPIRow = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizerUI->Add(pDPIRow, 0, wxEXPAND);
@@ -4144,7 +4144,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 //         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
 //                        _("Suppress blur/fog effects on overzoom"));
 //     boxCharts->Add(pOverzoomEmphasis, verticleInputFlags);
-// 
+//
 //     pOZScaleVector =
 //         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
 //                        _("Suppress scaled vector charts on overzoom"));
@@ -4182,7 +4182,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(zoomTextHead, labelFlags);
     itemBoxSizerUI->Add(0, border_size * 1);
     itemBoxSizerUI->Add(0, border_size * 1);
-    
+
     wxStaticText* zoomText =
         new wxStaticText(m_ChartDisplayPage, wxID_ANY,
             _("With a lower value, the same zoom level shows a less detailed chart.\n\
@@ -4197,9 +4197,9 @@ With a higher value, the same zoom level shows a more detailed chart."));
 
     // spacer
     /*itemBoxSizerUI->Add(0, border_size * 8); itemBoxSizerUI->Add(0, border_size * 8);*/
-    
+
     //wxSize sz = g_Platform->getDisplaySize();
-    
+
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
     m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
@@ -4212,16 +4212,16 @@ With a higher value, the same zoom level shows a more detailed chart."));
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
     m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5,
                                          wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
-    
+
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom_Vector );
 #endif
-    
+
     itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
 
     //Spacer
     itemBoxSizerUI->Add(0, border_size * 3); itemBoxSizerUI->Add(0, border_size * 3);
-    
+
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
         _("CM93 Detail level")), labelFlags);
     m_pSlider_CM93_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0,
@@ -4294,14 +4294,14 @@ With a higher value, the same zoom level shows a more detailed chart."));
     bOpenGL->Enable(!g_bdisable_opengl);
 
     itemBoxSizerUI->Add(0, border_size * 3);
-/*    
+/*
     pTransparentToolbar =
         new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                        _("Enable Transparent Toolbar"));
     itemBoxSizerUI->Add(pTransparentToolbar, 0, wxALL, border_size);
     if (g_bopengl && !g_bTransparentToolbarInOpenGLOK)
       pTransparentToolbar->Disable();
-*/    
+*/
   }
 }
 
@@ -4337,7 +4337,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
-    
+
     // display options
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Display")), groupLabelFlags);
 
@@ -4354,13 +4354,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_META->SetValue(FALSE);
     miscSizer->Add(pCheck_META, verticleInputFlags);
 
-    
+
     if(!g_useMUI){
         optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")), groupLabelFlags);
 
         wxBoxSizer* lightSizer = new wxBoxSizer(wxVERTICAL);
         optionsColumn->Add(lightSizer, groupInputFlags);
-        
+
         pCheck_ATONTEXT = new wxCheckBox(ps57Ctl, ID_ATONTEXTCHECKBOX, _("Buoy/Light Labels"));
         pCheck_ATONTEXT->SetValue(FALSE);
         lightSizer->Add(pCheck_ATONTEXT, verticleInputFlags);
@@ -4489,12 +4489,12 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     itemButtonClearList = new wxButton(ps57Ctl, ID_CLEARLIST, _("Clear All"));
     btnRow1->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow1);
-    
+
     wxBoxSizer* btnRow2 = new wxBoxSizer(wxHORIZONTAL);
     itemButtonSetStd = new wxButton(ps57Ctl, ID_SETSTDLIST, _("Reset to STANDARD"));
     btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow2);
-    
+
 
   }
 
@@ -4514,12 +4514,12 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         pDispCat = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
                             wxSize(350, -1), 4, pDispCatStrings);
         optionsColumn->Add(pDispCat, 0, wxALL, 2);
-        
+
     // spacer
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
     }
-        
+
     // display options
 
     wxBoxSizer* miscSizer = new wxBoxSizer(wxVERTICAL);
@@ -4596,7 +4596,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     #ifdef __OCPN__ANDROID__
     setChoiceStyleSheet( pPointStyle, m_fontHeight *8/10);
     #endif
-    
+
     StyleColumn->Add(pPointStyle, inputFlags);
 
     StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Boundaries")), inputFlags);
@@ -4608,11 +4608,11 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     #ifdef __OCPN__ANDROID__
     setChoiceStyleSheet( pBoundStyle, m_fontHeight *8/10);
     #endif
-    
+
     StyleColumn->Add(pBoundStyle, inputFlags);
 
     StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Colors")), inputFlags);
-    
+
     wxString pColorNumStrings[] = {
         _("2 Color"), _("4 Color"),
     };
@@ -4717,7 +4717,7 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   //  of the Global static array
   tcDataSelected->DeleteAllItems();
 
-    // Add first column       
+    // Add first column
   wxListItem col0;
   col0.SetId(0);
   col0.SetText( _("") );
@@ -4782,7 +4782,7 @@ void ChartGroupsUI::CompletePanel(void)
 {
     m_topSizer = new wxBoxSizer(wxVERTICAL);
     m_panel->SetSizer(m_topSizer);
-    
+
   //    The chart file/dir tree
   wxStaticText* allChartsLabel = new wxStaticText(m_panel, wxID_ANY, _("All Available Charts"));
   m_topSizer->Add(allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size);
@@ -4793,13 +4793,13 @@ void ChartGroupsUI::CompletePanel(void)
   wxBoxSizer* activeListSizer = new wxBoxSizer(wxVERTICAL);
   sizerCharts->Add(activeListSizer, 1, wxALL | wxEXPAND, 5);
 
-#ifdef __OCPN__ANDROID__  
+#ifdef __OCPN__ANDROID__
   allAvailableCtl = new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL);
-#else   
+#else
   allAvailableCtl = new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,  wxDefaultSize, wxVSCROLL);
-#endif  
+#endif
   activeListSizer->Add(allAvailableCtl, 1, wxEXPAND);
-  
+
   m_pAddButton = new wxButton(m_panel, ID_GROUPINSERTDIR, _("Add"));
   m_pAddButton->Disable();
   m_pRemoveButton = new wxButton(m_panel, ID_GROUPREMOVEDIR, _("Remove Chart"));
@@ -4943,7 +4943,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
     }
-    
+
     // Control Options
     generalSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Controls")),
                       groupLabelFlags);
@@ -4982,29 +4982,29 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSDepthUnits = new wxCheckBox(pDisplayPanel, ID_SHOWDEPTHUNITSBOX1,
                                   _("Show Depth Units"));
     boxDisp->Add(pSDepthUnits, verticleInputFlags);
-      
+
     }
-    
+
     // CUSTOMIZATION - LIVE ETA OPTION
     // -------------------------------
     // Add a checkbox to activate live ETA option in status bar, and
     // Add a text field to set default boat speed (for calculation when
     // no GPS or when the boat is at the harbor).
-      
+
     // Spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
-    
+
     // New menu status bar
     generalSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar Option")),
                       groupLabelFlags);
     wxBoxSizer* boxDispStatusBar = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxDispStatusBar, groupInputFlags);
-      
+
     // Add option for live ETA
     pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA, _("Live ETA at Cursor"));
     boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
-      
+
     // Add text input for default boat speed
     // (for calculation, in case GPS speed is null)
     wxBoxSizer *defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -5014,18 +5014,18 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSDefaultBoatSpeed = new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""), wxDefaultPosition,
                                         wxSize(50, -1), wxTE_RIGHT);
     defaultBoatSpeedSizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_CENTER_VERTICAL, group_item_spacing);
-    
+
     // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
-    
-#ifndef __OCPN__ANDROID__    
-    // MultiChart selection panel 
-    if(g_Platform->GetDisplayAreaCM2() > 100){    
+
+#ifndef __OCPN__ANDROID__
+    // MultiChart selection panel
+    if(g_Platform->GetDisplayAreaCM2() > 100){
 
     wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
     wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
     wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
-    
+
     //  The standard screen configs...
     wxString iconDir = g_Platform->GetSharedDataDir();
     appendOSDirSlash(&iconDir);
@@ -5034,28 +5034,28 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     iconDir.append(_T("MUI_flat"));
     appendOSDirSlash(&iconDir);
     int bmpSize = GetCharHeight() * 3;
-    
+
     wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
     m_sconfigSelect_single = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG1, bmp);
     itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
-    
+
     itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
-    
+
     bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
     m_sconfigSelect_twovertical = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG2, bmp);
     itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
-    
+
     itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
     }
 #endif
-    
+
   } else {      // compact follows
     wxFlexGridSizer* generalSizer = new wxFlexGridSizer(2);
     generalSizer->SetHGap(border_size);
     //    generalSizer->AddGrowableCol( 0, 1 );
     //    generalSizer->AddGrowableCol( 1, 1 );
     //    pDisplayPanel->SetSizer( generalSizer );
-      
+
     // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
     // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
@@ -5156,29 +5156,29 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSDepthUnits = new wxCheckBox(pDisplayPanel, ID_SHOWDEPTHUNITSBOX1,
                                   _("Show Depth Units"));
     boxDisp->Add(pSDepthUnits, verticleInputFlags);
-      
+
     }
-    
+
     // CUSTOMIZATION - LIVE ETA OPTION
     // -------------------------------
     // Add a checkbox to activate live ETA option in status bar, and
     // Add a text field to set default boat speed (for calculation when
     // no GPS or when the boat is at the harbor).
-      
+
     // Spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
-    
+
     // New menu status bar
     generalSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar")),
                       groupLabelFlags);
     wxBoxSizer* boxDispStatusBar = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxDispStatusBar, groupInputFlags);
-      
+
     // Add option for live ETA
     pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA, _("Live ETA at Cursor"));
     boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
-      
+
     // Add text input for default boat speed
     // (for calculation, in case GPS speed is null)
     wxBoxSizer *defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -5188,17 +5188,17 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSDefaultBoatSpeed = new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""), wxDefaultPosition,
                                         wxSize(50, -1), wxTE_RIGHT);
     defaultBoatSpeedSizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_CENTER_VERTICAL, group_item_spacing);
-    
+
     // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
- 
+
 #ifndef __OCPN__ANDROID__
-    if(g_Platform->GetDisplayAreaCM2() > 100){    
-        // MultiChart selection panel 
+    if(g_Platform->GetDisplayAreaCM2() > 100){
+        // MultiChart selection panel
         wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
         wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
         wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
-        
+
         //  The standard screen configs...
         wxString iconDir = g_Platform->GetSharedDataDir();
         appendOSDirSlash(&iconDir);
@@ -5207,23 +5207,23 @@ void options::CreatePanel_Display(size_t parent, int border_size,
         iconDir.append(_T("MUI_flat"));
         appendOSDirSlash(&iconDir);
         int bmpSize = GetCharHeight() * 3;
-        
+
         wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
         m_sconfigSelect_single = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG1, bmp);
         itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
-        
+
         itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
-        
+
         bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
         m_sconfigSelect_twovertical = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG2, bmp);
         itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
-        
+
         itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
     }
 #endif
 
   }
- 
+
 }
 
 void options::CreatePanel_Units(size_t parent, int border_size,
@@ -5238,7 +5238,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     panelUnits->SetSizer(wrapperSizer);
-    
+
     wrapperSizer->Add(1, border_size * 24);
     wrapperSizer->Add(unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size);
 
@@ -5319,7 +5319,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxCheckBox(panelUnits, ID_TRUESHOWCHECKBOX, _("Show true"));
     unitsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
-    
+
     pCBMagShow =  new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic"));
     unitsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
@@ -5433,15 +5433,15 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     bearingsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
 
     bearingsSizer->AddSpacer(10);
-    
-    
+
+
     //  Mag Heading user variation
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
     bearingsSizer->Add(magVarSizer, 0, wxALL, group_item_spacing);
 
     itemStaticTextUserVar = new wxStaticText(panelUnits, wxID_ANY, wxEmptyString);
     itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
-        
+
     magVarSizer->Add(itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL,
                      group_item_spacing);
 
@@ -5451,16 +5451,16 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
 	itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
     magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
-    
+
     bearingsSizer->AddSpacer(10);
-    
+
     wxStaticText *varText = new wxStaticText(panelUnits, wxID_ANY, _(" To set the magnetic variation manually,\n you must disable the WMM plugin."));
     smallFont = *dialogFont;
     smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +  0.5);  // + 0.5 to round instead of truncate
     varText->SetFont(smallFont);
-    
+
     bearingsSizer->Add(varText);
-    
+
   }
 }
 
@@ -5468,7 +5468,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                 int group_item_spacing) {
   wxScrolledWindow* panelSounds = AddPage(parent, _("Sounds"));
 
-#if 0  
+#if 0
   if (m_bcompact) {
     wxFlexGridSizer* unitsSizer = new wxFlexGridSizer(2);
     unitsSizer->SetHGap(border_size);
@@ -5477,7 +5477,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     panelUnits->SetSizer(wrapperSizer);
-    
+
     wrapperSizer->Add(1, border_size * 24);
     wrapperSizer->Add(unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size);
 
@@ -5558,7 +5558,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
         new wxCheckBox(panelUnits, ID_TRUESHOWCHECKBOX, _("Show true"));
     unitsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
-    
+
     pCBMagShow =  new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic"));
     unitsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
@@ -5592,14 +5592,14 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
   }
   else
-#endif      
+#endif
   {
     //wxFlexGridSizer* unitsSizer = new wxFlexGridSizer(2);
     //unitsSizer->SetHGap(border_size);
 
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     panelSounds->SetSizer(wrapperSizer);
-    
+
     //wrapperSizer->Add(unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size);
 
     // spacer
@@ -5607,15 +5607,15 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     //unitsSizer->Add(0, border_size * 4);
 
     ///HERE
-    
+
     //  Anchor Alarm
     wxStaticBox* StaticBox1 = new wxStaticBox(panelSounds, wxID_ANY, _("Anchor Alarm"));
     wxStaticBoxSizer *StaticBoxSizer1 = new wxStaticBoxSizer(StaticBox1, wxVERTICAL);
     wrapperSizer->Add(StaticBoxSizer1, 0, wxALL | wxEXPAND, border_size);
- 
+
     m_pCheck_AnchorAudio = new wxCheckBox( panelSounds, ID_ANCHORALERTAUDIO, _("Play Sound on Anchor Alarm."));
     StaticBoxSizer1->Add(m_pCheck_AnchorAudio, 1, wxALL, border_size);
-    
+
     m_anchorAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
     m_anchorAudioFileNameText->SetLabel( _(" Audio file name: " + g_anchorwatch_sound_file) );
     StaticBoxSizer1->Add(m_anchorAudioFileNameText, 0, wxLEFT, border_size);
@@ -5631,7 +5631,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
       new wxButton(panelSounds, ID_ANCHORSELECTSOUND, _("Select Anchor Alarm Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
     soundSizer1->Add(SelSoundAnchor, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
-    
+
 
     wxButton* pPlay_AnchorSound =
       new wxButton(panelSounds, ID_ANCHORTESTSOUND, _("Test Anchor Alarm Sound"),
@@ -5668,7 +5668,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     wxStaticBox* StaticBox3 = new wxStaticBox(panelSounds, wxID_ANY, _("SART Alert"));
     wxStaticBoxSizer *StaticBoxSizer3 = new wxStaticBoxSizer(StaticBox3, wxVERTICAL);
     wrapperSizer->Add(StaticBoxSizer3, 0, wxALL | wxEXPAND, border_size);
- 
+
     m_pCheck_SARTAudio = new wxCheckBox( panelSounds, ID_SARTALERTAUDIO, _("Play Sound on AIS SART Alert."));
     StaticBoxSizer3->Add(m_pCheck_SARTAudio, 1, wxALL, border_size);
 
@@ -5685,13 +5685,13 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
       new wxButton(panelSounds, ID_SARTELECTSOUND, _("Select AIS SART Alert Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
     soundSizer3->Add(SelSoundSART, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
-    
+
 
     wxButton* pPlay_SARTSound =
       new wxButton(panelSounds, ID_SARTTESTSOUND, _("Test AIS SART Alert Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
     soundSizer3->Add(pPlay_SARTSound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
-    
+
     // DSC Call
     wxStaticBox* StaticBox4 = new wxStaticBox(panelSounds, wxID_ANY, _("DSC Alert"));
     wxStaticBoxSizer *StaticBoxSizer4 = new wxStaticBoxSizer(StaticBox4, wxVERTICAL);
@@ -5712,14 +5712,14 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
       new wxButton(panelSounds, ID_DSCSELECTSOUND, _("Select DSC notification Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
     soundSizer4->Add(SelSoundDSC, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
-    
+
 
     wxButton* pPlay_DSCSound =
       new wxButton(panelSounds, ID_DSCTESTSOUND, _("Test DSC notification Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
     soundSizer4->Add(pPlay_DSCSound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
-    
-#if 0    
+
+#if 0
     // distance units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Distance")),
                     labelFlags);
@@ -5788,15 +5788,15 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     bearingsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
 
     bearingsSizer->AddSpacer(10);
-    
-    
+
+
     //  Mag Heading user variation
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
     bearingsSizer->Add(magVarSizer, 0, wxALL, group_item_spacing);
 
     itemStaticTextUserVar = new wxStaticText(panelUnits, wxID_ANY, wxEmptyString);
     itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
-        
+
     magVarSizer->Add(itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL,
                      group_item_spacing);
 
@@ -5806,16 +5806,16 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
         itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
     magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
-    
+
     bearingsSizer->AddSpacer(10);
-    
+
     wxStaticText *varText = new wxStaticText(panelUnits, wxID_ANY, _(" To set the magnetic variation manually,\n you must disable the WMM plugin."));
     smallFont = *dialogFont;
     smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +  0.5);  // + 0.5 to round instead of truncate
     varText->SetFont(smallFont);
-    
+
     bearingsSizer->Add(varText);
-#endif    
+#endif
   }
 }
 
@@ -5913,7 +5913,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   if(g_bInlandEcdis)
       lostSizer->Hide(pLostGrid, true);
-  
+
   //      Display
   wxStaticBox* displBox = new wxStaticBox(panelAIS, wxID_ANY, _("Display"));
   wxStaticBoxSizer* displSizer = new wxStaticBoxSizer(displBox, wxHORIZONTAL);
@@ -5946,7 +5946,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
-  
+
   m_pCheck_Draw_Realtime_Prediction = new wxCheckBox(
       panelAIS, -1, _("Draw AIS realtime prediction, target speed min (kn)"));
   pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL, group_item_spacing);
@@ -5954,7 +5954,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pText_RealtPred_Speed = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_RealtPred_Speed, 1, wxALL | wxALIGN_RIGHT,
       group_item_spacing);
-    
+
   m_pCheck_Scale_Priority = new wxCheckBox(
       panelAIS, -1, _("Allow attenuation of less critical targets if more than ... targets"));
   pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
@@ -5980,12 +5980,12 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pCheck_Show_Target_Name = new wxCheckBox(
       panelAIS, -1, _("Show names with AIS targets at scale greater than 1:"));
   pDisplayGrid->Add(m_pCheck_Show_Target_Name, 1, wxALL, group_item_spacing);
-  
+
   m_pText_Show_Target_Name_Scale = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_Show_Target_Name_Scale, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
-  
-  m_pCheck_use_Wpl = new wxCheckBox( panelAIS, -1, 
+
+  m_pCheck_use_Wpl = new wxCheckBox( panelAIS, -1,
                      _("Use WPL position messages. Action when received:"));
   pDisplayGrid->Add(m_pCheck_use_Wpl, 1, wxALL, group_item_spacing);
 
@@ -5993,7 +5993,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pWplAction = new wxChoice(panelAIS, wxID_ANY, wxDefaultPosition,
                               m_pShipIconType->GetSize(), 2, Wpl_Action);
   pDisplayGrid->Add(m_pWplAction, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
-    
+
   // Rollover
   wxStaticBox* rolloverBox = new wxStaticBox(panelAIS, wxID_ANY, _("Rollover"));
   wxStaticBoxSizer* rolloverSizer =
@@ -6004,7 +6004,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   rolloverSizer->Add(pRollover, 1, wxALL, 2 * group_item_spacing);
 
   pRollover->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED,  wxCommandEventHandler(options::OnAISRolloverClick), NULL, this);
-   
+
   pStatic_CallSign = new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
   rolloverSizer->Add(pStatic_CallSign, 1, wxALL, 2 * group_item_spacing);
 
@@ -6095,22 +6095,22 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL, border_size);
 #ifdef __OCPN__ANDROID__
   m_itemLangListBox->Disable();
-#endif  
+#endif
 
   wxStaticBox* itemFontStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
 
   wxSize fontChoiceSize = wxSize( -1, -1 );
-  
+
   int fLayout = wxHORIZONTAL;
 #ifdef __OCPN__ANDROID__
   // Compensate for very narrow displays on Android
   if(m_nCharWidthMax <  40)
       fLayout = wxVERTICAL;
-  
+
    // Need to set wxChoice vertical size explicitely in Android
    fontChoiceSize = wxSize( -1, m_fontHeight * 3 / 4);
-#endif  
-  
+#endif
+
   wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer(itemFontStaticBox, fLayout);
   m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL, border_size);
 
@@ -6144,7 +6144,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   wxCommandEvent e;
   OnFontChoice(e);
 
-#if 0  
+#if 0
   wxStaticBox* itemStyleStaticBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Toolbar and Window Style"));
   wxStaticBoxSizer* itemStyleStaticBoxSizer =
@@ -6268,7 +6268,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
 #ifdef __OCPN__ANDROID__
     stSoundDeviceIndex->Hide();
     pSoundDeviceIndex->Hide();
-#endif    
+#endif
 
   //  Mobile/Touchscreen checkboxes
   pMobile = new wxCheckBox(itemPanelFont, ID_MOBILEBOX,
@@ -6289,23 +6289,23 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   miscOptions->Add(pZoomButtons, 0, wxALL, border_size);
 #ifndef __OCPN__ANDROID__
   pZoomButtons->Hide();
-#endif  
-  
+#endif
+
   pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,  _("Use Inland ECDIS V2.3"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
 
 #ifdef __OCPN__ANDROID__
   pInlandEcdis->Hide();
 #endif
-  
+
 #ifdef __WXOSX__
   pDarkDecorations = new wxCheckBox(itemPanelFont, ID_DARKDECORATIONSBOX,
                                   _("Use dark window decorations"));
   miscOptions->Add(pDarkDecorations, 0, wxALL, border_size);
   pDarkDecorations->Enable( (osMajor >= 10) && (osMinor >= 12) );
- 
+
 #endif
-    
+
   miscOptions->AddSpacer(10);
 
   wxFlexGridSizer* sliderSizer;
@@ -6313,7 +6313,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->AddGrowableCol( 1 );
   sliderSizer->SetFlexibleDirection( wxBOTH );
   sliderSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-  
+
   m_pSlider_GUI_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
   m_pSlider_GUI_Factor->Hide();
@@ -6345,18 +6345,18 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
       new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")), inputFlags);
   sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
   m_pSlider_Ship_Factor->Show();
-  
+
 #ifdef __OCPN__ANDROID__
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
-  
+
   m_pSlider_Text_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,  m_sliderSize, SLIDER_STYLE);
   m_pSlider_Text_Factor->Hide();
   sliderSizer->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("ENC Sounding factor")), inputFlags);
   sliderSizer->Add(m_pSlider_Text_Factor, 0, wxALL, border_size);
   m_pSlider_Text_Factor->Show();
-  
+
 #ifdef __OCPN__ANDROID__
   m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
@@ -6398,10 +6398,10 @@ void options::OnAlertAudioEnableButtonClick(wxCommandEvent &event)
 void options::CreateListbookIcons()
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    
+
     if(!g_bresponsive){
         m_topImgList = new wxImageList(40, 40, TRUE, 1);
-        
+
         #if wxCHECK_VERSION(2, 8, 12)
         m_topImgList->Add(style->GetIcon(_T("Display")));
         m_topImgList->Add(style->GetIcon(_T("Charts")));
@@ -6449,25 +6449,25 @@ void options::CreateListbookIcons()
         bmps = style->GetIcon(_T("Display"));
         int base_size = bmps.GetWidth();
         double tool_size = base_size;
-        
+
         double premult = 1.0;
-        
+
         // unless overridden by user, we declare the "best" size
         // to be roughly 6 mm square.
         double target_size = 6.0;                // mm
-        
+
         double basic_tool_size_mm = tool_size / g_Platform->GetDisplayDPmm();
         premult = target_size / basic_tool_size_mm;
-        
+
         //Adjust the scale factor using the global GUI scale parameter
         double postmult =  exp( g_GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
         postmult = wxMin(postmult, 3.0);
         postmult = wxMax(postmult, 1.0);
-        
+
         int sizeTab = base_size * postmult * premult;
-        
+
         m_topImgList = new wxImageList(sizeTab, sizeTab, TRUE, 1);
-        
+
         wxBitmap bmp;
         wxImage img, simg;
         bmp = style->GetIcon(_T("Display"));
@@ -6501,7 +6501,7 @@ void options::CreateListbookIcons()
         bmp = wxBitmap(simg);
         m_topImgList->Add(bmp);
     }
-    
+
 }
 
 
@@ -6519,12 +6519,12 @@ void options::CreateControls(void) {
 #else
   m_sliderSize = wxSize(wxMin(m_fontHeight * 8, g_Platform->getDisplaySize().x / 2), m_fontHeight * 2);
 #endif
-  
+
   m_small_button_size =
       wxSize(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
 
   m_nCharWidthMax = GetSize().x / GetCharWidth();
-      
+
   // Some members (pointers to controls) need to initialized
   pEnableZoomToCursor = NULL;
   pSmoothPanZoom = NULL;
@@ -6654,7 +6654,7 @@ void options::CreateControls(void) {
   CreatePanel_Units(m_pageDisplay, border_size, group_item_spacing);
   CreatePanel_Advanced(m_pageDisplay, border_size, group_item_spacing);
   CreatePanel_Configs(m_pageDisplay, border_size, group_item_spacing);
-  
+
   m_pageCharts = CreatePanel(_("Charts"));
   CreatePanel_ChartsLoad(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_VectorCharts(m_pageCharts, border_size, group_item_spacing);
@@ -6665,8 +6665,8 @@ void options::CreateControls(void) {
 
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
   if (nb){
-      
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__      
+
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
       nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                                   wxListbookEventHandler(options::OnChartsPageChange),
                                   NULL, this);
@@ -6677,8 +6677,8 @@ void options::CreateControls(void) {
 
 #endif
   }
-      
-      
+
+
   m_pageConnections = CreatePanel(_("Connections"));
 #ifndef __OCPN__ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
@@ -6695,7 +6695,7 @@ void options::CreateControls(void) {
 #ifndef __OCPN__ANDROID__
   CreatePanel_MMSI(m_pageShips, border_size, group_item_spacing);
 #endif
-  
+
   CreatePanel_Routes(m_pageShips, border_size, group_item_spacing);
 
   m_pageUI = CreatePanel(_("User Interface"));
@@ -6721,7 +6721,7 @@ void options::CreateControls(void) {
       marginx = 100;
       marginy = 100;
   }
-  
+
   SetSizeHints(-1, -1, width - marginx, height - marginy);
 
   //  The s57 chart panel is the one which controls the minimum width required
@@ -6760,15 +6760,15 @@ void options::SetColorScheme(ColorScheme cs) {
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__
   wxListView* lv = m_pListbook->GetListView();
   lv->SetBackgroundColour(GetBackgroundColour());
-  
+
   if(m_cs != cs){
       delete m_topImgList;
       CreateListbookIcons();
       m_pListbook->SetImageList(m_topImgList);
-      
+
       m_cs = cs;
   }
-      
+
 #endif
 }
 
@@ -6796,7 +6796,7 @@ void options::OnCanvasConfigSelectClick( int ID, bool selected)
             m_screenConfig = 1;
             break;
     }
-            
+
 }
 
 void options::SetInitialSettings(void) {
@@ -6804,7 +6804,7 @@ void options::SetInitialSettings(void) {
 
   m_returnChanges = 0;                  // reset the flags
   m_bfontChanged = false;
-  
+
   b_oldhaveWMM = b_haveWMM;
   b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
 
@@ -6825,7 +6825,7 @@ void options::SetInitialSettings(void) {
           break;
   }
   m_screenConfig = g_canvasConfig;
-          
+
   // ChartsLoad
 
   if (pActiveChartsList) {
@@ -6879,7 +6879,7 @@ void options::SetInitialSettings(void) {
   m_pCheck_Rollover_CPA->Enable(g_bRollover);
   pStatic_CallSign->Enable(g_bRollover);
 
- 
+
   pZoomButtons->SetValue( g_bShowMuiZoomButtons );
 
   //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
@@ -6894,7 +6894,7 @@ void options::SetInitialSettings(void) {
   pCBMagShow->SetValue(g_bShowMag);
 
   int oldLength = itemStaticTextUserVar->GetLabel().Length();
-  
+
   //disable input for variation if WMM is available
   if(b_haveWMM){
       itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
@@ -6908,26 +6908,26 @@ void options::SetInitialSettings(void) {
       s.Printf(_T("%4.1f"), g_UserVar);
       pMagVar->SetValue(s);
   }
-  
+
   int newLength = itemStaticTextUserVar->GetLabel().Length();
-  
+
   // size hack to adjust change in static text size
   if( (newLength != oldLength) || (b_oldhaveWMM != b_haveWMM) ){
       wxSize sz = GetSize();
       SetSize(sz.x+1, sz.y);
       SetSize(sz);
   }
-  
+
   itemStaticTextUserVar2->Enable(!b_haveWMM);
   pMagVar->Enable(!b_haveWMM);
-  
+
   if(pSDisplayGrid) pSDisplayGrid->SetValue(g_bDisplayGrid);
-    
+
   // LIVE ETA OPTION
-    
+
   // Checkbox
   if(pSLiveETA) pSLiveETA->SetValue(g_bShowLiveETA);
-    
+
   // Defaut boat speed text input field
   // Speed always in knots, and converted to user speed unit
   wxString stringDefaultBoatSpeed;
@@ -6938,7 +6938,7 @@ void options::SetInitialSettings(void) {
   }
   stringDefaultBoatSpeed.Printf(_T("%d"), (int)g_defaultBoatSpeedUserUnit);
   if(pSDefaultBoatSpeed) pSDefaultBoatSpeed->SetValue(stringDefaultBoatSpeed);
-  
+
   // END LIVE ETA OPTION
 
   if(pCBCourseUp) pCBCourseUp->SetValue(g_bCourseUp);
@@ -6982,11 +6982,11 @@ void options::SetInitialSettings(void) {
   pNavAidRadarRingsStep->SetValue(buf);
   m_itemRadarRingsUnits->SetSelection(g_pNavAidRadarRingsStepUnits);
   m_colourOwnshipRangeRingColour->SetColour(g_colourOwnshipRangeRingsColour);
-  
+
   pScaMinChckB->SetValue( g_bUseWptScaMin );
   m_pText_ScaMin->SetValue( wxString::Format(_T("%i"), g_iWpt_ScaMin ));
   pScaMinOverruleChckB->SetValue( g_bOverruleScaMin );
-  
+
   OnRadarringSelect(eDummy);
 
   if (g_iWaypointRangeRingsNumber > 10) g_iWaypointRangeRingsNumber = 10;
@@ -7034,7 +7034,7 @@ void options::SetInitialSettings(void) {
   pTrackPrecision->SetSelection(g_nTrackPrecision);
 
   m_pCheck_AnchorAudio->SetValue(g_bAnchor_Alert_Audio);
-  
+
   //    AIS Parameters
   //      CPA Box
   m_pCheck_CPA_Max->SetValue(g_bCPAMax);
@@ -7087,9 +7087,9 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%4.1f"), g_AIS_RealtPred_Kts);
   m_pText_RealtPred_Speed->SetValue(s);
-  
+
   m_pCheck_Scale_Priority->SetValue(g_bAllowShowScaled);
-  
+
   s.Printf(_T("%i"), g_ShowScaled_Num);
   m_pText_Scale_Priority->SetValue(s);
 
@@ -7116,8 +7116,8 @@ void options::SetInitialSettings(void) {
   else{
       m_pCheck_AlertAudio->Disable();
       m_pCheck_AlertAudio->SetValue( false );
-  }      
-      
+  }
+
   m_pCheck_Alert_Moored->SetValue(g_bAIS_CPA_Alert_Suppress_Moored);
 
   m_pCheck_Ack_Timout->SetValue(g_bAIS_ACK_Timeout);
@@ -7127,7 +7127,7 @@ void options::SetInitialSettings(void) {
   // Sounds
 
   if( m_pCheck_AlertDialog->GetValue() ){               // AIS Alert sound only if Alert dialog is enabled
-      
+
       m_pCheck_AISAudio->Enable( m_pCheck_AlertAudio->GetValue());
       m_pCheck_AISAudio->SetValue(g_bAIS_GCPA_Alert_Audio);
       m_pCheck_SARTAudio->Enable(m_pCheck_AlertAudio->GetValue());
@@ -7151,7 +7151,7 @@ void options::SetInitialSettings(void) {
 
   m_pSlider_Zoom->SetValue(g_chart_zoom_modifier);
   m_pSlider_Zoom_Vector->SetValue(g_chart_zoom_modifier_vector);
-  
+
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
   m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
@@ -7173,7 +7173,7 @@ void options::SetInitialSettings(void) {
 
   pDepthUnitSelect->SetSelection(g_nDepthUnitDisplay);
   UpdateOptionsUnits();  // sets depth values using the user's unit preference
-  
+
   SetInitialVectorSettings();
 
   pToolbarAutoHideCB->SetValue(g_bAutoHideToolbar);
@@ -7187,29 +7187,29 @@ void options::SetInitialSettings(void) {
           m_cbNMEADebug->SetValue(true);
       }
   }
-      
+
   //  Serial ports
-  
+
   delete m_pSerialArray;
   m_pSerialArray = NULL;
   m_pSerialArray = EnumerateSerialPorts();
-  
+
   if (m_pSerialArray) {
       m_comboPort->Clear();
       for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
           m_comboPort->Append(m_pSerialArray->Item(i));
       }
   }
-  
+
   //  On some platforms, the global connections list may be changed outside of the options dialog.
   //  Pick up any changes here, and re-populate the dialog list.
   FillSourceList();
 
   //  Reset the touch flag...
   connectionsaved = true;
-  
+
   SetSelectedConnectionPanel( nullptr);
-  
+
 }
 
 void options::resetMarStdList(bool bsetConfig, bool bsetStd)
@@ -7218,7 +7218,7 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
         //    S52 Primary Filters
         ps57CtlListBox->Clear();
         marinersStdXref.clear();
-        
+
         for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++) {
             OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
 
@@ -7228,24 +7228,24 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
             } else {
                 item = wxString(pOLE->OBJLName, wxConvUTF8);
             }
-            
-            
+
+
             // Find the most conservative Category, among Point, Area, and Line LUPs
             DisCat cat = OTHER;
- 
+
             DisCat catp = ps52plib->findLUPDisCat(pOLE->OBJLName, SIMPLIFIED);
             DisCat cata = ps52plib->findLUPDisCat(pOLE->OBJLName, PLAIN_BOUNDARIES);
             DisCat catl = ps52plib->findLUPDisCat(pOLE->OBJLName, LINES);
-            
+
             if((catp == DISPLAYBASE) || (cata == DISPLAYBASE) || (catl== DISPLAYBASE) )
                 cat = DISPLAYBASE;
             else if((catp == STANDARD) || (cata == STANDARD) || (catl== STANDARD) )
                 cat = STANDARD;
-            
+
             bool benable = true;
             if(cat > 0)
                 benable = cat != DISPLAYBASE;
-            
+
             // The ListBox control will insert entries in sorted order, which means
                 // we need to
                 // keep track of already inserted items that gets pushed down the line.
@@ -7254,20 +7254,20 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
                 for (size_t i = 0; i < iPtr; i++) {
                     if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
                 }
-                
+
                 bool bviz = 0;
                 if(bsetConfig)
                     bviz = !(pOLE->nViz == 0);
-                
+
                 if(cat == DISPLAYBASE)
                     bviz = true;
-                
+
                 if(bsetStd){
                     if(cat == STANDARD){
                         bviz = true;
                     }
                 }
-                
+
                 ps57CtlListBox->Check(newpos, bviz);
         }
         //  Force the wxScrolledWindow to recalculate its scroll bars
@@ -7279,7 +7279,7 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
 void options::SetInitialVectorSettings(void)
 {
     m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
-    
+
     //    Diplay Category
     if (ps52plib) {
         m_bVectorInit = true;
@@ -7288,7 +7288,7 @@ void options::SetInitialVectorSettings(void)
         #ifdef __OCPN__ANDROID__
         ps57CtlListBox->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
         #endif
-        
+
         int nset = 2;  // default OTHER
         switch (ps52plib->GetDisplayCategory()) {
             case (DISPLAYBASE):
@@ -7307,7 +7307,7 @@ void options::SetInitialVectorSettings(void)
                 nset = 3;
                 break;
         }
-        
+
         if(pDispCat)
             pDispCat->SetSelection(nset);
 
@@ -7322,48 +7322,48 @@ void options::SetInitialVectorSettings(void)
             }
         }
 
-        
+
 //        if(g_useMUI)
 //           benableMarStd = true;
-        
-        
+
+
         if( ps57CtlListBox )
             ps57CtlListBox->Enable(benableMarStd);
         itemButtonClearList->Enable(benableMarStd);
         itemButtonSelectList->Enable(benableMarStd);
         itemButtonSetStd->Enable(benableMarStd);
-        
-                
+
+
         //  Other Display Filters
         if(pCheck_SOUNDG) pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
         if(pCheck_ATONTEXT) pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
         if(pCheck_LDISTEXT) pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
         if(pCheck_XLSECTTEXT) pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
-        
+
         pCheck_META->SetValue(ps52plib->m_bShowMeta);
         pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
         pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
         pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
         pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
-        
+
         // Chart Display Style
         if (ps52plib->m_nSymbolStyle == PAPER_CHART)
             pPointStyle->SetSelection(0);
         else
             pPointStyle->SetSelection(1);
-        
+
         if (ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
             pBoundStyle->SetSelection(0);
         else
             pBoundStyle->SetSelection(1);
-        
+
         if (S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
             p24Color->SetSelection(0);
         else
             p24Color->SetSelection(1);
-        
+
         UpdateOptionsUnits();  // sets depth values using the user's unit preference
-        
+
     }
 }
 
@@ -7373,7 +7373,7 @@ void options::UpdateOptionsUnits(void) {
 
   depthUnit = wxMax(depthUnit, 0);
   depthUnit = wxMin(depthUnit, 2);
-  
+
   // depth unit conversion factor
   float conv = 1;
   if (depthUnit == 0)  // feet
@@ -7420,18 +7420,18 @@ void options::UpdateOptionsUnits(void) {
   }
 
   int newLength = itemStaticTextUserVar->GetLabel().Length();
-  
+
   // size hack to adjust change in static text size
   if( (newLength != oldLength) || (b_oldhaveWMM != b_haveWMM) ){
     wxSize sz = GetSize();
     SetSize(sz.x+1, sz.y);
     SetSize(sz);
   }
-  
+
   itemStaticTextUserVar2->Enable(!b_haveWMM);
   pMagVar->Enable(!b_haveWMM);
-*/  
-} 
+*/
+}
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
   wxString screenmm = wxString::Format(
@@ -7467,16 +7467,16 @@ void options::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
     NMEALogWindow::Get().DestroyWindow();
   } else {
     NMEALogWindow::Get().Create(pParent, 35);
-    
+
     // Try to ensure that the log window is a least a little bit visible
     wxRect logRect(NMEALogWindow::Get().GetPosX(), NMEALogWindow::Get().GetPosY(),
                    NMEALogWindow::Get().GetSizeW(), NMEALogWindow::Get().GetSizeH());
-                   
+
     if(GetRect().Contains(logRect)){
         NMEALogWindow::Get().SetPos(GetRect().x/2, (GetRect().y + (GetRect().height - logRect.height)/2) );
         NMEALogWindow::Get().Move();
     }
-        
+
     Raise();
   }
 }
@@ -7523,7 +7523,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
         g_bGLexpert ? dlg.GetAcceleratedPanning()
                   : gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning();
     }
-    
+
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
 
@@ -7543,7 +7543,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
     if (g_bopengl && g_glTextureManager && g_GLOptions.m_bTextureCompression != dlg.GetTextureCompression()) {
       // new g_GLoptions setting is needed in callees
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
-    
+
       if(gFrame->GetPrimaryCanvas()->GetglCanvas()){
         ::wxBeginBusyCursor();
         gFrame->GetPrimaryCanvas()->GetglCanvas()->SetupCompression();
@@ -7553,7 +7553,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
     }
     else
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
-    
+
   }
 
   if (dlg.GetRebuildCache()) {
@@ -7572,7 +7572,7 @@ void options::OnChartDirListSelect(wxCommandEvent& event)
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
-    
+
     if(!g_useMUI){
         if(pDispCat){
             const bool select = pDispCat->GetSelection() == 3;
@@ -7587,7 +7587,7 @@ void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
 
 void options::OnButtonClearClick(wxCommandEvent& event) {
   resetMarStdList(false, false);
-    
+
 //   int nOBJL = ps57CtlListBox->GetCount();
 //   for (int iPtr = 0; iPtr < nOBJL; iPtr++){
 //           ps57CtlListBox->Check(iPtr, FALSE);
@@ -7604,7 +7604,7 @@ void options::OnButtonSelectClick(wxCommandEvent& event) {
 
 void options::OnButtonSetStd(wxCommandEvent& event) {
     resetMarStdList(false, true);
-    
+
     event.Skip();
 }
 
@@ -7633,7 +7633,7 @@ void options::OnButtonaddClick(wxCommandEvent& event) {
 void options::AddChartDir(const wxString& dir) {
    wxFileName dirname = wxFileName(dir);
    pInit_Chart_Dir->Empty();
- 
+
    wxString dirAdd;
    if (g_bportable) {
      wxFileName f(dir);
@@ -7654,7 +7654,7 @@ void options::AddChartDir(const wxString& dir) {
    long idx = pActiveChartsList->InsertItem( li );
 
    k_charts |= CHANGE_CHARTS;
- 
+
    pScanCheckBox->Disable();
 }
 
@@ -7681,7 +7681,7 @@ void options::UpdateWorkArrayFromTextCtl(void) {
   if (m_pWorkDirList) {
     m_pWorkDirList->Clear();
     for (int i = 0; i < n; i++) {
-        
+
       dirname = pActiveChartsList->GetItemText(i);
       if (!dirname.IsEmpty()) {
         //    This is a fix for OSX, which appends EOL to results of
@@ -7716,7 +7716,7 @@ void options::UpdateWorkArrayFromTextCtl(void) {
       }
     }
   }
-  
+
 }
 
 ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
@@ -7728,7 +7728,7 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
 
   //  We check some values here for consistency.
   //  If necessary, set defaults so user will see some result, however wrong...
-    
+
   //  DataStreams should be Input, Output, or Both
   if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
       m_cbInput->SetValue( true );
@@ -7751,7 +7751,7 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   ConnectionParams* pConnectionParams = new ConnectionParams();
 
   UpdateConnectionParamsFromSelectedItem( pConnectionParams );
-  
+
   ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                              pConnectionParams, this);
   pPanel->SetSelected(false);
@@ -7778,7 +7778,7 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
   pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
   pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
-  
+
   pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
   pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
   if (m_rbNetProtoTCP->GetValue())
@@ -7822,10 +7822,10 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
 #ifdef __linux__
   CheckSerialAccess(this, pConnectionParams->Port.ToStdString());
 #endif
-  
+
   if( (pConnectionParams->Type != INTERNAL_GPS) && (pConnectionParams->Type != INTERNAL_BT) )
     CheckDeviceAccess(pConnectionParams->Port);
-  
+
   pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;
@@ -7851,14 +7851,14 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
     pConnectionParams->Baudrate = 0;
     //        pConnectionParams->SetAuxParameterStr(m_choiceBTDataSources->GetStringSelection());
   }
-  
+
   if (pConnectionParams->Type == SERIAL) {
     pConnectionParams->UserComment = m_tSerialComment->GetValue();
   }
   else if (pConnectionParams->Type == NETWORK) {
     pConnectionParams->UserComment = m_tNetComment->GetValue();
   }
-      
+
 
   return pConnectionParams;
 }
@@ -7922,7 +7922,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   icon_name = pWayPointMan->GetIconKey( pRoutepointDefaultIconChoice->GetSelection() );
   if(icon_name && icon_name->Length())
     g_default_routepoint_icon = *icon_name;
-  
+
   g_bUseWptScaMin = pScaMinChckB->GetValue();
   g_iWpt_ScaMin = wxAtoi( m_pText_ScaMin->GetValue() );
   g_bOverruleScaMin = pScaMinOverruleChckB->GetValue();
@@ -7930,7 +7930,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  Any Font changes?
   if(m_bfontChanged)
       m_returnChanges |= FONT_CHANGED;
-  
+
   // Handle Chart Tab
   if (pActiveChartsList) {
     UpdateWorkArrayFromTextCtl();
@@ -8012,7 +8012,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   wxString lastAddr;
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
-  
+
   if (mSelectedConnection) {
     ConnectionParams* cpo = mSelectedConnection;
     lastAddr = cpo->NetworkAddress;
@@ -8058,17 +8058,17 @@ void options::OnApplyClick(wxCommandEvent& event) {
           else
              UpdateSourceList( false );
       }
-          
 
-              
-      
+
+
+
       connectionsaved = TRUE;
     }
 //     else {
 //       ::wxEndBusyCursor();
 //       if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
 //     }
-    
+
     SetSelectedConnectionPanel( nullptr );
 
   }
@@ -8076,7 +8076,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // Recreate datastreams that are new, or have been edited
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams* cp = g_pConnectionParams->Item(i);
-    
+
     // Stream is new, or edited
     if (cp->b_IsSetup) continue;
     // Terminate and remove any existing stream with the same port name
@@ -8109,7 +8109,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // End of Connections page
   if(pCDOOutlines) g_bShowOutlines = pCDOOutlines->GetValue();
   if(pSDisplayGrid) g_bDisplayGrid = pSDisplayGrid->GetValue();
-  
+
   if(pCDOQuilting){
     bool temp_bquilting = pCDOQuilting->GetValue();
 //   if (!g_bQuiltEnable && temp_bquilting)
@@ -8124,7 +8124,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bresponsive = pResponsive->GetValue();
   g_bRollover = pRollover->GetValue();
   g_bShowMuiZoomButtons = pZoomButtons->GetValue();
-  
+
   g_bAutoHideToolbar = pToolbarAutoHideCB->GetValue();
 
   long hide_val = 10;
@@ -8154,7 +8154,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bShowTrue = pCBTrueShow->GetValue();
   g_bShowMag = pCBMagShow->GetValue();
-  
+
   b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
   if(!b_haveWMM  && !b_oldhaveWMM)
     pMagVar->GetValue().ToDouble(&g_UserVar);
@@ -8198,7 +8198,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
   g_iSpeedFormat = pSpeedFormat->GetSelection();
-    
+
   // LIVE ETA OPTION
   if(pSLiveETA) g_bShowLiveETA = pSLiveETA->GetValue();
   if(pSDefaultBoatSpeed) pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
@@ -8237,7 +8237,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_colourOwnshipRangeRingsColour =  m_colourOwnshipRangeRingColour->GetColour();
   g_colourOwnshipRangeRingsColour =  wxColour(g_colourOwnshipRangeRingsColour.Red(), g_colourOwnshipRangeRingsColour.Green(), g_colourOwnshipRangeRingsColour.Blue());
-  
+
   // Sounds
   g_bAIS_GCPA_Alert_Audio = m_pCheck_AISAudio->GetValue();
   g_bAIS_SART_Alert_Audio = m_pCheck_SARTAudio->GetValue();
@@ -8286,7 +8286,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   long l;
   m_pText_Scale_Priority->GetValue().ToLong(&l);
   g_ShowScaled_Num = (int)l;
-  
+
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
   g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
@@ -8319,11 +8319,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
   g_ENCSoundingScaleFactor =  m_pSlider_Text_Factor->GetValue();
 
-  
-  //  Only reload the icons if user has actually visted the UI page    
-  //if(m_bVisitLang)    
+
+  //  Only reload the icons if user has actually visted the UI page
+  //if(m_bVisitLang)
   //  pWayPointMan->ReloadAllIcons();
-  
+
   g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
 
   g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
@@ -8331,10 +8331,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (g_bopengl != pOpenGL->GetValue()) m_returnChanges |= GL_CHANGED;
   g_bopengl = pOpenGL->GetValue();
 
-  //   Handle Vector Charts Tab  
+  //   Handle Vector Charts Tab
   int depthUnit = pDepthUnitSelect->GetSelection();
   g_nDepthUnitDisplay = depthUnit;
- 
+
   //  Process the UserStandard display list, noting if any changes were made
   bool bUserStdChange = false;
 
@@ -8362,7 +8362,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->GenerateStateHash();
     long stateHash = ps52plib->GetStateHash();
 
-  
+
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
       // generated on Windows at closure of the options dialog...
@@ -8395,13 +8395,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if(pCheck_ATONTEXT) ps52plib->m_bShowAtonText = pCheck_ATONTEXT->GetValue();
     if(pCheck_LDISTEXT) ps52plib->m_bShowLdisText = pCheck_LDISTEXT->GetValue();
     if(pCheck_XLSECTTEXT) ps52plib->m_bExtendLightSectors = pCheck_XLSECTTEXT->GetValue();
-    
+
     ps52plib->m_bShowMeta = pCheck_META->GetValue();
     ps52plib->m_bDeClutterText = pCheck_DECLTEXT->GetValue();
     ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
     ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
     ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
-    
+
     ps52plib->m_nSymbolStyle = pPointStyle->GetSelection() == 0 ? PAPER_CHART : SIMPLIFIED;
 
     ps52plib->m_nBoundaryStyle = pBoundStyle->GetSelection() == 0
@@ -8433,9 +8433,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
     ps52plib->UpdateMarinerParams();
     ps52plib->m_nDepthUnitDisplay = depthUnit;
-    
+
     ps52plib->GenerateStateHash();
-    
+
     // Detect a change to S52 library config
     if( (stateHash != ps52plib->GetStateHash()) || bUserStdChange )
         m_returnChanges |= S52_CHANGED;
@@ -8478,12 +8478,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if ( g_bInlandEcdis != pInlandEcdis->GetValue() ){ // InlandEcdis changed
         g_bInlandEcdis = pInlandEcdis->GetValue();
         SwitchInlandEcdisMode( g_bInlandEcdis );
-        m_returnChanges |= TOOLBAR_CHANGED;    
+        m_returnChanges |= TOOLBAR_CHANGED;
     }
 #ifdef __WXOSX__
     if ( g_bDarkDecorations != pDarkDecorations->GetValue() ) {
         g_bDarkDecorations = pDarkDecorations->GetValue();
-       
+
         OCPNMessageBox(this,
                        _("The changes to the window decorations will take full effect the next time you start OpenCPN."),
                        _("OpenCPN"));
@@ -8513,10 +8513,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
       wxString setName = tcDataSelected->GetItemText(i);
       TideCurrentDataSet.Add(setName);
   }
-  
+
   if (event.GetId() != ID_APPLY)                // only on ID_OK
     g_canvasConfig = m_screenConfig;
-    
+
   if (event.GetId() == ID_APPLY) {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
     m_CurrentDirList = *m_pWorkDirList; // Perform a deep copy back to main database.
@@ -8525,17 +8525,17 @@ void options::OnApplyClick(wxCommandEvent& event) {
     //  Their actions have already been accomplished once...
     m_returnChanges &= ~( CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE );
     k_charts = 0;
-    
+
     gFrame->RefreshAllCanvas();
   }
 
   // Some layout changes requiring a new options instance?
   if(m_bneedNew)
     m_returnChanges |= NEED_NEW_OPTIONS;
-  
+
   //  Record notice of any changes to last applied template
   UpdateTemplateTitleText();
-  
+
   if (::wxIsBusy()) //FIXME: Not sure why this is needed here
       ::wxEndBusyCursor();
 }
@@ -8581,7 +8581,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event)
 #ifdef __OCPN__ANDROID__
       break;
 #endif
-      
+
       item = -1;      // Restart
   }
 
@@ -8605,23 +8605,23 @@ void options::OnButtondeleteClick(wxCommandEvent& event)
   pScanCheckBox->Disable();
 
   event.Skip();
-  
+
 }
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
     gFrame->GetPrimaryCanvas()->EnablePaint(false);
-    
+
     extern void ParseAllENC(wxWindow* parent);
-        
+
     ParseAllENC(g_pOptions);
-    
+
     ViewPort vp;
     gFrame->ChartsRefresh();
-    
+
     gFrame->GetPrimaryCanvas()->EnablePaint(true);
-    
-}   
+
+}
 
 #ifdef OCPN_USE_LZMA
 #include <lzma.h>
@@ -8820,7 +8820,7 @@ void options::OnButtoncompressClick(wxCommandEvent& event)
       pListBoxSelections.Add((int)item);
       item = -1;      // Restart
   }
-  
+
 
     if(OCPNMessageBox( this, _("Compression will alter chart files on disk.\n\
 This may make them incompatible with other programs or older versions of OpenCPN.\n\
@@ -8834,7 +8834,7 @@ They can be decompressed again using unxz or 7 zip programs."),
     filespecs.Add("*.kap");
     filespecs.Add("*.KAP");
     filespecs.Add("*.000");
-    
+
     // should we verify we are in a cm93 directory for these?
     filespecs.Add("*.A"), filespecs.Add("*.B"), filespecs.Add("*.C"), filespecs.Add("*.D");
     filespecs.Add("*.E"), filespecs.Add("*.F"), filespecs.Add("*.G"), filespecs.Add("*.Z");
@@ -8887,7 +8887,7 @@ They can be decompressed again using unxz or 7 zip programs."),
       return;
   }
 
-    
+
   // TODO: make this use threads
   unsigned long total_size = 0, total_compressed_size = 0, count = 0;
   wxGenericProgressDialog prog(_("OpenCPN Compress Charts"), wxEmptyString, charts.GetCount()+1, this,
@@ -8921,9 +8921,9 @@ They can be decompressed again using unxz or 7 zip programs."),
                        total_size_mb - total_compressed_size_mb,
                        (1 - total_compressed_size_mb / total_size_mb) * 100.0),
       _("OpenCPN Info"));
-  
+
   UpdateWorkArrayFromTextCtl();
-  
+
   if (m_pWorkDirList) {
       pActiveChartsList->DeleteAllItems();
       for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
@@ -8943,7 +8943,7 @@ They can be decompressed again using unxz or 7 zip programs."),
   pScanCheckBox->Disable();
 
   event.Skip();
-  
+
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
@@ -8985,11 +8985,11 @@ void options::OnFontChoice(wxCommandEvent& event) {
 }
 
 void options::OnChooseFont(wxCommandEvent& event) {
-    
+
 #ifdef __OCPN__ANDROID__
     androidDisableRotation();
-#endif  
-    
+#endif
+
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
   wxFontData font_data;
 
@@ -9043,7 +9043,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
 
 #ifdef __OCPN__ANDROID__
   androidEnableRotation();
-#endif  
+#endif
 
   event.Skip();
 }
@@ -9062,9 +9062,9 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
   unsigned int cco = 0;
   cco |= 0xff;  cco  = cco << 8;
-  cco |= init_color.Red(); cco = cco << 8; 
-  cco |= init_color.Green(); cco = cco << 8; 
-  cco |= init_color.Blue();  
+  cco |= init_color.Red(); cco = cco << 8;
+  cco |= init_color.Green(); cco = cco << 8;
+  cco |= init_color.Blue();
   unsigned int cc = androidColorPicker( cco);
 
   wxColor cn;
@@ -9072,16 +9072,16 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   unsigned char green = (unsigned char) (cc >> 8) % 256;;
   unsigned char red = (unsigned char) (cc >> 16) % 256;
   cn.Set(red, green, blue);
-  
+
   FontMgr::Get().SetFont(sel_text_element, pif, cn);
-  
+
   pParent->UpdateAllFonts();
   m_bfontChanged = true;
-  
+
   androidEnableRotation();
-#else  
+#else
   wxScrolledWindow *sw = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxSize(400, 400));
-  
+
   wxColourData init_colour_data;
   init_colour_data.SetColour(init_color);
 
@@ -9100,14 +9100,14 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   }
 
   sw->Destroy();
-#endif  
+#endif
   event.Skip();
 }
 #endif
 
 void options::OnChartsPageChange(wxListbookEvent& event) {
   unsigned int i = event.GetSelection();
-  
+
   //    User selected Chart Groups Page?
   //    If so, build the remaining UI elements
   if (2 == i) {  // 2 is the index of "Chart Groups" page
@@ -9129,7 +9129,7 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
         UpdateOptionsUnits();  // sets depth values, overriding defaults
     }
   }
-  
+
   event.Skip();  // Allow continued event processing
 }
 
@@ -9162,24 +9162,24 @@ void options::OnTopNBPageChange(wxNotebookEvent& event) {
 }
 
 void options::DoOnPageChange(size_t page) {
-    
+
   unsigned int i = page;
 
   //  Sometimes there is a (-1) page selected.
   if(page > 10)
       return;
-  
+
   lastPage = i;
 
-#ifndef __OCPN__ANDROID__  
+#ifndef __OCPN__ANDROID__
   if (0 == i) {  // Display
     if(m_sconfigSelect_single)
        m_sconfigSelect_single->Refresh( true );
     if(m_sconfigSelect_twovertical)
        m_sconfigSelect_twovertical->Refresh( true );
   }
-#endif  
-  
+#endif
+
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page
@@ -9322,7 +9322,7 @@ void options::DoOnPageChange(size_t page) {
 
       m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
       m_PluginCatalogMgrPanel->SetListPanelPtr(m_pPlugInCtrl);
-      
+
       itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel, 0, wxEXPAND | wxALL, 4);
       itemBoxSizerPanelPlugins->Layout();
 
@@ -9406,10 +9406,10 @@ wxString options::SelectSoundFile()
       return g_Platform->NormalizePath(sel_file);
   else
       return _T("");
-  
+
 }
 
-    
+
 void options::OnButtonSelectSound(wxCommandEvent& event) {
   wxString sel_file = SelectSoundFile();
 
@@ -9425,7 +9425,7 @@ void options::OnButtonTestSound(wxCommandEvent& event) {
     if ((bool) dynamic_cast<SystemCmdSound*>(sound)) {
         sound->SetCmd(g_CmdSoundString.mb_str());
     }
-#endif    
+#endif
     sound->SetFinishedCallback([sound](void*) { delete sound; });
     sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     sound->Play();
@@ -9448,7 +9448,7 @@ void options::OnButtonTestAnchorSound(wxCommandEvent& event) {
     if ((bool) dynamic_cast<SystemCmdSound*>(sound)) {
         sound->SetCmd(g_CmdSoundString.mb_str());
     }
-#endif    
+#endif
     sound->SetFinishedCallback([sound](void*) { delete sound; });
     sound->Load(g_anchorwatch_sound_file, g_iSoundDeviceIndex);
     sound->Play();
@@ -9471,7 +9471,7 @@ void options::OnButtonTestDSCSound(wxCommandEvent& event) {
     if ((bool) dynamic_cast<SystemCmdSound*>(sound)) {
         sound->SetCmd(g_CmdSoundString.mb_str());
     }
-#endif    
+#endif
     sound->SetFinishedCallback([sound](void*) { delete sound; });
     sound->Load(g_DSC_sound_file, g_iSoundDeviceIndex);
     sound->Play();
@@ -9493,7 +9493,7 @@ void options::OnButtonTestSARTSound(wxCommandEvent& event) {
     if ((bool) dynamic_cast<SystemCmdSound*>(sound)) {
         sound->SetCmd(g_CmdSoundString.mb_str());
     }
-#endif    
+#endif
     sound->SetFinishedCallback([sound](void*) { delete sound; });
     sound->Load(g_SART_sound_file, g_iSoundDeviceIndex);
     sound->Play();
@@ -9515,7 +9515,7 @@ void options::OnButtonTestAISSound(wxCommandEvent& event) {
     if ((bool) dynamic_cast<SystemCmdSound*>(sound)) {
         sound->SetCmd(g_CmdSoundString.mb_str());
     }
-#endif    
+#endif
     sound->SetFinishedCallback([sound](void*) { delete sound; });
     sound->Load(g_AIS_sound_file, g_iSoundDeviceIndex);
     sound->Play();
@@ -9786,7 +9786,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
   modified = TRUE;
   allAvailableCtl->GetTreeCtrl()->UnselectAll();
   m_pAddButton->Disable();
-  
+
   wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
   if(pDirCtrl){
       wxTreeCtrl* ptree = pDirCtrl->GetTreeCtrl();
@@ -10015,7 +10015,7 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
 void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray)
 {
   ClearGroupPages();
-  
+
   for (unsigned int i = 0; i < pGroupArray->GetCount(); i++) {
     ChartGroup* pGroup = pGroupArray->Item(i);
     wxTreeCtrl* ptc = AddEmptyGroupPage(pGroup->m_group_name);
@@ -10065,7 +10065,7 @@ void ChartGroupsUI::ClearGroupPages()
     }
 }
 
-            
+
 void options::OnInsertTideDataLocation(wxCommandEvent& event) {
   wxString sel_file;
   int response = wxID_CANCEL;
@@ -10220,7 +10220,7 @@ void options::OnUploadFormatChange(wxCommandEvent& event) {
     m_cbFurunoGP3X->SetValue(FALSE);
   else if (event.GetEventObject() == m_cbFurunoGP3X && event.IsChecked())
     m_cbGarminUploadHost->SetValue(FALSE);
- 
+
   OnConnValChange(event);
   event.Skip();
 }
@@ -10404,7 +10404,7 @@ void options::SetDSFormOptionVizStates(void) {
     m_cbCheckSKDiscover->Show();
     m_ButtonSKDiscover->Show();
     m_StaticTextSKServerStatus->Show();
-  
+
   if (m_rbTypeSerial->GetValue()) {
     m_cbCheckSKDiscover->Hide();
     m_ButtonSKDiscover->Hide();
@@ -10447,15 +10447,15 @@ void options::SetDSFormOptionVizStates(void) {
     m_btnInputStcList->Hide();
     m_tcOutputStc->Hide();
     m_btnOutputStcList->Hide();
- 
- 
+
+
   } else {
     m_cbCheckSKDiscover->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
   }
 }
-  
+
 
 void options::SetDSFormRWStates(void) {
   if (m_rbTypeSerial->GetValue()) {
@@ -10484,7 +10484,7 @@ void options::SetDSFormRWStates(void) {
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
     UpdateDiscoverStatus( wxEmptyString );
-    
+
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
       m_tNetPort->SetValue(_T("10110"));
@@ -10494,7 +10494,7 @@ void options::SetDSFormRWStates(void) {
     m_rbOIgnore->Enable(TRUE);
     m_btnOutputStcList->Enable(TRUE);
   }
-  
+
   SetDSFormOptionVizStates();
   m_pNMEAForm->FitInside();
   //Fit();
@@ -10572,12 +10572,12 @@ void options::SetConnectionParams(ConnectionParams* cp) {
       m_tSerialComment->SetValue(cp->UserComment);
   else if (cp->Type == NETWORK)
       m_tNetComment->SetValue(cp->UserComment);
-  
+
   m_connection_enabled = cp->bEnabled;
-  
+
   // Reset touch flag
   connectionsaved = true;
-  
+
 }
 
 void options::SetDefaultConnectionParams(void) {
@@ -10599,7 +10599,7 @@ void options::SetDefaultConnectionParams(void) {
 
   m_tNetComment->SetValue(wxEmptyString);
   m_tSerialComment->SetValue(wxEmptyString);
-  
+
   bool bserial = TRUE;
 #ifdef __WXGTK__
   bserial = FALSE;
@@ -10615,7 +10615,7 @@ void options::SetDefaultConnectionParams(void) {
       m_rbTypeNet->SetValue( true );
       SetNMEAFormToNet();
   }
-      
+
 #else
   m_rbTypeSerial->SetValue(bserial);
   m_rbTypeNet->SetValue(!bserial);
@@ -10623,21 +10623,21 @@ void options::SetDefaultConnectionParams(void) {
 #endif
 
   m_connection_enabled = TRUE;
-  
+
   // Reset touch flag
   connectionsaved = false;
-  
+
 }
 
 bool options::SortSourceList(void) {
-    
+
     if(g_pConnectionParams->Count() < 2)
         return false;
-    
+
     std::vector<int> ivec;
     for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
         ivec.push_back(i);
-    
+
     bool did_sort = false;
     bool did_swap = true;
     while(did_swap){
@@ -10645,7 +10645,7 @@ bool options::SortSourceList(void) {
         for (size_t j=1 ; j < ivec.size() ; j++){
             ConnectionParams *c1 = g_pConnectionParams->Item(ivec[j]);
             ConnectionParams *c2 = g_pConnectionParams->Item(ivec[j-1]);
-            
+
             if(c1->Priority > c2->Priority){
                 int t = ivec[j-1];
                 ivec[j-1] = ivec[j];
@@ -10655,28 +10655,28 @@ bool options::SortSourceList(void) {
             }
         }
     }
-    
+
     //if(did_sort)
     {
         boxSizerConnections = new wxBoxSizer(wxVERTICAL);
         m_scrollWinConnections->SetSizer(boxSizerConnections );
-        
+
         for(size_t i=0 ; i < ivec.size() ; i++){
             ConnectionParamsPanel *pPanel = g_pConnectionParams->Item(ivec[i])->m_optionsPanel;
             boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
         }
     }
-    
+
     return did_sort;
-    
-}           
+
+}
 
 void options::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
-  
+
   // Add new panels as necessary
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      
+
       if(!g_pConnectionParams->Item(i)->m_optionsPanel){
             ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                              g_pConnectionParams->Item(i), this);
@@ -10691,7 +10691,7 @@ void options::FillSourceList(void) {
   }
   SortSourceList();
   m_scrollWinConnections->Layout();
-  
+
   mSelectedConnection = NULL;
   m_buttonAdd->Enable( true );
   m_buttonAdd->Show();
@@ -10699,7 +10699,7 @@ void options::FillSourceList(void) {
 }
 
 void options::UpdateSourceList( bool bResort ) {
-   
+
     for (size_t i = 0; i < g_pConnectionParams->Count(); i++){
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         ConnectionParamsPanel *panel = cp->m_optionsPanel;
@@ -10710,14 +10710,14 @@ void options::UpdateSourceList( bool bResort ) {
     if(bResort){
         SortSourceList();
     }
-    
+
     m_scrollWinConnections->Layout();
 }
 
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
- 
+
   //  Unselect all panels
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) 
+  for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
     g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected( false );
 
   connectionsaved = FALSE;
@@ -10728,9 +10728,9 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
   m_buttonAdd->Hide(); //Disable();
 
   SetDSFormRWStates();
-  
+
   RecalculateSize();
-  
+
   //  Scroll the panel to allow the user to see more of the NMEA parameter settings area
   wxPoint buttonPosition  = m_buttonAdd->GetPosition();
   m_pNMEAForm->Scroll(-1, buttonPosition.y / m_scrollRate);
@@ -10749,9 +10749,9 @@ void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
             break;
         }
       }
-            
+
       if((index >= 0) && (cp)){
-        delete g_pConnectionParams->Item(index)->m_optionsPanel;  
+        delete g_pConnectionParams->Item(index)->m_optionsPanel;
         g_pConnectionParams->RemoveAt(index);
 
         DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
@@ -10780,15 +10780,15 @@ void options::OnSelectDatasource(wxListEvent& event) {
 }
 
 void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
-  //  Only one panel can be selected at any time  
+  //  Only one panel can be selected at any time
   //  Clear any selections
 
   if(mSelectedConnection && mSelectedConnection->m_optionsPanel)
       mSelectedConnection->m_optionsPanel->SetSelected( false );
-  
+
   if(panel){
     mSelectedConnection = panel->m_pConnectionParams;
-    panel->SetSelected( true );  
+    panel->SetSelected( true );
     SetConnectionParams(mSelectedConnection);
     m_buttonRemove->Enable();
     m_buttonRemove->Show();
@@ -10804,7 +10804,7 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
     m_sbConnEdit->SetLabel(_T(""));
     ClearNMEAForm();
   }
-     
+
 }
 
 void options::OnDiscoverButton(wxCommandEvent &event){
@@ -10826,7 +10826,7 @@ void options::OnDiscoverButton(wxCommandEvent &event){
     }
     g_Platform->HideBusySpinner();
 
-    
+
     event.Skip();
 }
 
@@ -11052,10 +11052,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
 #endif
                ),
       m_brebuild_cache(FALSE) {
-          
+
   wxFont* dialogFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*dialogFont);
-          
+
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   wxFlexGridSizer* flexSizer = new wxFlexGridSizer(2);
 
@@ -11211,7 +11211,7 @@ void OpenGLOptionsDlg::Populate(void) {
           }
       } else {
           m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
-      }          
+      }
   } else {
     m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
     m_cbUseAcceleratedPanning->Disable();
@@ -11226,11 +11226,11 @@ void OpenGLOptionsDlg::OnButtonRebuild(wxCommandEvent& event) {
 }
 
 void OpenGLOptionsDlg::OnButtonClear(wxCommandEvent& event) {
-    
+
   if (g_bopengl && g_glTextureManager){
       ::wxBeginBusyCursor();
       g_glTextureManager->ClearAllRasterTextures();
-      
+
       wxString path = g_Platform->GetPrivateDataDir();
       appendOSDirSlash(&path);
       path.append(_T("raster_texture_cache"));
@@ -11241,7 +11241,7 @@ void OpenGLOptionsDlg::OnButtonClear(wxCommandEvent& event) {
           for (unsigned int i = 0; i < files.GetCount(); i++)
             ::wxRemoveFile(files[i]);
       }
-  
+
       m_cacheSize->SetLabel(_("Size: ") + GetTextureCacheSize());
       ::wxEndBusyCursor();
   }
@@ -11281,11 +11281,11 @@ CanvasConfigSelect::CanvasConfigSelect(wxWindow *parent, options *parentOptions,
     m_bmpNormal = bmp;
     m_borderWidth = 5;
     SetSelected(false);
-    
+
     int refHeight = GetCharHeight();
     //SetMinSize(wxSize(-1, 5 * refHeight));
     SetMinSize(wxSize(bmp.GetSize().x + m_borderWidth * 2, bmp.GetSize().y + m_borderWidth * 2));
-    
+
     Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CanvasConfigSelect::OnMouseSelected), NULL, this);
 }
 
@@ -11303,14 +11303,14 @@ void CanvasConfigSelect::OnMouseSelected( wxMouseEvent &event )
     }
     if(m_parentOptions)
         m_parentOptions->OnCanvasConfigSelectClick( GetId(), GetSelected());
-        
+
 }
 
 void CanvasConfigSelect::SetSelected( bool selected )
 {
     m_bSelected = selected;
     wxColour colour;
-    
+
     if (selected)
     {
         GetGlobalColor(_T("UIBCK"), &colour);
@@ -11321,9 +11321,9 @@ void CanvasConfigSelect::SetSelected( bool selected )
         GetGlobalColor(_T("DILG0"), &colour);
         m_boxColour = colour;
     }
-    
+
     Refresh( true );
-    
+
 }
 
 void CanvasConfigSelect::OnPaint( wxPaintEvent &event )
@@ -11331,32 +11331,32 @@ void CanvasConfigSelect::OnPaint( wxPaintEvent &event )
     int width, height;
     GetSize( &width, &height );
     wxPaintDC dc( this );
-    
+
     dc.SetBackground(*wxLIGHT_GREY);
-    
+
     dc.SetPen(*wxTRANSPARENT_PEN);
     dc.SetBrush(wxBrush(GetBackgroundColour()));
     dc.DrawRectangle(GetVirtualSize());
-    
+
     wxColour c;
-    
+
     if(m_bSelected){
         dc.SetBrush( wxBrush( m_boxColour ) );
-        
+
         GetGlobalColor( _T ( "UITX1" ), &c );
         dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
-        
+
         dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
     }
     else {
         dc.SetBrush( wxBrush( m_boxColour ) );
-        
+
         GetGlobalColor( _T ( "UITX1" ), &c );
         dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
-        
+
         dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
     }
-    
+
     dc.DrawBitmap(m_bmpNormal, m_borderWidth, m_borderWidth, false);
 }
 

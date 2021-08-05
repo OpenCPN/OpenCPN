@@ -133,7 +133,7 @@ typedef struct _OPOINTBLOCK {
 
 /*  1 if two BOXs overlap.
  *  0 if two BOXs do not overlap.
- *  Remember, x2 and y2 are not in the region 
+ *  Remember, x2 and y2 are not in the region
  */
 #define EXTENTCHECK(r1, r2) \
 ((r1)->x2 > (r2)->x1 && \
@@ -147,7 +147,7 @@ typedef struct _OPOINTBLOCK {
  *    ((struct_type *) malloc ((n_structs), sizeof (struct_type)))
  * #define _OG_RENEW(struct_type, mem, n_structs, func) \
  *    ((struct_type *) realloc (mem, (n_structs), sizeof (struct_type)))
- * 
+ *
  * #define og_new(struct_type, n_structs)                   _OG_NEW (struct_type, n_structs, malloc)
  * #define og_renew(struct_type, mem, n_structs)            _OG_RENEW (struct_type, mem, n_structs, realloc)
  */
@@ -167,8 +167,8 @@ if ((nRects) == 0) {                                             \
             else                                                             \
                 (reg)->rects = (OGdkRegionBox *)realloc((reg)->rects, sizeof(OGdkRegionBox) * nRects); \
                 (reg)->size = (nRects);                                          \
-                }                                 
-                
+                }
+
                 /*
                  *   Check to see if there is enough memory in the present region.
                  */
@@ -178,16 +178,16 @@ if ((nRects) == 0) {                                             \
                     (rect) = &(firstrect)[(reg)->numRects];                                \
                     }                                                                       \
                     }
-                    
+
                     #ifndef MIN
                     #define MIN(a,b) wxMin(a,b)
                     #endif
-                    
+
                     #ifndef MAX
                     #define MAX(a,b) wxMax(a,b)
                     #endif
-                    
-                    
+
+
                     /*
                      *  In scan converting polygons, we want to choose those pixels
                      *  which are inside the polygon.  Thus, we add .5 to the starting
@@ -232,7 +232,7 @@ if ((nRects) == 0) {                                             \
                          } \
                      } \
                     }
-                    
+
                     #define OBRESINCRPGON(d, minval, m, m1, incr1, incr2) { \
                     if (m1 > 0) { \
                         if (d > 0) { \
@@ -254,7 +254,7 @@ if ((nRects) == 0) {                                             \
                         } \
                     } \
                     }
-                    
+
                     /*
                      *     This structure contains all of the information needed
                      *     to run the bresenham algorithm.
@@ -268,21 +268,21 @@ if ((nRects) == 0) {                                             \
                         int m, m1;          /* slope and slope+1 */
                         int incr1, incr2;   /* error increments */
                     } OBRESINFO;
-                    
+
                     #define OBRESINITPGONSTRUCT(dmaj, min1, min2, bres) \
                     OBRESINITPGON(dmaj, min1, min2, bres.minor_axis, bres.d, \
                     bres.m, bres.m1, bres.incr1, bres.incr2)
-                    
+
                     #define OBRESINCRPGONSTRUCT(bres) \
                     OBRESINCRPGON(bres.d, bres.minor_axis, bres.m, bres.m1, bres.incr1, bres.incr2)
-                    
-                    
+
+
                     /*
                      * for the winding number rule
                      */
                     #define CLOCKWISE          1
-                    #define COUNTERCLOCKWISE  -1 
-                    
+                    #define COUNTERCLOCKWISE  -1
+
                     typedef struct _OEdgeTableEntry {
                         int ymax;             /* ycoord at which we exit this edge. */
                         OBRESINFO bres;        /* Bresenham info to run the edge     */
@@ -291,36 +291,36 @@ if ((nRects) == 0) {                                             \
                         struct _OEdgeTableEntry *nextWETE;   /* for winding num rule */
                         int ClockWise;        /* flag for winding number rule       */
                     } OEdgeTableEntry;
-                    
-                    
+
+
                     typedef struct _OScanLineList{
                         int scanline;              /* the scanline represented */
                         OEdgeTableEntry *edgelist;  /* header node              */
                         struct _OScanLineList *next;  /* next in the list       */
                     } OScanLineList;
-                    
-                    
+
+
                     typedef struct {
                         int ymax;                 /* ymax for the polygon     */
                         int ymin;                 /* ymin for the polygon     */
                         OScanLineList scanlines;   /* header node              */
                     } OEdgeTable;
-                    
+
                     /*
                      * Here is a struct to help with storage allocation
                      * so we can allocate a big chunk at a time, and then take
                      * pieces from this heap when we need to.
                      */
                     #define SLLSPERBLOCK 25
-                    
+
                     typedef struct _OScanLineListBlock {
                         OScanLineList SLLs[SLLSPERBLOCK];
                         struct _OScanLineListBlock *next;
                     } OScanLineListBlock;
-                    
-                    
+
+
                     /*
-                     * 
+                     *
                      *     a few macros for the inner loops of the fill code where
                      *     performance considerations don't allow a procedure call.
                      *
@@ -346,8 +346,8 @@ if ((nRects) == 0) {                                             \
                         pAET = pAET->next; \
                     } \
                     }
-                    
-                    
+
+
                     /*
                      *     Evaluate the given edge at the given scanline.
                      *     If the edge has expired, then we leave it and fix up
@@ -368,9 +368,9 @@ if ((nRects) == 0) {                                             \
                         pAET = pAET->next; \
                     } \
                     }
-                    
-                    
-                    
+
+
+
 
 OGdkRegion    * gdk_region_copy            (const OGdkRegion    *region);
 void           gdk_region_destroy         (OGdkRegion          *region);
@@ -456,7 +456,7 @@ OCPNRegion::OCPNRegion( wxCoord x, wxCoord y, wxCoord w, wxCoord h ) : wxRegion(
 {
 }
 
-OCPNRegion::OCPNRegion( const wxPoint& topLeft, const wxPoint& bottomRight ) : wxRegion(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y) 
+OCPNRegion::OCPNRegion( const wxPoint& topLeft, const wxPoint& bottomRight ) : wxRegion(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y)
 {
 }
 
@@ -482,7 +482,7 @@ wxRegion *OCPNRegion::GetNew_wxRegion() const
     return new wxRegion(this);
 }
 
-#endif    
+#endif
 
 #ifdef USE_NEW_REGION
 
@@ -589,7 +589,7 @@ bool OCPNRegion::ODoIsEqual(const OCPNRegion& region) const
 {
     if(!region.m_refData)
         return false;
-    
+
     return ogdk_region_equal(M_REGIONDATA->m_region, M_REGIONDATA_OF(region)->m_region);
 }
 
@@ -761,7 +761,7 @@ wxRegionContain OCPNRegion::ODoContainsPoint( wxCoord x, wxCoord y ) const
 
 wxRegionContain OCPNRegion::ODoContainsRect(const wxRect& r) const
 {
-    
+
     if (!m_refData)
         return wxOutRegion;
 
@@ -777,7 +777,7 @@ wxRegionContain OCPNRegion::ODoContainsRect(const wxRect& r) const
         case OGDK_OVERLAP_RECTANGLE_OUT:  return wxOutRegion;
         case OGDK_OVERLAP_RECTANGLE_PART: return wxPartRegion;
     }
-    
+
     return wxOutRegion;
 }
 
@@ -794,28 +794,28 @@ wxRegion *OCPNRegion::GetNew_wxRegion() const
 {
     wxRegion *r = new wxRegion;
     r->Clear();
-    
+
     OGdkRectangle *gdkrects = NULL;
     int numRects = 0;
     gdk_region_get_rectangles( (OGdkRegion *)GetRegion(), &gdkrects, &numRects );
-    
+
     if (numRects)
     {
         for (int i=0; i < numRects; ++i)
         {
             OGdkRectangle &gr = gdkrects[i];
-            
+
             wxRect wr;
             wr.x = gr.x;
             wr.y = gr.y;
             wr.width = gr.width;
             wr.height = gr.height;
-            
+
             r->Union(wr);
         }
     }
     free( gdkrects );
-    
+
     return r;
 }
 
@@ -960,38 +960,38 @@ wxRect OCPNRegionIterator::GetRect() const
 
 /* $TOG: Region.c /main/31 1998/02/06 17:50:22 kaleb $ */
 /************************************************************************
- * 
+ *
  * Copyright 1987, 1988, 1998  The Open Group
- * 
+ *
  * All Rights Reserved.
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
  * OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * Except as contained in this notice, the name of The Open Group shall not be
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from The Open Group.
- * 
- * 
+ *
+ *
  * Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts.
- * 
+ *
  *                        All Rights Reserved
- * 
- * Permission to use, copy, modify, and distribute this software and its 
- * documentation for any purpose and without fee is hereby granted, 
+ *
+ * Permission to use, copy, modify, and distribute this software and its
+ * documentation for any purpose and without fee is hereby granted,
  * provided that the above copyright notice appear in all copies and that
- * both that copyright notice and this permission notice appear in 
+ * both that copyright notice and this permission notice appear in
  * supporting documentation, and that the name of Digital not be
  * used in advertising or publicity pertaining to distribution of the
- * software without specific, written prior permission.  
- * 
+ * software without specific, written prior permission.
+ *
  * DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
  * ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
  * DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
@@ -999,7 +999,7 @@ wxRect OCPNRegionIterator::GetRect() const
  * WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
  * SOFTWARE.
- * 
+ *
  ************************************************************************/
 /* $XFree86: xc/lib/X11/Region.c,v 1.5 1999/05/09 10:50:01 dawes Exp $ */
 /*
@@ -1068,9 +1068,9 @@ OGdkRegion *
 gdk_region_new (void)
 {
     OGdkRegion *temp;
-    
+
     temp = (OGdkRegion *) malloc(sizeof(OGdkRegion));
-    
+
     temp->numRects = 0;
     temp->rects = &temp->extents;
     temp->extents.x1 = 0;
@@ -1078,30 +1078,30 @@ gdk_region_new (void)
     temp->extents.x2 = 0;
     temp->extents.y2 = 0;
     temp->size = 1;
-    
+
     return temp;
 }
 
 /**
  * gdk_region_rectangle:
  * @rectangle: a #GdkRectangle
- * 
+ *
  * Creates a new region containing the area @rectangle.
- * 
+ *
  * Return value: a new region
  **/
 OGdkRegion *
 gdk_region_rectangle (const OGdkRectangle *rectangle)
 {
     OGdkRegion *temp;
-    
+
 ///    g_return_val_if_fail (rectangle != NULL, NULL);
-    
+
     if (rectangle->width <= 0 || rectangle->height <= 0)
         return gdk_region_new();
-    
+
     temp = gdk_region_new(); ///    temp = g_slice_new (GdkRegion);
-    
+
     temp->numRects = 1;
     temp->rects = &temp->extents;
     temp->extents.x1 = rectangle->x;
@@ -1109,29 +1109,29 @@ gdk_region_rectangle (const OGdkRectangle *rectangle)
     temp->extents.x2 = rectangle->x + rectangle->width;
     temp->extents.y2 = rectangle->y + rectangle->height;
     temp->size = 1;
-    
+
     return temp;
 }
 
 /**
  * gdk_region_copy:
  * @region: a #GdkRegion
- * 
+ *
  * Copies @region, creating an identical new region.
- * 
+ *
  * Return value: a new region identical to @region
  **/
 OGdkRegion *
 gdk_region_copy (const OGdkRegion *region)
 {
     OGdkRegion *temp;
-    
+
  ///   g_return_val_if_fail (region != NULL, NULL);
-    
+
     temp = gdk_region_new ();
-    
+
     miRegionCopy (temp, region);
-    
+
     return temp;
 }
 
@@ -1149,7 +1149,7 @@ gdk_region_get_clipbox (const OGdkRegion *region,
 {
 ///    g_return_if_fail (region != NULL);
 ///    g_return_if_fail (rectangle != NULL);
-    
+
     rectangle->x = region->extents.x1;
     rectangle->y = region->extents.y1;
     rectangle->width = region->extents.x2 - region->extents.x1;
@@ -1172,14 +1172,14 @@ gdk_region_get_rectangles (const OGdkRegion  *region,
                            int             *n_rectangles)
 {
     int i;
-    
+
  ///   g_return_if_fail (region != NULL);
  ///   g_return_if_fail (rectangles != NULL);
  ///   g_return_if_fail (n_rectangles != NULL);
-    
+
     *n_rectangles = region->numRects;
     *rectangles = (OGdkRectangle *)malloc (sizeof(OGdkRectangle) * region->numRects);
-    
+
     for (i = 0; i < region->numRects; i++)
     {
         OGdkRegionBox rect;
@@ -1195,7 +1195,7 @@ gdk_region_get_rectangles (const OGdkRegion  *region,
  * gdk_region_union_with_rect:
  * @region: a #GdkRegion.
  * @rect: a #GdkRectangle.
- * 
+ *
  * Sets the area of @region to the union of the areas of @region and
  * @rect. The resulting area is the set of pixels contained in
  * either @region or @rect.
@@ -1205,13 +1205,13 @@ gdk_region_union_with_rect (OGdkRegion          *region,
                             const OGdkRectangle *rect)
 {
     OGdkRegion tmp_region;
-    
+
 //    g_return_if_fail (region != NULL);
  //   g_return_if_fail (rect != NULL);
-    
+
     if (rect->width <= 0 || rect->height <= 0)
         return;
-    
+
     tmp_region.rects = &tmp_region.extents;
     tmp_region.numRects = 1;
     tmp_region.extents.x1 = rect->x;
@@ -1219,7 +1219,7 @@ gdk_region_union_with_rect (OGdkRegion          *region,
     tmp_region.extents.x2 = rect->x + rect->width;
     tmp_region.extents.y2 = rect->y + rect->height;
     tmp_region.size = 1;
-    
+
     gdk_region_union (region, &tmp_region);
 }
 
@@ -1242,7 +1242,7 @@ static void
 miSetExtents (OGdkRegion *pReg)
 {
     OGdkRegionBox *pBox, *pBoxEnd, *pExtents;
-    
+
     if (pReg->numRects == 0)
     {
         pReg->extents.x1 = 0;
@@ -1251,11 +1251,11 @@ miSetExtents (OGdkRegion *pReg)
         pReg->extents.y2 = 0;
         return;
     }
-    
+
     pExtents = &pReg->extents;
     pBox = pReg->rects;
     pBoxEnd = &pBox[pReg->numRects - 1];
-    
+
     /*
      * Since pBox is the first rectangle in the region, it must have the
      * smallest y1 and since pBoxEnd is the last rectangle in the region,
@@ -1267,7 +1267,7 @@ miSetExtents (OGdkRegion *pReg)
     pExtents->y1 = pBox->y1;
     pExtents->x2 = pBoxEnd->x2;
     pExtents->y2 = pBoxEnd->y2;
-    
+
 ///    g_assert(pExtents->y1 < pExtents->y2);
     while (pBox <= pBoxEnd)
     {
@@ -1294,7 +1294,7 @@ void
 gdk_region_destroy (OGdkRegion *region)
 {
 ///    g_return_if_fail (region != NULL);
-    
+
     if (region->rects != &region->extents)
         free (region->rects);
  ///   g_slice_free (GdkRegion, region);
@@ -1316,12 +1316,12 @@ gdk_region_offset (OGdkRegion *region,
 {
     int nbox;
     OGdkRegionBox *pbox;
-    
+
 ///    g_return_if_fail (region != NULL);
-    
+
     pbox = region->rects;
     nbox = region->numRects;
-    
+
     while(nbox--)
     {
         pbox->x1 += x;
@@ -1339,13 +1339,13 @@ gdk_region_offset (OGdkRegion *region,
     }
 }
 
-/* 
+/*
  *   Utility procedure Compress:
- *   Replace r by the region r', where 
+ *   Replace r by the region r', where
  *     p in r' iff (Quantifer m <= dx) (p + m in r), and
  *     Quantifier is Exists if grow is TRUE, For all if grow is FALSE, and
  *     (x,y) + m = (x+m,y) if xdir is TRUE; (x,y+m) if xdir is FALSE.
- * 
+ *
  *   Thus, if xdir is TRUE and grow is FALSE, r is replaced by the region
  *   of all points p such that p and the next dx points on the same
  *   horizontal scan line are all in r.  We do this using by noting
@@ -1363,7 +1363,7 @@ gdk_region_offset (OGdkRegion *region,
 else gdk_region_intersect (a,b)
     #define ZShiftRegion(a,b) if (xdir) gdk_region_offset (a,b,0); \
     else gdk_region_offset (a,0,b)
-        
+
         static void
         Compress(OGdkRegion *r,
                  OGdkRegion *s,
@@ -1373,7 +1373,7 @@ else gdk_region_intersect (a,b)
                  int        grow)
         {
             unsigned int shift = 1;
-            
+
             miRegionCopy (s, r);
             while (dx)
             {
@@ -1390,11 +1390,11 @@ else gdk_region_intersect (a,b)
                 shift <<= 1;
             }
         }
-        
+
         #undef ZOpRegion
         #undef ZShiftRegion
         #undef ZCopyRegion
-        
+
         /**
          * gdk_region_shrink:
          * @region: a #GdkRegion
@@ -1411,33 +1411,33 @@ else gdk_region_intersect (a,b)
         {
             OGdkRegion *s, *t;
             int grow;
-            
+
 ///            g_return_if_fail (region != NULL);
-            
+
             if (!dx && !dy)
                 return;
-            
+
             s = gdk_region_new ();
             t = gdk_region_new ();
-            
+
             grow = (dx < 0);
             if (grow)
                 dx = -dx;
             if (dx)
                 Compress(region, s, t, (unsigned) 2*dx, TRUE, grow);
-            
+
             grow = (dy < 0);
             if (grow)
                 dy = -dy;
             if (dy)
                 Compress(region, s, t, (unsigned) 2*dy, FALSE, grow);
-            
+
             gdk_region_offset (region, dx, dy);
             gdk_region_destroy (s);
             gdk_region_destroy (t);
         }
-        
-        
+
+
         /*======================================================================
          *          Region Intersection
          *====================================================================*/
@@ -1467,14 +1467,14 @@ else gdk_region_intersect (a,b)
             int   x1;
             int   x2;
             OGdkRegionBox *pNextRect;
-            
+
             pNextRect = &pReg->rects[pReg->numRects];
-            
+
             while ((r1 != r1End) && (r2 != r2End))
             {
                 x1 = MAX (r1->x1,r2->x1);
                 x2 = MIN (r1->x2,r2->x2);
-                
+
                 /*
                  * If there's any overlap between the two rectangles, add that
                  * overlap to the new region.
@@ -1485,7 +1485,7 @@ else gdk_region_intersect (a,b)
                 if (x1 < x2)
                 {
 ///                    g_assert (y1<y2);
-                    
+
                     OMEMCHECK (pReg, pNextRect, pReg->rects);
                     pNextRect->x1 = x1;
                     pNextRect->y1 = y1;
@@ -1495,7 +1495,7 @@ else gdk_region_intersect (a,b)
                     pNextRect++;
  //                   g_assert (pReg->numRects <= pReg->size);
                 }
-                
+
                 /*
                  * Need to advance the pointers. Shift the one that extends
                  * to the right the least, since the other still has a chance to
@@ -1516,7 +1516,7 @@ else gdk_region_intersect (a,b)
                 }
             }
         }
-        
+
         /**
          * gdk_region_intersect:
          * @source1: a #GdkRegion
@@ -1532,7 +1532,7 @@ else gdk_region_intersect (a,b)
         {
 ///            g_return_if_fail (source1 != NULL);
 ///            g_return_if_fail (source2 != NULL);
-            
+
             /* check for trivial reject */
             if ((!(source1->numRects)) || (!(source2->numRects))  ||
                 (!EXTENTCHECK(&source1->extents, &source2->extents)))
@@ -1540,7 +1540,7 @@ else gdk_region_intersect (a,b)
             else
                 miRegionOp (source1, source1, source2,
                             miIntersectO, (nonOverlapFunc) NULL, (nonOverlapFunc) NULL);
-                
+
             /*
              * Can't alter source1's extents before miRegionOp depends on the
              * extents of the regions being unchanged. Besides, this way there's
@@ -1549,34 +1549,34 @@ else gdk_region_intersect (a,b)
              */
             miSetExtents(source1);
         }
-        
+
         static void
         miRegionCopy (OGdkRegion       *dstrgn,
                       const OGdkRegion *rgn)
         {
             if (dstrgn != rgn) /*  don't want to copy to itself */
-            {  
+            {
                 if (dstrgn->size < rgn->numRects)
                 {
                     if (dstrgn->rects != &dstrgn->extents)
                         free (dstrgn->rects);
-                    
+
                     dstrgn->rects = (OGdkRegionBox *)malloc(sizeof(OGdkRegionBox) * rgn->numRects);
                     dstrgn->size = rgn->numRects;
                 }
-                
+
                 dstrgn->numRects = rgn->numRects;
                 dstrgn->extents = rgn->extents;
-                
+
                 memcpy (dstrgn->rects, rgn->rects, rgn->numRects * sizeof (OGdkRegionBox));
             }
         }
-        
-        
+
+
         /*======================================================================
          *          Generic Region Operator
          *====================================================================*/
-        
+
         /*-
          * -----------------------------------------------------------------------
          * miCoalesce --
@@ -1608,12 +1608,12 @@ else gdk_region_intersect (a,b)
             int           prevNumRects;   /* Number of rectangles in previous
             * band */
             int           bandY1;         /* Y1 coordinate for current band */
-            
+
             pRegEnd = &pReg->rects[pReg->numRects];
-            
+
             pPrevBox = &pReg->rects[prevStart];
             prevNumRects = curStart - prevStart;
-            
+
             /*
              * Figure out how many rectangles are in the current band. Have to do
              * this because multiple bands could have been added in miRegionOp
@@ -1627,7 +1627,7 @@ else gdk_region_intersect (a,b)
                  {
                      pCurBox++;
                  }
-                 
+
                  if (pCurBox != pRegEnd)
                  {
                      /*
@@ -1644,7 +1644,7 @@ else gdk_region_intersect (a,b)
                      curStart = pRegEnd - pReg->rects;
                      pRegEnd = pReg->rects + pReg->numRects;
                  }
-                 
+
                  if ((curNumRects == prevNumRects) && (curNumRects != 0)) {
                      pCurBox -= curNumRects;
                      /*
@@ -1673,11 +1673,11 @@ else gdk_region_intersect (a,b)
                              pCurBox++;
                              prevNumRects -= 1;
                          } while (prevNumRects != 0);
-                         
+
                          pReg->numRects -= curNumRects;
                          pCurBox -= curNumRects;
                          pPrevBox -= curNumRects;
-                         
+
                          /*
                           * The bands may be merged, so set the bottom y of each box
                           * in the previous band to that of the corresponding box in
@@ -1691,7 +1691,7 @@ else gdk_region_intersect (a,b)
                              curNumRects -= 1;
                          }
                          while (curNumRects != 0);
-                
+
                 /*
                  * If only one band was added to the region, we have to backup
                  * curStart to the start of the previous band.
@@ -1714,12 +1714,12 @@ else gdk_region_intersect (a,b)
                     }
                     while (pCurBox != pRegEnd);
                 }
-                
+
                      }
                  }
                  return curStart;
         }
-        
+
         /*-
          * -----------------------------------------------------------------------
          * miRegionOp --
@@ -1777,7 +1777,7 @@ else gdk_region_intersect (a,b)
                        * band */
                        int           bot;                  /* Bottom of non-overlapping
                        * band */
-                       
+
                        /*
                         * Initialization:
                         *  set r1, r2, r1End and r2End appropriately, preserve the important
@@ -1789,11 +1789,11 @@ else gdk_region_intersect (a,b)
                        r2 = reg2->rects;
                        r1End = r1 + reg1->numRects;
                        r2End = r2 + reg2->numRects;
-                       
+
                        oldRects = newReg->rects;
-                       
+
                        EMPTY_REGION(newReg);
-                       
+
                        /*
                         * Allocate a reasonable number of rectangles for the new region. The idea
                         * is to allocate enough so the individual functions don't need to
@@ -1803,7 +1803,7 @@ else gdk_region_intersect (a,b)
                         */
                        newReg->size = MAX (reg1->numRects, reg2->numRects) * 2;
                        newReg->rects = (OGdkRegionBox *)malloc(sizeof(OGdkRegionBox) * newReg->size);
-                       
+
                        /*
                         * Initialize ybot and ytop.
                         * In the upcoming loop, ybot and ytop serve different functions depending
@@ -1821,7 +1821,7 @@ else gdk_region_intersect (a,b)
                            ybot = reg1->extents.y1;
                        else
                            ybot = reg2->extents.y1;
-                       
+
                        /*
                         * prevBand serves to mark the start of the previous band so rectangles
                         * can be coalesced into larger rectangles. qv. miCoalesce, above.
@@ -1832,11 +1832,11 @@ else gdk_region_intersect (a,b)
                         * array of rectangles.
                         */
                        prevBand = 0;
-                       
+
                        do
                        {
                            curBand = newReg->numRects;
-                           
+
                            /*
                             * This algorithm proceeds one source-band (as opposed to a
                             * destination band, which is determined by where the two regions
@@ -1849,13 +1849,13 @@ else gdk_region_intersect (a,b)
                            {
                                r1BandEnd++;
                            }
-                           
+
                            r2BandEnd = r2;
                            while ((r2BandEnd != r2End) && (r2BandEnd->y1 == r2->y1))
                            {
                                r2BandEnd++;
                            }
-                           
+
                            /*
                             * First handle the band that doesn't intersect, if any.
                             *
@@ -1868,31 +1868,31 @@ else gdk_region_intersect (a,b)
                            {
                                top = MAX (r1->y1,ybot);
                                bot = MIN (r1->y2,r2->y1);
-                               
+
                                if ((top != bot) && (nonOverlap1Fn != (void (*)(OGdkRegion *, OGdkRegionBox *, OGdkRegionBox *, int,int))NULL))
                                {
                                    (* nonOverlap1Fn) (newReg, r1, r1BandEnd, top, bot);
                                }
-                               
+
                                ytop = r2->y1;
                            }
                            else if (r2->y1 < r1->y1)
                            {
                                top = MAX (r2->y1,ybot);
                                bot = MIN (r2->y2,r1->y1);
-                               
+
                                if ((top != bot) && (nonOverlap2Fn != (void (*)(OGdkRegion *, OGdkRegionBox *, OGdkRegionBox *, int,int))NULL))
                                {
                                    (* nonOverlap2Fn) (newReg, r2, r2BandEnd, top, bot);
                                }
-                               
+
                                ytop = r1->y1;
                            }
                            else
                            {
                                ytop = r1->y1;
                            }
-                           
+
                            /*
                             * If any rectangles got added to the region, try and coalesce them
                             * with rectangles from the previous band. Note we could just do
@@ -1903,7 +1903,7 @@ else gdk_region_intersect (a,b)
                            {
                                prevBand = miCoalesce (newReg, prevBand, curBand);
                            }
-                           
+
                            /*
                             * Now see if we've hit an intersecting band. The two bands only
                             * intersect if ybot > ytop
@@ -1913,14 +1913,14 @@ else gdk_region_intersect (a,b)
                            if (ybot > ytop)
                            {
                                (* overlapFn) (newReg, r1, r1BandEnd, r2, r2BandEnd, ytop, ybot);
-                               
+
                            }
-                           
+
                            if (newReg->numRects != curBand)
                            {
                                prevBand = miCoalesce (newReg, prevBand, curBand);
                            }
-                           
+
                            /*
                             * If we've finished with a band (y2 == ybot) we skip forward
                             * in the region to the next band.
@@ -1934,7 +1934,7 @@ else gdk_region_intersect (a,b)
                                r2 = r2BandEnd;
                            }
                        } while ((r1 != r1End) && (r2 != r2End));
-                       
+
                        /*
                         * Deal with whichever region still has rectangles left.
                         */
@@ -1970,12 +1970,12 @@ else gdk_region_intersect (a,b)
                                r2 = r2BandEnd;
                            } while (r2 != r2End);
                        }
-                       
+
                        if (newReg->numRects != curBand)
                        {
                            (void) miCoalesce (newReg, prevBand, curBand);
                        }
-                       
+
                        /*
                         * A bit of cleanup. To keep regions from growing without bound,
                         * we shrink the array of rectangles to match the new number of
@@ -2003,16 +2003,16 @@ else gdk_region_intersect (a,b)
                                newReg->rects = &newReg->extents;
                            }
                        }
-                       
+
                        if (oldRects != &newReg->extents)
                            free (oldRects);
                    }
-                   
-                   
+
+
                    /*======================================================================
                     *          Region Union
                     *====================================================================*/
-                   
+
                    /*-
                     * -----------------------------------------------------------------------
                     * miUnionNonO --
@@ -2037,11 +2037,11 @@ else gdk_region_intersect (a,b)
                                 int          y2)
                    {
                        OGdkRegionBox *pNextRect;
-                       
+
                        pNextRect = &pReg->rects[pReg->numRects];
-                       
+
  ///                      g_assert(y1 < y2);
-                       
+
                        while (r != rEnd)
                        {
 ///                           g_assert(r->x1 < r->x2);
@@ -2052,13 +2052,13 @@ else gdk_region_intersect (a,b)
                            pNextRect->y2 = y2;
                            pReg->numRects += 1;
                            pNextRect++;
-                           
+
 ///                           g_assert(pReg->numRects<=pReg->size);
                            r++;
                        }
                    }
-                   
-                   
+
+
                    /*-
                     * -----------------------------------------------------------------------
                     * miUnionO --
@@ -2074,7 +2074,7 @@ else gdk_region_intersect (a,b)
                     *
                     *-----------------------------------------------------------------------
                     */
-                   
+
                    /* static void*/
                    static void
                    miUnionO (OGdkRegion *pReg,
@@ -2086,9 +2086,9 @@ else gdk_region_intersect (a,b)
                              int          y2)
                    {
                        OGdkRegionBox *        pNextRect;
-                       
+
                        pNextRect = &pReg->rects[pReg->numRects];
-                       
+
                        #define MERGERECT(r)                                    \
                        if ((pReg->numRects != 0) &&                        \
                            (pNextRect[-1].y1 == y1) &&                     \
@@ -2113,7 +2113,7 @@ else gdk_region_intersect (a,b)
                    }                                                 \
                    /*g_assert(pReg->numRects<=pReg->size);*/                       \
                    r++;
-                   
+
 ///                   g_assert (y1<y2);
                    while ((r1 != r1End) && (r2 != r2End))
                    {
@@ -2126,7 +2126,7 @@ else gdk_region_intersect (a,b)
                            MERGERECT(r2);
                        }
                    }
-                   
+
                    if (r1 != r1End)
                    {
                        do
@@ -2139,12 +2139,12 @@ else gdk_region_intersect (a,b)
                        MERGERECT(r2);
                    }
                    }
-                   
+
                    /**
                     * gdk_region_union:
                     * @source1:  a #GdkRegion
-                    * @source2: a #GdkRegion 
-                    * 
+                    * @source2: a #GdkRegion
+                    *
                     * Sets the area of @source1 to the union of the areas of @source1 and
                     * @source2. The resulting area is the set of pixels contained in
                     * either @source1 or @source2.
@@ -2155,16 +2155,16 @@ else gdk_region_intersect (a,b)
                    {
 ///                       g_return_if_fail (source1 != NULL);
 ///                       g_return_if_fail (source2 != NULL);
-                       
+
                        /*  checks all the simple cases */
-                       
+
                        /*
                         * source1 and source2 are the same or source2 is empty
                         */
                        if ((source1 == source2) || (!(source2->numRects)))
                            return;
-                       
-                       /* 
+
+                       /*
                         * source1 is empty
                         */
                        if (!(source1->numRects))
@@ -2172,21 +2172,21 @@ else gdk_region_intersect (a,b)
                            miRegionCopy (source1, source2);
                            return;
                        }
-                       
+
                        /*
                         * source1 completely subsumes source2
                         */
-                       if ((source1->numRects == 1) && 
+                       if ((source1->numRects == 1) &&
                            (source1->extents.x1 <= source2->extents.x1) &&
                            (source1->extents.y1 <= source2->extents.y1) &&
                            (source1->extents.x2 >= source2->extents.x2) &&
                            (source1->extents.y2 >= source2->extents.y2))
                            return;
-                       
+
                        /*
                         * source2 completely subsumes source1
                         */
-                       if ((source2->numRects == 1) && 
+                       if ((source2->numRects == 1) &&
                            (source2->extents.x1 <= source1->extents.x1) &&
                            (source2->extents.y1 <= source1->extents.y1) &&
                            (source2->extents.x2 >= source1->extents.x2) &&
@@ -2195,21 +2195,21 @@ else gdk_region_intersect (a,b)
                            miRegionCopy(source1, source2);
                            return;
                        }
-                       
-                       miRegionOp (source1, source1, source2, miUnionO, 
+
+                       miRegionOp (source1, source1, source2, miUnionO,
                                    miUnionNonO, miUnionNonO);
-                       
+
                        source1->extents.x1 = MIN (source1->extents.x1, source2->extents.x1);
                        source1->extents.y1 = MIN (source1->extents.y1, source2->extents.y1);
                        source1->extents.x2 = MAX (source1->extents.x2, source2->extents.x2);
                        source1->extents.y2 = MAX (source1->extents.y2, source2->extents.y2);
                    }
-                   
-                   
+
+
                    /*======================================================================
                     *                Region Subtraction
                     *====================================================================*/
-                   
+
                    /*-
                     * -----------------------------------------------------------------------
                     * miSubtractNonO --
@@ -2233,11 +2233,11 @@ else gdk_region_intersect (a,b)
                                     int          y2)
                    {
                        OGdkRegionBox *        pNextRect;
-                       
+
                        pNextRect = &pReg->rects[pReg->numRects];
-                       
+
 ///                       g_assert(y1<y2);
-                       
+
                        while (r != rEnd)
                        {
 ///                           g_assert (r->x1<r->x2);
@@ -2248,13 +2248,13 @@ else gdk_region_intersect (a,b)
                            pNextRect->y2 = y2;
                            pReg->numRects += 1;
                            pNextRect++;
-                           
+
 ///                           g_assert (pReg->numRects <= pReg->size);
-                           
+
                            r++;
                        }
                    }
-                   
+
                    /*-
                     * -----------------------------------------------------------------------
                     * miSubtractO --
@@ -2281,12 +2281,12 @@ else gdk_region_intersect (a,b)
                    {
                        OGdkRegionBox *        pNextRect;
                        int   x1;
-                       
+
                        x1 = r1->x1;
-                       
+
  ///                      g_assert(y1<y2);
                        pNextRect = &pReg->rects[pReg->numRects];
-                       
+
                        while ((r1 != r1End) && (r2 != r2End))
                        {
                            if (r2->x2 <= x1)
@@ -2335,9 +2335,9 @@ else gdk_region_intersect (a,b)
                                pNextRect->y2 = y2;
                                pReg->numRects += 1;
                                pNextRect++;
-                               
+
  ///                              g_assert(pReg->numRects<=pReg->size);
-                               
+
                                x1 = r2->x2;
                                if (x1 >= r1->x2)
                                {
@@ -2377,7 +2377,7 @@ else gdk_region_intersect (a,b)
                                    x1 = r1->x1;
                            }
                        }
-                       
+
                        /*
                         * Add remaining minuend rectangles to region.
                         */
@@ -2391,9 +2391,9 @@ else gdk_region_intersect (a,b)
                            pNextRect->y2 = y2;
                            pReg->numRects += 1;
                            pNextRect++;
-                           
+
 ///                           g_assert(pReg->numRects<=pReg->size);
-                           
+
                            r1++;
                            if (r1 != r1End)
                            {
@@ -2401,7 +2401,7 @@ else gdk_region_intersect (a,b)
                            }
                        }
                    }
-                   
+
                    /**
                     * gdk_region_subtract:
                     * @source1: a #GdkRegion
@@ -2416,15 +2416,15 @@ else gdk_region_intersect (a,b)
                    {
  //                      g_return_if_fail (source1 != NULL);
  //                      g_return_if_fail (source2 != NULL);
-                       
+
                        /* check for trivial reject */
                        if ((!(source1->numRects)) || (!(source2->numRects)) ||
                            (!EXTENTCHECK(&source1->extents, &source2->extents)))
                            return;
-                       
+
                        miRegionOp (source1, source1, source2, miSubtractO,
                                    miSubtractNonO1, (nonOverlapFunc) NULL);
-                       
+
                        /*
                         * Can't alter source1's extents before we call miRegionOp because miRegionOp
                         * depends on the extents of those regions being the unaltered. Besides, this
@@ -2433,7 +2433,7 @@ else gdk_region_intersect (a,b)
                         */
                        miSetExtents (source1);
                    }
-                   
+
                    /**
                     * gdk_region_xor:
                     * @source1: a #GdkRegion
@@ -2448,22 +2448,22 @@ else gdk_region_intersect (a,b)
                                    const OGdkRegion *source2)
                    {
                        OGdkRegion *trb;
-                       
+
  //                      g_return_if_fail (source1 != NULL);
  //                      g_return_if_fail (source2 != NULL);
-                       
+
                        trb = gdk_region_copy (source2);
-                       
+
                        gdk_region_subtract (trb, source1);
                        gdk_region_subtract (source1, source2);
-                       
+
                        gdk_region_union (source1, trb);
-                       
+
                        gdk_region_destroy (trb);
                    }
-                   
+
                    /**
-                    * gdk_region_empty: 
+                    * gdk_region_empty:
                     * @region: a #GdkRegion
                     *
                     * Finds out if the #GdkRegion is empty.
@@ -2474,13 +2474,13 @@ else gdk_region_intersect (a,b)
                    gdk_region_empty (const OGdkRegion *region)
                    {
 //                       g_return_val_if_fail (region != NULL, FALSE);
-                       
+
                        if (region->numRects == 0)
                            return TRUE;
                        else
                            return FALSE;
                    }
-                   
+
                    /**
                     * gdk_region_equal:
                     * @region1: a #GdkRegion
@@ -2495,10 +2495,10 @@ else gdk_region_intersect (a,b)
                                      const OGdkRegion *region2)
                    {
                        int i;
-                       
+
  //                      g_return_val_if_fail (region1 != NULL, FALSE);
  //                      g_return_val_if_fail (region2 != NULL, FALSE);
-                       
+
                        if (region1->numRects != region2->numRects) return FALSE;
                        if (region1->numRects == 0) return TRUE;
                        if (region1->extents.x1 != region2->extents.x1) return FALSE;
@@ -2514,7 +2514,7 @@ else gdk_region_intersect (a,b)
                        }
                        return TRUE;
                    }
-                   
+
                    /**
                     * gdk_region_point_in:
                     * @region: a #GdkRegion
@@ -2531,9 +2531,9 @@ else gdk_region_intersect (a,b)
                                         int              y)
                    {
                        int i;
-                       
+
 //                       g_return_val_if_fail (region != NULL, FALSE);
-                       
+
                        if (region->numRects == 0)
                            return FALSE;
                        if (!INBOX(region->extents, x, y))
@@ -2545,10 +2545,10 @@ else gdk_region_intersect (a,b)
                        }
                        return FALSE;
                    }
- 
+
 
                    /**
-                    * gdk_region_rect_in: 
+                    * gdk_region_rect_in:
                     * @region: a #GdkRegion.
                     * @rectangle: a #GdkRectangle.
                     *
@@ -2568,29 +2568,29 @@ else gdk_region_intersect (a,b)
                        OGdkRegionBox *prect = &rect;
                        bool          partIn, partOut;
                        int rx, ry;
-                       
+
 //                       g_return_val_if_fail (region != NULL, GDK_OVERLAP_RECTANGLE_OUT);
 //                       g_return_val_if_fail (rectangle != NULL, GDK_OVERLAP_RECTANGLE_OUT);
-                       
+
                        rx = rectangle->x;
                        ry = rectangle->y;
-                       
+
                        prect->x1 = rx;
                        prect->y1 = ry;
                        prect->x2 = rx + rectangle->width;
                        prect->y2 = ry + rectangle->height;
-                       
+
                        /* this is (just) a useful optimization */
                        if ((region->numRects == 0) || !EXTENTCHECK (&region->extents, prect))
                            return OGDK_OVERLAP_RECTANGLE_OUT;
-                       
+
                        partOut = FALSE;
                        partIn = FALSE;
-                       
+
                        /* can stop when both partOut and partIn are TRUE, or we reach prect->y2 */
                        for (pbox = region->rects, pboxEnd = pbox + region->numRects; pbox < pboxEnd; pbox++)
                        {
-                                
+
                            if (pbox->y2 <= ry)
                                continue;       /* getting up to speed or skipping remainder of band */
 
@@ -2601,24 +2601,24 @@ else gdk_region_intersect (a,b)
                                    break;
                                ry = pbox->y1;        /* x guaranteed to be == prect->x1 */
                            }
-                           
+
                            if (pbox->x2 <= rx)
                                 continue;               /* not far enough over yet */
-                                    
+
                            if (pbox->x1 > rx)
                            {
                                partOut = TRUE;       /* missed part of rectangle to left */
                                if (partIn)
                                    break;
                            }
-                           
+
                            if (pbox->x1 < prect->x2)
                            {
                                partIn = TRUE;        /* definitely overlap */
                                if (partOut)
                                    break;
                            }
-                           
+
                            if (pbox->x2 >= prect->x2)
                            {
                                ry = pbox->y2;        /* finished with this band */
@@ -2637,16 +2637,16 @@ else gdk_region_intersect (a,b)
                                 */
                                break;
                            }
-                                        
+
                        }
-                            
+
                        return (partIn ?
                            ((ry < prect->y2) ?
-                           OGDK_OVERLAP_RECTANGLE_PART : OGDK_OVERLAP_RECTANGLE_IN) : 
+                           OGDK_OVERLAP_RECTANGLE_PART : OGDK_OVERLAP_RECTANGLE_IN) :
                            OGDK_OVERLAP_RECTANGLE_OUT);
                    }
-                   
-#if 0                   
+
+#if 0
                    static void
                    gdk_region_unsorted_spans_intersect_foreach (GdkRegion     *region,
                                                                 const GdkSpan *spans,
@@ -2658,22 +2658,22 @@ else gdk_region_intersect (a,b)
                        gint clipped_left, clipped_right;
                        GdkRegionBox *pbox;
                        GdkRegionBox *pboxEnd;
-                       
+
                        if (!region->numRects)
                            return;
-                       
+
                        for (i=0;i<n_spans;i++)
                        {
                            y = spans[i].y;
                            left = spans[i].x;
                            right = left + spans[i].width; /* right is not in the span! */
-                           
+
                            if (! ((region->extents.y1 <= y) &&
                                (region->extents.y2 > y) &&
                                (region->extents.x1 < right) &&
-                               (region->extents.x2 > left)) ) 
+                               (region->extents.x2 > left)) )
                                continue;
-                           
+
                            /* can stop when we passed y */
                            for (pbox = region->rects, pboxEnd = pbox + region->numRects;
                                 pbox < pboxEnd;
@@ -2681,17 +2681,17 @@ else gdk_region_intersect (a,b)
                                 {
                                     if (pbox->y2 <= y)
                                         continue; /* Not quite there yet */
-                                        
+
                                         if (pbox->y1 > y)
                                             break; /* passed the spanline */
-                                            
-                                            if ((right > pbox->x1) && (left < pbox->x2)) 
+
+                                            if ((right > pbox->x1) && (left < pbox->x2))
                                             {
                                                 GdkSpan out_span;
-                                                
+
                                                 clipped_left = MAX (left, pbox->x1);
                                                 clipped_right = MIN (right, pbox->x2);
-                                                
+
                                                 out_span.y = y;
                                                 out_span.x = clipped_left;
                                                 out_span.width = clipped_right - clipped_left;
@@ -2728,10 +2728,10 @@ else gdk_region_intersect (a,b)
                        GdkRegionBox *pboxEnd;
                        const GdkSpan *span, *tmpspan;
                        const GdkSpan *end_span;
-                       
+
                        g_return_if_fail (region != NULL);
                        g_return_if_fail (spans != NULL);
-                       
+
                        if (!sorted)
                        {
                            gdk_region_unsorted_spans_intersect_foreach (region,
@@ -2741,16 +2741,16 @@ else gdk_region_intersect (a,b)
                                                                         data);
                            return;
                        }
-                       
+
                        if ((!region->numRects) || (n_spans == 0))
                            return;
-                       
+
                        /* The main method here is to step along the
                         * sorted rectangles and spans in lock step, and
                         * clipping the spans that are in the current
                         * rectangle before going on to the next rectangle.
                         */
-                       
+
                        span = spans;
                        end_span = spans + n_spans;
                        pbox = region->rects;
@@ -2774,7 +2774,7 @@ else gdk_region_intersect (a,b)
                                        return;
                                }
                            }
-                           
+
                            /* Ok, we got at least one span that might intersect this rectangle. */
                            tmpspan = span;
                            while ((tmpspan < end_span) &&
@@ -2783,66 +2783,66 @@ else gdk_region_intersect (a,b)
                                y = tmpspan->y;
                                left = tmpspan->x;
                                right = left + tmpspan->width; /* right is not in the span! */
-                               
+
                                if ((right > pbox->x1) && (left < pbox->x2))
                                {
                                    GdkSpan out_span;
-                                   
+
                                    clipped_left = MAX (left, pbox->x1);
                                    clipped_right = MIN (right, pbox->x2);
-                                   
+
                                    out_span.y = y;
                                    out_span.x = clipped_left;
                                    out_span.width = clipped_right - clipped_left;
                                    (*function) (&out_span, data);
                                }
-                               
+
                                tmpspan++;
                            }
-                           
+
                            /* Finished this rectangle.
                             * The spans could still intersect the next one
                             */
                            pbox++;
                        }
                    }
-#endif                  
- 
- 
+#endif
+
+
  /* $TOG: PolyReg.c /main/15 1998/02/06 17:47:08 kaleb $ */
  /************************************************************************
-  * 
+  *
   * Copyright 1987, 1998  The Open Group
-  * 
+  *
   * All Rights Reserved.
-  * 
+  *
   * The above copyright notice and this permission notice shall be included in
   * all copies or substantial portions of the Software.
-  * 
+  *
   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
   * OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
   * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  * 
+  *
   * Except as contained in this notice, the name of The Open Group shall not be
   * used in advertising or otherwise to promote the sale, use or other dealings
   * in this Software without prior written authorization from The Open Group.
-  * 
-  * 
+  *
+  *
   * Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
-  * 
+  *
   *                        All Rights Reserved
-  * 
-  * Permission to use, copy, modify, and distribute this software and its 
-  * documentation for any purpose and without fee is hereby granted, 
+  *
+  * Permission to use, copy, modify, and distribute this software and its
+  * documentation for any purpose and without fee is hereby granted,
   * provided that the above copyright notice appear in all copies and that
-  * both that copyright notice and this permission notice appear in 
+  * both that copyright notice and this permission notice appear in
   * supporting documentation, and that the name of Digital not be
   * used in advertising or publicity pertaining to distribution of the
-  * software without specific, written prior permission.  
-  * 
+  * software without specific, written prior permission.
+  *
   * DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
   * ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
   * DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
@@ -2850,19 +2850,19 @@ else gdk_region_intersect (a,b)
   * WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
   * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
   * SOFTWARE.
-  * 
+  *
   ************************************************************************/
  /* $XFree86: xc/lib/X11/PolyReg.c,v 1.4 1998/10/03 08:41:21 dawes Exp $ */
- 
+
  #define LARGE_COORDINATE 1000000
  #define SMALL_COORDINATE -LARGE_COORDINATE
- 
+
 // #include "config.h"
 // #include <gdkregion.h>
 // #include "gdkregion-generic.h"
 // #include "gdkpoly-generic.h"
 // #include "gdkalias.h"
- 
+
  /*
   *     InsertEdgeInET
   *
@@ -2882,26 +2882,26 @@ else gdk_region_intersect (a,b)
      OEdgeTableEntry *start, *prev;
      OScanLineList *pSLL, *pPrevSLL;
      OScanLineListBlock *tmpSLLBlock;
-     
+
      /*
       * find the right bucket to put the edge into
       */
      pPrevSLL = &ET->scanlines;
      pSLL = pPrevSLL->next;
-     while (pSLL && (pSLL->scanline < scanline)) 
+     while (pSLL && (pSLL->scanline < scanline))
      {
          pPrevSLL = pSLL;
          pSLL = pSLL->next;
      }
-     
+
      /*
       * reassign pSLL (pointer to ScanLineList) if necessary
       */
-     if ((!pSLL) || (pSLL->scanline > scanline)) 
+     if ((!pSLL) || (pSLL->scanline > scanline))
      {
-         if (*iSLLBlock > SLLSPERBLOCK-1) 
+         if (*iSLLBlock > SLLSPERBLOCK-1)
          {
-             tmpSLLBlock = 
+             tmpSLLBlock =
              (OScanLineListBlock *)malloc(sizeof(OScanLineListBlock));
              (*SLLBlock)->next = tmpSLLBlock;
              tmpSLLBlock->next = (OScanLineListBlock *)NULL;
@@ -2909,36 +2909,36 @@ else gdk_region_intersect (a,b)
              *iSLLBlock = 0;
          }
          pSLL = &((*SLLBlock)->SLLs[(*iSLLBlock)++]);
-         
+
          pSLL->next = pPrevSLL->next;
          pSLL->edgelist = (OEdgeTableEntry *)NULL;
          pPrevSLL->next = pSLL;
      }
      pSLL->scanline = scanline;
-     
+
      /*
       * now insert the edge in the right bucket
       */
      prev = (OEdgeTableEntry *)NULL;
      start = pSLL->edgelist;
-     while (start && (start->bres.minor_axis < ETE->bres.minor_axis)) 
+     while (start && (start->bres.minor_axis < ETE->bres.minor_axis))
      {
          prev = start;
          start = start->next;
      }
      ETE->next = start;
-     
+
      if (prev)
          prev->next = ETE;
      else
          pSLL->edgelist = ETE;
  }
- 
+
  /*
   *     CreateEdgeTable
   *
   *     This routine creates the edge table for
-  *     scan converting polygons. 
+  *     scan converting polygons.
   *     The Edge Table (ET) looks like:
   *
   *    EdgeTable
@@ -2958,7 +2958,7 @@ else gdk_region_intersect (a,b)
   *     which an edge is initially entered.
   *
   */
- 
+
  static void
  CreateETandAET (int                count,
                  const OGdkPoint    *pts,
@@ -2971,9 +2971,9 @@ else gdk_region_intersect (a,b)
      const OGdkPoint *PrevPt, *CurrPt;
      int iSLLBlock = 0;
      int dy;
-     
+
      if (count < 2)  return;
-     
+
      /*
       *  initialize the Active Edge Table
       */
@@ -2981,7 +2981,7 @@ else gdk_region_intersect (a,b)
      AET->back = (OEdgeTableEntry *)NULL;
      AET->nextWETE = (OEdgeTableEntry *)NULL;
      AET->bres.minor_axis = SMALL_COORDINATE;
-     
+
      /*
       *  initialize the Edge Table.
       */
@@ -2989,58 +2989,58 @@ else gdk_region_intersect (a,b)
      ET->ymax = SMALL_COORDINATE;
      ET->ymin = LARGE_COORDINATE;
      pSLLBlock->next = (OScanLineListBlock *)NULL;
-     
+
      PrevPt = &pts[count-1];
-     
+
      /*
       *  for each vertex in the array of points.
       *  In this loop we are dealing with two vertices at
       *  a time -- these make up one edge of the polygon.
       */
-     while (count--) 
+     while (count--)
      {
          CurrPt = pts++;
-         
+
          /*
           *  find out which point is above and which is below.
           */
-         if (PrevPt->y > CurrPt->y) 
+         if (PrevPt->y > CurrPt->y)
          {
              bottom = PrevPt, top = CurrPt;
              pETEs->ClockWise = 0;
          }
-         else 
+         else
          {
              bottom = CurrPt, top = PrevPt;
              pETEs->ClockWise = 1;
          }
-         
+
          /*
           * don't add horizontal edges to the Edge table.
           */
-         if (bottom->y != top->y) 
+         if (bottom->y != top->y)
          {
              pETEs->ymax = bottom->y-1;  /* -1 so we don't get last scanline */
-             
+
              /*
               *  initialize integer edge algorithm
               */
              dy = bottom->y - top->y;
              OBRESINITPGONSTRUCT(dy, top->x, bottom->x, pETEs->bres);
-             
+
              InsertEdgeInET(ET, pETEs, top->y, &pSLLBlock, &iSLLBlock);
-             
+
              if (PrevPt->y > ET->ymax)
                  ET->ymax = PrevPt->y;
              if (PrevPt->y < ET->ymin)
                  ET->ymin = PrevPt->y;
              pETEs++;
          }
-         
+
          PrevPt = CurrPt;
      }
  }
- 
+
  /*
   *     loadAET
   *
@@ -3049,19 +3049,19 @@ else gdk_region_intersect (a,b)
   *     leaving them sorted by smaller x coordinate.
   *
   */
- 
+
  static void
  loadAET(OEdgeTableEntry *AET,
          OEdgeTableEntry *ETEs)
  {
      OEdgeTableEntry *pPrevAET;
      OEdgeTableEntry *tmp;
-     
+
      pPrevAET = AET;
      AET = AET->next;
-     while (ETEs) 
+     while (ETEs)
      {
-         while (AET && (AET->bres.minor_axis < ETEs->bres.minor_axis)) 
+         while (AET && (AET->bres.minor_axis < ETEs->bres.minor_axis))
          {
              pPrevAET = AET;
              AET = AET->next;
@@ -3073,23 +3073,23 @@ else gdk_region_intersect (a,b)
          ETEs->back = pPrevAET;
          pPrevAET->next = ETEs;
          pPrevAET = ETEs;
-         
+
          ETEs = tmp;
      }
  }
- 
+
  /*
   *     computeWAET
   *
   *     This routine links the AET by the
   *     nextWETE (winding EdgeTableEntry) link for
-  *     use by the winding number rule.  The final 
+  *     use by the winding number rule.  The final
   *     Active Edge Table (AET) might look something
   *     like:
   *
   *     AET
   *     ----------  ---------   ---------
-  *     |ymax    |  |ymax    |  |ymax    | 
+  *     |ymax    |  |ymax    |  |ymax    |
   *     | ...    |  |...     |  |...     |
   *     |next    |->|next    |->|next    |->...
   *     |nextWETE|  |nextWETE|  |nextWETE|
@@ -3104,19 +3104,19 @@ else gdk_region_intersect (a,b)
      OEdgeTableEntry *pWETE;
      int inside = 1;
      int isInside = 0;
-     
+
      AET->nextWETE = (OEdgeTableEntry *)NULL;
      pWETE = AET;
      AET = AET->next;
-     while (AET) 
+     while (AET)
      {
          if (AET->ClockWise)
              isInside++;
          else
              isInside--;
-         
+
          if ((!inside && !isInside) ||
-             ( inside &&  isInside)) 
+             ( inside &&  isInside))
          {
              pWETE->nextWETE = AET;
              pWETE = AET;
@@ -3126,7 +3126,7 @@ else gdk_region_intersect (a,b)
      }
      pWETE->nextWETE = (OEdgeTableEntry *)NULL;
  }
- 
+
  /*
   *     InsertionSort
   *
@@ -3135,7 +3135,7 @@ else gdk_region_intersect (a,b)
   *     Edge Table.
   *
   */
- 
+
  static int
  InsertionSort (OEdgeTableEntry *AET)
  {
@@ -3143,17 +3143,17 @@ else gdk_region_intersect (a,b)
      OEdgeTableEntry *pETEinsert;
      OEdgeTableEntry *pETEchaseBackTMP;
      int changed = 0;
-     
+
      AET = AET->next;
-     while (AET) 
+     while (AET)
      {
          pETEinsert = AET;
          pETEchase = AET;
          while (pETEchase->back->bres.minor_axis > AET->bres.minor_axis)
              pETEchase = pETEchase->back;
-         
+
          AET = AET->next;
-         if (pETEchase != pETEinsert) 
+         if (pETEchase != pETEinsert)
          {
              pETEchaseBackTMP = pETEchase->back;
              pETEinsert->back->next = AET;
@@ -3168,7 +3168,7 @@ else gdk_region_intersect (a,b)
      }
      return(changed);
  }
- 
+
  /*
   *     Clean up our act.
   */
@@ -3176,15 +3176,15 @@ else gdk_region_intersect (a,b)
  FreeStorage (OScanLineListBlock *pSLLBlock)
  {
      OScanLineListBlock   *tmpSLLBlock;
-     
-     while (pSLLBlock) 
+
+     while (pSLLBlock)
      {
          tmpSLLBlock = pSLLBlock->next;
          free (pSLLBlock);
          pSLLBlock = tmpSLLBlock;
      }
  }
- 
+
  /*
   *     Create an array of rectangles from a list of points.
   *     If indeed these things (POINTS, RECTS) are the same,
@@ -3205,18 +3205,18 @@ else gdk_region_intersect (a,b)
      int i;
      OGdkRegionBox *extents;
      int numRects;
-     
+
      extents = &reg->extents;
-     
+
      numRects = ((numFullPtBlocks * NUMPTSTOBUFFER) + iCurPtBlock) >> 1;
-     
+
      OGROWREGION(reg, numRects);
-     
+
      CurPtBlock = FirstPtBlock;
      rects = reg->rects - 1;
      numRects = 0;
      extents->x1 = 1000000 /*G_MAXSHORT*/,  extents->x2 = -1000000 /*G_MINSHORT*/;
-     
+
      for ( ; numFullPtBlocks >= 0; numFullPtBlocks--) {
          /* the loop uses 2 points per iteration */
          i = NUMPTSTOBUFFER >> 1;
@@ -3243,7 +3243,7 @@ else gdk_region_intersect (a,b)
          }
          CurPtBlock = CurPtBlock->next;
      }
-     
+
      if (numRects) {
          extents->y1 = reg->rects->y1;
          extents->y2 = rects->y2;
@@ -3254,18 +3254,18 @@ else gdk_region_intersect (a,b)
          extents->y2 = 0;
      }
      reg->numRects = numRects;
-     
+
      return(TRUE);
  }
- 
+
  /**
   * gdk_region_polygon:
   * @points: an array of #GdkPoint structs
   * @n_points: the number of elements in the @points array
-  * @fill_rule: specifies which pixels are included in the region when the 
+  * @fill_rule: specifies which pixels are included in the region when the
   *     polygon overlaps itself.
-  * 
-  * Creates a new #GdkRegion using the polygon defined by a 
+  *
+  * Creates a new #GdkRegion using the polygon defined by a
   * number of points.
   *
   * Returns: a new #GdkRegion based on the given polygon
@@ -3291,9 +3291,9 @@ else gdk_region_intersect (a,b)
      OPOINTBLOCK FirstPtBlock, *curPtBlock; /* PtBlock buffers    */
      OPOINTBLOCK *tmpPtBlock;
      int numFullPtBlocks = 0;
-     
+
      region = gdk_region_new ();
-     
+
      /* special case a rectangle */
      if (((n_points == 4) ||
          ((n_points == 5) && (points[4].x == points[0].x) && (points[4].y == points[0].y))) &&
@@ -3316,14 +3316,14 @@ else gdk_region_intersect (a,b)
          }
          return(region);
          }
-         
+
          pETEs = (OEdgeTableEntry *)malloc(sizeof(OEdgeTableEntry) * n_points);
-         
+
          pts = FirstPtBlock.pts;
          CreateETandAET(n_points, points, &ET, &AET, pETEs, &SLLBlock);
          pSLL = ET.scanlines.next;
          curPtBlock = &FirstPtBlock;
-         
+
          if (fill_rule == OGDK_EVEN_ODD_RULE) {
              /*
               *  for each scanline
@@ -3339,14 +3339,14 @@ else gdk_region_intersect (a,b)
                  }
                  pPrevAET = &AET;
                  pAET = AET.next;
-                 
+
                  /*
                   *  for each active edge
                   */
                  while (pAET) {
                      pts->x = pAET->bres.minor_axis,  pts->y = y;
                      pts++, iPts++;
-                     
+
                      /*
                       *  send out the buffer
                       */
@@ -3381,7 +3381,7 @@ else gdk_region_intersect (a,b)
                  pPrevAET = &AET;
                  pAET = AET.next;
                  pWETE = pAET;
-                 
+
                  /*
                   *  for each active edge
                   */
@@ -3393,7 +3393,7 @@ else gdk_region_intersect (a,b)
                      if (pWETE == pAET) {
                          pts->x = pAET->bres.minor_axis,  pts->y = y;
                          pts++, iPts++;
-                         
+
                          /*
                           *  send out the buffer
                           */
@@ -3409,7 +3409,7 @@ else gdk_region_intersect (a,b)
                      }
                      OEVALUATEEDGEWINDING(pAET, pPrevAET, y, fixWAET);
                  }
-                 
+
                  /*
                   *  recompute the winding active edge table if
                   *  we just resorted or have exited an edge.
@@ -3420,7 +3420,7 @@ else gdk_region_intersect (a,b)
                  }
              }
          }
-         FreeStorage(SLLBlock.next); 
+         FreeStorage(SLLBlock.next);
          (void) PtsToRegion(numFullPtBlocks, iPts, &FirstPtBlock, region);
          for (curPtBlock = FirstPtBlock.next; --numFullPtBlocks >= 0;) {
              tmpPtBlock = curPtBlock->next;
@@ -3430,7 +3430,7 @@ else gdk_region_intersect (a,b)
          free (pETEs);
          return(region);
  }
- 
+
 // #define __GDK_POLYREG_GENERIC_C__
 // #include "gdkaliasdef.c"
-#endif  //USE_NEW_REGION 
+#endif  //USE_NEW_REGION

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGLength.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/04/29
 // RCS-ID:      $Id: SVGLength.cpp,v 1.5 2005/11/07 17:39:59 ntalex Exp $
@@ -54,12 +54,12 @@ void wxSVGLength::SetValueAsString(const wxString& n)
 	  }
 	}
   }
-  
+
   double d;
   if (!value.ToDouble(&d))
 	return;
   m_valueInSpecifiedUnits = d;
-  
+
   if (unit.length() == 0);
   else if (unit == wxT("px"))
 	m_unitType = wxSVG_LENGTHTYPE_PX;

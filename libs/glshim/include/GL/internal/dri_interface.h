@@ -31,7 +31,7 @@
  * between a DRI driver and driver loader.  Currently, the most common driver
  * loader is the XFree86 libGL.so.  However, other loaders do exist, and in
  * the future the server-side libglx.a will also be a loader.
- * 
+ *
  * \author Kevin E. Martin <kevin@precisioninsight.com>
  * \author Ian Romanick <idr@us.ibm.com>
  * \author Kristian Høgsberg <krh@redhat.com>
@@ -158,14 +158,14 @@ struct __DRIframeTrackingExtensionRec {
 
     /**
      * Enable or disable frame usage tracking.
-     * 
+     *
      * \since Internal API version 20030317.
      */
     int (*frameTracking)(__DRIdrawable *drawable, GLboolean enable);
 
     /**
      * Retrieve frame usage information.
-     * 
+     *
      * \since Internal API version 20030317.
      */
     int (*queryFrameTracking)(__DRIdrawable *drawable,
@@ -232,7 +232,7 @@ struct __DRItexBufferExtensionRec {
 
     /**
      * Method to override base texture image with the contents of a
-     * __DRIdrawable. 
+     * __DRIdrawable.
      *
      * For GLX_EXT_texture_from_pixmap with AIGLX.  Deprecated in favor of
      * setTexBuffer2 in version 2 of this interface
@@ -335,7 +335,7 @@ struct __DRIsystemTimeExtensionRec {
 
     /**
      * Get the media stream counter (MSC) rate.
-     * 
+     *
      * Matching the definition in GLX_OML_sync_control, this function returns
      * the rate of the "media stream counter".  In practical terms, this is
      * the frame refresh rate of the display.
@@ -492,7 +492,7 @@ struct __DRIuseInvalidateExtensionRec {
 #define __DRI_ATTRIB_YINVERTED			47
 
 /* __DRI_ATTRIB_RENDER_TYPE */
-#define __DRI_ATTRIB_RGBA_BIT			0x01	
+#define __DRI_ATTRIB_RGBA_BIT			0x01
 #define __DRI_ATTRIB_COLOR_INDEX_BIT		0x02
 #define __DRI_ATTRIB_LUMINANCE_BIT		0x04
 
@@ -566,7 +566,7 @@ struct __DRIcoreExtensionRec {
 /**
  * Stored version of some component (i.e., server-side DRI module, kernel-side
  * DRM, etc.).
- * 
+ *
  * \todo
  * There are several data structures that explicitly store a major version,
  * minor version, and patch level.  These structures should be modified to
@@ -581,7 +581,7 @@ struct __DRIversionRec {
 /**
  * Framebuffer information record.  Used by libGL to communicate information
  * about the framebuffer to the driver's \c __driCreateNewScreen function.
- * 
+ *
  * In XFree86, most of this information is derrived from data returned by
  * calling \c XF86DRIGetDeviceInfo.
  *
@@ -622,7 +622,7 @@ struct __DRIlegacyExtensionRec {
 				    const __DRIversion *dri_version,
 				    const __DRIversion *drm_version,
 				    const __DRIframebuffer *frame_buffer,
-				    void *pSAREA, int fd, 
+				    void *pSAREA, int fd,
 				    const __DRIextension **extensions,
 				    const __DRIconfig ***driver_configs,
 				    void *loaderPrivate);

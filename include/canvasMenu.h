@@ -91,15 +91,15 @@ public:
           RoutePoint *selectedPoint,
           int selectedAIS_MMSI,
           void *selectedTCIndex);
-      
+
       ~CanvasMenuHandler();
- 
+
       void CanvasPopupMenu( int x, int y, int seltype );
       void PopupMenuHandler( wxCommandEvent& event );
       static int GetNextContextMenuId();
-      
+
  private:
-       
+
       int               popx, popy;
       ChartCanvas       *parent;
       Route             *m_pSelectedRoute;
@@ -110,8 +110,8 @@ public:
 	  int				m_SelectedIdx;
       int               m_FoundAIS_MMSI;
       void *            m_pIDXCandidate;
-      
-      
+
+
 };
 
 

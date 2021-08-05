@@ -6,7 +6,7 @@
 #include   "ocpn_plugin.h"
 
 /*
- * The user-writable paths for libraries, binaries and plugin data, 
+ * The user-writable paths for libraries, binaries and plugin data,
  * one path each. And the list of paths used fo loading plugin
  * plugin libraries, locating helper binaries and storing plugin
  * data.
@@ -115,8 +115,8 @@ void PluginPaths::initLinuxPaths()
         m_datadirs.push_back(m_userDatadir);
         return;
     }
-        
-        
+
+
     m_userLibdir = m_home + "/.local/lib";
     m_userBindir = m_home + "/.local/bin";
     m_userDatadir = m_home + "/.local/share";
@@ -166,7 +166,7 @@ void PluginPaths::initApplePaths()
     m_libdirs.push_back(m_userLibdir);
     wxFileName fn_exe(GetOCPN_ExePath());
     fn_exe.RemoveLastDir();
-    string exeLibDir = fn_exe.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR).ToStdString() + "Plugins"; 
+    string exeLibDir = fn_exe.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR).ToStdString() + "Plugins";
     m_libdirs.push_back(exeLibDir);
     //m_libdirs.push_back("/Applications/OpenCPN.app/Contents/Plugins");
     m_bindirs = m_libdirs;
@@ -180,11 +180,11 @@ void PluginPaths::initAndroidPaths()
     using namespace std;
 
     const string platform_dir = g_Platform->GetPluginDir().ToStdString();
-    
+
     m_userLibdir = platform_dir + "/manPlug"; //("/data/user/0/org.opencpn.opencpn");
     m_userBindir = platform_dir + "/manPlug"; //("/data/user/0/org.opencpn.opencpn");
     m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString(); //( "/storage/emulated/0/android/data/org.opencpn.opencpn/files");
-    
+
     m_libdirs.push_back(m_userLibdir);          // Load managed plugins first...
     m_libdirs.push_back(expand(platform_dir));
 
@@ -213,7 +213,7 @@ PluginPaths::PluginPaths()
         initAndroidPaths();
 #else
         initLinuxPaths();
-#endif        
+#endif
     }
     else if (osSystemId & wxOS_MAC) {
         initApplePaths();

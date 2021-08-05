@@ -93,28 +93,28 @@ class NavObjectCollection1 : public pugi::xml_document
 public:
     NavObjectCollection1();
     ~NavObjectCollection1();
-    
+
     bool CreateNavObjGPXPoints(void);
     bool CreateNavObjGPXRoutes(void);
     bool CreateNavObjGPXTracks(void);
- 
+
     void AddGPXRoutesList( RouteList *pRoutes );
     void AddGPXTracksList( TrackList *pTracks );
     bool AddGPXPointsList( RoutePointList *pRoutePoints );
     bool AddGPXRoute(Route *pRoute);
     bool AddGPXTrack(Track *pTrk);
     bool AddGPXWaypoint(RoutePoint *pWP );
-    
+
     bool CreateAllGPXObjects();
     bool LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates, bool b_compute_bbox = false);
     int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, wxCheckBoxState b_namesviz);
-    
+
     bool SaveFile( const wxString filename );
 
     void SetRootGPXNode(void);
     bool IsOpenCPN();
     LLBBox &GetBBox( ) { return BBox;};
-    
+
     LLBBox     BBox;
     pugi::xml_node      m_gpx_root;
 };
@@ -126,18 +126,18 @@ public:
     NavObjectChanges();
     NavObjectChanges( wxString file_name );
     ~NavObjectChanges();
-    
+
     void AddRoute( Route *pr, const char *action );           // support "changes" file set
     void AddTrack( Track *pr, const char *action );
     void AddWP( RoutePoint *pr, const char *action );
     void AddTrackPoint( TrackPoint *pWP, const char *action, const wxString& parent_GUID );
-    
+
     bool ApplyChanges(void);
-    
+
     wxString    m_filename;
     FILE *      m_changes_file;
     bool        m_bdirty;
- 
+
 };
 
 

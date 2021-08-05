@@ -23,8 +23,8 @@ namespace Zeroconf
         {
             class membuf : public std::streambuf
             {
-            public: 
-                membuf(const unsigned char* base, int size) 
+            public:
+                membuf(const unsigned char* base, int size)
                 {
                     auto p = reinterpret_cast<char*>(const_cast<unsigned char*>(base));
                     setg(p, p, p + size);
@@ -49,13 +49,13 @@ namespace Zeroconf
 
             static thread_local LogCallback g_logcb = nullptr;
 
-            inline void Error(const std::string& message) 
+            inline void Error(const std::string& message)
             {
                 if (g_logcb != nullptr)
                     g_logcb(LogLevel::Error, message);
             }
 
-            inline void Warning(const std::string& message) 
+            inline void Warning(const std::string& message)
             {
                 if (g_logcb != nullptr)
                     g_logcb(LogLevel::Warning, message);

@@ -132,14 +132,14 @@ private:
       void BuildLookup( Lookup &lookup );
       void BuildPattern( OCPNPattern &pattern );
       void BuildSymbol( ChartSymbol &symol );
-       
+
       void ProcessColorTables( pugi::xml_node &node );
       void ProcessLookups( pugi::xml_node &node );
       void ProcessLinestyles( pugi::xml_node &node );
       void ProcessPatterns( pugi::xml_node &node );
       void ProcessSymbols( pugi::xml_node &node );
       void ProcessVectorTag( pugi::xml_node &vectorNode, SymbolSizeInfo_t &vectorSize );
-      
+
       pugi::xml_document m_symbolsDoc;
 
       s52plib* plib;

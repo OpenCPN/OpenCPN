@@ -40,18 +40,18 @@ class wxFileConfig;
 //  Class to encapsulate persistant canvas configuration(s)
 class canvasConfig
 {
-public:    
+public:
     canvasConfig();
     canvasConfig(int index);
     ~canvasConfig();
-    
+
     void Reset();
     void LoadFromLegacyConfig( wxFileConfig *conf );
-    
+
     int configIndex;
     ChartCanvas *canvas;
     double iLat, iLon, iScale, iRotation;
-    int DBindex; 
+    int DBindex;
     int GroupID;
     bool bFollow;
     bool bQuilt;
@@ -74,9 +74,9 @@ public:
     bool bShowENCLightDescriptions;
     bool bShowENCLights;
     bool bShowENCVisibleSectorLights;
-    
-    
-     
+
+
+
 };
 
 WX_DEFINE_ARRAY_PTR(canvasConfig*, arrayofCanvasConfigPtr);

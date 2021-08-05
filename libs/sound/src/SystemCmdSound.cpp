@@ -54,7 +54,7 @@ static int do_play(const char* cmd, const char* path)
     char buff[1024];
     snprintf(buff, sizeof( buff ), cmd, path);
     wxLogDebug("Sound command: %s", buff);
-    
+
     int status = system(buff);
     if (status == -1) {
         wxLogWarning("Cannot fork process running %s", buff);
@@ -90,7 +90,7 @@ bool SystemCmdSound::Load(const char* path, int deviceIndex)
 bool SystemCmdSound::Stop(void)  { return false; }
 
 
-bool SystemCmdSound::canPlay(void) 
+bool SystemCmdSound::canPlay(void)
 {
     if (m_isPlaying)
         wxLogWarning("SystemCmdSound: cannot play: already playing");
@@ -126,5 +126,5 @@ bool SystemCmdSound::Play()
         return true;
     }
     int r = do_play(m_cmd.c_str(), m_path.c_str());
-    return r == 0; 
+    return r == 0;
 }

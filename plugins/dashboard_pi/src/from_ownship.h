@@ -51,7 +51,7 @@ public:
 
     void SetData(DASH_CAP st, double data, wxString unit);
     wxSize GetSize( int orient, wxSize hint );
-      
+
 protected:
     wxString          m_data1;
     wxString          m_data2;

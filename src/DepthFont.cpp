@@ -79,13 +79,13 @@ void DepthFont::Build( wxFont *font, double scale )
     /* avoid rebuilding if the parameters are the same */
     if(m_built && (*font == m_font) )
         return;
-    
+
     m_font = *font;
     m_scaleFactor = scale;
 
     m_maxglyphw = 0;
     m_maxglyphh = 0;
-    
+
     wxScreenDC sdc;
 
     sdc.SetFont( *font );
@@ -101,8 +101,8 @@ void DepthFont::Build( wxFont *font, double scale )
         tgi[i].height = gh;// - descent;
 
         tgi[i].advance = gw;
-        
-        
+
+
         m_maxglyphw = wxMax(tgi[i].width,  m_maxglyphw);
         m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
     }
@@ -111,7 +111,7 @@ void DepthFont::Build( wxFont *font, double scale )
     int h = m_maxglyphh;
 
     /* make power of 2 */
-    
+
     for(tex_w = 1; tex_w < w; tex_w *= 2);
     for(tex_h = 1; tex_h < h; tex_h *= 2);
 
@@ -119,11 +119,11 @@ void DepthFont::Build( wxFont *font, double scale )
     wxMemoryDC dc;
     dc.SelectObject(tbmp);
     dc.SetFont( *font );
-    
+
     /* fill bitmap with black */
     dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
     dc.Clear();
-        
+
     /* draw the text white */
     dc.SetTextForeground( wxColour( 255, 255, 255 ) );
 
@@ -131,7 +131,7 @@ void DepthFont::Build( wxFont *font, double scale )
      wxBrush brush(wxColour( 255, 255, 255 ), wxTRANSPARENT);
      dc.SetPen(pen);
      dc.SetBrush(brush);
-  */  
+  */
     int row = 0, col = 0;
     for( int i = 0; i < 10; i++ ) {
 
@@ -142,12 +142,12 @@ void DepthFont::Build( wxFont *font, double scale )
         text = wxString::Format(_T("%d"), i);
 
         dc.DrawText(text, tgi[i].x, tgi[i].y );
-        
+
         col++;
     }
 
     dc.SelectObject(wxNullBitmap);
-    
+
     wxImage image = tbmp.ConvertToImage();
 
     GLuint format, internalformat;
@@ -158,7 +158,7 @@ void DepthFont::Build( wxFont *font, double scale )
     stride = 1;
 
     unsigned char *imgdata = image.GetData();
-    
+
     if(imgdata){
         unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
 
@@ -179,7 +179,7 @@ void DepthFont::Build( wxFont *font, double scale )
 
         free(teximage);
     }
-    
+
     m_built = true;
 }
 
@@ -208,7 +208,7 @@ bool DepthFont::GetGLTextureRect(wxRect &texrect, int symIndex)
         texrect.width = tgi[0].width;
         texrect.height = tgi[0].height;
         return false;
-    }        
+    }
 }
 
 #if 0
@@ -224,8 +224,8 @@ void DepthFont::RenderGlyph( int c )
     float ty1 = (float)y / (float)tex_h;
     float ty2 = (float)(y + h) / (float)tex_h;
 
-#ifndef USE_ANDROID_GLES2    
-    
+#ifndef USE_ANDROID_GLES2
+
     glBegin( GL_QUADS );
 
     glTexCoord2f( tx1, ty1 );  glVertex2i( 0, 0 );
@@ -239,75 +239,75 @@ void DepthFont::RenderGlyph( int c )
 
     float uv[8];
     float coords[8];
-    
+
     //normal uv
     uv[0] = tx1; uv[1] = ty1; uv[2] = tx2; uv[3] = ty1;
     uv[4] = tx2; uv[5] = ty2; uv[6] = tx1; uv[7] = ty2;
-    
+
     // pixels
     coords[0] = 0; coords[1] = 0; coords[2] = w; coords[3] = 0;
     coords[4] = w; coords[5] = h; coords[6] = 0; coords[7] = h;
-    
+
     glUseProgram( texture_2DA_shader_program );
-    
+
     // Get pointers to the attributes in the program.
     GLint mPosAttrib = glGetAttribLocation( texture_2DA_shader_program, "aPos" );
     GLint mUvAttrib  = glGetAttribLocation( texture_2DA_shader_program, "aUV" );
-    
+
     // Set up the texture sampler to texture unit 0
     GLint texUni = glGetUniformLocation( texture_2DA_shader_program, "uTex" );
     glUniform1i( texUni, 0 );
-    
+
     // Disable VBO's (vertex buffer objects) for attributes.
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    
+
     // Set the attribute mPosAttrib with the vertices in the screen coordinates...
     glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
     // ... and enable it.
     glEnableVertexAttribArray( mPosAttrib );
-    
+
     // Set the attribute mUvAttrib with the vertices in the GL coordinates...
     glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
     // ... and enable it.
     glEnableVertexAttribArray( mUvAttrib );
- 
+
     float colorv[4];
     colorv[0] = m_color.Red() / float(256);
     colorv[1] = m_color.Green() / float(256);
     colorv[2] = m_color.Blue() / float(256);
     colorv[3] = 0;
-    
+
     GLint colloc = glGetUniformLocation(texture_2DA_shader_program,"color");
     glUniform4fv(colloc, 1, colorv);
-    
-    // Rotate 
+
+    // Rotate
     float angle = 0;
     mat4x4 I, Q;
     mat4x4_identity(I);
     mat4x4_rotate_Z(Q, I, angle);
-    
+
     // Translate
     Q[3][0] = m_dx;
     Q[3][1] = m_dy;
-    
-    
+
+
     //mat4x4 X;
     //mat4x4_mul(X, (float (*)[4])vp->vp_transform, Q);
-    
+
     GLint matloc = glGetUniformLocation(texture_2DA_shader_program,"TransformMatrix");
-    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
-    
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
+
     // Select the active texture unit.
     glActiveTexture( GL_TEXTURE0 );
-    
+
     // For some reason, glDrawElements is busted on Android
     // So we do this a hard ugly way, drawing two triangles...
     #if 0
-    GLushort indices1[] = {0,1,3,2}; 
+    GLushort indices1[] = {0,1,3,2};
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
     #else
-    
+
     float co1[8];
     co1[0] = coords[0];
     co1[1] = coords[1];
@@ -317,7 +317,7 @@ void DepthFont::RenderGlyph( int c )
     co1[5] = coords[7];
     co1[6] = coords[4];
     co1[7] = coords[5];
-    
+
     float tco1[8];
     tco1[0] = uv[0];
     tco1[1] = uv[1];
@@ -327,20 +327,20 @@ void DepthFont::RenderGlyph( int c )
     tco1[5] = uv[7];
     tco1[6] = uv[4];
     tco1[7] = uv[5];
-    
+
     glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
     glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
-    
+
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
+
     #endif
-    
-    
-    
-    
+
+
+
+
     m_dx += tgic.advance;
-    
-#endif    
+
+#endif
 }
 #endif
 
@@ -349,7 +349,7 @@ void DepthFont::RenderString( const char *string, int x, int y )
 {
 
 #ifndef USE_ANDROID_GLES2
-    
+
     glPushMatrix();
     glTranslatef(x, y, 0);
 
@@ -378,9 +378,9 @@ void DepthFont::RenderString( const char *string, int x, int y )
 #else
     m_dx = x;
     m_dy = y;
-     
+
     glBindTexture( GL_TEXTURE_2D, texobj);
-    
+
     for( int i = 0; string[i]; i++ ) {
         if(string[i] == '\n') {
             m_dy += tgi[(int)'A'].height;
@@ -395,8 +395,8 @@ void DepthFont::RenderString( const char *string, int x, int y )
         }
         RenderGlyph( string[i] );
     }
-            
-#endif    
+
+#endif
 }
 
 void DepthFont::RenderString( const wxString &string, int x, int y )

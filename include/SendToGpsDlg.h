@@ -72,7 +72,7 @@ class SendToGpsDlg : public wxDialog
        void SetWaypoint(RoutePoint *pRoutePoint){m_pRoutePoint = pRoutePoint;}
        wxGauge *GetProgressGauge(){ return m_pgauge; }
        void SetMessage( wxString message );
-       
+
 private:
       void CreateControls(const wxString& hint);
 

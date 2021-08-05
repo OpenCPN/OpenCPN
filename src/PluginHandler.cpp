@@ -241,13 +241,13 @@ class Host {
                     name_like + "-" + os_detail->osd_arch;
                 if (osd_abi == plugin.abi()) {
                     if (is_version_compatible(plugin)) {
-                        return true; 
+                        return true;
                     }
                 }
             }
             return false;
         }
- 
+
         const std::string& abi() const { return m_abi; }
 
         const std::string& abi_version() const { return m_abi_version; }
@@ -464,7 +464,7 @@ static bool win_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return true;
     }
-        
+
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
 
@@ -529,7 +529,7 @@ static bool flatpak_entry_set_install_path(struct archive_entry* entry,
     }
     string dest = installPaths[location] + "/" + suffix;
     archive_entry_set_pathname(entry, dest.c_str());
-    
+
     return true;
 }
 
@@ -569,7 +569,7 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
         wxLogDebug(msg);
         return false;
     }
-    
+
     string dest = installPaths[location] + "/" + suffix;
 
     if(g_bportable){
@@ -586,7 +586,7 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
             dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/lib/" + suffix;
         }
     }
-    
+
     archive_entry_set_pathname(entry, dest.c_str());
     return true;
 }
@@ -670,7 +670,7 @@ static bool android_entry_set_install_path(struct archive_entry* entry,
         wxLogDebug(msg);
         return false;
     }
-    
+
     if((location == "lib") && ocpn::startswith(suffix, "opencpn")){
         auto parts = split(suffix, "/");
         if(parts.size() == 2)
@@ -732,7 +732,7 @@ bool PluginHandler::archive_check(int r, const char* msg, struct archive* a)
 {
     if (r < ARCHIVE_OK) {
         std::string s(msg);
-        
+
         if(archive_error_string(a))
             s = s + ": " + archive_error_string(a);
         wxLogMessage(s.c_str());
@@ -756,12 +756,12 @@ bool PluginHandler::explodeTarball(struct archive* src,
         if (!archive_check(r, "archive read header error", src)) {
             return false;
         }
-        
+
         //  Ignore any occurrence of file "metadata.xml"
         std::string path = archive_entry_pathname(entry);
         if(std::string::npos != path.find("metadata.xml"))
             continue;
-        
+
         if(!entry_set_install_path(entry, pathmap))
             continue;
         if (strlen(archive_entry_pathname(entry)) == 0) {
@@ -781,7 +781,7 @@ bool PluginHandler::explodeTarball(struct archive* src,
         if (!archive_check(r, "archive finish write error", dest)) {
             return false;
         }
-        
+
     }
     return false; // notreached
 }
@@ -869,14 +869,14 @@ static std::string computeMetadataPath(void)
         return path;
     }
 
-    // If default location for composit plugin metadata is not found, 
+    // If default location for composit plugin metadata is not found,
     // we look in the plugin cache directory, which will normally contain
     // he last "master" catalog downloaded
     path = ocpn::lookup_metadata();
     if (path != "") {
         return path;
     }
-    
+
     // And if that does not work, use the empty metadata file found in the
     // distribution "data" directory
     path = g_Platform->GetSharedDataDir();
@@ -953,7 +953,7 @@ void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
-    
+
     std::istringstream files(filelist);
     while (!files.eof()) {
         char line[256];
@@ -965,7 +965,7 @@ void PluginHandler::cleanup(const std::string& filelist,
             }
         }
     }
-    
+
         // Make another limited recursive pass, and remove any empty directories
     bool done = false;
     int iloop = 0;
@@ -975,7 +975,7 @@ void PluginHandler::cleanup(const std::string& filelist,
         while (!dirs.eof()) {
             char line[256];
             dirs.getline(line, sizeof(line));
-            
+
             wxFileName wxFile(line);
             if(wxFile.IsDir() && wxFile.DirExists()){
                 wxDir dir(wxFile.GetFullPath());
@@ -1007,7 +1007,7 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable()
     catalog_ctx ctx;
 
     auto catalogHandler = CatalogHandler::getInstance();
-    
+
     //std::string path = g_Platform->GetPrivateDataDir().ToStdString();
     //path += SEP;
     //path += "ocpn-plugins.xml";
@@ -1129,7 +1129,7 @@ bool PluginHandler::uninstall(const std::string plugin_name)
         }
     }
     files.close();
-    
+
     // Make another limited recursive pass, and remove any empty directories
     bool done = false;
     int iloop = 0;
@@ -1140,7 +1140,7 @@ bool PluginHandler::uninstall(const std::string plugin_name)
             char line[256];
             dirs.getline(line, sizeof(line));
             string dirc(line);
-            
+
             wxFileName wxFile(line);
             if(wxFile.IsDir() && wxFile.DirExists()){
                 wxDir dir(wxFile.GetFullPath());
@@ -1153,10 +1153,10 @@ bool PluginHandler::uninstall(const std::string plugin_name)
             }
         }
         dirs.close();
-        
+
         iloop++;
     }
-    
+
     int r = remove(path.c_str());
     if (r != 0) {
         wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
@@ -1174,7 +1174,7 @@ bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
     wxFileName fn(uri.GetPath());
     wxString tarballFile = fn.GetFullName();
     auto cacheFile = ocpn::lookup_tarball(tarballFile);
- 
+
     if (cacheFile != "") {
         wxLogMessage("Installing %s from local cache",  tarballFile.c_str());
         bool bOK = installPlugin( plugin, cacheFile);
@@ -1185,7 +1185,7 @@ bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
 
             return false;
         }
-        
+
         wxString message;
         message.Printf("%s %s\n", plugin.name.c_str(),  plugin.version.c_str());
         message += _(" successfully installed from cache");
@@ -1193,6 +1193,6 @@ bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
 
         return true;
    }
- 
+
    return false;
 }

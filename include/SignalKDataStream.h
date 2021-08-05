@@ -76,7 +76,7 @@ class SignalKDataStream : public DataStream {
 public:
     SignalKDataStream(wxEvtHandler *input_consumer,
                       const ConnectionParams *params);
-    virtual ~SignalKDataStream(); 
+    virtual ~SignalKDataStream();
 
     void Close();
     static bool DiscoverSKServer( wxString &ip, int &port, int tSec);
@@ -91,7 +91,7 @@ private:
     void OpenWebSocket();
     void CloseWebSocket();
     bool IsThreadRunning(){ return m_threadActive; }
-    
+
     const ConnectionParams *m_params;
     wxSocketBase        *m_sock;
     void SetSock(wxSocketBase* sock) { m_sock = sock; }
@@ -110,11 +110,11 @@ private:
 
     wxTimer             m_socketread_watchdog_timer;
     wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
-    
+
     OCPN_WebSocketMessageHandler        *m_eventHandler;
     bool m_useWebSocket;
     bool m_threadActive;
-    
+
     NetworkProtocol GetProtocol() { return m_params->NetProtocol; }
     std::string         m_sock_buffer;
 

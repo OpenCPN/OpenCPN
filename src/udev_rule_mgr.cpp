@@ -237,7 +237,7 @@ class ReviewRule: public HideShowPanel
 
 
 /** Read and return contents of file with given path. */
-static std::string get_rule(const std::string& path) 
+static std::string get_rule(const std::string& path)
 {
     std::ifstream input(path.c_str());
     std::ostringstream buf;
@@ -399,7 +399,7 @@ class DeviceRuleDialog: public wxDialog
 
             auto sizer = new wxBoxSizer(wxVERTICAL);
             auto flags = wxSizerFlags().Expand().Border();
-        
+
             std::string symlink(make_udev_link());
             auto intro = get_device_intro(device_path, symlink.c_str());
             auto rule_path = get_device_rule(device_path, symlink.c_str());
@@ -411,7 +411,7 @@ class DeviceRuleDialog: public wxDialog
                        flags.Right());
             sizer->Add(new wxStaticLine(this), flags);
             sizer->Add(new Buttons(this, rule_path.c_str()), flags);
-        
+
             SetSizer(sizer);
             SetAutoLayout(true);
             Fit();

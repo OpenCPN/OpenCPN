@@ -252,7 +252,7 @@ class DDFFieldDefn
     DDF_data_type_code   _data_type_code;
 
     int         _lex_level;
-    
+
     int         nSubfieldCount;
     DDFSubfieldDefn **papoSubfields;
 };

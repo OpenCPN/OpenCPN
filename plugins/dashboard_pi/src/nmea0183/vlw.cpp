@@ -61,18 +61,18 @@ void VLW::Empty( void )
 bool VLW::Parse( const SENTENCE& sentence )
 {
    /*
-   VLW - Distance Traveled through Water 
+   VLW - Distance Traveled through Water
 
-        1   2 3   4 5 
-        |   | |   | | 
- $--VLW,x.x,N,x.x,N*hh<CR><LF> 
+        1   2 3   4 5
+        |   | |   | |
+ $--VLW,x.x,N,x.x,N*hh<CR><LF>
 
- Field Number:  
-  1) Total cumulative distance 
-  2) N = Nautical Miles 
-  3) Distance since Reset 
-  4) N = Nautical Miles 
-  5) Checksum 
+ Field Number:
+  1) Total cumulative distance
+  2) N = Nautical Miles
+  3) Distance since Reset
+  4) N = Nautical Miles
+  5) Checksum
 
    */
 
@@ -88,7 +88,7 @@ bool VLW::Parse( const SENTENCE& sentence )
 
    TotalMileage = sentence.Double( 1 );
    TripMileage  = sentence.Double( 3 );
-   
+
    return( TRUE );
 }
 

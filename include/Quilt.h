@@ -68,7 +68,7 @@ public:
     void SetScale(int scale);
     bool Scale_eq( int b ) const { return abs ( ChartScale - b) <= rounding; }
     bool Scale_ge( int b ) const { return  Scale_eq( b ) || ChartScale > b; }
-    
+
     int dbIndex;
     int ChartScale;
     int rounding;
@@ -99,7 +99,7 @@ public:
     }
 
     void EnableHighDefinitionZoom( bool value ) { m_b_hidef = value;}
-    
+
     void UnlockQuilt();
     bool Compose( const ViewPort &vp );
     bool IsComposed() {
@@ -109,7 +109,7 @@ public:
     ChartBase *GetNextChart();
     ChartBase *GetLargestScaleChart();
     ChartBase *GetNextSmallerScaleChart();
-    
+
     std::vector<int> GetQuiltIndexArray( void );
     bool IsQuiltDelta( ViewPort &vp );
     bool IsChartQuiltableRef( int db_index );
@@ -134,12 +134,12 @@ public:
         return m_PatchList.GetCount();
     }
     double GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in);
-    
+
 
     void ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region );
     bool RenderQuiltRegionViewOnDCNoText( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
     bool RenderQuiltRegionViewOnDCTextOnly( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
-    
+
     bool IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false );
     ChartBase *GetChartAtPix( ViewPort &VPoint, wxPoint p );
     ChartBase *GetOverlayChartAtPix( ViewPort &VPoint, wxPoint p );
@@ -170,7 +170,7 @@ public:
     int AdjustRefOnZoomIn( double proposed_scale_onscreen );
 //    int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
     int AdjustRefSelection(const ViewPort &vp_in);
-    
+
     void SetHiliteIndex( int index ) {
         m_nHiLiteIndex = index;
     }
@@ -183,9 +183,9 @@ public:
     int GetRefChartdbIndex( void ) {
         return m_refchart_dbIndex;
     }
-    
+
     ChartBase *GetRefChart();
-    
+
     int GetQuiltProj( void )
     {
         return m_quilt_proj;
@@ -198,11 +198,11 @@ public:
     {
         return m_reference_scale;
     }
-    
+
     ChartFamilyEnum GetRefFamily(){ return (ChartFamilyEnum)m_reference_family; }
-    
+
     void SetPreferrefFamily(ChartFamilyEnum family) { m_preferred_family = family; }
-    
+
     double GetRefNativeScale();
 
     std::vector<int> GetCandidatedbIndexArray( bool from_ref_chart, bool exclude_user_hidden );
@@ -226,32 +226,32 @@ public:
     QuiltPatch *GetCurrentPatch();
     bool IsChartInQuilt( ChartBase *pc );
     bool IsChartInQuilt( wxString &full_path);
-    
+
     bool IsQuiltVector( void );
     bool DoesQuiltContainPlugins( void );
-    
+
     LLRegion GetHiliteRegion( );
     static LLRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
 
     int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     ChartFamilyEnum GetPreferredFamily( void ){ return m_preferred_family; }
-    
+
 private:
     bool BuildExtendedChartStackAndCandidateArray(int ref_db_index, ViewPort &vp_in);
     int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
 
     bool DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
     bool DoRenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, OCPNRegion &chart_region );
-    
+
     void EmptyCandidateArray( void );
     void SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp );
     int GetNewRefChart( void );
     const LLRegion &GetTilesetRegion( int dbIndex);
 
-    
+
     bool IsChartS57Overlay( int db_index );
-    
+
     LLRegion m_covered_region;
     OCPNRegion m_rendered_region; // used only in dc mode
 
@@ -288,15 +288,15 @@ private:
     int m_zout_dbindex;
     int m_zout_family;
     int m_zout_type;
-    
+
     int m_lost_refchart_dbIndex;
     bool m_b_hidef;
-    
+
     bool m_bquiltskew;
     bool m_bquiltanyproj;
     ChartFamilyEnum m_preferred_family;
     ChartCanvas *m_parent;
-    
+
 };
 
 #endif

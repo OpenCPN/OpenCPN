@@ -188,7 +188,7 @@ class PluginIconPanel: public wxPanel
             path.AppendDir("uidata");
             path.AppendDir("traditional");
             bool ok = false;
-            
+
 
             if (path.IsFileReadable()) {
                 wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
@@ -202,7 +202,7 @@ class PluginIconPanel: public wxPanel
                 wxLogMessage("Icon: %s not found.", path.GetFullPath());
             }
 
-/*            
+/*
             wxFileName path(g_Platform->GetSharedDataDir(), plugin_name);
             path.AppendDir("uidata");
             bool ok = false;
@@ -215,7 +215,7 @@ class PluginIconPanel: public wxPanel
                 auto style = g_StyleManager->GetCurrentStyle();
                 bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
             }
-*/            
+*/
         }
 };
 
@@ -342,7 +342,7 @@ class PluginTextPanel: public wxPanel
         {
             auto flags = wxSizerFlags().Border();
             m_isDesc = false;
-            
+
             auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
             m_widthDescription = g_options->GetSize().x / 2;
 
@@ -351,7 +351,7 @@ class PluginTextPanel: public wxPanel
             m_summaryText = wxString(plugin->summary.c_str());
             m_summary->SetLabel( m_summaryText );
             m_summary->Wrap( m_widthDescription );
-    
+
             HardBreakWrapper wrapper(this, m_summaryText, m_widthDescription);
             m_summaryLineCount = wrapper.GetLineCount() + 1;
 
@@ -390,7 +390,7 @@ class PluginTextPanel: public wxPanel
 
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
             m_buttons->HideDetails(!m_descr->IsShown());
-            
+
             UpdateDialog *swin = wxDynamicCast(GetGrandParent(), UpdateDialog);
             if(swin){
                 swin->RecalculateSize();
@@ -475,7 +475,7 @@ class OcpnUpdateScrolledWindow : public wxScrolledWindow
             }
         }
 
-       
+
     private:
         const std::vector<PluginMetadata> m_updates;
         wxFlexGridSizer* m_grid;
@@ -492,12 +492,12 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     SetSizer(vbox);
-    
+
     m_scrwin = new OcpnUpdateScrolledWindow(this, updates);
     vbox->Add(m_scrwin, wxSizerFlags(1).Expand());
 
     RecalculateSize();
-    
+
     Center();
 }
 
@@ -519,15 +519,15 @@ void UpdateDialog::RecalculateSize()
             }
         }
     }
-    
+
     calcHeight += 3 * GetCharHeight();      // "dismiss" button
     calcWidth = wxMin(calcWidth, g_Platform->getDisplaySize().x);
 
     m_scrwin->SetMinSize(wxSize(calcWidth, calcHeight));
-    
+
 #ifdef __OCPN__ANDROID__
     SetMinSize(g_Platform->getDisplaySize());
-#endif    
+#endif
 
     SetMaxSize(g_Platform->getDisplaySize());
 

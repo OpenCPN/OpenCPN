@@ -51,7 +51,7 @@ GribReader::GribReader(const wxString fname)
 GribReader::~GribReader()
 {
     clean_all_vectors();
-    if (file != NULL) 
+    if (file != NULL)
     {
         zu_close(file);
         file = NULL;
@@ -195,8 +195,8 @@ void GribReader::readAllGribRecords()
             || ( RecordIsWind(rec) && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==10)
                 || ( RecordIsWind(rec) && rec->getLevelType()==LV_ISOBARIC //wind at x hpa
                     && (  rec->getLevelValue()==850 || rec->getLevelValue()==700
-			|| rec->getLevelValue()==500 || rec->getLevelValue()==300 
-                       ) 
+			|| rec->getLevelValue()==500 || rec->getLevelValue()==300
+                       )
                ) )
             storeRecordInMap(rec);
 
@@ -228,7 +228,7 @@ void GribReader::readAllGribRecords()
 
         else if((rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
                  || rec->getDataType()==GRB_COMP_REFL)
-                    && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
+                    && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )
             storeRecordInMap(rec);
         else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
             storeRecordInMap(rec);
@@ -241,7 +241,7 @@ void GribReader::readAllGribRecords()
 
         else if( rec->getDataType() == GRB_WVHGT )               // Wind Wave Height
             storeRecordInMap(rec);
-                
+
         else if( rec->getDataType() == GRB_WVPER )               // Wind Waves period
             storeRecordInMap(rec);
 
@@ -252,7 +252,7 @@ void GribReader::readAllGribRecords()
             storeRecordInMap(rec);
 
         else if ((rec->getDataType()==GRB_WTMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
-            storeRecordInMap(rec);                             // rtofs Water Temp + translated gfs Water Temp  
+            storeRecordInMap(rec);                             // rtofs Water Temp + translated gfs Water Temp
 
         else if( RecordIsCurrent(rec))          // rtofs model sea current current
             storeRecordInMap(rec);
@@ -261,7 +261,7 @@ void GribReader::readAllGribRecords()
             storeRecordInMap(rec);
 
         else if( (rec->getDataType()==GRB_GEOPOT_HGT && rec->getLevelType()==LV_ISOBARIC) //geopotentiel geight at x hpa
-                    && (rec->getLevelValue()==850 
+                    && (rec->getLevelValue()==850
 			|| rec->getLevelValue()==700
 			|| rec->getLevelValue()==500
 			|| rec->getLevelValue()==300) )
@@ -374,8 +374,8 @@ void  GribReader::computeAccumulationRecords (int dataType, int levelType, int l
 		time_t date = *rit;
 		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
 		if ( rec && rec->isOk() ) {
-		    
-		    // XXX double check reference date and timerange 
+
+		    // XXX double check reference date and timerange
 		    if (prev != 0 ) {
 		        if (prev->getPeriodP1() == rec->getPeriodP1()) {
 		            // printf("substract %d %d %d\n", prev->getPeriodP1(), prev->getPeriodP2(), prev->getPeriodSec());
@@ -407,7 +407,7 @@ void  GribReader::computeAccumulationRecords (int dataType, int levelType, int l
 	    // the last one
         prev->multiplyAllData( 1.0/(p2 -p1) );
 	}
-	    
+
 }
 
 //---------------------------------------------------------------------------------
@@ -768,7 +768,7 @@ void GribReader::openFile(const wxString fname)
     	if (file != NULL)
     		readGribFileContent();
     }
-    if (file != NULL) 
+    if (file != NULL)
     {
         zu_close(file);
         file = NULL;

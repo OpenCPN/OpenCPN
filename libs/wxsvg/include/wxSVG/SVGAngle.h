@@ -36,17 +36,17 @@ class wxSVGAngle
     wxSVGAngle() : m_unitType(wxSVG_ANGLETYPE_UNKNOWN), m_value(0), m_valueInSpecifiedUnits(0) {}
     wxSVGAngle(double v) : m_unitType(wxSVG_ANGLETYPE_UNSPECIFIED), m_value(v), m_valueInSpecifiedUnits(0) {}
     virtual ~wxSVGAngle() {}
-    
+
     inline double GetValue() const { return m_value; }
     inline void SetValue(double n) { m_unitType = wxSVG_ANGLETYPE_UNSPECIFIED; m_valueInSpecifiedUnits = n; m_value = n; }
     inline operator double() const { return GetValue(); }
-    
+
     inline double GetValueInSpecifiedUnits() const { return m_valueInSpecifiedUnits; }
     void SetValueInSpecifiedUnits(double n);
-    
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& n);
-    
+
     virtual void NewValueSpecifiedUnits(wxSVG_ANGLETYPE unitType, double valueInSpecifiedUnits);
     virtual void ConvertToSpecifiedUnits(wxSVG_ANGLETYPE unitType);
 };

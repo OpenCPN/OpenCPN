@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGColor.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/04/29
 // RCS-ID:      $Id: SVGColor.cpp,v 1.3 2005/06/07 22:30:30 ntalex Exp $
@@ -17,7 +17,7 @@ wxString wxSVGColor::GetCSSText() const
   return wxString::Format(_T("#%02x%02x%02x"),
 	m_rgbColor.Red(), m_rgbColor.Green(), m_rgbColor.Blue());
 }
-	
+
 void wxSVGColor::SetRGBColor(const wxRGBColor& rgbColor)
 {
   m_rgbColor = rgbColor;

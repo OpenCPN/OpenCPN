@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        String_wxsvg.h
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/01/19
 // RCS-ID:      $Id: String_wxsvg.h,v 1.1 2007/09/21 06:47:34 etisserant Exp $

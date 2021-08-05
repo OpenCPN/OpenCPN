@@ -115,7 +115,7 @@ public:
                            int width = -1, int height = -1);
       wxBitmap BuildPluginIcon( wxBitmap &bm, int iconType, double scale = 1.0 );
       bool NativeToolIconExists(const wxString & name);
-      
+
       int GetTopMargin() const { return toolMarginTop[currentOrientation]; }
       int GetRightMargin() const { return toolMarginRight[currentOrientation]; }
       int GetBottomMargin() const { return toolMarginBottom[currentOrientation]; }
@@ -141,7 +141,7 @@ public:
 
       static wxBitmap SetBitmapBrightness( wxBitmap& bitmap, ColorScheme cs );
       static wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
-      
+
       void SetOrientation( long orient );
       int GetOrientation();
       void SetColorScheme( ColorScheme cs );

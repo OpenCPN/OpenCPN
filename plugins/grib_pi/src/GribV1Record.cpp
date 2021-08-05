@@ -466,7 +466,7 @@ static zuint readPackedBits(zuchar *buf, zuint first, zuint nbBits)
         // x >> 32 is undefined behavior, on x86 it returns x
         return 0;
     }
-#endif    
+#endif
     zuint oct = first / 8;
     zuint bit = first % 8;
 
@@ -972,7 +972,7 @@ zuint GribV1Record::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) 
          case 4: // Accumulation  (reference time + P1 to reference time + P2)
             dur = (zuint)P2; break;
 
-        case 10: // P1 occupies octets 19 and 20; product valid at reference time + P1 
+        case 10: // P1 occupies octets 19 and 20; product valid at reference time + P1
             dur = ((zuint)P1<<8) + (zuint)P2; break;
         default:
             erreur("id=%d: unknown time range in PDS b21=%d",id,range);

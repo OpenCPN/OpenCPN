@@ -173,7 +173,7 @@ unsigned long cache_size()
                          dirs.GetFullPath().ToStdString().c_str());
                 continue;
             }
-            
+
             total += size;
         }
         cont = dir.GetNext(&file);

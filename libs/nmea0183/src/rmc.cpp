@@ -105,7 +105,7 @@ bool RMC::Parse( const SENTENCE& sentence )
    */
 
    int nFields = sentence.GetNumberOfDataFields( );
-   
+
    NMEA0183_BOOLEAN check = sentence.IsChecksumBad( nFields + 1 );
 
    if ( check == NTrue )
@@ -130,21 +130,21 @@ bool RMC::Parse( const SENTENCE& sentence )
                mode_valid = false;
        }
    }
-       
+
 
    UTCTime                    = sentence.Field( 1 );
-   
+
    IsDataValid                = sentence.Boolean( 2 );
    if( !mode_valid )
        IsDataValid = NFalse;
-       
+
    Position.Parse( 3, 4, 5, 6, sentence );
    SpeedOverGroundKnots       = sentence.Double( 7 );
    TrackMadeGoodDegreesTrue   = sentence.Double( 8 );
    Date                       = sentence.Field( 9 );
    MagneticVariation          = sentence.Double( 10 );
    MagneticVariationDirection = sentence.EastOrWest( 11 );
-   
+
    return( TRUE );
 }
 

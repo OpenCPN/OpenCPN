@@ -75,7 +75,7 @@ bool RSA::Parse( const SENTENCE& sentence )
    **        |   | |   | |
    ** $--RSA,x.x,A,x.x,A*hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Starboard (or single) rudder sensor, "-" means Turn To Port
    **  2) Status, A means data is valid
    **  3) Port rudder sensor
@@ -91,7 +91,7 @@ bool RSA::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    Starboard            = sentence.Double(  1 );
    IsStarboardDataValid = sentence.Boolean( 2 );
@@ -108,14 +108,14 @@ bool RSA::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += Starboard;
    sentence += IsStarboardDataValid;
    sentence += Port;
    sentence += IsPortDataValid;
-   
+
    sentence.Finish();
 
    return( TRUE );

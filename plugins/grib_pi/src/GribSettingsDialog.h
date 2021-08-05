@@ -46,7 +46,7 @@ struct GribOverlaySettings
     wxString SettingsToJSON(wxString json);
     bool JSONToSettings(wxString json);
     bool UpdateJSONval( wxJSONValue &v, int settings, int group);
-    
+
     double CalibrationOffset(int settings);
     double CalibrationFactor(int settings, double input, bool reverse = false);
     double CalibrateValue(int settings, double input)
@@ -70,7 +70,7 @@ struct GribOverlaySettings
     int m_iCtrlandDataStyle;
     wxString m_iCtrlBarCtrlVisible[2];
 
-    enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
+    enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD,
                        AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, COMP_REFL, GEO_ALTITUDE, REL_HUMIDITY, SETTINGS_COUNT};
     enum Units0 {KNOTS, M_S, MPH, KPH, BFS};
     enum Units1 {MILLIBARS, MMHG, INHG};

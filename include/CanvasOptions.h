@@ -73,17 +73,17 @@ public:
 
     void OnClose( wxCloseEvent& event );
     void OnOptionChange( wxCommandEvent &event);
-    
+
     void RefreshControlValues( void );
     void UpdateCanvasOptions( void );
     void OnEraseBackground( wxEraseEvent& event );
     void SetENCAvailable( bool avail );
-    
+
 private:
     int m_style;
     bool m_ENCAvail;
     wxScrolledWindow *m_sWindow;
-    
+
     wxCheckBox *pShowStatusBar, *pShowMenuBar, *pShowChartBar, *pShowCompassWin;
     wxCheckBox *pPrintShowIcon, *pCDOOutlines, *pSDepthUnits, *pSDisplayGrid;
     wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
@@ -97,13 +97,13 @@ private:
     wxSlider *m_pSlider_Zoom_Vector;
     wxRadioButton *pCBCourseUp, *pCBNorthUp, *pCBHeadUp, *pRBSizeAuto, *pRBSizeManual;
     wxCheckBox *pEnableZoomToCursor, *pPreserveScale;
-    
+
     wxCheckBox *pCDOTides, *pCDOCurrents;
     wxCheckBox *pCDOENCText, *pCBToolbar;
     wxChoice *m_pDispCat;
     wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights, *pCBENCAnchorDetails;
     wxCheckBox *pCBShowAIS, *pCBAttenAIS, *pCBENCVisibleSectors;
-    
+
         DECLARE_EVENT_TABLE()
 
 };

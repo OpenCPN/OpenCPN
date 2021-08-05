@@ -56,7 +56,7 @@ void set_mode(bool mode)
 bool get_mode() { return safe_mode; }
 
 
-/** 
+/**
  * Check if the last start failed, possibly invoke user dialog and set
  * safe mode state.
  */

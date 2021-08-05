@@ -22,7 +22,7 @@
 #endif
 
 #ifdef __WXMSW__
-    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC 
+    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC
 #endif
 
 #include <wx/wfstream.h>
@@ -363,7 +363,7 @@ void *wxCurlUploadThread::Entry()
 
         case wxCP_FTP:
             return (void*)wx_static_cast(wxCurlFTP*, m_pCurl.get())->Put(m_input, m_url);
-            
+
         default: break;
     }
 

@@ -45,7 +45,7 @@
 #include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
-#include "qdebug.h" 
+#include "qdebug.h"
 #include "androidUTIL.h"
 #endif
 
@@ -78,7 +78,7 @@ END_EVENT_TABLE()
 Piano::Piano(ChartCanvas *parent)
 {
     m_parentCanvas = parent;;
-    
+
     m_index_last = -1;
     m_iactive = -1;
 
@@ -87,10 +87,10 @@ Piano::Piano(ChartCanvas *parent)
     m_brounded = false;
     m_bBusy = false;
     m_gotPianoDown = false;
-    
+
     m_nRegions = 0;
     m_width = 0;
-    
+
 
 //>    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
@@ -101,7 +101,7 @@ Piano::Piano(ChartCanvas *parent)
     m_pTmercIconBmp = NULL;
 
     SetColorScheme( GLOBAL_COLOR_SCHEME_RGB );      // default
-    
+
     m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
 
     m_tex = m_tex_piano_height = 0;
@@ -177,7 +177,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
 
         if(m_bBusy)
             dc.SetBrush( m_unavailableBrush );
-            
+
         wxRect box = KeyRect[i];
         box.y += y;
 
@@ -238,8 +238,8 @@ static void SetColor(unsigned char color[4], const wxBrush &brush)
 void Piano::BuildGLTexture()
 {
 #ifdef ocpnUSE_GL
-    
-    // Defer building until auxiliary bitmaps have been loaded 
+
+    // Defer building until auxiliary bitmaps have been loaded
     if( !m_pInVizIconBmp || !m_pTmercIconBmp || !m_pSkewIconBmp ||! m_pPolyIconBmp)
         return;
 
@@ -261,7 +261,7 @@ void Piano::BuildGLTexture()
 
     m_tex_piano_height = h;
     m_texw = m_texPitch * 3;
-    
+
     m_texh = ((sizeof brushes) / (sizeof *brushes)) * h;
     m_texh += 4 * m_ref; // for icons;
 
@@ -272,8 +272,8 @@ void Piano::BuildGLTexture()
         glGenTextures( 1, &m_tex );
 
     glBindTexture(GL_TEXTURE_2D, m_tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     wxBitmap bmp(m_texw, m_texh);
     wxMemoryDC dc(bmp);
@@ -283,8 +283,8 @@ void Piano::BuildGLTexture()
     dc.DrawRectangle(0, 0, m_texw, m_texh);
 
     double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2.0));    //0.5 mm nominal, but not less than 1 pixel
-    
-    // draw the needed rectangles 
+
+    // draw the needed rectangles
     wxPen ppPen( GetGlobalColor( _T("CHBLK") ), nominal_line_width_pix, wxPENSTYLE_SOLID );
     dc.SetPen( ppPen );
     for(unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
@@ -294,10 +294,10 @@ void Piano::BuildGLTexture()
 
         int v = 2;
         dc.DrawRectangle(x + m_pad, y+v, 2*m_ref, h-2*v);
-         
+
         x += m_texPitch;
         dc.DrawRoundedRectangle(x + m_pad, y+v, 2*m_ref, h-2*v, m_radius);
-        
+
         int w = m_ref / 6;      // border width of eclipsed chart
 
         x += m_texPitch;
@@ -305,7 +305,7 @@ void Piano::BuildGLTexture()
         dc.SetBrush( m_backBrush );
         dc.DrawRoundedRectangle(x + m_pad +w, y+v+w, (2*m_ref)-(2*w), h-2*v-2*w, m_radius * (h-2*v-2*w) / (h-2*v));  // slightly smaller radius
     }
-    
+
 
     dc.SelectObject( wxNullBitmap );
 
@@ -347,9 +347,9 @@ void Piano::BuildGLTexture()
 
 void Piano::DrawGL(int off)
 {
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
     unsigned int w = m_parentCanvas->GetClientSize().x, h = GetHeight(), endx = 0;
- 
+
     if(m_tex_piano_height != h)
         BuildGLTexture();
 
@@ -363,7 +363,7 @@ void Piano::DrawGL(int off)
     // we could cache the coordinates and recompute only when the piano hash changes,
     // but the performance is already fast enough at this point
     float *texcoords = new float[(nKeys*3+1)*4*2], *coords = new float[(nKeys*3+1)*4*2];
-    
+
     int tc = 0, vc = 0;
 
     // draw the keys
@@ -386,7 +386,7 @@ void Piano::DrawGL(int off)
 
         wxRect box = KeyRect[i];
         float y = h*b, v1 = (y+.5)/m_texh, v2 = (y+h-.5)/m_texh;
-        
+
         // texcord contains the texture pixel coordinates in the texture for the three rectangle parts
         const float texcord[6] = {0, (float)m_ref-1, (float)m_ref, (float)m_ref, (float)m_ref+1, (float)m_texPitch-1};
         int uindex;
@@ -674,7 +674,7 @@ void Piano::FormatKeys( void )
 
         kw = wxMin(kw, (m_parentCanvas->GetClientSize().x * 3 / 4) / nKeys);
         kw = wxMax(kw, 6);
-        
+
 //    Build the Key Regions
 
         KeyRect.clear();
@@ -743,10 +743,10 @@ bool Piano::MouseEvent( wxMouseEvent& event )
             if( sel_index != m_hover_last ) {
                 m_parentCanvas->HandlePianoRollover( sel_index, sel_dbindex );
                 m_hover_last = sel_index;
-                
+
 //                m_action = INFOWIN_TIMEOUT;
 //                m_eventTimer.Start(3000, wxTIMER_ONE_SHOT);
-                
+
             }
         } else if( event.ButtonUp() ) {
             m_parentCanvas->HandlePianoRollover( -1, -1 );
@@ -810,11 +810,11 @@ int Piano::GetHeight()
         height = wxMax(height, 10);
     }
     height *= g_Platform->GetDisplayDensityFactor();
-    
-#ifdef __OCPN__ANDROID__    
+
+#ifdef __OCPN__ANDROID__
     height = wxMax(height, 4 * g_Platform->GetDisplayDPmm());
-#endif    
-    
+#endif
+
     return height;
 }
 
@@ -823,7 +823,7 @@ int Piano::GetWidth()
     return m_width;
 }
 
-    
+
 void Piano::onTimerEvent(wxTimerEvent &event)
 {
     switch(m_action){

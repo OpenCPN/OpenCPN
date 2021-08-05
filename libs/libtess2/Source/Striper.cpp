@@ -55,7 +55,7 @@ Striper& Striper::FreeUsedRam()
 void ZeroMemory(void* addr, udword size);
 void CopyMemory(void* dest, const void* src, udword size);
 void FillMemory(void* dest, udword size, ubyte val);
-        
+
 void ZeroMemory(void* addr, udword size)
         {
                 memset(addr, 0, size);
@@ -204,7 +204,7 @@ udword Striper::ComputeBestStrip(udword face)
 
 	udword FirstLength[3];	// Lengths of the first parts of the strips are saved for culling
         udword jLook = 1;
-        
+
 	// Starting references
 	udword Refs0[3];
 	udword Refs1[3];

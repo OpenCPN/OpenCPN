@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        NodeList.cpp
-// Purpose:     
+// Purpose:
 // Author:      Edouard TISSERANT
 // Created:     2005/04/29
 // RCS-ID:      $Id:

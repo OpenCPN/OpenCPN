@@ -79,7 +79,7 @@ public:
       void RecalculateSize( void );
       void SetAutoCentre( bool bval ){ m_bautoCentre = bval;}
       void SetAutoSize( bool bval ){ m_bautosize = bval;}
-      
+
       void UpdateText(void);
       void SetMMSI(int mmsi);
       int  GetMMSI(void){ return m_MMSI; }

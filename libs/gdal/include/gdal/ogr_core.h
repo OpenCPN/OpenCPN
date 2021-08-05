@@ -187,7 +187,7 @@ typedef int     OGRBoolean;
  * type of a geometry object.
  */
 
-typedef enum 
+typedef enum
 {
     wkbUnknown = 0,             /* non-standard */
     wkbPoint = 1,               /* rest are standard WKB type codes */
@@ -215,7 +215,7 @@ typedef enum
 
 const char CPL_DLL * OGRGeometryTypeToName( OGRwkbGeometryType eType );
 
-typedef enum 
+typedef enum
 {
     wkbXDR = 0,         /* MSB/Sun/Motoroloa: Most Significant Byte First   */
     wkbNDR = 1          /* LSB/Intel/Vax: Least Significant Byte First      */
@@ -243,7 +243,7 @@ typedef enum
  * field types can be known.
  */
 
-typedef enum 
+typedef enum
 {
   /** Simple 32bit integer */                   OFTInteger = 0,
   /** List of 32bit integers */                 OFTIntegerList = 1,
@@ -260,7 +260,7 @@ typedef enum
  * Display justification for field values.
  */
 
-typedef enum 
+typedef enum
 {
     OJUndefined = 0,
     OJLeft = 1,
@@ -283,17 +283,17 @@ typedef union {
     double      Real;
     char       *String;
     /* wchar    *WideString; */
-    
+
     struct {
         int     nCount;
         int     *paList;
     } IntegerList;
-    
+
     struct {
         int     nCount;
         double  *paList;
     } RealList;
-    
+
     struct {
         int     nCount;
         char    **paList;

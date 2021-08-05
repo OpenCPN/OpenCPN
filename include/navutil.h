@@ -128,7 +128,7 @@ const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime );
 
 void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
 void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true, bool isPersistent = false);
- 
+
 bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
 bool ExportGPXTracks(wxWindow* parent, TrackList *pRoutes, const wxString suggestedName = _T("tracks"));
 bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName = _T("waypoints"));
@@ -164,10 +164,10 @@ public:
 
       virtual void LoadCanvasConfigs( bool bApplyAsTemplate = false );
       virtual void LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate );
-      
+
       virtual void SaveCanvasConfigs( );
       virtual void SaveConfigCanvas( canvasConfig *cc );
-      
+
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
@@ -176,16 +176,16 @@ public:
 
       bool LoadLayers(wxString &path);
       int LoadMyConfigRaw( bool bAsTemplate = false );
-      
+
       void CreateRotatingNavObjBackup();
-      
+
       wxString                m_sNavObjSetFile;
       wxString                m_sNavObjSetChangesFile;
 
       NavObjectChanges        *m_pNavObjectChangesSet;
       NavObjectCollection1    *m_pNavObjectInputSet;
       bool                    m_bSkipChangeSetUpdate;
-      
+
 };
 
 void SwitchInlandEcdisMode( bool Switch );

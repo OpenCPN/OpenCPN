@@ -57,13 +57,13 @@ void TexFont::Build( wxFont &font, bool blur )
     /* avoid rebuilding if the parameters are the same */
     if(font == m_font && blur == m_blur)
         return;
-    
+
     m_font = font;
     m_blur = blur;
 
     m_maxglyphw = 0;
     m_maxglyphh = 0;
-    
+
     wxScreenDC sdc;
 
     sdc.SetFont( font );
@@ -82,8 +82,8 @@ void TexFont::Build( wxFont &font, bool blur )
         tgi[i].height = gh;
 
         tgi[i].advance = gw;
-        
-        
+
+
         m_maxglyphw = wxMax(tgi[i].width,  m_maxglyphw);
         m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
     }
@@ -106,11 +106,11 @@ void TexFont::Build( wxFont &font, bool blur )
     wxMemoryDC dc;
     dc.SelectObject(tbmp);
     dc.SetFont( font );
-    
+
     /* fill bitmap with black */
     dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
     dc.Clear();
-        
+
     /* draw the text white */
     dc.SetTextForeground( wxColour( 255, 255, 255 ) );
 
@@ -118,7 +118,7 @@ void TexFont::Build( wxFont &font, bool blur )
      wxBrush brush(wxColour( 255, 255, 255 ), wxTRANSPARENT);
      dc.SetPen(pen);
      dc.SetBrush(brush);
-  */  
+  */
     int row = 0, col = 0;
     for( int i = MIN_GLYPH; i < MAX_GLYPH; i++ ) {
         if(col == COLS_GLYPHS) {
@@ -136,13 +136,13 @@ void TexFont::Build( wxFont &font, bool blur )
             text = wxString::Format(_T("%c"), i);
 
         dc.DrawText(text, tgi[i].x, tgi[i].y );
-        
+
 //        dc.DrawRectangle(tgi[i].x, tgi[i].y, tgi[i].advance, tgi[i].height);
         col++;
     }
 
     dc.SelectObject(wxNullBitmap);
-    
+
     wxImage image = tbmp.ConvertToImage();
 
     GLuint format, internalformat;
@@ -156,7 +156,7 @@ void TexFont::Build( wxFont &font, bool blur )
         image = image.Blur(1);
 
     unsigned char *imgdata = image.GetData();
-    
+
     if(imgdata){
         unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
 
@@ -179,7 +179,7 @@ void TexFont::Build( wxFont &font, bool blur )
 
         free(teximage);
     }
-    
+
     m_built = true;
 }
 
@@ -224,7 +224,7 @@ void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
 
 void TexFont::RenderGlyph( int c )
 {
-    
+
     if( c < MIN_GLYPH || c >= MAX_GLYPH)
         return;
 
@@ -237,8 +237,8 @@ void TexFont::RenderGlyph( int c )
     float ty1 = (float)y / (float)tex_h;
     float ty2 = (float)(y + h) / (float)tex_h;
 
-#ifndef USE_ANDROID_GLES2    
-    
+#ifndef USE_ANDROID_GLES2
+
     glBegin( GL_QUADS );
 
     glTexCoord2f( tx1, ty1 );  glVertex2i( 0, 0 );
@@ -252,63 +252,63 @@ void TexFont::RenderGlyph( int c )
 
     float uv[8];
     float coords[8];
-    
+
     //normal uv
     uv[0] = tx1; uv[1] = ty1; uv[2] = tx2; uv[3] = ty1;
     uv[4] = tx2; uv[5] = ty2; uv[6] = tx1; uv[7] = ty2;
-    
+
     // pixels
     coords[0] = 0; coords[1] = 0; coords[2] = w; coords[3] = 0;
     coords[4] = w; coords[5] = h; coords[6] = 0; coords[7] = h;
-    
+
     //glChartCanvas::RenderSingleTexture(coords, uv, cc1->GetpVP(), m_dx, m_dy, 0);
-    
+
     glUseProgram( pi_texture_2D_shader_program );
-    
+
     // Get pointers to the attributes in the program.
     GLint mPosAttrib = glGetAttribLocation( pi_texture_2D_shader_program, "aPos" );
     GLint mUvAttrib  = glGetAttribLocation( pi_texture_2D_shader_program, "aUV" );
-    
+
     // Set up the texture sampler to texture unit 0
     GLint texUni = glGetUniformLocation( pi_texture_2D_shader_program, "uTex" );
     glUniform1i( texUni, 0 );
-    
+
     // Disable VBO's (vertex buffer objects) for attributes.
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    
+
     // Set the attribute mPosAttrib with the vertices in the screen coordinates...
     glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
     // ... and enable it.
     glEnableVertexAttribArray( mPosAttrib );
-    
+
     // Set the attribute mUvAttrib with the vertices in the GL coordinates...
     glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
     // ... and enable it.
     glEnableVertexAttribArray( mUvAttrib );
-    
-    // Rotate 
+
+    // Rotate
     float angle = 0;
     mat4x4 I, Q;
     mat4x4_identity(I);
     mat4x4_rotate_Z(Q, I, angle);
-    
+
     // Translate
     Q[3][0] = m_dx;
     Q[3][1] = m_dy;
-    
+
     GLint matloc = glGetUniformLocation(pi_texture_2D_shader_program,"TransformMatrix");
-    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
-    
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
+
     // Select the active texture unit.
     glActiveTexture( GL_TEXTURE0 );
-    
-    
+
+
     // For some reason, glDrawElements is busted on Android
     // So we do this a hard ugly way, drawing two triangles...
-    //GLushort indices1[] = {0,1,3,2}; 
+    //GLushort indices1[] = {0,1,3,2};
     //glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
-    
+
     float co1[8];
     co1[0] = coords[0];
     co1[1] = coords[1];
@@ -318,7 +318,7 @@ void TexFont::RenderGlyph( int c )
     co1[5] = coords[7];
     co1[6] = coords[4];
     co1[7] = coords[5];
-    
+
     float tco1[8];
     tco1[0] = uv[0];
     tco1[1] = uv[1];
@@ -328,16 +328,16 @@ void TexFont::RenderGlyph( int c )
     tco1[5] = uv[7];
     tco1[6] = uv[4];
     tco1[7] = uv[5];
-    
+
     glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
     glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
-    
+
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
-#endif          //GLES2   
-    
-    
-    
+
+#endif          //GLES2
+
+
+
     m_dx += tgic.advance;
 }
 
@@ -346,7 +346,7 @@ void TexFont::RenderString( const char *string, int x, int y )
 {
 
 #ifndef USE_ANDROID_GLES2
-    
+
     glPushMatrix();
     glTranslatef(x, y, 0);
 
@@ -375,9 +375,9 @@ void TexFont::RenderString( const char *string, int x, int y )
 #else
     m_dx = x;
     m_dy = y;
-     
+
     glBindTexture( GL_TEXTURE_2D, texobj);
-    
+
     for( int i = 0; string[i]; i++ ) {
         if(string[i] == '\n') {
             m_dy += tgi[(int)'A'].height;
@@ -392,8 +392,8 @@ void TexFont::RenderString( const char *string, int x, int y )
         }
         RenderGlyph( string[i] );
     }
-            
-#endif    
+
+#endif
 }
 
 void TexFont::RenderString( const wxString &string, int x, int y )

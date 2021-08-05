@@ -36,7 +36,7 @@ std::string ltrim(std::string s);
 
 std::string rtrim(std::string s);
 
-std::string trim(std::string s); 
+std::string trim(std::string s);
 
 std::string join(std::vector<std::string> v, char c);
 

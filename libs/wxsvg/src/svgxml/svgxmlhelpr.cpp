@@ -28,7 +28,7 @@ wxSvgXmlNode *XmlFindNodeSimple(wxSvgXmlNode *parent, const wxString& param)
     if (param.IsEmpty()) return parent;
 
     wxSvgXmlNode *n = parent->GetChildren();
-    
+
     while (n)
     {
         if (n->GetType() == wxSVGXML_ELEMENT_NODE && n->GetName() == param)
@@ -67,13 +67,13 @@ wxSvgXmlNode *XmlCreateNode(wxSvgXmlNode *parent, const wxString& name)
         nm = tkn.GetNextToken();
         n = XmlFindNodeSimple(parent, nm);
         if (n) continue;
-        
+
         // n == NULL:
         n = new wxSvgXmlNode(wxSVGXML_ELEMENT_NODE, nm);
-        parent->AddChild(n);        
+        parent->AddChild(n);
     }
     n->AddChild(new wxSvgXmlNode(wxSVGXML_TEXT_NODE, wxEmptyString));
-    
+
     return n;
 }
 
@@ -84,12 +84,12 @@ void XmlWriteValue(wxSvgXmlNode *parent, const wxString& name, const wxString& v
     wxSvgXmlNode *n = XmlFindNode(parent, name);
     if (n == NULL)
         n = XmlCreateNode(parent, name);
-    
+
     n = n->GetChildren();
-    
+
     while (n)
     {
-        if (n->GetType() == wxSVGXML_TEXT_NODE || 
+        if (n->GetType() == wxSVGXML_TEXT_NODE ||
             n->GetType() == wxSVGXML_CDATA_SECTION_NODE)
         {
             n->SetContent(value);
@@ -106,10 +106,10 @@ wxString XmlReadValue(wxSvgXmlNode *parent, const wxString& name)
     wxSvgXmlNode *n = XmlFindNode(parent, name);
     if (n == NULL) return wxEmptyString;
     n = n->GetChildren();
-    
+
     while (n)
     {
-        if (n->GetType() == wxSVGXML_TEXT_NODE || 
+        if (n->GetType() == wxSVGXML_TEXT_NODE ||
             n->GetType() == wxSVGXML_CDATA_SECTION_NODE)
             return n->GetContent();
         n = n->GetNext();

@@ -67,7 +67,7 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * list
 
     wxBoxSizer* bSizerBottomContainer = new wxBoxSizer( wxHORIZONTAL );
     bSizerOuterContainer->Add( bSizerBottomContainer, 0, wxEXPAND, 5 );
-    
+
     wxStaticBox *psb = new wxStaticBox( this,  wxID_ANY, _("Legend")) ;
     wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer( psb , wxVERTICAL );
 

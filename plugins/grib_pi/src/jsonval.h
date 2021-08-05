@@ -417,7 +417,7 @@ public:
 
     //! The pointer to the memory buffer object
     /*!
-     Note that despite using reference counting, the \b wxMemoryBuffer is not a 
+     Note that despite using reference counting, the \b wxMemoryBuffer is not a
      \e copy-on-write structure so the wxJSON library uses some tricks in order to
      avoid the side effects of copying / assigning wxMemoryBuffer objects
     */

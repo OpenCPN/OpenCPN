@@ -134,7 +134,7 @@ public:
       ChartBase *OpenChartFromDBAndLock(int index, ChartInitFlag init_flag , bool lock = true);
       ChartBase *OpenChartFromDBAndLock(wxString chart_path, ChartInitFlag init_flag);
       ChartBase *OpenChartFromDB(wxString chart_path, ChartInitFlag init_flag);
-      
+
       void ApplyColorSchemeToCachedCharts(ColorScheme cs);
       void PurgeCache();
       void PurgeCachePlugins();
@@ -148,10 +148,10 @@ public:
 
       bool LockCacheChart( int index );
       bool IsChartLocked( int index );
-      
+
       void UnLockCacheChart( int index );
       void UnLockAllCacheCharts();
-      
+
       void ClearCacheInUseFlags(void);
       void PurgeCacheUnusedCharts( double factor );
 
@@ -172,8 +172,8 @@ private:
       CacheEntry *FindOldestDeleteCandidate( bool blog );
       void DeleteCacheEntry(int i, bool bDelTexture = false, const wxString &msg = wxEmptyString);
       void DeleteCacheEntry(CacheEntry *pce, bool bDelTexture = false, const wxString &msg = wxEmptyString);
-      
-      
+
+
       wxArrayPtrVoid    *pChartCache;
       int              m_ticks;
 

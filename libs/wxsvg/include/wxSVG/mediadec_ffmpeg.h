@@ -34,10 +34,10 @@ public:
 	wxFfmpegMediaDecoder();
 	virtual ~wxFfmpegMediaDecoder();
 	static void Init();
-	
+
 	virtual bool Load(const wxString& fileName);
 	virtual void Close();
-	
+
 	unsigned int GetStreamCount();
 	StreamType GetStreamType(unsigned int streamIndex);
 	/** Returns codec name (e.g. h264, MPEG4) */
@@ -47,19 +47,19 @@ public:
 	int GetChannelNumber(unsigned int streamIndex);
 	int GetSampleRate(unsigned int streamIndex);
 	int GetBitrate(unsigned int streamIndex);
-	
+
 	double GetDuration();
 	bool SetPosition(double pos, bool keyFrame = true);
 	double GetPosition();
-	
+
 	virtual wxSize GetVideoSize();
 	virtual float GetFrameAspectRatio();
 	virtual float GetFps();
-	
+
 	virtual bool BeginDecode(int width = -1, int height = -1);
 	virtual wxImage GetNextFrame();
 	virtual void EndDecode();
-	
+
 	/** Returns a comma separated list of short names for the format. */
 	wxString GetFormatName();
 	/** Returns time base for video codec (tbc). */
@@ -70,7 +70,7 @@ public:
 	map<wxString, wxString> GetMetadata();
 	/** Returns stream metadata */
 	map<wxString, wxString> GetMetadata(unsigned int streamIndex);
-	
+
 private:
 	AVFormatContext* m_formatCtx;
 	int m_videoStream;

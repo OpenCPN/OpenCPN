@@ -80,7 +80,7 @@ void wxSVGAnimateTransformElement::ApplyAnimation() {
 			wxSVGTransform* transform = new wxSVGTransform();
 			UpdateTransform(*transform, GetType(), values);
 			transforms.Add(transform);
-			m_transformIdx = transforms.size() - 1; 
+			m_transformIdx = transforms.size() - 1;
 		} else {
 			UpdateTransform(transformable->GetTransformList().GetAnimVal()[m_transformIdx], GetType(), values);
 		}

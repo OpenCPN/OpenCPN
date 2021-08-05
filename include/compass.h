@@ -45,7 +45,7 @@ public:
       int GetYOffset(void) const { return m_yoffset; }
       float GetScaleFactor(){ return m_scale; }
       void SetScaleFactor( float factor);
-      
+
       void Move(const wxPoint &pt) { m_rect.SetPosition(pt); }
       wxRect GetRect(void) const { return m_rect; }
 private:
@@ -69,11 +69,11 @@ private:
       bool m_shown;
       bool m_bshowGPS;
       ColorScheme m_cs;
-      
+
 #ifdef ocpnUSE_GL
       unsigned int texobj;
       int m_tex_w, m_tex_h;
       int m_image_width, m_image_height;
 #endif
-      
+
 };

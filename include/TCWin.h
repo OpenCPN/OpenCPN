@@ -58,7 +58,7 @@ public:
       void OnCloseWindow(wxCloseEvent& event);
 
       void RePosition(void);
-      
+
       void RecalculateSize();
 
 private:
@@ -78,7 +78,7 @@ private:
     int           m_tsx;      // test button width
     int           m_tsy;      // test button height
     float         m_tcwin_scaler; // factor to scale TCWin and contents by
-    
+
       IDX_entry   *pIDX;
       wxButton    *OK_button;
       wxButton    *NX_button;
@@ -94,7 +94,7 @@ private:
 
       float       tcv[26];
       time_t      tt_tcv[26];
-      
+
       wxListCtrl  *m_tList ;
       bool        btc_valid;
       ChartCanvas    *pParent;
@@ -120,7 +120,7 @@ private:
       wxBrush *pltgray2;
 
       int         m_button_height;
-      
+
       int xSpot;
       int ySpot;
 

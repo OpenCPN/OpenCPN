@@ -118,7 +118,7 @@ and extended by Sean D'Epagnier to support plotting."));
 
 wmm_pi::wmm_pi(void *ppimgr)
     : opencpn_plugin_18(ppimgr),
-    m_bShowPlot(false), 
+    m_bShowPlot(false),
     m_DeclinationMap(DECLINATION_PLOT, MagneticModel, TimedMagneticModel, &Ellip),
     m_InclinationMap(INCLINATION_PLOT, MagneticModel, TimedMagneticModel, &Ellip),
     m_FieldStrengthMap(FIELD_STRENGTH_PLOT, MagneticModel, TimedMagneticModel, &Ellip),
@@ -126,7 +126,7 @@ wmm_pi::wmm_pi(void *ppimgr)
 {
     // Create the PlugIn icons
     initialize_images();
-    
+
     g_pi = this;
 }
 
@@ -140,7 +140,7 @@ int wmm_pi::Init(void)
 
     MagneticModel = NULL;
     TimedMagneticModel = NULL;
-    
+
     ::wxDisplaySize(&m_display_width, &m_display_height);
 
     //    Get a pointer to the opencpn display canvas, to use as a parent for the POI Manager dialog
@@ -157,26 +157,26 @@ int wmm_pi::Init(void)
     m_bShowPlotOptions = false;
     m_iViewType = 1;
 #endif
-    
-    
+
+
     m_buseable = true;
 
     m_LastVal = wxEmptyString;
 
     //pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     pFontSmall = OCPNGetFont( _("WMM_Live_Overlay"), 10);
-    
+
     m_shareLocn =*GetpSharedDataLocation() +
     _T("plugins") + wxFileName::GetPathSeparator() +
     _T("wmm_pi") + wxFileName::GetPathSeparator() +
     _T("data") + wxFileName::GetPathSeparator();
-    
+
     //    WMM initialization
-    
+
     /* Memory allocation */
     int NumTerms, epochs = 1, nMax = 0;
     wxString cof_filename = m_shareLocn + "WMM.COF";
-    
+
     if(!MAG_robustReadMagModels(const_cast<char*>((const char*)cof_filename.mb_str()), &MagneticModels)) {
         WMMLogMessage1(_T("initialization error"));
         m_buseable = false;
@@ -188,27 +188,27 @@ int wmm_pi::Init(void)
             }
         }
         NumTerms = ((nMax + 1) * (nMax + 2) / 2);
-        
+
         TimedMagneticModel = MAG_AllocateModelMemory(NumTerms); /* For storing the time modified WMM Model parameters */
-        
+
         for(int i = 0; i < epochs; i++) {
             if(MagneticModels[i] == NULL || TimedMagneticModel == NULL) {
                 WMMLogMessage1(_T("initialization error MAG_Error(2)"));
                 m_buseable = false;
             }
         }
-        
+
         MagneticModel = MagneticModels[0];
-        
+
         MAG_SetDefaults(&Ellip, &Geoid); /* Set default values and constants */
         /* Check for Geographic Poles */
-        
+
         /* Set EGM96 Geoid parameters */
         Geoid.GeoidHeightBuffer = GeoidHeightBuffer;
         Geoid.Geoid_Initialized = 1;
         /* Set EGM96 Geoid parameters END */
     }
-    
+
     int ret_flag =  (WANTS_OVERLAY_CALLBACK |
     WANTS_OPENGL_OVERLAY_CALLBACK |
     WANTS_CURSOR_LATLON     |
@@ -218,14 +218,14 @@ int wmm_pi::Init(void)
     WANTS_CONFIG          |
     WANTS_PLUGIN_MESSAGING
     );
-    
+
     if(m_bShowIcon){
     //    This PlugIn needs a toolbar icon, so request its insertion
         m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_wmm, _img_wmm, wxITEM_NORMAL,
                                             _("WMM"), _T(""), NULL, WMM_TOOL_POSITION, 0, this);
-        
+
         SetIconType();          // SVGs allowed if not showing live icon
-        
+
         ret_flag |= INSTALLS_TOOLBAR_TOOL;
     }
 
@@ -242,7 +242,7 @@ int wmm_pi::Init(void)
 #endif
     g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
 #endif
-    
+
     return ret_flag;
 }
 
@@ -254,7 +254,7 @@ bool wmm_pi::DeInit(void)
          wxPoint p = m_pWmmDialog->GetPosition();
          SetWmmDialogX(p.x);
          SetWmmDialogY(p.y);
- 
+
          m_pWmmDialog->Close();
          delete m_pWmmDialog;
          m_pWmmDialog = NULL;
@@ -274,12 +274,12 @@ bool wmm_pi::DeInit(void)
         free(Geoid.GeoidHeightBuffer);
         Geoid.GeoidHeightBuffer = NULL;
     }*/
-    
+
     //delete pFontSmall;
-    
+
     if(m_oDC)
         delete m_oDC;
-    
+
     return true;
 }
 
@@ -355,10 +355,10 @@ void wmm_pi::SetIconType()
         wxString normalIcon = m_shareLocn + _T("wmm_pi.svg");
         wxString toggledIcon = m_shareLocn + _T("wmm_pi.svg");
         wxString rolloverIcon = m_shareLocn + _T("wmm_pi.svg");
-        
+
         SetToolbarToolBitmapsSVG(m_leftclick_tool_id, normalIcon, rolloverIcon, toggledIcon);
     }
-    
+
 }
 
 
@@ -420,7 +420,7 @@ void wmm_pi::OnToolbarToolCallback(int id)
         m_pWmmDialog = new WmmUIDialog(*this, m_parent_window);
         wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
         m_pWmmDialog->SetFont(*pFont);
-        
+
         m_pWmmDialog->Move(wxPoint(m_wmm_dialog_x, m_wmm_dialog_y));
     }
 
@@ -437,12 +437,12 @@ void wmm_pi::OnToolbarToolCallback(int id)
     wxPoint p = m_pWmmDialog->GetPosition();
     m_pWmmDialog->Move(0,0);      // workaround for gtk autocentre dialog behavior
     m_pWmmDialog->Move(p);
-    
+
 #ifdef __OCPN__ANDROID__
     m_pWmmDialog->CentreOnScreen();
     m_pWmmDialog->Move(-1,0);
-#endif    
-    
+#endif
+
 }
 
 void wmm_pi::RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp)
@@ -459,15 +459,15 @@ bool wmm_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
     if(!m_bShowPlot)
         return true;
-    
+
     if(!m_oDC)
         m_oDC = new pi_ocpnDC();
-    
+
     m_oDC->SetVP(vp);
     m_oDC->SetDC(&dc);
-    
+
     RenderOverlayBoth(m_oDC, vp);
-    
+
     return true;
 }
 
@@ -475,16 +475,16 @@ bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {
     if(!m_bShowPlot)
         return true;
-    
+
     if(!m_oDC)
         m_oDC = new pi_ocpnDC();
-    
+
     m_oDC->SetVP(vp);
     m_oDC->SetDC(NULL);
-    
-#ifndef USE_ANDROID_GLES2    
+
+#ifndef USE_ANDROID_GLES2
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_HINT_BIT );
-    
+
     glEnable( GL_LINE_SMOOTH );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -525,7 +525,7 @@ void wmm_pi::SetCursorLatLon(double lat, double lon)
 {
     if(!m_pWmmDialog)
         return;
-    
+
     if (!m_bShowAtCursor)
         return; //We don't want to waste CPU cycles that much...
     if (lat < -90 || lat > 90 || lon < -180 || lon > 180 || NULL == m_pWmmDialog || !m_pWmmDialog->IsShown())
@@ -581,7 +581,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
     MAG_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
     MAG_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
     //WMM_PrintUserData(GeoMagneticElements,CoordGeodetic, UserDate, TimedMagneticModel, &Geoid);     /* Print the results */
-    
+
     m_boatVariation = GeoMagneticElements;
     SendBoatVariation();
 
@@ -589,7 +589,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
     double scale = GetOCPNGUIToolScaleFactor_PlugIn();
     scale = wxRound(scale * 4.0) / 4.0;
     scale = wxMax(1.0, scale);          // Let the upstream processing handle minification.
-    
+
     if( m_bShowIcon && m_bShowLiveIcon && ((m_LastVal != NewVal) || (scale != m_scale)) )
     {
         m_scale = scale;
@@ -598,7 +598,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
         int h = _img_wmm_live->GetHeight() * scale;
         wxMemoryDC dc;
         wxBitmap icon;
-        
+
         //  Is SVG available?
         wxBitmap live = GetBitmapFromSVGFile(m_shareLocn + _T("wmm_live.svg"), w, h);
         if( ! live.IsOk() ){
@@ -612,7 +612,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
             wxColour col;
             dc.SetBackground( *wxTRANSPARENT_BRUSH );
             dc.Clear();
-        
+
             dc.DrawBitmap(live, 0, 0, true);
         }
 
@@ -623,7 +623,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
             if(live.IsOk()){
                 int point_size = wxMax(10, 10 * scale);
                 pFontSmall->SetPointSize(point_size);
-                
+
                 //  Validate and adjust the font size...
                 //   No smaller than 8 pt.
                 int w;
@@ -641,21 +641,21 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
         wxSize s = dc.GetTextExtent(NewVal);
         dc.DrawText(NewVal, (icon.GetWidth() - s.GetWidth()) / 2, (icon.GetHeight() - s.GetHeight()) / 2);
         dc.SelectObject(wxNullBitmap);
-        
+
         if(live.IsOk()){
             //  By using a DC to modify the bitmap, we have lost the original bitmap's alpha channel
             //  Recover it by copying from the original to the target, bit by bit
             wxImage imo = live.ConvertToImage();
             wxImage im = icon.ConvertToImage();
-            
+
             if(!imo.HasAlpha())
                 imo.InitAlpha();
             if(!im.HasAlpha())
                 im.InitAlpha();
-            
+
             unsigned char *alive = imo.GetAlpha();
             unsigned char *target = im.GetAlpha();
-                
+
             for(int i=0 ; i < h ; i ++){
                 for(int j=0 ; j < w ; j++){
                     int index = (i * w) + j;
@@ -664,7 +664,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
             }
             icon = wxBitmap(im);
         }
-        
+
         SetToolbarToolBitmaps(m_leftclick_tool_id, &icon, &icon);
     }
 
@@ -907,43 +907,43 @@ void SetBackColor( wxWindow* ctrl, wxColour col)
 
         ctrl->SetBackgroundColour( col );
     }
-    
+
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
         wxWindowListNode *node = kids.Item( i );
         wxWindow *win = node->GetData();
-        
+
         if( win->IsKindOf( CLASSINFO(wxListBox) ) )
             ( (wxListBox*) win )->SetBackgroundColour( col );
-        
+
         else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
             ( (wxTextCtrl*) win )->SetBackgroundColour( col );
-        
+
         //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
             //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
                 ( (wxChoice*) win )->SetBackgroundColour( col );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
                 ( (wxComboBox*) win )->SetBackgroundColour( col );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
                 ( (wxRadioButton*) win )->SetBackgroundColour( col );
-            
+
             else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
                 ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
             }
-            
-            
+
+
             else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
                 ( (wxButton*) win )->SetBackgroundColour( col );
             }
-            
+
             else {
                 ;
             }
-            
+
             if( win->GetChildren().GetCount() > 0 ) {
                 depth++;
                 wxWindow * w = win;
@@ -990,7 +990,7 @@ void wmm_pi::ShowPlotSettings()
     WmmPlotSettingsDialog *dialog = new WmmPlotSettingsDialog( m_parent_window );
     wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
     dialog->SetFont(*pFont);
-    
+
     dialog->Fit();
     wxColour cl;
     GetGlobalColor(_T("DILG1"), &cl);

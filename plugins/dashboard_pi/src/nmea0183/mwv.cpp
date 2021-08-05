@@ -75,7 +75,7 @@ bool MWV::Parse( const SENTENCE& sentence )
    **        |   | |   | |
    ** $--MWV,x.x,a,x.x,a*hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Wind Angle, 0 to 360 degrees
    **  2) Reference, R = Relative, T = True
    **  3) Wind Speed
@@ -92,7 +92,7 @@ bool MWV::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    WindAngle      = sentence.Double( 1 );
    Reference      = sentence.Field( 2 );
@@ -110,7 +110,7 @@ bool MWV::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += WindAngle;
@@ -127,7 +127,7 @@ bool MWV::Write( SENTENCE& sentence )
 const MWV& MWV::operator = ( const MWV& source )
 {
 //   ASSERT_VALID( this );
- 
+
    WindAngle      = source.WindAngle;
    Reference      = source.Reference;
    WindSpeed      = source.WindSpeed;

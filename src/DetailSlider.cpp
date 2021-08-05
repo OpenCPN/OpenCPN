@@ -98,17 +98,17 @@ bool PopUpDSlide::Create( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartT,
                 value = g_chart_zoom_modifier_vector;
                 WindowText = _("Vectorchart Zoom/Scale Weighting");
             }
-            else{ 
+            else{
                 pPopupDetailSlider = NULL;
-                return false;                
+                return false;
             }
-    
+
     long wstyle = wxDEFAULT_DIALOG_STYLE|wxFRAME_FLOAT_ON_PARENT;
-    
+
     if( !wxFrame::Create( parent, id, WindowText, pos, size, wstyle ) ) return false;
 
     m_pparent = parent;
-    
+
 int minValue = -5;
 int maxValue = 5;
     m_p_DetailSlider = new wxSlider( this, id, value, minValue, maxValue, wxPoint( 0, 0 ),
@@ -139,7 +139,7 @@ void PopUpDSlide::OnCancelClick( wxCommandEvent& event )
 void PopUpDSlide::OnClose( wxCloseEvent& event )
 {
     g_bShowDetailSlider = false;
-    
+
     if( m_p_DetailSlider )
        m_p_DetailSlider->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler(PopUpDSlide::OnKeyDown), NULL, this );
     Destroy();
@@ -173,21 +173,21 @@ void PopUpDSlide::OnChangeValue( wxScrollEvent& event )
     if ( (ChartType == CHART_TYPE_CM93COMP ) || (ChartType == CHART_TYPE_CM93 )){
         g_cm93_zoom_factor = m_p_DetailSlider->GetValue();
         ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
-        
+
         parentCanvas->ReloadVP();
         parentCanvas->Refresh();
         ::wxEndBusyCursor();
         return;
     }
- 
+
     if ( (ChartType == CHART_TYPE_KAP) || (ChartType == CHART_TYPE_GEO) || (ChartFam == CHART_FAMILY_RASTER ) ){
-        g_chart_zoom_modifier = m_p_DetailSlider->GetValue();            
+        g_chart_zoom_modifier = m_p_DetailSlider->GetValue();
     }
 
     if ( (ChartType == CHART_TYPE_S57) || (ChartFam == CHART_FAMILY_VECTOR ) ){
         g_chart_zoom_modifier_vector = m_p_DetailSlider->GetValue();
     }
-    
+
      gFrame->ProcessOptionsDialog( S52_CHANGED | FORCE_UPDATE, NULL);
 
     ::wxEndBusyCursor();

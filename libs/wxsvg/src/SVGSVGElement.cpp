@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGSVGElement.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/05/10
 // RCS-ID:      $Id: SVGSVGElement.cpp,v 1.13 2017/05/01 17:06:53 ntalex Exp $

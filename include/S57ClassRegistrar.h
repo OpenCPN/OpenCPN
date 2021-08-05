@@ -54,7 +54,7 @@ class S57ClassRegistrar
 
     const char *ReadLine( FILE * fp );
     const char *OCPLReadLine( FILE * fp );
-    
+
     char      **papszNextLine;
     void        DestroySparseStringlist(char **papszStrList);
 

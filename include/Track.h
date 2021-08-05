@@ -60,7 +60,7 @@ public:
       void Draw(ChartCanvas *cc, ocpnDC& dc );
       const char *GetTimeString() { return m_timestring; }
       bool HasValidTimestamp() { if (m_timestring == NULL || strlen(m_timestring) != strlen("YYYY-MM-DDTHH:MM:SSZ")) return false; return true; };
-      
+
       double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
 private:
@@ -80,15 +80,15 @@ public:
 
     void Draw( ChartCanvas *cc, ocpnDC& dc, ViewPort &VP, const LLBBox &box);
     int GetnPoints(void){ return TrackPoints.size(); }
-    
-    
+
+
     void SetVisible(bool visible = true) { m_bVisible = visible; }
     TrackPoint *GetPoint( int nWhichPoint );
     TrackPoint *GetLastPoint();
     void AddPoint( TrackPoint *pNewPoint );
     void AddPointFinalized( TrackPoint *pNewPoint );
     TrackPoint* AddNewPoint( vector2D point, wxDateTime time );
-    
+
     void SetListed(bool listed = true) { m_bListed = listed; }
     virtual bool IsRunning() { return false; }
 
@@ -103,7 +103,7 @@ public:
     Route *RouteFromTrack(wxGenericProgressDialog *pprog);
 
     void ClearHighlights();
-    
+
     wxString GetName( bool auto_if_empty = false ) const {
         if( !auto_if_empty || !m_TrackNameString.IsEmpty() ) {
             return m_TrackNameString;
@@ -120,7 +120,7 @@ public:
         }
     }
     void SetName( const wxString name ) { m_TrackNameString = name; }
-    
+
     wxString    m_GUID;
     bool        m_bIsInLayer;
     int         m_LayerID;
@@ -152,7 +152,7 @@ protected:
                                 int from, int to, double delta );
     double GetXTE(TrackPoint *fm1, TrackPoint *fm2, TrackPoint *to);
     double GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  );
-            
+
     std::vector<TrackPoint*>     TrackPoints;
     std::vector<std::vector <SubTrack> > SubTracks;
 
@@ -167,7 +167,7 @@ private:
     void AddPointToLists(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, int &last, int n);
 
     void Assemble( ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos);
-    
+
     wxString    m_TrackNameString;
 };
 
@@ -186,9 +186,9 @@ class ActiveTrack : public wxEvtHandler, public Track
             void Stop(bool do_add_point = false);
             Track *DoExtendDaily();
             bool IsRunning(){ return m_bRunning; }
-            
+
             void AdjustCurrentTrackPoint( TrackPoint *prototype );
-            
+
       private:
             void OnTimerTrack(wxTimerEvent& event);
             void AddPointNow(bool do_add_point = false);
@@ -211,7 +211,7 @@ class ActiveTrack : public wxEvtHandler, public Track
             TrackPoint        *m_fixedTP;
             int               m_track_run;
             double            m_minTrackpoint_delta;
-            
+
             enum eTrackPointState {
                 firstPoint,
                 secondPoint,

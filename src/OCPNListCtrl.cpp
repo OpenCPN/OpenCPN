@@ -47,7 +47,7 @@ OCPNListCtrl::~OCPNListCtrl()
         g_AisTargetList_column_spec += sitem;
     }
 
-#ifdef wxHAS_LISTCTRL_COLUMN_ORDER 
+#ifdef wxHAS_LISTCTRL_COLUMN_ORDER
     int i_columns = GetColumnCount();
     wxArrayInt a_order(i_columns);
     a_order = GetColumnsOrder();
@@ -91,7 +91,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
                 else
                     ret = _("No");
                 break;
-                
+
             case tlNAME:
                 if( (!pAISTarget->b_nameValid && ( pAISTarget->Class == AIS_BASE )) || ( pAISTarget->Class == AIS_SART ) )
                     ret = _("-");
@@ -121,7 +121,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
                 if (pAISTarget->b_SarAircraftPosnReport) {
                     int airtype = (pAISTarget->MMSI % 1000) / 100;
                     ret = airtype == 5 ? _("SAR Helicopter") :_("SAR Aircraft");
-                }                    
+                }
                 else
                     ret = wxGetTranslation( pAISTarget->Get_class_string( true ) );
                 break;

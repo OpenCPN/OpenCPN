@@ -280,7 +280,7 @@ int SENTENCE::Integer( int field_number ) const
     wxCharBuffer abuf = Field( field_number).ToUTF8();
     if( !abuf.data() )                            // badly formed sentence?
         return 0;
-    
+
     return( ::atoi( abuf.data() ));
 }
 

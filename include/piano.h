@@ -79,28 +79,28 @@ public:
       void SetPolyIcon(wxBitmap *picon_bmp){ if( m_pPolyIconBmp ) delete m_pPolyIconBmp; m_pPolyIconBmp = picon_bmp; }
       void ShowBusy( bool busy );
       void onTimerEvent(wxTimerEvent &event);
-      
+
       wxPoint GetKeyOrigin(int key_index);
       void ResetRollover(void);
       void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
 
       int GetHeight();
       int GetWidth();
-      
+
       wxString &GenerateAndStoreNewHash();
       wxString &GetStoredHash();
-      
+
       int GetnKeys(){ return m_nRegions; }
-      
+
 private:
       void BuildGLTexture();
       bool InArray(std::vector<int> &array, int key);
 
       wxString GetStateHash();
       wxString    m_hash;
-      
+
       ChartCanvas *m_parentCanvas;
-      
+
       int         m_nRegions;
       int         m_index_last;
       int         m_hover_icon_last;
@@ -128,10 +128,10 @@ private:
       int         m_click_sel_index;
       int         m_click_sel_dbindex;
       int         m_action;
-      
+
       //RectArray KeyRect;
       std::vector<wxRect> KeyRect;
-      
+
       wxBitmap    *m_pVizIconBmp;
       wxBitmap    *m_pInVizIconBmp;
       wxBitmap    *m_pTmercIconBmp;
@@ -144,9 +144,9 @@ private:
 
       GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
       int         m_ref, m_pad, m_radius, m_texPitch;
-      
+
       int         m_width;
-      
+
 DECLARE_EVENT_TABLE()
 };
 
@@ -164,7 +164,7 @@ public:
       int  GetFontHeight();
       void RePosition();
       void ReSize();
-      
+
 DECLARE_EVENT_TABLE()
 };
 

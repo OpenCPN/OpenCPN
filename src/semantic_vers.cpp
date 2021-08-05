@@ -122,10 +122,10 @@ std::ostream& operator << (std::ostream& s, const SemanticVersion& v)
     if (v.post != 0) {
         s << '.' << v.post;
     }
-    if (v.pre != "" ) { 
+    if (v.pre != "" ) {
         s << '-' << v.pre;
     }
-    if (v.build != "" ) { 
+    if (v.build != "" ) {
         s << '+' << v.build;
     }
     return s;

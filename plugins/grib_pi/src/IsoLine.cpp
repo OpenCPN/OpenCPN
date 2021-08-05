@@ -421,12 +421,12 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
 //           else{
 //             glLineWidth( 0.4/m_pixelMM);        //  set a target line width by MM
 //           }
-//#else          
+//#else
           if(pof->m_oDC){
             wxPen ppISO ( isoLineColor, 2 );
             pof->m_oDC->SetPen(ppISO);
           }
-#endif          
+#endif
       }
 
       std::list<Segment *>::iterator it;
@@ -473,7 +473,7 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
                 pof->m_oDC->DrawLine(ab.x, ab.y, cd.x, cd.y);
             }
 
-#endif                
+#endif
                                     }
                               }
 
@@ -577,7 +577,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
 
                 wxRect r(x,y, w,h);
                 r.Inflate(w);
-                if (!prev.Intersects(r)) 
+                if (!prev.Intersects(r))
                 {
 #if 1
                     prev = r;
@@ -590,7 +590,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
                         pof->m_oDC->DrawText( label, xd, yd );
                     }
 
-#else                    
+#else
                       prev = r;
                       glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
 
@@ -614,7 +614,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
                       glEnable(GL_TEXTURE_2D);
                       texfont.RenderString(label, xd, yd);
                       glDisable(GL_TEXTURE_2D);
-#endif                      
+#endif
                 }
             }
         }

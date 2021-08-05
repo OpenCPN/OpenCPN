@@ -52,7 +52,7 @@ void wxFfmpegMediaDecoder::Init() {
 void PrintError(const wxString& msg, int err) {
 	char errbuf[128];
 	const char *errbuf_ptr = errbuf;
-	
+
 	if (av_strerror(err, errbuf, sizeof(errbuf)) < 0)
 		errbuf_ptr = strerror(AVUNERROR(err));
 	wxString errorStr(errbuf_ptr, wxConvUTF8);
@@ -177,7 +177,7 @@ bool wxFfmpegMediaDecoder::OpenVideoDecoder() {
 	if (m_codecCtx)
 		return true;
 	// find the first video stream
-	
+
 	m_videoStream = -1;
 	for (int i=0; i<(int)m_formatCtx->nb_streams; i++) {
 		if (m_formatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -187,9 +187,9 @@ bool wxFfmpegMediaDecoder::OpenVideoDecoder() {
 	}
 	if(m_videoStream == -1)
 		return false;
-	// get a pointer to the codec context for the video stream 
+	// get a pointer to the codec context for the video stream
 	m_codecCtx = m_formatCtx->streams[m_videoStream]->codec;
-	// find and open the decoder for the video stream 
+	// find and open the decoder for the video stream
 	AVCodec* codec = avcodec_find_decoder(m_codecCtx->codec_id);
 	if (!codec || avcodec_open2(m_codecCtx, codec, NULL) < 0) {
 		m_codecCtx = NULL;

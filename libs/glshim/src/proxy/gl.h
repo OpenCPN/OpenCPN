@@ -4248,15 +4248,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glEnableClientState_FORMAT FORMAT_void_GLenum
 #define glEnd_INDEX 108
 #define glEnd_RETURN void
-#define glEnd_ARG_NAMES 
-#define glEnd_ARG_EXPAND 
+#define glEnd_ARG_NAMES
+#define glEnd_ARG_EXPAND
 #define glEnd_PACKED PACKED_void
 #define glEnd_INDEXED INDEXED_void
 #define glEnd_FORMAT FORMAT_void
 #define glEndList_INDEX 109
 #define glEndList_RETURN void
-#define glEndList_ARG_NAMES 
-#define glEndList_ARG_EXPAND 
+#define glEndList_ARG_NAMES
+#define glEndList_ARG_EXPAND
 #define glEndList_PACKED PACKED_void
 #define glEndList_INDEXED INDEXED_void
 #define glEndList_FORMAT FORMAT_void
@@ -4360,15 +4360,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glFeedbackBuffer_FORMAT FORMAT_void_GLsizei_GLenum_GLfloat___GENPT__
 #define glFinish_INDEX 124
 #define glFinish_RETURN void
-#define glFinish_ARG_NAMES 
-#define glFinish_ARG_EXPAND 
+#define glFinish_ARG_NAMES
+#define glFinish_ARG_EXPAND
 #define glFinish_PACKED PACKED_void
 #define glFinish_INDEXED INDEXED_void
 #define glFinish_FORMAT FORMAT_void
 #define glFlush_INDEX 125
 #define glFlush_RETURN void
-#define glFlush_ARG_NAMES 
-#define glFlush_ARG_EXPAND 
+#define glFlush_ARG_NAMES
+#define glFlush_ARG_EXPAND
 #define glFlush_PACKED PACKED_void
 #define glFlush_INDEXED INDEXED_void
 #define glFlush_FORMAT FORMAT_void
@@ -4570,8 +4570,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glGetDoublev_FORMAT FORMAT_void_GLenum_GLdouble___GENPT__
 #define glGetError_INDEX 154
 #define glGetError_RETURN GLenum
-#define glGetError_ARG_NAMES 
-#define glGetError_ARG_EXPAND 
+#define glGetError_ARG_NAMES
+#define glGetError_ARG_EXPAND
 #define glGetError_PACKED PACKED_GLenum
 #define glGetError_INDEXED INDEXED_GLenum
 #define glGetError_FORMAT FORMAT_GLenum
@@ -4920,8 +4920,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glIndexubv_FORMAT FORMAT_void_const_GLubyte___GENPT__
 #define glInitNames_INDEX 204
 #define glInitNames_RETURN void
-#define glInitNames_ARG_NAMES 
-#define glInitNames_ARG_EXPAND 
+#define glInitNames_ARG_NAMES
+#define glInitNames_ARG_EXPAND
 #define glInitNames_PACKED PACKED_void
 #define glInitNames_INDEXED INDEXED_void
 #define glInitNames_FORMAT FORMAT_void
@@ -5046,8 +5046,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glListBase_FORMAT FORMAT_void_GLuint
 #define glLoadIdentity_INDEX 222
 #define glLoadIdentity_RETURN void
-#define glLoadIdentity_ARG_NAMES 
-#define glLoadIdentity_ARG_EXPAND 
+#define glLoadIdentity_ARG_NAMES
+#define glLoadIdentity_ARG_EXPAND
 #define glLoadIdentity_PACKED PACKED_void
 #define glLoadIdentity_INDEXED INDEXED_void
 #define glLoadIdentity_FORMAT FORMAT_void
@@ -5676,29 +5676,29 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glPolygonStipple_FORMAT FORMAT_void_const_GLubyte___GENPT__
 #define glPopAttrib_INDEX 312
 #define glPopAttrib_RETURN void
-#define glPopAttrib_ARG_NAMES 
-#define glPopAttrib_ARG_EXPAND 
+#define glPopAttrib_ARG_NAMES
+#define glPopAttrib_ARG_EXPAND
 #define glPopAttrib_PACKED PACKED_void
 #define glPopAttrib_INDEXED INDEXED_void
 #define glPopAttrib_FORMAT FORMAT_void
 #define glPopClientAttrib_INDEX 313
 #define glPopClientAttrib_RETURN void
-#define glPopClientAttrib_ARG_NAMES 
-#define glPopClientAttrib_ARG_EXPAND 
+#define glPopClientAttrib_ARG_NAMES
+#define glPopClientAttrib_ARG_EXPAND
 #define glPopClientAttrib_PACKED PACKED_void
 #define glPopClientAttrib_INDEXED INDEXED_void
 #define glPopClientAttrib_FORMAT FORMAT_void
 #define glPopMatrix_INDEX 314
 #define glPopMatrix_RETURN void
-#define glPopMatrix_ARG_NAMES 
-#define glPopMatrix_ARG_EXPAND 
+#define glPopMatrix_ARG_NAMES
+#define glPopMatrix_ARG_EXPAND
 #define glPopMatrix_PACKED PACKED_void
 #define glPopMatrix_INDEXED INDEXED_void
 #define glPopMatrix_FORMAT FORMAT_void
 #define glPopName_INDEX 315
 #define glPopName_RETURN void
-#define glPopName_ARG_NAMES 
-#define glPopName_ARG_EXPAND 
+#define glPopName_ARG_NAMES
+#define glPopName_ARG_EXPAND
 #define glPopName_PACKED PACKED_void
 #define glPopName_INDEXED INDEXED_void
 #define glPopName_FORMAT FORMAT_void
@@ -5725,8 +5725,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glPushClientAttrib_FORMAT FORMAT_void_GLbitfield
 #define glPushMatrix_INDEX 319
 #define glPushMatrix_RETURN void
-#define glPushMatrix_ARG_NAMES 
-#define glPushMatrix_ARG_EXPAND 
+#define glPushMatrix_ARG_NAMES
+#define glPushMatrix_ARG_EXPAND
 #define glPushMatrix_PACKED PACKED_void
 #define glPushMatrix_INDEXED INDEXED_void
 #define glPushMatrix_FORMAT FORMAT_void
@@ -6929,8 +6929,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXChooseVisual_FORMAT FORMAT_XVisualInfo___GENPT___Display___GENPT___int_int___GENPT__
 #define glXClientInfo_INDEX 491
 #define glXClientInfo_RETURN void
-#define glXClientInfo_ARG_NAMES 
-#define glXClientInfo_ARG_EXPAND 
+#define glXClientInfo_ARG_NAMES
+#define glXClientInfo_ARG_EXPAND
 #define glXClientInfo_PACKED PACKED_void
 #define glXClientInfo_INDEXED INDEXED_void
 #define glXClientInfo_FORMAT FORMAT_void
@@ -7069,15 +7069,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXDestroyWindow_FORMAT FORMAT_void_Display___GENPT___GLXWindow
 #define glXGetCurrentDisplay_INDEX 511
 #define glXGetCurrentDisplay_RETURN Display *
-#define glXGetCurrentDisplay_ARG_NAMES 
-#define glXGetCurrentDisplay_ARG_EXPAND 
+#define glXGetCurrentDisplay_ARG_NAMES
+#define glXGetCurrentDisplay_ARG_EXPAND
 #define glXGetCurrentDisplay_PACKED PACKED_Display___GENPT__
 #define glXGetCurrentDisplay_INDEXED INDEXED_Display___GENPT__
 #define glXGetCurrentDisplay_FORMAT FORMAT_Display___GENPT__
 #define glXGetCurrentReadDrawable_INDEX 512
 #define glXGetCurrentReadDrawable_RETURN GLXDrawable
-#define glXGetCurrentReadDrawable_ARG_NAMES 
-#define glXGetCurrentReadDrawable_ARG_EXPAND 
+#define glXGetCurrentReadDrawable_ARG_NAMES
+#define glXGetCurrentReadDrawable_ARG_EXPAND
 #define glXGetCurrentReadDrawable_PACKED PACKED_GLXDrawable
 #define glXGetCurrentReadDrawable_INDEXED INDEXED_GLXDrawable
 #define glXGetCurrentReadDrawable_FORMAT FORMAT_GLXDrawable
@@ -7111,8 +7111,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXGetFBConfigs_FORMAT FORMAT_GLXFBConfig___GENPT___Display___GENPT___int_int___GENPT__
 #define glXGetFBConfigsSGIX_INDEX 517
 #define glXGetFBConfigsSGIX_RETURN void
-#define glXGetFBConfigsSGIX_ARG_NAMES 
-#define glXGetFBConfigsSGIX_ARG_EXPAND 
+#define glXGetFBConfigsSGIX_ARG_NAMES
+#define glXGetFBConfigsSGIX_ARG_EXPAND
 #define glXGetFBConfigsSGIX_PACKED PACKED_void
 #define glXGetFBConfigsSGIX_INDEXED INDEXED_void
 #define glXGetFBConfigsSGIX_FORMAT FORMAT_void
@@ -7132,8 +7132,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXGetSelectedEvent_FORMAT FORMAT_void_Display___GENPT___GLXDrawable_unsigned_long___GENPT__
 #define glXGetVisualConfigs_INDEX 520
 #define glXGetVisualConfigs_RETURN void
-#define glXGetVisualConfigs_ARG_NAMES 
-#define glXGetVisualConfigs_ARG_EXPAND 
+#define glXGetVisualConfigs_ARG_NAMES
+#define glXGetVisualConfigs_ARG_EXPAND
 #define glXGetVisualConfigs_PACKED PACKED_void
 #define glXGetVisualConfigs_INDEXED INDEXED_void
 #define glXGetVisualConfigs_FORMAT FORMAT_void
@@ -7202,8 +7202,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXQueryContext_FORMAT FORMAT_int_Display___GENPT___GLXContext_int_int___GENPT__
 #define glXQueryContextInfoEXT_INDEX 530
 #define glXQueryContextInfoEXT_RETURN void
-#define glXQueryContextInfoEXT_ARG_NAMES 
-#define glXQueryContextInfoEXT_ARG_EXPAND 
+#define glXQueryContextInfoEXT_ARG_NAMES
+#define glXQueryContextInfoEXT_ARG_EXPAND
 #define glXQueryContextInfoEXT_PACKED PACKED_void
 #define glXQueryContextInfoEXT_INDEXED INDEXED_void
 #define glXQueryContextInfoEXT_FORMAT FORMAT_void
@@ -7251,8 +7251,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXQueryHyperpipeNetworkSGIX_FORMAT FORMAT_GLXHyperpipeNetworkSGIX___GENPT___Display___GENPT___int___GENPT__
 #define glXQueryMaxSwapBarriersSGIX_INDEX 537
 #define glXQueryMaxSwapBarriersSGIX_RETURN void
-#define glXQueryMaxSwapBarriersSGIX_ARG_NAMES 
-#define glXQueryMaxSwapBarriersSGIX_ARG_EXPAND 
+#define glXQueryMaxSwapBarriersSGIX_ARG_NAMES
+#define glXQueryMaxSwapBarriersSGIX_ARG_EXPAND
 #define glXQueryMaxSwapBarriersSGIX_PACKED PACKED_void
 #define glXQueryMaxSwapBarriersSGIX_INDEXED INDEXED_void
 #define glXQueryMaxSwapBarriersSGIX_FORMAT FORMAT_void
@@ -7272,15 +7272,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXQueryVersion_FORMAT FORMAT_Bool_Display___GENPT___int___GENPT___int___GENPT__
 #define glXRender_INDEX 540
 #define glXRender_RETURN void
-#define glXRender_ARG_NAMES 
-#define glXRender_ARG_EXPAND 
+#define glXRender_ARG_NAMES
+#define glXRender_ARG_EXPAND
 #define glXRender_PACKED PACKED_void
 #define glXRender_INDEXED INDEXED_void
 #define glXRender_FORMAT FORMAT_void
 #define glXRenderLarge_INDEX 541
 #define glXRenderLarge_RETURN void
-#define glXRenderLarge_ARG_NAMES 
-#define glXRenderLarge_ARG_EXPAND 
+#define glXRenderLarge_ARG_NAMES
+#define glXRenderLarge_ARG_EXPAND
 #define glXRenderLarge_PACKED PACKED_void
 #define glXRenderLarge_INDEXED INDEXED_void
 #define glXRenderLarge_FORMAT FORMAT_void
@@ -7300,8 +7300,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXSwapBuffers_FORMAT FORMAT_void_Display___GENPT___GLXDrawable
 #define glXSwapIntervalSGI_INDEX 544
 #define glXSwapIntervalSGI_RETURN void
-#define glXSwapIntervalSGI_ARG_NAMES 
-#define glXSwapIntervalSGI_ARG_EXPAND 
+#define glXSwapIntervalSGI_ARG_NAMES
+#define glXSwapIntervalSGI_ARG_EXPAND
 #define glXSwapIntervalSGI_PACKED PACKED_void
 #define glXSwapIntervalSGI_INDEXED INDEXED_void
 #define glXSwapIntervalSGI_FORMAT FORMAT_void
@@ -7314,29 +7314,29 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXUseXFont_FORMAT FORMAT_void_Font_int_int_int
 #define glXVendorPrivate_INDEX 546
 #define glXVendorPrivate_RETURN void
-#define glXVendorPrivate_ARG_NAMES 
-#define glXVendorPrivate_ARG_EXPAND 
+#define glXVendorPrivate_ARG_NAMES
+#define glXVendorPrivate_ARG_EXPAND
 #define glXVendorPrivate_PACKED PACKED_void
 #define glXVendorPrivate_INDEXED INDEXED_void
 #define glXVendorPrivate_FORMAT FORMAT_void
 #define glXVendorPrivateWithReply_INDEX 547
 #define glXVendorPrivateWithReply_RETURN void
-#define glXVendorPrivateWithReply_ARG_NAMES 
-#define glXVendorPrivateWithReply_ARG_EXPAND 
+#define glXVendorPrivateWithReply_ARG_NAMES
+#define glXVendorPrivateWithReply_ARG_EXPAND
 #define glXVendorPrivateWithReply_PACKED PACKED_void
 #define glXVendorPrivateWithReply_INDEXED INDEXED_void
 #define glXVendorPrivateWithReply_FORMAT FORMAT_void
 #define glXWaitGL_INDEX 548
 #define glXWaitGL_RETURN void
-#define glXWaitGL_ARG_NAMES 
-#define glXWaitGL_ARG_EXPAND 
+#define glXWaitGL_ARG_NAMES
+#define glXWaitGL_ARG_EXPAND
 #define glXWaitGL_PACKED PACKED_void
 #define glXWaitGL_INDEXED INDEXED_void
 #define glXWaitGL_FORMAT FORMAT_void
 #define glXWaitX_INDEX 549
 #define glXWaitX_RETURN void
-#define glXWaitX_ARG_NAMES 
-#define glXWaitX_ARG_EXPAND 
+#define glXWaitX_ARG_NAMES
+#define glXWaitX_ARG_EXPAND
 #define glXWaitX_PACKED PACKED_void
 #define glXWaitX_INDEXED INDEXED_void
 #define glXWaitX_FORMAT FORMAT_void

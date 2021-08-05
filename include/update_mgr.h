@@ -48,7 +48,7 @@ class UpdateDialog: public wxDialog
         PluginMetadata GetUpdate() { return update;  };
         void SetUpdate(const PluginMetadata md) { update = md; };
         void RecalculateSize();
-        
+
         OcpnUpdateScrolledWindow *m_scrwin;
 
     private:

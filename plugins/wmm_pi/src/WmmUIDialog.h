@@ -35,10 +35,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class WmmUIDialogBase
 ///////////////////////////////////////////////////////////////////////////////
-class WmmUIDialogBase : public wxDialog 
+class WmmUIDialogBase : public wxDialog
 {
 	private:
-	
+
 	protected:
 		wxStaticText* m_staticText8;
 		wxStaticText* m_staticText9;
@@ -54,12 +54,12 @@ class WmmUIDialogBase : public wxDialog
 		wxStaticText* m_staticText121;
 		wxStaticText* m_staticText141;
 		wxStaticText* m_staticText131;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void EnablePlotChanged( wxCommandEvent& event ) { event.Skip(); }
 		virtual void PlotSettings( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
 		wxBoxSizer* bSframe;
 		wxStaticBoxSizer* sbSboat;
@@ -83,8 +83,8 @@ class WmmUIDialogBase : public wxDialog
 		wxStaticBoxSizer* sbPlot;
 		wxCheckBox* m_cbEnablePlot;
 		wxButton* m_bPlotSettings;
-		
-		WmmUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("WMM"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 250,485 ), long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+
+		WmmUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("WMM"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 250,485 ), long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~WmmUIDialogBase();
                 void OnKey( wxKeyEvent& ke );
 
@@ -95,15 +95,15 @@ class WmmUIDialogBase : public wxDialog
 ///////////////////////////////////////////////////////////////////////////////
 /// Class WmmPrefsDialog
 ///////////////////////////////////////////////////////////////////////////////
-class WmmPrefsDialog : public wxDialog 
+class WmmPrefsDialog : public wxDialog
 {
 	private:
-	
+
 	protected:
 		wxStdDialogButtonSizer* m_sdbSizer1;
 		wxButton* m_sdbSizer1OK;
 		wxButton* m_sdbSizer1Cancel;
-	
+
 	public:
 		wxRadioBox* m_rbViewType;
 		wxCheckBox* m_cbShowPlotOptions;
@@ -111,19 +111,19 @@ class WmmPrefsDialog : public wxDialog
 		wxCheckBox* m_cbLiveIcon;
                 wxCheckBox* m_cbShowIcon;
 		wxSlider* m_sOpacity;
-		
-		WmmPrefsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("WMM Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE ); 
+
+		WmmPrefsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("WMM Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE );
 		~WmmPrefsDialog();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class WmmPlotSettingsDialogBase
 ///////////////////////////////////////////////////////////////////////////////
-class WmmPlotSettingsDialogBase : public wxDialog 
+class WmmPlotSettingsDialogBase : public wxDialog
 {
 	private:
-	
+
 	protected:
 		wxStaticText* m_staticText15;
 		wxStaticText* m_staticText18;
@@ -134,13 +134,13 @@ class WmmPlotSettingsDialogBase : public wxDialog
 		wxButton* m_bAbout;
 		wxButton* m_bSave;
 		wxButton* m_bCancel;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void About( wxCommandEvent& event ) { event.Skip(); }
 		virtual void Save( wxCommandEvent& event ) { event.Skip(); }
 		virtual void Cancel( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
 		wxCheckBox* m_cbDeclination;
 		wxSpinCtrl* m_scDeclinationSpacing;
@@ -151,11 +151,11 @@ class WmmPlotSettingsDialogBase : public wxDialog
 		//wxDatePickerCtrl* m_dpDate;
 		wxSlider* m_sStep;
 		wxSlider* m_sPoleAccuracy;
-		
-		WmmPlotSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Magnetic Plot Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 375,270 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+
+		WmmPlotSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Magnetic Plot Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 375,270 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~WmmPlotSettingsDialogBase();
-                
-	
+
+
 };
 
 #endif //__WMMUIDIALOG_H__
