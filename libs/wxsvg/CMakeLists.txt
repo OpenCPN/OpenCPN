@@ -93,7 +93,7 @@ add_library(WXSVG STATIC ${SRC})
 add_library(ocpn::wxsvg ALIAS WXSVG)
 set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
-     
+
    # CMake has trouble finding libgobject-2.0.so, as required for static wxsvg library.
    # We look for and add it explicitely
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
@@ -102,11 +102,11 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
         pkg_search_module(GOBJECT REQUIRED gobject-2.0)
         #MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
         target_link_libraries(WXSVG PRIVATE ${GOBJECT_LDFLAGS})
-        
+
         find_library(PANGOCAIRO_LIBRARY NAMES pangocairo-1.0 PATHS ${LINUX_LIB_PATHS})
         #MESSAGE (STATUS "    PANGOCAIRO: " ${PANGOCAIRO_LIBRARY})
         target_link_libraries(WXSVG PRIVATE ${PANGOCAIRO_LIBRARY})
-        
+
 endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
 include(FindEXIF)

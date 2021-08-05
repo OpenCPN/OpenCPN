@@ -77,7 +77,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     PUBLIC_HEADER "${serial_HEADERS}"
 )
 if (OBJ_VISIBILITY)
-    set_target_properties(${PROJECT_NAME} PROPERTIES 
+    set_target_properties(${PROJECT_NAME} PROPERTIES
         COMPILE_FLAGS "${OBJ_VISIBILITY}"
     )
 endif ()
