@@ -31528,11 +31528,11 @@
 			<display-cat>Standard</display-cat>
 			<comment>27025</comment>
 		</lookup>
-    
+
     <!-- These LUPs added in OCPN 5.5+ -->
     <!-- Note that in some cases the RCID may have already been defined earlier in this file. -->
     <!-- In this case, the code logic will replace the earlier definition with the last definition encountered in serial processing -->
-    
+
                     <lookup id="2" RCID="32038" name="ACHARE">
                         <type>Area</type>
                         <disp-prio>Area 2</disp-prio>
@@ -31552,7 +31552,7 @@
                         <display-cat>Standard</display-cat>
                         <comment>26220</comment>
                 </lookup>
-                
+
                 <lookup id="84" RCID="32120" name="LNDARE">
                         <type>Area</type>
                         <disp-prio>Group 1</disp-prio>
@@ -31572,7 +31572,7 @@
                         <display-cat>Displaybase</display-cat>
                         <comment>12010</comment>
                 </lookup>
-                
+
                 <lookup id="2198" RCID="30378" name="LIGHTS">
                         <type>Point</type>
                         <disp-prio>Hazards</disp-prio>
@@ -48448,12 +48448,12 @@
 			<color-ref>ADEPMDBCHBLKCCHWHT</color-ref>
 			<definition>R</definition>
 		</symbol>
-    
+
     <!-- These Symbols added in OCPN 5.5+ -->
     <!-- Note that in some cases the RCID may have already been defined earlier in this file. -->
     <!-- In this case, the code logic will replace the earlier definition with the last definition encountered in serial processing -->
-    
-    
+
+
                 <symbol RCID="1399">
                         <name>LIGHTS82</name>
                         <description>floodlight</description>
@@ -48473,7 +48473,7 @@
                         <definition>V</definition>
                         <prefer-bitmap>no</prefer-bitmap>
                 </symbol>
-                
+
                 <symbol RCID="3412">
                         <name>TSSRON51</name>
                         <description>traffic roundabout</description>
@@ -49162,7 +49162,7 @@
                     </bitmap>
                     <definition>R</definition>
                 </symbol>
-                
+
     </symbols>
 
 </chartsymbols>

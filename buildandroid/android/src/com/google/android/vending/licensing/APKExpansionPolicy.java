@@ -122,7 +122,7 @@ public class APKExpansionPolicy implements Policy {
      * <li>GT: the timestamp that the client should ignore retry errors until
      * <li>GR: the number of retry errors that the client should ignore
      * </ul>
-     * 
+     *
      * @param response the result from validating the server response
      * @param rawData the raw server response data
      */
@@ -175,7 +175,7 @@ public class APKExpansionPolicy implements Policy {
      * Set the last license response received from the server and add to
      * preferences. You must manually call PreferenceObfuscator.commit() to
      * commit these changes to disk.
-     * 
+     *
      * @param l the response
      */
     private void setLastResponse(int l) {
@@ -187,7 +187,7 @@ public class APKExpansionPolicy implements Policy {
     /**
      * Set the current retry count and add to preferences. You must manually
      * call PreferenceObfuscator.commit() to commit these changes to disk.
-     * 
+     *
      * @param c the new retry count
      */
     private void setRetryCount(long c) {
@@ -203,7 +203,7 @@ public class APKExpansionPolicy implements Policy {
      * Set the last validity timestamp (VT) received from the server and add to
      * preferences. You must manually call PreferenceObfuscator.commit() to
      * commit these changes to disk.
-     * 
+     *
      * @param validityTimestamp the VT string received
      */
     private void setValidityTimestamp(String validityTimestamp) {
@@ -229,7 +229,7 @@ public class APKExpansionPolicy implements Policy {
      * Set the retry until timestamp (GT) received from the server and add to
      * preferences. You must manually call PreferenceObfuscator.commit() to
      * commit these changes to disk.
-     * 
+     *
      * @param retryUntil the GT string received
      */
     private void setRetryUntil(String retryUntil) {
@@ -255,7 +255,7 @@ public class APKExpansionPolicy implements Policy {
      * Set the max retries value (GR) as received from the server and add to
      * preferences. You must manually call PreferenceObfuscator.commit() to
      * commit these changes to disk.
-     * 
+     *
      * @param maxRetries the GR string received
      */
     private void setMaxRetries(String maxRetries) {
@@ -281,7 +281,7 @@ public class APKExpansionPolicy implements Policy {
      * Gets the count of expansion URLs. Since expansionURLs are not committed
      * to preferences, this will return zero if there has been no LVL fetch
      * in the current session.
-     * 
+     *
      * @return the number of expansion URLs. (0,1,2)
      */
     public int getExpansionURLCount() {
@@ -292,7 +292,7 @@ public class APKExpansionPolicy implements Policy {
      * Gets the expansion URL. Since these URLs are not committed to
      * preferences, this will always return null if there has not been an LVL
      * fetch in the current session.
-     * 
+     *
      * @param index the index of the URL to fetch. This value will be either
      *            MAIN_FILE_URL_INDEX or PATCH_FILE_URL_INDEX
      * @param URL the URL to set
@@ -308,7 +308,7 @@ public class APKExpansionPolicy implements Policy {
      * Sets the expansion URL. Expansion URL's are not committed to preferences,
      * but are instead intended to be stored when the license response is
      * processed by the front-end.
-     * 
+     *
      * @param index the index of the expansion URL. This value will be either
      *            MAIN_FILE_URL_INDEX or PATCH_FILE_URL_INDEX
      * @param URL the URL to set
