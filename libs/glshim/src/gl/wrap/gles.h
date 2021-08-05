@@ -1492,15 +1492,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glEnableClientState_FORMAT FORMAT_void_GLenum
 #define glFinish_INDEX 40
 #define glFinish_RETURN void
-#define glFinish_ARG_NAMES 
-#define glFinish_ARG_EXPAND 
+#define glFinish_ARG_NAMES
+#define glFinish_ARG_EXPAND
 #define glFinish_PACKED PACKED_void
 #define glFinish_INDEXED INDEXED_void
 #define glFinish_FORMAT FORMAT_void
 #define glFlush_INDEX 41
 #define glFlush_RETURN void
-#define glFlush_ARG_NAMES 
-#define glFlush_ARG_EXPAND 
+#define glFlush_ARG_NAMES
+#define glFlush_ARG_EXPAND
 #define glFlush_PACKED PACKED_void
 #define glFlush_INDEXED INDEXED_void
 #define glFlush_FORMAT FORMAT_void
@@ -1597,8 +1597,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glGetClipPlanex_FORMAT FORMAT_void_GLenum_GLfixed___GENPT__
 #define glGetError_INDEX 55
 #define glGetError_RETURN GLenum
-#define glGetError_ARG_NAMES 
-#define glGetError_ARG_EXPAND 
+#define glGetError_ARG_NAMES
+#define glGetError_ARG_EXPAND
 #define glGetError_PACKED PACKED_GLenum
 #define glGetError_INDEXED INDEXED_GLenum
 #define glGetError_FORMAT FORMAT_GLenum
@@ -1807,8 +1807,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glLineWidthx_FORMAT FORMAT_void_GLfixed
 #define glLoadIdentity_INDEX 85
 #define glLoadIdentity_RETURN void
-#define glLoadIdentity_ARG_NAMES 
-#define glLoadIdentity_ARG_EXPAND 
+#define glLoadIdentity_ARG_NAMES
+#define glLoadIdentity_ARG_EXPAND
 #define glLoadIdentity_PACKED PACKED_void
 #define glLoadIdentity_INDEXED INDEXED_void
 #define glLoadIdentity_FORMAT FORMAT_void
@@ -2003,15 +2003,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glPolygonOffsetx_FORMAT FORMAT_void_GLfixed_GLfixed
 #define glPopMatrix_INDEX 113
 #define glPopMatrix_RETURN void
-#define glPopMatrix_ARG_NAMES 
-#define glPopMatrix_ARG_EXPAND 
+#define glPopMatrix_ARG_NAMES
+#define glPopMatrix_ARG_EXPAND
 #define glPopMatrix_PACKED PACKED_void
 #define glPopMatrix_INDEXED INDEXED_void
 #define glPopMatrix_FORMAT FORMAT_void
 #define glPushMatrix_INDEX 114
 #define glPushMatrix_RETURN void
-#define glPushMatrix_ARG_NAMES 
-#define glPushMatrix_ARG_EXPAND 
+#define glPushMatrix_ARG_NAMES
+#define glPushMatrix_ARG_EXPAND
 #define glPushMatrix_PACKED PACKED_void
 #define glPushMatrix_INDEXED INDEXED_void
 #define glPushMatrix_FORMAT FORMAT_void

@@ -24,9 +24,9 @@ wxString wxSVGTransformList::GetValueAsString() const {
 void wxSVGTransformList::SetValueAsString(const wxString& value) {
   Clear();
   wxStringTokenizer tkz(value, wxT(" \t"));
-  while (tkz.HasMoreTokens()) 
-  { 
-    wxString token = tkz.GetNextToken(); 
+  while (tkz.HasMoreTokens())
+  {
+    wxString token = tkz.GetNextToken();
     if (token.length() == 0)
     	continue;
     wxSVGTransform transform;

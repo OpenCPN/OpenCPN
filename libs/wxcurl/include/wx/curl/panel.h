@@ -40,7 +40,7 @@ enum
 class WXDLLIMPEXP_CURL wxCurlConnectionSettingsPanel : public wxPanel
 {
 public:
-    wxCurlConnectionSettingsPanel() 
+    wxCurlConnectionSettingsPanel()
     {
         m_pUsername = NULL;
         m_pPassword = NULL;

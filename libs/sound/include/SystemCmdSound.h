@@ -29,7 +29,7 @@
 #include "config.h"
 
 /**
- * Sound backend based on running a external CLI tool using system(3). 
+ * Sound backend based on running a external CLI tool using system(3).
  * Supports synchronous and asynchronous mode. The command line tools
  * also typically supports a wide range of audio formats; the exact
  * list is platform dependent.

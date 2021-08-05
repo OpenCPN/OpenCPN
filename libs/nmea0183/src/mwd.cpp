@@ -66,7 +66,7 @@ bool MWD::Parse( const SENTENCE& sentence )
    **        |   | |   | |   | |   | |
    ** $--MWD,x.x,T,x.x,M,x.x,N,x.x,M*hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Wind direction, 0.0 to 359.9 degrees True, to the nearest 0.1 degree
    **  2) T = True
    **  3) Wind direction, 0.0 to 359.9 degrees Magnetic, to the nearest 0.1 degree
@@ -86,7 +86,7 @@ bool MWD::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    WindAngleTrue      = sentence.Double( 1 );
    WindAngleMagnetic  = sentence.Double( 3 );
@@ -103,7 +103,7 @@ bool MWD::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += WindAngleTrue;
@@ -123,7 +123,7 @@ bool MWD::Write( SENTENCE& sentence )
 const MWD& MWD::operator = ( const MWD& source )
 {
 //   ASSERT_VALID( this );
- 
+
    WindAngleTrue      = source.WindAngleTrue;
    WindAngleMagnetic  = source.WindAngleMagnetic;
    WindSpeedKnots     = source.WindSpeedKnots;

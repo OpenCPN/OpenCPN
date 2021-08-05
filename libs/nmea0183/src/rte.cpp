@@ -45,7 +45,7 @@ RTE::RTE()
 {
    m_complete_char = 'c';
    m_skip_checksum = 0;
-   
+
    Mnemonic = _T("RTE");
    Empty();
 }

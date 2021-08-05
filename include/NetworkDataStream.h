@@ -93,7 +93,7 @@ public:
 
     NetworkDataStream(wxEvtHandler *input_consumer, NetworkProtocol protocol, wxString &address, int port)
             : DataStream(input_consumer,
-               NETWORK, 
+               NETWORK,
                _T(""),
                _T(""),
                DS_TYPE_OUTPUT,
@@ -101,7 +101,7 @@ public:
                false,
                DS_EOS_CRLF,
                DS_HANDSHAKE_NONE)
-              
+
     {
         m_net_port = wxString::Format(wxT("%i"), port);
         m_net_protocol = protocol;
@@ -118,7 +118,7 @@ public:
 
         Open();
     }
-    
+
     ~NetworkDataStream() {
         Close();
     }
@@ -130,7 +130,7 @@ public:
         return SendSentenceNetwork(payload);
     }
     virtual void Close();
-    
+
     wxSocketBase* GetSock() const { return m_sock; }
 
 private:
@@ -188,7 +188,7 @@ private:
         m_mrq.imr_multiaddr.s_addr = addr;
         m_mrq.imr_interface.s_addr = INADDR_ANY;
     }
-    
+
     struct ip_mreq& GetMrq() { return m_mrq; }
 
     wxTimer* GetSocketTimer() { return &m_socket_timer; }

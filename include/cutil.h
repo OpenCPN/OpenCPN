@@ -51,7 +51,7 @@ typedef struct {
       extern "C" int G_PtInPolygon(MyPoint *, int, float, float) ;
       extern "C" int G_PtInPolygon_FL(float_2Dpt *, int, float, float) ;
       extern "C" int Intersect_FL(float_2Dpt, float_2Dpt, float_2Dpt, float_2Dpt);
-          
+
       extern "C" int mysnprintf( char *buffer, int count, const char *format, ... );
       extern "C" int NextPow2(int size);
       extern "C" void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, std::vector<int> *keep);
@@ -59,7 +59,7 @@ typedef struct {
       extern "C" void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, std::vector<int> *keep);
       extern "C" void DouglasPeuckerFI(float *PointList, int fp, int lp, double epsilon, std::vector<bool> &keep);
       extern "C" void DouglasPeuckerDI(double *PointList, int fp, int lp, double epsilon, std::vector<bool> &keep);
-      
+
 #else /* __cplusplus */
       extern int G_PtInPolygon(MyPoint *, int, float, float) ;
       extern int mysnprintf( char *buffer, int count, const char *format, ... );
@@ -73,7 +73,7 @@ typedef struct {
      extern  long  __stdcall MyUnhandledExceptionFilter( struct _EXCEPTION_POINTERS *ExceptionInfo );
 #endif
 #endif
-     
+
 inline int roundint (double x)
 {
 #ifdef __WXOSX__
@@ -82,10 +82,10 @@ inline int roundint (double x)
     int tmp = static_cast<int> (x);
     tmp += (x-tmp>=.5) - (x-tmp<=-.5);
     return tmp;
-#endif    
+#endif
 }
-     
-     
+
+
 
 //-------------------------------------------------------------------------------------------------------
 //  Cohen & Sutherland Line clipping algorithms

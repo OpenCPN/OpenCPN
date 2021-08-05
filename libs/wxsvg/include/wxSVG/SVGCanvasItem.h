@@ -29,10 +29,10 @@ struct wxSVGMark {
 	enum Type {
 		START, MID, END
 	};
-	
+
 	double x, y, angle;
 	Type type;
-	
+
 	wxSVGMark(double aX, double aY, double aAngle, Type aType): x(aX), y(aY), angle(aAngle), type(aType) {}
 };
 
@@ -42,12 +42,12 @@ class wxSVGCanvasItem {
 	wxSVGCanvasItem(wxSVGCanvasItemType type) { m_type = type; }
 	virtual ~wxSVGCanvasItem() {}
 	wxSVGCanvasItemType GetType() { return m_type; }
-	
+
     /** returns the bounding box of the item */
     virtual wxSVGRect GetBBox(const wxSVGMatrix* matrix = NULL) { return wxSVGRect(); }
     virtual wxSVGRect GetResultBBox(const wxCSSStyleDeclaration& style,
       const wxSVGMatrix* matrix = NULL) { return GetBBox(matrix); }
-	
+
   protected:
 	wxSVGCanvasItemType m_type;
 };
@@ -60,7 +60,7 @@ class wxSVGCanvasPath: public wxSVGCanvasItem
   public:
 	wxSVGCanvasPath();
 	virtual ~wxSVGCanvasPath() {}
-	
+
 	void Init(wxSVGLineElement& element);
 	void Init(wxSVGPolylineElement& element);
 	void Init(wxSVGPolygonElement& element);
@@ -68,7 +68,7 @@ class wxSVGCanvasPath: public wxSVGCanvasItem
 	void Init(wxSVGCircleElement& element);
 	void Init(wxSVGEllipseElement& element);
 	void Init(wxSVGPathElement& element);
-		
+
 	void MoveTo(double x, double y, bool relative = false);
 	void LineTo(double x, double y, bool relative = false);
 	void LineToHorizontal(double x, bool relative = false);
@@ -80,15 +80,15 @@ class wxSVGCanvasPath: public wxSVGCanvasItem
 	void Arc(double x, double y, double r1, double r2, double angle,
 	  bool largeArcFlag, bool sweepFlag, bool relative = false);
 	bool ClosePath();
-	
+
 	virtual void End() = 0;
-	
+
 	inline void SetFill(bool fill = true) { m_fill = fill; }
 	inline bool GetFill() { return m_fill; }
-    
+
     /** returns the marker points */
     virtual vector<wxSVGMark> GetMarkPoints();
-    
+
   protected:
     wxSVGElement* m_element;
 	bool m_fill; /* define, if a path can be filled (disabled for line) */
@@ -126,7 +126,7 @@ class wxSVGCanvasText: public wxSVGCanvasItem
   public:
 	wxSVGCanvasText(wxSVGCanvas* canvas);
 	virtual ~wxSVGCanvasText();
-	
+
 	virtual void Init(wxSVGTextElement& element, const wxCSSStyleDeclaration& style, wxSVGMatrix* matrix);
     virtual wxSVGRect GetBBox(const wxSVGMatrix* matrix = NULL);
 	virtual long GetNumberOfChars();
@@ -137,11 +137,11 @@ class wxSVGCanvasText: public wxSVGCanvasItem
     virtual wxSVGRect GetExtentOfChar(unsigned long charnum);
     virtual double GetRotationOfChar(unsigned long charnum);
     virtual long GetCharNumAtPosition(const wxSVGPoint& point);
-	
+
   public:
     wxSVGCanvasTextChunkList m_chunks; /** list of text-chunks */
 	wxSVGCanvasTextChar* m_char; /** current char */
-  
+
   protected:
     wxSVGCanvas* m_canvas;
     double m_tx, m_ty; /** current text position */
@@ -167,12 +167,12 @@ public:
 	wxSVGCanvasSvgImageData(const wxString& filename, wxSVGDocument* doc);
 	wxSVGCanvasSvgImageData(wxSVGSVGElement* svgImage, wxSVGDocument* doc);
 	~wxSVGCanvasSvgImageData();
-	
+
 	void IncRef() { m_count++; }
 	int DecRef() { return (--m_count); }
-	
+
 	inline wxSVGSVGElement* GetSvgImage() { return m_svgImage; }
-	
+
 private:
     int m_count;
     wxSVGSVGElement* m_svgImage;
@@ -191,7 +191,7 @@ public:
 	virtual int GetDefaultHeight();
 	const wxSVGPreserveAspectRatio& GetPreserveAspectRatio() { return m_preserveAspectRatio; }
 	wxSVGSVGElement* GetSvgImage(wxSVGDocument* doc = NULL);
-	
+
 public:
 	double m_x, m_y, m_width, m_height; /** position and size of image */
     wxString m_href; /** link to the image (filename) */
@@ -208,13 +208,13 @@ class wxSVGCanvasVideoData {
 public:
 	wxSVGCanvasVideoData(wxFfmpegMediaDecoder* mediaDecoder);
 	~wxSVGCanvasVideoData();
-	
+
 	void IncRef() { m_count++; }
 	int DecRef() { return (--m_count); }
-	
+
 	wxFfmpegMediaDecoder* GetMediaDecoder() { return m_mediaDecoder; }
 	wxImage GetImage(double time);
-	
+
 private:
 	int m_count;
 	wxFfmpegMediaDecoder* m_mediaDecoder;
@@ -228,7 +228,7 @@ public:
 	virtual ~wxSVGCanvasVideo();
 	virtual void Init(wxSVGVideoElement& element, const wxCSSStyleDeclaration& style, wxProgressDialog* progressDlg);
 	double GetDuration() { return m_duration; }
-	
+
 public:
 	double m_time; /** time of the loaded frame */
 	double m_duration;

@@ -84,7 +84,7 @@ public:
     bool DeleteAllSelectableTypePoints( int SeltypeToDelete );
 
     bool DeleteSelectableRoutePoint( RoutePoint *prp );
-    
+
     //  Accessors
 
     SelectableItemList *GetSelectList()

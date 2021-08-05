@@ -114,8 +114,8 @@ public:
     void SetScaledBitmap( double factor );
     wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName, double scale_factor);
     void OpenFileFromJSON( wxString json);
-        
-    // 
+
+    //
     double getTimeInterpolatedValue ( int idx, double lon, double lat, wxDateTime t);
     bool getTimeInterpolatedValues ( double &M, double &A, int idx1, int idx2, double lon, double lat, wxDateTime t);
 
@@ -135,7 +135,7 @@ public:
     int             m_old_DialogStyle;
     double			m_ScaledFactor;
     void DoZoomToCenter();
-    
+
 private:
     void OnClose( wxCloseEvent& event );
     void OnSize( wxSizeEvent& event );
@@ -155,7 +155,7 @@ private:
     void OnOpenFile( wxCommandEvent& event );
     void OnRequest(  wxCommandEvent& event );
     void OnCompositeDialog( wxCommandEvent& event );
-    
+
     void OnTimeline( wxScrollEvent& event );
 	void OnShowCursorData( wxCommandEvent& event );
 

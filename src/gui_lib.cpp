@@ -292,22 +292,22 @@ OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
         wxFont *qFont = wxTheFontList->FindOrCreateFont( font_size,wxFONTFAMILY_TELETYPE, dFont->GetStyle(), dFont->GetWeight());
         SetFont( *qFont );
     }
-    
+
     wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
-    
+
     msgWindow = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                                 wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
     msgWindow->SetBorders( 30 );
-    
+
     topsizer->Add( msgWindow, 1, wxEXPAND, 5 );
-    
+
     wxString html;
     html << message;
-    
+
     wxCharBuffer buf = html.ToUTF8();
     if( buf.data() )                            // string OK?
        msgWindow->SetPage( html );
-    
+
     // 3) buttons
        int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
        int center_flag = wxEXPAND;
@@ -316,26 +316,26 @@ OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
        wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
        if ( sizerBtn )
            topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
-       
+
        SetSizer( topsizer );
-       
+
        topsizer->Fit( this );
-       
+
        RecalculateSize();
 //       wxSize szyv = msgWindow->GetVirtualSize();
-       
-//       SetClientSize(szyv.x + 20, szyv.y + 20); 
-       
+
+//       SetClientSize(szyv.x + 20, szyv.y + 20);
+
        CentreOnScreen();
-       
+
        //msgWindow->SetBackgroundColour(wxColour(191, 183, 180));
        msgWindow->SetBackgroundColour(GetBackgroundColour());
-       
+
        m_timer.SetOwner( this, -1 );
-       
+
        if(tSeconds > 0)
            m_timer.Start( tSeconds * 1000, wxTIMER_ONE_SHOT );
-       
+
 }
 
 void OCPN_TimedHTMLMessageDialog::RecalculateSize( void )
@@ -347,13 +347,13 @@ void OCPN_TimedHTMLMessageDialog::RecalculateSize( void )
     esize.x = wxMin(esize.x, sx * 6 / 10);
     esize.y = -1;
     SetClientSize(esize);     // This will force a recalc of internal representation
-    
+
     int height1 = msgWindow->GetInternalRepresentation()->GetHeight();
-    
+
     int client_size_y = wxMin(::wxGetDisplaySize().y - 100, height1 + 70);    // Must fit on screen
-    
+
     SetClientSize(wxSize(esize.x, client_size_y ));   // constant is 2xBorders + a little slop.
-    
+
 }
 
 void OCPN_TimedHTMLMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))

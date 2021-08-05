@@ -73,13 +73,13 @@ WX_DECLARE_USER_EXPORTED_OBJARRAY(wxCurlDAVFs, wxArrayDAVFs, WXDLLIMPEXP_CURL);
 //
 //////////////////////////////////////////////////////////////////////
 
-class WXDLLIMPEXP_CURL wxCurlDAVTool : public wxCurlDAV  
+class WXDLLIMPEXP_CURL wxCurlDAVTool : public wxCurlDAV
 {
 public:
-	wxCurlDAVTool(const wxString& szURL = wxEmptyString, 
-                  const wxString& szUserName = wxEmptyString, 
+	wxCurlDAVTool(const wxString& szURL = wxEmptyString,
+                  const wxString& szUserName = wxEmptyString,
                   const wxString& szPassword = wxEmptyString,
-                  wxEvtHandler* pEvtHandler = NULL, 
+                  wxEvtHandler* pEvtHandler = NULL,
                   long flags = wxCURL_DEFAULT_FLAGS);
 	virtual ~wxCurlDAVTool();
 

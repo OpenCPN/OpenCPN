@@ -94,7 +94,7 @@ public:
       double            y_rate;
       double            y_offset;
       double            ref_lat;                // Lower left corner of the cell containing this feature
-      double            ref_lon; 
+      double            ref_lon;
 };
 
 
@@ -114,9 +114,9 @@ public:
         double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
 
         LLBBox      tri_box;
-        
+
         TriPrim     *p_next;                // chain link
-        
+
 };
 
 class LegacyTriPrim
@@ -125,19 +125,19 @@ public:
     LegacyTriPrim();
     ~LegacyTriPrim();
     void FreeMem(void);
-    
+
     unsigned int type;                  // Type of triangle primitive
     //  May be PTG_TRIANGLES
     //         PTG_TRIANGLE_STRIP
     //         PTG_TRIANGLE_FAN
-    
+
     int         nVert;
     double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
-    
+
     double      minx, miny, maxx, maxy;
-    
+
     LegacyTriPrim     *p_next;                // chain link
-    
+
 };
 
 
@@ -160,7 +160,7 @@ public:
         int             data_type;              //  p_vertex in TriPrim chain is FLOAT or DOUBLE
         float           sfactor;
         float           soffset;
-        
+
     private:
         int my_bufgets( char *buf, int buf_len_max );
 
@@ -207,17 +207,17 @@ class PolyTessGeo
         double Get_ymin(){ return ymin;}
         double Get_ymax(){ return ymax;}
         void SetExtents(double x_left, double y_bot, double x_right, double y_top);
-        
-        
+
+
         PolyTriGroup *Get_PolyTriGroup_head(){ return m_ppg_head;}
         int GetnVertexMax(){ return m_nvertex_max; }
         void SetnVertexMax( int max ){ m_nvertex_max = max; }
         int GetnContours(){ return m_ncnt; }
-        
+
         int     ErrorCode;
         void Set_PolyTriGroup_head( PolyTriGroup *head ){ m_ppg_head = head;}
         void Set_OK( bool bok ){ m_bOK = bok;}
-        
+
         void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
         int my_bufgets( char *buf, int buf_len_max );
 
@@ -242,7 +242,7 @@ class PolyTessGeo
 
         double         earthAxis;
         bool           m_bcm93;
-        
+
 private:
         int BuildTess(void);
         //int BuildTessGL2(void);
@@ -254,7 +254,7 @@ private:
         bool            m_bOK;
 
         Extended_Geometry     *m_pxgeom;
-        
+
         double         xmin, xmax, ymin, ymax;
         PolyTriGroup    *m_ppg_head;                  // head of a PolyTriGroup chain
         int             m_nvertex_max;                 // and computed max vertex count
@@ -269,7 +269,7 @@ private:
         int            m_nrecl;
 
         double         m_LOD_meters;
-        
+
 
         double         **m_vertexPtrArray;
         bool           m_printStats;

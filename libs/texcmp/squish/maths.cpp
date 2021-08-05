@@ -3,29 +3,29 @@
 	Copyright (c) 2006 Simon Brown                          si@sjbrown.co.uk
 
 	Permission is hereby granted, free of charge, to any person obtaining
-	a copy of this software and associated documentation files (the 
+	a copy of this software and associated documentation files (the
 	"Software"), to	deal in the Software without restriction, including
 	without limitation the rights to use, copy, modify, merge, publish,
-	distribute, sublicense, and/or sell copies of the Software, and to 
-	permit persons to whom the Software is furnished to do so, subject to 
+	distribute, sublicense, and/or sell copies of the Software, and to
+	permit persons to whom the Software is furnished to do so, subject to
 	the following conditions:
 
 	The above copyright notice and this permission notice shall be included
 	in all copies or substantial portions of the Software.
 
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
-	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
-	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-	
+
    -------------------------------------------------------------------------- */
-   
+
 /*! @file
 
-	The symmetric eigensystem solver algorithm is from 
+	The symmetric eigensystem solver algorithm is from
 	http://www.geometrictools.com/Documentation/EigenSymmetric3x3.pdf
 */
 
@@ -52,7 +52,7 @@ Sym3x3 ComputeWeightedCovariance( int n, Vec3 const* points, float const* weight
 	{
 		Vec3 a = points[i] - centroid;
 		Vec3 b = weights[i]*a;
-		
+
 		covariance[0] += a.X()*b.X();
 		covariance[1] += a.X()*b.Y();
 		covariance[2] += a.X()*b.Z();
@@ -60,7 +60,7 @@ Sym3x3 ComputeWeightedCovariance( int n, Vec3 const* points, float const* weight
 		covariance[4] += a.Y()*b.Z();
 		covariance[5] += a.Z()*b.Z();
 	}
-	
+
 	// return it
 	return covariance;
 }
@@ -159,10 +159,10 @@ static Vec3 GetMultiplicity2Evector( Sym3x3 const& matrix, float evalue )
 Vec3 ComputePrincipleComponent( Sym3x3 const& matrix )
 {
 	// compute the cubic coefficients
-	float c0 = matrix[0]*matrix[3]*matrix[5] 
-		+ 2.0f*matrix[1]*matrix[2]*matrix[4] 
-		- matrix[0]*matrix[4]*matrix[4] 
-		- matrix[3]*matrix[2]*matrix[2] 
+	float c0 = matrix[0]*matrix[3]*matrix[5]
+		+ 2.0f*matrix[1]*matrix[2]*matrix[4]
+		- matrix[0]*matrix[4]*matrix[4]
+		- matrix[3]*matrix[2]*matrix[2]
 		- matrix[5]*matrix[1]*matrix[1];
 	float c1 = matrix[0]*matrix[3] + matrix[0]*matrix[5] + matrix[3]*matrix[5]
 		- matrix[1]*matrix[1] - matrix[2]*matrix[2] - matrix[4]*matrix[4];
@@ -212,10 +212,10 @@ Vec3 ComputePrincipleComponent( Sym3x3 const& matrix )
 			rt = -std::pow( -0.5f*b, 1.0f/3.0f );
 		else
 			rt = std::pow( 0.5f*b, 1.0f/3.0f );
-		
+
 		float l1 = ( 1.0f/3.0f )*c2 + rt;		// repeated
 		float l2 = ( 1.0f/3.0f )*c2 - 2.0f*rt;
-		
+
 		// get the eigenvector
 		if( std::fabs( l1 ) > std::fabs( l2 ) )
 			return GetMultiplicity2Evector( matrix, l1 );

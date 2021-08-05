@@ -72,9 +72,9 @@ bool DPT::Parse( const SENTENCE& sentence )
    **        |   |   |
    ** $--DPT,x.x,x.x*hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Depth, meters
-   **  2) Offset from transducer, 
+   **  2) Offset from transducer,
    **     positive means distance from tansducer to water line
    **     negative means distance from transducer to keel
    **  3) Checksum
@@ -103,7 +103,7 @@ bool DPT::Parse( const SENTENCE& sentence )
                return( FALSE );
            }
        }
-   } 
+   }
 
    DepthMeters                = sentence.Double( 1 );
    OffsetFromTransducerMeters = sentence.Double( 2 );
@@ -117,7 +117,7 @@ bool DPT::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += DepthMeters;

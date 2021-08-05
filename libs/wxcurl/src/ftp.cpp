@@ -24,7 +24,7 @@
 #endif
 
 #ifdef __WXMSW__
-    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC 
+    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC
 #endif
 
 #include <wx/mstream.h>
@@ -43,15 +43,15 @@ extern "C"
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-wxCurlFTP::wxCurlFTP(const wxString& szURL /*= wxEmptyString*/, 
-                     const wxString& szUserName /*= wxEmptyString*/, 
-                     const wxString& szPassword /*= wxEmptyString*/, 
+wxCurlFTP::wxCurlFTP(const wxString& szURL /*= wxEmptyString*/,
+                     const wxString& szUserName /*= wxEmptyString*/,
+                     const wxString& szPassword /*= wxEmptyString*/,
                      wxEvtHandler* pEvtHandler /*= NULL*/,
                      int id /*= wxID_ANY*/,
                      long flags /*= wxCURL_DEFAULT_FLAGS*/)
 : wxCurlBase(szURL, szUserName, szPassword, pEvtHandler, id, flags),
   m_pQuote(NULL), m_pPreQuote(NULL), m_pPostQuote(NULL),
-  m_bCreateMissingDirs(true), m_bAppend(false), m_bUsePortOption(false), 
+  m_bCreateMissingDirs(true), m_bAppend(false), m_bUsePortOption(false),
   m_tmMode(kASCII), m_bUseEPRT(false), m_bUseEPSV(false),
   m_szPortParam("-")
 {
@@ -406,7 +406,7 @@ bool wxCurlFTP::Delete(const wxString& szRemoteLoc /*= wxEmptyString*/)
 	return false;
 }
 
-bool wxCurlFTP::Rename(const wxString& szRemoteLocName, 
+bool wxCurlFTP::Rename(const wxString& szRemoteLocName,
                        const wxString& szRemoteFile /*= wxEmptyString*/)
 {
 	if(m_pCURL)

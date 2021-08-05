@@ -42,23 +42,23 @@ OCPN_DataStreamEvent::~OCPN_DataStreamEvent()
 wxString OCPN_DataStreamEvent::ProcessNMEA4Tags()
 {
     wxString msg = wxString(GetNMEAString().c_str(), wxConvUTF8);
-   
+
     int idxFirst =  msg.Find('\\');
-    
+
     if(wxNOT_FOUND == idxFirst)
         return msg;
-    
+
     if(idxFirst < (int)msg.Length()-1){
         int idxSecond = msg.Mid(idxFirst + 1).Find('\\') + 1;
         if(wxNOT_FOUND != idxSecond){
             if(idxSecond < (int)msg.Length()-1){
-                
+
                // wxString tag = msg.Mid(idxFirst+1, (idxSecond - idxFirst) -1);
                 return msg.Mid(idxSecond + 1);
             }
         }
     }
-    
+
     return msg;
 }
 

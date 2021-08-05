@@ -29,11 +29,11 @@ bool wxSVGHandler::LoadFile(wxImage *image, wxInputStream& stream, bool verbose,
 	int maxWidth = image->HasOption(wxT("max_width")) ? image->GetOptionInt(wxT("max_width")) : -1;
 	int maxHeight = image->HasOption(wxT("max_height")) ? image->GetOptionInt(wxT("max_height")) : -1;
 	image->Destroy();
-	
+
 	wxSVGDocument imgDoc;
 	if (!imgDoc.Load(stream))
 		return false;
-	
+
 	*image = imgDoc.Render(maxWidth, maxHeight);
 	return true;
 }
@@ -44,9 +44,9 @@ bool wxSVGHandler::SaveFile(wxImage *image, wxOutputStream& stream, bool verbose
 
 bool wxSVGHandler::DoCanRead(wxInputStream& stream) {
 	unsigned char hdr[5];
-	
+
 	if (!stream.Read(hdr, WXSIZEOF(hdr))) // it's ok to modify the stream position here
 		return false;
-	
+
 	return hdr[0] == '<' && hdr[1] == '?' && hdr[2] == 'x' && hdr[3] == 'm' && hdr[4] == 'l'; // <?xml
 }

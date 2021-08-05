@@ -99,7 +99,7 @@ void NMEALogWindow::SetSize(const wxSize & size)
     height = size.GetHeight();
     height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
     height = wxMin(height, g_Platform->getDisplaySize().y - 20);
-    
+
 }
 
 void NMEALogWindow::SetPos(const wxPoint & pos)

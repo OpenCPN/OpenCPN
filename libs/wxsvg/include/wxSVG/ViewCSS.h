@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        ViewCSS.h
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/04/28
 // RCS-ID:      $Id: ViewCSS.h,v 1.1.1.1 2005/05/10 17:51:20 ntalex Exp $

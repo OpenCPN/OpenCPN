@@ -3,35 +3,35 @@
 	Copyright (c) 2006 Simon Brown                          si@sjbrown.co.uk
 
 	Permission is hereby granted, free of charge, to any person obtaining
-	a copy of this software and associated documentation files (the 
+	a copy of this software and associated documentation files (the
 	"Software"), to	deal in the Software without restriction, including
 	without limitation the rights to use, copy, modify, merge, publish,
-	distribute, sublicense, and/or sell copies of the Software, and to 
-	permit persons to whom the Software is furnished to do so, subject to 
+	distribute, sublicense, and/or sell copies of the Software, and to
+	permit persons to whom the Software is furnished to do so, subject to
 	the following conditions:
 
 	The above copyright notice and this permission notice shall be included
 	in all copies or substantial portions of the Software.
 
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
-	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
-	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-	
+
    -------------------------------------------------------------------------- */
 
 #include <string.h>
 #include <stdint.h>
-   
+
 #include "colourset.h"
 
 namespace squish {
 
 ColourSet::ColourSet( u8 const* rgba, int mask, int flags )
-  : m_count( 0 ), 
+  : m_count( 0 ),
 	m_transparent( false )
 {
     #if 0
@@ -49,7 +49,7 @@ ColourSet::ColourSet( u8 const* rgba, int mask, int flags )
 			m_remap[i] = -1;
 			continue;
 		}
-	
+
 		// check for transparent pixels when using dxt1
 		if( isDxt1 && rgba[4*i + 3] < 128 )
 		{
@@ -68,7 +68,7 @@ ColourSet::ColourSet( u8 const* rgba, int mask, int flags )
 				float x = ( float )rgba[4*i] / 255.0f;
 				float y = ( float )rgba[4*i + 1] / 255.0f;
 				float z = ( float )rgba[4*i + 2] / 255.0f;
-				
+
 				// ensure there is always non-zero weight even for zero alpha
 				float w = ( float )( rgba[4*i + 3] + 1 ) / 256.0f;
 
@@ -76,12 +76,12 @@ ColourSet::ColourSet( u8 const* rgba, int mask, int flags )
 				m_points[m_count] = Vec3( x, y, z );
 				m_weights[m_count] = ( weightByAlpha ? w : 1.0f );
 				m_remap[i] = m_count;
-				
+
 				// advance
 				++m_count;
 				break;
 			}
-		
+
 			// check for a match
 			int oldbit = 1 << j;
 			bool match = ( ( mask & oldbit ) != 0 )
@@ -93,7 +93,7 @@ ColourSet::ColourSet( u8 const* rgba, int mask, int flags )
 			{
 				// get the index of the match
 				int index = m_remap[j];
-				
+
 				// ensure there is always non-zero weight even for zero alpha
 				float w = ( float )( rgba[4*i + 3] + 1 ) / 256.0f;
 
@@ -113,7 +113,7 @@ ColourSet::ColourSet( u8 const* rgba, int mask, int flags )
 
 // this version optimized and used for dxt1 only without alpha
 ColourSet::ColourSet( u8 const* rgba, int flags )
-    : m_count( 0 ), 
+    : m_count( 0 ),
       m_transparent( false )
 {
 	// create the minimal set
@@ -129,19 +129,19 @@ ColourSet::ColourSet( u8 const* rgba, int flags )
 
                             m_weights[m_count] = 1;
                             m_remap[i] = m_count;
-				
+
                             // advance
                             ++m_count;
                             break;
 			}
-		
+
 			// check for a match
 			bool match = *(uint32_t*)(rgba + 4*i) == *(uint32_t*)(rgba + 4*j);
 			if( match )
 			{
 				// get the index of the match
 				int index = m_remap[j];
-				
+
 				// map to this point and increase the weight
 				m_weights[index]++;
 				m_remap[i] = index;
@@ -169,11 +169,11 @@ Vec3 const* ColourSet::GetPoints()
         float x = ( float )m_points[i][0] / 255.0f;
         float y = ( float )m_points[i][1] / 255.0f;
         float z = ( float )m_points[i][2] / 255.0f;
-				
+
         // add the point
         m_vpoints[i] = Vec3( x, y, z );
     }
-        
+
     return m_vpoints;
 }
 

@@ -408,7 +408,7 @@ public:
     /**
      * @brief Try to execute a step of the prepared query to fetch one row of results, returning the sqlite result code.
      *
-     *  
+     *
      *
      * @see exec() execute a one-step prepared statement with no expected result
      * @see executeStep() execute a step of the prepared query to fetch one row of results

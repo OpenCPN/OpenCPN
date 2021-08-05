@@ -36,13 +36,13 @@
  *    - The binary directory (additional program) e. g, /usr/bin.
  *
  * The compiled plugins are installed to user-writable location(s)
- *    
+ *
  *    - Linux: under ~/.local, possibly relocated by environment variables.
  *    - Windows: under &GetWinPluginBaseDir() which is configurable,
  *      defaults to %APPDATA%/Local/opencpn
  *    - Flatpak: under ~/.var/app/org.opencpn.OpenCPN
  *
- * However, plugins are loaded from multiple locations basically 
+ * However, plugins are loaded from multiple locations basically
  * corresponding to new and old lacations:
  *
  *    - Windows: GetSharedDataDirPtr():GetWinPluginBaseDir()
@@ -50,7 +50,7 @@
  *      ~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn
  *    - flatpak:
  *        /app/lib/opencpn:/app/extensions/lib/opencpn:~/.var/app/opencpn/lib
- *        
+ *
  */
 
 #ifndef PLUGIN_HANDLER_H__
@@ -117,7 +117,7 @@ class PluginHandler {
 
         /** Return list of available, not installed plugins. */
         const std::vector<PluginMetadata> getAvailable();
-        
+
         /** Map of available plugin targets -> number of occurences. */
         const std::map<std::string, int> getCountByTarget();
 
@@ -142,7 +142,7 @@ class PluginHandler {
         std::string getLastErrorMsg() { return last_error_msg; }
 
         CatalogData *GetCatalogData(){ return &catalogData; }
-        
+
     protected:
 	/** Initiats the handler and set up LD_LIBRARY_PATH. */
         PluginHandler() {}

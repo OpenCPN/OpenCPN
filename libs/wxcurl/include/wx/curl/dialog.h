@@ -70,7 +70,7 @@ enum wxCurlDialogReturnFlag
 class WXDLLIMPEXP_CURL wxCurlTransferDialog : public wxDialog
 {
 public:
-    wxCurlTransferDialog() 
+    wxCurlTransferDialog()
     {
         m_bTransferComplete = false;
 #ifdef __WXDEBUG__
@@ -136,12 +136,12 @@ protected:     // internal utils
 
 
     wxStaticText *AddSizerRow(wxSizer *sz, const wxString &name);
-    void CreateControls(const wxString &url, const wxString &msg, 
+    void CreateControls(const wxString &url, const wxString &msg,
                         const wxString& sizeLabel, const wxBitmap &bitmap);
     void UpdateLabels(wxCurlProgressBaseEvent *ev);
 
     // returns true if the error can be ignored
-    bool HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread *p, 
+    bool HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread *p,
                                const wxString &url = wxEmptyString);
 
     bool HasFlag(wxCurlTransferDialogStyle flag) const

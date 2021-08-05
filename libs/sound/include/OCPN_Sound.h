@@ -60,13 +60,13 @@ class OcpnSound
          * Callback invoked as cb(userData) when audio stream is done and
          * drained. Should be called before Load() to be effective.
          *
-         * Setting a non-null callback forces use of asynchronous mode. 
+         * Setting a non-null callback forces use of asynchronous mode.
          * Using a default, 0 argument restores to synchronous mode.
          *
          * NOTE: Callback might be invoked in a interrupt or thread context,
-         * avoid anything which might block (I/O, memory allocation etc.). 
+         * avoid anything which might block (I/O, memory allocation etc.).
          */
-        virtual void SetFinishedCallback(AudioDoneCallback cb = 0, 
+        virtual void SetFinishedCallback(AudioDoneCallback cb = 0,
                                          void* userData = 0);
 
         /**

@@ -251,10 +251,10 @@ class InstallButton: public wxPanel
                 PluginHandler::getInstance()->uninstall(m_metadata.name);
             }
             wxLogMessage("Installing %s", m_metadata.name.c_str());
-            
+
             auto pluginHandler = PluginHandler::getInstance();
             bool cacheResult = pluginHandler->installPluginFromCache( m_metadata );
-            
+
             if(!cacheResult){
                 auto downloader = new GuiDownloader(this, m_metadata);
                 downloader->run(this, m_remove);
@@ -319,7 +319,7 @@ class CandidateButtonsPanel: public wxPanel
             auto flags = wxSizerFlags().Border();
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
-            vbox->Add(new InstallButton(this, *plugin), 
+            vbox->Add(new InstallButton(this, *plugin),
                                         flags.DoubleBorder().Top().Right());
             vbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
             m_info_btn = new WebsiteButton(this, plugin->info_url.c_str());
@@ -422,7 +422,7 @@ class MainButtonsPanel: public wxPanel
         }
 
     protected:
-        
+
         /**  Invokes the simple update catalog procedure. */
         class UpdateCatalogNowBtn: public wxButton
         {
@@ -560,7 +560,7 @@ GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             m_downloaded(0), m_dialog(0), m_plugin(plugin), m_parent(parent)
             { }
 
-        
+
 std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
 {
             bool ok;
@@ -576,8 +576,8 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
                                 wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
 #ifdef __OCPN__ANDROID__
                 m_dialog->SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));              // light blue
-#endif                
-                
+#endif
+
                 ok = download(path);
                 g_Platform->HideBusySpinner();
 
@@ -586,7 +586,7 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
                     showErrorDialog("Download error");
                     return "";
                 }
-                
+
                 // Download aborted?
                 if (m_dialog == 0) {
                     showErrorDialog("Download aborted");
@@ -614,7 +614,7 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
                 showErrorDialog("Installation error");
                 return "";
             }
-            
+
             if(downloaded){
                 // Cache the tarball from the tmp location to the plugin cache.
                 wxURI uri( wxString(m_plugin.tarball_url.c_str()));
@@ -626,7 +626,7 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
                 }
             }
 
-            
+
             wxMessageDialog *dlg = new wxMessageDialog(
                         m_parent,
                         m_plugin.name + " " + m_plugin.version
@@ -637,7 +637,7 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current)
             return path;
 }
 
-void GuiDownloader::on_chunk(const char* buff, unsigned bytes) 
+void GuiDownloader::on_chunk(const char* buff, unsigned bytes)
 {
             Downloader::on_chunk(buff, bytes);
             m_downloaded += bytes;

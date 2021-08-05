@@ -106,7 +106,7 @@ void LLRegion::plot(const char*fn) const
     for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
         for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
             fprintf(f, "%f %f\n", j->x, j->y);
-        
+
         fprintf(f, "%f %f\n", i->begin()->x, i->begin()->y);
         fprintf(f, "\n");
     }
@@ -141,7 +141,7 @@ LLBBox LLRegion::GetBox() const
         for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++) {
             minlat = wxMin(minlat, j->y);
             maxlat = wxMax(maxlat, j->y);
-                
+
             for(int k = 0; k<3; k++) {
                 minlon[k] = wxMin(minlon[k], j->x + resolved[k]);
                 maxlon[k] = wxMax(maxlon[k], j->x + resolved[k]);
@@ -292,16 +292,16 @@ static void /*APIENTRY*/ LLendCallback(void *user_data)
     if(w->contour.size()) {
         w->region.contours.push_back(w->contour);
         w->contour.clear();
-    }    
+    }
 }
 
 static void /*APIENTRY*/ LLcombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
                       GLdouble **dataOut, void *user_data )
 {
     work *w = (work*)user_data;
-    GLdouble *vertex = w->NewData(); 
-    memcpy(vertex, coords, 3*(sizeof *coords)); 
-    *dataOut = vertex;    
+    GLdouble *vertex = w->NewData();
+    memcpy(vertex, coords, 3*(sizeof *coords));
+    *dataOut = vertex;
 }
 
 static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
@@ -336,7 +336,7 @@ void LLRegion::Subtract(const LLRegion& region)
 {
     if(NoIntersection(region))
         return;
-    
+
     Put(region, GLU_TESS_WINDING_POSITIVE, true);
 }
 
@@ -378,7 +378,7 @@ bool LLRegion::NoIntersection(const LLBBox& box) const
 {
     return false; // there are occasional false positives we must fix first
 
-#if 0    
+#if 0
     double minx = box.GetMinLon(), maxx = box.GetMaxLon(), miny = box.GetMinLat(), maxy = box.GetMaxLat();
     if(Contains(miny, minx))
         return false;
@@ -450,7 +450,7 @@ bool LLRegion::NoIntersection(const LLBBox& box) const
     }
 
     return true;
-#endif    
+#endif
 }
 
 // internal test to see if regions don't intersect (optimization)
@@ -458,7 +458,7 @@ bool LLRegion::NoIntersection(const LLRegion& region) const
 {
     if(Empty() || region.Empty())
         return true;
-    
+
     LLBBox box = GetBox(), rbox = region.GetBox();
     return box.IntersectOut(rbox) || NoIntersection(rbox) || region.NoIntersection(box);
 }
@@ -480,7 +480,7 @@ void LLRegion::PutContours(work &w, const LLRegion& region, bool reverse)
 void LLRegion::Put( const LLRegion& region, int winding_rule, bool reverse)
 {
     work w(*this);
-   
+
     gluTessCallback( w.tobj, GLU_TESS_VERTEX_DATA, (_GLUfuncptr) &LLvertexCallback );
     gluTessCallback( w.tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &LLbeginCallback );
     gluTessCallback( w.tobj, GLU_TESS_COMBINE_DATA, (_GLUfuncptr) &LLcombineCallback );
@@ -497,7 +497,7 @@ void LLRegion::Put( const LLRegion& region, int winding_rule, bool reverse)
     PutContours(w, *this);
     PutContours(w, region, reverse);
     contours.clear();
-    gluTessEndPolygon( w.tobj ); 
+    gluTessEndPolygon( w.tobj );
 
     Optimize();
     m_box.Invalidate();
@@ -611,15 +611,15 @@ void LLRegion::Optimize()
         int s = i->size();
         for(int c=0; c<s; c++) {
             poly_contour::iterator l = j, k = j;
-            
+
             if (l == i->begin())
                 l = i->end();
             l--;
-            
+
             k++;
             if(k == i->end())
                 k = i->begin();
-            
+
             if(l == k)
                 break;
             if(fabs(cross(vector(*j, *l), vector(*j, *k))) < 1e-12) {

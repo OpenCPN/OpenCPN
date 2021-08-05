@@ -18,7 +18,7 @@ class wxSVGLengthList: public wxSVGLengthListBase
 {
   public:
     wxSVGLengthList() {}
-    
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& value);
 };

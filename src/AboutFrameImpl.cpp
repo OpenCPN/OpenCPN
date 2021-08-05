@@ -61,7 +61,7 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
 #endif
     m_bitmapLogo->SetBitmap(logo);
-    
+
     int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + EXTEND_WIDTH;
     int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + EXTEND_HEIGHT;
 
@@ -72,19 +72,19 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
 
 void AboutFrameImpl::OnLinkHelp( wxHyperlinkEvent& event )
 {
-#ifdef __WXGTK__   
+#ifdef __WXGTK__
     wxString testFile = wxString::Format("/%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str());
     if( !::wxFileExists(testFile)){
         wxString msg = _("OpenCPN Help documentation is not available locally.");  msg += _T("\n");
         msg += _("Would you like to visit the opencpn.org website for more information?");
-        
+
         if( wxID_YES == OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) )
         {
             wxLaunchDefaultBrowser(_T("https://opencpn.org"));
         }
     }
     else
-#endif        
+#endif
     {
         m_htmlWinAuthors->Hide();
         m_htmlWinLicense->Hide();
@@ -136,28 +136,28 @@ void AboutFrameImpl::AboutFrameOnActivate( wxActivateEvent& event )
 
 void AboutFrameImpl::RecalculateSize( void )
 {
-#ifdef __OCPN__ANDROID__    
+#ifdef __OCPN__ANDROID__
     //  Make an estimate of the dialog size, without scrollbars showing
-    
+
     wxSize esize;
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 20;
-    
+
     wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
     SetClientSize(esize);
-    
+
     wxSize fsize = GetSize();
     fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
     fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
-    
+
     SetSize(fsize);
     Centre();
 
-#else 
+#else
     Fit();
     Centre();
 #endif
-    
+
 }

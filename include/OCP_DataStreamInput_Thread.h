@@ -60,31 +60,31 @@ public:
         std::lock_guard<std::mutex> lock(m_mutex);
         return m_queque.size();
     }
-    
+
     bool empty()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         return m_queque.empty();
     }
-    
+
     const T& front()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         return m_queque.front();
     }
-    
+
     void push( const T& value )
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_queque.push(value);
     }
-    
+
     void pop()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_queque.pop();
     }
-    
+
 private:
     std::queue<T> m_queque;
     mutable std::mutex m_mutex;
@@ -132,7 +132,7 @@ private:
     int WriteComPortPhysical(int port_descriptor, char *msg);
     int ReadComPortPhysical(int port_descriptor, int count, unsigned char *p);
     bool CheckComPortPhysical(int port_descriptor);
-    
+
     void HandleASuccessfulRead( char *buf, int nread );
     wxCriticalSection       m_outCritical;
 #endif
@@ -158,9 +158,9 @@ private:
     //int                     m_takIndex;
     //int                     m_putIndex;
     //char                    *m_poutQueue[OUT_QUEUE_LENGTH];
-    
+
     atomic_queue<char *>  out_que;
-    
+
 
 #ifdef __WXMSW__
     HANDLE                  m_hSerialComm;

@@ -189,7 +189,7 @@ static const wxChar* writerTraceMask = _T("traceWriter");
     \li wxJSONWRITER_NOUTF8_STREAM: suppress UTF-8 conversion when writing string
         values to the stream thus producing ANSI text output; only meaningfull in
         ANSI builds, this flag is simply ignored in Unicode builds.
-    \li wxJSONWRITER_MEMORYBUFF: 
+    \li wxJSONWRITER_MEMORYBUFF:
 
 
  Note that for the style wxJSONWRITER_NONE the JSON text output is a bit
@@ -1131,7 +1131,7 @@ wxJSONWriter::WriteMemoryBuff( wxOutputStream& os, const wxMemoryBuffer& buff )
     // the string is splitted only for the special meory buffer type, not for array of INTs
     int bytesWritten = 0;
     bool splitString = false;
-    if ( (m_style & wxJSONWRITER_STYLED) && 
+    if ( (m_style & wxJSONWRITER_STYLED) &&
                (m_style & wxJSONWRITER_SPLIT_STRING))   {
         splitString = true;
     }

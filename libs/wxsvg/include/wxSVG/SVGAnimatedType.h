@@ -36,7 +36,7 @@ public:
 	wxSVGAnimatedType(const wxString& value) { m_propertyType = wxSVG_ANIMATED_STRING; m_string = value; }
 	wxSVGAnimatedType(const wxSVGTransformList& value) { m_propertyType = wxSVG_ANIMATED_TRANSFORM_LIST; m_transformList = value; }
 	~wxSVGAnimatedType();
-	
+
 	inline wxSVG_ANIMATED_PROPERTY_TYPE GetPropertyType() const { return m_propertyType; }
 	inline const wxRGBColor& GetColor() const { return m_color; }
 	inline const wxSVGLength& GetLength() const { return m_length; }
@@ -44,10 +44,10 @@ public:
 	inline const wxSVGNumberList& GetNumberList() const { return m_numberList; }
 	inline const wxString& GetString() const { return m_string; }
 	inline const wxSVGTransformList& GetTransformList() const { return m_transformList; }
-	
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& value);
-	
+
 private:
 	wxSVG_ANIMATED_PROPERTY_TYPE m_propertyType;
 	wxString m_string;

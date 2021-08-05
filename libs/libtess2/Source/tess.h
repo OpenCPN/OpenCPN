@@ -63,7 +63,7 @@ struct TESStesselator {
 
 	int processCDT;	/* option to run Constrained Delayney pass. */
 	int reverseContours; /* tessAddContour() will treat CCW contours as CW and vice versa */
-    
+
 	/*** state needed for the line sweep ***/
 	int	windingRule;	/* rule for determining polygon interior */
 

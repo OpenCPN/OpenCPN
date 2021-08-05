@@ -283,7 +283,7 @@ class options : private Uncopyable,
   ~options(void);
 #if wxCHECK_VERSION(3,0,0)
   bool SendIdleEvents(wxIdleEvent &event );
-#endif  
+#endif
   void SetInitialPage(int page_sel, int sub_page = -1);
   void Finish(void);
 
@@ -300,7 +300,7 @@ class options : private Uncopyable,
   void SetInitChartDir(const wxString &dir) { m_init_chart_dir = dir; }
   void SetInitialSettings(void);
   void SetInitialVectorSettings(void);
-  
+
   void SetCurrentDirList(ArrayOfCDI p) { m_CurrentDirList = p; }
   void SetWorkDirListPtr(ArrayOfCDI *p) { m_pWorkDirList = p; }
   ArrayOfCDI *GetWorkDirListPtr(void) { return m_pWorkDirList; }
@@ -336,7 +336,7 @@ class options : private Uncopyable,
   void OnButtonClearClick(wxCommandEvent &event);
   void OnButtonSelectClick(wxCommandEvent &event);
   void OnButtonSetStd(wxCommandEvent& event);
-      
+
   void OnPageChange(wxListbookEvent &event);
   void OnTopNBPageChange(wxNotebookEvent &event);
   void OnSubNBPageChange(wxNotebookEvent &event);
@@ -382,11 +382,11 @@ class options : private Uncopyable,
   void OnConfigMouseSelected( wxMouseEvent &event);
 
   void SetSelectedConnectionPanel( ConnectionParamsPanel *panel );
-  
+
   bool GetNeedNew(){ return m_bneedNew; }
   void SetNeedNew( bool bnew ){ m_bneedNew =bnew; }
   int GetScrollRate(){ return m_scrollRate; }
-  
+
   // Should we show tooltips?
   static bool ShowToolTips(void);
 
@@ -432,7 +432,7 @@ class options : private Uncopyable,
   // LIVE ETA OPTION
   wxCheckBox *pSLiveETA;
   wxTextCtrl *pSDefaultBoatSpeed;
-  
+
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;
 
@@ -456,14 +456,14 @@ class options : private Uncopyable,
   wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
-  wxScrolledWindow *m_scrollWinConnections; 
+  wxScrolledWindow *m_scrollWinConnections;
   wxBoxSizer *boxSizerConnections;
   ConnectionParams *mSelectedConnection;
-  
+
   // For the Display\Units page
   wxStaticText* itemStaticTextUserVar;
   wxStaticText* itemStaticTextUserVar2;
-  
+
   wxGridSizer *gSizerNetProps, *gSizerSerProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
@@ -474,7 +474,7 @@ class options : private Uncopyable,
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
   wxButton *m_configDeleteButton, *m_configApplyButton, *m_ButtonSKDiscover;
   wxStaticText *m_StaticTextSKServerStatus;
-  
+
   void OnSelectDatasource(wxListEvent &event);
   void OnAddDatasourceClick(wxCommandEvent &event);
   void OnRemoveDatasourceClick(wxCommandEvent &event);
@@ -499,19 +499,19 @@ class options : private Uncopyable,
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
   void EnableConnection( ConnectionParams *conn, bool value);
-  void OnDiscoverButton(wxCommandEvent &event); 
+  void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus( wxString stat);
   void OnAISRolloverClick(wxCommandEvent &event);
-  
+
   void OnCanvasConfigSelectClick( int ID, bool selected);
-  
+
   bool connectionsaved;
   bool m_connection_enabled;
 
   bool b_haveWMM;
   bool b_oldhaveWMM;
   ColorScheme m_cs;
-  
+
   // For "S57" page
   wxBoxSizer *vectorPanel;
   wxScrolledWindow *ps57Ctl;
@@ -548,7 +548,7 @@ class options : private Uncopyable,
   wxButton *m_removeBtn, *m_compressBtn;
   int k_charts;
   int m_nCharWidthMax;
-  
+
   // For the "Charts->Display Options" page
   wxScrolledWindow *m_ChartDisplayPage;
 
@@ -572,16 +572,16 @@ class options : private Uncopyable,
 
   // For Display->Configs page...
   wxScrolledWindow *m_DisplayConfigsPage;
-  
+
   CanvasConfigSelect *m_sconfigSelect_single;
   CanvasConfigSelect *m_sconfigSelect_twovertical;
-  
+
   // For Configuration Template panel
   wxScrolledWindow *m_scrollWinConfigList;
   wxStaticText *m_templateTitleText;
   wxStaticText *m_staticTextLastAppled;
   wxStaticBoxSizer *m_templateStatusBoxSizer;
-  
+
   // For the ship page
   wxFlexGridSizer *realSizes;
   wxTextCtrl *m_pOSLength, *m_pOSWidth, *m_pOSGPSOffsetX, *m_pOSGPSOffsetY;
@@ -596,7 +596,7 @@ class options : private Uncopyable,
   OCPNIconCombo *pRoutepointDefaultIconChoice;
   wxCheckBox    *pScaMinChckB, *pScaMinOverruleChckB;
   wxTextCtrl*   m_pText_ScaMin;
-  
+
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
   wxChoice *m_itemFontElementListBox, *m_itemStyleListBox, *m_itemLangListBox;
@@ -630,19 +630,19 @@ class options : private Uncopyable,
   wxStaticText* pStatic_CallSign;
 
 #if wxCHECK_VERSION(2, 9, 0)
-#if wxUSE_TIMEPICKCTRL  
+#if wxUSE_TIMEPICKCTRL
 #ifdef __WXGTK__
   TimeCtrl *pTrackRotateTime;
 #else
   wxTimePickerCtrl *pTrackRotateTime;
-#endif  
 #endif
-#endif  
+#endif
+#endif
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   OCPNColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxChoice *pSoundDeviceIndex;
   wxStaticText *stSoundDeviceIndex;
-  
+
   wxArrayPtrVoid OBJLBoxArray;
   wxString m_init_chart_dir;
   wxArrayString *m_pSerialArray;
@@ -654,9 +654,9 @@ class options : private Uncopyable,
   int k_plugins;
 
   // Sounds panel
-  wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio, *m_pCheck_DSCAudio; 
+  wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio, *m_pCheck_DSCAudio;
   wxStaticText *m_anchorAudioFileNameText, *m_aisAudioFileNameText, *m_sartAudioFileNameText, *m_dscAudioFileNameText;
-  
+
  private:
   void Init(void);
   void CreatePanel_MMSI(size_t parent, int border_size, int group_item_spacing);
@@ -702,9 +702,9 @@ class options : private Uncopyable,
 
   void ClearNMEAForm(void);
   bool m_bNMEAParams_shown;
-  
+
   void resetMarStdList(bool bsetConfig, bool bsetStd);
-  
+
   void SetConnectionParams(ConnectionParams *cp);
   void SetDefaultConnectionParams(void);
   void SetDSFormRWStates();
@@ -717,7 +717,7 @@ class options : private Uncopyable,
   ConnectionParams *UpdateConnectionParamsFromSelectedItem(ConnectionParams *pConnectionParams);
 
   int m_screenConfig;
-  
+
   wxNotebookPage *m_groupsPage;
   wxFont  *dialogFont, *dialogFontPlus;
   wxFont smallFont;
@@ -731,7 +731,7 @@ class options : private Uncopyable,
   int m_btlastResultCount;
   bool m_bfontChanged;
   bool m_bVectorInit;
-  
+
   wxBoxSizer *m_boxSizerConfigs;
   wxColour m_panelBackgroundUnselected;
   wxString m_selectedConfigPanelGUID;
@@ -739,30 +739,30 @@ class options : private Uncopyable,
 
   wxSize m_sliderSize;
   bool m_bneedNew;
-  
+
   DECLARE_EVENT_TABLE()
 };
 
 class CanvasConfigSelect: public wxPanel
 {
 public:
-    CanvasConfigSelect( wxWindow *parent, options *parentOptions, int id, wxBitmap &bmp, 
+    CanvasConfigSelect( wxWindow *parent, options *parentOptions, int id, wxBitmap &bmp,
                         const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize );
     ~CanvasConfigSelect();
-    
+
     void OnMouseSelected( wxMouseEvent &event );
     void SetSelected( bool selected );
     void OnPaint( wxPaintEvent &event );
-    
+
     bool GetSelected(){ return m_bSelected; }
-    
+
 private:
     options *m_parentOptions;
     bool m_bSelected;
     wxColour m_boxColour;
     wxBitmap m_bmpNormal;
     int m_borderWidth;
-    
+
     DECLARE_EVENT_TABLE()
 };
 
@@ -785,7 +785,7 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
   void BuildNotebookPages(ChartGroupArray *pGroupArray);
   void EmptyChartGroupArray(ChartGroupArray *s);
   void ClearGroupPages();
-  
+
 
   void OnNodeExpanded(wxTreeEvent &event);
   void OnAvailableSelection(wxTreeEvent &event);
@@ -801,7 +801,7 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
   bool modified, m_UIcomplete, m_settingscomplete, m_treespopulated;
 
   wxScrolledWindow *m_panel;
-  
+
  private:
   int FindGroupBranch(ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
                       wxString *pbranch_adder);
@@ -822,7 +822,7 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
   ChartGroupArray *m_pGroupArray;
 
   int m_border_size, m_group_item_spacing, m_GroupSelectedPage;
-  
+
   wxBoxSizer *m_topSizer;
 
   DECLARE_EVENT_TABLE()
@@ -911,7 +911,7 @@ class MMSIListCtrl : private Uncopyable, public wxListCtrl {
 
   wxWindow *m_parent;
   int m_context_item;
-  
+
   DECLARE_EVENT_TABLE()
 };
 
@@ -973,14 +973,14 @@ public:
                             const wxPoint &pos = wxDefaultPosition,
                             const wxSize &size = wxDefaultSize, long style = 0);
     ~ConfigCreateDialog(void);
-    
+
     void SetColorScheme(ColorScheme cs);
     void CreateControls(void);
     void OnConfigEditCancelClick(wxCommandEvent& event);
     void OnConfigEditOKClick(wxCommandEvent& event);
     wxString GetCreatedTemplateGUID(){ return m_createdTemplateGUID; }
-    
-    wxTextCtrl *m_TitleCtl, *m_DescriptionCtl; 
+
+    wxTextCtrl *m_TitleCtl, *m_DescriptionCtl;
     wxButton *m_CancelButton, *m_OKButton;
     wxString m_createdTemplateGUID;
     DECLARE_EVENT_TABLE()

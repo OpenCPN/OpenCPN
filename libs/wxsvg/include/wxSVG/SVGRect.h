@@ -33,7 +33,7 @@ class wxSVGRect
 
     inline double GetHeight() const { return m_height; }
     inline void SetHeight(double n) { m_height = n; m_empty = false; }
-    
+
     inline bool IsEmpty() const { return m_empty; }
     inline void Clear() { m_x = m_y = m_width = m_height = 0; m_empty = true; }
 

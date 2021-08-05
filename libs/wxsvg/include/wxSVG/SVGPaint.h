@@ -49,19 +49,19 @@ class wxSVGPaint:
       { m_cssValueType = wxCSS_SVG_PAINT; if (!color.Ok()) m_paintType = wxSVG_PAINTTYPE_NONE; }
     virtual ~wxSVGPaint() {}
     wxCSSValue* Clone() const { return new wxSVGPaint(*this); }
-    
+
     wxString GetCSSText() const;
     inline const wxString& GetUri() const { return m_uri; }
     virtual void SetUri(const wxString& uri);
     virtual void SetRGBColor(const wxRGBColor& rgbColor);
     virtual void SetICCColor(const wxSVGICCColor& iccColor);
-    
+
     inline bool Ok() const
     {
 	  return m_paintType != wxSVG_PAINTTYPE_UNKNOWN &&
 	         m_paintType != wxSVG_PAINTTYPE_NONE;
 	}
-    
+
     virtual void SetPaint(wxSVG_PAINTTYPE paintType, const wxString& uri, const wxString& rgbColor, const wxString& iccColor);
 };
 

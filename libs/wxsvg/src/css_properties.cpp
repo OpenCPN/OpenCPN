@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-wxString s_cssPropertyStrings[] = 
+wxString s_cssPropertyStrings[] =
 {
   wxT("alignment-baseline"),
   wxT("baseline-shift"),
@@ -69,4 +69,4 @@ wxString s_cssPropertyStrings[] =
   wxT("word-spacing"),
   wxT("writing-mode")
 };
-    
+

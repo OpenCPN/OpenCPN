@@ -95,7 +95,7 @@ class ViewPort
                                              int chart_native_scale, wxPoint *ppoints );
             wxRect GetVPRectIntersect( size_t n, float *llpoints );
             ViewPort BuildExpandedVP(int width, int height);
-            
+
             void SetBoxes(void);
 
 //  Accessors
@@ -112,7 +112,7 @@ class ViewPort
             void SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax);
 
             void InvalidateTransformCache() { lat0_cache = NAN; }
-            
+
 //  Generic
             double   clat;                   // center point
             double   clon;
@@ -138,7 +138,7 @@ class ViewPort
             float    vp_transform[16];
             float    norm_transform[16];
 #endif
-            
+
       private:
             LLBBox   vpBBox;                // An un-skewed rectangular lat/lon bounding box
                                             // which contains the entire vieport

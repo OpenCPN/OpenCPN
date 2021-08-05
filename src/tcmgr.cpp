@@ -196,7 +196,7 @@ double time2mean (time_t t, IDX_entry *pIDX)
 double time2asecondary (time_t t, IDX_entry *pIDX) {
 
     time_t tadj = t + pIDX->station_tz_offset;
-    
+
     /* Get rid of the normals. */
     if (!(pIDX->have_offsets))
         return time2atide (tadj, pIDX);
@@ -512,8 +512,8 @@ double blend_tide (time_t t, unsigned int deriv, int first_year, double blend, I
     /*
      * Do the blending.
      */
-    
-    
+
+
     f = fl[deriv];
     for (n = 0; n <= deriv; n++)
     {
@@ -757,11 +757,11 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
     }
 
     bTCMReady = true;
-    
+
     if (m_Combined_IDX_array.Count() <= 1)
         OCPNMessageBox( NULL, _("It seems you have no tide/current harmonic data installed."),
                         _("OpenCPN Info"), wxOK | wxCENTER );
-        
+
     return  TC_NO_ERROR ;
 }
 
@@ -991,7 +991,7 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
     }
     tcvalue = newval;
     tctime = ttt + sch_step_2 ;
-    
+
     // Cache the data
     pIDX->recent_highlow_calc_time = t;
     if(w_t){
@@ -1002,7 +1002,7 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
         pIDX->recent_low_level = newval;
         pIDX->recent_low_time = tctime;
     }
-        
+
 
 }
 
@@ -1061,19 +1061,19 @@ std::map<double, const IDX_entry*> TCMgr::GetStationsForLL(double xlat, double x
 {
     std::map<double, const IDX_entry*> x;
     const IDX_entry *lpIDX;
-    
+
     for ( int j=1 ; j<Get_max_IDX() +1 ; j++ ) {
         lpIDX = GetIDX_entry ( j );
         char type = lpIDX->IDX_type;
         wxString locnx ( lpIDX->IDX_station_name, wxConvUTF8 );
-        
+
         if ( type == 't' || type == 'T' ) {
             double brg, dist;
             DistanceBearingMercator(xlat, xlon, lpIDX->IDX_lat, lpIDX->IDX_lon, &brg, &dist);
             x.emplace(std::make_pair(dist, lpIDX));
         }
     }
-    
+
     return x;
 }
 
@@ -1221,9 +1221,9 @@ const NV_CHAR *inferred_semi_diurnal[INFERRED_SEMI_DIURNAL_COUNT] = {
             .1759, .0341, .0219, .0235, .0066, .0248, .0035, .0251, .1151, .0064};
             NV_FLOAT32 diurnal_coeff[INFERRED_DIURNAL_COUNT] = {
                 .0163, .0209, .0297, .0142, .0730, .0097, .1755, .0103, .0076, .0042};
-                
+
                 /*  These represent M2 and O1.  */
-                
+
                 NV_FLOAT32 coeff[2] = {.9085, .3771};
 
                 /* The following lookup tables are only used for initialization
@@ -1231,34 +1231,34 @@ const NV_CHAR *inferred_semi_diurnal[INFERRED_SEMI_DIURNAL_COUNT] = {
                  *   possible to change them without breaking existing TCD files.  TCD
                  *   files embed their own lookup tables.
                  */
-                
-                
+
+
                 /*  Level unit names  */
-                
+
                 NV_CHAR level_unit[DEFAULT_LEVEL_UNIT_TYPES][DEFAULT_LEVEL_UNIT_SIZE] = {
                     "Unknown", "feet", "meters", "knots", "knots^2"};
-                    
-                    
+
+
                     /*  Direction unit names  */
-                    
+
                     NV_CHAR dir_unit[DEFAULT_DIR_UNIT_TYPES][DEFAULT_DIR_UNIT_SIZE] = {
                         "Unknown", "degrees true", "degrees"};
-                        
-                        
+
+
                         /*  Restriction types  */
-                        
+
                         NV_CHAR restriction[DEFAULT_RESTRICTION_TYPES][DEFAULT_RESTRICTION_SIZE] = {
                             "Public Domain", "DoD/DoD Contractors Only"};
-                            
-                            
+
+
                             /*  Legaleses  */
-                            
+
                             NV_CHAR legalese[DEFAULT_LEGALESES][DEFAULT_LEGALESE_SIZE] = {
                                 "NULL"};
-                                
-                                
+
+
                                 /*  # Datum names  */
-                                
+
                                 NV_CHAR datum[DEFAULT_DATUM_TYPES][DEFAULT_DATUM_SIZE] = {
                                     "Unknown", "Mean Sea Level", "Mean Low Water", "Mean Lower Low Water",
                                     "Mean High Water", "Mean Higher High Water", "Mean Lower High Water",
@@ -1303,10 +1303,10 @@ const NV_CHAR *inferred_semi_diurnal[INFERRED_SEMI_DIURNAL_COUNT] = {
                                     "Approximate Level of World Geodetic System (1984)",
                                     "Approximate Level of National Geodetic Vertical Datum",
                                     "Approximate Level of Gulf Coast Low Water Datum"};
-                                    
-                                    
+
+
                                     /*  # Country names from ISO 3166-1:1999 2-character country code list  */
-                                    
+
                                     NV_CHAR country[DEFAULT_COUNTRIES][DEFAULT_COUNTRY_SIZE] = {"Unknown",
                                     "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla",
                                     "Antarctica", "Antigua & Barbuda", "Argentina", "Armenia", "Aruba",
@@ -1355,10 +1355,10 @@ const NV_CHAR *inferred_semi_diurnal[INFERRED_SEMI_DIURNAL_COUNT] = {
                                     "Venezuela", "Vietnam", "Virgin Islands (UK)", "Virgin Islands (US)",
                                     "Wallis & Futuna", "Western Sahara", "Yemen", "Yugoslavia", "Zambia",
                                     "Zimbabwe"};
-                                    
-                                    
+
+
                                     /*  # Time zones extracted from tzdata2002? .  */
-                                    
+
                                     NV_CHAR tzfile[DEFAULT_TZFILES][DEFAULT_TZFILE_SIZE] = {"Unknown",
                                     ":Africa/Abidjan", ":Africa/Accra", ":Africa/Addis_Ababa",
                                     ":Africa/Algiers", ":Africa/Asmera", ":Africa/Bamako",
@@ -1493,7 +1493,7 @@ const NV_CHAR *inferred_semi_diurnal[INFERRED_SEMI_DIURNAL_COUNT] = {
                                     ":Pacific/Tahiti", ":Pacific/Tarawa", ":Pacific/Tongatapu",
                                     ":Pacific/Truk", ":Pacific/Wake", ":Pacific/Wallis",
                                     ":Pacific/Yap"};
-                                    
+
 
 
 /* $Id: tide_db.c 3744 2010-08-17 22:34:46Z flaterco $ */

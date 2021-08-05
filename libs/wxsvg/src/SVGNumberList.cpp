@@ -24,10 +24,10 @@ void wxSVGNumberList::SetValueAsString(const wxString& value)
 {
   double val;
   wxStringTokenizer tkz(value, wxT(", \t"));
-  while (tkz.HasMoreTokens()) 
-  { 
-    wxString token = tkz.GetNextToken(); 
+  while (tkz.HasMoreTokens())
+  {
+    wxString token = tkz.GetNextToken();
     if (token.length() && token.ToDouble(&val))
-      Add(val); 
+      Add(val);
   }
 }

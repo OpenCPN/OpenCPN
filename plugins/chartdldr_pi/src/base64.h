@@ -65,10 +65,10 @@ WXDLLIMPEXP_HTTPENGINE wxString wxBase64Encode(const wxString &str )
     szToReturn.Append( base64_table[str.GetChar(current+2) & 0x3f] );
 
 		current += 3;
-		length -= 3; // we just handle 3 octets of data 
+		length -= 3; // we just handle 3 octets of data
 	}
 
-  // now deal with the tail end of things 
+  // now deal with the tail end of things
 	if (length != 0)
   {
     szToReturn.Append( base64_table[str.GetChar(current) >> 2] );
@@ -114,7 +114,7 @@ WXDLLIMPEXP_HTTPENGINE wxString wxBase64Decode(const wxString &str)
 		//   spaces are invalid).  This will also save many people considerable
 		//   headache.  - Turadg Aleahmad <turadg@wise.berkeley.edu>
 
-		if (ch == ' ') ch = '+'; 
+		if (ch == ' ') ch = '+';
 
 		ch = base64_reverse_table[ (int)ch]; //CHECK
 		if (ch < 0) continue;
@@ -144,7 +144,7 @@ WXDLLIMPEXP_HTTPENGINE wxString wxBase64Decode(const wxString &str)
   }
 
   k = j;
-	// mop things up if we ended on a boundary 
+	// mop things up if we ended on a boundary
 	if (ch == base64_pad)
   {
 		switch(i % 4)

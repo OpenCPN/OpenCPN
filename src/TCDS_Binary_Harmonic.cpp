@@ -336,7 +336,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
     num_nodes = hdr.number_of_years;
     if(0 == num_nodes)
         return TC_GENERIC_ERROR;
-    
+
     //  Allocate a working buffer
     m_work_buffer = (double *) malloc (num_csts * sizeof (double));
 

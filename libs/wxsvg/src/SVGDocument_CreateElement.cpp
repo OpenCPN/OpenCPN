@@ -176,7 +176,7 @@ wxSvgXmlElement* wxSVGDocument::CreateElementNS(const wxString& namespaceURI,
     res = new wxSVGViewElement();
   else if (qualifiedName == wxT("vkern"))
     res = new wxSVGVKernElement();
-  else 
+  else
 	res = new wxSVGGElement();
   return res;
 }

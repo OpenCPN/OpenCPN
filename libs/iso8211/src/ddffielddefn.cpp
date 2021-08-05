@@ -403,10 +403,10 @@ int DDFFieldDefn::Initialize( DDFModule * poModuleIn,
         _lex_level = 0;
     else if(seq[0] == '-')
         _lex_level = 1;
-    else 
+    else
         _lex_level = 2;
-    
-    
+
+
 /* -------------------------------------------------------------------- */
 /*      Capture the field name, description (sub field names), and      */
 /*      format statements.                                              */
@@ -445,7 +445,7 @@ int DDFFieldDefn::Initialize( DDFModule * poModuleIn,
     }
 
 //    Dump(stdout);
-    
+
     return TRUE;
 }
 
@@ -537,7 +537,7 @@ void DDFFieldDefn::Dump( FILE * fp )
     fprintf( fp, "      _data_type_code = %s\n", pszValue );
 
     fprintf( fp, "      _lex_level = %d\n", _lex_level );
-    
+
     for( int i = 0; i < nSubfieldCount; i++ )
         papoSubfields[i]->Dump( fp );
 }
@@ -906,8 +906,8 @@ char *DDFFieldDefn::GetDefaultValue( int *pnSize )
             if(!strncmp(posf->GetName(), "ATVL", 4))
                 b_isUTF16 = true;
         }
-        
-        
+
+
         if( !posf->GetDefaultValue( NULL, 0, &nSubfieldSize, b_isUTF16 ) )
             return NULL;
         nTotalSize += nSubfieldSize;

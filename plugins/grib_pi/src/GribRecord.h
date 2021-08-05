@@ -148,10 +148,10 @@ class GribRecord
     public:
         GribRecord(const GribRecord &rec);
         GribRecord() { m_bfilled = false;}
-        
+
         virtual ~GribRecord();
-  
-  
+
+
         static GribRecord *InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d, bool dir=false);
         static GribRecord *Interpolated2DRecord(GribRecord *&rety,
                                                 const GribRecord &rec1x, const GribRecord &rec1y,
@@ -168,7 +168,7 @@ class GribRecord
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};
         bool  isEof() const   {return eof;};
-        bool  isDuplicated()  const   {return IsDuplicated;};                                          
+        bool  isDuplicated()  const   {return IsDuplicated;};
         //-----------------------------------------
         zuchar  getDataType() const         { return dataType; }
         void    setDataType(const zuchar t);
@@ -212,7 +212,7 @@ class GribRecord
         static bool getInterpolatedValues(double &M, double &A,
                                           const GribRecord *GRX, const GribRecord *GRY,
                                           double px, double py, bool numericalInterpolation=true);
-        
+
         // coordiantes of grid point
         inline double  getX(int i) const   { return Lo1+i*Di;}
         inline double  getY(int j) const   { return La1+j*Dj;}

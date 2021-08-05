@@ -22,8 +22,8 @@
 #else
     #ifndef __WXOSX__
         #include <error.h>
-    #else    
-        #include <mach/error.h> 
+    #else
+        #include <mach/error.h>
 #endif
 
 #include <string.h>
@@ -40,13 +40,13 @@ namespace Zeroconf
     {
         const size_t MdnsMessageMaxLength = 512;
         const size_t MdnsRecordHeaderLength = 12;
-    
+
         const uint8_t MdnsOffsetToken = 0xC0;
         const uint16_t MdnsResponseFlag = 0x8400;
 
         const uint32_t SockTrue = 1;
 
-        const uint8_t MdnsQueryHeader[] = 
+        const uint8_t MdnsQueryHeader[] =
         {
             0x00, 0x00, // ID
             0x00, 0x00, // Flags
@@ -56,7 +56,7 @@ namespace Zeroconf
             0x00, 0x00  // ARCOUNT
         };
 
-        const uint8_t MdnsQueryFooter[] = 
+        const uint8_t MdnsQueryFooter[] =
         {
             0x00, 0x0c, // QTYPE
             0x00, 0x01  // QCLASS
@@ -126,9 +126,9 @@ namespace Zeroconf
                 if (name[i] == '.' || i == name.size() - 1)
                 {
                     if (len == 0) continue;
-                    
+
                     result->at(pos) = len; // update component length
-                    
+
                     len = 0;
                     pos = result->size();
                     result->push_back(0); // length placeholder or trailing zero
@@ -147,7 +147,7 @@ namespace Zeroconf
                     return 0;
 
                 uint8_t len = data[pos++];
-                
+
                 if (pos + len > data.size())
                     return 0;
 
@@ -156,7 +156,7 @@ namespace Zeroconf
 
                 if (!result->empty())
                     result->append(".");
-        
+
                 result->append(reinterpret_cast<const char*>(&data[pos]), len);
                 pos += len;
             }
@@ -193,18 +193,18 @@ namespace Zeroconf
             broadcastAddr.sin_addr.s_addr = INADDR_BROADCAST;
 
             auto st = sendto(
-                fd, 
-                reinterpret_cast<const char*>(&data[0]), 
-                data.size(), 
-                0, 
-                reinterpret_cast<const sockaddr*>(&broadcastAddr), 
+                fd,
+                reinterpret_cast<const char*>(&data[0]),
+                data.size(),
+                0,
+                reinterpret_cast<const sockaddr*>(&broadcastAddr),
                 sizeof(broadcastAddr));
 
             // todo: st == data.size() ???
             if (st < 0)
             {
                 Log::Error("Failed to send the query with code " + std::to_string(GetSocketError()));
-                return false; 
+                return false;
             }
 
             return true;
@@ -232,7 +232,7 @@ namespace Zeroconf
                 if (st < 0)
                 {
                     Log::Error("Failed to wait on socket with code " + std::to_string(GetSocketError()));
-                    return false; 
+                    return false;
                 }
 
                 if (st > 0)
@@ -244,41 +244,41 @@ namespace Zeroconf
 #endif
 
                     raw_responce item;
-                    item.data.resize(MdnsMessageMaxLength);                    
+                    item.data.resize(MdnsMessageMaxLength);
 
 #ifndef __OCPN__ANDROID__
                     auto cb = recvfrom(
-                        fd, 
-                        reinterpret_cast<char*>(&item.data[0]), 
-                        item.data.size(), 
-                        0, 
-                        reinterpret_cast<sockaddr*>(&item.peer), 
+                        fd,
+                        reinterpret_cast<char*>(&item.data[0]),
+                        item.data.size(),
+                        0,
+                        reinterpret_cast<sockaddr*>(&item.peer),
                         &salen);
 #else
 
 #ifdef ANDROID_ARM64
                     auto cb = recvfrom(
-                        fd, 
-                        reinterpret_cast<char*>(&item.data[0]), 
-                        item.data.size(), 
-                        0, 
-                        reinterpret_cast<sockaddr*>(&item.peer), 
+                        fd,
+                        reinterpret_cast<char*>(&item.data[0]),
+                        item.data.size(),
+                        0,
+                        reinterpret_cast<sockaddr*>(&item.peer),
                         (unsigned int *)&salen);
 #else
                     auto cb = recvfrom(
-                        fd, 
-                        reinterpret_cast<char*>(&item.data[0]), 
-                        item.data.size(), 
-                        0, 
-                        reinterpret_cast<sockaddr*>(&item.peer), 
+                        fd,
+                        reinterpret_cast<char*>(&item.data[0]),
+                        item.data.size(),
+                        0,
+                        reinterpret_cast<sockaddr*>(&item.peer),
                         (int *)&salen);
-#endif                    
-                        
-#endif                    
+#endif
+
+#endif
                     if (cb < 0)
                     {
                         Log::Error("Failed to receive with code " + std::to_string(GetSocketError()));
-                        return false; 
+                        return false;
                     }
 
                     item.data.resize((size_t)cb);
@@ -291,7 +291,7 @@ namespace Zeroconf
         inline bool Parse(const raw_responce& input, mdns_responce* result)
         {
             // Structure:
-            //   header (12b) 
+            //   header (12b)
             //   qname fqdn
             //   qtype (2b)
             //   qclass (2b)
@@ -324,7 +324,7 @@ namespace Zeroconf
 
                 is.ignore(); // id
                 is.ignore();
-    
+
                 is.read(reinterpret_cast<char*>(&u16), 2); // flags
                 if (ntohs(u16) != MdnsResponseFlag)
                 {
@@ -344,7 +344,7 @@ namespace Zeroconf
 
                 for (unsigned int i = 0; i < cb; i++)
                     is.ignore(); // qname
-        
+
                 is.read(reinterpret_cast<char*>(&u16), 2); // qtype
                 result->qtype = ntohs(u16);
 
@@ -418,11 +418,11 @@ namespace Zeroconf
 
             if (!Send(fd, query))
                 return false;
-            
+
             std::vector<raw_responce> responces;
             if (!Receive(fd, scanTime, &responces))
                 return false;
-            
+
             for (auto& raw: responces)
             {
                 mdns_responce parsed = {{0}};

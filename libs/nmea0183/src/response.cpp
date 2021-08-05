@@ -85,7 +85,7 @@ bool RESPONSE::Write( SENTENCE& sentence )
             sentence.Sentence.Append( g_TalkerIdText );
         }
     }
-    
+
     sentence.Sentence.Append(Mnemonic);
 
    return( TRUE );

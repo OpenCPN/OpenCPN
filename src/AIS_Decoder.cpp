@@ -163,31 +163,31 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
     // Load cached AIS target names from a file
     AISTargetNamesC = new AIS_Target_Name_Hash;
     AISTargetNamesNC = new AIS_Target_Name_Hash;
-    
+
     if(g_benableAISNameCache){
         wxTextFile  infile;
-        if ( infile.Open(AISTargetNameFileName) ){    
+        if ( infile.Open(AISTargetNameFileName) ){
             AIS_Target_Name_Hash *HashFile = AISTargetNamesNC;
             wxString line = infile.GetFirstLine();
             while ( !infile.Eof() ) {
                 if( line.IsSameAs( wxT("+++==Confirmed Entry's==+++") ) )
                     HashFile = AISTargetNamesC;
-                else { 
+                else {
                     if( line.IsSameAs( wxT("+++==Non Confirmed Entry's==+++") ) )
                         HashFile = AISTargetNamesNC;
                     else{
                         wxStringTokenizer tokenizer( line, _T(",") );
                         int mmsi = wxAtoi( tokenizer.GetNextToken() );
                         wxString name = tokenizer.GetNextToken().Trim();
-                        ( *HashFile )[mmsi] = name;                        
-                    }                    
+                        ( *HashFile )[mmsi] = name;
+                    }
                 }
                 line = infile.GetNextLine();
             }
         }
         infile.Close();
     }
-    
+
     AIS_AreaNotice_Sources = new AIS_Target_Hash;
     BuildERIShipTypeHash();
 
@@ -203,10 +203,10 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
 
     TimerAIS.SetOwner(this, TIMER_AIS1);
     TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
-    
+
     m_ptentative_dsctarget = NULL;
     m_dsc_timer.SetOwner( this, TIMER_DSC );
-    
+
 
     //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS);
@@ -225,7 +225,7 @@ AIS_Decoder::~AIS_Decoder( void )
     }
 
     delete AISTargetList;
-    
+
     delete AIS_AreaNotice_Sources;
 
     //Write mmsi-shipsname to file in a safe way
@@ -260,7 +260,7 @@ AIS_Decoder::~AIS_Decoder( void )
     delete AISTargetNamesNC;
 
     clear_hash_ERI();
-    
+
     m_dsc_timer.Stop();
     m_AIS_Audio_Alert_Timer.Stop();
     TimerAIS.Stop();
@@ -384,7 +384,7 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
     int errors = jsonReader.Parse(msgTerminated, &root);
     if(errors > 0)
         return;
-    
+
     if(root.HasMember(_T("self"))) {
         //m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
         m_signalk_selfid = (root["self"].AsString());           // Verified for OpenPlotter node.js server 1.20
@@ -404,7 +404,7 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
         }
         wxString mmsi_string;
         if(context.StartsWith(_T("vessels.urn:mrn:imo:mmsi:"), &mmsi_string) ||
-            context.StartsWith(_T("atons.urn:mrn:imo:mmsi:"), &mmsi_string) || 
+            context.StartsWith(_T("atons.urn:mrn:imo:mmsi:"), &mmsi_string) ||
             context.StartsWith(_T("aircraft.urn:mrn:imo:mmsi:"), &mmsi_string) ) {
         //    wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
             if(mmsi_string.ToLong(&mmsi)) {
@@ -512,7 +512,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->b_positionDoubtful = false;
             }
 
-            if ( value.HasMember(_T("altitude")) ) { 
+            if ( value.HasMember(_T("altitude")) ) {
                 pTargetData->altitude = value[_T("altitude ")].AsInt(); }
         } else if (update_path == _T("navigation.speedOverGround")) {
             pTargetData->SOG = value.AsDouble() * ms_to_knot_factor;
@@ -529,9 +529,9 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         } else if (update_path == _T("atonType")) {
             if (value.HasMember(_T("id"))) {
                 pTargetData->ShipType = value[_T("id")].AsUInt();
-            }        
+            }
         } else if (update_path == _T("virtual")) {
-            if (_T("true") == value.AsString()) { 
+            if (_T("true") == value.AsString()) {
                 pTargetData->NavStatus = ATON_VIRTUAL; }
             else { pTargetData->NavStatus = ATON_REAL; }
         } else if (update_path == _T("offPosition")) {
@@ -568,8 +568,8 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
             if (aisclass == _T("A") ) { pTargetData->Class = AIS_CLASS_A; }
             else if (aisclass == _T("B")) {
                 pTargetData->Class = AIS_CLASS_B;
-                pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this... 
-            } 
+                pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this...
+            }
             else if (aisclass == _T("BASE")) { pTargetData->Class = AIS_BASE; }
             else if (aisclass == _T("ATON")) { pTargetData->Class = AIS_ATON; }
         } else if (update_path == _T("sensors.ais.fromBow")) {
@@ -619,8 +619,8 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 if (_T("engaged") == bluesign) {
                     pTargetData->blue_paddle = 2;
                 }
-                pTargetData->b_blue_paddle = pTargetData->blue_paddle == 2 ? true: false;                
-            } 
+                pTargetData->b_blue_paddle = pTargetData->blue_paddle == 2 ? true: false;
+            }
         } else if (update_path == _T("sensors.ais.designatedAreaCode")) {
             if (value.AsInt() == 200) { pTargetData->b_hasInlandDac = true; } // European inland
         } else if (update_path == _T("sensors.ais.functionalId")) {
@@ -645,9 +645,9 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 long mmsi;
                 if (value[_T("mmsi")].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
-                    
+
                     if (97 == mmsi / 10000000) {
-                        pTargetData->Class = AIS_SART;                        
+                        pTargetData->Class = AIS_SART;
                     }
                     if (111 == mmsi / 1000000) {
                         pTargetData->b_SarAircraftPosnReport = true;
@@ -816,9 +816,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     int gpsg_utc_sec = 0;
     char gpsg_name_str[21];
     wxString gpsg_date;
-    
-    bool bdecode_result = false; 
-    
+
+    bool bdecode_result = false;
+
     int gpsg_mmsi = 0;
     int arpa_mmsi = 0;
     int aprs_mmsi = 0;
@@ -855,7 +855,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     AIS_Target_Data *pStaleTarget = NULL;
     bool bnewtarget = false;
     int last_report_ticks;
-    
+
     //  Make some simple tests for validity
 
     if( str.Len() > 100 ) return AIS_NMEAVDX_TOO_LONG;
@@ -1055,7 +1055,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             mmsi = aprs_mmsi = 199300000 + hash; // 199 is INMARSAT-A MID, should not occur ever in AIS stream + we make sure we are out of the hashes for GPSGate buddies and ARPA by being above 1993*
         }
         else if( 1 == g_WplAction ) {  // Create mark
-            RoutePoint *pWP = new RoutePoint (aprs_lat, aprs_lon, g_default_wp_icon, 
+            RoutePoint *pWP = new RoutePoint (aprs_lat, aprs_lon, g_default_wp_icon,
                                               aprs_name_str, wxEmptyString);
             pWP->m_bIsolatedMark = true;       // This is an isolated mark
             pSelect->AddSelectableRoutePoint (aprs_lat, aprs_lon, pWP);
@@ -1087,7 +1087,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
         token = tkz.GetNextToken();            //  hemisphere N or S
         if( token.Mid( 0, 1 ).Contains( _T("S") ) == true || token.Mid( 0, 1 ).Contains( _T("s") ) == true )  gpsg_lat = 0. - gpsg_lat;
-            
+
         token = tkz.GetNextToken();            // longitude DDDMM.MMMM
         token.ToDouble( &gpsg_lon );
         gpsg_degs = (int) ( gpsg_lon / 100.0 );
@@ -1096,7 +1096,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
         token = tkz.GetNextToken();            // hemisphere E or W
         if( token.Mid( 0, 1 ).Contains( _T("W") ) == true || token.Mid( 0, 1 ).Contains( _T("w") ) == true ) gpsg_lon = 0. - gpsg_lon;
-            
+
         token = tkz.GetNextToken();            //    altitude AA.a
         //    token.toDouble(&gpsg_alt);
 
@@ -1108,7 +1108,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
         token = tkz.GetNextToken();            // date DDMMYY
         gpsg_date = token;
-        
+
         token = tkz.GetNextToken();            // time UTC hhmmss.dd
         token.ToDouble( &gpsg_utc_time );
         gpsg_utc_hour = (int) ( gpsg_utc_time / 10000.0 );
@@ -1155,7 +1155,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
         token = tkz.GetNextToken();
         long lchannel;
-        token.ToLong( &lchannel ); 
+        token.ToLong( &lchannel );
         //  Now, some decisions
 
         string_to_parse.Clear();
@@ -1186,7 +1186,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             wxCharBuffer abuf = string_to_parse.ToUTF8();
             if( !abuf.data() )                            // badly formed sentence?
                 return AIS_GENERIC_ERROR;
-            
+
             AIS_Bitstring strbit( abuf.data() );
 
             //  Extract the MMSI
@@ -1206,7 +1206,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
                 MMSIProperties *props =  g_MMSI_Props_Array[i];
                 if(mmsi == props->MMSI){
-                    
+
                     // Check to see if this target has been flagged as a "follower"
                     if(props->m_bFollower)
                         follower_mmsi = mmsi;
@@ -1216,10 +1216,10 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                         return AIS_NoError;
                     // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
                     else if (props->m_bVDM){
-                        
+
                         //Only single line VDM messages to be translated
-                        if( str.Mid( 3, 9 ).IsSameAs( wxT("VDM,1,1,,") ) )  
-                        {  
+                        if( str.Mid( 3, 9 ).IsSameAs( wxT("VDM,1,1,,") ) )
+                        {
                             int message_ID = strbit.GetInt( 1, 6 );        // Parse on message ID
                             // Only translate the dynamic positionreport messages (1, 2, 3 or 18)
                             if ( (message_ID <= 3) || (message_ID == 18) )
@@ -1244,7 +1244,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 std::string s = std::string( aivdostr.mb_str() );
                                 event.SetNMEAString( s );
                                 event.SetStream( NULL );
-                                g_pMUX->AddPendingEvent( event ); 
+                                g_pMUX->AddPendingEvent( event );
                             }
                         }
                         return AIS_NoError;
@@ -1252,7 +1252,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     else
                         break;
                 }
-            }        
+            }
 
             //  Grab the stale targets's last report time
             wxDateTime now = wxDateTime::Now();
@@ -1359,11 +1359,11 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 // The normal Plain-Old AIS target code path....
                 bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );       // Parse the new data
               }
-              
+
               //  Catch followers, and set correct flag
               if(follower_mmsi)
                   pTargetData->b_isFollower = true;
-              
+
               //     Update the most recent report period
               pTargetData->RecentPeriod = pTargetData->PositionReportTicks - last_report_ticks;
             }
@@ -1372,16 +1372,16 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             ret = AIS_Partial;                // accumulating parts of a multi-sentence message
             pTargetData = 0;
         }
-        
+
 
         if(pTargetData){
             //  pTargetData is valid, either new or existing. Continue processing
 
             m_pLatestTargetData = pTargetData;
 
-            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )            
+            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )
                 pTargetData->b_OwnShip = true;
-            else{ 
+            else{
                 //set  mmsi-props to default values
                 pTargetData->b_OwnShip = false;
                 if ( 0 == m_persistent_tracks.count( mmsi ) ) {
@@ -1391,12 +1391,12 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     // The track persistency enabled in the query window
                     pTargetData->b_PersistTrack = true;
                 }
-                pTargetData->b_NoTrack = false;                
+                pTargetData->b_NoTrack = false;
             }
 
             //  If the message was decoded correctly
             //  Update the AIS Target information
-            if( bdecode_result ) { 
+            if( bdecode_result ) {
                 AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
                 ( *AISTargetList )[pTargetData->MMSI] = pTargetData;  // update the hash table entry
 
@@ -1415,7 +1415,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 pTargetData->Lon, (void *) mmsi_long, SELTYPE_AISTARGET );
                         pSel->SetUserData( pTargetData->MMSI );
                     }
-                    
+
 
                     //    Calculate CPA info for this target immediately
                     UpdateOneCPA( pTargetData );
@@ -1496,56 +1496,56 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
     double dse_lat = 0.;
     double dse_lon = 0.;
     long dsc_fmt, dsc_quadrant;
-    
+
     int dsc_mmsi = 0;
     int dse_mmsi = 0;
     int mmsi = 0;
-    
+
     AIS_Target_Data *pTargetData = NULL;
-    
+
     // parse a DSC Position message            $CDDSx,.....
     //  Use a tokenizer to pull out the first 9 fields
     wxString string( str );
     wxStringTokenizer tkz( string, _T(",*") );
-    
+
     wxString token;
     token = tkz.GetNextToken();         // !$CDDS
-    
+
     if( str.Mid( 3, 3 ).IsSameAs( _T("DSC") ) ) {
         m_dsc_last_string = str;
-        
+
         token = tkz.GetNextToken(); // format specifier (02-area,12-distress,16-allships,20-individual,...)
         token.ToLong( &dsc_fmt );
-        
+
         token = tkz.GetNextToken();       // address i.e. mmsi*10 for received msg, or area spec
         token.ToDouble( &dsc_addr );
         dsc_mmsi = 0 - (int) ( dsc_addr / 10 ); // as per NMEA 0183 3.01
-        
+
         token = tkz.GetNextToken();         // category
         token = tkz.GetNextToken();         // nature of distress or telecommand1
         token = tkz.GetNextToken();         // comm type or telecommand2
-        
+
         token = tkz.GetNextToken();         // position or channel/freq
         token.ToDouble( &dsc_tmp );
-        
+
         token = tkz.GetNextToken();         // time or tel. no.
         token = tkz.GetNextToken();         // mmsi of ship in distress
         token = tkz.GetNextToken();         // nature of distress
         token = tkz.GetNextToken();         // acknowledgement
         token = tkz.GetNextToken();         // expansion indicator
-        
+
         dsc_quadrant = (int) (dsc_tmp / 1000000000.0);
-        
+
         if(dsc_quadrant > 3)                // Position is "Unspecified", or 9999999999
             return NULL;
-        
+
         dsc_lat = (int) ( dsc_tmp / 100000.0 );
         dsc_lon = dsc_tmp - dsc_lat * 100000.0;
         dsc_lat = dsc_lat - dsc_quadrant * 10000;
         dsc_degs = (int) ( dsc_lat / 100.0 );
         dsc_mins = dsc_lat - dsc_degs * 100.0;
         dsc_lat = dsc_degs + dsc_mins / 60.0;
-        
+
         dsc_degs = (int) ( dsc_lon / 100.0 );
         dsc_mins = dsc_lon - dsc_degs * 100.0;
         dsc_lon = dsc_degs + dsc_mins / 60.0;
@@ -1559,14 +1559,14 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         if( dsc_fmt != 02 )
             mmsi = (int) dsc_mmsi;
     } else if( str.Mid( 3, 3 ).IsSameAs( _T("DSE") ) ) {
-        
+
         token = tkz.GetNextToken();         // total number of sentences
         token = tkz.GetNextToken();         // sentence number
         token = tkz.GetNextToken();         // query/rely flag
         token = tkz.GetNextToken();         // vessel MMSI
         token.ToDouble( &dse_addr );
         dse_mmsi = 0 - (int) ( dse_addr / 10 ); // as per NMEA 0183 3.01
-        
+
         token = tkz.GetNextToken();         // code field
         token = tkz.GetNextToken();         // data field - position - 2*4 digits latlon .mins
         token.ToDouble( &dse_tmp );
@@ -1574,15 +1574,15 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         dse_lon = (int) ( dse_tmp - dse_lat * 10000.0 );
         dse_lat = dse_lat / 600000.0;
         dse_lon = dse_lon / 600000.0;
-        
+
         mmsi = (int) dse_mmsi;
     }
-    
+
     //  Get the last report time for this target, if it exists
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT();
     int last_report_ticks = now.GetTicks();
-    
+
     //  Search the current AISTargetList for an MMSI match
     AIS_Target_Hash::iterator it = AISTargetList->find( mmsi );
     AIS_Target_Data *pStaleTarget = NULL;
@@ -1591,19 +1591,19 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         pStaleTarget = it->second;          // find current entry
         last_report_ticks = pStaleTarget->PositionReportTicks;
     }
-    
+
     if( dsc_mmsi ){
         //      Create a tentative target, but do not post it pending receipt of extended data
         m_ptentative_dsctarget = new AIS_Target_Data;
-        
+
         m_ptentative_dsctarget->PositionReportTicks = now.GetTicks();
         m_ptentative_dsctarget->StaticReportTicks = now.GetTicks();
-        
+
         m_ptentative_dsctarget->MMSI = mmsi;
         m_ptentative_dsctarget->NavStatus = 0; // underway
         m_ptentative_dsctarget->Lat = dsc_lat;
         m_ptentative_dsctarget->Lon = dsc_lon;
-        m_ptentative_dsctarget->b_positionOnceValid = true; 
+        m_ptentative_dsctarget->b_positionOnceValid = true;
         m_ptentative_dsctarget->COG = 0;
         m_ptentative_dsctarget->SOG = 0;
         m_ptentative_dsctarget->ShipType = dsc_fmt; // DSC report
@@ -1615,7 +1615,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         else {
             snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d", std::abs(mmsi));
         }
-        
+
         m_ptentative_dsctarget->b_active = true;
         m_ptentative_dsctarget->b_lost = false;
         m_ptentative_dsctarget->RecentPeriod = m_ptentative_dsctarget->PositionReportTicks - last_report_ticks;
@@ -1624,20 +1624,20 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         if( !b_take_dsc )
             m_dsc_timer.Start( 500, wxTIMER_ONE_SHOT);
     }
-    
+
     //    Got an extension message, or the timer expired and no extension is expected
     if( dse_mmsi || b_take_dsc){
         if( m_ptentative_dsctarget ){
-            
+
             //  stop the timer for sure
             m_dsc_timer.Stop();
-            
+
             //  Update the extended information
             if( dse_mmsi ) {
                 m_ptentative_dsctarget->Lat = m_ptentative_dsctarget->Lat + ( ( m_ptentative_dsctarget->Lat ) >= 0 ? dse_lat : -dse_lat );
                 m_ptentative_dsctarget->Lon = m_ptentative_dsctarget->Lon + ( ( m_ptentative_dsctarget->Lon ) >= 0 ? dse_lon : -dse_lon );
             }
-            
+
             //     Update the most recent report period
             m_ptentative_dsctarget->RecentPeriod = m_ptentative_dsctarget->PositionReportTicks - last_report_ticks;
 
@@ -1651,20 +1651,20 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
                 pTargetData = it->second;          // find current entry
                 AISTargetTrackList *ptrack = pTargetData->m_ptrack;
                 pTargetData->CloneFrom( m_ptentative_dsctarget);  // this will make an empty track list
-                
+
                 delete pTargetData->m_ptrack;           // get rid of the new empty one
                 pTargetData->m_ptrack = ptrack;         // and substitute the old track list
-                
+
                 delete m_ptentative_dsctarget;
             }
 
             //  Reset for next time
             m_ptentative_dsctarget = NULL;
-            
+
             m_pLatestTargetData = pTargetData;
-            
+
             ( *AISTargetList )[pTargetData->MMSI] = pTargetData;            // update the hash table entry
-                
+
             long mmsi_long = pTargetData->MMSI;
 
             // Delete any stale Target selectable point
@@ -1674,17 +1674,17 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
             SelectItem *pSel = pSelectAIS->AddSelectablePoint( pTargetData->Lat,
                                                                pTargetData->Lon, (void *) mmsi_long, SELTYPE_AISTARGET );
             pSel->SetUserData( pTargetData->MMSI );
-                    
+
            //    Calculate CPA info for this target immediately
             UpdateOneCPA( pTargetData );
-                    
+
            //    Update this target's track
             if( pTargetData->b_show_track )
                 UpdateOneTrack( pTargetData );
         }
-        
+
     }
-        
+
     return pTargetData;
 }
 
@@ -1698,7 +1698,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
     bool b_posn_report = false;
 
     wxDateTime now = wxDateTime::Now();
-    now.MakeGMT( );                    
+    now.MakeGMT( );
     int message_ID = bstr->GetInt( 1, 6 );        // Parse on message ID
     ptd->MID = message_ID;
     ptd->MMSI = bstr->GetInt( 9, 30 );           // MMSI is always in the same spot in the bitstream
@@ -1787,7 +1787,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                 //    On receipt of Msg 3, force any existing SART target out of acknowledge mode
                 //    by adjusting its ack_time to yesterday
                 //    This will cause any previously "Acknowledged" SART to re-alert.
-                
+
                 //    On reflection, re-alerting seems a little excessive in real life use.
                 //    After all, the target is on-screen, and in the AIS target list.
                 //    So lets just honor the programmed ACK timout value for SART targets as well
@@ -1884,7 +1884,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
         case 27: {
             // Long-range automatic identification system broadcast message
             // This message is used for long-range detection of AIS Class A and Class B vessels (typically by satellite).
-            
+
             // Define the constant to do the covertion from the internal encoded
             // position in message 27. The position is less accuate :  1/10 minute position resolution.
             int bitCorrection = 10;
@@ -1922,7 +1922,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                 lon_tentative = (0x10000000 >> bitCorrection) - lon;
                 lon_tentative *= -1;
             }
-	      
+
             // Decode the internal position format.
             lat_tentative = lat_tentative / resolution / 60.0;
             lon_tentative = lon_tentative / resolution / 60.0;
@@ -1960,7 +1960,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
             parse_result = true;
             break;
         }
-      
+
 
         case 5: {
             n_msg5++;
@@ -2061,17 +2061,17 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
         case 9:                   // Special Position Report (Standard SAR Aircraft Position Report)
         {
             ptd->SOG =  bstr->GetInt( 51, 10 ) ;
-            
+
             int lon = bstr->GetInt( 62, 28 );
             if( lon & 0x08000000 )                    // negative?
             lon |= 0xf0000000;
             double lon_tentative = lon / 600000.;
-            
+
             int lat = bstr->GetInt( 90, 27 );
             if( lat & 0x04000000 )                    // negative?
             lat |= 0xf8000000;
             double lat_tentative = lat / 600000.;
-            
+
             if( ( lon_tentative <= 180. ) && ( lat_tentative <= 90. ) ) // Ship does not report Lat or Lon "unavailable"
                     {
                         ptd->Lon = lon_tentative;
@@ -2081,18 +2081,18 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                         ptd->PositionReportTicks = now.GetTicks();
                     } else
                         ptd->b_positionDoubtful = true;
-                    
+
             //    decode balance of message....
             ptd->COG = 0.1 * ( bstr->GetInt( 117, 12 ) );
 
             int alt_tent = bstr->GetInt( 39, 12 );
             ptd->altitude = alt_tent;
-            
+
             ptd->b_SarAircraftPosnReport = true;
-            
+
             parse_result = true;
             b_posn_report = true;
-            
+
             break;
         }
         case 21:                                    // Test Message (Aid to Navigation)
@@ -2317,9 +2317,9 @@ bool AIS_Decoder::NMEACheckSumOK( const wxString& str_in )
     int sentence_hex_sum;
 
     wxCharBuffer buf = str_in.ToUTF8();
-    if( !buf.data()) 
+    if( !buf.data())
         return false;                           // cannot decode string
-        
+
     char str_ascii[AIS_MAX_MESSAGE_LEN + 1];
     strncpy( str_ascii, buf.data(), AIS_MAX_MESSAGE_LEN );
     str_ascii[AIS_MAX_MESSAGE_LEN] = '\0';
@@ -2390,9 +2390,9 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
             // after an unlikely jump in pos, the last trackpoint might also be wrong
             // just to be sure we do delete this one as well.
             ptarget->m_ptrack->pop_back();
-            ptarget->b_positionDoubtful = true;            
+            ptarget->b_positionDoubtful = true;
             return;
-        }        
+        }
     }
 
     //    Add the newest point
@@ -2402,7 +2402,7 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
     ptrackpoint->m_time = wxDateTime::Now().GetTicks();
 
     ptarget->m_ptrack->Append( ptrackpoint );
-    
+
     if( ptarget->b_PersistTrack )
     {
         Track *t;
@@ -2420,13 +2420,13 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
         }
         TrackPoint *tp = t->GetLastPoint();
         vector2D point( ptrackpoint->m_lon, ptrackpoint->m_lat );
-        TrackPoint *tp1 = t->AddNewPoint( point, wxDateTime(ptrackpoint->m_time).ToUTC() );        
+        TrackPoint *tp1 = t->AddNewPoint( point, wxDateTime(ptrackpoint->m_time).ToUTC() );
         if( tp )
         {
             pSelect->AddSelectableTrackSegment( tp->m_lat, tp->m_lon, tp1->m_lat,
                 tp1->m_lon, tp, tp1, t );
         }
-        
+
 //We do not want dependency on the GUI here, do we?
 //        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
 //                pRouteManagerDialog->UpdateTrkListCtrl();
@@ -2505,11 +2505,11 @@ void AIS_Decoder::UpdateAllAlarms( void )
             //  SART targets always alert if "Active"
             if( td->Class == AIS_SART && td->NavStatus == 14)
                 this_alarm = AIS_ALERT_SET;
-            
+
             //  DSC Distress targets always alert
             if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )
                     this_alarm = AIS_ALERT_SET;
-            
+
             if( g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
                 ( td->Class != AIS_SART ) && ( td->Class != AIS_DSC ) ) {
                 //      Skip anchored/moored(interpreted as low speed) targets if requested
@@ -2534,7 +2534,7 @@ void AIS_Decoder::UpdateAllAlarms( void )
 
                 if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) && ( td->Class != AIS_BASE )) {
                     if( g_bTCPA_Max ) {
-                        if( td->TCPA < g_TCPA_Max ){ 
+                        if( td->TCPA < g_TCPA_Max ){
                             if(td->b_isFollower)
                                 this_alarm = AIS_ALERT_NO_DIALOG_SET;
                             else
@@ -2549,7 +2549,7 @@ void AIS_Decoder::UpdateAllAlarms( void )
                 }
             }
 
-            
+
             //    Maintain the timer for in_ack flag
             //  SART and DSC targets always maintain ack timeout
 
@@ -2655,7 +2655,7 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
         double north1 = ( ptarget->Lat - gLat ) * 60 * 1852;
 
         double east = east1 * ( cos( gLat * PI / 180. ) );
-        
+
         double north = north1;
 
         //    Convert COGs trigonometry to standard unit circle
@@ -2729,7 +2729,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
     it = ( *current_targets ).begin();
     std::vector<int> remove_array;                    // collector for MMSI of targets to be removed
-    
+
     while( it != ( *current_targets ).end() ) {
         AIS_Target_Data *td = it->second;
 
@@ -2747,12 +2747,12 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         //g_MarkLost_Mins       // Minutes until black "cross out
         //g_bRemoveLost
         //g_RemoveLost_Mins);   // minutes until target is removed from screen and internal lists
-        
+
         //g_bInlandEcdis
-        
+
         //      Mark lost targets if specified
         double removelost_Mins = fmax(g_RemoveLost_Mins,g_MarkLost_Mins);
-        
+
         if (g_bInlandEcdis && (td->Class != AIS_ARPA)) {
             double iECD_LostTimeOut = 0.0;
             //special rules apply for europe inland ecdis timeout settings. overrule option settings
@@ -2762,7 +2762,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                     iECD_LostTimeOut = 18 * 60;
                 else
                     iECD_LostTimeOut = 180;
-                
+
             }
             if ( td->Class == AIS_CLASS_A){
                 if( (td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR) ){
@@ -2774,12 +2774,12 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 else
                     iECD_LostTimeOut = 60;
             }
-                
+
             if( ( target_posn_age > iECD_LostTimeOut ) && ( td->Class != AIS_GPSG_BUDDY ) )
                     td->b_active = false;
-                
+
             removelost_Mins = (2 * iECD_LostTimeOut) / 60.;
-        }               
+        }
         else if( g_bMarkLost ) {
             if( ( target_posn_age > g_MarkLost_Mins * 60 ) && ( td->Class != AIS_GPSG_BUDDY ) )
                 td->b_active = false;
@@ -2787,7 +2787,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
         if( td->Class == AIS_SART )
             removelost_Mins = 18.0;
-        
+
         //      Remove lost targets if specified
 
         if( g_bRemoveLost || g_bInlandEcdis ) {
@@ -2800,7 +2800,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 td->SOG = 103.0;
                 td->HDG = 511.0;
                 td->ROTAIS = -128;
-                
+
                 SendJSONMsg(td);
 
                 long mmsi_long = td->MMSI;
@@ -2816,7 +2816,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 }
             }
         }
-        
+
         // Remove any targets specified as to be "ignored", so that they won't trigger phantom alerts (e.g. SARTs)
         for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
             MMSIProperties *props =  g_MMSI_Props_Array[i];
@@ -2829,7 +2829,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 break;
             }
         }
-        
+
 
         ++it;
     }
@@ -2843,13 +2843,13 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             delete td;
         }
     }
-    
+
     UpdateAllCPA();
     UpdateAllAlarms();
 
     //    Update the general suppression flag
     m_bSuppressed = false;
-    if( g_bAIS_CPA_Alert_Suppress_Moored || g_bHideMoored 
+    if( g_bAIS_CPA_Alert_Suppress_Moored || g_bHideMoored
         || (g_bShowScaled && g_bAllowShowScaled) )
         m_bSuppressed = true;
 
@@ -2862,8 +2862,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //    Scan all targets, looking for SART, DSC Distress, and CPA incursions
     //    In the case of multiple targets of the same type, select the shortest range or shortest TCPA
     AIS_Target_Data *palert_target = NULL;
-    int audioType = AISAUDIO_NONE; 
-    
+    int audioType = AISAUDIO_NONE;
+
     if( NULL == g_pais_alert_dialog_active ) {
         pAISMOBRoute = NULL;                // Reset the AISMOB auto route.
         double tcpa_min = 1e6;             // really long
@@ -2871,7 +2871,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         AIS_Target_Data *palert_target_cpa = NULL;
         AIS_Target_Data *palert_target_sart = NULL;
         AIS_Target_Data *palert_target_dsc = NULL;
-        
+
         for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
             AIS_Target_Data *td = it->second;
             if( td ) {
@@ -2893,7 +2893,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                         }
                     }
                 }
-                                
+
                 else if( td->Class == AIS_SART ){
                     if( td->b_active ) {
                         if( ( AIS_ALERT_SET == td->n_alert_state ) && !td->b_in_ack_timeout ) {
@@ -2917,12 +2917,12 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             palert_target = palert_target_sart;
             audioType = AISAUDIO_SART;
         }
-        
+
         if( palert_target_dsc ){
             palert_target = palert_target_dsc;
             audioType = AISAUDIO_DSC;
         }
-        
+
 
         //    Show the alert
         if( palert_target ) {
@@ -2930,30 +2930,30 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             bool b_jumpto = (palert_target->Class == AIS_SART) || (palert_target->Class == AIS_DSC);
             bool b_createWP = palert_target->Class == AIS_DSC;
             bool b_ack = palert_target->Class != AIS_DSC;
-            
+
         //    Show the Alert dialog
-            
+
 //      See FS# 968/998
 //      If alert occurs while OCPN is iconized to taskbar, then clicking the taskbar icon
 //      only brings up the Alert dialog, and not the entire application.
 //      This is an OS specific behavior, not seen on linux or Mac.
 //      This patch will allow the audio alert to occur, and the visual alert will pop up soon
 //      after the user selects the OCPN icon from the taskbar. (on the next timer tick, probably)
-            
+
 #ifndef __OCPN__ANDROID__
             if( gFrame->IsIconized() || !gFrame->IsActive() )
                 gFrame->RequestUserAttention();
-#endif  
-            
+#endif
+
             if( !gFrame->IsIconized() ){
                 AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
                 pAISAlertDialog->Create( palert_target->MMSI, m_parent_frame, this,
                                          b_jumpto, b_createWP, b_ack,
                                          -1, _("AIS Alert"));
                 wxTimeSpan alertLifeTime(0,1,0,0);                      // Alert default lifetime, 1 minute.
-                palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime; 
+                palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
                 g_Platform->PositionAISAlert(pAISAlertDialog);
-               
+
                 g_pais_alert_dialog_active = pAISAlertDialog;
                 pAISAlertDialog->Show();                     // Show modeless, so it stays on the screen
             }
@@ -2966,11 +2966,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //    The AIS Alert dialog is already shown.  If the  dialog MMSI number is still alerted, update the dialog
     //    otherwise, destroy the dialog
     else {
-        
+
         // Find the target with shortest CPA, ignoring DSC and SART targets
        double tcpa_min = 1e6;             // really long
        AIS_Target_Data *palert_target_lowestcpa = NULL;
-  
+
        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
             AIS_Target_Data *td = it->second;
             if( td ) {
@@ -2990,7 +2990,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
         // Get the target currently displayed
         palert_target = Get_Target_Data_From_MMSI( g_pais_alert_dialog_active->Get_Dialog_MMSI() );
-        
+
         //  If the currently displayed target is not alerted, it must be in "expiry delay"
         //  We should cancel that alert display now, and pick up the more critical CPA target on the next timer tick
         if( palert_target ) {
@@ -3009,8 +3009,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 g_pais_alert_dialog_active->UpdateText();
                 // Retrigger the alert expiry timeout if alerted now
                 wxTimeSpan alertLifeTime(0,1,0,0);                      // Alert default lifetime, 1 minute.
-                palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime; 
-            } 
+                palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+            }
             //  In "expiry delay"?
             else if(!palert_target->b_in_ack_timeout && (now.IsEarlierThan(palert_target->dtAlertExpireTime))){
                  g_pais_alert_dialog_active->UpdateText();
@@ -3058,8 +3058,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                     if(g_bAIS_SART_Alert_Audio)
                         soundFile = g_SART_sound_file;
                     break;
-            }                    
-            
+            }
+
             m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
             if ( m_AIS_Sound->IsOk( ) ) {
                 m_AIS_Sound->SetFinishedCallback( onSoundFinished, this );
@@ -3070,7 +3070,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 m_bAIS_AlertPlaying = false;
         }
     }
-    //  If a SART Alert is active, check to see if the MMSI has special properties set 
+    //  If a SART Alert is active, check to see if the MMSI has special properties set
     //  indicating that this Alert is a MOB for THIS ship.
     if(palert_target && (palert_target->Class == AIS_SART) ){
         for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
@@ -3083,7 +3083,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             }
         }
     }
-    
+
     TimerAIS.Start( TIMER_AIS_MSEC, wxTIMER_CONTINUOUS );
 }
 
@@ -3107,12 +3107,12 @@ MMSIProperties::MMSIProperties( wxString &spec )
     Init();
     wxStringTokenizer tkz( spec, _T(";") );
     wxString s;
-    
+
     s = tkz.GetNextToken();
     long mmsil;
     s.ToLong(&mmsil);
     MMSI = (int)mmsil;
-    
+
     s = tkz.GetNextToken();
     if(s.Len()){
         if(s.Upper() == _T("ALWAYS"))
@@ -3120,7 +3120,7 @@ MMSIProperties::MMSIProperties( wxString &spec )
         else if(s.Upper() == _T("NEVER"))
             TrackType = TRACKTYPE_NEVER;
     }
-    
+
     s = tkz.GetNextToken();
     if(s.Len()){
         if(s.Upper() == _T("IGNORE"))
@@ -3132,7 +3132,7 @@ MMSIProperties::MMSIProperties( wxString &spec )
         if(s.Upper() == _T("MOB"))
             m_bMOB = true;
     }
-    
+
     s = tkz.GetNextToken();
     if(s.Len()){
         if(s.Upper() == _T("VDM"))
@@ -3177,10 +3177,10 @@ wxString MMSIProperties::Serialize( void )
 {
     wxString sMMSI;
     wxString s;
-    
+
     sMMSI.Printf(_T("%d"), MMSI);
     sMMSI << _T(";");
-    
+
     if(TrackType){
         if(TRACKTYPE_ALWAYS == TrackType)
             sMMSI << _T("always");
@@ -3188,7 +3188,7 @@ wxString MMSIProperties::Serialize( void )
             sMMSI << _T("never");
     }
     sMMSI << _T(";");
-    
+
     if(m_bignore){
         sMMSI << _T("ignore");
     }
@@ -3198,17 +3198,17 @@ wxString MMSIProperties::Serialize( void )
         sMMSI << _T("MOB");
     }
     sMMSI << _T(";");
-    
+
     if(m_bVDM){
         sMMSI << _T("VDM");
-    }    
+    }
     sMMSI << _T(";");
 
-    if (m_bFollower){ 
+    if (m_bFollower){
         sMMSI << _T("Follower");
     }
     sMMSI << _T(";");
-    
+
     if(m_bPersistentTrack){
         sMMSI << _T("PERSIST");
     }
@@ -3224,7 +3224,7 @@ wxString MMSIProperties::Serialize( void )
 void AISshipNameCache(AIS_Target_Data *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC,
-                      long mmsi) 
+                      long mmsi)
 {
     if (g_benableAISNameCache) {
         wxString ship_name = wxEmptyString;
@@ -3250,7 +3250,7 @@ void AISshipNameCache(AIS_Target_Data *pTargetData,
                 }
         }
         // else there IS a valid name, lets check if it is in one of the hash lists.
-        else if ((pTargetData->MID ==  5) || (pTargetData->MID == 24) || 
+        else if ((pTargetData->MID ==  5) || (pTargetData->MID == 24) ||
                  (pTargetData->MID == 19) || (pTargetData->MID == 123) ) { //123: Has got a name from SignalK
             //  This message contains ship static data, so has a name field
             pTargetData->b_nameFromCache = false;
@@ -3289,7 +3289,7 @@ void AISshipNameCache(AIS_Target_Data *pTargetData,
             }
             else { //No confirmed entry available
                 if (itNC != AISTargetNamesNC->end())
-                {  //there is  an entry in the NC list, 
+                {  //there is  an entry in the NC list,
                     if ((*AISTargetNamesNC)[mmsi] == ship_name)
                     {  //Received name same as already in NC list, promote to confirmen
                         (*AISTargetNamesC)[mmsi] = ship_name;
@@ -3337,12 +3337,12 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     //  Only send messages if someone is listening...
     if(!g_pi_manager->GetJSONMessageTargetCount())
         return;
-        
+
     // Do JSON message to all Plugin to inform of target
     wxJSONValue jMsg;
-    
+
     wxLongLong t = ::wxGetLocalTimeMillis();
-    
+
     jMsg[wxS("Source")] = wxS("AIS_Decoder");
     jMsg[wxT("Type")] = wxT("Information");
     jMsg[wxT("Msg")] = wxS("AIS Target");
@@ -3368,5 +3368,5 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     }
     jMsg[wxS("callsign")] = l_CallSign;
     jMsg[wxS("removed")] = pTarget->b_removed;
-    g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );    
+    g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );
 }

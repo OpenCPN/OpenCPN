@@ -15,16 +15,16 @@ class wxSVGAnimatedBoolean
   public:
     wxSVGAnimatedBoolean(): m_baseVal(0), m_animVal(0) {}
 	wxSVGAnimatedBoolean(bool value): m_baseVal(value), m_animVal(value) {}
-	
+
     inline bool GetBaseVal() const { return m_baseVal; };
 	inline void SetBaseVal(bool value) { m_baseVal = m_animVal = value; }
-	
+
     inline bool GetAnimVal() const { return m_animVal; }
 	inline void SetAnimVal(bool value) { m_animVal = value; }
-    
+
   public:
     inline operator bool() const { return GetAnimVal(); }
-    
+
   protected:
     bool m_baseVal;
     bool m_animVal;

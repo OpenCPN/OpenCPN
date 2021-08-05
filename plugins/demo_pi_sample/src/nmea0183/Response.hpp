@@ -43,7 +43,7 @@
 
 class NMEA0183;
 
-class RESPONSE 
+class RESPONSE
 {
 
    private:
@@ -76,5 +76,5 @@ class RESPONSE
 };
 
 
- 
+
 #endif // RESPONSE_CLASS_HEADER

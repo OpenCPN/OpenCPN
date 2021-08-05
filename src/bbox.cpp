@@ -393,7 +393,7 @@ void LLBBox::SetFromSegment(double lat1, double lon1, double lat2, double lon2)
             lon[i][2] = lon[i][0] - 360;
         }
     }
-    
+
     double d[3];
     for(int k=0; k<3; k++) {
         minlon[k] = wxMin(lon[0][k], lon[1][k]);
@@ -525,7 +525,7 @@ bool LLBBox::IntersectIn( const LLBBox &other ) const
 
     if((m_maxlat <= other.m_maxlat) || (m_minlat >= other.m_minlat))
         return false;
-    
+
     double minlon = m_minlon, maxlon = m_maxlon;
     if(m_maxlon < other.m_minlon)
         minlon += 360, maxlon += 360;
@@ -540,7 +540,7 @@ bool LLBBox::IntersectOutGetBias( const LLBBox &other, double bias ) const
     // allow -180 to 180 or 0 to 360
     if( !GetValid() || !other.GetValid() )
         return true;
-    
+
     if((m_maxlat < other.m_minlat) || (m_minlat > other.m_maxlat))
         return true;
 

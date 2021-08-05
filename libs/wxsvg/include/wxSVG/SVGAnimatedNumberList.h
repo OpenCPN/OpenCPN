@@ -19,14 +19,14 @@ class wxSVGAnimatedNumberList
     wxSVGAnimatedNumberList(const wxSVGAnimatedNumberList& value): m_baseVal(value.m_baseVal), m_animVal(NULL)
     { if (value.m_animVal != NULL) m_animVal = new wxSVGNumberList(*value.m_animVal); }
     ~wxSVGAnimatedNumberList() { ResetAnimVal(); }
-    
+
     inline wxSVGAnimatedNumberList& operator=(const wxSVGAnimatedNumberList& value)
     { m_baseVal = value.m_baseVal; m_animVal = value.m_animVal != NULL ? new wxSVGNumberList(*value.m_animVal) : NULL; return *this; }
-    
+
     inline wxSVGNumberList& GetBaseVal() { return m_baseVal; }
     inline const wxSVGNumberList& GetBaseVal() const { return m_baseVal; }
     inline void SetBaseVal(const wxSVGNumberList& value) { m_baseVal = value; ResetAnimVal(); }
-    
+
     inline wxSVGNumberList& GetAnimVal()
     {
       if (!m_animVal)
@@ -52,10 +52,10 @@ class wxSVGAnimatedNumberList
         m_animVal = NULL;
       }
     }
-    
+
   public:
     inline operator const wxSVGNumberList&() const { return GetAnimVal(); }
-    
+
   protected:
     wxSVGNumberList m_baseVal;
     wxSVGNumberList* m_animVal;

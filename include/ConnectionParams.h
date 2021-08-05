@@ -81,7 +81,7 @@ public:
     ConnectionParamsPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size,
                            ConnectionParams *p_itemConnectionParams, options *pContainer );
     ~ConnectionParamsPanel();
-    
+
     void OnSelected( wxMouseEvent &event );
     void SetSelected( bool selected );
     void OnPaint( wxPaintEvent &event );
@@ -89,11 +89,11 @@ public:
     void CreateControls( void );
     void OnEnableCBClick(wxCommandEvent &event);
     void Update( ConnectionParams *ConnectionParams);
- 
+
     bool GetSelected(){ return m_bSelected; }
     int GetUnselectedHeight(){ return m_unselectedHeight; }
     ConnectionParams *m_pConnectionParams;
-    
+
 private:
     options *m_pContainer;
     bool m_bSelected;
@@ -111,7 +111,7 @@ private:
 
     wxStaticText *t21;
 
-    
+
     DECLARE_EVENT_TABLE()
 };
 
@@ -129,11 +129,11 @@ public:
     NetworkProtocol NetProtocol;
     wxString        NetworkAddress;
     int             NetworkPort;
-    
+
     wxString        LastNetworkAddress;
     int             LastNetworkPort;
     NetworkProtocol LastNetProtocol;
-    
+
     DataProtocol    Protocol;
     wxString        Port;
     int             Baudrate;
@@ -150,7 +150,7 @@ public:
     int             Priority;
     bool            bEnabled;
     wxString        UserComment;
-    
+
     wxString        Serialize() const;
     void            Deserialize(const wxString &configStr);
 
@@ -163,14 +163,14 @@ public:
     wxString GetLastDSPort() const;
     wxString GetPortStr() const { return Port; }
     void SetPortStr( wxString str ){ Port = str; }
-    
-    
+
+
     bool            Valid;
     bool            b_IsSetup;
     ConnectionParamsPanel *m_optionsPanel;
 private:
     wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
-    
+
 };
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);

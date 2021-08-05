@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        GetSVGDocument.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/05/10
 // RCS-ID:      $Id: GetSVGDocument.cpp,v 1.1.1.1 2005/05/10 17:51:39 ntalex Exp $

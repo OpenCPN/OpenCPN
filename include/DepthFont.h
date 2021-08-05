@@ -39,7 +39,7 @@ class DepthFont {
 public:
     DepthFont();
     ~DepthFont();
-    
+
     void Build( wxFont *font, double scale );
     void Delete();
 
@@ -59,7 +59,7 @@ private:
     int m_maxglyphw;
     int m_maxglyphh;
     bool m_built;
-    
+
     float m_dx;
     float m_dy;
     double m_scaleFactor;

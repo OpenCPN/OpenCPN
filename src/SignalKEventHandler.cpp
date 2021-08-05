@@ -70,9 +70,9 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
             m_self = (root["self"].AsString());                                 // for java server, and OpenPlotter node.js server 1.20
         else
             m_self = _T("vessels.") + (root["self"].AsString());                // for Node.js server
-        g_ownshipMMSI_SK = m_self;    
+        g_ownshipMMSI_SK = m_self;
     }
-    
+
     if(root.HasMember("context")
        && root["context"].IsString()) {
         auto context = root["context"].AsString();
@@ -123,7 +123,7 @@ void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) cons
         else if (update_path == _T("navigation.courseOverGroundTrue") && bGPSValid_SK) {
             updateNavigationCourseOverGround(value, sfixtime);
         }
-        else if (update_path == _T("navigation.courseOverGroundMagnetic")) {         
+        else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
         }   // Ignore magnetic COG as OpenCPN don't handle yet.
         else if (update_path == _T("navigation.gnss.satellites")) //From GGA sats in use
         {

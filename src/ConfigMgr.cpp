@@ -415,17 +415,17 @@ public:
     ~OCPNConfigObject();
 
     OCPNConfigObject( int canvas_config );
-    
+
     void Init();
     wxPanel *GetSettingsPanel();
-    
+
     int m_canvasConfig;
     wxString m_GUID;
     wxString templateFileName;
     wxString m_title;
     wxString m_description;
-    
-    
+
+
 };
 
 OCPNConfigObject::OCPNConfigObject()
@@ -460,16 +460,16 @@ class OCPNConfigCatalog : public pugi::xml_document
 public:
     OCPNConfigCatalog();
     ~OCPNConfigCatalog();
-    
+
     bool AddConfig( OCPNConfigObject *config, unsigned int flags );
     bool RemoveConfig( wxString GUID);
-    
-    
+
+
     void SetRootConfigNode(void);
     bool IsOpenCPN();
     bool SaveFile( const wxString filename );
     bool LoadFile( const wxString filename );
-    
+
     pugi::xml_node      m_config_root;
 };
 
@@ -520,53 +520,53 @@ bool OCPNConfigCatalog::LoadFile( const wxString filename )
 bool OCPNConfigCatalog::AddConfig( OCPNConfigObject *config, unsigned int flags )
 {
     pugi::xml_node node = m_config_root.append_child("config");
-    
+
     node.append_attribute("GUID") = config->m_GUID.mb_str();
 
     //  Handle non-ASCII characters as UTF8
     wxCharBuffer abuf = config->m_title.ToUTF8();
-    if( abuf.data() )                            
+    if( abuf.data() )
         node.append_attribute("title") = abuf.data();
-    else 
+    else
         node.append_attribute("title") = _T("Substitute Title");
 
     abuf = config->m_description.ToUTF8();
-    if( abuf.data() )                            
+    if( abuf.data() )
         node.append_attribute("description") = abuf.data();
-    else 
+    else
         node.append_attribute("description") = _T("Substitute Description");
-    
+
     node.append_attribute("templateFile") = config->templateFileName.mb_str();
 
-    
+
     return true;
 }
-    
+
 bool OCPNConfigCatalog::RemoveConfig( wxString GUID)
 {
     for (pugi::xml_node child = m_config_root.first_child(); child; )
     {
         pugi::xml_node next = child.next_sibling();
         const char* guid = child.attribute("GUID").value();
-        
+
         if(!strcmp(guid, GUID.mb_str())){
             child.parent().remove_child(child);
             return true;
         }
-        
+
         child = next;
     }
-    
+
     return false;
 }
 
-    
+
 
 
 //--------------------------------------------------------------------
 //   ConfigPanel implementation
 //--------------------------------------------------------------------
-    
+
 ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size)
 :wxPanel(parent, id, pos, size, wxSIMPLE_BORDER)
 
@@ -574,22 +574,22 @@ ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent, wxWindowID 
     m_config = config;
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(mainSizer);
-    
+
     mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Title")));
     mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_title));
-    
+
     mainSizer->Add(new wxStaticLine(this, wxID_ANY), 0, wxEXPAND | wxALL, 1);
-    
+
     mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Description")));
     mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_description));
-    
+
     SetMinSize(wxSize(-1, 6 * GetCharHeight()) );
-    
+
     wxColour colour;
     GetGlobalColor(_T("COMP1"), &colour);
     SetBackgroundColour(colour);
     //Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
-    
+
 }
 
 ConfigPanel::~ConfigPanel()
@@ -612,7 +612,7 @@ wxString ConfigPanel::GetConfigGUID()
 //   ConfigMgr implementation
 //   Singleton Pattern
 //--------------------------------------------------------------------
-    
+
 
 ConfigMgr & ConfigMgr::Get()
 {
@@ -633,10 +633,10 @@ void ConfigMgr::Shutdown()
 ConfigMgr::ConfigMgr()
 {
     Init();
-    
+
     // Load any existing configs from the catalog
     LoadCatalog();
-    
+
 }
 
 ConfigMgr::~ConfigMgr()
@@ -653,7 +653,7 @@ void ConfigMgr::Init()
     if(!wxFileName::DirExists( m_configDir )){
         wxFileName::Mkdir( m_configDir );
     }
-    
+
     m_configCatalogName = g_Platform->GetPrivateDataDir();
     appendOSDirSlash(&m_configCatalogName);
     m_configCatalogName.append(_T("Configs"));
@@ -662,48 +662,48 @@ void ConfigMgr::Init()
 
     //Create the catalog, if necessary
     if(!wxFileExists(m_configCatalogName)){
-        
+
         wxLogMessage( _T("Creating new Configs catalog: ") + m_configCatalogName );
-        
+
         OCPNConfigCatalog *cat = new OCPNConfigCatalog();
         cat->SetRootConfigNode();
         cat->SaveFile( m_configCatalogName);
         delete cat;
     }
-    
+
     m_configCatalog = new OCPNConfigCatalog();
-    
+
     configList = new ConfigObjectList;
 
     //  Add the default "Recovery" template
      wxString t_title = _("Recovery Template");
      wxString t_desc = _("Apply this template to return to a known safe configuration");
      CreateNamedConfig( t_title, t_desc, _T("11111111-1111-1111-1111-111111111111"));
-    
+
 }
 
 bool ConfigMgr::LoadCatalog()
 {
     wxLogMessage( _T("Loading Configs catalog: ") + m_configCatalogName );
     m_configCatalog->LoadFile( m_configCatalogName );
-    
+
     // Parse the config catalog
     pugi::xml_node objects = m_configCatalog->child("configs");
 
     //pugi::xml_node node = m_config_root.append_child("config");
-    
+
     //node.append_attribute("GUID") = config->m_GUID.mb_str();
     //node.append_attribute("title") = config->m_title.mb_str();
     //node.append_attribute("description") = config->m_description.mb_str();
     //node.append_attribute("templateFile") = config->templateFileName.mb_str();
-    
+
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "config") ) {
-            
+
             //Check the GUID for duplicates
             wxString testGUID = wxString::FromUTF8(object.attribute( "GUID" ).as_string());
-            
+
             bool bFound = false;
             for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
             {
@@ -716,7 +716,7 @@ bool ConfigMgr::LoadCatalog()
 
             if(!bFound){
                 OCPNConfigObject *newConfig = new OCPNConfigObject;
-            
+
                 newConfig->m_GUID = wxString::FromUTF8(object.attribute( "GUID" ).as_string());
                 newConfig->m_title = wxString::FromUTF8(object.attribute( "title" ).as_string());
                 newConfig->m_description = wxString::FromUTF8(object.attribute( "description" ).as_string());
@@ -727,42 +727,42 @@ bool ConfigMgr::LoadCatalog()
             }
         }
     }
-    
+
     return true;
-    
+
 }
 
 bool ConfigMgr::SaveCatalog()
 {
     m_configCatalog->SaveFile( m_configCatalogName);
-    
+
     return true;
 }
 
 wxString ConfigMgr::CreateNamedConfig( const wxString &title, const wxString &description, wxString UUID )
 {
     wxString GUID;
-    
+
     // Must have title
     if( title.IsEmpty())
         return GUID;
-    
+
     OCPNConfigObject *pConfig = new OCPNConfigObject;
-    
+
     //If no UUID is passed, then create a new GUID for this config
     if(UUID.IsEmpty())
         GUID = GetUUID();
     else
         GUID = UUID;
-    
+
     pConfig->m_GUID = GUID;
     pConfig->m_title = title;
     pConfig->m_description = description;
-    
+
     if(UUID.IsEmpty()){
         // create template file name
         pConfig->templateFileName = _T("OCPNTemplate-") + GUID + _T(".conf");
-    
+
         //  Save the template contents
         wxString templateFullFileName = GetConfigDir() + pConfig->templateFileName;
         if(!SaveTemplate( templateFullFileName )){
@@ -771,20 +771,20 @@ wxString ConfigMgr::CreateNamedConfig( const wxString &title, const wxString &de
             return _T("");
         }
     }
-    
+
     // Add this config to the catalog
     if(!m_configCatalog->AddConfig( pConfig, 0 )){
         wxLogMessage(_T("Unable to add config to catalog...Title: ") + title);
         delete pConfig;
         return _T("");
     }
-    
+
     // Add to the class list of configs
     configList->Append(pConfig);
-    
+
     if(UUID.IsEmpty())
         SaveCatalog();
-    
+
     return GUID;
 }
 
@@ -793,23 +793,23 @@ bool ConfigMgr::DeleteConfig(wxString GUID)
     OCPNConfigObject *cfg = GetConfig( GUID );
     if(!cfg)
         return false;
-    
+
     // Find and delete the template file
     wxString templateFullFileName = GetConfigDir() + cfg->templateFileName;
     if(wxFileExists(templateFullFileName))
         wxRemoveFile(templateFullFileName);
-    
+
     // Remove the config from the catalog
     bool rv = m_configCatalog->RemoveConfig(GUID);
-    
+
     if(rv)
         SaveCatalog();
-    
+
     //  Remove the config from the member list
     bool bDel = configList->DeleteObject(cfg);
     if(bDel)
         delete cfg;
-        
+
     return rv;
 }
 
@@ -818,15 +818,15 @@ bool ConfigMgr::DeleteConfig(wxString GUID)
 wxPanel *ConfigMgr::GetConfigPanel( wxWindow *parent, wxString GUID )
 {
     wxPanel *retPanel = NULL;
-    
+
     // Find the GUID-matching config in the member list
     OCPNConfigObject *config = GetConfig( GUID );
-    
+
     //  Found it?
     if(config){
         retPanel = new ConfigPanel( config, parent );
     }
-        
+
     return retPanel;
 }
 
@@ -841,7 +841,7 @@ OCPNConfigObject *ConfigMgr::GetConfig( wxString GUID )
             break;
         }
     }
-    
+
     return NULL;
 }
 
@@ -855,30 +855,30 @@ wxString ConfigMgr::GetTemplateTitle( wxString GUID)
             break;
         }
     }
-    
+
     return wxEmptyString;
 }
-    
+
 
 wxArrayString ConfigMgr::GetConfigGUIDArray()
 {
     wxArrayString ret_val;
-    
+
     for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
     {
         OCPNConfigObject *look = node->GetData();
         ret_val.Add(look->m_GUID);
     }
-    
+
     return ret_val;
 }
 
 bool ConfigMgr::ApplyConfigGUID( wxString GUID)
 {
-     
+
     // Find the GUID-matching config in the member list
     OCPNConfigObject *config = GetConfig( GUID );
-    
+
     //  Found it?
     if(config){
         wxString thisConfig = GetConfigDir() + config->templateFileName;
@@ -889,19 +889,19 @@ bool ConfigMgr::ApplyConfigGUID( wxString GUID)
         }
 
         MyConfig fconf( thisConfig );
-        
+
         //  Load the template contents, without resetting defaults
         fconf.LoadMyConfigRaw( true );
-        
+
         //  Load Canvas configs, applying only the "templateable" items
         fconf.LoadCanvasConfigs( true );
-        
-        if( ps52plib && ps52plib->m_bOK ) 
+
+        if( ps52plib && ps52plib->m_bOK )
             fconf.LoadS57Config();
 
         return true;
     }
-    
+
     return false;
 }
 
@@ -919,7 +919,7 @@ wxString ConfigMgr::GetUUID(void)
         int node_hi;
         int node_low;
     } uuid;
-    
+
     uuid.time_low = GetRandomNumber(0, 2147483647);//FIXME: the max should be set to something like MAXINT32, but it doesn't compile un gcc...
     uuid.time_mid = GetRandomNumber(0, 65535);
     uuid.time_hi_and_version = GetRandomNumber(0, 65535);
@@ -927,15 +927,15 @@ wxString ConfigMgr::GetUUID(void)
     uuid.clock_seq_low = GetRandomNumber(0, 255);
     uuid.node_hi = GetRandomNumber(0, 65535);
     uuid.node_low = GetRandomNumber(0, 2147483647);
-    
+
     /* Set the two most significant bits (bits 6 and 7) of the
      * clock_seq_hi_and_rsv to zero and one, respectively. */
     uuid.clock_seq_hi_and_rsv = (uuid.clock_seq_hi_and_rsv & 0x3F) | 0x80;
-    
+
     /* Set the four most significant bits (bits 12 through 15) of the
      * time_hi_and_version field to 4 */
     uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
-    
+
     str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"),
                   uuid.time_low,
                   uuid.time_mid,
@@ -944,7 +944,7 @@ wxString ConfigMgr::GetUUID(void)
                   uuid.clock_seq_low,
                   uuid.node_hi,
                   uuid.node_low);
-    
+
     return str;
 }
 
@@ -952,31 +952,31 @@ wxString ConfigMgr::GetUUID(void)
 bool ConfigMgr::SaveTemplate( wxString fileName)
 {
     //  Assuming the file exists, and is empty....
-    
+
     //  Create a private wxFileConfig object
     MyConfig *conf = new MyConfig( fileName );
-    
+
     //  Write out all the elements of a config template....
-    
+
     //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages provoked by Android security...
-    #ifdef __OCPN__ANDROID__    
+    #ifdef __OCPN__ANDROID__
     wxLogNull logNo;
-    #endif    
-    
+    #endif
+
     //    Global options and settings
     conf->SetPath( _T ( "/Settings" ) );
-    
+
     conf->Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
     conf->Write( _T ( "DarkDecorations"), g_bDarkDecorations );
     conf->Write( _T ( "UIexpert" ), g_bUIexpert );
     conf->Write( _T ( "SpaceDropMark" ), g_bSpaceDropMark );
-    
+
     conf->Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
     #ifndef __WXOSX__
     conf->Write( _T ( "ShowMenuBar" ), g_bShowMenuBar );
     #endif
     conf->Write( _T ( "DefaultFontSize" ), g_default_font_size );
-    
+
     conf->Write( _T ( "Fullscreen" ), g_bFullscreen );
     conf->Write( _T ( "ShowCompassWindow" ), g_bShowCompassWin );
     conf->Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
@@ -993,33 +993,33 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     conf->Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
     conf->Write( _T ( "ShowChartBar" ), g_bShowChartBar );
-    
+
     conf->Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
     conf->Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
     conf->Write( _T ( "ShipScaleFactor" ), g_ShipScaleFactor );
-    
+
     conf->Write( _T ( "ShowTrue" ), g_bShowTrue );
     conf->Write( _T ( "ShowMag" ), g_bShowMag );
     conf->Write( _T ( "UserMagVariation" ), wxString::Format( _T("%.2f"), g_UserVar ) );
-    
+
     conf->Write( _T ( "CM93DetailFactor" ), g_cm93_zoom_factor );
     conf->Write( _T ( "CM93DetailZoomPosX" ), g_detailslider_dialog_x );
     conf->Write( _T ( "CM93DetailZoomPosY" ), g_detailslider_dialog_y );
     conf->Write( _T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider );
-    
+
     conf->Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
-    
+
     conf->Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
     conf->Write( _T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector );
-    
+
     conf->Write( _T ( "SmoothPanZoom" ), g_bsmoothpanzoom );
-    
+
     conf->Write( _T ( "CourseUpMode" ), g_bCourseUp );
     if (!g_bInlandEcdis )
         conf->Write( _T ( "LookAheadMode" ), g_bLookAhead );
     conf->Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
     conf->Write( _T ( "UseMagAPB" ), g_bMagneticAPB );
-    
+
     conf->Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
     conf->Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
     conf->Write( _T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles );
@@ -1031,30 +1031,30 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "OwnShipMinSize" ), g_n_ownship_min_mm );
     conf->Write( _T ( "OwnShipSogCogCalc" ), g_own_ship_sog_cog_calc );
     conf->Write( _T ( "OwnShipSogCogCalcDampSec"), g_own_ship_sog_cog_calc_damp_sec );
-    
+
     conf->Write( _T ( "RouteArrivalCircleRadius" ), wxString::Format( _T("%.3f"), g_n_arrival_circle_radius ));
     conf->Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
-    
+
     conf->Write( _T ( "StartWithTrackActive" ), g_bTrackCarryOver );
     conf->Write( _T ( "AutomaticDailyTracks" ), g_bTrackDaily );
     conf->Write( _T ( "TrackRotateAt" ), g_track_rotate_time );
     conf->Write( _T ( "TrackRotateTimeType" ), g_track_rotate_time_type );
     conf->Write( _T ( "HighlightTracks" ), g_bHighliteTracks );
-    
+
     conf->Write( _T ( "InitialStackIndex" ), g_restore_stackindex );
     conf->Write( _T ( "InitialdBIndex" ), g_restore_dbindex );
-    
+
     conf->Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     conf->Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
-    
+
     conf->Write( _T ( "ToolbarX" ), g_maintoolbar_x );
     conf->Write( _T ( "ToolbarY" ), g_maintoolbar_y );
     conf->Write( _T ( "ToolbarOrient" ), g_maintoolbar_orient );
-    
+
     conf->Write( _T ( "iENCToolbarX" ), g_iENCToolbarPosX );
     conf->Write( _T ( "iENCToolbarY" ), g_iENCToolbarPosY );
-    
-    if ( !g_bInlandEcdis ){  
+
+    if ( !g_bInlandEcdis ){
         conf->Write( _T ( "GlobalToolbarConfig" ), g_toolbarConfig );
         conf->Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
         conf->Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
@@ -1063,16 +1063,16 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
 
     conf->Write( _T ( "MobileTouch" ), g_btouch );
     conf->Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
-    
+
     conf->Write( _T ( "AutoHideToolbar" ), g_bAutoHideToolbar );
     conf->Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
-    
+
     conf->Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
     conf->Write( _T ( "DisplaySizeManual" ), g_config_display_size_manual );
-    
+
     conf->Write( _T ( "PlanSpeed" ), wxString::Format( _T("%.2f"), g_PlanSpeed ));
 
-#if 0    
+#if 0
     wxString vis, invis;
     LayerList::iterator it;
     int index = 0;
@@ -1088,18 +1088,18 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
 
     conf->Write( _T ( "Locale" ), g_locale );
     conf->Write( _T ( "LocaleOverride" ), g_localeOverride );
-    
+
     // LIVE ETA OPTION
     conf->Write( _T( "LiveETA" ), g_bShowLiveETA);
     conf->Write( _T( "DefaultBoatSpeed" ), g_defaultBoatSpeed);
-    
+
     //    S57 Object Filter Settings
     conf->SetPath( _T ( "/Settings/ObjectFilter" ) );
-    
+
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            
+
             wxString st1( _T ( "viz" ) );
             char name[7];
             strncpy( name, pOLE->OBJLName, 6 );
@@ -1108,19 +1108,19 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
             conf->Write( st1, pOLE->nViz );
         }
     }
-    
+
     //    Global State
-    
+
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
-    
+
     //    Various Options
     if ( !g_bInlandEcdis )
         conf->Write( _T ( "nColorScheme" ), (int) gFrame->GetColorScheme() );
-    
-    
+
+
     //    AIS
     conf->SetPath( _T ( "/Settings/AIS" ) );
-    
+
     conf->Write( _T ( "bNoCPAMax" ), g_bCPAMax );
     conf->Write( _T ( "NoCPAMaxNMi" ), g_CPAMax_NM );
     conf->Write( _T ( "bCPAWarn" ), g_bCPAWarn );
@@ -1135,10 +1135,10 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "CogArrowMinutes" ), g_ShowCOG_Mins );
     conf->Write( _T ( "bShowTargetTracks" ), g_bAISShowTracks );
     conf->Write( _T ( "TargetTracksMinutes" ), g_AISShowTracks_Mins );
-    
+
     conf->Write( _T ( "bHideMooredTargets" ), g_bHideMoored );
     conf->Write( _T ( "MooredTargetMaxSpeedKnots" ), g_ShowMoored_Kts );
-    
+
     conf->Write( _T ( "bAISAlertDialog" ), g_bAIS_CPA_Alert );
     conf->Write( _T ( "bAISAlertAudio" ), g_bAIS_CPA_Alert_Audio );
     conf->Write( _T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File );
@@ -1153,15 +1153,15 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "WplSelAction" ), g_WplAction );
     conf->Write( _T ( "AISCOGPredictorWidth" ), g_ais_cog_predictor_width );
     conf->Write( _T ( "bShowScaledTargets" ), g_bAllowShowScaled );
-    conf->Write( _T ( "AISScaledNumber" ), g_ShowScaled_Num );    
+    conf->Write( _T ( "AISScaledNumber" ), g_ShowScaled_Num );
     conf->Write( _T ( "AISScaledNumberWeightSOG" ), g_ScaledNumWeightSOG );
     conf->Write( _T ( "AISScaledNumberWeightCPA" ), g_ScaledNumWeightCPA );
     conf->Write( _T ( "AISScaledNumberWeightTCPA" ), g_ScaledNumWeightTCPA );
     conf->Write( _T ( "AISScaledNumberWeightRange" ), g_ScaledNumWeightRange );
-    conf->Write( _T ( "AISScaledNumberWeightSizeOfTarget" ), g_ScaledNumWeightSizeOfT ); 
+    conf->Write( _T ( "AISScaledNumberWeightSizeOfTarget" ), g_ScaledNumWeightSizeOfT );
     conf->Write( _T ( "AISScaledSizeMinimal" ), g_ScaledSizeMinimal );
     conf->Write( _T ( "AISShowScaled"), g_bShowScaled);
-    
+
     conf->Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     conf->Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
     conf->Write( _T ( "AlertDialogPosX" ), g_ais_alert_dialog_x );
@@ -1181,7 +1181,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "bAISRolloverShowCPA" ), g_bAISRolloverShowCPA );
     conf->Write( _T ( "bAISAlertAckTimeout" ), g_bAIS_ACK_Timeout );
     conf->Write( _T ( "AlertAckTimeoutMinutes" ), g_AckTimeout_Mins );
-    
+
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
     if( ps52plib ) {
         conf->Write( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
@@ -1190,7 +1190,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
             conf->Write( _T ( "nDisplayCategory" ), (long) ps52plib->GetDisplayCategory() );
         conf->Write( _T ( "nSymbolStyle" ), (int) ps52plib->m_nSymbolStyle );
         conf->Write( _T ( "nBoundaryStyle" ), (int) ps52plib->m_nBoundaryStyle );
-        
+
         conf->Write( _T ( "bShowSoundg" ), ps52plib->m_bShowSoundg );
         conf->Write( _T ( "bShowMeta" ), ps52plib->m_bShowMeta );
         conf->Write( _T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN );
@@ -1199,50 +1199,50 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
         conf->Write( _T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors );
         conf->Write( _T ( "bDeClutterText" ), ps52plib->m_bDeClutterText );
         conf->Write( _T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts );
-        
+
         conf->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) );
         conf->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) );
         conf->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) );
         conf->Write( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ) );
         conf->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
     }
-    
+
     conf->SetPath( _T ( "/Settings/Others" ) );
-    
+
     // Radar rings
     conf->Write( _T ( "ShowRadarRings" ), (bool)(g_iNavAidRadarRingsNumberVisible > 0) );  //3.0.0 config support
     conf->Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     conf->Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     conf->Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
     conf->Write( _T ( "RadarRingsColour" ), g_colourOwnshipRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
-    
+
     // Waypoint Radar rings
     conf->Write( _T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber );
     conf->Write( _T ( "WaypointRangeRingsStep" ), g_fWaypointRangeRingsStep );
     conf->Write( _T ( "WaypointRangeRingsStepUnits" ), g_iWaypointRangeRingsStepUnits );
     conf->Write( _T ( "WaypointRangeRingsColour" ), g_colourWaypointRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
-    
+
     conf->Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
-    
+
     // Waypoint dragging with mouse
     conf->Write( _T ( "WaypointPreventDragging" ), g_bWayPointPreventDragging );
-    
+
     conf->Write( _T ( "EnableZoomToCursor" ), g_bEnableZoomToCursor );
-    
+
     conf->Write( _T ( "TrackIntervalSeconds" ), g_TrackIntervalSeconds );
     conf->Write( _T ( "TrackDeltaDistance" ), g_TrackDeltaDistance );
     conf->Write( _T ( "TrackPrecision" ), g_nTrackPrecision );
-    
+
     conf->Write( _T ( "RouteLineWidth" ), g_route_line_width );
     conf->Write( _T ( "TrackLineWidth" ), g_track_line_width );
     conf->Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     conf->Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
 
     //    Fonts
-    
+
     //  Store the persistent Auxiliary Font descriptor Keys
     conf->SetPath( _T ( "/Settings/AuxFontKeys" ) );
-    
+
     wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
     for(unsigned int i=0 ; i <  keyArray.GetCount() ; i++){
         wxString key;
@@ -1250,47 +1250,47 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
         wxString keyval = keyArray[i];
         conf->Write( key, keyval );
     }
-    
+
     wxString font_path;
     #ifdef __WXX11__
     font_path = ( _T ( "/Settings/X11Fonts" ) );
     #endif
-    
+
     #ifdef __WXGTK__
     font_path = ( _T ( "/Settings/GTKFonts" ) );
     #endif
-    
+
     #ifdef __WXMSW__
     font_path = ( _T ( "/Settings/MSWFonts" ) );
     #endif
-    
+
     #ifdef __WXMAC__
     font_path = ( _T ( "/Settings/MacFonts" ) );
     #endif
-    
+
     #ifdef __WXQT__
     font_path = ( _T ( "/Settings/QTFonts" ) );
     #endif
-    
+
     conf->DeleteGroup(font_path);
-    
+
     conf->SetPath( font_path );
-    
+
     int nFonts = FontMgr::Get().GetNumFonts();
-    
+
     for( int i = 0; i < nFonts; i++ ) {
         wxString cfstring(FontMgr::Get().GetConfigString(i));
         wxString valstring = FontMgr::Get().GetFullConfigDesc( i );
         conf->Write( cfstring, valstring );
     }
-    
+
     //  Save the per-canvas config options
     conf->SaveCanvasConfigs( );
-    
+
     conf->Flush();
-    
+
     delete conf;
-    
+
     return true;
 }
 
@@ -1298,12 +1298,12 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
 bool ConfigMgr::CheckTemplateGUID( wxString GUID )
 {
     bool rv = false;
-    
+
     OCPNConfigObject *config = GetConfig( GUID );
     if(config){
         rv = CheckTemplate( GetConfigDir() + config->templateFileName );
     }
-    
+
     return rv;
 }
 
@@ -1318,41 +1318,41 @@ bool ConfigMgr::CheckTemplateGUID( wxString GUID )
 
 #define CHECK_STRP(s, t)        conf->Read( s , &val); \
                                 if( !t->IsSameAs( val )) return false;
-                                
+
 #define CHECK_FLT(s, t, eps)    conf->Read(s, &val);  \
                                 val.ToDouble( &dval ); \
                                 if(fabs(dval - *t) > eps) return false;
-                                
-bool ConfigMgr::CheckTemplate( wxString fileName) 
+
+bool ConfigMgr::CheckTemplate( wxString fileName)
 {
     bool rv = true;
- 
-    
+
+
     int read_int;
     wxString val;
     double dval;
 
     MyConfig *conf = new MyConfig( fileName );
-    
+
 //    Global options and settings
-    conf->SetPath( _T ( "/Settings" ) );    
-    
-    
-    
+    conf->SetPath( _T ( "/Settings" ) );
+
+
+
     CHECK_INT( _T ( "UIexpert" ), &g_bUIexpert );
-    
+
     ///CHECK_STR( _T ( "UIStyle" ), g_uiStyle  );
 
-     
+
     CHECK_INT( _T ( "InlandEcdis" ), &g_bInlandEcdis );
-    
+
     CHECK_INT( _T ("DarkDecorations" ), &g_bDarkDecorations );
 
     CHECK_INT( _T( "SpaceDropMark" ), &g_bSpaceDropMark );
 
     ///CHECK_INT( _T ( "UseModernUI5" ), &g_useMUI );
 
-#if 0    
+#if 0
     CHECK_INT( _T ( "DebugGDAL" ), &g_bGDAL_Debug );
     CHECK_INT( _T ( "DebugNMEA" ), &g_nNMEADebug );
     CHECK_INT( _T ( "DebugOpenGL" ), &g_bDebugOGL );
@@ -1366,7 +1366,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 #endif
 
     CHECK_INT( _T ( "DefaultFontSize"), &g_default_font_size );
-    
+
 //    Read( _T ( "GPSIdent" ), &g_GPS_Ident );
     CHECK_INT( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload );
 
@@ -1374,24 +1374,24 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     CHECK_INT( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar );
     CHECK_INT( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar );
-    
+
     CHECK_INT( _T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar );
-    
+
     CHECK_INT( _T ( "DisplaySizeMM" ), &g_display_size_mm );
     CHECK_INT( _T ( "DisplaySizeManual" ), &g_config_display_size_manual );
-    
+
     CHECK_INT( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor );
-    
+
     CHECK_INT( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
     CHECK_INT( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
-    
+
     CHECK_INT( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog );
     CHECK_INT( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec );
 
     CHECK_INT( _T ( "ShowTrue" ), &g_bShowTrue );
     CHECK_INT( _T ( "ShowMag" ), &g_bShowMag );
 
-    CHECK_FLT( _T ( "UserMagVariation" ), &g_UserVar, 0.1) 
+    CHECK_FLT( _T ( "UserMagVariation" ), &g_UserVar, 0.1)
 
     CHECK_INT( _T ( "UseMagAPB" ), &g_bMagneticAPB );
 
@@ -1410,11 +1410,11 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     //CHECK_INT( _T ( "SkewToNorthUp" ), &g_bskew_comp );
     CHECK_INT( _T ( "OpenGL" ), &g_bopengl );
     CHECK_INT( _T ( "SoftwareGL" ), &g_bSoftwareGL );
-    
+
     CHECK_INT( _T ( "ShowFPS" ), &g_bShowFPS );
-    
+
     CHECK_INT( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision );
-    
+
     CHECK_STR( _T( "TalkerIdText" ), g_TalkerIdText );
     CHECK_INT( _T( "MaxWaypointNameLength" ), &g_maxWPNameLength );
 
@@ -1439,7 +1439,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     CHECK_INT( _T ( "iENCToolbarX"), &g_iENCToolbarPosX );
     CHECK_INT( _T ( "iENCToolbarY"), &g_iENCToolbarPosY );
-    
+
     CHECK_STR( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     CHECK_STR( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
 
@@ -1448,7 +1448,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     CHECK_INT( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     CHECK_INT( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
-    
+
     CHECK_INT( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor );
     CHECK_INT( _T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x );
     CHECK_INT( _T ( "CM93DetailZoomPosY" ), &g_detailslider_dialog_y );
@@ -1477,14 +1477,14 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_STR( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection);
     CHECK_INT( _T ( "ShowChartBar" ), &g_bShowChartBar );
     CHECK_INT( _T ( "SDMMFormat" ), &g_iSDMMFormat ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
-      
+
     CHECK_INT( _T ( "DistanceFormat" ), &g_iDistanceFormat ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
     CHECK_INT( _T ( "SpeedFormat" ), &g_iSpeedFormat ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
 
     // LIVE ETA OPTION
     CHECK_INT( _T ( "LiveETA" ), &g_bShowLiveETA );
     CHECK_INT( _T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed );
-    
+
     CHECK_INT( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes );
     CHECK_INT( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width );
     CHECK_INT( _T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles );
@@ -1509,7 +1509,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "HighlightTracks" ), &g_bHighliteTracks );
 
     CHECK_FLT( _T ( "PlanSpeed" ), &g_PlanSpeed, 0.1)
-    
+
     ///CHECK_STR( _T ( "VisibleLayers" ), g_VisibleLayers );
     ///CHECK_STR( _T ( "InvisibleLayers" ), g_InvisibleLayers );
 
@@ -1517,26 +1517,26 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     CHECK_STR( _T ( "Locale" ), g_locale );
     CHECK_STR( _T ( "LocaleOverride" ), g_localeOverride );
-    
+
     //We allow 0-99 backups ov navobj.xml
     CHECK_INT( _T ( "KeepNavobjBackups" ), &g_navobjbackups );
-    
+
 //     NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L), Read(_T("NMEALogWindowSizeY"), 400L));
 //     NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L), Read(_T("NMEALogWindowPosY"), 10L));
 //     NMEALogWindow::Get().CheckPos(display_width, display_height);
 
     // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg filtered but put msg on bus.
     CHECK_INT( _T ( "LegacyInputCOMPortFilterBehaviour" ), &g_b_legacy_input_filter_behaviour );
-    
+
     CHECK_INT( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly);
 
     CHECK_INT( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
     CHECK_INT( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
-    
+
     CHECK_INT( _T ( "EnableAISNameCache" ),  &g_benableAISNameCache );
-    
+
     CHECK_INT( _T ( "EnableUDPNullHeader" ),  &g_benableUDPNullHeader );
-    
+
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
 
     CHECK_INT( _T ( "FrameWinX" ), &g_nframewin_x );
@@ -1549,12 +1549,12 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ClientPosY" ), &g_lastClientRecty );
     CHECK_INT( _T ( "ClientSzX" ), &g_lastClientRectw );
     CHECK_INT( _T ( "ClientSzY" ), &g_lastClientRecth );
-    
+
     CHECK_INT( _T( "RoutePropSizeX" ), &g_route_prop_sx );
     CHECK_INT( _T( "RoutePropSizeY" ), &g_route_prop_sy );
     CHECK_INT( _T( "RoutePropPosX" ), &g_route_prop_x );
     CHECK_INT( _T( "RoutePropPosY" ), &g_route_prop_y );
-    
+
     CHECK_INT( _T ( "S52_DEPTH_UNIT_SHOW" ), &g_nDepthUnitDisplay );   // default is metres
 
     //    AIS
@@ -1609,7 +1609,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     CHECK_INT( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     CHECK_INT( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
-    
+
     CHECK_INT( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx );
     CHECK_INT( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy );
     CHECK_INT( _T ( "AlertDialogSizeX" ), &g_ais_alert_dialog_sx );
@@ -1618,15 +1618,15 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "AlertDialogPosY" ), &g_ais_alert_dialog_y );
     CHECK_INT( _T ( "QueryDialogPosX" ), &g_ais_query_dialog_x );
     CHECK_INT( _T ( "QueryDialogPosY" ), &g_ais_query_dialog_y );
-    
-    
+
+
     conf->SetPath( _T ( "/Directories" ) );
     CHECK_STR( _T ( "PresentationLibraryData" ), g_UserPresLibData)
     ///CHECK_STRP( _T ( "InitChartDir" ), pInit_Chart_Dir)
-    
+
     CHECK_STR( _T ( "SENCFileLocation" ), g_SENCPrefix)
 
-    
+
     CHECK_STR( _T ( "GPXIODir" ), g_gpx_path );           // Get the Directory name
     CHECK_STR( _T ( "TCDataDir" ), g_TCData_Dir );           // Get the Directory name
     CHECK_STR( _T ( "BasemapDir"), gWorldMapLocation );
@@ -1636,7 +1636,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 #if 0
     //  Load the persistent Auxiliary Font descriptor Keys
     conf->SetPath ( _T ( "/Settings/AuxFontKeys" ) );
-    
+
     wxString strk;
     long dummyk;
     wxString kval;
@@ -1673,10 +1673,10 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     conf->SetPath ( _T ( "/Settings/QTFonts" ) );
 #endif
 
-#if 0    
+#if 0
     if(conf->GetNumberOfEntries() != (unsigned int)FontMgr::Get().GetNumFonts() )
         return false;
-    
+
     wxString str;
     long dummy;
     wxString pval;
@@ -1695,7 +1695,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     conf->SetPath( _T ( "/TideCurrentDataSources" ) );
     if( conf->GetNumberOfEntries() != TideCurrentDataSet.GetCount())
         return false;
-    
+
     if( conf->GetNumberOfEntries()){
         wxString str, val;
         long dummy;
@@ -1715,20 +1715,20 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     conf->SetPath( _T ( "/Groups" ) );
     unsigned int group_count;
     conf->Read( _T ( "GroupCount" ), (int *) &group_count, 0 );
-    
+
     if(group_count != g_pGroupArray->GetCount())
         return false;
-    
+
     // Walk the array of groups in the target template
     for( unsigned int i = 0; i < group_count; i++ ) {
         wxString s;
         s.Printf( _T("Group%d"), i + 1 );
         s.Prepend( _T ( "/Groups/" ) );
         conf->SetPath( s );
-        
+
         wxString t;
         conf->Read( _T ( "GroupName" ), &t );
-        
+
         // Look for this group name int the active array
         bool bfound = false;
         ChartGroup *pGroup;
@@ -1739,18 +1739,18 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
                 break;
             }
         }
-        
+
         if(!bfound)
             return false;
         //TODO
-        // Here we could further check the contents of the found group.    
+        // Here we could further check the contents of the found group.
     }
-        
-    
-#endif    
-    
-    
-    
+
+
+#endif
+
+
+
     conf->SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
@@ -1762,14 +1762,14 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 //    wxString l_wxsOwnshipRangeRingsColour;
 //    CHECK_STR( _T ( "RadarRingsColour" ), &l_wxsOwnshipRangeRingsColour );
 //    if(l_wxsOwnshipRangeRingsColour.Length()) g_colourOwnshipRangeRingsColour.Set( l_wxsOwnshipRangeRingsColour );
-    
+
     // Waypoint Radar rings
     CHECK_INT( _T ( "WaypointRangeRingsNumber" ), &g_iWaypointRangeRingsNumber )
 
     CHECK_FLT( _T ( "WaypointRangeRingsStep" ), &g_fWaypointRangeRingsStep, .1 )
 
     CHECK_INT( _T ( "WaypointRangeRingsStepUnits" ), &g_iWaypointRangeRingsStepUnits );
-    
+
 //    wxString l_wxsWaypointRangeRingsColour;
 //    CHECK_STR( _T( "WaypointRangeRingsColour" ), &l_wxsWaypointRangeRingsColour );
 //    g_colourWaypointRangeRingsColour.Set( l_wxsWaypointRangeRingsColour );
@@ -1792,7 +1792,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     CHECK_INT( _T ( "RouteLineWidth" ), &g_route_line_width );
     CHECK_INT( _T ( "TrackLineWidth" ), &g_track_line_width );
-    
+
 //     wxString l_wxsTrackLineColour;
 //     CHECK_STR( _T( "TrackLineColour" ), l_wxsTrackLineColour )
 //         g_colourTrackLineColour.Set( l_wxsTrackLineColour );
@@ -1800,7 +1800,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_STR( _T ( "DefaultWPIcon" ), g_default_wp_icon )
 
     // S57 template items
-    
+
     #define CHECK_BFN(s, t)         conf->Read( s , &read_int); \
                                     bval = t; \
                                     bval0 = read_int != 0; \
@@ -1811,17 +1811,17 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     #define CHECK_FFN(s, t)         conf->Read( s , &dval); \
                                     if( fabs(dval - t) > 0.1) return false;
-                                    
+
     if( ps52plib ){
-    
+
         int read_int;
         double dval;
         bool bval, bval0;
-        
+
         conf->SetPath( _T ( "/Settings/GlobalState" ) );
 
         CHECK_BFN( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
-       
+
         CHECK_BFN( _T ( "bShowS57ImportantTextOnly" ), ps52plib->GetShowS57ImportantTextOnly() );
         CHECK_BFN( _T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText );
         CHECK_BFN( _T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors );
@@ -1839,28 +1839,28 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
         CHECK_FFN( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ));
         CHECK_FFN( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ));
         CHECK_INT( _T ( "S52_DEPTH_UNIT_SHOW" ), &g_nDepthUnitDisplay );
-        
+
         //    S57 Object Class Visibility
-        
+
         OBJLElement *pOLE;
-        
+
         conf->SetPath( _T ( "/Settings/ObjectFilter" ) );
-        
+
         unsigned int iOBJMax = conf->GetNumberOfEntries();
-        
+
         if(iOBJMax != ps52plib->pOBJLArray->GetCount() )
             return false;
-           
+
         if( iOBJMax ) {
-            
+
             wxString str, sObj;
             long val;
             long dummy;
-            
+
             bool bCont = conf->GetFirstEntry( str, dummy );
             while( bCont ) {
                 conf->Read( str, &val );              // Get an Object Viz
-                
+
                 // scan for the same key in the global list
                 bool bfound = false;
                 if( str.StartsWith( _T ( "viz" ), &sObj ) ) {
@@ -1873,7 +1873,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
                             }
                         }
                     }
-                    
+
                     if(!bfound)
                         return false;
                 }
@@ -1881,13 +1881,13 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
             }
         }
     }
-    
+
     conf->SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = conf->GetNumberOfEntries();
     if( iPMax ) {
         wxString str, val;
         long dummy;
-        
+
         bool bCont = conf->GetFirstEntry( str, dummy );
         while( bCont ) {
             conf->Read( str, &val );              // Get an entry
@@ -1902,7 +1902,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
             }
             if(!bfound)
                 return false;
-                
+
             bCont = conf->GetNextEntry( str, dummy );
         }
     }

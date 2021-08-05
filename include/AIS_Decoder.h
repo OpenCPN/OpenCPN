@@ -47,11 +47,11 @@ public:
     MMSIProperties(){};
     MMSIProperties( int mmsi ){ Init(); MMSI = mmsi; }
     MMSIProperties( wxString &spec );
-    
+
     ~MMSIProperties();
-    
+
     wxString Serialize();
-    
+
     void Init( void );
     int         MMSI;
     int         TrackType;
@@ -88,12 +88,12 @@ public:
     bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
 
 private:
-    
+
     void OnActivate(wxActivateEvent& event);
     void OnTimerAIS(wxTimerEvent& event);
     void OnSoundFinishedAISAudio(wxCommandEvent& event);
     void OnTimerDSC( wxTimerEvent& event );
-    
+
     bool NMEACheckSumOK(const wxString& str);
     bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
     void UpdateAllCPA(void);
@@ -110,7 +110,7 @@ private:
 
     void handleUpdate(AIS_Target_Data *pTargetData, bool bnewtarget, wxJSONValue &update);
     void updateItem(AIS_Target_Data *pTargetData, bool bnewtarget, wxJSONValue &item, wxString &sfixtime) const;
-    
+
     wxString m_signalk_selfid;
     AIS_Target_Hash *AISTargetList;
     AIS_Target_Hash *AIS_AreaNotice_Sources;
@@ -138,7 +138,7 @@ private:
     wxTimer          m_dsc_timer;
     wxString         m_dsc_last_string;
     std::vector<int> m_MMSI_MismatchVec;
-    
+
     bool             m_bAIS_AlertPlaying;
 DECLARE_EVENT_TABLE()
 

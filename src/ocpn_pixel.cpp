@@ -350,7 +350,7 @@ PixelCache::PixelCache(int width, int height, int depth)
       pData = m_pDS->GetData();
       //        For DIBsections, each scan line is DWORD aligned, padded on the right
       line_pitch_bytes = (((m_width * 24) + 31) & ~31) >> 3;
-      
+
 #endif
 
 
@@ -411,9 +411,9 @@ size_t PixelCache::GetLength(void)
     return m_width * m_height * 3;
 #else
     return 0;
-#endif    
+#endif
 }
-    
+
 
 void PixelCache::Update(void)
 {

@@ -57,7 +57,7 @@ public:
       void OnPaint(wxPaintEvent& event);
       void SetColorScheme(ColorScheme cs);
       void MouseEvent( wxMouseEvent& event );
-      
+
       wxBrush *m_pbackBrush;
       wxBrush *m_proadBrush;
       wxPen   *m_proadPen;
@@ -84,7 +84,7 @@ public:
       void SetValueElement(const wxString &element);
       void SetColorScheme(ColorScheme cs);
       void MouseEvent( wxMouseEvent& event );
-      
+
 private:
       void CalculateMinSize(void);
 
@@ -125,7 +125,7 @@ public:
       void OnContextMenuSelection( wxCommandEvent& event );
       void RefreshConsoleData(void);
       void ToggleRouteTotalDisplay();
-      
+
       wxWindow          *m_pParent;
       wxStaticText      *pThisLegText;
       wxBoxSizer        *m_pitemBoxSizerLeg;

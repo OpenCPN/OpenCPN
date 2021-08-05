@@ -23,7 +23,7 @@
 
 #include "shaders.h"
 
-#ifdef USE_ANDROID_GLES2    
+#ifdef USE_ANDROID_GLES2
 #include "qdebug.h"
 
 #include <gl2.h>
@@ -82,7 +82,7 @@ static const GLchar* fade_texture_2D_vertex_shader_source =
     "   varCoord = aUV.st;\n"
     "   varCoord2 = aUV2.st;\n"
     "}\n";
-    
+
 static const GLchar* fade_texture_2D_fragment_shader_source =
     "precision highp float;\n"
     "uniform sampler2D uTex;\n"
@@ -95,11 +95,11 @@ static const GLchar* fade_texture_2D_fragment_shader_source =
     "   mediump vec4 texTwoColor = texture2D(uTex2, varCoord2);\n"
     "   gl_FragColor = ((texTwoColor * (1.0 - texAlpha)) + (texColor * texAlpha));\n"
     "}\n";
-    
+
 
 
     //  Circle shader
- 
+
 static const GLchar* circle_filled_vertex_shader_source =
     "precision highp float;\n"
     "attribute vec2 aPos;\n"
@@ -123,7 +123,7 @@ static const GLchar* circle_filled_fragment_shader_source =
     "else if (d < circle_radius) { gl_FragColor = border_color; }\n"
     "else { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }\n"
     "}\n";
-    
+
 
     //  2D texture shader for FBOs
     static const GLchar* FBO_texture_2D_vertex_shader_source =
@@ -135,7 +135,7 @@ static const GLchar* circle_filled_fragment_shader_source =
     "   gl_Position = MVMatrix * vec4(aPos, 0.0, 1.0);\n"
     "   varCoord = aUV;\n"
     "}\n";
-    
+
     static const GLchar* FBO_texture_2D_fragment_shader_source =
     "precision lowp float;\n"
     "uniform sampler2D uTex;\n"
@@ -143,7 +143,7 @@ static const GLchar* circle_filled_fragment_shader_source =
     "void main() {\n"
     "   gl_FragColor = texture2D(uTex, varCoord);\n"
     "}\n";
-    
+
     // Alpah 2D texture shader
     static const GLchar* texture_2DA_vertex_shader_source =
     "attribute vec2 aPos;\n"
@@ -155,7 +155,7 @@ static const GLchar* circle_filled_fragment_shader_source =
     "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
     "   varCoord = aUV;\n"
     "}\n";
-    
+
     static const GLchar* texture_2DA_fragment_shader_source =
     "precision lowp float;\n"
     "uniform sampler2D uTex;\n"
@@ -164,8 +164,8 @@ static const GLchar* circle_filled_fragment_shader_source =
     "void main() {\n"
     "   gl_FragColor = texture2D(uTex, varCoord) + color;\n"
     "}\n";
-    
-    
+
+
     GLint color_tri_fragment_shader;
     GLint color_tri_shader_program;
     GLint color_tri_vertex_shader;
@@ -214,28 +214,28 @@ static const GLchar* circle_filled_fragment_shader_source =
     GLint texture_2DA_fragment_shader_p[2];
     GLint texture_2DA_shader_program_p[2];
     GLint texture_2DA_vertex_shader_p[2];
-    
+
     bool bShadersLoaded[2];
-    
+
 
 bool loadShaders(int index)
 {
-   
+
     if(bShadersLoaded[index]){
         reConfigureShaders(index);
         return true;
     }
-    
+
     bool ret_val = true;
     GLint success;
 
     enum Consts {INFOLOG_LEN = 512};
     GLchar infoLog[INFOLOG_LEN];
-    
+
     // Are the shaders ready?
-    
+
     // Simple colored triangle shader
-        
+
     if(!color_tri_vertex_shader_p[index]){
        /* Vertex shader */
       color_tri_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -248,7 +248,7 @@ bool loadShaders(int index)
         ret_val = false;
       }
     }
-    
+
     if(!color_tri_fragment_shader_p[index]){
         /* Fragment shader */
       color_tri_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
@@ -278,7 +278,7 @@ bool loadShaders(int index)
 
 
         // Simple 2D texture shader
-        
+
     if(!texture_2D_vertex_shader_p[index]){
        /* Vertex shader */
       texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -291,7 +291,7 @@ bool loadShaders(int index)
         ret_val = false;
       }
     }
-    
+
     if(!texture_2D_fragment_shader_p[index]){
         /* Fragment shader */
       texture_2D_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
@@ -332,7 +332,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!fade_texture_2D_fragment_shader_p[index]){
         /* Fragment shader */
         fade_texture_2D_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
@@ -345,7 +345,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!fade_texture_2D_shader_program_p[index]){
         /* Link shaders */
         fade_texture_2D_shader_program_p[index] = glCreateProgram();
@@ -359,7 +359,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
 
     // Circle shader
     if(!circle_filled_vertex_shader_p[index]){
@@ -375,7 +375,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!circle_filled_fragment_shader_p[index]){
         /* Fragment shader */
         circle_filled_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
@@ -389,7 +389,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!circle_filled_shader_program_p[index]){
         /* Link shaders */
         circle_filled_shader_program_p[index] = glCreateProgram();
@@ -404,10 +404,10 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
 
     // FBO 2D texture shader
-    
+
     if(!FBO_texture_2D_vertex_shader_p[index]){
         /* Vertex shader */
         FBO_texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -420,7 +420,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!FBO_texture_2D_fragment_shader_p[index]){
         /* Fragment shader */
         FBO_texture_2D_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
@@ -433,7 +433,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!FBO_texture_2D_shader_program_p[index]){
         /* Link shaders */
         FBO_texture_2D_shader_program_p[index] = glCreateProgram();
@@ -449,7 +449,7 @@ bool loadShaders(int index)
     }
 
     // 2D Alpha color texture shader
-    
+
     if(!texture_2DA_vertex_shader_p[index]){
         /* Vertex shader */
         texture_2DA_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -463,7 +463,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!texture_2DA_fragment_shader_p[index]){
         /* Fragment shader */
         texture_2DA_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
@@ -477,7 +477,7 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     if(!texture_2DA_shader_program_p[index]){
         /* Link shaders */
         texture_2DA_shader_program_p[index] = glCreateProgram();
@@ -492,12 +492,12 @@ bool loadShaders(int index)
             ret_val = false;
         }
     }
-    
+
     qDebug() << "Shader Load " << ret_val;
-    
+
     bShadersLoaded[index] = true;
     reConfigureShaders(index);
-    
+
     return ret_val;
 }
 
@@ -519,7 +519,7 @@ void reConfigureShaders(int index)
     circle_filled_vertex_shader = circle_filled_vertex_shader_p[index];
     circle_filled_fragment_shader = circle_filled_fragment_shader_p[index];
 
-    FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[index]; 
+    FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[index];
     FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[index];
     FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[index];
 
@@ -546,14 +546,14 @@ void unloadShaders()
     circle_filled_vertex_shader = circle_filled_vertex_shader_p[0] = circle_filled_vertex_shader_p[1] = 0;
     circle_filled_fragment_shader = circle_filled_fragment_shader_p[0] = circle_filled_fragment_shader_p[1] = 0;
 
-    FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[0] = FBO_texture_2D_fragment_shader_p[1] = 0; 
+    FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[0] = FBO_texture_2D_fragment_shader_p[1] = 0;
     FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[0] = FBO_texture_2D_shader_program_p[1] = 0;
     FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[0] = FBO_texture_2D_vertex_shader_p[1] = 0;
 
     texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[0] = texture_2DA_fragment_shader_p[1] = 0;
     texture_2DA_shader_program = texture_2DA_shader_program_p[0] = texture_2DA_shader_program_p[1] = 0;
     texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[0] = texture_2DA_vertex_shader_p[1] = 0;
-    
+
     bShadersLoaded[0] = bShadersLoaded[1] = false;
 
 }

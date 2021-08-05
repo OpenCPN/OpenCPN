@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        RGBColor.h
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/04/29
 // RCS-ID:      $Id: RGBColor.h,v 1.1.1.1 2005/05/10 17:51:13 ntalex Exp $

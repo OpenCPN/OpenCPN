@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/* 
+/*
  * Dialogs about missing udev rules and how to install them.
  */
 

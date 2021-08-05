@@ -106,19 +106,19 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     SetFont( *qFont );
 
     SetWindowStyleFlag( style );
-    
+
     m_scrolledWindowLinks = NULL;
     m_tDescription = NULL;
-    
+
     m_bcompact = false;
-    
+
 #ifdef __OCPN__ANDROID__
     m_bcompact = true;
     CreateControlsCompact();
 #else
     CreateControls();
 #endif
-    
+
 
     RecalculateSize();
 
@@ -171,7 +171,7 @@ TrackPropDlg::~TrackPropDlg()
             wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
     Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
             wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-    
+
     if(!m_bcompact){
         m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
@@ -209,11 +209,11 @@ void TrackPropDlg::RecalculateSize( void )
         sy = wxMax(sy, 250);
         sy = wxMin(sy, 500);
         m_lcPoints->SetSize(wxSize(GetClientSize().x-40, sy) );
-        
+
         if(m_lcPoints->GetItemCount())
             Layout();
     }
-    
+
 
     Centre();
 
@@ -296,8 +296,8 @@ void TrackPropDlg::CreateControlsCompact()
 
     m_cbShow = new wxCheckBox( itemDialog1, wxID_ANY, _("Show on chart"), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer2->Add( m_cbShow, 0, wxALL, 5 );
-    
-    
+
+
 
     wxFlexGridSizer* itemFlexGridSizer6a = new wxFlexGridSizer( 4, 2, 0, 0 );
     itemFlexGridSizer6a->AddGrowableCol(1, 0);
@@ -885,9 +885,9 @@ void TrackPropDlg::SetTrackAndUpdate( Track *pt )
 
     InitializeList();
     UpdateProperties();
-    
+
     RecalculateSize();
-    
+
 }
 
 void TrackPropDlg::InitializeList()
@@ -1097,7 +1097,7 @@ bool TrackPropDlg::IsThisTrackExtendable()
     if( !pLastPoint->GetCreateTime().IsValid() ) {
         return false;
     }
-    
+
     wxTrackListNode *track_node = pTrackList->GetFirst();
     while( track_node ) {
         Track *ptrack = track_node->GetData();
@@ -1271,15 +1271,15 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
                 m_sdbBtmBtnsSizerSplit->Enable( true );
             }
             gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
-#ifdef __WXMSW__            
+#ifdef __WXMSW__
             if(m_lcPoints)
                 m_lcPoints->SetFocus();
-#endif            
+#endif
         }
     }
     if( selected_no == 0 || selected_no == m_pTrack->GetnPoints() - 1)
         m_sdbBtmBtnsSizerSplit->Enable( false );
-    
+
 }
 
 void TrackPropDlg::OnTrackPropMenuSelected( wxCommandEvent& event )
@@ -1335,7 +1335,7 @@ void TrackPropDlg::PopupMenuHandler( wxCommandEvent& event )
 
     }
 }
- 
+
 void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
 {
     wxHyperlinkListNode* nodeToDelete = NULL;
@@ -1393,7 +1393,7 @@ void TrackPropDlg::OnEditLink( wxCommandEvent& event )
 {
     wxString findurl = m_pEditedLink->GetURL();
     wxString findlabel = m_pEditedLink->GetLabel();
-    
+
     LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
     LinkPropDlg->m_textCtrlLinkDescription->SetValue( findlabel );
     LinkPropDlg->m_textCtrlLinkUrl->SetValue( findurl );
@@ -1463,7 +1463,7 @@ void TrackPropDlg::OnAddLink( wxCommandEvent& event )
         }
     });
 //    sbSizerLinks->Layout();
-    
+
     m_scrolledWindowLinks->InvalidateBestSize();
     m_scrolledWindowLinks->Layout();
     sbSizerLinks->Layout();
@@ -1615,21 +1615,21 @@ void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
     wxTrackListNode *node = pTrackList->GetFirst();
     while( node ) {
         Track *ptrack = node->GetData();
-        
+
         if( ptrack == m_pTrack ) {
             b_found_track = true;
             break;
         }
         node = node->GetNext();
     }
-    
+
     if( b_found_track )
         m_pTrack->ClearHighlights();
-        
+
     Hide();
     gFrame->InvalidateAllGL();
     gFrame->RefreshAllCanvas( false );
-    
+
     event.Skip();
 }
 
@@ -1657,7 +1657,7 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
 
     if(item < 0 || item >= m_pTrack->GetnPoints())
         return wxEmptyString;
-    
+
     TrackPoint              *this_point = m_pTrack->GetPoint(item);
     TrackPoint              *prev_point = item > 0 ? m_pTrack->GetPoint(item-1) : NULL;
 

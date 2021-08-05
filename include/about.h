@@ -68,7 +68,7 @@ class about: public wxDialog
                  long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX );
 
    void RecalculateSize( void );
-   
+
   private:
     void CreateControls( void );
     void Populate( void );
@@ -95,7 +95,7 @@ class about: public wxDialog
     wxHtmlWindow *pAboutHTMLCtl;
     wxHtmlWindow *pLicenseHTMLCtl;
     wxHtmlWindow *pAuthorHTMLCtl;
-    
+
     wxSize m_displaySize;
 
 };

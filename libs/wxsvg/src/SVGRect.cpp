@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGRect.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/09/27
 // RCS-ID:      $Id: SVGRect.cpp,v 1.5 2006/02/26 14:50:01 ntalex Exp $
@@ -23,9 +23,9 @@ void wxSVGRect::SetValueAsString(const wxString& value)
   double val;
   wxStringTokenizer tkz(value, wxT(", \\t"));
   int pi = 0;
-  while (tkz.HasMoreTokens() && pi<4) 
-  { 
-    wxString token = tkz.GetNextToken(); 
+  while (tkz.HasMoreTokens() && pi<4)
+  {
+    wxString token = tkz.GetNextToken();
     token.ToDouble(&val);
     switch (pi)
     {
@@ -44,7 +44,7 @@ wxSVGRect wxSVGRect::MatrixTransform(const wxSVGMatrix& matrix) const
   point1 = point1.MatrixTransform(matrix);
   wxSVGPoint point2(GetX() + GetWidth(), GetY() + GetHeight());
   point2 = point2.MatrixTransform(matrix);
-  
+
   wxSVGRect rect;
   rect.SetX(point1.GetX() < point2.GetX() ? point1.GetX() : point2.GetX());
   rect.SetY(point1.GetY() < point2.GetY() ? point1.GetY() : point2.GetY());

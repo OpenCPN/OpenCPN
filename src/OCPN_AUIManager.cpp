@@ -1,5 +1,5 @@
 /***************************************************************************
- * 
+ *
  * Project:  OpenCPN
  * Purpose:  OCPN_AUIManager
  * Author:   David Register
@@ -49,7 +49,7 @@ static wxBitmap wxOPaneCreateStippleBitmap()
 
 static void ODrawResizeHint(wxDC& dc, const wxRect& rect)
 {
-#if 1    
+#if 1
     wxBitmap stipple = wxOPaneCreateStippleBitmap();
     wxBrush brush(stipple);
     dc.SetBrush(brush);
@@ -58,7 +58,7 @@ static void ODrawResizeHint(wxDC& dc, const wxRect& rect)
     PatBlt(GetHdcOf(*impl), rect.GetX(), rect.GetY(), rect.GetWidth(), rect.GetHeight(), PATINVERT);
 #else
     dc.SetPen(*wxTRANSPARENT_PEN);
-    
+
     dc.SetLogicalFunction(wxXOR);
     dc.DrawRectangle(rect);
 #endif
@@ -117,13 +117,13 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
     // sure that only real mouse moves will get anywhere in this method;
     // this appears to be a bug somewhere, and I don't know where the
     // mouse move event is being generated.  only verified on MSW
-    
+
     wxPoint mouse_pos = event.GetPosition();
     if (m_lastMouseMove == mouse_pos)
         return;
     m_lastMouseMove = mouse_pos;
-    
-    
+
+
     if (m_action == actionResize)
     {
         // It's necessary to reset m_actionPart since it destroyed
@@ -132,7 +132,7 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
             m_actionPart = & (m_uiParts.Item(m_currentDragItem));
         else
             m_currentDragItem = m_uiParts.Index(* m_actionPart);
-        
+
         if (m_actionPart)
         {
             wxPoint pos = m_actionPart->rect.GetPosition();
@@ -140,10 +140,10 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
                 pos.y = wxMax(0, event.m_y - m_actionOffset.y);
             else
                 pos.x = wxMax(0, event.m_x - m_actionOffset.x);
-            
+
             wxSize client_size = m_frame->GetClientSize();
             int used_width = 0, used_height = 0;
-            
+
             size_t dock_i, dock_count = m_docks.GetCount();
             for (dock_i = 0; dock_i < dock_count; ++dock_i)
             {
@@ -164,18 +164,18 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
 
             if (OAuiManager_HasLiveResize(*this))
             {
- 
+
 
                 m_frame->ReleaseMouse();
                 if( (used_width < client_size.x * 9 / 10) &&  (used_width > client_size.x * 1 / 10) )
                     DoEndResizeAction(event);
-                
+
                 m_frame->CaptureMouse();
             }
             else
             {
                 bool bhasMouse  = m_frame->HasCapture();
-                
+
                 if(bhasMouse)
                     m_frame->ReleaseMouse();
 
@@ -184,39 +184,39 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
                 MyFrame *pmf = wxDynamicCast(m_frame, MyFrame);
                 if(pmf)
                     pmf->NotifyChildrenResize();
-                
+
                 wxRect rect(m_frame->ClientToScreen(pos), m_actionPart->rect.GetSize());
                 wxScreenDC dc;
-                
+
                 if (!m_0actionHintRect.IsEmpty())
                 {
                     // remove old resize hint
                     ODrawResizeHint(dc, m_0actionHintRect);
                     m_0actionHintRect = wxRect();
                 }
- 
+
                 wxRect frameScreenRect = m_frame->GetScreenRect();
-                
+
                 rect.x = wxMax(rect.x, frameScreenRect.x + frameScreenRect.width * 1 / 10);
                 rect.x = wxMin(rect.x, frameScreenRect.x + frameScreenRect.width * 9 / 10);
-                
+
                 // draw new resize hint, if it's inside the managed frame
                 if (1/*frameScreenRect.Contains(rect)*/)
                 {
                     ODrawResizeHint(dc, rect);
                     m_0actionHintRect = rect;
                 }
-                
+
                 if(bhasMouse)
                     m_frame->CaptureMouse();
-                
+
             }
         }
     }
     else{
         OnMotion(event);
     }
-    
+
 }
 
 bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event)
@@ -295,10 +295,10 @@ bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event)
             if (new_size-old_size > available_width)
                 new_size = old_size+available_width;
             m_actionPart->dock->size = new_size;
-            
+
             m_actionPart->dock->size = wxMax(m_actionPart->dock->size, client_size.x * 1 / 10);
             m_actionPart->dock->size = wxMin(m_actionPart->dock->size, client_size.x * 9 / 10);
-            
+
             break;
         case wxAUI_DOCK_BOTTOM:
             new_size = rect.y + rect.height -
@@ -492,7 +492,7 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
     if (m_action == actionResize)
     {
         m_frame->ReleaseMouse();
-        
+
         if (!OAuiManager_HasLiveResize(*this))
         {
             // get rid of the hint rectangle
@@ -501,21 +501,21 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
         }
         if (m_currentDragItem != -1 && OAuiManager_HasLiveResize(*this))
             m_actionPart = & (m_uiParts.Item(m_currentDragItem));
-        
+
         DoEndResizeAction(event);
-        
+
         m_currentDragItem = -1;
-        
+
     }
     else if (m_action == actionClickButton)
     {
         m_hoverButton = NULL;
         m_frame->ReleaseMouse();
-        
+
         if (m_actionPart)
         {
             UpdateButtonOnScreen(m_actionPart, event);
-            
+
             // make sure we're still over the item that was originally clicked
             if (m_actionPart == HitTest(event.GetX(), event.GetY()))
             {
@@ -541,14 +541,14 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
     {
         m_frame->ReleaseMouse();
     }
-#if 0    
+#if 0
     else if (m_action == actionDragToolbarPane)
     {
         m_frame->ReleaseMouse();
-        
+
         wxAuiPaneInfo& pane = GetPane(m_actionWindow);
         wxASSERT_MSG(pane.IsOk(), wxT("Pane window not found"));
-        
+
         // save the new positions
         wxAuiDockInfoPtrArray docks;
         FindDocks(m_docks, pane.dock_direction,
@@ -556,24 +556,24 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
         if (docks.GetCount() == 1)
         {
             wxAuiDockInfo& dock = *docks.Item(0);
-            
+
             wxArrayInt pane_positions, pane_sizes;
             GetPanePositionsAndSizes(dock, pane_positions, pane_sizes);
-            
+
             int i, dock_pane_count = dock.panes.GetCount();
             for (i = 0; i < dock_pane_count; ++i)
                 dock.panes.Item(i)->dock_pos = pane_positions[i];
         }
-        
+
         pane.state &= ~wxAuiPaneInfo::actionPane;
         Update();
     }
-#endif    
+#endif
     else
     {
         event.Skip();
     }
-    
+
     m_action = actionNone;
     m_lastMouseMove = wxPoint(); // see comment in OnMotion()
 }
@@ -593,30 +593,30 @@ static void OCPNFindDocks(wxAuiDockInfoArray& docks,
     int end_row = dock_row;
     int dock_count = docks.GetCount();
     int layer, row, i, max_row = 0, max_layer = 0;
-    
+
     // discover the maximum dock layer and the max row
     for (i = 0; i < dock_count; ++i)
     {
         max_row = wxMax(max_row, docks.Item(i).dock_row);
         max_layer = wxMax(max_layer, docks.Item(i).dock_layer);
     }
-    
+
     // if no dock layer was specified, search all dock layers
     if (dock_layer == -1)
     {
         begin_layer = 0;
         end_layer = max_layer;
     }
-    
+
     // if no dock row was specified, search all dock row
     if (dock_row == -1)
     {
         begin_row = 0;
         end_row = max_row;
     }
-    
+
     arr.Clear();
-    
+
     for (layer = begin_layer; layer <= end_layer; ++layer)
         for (row = begin_row; row <= end_row; ++row)
             for (i = 0; i < dock_count; ++i)
@@ -651,13 +651,13 @@ void OCPN_AUIManager::SetDockSize( wxAuiDockInfo *dock, int size)
 bool OCPN_AUIManager::ProcessDockResult(wxAuiPaneInfo& target, const wxAuiPaneInfo& new_pos)
 {
     //printf("DockResult direction: %d   layer: %d   position: %d %d\n" , new_pos.dock_direction, new_pos.dock_layer, new_pos.dock_pos, GetCanvasIndexUnderMouse());
- 
-    // If we are docking a Dashboard window, we restrict the spots that can accept the docking action    
+
+    // If we are docking a Dashboard window, we restrict the spots that can accept the docking action
     if(new_pos.window->GetName().IsSameAs(_T("panel"))){
         // Dashboards can not go on the left( interferes with global toolbar )
         if( /*(new_pos.dock_layer != 1)  ||*/ (new_pos.dock_direction == wxAUI_DOCK_LEFT) )
             return false;
-  
+
         // Also, in multi-canvas mode, the dashboard  is restricted to layer 1 in right hand canvas.
         // This forces it to dock at the far right only.
         if(GetCanvasCount() > 1){
@@ -666,9 +666,9 @@ bool OCPN_AUIManager::ProcessDockResult(wxAuiPaneInfo& target, const wxAuiPaneIn
                     return false;
             }
         }
-                
+
     }
-    
+
     return wxAuiManager::ProcessDockResult(target, new_pos);
-}    
+}
 

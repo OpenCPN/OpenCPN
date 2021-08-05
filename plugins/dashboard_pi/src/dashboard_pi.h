@@ -99,8 +99,8 @@ class DashboardWindowContainer
 
             ~DashboardWindowContainer(){}
             DashboardWindow              *m_pDashboardWindow;
-            bool                          m_bIsVisible; 
-            bool                          m_bIsDeleted; 
+            bool                          m_bIsVisible;
+            bool                          m_bIsDeleted;
             bool                          m_bPersVisible;  // Persists visibility, even when Dashboard tool is toggled off.
             wxString                      m_sName;
             wxString                      m_sCaption;
@@ -175,7 +175,7 @@ public:
 private:
       bool LoadConfig(void);
       void LoadFont(wxFont **target, wxString native_info);
-      
+
       void ApplyConfig(void);
       void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
@@ -197,7 +197,7 @@ private:
       int               m_hide_id;
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
-      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT; 
+      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT;
       short                mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
       short                mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
       //Prio: Pos from O, SK gnss.satellites, GGA sats in use, SK gnss satellitesinView, GSV sats in view
@@ -327,14 +327,14 @@ public:
     void OnSize( wxSizeEvent& evt );
     void OnContextMenu( wxContextMenuEvent& evt );
     void OnContextMenuSelect( wxCommandEvent& evt );
-    
+
     void OnMouseEvent( wxMouseEvent& event );
 
 #ifdef __OCPN__ANDROID__
     void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
     void OnEvtPanGesture( wxQT_PanGestureEvent &event);
-#endif    
-    
+#endif
+
     bool isInstrumentListEqual( const wxArrayInt& list );
     void SetInstrumentList( wxArrayInt list );
     void SendSentenceToAllInstruments( DASH_CAP st, double value, wxString unit );
@@ -347,12 +347,12 @@ public:
 
     bool m_binPinch;
     bool m_binPan;
-    
+
     wxPoint m_resizeStartPoint;
     wxSize m_resizeStartSize;
     bool m_binResize;
     bool m_binResize2;
-    
+
 private:
       wxAuiManager         *m_pauimgr;
       dashboard_pi*         m_plugin;
@@ -360,7 +360,7 @@ private:
 //wx2.9      wxWrapSizer*          itemBoxSizer;
       wxBoxSizer*          itemBoxSizer;
       wxArrayOfInstrument  m_ArrayOfInstrument;
-      
+
       wxButton*            m_tButton;
 };
 
@@ -388,30 +388,30 @@ public:
     {
         Create(parent, id, initial, pos, size, style, validator, name);
     }
-    
+
     virtual wxColour GetSelectedColour() const
     { return m_data.GetColour(); }
-    
+
     virtual void SetSelectedColour(const wxColour &colour)
     { m_data.SetColour(colour); UpdateFont(); }
-    
+
     virtual ~OCPNFontButton() {}
-    
-    
+
+
     public:     // API extensions specific for OCPNFontButton
 
     // user can override this to init font data in a different way
     virtual void InitFontData();
-    
+
     // returns the font data shown in wxFontDialog
     wxFontData *GetFontData() { return &m_data; }
-    
+
     // get the font chosen
     wxFont GetSelectedFont() const { return m_selectedFont; }
-    
-    
+
+
 public:
-    
+
     bool Create(wxWindow *parent,
                 wxWindowID id,
                 const wxFont &initial = *wxNORMAL_FONT,
@@ -420,19 +420,19 @@ public:
                 long style = wxFONTBTN_DEFAULT_STYLE,
                 const wxValidator& validator = wxDefaultValidator,
                 const wxString& name = wxFontPickerWidgetNameStr);
-    
+
     void OnButtonClick(wxCommandEvent &);
 
-    
-    
+
+
 protected:
-    
+
     void UpdateFont();
-    
+
     wxFontData m_data;
-    
+
     wxFont m_selectedFont;
-    
+
 private:
     DECLARE_DYNAMIC_CLASS(OCPNFontButton)
 };

@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     copyright ?
 */
 
-#define __STDC_LIMIT_MACROS 
+#define __STDC_LIMIT_MACROS
 
 #include "wx/wxprec.h"
 
@@ -147,14 +147,14 @@ class  GRIB2Grid {
 public:
   GRIB2Grid() : gridpoints(0) { };
   ~GRIB2Grid() { delete [] gridpoints; };
-  
+
   double *gridpoints;
 };
 
 class  GRIBMessage {
 public:
   GRIBMessage() : buffer(0) {};
-  ~GRIBMessage() { 
+  ~GRIBMessage() {
       delete [] buffer;
   };
   unsigned char *buffer;
@@ -177,7 +177,7 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 *   PRGMMR: Gilbert          ORG: W/NP11     DATE: 2002-12-02
 *
 * ABSTRACT: This Function decodes a JPEG2000 code stream specified in the
-*   JPEG2000 Part-1 standard (i.e., ISO/IEC 15444-1) using JasPer 
+*   JPEG2000 Part-1 standard (i.e., ISO/IEC 15444-1) using JasPer
 *   Software version 1.500.4 (or 1.700.2) written by the University of British
 *   Columbia and Image Power Inc, and others.
 *   JasPer is available at http://www.ece.uvic.ca/~mdadams/jasper/.
@@ -223,24 +223,24 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 //    jas_init();
 
     ier=0;
-//   
+//
 //     Create jas_stream_t containing input JPEG200 codestream in memory.
-//       
+//
 
     jpcstream=jas_stream_memopen(injpc,bufsize);
     if (jpcstream == nullptr) {
         printf(" dec_jpeg2000: no memory\n");
         return -2;
     }
-//   
+//
 //     Decode JPEG200 codestream into jas_image_t structure.
-//       
+//
     image=jpc_decode(jpcstream,opts);
     if ( image == 0 ) {
        printf(" jpc_decode return = %d \n",ier);
        return -3;
     }
-    
+
     pcmpt=image->cmpts_[0];
 
 //   Expecting jpeg2000 image to be grayscale only.
@@ -251,7 +251,7 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
        return (-5);
     }
 
-// 
+//
 //    Create a data matrix of grayscale image values decoded from
 //    the jpeg2000 codestream.
 //
@@ -262,8 +262,8 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 //    Copy data matrix to output integer array.
 //
     k=0;
-    for (i=0;i<pcmpt->height_;i++) 
-      for (j=0;j<pcmpt->width_;j++) 
+    for (i=0;i<pcmpt->height_;i++)
+      for (j=0;j<pcmpt->width_;j++)
         outfld[k++]=data->rows_[i][j];
 //
 //     Clean up JasPer work structures.
@@ -316,7 +316,7 @@ static float ieee2flt(unsigned const char *ieee) {
 
     exp = ((ieee[0] & 127) << 1) + (ieee[1] >> 7);
     fmant = (double) ((int) ieee[3] + (int) (ieee[2] << 8) + (int) ((ieee[1] | 128) << 16));
-    if (ieee[0] & 128) 
+    if (ieee[0] & 128)
         fmant = -fmant;
 
     return (float) (ldexp(fmant, (int) (exp - 128 - 22)));
@@ -444,7 +444,7 @@ static bool unpackGDS(GRIBMessage *grib_msg)
 	grib_msg->md.slon = int4(b + 42)/1000000.; /* longitude of first gridpoint */
 
 	grib_msg->md.rescomp = b[46]; /* resolution and component flags */
-	grib_msg->md.latD    = int4(b +47)/1000000.; /* latitude at which the Mercator projection intersects the Earth 
+	grib_msg->md.latD    = int4(b +47)/1000000.; /* latitude at which the Mercator projection intersects the Earth
                                                         (Latitude where Di and Dj are specified)   */
 
 	grib_msg->md.lats.elat = int4(b +51)/1000000.; /* latitude of last gridpoint */
@@ -520,7 +520,7 @@ static void unpack_stat_proc(GRIBMessage *grib_msg, unsigned const char *b)
   }
 }
 
-// Section 4: Product Definition Section 
+// Section 4: Product Definition Section
 static bool unpackPDS(GRIBMessage *grib_msg)
 {
   int num_coords,factor;
@@ -602,7 +602,7 @@ static bool unpackPDS(GRIBMessage *grib_msg)
   return true;
 }
 
-//  Section 5: Data Representation Section 
+//  Section 5: Data Representation Section
 static bool unpackDRS(GRIBMessage *grib_msg)
 {
   size_t ofs = grib_msg->offset/8;
@@ -612,10 +612,10 @@ static bool unpackDRS(GRIBMessage *grib_msg)
   grib_msg->md.drs_templ_num = uint2(b +9); /* data representation template number */
 
   switch (grib_msg->md.drs_templ_num) { // Table 5.0
-    case 4:        // Grid Point Data - Simple Packing 
+    case 4:        // Grid Point Data - Simple Packing
         grib_msg->md.precision = b[11];
         break;
-    case 0:        // Grid Point Data - Simple Packing 
+    case 0:        // Grid Point Data - Simple Packing
     case 2:        // Grid Point Data - Complex Packing
     case 3:        // Grid Point Data - Complex Packing and Spatial Differencing
 #ifdef JASPER
@@ -672,7 +672,7 @@ static bool unpackDRS(GRIBMessage *grib_msg)
   return true;
 }
 
-//  Section 6: Bit-Map Section 
+//  Section 6: Bit-Map Section
 static bool unpackBMS(GRIBMessage *grib_msg)
 {
   int ind,len,n,bit;
@@ -787,7 +787,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	  getBits(grib_msg->buffer,&groups.ref_vals[n],off,grib_msg->md.pack_width);
 	  off+=grib_msg->md.pack_width;
 	}
-	off = (off + 7) & ~7; // byte boundary padding 
+	off = (off + 7) & ~7; // byte boundary padding
 
 	for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
 	  getBits(grib_msg->buffer,&groups.widths[n],off,grib_msg->md.complex_pack.width.pack_width);
@@ -1008,13 +1008,13 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 195: ret = GRB_SNOW_CATEG; break; //DATA_TO_GRBV2[DATA_SNOW_CATEG] = grb2DataType(0,1,195);
             }
             break;
-        case 2: // dataCat  Momentum 
+        case 2: // dataCat  Momentum
             switch (dataNum) {
             case 0: ret = GRB_WIND_DIR; break;
             case 1: ret = GRB_WIND_SPEED; break;
             case 2: ret = GRB_WIND_VX; break; // DATA_TO_GRBV2[DATA_WIND_VX] = grb2DataType(0,2,2);
             case 3: ret = GRB_WIND_VY; break; // DATA_TO_GRBV2[DATA_WIND_VY] = grb2DataType(0,2,3);
-            case 22: ret = GRB_WIND_GUST; break; // 
+            case 22: ret = GRB_WIND_GUST; break; //
             }
             break;
         case 3: // dataCat mass
@@ -1044,10 +1044,10 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             break;
         }
         break;
-    case 10: // productDiscipline Oceanographic products 
+    case 10: // productDiscipline Oceanographic products
         switch (dataCat) {
         case 0:         // waves
-#if 0        
+#if 0
             switch (dataNum) {
             case 3: ret= GRB_WVHGT; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
             DATA_TO_GRBV2[DATA_WAVES_WND_DIR] = grb2DataType(10,0,4);
@@ -1073,7 +1073,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             }
             break;
 
-        case 1: // Currents 
+        case 1: // Currents
             switch (dataNum) {
                 case 0: ret = GRB_CUR_DIR; break;
                 case 1: ret = GRB_CUR_SPEED; break;
@@ -1086,7 +1086,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
                 case 0: ret = GRB_WTMP; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
             }
             break;
-            
+
         }
         break;
     }
@@ -1094,8 +1094,8 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     if (ret == 255) {
         erreur("unknown Discipline %d dataCat %d dataNum %d", productDiscipline,  dataCat, dataNum);
     }
-#endif    
-    return ret;    
+#endif
+    return ret;
 }
 
 /** Return UINT_MAX on errors. */
@@ -1130,7 +1130,7 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
          return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length /60;
   }
 
-  fprintf(stderr, "Unable to map end time %d %d %d %d \n", grid->md.time_unit, grid->md.stat_proc.t[0].time_unit, grid->md.fcst_time, 
+  fprintf(stderr, "Unable to map end time %d %d %d %d \n", grid->md.time_unit, grid->md.stat_proc.t[0].time_unit, grid->md.fcst_time,
             grid->md.stat_proc.t[0].time_length);
   return UINT_MAX;
 }
@@ -1243,7 +1243,7 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		break;
 
 	    case 2: // maximum
-	    case 3: // minimum 
+	    case 3: // minimum
 		*t_range=2;
 		*p1=grid->md.fcst_time;
 		*p2=mapStatisticalEndTime(grid);
@@ -1379,7 +1379,7 @@ void  GribV2Record::translateDataType()
     else if (idCenter==84 && idModel <= 5 && idGrid==0)
     {
     }
-	
+
 	//------------------------
 	// Unknown center
 	//------------------------
@@ -1395,7 +1395,7 @@ void  GribV2Record::translateDataType()
     if (this->knownData) {
         switch (levelType) {
             case 100: // LV_ISOBARIC
-                /* GRIB1 is in hectoPascal 
+                /* GRIB1 is in hectoPascal
                    GRIB2 in Pascal, convert to GRIB1
                 */
                 levelValue = levelValue /100;
@@ -1465,7 +1465,7 @@ void GribV2Record::readDataSet(ZUFILE* file)
                  isAdjacentI     = (scanFlags&0x20) ==0;
                  if (Lo1>=0 && Lo1<=180 && Lo2<0)
                      Lo2 += 360.0;    // cross the 180 deg meridien,beetwen alaska and russia
-	                     
+
 	         if (isScanIpositive) while ( Lo1> Lo2 ) {   // horizontal size > 360 °
 	             Lo1 -= 360.0;
                  }
@@ -1495,7 +1495,7 @@ void GribV2Record::readDataSet(ZUFILE* file)
                   }
 	     }
 	     break;
-	case 4: //  Section 4: Product Definition Section 
+	case 4: //  Section 4: Product Definition Section
 	     if (skip == true)  break;
 	     ok = unpackPDS(grib_msg);
 	     if (ok) {
@@ -1509,16 +1509,16 @@ void GribV2Record::readDataSet(ZUFILE* file)
                      skip = true;
                      break;
                  }
-                                            
+
 	         levelType = grib_msg->md.lvl1_type;
 	         levelValue = grib_msg->md.lvl1;
 	         if (grib_msg->md.lvl2_type == 8 && grib_msg->md.lvl1_type == 1) {
-	             // cf table 4.5:  8 Nominal top of the atmosphere 
+	             // cf table 4.5:  8 Nominal top of the atmosphere
 	             levelType = LV_ATMOS_ALL;
 	             levelValue = 0.;
 	         }
 	         int n_avg, n_missing;
-	          
+
 	         if (!mapTimeRange(grib_msg, &periodP1 , &periodP2, &timeRange , &n_avg, &n_missing, idCenter)) {
 	             skip = true;
 	             break;
@@ -1527,14 +1527,14 @@ void GribV2Record::readDataSet(ZUFILE* file)
 	         setRecordCurrentDate(makeDate(refyear,refmonth,refday,refhour,refminute,periodsec));
 	         //printf("%d %d %d %d %d %d \n", refyear,refmonth,refday,refhour,refminute,periodsec);
 	         //printf("%d Periode %d P1=%d p2=%d %s\n", grib_msg->md.time_unit, periodsec, periodP1,periodP2, strCurDate);
-	         
+
 	     }
 	     break;
-	case 5: //  Section 5: Data Representation Section 
+	case 5: //  Section 5: Data Representation Section
 	     if (skip == true)  break;
 	     ok = unpackDRS(grib_msg);
 	     break;
-	case 6: //  Section 6: Bit-Map Section 
+	case 6: //  Section 6: Bit-Map Section
 	     if (skip == true)  break;
 	     ok = unpackBMS(grib_msg);
 	     if (ok) {
@@ -1562,7 +1562,7 @@ void GribV2Record::readDataSet(ZUFILE* file)
         if (ok == false || DS == true )
             break;
     }
-    
+
     //ok = false;
 if (false) {
 //if (true) {
@@ -1575,7 +1575,7 @@ printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",isScanIpositive,
 printf("hasBMS=%d\n", hasBMS);
 }
     if (ok) {
-        if (!skip) 
+        if (!skip)
         {
 		translateDataType();
 		setDataType(dataType);
@@ -1632,8 +1632,8 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
           b_haveReadGRIB = false;
     }
     ok = readGribSection0_IS(file, b_haveReadGRIB ); // Section 0: Indicator Section
-    
-    int len, sec_num;    
+
+    int len, sec_num;
     if (ok) {
         unpackIDS(grib_msg);  // Section 1: Identification Section
         int off;
@@ -1651,7 +1651,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
         // seek back if V1
         (void)zu_seek(file, start, SEEK_SET);
         return;
-    }   
+    }
     refyear  = grib_msg->yr;
     refmonth = grib_msg->mo;
     refday   = grib_msg->dy;
@@ -1676,7 +1676,7 @@ bool GribV2Record::hasMoreDataSet() const
 GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE* file, int id_)
 {
     GribV2Record *rec1 = new GribV2Record(*this);
-    // XXX should have a shallow copy constructor 
+    // XXX should have a shallow copy constructor
     delete [] rec1->data;
     delete [] rec1->BMSbits;
     // new records take ownership
@@ -1725,11 +1725,11 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
   }
   grib_msg->disc = temp[6];
   grib_msg->ed_num = temp[7];
-  
+
   //  Bail out early if this is not GRIB2
   if(grib_msg->ed_num != 2)
       return false;
-  
+
   getBits(temp,&grib_msg->total_len,96,32);
   // too small or overflow
   if ( grib_msg->total_len < 16 || grib_msg->total_len > (INT_MAX - 4))

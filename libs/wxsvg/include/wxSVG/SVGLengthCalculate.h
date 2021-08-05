@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        SVGLengthCalculate.h
-// Purpose:     calculate length relative to viewport size 
+// Purpose:     calculate length relative to viewport size
 // Author:      Alex Thuering
 // Created:     2005/06/19
 // RCS-ID:      $Id: SVGLengthCalculate.h,v 1.1 2005/07/28 13:02:57 ntalex Exp $
@@ -15,7 +15,7 @@
 #define WX_SVG_LENGTH_CALC_WIDTH(l, viewportElement)\
   if (l.GetUnitType() == wxSVG_LENGTHTYPE_PERCENTAGE && viewportElement &&\
 	  viewportElement->GetDtd() == wxSVG_SVG_ELEMENT)\
-	l.ToViewportWidth(((wxSVGSVGElement*)viewportElement)->GetWidth().GetAnimVal()) 
+	l.ToViewportWidth(((wxSVGSVGElement*)viewportElement)->GetWidth().GetAnimVal())
 #define WX_SVG_LENGTH_CALC_HEIGHT(l, viewportElement)\
   if (l.GetUnitType() == wxSVG_LENGTHTYPE_PERCENTAGE && viewportElement &&\
 	  viewportElement->GetDtd() == wxSVG_SVG_ELEMENT)\

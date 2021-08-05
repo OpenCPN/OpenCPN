@@ -114,7 +114,7 @@ void SerialDataStream::Open(void)
         SetOk(true);
         return;
     }
-#endif            
+#endif
 
     if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
         SetGarminProtocolHandler(new GarminProtocolHandler(this, GetConsumer(), true));
@@ -147,7 +147,7 @@ bool SerialDataStream::SendSentenceSerial(const wxString &sentence)
     wxString payload = sentence;
     if( !sentence.EndsWith(_T("\r\n")) )
         payload += _T("\r\n");
-    
+
     if(IsOk()){
         wxString port = GetPort().AfterFirst(':');
         androidWriteSerial( port, payload );

@@ -225,7 +225,7 @@ bool S57Obj::AddIntegerAttribute( const char *acronym, int val ){
 
     if(!strncmp(acronym, "SCAMIN", 6))
         Scamin = val;
-    
+
     return true;
 }
 

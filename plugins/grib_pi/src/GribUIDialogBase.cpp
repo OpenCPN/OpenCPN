@@ -15,7 +15,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
     const bool m_bcompact = true;
 #else
     const bool m_bcompact = false;
-#endif    
+#endif
 
     if(m_bcompact){
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -24,7 +24,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
         m_fgCtrlBarSizer->AddGrowableCol( 0 );
         m_fgCtrlBarSizer->SetFlexibleDirection( wxHORIZONTAL );
         m_fgCtrlBarSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
-        
+
 	wxBoxSizer *mainBox = new wxBoxSizer(wxVERTICAL);
         m_fgCtrlBarSizer->Add( mainBox, 1, wxEXPAND, 0 );
 
@@ -96,7 +96,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
         fgSizer51->Add( m_bpSettings, 0, wxALL, 1 );
 
         m_bpRequest = NULL;
-        
+
 //         m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 //         fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
 
@@ -257,7 +257,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	this->Connect( wxEVT_MOUSEWHEEL, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ) );
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GRIBUICtrlBarBase::OnSize ) );
 
-#ifndef __WXQT__ 
+#ifndef __WXQT__
         this->Connect( wxEVT_PAINT, wxPaintEventHandler( GRIBUICtrlBarBase::OnPaint ) );
 #endif
 	m_bpPrev->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnPrev ), NULL, this );
@@ -294,11 +294,11 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 
 #ifdef __OCPN__ANDROID__
         m_bpSettings->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnCompositeDialog ), NULL, this );
-#else        
+#else
         m_bpSettings->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnSettings ), NULL, this );
 	m_bpSettings->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 #endif
-        
+
         if(m_bpRequest){
             m_bpRequest->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRequest ), NULL, this );
             m_bpRequest->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
@@ -355,7 +355,7 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
             m_bpOpenFile->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnOpenFile ), NULL, this );
             m_bpOpenFile->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
         }
-        
+
 	m_bpSettings->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnSettings ), NULL, this );
 	m_bpSettings->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 
@@ -611,7 +611,7 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	m_tcRelHumid->SetMinSize( wxSize( 70,-1 ) );
 
 	m_fgTrackingControls->Add( m_tcRelHumid, 0, 0, 5 );
-	
+
 
 
 	fgSizer43->Add( m_fgTrackingControls, 1, wxEXPAND, 1 );
@@ -1495,21 +1495,21 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 
         wxBoxSizer* labelSizer = new wxBoxSizer( wxHORIZONTAL );
         topSizer->Add( labelSizer, 0, wxEXPAND, 5 );
-        
+
         wxStaticText *labelBox = new wxStaticText( this, wxID_ANY, _("GRIB PlugIn Preferences"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
         labelSizer->Add(labelBox, 1, wxEXPAND, 0);
-        
+
         wxScrolledWindow *itemScrollWin = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
         topSizer->Add( itemScrollWin, 1, wxEXPAND | wxALL, 0 );
         itemScrollWin->SetScrollRate(2, 2);
-        
+
         wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
         itemScrollWin->SetSizer( itemBoxSizer2 );
-        
+
         wxStaticBoxSizer* sbSizer9;
         sbSizer9 = new wxStaticBoxSizer( new wxStaticBox( itemScrollWin, wxID_ANY, _("General Options") ), wxVERTICAL );
         itemBoxSizer2->Add( sbSizer9, 1, wxEXPAND, 5 );
-        
+
         m_cbUseHiDef = new wxCheckBox( itemScrollWin, wxID_ANY, _("Use High Definition Graphics"), wxDefaultPosition, wxDefaultSize, 0 );
         sbSizer9->Add( m_cbUseHiDef, 0, wxALL, 5 );
 
@@ -1527,7 +1527,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 
         m_cZoomToCenterAtInit = new wxCheckBox(itemScrollWin, wxID_ANY, _("Zoom to file center when opened"), wxDefaultPosition, wxDefaultSize, 0);
         sbSizer9->Add(m_cZoomToCenterAtInit, 0, wxALL, 5);
- 
+
         wxString m_rbLoadOptionsChoices[] = { _("Load the More Recent File in Directory"), _("Load the Last Opened File") };
         int m_rbLoadOptionsNChoices = sizeof( m_rbLoadOptionsChoices ) / sizeof( wxString );
         m_rbLoadOptions = new wxRadioBox( itemScrollWin, wxID_ANY, _("Load File Options"), wxDefaultPosition, wxDefaultSize, m_rbLoadOptionsNChoices, m_rbLoadOptionsChoices, 1, wxRA_SPECIFY_COLS );
@@ -1549,10 +1549,10 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 
         wxBoxSizer* m_sdbButtonSizer = new wxBoxSizer( wxHORIZONTAL );
         topSizer->Add( m_sdbButtonSizer, 0, wxEXPAND, 5 );
-        
+
         wxButton *m_sdbButtonSizerOK = new wxButton( this, wxID_OK );
         m_sdbButtonSizer->Add( m_sdbButtonSizerOK, 0, wxALL | wxALIGN_RIGHT, 15 );
-        
+
         wxButton *m_sdbButtonSizerCancel = new wxButton( this, wxID_CANCEL );
         m_sdbButtonSizer->Add( m_sdbButtonSizerCancel, 0, wxALL | wxALIGN_RIGHT, 15 );
 

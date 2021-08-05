@@ -14545,15 +14545,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glEnableClientState_FORMAT FORMAT_void_GLenum
 #define glEnd_INDEX 108
 #define glEnd_RETURN void
-#define glEnd_ARG_NAMES 
-#define glEnd_ARG_EXPAND 
+#define glEnd_ARG_NAMES
+#define glEnd_ARG_EXPAND
 #define glEnd_PACKED PACKED_void
 #define glEnd_INDEXED INDEXED_void
 #define glEnd_FORMAT FORMAT_void
 #define glEndList_INDEX 109
 #define glEndList_RETURN void
-#define glEndList_ARG_NAMES 
-#define glEndList_ARG_EXPAND 
+#define glEndList_ARG_NAMES
+#define glEndList_ARG_EXPAND
 #define glEndList_PACKED PACKED_void
 #define glEndList_INDEXED INDEXED_void
 #define glEndList_FORMAT FORMAT_void
@@ -14657,15 +14657,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glFeedbackBuffer_FORMAT FORMAT_void_GLsizei_GLenum_GLfloat___GENPT__
 #define glFinish_INDEX 124
 #define glFinish_RETURN void
-#define glFinish_ARG_NAMES 
-#define glFinish_ARG_EXPAND 
+#define glFinish_ARG_NAMES
+#define glFinish_ARG_EXPAND
 #define glFinish_PACKED PACKED_void
 #define glFinish_INDEXED INDEXED_void
 #define glFinish_FORMAT FORMAT_void
 #define glFlush_INDEX 125
 #define glFlush_RETURN void
-#define glFlush_ARG_NAMES 
-#define glFlush_ARG_EXPAND 
+#define glFlush_ARG_NAMES
+#define glFlush_ARG_EXPAND
 #define glFlush_PACKED PACKED_void
 #define glFlush_INDEXED INDEXED_void
 #define glFlush_FORMAT FORMAT_void
@@ -14867,8 +14867,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glGetDoublev_FORMAT FORMAT_void_GLenum_GLdouble___GENPT__
 #define glGetError_INDEX 154
 #define glGetError_RETURN GLenum
-#define glGetError_ARG_NAMES 
-#define glGetError_ARG_EXPAND 
+#define glGetError_ARG_NAMES
+#define glGetError_ARG_EXPAND
 #define glGetError_PACKED PACKED_GLenum
 #define glGetError_INDEXED INDEXED_GLenum
 #define glGetError_FORMAT FORMAT_GLenum
@@ -15217,8 +15217,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glIndexubv_FORMAT FORMAT_void_const_GLubyte___GENPT__
 #define glInitNames_INDEX 204
 #define glInitNames_RETURN void
-#define glInitNames_ARG_NAMES 
-#define glInitNames_ARG_EXPAND 
+#define glInitNames_ARG_NAMES
+#define glInitNames_ARG_EXPAND
 #define glInitNames_PACKED PACKED_void
 #define glInitNames_INDEXED INDEXED_void
 #define glInitNames_FORMAT FORMAT_void
@@ -15343,8 +15343,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glListBase_FORMAT FORMAT_void_GLuint
 #define glLoadIdentity_INDEX 222
 #define glLoadIdentity_RETURN void
-#define glLoadIdentity_ARG_NAMES 
-#define glLoadIdentity_ARG_EXPAND 
+#define glLoadIdentity_ARG_NAMES
+#define glLoadIdentity_ARG_EXPAND
 #define glLoadIdentity_PACKED PACKED_void
 #define glLoadIdentity_INDEXED INDEXED_void
 #define glLoadIdentity_FORMAT FORMAT_void
@@ -15973,29 +15973,29 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glPolygonStipple_FORMAT FORMAT_void_const_GLubyte___GENPT__
 #define glPopAttrib_INDEX 312
 #define glPopAttrib_RETURN void
-#define glPopAttrib_ARG_NAMES 
-#define glPopAttrib_ARG_EXPAND 
+#define glPopAttrib_ARG_NAMES
+#define glPopAttrib_ARG_EXPAND
 #define glPopAttrib_PACKED PACKED_void
 #define glPopAttrib_INDEXED INDEXED_void
 #define glPopAttrib_FORMAT FORMAT_void
 #define glPopClientAttrib_INDEX 313
 #define glPopClientAttrib_RETURN void
-#define glPopClientAttrib_ARG_NAMES 
-#define glPopClientAttrib_ARG_EXPAND 
+#define glPopClientAttrib_ARG_NAMES
+#define glPopClientAttrib_ARG_EXPAND
 #define glPopClientAttrib_PACKED PACKED_void
 #define glPopClientAttrib_INDEXED INDEXED_void
 #define glPopClientAttrib_FORMAT FORMAT_void
 #define glPopMatrix_INDEX 314
 #define glPopMatrix_RETURN void
-#define glPopMatrix_ARG_NAMES 
-#define glPopMatrix_ARG_EXPAND 
+#define glPopMatrix_ARG_NAMES
+#define glPopMatrix_ARG_EXPAND
 #define glPopMatrix_PACKED PACKED_void
 #define glPopMatrix_INDEXED INDEXED_void
 #define glPopMatrix_FORMAT FORMAT_void
 #define glPopName_INDEX 315
 #define glPopName_RETURN void
-#define glPopName_ARG_NAMES 
-#define glPopName_ARG_EXPAND 
+#define glPopName_ARG_NAMES
+#define glPopName_ARG_EXPAND
 #define glPopName_PACKED PACKED_void
 #define glPopName_INDEXED INDEXED_void
 #define glPopName_FORMAT FORMAT_void
@@ -16022,8 +16022,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glPushClientAttrib_FORMAT FORMAT_void_GLbitfield
 #define glPushMatrix_INDEX 319
 #define glPushMatrix_RETURN void
-#define glPushMatrix_ARG_NAMES 
-#define glPushMatrix_ARG_EXPAND 
+#define glPushMatrix_ARG_NAMES
+#define glPushMatrix_ARG_EXPAND
 #define glPushMatrix_PACKED PACKED_void
 #define glPushMatrix_INDEXED INDEXED_void
 #define glPushMatrix_FORMAT FORMAT_void
@@ -17226,8 +17226,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXChooseVisual_FORMAT FORMAT_XVisualInfo___GENPT___Display___GENPT___int_int___GENPT__
 #define glXClientInfo_INDEX 491
 #define glXClientInfo_RETURN void
-#define glXClientInfo_ARG_NAMES 
-#define glXClientInfo_ARG_EXPAND 
+#define glXClientInfo_ARG_NAMES
+#define glXClientInfo_ARG_EXPAND
 #define glXClientInfo_PACKED PACKED_void
 #define glXClientInfo_INDEXED INDEXED_void
 #define glXClientInfo_FORMAT FORMAT_void
@@ -17387,29 +17387,29 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXGetConfig_FORMAT FORMAT_int_Display___GENPT___XVisualInfo___GENPT___int_int___GENPT__
 #define glXGetCurrentContext_INDEX 514
 #define glXGetCurrentContext_RETURN GLXContext
-#define glXGetCurrentContext_ARG_NAMES 
-#define glXGetCurrentContext_ARG_EXPAND 
+#define glXGetCurrentContext_ARG_NAMES
+#define glXGetCurrentContext_ARG_EXPAND
 #define glXGetCurrentContext_PACKED PACKED_GLXContext
 #define glXGetCurrentContext_INDEXED INDEXED_GLXContext
 #define glXGetCurrentContext_FORMAT FORMAT_GLXContext
 #define glXGetCurrentDisplay_INDEX 515
 #define glXGetCurrentDisplay_RETURN Display *
-#define glXGetCurrentDisplay_ARG_NAMES 
-#define glXGetCurrentDisplay_ARG_EXPAND 
+#define glXGetCurrentDisplay_ARG_NAMES
+#define glXGetCurrentDisplay_ARG_EXPAND
 #define glXGetCurrentDisplay_PACKED PACKED_Display___GENPT__
 #define glXGetCurrentDisplay_INDEXED INDEXED_Display___GENPT__
 #define glXGetCurrentDisplay_FORMAT FORMAT_Display___GENPT__
 #define glXGetCurrentDrawable_INDEX 516
 #define glXGetCurrentDrawable_RETURN GLXDrawable
-#define glXGetCurrentDrawable_ARG_NAMES 
-#define glXGetCurrentDrawable_ARG_EXPAND 
+#define glXGetCurrentDrawable_ARG_NAMES
+#define glXGetCurrentDrawable_ARG_EXPAND
 #define glXGetCurrentDrawable_PACKED PACKED_GLXDrawable
 #define glXGetCurrentDrawable_INDEXED INDEXED_GLXDrawable
 #define glXGetCurrentDrawable_FORMAT FORMAT_GLXDrawable
 #define glXGetCurrentReadDrawable_INDEX 517
 #define glXGetCurrentReadDrawable_RETURN GLXDrawable
-#define glXGetCurrentReadDrawable_ARG_NAMES 
-#define glXGetCurrentReadDrawable_ARG_EXPAND 
+#define glXGetCurrentReadDrawable_ARG_NAMES
+#define glXGetCurrentReadDrawable_ARG_EXPAND
 #define glXGetCurrentReadDrawable_PACKED PACKED_GLXDrawable
 #define glXGetCurrentReadDrawable_INDEXED INDEXED_GLXDrawable
 #define glXGetCurrentReadDrawable_FORMAT FORMAT_GLXDrawable
@@ -17443,8 +17443,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXGetFBConfigs_FORMAT FORMAT_GLXFBConfig___GENPT___Display___GENPT___int_int___GENPT__
 #define glXGetFBConfigsSGIX_INDEX 522
 #define glXGetFBConfigsSGIX_RETURN void
-#define glXGetFBConfigsSGIX_ARG_NAMES 
-#define glXGetFBConfigsSGIX_ARG_EXPAND 
+#define glXGetFBConfigsSGIX_ARG_NAMES
+#define glXGetFBConfigsSGIX_ARG_EXPAND
 #define glXGetFBConfigsSGIX_PACKED PACKED_void
 #define glXGetFBConfigsSGIX_INDEXED INDEXED_void
 #define glXGetFBConfigsSGIX_FORMAT FORMAT_void
@@ -17464,8 +17464,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXGetSelectedEvent_FORMAT FORMAT_void_Display___GENPT___GLXDrawable_unsigned_long___GENPT__
 #define glXGetVisualConfigs_INDEX 525
 #define glXGetVisualConfigs_RETURN void
-#define glXGetVisualConfigs_ARG_NAMES 
-#define glXGetVisualConfigs_ARG_EXPAND 
+#define glXGetVisualConfigs_ARG_NAMES
+#define glXGetVisualConfigs_ARG_EXPAND
 #define glXGetVisualConfigs_PACKED PACKED_void
 #define glXGetVisualConfigs_INDEXED INDEXED_void
 #define glXGetVisualConfigs_FORMAT FORMAT_void
@@ -17534,8 +17534,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXQueryContext_FORMAT FORMAT_int_Display___GENPT___GLXContext_int_int___GENPT__
 #define glXQueryContextInfoEXT_INDEX 535
 #define glXQueryContextInfoEXT_RETURN void
-#define glXQueryContextInfoEXT_ARG_NAMES 
-#define glXQueryContextInfoEXT_ARG_EXPAND 
+#define glXQueryContextInfoEXT_ARG_NAMES
+#define glXQueryContextInfoEXT_ARG_EXPAND
 #define glXQueryContextInfoEXT_PACKED PACKED_void
 #define glXQueryContextInfoEXT_INDEXED INDEXED_void
 #define glXQueryContextInfoEXT_FORMAT FORMAT_void
@@ -17590,8 +17590,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXQueryHyperpipeNetworkSGIX_FORMAT FORMAT_GLXHyperpipeNetworkSGIX___GENPT___Display___GENPT___int___GENPT__
 #define glXQueryMaxSwapBarriersSGIX_INDEX 543
 #define glXQueryMaxSwapBarriersSGIX_RETURN void
-#define glXQueryMaxSwapBarriersSGIX_ARG_NAMES 
-#define glXQueryMaxSwapBarriersSGIX_ARG_EXPAND 
+#define glXQueryMaxSwapBarriersSGIX_ARG_NAMES
+#define glXQueryMaxSwapBarriersSGIX_ARG_EXPAND
 #define glXQueryMaxSwapBarriersSGIX_PACKED PACKED_void
 #define glXQueryMaxSwapBarriersSGIX_INDEXED INDEXED_void
 #define glXQueryMaxSwapBarriersSGIX_FORMAT FORMAT_void
@@ -17618,15 +17618,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXReleaseBuffersMESA_FORMAT FORMAT_Bool_Display___GENPT___GLXDrawable
 #define glXRender_INDEX 547
 #define glXRender_RETURN void
-#define glXRender_ARG_NAMES 
-#define glXRender_ARG_EXPAND 
+#define glXRender_ARG_NAMES
+#define glXRender_ARG_EXPAND
 #define glXRender_PACKED PACKED_void
 #define glXRender_INDEXED INDEXED_void
 #define glXRender_FORMAT FORMAT_void
 #define glXRenderLarge_INDEX 548
 #define glXRenderLarge_RETURN void
-#define glXRenderLarge_ARG_NAMES 
-#define glXRenderLarge_ARG_EXPAND 
+#define glXRenderLarge_ARG_NAMES
+#define glXRenderLarge_ARG_EXPAND
 #define glXRenderLarge_PACKED PACKED_void
 #define glXRenderLarge_INDEXED INDEXED_void
 #define glXRenderLarge_FORMAT FORMAT_void
@@ -17667,36 +17667,36 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glXUseXFont_FORMAT FORMAT_void_Font_int_int_int
 #define glXVendorPrivate_INDEX 554
 #define glXVendorPrivate_RETURN void
-#define glXVendorPrivate_ARG_NAMES 
-#define glXVendorPrivate_ARG_EXPAND 
+#define glXVendorPrivate_ARG_NAMES
+#define glXVendorPrivate_ARG_EXPAND
 #define glXVendorPrivate_PACKED PACKED_void
 #define glXVendorPrivate_INDEXED INDEXED_void
 #define glXVendorPrivate_FORMAT FORMAT_void
 #define glXVendorPrivateWithReply_INDEX 555
 #define glXVendorPrivateWithReply_RETURN void
-#define glXVendorPrivateWithReply_ARG_NAMES 
-#define glXVendorPrivateWithReply_ARG_EXPAND 
+#define glXVendorPrivateWithReply_ARG_NAMES
+#define glXVendorPrivateWithReply_ARG_EXPAND
 #define glXVendorPrivateWithReply_PACKED PACKED_void
 #define glXVendorPrivateWithReply_INDEXED INDEXED_void
 #define glXVendorPrivateWithReply_FORMAT FORMAT_void
 #define glXWaitGL_INDEX 556
 #define glXWaitGL_RETURN void
-#define glXWaitGL_ARG_NAMES 
-#define glXWaitGL_ARG_EXPAND 
+#define glXWaitGL_ARG_NAMES
+#define glXWaitGL_ARG_EXPAND
 #define glXWaitGL_PACKED PACKED_void
 #define glXWaitGL_INDEXED INDEXED_void
 #define glXWaitGL_FORMAT FORMAT_void
 #define glXWaitX_INDEX 557
 #define glXWaitX_RETURN void
-#define glXWaitX_ARG_NAMES 
-#define glXWaitX_ARG_EXPAND 
+#define glXWaitX_ARG_NAMES
+#define glXWaitX_ARG_EXPAND
 #define glXWaitX_PACKED PACKED_void
 #define glXWaitX_INDEXED INDEXED_void
 #define glXWaitX_FORMAT FORMAT_void
 #define snd_asoundlib_version_INDEX 558
 #define snd_asoundlib_version_RETURN const char *
-#define snd_asoundlib_version_ARG_NAMES 
-#define snd_asoundlib_version_ARG_EXPAND 
+#define snd_asoundlib_version_ARG_NAMES
+#define snd_asoundlib_version_ARG_EXPAND
 #define snd_asoundlib_version_PACKED PACKED_const_char___GENPT__
 #define snd_asoundlib_version_INDEXED INDEXED_const_char___GENPT__
 #define snd_asoundlib_version_FORMAT FORMAT_const_char___GENPT__
@@ -18157,8 +18157,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_config_top_FORMAT FORMAT_int_snd_config_t___GENPT____GENPT__
 #define snd_config_update_INDEX 624
 #define snd_config_update_RETURN int
-#define snd_config_update_ARG_NAMES 
-#define snd_config_update_ARG_EXPAND 
+#define snd_config_update_ARG_NAMES
+#define snd_config_update_ARG_EXPAND
 #define snd_config_update_PACKED PACKED_int
 #define snd_config_update_INDEXED INDEXED_int
 #define snd_config_update_FORMAT FORMAT_int
@@ -18171,8 +18171,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_config_update_free_FORMAT FORMAT_int_snd_config_update_t___GENPT__
 #define snd_config_update_free_global_INDEX 626
 #define snd_config_update_free_global_RETURN int
-#define snd_config_update_free_global_ARG_NAMES 
-#define snd_config_update_free_global_ARG_EXPAND 
+#define snd_config_update_free_global_ARG_NAMES
+#define snd_config_update_free_global_ARG_EXPAND
 #define snd_config_update_free_global_PACKED PACKED_int
 #define snd_config_update_free_global_INDEXED INDEXED_int
 #define snd_config_update_free_global_FORMAT FORMAT_int
@@ -18269,8 +18269,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_ctl_card_info_malloc_FORMAT FORMAT_int_snd_ctl_card_info_t___GENPT____GENPT__
 #define snd_ctl_card_info_sizeof_INDEX 640
 #define snd_ctl_card_info_sizeof_RETURN size_t
-#define snd_ctl_card_info_sizeof_ARG_NAMES 
-#define snd_ctl_card_info_sizeof_ARG_EXPAND 
+#define snd_ctl_card_info_sizeof_ARG_NAMES
+#define snd_ctl_card_info_sizeof_ARG_EXPAND
 #define snd_ctl_card_info_sizeof_PACKED PACKED_size_t
 #define snd_ctl_card_info_sizeof_INDEXED INDEXED_size_t
 #define snd_ctl_card_info_sizeof_FORMAT FORMAT_size_t
@@ -18423,8 +18423,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_ctl_elem_id_set_subdevice_FORMAT FORMAT_void_snd_ctl_elem_id_t___GENPT___unsigned_int
 #define snd_ctl_elem_id_sizeof_INDEX 662
 #define snd_ctl_elem_id_sizeof_RETURN size_t
-#define snd_ctl_elem_id_sizeof_ARG_NAMES 
-#define snd_ctl_elem_id_sizeof_ARG_EXPAND 
+#define snd_ctl_elem_id_sizeof_ARG_NAMES
+#define snd_ctl_elem_id_sizeof_ARG_EXPAND
 #define snd_ctl_elem_id_sizeof_PACKED PACKED_size_t
 #define snd_ctl_elem_id_sizeof_INDEXED INDEXED_size_t
 #define snd_ctl_elem_id_sizeof_FORMAT FORMAT_size_t
@@ -18738,8 +18738,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_ctl_elem_info_set_subdevice_FORMAT FORMAT_void_snd_ctl_elem_info_t___GENPT___unsigned_int
 #define snd_ctl_elem_info_sizeof_INDEX 707
 #define snd_ctl_elem_info_sizeof_RETURN size_t
-#define snd_ctl_elem_info_sizeof_ARG_NAMES 
-#define snd_ctl_elem_info_sizeof_ARG_EXPAND 
+#define snd_ctl_elem_info_sizeof_ARG_NAMES
+#define snd_ctl_elem_info_sizeof_ARG_EXPAND
 #define snd_ctl_elem_info_sizeof_PACKED PACKED_size_t
 #define snd_ctl_elem_info_sizeof_INDEXED INDEXED_size_t
 #define snd_ctl_elem_info_sizeof_FORMAT FORMAT_size_t
@@ -18864,8 +18864,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_ctl_elem_list_set_offset_FORMAT FORMAT_void_snd_ctl_elem_list_t___GENPT___unsigned_int
 #define snd_ctl_elem_list_sizeof_INDEX 725
 #define snd_ctl_elem_list_sizeof_RETURN size_t
-#define snd_ctl_elem_list_sizeof_ARG_NAMES 
-#define snd_ctl_elem_list_sizeof_ARG_EXPAND 
+#define snd_ctl_elem_list_sizeof_ARG_NAMES
+#define snd_ctl_elem_list_sizeof_ARG_EXPAND
 #define snd_ctl_elem_list_sizeof_PACKED PACKED_size_t
 #define snd_ctl_elem_list_sizeof_INDEXED INDEXED_size_t
 #define snd_ctl_elem_list_sizeof_FORMAT FORMAT_size_t
@@ -19151,8 +19151,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_ctl_elem_value_set_subdevice_FORMAT FORMAT_void_snd_ctl_elem_value_t___GENPT___unsigned_int
 #define snd_ctl_elem_value_sizeof_INDEX 766
 #define snd_ctl_elem_value_sizeof_RETURN size_t
-#define snd_ctl_elem_value_sizeof_ARG_NAMES 
-#define snd_ctl_elem_value_sizeof_ARG_EXPAND 
+#define snd_ctl_elem_value_sizeof_ARG_NAMES
+#define snd_ctl_elem_value_sizeof_ARG_EXPAND
 #define snd_ctl_elem_value_sizeof_PACKED PACKED_size_t
 #define snd_ctl_elem_value_sizeof_INDEXED INDEXED_size_t
 #define snd_ctl_elem_value_sizeof_FORMAT FORMAT_size_t
@@ -19256,8 +19256,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_ctl_event_malloc_FORMAT FORMAT_int_snd_ctl_event_t___GENPT____GENPT__
 #define snd_ctl_event_sizeof_INDEX 781
 #define snd_ctl_event_sizeof_RETURN size_t
-#define snd_ctl_event_sizeof_ARG_NAMES 
-#define snd_ctl_event_sizeof_ARG_EXPAND 
+#define snd_ctl_event_sizeof_ARG_NAMES
+#define snd_ctl_event_sizeof_ARG_EXPAND
 #define snd_ctl_event_sizeof_PACKED PACKED_size_t
 #define snd_ctl_event_sizeof_INDEXED INDEXED_size_t
 #define snd_ctl_event_sizeof_FORMAT FORMAT_size_t
@@ -19809,8 +19809,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_hwdep_dsp_image_set_name_FORMAT FORMAT_void_snd_hwdep_dsp_image_t___GENPT___const_char___GENPT__
 #define snd_hwdep_dsp_image_sizeof_INDEX 860
 #define snd_hwdep_dsp_image_sizeof_RETURN size_t
-#define snd_hwdep_dsp_image_sizeof_ARG_NAMES 
-#define snd_hwdep_dsp_image_sizeof_ARG_EXPAND 
+#define snd_hwdep_dsp_image_sizeof_ARG_NAMES
+#define snd_hwdep_dsp_image_sizeof_ARG_EXPAND
 #define snd_hwdep_dsp_image_sizeof_PACKED PACKED_size_t
 #define snd_hwdep_dsp_image_sizeof_INDEXED INDEXED_size_t
 #define snd_hwdep_dsp_image_sizeof_FORMAT FORMAT_size_t
@@ -19886,8 +19886,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_hwdep_dsp_status_malloc_FORMAT FORMAT_int_snd_hwdep_dsp_status_t___GENPT____GENPT__
 #define snd_hwdep_dsp_status_sizeof_INDEX 871
 #define snd_hwdep_dsp_status_sizeof_RETURN size_t
-#define snd_hwdep_dsp_status_sizeof_ARG_NAMES 
-#define snd_hwdep_dsp_status_sizeof_ARG_EXPAND 
+#define snd_hwdep_dsp_status_sizeof_ARG_NAMES
+#define snd_hwdep_dsp_status_sizeof_ARG_EXPAND
 #define snd_hwdep_dsp_status_sizeof_PACKED PACKED_size_t
 #define snd_hwdep_dsp_status_sizeof_INDEXED INDEXED_size_t
 #define snd_hwdep_dsp_status_sizeof_FORMAT FORMAT_size_t
@@ -19900,8 +19900,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_hwdep_info_FORMAT FORMAT_int_snd_hwdep_t___GENPT___snd_hwdep_info_t___GENPT__
 #define snd_hwdep_info_sizeof_INDEX 873
 #define snd_hwdep_info_sizeof_RETURN size_t
-#define snd_hwdep_info_sizeof_ARG_NAMES 
-#define snd_hwdep_info_sizeof_ARG_EXPAND 
+#define snd_hwdep_info_sizeof_ARG_NAMES
+#define snd_hwdep_info_sizeof_ARG_EXPAND
 #define snd_hwdep_info_sizeof_PACKED PACKED_size_t
 #define snd_hwdep_info_sizeof_INDEXED INDEXED_size_t
 #define snd_hwdep_info_sizeof_FORMAT FORMAT_size_t
@@ -20173,8 +20173,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_mixer_class_set_private_FORMAT FORMAT_int_snd_mixer_class_t___GENPT___void___GENPT__
 #define snd_mixer_class_sizeof_INDEX 912
 #define snd_mixer_class_sizeof_RETURN size_t
-#define snd_mixer_class_sizeof_ARG_NAMES 
-#define snd_mixer_class_sizeof_ARG_EXPAND 
+#define snd_mixer_class_sizeof_ARG_NAMES
+#define snd_mixer_class_sizeof_ARG_EXPAND
 #define snd_mixer_class_sizeof_PACKED PACKED_size_t
 #define snd_mixer_class_sizeof_INDEXED INDEXED_size_t
 #define snd_mixer_class_sizeof_FORMAT FORMAT_size_t
@@ -20670,8 +20670,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_mixer_selem_id_set_name_FORMAT FORMAT_void_snd_mixer_selem_id_t___GENPT___const_char___GENPT__
 #define snd_mixer_selem_id_sizeof_INDEX 983
 #define snd_mixer_selem_id_sizeof_RETURN size_t
-#define snd_mixer_selem_id_sizeof_ARG_NAMES 
-#define snd_mixer_selem_id_sizeof_ARG_EXPAND 
+#define snd_mixer_selem_id_sizeof_ARG_NAMES
+#define snd_mixer_selem_id_sizeof_ARG_EXPAND
 #define snd_mixer_selem_id_sizeof_PACKED PACKED_size_t
 #define snd_mixer_selem_id_sizeof_INDEXED INDEXED_size_t
 #define snd_mixer_selem_id_sizeof_FORMAT FORMAT_size_t
@@ -20992,8 +20992,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_pcm_access_mask_set_FORMAT FORMAT_void_snd_pcm_access_mask_t___GENPT___snd_pcm_access_t
 #define snd_pcm_access_mask_sizeof_INDEX 1029
 #define snd_pcm_access_mask_sizeof_RETURN size_t
-#define snd_pcm_access_mask_sizeof_ARG_NAMES 
-#define snd_pcm_access_mask_sizeof_ARG_EXPAND 
+#define snd_pcm_access_mask_sizeof_ARG_NAMES
+#define snd_pcm_access_mask_sizeof_ARG_EXPAND
 #define snd_pcm_access_mask_sizeof_PACKED PACKED_size_t
 #define snd_pcm_access_mask_sizeof_INDEXED INDEXED_size_t
 #define snd_pcm_access_mask_sizeof_FORMAT FORMAT_size_t
@@ -21223,8 +21223,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_pcm_format_mask_set_FORMAT FORMAT_void_snd_pcm_format_mask_t___GENPT___snd_pcm_format_t
 #define snd_pcm_format_mask_sizeof_INDEX 1062
 #define snd_pcm_format_mask_sizeof_RETURN size_t
-#define snd_pcm_format_mask_sizeof_ARG_NAMES 
-#define snd_pcm_format_mask_sizeof_ARG_EXPAND 
+#define snd_pcm_format_mask_sizeof_ARG_NAMES
+#define snd_pcm_format_mask_sizeof_ARG_EXPAND
 #define snd_pcm_format_mask_sizeof_PACKED PACKED_size_t
 #define snd_pcm_format_mask_sizeof_INDEXED INDEXED_size_t
 #define snd_pcm_format_mask_sizeof_FORMAT FORMAT_size_t
@@ -22266,8 +22266,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_pcm_hw_params_set_tick_time_near_FORMAT FORMAT_int_snd_pcm_t___GENPT___snd_pcm_hw_params_t___GENPT___unsigned_int___GENPT___int___GENPT__
 #define snd_pcm_hw_params_sizeof_INDEX 1211
 #define snd_pcm_hw_params_sizeof_RETURN size_t
-#define snd_pcm_hw_params_sizeof_ARG_NAMES 
-#define snd_pcm_hw_params_sizeof_ARG_EXPAND 
+#define snd_pcm_hw_params_sizeof_ARG_NAMES
+#define snd_pcm_hw_params_sizeof_ARG_EXPAND
 #define snd_pcm_hw_params_sizeof_PACKED PACKED_size_t
 #define snd_pcm_hw_params_sizeof_INDEXED INDEXED_size_t
 #define snd_pcm_hw_params_sizeof_FORMAT FORMAT_size_t
@@ -22490,8 +22490,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_pcm_info_set_subdevice_FORMAT FORMAT_void_snd_pcm_info_t___GENPT___unsigned_int
 #define snd_pcm_info_sizeof_INDEX 1243
 #define snd_pcm_info_sizeof_RETURN size_t
-#define snd_pcm_info_sizeof_ARG_NAMES 
-#define snd_pcm_info_sizeof_ARG_EXPAND 
+#define snd_pcm_info_sizeof_ARG_NAMES
+#define snd_pcm_info_sizeof_ARG_EXPAND
 #define snd_pcm_info_sizeof_PACKED PACKED_size_t
 #define snd_pcm_info_sizeof_INDEXED INDEXED_size_t
 #define snd_pcm_info_sizeof_FORMAT FORMAT_size_t
@@ -22896,8 +22896,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_pcm_status_malloc_FORMAT FORMAT_int_snd_pcm_status_t___GENPT____GENPT__
 #define snd_pcm_status_sizeof_INDEX 1301
 #define snd_pcm_status_sizeof_RETURN size_t
-#define snd_pcm_status_sizeof_ARG_NAMES 
-#define snd_pcm_status_sizeof_ARG_EXPAND 
+#define snd_pcm_status_sizeof_ARG_NAMES
+#define snd_pcm_status_sizeof_ARG_EXPAND
 #define snd_pcm_status_sizeof_PACKED PACKED_size_t
 #define snd_pcm_status_sizeof_INDEXED INDEXED_size_t
 #define snd_pcm_status_sizeof_FORMAT FORMAT_size_t
@@ -22980,8 +22980,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_pcm_subformat_mask_set_FORMAT FORMAT_void_snd_pcm_subformat_mask_t___GENPT___snd_pcm_subformat_t
 #define snd_pcm_subformat_mask_sizeof_INDEX 1313
 #define snd_pcm_subformat_mask_sizeof_RETURN size_t
-#define snd_pcm_subformat_mask_sizeof_ARG_NAMES 
-#define snd_pcm_subformat_mask_sizeof_ARG_EXPAND 
+#define snd_pcm_subformat_mask_sizeof_ARG_NAMES
+#define snd_pcm_subformat_mask_sizeof_ARG_EXPAND
 #define snd_pcm_subformat_mask_sizeof_PACKED PACKED_size_t
 #define snd_pcm_subformat_mask_sizeof_INDEXED INDEXED_size_t
 #define snd_pcm_subformat_mask_sizeof_FORMAT FORMAT_size_t
@@ -23190,8 +23190,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_pcm_sw_params_set_xrun_mode_FORMAT FORMAT_int_snd_pcm_t___GENPT___snd_pcm_sw_params_t___GENPT___snd_pcm_xrun_t
 #define snd_pcm_sw_params_sizeof_INDEX 1343
 #define snd_pcm_sw_params_sizeof_RETURN size_t
-#define snd_pcm_sw_params_sizeof_ARG_NAMES 
-#define snd_pcm_sw_params_sizeof_ARG_EXPAND 
+#define snd_pcm_sw_params_sizeof_ARG_NAMES
+#define snd_pcm_sw_params_sizeof_ARG_EXPAND
 #define snd_pcm_sw_params_sizeof_PACKED PACKED_size_t
 #define snd_pcm_sw_params_sizeof_INDEXED INDEXED_size_t
 #define snd_pcm_sw_params_sizeof_FORMAT FORMAT_size_t
@@ -23393,8 +23393,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_rawmidi_info_set_subdevice_FORMAT FORMAT_void_snd_rawmidi_info_t___GENPT___unsigned_int
 #define snd_rawmidi_info_sizeof_INDEX 1372
 #define snd_rawmidi_info_sizeof_RETURN size_t
-#define snd_rawmidi_info_sizeof_ARG_NAMES 
-#define snd_rawmidi_info_sizeof_ARG_EXPAND 
+#define snd_rawmidi_info_sizeof_ARG_NAMES
+#define snd_rawmidi_info_sizeof_ARG_EXPAND
 #define snd_rawmidi_info_sizeof_PACKED PACKED_size_t
 #define snd_rawmidi_info_sizeof_INDEXED INDEXED_size_t
 #define snd_rawmidi_info_sizeof_FORMAT FORMAT_size_t
@@ -23505,8 +23505,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_rawmidi_params_set_no_active_sensing_FORMAT FORMAT_int_snd_rawmidi_t___GENPT___snd_rawmidi_params_t___GENPT___int
 #define snd_rawmidi_params_sizeof_INDEX 1388
 #define snd_rawmidi_params_sizeof_RETURN size_t
-#define snd_rawmidi_params_sizeof_ARG_NAMES 
-#define snd_rawmidi_params_sizeof_ARG_EXPAND 
+#define snd_rawmidi_params_sizeof_ARG_NAMES
+#define snd_rawmidi_params_sizeof_ARG_EXPAND
 #define snd_rawmidi_params_sizeof_PACKED PACKED_size_t
 #define snd_rawmidi_params_sizeof_INDEXED INDEXED_size_t
 #define snd_rawmidi_params_sizeof_FORMAT FORMAT_size_t
@@ -23589,8 +23589,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_rawmidi_status_malloc_FORMAT FORMAT_int_snd_rawmidi_status_t___GENPT____GENPT__
 #define snd_rawmidi_status_sizeof_INDEX 1400
 #define snd_rawmidi_status_sizeof_RETURN size_t
-#define snd_rawmidi_status_sizeof_ARG_NAMES 
-#define snd_rawmidi_status_sizeof_ARG_EXPAND 
+#define snd_rawmidi_status_sizeof_ARG_NAMES
+#define snd_rawmidi_status_sizeof_ARG_EXPAND
 #define snd_rawmidi_status_sizeof_PACKED PACKED_size_t
 #define snd_rawmidi_status_sizeof_INDEXED INDEXED_size_t
 #define snd_rawmidi_status_sizeof_FORMAT FORMAT_size_t
@@ -23785,8 +23785,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_client_info_set_name_FORMAT FORMAT_void_snd_seq_client_info_t___GENPT___const_char___GENPT__
 #define snd_seq_client_info_sizeof_INDEX 1428
 #define snd_seq_client_info_sizeof_RETURN size_t
-#define snd_seq_client_info_sizeof_ARG_NAMES 
-#define snd_seq_client_info_sizeof_ARG_EXPAND 
+#define snd_seq_client_info_sizeof_ARG_NAMES
+#define snd_seq_client_info_sizeof_ARG_EXPAND
 #define snd_seq_client_info_sizeof_PACKED PACKED_size_t
 #define snd_seq_client_info_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_client_info_sizeof_FORMAT FORMAT_size_t
@@ -23876,8 +23876,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_client_pool_set_output_room_FORMAT FORMAT_void_snd_seq_client_pool_t___GENPT___size_t
 #define snd_seq_client_pool_sizeof_INDEX 1441
 #define snd_seq_client_pool_sizeof_RETURN size_t
-#define snd_seq_client_pool_sizeof_ARG_NAMES 
-#define snd_seq_client_pool_sizeof_ARG_EXPAND 
+#define snd_seq_client_pool_sizeof_ARG_NAMES
+#define snd_seq_client_pool_sizeof_ARG_EXPAND
 #define snd_seq_client_pool_sizeof_PACKED PACKED_size_t
 #define snd_seq_client_pool_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_client_pool_sizeof_FORMAT FORMAT_size_t
@@ -24436,8 +24436,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_port_info_set_type_FORMAT FORMAT_void_snd_seq_port_info_t___GENPT___unsigned_int
 #define snd_seq_port_info_sizeof_INDEX 1521
 #define snd_seq_port_info_sizeof_RETURN size_t
-#define snd_seq_port_info_sizeof_ARG_NAMES 
-#define snd_seq_port_info_sizeof_ARG_EXPAND 
+#define snd_seq_port_info_sizeof_ARG_NAMES
+#define snd_seq_port_info_sizeof_ARG_EXPAND
 #define snd_seq_port_info_sizeof_PACKED PACKED_size_t
 #define snd_seq_port_info_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_port_info_sizeof_FORMAT FORMAT_size_t
@@ -24548,8 +24548,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_port_subscribe_set_time_update_FORMAT FORMAT_void_snd_seq_port_subscribe_t___GENPT___int
 #define snd_seq_port_subscribe_sizeof_INDEX 1537
 #define snd_seq_port_subscribe_sizeof_RETURN size_t
-#define snd_seq_port_subscribe_sizeof_ARG_NAMES 
-#define snd_seq_port_subscribe_sizeof_ARG_EXPAND 
+#define snd_seq_port_subscribe_sizeof_ARG_NAMES
+#define snd_seq_port_subscribe_sizeof_ARG_EXPAND
 #define snd_seq_port_subscribe_sizeof_PACKED PACKED_size_t
 #define snd_seq_port_subscribe_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_port_subscribe_sizeof_FORMAT FORMAT_size_t
@@ -24716,8 +24716,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_query_subscribe_set_type_FORMAT FORMAT_void_snd_seq_query_subscribe_t___GENPT___snd_seq_query_subs_type_t
 #define snd_seq_query_subscribe_sizeof_INDEX 1561
 #define snd_seq_query_subscribe_sizeof_RETURN size_t
-#define snd_seq_query_subscribe_sizeof_ARG_NAMES 
-#define snd_seq_query_subscribe_sizeof_ARG_EXPAND 
+#define snd_seq_query_subscribe_sizeof_ARG_NAMES
+#define snd_seq_query_subscribe_sizeof_ARG_EXPAND
 #define snd_seq_query_subscribe_sizeof_PACKED PACKED_size_t
 #define snd_seq_query_subscribe_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_query_subscribe_sizeof_FORMAT FORMAT_size_t
@@ -24807,8 +24807,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_queue_info_set_owner_FORMAT FORMAT_void_snd_seq_queue_info_t___GENPT___int
 #define snd_seq_queue_info_sizeof_INDEX 1574
 #define snd_seq_queue_info_sizeof_RETURN size_t
-#define snd_seq_queue_info_sizeof_ARG_NAMES 
-#define snd_seq_queue_info_sizeof_ARG_EXPAND 
+#define snd_seq_queue_info_sizeof_ARG_NAMES
+#define snd_seq_queue_info_sizeof_ARG_EXPAND
 #define snd_seq_queue_info_sizeof_PACKED PACKED_size_t
 #define snd_seq_queue_info_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_queue_info_sizeof_FORMAT FORMAT_size_t
@@ -24870,8 +24870,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_queue_status_malloc_FORMAT FORMAT_int_snd_seq_queue_status_t___GENPT____GENPT__
 #define snd_seq_queue_status_sizeof_INDEX 1583
 #define snd_seq_queue_status_sizeof_RETURN size_t
-#define snd_seq_queue_status_sizeof_ARG_NAMES 
-#define snd_seq_queue_status_sizeof_ARG_EXPAND 
+#define snd_seq_queue_status_sizeof_ARG_NAMES
+#define snd_seq_queue_status_sizeof_ARG_EXPAND
 #define snd_seq_queue_status_sizeof_PACKED PACKED_size_t
 #define snd_seq_queue_status_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_queue_status_sizeof_FORMAT FORMAT_size_t
@@ -24961,8 +24961,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_queue_tempo_set_tempo_FORMAT FORMAT_void_snd_seq_queue_tempo_t___GENPT___unsigned_int
 #define snd_seq_queue_tempo_sizeof_INDEX 1596
 #define snd_seq_queue_tempo_sizeof_RETURN size_t
-#define snd_seq_queue_tempo_sizeof_ARG_NAMES 
-#define snd_seq_queue_tempo_sizeof_ARG_EXPAND 
+#define snd_seq_queue_tempo_sizeof_ARG_NAMES
+#define snd_seq_queue_tempo_sizeof_ARG_EXPAND
 #define snd_seq_queue_tempo_sizeof_PACKED PACKED_size_t
 #define snd_seq_queue_tempo_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_queue_tempo_sizeof_FORMAT FORMAT_size_t
@@ -25038,8 +25038,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_queue_timer_set_type_FORMAT FORMAT_void_snd_seq_queue_timer_t___GENPT___snd_seq_queue_timer_type_t
 #define snd_seq_queue_timer_sizeof_INDEX 1607
 #define snd_seq_queue_timer_sizeof_RETURN size_t
-#define snd_seq_queue_timer_sizeof_ARG_NAMES 
-#define snd_seq_queue_timer_sizeof_ARG_EXPAND 
+#define snd_seq_queue_timer_sizeof_ARG_NAMES
+#define snd_seq_queue_timer_sizeof_ARG_EXPAND
 #define snd_seq_queue_timer_sizeof_PACKED PACKED_size_t
 #define snd_seq_queue_timer_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_queue_timer_sizeof_FORMAT FORMAT_size_t
@@ -25171,8 +25171,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_remove_events_set_time_FORMAT FORMAT_void_snd_seq_remove_events_t___GENPT___const_snd_seq_timestamp_t___GENPT__
 #define snd_seq_remove_events_sizeof_INDEX 1626
 #define snd_seq_remove_events_sizeof_RETURN size_t
-#define snd_seq_remove_events_sizeof_ARG_NAMES 
-#define snd_seq_remove_events_sizeof_ARG_EXPAND 
+#define snd_seq_remove_events_sizeof_ARG_NAMES
+#define snd_seq_remove_events_sizeof_ARG_EXPAND
 #define snd_seq_remove_events_sizeof_PACKED PACKED_size_t
 #define snd_seq_remove_events_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_remove_events_sizeof_FORMAT FORMAT_size_t
@@ -25374,8 +25374,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_seq_system_info_malloc_FORMAT FORMAT_int_snd_seq_system_info_t___GENPT____GENPT__
 #define snd_seq_system_info_sizeof_INDEX 1655
 #define snd_seq_system_info_sizeof_RETURN size_t
-#define snd_seq_system_info_sizeof_ARG_NAMES 
-#define snd_seq_system_info_sizeof_ARG_EXPAND 
+#define snd_seq_system_info_sizeof_ARG_NAMES
+#define snd_seq_system_info_sizeof_ARG_EXPAND
 #define snd_seq_system_info_sizeof_PACKED PACKED_size_t
 #define snd_seq_system_info_sizeof_INDEXED INDEXED_size_t
 #define snd_seq_system_info_sizeof_FORMAT FORMAT_size_t
@@ -25549,8 +25549,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_timer_ginfo_set_tid_FORMAT FORMAT_int_snd_timer_ginfo_t___GENPT___snd_timer_id_t___GENPT__
 #define snd_timer_ginfo_sizeof_INDEX 1680
 #define snd_timer_ginfo_sizeof_RETURN size_t
-#define snd_timer_ginfo_sizeof_ARG_NAMES 
-#define snd_timer_ginfo_sizeof_ARG_EXPAND 
+#define snd_timer_ginfo_sizeof_ARG_NAMES
+#define snd_timer_ginfo_sizeof_ARG_EXPAND
 #define snd_timer_ginfo_sizeof_PACKED PACKED_size_t
 #define snd_timer_ginfo_sizeof_INDEXED INDEXED_size_t
 #define snd_timer_ginfo_sizeof_FORMAT FORMAT_size_t
@@ -25647,8 +25647,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_timer_id_set_subdevice_FORMAT FORMAT_void_snd_timer_id_t___GENPT___int
 #define snd_timer_id_sizeof_INDEX 1694
 #define snd_timer_id_sizeof_RETURN size_t
-#define snd_timer_id_sizeof_ARG_NAMES 
-#define snd_timer_id_sizeof_ARG_EXPAND 
+#define snd_timer_id_sizeof_ARG_NAMES
+#define snd_timer_id_sizeof_ARG_EXPAND
 #define snd_timer_id_sizeof_PACKED PACKED_size_t
 #define snd_timer_id_sizeof_INDEXED INDEXED_size_t
 #define snd_timer_id_sizeof_FORMAT FORMAT_size_t
@@ -25724,8 +25724,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_timer_info_malloc_FORMAT FORMAT_int_snd_timer_info_t___GENPT____GENPT__
 #define snd_timer_info_sizeof_INDEX 1705
 #define snd_timer_info_sizeof_RETURN size_t
-#define snd_timer_info_sizeof_ARG_NAMES 
-#define snd_timer_info_sizeof_ARG_EXPAND 
+#define snd_timer_info_sizeof_ARG_NAMES
+#define snd_timer_info_sizeof_ARG_EXPAND
 #define snd_timer_info_sizeof_PACKED PACKED_size_t
 #define snd_timer_info_sizeof_INDEXED INDEXED_size_t
 #define snd_timer_info_sizeof_FORMAT FORMAT_size_t
@@ -25857,8 +25857,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_timer_params_set_ticks_FORMAT FORMAT_void_snd_timer_params_t___GENPT___long
 #define snd_timer_params_sizeof_INDEX 1724
 #define snd_timer_params_sizeof_RETURN size_t
-#define snd_timer_params_sizeof_ARG_NAMES 
-#define snd_timer_params_sizeof_ARG_EXPAND 
+#define snd_timer_params_sizeof_ARG_NAMES
+#define snd_timer_params_sizeof_ARG_EXPAND
 #define snd_timer_params_sizeof_PACKED PACKED_size_t
 #define snd_timer_params_sizeof_INDEXED INDEXED_size_t
 #define snd_timer_params_sizeof_FORMAT FORMAT_size_t
@@ -26011,8 +26011,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define snd_timer_status_malloc_FORMAT FORMAT_int_snd_timer_status_t___GENPT____GENPT__
 #define snd_timer_status_sizeof_INDEX 1746
 #define snd_timer_status_sizeof_RETURN size_t
-#define snd_timer_status_sizeof_ARG_NAMES 
-#define snd_timer_status_sizeof_ARG_EXPAND 
+#define snd_timer_status_sizeof_ARG_NAMES
+#define snd_timer_status_sizeof_ARG_EXPAND
 #define snd_timer_status_sizeof_PACKED PACKED_size_t
 #define snd_timer_status_sizeof_INDEXED INDEXED_size_t
 #define snd_timer_status_sizeof_FORMAT FORMAT_size_t

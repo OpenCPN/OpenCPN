@@ -52,7 +52,7 @@ public:
     }
 
     /* copy and paste by plugins, keep functions in header */
-    void SetUnRefGribRecord(int i, GribRecord *pGR ) { 
+    void SetUnRefGribRecord(int i, GribRecord *pGR ) {
         assert (i >= 0 && i < Idx_COUNT);
         if (m_GribRecordUnref[i] == true) {
             delete m_GribRecordPtrArray[i];
@@ -61,7 +61,7 @@ public:
         m_GribRecordUnref[i] = true;
     }
 
-    void RemoveGribRecords( ) { 
+    void RemoveGribRecords( ) {
         for(int i=0; i<Idx_COUNT; i++) {
             if (m_GribRecordUnref[i] == true) {
                 delete m_GribRecordPtrArray[i];

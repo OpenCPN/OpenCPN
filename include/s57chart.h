@@ -137,7 +137,7 @@ public:
 
       virtual bool RenderRegionViewOnDCNoText(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
       virtual bool RenderRegionViewOnDCTextOnly(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
-      
+
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
       virtual LLRegion GetValidRegion();
 
@@ -160,7 +160,7 @@ public:
 
       int _insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner);
 
-      virtual ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, 
+      virtual ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon, float select_radius,
                                                         ViewPort *VPoint, int selection_mask = MASK_ALL);
       bool DoesLatLonSelectObject(float lat, float lon, float select_radius, S57Obj *obj);
       bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);
@@ -175,7 +175,7 @@ public:
       int BuildRAZFromSENCFile(const wxString& SENCPath);
       static void GetChartNameFromTXT(const wxString& FullPath, wxString &Name);
       wxString buildSENCName( const wxString& name);
-      
+
       //    DEPCNT VALDCO array access
       bool GetNearestSafeContour(double safe_cnt, double &next_safe_cnt);
 
@@ -187,9 +187,9 @@ public:
       virtual void ForceEdgePriorityEvaluate(void);
 
       float *GetLineVertexBuffer( void ){ return m_line_vertex_buffer; }
-      
+
       void ClearRenderedTextCache();
-      
+
       double GetCalculatedSafetyContour(void){ return m_next_safe_cnt; }
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
@@ -199,7 +199,7 @@ public:
       virtual bool RenderRegionViewOnGLNoText(const wxGLContext &glc, const ViewPort& VPoint,
                                         const OCPNRegion &RectRegion, const LLRegion &Region);
       virtual bool RenderViewOnGLTextOnly(const wxGLContext &glc, const ViewPort& VPoint);
-      
+
 // Public data
 //Todo Accessors here
       //  Object arrays used by S52PLIB TOPMAR rendering logic
@@ -240,23 +240,23 @@ public:
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;
       bool        m_RAZBuilt;
-      
+
       struct _chart_context     *m_this_chart_context;
 
       int FindOrCreateSenc( const wxString& name, bool b_progress = true );
       void DisableBackgroundSENC(){ m_disableBackgroundSENC = true; }
       void EnableBackgroundSENC(){ m_disableBackgroundSENC = false; }
-      
+
       SENCThreadStatus m_SENCthreadStatus;
 protected:
       void AssembleLineGeometry( void );
 
       ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
-    
+
 private:
       int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
       void SetSafetyContour(void);
-    
+
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
 
       bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
@@ -264,10 +264,10 @@ private:
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
       bool DCRenderText(wxMemoryDC& dcinput, const ViewPort& vp);
-      
+
 
       int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName, bool b_progress = true);
-      
+
       void SetLinePriorities(void);
 
       bool BuildThumbnail(const wxString &bmpname);
@@ -275,7 +275,7 @@ private:
       bool CreateHeaderDataFromSENC(void);
       bool CreateHeaderDataFromoSENC(void);
       bool GetBaseFileAttr( const wxString& file000 );
-      
+
       void ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this);
 
            //    Access to raw ENC DataSet
@@ -293,14 +293,14 @@ private:
                                   const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay);
 
       void BuildLineVBO( void );
-      
+
       void ChangeThumbColor(ColorScheme cs);
       void LoadThumb();
 bool s57_ProcessExtendedLightSectors( ChartCanvas *cc, ChartPlugInWrapper *target_plugin_chart, s57chart *Chs57,
                                       ListOfObjRazRules* rule_list, ListOfPI_S57Obj* pi_rule_list,
                                       std::vector<s57Sector_t>& sectorlegs );
 
-      
+
  // Private Data
       char        *hdr_buf;
       char        *mybuf_ptr;
@@ -336,31 +336,31 @@ bool s57_ProcessExtendedLightSectors( ChartCanvas *cc, ChartPlugInWrapper *targe
       int         m_nvaldco_alloc;
       double       *m_pvaldco_array;
 
-      
+
       float      *m_line_vertex_buffer;
       size_t      m_vbo_byte_length;
-      
+
       bool        m_blastS57TextRender;
       wxString    m_lastColorScheme;
       wxRect      m_last_vprect;
       long        m_plib_state_hash;
       bool        m_btex_mem;
       char        m_usage_char;
-      
+
       double      m_next_safe_cnt;
 
       int         m_LineVBO_name;
-      
+
       VE_Hash     m_ve_hash;
       VC_Hash     m_vc_hash;
       std::vector<connector_segment *> m_pcs_vector;
       std::vector<VE_Element *> m_pve_vector;
-      
+
       wxString    m_TempFilePath;
       bool        m_disableBackgroundSENC;
-protected:      
+protected:
       sm_parms    vp_transform;
-      
+
 };
 
 

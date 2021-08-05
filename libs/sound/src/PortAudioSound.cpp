@@ -123,10 +123,10 @@ static bool openStream(PaStream** stream,
 }
 
 /** Dump the complete soundLoader buffer to stream using blocking write. */
-static bool writeSynchronous(int deviceIx, 
+static bool writeSynchronous(int deviceIx,
                              std::unique_ptr<AbstractSoundLoader>& soundLoader,
                              PortAudioSound* portAudioSound)
-{   
+{
     PaStream* stream;
     if (!openStream(&stream, deviceIx, soundLoader, 0, portAudioSound)) {
         return false;
@@ -278,16 +278,16 @@ bool PortAudioSound::Play()
         return ok;
     }
     if (!m_stream) {
-        if (!openStream(&m_stream, 
-                        m_deviceIx, 
-                        m_soundLoader, 
-                        PortAudioSoundCallback, 
+        if (!openStream(&m_stream,
+                        m_deviceIx,
+                        m_soundLoader,
+                        PortAudioSoundCallback,
                         this))
         {
             unlock();
             return false;
         }
-        PaError pe = 
+        PaError pe =
             Pa_SetStreamFinishedCallback(m_stream, PortAudioDoneCallback);
         if (pe != paNoError) {
             wxLogWarning("PortAudio set stream finished callback error: %s",
@@ -295,7 +295,7 @@ bool PortAudioSound::Play()
             unlock();
             return false;
         }
-    } 
+    }
     bool ok = startStream(m_stream);
     unlock();
     return ok;

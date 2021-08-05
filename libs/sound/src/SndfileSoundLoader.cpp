@@ -40,7 +40,7 @@ bool SndfileSoundLoader::Load(const char* path)
     return true;
 }
 
-bool SndfileSoundLoader::Reset() 
+bool SndfileSoundLoader::Reset()
 {
     if (!m_sndfile) {
         wxLogWarning("SndfileLoader: Attempt to reset unloaded file.");
@@ -64,7 +64,7 @@ unsigned SndfileSoundLoader::GetChannelCount()  const
 
 unsigned SndfileSoundLoader::GetSamplingRate() const
 {
-    return m_sfinfo.samplerate; 
+    return m_sfinfo.samplerate;
 }
 
 SndfileSoundLoader::~SndfileSoundLoader()

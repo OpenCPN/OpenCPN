@@ -48,14 +48,14 @@ END_EVENT_TABLE()
 // Define a constructor
 ChInfoWin::ChInfoWin( wxWindow *parent )
 {
-    
+
     long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
     wxPanel::Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
 
     wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
     SetFont(*dFont);
-    
+
     int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
     m_pInfoTextCtl = new wxStaticText( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize,
                                        ststyle );
@@ -78,15 +78,15 @@ void ChInfoWin::MouseEvent( wxMouseEvent& event )
     if(g_btouch){
         if( event.LeftDown() ) {
             Hide();
-            
-            #ifdef __OCPN__ANDROID__        
+
+            #ifdef __OCPN__ANDROID__
             androidForceFullRepaint();
             #endif
         }
     }
 }
 
-    
+
 void ChInfoWin::OnPaint( wxPaintEvent& event )
 {
     int width, height;
@@ -126,7 +126,7 @@ void ChInfoWin::FitToChars( int char_width, int char_height )
 #ifdef __OCPN__ANDROID__
     adjust = 4;
 #endif
-    
+
     size.x = GetCharWidth() * char_width;
     size.y = GetCharHeight() * ( char_height + adjust );
     size.x = wxMin(size.x, g_Platform->getDisplaySize().x-10);

@@ -22,19 +22,19 @@ protected:
 public:
 	wxSVGCanvasPathCairo(cairo_surface_t* surface, wxSVGMatrix* matrix = NULL);
 	virtual ~wxSVGCanvasPathCairo();
-	
+
 	void End();
 	wxSVGRect GetBBox(const wxSVGMatrix* matrix = NULL);
 	wxSVGRect GetResultBBox(const wxCSSStyleDeclaration& style, const wxSVGMatrix* matrix = NULL);
-	
+
 	cairo_t* GetCr() { return m_cr; }
 	cairo_path_t* GetPath();
-	
+
 	void MoveToImpl(double x, double y);
 	void LineToImpl(double x, double y);
 	void CurveToCubicImpl(double x1, double y1, double x2, double y2, double x, double y);
 	bool ClosePathImpl();
-	
+
 	static void ApplyStrokeStyle(cairo_t* cr, const wxCSSStyleDeclaration& style);
 };
 

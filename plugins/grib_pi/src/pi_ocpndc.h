@@ -67,11 +67,11 @@ public:
      void SetBrush( const wxBrush &brush);
      void SetTextForeground(const wxColour &colour);
      void SetFont(const wxFont& font);
-     static void SetGLAttrs( bool highQuality ); 
+     static void SetGLAttrs( bool highQuality );
      void SetGLStipple() const;
      void SetVP(PlugIn_ViewPort *vp);
      void SetDC(wxDC *dc_in){dc = dc_in;}
-     
+
      const wxPen& GetPen() const;
      const wxBrush& GetBrush() const;
      const wxFont& GetFont() const;
@@ -111,11 +111,11 @@ public:
      wxDC *GetDC() const { return dc; }
 
      void DrawGLLineArray( int n, float *vertex_array, float *color_array,  unsigned char *color_array_ub, bool b_hiqual );
-     
-#ifdef ocpnUSE_GL     
+
+#ifdef ocpnUSE_GL
      GLfloat     *s_odc_tess_work_buf;
 #endif
-     
+
      #ifdef USE_ANDROID_GLES2
      int          s_odc_tess_vertex_idx;
      int          s_odc_tess_vertex_idx_this;
@@ -125,9 +125,9 @@ public:
      vec4         s_odc_tess_color;
      //ViewPort    *s_odc_tessVP;
      GLUtesselator *m_tobj;
-     
+
      #endif
-     
+
 protected:
      bool ConfigurePen();
      bool ConfigureBrush();
@@ -136,7 +136,7 @@ protected:
                           int format, const unsigned char *data);
 
      void drawrrhelperGLES2( wxCoord x0, wxCoord y0, wxCoord r, int quadrant, int steps );
-     
+
      wxGLCanvas *glcanvas;
      wxDC *dc;
      wxPen m_pen;
@@ -144,7 +144,7 @@ protected:
      wxColour m_textforegroundcolour;
      wxFont m_font;
 
-#ifdef ocpnUSE_GL     
+#ifdef ocpnUSE_GL
      TexFont m_texfont;
 #endif
      bool m_buseTex;
@@ -152,13 +152,13 @@ protected:
 #if  wxUSE_GRAPHICS_CONTEXT
      wxGraphicsContext *pgc;
 #endif
-     
+
      float *workBuf;
      size_t workBufSize;
      unsigned int workBufIndex;
-     
+
      wxSize m_vpSize;
-     
+
 };
 
 #endif

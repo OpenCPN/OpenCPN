@@ -24,10 +24,10 @@ class wxSVGPathSegList: public wxSVGPathSegListBase
         { DoCopy(src); }
     wxSVGPathSegList& operator=(const wxSVGPathSegList& src)
     { Clear(); DoCopy(src); return *this; }
-    
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& value);
-    
+
   protected:
     void DoCopy(const wxSVGPathSegList& src);
 };

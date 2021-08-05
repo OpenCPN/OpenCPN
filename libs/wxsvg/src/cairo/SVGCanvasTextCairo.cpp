@@ -16,7 +16,7 @@
 #include <cairo/cairo.h>
 #if defined(__WXMSW__)
 #include <cairo/cairo-win32.h>
-#elif defined(__WXMAC__) 
+#elif defined(__WXMAC__)
 #include <cairo/cairo-quartz.h>
 #else
 #include <pango/pangocairo.h>
@@ -31,10 +31,10 @@ wxSVGCanvasTextCairo::~wxSVGCanvasTextCairo() {
 
 void wxSVGCanvasTextCairo::InitText(const wxString& text, const wxCSSStyleDeclaration& style, wxSVGMatrix* matrix) {
 	BeginChar(matrix);
-	
+
 	// create path from text
 	cairo_t* cr = ((wxSVGCanvasPathCairo*) m_char->path)->GetCr();
-	
+
 #if defined(__WXMSW__) || defined(__WXMAC__)
 	int size = (int) style.GetFontSize();
 	int fstyle = style.GetFontStyle() == wxCSS_VALUE_ITALIC ? wxFONTSTYLE_ITALIC
@@ -49,12 +49,12 @@ void wxSVGCanvasTextCairo::InitText(const wxString& text, const wxCSSStyleDeclar
 #else
 	CGFontRef cgFont = fnt.OSXGetCGFont();
 	cairo_set_font_face(cr, cairo_quartz_font_face_create_for_cgfont(cgFont));
-#endif	
+#endif
 	cairo_set_font_size(cr, style.GetFontSize());
-	
+
 	cairo_font_extents_t fextents;
 	cairo_font_extents(cr, &fextents);
-	
+
 	double maxWidth = 0;
 	if (style.GetTextAnchor() == wxCSS_VALUE_MIDDLE || style.GetTextAnchor() == wxCSS_VALUE_END) {
 		wxStringTokenizer tokenzr(text, wxT("\n"));
@@ -66,7 +66,7 @@ void wxSVGCanvasTextCairo::InitText(const wxString& text, const wxCSSStyleDeclar
 				maxWidth = extents.width;
 		}
 	}
-	
+
 	wxStringTokenizer tokenzr(text, wxT("\n"));
 	double x_advance = 0;
 	double width = 0;
@@ -74,16 +74,16 @@ void wxSVGCanvasTextCairo::InitText(const wxString& text, const wxCSSStyleDeclar
 	double y = 0;
 	while (tokenzr.HasMoreTokens()) {
 		wxString token = tokenzr.GetNextToken();
-		
+
 		// get text extents
 		cairo_text_extents_t extents;
 		cairo_text_extents(cr, (const char*) token.utf8_str(), &extents);
 		double x = style.GetTextAnchor() == wxCSS_VALUE_END ? maxWidth - extents.width
 				: style.GetTextAnchor() == wxCSS_VALUE_MIDDLE ? (maxWidth - extents.width) / 2 : 0;
-		
+
 		m_char->path->MoveTo(m_tx + x, m_ty + y);
 		cairo_text_path(cr, (const char*) token.utf8_str());
-		
+
 		if (x_advance < extents.x_advance)
 			x_advance = extents.x_advance;
 		if (width < extents.width)
@@ -92,10 +92,10 @@ void wxSVGCanvasTextCairo::InitText(const wxString& text, const wxCSSStyleDeclar
 		if (tokenzr.HasMoreTokens())
 			y += fextents.height;
 	}
-	
+
 	// set bbox
 	m_char->bbox = wxSVGRect(m_tx, m_ty, width, height);
-	
+
 	// increase current position (m_tx)
 	if (style.GetTextAnchor() == wxCSS_VALUE_MIDDLE || style.GetTextAnchor() == wxCSS_VALUE_END) {
 		wxSVGRect bbox = m_char->path->GetResultBBox(style);
@@ -117,15 +117,15 @@ void wxSVGCanvasTextCairo::InitText(const wxString& text, const wxCSSStyleDeclar
 	if (f == NULL)
 		pango_font_description_set_style(font, PANGO_STYLE_NORMAL);
 	pango_layout_set_font_description(layout, font);
-	
+
 	if (style.GetTextAnchor() != wxCSS_VALUE_START)
 		pango_layout_set_alignment(layout, style.GetTextAnchor() == wxCSS_VALUE_MIDDLE ? PANGO_ALIGN_CENTER : PANGO_ALIGN_RIGHT);
 	pango_layout_set_text(layout, (const char*) text.utf8_str(), -1);
-	
+
 	int baseline = pango_layout_get_baseline(layout);
 	m_char->path->MoveTo(m_tx, m_ty - ((double)baseline / PANGO_SCALE));
 	pango_cairo_layout_path(cr, layout);
-	
+
 	// set bbox and increase current position (m_tx)
 	int lwidth, lheight;
 	pango_layout_get_size(layout, &lwidth, &lheight);
@@ -137,7 +137,7 @@ void wxSVGCanvasTextCairo::InitText(const wxString& text, const wxCSSStyleDeclar
 		m_tx += width > bbox.GetWidth() ? width : bbox.GetWidth();
 	} else
 		m_tx += width;
-		
+
 	g_object_unref(layout);
 	pango_font_description_free(font);
 #endif

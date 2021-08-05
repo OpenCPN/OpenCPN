@@ -43,7 +43,7 @@ public:
         Bind(wxEVT_KEY_UP, &TimeCtrl::OnChar, this);
         Bind(wxEVT_KILL_FOCUS, &TimeCtrl::OnKillFocus, this);
     };
-    
+
     void SetValue(const wxDateTime val)
     {
         if (val.IsValid()) {
@@ -52,7 +52,7 @@ public:
             wxTextCtrl::SetValue(NO_TIME);
         }
     };
-    
+
     wxDateTime GetValue()
     {
         wxDateTime dt;
@@ -67,7 +67,7 @@ public:
             return dt;
         }
     };
-    
+
     void OnChar(wxKeyEvent& event)
     {
         if (GetValue().IsValid()) {
@@ -75,19 +75,19 @@ public:
             HandleWindowEvent(evt);
         }
     };
-    
+
     void OnKillFocus(wxFocusEvent& event)
     {
         wxTextCtrl::SetValue(GetValue().Format(TIME_FORMAT));
     };
-    
+
     bool GetTime(int* hour, int* min, int* sec)
     {
         const wxDateTime::Tm tm = GetValue().GetTm();
         *hour = tm.hour;
         *min = tm.min;
         *sec = tm.sec;
-        
+
         return true;
     }
 

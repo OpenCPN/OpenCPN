@@ -108,7 +108,7 @@ const wxBitmap &ThumbWin::GetBitmap(void)
                 m_bitmap =  *( pThumbChart->GetThumbData()->pDIBThumb );
         }
     }
-    
+
     return m_bitmap;
 }
-     
+

@@ -331,7 +331,7 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 #else
     m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
     m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
-#endif    
+#endif
 
 }
 
@@ -570,7 +570,7 @@ void GRIBUICtrlBar::SetCursorLatLon( double lat, double lon )
     m_cursor_lon = lon;
     m_cursor_lat = lat;
 
-    if(m_vp && 
+    if(m_vp &&
         ((lat > m_vp->lat_min) && (lat < m_vp->lat_max))&&
         ((lon > m_vp->lon_min) && (lon < m_vp->lon_max)) )
         UpdateTrackingControl();
@@ -680,7 +680,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
 #endif
     SetSize( wxSize( sd.x, sd.y ) );
     SetMinSize( wxSize( sd.x, sd.y ) );
-    
+
 #ifdef __OCPN__ANDROID__
     wxRect tbRect = GetMasterToolbarRect();
     //qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height << pPlugIn->GetCtrlBarXY().x << pPlugIn->GetCtrlBarXY().y;
@@ -691,12 +691,12 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
         pNew.y = 0; //tbRect.y;
         pPlugIn->SetCtrlBarXY( pNew );
         //qDebug() << "pNew" << pNew.x;
-        
+
         int widthAvail = GetCanvasByIndex(0)->GetClientSize().x - (tbRect.x +tbRect.width);
-        
+
         if(sd.x > widthAvail){
             //qDebug() << "Too big" << widthAvail << sd.x;
-            
+
             int target_char_width = (float)widthAvail / 28;
             wxScreenDC dc;
             bool bOK = false;
@@ -706,17 +706,17 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
             while(!bOK){
                 //qDebug() << "PointSize" << pointSize;
                 sFont = FindOrCreateFont_PlugIn( pointSize, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE );
-                dc.GetTextExtent (_T("W"), &width, &height, NULL, NULL, sFont); 
+                dc.GetTextExtent (_T("W"), &width, &height, NULL, NULL, sFont);
                 if(width <= target_char_width)
                     bOK = true;
                 pointSize--;
                 if(pointSize <= 10)
                     bOK = true;
             }
-                
-                
+
+
             m_cRecordForecast->SetFont(*sFont);
-            
+
             Layout();
             Fit();
             Hide();
@@ -730,7 +730,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     pNow.y = 0;
     pPlugIn->SetCtrlBarXY( pNow );
 
-#endif    
+#endif
 
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
@@ -901,7 +901,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     if( m_gCursorData && m_CDataIsShown ){
         m_gCursorData->OnMouseEvent (evt );
     }
-#endif    
+#endif
 }
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
@@ -1602,7 +1602,7 @@ void GRIBUICtrlBar::PopulateComboDataList()
 void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
 {
     DoZoomToCenter();
-#if 0    
+#if 0
     if(!m_pTimelineSet) return;
 
     double latmin,latmax,lonmin,lonmax;
@@ -2039,7 +2039,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
                         if (idx == Idx_PRESSURE) {
                             skip = (oRec->getLevelType() == LV_MSL);
-                        } 
+                        }
                         else {
                             // we favor UV over DIR/SPEED
                             if (polarWind) {

@@ -77,7 +77,7 @@ BEGIN_EVENT_TABLE(ConsoleCanvas, wxWindow)
     EVT_MENU(ID_NAVLEG, ConsoleCanvas::OnContextMenuSelection)
     EVT_MENU(ID_NAVROUTE, ConsoleCanvas::OnContextMenuSelection)
     EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvas::OnContextMenuSelection)
-    
+
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -90,7 +90,7 @@ ConsoleCanvas::ConsoleCanvas( wxWindow *frame )
     long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
     wxFrame::Create( frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
-    
+
     m_pParent = frame;
 
     m_pitemBoxSizerLeg = new wxBoxSizer( wxVERTICAL );
@@ -101,7 +101,7 @@ ConsoleCanvas::ConsoleCanvas( wxWindow *frame )
 
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    
+
     wxFont *pThisLegFont = FontMgr::Get().FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
                                                           qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
                                                           qFont->GetFaceName() );
@@ -142,7 +142,7 @@ ConsoleCanvas::ConsoleCanvas( wxWindow *frame )
         pThisLegText->SetLabel( _("Route") );
     else
         pThisLegText->SetLabel( _("This Leg") );
-    
+
     Hide();
 }
 
@@ -150,7 +150,7 @@ ConsoleCanvas::~ConsoleCanvas()
 {
     delete pCDI;
 }
-    
+
 void ConsoleCanvas::SetColorScheme( ColorScheme cs )
 {
     pbackBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("DILG1"/*UIBDR*/) ),
@@ -161,7 +161,7 @@ void ConsoleCanvas::SetColorScheme( ColorScheme cs )
         pThisLegText->SetLabel( _("Route") );
     else
         pThisLegText->SetLabel( _("This Leg") );
-    
+
     //  Also apply color scheme to all known children
 
     pThisLegText->SetBackgroundColour( GetGlobalColor( _T("DILG1"/*"UIBDR"*/) ) );
@@ -262,7 +262,7 @@ void ConsoleCanvas::ToggleRouteTotalDisplay()
     }
     LegRoute();
 }
-    
+
 void ConsoleCanvas::UpdateRouteData()
 {
     wxString str_buf;
@@ -278,13 +278,13 @@ void ConsoleCanvas::UpdateRouteData()
             float dcog = g_pRouteMan->GetCurrentBrgToActivePoint();
             if( dcog >= 359.5 )
                 dcog = 0;
-            
+
             wxString cogstr;
             if( g_bShowTrue )
                 cogstr << wxString::Format( wxString("%6.0f", wxConvUTF8 ), dcog );
             if( g_bShowMag )
                 cogstr << wxString::Format( wxString("%6.0f(M)", wxConvUTF8 ), gFrame->GetMag( dcog ) );
-            
+
             pBRG->SetAValue( cogstr );
 
             double speed = 0.;
@@ -400,7 +400,7 @@ void ConsoleCanvas::UpdateRouteData()
                     tttg_sec = ( trng / gSog ) * 3600.;
                     tttg_span = wxTimeSpan::Seconds( (long) tttg_sec );
                     //Show also #days if TTG > 24 h
-                    tttg_s = tttg_sec > SECONDS_PER_DAY ? 
+                    tttg_s = tttg_sec > SECONDS_PER_DAY ?
                       tttg_span.Format(_("%Dd %H:%M")) : tttg_span.Format("%H:%M:%S");
                 }
                 else
@@ -515,11 +515,11 @@ void AnnunText::MouseEvent( wxMouseEvent& event )
     if( event.RightDown() ) {
         wxContextMenuEvent cevt;
         cevt.SetPosition( event.GetPosition());
-        
+
         ConsoleCanvas *ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
         if(ccp)
             ccp->OnContextMenu( cevt );
-        
+
     }
     else if( event.LeftDown() ) {
         ConsoleCanvas *ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
@@ -527,7 +527,7 @@ void AnnunText::MouseEvent( wxMouseEvent& event )
             ccp->ToggleRouteTotalDisplay();
         }
     }
-    
+
 }
 
 void AnnunText::CalculateMinSize( void )
@@ -545,12 +545,12 @@ void AnnunText::CalculateMinSize( void )
 
     wxSize min;
     min.x = wl + wv;
-    
+
     // Space is tight on Android....
 #ifdef __OCPN__ANDROID__
-    min.x = wv * 1.2; 
-#endif    
-    
+    min.x = wv * 1.2;
+#endif
+
     min.y = (int) ( ( hl + hv ) * 1.2 );
 
     SetMinSize( min );
@@ -572,28 +572,28 @@ void AnnunText::RefreshFonts()
 
     m_legend_color = FontMgr::Get().GetFontColor( _("Console Legend") );
     m_val_color = FontMgr::Get().GetFontColor( _("Console Value") );
-    
+
     CalculateMinSize();
-    
+
     // Make sure that the background color and the text colors are not too close, for contrast
     if(m_backBrush.IsOk()){
         wxColour back_color = m_backBrush.GetColour();
-    
+
         wxColour legend_color = m_legend_color;
         if( (abs(legend_color.Red() - back_color.Red()) < 5) &&
                 (abs(legend_color.Green() - back_color.Blue()) < 5) &&
                 (abs(legend_color.Blue() - back_color.Blue()) < 5))
             m_legend_color = m_default_text_color;
-            
+
         wxColour value_color = m_val_color;
         if( (abs(value_color.Red() - back_color.Red()) < 5) &&
             (abs(value_color.Green() - back_color.Blue()) < 5) &&
             (abs(value_color.Blue() - back_color.Blue()) < 5))
             m_val_color = m_default_text_color;
-            
+
     }
-    
-        
+
+
 
 }
 
@@ -656,7 +656,7 @@ void AnnunText::OnPaint( wxPaintEvent& event )
 
     wxPaintDC dc( this );
     dc.Blit( 0, 0, sx, sy, &mdc, 0, 0 );
-    
+
 }
 //------------------------------------------------------------------------------
 //    CDI Implementation
@@ -678,16 +678,16 @@ void CDI::MouseEvent( wxMouseEvent& event )
 #ifdef    __OCPN__ANDROID__
     if( event.RightDown() ) {
         qDebug() << "right down";
-         
+
         wxContextMenuEvent cevt;
         cevt.SetPosition( event.GetPosition());
-        
+
         ConsoleCanvas *ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
         if(ccp)
             ccp->OnContextMenu( cevt );
-        
+
     }
-#endif    
+#endif
 }
 
 void CDI::SetColorScheme( ColorScheme cs )

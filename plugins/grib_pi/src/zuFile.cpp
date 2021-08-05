@@ -76,7 +76,7 @@ ZUFILE * zu_open(const char *fname, const char *mode, int type)
 	{
 		f->type = type;
 	}
-	
+
     switch(f->type) {
         case ZU_COMPRESS_NONE :
             f->zfile = (void *) fopen(f->fname, mode);
@@ -175,7 +175,7 @@ long   zu_filesize(ZUFILE *f)
     if (ftmp)
     {
         fseek(ftmp, 0, SEEK_END);
-        res = ftell(ftmp);        
+        res = ftell(ftmp);
         fclose(ftmp);
     }
     return res;
@@ -189,7 +189,7 @@ int zu_seek(ZUFILE *f, long offset, int whence)
     if (whence == SEEK_END) {
         return -1;              // TODO
     }
-    
+
     switch(f->type) {         //SEEK_SET, SEEK_CUR
         case ZU_COMPRESS_NONE :
             res = fseek((FILE*)(f->zfile), offset, whence);

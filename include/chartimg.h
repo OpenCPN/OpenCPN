@@ -224,7 +224,7 @@ protected:
       virtual int ReadBSBHdrLine( wxInputStream*, char *, int );
       virtual int AnalyzeRefpoints(bool b_testSolution = true);
       virtual bool AnalyzeSkew(void);
-      
+
       virtual bool SetMinMax(void);
 
       InitReturn PreInit( const wxString& name, ChartInitFlag init_flags, ColorScheme cs );
@@ -325,11 +325,11 @@ protected:
       double    m_proj_lat, m_proj_lon;
 
       ViewPort  m_vp_render_last;
-      
+
       wxCriticalSection m_critSect;
       wxULongLong m_filesize;
-      
-      
+
+
 };
 
 
@@ -406,7 +406,7 @@ class ChartPlugInWrapper : public ChartBaseBSB
             virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
             virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
-            
+
             virtual PlugInChartBase *GetPlugInChart(void){ return m_ppicb; }
 
             virtual int GetCOVREntries();
@@ -418,7 +418,7 @@ class ChartPlugInWrapper : public ChartBaseBSB
             virtual int GetNoCOVRTablePoints(int iTable);
             virtual int  GetNoCOVRTablenPoints(int iTable);
             virtual float *GetNoCOVRTableHead(int iTable);
-            
+
             //    The following set of methods apply to BSB (i.e. Raster) type PlugIn charts only
             //    and need not be implemented if the ChartFamily is not CHART_FAMILY_RASTER
             virtual void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
@@ -428,23 +428,23 @@ class ChartPlugInWrapper : public ChartBaseBSB
             virtual int GetSize_Y();
             virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
             virtual void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
-            
-            
+
+
             //  Added for API V 1.14, with PlugInChartBaseExtended
             virtual bool RenderRegionViewOnDCNoText(wxMemoryDC &dc, const ViewPort& VPoint,
                                                                 const OCPNRegion &Region);
-            
+
             virtual bool RenderRegionViewOnDCTextOnly(wxMemoryDC &dc, const ViewPort& VPoint,
                                                     const OCPNRegion &Region);
-            
+
             virtual bool RenderRegionViewOnGLNoText( const wxGLContext &glc, const ViewPort& VPoint,
                                                        const OCPNRegion &RectRegion, const LLRegion &Region );
-            
+
             virtual bool RenderRegionViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& VPoint,
                                                          const OCPNRegion &RectRegion );
-            
+
             virtual void ClearPLIBTextList();
-            
+
       private:
             PlugInChartBase *m_ppicb;
             wxObject          *m_ppo;

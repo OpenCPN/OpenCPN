@@ -140,7 +140,7 @@ void DashboardInstrument_Moon::SetData( DASH_CAP st, double value, wxString form
 {
     if( st == OCPN_DBP_STC_LAT && !std::isnan(value)) {
         m_hemisphere = (value < 0 ? _T("S") : _T("N"));
-    } 
+    }
 }
 
 void DashboardInstrument_Moon::Draw(wxGCDC* dc)

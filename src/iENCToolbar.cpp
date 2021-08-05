@@ -44,7 +44,7 @@
 
 extern s52plib *ps52plib;
 extern MyFrame * gFrame;
-extern OCPNPlatform *g_Platform; 
+extern OCPNPlatform *g_Platform;
 
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
@@ -61,21 +61,21 @@ END_EVENT_TABLE()
 iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float size_factor ):
         ocpnFloatingToolbarDialog( parent, position, orient, size_factor)
 {
- 
+
     LoadToolBitmaps();
- 
+
     wxSize a = m_bmMinimum.GetSize();
     m_ptoolbar->SetToolBitmapSize( a );
 
     m_pbmScratch = new wxBitmap(a.x, a.y);
-    
+
     m_bmTemplate = m_bmRMinus;
-    
+
     m_toolDensity = m_ptoolbar->AddTool( ID_DENSITY, _T("Density"), m_bmMinimum, m_bmMinimum );
     m_ptoolbar->AddTool( ID_RPLUS, _T("RangePlus"), m_bmRPlus, m_bmRPlus );
     m_ptoolbar->AddTool( ID_RMINUS, _T("RangeMinus"), m_bmRMinus, m_bmRMinus );
-    
- 
+
+
     SetCanToggleOrientation( false );
     EnableRolloverBitmaps( false );
     DisableTooltips();
@@ -83,17 +83,17 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
 
     m_nDensity = 0;
     SetDensityToolBitmap(m_nDensity);
-    
+
     // Realize() the toolbar
     Realize();
     Hide();
-    
+
     SetDefaultPosition();
     Show(true);
-    
+
     m_state_timer.SetOwner( this, STATE_TIMER );
     m_state_timer.Start( 500, wxTIMER_CONTINUOUS );
-    
+
 
 }
 
@@ -107,16 +107,16 @@ void iENCToolbar::MouseEvent( wxMouseEvent& event )
     if( event.IsButton() )
         gFrame->Raise();
 }
-    
-    
+
+
 void iENCToolbar::SetColorScheme( ColorScheme cs )
 {
     m_range = 0;                // Forcw a redraw of tools
     m_nDensity = -1;
-    
+
     ocpnFloatingToolbarDialog::SetColorScheme( cs );
 }
-    
+
 
 void iENCToolbar::LoadToolBitmaps()
 {
@@ -124,7 +124,7 @@ void iENCToolbar::LoadToolBitmaps()
 
     int w = 96;
     int h = 32;
-    
+
     if(::wxFileExists( svgDir + _T("iENC_All.svg"))){
         wxImage img = LoadSVGIcon( svgDir + _T("iENC_All.svg"), w, h );
         m_bmAll = wxBitmap(img);
@@ -139,43 +139,43 @@ void iENCToolbar::LoadToolBitmaps()
         m_bmRPlus = wxBitmap(img);
         img = LoadSVGIcon( svgDir + _T("iENC_RMinus.svg"), w, h );
         m_bmRMinus = wxBitmap(img);
-        
+
     }
     else{
         wxLogMessage(_T("Cannot find iENC icons at: ") + svgDir);
-        
+
         m_bmMinimum = wxBitmap( 96, 32);
         m_bmStandard = wxBitmap( 96, 32);;
         m_bmAll = wxBitmap( 96, 32);
         m_bmUStd = wxBitmap( 96, 32);
-        
+
         m_bmRPlus = wxBitmap( 96, 32);
         m_bmRMinus = wxBitmap( 96, 32);
     }
-   
+
 }
-    
-    
+
+
 
 void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
 {
     int itemId = event.GetId();
 
     ChartCanvas *cc = gFrame->GetPrimaryCanvas();
-    
+
     enum _DisCat nset = STANDARD;
     double range;
-    
+
     switch(itemId){
         case ID_DENSITY:
 
             if(++m_nDensity > 3)
                 m_nDensity = 0;
-            
+
             SetDensityToolBitmap(m_nDensity);
             m_ptoolbar->Refresh();
-            
-            
+
+
             switch(m_nDensity){
                 case 0:
                     nset = DISPLAYBASE;
@@ -193,15 +193,15 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
                     nset = STANDARD;
                     break;
             }
-            
+
             gFrame->SetENCDisplayCategory( cc, nset );
-            
+
             break;
 
         case ID_RMINUS:
             range = cc->GetCanvasRangeMeters();
             range = wxRound(range * 10) / 10.;
-            
+
             if(range > 8000.)
                 cc->SetCanvasRangeMeters(8000.);
             if(range > 4000.)
@@ -218,13 +218,13 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
                 cc->SetCanvasRangeMeters(500.);
             else if(range > 300.)
                 cc->SetCanvasRangeMeters(300.);
-            
+
             break;
-                    
+
         case ID_RPLUS:
             range = cc->GetCanvasRangeMeters();
             range = wxRound(range * 10) / 10.;
-            
+
             if(range < 300.)
                 cc->SetCanvasRangeMeters(300.);
             else if(range < 500.)
@@ -241,13 +241,13 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
                 cc->SetCanvasRangeMeters(4000.);
             else if(range < 8000.)
                 cc->SetCanvasRangeMeters(8000.);
-            
+
             break;
-        
+
         default:
             break;
     }
-    
+
 }
 
 
@@ -255,7 +255,7 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
 void iENCToolbar::SetDensityToolBitmap( int nDensity)
 {
     int toolID = m_toolDensity->GetId();
-    
+
     if(nDensity == 0)
         m_ptoolbar->SetToolBitmaps( ID_DENSITY, &m_bmMinimum, &m_bmMinimum );
     else if(nDensity == 1)
@@ -264,8 +264,8 @@ void iENCToolbar::SetDensityToolBitmap( int nDensity)
         m_ptoolbar->SetToolBitmaps( ID_DENSITY, &m_bmAll, &m_bmAll );
     else if(nDensity == 3)
         m_ptoolbar->SetToolBitmaps( ID_DENSITY, &m_bmUStd, &m_bmUStd );
-    
-}    
+
+}
 
 
 void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
@@ -273,7 +273,7 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
     ChartCanvas *cc = gFrame->GetPrimaryCanvas();
     if(!cc)
         return;
-    
+
     //  Keep the Density tool in sync
     if(ps52plib){
         int nset = 1;
@@ -295,22 +295,22 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
                 nset = 1;
                 break;
         }
-        
+
         if( nset != m_nDensity){
             if(nset < 3){
                 m_nDensity = nset;
                 SetDensityToolBitmap( m_nDensity );
-                
+
                 m_ptoolbar->Refresh();
             }
         }
     }
-    
+
     // Keep the Range annunciator updated
-        
+
     if(cc){
         double range = cc->GetCanvasRangeMeters();
-     
+
         if(range != m_range){
             m_range = range;
 
@@ -321,23 +321,23 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
 
 //            wxImage image = m_bmRMinus.ConvertToImage();
 //            wxBitmap bmTemplate(image);
-            
+
             // Get the template bitmap
             wxBitmap bmTemplate = m_bmRMinus;
-            
+
             wxMask *mask = new wxMask(bmTemplate, wxColour(wxTRANSPARENT));
             bmTemplate.SetMask(mask);
-            
+
             wxMemoryDC dct(bmTemplate);
-            
+
             //  Make a deep copy by Blit
             wxMemoryDC dc;
             dc.SelectObject(*m_pbmScratch);
             dc.SetBackground(wxBrush(GetGlobalColor(_T("GREY2"))));
             dc.Clear();
-            
+
             dc.Blit(0, 0, m_pbmScratch->GetWidth(), m_pbmScratch->GetHeight(), &dct, 0, 0, wxCOPY, true);
-            
+
             dct.SelectObject(wxNullBitmap);
 #else
             wxMemoryDC dc;
@@ -345,13 +345,13 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
             dc.SetBackground(wxBrush(GetGlobalColor(_T("GREY2"))));
             dc.Clear();
             dc.DrawBitmap(m_bmRMinus, wxPoint(0,0));
-#endif            
+#endif
             //  Render the range as text onto the template
             m_rangeFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
 
             wxString range_string;
             range_string.Printf(_T("%4.0fm"), range);
-                
+
             dc.SetFont( *m_rangeFont );
 
             //  Select a font that will fit into the allow space.
@@ -370,17 +370,17 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
                     dc.SetFont( *m_rangeFont );
                 }
             }
-            
+
             dc.SetTextForeground(*wxBLACK);
             dc.SetBackgroundMode(wxTRANSPARENT);
-            
-            
+
+
             dc.DrawText(range_string, 42, 8);
-            
+
             dc.SelectObject(wxNullBitmap);
 
             m_ptoolbar->SetToolBitmaps( ID_RMINUS, m_pbmScratch, m_pbmScratch );
-            
+
             m_ptoolbar->Refresh();
         }
     }

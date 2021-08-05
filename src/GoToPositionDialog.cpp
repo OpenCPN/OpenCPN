@@ -90,7 +90,7 @@ bool GoToPositionDialog::Create( wxWindow* parent, wxWindowID id, const wxString
     wxDialog::Create( parent, id, caption, pos, size, style );
 
     m_hostCanvas = NULL;
-    
+
     CreateControls();
     GetSizer()->SetSizeHints( this );
     Centre();

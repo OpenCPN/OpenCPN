@@ -30,4 +30,4 @@ wxSvgXmlNode *XmlFindNodeSimple(wxSvgXmlNode *parent, const wxString& path);
 wxString XmlGetClass(wxSvgXmlNode *parent);
 void XmlSetClass(wxSvgXmlNode *parent, const wxString& classname);
 
-#endif 
+#endif
