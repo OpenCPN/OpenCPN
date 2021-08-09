@@ -54,6 +54,8 @@
 #include <wx/clrpicker.h>
 #include <wx/tokenzr.h>
 #include <wx/dir.h>
+#include <wx/textfile.h>
+#include <wx/regex.h>
 #include <wx/dialog.h>
 
 #include "dychart.h"
@@ -439,6 +441,8 @@ int                       g_ShipScaleFactor;
 float                     g_ShipScaleFactorExp;
 int                       g_ENCSoundingScaleFactor;
 
+
+wxVector<wxPoint>         g_shipPoints;
 
 bool                      g_bShowTide;
 bool                      g_bShowCurrent;
@@ -1081,7 +1085,7 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
 #endif        
 }
 
-wxString newPrivateFileName(wxString home_locn, const char *name, const char *windowsName)
+wxString newPrivateFileName(const char *name, const char *windowsName)
 {
     wxString fname = wxString::FromUTF8(name);
     wxString fwname = wxString::FromUTF8(windowsName);
@@ -2045,6 +2049,52 @@ bool MyApp::OnInit()
         style->chartStatusWindowTransparent = true;
     }
     
+    // Setup the ship shape
+    bool m_vectorShipLoaded = false;
+    bool m_vectorShipLoadError = false;
+    wxString vectorShipFileName = newPrivateFileName("shipicon.txt", "shipicon.txt");
+    wxRegEx vectorShipVerify;
+    
+    vectorShipVerify.Compile("^-?[[:digit:]]+ -?[[:digit:]]+");
+    
+    if(wxFileExists(vectorShipFileName)){
+      wxTextFile f_vectorShip;
+      f_vectorShip.Open(vectorShipFileName);
+      for ( wxString line = f_vectorShip.GetFirstLine(); !f_vectorShip.Eof(); line = f_vectorShip.GetNextLine() )
+      {
+        if(line.Len() == 0) continue;
+        
+        if(!vectorShipVerify.Matches(line)){
+          m_vectorShipLoadError = true;
+          break;
+        }
+        wxStringTokenizer vstokenizer(line, " ");
+        if(vstokenizer.CountTokens() != 2){
+          m_vectorShipLoadError = true;
+          break;
+        }
+        wxString xcoord = vstokenizer.GetNextToken();
+        wxString ycoord = vstokenizer.GetNextToken();
+        
+        g_shipPoints.push_back(wxPoint(wxAtoi(xcoord), wxAtoi(ycoord)));
+        
+      }
+      f_vectorShip.Close();
+      if(!m_vectorShipLoadError){
+        m_vectorShipLoaded = true;
+      }
+    }
+    // A default ship in case load from file fails
+    if(!m_vectorShipLoaded){
+      g_shipPoints.clear();
+      g_shipPoints.push_back(wxPoint(11, 42));
+      g_shipPoints.push_back(wxPoint(11, -28));
+      g_shipPoints.push_back(wxPoint(5, -42));
+      g_shipPoints.push_back(wxPoint(-5, -42));
+      g_shipPoints.push_back(wxPoint(-11, -28));
+      g_shipPoints.push_back(wxPoint(-11, 42));
+    }
+    
 
     //      Init the WayPoint Manager
     pWayPointMan = NULL;
@@ -2180,10 +2230,10 @@ bool MyApp::OnInit()
 #endif
     
 //      Establish location and name of chart database
-    ChartListFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "chartlist.dat", "CHRTLIST.DAT");
+    ChartListFileName = newPrivateFileName("chartlist.dat", "CHRTLIST.DAT");
 
 //      Establish location and name of AIS MMSI -> Target Name mapping
-    AISTargetNameFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "mmsitoname.csv", "MMSINAME.CSV");
+    AISTargetNameFileName = newPrivateFileName("mmsitoname.csv", "MMSINAME.CSV");
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
@@ -11653,4 +11703,3 @@ void appendOSDirSlash( wxString* pString )
     wxChar sep = wxFileName::GetPathSeparator();
     if( pString->Last() != sep ) pString->Append( sep );
 }
-
