@@ -39,6 +39,7 @@ class wxCloseEvent;
 class wxTextCtrl;
 class wxButton;
 class wxListCtrl;
+class wxChoice;
 
 WX_DECLARE_LIST(wxPoint, SplineList);           // for spline curve points
 
@@ -56,10 +57,12 @@ public:
       void NXEvent(wxCommandEvent& event);
       void PREvent(wxCommandEvent& event);
       void OnCloseWindow(wxCloseEvent& event);
+      void TimezoneOnChoice( wxCommandEvent& event );
 
       void RePosition(void);
-      
+
       void RecalculateSize();
+      void SetTimeFactors();
 
 private:
     wxTextCtrl   *m_ptextctrl;
@@ -78,29 +81,32 @@ private:
     int           m_tsx;      // test button width
     int           m_tsy;      // test button height
     float         m_tcwin_scaler; // factor to scale TCWin and contents by
-    
-      IDX_entry   *pIDX;
-      wxButton    *OK_button;
-      wxButton    *NX_button;
-      wxButton    *PR_button;
 
-      int         im;  // span of values to graph
-      int         ib;  // minimum value to graph
-      int         it;  // maximum value to graph
-      int         val_off; // offset
-      int         i_skip; // vertical stride in graph
-      wxRect    m_graph_rect;
+    IDX_entry   *pIDX;
+    wxButton    *OK_button;
+    wxButton    *NX_button;
+    wxButton    *PR_button;
+    wxChoice    *m_choiceTimezone;
+    int         m_tzoneDisplay;
+
+    int         im;  // span of values to graph
+    int         ib;  // minimum value to graph
+    int         it;  // maximum value to graph
+    int         val_off; // offset
+    int         i_skip; // vertical stride in graph
+    wxRect    m_graph_rect;
 
 
       float       tcv[26];
       time_t      tt_tcv[26];
-      
+
       wxListCtrl  *m_tList ;
       bool        btc_valid;
       ChartCanvas    *pParent;
-      int         m_corr_mins;
+      int         m_stationOffset_mins;
+      int         m_diff_mins;
       wxString    m_stz;
-      int         m_t_graphday_00_at_station;
+      int         m_t_graphday_GMT;
       wxDateTime  m_graphday;
       int         m_plot_y_offset;
 
@@ -120,7 +126,7 @@ private:
       wxBrush *pltgray2;
 
       int         m_button_height;
-      
+
       int xSpot;
       int ySpot;
 
