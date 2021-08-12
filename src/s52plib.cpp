@@ -10910,6 +10910,7 @@ bool s52plib::ObjectRenderCheckDates( ObjRazRules *rzRules )
         }
         if(bDateValid){
             wxDateTime now = wxDateTime::Now();
+            objDate.ResetTime();
             if(now.IsEarlierThan(objDate))
                 return false;                       // No Show
         }
@@ -10931,6 +10932,7 @@ bool s52plib::ObjectRenderCheckDates( ObjRazRules *rzRules )
         }
         if(bDateValid){
             wxDateTime now = wxDateTime::Now();
+            objDate.ResetTime();
             if(now.IsLaterThan(objDate))
                 return false;                       // No Show
         }
@@ -10952,6 +10954,7 @@ bool s52plib::ObjectRenderCheckDates( ObjRazRules *rzRules )
         }
         if(bDateValid){
             wxDateTime now = wxDateTime::Now();
+            objDate.ResetTime();
             if(now.IsLaterThan(objDate))
                 return false;                       // No Show
         }
