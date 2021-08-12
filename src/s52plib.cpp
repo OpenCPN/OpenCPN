@@ -10936,6 +10936,27 @@ bool s52plib::ObjectRenderCheckDates( ObjRazRules *rzRules )
         }
     }
 
+    // PEREND
+    datsta = rzRules->obj->GetAttrValueAsString("PEREND");
+    if( (datsta.Len() > 0) && !datsta.StartsWith(_T("--")) ){
+        bool bDateValid = false;
+
+        // CCYYMMDD
+        wxDateTime objDate;
+        wxString::const_iterator end;
+        if ( objDate.ParseFormat(datsta, "%Y%m%d", &end) ){
+            if(end == datsta.end()) {                            // Require perfect parsing
+                if(objDate.IsValid())
+                    bDateValid = true;
+            }
+        }
+        if(bDateValid){
+            wxDateTime now = wxDateTime::Now();
+            if(now.IsLaterThan(objDate))
+                return false;                       // No Show
+        }
+    }
+
     return true;
 }
 
