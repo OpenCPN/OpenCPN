@@ -653,7 +653,7 @@ void glChartCanvas::Init() {
 
 //  Gesture support for platforms other than Android
 #ifdef HAVE_WX_GESTURE_EVENTS
-  if ( !EnableTouchEvents( wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES )){
+  if ( !EnableTouchEvents( wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES | wxTOUCH_PRESS_GESTURES )){
       wxLogError("Failed to enable touch events");
   }
 

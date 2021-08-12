@@ -877,7 +877,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 #ifdef HAVE_WX_GESTURE_EVENTS
 //#ifndef ocpnUSE_GL
 
-  if ( !EnableTouchEvents( wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES )){
+  if ( !EnableTouchEvents( wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES | wxTOUCH_PRESS_GESTURES )){
       wxLogError("Failed to enable touch events");
   }
 
@@ -1161,6 +1161,11 @@ void ChartCanvas::OnPan(wxPanGestureEvent& event) {
 
 void ChartCanvas::OnZoom(wxZoomGestureEvent& event)
 {
+
+  /* there are spurious end zoom events upon right-click */
+  if (event.IsGestureEnd())
+    return;
+
   double factor = event.GetZoomFactor();
 
   if (event.IsGestureStart() || m_oldVPSScale < 0) {
