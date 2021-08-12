@@ -178,6 +178,9 @@ void androidEnableRotation( void );
 void androidDisableRotation( void );
 int androidGetScreenOrientation();
 
+void androidEnableMulticast(bool benable);
+void androidLastCall();
+
 //      SVG Support
 wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height );
 
