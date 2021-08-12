@@ -361,7 +361,9 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_PAINT ( ChartCanvas::OnPaint )
     EVT_ACTIVATE ( ChartCanvas::OnActivate )
     EVT_SIZE ( ChartCanvas::OnSize )
+#ifndef HAVE_WX_GESTURE_EVENTS
     EVT_MOUSE_EVENTS ( ChartCanvas::MouseEvent )
+#endif
     EVT_TIMER ( DBLCLICK_TIMER, ChartCanvas::MouseTimedEvent )
     EVT_TIMER ( PAN_TIMER, ChartCanvas::PanTimerEvent )
     EVT_TIMER ( MOVEMENT_TIMER, ChartCanvas::MovementTimerEvent )
@@ -518,6 +520,13 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     SetAlertString(_T(""));
     m_sector_glat = 200;
     m_sector_glon = 200;
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+    m_oldVPSScale = -1.0;
+    m_popupWanted = false;
+    m_oldRotationAngle = 0.0;
+    m_leftdown = false;
+#endif /* HAVE_WX_GESTURE_EVENTS */
 
     SetupGlCanvas( );
 /*
@@ -887,6 +896,33 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_pianoFrozen = false;
 
     SetMinSize(wxSize(200,200));
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+#ifndef ocpnUSE_GL
+
+    if ( !EnableTouchEvents( wxTOUCH_ALL_GESTURES )) {
+        wxLogError("Failed to enable touch events");
+        // Still bind event handlers just in case they still work?
+    }
+
+    Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, this);
+    Bind(wxEVT_GESTURE_PAN, &ChartCanvas::OnPan, this);
+    Bind(wxEVT_GESTURE_ROTATE, &ChartCanvas::OnRotate, this);
+    Bind(wxEVT_TWO_FINGER_TAP, &ChartCanvas::OnTwoFingerTap, this);
+    Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, this);
+    Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, this);
+
+    Bind(wxEVT_RIGHT_UP, &ChartCanvas::OnRightUp, this);
+    Bind(wxEVT_RIGHT_DOWN, &ChartCanvas::OnRightDown, this);
+
+    Bind(wxEVT_LEFT_UP, &ChartCanvas::OnLeftUp, this);
+    Bind(wxEVT_LEFT_DOWN, &ChartCanvas::OnLeftDown, this);
+
+    Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, this);
+    Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
+#endif
+#endif
+
 }
 
 ChartCanvas::~ChartCanvas()
@@ -1089,6 +1125,109 @@ void ChartCanvas::OnRouteFinishTimerEvent( wxTimerEvent& event )
     if(m_routeState && m_FinishRouteOnKillFocus)
         FinishRoute();
 }
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+void ChartCanvas::OnRotate(wxRotateGestureEvent& event) {
+
+    double angle = event.GetRotationAngle();
+
+    if (event.IsGestureStart()) {
+        m_oldRotationAngle = VPoint.rotation;
+    }
+
+    DoRotateCanvas(m_oldRotationAngle + angle);
+}
+
+void ChartCanvas::OnTwoFingerTap(wxTwoFingerTapEvent& event) {
+    DoRotateCanvas(0.0);
+}
+
+void ChartCanvas::OnLongPress(wxLongPressEvent& event) {
+
+    /* we defer the popup menu call upon the leftup event
+    else the menu disappears immediately,
+    (see http://wxwidgets.10942.n7.nabble.com/Popupmenu-disappears-immediately-if-called-from-QueueEvent-td92572.html)
+    */
+    m_popupWanted = true;
+
+}
+
+void ChartCanvas::OnPressAndTap(wxPressAndTapEvent& event) {
+    // not implemented yet
+}
+
+void ChartCanvas::OnRightUp(wxMouseEvent& event) {
+    MouseEvent(event);
+}
+
+void ChartCanvas::OnRightDown(wxMouseEvent& event) {
+    MouseEvent(event);
+}
+
+void ChartCanvas::OnLeftUp(wxMouseEvent& event) {
+
+    wxPoint pos = event.GetPosition();
+
+    m_leftdown = false;
+
+    if (!m_popupWanted)
+        return;
+
+    m_popupWanted = false;
+
+    wxMouseEvent ev(wxEVT_RIGHT_DOWN);
+    ev.m_x = pos.x;
+    ev.m_y = pos.y;
+
+    MouseEvent(ev);
+}
+
+void ChartCanvas::OnLeftDown(wxMouseEvent& event) {
+
+    m_leftdown = true;
+
+    wxPoint pos = event.GetPosition();
+    MouseEvent(event);
+
+}
+
+void ChartCanvas::OnMotion(wxMouseEvent& event) {
+    /* This is a workaround, to the fact that on touchscreen, OnMotion comes with dragging,
+       upon simple click, and without the OnLeftDown event before
+       Thus, this consists in skiping it, and setting the leftdown bit according to a status
+       that we trust */
+    event.m_leftDown = m_leftdown;
+    MouseEvent(event);
+}
+
+void ChartCanvas::OnPan(wxPanGestureEvent& event) {
+    /* not implemented. The event in current wxwidgets version
+    is not reliable, comes with delays and losts */
+}
+
+
+void ChartCanvas::OnZoom(wxZoomGestureEvent& event)
+{
+    double factor = event.GetZoomFactor();
+
+    if (event.IsGestureStart() || m_oldVPSScale < 0) {
+        m_oldVPSScale = GetVPScale();
+    }
+
+    double current_vps = GetVPScale();
+    double wanted_factor = m_oldVPSScale/current_vps*factor;
+
+    ZoomCanvas( wanted_factor, true, false );
+}
+
+void ChartCanvas::OnWheel(wxMouseEvent& event) {
+    MouseEvent(event);
+}
+
+void ChartCanvas::OnDoubleLeftClick(wxMouseEvent& event) {
+    DoRotateCanvas(0.0);
+}
+#endif /* HAVE_WX_GESTURE_EVENTS */
 
 
 void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)

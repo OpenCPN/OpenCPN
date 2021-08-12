@@ -164,6 +164,25 @@ public:
       void SetCanvasCursor( wxMouseEvent& event );
       void OnKillFocus( wxFocusEvent& WXUNUSED(event) );
       void OnSetFocus( wxFocusEvent& WXUNUSED(event) );
+#ifdef HAVE_WX_GESTURE_EVENTS
+      void OnZoom(wxZoomGestureEvent& event);
+      void OnPan(wxPanGestureEvent& event);
+      void OnRotate(wxRotateGestureEvent& event);
+      void OnTwoFingerTap(wxTwoFingerTapEvent& event);
+      void OnLongPress(wxLongPressEvent& event);
+      void OnPressAndTap(wxPressAndTapEvent& event);
+
+      void OnLeftDown(wxMouseEvent& evt);
+      void OnLeftUp(wxMouseEvent& evt);
+
+      void OnRightUp(wxMouseEvent& event);
+      void OnRightDown(wxMouseEvent& event);
+
+      void OnDoubleLeftClick(wxMouseEvent& event);
+
+      void OnWheel(wxMouseEvent& event);
+      void OnMotion(wxMouseEvent& event);
+#endif /* HAVE_WX_GESTURE_EVENTS */
 
       void PopupMenuHandler(wxCommandEvent& event);
       bool IsPrimaryCanvas(){ return (m_canvasIndex == 0); }
@@ -400,6 +419,13 @@ public:
       int         m_upMode;
       bool        m_bLookAhead;
       double      m_VPRotate;
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+      double      m_oldVPSScale;
+      double      m_oldRotationAngle;
+      bool        m_popupWanted;
+      bool        m_leftdown;
+#endif /* HAVE_WX_GESTURE_EVENTS */
 
       void DrawBlinkObjects( void );
 

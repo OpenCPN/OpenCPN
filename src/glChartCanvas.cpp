@@ -542,7 +542,9 @@ int attribs[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, WX_GL_ST
 BEGIN_EVENT_TABLE ( glChartCanvas, wxGLCanvas ) EVT_PAINT ( glChartCanvas::OnPaint )
     EVT_ACTIVATE ( glChartCanvas::OnActivate )
     EVT_SIZE ( glChartCanvas::OnSize )
+#ifndef HAVE_WX_GESTURE_EVENTS
     EVT_MOUSE_EVENTS ( glChartCanvas::MouseEvent )
+#endif /* HAVE_WX_GESTURE_EVENTS */
 END_EVENT_TABLE()
 
 glChartCanvas::glChartCanvas( wxWindow *parent, wxGLCanvas *share ) :
@@ -551,6 +553,31 @@ glChartCanvas::glChartCanvas( wxWindow *parent, wxGLCanvas *share ) :
 
 {
     m_pParentCanvas = dynamic_cast<ChartCanvas *>( parent );
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+    if ( !EnableTouchEvents( wxTOUCH_ALL_GESTURES ))
+    {
+        wxLogError("Failed to enable touch events");
+        // Still bind event handlers just in case they still work?
+    }
+
+    Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, m_pParentCanvas);
+    Bind(wxEVT_GESTURE_PAN, &ChartCanvas::OnPan, m_pParentCanvas);
+    Bind(wxEVT_GESTURE_ROTATE, &ChartCanvas::OnRotate, m_pParentCanvas);
+    Bind(wxEVT_TWO_FINGER_TAP, &ChartCanvas::OnTwoFingerTap, m_pParentCanvas);
+    Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, m_pParentCanvas);
+    Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, m_pParentCanvas);
+
+    Bind(wxEVT_RIGHT_UP, &ChartCanvas::OnRightUp, m_pParentCanvas);
+    Bind(wxEVT_RIGHT_DOWN, &ChartCanvas::OnRightDown, m_pParentCanvas);
+
+    Bind(wxEVT_LEFT_UP, &ChartCanvas::OnLeftUp, m_pParentCanvas);
+    Bind(wxEVT_LEFT_DOWN, &ChartCanvas::OnLeftDown, m_pParentCanvas);
+
+    Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, m_pParentCanvas);
+    Bind(wxEVT_LEFT_DCLICK, &ChartCanvas::OnDoubleLeftClick, m_pParentCanvas);
+    Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, m_pParentCanvas);
+#endif /* HAVE_WX_GESTURE_EVENTS */
 
     Init();
 }
