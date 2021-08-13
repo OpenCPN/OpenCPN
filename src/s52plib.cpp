@@ -10909,8 +10909,8 @@ bool s52plib::ObjectRenderCheckDates( ObjRazRules *rzRules )
             }
         }
         if(bDateValid){
+            objDate.ResetTime();                    // DATSTA specifications take effect at 00:01- on the specified date
             wxDateTime now = wxDateTime::Now();
-            objDate.ResetTime();
             if(now.IsEarlierThan(objDate))
                 return false;                       // No Show
         }
@@ -10931,8 +10931,9 @@ bool s52plib::ObjectRenderCheckDates( ObjRazRules *rzRules )
             }
         }
         if(bDateValid){
+            objDate.ResetTime();                    // DATEND specifications take effect at 23:59+ on the specified date.
+            objDate += wxTimeSpan(24);
             wxDateTime now = wxDateTime::Now();
-            objDate.ResetTime();
             if(now.IsLaterThan(objDate))
                 return false;                       // No Show
         }
@@ -10953,8 +10954,9 @@ bool s52plib::ObjectRenderCheckDates( ObjRazRules *rzRules )
             }
         }
         if(bDateValid){
+            objDate.ResetTime();                    // PEREND specifications take effect at 23:59+ on the specified date.
+            objDate += wxTimeSpan(24);
             wxDateTime now = wxDateTime::Now();
-            objDate.ResetTime();
             if(now.IsLaterThan(objDate))
                 return false;                       // No Show
         }
