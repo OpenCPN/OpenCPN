@@ -51,7 +51,7 @@ public:
     wxSlider *m_p_DetailSlider;
     wxWindow *m_pparent;
 private:
-    
+
     ChartTypeEnum ChartType;
     ChartFamilyEnum ChartFam;
 

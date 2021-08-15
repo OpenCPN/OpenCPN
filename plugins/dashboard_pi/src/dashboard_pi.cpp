@@ -164,7 +164,7 @@ enum {
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_GPSUTC, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
     ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_D_WDH, ID_DBP_I_VLW1, ID_DBP_I_VLW2, ID_DBP_D_MDA, ID_DBP_I_MDA,ID_DBP_D_BPH, ID_DBP_I_FOS,
-	ID_DBP_M_COG, ID_DBP_I_PITCH, ID_DBP_I_HEEL, ID_DBP_D_AWA_TWA, ID_DBP_I_GPSLCL, ID_DBP_I_CPULCL, ID_DBP_I_SUNLCL,
+    ID_DBP_M_COG, ID_DBP_I_PITCH, ID_DBP_I_HEEL, ID_DBP_D_AWA_TWA, ID_DBP_I_GPSLCL, ID_DBP_I_CPULCL, ID_DBP_I_SUNLCL,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -201,8 +201,8 @@ wxString getInstrumentCaption( unsigned int id )
         case ID_DBP_D_AW:
         case ID_DBP_D_AWA:
             return _("App. Wind Angle & Speed");
-		case ID_DBP_D_AWA_TWA:
-			return _("App & True Wind Angle");
+        case ID_DBP_D_AWA_TWA:
+            return _("App & True Wind Angle");
         case ID_DBP_I_AWS:
             return _("App. Wind Speed");
         case ID_DBP_D_AWS:
@@ -261,10 +261,10 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Sum Log");
         case ID_DBP_I_FOS:
             return _("From Ownship");
-		case ID_DBP_I_PITCH:
-			return _("Pitch");
-		case ID_DBP_I_HEEL:
-			return _("Heel");
+        case ID_DBP_I_PITCH:
+            return _("Pitch");
+        case ID_DBP_I_HEEL:
+            return _("Heel");
         case ID_DBP_I_GPSLCL:
             return _( "Local GNSS Clock" );
         case ID_DBP_I_CPULCL:
@@ -289,7 +289,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_HDM:
         case ID_DBP_I_AWS:
         case ID_DBP_I_DPT:
-    	case ID_DBP_I_MDA:
+        case ID_DBP_I_MDA:
         case ID_DBP_I_TMP:
         case ID_DBP_I_ATMP:
         case ID_DBP_I_TWA:
@@ -308,8 +308,8 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_VLW1:
         case ID_DBP_I_VLW2:
         case ID_DBP_I_FOS:
-		case ID_DBP_I_PITCH:
-		case ID_DBP_I_HEEL:
+        case ID_DBP_I_PITCH:
+        case ID_DBP_I_HEEL:
             item.SetImage( 0 );
             break;
         case ID_DBP_D_SOG:
@@ -318,10 +318,10 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_D_AWA:
         case ID_DBP_D_AWS:
         case ID_DBP_D_TW:
-		case ID_DBP_D_AWA_TWA:
+        case ID_DBP_D_AWA_TWA:
         case ID_DBP_D_TWD:
         case ID_DBP_D_DPT:
-    	case ID_DBP_D_MDA:
+        case ID_DBP_D_MDA:
         case ID_DBP_D_VMG:
         case ID_DBP_D_RSA:
         case ID_DBP_D_GPS:
@@ -469,27 +469,27 @@ int dashboard_pi::Init( void )
     //    This PlugIn needs a toolbar icon
 //    m_toolbar_item_id = InsertPlugInTool( _T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
 //            _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
-    
+
     wxString shareLocn =*GetpSharedDataLocation() +
                 _T("plugins") + wxFileName::GetPathSeparator() +
                 _T("dashboard_pi") + wxFileName::GetPathSeparator()
                 +_T("data") + wxFileName::GetPathSeparator();
-    
+
      wxString normalIcon = shareLocn + _T("Dashboard.svg");
      wxString toggledIcon = shareLocn + _T("Dashboard_toggled.svg");
      wxString rolloverIcon = shareLocn + _T("Dashboard_rollover.svg");
-     
+
      //  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
      if(GetActiveStyleName().Lower() != _T("traditional")){
          normalIcon = _T("");
          toggledIcon = _T("");
          rolloverIcon = _T("");
      }
-         
+
       m_toolbar_item_id = InsertPlugInToolSVG( _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
              _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
-    
-    
+
+
     ApplyConfig();
 
     //  If we loaded a version 1 config setup, convert now to version 2
@@ -554,7 +554,7 @@ void dashboard_pi::Notify()
         DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
         if( dashboard_window ){
             dashboard_window->Refresh();
-#ifdef __OCPN__ANDROID__            
+#ifdef __OCPN__ANDROID__
             wxWindowList list = dashboard_window->GetChildren();
             wxWindowListNode *node = list.GetFirst();
             for( size_t i = 0; i < list.GetCount(); i++ ) {
@@ -563,9 +563,9 @@ void dashboard_pi::Notify()
                 win->Refresh();
                 node = node->GetNext();
             }
-#endif            
+#endif
 
-            
+
         }
     }
     //  Manage the watchdogs
@@ -600,7 +600,7 @@ void dashboard_pi::Notify()
         SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, NAN, _T(""));
         mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
     }
-    
+
     mSatStatus_Wdog--;
     if( mSatStatus_Wdog <= 0 ) {
         SAT_INFO sats[4];
@@ -638,7 +638,7 @@ void dashboard_pi::Notify()
         SendSentenceToAllInstruments(OCPN_DBP_STC_DPT, NAN, _T("-"));
         mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
     }
-    
+
     mSTW_Watchdog--;
     if (mSTW_Watchdog <= 0) {
         mPriSTW = 99;
@@ -664,7 +664,7 @@ void dashboard_pi::Notify()
     }
     mUTC_Watchdog--;
     if (mUTC_Watchdog <= 0) {
-        mPriDateTime = 99; 
+        mPriDateTime = 99;
         mUTC_Watchdog = gps_watchdog_timeout_ticks;
     }
     mATMP_Watchdog--;
@@ -759,9 +759,9 @@ void dashboard_pi::SendSentenceToAllInstruments( DASH_CAP st, double value, wxSt
 void dashboard_pi::SendUtcTimeToAllInstruments( wxDateTime value )
 {
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = 
+        DashboardWindow *dashboard_window =
                     m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) 
+        if( dashboard_window )
                     dashboard_window->SendUtcTimeToAllInstruments( value );
     }
 }
@@ -769,7 +769,7 @@ void dashboard_pi::SendUtcTimeToAllInstruments( wxDateTime value )
 void dashboard_pi::SendSatInfoToAllInstruments( int cnt, int seq, wxString talk, SAT_INFO sats[4] )
 {
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = 
+        DashboardWindow *dashboard_window =
                     m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
         if( dashboard_window ) dashboard_window->
                     SendSatInfoToAllInstruments( cnt, seq, talk, sats );
@@ -911,7 +911,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         else if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") ) {
             if (mPriSatStatus >= 1 || mPriSatUsed >= 5) {
                 if (m_NMEA0183.Parse ()) {
-                    
+
                     if (m_NMEA0183.Gsv.MessageNumber == 1) {
                         //NMEA0183 recommend to not repeat SatsInView in subsequent messages
                         mSatsInView = m_NMEA0183.Gsv.SatsInView;
@@ -919,7 +919,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             SendSentenceToAllInstruments (OCPN_DBP_STC_SAT,
                                        m_NMEA0183.Gsv.SatsInView, _T (""));
                             mPriSatUsed = 5;
-                            mSatsUsed_Wdog = gps_watchdog_timeout_ticks; 
+                            mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
                         }
                     }
                     if (mPriSatStatus >= 1) {
@@ -1130,7 +1130,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                                              getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
                                 mMWVA_Watchdog = gps_watchdog_timeout_ticks;
                             }
-                            
+
                             // If we have true HDT, COG, and SOG
                             // then using simple vector math, we can calculate true wind direction and speed.
                             // If there is no higher priority source for WDN, then do so here, and update the appropriate instruments.
@@ -1161,7 +1161,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                                              m_twaangle, m_twaunit);
 
                                 if (mPriWDN >= 4) {
-                                    // MWV has wind angle relative to the bow. 
+                                    // MWV has wind angle relative to the bow.
                                     // Wind history use angle relative to north.
                                     // If no TWD with higher priority is present
                                     // and true heading is available calculate it.
@@ -1219,7 +1219,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                 SendSentenceToAllInstruments(OCPN_DBP_STC_SOG,
                                                              toUsrSpeed_Plugin(mSOGFilter.filter(m_NMEA0183.Rmc.SpeedOverGroundKnots), g_iDashSpeedUnit), getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
                             }
-                            
+
                             if (!std::isnan(m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue)) {
                                 SendSentenceToAllInstruments(OCPN_DBP_STC_COG,
                                                              mCOGFilter.filter(m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue), _T("\u00B0"));
@@ -1351,7 +1351,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             double m_NMEA0183.Vwr.WindSpeedKmh;
                             */
                     }
-                    
+
                     // If we have true HDT, COG, and SOG
                     // then using simple vector math, we can calculate true wind direction and speed.
                     // If there is no higher priority source for WDN, then do so here, and update the appropriate instruments.
@@ -1407,7 +1407,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
               * VolumeTransducer = 'V'
              */
 
-            if (m_NMEA0183.Parse()) { 
+            if (m_NMEA0183.Parse()) {
                 wxString xdrunit;
                 double xdrdata;
                 for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++) {
@@ -1534,11 +1534,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 void dashboard_pi::CalculateAndUpdateTWDS( double awsKnots, double awaDegrees)
 {
     if( !std::isnan(g_dHDT) ){
-                                    
+
         // Apparent wind velocity vector, relative to head-up
         double awsx = awsKnots * cos(awaDegrees * PI / 180.);
         double awsy = awsKnots * sin(awaDegrees * PI / 180.);
-                                    
+
         // Ownship velocity vector, relative to head-up
         double bsx = 0;
         double bsy = 0;
@@ -1546,29 +1546,29 @@ void dashboard_pi::CalculateAndUpdateTWDS( double awsKnots, double awaDegrees)
             bsx = g_dSOG * cos((g_dCOG - g_dHDT) * PI / 180.);
             bsy = g_dSOG * sin((g_dCOG - g_dHDT) * PI / 180.);;
         }
-                                    
+
         // "True" wind is calculated by vector subtraction
         double twdx = awsx - bsx;
         double twdy = awsy - bsy;
-                                    
+
         // Calculate the speed (magnitude of the vector)
         double tws = pow(((twdx * twdx) + (twdy * twdy)), 0.5);
-                                    
+
         // calculate the direction
         double twd = atan2(twdy, twdx) * 180. / PI;
-                                    
+
         // Re-orient to the ownship HDT
         double twdc = twd + g_dHDT;
-                                    
+
         // Normalize
         if( twdc < 0 ) twdc +=360.;
         if( twdc > 360.) twdc -= 360;
- 
+
         // Update the instruments
         //printf("CALC: %4.0f %4.0f\n", tws, twdc);
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twdc, _T("\u00B0"));
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, twdc, _T("\u00B0"));
-                                          
+
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,toUsrSpeed_Plugin(tws, g_iDashWindSpeedUnit),
                                                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2, toUsrSpeed_Plugin(tws, g_iDashWindSpeedUnit),
@@ -1596,7 +1596,7 @@ void dashboard_pi::ParseSignalK( wxString &msg)
         else
             m_self = _T("vessels.") + (root["self"].AsString());                // for Node.js server
     }
-    
+
     if(root.HasMember("context")
        && root["context"].IsString()) {
         auto context = root["context"].AsString();
@@ -1635,7 +1635,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
        && item.HasMember("value")) {
         const wxString &update_path = item["path"].AsString();
         wxJSONValue &value = item["value"];
-        
+
         if(update_path == _T("navigation.position")) {
             if (mPriPosition >= 2) {
                 if (value["latitude"].IsDouble() && value["longitude"].IsDouble()) {
@@ -1646,13 +1646,13 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                     mPriPosition = 2;
                 }
             }
-        } 
+        }
         else if(update_path == _T("navigation.speedOverGround") && 2 == mPriPosition){
             double sog_knot = GetJsonDouble(value);
             if (std::isnan(sog_knot)) return;
 
             SendSentenceToAllInstruments( OCPN_DBP_STC_SOG,
-                        toUsrSpeed_Plugin( mSOGFilter.filter(sog_knot), 
+                        toUsrSpeed_Plugin( mSOGFilter.filter(sog_knot),
                         g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
         }
         else if(update_path == _T("navigation.courseOverGroundTrue") && 2 == mPriPosition){
@@ -1721,7 +1721,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 }
             }
         }
-        else if (update_path == _T("environment.wind.angleApparent")) { 
+        else if (update_path == _T("environment.wind.angleApparent")) {
             if (mPriAWA >= 1) {
                 double m_awaangle = GetJsonDouble(value);
                 if (std::isnan(m_awaangle)) return;
@@ -1770,7 +1770,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 if (mPriWDN >= 3) {
                     // m_twaangle_raw has wind angle relative to the bow.
                     // Wind history use angle relative to north.
-                    // If no TWD with higher priority is present and 
+                    // If no TWD with higher priority is present and
                     // true heading is available calculate it.
                     if (g_dHDT < 361. && g_dHDT >= 0.0) {
                         double g_dCalWdir = (m_twaangle_raw) + g_dHDT;
@@ -1834,7 +1834,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             if (mPriWTP >= 1) {
                 double m_wtemp = GetJsonDouble(value);
                 if (std::isnan(m_wtemp)) return;
-                
+
                 m_wtemp = KELVIN2C(m_wtemp);
                 if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_wtemp, "C");
@@ -1857,7 +1857,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         else if (update_path == _T("steering.rudderAngle")) { // ->port
             double m_rudangle = GetJsonDouble(value);
             if (std::isnan(m_rudangle)) return;
-                    
+
             m_rudangle = GEODESIC_RAD2DEG(m_rudangle);
             SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
             mRSA_Watchdog = gps_watchdog_timeout_ticks;
@@ -1881,7 +1881,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             }
             if (mPriSatStatus >= 2) {
                 if (value.HasMember ("satellites") && value["satellites"].IsArray ()) {
-                    // Update satellites data.                                
+                    // Update satellites data.
                     int iNumSats = value[_T ("satellites")].Size ();
                     SAT_INFO SK_SatInfo[4];
                     for (int idx = 0; idx < 4; idx++) {
@@ -1901,7 +1901,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                         int arr = 0;
                         for (int iMesNum = 0; iMesNum < 3; iMesNum++) {
                             for (idx = 0; idx < 4; idx++) {
-                                arr = idx + 4 * iMesNum;                                
+                                arr = idx + 4 * iMesNum;
                                 try {
                                     if(value["satellites"][arr]["id"].IsInt())
                                         iID =  value["satellites"][arr]["id"].AsInt();
@@ -1963,7 +1963,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             if (mPriWDN >= 1) {
                 double m_twdT = GetJsonDouble(value);
                 if (std::isnan(m_twdT)) return;
-                        
+
                 m_twdT = GEODESIC_RAD2DEG(m_twdT);
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
                 mPriWDN = 1;
@@ -1974,7 +1974,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             if (mPriWDN >= 2) {
                 double m_twdM = GetJsonDouble(value);
                 if (std::isnan(m_twdM)) return;
-                        
+
                 m_twdM = GEODESIC_RAD2DEG(m_twdM);
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, _T("\u00B0M"));
                 mPriWDN = 2;
@@ -1984,9 +1984,9 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         else if (update_path == _T("navigation.trip.log")) { //m
             double m_tlog = GetJsonDouble(value);
             if (std::isnan(m_tlog)) return;
-                
+
             m_tlog = METERS2NM(m_tlog);
-            SendSentenceToAllInstruments(OCPN_DBP_STC_VLW1, 
+            SendSentenceToAllInstruments(OCPN_DBP_STC_VLW1,
                 toUsrDistance_Plugin(m_tlog, g_iDashDistanceUnit),
                 getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
         }
@@ -2027,8 +2027,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 }
                 SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
                 mPITCH_Watchdog = gps_watchdog_timeout_ticks;
-            }            
-        }       
+            }
+        }
     }
 }
 
@@ -2137,7 +2137,7 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
 #ifdef __OCPN__ANDROID__
     dialog->GetHandle()->setStyleSheet( qtStyleSheet);
 #endif
-    
+
 #ifdef __OCPN__ANDROID__
     wxWindow *ccwin = GetOCPNCanvasWindow();
 
@@ -2146,7 +2146,7 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
         int ymax = ccwin->GetParent()->GetSize().GetHeight();  // This would be the Frame itself
         dialog->SetSize( xmax, ymax );
         dialog->Layout();
-        
+
         dialog->Move(0,0);
     }
 #endif
@@ -2309,19 +2309,19 @@ void dashboard_pi::UpdateAuiStatus( void )
         wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
         // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
-        
-#ifdef __WXQT__        
+
+#ifdef __WXQT__
         if(pane.IsShown()){
             pane.Show(false);
             m_pauimgr->Update();
             pane.Show(true);
             m_pauimgr->Update();
         }
-#endif        
-        
+#endif
+
     }
     m_pauimgr->Update();
-    
+
     //    We use this callback here to keep the context menu selection in sync with the window state
 
     SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() != 0 );
@@ -2343,24 +2343,24 @@ bool dashboard_pi::LoadConfig( void )
         wxString DataFont;
         wxString LabelFont;
         wxString SmallFont;
-        
+
 #ifdef __OCPN__ANDROID__
         TitleFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
         DataFont =  _T("Roboto,16,-1,5,50,0,0,0,0,0");
         LabelFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
         SmallFont = _T("Roboto,14,-1,5,50,0,0,0,0,0");
-#endif        
-        
-        
+#endif
+
+
         pConf->Read( _T("FontTitle"), &config, TitleFont );
         LoadFont(&g_pFontTitle, config);
-        
+
         pConf->Read( _T("FontData"), &config, DataFont );
         LoadFont(&g_pFontData, config);
-        
+
         pConf->Read( _T("FontLabel"), &config, LabelFont );
         LoadFont(&g_pFontLabel, config);
-        
+
         pConf->Read( _T("FontSmall"), &config, SmallFont );
         LoadFont(&g_pFontSmall, config);
 
@@ -2397,7 +2397,7 @@ bool dashboard_pi::LoadConfig( void )
                 }
             } else {
                 // This is the default instrument list
-#ifndef __OCPN__ANDROID__    
+#ifndef __OCPN__ANDROID__
                 ar.Add( ID_DBP_I_POS );
                 ar.Add( ID_DBP_D_COG );
                 ar.Add( ID_DBP_D_GPS );
@@ -2405,14 +2405,14 @@ bool dashboard_pi::LoadConfig( void )
                 ar.Add( ID_DBP_I_POS );
                 ar.Add( ID_DBP_D_COG );
                 ar.Add( ID_DBP_I_SOG );
-                 
-#endif                
+
+#endif
             }
 
             DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, MakeName(), _("Dashboard"), _T("V"), ar );
             cont->m_bPersVisible = true;
             m_ArrayOfDashboardWindow.Add(cont);
-            
+
         } else {
             // Version 2
             m_config_version = 2;
@@ -2429,7 +2429,7 @@ bool dashboard_pi::LoadConfig( void )
                 pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
                 bool b_persist;
                 pConf->Read( _T("Persistence"), &b_persist, 1 );
-                
+
                 wxArrayInt ar;
                 for( int i = 0; i < i_cnt; i++ ) {
                     int id;
@@ -2443,18 +2443,18 @@ bool dashboard_pi::LoadConfig( void )
 
                 if(b_persist)
                     b_onePersisted = true;
-                
+
                 m_ArrayOfDashboardWindow.Add(cont);
 
             }
-            
+
             // Make sure at least one dashboard is scheduled to be visible
             if( m_ArrayOfDashboardWindow.Count() && !b_onePersisted){
                 DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(0);
                 if(cont)
                     cont->m_bPersVisible = true;
             }
-                
+
         }
 
         return true;
@@ -2506,7 +2506,7 @@ bool dashboard_pi::SaveConfig( void )
             pConf->Write( _T("Caption"), cont->m_sCaption );
             pConf->Write( _T("Orientation"), cont->m_sOrientation );
             pConf->Write( _T("Persistence"), cont->m_bPersVisible );
-            
+
             pConf->Write( _T("InstrumentCount"), (int) cont->m_aInstrumentList.GetCount() );
             for( unsigned int j = 0; j < cont->m_aInstrumentList.GetCount(); j++ )
                 pConf->Write( wxString::Format( _T("Instrument%d"), j + 1 ),
@@ -2549,18 +2549,18 @@ void dashboard_pi::ApplyConfig( void )
                 wxAuiPaneInfo p = wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                     !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
                         sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ).Gripper(false) ;
-            
+
             m_pauimgr->AddPane( cont->m_pDashboardWindow, p);
                 //wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
                // sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ) );
-            
+
             #ifdef __OCPN__ANDROID__
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
             pane.Dockable( false );
-            
-            #endif            
-            
+
+            #endif
+
         } else {
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
             pane.Caption( cont->m_sCaption ).Show( cont->m_bIsVisible );
@@ -2609,8 +2609,8 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
         wxDialog( parent, id, _("Dashboard preferences"), wxDefaultPosition, wxDefaultSize,
                 wxDEFAULT_DIALOG_STYLE )
 {
-    
-#ifdef __WXQT__    
+
+#ifdef __WXQT__
     wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
     SetFont( *pF );
 #endif
@@ -2618,7 +2618,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") + wxFileName::GetPathSeparator() +
     _T("dashboard_pi") + wxFileName::GetPathSeparator()
     + _T("data") + wxFileName::GetPathSeparator();
-    
+
     Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DashboardPreferencesDialog::OnCloseDialog ),
             NULL, this );
 
@@ -2646,9 +2646,9 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
 
     // Scale the images in the dashboard list control
     int imageRefSize = 32 * GetOCPNGUIToolScaleFactor_PlugIn();
-    
+
     wxImageList *imglist1 = new wxImageList( imageRefSize, imageRefSize, true, 1 );
-    
+
     wxBitmap bmDashBoard;
 #ifdef ocpnUSE_SVG
     wxString filename = shareLocn + _T("Dashboard.svg");
@@ -2658,13 +2658,13 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxImage dash1s = dash1.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
     bmDashBoard = wxBitmap(dash1s);
 #endif
-    
+
     imglist1->Add( bmDashBoard );
 
     m_pListCtrlDashboards = new wxListCtrl( itemPanelNotebook01, wxID_ANY, wxDefaultPosition,
                                             wxSize( imageRefSize * 3/2, 200 ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
-    
-    
+
+
     m_pListCtrlDashboards->AssignImageList( imglist1, wxIMAGE_LIST_SMALL );
     m_pListCtrlDashboards->InsertColumn( 0, _T("") );
     m_pListCtrlDashboards->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -2677,25 +2677,25 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemBoxSizer01->Add( itemBoxSizer02 );
 
     wxBitmap bmPlus, bmMinus;
-#ifdef ocpnUSE_SVG    
+#ifdef ocpnUSE_SVG
     bmPlus = GetBitmapFromSVGFile(shareLocn + _T("plus.svg"), imageRefSize/2, imageRefSize/2);
     bmMinus = GetBitmapFromSVGFile(shareLocn + _T("minus.svg"), imageRefSize/2, imageRefSize/2);
 #else
     wxImage plus1 = wxBitmap( *_img_plus ).ConvertToImage();
     wxImage plus1s = plus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
     bmPlus = wxBitmap(plus1s);
-    
+
     wxImage minus1 = wxBitmap( *_img_minus ).ConvertToImage();
     wxImage minus1s = minus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
     bmMinus = wxBitmap(minus1s);
 #endif
-    
+
     m_pButtonAddDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, bmPlus,
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonAddDashboard, 0, wxALIGN_CENTER, 2 );
     m_pButtonAddDashboard->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(DashboardPreferencesDialog::OnDashboardAdd), NULL, this );
-    
+
     m_pButtonDeleteDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, bmMinus,
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonDeleteDashboard, 0, wxALIGN_CENTER, 2 );
@@ -2728,11 +2728,11 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pTextCtrlCaption = new wxTextCtrl( m_pPanelDashboard, wxID_ANY, _T(""), wxDefaultPosition,
                                          wxSize( 220, -1 ) );
     itemFlexGridSizer->Add( m_pTextCtrlCaption, 0, wxALIGN_RIGHT | wxALL, border_size );
-    
+
 #ifdef __OCPN__ANDROID__
     itemStaticText01->Hide();
     m_pTextCtrlCaption->Hide();
-#endif    
+#endif
 
     wxStaticText* itemStaticText02 = new wxStaticText( m_pPanelDashboard, wxID_ANY,
             _("Orientation:"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -2744,23 +2744,23 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer->Add( m_pChoiceOrientation, 0, wxALIGN_RIGHT | wxALL, border_size );
 
     int instImageRefSize = 20 * GetOCPNGUIToolScaleFactor_PlugIn();
-    
+
     wxImageList *imglist = new wxImageList( instImageRefSize, instImageRefSize, true, 2 );
 
     wxBitmap bmDial, bmInst;
-#ifdef ocpnUSE_SVG    
+#ifdef ocpnUSE_SVG
     bmDial = GetBitmapFromSVGFile(shareLocn + _T("dial.svg"), instImageRefSize, instImageRefSize);
     bmInst = GetBitmapFromSVGFile(shareLocn + _T("instrument.svg"), instImageRefSize, instImageRefSize);
 #else
     wxImage dial1 = wxBitmap( *_img_dial ).ConvertToImage();
     wxImage dial1s = dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
     bmDial = wxBitmap(dial1);
-    
+
     wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
     wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
     bmInst = wxBitmap(inst1s);
 #endif
-    
+
     imglist->Add( bmInst );
     imglist->Add( bmDial );
 
@@ -2769,16 +2769,16 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemBoxSizer03->Add( itemStaticBoxSizer03, 1, wxEXPAND | wxALL, border_size );
 
     int vsize = 200;
-    
+
     #ifdef __OCPN__ANDROID__
     int dw, dh;
     wxDisplaySize(&dw, &dh);
     vsize = dh * 50 / 100;
     #endif
-    
+
     m_pListCtrlInstruments = new wxListCtrl( m_pPanelDashboard, wxID_ANY, wxDefaultPosition,
             wxSize( -1, vsize ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
-    
+
     itemStaticBoxSizer03->Add( m_pListCtrlInstruments, 1, wxEXPAND | wxALL, border_size );
     m_pListCtrlInstruments->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pListCtrlInstruments->InsertColumn( 0, _("Instruments") );
@@ -2831,7 +2831,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxFlexGridSizer *itemFlexGridSizer03 = new wxFlexGridSizer( 2 );
     itemFlexGridSizer03->AddGrowableCol( 1 );
     itemStaticBoxSizer01->Add( itemFlexGridSizer03, 1, wxEXPAND | wxALL, 0 );
-    
+
     wxStaticText* itemStaticText04 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Title:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText04, 0, wxEXPAND | wxALL, border_size );
@@ -2845,14 +2845,14 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pFontPickerData = new wxFontPickerCtrl( itemPanelNotebook02, wxID_ANY, *g_pFontData,
             wxDefaultPosition, wxDefaultSize );
     itemFlexGridSizer03->Add( m_pFontPickerData, 0, wxALIGN_RIGHT | wxALL, 0 );
-    
+
     wxStaticText* itemStaticText06 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Label:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText06, 0, wxEXPAND | wxALL, border_size );
     m_pFontPickerLabel = new wxFontPickerCtrl( itemPanelNotebook02, wxID_ANY, *g_pFontLabel,
             wxDefaultPosition, wxDefaultSize );
     itemFlexGridSizer03->Add( m_pFontPickerLabel, 0, wxALIGN_RIGHT | wxALL, 0 );
-    
+
     wxStaticText* itemStaticText07 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Small:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText07, 0, wxEXPAND | wxALL, border_size );
@@ -2962,7 +2962,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pChoiceWindSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_WSpeedUnitNChoices, m_WSpeedUnitChoices, 0 );
     m_pChoiceWindSpeedUnit->SetSelection( g_iDashWindSpeedUnit );
     itemFlexGridSizer04->Add( m_pChoiceWindSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
-    
+
     m_pUseTrueWinddata = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
         _("Use SignalK true wind data over ground. (Instead of through water)"));
     m_pUseTrueWinddata->SetValue(g_iDashUsetruewinddata);
@@ -2981,7 +2981,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
 
     m_pListCtrlDashboards->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
     curSel = 0;
-    
+
     UpdateDashboardButtonsState();
     UpdateButtonsState();
     //SetMinSize( wxSize( 450, -1 ) );
@@ -2992,19 +2992,19 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
 void DashboardPreferencesDialog::RecalculateSize( void )
 {
 
-#ifdef __OCPN__ANDROID__    
+#ifdef __OCPN__ANDROID__
     wxSize esize;
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 40;
-    
-    wxSize dsize = GetOCPNCanvasWindow()->GetClientSize(); 
+
+    wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
     esize.y = wxMin( esize.y, dsize.y -(3 * GetCharHeight()) );
     esize.x = wxMin( esize.x, dsize.x -(3 * GetCharHeight()) );
     SetSize(esize);
 
     CentreOnScreen();
 #endif
-    
+
 }
 
 void DashboardPreferencesDialog::OnCloseDialog( wxCloseEvent& event )
@@ -3147,19 +3147,19 @@ void DashboardPreferencesDialog::OnInstrumentAdd( wxCommandEvent& event )
 {
     AddInstrumentDlg pdlg( (wxWindow *) event.GetEventObject(), wxID_ANY );
 
-#ifdef __OCPN__ANDROID__    
+#ifdef __OCPN__ANDROID__
     wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
     pdlg.SetFont( *pF );
-    
+
     wxSize esize;
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 40;
-    
-    wxSize dsize = GetOCPNCanvasWindow()->GetClientSize(); 
+
+    wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
     esize.y = wxMin( esize.y, dsize.y -(3 * GetCharHeight()) );
     esize.x = wxMin( esize.x, dsize.x -(3 * GetCharHeight()) );
     pdlg.SetSize(esize);
-    
+
     pdlg.CentreOnScreen();
 #endif
     pdlg.ShowModal();
@@ -3200,12 +3200,12 @@ void DashboardPreferencesDialog::OnInstrumentUp( wxCommandEvent& event )
     //item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
     m_pListCtrlInstruments->InsertItem( item );
-    
+
     for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
         m_pListCtrlInstruments->SetItemState(i,0,wxLIST_STATE_SELECTED);
-    
+
     m_pListCtrlInstruments->SetItemState( itemID - 1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
-    
+
     UpdateButtonsState();
 }
 
@@ -3222,10 +3222,10 @@ void DashboardPreferencesDialog::OnInstrumentDown( wxCommandEvent& event )
     //item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
     m_pListCtrlInstruments->InsertItem( item );
-    
+
     for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
         m_pListCtrlInstruments->SetItemState(i,0,wxLIST_STATE_SELECTED);
-    
+
     m_pListCtrlInstruments->SetItemState( itemID + 1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
 
     UpdateButtonsState();
@@ -3248,22 +3248,22 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
     itemBoxSizer01->Add( itemStaticText01, 0, wxEXPAND | wxALL, 5 );
 
     int instImageRefSize = 20 * GetOCPNGUIToolScaleFactor_PlugIn();
-    
+
     wxImageList *imglist = new wxImageList( instImageRefSize, instImageRefSize, true, 2 );
-    
+
     wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
     wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
     imglist->Add( wxBitmap(inst1s) );
-    
+
     wxImage dial1 = wxBitmap( *_img_dial ).ConvertToImage();
     wxImage dial1s = dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
     imglist->Add( wxBitmap(dial1s) );
-    
-    
-    
-    
+
+
+
+
     int vsize = 180;
-    
+
     #ifdef __OCPN__ANDROID__
     int dw, dh;
     wxDisplaySize(&dw, &dh);
@@ -3278,7 +3278,7 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
 
     wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
     m_pListCtrlInstruments->SetFont( *pF );
-    
+
     #ifdef __OCPN__ANDROID__
     m_pListCtrlInstruments->GetHandle()->setStyleSheet( qtStyleSheet);
     ///QScroller::ungrabGesture(m_pListCtrlInstruments->GetHandle());
@@ -3321,9 +3321,9 @@ DashboardWindow::DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager
         dashboard_pi* plugin, int orient, DashboardWindowContainer* mycont ) :
         wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, 0)
 {
-    
+
     //wxDialog::Create(pparent, id, _("tileMine"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("Dashboard"));
-    
+
     m_pauimgr = auimgr;
     m_plugin = plugin;
     m_Container = mycont;
@@ -3336,29 +3336,29 @@ DashboardWindow::DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager
             this );
     Connect( wxEVT_COMMAND_MENU_SELECTED,
             wxCommandEventHandler( DashboardWindow::OnContextMenuSelect ), NULL, this );
-    
-    
-    
-#ifdef __OCPN__ANDROID__ 
+
+
+
+#ifdef __OCPN__ANDROID__
     Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DashboardWindow::OnMouseEvent ) );
     Connect( wxEVT_LEFT_UP, wxMouseEventHandler( DashboardWindow::OnMouseEvent ) );
     Connect( wxEVT_MOTION, wxMouseEventHandler( DashboardWindow::OnMouseEvent ) );
-    
+
     GetHandle()->setAttribute(Qt::WA_AcceptTouchEvents);
     GetHandle()->grabGesture(Qt::PinchGesture);
     GetHandle()->grabGesture(Qt::PanGesture);
-    
+
     Connect( wxEVT_QT_PINCHGESTURE,
             (wxObjectEventFunction) (wxEventFunction) &DashboardWindow::OnEvtPinchGesture, NULL, this );
     Connect( wxEVT_QT_PANGESTURE,
              (wxObjectEventFunction) (wxEventFunction) &DashboardWindow::OnEvtPanGesture, NULL, this );
 #endif
-    
+
     Hide();
-    
+
     m_binResize = false;
     m_binPinch = false;
-    
+
 }
 
 DashboardWindow::~DashboardWindow()
@@ -3374,58 +3374,58 @@ DashboardWindow::~DashboardWindow()
 #ifdef __OCPN__ANDROID__
 void DashboardWindow::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
 {
-    
+
     float zoom_gain = 0.3;
     float zoom_val;
     float total_zoom_val;
-    
+
     if( event.GetScaleFactor() > 1)
         zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
     else
         zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
-    
+
     if( event.GetTotalScaleFactor() > 1)
         total_zoom_val = ((event.GetTotalScaleFactor() - 1.0) * zoom_gain) + 1.0;
     else
         total_zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zoom_gain);
-    
+
 
     wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
-    
+
     wxSize currentSize = wxSize( pane.floating_size.x, pane.floating_size.y );
     double aRatio = (double)currentSize.y / (double)currentSize.x;
 
     wxSize par_size = GetOCPNCanvasWindow()->GetClientSize();
     wxPoint par_pos = wxPoint( pane.floating_pos.x, pane.floating_pos.y );
-    
+
     switch(event.GetState()){
         case GestureStarted:
             m_binPinch = true;
             break;
-            
+
         case GestureUpdated:
             currentSize.y *= zoom_val;
             currentSize.x *= zoom_val;
 
             if((par_pos.y + currentSize.y) > par_size.y)
                 currentSize.y = par_size.y - par_pos.y;
-            
+
             if((par_pos.x + currentSize.x) > par_size.x)
                 currentSize.x = par_size.x - par_pos.x;
-            
-            
+
+
             ///vertical
             currentSize.x = currentSize.y / aRatio;
-                
+
             currentSize.x = wxMax(currentSize.x, 150);
             currentSize.y = wxMax(currentSize.y, 150);
-            
+
             pane.FloatingSize(currentSize);
             m_pauimgr->Update();
-            
-            
+
+
             break;
-            
+
         case GestureFinished:{
 
             if(itemBoxSizer->GetOrientation() == wxVERTICAL){
@@ -3436,19 +3436,19 @@ void DashboardWindow::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                 currentSize.x *= total_zoom_val;
                 currentSize.y = currentSize.x * aRatio;
             }
-            
-            
+
+
             //  Bound the resulting size
             if((par_pos.y + currentSize.y) > par_size.y)
                 currentSize.y = par_size.y - par_pos.y;
-            
+
             if((par_pos.x + currentSize.x) > par_size.x)
                 currentSize.x = par_size.x - par_pos.x;
- 
+
             // not too small
             currentSize.x = wxMax(currentSize.x, 150);
             currentSize.y = wxMax(currentSize.y, 150);
-                
+
             //  Try a manual layout of the window, to estimate a good primary size..
 
             // vertical
@@ -3459,36 +3459,36 @@ void DashboardWindow::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                     wxSize is = inst->GetSize( itemBoxSizer->GetOrientation(), currentSize );
                     total_y += is.y;
                 }
-        
+
                 currentSize.y = total_y;
             }
-    
-    
+
+
             pane.FloatingSize(currentSize);
-            
+
             // Reshow the window
             for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
                 DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
                 inst->Show();
             }
-            
+
             m_pauimgr->Update();
-            
+
             m_binPinch = false;
             m_binResize = false;
-            
+
             break;
         }
-        
+
         case GestureCanceled:
             m_binPinch = false;
             m_binResize = false;
             break;
-            
+
         default:
             break;
     }
-    
+
 }
 
 
@@ -3499,131 +3499,131 @@ void DashboardWindow::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 
     if(m_binResize)
         return;
-        
+
     int x = event.GetOffset().x;
     int y = event.GetOffset().y;
-    
+
     int lx = event.GetLastOffset().x;
     int ly = event.GetLastOffset().y;
-    
+
     int dx = x - lx;
     int dy = y - ly;
-    
+
     switch(event.GetState()){
         case GestureStarted:
             if(m_binPan)
                 break;
-            
+
             m_binPan = true;
             break;
-            
+
         case GestureUpdated:
             if(m_binPan){
-                
+
                 wxSize par_size = GetOCPNCanvasWindow()->GetClientSize();
                 wxPoint par_pos_old = ClientToScreen( wxPoint( 0, 0 ) ); //GetPosition();
-                
+
                 wxPoint par_pos = par_pos_old;
                 par_pos.x += dx;
                 par_pos.y += dy;
-                
+
                 par_pos.x = wxMax(par_pos.x, 0);
                 par_pos.y = wxMax(par_pos.y, 0);
-                
+
                 wxSize mySize = GetSize();
-                
+
                 if((par_pos.y + mySize.y) > par_size.y)
                     par_pos.y = par_size.y - mySize.y;
-                
-                
+
+
                 if((par_pos.x + mySize.x) > par_size.x)
                     par_pos.x = par_size.x - mySize.x;
-                
+
                 wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
                 pane.FloatingPosition( par_pos).Float();
                 m_pauimgr->Update();
-                
+
             }
             break;
-            
+
         case GestureFinished:
             if(m_binPan){
             }
             m_binPan = false;
-            
+
             break;
-            
+
         case GestureCanceled:
-            m_binPan = false; 
+            m_binPan = false;
             break;
-            
+
         default:
             break;
     }
-    
-    
+
+
 }
-    
-    
+
+
 void DashboardWindow::OnMouseEvent( wxMouseEvent& event )
 {
     if(m_binPinch)
         return;
 
     if(m_binResize){
-        
+
         wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
         wxSize currentSize = wxSize( pane.floating_size.x, pane.floating_size.y );
         double aRatio = (double)currentSize.y / (double)currentSize.x;
-        
+
         wxSize par_size = GetOCPNCanvasWindow()->GetClientSize();
         wxPoint par_pos = wxPoint( pane.floating_pos.x, pane.floating_pos.y );
-        
+
         if(event.LeftDown()){
             m_resizeStartPoint = event.GetPosition();
             m_resizeStartSize = currentSize;
             m_binResize2 = true;
          }
 
-        if(m_binResize2){ 
+        if(m_binResize2){
             if(event.Dragging()){
                 wxPoint p = event.GetPosition();
-                
+
                 wxSize dragSize = m_resizeStartSize;
-                
+
                 dragSize.y += p.y - m_resizeStartPoint.y;
                 dragSize.x += p.x - m_resizeStartPoint.x;;
 
                 if((par_pos.y + dragSize.y) > par_size.y)
                     dragSize.y = par_size.y - par_pos.y;
-                
+
                 if((par_pos.x + dragSize.x) > par_size.x)
                     dragSize.x = par_size.x - par_pos.x;
-                
-                
+
+
                 ///vertical
                 //dragSize.x = dragSize.y / aRatio;
 
                 // not too small
                 dragSize.x = wxMax(dragSize.x, 150);
                 dragSize.y = wxMax(dragSize.y, 150);
-                
+
                 pane.FloatingSize(dragSize);
                 m_pauimgr->Update();
-                    
+
             }
-            
+
             if(event.LeftUp()){
                 wxPoint p = event.GetPosition();
-                
+
                 wxSize dragSize = m_resizeStartSize;
-                
+
                 dragSize.y += p.y - m_resizeStartPoint.y;
                 dragSize.x += p.x - m_resizeStartPoint.x;;
 
                 if((par_pos.y + dragSize.y) > par_size.y)
                     dragSize.y = par_size.y - par_pos.y;
-                
+
                 if((par_pos.x + dragSize.x) > par_size.x)
                     dragSize.x = par_size.x - par_pos.x;
 
@@ -3638,8 +3638,8 @@ void DashboardWindow::OnMouseEvent( wxMouseEvent& event )
 */
                 pane.FloatingSize(dragSize);
                 m_pauimgr->Update();
-                
-                
+
+
                 m_binResize = false;
                 m_binResize2 = false;
             }
@@ -3664,9 +3664,9 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 {
     wxMenu* contextMenu = new wxMenu();
 
-#ifdef __WXQT__    
+#ifdef __WXQT__
     wxFont *pf = OCPNGetFont(_T("Menu"), 0);
-    
+
     // add stuff
     wxMenuItem *item1 = new wxMenuItem(contextMenu, ID_DASH_PREFS, _("Preferences..."));
     item1->SetFont(*pf);
@@ -3675,10 +3675,10 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
     wxMenuItem *item2 = new wxMenuItem(contextMenu, ID_DASH_RESIZE, _("Resize..."));
     item2->SetFont(*pf);
     contextMenu->Append(item2);
-    
-     
-#else    
-    
+
+
+#else
+
 
     wxAuiPaneInfo &pane = m_pauimgr->GetPane( this );
     if ( pane.IsOk( ) && pane.IsDocked( ) ) {
@@ -3694,9 +3694,9 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 
     contextMenu->AppendSeparator();
     contextMenu->Append( ID_DASH_PREFS, _("Preferences...") );
-    
+
 #endif
-    
+
     PopupMenu( contextMenu );
     delete contextMenu;
 }
@@ -3714,15 +3714,15 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
             return; // Does it's own save.
         }
         case ID_DASH_RESIZE: {
-/*            
+/*
             for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
                 DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
                 inst->Hide();
             }
-*/            
+*/
             m_binResize = true;
-            
-            return; 
+
+            return;
         }
         case ID_DASH_VERTICAL: {
             ChangePaneOrientation( wxVERTICAL, true );
@@ -3745,12 +3745,12 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 void DashboardWindow::SetColorScheme( PI_ColorScheme cs )
 {
     DimeWindow( this );
-    
+
     //  Improve appearance, especially in DUSK or NIGHT palette
     wxColour col;
     GetGlobalColor( _T("DASHL"), &col );
     SetBackgroundColour( col );
-    
+
     Refresh( false );
 }
 
@@ -3767,12 +3767,12 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
         m_Container->m_sCaption ).CaptionVisible( true ).TopDockable( !vertical ).BottomDockable(
         !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize( sz ).BestSize(
         sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( m_Container->m_bIsVisible ) );
-    
+
 #ifdef __OCPN__ANDROID__
     wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
     pane.Dockable( false );
-#endif            
-    
+#endif
+
     if ( updateAUImgr ) m_pauimgr->Update();
 }
 
@@ -3923,14 +3923,14 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
                         OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
                 break;
-			case ID_DBP_D_AWA_TWA: //App/True Wind angle +-180° on boat axis
-				instrument = new DashboardInstrument_AppTrueWindAngle(this, wxID_ANY,
-					getInstrumentCaption(id), OCPN_DBP_STC_AWA);
+            case ID_DBP_D_AWA_TWA: //App/True Wind angle +-180° on boat axis
+                instrument = new DashboardInstrument_AppTrueWindAngle(this, wxID_ANY,
+                    getInstrumentCaption(id), OCPN_DBP_STC_AWA);
                 ((DashboardInstrument_Dial *)instrument)->SetCapFlag(OCPN_DBP_STC_TWA);
-				((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%.0f"),
-					DIAL_POSITION_NONE);
-				((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(
-					OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_NONE);
+                ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%.0f"),
+                    DIAL_POSITION_NONE);
+                ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(
+                    OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_NONE);
                 ((DashboardInstrument_Dial*)instrument)->SetOptionExtraValue(
                     OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_NONE);
                 break;
@@ -4056,13 +4056,13 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 instrument = new DashboardInstrument_FromOwnship( this, wxID_ANY,
                         getInstrumentCaption( id ) );
                 break;
-			case ID_DBP_I_PITCH:
-				instrument = new DashboardInstrument_Single(this, wxID_ANY,
-					getInstrumentCaption(id), OCPN_DBP_STC_PITCH, _T("%2.1f"));
-				break;
-			case ID_DBP_I_HEEL:
-				instrument = new DashboardInstrument_Single(this, wxID_ANY,
-					getInstrumentCaption(id), OCPN_DBP_STC_HEEL, _T("%2.1f"));
+            case ID_DBP_I_PITCH:
+                instrument = new DashboardInstrument_Single(this, wxID_ANY,
+                    getInstrumentCaption(id), OCPN_DBP_STC_PITCH, _T("%2.1f"));
+                break;
+            case ID_DBP_I_HEEL:
+                instrument = new DashboardInstrument_Single(this, wxID_ANY,
+                    getInstrumentCaption(id), OCPN_DBP_STC_HEEL, _T("%2.1f"));
                 break;
              // any clock display with "LCL" in the format string is converted from UTC to local TZ
             case ID_DBP_I_SUNLCL:
@@ -4089,18 +4089,18 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
         }
     }
 
-    //  In the absense of any other hints, build the default instrument sizes by taking the 
+    //  In the absense of any other hints, build the default instrument sizes by taking the
     //  calculated with of the first (and succeeding) instruments as hints for the next.
     //  So, best in default loads to start with an instrument that accurately calculates its minimum width.
     //  e.g. DashboardInstrument_Position
-    
+
     wxSize Hint = wxSize(DefaultWidth, DefaultWidth);
     for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
         DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
         inst->SetMinSize( inst->GetSize( itemBoxSizer->GetOrientation(), Hint ) );
         Hint = inst->GetMinSize();
     }
-    
+
     Fit();
     Layout();
     SetMinSize( itemBoxSizer->GetMinSize() );
@@ -4114,11 +4114,11 @@ void DashboardWindow::SendSentenceToAllInstruments( DASH_CAP st, double value, w
     }
 }
 
-void DashboardWindow::SendSatInfoToAllInstruments( 
+void DashboardWindow::SendSatInfoToAllInstruments(
                       int cnt, int seq, wxString talk, SAT_INFO sats[4] )
 {
     for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag.test(OCPN_DBP_STC_GPS) ) && 
+        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag.test(OCPN_DBP_STC_GPS) ) &&
                         m_ArrayOfInstrument.Item( i )->m_pInstrument->
                         IsKindOf( CLASSINFO(DashboardInstrument_GPS)) )
                     ((DashboardInstrument_GPS*)m_ArrayOfInstrument.Item(i)->
@@ -4162,7 +4162,7 @@ bool OCPNFontButton::Create( wxWindow *parent, wxWindowID id,
     wxString label = (style & wxFNTP_FONTDESC_AS_LABEL) ?
     wxString() : // label will be updated by UpdateFont
     _("Choose font");
-    
+
     // create this button
     if (!wxButton::Create( parent, id, label, pos,
         size, style, validator, name ))
@@ -4170,17 +4170,17 @@ bool OCPNFontButton::Create( wxWindow *parent, wxWindowID id,
         wxFAIL_MSG( wxT("OCPNFontButton creation failed") );
         return false;
     }
-    
+
     // and handle user clicks on it
     Connect(GetId(), wxEVT_BUTTON,
             wxCommandEventHandler(OCPNFontButton::OnButtonClick),
             NULL, this);
-    
+
     InitFontData();
-    
+
     m_selectedFont = initial.IsOk() ? initial : *wxNORMAL_FONT;
     UpdateFont();
-    
+
     return true;
 }
 
@@ -4195,43 +4195,43 @@ void OCPNFontButton::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
 {
     // update the wxFontData to be shown in the dialog
     m_data.SetInitialFont(m_selectedFont);
-    
+
     // create the font dialog and display it
     wxFontDialog dlg(this, m_data);
-    
+
     wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
     dlg.SetFont( *pF );
-    
+
 #ifdef __WXQT__
     // Make sure that font dialog will fit on the screen without scrolling
     // We do this by setting the dialog font size "small enough" to show "n" lines
     wxSize proposed_size = GetParent()->GetSize();
     float n_lines = 30;
     float font_size = pF->GetPointSize();
-    
+
     if ( ( proposed_size.y / font_size ) < n_lines ) {
         float new_font_size = proposed_size.y / n_lines;
         wxFont *smallFont = new wxFont( *pF );
         smallFont->SetPointSize( new_font_size );
         dlg.SetFont( *smallFont );
     }
-    
+
     dlg.SetSize(GetParent()->GetSize());
     dlg.Centre();
-#endif    
-    
-   
-    
-    
+#endif
+
+
+
+
     if (dlg.ShowModal() == wxID_OK)
     {
         m_data = dlg.GetFontData();
         m_selectedFont = m_data.GetChosenFont();
-        
+
         // fire an event
         wxFontPickerEvent event(this, GetId(), m_selectedFont);
         GetEventHandler()->ProcessEvent(event);
-        
+
         UpdateFont();
     }
 }
@@ -4240,28 +4240,28 @@ void OCPNFontButton::UpdateFont()
 {
     if ( !m_selectedFont.IsOk() )
         return;
-    
+
     //  Leave black, until Instruments are modified to accept color fonts
     //SetForegroundColour(m_data.GetColour());
-    
+
     if (HasFlag(wxFNTP_USEFONT_FOR_LABEL))
     {
         // use currently selected font for the label...
         wxButton::SetFont(m_selectedFont);
     }
-    
+
     wxString label = wxString::Format(wxT("%s, %d"),
                                   m_selectedFont.GetFaceName().c_str(),
                                   m_selectedFont.GetPointSize());
-                                  
+
     if (HasFlag(wxFNTP_FONTDESC_AS_LABEL))
     {
         SetLabel(label);
     }
-    
+
     auto minsize = GetTextExtent(label);
     SetSize(minsize);
-    
+
     GetParent()->Layout();
 
 }

@@ -45,10 +45,10 @@ class wxSVGTransform
     wxSVGTransform(): m_type(wxSVG_TRANSFORM(0)), m_angle(0), m_cx(0), m_cy(0) {}
     wxSVGTransform(const wxSVGMatrix& matrix): m_type(wxSVG_TRANSFORM_MATRIX), m_matrix(matrix), m_angle(0), m_cx(0), m_cy(0) {}
     virtual ~wxSVGTransform() {}
-    
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& value);
-    
+
     inline void SetMatrix(const wxSVGMatrix& n) { m_type = wxSVG_TRANSFORM_MATRIX; m_matrix = n; }
     virtual void SetTranslate(double tx, double ty);
     virtual void SetScale(double sx, double sy);

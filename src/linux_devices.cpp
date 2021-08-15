@@ -102,7 +102,7 @@ static void read_usbdata(libusb_device* dev,
     if (desc.iManufacturer) {
         r = libusb_get_string_descriptor_ascii(handle, desc.iManufacturer,
                                                buff, sizeof(buff));
-        if (r > 0) data->vendor = reinterpret_cast<char*>(buff);  
+        if (r > 0) data->vendor = reinterpret_cast<char*>(buff);
     }
     if (desc.iSerialNumber) {
         r = libusb_get_string_descriptor_ascii(handle, desc.iSerialNumber,
@@ -229,7 +229,7 @@ static usbdata get_device_usbdata(const char* path)
             if (data.is_ok()) {
                 // Add missing pieces (descriptions...) using libusb
                 try_open(data.vendor_id, data.product_id, &data);
-                return data; 
+                return data;
             }
         }
         // Drop last part of filename
@@ -296,7 +296,7 @@ static std::string create_udev_rule(usbdata data, const char* symlink)
     ocpn::replace(rule, "@vendor@", data.vendor_id);
     ocpn::replace(rule, "@product@", data.product_id);
     ocpn::replace(rule, "@symlink@", symlink);
-   
+
     std::string name(symlink);
     name.insert(0, "65-");
     name += ".rules";

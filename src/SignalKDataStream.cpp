@@ -94,7 +94,7 @@ class OCPN_WebSocketMessageHandler : public wxEvtHandler
  public:
      OCPN_WebSocketMessageHandler( SignalKDataStream *parent, wxEvtHandler *upstream_consumer );
     ~OCPN_WebSocketMessageHandler();
-    
+
     void OnWebSocketMessage( OCPN_SignalKEvent& event );
 
     SignalKDataStream   *m_parent;
@@ -116,7 +116,7 @@ void OCPN_WebSocketMessageHandler::OnWebSocketMessage( OCPN_SignalKEvent &event 
             OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, event.GetString());
             m_upstream_consumer->AddPendingEvent(signalKEvent);
     }
-    
+
     m_parent->ResetWatchdog();      // feed the dog
 
 }
@@ -124,7 +124,7 @@ void OCPN_WebSocketMessageHandler::OnWebSocketMessage( OCPN_SignalKEvent &event 
 OCPN_WebSocketMessageHandler::~OCPN_WebSocketMessageHandler()
 {
     Unbind(EVT_OCPN_SIGNALKSTREAM, &OCPN_WebSocketMessageHandler::OnWebSocketMessage, this);
-}    
+}
 
 
 
@@ -152,7 +152,7 @@ SignalKDataStream::SignalKDataStream(wxEvtHandler *input_consumer,
         m_threadActive = false;
         m_eventHandler = new OCPN_WebSocketMessageHandler( this, GetConsumer());
 
-        
+
         Open();
 
 }
@@ -175,10 +175,10 @@ SignalKDataStream::~SignalKDataStream(){
 }
 
 void SignalKDataStream::Open(void) {
-    
+
     wxString discoveredIP;
     int discoveredPort;
-    
+
     if(m_useWebSocket){
         std::string serviceIdent = std::string("_signalk-ws._tcp.local.");              // Works for node.js server
         if(m_params->AutoSKDiscover){
@@ -186,7 +186,7 @@ void SignalKDataStream::Open(void) {
                 wxLogDebug(wxString::Format(_T("SK server autodiscovery finds WebSocket service: %s:%d"), discoveredIP.c_str(), discoveredPort));
                 m_addr.Hostname(discoveredIP);
                 m_addr.Service(discoveredPort);
-                
+
                 // Update the connection params, by pointer to item in global params array
                 ConnectionParams *params = (ConnectionParams *)m_params;        // non-const
                 params->NetworkAddress = discoveredIP;
@@ -215,15 +215,15 @@ void SignalKDataStream::Open(void) {
 }
 
 bool SignalKDataStream::DiscoverSKServer( std::string serviceIdent, wxString &ip, int &port, int tSec){
-#if 0    
+#if 0
     std::vector<Zeroconf::mdns_responce> result;
-    bool st = Zeroconf::Resolve(serviceIdent.c_str(), tSec, &result); 
+    bool st = Zeroconf::Resolve(serviceIdent.c_str(), tSec, &result);
 
     for(size_t i = 0 ; i < result.size() ; i++){
       sockaddr_storage sas = result[i].peer;                 // Address of the responded machine
       sockaddr_in *sai = (sockaddr_in*)&sas;
       ip = wxString(inet_ntoa(sai->sin_addr));
-      
+
       std::vector<uint8_t> data = result[i].data;
 
       std::vector<Zeroconf::Detail::mdns_record> records = result[i].records;
@@ -234,7 +234,7 @@ bool SignalKDataStream::DiscoverSKServer( std::string serviceIdent, wxString &ip
             size_t pos = records[j].pos;
             //size_t len = records[j].len;
             //std::string name = records[j].name;
-            
+
             // TODO This is pretty ugly, but I cannot find a definition of SRV record
             unsigned char portHi = data[pos + 16];
             unsigned char portLo = data[pos + 17];
@@ -246,7 +246,7 @@ bool SignalKDataStream::DiscoverSKServer( std::string serviceIdent, wxString &ip
     return false;
 #else
     wxServDisc *servscan = new wxServDisc(gFrame, wxString(serviceIdent.c_str()), QTYPE_PTR);
-    
+
     for(int i = 0 ; i < 10 ; i++){
         if(servscan->getResultCount()){
             auto result = servscan->getResults().at(0);
@@ -291,7 +291,7 @@ bool SignalKDataStream::DiscoverSKServer( std::string serviceIdent, wxString &ip
             wxMilliSleep(1000);
         }
     }
-    
+
     delete servscan;
     return false;
 
@@ -299,8 +299,8 @@ bool SignalKDataStream::DiscoverSKServer( std::string serviceIdent, wxString &ip
     //wxServDisc namescan(0, servscan->getResults().at(0).name, QTYPE_SRV);
     //wxServDisc addrscan(0, namescan.getResults().at(0).name, QTYPE_A);
     //wxString addr = addrscan.getResults().at(0).ip;
-#endif    
-}    
+#endif
+}
 
 void SignalKDataStream::OpenTCPSocket()
 {
@@ -326,11 +326,11 @@ void SignalKDataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
 {
     m_dog_value--;
     sdogval++;
-    
+
     if( m_dog_value <= 0 ) {            // No receive in n seconds, assume connection lost
         if(m_useWebSocket){
             wxLogMessage( wxString::Format(_T("    WebSocket SignalKDataStream watchdog timeout: %s"), GetPort().c_str()) );
-        
+
             //printf("DOGTIME  %d\n", sdogval);
             CloseWebSocket();
             OpenWebSocket();
@@ -383,7 +383,7 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
             GetSocketTimer()->Stop();
             SetBrxConnectEvent(true);
             SetConnectTime(wxDateTime::Now());
-            
+
             char sub2[]  = "{\"context\":\"vessels.self\",\"subscribe\":[{\"path\":\"navigation.*\"}]}\r\n";
             GetSock()->Write(sub2, strlen(sub2));
 
@@ -451,11 +451,11 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
                     else
                         m_sock_buffer = m_sock_buffer.substr(sk_end + sk_tail);
 
-                    size_t sk_start = 0; 
+                    size_t sk_start = 0;
                     if(sk_start != wxString::npos){
                         sk_line = sk_line.substr(sk_start);
                         if(sk_line.size()){
-                            
+
                             int errors = jsonReader.Parse(sk_line, &root);
                             if (errors > 0) {
                                 wxLogMessage(
@@ -466,7 +466,7 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
                             } else {
                                 if( GetConsumer() ) {
 
-#if 0                                    
+#if 0
                                     wxString dbg;
                                     wxJSONWriter writer;
                                     writer.Write(root, dbg);
@@ -535,7 +535,7 @@ void SignalKDataStream::Close()
 //      WebSocket implementation
 
 class WebSocketThread : public wxThread
-{ 
+{
     public:     WebSocketThread( SignalKDataStream *parent, wxIPV4address address, wxEvtHandler *consumer );
                 virtual void *Entry();
     private:
@@ -557,14 +557,14 @@ WebSocketThread::WebSocketThread( SignalKDataStream *parent, wxIPV4address addre
 void *WebSocketThread::Entry()
 {
     using easywsclient::WebSocket;
-    
+
     m_parentStream->SetThreadRunning(true);
-    
+
     s_wsConsumer = m_consumer;
-    
+
     wxString host = m_address.IPAddress();
     int port = m_address.Service();
-    
+
     // Craft the address string
     std::stringstream wsAddress;
     wsAddress << "ws://" << host.mb_str()  << ":" << port << "/signalk/v1/stream?subscribe=all&sendCachedValues=false" ;
@@ -578,21 +578,21 @@ void *WebSocketThread::Entry()
     while (true) {
         if(TestDestroy()){
             //printf("receiving delete\n");
-	    ws->close();
+        ws->close();
         }
-        
+
         if(ws->getReadyState() == WebSocket::CLOSED){
-	    //printf("closed\n");
-	    break;
-	}
-    	ws->poll(10);
+        //printf("closed\n");
+        break;
+    }
+        ws->poll(10);
         if(ws->getReadyState() == WebSocket::OPEN){
             ws->dispatch(HandleMessage);
         }
     }
-    
+
     //printf("ws delete\n");
-    delete ws; 
+    delete ws;
 
     m_parentStream->SetThreadRunning(false);
 
@@ -605,7 +605,7 @@ void WebSocketThread::HandleMessage(const std::string & message)
         OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, message);
         s_wsConsumer->AddPendingEvent(signalKEvent);
     }
-   
+
 }
 
 
@@ -616,13 +616,13 @@ void SignalKDataStream::OpenWebSocket()
     //printf("OpenWebSocket\n");
     wxLogMessage(wxString::Format(_T("Opening Signal K WebSocket client: %s"),
             m_params->GetDSPort().c_str()));
-    
+
     // Start a thread to run the client without blocking
-    
+
     m_wsThread = new WebSocketThread(this, GetAddr(), m_eventHandler);
     if ( m_wsThread->Create() != wxTHREAD_NO_ERROR ) {
         wxLogError(wxT("Can't create WebSocketThread!"));
-        
+
         return;
     }
 
@@ -639,7 +639,7 @@ void SignalKDataStream::CloseWebSocket()
             //printf("sending delete\n");
             m_wsThread->Delete();
             wxMilliSleep(100);
-            
+
             int nDeadman = 0;
             while(IsThreadRunning() && (++nDeadman < 200)){   // spin for max 2 secs.
                 wxMilliSleep(10);

@@ -61,7 +61,7 @@ class mbTileDescriptor;
  namespace SQLite {
    class Database;
  }
- 
+
 //-----------------------------------------------------------------------------
 //    Helper classes
 //-----------------------------------------------------------------------------
@@ -78,14 +78,14 @@ class  ChartMBTiles     :public ChartBase
 
       ChartMBTiles();
       virtual ~ChartMBTiles();
- 
+
       //    Accessors
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
       virtual ThumbData *GetThumbData();
       virtual bool UpdateThumbData(double lat, double lon);
-      
+
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-      
+
       int GetNativeScale(){return m_Chart_Scale;}
       double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
       double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
@@ -109,7 +109,7 @@ class  ChartMBTiles     :public ChartBase
 
       double GetPPM(){ return m_ppm_avg;}
       double GetZoomFactor(){ return m_zoomScaleFactor; }
-      
+
 protected:
 //    Methods
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
@@ -138,15 +138,15 @@ protected:
       mbTileZoomDescriptor      **m_tileArray;
       LLRegion  m_minZoomRegion;
       wxBitmapType m_imageType;
-      
+
       double m_zoomScaleFactor;
-    
+
       MBTilesType m_Type;
       MBTilesScheme m_Scheme;
-      
+
       SQLite::Database  *m_pDB;
       int       m_nTiles;
-      
+
 private:
       void InitFromTiles( const wxString& name );
       wxPoint2DDouble GetDoublePixFromLL( ViewPort& vp, double lat, double lon );

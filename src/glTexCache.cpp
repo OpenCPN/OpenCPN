@@ -100,28 +100,28 @@ int CatalogEntry::GetSerialSize()
 void CatalogEntry::Serialize( unsigned char *t)
 {
     uint32_t *p = (uint32_t *)t;
-    
+
     *p++ = k.mip_level;
     *p++ = k.x;
     *p++ = k.y;
     *p++ = k.tcolorscheme;
     *p++ = v.texture_offset;
     *p++ = v.compressed_size;
-    
+
 }
 
 
 void CatalogEntry::DeSerialize( unsigned char *t)
 {
     uint32_t *p = (uint32_t *)t;
-    
+
      k.mip_level = *p++;
      k.x = *p++;
      k.y = *p++;
      k.tcolorscheme = (ColorScheme)*p++;
      v.texture_offset = *p++;
      v.compressed_size = *p++;
-     
+
 }
 
 //      glTexFactory Implementation
@@ -137,7 +137,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     m_chartfile_date_binary = ::wxFileModificationTime(chart->GetFullPath());
     m_chartfile_size = (uint32_t)wxFileName::GetSize(chart->GetFullPath()).GetLo();
     m_ChartPath = chart->GetFullPath();
-    
+
     m_CompressedCacheFilePath = CompressedCachePath(chart->GetFullPath());
     m_hdrOK = false;
     m_catalogOK = false;
@@ -156,18 +156,18 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     }
     //  Initialize the TextureDescriptor array
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( chart );
-    
+
     if( !pBSBChart )
         return;
-    
+
     m_size_X = pBSBChart->GetSize_X();
     m_size_Y = pBSBChart->GetSize_Y();
-        
+
     //  Calculate the number of textures needed
     m_tex_dim = g_GLOptions.m_iTextureDimension;
     m_nx_tex = ( m_size_X / m_tex_dim ) + ((m_size_X % m_tex_dim) == 0 ? 0:1);
     m_ny_tex = ( m_size_Y / m_tex_dim ) + ((m_size_Y % m_tex_dim) == 0 ? 0:1);
-    
+
     m_stride = m_nx_tex;
     m_ntex = m_nx_tex * m_ny_tex;
     m_td_array = (glTextureDescriptor **)calloc(m_ntex, sizeof(glTextureDescriptor *));
@@ -191,7 +191,7 @@ glTexFactory::~glTexFactory()
             }
         }
     }
- 
+
     free( m_td_array );         // array is empty
 
     if(m_tiles)
@@ -236,13 +236,13 @@ bool glTexFactory::OnTimer()
                 for(int x = 0; x<m_nx_tex; x++) {
                     int i = ArrayIndex(x, y);
                     glTextureDescriptor *ptd = m_td_array[i];
-                    
+
                     if( !ptd )
                         goto keeplines;
-                    
+
                     if( ptd->compcomp_array[0] )
                         continue; // ok
-                    
+
                     CatalogEntryValue *p = GetCacheEntryValue(0, x*dim, y*dim, ptd->m_colorscheme);
                     if(!p)
                         goto keeplines;
@@ -254,7 +254,7 @@ bool glTexFactory::OnTimer()
         }
     }
 #endif
-    
+
     // write doubly compressed data to disk
     if(g_GLOptions.m_bTextureCompressionCaching)
         for(int i=0 ; i < m_ntex ; i++) {
@@ -279,7 +279,7 @@ bool glTexFactory::OnTimer()
     // delete any uncompressed textures if texture memory is more than 30
     // on android??   Maybe this should be removed now
     bool bGLMemCrunch = g_tex_mem_used > 30/*g_GLOptions.m_iTextureMemorySize*/ * 1024 * 1024;
-    
+
     if( bGLMemCrunch ){
         for(wxTextureListNode *node = m_texture_list.GetFirst(); node;
             node = node->GetNext()) {
@@ -289,7 +289,7 @@ bool glTexFactory::OnTimer()
             }
         }
     }
-#endif    
+#endif
 #endif
 
 void glTexFactory::AccumulateMemStatistics(int &map_size, int &comp_size, int &compcomp_size)
@@ -310,7 +310,7 @@ void glTexFactory::DeleteTexture(const wxRect &rect)
     int array_index = ArrayIndex(rect.x, rect.y);
     glTextureDescriptor *ptd = m_td_array[array_index];
 
-    
+
     if( ptd && ptd->tex_name > 0 ) {
         DeleteSingleTexture( ptd );
     }
@@ -321,14 +321,14 @@ void glTexFactory::DeleteAllTextures( void )
     // iterate over all the textures presently loaded
     // and delete the OpenGL texture from the GPU
     // but keep the private texture descriptor for now
-  
+
     for(int i=0 ; i < m_ntex ; i++){
         glTextureDescriptor *ptd = m_td_array[i] ;
-        
+
         if( ptd ) {
 //            if(ptd->tex_name && bthread_debug)
 //                printf("DAT::Delete Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
-            
+
             DeleteSingleTexture( ptd);
         }
     }
@@ -341,17 +341,17 @@ void glTexFactory::DeleteSomeTextures( long target )
     // and delete the OpenGL texture from the GPU
     // until the target g_tex_mem_used is reached
     // but keep the private texture descriptor for now
-    
+
     for(int i=0 ; i < m_ntex ; i++){
         glTextureDescriptor *ptd = m_td_array[i] ;
-        
+
         if( ptd ) {
 //            if(ptd->tex_name && bthread_debug)
 //                printf("DSoT::Delete Some Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
-            
+
             if(ptd->tex_name)
                 DeleteSingleTexture( ptd);
-        
+
             if(g_tex_mem_used <= target)
                 break;
         }
@@ -362,7 +362,7 @@ void glTexFactory::FreeSome( long target )
 {
     for(int i=0 ; i < m_ntex ; i++){
         glTextureDescriptor *ptd = m_td_array[i] ;
-        
+
         if( ptd )
             ptd->FreeMap();
     }
@@ -378,7 +378,7 @@ void glTexFactory::DeleteAllDescriptors( void )
         delete ptd;
         m_td_array[i] = 0;
     }
-    
+
 }
 
 bool glTexFactory::BackgroundCompressionAsJob() const
@@ -391,7 +391,7 @@ void glTexFactory::PurgeBackgroundCompressionPool()
     //  Purge the "todo" list, and allow any running jobs to complete normally
     g_glTextureManager->PurgeJobList( m_ChartPath );
 }
-        
+
 void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
 {
     if(!ptd->tex_name)
@@ -432,21 +432,21 @@ CatalogEntryValue *glTexFactory::GetCacheEntryValue(int level, int x, int y, Col
     if (r->compressed_size == 0)
         return 0;
 
-    return r;    
+    return r;
 }
 
 bool glTexFactory::IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme )
 {
     bool b_ret = false;
-    
+
     if(g_GLOptions.m_bTextureCompression &&
         g_GLOptions.m_bTextureCompressionCaching) {
-         
+
     //  Search for the requested texture
         if (GetCacheEntryValue(level, rect.x, rect.y, color_scheme) != 0)
             b_ret = true;
     }
-    
+
     return b_ret;
 }
 
@@ -455,7 +455,7 @@ glTextureDescriptor *glTexFactory::GetOrCreateTD(const wxRect &rect)
     int array_index = ArrayIndex(rect.x, rect.y);
     if( !m_td_array[array_index] ){
         glTextureDescriptor *p = new glTextureDescriptor();
-        
+
         p->x = rect.x;
         p->y = rect.y;
         p->level_min = g_mipmap_max_level + 1;  // default, nothing loaded
@@ -468,10 +468,10 @@ glTextureDescriptor *glTexFactory::GetOrCreateTD(const wxRect &rect)
 static void CreateTexture(GLuint &tex_name, bool b_use_mipmaps)
 {
     glGenTextures( 1, &tex_name );
-        
+
 //        printf("gentex  %d   rect:  %d %d   index %d\n", ptd->tex_name, rect.x, rect.y, array_index);
     glBindTexture( GL_TEXTURE_2D, tex_name );
-        
+
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -491,7 +491,7 @@ static void CreateTexture(GLuint &tex_name, bool b_use_mipmaps)
 bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const wxRect &rect)
 {
     bool busy_shown = false;
-    
+
     // the quality is only slightly worse because linear_mipmap_linear
     // is impossible, but still replace the texture data with the
     // correct level data and using only texture level 0
@@ -504,7 +504,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
     // don't use uncompressed mipmaps as they are temporary
     // we upload only the correct level so the image quality is good anyways
     bool b_use_uncompressed_mipmaps = !g_GLOptions.m_bTextureCompression;
-#endif    
+#endif
 
     // on systems with little memory we can go up a mipmap level
     // here so that the uncompressed size without mipmaps (level+1)
@@ -539,8 +539,8 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
             if(!bGLMemCrunch)
                 return false; // we already have the data in vram
         }
-    }    
-    
+    }
+
     int status = GetTextureLevel( ptd, rect, base_level, ptd->m_colorscheme );
 
     bool b_use_mipmaps = COMPRESSED_BUFFER_OK == status ?
@@ -564,7 +564,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
             ptd->tex_mem_used += size;
             g_tex_mem_used += size;
             texture_level++;
-            
+
             if(!b_use_mipmaps)
                 break;
         }
@@ -607,7 +607,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
                 ptd->tex_mem_used += size;
                 g_tex_mem_used += size;
                 texture_level++;
-                
+
                 if(!b_use_mipmaps)
                     break;
             }
@@ -624,12 +624,12 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
 
     if(busy_shown)
         OCPNPlatform::HideBusySpinner();
-    
+
     return true;
 }
 
 bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, int mem_used )
-{    
+{
     glTextureDescriptor *ptd = NULL;
 
     try
@@ -637,9 +637,9 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     ptd = GetOrCreateTD(rect);
 
     ptd->m_colorscheme = color_scheme;
-    
+
     //glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
-    
+
     if(!BuildTexture(ptd, base_level, rect))
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
 
@@ -681,10 +681,10 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 #endif
 
 //    g_Platform->HideBusySpinner();
-    
+
     return true;
     }   //try
-    
+
     catch (...)
     {
         //      Clean up
@@ -697,7 +697,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase *chart)
 {
     ChartBaseBSB *pChartBSB = dynamic_cast<ChartBaseBSB*>( chart );
-    if( !pChartBSB ) 
+    if( !pChartBSB )
       return;
 
     // detect changing north/south polar
@@ -714,7 +714,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
     m_prepared_projection_type = vp.m_projection_type;
 
     double native_scale;
-    
+
     native_scale = pChartBSB->GetNativeScale();
 
     if(m_tiles)
@@ -738,17 +738,17 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
     case PROJECTION_POLYCONIC:
         xsplits = native_scale / 1000000000.0 * tex_dim; // todo: fix this
 //        xsplits /= (1 << base_level); // split less zoomed out
-        
+
         // split more near poles
         if(vp.m_projection_type == PROJECTION_ORTHOGRAPHIC) {
             Extent e;
             pChartBSB->GetChartExtent(&e);
             xsplits = xsplits * wxMax(fabsf(e.NLAT), fabsf(e.SLAT)) / 90;
         }
-        
+
         xsplits = round(xsplits);
         ysplits = 2*xsplits;
-        
+
         xsplits = wxMin(wxMax(xsplits, 1), 8);
         ysplits = wxMin(wxMax(ysplits, 1), 8);
         break;
@@ -798,7 +798,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
             }
 
             if(fabsf(lonmin - lonmax) > 180) {
-                lonmin = 540, lonmax = 0; 
+                lonmin = 540, lonmax = 0;
                 for(int i=0; i<8; i+=2) {
                     float lon = ll[i] < 0 ? ll[i]+360 : ll[i];
                     lonmin = wxMin(lonmin, lon), lonmax = wxMax(lonmax, lon);
@@ -854,13 +854,13 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
 
                     if(y1 + ys > m_size_Y - end)
                         break;
-                        
+
                     v1 = v2;
                     y1 = y2;
                 }
                 if(x1 + xs > m_size_X - end)
                     break;
-                
+
                 u1 = u2;
                 x1 = x2;
             }
@@ -882,11 +882,11 @@ bool glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
     //  Search for the requested texture
         //  Search the catalog for this particular texture
     CatalogEntryValue *v = GetCacheEntryValue(level, rect.x, rect.y, color_scheme) ;
-        
+
     //      This texture is already done
     if(v != 0)
         return false;
-    
+
     return UpdateCachePrecomp(data, size, rect, level, color_scheme);
 
 }
@@ -902,8 +902,8 @@ bool glTexFactory::UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_s
         work |= UpdateCacheLevel( rect, level, color_scheme, compcomp_array[level], compcomp_size[level] );
     if (work) {
         WriteCatalogAndHeader();
-    }    
-    
+    }
+
     return work;
 }
 
@@ -926,7 +926,7 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
             //  Search for the requested texture
             //  Search the catalog for this particular texture
             CatalogEntryValue *p = GetCacheEntryValue(level, rect.x, rect.y, color_scheme);
-        
+
             //      Requested texture level is found in the cache
             //      so go load it
             if( p != 0 ) {
@@ -941,24 +941,24 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
                     LZ4_decompress_fast(compressed_data, (char*)ptd->comp_array[level], size);
                     free(compressed_data);
                 }
-            
+
                 return COMPRESSED_BUFFER_OK;
             }
         }
     }
-        
+
     //  Requested Texture level is not in cache, and not already built
     //  So go build it
     if( !ptd->map_array[level] )
         GetFullMap( ptd, rect, m_ChartPath, level );
-        
+
     return MAP_BUFFER_OK;
 }
 
 
 // return not used
 // false? never
-// true 
+// true
 bool glTexFactory::LoadHeader(void)
 {
     if(m_hdrOK)
@@ -967,24 +967,24 @@ bool glTexFactory::LoadHeader(void)
     bool need_new = false;
 
     if(wxFileName::FileExists(m_CompressedCacheFilePath)) {
-        
+
         m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
         if(m_fs->IsOpened()){
-        
+
             CompressedCacheHeader hdr;
-            
+
             //  Header is located at the end of the file
             wxFileOffset hdr_offset = m_fs->Length() -sizeof( hdr);
             hdr_offset = m_fs->Seek( hdr_offset );
-            
+
             if( sizeof( hdr) == m_fs->Read(&hdr, sizeof( hdr ))) {
                 if( hdr.magic != COMPRESSED_CACHE_MAGIC ||
                     hdr.chartdate != m_chart_date_binary ||
                     hdr.chartfile_date != m_chartfile_date_binary ||
                     hdr.chartfile_size != m_chartfile_size ||
                     hdr.format != g_raster_format) {
-                    
-                    //  Bad header signature    
+
+                    //  Bad header signature
                     delete m_fs;
                     need_new = true;
                 }
@@ -999,15 +999,15 @@ bool glTexFactory::LoadHeader(void)
                 WriteCatalogAndHeader();
             }
         }  // is open
-        
+
         else{               // some problem opening file, probably permissions on Win7
             delete m_fs;
             need_new = true;
             wxRemoveFile(m_CompressedCacheFilePath);
         }
-        
+
     }   // exists
-    
+
     else {   // File does not exist
         wxFileName fn(m_CompressedCacheFilePath);
         if(!fn.DirExists())
@@ -1031,22 +1031,22 @@ bool glTexFactory::LoadHeader(void)
 
 bool glTexFactory::AddCacheEntryValue(const CatalogEntry &p)
 {
-    if ((int)p.k.tcolorscheme < 0 || p.k.tcolorscheme >= N_COLOR_SCHEMES) 
+    if ((int)p.k.tcolorscheme < 0 || p.k.tcolorscheme >= N_COLOR_SCHEMES)
         return false;
 
-    if (p.k.mip_level < 0 || p.k.mip_level >= MAX_TEX_LEVEL) 
+    if (p.k.mip_level < 0 || p.k.mip_level >= MAX_TEX_LEVEL)
         return false;
 
     int array_index = ArrayIndex(p.k.x, p.k.y);
-    if (array_index < 0 || array_index >= m_ntex) 
+    if (array_index < 0 || array_index >= m_ntex)
         return false;
 
-    if (m_cache[p.k.tcolorscheme][p.k.mip_level] == 0) 
+    if (m_cache[p.k.tcolorscheme][p.k.mip_level] == 0)
         m_cache[p.k.tcolorscheme][p.k.mip_level] = (CatalogEntryValue* )calloc(m_ntex, sizeof (CatalogEntryValue) );
 
     CatalogEntryValue *v = m_cache[p.k.tcolorscheme][p.k.mip_level];
     CatalogEntryValue *r = &v[array_index];
-    *r = p.v; 
+    *r = p.v;
     return true;
 }
 
@@ -1058,20 +1058,20 @@ bool glTexFactory::LoadCatalog(void)
 
     if( !LoadHeader() )
         return false;
-    
+
     if (n_catalog_entries == 0) {
         // new empty header
         m_catalogOK = true;
         m_newCatalog = true;
         return true;
     }
-    
+
     m_fs->Seek(m_catalog_offset);
- 
+
     CatalogEntry ps;
     int buf_size =  ps.GetSerialSize();
     unsigned char *buf = (unsigned char *)malloc(buf_size);
-    
+
     CatalogEntry p;
     bool bad = false;
     for(int i=0 ; i < n_catalog_entries ; i++){
@@ -1080,7 +1080,7 @@ bool glTexFactory::LoadCatalog(void)
         if (!AddCacheEntryValue(p))
             bad = true;
     }
-    
+
     free(buf);
     if (bad && !m_catalogCorrupted) {
         wxLogMessage(_T("Bad cache catalog %s %s"), m_ChartPath.c_str(), m_CompressedCacheFilePath.c_str());
@@ -1096,7 +1096,7 @@ bool glTexFactory::WriteCatalogAndHeader()
     if(m_fs && m_fs->IsOpened()){
 
         m_fs->Seek(m_catalog_offset);
-        
+
         CatalogEntry ps;
         int buf_size =  ps.GetSerialSize();
         unsigned char buf[CATALOG_ENTRY_SERIAL_SIZE];   // MSVC requires constant stack array size...
@@ -1107,7 +1107,7 @@ bool glTexFactory::WriteCatalogAndHeader()
             p.k.tcolorscheme = (ColorScheme)i;
             for (int j = 0; j < MAX_TEX_LEVEL; j++) {
                 CatalogEntryValue *v = m_cache[i][j];
-                if (!v) 
+                if (!v)
                     continue;
                 p.k.mip_level = j;
                 for (int k = 0; k < m_ntex; k++) {
@@ -1136,10 +1136,10 @@ bool glTexFactory::WriteCatalogAndHeader()
         hdr.chartdate = m_chart_date_binary;
         hdr.chartfile_date = m_chartfile_date_binary;
         hdr.chartfile_size = m_chartfile_size;
-        
+
         m_fs->Write( &hdr, sizeof(hdr));
         m_fs->Flush();
-        
+
         return true;
     }
     else
@@ -1153,33 +1153,33 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, const 
         return false;	// XXX BUG
 
     //  Search the catalog for this particular texture
-    if (GetCacheEntryValue(level, rect.x, rect.y, color_scheme) != 0) 
+    if (GetCacheEntryValue(level, rect.x, rect.y, color_scheme) != 0)
         return false;
-    
+
     // Make sure the file exists
     wxASSERT(m_fs != 0);
-        
+
     if( ! m_fs->IsOpened() )
         return false;
 
     //      Create a new catalog entry
     CatalogEntry p( level, rect.x, rect.y, color_scheme);
-    
+
     //      Write the compressed data to disk
     p.v.texture_offset = m_catalog_offset;
-    
+
     p.v.compressed_size = data_size;
-    AddCacheEntryValue(p);            
+    AddCacheEntryValue(p);
     n_catalog_entries++;
 
     //      We write the new data at the current catalog offset, overwriting the old catalog
     m_fs->Seek( m_catalog_offset );
     m_fs->Write( data, data_size );
-    
+
     //      Write the catalog and Header (which follows the catalog at the end of the file
     m_catalog_offset += data_size;
     if (write_catalog)
         WriteCatalogAndHeader();
-    
+
     return true;
 }

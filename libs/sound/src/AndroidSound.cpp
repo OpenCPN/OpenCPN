@@ -62,7 +62,7 @@ bool AndroidSound::Stop(void)
 }
 
 
-bool AndroidSound::Play(void) 
+bool AndroidSound::Play(void)
 {
     return androidPlaySound(m_soundfile, m_onFinished, m_callbackData);
 }

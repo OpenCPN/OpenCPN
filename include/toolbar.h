@@ -38,7 +38,7 @@ class ToolbarItemContainer{
 public:
     ToolbarItemContainer();
     ~ToolbarItemContainer(){}
-    
+
     ToolbarItemContainer( int toolid, wxBitmap bmpNormal, wxBitmap bmpDisabled,
                             wxItemKind kind, wxString tooltip, wxString label)
     {   m_ID = toolid;
@@ -51,7 +51,7 @@ public:
         m_bPlugin = false;
     }
 
-    ToolbarItemContainer( int toolid, wxBitmap bmpNormal, 
+    ToolbarItemContainer( int toolid, wxBitmap bmpNormal,
                             wxItemKind kind, wxString tooltip, wxString label)
     {   m_ID = toolid;
         m_tipString = tooltip;
@@ -63,7 +63,7 @@ public:
         m_bPlugin = false;
     }
 
-    
+
     int m_ID;
     wxString m_tipString;
     wxString m_label;
@@ -71,11 +71,11 @@ public:
     bool m_bRequired;
     bool m_bPlugin;
 
-    
+
     wxBitmap m_bmpNormal;
     wxBitmap m_bmpDisabled;
     wxToolBarToolBase *m_tool;
-    
+
     //  Supplemental SVG icons for plugin tools
     wxString m_NormalIconSVG;
     wxString m_RolloverIconSVG;
@@ -96,7 +96,7 @@ public:
       void MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
       wxBitmap &GetBitmap(){ return m_bitmap; }
-      
+
       wxBitmap m_bitmap;
       bool m_bLeftDown;
       bool m_bRightDown;
@@ -203,7 +203,7 @@ public:
       void SetToolNormalBitmapSVG(wxToolBarToolBase *tool, wxString fileSVG);
 
       void EnableRolloverBitmaps( bool enable ){ m_tbenableRolloverBitmaps = enable; }
-      
+
       // get the control with the given id or return NULL
       virtual wxControl *FindControl( int toolid );
 
@@ -236,7 +236,7 @@ public:
       virtual void SetToolBitmapsSVG( int id, wxString fileSVGNormal,
                                       wxString fileSVGRollover,
                                       wxString fileSVGToggled );
-      
+
       void InvalidateBitmaps();
 
       // set/get tools client data (not for controls)
@@ -409,23 +409,23 @@ public:
       float GetScaleFactor() { return m_sizefactor; }
       void SetGrabber( wxString icon_name );
       void DestroyTimerEvent( wxTimerEvent& event );
-      
+
       void EnableSubmerge(bool enable){ m_benableSubmerge = enable; }
       void Realize();
       ocpnToolBarSimple *GetToolbar();
       ocpnToolBarSimple *CreateNewToolbar();
       void SetToolbarHideMethod(int n_method ){ n_toolbarHideMethod = n_method; }
-      
+
       void SetToolConfigString(wxString string){ m_configString = string; }
       wxString GetToolConfigString(){ return m_configString; }
 
       float GetSizeFactor(){ return m_sizefactor; }
-      
+
       void CreateConfigMenu();
       bool _toolbarConfigMenuUtil( ToolbarItemContainer *tic );
 
       void SetCornerRadius( int radius){ m_cornerRadius = radius; }
-      
+
       void SetGrabberEnable( bool bShow ){ m_bGrabberEnable = bShow; }
       void Submerge();
       void SubmergeToGrabber();
@@ -439,7 +439,7 @@ public:
       void UpdateRecoveryWindow(bool b_toolbarEnable);
       void EnableTool( int toolid, bool enable );
       void SetToolShortHelp( int toolid, const wxString& helpString );
-      
+
       void DestroyToolBar();
       void ToggleOrientation();
       void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
@@ -450,7 +450,7 @@ public:
       bool CheckSurfaceRequest( wxMouseEvent &event );
       void GetFrameRelativePosition( int *x, int *y);
       void RestoreRelativePosition( int x, int y );
-      
+
       void SetGeometry(bool bAvoid, wxRect rectAvoid);
       void SetMinX( int offset ){ m_dock_min_x = offset; }
       void SetMinY( int offset ){ m_dock_min_y = offset; }
@@ -460,32 +460,32 @@ public:
       void RefreshFadeTimer();
       void SetAutoHideTimer(int time);
       void SetAutoHide( bool hide ){ m_bAutoHideToolbar = hide; }
-      
+
       size_t GetToolCount();
       void SetToolShowMask( wxString mask );
       wxString GetToolShowMask( void ){ return m_toolShowMask; }
-      
+
       void SetToolShowCount( int count );
       int GetToolShowCount( void );
-      
+
       bool CheckAndAddPlugInTool( ocpnToolBarSimple *tb );
       bool AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb );
       ocpnToolBarSimple *CreateMyToolbar();
-      
+
       int GetDockX() { return m_dock_x; }
       int GetDockY() { return m_dock_y; }
       void SetDockX( int x) { m_dock_x = x; }
       void SetDockY( int y) { m_dock_y = y; }
-      
+
       void SetYAuxOffset( int offset ){ m_auxOffsetY = offset; }
-      
+
       void SetCanToggleOrientation(bool enable){ b_canToggleOrientation = enable; }
       bool GetCanToggleOrientation(){ return b_canToggleOrientation; }
-      
+
       bool toolbarConfigChanged;
       GrabberWin *m_pRecoverwin;
       bool m_bnavgrabber;
-      
+
       wxMenu  *m_FloatingToolbarConfigMenu;
 
       wxString m_tblastAISiconName;
@@ -493,23 +493,23 @@ public:
       bool m_toolbar_scale_tools_shown;
       void SetBackGroundColorString( wxString colorRef );
       void SetULDockPosition(wxPoint position);
-      
+
       ArrayOfToolbarItemContainer m_Items;
-      
+
       void AddToolItem(ToolbarItemContainer *item);
       int RebuildToolbar();
       void EnableRolloverBitmaps( bool bEnable );
       bool GetEnableRolloverBitmaps(){ return m_enableRolloverBitmaps; }
-      
+
 protected:
     ocpnToolBarSimple *m_ptoolbar;
-    
+
 private:
       void DoFade( int value );
 
       bool  m_bsubmerged;
       bool  m_bsubmergedToGrabber;
-      
+
       wxWindow *m_pparent;
       wxBoxSizer *m_topSizer;
 
@@ -525,7 +525,7 @@ private:
       int m_dock_y;
       int m_dock_min_x;
       int m_dock_min_y;
-      
+
       ocpnStyle::Style* m_style;
       bool m_block;
 
@@ -534,12 +534,12 @@ private:
       wxTimer m_destroyTimer;
       GrabberWin *m_destroyGrabber;
       wxSize m_recoversize;
-      
+
       bool m_bAutoHideToolbar;
       int m_nAutoHideToolbar;
       bool m_benableSubmerge;
       bool m_bGrabberEnable;
-      
+
       wxString m_backcolorString;
       int m_cornerRadius;
       wxString m_toolShowMask;
@@ -568,7 +568,7 @@ class ToolbarChoicesDialog: public wxDialog
 {
     DECLARE_DYNAMIC_CLASS( ToolbarChoicesDialog )
     DECLARE_EVENT_TABLE()
-    
+
 public:
     /// Constructors
     ToolbarChoicesDialog( );
@@ -577,17 +577,17 @@ public:
                           const wxPoint& pos = wxDefaultPosition,
                           const wxSize& size = wxDefaultSize,
                           long style = SYMBOL_ToolbarChoices_STYLE );
-    
+
     ~ToolbarChoicesDialog();
-    
+
     void SetColorScheme(ColorScheme cs);
     void RecalculateSize( void );
     void CreateControls();
-    
+
     void OnCancelClick( wxCommandEvent& event );
     void OnOkClick( wxCommandEvent& event );
-    
-    
+
+
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
 

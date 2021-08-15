@@ -55,7 +55,7 @@ public:
     void Toggle_AIS_CPA(void);
     void ToggleShowTrack(void);
     void CloneFrom( AIS_Target_Data* q );
-    
+
 
     int                       MID;
     int                       MMSI;
@@ -113,7 +113,7 @@ public:
     bool                      b_positionOnceValid;
     bool                      b_nameValid;
     bool                      b_isFollower;
-    
+
     //                     MMSI Properties
     bool                      b_NoTrack;
     bool                      b_OwnShip;
@@ -123,7 +123,7 @@ public:
     int                       m_utc_min;
     int                       m_utc_sec;
     wxString                  m_date_string;
-    
+
     wxDateTime                m_ack_time;
     bool                      b_in_ack_timeout;
 
@@ -138,7 +138,7 @@ public:
     double                    CPA;                      // Nautical Miles
 
     bool                      b_show_AIS_CPA;           //TR 2012.06.28: Show AIS-CPA
-    
+
     bool                      b_show_track;
 
     AISTargetTrackList        *m_ptrack;
@@ -150,7 +150,7 @@ public:
     float                    importance;
     short                    last_scale[AIS_TARGETDATA_MAX_CANVAS]; // where AIS_TARGETDATA_MAX_CANVAS is the max number of chartcanvas
     wxDateTime               dtAlertExpireTime;
-    
+
 };
 
 #endif

@@ -31,7 +31,7 @@
 class MarkIcon
 {
 public:
-    MarkIcon(){ m_blistImageOK = false; piconBitmap = NULL; icon_texture = 0; preScaled = false; listIndex = 0; } 
+    MarkIcon(){ m_blistImageOK = false; piconBitmap = NULL; icon_texture = 0; preScaled = false; listIndex = 0; }
     wxBitmap *piconBitmap;
     wxString icon_name;
     wxString icon_description;

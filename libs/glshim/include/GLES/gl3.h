@@ -1,7 +1,7 @@
 #ifndef __gl3_h_
 #define __gl3_h_
 
-/* 
+/*
  * gl3.h last updated on $Date: 2012-09-12 10:13:02 -0700 (Wed, 12 Sep 2012) $
  */
 

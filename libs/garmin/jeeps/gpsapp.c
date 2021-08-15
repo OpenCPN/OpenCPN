@@ -277,7 +277,7 @@ static int32 GPS_A000(const char *port)
 
     if(!(tra = GPS_Packet_New()) || !(rec = GPS_Packet_New()))
 	return MEMORY_ERROR;
-    
+
     GPS_Make_Packet(&tra, LINK_ID[0].Pid_Product_Rqst,NULL,0);
     if(!GPS_Write_Packet(fd,tra))
     {
@@ -285,16 +285,16 @@ static int32 GPS_A000(const char *port)
 		err = -55;
         goto carry_out;
     }
-    
+
     if(!GPS_Get_Ack(fd, &tra, &rec))
     {
- 
+
         // It seems that sometimes the first byte received after port open is lost...
         //      On error, Flush() and try once more....
         GPS_Error("GPS_Get_Ack error: %d", gps_errno);
-        
+
         GPS_Device_Flush(fd);
-            
+
         if(!GPS_Write_Packet(fd,tra))
         {
             GPS_Error("GPS_Write_Packet error: %d: %s",
@@ -302,16 +302,16 @@ static int32 GPS_A000(const char *port)
             err = -55;
             goto carry_out;
         }
-        
+
         if(!GPS_Get_Ack(fd, &tra, &rec))
         {
             GPS_Error("GPS_Get_Ack error %d: %s",
                       gps_errno, GetDeviceLastError());
             err = -56;
             goto carry_out;
-        }            
+        }
     }
-    
+
     GPS_Packet_Read(fd, &rec);
     GPS_Send_Ack(fd, &tra, &rec);
 

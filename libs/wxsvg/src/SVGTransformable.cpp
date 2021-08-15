@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGTransformable.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/05/05
 // RCS-ID:      $Id: SVGTransformable.cpp,v 1.8 2014/03/27 21:20:10 ntalex Exp $

@@ -1,8 +1,8 @@
-/* To run these tests you need to change the define below to the serial port 
+/* To run these tests you need to change the define below to the serial port
  * with a loop back device attached.
- * 
+ *
  * Alternatively you could use an Arduino:
- 
+
 void setup()
 {
  Serial.begin(115200);
@@ -14,7 +14,7 @@ void loop()
    Serial.write(Serial.read());
  }
 }
- 
+
 */
 
 #include <string>
@@ -84,7 +84,7 @@ TEST_F(SerialTests, timeoutWorks) {
   // Timeout a read, returns an empty string
   string empty = port1->read();
   EXPECT_EQ(empty, string(""));
-  
+
   // Ensure that writing/reading still works after a timeout.
   write(master_fd, "abc\n", 4);
   string r = port1->read(4);
@@ -98,7 +98,7 @@ TEST_F(SerialTests, partialRead) {
   // Should timeout, but return what was in the buffer.
   string empty = port1->read(10);
   EXPECT_EQ(empty, string("abc\n"));
-  
+
   // Ensure that writing/reading still works after a timeout.
   write(master_fd, "abc\n", 4);
   string r = port1->read(4);

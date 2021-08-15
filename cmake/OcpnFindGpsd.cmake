@@ -12,7 +12,7 @@ if (GPS_FOUND)
   message (STATUS "Building with libgps includes")
   target_link_libraries(_GPSD INTERFACE ${GPS_LIBRARY})
   target_include_directories(_GPSD INTERFACE ${GPS_INCLUDE_DIR})
-  target_compile_definitions(_GPSD 
+  target_compile_definitions(_GPSD
       INTERFACE -DBUILD_WITH_LIBGPS ${GPS_DEFINITIONS}
   )
   add_library(ocpn::gpsd ALIAS _GPSD)

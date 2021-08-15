@@ -77,11 +77,11 @@ typedef class{
   public:
     wxString Renderer;
     GLenum TextureRectangleFormat;
-    
+
     bool bOldIntel;
     bool bCanDoVBO;
     bool bCanDoFBO;
-    
+
     //      Vertex Buffer Object (VBO) support
     PFNGLGENBUFFERSPROC                 m_glGenBuffers;
     PFNGLBINDBUFFERPROC                 m_glBindBuffer;
@@ -99,10 +99,10 @@ typedef class{
     PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  m_glCheckFramebufferStatus;
     PFNGLDELETEFRAMEBUFFERSEXTPROC      m_glDeleteFramebuffers;
     PFNGLDELETERENDERBUFFERSEXTPROC     m_glDeleteRenderbuffers;
-    
+
     PFNGLCOMPRESSEDTEXIMAGE2DPROC       m_glCompressedTexImage2D;
     PFNGLGETCOMPRESSEDTEXIMAGEPROC      m_glGetCompressedTexImage;
-    
+
 }OCPN_GLCaps;
 
 void GetglEntryPoints( OCPN_GLCaps *pcaps );
@@ -114,13 +114,13 @@ class ocpnGLOptions
 public:
     bool m_bUseAcceleratedPanning;
     bool m_bUseCanvasPanning;
-    
+
     bool m_bTextureCompression;
     bool m_bTextureCompressionCaching;
 
     int m_iTextureDimension;
     int m_iTextureMemorySize;
-    
+
     bool m_GLPolygonSmoothing;
     bool m_GLLineSmoothing;
 };
@@ -159,19 +159,19 @@ public:
     void RenderTextures(float *coords, float *uvCoords, int nVertex, ViewPort *vp);
     static void RenderSingleTexture(float *coords, float *uvCoords,ViewPort *vp, float dx, float dy, float angle);
     void RenderColorRect(wxRect r, wxColor &color);
-    
+
     static bool         s_b_useScissorTest;
     static bool         s_b_useStencil;
     static bool         s_b_useStencilAP;
     static bool         s_b_useFBO;
-    
+
     void SendJSONConfigMessage();
-    
+
     glChartCanvas(wxWindow *parent, wxGLCanvas *share = NULL);
-    
+
     ~glChartCanvas();
 
-    void Init();    
+    void Init();
     void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
 
     void OnPaint(wxPaintEvent& event);
@@ -185,30 +185,30 @@ public:
 //    void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
 //    void FastZoom(float factor);
     void RenderCanvasBackingChart( ocpnDC &dc, OCPNRegion chart_get_region);
-    
-#ifdef __OCPN__ANDROID__    
+
+#ifdef __OCPN__ANDROID__
     void OnEvtPanGesture( wxQT_PanGestureEvent &event);
     void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
     void onGestureTimerEvent(wxTimerEvent &event);
     void onGestureFinishTimerEvent(wxTimerEvent &event);
 #endif
-    
+
     void onZoomTimerEvent(wxTimerEvent &event);
-    
+
     wxString GetRendererString(){ return m_renderer; }
     wxString GetVersionString(){ return m_version; }
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
 
     void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
-    
+
     void DrawGLOverLayObjects(void);
     void GridDraw( );
     void FlushFBO( void );
-    
+
     void DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp );
     void DrawStaticRoutesTracksAndWaypoints( ViewPort &vp );
-    
+
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
     void RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &VP );
 
@@ -220,7 +220,7 @@ public:
     bool UsingFBO() { return m_b_BuiltFBO; }
 
     bool isInGesture(){ return m_binGesture; }
-    
+
     time_t m_last_render_time;
 
     int viewport[4];
@@ -233,18 +233,18 @@ protected:
     void RenderS57TextOverlay( ViewPort &VPoint);
     void RenderMBTilesOverlay( ViewPort &VPoint);
     void RenderScene( bool bRenderCharts = true, bool bRenderOverlays = true);
-    
+
 
     void RenderGLAlertMessage();
 
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
     void RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region );
-    
+
     void BuildFBO();
     bool buildFBOSize(int fboSize);
-    
+
     void configureShaders( ViewPort &vp);
-    
+
 //    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
     void RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency = 255);
@@ -260,30 +260,30 @@ protected:
 
     void DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox);
     void DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox);
-    
+
     void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
-    
+
     void RendertoTexture(GLint tex);
-    
+
     void fboFade(GLint tex0, GLint tex1);
     void onFadeTimerEvent(wxTimerEvent &event);
     bool m_inFade;
-    
+
     wxGLContext       *m_pcontext;
 
     ocpnDC            m_gldc;
-    
+
     int max_texture_dimension;
 
     bool m_bsetup;
 
     wxString m_renderer;
     wxString m_version;
-    wxString m_extensions;    
-    
+    wxString m_extensions;
+
     ViewPort    m_cache_vp;
     ChartBase   *m_cache_current_ch;
-    
+
     bool        m_b_paint_enable;
     int         m_in_glpaint;
 
@@ -304,7 +304,7 @@ protected:
     wxSize      ownship_size, ownship_tex_size;
 
     GLuint      m_piano_tex;
-    
+
     float       m_fbo_offsetx;
     float       m_fbo_offsety;
     float       m_fbo_swidth;
@@ -314,7 +314,7 @@ protected:
     float       m_lastfbo_offsety;
     float       m_lastfbo_swidth;
     float       m_lastfbo_sheight;
-    
+
     float       m_offsetxStep, m_offsetyStep, m_swidthStep, m_sheightStep;
     float       m_runoffsetx, m_runoffsety, m_runswidth, m_runsheight;
     float       m_nStep, m_nTotal, m_nRun;
@@ -322,34 +322,34 @@ protected:
     double      m_zoomFinalZoom;
     int         m_zoomFinaldx, m_zoomFinaldy;
     bool        m_bforcefull;
-    
-    
+
+
     wxTimer     zoomTimer;
-    
+
     double      m_fbo_lat, m_fbo_lon;
     int         m_cc_x,m_cc_y;
     wxPoint     m_lpinchPoint;
-    
+
     bool        m_binPinch;
     bool        m_binPan;
     bool        m_binGesture;
     bool        m_bfogit;
     bool        m_benableFog;
     bool        m_benableVScale;
-    
+
     wxTimer     m_gestureEeventTimer;
     wxTimer     m_gestureFinishTimer;
     bool        m_bgestureGuard;
     bool        m_bpinchGuard;
     wxPoint     m_pinchStart;
     double      m_pinchlat, m_pinchlon;
-    
+
     wxTimer     m_fadeTimer;
-    
+
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;
 
-    int		m_LRUtime;
+    int     m_LRUtime;
 
     GLuint       m_tideTex;
     GLuint       m_currentTex;
@@ -359,7 +359,7 @@ protected:
     int          m_currentTexHeight;
     int          m_displayScale;
 
-    
+
     DECLARE_EVENT_TABLE()
 };
 

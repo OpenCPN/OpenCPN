@@ -46,7 +46,7 @@ class wxSVGElement:
     wxSVGElement(wxString tagName = wxT("")): wxSvgXmlElement(wxSVGXML_ELEMENT_NODE, tagName),
       m_ownerSVGElement(NULL), m_viewportElement(NULL) { }
     virtual ~wxSVGElement() {}
-    
+
     virtual wxSVGElement* GetSvgElement() { return this; }
     virtual wxSVGDTD GetDtd() const = 0;
 

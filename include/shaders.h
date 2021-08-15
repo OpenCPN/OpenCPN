@@ -37,7 +37,7 @@
     extern GLint circle_filled_shader_program;
     extern GLint FBO_texture_2D_shader_program;
     extern GLint texture_2DA_shader_program;
-    
+
 
 bool loadShaders(int index = 0);
 void reConfigureShaders(int index = 0);

@@ -42,7 +42,7 @@ void MipMap_24_neon( int width, int height, unsigned char *source, unsigned char
     int newwidth = width / 2;
     int newheight = height / 2;
     int stride = width * 3;
-    
+
     unsigned char *s = target;
     unsigned char *t = source;
     unsigned char *u = t+stride;
@@ -76,7 +76,7 @@ void MipMap_24_neon( int width, int height, unsigned char *source, unsigned char
             // at this point, we have averaged the two scanlines,
             // in 24bit it's a bit of a pain to average the pixels
             // because they are aligned to 3 bytes
-            
+
 #if 0  // simple readable version finishing without neon (slower)
             uint8_t b[96], c[96];
             memcpy(b,    &a0, 16);
@@ -93,14 +93,14 @@ void MipMap_24_neon( int width, int height, unsigned char *source, unsigned char
 #else
             // full neon version with swizzel (ugly but fast)
             uint8x8_t r0, r1;
-            
+
             uint8x8x4_t z;
             uint8x8x2_t *z2 = (uint8x8x2_t*)&z, *z3 = (uint8x8x2_t*)&z+1;
 
 //          a00 a01 a02 a06 a07 a08 a0c a0d a0e a12 a13 a14 a18 a19 a1a a1e
 //          a03 a04 a05 a09 a0a a0b a0f a10 a11 a15 a16 a17 a1b a1c a1d a21
 #define int8x16_to_8x8x2(v) ((int8x8x2_t) { vget_low_s8(v), vget_high_s8(v) })
-            
+
             uint8x8_t s0l = {0, 1, 2, 6, 7, 8, 12, 13};
             memcpy(&z, &a0, sizeof a0);
             r0 = vtbl2_u8(*z2, s0l);
@@ -180,7 +180,7 @@ void MipMap_32_neon( int width, int height, unsigned char *source, unsigned char
     int newwidth = width / 2;
     int newheight = height / 2;
     int stride = width * 4;
-    
+
     unsigned char *s = target;
     unsigned char *t = source;
     unsigned char *u = t+stride;

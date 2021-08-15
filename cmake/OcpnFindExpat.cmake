@@ -1,5 +1,5 @@
 #
-# After inclusion, export the target ocpn::expat 
+# After inclusion, export the target ocpn::expat
 #
 
 if (TARGET ocpn::expat)

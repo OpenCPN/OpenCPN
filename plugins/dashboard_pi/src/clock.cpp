@@ -140,7 +140,7 @@ void DashboardInstrument_Moon::SetData( DASH_CAP st, double value, wxString form
 {
     if( st == OCPN_DBP_STC_LAT && !std::isnan(value)) {
         m_hemisphere = (value < 0 ? _T("S") : _T("N"));
-    } 
+    }
 }
 
 void DashboardInstrument_Moon::Draw(wxGCDC* dc)
@@ -247,10 +247,10 @@ int DashboardInstrument_Moon::moon_phase(int y, int m, int d)
     e = 30.6*m;
     jd = c+e+d-694039.09;  /* jd is total days elapsed */
     jd /= 29.53;           /* divide by the moon cycle (29.53 days) */
-    b = jd;		   /* int(jd) -> b, take integer part of jd */
-    jd -= b;		   /* subtract integer part to leave fractional part of original jd */
-    b = jd*8 + 0.5;	   /* scale fraction from 0-8 and round by adding 0.5 */
-    b = b & 7;		   /* 0 and 8 are the same so turn 8 into 0 */
+    b = jd;        /* int(jd) -> b, take integer part of jd */
+    jd -= b;           /* subtract integer part to leave fractional part of original jd */
+    b = jd*8 + 0.5;    /* scale fraction from 0-8 and round by adding 0.5 */
+    b = b & 7;         /* 0 and 8 are the same so turn 8 into 0 */
     return b;
 }
 
@@ -356,21 +356,21 @@ void DashboardInstrument_Sun::SetData( DASH_CAP st, double data, wxString unit )
 void DashboardInstrument_Sun::calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){
 /*
 Source:
-	Almanac for Computers, 1990
-	published by Nautical Almanac Office
-	United States Naval Observatory
-	Washington, DC 20392
+    Almanac for Computers, 1990
+    published by Nautical Almanac Office
+    United States Naval Observatory
+    Washington, DC 20392
 
 Inputs:
-	day, month, year:      date of sunrise/sunset
-	latitude, longitude:   location for sunrise/sunset
-	zenith:                Sun's zenith for sunrise/sunset
-	  offical      = 90 degrees 50'
-	  civil        = 96 degrees
-	  nautical     = 102 degrees
-	  astronomical = 108 degrees
+    day, month, year:      date of sunrise/sunset
+    latitude, longitude:   location for sunrise/sunset
+    zenith:                Sun's zenith for sunrise/sunset
+      offical      = 90 degrees 50'
+      civil        = 96 degrees
+      nautical     = 102 degrees
+      astronomical = 108 degrees
 
-	NOTE: longitude is positive for East and negative for West
+    NOTE: longitude is positive for East and negative for West
         NOTE: the algorithm assumes the use of a calculator with the
         trig functions in "degree" (rather than "radian") mode. Most
         programming languages assume radian arguments, requiring back
@@ -381,21 +381,21 @@ Inputs:
 
 1. first calculate the day of the year
 
-	N1 = floor(275 * month / 9)
-	N2 = floor((month + 9) / 12)
-	N3 = (1 + floor((year - 4 * floor(year / 4) + 2) / 3))
-	N = N1 - (N2 * N3) + day - 30
+    N1 = floor(275 * month / 9)
+    N2 = floor((month + 9) / 12)
+    N3 = (1 + floor((year - 4 * floor(year / 4) + 2) / 3))
+    N = N1 - (N2 * N3) + day - 30
 */
       int n = m_dt.GetDayOfYear();
 /*
 2. convert the longitude to hour value and calculate an approximate time
 
-	lngHour = longitude / 15
+    lngHour = longitude / 15
 
-	if rising time is desired:
-	  t = N + ((6 - lngHour) / 24)
-	if setting time is desired:
-	  t = N + ((18 - lngHour) / 24)
+    if rising time is desired:
+      t = N + ((6 - lngHour) / 24)
+    if setting time is desired:
+      t = N + ((18 - lngHour) / 24)
 */
       double lngHour = longit / 15;
       double tris = n + ((6 - lngHour) / 24);
@@ -404,15 +404,15 @@ Inputs:
 
 3. calculate the Sun's mean anomaly
 
-	M = (0.9856 * t) - 3.289
+    M = (0.9856 * t) - 3.289
 */
       double mris = (0.9856 * tris) - 3.289;
       double mset = (0.9856 * tset) - 3.289;
 /*
 4. calculate the Sun's true longitude
 
-	L = M + (1.916 * sin(M)) + (0.020 * sin(2 * M)) + 282.634
-	NOTE: L potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
+    L = M + (1.916 * sin(M)) + (0.020 * sin(2 * M)) + 282.634
+    NOTE: L potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
 */
       double lris = mris + (1.916 * sin(DEGREE * mris)) + (0.020 * sin(2 * DEGREE * mris)) + 282.634;
       if (lris > 360) lris -= 360;
@@ -423,8 +423,8 @@ Inputs:
 /*
 5a. calculate the Sun's right ascension
 
-	RA = atan(0.91764 * tan(L))
-	NOTE: RA potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
+    RA = atan(0.91764 * tan(L))
+    NOTE: RA potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
 */
       double raris = RADIAN * atan(0.91764 * tan(DEGREE * lris));
       if (raris > 360) raris -= 360;
@@ -435,9 +435,9 @@ Inputs:
 /*
 5b. right ascension value needs to be in the same quadrant as L
 
-	Lquadrant  = (floor( L/90)) * 90
-	RAquadrant = (floor(RA/90)) * 90
-	RA = RA + (Lquadrant - RAquadrant)
+    Lquadrant  = (floor( L/90)) * 90
+    RAquadrant = (floor(RA/90)) * 90
+    RA = RA + (Lquadrant - RAquadrant)
 */
       double lqris = (floor( lris/90)) * 90;
       double raqris = (floor(raris/90)) * 90;
@@ -448,15 +448,15 @@ Inputs:
 /*
 5c. right ascension value needs to be converted into hours
 
-	RA = RA / 15
+    RA = RA / 15
 */
       raris = raris/15;
       raset = raset/15;
 /*
 6. calculate the Sun's declination
 
-	sinDec = 0.39782 * sin(L)
-	cosDec = cos(asin(sinDec))
+    sinDec = 0.39782 * sin(L)
+    cosDec = cos(asin(sinDec))
 */
       double sinDecris = 0.39782 * sin(DEGREE * lris);
       double cosDecris = cos(asin(sinDecris));
@@ -465,12 +465,12 @@ Inputs:
 /*
 7a. calculate the Sun's local hour angle
 
-	cosH = (cos(zenith) - (sinDec * sin(latitude))) / (cosDec * cos(latitude))
+    cosH = (cos(zenith) - (sinDec * sin(latitude))) / (cosDec * cos(latitude))
 
-	if (cosH >  1)
-	  the sun never rises on this location (on the specified date)
-	if (cosH < -1)
-	  the sun never sets on this location (on the specified date)
+    if (cosH >  1)
+      the sun never rises on this location (on the specified date)
+    if (cosH < -1)
+      the sun never sets on this location (on the specified date)
 */
       double cosZenith = cos(DEGREE * ZENITH_OFFICIAL);
       double coshris = (cosZenith - (sinDecris * sin(DEGREE * latit))) / (cosDecris * cos(DEGREE * latit));
@@ -484,12 +484,12 @@ Inputs:
 /*
 7b. finish calculating H and convert into hours
 
-	if if rising time is desired:
-	  H = 360 - acos(cosH)
-	if setting time is desired:
-	  H = acos(cosH)
+    if if rising time is desired:
+      H = 360 - acos(cosH)
+    if setting time is desired:
+      H = acos(cosH)
 
-	H = H / 15
+    H = H / 15
 */
       double hris = 360 - RADIAN * acos(coshris);
       hris = hris/15;
@@ -498,15 +498,15 @@ Inputs:
 /*
 8. calculate local mean time of rising/setting
 
-	T = H + RA - (0.06571 * t) - 6.622
+    T = H + RA - (0.06571 * t) - 6.622
 */
       tris = hris + raris - (0.06571 * tris) - 6.622;
       tset = hset + raset - (0.06571 * tset) - 6.622;
 /*
 9. adjust back to UTC
 
-	UT = T - lngHour
-	NOTE: UT potentially needs to be adjusted into the range [0,24) by adding/subtracting 24
+    UT = T - lngHour
+    NOTE: UT potentially needs to be adjusted into the range [0,24) by adding/subtracting 24
 */
       double utris = tris - lngHour;
       if (utris > 24) utris -= 24;
@@ -523,7 +523,7 @@ Inputs:
 Optional:
 10. convert UT value to local time zone of latitude/longitude
 
-	localT = UT + localOffset
+    localT = UT + localOffset
 */
 }
 

@@ -201,7 +201,7 @@ public:
       virtual int GetNoCOVRTablePoints(int iTable) { return m_pNoCOVRTablePoints[iTable]; }
       virtual int  GetNoCOVRTablenPoints(int iTable){ return m_pNoCOVRTablePoints[iTable]; }
       virtual float *GetNoCOVRTableHead(int iTable){ return m_pNoCOVRTable[iTable]; }
-      
+
 protected:
 
       int               m_Chart_Scale;

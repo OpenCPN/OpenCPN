@@ -69,18 +69,18 @@ public:
     LLRegion( size_t n, const double *points );
 
     static bool PointsCCW( size_t n, const double *points );
-    
+
     void Print() const;
     void plot(const char*fn) const;
-    
+
     LLBBox GetBox() const;
     bool IntersectOut(const LLBBox &box) const;
-    
+
     bool Contains(float lat, float lon) const;
-   
+
     void Clear() { contours.clear(); }
     bool Empty() const { return contours.empty(); }
-    
+
     void Intersect(const LLRegion& region);
     void Union(const LLRegion& region);
     void Subtract(const LLRegion& region);

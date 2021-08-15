@@ -85,9 +85,9 @@ static const GLchar* vertex_shader_source =
     "}\n";
 
 static const GLfloat vertices2[] = {
-    0.0f,  0.5f, 
-    0.5f, -0.5f, 
-    -0.5f, -0.5f, 
+    0.0f,  0.5f,
+    0.5f, -0.5f,
+    -0.5f, -0.5f,
 };
 
 static const GLfloat vertices3[] = {
@@ -114,7 +114,7 @@ GSHHSChart::GSHHSChart() {
     reader = NULL;
     land = wxColor( 250, 250, 250 );
     water = wxColor( 0, 0, 0 );
-    
+
 }
 
 GSHHSChart::~GSHHSChart() {
@@ -147,7 +147,7 @@ void GSHHSChart::SetColorsDirect( wxColour newLand, wxColour newWater ) {
     land =  newLand;
     water = newWater;
 }
-    
+
 
 void GSHHSChart::Reset() {
     if( reader )
@@ -440,16 +440,16 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
             contour &cp = p->at( c );
 
             GLUtesselator *tobj = gluNewTess();
-            
+
             gluTessCallback( tobj, GLU_TESS_VERTEX, (_GLUfuncptr) &gshhsvertexCallback );
             gluTessCallback( tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &gshhsbeginCallback );
             gluTessCallback( tobj, GLU_TESS_END, (_GLUfuncptr) &gshhsendCallback );
             gluTessCallback( tobj, GLU_TESS_COMBINE, (_GLUfuncptr) &gshhscombineCallback );
             gluTessCallback( tobj, GLU_TESS_ERROR, (_GLUfuncptr) &gshhserrorCallback );
-            
+
             gluTessNormal( tobj, 0, 0, 1);
             gluTessProperty( tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO );
-            
+
             gluTessBeginPolygon( tobj, NULL );
             gluTessBeginContour( tobj );
 
@@ -469,7 +469,7 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
                     if(vp.m_projection_type != PROJECTION_POLAR) {
                         // need to correctly pick +180 or -180 longitude for projections
                         // that have a discontiguous date line
-                            
+
                         if(idl && ccp.x == 180) {
                             if(vp.m_projection_type == PROJECTION_MERCATOR ||
                                vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)
@@ -499,7 +499,7 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
         int i=0;
         for(std::list<float_2Dpt>::iterator it = g_pv.begin(); it != g_pv.end(); it++)
             (*pv)[i++] = *it;
-            
+
         *pvc = g_pv.size();
         g_pv.clear();
     }
@@ -519,7 +519,7 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
             printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
         }
     }
-    
+
     if(!fragment_shader){
         /* Fragment shader */
         fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -531,7 +531,7 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
             printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
         }
     }
-    
+
     if(!shader_program){
         /* Link shaders */
         shader_program = glCreateProgram();
@@ -544,27 +544,27 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
             printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
         }
     }
-    
-    
+
+
     GLuint vbo = 0;
- 
+
     //  Build the shader viewport transform matrix
     mat4x4 m, mvp;
     mat4x4_identity(m);
     mat4x4_scale_aniso(mvp, m, 2.0 / (float)vp.pix_width, 2.0 / (float)vp.pix_height, 1.0);
     mat4x4_translate_in_place(mvp, -vp.pix_width/2, vp.pix_height/2, 0);
-    
-    
+
+
     if(glChartCanvas::HasNormalizedViewPort(vp)) {
         GLint pos = glGetAttribLocation(shader_program, "position");
         glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), *pv);
         glEnableVertexAttribArray(pos);
-        
-//FIXME        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)vp.vp_transform); 
-        
+
+//FIXME        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)vp.vp_transform);
+
         glUseProgram(shader_program);
         glDrawArrays(GL_TRIANGLES, 0, *pvc);
-        
+
     }
     else{
         float *pvt = new float[ 2 * (*pvc)];
@@ -574,40 +574,40 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
             pvt[i*2] = q.m_x;
             pvt[(i*2) + 1] = q.m_y;
         }
-        
+
         glUseProgram(shader_program);
-        
+
         GLint pos = glGetAttribLocation(shader_program, "position");
         glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), pvt);
         glEnableVertexAttribArray(pos);
- 
-        
+
+
 //         mat4x4 m, mvp;
 //         mat4x4_identity(m);
 //         mat4x4_scale_aniso(mvp, m, 2.0 / (float)vp.pix_width, -2.0 / (float)vp.pix_height, 1.0);
 //         mat4x4_translate_in_place(mvp, (float)-vp.pix_width/2, (float)-vp.pix_height/2, 0);
-//        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)mvp); 
+//        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)mvp);
 
         GLint matloc = glGetUniformLocation(shader_program,"MVMatrix");
-        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)vp.vp_transform); 
+        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)vp.vp_transform);
 
         float colorv[4];
         colorv[0] = color.Red() / float(256);
         colorv[1] = color.Green() / float(256);
         colorv[2] = color.Blue() / float(256);
         colorv[3] = 1.0;
-        
+
         GLint colloc = glGetUniformLocation(shader_program,"color");
         glUniform4fv(colloc, 1, colorv);
-        
+
         //qDebug() << "colortri" << matloc << colloc;
-        
+
         glDrawArrays(GL_TRIANGLES, 0, *pvc);
         delete [] pvt;
         glDeleteBuffers(1, &vbo);
-        
+
     }
-    
+
 #else
     glColor3ub(color.Red(), color.Green(), color.Blue());
 
@@ -629,7 +629,7 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
         delete [] pvt;
     }
 #endif
-    
+
 }
 #endif          //#ifdef ocpnUSE_GL
 
@@ -639,7 +639,7 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
 void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
                                   wxColor landColor, bool idl )
 {
-#ifdef ocpnUSE_GL        
+#ifdef ocpnUSE_GL
     if(!pnt.GetDC()) { // opengl
 #ifndef USE_ANDROID_GLES2
 #define NORM_FACTOR 4096.0
@@ -656,11 +656,11 @@ void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor 
         DRAW_POLY_FILLED_GL( 4, seaColor );
         DRAW_POLY_FILLED_GL( 5, landColor );
 
-#ifndef USE_ANDROID_GLES2        
+#ifndef USE_ANDROID_GLES2
         if(dx)
             glPopMatrix();
-#endif        
-        
+#endif
+
     } else
 #endif
     {
@@ -911,7 +911,7 @@ bool GshhsPolyReader::crossing1( wxLineF trajectWorld )
                            through it so must be included */
                         int lstatex = lx < minlon ? -1 : lx > maxlon ? 1 : 0;
                         int lstatey = ly < minlat ? -1 : ly > maxlat ? 1 : 0;
-                    
+
                         for( unsigned int pj = 0; pj < c.size(); pj++ ) {
                             double clon = c[pj].x, clat = c[pj].y;
                             // gshhs data shouldn't, but sometimes contains zero segments
@@ -986,7 +986,7 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
         }
 #ifndef USE_ANDROID_GLES2
         glEnableClientState(GL_VERTEX_ARRAY);
-        
+
         // use a viewport that allows the vertexes to be reused over many frames
         // TODO fix for multicanvas
          if(glChartCanvas::HasNormalizedViewPort(vp)) {
@@ -1088,22 +1088,22 @@ void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp )
 int GshhsPolygon::readInt4()
 {
     union {
-		unsigned int n;
-		unsigned char buf[4];
-	} res;
+        unsigned int n;
+        unsigned char buf[4];
+    } res;
 
-	unsigned char in[4];
+    unsigned char in[4];
 
     int nb = 0;
     nb += fread( &in, 1, 4, file );
-	res.buf[3] = in[0];
-	res.buf[2] = in[1];
-	res.buf[1] = in[2];
-	res.buf[0] = in[3];
+    res.buf[3] = in[0];
+    res.buf[2] = in[1];
+    res.buf[1] = in[2];
+    res.buf[0] = in[3];
 
     if( nb != 4 ) {
         ok = false;
-		res.n = 0;
+        res.n = 0;
     }
 
     return res.n;
@@ -1113,9 +1113,9 @@ int GshhsPolygon::readInt4()
 int GshhsPolygon::readInt2()
 {
     union {
-		unsigned int n;
-		unsigned char buf[4];
-	} v;
+        unsigned int n;
+        unsigned char buf[4];
+    } v;
 
     int nb = 0;
     nb += fread( &v.buf[0], 2, 1, file );

@@ -120,7 +120,7 @@ bool wxSVGAElement::SetAttribute(const wxString& attrName, const wxString& attrV
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAElement::") + attrName);
     return false;
@@ -148,7 +148,7 @@ bool wxSVGAElement::SetAnimatedValue(const wxString& attrName, const wxSVGAnimat
 // wxSVGAltGlyphDefElement
 bool wxSVGAltGlyphDefElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAltGlyphDefElement::") + attrName);
     return false;
@@ -165,7 +165,7 @@ bool wxSVGAltGlyphElement::SetAttribute(const wxString& attrName, const wxString
 	m_format = attrValue;
   else if (wxSVGTextPositioningElement::SetAttribute(attrName, attrValue));
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAltGlyphElement::") + attrName);
     return false;
@@ -186,7 +186,7 @@ bool wxSVGAltGlyphElement::SetAnimatedValue(const wxString& attrName, const wxSV
 // wxSVGAltGlyphItemElement
 bool wxSVGAltGlyphItemElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAltGlyphItemElement::") + attrName);
     return false;
@@ -198,7 +198,7 @@ bool wxSVGAltGlyphItemElement::SetAttribute(const wxString& attrName, const wxSt
 // wxSVGAnimateColorElement
 bool wxSVGAnimateColorElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGAnimationElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAnimateColorElement::") + attrName);
     return false;
@@ -210,7 +210,7 @@ bool wxSVGAnimateColorElement::SetAttribute(const wxString& attrName, const wxSt
 // wxSVGAnimateElement
 bool wxSVGAnimateElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGAnimationElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAnimateElement::") + attrName);
     return false;
@@ -222,7 +222,7 @@ bool wxSVGAnimateElement::SetAttribute(const wxString& attrName, const wxString&
 // wxSVGAnimateMotionElement
 bool wxSVGAnimateMotionElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGAnimationElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAnimateMotionElement::") + attrName);
     return false;
@@ -247,7 +247,7 @@ bool wxSVGAnimateTransformElement::SetAttribute(const wxString& attrName, const 
     m_type = value;
   }
   else if (wxSVGAnimationElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGAnimateTransformElement::") + attrName);
     return false;
@@ -260,7 +260,7 @@ bool wxSVGAnimateTransformElement::SetAttribute(const wxString& attrName, const 
 bool wxSVGAnimatedPathData::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (attrName == wxT("d"))
     m_pathSegList.SetValueAsString(attrValue);
-  else 
+  else
       return false;
 
   return true;
@@ -270,7 +270,7 @@ bool wxSVGAnimatedPathData::SetAttribute(const wxString& attrName, const wxStrin
 bool wxSVGAnimatedPoints::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (attrName == wxT("points"))
     m_points.SetValueAsString(attrValue);
-  else 
+  else
       return false;
 
   return true;
@@ -349,7 +349,7 @@ bool wxSVGCircleElement::SetAttribute(const wxString& attrName, const wxString& 
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGCircleElement::") + attrName);
     return false;
@@ -399,7 +399,7 @@ bool wxSVGClipPathElement::SetAttribute(const wxString& attrName, const wxString
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGClipPathElement::") + attrName);
     return false;
@@ -433,7 +433,7 @@ bool wxSVGColorProfileElement::SetAttribute(const wxString& attrName, const wxSt
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGColorProfileElement::") + attrName);
     return false;
@@ -500,7 +500,7 @@ bool wxSVGComponentTransferFunctionElement::SetAttribute(const wxString& attrNam
       m_offset.SetBaseVal(value);
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
       return false;
 
   return true;
@@ -547,7 +547,7 @@ bool wxSVGCursorElement::SetAttribute(const wxString& attrName, const wxString& 
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
   else if (wxSVGTests::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGCursorElement::") + attrName);
     return false;
@@ -579,7 +579,7 @@ bool wxSVGCursorElement::SetAnimatedValue(const wxString& attrName, const wxSVGA
 // wxSVGDefinitionSrcElement
 bool wxSVGDefinitionSrcElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGDefinitionSrcElement::") + attrName);
     return false;
@@ -596,7 +596,7 @@ bool wxSVGDefsElement::SetAttribute(const wxString& attrName, const wxString& at
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGDefsElement::") + attrName);
     return false;
@@ -619,7 +619,7 @@ bool wxSVGDescElement::SetAttribute(const wxString& attrName, const wxString& at
   if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGLangSpace::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGDescElement::") + attrName);
     return false;
@@ -640,7 +640,7 @@ bool wxSVGDescElement::SetAnimatedValue(const wxString& attrName, const wxSVGAni
 bool wxSVGElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (attrName == wxT("id"))
 	m_id = attrValue;
-  else 
+  else
       return false;
 
   return true;
@@ -662,7 +662,7 @@ bool wxSVGEllipseElement::SetAttribute(const wxString& attrName, const wxString&
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGEllipseElement::") + attrName);
     return false;
@@ -712,7 +712,7 @@ bool wxSVGExternalResourcesRequired::SetAttribute(const wxString& attrName, cons
     if (attrValue.ToLong(&value))
       m_externalResourcesRequired.SetBaseVal((bool) value);
   }
-  else 
+  else
       return false;
 
   return true;
@@ -750,7 +750,7 @@ bool wxSVGFEBlendElement::SetAttribute(const wxString& attrName, const wxString&
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEBlendElement::") + attrName);
     return false;
@@ -802,7 +802,7 @@ bool wxSVGFEColorMatrixElement::SetAttribute(const wxString& attrName, const wxS
     m_values.GetBaseVal().SetValueAsString(attrValue);
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEColorMatrixElement::") + attrName);
     return false;
@@ -845,7 +845,7 @@ bool wxSVGFEComponentTransferElement::SetAttribute(const wxString& attrName, con
 	m_in1.GetBaseVal() = attrValue;
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEComponentTransferElement::") + attrName);
     return false;
@@ -917,7 +917,7 @@ bool wxSVGFECompositeElement::SetAttribute(const wxString& attrName, const wxStr
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFECompositeElement::") + attrName);
     return false;
@@ -1003,7 +1003,7 @@ bool wxSVGFEConvolveMatrixElement::SetAttribute(const wxString& attrName, const 
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEConvolveMatrixElement::") + attrName);
     return false;
@@ -1062,7 +1062,7 @@ bool wxSVGFEDiffuseLightingElement::SetAttribute(const wxString& attrName, const
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEDiffuseLightingElement::") + attrName);
     return false;
@@ -1129,7 +1129,7 @@ bool wxSVGFEDisplacementMapElement::SetAttribute(const wxString& attrName, const
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEDisplacementMapElement::") + attrName);
     return false;
@@ -1179,7 +1179,7 @@ bool wxSVGFEDistantLightElement::SetAttribute(const wxString& attrName, const wx
       m_elevation.SetBaseVal(value);
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEDistantLightElement::") + attrName);
     return false;
@@ -1205,7 +1205,7 @@ bool wxSVGFEFloodElement::SetAttribute(const wxString& attrName, const wxString&
 	m_in1.GetBaseVal() = attrValue;
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEFloodElement::") + attrName);
     return false;
@@ -1231,7 +1231,7 @@ bool wxSVGFEFloodElement::SetAnimatedValue(const wxString& attrName, const wxSVG
 // wxSVGFEFuncAElement
 bool wxSVGFEFuncAElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGComponentTransferFunctionElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEFuncAElement::") + attrName);
     return false;
@@ -1251,7 +1251,7 @@ bool wxSVGFEFuncAElement::SetAnimatedValue(const wxString& attrName, const wxSVG
 // wxSVGFEFuncBElement
 bool wxSVGFEFuncBElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGComponentTransferFunctionElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEFuncBElement::") + attrName);
     return false;
@@ -1271,7 +1271,7 @@ bool wxSVGFEFuncBElement::SetAnimatedValue(const wxString& attrName, const wxSVG
 // wxSVGFEFuncGElement
 bool wxSVGFEFuncGElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGComponentTransferFunctionElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEFuncGElement::") + attrName);
     return false;
@@ -1291,7 +1291,7 @@ bool wxSVGFEFuncGElement::SetAnimatedValue(const wxString& attrName, const wxSVG
 // wxSVGFEFuncRElement
 bool wxSVGFEFuncRElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGComponentTransferFunctionElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEFuncRElement::") + attrName);
     return false;
@@ -1346,7 +1346,7 @@ bool wxSVGFEImageElement::SetAttribute(const wxString& attrName, const wxString&
   else if (wxSVGLangSpace::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEImageElement::") + attrName);
     return false;
@@ -1368,7 +1368,7 @@ bool wxSVGFEImageElement::SetAnimatedValue(const wxString& attrName, const wxSVG
 bool wxSVGFEMergeElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEMergeElement::") + attrName);
     return false;
@@ -1390,7 +1390,7 @@ bool wxSVGFEMergeNodeElement::SetAttribute(const wxString& attrName, const wxStr
   if (attrName == wxT("in"))
 	m_in1.GetBaseVal() = attrValue;
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEMergeNodeElement::") + attrName);
     return false;
@@ -1427,7 +1427,7 @@ bool wxSVGFEMorphologyElement::SetAttribute(const wxString& attrName, const wxSt
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEMorphologyElement::") + attrName);
     return false;
@@ -1470,7 +1470,7 @@ bool wxSVGFEOffsetElement::SetAttribute(const wxString& attrName, const wxString
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEOffsetElement::") + attrName);
     return false;
@@ -1518,7 +1518,7 @@ bool wxSVGFEPointLightElement::SetAttribute(const wxString& attrName, const wxSt
       m_z.SetBaseVal(value);
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFEPointLightElement::") + attrName);
     return false;
@@ -1564,7 +1564,7 @@ bool wxSVGFESpecularLightingElement::SetAttribute(const wxString& attrName, cons
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFESpecularLightingElement::") + attrName);
     return false;
@@ -1644,7 +1644,7 @@ bool wxSVGFESpotLightElement::SetAttribute(const wxString& attrName, const wxStr
       m_limitingConeAngle.SetBaseVal(value);
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFESpotLightElement::") + attrName);
     return false;
@@ -1682,7 +1682,7 @@ bool wxSVGFETileElement::SetAttribute(const wxString& attrName, const wxString& 
 	m_in1.GetBaseVal() = attrValue;
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFETileElement::") + attrName);
     return false;
@@ -1739,7 +1739,7 @@ bool wxSVGFETurbulenceElement::SetAttribute(const wxString& attrName, const wxSt
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGFilterPrimitiveStandardAttributes::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFETurbulenceElement::") + attrName);
     return false;
@@ -1791,7 +1791,7 @@ bool wxSVGFilterElement::SetAttribute(const wxString& attrName, const wxString& 
   else if (wxSVGLangSpace::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFilterElement::") + attrName);
     return false;
@@ -1850,7 +1850,7 @@ bool wxSVGFilterPrimitiveStandardAttributes::SetAttribute(const wxString& attrNa
   else if (attrName == wxT("result"))
 	m_result.GetBaseVal() = attrValue;
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
       return false;
 
   return true;
@@ -1900,7 +1900,7 @@ bool wxSVGFitToViewBox::SetAttribute(const wxString& attrName, const wxString& a
     m_viewBox.GetBaseVal().SetValueAsString(attrValue);
   else if (attrName == wxT("preserveAspectRatio"))
     m_preserveAspectRatio.GetBaseVal().SetValueAsString(attrValue);
-  else 
+  else
       return false;
 
   return true;
@@ -1935,7 +1935,7 @@ bool wxSVGFontElement::SetAttribute(const wxString& attrName, const wxString& at
   if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFontElement::") + attrName);
     return false;
@@ -1955,7 +1955,7 @@ bool wxSVGFontElement::SetAnimatedValue(const wxString& attrName, const wxSVGAni
 // wxSVGFontFaceElement
 bool wxSVGFontFaceElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFontFaceElement::") + attrName);
     return false;
@@ -1967,7 +1967,7 @@ bool wxSVGFontFaceElement::SetAttribute(const wxString& attrName, const wxString
 // wxSVGFontFaceFormatElement
 bool wxSVGFontFaceFormatElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFontFaceFormatElement::") + attrName);
     return false;
@@ -1979,7 +1979,7 @@ bool wxSVGFontFaceFormatElement::SetAttribute(const wxString& attrName, const wx
 // wxSVGFontFaceNameElement
 bool wxSVGFontFaceNameElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFontFaceNameElement::") + attrName);
     return false;
@@ -1991,7 +1991,7 @@ bool wxSVGFontFaceNameElement::SetAttribute(const wxString& attrName, const wxSt
 // wxSVGFontFaceSrcElement
 bool wxSVGFontFaceSrcElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFontFaceSrcElement::") + attrName);
     return false;
@@ -2003,7 +2003,7 @@ bool wxSVGFontFaceSrcElement::SetAttribute(const wxString& attrName, const wxStr
 // wxSVGFontFaceUriElement
 bool wxSVGFontFaceUriElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGFontFaceUriElement::") + attrName);
     return false;
@@ -2028,7 +2028,7 @@ bool wxSVGForeignObjectElement::SetAttribute(const wxString& attrName, const wxS
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGForeignObjectElement::") + attrName);
     return false;
@@ -2078,7 +2078,7 @@ bool wxSVGGElement::SetAttribute(const wxString& attrName, const wxString& attrV
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGGElement::") + attrName);
     return false;
@@ -2100,7 +2100,7 @@ bool wxSVGGElement::SetAnimatedValue(const wxString& attrName, const wxSVGAnimat
 bool wxSVGGlyphElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGGlyphElement::") + attrName);
     return false;
@@ -2150,7 +2150,7 @@ bool wxSVGGlyphRefElement::SetAttribute(const wxString& attrName, const wxString
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGGlyphRefElement::") + attrName);
     return false;
@@ -2196,7 +2196,7 @@ bool wxSVGGradientElement::SetAttribute(const wxString& attrName, const wxString
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
       return false;
 
   return true;
@@ -2224,7 +2224,7 @@ bool wxSVGGradientElement::SetAnimatedValue(const wxString& attrName, const wxSV
 // wxSVGHKernElement
 bool wxSVGHKernElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGHKernElement::") + attrName);
     return false;
@@ -2252,7 +2252,7 @@ bool wxSVGImageElement::SetAttribute(const wxString& attrName, const wxString& a
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGImageElement::") + attrName);
     return false;
@@ -2309,7 +2309,7 @@ bool wxSVGLangSpace::SetAttribute(const wxString& attrName, const wxString& attr
 	m_xmllang = attrValue;
   else if (attrName == wxT("xml:space"))
 	m_xmlspace = attrValue;
-  else 
+  else
       return false;
 
   return true;
@@ -2331,7 +2331,7 @@ bool wxSVGLineElement::SetAttribute(const wxString& attrName, const wxString& at
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGLineElement::") + attrName);
     return false;
@@ -2384,7 +2384,7 @@ bool wxSVGLinearGradientElement::SetAttribute(const wxString& attrName, const wx
   else if (attrName == wxT("y2"))
     m_y2.GetBaseVal().SetValueAsString(attrValue);
   else if (wxSVGGradientElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGLinearGradientElement::") + attrName);
     return false;
@@ -2430,7 +2430,7 @@ bool wxSVGMPathElement::SetAttribute(const wxString& attrName, const wxString& a
   if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGMPathElement::") + attrName);
     return false;
@@ -2471,7 +2471,7 @@ bool wxSVGMarkerElement::SetAttribute(const wxString& attrName, const wxString& 
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGFitToViewBox::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGMarkerElement::") + attrName);
     return false;
@@ -2542,7 +2542,7 @@ bool wxSVGMaskElement::SetAttribute(const wxString& attrName, const wxString& at
   else if (wxSVGLangSpace::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGMaskElement::") + attrName);
     return false;
@@ -2590,7 +2590,7 @@ bool wxSVGMaskElement::SetAnimatedValue(const wxString& attrName, const wxSVGAni
 // wxSVGMetadataElement
 bool wxSVGMetadataElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGMetadataElement::") + attrName);
     return false;
@@ -2603,7 +2603,7 @@ bool wxSVGMetadataElement::SetAttribute(const wxString& attrName, const wxString
 bool wxSVGMissingGlyphElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGMissingGlyphElement::") + attrName);
     return false;
@@ -2635,7 +2635,7 @@ bool wxSVGPathElement::SetAttribute(const wxString& attrName, const wxString& at
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
   else if (wxSVGAnimatedPathData::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGPathElement::") + attrName);
     return false;
@@ -2686,7 +2686,7 @@ bool wxSVGPatternElement::SetAttribute(const wxString& attrName, const wxString&
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGFitToViewBox::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGPatternElement::") + attrName);
     return false;
@@ -2748,7 +2748,7 @@ bool wxSVGPolygonElement::SetAttribute(const wxString& attrName, const wxString&
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
   else if (wxSVGAnimatedPoints::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGPolygonElement::") + attrName);
     return false;
@@ -2775,7 +2775,7 @@ bool wxSVGPolylineElement::SetAttribute(const wxString& attrName, const wxString
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
   else if (wxSVGAnimatedPoints::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGPolylineElement::") + attrName);
     return false;
@@ -2806,7 +2806,7 @@ bool wxSVGRadialGradientElement::SetAttribute(const wxString& attrName, const wx
   else if (attrName == wxT("fy"))
     m_fy.GetBaseVal().SetValueAsString(attrValue);
   else if (wxSVGGradientElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGRadialGradientElement::") + attrName);
     return false;
@@ -2873,7 +2873,7 @@ bool wxSVGRectElement::SetAttribute(const wxString& attrName, const wxString& at
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGRectElement::") + attrName);
     return false;
@@ -2948,7 +2948,7 @@ bool wxSVGSVGElement::SetAttribute(const wxString& attrName, const wxString& att
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGFitToViewBox::SetAttribute(attrName, attrValue));
   else if (wxSVGZoomAndPan::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGSVGElement::") + attrName);
     return false;
@@ -2997,7 +2997,7 @@ bool wxSVGScriptElement::SetAttribute(const wxString& attrName, const wxString& 
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGScriptElement::") + attrName);
     return false;
@@ -3017,7 +3017,7 @@ bool wxSVGScriptElement::SetAnimatedValue(const wxString& attrName, const wxSVGA
 // wxSVGSetElement
 bool wxSVGSetElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGAnimationElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGSetElement::") + attrName);
     return false;
@@ -3041,7 +3041,7 @@ bool wxSVGStopElement::SetAttribute(const wxString& attrName, const wxString& at
   }
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGStopElement::") + attrName);
     return false;
@@ -3098,7 +3098,7 @@ bool wxSVGStyleElement::SetAttribute(const wxString& attrName, const wxString& a
   else if (attrName == wxT("title"))
 	m_title = attrValue;
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGStyleElement::") + attrName);
     return false;
@@ -3115,7 +3115,7 @@ bool wxSVGSwitchElement::SetAttribute(const wxString& attrName, const wxString& 
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGSwitchElement::") + attrName);
     return false;
@@ -3140,7 +3140,7 @@ bool wxSVGSymbolElement::SetAttribute(const wxString& attrName, const wxString& 
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGFitToViewBox::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGSymbolElement::") + attrName);
     return false;
@@ -3161,7 +3161,7 @@ bool wxSVGSymbolElement::SetAnimatedValue(const wxString& attrName, const wxSVGA
 // wxSVGTBreakElement
 bool wxSVGTBreakElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGTBreakElement::") + attrName);
     return false;
@@ -3174,7 +3174,7 @@ bool wxSVGTBreakElement::SetAttribute(const wxString& attrName, const wxString& 
 bool wxSVGTRefElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGTextPositioningElement::SetAttribute(attrName, attrValue));
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGTRefElement::") + attrName);
     return false;
@@ -3195,7 +3195,7 @@ bool wxSVGTRefElement::SetAnimatedValue(const wxString& attrName, const wxSVGAni
 // wxSVGTSpanElement
 bool wxSVGTSpanElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGTextPositioningElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGTSpanElement::") + attrName);
     return false;
@@ -3220,7 +3220,7 @@ bool wxSVGTests::SetAttribute(const wxString& attrName, const wxString& attrValu
     m_requiredExtensions.SetValueAsString(attrValue);
   else if (attrName == wxT("systemLanguage"))
     m_systemLanguage.SetValueAsString(attrValue);
-  else 
+  else
       return false;
 
   return true;
@@ -3244,7 +3244,7 @@ bool wxSVGTextContentElement::SetAttribute(const wxString& attrName, const wxStr
   else if (wxSVGLangSpace::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
       return false;
 
   return true;
@@ -3270,7 +3270,7 @@ bool wxSVGTextContentElement::SetAnimatedValue(const wxString& attrName, const w
 bool wxSVGTextElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGTextPositioningElement::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGTextElement::") + attrName);
     return false;
@@ -3312,7 +3312,7 @@ bool wxSVGTextPathElement::SetAttribute(const wxString& attrName, const wxString
   }
   else if (wxSVGTextContentElement::SetAttribute(attrName, attrValue));
   else if (wxSVGURIReference::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGTextPathElement::") + attrName);
     return false;
@@ -3353,7 +3353,7 @@ bool wxSVGTextPositioningElement::SetAttribute(const wxString& attrName, const w
   else if (attrName == wxT("rotate"))
     m_rotate.GetBaseVal().SetValueAsString(attrValue);
   else if (wxSVGTextContentElement::SetAttribute(attrName, attrValue));
-  else 
+  else
       return false;
 
   return true;
@@ -3408,7 +3408,7 @@ bool wxSVGTitleElement::SetAttribute(const wxString& attrName, const wxString& a
   if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGLangSpace::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGTitleElement::") + attrName);
     return false;
@@ -3429,7 +3429,7 @@ bool wxSVGTitleElement::SetAnimatedValue(const wxString& attrName, const wxSVGAn
 bool wxSVGTransformable::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (attrName == wxT("transform"))
     m_transform.GetBaseVal().SetValueAsString(attrValue);
-  else 
+  else
       return false;
 
   return true;
@@ -3452,7 +3452,7 @@ bool wxSVGTransformable::SetAnimatedValue(const wxString& attrName, const wxSVGA
 bool wxSVGURIReference::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (attrName == wxT("xlink:href") || attrName == wxT("href"))
 	m_href.GetBaseVal() = attrValue;
-  else 
+  else
       return false;
 
   return true;
@@ -3488,7 +3488,7 @@ bool wxSVGUseElement::SetAttribute(const wxString& attrName, const wxString& att
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGUseElement::") + attrName);
     return false;
@@ -3534,7 +3534,7 @@ bool wxSVGUseElement::SetAnimatedValue(const wxString& attrName, const wxSVGAnim
 // wxSVGVKernElement
 bool wxSVGVKernElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGElement::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGVKernElement::") + attrName);
     return false;
@@ -3584,7 +3584,7 @@ bool wxSVGVideoElement::SetAttribute(const wxString& attrName, const wxString& a
   else if (wxSVGLangSpace::SetAttribute(attrName, attrValue));
   else if (wxSVGStylable::SetAttribute(attrName, attrValue));
   else if (wxSVGTransformable::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGVideoElement::") + attrName);
     return false;
@@ -3643,7 +3643,7 @@ bool wxSVGViewElement::SetAttribute(const wxString& attrName, const wxString& at
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
   else if (wxSVGFitToViewBox::SetAttribute(attrName, attrValue));
   else if (wxSVGZoomAndPan::SetAttribute(attrName, attrValue));
-  else 
+  else
   {
     //wxLogDebug(wxT("unknown attribute SVGViewElement::") + attrName);
     return false;
@@ -3664,7 +3664,7 @@ bool wxSVGViewElement::SetAnimatedValue(const wxString& attrName, const wxSVGAni
 bool wxSVGViewSpec::SetAttribute(const wxString& attrName, const wxString& attrValue) {
   if (wxSVGZoomAndPan::SetAttribute(attrName, attrValue));
   else if (wxSVGFitToViewBox::SetAttribute(attrName, attrValue));
-  else 
+  else
       return false;
 
   return true;
@@ -3689,7 +3689,7 @@ bool wxSVGZoomAndPan::SetAttribute(const wxString& attrName, const wxString& att
       value = wxSVG_ZOOMANDPAN_MAGNIFY;
     m_zoomAndPan = (wxSVG_ZOOMANDPAN) value;
   }
-  else 
+  else
       return false;
 
   return true;

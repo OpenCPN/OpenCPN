@@ -31,16 +31,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------
 void  GribV1Record::translateDataType()
 {
-	this->knownData = true;
-	//------------------------
-	// NOAA GFS
-	//------------------------
-	if (   idCenter==7
-		&& (idModel==96 || idModel==81)		// NOAA
-		&& (idGrid==4 || idGrid==255))		// Saildocs
-	{
+    this->knownData = true;
+    //------------------------
+    // NOAA GFS
+    //------------------------
+    if (   idCenter==7
+        && (idModel==96 || idModel==81)     // NOAA
+        && (idGrid==4 || idGrid==255))      // Saildocs
+    {
         dataCenterModel = NOAA_GFS;
-		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+        if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
             multiplyAllData( 3600.0 );
         }
         if (dataType == GRB_TEMP                        //gfs Water surface Temperature
@@ -51,51 +51,51 @@ void  GribV1Record::translateDataType()
         if (levelType == LV_ATMOS_ENT) {
             levelType = LV_ATMOS_ALL;
         }
-	}
-	//------------------------
-	// ICON DWD Saildoc
-	//------------------------
-	else if ( idCenter==78 && idModel==1 && idGrid==255) {
+    }
+    //------------------------
+    // ICON DWD Saildoc
+    //------------------------
+    else if ( idCenter==78 && idModel==1 && idGrid==255) {
         if (dataType == GRB_TEMP                        // ICON Water surface Temperature
             && levelType == LV_GND_SURF
             && levelValue == 0) dataType = GRB_WTMP;
-	}
-	//------------------------
-	// EMCF masquaraded as NOAA ?
-	//------------------------
-	else if ( idCenter==7 && idModel==64 && idGrid==4)
-	{
+    }
+    //------------------------
+    // EMCF masquaraded as NOAA ?
+    //------------------------
+    else if ( idCenter==7 && idModel==64 && idGrid==4)
+    {
         dataCenterModel = NOAA_GFS;
-        if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+        if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
             multiplyAllData( 3600.0 );
         }
     }
     //------------------------
-	//DNMI-NEurope.grb
-	//------------------------
+    //DNMI-NEurope.grb
+    //------------------------
     else if ( (idCenter==88 && idModel==255 && idGrid==255)
-		|| (idCenter==88 && idModel==230 && idGrid==255)
-		|| (idCenter==88 && idModel==200 && idGrid==255)
-		|| (idCenter==88 && idModel==67 && idGrid==255) )
+        || (idCenter==88 && idModel==230 && idGrid==255)
+        || (idCenter==88 && idModel==200 && idGrid==255)
+        || (idCenter==88 && idModel==67 && idGrid==255) )
     {
         if( dataType==GRB_TEMP && levelType==LV_GND_SURF && levelValue==0 ) {       //air temperature at groud level
             levelType = LV_ABOV_GND; levelValue = 2;
         }
-		dataCenterModel = NORWAY_METNO;
+        dataCenterModel = NORWAY_METNO;
     }
-	//------------------------
-	// WRF NMM grib.meteorologic.net
-	//------------------------
-	else if (idCenter==7 && idModel==89 && idGrid==255)
+    //------------------------
+    // WRF NMM grib.meteorologic.net
+    //------------------------
+    else if (idCenter==7 && idModel==89 && idGrid==255)
     {
         // dataCenterModel ??
-		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+        if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
             multiplyAllData( 3600.0 );
-		}
-	}
+        }
+    }
     else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
-		dataCenterModel = NOAA_NCEP_WW3;
-	}
+        dataCenterModel = NOAA_NCEP_WW3;
+    }
     //----------------------------
     //NOAA RTOFS
     //--------------------------------
@@ -124,30 +124,30 @@ void  GribV1Record::translateDataType()
     {
         dataCenterModel = FNMOC_WW3_GLB;
     }
-	//------------------------
-	// Meteorem (Scannav)
-	//------------------------
-	else if (idCenter==59 && idModel==78 && idGrid==255)
-	{
+    //------------------------
+    // Meteorem (Scannav)
+    //------------------------
+    else if (idCenter==59 && idModel==78 && idGrid==255)
+    {
         //dataCenterModel = ??
-		if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
-			&& getLevelType()==LV_MSL
-			&& getLevelValue()==0)
-		{
-			levelType  = LV_ABOV_GND;
-			levelValue = 10;
-		}
-		if ( getDataType()==GRB_PRECIP_TOT
-			&& getLevelType()==LV_MSL
-			&& getLevelValue()==0)
-		{
-			levelType  = LV_GND_SURF;
-			levelValue = 0;
-		}
-	}
-	//----------------------------------------------
-	// ECMWF ERA5
-	//----------------------------------------------
+        if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
+            && getLevelType()==LV_MSL
+            && getLevelValue()==0)
+        {
+            levelType  = LV_ABOV_GND;
+            levelValue = 10;
+        }
+        if ( getDataType()==GRB_PRECIP_TOT
+            && getLevelType()==LV_MSL
+            && getLevelValue()==0)
+        {
+            levelType  = LV_GND_SURF;
+            levelValue = 0;
+        }
+    }
+    //----------------------------------------------
+    // ECMWF ERA5
+    //----------------------------------------------
     else if (idCenter==98 && (idModel==145|| idModel==255 ) && idGrid==255 && tableVersion == 128)
     {
         dataCenterModel = ECMWF_ERA5;
@@ -234,9 +234,9 @@ void  GribV1Record::translateDataType()
             }
         }
     }
-	//----------------------------------------------
-	// ECMWF ERA5 WAVE
-	//----------------------------------------------
+    //----------------------------------------------
+    // ECMWF ERA5 WAVE
+    //----------------------------------------------
     else if (idCenter==98 && idModel==111 && idGrid==255 && tableVersion == 140)
     {
         dataCenterModel = ECMWF_ERA5;
@@ -252,30 +252,30 @@ void  GribV1Record::translateDataType()
             break;
         }
     }
-	//------------------------
-	// EMCWF grib1...
-	//------------------------
-	else if (idCenter==98 /*&& idModel==148*/ && idGrid==255)
-	{
+    //------------------------
+    // EMCWF grib1...
+    //------------------------
+    else if (idCenter==98 /*&& idModel==148*/ && idGrid==255)
+    {
         dataCenterModel = OTHER_DATA_CENTER;
-		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+        if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
             //dataType=71 levelType=1 levelValue=0
             multiplyAllData( 3600.0 );
-		}
-		else if (getDataType()==GRB_CLOUD_TOT && getLevelType()==LV_GND_SURF && getLevelValue()==0) {
-		    // dataType=59 levelType=1 levelValue=0
-		    levelType = LV_ATMOS_ALL;
-		}
-		else if (getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0) {
-		    // dataType=2 levelType=1 levelValue=0
-		    levelType = LV_MSL;
-		}
+        }
+        else if (getDataType()==GRB_CLOUD_TOT && getLevelType()==LV_GND_SURF && getLevelValue()==0) {
+            // dataType=59 levelType=1 levelValue=0
+            levelType = LV_ATMOS_ALL;
+        }
+        else if (getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0) {
+            // dataType=2 levelType=1 levelValue=0
+            levelType = LV_MSL;
+        }
     }
     //------------------------------------------
     // KNMI
     // ------------------------
     else if (idCenter==99 && idGrid==255)
-	{
+    {
         if (idModel==8) {
             dataCenterModel = KNMI_HIRLAM;
         }
@@ -319,18 +319,18 @@ void  GribV1Record::translateDataType()
                 }
                 break;
         }
-	}
-	//------------------------
-	// Unknown center
-	//------------------------
-	else
-	{
+    }
+    //------------------------
+    // Unknown center
+    //------------------------
+    else
+    {
         dataCenterModel = OTHER_DATA_CENTER;
-//		printf("Uncorrected GribRecord: ");
-//		this->print();
-//		this->knownData = false;
+//      printf("Uncorrected GribRecord: ");
+//      this->print();
+//      this->knownData = false;
 
-	}
+    }
     //translate significant wave height and dir
     if (this->knownData) {
         switch (getDataType()) {
@@ -372,31 +372,31 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_)
     //then the read can be continued from that position in the file in the section 0 read
     char strgrib[5];
 
-    unsigned int b_haveReadGRIB = 0;				    // already read the "GRIB" of section 0 ?
+    unsigned int b_haveReadGRIB = 0;                    // already read the "GRIB" of section 0 ?
 
-	for (unsigned i = 0; i < 4; i++) {		            //read the four first bytes one by one
+    for (unsigned i = 0; i < 4; i++) {                  //read the four first bytes one by one
         if (zu_read(file, strgrib + i, 1) != 1) {       //detect end of file?
             ok = false;
             eof = true;
             return;
-		} else {                            //search "GRIB" or at least "G"
-			if (strgrib[0] != 'G') {		//if no 'G' found in the 1st byte
-				if (strgrib[i] == 'G') {    //but found in the next 3 bytes
-					b_haveReadGRIB = 1;		//stop reading.The 3 following bytes will be read in section 0 read starting at that position
-					b_len_add_8 = false;
-					break;
-				} // end 'G' found in the next bytes
-			} // end no 'G' found in 1st byte.
-		}
-	}// end reading four bytes
+        } else {                            //search "GRIB" or at least "G"
+            if (strgrib[0] != 'G') {        //if no 'G' found in the 1st byte
+                if (strgrib[i] == 'G') {    //but found in the next 3 bytes
+                    b_haveReadGRIB = 1;     //stop reading.The 3 following bytes will be read in section 0 read starting at that position
+                    b_len_add_8 = false;
+                    break;
+                } // end 'G' found in the next bytes
+            } // end no 'G' found in 1st byte.
+        }
+    }// end reading four bytes
 
-    if (b_haveReadGRIB == 0) {						//the four bytes have been read
-		if (strncmp(strgrib, "GRIB", 4) != 0)
-			b_len_add_8 = true;                 //"GRIB" header no valid so apply length adder. Further reading will happen
-		else {
-			b_haveReadGRIB = 2;					//"GRIB" header is valid so no further reading
-			b_len_add_8 = false;
-		}
+    if (b_haveReadGRIB == 0) {                      //the four bytes have been read
+        if (strncmp(strgrib, "GRIB", 4) != 0)
+            b_len_add_8 = true;                 //"GRIB" header no valid so apply length adder. Further reading will happen
+        else {
+            b_haveReadGRIB = 2;                 //"GRIB" header is valid so no further reading
+            b_len_add_8 = false;
+        }
 
         // Another special case, where zero padding is used between records.
         if((strgrib[0] == 0) &&
@@ -434,9 +434,9 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_)
     }
 
     if (ok) {
-		translateDataType();
-		setDataType(dataType);
-	}
+        translateDataType();
+        setDataType(dataType);
+    }
     else {
         // XXX very slow with bzip2 file
         zu_seek(file, start, SEEK_SET);
@@ -466,7 +466,7 @@ static zuint readPackedBits(zuchar *buf, zuint first, zuint nbBits)
         // x >> 32 is undefined behavior, on x86 it returns x
         return 0;
     }
-#endif    
+#endif
     zuint oct = first / 8;
     zuint bit = first % 8;
 
@@ -498,8 +498,8 @@ bool GribV1Record::readGribSection0_IS(ZUFILE* file, unsigned int b_skip_initial
             eof = true;
             return false;
       }
-    } else if(b_skip_initial_GRIB == 1)			//the first 'G' has been found previously
-		strgrib[0] = 'G';
+    } else if(b_skip_initial_GRIB == 1)         //the first 'G' has been found previously
+        strgrib[0] = 'G';
 
     if( b_skip_initial_GRIB == 0 || b_skip_initial_GRIB == 1 ) {    // contine to search the end of "GRIB" in the next three bytes
       if (zu_read(file, strgrib+1, 3) != 3) {
@@ -551,9 +551,9 @@ bool GribV1Record::readGribSection1_PDS(ZUFILE* file) {
     hasGDS = (data1[7]&128)!=0;
     hasBMS = (data1[7]&64)!=0;
 
-    dataType = data1[8];	 // octet 9 = parameters and units
-	levelType = data1[9];
-	levelValue = makeInt2(data1[10],data1[11]);
+    dataType = data1[8];     // octet 9 = parameters and units
+    levelType = data1[9];
+    levelValue = makeInt2(data1[10],data1[11]);
 
     refyear   = (data1[24]-1)*100+data1[12];
     refmonth  = data1[13];
@@ -562,7 +562,7 @@ bool GribV1Record::readGribSection1_PDS(ZUFILE* file) {
     refminute = data1[16];
 
     refDate = makeDate(refyear,refmonth,refday,refhour,refminute,0);
-	sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear,refmonth,refday,refhour,refminute);
+    sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear,refmonth,refday,refhour,refminute);
 
     periodP1  = data1[18];
     periodP2  = data1[19];
@@ -596,31 +596,31 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
         return 0;
     fileOffset2 = zu_tell(file);
     sectionSize2 = readInt3(file);  // byte 1-2-3
-    NV = readChar(file);			// byte 4
-    PV = readChar(file); 			// byte 5
-    gridType = readChar(file); 		// byte 6
+    NV = readChar(file);            // byte 4
+    PV = readChar(file);            // byte 5
+    gridType = readChar(file);      // byte 6
 
     if (gridType != 0
-    		// && gridType != 4
-		) {
+            // && gridType != 4
+        ) {
         erreur("Record %d: unknown grid type GDS(6) : %d",id,gridType);
         ok = false;
     }
 
-    Ni  = readInt2(file);				// byte 7-8
-    Nj  = readInt2(file);				// byte 9-10
-    La1 = readSignedInt3(file)/1000.0;	// byte 11-12-13
-    Lo1 = readSignedInt3(file)/1000.0;	// byte 14-15-16
-    resolFlags = readChar(file);		// byte 17
-    La2 = readSignedInt3(file)/1000.0;	// byte 18-19-20
-    Lo2 = readSignedInt3(file)/1000.0;	// byte 21-22-23
+    Ni  = readInt2(file);               // byte 7-8
+    Nj  = readInt2(file);               // byte 9-10
+    La1 = readSignedInt3(file)/1000.0;  // byte 11-12-13
+    Lo1 = readSignedInt3(file)/1000.0;  // byte 14-15-16
+    resolFlags = readChar(file);        // byte 17
+    La2 = readSignedInt3(file)/1000.0;  // byte 18-19-20
+    Lo2 = readSignedInt3(file)/1000.0;  // byte 21-22-23
 
     if (Lo1>=0 && Lo1<=180 && Lo2<0) {
         Lo2 += 360.0;    // cross the 180 deg meridien,beetwen alaska and russia
     }
 
-    Di  = readSignedInt2(file)/1000.0;	// byte 24-25
-    Dj  = readSignedInt2(file)/1000.0;	// byte 26-27
+    Di  = readSignedInt2(file)/1000.0;  // byte 24-25
+    Dj  = readSignedInt2(file)/1000.0;  // byte 26-27
 
     while ( Lo1> Lo2   &&  Di >0) {   // horizontal size > 360 °
         Lo1 -= 360.0;
@@ -629,35 +629,35 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
     isEarthSpheric = (resolFlags&0x40) ==0;
     isUeastVnorth =  (resolFlags&0x08) ==0;
 
-    scanFlags = readChar(file);			// byte 28
+    scanFlags = readChar(file);         // byte 28
     isScanIpositive = (scanFlags&0x80) ==0;
     isScanJpositive = (scanFlags&0x40) !=0;
     isAdjacentI     = (scanFlags&0x20) ==0;
 
-   	if (Lo2 > Lo1) {
-	    lonMin = Lo1;
-	    lonMax = Lo2;
-	}
-  	else {
-	    lonMin = Lo2;
-	    lonMax = Lo1;
-	}
-   	if (La2 > La1) {
-	    latMin = La1;
-	    latMax = La2;
-	}
-  	else {
-	    latMin = La2;
-	    latMax = La1;
-	}
-	if (Ni<=1 || Nj<=1) {
-		erreur("Record %d: Ni=%d Nj=%d",id,Ni,Nj);
-		ok = false;
-	}
-	else {
-		Di = (Lo2-Lo1) / (Ni-1);
-		Dj = (La2-La1) / (Nj-1);
-	}
+    if (Lo2 > Lo1) {
+        lonMin = Lo1;
+        lonMax = Lo2;
+    }
+    else {
+        lonMin = Lo2;
+        lonMax = Lo1;
+    }
+    if (La2 > La1) {
+        latMin = La1;
+        latMax = La2;
+    }
+    else {
+        latMin = La2;
+        latMax = La1;
+    }
+    if (Ni<=1 || Nj<=1) {
+        erreur("Record %d: Ni=%d Nj=%d",id,Ni,Nj);
+        ok = false;
+    }
+    else {
+        Di = (Lo2-Lo1) / (Ni-1);
+        Dj = (La2-La1) / (Nj-1);
+    }
 
 if (false) {
 printf("==== GV1 \n");
@@ -708,10 +708,10 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
     fileOffset4  = zu_tell(file);
     sectionSize4 = readInt3(file);  // byte 1-2-3
 
-    zuchar flags  = readChar(file);			// byte 4
-    scaleFactorE = readSignedInt2(file);	// byte 5-6
-    refValue     = readFloat4(file);		// byte 7-8-9-10
-    nbBitsInPack = readChar(file);			// byte 11
+    zuchar flags  = readChar(file);         // byte 4
+    scaleFactorE = readSignedInt2(file);    // byte 5-6
+    refValue     = readFloat4(file);        // byte 7-8-9-10
+    nbBitsInPack = readChar(file);          // byte 11
     scaleFactorEpow2 = pow(2.,scaleFactorE);
     unusedBitsEndBDS = flags & 0x0F;
     isGridData      = (flags&0x80) ==0;
@@ -931,25 +931,25 @@ zuint GribV1Record::makeInt2(zuchar b, zuchar c) {
 zuint GribV1Record::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) {
     zuint res, dur;
     switch (unit) {
-        case 0: //	Minute
+        case 0: //  Minute
             res = 60; break;
-        case 1: //	Hour
+        case 1: //  Hour
             res = 3600; break;
-        case 2: //	Day
+        case 2: //  Day
             res = 86400; break;
-        case 10: //	3 hours
+        case 10: // 3 hours
             res = 10800; break;
-        case 11: //	6 hours
+        case 11: // 6 hours
             res = 21600; break;
-        case 12: //	12 hours
+        case 12: // 12 hours
             res = 43200; break;
         case 254: // Second
             res = 1; break;
-        case 3: //	Month
-        case 4: //	Year
-        case 5: //	Decade (10 years)
-        case 6: //	Normal (30 years)
-        case 7: //	Century (100 years)
+        case 3: //  Month
+        case 4: //  Year
+        case 5: //  Decade (10 years)
+        case 6: //  Normal (30 years)
+        case 7: //  Century (100 years)
         default:
             erreur("id=%d: unknown time unit in PDS b18=%d",id,unit);
             res = 0;
@@ -972,7 +972,7 @@ zuint GribV1Record::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) 
          case 4: // Accumulation  (reference time + P1 to reference time + P2)
             dur = (zuint)P2; break;
 
-        case 10: // P1 occupies octets 19 and 20; product valid at reference time + P1 
+        case 10: // P1 occupies octets 19 and 20; product valid at reference time + P1
             dur = ((zuint)P1<<8) + (zuint)P2; break;
         default:
             erreur("id=%d: unknown time range in PDS b21=%d",id,range);

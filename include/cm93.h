@@ -26,7 +26,7 @@
 #ifndef __CM93CHART_H__
 #define __CM93CHART_H__
 
-#include <wx/listctrl.h>			// Somehow missing from wx build
+#include <wx/listctrl.h>            // Somehow missing from wx build
 
 #include    "s57chart.h"
 #include    "cutil.h"               // for types
@@ -79,7 +79,7 @@ class M_COVR_Desc
       double      user_xoff;
       double      user_yoff;
       double      m_centerlat_cos;
-      
+
       LLBBox m_covr_bbox;
       bool        m_buser_offsets;
 
@@ -218,7 +218,7 @@ typedef struct{
       double                       user_yoff;
 
       double                       min_lat, min_lon;
-      
+
       //    Allocated working blocks
       vector_record_descriptor      *object_vector_record_descriptor_block;
       Object                        *pobject_block;
@@ -434,7 +434,7 @@ class cm93compchart : public s57chart
             void SetVPParms(const ViewPort &vpt);
             void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
             LLRegion GetValidRegion();
-            
+
             ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
             ThumbData *GetThumbData() {return (ThumbData *)NULL;}
 

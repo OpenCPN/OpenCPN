@@ -192,9 +192,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
                                                       FALSE, wxString( _T ( "Arial" ) ) );
 
     pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), wxMax(1,(int)(m_tcwin_scaler+0.5)),
-					      wxPENSTYLE_SOLID );
+                          wxPENSTYLE_SOLID );
     pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), wxMax(2,(int)(2*m_tcwin_scaler+0.5)),
-					      wxPENSTYLE_SOLID );
+                          wxPENSTYLE_SOLID );
     pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), wxMax(1,(int)(m_tcwin_scaler+0.5)),
                                                                           wxPENSTYLE_SOLID );
     pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), wxMax(4,(int)(4*m_tcwin_scaler+0.5)),
@@ -722,18 +722,18 @@ void TCWin::OnPaint( wxPaintEvent& event )
                 val_off = ib;
             }
 
-	    // Arrange to skip some lines and legends if there are too many for the vertical space we have
-	    int height_stext;
-	    dc.GetTextExtent( _T("1"), NULL, &height_stext );
-	    float available_lines = (float) m_graph_rect.height / height_stext;
-	    i_skip = (int) ceil(im / available_lines);
+        // Arrange to skip some lines and legends if there are too many for the vertical space we have
+        int height_stext;
+        dc.GetTextExtent( _T("1"), NULL, &height_stext );
+        float available_lines = (float) m_graph_rect.height / height_stext;
+        i_skip = (int) ceil(im / available_lines);
 
-	    if( CURRENT_PLOT == m_plot_type && i_skip != 1) {
-	      // Adjust steps so slack current "0" line is always drawn on graph
-	      ib -= it % i_skip;
-	      it = -ib;
-	      im = 2 * it;
-	    }
+        if( CURRENT_PLOT == m_plot_type && i_skip != 1) {
+          // Adjust steps so slack current "0" line is always drawn on graph
+          ib -= it % i_skip;
+          it = -ib;
+          im = 2 * it;
+        }
 
 //    Build spline list of points
 
@@ -762,9 +762,9 @@ void TCWin::OnPaint( wxPaintEvent& event )
             int yd = m_graph_rect.y + ( m_plot_y_offset ) - ( ( i - val_off ) * m_graph_rect.height / im );
 
             if( ( m_plot_y_offset + m_graph_rect.y ) == yd )
-	      dc.SetPen( *pblack_2 );
+          dc.SetPen( *pblack_2 );
             else
-	      dc.SetPen( *pblack_1 );
+          dc.SetPen( *pblack_1 );
 
             dc.DrawLine( m_graph_rect.x, yd, m_graph_rect.x + m_graph_rect.width, yd );
             snprintf( sbuf, 99, "%d", i );

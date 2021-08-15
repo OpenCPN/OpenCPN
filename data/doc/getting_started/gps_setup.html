@@ -23,18 +23,18 @@
 <!--<![endif]-->
 
     <script type="text/javascript">
-    //<![CDATA[ 
+    //<![CDATA[
     function LoadScript( url )
     {
-     document.write( '<scr' + 'ipt type="text/javascript" src="..//url"><\/scr' + 'ipt>' ) ;        
+     document.write( '<scr' + 'ipt type="text/javascript" src="..//url"><\/scr' + 'ipt>' ) ;
 
     }
    function LoadScriptDefer( url )
     {
-     document.write( '<scr' + 'ipt type="text/javascript" src="..//url" defer><\/scr' + 'ipt>' ) ;        
+     document.write( '<scr' + 'ipt type="text/javascript" src="..//url" defer><\/scr' + 'ipt>' ) ;
 
     }
-//]]> 
+//]]>
 
  </script>
 </head>
@@ -302,7 +302,7 @@ All major Linux distribution includes a graphical user settings dialog, where ad
 <li class="level1"><div class="li"> Install the gpsd and gpsd-clients packages</div>
 </li>
 </ul>
-<pre class="code">      
+<pre class="code">
 $ sudo apt-get install gpsd gpsd-clients</pre>
 <ul>
 <li class="level1"><div class="li"> Go to Options→ Connections→ Add Connection and select “Network” plus the GPSD radio button. Address should be “localhost” and DataPorts should be set to 2947.</div>
@@ -363,7 +363,7 @@ None of this is normally noticed when using gpsd, as this program reads both NME
 </li>
 </ul>
 <pre class="code">$ ps aux | grep gpsd
-nobody 12338 0.3 0.1 4124 1448 ? S&lt;s 18:31 0:00 gpsd -F /var/run/gpsd.sock 
+nobody 12338 0.3 0.1 4124 1448 ? S&lt;s 18:31 0:00 gpsd -F /var/run/gpsd.sock
 you 12356 0.0 0.0 3036 800 pts/3 S+ 18:32 0:00 grep –color=tty -d skip gpsd</pre>
 <ul>
 <li class="level1"><div class="li"> This or similar responses indicate that gpsd is running. If you only have something like the second line,…it is not running.</div>
@@ -437,12 +437,12 @@ More user experience of setting up bluetooth GPS are welcome, as the notes below
 <div class="level4">
 
 <p>
-If you have a bluetooth GPS you will need to first configure it through the standard Ubuntu Bluetooth “set up new device ” proceedure. Once you have done that you will need to find what the address of the GPS is. To do that you run this command:   
+If you have a bluetooth GPS you will need to first configure it through the standard Ubuntu Bluetooth “set up new device ” proceedure. Once you have done that you will need to find what the address of the GPS is. To do that you run this command:
 </p>
 <pre class="code">&quot;sudo hcitool scan&quot; </pre>
 
 <p>
-it will then start looking for the Bluetooth GPS and hopefully find your GPS. You should see something similar to: 
+it will then start looking for the Bluetooth GPS and hopefully find your GPS. You should see something similar to:
 </p>
 <pre class="code">Scanning …
 00:1C:88:10:D3:4D    iBT-GPS </pre>
@@ -452,19 +452,19 @@ In this case I have a IBT-GPS at address 00:1C:88:10:D3:4D (Your GPS address wil
 </p>
 
 <p>
-Next we have to bind the GPS address to a “virtual” device OpenCPN understands in this case rfcomm0. We do this with the following command: 
+Next we have to bind the GPS address to a “virtual” device OpenCPN understands in this case rfcomm0. We do this with the following command:
 </p>
 <pre class="code">sudo rfcomm bind /dev/rfcomm0 00:1C:88:10:D3:4D </pre>
 
 <p>
 Note put your GPS address in this line
-You should not have to run these commands each time your linux is restarted as it will remember your GPS address. 
+You should not have to run these commands each time your linux is restarted as it will remember your GPS address.
 </p>
 
 <p>
-Now all you need to do is go into OpenCPN Toolbox and select GPS. 
-Now in the NMEA Data Source options select from the pulldown menu: 
-“<strong>/dev/rfcomm0</strong>”, or write it in the box, if not present as an alternative. 
+Now all you need to do is go into OpenCPN Toolbox and select GPS.
+Now in the NMEA Data Source options select from the pulldown menu:
+“<strong>/dev/rfcomm0</strong>”, or write it in the box, if not present as an alternative.
 </p>
 
 <p>
@@ -476,7 +476,7 @@ That&#039;s it - you should now have a Bluetooth GPS Connected.
 </p>
 
 <p>
--Pair GPS with bluetooth icon 
+-Pair GPS with bluetooth icon
 -break connection with bluetooth icon
 -get device id: sudo hcitool scan
 -get channel for gps: sdptool records 00:02:78:0A:4E:E9 (put your actual number here)
@@ -521,23 +521,23 @@ comment &quot;Your GPS Device Here&quot;;
 <p>
 You only need to to this once, not required if you reboot at this point).
 </p>
-<pre class="code">…connected /dev/rfcomm0 to 00:00:00:00:00:00 (whatever) 
+<pre class="code">…connected /dev/rfcomm0 to 00:00:00:00:00:00 (whatever)
 Press CTRL-C for hangup </pre>
 
 <p>
-in a separate terminal, you can test the connection with 
+in a separate terminal, you can test the connection with
 </p>
-<pre class="code">rfcomm show /dev/rfcomm0 
+<pre class="code">rfcomm show /dev/rfcomm0
 …rfcomm0: 00:08:1B:14:18:B6 channel 1 connected [tty-attached] </pre>
 
 <p>
-Your bluetooth GPS should now be working in open CPN. 
-Run 
+Your bluetooth GPS should now be working in open CPN.
+Run
 </p>
 <pre class="code">sudo opencpn</pre>
 
 <p>
-To check that it works (/dev/rfcomm0 under GPS NMEA data source). If it works, try running opencpn without sudo, chances are that you cannot see the gps. if this is the case, use the following fix: 
+To check that it works (/dev/rfcomm0 under GPS NMEA data source). If it works, try running opencpn without sudo, chances are that you cannot see the gps. if this is the case, use the following fix:
 </p>
 <pre class="code">sudo usermod -a -G dialout $USER &#039;&#039;</pre>
 
@@ -547,7 +547,7 @@ To check that it works (/dev/rfcomm0 under GPS NMEA data source). If it works, t
 <div class="level4">
 
 <p>
-Run 
+Run
 </p>
 <pre class="code">hcitool scan</pre>
 
@@ -559,26 +559,26 @@ Make a file “rfcomm.config” and put it in /etc/bluetooth.
 <p>
 This file is already present in Ubuntu, but needs editing for persistent connection.
 </p>
-<pre class="code"># RFCOMM configuration file. 
-# 
-# $Id: rfcomm.conf,v 1.1 2002/10/07 05:58:18 maxk Exp $ 
-# 
-rfcomm0 { 
-# Automatically bind the device at startup 
-bind yes; 
-# Bluetooth address of the device 
-device XX:XX:XX:XX:XX:XX; 
-# RFCOMM channel for the connection 
-channel 1; 
-# Description of the connection 
-comment &quot;Your GPS Device Here&quot;; 
+<pre class="code"># RFCOMM configuration file.
+#
+# $Id: rfcomm.conf,v 1.1 2002/10/07 05:58:18 maxk Exp $
+#
+rfcomm0 {
+# Automatically bind the device at startup
+bind yes;
+# Bluetooth address of the device
+device XX:XX:XX:XX:XX:XX;
+# RFCOMM channel for the connection
+channel 1;
+# Description of the connection
+comment &quot;Your GPS Device Here&quot;;
 } </pre>
 
 <p>
 Change XX:XX:XX…. to your device ID
-Open Opencpn and write <strong>/dev/rfcomm0</strong> as GPS NMEA device. Note that you can add it yourself by writing directly into the scroll down box. 
-Permissions for <strong>/dev/rfcomm0</strong> are for group “<strong>dialou</strong>t”. Make sure you belong to that group. 
-The command “groups” will show all the groups you belong to. 
+Open Opencpn and write <strong>/dev/rfcomm0</strong> as GPS NMEA device. Note that you can add it yourself by writing directly into the scroll down box.
+Permissions for <strong>/dev/rfcomm0</strong> are for group “<strong>dialou</strong>t”. Make sure you belong to that group.
+The command “groups” will show all the groups you belong to.
 Make sure that “gpsd” isn&#039;t running, issuing “killall gpsd” as root.
 </p>
 
@@ -588,11 +588,11 @@ Make sure that “gpsd” isn&#039;t running, issuing “killall gpsd” as root
 <div class="level2">
 
 <p>
-Attaching a GPS device to a Mac is done via one of the USB ports. Whether using a device with its own USB lead or via a serial-USB adapter lead or an NMEA multiplexer with USB port, the appropriate <abbr title="Operating System">OS</abbr> X driver needs to be installed. Nearly all hardware uses one of just two chip makes: those from FTDI or Prolific. Both those companies make <abbr title="Operating System">OS</abbr> X drivers available on their web sites, but manufacturers of GPS devices usually package the driver with device. 
+Attaching a GPS device to a Mac is done via one of the USB ports. Whether using a device with its own USB lead or via a serial-USB adapter lead or an NMEA multiplexer with USB port, the appropriate <abbr title="Operating System">OS</abbr> X driver needs to be installed. Nearly all hardware uses one of just two chip makes: those from FTDI or Prolific. Both those companies make <abbr title="Operating System">OS</abbr> X drivers available on their web sites, but manufacturers of GPS devices usually package the driver with device.
 </p>
 
 <p>
-When the driver is installed and the device connected, start OpenCPN, select the Toolbox and click the GPS tab. Open the “NMEA Data Source” menu &amp; select the the device from the list. It is not always obvious which is the correct one, but in general the device will have a name starting: ”/dev/cu.“ or ”/dev/tty.“. Some manufacturers make it obvious, like ”/dev/cu.MiniPlex-99000125“, but others may be more generic, like: ”/dev/cu.usbserial“. Set the “NMEA Baud Rate” to 4800 and click “OK”. If the correct selection has been made, you should see the GPS status icon change from red to green. 
+When the driver is installed and the device connected, start OpenCPN, select the Toolbox and click the GPS tab. Open the “NMEA Data Source” menu &amp; select the the device from the list. It is not always obvious which is the correct one, but in general the device will have a name starting: ”/dev/cu.“ or ”/dev/tty.“. Some manufacturers make it obvious, like ”/dev/cu.MiniPlex-99000125“, but others may be more generic, like: ”/dev/cu.usbserial“. Set the “NMEA Baud Rate” to 4800 and click “OK”. If the correct selection has been made, you should see the GPS status icon change from red to green.
 </p>
 
 </div>
@@ -601,11 +601,11 @@ When the driver is installed and the device connected, start OpenCPN, select the
 <div class="level2">
 
 <p>
-Use of Virtualized Environments such as Parallels, VM, VirtualBox, etc to run an alternative version of Opencpn on your Mac or PC are beyond the scope of this section. However experienced users are invited to report the specifics about using USB ports with Virtual Configurations. Please be specific about the setup and software and explain how virtual USB ports work in that environment. These commenta will eventually make their way into this section. 
+Use of Virtualized Environments such as Parallels, VM, VirtualBox, etc to run an alternative version of Opencpn on your Mac or PC are beyond the scope of this section. However experienced users are invited to report the specifics about using USB ports with Virtual Configurations. Please be specific about the setup and software and explain how virtual USB ports work in that environment. These commenta will eventually make their way into this section.
 </p>
 
 <p>
-It should be noted that each Virtual Software handles virtualization of USB and Sharing differently. This can affect the connection and reliability of the connection for GPS.  
+It should be noted that each Virtual Software handles virtualization of USB and Sharing differently. This can affect the connection and reliability of the connection for GPS.
 </p>
 
 <p>

@@ -1,5 +1,5 @@
 /******************************************************************************
- * updated: 4-5-2012  
+ * updated: 4-5-2012
  * Project:  OpenCPN
  * Purpose:  demo Plugin
  * Author:   David Register
@@ -71,7 +71,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 int demo_pi::Init(void)
 {
     AddLocaleCatalog( PLUGIN_CATALOG_NAME );
-    
+
       m_pdemo_window = NULL;
 
       // Get a pointer to the opencpn display canvas, to use as a parent for windows created

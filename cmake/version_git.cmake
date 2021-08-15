@@ -3,12 +3,12 @@
 #
 
 execute_process(
-    COMMAND git rev-parse --short HEAD 
+    COMMAND git rev-parse --short HEAD
     OUTPUT_VARIABLE  GIT_HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 execute_process(
-    COMMAND git tag --contains HEAD 
+    COMMAND git tag --contains HEAD
     OUTPUT_VARIABLE  GIT_TAG
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )

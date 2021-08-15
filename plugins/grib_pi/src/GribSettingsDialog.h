@@ -46,7 +46,7 @@ struct GribOverlaySettings
     wxString SettingsToJSON(wxString json);
     bool JSONToSettings(wxString json);
     bool UpdateJSONval( wxJSONValue &v, int settings, int group);
-    
+
     double CalibrationOffset(int settings);
     double CalibrationFactor(int settings, double input, bool reverse = false);
     double CalibrateValue(int settings, double input)
@@ -64,13 +64,13 @@ struct GribOverlaySettings
     int m_LoopStartPoint;
     int m_SlicesPerUpdate;
     int m_UpdatesPerSecond;
-	//display
+    //display
     int m_iOverlayTransparency;
     //gui
     int m_iCtrlandDataStyle;
     wxString m_iCtrlBarCtrlVisible[2];
 
-    enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
+    enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD,
                        AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, COMP_REFL, GEO_ALTITUDE, REL_HUMIDITY, SETTINGS_COUNT};
     enum Units0 {KNOTS, M_S, MPH, KPH, BFS};
     enum Units1 {MILLIBARS, MMHG, INHG};
@@ -86,21 +86,21 @@ struct GribOverlaySettings
         bool m_bBarbedArrows;
         bool m_iBarbedVisibility;
         int m_iBarbedColour;
-		bool m_bBarbArrFixSpac;
-		int m_iBarbArrSpacing;
+        bool m_bBarbArrFixSpac;
+        int m_iBarbArrSpacing;
         bool m_bIsoBars;
         bool m_bAbbrIsoBarsNumbers;
         bool m_iIsoBarVisibility;
         double m_iIsoBarSpacing;
         bool m_bDirectionArrows;
         int m_iDirectionArrowForm;
-		bool m_bDirArrFixSpac;
+        bool m_bDirArrFixSpac;
         int m_iDirectionArrowSize;
-		int m_iDirArrSpacing;
+        int m_iDirArrSpacing;
         bool m_bOverlayMap;
         int m_iOverlayMapColors;
         bool m_bNumbers;
-		bool m_bNumFixSpac;
+        bool m_bNumFixSpac;
         int m_iNumbersSpacing;
         bool m_bParticles;
         double m_dParticleDensity;
@@ -116,9 +116,9 @@ public:
     GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySettings &extSettings, int &lastdatatype, int fileIntervalIndex);
     void WriteSettings();
 
-	void SetSettingsDialogSize();
-	void SaveLastPage();
-	int  GetPageIndex() { return m_SetBookpageIndex; }
+    void SetSettingsDialogSize();
+    void SaveLastPage();
+    int  GetPageIndex() { return m_SetBookpageIndex; }
 
 private:
     void SetDataTypeSettings(int settings);
@@ -127,19 +127,19 @@ private:
     void ShowFittingSettings (int settings);
     void ShowSettings( int params, bool show = true );
     void OnDataTypeChoice( wxCommandEvent& event );
-	void OnUnitChange( wxCommandEvent& event );
+    void OnUnitChange( wxCommandEvent& event );
     void OnTransparencyChange( wxScrollEvent& event  );
     void OnApply( wxCommandEvent& event );
     void OnIntepolateChange( wxCommandEvent& event );
-	void OnSpacingModeChange( wxCommandEvent& event );
-	void OnPageChange( wxNotebookEvent& event );
-	void OnCtrlandDataStyleChanged( wxCommandEvent& event );
+    void OnSpacingModeChange( wxCommandEvent& event );
+    void OnPageChange( wxNotebookEvent& event );
+    void OnCtrlandDataStyleChanged( wxCommandEvent& event );
 
     GRIBUICtrlBar &m_parent;
 
     GribOverlaySettings m_Settings, &m_extSettings;
     int &m_lastdatatype;
-	int m_SetBookpageIndex;
+    int m_SetBookpageIndex;
 };
 
 #endif

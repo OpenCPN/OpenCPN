@@ -12,8 +12,8 @@ typedef int64_t time64_t;
 
 #define UNARR_API_VERSION 100
 
-#ifdef __cplusplus                                                                                            
-extern "C" {                                                                                                  
+#ifdef __cplusplus
+extern "C" {
 #endif
 /***** common/stream *****/
 
@@ -94,8 +94,8 @@ ar_archive *ar_open_zip_archive(ar_stream *stream, bool deflatedonly);
 /* checks whether 'stream' could contain 7Z data and prepares for archive listing/extraction; returns NULL on failure */
 ar_archive *ar_open_7z_archive(ar_stream *stream);
 
-#ifdef __cplusplus                                                                                            
-}                                                                                                  
+#ifdef __cplusplus
+}
 #endif
 
 #endif

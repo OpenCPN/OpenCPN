@@ -101,9 +101,9 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
 
     table.StartFillHeader();
     // setup widths for columns
-    
+
     table << _("Leg");
-    
+
     if ( toPrintOut[ PRINT_WP_NAME ] ) {
         table << _("To Waypoint");
     }
@@ -121,9 +121,9 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
     }
 
     table.StartFillWidths();
-    
+
     table << 20;                // "Leg" column
-    
+
     // setup widths for columns
     if ( toPrintOut[ PRINT_WP_NAME ] ) {
         table << 40;
@@ -145,22 +145,22 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
 
     for ( int n = 1; n <= myRoute->GetnPoints(); n++ ) {
         RoutePoint* point = myRoute->GetPoint( n );
-        
+
         RoutePoint* pointm1 = NULL;
         if(n - 1 >= 0)
             pointm1 = myRoute->GetPoint( n - 1 );
 
         if(NULL == point)
             continue;
-        
+
         wxString leg = _T("---");
         if(n > 1)
             leg.Printf( _T("%d"), n - 1);
-        
+
         string cell( leg.mb_str() );
-        
+
         table << cell;
-        
+
         if ( toPrintOut[ PRINT_WP_NAME ] ) {
             string cell( point->GetName().mb_str() );
             table << cell;
@@ -260,9 +260,9 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
 
     int header_textOffsetX = 2;
     int header_textOffsetY = 2;
-    
+
     dc->DrawText( myRoute->m_RouteNameString,  150, 20 );
-    
+
 
 
     int currentX = marginX;

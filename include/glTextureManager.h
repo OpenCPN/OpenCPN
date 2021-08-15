@@ -42,7 +42,7 @@ class ProgressInfoItem
 public:
     ProgressInfoItem(){};
     ~ProgressInfoItem(){};
-    
+
     wxString file_path;
     wxString msgx;
 };
@@ -54,7 +54,7 @@ class CompressionPoolThread : public wxThread
 public:
     CompressionPoolThread(JobTicket *ticket, wxEvtHandler *message_target);
     void *Entry();
-    
+
     wxEvtHandler        *m_pMessageTarget;
     JobTicket           *m_ticket;
 };
@@ -66,18 +66,18 @@ class OCPN_CompressionThreadEvent: public wxEvent
 public:
     OCPN_CompressionThreadEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
     ~OCPN_CompressionThreadEvent( );
-    
+
     // accessors
     void SetTicket( JobTicket *ticket ){m_ticket = ticket;}
     JobTicket *GetTicket(void){ return m_ticket; }
-    
+
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
 
     int        type;
     int        nstat;
     int        nstat_max;
-    
+
 private:
     JobTicket  * m_ticket;
 };
@@ -90,13 +90,13 @@ public:
     ~JobTicket() { free(level0_bits); }
     bool DoJob();
     bool DoJob(const wxRect &rect);
-    
+
     glTexFactory *pFact;
     wxRect      m_rect;
     int         level_min_request;
     int         ident;
     bool        b_throttle;
-    
+
     CompressionPoolThread *pthread;
     unsigned char *level0_bits;
     unsigned char *comp_bits_array[10];
@@ -136,22 +136,22 @@ public:
     bool TextureCrunch(double factor);
     bool FactoryCrunch(double factor);
     void BuildCompressedCache();
-    
+
     //    This is a hash table
     //    key is Chart full path
     //    Value is glTexFactory*
     ChartPathHashTexfactType   m_chart_texfactory_hash;
 
-private:    
+private:
     bool DoJob( JobTicket *pticket );
     bool DoThreadJob(JobTicket* pticket);
     bool StartTopJob();
-    
+
     JobList             running_list;
     JobList             todo_list;
     int                 m_max_jobs;
 
-    int		m_prevMemUsed;
+    int     m_prevMemUsed;
 
     wxTimer     m_timer;
     size_t      m_ticks;

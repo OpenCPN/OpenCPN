@@ -87,7 +87,7 @@ void ConnectionParams::Deserialize(const wxString &configStr)
     if (prms.Count() >= 20){
         AutoSKDiscover = !!wxAtoi(prms[19]);
     }
-    
+
 }
 
 wxString ConnectionParams::Serialize() const
@@ -298,7 +298,7 @@ wxString ConnectionParams::GetDSPort() const
     }
     else
         return _T("");
-    
+
 }
 
 wxString ConnectionParams::GetLastDSPort() const
@@ -331,13 +331,13 @@ ConnectionParamsPanel::ConnectionParamsPanel(wxWindow *parent, wxWindowID id, co
     SetFont( *dFont );
 
     int refHeight = GetCharHeight();
-    
+
     //  This controls the basic heght when later added to a vertical sizer
     //SetMinSize(wxSize(-1, 6 * refHeight));
-    
+
     Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-    CreateControls(); 
-    
+    CreateControls();
+
 }
 
 ConnectionParamsPanel::~ConnectionParamsPanel()
@@ -348,7 +348,7 @@ ConnectionParamsPanel::~ConnectionParamsPanel()
 
 void ConnectionParamsPanel::OnSelected( wxMouseEvent &event )
 {
-    
+
     if(!m_bSelected){
         SetSelected( true );
         m_pContainer->SetSelectedConnectionPanel( this );
@@ -357,7 +357,7 @@ void ConnectionParamsPanel::OnSelected( wxMouseEvent &event )
         SetSelected( false );
         m_pContainer->SetSelectedConnectionPanel( NULL );
     }
- 
+
 }
 
 void ConnectionParamsPanel::SetSelected( bool selected )
@@ -365,7 +365,7 @@ void ConnectionParamsPanel::SetSelected( bool selected )
     m_bSelected = selected;
     wxColour colour;
     int refHeight = GetCharHeight();
-    
+
     if (selected)
     {
         m_boxColour = GetDialogColor(DLG_HIGHLIGHT);
@@ -384,7 +384,7 @@ void ConnectionParamsPanel::SetSelected( bool selected )
 
     GetSizer()->Layout();
     Refresh( true );
-    
+
 }
 
 void ConnectionParamsPanel::OnEnableCBClick(wxCommandEvent &event){
@@ -399,7 +399,7 @@ void ConnectionParamsPanel::CreateControls( void ){
     wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
     double font_size = dFont->GetPointSize() * 17/16;
     wxFont *bFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(), dFont->GetStyle(), wxFONTWEIGHT_BOLD);
-    
+
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(mainSizer);
 
@@ -419,21 +419,21 @@ void ConnectionParamsPanel::CreateControls( void ){
                           wxCommandEventHandler(ConnectionParamsPanel::OnEnableCBClick),
                           NULL, this);
     m_cbEnable->SetValue( m_pConnectionParams->bEnabled);
-    
+
     enableSizer->Add(m_cbEnable, 1, wxLEFT | wxEXPAND, metric);
-    
+
     //  Parms
     wxBoxSizer* parmSizer = new wxBoxSizer(wxVERTICAL);
     panelSizer->Add(parmSizer, 5, wxLEFT, metric);
 
     if(m_pConnectionParams->Type == SERIAL){
-        
+
         wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 7, 0, metric/2);
         serialGrid->SetFlexibleDirection(wxHORIZONTAL);
         parmSizer->Add(serialGrid, 0, wxALIGN_LEFT);
 
         wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
-        
+
         wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
         serialGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
         t1->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -441,7 +441,7 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
         serialGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
         t3->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
         serialGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
         t5->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -449,7 +449,7 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _("Protocol"));
         serialGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
         t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-       
+
         wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Serial Port"));
         serialGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
         t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -515,13 +515,13 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
         parmSizer->Add(line, 0, wxEXPAND);
         line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
         parmSizer->Add(t21, 0);
         t21->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
     }
- 
+
     else if(m_pConnectionParams->Type == NETWORK){
         wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
@@ -532,11 +532,11 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
         netGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
         t1->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-            
+
         wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
         netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
         t3->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
         netGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
         t5->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -544,7 +544,7 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _("Protocol"));
         netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
         t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-       
+
         wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Network Address"));
         netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
         t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -612,12 +612,12 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
         parmSizer->Add(line, 0, wxEXPAND);
         line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
         parmSizer->Add(t21, 0);
         t21->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
         }
-        
+
     else if(m_pConnectionParams->Type == INTERNAL_GPS){
         wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
@@ -628,11 +628,11 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
         netGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
         t1->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-            
+
         wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
         netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
         t3->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
         netGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
         t5->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -640,7 +640,7 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _T(""));
         netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
         t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-       
+
         wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _T(""));
         netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
         t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -696,12 +696,12 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
         parmSizer->Add(line, 0, wxEXPAND);
         line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
         parmSizer->Add(t21, 0);
         t21->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
-    }            
+
+    }
     else if(m_pConnectionParams->Type == INTERNAL_BT){
         wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
@@ -712,11 +712,11 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
         netGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
         t1->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-            
+
         wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
         netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
         t3->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
         netGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
         t5->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -724,7 +724,7 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _T(""));
         netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
         t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-       
+
         wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _T(""));
         netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
         t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -780,19 +780,19 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
         parmSizer->Add(line, 0, wxEXPAND);
         line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
+
         t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
         parmSizer->Add(t21, 0);
         t21->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
-        
-    }            
+
+    }
 
 }
 
 void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
 {
     m_pConnectionParams = ConnectionParams;
-    
+
     wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
     wxString priority;  priority.Printf(_T("%d"), m_pConnectionParams->Priority);
 
@@ -869,44 +869,44 @@ void ConnectionParamsPanel::OnPaint( wxPaintEvent &event )
     int width, height;
     GetSize( &width, &height );
     wxPaintDC dc( this );
- 
-    
+
+
     dc.SetPen(*wxTRANSPARENT_PEN);
     dc.SetBrush(wxBrush(GetBackgroundColour()));
     dc.DrawRectangle(GetVirtualSize());
-    
+
     wxColour c;
-    
+
     wxString nameString = m_pConnectionParams->Serialize();
 
     wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
-    
-    
+
+
     if(m_bSelected){
         dc.SetBrush( wxBrush( m_boxColour ) );
-        
+
         GetGlobalColor( _T ( "UITX1" ), &c );
         dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
-        
+
         dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
-        
+
         // Draw the thumbnail
-        
+
         dc.SetTextForeground(wxColour(0,0,0));
     }
     else{
         dc.SetBrush( wxBrush( m_boxColour ) );
-    
+
         GetGlobalColor( _T ( "UITX1" ), &c );
         dc.SetPen( wxPen( c, 1 ) );
-    
+
         int offset = height / 10;
         dc.DrawRectangle( offset, offset, width - (2 * offset), height - (2 * offset));
 
         dc.SetTextForeground(wxColour(128, 128, 128));
     }
-    
-    
+
+
 }
 
 

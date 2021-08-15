@@ -1,6 +1,6 @@
- 
+
  /***************************************************************************
-  * 
+  *
   * Project:  OpenCPN
   * Purpose:  OpenCPN Android support utilities
   * Author:   David Register
@@ -23,20 +23,20 @@
   *   Free Software Foundation, Inc.,                                       *
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
   **************************************************************************/
- 
+
  #ifndef ANDROIDSUPPORT_H
  #define ANDROIDSUPPORT_H
- 
+
  #include "wx/wxprec.h"
- 
+
  #ifndef  WX_PRECOMP
  #include "wx/wx.h"
  #endif //precompiled headers
- 
+
  class ArrayOfCDI;
- 
+
  #include <QString>
- 
+
  bool AndroidUnzip(wxString zipFile, wxString destDir, int nStrip, bool bRemoveZip);
  wxString AndroidGetCacheDir();
  bool AndroidSecureCopyFile(wxString in, wxString out);
@@ -44,4 +44,3 @@
  void androidHideBusyIcon();
 
  #endif
-  

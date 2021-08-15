@@ -90,19 +90,19 @@ bool OCPN_AlertDialog::Create( wxWindow *parent, wxWindowID id,
     //    Then create the dialog ..WITHOUT.. borders and title bar.
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
-    
+
     long wstyle = wxDEFAULT_FRAME_STYLE;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
         && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
-    
+
     wxSize size_min = size;
     size_min.IncTo( wxSize( 500, 600 ) );
     if( !wxDialog::Create( parent, id, caption, pos, size_min, wstyle ) ) return false;
-    
+
     m_pparent = parent;
-    
+
     if( !g_bopengl && CanSetTransparent() ) SetTransparent( 192 );
-    
+
     return true;
 }
 
@@ -140,7 +140,7 @@ void AISTargetAlertDialog::Init()
     m_max_nline = 20;
     m_adj_height = 0;
     m_bsizeSet = false;
-    
+
 }
 
 
@@ -148,14 +148,14 @@ bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decode
                                    bool b_jumpto, bool b_createWP, bool b_ack,
                                    wxWindowID id,  const wxString& caption,
                                    const wxPoint& pos,const wxSize& size, long style )
-                     
+
 {
-    
+
     OCPN_AlertDialog::Create(parent, id, caption, pos, size, style);
     m_bjumpto = b_jumpto;
     m_back = b_ack;
     m_bcreateWP = b_createWP;
-    
+
     m_target_mmsi = target_mmsi;
     m_pdecoder = pdecoder;
 
@@ -176,7 +176,7 @@ bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decode
     wxColor bg = GetBackgroundColour();
     m_pAlertTextCtl->SetBackgroundColour( bg );
     SetBackgroundColour( bg );
-    
+
     return true;
 }
 
@@ -190,7 +190,7 @@ void AISTargetAlertDialog::CreateControls()
     #ifdef __OCPN__ANDROID__
     m_pAlertTextCtl->GetHandle()->setStyleSheet( getQtStyleSheet());
     #endif
-    
+
     m_pAlertTextCtl->SetBorders( 5 );
 
     topSizer->Add( m_pAlertTextCtl, 1, wxALL | wxEXPAND, 5 );
@@ -218,17 +218,17 @@ void AISTargetAlertDialog::CreateControls()
                 wxDefaultSize, 0 );
         AckBox->Add( jumpto, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     }
-    
+
     if( m_bcreateWP ) {
         wxButton *createWptBtn = new wxButton( this, ID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
         AckBox->Add( createWptBtn, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     }
-    
+
 
     UpdateText();
-    
+
     RecalculateSize();
-    
+
 }
 
 bool AISTargetAlertDialog::GetAlertText()
@@ -249,7 +249,7 @@ bool AISTargetAlertDialog::GetAlertText()
 void AISTargetAlertDialog::UpdateText()
 {
     if( GetAlertText() ) {
-        
+
         wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetAlert"), 12 );
         wxString face = dFont->GetFaceName();
         int sizes[7];
@@ -262,7 +262,7 @@ void AISTargetAlertDialog::UpdateText()
         wxColor fg = GetForegroundColour();
 
         html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue() );
-        
+
         html << m_alert_text;
         html << _T("</center></font></body></html>");
 
@@ -271,7 +271,7 @@ void AISTargetAlertDialog::UpdateText()
 
         RecalculateSize();
     }
-    
+
     SetColorScheme();
     if( !g_bopengl && CanSetTransparent() )
         SetTransparent( 192 );
@@ -290,7 +290,7 @@ void AISTargetAlertDialog::RecalculateSize( void )
 
     if(nline > m_max_nline)
         m_max_nline = nline;
-    
+
     wxSize esize;
     esize.x = GetCharWidth() * 45;
     esize.y = GetCharHeight() * (m_max_nline + 4);
@@ -299,9 +299,9 @@ void AISTargetAlertDialog::RecalculateSize( void )
     int height = m_pAlertTextCtl->GetInternalRepresentation()->GetHeight();
     int adj_height = height + (GetCharHeight() * 6);
     m_adj_height = wxMax(m_adj_height, adj_height);
-    
+
     esize.y = wxMin(esize.y, m_adj_height);
-    
+
     Fit();          // Sets the horizontal size OK, with respect to the buttons
 
     // If there is only one button shown, the resulting Fit() size may be too narrow.
@@ -310,10 +310,10 @@ void AISTargetAlertDialog::RecalculateSize( void )
     wxSize gSize = GetClientSize();
     int adjustedWidth = wxMax(GetClientSize().x, textWidth  + GetCharHeight() * 2);
     SetClientSize(adjustedWidth, esize.y);
-      
-    
+
+
     g_Platform->PositionAISAlert( this );
-    
+
 }
 
 void AISTargetAlertDialog::SetColorScheme( void )
@@ -323,8 +323,8 @@ void AISTargetAlertDialog::SetColorScheme( void )
     m_pAlertTextCtl->SetBackgroundColour( bg );
     SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
     // to get colours to propagate down the control's family tree.
-    
-#ifdef __WXQT__    
+
+#ifdef __WXQT__
     //  wxQT has some trouble clearing the background of HTML window...
     wxBitmap tbm( GetSize().x, GetSize().y, -1 );
     wxMemoryDC tdc( tbm );
@@ -333,7 +333,7 @@ void AISTargetAlertDialog::SetColorScheme( void )
     tdc.Clear();
     m_pAlertTextCtl->SetBackgroundImage(tbm);
 #endif
-    
+
 }
 
 void AISTargetAlertDialog::OnClose( wxCloseEvent& event )
@@ -370,14 +370,14 @@ void AISTargetAlertDialog::OnIdAckClick( wxCommandEvent& event )
 }
 void AISTargetAlertDialog::OnIdCreateWPClick( wxCommandEvent& event )
 {
-    if( m_pdecoder ) { 
+    if( m_pdecoder ) {
         AIS_Target_Data *td =  m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
         if( td ) {
             RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
             pWP->m_bIsolatedMark = true;                      // This is an isolated mark
             pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );
             pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-            
+
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
             if(gFrame->GetPrimaryCanvas()){
@@ -388,7 +388,7 @@ void AISTargetAlertDialog::OnIdCreateWPClick( wxCommandEvent& event )
             Refresh( false );
         }
     }
-    
+
 }
 
 

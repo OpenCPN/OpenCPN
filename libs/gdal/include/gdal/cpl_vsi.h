@@ -29,8 +29,8 @@
  *
  * Most VSI functions are direct analogs of Posix C library functions.
  * VSI exists to allow ``hooking'' these functions to provide application
- * specific checking, io redirection and so on. 
- * 
+ * specific checking, io redirection and so on.
+ *
  * $Log: cpl_vsi.h,v $
  * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
  * Initial import as opencpn, GNU Automake compliant.

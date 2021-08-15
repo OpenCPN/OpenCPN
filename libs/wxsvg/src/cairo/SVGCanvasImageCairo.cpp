@@ -13,15 +13,15 @@
 
 wxSVGCanvasImageCairoData::wxSVGCanvasImageCairoData(wxImage image) {
 	m_count = 1;
-	
+
 	int bw = image.GetWidth();
 	int bh = image.GetHeight();
 	m_buffer = new unsigned char[bw*bh*4];
 	wxUint32* data = (wxUint32*) m_buffer;
-	
+
 	// Create a surface object and copy the bitmap pixel data to it
 	unsigned char* srcPix = image.GetData();
-	if (image.HasAlpha()) { // alpha 
+	if (image.HasAlpha()) { // alpha
 		m_surface = cairo_image_surface_create_for_data(m_buffer, CAIRO_FORMAT_ARGB32, bw, bh, bw*4);
 		unsigned char* srcAlpha = image.GetAlpha();
 		for (int y = 0; y < bh; y++) {
@@ -77,18 +77,18 @@ wxSVGCanvasImageCairo::~wxSVGCanvasImageCairo() {
 void wxSVGCanvasImageCairo::Init(wxSVGImageElement& element, const wxCSSStyleDeclaration& style,
 		wxProgressDialog* progressDlg) {
 	wxSVGCanvasImage::Init(element, style, progressDlg);
-	
+
 	wxSVGCanvasImageCairo* prevItem = (wxSVGCanvasImageCairo*) element.GetCanvasItem();
 	if (prevItem != NULL && prevItem->m_href == m_href && prevItem->m_data != NULL) {
 		m_data = prevItem->m_data;
 		m_data->IncRef();
 		return;
 	}
-	
+
 	if (!m_image.Ok())
 		return;
-	
-	m_data = new wxSVGCanvasImageCairoData(m_image); 
+
+	m_data = new wxSVGCanvasImageCairoData(m_image);
 }
 
 
@@ -104,16 +104,16 @@ wxSVGCanvasVideoCairo::~wxSVGCanvasVideoCairo() {
 void wxSVGCanvasVideoCairo::Init(wxSVGVideoElement& element, const wxCSSStyleDeclaration& style,
 		wxProgressDialog* progressDlg) {
 	wxSVGCanvasVideo::Init(element, style, progressDlg);
-	
+
 	wxSVGCanvasVideoCairo* prevItem = (wxSVGCanvasVideoCairo*) element.GetCanvasItem();
 	if (prevItem != NULL && prevItem->m_href == m_href && prevItem->m_time == m_time && prevItem->m_data != NULL) {
 		m_data = prevItem->m_data;
 		m_data->IncRef();
 		return;
 	}
-	
+
 	if (!m_image.Ok())
 		return;
-	
-	m_data = new wxSVGCanvasImageCairoData(m_image); 
+
+	m_data = new wxSVGCanvasImageCairoData(m_image);
 }

@@ -41,12 +41,12 @@ class OCPN_AlertDialog: public wxDialog
     DECLARE_CLASS( OCPN_AlertDialog )
     DECLARE_EVENT_TABLE()
 public:
-    
+
     OCPN_AlertDialog( );
-    
+
     virtual ~OCPN_AlertDialog( );
     virtual void Init();
-    
+
     virtual bool Create( wxWindow *parent,
                  wxWindowID id = wxID_ANY,
                  const wxString& caption = _("OpenCPN Alert"),
@@ -54,10 +54,10 @@ public:
                  const wxSize& size = wxDefaultSize,
                  long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
 
-                 
+
 private:
     wxWindow          *m_pparent;
-    
+
 };
 
 
@@ -82,7 +82,7 @@ class AISTargetAlertDialog: public OCPN_AlertDialog
            int Get_Dialog_MMSI(void){ return m_target_mmsi; }
            void UpdateText();
            void RecalculateSize( void );
-           
+
       private:
           void CreateControls();
           bool GetAlertText(void);
@@ -94,7 +94,7 @@ class AISTargetAlertDialog: public OCPN_AlertDialog
             void OnIdSilenceClick( wxCommandEvent& event );
             void OnIdJumptoClick( wxCommandEvent& event );
             void OnIdCreateWPClick( wxCommandEvent& event );
-            
+
 
             wxHtmlWindow      *m_pAlertTextCtl;
             int               m_target_mmsi;
@@ -107,7 +107,7 @@ class AISTargetAlertDialog: public OCPN_AlertDialog
             int               m_max_nline;
             int               m_adj_height;
             bool              m_bsizeSet;
-            
+
 
 };
 

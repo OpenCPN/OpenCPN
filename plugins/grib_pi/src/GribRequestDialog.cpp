@@ -206,17 +206,17 @@ void GribRequestSetting::SetRequestDialogSize()
 #ifdef __WXGTK__
     SetMinSize( wxSize( 0, 0 ) );
 #endif
-    
-     wxWindow *frame = wxTheApp->GetTopWindow();  
+
+     wxWindow *frame = wxTheApp->GetTopWindow();
 
     int w = frame->GetClientSize().x;           // the display size
     int h = frame->GetClientSize().y;
     int dMargin = 80;                                      //set a margin
     h -= ( m_rButton->GetSize().GetY() + dMargin );         //height available for the scrolled window
     w -= dMargin;                                           //width available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.x ), wxMin( h, scroll.y ) ) );		//set scrolled area size with margin
+    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.x ), wxMin( h, scroll.y ) ) );      //set scrolled area size with margin
 
-	Layout();
+    Layout();
     Fit();
 #ifdef __WXGTK__
     wxSize sd = GetSize();
@@ -260,7 +260,7 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
 //     wxWindow *win = wxDynamicCast(obj, wxWindow);
 //     if( win && (win != PluginGetFocusCanvas()))
 //         return false;
-    
+
     if( event.LeftDown() ) {
         m_parent.pParent->SetFocus();
         m_ZoneSelMode = DRAW_SELECTION;                         //restart a new drawing
@@ -282,7 +282,7 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
             m_StartPoint = event.GetPosition();                                    //starting selection point
             m_RenderZoneOverlay = 2;
         }
-		m_IsMaxLong = m_StartPoint.x > event.GetPosition().x? true: false;         //find if startpoint is max longitude 
+        m_IsMaxLong = m_StartPoint.x > event.GetPosition().x? true: false;         //find if startpoint is max longitude
         GetCanvasLLPix( m_Vp, event.GetPosition(), &m_Lat, &m_Lon);                //extend selection
         if( !m_tMouseEventTimer.IsRunning() ) m_tMouseEventTimer.Start( 20, wxTIMER_ONE_SHOT );
     }
@@ -304,7 +304,7 @@ void GribRequestSetting::OnMouseEventTimer( wxTimerEvent & event)
         m_spMaxLat->SetValue( (int) ceil(m_Lat) );
         m_spMinLat->SetValue( (int) floor(lat) );
     }
-	if(m_IsMaxLong) {
+    if(m_IsMaxLong) {
         m_spMaxLon->SetValue( (int) ceil(lon) );
         m_spMinLon->SetValue( (int) floor(m_Lon) );
     }
@@ -335,7 +335,7 @@ void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
 {
     if(!vp)
         return;
-        
+
     delete m_Vp;
     m_Vp = new PlugIn_ViewPort(*vp);
 
@@ -541,8 +541,8 @@ bool GribRequestSetting::DoRenderZoneOverlay()
         im.InitAlpha();
         w = im.GetWidth(), h = im.GetHeight();
         for( int j = 0; j < h; j++ )
-			for( int i = 0; i < w; i++ )
-				im.SetAlpha( i, j, 155 );
+            for( int i = 0; i < w; i++ )
+                im.SetAlpha( i, j, 155 );
 
         m_pdc->DrawBitmap(im, x, y, true);
 
@@ -601,7 +601,7 @@ bool GribRequestSetting::DoRenderZoneOverlay()
    glDisable( GL_BLEND );
 
    glPopAttrib();
-   
+
 #endif
 #endif
     }
@@ -791,11 +791,11 @@ wxString GribRequestSetting::WriteMail()
         m_pTimeRange->GetStringSelection().ToDouble(&v);
         r_topmess.Append(wxString::Format(_T("..%d"), (int) v*24) + _T("|=\n"));
         break;
-	case ZYGRIB:                                                                         //Zygrib
-		double maxlon = (m_spMinLon->GetValue() > m_spMaxLon->GetValue() && m_spMaxLon->GetValue() < 0)?
-			m_spMaxLon->GetValue() + 360 : m_spMaxLon->GetValue();
-		r_zone = toMailFormat(1, m_spMinLat->GetValue() ) + toMailFormat(2, m_spMinLon->GetValue() ) + _T(" ")
-			+ toMailFormat(1, m_spMaxLat->GetValue() ) + toMailFormat(2, maxlon );
+    case ZYGRIB:                                                                         //Zygrib
+        double maxlon = (m_spMinLon->GetValue() > m_spMaxLon->GetValue() && m_spMaxLon->GetValue() < 0)?
+            m_spMaxLon->GetValue() + 360 : m_spMaxLon->GetValue();
+        r_zone = toMailFormat(1, m_spMinLat->GetValue() ) + toMailFormat(2, m_spMinLon->GetValue() ) + _T(" ")
+            + toMailFormat(1, m_spMaxLat->GetValue() ) + toMailFormat(2, maxlon );
         r_topmess = wxT("login : ");
         r_topmess.Append(m_pLogin->GetValue() + _T("\n"));
         r_topmess.Append(wxT("code :"));
@@ -1084,7 +1084,7 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_pSenderAddress->GetValue()
         );
 #endif
-    
+
     wxEmail mail ;
     if(mail.Send( *message, m_SendMethod)) {
 #ifdef __WXMSW__

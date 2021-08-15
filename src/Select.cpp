@@ -75,14 +75,14 @@ bool Select::AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoute
     pSelItem->m_pData1 = pRoutePointAdd;
 
     wxSelectableItemListNode *node;
-    
+
     if( pRoutePointAdd->m_bIsInLayer )
         node = pSelectList->Append( pSelItem );
     else
         node = pSelectList->Insert( pSelItem );
 
     pRoutePointAdd->SetSelectNode(node);
-    
+
     return true;
 }
 
@@ -116,15 +116,15 @@ bool Select::DeleteAllSelectableRouteSegments( Route *pr )
 
     while( node ) {
         pFindSel = node->GetData();
-        if( pFindSel->m_seltype == SELTYPE_ROUTESEGMENT && 
-            (Route *) pFindSel->m_pData3 == pr ) 
+        if( pFindSel->m_seltype == SELTYPE_ROUTESEGMENT &&
+            (Route *) pFindSel->m_pData3 == pr )
         {
                 delete pFindSel;
                 wxSelectableItemListNode *d = node;
                 node = node->GetNext();
                 pSelectList->DeleteNode( d );   //delete node;
         }
-        else 
+        else
             node = node->GetNext();
     }
 
@@ -152,7 +152,7 @@ bool Select::DeleteAllSelectableRoutePoints( Route *pr )
                     delete pFindSel;
                     pSelectList->DeleteNode( node );   //delete node;
                     prp->SetSelectNode( NULL );
-                    
+
                     node = pSelectList->GetFirst();
 
                     goto got_next_outer_node;
@@ -310,12 +310,12 @@ bool Select::DeleteSelectablePoint( void *pdata, int SeltypeToDelete )
                 if( pdata == pFindSel->m_pData1 ) {
                     delete pFindSel;
                     delete node;
-                    
+
                     if( SELTYPE_ROUTEPOINT == SeltypeToDelete ){
                         RoutePoint *prp = (RoutePoint *)pdata;
                         prp->SetSelectNode( NULL );
                     }
-                    
+
                     return true;
                 }
             }
@@ -336,13 +336,13 @@ bool Select::DeleteAllSelectableTypePoints( int SeltypeToDelete )
         pFindSel = node->GetData();
         if( pFindSel->m_seltype == SeltypeToDelete ) {
             delete node;
-            
+
             if( SELTYPE_ROUTEPOINT == SeltypeToDelete ){
                 RoutePoint *prp = (RoutePoint *)pFindSel->m_pData1;
                 prp->SetSelectNode( NULL );
             }
             delete pFindSel;
-            
+
             node = pSelectList->GetFirst();
             goto got_next_node;
         }
@@ -355,7 +355,7 @@ bool Select::DeleteAllSelectableTypePoints( int SeltypeToDelete )
 
 bool Select::DeleteSelectableRoutePoint( RoutePoint *prp )
 {
-    
+
     if( NULL != prp ) {
         wxSelectableItemListNode *node = (wxSelectableItemListNode *)prp->GetSelectNode();
         if(node){
@@ -369,7 +369,7 @@ bool Select::DeleteSelectableRoutePoint( RoutePoint *prp )
         }
         else
             return DeleteSelectablePoint( prp, SELTYPE_ROUTEPOINT );
-        
+
     }
     return false;
 }
@@ -427,15 +427,15 @@ bool Select::DeleteAllSelectableTrackSegments( Track *pt )
 
     while( node ) {
         pFindSel = node->GetData();
-        if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT && 
-          (Track *) pFindSel->m_pData3 == pt  ) 
+        if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT &&
+          (Track *) pFindSel->m_pData3 == pt  )
         {
             delete pFindSel;
             wxSelectableItemListNode *d = node;
             node = node->GetNext();
             pSelectList->DeleteNode( d );   //delete node;
         }
-        else 
+        else
             node = node->GetNext();
     }
     return true;
@@ -642,7 +642,7 @@ SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:
-                case SELTYPE_DRAGHANDLE:    
+                case SELTYPE_DRAGHANDLE:
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
                         if (is_selectable_wp(cc, (RoutePoint *)pFindSel->m_pData1))

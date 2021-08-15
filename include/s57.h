@@ -203,10 +203,10 @@ class S57Reader
 
     int                 bMissingWarningIssued;
     int                 bAttrWarningIssued;
-    
+
     int                 Nall;
     int                 Aall;
-    
+
 
   public:
                         S57Reader( const char * );
@@ -242,12 +242,12 @@ class S57Reader
     int                 CollectClassList( int *, int);
 
     OGRErr              GetExtent( OGREnvelope *psExtent, int bForce );
-    
+
     int                 GetNall(){ return Nall; }
     int                 GetAall(){ return Aall; }
 
     int                 GetFeatureCount() { return oFE_Index.GetCount(); }
-    
+
  };
 
 /************************************************************************/

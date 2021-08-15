@@ -45,17 +45,17 @@ extern int OCPNMessageBox(wxWindow *parent,
 
 class  OCPNMessageDialog: public wxDialog
 {
-    
+
 public:
     OCPNMessageDialog(wxWindow *parent, const wxString& message,
                       const wxString& caption = wxMessageBoxCaptionStr,
                       long style = wxOK|wxCENTRE, const wxPoint& pos = wxDefaultPosition);
-    
+
     void OnYes(wxCommandEvent& event);
     void OnNo(wxCommandEvent& event);
     void OnCancel(wxCommandEvent& event);
     void OnClose( wxCloseEvent& event );
-    
+
 private:
     int m_style;
     DECLARE_EVENT_TABLE()
@@ -82,28 +82,28 @@ public:
 
 class  OCPN_TimedHTMLMessageDialog: public wxDialog
 {
-    
+
 public:
     OCPN_TimedHTMLMessageDialog(wxWindow *parent, const wxString& message,
                            const wxString& caption = wxMessageBoxCaptionStr,
                            int tSeconds = -1,
-                           long style = wxOK|wxCENTRE,  
+                           long style = wxOK|wxCENTRE,
                            bool bFixedFont = false,
                            const wxPoint& pos = wxDefaultPosition);
-    
+
     void OnYes(wxCommandEvent& event);
     void OnNo(wxCommandEvent& event);
     void OnCancel(wxCommandEvent& event);
     void OnClose( wxCloseEvent& event );
     void OnTimer(wxTimerEvent &evt);
     void RecalculateSize( void );
-    
-    
+
+
 private:
     int m_style;
     wxTimer m_timer;
     wxHtmlWindow *msgWindow;
-    
+
     DECLARE_EVENT_TABLE()
 };
 

@@ -19,14 +19,14 @@ class wxSVGAnimatedLengthList
     wxSVGAnimatedLengthList(const wxSVGAnimatedLengthList& value): m_baseVal(value.m_baseVal), m_animVal(NULL)
     { if (value.m_animVal != NULL) m_animVal = new wxSVGLengthList(*value.m_animVal); }
     ~wxSVGAnimatedLengthList() { ResetAnimVal(); }
-    
+
     inline wxSVGAnimatedLengthList& operator=(const wxSVGAnimatedLengthList& value)
     { m_baseVal = value.m_baseVal; m_animVal = value.m_animVal != NULL ? new wxSVGLengthList(*value.m_animVal) : NULL; return *this; }
-    
+
     inline wxSVGLengthList& GetBaseVal() { return m_baseVal; }
     inline const wxSVGLengthList& GetBaseVal() const { return m_baseVal; }
     inline void SetBaseVal(const wxSVGLengthList& value) { m_baseVal = value; ResetAnimVal(); }
-    
+
     inline wxSVGLengthList& GetAnimVal()
     {
       if (!m_animVal)
@@ -52,10 +52,10 @@ class wxSVGAnimatedLengthList
         m_animVal = NULL;
       }
     }
-    
+
   public:
     inline operator const wxSVGLengthList&() const { return GetAnimVal(); }
-    
+
   protected:
     wxSVGLengthList m_baseVal;
     wxSVGLengthList* m_animVal;

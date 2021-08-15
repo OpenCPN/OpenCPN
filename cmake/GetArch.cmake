@@ -1,5 +1,5 @@
 
-# Set ARCH and LIB_INSTALL_DIR  and PACKAGE_RECS in parent 
+# Set ARCH and LIB_INSTALL_DIR  and PACKAGE_RECS in parent
 # using cmake probes and various heuristics.
 
 #Red Hat:/etc/redhat-release

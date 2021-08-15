@@ -50,7 +50,7 @@ class OCPNRegion : public
 #ifdef USE_NEW_REGION
  wxObject
 #else
- wxRegion 
+ wxRegion
 #endif
 {
 public:
@@ -61,25 +61,25 @@ public:
     OCPNRegion( const wxRect& rect );
     OCPNRegion( const wxRegion& region );
     OCPNRegion( size_t n, const wxPoint *points, int fillStyle = wxODDEVEN_RULE );
-    
+
     virtual ~OCPNRegion();
-    
+
     wxRegion *GetNew_wxRegion() const;
-    
-    
-#ifdef USE_NEW_REGION    
+
+
+#ifdef USE_NEW_REGION
 
     // common part of ctors for a rectangle region
     void InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h);
- 
+
      // operators
     // ---------
     bool operator==(const OCPNRegion& region) const { return ODoIsEqual(region); }
     bool operator!=(const OCPNRegion& region) const { return !(*this == region); }
-    
+
     bool IsOk() const { return m_refData != NULL; }
     bool Ok() const { return IsOk(); }
-    
+
     // Get the bounding box
     bool GetBox(wxCoord& x, wxCoord& y, wxCoord& w, wxCoord& h) const
     { return ODoGetBox(x, y, w, h); }
@@ -98,15 +98,15 @@ public:
     { return ODoContainsRect(wxRect(x, y, w, h)); }
     wxRegionContain Contains(const wxRect& rect) const
     { return ODoContainsRect(rect); }
-    
+
  // Is region equal (i.e. covers the same area as another one)?
  bool IsEqual(const OCPNRegion& region) const;
- 
+
     // OCPNRegionBase methods
     virtual void Clear();
     virtual bool IsEmpty() const;
     bool Empty() const { return IsEmpty(); }
-    
+
 public:
 //    OCPNRegion( OGdkRegion *region );
 
@@ -119,7 +119,7 @@ public:
             bool Union(wxCoord x, wxCoord y, wxCoord w, wxCoord h) { return ODoUnionWithRect(wxRect(x, y, w, h)); }
     bool Union(const wxRect& rect) { return ODoUnionWithRect(rect); }
     bool Subtract(const OCPNRegion& region) { return ODoSubtract(region); }
-    
+
 protected:
     // ref counting code
     virtual wxObjectRefData *CreateRefData() const;
@@ -137,10 +137,10 @@ protected:
     virtual bool ODoIntersect(const OCPNRegion& region);
     virtual bool ODoSubtract(const OCPNRegion& region);
 //    virtual bool DoXor(const OCPNRegion& region);
-    
+
 
 #endif
-    
+
 private:
     DECLARE_DYNAMIC_CLASS(OCPNRegion)
 };
@@ -149,7 +149,7 @@ private:
 // OCPNRegionIterator: decomposes a region into rectangles
 // ----------------------------------------------------------------------------
 
-class  OCPNRegionIterator 
+class  OCPNRegionIterator
 {
 public:
     OCPNRegionIterator();

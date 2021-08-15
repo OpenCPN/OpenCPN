@@ -52,7 +52,7 @@ SENCJobTicket::SENCJobTicket()
 }
 
 const wxEventType wxEVT_OCPN_BUILDSENCTHREAD = wxNewEventType();
- 
+
 //----------------------------------------------------------------------------------
 //      OCPN_BUILDSENC_ThreadEvent Implementation
 //----------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ wxEvent* OCPN_BUILDSENC_ThreadEvent::Clone() const
     newevent->stat = this->stat;
     newevent->type = this->type;
     newevent->m_ticket = this->m_ticket;
-   
+
     return newevent;
 }
 
@@ -88,9 +88,9 @@ SENCThreadManager::SENCThreadManager()
      int nCPU =  wxMax(1, wxThread::GetCPUCount());
      if(g_nCPUCount > 0)
          nCPU = g_nCPUCount;
- 
+
       // obviously there's at least one CPU!
-     if (nCPU < 1) 
+     if (nCPU < 1)
          nCPU = 1;
 
     m_max_jobs =  wxMax(nCPU - 1, 1);
@@ -98,12 +98,12 @@ SENCThreadManager::SENCThreadManager()
 
 //    if(bthread_debug)
     printf(" SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
-    
-    
+
+
     //  Create/connect a dynamic event handler slot for messages from the worker threads
     Connect( wxEVT_OCPN_BUILDSENCTHREAD, (wxObjectEventFunction) (wxEventFunction) &SENCThreadManager::OnEvtThread );
-    
-    
+
+
 //     m_timer.Connect(wxEVT_TIMER, wxTimerEventHandler( glTextureManager::OnTimer ), NULL, this);
 //     m_timer.Start(500);
 }
@@ -120,7 +120,7 @@ SENCThreadStatus SENCThreadManager::ScheduleJob(SENCJobTicket *ticket)
         if(ticket_list[i]->m_FullPath000 == ticket->m_FullPath000)
                 return THREAD_PENDING;
     }
-    
+
     ticket->m_status = THREAD_PENDING;
     ticket_list.push_back(ticket);
 
@@ -139,19 +139,19 @@ void SENCThreadManager::StartTopJob()
         if(ticket_list[i]->m_status == THREAD_STARTED)
             nRunning++;
     }
-    
+
     // OK to start one?
     if(nRunning < m_max_jobs){
 
         // Find the first eligible
-        startCandidate = NULL;    
+        startCandidate = NULL;
         for(size_t i=0 ; i < ticket_list.size() ; i++){
             if(ticket_list[i]->m_status == THREAD_PENDING){
                 startCandidate = ticket_list[i];
                 break;
             }
         }
-        
+
         // Found one?
         if(startCandidate){
             //printf("Starting job:  %s\n", (const char*)startCandidate->m_FullPath000.mb_str());
@@ -164,7 +164,7 @@ void SENCThreadManager::StartTopJob()
             nRunning++;
         }
     }
-    
+
     if(nRunning){
         wxString count;
         count.Printf(_T("  %ld"), ticket_list.size());
@@ -196,7 +196,7 @@ void SENCThreadManager::FinishJob(SENCJobTicket *ticket)
             nRunning++;
     }
 
-    
+
     if(nRunning){
         wxString count;
         count.Printf(_T("  %ld"), ticket_list.size());
@@ -206,7 +206,7 @@ void SENCThreadManager::FinishJob(SENCJobTicket *ticket)
     else{
         if(gFrame->GetPrimaryCanvas())
             gFrame->GetPrimaryCanvas()->SetAlertString( _T(""));
-    }        
+    }
 #endif
 
 }
@@ -238,13 +238,13 @@ bool SENCThreadManager::SetChartPointer(s57chart *chart, void *new_ptr)
     return false;
 }
 
- 
+
 #define NBAR_LENGTH 40
 
 void SENCThreadManager::OnEvtThread( OCPN_BUILDSENC_ThreadEvent & event )
 {
-    OCPN_BUILDSENC_ThreadEvent Sevent(wxEVT_OCPN_BUILDSENCTHREAD, 0);    
-    
+    OCPN_BUILDSENC_ThreadEvent Sevent(wxEVT_OCPN_BUILDSENCTHREAD, 0);
+
     switch(event.type){
        case SENC_BUILD_STARTED:
             //printf("SENC build started\n");
@@ -287,7 +287,7 @@ SENCBuildThread::SENCBuildThread(SENCJobTicket *ticket, SENCThreadManager *manag
     m_SENCFileName = ticket->m_SENCFileName;
     m_manager = manager;
     m_ticket = ticket;
-    
+
     Create();
 }
 
@@ -300,9 +300,9 @@ void * SENCBuildThread::Entry()
     //  On Windows, if anything in this thread produces a SEH exception (like access violation)
     //  we handle the exception locally, and simply alow the thread to exit smoothly with no results.
     //  Upstream will notice that nothing got done, and maybe try again later.
-    
+
     try
-//#endif    
+//#endif
     {
         // Start the SENC build
         Osenc senc;
@@ -319,7 +319,7 @@ void * SENCBuildThread::Entry()
         Sevent.m_ticket = m_ticket;
         if(m_manager)
             m_manager->QueueEvent(Sevent.Clone());
- 
+
 
         int ret = senc.createSenc200( m_FullPath000, m_SENCFileName, false );
 
@@ -342,8 +342,8 @@ void * SENCBuildThread::Entry()
 
         return 0;
     }           // try
-    
-//#ifdef __MSVC__    
+
+//#ifdef __MSVC__
     catch (const std::exception& e/*SE_Exception e*/)
     {
         const char *msg = e.what();
@@ -354,12 +354,12 @@ void * SENCBuildThread::Entry()
 //             Nevent.type = 0;
 //             m_manager->QueueEvent(Nevent.Clone());
         }
-        
-        
+
+
         return 0;
     }
-//#endif    
-    
+//#endif
+
 }
 
 

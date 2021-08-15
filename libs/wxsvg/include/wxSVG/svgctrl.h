@@ -24,7 +24,7 @@ public:
     		const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator,
     		const wxString& name = wxPanelNameStr);
     virtual ~wxSVGCtrlBase();
-      
+
     void SetFitToFrame(bool fit = true) { m_fitToFrame = fit; }
     double GetScale() const;
     double GetScaleX() const;
@@ -35,7 +35,7 @@ public:
     wxSVGDocument* GetSVG() { return m_doc; }
     /** clears SVGCtrl (deletes svg document) */
     void Clear();
-    
+
     /** loads svg file */
     bool Load(const wxString& filename);
     /** renders svg and repaints window */
@@ -45,9 +45,9 @@ public:
         only the area inside it will be repainted. */
     void RefreshRect(const wxRect& rect) { Refresh(true, &rect); }
     void RefreshRect(const wxSVGRect& rect) { Refresh(&rect); }
-    
+
     void MoveElement(wxSVGElement* elem, double Xposition, double Yposition);
-    
+
 protected:
     wxSVGDocument* m_doc;
     bool m_docDelete;
@@ -55,13 +55,13 @@ protected:
     wxRect m_repaintRect;
     wxBitmap m_buffer;
     bool m_fitToFrame;
-    
+
     virtual void Init();
     virtual void OnPaint(wxPaintEvent& event);
     virtual void OnResize(wxSizeEvent& event) { Refresh(); }
     virtual void OnEraseBackground(wxEraseEvent &event) {}
     virtual void RepaintBuffer();
-  
+
 private:
     DECLARE_ABSTRACT_CLASS(wxSVGCtrlBase)
     DECLARE_EVENT_TABLE()

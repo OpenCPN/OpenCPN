@@ -60,7 +60,7 @@ add_library(GDAL STATIC ${SRC})
 add_library(ocpn::gdal ALIAS GDAL)
 
 set_property(TARGET GDAL PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_include_directories(GDAL BEFORE 
+target_include_directories(GDAL BEFORE
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/gdal
 )

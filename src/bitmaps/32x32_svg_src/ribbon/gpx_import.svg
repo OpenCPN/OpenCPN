@@ -94,45 +94,45 @@
    x1="28"
    gradientUnits="userSpaceOnUse"
    id="linearGradient18668">
-			<stop
+            <stop
    id="stop18670"
    style="stop-color:#fff8a8;stop-opacity:1;"
    offset="0" />
-			<stop
+            <stop
    id="stop18672"
    style="stop-color:white;stop-opacity:0;"
    offset="1" />
-		</linearGradient><linearGradient
+        </linearGradient><linearGradient
    y2="0"
    x2="28"
    y1="57.5"
    x1="28"
    gradientUnits="userSpaceOnUse"
    id="linearGradient15967">
-			<stop
+            <stop
    id="stop15969"
    style="stop-color:white;stop-opacity:1;"
    offset="0" />
-			<stop
+            <stop
    id="stop15971"
    style="stop-color:white;stop-opacity:0;"
    offset="1" />
-		</linearGradient><linearGradient
+        </linearGradient><linearGradient
    id="XMLID_2_"
    gradientUnits="userSpaceOnUse"
    x1="28"
    y1="57.5"
    x2="28"
    y2="0">
-			<stop
+            <stop
    offset="0"
    style="stop-color:#FFEA00"
    id="stop12" />
-			<stop
+            <stop
    offset="1"
    style="stop-color:#FFCC00"
    id="stop14" />
-		</linearGradient><linearGradient
+        </linearGradient><linearGradient
    inkscape:collect="always"
    xlink:href="#XMLID_9_"
    id="linearGradient2391"
@@ -179,18 +179,18 @@
    cx="102"
    cy="112.3047"
    r="139.55859" />
-	<foreignObject
+    <foreignObject
    requiredExtensions="http://ns.adobe.com/AdobeIllustrator/10.0/"
    x="0"
    y="0"
    width="1"
    height="1"
    id="foreignObject7">
-		<i:pgfRef
+        <i:pgfRef
    xlink:href="#adobe_illustrator_pgf">
-		</i:pgfRef>
-	</foreignObject>
-	
+        </i:pgfRef>
+    </foreignObject>
+
 <radialGradient
    inkscape:collect="always"
    xlink:href="#XMLID_7_"
@@ -299,24 +299,24 @@
    y1="57.5"
    x2="28"
    y2="0" />
-		<linearGradient
+        <linearGradient
    id="linearGradient18649"
    gradientUnits="userSpaceOnUse"
    x1="28"
    y1="57.5"
    x2="28"
    y2="0">
-			<stop
+            <stop
    offset="0"
    style="stop-color:#FFEA00"
    id="stop18651" />
-			<stop
+            <stop
    offset="1"
    style="stop-color:#FFCC00"
    id="stop18653" />
-		</linearGradient>
-		
-	<linearGradient
+        </linearGradient>
+
+    <linearGradient
    inkscape:collect="always"
    xlink:href="#linearGradient18668"
    id="linearGradient18674"
@@ -8757,46 +8757,46 @@
      snapvisiblegridlinesonly="true" /></sodipodi:namedview>
 <metadata
    id="metadata3">
-	<ns:sfw>
-		<ns:slices>
-			<ns:slice
+    <ns:sfw>
+        <ns:slices>
+            <ns:slice
    y="0"
    x="0"
    height="128"
    width="128"
    sliceID="1316743234" />
-		</ns:slices>
-		<ns:sliceSourceBounds
+        </ns:slices>
+        <ns:sliceSourceBounds
    y="0"
    x="0"
    height="128"
    width="128"
    bottomLeftOrigin="true" />
-		<ns:optimizationSettings>
-			<ns:targetSettings
+        <ns:optimizationSettings>
+            <ns:targetSettings
    targetSettingsID="0"
    fileFormat="PNG24Format">
-				<ns:PNG24Format
+                <ns:PNG24Format
    transparency="true"
    filtered="false"
    matteColor="#FFFFFF"
    noMatteColor="false"
    interlaced="false">
-					</ns:PNG24Format>
-			</ns:targetSettings>
-			<ns:targetSettings
+                    </ns:PNG24Format>
+            </ns:targetSettings>
+            <ns:targetSettings
    targetSettingsID="1696735251"
    fileFormat="PNG24Format">
-				<ns:PNG24Format
+                <ns:PNG24Format
    transparency="true"
    filtered="false"
    matteColor="#FFFFFF"
    noMatteColor="false"
    interlaced="false">
-					</ns:PNG24Format>
-			</ns:targetSettings>
-		</ns:optimizationSettings>
-	</ns:sfw>
+                    </ns:PNG24Format>
+            </ns:targetSettings>
+        </ns:optimizationSettings>
+    </ns:sfw>
 <rdf:RDF><cc:Work
      rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
        rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata>
@@ -8807,39 +8807,39 @@
    cy="112.3047"
    r="139.5585"
    gradientUnits="userSpaceOnUse">
-	<stop
+    <stop
    offset="0"
    style="stop-color:#00537D"
    id="stop16" />
-	<stop
+    <stop
    offset="0.0151"
    style="stop-color:#186389"
    id="stop18" />
-	<stop
+    <stop
    offset="0.0558"
    style="stop-color:#558CA8"
    id="stop20" />
-	<stop
+    <stop
    offset="0.0964"
    style="stop-color:#89AFC3"
    id="stop22" />
-	<stop
+    <stop
    offset="0.1357"
    style="stop-color:#B3CCD8"
    id="stop24" />
-	<stop
+    <stop
    offset="0.1737"
    style="stop-color:#D4E2E9"
    id="stop26" />
-	<stop
+    <stop
    offset="0.2099"
    style="stop-color:#ECF2F5"
    id="stop28" />
-	<stop
+    <stop
    offset="0.2435"
    style="stop-color:#FAFCFD"
    id="stop30" />
-	<stop
+    <stop
    offset="0.2722"
    style="stop-color:#FFFFFF"
    id="stop32" />
@@ -8851,38 +8851,38 @@
    cy="112.3047"
    r="139.55859"
    gradientUnits="userSpaceOnUse">
-	<stop
+    <stop
    offset="0"
    style="stop-color:#535557"
    id="stop37" />
-	
-	<stop
+
+    <stop
    offset="0.11366145"
    style="stop-color:#898A8C"
    id="stop41" />
-	
-	
-	<stop
+
+
+    <stop
    offset="0.20296688"
    style="stop-color:#ECECEC"
    id="stop47" />
-	<stop
+    <stop
    offset="0.2363"
    style="stop-color:#FAFAFA"
    id="stop49" />
-	<stop
+    <stop
    offset="0.2722"
    style="stop-color:#FFFFFF"
    id="stop51" />
-	<stop
+    <stop
    offset="0.5313"
    style="stop-color:#FAFAFA"
    id="stop53" />
-	<stop
+    <stop
    offset="0.8449"
    style="stop-color:#EBECEC"
    id="stop55" />
-	<stop
+    <stop
    offset="1"
    style="stop-color:#E1E2E3"
    id="stop57" />
@@ -8895,11 +8895,11 @@
    y1="102.3447"
    x2="86.535599"
    y2="94.536598">
-	<stop
+    <stop
    offset="0"
    style="stop-color:#FFFFFF"
    id="stop62" />
-	<stop
+    <stop
    offset="1"
    style="stop-color:#555753"
    id="stop64" />
@@ -8912,11 +8912,11 @@
    y1="103"
    x2="86.586502"
    y2="94.586502">
-	<stop
+    <stop
    offset="0"
    style="stop-color:#FFFFFF"
    id="stop69" />
-	<stop
+    <stop
    offset="1"
    style="stop-color:#555753"
    id="stop71" />
@@ -8929,11 +8929,11 @@
    y1="103"
    x2="87.292999"
    y2="95.292999">
-	<stop
+    <stop
    offset="0"
    style="stop-color:#FFFFFF"
    id="stop76" />
-	<stop
+    <stop
    offset="1"
    style="stop-color:#393B38"
    id="stop78" />
@@ -8946,39 +8946,39 @@
    y1="104"
    x2="88.000198"
    y2="96.000198">
-	<stop
+    <stop
    offset="0"
    style="stop-color:#888A85"
    id="stop83" />
-	<stop
+    <stop
    offset="0.0072"
    style="stop-color:#8C8E89"
    id="stop85" />
-	<stop
+    <stop
    offset="0.0673"
    style="stop-color:#ABACA9"
    id="stop87" />
-	<stop
+    <stop
    offset="0.1347"
    style="stop-color:#C5C6C4"
    id="stop89" />
-	<stop
+    <stop
    offset="0.2115"
    style="stop-color:#DBDBDA"
    id="stop91" />
-	<stop
+    <stop
    offset="0.3012"
    style="stop-color:#EBEBEB"
    id="stop93" />
-	<stop
+    <stop
    offset="0.4122"
    style="stop-color:#F7F7F6"
    id="stop95" />
-	<stop
+    <stop
    offset="0.5679"
    style="stop-color:#FDFDFD"
    id="stop97" />
-	<stop
+    <stop
    offset="1"
    style="stop-color:#FFFFFF"
    id="stop99" />

@@ -512,7 +512,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
         read_next_line (fp, linrec, 0);
         psd->meridian = hhmm2seconds (linrec);
         psd->zone_offset = 0;
-        
+
         /* Get tzfile, if present */
         if (sscanf (nojunk(linrec), "%s %s", junk, psd->tzfile) < 2)
             strcpy (psd->tzfile, "UTC0");

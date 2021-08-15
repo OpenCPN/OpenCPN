@@ -1,10 +1,10 @@
-Name:		opencpn-deps
-Version:	0.1
-Release:	1%{?dist}
-Summary:	Empty package with opencpn build dependencies
+Name:       opencpn-deps
+Version:    0.1
+Release:    1%{?dist}
+Summary:    Empty package with opencpn build dependencies
 
-License:	MIT
-URL:		https://github.com/leamas/opencpn
+License:    MIT
+URL:        https://github.com/leamas/opencpn
 
 BuildRequires: binutils
 BuildRequires: cmake

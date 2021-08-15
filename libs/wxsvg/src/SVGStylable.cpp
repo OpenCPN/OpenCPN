@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGStylable.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/04/29
 // RCS-ID:      $Id: SVGStylable.cpp,v 1.8 2014/03/27 08:42:16 ntalex Exp $
@@ -41,10 +41,10 @@ wxSvgXmlAttrHash wxSVGStylable::GetCustomAttributes() const {
 
 bool wxSVGStylable::SetCustomAnimatedValue(const wxString& name, const wxSVGAnimatedType& value) {
 	wxCSS_PROPERTY id = wxCSSStyleDeclaration::GetPropertyId(name);
-	
+
 	if (id == wxCSS_PROPERTY_UNKNOWN)
 		return false;
-	
+
 	m_style.SetProperty(name, value);
 	return true;
 }
@@ -64,7 +64,7 @@ wxCSSStyleDeclaration wxSVGStylable::GetResultStyle(const wxSVGElement& element)
 #define GET_STYLABLE(the_dtd, the_class)\
 case the_dtd:\
   return &((the_class&) element);
-  
+
 wxSVGStylable* wxSVGStylable::GetSVGStylable(wxSVGElement& element) {
   if (element.GetType() != wxSVGXML_ELEMENT_NODE)
     return NULL;

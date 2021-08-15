@@ -412,7 +412,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 --------------------------------------------------------------------------------
-Portions of this program are distributed under the terms of the LGPLv3 License.                                  
+Portions of this program are distributed under the terms of the LGPLv3 License.
 Those portions, herinafter called "LGPLv3 Modules", include:
 
 unarr library (https://github.com/zeniko/unarr)

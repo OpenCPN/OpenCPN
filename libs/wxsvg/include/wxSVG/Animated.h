@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        Animated.h
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/05/07
 // RCS-ID:      $Id: Animated.h,v 1.3 2007/09/21 06:47:34 etisserant Exp $

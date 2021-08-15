@@ -18,7 +18,7 @@ TEST(timer_tests, short_intervals) {
     uint32_t ms = rand() % 20;
     MillisecondTimer mt(ms);
     usleep(1000 * ms);
-    int32_t r = mt.remaining(); 
+    int32_t r = mt.remaining();
 
     // 1ms slush, for the cost of calling usleep.
     EXPECT_NEAR(r+1, 0, 1);

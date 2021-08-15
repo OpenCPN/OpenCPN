@@ -885,7 +885,7 @@
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/BE_IENC_Catalog.xml</location>
           <dir>{USERDATA}/ENC/BE_INLAND</dir>
         </catalog>
-        <catalog>                                                                                             
+        <catalog>
           <name>Belgium OSM Raster Charts</name>
           <type>RNC</type>
           <location>https://charts.openwaterkaart.nl/OSM-raster-be/OSM-raster-be-catalog.xml</location>
@@ -1018,7 +1018,7 @@
         </catalog>
       </catalogs>
     </section>
-    <section>                                                                                                 
+    <section>
       <name>MBTiles</name>
       <catalogs>
         <catalog>
@@ -1028,6 +1028,6 @@
           <dir>{USERDATA}/MBTiles/NOAA</dir>
         </catalog>
       </catalogs>
-    </section> 
+    </section>
   </sections>
 </ChartCatalog>

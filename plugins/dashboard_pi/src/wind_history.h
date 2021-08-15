@@ -70,7 +70,7 @@ class DashboardInstrument_WindDirHistory: public DashboardInstrument
         double m_ExpSmoothArrayWindSpd[WIND_RECORD_COUNT];
         double m_ExpSmoothArrayWindDir[WIND_RECORD_COUNT];
         wxDateTime::Tm m_ArrayRecTime[WIND_RECORD_COUNT];
-            
+
         double m_MaxWindDir;
         double m_MinWindDir;
         double m_WindDirRange;

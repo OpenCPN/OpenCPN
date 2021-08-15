@@ -56,7 +56,7 @@ typedef int wxPenStyle;
 enum wxKeyCode_compat
 {
     WXK_NONE    =    0,
-    
+
     WXK_CONTROL_A = 1,
     WXK_CONTROL_B,
     WXK_CONTROL_C,
@@ -83,7 +83,7 @@ enum wxKeyCode_compat
     WXK_CONTROL_X,
     WXK_CONTROL_Y,
     WXK_CONTROL_Z,
-    
+
 };
 
 #endif

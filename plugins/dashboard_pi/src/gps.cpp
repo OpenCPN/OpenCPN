@@ -48,13 +48,13 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
       DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS)
 {
       m_refDim = GetCharHeight();
-      
+
       m_cx = 35;
       m_cy =  GetCharHeight() * 35/10;
       m_radius = GetCharHeight() * 2;
       m_scaleDelta = m_refDim / 2;
       m_scaleBase = (m_radius * 2) +  (2 * m_refDim);
-      
+
       for (int idx = 0; idx < 12; idx++)
       {
             m_SatInfo[idx].SatNumber = 0;
@@ -97,7 +97,7 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk, SAT_IN
       // Some GPS receivers may emit more than 12 sats info
       if (seq < 1 || seq > 3)
           return;
-      
+
       if (talkerID != wxEmptyString) {
           // Switch view between the six GNSS system,
           // mentioned in NMEA0183, when available.
@@ -108,7 +108,7 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk, SAT_IN
           if (sinceLastShift.GetSeconds() >= 15){
               b_shift = true;
               m_lastShift = now;
-          }          
+          }
           if (b_shift) {
               //Who's here and in turn to show up next
               bool secondturn = false;
@@ -122,7 +122,7 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk, SAT_IN
                   }
                   if (i == 5 && !secondturn) {
                       i = -1;
-                      secondturn = true;                     
+                      secondturn = true;
                   }
               }
           }
@@ -156,9 +156,9 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk, SAT_IN
               if (m_iMaster != 0) return;
               s_gTalker = wxString::Format(_T("QZSS\n%d"), m_SatCount);
           }
-          else s_gTalker = wxEmptyString;          
+          else s_gTalker = wxEmptyString;
       }
-            
+
       int lidx = (seq-1)*4;
       for (int idx = 0; idx < 4; idx++)
       {
@@ -239,7 +239,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 
       dc->SetBackgroundMode(wxTRANSPARENT);
 
-      
+
       dc->DrawLine(3, m_scaleBase, size.x-3, m_scaleBase);
       dc->DrawLine(3, m_scaleBase + 4*m_scaleDelta, size.x-3, m_scaleBase + 4*m_scaleDelta);
 
@@ -287,9 +287,9 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
             else
                 tdc.DrawText(" -", idx*pitch+offset, 0);
       }
-      
+
       tdc.SelectObject( wxNullBitmap );
-      
+
       int scaleDelta = m_refDim / 2;
       int scaleBase = (m_radius * 2) +  (2 * m_refDim);
 
@@ -354,7 +354,7 @@ void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
              dc->DrawBitmap( tbm, posx, posy, false );
         }
     }
-    if (talkerID != wxEmptyString) 
+    if (talkerID != wxEmptyString)
         dc->DrawText( s_gTalker, 1, m_refDim);
 }
 

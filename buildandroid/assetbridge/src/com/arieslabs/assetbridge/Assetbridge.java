@@ -19,7 +19,7 @@ public class Assetbridge {
     }
 
 
-    // unpack 
+    // unpack
     public static void unpack(Context c) {
 
         try {
@@ -89,7 +89,7 @@ public class Assetbridge {
             // copy the file from the assets subsystem to the filesystem
             FileOutputStream destOS = new FileOutputStream(destfh);
 
-    	    //copy the file content in bytes 
+    	    //copy the file content in bytes
             while( (count = srcIS.read(data, 0, buffer_len)) != -1) {
                 destOS.write(data, 0, count);
             }

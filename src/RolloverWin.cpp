@@ -43,7 +43,7 @@
 
 
 extern bool             g_bopengl;
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
 extern GLenum       g_texture_rectangle_format;
 #endif
 
@@ -101,7 +101,7 @@ void RolloverWin::SetBitmap( int rollover )
     delete m_pbm;
     m_pbm = new wxBitmap( m_size.x, m_size.y );
     mdc.SelectObject( *m_pbm );
-    
+
     mdc.SetBackground( wxBrush( GetGlobalColor( _T ( "YELO1" ) ) ) );
     mdc.Clear();
 #ifdef ocpnUSE_GL
@@ -110,7 +110,7 @@ void RolloverWin::SetBitmap( int rollover )
 #ifdef __WXOSX__
     usegl = false;
 #endif
-        
+
 #else
     bool usegl = false;
 #endif
@@ -122,10 +122,10 @@ void RolloverWin::SetBitmap( int rollover )
             mdc.Blit( 0, 0, m_size.x, m_size.y, cdc,m_position.x + cpx, m_position.y + cpy);
             delete cdc;
         }
-    } 
-    
+    }
+
     ocpnDC dc( mdc );
-    
+
     wxString text;
     double radius = 6.0;
     switch( rollover ) {
@@ -134,24 +134,24 @@ void RolloverWin::SetBitmap( int rollover )
         default:
         case LEG_ROLLOVER: text = _("RouteLegInfoRollover");  break;
     }
-    
+
     if(m_bmaincanvas)
         AlphaBlending( dc, 0, 0, m_size.x, m_size.y, radius, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-    
+
     mdc.SetTextForeground( FontMgr::Get().GetFontColor( text ) );
-    
+
     if(m_plabelFont && m_plabelFont->IsOk()) {
-        
+
         //    Draw the text
         mdc.SetFont( *m_plabelFont );
-        
+
         mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
     }
 
     mdc.SelectObject( wxNullBitmap );
-    
-    SetSize( m_position.x, m_position.y, m_size.x, m_size.y );  
-    
+
+    SetSize( m_position.x, m_position.y, m_size.x, m_size.y );
+
     #ifdef ocpnUSE_GL
     if(usegl) {
         if(!m_texture) {
@@ -165,17 +165,17 @@ void RolloverWin::SetBitmap( int rollover )
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-            
+
         } else
             glBindTexture( g_texture_rectangle_format, m_texture );
- 
+
         wxString msg;
         msg.Printf(_T("Render texture  %d"), m_texture);
         wxLogMessage(msg);
 
         // make texture data
         wxImage image = m_pbm->ConvertToImage();
-        
+
         unsigned char *d = image.GetData();
         unsigned char *e = new unsigned char[4*m_size.x*m_size.y];
         for(int y = 0; y<m_size.y; y++)
@@ -192,7 +192,7 @@ void RolloverWin::SetBitmap( int rollover )
 
     }
     #endif
-    
+
     // Retrigger the auto timeout
     if( m_timeout_sec > 0 ){
         m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
@@ -210,7 +210,7 @@ void RolloverWin::SetBitmap( int rollover )
     mdc.SelectObject( *m_pbm );
 
     int usegl = g_bopengl &&
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
         g_texture_rectangle_format &&
 #endif
         m_bmaincanvas;
@@ -301,16 +301,16 @@ void RolloverWin::Draw(ocpnDC &dc)
     if(!IsActive())
         return;
 #ifdef ocpnUSE_GL
-//#ifndef __WXOSX__    
+//#ifndef __WXOSX__
     if(g_bopengl && m_texture) {
         wxString msg;
         msg.Printf(_T("Draw texture  %d"), m_texture);
         wxLogMessage(msg);
-        
+
         glEnable(g_texture_rectangle_format);
         glBindTexture( g_texture_rectangle_format, m_texture );
         glEnable(GL_BLEND);
-        
+
         int x0 = m_position.x, x1 = x0 + m_size.x;
         int y0 = m_position.y, y1 = y0 + m_size.y;
         float tx, ty;
@@ -319,8 +319,8 @@ void RolloverWin::Draw(ocpnDC &dc)
         else
             tx = ty = 1;
 
-#ifndef USE_ANDROID_GLES2        
-            
+#ifndef USE_ANDROID_GLES2
+
         glColor3f(1, 1, 1);
         glBegin(GL_QUADS);
         glTexCoord2f(0,  0);  glVertex2i(x0, y0);
@@ -331,7 +331,7 @@ void RolloverWin::Draw(ocpnDC &dc)
 #else
         float coords[8];
         float uv[8];
-        
+
         //normal uv
         uv[0] = 0; uv[1] = 0; uv[2] = tx; uv[3] = 0;
         uv[4] = tx; uv[5] = ty; uv[6] = 0; uv[7] = ty;
@@ -339,17 +339,17 @@ void RolloverWin::Draw(ocpnDC &dc)
         // pixels
         coords[0] = x0; coords[1] = y0; coords[2] = x1; coords[3] = y0;
         coords[4] = x1; coords[5] = y1; coords[6] = x0; coords[7] = y1;
-        
+
         ChartCanvas *pCanvas = wxDynamicCast(GetParent(), ChartCanvas);
         if(pCanvas)
             pCanvas->GetglCanvas()->RenderTextures(coords, uv, 4, pCanvas->GetpVP());
-        
-#endif        
+
+#endif
         glDisable(g_texture_rectangle_format);
         glDisable(GL_BLEND);
     } else
-//#endif        
-#endif    
+//#endif
+#endif
     dc.DrawBitmap( *m_pbm, m_position.x, m_position.y, false );
 }
 

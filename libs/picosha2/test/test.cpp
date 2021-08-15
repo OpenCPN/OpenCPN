@@ -49,7 +49,7 @@ void input_hex(std::istream& is, OutIter first, OutIter last){
             buffer.push_back(c-'0');
         }else
         if('a' <= c && c <= 'f'){
-            buffer.push_back(c-'a'+10); 
+            buffer.push_back(c-'a'+10);
         }
     }
 }
@@ -69,7 +69,7 @@ void hex_string_to_bytes(const std::string& hex_str, OutContainer& bytes){
 typedef std::pair<std::string, std::string> mess_and_hash;
 const size_t sample_size = 10;
 const std::pair<std::string, std::string> sample_message_list[sample_size] = {
-    mess_and_hash("", 
+    mess_and_hash("",
             "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
     mess_and_hash("The quick brown fox jumps over the lazy dog",
             "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"),
@@ -140,7 +140,7 @@ void test(){
             PICOSHA2_CHECK_EQUAL(ans_hex_str, hash_hex_str);
         }
         {
-            std::string hash_hex_str = 
+            std::string hash_hex_str =
                 picosha2::hash256_hex_string(src_str.begin(), src_str.end());
             PICOSHA2_CHECK_EQUAL(ans_hex_str, hash_hex_str);
         }
@@ -148,7 +148,7 @@ void test(){
             std::string hash_hex_str = picosha2::hash256_hex_string(src_str);
             PICOSHA2_CHECK_EQUAL(ans_hex_str, hash_hex_str);
         }
-        
+
         std::vector<unsigned char> src_vect(src_str.begin(), src_str.end());
         {
             std::vector<unsigned char> hash(picosha2::k_digest_size);
@@ -167,7 +167,7 @@ void test(){
         }
         {
             std::list<unsigned char> hash(picosha2::k_digest_size);
-            picosha2::hash256(src_vect.data(), src_vect.data()+src_vect.size(), 
+            picosha2::hash256(src_vect.data(), src_vect.data()+src_vect.size(),
                     hash.begin(), hash.end());
             PICOSHA2_CHECK_EQUAL_BYTES(ans, hash);
         }
@@ -187,7 +187,7 @@ void test(){
             PICOSHA2_CHECK_EQUAL(ans_hex_str, hash_hex_str);
         }
         {
-            std::string hash_hex_str = 
+            std::string hash_hex_str =
                 picosha2::hash256_hex_string(src_vect.begin(), src_vect.end());
             PICOSHA2_CHECK_EQUAL(ans_hex_str, hash_hex_str);
         }
@@ -205,7 +205,7 @@ void test(){
     {
         picosha2::hash256_one_by_one hasher;
         std::ifstream ifs("test.cpp");
-        std::string file_str((std::istreambuf_iterator<char>(ifs)), 
+        std::string file_str((std::istreambuf_iterator<char>(ifs)),
                 std::istreambuf_iterator<char>());
         std::size_t i = 0;
         std::size_t block_size = file_str.length()/10;
@@ -226,7 +226,7 @@ void test(){
         std::string one_by_one_hex_string; {
             picosha2::hash256_one_by_one hasher;
             std::ifstream ifs("test.cpp");
-            std::string file_str((std::istreambuf_iterator<char>(ifs)), 
+            std::string file_str((std::istreambuf_iterator<char>(ifs)),
                     std::istreambuf_iterator<char>());
             std::size_t i = 0;
             std::size_t block_size = file_str.length()/10;

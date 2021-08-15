@@ -61,10 +61,10 @@ class S57QueryDialog: public wxFrame
             void CreateControls();
             void OnSize(wxSizeEvent& event);
             void RecalculateSize( void );
-            
+
             void OnClose(wxCloseEvent& event);
             void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
-    
+
             void OnOKClick(wxCommandEvent& event) { Close(); }
             void OnKey( wxKeyEvent& ke );
 
@@ -76,7 +76,7 @@ class S57QueryDialog: public wxFrame
       //    Data
             wxHtmlWindow      *m_phtml;
             wxSize            m_createsize;
-    
+
             wxButton          *m_btnOK;
 };
 

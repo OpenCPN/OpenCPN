@@ -1438,7 +1438,7 @@ int CPLSetXMLValue( CPLXMLNode *psRoot,  const char *pszPath,
 {
     if( psRoot == NULL )
         return FALSE;
-    
+
     char        **papszTokens;
     int         iToken = 0;
 

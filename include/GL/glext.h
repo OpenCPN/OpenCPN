@@ -7,7 +7,7 @@ extern "C" {
 
 /*
 ** Copyright (c) 2007 The Khronos Group Inc.
-** 
+**
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
 ** "Materials"), to deal in the Materials without restriction, including
@@ -15,10 +15,10 @@ extern "C" {
 ** distribute, sublicense, and/or sell copies of the Materials, and to
 ** permit persons to whom the Materials are furnished to do so, subject to
 ** the following conditions:
-** 
+**
 ** The above copyright notice and this permission notice shall be included
 ** in all copies or substantial portions of the Materials.
-** 
+**
 ** THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 ** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 ** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -3385,7 +3385,7 @@ extern "C" {
 #include <stddef.h>
 #ifndef GL_VERSION_2_0
 /* GL type for program/shader text */
-typedef char GLchar;			/* native character */
+typedef char GLchar;            /* native character */
 #endif
 
 #ifndef GL_VERSION_1_5
@@ -3402,8 +3402,8 @@ typedef ptrdiff_t GLsizeiptrARB;
 
 #ifndef GL_ARB_shader_objects
 /* GL types for handling shader object handles and program/shader text */
-typedef char GLcharARB;		/* native character */
-typedef unsigned int GLhandleARB;	/* shader object handle */
+typedef char GLcharARB;     /* native character */
+typedef unsigned int GLhandleARB;   /* shader object handle */
 #endif
 
 /* GL types for "half" precision (s10e5) float data in host memory */

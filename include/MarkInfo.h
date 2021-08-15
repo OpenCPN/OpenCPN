@@ -144,27 +144,27 @@ class SaveDefaultsDialog;
 class  OCPNIconCombo : public wxOwnerDrawnComboBox
 {
 public:
-    
+
     OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
                   const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
                   int n = 0, const wxString choices[] = NULL,
                   long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = _T("OCPNIconCombo") );
-    
-    
-    
+
+
+
     ~OCPNIconCombo ();
-    
+
     void OnDrawItem(wxDC& dc, const wxRect& rect, int item, int flags) const;
     wxCoord OnMeasureItem(size_t item) const;
     wxCoord OnMeasureItemWidth(size_t item) const;
-    
+
     int Append(const wxString& item, wxBitmap bmp);
     void Clear( void );
-    
+
 private:
     int         itemHeight;
     ArrayOfBitmaps  bmpArray;
-    
+
 };
 
 
@@ -201,12 +201,12 @@ class MarkInfoDlg : public wxFrame
 {
     DECLARE_EVENT_TABLE()
     friend class SaveDefaultsDialog;
-    
+
 	private:
         RoutePoint*     m_pRoutePoint;
         static bool     instanceFlag;
         int             i_htmlList_item;
-        
+
         bool            m_bShowName_save;
         wxString        m_Name_save;
         wxString        m_IconName_save;
@@ -227,7 +227,7 @@ class MarkInfoDlg : public wxFrame
         wxDateTime      m_ArrETA_save;
         std::map<double, const IDX_entry*> m_tss;
         wxString        m_lasttspos;
-        
+
 	protected:
         OCPNIconCombo*          m_bcomboBoxIcon;
         wxBoxSizer*             bSizerBasicProperties;
@@ -261,13 +261,13 @@ class MarkInfoDlg : public wxFrame
         wxStaticBoxSizer*       sbS_Description;
         wxStaticBoxSizer*       sbSizerExtProperties;
         wxStaticBoxSizer*       sbSizerLinks;
-        wxStaticBoxSizer*       sbSizerBasicProperties; 
+        wxStaticBoxSizer*       sbSizerBasicProperties;
         wxStaticBoxSizer*       sbRangeRingsExtProperties;
         wxStaticBoxSizer*       sbSizerDescription;
-        wxStaticText*           m_staticTextArrivalRadius;                                   
-        wxStaticText*           m_staticTextDescription;                                     
-        wxStaticText*           m_staticTextEditEnabled;                                     
-        wxStaticText*           m_staticTextGpx;                                             
+        wxStaticText*           m_staticTextArrivalRadius;
+        wxStaticText*           m_staticTextDescription;
+        wxStaticText*           m_staticTextEditEnabled;
+        wxStaticText*           m_staticTextGpx;
         wxStaticText*           m_staticTextGuid;
         wxStaticText*           m_staticTextTideStation;
         wxStaticText*           m_staticTextIcon;
@@ -295,12 +295,12 @@ class MarkInfoDlg : public wxFrame
         wxMenu                  *m_menuLink;
         wxToggleButton          *m_toggleBtnEdit;
         wxButton                *m_buttonAddLink;
-        
-#ifdef __OCPN__ANDROID__        
+
+#ifdef __OCPN__ANDROID__
         wxChoice*               m_comboBoxTideStation;
 #else
         wxComboBox*             m_comboBoxTideStation;
-#endif        
+#endif
         wxTextCtrl*             m_textDescription;
         wxTextCtrl*             m_textLatitude;
         wxTextCtrl*             m_textLongitude;
@@ -324,7 +324,7 @@ class MarkInfoDlg : public wxFrame
         wxBitmap                m_bmTide;
         int                     m_sizeMetric;
         wxHyperlinkCtrl         *m_pEditedLink;
-        
+
         void initialize_images(void);
         void OnBitmapCombClick(wxCommandEvent& event);
         void OnPositionCtlUpdated( wxCommandEvent& event );
@@ -353,7 +353,7 @@ class MarkInfoDlg : public wxFrame
         void OnClose( wxCloseEvent& event );
         void ShowTidesBtnClicked( wxCommandEvent& event );
         void OnAddLink( wxCommandEvent& event );
-        
+
     public:
         MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = FRAME_WITH_LINKS_STYLE );
         ~MarkInfoDlg();
@@ -371,7 +371,7 @@ class MarkInfoDlg : public wxFrame
         wxSimpleHtmlListBox *GetSimpleBox()
             { return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox); }
         void OnHtmlCellClicked(wxHtmlCellEvent &event);
-        
+
         SaveDefaultsDialog* m_SaveDefaultDlg;
 
 };
@@ -398,7 +398,7 @@ protected:
     wxStaticText* stScale;
     wxStaticText* StaticText1;
     //*)
-    
+
 public:
     SaveDefaultsDialog(MarkInfoDlg* parent);
 };

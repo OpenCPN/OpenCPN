@@ -110,9 +110,9 @@ wxString wxSVGPathSegList::GetValueAsString() const
   for (int i=0; i<(int)GetCount(); i++)
   {
     value += i==0 ? wxT("") : wxT(" ");
-    
+
     wxSVGPathSeg& pathSeg = Item(i);
-      
+
     switch (pathSeg.GetPathSegType())
     {
       case wxPATHSEG_UNKNOWN:
@@ -120,7 +120,7 @@ wxString wxSVGPathSegList::GetValueAsString() const
       case wxPATHSEG_CLOSEPATH:
         value += wxT("z");
         break;
-    
+
       case wxPATHSEG_MOVETO_ABS:
         value += wxString::Format(wxT("M%g,%g"),
                     ((wxSVGPathSegMovetoAbs&)pathSeg).GetX(),
@@ -261,11 +261,11 @@ void wxSVGPathSegList::SetValueAsString(const wxString& value) {
 			break;
 		type = val.GetChar(0);
 		val.Remove(0, 1);
-		
+
 		while (val.Length()) {
 			while (val.Length() && s_separators.Find(val[0]) != wxNOT_FOUND)
 				val.Remove(0, 1);
-			
+
 			unsigned int pos;
 			if (val.Length() > 0 && isNumericFirst(val[0])) {
 				pos = 1;

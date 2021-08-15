@@ -90,7 +90,7 @@ public:
     virtual wxDateTime GetUpdateDatetime() { return zipfile_datetime_iso8601; }
 
     // public properties
-    wxString number; // chart number used for zip file name, BSB name, cell number  .Paul. 
+    wxString number; // chart number used for zip file name, BSB name, cell number  .Paul.
     wxString title; //RNC: <title>, ENC:<lname>
     wxArrayString *coast_guard_districts;
     wxArrayString *states;

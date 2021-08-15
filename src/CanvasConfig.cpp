@@ -80,7 +80,7 @@ void canvasConfig::LoadFromLegacyConfig( wxFileConfig *conf )
 
     bFollow = false;
     bShowAIS = true;
-    
+
     //S52 stuff
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
     conf->Read( _T ( "bShowS57Text" ), &bShowENCText, 1 );

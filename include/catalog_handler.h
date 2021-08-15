@@ -43,15 +43,15 @@
  * of branches, some of which containing a plugin catalog.
  *
  * Backend code for channel management (which catalog to get) and
- * the important download function. 
+ * the important download function.
  *
- * Also: CatalogData handling, basically version and date for 
+ * Also: CatalogData handling, basically version and date for
  * various ocpn-plugins.xml.
  */
 class CatalogHandler {
 
     public:
-        
+
         enum class ServerStatus {
             UNKNOWN, OK, OK_MSG, CURL_ERROR, JSON_ERROR, XML_ERROR, OS_ERROR
         };
@@ -125,9 +125,9 @@ class CatalogHandler {
         const char* const GITHUB_API =
             "https://api.github.com";
 
-        const char* const REPO_URL = 
+        const char* const REPO_URL =
             "https://raw.githubusercontent.com";
-        const char* const REPO_PATH = 
+        const char* const REPO_PATH =
             "/OpenCPN/plugins/@branch@/ocpn-plugins.xml";
 
         const char* const DEFAULT_CHANNEL = "master";

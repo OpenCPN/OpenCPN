@@ -84,7 +84,7 @@ int Garmin_GPS_PVT_Off( wxString &port_name )
 int Garmin_GPS_GetPVT(void *pvt)
 {
     return GPS_Serial_Command_Pvt_Get((GPS_PPvt_Data *)pvt );
-    
+
 }
 
 void Garmin_GPS_ClosePortVerify(void)
@@ -247,23 +247,23 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
       //    Even elements 2,4,6... are links
       for(int i=1 ; i < *size ; i++)
       {
-	    if (i % 2 == 1) /* Odd */
-	    {
-	          GPS_PWay pway = ppway[i];
+        if (i % 2 == 1) /* Odd */
+        {
+              GPS_PWay pway = ppway[i];
                   wxRoutePointListNode *node = wplist->Item((i-1)/2);
                   RoutePoint *prp = node->GetData();
 
                   Garmin_GPS_PrepareWptData(pway, prp);
-	    }
-	    else  /* Even */
-	    {
-	          /* Apparently, 0 filled links are OK */
-	          GPS_PWay pway = ppway[i];
-		  pway->islink = true;
-		  pway->rte_link_class = 0;
-		  memset(pway->rte_link_subclass, 0, sizeof(pway->rte_link_subclass));
-		  memset(pway->rte_link_ident, 0 , sizeof(pway->rte_link_ident));
-	    }
+        }
+        else  /* Even */
+        {
+              /* Apparently, 0 filled links are OK */
+              GPS_PWay pway = ppway[i];
+          pway->islink = true;
+          pway->rte_link_class = 0;
+          memset(pway->rte_link_subclass, 0, sizeof(pway->rte_link_subclass));
+          memset(pway->rte_link_ident, 0 , sizeof(pway->rte_link_ident));
+        }
       }
 
       return ppway;
@@ -339,9 +339,9 @@ int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgre
       GPS_SWay **ppway;
       int elements = 0;
       if (gps_route_transfer == pA201)
-	ppway = Garmin_GPS_Create_A201_Route(pr, route_number, &elements);
+    ppway = Garmin_GPS_Create_A201_Route(pr, route_number, &elements);
       else
-	ppway = Garmin_GPS_Create_A200_Route(pr, route_number, &elements);
+    ppway = Garmin_GPS_Create_A200_Route(pr, route_number, &elements);
 
 
       //    Transmit the Route to the GPS receiver

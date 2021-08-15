@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGFitToViewBox.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2006/01/07
 // RCS-ID:      $Id: SVGFitToViewBox.cpp,v 1.2 2014/07/06 15:20:38 ntalex Exp $
@@ -15,12 +15,12 @@ void wxSVGFitToViewBox::UpdateMatrix(wxSVGMatrix& matrix, const wxSVGLength& wid
 	wxSVGRect viewbox = GetViewBox().GetAnimVal();
 	if (viewbox.GetWidth() <= 0 || viewbox.GetHeight() <= 0)
 		return;
-	
+
 	wxSVG_PRESERVEASPECTRATIO align = GetPreserveAspectRatio().GetAnimVal().GetAlign();
 	if (align == wxSVG_PRESERVEASPECTRATIO_UNKNOWN) {
 		align = wxSVG_PRESERVEASPECTRATIO_XMIDYMID;
 	}
-	
+
 	if (align == wxSVG_PRESERVEASPECTRATIO_NONE) {
 		matrix = matrix.ScaleNonUniform(width / viewbox.GetWidth(), height / viewbox.GetHeight());
 	} else {

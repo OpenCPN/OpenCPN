@@ -440,7 +440,7 @@ void wxSvgXmlDocument::DoCopy(const wxSvgXmlDocument& doc)
     m_root = new wxSvgXmlNode(*doc.m_root);
 }
 
-bool wxSvgXmlDocument::Load(const wxString& filename, const wxString& encoding) {	
+bool wxSvgXmlDocument::Load(const wxString& filename, const wxString& encoding) {
     if (!wxFile::Exists(filename)) { //TODO Find why emptystrings are passed
         if (filename != wxEmptyString) wxLogError(_("File %s doesn't exist."), filename.c_str());
 		return false;

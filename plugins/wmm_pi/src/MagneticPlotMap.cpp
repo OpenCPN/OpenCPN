@@ -215,12 +215,12 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
 //  b = (x1/y1-x2/y2)/(1/y1-1/y2)
 //  b = [(x1/y1-x2/y2)* (y1*y2)]/[(1/y1-1/y2) *(y1*y2)]
 //  b = (x1*y2-x2*y1)/(y2-y1)
-    
+
         rx = (x1*(y2-ry)-x2*(y1-ry))/(y2-y1);
 
         if(fabs(x1-x2) < m_PoleAccuracy) /* to avoid recursing too far close */
             return true;
-   
+
         double p;
         if(lat)
             p = CalcParameter(rx, lonval);
@@ -252,7 +252,7 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
             x2 = rx;
             y2 = p;
         }
-    }    
+    }
 }
 
 /* once we have a final line segment, store it in the database */
@@ -301,7 +301,7 @@ void MagneticPlotMap::PlotRegion(std::list<PlotLineSeg*> &region,
         PlotRegion(region, lat1, lon3, lat2, lon2);
         return;
     }
-    
+
     /* vertical interpolate */
     if(!Interpolate(lat1, lat2, p1, p3, true, lon1, lat3, ry3) ||
        !Interpolate(lat1, lat2, p2, p4, true, lon2, lat4, ry4)) {
@@ -404,7 +404,7 @@ void DrawLineSeg(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, d
     GetCanvasPixLL(&VP, &r2, lat2, lon2);
 
     dc->DrawLine(r1.x, r1.y, r2.x, r2.y);
-#if 0    
+#if 0
     if(dc)
         dc->DrawLine(r1.x, r1.y, r2.x, r2.y);
     else {
@@ -413,7 +413,7 @@ void DrawLineSeg(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, d
         glVertex2i(r2.x, r2.y);
         glEnd();
     }
-#endif    
+#endif
 }
 
 /* reset the map and clear all the data so it can be reused */
@@ -445,7 +445,7 @@ void MagneticPlotMap::DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double con
     int w, h;
     dc->GetTextExtent( msg, &w, &h);
     dc->DrawText(msg, r.x - w/2, r.y - h/2);
-#if 0    
+#if 0
     if(dc) {
         int w, h;
         dc->GetTextExtent( msg, &w, &h);
@@ -463,7 +463,7 @@ void MagneticPlotMap::DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double con
 
         glDisable(GL_BLEND);
     }
-#endif    
+#endif
 }
 
 /* plot to dc, or opengl is dc is NULL */
@@ -477,7 +477,7 @@ void MagneticPlotMap::Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color)
     dc->SetPen(wxPen(color, 3));
     dc->SetTextForeground(color);
     dc->SetFont( font );
-#if 0    
+#if 0
     if(dc) {
         dc->SetPen(wxPen(color, 3));
         dc->SetTextForeground(color);

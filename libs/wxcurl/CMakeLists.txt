@@ -35,7 +35,7 @@ set(SRC
     include/wx/curl/telnet.h
     include/wx/curl/thread.h
     include/wx/curl/utils.h
-)   
+)
 
 if (NOT wxWidgets_INCLUDE_DIRS)
     include(SimpleWxConfig)
@@ -43,11 +43,11 @@ if (NOT wxWidgets_INCLUDE_DIRS)
 endif ()
 
 include(Curl)
-    
+
 add_library(WXCURL STATIC ${SRC})
 add_library(ocpn::wxcurl ALIAS WXCURL)
 set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "-fvisibility=default")
-target_include_directories(WXCURL 
+target_include_directories(WXCURL
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC ${CURL_INCLUDE_DIRS}
 )
@@ -56,5 +56,5 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
   target_compile_options(WXCURL  PRIVATE "-Wno-unknown-pragmas")
 endif ()
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
-    target_compile_options(WXCURL PRIVATE "-Wno-varargs") 
+    target_compile_options(WXCURL PRIVATE "-Wno-varargs")
 endif()

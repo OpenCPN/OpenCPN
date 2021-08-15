@@ -132,24 +132,24 @@ bool RMC::Parse( const SENTENCE& sentence )
    bool bext_valid = true;
    wxString checksum_in_sentence = sentence.Field( 12 );
    if(!checksum_in_sentence.StartsWith(_T("*"))) {
-       if(checksum_in_sentence == _T("N") ) 
+       if(checksum_in_sentence == _T("N") )
             bext_valid = false;
    }
-       
+
 
    UTCTime                    = sentence.Field( 1 );
-   
+
    IsDataValid                = sentence.Boolean( 2 );
    if( !bext_valid )
        IsDataValid = NFalse;
-       
+
    Position.Parse( 3, 4, 5, 6, sentence );
    SpeedOverGroundKnots       = sentence.Double( 7 );
    TrackMadeGoodDegreesTrue   = sentence.Double( 8 );
    Date                       = sentence.Field( 9 );
    MagneticVariation          = sentence.Double( 10 );
    MagneticVariationDirection = sentence.EastOrWest( 11 );
-   
+
    return( TRUE );
 }
 

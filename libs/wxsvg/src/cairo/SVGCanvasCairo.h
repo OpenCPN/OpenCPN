@@ -22,13 +22,13 @@ class wxSVGCanvasCairo: public wxSVGCanvas {
 public:
 	wxSVGCanvasCairo(): m_cr(NULL), m_surface(NULL), m_pattern(NULL), m_alpha(false) { }
 	virtual ~wxSVGCanvasCairo();
-	
+
 	void Init(int width, int height, bool alpha = false);
     int GetWidth();
     int GetHeight();
     wxImage GetImage();
 	void Clear(wxRGBColor color = wxRGBColor(0xFF,0xFF,0xFF));
-	
+
 	wxSVGCanvasPath* CreateCanvasPath(wxSVGMatrix* matrix = NULL);
     wxSVGCanvasItem* CreateItem(wxSVGTextElement* element, const wxCSSStyleDeclaration* style = NULL,
     		wxSVGMatrix* matrix = NULL);
@@ -36,10 +36,10 @@ public:
 			wxProgressDialog* progressDlg = NULL);
 	wxSVGCanvasItem* CreateItem(wxSVGVideoElement* element, const wxCSSStyleDeclaration* style = NULL,
 			wxProgressDialog* progressDlg = NULL);
-    
+
 	void DrawItem(wxSVGCanvasItem& item, wxSVGMatrix& matrix, const wxCSSStyleDeclaration& style,
 			wxSVGSVGElement& svgElem);
-  
+
 protected:
 	void DrawCanvasPath(wxSVGCanvasPathCairo& canvasPath, wxSVGMatrix& matrix, const wxCSSStyleDeclaration& style,
 			wxSVGSVGElement& svgElem);

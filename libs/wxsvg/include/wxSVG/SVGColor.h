@@ -45,15 +45,15 @@ class wxSVGColor:
       m_colorType(wxSVG_COLORTYPE_RGBCOLOR), m_rgbColor(r, g, b) {}
     virtual ~wxSVGColor() {}
     wxCSSValue* Clone() const { return new wxSVGColor(*this); }
-    
+
     wxString GetCSSText() const;
-    
+
     inline const wxRGBColor& GetRGBColor() const { return m_rgbColor; }
     virtual void SetRGBColor(const wxRGBColor& rgbColor);
-    
+
     inline const wxSVGICCColor& GetICCColor() const { return m_iccColor; }
     virtual void SetICCColor(const wxSVGICCColor& iccColor);
-    
+
     virtual void SetRGBColor(const wxString& rgbColor);
     virtual void SetRGBColorICCColor(const wxString& rgbColor, const wxString& iccColor);
     virtual void SetColor(wxSVG_COLORTYPE colorType, const wxString& rgbColor, const wxString& iccColor);

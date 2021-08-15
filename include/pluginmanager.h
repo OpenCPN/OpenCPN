@@ -99,7 +99,7 @@ const BlackListedPlugin PluginBlacklist[] = {
     { _T("objsearch_pi"), 0, 3, true, true },
 #ifdef __WXOSX__
     { _T("s63_pi"), 0, 6, true, true },
-#endif    
+#endif
 };
 
 //----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ private:
 
 extern  const wxEventType wxEVT_OCPN_MSG;
 
-enum class PluginStatus { 
+enum class PluginStatus {
     System,    // One of the four system plugins, unmanaged.
     Managed,   // Managed by installer.
     Unmanaged, // Unmanaged, probably a package.
@@ -192,7 +192,7 @@ class PlugInContainer
             int               m_version_major;
             int               m_version_minor;
             wxBitmap         *m_bitmap;
-            /** 
+            /**
              * Return version from plugin API. Older pre-117 plugins just
              * support major and minor version, newer plugins have
              * complete semantic version data.
@@ -238,7 +238,7 @@ class PlugInToolbarToolContainer
             wxBitmap          *bitmap_Rollover_day;
             wxBitmap          *bitmap_Rollover_dusk;
             wxBitmap          *bitmap_Rollover_night;
-            
+
             wxItemKind        kind;
             wxString          shortHelp;
             wxString          longHelp;
@@ -250,7 +250,7 @@ class PlugInToolbarToolContainer
             wxString          pluginNormalIconSVG;
             wxString          pluginRolloverIconSVG;
             wxString          pluginToggledIconSVG;
-            
+
 };
 
 //    Define an array of PlugIn ToolbarTool Containers
@@ -308,16 +308,16 @@ public:
       void SetToolbarToolViz(int tool_id, bool viz);
       void SetToolbarItemState(int tool_id, bool toggle);
       void SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
-      
+
       int AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile, wxString SVGToggledfile,
                          wxItemKind kind, wxString shortHelp, wxString longHelp,
                          wxObject *clientData, int position,
                          int tool_sel, opencpn_plugin *pplugin );
-      
+
       void SetToolbarItemBitmaps(int item, wxString SVGfile,
                                  wxString SVGfileRollover,
                                  wxString SVGfileToggled);
-      
+
       opencpn_plugin *FindToolOwner(const int id);
       wxString GetToolOwnerCommonName(const int id);
       void ShowDeferredBlacklistMessages();
@@ -335,15 +335,15 @@ public:
       void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body);
       int GetJSONMessageTargetCount();
-      
+
       void SendResizeEventToAllPlugIns(int x, int y);
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
       void NotifyAuiPlugIns(void);
       bool CallLateInit(void);
-      
+
       bool IsPlugInAvailable(wxString commonName);
       bool IsAnyPlugInChartEnabled();
-      
+
       void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale);
 
       bool SendMouseEventToPlugins( wxMouseEvent &event);
@@ -360,7 +360,7 @@ public:
       ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
                                                        float SelectRadius, const ViewPort& vp );
       wxString CreateObjDescriptions( ChartPlugInWrapper *target, ListOfPI_S57Obj *rule_list );
-      
+
       wxString GetLastError();
       MyFrame *GetParentFrame(){ return pParent; }
 
@@ -368,7 +368,7 @@ public:
       pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
       void SetListPanelPtr( PluginListPanel *ptr ) { m_listPanel = ptr; }
       bool CheckPluginCompatibility(wxString plugin_file);
-      
+
       ListOfPI_S57Obj *GetLightsObjRuleListVisibleAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
                                                             const ViewPort& vp );
 
@@ -397,18 +397,18 @@ private:
       bool              m_benable_blackdialog;
       bool              m_benable_blackdialog_done;
       wxArrayString     m_deferred_blacklist_messages;
-      
+
       wxArrayString     m_plugin_order;
       void SetPluginOrder( wxString serialized_names );
       wxString GetPluginOrder();
-    
+
       pluginUtilHandler *m_utilHandler;
       PluginListPanel   *m_listPanel;
 
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
-      
+
 public:
       wxCurlDownloadThread *m_pCurlThread;
       // The libcurl handle being re used for the transfer.
@@ -419,7 +419,7 @@ public:
                                const wxString &url = wxEmptyString);
       void            OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev);
       void            OnCurlDownload(wxCurlDownloadEvent &ev);
-      
+
       wxEvtHandler   *m_download_evHandler;
       long           *m_downloadHandle;
       bool m_last_online;
@@ -558,7 +558,7 @@ private:
       wxStaticBitmap  *m_itemStatusIconBitmap;
       wxButton        *m_pButtonPreferences;
       wxButton        *m_pButtonAction, *m_pButtonUninstall;
-      
+
       wxCheckBox      *m_cbEnable;
       WebsiteButton   *m_info_btn;
       ActionVerb      m_action;
@@ -583,19 +583,19 @@ public:
         MPSRulesList = NULL;
         LUP = NULL;
         };
-        
+
     ~S52PLIB_Context(){};
-    
+
     wxBoundingBox           BBObj;                  // lat/lon BBox of the rendered object
     bool                    bBBObj_valid;           // set after the BBObj has been calculated once.
-    
+
     Rules                   *CSrules;               // per object conditional symbology
     int                     bCS_Added;
-    
+
     S52_TextC                *FText;
     int                     bFText_Added;
     wxRect                  rText;
-    
+
     LUPrec                  *LUP;
     ObjRazRules             *ChildRazRules;
     mps_container           *MPSRulesList;

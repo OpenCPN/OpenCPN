@@ -48,18 +48,18 @@ public:
       void StateTimerEvent( wxTimerEvent& event );
       void SetColorScheme( ColorScheme cs );
       void MouseEvent( wxMouseEvent& event );
-      
+
       wxBitmap m_bmMinimum, m_bmStandard, m_bmAll, m_bmUStd, m_bmRPlus, m_bmRMinus;
       wxBitmap *m_pbmScratch;
       wxBitmap m_bmTemplate;
-      
+
       wxToolBarToolBase *m_toolDensity;
-      
+
       int m_nDensity;
       wxTimer m_state_timer;
       double m_range;
       wxFont *m_rangeFont;
-      
+
 #if 0
       void OnClose( wxCloseEvent& event );
       void OnWindowCreate( wxWindowCreateEvent& event );

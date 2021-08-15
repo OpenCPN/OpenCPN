@@ -59,7 +59,7 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
 
       Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler(DashboardInstrument::OnEraseBackground));
       Connect(wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument::OnPaint));
-      
+
       //  On OSX, there is an orphan mouse event that comes from the automatic
       //  exEVT_CONTEXT_MENU synthesis on the main wxWindow mouse handler.
       //  The event goes to an instrument window (here) that may have been deleted by the
@@ -67,10 +67,10 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       //  Solution:  Handle right-click here, and DO NOT skip()
       //  Strangely, this does not work for GTK...
       //  See: http://trac.wxwidgets.org/ticket/15417
-      
+
 #if defined(__WXOSX__) || defined(__WXQT__)
       Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(DashboardInstrument::MouseEvent), NULL, this);
-#endif      
+#endif
 }
 
 void DashboardInstrument::MouseEvent( wxMouseEvent &event )
@@ -265,7 +265,7 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data, wxString unit
             }
             else
                 m_data = _T("---");
-      
+
             Refresh();
       }
 }

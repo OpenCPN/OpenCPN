@@ -19,14 +19,14 @@ class wxSVGAnimatedTransformList
     wxSVGAnimatedTransformList(const wxSVGAnimatedTransformList& value): m_baseVal(value.m_baseVal), m_animVal(NULL)
     { if (value.m_animVal != NULL) m_animVal = new wxSVGTransformList(*value.m_animVal); }
     ~wxSVGAnimatedTransformList() { ResetAnimVal(); }
-    
+
     inline wxSVGAnimatedTransformList& operator=(const wxSVGAnimatedTransformList& value)
     { m_baseVal = value.m_baseVal; m_animVal = value.m_animVal != NULL ? new wxSVGTransformList(*value.m_animVal) : NULL; return *this; }
-    
+
     inline wxSVGTransformList& GetBaseVal() { return m_baseVal; }
     inline const wxSVGTransformList& GetBaseVal() const { return m_baseVal; }
     inline void SetBaseVal(const wxSVGTransformList& value) { m_baseVal = value; ResetAnimVal(); }
-    
+
     inline wxSVGTransformList& GetAnimVal()
     {
       if (!m_animVal)
@@ -52,10 +52,10 @@ class wxSVGAnimatedTransformList
         m_animVal = NULL;
       }
     }
-    
+
   public:
     inline operator const wxSVGTransformList&() const { return GetAnimVal(); }
-    
+
   protected:
     wxSVGTransformList m_baseVal;
     wxSVGTransformList* m_animVal;

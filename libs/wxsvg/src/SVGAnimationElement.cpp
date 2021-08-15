@@ -82,7 +82,7 @@ void wxSVGAnimationElement::ApplyAnimation() {
 		if (m_repeatCount < 0 || m_repeatCount < cnt)
 			currTime -= GetDur() * cnt;
 	}
-	
+
 	vector<wxSVGAnimatedType> values;
 	if (m_values.size() > 0) {
 		for (unsigned int i = 0; i < m_values.size(); i++) {
@@ -96,7 +96,7 @@ void wxSVGAnimationElement::ApplyAnimation() {
 	}
 	if (values.size() < 2)
 		return;
-	
+
 	if (currTime >= GetStartTime() + GetDur()) {
 		targetElement->SetAnimatedValue(GetAttributeName(), values[values.size() - 1]);
 	} else if (currTime >= GetStartTime()) {
@@ -105,7 +105,7 @@ void wxSVGAnimationElement::ApplyAnimation() {
 		wxSVGAnimatedType from = values[idx];
 		wxSVGAnimatedType to = values[idx + 1];
 		double t = (currTime - GetStartTime())/dur - idx;
-		
+
 		if (from.GetPropertyType() == wxSVG_ANIMATED_LENGTH && to.GetPropertyType() == wxSVG_ANIMATED_LENGTH) {
 			wxSVGAnimatedType value(wxSVGLength(to.GetLength().GetUnitType(), from.GetLength().GetValue()
 					+ (to.GetLength().GetValue() - from.GetLength().GetValue()) * t));

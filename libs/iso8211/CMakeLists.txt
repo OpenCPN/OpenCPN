@@ -10,12 +10,12 @@ endif ()
 
 SET(SRC
     include/iso8211.h
-    src/ddffield.cpp 
-    src/ddffielddefn.cpp	
-    src/ddfmodule.cpp  
-    src/ddfrecord.cpp  
+    src/ddffield.cpp
+    src/ddffielddefn.cpp
+    src/ddfmodule.cpp
+    src/ddfrecord.cpp
     src/ddfrecordindex.cpp
-    src/ddfsubfielddefn.cpp  
+    src/ddfsubfielddefn.cpp
     src/ddfutils.cpp
 )
 

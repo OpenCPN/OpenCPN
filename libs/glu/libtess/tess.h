@@ -107,9 +107,9 @@ struct GLUtesselator {
   int		cacheCount;		/* number of cached vertices */
   CachedVertex	cache[TESS_MAX_CACHE];	/* the vertex data */
 
-  /*** rendering callbacks that also pass polygon data  ***/ 
+  /*** rendering callbacks that also pass polygon data  ***/
   void		(/*GLAPIENTRY*/ *callBeginData)( GLenum type, void *polygonData );
-  void		(/*GLAPIENTRY*/ *callEdgeFlagData)( GLboolean boundaryEdge, 
+  void		(/*GLAPIENTRY*/ *callEdgeFlagData)( GLboolean boundaryEdge,
 				     void *polygonData );
   void		(/*GLAPIENTRY*/ *callVertexData)( void *data, void *polygonData );
   void		(/*GLAPIENTRY*/ *callEndData)( void *polygonData );

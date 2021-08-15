@@ -18,7 +18,7 @@ class wxSVGPointList: public wxSVGPointListBase
 {
   public:
     wxSVGPointList() {}
-    
+
     wxString GetValueAsString() const;
     void SetValueAsString(const wxString& value);
 };

@@ -3,26 +3,26 @@
 	Copyright (c) 2006 Simon Brown                          si@sjbrown.co.uk
 
 	Permission is hereby granted, free of charge, to any person obtaining
-	a copy of this software and associated documentation files (the 
+	a copy of this software and associated documentation files (the
 	"Software"), to	deal in the Software without restriction, including
 	without limitation the rights to use, copy, modify, merge, publish,
-	distribute, sublicense, and/or sell copies of the Software, and to 
-	permit persons to whom the Software is furnished to do so, subject to 
+	distribute, sublicense, and/or sell copies of the Software, and to
+	permit persons to whom the Software is furnished to do so, subject to
 	the following conditions:
 
 	The above copyright notice and this permission notice shall be included
 	in all copies or substantial portions of the Software.
 
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
-	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
-	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-	
+
    -------------------------------------------------------------------------- */
-   
+
 #include "rangefit.h"
 #include "colourset.h"
 #include "colourblock.h"
@@ -30,7 +30,7 @@
 
 namespace squish {
 
-RangeFit::RangeFit( ColourSet * colours, int flags ) 
+RangeFit::RangeFit( ColourSet * colours, int flags )
   : ColourFit( colours, flags )
 {
 	// initialise the metric
@@ -47,10 +47,10 @@ RangeFit::RangeFit( ColourSet * colours, int flags )
 	int const count = m_colours->GetCount();
 	Vec3 const* values = m_colours->GetPoints();
 	float const* weights = m_colours->GetWeights();
-	
+
 	// get the covariance matrix
 	Sym3x3 covariance = ComputeWeightedCovariance( count, values, weights );
-	
+
 	// compute the principle component
 	Vec3 principle = ComputePrincipleComponent( covariance );
 
@@ -60,7 +60,7 @@ RangeFit::RangeFit( ColourSet * colours, int flags )
 	if( count > 0 )
 	{
 		float min, max;
-		
+
 		// compute the range
 		start = end = values[0];
 		min = max = Dot( values[0], principle );
@@ -79,7 +79,7 @@ RangeFit::RangeFit( ColourSet * colours, int flags )
 			}
 		}
 	}
-			
+
 	// clamp the output to [0, 1]
 	Vec3 const one( 1.0f );
 	Vec3 const zero( 0.0f );
@@ -99,7 +99,7 @@ void RangeFit::Compress3( void* block )
 	// cache some values
 	int const count = m_colours->GetCount();
 	Vec3 const* values = m_colours->GetPoints();
-	
+
 	// create a codebook
 	Vec3 codes[3];
 	codes[0] = m_start;
@@ -123,24 +123,24 @@ void RangeFit::Compress3( void* block )
 				idx = j;
 			}
 		}
-		
+
 		// save the index
 		closest[i] = ( u8 )idx;
-		
+
 		// accumulate the error
 		error += dist;
 	}
-	
+
 	// save this scheme if it wins
 	if( error < m_besterror )
 	{
 		// remap the indices
 		u8 indices[16];
 		m_colours->RemapIndices( closest, indices );
-		
+
 		// save the block
 		WriteColourBlock3( m_start, m_end, indices, block );
-		
+
 		// save the error
 		m_besterror = error;
 	}
@@ -151,7 +151,7 @@ void RangeFit::Compress4( void* block )
 	// cache some values
 	int const count = m_colours->GetCount();
 	Vec3 const* values = m_colours->GetPoints();
-	
+
 	// create a codebook
 	Vec3 codes[4];
 	codes[0] = m_start;
@@ -176,21 +176,21 @@ void RangeFit::Compress4( void* block )
 				idx = j;
 			}
 		}
-		
+
 		// save the index
 		closest[i] = ( u8 )idx;
-		
+
 		// accumulate the error
 		error += dist;
 	}
-	
+
 	// save this scheme if it wins
 	if( error < m_besterror )
 	{
 		// remap the indices
 		u8 indices[16];
 		m_colours->RemapIndices( closest, indices );
-		
+
 		// save the block
 		WriteColourBlock4( m_start, m_end, indices, block );
 

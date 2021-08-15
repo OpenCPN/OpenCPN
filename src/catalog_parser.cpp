@@ -48,7 +48,7 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
 
     pugi::xml_document doc;
     doc.load_string(xml.c_str());
-    
+
     pugi::xml_node elements = doc.child("plugins");
     for (pugi::xml_node element = elements.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "version") && ctx->version == "" ){

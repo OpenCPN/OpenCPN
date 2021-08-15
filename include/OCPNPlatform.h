@@ -67,7 +67,7 @@ public:
     std::string                 osd_build_gtk;
 
 };
- 
+
 
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
@@ -81,7 +81,7 @@ public:
 
 class OCPNPlatform
 {
-public:    
+public:
     OCPNPlatform();
     ~OCPNPlatform();
 
@@ -93,24 +93,24 @@ public:
     bool startBluetoothScan();
     wxArrayString getBluetoothScanResults();
     bool stopBluetoothScan();
-    
-//  Per-Platform initialization support    
-    
+
+//  Per-Platform initialization support
+
     //  Called from MyApp() immediately upon entry to MyApp::OnInit()
     static void Initialize_1( void );
-    
+
     //  Called from MyApp() immediately before creation of MyFrame()
     void Initialize_2( void );
-    
+
     //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
     void Initialize_3( void );
 
     //  Called from MyApp() just before end of MyApp::OnInit()
     static void Initialize_4( void );
-    
+
     static void OnExit_1( void );
     static void OnExit_2( void );
-    
+
 
     void SetDefaultOptions( void );
     void SetUpgradeOptions( wxString vString, wxString vStringConfig );
@@ -135,7 +135,7 @@ public:
     unsigned int GetSelectRadiusPix();
     double GetToolbarScaleFactor( int GUIScaleFactor );
     double GetCompassScaleFactor( int GUIScaleFactor );
-    
+
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);
     wxDirDialog  *AdjustDirDialogFont(wxWindow *container,  wxDirDialog *dlg);
 
@@ -148,7 +148,7 @@ public:
     double GetDisplayDensityFactor();
     double m_pt_per_pixel;
     long GetDefaultToolbarOrientation();
-    
+
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
@@ -175,7 +175,7 @@ public:
      * prepends this with user-writable path(s), each of which ending in
      * "opencpn". All paths are guaranteed to exist.
      *
-     * For Linux, return paths ending in .../share. 
+     * For Linux, return paths ending in .../share.
      */
     wxString GetPluginDataPath();
 
@@ -190,18 +190,18 @@ public:
     MyConfig *GetConfigObject();
     wxString GetSupplementalLicenseString();
     wxString NormalizePath(const wxString &full_path); //Adapt for portable use
-    
+
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);
     int DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir, bool b_addFiles = true);
-    
+
     bool InitializeLogFile( void );
     void CloseLogFile( void );
     wxString    &GetLargeLogMessage( void ){ return large_log_message; }
     FILE        *GetLogFilePtr(){ return flog; }
 
-    
-    
+
+
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
@@ -217,13 +217,13 @@ public:
 
     void SetLocaleSearchPrefixes( void );
     wxString GetDefaultSystemLocale();
-    
-#if wxUSE_XLOCALE    
+
+#if wxUSE_XLOCALE
     wxString GetAdjustedAppLocale();
     wxString ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale);
 #endif
-    
-    
+
+
 //--------------------------------------------------------------------------
 //      Per-Platform OpenGL support
 //--------------------------------------------------------------------------
@@ -232,7 +232,7 @@ public:
 
 private:
     bool        GetWindowsMonitorSize( int *width, int *height);
-    
+
     wxString    m_homeDir;
     wxString    m_exePath;
     wxString    m_SData_Dir;
@@ -240,7 +240,7 @@ private:
     wxString    m_PluginsDir;
     wxString    m_config_file_name;
     wxString    m_pluginDataPath;
-    
+
     wxString    mlog_file;
     FILE        *flog;
     wxLog       *m_Oldlogger;
@@ -248,7 +248,7 @@ private:
     wxSize      m_displaySize;
     wxSize      m_displaySizeMM;
     int         m_displaySizeMMOverride;
-    
+
     int         m_monitorWidth, m_monitorHeight;
     bool        m_bdisableWindowsDisplayEnum;
     bool        m_isFlatpacked;
@@ -287,7 +287,7 @@ public:
     void InitColourData();
     void SetColour( wxColour& c);
     wxColour GetColour( void );
-    
+
 protected:
     virtual void UpdateColour();
     wxSize DoGetBestSize() const;

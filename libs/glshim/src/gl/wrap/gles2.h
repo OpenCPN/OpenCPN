@@ -1571,8 +1571,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glCopyTexSubImage2D_FORMAT FORMAT_void_GLenum_GLint_GLint_GLint_GLint_GLint_GLsizei_GLsizei
 #define glCreateProgram_INDEX 26
 #define glCreateProgram_RETURN GLuint
-#define glCreateProgram_ARG_NAMES 
-#define glCreateProgram_ARG_EXPAND 
+#define glCreateProgram_ARG_NAMES
+#define glCreateProgram_ARG_EXPAND
 #define glCreateProgram_PACKED PACKED_GLuint
 #define glCreateProgram_INDEXED INDEXED_GLuint
 #define glCreateProgram_FORMAT FORMAT_GLuint
@@ -1704,15 +1704,15 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glEnableVertexAttribArray_FORMAT FORMAT_void_GLuint
 #define glFinish_INDEX 45
 #define glFinish_RETURN void
-#define glFinish_ARG_NAMES 
-#define glFinish_ARG_EXPAND 
+#define glFinish_ARG_NAMES
+#define glFinish_ARG_EXPAND
 #define glFinish_PACKED PACKED_void
 #define glFinish_INDEXED INDEXED_void
 #define glFinish_FORMAT FORMAT_void
 #define glFlush_INDEX 46
 #define glFlush_RETURN void
-#define glFlush_ARG_NAMES 
-#define glFlush_ARG_EXPAND 
+#define glFlush_ARG_NAMES
+#define glFlush_ARG_EXPAND
 #define glFlush_PACKED PACKED_void
 #define glFlush_INDEXED INDEXED_void
 #define glFlush_FORMAT FORMAT_void
@@ -1816,8 +1816,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glGetBufferParameteriv_FORMAT FORMAT_void_GLenum_GLenum_GLint___GENPT__
 #define glGetError_INDEX 61
 #define glGetError_RETURN GLenum
-#define glGetError_ARG_NAMES 
-#define glGetError_ARG_EXPAND 
+#define glGetError_ARG_NAMES
+#define glGetError_ARG_EXPAND
 #define glGetError_PACKED PACKED_GLenum
 #define glGetError_INDEXED INDEXED_GLenum
 #define glGetError_FORMAT FORMAT_GLenum
@@ -2047,8 +2047,8 @@ void glIndexedCall(const indexed_call_t *packed, void *ret_v);
 #define glReadPixels_FORMAT FORMAT_void_GLint_GLint_GLsizei_GLsizei_GLenum_GLenum_GLvoid___GENPT__
 #define glReleaseShaderCompiler_INDEX 94
 #define glReleaseShaderCompiler_RETURN void
-#define glReleaseShaderCompiler_ARG_NAMES 
-#define glReleaseShaderCompiler_ARG_EXPAND 
+#define glReleaseShaderCompiler_ARG_NAMES
+#define glReleaseShaderCompiler_ARG_EXPAND
 #define glReleaseShaderCompiler_PACKED PACKED_void
 #define glReleaseShaderCompiler_INDEXED INDEXED_void
 #define glReleaseShaderCompiler_FORMAT FORMAT_void

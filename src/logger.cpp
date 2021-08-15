@@ -65,7 +65,7 @@ static void init_level_by_name()
     }
 }
 
- 
+
 static std::string timeStamp()
 {
     wxDateTime now = wxDateTime::UNow();
@@ -116,8 +116,8 @@ void OcpnLog::Flush()
 }
 
 void OcpnLog::DoLogRecord(wxLogLevel level,
-		          const wxString& msg,
-		          const wxLogRecordInfo& info)
+                  const wxString& msg,
+                  const wxLogRecordInfo& info)
 {
     std::ostringstream oss;
     oss << timeStamp() << " "

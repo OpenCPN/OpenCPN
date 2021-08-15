@@ -69,13 +69,13 @@ class SENCJobTicket
 public:
     SENCJobTicket();
     ~SENCJobTicket() {}
-    
+
     s57chart *m_chart;
     wxString m_FullPath000;
     wxString m_SENCFileName;
     double ref_lat, ref_lon;
     double m_LOD_meters;
-    
+
     SENCBuildThread *m_thread;
 
     SENCThreadStatus m_status;
@@ -95,12 +95,12 @@ public:
 
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
- 
+
     int stat;
     EVENTSENCResult type;
     SENCJobTicket *m_ticket;
 
-    
+
 private:
 };
 
@@ -114,7 +114,7 @@ public:
     ~SENCThreadManager();
 
     void OnEvtThread( OCPN_BUILDSENC_ThreadEvent & event );
- 
+
     SENCThreadStatus ScheduleJob( SENCJobTicket *ticket);
     void FinishJob(SENCJobTicket *ticket);
     void StartTopJob();
@@ -123,7 +123,7 @@ public:
     int GetJobCount();
 
     int                 m_max_jobs;
-    
+
     std::vector<SENCJobTicket *> ticket_list;
 };
 
@@ -142,7 +142,7 @@ public:
     s57chart *m_chart;
     SENCThreadManager *m_manager;
     SENCJobTicket *m_ticket;
-    
+
 };
 
 

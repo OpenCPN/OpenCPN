@@ -67,7 +67,7 @@ struct CatalogEntryValue
 {
     int         texture_offset;
     uint32_t    compressed_size;
-}; 
+};
 
 #define CATALOG_ENTRY_SERIAL_SIZE 6 * sizeof(uint32_t)
 
@@ -82,7 +82,7 @@ public:
     void DeSerialize(unsigned char *);
     CatalogEntryKey k;
     CatalogEntryValue v;
-    
+
 };
 
 WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
@@ -127,7 +127,7 @@ public:
     bool BackgroundCompressionAsJob() const;
     void PurgeBackgroundCompressionPool();
     void SetLRUTime(int lru) { m_LRUtime = lru; }
-    int	 GetLRUTime() { return m_LRUtime; }
+    int  GetLRUTime() { return m_LRUtime; }
     void FreeSome( long target );
     void FreeIfCached();
 
@@ -145,12 +145,12 @@ private:
     bool UpdateCachePrecomp(unsigned char *data, int data_size, const wxRect &rect, int level,
                                           ColorScheme color_scheme, bool write_catalog = true);
     bool UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, unsigned char *data, int size);
-    
+
     void DeleteSingleTexture( glTextureDescriptor *ptd );
 
     CatalogEntryValue *GetCacheEntryValue(int level, int x, int y, ColorScheme color_scheme);
     bool AddCacheEntryValue(const CatalogEntry &p);
-    int  ArrayIndex(int x, int y) const { return ((y / m_tex_dim) * m_stride) + (x / m_tex_dim); } 
+    int  ArrayIndex(int x, int y) const { return ((y / m_tex_dim) * m_stride) + (x / m_tex_dim); }
     void  ArrayXY(wxRect *r, int index) const;
 
     int         n_catalog_entries;
@@ -162,19 +162,19 @@ private:
     wxString    m_ChartPath;
     wxString    m_HashKey;
     wxString    m_CompressedCacheFilePath;
-    
+
     int         m_catalog_offset;
     bool        m_hdrOK;
     bool        m_catalogOK;
     bool        m_newCatalog;
 
-    bool	m_catalogCorrupted;
-    
+    bool    m_catalogCorrupted;
+
     wxFFile     *m_fs;
     uint32_t    m_chart_date_binary;
     uint32_t    m_chartfile_date_binary;
     uint32_t    m_chartfile_size;
-    
+
     int         m_stride;
     int         m_ntex;
     int         m_tex_dim;
@@ -182,16 +182,16 @@ private:
     int         m_size_Y;
     int         m_nx_tex;
     int         m_ny_tex;
-    
-    int		m_LRUtime;
-    
+
+    int     m_LRUtime;
+
     glTextureDescriptor  **m_td_array;
 
     double m_clat, m_clon;
     glTexTile **m_tiles;
     int m_prepared_projection_type;
     bool m_north; // used for polar projection
-    
+
 };
 
 

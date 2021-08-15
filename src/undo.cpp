@@ -114,7 +114,7 @@ void doUndoMoveWaypoint( UndoAction* action, ChartCanvas *cc ) {
     if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ){
        if( currentPoint == g_pMarkInfoDialog->GetRoutePoint() ) g_pMarkInfoDialog->UpdateProperties(true);
        }
-        
+
     wxArrayPtrVoid* routeArray = g_pRouteMan->GetRouteArrayContaining( currentPoint );
     if( routeArray ) {
         for( unsigned int ir = 0; ir < routeArray->GetCount(); ir++ ) {

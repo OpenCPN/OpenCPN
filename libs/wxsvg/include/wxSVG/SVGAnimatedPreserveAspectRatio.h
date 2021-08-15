@@ -19,14 +19,14 @@ class wxSVGAnimatedPreserveAspectRatio
     wxSVGAnimatedPreserveAspectRatio(const wxSVGAnimatedPreserveAspectRatio& value): m_baseVal(value.m_baseVal), m_animVal(NULL)
     { if (value.m_animVal != NULL) m_animVal = new wxSVGPreserveAspectRatio(*value.m_animVal); }
     ~wxSVGAnimatedPreserveAspectRatio() { ResetAnimVal(); }
-    
+
     inline wxSVGAnimatedPreserveAspectRatio& operator=(const wxSVGAnimatedPreserveAspectRatio& value)
     { m_baseVal = value.m_baseVal; m_animVal = value.m_animVal != NULL ? new wxSVGPreserveAspectRatio(*value.m_animVal) : NULL; return *this; }
-    
+
     inline wxSVGPreserveAspectRatio& GetBaseVal() { return m_baseVal; }
     inline const wxSVGPreserveAspectRatio& GetBaseVal() const { return m_baseVal; }
     inline void SetBaseVal(const wxSVGPreserveAspectRatio& value) { m_baseVal = value; ResetAnimVal(); }
-    
+
     inline wxSVGPreserveAspectRatio& GetAnimVal()
     {
       if (!m_animVal)
@@ -52,10 +52,10 @@ class wxSVGAnimatedPreserveAspectRatio
         m_animVal = NULL;
       }
     }
-    
+
   public:
     inline operator const wxSVGPreserveAspectRatio&() const { return GetAnimVal(); }
-    
+
   protected:
     wxSVGPreserveAspectRatio m_baseVal;
     wxSVGPreserveAspectRatio* m_animVal;

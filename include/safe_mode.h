@@ -1,5 +1,5 @@
 /**
- * Safe mode handling. 
+ * Safe mode handling.
  *
  * Administrate the safe mode state which is true if openpcn should run in
  * safe mode without OpenGL, plugins, etc.
@@ -17,12 +17,12 @@ bool get_mode();
 void set_mode(bool mode);
 
 
-/** 
- * Check if the last start failed, possibly invoke user dialog and set 
+/**
+ * Check if the last start failed, possibly invoke user dialog and set
  * safe mode state.
  */
 void check_last_start();
- 
+
 
 /** Mark last run as successful. */
 void clear_check();

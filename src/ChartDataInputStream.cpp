@@ -58,25 +58,25 @@ size_t wxCompressedFFileInputStream::OnSysRead(void *buffer, size_t size)
 
     strm.next_out = (uint8_t*)buffer;
     strm.avail_out = size;
-    
+
     for(;;) {
         if (strm.avail_in == 0) {
             if(!m_file->Eof()) {
                 strm.next_in = inbuf;
                 strm.avail_in = m_file->Read(inbuf, sizeof inbuf);
-                
+
                 if(m_file->Error())
                     return 0;
-                
+
             } else
                 action = LZMA_FINISH;
         }
-        
+
         lzma_ret ret = lzma_code(&strm, action);
-        
+
         if (strm.avail_out == 0 || ret == LZMA_STREAM_END)
             return size - strm.avail_out;
-        
+
         if(ret != LZMA_OK) {
             m_lasterror = wxSTREAM_READ_ERROR;
             return 0;
@@ -93,7 +93,7 @@ wxFileOffset wxCompressedFFileInputStream::OnSysSeek(wxFileOffset pos, wxSeekMod
         init_lzma();
         return m_file->Seek(pos, mode);
     }
-    
+
     return wxInvalidOffset;
 }
 
@@ -201,7 +201,7 @@ bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
     }
     wxCompressedFFileInputStream in(input_path);
     wxFFileOutputStream out(output_path);
-    
+
     char buffer[8192];
     int len;
     do {
@@ -219,7 +219,7 @@ bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
 {
     wxLogMessage(_T("Failed to decompress: ") + input_path);
     wxLogMessage(_T("OpenCPN compiled without liblzma support"));
-                 
+
     return false;
 }
 

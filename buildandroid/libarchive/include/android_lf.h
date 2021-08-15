@@ -1,4 +1,4 @@
-/* 
+/*
  * Macros for file64 functions
  *
  * Android does not support the macro _FILE_OFFSET_BITS=64

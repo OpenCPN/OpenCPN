@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        SVGTransform.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/04/29
 // RCS-ID:      $Id: SVGTransform.cpp,v 1.8 2015/03/21 18:20:28 ntalex Exp $

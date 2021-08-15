@@ -54,7 +54,7 @@ NavObjectCollection1::~NavObjectCollection1()
 
 
 
-static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node, 
+static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                                wxString def_symbol_name,
                                wxString GUID,
                                bool b_fullviz,
@@ -81,7 +81,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     wxString TimeString;
     wxDateTime dt;
     RoutePoint *pWP;
-    
+
     HyperlinkList *linklist = NULL;
 
     double rlat = wpt_node.attribute( "lat" ).as_double();
@@ -99,12 +99,12 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();
-        
+
         if( !strcmp( pcn, "sym" ) ) {
             SymString = wxString::FromUTF8( child.first_child().value() );
         }
         else
-        if( !strcmp( pcn, "time") ) 
+        if( !strcmp( pcn, "time") )
             TimeString = wxString::FromUTF8( child.first_child().value() );
 
         else
@@ -116,18 +116,18 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                 TideStation = NameString.Right(NameString.length() - 3);
                 NameString.Replace("@~~", "@-~");
             }
-        } 
-        
+        }
+
         else
         if( !strcmp( pcn, "desc") ) {
                 DescString = wxString::FromUTF8( child.first_child().value() );
         }
-        
+
         else
         if( !strcmp( pcn, "type") ) {
                 TypeString = wxString::FromUTF8( child.first_child().value() );
         }
-        
+
         else              // Read hyperlink
         if( !strcmp( pcn, "link") ) {
             wxString HrefString;
@@ -142,10 +142,10 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
                 if( LinkString == _T ( "text" ) )
                     HrefTextString = wxString::FromUTF8( child1.first_child().value() );
-                if( LinkString == _T ( "type" ) ) 
+                if( LinkString == _T ( "type" ) )
                     HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
             }
-          
+
             Hyperlink *link = new Hyperlink;
             link->Link = HrefString;
             link->DescrText = HrefTextString;
@@ -231,7 +231,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                                 etd = attr.as_string();
                     }
                 }
-             }// for 
+             }// for
         } //extensions
     }   // for
 
@@ -251,7 +251,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->SetWaypointRangeRingsStep( l_fWaypointRangeRingsStep );
     pWP->SetWaypointRangeRingsStepUnits( l_pWaypointRangeRingsStepUnits );
     pWP->SetShowWaypointRangeRings( l_bWaypointRangeRingsVisible );
-    
+
     // Migrate from O4.x XML format.
     // In O5, the attribute "range rings visible" is synonymous with ( "range rings number" != 0 )
     // So, if we see an attribute "visible"=false in importing from XML, we must set "number" = 0 to be consistent
@@ -273,7 +273,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
             pWP->m_bShowName = true;
         else
             pWP->m_bShowName = false;
-    
+
     if( b_propviz )
         pWP->m_bIsVisible = bviz;
     else
@@ -286,7 +286,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
         pWP->m_bIsVisible = b_layerviz;
         pWP->SetListed( false );
     }
-   
+
     pWP->m_bKeepXRoute = bshared;
     pWP->m_bDynamicName = bauto_name;
 
@@ -294,7 +294,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
         pWP->m_timestring = TimeString;
         pWP->SetCreateTime(wxInvalidDateTime);          // cause deferred timestamp parsing
     }
-        
+
 
     if( linklist ) {
         delete pWP->m_HyperlinkList;                    // created in RoutePoint ctor
@@ -313,7 +313,7 @@ static TrackPoint * GPXLoadTrackPoint1( pugi::xml_node &wpt_node )
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();
-        if( !strcmp( pcn, "time") ) 
+        if( !strcmp( pcn, "time") )
             TimeString = wxString::FromUTF8( child.first_child().value() );
 
     //    OpenCPN Extensions....
@@ -323,7 +323,7 @@ static TrackPoint * GPXLoadTrackPoint1( pugi::xml_node &wpt_node )
                 wxString ext_name = wxString::FromUTF8( ext_child.name() );
                 if( ext_name == _T ( "opencpn:action" ) ) {
                 }
-             }// for 
+             }// for
         } //extensions
     }   // for
 
@@ -338,24 +338,24 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
 {
     wxString TrackName;
     wxString DescString;
-    unsigned short int GPXSeg;            
+    unsigned short int GPXSeg;
     bool b_propviz = false;
     bool b_viz = true;
     Track *pTentTrack = NULL;
     HyperlinkList *linklist = NULL;
-    
+
     wxString Name = wxString::FromUTF8( trk_node.name() );
     if( Name == _T ( "trk" ) ) {
         pTentTrack = new Track();
-        GPXSeg = 0;   
-        
+        GPXSeg = 0;
+
         TrackPoint *pWp = NULL;
-        
+
         for( pugi::xml_node tschild = trk_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
             if( ChildName == _T ( "trkseg" ) ) {
-                GPXSeg += 1;                
-                
+                GPXSeg += 1;
+
                 //    Official GPX spec calls for trkseg to have children trkpt
                 for( pugi::xml_node tpchild = tschild.first_child(); tpchild; tpchild = tpchild.next_sibling() ) {
                     wxString tpChildName = wxString::FromUTF8( tpchild.name() );
@@ -373,7 +373,7 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
             if( ChildName == _T ( "desc" ) )
                 DescString = wxString::FromUTF8( tschild.first_child().value() );
             else
-            
+
             if( ChildName == _T ( "link") ) {
                 wxString HrefString;
                 wxString HrefTextString;
@@ -387,17 +387,17 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
 
                     if( LinkString == _T ( "text" ) )
                         HrefTextString = wxString::FromUTF8( child1.first_child().value() );
-                    if( LinkString == _T ( "type" ) ) 
+                    if( LinkString == _T ( "type" ) )
                         HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
                 }
-              
+
                 Hyperlink *link = new Hyperlink;
                 link->Link = HrefString;
                 link->DescrText = HrefTextString;
                 link->LType = HrefTypeString;
                 linklist->Append( link );
             }
-            
+
             else
             if( ChildName == _T ( "extensions" ) ) {
                         for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
@@ -409,7 +409,7 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                             if( ext_name == _T ( "opencpn:end" ) ) {
                                 pTentTrack->m_TrackEndString = wxString::FromUTF8(ext_child.first_child().value());
                             }
-                            
+
                             else
                             if( ext_name == _T ( "opencpn:viz" ) ) {
                                 wxString viz = wxString::FromUTF8(ext_child.first_child().value());
@@ -426,12 +426,12 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                                         pTentTrack->m_width = attr.as_int();
                                 }
                             }
- 
+
                             else
                             if( ext_name == _T ( "opencpn:guid" ) ) {
                                     pTentTrack->m_GUID =  wxString::FromUTF8(ext_child.first_child().value());
                             }
-                            
+
                             else
                             if( ext_name.EndsWith( _T ( "TrackExtension" ) ) ) //Parse GPXX color
                               {
@@ -444,7 +444,7 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                     } //extensions
                 }
         }
-        
+
         pTentTrack->SetName( TrackName );
         pTentTrack->m_TrackDescription = DescString;
 
@@ -461,11 +461,11 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
             pTentTrack->m_LayerID = layer_id;
             pTentTrack->SetListed( false );
         }
-                
+
         pTentTrack->SetCurrentTrackSeg( GPXSeg );
-                
+
     }
-    
+
     if( linklist ) {
         delete pTentTrack->m_HyperlinkList;                    // created in TrackPoint ctor
         pTentTrack->m_HyperlinkList = linklist;
@@ -486,21 +486,21 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
     bool b_viz = true;
     bool swpViz = false;
     Route *pTentRoute = NULL;
-    
+
     wxString Name = wxString::FromUTF8( wpt_node.name() );
     if( Name == _T ( "rte" ) ) {
         pTentRoute = new Route();
         HyperlinkList *linklist = NULL;
-        
+
         RoutePoint *pWp = NULL;
-		bool route_existing = false;
+        bool route_existing = false;
         pTentRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
-        
+
         for( pugi::xml_node tschild = wpt_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
 
-			//load extentions first to determine if the route still exists
-			if( ChildName == _T ( "extensions" ) ) {
+            //load extentions first to determine if the route still exists
+            if( ChildName == _T ( "extensions" ) ) {
                 for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
                     wxString ext_name = wxString::FromUTF8( ext_child.name() );
 
@@ -511,14 +511,14 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                     if( ext_name == _T ( "opencpn:end" ) ) {
                         pTentRoute->m_RouteEndString = wxString::FromUTF8(ext_child.first_child().value());
                     }
-                        
+
                     else
                     if( ext_name == _T ( "opencpn:viz" ) ) {
                                 wxString viz = wxString::FromUTF8(ext_child.first_child().value());
                                 b_propviz = true;
                                 b_viz = ( viz == _T("1") );
                     }
-                    
+
                     else
                     if( ext_name == _T ( "opencpn:sharedWPviz" ) ) {
                                 wxString viz = wxString::FromUTF8(ext_child.first_child().value());
@@ -536,23 +536,23 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                                 pTentRoute->m_width = attr.as_int();
                         }
                      }
-                     
+
                      else
                      if( ext_name == _T ( "opencpn:guid" ) ) {
-                        //if ( !g_bIsNewLayer ) ) 
+                        //if ( !g_bIsNewLayer ) )
                         pTentRoute->m_GUID =  wxString::FromUTF8(ext_child.first_child().value());
                      }
-                     
+
                      else
                      if( ext_name == _T ( "opencpn:planned_speed" ) ) {
                         pTentRoute->m_PlannedSpeed = atof( ext_child.first_child().value() );
                      }
-                     
+
                      else
                      if( ext_name == _T ( "opencpn:planned_departure" ) ) {
                         ParseGPXDateTime( pTentRoute->m_PlannedDeparture, wxString::FromUTF8(ext_child.first_child().value()) );
                      }
-                     
+
                      else
                      if( ext_name == _T ( "opencpn:time_display" ) ) {
                         pTentRoute->m_TimeDisplayFormat = wxString::FromUTF8(ext_child.first_child().value());
@@ -567,45 +567,45 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                         }
                      }
                 }
-				if( !b_change) {
-					if( RouteExists(pTentRoute->m_GUID) ) { //we are loading a different route with the same guid so let's generate a new guid
-						pTentRoute->m_GUID = pWayPointMan->CreateGUID(NULL);
-						route_existing = true;
-					}
-				}
-			}//extension
-			else
+                if( !b_change) {
+                    if( RouteExists(pTentRoute->m_GUID) ) { //we are loading a different route with the same guid so let's generate a new guid
+                        pTentRoute->m_GUID = pWayPointMan->CreateGUID(NULL);
+                        route_existing = true;
+                    }
+                }
+            }//extension
+            else
             if( ChildName == _T ( "rtept" ) ) {
                 RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
                 RoutePoint *erp = NULL;
                 if(!b_layer)
                     erp = ::WaypointExists( tpWp->m_GUID );
-				// 1) if b_change is true, that means we are after crash - load the route and points as found in source file
-				// 2) if route_existing, we are loading a different route with the same guid. In this case load points as found in
-				//source file, changing the guid, but keep existing "isolated point" as found in the DB
-				// 3) in all other cases keep existing points if found and load new points if not found
-				bool new_wpt = true;
-				if( b_change )
-					pWp = tpWp;
+                // 1) if b_change is true, that means we are after crash - load the route and points as found in source file
+                // 2) if route_existing, we are loading a different route with the same guid. In this case load points as found in
+                //source file, changing the guid, but keep existing "isolated point" as found in the DB
+                // 3) in all other cases keep existing points if found and load new points if not found
+                bool new_wpt = true;
+                if( b_change )
+                    pWp = tpWp;
                 else {
-					if(  erp != NULL && (!route_existing || ( route_existing && tpWp->m_bKeepXRoute) ) ) {
-						pWp = erp;
-						new_wpt = false;
-					}
-					else {
-						if( route_existing )
-							tpWp->m_GUID = pWayPointMan->CreateGUID( NULL );
-						pWp = tpWp;
-					}
-				}
+                    if(  erp != NULL && (!route_existing || ( route_existing && tpWp->m_bKeepXRoute) ) ) {
+                        pWp = erp;
+                        new_wpt = false;
+                    }
+                    else {
+                        if( route_existing )
+                            tpWp->m_GUID = pWayPointMan->CreateGUID( NULL );
+                        pWp = tpWp;
+                    }
+                }
 
                 pTentRoute->AddPoint( pWp, false, true );          // defer BBox calculation
                 pWp->m_bIsInRoute = true;                      // Hack
 
                 if( new_wpt )
-					pWayPointMan->AddRoutePoint( pWp );
-				else
-					delete tpWp;
+                    pWayPointMan->AddRoutePoint( pWp );
+                else
+                    delete tpWp;
             }
             else
             if( ChildName == _T ( "name" ) ) {
@@ -623,23 +623,23 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                 if( linklist == NULL )
                     linklist = new HyperlinkList;
                 HrefString = wxString::FromUTF8( tschild.first_attribute().value() );
-                
+
                 for( pugi::xml_node child1 = tschild.first_child(); child1; child1 = child1.next_sibling() ) {
                     wxString LinkString = wxString::FromUTF8( child1.name() );
-                    
+
                     if( LinkString == _T ( "text" ) )
                         HrefTextString = wxString::FromUTF8( child1.first_child().value() );
                     if( LinkString == _T ( "type" ) )
                         HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
                 }
-                
+
                 Hyperlink *link = new Hyperlink;
                 link->Link = HrefString;
                 link->DescrText = HrefTextString;
                 link->LType = HrefTypeString;
                 linklist->Append( link );
             }
-            
+
             else
             //TODO: This is wrong, left here just to save data of the 3.3 beta series users.
             if( ChildName.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
@@ -651,7 +651,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                 }
             }
         }
-                    
+
         pTentRoute->m_RouteNameString = RouteName;
         pTentRoute->m_RouteDescription = DescString;
         if( linklist ) {
@@ -663,17 +663,17 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
         } else if( b_fullviz ) {
             pTentRoute->SetVisible();
         }
-        
+
         if( b_propSWPviz)
             pTentRoute->SetSharedWPViz( swpViz );
- 
+
         if( b_layer ){
             pTentRoute->SetVisible( b_layerviz );
             pTentRoute->m_bIsInLayer = true;
             pTentRoute->m_LayerID = layer_id;
             pTentRoute->SetListed( false );
-        }            
- 
+        }
+
     }
 
     return pTentRoute;
@@ -685,12 +685,12 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
     wxString s;
     pugi::xml_node child;
     pugi::xml_attribute attr;
-    
+
     s.Printf(_T("%.9f"), pr->m_lat);
     node.append_attribute("lat") = s.mb_str();
     s.Printf(_T("%.9f"), pr->m_lon);
     node.append_attribute("lon") = s.mb_str();
- 
+
     if(flags & OUT_TIME) {
             child = node.append_child("time");
             if( pr->m_timestring.Len() )
@@ -700,14 +700,14 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
                 child.append_child(pugi::node_pcdata).set_value(t.mb_str());
             }
     }
-        
+
     if ( (!pr->GetName().IsEmpty() && (flags & OUT_NAME)) || (flags & OUT_NAME_FORCE) ) {
         wxCharBuffer buffer=pr->GetName().ToUTF8();
         if(buffer.data()) {
             child = node.append_child("name");
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
-    }       
+    }
 
     if ( (!pr->GetDescription().IsEmpty() && (flags & OUT_DESC)) || (flags & OUT_DESC_FORCE) ) {
         wxCharBuffer buffer=pr->GetDescription().ToUTF8();
@@ -715,7 +715,7 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             child = node.append_child("desc");
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
-    }       
+    }
 
     // Hyperlinks
     if(flags & OUT_HYPERLINKS ){
@@ -724,29 +724,29 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             wxHyperlinkListNode *linknode = linklist->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
-                
+
                 pugi::xml_node child_link = node.append_child("link");;
                 wxCharBuffer buffer=link->Link.ToUTF8();
                 if(buffer.data())
                     child_link.append_attribute("href") = buffer.data();
-                                
+
                 buffer=link->DescrText.ToUTF8();
                 if(buffer.data()) {
                     child = child_link.append_child("text");
                     child.append_child(pugi::node_pcdata).set_value(buffer.data());
                 }
-                
+
                 buffer=link->LType.ToUTF8();
                 if(buffer.data() && strlen(buffer.data()) > 0) {
                     child = child_link.append_child("type");
                     child.append_child(pugi::node_pcdata).set_value(buffer.data());
                 }
-                
+
                 linknode = linknode->GetNext();
             }
         }
     }
-    
+
     if (flags & OUT_SYM_FORCE) {
         child = node.append_child("sym");
         if (!pr->GetIconName().IsEmpty()) {
@@ -755,34 +755,34 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
         else {
             child.append_child("empty");
         }
-    }       
-    
+    }
+
     if(flags & OUT_TYPE) {
         child = node.append_child("type");
         child.append_child(pugi::node_pcdata).set_value("WPT");
     }
-    
+
     if( (flags & OUT_GUID) || (flags & OUT_VIZ) || (flags & OUT_VIZ_NAME) || (flags & OUT_SHARED)
        || (flags & OUT_AUTO_NAME)  || (flags & OUT_EXTENSION) || (flags & OUT_TIDE_STATION)
        || (flags & OUT_RTE_PROPERTIES) ) {
-        
+
         pugi::xml_node child_ext = node.append_child("extensions");
-        
+
         if (!pr->m_GUID.IsEmpty() && (flags & OUT_GUID) ) {
             child = child_ext.append_child("opencpn:guid");
             child.append_child(pugi::node_pcdata).set_value(pr->m_GUID.mb_str());
         }
-         
+
          if((flags & OUT_VIZ) && !pr->m_bIsVisible) {
              child = child_ext.append_child("opencpn:viz");
              child.append_child(pugi::node_pcdata).set_value("0");
          }
-            
+
          if((flags & OUT_VIZ_NAME) && pr->m_bShowName) {
              child = child_ext.append_child("opencpn:viz_name");
              child.append_child(pugi::node_pcdata).set_value("1");
          }
-         
+
          if((flags & OUT_AUTO_NAME) && pr->m_bDynamicName) {
              child = child_ext.append_child("opencpn:auto_name");
              child.append_child(pugi::node_pcdata).set_value("1");
@@ -834,7 +834,7 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             }
         }
     }
-    
+
     return true;
 }
 
@@ -843,17 +843,17 @@ static bool GPXCreateTrkpt( pugi::xml_node node, TrackPoint *pt, unsigned int fl
     wxString s;
     pugi::xml_node child;
     pugi::xml_attribute attr;
-    
+
     s.Printf(_T("%.9f"), pt->m_lat);
     node.append_attribute("lat") = s.mb_str();
     s.Printf(_T("%.9f"), pt->m_lon);
     node.append_attribute("lon") = s.mb_str();
- 
+
     if(flags & OUT_TIME && pt->HasValidTimestamp()) {
         child = node.append_child("time");
         child.append_child(pugi::node_pcdata).set_value(pt->GetTimeString());
     }
-    
+
     return true;
 }
 
@@ -868,7 +868,7 @@ static bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     if( pTrack->m_TrackDescription.Len() ) {
         wxCharBuffer buffer=pTrack->m_TrackDescription.ToUTF8();
         if(buffer.data()) {
@@ -876,40 +876,40 @@ static bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     // Hyperlinks
     HyperlinkList *linklist = pTrack->m_HyperlinkList;
     if( linklist && linklist->GetCount() ) {
         wxHyperlinkListNode *linknode = linklist->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
-        
+
             pugi::xml_node child_link = node.append_child("link");
             wxCharBuffer buffer = link->Link.ToUTF8();
             if(buffer.data())
                 child_link.append_attribute("href") = buffer.data();
-                        
+
             buffer=link->DescrText.ToUTF8();
             if(buffer.data()) {
                 child = child_link.append_child("text");
                 child.append_child(pugi::node_pcdata).set_value(buffer.data());
             }
-        
+
             buffer=link->LType.ToUTF8();
             if(buffer.data()  && strlen(buffer.data()) > 0) {
                 child = child_link.append_child("type");
                 child.append_child(pugi::node_pcdata).set_value(buffer.data());
             }
-        
+
             linknode = linknode->GetNext();
         }
     }
-    
+
     pugi::xml_node child_ext = node.append_child("extensions");
-    
+
     child = child_ext.append_child("opencpn:guid");
     child.append_child(pugi::node_pcdata).set_value(pTrack->m_GUID.mb_str());
-    
+
     child = child_ext.append_child("opencpn:viz");
     child.append_child(pugi::node_pcdata).set_value(pTrack->IsVisible() == true ? "1" : "0");
 
@@ -920,7 +920,7 @@ static bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     if( pTrack->m_TrackEndString.Len() ) {
         wxCharBuffer buffer=pTrack->m_TrackEndString.ToUTF8();
         if(buffer.data()) {
@@ -928,56 +928,56 @@ static bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     if( pTrack->m_width != WIDTH_UNDEFINED || pTrack->m_style != wxPENSTYLE_INVALID ) {
         child = child_ext.append_child("opencpn:style");
-        
+
         if( pTrack->m_width != WIDTH_UNDEFINED )
             child.append_attribute("width") = pTrack->m_width;
         if( pTrack->m_style != wxPENSTYLE_INVALID )
             child.append_attribute("style") = pTrack->m_style;
     }
-    
+
     if( pTrack->m_Colour != wxEmptyString ) {
         pugi::xml_node gpxx_ext = child_ext.append_child("gpxx:TrackExtension");
         child = gpxx_ext.append_child("gpxx:DisplayColor");
         child.append_child(pugi::node_pcdata).set_value(pTrack->m_Colour.mb_str());
     }
-        
-    
+
+
     if(flags & RT_OUT_NO_RTPTS)
         return true;
-    
+
     int node2 = 0;
     TrackPoint *prp;
-        
+
     unsigned short int GPXTrkSegNo1 = 1;
-        
+
     do {
         unsigned short int GPXTrkSegNo2 = GPXTrkSegNo1;
-        
+
         pugi::xml_node seg = node.append_child("trkseg");
-        
+
         while( node2 < pTrack->GetnPoints() ) {
             prp = pTrack->GetPoint(node2);
             GPXTrkSegNo1 = prp->m_GPXTrkSegNo;
             if(GPXTrkSegNo1 != GPXTrkSegNo2)
                 break;
-            
+
             GPXCreateTrkpt(seg.append_child("trkpt"), prp, OPT_TRACKPT);
-            
+
             node2++;
         }
     } while( node2 < pTrack->GetnPoints() );
-        
-        
+
+
     return true;
 }
-                   
+
 static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
 {
     pugi::xml_node child;
-    
+
     if( pRoute->m_RouteNameString.Len() ) {
         wxCharBuffer buffer=pRoute->m_RouteNameString.ToUTF8();
         if(buffer.data()) {
@@ -985,7 +985,7 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     if( pRoute->m_RouteDescription.Len() ) {
         wxCharBuffer buffer=pRoute->m_RouteDescription.ToUTF8();
         if(buffer.data()) {
@@ -993,49 +993,49 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     // Hyperlinks
     HyperlinkList *linklist = pRoute->m_HyperlinkList;
     if( linklist && linklist->GetCount() ) {
         wxHyperlinkListNode *linknode = linklist->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
-            
+
             pugi::xml_node child_link = node.append_child("link");
             wxCharBuffer buffer = link->Link.ToUTF8();
             if(buffer.data())
                 child_link.append_attribute("href") = buffer.data();
-            
+
             buffer=link->DescrText.ToUTF8();
             if(buffer.data()) {
                 child = child_link.append_child("text");
                 child.append_child(pugi::node_pcdata).set_value(buffer.data());
             }
-            
+
             buffer=link->LType.ToUTF8();
             if(buffer.data()  && strlen(buffer.data()) > 0) {
                 child = child_link.append_child("type");
                 child.append_child(pugi::node_pcdata).set_value(buffer.data());
             }
-            
+
             linknode = linknode->GetNext();
         }
     }
-    
+
     pugi::xml_node child_ext = node.append_child("extensions");
-    
+
     child = child_ext.append_child("opencpn:guid");
     child.append_child(pugi::node_pcdata).set_value(pRoute->m_GUID.mb_str());
-    
+
     child = child_ext.append_child("opencpn:viz");
     child.append_child(pugi::node_pcdata).set_value(pRoute->IsVisible() == true ? "1" : "0");
-    
+
     if(pRoute->ContainsSharedWP()){
         child = child_ext.append_child("opencpn:sharedWPviz");
         child.append_child(pugi::node_pcdata).set_value(pRoute->GetSharedWPViz() == true ? "1" : "0");
 
     }
- 
+
     if( pRoute->m_RouteStartString.Len() ) {
         wxCharBuffer buffer=pRoute->m_RouteStartString.ToUTF8();
         if(buffer.data()) {
@@ -1043,7 +1043,7 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     if( pRoute->m_RouteEndString.Len() ) {
         wxCharBuffer buffer=pRoute->m_RouteEndString.ToUTF8();
         if(buffer.data()) {
@@ -1051,14 +1051,14 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }
-    
+
     if( pRoute->m_PlannedSpeed != ROUTE_DEFAULT_SPEED ) {
         child = child_ext.append_child("opencpn:planned_speed");
         wxString s;
         s.Printf(_T("%.2f"), pRoute->m_PlannedSpeed);
         child.append_child(pugi::node_pcdata).set_value(s.mb_str());
     }
-    
+
     if( pRoute->m_PlannedDeparture.IsValid() ) {
         child = child_ext.append_child("opencpn:planned_departure");
         wxString t = pRoute->m_PlannedDeparture.FormatISODate().Append(_T("T")).Append(pRoute->m_PlannedDeparture.FormatISOTime()).Append(_T("Z"));
@@ -1067,70 +1067,70 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
 
     child = child_ext.append_child("opencpn:time_display");
     child.append_child(pugi::node_pcdata).set_value(pRoute->m_TimeDisplayFormat.mb_str());
-    
+
     if( pRoute->m_width != WIDTH_UNDEFINED || pRoute->m_style != wxPENSTYLE_INVALID ) {
         child = child_ext.append_child("opencpn:style");
-        
+
         if( pRoute->m_width != WIDTH_UNDEFINED )
             child.append_attribute("width") = pRoute->m_width;
         if( pRoute->m_style != wxPENSTYLE_INVALID )
             child.append_attribute("style") = pRoute->m_style;
     }
- 
+
     pugi::xml_node gpxx_ext = child_ext.append_child("gpxx:RouteExtension");
     child = gpxx_ext.append_child("gpxx:IsAutoNamed");
     child.append_child(pugi::node_pcdata).set_value("false");
-    
+
     if( pRoute->m_Colour != wxEmptyString ) {
         child = gpxx_ext.append_child("gpxx:DisplayColor");
         child.append_child(pugi::node_pcdata).set_value(pRoute->m_Colour.mb_str());
     }
-                                 
+
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
     wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;
-    
+
     while( node2  ) {
         prp = node2->GetData();
-            
+
         GPXCreateWpt(node.append_child("rtept"), prp, OPT_ROUTEPT);
-            
+
         node2 = node2->GetNext();
     }
-    
+
     return true;
 }
-                       
+
 
 static bool InsertRouteA( Route *pTentRoute )
 {
     if( !pTentRoute )
         return false;
-    
+
     bool bAddroute = true;
     //    If the route has only 1 point, don't load it.
     if( pTentRoute->GetnPoints() < 2 )
         bAddroute = false;
-    
+
     //    TODO  All this trouble for a tentative route.......Should make some Route methods????
     if( bAddroute ) {
-            
+
         pRouteList->Append( pTentRoute );
-                 
+
                 //    Do the (deferred) calculation of BBox
                     pTentRoute->FinalizeForRendering();
 
-                    
+
                     //    Add the selectable points and segments
-                    
+
                     int ip = 0;
                     float prev_rlat = 0., prev_rlon = 0.;
                     RoutePoint *prev_pConfPoint = NULL;
-                    
+
                     wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
                     while( node ) {
                         RoutePoint *prp = node->GetData();
-                        
+
                         if( ip )
                             pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
                                                                 prp->m_lon, prev_pConfPoint, prp, pTentRoute );
@@ -1138,22 +1138,22 @@ static bool InsertRouteA( Route *pTentRoute )
                         prev_rlat = prp->m_lat;
                         prev_rlon = prp->m_lon;
                         prev_pConfPoint = prp;
-                        
+
                         ip++;
-                        
+
                         node = node->GetNext();
                     }
     }
     else {
-        
+
         // walk the route, deleting points used only by this route
         wxRoutePointListNode *pnode = ( pTentRoute->pRoutePointList )->GetFirst();
         while( pnode ) {
             RoutePoint *prp = pnode->GetData();
-            
+
             // check all other routes to see if this point appears in any other route
             Route *pcontainer_route = g_pRouteMan->FindRouteContainingWaypoint( prp );
-            
+
             if( pcontainer_route == NULL ) {
                 prp->m_bIsInRoute = false; // Take this point out of this (and only) track/route
                 if( !prp->m_bKeepXRoute ) {
@@ -1163,45 +1163,45 @@ static bool InsertRouteA( Route *pTentRoute )
                     delete prp;
                 }
             }
-            
+
             pnode = pnode->GetNext();
         }
-        
+
         delete pTentRoute;
     }
     return bAddroute;
 }
-                       
+
 static bool  InsertTrack( Track *pTentTrack, bool bApplyChanges = false )
 {
     if(!pTentTrack)
         return false;
-    
+
     bool bAddtrack = true;
     //    If the track has only 1 point, don't load it.
     //    This usually occurs if some points were discarded as being co-incident.
     if( !bApplyChanges && pTentTrack->GetnPoints() < 2 )
         bAddtrack = false;
-    
+
     //    TODO  All this trouble for a tentative track.......Should make some Track methods????
     if( bAddtrack ) {
         pTrackList->Append( pTentTrack );
-        
-               
+
+
         //    Do the (deferred) calculation of Track BBox
 //        pTentTrack->FinalizeForRendering();
-            
+
         //    Add the selectable points and segments
-                
+
         float prev_rlat = 0., prev_rlon = 0.;
         TrackPoint *prev_pConfPoint = NULL;
-                
+
         for(int i=0; i<pTentTrack->GetnPoints(); i++) {
             TrackPoint *prp = pTentTrack->GetPoint(i);
-            
+
             if( i ) pSelect->AddSelectableTrackSegment( prev_rlat, prev_rlon, prp->m_lat,
                                                         prp->m_lon, prev_pConfPoint, prp, pTentTrack );
-                    
+
             prev_rlat = prp->m_lat;
             prev_rlon = prp->m_lon;
             prev_pConfPoint = prp;
@@ -1210,8 +1210,8 @@ static bool  InsertTrack( Track *pTentTrack, bool bApplyChanges = false )
         delete pTentTrack;
 
     return bAddtrack;
-}                       
-                       
+}
+
 static void UpdateRouteA( Route *pTentRoute )
  {
     if( !pTentRoute )
@@ -1245,31 +1245,31 @@ static void UpdateRouteA( Route *pTentRoute )
 
     wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
     while( node ) {
-		RoutePoint *prp = node->GetData();
+        RoutePoint *prp = node->GetData();
 
-		//if some wpts have been not deleted, that meens they should be used in other routes
-		//or are isolated way points so need to be updated
-		RoutePoint *ex_rp = ::WaypointExists( prp->m_GUID );
-		if( ex_rp ) {
-			pSelect->DeleteSelectableRoutePoint(ex_rp);
-			ex_rp->m_lat = prp->m_lat;
-			ex_rp->m_lon = prp->m_lon;
-			ex_rp->SetIconName( prp->GetIconName() );
-			ex_rp->m_MarkDescription = prp->m_MarkDescription;
-			ex_rp->SetName( prp->GetName() );
+        //if some wpts have been not deleted, that meens they should be used in other routes
+        //or are isolated way points so need to be updated
+        RoutePoint *ex_rp = ::WaypointExists( prp->m_GUID );
+        if( ex_rp ) {
+            pSelect->DeleteSelectableRoutePoint(ex_rp);
+            ex_rp->m_lat = prp->m_lat;
+            ex_rp->m_lon = prp->m_lon;
+            ex_rp->SetIconName( prp->GetIconName() );
+            ex_rp->m_MarkDescription = prp->m_MarkDescription;
+            ex_rp->SetName( prp->GetName() );
             ex_rp->m_TideStation = prp->m_TideStation;
             ex_rp->SetPlannedSpeed(prp->GetPlannedSpeed());
-			pChangeRoute->AddPoint( ex_rp );
-			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, ex_rp);
+            pChangeRoute->AddPoint( ex_rp );
+            pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, ex_rp);
 
-		} else {
-			pChangeRoute->AddPoint( prp );
-			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
-		}
+        } else {
+            pChangeRoute->AddPoint( prp );
+            pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
+        }
 
         if( ip )
-			pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
-					prp->m_lon, prev_pConfPoint, prp, pChangeRoute );
+            pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
+                    prp->m_lon, prev_pConfPoint, prp, pChangeRoute );
         prev_rlat = prp->m_lat;
         prev_rlon = prp->m_lon;
         prev_pConfPoint = prp;
@@ -1277,15 +1277,15 @@ static void UpdateRouteA( Route *pTentRoute )
         ip++;
 
         node = node->GetNext();
-	}
-	//    Do the (deferred) calculation of BBox
+    }
+    //    Do the (deferred) calculation of BBox
     pChangeRoute->FinalizeForRendering();
 }
 
-                       
+
 bool NavObjectCollection1::CreateNavObjGPXPoints( void )
 {
-    
+
     //    Iterate over the Routepoint list, creating Nodes for
     //    Routepoints that are not in any Route
     //    as indicated by m_bIsolatedMark == false
@@ -1294,19 +1294,19 @@ bool NavObjectCollection1::CreateNavObjGPXPoints( void )
         return false;
 
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-    
+
     RoutePoint *pr;
-    
+
     while( node ) {
         pr = node->GetData();
-        
+
         if( ( pr->m_bIsolatedMark ) && !( pr->m_bIsInLayer ) && !(pr->m_btemp) )
         {
             GPXCreateWpt(m_gpx_root.append_child("wpt"), pr, OPT_WPT);
         }
         node = node->GetNext();
     }
-    
+
     return true;
 }
 
@@ -1315,16 +1315,16 @@ bool NavObjectCollection1::CreateNavObjGPXRoutes( void )
     // Routes
     if(!pRouteList)
         return false;
-    
+
     wxRouteListNode *node1 = pRouteList->GetFirst();
     while( node1 ) {
         Route *pRoute = node1->GetData();
-        
+
         if( !pRoute->m_bIsInLayer && !pRoute->m_btemp )
             GPXCreateRoute(m_gpx_root.append_child("rte"), pRoute);
         node1 = node1->GetNext();
     }
-    
+
     return true;
 }
 
@@ -1334,14 +1334,14 @@ bool NavObjectCollection1::CreateNavObjGPXTracks( void )
     wxTrackListNode *node1 = pTrackList->GetFirst();
     while( node1 ) {
         Track *pTrack = node1->GetData();
-        
+
         if( pTrack->GetnPoints() ) {
-            if( !pTrack->m_bIsInLayer && !pTrack->m_btemp ) 
+            if( !pTrack->m_bIsInLayer && !pTrack->m_btemp )
                 GPXCreateTrk(m_gpx_root.append_child("trk"), pTrack, 0);
         }
         node1 = node1->GetNext();
     }
-    
+
     return true;
 }
 
@@ -1349,11 +1349,11 @@ bool NavObjectCollection1::CreateNavObjGPXTracks( void )
 bool NavObjectCollection1::CreateAllGPXObjects()
 {
     SetRootGPXNode();
-    
+
     CreateNavObjGPXPoints();
     CreateNavObjGPXRoutes();
     CreateNavObjGPXTracks();
-    
+
     return true;
 }
 
@@ -1381,7 +1381,7 @@ bool NavObjectCollection1::AddGPXWaypoint(RoutePoint *pWP )
 void NavObjectCollection1::AddGPXRoutesList( RouteList *pRoutes )
 {
     SetRootGPXNode();
-    
+
     wxRouteListNode* pRoute = pRoutes->GetFirst();
     while (pRoute) {
         Route* pRData = pRoute->GetData();
@@ -1393,7 +1393,7 @@ void NavObjectCollection1::AddGPXRoutesList( RouteList *pRoutes )
 void NavObjectCollection1::AddGPXTracksList( TrackList *pTracks )
 {
     SetRootGPXNode();
-    
+
     wxTrackListNode* pTrack = pTracks->GetFirst();
     while (pTrack) {
         Track* pRData = pTrack->GetData();
@@ -1405,14 +1405,14 @@ void NavObjectCollection1::AddGPXTracksList( TrackList *pTracks )
 bool NavObjectCollection1::AddGPXPointsList( RoutePointList *pRoutePoints )
 {
     SetRootGPXNode();
-    
+
     wxRoutePointListNode* pRoutePointNode = pRoutePoints->GetFirst();
     while (pRoutePointNode) {
         RoutePoint* pRP = pRoutePointNode->GetData();
         AddGPXWaypoint( pRP);
         pRoutePointNode = pRoutePointNode->GetNext();
     }
-    
+
     return true;
 }
 
@@ -1427,11 +1427,11 @@ void NavObjectCollection1::SetRootGPXNode(void)
         m_gpx_root.append_attribute( "xmlns:xsi" ) = "http://www.w3.org/2001/XMLSchema-instance";
         m_gpx_root.append_attribute( "xmlns" ) = "http://www.topografix.com/GPX/1/1";
         m_gpx_root.append_attribute( "xmlns:gpxx" ) =  "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
-        m_gpx_root.append_attribute( "xsi:schemaLocation" ) = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd";	  
+        m_gpx_root.append_attribute( "xsi:schemaLocation" ) = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd";
         m_gpx_root.append_attribute( "xmlns:opencpn" ) = "http://www.opencpn.org";
     }
 }
-        
+
 bool NavObjectCollection1::IsOpenCPN()
 {
     for (pugi::xml_attribute attr = root().first_child().first_attribute(); attr; attr = attr.next_attribute())
@@ -1439,7 +1439,7 @@ bool NavObjectCollection1::IsOpenCPN()
         return true;
     return false;
 }
-            
+
 bool NavObjectCollection1::SaveFile( const wxString filename )
 {
     save_file(filename.fn_str(), "  ");
@@ -1450,12 +1450,12 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicat
 {
     wpt_duplicates = 0;
     pugi::xml_node objects = this->child("gpx");
-    
+
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "wpt") ) {
             RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), b_full_viz, false, false, 0 );
-            
+
             pWp->m_bIsolatedMark = true;      // This is an isolated mark
             RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
             if( !pExisting ) {
@@ -1485,10 +1485,10 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicat
                         BBox.Expand(pRoute->GetBBox());
                     }
                 }
-                
-                
+
+
     }
-    
+
     return true;
 }
 
@@ -1496,10 +1496,10 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz
 {
     if(!pWayPointMan)
         return 0;
-    
+
     int n_obj = 0;
     pugi::xml_node objects = this->child("gpx");
-    
+
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "wpt") ) {
@@ -1524,9 +1524,9 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz
                     n_obj++;
                     InsertRouteA( pRoute );
                 }
-        }   
+        }
     }
-    
+
     return n_obj;
 }
 
@@ -1549,7 +1549,7 @@ NavObjectChanges::NavObjectChanges(wxString file_name)
     : NavObjectCollection1()
 {
     m_filename = file_name;
-    
+
     m_changes_file = fopen(m_filename.mb_str(), "a");
     m_bdirty = false;
 }
@@ -1561,16 +1561,16 @@ NavObjectChanges::~NavObjectChanges()
 
     if( ::wxFileExists( m_filename ) )
         ::wxRemoveFile( m_filename );
-        
+
 }
 
 void NavObjectChanges::AddRoute( Route *pr, const char *action )
 {
     SetRootGPXNode();
-    
+
     pugi::xml_node object = m_gpx_root.append_child("rte");
     GPXCreateRoute(object, pr );
-    
+
     pugi::xml_node xchild = object.child("extensions");
     //FIXME  What if extensions do not exist?
     pugi::xml_node child = xchild.append_child("opencpn:action");
@@ -1585,10 +1585,10 @@ void NavObjectChanges::AddRoute( Route *pr, const char *action )
 void NavObjectChanges::AddTrack( Track *pr, const char *action )
 {
     SetRootGPXNode();
-    
+
     pugi::xml_node object = m_gpx_root.append_child("trk");
     GPXCreateTrk(object, pr, RT_OUT_NO_RTPTS );         // emit a void track, no waypoints
-    
+
     pugi::xml_node xchild = object.child("extensions");
     pugi::xml_node child = xchild.append_child("opencpn:action");
     child.append_child(pugi::node_pcdata).set_value(action);
@@ -1602,7 +1602,7 @@ void NavObjectChanges::AddTrack( Track *pr, const char *action )
 void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
 {
     SetRootGPXNode();
-    
+
     pugi::xml_node object = m_gpx_root.append_child("wpt");
     GPXCreateWpt(object, pWP, OPT_WPT);
 
@@ -1619,15 +1619,15 @@ void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
 void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const wxString& parent_GUID )
 {
     SetRootGPXNode();
-    
+
     pugi::xml_node object = m_gpx_root.append_child("tkpt");
     GPXCreateTrkpt(object, pWP, OPT_TRACKPT);
 
     pugi::xml_node xchild = object.append_child("extensions");
-    
+
     pugi::xml_node child = xchild.append_child("opencpn:action");
     child.append_child(pugi::node_pcdata).set_value(action);
-    
+
     pugi::xml_node gchild = xchild.append_child("opencpn:track_GUID");
     gchild.append_child(pugi::node_pcdata).set_value(parent_GUID.mb_str());
 
@@ -1641,26 +1641,26 @@ void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const
 bool NavObjectChanges::ApplyChanges(void)
 {
     //Let's reconstruct the unsaved changes
-    
+
     pugi::xml_node object = this->first_child();
-    
+
     while(strlen(object.name()))
     {
         if( !strcmp(object.name(), "wpt") && pWayPointMan) {
             RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), false, false, false, 0 );
-            
+
             pWp->m_bIsolatedMark = true;
             RoutePoint *pExisting = WaypointExists( pWp->m_GUID );
-                
+
             pugi::xml_node xchild = object.child("extensions");
             pugi::xml_node child = xchild.child("opencpn:action");
-                
+
             if(!strcmp(child.first_child().value(), "add") ){
                 if( !pExisting )
                     pWayPointMan->AddRoutePoint( pWp );
                 pSelect->AddSelectableRoutePoint( pWp->m_lat, pWp->m_lon, pWp );
             }
-                
+
             else if(!strcmp(child.first_child().value(), "update") ){
                 if( pExisting )
                     pWayPointMan->RemoveRoutePoint( pExisting );
@@ -1682,7 +1682,7 @@ bool NavObjectChanges::ApplyChanges(void)
                 if(pTrack ) {
                     pugi::xml_node xchild = object.child("extensions");
                     pugi::xml_node child = xchild.child("opencpn:action");
-                    
+
                     Track *pExisting = TrackExists( pTrack->m_GUID );
                     if(!strcmp(child.first_child().value(), "update") ){
                          if( pExisting ) {
@@ -1706,19 +1706,19 @@ bool NavObjectChanges::ApplyChanges(void)
                         delete pTrack;
                 }
             }
-            
+
             else
                 if( !strcmp(object.name(), "rte") && g_pRouteMan) {
                     Route *pRoute = GPXLoadRoute1( object, false, false, false, 0, true );
-                    
+
                     if(pRoute ) {
                         pugi::xml_node xchild = object.child("extensions");
                         pugi::xml_node child = xchild.child("opencpn:action");
 
                         if(!strcmp(child.first_child().value(), "add") ){
                             ::UpdateRouteA( pRoute );
-                        }                    
-                    
+                        }
+
                         else if(!strcmp(child.first_child().value(), "update") ){
                             ::UpdateRouteA( pRoute );
                         }
@@ -1731,7 +1731,7 @@ bool NavObjectChanges::ApplyChanges(void)
                                 pConfig->m_bSkipChangeSetUpdate = false;
                             }
                         }
-                    
+
                         else
                             delete pRoute;
                     }
@@ -1739,9 +1739,9 @@ bool NavObjectChanges::ApplyChanges(void)
             else
                 if( !strcmp(object.name(), "tkpt") && pWayPointMan) {
                     TrackPoint *pWp = ::GPXLoadTrackPoint1( object );
-                    
+
 //                        RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
-                        
+
                     pugi::xml_node xchild = object.child("extensions");
                     pugi::xml_node child = xchild.child("opencpn:action");
 
@@ -1749,7 +1749,7 @@ bool NavObjectChanges::ApplyChanges(void)
                     wxString track_GUID(guid_child.first_child().value(), wxConvUTF8);
 
                     Track *pExistingTrack = TrackExists( track_GUID );
-                        
+
                     if(!strcmp(child.first_child().value(), "add") && pExistingTrack ) {
                         pExistingTrack->AddPoint( pWp );
                         pWp->m_GPXTrkSegNo = pExistingTrack->GetCurrentTrackSeg() + 1;
@@ -1772,6 +1772,6 @@ bool NavObjectChanges::ApplyChanges(void)
         } else
             node1 = node1->GetNext();
     }
-    
+
     return true;
 }

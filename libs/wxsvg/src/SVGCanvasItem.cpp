@@ -409,13 +409,13 @@ void wxSVGCanvasPath::Arc(double x, double y, double r1, double r2,
 	x += m_curx;
 	y += m_cury;
   }
-  
+
   double sin_th = sin(angle*(M_PI/180.0));
   double cos_th = cos(angle*(M_PI/180.0));
 
   double dx = (m_curx - x)/2.0;
   double dy = (m_cury - y)/2.0;
-	  
+
   double _x1 =  cos_th*dx + sin_th*dy;
   double _y1 = -sin_th*dx + cos_th*dy;
   double Pr1 = r1*r1;
@@ -556,30 +556,30 @@ double AngleBisect(float a1, float a2) {
 void GetPolylineMarkPoints(const wxSVGPointList &points, vector<wxSVGMark>& marks) {
 	if (!points.size())
 		return;
-	
+
 	float px = points[0].GetX(), py = points[0].GetY(), prevAngle = 0.0;
-	
+
 	marks.push_back(wxSVGMark(px, py, 0, wxSVGMark::START));
-	
+
 	for (unsigned int i = 1; i < points.size(); ++i) {
 		float x = points[i].GetX();
 		float y = points[i].GetY();
 		float angle = atan2(y-py, x-px);
-		
+
 		// Vertex marker.
 		if (i == 1) {
 			marks.begin()->angle = angle;
 		} else {
 			(marks.begin() + (marks.size() - 2))->angle = AngleBisect(prevAngle, angle);
 		}
-		
+
 		marks.push_back(wxSVGMark(x, y, 0, wxSVGMark::MID));
-		
+
 		prevAngle = angle;
 		px = x;
 		py = y;
 	}
-	
+
 	marks.back().angle = prevAngle;
 	marks.back().type = wxSVGMark::END;
 }
@@ -735,7 +735,7 @@ void GetPathMarkPoints(const wxSVGPathSegList& segments, vector<wxSVGMark>& mark
 				root = 0.0;
 			}
 
-			double cxp = root * rx * y1p / ry; 
+			double cxp = root * rx * y1p / ry;
 			double cyp = -root * ry * x1p / rx;
 
 			double theta, delta;
@@ -805,7 +805,7 @@ void GetPathMarkPoints(const wxSVGPathSegList& segments, vector<wxSVGMark>& mark
 				root = 0.0;
 			}
 
-			double cxp = root * rx * y1p / ry; 
+			double cxp = root * rx * y1p / ry;
 			double cyp = -root * ry * x1p / rx;
 
 			double theta, delta;
@@ -911,7 +911,7 @@ void GetPathMarkPoints(const wxSVGPathSegList& segments, vector<wxSVGMark>& mark
 			segEndAngle = AngleOfVector(segEnd - cp1);
 			break;
 		}
-		
+
 		case wxPATHSEG_UNKNOWN:
 		default:
 			break;
@@ -974,11 +974,11 @@ vector<wxSVGMark> wxSVGCanvasPath::GetMarkPoints() {
 		if (marks.size() == 0 || marks.back().type != wxSVGMark::END) {
 			break;
 		}
-		
+
 		wxSVGMark& endMark = marks.back();
 		wxSVGMark& startMark = *marks.begin();
 		float angle = atan2(startMark.y - endMark.y, startMark.x - endMark.x);
-		
+
 		endMark.type = wxSVGMark::MID;
 		endMark.angle = AngleBisect(angle, endMark.angle);
 		startMark.angle = AngleBisect(angle, startMark.angle);
@@ -1041,13 +1041,13 @@ void wxSVGCanvasText::Init(wxSVGTextElement& element, const wxCSSStyleDeclaratio
 void wxSVGCanvasText::Init(wxSVGTSpanElement& element, const wxCSSStyleDeclaration& style, wxSVGMatrix* matrix) {
 	if (element.GetX().GetAnimVal().Count())
 		EndTextAnchor();
-	
+
 	if (element.GetX().GetAnimVal().Count())
 		m_tx = element.GetX().GetAnimVal()[0];
 	if (element.GetY().GetAnimVal().Count())
 		m_ty = element.GetY().GetAnimVal()[0];
 	InitChildren(element, style, matrix);
-	
+
 	if (element.GetX().GetAnimVal().Count())
 		EndTextAnchor();
 }
@@ -1088,7 +1088,7 @@ void wxSVGCanvasText::InitChildren(wxSVGTextPositioningElement& element, const w
 			AddChunk(text, style, matrix);
 			text = wxT("");
 		}
-		
+
 		if (elem->GetType() == wxSVGXML_ELEMENT_NODE && elem->GetDtd() == wxSVG_TSPAN_ELEMENT) {
 			wxSVGTSpanElement& tElem = (wxSVGTSpanElement&) *elem;
 			wxCSSStyleDeclaration tStyle(style);
@@ -1108,7 +1108,7 @@ void wxSVGCanvasText::AddChunk(const wxString& text, const wxCSSStyleDeclaration
 	chunk->y = m_ty;
 	chunk->text = text;
 	m_chunks.Add(chunk);
-	
+
 	// set textAnchor and dominantBaseline if they are not already set
 	if (style.HasTextAnchor() && m_textAnchor == wxCSS_VALUE_START) {
 		m_textAnchor = style.GetTextAnchor();
@@ -1120,7 +1120,7 @@ void wxSVGCanvasText::AddChunk(const wxString& text, const wxCSSStyleDeclaration
 		m_dominantBaseline = style.GetDominantBaseline();
 		m_dominantBaselineBeginIndex = m_chunks.Count() - 1;
 	}
-	
+
 	InitText(text, style, matrix);
 }
 
@@ -1247,7 +1247,7 @@ double wxSVGCanvasText::GetComputedTextLength()
 {
 	if (m_chunks.Count() && m_chunks[0].chars.GetCount())
 	{
-		wxSVGCanvasTextChunk& firstChunk = m_chunks[0]; 
+		wxSVGCanvasTextChunk& firstChunk = m_chunks[0];
 		wxSVGRect bboxFirst = firstChunk.chars[0].path->GetBBox();
 		if (bboxFirst.IsEmpty())
 			bboxFirst = firstChunk.chars[0].bbox;
@@ -1335,9 +1335,9 @@ long wxSVGCanvasText::GetCharNumAtPosition(const wxSVGPoint& point)
 		{
 			bbox = chunk.chars[i].path->GetBBox().MatrixTransform(chunk.matrix);
 			double Xmin = bbox.GetX();
-			double Xmax = Xmin + bbox.GetWidth(); 
+			double Xmax = Xmin + bbox.GetWidth();
 			double Ymin = bbox.GetY();
-			double Ymax = Ymin + bbox.GetHeight(); 
+			double Ymax = Ymin + bbox.GetHeight();
 			if (X >= Xmin && X <= Xmax && Y >= Ymin && Y <= Ymax)
 				return i;
 		}
@@ -1361,7 +1361,7 @@ wxSVGCanvasSvgImageData::wxSVGCanvasSvgImageData(const wxString& filename, wxSVG
 	if (imgDoc.Load(filename) && imgDoc.GetRootElement() != NULL) {
 		m_svgImage = imgDoc.GetRootElement();
 		imgDoc.RemoveChild(m_svgImage);
-		
+
 		m_svgImage->SetOwnerDocument(doc);
 		if (m_svgImage->GetViewBox().GetBaseVal().IsEmpty()
 				&& m_svgImage->GetWidth().GetBaseVal().GetValue() > 0

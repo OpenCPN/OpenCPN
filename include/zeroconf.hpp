@@ -15,7 +15,7 @@
 #include "zeroconf-detail.hpp"
 
 namespace Zeroconf
-{    
+{
     typedef Detail::Log::LogLevel LogLevel;
     typedef Detail::Log::LogCallback LogCallback;
     typedef Detail::mdns_responce mdns_responce;

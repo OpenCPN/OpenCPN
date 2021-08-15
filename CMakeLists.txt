@@ -87,7 +87,7 @@ To build for android, use something like:
         -D_wx_selected_config=androideabi-qt
         -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
         -DwxQt_Build=build_android_53
-       	-DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+        -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
         -DQt_Base /home/dsr/Qt/5.3)
         ..
 
@@ -549,7 +549,7 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
         set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
     else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")
     endif ()
     set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
         CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
@@ -869,7 +869,7 @@ else( wxWidgets_VERSION_STRING)
     message(STATUS "Forcing wxWidgets_VERSION_STRING: ${wxWidgets_VERSION_STRING}")
     set(wxWidgets_VERSION_STRING "3.0")
 endif( wxWidgets_VERSION_STRING)
-  
+
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
@@ -1622,7 +1622,7 @@ elseif ( APPLE )
         set(LIBARCHIVE_COMMENT_START "<!--")
         set(LIBARCHIVE_COMMENT_END "-->")
     else()
-        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment 
+        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
         target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
         target_link_libraries(${PACKAGE_NAME} PRIVATE /usr/local/lib/libarchive.dylib)
     endif()
@@ -1816,7 +1816,7 @@ if (CMAKE_HOST_WIN32)
   target_link_libraries(
     ${PACKAGE_NAME}
     PRIVATE setupapi.lib "GLU_static" psapi.lib
-    # glu32.lib 
+    # glu32.lib
   )
 
   # use gdi plus only on MSVC, it is not a free library
@@ -2339,7 +2339,7 @@ if (NOT APPLE)
 
   IF(PACKAGE_FORMAT MATCHES "DEB")
         INSTALL(FILES "buildlinux/98-sglock-ocpn.rules"
-          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ 
+          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
           DESTINATION "/lib/udev/rules.d")
   ENDIF(PACKAGE_FORMAT MATCHES "DEB")
 

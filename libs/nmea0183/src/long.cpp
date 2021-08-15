@@ -110,7 +110,7 @@ void LONGITUDE::Write( SENTENCE& sentence )
     d = (int) Longitude;
     double m0 = (Longitude - (double) d) * 60000.0;
     m = (int)wxRound(m0);
-    
+
     if (neg)
             d = -d;
 

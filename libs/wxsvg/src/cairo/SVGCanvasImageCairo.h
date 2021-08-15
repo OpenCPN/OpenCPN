@@ -18,12 +18,12 @@ class wxSVGCanvasImageCairoData {
 public:
 	wxSVGCanvasImageCairoData(wxImage image);
 	~wxSVGCanvasImageCairoData();
-	
+
 	void IncRef() { m_count++; }
 	int DecRef() { return (--m_count); }
-	
+
 	inline cairo_surface_t* GetSurface() { return m_surface; }
-	
+
 private:
     int m_count;
 	unsigned char* m_buffer;
@@ -37,7 +37,7 @@ public:
 	virtual ~wxSVGCanvasImageCairo();
 	virtual void Init(wxSVGImageElement& element, const wxCSSStyleDeclaration& style, wxProgressDialog* progressDlg);
 	virtual cairo_surface_t* GetCairoSurface() { return m_data != NULL ? m_data->GetSurface() : NULL; }
-	
+
 private:
 	wxSVGCanvasImageCairoData* m_data;
 };
@@ -48,7 +48,7 @@ public:
 	virtual ~wxSVGCanvasVideoCairo();
 	virtual void Init(wxSVGVideoElement& element, const wxCSSStyleDeclaration& style, wxProgressDialog* progressDlg);
 	virtual cairo_surface_t* GetCairoSurface() { return m_data != NULL ? m_data->GetSurface() : NULL; }
-	
+
 private:
 	wxSVGCanvasImageCairoData* m_data;
 };

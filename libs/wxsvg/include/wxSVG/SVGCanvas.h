@@ -20,13 +20,13 @@ class wxSVGCanvas: public wxObject {
 public:
 	wxSVGCanvas():  m_itemsCached(true) {}
 	virtual ~wxSVGCanvas() {}
-	
+
 	virtual void Init(int width, int height, bool alpha = false) = 0;
 	virtual int GetWidth() = 0;
 	virtual int GetHeight() = 0;
 	virtual wxImage GetImage() = 0;
 	virtual void Clear(wxRGBColor color = wxRGBColor(0xFF,0xFF,0xFF)) = 0;
-	
+
 	virtual wxSVGCanvasPath* CreateCanvasPath(wxSVGMatrix* matrix = NULL) = 0;
 	wxSVGCanvasItem* CreateItem(wxSVGLineElement* element);
 	wxSVGCanvasItem* CreateItem(wxSVGPolylineElement* element);
@@ -41,10 +41,10 @@ public:
 			wxProgressDialog* progressDlg = NULL) = 0;
 	virtual wxSVGCanvasItem* CreateItem(wxSVGVideoElement* element, const wxCSSStyleDeclaration* style = NULL,
 			wxProgressDialog* progressDlg = NULL) = 0;
-	
+
 	virtual void DrawItem(wxSVGCanvasItem& item, wxSVGMatrix& matrix,
       const wxCSSStyleDeclaration& style, wxSVGSVGElement& svgElem) = 0;
-    
+
 	void DrawLine(wxSVGLineElement* element, wxSVGMatrix* matrix, const wxCSSStyleDeclaration* style = NULL);
 	void DrawPolyline(wxSVGPolylineElement* element, wxSVGMatrix* matrix, const wxCSSStyleDeclaration* style = NULL);
 	void DrawPolygon(wxSVGPolygonElement* element, wxSVGMatrix* matrix, const wxCSSStyleDeclaration* style = NULL);
@@ -57,17 +57,17 @@ public:
 			const wxSVGRect* rect = NULL, wxProgressDialog* progressDlg = NULL);
 	void DrawVideo(wxSVGVideoElement* element, wxSVGMatrix* matrix, const wxCSSStyleDeclaration* style = NULL,
 			wxProgressDialog* progressDlg = NULL);
-	
+
 	void RenderElement(wxSVGElement* elem, const wxSVGRect* rect, const wxSVGMatrix* parentMatrix,
 		const wxCSSStyleDeclaration* parentStyle, wxSVGSVGElement* ownerSVGElement, wxSVGElement* viewportElement,
 		wxProgressDialog* progressDlg);
-	
+
 	bool IsItemsCached() { return m_itemsCached; }
 	void EnableItemsCache(bool enable = true) { m_itemsCached = enable; }
-	
+
 protected:
 	bool m_itemsCached;
-	
+
 	virtual void DrawCanvasText(wxSVGCanvasText& canvasText, wxSVGMatrix& matrix, const wxCSSStyleDeclaration& style,
 		wxSVGSVGElement& svgElem);
 	wxSVGPatternElement* GetPatternElement(const wxSVGSVGElement& svgElem, const wxString& href);

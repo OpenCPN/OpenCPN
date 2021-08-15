@@ -73,7 +73,7 @@ void DashboardInstrument_Depth::SetData(DASH_CAP st, double data, wxString unit)
 {
       if (st == OCPN_DBP_STC_DPT)
       {
-            m_Depth = std::isnan(data) ? 0.0 : data; 
+            m_Depth = std::isnan(data) ? 0.0 : data;
 
             for (int idx = 1; idx < DEPTH_RECORD_COUNT; idx++)
             {
@@ -117,13 +117,13 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       dc->DrawLine(3, 50, size.x-3, 50);
       dc->DrawLine(3, 140, size.x-3, 140);
 
-#ifdef __WXMSW__      
+#ifdef __WXMSW__
       pen.SetStyle(wxPENSTYLE_SHORT_DASH);
 #else
       pen.SetStyle(wxPENSTYLE_DOT);
       pen.SetWidth(1);
-#endif      
-      
+#endif
+
       dc->SetPen(pen);
       dc->DrawLine(3, 65, size.x-3, 65);
       dc->DrawLine(3, 90, size.x-3, 90);
@@ -178,7 +178,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
                   points[1].y = 40 + m_ArrayDepth[idx] * ratioH;
             else
                   points[1].y = 140;
-            
+
             points[2].x = points[1].x + ratioW;
             if (m_ArrayDepth[idx + 1])
                   points[2].y = 40 + m_ArrayDepth[idx + 1] * ratioH;
@@ -188,13 +188,13 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
             points[3].x = points[2].x;
             points[3].y = 140;
             dc->DrawPolygon( 4, points);
-            
+
             points[0].x = points[2].x;
             points[0].y = 140;
 
       }
 
-#else      
+#else
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
       {
             points[idx].x = idx * ratioW + 3;
@@ -209,7 +209,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       points[DEPTH_RECORD_COUNT+1].y = 140;
       dc->DrawPolygon(DEPTH_RECORD_COUNT+2, points);
 #endif
-      
+
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground( cl );
       dc->SetFont(*g_pFontData);

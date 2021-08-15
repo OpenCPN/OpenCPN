@@ -54,7 +54,7 @@ class VWR : public RESPONSE
       */
 
       double           WindDirectionMagnitude;
-	  LEFTRIGHT			DirectionOfWind;
+      LEFTRIGHT         DirectionOfWind;
       double           WindSpeedKnots;
       double           WindSpeedms;
       double           WindSpeedKmh;

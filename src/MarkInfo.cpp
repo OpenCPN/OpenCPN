@@ -101,13 +101,13 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
 #ifdef ocpnUSE_SVG
 #ifdef __OCPN__ANDROID__
     return loadAndroidSVG( filename, width, height );
-#else    
+#else
     wxSVGDocument svgDoc;
     if( svgDoc.Load(filename) )
         return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
     else
         return wxBitmap(width, height);
-#endif    
+#endif
 #else
     return wxBitmap(width, height);
 #endif // ocpnUSE_SVG
@@ -118,7 +118,7 @@ WX_DECLARE_LIST(wxBitmap, BitmapList);
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(BitmapList);
 
-#include <wx/arrimpl.cpp> 
+#include <wx/arrimpl.cpp>
 #include <chart1.h>
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
@@ -132,7 +132,7 @@ OCPNIconCombo::OCPNIconCombo (wxWindow* parent, wxWindowID id, const wxString& v
 {
     double fontHeight = GetFont().GetPointSize() / g_Platform->getFontPointsperPixel();
     itemHeight = (int)wxRound(fontHeight);
-    
+
 }
 
 OCPNIconCombo::~OCPNIconCombo ()
@@ -144,16 +144,16 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
                                        int item,
                                        int flags ) const
 {
-    
+
     int offset_x = bmpArray[item].GetWidth();
     int bmpHeight = bmpArray[item].GetHeight();
     dc.DrawBitmap(bmpArray[item], rect.x, rect.y + (rect.height - bmpHeight)/2, true);
-    
+
     if ( flags & wxODCB_PAINTING_CONTROL )
     {
         wxString text = GetValue();
         int margin_x = 2;
-        
+
 #if wxCHECK_VERSION(2, 9, 0)
         if ( ShouldUseHintText() )
         {
@@ -161,7 +161,7 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
             wxColour col = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
             dc.SetTextForeground(col);
         }
-        
+
         margin_x = GetMargins().x;
 #endif
 
@@ -178,7 +178,7 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
 wxCoord OCPNIconCombo::OnMeasureItem( size_t item ) const
 {
     int bmpHeight = bmpArray[item].GetHeight();
-    
+
     return wxMax(itemHeight, bmpHeight);
 }
 
@@ -191,7 +191,7 @@ int OCPNIconCombo::Append(const wxString& item, wxBitmap bmp)
 {
     bmpArray.Add(bmp);
     int idx = wxOwnerDrawnComboBox::Append(item);
-    
+
     return idx;
 }
 
@@ -258,7 +258,7 @@ BEGIN_EVENT_TABLE( MarkInfoDlg, wxFrame )
      // the HTML listbox's events
      EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
      EVT_CLOSE(MarkInfoDlg::OnClose)
-     
+
      //EVT_CHOICE( ID_WAYPOINTRANGERINGS, MarkInfoDef::OnWaypointRangeRingSelect )
 END_EVENT_TABLE()
 
@@ -269,14 +269,14 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     int metric = GetCharHeight();
-    
+
 #ifdef __OCPN__ANDROID__
     //  Set Dialog Font by custom crafted Qt Stylesheet.
     wxString wqs = getFontQtStylesheet(qFont);
     wxCharBuffer sbuf = wqs.ToUTF8();
-    QString qsb = QString(sbuf.data());    
-    QString qsbq = getQtStyleSheet();          // basic scrollbars, etc    
-    this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets    
+    QString qsb = QString(sbuf.data());
+    QString qsbq = getQtStyleSheet();          // basic scrollbars, etc
+    this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
     wxScreenDC sdc;
     if(sdc.IsOk())
         sdc.GetTextExtent(_T("W"), NULL, &metric, NULL, NULL, qFont);
@@ -292,11 +292,11 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
 
 
 void MarkInfoDlg::initialize_images(void)
-{ 
+{
     wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
     _img_MUI_settings_svg = LoadSVG(iconDir + _T("MUI_settings.svg"), 2 * GetCharHeight(), 2 * GetCharHeight());
-    
-    
+
+
      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
      wxBitmap tide = style->GetIcon( _T("tidesml") );
      wxImage tide1 = tide.ConvertToImage();
@@ -307,32 +307,32 @@ void MarkInfoDlg::initialize_images(void)
 }
 
 
-    
+
 void MarkInfoDlg::Create()
 {
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     m_sizeMetric = GetCharHeight();
-    
+
 #ifdef __OCPN__ANDROID__
     //  Set Dialog Font by custom crafted Qt Stylesheet.
-    
+
     wxString wqs = getFontQtStylesheet(qFont);
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
-    
+
     QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
-    
+
     this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
-    
+
     wxScreenDC sdc;
     if(sdc.IsOk())
         sdc.GetTextExtent(_T("W"), NULL, &m_sizeMetric, NULL, NULL, qFont);
-    
+
 #endif
 
     initialize_images();
-    
+
     wxBoxSizer* bSizer1;
     bSizer1 = new wxBoxSizer( wxVERTICAL );
     SetSizer( bSizer1 );
@@ -345,7 +345,7 @@ void MarkInfoDlg::Create()
     #ifdef __OCPN__ANDROID__
     m_panelBasicProperties->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
     #endif
-    
+
     m_panelBasicProperties->SetScrollRate(0, 2);
 
     m_notebookProperties->AddPage( m_panelBasicProperties, _("Basic"), true );
@@ -363,7 +363,7 @@ void MarkInfoDlg::Create()
 //            wxDefaultPosition, wxDefaultSize, 0 );
 //    bSizerInnerProperties->Add( m_bitmapIcon, 0, wxALL, 5 );
 //    m_bitmapIcon->Show( false );
-    
+
     wxBoxSizer* bSizerTextProperties;
     bSizerTextProperties = new wxBoxSizer( wxVERTICAL );
 
@@ -383,7 +383,7 @@ void MarkInfoDlg::Create()
     bSizerName->Add( m_staticTextName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
     wxBoxSizer* bSizerNameValue = new wxBoxSizer( wxVERTICAL );
- 
+
     m_textName = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString, wxDefaultPosition,
              wxDefaultSize, 0 );
     bSizerNameValue->Add( m_textName, 0, wxALL | wxEXPAND, 5 );
@@ -397,32 +397,32 @@ void MarkInfoDlg::Create()
     ///
     wxBoxSizer* bSizer8 = new wxBoxSizer( wxHORIZONTAL );
     bSizerTextProperties->Add( bSizer8, 0, wxEXPAND, 5 );
-    
+
     m_staticTextIcon = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Icon"),
             wxDefaultPosition, wxDefaultSize, 0 );
     bSizer8->Add( m_staticTextIcon, 0, wxALL, 5 );
 
     m_bcomboBoxIcon = new OCPNIconCombo( m_panelBasicProperties, wxID_ANY, _("Combo!"),
                                         wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
-    
+
     m_bcomboBoxIcon->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
-    
+
     //  Accomodate scaling of icon
     int min_size = m_sizeMetric * 2;
     min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
     m_bcomboBoxIcon->SetMinSize( wxSize(-1, min_size) );
-    
+
     bSizer8->Add( m_bcomboBoxIcon, 1, wxALL, 5 );
 
     bSizerTextProperties->AddSpacer(5);
-    
+
     wxFlexGridSizer *LLGrid = new wxFlexGridSizer( 0, 2, 1, 1 );
     LLGrid->AddGrowableCol( 1 );
     bSizerTextProperties->Add( LLGrid, 0, wxEXPAND, 0 );
-    
+
     int w,h;
     GetTextExtent(_T("179 59.9999 W"), &w, &h);
-    
+
     m_staticTextLatitude = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Latitude"));
     LLGrid->Add( m_staticTextLatitude, 0, wxALL | wxALIGN_LEFT, 0 );
 
@@ -432,12 +432,12 @@ void MarkInfoDlg::Create()
 
     m_staticTextLongitude = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Longitude"));
     LLGrid->Add( m_staticTextLongitude, 0, wxALL  | wxALIGN_LEFT, 0 );
- 
+
     m_textLongitude = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString,  wxDefaultPosition, wxSize(w + 20, -1), 0 );
     LLGrid->Add( m_textLongitude, 1, wxALL , 5 );
 
     bSizerTextProperties->AddSpacer(15);
-    
+
     m_staticTextDescription = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Description"),
             wxDefaultPosition, wxDefaultSize, 0 );
     bSizerTextProperties->Add( m_staticTextDescription, 0, wxALL, 5 );
@@ -473,16 +473,16 @@ void MarkInfoDlg::Create()
 
     sbSizerLinks = new wxStaticBoxSizer( new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Links") ), wxVERTICAL );
     bSizerBasicProperties->Add( sbSizerLinks, 1, wxALL | wxEXPAND, 5 );
-    
+
     m_scrolledWindowLinks = new wxScrolledWindow( m_panelBasicProperties, wxID_ANY,
             wxDefaultPosition, wxSize(-1, 100), wxHSCROLL | wxVSCROLL );
     m_scrolledWindowLinks->SetMinSize( wxSize( -1, 80 ) );
     m_scrolledWindowLinks->SetScrollRate( 2, 2 );
     sbSizerLinks->Add( m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5 );
-    
+
     bSizerLinks = new wxBoxSizer( wxVERTICAL );
     m_scrolledWindowLinks->SetSizer( bSizerLinks );
-    
+
     m_menuLink = new wxMenu();
     wxMenuItem* m_menuItemDelete;
     m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ), wxEmptyString, wxITEM_NORMAL );
@@ -502,15 +502,15 @@ void MarkInfoDlg::Create()
     bSizer9->Add( m_buttonAddLink, 0, wxALL, 5 );
 
     m_buttonAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MarkInfoDlg::OnAddLink ), NULL, this );
-    
+
     sbSizerLinks->Add( bSizer9, 0, wxEXPAND, 5 );
 
 
 #endif
-    
-    
-    
-    
+
+
+
+
     m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxBoxSizer* bSizer15;
     bSizer15 = new wxBoxSizer( wxVERTICAL );
@@ -520,16 +520,16 @@ void MarkInfoDlg::Create()
 
     m_panelDescription->SetSizer( bSizer15 );
     m_notebookProperties->AddPage( m_panelDescription, _("Description"), false );
-    
+
 
 /////////////////////////////////////////////////////// EXTENDED ///////////////////////////////////////////////////////
-    
+
     m_panelExtendedProperties = new wxScrolledWindow( m_notebookProperties, wxID_ANY,
                                                    wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
     #ifdef __OCPN__ANDROID__
     m_panelExtendedProperties->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
     #endif
-    
+
     m_panelExtendedProperties->SetScrollRate(0, 2);
 
     wxBoxSizer* fSizerExtProperties = new wxBoxSizer(wxVERTICAL);
@@ -547,20 +547,20 @@ void MarkInfoDlg::Create()
     wxStaticText* m_staticTextVisible = new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show on chart"));
     gbSizerInnerExtProperties->Add(m_staticTextVisible);
     gbSizerInnerExtProperties->Add( 0, 0, 1, wxEXPAND, 0 );
-    
+
     m_checkBoxScaMin = new wxCheckBox(sbSizerExtProperties->GetStaticBox(), ID_CHECKBOX_SCAMIN_VIS, wxEmptyString);
     gbSizerInnerExtProperties->Add(m_checkBoxScaMin, 0, wxALIGN_CENTRE_VERTICAL, 0);
     m_staticTextScaMin = new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show at scale > 1 :"));
     gbSizerInnerExtProperties->Add(m_staticTextScaMin, 0, wxALIGN_CENTRE_VERTICAL, 0);
     m_textScaMin = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY);
     gbSizerInnerExtProperties->Add(m_textScaMin, 0, wxALL|wxEXPAND, 5);
-    
+
     m_checkBoxShowNameExt = new wxCheckBox(sbSizerExtProperties->GetStaticBox(), ID_SHOWNAMECHECKBOX_EXT, wxEmptyString);
     gbSizerInnerExtProperties->Add(m_checkBoxShowNameExt);
     m_staticTextShowNameExt = new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show waypoint name"));
     gbSizerInnerExtProperties->Add(m_staticTextShowNameExt);
     gbSizerInnerExtProperties->Add( 0, 0, 1, wxEXPAND, 0 );
-    
+
     sbRangeRingsExtProperties = new wxStaticBoxSizer(wxVERTICAL, sbSizerExtProperties->GetStaticBox(), _("Range rings"));
     wxFlexGridSizer* gbRRExtProperties = new wxFlexGridSizer(4, 0, 0);
     gbRRExtProperties->AddGrowableCol(0);
@@ -573,20 +573,20 @@ void MarkInfoDlg::Create()
     gbRRExtProperties->Add( 0, 0, 1, wxEXPAND, 5 ); // a spacer
     m_staticTextRR4 = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Color"));
     gbRRExtProperties->Add(m_staticTextRR4, 0, wxLEFT, 5);
-    
+
     wxString rrAlt[] = {_("None"), _T( "1" ), _T( "2" ), _T( "3" ),
                       _T( "4" ), _T( "5" ), _T( "6" ), _T( "7" ),
                       _T( "8" ), _T( "9" ), _T( "10" )};
     m_ChoiceWaypointRangeRingsNumber =  new wxChoice(sbSizerExtProperties->GetStaticBox(), ID_WPT_RANGERINGS_NO, wxDefaultPosition,  wxDefaultSize, 11, rrAlt);
 
-    
+
     gbRRExtProperties->Add(m_ChoiceWaypointRangeRingsNumber, 0, wxALL|wxEXPAND, 5);
     m_textWaypointRangeRingsStep = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("0.05"), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_textWaypointRangeRingsStep, 0, wxALL|wxEXPAND, 5);
-    
+
     m_RangeRingUnits = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrDistanceUnit());
     gbRRExtProperties->Add(m_RangeRingUnits, 0, wxALIGN_CENTRE_VERTICAL|wxALIGN_LEFT, 0);
-    
+
     m_PickColor = new wxColourPickerCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxColour(0,0,0), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_PickColor, 0, wxALL|wxEXPAND, 5);
     sbRangeRingsExtProperties->Add(gbRRExtProperties, 1, wxLEFT|wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
@@ -595,7 +595,7 @@ void MarkInfoDlg::Create()
 
     wxFlexGridSizer* gbSizerInnerExtProperties2 = new wxFlexGridSizer(2, 0, 0);
     gbSizerInnerExtProperties2->AddGrowableCol(1);
-    
+
     m_staticTextGuid = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("GUID"),
                                         wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties2->Add(m_staticTextGuid, 0, wxALIGN_CENTRE_VERTICAL, 0);
@@ -603,14 +603,14 @@ void MarkInfoDlg::Create()
                                     wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
     m_textCtrlGuid->SetEditable(false);
     gbSizerInnerExtProperties2->Add(m_textCtrlGuid, 0, wxALL|wxEXPAND, 5);
-    
+
     wxFlexGridSizer* gbSizerInnerExtProperties1 = new wxFlexGridSizer(3, 0, 0);
     gbSizerInnerExtProperties1->AddGrowableCol(1);
-    
+
     m_staticTextTideStation = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Tide Station"),
                                                wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties1->Add(m_staticTextTideStation, 0, wxALIGN_CENTRE_VERTICAL, 5);
-    
+
 #ifdef __OCPN__ANDROID__
     m_choiceTideChoices.Add(_T(" "));
     m_comboBoxTideStation = new wxChoice( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceTideChoices);
@@ -620,11 +620,11 @@ void MarkInfoDlg::Create()
 #else
     m_comboBoxTideStation = new wxComboBox( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
     gbSizerInnerExtProperties1->Add(m_comboBoxTideStation, 0, wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL, 5);
-#endif    
-    
+#endif
+
     m_buttonShowTides = new wxBitmapButton( sbSizerExtProperties->GetStaticBox(), ID_BTN_SHOW_TIDES, m_bmTide, wxDefaultPosition, m_bmTide.GetSize(), 0);
     gbSizerInnerExtProperties1->Add(m_buttonShowTides, 0, wxALL|wxALIGN_CENTRE_VERTICAL, 5);
-    
+
     m_staticTextArrivalRadius = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Arrival Radius") );
     gbSizerInnerExtProperties1->Add(m_staticTextArrivalRadius, 0, wxALIGN_CENTRE_VERTICAL, 0);
     m_textArrivalRadius = new wxTextCtrl( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
@@ -642,7 +642,7 @@ void MarkInfoDlg::Create()
     m_staticTextPlSpeedUnits = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrSpeedUnit(),
             wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties1->Add(m_staticTextPlSpeedUnits, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    
+
 #ifndef __OCPN__ANDROID__
     m_staticTextEta = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("ETD (UTC)") );
     gbSizerInnerExtProperties1->Add(m_staticTextEta, 0, wxALIGN_CENTRE_VERTICAL, 0);
@@ -651,7 +651,7 @@ void MarkInfoDlg::Create()
     bsTimestamp->Add(m_cbEtaPresent, 0, wxALL|wxEXPAND, 5);
     m_EtaDatePickerCtrl = new wxDatePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_DATEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
     bsTimestamp->Add(m_EtaDatePickerCtrl, 0, wxALL|wxEXPAND, 5);
-    
+
 #ifdef __WXGTK__
     m_EtaTimePickerCtrl = new TimeCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize);
 #else
@@ -665,11 +665,11 @@ void MarkInfoDlg::Create()
     sbSizerExtProperties->Add(sbRangeRingsExtProperties, 0, wxALL|wxEXPAND, 5);
     sbSizerExtProperties->Add(gbSizerInnerExtProperties2, 0, wxALL|wxEXPAND, 5);
     sbSizerExtProperties->Add(gbSizerInnerExtProperties1, 0, wxALL|wxEXPAND, 5);
-    
+
     fSizerExtProperties->Add(sbSizerExtProperties, 1, wxALL|wxEXPAND);
 
 
-//-----------------    
+//-----------------
     bSizer1->Add( m_notebookProperties, 1, wxEXPAND | wxALL, 5 );
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -678,7 +678,7 @@ void MarkInfoDlg::Create()
     DefaultsBtn = new wxBitmapButton( this, ID_DEFAULT, _img_MUI_settings_svg, wxDefaultPosition, _img_MUI_settings_svg.GetSize(), 0);
     btnSizer->Add(DefaultsBtn, 0, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
     btnSizer->Add(0, 0, 1, wxEXPAND);  //spacer
-    
+
     m_sdbSizerButtons = new wxStdDialogButtonSizer();
     m_sdbSizerButtons->AddButton(new wxButton(this, wxID_OK));
     m_sdbSizerButtons->AddButton(new wxButton(this, wxID_CANCEL, _("Cancel")));
@@ -687,11 +687,11 @@ void MarkInfoDlg::Create()
 
 
     //SetMinSize(wxSize(-1, 600));
-    
+
     // Connect Events
     m_textLatitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
     m_textLongitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
-#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....
     m_htmlList->Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
 #else
 #endif
@@ -699,14 +699,14 @@ void MarkInfoDlg::Create()
     //m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
     //m_EtaDatePickerCtrl->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
     m_comboBoxTideStation->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnTideStationCombobox ), NULL, this );
-    
-    
-    
+
+
+
 }
 
 
 void MarkInfoDlg::OnClose( wxCloseEvent& event )
-{ 
+{
     Hide();
     event.Veto();
     if(m_pRoutePoint)
@@ -770,37 +770,37 @@ void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
 
 void MarkInfoDlg::RecalculateSize( void )
 {
-#ifdef __OCPN__ANDROID__    
-    
+#ifdef __OCPN__ANDROID__
+
     Layout();
 
     wxSize dsize = GetParent()->GetClientSize();
-    
+
     wxSize esize;
 
     esize.x = GetCharHeight() * 20;
     esize.y = GetCharHeight() * 40;
     //qDebug() << "esizeA" << esize.x << esize.y;
-    
+
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
     SetSize(wxSize(esize.x, esize.y));
     //qDebug() << "esize" << esize.x << esize.y;
-    
+
     wxSize fsize = GetSize();
     fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
     fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
     //qDebug() << "fsize" << fsize.x << fsize.y;
-    
+
     //  And finally, not too tall...
     fsize.y = wxMin(fsize.y, (25 * GetCharHeight()));
-    
+
     SetSize(wxSize(-1, fsize.y));
 
     m_defaultClientSize = GetClientSize();
     Center();
 #endif
-    
+
 }
 
 
@@ -813,7 +813,7 @@ MarkInfoDlg::~MarkInfoDlg()
                             wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
     m_textLongitude->Disconnect( wxEVT_CONTEXT_MENU,
                              wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
-#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....
     m_htmlList->Disconnect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
 #else
 #endif
@@ -822,7 +822,7 @@ MarkInfoDlg::~MarkInfoDlg()
 #ifndef __OCPN__ANDROID__
     m_EtaTimePickerCtrl->Disconnect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
     m_EtaDatePickerCtrl->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
-#endif    
+#endif
 
 #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
@@ -879,10 +879,10 @@ void MarkInfoDlg::SetRoutePoint( RoutePoint *pRP )
 
 void MarkInfoDlg::UpdateHtmlList()
 {
-#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....
     GetSimpleBox()->Clear();
     int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
-    
+
     if( NbrOfLinks > 0 ) {
         wxHyperlinkListNode *linknode = m_pRoutePoint->m_HyperlinkList->GetFirst();
         while( linknode ) {
@@ -890,7 +890,7 @@ void MarkInfoDlg::UpdateHtmlList()
             wxString s = wxString::Format(wxT("<a href='%s'>%s</a>"),link->Link, link->DescrText );
             GetSimpleBox()->AppendString(s);
             linknode = linknode->GetNext();
-        }       
+        }
     }
 #else
         // Clear the list
@@ -926,7 +926,7 @@ void MarkInfoDlg::UpdateHtmlList()
                 linknode = linknode->GetNext();
             }
         }
-        
+
         // Integrate all of the rebuilt hyperlink controls
          m_scrolledWindowLinks->Layout();
 #endif
@@ -945,7 +945,7 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
 //        Windows has trouble handling local file URLs with embedded anchor points, e.g file://testfile.html#point1
 //        The trouble is with the wxLaunchDefaultBrowser with verb "open"
 //        Workaround is to probe the registry to get the default browser, and open directly
-//     
+//
 //        But, we will do this only if the URL contains the anchor point character '#'
 //        What a hack......
 
@@ -973,13 +973,13 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
                 wxExecute( cl );        // Async, so Fire and Forget...
             }
         }
-	}
-	else {
-		wxString url = event.GetLinkInfo().GetHref().c_str();
-		url.Replace(_T(" "), _T("%20"));
-		::wxLaunchDefaultBrowser(url);
-		event.Skip();
-	}
+    }
+    else {
+        wxString url = event.GetLinkInfo().GetHref().c_str();
+        url.Replace(_T(" "), _T("%20"));
+        ::wxLaunchDefaultBrowser(url);
+        event.Skip();
+    }
 #else
     wxString url = event.GetLinkInfo().GetHref().c_str();
     url.Replace(_T(" "), _T("%20") );
@@ -1030,8 +1030,8 @@ void MarkInfoDlg::OnWptRangeRingsNoChange( wxCommandEvent& event )
 {
     if( !m_pRoutePoint->m_bIsInLayer ){
         m_textWaypointRangeRingsStep->Enable( (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0) );
-        m_PickColor->Enable( (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0) );        
-    }        
+        m_PickColor->Enable( (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0) );
+    }
 }
 
 void MarkInfoDlg::OnSelectScaMinExt( wxCommandEvent& event )
@@ -1056,41 +1056,41 @@ void MarkInfoDlg::OnPositionCtlUpdated( wxCommandEvent& event )
 
 void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
 {
-#ifndef __OCPN__ANDROID__    
+#ifndef __OCPN__ANDROID__
     //SimpleHtmlList->HitTest doesn't seem to work under msWin, so we use a custom made version
     wxPoint pos = event.GetPosition();
-    i_htmlList_item = -1; 
+    i_htmlList_item = -1;
     for( int i=0; i <  (int)GetSimpleBox()->GetCount(); i++ )
     {
         wxRect rect = GetSimpleBox()->GetItemRect( i );
         if( rect.Contains( pos) ){
             i_htmlList_item = i;
             break;
-        }            
+        }
     }
 
     wxMenu* popup = new wxMenu();
-    if( ( GetSimpleBox()->GetCount() ) > 0 && 
+    if( ( GetSimpleBox()->GetCount() ) > 0 &&
             ( i_htmlList_item > -1 ) &&
             ( i_htmlList_item < (int)GetSimpleBox()->GetCount() ) ) {
         popup->Append( ID_RCLK_MENU_DELETE_LINK, _("Delete") );
         popup->Append( ID_RCLK_MENU_EDIT_LINK, _("Edit") );
     }
     popup->Append( ID_RCLK_MENU_ADD_LINK, _("Add New") );
-    
+
     m_contextObject = event.GetEventObject();
     popup->Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MarkInfoDlg::On_html_link_popupmenu_Click), NULL, this);
     PopupMenu( popup );
-    delete popup;        
+    delete popup;
 #else
-    
+
     m_pEditedLink = wxDynamicCast(event.GetEventObject(), wxHyperlinkCtrl);
-     
+
     if(m_pEditedLink){
 
         wxString url = m_pEditedLink->GetURL();
         wxString label = m_pEditedLink->GetLabel();
-        i_htmlList_item = -1; 
+        i_htmlList_item = -1;
         HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
         if( hyperlinklist->GetCount() > 0 ){
             int i = 0;
@@ -1101,7 +1101,7 @@ void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
                     i_htmlList_item = i;
                     break;
                 }
-                
+
                 linknode = linknode->GetNext();
                 i++;
             }
@@ -1124,7 +1124,7 @@ void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
             popup->Append( menuItemEdit );
 
         }
-        
+
         wxMenuItem* menuItemAdd = new wxMenuItem( popup, ID_RCLK_MENU_ADD_LINK, wxString( _("Add New") ), wxEmptyString,  wxITEM_NORMAL );
 #ifdef __WXQT__
         menuItemAdd->SetFont(sFont);
@@ -1136,7 +1136,7 @@ void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
         wxPoint p = m_scrolledWindowLinks->GetPosition();
         p.x += m_scrolledWindowLinks->GetSize().x / 2;
         PopupMenu( popup, p );
-        delete popup;        
+        delete popup;
 
         //m_scrolledWindowLinks->PopupMenu( m_menuLink,
             //m_pEditedLink->GetPosition().x /*+ event.GetPosition().x*/,
@@ -1144,17 +1144,17 @@ void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
     }
 /*
     wxPoint pos = event.GetPosition();
-    i_htmlList_item = -1; 
+    i_htmlList_item = -1;
     for( int i=0; i <  (int)GetSimpleBox()->GetCount(); i++ )
     {
         wxRect rect = GetSimpleBox()->GetItemRect( i );
         if( rect.Contains( pos) ){
             i_htmlList_item = i;
             break;
-        }            
+        }
     }
 
- */    
+ */
 #endif
 }
 
@@ -1162,21 +1162,21 @@ void MarkInfoDlg::OnAddLink( wxCommandEvent& event )
 {
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
     evt.SetId(ID_RCLK_MENU_ADD_LINK);
-    
+
     On_html_link_popupmenu_Click( evt );
 }
 
 void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )
 {
     switch(event.GetId()) {
- 		case ID_RCLK_MENU_DELETE_LINK:
+        case ID_RCLK_MENU_DELETE_LINK:
         {
             wxHyperlinkListNode* node = m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item);
             m_pRoutePoint->m_HyperlinkList->DeleteNode(node);
             UpdateHtmlList();
- 			break;
+            break;
         }
- 		case ID_RCLK_MENU_EDIT_LINK:
+        case ID_RCLK_MENU_EDIT_LINK:
         {
             Hyperlink *link = m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->GetData();
             LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
@@ -1191,7 +1191,7 @@ void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )
                     UpdateHtmlList();
                 }
             });
- 			break;
+            break;
         }
         case ID_RCLK_MENU_ADD_LINK:
         {
@@ -1216,7 +1216,7 @@ void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )
                     UpdateHtmlList();
                 }
             });
- 			break;
+            break;
         }
     }
     event.Skip();
@@ -1296,7 +1296,7 @@ void MarkInfoDlg::DefautlBtnClicked( wxCommandEvent& event )
     m_SaveDefaultDlg->Center();
     DimeControl( m_SaveDefaultDlg );
     int retcode = m_SaveDefaultDlg->ShowModal();
-    
+
     {
         if ( retcode == wxID_OK ) {
             double value;
@@ -1357,11 +1357,11 @@ void MarkInfoDlg::OnMarkInfoCancelClick( wxCommandEvent& event )
     }
 
     m_lasttspos.Clear();
-    
-    #ifdef __WXGTK__ 
+
+    #ifdef __WXGTK__
         gFrame->Raise();
     #endif
-    
+
     Show( false );
     delete m_pMyLinkList;
     m_pMyLinkList = NULL;
@@ -1370,7 +1370,7 @@ void MarkInfoDlg::OnMarkInfoCancelClick( wxCommandEvent& event )
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
     #endif
-    
+
     event.Skip();
 }
 
@@ -1383,24 +1383,24 @@ void MarkInfoDlg::OnMarkInfoOKClick( wxCommandEvent& event )
         SaveChanges(); // write changes to globals and update config
     }
 
-    #ifdef __WXGTK__ 
+    #ifdef __WXGTK__
         gFrame->Raise();
     #endif
-    
+
     Show( false );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateWptListCtrl();
-        
+
     if( pRoutePropDialog && pRoutePropDialog->IsShown() )
         pRoutePropDialog->UpdatePoints();
 
     SetClientSize(m_defaultClientSize);
-    
+
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
     #endif
-    
+
     event.Skip();
 }
 
@@ -1441,9 +1441,9 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             default:
                 break;
         }
-                
+
         m_RangeRingUnits->SetLabel(units);
-        
+
         wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
         m_PickColor->SetColour(col);
 
@@ -1455,13 +1455,13 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
                 m_comboBoxTideStation->SetSelection(1);
             }
         }
-        
+
         if( m_pRoutePoint->GetPlannedSpeed() > .01 ) {
             m_textCtrlPlSpeed->SetValue(wxString::Format("%.1f", toUsrSpeed(m_pRoutePoint->GetPlannedSpeed())));
         } else {
             m_textCtrlPlSpeed->SetValue(wxEmptyString);
         }
-        
+
 #ifndef __OCPN__ANDROID__
         wxDateTime etd;
         etd = m_pRoutePoint->GetManualETD();
@@ -1472,7 +1472,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         } else {
             m_cbEtaPresent->SetValue(false);
         }
-#endif        
+#endif
 
 
         m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1487,7 +1487,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         m_staticTextArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
         m_staticTextArrivalUnits->Show(m_pRoutePoint->m_bIsInRoute);
         m_textArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
-        
+
         if( positionOnly ) return true;
 
         //Layer or not?
@@ -1542,25 +1542,25 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_EtaDatePickerCtrl->Enable(true);
             m_EtaTimePickerCtrl->Enable(true);
             m_cbEtaPresent->Enable(true);
-#endif            
+#endif
             m_notebookProperties->SetSelection(0);
             m_comboBoxTideStation->Enable(true);
         }
-               
- 
+
+
         // Fill the icon selector combo box
         m_bcomboBoxIcon->Clear();
         //      Iterate on the Icon Descriptions, filling in the combo control
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
-        
+
         if( fillCombo ){
             for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
                 wxString *ps = pWayPointMan->GetIconDescription( i );
                 wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
-                    
+
                 m_bcomboBoxIcon->Append( *ps, bmp );
             }
-        }                
+        }
         // find the correct item in the combo box
         int iconToSelect = -1;
         for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
@@ -1574,18 +1574,18 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         OnShowWaypointNameSelectBasic( ev );
         OnWptRangeRingsNoChange( ev );
         OnSelectScaMinExt(ev);
-        UpdateHtmlList();       
+        UpdateHtmlList();
     }
-    
+
 
     #ifdef __OCPN__ANDROID__
         androidEnableBackButton( false );
     #endif
-    
+
     Fit();
     //SetMinSize(wxSize(-1, 600));
     RecalculateSize();
-    
+
     return true;
 }
 
@@ -1643,7 +1643,7 @@ bool MarkInfoDlg::SaveChanges()
             m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1) );
         if(m_textArrivalRadius->GetValue().ToDouble(&value))
             m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1) );
-        
+
         m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
         if( m_textCtrlPlSpeed->GetValue() == wxEmptyString ) {
             m_pRoutePoint->SetPlannedSpeed(0.0);
@@ -1653,7 +1653,7 @@ bool MarkInfoDlg::SaveChanges()
                 m_pRoutePoint->SetPlannedSpeed(fromUsrSpeed(spd));
             }
         }
-        
+
 #ifndef __OCPN__ANDROID__
         if( m_cbEtaPresent->GetValue() ) {
             wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
@@ -1719,13 +1719,13 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
 {
     //(*Initialize(SaveDefaultsDialog)
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-    
+
     wxBoxSizer* bSizer1 = new wxBoxSizer(wxVERTICAL);
     wxStdDialogButtonSizer* StdDialogButtonSizer1;
-    
+
     StaticText1 = new wxStaticText(this, wxID_ANY, _("Check which properties of current waypoint\n should be set as default for NEW waypoints."));
     bSizer1->Add(StaticText1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
-    
+
     wxFlexGridSizer* fgSizer1 = new wxFlexGridSizer(2);
 
     wxString s = ( g_pMarkInfoDialog->m_checkBoxShowName->GetValue() ? _("Do use"): _("Don't use") );
@@ -1734,14 +1734,14 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
     stName = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
     stName->Wrap( -1 );
     fgSizer1->Add( stName, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
-    
+
     s = g_pMarkInfoDialog->m_pRoutePoint->GetIconName();
     IconCB = new wxCheckBox(this, wxID_ANY, _("Icon"));
     fgSizer1->Add(IconCB, 0, wxALL, 5);
     stIcon = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
     stIcon->Wrap( -1 );
     fgSizer1->Add( stIcon, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
-    
+
     s = ( g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber->GetSelection() ?
          _("Do use") + wxString::Format(_T(" (%i) "), g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber->GetSelection() ): _("Don't use") );
     RangRingsCB = new wxCheckBox(this, wxID_ANY, _("Range rings"));
@@ -1749,14 +1749,14 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
     stRR = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
     stRR->Wrap( -1 );
     fgSizer1->Add( stRR, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
-    
+
     s = ( g_pMarkInfoDialog->m_textArrivalRadius->GetValue());
     ArrivalRCB = new wxCheckBox(this, wxID_ANY, _("Arrival radius"));
     fgSizer1->Add(ArrivalRCB, 0, wxALL, 5);
     stArrivalR = new wxStaticText( this, wxID_ANY, wxString::Format(_T("[%s %s]"), s.c_str(), getUsrDistanceUnit().c_str()), wxDefaultPosition, wxDefaultSize, 0 );
     stArrivalR->Wrap( -1 );
     fgSizer1->Add( stArrivalR, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
-    
+
     s = ( g_pMarkInfoDialog->m_checkBoxScaMin->GetValue() ?
          _("Show only if")+_T(" < ") + g_pMarkInfoDialog->m_textScaMin->GetValue():
          _("Show always") );
@@ -1765,7 +1765,7 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
     stScale = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
     stScale->Wrap( -1 );
     fgSizer1->Add( stScale, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
-    
+
     bSizer1->Add(fgSizer1, 0, wxALL|wxEXPAND, 5);
 
     StdDialogButtonSizer1 = new wxStdDialogButtonSizer();
@@ -1781,7 +1781,7 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
 #ifdef __OCPN__ANDROID__
     SetSize(parent->GetSize());
 #endif
-    
+
     Center();
 }
 

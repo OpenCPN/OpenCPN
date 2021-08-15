@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:        CSSStyleDeclaration.cpp
-// Purpose:     
+// Purpose:
 // Author:      Alex Thuering
 // Created:     2005/05/03
 // RCS-ID:      $Id: CSSStyleDeclaration.cpp,v 1.13 2015/03/21 16:28:23 ntalex Exp $
@@ -47,7 +47,7 @@ void wxCSSStyleDeclaration::Add(const wxCSSStyleDeclaration& style) {
 wxString wxCSSStyleDeclaration::GetCSSText() const {
 	wxString text;
 	const_iterator it;
-	for (it = begin(); it != end(); ++it) 
+	for (it = begin(); it != end(); ++it)
 		text = text + GetPropertyName(it->first) + wxT(":") + it->second->GetCSSText() + wxT(";");
 	return text;
 }

@@ -61,7 +61,7 @@ class wxSVGDocument:
       wxSvgXmlDocument(stream, encoding) { Init(); }
     wxSVGDocument(const wxSVGDocument& doc);
     virtual ~wxSVGDocument();
-    
+
     virtual bool Load(const wxString& filename, const wxString& encoding = wxT("UTF-8"));
     virtual bool Load(wxInputStream& stream, const wxString& encoding = wxT("UTF-8"));
 
@@ -71,26 +71,26 @@ class wxSVGDocument:
     inline double GetScaleX() { return m_scale; }
     inline double GetScaleY() { return m_scaleY > 0 ? m_scaleY : m_scale; }
     const wxSVGMatrix& GetScreenCTM() { return m_screenCTM; }
-    
+
     wxString GetTitle();
     void SetTitle(const wxString& n);
-    
+
     wxSVGSVGElement* GetRootElement() { return (wxSVGSVGElement*) GetRoot(); }
     void SetRootElement(wxSVGSVGElement* n) { SetRoot((wxSvgXmlElement*) n); }
-    
+
     wxSVGElement* GetElementById(const wxString& id);
-    
+
     wxSvgXmlElement* CreateElement(const wxString& tagName);
     wxSvgXmlElement* CreateElementNS(const wxString& namespaceURI, const wxString& qualifiedName);
-    
+
     double GetDuration();
     double GetCurrentTime() { return m_time; }
     void SetCurrentTime(double seconds);
-    
+
     /** Renders SVG to bitmap image */
     wxImage Render(int width = -1, int height = -1, const wxSVGRect* rect = NULL, bool preserveAspectRatio = true,
 		bool alpha = false, wxProgressDialog* progressDlg = NULL);
-    
+
     static void ApplyAnimation(wxSVGElement* parent, wxSVGSVGElement* ownerSVGElement);
   private:
       DECLARE_DYNAMIC_CLASS(wxSVGDocument)
