@@ -21,7 +21,7 @@ jobs:
            username: $DOCKER_USER
            password: $DOCKER_PW
      environment:
-       - OCPN_TARGET:  focal
+       - OCPN_TARGET:  focal-gtk3
        - CMAKE_BUILD_PARALLEL_LEVEL: 2
      steps:
        - checkout
