@@ -14,6 +14,20 @@ jobs:
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
+   build-focal:
+     docker:
+       - image: circleci/buildpack-deps:focal-scm
+         auth:
+           username: $DOCKER_USER
+           password: $DOCKER_PW
+     environment:
+       - OCPN_TARGET:  focal
+       - CMAKE_BUILD_PARALLEL_LEVEL: 2
+     steps:
+       - checkout
+       - run: cat /etc/apt/sources.list
+       - run: ci/generic-build-debian.sh
+       - run: ci/generic-upload.sh
    build-macos:
      macos:
        xcode: "11.3.0"
@@ -64,6 +78,11 @@ workflows:
   build_all:
     jobs:
       - build-xenial:
+          filters:
+            branches:
+              only:
+                - master
+      - build-focal:
           filters:
             branches:
               only:
