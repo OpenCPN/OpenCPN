@@ -169,7 +169,7 @@ msgid "OpenCPN Info"
 msgstr "OpenCPN Info"
 
 #: src/ais.cpp:118
-msgid "Underway"
+msgid "Underway using Engine"
 msgstr "Let, maskindrevet"
 
 #: src/ais.cpp:119
@@ -201,7 +201,7 @@ msgid "Engaged in Fishing"
 msgstr "Beskæftiget med fiskeri"
 
 #: src/ais.cpp:126
-msgid "Under way sailing"
+msgid "Underway Sailing"
 msgstr "Let, for sejl"
 
 #: src/ais.cpp:127 src/ais.cpp:156

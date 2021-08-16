@@ -115,7 +115,7 @@ WX_DEFINE_LIST(AISTargetTrackList);
 wxString ais_get_status(int index)
 {
     static const wxString ais_status[] = {
-        _("Underway"),
+        _("Underway using Engine"),
         _("At Anchor"),
         _("Not Under Command"),
         _("Restricted Manoeuvrability"),
@@ -123,7 +123,7 @@ wxString ais_get_status(int index)
         _("Moored"),
         _("Aground"),
         _("Engaged in Fishing"),
-        _("Under way sailing"),
+        _("Underway Sailing"),
         _("High Speed Craft"),
         _("Wing In Ground Effect"),
         _("Power-driven vessel towing astern (regional use)"),

@@ -170,7 +170,7 @@ msgid "OpenCPN Info"
 msgstr "OpenCPN — Сведения"
 
 #: src/ais.cpp:118
-msgid "Underway"
+msgid "Underway using Engine"
 msgstr "движется"
 
 #: src/ais.cpp:119
@@ -202,7 +202,7 @@ msgid "Engaged in Fishing"
 msgstr "занимается рыбным ловом"
 
 #: src/ais.cpp:126
-msgid "Under way sailing"
+msgid "Underway Sailing"
 msgstr "Движется [под парусом]"
 
 #: src/ais.cpp:127 src/ais.cpp:156

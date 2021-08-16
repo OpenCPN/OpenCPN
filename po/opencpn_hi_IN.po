@@ -169,7 +169,7 @@ msgid "OpenCPN Info"
 msgstr "ओपनसीपीएन जानकारी"
 
 #: src/ais.cpp:118
-msgid "Underway"
+msgid "Underway using Engine"
 msgstr "क्रम में"
 
 #: src/ais.cpp:119
@@ -201,7 +201,7 @@ msgid "Engaged in Fishing"
 msgstr "मत्स्य पालन में लगे"
 
 #: src/ais.cpp:126
-msgid "Under way sailing"
+msgid "Underway Sailing"
 msgstr "रास्ते नौकायन के तहत"
 
 #: src/ais.cpp:127 src/ais.cpp:156
