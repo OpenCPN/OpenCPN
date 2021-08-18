@@ -10,11 +10,8 @@ sudo apt-get install -q devscripts equivs
 mk-build-deps ./ci/control --install --root-cmd=sudo --remove
 sudo apt-get --allow-unauthenticated install -f
 
-# Ancient cmake cannot handle multi-line block comments:
-sed -i '/#\[\[/,/#\]\]/{//!d}' CMakeLists.txt
-
-# Trusty and xenial finds webview header but not the library:
-if [ "$OCPN_TARGET" = "trusty"  -o "$OCPN_TARGET" = "xenial" ]; then \
+# Xenial finds webview header but not the library:
+if [ "$OCPN_TARGET" = "xenial" ]; then
     WEBVIEW_OPT="-DOCPN_USE_WEBVIEW:BOOL=OFF"
 fi
 
