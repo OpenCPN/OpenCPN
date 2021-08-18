@@ -551,7 +551,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             html << rowEnd;
         }
 
-        if( Class == AIS_CLASS_A || Class == AIS_CLASS_B || Class == AIS_ARPA || Class == AIS_APRS ) {
+        if( Class == AIS_CLASS_A || Class == AIS_CLASS_B || Class == AIS_ARPA || Class == AIS_APRS || Class == AIS_SART) {
             int crs = wxRound( COG );
             if( crs < 360 ) {
                 wxString magString, trueString;
