@@ -1554,10 +1554,15 @@ void dashboard_pi::CalculateAndUpdateTWDS( double awsKnots, double awaDegrees)
         // Calculate the speed (magnitude of the vector)
         double tws = pow(((twdx * twdx) + (twdy * twdy)), 0.5);
 
-        // calculate the direction
+        // calculate the True Wind Angle
         double twd = atan2(twdy, twdx) * 180. / PI;
 
-        // Re-orient to the ownship HDT
+        if(twd < 0)
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, -twd, _T("\u00B0L"));
+        else
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, twd, _T("\u00B0R"));
+
+        // Calculate the True Wind Direction, by re-orienting to the ownship HDT
         double twdc = twd + g_dHDT;
 
         // Normalize
@@ -1567,7 +1572,6 @@ void dashboard_pi::CalculateAndUpdateTWDS( double awsKnots, double awaDegrees)
         // Update the instruments
         //printf("CALC: %4.0f %4.0f\n", tws, twdc);
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twdc, _T("\u00B0"));
-        SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, twdc, _T("\u00B0"));
 
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,toUsrSpeed_Plugin(tws, g_iDashWindSpeedUnit),
                                                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
