@@ -6728,6 +6728,8 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 {
     bool b_run = FrameTimer1.IsRunning();
     FrameTimer1.Stop();                  // stop other asynchronous activity
+    bool b_runCOGTimer = FrameCOGTimer.IsRunning();
+    FrameCOGTimer.Stop();
 
     // ..For each canvas...
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -6794,8 +6796,16 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     pConfig->UpdateChartDirs( DirArray );
 
-    if( b_run ) FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
-
+    // Restart timers, if necessary
+    if( b_run )
+        FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
+    if( b_runCOGTimer ){
+           //    Restart the COG rotation timer, max frequency is 10 hz.
+        int period_ms = 100;
+        if( g_COGAvgSec > 0 )
+            period_ms = g_COGAvgSec * 1000;
+        FrameCOGTimer.Start( period_ms, wxTIMER_CONTINUOUS );
+    }
     return true;
 }
 
