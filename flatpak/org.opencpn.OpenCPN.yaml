@@ -94,7 +94,7 @@ modules:
           - -DOCPN_CI_BUILD=ON
           - -DOCPN_FLATPAK=ON
           - -DBUILD_SHARED_LIBS=OFF
-          - -DOCPN_TARGET_TUPLE=flatpak-x86_64;18.08;x86_64
+          - -DOCPN_TARGET_TUPLE=flatpak-x86_64;20.08;x86_64
           - -DCMAKE_FIND_ROOT_PATH=/app
           - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
           - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
