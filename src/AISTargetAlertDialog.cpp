@@ -405,7 +405,8 @@ void AISTargetAlertDialog::OnIdJumptoClick( wxCommandEvent& event )
 {
     if( m_pdecoder ) {
         AIS_Target_Data *td = m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
-        if( td ) gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), td->Lat, td->Lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
+        if( td ) gFrame->JumpToPosition( gFrame->GetFocusCanvas(), 
+                 td->Lat, td->Lon, gFrame->GetFocusCanvas()->GetVPScale() );
     }
 }
 
