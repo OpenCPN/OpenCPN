@@ -289,7 +289,7 @@ wxString AIS_Target_Data::GetFullName( void )
 }
 
 
-wxString AIS_Target_Data::BuildQueryResult( void )
+wxString AIS_Target_Data::BuildQueryResult( void ) 
 {
     wxString html;
     wxDateTime now = wxDateTime::Now();
@@ -307,11 +307,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     wxString IMOstr, MMSIstr, ClassStr;
 
     html << tableStart << _T("<tr><td nowrap colspan=2>");
-    if( /*( Class != AIS_BASE ) &&*/ ( Class != AIS_SART ) ) {
-        if( b_nameValid ) {
-            html << _T("<font size=+2><i><b>") << GetFullName() ;
-            html << _T("</b></i></font>&nbsp;&nbsp;<b>");
-        }
+    if( b_nameValid ) {
+        html << _T("<font size=+2><i><b>") << GetFullName() ;
+        html << _T("</b></i></font>&nbsp;&nbsp;<b>");
     }
 
     if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) && ( Class != AIS_GPSG_BUDDY )
