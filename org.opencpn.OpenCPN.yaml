@@ -11,7 +11,7 @@
 
 app-id: org.opencpn.OpenCPN
 runtime: org.freedesktop.Platform
-runtime-version: 18.08
+runtime-version: "20.08"
 sdk: org.freedesktop.Sdk
 command: opencpn.sh
 
@@ -35,14 +35,14 @@ add-extensions:
         autodelete: false
 
 modules:
-    - name: mesa-libGLU
+    - shared-modules/glu/glu-9.json
+    - name: portaudio
       sources:
           - type: archive
-            url: https://mesa.freedesktop.org/archive/glu/glu-9.0.0.tar.bz2
-            sha256: 1f7ad0d379a722fcbd303aa5650c6d7d5544fde83196b42a73d1193568a4df12
+            url: http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz
+            sha256: f5a21d7dcd6ee84397446fa1fa1a0675bb2e8a4a6dceb4305a8404698d8d1513
       config-opts:
           - --disable-static
-
     - name: wxGTK3
       sources:
           - type: archive
@@ -58,12 +58,8 @@ modules:
           - --enable-no_deps
           - --disable-rpath
           - --enable-ipv6
-
-    - name:  zlib
-      sources:
-          - type: archive
-            url: http://zlib.net/zlib-1.2.11.tar.gz
-            sha256: c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
+      cleanup:
+          - /include/
 
     - name: opencpn
       buildsystem: cmake
@@ -90,7 +86,15 @@ modules:
       sources:
           - type: git
             url: https://github.com/OpenCPN/OpenCPN.git
-            # tag: 5.1.511-Beta
-            commit: c3b67169f
+            tag: Release_5.2.4
+            disable-fsckobjects: true
           - type: patch
-            path: flatpak/src/0008-flatpak-Add-a-shell-wrapper.patch
+            path: 0001-cmake-linux-Install-correct-appdata-file-2069.patch
+          - type: patch
+            path: 0002-flatpak-Add-a-shell-wrapper.patch
+          - type: patch
+            path: 0003-appdata-screenshot-url.patch
+          - type: patch
+            path: 0004-Add-warning-message-for-aarch64.patch
+          - type: patch
+            path: 0001-cmake-Upate-flatpak-runtime-version-18.08-20.08.patch

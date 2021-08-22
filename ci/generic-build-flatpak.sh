@@ -25,10 +25,12 @@ sudo dnf install -q -y appstream flatpak-builder ccrypt make rsync gnupg2
 test -d /opencpn-ci && cd /opencpn-ci || :
 
 # Set up flatpak
+runtime=$(sed -n '/runtime-version/s/.*://p' flatpak/org.opencpn.OpenCPN.yaml)
+runtime=${runtime/ /}
 flatpak --user remote-add --if-not-exists \
     flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak --user install -y org.freedesktop.Platform//18.08
-flatpak --user install -y org.freedesktop.Sdk//18.08
+flatpak --user install -y org.freedesktop.Platform//$runtime
+flatpak --user install -y org.freedesktop.Sdk//$runtime
 
 # Patch to use official master branch from github and build + build number.
 cd flatpak

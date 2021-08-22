@@ -56,8 +56,8 @@ package locally. The first steps are about installing *flatpak* and
 
 Armed with these tools, initialize by installing the runtime and sdk:
 
-    $ sudo flatpak install flathub org.freedesktop.Platform//18.08
-    $ sudo flatpak install flathub org.freedesktop.Sdk//18.08
+    $ sudo flatpak install flathub org.freedesktop.Platform//20.08
+    $ sudo flatpak install flathub org.freedesktop.Sdk//20.08
 
 Review the `org.opencpn.OpenCPN.yaml` manifest file. In the very end
 are the definitions for the opencpn source; the current setup is
