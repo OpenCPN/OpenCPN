@@ -177,6 +177,7 @@ public:
       int GetIconIndex(const wxBitmap *pbm);
       int GetIconImageListIndex(const wxBitmap *pbm);
       int GetXIconImageListIndex(const wxBitmap *pbm);
+      int GetFIconImageListIndex( const wxBitmap *pbm );
       int GetNumIcons(void){ return m_pIconArray->Count(); }
       wxString CreateGUID(RoutePoint *pRP);
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);

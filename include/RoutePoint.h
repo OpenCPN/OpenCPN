@@ -62,11 +62,17 @@ public:
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
       bool IsNameShown() { return m_bShowName; }
+
+      bool IsShared() { return m_bsharedMark; }
+      void SetShared( bool bshared ) { m_bsharedMark = bshared; }
+
+      bool IsSharedInVisibleRoute( void );
+
       bool IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz = false);
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
-      bool GetNameShown(){ return m_bShowName;}
+      bool GetNameShown(){ return m_bShowName; }
       virtual wxString GetName(void){ return m_MarkName; }
       wxString GetDescription(void) { return m_MarkDescription; }
 
@@ -76,6 +82,7 @@ public:
       wxString GetIconName(void){ return m_IconName; }
       wxBitmap *GetIconBitmap(){ return m_pbmIcon; }
       void SetIconName( wxString name ){ m_IconName = name; }
+      int GetIconImageIndex();
 
       void *GetSelectNode(void) { return m_SelectNode; }
       void SetSelectNode(void* node) { m_SelectNode = node; }
@@ -145,9 +152,6 @@ public:
       bool              m_bIsInRoute;
       bool              m_bIsolatedMark;        // This is an isolated mark
 
-      bool              m_bKeepXRoute;          // This is a mark which is part of a route/track
-                                                //  and is also an isolated mark, so should not be deleted with
-                                                //  route
 
       bool              m_bIsVisible;           // true if should be drawn, false if invisible
       bool              m_bIsListed;
@@ -224,6 +228,8 @@ private:
       long              m_ScaMax;
       double            m_PlannedSpeed;
 
+      bool              m_bsharedMark/*m_bKeepXRoute*/;          // This is an isolated mark which is also part of a route.
+                                                // It should not be deleted with route.
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;
       int               m_dragIconTextureWidth, m_dragIconTextureHeight;

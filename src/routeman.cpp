@@ -894,7 +894,7 @@ bool Routeman::DoesRouteContainSharedPoints( Route *pRoute )
         pnode = ( pRoute->pRoutePointList )->GetFirst();
         while( pnode ) {
             RoutePoint *prp = pnode->GetData();
-            if( prp->m_bKeepXRoute == true )
+            if( prp->IsShared() )
                 return true;
 
            if( pnode ) pnode = pnode->GetNext();
@@ -949,7 +949,7 @@ bool Routeman::DeleteRoute( Route *pRoute )
 
             if( pcontainer_route == NULL && prp->m_bIsInRoute ) {
                 prp->m_bIsInRoute = false;          // Take this point out of this (and only) route
-                if( !prp->m_bKeepXRoute ) {
+                if( !prp->IsShared() ) {
 //    This does not need to be done with navobj.xml storage, since the waypoints are stored with the route
 //                              pConfig->DeleteWayPoint(prp);
 
@@ -967,7 +967,7 @@ bool Routeman::DeleteRoute( Route *pRoute )
                 } else {
                     prp->m_bDynamicName = false;
                     prp->m_bIsolatedMark = true;        // This has become an isolated mark
-                    prp->m_bKeepXRoute = false;         // and is no longer part of a route
+                    prp->SetShared( false );            // and is no longer part of a route
                 }
 
             }
@@ -2147,7 +2147,7 @@ int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
 
         int index = pmarkicon_image_list->Add( wxBitmap(icon_larger));
 
-        // Create and replace "x-ed out" icon,
+        // Create and replace "x-ed out" and "fixed visibility" icon,
         // Being careful to preserve (some) transparency
 
         icon_larger.ConvertAlphaToMask( 128 );
@@ -2156,15 +2156,16 @@ int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
         icon_larger.GetOrFindMaskColour(&r, &g, &b);
         wxColour unused_color(r,g,b);
 
-        wxBitmap bmp0( icon_larger );
+        // X-out
+        wxBitmap xIcon( icon_larger );
 
-        wxBitmap bmp(w, h, -1 );
-        wxMemoryDC mdc( bmp );
+        wxBitmap xbmp(w, h, -1 );
+        wxMemoryDC mdc( xbmp );
         mdc.SetBackground( wxBrush( unused_color) );
         mdc.Clear();
-        mdc.DrawBitmap( bmp0, 0, 0 );
-        int xm = bmp.GetWidth() / 2;
-        int ym = bmp.GetHeight() / 2;
+        mdc.DrawBitmap( xIcon, 0, 0 );
+        int xm = xbmp.GetWidth() / 2;
+        int ym = xbmp.GetHeight() / 2;
         int dp = xm / 2;
         int width = wxMax(xm / 10, 2);
         wxPen red(GetGlobalColor(_T( "URED" )), width );
@@ -2173,10 +2174,32 @@ int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
         mdc.DrawLine( xm-dp, ym+dp, xm+dp, ym-dp );
         mdc.SelectObject( wxNullBitmap );
 
-        wxMask *pmask = new wxMask(bmp, unused_color);
-        bmp.SetMask( pmask );
+        wxMask *pmask = new wxMask(xbmp, unused_color);
+        xbmp.SetMask( pmask );
 
-        pmarkicon_image_list->Add( bmp );
+        pmarkicon_image_list->Add( xbmp );
+
+        // fixed Viz
+        wxBitmap fIcon( icon_larger );
+
+        wxBitmap fbmp(w, h, -1 );
+        wxMemoryDC fmdc( fbmp );
+        fmdc.SetBackground( wxBrush( unused_color) );
+        fmdc.Clear();
+        fmdc.DrawBitmap( xIcon, 0, 0 );
+        xm = fbmp.GetWidth() / 2;
+        ym = fbmp.GetHeight() / 2;
+        dp = xm / 2;
+        width = wxMax(xm / 10, 2);
+        wxPen fred(GetGlobalColor(_T( "UGREN" )), width );
+        fmdc.SetPen( fred );
+        fmdc.DrawLine( xm-dp, ym+dp, xm+dp, ym+dp );
+        fmdc.SelectObject( wxNullBitmap );
+
+        wxMask *pfmask = new wxMask(fbmp, unused_color);
+        fbmp.SetMask( pfmask );
+
+        pmarkicon_image_list->Add( fbmp );
 
         pmi->m_blistImageOK = true;
         pmi->listIndex = index;
@@ -2191,6 +2214,11 @@ int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
 int WayPointman::GetXIconImageListIndex( const wxBitmap *pbm )
 {
     return GetIconImageListIndex( pbm ) +1; // index of "X-ed out" icon in the image list
+}
+
+int WayPointman::GetFIconImageListIndex( const wxBitmap *pbm )
+{
+    return GetIconImageListIndex( pbm ) +2; // index of "fixed viz" icon in the image list
 }
 
 //  Create the unique identifier
@@ -2280,7 +2308,7 @@ bool WayPointman::IsReallyVisible( RoutePoint* pWP )
             node = node->GetNext();
         }
     }
-    if( pWP->m_bKeepXRoute ) // is not visible as part of route, but still exists as a waypoint
+    if( pWP->IsShared() ) // is not visible as part of route, but still exists as a waypoint
         return pWP->IsVisible(); // so treat as isolated point
 
     return false;
@@ -2305,7 +2333,7 @@ bool WayPointman::SharedWptsExist()
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
     while( node ) {
         RoutePoint *prp = node->GetData();
-        if (prp->m_bKeepXRoute && ( prp->m_bIsInRoute || prp == pAnchorWatchPoint1 || prp == pAnchorWatchPoint2))
+        if (prp->IsShared() && ( prp->m_bIsInRoute || prp == pAnchorWatchPoint1 || prp == pAnchorWatchPoint2))
             return true;
         node = node->GetNext();
     }
@@ -2320,7 +2348,7 @@ void WayPointman::DeleteAllWaypoints( bool b_delete_used )
         RoutePoint *prp = node->GetData();
         // if argument is false, then only delete non-route waypoints
         if( !prp->m_bIsInLayer && ( prp->GetIconName() != _T("mob") )
-            && ( ( b_delete_used && prp->m_bKeepXRoute )
+            && ( ( b_delete_used && prp->IsShared() )
                         || ( ( !prp->m_bIsInRoute )
                                 && !( prp == pAnchorWatchPoint1 ) && !( prp == pAnchorWatchPoint2 ) ) ) ) {
             DestroyWaypoint(prp);

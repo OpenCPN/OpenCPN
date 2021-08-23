@@ -287,7 +287,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
         pWP->SetListed( false );
     }
 
-    pWP->m_bKeepXRoute = bshared;
+    pWP->SetShared( bshared );
     pWP->m_bDynamicName = bauto_name;
 
     if(TimeString.Len()) {
@@ -588,7 +588,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                 if( b_change )
                     pWp = tpWp;
                 else {
-                    if(  erp != NULL && (!route_existing || ( route_existing && tpWp->m_bKeepXRoute) ) ) {
+                    if(  erp != NULL && (!route_existing || ( route_existing && tpWp->IsShared()) ) ) {
                         pWp = erp;
                         new_wpt = false;
                     }
@@ -787,7 +787,7 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
              child = child_ext.append_child("opencpn:auto_name");
              child.append_child(pugi::node_pcdata).set_value("1");
          }
-         if((flags & OUT_SHARED) && pr->m_bKeepXRoute) {
+         if((flags & OUT_SHARED) && pr->IsShared()) {
              child = child_ext.append_child("opencpn:shared");
              child.append_child(pugi::node_pcdata).set_value("1");
          }
@@ -1156,7 +1156,7 @@ static bool InsertRouteA( Route *pTentRoute )
 
             if( pcontainer_route == NULL ) {
                 prp->m_bIsInRoute = false; // Take this point out of this (and only) track/route
-                if( !prp->m_bKeepXRoute ) {
+                if( !prp->IsShared() ) {
                     pConfig->m_bSkipChangeSetUpdate = true;
                     pConfig->DeleteWayPoint( prp );
                     pConfig->m_bSkipChangeSetUpdate = false;

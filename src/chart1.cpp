@@ -5137,7 +5137,7 @@ void MyFrame::ActivateMOB( void )
     mob_label += mob_time.FormatISODate();
 
     RoutePoint *pWP_MOB = new RoutePoint( gLat, gLon, _T ( "mob" ), mob_label, wxEmptyString );
-    pWP_MOB->m_bKeepXRoute = true;
+    pWP_MOB->SetShared( true );
     pWP_MOB->m_bIsolatedMark = true;
     pWP_MOB->SetWaypointArrivalRadius( -1.0 ); // Negative distance is code to signal "Never Arrive"
     pWP_MOB->SetUseSca(false); //Do not use scaled hiding for MOB
@@ -9631,7 +9631,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
     mob_label += mob_time.FormatISODate();
 
     RoutePoint *pWP_MOB = new RoutePoint( ptarget->Lat, ptarget->Lon, _T ( "mob" ), mob_label, wxEmptyString );
-    pWP_MOB->m_bKeepXRoute = true;
+    pWP_MOB->SetShared( true );
     pWP_MOB->m_bIsolatedMark = true;
     pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, pWP_MOB );
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
