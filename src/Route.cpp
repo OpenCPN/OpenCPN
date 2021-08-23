@@ -129,7 +129,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
 void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_deferBoxCalc )
 {
     if( pNewPoint->m_bIsolatedMark ) {
-        pNewPoint->m_bKeepXRoute = true;
+        pNewPoint->SetShared( true );
     }
     pNewPoint->m_bIsolatedMark = false;       // definitely no longer isolated
     pNewPoint->m_bIsInRoute = true;
@@ -143,7 +143,7 @@ void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_d
     if( prev )
         UpdateSegmentDistance( prev, pNewPoint );
 
-    if( b_rename_in_sequence && pNewPoint->GetName().IsEmpty() && !pNewPoint->m_bKeepXRoute ) {
+    if( b_rename_in_sequence && pNewPoint->GetName().IsEmpty() && !pNewPoint->IsShared() ) {
         wxString name;
         name.Printf( _T ( "%03d" ), GetnPoints() );
         pNewPoint->SetName( name );
@@ -253,14 +253,12 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
     if ( m_bVisible )
         DrawPointWhich( dc, canvas, 1, &rpt1 );
 
-    bool sharedVizOveride = GetSharedWPViz();
-
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp1 = node->GetData();
     node = node->GetNext();
 
-    if ( !m_bVisible && prp1->m_bKeepXRoute )
-        prp1->Draw( dc, canvas, NULL, sharedVizOveride);
+    if ( m_bVisible || prp1->IsShared() )
+        prp1->Draw( dc, canvas, NULL );
 
     while( node ) {
 
@@ -268,9 +266,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 
         bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
 
-        if ( !m_bVisible && prp2->m_bKeepXRoute )
-            prp2->Draw( dc, canvas, &rpt2, sharedVizOveride );
-        else if (m_bVisible)
+        if ( m_bVisible || prp2->IsShared() )
             prp2->Draw( dc, canvas, &rpt2 );
 
         if ( m_bVisible )
@@ -489,7 +485,7 @@ bool Route::ContainsSharedWP()
 {
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
-            if ( prp->m_bKeepXRoute )
+            if ( prp->IsShared() )
                 return true;
     }
     return false;
@@ -504,8 +500,6 @@ void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
     if(!vp.GetBBox().IntersectOut(GetBBox()) && m_bVisible)
         DrawGLRouteLines(vp, canvas);
 
-    bool bVizOverride = GetSharedWPViz();
-
     /*  Route points  */
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
@@ -513,10 +507,9 @@ void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
         // TODO this is a little extravagant, assumming a mark is always a large fixed lat/lon extent.
         //  Maybe better to use the mark's drawn box, once it is known.
         if(vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)){
-            if ( !m_bVisible && prp->m_bKeepXRoute )
-                prp->DrawGL( vp, canvas, false, bVizOverride );
-            else if (m_bVisible)
-                prp->DrawGL( vp, canvas );
+
+          if ( m_bVisible || prp->IsShared() )
+              prp->DrawGL( vp, canvas );
         }
     }
 
@@ -1157,10 +1150,13 @@ void Route::SetVisible( bool visible, bool includeWpts )
     RoutePoint *rp;
     while( node ) {
         rp = node->GetData();
-        if ( rp->m_bKeepXRoute )
-        {
-            rp->SetVisible( visible );
-            //pConfig->UpdateWayPoint( rp );
+
+        // if this is a "shared" point, then do not turn off visibility.
+        // This step keeps the point available for selection to other routes,
+        // or may be manaully hidden in route-manager dialog.
+        if ( rp->IsShared() ){
+            if( visible )
+              rp->SetVisible( visible );
         }
         node = node->GetNext();
     }

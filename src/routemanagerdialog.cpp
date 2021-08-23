@@ -797,6 +797,12 @@ void RouteManagerDialog::Create()
         imglist->Add( wxBitmap( iconSVG ) );
     }
 
+    iconSVG = LoadSVGIcon( UserIconPath  + _T("eyeGray.svg"), imageRefSize, imageRefSize );
+    if(iconSVG.IsOk()){
+        iconSVG.Resize( wxSize(imageRefSize, imageRefSize), wxPoint(0,0));
+        imglist->Add( wxBitmap( iconSVG ) );
+    }
+
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
 
 #ifdef __OCPN__ANDROID__
@@ -941,6 +947,8 @@ void RouteManagerDialog::OnShowAllRteCBClicked(wxCommandEvent& event)
         pConfig->UpdateRoute( pR );
     }
 
+    UpdateWptListCtrlViz();
+
     gFrame->RefreshAllCanvas();
 
 }
@@ -957,11 +965,14 @@ void RouteManagerDialog::OnShowAllWpCBClicked(wxCommandEvent& event)
 
         RoutePoint *pRP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
 
-        pRP->SetVisible( viz );
-        m_pWptListCtrl->SetItemImage( item,
-                                      pRP->IsVisible() ? pWayPointMan->GetIconImageListIndex( pRP->GetIconBitmap() )
-                                                      : pWayPointMan->GetXIconImageListIndex( pRP->GetIconBitmap() ) );
+        if(!pRP->IsSharedInVisibleRoute()){
+          pRP->SetVisible( viz );
+        }
+        else
+          pRP->SetVisible( true );
 
+
+        m_pWptListCtrl->SetItemImage( item, pRP->GetIconImageIndex());
         pConfig->UpdateWayPoint( pRP );
     }
 
@@ -1414,16 +1425,7 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         // Process the clicked item
         Route *route = (Route*)m_pRouteListCtrl->GetItemData( clicked_index );
 
-        int wpts_set_viz = wxID_YES;
-        bool invizsharedwpts = true;
-        bool has_shared_wpts = g_pRouteMan->DoesRouteContainSharedPoints(route);
-
-        if( has_shared_wpts && route->IsVisible() ) {
-            wpts_set_viz = OCPNMessageBox(  this, _("Do you also want to make the shared waypoints being part of this route invisible?"), _("Question"), wxYES_NO );
-            invizsharedwpts = (wpts_set_viz == wxID_YES);
-        }
-        route->SetVisible( !route->IsVisible(), invizsharedwpts );
-        route->SetSharedWPViz( !invizsharedwpts);
+        route->SetVisible( !route->IsVisible() );
 
         m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 
@@ -1432,9 +1434,9 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         pConfig->UpdateRoute( route );
         gFrame->RefreshAllCanvas();
 
-        //   We need to update the waypoint list control only if the visibility of shared waypoints might have changed.
-        if( has_shared_wpts )
-            UpdateWptListCtrlViz();
+        //   We need to update the waypoint list control since the visibility of shared waypoints might have changed.
+        if( g_pRouteMan->DoesRouteContainSharedPoints( route ))
+          UpdateWptListCtrlViz();
 
         // Manage "show all" checkbox
         bool viz = true;
@@ -1462,25 +1464,6 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
     event.Skip();
 }
 
-// FIXME add/remove route segments/waypoints from selectable items, so there are no
-// hidden selectables! This should probably be done outside this class!
-// The problem is that the current waypoint class does not provide good support
-// for this, there is a "visible" property, but no means for proper management.
-// Jan. 28 2010: Ideas:
-// - Calculate on the fly how many visible routes use a waypoint.
-//   This requires a semidouble loop (routes, waypoints in visible routes). It could
-//   be done by the function getting the selection. Potentially somewhat slow?
-// - OR keep a property in waypoints telling that
-//   (A number, increased/decreased for each waypoint by Route::SetVisible()).
-//   Immediate result when detecting the selectable object, small overhead in
-//   Route::SetVisible(). I prefer this.
-// - We also need to know if the waypoint should otherwise be visible,
-//   ie it is a "normal" waypoint used in the route (then it should be visible
-//   in all cases). Is this possible with current code?
-// - Get rid of the Select objects, they do no good! They should be replaced with a function
-//   in the application, the search would reqire equal amount of looping, but less
-//   dereferencing pointers, and it would remove the overhead of keeping and maintaining
-//   the extra pointer lists.
 
 void RouteManagerDialog::OnRteBtnLeftDown( wxMouseEvent &event )
 {
@@ -2079,7 +2062,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     while( node ) {
         RoutePoint *rp = node->GetData();
         if( rp && rp->IsListed() ) {
-            if( rp->m_bIsInRoute && !rp->m_bKeepXRoute ) {
+            if( rp->m_bIsInRoute && !rp->IsShared() ) {
                 node = node->GetNext();
                 continue;
             }
@@ -2091,8 +2074,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
 
             wxListItem li;
             li.SetId( index );
-            li.SetImage( rp->IsVisible() ? pWayPointMan->GetIconImageListIndex( rp->GetIconBitmap() )
-                                    : pWayPointMan->GetXIconImageListIndex( rp->GetIconBitmap() ) );
+            li.SetImage( rp->GetIconImageIndex() );
             li.SetData( rp );
             li.SetText( _T("") );
             long idx = m_pWptListCtrl->InsertItem( li );
@@ -2177,10 +2159,9 @@ void RouteManagerDialog::UpdateWptListCtrlViz( )
             break;
 
         RoutePoint *pRP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-        int image = pRP->IsVisible() ? pWayPointMan->GetIconImageListIndex( pRP->GetIconBitmap() )
-        : pWayPointMan->GetXIconImageListIndex( pRP->GetIconBitmap() ) ;
+        int imageIndex = pRP->GetIconImageIndex();
 
-        m_pWptListCtrl->SetItemImage(item, image);
+        m_pWptListCtrl->SetItemImage(item, imageIndex);
     }
 }
 
@@ -2263,13 +2244,12 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
         // Process the clicked item
         RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( clicked_index );
 
-        wp->SetVisible( !wp->IsVisible() );
-        m_pWptListCtrl->SetItemImage( clicked_index,
-                                      wp->IsVisible() ? pWayPointMan->GetIconImageListIndex( wp->GetIconBitmap() )
-                                                      : pWayPointMan->GetXIconImageListIndex( wp->GetIconBitmap() ) );
+        if(!wp->IsSharedInVisibleRoute()){
+          wp->SetVisible( !wp->IsVisible() );
+          m_pWptListCtrl->SetItemImage( clicked_index, wp->GetIconImageIndex() );
 
-
-        pConfig->UpdateWayPoint( wp );
+          pConfig->UpdateWayPoint( wp );
+        }
 
         // Manage "show all" checkbox
         bool viz = true;

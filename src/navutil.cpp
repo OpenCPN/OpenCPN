@@ -2996,7 +2996,7 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
             if( pr->m_bIsInLayer && !blayer )
                 b_add = false;
             if( b_add) {
-                if( pr->m_bKeepXRoute || !WptIsInRouteList( pr ) )
+                if( pr->IsShared() || !WptIsInRouteList( pr ) )
                     pgpx->AddGPXWaypoint( pr);
             }
 
