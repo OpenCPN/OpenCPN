@@ -1170,8 +1170,13 @@ void ChartCanvas::OnLeftUp(wxMouseEvent& event) {
 
     m_leftdown = false;
 
-    if (!m_popupWanted)
+    if (!m_popupWanted) {
+        wxMouseEvent ev(wxEVT_LEFT_UP);
+        ev.m_x = pos.x;
+        ev.m_y = pos.y;
+        MouseEvent(ev);
         return;
+    }
 
     m_popupWanted = false;
 
