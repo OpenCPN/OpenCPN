@@ -11022,7 +11022,7 @@ void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
 }
 
 void SentenceListDlg::OnDeleteClick(wxCommandEvent& event) {
-  m_clbSentences->Delete(event.GetSelection());
+  m_clbSentences->Delete(m_clbSentences->GetSelection());
 }
 
 void SentenceListDlg::OnClearAllClick(wxCommandEvent& event) {
