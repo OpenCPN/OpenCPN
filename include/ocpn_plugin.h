@@ -780,8 +780,11 @@ extern "C" DECL_EXP double toUsrDistance_Plugin( double nm_distance, int unit = 
 extern "C" DECL_EXP double fromUsrDistance_Plugin( double usr_distance, int unit = -1 );
 extern "C" DECL_EXP double toUsrSpeed_Plugin( double kts_speed, int unit = -1 );
 extern "C" DECL_EXP double fromUsrSpeed_Plugin( double usr_speed, int unit = -1 );
+extern "C" DECL_EXP double toUsrTemp_Plugin(double cel_temp, int unit = -1);
+extern "C" DECL_EXP double fromUsrTemp_Plugin(double usr_temp, int unit = -1);
 extern DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
 extern DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
+extern DECL_EXP wxString getUsrTempUnit_Plugin(int unit = -1);
 extern DECL_EXP wxString GetNewGUID();
 extern "C" DECL_EXP bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2);
 /**

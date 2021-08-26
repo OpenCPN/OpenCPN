@@ -268,6 +268,7 @@ public:
       wxChoice                     *m_pChoiceDistanceUnit;
       wxChoice                     *m_pChoiceWindSpeedUnit;
       wxCheckBox                   *m_pUseTrueWinddata;
+      wxChoice                     *m_pChoiceTempUnit;
 
 private:
       void UpdateDashboardButtonsState(void);

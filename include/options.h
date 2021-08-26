@@ -222,7 +222,7 @@ enum {
   ID_AISALERTDIALOG,
   ID_AISALERTSELECTSOUND,
   ID_AISALERTTESTSOUND,
-
+  ID_TEMPUNITSCHOICE
 };
 
 /* Define an int bit field for dialog return value
@@ -533,7 +533,7 @@ class options : private Uncopyable,
   int k_vectorcharts;
 
   // For "Units" page
-  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect;
+  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect, *pTempFormat;
   wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 
