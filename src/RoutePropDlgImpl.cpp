@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -38,6 +38,8 @@
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP   7014
 #define ID_RCLK_MENU_DELETE    7015
+#define ID_RCLK_MENU_MOVEUP_WP   7026
+#define ID_RCLK_MENU_MOVEDOWN_WP   7027
 
 #define COLUMN_PLANNED_SPEED 8
 #define COLUMN_ETD 12
@@ -55,6 +57,7 @@ extern Select *pSelect;
 extern MyFrame *gFrame;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern TCMgr *ptcmgr;
+extern bool g_btouch;
 
 int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
 
@@ -777,9 +780,47 @@ void RoutePropDlgImpl::OnRoutepropCopyTxtClick( wxCommandEvent& event )
 
 void RoutePropDlgImpl::OnRoutePropMenuSelected( wxCommandEvent& event )
 {
+    bool moveup = false;
     switch( event.GetId() ) {
         case ID_RCLK_MENU_COPY_TEXT: {
             OnRoutepropCopyTxtClick( event );
+            break;
+        }
+        case ID_RCLK_MENU_MOVEUP_WP: {
+            moveup = true;
+        }
+        case ID_RCLK_MENU_MOVEDOWN_WP: {
+            wxString mess = moveup? _("Are you sure you want to move Up this waypoint?")
+                             : _("Are you sure you want to move Down this waypoint?");
+            int dlg_return = OCPNMessageBox( this, mess, _("OpenCPN Move Waypoint"),
+                                         (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+
+            if( dlg_return == wxID_YES ) {
+                wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
+                RoutePoint *pRP = m_pRoute->GetPoint(
+                        static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
+                int nRP = m_pRoute->pRoutePointList->IndexOf( pRP ) + (moveup? - 1: 1);
+
+                pSelect->DeleteAllSelectableRoutePoints( m_pRoute );
+                pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
+
+                m_pRoute->pRoutePointList->DeleteObject( pRP );
+                m_pRoute->pRoutePointList->Insert( nRP, pRP );
+
+                pSelect->AddAllSelectableRouteSegments( m_pRoute );
+                pSelect->AddAllSelectableRoutePoints( m_pRoute );
+
+                pConfig->UpdateRoute( m_pRoute );
+
+                m_pRoute->FinalizeForRendering();
+                m_pRoute->UpdateSegmentDistances();;
+
+                gFrame->InvalidateAllGL();
+
+                m_dvlcWaypoints->SelectRow(nRP);
+
+                SetRouteAndUpdate( m_pRoute, true);
+            }
             break;
         }
         case ID_RCLK_MENU_DELETE: {
@@ -812,27 +853,52 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected( wxCommandEvent& event )
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event )
 {
     wxMenu menu;
-
     if( ! m_pRoute->m_bIsInLayer ) {
+        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));
+        wxMenuItem* moveUpItem = new wxMenuItem( &menu, ID_RCLK_MENU_MOVEUP_WP, _("Move Up") );
+        wxMenuItem* moveDownItem = new wxMenuItem( &menu, ID_RCLK_MENU_MOVEDOWN_WP, _("Move Down") );
+        wxMenuItem *delItem = new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
 #ifdef __OCPN__ANDROID__
         wxFont *pf = OCPNGetFont(_T("Menu"), 0);
-        // add stuff
-        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));
         editItem->SetFont(*pf);
-        menu.Append(editItem);
-
-        wxMenuItem *delItem = new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
+        moveUpItem->SetFont(*pf);
+        moveDownItem->SetFont(*pf);
         delItem->SetFont(*pf);
-        menu.Append(delItem);
-#else
-        wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
-        wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
 #endif
+#if defined(__WXMSW__)
+        wxFont *pf = GetOCPNScaledFont(_T("Menu"));
+        editItem->SetFont(*pf);
+        moveUpItem->SetFont(*pf);
+        moveDownItem->SetFont(*pf);
+        delItem->SetFont(*pf);
+#endif
+
+        menu.Append(editItem);
+        if(g_btouch) menu.AppendSeparator();
+        menu.Append(moveUpItem);
+        if(g_btouch) menu.AppendSeparator();
+        menu.Append(moveDownItem);
+        if(g_btouch) menu.AppendSeparator();
+        menu.Append(delItem);
+
         editItem->Enable( m_dvlcWaypoints->GetSelectedRow() >= 0 );
+        moveUpItem->Enable( m_dvlcWaypoints->GetSelectedRow() >= 1
+                            && m_dvlcWaypoints->GetItemCount() > 2 );
+        moveDownItem->Enable( m_dvlcWaypoints->GetSelectedRow() >= 0
+                              && m_dvlcWaypoints->GetSelectedRow() < m_dvlcWaypoints->GetItemCount() - 1
+                              && m_dvlcWaypoints->GetItemCount() > 2 );
         delItem->Enable( m_dvlcWaypoints->GetSelectedRow() >= 0 && m_dvlcWaypoints->GetItemCount() > 2 );
     }
 #ifndef __WXQT__
-    wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
+    wxMenuItem* copyItem = new wxMenuItem( &menu, ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
+
+#if defined(__WXMSW__)
+    wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
+    copyItem->SetFont(*qFont);
+#endif
+
+    if(g_btouch) menu.AppendSeparator();
+    menu.Append(copyItem);
 #endif
 
     PopupMenu( &menu );
