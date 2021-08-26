@@ -165,6 +165,7 @@ extern int              g_nTrackPrecision;
 extern int              g_iSDMMFormat;
 extern int              g_iDistanceFormat;
 extern int              g_iSpeedFormat;
+extern int              g_iTempFormat;
 
 extern int              g_nframewin_x;
 extern int              g_nframewin_y;
@@ -983,6 +984,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "DistanceFormat" ), &g_iDistanceFormat ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
     Read( _T ( "SpeedFormat" ), &g_iSpeedFormat ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+    Read( _T ("TemperatureFormat"), &g_iTempFormat ); //0 = C, 1 = F, 2 = K
 
     // LIVE ETA OPTION
     Read( _T ( "LiveETA" ), &g_bShowLiveETA );
@@ -2475,6 +2477,7 @@ void MyConfig::UpdateSettings()
         Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
         Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
         Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
+        Write( _T ( "TemperatureFormat" ), g_iTempFormat );
     }
     Write( _T ( "GPSIdent" ), g_GPS_Ident );
     Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
@@ -4439,6 +4442,74 @@ wxString getUsrSpeedUnit( int unit )
             break;
     }
     return ret;
+}
+
+/**************************************************************************/
+/*    Converts the temperature to the units selected by user              */
+/**************************************************************************/
+double toUsrTemp(double cel_temp, int unit)
+{
+	double ret = NAN;
+	if (unit == -1)
+		unit = g_iTempFormat;
+	switch (unit)
+	{
+	case TEMPERATURE_C: //Celsius
+		ret = cel_temp;
+		break;
+	case TEMPERATURE_F: //Fahrenheit
+		ret = (cel_temp * 9.0 / 5.0)  + 32;
+		break;
+	case TEMPERATURE_K:
+		ret = cel_temp + 273.15;
+		break;
+	}
+	return ret;
+}
+
+/**************************************************************************/
+/*  Converts the temperature from the units selected by user to Celsius   */
+/**************************************************************************/
+double fromUsrTemp(double usr_temp, int unit)
+{
+	double ret = NAN;
+	if (unit == -1)
+		unit = g_iTempFormat;
+	switch (unit)
+	{
+	case TEMPERATURE_C: //C
+		ret = usr_temp;
+		break;
+	case TEMPERATURE_F: //F
+		ret = (usr_temp - 32) * 5.0 / 9.0;
+		break;
+	case TEMPERATURE_K: //K
+		ret = usr_temp - 273.15;
+		break;
+	}
+	return ret;
+}
+
+/**************************************************************************/
+/*          Returns the abbreviation of user selected temperature unit          */
+/**************************************************************************/
+wxString getUsrTempUnit(int unit)
+{
+	wxString ret;
+	if (unit == -1)
+		unit = g_iTempFormat;
+	switch (unit){
+	case TEMPERATURE_C: //Celsius
+		ret = _("C");
+		break;
+	case TEMPERATURE_F: //Fahrenheit
+		ret = _("F");
+		break;
+	case TEMPERATURE_K: //Kelvin
+		ret = _("K");
+		break;
+	}
+	return ret;
 }
 
 wxString formatTimeDelta(wxTimeSpan span)

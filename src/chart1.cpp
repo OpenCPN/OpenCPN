@@ -368,6 +368,7 @@ bool                      g_bTempShowMenuBar;
 int                       g_iSDMMFormat;
 int                       g_iDistanceFormat;
 int                       g_iSpeedFormat;
+int                       g_iTempFormat;
 
 int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;

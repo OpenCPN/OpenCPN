@@ -59,6 +59,7 @@ double g_dDashDBTOffset;
 bool g_iDashUsetruewinddata;
 double g_dHDT;
 double g_dSOG, g_dCOG;
+int g_iDashTempUnit;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -1025,8 +1026,10 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if (mPriATMP >= 3) {
                 if( m_NMEA0183.Parse() ) {
                     mPriATMP = 3;
-                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Mta.Temperature,
-                        m_NMEA0183.Mta.UnitOfMeasurement);
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP,
+                                                 toUsrTemp_Plugin(m_NMEA0183.Mta.Temperature,
+                                                                  g_iDashTempUnit),
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
                     mATMP_Watchdog = gps_watchdog_timeout_ticks;
                 }
             }
@@ -1051,9 +1054,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if (mPriWTP >= 3) {
                 if( m_NMEA0183.Parse() ) {
                     mPriWTP = 3;
-                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Mtw.Temperature,
-                        m_NMEA0183.Mtw.UnitOfMeasurement);
-                    mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP,
+                                                 toUsrTemp_Plugin(m_NMEA0183.Mtw.Temperature,
+                                                                  g_iDashTempUnit),
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
+                    mWTP_Watchdog = gps_watchdog_timeout_ticks;
                 }
             }
 
@@ -1420,8 +1425,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         if (mPriATMP >= 2) {
                             mPriATMP = 2;
                             SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP,
-                                                         xdrdata,
-                                                         m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                                                         toUsrTemp_Plugin(xdrdata, g_iDashTempUnit),
+                                                         getUsrTempUnit_Plugin(g_iDashTempUnit));
                             mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
                         }
                     }
@@ -1476,8 +1481,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         if (mPriWTP >= 2) {
                             mPriWTP = 2;
                             SendSentenceToAllInstruments(OCPN_DBP_STC_TMP,
-                                m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,
-                                m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                                                         toUsrTemp_Plugin(m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,
+                                                                          g_iDashTempUnit),
+                                                         getUsrTempUnit_Plugin(g_iDashTempUnit));
                             mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
                         }
                     }
@@ -1841,7 +1847,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
 
                 m_wtemp = KELVIN2C(m_wtemp);
                 if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
-                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_wtemp, "C");
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP,
+                                                 toUsrTemp_Plugin(m_wtemp,
+                                                                  g_iDashTempUnit),
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
                     mPriWTP = 1;
                     mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
                 }
@@ -1957,7 +1966,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
 
                 m_airtemp = KELVIN2C(m_airtemp);
                 if ( m_airtemp > -60 && m_airtemp < 100 ) {
-                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_airtemp, "C");
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP,
+                                                 toUsrTemp_Plugin(m_airtemp,
+                                                                  g_iDashTempUnit),
+                                                 getUsrTempUnit_Plugin(g_iDashTempUnit));
                     mPriATMP = 1;
                     mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
                 }
@@ -2380,6 +2392,7 @@ bool dashboard_pi::LoadConfig( void )
         pConf->Read( _T("DistanceUnit"), &g_iDashDistanceUnit, 0 );
         pConf->Read( _T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0 );
         pConf->Read(_T("UseSignKtruewind"), &g_iDashUsetruewinddata, 0);
+        pConf->Read(_T("TemperatureUnit"), &g_iDashTempUnit, 0);
 
         pConf->Read( _T("UTCOffset"), &g_iUTCOffset, 0 );
 
@@ -2501,6 +2514,7 @@ bool dashboard_pi::SaveConfig( void )
         pConf->Write( _T("WindSpeedUnit"), g_iDashWindSpeedUnit );
         pConf->Write( _T("UTCOffset"), g_iUTCOffset );
         pConf->Write(_T("UseSignKtruewind"), g_iDashUsetruewinddata);
+        pConf->Write(_T("TemperatureUnit"), g_iDashTempUnit);
 
         pConf->Write( _T("DashboardCount" ), (int) m_ArrayOfDashboardWindow.GetCount() );
         for( unsigned int i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
@@ -2967,6 +2981,15 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pChoiceWindSpeedUnit->SetSelection( g_iDashWindSpeedUnit );
     itemFlexGridSizer04->Add( m_pChoiceWindSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
+    wxStaticText* itemStaticText0c = new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Temperature units:"),
+      wxDefaultPosition, wxDefaultSize, 0);
+    itemFlexGridSizer04->Add(itemStaticText0c, 0, wxEXPAND | wxALL, border_size);
+    wxString m_TempUnitChoices[] = { _("Celsius"), _("Fahrenheit"), _("Kelvin") };
+    int m_TempUnitNChoices = sizeof(m_TempUnitChoices) / sizeof(wxString);
+    m_pChoiceTempUnit = new wxChoice(itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_TempUnitNChoices, m_TempUnitChoices, 0);
+    m_pChoiceTempUnit->SetSelection(g_iDashTempUnit);
+    itemFlexGridSizer04->Add(m_pChoiceTempUnit, 0, wxALIGN_RIGHT | wxALL, 0);
+
     m_pUseTrueWinddata = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
         _("Use SignalK true wind data over ground. (Instead of through water)"));
     m_pUseTrueWinddata->SetValue(g_iDashUsetruewinddata);
@@ -3045,6 +3068,7 @@ void DashboardPreferencesDialog::SaveDashboardConfig()
     g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
     g_iDashWindSpeedUnit = m_pChoiceWindSpeedUnit->GetSelection();
     g_iDashUsetruewinddata = m_pUseTrueWinddata->GetValue();
+    g_iDashTempUnit = m_pChoiceTempUnit->GetSelection();
     if( curSel != -1 ) {
         DashboardWindowContainer *cont = m_Config.Item( curSel );
         cont->m_bIsVisible = m_pCheckBoxIsVisible->IsChecked();

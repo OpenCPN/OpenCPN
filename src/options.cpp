@@ -264,6 +264,7 @@ extern wxColour g_colourTrackLineColour;
 extern int g_iSDMMFormat;
 extern int g_iDistanceFormat;
 extern int g_iSpeedFormat;
+extern int g_iTempFormat;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -5287,6 +5288,20 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     #endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
 
+    // temperature units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Temperature")),
+                    labelFlags);
+    wxString pTempUnitStrings[] = {
+        _("Celsius"), _("Fahrenheit"), _("Kelvin"),
+    };
+    pTempFormat =
+        new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), 3, pTempUnitStrings);
+    #ifdef __OCPN__ANDROID__
+        setChoiceStyleSheet( pTempFormat, m_fontHeight *8/10);
+    #endif
+    unitsSizer->Add(pTempFormat, inputFlags);
+
     // spacer
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
@@ -5396,6 +5411,17 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                      wxDefaultSize, 3, pDepthUnitStrings);
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
+
+    // temperature units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Temperature")),
+                    labelFlags);
+    wxString pTempUnitStrings[] = {
+        _("Celsius"), _("Fahrenheit"), _("Kelvin"),
+    };
+    pTempFormat =
+        new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
+                     wxDefaultSize, 3, pTempUnitStrings);
+    unitsSizer->Add(pTempFormat, inputFlags);
 
     // spacer
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
@@ -7021,6 +7047,7 @@ void options::SetInitialSettings(void) {
   pSDMMFormat->Select(g_iSDMMFormat);
   pDistanceFormat->Select(g_iDistanceFormat);
   pSpeedFormat->Select(g_iSpeedFormat);
+  pTempFormat->Select(g_iTempFormat);
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
@@ -8198,6 +8225,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
   g_iSpeedFormat = pSpeedFormat->GetSelection();
+  g_iTempFormat = pTempFormat->GetSelection();
 
   // LIVE ETA OPTION
   if(pSLiveETA) g_bShowLiveETA = pSLiveETA->GetValue();
