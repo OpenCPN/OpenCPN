@@ -38,6 +38,9 @@
   #include "wx/wx.h"
 #endif //precompiled header
 
+#if defined(__WXMSW__)
+#include <ws2tcpip.h>
+#endif
 
 #include <wx/datetime.h>
 

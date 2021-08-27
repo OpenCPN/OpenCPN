@@ -21,6 +21,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifdef __MSVC__
+#include "winsock2.h"
+#include "wx/msw/winundef.h"
+#endif
+
 #include "config.h"
 #include "OCP_DataStreamInput_Thread.h"
 #include "OCPN_DataStreamEvent.h"

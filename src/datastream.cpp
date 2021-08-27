@@ -36,6 +36,11 @@
 #include <ws2tcpip.h>
 #endif
 
+#ifdef __MSVC__
+#include "winsock2.h"
+#include "wx/msw/winundef.h"
+#endif
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
