@@ -388,7 +388,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             {
                 DataStream* s = m_pdatastreams->Item(i);
                 if ( s->IsOk() ) {
-                    if((s->GetConnectionType() == SERIAL)  || (s->GetPort() != port)) {
+                    if((s->GetConnectionType() == SERIAL || s->GetConnectionType()==NETWORK)  && (s->GetPort() != port)) {
                         if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
                             bool bout_filter = true;
 
