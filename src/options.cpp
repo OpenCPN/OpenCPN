@@ -8184,8 +8184,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bShowMag = pCBMagShow->GetValue();
 
   b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
-  if(!b_haveWMM  && !b_oldhaveWMM)
+  if(!b_haveWMM  && !b_oldhaveWMM){
     pMagVar->GetValue().ToDouble(&g_UserVar);
+    gVar = g_UserVar;
+  }
 
   m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
   m_pText_OSHDT_Predictor->GetValue().ToDouble(&g_ownship_HDTpredictor_miles);
