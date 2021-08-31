@@ -48,6 +48,7 @@
 #endif //precompiled headers
 
 #include <wx/datetime.h>
+#include <wx/regex.h>
 
 #include <stdlib.h>
 #include <math.h>
@@ -594,6 +595,16 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
             case 5:
                 if (fs == sentence.Mid(1, 5))
                     return listype;
+                break;
+            default:   
+	        // TODO: regex patterns like ".GPZ.." or 6-character patterns
+		//       are rejected in the connection settings dialogue currently
+		//       experts simply edit .opencpn/opncpn.config
+                wxRegEx  re(fs);
+                if (re.Matches(sentence.Mid(0, 8)))
+                {
+                    return listype;
+                }    
                 break;
         }
     }
