@@ -36,5 +36,4 @@ std::string get_dongle_rule();
 std::string make_udev_link();
 std::string get_device_rule(const char* device, const char* symlink);
 
-
 #endif

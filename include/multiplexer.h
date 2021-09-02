@@ -28,9 +28,9 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include "pluginmanager.h"  // for PlugInManager
 #include "datastream.h"
@@ -42,47 +42,49 @@ class SendToGpsDlg;
 WX_DEFINE_ARRAY(DataStream *, wxArrayOfDataStreams);
 
 //      Garmin interface private error codes
-#define ERR_GARMIN_INITIALIZE           -1
-#define ERR_GARMIN_GENERAL              -2
+#define ERR_GARMIN_INITIALIZE -1
+#define ERR_GARMIN_GENERAL -2
 
-class Multiplexer : public wxEvtHandler
-{
-    public:
-        Multiplexer();
-        ~Multiplexer();
-        void AddStream(DataStream *stream);
-        void StopAllStreams();
-        void ClearStreams();
-        void StartAllStreams();
+class Multiplexer : public wxEvtHandler {
+public:
+  Multiplexer();
+  ~Multiplexer();
+  void AddStream(DataStream *stream);
+  void StopAllStreams();
+  void ClearStreams();
+  void StartAllStreams();
 
-        DataStream *FindStream(const wxString & port);
-        void StopAndRemoveStream( DataStream *stream );
-        void SaveStreamProperties( DataStream *stream );
-        bool CreateAndRestoreSavedStreamProperties();
+  DataStream *FindStream(const wxString &port);
+  void StopAndRemoveStream(DataStream *stream);
+  void SaveStreamProperties(DataStream *stream);
+  bool CreateAndRestoreSavedStreamProperties();
 
-        void SendNMEAMessage(const wxString &msg);
-        void SetAISHandler(wxEvtHandler *handler);
-        void SetGPSHandler(wxEvtHandler *handler);
+  void SendNMEAMessage(const wxString &msg);
+  void SetAISHandler(wxEvtHandler *handler);
+  void SetGPSHandler(wxEvtHandler *handler);
 
-        int SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints, SendToGpsDlg *dialog);
-        int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, SendToGpsDlg *dialog);
+  int SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints,
+                     SendToGpsDlg *dialog);
+  int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
+                        SendToGpsDlg *dialog);
 
-        void OnEvtStream(OCPN_DataStreamEvent& event);
-        void OnEvtSignalK(OCPN_SignalKEvent& event);
+  void OnEvtStream(OCPN_DataStreamEvent &event);
+  void OnEvtSignalK(OCPN_SignalKEvent &event);
 
-        void LogOutputMessage(const wxString &msg, wxString stream_name, bool b_filter);
-        void LogOutputMessageColor(const wxString &msg, const wxString & stream_name, const wxString & color);
-        void LogInputMessage(const wxString &msg, const wxString & stream_name, bool b_filter, bool b_error = false);
+  void LogOutputMessage(const wxString &msg, wxString stream_name,
+                        bool b_filter);
+  void LogOutputMessageColor(const wxString &msg, const wxString &stream_name,
+                             const wxString &color);
+  void LogInputMessage(const wxString &msg, const wxString &stream_name,
+                       bool b_filter, bool b_error = false);
 
-    private:
-        wxArrayOfDataStreams *m_pdatastreams;
+private:
+  wxArrayOfDataStreams *m_pdatastreams;
 
-        wxEvtHandler        *m_aisconsumer;
-        wxEvtHandler        *m_gpsconsumer;
+  wxEvtHandler *m_aisconsumer;
+  wxEvtHandler *m_gpsconsumer;
 
-        //      A set of temporarily saved parameters for a DataStream
-        const ConnectionParams* params_save;
-
+  //      A set of temporarily saved parameters for a DataStream
+  const ConnectionParams *params_save;
 };
-#endif // __MULTIPLEXER_H__
-
+#endif  // __MULTIPLEXER_H__

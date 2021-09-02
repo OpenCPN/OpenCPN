@@ -27,7 +27,7 @@
 #define _OPTIONS_H_
 
 #ifdef __MINGW32__
-#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
@@ -41,11 +41,12 @@
 #include <wx/colourdata.h>
 
 #if wxUSE_TIMEPICKCTRL
- #include <wx/timectrl.h>
+#include <wx/timectrl.h>
 #endif
 
 #ifdef __WXGTK__
-//wxTimePickerCtrl is completely broken in Gnome based desktop environments as of wxGTK 3.0
+// wxTimePickerCtrl is completely broken in Gnome based desktop environments as
+// of wxGTK 3.0
 #include "time_textbox.h"
 #endif
 
@@ -88,7 +89,7 @@ class OCPNColourPickerCtrl;
 #define SYMBOL_OPTIONS_POSITION wxDefaultPosition
 
 enum {
-  ID_APPLY =10000,
+  ID_APPLY = 10000,
   ID_ATONTEXTCHECKBOX,
   ID_AUTOANCHORMARKBOX1,
   ID_BELLSCHECKBOX,
@@ -227,23 +228,23 @@ enum {
 
 /* Define an int bit field for dialog return value
  * to indicate which types of settings have changed */
-#define GENERIC_CHANGED                 1
-#define S52_CHANGED                     1 << 1
-#define FONT_CHANGED                    1 << 2
-#define FORCE_UPDATE                    1 << 3
-#define VISIT_CHARTS                    1 << 4
-#define LOCALE_CHANGED                  1 << 5
-#define TOOLBAR_CHANGED                 1 << 6
-#define CHANGE_CHARTS                   1 << 7
-#define SCAN_UPDATE                     1 << 8
-#define GROUPS_CHANGED                  1 << 9
-#define STYLE_CHANGED                   1 << 10
-#define TIDES_CHANGED                   1 << 11
-#define GL_CHANGED                      1 << 12
-#define REBUILD_RASTER_CACHE            1 << 13
-#define NEED_NEW_OPTIONS                1 << 14
-#define PARSE_ENC                       1 << 15
-#define CONFIG_CHANGED                  1 << 16
+#define GENERIC_CHANGED 1
+#define S52_CHANGED 1 << 1
+#define FONT_CHANGED 1 << 2
+#define FORCE_UPDATE 1 << 3
+#define VISIT_CHARTS 1 << 4
+#define LOCALE_CHANGED 1 << 5
+#define TOOLBAR_CHANGED 1 << 6
+#define CHANGE_CHARTS 1 << 7
+#define SCAN_UPDATE 1 << 8
+#define GROUPS_CHANGED 1 << 9
+#define STYLE_CHANGED 1 << 10
+#define TIDES_CHANGED 1 << 11
+#define GL_CHANGED 1 << 12
+#define REBUILD_RASTER_CACHE 1 << 13
+#define NEED_NEW_OPTIONS 1 << 14
+#define PARSE_ENC 1 << 15
+#define CONFIG_CHANGED 1 << 16
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -256,11 +257,11 @@ enum {
 WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
 class Uncopyable {
- protected:
+protected:
   Uncopyable(void) {}
   ~Uncopyable(void) {}
 
- private:
+private:
   Uncopyable(const Uncopyable &);
   Uncopyable &operator=(const Uncopyable &);
 };
@@ -272,8 +273,8 @@ class options : private Uncopyable,
 class options : private Uncopyable,
                 public wxScrollingDialog
 #endif
-                {
- public:
+{
+public:
   explicit options(MyFrame *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                    const wxString &caption = SYMBOL_OPTIONS_TITLE,
                    const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
@@ -281,8 +282,8 @@ class options : private Uncopyable,
                    long style = SYMBOL_OPTIONS_STYLE);
 
   ~options(void);
-#if wxCHECK_VERSION(3,0,0)
-  bool SendIdleEvents(wxIdleEvent &event );
+#if wxCHECK_VERSION(3, 0, 0)
+  bool SendIdleEvents(wxIdleEvent &event);
 #endif
   void SetInitialPage(int page_sel, int sub_page = -1);
   void Finish(void);
@@ -335,7 +336,7 @@ class options : private Uncopyable,
   void OnDisplayCategoryRadioButton(wxCommandEvent &event);
   void OnButtonClearClick(wxCommandEvent &event);
   void OnButtonSelectClick(wxCommandEvent &event);
-  void OnButtonSetStd(wxCommandEvent& event);
+  void OnButtonSetStd(wxCommandEvent &event);
 
   void OnPageChange(wxListbookEvent &event);
   void OnTopNBPageChange(wxNotebookEvent &event);
@@ -345,14 +346,14 @@ class options : private Uncopyable,
   wxString SelectSoundFile();
   void OnButtonSelectSound(wxCommandEvent &event);
   void OnButtonTestSound(wxCommandEvent &event);
-  void OnButtonSelectAnchorSound(wxCommandEvent& event);
-  void OnButtonTestAnchorSound(wxCommandEvent& event);
-  void OnButtonSelectAISSound(wxCommandEvent& event);
-  void OnButtonTestAISSound(wxCommandEvent& event);
-  void OnButtonSelectSARTSound(wxCommandEvent& event);
-  void OnButtonTestSARTSound(wxCommandEvent& event);
-  void OnButtonSelectDSCSound(wxCommandEvent& event);
-  void OnButtonTestDSCSound(wxCommandEvent& event);
+  void OnButtonSelectAnchorSound(wxCommandEvent &event);
+  void OnButtonTestAnchorSound(wxCommandEvent &event);
+  void OnButtonSelectAISSound(wxCommandEvent &event);
+  void OnButtonTestAISSound(wxCommandEvent &event);
+  void OnButtonSelectSARTSound(wxCommandEvent &event);
+  void OnButtonTestSARTSound(wxCommandEvent &event);
+  void OnButtonSelectDSCSound(wxCommandEvent &event);
+  void OnButtonTestDSCSound(wxCommandEvent &event);
 
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void OnZTCCheckboxClick(wxCommandEvent &event);
@@ -372,20 +373,20 @@ class options : private Uncopyable,
 
   void UpdateWorkArrayFromTextCtl(void);
 
-  void OnCreateConfig( wxCommandEvent &event);
-  void OnEditConfig( wxCommandEvent &event);
-  void OnDeleteConfig( wxCommandEvent &event);
-  void OnApplyConfig( wxCommandEvent &event);
+  void OnCreateConfig(wxCommandEvent &event);
+  void OnEditConfig(wxCommandEvent &event);
+  void OnDeleteConfig(wxCommandEvent &event);
+  void OnApplyConfig(wxCommandEvent &event);
   void SetConfigButtonState();
   void ClearConfigList();
   void BuildConfigList();
-  void OnConfigMouseSelected( wxMouseEvent &event);
+  void OnConfigMouseSelected(wxMouseEvent &event);
 
-  void SetSelectedConnectionPanel( ConnectionParamsPanel *panel );
+  void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
 
-  bool GetNeedNew(){ return m_bneedNew; }
-  void SetNeedNew( bool bnew ){ m_bneedNew =bnew; }
-  int GetScrollRate(){ return m_scrollRate; }
+  bool GetNeedNew() { return m_bneedNew; }
+  void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
+  int GetScrollRate() { return m_scrollRate; }
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -417,8 +418,10 @@ class options : private Uncopyable,
   wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
-//  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
-  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover, *pDarkDecorations;
+  //  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis,
+  //  *pRollover;
+  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover,
+      *pDarkDecorations;
   wxCheckBox *pZoomButtons;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
@@ -426,7 +429,8 @@ class options : private Uncopyable,
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
-  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
+  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
+      *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
   // LIVE ETA OPTION
@@ -461,13 +465,14 @@ class options : private Uncopyable,
   ConnectionParams *mSelectedConnection;
 
   // For the Display\Units page
-  wxStaticText* itemStaticTextUserVar;
-  wxStaticText* itemStaticTextUserVar2;
+  wxStaticText *itemStaticTextUserVar;
+  wxStaticText *itemStaticTextUserVar2;
 
   wxGridSizer *gSizerNetProps, *gSizerSerProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
-  wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost, *m_cbCheckSKDiscover;
+  wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
+      *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
@@ -498,12 +503,12 @@ class options : private Uncopyable,
   void OnConnValChange(wxCommandEvent &event);
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
-  void EnableConnection( ConnectionParams *conn, bool value);
+  void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
-  void UpdateDiscoverStatus( wxString stat);
+  void UpdateDiscoverStatus(wxString stat);
   void OnAISRolloverClick(wxCommandEvent &event);
 
-  void OnCanvasConfigSelectClick( int ID, bool selected);
+  void OnCanvasConfigSelectClick(int ID, bool selected);
 
   bool connectionsaved;
   bool m_connection_enabled;
@@ -516,11 +521,11 @@ class options : private Uncopyable,
   wxBoxSizer *vectorPanel;
   wxScrolledWindow *ps57Ctl;
 
-// #if defined(__WXMSW__) || defined(__WXOSX__)
-//   wxCheckListBox *ps57CtlListBox;
-// #else
+  // #if defined(__WXMSW__) || defined(__WXOSX__)
+  //   wxCheckListBox *ps57CtlListBox;
+  // #else
   OCPNCheckedListCtrl *ps57CtlListBox;
-// #endif
+  // #endif
 
   wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
   wxButton *itemButtonClearList, *itemButtonSelectList, *itemButtonSetStd;
@@ -533,7 +538,8 @@ class options : private Uncopyable,
   int k_vectorcharts;
 
   // For "Units" page
-  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect, *pTempFormat;
+  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect,
+      *pTempFormat;
   wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 
@@ -555,18 +561,20 @@ class options : private Uncopyable,
   // For the "AIS" page
   wxCheckBox *m_pCheck_CPA_Max, *m_pCheck_CPA_Warn, *m_pCheck_CPA_WarnT;
   wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost, *m_pCheck_Show_COG;
-  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Hide_Moored, *m_pCheck_Scale_Priority;
+  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Hide_Moored,
+      *m_pCheck_Scale_Priority;
   wxCheckBox *m_pCheck_AlertDialog, *m_pCheck_AlertAudio;
   wxCheckBox *m_pCheck_Alert_Moored, *m_pCheck_Rollover_Class;
   wxCheckBox *m_pCheck_Rollover_COG, *m_pCheck_Rollover_CPA;
   wxCheckBox *m_pCheck_Ack_Timout, *m_pCheck_Show_Area_Notices;
   wxCheckBox *m_pCheck_Draw_Target_Size, *m_pCheck_Draw_Realtime_Prediction;
   wxCheckBox *m_pCheck_Show_Target_Name;
-  wxChoice   *m_pWplAction;
+  wxChoice *m_pWplAction;
   wxCheckBox *m_pCheck_use_Wpl, *m_pCheck_ShowAllCPA;
   wxTextCtrl *m_pText_CPA_Max, *m_pText_CPA_Warn, *m_pText_CPA_WarnT;
   wxTextCtrl *m_pText_Mark_Lost, *m_pText_Remove_Lost, *m_pText_COG_Predictor;
-  wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed, *m_pText_Scale_Priority;
+  wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed,
+      *m_pText_Scale_Priority;
   wxTextCtrl *m_pText_ACK_Timeout, *m_pText_Show_Target_Name_Scale;
   wxTextCtrl *m_pText_RealtPred_Speed;
 
@@ -594,8 +602,8 @@ class options : private Uncopyable,
 
   OCPNIconCombo *pWaypointDefaultIconChoice;
   OCPNIconCombo *pRoutepointDefaultIconChoice;
-  wxCheckBox    *pScaMinChckB, *pScaMinOverruleChckB;
-  wxTextCtrl*   m_pText_ScaMin;
+  wxCheckBox *pScaMinChckB, *pScaMinOverruleChckB;
+  wxTextCtrl *m_pText_ScaMin;
 
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
@@ -608,7 +616,7 @@ class options : private Uncopyable,
 
   // For "PlugIns" Panel
   PluginListPanel *m_pPlugInCtrl;
-  AddPluginPanel* m_AddPluginPanel;
+  AddPluginPanel *m_AddPluginPanel;
   CatalogMgrPanel *m_PluginCatalogMgrPanel;
   wxScrolledWindow *itemPanelPlugins;
   wxBoxSizer *itemBoxSizerPanelPlugins;
@@ -616,7 +624,8 @@ class options : private Uncopyable,
   wxChoice *pNavAidRadarRingsNumberVisible, *pWaypointRangeRingsNumber;
   OCPNColourPickerCtrl *m_colourOwnshipRangeRingColour;
   wxChoice *m_itemRadarRingsUnits, *m_itemWaypointRangeRingsUnits;
-  OCPNColourPickerCtrl *m_colourTrackLineColour;;
+  OCPNColourPickerCtrl *m_colourTrackLineColour;
+  ;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
   wxCheckBox *pSogCogFromLLCheckBox;
@@ -627,7 +636,7 @@ class options : private Uncopyable,
   wxCheckBox *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
-  wxStaticText* pStatic_CallSign;
+  wxStaticText *pStatic_CallSign;
 
 #if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL
@@ -654,27 +663,41 @@ class options : private Uncopyable,
   int k_plugins;
 
   // Sounds panel
-  wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio, *m_pCheck_DSCAudio;
-  wxStaticText *m_anchorAudioFileNameText, *m_aisAudioFileNameText, *m_sartAudioFileNameText, *m_dscAudioFileNameText;
+  wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio,
+      *m_pCheck_DSCAudio;
+  wxStaticText *m_anchorAudioFileNameText, *m_aisAudioFileNameText,
+      *m_sartAudioFileNameText, *m_dscAudioFileNameText;
 
- private:
+private:
   void Init(void);
   void CreatePanel_MMSI(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_AIS(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Ownship(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Ownship(size_t parent, int border_size,
+                           int group_item_spacing);
   void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_NMEA_Compact(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_ChartsLoad(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_VectorCharts(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_TidesCurrents(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_ChartGroups(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Display(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_NMEA_Compact(size_t parent, int border_size,
+                                int group_item_spacing);
+  void CreatePanel_ChartsLoad(size_t parent, int border_size,
+                              int group_item_spacing);
+  void CreatePanel_VectorCharts(size_t parent, int border_size,
+                                int group_item_spacing);
+  void CreatePanel_TidesCurrents(size_t parent, int border_size,
+                                 int group_item_spacing);
+  void CreatePanel_ChartGroups(size_t parent, int border_size,
+                               int group_item_spacing);
+  void CreatePanel_Display(size_t parent, int border_size,
+                           int group_item_spacing);
   void CreatePanel_UI(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Units(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Sounds(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Advanced(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Routes(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Units(size_t parent, int border_size,
+                         int group_item_spacing);
+  void CreatePanel_Sounds(size_t parent, int border_size,
+                          int group_item_spacing);
+  void CreatePanel_Advanced(size_t parent, int border_size,
+                            int group_item_spacing);
+  void CreatePanel_Configs(size_t parent, int border_size,
+                           int group_item_spacing);
+  void CreatePanel_Routes(size_t parent, int border_size,
+                          int group_item_spacing);
 
   void OnAlertEnableButtonClick(wxCommandEvent &event);
   void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
@@ -710,18 +733,19 @@ class options : private Uncopyable,
   void SetDSFormRWStates();
   void SetDSFormOptionVizStates();
   void FillSourceList();
-  void UpdateSourceList( bool bResort );
+  void UpdateSourceList(bool bResort);
   bool SortSourceList(void);
 
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
-  ConnectionParams *UpdateConnectionParamsFromSelectedItem(ConnectionParams *pConnectionParams);
+  ConnectionParams *UpdateConnectionParamsFromSelectedItem(
+      ConnectionParams *pConnectionParams);
 
   int m_screenConfig;
 
   wxNotebookPage *m_groupsPage;
-  wxFont  *dialogFont, *dialogFontPlus;
+  wxFont *dialogFont, *dialogFontPlus;
   wxFont smallFont;
-//  wxFont *dialogFont;
+  //  wxFont *dialogFont;
   wxSize m_small_button_size;
   wxTimer m_BTScanTimer;
   wxArrayString m_BTscan_results;
@@ -735,7 +759,7 @@ class options : private Uncopyable,
   wxBoxSizer *m_boxSizerConfigs;
   wxColour m_panelBackgroundUnselected;
   wxString m_selectedConfigPanelGUID;
-  wxSize  m_colourPickerDefaultSize;
+  wxSize m_colourPickerDefaultSize;
 
   wxSize m_sliderSize;
   bool m_bneedNew;
@@ -743,31 +767,31 @@ class options : private Uncopyable,
   DECLARE_EVENT_TABLE()
 };
 
-class CanvasConfigSelect: public wxPanel
-{
+class CanvasConfigSelect : public wxPanel {
 public:
-    CanvasConfigSelect( wxWindow *parent, options *parentOptions, int id, wxBitmap &bmp,
-                        const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize );
-    ~CanvasConfigSelect();
+  CanvasConfigSelect(wxWindow *parent, options *parentOptions, int id,
+                     wxBitmap &bmp, const wxPoint &pos = wxDefaultPosition,
+                     const wxSize &size = wxDefaultSize);
+  ~CanvasConfigSelect();
 
-    void OnMouseSelected( wxMouseEvent &event );
-    void SetSelected( bool selected );
-    void OnPaint( wxPaintEvent &event );
+  void OnMouseSelected(wxMouseEvent &event);
+  void SetSelected(bool selected);
+  void OnPaint(wxPaintEvent &event);
 
-    bool GetSelected(){ return m_bSelected; }
+  bool GetSelected() { return m_bSelected; }
 
 private:
-    options *m_parentOptions;
-    bool m_bSelected;
-    wxColour m_boxColour;
-    wxBitmap m_bmpNormal;
-    int m_borderWidth;
+  options *m_parentOptions;
+  bool m_bSelected;
+  wxColour m_boxColour;
+  wxBitmap m_bmpNormal;
+  int m_borderWidth;
 
-    DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
- public:
+public:
   explicit ChartGroupsUI(wxWindow *parent);
   ~ChartGroupsUI(void);
 
@@ -786,7 +810,6 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
   void EmptyChartGroupArray(ChartGroupArray *s);
   void ClearGroupPages();
 
-
   void OnNodeExpanded(wxTreeEvent &event);
   void OnAvailableSelection(wxTreeEvent &event);
   void OnInsertChartItem(wxCommandEvent &event);
@@ -802,7 +825,7 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
 
   wxScrolledWindow *m_panel;
 
- private:
+private:
   int FindGroupBranch(ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
                       wxString *pbranch_adder);
 
@@ -828,14 +851,13 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
   DECLARE_EVENT_TABLE()
 };
 
-
 class SentenceListDlg : private Uncopyable, public wxDialog {
- public:
+public:
   explicit SentenceListDlg(wxWindow *parent, FilterDirection dir, ListType type,
                            const wxArrayString &list);
   wxString GetSentences(void);
 
- private:
+private:
   void OnAddClick(wxCommandEvent &event);
   void OnDeleteClick(wxCommandEvent &event);
   void OnCLBSelect(wxCommandEvent &event);
@@ -855,7 +877,7 @@ class SentenceListDlg : private Uncopyable, public wxDialog {
 
 #ifdef ocpnUSE_GL
 class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
- public:
+public:
   explicit OpenGLOptionsDlg(wxWindow *parent);
   bool GetAcceleratedPanning(void) const;
   bool GetTextureCompression(void) const;
@@ -867,7 +889,7 @@ class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
   bool GetRebuildCache(void) const;
   int GetTextureMemorySize(void) const;
 
- private:
+private:
   void Populate(void);
   void OnButtonRebuild(wxCommandEvent &event);
   void OnButtonClear(wxCommandEvent &event);
@@ -888,17 +910,17 @@ class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
 #define ID_MMSI_PROPS_LIST 10073
 
 enum {
-    mlMMSI = 0,
-    mlTrackMode,
-    mlIgnore,
-    mlMOB,
-    mlVDM,
-    mlFollower,
-    mlShipName
+  mlMMSI = 0,
+  mlTrackMode,
+  mlIgnore,
+  mlMOB,
+  mlVDM,
+  mlFollower,
+  mlShipName
 };  // MMSIListCtrl Columns;
 
 class MMSIListCtrl : private Uncopyable, public wxListCtrl {
- public:
+public:
   explicit MMSIListCtrl(wxWindow *parent, wxWindowID id, const wxPoint &pos,
                         const wxSize &size, long style);
   ~MMSIListCtrl(void);
@@ -922,7 +944,7 @@ class MMSIListCtrl : private Uncopyable, public wxListCtrl {
 #define ID_DEF_MENU_MMSI_DELETE 8195
 
 class MMSIEditDialog : private Uncopyable, public wxDialog {
- public:
+public:
   explicit MMSIEditDialog(MMSIProperties *props, wxWindow *parent,
                           wxWindowID id = wxID_ANY,
                           const wxString &caption = wxEmptyString,
@@ -937,20 +959,21 @@ class MMSIEditDialog : private Uncopyable, public wxDialog {
   void OnCtlUpdated(wxCommandEvent &event);
 
   MMSIProperties *m_props;
-  wxTextCtrl *m_MMSICtl, m_ShipNameCtl; //Has ToDo take away?
+  wxTextCtrl *m_MMSICtl, m_ShipNameCtl;  // Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
-  wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton, *m_FollowerButton;
+  wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton,
+      *m_FollowerButton;
   wxButton *m_CancelButton, *m_OKButton;
 
 private:
-    void Persist();
+  void Persist();
 
   DECLARE_EVENT_TABLE()
 };
 
 class MMSI_Props_Panel : private Uncopyable, public wxPanel {
- public:
+public:
   explicit MMSI_Props_Panel(wxWindow *parent);
   ~MMSI_Props_Panel();
 
@@ -961,29 +984,29 @@ class MMSI_Props_Panel : private Uncopyable, public wxPanel {
   MMSIListCtrl *m_pListCtrlMMSI;
   wxButton *m_pButtonNew;
 
- private:
+private:
   wxWindow *m_pparent;
 };
 
-class ConfigCreateDialog : private Uncopyable, public wxDialog
-{
+class ConfigCreateDialog : private Uncopyable, public wxDialog {
 public:
-    explicit ConfigCreateDialog(wxWindow *parent, wxWindowID id = wxID_ANY,
-                            const wxString &caption = wxEmptyString,
-                            const wxPoint &pos = wxDefaultPosition,
-                            const wxSize &size = wxDefaultSize, long style = 0);
-    ~ConfigCreateDialog(void);
+  explicit ConfigCreateDialog(wxWindow *parent, wxWindowID id = wxID_ANY,
+                              const wxString &caption = wxEmptyString,
+                              const wxPoint &pos = wxDefaultPosition,
+                              const wxSize &size = wxDefaultSize,
+                              long style = 0);
+  ~ConfigCreateDialog(void);
 
-    void SetColorScheme(ColorScheme cs);
-    void CreateControls(void);
-    void OnConfigEditCancelClick(wxCommandEvent& event);
-    void OnConfigEditOKClick(wxCommandEvent& event);
-    wxString GetCreatedTemplateGUID(){ return m_createdTemplateGUID; }
+  void SetColorScheme(ColorScheme cs);
+  void CreateControls(void);
+  void OnConfigEditCancelClick(wxCommandEvent &event);
+  void OnConfigEditOKClick(wxCommandEvent &event);
+  wxString GetCreatedTemplateGUID() { return m_createdTemplateGUID; }
 
-    wxTextCtrl *m_TitleCtl, *m_DescriptionCtl;
-    wxButton *m_CancelButton, *m_OKButton;
-    wxString m_createdTemplateGUID;
-    DECLARE_EVENT_TABLE()
+  wxTextCtrl *m_TitleCtl, *m_DescriptionCtl;
+  wxButton *m_CancelButton, *m_OKButton;
+  wxString m_createdTemplateGUID;
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

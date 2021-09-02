@@ -27,19 +27,21 @@
 
 #include "dychart.h"
 
-class emboss_data
-{
-      public:
-            emboss_data(){ pmap = NULL; gltexind = 0; }
-            ~emboss_data(){ free(pmap); }
+class emboss_data {
+public:
+  emboss_data() {
+    pmap = NULL;
+    gltexind = 0;
+  }
+  ~emboss_data() { free(pmap); }
 
-            int         *pmap;
-            int         width;
-            int         height;
-            int         x, y;
+  int *pmap;
+  int width;
+  int height;
+  int x, y;
 
-            unsigned int      gltexind;
-            int         glwidth, glheight; // next power of 2 larger than width/height
+  unsigned int gltexind;
+  int glwidth, glheight;  // next power of 2 larger than width/height
 };
 
 #endif

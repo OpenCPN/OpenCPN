@@ -26,26 +26,25 @@
 
 #include <wx/string.h>
 
-class PositionParser
-{
+class PositionParser {
 public:
-    PositionParser(const wxString & src);
-    const wxString & GetSeparator() const { return separator; }
-    const wxString & GetLatitudeString() const { return latitudeString; }
-    const wxString & GetLongitudeString() const { return longitudeString; }
-    double GetLatitude() const { return latitude; }
-    double GetLongitude() const { return longitude; }
-    bool FindSeparator(const wxString & src);
-    bool IsOk() const { return parsedOk; }
+  PositionParser(const wxString& src);
+  const wxString& GetSeparator() const { return separator; }
+  const wxString& GetLatitudeString() const { return latitudeString; }
+  const wxString& GetLongitudeString() const { return longitudeString; }
+  double GetLatitude() const { return latitude; }
+  double GetLongitude() const { return longitude; }
+  bool FindSeparator(const wxString& src);
+  bool IsOk() const { return parsedOk; }
 
 private:
-    wxString source;
-    wxString separator;
-    wxString latitudeString;
-    wxString longitudeString;
-    double latitude;
-    double longitude;
-    bool parsedOk;
+  wxString source;
+  wxString separator;
+  wxString latitudeString;
+  wxString longitudeString;
+  double latitude;
+  double longitude;
+  bool parsedOk;
 };
 
 #endif

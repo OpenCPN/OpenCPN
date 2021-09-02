@@ -25,19 +25,18 @@
 #define __SHADERS_H__
 
 #include "wx/wxprec.h"
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include <gl2.h>
 
-    extern GLint color_tri_shader_program;
-    extern GLint texture_2D_shader_program;
-    extern GLint fade_texture_2D_shader_program;
-    extern GLint circle_filled_shader_program;
-    extern GLint FBO_texture_2D_shader_program;
-    extern GLint texture_2DA_shader_program;
-
+extern GLint color_tri_shader_program;
+extern GLint texture_2D_shader_program;
+extern GLint fade_texture_2D_shader_program;
+extern GLint circle_filled_shader_program;
+extern GLint FBO_texture_2D_shader_program;
+extern GLint texture_2DA_shader_program;
 
 bool loadShaders(int index = 0);
 void reConfigureShaders(int index = 0);

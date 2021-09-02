@@ -54,7 +54,6 @@
  */
 enum TableState { TABLE_SETUP_WIDTHS = 0, TABLE_FILL_DATA, TABLE_FILL_HEADER };
 
-
 /**
  *  \brief Represents a NxM simple table with captions.
  *
@@ -69,206 +68,145 @@ enum TableState { TABLE_SETUP_WIDTHS = 0, TABLE_FILL_DATA, TABLE_FILL_HEADER };
  */
 class Table {
 protected:
-    int nrows;
-    int ncols;
+  int nrows;
+  int ncols;
 
-    bool create_next_row;
+  bool create_next_row;
 
-    std::vector< std::vector < wxString > > data;
-    std::vector< double > widths;
-    std::vector< wxString > header;
-    TableState state;
+  std::vector<std::vector<wxString> > data;
+  std::vector<double> widths;
+  std::vector<wxString> header;
+  TableState state;
 
-    void Start();
+  void Start();
 
-    void NewRow();
+  void NewRow();
 
 public:
-    Table();
-    ~Table();
+  Table();
+  ~Table();
 
-    Table& operator<<( const int& );
-    Table& operator<<( const double& );
-    Table& operator<<( const wxString& );
+  Table& operator<<(const int&);
+  Table& operator<<(const double&);
+  Table& operator<<(const wxString&);
 
-    std::vector< std::vector < wxString > > & GetData()
-    {
-        return data;
-    };
+  std::vector<std::vector<wxString> >& GetData() { return data; };
 
-    void StartFillData()
-    {
-        state = TABLE_FILL_DATA;
-    };
+  void StartFillData() { state = TABLE_FILL_DATA; };
 
-    void StartFillHeader()
-    {
-        state = TABLE_FILL_HEADER;
-    };
+  void StartFillHeader() { state = TABLE_FILL_HEADER; };
 
-    void StartFillWidths()
-    {
-        state = TABLE_SETUP_WIDTHS;
-    };
+  void StartFillWidths() { state = TABLE_SETUP_WIDTHS; };
 
-    int GetRowHeight( int i )
-    {
-        return widths[ i ];
-    };
+  int GetRowHeight(int i) { return widths[i]; };
 };
 
-std::ostream& operator<<( std::ostream&,
-            Table& );
-
-
+std::ostream& operator<<(std::ostream&, Table&);
 
 /**
- *  \brief This class takes multilined string and modifies it to fit into given width
- *         for given device. If it is too wide for given DC (by class PrintTable )
+ *  \brief This class takes multilined string and modifies it to fit into given
+ * width for given device. If it is too wide for given DC (by class PrintTable )
  *        it introduces new lines between words
  *
  */
 
 class PrintCell {
 protected:
-    // Copy of printing device
-    wxDC* dc;
+  // Copy of printing device
+  wxDC* dc;
 
-    // Target width
-    int width;
+  // Target width
+  int width;
 
-    // Target height
-    int height;
+  // Target height
+  int height;
 
-    // Cellpadding
-    int cellpadding;
+  // Cellpadding
+  int cellpadding;
 
-    // Content of a cell
-    wxString content;
+  // Content of a cell
+  wxString content;
 
-    // Result of modification
-    wxString modified_content;
+  // Result of modification
+  wxString modified_content;
 
-    // Rect for printing of modified string
-    wxRect rect;
+  // Rect for printing of modified string
+  wxRect rect;
 
-    // Stores page, where this cell will be printed
-    int page;
+  // Stores page, where this cell will be printed
+  int page;
 
-    // Stores, if one has to ovveride property "weight" of the font with the value "bold" - used to print header of the table.
-    bool bold_font;
+  // Stores, if one has to ovveride property "weight" of the font with the value
+  // "bold" - used to print header of the table.
+  bool bold_font;
 
-
-    // Adjust text
-    void Adjust();
-
+  // Adjust text
+  void Adjust();
 
 public:
+  // Constructor with content to print and device
+  PrintCell(){};
 
-    // Constructor with content to print and device
-    PrintCell ()
-    {
-    };
+  // Constructor with content to print and device
+  void Init(const wxString& _content, wxDC* _dc, int _width, int _cellpadding,
+            bool bold_font = false);
 
-    // Constructor with content to print and device
-    void Init( const wxString& _content,
-          wxDC*           _dc,
-          int             _width,
-          int             _cellpadding,
-          bool            bold_font = false );
+  // Returns rect for printing
+  wxRect GetRect() { return rect; };
 
-    // Returns rect for printing
-    wxRect GetRect()
-    {
-        return rect;
-    };
+  // Returns modified cell content
+  wxString GetText() { return modified_content; };
 
-    // Returns modified cell content
-    wxString GetText()
-    {
-        return modified_content;
-    };
+  // Returns height of the cell
+  int GetHeight() { return height; };
 
-    // Returns height of the cell
-    int GetHeight()
-    {
-        return height;
-    };
+  // Returns width of the cell
+  int GetWidth() { return width; };
 
-    // Returns width of the cell
-    int GetWidth()
-    {
-        return width;
-    };
+  // sets the page to print
+  void SetPage(int _page) { page = _page; };
 
-    // sets the page to print
-    void SetPage( int _page )
-    {
-        page = _page;
-    };
+  // sets the height
+  void SetHeight(int _height) { height = _height; };
 
-    // sets the height
-    void SetHeight( int _height )
-    {
-        height = _height;
-    };
-
-    // Returns the page, where this element should be painted
-    int GetPage()
-    {
-        return page;
-    };
+  // Returns the page, where this element should be painted
+  int GetPage() { return page; };
 };
-
-
 
 /**
  *  \brief Extension of a class Table with printing into dc.
  *
  *   It takes all elements, takes DC as a printing device, takes  a maximal
  *   possible table width,  calculate width of every column.
- *   For printing of every cell it modifies its content so, that it fits into cell by inserting
- *   new lines.
+ *   For printing of every cell it modifies its content so, that it fits into
+ * cell by inserting new lines.
  *
  */
 class PrintTable : public Table {
 protected:
-    std::vector< std::vector < PrintCell > > contents;
-    std::vector < PrintCell >           header_content;
-    std::vector< int >                  rows_heights;
-    int                            header_height;
+  std::vector<std::vector<PrintCell> > contents;
+  std::vector<PrintCell> header_content;
+  std::vector<int> rows_heights;
+  int header_height;
 
-
-    int number_of_pages;                // stores the number of pages for printing of this table. It is set by AdjustCells(...)
+  int number_of_pages;  // stores the number of pages for printing of this
+                        // table. It is set by AdjustCells(...)
 
 public:
-    PrintTable();
+  PrintTable();
 
-    // creates internally std::vector of PrintCell's, to calculate columns widths and row sizes
-    void AdjustCells( wxDC* _dc,
-                 int   marginX,
-                 int   marginY );
+  // creates internally std::vector of PrintCell's, to calculate columns widths
+  // and row sizes
+  void AdjustCells(wxDC* _dc, int marginX, int marginY);
 
-    // delivers content of the table
-    std::vector< std::vector < PrintCell > >& GetContent()
-    {
-        return contents;
-    };
-    // delivers header  of the table
-    std::vector < PrintCell > & GetHeader()
-    {
-        return header_content;
-    };
-    // returns the total number of needed pages;
-    int GetNumberPages()
-    {
-        return number_of_pages;
-    };
+  // delivers content of the table
+  std::vector<std::vector<PrintCell> >& GetContent() { return contents; };
+  // delivers header  of the table
+  std::vector<PrintCell>& GetHeader() { return header_content; };
+  // returns the total number of needed pages;
+  int GetNumberPages() { return number_of_pages; };
 
-    // Returns the height of the header
-    int GetHeaderHeight()
-    {
-        return header_height;
-    };
+  // Returns the height of the header
+  int GetHeaderHeight() { return header_height; };
 };
 #endif

@@ -35,12 +35,11 @@
 #include "gdal/ogrsf_frmts.h"
 #include "s57.h"
 
-
 //    Misc error return codes
-#define BAD_FILE        10
-#define BAD_HEADER      11
-#define BAD_OPEN        12
-#define BAD_UPDATE      30
+#define BAD_FILE 10
+#define BAD_HEADER 11
+#define BAD_OPEN 12
+#define BAD_UPDATE 30
 
 class OGRS57DataSource;
 
@@ -50,43 +49,41 @@ class OGRS57DataSource;
 /*      Represents all features of a particular S57 object class.       */
 /************************************************************************/
 
-class OGRS57Layer : public OGRLayer
-{
-    OGRGeometry        *poFilterGeom;
+class OGRS57Layer : public OGRLayer {
+  OGRGeometry *poFilterGeom;
 
-    OGRS57DataSource   *poDS;
+  OGRS57DataSource *poDS;
 
-    OGRFeatureDefn     *poFeatureDefn;
+  OGRFeatureDefn *poFeatureDefn;
 
-    int                 nCurrentModule;
-    int                 nRCNM;
-    int                 nOBJL;
-    int                 nNextFEIndex;
-    int                 nFeatureCount;
+  int nCurrentModule;
+  int nRCNM;
+  int nOBJL;
+  int nNextFEIndex;
+  int nFeatureCount;
 
-  public:
-                        OGRS57Layer( OGRS57DataSource * poDS,
-                                     OGRFeatureDefn *, int nFeatureCount = -1,
-                                     int nOBJL = -1 );
-    virtual             ~OGRS57Layer();
+public:
+  OGRS57Layer(OGRS57DataSource *poDS, OGRFeatureDefn *, int nFeatureCount = -1,
+              int nOBJL = -1);
+  virtual ~OGRS57Layer();
 
-    OGRGeometry *       GetSpatialFilter() { return poFilterGeom; }
-    void                SetSpatialFilter( OGRGeometry * );
+  OGRGeometry *GetSpatialFilter() { return poFilterGeom; }
+  void SetSpatialFilter(OGRGeometry *);
 
-    void                ResetReading();
-    OGRFeature *        GetNextFeature();
-    OGRFeature *        GetNextUnfilteredFeature();
-    virtual OGRFeature *GetFeature( long nFeatureId );
+  void ResetReading();
+  OGRFeature *GetNextFeature();
+  OGRFeature *GetNextUnfilteredFeature();
+  virtual OGRFeature *GetFeature(long nFeatureId);
 
-    virtual int         GetFeatureCount( int bForce = TRUE );
-    virtual OGRErr      GetExtent(OGREnvelope *psExtent, int bForce = TRUE);
+  virtual int GetFeatureCount(int bForce = TRUE);
+  virtual OGRErr GetExtent(OGREnvelope *psExtent, int bForce = TRUE);
 
-    OGRFeatureDefn *    GetLayerDefn() { return poFeatureDefn; }
+  OGRFeatureDefn *GetLayerDefn() { return poFeatureDefn; }
 
-    virtual OGRErr      CreateFeature( OGRFeature *poFeature );
-    int                 TestCapability( const char * );
+  virtual OGRErr CreateFeature(OGRFeature *poFeature);
+  int TestCapability(const char *);
 
-    virtual OGRSpatialReference *GetSpatialRef();
+  virtual OGRSpatialReference *GetSpatialRef();
 };
 
 /************************************************************************/
@@ -94,73 +91,71 @@ class OGRS57Layer : public OGRLayer
 /************************************************************************/
 typedef bool (*CallBackFunction)(void);
 
-class OGRS57DataSource
-{
-    char                *pszName;
+class OGRS57DataSource {
+  char *pszName;
 
-    int                 nLayers;
-    OGRS57Layer         **papoLayers;
+  int nLayers;
+  OGRS57Layer **papoLayers;
 
-    OGRSpatialReference *poSpatialRef;
+  OGRSpatialReference *poSpatialRef;
 
-    char                **papszOptions;
+  char **papszOptions;
 
-    int                 nModules;
-    S57Reader           **papoModules;
+  int nModules;
+  S57Reader **papoModules;
 
-    S57Writer           *poWriter;
+  S57Writer *poWriter;
 
-    S57ClassRegistrar *poRegistrar;
+  S57ClassRegistrar *poRegistrar;
 
-    int                 bClassCountSet;
-    int                 anClassCount[MAX_CLASSES];
+  int bClassCountSet;
+  int anClassCount[MAX_CLASSES];
 
-    int                 bExtentsSet;
-    OGREnvelope         oExtents;
+  int bExtentsSet;
+  OGREnvelope oExtents;
 
-  public:
-                        OGRS57DataSource();
-                        ~OGRS57DataSource();
+public:
+  OGRS57DataSource();
+  ~OGRS57DataSource();
 
-    void                SetOptionList( char ** );
-    const char         *GetOption( const char * );
+  void SetOptionList(char **);
+  const char *GetOption(const char *);
 
-    int                 Open( const char * pszName, int bTestOpen = FALSE, CallBackFunction p_callback = NULL );
-    int                 OpenMin( const char * pszName, int bTestOpen = FALSE );
-    int                 Create( const char *pszName, char **papszOptions );
+  int Open(const char *pszName, int bTestOpen = FALSE,
+           CallBackFunction p_callback = NULL);
+  int OpenMin(const char *pszName, int bTestOpen = FALSE);
+  int Create(const char *pszName, char **papszOptions);
 
-    const char          *GetName() { return pszName; }
-    int                 GetLayerCount() { return nLayers; }
-    OGRLayer            *GetLayer( int );
-    void                AddLayer( OGRS57Layer * );
-    int                 TestCapability( const char * );
+  const char *GetName() { return pszName; }
+  int GetLayerCount() { return nLayers; }
+  OGRLayer *GetLayer(int);
+  void AddLayer(OGRS57Layer *);
+  int TestCapability(const char *);
 
-    OGRSpatialReference *GetSpatialRef() { return poSpatialRef; }
+  OGRSpatialReference *GetSpatialRef() { return poSpatialRef; }
 
-    int                 GetModuleCount() { return nModules; }
-    S57Reader          *GetModule( int );
-    S57Writer          *GetWriter() { return poWriter; }
+  int GetModuleCount() { return nModules; }
+  S57Reader *GetModule(int);
+  S57Writer *GetWriter() { return poWriter; }
 
-    S57ClassRegistrar  *GetS57Registrar() { return poRegistrar; }
-    void                SetS57Registrar(S57ClassRegistrar *p) { poRegistrar = p; }
+  S57ClassRegistrar *GetS57Registrar() { return poRegistrar; }
+  void SetS57Registrar(S57ClassRegistrar *p) { poRegistrar = p; }
 
-    OGRErr      GetDSExtent(OGREnvelope *psExtent, int bForce = TRUE);
+  OGRErr GetDSExtent(OGREnvelope *psExtent, int bForce = TRUE);
 };
 
 /************************************************************************/
 /*                            OGRS57Driver                              */
 /************************************************************************/
 
-class OGRS57Driver : public OGRSFDriver
-{
-  public:
-                ~OGRS57Driver();
+class OGRS57Driver : public OGRSFDriver {
+public:
+  ~OGRS57Driver();
 
-    const char *GetName();
-    OGRDataSource *Open( const char *, int );
-    virtual OGRDataSource *CreateDataSource( const char *pszName,
-                                             char ** = NULL );
-    int                 TestCapability( const char * );
+  const char *GetName();
+  OGRDataSource *Open(const char *, int);
+  virtual OGRDataSource *CreateDataSource(const char *pszName, char ** = NULL);
+  int TestCapability(const char *);
 };
 
 #endif /* ndef _OGR_S57_H_INCLUDED */

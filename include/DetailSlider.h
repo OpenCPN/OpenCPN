@@ -29,33 +29,34 @@
 //#include "chcanv.h"
 #include "chart1.h"
 
-class PopUpDSlide: public wxFrame
-{
+class PopUpDSlide : public wxFrame {
 public:
-    PopUpDSlide( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartType, ChartFamilyEnum ChartF,
-            const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-            long style = 0, const wxString& title = _T("") );
+  PopUpDSlide(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartType,
+              ChartFamilyEnum ChartF, const wxPoint& pos = wxDefaultPosition,
+              const wxSize& size = wxDefaultSize, long style = 0,
+              const wxString& title = _T(""));
 
-    ~PopUpDSlide( void );
+  ~PopUpDSlide(void);
 
-    void Init( void );
-    bool Create( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartType, ChartFamilyEnum ChartF,
-            const wxPoint& pos, const wxSize& size, long style, const wxString& title );
+  void Init(void);
+  bool Create(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartType,
+              ChartFamilyEnum ChartF, const wxPoint& pos, const wxSize& size,
+              long style, const wxString& title);
 
-    void OnCancelClick( wxCommandEvent& event );
-    void OnKeyDown( wxKeyEvent &event );
-    void OnMove( wxMoveEvent& event );
-    void OnChangeValue( wxScrollEvent& event );
-    void OnClose( wxCloseEvent& event );
+  void OnCancelClick(wxCommandEvent& event);
+  void OnKeyDown(wxKeyEvent& event);
+  void OnMove(wxMoveEvent& event);
+  void OnChangeValue(wxScrollEvent& event);
+  void OnClose(wxCloseEvent& event);
 
-    wxSlider *m_p_DetailSlider;
-    wxWindow *m_pparent;
+  wxSlider* m_p_DetailSlider;
+  wxWindow* m_pparent;
+
 private:
+  ChartTypeEnum ChartType;
+  ChartFamilyEnum ChartFam;
 
-    ChartTypeEnum ChartType;
-    ChartFamilyEnum ChartFam;
-
-DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
-#endif //__DETAILSLIDE_H__
+#endif  //__DETAILSLIDE_H__

@@ -25,20 +25,18 @@
  *
  */
 
-
 //
 
 #ifndef __thumbwin_H__
 #define __thumbwin_H__
 
-
 // Include wxWindows' headers
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
-  #include "wx/wx.h"
-#endif //precompiled headers
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
 
 //#include "ocpn_pixel.h"
 
@@ -55,27 +53,25 @@ class ChartBase;
 //----------------------------------------------------------------------------
 // ThumbWin
 //----------------------------------------------------------------------------
-class ThumbWin: public wxWindow
-{
+class ThumbWin : public wxWindow {
 public:
-      ThumbWin();
-      ThumbWin(wxWindow *parent);
-      virtual ~ThumbWin();
+  ThumbWin();
+  ThumbWin(wxWindow *parent);
+  virtual ~ThumbWin();
 
-      void Resize(void);
-      void SetMaxSize(wxSize const &max_size);
-      const wxBitmap &GetBitmap(void);
+  void Resize(void);
+  void SetMaxSize(wxSize const &max_size);
+  const wxBitmap &GetBitmap(void);
 
-
-      wxBitmap     m_bitmap;
-      ChartBase    *pThumbChart;
+  wxBitmap m_bitmap;
+  ChartBase *pThumbChart;
 
 private:
-      void OnPaint(wxPaintEvent& event);
+  void OnPaint(wxPaintEvent &event);
 
-      wxSize      m_max_size;
+  wxSize m_max_size;
 
-DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

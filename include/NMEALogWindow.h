@@ -44,41 +44,41 @@ class TTYWindow;
  * inside this class. This is used to store them permanently in
  * the configuration file.
  */
-class NMEALogWindow : public WindowDestroyListener
-{
-    public:
-        static NMEALogWindow & Get();
-        bool Active() const;
-        void Create(wxWindow * parent, int num_lines = 35);
-        void Add(const wxString & s);
-        void Refresh(bool do_refresh = false);
-        int GetSizeW();
-        int GetSizeH();
-        int GetPosX();
-        int GetPosY();
-        void SetSize(int w, int h);
-        void SetSize(const wxSize & size);
-        void SetPos(int x, int y);
-        void SetPos(const wxPoint & pos);
-        void CheckPos(int display_width, int display_height);
-        void Move();
-        virtual void DestroyWindow();
-        static void Shutdown();
-        wxWindow *GetTTYWindow( void ){ return (wxWindow *)window; }
+class NMEALogWindow : public WindowDestroyListener {
+public:
+  static NMEALogWindow &Get();
+  bool Active() const;
+  void Create(wxWindow *parent, int num_lines = 35);
+  void Add(const wxString &s);
+  void Refresh(bool do_refresh = false);
+  int GetSizeW();
+  int GetSizeH();
+  int GetPosX();
+  int GetPosY();
+  void SetSize(int w, int h);
+  void SetSize(const wxSize &size);
+  void SetPos(int x, int y);
+  void SetPos(const wxPoint &pos);
+  void CheckPos(int display_width, int display_height);
+  void Move();
+  virtual void DestroyWindow();
+  static void Shutdown();
+  wxWindow *GetTTYWindow(void) { return (wxWindow *)window; }
 
-    private: // prevent class from being copied, needed by singleton
-        NMEALogWindow();
-        NMEALogWindow(const NMEALogWindow &) {}
-        virtual ~NMEALogWindow() {};
-        NMEALogWindow & operator=(const NMEALogWindow &) { return *this; }
-        void UpdateGeometry();
-    private:
-        static NMEALogWindow * instance;
-        TTYWindow * window;
-        int width;
-        int height;
-        int pos_x;
-        int pos_y;
+private:  // prevent class from being copied, needed by singleton
+  NMEALogWindow();
+  NMEALogWindow(const NMEALogWindow &) {}
+  virtual ~NMEALogWindow(){};
+  NMEALogWindow &operator=(const NMEALogWindow &) { return *this; }
+  void UpdateGeometry();
+
+private:
+  static NMEALogWindow *instance;
+  TTYWindow *window;
+  int width;
+  int height;
+  int pos_x;
+  int pos_y;
 };
 
 #endif

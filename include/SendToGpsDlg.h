@@ -26,67 +26,68 @@
 #define __SENDTOGPSDLG_H__
 
 #include "wx/wxprec.h"
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include <wx/dialog.h>
 
 //    Constants for SendToGps... Dialog
 #define ID_STGDIALOG 10005
-#define SYMBOL_STG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT
+#define SYMBOL_STG_STYLE                                      \
+  wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX | \
+      wxFRAME_FLOAT_ON_PARENT
 #define SYMBOL_STG_TITLE _("Send to GPS")
 #define SYMBOL_STG_IDNAME ID_STGDIALOG
 #define SYMBOL_STG_SIZE wxSize(500, 500)
 #define SYMBOL_STG_POSITION wxDefaultPosition
 
-enum {
-      ID_STG_CANCEL =            10000,
-      ID_STG_OK,
-      ID_STG_CHOICE_COMM
-};
+enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHOICE_COMM };
 
 class Route;
 class RoutePoint;
-//class wxButton;
-//class wxGauge;
-//class wxComboBox;
+// class wxButton;
+// class wxGauge;
+// class wxComboBox;
 
 /**
  * Route "Send to GPS..." Dialog Definition
  */
-class SendToGpsDlg : public wxDialog
-{
-      DECLARE_DYNAMIC_CLASS( SendToGpsDlg )
-      DECLARE_EVENT_TABLE()
+class SendToGpsDlg : public wxDialog {
+  DECLARE_DYNAMIC_CLASS(SendToGpsDlg)
+  DECLARE_EVENT_TABLE()
 
- public:
-       SendToGpsDlg();
-       SendToGpsDlg(  wxWindow* parent, wxWindowID id, const wxString& caption, const wxString& hint, const wxPoint& pos, const wxSize& size, long style );
-       ~SendToGpsDlg( );
+public:
+  SendToGpsDlg();
+  SendToGpsDlg(wxWindow* parent, wxWindowID id, const wxString& caption,
+               const wxString& hint, const wxPoint& pos, const wxSize& size,
+               long style);
+  ~SendToGpsDlg();
 
-       bool Create( wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME, const wxString& caption = SYMBOL_STG_TITLE, const wxString& hint = SYMBOL_STG_TITLE,
-                    const wxPoint& pos = SYMBOL_STG_POSITION, const wxSize& size = SYMBOL_STG_SIZE,
-                    long style = SYMBOL_STG_STYLE);
-       void SetRoute(Route *pRoute){m_pRoute = pRoute;}
-       void SetWaypoint(RoutePoint *pRoutePoint){m_pRoutePoint = pRoutePoint;}
-       wxGauge *GetProgressGauge(){ return m_pgauge; }
-       void SetMessage( wxString message );
+  bool Create(wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME,
+              const wxString& caption = SYMBOL_STG_TITLE,
+              const wxString& hint = SYMBOL_STG_TITLE,
+              const wxPoint& pos = SYMBOL_STG_POSITION,
+              const wxSize& size = SYMBOL_STG_SIZE,
+              long style = SYMBOL_STG_STYLE);
+  void SetRoute(Route* pRoute) { m_pRoute = pRoute; }
+  void SetWaypoint(RoutePoint* pRoutePoint) { m_pRoutePoint = pRoutePoint; }
+  wxGauge* GetProgressGauge() { return m_pgauge; }
+  void SetMessage(wxString message);
 
 private:
-      void CreateControls(const wxString& hint);
+  void CreateControls(const wxString& hint);
 
-      void OnCancelClick( wxCommandEvent& event );
-      void OnSendClick( wxCommandEvent& event );
+  void OnCancelClick(wxCommandEvent& event);
+  void OnSendClick(wxCommandEvent& event);
 
-      Route       *m_pRoute;
-      RoutePoint  *m_pRoutePoint;
-      wxComboBox  *m_itemCommListBox;
-      wxGauge     *m_pgauge;
-      wxButton    *m_CancelButton;
-      wxButton    *m_SendButton;
-      wxStaticText *premtext;
-
+  Route* m_pRoute;
+  RoutePoint* m_pRoutePoint;
+  wxComboBox* m_itemCommListBox;
+  wxGauge* m_pgauge;
+  wxButton* m_CancelButton;
+  wxButton* m_SendButton;
+  wxStaticText* premtext;
 };
 
 #endif

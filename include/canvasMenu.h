@@ -35,7 +35,7 @@
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
 
-#include "chart1.h"                 // for enum types
+#include "chart1.h"  // for enum types
 #include "ocpndc.h"
 #include "undo.h"
 
@@ -54,66 +54,54 @@ class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
 
-
 //----------------------------------------------------------------------------
 //    Forward Declarations
 //----------------------------------------------------------------------------
-      class Route;
-      class TCWin;
-      class RoutePoint;
-      class SelectItem;
-      class wxBoundingBox;
-      class ocpnBitmap;
-      class WVSChart;
-      class MyFrame;
-      class ChartBaseBSB;
-      class ChartBase;
-      class AIS_Target_Data;
-      class S57ObjectTree;
-      class S57ObjectDesc;
-      class RolloverWin;
-      class Quilt;
-      class PixelCache;
-      class ChInfoWin;
-      class glChartCanvas;
-
-
+class Route;
+class TCWin;
+class RoutePoint;
+class SelectItem;
+class wxBoundingBox;
+class ocpnBitmap;
+class WVSChart;
+class MyFrame;
+class ChartBaseBSB;
+class ChartBase;
+class AIS_Target_Data;
+class S57ObjectTree;
+class S57ObjectDesc;
+class RolloverWin;
+class Quilt;
+class PixelCache;
+class ChInfoWin;
+class glChartCanvas;
 
 //----------------------------------------------------------------------------
 // CanvasMenuHandler
 //----------------------------------------------------------------------------
-class CanvasMenuHandler: public wxEvtHandler
-{
+class CanvasMenuHandler : public wxEvtHandler {
 public:
-    CanvasMenuHandler(ChartCanvas *parentCanvas,
-          Route *selectedRoute,
-          Track *selectedTrack,
-          RoutePoint *selectedPoint,
-          int selectedAIS_MMSI,
-          void *selectedTCIndex);
+  CanvasMenuHandler(ChartCanvas *parentCanvas, Route *selectedRoute,
+                    Track *selectedTrack, RoutePoint *selectedPoint,
+                    int selectedAIS_MMSI, void *selectedTCIndex);
 
-      ~CanvasMenuHandler();
+  ~CanvasMenuHandler();
 
-      void CanvasPopupMenu( int x, int y, int seltype );
-      void PopupMenuHandler( wxCommandEvent& event );
-      static int GetNextContextMenuId();
+  void CanvasPopupMenu(int x, int y, int seltype);
+  void PopupMenuHandler(wxCommandEvent &event);
+  static int GetNextContextMenuId();
 
- private:
-
-      int               popx, popy;
-      ChartCanvas       *parent;
-      Route             *m_pSelectedRoute;
-      Track             *m_pSelectedTrack;
-      RoutePoint        *m_pFoundRoutePoint;
-      Route             *m_pHead;           //for split function
-      Route             *m_pTail;
-      int               m_SelectedIdx;
-      int               m_FoundAIS_MMSI;
-      void *            m_pIDXCandidate;
-
-
+private:
+  int popx, popy;
+  ChartCanvas *parent;
+  Route *m_pSelectedRoute;
+  Track *m_pSelectedTrack;
+  RoutePoint *m_pFoundRoutePoint;
+  Route *m_pHead;  // for split function
+  Route *m_pTail;
+  int m_SelectedIdx;
+  int m_FoundAIS_MMSI;
+  void *m_pIDXCandidate;
 };
-
-
 
 #endif

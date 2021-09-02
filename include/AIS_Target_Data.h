@@ -30,127 +30,123 @@
 
 #include "ais.h"
 
-#define SHIP_NAME_LEN  21
-#define CALL_SIGN_LEN  8
-#define EURO_VIN_LEN   9
+#define SHIP_NAME_LEN 21
+#define CALL_SIGN_LEN 8
+#define EURO_VIN_LEN 9
 
-void make_hash_ERI(int key, const wxString & description);
-void clear_hash_ERI( void );
+void make_hash_ERI(int key, const wxString& description);
+void clear_hash_ERI(void);
 
-
-
-class AIS_Target_Data
-{
+class AIS_Target_Data {
 public:
+  AIS_Target_Data();
+  ~AIS_Target_Data();
 
-    AIS_Target_Data();
-    ~AIS_Target_Data();
+  wxString BuildQueryResult(void);
+  wxString GetRolloverString(void);
+  wxString Get_vessel_type_string(bool b_short = false);
+  wxString Get_class_string(bool b_short = false);
+  wxString GetFullName(void);
+  wxString GetCountryCode(bool b_CntryLongStr);
+  void Toggle_AIS_CPA(void);
+  void ToggleShowTrack(void);
+  void CloneFrom(AIS_Target_Data* q);
 
-    wxString BuildQueryResult(void);
-    wxString GetRolloverString(void);
-    wxString Get_vessel_type_string(bool b_short = false);
-    wxString Get_class_string(bool b_short = false);
-    wxString GetFullName( void );
-    wxString GetCountryCode(bool b_CntryLongStr);
-    void Toggle_AIS_CPA(void);
-    void ToggleShowTrack(void);
-    void CloneFrom( AIS_Target_Data* q );
+  int MID;
+  int MMSI;
+  ais_transponder_class Class;
+  int NavStatus;
+  int SyncState;
+  int SlotTO;
+  double SOG;
+  double COG;
+  double HDG;
+  double Lon;
+  double Lat;
+  int ROTAIS;
+  int ROTIND;
+  char CallSign[CALL_SIGN_LEN];  // includes terminator
+  char ShipName[SHIP_NAME_LEN];
+  char ShipNameExtension[15];
+  unsigned char ShipType;
+  int IMO;
 
+  int DimA;
+  int DimB;
+  int DimC;
+  int DimD;
 
-    int                       MID;
-    int                       MMSI;
-    ais_transponder_class     Class;
-    int                       NavStatus;
-    int                       SyncState;
-    int                       SlotTO;
-    double                    SOG;
-    double                    COG;
-    double                    HDG;
-    double                    Lon;
-    double                    Lat;
-    int                       ROTAIS;
-    int                       ROTIND;
-    char                      CallSign[CALL_SIGN_LEN];                // includes terminator
-    char                      ShipName[SHIP_NAME_LEN];
-    char                      ShipNameExtension[15];
-    unsigned char             ShipType;
-    int                       IMO;
+  double Euro_Length;  // Extensions for European Inland AIS
+  double Euro_Beam;
+  double Euro_Draft;
+  char Euro_VIN[EURO_VIN_LEN];  // includes terminator
+  int UN_shiptype;
+  bool b_isEuroInland;
+  bool b_hasInlandDac;  // intermediate storage for EU Inland. SignalK
+  bool b_blue_paddle;
+  int blue_paddle;
 
-    int                       DimA;
-    int                       DimB;
-    int                       DimC;
-    int                       DimD;
+  int ETA_Mo;
+  int ETA_Day;
+  int ETA_Hr;
+  int ETA_Min;
 
-    double                    Euro_Length;            // Extensions for European Inland AIS
-    double                    Euro_Beam;
-    double                    Euro_Draft;
-    char                      Euro_VIN[EURO_VIN_LEN];	      // includes terminator
-    int                       UN_shiptype;
-    bool                      b_isEuroInland;
-    bool                      b_hasInlandDac;  // intermediate storage for EU Inland. SignalK
-    bool                      b_blue_paddle;
-    int                       blue_paddle;
+  double Draft;
 
-    int                       ETA_Mo;
-    int                       ETA_Day;
-    int                       ETA_Hr;
-    int                       ETA_Min;
+  char Destination[21];
 
-    double                    Draft;
+  time_t PositionReportTicks;
+  time_t StaticReportTicks;
 
-    char                      Destination[21];
+  int RecentPeriod;
+  bool b_active;
+  bool b_lost;
+  bool b_removed;
+  ais_alert_type n_alert_state;
+  bool b_suppress_audio;
+  bool b_positionDoubtful;
+  bool b_positionOnceValid;
+  bool b_nameValid;
+  bool b_isFollower;
 
-    time_t                    PositionReportTicks;
-    time_t                    StaticReportTicks;
+  //                     MMSI Properties
+  bool b_NoTrack;
+  bool b_OwnShip;
+  bool b_PersistTrack;
 
-    int                       RecentPeriod;
-    bool                      b_active;
-    bool                      b_lost;
-    bool                      b_removed;
-    ais_alert_type            n_alert_state;
-    bool                      b_suppress_audio;
-    bool                      b_positionDoubtful;
-    bool                      b_positionOnceValid;
-    bool                      b_nameValid;
-    bool                      b_isFollower;
+  int m_utc_hour;
+  int m_utc_min;
+  int m_utc_sec;
+  wxString m_date_string;
 
-    //                     MMSI Properties
-    bool                      b_NoTrack;
-    bool                      b_OwnShip;
-    bool                      b_PersistTrack;
+  wxDateTime m_ack_time;
+  bool b_in_ack_timeout;
 
-    int                       m_utc_hour;
-    int                       m_utc_min;
-    int                       m_utc_sec;
-    wxString                  m_date_string;
+  double Range_NM;
+  double Brg;
 
-    wxDateTime                m_ack_time;
-    bool                      b_in_ack_timeout;
+  wxString MSG_14_text;
 
-    double                    Range_NM;
-    double                    Brg;
+  //      Per target collision parameters
+  bool bCPA_Valid;
+  double TCPA;  // Minutes
+  double CPA;   // Nautical Miles
 
-    wxString                  MSG_14_text;
+  bool b_show_AIS_CPA;  // TR 2012.06.28: Show AIS-CPA
 
-    //      Per target collision parameters
-    bool                      bCPA_Valid;
-    double                    TCPA;                     // Minutes
-    double                    CPA;                      // Nautical Miles
+  bool b_show_track;
 
-    bool                      b_show_AIS_CPA;           //TR 2012.06.28: Show AIS-CPA
+  AISTargetTrackList* m_ptrack;
 
-    bool                      b_show_track;
-
-    AISTargetTrackList        *m_ptrack;
-
-    AIS_Area_Notice_Hash     area_notices;
-    bool                     b_SarAircraftPosnReport;
-    int                      altitude;                  // Metres, from special position report(9)
-    bool                     b_nameFromCache;
-    float                    importance;
-    short                    last_scale[AIS_TARGETDATA_MAX_CANVAS]; // where AIS_TARGETDATA_MAX_CANVAS is the max number of chartcanvas
-    wxDateTime               dtAlertExpireTime;
-
+  AIS_Area_Notice_Hash area_notices;
+  bool b_SarAircraftPosnReport;
+  int altitude;  // Metres, from special position report(9)
+  bool b_nameFromCache;
+  float importance;
+  short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
+                                                // AIS_TARGETDATA_MAX_CANVAS is
+                                                // the max number of chartcanvas
+  wxDateTime dtAlertExpireTime;
 };
 
 #endif

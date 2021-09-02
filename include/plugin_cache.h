@@ -20,8 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
-*/
-
+ */
 
 #ifndef PLUGIN_CACHE_H__
 #define PLUGIN_CACHE_H__
@@ -59,9 +58,5 @@ unsigned long cache_size();
 /** Remove all files in cache: */
 void cache_clear();
 
-
-
-}  // namespace
+}  // namespace ocpn
 #endif
-
-

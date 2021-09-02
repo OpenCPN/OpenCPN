@@ -26,27 +26,22 @@
  *
  */
 
-
 #ifndef _CHARTMBTILES_H_
 #define _CHARTMBTILES_H_
 
-
 #include "chartbase.h"
-#include "georef.h"                 // for GeoRef type
+#include "georef.h"  // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
 
-
-enum class MBTilesType : std::int8_t {BASE, OVERLAY};
-enum class MBTilesScheme : std::int8_t {XYZ, TMS};
+enum class MBTilesType : std::int8_t { BASE, OVERLAY };
+enum class MBTilesScheme : std::int8_t { XYZ, TMS };
 
 class WXDLLEXPORT ChartMbTiles;
 
 //-----------------------------------------------------------------------------
 //    Constants, etc.
 //-----------------------------------------------------------------------------
-
-
 
 //-----------------------------------------------------------------------------
 //    Fwd Refs
@@ -58,101 +53,99 @@ class ocpnBitmap;
 class mbTileZoomDescriptor;
 class mbTileDescriptor;
 
- namespace SQLite {
-   class Database;
- }
+namespace SQLite {
+class Database;
+}
 
 //-----------------------------------------------------------------------------
 //    Helper classes
 //-----------------------------------------------------------------------------
 
-
 // ----------------------------------------------------------------------------
 // ChartMBTiles
 // ----------------------------------------------------------------------------
 
-class  ChartMBTiles     :public ChartBase
-{
-    public:
-      //    Public methods
+class ChartMBTiles : public ChartBase {
+public:
+  //    Public methods
 
-      ChartMBTiles();
-      virtual ~ChartMBTiles();
+  ChartMBTiles();
+  virtual ~ChartMBTiles();
 
-      //    Accessors
-      virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
-      virtual ThumbData *GetThumbData();
-      virtual bool UpdateThumbData(double lat, double lon);
+  //    Accessors
+  virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
+  virtual ThumbData *GetThumbData();
+  virtual bool UpdateThumbData(double lat, double lon);
 
-      virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+  virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
-      int GetNativeScale(){return m_Chart_Scale;}
-      double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
-      double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
+  int GetNativeScale() { return m_Chart_Scale; }
+  double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
+  double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
-      virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
+  virtual InitReturn Init(const wxString &name, ChartInitFlag init_flags);
 
+  bool RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
+                            const OCPNRegion &Region);
 
-      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
+  virtual bool RenderRegionViewOnGL(const wxGLContext &glc,
+                                    const ViewPort &VPoint,
+                                    const OCPNRegion &RectRegion,
+                                    const LLRegion &Region);
 
-      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const OCPNRegion &RectRegion, const LLRegion &Region);
+  virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
-      virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
+  virtual void GetValidCanvasRegion(const ViewPort &VPoint,
+                                    OCPNRegion *pValidRegion);
+  virtual LLRegion GetValidRegion();
 
-      virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
-      virtual LLRegion GetValidRegion();
+  virtual bool GetChartExtent(Extent *pext);
 
-      virtual bool GetChartExtent(Extent *pext);
+  void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
-      void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
-
-      double GetPPM(){ return m_ppm_avg;}
-      double GetZoomFactor(){ return m_zoomScaleFactor; }
+  double GetPPM() { return m_ppm_avg; }
+  double GetZoomFactor() { return m_zoomScaleFactor; }
 
 protected:
-//    Methods
-      bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
-      InitReturn PreInit( const wxString& name, ChartInitFlag init_flags, ColorScheme cs );
-      InitReturn PostInit(void);
+  //    Methods
+  bool RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint);
+  InitReturn PreInit(const wxString &name, ChartInitFlag init_flags,
+                     ColorScheme cs);
+  InitReturn PostInit(void);
 
-      void PrepareTiles();
-      void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
-      bool getTileTexture( mbTileDescriptor *tile);
-      void FlushTiles( void );
-      void FlushTextures( void );
-      bool RenderTile( mbTileDescriptor *tile, int zoomLevel, const ViewPort& VPoint);
+  void PrepareTiles();
+  void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
+  bool getTileTexture(mbTileDescriptor *tile);
+  void FlushTiles(void);
+  void FlushTextures(void);
+  bool RenderTile(mbTileDescriptor *tile, int zoomLevel,
+                  const ViewPort &VPoint);
 
+  //    Protected Data
 
-//    Protected Data
+  float m_LonMax, m_LonMin, m_LatMax, m_LatMin;
 
+  double m_ppm_avg;  // Calculated true scale factor of the 1X chart,
+                     // pixels per meter
 
-      float       m_LonMax, m_LonMin, m_LatMax, m_LatMin;
+  int m_b_cdebug;
 
-      double      m_ppm_avg;              // Calculated true scale factor of the 1X chart,
-                                        // pixels per meter
+  int m_minZoom, m_maxZoom;
+  mbTileZoomDescriptor **m_tileArray;
+  LLRegion m_minZoomRegion;
+  wxBitmapType m_imageType;
 
-      int       m_b_cdebug;
+  double m_zoomScaleFactor;
 
-      int       m_minZoom, m_maxZoom;
-      mbTileZoomDescriptor      **m_tileArray;
-      LLRegion  m_minZoomRegion;
-      wxBitmapType m_imageType;
+  MBTilesType m_Type;
+  MBTilesScheme m_Scheme;
 
-      double m_zoomScaleFactor;
-
-      MBTilesType m_Type;
-      MBTilesScheme m_Scheme;
-
-      SQLite::Database  *m_pDB;
-      int       m_nTiles;
+  SQLite::Database *m_pDB;
+  int m_nTiles;
 
 private:
-      void InitFromTiles( const wxString& name );
-      wxPoint2DDouble GetDoublePixFromLL( ViewPort& vp, double lat, double lon );
-
+  void InitFromTiles(const wxString &name);
+  wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon);
 };
-
-
 
 #endif

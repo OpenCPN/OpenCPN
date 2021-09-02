@@ -28,7 +28,7 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
 
@@ -38,47 +38,43 @@ class ChartCanvas;
 class wxFileConfig;
 
 //  Class to encapsulate persistant canvas configuration(s)
-class canvasConfig
-{
+class canvasConfig {
 public:
-    canvasConfig();
-    canvasConfig(int index);
-    ~canvasConfig();
+  canvasConfig();
+  canvasConfig(int index);
+  ~canvasConfig();
 
-    void Reset();
-    void LoadFromLegacyConfig( wxFileConfig *conf );
+  void Reset();
+  void LoadFromLegacyConfig(wxFileConfig *conf);
 
-    int configIndex;
-    ChartCanvas *canvas;
-    double iLat, iLon, iScale, iRotation;
-    int DBindex;
-    int GroupID;
-    bool bFollow;
-    bool bQuilt;
-    bool bShowTides;
-    bool bShowCurrents;
-    wxSize canvasSize;
-    bool bShowGrid;
-    bool bShowOutlines;
-    bool bShowDepthUnits;
-    bool bCourseUp;
-    bool bHeadUp;
-    bool bLookahead;
-    bool bShowAIS;
-    bool bAttenAIS;
-    // ENC options
-    bool bShowENCText;
-    int  nENCDisplayCategory;
-    bool bShowENCDepths;
-    bool bShowENCBuoyLabels;
-    bool bShowENCLightDescriptions;
-    bool bShowENCLights;
-    bool bShowENCVisibleSectorLights;
-
-
-
+  int configIndex;
+  ChartCanvas *canvas;
+  double iLat, iLon, iScale, iRotation;
+  int DBindex;
+  int GroupID;
+  bool bFollow;
+  bool bQuilt;
+  bool bShowTides;
+  bool bShowCurrents;
+  wxSize canvasSize;
+  bool bShowGrid;
+  bool bShowOutlines;
+  bool bShowDepthUnits;
+  bool bCourseUp;
+  bool bHeadUp;
+  bool bLookahead;
+  bool bShowAIS;
+  bool bAttenAIS;
+  // ENC options
+  bool bShowENCText;
+  int nENCDisplayCategory;
+  bool bShowENCDepths;
+  bool bShowENCBuoyLabels;
+  bool bShowENCLightDescriptions;
+  bool bShowENCLights;
+  bool bShowENCVisibleSectorLights;
 };
 
-WX_DEFINE_ARRAY_PTR(canvasConfig*, arrayofCanvasConfigPtr);
+WX_DEFINE_ARRAY_PTR(canvasConfig *, arrayofCanvasConfigPtr);
 
 #endif

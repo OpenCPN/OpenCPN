@@ -27,54 +27,51 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include "dychart.h"
 #include "ocpn_types.h"
 
+#define CA_READ 0
+#define CA_WRITE 1
 
-#define CA_READ         0
-#define CA_WRITE        1
-
-#define GPU_TEXTURE_UNKNOWN             0
-#define GPU_TEXTURE_UNCOMPRESSED        1
-#define GPU_TEXTURE_COMPRESSED          2
+#define GPU_TEXTURE_UNKNOWN 0
+#define GPU_TEXTURE_UNCOMPRESSED 1
+#define GPU_TEXTURE_COMPRESSED 2
 
 class glTexFactory;
-class glTextureDescriptor
-{
+class glTextureDescriptor {
 public:
-    glTextureDescriptor();
-    ~glTextureDescriptor();
-    void FreeAll();
-    void FreeMap();
-    void FreeComp();
-    void FreeCompComp();
+  glTextureDescriptor();
+  ~glTextureDescriptor();
+  void FreeAll();
+  void FreeMap();
+  void FreeComp();
+  void FreeCompComp();
 
-    size_t GetMapArrayAlloc(void);
-    size_t GetCompArrayAlloc(void);
-    size_t GetCompCompArrayAlloc(void);
+  size_t GetMapArrayAlloc(void);
+  size_t GetCompArrayAlloc(void);
+  size_t GetCompCompArrayAlloc(void);
 
-    bool IsCompCompArrayComplete( int base_level );
+  bool IsCompCompArrayComplete(int base_level);
 
-    GLuint tex_name;
-    int level_min;
-    int x;
-    int y;
-    int nGPU_compressed;
-    ColorScheme m_colorscheme;
+  GLuint tex_name;
+  int level_min;
+  int x;
+  int y;
+  int nGPU_compressed;
+  ColorScheme m_colorscheme;
 
-    int                tex_mem_used;
+  int tex_mem_used;
 
-    unsigned char      *map_array[10];
-    unsigned char      *comp_array[10];
-    unsigned char      *compcomp_array[10];
-    int                 compcomp_size[10];
+  unsigned char *map_array[10];
+  unsigned char *comp_array[10];
+  unsigned char *compcomp_array[10];
+  int compcomp_size[10];
 
-    int compdata_ticks;
+  int compdata_ticks;
 };
-
 
 #endif

@@ -29,32 +29,33 @@
 #include <wx/list.h>
 #include <wx/datetime.h>
 
-class Layer
-{
+class Layer {
 public:
-      Layer(void);
-      ~Layer(void);
-      wxString CreatePropString(void) { return m_LayerFileName; }
-      bool IsVisibleOnChart() { return m_bIsVisibleOnChart; }
-      void SetVisibleOnChart(bool viz = true){ m_bIsVisibleOnChart = viz; }
-      bool IsVisibleOnListing() { return m_bIsVisibleOnListing; }
-      void SetVisibleOnListing(bool viz = true){ m_bIsVisibleOnListing = viz; }
-      wxCheckBoxState HasVisibleNames() { return m_bHasVisibleNames; }
-      void SetVisibleNames(wxCheckBoxState viz = wxCHK_UNDETERMINED){ m_bHasVisibleNames = viz; }
+  Layer(void);
+  ~Layer(void);
+  wxString CreatePropString(void) { return m_LayerFileName; }
+  bool IsVisibleOnChart() { return m_bIsVisibleOnChart; }
+  void SetVisibleOnChart(bool viz = true) { m_bIsVisibleOnChart = viz; }
+  bool IsVisibleOnListing() { return m_bIsVisibleOnListing; }
+  void SetVisibleOnListing(bool viz = true) { m_bIsVisibleOnListing = viz; }
+  wxCheckBoxState HasVisibleNames() { return m_bHasVisibleNames; }
+  void SetVisibleNames(wxCheckBoxState viz = wxCHK_UNDETERMINED) {
+    m_bHasVisibleNames = viz;
+  }
 
-      bool m_bIsVisibleOnChart;
-      bool m_bIsVisibleOnListing;
-      wxCheckBoxState m_bHasVisibleNames;
-      long m_NoOfItems;
-      int m_LayerID;
+  bool m_bIsVisibleOnChart;
+  bool m_bIsVisibleOnListing;
+  wxCheckBoxState m_bHasVisibleNames;
+  long m_NoOfItems;
+  int m_LayerID;
 
-      wxString          m_LayerName;
-      wxString          m_LayerFileName;
-      wxString          m_LayerDescription;
-      wxString          m_LayerType;
-      wxDateTime        m_CreateTime;
+  wxString m_LayerName;
+  wxString m_LayerFileName;
+  wxString m_LayerDescription;
+  wxString m_LayerType;
+  wxDateTime m_CreateTime;
 };
 
-WX_DECLARE_LIST(Layer, LayerList);// establish class as list member
+WX_DECLARE_LIST(Layer, LayerList);  // establish class as list member
 
 #endif

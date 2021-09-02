@@ -22,21 +22,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
- //Originally by balp on 2018-07-28.
+// Originally by balp on 2018-07-28.
 
 #ifndef OPENCPN_SIGNALKDATASTREAM_H
 #define OPENCPN_SIGNALKDATASTREAM_H
 
-
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled header
-
+#endif  // precompiled header
 
 #include <wx/datetime.h>
-
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
@@ -51,7 +48,7 @@
 #endif
 
 #ifndef __WXMSW__
-#include <sys/socket.h>                 // needed for (some) Mac builds
+#include <sys/socket.h>  // needed for (some) Mac builds
 #include <netinet/in.h>
 #endif
 
@@ -65,70 +62,71 @@
 #include "dsPortType.h"
 #include "datastream.h"
 
-#define SIGNALK_SOCKET_ID             5011
-#define N_DOG_TIMEOUT   5                       // seconds
-#define N_DOG_TIMEOUT_RECONNECT   10            // seconds
+#define SIGNALK_SOCKET_ID 5011
+#define N_DOG_TIMEOUT 5             // seconds
+#define N_DOG_TIMEOUT_RECONNECT 10  // seconds
 
 class WebSocketThread;
 class OCPN_WebSocketMessageHandler;
 
 class SignalKDataStream : public DataStream {
 public:
-    SignalKDataStream(wxEvtHandler *input_consumer,
-                      const ConnectionParams *params);
-    virtual ~SignalKDataStream();
+  SignalKDataStream(wxEvtHandler *input_consumer,
+                    const ConnectionParams *params);
+  virtual ~SignalKDataStream();
 
-    void Close();
-    static bool DiscoverSKServer( wxString &ip, int &port, int tSec);
-    static bool DiscoverSKServer( std::string serviceIdent, wxString &ip, int &port, int tSec);
+  void Close();
+  static bool DiscoverSKServer(wxString &ip, int &port, int tSec);
+  static bool DiscoverSKServer(std::string serviceIdent, wxString &ip,
+                               int &port, int tSec);
 
-    void SetThreadRunning( bool active ){ m_threadActive = active; }
-    void ResetWatchdog() {m_dog_value = N_DOG_TIMEOUT;}
-    void SetWatchdog( int n ) {m_dog_value = n;}
+  void SetThreadRunning(bool active) { m_threadActive = active; }
+  void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
+  void SetWatchdog(int n) { m_dog_value = n; }
+
 private:
-    void Open();
-    void OpenTCPSocket();
-    void OpenWebSocket();
-    void CloseWebSocket();
-    bool IsThreadRunning(){ return m_threadActive; }
+  void Open();
+  void OpenTCPSocket();
+  void OpenWebSocket();
+  void CloseWebSocket();
+  bool IsThreadRunning() { return m_threadActive; }
 
-    const ConnectionParams *m_params;
-    wxSocketBase        *m_sock;
-    void SetSock(wxSocketBase* sock) { m_sock = sock; }
-    wxSocketBase* GetSock() const { return m_sock; }
+  const ConnectionParams *m_params;
+  wxSocketBase *m_sock;
+  void SetSock(wxSocketBase *sock) { m_sock = sock; }
+  wxSocketBase *GetSock() const { return m_sock; }
 
-    wxIPV4address       m_addr;
-    wxIPV4address GetAddr() const { return m_addr; }
+  wxIPV4address m_addr;
+  wxIPV4address GetAddr() const { return m_addr; }
 
-    bool                m_brx_connect_event;
-    void SetBrxConnectEvent(bool event) { m_brx_connect_event = event;}
-    bool GetBrxConnectEvent() { return m_brx_connect_event; }
+  bool m_brx_connect_event;
+  void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
+  bool GetBrxConnectEvent() { return m_brx_connect_event; }
 
-    int                 m_dog_value;
-    wxTimer             m_socket_timer;
-    wxTimer* GetSocketTimer() { return &m_socket_timer; }
+  int m_dog_value;
+  wxTimer m_socket_timer;
+  wxTimer *GetSocketTimer() { return &m_socket_timer; }
 
-    wxTimer             m_socketread_watchdog_timer;
-    wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
+  wxTimer m_socketread_watchdog_timer;
+  wxTimer *GetSocketThreadWatchdogTimer() {
+    return &m_socketread_watchdog_timer;
+  }
 
-    OCPN_WebSocketMessageHandler        *m_eventHandler;
-    bool m_useWebSocket;
-    bool m_threadActive;
+  OCPN_WebSocketMessageHandler *m_eventHandler;
+  bool m_useWebSocket;
+  bool m_threadActive;
 
-    NetworkProtocol GetProtocol() { return m_params->NetProtocol; }
-    std::string         m_sock_buffer;
+  NetworkProtocol GetProtocol() { return m_params->NetProtocol; }
+  std::string m_sock_buffer;
 
+  void OnTimerSocket(wxTimerEvent &event);
+  void OnSocketEvent(wxSocketEvent &event);
+  void OnSocketReadWatchdogTimer(wxTimerEvent &event);
 
+  bool SetOutputSocketOptions(wxSocketBase *sock);
 
-    void OnTimerSocket(wxTimerEvent& event);
-    void OnSocketEvent(wxSocketEvent& event);
-    void OnSocketReadWatchdogTimer(wxTimerEvent& event);
-
-    bool SetOutputSocketOptions(wxSocketBase* sock);
-
-    WebSocketThread     *m_wsThread;
-DECLARE_EVENT_TABLE()
+  WebSocketThread *m_wsThread;
+  DECLARE_EVENT_TABLE()
 };
 
-
-#endif //OPENCPN_SIGNALKDATASTREAM_H
+#endif  // OPENCPN_SIGNALKDATASTREAM_H
