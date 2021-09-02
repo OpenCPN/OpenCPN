@@ -492,7 +492,7 @@ wxArrayString* EnumerateSerialPorts(void) {
   return androidGetSerialPortsArray();
 }
 
-#elif defined(__WSOSX__)
+#elif defined(__WXOSX__)
 
 wxArrayString* EnumerateSerialPorts(void) {
   wxArrayString* preturn = new wxArrayString;
