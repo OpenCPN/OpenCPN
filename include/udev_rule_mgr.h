@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2021 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -28,10 +28,7 @@
 
 #include <wx/window.h>
 
-
 bool CheckDongleAccess(wxWindow* parent);
 bool CheckSerialAccess(wxWindow* parent, const std::string device);
 
-
-
-#endif // UDEV_RULE_MGR_H__
+#endif  // UDEV_RULE_MGR_H__

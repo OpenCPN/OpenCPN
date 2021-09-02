@@ -25,12 +25,8 @@
  *
  */
 
-
-
 #ifndef __S57MGR_H__
 #define __S57MGR_H__
-
-
 
 #include "gdal/ogrsf_frmts.h"
 //----------------------------------------------------------------------------
@@ -42,29 +38,26 @@ bool ddfrecord_test();
 //----------------------------------------------------------------------------
 // s57mgr
 //----------------------------------------------------------------------------
-class s57mgr
-{
+class s57mgr {
 public:
-      s57mgr(const wxString& csv_dir);
-      ~s57mgr();
+  s57mgr(const wxString &csv_dir);
+  ~s57mgr();
 
-      bool GetChartExtent(char *pFullPath, Extent *pext);
-      int GetChartScale(char *pFullPath);
+  bool GetChartExtent(char *pFullPath, Extent *pext);
+  int GetChartScale(char *pFullPath);
 
-      bool GetChartFirstM_COVR(char *pFullPath, OGRDataSource **pDS, OGRFeature **pFeature,
-                               OGRLayer **pLayer, int &catcov);
+  bool GetChartFirstM_COVR(char *pFullPath, OGRDataSource **pDS,
+                           OGRFeature **pFeature, OGRLayer **pLayer,
+                           int &catcov);
 
-      bool GetChartNextM_COVR(OGRDataSource *pDS, OGRLayer *pLayer, OGRFeature *pLastFeature,
-                              OGRFeature **pFeature, int &catcov);
+  bool GetChartNextM_COVR(OGRDataSource *pDS, OGRLayer *pLayer,
+                          OGRFeature *pLastFeature, OGRFeature **pFeature,
+                          int &catcov);
 
-      wxString *GetCSVDir(){return pcsv_locn;}
-
-
+  wxString *GetCSVDir() { return pcsv_locn; }
 
 private:
-
-
-      wxString              *pcsv_locn;
+  wxString *pcsv_locn;
 };
 
 #endif

@@ -37,7 +37,6 @@
 
 #include "catalog_parser.h"
 
-
 /**
  * A local proxy for the catalog server. The server has a number
  * of branches, some of which containing a plugin catalog.
@@ -49,100 +48,99 @@
  * various ocpn-plugins.xml.
  */
 class CatalogHandler {
+public:
+  enum class ServerStatus {
+    UNKNOWN,
+    OK,
+    OK_MSG,
+    CURL_ERROR,
+    JSON_ERROR,
+    XML_ERROR,
+    OS_ERROR
+  };
 
-    public:
+  static CatalogHandler* getInstance();
 
-        enum class ServerStatus {
-            UNKNOWN, OK, OK_MSG, CURL_ERROR, JSON_ERROR, XML_ERROR, OS_ERROR
-        };
+  /** Download channel json data, possibly return error code. */
+  ServerStatus LoadChannels(std::ostream* json);
 
-        static CatalogHandler* getInstance();
+  /** Parse and store json channel data, possibly return error code. */
+  ServerStatus LoadChannels(const std::string& json);
 
-        /** Download channel json data, possibly return error code. */
-        ServerStatus LoadChannels(std::ostream* json);
+  /** Get the downloaded list of channels, empty on errors. */
+  std::vector<std::string> GetChannels();
 
-        /** Parse and store json channel data, possibly return error code. */
-        ServerStatus LoadChannels(const std::string& json);
+  /** Set the active channel used when downloading catalog. */
+  bool SetActiveChannel(const char* channel);
 
-        /** Get the downloaded list of channels, empty on errors. */
-        std::vector<std::string> GetChannels();
+  /** Get the branch (a. k. a. channel) used to download. */
+  std::string GetActiveChannel();
 
-        /** Set the active channel used when downloading catalog. */
-        bool SetActiveChannel(const char* channel);
+  /** Set a custom url, overrides also channel settings. */
+  void SetCustomUrl(const char* url);
 
-        /** Get the branch (a. k. a. channel) used to download. */
-        std::string GetActiveChannel();
+  /** Set a custom url, overrides also channel settings. */
+  std::string GetCustomUrl();
 
-        /** Set a custom url, overrides also channel settings. */
-        void SetCustomUrl(const char* url);
+  /** Get the default URL, with actual channel included */
+  std::string GetDefaultUrl();
 
-        /** Set a custom url, overrides also channel settings. */
-        std::string  GetCustomUrl();
+  /** Download the latest catalog to given stream. */
+  ServerStatus DownloadCatalog(std::ostream* stream);
 
-        /** Get the default URL, with actual channel included */
-        std::string GetDefaultUrl();
+  /** Download the latest catalog to local path. */
+  ServerStatus DownloadCatalog(std::string& path);
 
-        /** Download the latest catalog to given stream. */
-        ServerStatus DownloadCatalog(std::ostream* stream);
+  /** Download the specified catalog to given stream. */
+  ServerStatus DownloadCatalog(std::ostream* stream, std::string url);
 
-        /** Download the latest catalog to local path. */
-        ServerStatus DownloadCatalog(std::string& path);
+  /** Download the specified catalog to local path. */
+  ServerStatus DownloadCatalog(std::string& filePath, std::string url);
 
-        /** Download the specified catalog to given stream. */
-        ServerStatus DownloadCatalog(std::ostream* stream, std::string url);
+  /** Parse XML contents, save as latest data if latest is true. */
+  ServerStatus ParseCatalog(const std::string xml, bool latest = false);
 
-        /** Download the specified catalog to local path. */
-        ServerStatus DownloadCatalog(std::string& filePath, std::string url);
+  /** Data for default version, installed with main opencpn. */
+  CatalogData DefaultCatalogData();
 
-        /** Parse XML contents, save as latest data if latest is true. */
-        ServerStatus ParseCatalog(const std::string xml, bool latest = false);
+  /** Data for user catalog which overrides the default one. */
+  CatalogData UserCatalogData();
 
-        /** Data for default version, installed with main opencpn. */
-        CatalogData DefaultCatalogData();
+  /** Data for latest parsed data marked as latest. */
+  CatalogData LatestCatalogData();
 
-        /** Data for user catalog which overrides the default one. */
-        CatalogData UserCatalogData();
+  /** Invalidate *CatalogData caches */
+  void ClearCatalogData();
 
-        /** Data for latest parsed data marked as latest. */
-        CatalogData LatestCatalogData();
+  /** Last error message, free format. */
+  std::string LastErrorMsg();
 
-        /** Invalidate *CatalogData caches */
-        void ClearCatalogData();
+  ServerStatus DoParseCatalog(const std::string xml, catalog_ctx* ctx);
 
-        /** Last error message, free format. */
-        std::string LastErrorMsg();
+protected:
+  /** Initiate the handler. */
+  CatalogHandler();
 
-        ServerStatus DoParseCatalog(const std::string xml, catalog_ctx* ctx);
+  void LoadCatalogData(const std::string& path, CatalogData& data);
 
-    protected:
-	/** Initiate the handler. */
-        CatalogHandler();
+  const char* const GET_BRANCHES_PATH = "/repos/OpenCPN/plugins/branches";
+  const char* const GITHUB_API = "https://api.github.com";
 
-        void LoadCatalogData(const std::string& path, CatalogData& data);
+  const char* const REPO_URL = "https://raw.githubusercontent.com";
+  const char* const REPO_PATH = "/OpenCPN/plugins/@branch@/ocpn-plugins.xml";
 
-        const char* const GET_BRANCHES_PATH =
-            "/repos/OpenCPN/plugins/branches";
-        const char* const GITHUB_API =
-            "https://api.github.com";
+  const char* const DEFAULT_CHANNEL = "master";
 
-        const char* const REPO_URL =
-            "https://raw.githubusercontent.com";
-        const char* const REPO_PATH =
-            "/OpenCPN/plugins/@branch@/ocpn-plugins.xml";
-
-        const char* const DEFAULT_CHANNEL = "master";
-
-    private:
-        std::vector<std::string> channels;
-        ServerStatus status;
-        std::ostream* stream;
-        std::string error_msg;
-        CatalogData latest_data;
-        CatalogData default_data;
-        CatalogData user_data;
+private:
+  std::vector<std::string> channels;
+  ServerStatus status;
+  std::ostream* stream;
+  std::string error_msg;
+  CatalogData latest_data;
+  CatalogData default_data;
+  CatalogData user_data;
 };
 
 typedef CatalogHandler::ServerStatus catalog_status;
 
-
-#endif // CATALOG_HANDLER_H__
+#endif  // CATALOG_HANDLER_H__

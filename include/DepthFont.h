@@ -26,44 +26,43 @@
 #ifndef __DEPTHFONT_H__
 #define __DEPTHFONT_H__
 
+#include <wx/font.h>
 
 #define SOUND_MAX_GLYPH 50
 
-
 struct SoundTexGlyphInfo {
-    int x, y, width, height;
-    float advance;
+  int x, y, width, height;
+  float advance;
 };
 
 class DepthFont {
 public:
-    DepthFont();
-    ~DepthFont();
+  DepthFont();
+  ~DepthFont();
 
-    void Build( wxFont *font, double scale );
-    void Delete();
+  void Build(wxFont *font, double scale);
+  void Delete();
 
-    bool IsBuilt(){ return m_built; }
-    unsigned int GetTexture(){ return texobj; }
-    bool GetGLTextureRect(wxRect &texrect, int symIndex);
-    wxSize GLTextureSize(){ return wxSize(tex_w, tex_h); };
-    double GetScale(){ return m_scaleFactor; }
+  bool IsBuilt() { return m_built; }
+  unsigned int GetTexture() { return texobj; }
+  bool GetGLTextureRect(wxRect &texrect, int symIndex);
+  wxSize GLTextureSize() { return wxSize(tex_w, tex_h); };
+  double GetScale() { return m_scaleFactor; }
+
 private:
+  wxFont m_font;
 
-    wxFont m_font;
+  SoundTexGlyphInfo tgi[SOUND_MAX_GLYPH];
 
-    SoundTexGlyphInfo tgi[SOUND_MAX_GLYPH];
+  unsigned int texobj;
+  int tex_w, tex_h;
+  int m_maxglyphw;
+  int m_maxglyphh;
+  bool m_built;
 
-    unsigned  int texobj;
-    int tex_w, tex_h;
-    int m_maxglyphw;
-    int m_maxglyphh;
-    bool m_built;
-
-    float m_dx;
-    float m_dy;
-    double m_scaleFactor;
+  float m_dx;
+  float m_dy;
+  double m_scaleFactor;
 };
 
-
-#endif  //guard
+#endif  // guard

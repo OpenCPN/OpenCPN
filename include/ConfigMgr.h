@@ -25,9 +25,9 @@
 #define __CONFIGMGR_H__
 
 #include "wx/wxprec.h"
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include "pugixml.hpp"
 
@@ -41,55 +41,56 @@ WX_DECLARE_LIST(OCPNConfigObject, ConfigObjectList);
  *
  * Singleton.
  */
-class ConfigMgr
-{
-    public:
-        static ConfigMgr & Get();
-        static void Shutdown();
+class ConfigMgr {
+public:
+  static ConfigMgr &Get();
+  static void Shutdown();
 
-        wxString CreateNamedConfig( const wxString &title, const wxString &description, wxString UUID );
-        bool DeleteConfig(wxString GUID);
-        wxArrayString GetConfigGUIDArray();
+  wxString CreateNamedConfig(const wxString &title, const wxString &description,
+                             wxString UUID);
+  bool DeleteConfig(wxString GUID);
+  wxArrayString GetConfigGUIDArray();
 
-        wxPanel *GetConfigPanel( wxWindow *parent, wxString GUID );
-        wxString GetTemplateTitle( wxString GUID );
-        bool ApplyConfigGUID( wxString GUID );
-        bool CheckTemplateGUID( wxString GUID );
+  wxPanel *GetConfigPanel(wxWindow *parent, wxString GUID);
+  wxString GetTemplateTitle(wxString GUID);
+  bool ApplyConfigGUID(wxString GUID);
+  bool CheckTemplateGUID(wxString GUID);
 
-    private: // private for singleton
-        ConfigMgr();
-        ~ConfigMgr();
-        ConfigMgr(const ConfigMgr &) {}
-        ConfigMgr & operator=(const ConfigMgr &) { return *this; }
-        static ConfigMgr *instance;
+private:  // private for singleton
+  ConfigMgr();
+  ~ConfigMgr();
+  ConfigMgr(const ConfigMgr &) {}
+  ConfigMgr &operator=(const ConfigMgr &) { return *this; }
+  static ConfigMgr *instance;
 
-        void Init();
-        bool LoadCatalog();
-        bool SaveCatalog();
-        wxString GetUUID(void);
-        bool SaveTemplate( wxString fileName);
-        wxString GetConfigDir(){ return m_configDir; }
-        ConfigObjectList *GetConfigList(){ return configList; }
-        OCPNConfigObject *GetConfig( wxString GUID );
-        bool CheckTemplate( wxString fileName);
+  void Init();
+  bool LoadCatalog();
+  bool SaveCatalog();
+  wxString GetUUID(void);
+  bool SaveTemplate(wxString fileName);
+  wxString GetConfigDir() { return m_configDir; }
+  ConfigObjectList *GetConfigList() { return configList; }
+  OCPNConfigObject *GetConfig(wxString GUID);
+  bool CheckTemplate(wxString fileName);
 
-        wxString m_configDir;
-        wxString m_configCatalogName;
-        OCPNConfigCatalog *m_configCatalog;
-        ConfigObjectList *configList;
+  wxString m_configDir;
+  wxString m_configCatalogName;
+  OCPNConfigCatalog *m_configCatalog;
+  ConfigObjectList *configList;
 };
 
-class ConfigPanel: public wxPanel
-{
+class ConfigPanel : public wxPanel {
 public:
-    ConfigPanel( OCPNConfigObject *config, wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize );
-    ~ConfigPanel();
+  ConfigPanel(OCPNConfigObject *config, wxWindow *parent,
+              wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition,
+              const wxSize &size = wxDefaultSize);
+  ~ConfigPanel();
 
-    wxString GetConfigGUID();
+  wxString GetConfigGUID();
 
 private:
-    void OnConfigPanelMouseSelected( wxMouseEvent &event);
-    OCPNConfigObject *m_config;
+  void OnConfigPanelMouseSelected(wxMouseEvent &event);
+  OCPNConfigObject *m_config;
 };
 
 #endif

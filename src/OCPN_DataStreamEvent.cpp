@@ -24,50 +24,39 @@
 
 #include "OCPN_DataStreamEvent.h"
 
-
-
 OCPN_DataStreamEvent::OCPN_DataStreamEvent(wxEventType commandType, int id)
-      :wxEvent(id, commandType)
-{
-    m_pDataStream = NULL;
+    : wxEvent(id, commandType) {
+  m_pDataStream = NULL;
 }
 
-OCPN_DataStreamEvent::~OCPN_DataStreamEvent()
-{
-}
+OCPN_DataStreamEvent::~OCPN_DataStreamEvent() {}
 
 //----------------------------------------------------------------------------------
 //     Strip NMEA V4 tags from message
 //----------------------------------------------------------------------------------
-wxString OCPN_DataStreamEvent::ProcessNMEA4Tags()
-{
-    wxString msg = wxString(GetNMEAString().c_str(), wxConvUTF8);
+wxString OCPN_DataStreamEvent::ProcessNMEA4Tags() {
+  wxString msg = wxString(GetNMEAString().c_str(), wxConvUTF8);
 
-    int idxFirst =  msg.Find('\\');
+  int idxFirst = msg.Find('\\');
 
-    if(wxNOT_FOUND == idxFirst)
-        return msg;
+  if (wxNOT_FOUND == idxFirst) return msg;
 
-    if(idxFirst < (int)msg.Length()-1){
-        int idxSecond = msg.Mid(idxFirst + 1).Find('\\') + 1;
-        if(wxNOT_FOUND != idxSecond){
-            if(idxSecond < (int)msg.Length()-1){
-
-               // wxString tag = msg.Mid(idxFirst+1, (idxSecond - idxFirst) -1);
-                return msg.Mid(idxSecond + 1);
-            }
-        }
+  if (idxFirst < (int)msg.Length() - 1) {
+    int idxSecond = msg.Mid(idxFirst + 1).Find('\\') + 1;
+    if (wxNOT_FOUND != idxSecond) {
+      if (idxSecond < (int)msg.Length() - 1) {
+        // wxString tag = msg.Mid(idxFirst+1, (idxSecond - idxFirst) -1);
+        return msg.Mid(idxSecond + 1);
+      }
     }
+  }
 
-    return msg;
+  return msg;
 }
 
-
-wxEvent* OCPN_DataStreamEvent::Clone() const
-{
-    OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
-    newevent->m_NMEAstring=this->m_NMEAstring;
-    newevent->m_pDataStream = this->m_pDataStream;
-    return newevent;
+wxEvent* OCPN_DataStreamEvent::Clone() const {
+  OCPN_DataStreamEvent* newevent = new OCPN_DataStreamEvent(*this);
+  newevent->m_NMEAstring = this->m_NMEAstring;
+  newevent->m_pDataStream = this->m_pDataStream;
+  return newevent;
 }
-

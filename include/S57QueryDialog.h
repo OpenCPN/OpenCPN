@@ -25,89 +25,84 @@
 #ifndef __S57QUERYDIALOG_H__
 #define __S57QUERYDIALOG_H__
 
+#include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/html/htmlwin.h>
 
 class wxHtmlWindow;
 
-class S57QueryDialog: public wxFrame
-{
-      DECLARE_CLASS( S57QueryDialog )
-                  DECLARE_EVENT_TABLE()
-      public:
+class S57QueryDialog : public wxFrame {
+  DECLARE_CLASS(S57QueryDialog)
+  DECLARE_EVENT_TABLE()
+public:
+  /// Constructors
 
-      /// Constructors
+  S57QueryDialog();
+  S57QueryDialog(wxWindow* parent, wxWindowID id = wxID_ANY,
+                 const wxString& caption = _("Object Query"),
+                 const wxPoint& pos = wxDefaultPosition,
+                 const wxSize& size = wxDefaultSize,
+                 long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU);
 
-            S57QueryDialog( );
-            S57QueryDialog( wxWindow* parent,
-                            wxWindowID id = wxID_ANY,
-                            const wxString& caption = _("Object Query"),
-                                        const wxPoint& pos = wxDefaultPosition,
-                                        const wxSize& size = wxDefaultSize,
-                                        long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+  ~S57QueryDialog();
+  void Init();
 
-            ~S57QueryDialog( );
-            void Init();
+  bool Create(wxWindow* parent, wxWindowID id = wxID_ANY,
+              const wxString& caption = _("Object Query"),
+              const wxPoint& pos = wxDefaultPosition,
+              const wxSize& size = wxDefaultSize,
+              long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU);
 
-            bool Create( wxWindow* parent,
-                         wxWindowID id = wxID_ANY,
-                         const wxString& caption = _("Object Query"),
-                                     const wxPoint& pos = wxDefaultPosition,
-                                     const wxSize& size = wxDefaultSize,
-                                     long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+  void SetColorScheme(void);
 
-            void SetColorScheme(void);
+  void CreateControls();
+  void OnSize(wxSizeEvent& event);
+  void RecalculateSize(void);
 
-            void CreateControls();
-            void OnSize(wxSizeEvent& event);
-            void RecalculateSize( void );
+  void OnClose(wxCloseEvent& event);
+  void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
 
-            void OnClose(wxCloseEvent& event);
-            void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
+  void OnOKClick(wxCommandEvent& event) { Close(); }
+  void OnKey(wxKeyEvent& ke);
 
-            void OnOKClick(wxCommandEvent& event) { Close(); }
-            void OnKey( wxKeyEvent& ke );
+  //    Overrides
+  void OnPaint(wxPaintEvent& event);
 
-      //    Overrides
-            void OnPaint ( wxPaintEvent& event );
+  void SetHTMLPage(wxString& page);
 
-            void SetHTMLPage(wxString& page);
+  //    Data
+  wxHtmlWindow* m_phtml;
+  wxSize m_createsize;
 
-      //    Data
-            wxHtmlWindow      *m_phtml;
-            wxSize            m_createsize;
-
-            wxButton          *m_btnOK;
+  wxButton* m_btnOK;
 };
 
-class S57ExtraQueryInfoDlg: public S57QueryDialog
-{
-        DECLARE_CLASS( S57ExtraQueryInfoDlg )
-        DECLARE_EVENT_TABLE()
-    public:
+class S57ExtraQueryInfoDlg : public S57QueryDialog {
+  DECLARE_CLASS(S57ExtraQueryInfoDlg)
+  DECLARE_EVENT_TABLE()
+public:
+  /// Constructors
 
-      /// Constructors
+  S57ExtraQueryInfoDlg();
+  S57ExtraQueryInfoDlg(wxWindow* parent, wxWindowID id = wxID_ANY,
+                       const wxString& caption = _("Extra Object Info"),
+                       const wxPoint& pos = wxDefaultPosition,
+                       const wxSize& size = wxDefaultSize,
+                       long style = wxCAPTION | wxRESIZE_BORDER |
+                                    wxSYSTEM_MENU);
+  bool Create(wxWindow* parent, wxWindowID id = wxID_ANY,
+              const wxString& caption = _("Extra Object Info"),
+              const wxPoint& pos = wxDefaultPosition,
+              const wxSize& size = wxDefaultSize,
+              long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU);
 
-            S57ExtraQueryInfoDlg( );
-            S57ExtraQueryInfoDlg( wxWindow* parent,
-                            wxWindowID id = wxID_ANY,
-                            const wxString& caption = _("Extra Object Info"),
-                                        const wxPoint& pos = wxDefaultPosition,
-                                        const wxSize& size = wxDefaultSize,
-                                        long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
-            bool Create( wxWindow* parent,
-                         wxWindowID id = wxID_ANY,
-                         const wxString& caption = _("Extra Object Info"),
-                                     const wxPoint& pos = wxDefaultPosition,
-                                     const wxSize& size = wxDefaultSize,
-                                     long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+  ~S57ExtraQueryInfoDlg();
+  void OnClose(wxCloseEvent& event);
+  void OnSize(wxSizeEvent& event);
+  void RecalculateSize(void);
 
-            ~S57ExtraQueryInfoDlg( );
-            void OnClose(wxCloseEvent& event);
-            void OnSize( wxSizeEvent& event );
-            void RecalculateSize( void );
 private:
-            wxButton          *m_btnOK;
+  wxButton* m_btnOK;
 };
 
 #endif

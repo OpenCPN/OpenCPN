@@ -28,9 +28,8 @@
 #include "config.h"
 #include <sstream>
 
-#undef major                // walk around gnu's major() and minor() macros.
+#undef major  // walk around gnu's major() and minor() macros.
 #undef minor
-
 
 /**
  * Versions uses a modified semantic versioning scheme:
@@ -48,37 +47,35 @@
  *
  * See: https://semver.org/
  */
-struct SemanticVersion
-{
-    int major;
-    int minor;
-    int patch;
-    int post;           // Post-release number e. g., downstream packaging.
-    std::string pre;    // Pre-release tag like alfa.
-    std::string build;  // Build info
+struct SemanticVersion {
+  int major;
+  int minor;
+  int patch;
+  int post;           // Post-release number e. g., downstream packaging.
+  std::string pre;    // Pre-release tag like alfa.
+  std::string build;  // Build info
 
-    /** Construct a "0.0.0.0" version. */
-    SemanticVersion();
+  /** Construct a "0.0.0.0" version. */
+  SemanticVersion();
 
-    SemanticVersion(int major, int minor, int rev = 0, int post = 0,
-                    std::string pre = "",  std::string build = "");
+  SemanticVersion(int major, int minor, int rev = 0, int post = 0,
+                  std::string pre = "", std::string build = "");
 
-    bool operator <  (const SemanticVersion& other);
-    bool operator == (const SemanticVersion& other);
-    bool operator >  (const SemanticVersion& other);
-    bool operator <= (const SemanticVersion& other);
-    bool operator >= (const SemanticVersion& other);
-    bool operator != (const SemanticVersion& other);
+  bool operator<(const SemanticVersion& other);
+  bool operator==(const SemanticVersion& other);
+  bool operator>(const SemanticVersion& other);
+  bool operator<=(const SemanticVersion& other);
+  bool operator>=(const SemanticVersion& other);
+  bool operator!=(const SemanticVersion& other);
 
-    /** Return printable representation. */
-    std::string to_string();
+  /** Return printable representation. */
+  std::string to_string();
 
-    /** Parse a version string, sets major == -1 on errors. */
-    static SemanticVersion parse(std::string s);
+  /** Parse a version string, sets major == -1 on errors. */
+  static SemanticVersion parse(std::string s);
 };
 
 /** Dump version string. */
-std::ostream& operator << (std::ostream& s, const SemanticVersion& v);
-
+std::ostream& operator<<(std::ostream& s, const SemanticVersion& v);
 
 #endif  // SEMANTIC_VERSION_H_GUARD

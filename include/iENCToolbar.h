@@ -30,35 +30,36 @@
 //----------------------------------------------------------------------------------------------------------
 
 #define ID_DENSITY 20000
-#define ID_RPLUS   20001
-#define ID_RMINUS  20002
+#define ID_RPLUS 20001
+#define ID_RMINUS 20002
 
 #define STATE_TIMER 3689
 
-class iENCToolbar: public ocpnFloatingToolbarDialog {
-DECLARE_EVENT_TABLE()
+class iENCToolbar : public ocpnFloatingToolbarDialog {
+  DECLARE_EVENT_TABLE()
 
 public:
-      iENCToolbar( wxWindow *parent, wxPoint position, long orient, float size_factor );
-      ~iENCToolbar();
+  iENCToolbar(wxWindow *parent, wxPoint position, long orient,
+              float size_factor);
+  ~iENCToolbar();
 
-      void LoadToolBitmaps();
-      void OnToolLeftClick( wxCommandEvent& event );
-      void SetDensityToolBitmap( int nDensity);
-      void StateTimerEvent( wxTimerEvent& event );
-      void SetColorScheme( ColorScheme cs );
-      void MouseEvent( wxMouseEvent& event );
+  void LoadToolBitmaps();
+  void OnToolLeftClick(wxCommandEvent &event);
+  void SetDensityToolBitmap(int nDensity);
+  void StateTimerEvent(wxTimerEvent &event);
+  void SetColorScheme(ColorScheme cs);
+  void MouseEvent(wxMouseEvent &event);
 
-      wxBitmap m_bmMinimum, m_bmStandard, m_bmAll, m_bmUStd, m_bmRPlus, m_bmRMinus;
-      wxBitmap *m_pbmScratch;
-      wxBitmap m_bmTemplate;
+  wxBitmap m_bmMinimum, m_bmStandard, m_bmAll, m_bmUStd, m_bmRPlus, m_bmRMinus;
+  wxBitmap *m_pbmScratch;
+  wxBitmap m_bmTemplate;
 
-      wxToolBarToolBase *m_toolDensity;
+  wxToolBarToolBase *m_toolDensity;
 
-      int m_nDensity;
-      wxTimer m_state_timer;
-      double m_range;
-      wxFont *m_rangeFont;
+  int m_nDensity;
+  wxTimer m_state_timer;
+  double m_range;
+  wxFont *m_rangeFont;
 
 #if 0
       void OnClose( wxCloseEvent& event );
@@ -121,7 +122,6 @@ public:
       wxMenu  *m_FloatingToolbarConfigMenu;
 #endif
 private:
-
 #if 0
       void DoFade( int value );
 
@@ -155,4 +155,3 @@ private:
       int m_nAutoHideToolbar;
 #endif
 };
-

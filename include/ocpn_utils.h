@@ -52,4 +52,4 @@ bool replace(std::string& str, const std::string& from, const std::string& to);
 
 void copy_file(const std::string& src_path, const std::string& dest_path);
 
-}   // namespace ocpn
+}  // namespace ocpn

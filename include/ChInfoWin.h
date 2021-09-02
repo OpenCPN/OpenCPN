@@ -29,43 +29,32 @@
 
 #include "chart1.h"
 
-class ChInfoWin: public wxPanel
-{
+class ChInfoWin : public wxPanel {
 public:
-    ChInfoWin( wxWindow *parent );
-    ~ChInfoWin();
+  ChInfoWin(wxWindow* parent);
+  ~ChInfoWin();
 
-    void SetString(const wxString &s){ m_string = s; }
-    const wxString& GetString(void) { return m_string; }
-    void MouseEvent( wxMouseEvent& event );
+  void SetString(const wxString& s) { m_string = s; }
+  const wxString& GetString(void) { return m_string; }
+  void MouseEvent(wxMouseEvent& event);
 
-    void SetPosition( wxPoint pt )
-    {
-        m_position = pt;
-    }
-    void SetWinSize( wxSize sz )
-    {
-        m_size = sz;
-    }
-    void SetBitmap( void );
-    void FitToChars( int char_width, int char_height );
-    wxSize GetWinSize( void )
-    {
-        return m_size;
-    }
-    void OnPaint( wxPaintEvent& event );
-    void OnEraseBackground( wxEraseEvent& event );
+  void SetPosition(wxPoint pt) { m_position = pt; }
+  void SetWinSize(wxSize sz) { m_size = sz; }
+  void SetBitmap(void);
+  void FitToChars(int char_width, int char_height);
+  wxSize GetWinSize(void) { return m_size; }
+  void OnPaint(wxPaintEvent& event);
+  void OnEraseBackground(wxEraseEvent& event);
 
-    wxStaticText *m_pInfoTextCtl;
-    int dbIndex;
+  wxStaticText* m_pInfoTextCtl;
+  int dbIndex;
+
 private:
+  wxString m_string;
+  wxSize m_size;
+  wxPoint m_position;
 
-    wxString m_string;
-    wxSize m_size;
-    wxPoint m_position;
-
-    DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
-
 
 #endif

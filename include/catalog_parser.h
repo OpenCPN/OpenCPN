@@ -34,72 +34,67 @@
 
 /** Overall metadata for the set of plugins used. */
 struct CatalogData {
-    std::string version;
-    std::string date;
-    bool undef;
-    CatalogData() : undef(true) {}
+  std::string version;
+  std::string date;
+  bool undef;
+  CatalogData() : undef(true) {}
 };
-
 
 /** Plugin metadata, reflects the xml format directly. */
 struct PluginMetadata {
-    std::string name;
-    std::string version;
-    std::string release;
-    std::string summary;
+  std::string name;
+  std::string version;
+  std::string release;
+  std::string summary;
 
-    std::string api_version;
-    std::string author;
-    std::string description;
-    std::string git_commit ;
-    std::string git_date;
-    std::string source;
-    std::string tarball_url;
-    std::string target;
-    std::string build_gtk;
-    std::string target_version;
-    std::string target_arch;
-    std::string info_url;
-    std::string meta_url;
-    std::string checksum;
+  std::string api_version;
+  std::string author;
+  std::string description;
+  std::string git_commit;
+  std::string git_date;
+  std::string source;
+  std::string tarball_url;
+  std::string target;
+  std::string build_gtk;
+  std::string target_version;
+  std::string target_arch;
+  std::string info_url;
+  std::string meta_url;
+  std::string checksum;
 
-    bool openSource;
+  bool openSource;
 
-    bool readonly;                // Can plugin be removed?
-    int ix;                       // Index in list of installed or available.
-    void clear() { *this = PluginMetadata(); }
-    std::string key() const
-    {
-       return std::string(name) + version + release + target + target_version;
-    }
+  bool readonly;  // Can plugin be removed?
+  int ix;         // Index in list of installed or available.
+  void clear() { *this = PluginMetadata(); }
+  std::string key() const {
+    return std::string(name) + version + release + target + target_version;
+  }
 
-
-    PluginMetadata() : openSource(true), readonly(true), ix(-1) {}
+  PluginMetadata() : openSource(true), readonly(true), ix(-1) {}
 };
-
 
 /**
  * The result from parsing the xml catalog i. e., ocpn-plugins.xml.
  */
 struct catalog_ctx {
-    // list of plugins parsed
-    std::vector<PluginMetadata> plugins;
+  // list of plugins parsed
+  std::vector<PluginMetadata> plugins;
 
-    // list meta-urls found when parsing last plugin.
-    std::vector<std::string> meta_urls;
-    std::vector<std::string> parsed_metas;
+  // list meta-urls found when parsing last plugin.
+  std::vector<std::string> meta_urls;
+  std::vector<std::string> parsed_metas;
 
-    std::string version;
-    std::string date;
+  std::string version;
+  std::string date;
 
-    // Internal data used while parsing, undefined on exit.
-    std::unique_ptr<PluginMetadata> plugin;
-    std::string buff;
-    std::string meta_url;
-    int depth;
-    catalog_ctx(): depth(0) {}
+  // Internal data used while parsing, undefined on exit.
+  std::unique_ptr<PluginMetadata> plugin;
+  std::string buff;
+  std::string meta_url;
+  int depth;
+  catalog_ctx() : depth(0) {}
 };
-
 
 bool ParseCatalog(const std::string xml, catalog_ctx* ctx);
 

@@ -41,14 +41,14 @@ static const GLchar* color_tri_vertex_shader_source =
     "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
     "}\n";
 
-    static const GLchar* color_tri_fragment_shader_source =
+static const GLchar* color_tri_fragment_shader_source =
     "precision lowp float;\n"
     "varying vec4 fragColor;\n"
     "void main() {\n"
     "   gl_FragColor = fragColor;\n"
     "}\n";
 
-    // Simple 2D texture shader
+// Simple 2D texture shader
 static const GLchar* texture_2D_vertex_shader_source =
     "attribute vec2 aPos;\n"
     "attribute vec2 aUV;\n"
@@ -68,7 +68,7 @@ static const GLchar* texture_2D_fragment_shader_source =
     "   gl_FragColor = texture2D(uTex, varCoord);\n"
     "}\n";
 
-    // Fade Texture shader
+// Fade Texture shader
 static const GLchar* fade_texture_2D_vertex_shader_source =
     "precision highp float;\n"
     "attribute vec2 aPos;\n"
@@ -93,12 +93,11 @@ static const GLchar* fade_texture_2D_fragment_shader_source =
     "void main() {\n"
     "   mediump vec4 texColor = texture2D(uTex, varCoord);\n"
     "   mediump vec4 texTwoColor = texture2D(uTex2, varCoord2);\n"
-    "   gl_FragColor = ((texTwoColor * (1.0 - texAlpha)) + (texColor * texAlpha));\n"
+    "   gl_FragColor = ((texTwoColor * (1.0 - texAlpha)) + (texColor * "
+    "texAlpha));\n"
     "}\n";
 
-
-
-    //  Circle shader
+//  Circle shader
 
 static const GLchar* circle_filled_vertex_shader_source =
     "precision highp float;\n"
@@ -108,7 +107,6 @@ static const GLchar* circle_filled_vertex_shader_source =
     "void main() {\n"
     "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
     "}\n";
-
 
 static const GLchar* circle_filled_fragment_shader_source =
     "precision highp float;\n"
@@ -124,9 +122,8 @@ static const GLchar* circle_filled_fragment_shader_source =
     "else { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }\n"
     "}\n";
 
-
-    //  2D texture shader for FBOs
-    static const GLchar* FBO_texture_2D_vertex_shader_source =
+//  2D texture shader for FBOs
+static const GLchar* FBO_texture_2D_vertex_shader_source =
     "attribute vec2 aPos;\n"
     "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
@@ -136,7 +133,7 @@ static const GLchar* circle_filled_fragment_shader_source =
     "   varCoord = aUV;\n"
     "}\n";
 
-    static const GLchar* FBO_texture_2D_fragment_shader_source =
+static const GLchar* FBO_texture_2D_fragment_shader_source =
     "precision lowp float;\n"
     "uniform sampler2D uTex;\n"
     "varying vec2 varCoord;\n"
@@ -144,8 +141,8 @@ static const GLchar* circle_filled_fragment_shader_source =
     "   gl_FragColor = texture2D(uTex, varCoord);\n"
     "}\n";
 
-    // Alpah 2D texture shader
-    static const GLchar* texture_2DA_vertex_shader_source =
+// Alpah 2D texture shader
+static const GLchar* texture_2DA_vertex_shader_source =
     "attribute vec2 aPos;\n"
     "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
@@ -156,7 +153,7 @@ static const GLchar* circle_filled_fragment_shader_source =
     "   varCoord = aUV;\n"
     "}\n";
 
-    static const GLchar* texture_2DA_fragment_shader_source =
+static const GLchar* texture_2DA_fragment_shader_source =
     "precision lowp float;\n"
     "uniform sampler2D uTex;\n"
     "varying vec2 varCoord;\n"
@@ -165,398 +162,466 @@ static const GLchar* circle_filled_fragment_shader_source =
     "   gl_FragColor = texture2D(uTex, varCoord) + color;\n"
     "}\n";
 
+GLint color_tri_fragment_shader;
+GLint color_tri_shader_program;
+GLint color_tri_vertex_shader;
 
-    GLint color_tri_fragment_shader;
-    GLint color_tri_shader_program;
-    GLint color_tri_vertex_shader;
+GLint texture_2D_fragment_shader;
+GLint texture_2D_shader_program;
+GLint texture_2D_vertex_shader;
 
-    GLint texture_2D_fragment_shader;
-    GLint texture_2D_shader_program;
-    GLint texture_2D_vertex_shader;
+GLint fade_texture_2D_fragment_shader;
+GLint fade_texture_2D_shader_program;
+GLint fade_texture_2D_vertex_shader;
 
-    GLint fade_texture_2D_fragment_shader;
-    GLint fade_texture_2D_shader_program;
-    GLint fade_texture_2D_vertex_shader;
+GLint circle_filled_shader_program;
+GLint circle_filled_vertex_shader;
+GLint circle_filled_fragment_shader;
 
-    GLint circle_filled_shader_program;
-    GLint circle_filled_vertex_shader;
-    GLint circle_filled_fragment_shader;
+GLint FBO_texture_2D_fragment_shader;
+GLint FBO_texture_2D_shader_program;
+GLint FBO_texture_2D_vertex_shader;
 
-    GLint FBO_texture_2D_fragment_shader;
-    GLint FBO_texture_2D_shader_program;
-    GLint FBO_texture_2D_vertex_shader;
-
-    GLint texture_2DA_fragment_shader;
-    GLint texture_2DA_shader_program;
-    GLint texture_2DA_vertex_shader;
+GLint texture_2DA_fragment_shader;
+GLint texture_2DA_shader_program;
+GLint texture_2DA_vertex_shader;
 
 // Protos
-    GLint color_tri_fragment_shader_p[2];
-    GLint color_tri_shader_program_p[2];
-    GLint color_tri_vertex_shader_p[2];
+GLint color_tri_fragment_shader_p[2];
+GLint color_tri_shader_program_p[2];
+GLint color_tri_vertex_shader_p[2];
 
-    GLint texture_2D_fragment_shader_p[2];
-    GLint texture_2D_shader_program_p[2];
-    GLint texture_2D_vertex_shader_p[2];
+GLint texture_2D_fragment_shader_p[2];
+GLint texture_2D_shader_program_p[2];
+GLint texture_2D_vertex_shader_p[2];
 
-    GLint fade_texture_2D_fragment_shader_p[2];
-    GLint fade_texture_2D_shader_program_p[2];
-    GLint fade_texture_2D_vertex_shader_p[2];
+GLint fade_texture_2D_fragment_shader_p[2];
+GLint fade_texture_2D_shader_program_p[2];
+GLint fade_texture_2D_vertex_shader_p[2];
 
-    GLint circle_filled_shader_program_p[2];
-    GLint circle_filled_vertex_shader_p[2];
-    GLint circle_filled_fragment_shader_p[2];
+GLint circle_filled_shader_program_p[2];
+GLint circle_filled_vertex_shader_p[2];
+GLint circle_filled_fragment_shader_p[2];
 
-    GLint FBO_texture_2D_fragment_shader_p[2];
-    GLint FBO_texture_2D_shader_program_p[2];
-    GLint FBO_texture_2D_vertex_shader_p[2];
+GLint FBO_texture_2D_fragment_shader_p[2];
+GLint FBO_texture_2D_shader_program_p[2];
+GLint FBO_texture_2D_vertex_shader_p[2];
 
-    GLint texture_2DA_fragment_shader_p[2];
-    GLint texture_2DA_shader_program_p[2];
-    GLint texture_2DA_vertex_shader_p[2];
+GLint texture_2DA_fragment_shader_p[2];
+GLint texture_2DA_shader_program_p[2];
+GLint texture_2DA_vertex_shader_p[2];
 
-    bool bShadersLoaded[2];
+bool bShadersLoaded[2];
 
-
-bool loadShaders(int index)
-{
-
-    if(bShadersLoaded[index]){
-        reConfigureShaders(index);
-        return true;
-    }
-
-    bool ret_val = true;
-    GLint success;
-
-    enum Consts {INFOLOG_LEN = 512};
-    GLchar infoLog[INFOLOG_LEN];
-
-    // Are the shaders ready?
-
-    // Simple colored triangle shader
-
-    if(!color_tri_vertex_shader_p[index]){
-       /* Vertex shader */
-      color_tri_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-      glShaderSource(color_tri_vertex_shader_p[index], 1, &color_tri_vertex_shader_source, NULL);
-      glCompileShader(color_tri_vertex_shader_p[index]);
-      glGetShaderiv(color_tri_vertex_shader_p[index], GL_COMPILE_STATUS, &success);
-      if (!success) {
-        glGetShaderInfoLog(color_tri_vertex_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-        ret_val = false;
-      }
-    }
-
-    if(!color_tri_fragment_shader_p[index]){
-        /* Fragment shader */
-      color_tri_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
-      glShaderSource(color_tri_fragment_shader_p[index], 1, &color_tri_fragment_shader_source, NULL);
-      glCompileShader(color_tri_fragment_shader_p[index]);
-      glGetShaderiv(color_tri_fragment_shader_p[index], GL_COMPILE_STATUS, &success);
-      if (!success) {
-        glGetShaderInfoLog(color_tri_fragment_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-        ret_val = false;
-     }
-    }
-
-    if(!color_tri_shader_program_p[index]){
-      /* Link shaders */
-      color_tri_shader_program_p[index] = glCreateProgram();
-      glAttachShader(color_tri_shader_program_p[index], color_tri_fragment_shader_p[index]);
-      glAttachShader(color_tri_shader_program_p[index], color_tri_vertex_shader_p[index]);
-      glLinkProgram(color_tri_shader_program_p[index]);
-      glGetProgramiv(color_tri_shader_program_p[index], GL_LINK_STATUS, &success);
-      if (!success) {
-        glGetProgramInfoLog(color_tri_shader_program_p[index], INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-        ret_val = false;
-      }
-    }
-
-
-        // Simple 2D texture shader
-
-    if(!texture_2D_vertex_shader_p[index]){
-       /* Vertex shader */
-      texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-      glShaderSource(texture_2D_vertex_shader_p[index], 1, &texture_2D_vertex_shader_source, NULL);
-      glCompileShader(texture_2D_vertex_shader_p[index]);
-      glGetShaderiv(texture_2D_vertex_shader_p[index], GL_COMPILE_STATUS, &success);
-      if (!success) {
-        glGetShaderInfoLog(texture_2D_vertex_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-        ret_val = false;
-      }
-    }
-
-    if(!texture_2D_fragment_shader_p[index]){
-        /* Fragment shader */
-      texture_2D_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
-      glShaderSource(texture_2D_fragment_shader_p[index], 1, &texture_2D_fragment_shader_source, NULL);
-      glCompileShader(texture_2D_fragment_shader_p[index]);
-      glGetShaderiv(texture_2D_fragment_shader_p[index], GL_COMPILE_STATUS, &success);
-      if (!success) {
-        glGetShaderInfoLog(texture_2D_fragment_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-        ret_val = false;
-      }
-    }
-
-    if(!texture_2D_shader_program_p[index]){
-      /* Link shaders */
-      texture_2D_shader_program_p[index] = glCreateProgram();
-      glAttachShader(texture_2D_shader_program_p[index], texture_2D_vertex_shader_p[index]);
-      glAttachShader(texture_2D_shader_program_p[index], texture_2D_fragment_shader_p[index]);
-      glLinkProgram(texture_2D_shader_program_p[index]);
-      glGetProgramiv(texture_2D_shader_program_p[index], GL_LINK_STATUS, &success);
-      if (!success) {
-        glGetProgramInfoLog(texture_2D_shader_program_p[index], INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-        ret_val = false;
-      }
-    }
-
-    // Fade texture shader
-    if(!fade_texture_2D_vertex_shader_p[index]){
-        /* Vertex shader */
-        fade_texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(fade_texture_2D_vertex_shader_p[index], 1, &fade_texture_2D_vertex_shader_source, NULL);
-        glCompileShader(fade_texture_2D_vertex_shader_p[index]);
-        glGetShaderiv(fade_texture_2D_vertex_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(fade_texture_2D_vertex_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-            ret_val = false;
-        }
-    }
-
-    if(!fade_texture_2D_fragment_shader_p[index]){
-        /* Fragment shader */
-        fade_texture_2D_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fade_texture_2D_fragment_shader_p[index], 1, &fade_texture_2D_fragment_shader_source, NULL);
-        glCompileShader(fade_texture_2D_fragment_shader_p[index]);
-        glGetShaderiv(fade_texture_2D_fragment_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(fade_texture_2D_fragment_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-            ret_val = false;
-        }
-    }
-
-    if(!fade_texture_2D_shader_program_p[index]){
-        /* Link shaders */
-        fade_texture_2D_shader_program_p[index] = glCreateProgram();
-        glAttachShader(fade_texture_2D_shader_program_p[index], fade_texture_2D_vertex_shader_p[index]);
-        glAttachShader(fade_texture_2D_shader_program_p[index], fade_texture_2D_fragment_shader_p[index]);
-        glLinkProgram(fade_texture_2D_shader_program_p[index]);
-        glGetProgramiv(fade_texture_2D_shader_program_p[index], GL_LINK_STATUS, &success);
-        if (!success) {
-            glGetProgramInfoLog(fade_texture_2D_shader_program_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-            ret_val = false;
-        }
-    }
-
-
-    // Circle shader
-    if(!circle_filled_vertex_shader_p[index]){
-        /* Vertex shader */
-        circle_filled_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(circle_filled_vertex_shader_p[index], 1, &circle_filled_vertex_shader_source, NULL);
-        glCompileShader(circle_filled_vertex_shader_p[index]);
-        glGetShaderiv(circle_filled_vertex_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(circle_filled_vertex_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
-            ret_val = false;
-        }
-    }
-
-    if(!circle_filled_fragment_shader_p[index]){
-        /* Fragment shader */
-        circle_filled_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(circle_filled_fragment_shader_p[index], 1, &circle_filled_fragment_shader_source, NULL);
-        glCompileShader(circle_filled_fragment_shader_p[index]);
-        glGetShaderiv(circle_filled_fragment_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(circle_filled_fragment_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
-            ret_val = false;
-        }
-    }
-
-    if(!circle_filled_shader_program_p[index]){
-        /* Link shaders */
-        circle_filled_shader_program_p[index] = glCreateProgram();
-        glAttachShader(circle_filled_shader_program_p[index], circle_filled_vertex_shader_p[index]);
-        glAttachShader(circle_filled_shader_program_p[index], circle_filled_fragment_shader_p[index]);
-        glLinkProgram(circle_filled_shader_program_p[index]);
-        glGetProgramiv(circle_filled_shader_program_p[index], GL_LINK_STATUS, &success);
-        if (!success) {
-            glGetProgramInfoLog(circle_filled_shader_program_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
-            ret_val = false;
-        }
-    }
-
-
-    // FBO 2D texture shader
-
-    if(!FBO_texture_2D_vertex_shader_p[index]){
-        /* Vertex shader */
-        FBO_texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(FBO_texture_2D_vertex_shader_p[index], 1, &FBO_texture_2D_vertex_shader_source, NULL);
-        glCompileShader(FBO_texture_2D_vertex_shader_p[index]);
-        glGetShaderiv(FBO_texture_2D_vertex_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(FBO_texture_2D_vertex_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-            ret_val = false;
-        }
-    }
-
-    if(!FBO_texture_2D_fragment_shader_p[index]){
-        /* Fragment shader */
-        FBO_texture_2D_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(FBO_texture_2D_fragment_shader_p[index], 1, &FBO_texture_2D_fragment_shader_source, NULL);
-        glCompileShader(FBO_texture_2D_fragment_shader_p[index]);
-        glGetShaderiv(FBO_texture_2D_fragment_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(FBO_texture_2D_fragment_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-            ret_val = false;
-        }
-    }
-
-    if(!FBO_texture_2D_shader_program_p[index]){
-        /* Link shaders */
-        FBO_texture_2D_shader_program_p[index] = glCreateProgram();
-        glAttachShader(FBO_texture_2D_shader_program_p[index], FBO_texture_2D_vertex_shader_p[index]);
-        glAttachShader(FBO_texture_2D_shader_program_p[index], FBO_texture_2D_fragment_shader_p[index]);
-        glLinkProgram(FBO_texture_2D_shader_program_p[index]);
-        glGetProgramiv(FBO_texture_2D_shader_program_p[index], GL_LINK_STATUS, &success);
-        if (!success) {
-            glGetProgramInfoLog(FBO_texture_2D_shader_program_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-            ret_val = false;
-        }
-    }
-
-    // 2D Alpha color texture shader
-
-    if(!texture_2DA_vertex_shader_p[index]){
-        /* Vertex shader */
-        texture_2DA_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(texture_2DA_vertex_shader_p[index], 1, &texture_2DA_vertex_shader_source, NULL);
-        glCompileShader(texture_2DA_vertex_shader_p[index]);
-        glGetShaderiv(texture_2DA_vertex_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(texture_2DA_vertex_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
-            ret_val = false;
-        }
-    }
-
-    if(!texture_2DA_fragment_shader_p[index]){
-        /* Fragment shader */
-        texture_2DA_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(texture_2DA_fragment_shader_p[index], 1, &texture_2DA_fragment_shader_source, NULL);
-        glCompileShader(texture_2DA_fragment_shader_p[index]);
-        glGetShaderiv(texture_2DA_fragment_shader_p[index], GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(texture_2DA_fragment_shader_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
-            ret_val = false;
-        }
-    }
-
-    if(!texture_2DA_shader_program_p[index]){
-        /* Link shaders */
-        texture_2DA_shader_program_p[index] = glCreateProgram();
-        glAttachShader(texture_2DA_shader_program_p[index], texture_2DA_vertex_shader_p[index]);
-        glAttachShader(texture_2DA_shader_program_p[index], texture_2DA_fragment_shader_p[index]);
-        glLinkProgram(texture_2DA_shader_program_p[index]);
-        glGetProgramiv(texture_2DA_shader_program_p[index], GL_LINK_STATUS, &success);
-        if (!success) {
-            glGetProgramInfoLog(texture_2DA_shader_program_p[index], INFOLOG_LEN, NULL, infoLog);
-            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
-            ret_val = false;
-        }
-    }
-
-    qDebug() << "Shader Load " << ret_val;
-
-    bShadersLoaded[index] = true;
+bool loadShaders(int index) {
+  if (bShadersLoaded[index]) {
     reConfigureShaders(index);
+    return true;
+  }
 
-    return ret_val;
+  bool ret_val = true;
+  GLint success;
+
+  enum Consts { INFOLOG_LEN = 512 };
+  GLchar infoLog[INFOLOG_LEN];
+
+  // Are the shaders ready?
+
+  // Simple colored triangle shader
+
+  if (!color_tri_vertex_shader_p[index]) {
+    /* Vertex shader */
+    color_tri_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(color_tri_vertex_shader_p[index], 1,
+                   &color_tri_vertex_shader_source, NULL);
+    glCompileShader(color_tri_vertex_shader_p[index]);
+    glGetShaderiv(color_tri_vertex_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(color_tri_vertex_shader_p[index], INFOLOG_LEN, NULL,
+                         infoLog);
+      printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!color_tri_fragment_shader_p[index]) {
+    /* Fragment shader */
+    color_tri_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(color_tri_fragment_shader_p[index], 1,
+                   &color_tri_fragment_shader_source, NULL);
+    glCompileShader(color_tri_fragment_shader_p[index]);
+    glGetShaderiv(color_tri_fragment_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(color_tri_fragment_shader_p[index], INFOLOG_LEN, NULL,
+                         infoLog);
+      printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!color_tri_shader_program_p[index]) {
+    /* Link shaders */
+    color_tri_shader_program_p[index] = glCreateProgram();
+    glAttachShader(color_tri_shader_program_p[index],
+                   color_tri_fragment_shader_p[index]);
+    glAttachShader(color_tri_shader_program_p[index],
+                   color_tri_vertex_shader_p[index]);
+    glLinkProgram(color_tri_shader_program_p[index]);
+    glGetProgramiv(color_tri_shader_program_p[index], GL_LINK_STATUS, &success);
+    if (!success) {
+      glGetProgramInfoLog(color_tri_shader_program_p[index], INFOLOG_LEN, NULL,
+                          infoLog);
+      printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  // Simple 2D texture shader
+
+  if (!texture_2D_vertex_shader_p[index]) {
+    /* Vertex shader */
+    texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(texture_2D_vertex_shader_p[index], 1,
+                   &texture_2D_vertex_shader_source, NULL);
+    glCompileShader(texture_2D_vertex_shader_p[index]);
+    glGetShaderiv(texture_2D_vertex_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(texture_2D_vertex_shader_p[index], INFOLOG_LEN, NULL,
+                         infoLog);
+      printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!texture_2D_fragment_shader_p[index]) {
+    /* Fragment shader */
+    texture_2D_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(texture_2D_fragment_shader_p[index], 1,
+                   &texture_2D_fragment_shader_source, NULL);
+    glCompileShader(texture_2D_fragment_shader_p[index]);
+    glGetShaderiv(texture_2D_fragment_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(texture_2D_fragment_shader_p[index], INFOLOG_LEN, NULL,
+                         infoLog);
+      printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!texture_2D_shader_program_p[index]) {
+    /* Link shaders */
+    texture_2D_shader_program_p[index] = glCreateProgram();
+    glAttachShader(texture_2D_shader_program_p[index],
+                   texture_2D_vertex_shader_p[index]);
+    glAttachShader(texture_2D_shader_program_p[index],
+                   texture_2D_fragment_shader_p[index]);
+    glLinkProgram(texture_2D_shader_program_p[index]);
+    glGetProgramiv(texture_2D_shader_program_p[index], GL_LINK_STATUS,
+                   &success);
+    if (!success) {
+      glGetProgramInfoLog(texture_2D_shader_program_p[index], INFOLOG_LEN, NULL,
+                          infoLog);
+      printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  // Fade texture shader
+  if (!fade_texture_2D_vertex_shader_p[index]) {
+    /* Vertex shader */
+    fade_texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(fade_texture_2D_vertex_shader_p[index], 1,
+                   &fade_texture_2D_vertex_shader_source, NULL);
+    glCompileShader(fade_texture_2D_vertex_shader_p[index]);
+    glGetShaderiv(fade_texture_2D_vertex_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(fade_texture_2D_vertex_shader_p[index], INFOLOG_LEN,
+                         NULL, infoLog);
+      printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!fade_texture_2D_fragment_shader_p[index]) {
+    /* Fragment shader */
+    fade_texture_2D_fragment_shader_p[index] =
+        glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fade_texture_2D_fragment_shader_p[index], 1,
+                   &fade_texture_2D_fragment_shader_source, NULL);
+    glCompileShader(fade_texture_2D_fragment_shader_p[index]);
+    glGetShaderiv(fade_texture_2D_fragment_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(fade_texture_2D_fragment_shader_p[index], INFOLOG_LEN,
+                         NULL, infoLog);
+      printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!fade_texture_2D_shader_program_p[index]) {
+    /* Link shaders */
+    fade_texture_2D_shader_program_p[index] = glCreateProgram();
+    glAttachShader(fade_texture_2D_shader_program_p[index],
+                   fade_texture_2D_vertex_shader_p[index]);
+    glAttachShader(fade_texture_2D_shader_program_p[index],
+                   fade_texture_2D_fragment_shader_p[index]);
+    glLinkProgram(fade_texture_2D_shader_program_p[index]);
+    glGetProgramiv(fade_texture_2D_shader_program_p[index], GL_LINK_STATUS,
+                   &success);
+    if (!success) {
+      glGetProgramInfoLog(fade_texture_2D_shader_program_p[index], INFOLOG_LEN,
+                          NULL, infoLog);
+      printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  // Circle shader
+  if (!circle_filled_vertex_shader_p[index]) {
+    /* Vertex shader */
+    circle_filled_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(circle_filled_vertex_shader_p[index], 1,
+                   &circle_filled_vertex_shader_source, NULL);
+    glCompileShader(circle_filled_vertex_shader_p[index]);
+    glGetShaderiv(circle_filled_vertex_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(circle_filled_vertex_shader_p[index], INFOLOG_LEN,
+                         NULL, infoLog);
+      printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+      qDebug() << infoLog;
+      ret_val = false;
+    }
+  }
+
+  if (!circle_filled_fragment_shader_p[index]) {
+    /* Fragment shader */
+    circle_filled_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(circle_filled_fragment_shader_p[index], 1,
+                   &circle_filled_fragment_shader_source, NULL);
+    glCompileShader(circle_filled_fragment_shader_p[index]);
+    glGetShaderiv(circle_filled_fragment_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(circle_filled_fragment_shader_p[index], INFOLOG_LEN,
+                         NULL, infoLog);
+      printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+      qDebug() << infoLog;
+      ret_val = false;
+    }
+  }
+
+  if (!circle_filled_shader_program_p[index]) {
+    /* Link shaders */
+    circle_filled_shader_program_p[index] = glCreateProgram();
+    glAttachShader(circle_filled_shader_program_p[index],
+                   circle_filled_vertex_shader_p[index]);
+    glAttachShader(circle_filled_shader_program_p[index],
+                   circle_filled_fragment_shader_p[index]);
+    glLinkProgram(circle_filled_shader_program_p[index]);
+    glGetProgramiv(circle_filled_shader_program_p[index], GL_LINK_STATUS,
+                   &success);
+    if (!success) {
+      glGetProgramInfoLog(circle_filled_shader_program_p[index], INFOLOG_LEN,
+                          NULL, infoLog);
+      printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      qDebug() << infoLog;
+      ret_val = false;
+    }
+  }
+
+  // FBO 2D texture shader
+
+  if (!FBO_texture_2D_vertex_shader_p[index]) {
+    /* Vertex shader */
+    FBO_texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(FBO_texture_2D_vertex_shader_p[index], 1,
+                   &FBO_texture_2D_vertex_shader_source, NULL);
+    glCompileShader(FBO_texture_2D_vertex_shader_p[index]);
+    glGetShaderiv(FBO_texture_2D_vertex_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(FBO_texture_2D_vertex_shader_p[index], INFOLOG_LEN,
+                         NULL, infoLog);
+      printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!FBO_texture_2D_fragment_shader_p[index]) {
+    /* Fragment shader */
+    FBO_texture_2D_fragment_shader_p[index] =
+        glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(FBO_texture_2D_fragment_shader_p[index], 1,
+                   &FBO_texture_2D_fragment_shader_source, NULL);
+    glCompileShader(FBO_texture_2D_fragment_shader_p[index]);
+    glGetShaderiv(FBO_texture_2D_fragment_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(FBO_texture_2D_fragment_shader_p[index], INFOLOG_LEN,
+                         NULL, infoLog);
+      printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!FBO_texture_2D_shader_program_p[index]) {
+    /* Link shaders */
+    FBO_texture_2D_shader_program_p[index] = glCreateProgram();
+    glAttachShader(FBO_texture_2D_shader_program_p[index],
+                   FBO_texture_2D_vertex_shader_p[index]);
+    glAttachShader(FBO_texture_2D_shader_program_p[index],
+                   FBO_texture_2D_fragment_shader_p[index]);
+    glLinkProgram(FBO_texture_2D_shader_program_p[index]);
+    glGetProgramiv(FBO_texture_2D_shader_program_p[index], GL_LINK_STATUS,
+                   &success);
+    if (!success) {
+      glGetProgramInfoLog(FBO_texture_2D_shader_program_p[index], INFOLOG_LEN,
+                          NULL, infoLog);
+      printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  // 2D Alpha color texture shader
+
+  if (!texture_2DA_vertex_shader_p[index]) {
+    /* Vertex shader */
+    texture_2DA_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(texture_2DA_vertex_shader_p[index], 1,
+                   &texture_2DA_vertex_shader_source, NULL);
+    glCompileShader(texture_2DA_vertex_shader_p[index]);
+    glGetShaderiv(texture_2DA_vertex_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(texture_2DA_vertex_shader_p[index], INFOLOG_LEN, NULL,
+                         infoLog);
+      printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+      qDebug() << infoLog;
+      ret_val = false;
+    }
+  }
+
+  if (!texture_2DA_fragment_shader_p[index]) {
+    /* Fragment shader */
+    texture_2DA_fragment_shader_p[index] = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(texture_2DA_fragment_shader_p[index], 1,
+                   &texture_2DA_fragment_shader_source, NULL);
+    glCompileShader(texture_2DA_fragment_shader_p[index]);
+    glGetShaderiv(texture_2DA_fragment_shader_p[index], GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(texture_2DA_fragment_shader_p[index], INFOLOG_LEN,
+                         NULL, infoLog);
+      printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+      qDebug() << infoLog;
+      ret_val = false;
+    }
+  }
+
+  if (!texture_2DA_shader_program_p[index]) {
+    /* Link shaders */
+    texture_2DA_shader_program_p[index] = glCreateProgram();
+    glAttachShader(texture_2DA_shader_program_p[index],
+                   texture_2DA_vertex_shader_p[index]);
+    glAttachShader(texture_2DA_shader_program_p[index],
+                   texture_2DA_fragment_shader_p[index]);
+    glLinkProgram(texture_2DA_shader_program_p[index]);
+    glGetProgramiv(texture_2DA_shader_program_p[index], GL_LINK_STATUS,
+                   &success);
+    if (!success) {
+      glGetProgramInfoLog(texture_2DA_shader_program_p[index], INFOLOG_LEN,
+                          NULL, infoLog);
+      printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      qDebug() << infoLog;
+      ret_val = false;
+    }
+  }
+
+  qDebug() << "Shader Load " << ret_val;
+
+  bShadersLoaded[index] = true;
+  reConfigureShaders(index);
+
+  return ret_val;
 }
 
-void reConfigureShaders(int index)
-{
-    color_tri_fragment_shader = color_tri_fragment_shader_p[index];
-    color_tri_shader_program = color_tri_shader_program_p[index];
-    color_tri_vertex_shader = color_tri_vertex_shader_p[index];
+void reConfigureShaders(int index) {
+  color_tri_fragment_shader = color_tri_fragment_shader_p[index];
+  color_tri_shader_program = color_tri_shader_program_p[index];
+  color_tri_vertex_shader = color_tri_vertex_shader_p[index];
 
-    texture_2D_fragment_shader = texture_2D_fragment_shader_p[index];
-    texture_2D_shader_program = texture_2D_shader_program_p[index];
-    texture_2D_vertex_shader = texture_2D_vertex_shader_p[index];
+  texture_2D_fragment_shader = texture_2D_fragment_shader_p[index];
+  texture_2D_shader_program = texture_2D_shader_program_p[index];
+  texture_2D_vertex_shader = texture_2D_vertex_shader_p[index];
 
-    fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[index];
-    fade_texture_2D_shader_program = fade_texture_2D_shader_program_p[index];
-    fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[index];
+  fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[index];
+  fade_texture_2D_shader_program = fade_texture_2D_shader_program_p[index];
+  fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[index];
 
-    circle_filled_shader_program = circle_filled_shader_program_p[index];
-    circle_filled_vertex_shader = circle_filled_vertex_shader_p[index];
-    circle_filled_fragment_shader = circle_filled_fragment_shader_p[index];
+  circle_filled_shader_program = circle_filled_shader_program_p[index];
+  circle_filled_vertex_shader = circle_filled_vertex_shader_p[index];
+  circle_filled_fragment_shader = circle_filled_fragment_shader_p[index];
 
-    FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[index];
-    FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[index];
-    FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[index];
+  FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[index];
+  FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[index];
+  FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[index];
 
-    texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[index];
-    texture_2DA_shader_program = texture_2DA_shader_program_p[index];
-    texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[index];
+  texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[index];
+  texture_2DA_shader_program = texture_2DA_shader_program_p[index];
+  texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[index];
 }
 
-void unloadShaders()
-{
-    color_tri_fragment_shader = color_tri_fragment_shader_p[0] = color_tri_fragment_shader_p[1] = 0;
-    color_tri_shader_program = color_tri_shader_program_p[0]  = color_tri_shader_program_p[1] = 0;
-    color_tri_vertex_shader = color_tri_vertex_shader_p[0]= color_tri_vertex_shader_p[1] = 0;
+void unloadShaders() {
+  color_tri_fragment_shader = color_tri_fragment_shader_p[0] =
+      color_tri_fragment_shader_p[1] = 0;
+  color_tri_shader_program = color_tri_shader_program_p[0] =
+      color_tri_shader_program_p[1] = 0;
+  color_tri_vertex_shader = color_tri_vertex_shader_p[0] =
+      color_tri_vertex_shader_p[1] = 0;
 
-    texture_2D_fragment_shader = texture_2D_fragment_shader_p[0] = texture_2D_fragment_shader_p[1];
-    texture_2D_shader_program = texture_2D_shader_program_p[0] = texture_2D_shader_program_p[1] = 0;
-    texture_2D_vertex_shader = texture_2D_vertex_shader_p[0]  = texture_2D_vertex_shader_p[1] = 0;
+  texture_2D_fragment_shader = texture_2D_fragment_shader_p[0] =
+      texture_2D_fragment_shader_p[1];
+  texture_2D_shader_program = texture_2D_shader_program_p[0] =
+      texture_2D_shader_program_p[1] = 0;
+  texture_2D_vertex_shader = texture_2D_vertex_shader_p[0] =
+      texture_2D_vertex_shader_p[1] = 0;
 
-    fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[0] = fade_texture_2D_fragment_shader_p[1] = 0;
-    fade_texture_2D_shader_program = fade_texture_2D_shader_program_p[0] = fade_texture_2D_shader_program_p[1] = 0;
-    fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[0] = fade_texture_2D_vertex_shader_p[1] = 0;
+  fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[0] =
+      fade_texture_2D_fragment_shader_p[1] = 0;
+  fade_texture_2D_shader_program = fade_texture_2D_shader_program_p[0] =
+      fade_texture_2D_shader_program_p[1] = 0;
+  fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[0] =
+      fade_texture_2D_vertex_shader_p[1] = 0;
 
-    circle_filled_shader_program = circle_filled_shader_program_p[0] = circle_filled_shader_program_p[1] = 0;
-    circle_filled_vertex_shader = circle_filled_vertex_shader_p[0] = circle_filled_vertex_shader_p[1] = 0;
-    circle_filled_fragment_shader = circle_filled_fragment_shader_p[0] = circle_filled_fragment_shader_p[1] = 0;
+  circle_filled_shader_program = circle_filled_shader_program_p[0] =
+      circle_filled_shader_program_p[1] = 0;
+  circle_filled_vertex_shader = circle_filled_vertex_shader_p[0] =
+      circle_filled_vertex_shader_p[1] = 0;
+  circle_filled_fragment_shader = circle_filled_fragment_shader_p[0] =
+      circle_filled_fragment_shader_p[1] = 0;
 
-    FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[0] = FBO_texture_2D_fragment_shader_p[1] = 0;
-    FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[0] = FBO_texture_2D_shader_program_p[1] = 0;
-    FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[0] = FBO_texture_2D_vertex_shader_p[1] = 0;
+  FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[0] =
+      FBO_texture_2D_fragment_shader_p[1] = 0;
+  FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[0] =
+      FBO_texture_2D_shader_program_p[1] = 0;
+  FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[0] =
+      FBO_texture_2D_vertex_shader_p[1] = 0;
 
-    texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[0] = texture_2DA_fragment_shader_p[1] = 0;
-    texture_2DA_shader_program = texture_2DA_shader_program_p[0] = texture_2DA_shader_program_p[1] = 0;
-    texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[0] = texture_2DA_vertex_shader_p[1] = 0;
+  texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[0] =
+      texture_2DA_fragment_shader_p[1] = 0;
+  texture_2DA_shader_program = texture_2DA_shader_program_p[0] =
+      texture_2DA_shader_program_p[1] = 0;
+  texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[0] =
+      texture_2DA_vertex_shader_p[1] = 0;
 
-    bShadersLoaded[0] = bShadersLoaded[1] = false;
-
+  bShadersLoaded[0] = bShadersLoaded[1] = false;
 }
-
 
 #endif

@@ -25,7 +25,7 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
 
@@ -48,92 +48,88 @@
 
 #ifdef ocpnUSE_SVG
 #include "wxSVG/svg.h"
-#endif // ocpnUSE_SVG
+#endif  // ocpnUSE_SVG
 
-extern bool                       g_bTransparentToolbar;
-extern bool                       g_bTransparentToolbarInOpenGLOK;
-extern bool                       g_bopengl;
-extern ocpnStyle::StyleManager*   g_StyleManager;
-extern MyFrame*                   gFrame;
-extern PlugInManager*             g_pi_manager;
-extern bool                       g_bPermanentMOBIcon;
-extern bool                       g_btouch;
-extern bool                       g_bsmoothpanzoom;
-extern OCPNPlatform               *g_Platform;
-extern bool                       g_bmasterToolbarFull;
-extern bool                       g_useMUI;
-extern wxString                   g_toolbarConfig;
-extern double                     g_plus_minus_zoom_factor;
-extern int                        g_maintoolbar_x;
-extern int                        g_maintoolbar_y;
+extern bool g_bTransparentToolbar;
+extern bool g_bTransparentToolbarInOpenGLOK;
+extern bool g_bopengl;
+extern ocpnStyle::StyleManager *g_StyleManager;
+extern MyFrame *gFrame;
+extern PlugInManager *g_pi_manager;
+extern bool g_bPermanentMOBIcon;
+extern bool g_btouch;
+extern bool g_bsmoothpanzoom;
+extern OCPNPlatform *g_Platform;
+extern bool g_bmasterToolbarFull;
+extern bool g_useMUI;
+extern wxString g_toolbarConfig;
+extern double g_plus_minus_zoom_factor;
+extern int g_maintoolbar_x;
+extern int g_maintoolbar_y;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(GrabberWin, wxPanel) EVT_MOUSE_EVENTS ( GrabberWin::MouseEvent )
-EVT_PAINT ( GrabberWin::OnPaint )
-END_EVENT_TABLE()
+BEGIN_EVENT_TABLE(GrabberWin, wxPanel)
+EVT_MOUSE_EVENTS(GrabberWin::MouseEvent) EVT_PAINT(GrabberWin::OnPaint)
+    END_EVENT_TABLE()
 
-GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, float scale_factor, wxString icon_name, wxPoint position ):
-    wxPanel( parent, wxID_ANY, position, wxDefaultSize, wxNO_BORDER )
-{
-    m_icon_name = icon_name;
-    m_style = g_StyleManager->GetCurrentStyle();
-    wxBitmap bitmap = m_style->GetIcon( icon_name );
-    if(scale_factor > 1.0f){
-        int new_width = bitmap.GetWidth() * scale_factor;
-        int new_height = bitmap.GetHeight() * scale_factor;
-        wxImage scaled_image = bitmap.ConvertToImage();
-        m_bitmap = wxBitmap(scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
-    }
-    else
-        m_bitmap = bitmap;
+        GrabberWin::GrabberWin(wxWindow *parent,
+                               ocpnFloatingToolbarDialog *toolbar,
+                               float scale_factor, wxString icon_name,
+                               wxPoint position)
+    : wxPanel(parent, wxID_ANY, position, wxDefaultSize, wxNO_BORDER) {
+  m_icon_name = icon_name;
+  m_style = g_StyleManager->GetCurrentStyle();
+  wxBitmap bitmap = m_style->GetIcon(icon_name);
+  if (scale_factor > 1.0f) {
+    int new_width = bitmap.GetWidth() * scale_factor;
+    int new_height = bitmap.GetHeight() * scale_factor;
+    wxImage scaled_image = bitmap.ConvertToImage();
+    m_bitmap = wxBitmap(
+        scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
+  } else
+    m_bitmap = bitmap;
 
-    SetSize( wxSize( m_bitmap.GetWidth(), m_bitmap.GetHeight() ) );
-    SetMinSize( wxSize( m_bitmap.GetWidth(), m_bitmap.GetHeight() ) );
+  SetSize(wxSize(m_bitmap.GetWidth(), m_bitmap.GetHeight()));
+  SetMinSize(wxSize(m_bitmap.GetWidth(), m_bitmap.GetHeight()));
 
-    m_bLeftDown = false;
-    m_bRightDown = false;
-    m_scale_factor = scale_factor;
-    m_ptoolbar = toolbar;
-    m_dragging = false;
-    Hide();
-
+  m_bLeftDown = false;
+  m_bRightDown = false;
+  m_scale_factor = scale_factor;
+  m_ptoolbar = toolbar;
+  m_dragging = false;
+  Hide();
 }
 
+void GrabberWin::OnPaint(wxPaintEvent &event) {
+  wxPaintDC dc(this);
 
-void GrabberWin::OnPaint( wxPaintEvent& event )
-{
-    wxPaintDC dc( this );
+  wxColour back_color = GetGlobalColor(_T("GREY2"));
+  SetBackgroundColour(back_color);
+  ClearBackground();
 
-    wxColour back_color = GetGlobalColor( _T("GREY2") );
-    SetBackgroundColour( back_color );
-    ClearBackground();
-
-    dc.DrawBitmap( m_bitmap, 0, 0, true );
+  dc.DrawBitmap(m_bitmap, 0, 0, true);
 }
 
-void GrabberWin::SetColorScheme( ColorScheme cs )
-{
-    wxColour back_color = GetGlobalColor( _T("GREY2") );
+void GrabberWin::SetColorScheme(ColorScheme cs) {
+  wxColour back_color = GetGlobalColor(_T("GREY2"));
 
-    SetBackgroundColour( back_color );
-    ClearBackground();
+  SetBackgroundColour(back_color);
+  ClearBackground();
 
-    wxBitmap bitmap = m_style->GetIcon( m_icon_name) ;
-    if(m_scale_factor > 1.0f){
-        int new_width = bitmap.GetWidth() * m_scale_factor;
-        int new_height = bitmap.GetHeight() * m_scale_factor;
-        wxImage scaled_image = bitmap.ConvertToImage();
-        m_bitmap = wxBitmap(scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
-    }
-    else
-        m_bitmap = bitmap;
+  wxBitmap bitmap = m_style->GetIcon(m_icon_name);
+  if (m_scale_factor > 1.0f) {
+    int new_width = bitmap.GetWidth() * m_scale_factor;
+    int new_height = bitmap.GetHeight() * m_scale_factor;
+    wxImage scaled_image = bitmap.ConvertToImage();
+    m_bitmap = wxBitmap(
+        scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
+  } else
+    m_bitmap = bitmap;
 }
 
-void GrabberWin::MouseEvent( wxMouseEvent& event )
-{
-}
+void GrabberWin::MouseEvent(wxMouseEvent &event) {}
 #if 0
     static wxPoint s_gspt;
     int x, y;
@@ -144,7 +140,6 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
     if( event.LeftDown() ) {
         s_gspt = spt;
     }
-
 
 #ifndef __WXQT__
 
@@ -212,7 +207,6 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
         m_dragging = false;
     }
 
-
 #ifndef __OCPN__ANDROID__
     gFrame->Raise();
 #endif
@@ -220,1020 +214,934 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 }
 #endif
 
-class ocpnToolBarTool: public wxToolBarToolBase {
+class ocpnToolBarTool : public wxToolBarToolBase {
 public:
-    ocpnToolBarTool( ocpnToolBarSimple *tbar, int id, const wxString& label,
-            const wxBitmap& bmpNormal, const wxBitmap& bmpRollover, wxItemKind kind,
-            wxObject *clientData, const wxString& shortHelp, const wxString& longHelp ) :
-            wxToolBarToolBase( (wxToolBarBase*) tbar, id, label, bmpNormal, bmpRollover, kind,
-                    clientData, shortHelp, longHelp )
-    {
-        m_enabled = true;
-        m_toggled = false;
-        rollover = false;
-        bitmapOK = false;
-        m_btooltip_hiviz = false;
+  ocpnToolBarTool(ocpnToolBarSimple *tbar, int id, const wxString &label,
+                  const wxBitmap &bmpNormal, const wxBitmap &bmpRollover,
+                  wxItemKind kind, wxObject *clientData,
+                  const wxString &shortHelp, const wxString &longHelp)
+      : wxToolBarToolBase((wxToolBarBase *)tbar, id, label, bmpNormal,
+                          bmpRollover, kind, clientData, shortHelp, longHelp) {
+    m_enabled = true;
+    m_toggled = false;
+    rollover = false;
+    bitmapOK = false;
+    m_btooltip_hiviz = false;
 
-        toolname = g_pi_manager->GetToolOwnerCommonName( id );
-        if( toolname == _T("") ) {
-            isPluginTool = false;
-            toolname = label;
-            iconName = label;
+    toolname = g_pi_manager->GetToolOwnerCommonName(id);
+    if (toolname == _T("")) {
+      isPluginTool = false;
+      toolname = label;
+      iconName = label;
 
-        } else {
-            isPluginTool = true;
-            pluginNormalIcon = bmpNormal;
-            pluginRolloverIcon = bmpRollover;
-        }
+    } else {
+      isPluginTool = true;
+      pluginNormalIcon = bmpNormal;
+      pluginRolloverIcon = bmpRollover;
     }
+  }
 
-     ocpnToolBarTool( ocpnToolBarSimple *tbar, int id,
-            const wxBitmap& bmpNormal, const wxBitmap& bmpRollover, wxItemKind kind,
-            wxObject *clientData, const wxString& shortHelp, const wxString& longHelp ) :
-            wxToolBarToolBase( (wxToolBarBase*) tbar, id, _T(""), bmpNormal, bmpRollover, kind,
-                    clientData, shortHelp, longHelp )
-    {
-        m_enabled = true;
-        m_toggled = false;
-        rollover = false;
-        m_btooltip_hiviz = false;
-        isPluginTool = false;
+  ocpnToolBarTool(ocpnToolBarSimple *tbar, int id, const wxBitmap &bmpNormal,
+                  const wxBitmap &bmpRollover, wxItemKind kind,
+                  wxObject *clientData, const wxString &shortHelp,
+                  const wxString &longHelp)
+      : wxToolBarToolBase((wxToolBarBase *)tbar, id, _T(""), bmpNormal,
+                          bmpRollover, kind, clientData, shortHelp, longHelp) {
+    m_enabled = true;
+    m_toggled = false;
+    rollover = false;
+    m_btooltip_hiviz = false;
+    isPluginTool = false;
 
-        m_bmpNormal = bmpNormal;
-        bitmapOK = true;
-    }
+    m_bmpNormal = bmpNormal;
+    bitmapOK = true;
+  }
 
-    void SetSize( const wxSize& size )
-    {
-        m_width = size.x;
-        m_height = size.y;
-    }
+  void SetSize(const wxSize &size) {
+    m_width = size.x;
+    m_height = size.y;
+  }
 
-    wxCoord GetWidth() const
-    {
-        return m_width;
-    }
+  wxCoord GetWidth() const { return m_width; }
 
-    wxCoord GetHeight() const
-    {
-        return m_height;
-    }
+  wxCoord GetHeight() const { return m_height; }
 
-    wxString GetToolname()
-    {
-        return toolname;
-    }
+  wxString GetToolname() { return toolname; }
 
-    void SetIconName(wxString name)
-    {
-        iconName = name;
-    }
-    wxString GetIconName()
-    {
-        return iconName;
-    }
+  void SetIconName(wxString name) { iconName = name; }
+  wxString GetIconName() { return iconName; }
 
-    void SetTooltipHiviz( bool enable){ m_btooltip_hiviz = enable; }
+  void SetTooltipHiviz(bool enable) { m_btooltip_hiviz = enable; }
 
-    wxCoord m_x;
-    wxCoord m_y;
-    wxCoord m_width;
-    wxCoord m_height;
-    wxRect trect;
-    wxString toolname;
-    wxString iconName;
-    wxBitmap pluginNormalIcon;
-    wxBitmap pluginRolloverIcon;
-    const wxBitmap* pluginToggledIcon;
-    bool firstInLine;
-    bool lastInLine;
-    bool rollover;
-    bool bitmapOK;
-    bool isPluginTool;
-    bool b_hilite;
-    bool m_btooltip_hiviz;
-    wxRect last_rect;
-    wxString pluginNormalIconSVG;
-    wxString pluginRolloverIconSVG;
-    wxString pluginToggledIconSVG;
+  wxCoord m_x;
+  wxCoord m_y;
+  wxCoord m_width;
+  wxCoord m_height;
+  wxRect trect;
+  wxString toolname;
+  wxString iconName;
+  wxBitmap pluginNormalIcon;
+  wxBitmap pluginRolloverIcon;
+  const wxBitmap *pluginToggledIcon;
+  bool firstInLine;
+  bool lastInLine;
+  bool rollover;
+  bool bitmapOK;
+  bool isPluginTool;
+  bool b_hilite;
+  bool m_btooltip_hiviz;
+  wxRect last_rect;
+  wxString pluginNormalIconSVG;
+  wxString pluginRolloverIconSVG;
+  wxString pluginToggledIconSVG;
 };
 
 //---------------------------------------------------------------------------------------
 //          ocpnFloatingToolbarDialog Implementation
 //---------------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxFrame)
-    EVT_MOUSE_EVENTS ( ocpnFloatingToolbarDialog::MouseEvent )
-    EVT_MENU(wxID_ANY, ocpnFloatingToolbarDialog::OnToolLeftClick)
-    EVT_TIMER ( FADE_TIMER, ocpnFloatingToolbarDialog::FadeTimerEvent )
-    EVT_TIMER ( DESTROY_TIMER, ocpnFloatingToolbarDialog::DestroyTimerEvent )
-    EVT_KEY_DOWN(ocpnFloatingToolbarDialog::OnKeyDown )
-    EVT_KEY_UP(ocpnFloatingToolbarDialog::OnKeyUp )
-    EVT_WINDOW_CREATE(ocpnFloatingToolbarDialog::OnWindowCreate)
+EVT_MOUSE_EVENTS(ocpnFloatingToolbarDialog::MouseEvent)
+EVT_MENU(wxID_ANY, ocpnFloatingToolbarDialog::OnToolLeftClick)
+EVT_TIMER(FADE_TIMER, ocpnFloatingToolbarDialog::FadeTimerEvent)
+EVT_TIMER(DESTROY_TIMER, ocpnFloatingToolbarDialog::DestroyTimerEvent)
+EVT_KEY_DOWN(ocpnFloatingToolbarDialog::OnKeyDown)
+EVT_KEY_UP(ocpnFloatingToolbarDialog::OnKeyUp)
+EVT_WINDOW_CREATE(ocpnFloatingToolbarDialog::OnWindowCreate)
 END_EVENT_TABLE()
 
-ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position,
-                                                      long orient, float size_factor )
-{
-    m_pparent = parent;
-    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxFRAME_TOOL_WINDOW;
+ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
+                                                     wxPoint position,
+                                                     long orient,
+                                                     float size_factor) {
+  m_pparent = parent;
+  long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED |
+                wxFRAME_FLOAT_ON_PARENT | wxFRAME_TOOL_WINDOW;
 
-    m_ptoolbar = NULL;
+  m_ptoolbar = NULL;
 
-    wxFrame::Create( parent, -1, _T(""), wxPoint( -1, -1 ), wxSize( -1, -1 ),
-            wstyle );
+  wxFrame::Create(parent, -1, _T(""), wxPoint(-1, -1), wxSize(-1, -1), wstyle);
 
-    m_opacity = 255;
+  m_opacity = 255;
 
-    m_pGrabberwin = NULL; //new GrabberWin( this, this, size_factor, _T("grabber_hi") );
-    m_bGrabberEnable = true;            // default
+  m_pGrabberwin =
+      NULL;  // new GrabberWin( this, this, size_factor, _T("grabber_hi") );
+  m_bGrabberEnable = true;  // default
 
-    m_pRecoverwin = NULL;
-    m_position = position;
-    m_orient = orient;
-    m_sizefactor = size_factor;
-    m_cornerRadius = 0;
+  m_pRecoverwin = NULL;
+  m_position = position;
+  m_orient = orient;
+  m_sizefactor = size_factor;
+  m_cornerRadius = 0;
 
-    m_bAutoHideToolbar = false;
-    m_nAutoHideToolbar = 5;
-    m_toolbar_scale_tools_shown = false;
-    m_backcolorString = _T("GREY2") ;
-    m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
-    n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
-    b_canToggleOrientation = true;
-    m_enableRolloverBitmaps = true;
-    m_auxOffsetY = 0;
+  m_bAutoHideToolbar = false;
+  m_nAutoHideToolbar = 5;
+  m_toolbar_scale_tools_shown = false;
+  m_backcolorString = _T("GREY2");
+  m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
+  n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
+  b_canToggleOrientation = true;
+  m_enableRolloverBitmaps = true;
+  m_auxOffsetY = 0;
 
-    m_ptoolbar = CreateNewToolbar();
+  m_ptoolbar = CreateNewToolbar();
 
-    m_cs = (ColorScheme)-1;
+  m_cs = (ColorScheme)-1;
 
-    m_style = g_StyleManager->GetCurrentStyle();
-    SetULDockPosition(wxPoint(4,4));
+  m_style = g_StyleManager->GetCurrentStyle();
+  SetULDockPosition(wxPoint(4, 4));
 
-    SetGeometry(false, wxRect());
+  SetGeometry(false, wxRect());
 
+  // A top-level sizer
+  m_topSizer = new wxBoxSizer(wxHORIZONTAL);
+  SetSizer(m_topSizer);
 
-// A top-level sizer
-    m_topSizer = new wxBoxSizer( wxHORIZONTAL );
-    SetSizer( m_topSizer );
+  //    Set initial "Dock" parameters
+  m_dock_x = 0;
+  m_dock_y = 0;
+  m_block = false;
 
-    //    Set initial "Dock" parameters
-    m_dock_x = 0;
-    m_dock_y = 0;
-    m_block = false;
+  m_marginsInvisible = m_style->marginsInvisible;
 
-    m_marginsInvisible = m_style->marginsInvisible;
+  //    if(m_sizefactor > 1.0 )
+  //       m_marginsInvisible = true;
 
-//    if(m_sizefactor > 1.0 )
- //       m_marginsInvisible = true;
+  m_bnavgrabber = false;
 
-    m_bnavgrabber = false;
+  m_FloatingToolbarConfigMenu = NULL;
 
-    m_FloatingToolbarConfigMenu = NULL;
+  Hide();
 
-    Hide();
+  m_bsubmerged = false;
+  m_bsubmergedToGrabber = false;
 
-    m_bsubmerged = false;
-    m_bsubmergedToGrabber = false;
+  m_fade_timer.SetOwner(this, FADE_TIMER);
+  if (g_bTransparentToolbar) m_fade_timer.Start(5000);
 
-    m_fade_timer.SetOwner( this, FADE_TIMER );
-    if( g_bTransparentToolbar )
-        m_fade_timer.Start( 5000 );
+  if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0))
+    m_fade_timer.Start(m_nAutoHideToolbar * 1000);
 
-    if( m_bAutoHideToolbar && (m_nAutoHideToolbar > 0))
-        m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
+  m_destroyTimer.SetOwner(this, DESTROY_TIMER);
 
-    m_destroyTimer.SetOwner( this, DESTROY_TIMER );
-
-    m_benableSubmerge = true;
+  m_benableSubmerge = true;
 }
 
-ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
-{
-    delete m_FloatingToolbarConfigMenu;
+ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog() {
+  delete m_FloatingToolbarConfigMenu;
 
-    DestroyToolBar();
+  DestroyToolBar();
 }
 
-void ocpnFloatingToolbarDialog::AddToolItem(ToolbarItemContainer *item)
-{
-    m_Items.push_back(item);
+void ocpnFloatingToolbarDialog::AddToolItem(ToolbarItemContainer *item) {
+  m_Items.push_back(item);
 }
 
-int ocpnFloatingToolbarDialog::RebuildToolbar()
-{
-    ocpnToolBarSimple *tb = GetToolbar();
-    if( !tb )
-        return 0;
+int ocpnFloatingToolbarDialog::RebuildToolbar() {
+  ocpnToolBarSimple *tb = GetToolbar();
+  if (!tb) return 0;
 
-    // Iterate over the array of items added,
-    // Creating the toolbar from enabled items.
-    int i_count = 0;
-    for (auto it = m_Items.cbegin(); it != m_Items.cend(); it++){
+  // Iterate over the array of items added,
+  // Creating the toolbar from enabled items.
+  int i_count = 0;
+  for (auto it = m_Items.cbegin(); it != m_Items.cend(); it++) {
+    ToolbarItemContainer *tic = *it;
+    if (!tic) continue;
 
-        ToolbarItemContainer *tic = *it;
-        if(!tic)
-            continue;
+    bool bEnabled = _toolbarConfigMenuUtil(tic);
 
-        bool bEnabled = _toolbarConfigMenuUtil( tic );
+    if (bEnabled) {
+      wxToolBarToolBase *tool =
+          tb->AddTool(tic->m_ID, tic->m_label, tic->m_bmpNormal,
+                      tic->m_bmpDisabled, tic->m_toolKind, tic->m_tipString);
+      tic->m_tool = tool;
 
-        if(bEnabled){
-            wxToolBarToolBase *tool = tb->AddTool(tic->m_ID, tic->m_label, tic->m_bmpNormal, tic->m_bmpDisabled, tic->m_toolKind, tic->m_tipString);
-            tic->m_tool = tool;
-
-            //  Plugin tools may have prescribed their own SVG toolbars as file locations.
-            if(!tic->m_NormalIconSVG.IsEmpty()){
-                tb->SetToolBitmapsSVG( tic->m_ID, tic->m_NormalIconSVG,
-                                    tic->m_RolloverIconSVG,
-                                    tic->m_ToggledIconSVG );
-            }
-        }
-
-        i_count++;
+      //  Plugin tools may have prescribed their own SVG toolbars as file
+      //  locations.
+      if (!tic->m_NormalIconSVG.IsEmpty()) {
+        tb->SetToolBitmapsSVG(tic->m_ID, tic->m_NormalIconSVG,
+                              tic->m_RolloverIconSVG, tic->m_ToggledIconSVG);
+      }
     }
 
-    return i_count;
+    i_count++;
+  }
 
-
+  return i_count;
 }
 
-
-void ocpnFloatingToolbarDialog::SetULDockPosition(wxPoint position)
-{
-    if(position.x >= 0)
-        m_dock_min_x = position.x;
-    if(position.y >= 0)
-        m_dock_min_y = position.y;
+void ocpnFloatingToolbarDialog::SetULDockPosition(wxPoint position) {
+  if (position.x >= 0) m_dock_min_x = position.x;
+  if (position.y >= 0) m_dock_min_y = position.y;
 }
 
-size_t ocpnFloatingToolbarDialog::GetToolCount()
-{
-    if(m_ptoolbar)
-        return m_ptoolbar->GetToolsCount();
-    else
-        return 0;
+size_t ocpnFloatingToolbarDialog::GetToolCount() {
+  if (m_ptoolbar)
+    return m_ptoolbar->GetToolsCount();
+  else
+    return 0;
 }
 
-void ocpnFloatingToolbarDialog::SetToolShowMask( wxString mask )
-{
+void ocpnFloatingToolbarDialog::SetToolShowMask(wxString mask) {}
+
+void ocpnFloatingToolbarDialog::SetToolShowCount(int count) {
+  if (m_ptoolbar) m_ptoolbar->SetToolShowCount(count);
 }
 
-void ocpnFloatingToolbarDialog::SetToolShowCount( int count )
-{
-    if(m_ptoolbar)
-        m_ptoolbar->SetToolShowCount( count);
+int ocpnFloatingToolbarDialog::GetToolShowCount(void) {
+  if (m_ptoolbar)
+    return m_ptoolbar->GetToolShowCount();
+  else
+    return 0;
 }
 
-int ocpnFloatingToolbarDialog::GetToolShowCount( void )
-{
-    if(m_ptoolbar)
-        return m_ptoolbar->GetToolShowCount();
-    else
-        return 0;
+void ocpnFloatingToolbarDialog::SetBackGroundColorString(wxString colorRef) {
+  m_backcolorString = colorRef;
+  SetColorScheme(m_cs);  // Causes a reload of background color
 }
 
-void ocpnFloatingToolbarDialog::SetBackGroundColorString( wxString colorRef )
-{
-    m_backcolorString = colorRef;
-    SetColorScheme( m_cs );             //Causes a reload of background color
+void ocpnFloatingToolbarDialog::OnKeyDown(wxKeyEvent &event) { event.Skip(); }
+
+void ocpnFloatingToolbarDialog::OnKeyUp(wxKeyEvent &event) { event.Skip(); }
+
+void ocpnFloatingToolbarDialog::CreateConfigMenu() {
+  if (m_FloatingToolbarConfigMenu) delete m_FloatingToolbarConfigMenu;
+  m_FloatingToolbarConfigMenu = new wxMenu();
 }
 
-void ocpnFloatingToolbarDialog::OnKeyDown( wxKeyEvent &event )
-{
-    event.Skip();
-}
+bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil(
+    ToolbarItemContainer *tic) {
+  if (m_FloatingToolbarConfigMenu) {
+    wxMenuItem *menuitem;
 
-void ocpnFloatingToolbarDialog::OnKeyUp( wxKeyEvent &event )
-{
-    event.Skip();
-}
+    if (tic->m_ID == ID_MOB && g_bPermanentMOBIcon) return true;
 
-void ocpnFloatingToolbarDialog::CreateConfigMenu()
-{
-    if(m_FloatingToolbarConfigMenu)
-        delete m_FloatingToolbarConfigMenu;
-    m_FloatingToolbarConfigMenu = new wxMenu();
-}
+    if (tic->m_bRequired) return true;
+    if (tic->m_bPlugin) return true;
 
-bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( ToolbarItemContainer *tic )
-{
-    if(m_FloatingToolbarConfigMenu){
-        wxMenuItem* menuitem;
+    // Item ID trickery is needed because the wxCommandEvents for menu item
+    // clicked and toolbar button clicked are 100% identical, so if we use same
+    // id's we can't tell the events apart.
 
-        if( tic->m_ID == ID_MOB && g_bPermanentMOBIcon )
-            return true;
+    int idOffset = 100;  // Hopefully no more than 100 total icons...
+    int menuItemId = tic->m_ID + idOffset;
 
-        if( tic->m_bRequired )
-            return true;
-        if( tic->m_bPlugin )
-            return true;
+    menuitem = m_FloatingToolbarConfigMenu->FindItem(menuItemId);
 
-        // Item ID trickery is needed because the wxCommandEvents for menu item clicked and toolbar button
-        // clicked are 100% identical, so if we use same id's we can't tell the events apart.
-
-        int idOffset = 100;  // Hopefully no more than 100 total icons...
-        int menuItemId = tic->m_ID + idOffset;
-
-        menuitem = m_FloatingToolbarConfigMenu->FindItem( menuItemId );
-
-        if( menuitem ) {
-            return menuitem->IsChecked();
-        }
-
-        menuitem = m_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tic->m_tipString );
-        size_t n = m_FloatingToolbarConfigMenu->GetMenuItemCount();
-        menuitem->Check( m_configString.Len() >= n ? m_configString.GetChar( n-1 ) == _T('X') : true );
-        return menuitem->IsChecked();
+    if (menuitem) {
+      return menuitem->IsChecked();
     }
-    else
-        return true;
+
+    menuitem = m_FloatingToolbarConfigMenu->AppendCheckItem(menuItemId,
+                                                            tic->m_tipString);
+    size_t n = m_FloatingToolbarConfigMenu->GetMenuItemCount();
+    menuitem->Check(m_configString.Len() >= n
+                        ? m_configString.GetChar(n - 1) == _T('X')
+                        : true);
+    return menuitem->IsChecked();
+  } else
+    return true;
 }
 
-
-void ocpnFloatingToolbarDialog::OnWindowCreate( wxWindowCreateEvent& event )
-{
-    // At least on MSW, this call leads to recursion and stack overflow.
-    //  Probably not needed any longer
-    //Realize();
+void ocpnFloatingToolbarDialog::OnWindowCreate(wxWindowCreateEvent &event) {
+  // At least on MSW, this call leads to recursion and stack overflow.
+  //  Probably not needed any longer
+  // Realize();
 }
 
-void ocpnFloatingToolbarDialog::SetGrabber( wxString icon_name )
-{
-//    m_pGrabberwin->Destroy();
-    m_pGrabberwin = new GrabberWin( this, this, m_sizefactor, icon_name );
-    m_pGrabberwin->Hide();
+void ocpnFloatingToolbarDialog::SetGrabber(wxString icon_name) {
+  //    m_pGrabberwin->Destroy();
+  m_pGrabberwin = new GrabberWin(this, this, m_sizefactor, icon_name);
+  m_pGrabberwin->Hide();
 
-    Realize();
+  Realize();
 
 #ifdef __WXOSX__
-    m_pGrabberwin->Refresh();
+  m_pGrabberwin->Refresh();
 #endif
-
 }
 
-
-void ocpnFloatingToolbarDialog::UpdateRecoveryWindow(bool b_toolbarEnable)
-{
-    if(m_pRecoverwin ){
-        if(b_toolbarEnable){
-            m_pRecoverwin->Raise();
-            m_pRecoverwin->Refresh( false );
-        }
-        else
-            m_pRecoverwin->Hide();
-    }
- }
-
-void ocpnFloatingToolbarDialog::EnableTool( int toolid, bool enable )
-{
-    if(m_ptoolbar)
-        m_ptoolbar->EnableTool( toolid, enable);
+void ocpnFloatingToolbarDialog::UpdateRecoveryWindow(bool b_toolbarEnable) {
+  if (m_pRecoverwin) {
+    if (b_toolbarEnable) {
+      m_pRecoverwin->Raise();
+      m_pRecoverwin->Refresh(false);
+    } else
+      m_pRecoverwin->Hide();
+  }
 }
 
+void ocpnFloatingToolbarDialog::EnableTool(int toolid, bool enable) {
+  if (m_ptoolbar) m_ptoolbar->EnableTool(toolid, enable);
+}
 
-void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
-{
-    m_cs = cs;
+void ocpnFloatingToolbarDialog::SetColorScheme(ColorScheme cs) {
+  m_cs = cs;
 
-    wxColour back_color = GetGlobalColor( m_backcolorString );
+  wxColour back_color = GetGlobalColor(m_backcolorString);
 
+  //  Set background
+  SetBackgroundColour(back_color);
+  ClearBackground();
+
+  if (m_ptoolbar) {
     //  Set background
-    SetBackgroundColour( back_color );
-    ClearBackground();
+    m_ptoolbar->SetBackgroundColour(back_color);
+    m_ptoolbar->ClearBackground();
 
-    if( m_ptoolbar ) {
-        //  Set background
-        m_ptoolbar->SetBackgroundColour( back_color );
-        m_ptoolbar->ClearBackground();
+    m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
 
-        m_ptoolbar->SetToggledBackgroundColour( GetGlobalColor( _T("GREY1") ) );
+    m_ptoolbar->SetColorScheme(cs);
+    m_ptoolbar->Refresh(true);
+  }
 
-        m_ptoolbar->SetColorScheme( cs );
-        m_ptoolbar->Refresh( true );
-    }
+  if (m_pGrabberwin) {
+    m_pGrabberwin->SetColorScheme(cs);
+    m_pGrabberwin->Refresh();
+  }
 
-    if( m_pGrabberwin ){
-        m_pGrabberwin->SetColorScheme( cs );
-        m_pGrabberwin->Refresh();
-    }
-
-    Refresh(true);
-
+  Refresh(true);
 }
 
-wxSize ocpnFloatingToolbarDialog::GetToolSize()
-{
-    wxSize style_tool_size;
-    if( m_ptoolbar ) {
-        style_tool_size = m_style->GetToolSize();
+wxSize ocpnFloatingToolbarDialog::GetToolSize() {
+  wxSize style_tool_size;
+  if (m_ptoolbar) {
+    style_tool_size = m_style->GetToolSize();
 
-        style_tool_size.x *= m_sizefactor;
-        style_tool_size.y *= m_sizefactor;
-    }
-    else{
-        style_tool_size.x  = 32;
-        style_tool_size.y  = 32;
-    }
+    style_tool_size.x *= m_sizefactor;
+    style_tool_size.y *= m_sizefactor;
+  } else {
+    style_tool_size.x = 32;
+    style_tool_size.y = 32;
+  }
 
-    return style_tool_size;
+  return style_tool_size;
 }
 
-void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
-{
+void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid) {
+  if (m_ptoolbar) {
+    wxSize style_tool_size = m_style->GetToolSize();
 
-    if( m_ptoolbar ) {
-        wxSize style_tool_size = m_style->GetToolSize();
+    style_tool_size.x *= m_sizefactor;
+    style_tool_size.y *= m_sizefactor;
 
-        style_tool_size.x *= m_sizefactor;
-        style_tool_size.y *= m_sizefactor;
+    m_ptoolbar->SetToolBitmapSize(style_tool_size);
 
-        m_ptoolbar->SetToolBitmapSize( style_tool_size );
+    wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
+    int grabber_width = m_style->GetIcon(_T("grabber")).GetWidth();
 
-        wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
-        int grabber_width =  m_style->GetIcon( _T("grabber") ).GetWidth();
+    int max_rows = 10;
+    int max_cols = 100;
 
-        int max_rows = 10;
-        int max_cols = 100;
+    if (GetParent()) {
+      int avoid_start =
+          GetParent()->GetClientSize().x -
+          (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
+      if (bAvoid && !rectAvoid.IsEmpty()) {
+        avoid_start = GetParent()->GetClientSize().x - rectAvoid.width -
+                      10;  // this is compass window, if shown
+      }
 
-        if(GetParent())
-        {
+      max_rows = (GetParent()->GetClientSize().y /
+                  (tool_size.y + m_style->GetToolSeparation())) -
+                 2;
 
-            int avoid_start = GetParent()->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
-            if(bAvoid && !rectAvoid.IsEmpty()){
-                avoid_start = GetParent()->GetClientSize().x - rectAvoid.width - 10;  // this is compass window, if shown
-            }
+      max_cols = (avoid_start - grabber_width) /
+                 (tool_size.x + m_style->GetToolSeparation());
+      max_cols -= 1;
 
-
-            max_rows = (GetParent()->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 2;
-
-            max_cols = (avoid_start - grabber_width) / ( tool_size.x + m_style->GetToolSeparation());
-            max_cols -= 1;
-
-            if(m_orient == wxTB_VERTICAL)
-                max_rows = wxMax( max_rows, 2);             // at least two rows
-            else
-                max_cols = wxMax( max_cols, 2);             // at least two columns
-        }
-
-        if( m_orient == wxTB_VERTICAL )
-            m_ptoolbar->SetMaxRowsCols(max_rows, 100);
-        else
-            m_ptoolbar->SetMaxRowsCols( 100, max_cols);
-        m_ptoolbar->SetSizeFactor(m_sizefactor);
-
-    }
- }
-
-void ocpnFloatingToolbarDialog::GetFrameRelativePosition( int* x, int *y)
-{
-    wxPoint parentFramePos = m_pparent->GetPosition();
-    int myPosx, myPosy;
-    GetPosition(&myPosx, &myPosy);
-
-    if(x)
-        *x = myPosx - parentFramePos.x;
-    if(y)
-        *y = myPosy - parentFramePos.y;
-}
-
-void ocpnFloatingToolbarDialog::RestoreRelativePosition( int x, int y )
-{
-    if( (x < 0) || (y < 0) ){
-        SetDefaultPosition();
-        return;
+      if (m_orient == wxTB_VERTICAL)
+        max_rows = wxMax(max_rows, 2);  // at least two rows
+      else
+        max_cols = wxMax(max_cols, 2);  // at least two columns
     }
 
-    wxPoint parentFramePos = m_pparent->GetPosition();
-    wxPoint screenPos = wxPoint(parentFramePos.x + x, parentFramePos.y + y);
-    Move(wxPoint(screenPos));
+    if (m_orient == wxTB_VERTICAL)
+      m_ptoolbar->SetMaxRowsCols(max_rows, 100);
+    else
+      m_ptoolbar->SetMaxRowsCols(100, max_cols);
+    m_ptoolbar->SetSizeFactor(m_sizefactor);
+  }
 }
 
+void ocpnFloatingToolbarDialog::GetFrameRelativePosition(int *x, int *y) {
+  wxPoint parentFramePos = m_pparent->GetPosition();
+  int myPosx, myPosy;
+  GetPosition(&myPosx, &myPosy);
 
-void ocpnFloatingToolbarDialog::SetDefaultPosition()
-{
-    if(m_block) return;
+  if (x) *x = myPosx - parentFramePos.x;
+  if (y) *y = myPosy - parentFramePos.y;
+}
 
-    if( m_pparent && m_ptoolbar ) {
-        wxSize cs = m_pparent->GetClientSize();
-        if( -1 == m_dock_x )
-            m_position.x = m_dock_min_x;
-        else
-            if( 1 == m_dock_x ) m_position.x = cs.x - GetSize().x;
+void ocpnFloatingToolbarDialog::RestoreRelativePosition(int x, int y) {
+  if ((x < 0) || (y < 0)) {
+    SetDefaultPosition();
+    return;
+  }
 
-        if( -1 == m_dock_y )
-            m_position.y = m_dock_min_y;
-        else
-            if( 1 == m_dock_y ) m_position.y = cs.y - GetSize().y;
+  wxPoint parentFramePos = m_pparent->GetPosition();
+  wxPoint screenPos = wxPoint(parentFramePos.x + x, parentFramePos.y + y);
+  Move(wxPoint(screenPos));
+}
 
-        m_position.x = wxMin(cs.x - GetSize().x, m_position.x);
-        m_position.y = wxMin(cs.y - GetSize().y, m_position.y);
+void ocpnFloatingToolbarDialog::SetDefaultPosition() {
+  if (m_block) return;
 
-        m_position.x = wxMax(m_dock_min_x, m_position.x);
-        m_position.y = wxMax(m_dock_min_y, m_position.y);
+  if (m_pparent && m_ptoolbar) {
+    wxSize cs = m_pparent->GetClientSize();
+    if (-1 == m_dock_x)
+      m_position.x = m_dock_min_x;
+    else if (1 == m_dock_x)
+      m_position.x = cs.x - GetSize().x;
 
-        m_position.y += m_auxOffsetY;
+    if (-1 == m_dock_y)
+      m_position.y = m_dock_min_y;
+    else if (1 == m_dock_y)
+      m_position.y = cs.y - GetSize().y;
 
-        g_maintoolbar_x = m_position.x;
-        g_maintoolbar_y = m_position.y;
+    m_position.x = wxMin(cs.x - GetSize().x, m_position.x);
+    m_position.y = wxMin(cs.y - GetSize().y, m_position.y);
 
-        // take care of left docked instrument windows and don't blast the main toolbar on top of them, hinding instruments
-        // this positions the main toolbar directly right of the left docked instruments onto the chart
-        //        wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
-        wxPoint screen_pos = gFrame->GetPrimaryCanvas()->ClientToScreen(m_position);
+    m_position.x = wxMax(m_dock_min_x, m_position.x);
+    m_position.y = wxMax(m_dock_min_y, m_position.y);
 
-          //  GTK sometimes has trouble with ClientToScreen() if executed in the context of an event handler
-          //  The position of the window is calculated incorrectly if a deferred Move() has not been processed yet.
-          //  So work around this here...
-          //  Discovered with a Dashboard window left-docked, toggled on and off by toolbar tool.
+    m_position.y += m_auxOffsetY;
 
-          //  But this causes another problem. If a toolbar is NOT left docked, it will walk left by two pixels on each
-          //  call to Reposition().
-          //TODO
+    g_maintoolbar_x = m_position.x;
+    g_maintoolbar_y = m_position.y;
+
+    // take care of left docked instrument windows and don't blast the main
+    // toolbar on top of them, hinding instruments this positions the main
+    // toolbar directly right of the left docked instruments onto the chart
+    //        wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
+    wxPoint screen_pos = gFrame->GetPrimaryCanvas()->ClientToScreen(m_position);
+
+    //  GTK sometimes has trouble with ClientToScreen() if executed in the
+    //  context of an event handler The position of the window is calculated
+    //  incorrectly if a deferred Move() has not been processed yet. So work
+    //  around this here... Discovered with a Dashboard window left-docked,
+    //  toggled on and off by toolbar tool.
+
+    //  But this causes another problem. If a toolbar is NOT left docked, it
+    //  will walk left by two pixels on each call to Reposition().
+    // TODO
 #ifdef __WXGTK__
-          if (m_pparent->GetParent()) {
-            wxPoint pp = m_pparent->GetPosition();
-            wxPoint ppg = m_pparent->GetParent()->GetScreenPosition();
-            wxPoint screen_pos_fix = ppg + pp + m_position;
-            screen_pos.x = screen_pos_fix.x;
-          }
+    if (m_pparent->GetParent()) {
+      wxPoint pp = m_pparent->GetPosition();
+      wxPoint ppg = m_pparent->GetParent()->GetScreenPosition();
+      wxPoint screen_pos_fix = ppg + pp + m_position;
+      screen_pos.x = screen_pos_fix.x;
+    }
 #endif
 
-          Move(screen_pos);
+    Move(screen_pos);
 
 #ifdef __WXQT__
-        Raise();
-#endif
-
-    }
-}
-
-void ocpnFloatingToolbarDialog::Submerge()
-{
-    m_bsubmerged = true;
-    Hide();
-    if( m_ptoolbar ) m_ptoolbar->KillTooltip();
-}
-
-void ocpnFloatingToolbarDialog::SubmergeToGrabber()
-{
-    if(!m_benableSubmerge)
-        return;
-
-//Submerge();
-    m_bsubmerged = true;
-    m_bsubmergedToGrabber = true;
-    Hide();
-    if( m_ptoolbar ) m_ptoolbar->KillTooltip();
-
-    if(!m_pRecoverwin){
-        wxPoint tbPoint = GetPosition();
-        wxPoint tbPosInCanvas = m_pparent->ScreenToClient(tbPoint);
-        //tbPosInCanvas.y += 2;           // prettify
-        m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), tbPosInCanvas );
-    }
-
-    m_pRecoverwin->Show();
-    m_pRecoverwin->Raise();
-#ifdef __WXQT__
-    wxSize s = gFrame->GetSize();
-    m_recoversize = s;
-    s.y--;
-    //gFrame->TriggerResize(s);
     Raise();
 #endif
-
-    gFrame->Refresh();          // Needed for MSW OpenGL
+  }
 }
 
-void ocpnFloatingToolbarDialog::Surface()
-{
-
-    if(m_pRecoverwin){
-        //SurfaceFromGrabber();
-        m_pRecoverwin->Show();
-        m_pRecoverwin->Raise();
-    }
-    else {
-        m_bsubmerged = false;
-        #ifdef __WXMSW__
-        Hide();
-        Move( 0, 0 );
-        #endif
-
-        RestoreRelativePosition( g_maintoolbar_x, g_maintoolbar_y );
-        Show();
-        if( m_ptoolbar )
-            m_ptoolbar->EnableTooltips();
-
-        #ifdef __WXQT__
-        Raise();
-        #endif
-    }
-
-    if( m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) ){
-        m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
-    }
+void ocpnFloatingToolbarDialog::Submerge() {
+  m_bsubmerged = true;
+  Hide();
+  if (m_ptoolbar) m_ptoolbar->KillTooltip();
 }
 
-bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
-{
-    return false;
+void ocpnFloatingToolbarDialog::SubmergeToGrabber() {
+  if (!m_benableSubmerge) return;
+
+  // Submerge();
+  m_bsubmerged = true;
+  m_bsubmergedToGrabber = true;
+  Hide();
+  if (m_ptoolbar) m_ptoolbar->KillTooltip();
+
+  if (!m_pRecoverwin) {
+    wxPoint tbPoint = GetPosition();
+    wxPoint tbPosInCanvas = m_pparent->ScreenToClient(tbPoint);
+    // tbPosInCanvas.y += 2;           // prettify
+    m_pRecoverwin = new GrabberWin(m_pparent, this, m_sizefactor,
+                                   _T("grabber_ext" ), tbPosInCanvas);
+  }
+
+  m_pRecoverwin->Show();
+  m_pRecoverwin->Raise();
+#ifdef __WXQT__
+  wxSize s = gFrame->GetSize();
+  m_recoversize = s;
+  s.y--;
+  // gFrame->TriggerResize(s);
+  Raise();
+#endif
+
+  gFrame->Refresh();  // Needed for MSW OpenGL
 }
 
-void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
-{
+void ocpnFloatingToolbarDialog::Surface() {
+  if (m_pRecoverwin) {
+    // SurfaceFromGrabber();
+    m_pRecoverwin->Show();
+    m_pRecoverwin->Raise();
+  } else {
+    m_bsubmerged = false;
+#ifdef __WXMSW__
+    Hide();
+    Move(0, 0);
+#endif
+
+    RestoreRelativePosition(g_maintoolbar_x, g_maintoolbar_y);
+    Show();
+    if (m_ptoolbar) m_ptoolbar->EnableTooltips();
+
+#ifdef __WXQT__
+    Raise();
+#endif
+  }
+
+  if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0)) {
+    m_fade_timer.Start(m_nAutoHideToolbar * 1000);
+  }
 }
 
-void ocpnFloatingToolbarDialog::DestroyTimerEvent( wxTimerEvent& event )
-{
-    delete m_destroyGrabber;
-    m_destroyGrabber = NULL;
-
+bool ocpnFloatingToolbarDialog::CheckSurfaceRequest(wxMouseEvent &event) {
+  return false;
 }
 
-bool ocpnFloatingToolbarDialog::isSubmergedToGrabber()
-{
-    return (m_bsubmergedToGrabber);
+void ocpnFloatingToolbarDialog::SurfaceFromGrabber() {}
+
+void ocpnFloatingToolbarDialog::DestroyTimerEvent(wxTimerEvent &event) {
+  delete m_destroyGrabber;
+  m_destroyGrabber = NULL;
 }
 
-void ocpnFloatingToolbarDialog::HideTooltip()
-{
+bool ocpnFloatingToolbarDialog::isSubmergedToGrabber() {
+  return (m_bsubmergedToGrabber);
+}
+
+void ocpnFloatingToolbarDialog::HideTooltip() {
 #ifndef __OCPN__ANDROID__
-    if( m_ptoolbar ) m_ptoolbar->HideTooltip();
+  if (m_ptoolbar) m_ptoolbar->HideTooltip();
 #endif
 }
 
-void ocpnFloatingToolbarDialog::ShowTooltips()
-{
+void ocpnFloatingToolbarDialog::ShowTooltips() {
 #ifndef __OCPN__ANDROID__
-    if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
+  if (m_ptoolbar) m_ptoolbar->EnableTooltips();
 #endif
 }
 
-void ocpnFloatingToolbarDialog::ToggleOrientation()
-{
-}
+void ocpnFloatingToolbarDialog::ToggleOrientation() {}
 
-void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
-{
-    if( g_bTransparentToolbar ) {
-        if( event.Entering() && ( m_opacity < 255 ) ) {
-            SetTransparent( 255 );
-            m_opacity = 255;
-        }
-
-        m_fade_timer.Start( 5000 );           // retrigger the continuous timer
+void ocpnFloatingToolbarDialog::MouseEvent(wxMouseEvent &event) {
+  if (g_bTransparentToolbar) {
+    if (event.Entering() && (m_opacity < 255)) {
+      SetTransparent(255);
+      m_opacity = 255;
     }
 
-    if(m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) ){
-        m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
+    m_fade_timer.Start(5000);  // retrigger the continuous timer
+  }
+
+  if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0)) {
+    m_fade_timer.Start(m_nAutoHideToolbar * 1000);
+  }
+
+  event.Skip();
+}
+
+void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent &event) {
+  if (n_toolbarHideMethod == TOOLBAR_HIDE_TO_FIRST_TOOL) {
+    if (g_bmasterToolbarFull) {
+      if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged) {
+        wxCommandEvent event;
+        event.SetId(ID_MASTERTOGGLE);
+        gFrame->OnToolLeftClick(event);
+      }
     }
+  } else {
+    if (m_bnavgrabber) {
+      m_fade_timer.Start(5000);  // do nothing if nav grabber is shown
+    } else {
+      if (g_bTransparentToolbar &&
+          (!g_bopengl || g_bTransparentToolbarInOpenGLOK)) {
+        DoFade(128);
+        m_fade_timer.Start(5000);  // retrigger the continuous timer
+      }
 
-    event.Skip();
-}
-
-void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
-{
-    if(n_toolbarHideMethod == TOOLBAR_HIDE_TO_FIRST_TOOL){
-        if(g_bmasterToolbarFull){
-            if(m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged){
-                wxCommandEvent event;
-                event.SetId(ID_MASTERTOGGLE);
-                gFrame->OnToolLeftClick(event);
-            }
-        }
+      if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged) {
+        SubmergeToGrabber();
+      }
     }
-    else{
-
-        if(m_bnavgrabber){
-            m_fade_timer.Start( 5000 );           // do nothing if nav grabber is shown
-        }
-        else{
-            if( g_bTransparentToolbar && (!g_bopengl || g_bTransparentToolbarInOpenGLOK) ){
-                DoFade( 128 );
-                m_fade_timer.Start( 5000 );           // retrigger the continuous timer
-            }
-
-            if( m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged){
-               SubmergeToGrabber();
-            }
-        }
-    }
+  }
 }
 
-void ocpnFloatingToolbarDialog::SetAutoHideTimer(int time)
-{
-    m_nAutoHideToolbar = time;
-    if(m_bAutoHideToolbar){
-        m_fade_timer.Stop();
-        m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
-    }
+void ocpnFloatingToolbarDialog::SetAutoHideTimer(int time) {
+  m_nAutoHideToolbar = time;
+  if (m_bAutoHideToolbar) {
+    m_fade_timer.Stop();
+    m_fade_timer.Start(m_nAutoHideToolbar * 1000);
+  }
 }
 
-void ocpnFloatingToolbarDialog::DoFade( int value )
-{
-    if( value != m_opacity ) SetTransparent( value );
-    m_opacity = value;
+void ocpnFloatingToolbarDialog::DoFade(int value) {
+  if (value != m_opacity) SetTransparent(value);
+  m_opacity = value;
 }
 
-void ocpnFloatingToolbarDialog::RefreshFadeTimer()
-{
-    SetTransparent( 255 );
-    m_opacity = 255;
-    m_fade_timer.Start( 500 );           // retrigger the continuous timer
+void ocpnFloatingToolbarDialog::RefreshFadeTimer() {
+  SetTransparent(255);
+  m_opacity = 255;
+  m_fade_timer.Start(500);  // retrigger the continuous timer
 
-    if(m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) ){
-        m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
-    }
-
+  if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0)) {
+    m_fade_timer.Start(m_nAutoHideToolbar * 1000);
+  }
 }
 
-void ocpnFloatingToolbarDialog::SetToolShortHelp( int id, const wxString& help )
-{
-    if(m_ptoolbar)
-        m_ptoolbar->SetToolShortHelp( id, help);
+void ocpnFloatingToolbarDialog::SetToolShortHelp(int id, const wxString &help) {
+  if (m_ptoolbar) m_ptoolbar->SetToolShortHelp(id, help);
 }
 
+void ocpnFloatingToolbarDialog::MoveDialogInScreenCoords(wxPoint posn,
+                                                         wxPoint posn_old) {
+  wxPoint pos_in_parent = m_pparent->ScreenToClient(posn);
+  wxPoint pos_in_parent_old = m_pparent->ScreenToClient(posn_old);
 
-void ocpnFloatingToolbarDialog::MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old )
-{
-    wxPoint pos_in_parent = m_pparent->ScreenToClient( posn );
-    wxPoint pos_in_parent_old = m_pparent->ScreenToClient( posn_old );
-
-    //    "Docking" support
+  //    "Docking" support
 #define DOCK_MARGIN 40
 
-    // X
-    m_dock_x = 0;
-    if( pos_in_parent.x < pos_in_parent_old.x )            // moving left
-            {
-        if( pos_in_parent.x < DOCK_MARGIN ) {
-            pos_in_parent.x = m_dock_min_x;               // but dock position may be offset
-            m_dock_x = -1;
-        }
-    } else
-        if( pos_in_parent.x > pos_in_parent_old.x )            // moving right
-                {
-            int max_right = m_pparent->GetClientSize().x - GetSize().x;
-            if( pos_in_parent.x > ( max_right - DOCK_MARGIN ) ) {
-                pos_in_parent.x = max_right;
-                m_dock_x = 1;
-            }
-        }
+  // X
+  m_dock_x = 0;
+  if (pos_in_parent.x < pos_in_parent_old.x)  // moving left
+  {
+    if (pos_in_parent.x < DOCK_MARGIN) {
+      pos_in_parent.x = m_dock_min_x;  // but dock position may be offset
+      m_dock_x = -1;
+    }
+  } else if (pos_in_parent.x > pos_in_parent_old.x)  // moving right
+  {
+    int max_right = m_pparent->GetClientSize().x - GetSize().x;
+    if (pos_in_parent.x > (max_right - DOCK_MARGIN)) {
+      pos_in_parent.x = max_right;
+      m_dock_x = 1;
+    }
+  }
 
-    // Y
-    m_dock_y = 0;
-    if( pos_in_parent.y < pos_in_parent_old.y )            // moving up
-            {
-        if( pos_in_parent.y < DOCK_MARGIN ) {
-            pos_in_parent.y = 0;
-            m_dock_y = -1;
-        }
-    } else
-        if( pos_in_parent.y > pos_in_parent_old.y )            // moving down
-                {
-            int max_down = m_pparent->GetClientSize().y - GetSize().y;
-            if( pos_in_parent.y > ( max_down - DOCK_MARGIN ) ) {
-                pos_in_parent.y = max_down;
-                m_dock_y = 1;
-            }
-        }
+  // Y
+  m_dock_y = 0;
+  if (pos_in_parent.y < pos_in_parent_old.y)  // moving up
+  {
+    if (pos_in_parent.y < DOCK_MARGIN) {
+      pos_in_parent.y = 0;
+      m_dock_y = -1;
+    }
+  } else if (pos_in_parent.y > pos_in_parent_old.y)  // moving down
+  {
+    int max_down = m_pparent->GetClientSize().y - GetSize().y;
+    if (pos_in_parent.y > (max_down - DOCK_MARGIN)) {
+      pos_in_parent.y = max_down;
+      m_dock_y = 1;
+    }
+  }
 
-    m_position = pos_in_parent;
+  m_position = pos_in_parent;
 
-    wxPoint final_pos = m_pparent->ClientToScreen( pos_in_parent );
+  wxPoint final_pos = m_pparent->ClientToScreen(pos_in_parent);
 
-    Move( final_pos );
+  Move(final_pos);
 }
 
-void ocpnFloatingToolbarDialog::Realize()
-{
-    if( m_ptoolbar ) {
-        m_ptoolbar->Realize();
+void ocpnFloatingToolbarDialog::Realize() {
+  if (m_ptoolbar) {
+    m_ptoolbar->Realize();
 
-        m_topSizer->Clear();
-        m_topSizer->Add( m_ptoolbar );
+    m_topSizer->Clear();
+    m_topSizer->Add(m_ptoolbar);
 
-        if(m_bGrabberEnable){
-            if(!m_pGrabberwin){
-                m_pGrabberwin = new GrabberWin( this, this, m_sizefactor, _T("grabber_hi") );
-                m_pGrabberwin->Hide();
-            }
+    if (m_bGrabberEnable) {
+      if (!m_pGrabberwin) {
+        m_pGrabberwin =
+            new GrabberWin(this, this, m_sizefactor, _T("grabber_hi"));
+        m_pGrabberwin->Hide();
+      }
 
-            m_pGrabberwin->Show();
-            m_topSizer->Add( m_pGrabberwin, 0, wxTOP, m_style->GetTopMargin() );
+      m_pGrabberwin->Show();
+      m_topSizer->Add(m_pGrabberwin, 0, wxTOP, m_style->GetTopMargin());
+    }
+
+    m_topSizer->Layout();
+    Fit();
+
+    //    Update "Dock" parameters
+    if (m_position.x == 0)
+      m_dock_x = -1;
+    else if (m_position.x == m_pparent->GetClientSize().x - GetSize().x)
+      m_dock_x = 1;
+
+    if (m_position.y == 0)
+      m_dock_y = -1;
+    else if (m_position.y == m_pparent->GetClientSize().y - GetSize().y)
+      m_dock_y = 1;
+
+    // Now create a bitmap mask forthe frame shape.
+
+    if (m_marginsInvisible) {
+      wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
+
+      //  Determine whether the tool icons are meant (by style) to join without
+      //  speces between This will determine what type of region to draw.
+      bool b_overlap = false;
+
+      wxToolBarToolsList::compatibility_iterator node1 =
+          m_ptoolbar->m_tools.GetFirst();
+      if (node1) {
+        wxToolBarToolsList::compatibility_iterator node2 = node1->GetNext();
+        if (node2) {
+          wxToolBarToolBase *tool1 = node1->GetData();
+          ocpnToolBarTool *tools1 = (ocpnToolBarTool *)tool1;
+
+          wxToolBarToolBase *tool2 = node2->GetData();
+          ocpnToolBarTool *tools2 = (ocpnToolBarTool *)tool2;
+
+          if ((tools1->m_x + tools1->m_width) >= tools2->m_x) b_overlap = true;
         }
+      }
 
-        m_topSizer->Layout();
-        Fit();
+      int toolCount = m_ptoolbar->GetVisibleToolCount();
 
-        //    Update "Dock" parameters
-        if( m_position.x == 0 ) m_dock_x = -1;
-        else
-            if( m_position.x == m_pparent->GetClientSize().x - GetSize().x ) m_dock_x = 1;
+      wxPoint upperLeft(m_style->GetLeftMargin(), m_style->GetTopMargin());
+      wxSize visibleSize;
+      if (m_ptoolbar->IsVertical()) {
+        int noTools = m_ptoolbar->GetMaxRows();
+        if (noTools > toolCount) noTools = toolCount;
+        visibleSize.x = m_ptoolbar->GetLineCount() *
+                        (tool_size.x + m_style->GetTopMargin());
+        visibleSize.y = noTools * (tool_size.y + m_style->GetToolSeparation());
+        visibleSize.x -= m_style->GetTopMargin();
+        visibleSize.y -= m_style->GetToolSeparation();
+      } else {
+        int noTools = m_ptoolbar->GetMaxCols();
+        if (noTools > toolCount) noTools = toolCount;
+        visibleSize.x = noTools * (tool_size.x + m_style->GetToolSeparation());
+        visibleSize.y = m_ptoolbar->GetLineCount() *
+                        (tool_size.y + m_style->GetTopMargin());
+        visibleSize.x -= m_style->GetToolSeparation();
+        visibleSize.y -= m_style->GetTopMargin();
+      }
 
-        if( m_position.y == 0 ) m_dock_y = -1;
-        else
-            if( m_position.y == m_pparent->GetClientSize().y - GetSize().y ) m_dock_y = 1;
+      wxBitmap shape(visibleSize.x + tool_size.x,
+                     visibleSize.y + tool_size.y);  // + fluff
+      wxMemoryDC sdc(shape);
+      sdc.SetBackground(*wxWHITE_BRUSH);
+      sdc.SetBrush(*wxBLACK_BRUSH);
+      sdc.SetPen(*wxBLACK_PEN);
+      sdc.Clear();
 
-        // Now create a bitmap mask forthe frame shape.
+      if (b_overlap) {
+        int lines = m_ptoolbar->GetLineCount();
+        for (int i = 1; i <= lines; i++) {
+          if (m_ptoolbar->IsVertical()) {
+            wxSize barsize(tool_size.x, visibleSize.y);
+            if (i == lines && i > 1) {
+              int toolsInLastLine = toolCount % m_ptoolbar->GetMaxRows();
+              if (toolsInLastLine == 0)
+                toolsInLastLine = m_ptoolbar->GetMaxRows();
+              int emptySpace = (m_ptoolbar->GetMaxRows() - toolsInLastLine);
+              barsize.y -=
+                  emptySpace * (tool_size.y + m_style->GetToolSeparation());
+            }
+            if (i == lines) {
+              // Also do grabber here, since it is to the right of the last
+              // line.
+              wxRect grabMask(upperLeft, barsize);
+              grabMask.width += m_style->GetIcon(_T("grabber")).GetWidth();
+              grabMask.height = m_style->GetIcon(_T("grabber")).GetHeight();
+              sdc.DrawRoundedRectangle(grabMask,
+                                       m_style->GetToolbarCornerRadius());
+            }
+            sdc.DrawRoundedRectangle(upperLeft, barsize,
+                                     m_style->GetToolbarCornerRadius());
+            upperLeft.x += m_style->GetTopMargin() + tool_size.x;
+          } else {
+            wxSize barsize(visibleSize.x, tool_size.y);
 
-        if( m_marginsInvisible ) {
-
-            wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
-
-            //  Determine whether the tool icons are meant (by style) to join without speces between
-            //  This will determine what type of region to draw.
-            bool b_overlap = false;
-
-            wxToolBarToolsList::compatibility_iterator node1 = m_ptoolbar->m_tools.GetFirst();
-            if( node1 ){
-                wxToolBarToolsList::compatibility_iterator node2 = node1->GetNext() ;
-                if( node2 ){
-                    wxToolBarToolBase *tool1 = node1->GetData();
-                    ocpnToolBarTool *tools1 = (ocpnToolBarTool *) tool1;
-
-                    wxToolBarToolBase *tool2 = node2->GetData();
-                    ocpnToolBarTool *tools2 = (ocpnToolBarTool *) tool2;
-
-                    if( (tools1->m_x + tools1->m_width) >= tools2->m_x)
-                        b_overlap = true;
-                }
+            if (i == 1) {
+              barsize.x += m_style->GetIcon(_T("grabber")).GetWidth();
+            }
+            if (i == lines && i > 1) {
+              int toolsInLastLine = toolCount % m_ptoolbar->GetMaxCols();
+              if (toolsInLastLine == 0)
+                toolsInLastLine = m_ptoolbar->GetMaxCols();
+              int emptySpace = (m_ptoolbar->GetMaxCols() - toolsInLastLine);
+              barsize.x -=
+                  emptySpace * (tool_size.x + m_style->GetToolSeparation());
             }
 
+            sdc.DrawRoundedRectangle(upperLeft, barsize,
+                                     m_style->GetToolbarCornerRadius());
+            upperLeft.y += m_style->GetTopMargin() + tool_size.y;
+          }
+        }
+      }  // b_overlap
+      else {
+        for (wxToolBarToolsList::compatibility_iterator node =
+                 m_ptoolbar->m_tools.GetFirst();
+             node; node = node->GetNext()) {
+          wxToolBarToolBase *tool = node->GetData();
+          ocpnToolBarTool *tools = (ocpnToolBarTool *)tool;
 
-            int toolCount = m_ptoolbar->GetVisibleToolCount();
-
-            wxPoint upperLeft( m_style->GetLeftMargin(), m_style->GetTopMargin() );
-            wxSize visibleSize;
-            if( m_ptoolbar->IsVertical() ) {
-                int noTools = m_ptoolbar->GetMaxRows();
-                if( noTools > toolCount )
-                    noTools = toolCount;
-                visibleSize.x = m_ptoolbar->GetLineCount() * ( tool_size.x + m_style->GetTopMargin() );
-                visibleSize.y = noTools * ( tool_size.y + m_style->GetToolSeparation() );
-                visibleSize.x -= m_style->GetTopMargin();
-                visibleSize.y -= m_style->GetToolSeparation();
-            } else {
-                    int noTools = m_ptoolbar->GetMaxCols();
-                    if( noTools > toolCount )
-                        noTools = toolCount;
-                visibleSize.x = noTools * ( tool_size.x + m_style->GetToolSeparation() );
-                visibleSize.y = m_ptoolbar->GetLineCount() * ( tool_size.y + m_style->GetTopMargin() );
-                visibleSize.x -= m_style->GetToolSeparation();
-                visibleSize.y -= m_style->GetTopMargin();
-            }
-
-            wxBitmap shape( visibleSize.x + tool_size.x, visibleSize.y + tool_size.y);          // + fluff
-            wxMemoryDC sdc( shape );
-            sdc.SetBackground( *wxWHITE_BRUSH );
-            sdc.SetBrush( *wxBLACK_BRUSH );
-            sdc.SetPen( *wxBLACK_PEN );
-            sdc.Clear();
-
-            if(b_overlap) {
-                int lines = m_ptoolbar->GetLineCount();
-                for( int i = 1; i <= lines; i++ ) {
-                    if( m_ptoolbar->IsVertical() ) {
-                        wxSize barsize( tool_size.x, visibleSize.y );
-                        if( i == lines && i > 1 ) {
-                            int toolsInLastLine = toolCount % m_ptoolbar->GetMaxRows();
-                            if( toolsInLastLine == 0 ) toolsInLastLine = m_ptoolbar->GetMaxRows();
-                            int emptySpace = ( m_ptoolbar->GetMaxRows() - toolsInLastLine );
-                            barsize.y -= emptySpace
-                            * ( tool_size.y + m_style->GetToolSeparation() );
-                        }
-                        if( i == lines ) {
-                            // Also do grabber here, since it is to the right of the last line.
-                            wxRect grabMask( upperLeft, barsize );
-                            grabMask.width += m_style->GetIcon( _T("grabber") ).GetWidth();
-                            grabMask.height = m_style->GetIcon( _T("grabber") ).GetHeight();
-                            sdc.DrawRoundedRectangle( grabMask, m_style->GetToolbarCornerRadius() );
-                        }
-                        sdc.DrawRoundedRectangle( upperLeft, barsize,
-                                m_style->GetToolbarCornerRadius() );
-                        upperLeft.x += m_style->GetTopMargin() + tool_size.x;
-                    } else {
-                        wxSize barsize( visibleSize.x, tool_size.y );
-
-                        if( i == 1 ) {
-                            barsize.x += m_style->GetIcon( _T("grabber") ).GetWidth();
-                        }
-                        if( i == lines && i > 1 ) {
-                            int toolsInLastLine = toolCount % m_ptoolbar->GetMaxCols();
-                            if( toolsInLastLine == 0 ) toolsInLastLine = m_ptoolbar->GetMaxCols();
-                            int emptySpace = ( m_ptoolbar->GetMaxCols() - toolsInLastLine );
-                            barsize.x -= emptySpace * ( tool_size.x + m_style->GetToolSeparation() );
-                        }
-
-                        sdc.DrawRoundedRectangle( upperLeft, barsize,
-                                m_style->GetToolbarCornerRadius() );
-                        upperLeft.y += m_style->GetTopMargin() + tool_size.y;
-                    }
-                }
-            } //b_overlap
-            else {
-                for( wxToolBarToolsList::compatibility_iterator node = m_ptoolbar->m_tools.GetFirst(); node; node = node->GetNext() ) {
-                    wxToolBarToolBase *tool = node->GetData();
-                    ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
-
-                    sdc.DrawRoundedRectangle( tools->m_x, tools->m_y, tool_size.x, tool_size.y,
-                                              m_style->GetToolbarCornerRadius() );
-                }
-            }
+          sdc.DrawRoundedRectangle(tools->m_x, tools->m_y, tool_size.x,
+                                   tool_size.y,
+                                   m_style->GetToolbarCornerRadius());
+        }
+      }
 
 #ifndef __WXQT__
-            if(shape.GetWidth() && shape.GetHeight())
-                SetShape( wxRegion( shape, *wxWHITE, 10 ) );
+      if (shape.GetWidth() && shape.GetHeight())
+        SetShape(wxRegion(shape, *wxWHITE, 10));
 #endif
-        }
-        else{
+    } else {
 #if !defined(__WXMAC__) && !defined(__OCPN__ANDROID__)
-            if(m_cornerRadius) {
-                wxBitmap m_MaskBmp = wxBitmap( GetSize().x, GetSize().y );
-                wxMemoryDC sdc( m_MaskBmp );
-                sdc.SetBackground( *wxWHITE_BRUSH );
-                sdc.Clear();
-                sdc.SetBrush( *wxBLACK_BRUSH );
-                sdc.SetPen( *wxBLACK_PEN );
-                sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), m_cornerRadius );
-                sdc.SelectObject( wxNullBitmap );
-                SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
-            }
- #endif
-
-        }
+      if (m_cornerRadius) {
+        wxBitmap m_MaskBmp = wxBitmap(GetSize().x, GetSize().y);
+        wxMemoryDC sdc(m_MaskBmp);
+        sdc.SetBackground(*wxWHITE_BRUSH);
+        sdc.Clear();
+        sdc.SetBrush(*wxBLACK_BRUSH);
+        sdc.SetPen(*wxBLACK_PEN);
+        sdc.DrawRoundedRectangle(0, 0, m_MaskBmp.GetWidth(),
+                                 m_MaskBmp.GetHeight(), m_cornerRadius);
+        sdc.SelectObject(wxNullBitmap);
+        SetShape(wxRegion(m_MaskBmp, *wxWHITE, 0));
+      }
+#endif
     }
+  }
 }
 
-void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
-{
-    // Since Dialog events don't propagate automatically, we send it explicitly
-    // (instead of relying on event.Skip()). Send events up the window hierarchy
+void ocpnFloatingToolbarDialog::OnToolLeftClick(wxCommandEvent &event) {
+  // Since Dialog events don't propagate automatically, we send it explicitly
+  // (instead of relying on event.Skip()). Send events up the window hierarchy
 
-    m_pparent->GetEventHandler()->AddPendingEvent( event );
+  m_pparent->GetEventHandler()->AddPendingEvent(event);
 #ifndef __WXQT__
-    gFrame->Raise();
+  gFrame->Raise();
 #endif
 }
 
-ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
-{
-    if( !m_ptoolbar ) {
-        m_ptoolbar = CreateNewToolbar();
-    }
+ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar() {
+  if (!m_ptoolbar) {
+    m_ptoolbar = CreateNewToolbar();
+  }
 
-    return m_ptoolbar;
+  return m_ptoolbar;
 }
 
-ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateNewToolbar()
-{
-    long winstyle = wxNO_BORDER | wxTB_FLAT;
-    winstyle |= m_orient;
+ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateNewToolbar() {
+  long winstyle = wxNO_BORDER | wxTB_FLAT;
+  winstyle |= m_orient;
 
-    m_ptoolbar = new ocpnToolBarSimple( this, -1, wxPoint( -1, -1 ), wxSize( -1, -1 ), winstyle );
+  m_ptoolbar = new ocpnToolBarSimple(this, -1, wxPoint(-1, -1), wxSize(-1, -1),
+                                     winstyle);
 
-    m_ptoolbar->SetBackgroundColour( GetGlobalColor( _T("GREY2") ) );
-    m_ptoolbar->ClearBackground();
-    m_ptoolbar->SetToggledBackgroundColour( GetGlobalColor( _T("GREY1") ) );
-    m_ptoolbar->SetColorScheme( m_cs );
-    m_ptoolbar->EnableRolloverBitmaps(GetEnableRolloverBitmaps());
+  m_ptoolbar->SetBackgroundColour(GetGlobalColor(_T("GREY2")));
+  m_ptoolbar->ClearBackground();
+  m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
+  m_ptoolbar->SetColorScheme(m_cs);
+  m_ptoolbar->EnableRolloverBitmaps(GetEnableRolloverBitmaps());
 
-    return m_ptoolbar;
+  return m_ptoolbar;
 }
 
-void ocpnFloatingToolbarDialog::DestroyToolBar()
-{
-    g_toolbarConfig = GetToolConfigString();
+void ocpnFloatingToolbarDialog::DestroyToolBar() {
+  g_toolbarConfig = GetToolConfigString();
 
-    if( m_ptoolbar ) {
-        m_ptoolbar->ClearTools();
-        delete m_ptoolbar;                  //->Destroy();
-        m_ptoolbar = NULL;
-    }
+  if (m_ptoolbar) {
+    m_ptoolbar->ClearTools();
+    delete m_ptoolbar;  //->Destroy();
+    m_ptoolbar = NULL;
+  }
 
-    if(!m_destroyTimer.IsRunning()){
-        m_destroyGrabber = m_pRecoverwin;
-        m_pRecoverwin = NULL;
-        m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
-    }
+  if (!m_destroyTimer.IsRunning()) {
+    m_destroyGrabber = m_pRecoverwin;
+    m_pRecoverwin = NULL;
+    m_destroyTimer.Start(
+        5, wxTIMER_ONE_SHOT);  //  Destor the unneeded recovery grabber
+  }
 
-    m_Items.clear();
-
+  m_Items.clear();
 }
 
 #include "s52plib.h"
 #include "compass.h"
 #include "chartdb.h"
 
-extern bool     g_bAllowShowScaled;
-extern bool     g_bTrackActive;
+extern bool g_bAllowShowScaled;
+extern bool g_bTrackActive;
 extern s52plib *ps52plib;
 
-
-ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
-{
-    return NULL;
+ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar() {
+  return NULL;
 #if 0
 
     ocpnToolBarSimple *tb = GetToolbar();
@@ -1441,1622 +1349,1556 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
 #endif
 }
 
-bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
-{
-    if( !g_pi_manager ) return false;
+bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool(ocpnToolBarSimple *tb) {
+  if (!g_pi_manager) return false;
 
-    // We only add plugin tools on toolbar associated with canvas #0, the primary.
-    // Except, if in gMUI mode, we allow no plugins ever on per-canvas toolbars.
+  // We only add plugin tools on toolbar associated with canvas #0, the primary.
+  // Except, if in gMUI mode, we allow no plugins ever on per-canvas toolbars.
 
-    ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
-    if(parentCanvas){
+  ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>(GetParent());
+  if (parentCanvas) {
+    if (g_useMUI) {
+      return false;
+    } else if (!parentCanvas->IsPrimaryCanvas())
+      return false;
+  }
 
-        if(g_useMUI){
-            return false;
-        }
-        else if(!parentCanvas->IsPrimaryCanvas())
-            return false;
+  bool bret = false;
+  int n_tools = tb->GetToolsCount();
+
+  //    Walk the PlugIn tool spec array, checking the requested position
+  //    If a tool has been requested by a plugin at this position, add it
+  ArrayOfPlugInToolbarTools tool_array =
+      g_pi_manager->GetPluginToolbarToolArray();
+
+  for (unsigned int i = 0; i < tool_array.GetCount(); i++) {
+    PlugInToolbarToolContainer *pttc = tool_array.Item(i);
+    if (pttc->position == n_tools) {
+      wxBitmap *ptool_bmp;
+
+      switch (m_cs) {
+        case GLOBAL_COLOR_SCHEME_DAY:
+          ptool_bmp = pttc->bitmap_day;
+          ;
+          break;
+        case GLOBAL_COLOR_SCHEME_DUSK:
+          ptool_bmp = pttc->bitmap_dusk;
+          break;
+        case GLOBAL_COLOR_SCHEME_NIGHT:
+          ptool_bmp = pttc->bitmap_night;
+          break;
+        default:
+          ptool_bmp = pttc->bitmap_day;
+          ;
+          break;
+      }
+
+      wxToolBarToolBase *tool =
+          tb->AddTool(pttc->id, wxString(pttc->label), *(ptool_bmp),
+                      wxString(pttc->shortHelp), pttc->kind);
+
+      tb->SetToolBitmapsSVG(pttc->id, pttc->pluginNormalIconSVG,
+                            pttc->pluginRolloverIconSVG,
+                            pttc->pluginToggledIconSVG);
+
+      bret = true;
+    }
+  }
+
+  //    If we added a tool, call again (recursively) to allow for adding
+  //    adjacent tools
+  if (bret)
+    while (CheckAndAddPlugInTool(tb)) { /* nothing to do */
     }
 
-
-    bool bret = false;
-    int n_tools = tb->GetToolsCount();
-
-    //    Walk the PlugIn tool spec array, checking the requested position
-    //    If a tool has been requested by a plugin at this position, add it
-    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
-
-    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
-        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
-        if( pttc->position == n_tools ) {
-            wxBitmap *ptool_bmp;
-
-            switch( m_cs ){
-                case GLOBAL_COLOR_SCHEME_DAY:
-                    ptool_bmp = pttc->bitmap_day;
-                    ;
-                    break;
-                case GLOBAL_COLOR_SCHEME_DUSK:
-                    ptool_bmp = pttc->bitmap_dusk;
-                    break;
-                case GLOBAL_COLOR_SCHEME_NIGHT:
-                    ptool_bmp = pttc->bitmap_night;
-                    break;
-                default:
-                    ptool_bmp = pttc->bitmap_day;
-                    ;
-                    break;
-            }
-
-            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
-                    wxString( pttc->shortHelp ), pttc->kind );
-
-            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
-                                   pttc->pluginRolloverIconSVG,
-                                   pttc->pluginToggledIconSVG );
-
-            bret = true;
-        }
-    }
-
-    //    If we added a tool, call again (recursively) to allow for adding adjacent tools
-    if( bret ) while( CheckAndAddPlugInTool( tb ) ) { /* nothing to do */
-    }
-
-    return bret;
+  return bret;
 }
 
-bool ocpnFloatingToolbarDialog::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
-{
-    //We only add plugin tools on toolbar associated with canvas #0, the primary.
-    // Except, if in gMUI mode, we allow no plugins ever on per-canvas toolbars.
-    ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
-    if(parentCanvas){
-        if(g_useMUI){
-            return false;
-        }
-        if(!parentCanvas->IsPrimaryCanvas())
-            return false;
+bool ocpnFloatingToolbarDialog::AddDefaultPositionPlugInTools(
+    ocpnToolBarSimple *tb) {
+  // We only add plugin tools on toolbar associated with canvas #0, the primary.
+  // Except, if in gMUI mode, we allow no plugins ever on per-canvas toolbars.
+  ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>(GetParent());
+  if (parentCanvas) {
+    if (g_useMUI) {
+      return false;
     }
+    if (!parentCanvas->IsPrimaryCanvas()) return false;
+  }
 
-    if( !g_pi_manager ) return false;
+  if (!g_pi_manager) return false;
 
-    bool bret = false;
+  bool bret = false;
 
-    //    Walk the PlugIn tool spec array, checking the requested position
-    //    If a tool has been requested by a plugin at this position, add it
-    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+  //    Walk the PlugIn tool spec array, checking the requested position
+  //    If a tool has been requested by a plugin at this position, add it
+  ArrayOfPlugInToolbarTools tool_array =
+      g_pi_manager->GetPluginToolbarToolArray();
 
-    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
-        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+  for (unsigned int i = 0; i < tool_array.GetCount(); i++) {
+    PlugInToolbarToolContainer *pttc = tool_array.Item(i);
 
-        //      Tool is currently tagged as invisible
-        if( !pttc->b_viz )
-            continue;
+    //      Tool is currently tagged as invisible
+    if (!pttc->b_viz) continue;
 
-        if( pttc->position == -1 )                  // PlugIn has requested default positioning
-                {
-            wxBitmap *ptool_bmp;
+    if (pttc->position == -1)  // PlugIn has requested default positioning
+    {
+      wxBitmap *ptool_bmp;
 
-        switch( m_cs ){
-                case GLOBAL_COLOR_SCHEME_DAY:
-                    ptool_bmp = pttc->bitmap_day;
-                    break;
-                case GLOBAL_COLOR_SCHEME_DUSK:
-                    ptool_bmp = pttc->bitmap_dusk;
-                    break;
-                case GLOBAL_COLOR_SCHEME_NIGHT:
-                    ptool_bmp = pttc->bitmap_night;
-                    break;
-                default:
-                    ptool_bmp = pttc->bitmap_day;
-                    break;
-            }
+      switch (m_cs) {
+        case GLOBAL_COLOR_SCHEME_DAY:
+          ptool_bmp = pttc->bitmap_day;
+          break;
+        case GLOBAL_COLOR_SCHEME_DUSK:
+          ptool_bmp = pttc->bitmap_dusk;
+          break;
+        case GLOBAL_COLOR_SCHEME_NIGHT:
+          ptool_bmp = pttc->bitmap_night;
+          break;
+        default:
+          ptool_bmp = pttc->bitmap_day;
+          break;
+      }
 
+      wxToolBarToolBase *tool =
+          tb->AddTool(pttc->id, wxString(pttc->label), *(ptool_bmp),
+                      wxString(pttc->shortHelp), pttc->kind);
 
-            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
-                                                    wxString( pttc->shortHelp ), pttc->kind );
+      tb->SetToolBitmapsSVG(pttc->id, pttc->pluginNormalIconSVG,
+                            pttc->pluginRolloverIconSVG,
+                            pttc->pluginToggledIconSVG);
 
-            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
-                                   pttc->pluginRolloverIconSVG,
-                                   pttc->pluginToggledIconSVG );
-
-            bret = true;
-        }
+      bret = true;
     }
-    return bret;
+  }
+  return bret;
 }
 
-
-
-
-void ocpnFloatingToolbarDialog::EnableRolloverBitmaps( bool bEnable )
-{
-    m_enableRolloverBitmaps = bEnable;
-    if(m_ptoolbar)
-        m_ptoolbar->EnableRolloverBitmaps( bEnable );
+void ocpnFloatingToolbarDialog::EnableRolloverBitmaps(bool bEnable) {
+  m_enableRolloverBitmaps = bEnable;
+  if (m_ptoolbar) m_ptoolbar->EnableRolloverBitmaps(bEnable);
 }
-
-
-
-
-
-
-
-
-
 
 //----------------------------------------------------------------------------
 // Toolbar Tooltip Popup Window Definition
 //----------------------------------------------------------------------------
-class ToolTipWin: public wxFrame {
+class ToolTipWin : public wxFrame {
 public:
-    ToolTipWin( wxWindow *parent );
-    ~ToolTipWin();
+  ToolTipWin(wxWindow *parent);
+  ~ToolTipWin();
 
-    void OnPaint( wxPaintEvent& event );
+  void OnPaint(wxPaintEvent &event);
 
-    void SetColorScheme( ColorScheme cs );
-    void SetString( wxString &s )
-    {
-        m_string = s;
-    }
-    void SetPosition( wxPoint pt )
-    {
-        m_position = pt;
-    }
-    void SetBitmap( void );
+  void SetColorScheme(ColorScheme cs);
+  void SetString(wxString &s) { m_string = s; }
+  void SetPosition(wxPoint pt) { m_position = pt; }
+  void SetBitmap(void);
 
-    void SetHiviz( bool hiviz){ m_hiviz = hiviz; }
+  void SetHiviz(bool hiviz) { m_hiviz = hiviz; }
 
-    wxSize GetRenderedSize( void );
+  wxSize GetRenderedSize(void);
 
 private:
+  wxString m_string;
+  wxSize m_size;
+  wxPoint m_position;
+  wxBitmap *m_pbm;
+  wxColour m_back_color;
+  wxColour m_text_color;
+  ColorScheme m_cs;
+  bool m_hiviz;
 
-    wxString m_string;
-    wxSize m_size;
-    wxPoint m_position;
-    wxBitmap *m_pbm;
-    wxColour m_back_color;
-    wxColour m_text_color;
-    ColorScheme m_cs ;
-    bool m_hiviz;
-
-DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 //-----------------------------------------------------------------------
 //
 //    Toolbar Tooltip window implementation
 //
 //-----------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ToolTipWin, wxFrame) EVT_PAINT(ToolTipWin::OnPaint)
+BEGIN_EVENT_TABLE(ToolTipWin, wxFrame)
+EVT_PAINT(ToolTipWin::OnPaint)
 
-END_EVENT_TABLE()
+    END_EVENT_TABLE()
 
-// Define a constructor
-ToolTipWin::ToolTipWin( wxWindow *parent ) :
-        wxFrame( parent, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 1, 1 ),
-                wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR )
-{
-    m_pbm = NULL;
+    // Define a constructor
+    ToolTipWin::ToolTipWin(wxWindow *parent)
+    : wxFrame(parent, wxID_ANY, _T(""), wxPoint(0, 0), wxSize(1, 1),
+              wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR) {
+  m_pbm = NULL;
 
-    m_back_color = GetGlobalColor( _T ( "UIBCK" ) );
-    m_text_color = GetGlobalColor( _T ( "UITX1" ) );
+  m_back_color = GetGlobalColor(_T ( "UIBCK" ));
+  m_text_color = GetGlobalColor(_T ( "UITX1" ));
 
-    SetBackgroundStyle( wxBG_STYLE_CUSTOM );
-    SetBackgroundColour( m_back_color );
-    m_cs = GLOBAL_COLOR_SCHEME_RGB;
+  SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+  SetBackgroundColour(m_back_color);
+  m_cs = GLOBAL_COLOR_SCHEME_RGB;
 
-    Hide();
+  Hide();
 }
 
-ToolTipWin::~ToolTipWin()
-{
-    delete m_pbm;
+ToolTipWin::~ToolTipWin() { delete m_pbm; }
+
+void ToolTipWin::SetColorScheme(ColorScheme cs) {
+  m_back_color = GetGlobalColor(_T ( "UIBCK" ));
+  m_text_color = FontMgr::Get().GetFontColor(_("ToolTips"));
+  // assume black is the default
+  if (m_text_color == *wxBLACK) m_text_color = GetGlobalColor(_T ( "UITX1" ));
+
+  m_cs = cs;
 }
 
-void ToolTipWin::SetColorScheme( ColorScheme cs )
-{
-    m_back_color = GetGlobalColor( _T ( "UIBCK" ) );
-    m_text_color = FontMgr::Get().GetFontColor( _("ToolTips") );
-    // assume black is the default
-    if (m_text_color == *wxBLACK)
-       m_text_color = GetGlobalColor( _T ( "UITX1" ) );
+wxSize ToolTipWin::GetRenderedSize(void) {
+  int h, w;
+  wxSize sz;
 
-    m_cs = cs;
+  wxScreenDC cdc;
+
+  wxFont *plabelFont = FontMgr::Get().GetFont(_("ToolTips"));
+  cdc.GetTextExtent(m_string, &w, &h, NULL, NULL, plabelFont);
+
+  sz.x = w + 8;
+  sz.y = h + 4;
+
+  return sz;
 }
 
-wxSize ToolTipWin::GetRenderedSize( void )
-{
-    int h, w;
-    wxSize sz;
+void ToolTipWin::SetBitmap() {
+  int h, w;
 
-    wxScreenDC cdc;
+  wxScreenDC cdc;
 
-    wxFont *plabelFont = FontMgr::Get().GetFont( _("ToolTips") );
-    cdc.GetTextExtent( m_string, &w, &h, NULL, NULL, plabelFont );
+  wxFont *plabelFont = FontMgr::Get().GetFont(_("ToolTips"));
+  cdc.GetTextExtent(m_string, &w, &h, NULL, NULL, plabelFont);
 
-    sz.x = w + 8;
-    sz.y = h + 4;
+  m_size.x = w + 8;
+  m_size.y = h + 4;
 
-    return sz;
+  wxMemoryDC mdc;
 
+  delete m_pbm;
+  m_pbm = new wxBitmap(m_size.x, m_size.y, -1);
+  mdc.SelectObject(*m_pbm);
+
+  wxPen pborder(m_text_color);
+  wxBrush bback(m_back_color);
+  mdc.SetPen(pborder);
+  mdc.SetBrush(bback);
+
+  if (m_hiviz) {
+    if ((m_cs == GLOBAL_COLOR_SCHEME_DUSK) ||
+        (m_cs == GLOBAL_COLOR_SCHEME_NIGHT)) {
+      wxBrush hv_back(wxColour(200, 200, 200));
+      mdc.SetBrush(hv_back);
+    }
+  }
+  mdc.DrawRectangle(0, 0, m_size.x, m_size.y);
+
+  //    Draw the text
+  mdc.SetFont(*plabelFont);
+  mdc.SetTextForeground(m_text_color);
+  mdc.SetTextBackground(m_back_color);
+
+  mdc.DrawText(m_string, 4, 2);
+
+  SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
 }
 
-void ToolTipWin::SetBitmap()
-{
-    int h, w;
+void ToolTipWin::OnPaint(wxPaintEvent &event) {
+  int width, height;
+  GetClientSize(&width, &height);
+  wxPaintDC dc(this);
 
-    wxScreenDC cdc;
-
-    wxFont *plabelFont = FontMgr::Get().GetFont( _("ToolTips") );
-    cdc.GetTextExtent( m_string, &w, &h, NULL, NULL, plabelFont );
-
-    m_size.x = w + 8;
-    m_size.y = h + 4;
-
+  if (m_string.Len()) {
     wxMemoryDC mdc;
-
-    delete m_pbm;
-    m_pbm = new wxBitmap( m_size.x, m_size.y, -1 );
-    mdc.SelectObject( *m_pbm );
-
-    wxPen pborder( m_text_color );
-    wxBrush bback( m_back_color );
-    mdc.SetPen( pborder );
-    mdc.SetBrush( bback );
-
-    if(m_hiviz){
-        if((m_cs == GLOBAL_COLOR_SCHEME_DUSK) || (m_cs == GLOBAL_COLOR_SCHEME_NIGHT)){
-            wxBrush hv_back( wxColour(200,200,200));
-            mdc.SetBrush( hv_back );
-        }
-    }
-    mdc.DrawRectangle( 0, 0, m_size.x, m_size.y );
-
-    //    Draw the text
-    mdc.SetFont( *plabelFont );
-    mdc.SetTextForeground( m_text_color );
-    mdc.SetTextBackground( m_back_color );
-
-    mdc.DrawText( m_string, 4, 2 );
-
-    SetSize( m_position.x, m_position.y, m_size.x, m_size.y );
-
+    mdc.SelectObject(*m_pbm);
+    dc.Blit(0, 0, width, height, &mdc, 0, 0);
+  }
 }
 
-void ToolTipWin::OnPaint( wxPaintEvent& event )
-{
-    int width, height;
-    GetClientSize( &width, &height );
-    wxPaintDC dc( this );
-
-    if( m_string.Len() ) {
-        wxMemoryDC mdc;
-        mdc.SelectObject( *m_pbm );
-        dc.Blit( 0, 0, width, height, &mdc, 0, 0 );
-    }
-}
-
-
 // ----------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ocpnToolBarSimple, wxControl) EVT_SIZE(ocpnToolBarSimple::OnSize)
-EVT_PAINT(ocpnToolBarSimple::OnPaint)
-EVT_KILL_FOCUS(ocpnToolBarSimple::OnKillFocus)
-EVT_MOUSE_EVENTS(ocpnToolBarSimple::OnMouseEvent)
-EVT_TIMER(TOOLTIPON_TIMER, ocpnToolBarSimple::OnToolTipTimerEvent)
-EVT_TIMER(TOOLTIPOFF_TIMER, ocpnToolBarSimple::OnToolTipOffTimerEvent)
+BEGIN_EVENT_TABLE(ocpnToolBarSimple, wxControl)
+EVT_SIZE(ocpnToolBarSimple::OnSize) EVT_PAINT(ocpnToolBarSimple::OnPaint)
+    EVT_KILL_FOCUS(ocpnToolBarSimple::OnKillFocus)
+        EVT_MOUSE_EVENTS(ocpnToolBarSimple::OnMouseEvent)
+            EVT_TIMER(TOOLTIPON_TIMER, ocpnToolBarSimple::OnToolTipTimerEvent)
+                EVT_TIMER(TOOLTIPOFF_TIMER,
+                          ocpnToolBarSimple::OnToolTipOffTimerEvent)
 
-END_EVENT_TABLE()
+                    END_EVENT_TABLE()
 
-// ============================================================================
-// implementation
-// ============================================================================
+    // ============================================================================
+    // implementation
+    // ============================================================================
 
-// ----------------------------------------------------------------------------
-// tool bar tools creation
-// ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+    // tool bar tools creation
+    // ----------------------------------------------------------------------------
 
-wxToolBarToolBase *ocpnToolBarSimple::CreateTool( int id, const wxString& label,
-        const wxBitmap& bmpNormal, const wxBitmap& bmpDisabled, wxItemKind kind,
-        wxObject *clientData, const wxString& shortHelp, const wxString& longHelp )
-{
-    if(m_style->NativeToolIconExists(label) ){
-        return new ocpnToolBarTool( this, id, label, bmpNormal, bmpDisabled, kind, clientData,
-            shortHelp, longHelp );
+    wxToolBarToolBase *ocpnToolBarSimple::CreateTool(
+        int id, const wxString &label, const wxBitmap &bmpNormal,
+        const wxBitmap &bmpDisabled, wxItemKind kind, wxObject *clientData,
+        const wxString &shortHelp, const wxString &longHelp) {
+  if (m_style->NativeToolIconExists(label)) {
+    return new ocpnToolBarTool(this, id, label, bmpNormal, bmpDisabled, kind,
+                               clientData, shortHelp, longHelp);
+  } else {
+    wxString testToolname = g_pi_manager->GetToolOwnerCommonName(id);
+
+    if (testToolname == _T("")) {  // Not a PlugIn tool...
+      return new ocpnToolBarTool(this, id, bmpNormal, bmpDisabled, kind,
+                                 clientData, shortHelp, longHelp);
+    } else {
+      return new ocpnToolBarTool(this, id, label, bmpNormal, bmpDisabled, kind,
+                                 clientData, shortHelp, longHelp);
     }
-    else{
-        wxString testToolname = g_pi_manager->GetToolOwnerCommonName( id );
-
-        if( testToolname == _T("") ) {                  // Not a PlugIn tool...
-             return new ocpnToolBarTool( this, id, bmpNormal, bmpDisabled, kind, clientData,
-                                    shortHelp, longHelp );
-        }
-        else{
-            return new ocpnToolBarTool( this, id, label, bmpNormal, bmpDisabled, kind, clientData,
-                                        shortHelp, longHelp );
-        }
-    }
+  }
 }
 
 // ----------------------------------------------------------------------------
 // ocpnToolBarSimple creation
 // ----------------------------------------------------------------------------
 
-void ocpnToolBarSimple::Init()
-{
-    m_currentRowsOrColumns = 0;
+void ocpnToolBarSimple::Init() {
+  m_currentRowsOrColumns = 0;
 
-    m_lastX = m_lastY = 0;
+  m_lastX = m_lastY = 0;
 
-    m_maxWidth = m_maxHeight = 0;
+  m_maxWidth = m_maxHeight = 0;
 
-    m_pressedTool = m_currentTool = -1;
+  m_pressedTool = m_currentTool = -1;
 
-    m_xPos = m_yPos = wxDefaultCoord;
+  m_xPos = m_yPos = wxDefaultCoord;
 
-    m_style = g_StyleManager->GetCurrentStyle();
+  m_style = g_StyleManager->GetCurrentStyle();
 
-    m_defaultWidth = 16;
-    m_defaultHeight = 15;
+  m_defaultWidth = 16;
+  m_defaultHeight = 15;
 
-    m_toggle_bg_color = wxSystemSettings::GetColour( wxSYS_COLOUR_3DFACE );
-    m_toolOutlineColour.Set( _T("BLACK") );
-    m_pToolTipWin = NULL;
-    m_last_ro_tool = NULL;
+  m_toggle_bg_color = wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE);
+  m_toolOutlineColour.Set(_T("BLACK"));
+  m_pToolTipWin = NULL;
+  m_last_ro_tool = NULL;
 
-    m_btoolbar_is_zooming = false;
-    m_sizefactor = 1.0f;
+  m_btoolbar_is_zooming = false;
+  m_sizefactor = 1.0f;
 
-    m_last_plugin_down_id = -1;
-    m_leftDown = false;
-    m_nShowTools = 0;
-    m_btooltip_show = false;
+  m_last_plugin_down_id = -1;
+  m_leftDown = false;
+  m_nShowTools = 0;
+  m_btooltip_show = false;
 #ifndef __OCPN__ANDROID__
-    EnableTooltips();
+  EnableTooltips();
 #endif
-    m_tbenableRolloverBitmaps = false;
+  m_tbenableRolloverBitmaps = false;
+}
 
- }
+wxToolBarToolBase *ocpnToolBarSimple::DoAddTool(
+    int id, const wxString &label, const wxBitmap &bitmap,
+    const wxBitmap &bmpDisabled, wxItemKind kind, const wxString &shortHelp,
+    const wxString &longHelp, wxObject *clientData, wxCoord xPos,
+    wxCoord yPos) {
+  // rememeber the position for DoInsertTool()
+  m_xPos = xPos;
+  m_yPos = yPos;
 
-wxToolBarToolBase *ocpnToolBarSimple::DoAddTool( int id, const wxString& label,
-        const wxBitmap& bitmap, const wxBitmap& bmpDisabled, wxItemKind kind,
-        const wxString& shortHelp, const wxString& longHelp, wxObject *clientData, wxCoord xPos,
-        wxCoord yPos )
-{
-    // rememeber the position for DoInsertTool()
-    m_xPos = xPos;
-    m_yPos = yPos;
-
-    InvalidateBestSize();
-    return InsertTool( GetToolsCount(), id, label, bitmap, bmpDisabled, kind, shortHelp, longHelp,
-            clientData );
-
+  InvalidateBestSize();
+  return InsertTool(GetToolsCount(), id, label, bitmap, bmpDisabled, kind,
+                    shortHelp, longHelp, clientData);
 }
 
 ///
 
-wxToolBarToolBase *ocpnToolBarSimple::AddTool( int toolid, const wxString& label,
-        const wxBitmap& bitmap, const wxBitmap& bmpDisabled, wxItemKind kind,
-        const wxString& shortHelp, const wxString& longHelp, wxObject *data )
-{
-    InvalidateBestSize();
-    ocpnToolBarTool* tool = (ocpnToolBarTool*)InsertTool( GetToolsCount(), toolid, label, bitmap, bmpDisabled, kind,
-            shortHelp, longHelp, data );
-    return tool;
+wxToolBarToolBase *ocpnToolBarSimple::AddTool(
+    int toolid, const wxString &label, const wxBitmap &bitmap,
+    const wxBitmap &bmpDisabled, wxItemKind kind, const wxString &shortHelp,
+    const wxString &longHelp, wxObject *data) {
+  InvalidateBestSize();
+  ocpnToolBarTool *tool = (ocpnToolBarTool *)InsertTool(
+      GetToolsCount(), toolid, label, bitmap, bmpDisabled, kind, shortHelp,
+      longHelp, data);
+  return tool;
 }
 
-wxToolBarToolBase *ocpnToolBarSimple::InsertTool( size_t pos, int id, const wxString& label,
-        const wxBitmap& bitmap, const wxBitmap& bmpDisabled, wxItemKind kind,
-        const wxString& shortHelp, const wxString& longHelp, wxObject *clientData )
-{
-    wxCHECK_MSG( pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
-            _T("invalid position in wxToolBar::InsertTool()") );
+wxToolBarToolBase *ocpnToolBarSimple::InsertTool(
+    size_t pos, int id, const wxString &label, const wxBitmap &bitmap,
+    const wxBitmap &bmpDisabled, wxItemKind kind, const wxString &shortHelp,
+    const wxString &longHelp, wxObject *clientData) {
+  wxCHECK_MSG(pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
+              _T("invalid position in wxToolBar::InsertTool()"));
 
-    wxToolBarToolBase *tool = CreateTool( id, label, bitmap, bmpDisabled, kind, clientData,
-            shortHelp, longHelp );
+  wxToolBarToolBase *tool = CreateTool(id, label, bitmap, bmpDisabled, kind,
+                                       clientData, shortHelp, longHelp);
 
-    if( !InsertTool( pos, tool ) ) {
-        delete tool;
+  if (!InsertTool(pos, tool)) {
+    delete tool;
 
-        return NULL;
+    return NULL;
+  }
+
+  return tool;
+}
+
+wxToolBarToolBase *ocpnToolBarSimple::InsertTool(size_t pos,
+                                                 wxToolBarToolBase *tool) {
+  wxCHECK_MSG(pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
+              _T("invalid position in wxToolBar::InsertTool()"));
+
+  if (!tool || !DoInsertTool(pos, tool)) {
+    return NULL;
+  }
+
+  m_tools.Insert(pos, tool);
+  m_nShowTools++;
+
+  return tool;
+}
+
+bool ocpnToolBarSimple::DoInsertTool(size_t WXUNUSED(pos),
+                                     wxToolBarToolBase *toolBase) {
+  ocpnToolBarTool *tool = (ocpnToolBarTool *)toolBase;
+
+  // Check if the plugin is inserting same-named tools. Make sure they have
+  // different names, otherwise the style manager cannot differentiate between
+  // them.
+  if (tool->isPluginTool) {
+    for (unsigned int i = 0; i < GetToolsCount(); i++) {
+      if (tool->GetToolname() ==
+          ((ocpnToolBarTool *)m_tools.Item(i)->GetData())->GetToolname()) {
+        tool->toolname << _T("1");
+      }
     }
+  }
 
-    return tool;
+  tool->m_x = m_xPos;
+  if (tool->m_x == wxDefaultCoord) tool->m_x = m_style->GetLeftMargin();
+
+  tool->m_y = m_yPos;
+  if (tool->m_y == wxDefaultCoord) tool->m_y = m_style->GetTopMargin();
+
+  if (tool->IsButton()) {
+    tool->SetSize(GetToolSize());
+
+    // Calculate reasonable max size in case Layout() not called
+    if ((tool->m_x + tool->GetNormalBitmap().GetWidth() +
+         m_style->GetLeftMargin()) > m_maxWidth)
+      m_maxWidth =
+          (wxCoord)((tool->m_x + tool->GetWidth() + m_style->GetLeftMargin()));
+
+    if ((tool->m_y + tool->GetNormalBitmap().GetHeight() +
+         m_style->GetTopMargin()) > m_maxHeight)
+      m_maxHeight =
+          (wxCoord)((tool->m_y + tool->GetHeight() + m_style->GetTopMargin()));
+  }
+
+  else if (tool->IsControl()) {
+    tool->SetSize(tool->GetControl()->GetSize());
+  }
+
+  tool->b_hilite = false;
+
+  return true;
 }
 
-wxToolBarToolBase *ocpnToolBarSimple::InsertTool( size_t pos, wxToolBarToolBase *tool )
-{
-    wxCHECK_MSG( pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
-            _T("invalid position in wxToolBar::InsertTool()") );
+bool ocpnToolBarSimple::DoDeleteTool(size_t WXUNUSED(pos),
+                                     wxToolBarToolBase *tool) {
+  // VZ: didn't test whether it works, but why not...
+  tool->Detach();
 
-    if( !tool || !DoInsertTool( pos, tool ) ) {
-        return NULL;
-    }
+  if (m_last_ro_tool == tool) m_last_ro_tool = NULL;
 
-    m_tools.Insert( pos, tool );
-    m_nShowTools++;
+  Refresh(false);
 
-    return tool;
+  return true;
 }
 
-bool ocpnToolBarSimple::DoInsertTool( size_t WXUNUSED(pos), wxToolBarToolBase *toolBase )
-{
-    ocpnToolBarTool *tool = (ocpnToolBarTool *) toolBase;
+bool ocpnToolBarSimple::Create(wxWindow *parent, wxWindowID id,
+                               const wxPoint &pos, const wxSize &size,
+                               long style, const wxString &name) {
+  if (!wxWindow::Create(parent, id, pos, size, style, name)) return false;
 
-    // Check if the plugin is inserting same-named tools. Make sure they have different names,
-    // otherwise the style manager cannot differentiate between them.
-    if( tool->isPluginTool ) {
-        for( unsigned int i=0; i<GetToolsCount(); i++ ) {
-            if( tool->GetToolname() == ((ocpnToolBarTool *)m_tools.Item(i)->GetData())->GetToolname()) {
-                tool->toolname << _T("1");
-            }
-        }
-    }
+  // Set it to grey (or other 3D face colour)
+  SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
 
-    tool->m_x = m_xPos;
-    if( tool->m_x == wxDefaultCoord ) tool->m_x = m_style->GetLeftMargin();
+  if (GetWindowStyleFlag() & wxTB_VERTICAL) {
+    m_lastX = 7;
+    m_lastY = 3;
 
-    tool->m_y = m_yPos;
-    if( tool->m_y == wxDefaultCoord ) tool->m_y = m_style->GetTopMargin();
+    m_maxRows = 32000;  // a lot
+    m_maxCols = 1;
+  } else {
+    m_lastX = 3;
+    m_lastY = 7;
 
-    if( tool->IsButton() ) {
-        tool->SetSize( GetToolSize() );
+    m_maxRows = 1;
+    m_maxCols = 32000;  // a lot
+  }
 
-        // Calculate reasonable max size in case Layout() not called
-        if( ( tool->m_x + tool->GetNormalBitmap().GetWidth() + m_style->GetLeftMargin() )
-                > m_maxWidth ) m_maxWidth = (wxCoord) ( ( tool->m_x + tool->GetWidth()
-                + m_style->GetLeftMargin() ) );
+  SetCursor(*wxSTANDARD_CURSOR);
 
-        if( ( tool->m_y + tool->GetNormalBitmap().GetHeight() + m_style->GetTopMargin() )
-                > m_maxHeight ) m_maxHeight = (wxCoord) ( ( tool->m_y + tool->GetHeight()
-                + m_style->GetTopMargin() ) );
-    }
+  m_tooltip_timer.SetOwner(this, TOOLTIPON_TIMER);
+  m_tooltipoff_timer.SetOwner(this, TOOLTIPOFF_TIMER);
+  m_tooltip_off = 3000;
 
-    else
-        if( tool->IsControl() ) {
-            tool->SetSize( tool->GetControl()->GetSize() );
-        }
+  m_tbenableRolloverBitmaps = false;
 
-    tool->b_hilite = false;
-
-    return true;
+  return true;
 }
 
-bool ocpnToolBarSimple::DoDeleteTool( size_t WXUNUSED(pos), wxToolBarToolBase *tool )
-{
-    // VZ: didn't test whether it works, but why not...
-    tool->Detach();
-
-    if( m_last_ro_tool == tool ) m_last_ro_tool = NULL;
-
-    Refresh( false );
-
-    return true;
+ocpnToolBarSimple::~ocpnToolBarSimple() {
+  if (m_pToolTipWin) {
+    m_pToolTipWin->Destroy();
+    m_pToolTipWin = NULL;
+  }
 }
 
-bool ocpnToolBarSimple::Create( wxWindow *parent, wxWindowID id, const wxPoint& pos,
-        const wxSize& size, long style, const wxString& name )
-{
-    if( !wxWindow::Create( parent, id, pos, size, style, name ) ) return false;
-
-    // Set it to grey (or other 3D face colour)
-    SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_3DFACE ) );
-
-    if( GetWindowStyleFlag() & wxTB_VERTICAL ) {
-        m_lastX = 7;
-        m_lastY = 3;
-
-        m_maxRows = 32000;      // a lot
-        m_maxCols = 1;
-    } else {
-        m_lastX = 3;
-        m_lastY = 7;
-
-        m_maxRows = 1;
-        m_maxCols = 32000;      // a lot
-    }
-
-    SetCursor( *wxSTANDARD_CURSOR );
-
-    m_tooltip_timer.SetOwner( this, TOOLTIPON_TIMER );
-    m_tooltipoff_timer.SetOwner( this, TOOLTIPOFF_TIMER );
-    m_tooltip_off = 3000;
-
-    m_tbenableRolloverBitmaps = false;
-
-    return true;
-}
-
-ocpnToolBarSimple::~ocpnToolBarSimple()
-{
-    if( m_pToolTipWin ) {
-        m_pToolTipWin->Destroy();
-        m_pToolTipWin = NULL;
-    }
-
-}
-
-void ocpnToolBarSimple::EnableTooltips()
-{
+void ocpnToolBarSimple::EnableTooltips() {
 #ifndef __OCPN__ANDROID__
-    m_btooltip_show = true;
+  m_btooltip_show = true;
 #endif
 }
 
-void ocpnToolBarSimple::DisableTooltips()
-{
+void ocpnToolBarSimple::DisableTooltips() {
 #ifndef __OCPN__ANDROID__
-    ocpnToolBarSimple::m_btooltip_show = false;
+  ocpnToolBarSimple::m_btooltip_show = false;
 #endif
 }
 
-void ocpnToolBarSimple::KillTooltip()
-{
-    m_btooltip_show = false;
+void ocpnToolBarSimple::KillTooltip() {
+  m_btooltip_show = false;
 
-    if( m_pToolTipWin ) {
-        m_pToolTipWin->Hide();
-        m_pToolTipWin->Destroy();
-        m_pToolTipWin = NULL;
+  if (m_pToolTipWin) {
+    m_pToolTipWin->Hide();
+    m_pToolTipWin->Destroy();
+    m_pToolTipWin = NULL;
+  }
+  m_tooltip_timer.Stop();
+
+  /*
+      if( m_last_ro_tool ) {
+          if( m_last_ro_tool->IsEnabled() ) {
+              if( m_last_ro_tool->IsToggled() ) {
+                  if(
+     m_style->NativeToolIconExists(m_last_ro_tool->GetToolname()) ) {
+                      m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon(
+     m_last_ro_tool->GetToolname(), TOOLICON_TOGGLED ) );
+                  }
+                  else{
+                      m_last_ro_tool->SetNormalBitmap(m_style->BuildPluginIcon(
+     m_last_ro_tool->pluginNormalIcon, TOOLICON_TOGGLED ));
+                  }
+
+              }
+              else {
+                  if(
+     m_style->NativeToolIconExists(m_last_ro_tool->GetToolname()) ) {
+                      m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon(
+     m_last_ro_tool->GetToolname(), TOOLICON_NORMAL ) );
+                  }
+                  else{
+                      m_last_ro_tool->SetNormalBitmap(m_style->BuildPluginIcon(
+     m_last_ro_tool->pluginNormalIcon, TOOLICON_NORMAL ));
+                  }
+              }
+          }
+      }
+  */
+  gFrame->Raise();
+  gFrame->GetFocusCanvas()->TriggerDeferredFocus();
+}
+
+void ocpnToolBarSimple::HideTooltip() {
+#ifndef __OCPN__ANDROID__
+  if (m_pToolTipWin) {
+    m_pToolTipWin->Hide();
+  }
+#endif
+}
+
+void ocpnToolBarSimple::SetColorScheme(ColorScheme cs) {
+#ifndef __OCPN__ANDROID__
+  if (m_pToolTipWin) {
+    m_pToolTipWin->Destroy();
+    m_pToolTipWin = NULL;
+  }
+#endif
+  m_toolOutlineColour = GetGlobalColor(_T("UIBDR"));
+
+  m_currentColorScheme = cs;
+}
+
+bool ocpnToolBarSimple::Realize() {
+  if (IsVertical())
+    m_style->SetOrientation(wxTB_VERTICAL);
+  else
+    m_style->SetOrientation(wxTB_HORIZONTAL);
+
+  wxSize toolSize = wxSize(-1, -1);
+  int separatorSize = m_style->GetToolSeparation() * m_sizefactor;
+  int topMargin = m_style->GetTopMargin() * m_sizefactor;
+  int leftMargin = m_style->GetLeftMargin() * m_sizefactor;
+
+  m_currentRowsOrColumns = 0;
+  m_LineCount = 1;
+  m_lastX = leftMargin;
+  m_lastY = topMargin;
+  m_maxWidth = 0;
+  m_maxHeight = 0;
+
+  ocpnToolBarTool *lastTool = NULL;
+  bool firstNode = true;
+  wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+
+  int iNode = 0;
+
+  while (node) {
+    if (iNode >= m_nShowTools) break;
+
+    ocpnToolBarTool *tool = (ocpnToolBarTool *)node->GetData();
+
+    // Set the tool size to be the size of the first non-separator tool, usually
+    // the first one
+    if (toolSize.x == -1) {
+      if (!tool->IsSeparator()) {
+        toolSize.x = tool->m_width;
+        toolSize.y = tool->m_height;
+      }
     }
-    m_tooltip_timer.Stop();
 
-/*
-    if( m_last_ro_tool ) {
-        if( m_last_ro_tool->IsEnabled() ) {
-            if( m_last_ro_tool->IsToggled() ) {
-                if( m_style->NativeToolIconExists(m_last_ro_tool->GetToolname()) ) {
-                    m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_TOGGLED ) );
-                }
-                else{
-                    m_last_ro_tool->SetNormalBitmap(m_style->BuildPluginIcon( m_last_ro_tool->pluginNormalIcon, TOOLICON_TOGGLED ));
-                }
+    tool->firstInLine = firstNode;
+    tool->lastInLine = false;
+    firstNode = false;
 
-            }
-            else {
-                if( m_style->NativeToolIconExists(m_last_ro_tool->GetToolname()) ) {
-                    m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_NORMAL ) );
-                }
-                else{
-                    m_last_ro_tool->SetNormalBitmap(m_style->BuildPluginIcon( m_last_ro_tool->pluginNormalIcon, TOOLICON_NORMAL ));
-                }
-            }
+    tool->last_rect.width = 0;  // mark it invalid
+
+    if (tool->IsSeparator()) {
+      if (GetWindowStyleFlag() & wxTB_HORIZONTAL) {
+        if (m_currentRowsOrColumns >= m_maxCols)
+          m_lastY += separatorSize;
+        else
+          m_lastX += separatorSize;
+      } else {
+        if (m_currentRowsOrColumns >= m_maxRows)
+          m_lastX += separatorSize;
+        else
+          m_lastY += separatorSize;
+      }
+    } else if (tool->IsButton()) {
+      if (!IsVertical()) {
+        if (m_currentRowsOrColumns >= m_maxCols) {
+          tool->firstInLine = true;
+          if (lastTool && m_LineCount > 1) lastTool->lastInLine = true;
+          m_LineCount++;
+          m_currentRowsOrColumns = 0;
+          m_lastX = leftMargin;
+          m_lastY += toolSize.y + topMargin;
         }
-    }
-*/
-    gFrame->Raise();
-    gFrame->GetFocusCanvas()->TriggerDeferredFocus();
+        tool->m_x = (wxCoord)m_lastX;
+        tool->m_y = (wxCoord)m_lastY;
 
-}
+        tool->trect = wxRect(tool->m_x, tool->m_y, toolSize.x, toolSize.y);
+        tool->trect.Inflate(separatorSize / 2, topMargin);
 
-void ocpnToolBarSimple::HideTooltip()
-{
-#ifndef __OCPN__ANDROID__
-    if( m_pToolTipWin ) {
-        m_pToolTipWin->Hide();
-    }
-#endif
-}
-
-void ocpnToolBarSimple::SetColorScheme( ColorScheme cs )
-{
-#ifndef __OCPN__ANDROID__
-    if( m_pToolTipWin ) {
-        m_pToolTipWin->Destroy();
-        m_pToolTipWin = NULL;
-    }
-#endif
-    m_toolOutlineColour = GetGlobalColor( _T("UIBDR") );
-
-    m_currentColorScheme = cs;
-}
-
-bool ocpnToolBarSimple::Realize()
-{
-    if( IsVertical() )
-        m_style->SetOrientation( wxTB_VERTICAL );
-    else
-        m_style->SetOrientation( wxTB_HORIZONTAL );
-
-    wxSize toolSize = wxSize(-1, -1);
-    int separatorSize = m_style->GetToolSeparation() * m_sizefactor;
-    int topMargin = m_style->GetTopMargin() * m_sizefactor;
-    int leftMargin = m_style->GetLeftMargin() * m_sizefactor;
-
-    m_currentRowsOrColumns = 0;
-    m_LineCount = 1;
-    m_lastX = leftMargin;
-    m_lastY = topMargin;
-    m_maxWidth = 0;
-    m_maxHeight = 0;
-
-    ocpnToolBarTool *lastTool = NULL;
-    bool firstNode = true;
-    wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
-
-    int iNode = 0;
-
-    while( node ) {
-
-        if(iNode >= m_nShowTools)
-            break;
-
-        ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
-
-        // Set the tool size to be the size of the first non-separator tool, usually the first one
-        if(toolSize.x == -1){
-            if( !tool->IsSeparator() ){
-                toolSize.x = tool->m_width;
-                toolSize.y = tool->m_height;
-            }
+        m_lastX += toolSize.x + separatorSize;
+      } else {
+        if (m_currentRowsOrColumns >= m_maxRows) {
+          tool->firstInLine = true;
+          if (lastTool) lastTool->lastInLine = true;
+          m_LineCount++;
+          m_currentRowsOrColumns = 0;
+          m_lastX += toolSize.x + leftMargin;
+          m_lastY = topMargin;
         }
+        tool->m_x = (wxCoord)m_lastX;
+        tool->m_y = (wxCoord)m_lastY;
 
-        tool->firstInLine = firstNode;
-        tool->lastInLine = false;
-        firstNode = false;
+        tool->trect = wxRect(tool->m_x, tool->m_y, toolSize.x, toolSize.y);
+        tool->trect.Inflate((separatorSize / 2), topMargin);
 
-        tool->last_rect.width = 0;              // mark it invalid
+        m_lastY += toolSize.y + separatorSize;
+      }
+      m_currentRowsOrColumns++;
+    } else if (tool->IsControl()) {
+      tool->m_x = (wxCoord)(m_lastX);
+      tool->m_y = (wxCoord)(m_lastY - (topMargin / 2));
 
-        if( tool->IsSeparator() ) {
-            if( GetWindowStyleFlag() & wxTB_HORIZONTAL ) {
-                if( m_currentRowsOrColumns >= m_maxCols )
-                    m_lastY += separatorSize;
-                else
-                    m_lastX += separatorSize;
-            } else {
-                if( m_currentRowsOrColumns >= m_maxRows )
-                    m_lastX += separatorSize;
-                else
-                    m_lastY += separatorSize;
-            }
-        } else
-            if( tool->IsButton() ) {
-                if( !IsVertical() ) {
-                    if( m_currentRowsOrColumns >= m_maxCols ) {
-                        tool->firstInLine = true;
-                        if( lastTool && m_LineCount > 1 ) lastTool->lastInLine = true;
-                        m_LineCount++;
-                        m_currentRowsOrColumns = 0;
-                        m_lastX = leftMargin;
-                        m_lastY += toolSize.y + topMargin;
-                    }
-                    tool->m_x = (wxCoord) m_lastX;
-                    tool->m_y = (wxCoord) m_lastY;
+      tool->trect =
+          wxRect(tool->m_x, tool->m_y, tool->GetWidth(), tool->GetHeight());
+      tool->trect.Inflate(separatorSize / 2, topMargin);
 
-                    tool->trect = wxRect( tool->m_x, tool->m_y, toolSize.x, toolSize.y );
-                    tool->trect.Inflate( separatorSize / 2, topMargin );
-
-                    m_lastX += toolSize.x + separatorSize;
-                } else {
-                    if( m_currentRowsOrColumns >= m_maxRows ) {
-                        tool->firstInLine = true;
-                        if( lastTool ) lastTool->lastInLine = true;
-                        m_LineCount++;
-                        m_currentRowsOrColumns = 0;
-                        m_lastX += toolSize.x + leftMargin;
-                        m_lastY = topMargin;
-                    }
-                    tool->m_x = (wxCoord) m_lastX;
-                    tool->m_y = (wxCoord) m_lastY;
-
-                    tool->trect = wxRect( tool->m_x, tool->m_y, toolSize.x, toolSize.y );
-                    tool->trect.Inflate( (separatorSize / 2),  topMargin );
-
-                    m_lastY += toolSize.y + separatorSize;
-                }
-                m_currentRowsOrColumns++;
-            } else
-                if( tool->IsControl() ) {
-                    tool->m_x = (wxCoord) ( m_lastX );
-                    tool->m_y = (wxCoord) ( m_lastY - ( topMargin / 2 ) );
-
-                    tool->trect = wxRect( tool->m_x, tool->m_y, tool->GetWidth(), tool->GetHeight() );
-                    tool->trect.Inflate( separatorSize / 2, topMargin );
-
-
-                    wxSize s = tool->GetControl()->GetSize();
-                    m_lastX += s.x + separatorSize;
-
-                }
-
-        if( m_lastX > m_maxWidth )
-            m_maxWidth = m_lastX;
-        if( m_lastY > m_maxHeight )
-            m_maxHeight = m_lastY;
-
-        lastTool = tool;
-        node = node->GetNext();
-        iNode++;
-    }
-    if( lastTool && (m_LineCount > 1 || IsVertical()) )
-        lastTool->lastInLine = true;
-
-    if( GetWindowStyleFlag() & wxTB_HORIZONTAL ){
-        m_maxHeight += toolSize.y;
-        m_maxHeight += m_style->GetBottomMargin();
-    }
-    else{
-        m_maxWidth += toolSize.x;
-        m_maxWidth += m_style->GetRightMargin() * m_sizefactor;
+      wxSize s = tool->GetControl()->GetSize();
+      m_lastX += s.x + separatorSize;
     }
 
-    SetSize( m_maxWidth, m_maxHeight );
-    SetMinSize( wxSize( m_maxWidth, m_maxHeight ) );
+    if (m_lastX > m_maxWidth) m_maxWidth = m_lastX;
+    if (m_lastY > m_maxHeight) m_maxHeight = m_lastY;
 
-    return true;
+    lastTool = tool;
+    node = node->GetNext();
+    iNode++;
+  }
+  if (lastTool && (m_LineCount > 1 || IsVertical()))
+    lastTool->lastInLine = true;
+
+  if (GetWindowStyleFlag() & wxTB_HORIZONTAL) {
+    m_maxHeight += toolSize.y;
+    m_maxHeight += m_style->GetBottomMargin();
+  } else {
+    m_maxWidth += toolSize.x;
+    m_maxWidth += m_style->GetRightMargin() * m_sizefactor;
+  }
+
+  SetSize(m_maxWidth, m_maxHeight);
+  SetMinSize(wxSize(m_maxWidth, m_maxHeight));
+
+  return true;
 }
 
 // ----------------------------------------------------------------------------
 // event handlers
 // ----------------------------------------------------------------------------
 
-void ocpnToolBarSimple::OnPaint( wxPaintEvent& WXUNUSED(event) )
-{
-    wxPaintDC dc( this );
-    PrepareDC( dc );
+void ocpnToolBarSimple::OnPaint(wxPaintEvent &WXUNUSED(event)) {
+  wxPaintDC dc(this);
+  PrepareDC(dc);
 
-    wxRegion ru = GetUpdateRegion();
-    wxRect upRect = ru.GetBox();
+  wxRegion ru = GetUpdateRegion();
+  wxRect upRect = ru.GetBox();
 
-    static int count = 0;
-    // Prevent reentry of OnPaint which would cause wxMemoryDC errors.
-    if( count > 0 ) return;
-    count++;
+  static int count = 0;
+  // Prevent reentry of OnPaint which would cause wxMemoryDC errors.
+  if (count > 0) return;
+  count++;
 
-    for( wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst(); node; node = node->GetNext() ) {
-        wxToolBarToolBase *tool = node->GetData();
-        ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
-        wxRect toolRect = tools->trect;
+  for (wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+       node; node = node->GetNext()) {
+    wxToolBarToolBase *tool = node->GetData();
+    ocpnToolBarTool *tools = (ocpnToolBarTool *)tool;
+    wxRect toolRect = tools->trect;
 
-        if( toolRect.Intersects( upRect ) ) {
-
-            if( tool->IsButton() ) {
-                DrawTool( dc, tool );
-            } else
-                if( tool->IsControl() ) {
-                    if( tool->GetControl()->IsKindOf( CLASSINFO(wxStaticBitmap) ) ) {
-                        wxStaticBitmap *psbm = (wxStaticBitmap *) tool->GetControl();
-                        ocpnToolBarTool *toolsimp = (ocpnToolBarTool *) tool;
-                        dc.DrawBitmap( psbm->GetBitmap(), toolsimp->m_x, toolsimp->m_y, false );
-                    }
-                }
+    if (toolRect.Intersects(upRect)) {
+      if (tool->IsButton()) {
+        DrawTool(dc, tool);
+      } else if (tool->IsControl()) {
+        if (tool->GetControl()->IsKindOf(CLASSINFO(wxStaticBitmap))) {
+          wxStaticBitmap *psbm = (wxStaticBitmap *)tool->GetControl();
+          ocpnToolBarTool *toolsimp = (ocpnToolBarTool *)tool;
+          dc.DrawBitmap(psbm->GetBitmap(), toolsimp->m_x, toolsimp->m_y, false);
         }
+      }
     }
+  }
 
-    count--;
+  count--;
 }
 
-void ocpnToolBarSimple::OnSize( wxSizeEvent& WXUNUSED(event) )
-{
-    /*if( GetAutoLayout() )*/ Layout();
+void ocpnToolBarSimple::OnSize(wxSizeEvent &WXUNUSED(event)) {
+  /*if( GetAutoLayout() )*/ Layout();
 }
 
-void ocpnToolBarSimple::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
-{
-    OnMouseEnter( m_pressedTool = m_currentTool = -1 );
+void ocpnToolBarSimple::OnKillFocus(wxFocusEvent &WXUNUSED(event)) {
+  OnMouseEnter(m_pressedTool = m_currentTool = -1);
 }
 
-void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
-{
-    if( !gFrame ) //In case gFrame was already destroyed, but the toolbar still exists (Which should not happen, ever.)
-        return;
+void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent &event) {
+  if (!gFrame)  // In case gFrame was already destroyed, but the toolbar still
+                // exists (Which should not happen, ever.)
+    return;
 
-    //if( !gFrame->IsActive() )
-    //    return;
+  // if( !gFrame->IsActive() )
+  //    return;
 
-    if( m_btooltip_show && IsShown() && m_pToolTipWin && ( !m_pToolTipWin->IsShown() ) ) {
-        if( m_last_ro_tool ) {
-            wxString s = m_last_ro_tool->GetShortHelp();
+  if (m_btooltip_show && IsShown() && m_pToolTipWin &&
+      (!m_pToolTipWin->IsShown())) {
+    if (m_last_ro_tool) {
+      wxString s = m_last_ro_tool->GetShortHelp();
 
-            if( s.Len() ) {
-                m_pToolTipWin->SetString( s );
-                m_pToolTipWin->SetHiviz(m_last_ro_tool->m_btooltip_hiviz);
+      if (s.Len()) {
+        m_pToolTipWin->SetString(s);
+        m_pToolTipWin->SetHiviz(m_last_ro_tool->m_btooltip_hiviz);
 
-                wxPoint pos_in_toolbar( m_last_ro_tool->m_x, m_last_ro_tool->m_y );
-                pos_in_toolbar.x += m_last_ro_tool->m_width + 2;
+        wxPoint pos_in_toolbar(m_last_ro_tool->m_x, m_last_ro_tool->m_y);
+        pos_in_toolbar.x += m_last_ro_tool->m_width + 2;
 
-                m_pToolTipWin->Move(0,0);       // workaround for gtk autocentre dialog behavior
+        m_pToolTipWin->Move(
+            0, 0);  // workaround for gtk autocentre dialog behavior
 
-                wxPoint screenPosition = ClientToScreen( pos_in_toolbar );
-                wxPoint framePosition = gFrame->ScreenToClient(screenPosition);
-                wxSize tipSize = m_pToolTipWin->GetRenderedSize();
+        wxPoint screenPosition = ClientToScreen(pos_in_toolbar);
+        wxPoint framePosition = gFrame->ScreenToClient(screenPosition);
+        wxSize tipSize = m_pToolTipWin->GetRenderedSize();
 
-                if( (framePosition.x + tipSize.x) > gFrame->GetSize().x)
-                    screenPosition.x -= (tipSize.x + m_last_ro_tool->m_width + 4);
+        if ((framePosition.x + tipSize.x) > gFrame->GetSize().x)
+          screenPosition.x -= (tipSize.x + m_last_ro_tool->m_width + 4);
 
-                m_pToolTipWin->SetPosition( screenPosition );
-                m_pToolTipWin->SetBitmap();
-                m_pToolTipWin->Show();
+        m_pToolTipWin->SetPosition(screenPosition);
+        m_pToolTipWin->SetBitmap();
+        m_pToolTipWin->Show();
 #ifndef __WXOSX__
-                gFrame->Raise();
+        gFrame->Raise();
 #endif
 
 #ifndef __OCPN__ANDROID__
-                if( g_btouch )
-                    m_tooltipoff_timer.Start(m_tooltip_off, wxTIMER_ONE_SHOT);
+        if (g_btouch) m_tooltipoff_timer.Start(m_tooltip_off, wxTIMER_ONE_SHOT);
 #endif
-            }
-        }
+      }
     }
+  }
 }
 
-void ocpnToolBarSimple::OnToolTipOffTimerEvent( wxTimerEvent& event )
-{
-    HideTooltip();
+void ocpnToolBarSimple::OnToolTipOffTimerEvent(wxTimerEvent &event) {
+  HideTooltip();
 }
-
 
 int s_dragx, s_dragy;
 bool leftDown;
 
-void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
-{
+void ocpnToolBarSimple::OnMouseEvent(wxMouseEvent &event) {
 #ifdef __OCPN__ANDROID__
-    if(!event.IsButton())
-        return;
+  if (!event.IsButton()) return;
 #endif
 
-    wxCoord x, y;
-    event.GetPosition( &x, &y );
-    ocpnToolBarTool *tool = (ocpnToolBarTool *) FindToolForPosition( x, y );
+  wxCoord x, y;
+  event.GetPosition(&x, &y);
+  ocpnToolBarTool *tool = (ocpnToolBarTool *)FindToolForPosition(x, y);
 
 #ifndef __OCPN__ANDROID__
-    if( event.LeftDown() ) {
-///        CaptureMouse();
-        s_dragx = x;
-        s_dragy = y;
-    }
-    if( event.LeftUp() ) {
-///        if( HasCapture() ) ReleaseMouse();
-    }
+  if (event.LeftDown()) {
+    ///        CaptureMouse();
+    s_dragx = x;
+    s_dragy = y;
+  }
+  if (event.LeftUp()) {
+    ///        if( HasCapture() ) ReleaseMouse();
+  }
 #endif
 
-    static wxPoint s_pos_m_old;
-    static bool s_drag;
+  static wxPoint s_pos_m_old;
+  static bool s_drag;
 
-    if ( tool && (s_drag || tool->GetId() == ID_MASTERTOGGLE)) {
-
-        wxPoint pos_m = ClientToScreen(wxPoint(x, y));
-        if (event.LeftDown()) {
-            s_pos_m_old = pos_m;
-
-        }
-
-        if (!g_btouch && event.Dragging()) {
-            s_drag = true;
-            wxPoint pos_old = GetScreenPosition();
-            wxPoint pos_new = pos_old;
-
-            int dx = abs(pos_m.x - s_pos_m_old.x);
-            int dy = abs(pos_m.y - s_pos_m_old.y);
-            if( (dx < 10) && (dy < 10)){
-                //s_pos_m_old = pos_m;
-                //return;
-            }
-
-
-            pos_new.x += pos_m.x - s_pos_m_old.x;
-            pos_new.y += pos_m.y - s_pos_m_old.y;
-
-            ocpnFloatingToolbarDialog * parentFloatingToolBar = dynamic_cast<ocpnFloatingToolbarDialog*>(GetParent());
-            //if( (dx > 4) || (dy > 4))
-                parentFloatingToolBar->MoveDialogInScreenCoords(pos_new, pos_old);
-            ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
-            if(parent)
-                parent->GetFrameRelativePosition(&g_maintoolbar_x, &g_maintoolbar_y);
-            s_pos_m_old = pos_m;
-            return;
-        }
-
-        if (event.LeftUp() && s_drag) {
-            s_drag = false;
-            return;
-        }
+  if (tool && (s_drag || tool->GetId() == ID_MASTERTOGGLE)) {
+    wxPoint pos_m = ClientToScreen(wxPoint(x, y));
+    if (event.LeftDown()) {
+      s_pos_m_old = pos_m;
     }
 
+    if (!g_btouch && event.Dragging()) {
+      s_drag = true;
+      wxPoint pos_old = GetScreenPosition();
+      wxPoint pos_new = pos_old;
 
-    if( tool && tool->IsButton() && IsShown() ) {
+      int dx = abs(pos_m.x - s_pos_m_old.x);
+      int dy = abs(pos_m.y - s_pos_m_old.y);
+      if ((dx < 10) && (dy < 10)) {
+        // s_pos_m_old = pos_m;
+        // return;
+      }
 
-        if(m_btooltip_show){
-            //    ToolTips
-            if( NULL == m_pToolTipWin ) {
-                m_pToolTipWin = new ToolTipWin( gFrame/*GetParent()*/ );
-                m_pToolTipWin->SetColorScheme( m_currentColorScheme );
-                m_pToolTipWin->Hide();
-            }
+      pos_new.x += pos_m.x - s_pos_m_old.x;
+      pos_new.y += pos_m.y - s_pos_m_old.y;
 
-            if( tool != m_last_ro_tool ){
-                m_pToolTipWin->Hide();
-            }
+      ocpnFloatingToolbarDialog *parentFloatingToolBar =
+          dynamic_cast<ocpnFloatingToolbarDialog *>(GetParent());
+      // if( (dx > 4) || (dy > 4))
+      parentFloatingToolBar->MoveDialogInScreenCoords(pos_new, pos_old);
+      ocpnFloatingToolbarDialog *parent =
+          wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+      if (parent)
+        parent->GetFrameRelativePosition(&g_maintoolbar_x, &g_maintoolbar_y);
+      s_pos_m_old = pos_m;
+      return;
+    }
+
+    if (event.LeftUp() && s_drag) {
+      s_drag = false;
+      return;
+    }
+  }
+
+  if (tool && tool->IsButton() && IsShown()) {
+    if (m_btooltip_show) {
+      //    ToolTips
+      if (NULL == m_pToolTipWin) {
+        m_pToolTipWin = new ToolTipWin(gFrame /*GetParent()*/);
+        m_pToolTipWin->SetColorScheme(m_currentColorScheme);
+        m_pToolTipWin->Hide();
+      }
+
+      if (tool != m_last_ro_tool) {
+        m_pToolTipWin->Hide();
+      }
 
 #ifndef __OCPN__ANDROID__
-            if( !m_pToolTipWin->IsShown() ) {
-                if(!m_tooltip_timer.IsRunning()){
-                    m_tooltip_timer.Start( m_one_shot, wxTIMER_ONE_SHOT );
-                }
-            }
+      if (!m_pToolTipWin->IsShown()) {
+        if (!m_tooltip_timer.IsRunning()) {
+          m_tooltip_timer.Start(m_one_shot, wxTIMER_ONE_SHOT);
+        }
+      }
 #endif
+    }
+    //    Tool Rollover highlighting
+    if (!g_btouch && m_tbenableRolloverBitmaps) {
+      if (tool != m_last_ro_tool) {
+        if (tool->IsEnabled()) {
+          tool->rollover = true;
         }
-        //    Tool Rollover highlighting
-        if(!g_btouch && m_tbenableRolloverBitmaps){
-            if( tool != m_last_ro_tool ) {
-                if( tool->IsEnabled() ) {
-                    tool->rollover = true;
-                }
-                if( m_last_ro_tool ) {
-                    if( m_last_ro_tool->IsEnabled() ) {
-                        m_last_ro_tool->rollover = false;
-                    }
-                }
-                tool->bitmapOK = false;
-                m_last_ro_tool = tool;
+        if (m_last_ro_tool) {
+          if (m_last_ro_tool->IsEnabled()) {
+            m_last_ro_tool->rollover = false;
+          }
+        }
+        tool->bitmapOK = false;
+        m_last_ro_tool = tool;
 
-                Refresh( false );
-            }
-        }
-    } else {
-        //    Tooltips
-        if( m_pToolTipWin && m_pToolTipWin->IsShown() ){
-            m_pToolTipWin->Hide();
-            KillTooltip();
-            m_btooltip_show = true;
-
-        }
-
-        //    Remove Highlighting
-        if( m_last_ro_tool && m_tbenableRolloverBitmaps) {
-            if( m_last_ro_tool->IsEnabled() ) {
-                m_last_ro_tool->rollover = false;
-                m_last_ro_tool->bitmapOK = false;
-            }
-            Refresh( false );
-        }
+        Refresh(false);
+      }
+    }
+  } else {
+    //    Tooltips
+    if (m_pToolTipWin && m_pToolTipWin->IsShown()) {
+      m_pToolTipWin->Hide();
+      KillTooltip();
+      m_btooltip_show = true;
     }
 
-    m_last_ro_tool = tool;
+    //    Remove Highlighting
+    if (m_last_ro_tool && m_tbenableRolloverBitmaps) {
+      if (m_last_ro_tool->IsEnabled()) {
+        m_last_ro_tool->rollover = false;
+        m_last_ro_tool->bitmapOK = false;
+      }
+      Refresh(false);
+    }
+  }
 
-    // allow smooth zooming while toolbutton is held down
-    if(g_bsmoothpanzoom && !g_btouch) {
-        ChartCanvas *pcc = NULL;
-        ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
-        if(parent)
-            pcc = wxDynamicCast(parent->GetParent(), ChartCanvas);
+  m_last_ro_tool = tool;
 
+  // allow smooth zooming while toolbutton is held down
+  if (g_bsmoothpanzoom && !g_btouch) {
+    ChartCanvas *pcc = NULL;
+    ocpnFloatingToolbarDialog *parent =
+        wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+    if (parent) pcc = wxDynamicCast(parent->GetParent(), ChartCanvas);
 
-        if(event.LeftUp() && m_btoolbar_is_zooming) {
-            if(pcc){
-                pcc->StopMovement();
-                m_btoolbar_is_zooming = false;
-            }
-            return;
-        }
-
-        if( event.LeftDown() && tool && (tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT) ) {
-            if(pcc){
-                pcc->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? g_plus_minus_zoom_factor : 1.0 / g_plus_minus_zoom_factor, false, false );
-                m_btoolbar_is_zooming = true;
-            }
-            return;
-        }
+    if (event.LeftUp() && m_btoolbar_is_zooming) {
+      if (pcc) {
+        pcc->StopMovement();
+        m_btoolbar_is_zooming = false;
+      }
+      return;
     }
 
-    if( !tool ) {
-        if( m_currentTool > -1 ) {
-            if( event.LeftIsDown() ) SpringUpButton( m_currentTool );
-            m_currentTool = -1;
-            OnMouseEnter( -1 );
-        }
+    if (event.LeftDown() && tool &&
+        (tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT)) {
+      if (pcc) {
+        pcc->ZoomCanvas(tool->GetId() == ID_ZOOMIN
+                            ? g_plus_minus_zoom_factor
+                            : 1.0 / g_plus_minus_zoom_factor,
+                        false, false);
+        m_btoolbar_is_zooming = true;
+      }
+      return;
+    }
+  }
 
-        wxMouseEvent *pev = (wxMouseEvent *) event.Clone();
-        GetParent()->GetEventHandler()->AddPendingEvent( *pev );
-        wxDELETE( pev );
-
-        return;
+  if (!tool) {
+    if (m_currentTool > -1) {
+      if (event.LeftIsDown()) SpringUpButton(m_currentTool);
+      m_currentTool = -1;
+      OnMouseEnter(-1);
     }
 
-    if( !event.IsButton() ) {
-        if( tool->GetId() != m_currentTool ) {
-            // If the left button is kept down and moved over buttons,
-            // press those buttons.
-            if( event.LeftIsDown() && tool->IsEnabled() ) {
-                SpringUpButton( m_currentTool );
+    wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
+    GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+    wxDELETE(pev);
 
-                if( tool->CanBeToggled() ) {
-                    tool->Toggle();
-                }
+    return;
+  }
 
-                DrawTool( tool );
-            }
+  if (!event.IsButton()) {
+    if (tool->GetId() != m_currentTool) {
+      // If the left button is kept down and moved over buttons,
+      // press those buttons.
+      if (event.LeftIsDown() && tool->IsEnabled()) {
+        SpringUpButton(m_currentTool);
 
-            m_currentTool = tool->GetId();
-            OnMouseEnter( m_currentTool );
+        if (tool->CanBeToggled()) {
+          tool->Toggle();
         }
 
-        wxMouseEvent *pev = (wxMouseEvent *) event.Clone();
-        GetParent()->GetEventHandler()->AddPendingEvent( *pev );
-        wxDELETE( pev );
+        DrawTool(tool);
+      }
 
-        return;
+      m_currentTool = tool->GetId();
+      OnMouseEnter(m_currentTool);
     }
 
-    // Left button pressed.
-    if( event.LeftIsDown() )
-        m_leftDown = true;                      // trigger on
+    wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
+    GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+    wxDELETE(pev);
 
-    if( event.LeftDown() && tool->IsEnabled() ) {
-        if( tool->CanBeToggled() ) {
-            tool->Toggle();
-            tool->bitmapOK = false;
+    return;
+  }
 
-        }
+  // Left button pressed.
+  if (event.LeftIsDown()) m_leftDown = true;  // trigger on
 
-        DrawTool( tool );
-
-        //        Look for PlugIn tools
-        //        If found, make the callback.
-        if( g_pi_manager ) {
-            ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
-            for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
-                PlugInToolbarToolContainer *pttc = tool_array[i];
-                if( tool->GetId() == pttc->id ) {
-                    opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
-                    if( ppi ) {
-                        ppi->OnToolbarToolDownCallback( pttc->id );
-                        m_last_plugin_down_id = pttc->id;
-                    }
-                }
-            }
-        }
-    } else
-        if( event.RightDown() ) {
-            OnRightClick( tool->GetId(), x, y );
-        }
-
-    // Left Button Released.  Only this action confirms selection.
-    // If the button is enabled and it is not a toggle tool and it is
-    // in the pressed state, then raise the button and call OnLeftClick.
-    //
-    // Unfortunately, some touch screen drivers do not send "LeftIsDown" events.
-    // Nor do they report "LeftIsDown" in any state.
-    // c.f rPI "official" 7" panel.
-
-    // So, for this logic, assume in touch mode that the m_leftDown flag may not be set,
-    // and process the left-up event anyway.
-    if( event.LeftUp() && tool->IsEnabled() && (m_leftDown || g_btouch) ) {
-        // Pass the OnLeftClick event to tool
-        if( !OnLeftClick( tool->GetId(), tool->IsToggled() ) && tool->CanBeToggled() ) {
-            // If it was a toggle, and OnLeftClick says No Toggle allowed,
-            // then change it back
-            tool->Toggle();
-            tool->bitmapOK = false;
-        }
-
-        DoPluginToolUp();
-        m_leftDown = false;
+  if (event.LeftDown() && tool->IsEnabled()) {
+    if (tool->CanBeToggled()) {
+      tool->Toggle();
+      tool->bitmapOK = false;
     }
 
-    wxMouseEvent *pev = (wxMouseEvent *) event.Clone();
-    GetParent()->GetEventHandler()->AddPendingEvent( *pev );
-    wxDELETE( pev );
-    event.Skip();
+    DrawTool(tool);
+
+    //        Look for PlugIn tools
+    //        If found, make the callback.
+    if (g_pi_manager) {
+      ArrayOfPlugInToolbarTools tool_array =
+          g_pi_manager->GetPluginToolbarToolArray();
+      for (unsigned int i = 0; i < tool_array.GetCount(); i++) {
+        PlugInToolbarToolContainer *pttc = tool_array[i];
+        if (tool->GetId() == pttc->id) {
+          opencpn_plugin_113 *ppi =
+              dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
+          if (ppi) {
+            ppi->OnToolbarToolDownCallback(pttc->id);
+            m_last_plugin_down_id = pttc->id;
+          }
+        }
+      }
+    }
+  } else if (event.RightDown()) {
+    OnRightClick(tool->GetId(), x, y);
+  }
+
+  // Left Button Released.  Only this action confirms selection.
+  // If the button is enabled and it is not a toggle tool and it is
+  // in the pressed state, then raise the button and call OnLeftClick.
+  //
+  // Unfortunately, some touch screen drivers do not send "LeftIsDown" events.
+  // Nor do they report "LeftIsDown" in any state.
+  // c.f rPI "official" 7" panel.
+
+  // So, for this logic, assume in touch mode that the m_leftDown flag may not
+  // be set, and process the left-up event anyway.
+  if (event.LeftUp() && tool->IsEnabled() && (m_leftDown || g_btouch)) {
+    // Pass the OnLeftClick event to tool
+    if (!OnLeftClick(tool->GetId(), tool->IsToggled()) &&
+        tool->CanBeToggled()) {
+      // If it was a toggle, and OnLeftClick says No Toggle allowed,
+      // then change it back
+      tool->Toggle();
+      tool->bitmapOK = false;
+    }
+
+    DoPluginToolUp();
+    m_leftDown = false;
+  }
+
+  wxMouseEvent *pev = (wxMouseEvent *)event.Clone();
+  GetParent()->GetEventHandler()->AddPendingEvent(*pev);
+  wxDELETE(pev);
+  event.Skip();
 }
 
 // ----------------------------------------------------------------------------
 // drawing
 // ----------------------------------------------------------------------------
 
-void ocpnToolBarSimple::DrawTool( wxToolBarToolBase *tool )
-{
-    wxClientDC dc( this );
-    DrawTool( dc, tool );
+void ocpnToolBarSimple::DrawTool(wxToolBarToolBase *tool) {
+  wxClientDC dc(this);
+  DrawTool(dc, tool);
 }
 
 // NB! The current DrawTool code assumes that plugin tools are never disabled
 // when they are present on the toolbar, since disabled plugins are removed.
 
-void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
-{
-    ocpnToolBarTool *tool = (ocpnToolBarTool *) toolBase;
-    PrepareDC( dc );
+void ocpnToolBarSimple::DrawTool(wxDC &dc, wxToolBarToolBase *toolBase) {
+  ocpnToolBarTool *tool = (ocpnToolBarTool *)toolBase;
+  PrepareDC(dc);
 
-    wxPoint drawAt( tool->m_x, tool->m_y );
-    wxBitmap bmp = wxNullBitmap;
+  wxPoint drawAt(tool->m_x, tool->m_y);
+  wxBitmap bmp = wxNullBitmap;
 
-    bool bNeedClear = !tool->bitmapOK;
+  bool bNeedClear = !tool->bitmapOK;
 
-    if( tool->bitmapOK ) {
-        if( tool->IsEnabled() ) {
-            bmp = tool->GetNormalBitmap();
-            if( !bmp.IsOk() ){
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover,
-                                            tool->m_width, tool->m_height );
-                tool->SetNormalBitmap( bmp );
-                tool->bitmapOK = true;
-            }
-        } else {
-            bmp = tool->GetDisabledBitmap();
-            if( !bmp.IsOk() ){
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED, false,
-                                            tool->m_width, tool->m_height );
-                tool->SetDisabledBitmap( bmp );
-                tool->bitmapOK = true;
-            }
-        }
+  if (tool->bitmapOK) {
+    if (tool->IsEnabled()) {
+      bmp = tool->GetNormalBitmap();
+      if (!bmp.IsOk()) {
+        bmp =
+            m_style->GetToolIcon(tool->GetToolname(), TOOLICON_NORMAL,
+                                 tool->rollover, tool->m_width, tool->m_height);
+        tool->SetNormalBitmap(bmp);
+        tool->bitmapOK = true;
+      }
     } else {
-        if ( tool->isPluginTool ) {
-            int toggleFlag = tool->IsToggled()?TOOLICON_TOGGLED:TOOLICON_NORMAL;
+      bmp = tool->GetDisabledBitmap();
+      if (!bmp.IsOk()) {
+        bmp = m_style->GetToolIcon(tool->GetToolname(), TOOLICON_DISABLED,
+                                   false, tool->m_width, tool->m_height);
+        tool->SetDisabledBitmap(bmp);
+        tool->bitmapOK = true;
+      }
+    }
+  } else {
+    if (tool->isPluginTool) {
+      int toggleFlag = tool->IsToggled() ? TOOLICON_TOGGLED : TOOLICON_NORMAL;
 
-            // First try getting the icon from an SVG definition.
-            // If it is not found, try to see if it is available in the style
-            // If not there, we build a new icon from the style BG and the (default) plugin icon.
+      // First try getting the icon from an SVG definition.
+      // If it is not found, try to see if it is available in the style
+      // If not there, we build a new icon from the style BG and the (default)
+      // plugin icon.
 
-            wxString svgFile = tool->pluginNormalIconSVG;
-            if( toggleFlag ) {
-                if(tool->pluginToggledIconSVG.Length())
-                    svgFile = tool->pluginToggledIconSVG;
-            }
-            if( tool->rollover ) {
-                if(tool->pluginRolloverIconSVG.Length())
-                    svgFile = tool->pluginRolloverIconSVG;
-            }
+      wxString svgFile = tool->pluginNormalIconSVG;
+      if (toggleFlag) {
+        if (tool->pluginToggledIconSVG.Length())
+          svgFile = tool->pluginToggledIconSVG;
+      }
+      if (tool->rollover) {
+        if (tool->pluginRolloverIconSVG.Length())
+          svgFile = tool->pluginRolloverIconSVG;
+      }
 
-            if(!svgFile.IsEmpty()){         // try SVG
+      if (!svgFile.IsEmpty()) {  // try SVG
 #ifdef ocpnUSE_SVG
 #ifndef __OCPN__ANDROID__
-                if( wxFileExists( svgFile ) ){
-                    wxSVGDocument svgDoc;
-                    if( svgDoc.Load(svgFile) ){
-                        bool square = (tool->m_width == tool->m_height);
-                        bmp = wxBitmap( svgDoc.Render( tool->m_width, tool->m_height, NULL, !square, true ) );
-                        bmp = m_style->BuildPluginIcon( bmp, toggleFlag, m_sizefactor );
-                    }
-                    else
-                        bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
-                }
-#else
-                bmp = loadAndroidSVG( svgFile,tool->m_width, tool->m_height );
-                bmp = m_style->BuildPluginIcon( bmp, TOOLICON_NORMAL );
-#endif
-
-#endif
-            }
-
-            if( !bmp.IsOk() || bmp.IsNull() ) {
-                if( m_style->NativeToolIconExists(tool->GetToolname()) ) {
-                    bmp = m_style->GetToolIcon( tool->GetToolname(), toggleFlag, tool->rollover, tool->m_width, tool->m_height );
-                } else {
-                    bmp = wxNullBitmap;
-                }
-
-                if( bmp.IsNull() ) {     // Tool icon not found
-                    if( tool->rollover ) {
-                        bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, toggleFlag );
-                        if( !bmp.IsOk() ) {
-                            bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, toggleFlag );
-                        }
-                    }
-                    else {
-                        bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, toggleFlag );
-                    }
-                    if( fabs(m_sizefactor - 1.0) > 0.01) {
-                        if(tool->m_width && tool->m_height) {
-                            wxImage scaled_image = bmp.ConvertToImage();
-                            bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
-                        }
-                    }
-                }
-            }
-            tool->SetNormalBitmap( bmp );
-            tool->bitmapOK = true;
-        } else { // Not a plugin tool
-            bmp = tool->GetNormalBitmap();
-            if( tool->IsEnabled() ) {
-                if( tool->IsToggled() ){
-                    if(!tool->bitmapOK){
-                        if(m_style->NativeToolIconExists(tool->GetToolname())){
-                            bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover,
-                                                tool->m_width, tool->m_height );
-                            tool->SetNormalBitmap( bmp );
-                        }
-                    }
-                 }
-
-                else{
-                    if(!tool->bitmapOK){
-                        if(m_style->NativeToolIconExists(tool->GetToolname())){
-                            bmp = m_style->GetToolIcon( tool->GetIconName(), TOOLICON_NORMAL, tool->rollover,
-                                                tool->m_width, tool->m_height );
-                            tool->SetNormalBitmap( bmp );
-                        }
-                    }
-                }
-
-                tool->bitmapOK = true;
-            } else {
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED, false,
-                                            tool->m_width, tool->m_height );
-                tool->SetDisabledBitmap( bmp );
-                tool->bitmapOK = true;
-            }
+        if (wxFileExists(svgFile)) {
+          wxSVGDocument svgDoc;
+          if (svgDoc.Load(svgFile)) {
+            bool square = (tool->m_width == tool->m_height);
+            bmp = wxBitmap(svgDoc.Render(tool->m_width, tool->m_height, NULL,
+                                         !square, true));
+            bmp = m_style->BuildPluginIcon(bmp, toggleFlag, m_sizefactor);
+          } else
+            bmp = m_style->BuildPluginIcon(tool->pluginNormalIcon,
+                                           TOOLICON_NORMAL);
         }
-    }
+#else
+        bmp = loadAndroidSVG(svgFile, tool->m_width, tool->m_height);
+        bmp = m_style->BuildPluginIcon(bmp, TOOLICON_NORMAL);
+#endif
 
-    if( tool->firstInLine ) {
-        m_style->DrawToolbarLineStart( bmp, m_sizefactor );
-    }
-    if( tool->lastInLine ) {
-        m_style->DrawToolbarLineEnd( bmp, m_sizefactor );
-    }
+#endif
+      }
 
-    if( bmp.GetWidth() != m_style->GetToolSize().x
-            || bmp.GetHeight() != m_style->GetToolSize().y ) {
-//        drawAt.x -= ( bmp.GetWidth() - m_style->GetToolSize().x ) / 2;
-//        drawAt.y -= ( bmp.GetHeight() - m_style->GetToolSize().y ) / 2;
-    }
+      if (!bmp.IsOk() || bmp.IsNull()) {
+        if (m_style->NativeToolIconExists(tool->GetToolname())) {
+          bmp = m_style->GetToolIcon(tool->GetToolname(), toggleFlag,
+                                     tool->rollover, tool->m_width,
+                                     tool->m_height);
+        } else {
+          bmp = wxNullBitmap;
+        }
 
-    //      Clear the last drawn tool if necessary
-    if( (tool->last_rect.width && (tool->last_rect.x != drawAt.x || tool->last_rect.y != drawAt.y)) || bNeedClear )
-    {
-        wxBrush bb(GetGlobalColor( _T("GREY3") ));
-        dc.SetBrush(bb);
-        dc.SetPen( *wxTRANSPARENT_PEN );
-        dc.DrawRectangle(tool->last_rect.x, tool->last_rect.y, tool->last_rect.width, tool->last_rect.height);
-    }
+        if (bmp.IsNull()) {  // Tool icon not found
+          if (tool->rollover) {
+            bmp =
+                m_style->BuildPluginIcon(tool->pluginRolloverIcon, toggleFlag);
+            if (!bmp.IsOk()) {
+              bmp =
+                  m_style->BuildPluginIcon(tool->pluginNormalIcon, toggleFlag);
+            }
+          } else {
+            bmp = m_style->BuildPluginIcon(tool->pluginNormalIcon, toggleFlag);
+          }
+          if (fabs(m_sizefactor - 1.0) > 0.01) {
+            if (tool->m_width && tool->m_height) {
+              wxImage scaled_image = bmp.ConvertToImage();
+              bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height,
+                                                wxIMAGE_QUALITY_HIGH));
+            }
+          }
+        }
+      }
+      tool->SetNormalBitmap(bmp);
+      tool->bitmapOK = true;
+    } else {  // Not a plugin tool
+      bmp = tool->GetNormalBitmap();
+      if (tool->IsEnabled()) {
+        if (tool->IsToggled()) {
+          if (!tool->bitmapOK) {
+            if (m_style->NativeToolIconExists(tool->GetToolname())) {
+              bmp = m_style->GetToolIcon(tool->GetToolname(), TOOLICON_TOGGLED,
+                                         tool->rollover, tool->m_width,
+                                         tool->m_height);
+              tool->SetNormalBitmap(bmp);
+            }
+          }
+        }
 
-    //  could cache this in the tool...
-    //  A bit of a hack here.  We only scale tools if they are to be magnified globally
-    if(0/*m_sizefactor > 1.0*/ )
-    {
-        wxImage scaled_image = bmp.ConvertToImage();
-        wxBitmap sbmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
-        dc.DrawBitmap( sbmp, drawAt );
-        tool->last_rect = wxRect(drawAt.x, drawAt.y, sbmp.GetWidth(), sbmp.GetHeight());
+        else {
+          if (!tool->bitmapOK) {
+            if (m_style->NativeToolIconExists(tool->GetToolname())) {
+              bmp = m_style->GetToolIcon(tool->GetIconName(), TOOLICON_NORMAL,
+                                         tool->rollover, tool->m_width,
+                                         tool->m_height);
+              tool->SetNormalBitmap(bmp);
+            }
+          }
+        }
 
+        tool->bitmapOK = true;
+      } else {
+        bmp = m_style->GetToolIcon(tool->GetToolname(), TOOLICON_DISABLED,
+                                   false, tool->m_width, tool->m_height);
+        tool->SetDisabledBitmap(bmp);
+        tool->bitmapOK = true;
+      }
     }
-    else
-    {
-        dc.DrawBitmap( bmp, drawAt );
-        tool->last_rect = wxRect(drawAt.x, drawAt.y, bmp.GetWidth(), bmp.GetHeight());
-    }
+  }
 
+  if (tool->firstInLine) {
+    m_style->DrawToolbarLineStart(bmp, m_sizefactor);
+  }
+  if (tool->lastInLine) {
+    m_style->DrawToolbarLineEnd(bmp, m_sizefactor);
+  }
+
+  if (bmp.GetWidth() != m_style->GetToolSize().x ||
+      bmp.GetHeight() != m_style->GetToolSize().y) {
+    //        drawAt.x -= ( bmp.GetWidth() - m_style->GetToolSize().x ) / 2;
+    //        drawAt.y -= ( bmp.GetHeight() - m_style->GetToolSize().y ) / 2;
+  }
+
+  //      Clear the last drawn tool if necessary
+  if ((tool->last_rect.width &&
+       (tool->last_rect.x != drawAt.x || tool->last_rect.y != drawAt.y)) ||
+      bNeedClear) {
+    wxBrush bb(GetGlobalColor(_T("GREY3")));
+    dc.SetBrush(bb);
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.DrawRectangle(tool->last_rect.x, tool->last_rect.y,
+                     tool->last_rect.width, tool->last_rect.height);
+  }
+
+  //  could cache this in the tool...
+  //  A bit of a hack here.  We only scale tools if they are to be magnified
+  //  globally
+  if (0 /*m_sizefactor > 1.0*/) {
+    wxImage scaled_image = bmp.ConvertToImage();
+    wxBitmap sbmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height,
+                                                wxIMAGE_QUALITY_HIGH));
+    dc.DrawBitmap(sbmp, drawAt);
+    tool->last_rect =
+        wxRect(drawAt.x, drawAt.y, sbmp.GetWidth(), sbmp.GetHeight());
+
+  } else {
+    dc.DrawBitmap(bmp, drawAt);
+    tool->last_rect =
+        wxRect(drawAt.x, drawAt.y, bmp.GetWidth(), bmp.GetHeight());
+  }
 }
 
 // ----------------------------------------------------------------------------
 // toolbar geometry
 // ----------------------------------------------------------------------------
 
-wxToolBarToolBase *ocpnToolBarSimple::FindToolForPosition( wxCoord x, wxCoord y )
-{
-    wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
-    while( node ) {
-        ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
-        if( ( x >= tool->m_x ) && ( y >= tool->m_y ) && ( x < ( tool->m_x + tool->GetWidth() ) )
-                && ( y < ( tool->m_y + tool->GetHeight() ) ) ) {
-            return tool;
-        }
-
-        node = node->GetNext();
+wxToolBarToolBase *ocpnToolBarSimple::FindToolForPosition(wxCoord x,
+                                                          wxCoord y) {
+  wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+  while (node) {
+    ocpnToolBarTool *tool = (ocpnToolBarTool *)node->GetData();
+    if ((x >= tool->m_x) && (y >= tool->m_y) &&
+        (x < (tool->m_x + tool->GetWidth())) &&
+        (y < (tool->m_y + tool->GetHeight()))) {
+      return tool;
     }
 
-    return (wxToolBarToolBase *) NULL;
+    node = node->GetNext();
+  }
+
+  return (wxToolBarToolBase *)NULL;
 }
 
-void ocpnToolBarSimple::InvalidateBitmaps()
-{
-    wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
-    while( node ) {
-        ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
-        tool->bitmapOK = false;
-        node = node->GetNext();
-    }
+void ocpnToolBarSimple::InvalidateBitmaps() {
+  wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+  while (node) {
+    ocpnToolBarTool *tool = (ocpnToolBarTool *)node->GetData();
+    tool->bitmapOK = false;
+    node = node->GetNext();
+  }
 }
 
-wxRect ocpnToolBarSimple::GetToolRect( int tool_id )
-{
-    wxRect rect;
-    wxToolBarToolBase *tool = FindById( tool_id );
-    if( tool ) {
-        ocpnToolBarTool *otool = (ocpnToolBarTool *) tool;
-        if( otool ) rect = otool->trect;
-    }
+wxRect ocpnToolBarSimple::GetToolRect(int tool_id) {
+  wxRect rect;
+  wxToolBarToolBase *tool = FindById(tool_id);
+  if (tool) {
+    ocpnToolBarTool *otool = (ocpnToolBarTool *)tool;
+    if (otool) rect = otool->trect;
+  }
 
-    return rect;
+  return rect;
 }
 
 // ----------------------------------------------------------------------------
 // tool state change handlers
 // ----------------------------------------------------------------------------
 
-void ocpnToolBarSimple::DoEnableTool( wxToolBarToolBase *tool, bool WXUNUSED(enable) )
-{
-    ocpnToolBarTool *t = (ocpnToolBarTool *) tool;
-    t->bitmapOK = false;
-    DrawTool( tool );
+void ocpnToolBarSimple::DoEnableTool(wxToolBarToolBase *tool,
+                                     bool WXUNUSED(enable)) {
+  ocpnToolBarTool *t = (ocpnToolBarTool *)tool;
+  t->bitmapOK = false;
+  DrawTool(tool);
 }
 
-void ocpnToolBarSimple::DoToggleTool( wxToolBarToolBase *tool, bool WXUNUSED(toggle) )
-{
-    ocpnToolBarTool *t = (ocpnToolBarTool *) tool;
-    t->bitmapOK = false;
-    DrawTool( tool );
+void ocpnToolBarSimple::DoToggleTool(wxToolBarToolBase *tool,
+                                     bool WXUNUSED(toggle)) {
+  ocpnToolBarTool *t = (ocpnToolBarTool *)tool;
+  t->bitmapOK = false;
+  DrawTool(tool);
 }
 
 // Okay, so we've left the tool we're in ... we must check if the tool we're
 // leaving was a 'sprung push button' and if so, spring it back to the up
 // state.
-void ocpnToolBarSimple::SpringUpButton( int id )
-{
-    wxToolBarToolBase *tool = FindById( id );
+void ocpnToolBarSimple::SpringUpButton(int id) {
+  wxToolBarToolBase *tool = FindById(id);
 
-    if( tool && tool->CanBeToggled() ) {
-        if( tool->IsToggled() ) tool->Toggle();
+  if (tool && tool->CanBeToggled()) {
+    if (tool->IsToggled()) tool->Toggle();
 
-        DrawTool( tool );
-    }
+    DrawTool(tool);
+  }
 }
 
 // ----------------------------------------------------------------------------
 // scrolling implementation
 // ----------------------------------------------------------------------------
 
-wxString ocpnToolBarSimple::GetToolShortHelp( int id ) const
-{
-    wxToolBarToolBase *tool = FindById( id );
-    wxCHECK_MSG( tool, wxEmptyString, _T("no such tool") );
+wxString ocpnToolBarSimple::GetToolShortHelp(int id) const {
+  wxToolBarToolBase *tool = FindById(id);
+  wxCHECK_MSG(tool, wxEmptyString, _T("no such tool"));
 
-    return tool->GetShortHelp();
+  return tool->GetShortHelp();
 }
 
-wxString ocpnToolBarSimple::GetToolLongHelp( int id ) const
-{
-    wxToolBarToolBase *tool = FindById( id );
-    wxCHECK_MSG( tool, wxEmptyString, _T("no such tool") );
+wxString ocpnToolBarSimple::GetToolLongHelp(int id) const {
+  wxToolBarToolBase *tool = FindById(id);
+  wxCHECK_MSG(tool, wxEmptyString, _T("no such tool"));
 
-    return tool->GetLongHelp();
+  return tool->GetLongHelp();
 }
 
-void ocpnToolBarSimple::SetToolShortHelp( int id, const wxString& help )
-{
-    wxToolBarToolBase *tool = FindById( id );
-    if( tool ) {
-        (void) tool->SetShortHelp( help );
+void ocpnToolBarSimple::SetToolShortHelp(int id, const wxString &help) {
+  wxToolBarToolBase *tool = FindById(id);
+  if (tool) {
+    (void)tool->SetShortHelp(help);
+  }
+}
+
+void ocpnToolBarSimple::SetToolLongHelp(int id, const wxString &help) {
+  wxToolBarToolBase *tool = FindById(id);
+  if (tool) {
+    (void)tool->SetLongHelp(help);
+  }
+}
+
+int ocpnToolBarSimple::GetToolPos(int id) const {
+  size_t pos = 0;
+  wxToolBarToolsList::compatibility_iterator node;
+
+  for (node = m_tools.GetFirst(); node; node = node->GetNext()) {
+    if (node->GetData()->GetId() == id) return pos;
+
+    pos++;
+  }
+
+  return wxNOT_FOUND;
+}
+bool ocpnToolBarSimple::GetToolState(int id) const {
+  wxToolBarToolBase *tool = FindById(id);
+  wxCHECK_MSG(tool, false, _T("no such tool"));
+
+  return tool->IsToggled();
+}
+
+bool ocpnToolBarSimple::GetToolEnabled(int id) const {
+  wxToolBarToolBase *tool = FindById(id);
+  wxCHECK_MSG(tool, false, _T("no such tool"));
+
+  return tool->IsEnabled();
+}
+
+void ocpnToolBarSimple::ToggleTool(int id, bool toggle) {
+  wxToolBarToolBase *tool = FindById(id);
+
+  if (tool && tool->CanBeToggled() && tool->Toggle(toggle)) {
+    DoToggleTool(tool, toggle);
+    Refresh();
+  }
+}
+
+wxObject *ocpnToolBarSimple::GetToolClientData(int id) const {
+  wxToolBarToolBase *tool = FindById(id);
+  return tool ? tool->GetClientData() : (wxObject *)NULL;
+}
+
+void ocpnToolBarSimple::SetToolClientData(int id, wxObject *clientData) {
+  wxToolBarToolBase *tool = FindById(id);
+
+  wxCHECK_RET(tool, _T("no such tool in wxToolBar::SetToolClientData"));
+
+  tool->SetClientData(clientData);
+}
+
+void ocpnToolBarSimple::EnableTool(int id, bool enable) {
+  wxToolBarToolBase *tool = FindById(id);
+  if (tool) {
+    if (tool->Enable(enable)) {
+      DoEnableTool(tool, enable);
     }
+  }
+
+  ocpnFloatingToolbarDialog *parent =
+      wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+  if (parent && parent->m_FloatingToolbarConfigMenu) {
+    wxMenuItem *configItem = parent->m_FloatingToolbarConfigMenu->FindItem(id);
+    if (configItem) configItem->Check(true);
+  }
 }
 
-void ocpnToolBarSimple::SetToolLongHelp( int id, const wxString& help )
-{
-    wxToolBarToolBase *tool = FindById( id );
-    if( tool ) {
-        (void) tool->SetLongHelp( help );
-    }
+void ocpnToolBarSimple::SetToolTooltipHiViz(int id, bool b_hiviz) {
+  ocpnToolBarTool *tool = (ocpnToolBarTool *)FindById(id);
+  if (tool) {
+    tool->SetTooltipHiviz(b_hiviz);
+  }
 }
 
-int ocpnToolBarSimple::GetToolPos( int id ) const
-{
-    size_t pos = 0;
-    wxToolBarToolsList::compatibility_iterator node;
-
-    for( node = m_tools.GetFirst(); node; node = node->GetNext() ) {
-        if( node->GetData()->GetId() == id ) return pos;
-
-        pos++;
-    }
-
-    return wxNOT_FOUND;
-}
-bool ocpnToolBarSimple::GetToolState( int id ) const
-{
-    wxToolBarToolBase *tool = FindById( id );
-    wxCHECK_MSG( tool, false, _T("no such tool") );
-
-    return tool->IsToggled();
+void ocpnToolBarSimple::ClearTools() {
+  while (GetToolsCount()) {
+    DeleteToolByPos(0);
+  }
 }
 
-bool ocpnToolBarSimple::GetToolEnabled( int id ) const
-{
-    wxToolBarToolBase *tool = FindById( id );
-    wxCHECK_MSG( tool, false, _T("no such tool") );
-
-    return tool->IsEnabled();
+int ocpnToolBarSimple::GetVisibleToolCount() {
+  int counter = 0;
+  wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+  while (node) {
+    ocpnToolBarTool *tool = (ocpnToolBarTool *)node->GetData();
+    counter++;
+    node = node->GetNext();
+  }
+  return counter;
 }
 
-void ocpnToolBarSimple::ToggleTool( int id, bool toggle )
-{
-    wxToolBarToolBase *tool = FindById( id );
+bool ocpnToolBarSimple::DeleteToolByPos(size_t pos) {
+  wxCHECK_MSG(pos < GetToolsCount(), false,
+              _T("invalid position in wxToolBar::DeleteToolByPos()"));
 
-    if( tool && tool->CanBeToggled() && tool->Toggle( toggle ) ) {
-        DoToggleTool( tool, toggle );
-        Refresh();
-    }
+  wxToolBarToolsList::compatibility_iterator node = m_tools.Item(pos);
+
+  if (!DoDeleteTool(pos, node->GetData())) {
+    return false;
+  }
+
+  delete node->GetData();
+  m_tools.Erase(node);
+
+  return true;
 }
 
-wxObject *ocpnToolBarSimple::GetToolClientData( int id ) const
-{
-    wxToolBarToolBase *tool = FindById( id );
-    return tool ? tool->GetClientData() : (wxObject *) NULL;
+bool ocpnToolBarSimple::DeleteTool(int id) {
+  size_t pos = 0;
+  wxToolBarToolsList::compatibility_iterator node;
+  for (node = m_tools.GetFirst(); node; node = node->GetNext()) {
+    if (node->GetData()->GetId() == id) break;
+
+    pos++;
+  }
+
+  if (!node || !DoDeleteTool(pos, node->GetData())) {
+    return false;
+  }
+
+  delete node->GetData();
+  m_tools.Erase(node);
+
+  return true;
 }
 
-void ocpnToolBarSimple::SetToolClientData( int id, wxObject *clientData )
-{
-    wxToolBarToolBase *tool = FindById( id );
-
-    wxCHECK_RET( tool, _T("no such tool in wxToolBar::SetToolClientData") );
-
-    tool->SetClientData( clientData );
+wxToolBarToolBase *ocpnToolBarSimple::AddSeparator() {
+  return InsertSeparator(GetToolsCount());
 }
 
-void ocpnToolBarSimple::EnableTool( int id, bool enable )
-{
-    wxToolBarToolBase *tool = FindById( id );
-    if( tool ) {
-        if( tool->Enable( enable ) ) {
-            DoEnableTool( tool, enable );
-        }
-    }
+wxToolBarToolBase *ocpnToolBarSimple::InsertSeparator(size_t pos) {
+  wxCHECK_MSG(pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
+              _T("invalid position in wxToolBar::InsertSeparator()"));
 
-    ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
-    if(parent && parent->m_FloatingToolbarConfigMenu){
-        wxMenuItem* configItem = parent->m_FloatingToolbarConfigMenu->FindItem( id );
-        if(configItem)
-            configItem->Check( true );
-    }
-}
+  wxToolBarToolBase *tool = CreateTool(
+      wxID_SEPARATOR, wxEmptyString, wxNullBitmap, wxNullBitmap,
+      wxITEM_SEPARATOR, (wxObject *)NULL, wxEmptyString, wxEmptyString);
 
-void ocpnToolBarSimple::SetToolTooltipHiViz( int id, bool b_hiviz )
-{
-    ocpnToolBarTool *tool = (ocpnToolBarTool*)FindById( id );
-    if( tool ) {
-        tool->SetTooltipHiviz( b_hiviz );
-    }
-}
-
-
-void ocpnToolBarSimple::ClearTools()
-{
-    while( GetToolsCount() ) {
-        DeleteToolByPos( 0 );
-    }
-}
-
-int ocpnToolBarSimple::GetVisibleToolCount()
-{
-    int counter = 0;
-    wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
-    while( node ) {
-        ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
-        counter++;
-        node = node->GetNext();
-    }
-    return counter;
-}
-
-bool ocpnToolBarSimple::DeleteToolByPos( size_t pos )
-{
-    wxCHECK_MSG( pos < GetToolsCount(), false,
-            _T("invalid position in wxToolBar::DeleteToolByPos()") );
-
-    wxToolBarToolsList::compatibility_iterator node = m_tools.Item(pos);
-
-    if( !DoDeleteTool( pos, node->GetData() ) ) {
-        return false;
-    }
-
-    delete node->GetData();
-    m_tools.Erase( node );
-
-    return true;
-}
-
-bool ocpnToolBarSimple::DeleteTool( int id )
-{
-    size_t pos = 0;
-    wxToolBarToolsList::compatibility_iterator node;
-    for( node = m_tools.GetFirst(); node; node = node->GetNext() ) {
-        if( node->GetData()->GetId() == id ) break;
-
-        pos++;
-    }
-
-    if( !node || !DoDeleteTool( pos, node->GetData() ) ) {
-        return false;
-    }
-
-    delete node->GetData();
-    m_tools.Erase( node );
-
-    return true;
-}
-
-wxToolBarToolBase *ocpnToolBarSimple::AddSeparator()
-{
-    return InsertSeparator( GetToolsCount() );
-}
-
-wxToolBarToolBase *ocpnToolBarSimple::InsertSeparator( size_t pos )
-{
-    wxCHECK_MSG( pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
-            _T("invalid position in wxToolBar::InsertSeparator()") );
-
-    wxToolBarToolBase *tool = CreateTool( wxID_SEPARATOR, wxEmptyString, wxNullBitmap, wxNullBitmap,
-            wxITEM_SEPARATOR, (wxObject *) NULL, wxEmptyString, wxEmptyString );
-
-    if( !tool || !DoInsertTool( pos, tool ) ) {
-        delete tool;
-
-        return NULL;
-    }
-
-    m_tools.Insert( pos, tool );
-    m_nShowTools++;
-
-    return tool;
-}
-
-wxToolBarToolBase *ocpnToolBarSimple::RemoveTool( int id )
-{
-    size_t pos = 0;
-    wxToolBarToolsList::compatibility_iterator node;
-    for( node = m_tools.GetFirst(); node; node = node->GetNext() ) {
-        if( node->GetData()->GetId() == id ) break;
-
-        pos++;
-    }
-
-    if( !node ) {
-        // don't give any error messages - sometimes we might call RemoveTool()
-        // without knowing whether the tool is or not in the toolbar
-        return (wxToolBarToolBase *) NULL;
-    }
-
-    wxToolBarToolBase *tool = node->GetData();
-    if( !DoDeleteTool( pos, tool ) ) {
-        return (wxToolBarToolBase *) NULL;
-    }
-
-    m_tools.Erase( node );
-
-    return tool;
-}
-
-
-wxControl *ocpnToolBarSimple::FindControl( int id )
-{
-    for( wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst(); node;
-            node = node->GetNext() ) {
-        const wxToolBarToolBase * const tool = node->GetData();
-        if( tool->IsControl() ) {
-            wxControl * const control = tool->GetControl();
-
-            if( !control ) {
-                wxFAIL_MSG( _T("NULL control in toolbar?") );
-            } else
-                if( control->GetId() == id ) {
-                    // found
-                    return control;
-                }
-        }
-    }
+  if (!tool || !DoInsertTool(pos, tool)) {
+    delete tool;
 
     return NULL;
+  }
+
+  m_tools.Insert(pos, tool);
+  m_nShowTools++;
+
+  return tool;
 }
 
-wxToolBarToolBase *ocpnToolBarSimple::FindById( int id ) const
-{
-    wxToolBarToolBase *tool = (wxToolBarToolBase *) NULL;
+wxToolBarToolBase *ocpnToolBarSimple::RemoveTool(int id) {
+  size_t pos = 0;
+  wxToolBarToolsList::compatibility_iterator node;
+  for (node = m_tools.GetFirst(); node; node = node->GetNext()) {
+    if (node->GetData()->GetId() == id) break;
 
-    for( wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst(); node;
-            node = node->GetNext() ) {
-        tool = node->GetData();
-        if( tool->GetId() == id ) {
-            // found
-            break;
-        }
+    pos++;
+  }
 
-        tool = NULL;
+  if (!node) {
+    // don't give any error messages - sometimes we might call RemoveTool()
+    // without knowing whether the tool is or not in the toolbar
+    return (wxToolBarToolBase *)NULL;
+  }
+
+  wxToolBarToolBase *tool = node->GetData();
+  if (!DoDeleteTool(pos, tool)) {
+    return (wxToolBarToolBase *)NULL;
+  }
+
+  m_tools.Erase(node);
+
+  return tool;
+}
+
+wxControl *ocpnToolBarSimple::FindControl(int id) {
+  for (wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+       node; node = node->GetNext()) {
+    const wxToolBarToolBase *const tool = node->GetData();
+    if (tool->IsControl()) {
+      wxControl *const control = tool->GetControl();
+
+      if (!control) {
+        wxFAIL_MSG(_T("NULL control in toolbar?"));
+      } else if (control->GetId() == id) {
+        // found
+        return control;
+      }
+    }
+  }
+
+  return NULL;
+}
+
+wxToolBarToolBase *ocpnToolBarSimple::FindById(int id) const {
+  wxToolBarToolBase *tool = (wxToolBarToolBase *)NULL;
+
+  for (wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
+       node; node = node->GetNext()) {
+    tool = node->GetData();
+    if (tool->GetId() == id) {
+      // found
+      break;
     }
 
-    return tool;
+    tool = NULL;
+  }
+
+  return tool;
 }
 
 // ----------------------------------------------------------------------------
@@ -3064,44 +2906,46 @@ wxToolBarToolBase *ocpnToolBarSimple::FindById( int id ) const
 // ----------------------------------------------------------------------------
 
 // Only allow toggle if returns true
-bool ocpnToolBarSimple::OnLeftClick( int id, bool toggleDown )
-{
-    wxCommandEvent event( wxEVT_COMMAND_TOOL_CLICKED, id );
-    event.SetEventObject( this );
+bool ocpnToolBarSimple::OnLeftClick(int id, bool toggleDown) {
+  wxCommandEvent event(wxEVT_COMMAND_TOOL_CLICKED, id);
+  event.SetEventObject(this);
 
-    // we use SetInt() to make wxCommandEvent::IsChecked() return toggleDown
-    event.SetInt( (int) toggleDown );
+  // we use SetInt() to make wxCommandEvent::IsChecked() return toggleDown
+  event.SetInt((int)toggleDown);
 
-    // and SetExtraLong() for backwards compatibility
-    event.SetExtraLong( (long) toggleDown );
+  // and SetExtraLong() for backwards compatibility
+  event.SetExtraLong((long)toggleDown);
 
-    // Send events to this toolbar instead (and thence up the window hierarchy)
-    GetEventHandler()->ProcessEvent( event );
+  // Send events to this toolbar instead (and thence up the window hierarchy)
+  GetEventHandler()->ProcessEvent(event);
 
-    return true;
+  return true;
 }
 
 // Call when right button down.
-void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y) )
-{
-    HideTooltip();
+void ocpnToolBarSimple::OnRightClick(int id, long WXUNUSED(x),
+                                     long WXUNUSED(y)) {
+  HideTooltip();
 
-    ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
-    if(parent){
-        if(parent->m_FloatingToolbarConfigMenu){
-            ToolbarChoicesDialog *dlg = new ToolbarChoicesDialog(NULL, GetParent(), -1, _T("OpenCPN"), wxDefaultPosition, wxSize(100,100));
-            int rc = dlg->ShowModal();
-            delete dlg;
+  ocpnFloatingToolbarDialog *parent =
+      wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+  if (parent) {
+    if (parent->m_FloatingToolbarConfigMenu) {
+      ToolbarChoicesDialog *dlg =
+          new ToolbarChoicesDialog(NULL, GetParent(), -1, _T("OpenCPN"),
+                                   wxDefaultPosition, wxSize(100, 100));
+      int rc = dlg->ShowModal();
+      delete dlg;
 
-            if(rc == wxID_OK){
-                wxCommandEvent event( wxEVT_COMMAND_TOOL_RCLICKED, id );
-                event.SetEventObject( this );
-                event.SetInt( id );
+      if (rc == wxID_OK) {
+        wxCommandEvent event(wxEVT_COMMAND_TOOL_RCLICKED, id);
+        event.SetEventObject(this);
+        event.SetInt(id);
 
-                gFrame->GetEventHandler()->AddPendingEvent( event );
-            }
-        }
+        gFrame->GetEventHandler()->AddPendingEvent(event);
+      }
     }
+  }
 }
 
 // Called when the mouse cursor enters a tool bitmap (no button pressed).
@@ -3109,333 +2953,316 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
 // Note that for this event, the id of the window is used,
 // and the integer parameter of wxCommandEvent is used to retrieve
 // the tool id.
-void ocpnToolBarSimple::OnMouseEnter( int id )
-{
-    wxCommandEvent event( wxEVT_COMMAND_TOOL_ENTER, GetId() );
-    event.SetEventObject( this );
-    event.SetInt( id );
+void ocpnToolBarSimple::OnMouseEnter(int id) {
+  wxCommandEvent event(wxEVT_COMMAND_TOOL_ENTER, GetId());
+  event.SetEventObject(this);
+  event.SetInt(id);
 
-    wxFrame *frame = wxDynamicCast(GetParent(), wxFrame);
-    if( frame ) {
-        wxString help;
-        wxToolBarToolBase* tool = id == wxID_ANY ? (wxToolBarToolBase*) NULL : FindById( id );
-        if( tool ) help = tool->GetLongHelp();
-        frame->DoGiveHelp( help, id != wxID_ANY );
-    }
+  wxFrame *frame = wxDynamicCast(GetParent(), wxFrame);
+  if (frame) {
+    wxString help;
+    wxToolBarToolBase *tool =
+        id == wxID_ANY ? (wxToolBarToolBase *)NULL : FindById(id);
+    if (tool) help = tool->GetLongHelp();
+    frame->DoGiveHelp(help, id != wxID_ANY);
+  }
 
-    (void) GetEventHandler()->ProcessEvent( event );
+  (void)GetEventHandler()->ProcessEvent(event);
 
-    DoPluginToolUp();
+  DoPluginToolUp();
 }
 
-void ocpnToolBarSimple::DoPluginToolUp()
-{
-    //        Look for PlugIn tools
-    //        If found, make the callback.
-    if( !g_pi_manager)
-        return;
+void ocpnToolBarSimple::DoPluginToolUp() {
+  //        Look for PlugIn tools
+  //        If found, make the callback.
+  if (!g_pi_manager) return;
 
-    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
-    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
-        PlugInToolbarToolContainer *pttc = tool_array[i];
-        if( m_last_plugin_down_id == pttc->id ) {
-            opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
-            if( ppi )
-                ppi->OnToolbarToolUpCallback( pttc->id );
-        }
+  ArrayOfPlugInToolbarTools tool_array =
+      g_pi_manager->GetPluginToolbarToolArray();
+  for (unsigned int i = 0; i < tool_array.GetCount(); i++) {
+    PlugInToolbarToolContainer *pttc = tool_array[i];
+    if (m_last_plugin_down_id == pttc->id) {
+      opencpn_plugin_113 *ppi =
+          dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
+      if (ppi) ppi->OnToolbarToolUpCallback(pttc->id);
     }
+  }
 
-    m_last_plugin_down_id = -1;
+  m_last_plugin_down_id = -1;
 }
 
-void ocpnToolBarSimple::SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxString & iconName)
-{
-    if( tool ) {
-        ocpnToolBarTool *otool = (ocpnToolBarTool *) tool;
-        if(otool){
-            ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+void ocpnToolBarSimple::SetToolNormalBitmapEx(wxToolBarToolBase *tool,
+                                              const wxString &iconName) {
+  if (tool) {
+    ocpnToolBarTool *otool = (ocpnToolBarTool *)tool;
+    if (otool) {
+      ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
 
-            wxBitmap bmp = style->GetToolIcon( iconName, TOOLICON_NORMAL, false,
-                                        otool->m_width, otool->m_height );
-            tool->SetNormalBitmap( bmp );
-            otool->SetIconName( iconName );
-        }
+      wxBitmap bmp = style->GetToolIcon(iconName, TOOLICON_NORMAL, false,
+                                        otool->m_width, otool->m_height);
+      tool->SetNormalBitmap(bmp);
+      otool->SetIconName(iconName);
     }
+  }
 }
 
-void ocpnToolBarSimple::SetToolNormalBitmapSVG(wxToolBarToolBase *tool, wxString fileSVG)
-{
-    if( tool ) {
-        ocpnToolBarTool *otool = (ocpnToolBarTool *) tool;
-        if(otool){
-            otool->pluginNormalIconSVG = fileSVG;
-        }
+void ocpnToolBarSimple::SetToolNormalBitmapSVG(wxToolBarToolBase *tool,
+                                               wxString fileSVG) {
+  if (tool) {
+    ocpnToolBarTool *otool = (ocpnToolBarTool *)tool;
+    if (otool) {
+      otool->pluginNormalIconSVG = fileSVG;
     }
+  }
 }
 
-
-void ocpnToolBarSimple::SetToolBitmaps( int id, wxBitmap *bmp, wxBitmap *bmpRollover )
-{
-    ocpnToolBarTool *tool = (ocpnToolBarTool*)FindById( id );
-    if( tool ) {
-        if(tool->isPluginTool){
-            tool->pluginNormalIcon = *bmp;
-            tool->pluginRolloverIcon = *bmpRollover;
-            tool->bitmapOK = false;
-        }
-        else{
-            tool->SetNormalBitmap( *bmp );
-            tool->bitmapOK = true;
-        }
+void ocpnToolBarSimple::SetToolBitmaps(int id, wxBitmap *bmp,
+                                       wxBitmap *bmpRollover) {
+  ocpnToolBarTool *tool = (ocpnToolBarTool *)FindById(id);
+  if (tool) {
+    if (tool->isPluginTool) {
+      tool->pluginNormalIcon = *bmp;
+      tool->pluginRolloverIcon = *bmpRollover;
+      tool->bitmapOK = false;
+    } else {
+      tool->SetNormalBitmap(*bmp);
+      tool->bitmapOK = true;
     }
+  }
 }
 
-void ocpnToolBarSimple::SetToolBitmapsSVG( int id, wxString fileSVGNormal, wxString fileSVGRollover, wxString fileSVGToggled )
-{
-    ocpnToolBarTool *tool = (ocpnToolBarTool*)FindById( id );
-    if( tool ) {
-        tool->pluginNormalIconSVG = fileSVGNormal;
-        tool->pluginRolloverIconSVG = fileSVGRollover;
-        tool->pluginToggledIconSVG = fileSVGToggled;
-        tool->bitmapOK = false;
-    }
+void ocpnToolBarSimple::SetToolBitmapsSVG(int id, wxString fileSVGNormal,
+                                          wxString fileSVGRollover,
+                                          wxString fileSVGToggled) {
+  ocpnToolBarTool *tool = (ocpnToolBarTool *)FindById(id);
+  if (tool) {
+    tool->pluginNormalIconSVG = fileSVGNormal;
+    tool->pluginRolloverIconSVG = fileSVGRollover;
+    tool->pluginToggledIconSVG = fileSVGToggled;
+    tool->bitmapOK = false;
+  }
 }
-
 
 //-------------------------------------------------------------------------------------
 
-ToolbarMOBDialog::ToolbarMOBDialog( wxWindow* parent )
-       : wxDialog( parent, wxID_ANY, _("OpenCPN Alert"), wxDefaultPosition, wxSize(250, 230) )
-{
-    wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
+ToolbarMOBDialog::ToolbarMOBDialog(wxWindow *parent)
+    : wxDialog(parent, wxID_ANY, _("OpenCPN Alert"), wxDefaultPosition,
+               wxSize(250, 230)) {
+  wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
 
-    wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
-    topSizer->Add( sizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
+  wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+  topSizer->Add(sizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
-    choices.push_back( new wxRadioButton( this, 0,  _("No, I don't want to hide it."),
-            wxDefaultPosition, wxDefaultSize, wxRB_GROUP ) );
+  choices.push_back(
+      new wxRadioButton(this, 0, _("No, I don't want to hide it."),
+                        wxDefaultPosition, wxDefaultSize, wxRB_GROUP));
 
-    choices.push_back( new wxRadioButton( this, 1, _("No, and permanently remove the option to hide it."),
-            wxDefaultPosition) );
+  choices.push_back(new wxRadioButton(
+      this, 1, _("No, and permanently remove the option to hide it."),
+      wxDefaultPosition));
 
-    choices.push_back( new wxRadioButton( this, 2, _("Yes, hide it."),
-            wxDefaultPosition) );
+  choices.push_back(
+      new wxRadioButton(this, 2, _("Yes, hide it."), wxDefaultPosition));
 
-    wxStdDialogButtonSizer* buttonSizer = CreateStdDialogButtonSizer( wxOK | wxCANCEL );
+  wxStdDialogButtonSizer *buttonSizer =
+      CreateStdDialogButtonSizer(wxOK | wxCANCEL);
 
+  wxStaticText *textCtrl =
+      new wxStaticText(this, wxID_ANY,
+                       _("The Man Over Board button could be an important "
+                         "safety feature.\nAre you sure you want to hide it?"));
 
-    wxStaticText* textCtrl = new wxStaticText( this, wxID_ANY, _("The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?") );
+  sizer->Add(textCtrl, 0, wxEXPAND | wxALL, 5);
+  sizer->Add(choices[0], 0, wxEXPAND | wxALL, 5);
+  sizer->Add(choices[1], 0, wxEXPAND | wxALL, 5);
+  sizer->Add(choices[2], 0, wxEXPAND | wxALL, 5);
+  sizer->Add(buttonSizer, 0, wxEXPAND | wxTOP, 5);
 
-    sizer->Add( textCtrl, 0, wxEXPAND | wxALL, 5 );
-    sizer->Add( choices[0], 0, wxEXPAND | wxALL, 5 );
-    sizer->Add( choices[1], 0, wxEXPAND | wxALL, 5 );
-    sizer->Add( choices[2], 0, wxEXPAND | wxALL, 5 );
-    sizer->Add( buttonSizer, 0, wxEXPAND | wxTOP, 5 );
-
-    topSizer->SetSizeHints(this);
-    SetSizer( topSizer );
+  topSizer->SetSizeHints(this);
+  SetSizer(topSizer);
 }
 
 int ToolbarMOBDialog::GetSelection() {
-    for( unsigned int i=0; i<choices.size(); i++ ) {
-        if( choices[i]->GetValue() ) return choices[i]->GetId();
-    }
-    return 0;
+  for (unsigned int i = 0; i < choices.size(); i++) {
+    if (choices[i]->GetValue()) return choices[i]->GetId();
+  }
+  return 0;
 }
 
-
-
-
-IMPLEMENT_DYNAMIC_CLASS( ToolbarChoicesDialog, wxDialog )
+IMPLEMENT_DYNAMIC_CLASS(ToolbarChoicesDialog, wxDialog)
 /*!
  * ToolbarChoicesDialog event table definition
  */
-BEGIN_EVENT_TABLE( ToolbarChoicesDialog, wxDialog )
+BEGIN_EVENT_TABLE(ToolbarChoicesDialog, wxDialog)
 END_EVENT_TABLE()
 
- /*!
-  * ToolbarChoicesDialog constructors
-  */
+/*!
+ * ToolbarChoicesDialog constructors
+ */
 
- ToolbarChoicesDialog::ToolbarChoicesDialog()
- {
- }
+ToolbarChoicesDialog::ToolbarChoicesDialog() {}
 
- ToolbarChoicesDialog::ToolbarChoicesDialog( wxWindow* parent, wxWindow *sponsor, wxWindowID id, const wxString& caption,
-                                         const wxPoint& pos, const wxSize& size, long style )
- {
+ToolbarChoicesDialog::ToolbarChoicesDialog(wxWindow *parent, wxWindow *sponsor,
+                                           wxWindowID id,
+                                           const wxString &caption,
+                                           const wxPoint &pos,
+                                           const wxSize &size, long style) {
+  long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
+  wxDialog::Create(parent, id, caption, pos, size, wstyle);
 
-     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-     wxDialog::Create( parent, id, caption, pos, size, wstyle );
+  m_configMenu = NULL;
+  m_ToolbarDialogAncestor = wxDynamicCast(sponsor, ocpnFloatingToolbarDialog);
+  if (m_ToolbarDialogAncestor)
+    m_configMenu = m_ToolbarDialogAncestor->m_FloatingToolbarConfigMenu;
 
-     m_configMenu = NULL;
-     m_ToolbarDialogAncestor = wxDynamicCast(sponsor, ocpnFloatingToolbarDialog);
-     if(m_ToolbarDialogAncestor)
-         m_configMenu = m_ToolbarDialogAncestor->m_FloatingToolbarConfigMenu;
+  CreateControls();
+  GetSizer()->Fit(this);
 
+  RecalculateSize();
+}
 
-     CreateControls();
-     GetSizer()->Fit( this );
+ToolbarChoicesDialog::~ToolbarChoicesDialog() {}
 
-     RecalculateSize();
+/*!
+ * Control creation for ToolbarChoicesDialog
+ */
 
- }
+void ToolbarChoicesDialog::CreateControls() {
+  wxBoxSizer *itemBoxSizer1 = new wxBoxSizer(wxVERTICAL);
+  SetSizer(itemBoxSizer1);
 
- ToolbarChoicesDialog::~ToolbarChoicesDialog()
- {
- }
-
- /*!
-  * Control creation for ToolbarChoicesDialog
-  */
-
- void ToolbarChoicesDialog::CreateControls()
-{
-
-
-    wxBoxSizer* itemBoxSizer1 = new wxBoxSizer( wxVERTICAL );
-    SetSizer( itemBoxSizer1 );
-
-    wxScrolledWindow *itemDialog1 = new wxScrolledWindow( this, wxID_ANY,
-                                      wxDefaultPosition, wxSize(-1, -1), wxHSCROLL | wxVSCROLL);
-    itemDialog1->SetScrollRate(2, 2);
+  wxScrolledWindow *itemDialog1 = new wxScrolledWindow(
+      this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxHSCROLL | wxVSCROLL);
+  itemDialog1->SetScrollRate(2, 2);
 
 #ifdef __OCPN__ANDROID__
 
-    //  Set Dialog Font by custom crafted Qt Stylesheet.
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+  //  Set Dialog Font by custom crafted Qt Stylesheet.
+  wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
 
-    wxString wqs = getFontQtStylesheet(qFont);
-    wxCharBuffer sbuf = wqs.ToUTF8();
-    QString qsb = QString(sbuf.data());
+  wxString wqs = getFontQtStylesheet(qFont);
+  wxCharBuffer sbuf = wqs.ToUTF8();
+  QString qsb = QString(sbuf.data());
 
-    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+  QString qsbq = getQtStyleSheet();  // basic scrollbars, etc
 
-    this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
+  this->GetHandle()->setStyleSheet(qsb + qsbq);  // Concatenated style sheets
 
 #endif
-    itemBoxSizer1->Add( itemDialog1, 2, wxEXPAND | wxALL, 0 );
+  itemBoxSizer1->Add(itemDialog1, 2, wxEXPAND | wxALL, 0);
 
-    wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
-    itemDialog1->SetSizer( itemBoxSizer2 );
+  wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
+  itemDialog1->SetSizer(itemBoxSizer2);
 
-    wxStaticBox* itemStaticBoxSizer3Static = new wxStaticBox( itemDialog1, wxID_ANY,
-                                                              _("Choose Toolbar Icons")  );
-    wxStaticBoxSizer* itemStaticBoxSizer3 = new wxStaticBoxSizer( itemStaticBoxSizer3Static, wxVERTICAL );
-    itemBoxSizer2->Add( itemStaticBoxSizer3, 0, wxEXPAND | wxALL, 5 );
+  wxStaticBox *itemStaticBoxSizer3Static =
+      new wxStaticBox(itemDialog1, wxID_ANY, _("Choose Toolbar Icons"));
+  wxStaticBoxSizer *itemStaticBoxSizer3 =
+      new wxStaticBoxSizer(itemStaticBoxSizer3Static, wxVERTICAL);
+  itemBoxSizer2->Add(itemStaticBoxSizer3, 0, wxEXPAND | wxALL, 5);
 
-    int nitems = 0;
-    int max_width = -1;
-    if(m_configMenu){
-        nitems = m_configMenu->GetMenuItemCount();
+  int nitems = 0;
+  int max_width = -1;
+  if (m_configMenu) {
+    nitems = m_configMenu->GetMenuItemCount();
 
-        cboxes.clear();
-        for (int i=0 ; i < nitems ; i++){
-            if ( i + ID_ZOOMIN == ID_MOB && g_bPermanentMOBIcon )
-                continue;
-            wxMenuItem *item = m_configMenu->FindItemByPosition( i );
+    cboxes.clear();
+    for (int i = 0; i < nitems; i++) {
+      if (i + ID_ZOOMIN == ID_MOB && g_bPermanentMOBIcon) continue;
+      wxMenuItem *item = m_configMenu->FindItemByPosition(i);
 
-            wxString label = item->GetItemLabel();
-            int l = label.Len();
-            max_width = wxMax(max_width, l);
+      wxString label = item->GetItemLabel();
+      int l = label.Len();
+      max_width = wxMax(max_width, l);
 
-            wxString windowName = _T("");
-            if(item->GetId() == ID_MOB + 100)
-                windowName = _T("MOBCheck");
+      wxString windowName = _T("");
+      if (item->GetId() == ID_MOB + 100) windowName = _T("MOBCheck");
 
-            wxCheckBox *cb = new wxCheckBox(itemDialog1, -1, label, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, windowName);
-//            wxCheckBox *cb = new wxCheckBox(itemDialog1, -1, label);
-            itemStaticBoxSizer3->Add(cb, 0, wxALL | wxEXPAND, 2);
-            cb->SetValue(item->IsChecked());
+      wxCheckBox *cb =
+          new wxCheckBox(itemDialog1, -1, label, wxDefaultPosition,
+                         wxDefaultSize, 0, wxDefaultValidator, windowName);
+      //            wxCheckBox *cb = new wxCheckBox(itemDialog1, -1, label);
+      itemStaticBoxSizer3->Add(cb, 0, wxALL | wxEXPAND, 2);
+      cb->SetValue(item->IsChecked());
 
-            cboxes.push_back(cb);
-        }
+      cboxes.push_back(cb);
     }
+  }
 
-    itemBoxSizer1->SetMinSize( (max_width + 20) * GetCharWidth()  , (nitems + 4) * GetCharHeight() * 2);
+  itemBoxSizer1->SetMinSize((max_width + 20) * GetCharWidth(),
+                            (nitems + 4) * GetCharHeight() * 2);
 
-    wxBoxSizer* itemBoxSizerBottom = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizer1->Add( itemBoxSizerBottom, 0, wxALL | wxEXPAND, 5 );
+  wxBoxSizer *itemBoxSizerBottom = new wxBoxSizer(wxHORIZONTAL);
+  itemBoxSizer1->Add(itemBoxSizerBottom, 0, wxALL | wxEXPAND, 5);
 
-    wxBoxSizer* itemBoxSizerAux = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerBottom->Add( itemBoxSizerAux, 1, wxALL, 3 );
+  wxBoxSizer *itemBoxSizerAux = new wxBoxSizer(wxHORIZONTAL);
+  itemBoxSizerBottom->Add(itemBoxSizerAux, 1, wxALL, 3);
 
-    wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerBottom->Add( itemBoxSizer16, 0, wxALL, 3 );
+  wxBoxSizer *itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
+  itemBoxSizerBottom->Add(itemBoxSizer16, 0, wxALL, 3);
 
-    m_CancelButton = new wxButton( this, -1, _("Cancel"), wxDefaultPosition,
-            wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1 );
+  m_CancelButton =
+      new wxButton(this, -1, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0);
+  itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
 
-    m_OKButton = new wxButton( this, -1, _("OK"), wxDefaultPosition,
-            wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
-    m_OKButton->SetDefault();
+  m_OKButton =
+      new wxButton(this, -1, _("OK"), wxDefaultPosition, wxDefaultSize, 0);
+  itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
+  m_OKButton->SetDefault();
 
-    m_CancelButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnCancelClick ), NULL, this );
-    m_OKButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnOkClick ), NULL, this );
+  m_CancelButton->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ToolbarChoicesDialog::OnCancelClick), NULL, this);
+  m_OKButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                      wxCommandEventHandler(ToolbarChoicesDialog::OnOkClick),
+                      NULL, this);
 
-    SetColorScheme( (ColorScheme) 0 );
-
+  SetColorScheme((ColorScheme)0);
 }
 
+void ToolbarChoicesDialog::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
+void ToolbarChoicesDialog::OnCancelClick(wxCommandEvent &event) {
+  EndModal(wxID_CANCEL);
+}
 
+void ToolbarChoicesDialog::OnOkClick(wxCommandEvent &event) {
+  unsigned int ncheck = 0;
 
+  wxString toolbarConfigSave = m_ToolbarDialogAncestor->GetToolConfigString();
+  wxString new_toolbarConfig = toolbarConfigSave;
 
-
- void ToolbarChoicesDialog::SetColorScheme( ColorScheme cs )
- {
-     DimeControl( this );
- }
-
-
- void ToolbarChoicesDialog::OnCancelClick( wxCommandEvent& event )
- {
-     EndModal(wxID_CANCEL);
- }
-
- void ToolbarChoicesDialog::OnOkClick( wxCommandEvent& event )
- {
-     unsigned int ncheck = 0;
-
-     wxString toolbarConfigSave = m_ToolbarDialogAncestor->GetToolConfigString();
-     wxString new_toolbarConfig = toolbarConfigSave;
-
-     for(unsigned int i=0 ; i < cboxes.size() ; i++){
-         wxCheckBox *cb = cboxes[i];
-         wxString cbName = cb->GetName();               // Special flag passed into checkbox ctor to find the "MOB" item
-         if ( cbName.IsSameAs(_T("MOBCheck")) && !cb->IsChecked( ) ) {
-             // Ask if really want to disable MOB button
-             ToolbarMOBDialog mdlg( this );
-             int dialog_ret = mdlg.ShowModal( );
-             int answer = mdlg.GetSelection( );
-             if ( dialog_ret == wxID_OK ) {
-                 if ( answer == 1 ) {
-                     g_bPermanentMOBIcon = true;
-                     cb->SetValue( true );
-                 }
-                 else if ( answer == 0 ) {
-                     cb->SetValue( true );
-                 }
-             }
-             else { // wxID_CANCEL
-                 new_toolbarConfig = toolbarConfigSave;
-                 return;
-             }
-         }
-         if(m_configMenu){
-             wxMenuItem *item = m_configMenu->FindItemByPosition( i );
-             if( new_toolbarConfig.Len() > i ) {
-                 new_toolbarConfig.SetChar( i, cb->IsChecked( ) ? _T( 'X' ) : _T( '.' ) );
-             } else {
-                 new_toolbarConfig.Append( cb->IsChecked( ) ? _T( 'X' ) : _T( '.' ) );
-             }
-             item->Check( cb->IsChecked() );
-             if(cb->IsChecked())
-                 ncheck++;
-         }
-     }
+  for (unsigned int i = 0; i < cboxes.size(); i++) {
+    wxCheckBox *cb = cboxes[i];
+    wxString cbName = cb->GetName();  // Special flag passed into checkbox ctor
+                                      // to find the "MOB" item
+    if (cbName.IsSameAs(_T("MOBCheck")) && !cb->IsChecked()) {
+      // Ask if really want to disable MOB button
+      ToolbarMOBDialog mdlg(this);
+      int dialog_ret = mdlg.ShowModal();
+      int answer = mdlg.GetSelection();
+      if (dialog_ret == wxID_OK) {
+        if (answer == 1) {
+          g_bPermanentMOBIcon = true;
+          cb->SetValue(true);
+        } else if (answer == 0) {
+          cb->SetValue(true);
+        }
+      } else {  // wxID_CANCEL
+        new_toolbarConfig = toolbarConfigSave;
+        return;
+      }
+    }
+    if (m_configMenu) {
+      wxMenuItem *item = m_configMenu->FindItemByPosition(i);
+      if (new_toolbarConfig.Len() > i) {
+        new_toolbarConfig.SetChar(i, cb->IsChecked() ? _T('X') : _T('.'));
+      } else {
+        new_toolbarConfig.Append(cb->IsChecked() ? _T('X') : _T('.'));
+      }
+      item->Check(cb->IsChecked());
+      if (cb->IsChecked()) ncheck++;
+    }
+  }
 
 #if 0
      //  We always must have one Tool enabled.  Make it the Options tool....
@@ -3451,33 +3278,29 @@ END_EVENT_TABLE()
          }
      }
 #endif
-     m_ToolbarDialogAncestor->SetToolConfigString( new_toolbarConfig );
+  m_ToolbarDialogAncestor->SetToolConfigString(new_toolbarConfig);
 
-     EndModal(wxID_OK);
- }
+  EndModal(wxID_OK);
+}
 
- void ToolbarChoicesDialog::RecalculateSize( void )
- {
-     wxSize esize = GetSize();
+void ToolbarChoicesDialog::RecalculateSize(void) {
+  wxSize esize = GetSize();
 
-     if(GetParent()){
-        wxSize dsize = GetParent()->GetClientSize();
-        esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
-        esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
-        SetSize(esize);
-        Centre();
+  if (GetParent()) {
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    SetSize(esize);
+    Centre();
 
-     }
-     else{
-        wxSize fsize =  g_Platform->getDisplaySize();
-        fsize.y = wxMin(esize.y, fsize.y - (4 * GetCharHeight()));
-        fsize.x = wxMin(esize.x, fsize.x - (2 * GetCharHeight()));
-        SetSize(fsize);
-        CentreOnScreen();
+  } else {
+    wxSize fsize = g_Platform->getDisplaySize();
+    fsize.y = wxMin(esize.y, fsize.y - (4 * GetCharHeight()));
+    fsize.x = wxMin(esize.x, fsize.x - (2 * GetCharHeight()));
+    SetSize(fsize);
+    CentreOnScreen();
 #ifdef __OCPN__ANDROID__
-        Move(GetPosition().x, 10);
+    Move(GetPosition().x, 10);
 #endif
-     }
- }
-
-
+  }
+}

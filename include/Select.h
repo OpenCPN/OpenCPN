@@ -26,16 +26,16 @@
 
 #include "SelectItem.h"
 
-#define SELTYPE_UNKNOWN              0x0001
-#define SELTYPE_ROUTEPOINT           0x0002
-#define SELTYPE_ROUTESEGMENT         0x0004
-#define SELTYPE_TIDEPOINT            0x0008
-#define SELTYPE_CURRENTPOINT         0x0010
-#define SELTYPE_ROUTECREATE          0x0020
-#define SELTYPE_AISTARGET            0x0040
-#define SELTYPE_MARKPOINT            0x0080
-#define SELTYPE_TRACKSEGMENT         0x0100
-#define SELTYPE_DRAGHANDLE           0x0200
+#define SELTYPE_UNKNOWN 0x0001
+#define SELTYPE_ROUTEPOINT 0x0002
+#define SELTYPE_ROUTESEGMENT 0x0004
+#define SELTYPE_TIDEPOINT 0x0008
+#define SELTYPE_CURRENTPOINT 0x0010
+#define SELTYPE_ROUTECREATE 0x0020
+#define SELTYPE_AISTARGET 0x0040
+#define SELTYPE_MARKPOINT 0x0080
+#define SELTYPE_TRACKSEGMENT 0x0100
+#define SELTYPE_DRAGHANDLE 0x0200
 
 class TrackPoint;
 class Track;
@@ -43,61 +43,65 @@ class Route;
 class RoutePoint;
 class ChartCanvas;
 
-class Select
-{
+class Select {
 public:
-    Select();
-    ~Select();
+  Select();
+  ~Select();
 
-    void SetSelectPixelRadius(int radius){ pixelRadius = radius; }
+  void SetSelectPixelRadius(int radius) { pixelRadius = radius; }
 
-    bool IsSelectableRoutePointValid(RoutePoint *pRoutePoint );
-    bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
-    bool AddSelectableRouteSegment( float slat1, float slon1, float slat2, float slon2,
-            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
+  bool IsSelectableRoutePointValid(RoutePoint *pRoutePoint);
+  bool AddSelectableRoutePoint(float slat, float slon,
+                               RoutePoint *pRoutePointAdd);
+  bool AddSelectableRouteSegment(float slat1, float slon1, float slat2,
+                                 float slon2, RoutePoint *pRoutePointAdd1,
+                                 RoutePoint *pRoutePointAdd2, Route *pRoute);
 
-    bool AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
-                                    TrackPoint *pTrackPointAdd1, TrackPoint *pTrackPointAdd2, Track *pTrack );
+  bool AddSelectableTrackSegment(float slat1, float slon1, float slat2,
+                                 float slon2, TrackPoint *pTrackPointAdd1,
+                                 TrackPoint *pTrackPointAdd2, Track *pTrack);
 
-    SelectItem *FindSelection( ChartCanvas *cc, float slat, float slon, int fseltype );
-    SelectableItemList FindSelectionList( ChartCanvas *cc, float slat, float slon, int fseltype );
+  SelectItem *FindSelection(ChartCanvas *cc, float slat, float slon,
+                            int fseltype);
+  SelectableItemList FindSelectionList(ChartCanvas *cc, float slat, float slon,
+                                       int fseltype);
 
-    bool DeleteAllSelectableRouteSegments( Route * );
-    bool DeleteAllSelectableTrackSegments( Track * );
-    bool DeleteAllSelectableRoutePoints( Route * );
-    bool AddAllSelectableRouteSegments( Route *pr );
-    bool AddAllSelectableTrackSegments( Track *pr );
-    bool AddAllSelectableRoutePoints( Route *pr );
-    bool UpdateSelectableRouteSegments( RoutePoint *prp );
-    bool DeletePointSelectableTrackSegments( TrackPoint *pt );
-    bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
-    bool IsSelectableSegmentSelected( ChartCanvas *cc, float slat, float slon, SelectItem *pFindSel );
+  bool DeleteAllSelectableRouteSegments(Route *);
+  bool DeleteAllSelectableTrackSegments(Track *);
+  bool DeleteAllSelectableRoutePoints(Route *);
+  bool AddAllSelectableRouteSegments(Route *pr);
+  bool AddAllSelectableTrackSegments(Track *pr);
+  bool AddAllSelectableRoutePoints(Route *pr);
+  bool UpdateSelectableRouteSegments(RoutePoint *prp);
+  bool DeletePointSelectableTrackSegments(TrackPoint *pt);
+  bool IsSegmentSelected(float a, float b, float c, float d, float slat,
+                         float slon);
+  bool IsSelectableSegmentSelected(ChartCanvas *cc, float slat, float slon,
+                                   SelectItem *pFindSel);
 
-    //    Generic Point Support
-    //      e.g. Tides/Currents and AIS Targets
-    SelectItem *AddSelectablePoint(float slat, float slon, const void *data, int fseltype);
-    bool DeleteAllPoints( void );
-    bool DeleteSelectablePoint( void *data, int SeltypeToDelete );
-    bool ModifySelectablePoint( float slat, float slon, void *data, int fseltype );
+  //    Generic Point Support
+  //      e.g. Tides/Currents and AIS Targets
+  SelectItem *AddSelectablePoint(float slat, float slon, const void *data,
+                                 int fseltype);
+  bool DeleteAllPoints(void);
+  bool DeleteSelectablePoint(void *data, int SeltypeToDelete);
+  bool ModifySelectablePoint(float slat, float slon, void *data, int fseltype);
 
-    //    Delete all selectable points in list by type
-    bool DeleteAllSelectableTypePoints( int SeltypeToDelete );
+  //    Delete all selectable points in list by type
+  bool DeleteAllSelectableTypePoints(int SeltypeToDelete);
 
-    bool DeleteSelectableRoutePoint( RoutePoint *prp );
+  bool DeleteSelectableRoutePoint(RoutePoint *prp);
 
-    //  Accessors
+  //  Accessors
 
-    SelectableItemList *GetSelectList()
-    {
-        return pSelectList;
-    }
+  SelectableItemList *GetSelectList() { return pSelectList; }
 
 private:
-    void CalcSelectRadius(ChartCanvas *cc);
+  void CalcSelectRadius(ChartCanvas *cc);
 
-    SelectableItemList *pSelectList;
-    int pixelRadius;
-    float selectRadius;
+  SelectableItemList *pSelectList;
+  int pixelRadius;
+  float selectRadius;
 };
 
 #endif

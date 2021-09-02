@@ -40,14 +40,18 @@
 #include <wx/sizer.h>
 #include <wx/checkbox.h>
 #include <wx/choice.h>
-#include <wx/statbox.h>
+#include <wx/clipbrd.h>
+#include <wx/colour.h>
+#include <wx/font.h>
+#include <wx/frame.h>
+#include <wx/gdicmn.h>
+#include <wx/hyperlink.h>
+#include <wx/icon.h>
+#include <wx/image.h>
+#include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/panel.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
-#include <wx/menu.h>
-#include <wx/hyperlink.h>
+#include <wx/radiobut.h>
 #include <wx/scrolwin.h>
 #include <wx/button.h>
 #include <wx/tglbtn.h>
@@ -63,163 +67,161 @@
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 
-#define ID_TRK_MENU_ADD          7014
-#define ID_TRK_MENU_EDIT         7015
-#define ID_TRK_MENU_DELETE       7016
+#define ID_TRK_MENU_ADD 7014
+#define ID_TRK_MENU_EDIT 7015
+#define ID_TRK_MENU_DELETE 7016
 
 /*!
  * Forward declarations
  */
 
-class   wxListCtrl;
-class   OCPNTrackListCtrl;
-class   Track;
-class   TrackPoint;
-class   HyperlinkList;
+class wxListCtrl;
+class OCPNTrackListCtrl;
+class Track;
+class TrackPoint;
+class HyperlinkList;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class TrackPropDlg
 ///////////////////////////////////////////////////////////////////////////////
-class TrackPropDlg : public wxFrame
-{
+class TrackPropDlg : public wxFrame {
 private:
-        static bool instanceFlag;
-        static TrackPropDlg *single;
-        TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& title,
-                      const wxPoint& pos, const wxSize& size,
-                      long style );
+  static bool instanceFlag;
+  static TrackPropDlg* single;
+  TrackPropDlg(wxWindow* parent, wxWindowID id, const wxString& title,
+               const wxPoint& pos, const wxSize& size, long style);
 
-        TrackPoint *m_pExtendPoint;
-        Track      *m_pExtendTrack;
-        TrackPoint *m_pEntrackPoint;
-        bool        m_bStartNow;
+  TrackPoint* m_pExtendPoint;
+  Track* m_pExtendTrack;
+  TrackPoint* m_pEntrackPoint;
+  bool m_bStartNow;
 
-        double      m_planspeed;
-        double      m_avgspeed;
+  double m_planspeed;
+  double m_avgspeed;
 
-        int         m_nSelected; // index of point selected in Properties dialog row
+  int m_nSelected;  // index of point selected in Properties dialog row
 
-        bool        IsThisTrackExtendable();
-        bool        SaveChanges(void);
+  bool IsThisTrackExtendable();
+  bool SaveChanges(void);
 
-        HyperlinkList   *m_pMyLinkList;
-        void OnHyperLinkClick(wxHyperlinkEvent &event);
-        wxHyperlinkCtrl *m_pEditedLink;
-        void PopupMenuHandler( wxCommandEvent& event );
+  HyperlinkList* m_pMyLinkList;
+  void OnHyperLinkClick(wxHyperlinkEvent& event);
+  wxHyperlinkCtrl* m_pEditedLink;
+  void PopupMenuHandler(wxCommandEvent& event);
 
-    protected:
-        wxNotebook* m_notebook1;
-        wxScrolledWindow* m_panelBasic;
-        wxStaticText* m_stName;
-        wxTextCtrl* m_tName;
-        wxStaticText* m_stFrom;
-        wxTextCtrl* m_tFrom;
-        wxStaticText* m_stTo;
-        wxTextCtrl* m_tTo;
-        wxCheckBox* m_cbShow;
-        wxStaticText* m_stColor;
-        wxChoice* m_cColor;
-        wxStaticText* m_stStyle;
-        wxChoice* m_cStyle;
-        wxStaticText* m_stWidth;
-        wxChoice* m_cWidth;
-        wxStaticText* m_stTotDistance;
-        wxTextCtrl* m_tTotDistance;
-        wxStaticText* m_stAvgSpeed;
-        wxTextCtrl* m_tAvgSpeed;
-        wxStaticText* m_stTimeEnroute;
-        wxTextCtrl* m_tTimeEnroute;
-        wxStaticText* m_stShowTime;
-        wxRadioButton* m_rbShowTimeUTC;
-        wxRadioButton* m_rbShowTimePC;
-        wxRadioButton* m_rbShowTimeLocal;
-        OCPNTrackListCtrl *m_lcPoints;
-        wxScrolledWindow* m_panelAdvanced;
-        wxStaticText* m_stDescription;
-        wxTextCtrl* m_tDescription;
-        wxScrolledWindow* m_scrolledWindowLinks;
-        wxHyperlinkCtrl* m_hyperlink1;
-        wxMenu* m_menuLink;
-        wxButton* m_buttonAddLink;
-        wxToggleButton* m_toggleBtnEdit;
-        wxStaticText* m_staticTextEditEnabled;
-        wxStdDialogButtonSizer* m_sdbBtmBtnsSizer;
-        wxButton* m_sdbBtmBtnsSizerOK;
-        wxButton* m_sdbBtmBtnsSizerCancel;
-        wxStaticBoxSizer* sbSizerLinks;
-        wxBoxSizer* bSizerLinks;
+protected:
+  wxNotebook* m_notebook1;
+  wxScrolledWindow* m_panelBasic;
+  wxStaticText* m_stName;
+  wxTextCtrl* m_tName;
+  wxStaticText* m_stFrom;
+  wxTextCtrl* m_tFrom;
+  wxStaticText* m_stTo;
+  wxTextCtrl* m_tTo;
+  wxCheckBox* m_cbShow;
+  wxStaticText* m_stColor;
+  wxChoice* m_cColor;
+  wxStaticText* m_stStyle;
+  wxChoice* m_cStyle;
+  wxStaticText* m_stWidth;
+  wxChoice* m_cWidth;
+  wxStaticText* m_stTotDistance;
+  wxTextCtrl* m_tTotDistance;
+  wxStaticText* m_stAvgSpeed;
+  wxTextCtrl* m_tAvgSpeed;
+  wxStaticText* m_stTimeEnroute;
+  wxTextCtrl* m_tTimeEnroute;
+  wxStaticText* m_stShowTime;
+  wxRadioButton* m_rbShowTimeUTC;
+  wxRadioButton* m_rbShowTimePC;
+  wxRadioButton* m_rbShowTimeLocal;
+  OCPNTrackListCtrl* m_lcPoints;
+  wxScrolledWindow* m_panelAdvanced;
+  wxStaticText* m_stDescription;
+  wxTextCtrl* m_tDescription;
+  wxScrolledWindow* m_scrolledWindowLinks;
+  wxHyperlinkCtrl* m_hyperlink1;
+  wxMenu* m_menuLink;
+  wxButton* m_buttonAddLink;
+  wxToggleButton* m_toggleBtnEdit;
+  wxStaticText* m_staticTextEditEnabled;
+  wxStdDialogButtonSizer* m_sdbBtmBtnsSizer;
+  wxButton* m_sdbBtmBtnsSizerOK;
+  wxButton* m_sdbBtmBtnsSizerCancel;
+  wxStaticBoxSizer* sbSizerLinks;
+  wxBoxSizer* bSizerLinks;
 
-        wxButton* m_sdbBtmBtnsSizerPrint;
-        wxButton* m_sdbBtmBtnsSizerSplit;
-        wxButton* m_sdbBtmBtnsSizerExtend;
-        wxButton* m_sdbBtmBtnsSizerToRoute;
-        wxButton* m_sdbBtmBtnsSizerExport;
+  wxButton* m_sdbBtmBtnsSizerPrint;
+  wxButton* m_sdbBtmBtnsSizerSplit;
+  wxButton* m_sdbBtmBtnsSizerExtend;
+  wxButton* m_sdbBtmBtnsSizerToRoute;
+  wxButton* m_sdbBtmBtnsSizerExport;
 
-        wxMenuItem* m_menuItemEdit;
-        wxMenuItem* m_menuItemAdd;
-        wxMenuItem* m_menuItemDelete;
+  wxMenuItem* m_menuItemEdit;
+  wxMenuItem* m_menuItemAdd;
+  wxMenuItem* m_menuItemDelete;
 
+  wxScrolledWindow* itemDialog1;
+  bool m_bcompact;
 
-        wxScrolledWindow *itemDialog1;
-        bool m_bcompact;
-
-
-        // Virtual event handlers, overide them in your derived class
-        void OnCancelBtnClick( wxCommandEvent& event );
-        void OnOKBtnClick( wxCommandEvent& event );
-        void OnPrintBtnClick( wxCommandEvent& event );
-        void OnSplitBtnClick( wxCommandEvent& event );
-        void OnExtendBtnClick( wxCommandEvent& event );
-        void OnToRouteBtnClick( wxCommandEvent& event );
-        void OnExportBtnClick( wxCommandEvent& event );
-        void OnTrackPropCopyTxtClick( wxCommandEvent& event );
-        void OnTrackPropListClick( wxListEvent& event );
-        void OnTrackPropRightClick( wxListEvent &event );
-        void OnTrackPropMenuSelected( wxCommandEvent &event );
-        void OnDeleteLink( wxCommandEvent& event );
-        void OnEditLink( wxCommandEvent& event );
-        void OnAddLink( wxCommandEvent& event );
-        void OnEditLinkToggle( wxCommandEvent& event );
-        void OnShowTimeTZ( wxCommandEvent& event );
-        void CreateControls( void );
-        void CreateControlsCompact( void );
+  // Virtual event handlers, overide them in your derived class
+  void OnCancelBtnClick(wxCommandEvent& event);
+  void OnOKBtnClick(wxCommandEvent& event);
+  void OnPrintBtnClick(wxCommandEvent& event);
+  void OnSplitBtnClick(wxCommandEvent& event);
+  void OnExtendBtnClick(wxCommandEvent& event);
+  void OnToRouteBtnClick(wxCommandEvent& event);
+  void OnExportBtnClick(wxCommandEvent& event);
+  void OnTrackPropCopyTxtClick(wxCommandEvent& event);
+  void OnTrackPropListClick(wxListEvent& event);
+  void OnTrackPropRightClick(wxListEvent& event);
+  void OnTrackPropMenuSelected(wxCommandEvent& event);
+  void OnDeleteLink(wxCommandEvent& event);
+  void OnEditLink(wxCommandEvent& event);
+  void OnAddLink(wxCommandEvent& event);
+  void OnEditLinkToggle(wxCommandEvent& event);
+  void OnShowTimeTZ(wxCommandEvent& event);
+  void CreateControls(void);
+  void CreateControlsCompact(void);
 
 public:
-        static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track properties"),
-                                      const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
-                                      long style = FRAME_WITH_LINKS_STYLE );
-        static bool getInstanceFlag(){ return instanceFlag; }
-        ~TrackPropDlg();
+  static TrackPropDlg* getInstance(
+      wxWindow* parent, wxWindowID id = wxID_ANY,
+      const wxString& title = _("Track properties"),
+      const wxPoint& pos = wxDefaultPosition,
+      const wxSize& size = wxSize(680, 440),
+      long style = FRAME_WITH_LINKS_STYLE);
+  static bool getInstanceFlag() { return instanceFlag; }
+  ~TrackPropDlg();
 
-        void m_hyperlink1OnContextMenu( wxMouseEvent &event )
-        {
-            m_hyperlink1->PopupMenu( m_menuLink, event.GetPosition() );
-        }
+  void m_hyperlink1OnContextMenu(wxMouseEvent& event) {
+    m_hyperlink1->PopupMenu(m_menuLink, event.GetPosition());
+  }
 
-        void SetTrackAndUpdate( Track *pt );
-        bool UpdateProperties();
-        void InitializeList();
-        Track *GetTrack() { return m_pTrack; }
+  void SetTrackAndUpdate(Track* pt);
+  bool UpdateProperties();
+  void InitializeList();
+  Track* GetTrack() { return m_pTrack; }
 
-        void RecalculateSize( void );
+  void RecalculateSize(void);
 
-        Track      *m_pTrack;
+  Track* m_pTrack;
 
-        void m_hyperlinkContextMenu( wxMouseEvent &event );
+  void m_hyperlinkContextMenu(wxMouseEvent& event);
 };
 
-class OCPNTrackListCtrl: public wxListCtrl
-{
-    public:
-        OCPNTrackListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style);
-        ~OCPNTrackListCtrl();
+class OCPNTrackListCtrl : public wxListCtrl {
+public:
+  OCPNTrackListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+                    const wxSize& size, long style);
+  ~OCPNTrackListCtrl();
 
-        wxString OnGetItemText(long item, long column) const;
-        int OnGetItemColumnImage(long item, long column) const;
+  wxString OnGetItemText(long item, long column) const;
+  int OnGetItemColumnImage(long item, long column) const;
 
-        Track                   *m_pTrack;
-        int                     m_tz_selection;
-        int                     m_LMT_Offset;
+  Track* m_pTrack;
+  int m_tz_selection;
+  int m_LMT_Offset;
 };
 
-#endif //__TRACKPROPDLG_H__
+#endif  //__TRACKPROPDLG_H__

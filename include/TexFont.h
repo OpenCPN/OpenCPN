@@ -26,7 +26,11 @@
 #ifndef __TEXFONT_H__
 #define __TEXFONT_H__
 
-/* support ascii plus degree symbol for now pack font in a single texture 16x8 */
+#include <wx/colour.h>
+#include <wx/font.h>
+
+/* support ascii plus degree symbol for now pack font in a single texture 16x8
+ */
 #define DEGREE_GLYPH 127
 #define MIN_GLYPH 32
 #define MAX_GLYPH 128
@@ -34,48 +38,47 @@
 #define NUM_GLYPHS (MAX_GLYPH - MIN_GLYPH)
 
 #define COLS_GLYPHS 16
-#define ROWS_GLYPHS ((NUM_GLYPHS / COLS_GLYPHS)+1)
-
+#define ROWS_GLYPHS ((NUM_GLYPHS / COLS_GLYPHS) + 1)
 
 struct TexGlyphInfo {
-    int x, y, width, height;
-    float advance;
+  int x, y, width, height;
+  float advance;
 };
 
 class TexFont {
 public:
-    TexFont();
-    ~TexFont();
+  TexFont();
+  ~TexFont();
 
-    void Build( wxFont &font, bool blur = false );
-    void Delete();
+  void Build(wxFont &font, bool blur = false);
+  void Delete();
 
-    void GetTextExtent( const wxString &string, int *width, int *height);
-    void RenderString( const char *string, int x=0, int y=0 );
-    void RenderString( const wxString &string, int x=0, int y=0 );
-    bool IsBuilt(){ return m_built; }
-    void SetColor(wxColor &color){ m_color = color;}
+  void GetTextExtent(const wxString &string, int *width, int *height);
+  void RenderString(const char *string, int x = 0, int y = 0);
+  void RenderString(const wxString &string, int x = 0, int y = 0);
+  bool IsBuilt() { return m_built; }
+  void SetColor(wxColor &color) { m_color = color; }
 
 private:
-    void GetTextExtent( const char *string, int *width, int *height);
-    void RenderGlyph( int c );
+  void GetTextExtent(const char *string, int *width, int *height);
+  void RenderGlyph(int c);
 
-    wxFont m_font;
-    bool m_blur;
+  wxFont m_font;
+  bool m_blur;
 
-    TexGlyphInfo tgi[MAX_GLYPH];
+  TexGlyphInfo tgi[MAX_GLYPH];
 
-    unsigned  int texobj;
-    int tex_w, tex_h;
-    int m_maxglyphw;
-    int m_maxglyphh;
-    bool m_built;
+  unsigned int texobj;
+  int tex_w, tex_h;
+  int m_maxglyphw;
+  int m_maxglyphh;
+  bool m_built;
 
-    float m_dx;
-    float m_dy;
-    wxColor m_color;
+  float m_dx;
+  float m_dy;
+  wxColor m_color;
 };
 
 TexFont *GetTexFont(wxFont *key);
 
-#endif  //guard
+#endif  // guard

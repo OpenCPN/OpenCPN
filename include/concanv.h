@@ -28,13 +28,11 @@
 #ifndef __concanv_H__
 #define __concanv_H__
 
-
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
 
-#include "chart1.h"             // for ColorScheme
-
+#include "chart1.h"  // for ColorScheme
 
 #define SPEED_VMG 0
 #define SPEED_SOG 1
@@ -49,104 +47,97 @@ class Routeman;
 // CDI
 //----------------------------------------------------------------------------
 
-class CDI:public wxWindow
-{
+class CDI : public wxWindow {
 public:
-      CDI(wxWindow* parent, wxWindowID id, long style, const wxString& name);
+  CDI(wxWindow *parent, wxWindowID id, long style, const wxString &name);
 
-      void OnPaint(wxPaintEvent& event);
-      void SetColorScheme(ColorScheme cs);
-      void MouseEvent( wxMouseEvent& event );
+  void OnPaint(wxPaintEvent &event);
+  void SetColorScheme(ColorScheme cs);
+  void MouseEvent(wxMouseEvent &event);
 
-      wxBrush *m_pbackBrush;
-      wxBrush *m_proadBrush;
-      wxPen   *m_proadPen;
+  wxBrush *m_pbackBrush;
+  wxBrush *m_proadBrush;
+  wxPen *m_proadPen;
 
-DECLARE_EVENT_TABLE()
-
+  DECLARE_EVENT_TABLE()
 };
 
 //----------------------------------------------------------------------------
 // AnnunText
 //----------------------------------------------------------------------------
-class AnnunText : public wxWindow
-{
+class AnnunText : public wxWindow {
 public:
-      AnnunText(wxWindow *parent, wxWindowID id, const wxString& LegendElement, const wxString& ValueElement);
+  AnnunText(wxWindow *parent, wxWindowID id, const wxString &LegendElement,
+            const wxString &ValueElement);
 
-      ~AnnunText();
+  ~AnnunText();
 
-      void SetALabel(const wxString &l);
-      void SetAValue(const wxString &v);
-      void OnPaint(wxPaintEvent& event);
-      void RefreshFonts(void);
-      void SetLegendElement(const wxString &element);
-      void SetValueElement(const wxString &element);
-      void SetColorScheme(ColorScheme cs);
-      void MouseEvent( wxMouseEvent& event );
+  void SetALabel(const wxString &l);
+  void SetAValue(const wxString &v);
+  void OnPaint(wxPaintEvent &event);
+  void RefreshFonts(void);
+  void SetLegendElement(const wxString &element);
+  void SetValueElement(const wxString &element);
+  void SetColorScheme(ColorScheme cs);
+  void MouseEvent(wxMouseEvent &event);
 
 private:
-      void CalculateMinSize(void);
+  void CalculateMinSize(void);
 
-      wxBrush     m_backBrush;
-      wxColour    m_default_text_color;
+  wxBrush m_backBrush;
+  wxColour m_default_text_color;
 
-      wxString    m_label;
-      wxString    m_value;
-      wxFont      *m_plabelFont;
-      wxFont      *m_pvalueFont;
+  wxString m_label;
+  wxString m_value;
+  wxFont *m_plabelFont;
+  wxFont *m_pvalueFont;
 
-      wxString    m_LegendTextElement;
-      wxString    m_ValueTextElement;
-      wxColour    m_legend_color;
-      wxColour    m_val_color;
+  wxString m_LegendTextElement;
+  wxString m_ValueTextElement;
+  wxColour m_legend_color;
+  wxColour m_val_color;
 
-DECLARE_EVENT_TABLE()
-
+  DECLARE_EVENT_TABLE()
 };
-
-
-
 
 //----------------------------------------------------------------------------
 // ConsoleCanvas
 //----------------------------------------------------------------------------
-class ConsoleCanvas: public wxFrame
-{
+class ConsoleCanvas : public wxFrame {
 public:
-      ConsoleCanvas(wxWindow *frame);
-      ~ConsoleCanvas();
-      void UpdateRouteData();
-      void ShowWithFreshFonts(void);
-      void UpdateFonts(void);
-      void SetColorScheme(ColorScheme cs);
-      void LegRoute();
-      void OnContextMenu( wxContextMenuEvent& event );
-      void OnContextMenuSelection( wxCommandEvent& event );
-      void RefreshConsoleData(void);
-      void ToggleRouteTotalDisplay();
+  ConsoleCanvas(wxWindow *frame);
+  ~ConsoleCanvas();
+  void UpdateRouteData();
+  void ShowWithFreshFonts(void);
+  void UpdateFonts(void);
+  void SetColorScheme(ColorScheme cs);
+  void LegRoute();
+  void OnContextMenu(wxContextMenuEvent &event);
+  void OnContextMenuSelection(wxCommandEvent &event);
+  void RefreshConsoleData(void);
+  void ToggleRouteTotalDisplay();
 
-      wxWindow          *m_pParent;
-      wxStaticText      *pThisLegText;
-      wxBoxSizer        *m_pitemBoxSizerLeg;
+  wxWindow *m_pParent;
+  wxStaticText *pThisLegText;
+  wxBoxSizer *m_pitemBoxSizerLeg;
 
-      AnnunText         *pXTE;
-      AnnunText         *pBRG;
-      AnnunText         *pRNG;
-      AnnunText         *pTTG;
-      AnnunText         *pVMG;
-      CDI               *pCDI;
+  AnnunText *pXTE;
+  AnnunText *pBRG;
+  AnnunText *pRNG;
+  AnnunText *pTTG;
+  AnnunText *pVMG;
+  CDI *pCDI;
 
-      wxFont            *pThisLegFont;
-      bool              m_bNeedClear;
-      wxBrush           *pbackBrush;
+  wxFont *pThisLegFont;
+  bool m_bNeedClear;
+  wxBrush *pbackBrush;
 
 private:
-      void OnPaint(wxPaintEvent& event);
-      void OnShow(wxShowEvent& event);
-      char m_speedUsed;
+  void OnPaint(wxPaintEvent &event);
+  void OnShow(wxShowEvent &event);
+  char m_speedUsed;
 
-DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

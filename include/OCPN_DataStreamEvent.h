@@ -30,29 +30,25 @@
 
 class DataStream;
 
-
-class OCPN_DataStreamEvent: public wxEvent
-{
+class OCPN_DataStreamEvent : public wxEvent {
 public:
-    OCPN_DataStreamEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-    ~OCPN_DataStreamEvent( );
+  OCPN_DataStreamEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
+  ~OCPN_DataStreamEvent();
 
-    // accessors
-    void SetNMEAString(std::string string) { m_NMEAstring = string; }
-    void SetStream( DataStream *pDS ) { m_pDataStream = pDS; }
-    std::string GetNMEAString() const { return m_NMEAstring; }
-    DataStream *GetStream() const { return m_pDataStream; }
+  // accessors
+  void SetNMEAString(std::string string) { m_NMEAstring = string; }
+  void SetStream(DataStream *pDS) { m_pDataStream = pDS; }
+  std::string GetNMEAString() const { return m_NMEAstring; }
+  DataStream *GetStream() const { return m_pDataStream; }
 
-    // required for sending with wxPostEvent()
-    wxEvent *Clone() const;
+  // required for sending with wxPostEvent()
+  wxEvent *Clone() const;
 
-    wxString ProcessNMEA4Tags();
+  wxString ProcessNMEA4Tags();
 
 private:
-    std::string m_NMEAstring;
-    DataStream *m_pDataStream;
+  std::string m_NMEAstring;
+  DataStream *m_pDataStream;
 };
 
-
-
-#endif // __OCPN_DATASTREAMEVENT_H__
+#endif  // __OCPN_DATASTREAMEVENT_H__

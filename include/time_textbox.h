@@ -36,62 +36,61 @@
 #define NO_TIME _T("00:00")
 #define TIME_FORMAT _T("%H:%M")
 
-class TimeCtrl: public wxTextCtrl {
+class TimeCtrl : public wxTextCtrl {
 public:
-    TimeCtrl(wxWindow *parent, wxWindowID id, const wxDateTime &value=wxDefaultDateTime, const wxPoint &pos=wxDefaultPosition, const wxSize &size=wxDefaultSize, long style=0, const wxValidator &validator=wxDefaultValidator, const wxString &name=wxTextCtrlNameStr) : wxTextCtrl(parent, id, value.IsValid() ? value.Format(TIME_FORMAT) : NO_TIME, pos, size, style, validator, name)
-    {
-        Bind(wxEVT_KEY_UP, &TimeCtrl::OnChar, this);
-        Bind(wxEVT_KILL_FOCUS, &TimeCtrl::OnKillFocus, this);
-    };
+  TimeCtrl(wxWindow *parent, wxWindowID id,
+           const wxDateTime &value = wxDefaultDateTime,
+           const wxPoint &pos = wxDefaultPosition,
+           const wxSize &size = wxDefaultSize, long style = 0,
+           const wxValidator &validator = wxDefaultValidator,
+           const wxString &name = wxTextCtrlNameStr)
+      : wxTextCtrl(parent, id,
+                   value.IsValid() ? value.Format(TIME_FORMAT) : NO_TIME, pos,
+                   size, style, validator, name) {
+    Bind(wxEVT_KEY_UP, &TimeCtrl::OnChar, this);
+    Bind(wxEVT_KILL_FOCUS, &TimeCtrl::OnKillFocus, this);
+  };
 
-    void SetValue(const wxDateTime val)
-    {
-        if (val.IsValid()) {
-            wxTextCtrl::SetValue(val.Format(TIME_FORMAT));
-        } else {
-            wxTextCtrl::SetValue(NO_TIME);
-        }
-    };
-
-    wxDateTime GetValue()
-    {
-        wxDateTime dt;
-        wxString str = wxTextCtrl::GetValue();
-        wxString::const_iterator end;
-        if ( !dt.ParseTime(str, &end) ) {
-            return wxInvalidDateTime;
-        }
-        else if ( end == str.end() ) {
-            return dt;
-        } else {
-            return dt;
-        }
-    };
-
-    void OnChar(wxKeyEvent& event)
-    {
-        if (GetValue().IsValid()) {
-            wxDateEvent evt(this, GetValue(), wxEVT_TIME_CHANGED);
-            HandleWindowEvent(evt);
-        }
-    };
-
-    void OnKillFocus(wxFocusEvent& event)
-    {
-        wxTextCtrl::SetValue(GetValue().Format(TIME_FORMAT));
-    };
-
-    bool GetTime(int* hour, int* min, int* sec)
-    {
-        const wxDateTime::Tm tm = GetValue().GetTm();
-        *hour = tm.hour;
-        *min = tm.min;
-        *sec = tm.sec;
-
-        return true;
+  void SetValue(const wxDateTime val) {
+    if (val.IsValid()) {
+      wxTextCtrl::SetValue(val.Format(TIME_FORMAT));
+    } else {
+      wxTextCtrl::SetValue(NO_TIME);
     }
+  };
 
+  wxDateTime GetValue() {
+    wxDateTime dt;
+    wxString str = wxTextCtrl::GetValue();
+    wxString::const_iterator end;
+    if (!dt.ParseTime(str, &end)) {
+      return wxInvalidDateTime;
+    } else if (end == str.end()) {
+      return dt;
+    } else {
+      return dt;
+    }
+  };
+
+  void OnChar(wxKeyEvent &event) {
+    if (GetValue().IsValid()) {
+      wxDateEvent evt(this, GetValue(), wxEVT_TIME_CHANGED);
+      HandleWindowEvent(evt);
+    }
+  };
+
+  void OnKillFocus(wxFocusEvent &event) {
+    wxTextCtrl::SetValue(GetValue().Format(TIME_FORMAT));
+  };
+
+  bool GetTime(int *hour, int *min, int *sec) {
+    const wxDateTime::Tm tm = GetValue().GetTm();
+    *hour = tm.hour;
+    *min = tm.min;
+    *sec = tm.sec;
+
+    return true;
+  }
 };
-
 
 #endif /* time_textbox_h */

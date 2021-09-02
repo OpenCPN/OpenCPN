@@ -34,27 +34,24 @@ class TCDataFactory;
 class TCDS_Ascii_Harmonic;
 class TCDS_Binary_Harmonic;
 
-class TCDataSource
-{
+class TCDataSource {
 public:
-    TCDataSource();
-    ~TCDataSource();
+  TCDataSource();
+  ~TCDataSource();
 
-    TC_Error_Code LoadData(const wxString &data_file_path);
+  TC_Error_Code LoadData(const wxString &data_file_path);
 
-    int GetMaxIndex(void);
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
+  int GetMaxIndex(void);
+  IDX_entry *GetIndexEntry(int n_index);
+  TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
 
 private:
-    wxString             m_data_source_path;
+  wxString m_data_source_path;
 
-    TCDataFactory        *m_pfactory;
-    TCDS_Ascii_Harmonic  *pTCDS_Ascii_Harmonic;
-    TCDS_Binary_Harmonic *pTCDS_Binary_Harmonic;
-
+  TCDataFactory *m_pfactory;
+  TCDS_Ascii_Harmonic *pTCDS_Ascii_Harmonic;
+  TCDS_Binary_Harmonic *pTCDS_Binary_Harmonic;
 };
-
 
 WX_DECLARE_OBJARRAY(TCDataSource, ArrayOfTCDSources);
 

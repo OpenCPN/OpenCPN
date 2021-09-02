@@ -20,13 +20,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
-*/
-
+ */
 
 #ifndef DOWNLOAD_MGR_H__
 #define DOWNLOAD_MGR_H__
 
 #include <wx/dialog.h>
+#include <wx/progdlg.h>
 #include <wx/window.h>
 
 #include "Downloader.h"
@@ -35,31 +35,27 @@
 // Accepted by PluginDownloadDialog, reloads plugin list.
 wxDECLARE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
 
-class PluginDownloadDialog: public wxDialog
-{
-    public:
-        PluginDownloadDialog(wxWindow* parent);
+class PluginDownloadDialog : public wxDialog {
+public:
+  PluginDownloadDialog(wxWindow* parent);
 
-        wxWindow* GetRealParent() { return  m_parent; }
-
+  wxWindow* GetRealParent() { return m_parent; }
 };
 
 /** Add progress and final message dialogs to the basic Downloader. */
 
-class GuiDownloader: public Downloader
-{
-    private:
-        long m_downloaded;
-        wxProgressDialog* m_dialog;
-        PluginMetadata m_plugin;
-        wxWindow* m_parent;
+class GuiDownloader : public Downloader {
+private:
+  long m_downloaded;
+  wxProgressDialog* m_dialog;
+  PluginMetadata m_plugin;
+  wxWindow* m_parent;
 
-    public:
-        GuiDownloader(wxWindow* parent, PluginMetadata plugin);
-        std::string run(wxWindow* parent, bool remove_current);
-        void on_chunk(const char* buff, unsigned bytes) override;
-        void showErrorDialog(const char* msg);
+public:
+  GuiDownloader(wxWindow* parent, PluginMetadata plugin);
+  std::string run(wxWindow* parent, bool remove_current);
+  void on_chunk(const char* buff, unsigned bytes) override;
+  void showErrorDialog(const char* msg);
 };
 
-
-#endif // DOWNLOAD_MGR_H__
+#endif  // DOWNLOAD_MGR_H__

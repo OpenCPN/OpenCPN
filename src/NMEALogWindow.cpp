@@ -32,147 +32,117 @@
 
 extern OCPNPlatform *g_Platform;
 
-NMEALogWindow * NMEALogWindow::instance = NULL;
+NMEALogWindow *NMEALogWindow::instance = NULL;
 
-NMEALogWindow & NMEALogWindow::Get()
-{
-    if (instance == NULL) {
-        instance = new NMEALogWindow;
-    }
-    return *instance;
+NMEALogWindow &NMEALogWindow::Get() {
+  if (instance == NULL) {
+    instance = new NMEALogWindow;
+  }
+  return *instance;
 }
 
 NMEALogWindow::NMEALogWindow()
-    : window(NULL)
-    , width(0)
-    , height(0)
-    , pos_x(0)
-    , pos_y(0)
-{}
+    : window(NULL), width(0), height(0), pos_x(0), pos_y(0) {}
 
-void NMEALogWindow::Shutdown()
-{
-    if (instance)
-    {
-        delete instance;
-        instance = NULL;
-    }
+void NMEALogWindow::Shutdown() {
+  if (instance) {
+    delete instance;
+    instance = NULL;
+  }
 }
 
-bool NMEALogWindow::Active() const
-{
-    return window != NULL;
+bool NMEALogWindow::Active() const { return window != NULL; }
+
+void NMEALogWindow::Create(wxWindow *parent, int num_lines) {
+  if (window == NULL) {
+    window = new TTYWindow(parent, num_lines, this);
+    window->SetTitle(_("NMEA Debug Window"));
+
+    // Make sure the window is well on the screen
+    pos_x = wxMax(pos_x, 40);
+    pos_y = wxMax(pos_y, 40);
+
+    window->SetSize(pos_x, pos_y, width, height);
+  }
+  window->Show();
 }
 
-void NMEALogWindow::Create(wxWindow * parent, int num_lines)
-{
-    if (window == NULL) {
-        window = new TTYWindow(parent, num_lines, this);
-        window->SetTitle(_("NMEA Debug Window"));
-
-        // Make sure the window is well on the screen
-        pos_x = wxMax(pos_x, 40);
-        pos_y = wxMax(pos_y, 40);
-
-        window->SetSize(pos_x, pos_y, width, height);
-    }
-    window->Show();
+void NMEALogWindow::Add(const wxString &s) {
+  if (window) window->Add(s);
 }
 
-void NMEALogWindow::Add(const wxString & s)
-{
-    if (window)
-        window->Add(s);
+void NMEALogWindow::Refresh(bool do_refresh) {
+  if (window) window->Refresh(do_refresh);
 }
 
-void NMEALogWindow::Refresh(bool do_refresh)
-{
-    if (window)
-        window->Refresh(do_refresh);
+void NMEALogWindow::SetSize(const wxSize &size) {
+  width = size.GetWidth();
+  width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
+  width = wxMin(width, g_Platform->getDisplaySize().x - 20);
+  height = size.GetHeight();
+  height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
+  height = wxMin(height, g_Platform->getDisplaySize().y - 20);
 }
 
-void NMEALogWindow::SetSize(const wxSize & size)
-{
-    width = size.GetWidth();
-    width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
-    width = wxMin(width, g_Platform->getDisplaySize().x - 20);
-    height = size.GetHeight();
-    height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
-    height = wxMin(height, g_Platform->getDisplaySize().y - 20);
-
+void NMEALogWindow::SetPos(const wxPoint &pos) {
+  pos_x = pos.x;
+  pos_y = pos.y;
 }
 
-void NMEALogWindow::SetPos(const wxPoint & pos)
-{
-    pos_x = pos.x;
-    pos_y = pos.y;
+int NMEALogWindow::GetSizeW() {
+  UpdateGeometry();
+  return width;
 }
 
-int NMEALogWindow::GetSizeW()
-{
+int NMEALogWindow::GetSizeH() {
+  UpdateGeometry();
+  return height;
+}
+
+int NMEALogWindow::GetPosX() {
+  UpdateGeometry();
+  return pos_x;
+}
+
+int NMEALogWindow::GetPosY() {
+  UpdateGeometry();
+  return pos_y;
+}
+
+void NMEALogWindow::SetSize(int w, int h) {
+  width = w;
+  width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
+  width = wxMin(width, g_Platform->getDisplaySize().x - 20);
+
+  height = h;
+  height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
+  height = wxMin(height, g_Platform->getDisplaySize().y - 20);
+  //    qDebug() << w << h << width << height;
+}
+
+void NMEALogWindow::SetPos(int x, int y) {
+  pos_x = x;
+  pos_y = y;
+}
+
+void NMEALogWindow::CheckPos(int display_width, int display_height) {
+  if ((pos_x < 0) || (pos_x > display_width)) pos_x = 5;
+  if ((pos_y < 0) || (pos_y > display_height)) pos_y = 5;
+}
+
+void NMEALogWindow::DestroyWindow() {
+  if (window) {
     UpdateGeometry();
-    return width;
+    window->Destroy();
+    window = NULL;
+  }
 }
 
-int NMEALogWindow::GetSizeH()
-{
-    UpdateGeometry();
-    return height;
-}
-
-int NMEALogWindow::GetPosX()
-{
-    UpdateGeometry();
-    return pos_x;
-}
-
-int NMEALogWindow::GetPosY()
-{
-    UpdateGeometry();
-    return pos_y;
-}
-
-void NMEALogWindow::SetSize(int w, int h)
-{
-    width = w;
-    width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
-    width = wxMin(width, g_Platform->getDisplaySize().x - 20);
-
-    height = h;
-    height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
-    height = wxMin(height, g_Platform->getDisplaySize().y - 20);
-//    qDebug() << w << h << width << height;
-}
-
-void NMEALogWindow::SetPos(int x, int y)
-{
-    pos_x = x;
-    pos_y = y;
-}
-
-void NMEALogWindow::CheckPos(int display_width, int display_height)
-{
-    if ((pos_x < 0) || (pos_x > display_width))
-        pos_x = 5;
-    if ((pos_y < 0) || (pos_y > display_height))
-        pos_y = 5;
-}
-
-void NMEALogWindow::DestroyWindow()
-{
-    if (window) {
-        UpdateGeometry();
-        window->Destroy();
-        window = NULL;
-    }
-}
-
-void NMEALogWindow::Move()
-{
-    if (window) {
-        window->Move(pos_x, pos_y);
-        window->Raise();
-    }
+void NMEALogWindow::Move() {
+  if (window) {
+    window->Move(pos_x, pos_y);
+    window->Raise();
+  }
 }
 
 /**
@@ -182,11 +152,9 @@ void NMEALogWindow::Move()
  * Using this mechanism prevents to cache values on every move/resize
  * of the window.
  */
-void NMEALogWindow::UpdateGeometry()
-{
-    if (window) {
-        SetSize(window->GetSize());
-        SetPos(window->GetPosition());
-    }
+void NMEALogWindow::UpdateGeometry() {
+  if (window) {
+    SetSize(window->GetSize());
+    SetPos(window->GetPosition());
+  }
 }
-

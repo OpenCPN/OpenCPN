@@ -26,81 +26,80 @@
  */
 
 #include "config.h"
+#include <wx/ffile.h>
 
 #ifdef OCPN_USE_LZMA
 #include <lzma.h>
 
 // this implements a non-seekable input stream of xz compressed file
-class wxCompressedFFileInputStream : public wxInputStream
-{
+class wxCompressedFFileInputStream : public wxInputStream {
 public:
-    wxCompressedFFileInputStream(const wxString& fileName);
-    virtual ~wxCompressedFFileInputStream();
+  wxCompressedFFileInputStream(const wxString &fileName);
+  virtual ~wxCompressedFFileInputStream();
 
-    virtual bool IsOk() const { return wxStreamBase::IsOk() && m_file->IsOpened(); }
-    bool IsSeekable() const { return false; }
+  virtual bool IsOk() const {
+    return wxStreamBase::IsOk() && m_file->IsOpened();
+  }
+  bool IsSeekable() const { return false; }
 
 protected:
-    size_t OnSysRead(void *buffer, size_t size);
-    wxFileOffset OnSysSeek(wxFileOffset pos, wxSeekMode mode);
-    wxFileOffset OnSysTell() const;
+  size_t OnSysRead(void *buffer, size_t size);
+  wxFileOffset OnSysSeek(wxFileOffset pos, wxSeekMode mode);
+  wxFileOffset OnSysTell() const;
 
-    wxFFile *m_file;
-    lzma_stream strm;
+  wxFFile *m_file;
+  lzma_stream strm;
 
 private:
-    void init_lzma();
+  void init_lzma();
 
-    uint8_t inbuf[BUFSIZ];
+  uint8_t inbuf[BUFSIZ];
 
-    wxDECLARE_NO_COPY_CLASS(wxCompressedFFileInputStream);
+  wxDECLARE_NO_COPY_CLASS(wxCompressedFFileInputStream);
 };
 
 // non-seekable stream for either non-compressed or compressed files
-class ChartDataNonSeekableInputStream : public wxInputStream
-{
+class ChartDataNonSeekableInputStream : public wxInputStream {
 public:
-    ChartDataNonSeekableInputStream(const wxString& fileName);
-    virtual ~ChartDataNonSeekableInputStream();
+  ChartDataNonSeekableInputStream(const wxString &fileName);
+  virtual ~ChartDataNonSeekableInputStream();
 
-    virtual bool IsOk() const { return m_stream->IsOk(); }
-    bool IsSeekable() const { return false; }
+  virtual bool IsOk() const { return m_stream->IsOk(); }
+  bool IsSeekable() const { return false; }
 
 protected:
-    size_t OnSysRead(void *buffer, size_t size);
-    wxFileOffset OnSysSeek(wxFileOffset pos, wxSeekMode mode);
-    wxFileOffset OnSysTell() const;
+  size_t OnSysRead(void *buffer, size_t size);
+  wxFileOffset OnSysSeek(wxFileOffset pos, wxSeekMode mode);
+  wxFileOffset OnSysTell() const;
 
 private:
-    wxInputStream *m_stream;
+  wxInputStream *m_stream;
 
-    wxDECLARE_NO_COPY_CLASS(ChartDataNonSeekableInputStream);
+  wxDECLARE_NO_COPY_CLASS(ChartDataNonSeekableInputStream);
 };
-
 
 // seekable stream for either non-compressed or compressed files
 // it must decompress the file to a temporary file to make it seekable
-class ChartDataInputStream : public wxInputStream
-{
+class ChartDataInputStream : public wxInputStream {
 public:
-    ChartDataInputStream(const wxString& fileName);
-    virtual ~ChartDataInputStream();
+  ChartDataInputStream(const wxString &fileName);
+  virtual ~ChartDataInputStream();
 
-    virtual bool IsOk() const { return m_stream->IsOk(); }
-    bool IsSeekable() const { return m_stream->IsSeekable(); }
+  virtual bool IsOk() const { return m_stream->IsOk(); }
+  bool IsSeekable() const { return m_stream->IsSeekable(); }
 
-    wxString TempFileName() const { return m_tempfilename; }
+  wxString TempFileName() const { return m_tempfilename; }
 
 protected:
-    size_t OnSysRead(void *buffer, size_t size);
-    wxFileOffset OnSysSeek(wxFileOffset pos, wxSeekMode mode);
-    wxFileOffset OnSysTell() const;
+  size_t OnSysRead(void *buffer, size_t size);
+  wxFileOffset OnSysSeek(wxFileOffset pos, wxSeekMode mode);
+  wxFileOffset OnSysTell() const;
 
 private:
-    wxString  m_tempfilename;
-    wxInputStream *m_stream;
+  wxString m_tempfilename;
+  wxInputStream *m_stream;
 
-    wxDECLARE_NO_COPY_CLASS(ChartDataInputStream);
+  wxDECLARE_NO_COPY_CLASS(ChartDataInputStream);
 };
 
 #else
@@ -108,6 +107,6 @@ private:
 typedef wxFFileInputStream ChartDataInputStream;
 typedef wxFFileInputStream ChartDataNonSeekableInputStream;
 
-#endif // OCPN_USE_LZMA
+#endif  // OCPN_USE_LZMA
 
 bool DecompressXZFile(const wxString &input_path, const wxString &output_path);

@@ -26,10 +26,11 @@
 #ifndef __SENCMGR_H__
 #define __SENCMGR_H__
 
+#include <vector>
+
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
-
 
 //----------------------------------------------------------------------------
 // Constants
@@ -42,64 +43,57 @@
 class s57chart;
 class SENCBuildThread;
 
-
-typedef enum
-{
-    THREAD_INACTIVE = 0,
-    THREAD_PENDING,
-    THREAD_STARTED,
-    THREAD_FINISHED
+typedef enum {
+  THREAD_INACTIVE = 0,
+  THREAD_PENDING,
+  THREAD_STARTED,
+  THREAD_FINISHED
 } SENCThreadStatus;
 
-typedef enum{
-    SENC_BUILD_INACTIVE = 0,
-    SENC_BUILD_PENDING,
-    SENC_BUILD_STARTED,
-    SENC_BUILD_DONE_NOERROR,
-    SENC_BUILD_DONE_ERROR,
+typedef enum {
+  SENC_BUILD_INACTIVE = 0,
+  SENC_BUILD_PENDING,
+  SENC_BUILD_STARTED,
+  SENC_BUILD_DONE_NOERROR,
+  SENC_BUILD_DONE_ERROR,
 } EVENTSENCResult;
 
-extern  const wxEventType wxEVT_OCPN_BUILDSENCTHREAD;
+extern const wxEventType wxEVT_OCPN_BUILDSENCTHREAD;
 
 //----------------------------------------------------------------------------
 // s57 Chart Thread based SENC job ticket
 //----------------------------------------------------------------------------
-class SENCJobTicket
-{
+class SENCJobTicket {
 public:
-    SENCJobTicket();
-    ~SENCJobTicket() {}
+  SENCJobTicket();
+  ~SENCJobTicket() {}
 
-    s57chart *m_chart;
-    wxString m_FullPath000;
-    wxString m_SENCFileName;
-    double ref_lat, ref_lon;
-    double m_LOD_meters;
+  s57chart *m_chart;
+  wxString m_FullPath000;
+  wxString m_SENCFileName;
+  double ref_lat, ref_lon;
+  double m_LOD_meters;
 
-    SENCBuildThread *m_thread;
+  SENCBuildThread *m_thread;
 
-    SENCThreadStatus m_status;
-    EVENTSENCResult m_SENCResult;
+  SENCThreadStatus m_status;
+  EVENTSENCResult m_SENCResult;
 };
-
-
 
 //----------------------------------------------------------------------------
 // s57 Chart Thread based SENC creator status message
 //----------------------------------------------------------------------------
-class OCPN_BUILDSENC_ThreadEvent: public wxEvent
-{
+class OCPN_BUILDSENC_ThreadEvent : public wxEvent {
 public:
-    OCPN_BUILDSENC_ThreadEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-    ~OCPN_BUILDSENC_ThreadEvent( );
+  OCPN_BUILDSENC_ThreadEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
+  ~OCPN_BUILDSENC_ThreadEvent();
 
-    // required for sending with wxPostEvent()
-    wxEvent *Clone() const;
+  // required for sending with wxPostEvent()
+  wxEvent *Clone() const;
 
-    int stat;
-    EVENTSENCResult type;
-    SENCJobTicket *m_ticket;
-
+  int stat;
+  EVENTSENCResult type;
+  SENCJobTicket *m_ticket;
 
 private:
 };
@@ -107,46 +101,38 @@ private:
 //----------------------------------------------------------------------------
 // s57 Chart Thread based SENC creator
 //----------------------------------------------------------------------------
-class SENCThreadManager : public wxEvtHandler
-{
+class SENCThreadManager : public wxEvtHandler {
 public:
-    SENCThreadManager();
-    ~SENCThreadManager();
+  SENCThreadManager();
+  ~SENCThreadManager();
 
-    void OnEvtThread( OCPN_BUILDSENC_ThreadEvent & event );
+  void OnEvtThread(OCPN_BUILDSENC_ThreadEvent &event);
 
-    SENCThreadStatus ScheduleJob( SENCJobTicket *ticket);
-    void FinishJob(SENCJobTicket *ticket);
-    void StartTopJob();
-    bool IsChartInTicketlist(s57chart *chart);
-    bool SetChartPointer(s57chart *chart, void *new_ptr);
-    int GetJobCount();
+  SENCThreadStatus ScheduleJob(SENCJobTicket *ticket);
+  void FinishJob(SENCJobTicket *ticket);
+  void StartTopJob();
+  bool IsChartInTicketlist(s57chart *chart);
+  bool SetChartPointer(s57chart *chart, void *new_ptr);
+  int GetJobCount();
 
-    int                 m_max_jobs;
+  int m_max_jobs;
 
-    std::vector<SENCJobTicket *> ticket_list;
+  std::vector<SENCJobTicket *> ticket_list;
 };
-
 
 //----------------------------------------------------------------------------
 // s57 Chart Thread based SENC creator
 //----------------------------------------------------------------------------
-class SENCBuildThread : public wxThread
-{
+class SENCBuildThread : public wxThread {
 public:
-    SENCBuildThread( SENCJobTicket *ticket, SENCThreadManager *manager);
-    void *Entry();
+  SENCBuildThread(SENCJobTicket *ticket, SENCThreadManager *manager);
+  void *Entry();
 
-    wxString m_FullPath000;
-    wxString m_SENCFileName;
-    s57chart *m_chart;
-    SENCThreadManager *m_manager;
-    SENCJobTicket *m_ticket;
-
+  wxString m_FullPath000;
+  wxString m_SENCFileName;
+  s57chart *m_chart;
+  SENCThreadManager *m_manager;
+  SENCJobTicket *m_ticket;
 };
-
-
-
-
 
 #endif

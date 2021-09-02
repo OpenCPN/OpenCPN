@@ -23,57 +23,55 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 class ocpnDC;
 class ChartCanvas;
 
-class ocpnCompass
-{
+class ocpnCompass {
 public:
-      ocpnCompass(ChartCanvas *parent, bool bShowGPS = true);
-      ~ocpnCompass();
+  ocpnCompass(ChartCanvas *parent, bool bShowGPS = true);
+  ~ocpnCompass();
 
-      bool IsShown() const { return m_shown; }
-      void Show(bool show) { m_shown = show; }
-      void Paint( ocpnDC& dc );
+  bool IsShown() const { return m_shown; }
+  void Show(bool show) { m_shown = show; }
+  void Paint(ocpnDC &dc);
 
-      void UpdateStatus( bool newColorScheme = false );
+  void UpdateStatus(bool newColorScheme = false);
 
-      bool MouseEvent( wxMouseEvent& event );
-      void SetColorScheme( ColorScheme cs );
-      int GetXOffset(void) const { return m_xoffset; }
-      int GetYOffset(void) const { return m_yoffset; }
-      float GetScaleFactor(){ return m_scale; }
-      void SetScaleFactor( float factor);
+  bool MouseEvent(wxMouseEvent &event);
+  void SetColorScheme(ColorScheme cs);
+  int GetXOffset(void) const { return m_xoffset; }
+  int GetYOffset(void) const { return m_yoffset; }
+  float GetScaleFactor() { return m_scale; }
+  void SetScaleFactor(float factor);
 
-      void Move(const wxPoint &pt) { m_rect.SetPosition(pt); }
-      wxRect GetRect(void) const { return m_rect; }
+  void Move(const wxPoint &pt) { m_rect.SetPosition(pt); }
+  wxRect GetRect(void) const { return m_rect; }
+
 private:
-      void CreateBmp( bool bnew = false );
+  void CreateBmp(bool bnew = false);
 
-      ChartCanvas *m_parent;
-      wxBitmap m_StatBmp;
-      wxBitmap m_MaskBmp;
-      wxStaticBitmap *m_pStatBoxToolStaticBmp;
+  ChartCanvas *m_parent;
+  wxBitmap m_StatBmp;
+  wxBitmap m_MaskBmp;
+  wxStaticBitmap *m_pStatBoxToolStaticBmp;
 
-      wxString m_lastgpsIconName;
-      double m_rose_angle;
+  wxString m_lastgpsIconName;
+  double m_rose_angle;
 
-      wxBitmap _img_compass;
-      wxBitmap _img_gpsRed;
-      int m_xoffset;
-      int m_yoffset;
-      float m_scale;
+  wxBitmap _img_compass;
+  wxBitmap _img_gpsRed;
+  int m_xoffset;
+  int m_yoffset;
+  float m_scale;
 
-      wxRect m_rect;
-      bool m_shown;
-      bool m_bshowGPS;
-      ColorScheme m_cs;
+  wxRect m_rect;
+  bool m_shown;
+  bool m_bshowGPS;
+  ColorScheme m_cs;
 
 #ifdef ocpnUSE_GL
-      unsigned int texobj;
-      int m_tex_w, m_tex_h;
-      int m_image_width, m_image_height;
+  unsigned int texobj;
+  int m_tex_w, m_tex_h;
+  int m_image_width, m_image_height;
 #endif
-
 };

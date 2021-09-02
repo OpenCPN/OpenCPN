@@ -28,8 +28,8 @@
 #ifdef HAVE_LIBUSB_10
 #include "linux_devices.h"
 #else
-  static bool inline is_dongle_permissions_wrong() { return false; }
-  static bool inline is_device_permissions_ok(const char*) { return true; }
+static bool inline is_dongle_permissions_wrong() { return false; }
+static bool inline is_device_permissions_ok(const char*) { return true; }
 #endif
 
 #endif

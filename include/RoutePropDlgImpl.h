@@ -27,85 +27,102 @@
 
 #include "RoutePropDlg.h"
 #include "Route.h"
+#include <wx/dataview.h>
 #include <wx/dvrenderers.h>
 #include "ocpn_types.h"
 #include <cmath>
 #include "LinkPropDlg.h"
 
-
-class RoutePropDlgImpl : public RoutePropDlg
-{
+class RoutePropDlgImpl : public RoutePropDlg {
 public:
-    ~RoutePropDlgImpl();
+  ~RoutePropDlgImpl();
 
-    static RoutePropDlgImpl* getInstance( wxWindow* parent );
-    void SetRouteAndUpdate( Route *pR, bool only_points = FALSE );
-    Route *GetRoute(void) { return m_pRoute; }
-    void SetEnroutePoint( RoutePoint* rp ) { return; } //TODO
-    void UpdatePoints();
-    void SetColorScheme( ColorScheme cs );
-    void RecalculateSize(void);
-    static bool getInstanceFlag();
+  static RoutePropDlgImpl* getInstance(wxWindow* parent);
+  void SetRouteAndUpdate(Route* pR, bool only_points = FALSE);
+  Route* GetRoute(void) { return m_pRoute; }
+  void SetEnroutePoint(RoutePoint* rp) { return; }  // TODO
+  void UpdatePoints();
+  void SetColorScheme(ColorScheme cs);
+  void RecalculateSize(void);
+  static bool getInstanceFlag();
 
 protected:
-    void RoutePropDlgOnClose( wxCloseEvent& event ) { SaveGeometry(); ResetChanges(); Hide(); event.Veto(); }
-    void RoutePropDlgOnSize( wxSizeEvent& event ) { event.Skip(); }
-    void RoutePropDlgOnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
-    void PlanSpeedOnKillFocus( wxFocusEvent& event );
-    void PlanSpeedOnTextEnter( wxCommandEvent& event );
-    void DepartureDateOnDateChanged( wxDateEvent& event );
-    void DepartureTimeOnTimeChanged( wxDateEvent& event );
-    void TimezoneOnChoice( wxCommandEvent& event );
-    void WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event );
-    void WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event );
-    void WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event );
-    void WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event );
-    void PrintOnButtonClick( wxCommandEvent& event );
-    void ExtendOnButtonClick( wxCommandEvent& event );
-    void SplitOnButtonClick( wxCommandEvent& event );
-    void BtnsOnCancelButtonClick( wxCommandEvent& event ) { SaveGeometry(); ResetChanges(); Hide(); }
-    void BtnsOnOKButtonClick( wxCommandEvent& event );
-    void OnRoutePropMenuSelected( wxCommandEvent& event );
-    void OnRoutepropCopyTxtClick( wxCommandEvent& event );
-    void ItemEditOnMenuSelection( wxCommandEvent& event );
-    void ItemAddOnMenuSelection( wxCommandEvent& event );
-    void ItemDeleteOnMenuSelection( wxCommandEvent& event );
-    void AddLinkOnButtonClick( wxCommandEvent& event );
-    void BtnEditOnToggleButton( wxCommandEvent& event );
-    void OnHyperlinkClick( wxHyperlinkEvent& event );
-    void HyperlinkContextMenu( wxMouseEvent& event );
-    void m_scrolledWindowLinksOnContextMenu( wxMouseEvent &event );
+  void RoutePropDlgOnClose(wxCloseEvent& event) {
+    SaveGeometry();
+    ResetChanges();
+    Hide();
+    event.Veto();
+  }
+  void RoutePropDlgOnSize(wxSizeEvent& event) { event.Skip(); }
+  void RoutePropDlgOnNotebookPageChanged(wxNotebookEvent& event) {
+    event.Skip();
+  }
+  void PlanSpeedOnKillFocus(wxFocusEvent& event);
+  void PlanSpeedOnTextEnter(wxCommandEvent& event);
+  void DepartureDateOnDateChanged(wxDateEvent& event);
+  void DepartureTimeOnTimeChanged(wxDateEvent& event);
+  void TimezoneOnChoice(wxCommandEvent& event);
+  void WaypointsOnDataViewListCtrlItemContextMenu(wxDataViewEvent& event);
+  void WaypointsOnDataViewListCtrlItemEditingDone(wxDataViewEvent& event);
+  void WaypointsOnDataViewListCtrlItemValueChanged(wxDataViewEvent& event);
+  void WaypointsOnDataViewListCtrlSelectionChanged(wxDataViewEvent& event);
+  void PrintOnButtonClick(wxCommandEvent& event);
+  void ExtendOnButtonClick(wxCommandEvent& event);
+  void SplitOnButtonClick(wxCommandEvent& event);
+  void BtnsOnCancelButtonClick(wxCommandEvent& event) {
+    SaveGeometry();
+    ResetChanges();
+    Hide();
+  }
+  void BtnsOnOKButtonClick(wxCommandEvent& event);
+  void OnRoutePropMenuSelected(wxCommandEvent& event);
+  void OnRoutepropCopyTxtClick(wxCommandEvent& event);
+  void ItemEditOnMenuSelection(wxCommandEvent& event);
+  void ItemAddOnMenuSelection(wxCommandEvent& event);
+  void ItemDeleteOnMenuSelection(wxCommandEvent& event);
+  void AddLinkOnButtonClick(wxCommandEvent& event);
+  void BtnEditOnToggleButton(wxCommandEvent& event);
+  void OnHyperlinkClick(wxHyperlinkEvent& event);
+  void HyperlinkContextMenu(wxMouseEvent& event);
+  void m_scrolledWindowLinksOnContextMenu(wxMouseEvent& event);
 
-    wxDateTime GetDepartureTS();
-    void SaveChanges();
-    void ResetChanges();
+  wxDateTime GetDepartureTS();
+  void SaveChanges();
+  void ResetChanges();
 
-    RoutePropDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,450 ), long style = FRAME_WITH_LINKS_STYLE );
+  RoutePropDlgImpl(wxWindow* parent, wxWindowID id = wxID_ANY,
+                   const wxString& title = _("Route Properties"),
+                   const wxPoint& pos = wxDefaultPosition,
+                   const wxSize& size = wxSize(550, 450),
+                   long style = FRAME_WITH_LINKS_STYLE);
 
 private:
-    void SaveGeometry();
-    static bool instanceFlag;
-    static RoutePropDlgImpl* single;
+  void SaveGeometry();
+  static bool instanceFlag;
+  static RoutePropDlgImpl* single;
 
-    Route       *m_pRoute;
-    Route       m_OrigRoute;
-    Route       *m_pHead; // for route splitting
-    Route       *m_pTail;
-    RoutePoint  *m_pExtendPoint;
-    Route       *m_pExtendRoute;
-    RoutePoint  *m_pEnroutePoint;
-    bool        m_bStartNow;
+  Route* m_pRoute;
+  Route m_OrigRoute;
+  Route* m_pHead;  // for route splitting
+  Route* m_pTail;
+  RoutePoint* m_pExtendPoint;
+  Route* m_pExtendRoute;
+  RoutePoint* m_pEnroutePoint;
+  bool m_bStartNow;
 
-    int         m_tz_selection;
+  int m_tz_selection;
 
-    wxDataViewColumn *etd_col;
+  wxDataViewColumn* etd_col;
 
-    wxHyperlinkCtrl *m_pEditedLink;
+  wxHyperlinkCtrl* m_pEditedLink;
 
-    bool IsThisRouteExtendable();
-    wxDateTime toUsrDateTime( const wxDateTime ts, const int format, const double lon = INFINITY - INFINITY );
-    wxDateTime fromUsrDateTime( const wxDateTime ts, const int format, const double lon = INFINITY - INFINITY );
-    wxString MakeTideInfo( wxString stationName, double lat, double lon, wxDateTime utcTime );
+  bool IsThisRouteExtendable();
+  wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
+                           const double lon = INFINITY - INFINITY);
+  wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
+                             const double lon = INFINITY - INFINITY);
+  wxString MakeTideInfo(wxString stationName, double lat, double lon,
+                        wxDateTime utcTime);
 };
 
-#endif // _ROUTEPROPDLGIMPL_H_
+#endif  // _ROUTEPROPDLGIMPL_H_

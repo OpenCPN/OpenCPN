@@ -24,7 +24,6 @@
  ***************************************************************************
  */
 
-
 #ifndef __muibar_H__
 #define __muibar_H__
 
@@ -34,20 +33,17 @@
 //   constants
 //----------------------------------------------------------------------------
 
-enum
-{
-    ID_MUI_MENU = 21500
-};
+enum { ID_MUI_MENU = 21500 };
 
-enum{
-    CO_ANIMATION_LINEAR = 0,
-    CO_ANIMATION_QUADRATIC,
-    CO_ANIMATION_CUBIC,
-    CO_ANIMATION_CUBIC_BOUNCE_IN,
-    CO_ANIMATION_CUBIC_BACK_IN,
-    CO_ANIMATION_CUBIC_REVERSE,
-    CO_PULL,
-    CO_PUSH
+enum {
+  CO_ANIMATION_LINEAR = 0,
+  CO_ANIMATION_QUADRATIC,
+  CO_ANIMATION_CUBIC,
+  CO_ANIMATION_CUBIC_BOUNCE_IN,
+  CO_ANIMATION_CUBIC_BACK_IN,
+  CO_ANIMATION_CUBIC_REVERSE,
+  CO_PULL,
+  CO_PUSH
 };
 
 class MyFrame;
@@ -58,80 +54,81 @@ class CanvasOptions;
 //----------------------------------------------------------------------------
 // MUIBar
 //----------------------------------------------------------------------------
-class MUIBar : public wxFrame
-{
+class MUIBar : public wxFrame {
 public:
-    MUIBar();
-    MUIBar(ChartCanvas* parent, int orientation = wxHORIZONTAL,  float size_factor =1.0, wxWindowID id = wxID_ANY,
-           const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-           long style = 0, const wxString& name = wxPanelNameStr);
+  MUIBar();
+  MUIBar(ChartCanvas *parent, int orientation = wxHORIZONTAL,
+         float size_factor = 1.0, wxWindowID id = wxID_ANY,
+         const wxPoint &pos = wxDefaultPosition,
+         const wxSize &size = wxDefaultSize, long style = 0,
+         const wxString &name = wxPanelNameStr);
 
-    ~MUIBar();
+  ~MUIBar();
 
-    void OnSize( wxSizeEvent& event );
-    void OnPaint( wxPaintEvent& event );
-    void OnToolLeftClick(  wxCommandEvent& event );
-    void OnEraseBackground( wxEraseEvent& event );
-    void onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event );
+  void OnSize(wxSizeEvent &event);
+  void OnPaint(wxPaintEvent &event);
+  void OnToolLeftClick(wxCommandEvent &event);
+  void OnEraseBackground(wxEraseEvent &event);
+  void onCanvasOptionsAnimationTimerEvent(wxTimerEvent &event);
 
-    void SetBestPosition( void );
-    void UpdateDynamicValues();
-    int GetOrientation(){ return m_orientation; }
-    void ResetCanvasOptions();
-    void SetFollowButtonState( int state );
-    CanvasOptions *GetCanvasOptions(){ return m_canvasOptions; }
-    void SetColorScheme( ColorScheme cs );
-    void SetCanvasENCAvailable( bool avail );
-    void OnScaleSelected( wxMouseEvent &event );
+  void SetBestPosition(void);
+  void UpdateDynamicValues();
+  int GetOrientation() { return m_orientation; }
+  void ResetCanvasOptions();
+  void SetFollowButtonState(int state);
+  CanvasOptions *GetCanvasOptions() { return m_canvasOptions; }
+  void SetColorScheme(ColorScheme cs);
+  void SetCanvasENCAvailable(bool avail);
+  void OnScaleSelected(wxMouseEvent &event);
 
 private:
-    void Init( void );
-    void CreateControls();
-    void PullCanvasOptions();
-    void PushCanvasOptions();
+  void Init(void);
+  void CreateControls();
+  void PullCanvasOptions();
+  void PushCanvasOptions();
 
-    void CaptureCanvasOptionsBitmap();
-    void CaptureCanvasOptionsBitmapChain( wxTimerEvent& event );
+  void CaptureCanvasOptionsBitmap();
+  void CaptureCanvasOptionsBitmapChain(wxTimerEvent &event);
 
-    ChartCanvas *m_parentCanvas;
-    int         m_orientation;
-    float       m_scaleFactor;
+  ChartCanvas *m_parentCanvas;
+  int m_orientation;
+  float m_scaleFactor;
 
-    MUIButton   *m_zinButton;
-    MUIButton   *m_zoutButton;
-    MUIButton   *m_menuButton;
-    MUIButton   *m_followButton;
-    wxStaticText *m_scaleTextBox;
+  MUIButton *m_zinButton;
+  MUIButton *m_zoutButton;
+  MUIButton *m_menuButton;
+  MUIButton *m_followButton;
+  wxStaticText *m_scaleTextBox;
 
-    CanvasOptions *m_canvasOptions;
-    wxPoint     m_targetCOPos;
-    wxPoint     m_currentCOPos;
-    wxPoint     m_startCOPos;
-    int         m_COTopOffset;
+  CanvasOptions *m_canvasOptions;
+  wxPoint m_targetCOPos;
+  wxPoint m_currentCOPos;
+  wxPoint m_startCOPos;
+  int m_COTopOffset;
 
-    wxSize      m_canvasOptionsFullSize;
+  wxSize m_canvasOptionsFullSize;
 
-    wxTimer     m_canvasOptionsAnimationTimer;
-    int         m_animateStep;
-    int         m_animateSteps;
-    int         m_animationType;
-    int         m_animationTotalTime;
-    int         m_pushPull;
+  wxTimer m_canvasOptionsAnimationTimer;
+  int m_animateStep;
+  int m_animateSteps;
+  int m_animationType;
+  int m_animationTotalTime;
+  int m_pushPull;
 
-    wxString    m_backcolorString;
-    wxBitmap    m_animateBitmap;
-    wxBitmap    m_backingBitmap;
-    wxTimer     CanvasOptionTimer;
-    int         m_coSequence;
-    int         m_capture_size_y;
-    wxPoint     m_capturePoint;
-    wxPoint     m_backingPoint;
-    bool        m_coAnimateByBitmaps;
-    ColorScheme m_cs;
-    bool        m_CanvasENCAvail;
-    bool        m_bEffects;
+  wxString m_backcolorString;
+  wxBitmap m_animateBitmap;
+  wxBitmap m_backingBitmap;
+  wxTimer CanvasOptionTimer;
+  int m_coSequence;
+  int m_capture_size_y;
+  wxPoint m_capturePoint;
+  wxPoint m_backingPoint;
+  bool m_coAnimateByBitmaps;
+  ColorScheme m_cs;
+  bool m_CanvasENCAvail;
+  bool m_bEffects;
 
-DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

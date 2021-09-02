@@ -40,9 +40,9 @@
 
 class S57Reader;
 
-char **S57FileCollector( const char * pszDataset );
+char **S57FileCollector(const char *pszDataset);
 
-#define EMPTY_NUMBER_MARKER 2147483641  /* MAXINT-6 */
+#define EMPTY_NUMBER_MARKER 2147483641 /* MAXINT-6 */
 
 /* -------------------------------------------------------------------- */
 /*      Various option strings.                                         */
@@ -55,37 +55,37 @@ char **S57FileCollector( const char * pszDataset );
 #define S57O_RETURN_PRIMITIVES "RETURN_PRIMITIVES"
 #define S57O_RETURN_LINKAGES "RETURN_LINKAGES"
 
-#define S57M_UPDATES                0x01
-#define S57M_LNAM_REFS              0x02
-#define S57M_SPLIT_MULTIPOINT           0x04
-#define S57M_ADD_SOUNDG_DEPTH       0x08
+#define S57M_UPDATES 0x01
+#define S57M_LNAM_REFS 0x02
+#define S57M_SPLIT_MULTIPOINT 0x04
+#define S57M_ADD_SOUNDG_DEPTH 0x08
 #define S57M_PRESERVE_EMPTY_NUMBERS 0x10
-#define S57M_RETURN_PRIMITIVES            0x20
-#define S57M_RETURN_LINKAGES        0x40
+#define S57M_RETURN_PRIMITIVES 0x20
+#define S57M_RETURN_LINKAGES 0x40
 
 /* -------------------------------------------------------------------- */
 /*      RCNM values.                                                    */
 /* -------------------------------------------------------------------- */
 
-#define RCNM_FE         100     /* Feature record */
+#define RCNM_FE 100 /* Feature record */
 
-#define RCNM_VI         110     /* Isolated Node */
-#define RCNM_VC         120     /* Connected Node */
-#define RCNM_VE         130     /* Edge */
-#define RCNM_VF         140     /* Face */
+#define RCNM_VI 110 /* Isolated Node */
+#define RCNM_VC 120 /* Connected Node */
+#define RCNM_VE 130 /* Edge */
+#define RCNM_VF 140 /* Face */
 
-#define OGRN_VI         "IsolatedNode"
-#define OGRN_VC         "ConnectedNode"
-#define OGRN_VE         "Edge"
-#define OGRN_VF         "Face"
+#define OGRN_VI "IsolatedNode"
+#define OGRN_VC "ConnectedNode"
+#define OGRN_VE "Edge"
+#define OGRN_VF "Face"
 
 /* -------------------------------------------------------------------- */
 /*      FRID PRIM values.                                               */
 /* -------------------------------------------------------------------- */
-#define PRIM_P          1       /* point feature */
-#define PRIM_L          2       /* line feature */
-#define PRIM_A          3       /* area feature */
-#define PRIM_N          4       /* non-spatial feature  */
+#define PRIM_P 1 /* point feature */
+#define PRIM_L 2 /* line feature */
+#define PRIM_A 3 /* area feature */
+#define PRIM_N 4 /* non-spatial feature  */
 
 /************************************************************************/
 /*                          S57ClassRegistrar                           */
@@ -94,49 +94,46 @@ char **S57FileCollector( const char * pszDataset );
 #define MAX_CLASSES 23000
 #define MAX_ATTRIBUTES 25000
 
-
-
 /************************************************************************/
 /*                            DDFRecordIndex                            */
 /*                                                                      */
 /*      Maintain an index of DDF records based on an integer key.       */
 /************************************************************************/
 
-typedef struct
-{
-    int         nKey;
-    DDFRecord   *poRecord;
+typedef struct {
+  int nKey;
+  DDFRecord *poRecord;
 } DDFIndexedRecord;
 
-class DDFRecordIndex
-{
-    int         bSorted;
+class DDFRecordIndex {
+  int bSorted;
 
-    int         nRecordCount;
-    int         nRecordMax;
+  int nRecordCount;
+  int nRecordMax;
 
-    int         nLastObjlPos;            /* rjensen. added for FindRecordByObjl() */
-    int         nLastObjl;                  /* rjensen. added for FindRecordByObjl() */
+  int nLastObjlPos; /* rjensen. added for FindRecordByObjl() */
+  int nLastObjl;    /* rjensen. added for FindRecordByObjl() */
 
-    DDFIndexedRecord *pasRecords;
+  DDFIndexedRecord *pasRecords;
 
-    void        Sort();
+  void Sort();
 
 public:
-                DDFRecordIndex();
-               ~DDFRecordIndex();
+  DDFRecordIndex();
+  ~DDFRecordIndex();
 
-    void        AddRecord( int nKey, DDFRecord * );
-    int         RemoveRecord( int nKey );
+  void AddRecord(int nKey, DDFRecord *);
+  int RemoveRecord(int nKey);
 
-    DDFRecord  *FindRecord( int nKey );
+  DDFRecord *FindRecord(int nKey);
 
-    DDFRecord  *FindRecordByObjl( int nObjl );    /* rjensen. added for FindRecordByObjl() */
+  DDFRecord *FindRecordByObjl(
+      int nObjl); /* rjensen. added for FindRecordByObjl() */
 
-    void        Clear();
+  void Clear();
 
-    int         GetCount() { return nRecordCount; }
-    DDFRecord  *GetByIndex( int i );
+  int GetCount() { return nRecordCount; }
+  DDFRecord *GetByIndex(int i);
 };
 
 /************************************************************************/
@@ -144,157 +141,148 @@ public:
 /************************************************************************/
 typedef bool (*CallBackFunction)(void);
 
-class S57Reader
-{
-    S57ClassRegistrar  *poRegistrar;
+class S57Reader {
+  S57ClassRegistrar *poRegistrar;
 
-    int                 nFDefnCount;
-    OGRFeatureDefn      **papoFDefnList;
+  int nFDefnCount;
+  OGRFeatureDefn **papoFDefnList;
 
-    char                *pszModuleName;
-    char                *pszDSNM;
+  char *pszModuleName;
+  char *pszDSNM;
 
-    DDFModule           *poModule;
+  DDFModule *poModule;
 
-    int                 nCOMF;  /* Coordinate multiplier */
-    int                 nSOMF;  /* Vertical (sounding) multiplier */
-    int                 nCSCL;  /* Chart Scale (from DSPM record) */
+  int nCOMF; /* Coordinate multiplier */
+  int nSOMF; /* Vertical (sounding) multiplier */
+  int nCSCL; /* Chart Scale (from DSPM record) */
 
-    int                 bFileIngested;
-    DDFRecordIndex      oVI_Index;
-    DDFRecordIndex      oVC_Index;
-    DDFRecordIndex      oVE_Index;
-    DDFRecordIndex      oVF_Index;
+  int bFileIngested;
+  DDFRecordIndex oVI_Index;
+  DDFRecordIndex oVC_Index;
+  DDFRecordIndex oVE_Index;
+  DDFRecordIndex oVF_Index;
 
-    int                 nNextVIIndex;
-    int                 nNextVCIndex;
-    int                 nNextVEIndex;
-    int                 nNextVFIndex;
+  int nNextVIIndex;
+  int nNextVCIndex;
+  int nNextVEIndex;
+  int nNextVFIndex;
 
-    int                 nNextFEIndex;
-    DDFRecordIndex      oFE_Index;
+  int nNextFEIndex;
+  DDFRecordIndex oFE_Index;
 
-    char                **papszOptions;
+  char **papszOptions;
 
-    int                 nOptionFlags;
+  int nOptionFlags;
 
-    int                 iPointOffset;
-    OGRFeature          *poMultiPoint;
+  int iPointOffset;
+  OGRFeature *poMultiPoint;
 
-    void                ClearPendingMultiPoint();
-    OGRFeature         *NextPendingMultiPoint();
+  void ClearPendingMultiPoint();
+  OGRFeature *NextPendingMultiPoint();
 
-    OGRFeature         *AssembleFeature( DDFRecord  *, OGRFeatureDefn * );
+  OGRFeature *AssembleFeature(DDFRecord *, OGRFeatureDefn *);
 
-    void                ApplyObjectClassAttributes( DDFRecord *, OGRFeature *);
-    void                GenerateLNAMAndRefs( DDFRecord *, OGRFeature * );
-    void                GenerateFSPTAttributes( DDFRecord *, OGRFeature * );
+  void ApplyObjectClassAttributes(DDFRecord *, OGRFeature *);
+  void GenerateLNAMAndRefs(DDFRecord *, OGRFeature *);
+  void GenerateFSPTAttributes(DDFRecord *, OGRFeature *);
 
-    void                AssembleSoundingGeometry( DDFRecord *, OGRFeature * );
-    void                AssemblePointGeometry( DDFRecord *, OGRFeature * );
-    void                AssembleLineGeometry( DDFRecord *, OGRFeature * );
-    void                AssembleAreaGeometry( DDFRecord *, OGRFeature * );
+  void AssembleSoundingGeometry(DDFRecord *, OGRFeature *);
+  void AssemblePointGeometry(DDFRecord *, OGRFeature *);
+  void AssembleLineGeometry(DDFRecord *, OGRFeature *);
+  void AssembleAreaGeometry(DDFRecord *, OGRFeature *);
 
+  OGRFeatureDefn *FindFDefn(DDFRecord *);
+  int ParseName(DDFField *, int = 0, int * = NULL);
 
-    OGRFeatureDefn     *FindFDefn( DDFRecord * );
-    int                 ParseName( DDFField *, int = 0, int * = NULL );
+  int ApplyRecordUpdate(DDFRecord *, DDFRecord *);
 
-    int                 ApplyRecordUpdate( DDFRecord *, DDFRecord * );
+  int bMissingWarningIssued;
+  int bAttrWarningIssued;
 
-    int                 bMissingWarningIssued;
-    int                 bAttrWarningIssued;
+  int Nall;
+  int Aall;
 
-    int                 Nall;
-    int                 Aall;
+public:
+  S57Reader(const char *);
+  ~S57Reader();
 
+  int FetchPoint(int, int, double *, double *, double * = NULL, int * = NULL);
 
-  public:
-                        S57Reader( const char * );
-                       ~S57Reader();
+  void SetClassBased(S57ClassRegistrar *);
+  void SetOptions(char **);
+  int GetOptionFlags() { return nOptionFlags; }
 
-   int                 FetchPoint( int, int,
-                                   double *, double *, double * = NULL, int * = NULL );
+  int Open(int bTestOpen);
+  void Close();
+  DDFModule *GetModule() { return poModule; }
+  const char *GetDSNM() { return pszDSNM; }
+  int GetCSCL() { return nCSCL; }
 
-    void                SetClassBased( S57ClassRegistrar * );
-    void                SetOptions( char ** );
-    int                 GetOptionFlags() { return nOptionFlags; }
+  int Ingest(CallBackFunction pcallback = NULL);
+  int ApplyUpdates(DDFModule *, int);
+  int FindAndApplyUpdates(const char *pszPath = NULL);
 
-    int                 Open( int bTestOpen );
-    void                Close();
-    DDFModule           *GetModule() { return poModule; }
-    const char          *GetDSNM() { return pszDSNM; }
-    int                 GetCSCL() { return nCSCL; }
+  void Rewind();
+  OGRFeature *ReadNextFeature(OGRFeatureDefn * = NULL);
+  OGRFeature *ReadFeature(int nFID, OGRFeatureDefn * = NULL);
+  OGRFeature *ReadVector(int nFID, int nRCNM);
 
-    int                 Ingest(CallBackFunction pcallback = NULL);
-    int                 ApplyUpdates( DDFModule *, int );
-    int                 FindAndApplyUpdates( const char *pszPath=NULL );
+  int GetNextFEIndex(int nRCNM = 100);
+  void SetNextFEIndex(int nNewIndex, int nRCNM = 100);
 
-    void                Rewind();
-    OGRFeature          *ReadNextFeature( OGRFeatureDefn * = NULL );
-    OGRFeature          *ReadFeature( int nFID, OGRFeatureDefn * = NULL );
-    OGRFeature          *ReadVector( int nFID, int nRCNM );
+  void AddFeatureDefn(OGRFeatureDefn *);
 
-    int                 GetNextFEIndex( int nRCNM = 100 );
-    void                SetNextFEIndex( int nNewIndex, int nRCNM = 100 );
+  int CollectClassList(int *, int);
 
-    void                AddFeatureDefn( OGRFeatureDefn * );
+  OGRErr GetExtent(OGREnvelope *psExtent, int bForce);
 
-    int                 CollectClassList( int *, int);
+  int GetNall() { return Nall; }
+  int GetAall() { return Aall; }
 
-    OGRErr              GetExtent( OGREnvelope *psExtent, int bForce );
-
-    int                 GetNall(){ return Nall; }
-    int                 GetAall(){ return Aall; }
-
-    int                 GetFeatureCount() { return oFE_Index.GetCount(); }
-
- };
+  int GetFeatureCount() { return oFE_Index.GetCount(); }
+};
 
 /************************************************************************/
 /*                              S57Writer                               */
 /************************************************************************/
 
-class S57Writer
-{
+class S57Writer {
 public:
-                        S57Writer();
-                        ~S57Writer();
+  S57Writer();
+  ~S57Writer();
 
-    void                SetClassBased( S57ClassRegistrar * );
-    int                 CreateS57File( const char *pszFilename );
-    int                 Close();
+  void SetClassBased(S57ClassRegistrar *);
+  int CreateS57File(const char *pszFilename);
+  int Close();
 
-    int                 WriteGeometry( DDFRecord *, int, double *, double *,
-                                       double * );
-    int                 WriteATTF( DDFRecord *, OGRFeature * );
-    int                 WritePrimitive( OGRFeature *poFeature );
-    int                 WriteCompleteFeature( OGRFeature *poFeature );
-    int                 WriteDSID( const char *pszDSNM = NULL,
-                                   const char *pszISDT = NULL,
-                                   const char *pszSTED = NULL,
-                                   int nAGEN = 0,
-                                   const char *pszCOMT = NULL );
-    int                 WriteDSPM( int nScale = 0 );
+  int WriteGeometry(DDFRecord *, int, double *, double *, double *);
+  int WriteATTF(DDFRecord *, OGRFeature *);
+  int WritePrimitive(OGRFeature *poFeature);
+  int WriteCompleteFeature(OGRFeature *poFeature);
+  int WriteDSID(const char *pszDSNM = NULL, const char *pszISDT = NULL,
+                const char *pszSTED = NULL, int nAGEN = 0,
+                const char *pszCOMT = NULL);
+  int WriteDSPM(int nScale = 0);
 
 private:
-    DDFModule           *poModule;
-    S57ClassRegistrar   *poRegistrar;
+  DDFModule *poModule;
+  S57ClassRegistrar *poRegistrar;
 
-    int                 nNext0001Index;
+  int nNext0001Index;
 
-    DDFRecord           *MakeRecord();
+  DDFRecord *MakeRecord();
 
-    int                 nCOMF;  /* Coordinate multiplier */
-    int                 nSOMF;  /* Vertical (sounding) multiplier */
+  int nCOMF; /* Coordinate multiplier */
+  int nSOMF; /* Vertical (sounding) multiplier */
 };
 
 /* -------------------------------------------------------------------- */
 /*      Functions to create OGRFeatureDefns.                            */
 /* -------------------------------------------------------------------- */
-void           CPL_DLL  S57GenerateStandardAttributes( OGRFeatureDefn *, int );
-OGRFeatureDefn CPL_DLL *S57GenerateGeomFeatureDefn( OGRwkbGeometryType, int );
-OGRFeatureDefn CPL_DLL *S57GenerateObjectClassDefn( S57ClassRegistrar *,
-                                                    int, int );
-OGRFeatureDefn CPL_DLL  *S57GenerateVectorPrimitiveFeatureDefn( int, int );
+void CPL_DLL S57GenerateStandardAttributes(OGRFeatureDefn *, int);
+OGRFeatureDefn CPL_DLL *S57GenerateGeomFeatureDefn(OGRwkbGeometryType, int);
+OGRFeatureDefn CPL_DLL *S57GenerateObjectClassDefn(S57ClassRegistrar *, int,
+                                                   int);
+OGRFeatureDefn CPL_DLL *S57GenerateVectorPrimitiveFeatureDefn(int, int);
 
 #endif /* ndef _S57_H_INCLUDED */

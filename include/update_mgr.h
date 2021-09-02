@@ -20,8 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
-*/
-
+ */
 
 #ifndef UPDATE_MGR_H__
 #define UPDATE_MGR_H__
@@ -39,21 +38,18 @@ class OcpnUpdateScrolledWindow;
  * Modal dialog, displays available updates (possibly just one) and lets
  * user select and eventually confirm update.
  */
-class UpdateDialog: public wxDialog
-{
-    public:
-        UpdateDialog(wxWindow* parent,
-                     const std::vector<PluginMetadata>& updates);
+class UpdateDialog : public wxDialog {
+public:
+  UpdateDialog(wxWindow* parent, const std::vector<PluginMetadata>& updates);
 
-        PluginMetadata GetUpdate() { return update;  };
-        void SetUpdate(const PluginMetadata md) { update = md; };
-        void RecalculateSize();
+  PluginMetadata GetUpdate() { return update; };
+  void SetUpdate(const PluginMetadata md) { update = md; };
+  void RecalculateSize();
 
-        OcpnUpdateScrolledWindow *m_scrwin;
+  OcpnUpdateScrolledWindow* m_scrwin;
 
-    private:
-        PluginMetadata update;
-
+private:
+  PluginMetadata update;
 };
 
-#endif // UPDATE_MGR_H__
+#endif  // UPDATE_MGR_H__

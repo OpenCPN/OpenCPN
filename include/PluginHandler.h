@@ -69,95 +69,87 @@
 
 #include "catalog_parser.h"
 
-
 bool isRegularFile(const char* path);
 
-
 class CompatOs {
+public:
+  static CompatOs* getInstance();
+  std::string name() const { return _name; }
+  std::string version() const { return _version; }
 
-    public:
-        static CompatOs* getInstance();
-        std::string name()  const { return _name; }
-        std::string version() const { return _version; }
-
-    private:
-        CompatOs();
-        std::string _name;
-        std::string _version;
+private:
+  CompatOs();
+  std::string _name;
+  std::string _version;
 };
-
 
 class PluginHandler {
+public:
+  static PluginHandler* getInstance();
 
-    public:
-        static PluginHandler* getInstance();
+  /** Cleanup failed installation attempt using filelist for plugin. */
+  static void cleanup(const std::string& filelist, const std::string& plugname);
+  static void cleanupFiles(const std::string& manifestFile,
+                           const std::string& plugname);
 
-        /** Cleanup failed installation attempt using filelist for plugin. */
-        static void
-            cleanup(const std::string& filelist, const std::string& plugname);
-        static void
-            cleanupFiles(const std::string& manifestFile, const std::string& plugname);
+  /** Return path to installation manifest for given plugin. */
+  static std::string fileListPath(std::string name);
 
-        /** Return path to installation manifest for given plugin. */
-        static std::string fileListPath(std::string name);
+  /** Return path to file containing version for given plugin. */
+  static std::string versionPath(std::string name);
 
-        /** Return path to file containing version for given plugin. */
-        static std::string versionPath(std::string name);
+  /** Return true if given plugin is loadable on given os/version. */
+  static bool isCompatible(const PluginMetadata& metadata,
+                           const char* os = PKG_TARGET,
+                           const char* os_version = PKG_TARGET_VERSION);
 
-        /** Return true if given plugin is loadable on given os/version. */
-        static bool isCompatible(const PluginMetadata& metadata,
-                                 const char* os = PKG_TARGET,
-                                 const char* os_version = PKG_TARGET_VERSION);
+  /** Check if given plugin can be installed/updated. */
+  bool isPluginWritable(std::string name);
 
-        /** Check if given plugin can be installed/updated. */
-        bool isPluginWritable(std::string name);
+  /** Return list of all installed plugins. */
+  const std::vector<PluginMetadata> getInstalled();
 
-        /** Return list of all installed plugins. */
-        const std::vector<PluginMetadata> getInstalled();
+  /** Return list of available, not installed plugins. */
+  const std::vector<PluginMetadata> getAvailable();
 
-        /** Return list of available, not installed plugins. */
-        const std::vector<PluginMetadata> getAvailable();
+  /** Map of available plugin targets -> number of occurences. */
+  const std::map<std::string, int> getCountByTarget();
 
-        /** Map of available plugin targets -> number of occurences. */
-        const std::map<std::string, int> getCountByTarget();
+  /** Return path to metadata XML file. */
+  std::string getMetadataPath();
 
-        /** Return path to metadata XML file. */
-        std::string getMetadataPath();
+  /** Set path to metadata XML file. */
+  void setMetadata(std::string path) { metadataPath = path; }
 
-        /** Set path to metadata XML file. */
-        void setMetadata(std::string path) { metadataPath = path; }
+  /** Download and install a new, not installed plugin. */
+  bool installPlugin(PluginMetadata plugin);
 
-        /** Download and install a new, not installed plugin. */
-        bool installPlugin(PluginMetadata plugin);
+  /** Install a new, downloaded but not installed plugin tarball. */
+  bool installPlugin(PluginMetadata plugin, std::string path);
 
-        /** Install a new, downloaded but not installed plugin tarball. */
-        bool installPlugin(PluginMetadata plugin, std::string path);
+  /** Uninstall an installed plugin. */
+  bool uninstall(const std::string plugin);
 
-	/** Uninstall an installed plugin. */
-        bool uninstall(const std::string plugin);
+  /** Install plugin tarball from local cache. */
+  bool installPluginFromCache(PluginMetadata plugin);
 
-         /** Install plugin tarball from local cache. */
-        bool installPluginFromCache( PluginMetadata plugin );
+  std::string getLastErrorMsg() { return last_error_msg; }
 
-        std::string getLastErrorMsg() { return last_error_msg; }
+  CatalogData* GetCatalogData() { return &catalogData; }
 
-        CatalogData *GetCatalogData(){ return &catalogData; }
+protected:
+  /** Initiats the handler and set up LD_LIBRARY_PATH. */
+  PluginHandler() {}
 
-    protected:
-	/** Initiats the handler and set up LD_LIBRARY_PATH. */
-        PluginHandler() {}
-
-    private:
-        std::string metadataPath;
-        std::vector<PluginMetadata> installed;
-        CatalogData catalogData;
-        std::string last_error_msg;
-        bool explodeTarball(struct archive* src,
-                            struct archive* dest,
-                            std::string& filelist);
-        bool extractTarball(const std::string path, std::string& filelist);
-        bool archive_check(int r, const char* msg, struct archive* a);
+private:
+  std::string metadataPath;
+  std::vector<PluginMetadata> installed;
+  CatalogData catalogData;
+  std::string last_error_msg;
+  bool explodeTarball(struct archive* src, struct archive* dest,
+                      std::string& filelist);
+  bool extractTarball(const std::string path, std::string& filelist);
+  bool archive_check(int r, const char* msg, struct archive* a);
 };
 
-
-#endif // PLUGIN_HANDLER_H__
+#endif  // PLUGIN_HANDLER_H__

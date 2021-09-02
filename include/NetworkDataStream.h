@@ -28,22 +28,20 @@
  *
  */
 
-
 #ifndef __NETWORKDATASTREAM_H__
 #define __NETWORKDATASTREAM_H__
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
-  #include "wx/wx.h"
-#endif //precompiled header
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled header
 
 #if defined(__WXMSW__)
 #include <ws2tcpip.h>
 #endif
 
 #include <wx/datetime.h>
-
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
@@ -58,7 +56,7 @@
 #endif
 
 #ifndef __WXMSW__
-#include <sys/socket.h>                 // needed for (some) Mac builds
+#include <sys/socket.h>  // needed for (some) Mac builds
 #include <netinet/in.h>
 #endif
 
@@ -74,136 +72,128 @@
 
 class NetworkDataStream : public DataStream {
 public:
-    NetworkDataStream(wxEvtHandler *input_consumer,
-                      const ConnectionParams *params)
-            : DataStream(input_consumer, params),
-              m_net_port(wxString::Format(wxT("%i"), params->NetworkPort)),
-              m_net_protocol(params->NetProtocol),
-              m_sock(NULL),
-              m_tsock(NULL),
-              m_socket_server(NULL),
-              m_is_multicast(false),
-              m_txenter(0)
-    {
-        m_addr.Hostname(params->NetworkAddress);
-        m_addr.Service(params->NetworkPort);
+  NetworkDataStream(wxEvtHandler* input_consumer,
+                    const ConnectionParams* params)
+      : DataStream(input_consumer, params),
+        m_net_port(wxString::Format(wxT("%i"), params->NetworkPort)),
+        m_net_protocol(params->NetProtocol),
+        m_sock(NULL),
+        m_tsock(NULL),
+        m_socket_server(NULL),
+        m_is_multicast(false),
+        m_txenter(0) {
+    m_addr.Hostname(params->NetworkAddress);
+    m_addr.Service(params->NetworkPort);
 
-        m_socket_timer.SetOwner(this, TIMER_SOCKET);
-        m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
+    m_socket_timer.SetOwner(this, TIMER_SOCKET);
+    m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
 
-        Open();
-    }
+    Open();
+  }
 
-    NetworkDataStream(wxEvtHandler *input_consumer, NetworkProtocol protocol, wxString &address, int port)
-            : DataStream(input_consumer,
-               NETWORK,
-               _T(""),
-               _T(""),
-               DS_TYPE_OUTPUT,
-               0,
-               false,
-               DS_EOS_CRLF,
-               DS_HANDSHAKE_NONE)
+  NetworkDataStream(wxEvtHandler* input_consumer, NetworkProtocol protocol,
+                    wxString& address, int port)
+      : DataStream(input_consumer, NETWORK, _T(""), _T(""), DS_TYPE_OUTPUT, 0,
+                   false, DS_EOS_CRLF, DS_HANDSHAKE_NONE)
 
-    {
-        m_net_port = wxString::Format(wxT("%i"), port);
-        m_net_protocol = protocol;
-        m_sock = NULL;
-        m_tsock = NULL;
-        m_socket_server = NULL;
-        m_is_multicast = false;
-        m_txenter = 0;
-        m_addr.Hostname(address);
-        m_addr.Service(port);
+  {
+    m_net_port = wxString::Format(wxT("%i"), port);
+    m_net_protocol = protocol;
+    m_sock = NULL;
+    m_tsock = NULL;
+    m_socket_server = NULL;
+    m_is_multicast = false;
+    m_txenter = 0;
+    m_addr.Hostname(address);
+    m_addr.Service(port);
 
-        m_socket_timer.SetOwner(this, TIMER_SOCKET);
-        m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
+    m_socket_timer.SetOwner(this, TIMER_SOCKET);
+    m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
 
-        Open();
-    }
+    Open();
+  }
 
-    ~NetworkDataStream() {
-        Close();
-    }
+  ~NetworkDataStream() { Close(); }
 
-    virtual bool SendSentence( const wxString &sentence ) {
-        wxString payload = sentence;
-        if( !sentence.EndsWith(_T("\r\n")) )
-            payload += _T("\r\n");
-        return SendSentenceNetwork(payload);
-    }
-    virtual void Close();
+  virtual bool SendSentence(const wxString& sentence) {
+    wxString payload = sentence;
+    if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
+    return SendSentenceNetwork(payload);
+  }
+  virtual void Close();
 
-    wxSocketBase* GetSock() const { return m_sock; }
+  wxSocketBase* GetSock() const { return m_sock; }
 
 private:
-    wxString            m_net_port;
-    NetworkProtocol     m_net_protocol;
-    wxIPV4address       m_addr;
-    wxSocketBase        *m_sock;
-    wxSocketBase        *m_tsock;
-    wxSocketServer      *m_socket_server;
-    bool                m_is_multicast;
-    struct ip_mreq      m_mrq;
-    int                 m_txenter;
-    int                 m_dog_value;
-    std::string         m_sock_buffer;
-    wxTimer             m_socket_timer;
-    wxTimer             m_socketread_watchdog_timer;
-    bool                m_brx_connect_event;
+  wxString m_net_port;
+  NetworkProtocol m_net_protocol;
+  wxIPV4address m_addr;
+  wxSocketBase* m_sock;
+  wxSocketBase* m_tsock;
+  wxSocketServer* m_socket_server;
+  bool m_is_multicast;
+  struct ip_mreq m_mrq;
+  int m_txenter;
+  int m_dog_value;
+  std::string m_sock_buffer;
+  wxTimer m_socket_timer;
+  wxTimer m_socketread_watchdog_timer;
+  bool m_brx_connect_event;
 
+  void Open();
+  void OpenNetworkGPSD();
+  void OpenNetworkTCP(unsigned int addr);
+  void OpenNetworkUDP(unsigned int addr);
+  bool SendSentenceNetwork(const wxString& payload);
 
-    void Open();
-    void OpenNetworkGPSD();
-    void OpenNetworkTCP(unsigned int addr);
-    void OpenNetworkUDP(unsigned int addr);
-    bool SendSentenceNetwork(const wxString &payload);
+  void OnTimerSocket(wxTimerEvent& event);
+  void OnSocketEvent(wxSocketEvent& event);
+  //  TCP Server support
+  void OnServerSocketEvent(wxSocketEvent& event);  // The listener
+  // void OnActiveServerEvent(wxSocketEvent& event);             // The open
+  // connection
+  void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+  wxIPV4address GetAddr() const { return m_addr; }
+  bool SetOutputSocketOptions(wxSocketBase* tsock);
 
-    void OnTimerSocket(wxTimerEvent& event);
-    void OnSocketEvent(wxSocketEvent& event);
-    //  TCP Server support
-    void OnServerSocketEvent(wxSocketEvent& event);             // The listener
-    // void OnActiveServerEvent(wxSocketEvent& event);             // The open connection
-    void OnSocketReadWatchdogTimer(wxTimerEvent& event);
-    wxIPV4address GetAddr() const { return m_addr; }
-    bool SetOutputSocketOptions(wxSocketBase* tsock);
+  wxString GetNetPort() const { return m_net_port; }
 
+  NetworkProtocol GetProtocol() { return m_net_protocol; }
 
-    wxString  GetNetPort() const { return m_net_port; }
+  void SetSock(wxSocketBase* sock) { m_sock = sock; }
 
-    NetworkProtocol GetProtocol() { return m_net_protocol; }
+  void SetTSock(wxSocketBase* sock) { m_tsock = sock; }
 
-    void SetSock(wxSocketBase* sock) { m_sock = sock; }
+  wxSocketBase* GetTSock() const { return m_tsock; }
 
-    void SetTSock(wxSocketBase* sock) { m_tsock = sock; }
+  void SetSockServer(wxSocketServer* sock) { m_socket_server = sock; }
 
-    wxSocketBase* GetTSock() const { return m_tsock; }
+  wxSocketServer* GetSockServer() const { return m_socket_server; }
 
-    void SetSockServer(wxSocketServer* sock) { m_socket_server = sock; }
+  void SetMulticast(bool multicast) { m_is_multicast = multicast; }
 
-    wxSocketServer* GetSockServer() const { return m_socket_server; }
+  bool GetMulticast() const { return m_is_multicast; }
 
-    void SetMulticast(bool multicast) { m_is_multicast = multicast; }
+  void SetMrqAddr(unsigned int addr) {
+    m_mrq.imr_multiaddr.s_addr = addr;
+    m_mrq.imr_interface.s_addr = INADDR_ANY;
+  }
 
-    bool GetMulticast() const { return m_is_multicast; }
+  struct ip_mreq& GetMrq() {
+    return m_mrq;
+  }
 
-    void SetMrqAddr(unsigned int addr) {
-        m_mrq.imr_multiaddr.s_addr = addr;
-        m_mrq.imr_interface.s_addr = INADDR_ANY;
-    }
+  wxTimer* GetSocketTimer() { return &m_socket_timer; }
 
-    struct ip_mreq& GetMrq() { return m_mrq; }
+  wxTimer* GetSocketThreadWatchdogTimer() {
+    return &m_socketread_watchdog_timer;
+  }
 
-    wxTimer* GetSocketTimer() { return &m_socket_timer; }
+  void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
 
-    wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
+  bool GetBrxConnectEvent() { return m_brx_connect_event; }
 
-    void SetBrxConnectEvent(bool event) {m_brx_connect_event = event;}
-
-    bool GetBrxConnectEvent() { return m_brx_connect_event; }
-
-    DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
-
-#endif // __NETWORKDATASTREAM_H__
+#endif  // __NETWORKDATASTREAM_H__

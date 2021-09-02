@@ -31,9 +31,9 @@
  */
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include "wx/tokenzr.h"
 #include <wx/datetime.h>
@@ -69,107 +69,91 @@
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
-#define NAN (*(double*)&lNaN)
+#define NAN (*(double *)&lNaN)
 #endif
 
 extern bool g_benableUDPNullHeader;
 
-#define N_DOG_TIMEOUT   5
+#define N_DOG_TIMEOUT 5
 
 #ifdef __WXMSW__
 // {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
-DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0xba, 0xe7, 0x22, 0xc0);
+DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b,
+            0xba, 0xe7, 0x22, 0xc0);
 #endif
 
 DataStream *makeSerialDataStream(wxEvtHandler *input_consumer,
                                  const ConnectionType conn_type,
-                                 const wxString &Port,
-                                 const wxString &BaudRate,
-                                 dsPortType io_select,
-                                 int priority,
-                                 bool bGarmin)
-{
-    return new SerialDataStream(input_consumer,
-                                conn_type,
-                                Port,
-                                BaudRate,
-                                io_select,
-                                priority,
-                                bGarmin,
-                                DS_EOS_CRLF,
-                                DS_HANDSHAKE_NONE);
+                                 const wxString &Port, const wxString &BaudRate,
+                                 dsPortType io_select, int priority,
+                                 bool bGarmin) {
+  return new SerialDataStream(input_consumer, conn_type, Port, BaudRate,
+                              io_select, priority, bGarmin, DS_EOS_CRLF,
+                              DS_HANDSHAKE_NONE);
 }
 
+void SerialDataStream::Open(void) {
+  wxString comx;
+  comx = GetPort().AfterFirst(':');  // strip "Serial:"
 
-void SerialDataStream::Open(void)
-{
+  wxString port_uc = GetPort().Upper();
+
+#ifdef __OCPN__ANDROID__
+  if (comx.Contains(_T("AUSBSerial"))) {
+    androidStartUSBSerial(comx, GetBaudRate(), GetConsumer());
+    SetOk(true);
+    return;
+  }
+#endif
+
+  if ((wxNOT_FOUND != port_uc.Find(_T("USB"))) &&
+      (wxNOT_FOUND != port_uc.Find(_T("GARMIN")))) {
+    SetGarminProtocolHandler(
+        new GarminProtocolHandler(this, GetConsumer(), true));
+  } else if (GetGarminMode()) {
+    SetGarminProtocolHandler(
+        new GarminProtocolHandler(this, GetConsumer(), false));
+  } else {
     wxString comx;
-    comx =  GetPort().AfterFirst(':');      // strip "Serial:"
+    comx = GetPort().AfterFirst(':');  // strip "Serial:"
 
-    wxString port_uc = GetPort().Upper();
+    comx =
+        comx.BeforeFirst(' ');  // strip off any description provided by Windows
 
-#ifdef __OCPN__ANDROID__
-    if(comx.Contains(_T("AUSBSerial"))){
-        androidStartUSBSerial(comx, GetBaudRate(), GetConsumer());
-        SetOk(true);
-        return;
-    }
-#endif
+    //    Kick off the DataSource RX thread
+    SetSecondaryThread(new OCP_DataStreamInput_Thread(
+        this, GetConsumer(), comx, GetBaudRate(), GetPortType()));
+    SetThreadRunFlag(1);
+    GetSecondaryThread()->Run();
 
-    if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
-        SetGarminProtocolHandler(new GarminProtocolHandler(this, GetConsumer(), true));
-    }
-    else if(GetGarminMode()) {
-        SetGarminProtocolHandler(new GarminProtocolHandler(this, GetConsumer(), false));
-    }
-    else {
-        wxString comx;
-        comx =  GetPort().AfterFirst(':');      // strip "Serial:"
-
-        comx = comx.BeforeFirst(' ');               // strip off any description provided by Windows
-
-        //    Kick off the DataSource RX thread
-        SetSecondaryThread(new OCP_DataStreamInput_Thread(this,
-                                                          GetConsumer(),
-                                                          comx, GetBaudRate(),
-                                                          GetPortType()));
-        SetThreadRunFlag(1);
-        GetSecondaryThread()->Run();
-
-        SetOk(true);
-    }
+    SetOk(true);
+  }
 }
 
-
-bool SerialDataStream::SendSentenceSerial(const wxString &sentence)
-{
+bool SerialDataStream::SendSentenceSerial(const wxString &sentence) {
 #ifdef __OCPN__ANDROID__
-    wxString payload = sentence;
-    if( !sentence.EndsWith(_T("\r\n")) )
-        payload += _T("\r\n");
+  wxString payload = sentence;
+  if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
 
-    if(IsOk()){
-        wxString port = GetPort().AfterFirst(':');
-        androidWriteSerial( port, payload );
-        return IsOk();
-    }
-    else
-        return false;
+  if (IsOk()) {
+    wxString port = GetPort().AfterFirst(':');
+    androidWriteSerial(port, payload);
+    return IsOk();
+  } else
+    return false;
 #endif
-    if( GetSecondaryThread() ) {
-        if( IsSecThreadActive() )
-        {
-            int retry = 10;
-            while( retry ) {
-                if( GetSecondaryThread()->SetOutMsg( sentence ))
-                    return true;
-                else
-                    retry--;
-            }
-            return false;   // could not send after several tries....
-        }
+  if (GetSecondaryThread()) {
+    if (IsSecThreadActive()) {
+      int retry = 10;
+      while (retry) {
+        if (GetSecondaryThread()->SetOutMsg(sentence))
+          return true;
         else
-            return false;
-    }
-    return true;
+          retry--;
+      }
+      return false;  // could not send after several tries....
+    } else
+      return false;
+  }
+  return true;
 }
