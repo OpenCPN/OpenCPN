@@ -26,14 +26,11 @@
 
 #ifdef __WXOSX__
 
-#ifndef OCPN_USE_NEWSERIAL
 #define MAX_SERIAL_PORTS 10
 
 extern "C" int FindSerialPortNames(char** pNames, int iMaxNames);
 extern "C" bool ValidateSerialPortName(const char* pPortName,
                                        int iMaxNamesToSearch);
-#endif
-
 extern "C" int GetMacMonitorSize();
 
 #endif  // __WXOSX__
