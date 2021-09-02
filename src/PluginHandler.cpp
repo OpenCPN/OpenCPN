@@ -41,12 +41,12 @@
 
 #include <archive.h>
 #include <archive_entry.h>
-typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
+typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
 #include <expat.h>
 
 #if defined(__MINGW32__) && defined(Yield)
-#undef Yield                 // from win.h, conflicts with mingw headers
+#undef Yield  // from win.h, conflicts with mingw headers
 #endif
 
 #include "catalog_parser.h"
@@ -68,290 +68,254 @@ static std::string SEP("\\");
 static std::string SEP("/");
 #endif
 
-#ifndef F_OK   // windows: missing unistd.h.
+#ifndef F_OK  // windows: missing unistd.h.
 #define F_OK 0
 #endif
 
-
-extern OCPNPlatform*  g_Platform;
+extern OCPNPlatform* g_Platform;
 extern PlugInManager* g_pi_manager;
-extern wxString       g_winPluginDir;
-extern MyConfig*      pConfig;
-extern OCPNPlatform*  g_Platform;
-extern bool           g_bportable;
-extern MyFrame        *gFrame;
+extern wxString g_winPluginDir;
+extern MyConfig* pConfig;
+extern OCPNPlatform* g_Platform;
+extern bool g_bportable;
+extern MyFrame* gFrame;
 
-extern wxString       g_compatOS;
-extern wxString       g_compatOsVersion;
+extern wxString g_compatOS;
+extern wxString g_compatOsVersion;
 
 /** split s on first occurrence of delim, or return s in first result. */
-static std::vector<std::string> split(const std::string& s, const std::string& delim)
-{
-    std::vector<std::string> result;
-    size_t pos = s.find(delim);
-    if (pos == std::string::npos) {
-        result.push_back(s);
-        return result;
-    }
-    result.push_back(s.substr(0, pos));
-    result.push_back(s.substr(pos + delim.length()));
+static std::vector<std::string> split(const std::string& s,
+                                      const std::string& delim) {
+  std::vector<std::string> result;
+  size_t pos = s.find(delim);
+  if (pos == std::string::npos) {
+    result.push_back(s);
     return result;
+  }
+  result.push_back(s.substr(0, pos));
+  result.push_back(s.substr(pos + delim.length()));
+  return result;
 }
 
-
-inline std::string basename(const std::string path)
-{
-    wxFileName wxFile(path);
-    return wxFile.GetFullName().ToStdString();
+inline std::string basename(const std::string path) {
+  wxFileName wxFile(path);
+  return wxFile.GetFullName().ToStdString();
 }
 
-
-bool isRegularFile(const char* path)
-{
-    wxFileName wxFile(path);
-    return wxFile.FileExists() && !wxFile.IsDir();
+bool isRegularFile(const char* path) {
+  wxFileName wxFile(path);
+  return wxFile.FileExists() && !wxFile.IsDir();
 }
 
-
-static void mkdir(const std::string path)
-{
+static void mkdir(const std::string path) {
 #if defined(_WIN32) && !defined(__MINGW32__)
-    _mkdir(path.c_str());
+  _mkdir(path.c_str());
 #elif defined(__MINGW32__)
-    mkdir(path.c_str());
+  mkdir(path.c_str());
 #else
-    mkdir(path.c_str(), 0755);
+  mkdir(path.c_str(), 0755);
 #endif
 }
-
 
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
  * or -1 if not found
  */
-static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins)
-{
-    for (unsigned i = 0; i < plugins->GetCount(); i += 1) {
-        if (name == plugins->Item(i)->m_common_name.ToStdString()) {
-            return i;
-        }
+static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins) {
+  for (unsigned i = 0; i < plugins->GetCount(); i += 1) {
+    if (name == plugins->Item(i)->m_common_name.ToStdString()) {
+      return i;
     }
-    return -1;
+  }
+  return -1;
 }
 
-
-static std::string pluginsConfigDir()
-{
-    std::string pluginDataDir = g_Platform->GetPrivateDataDir().ToStdString();
-    pluginDataDir += SEP + "plugins";
-    if (!ocpn::exists(pluginDataDir)) {
-        mkdir(pluginDataDir);
-    }
-    pluginDataDir += SEP + "install_data";
-    if (!ocpn::exists(pluginDataDir)) {
-        mkdir(pluginDataDir);
-    }
-    return pluginDataDir;
+static std::string pluginsConfigDir() {
+  std::string pluginDataDir = g_Platform->GetPrivateDataDir().ToStdString();
+  pluginDataDir += SEP + "plugins";
+  if (!ocpn::exists(pluginDataDir)) {
+    mkdir(pluginDataDir);
+  }
+  pluginDataDir += SEP + "install_data";
+  if (!ocpn::exists(pluginDataDir)) {
+    mkdir(pluginDataDir);
+  }
+  return pluginDataDir;
 }
 
-
-static std::string dirListPath(std::string name)
-{
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    return pluginsConfigDir() + SEP + name + ".dirs";
+static std::string dirListPath(std::string name) {
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  return pluginsConfigDir() + SEP + name + ".dirs";
 }
-
 
 /** Plugin ABI encapsulation. */
 class Plugin {
-    public:
-        Plugin(const PluginMetadata& metadata) {
-            m_abi = metadata.target;
-            m_abi_version = metadata.target_version;
-            m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
-            m_name = metadata.name;
-            wxLogDebug("Plugin: setting up, name: %s", m_name);
-            wxLogDebug("Plugin: init: abi: %s, abi_version: %s, major ver: %s",
-                       m_abi, m_abi_version, m_major_version);
+public:
+  Plugin(const PluginMetadata& metadata) {
+    m_abi = metadata.target;
+    m_abi_version = metadata.target_version;
+    m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
+    m_name = metadata.name;
+    wxLogDebug("Plugin: setting up, name: %s", m_name);
+    wxLogDebug("Plugin: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
+               m_abi_version, m_major_version);
+  }
+  const std::string& abi() const { return m_abi; }
+  const std::string& abi_version() const { return m_abi_version; }
+  const std::string& major_version() const { return m_major_version; }
+  const std::string& name() const { return m_name; }
 
-        }
-        const std::string& abi() const { return m_abi; }
-        const std::string& abi_version() const { return m_abi_version; }
-        const std::string& major_version() const { return m_major_version; }
-        const std::string& name() const { return m_name; }
-
-    private:
-        std::string m_abi;
-        std::string m_abi_version;
-        std::string m_major_version;
-        std::string m_name;
+private:
+  std::string m_abi;
+  std::string m_abi_version;
+  std::string m_major_version;
+  std::string m_name;
 };
-
 
 /** Host ABI encapsulation and plugin compatibility checks. */
 class Host {
-    public:
-        Host(CompatOs* compatOs) {
-            m_abi = compatOs->name();
-            m_abi_version = compatOs->version();
-            m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
-            wxLogDebug("Host: init: abi: %s, abi_version: %s, major ver: %s",
-                       m_abi, m_abi_version, m_major_version);
+public:
+  Host(CompatOs* compatOs) {
+    m_abi = compatOs->name();
+    m_abi_version = compatOs->version();
+    m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
+    wxLogDebug("Host: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
+               m_abi_version, m_major_version);
+  }
+
+  bool is_version_compatible(const Plugin& plugin) const {
+    if (ocpn::startswith(plugin.abi(), "ubuntu")) {
+      return plugin.abi_version() == m_abi_version;
+    }
+    return plugin.major_version() == m_major_version;
+  }
+
+  // Test if plugin abi is a Debian version compatible with hosts's
+  // ubuntu version.
+  bool is_debian_plugin_compatible(const Plugin& plugin) const {
+    static const std::vector<std::string> debian_versions = {
+        "9;ubuntu-x86_64;16.04",
+        // Assuming Debian 10 users sticks to gtk2:
+        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
+        "sid;ubuntu-gtk3-x86_64;20.04"};
+    if (ocpn::startswith(m_abi, "debian-x86_64")) {
+      wxLogDebug("Checking for debian and ubuntu");
+      const std::string host_version =
+          m_major_version + ";" + plugin.abi() + ";" + plugin.abi_version();
+      for (auto& v : debian_versions) {
+        if (host_version == v) {
+          return true;
         }
+      }
+    }
+    return false;
+  }
 
-        bool is_version_compatible(const Plugin& plugin) const {
-            if (ocpn::startswith(plugin.abi(), "ubuntu")) {
-                return plugin.abi_version() == m_abi_version;
-            }
-            return plugin.major_version() == m_major_version;
+  // Plugin and host abi differs. Check if plugin is compatible anyway
+  // by comparing the plugin abi with the list of abis similar to the
+  // host abi. Typically a host on a Ubuntu derivative which might be
+  // compatible with a plugin built for the derivative's Ubuntu base.
+  bool is_similar_plugin_compatible(const Plugin& plugin) const {
+    OCPN_OSDetail* os_detail = g_Platform->GetOSDetail();
+    for (auto& name_like : os_detail->osd_names_like) {
+      const std::string osd_abi = name_like + "-" + os_detail->osd_arch;
+      if (osd_abi == plugin.abi()) {
+        if (is_version_compatible(plugin)) {
+          return true;
         }
+      }
+    }
+    return false;
+  }
 
-        // Test if plugin abi is a Debian version compatible with hosts's
-        // ubuntu version.
-        bool is_debian_plugin_compatible(const Plugin& plugin) const {
-            static const std::vector<std::string> debian_versions = {
-                "9;ubuntu-x86_64;16.04",
-                // Assuming Debian 10 users sticks to gtk2:
-                "10;ubuntu-x86_64;18.04",
-                "11;ubuntu-gtk3-x86_64;20.04",
-                "sid;ubuntu-gtk3-x86_64;20.04"
-            };
-            if (ocpn::startswith(m_abi, "debian-x86_64")) {
-                wxLogDebug("Checking for debian and ubuntu");
-                const std::string host_version =
-                    m_major_version + ";" + plugin.abi() + ";"
-                    + plugin.abi_version();
-                for (auto& v: debian_versions) {
-                    if (host_version == v) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+  const std::string& abi() const { return m_abi; }
 
-        // Plugin and host abi differs. Check if plugin is compatible anyway
-        // by comparing the plugin abi with the list of abis similar to the
-        // host abi. Typically a host on a Ubuntu derivative which might be
-        // compatible with a plugin built for the derivative's Ubuntu base.
-        bool is_similar_plugin_compatible(const Plugin& plugin) const {
-            OCPN_OSDetail* os_detail = g_Platform->GetOSDetail();
-            for (auto& name_like: os_detail->osd_names_like) {
-                const std::string osd_abi =
-                    name_like + "-" + os_detail->osd_arch;
-                if (osd_abi == plugin.abi()) {
-                    if (is_version_compatible(plugin)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+  const std::string& abi_version() const { return m_abi_version; }
 
-        const std::string& abi() const { return m_abi; }
+  const std::string& major_version() const { return m_major_version; }
 
-        const std::string& abi_version() const { return m_abi_version; }
-
-        const std::string& major_version() const { return m_major_version; }
-
-    private:
-        std::string m_abi;
-        std::string m_abi_version;
-        std::string m_major_version;
+private:
+  std::string m_abi;
+  std::string m_abi_version;
+  std::string m_major_version;
 };
 
+CompatOs* CompatOs::getInstance() {
+  static std::string last_global_os("");
+  static CompatOs* instance = 0;
 
-CompatOs* CompatOs::getInstance()
-{
-    static std::string last_global_os("");
-    static CompatOs* instance = 0;
-
-    if (!instance || last_global_os != g_compatOS) {
-        instance = new(CompatOs);
-        last_global_os = g_compatOS;
-    }
-    return instance;
+  if (!instance || last_global_os != g_compatOS) {
+    instance = new (CompatOs);
+    last_global_os = g_compatOS;
+  }
+  return instance;
 };
 
+CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
+  // Get the specified system definition,
+  //   from the environment override,
+  //   or the config file override
+  //   or the baked in (build system) values.
 
-CompatOs::CompatOs(): _name(PKG_TARGET), _version(PKG_TARGET_VERSION)
-{
-    // Get the specified system definition,
-    //   from the environment override,
-    //   or the config file override
-    //   or the baked in (build system) values.
+  std::string compatOS(_name);
+  std::string compatOsVersion(_version);
 
-    std::string compatOS(_name);
-    std::string compatOsVersion(_version);
-
-    if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
-        _name = getenv("OPENCPN_COMPAT_TARGET");
-        if (_name.find(':') != std::string::npos) {
-            auto tokens = ocpn::split(_name.c_str(), ":");
-            _name = tokens[0];
-            _version = tokens[1];
-        }
+  if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
+    _name = getenv("OPENCPN_COMPAT_TARGET");
+    if (_name.find(':') != std::string::npos) {
+      auto tokens = ocpn::split(_name.c_str(), ":");
+      _name = tokens[0];
+      _version = tokens[1];
     }
-    else if (g_compatOS != "") {
-        // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
-        _name = g_compatOS;
-        if (g_compatOsVersion != ""){
-            _version = g_compatOsVersion;
-        }
+  } else if (g_compatOS != "") {
+    // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
+    _name = g_compatOS;
+    if (g_compatOsVersion != "") {
+      _version = g_compatOsVersion;
     }
-    _name = ocpn::tolower(_name);
-    _version = ocpn::tolower(_version);
+  }
+  _name = ocpn::tolower(_name);
+  _version = ocpn::tolower(_version);
 }
 
-
-std::string PluginHandler::fileListPath(std::string name)
-{
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    return pluginsConfigDir() + SEP + name + ".files";
+std::string PluginHandler::fileListPath(std::string name) {
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  return pluginsConfigDir() + SEP + name + ".files";
 }
 
+bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
+                                 const char* os_version) {
+  auto compatOS = CompatOs::getInstance();
+  Host host(compatOS);
+  Plugin plugin(metadata);
 
-bool PluginHandler::isCompatible(const PluginMetadata& metadata,
-                                 const char* os, const char* os_version)
-{
-    auto compatOS = CompatOs::getInstance();
-    Host host(compatOS);
-    Plugin plugin(metadata);
-
-    if (plugin.abi() == "msvc"
-        || plugin.abi() == "darwin"
-        || plugin.abi() == "android-armeabi-v7a"
-        || plugin.abi() == "android-arm64-v8a"
-    ) {
-        bool ok = plugin.abi() == host.abi();
-        wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"),  host.abi());
-        return ok;
-    }
-    bool rv = false;
-    if (host.abi() == plugin.abi() && host.is_version_compatible(plugin)) {
-        rv = true;
-        wxLogDebug("Found matching abi version %s", plugin.abi_version());
-    }
-    else if (host.is_similar_plugin_compatible(plugin)) {
-        rv = true;
-        wxLogDebug("Found similar abi");
-    }
-    else if (host.is_debian_plugin_compatible(plugin)) {
-        rv = true;
-        wxLogDebug("Found Ubuntu version matching Debian host");
-    }
-    DEBUG_LOG << "Plugin compatibility check Final: "
-        << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
-    return rv;
+  if (plugin.abi() == "msvc" || plugin.abi() == "darwin" ||
+      plugin.abi() == "android-armeabi-v7a" ||
+      plugin.abi() == "android-arm64-v8a") {
+    bool ok = plugin.abi() == host.abi();
+    wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
+    return ok;
+  }
+  bool rv = false;
+  if (host.abi() == plugin.abi() && host.is_version_compatible(plugin)) {
+    rv = true;
+    wxLogDebug("Found matching abi version %s", plugin.abi_version());
+  } else if (host.is_similar_plugin_compatible(plugin)) {
+    rv = true;
+    wxLogDebug("Found similar abi");
+  } else if (host.is_debian_plugin_compatible(plugin)) {
+    rv = true;
+    wxLogDebug("Found Ubuntu version matching Debian host");
+  }
+  DEBUG_LOG << "Plugin compatibility check Final: "
+            << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
+  return rv;
 }
 
-
-std::string PluginHandler::versionPath(std::string name)
-{
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    return pluginsConfigDir() + SEP + name + ".version";
+std::string PluginHandler::versionPath(std::string name) {
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  return pluginsConfigDir() + SEP + name + ".version";
 }
-
 
 typedef std::unordered_map<std::string, std::string> pathmap_t;
 
@@ -359,433 +323,398 @@ typedef std::unordered_map<std::string, std::string> pathmap_t;
  * Platform-specific mapping of tarball paths to user-writable
  * installation directories.
  */
-static pathmap_t getInstallPaths()
-{
-    using namespace std;
+static pathmap_t getInstallPaths() {
+  using namespace std;
 
-    pathmap_t pathmap;
-    PluginPaths* paths = PluginPaths::getInstance();
-    pathmap["bin"] =  paths->UserBindir();
-    pathmap["lib"] =  paths->UserLibdir();
-    pathmap["lib64"] = paths->UserLibdir();
-    pathmap["share"] =  paths->UserDatadir();
-    return pathmap;
+  pathmap_t pathmap;
+  PluginPaths* paths = PluginPaths::getInstance();
+  pathmap["bin"] = paths->UserBindir();
+  pathmap["lib"] = paths->UserLibdir();
+  pathmap["lib64"] = paths->UserLibdir();
+  pathmap["share"] = paths->UserDatadir();
+  return pathmap;
 }
 
-
-static void saveFilelist(std::string filelist, std::string name)
-{
-    using namespace std;
-    string listpath = PluginHandler::fileListPath(name);
-    ofstream diskfiles(listpath);
-    if (!diskfiles.is_open()) {
-        wxLogWarning("Cannot create installed files list.");
-        return;
-    }
-    diskfiles << filelist;
+static void saveFilelist(std::string filelist, std::string name) {
+  using namespace std;
+  string listpath = PluginHandler::fileListPath(name);
+  ofstream diskfiles(listpath);
+  if (!diskfiles.is_open()) {
+    wxLogWarning("Cannot create installed files list.");
+    return;
+  }
+  diskfiles << filelist;
 }
 
-
-static void saveDirlist(std::string name)
-{
-    using namespace std;
-    string path = dirListPath(name);
-    ofstream dirs(path);
-    if (!dirs.is_open()) {
-        wxLogWarning("Cannot create installed files list.");
-        return;
-    }
-    pathmap_t pathmap = getInstallPaths();
-    unordered_map<string, string>::iterator it;
-    for (it = pathmap.begin(); it != pathmap.end(); it++) {
-        dirs << it->first << ": " << it->second << endl;
-    }
+static void saveDirlist(std::string name) {
+  using namespace std;
+  string path = dirListPath(name);
+  ofstream dirs(path);
+  if (!dirs.is_open()) {
+    wxLogWarning("Cannot create installed files list.");
+    return;
+  }
+  pathmap_t pathmap = getInstallPaths();
+  unordered_map<string, string>::iterator it;
+  for (it = pathmap.begin(); it != pathmap.end(); it++) {
+    dirs << it->first << ": " << it->second << endl;
+  }
 }
 
-static void saveVersion(const std::string& name, const std::string& version)
-{
-    using namespace std;
-    string path = PluginHandler::versionPath(name);
-    ofstream stream(path);
-    if (!stream.is_open()) {
-        wxLogWarning("Cannot create version file.");
-        return;
-    }
-    stream << version << endl;
+static void saveVersion(const std::string& name, const std::string& version) {
+  using namespace std;
+  string path = PluginHandler::versionPath(name);
+  ofstream stream(path);
+  if (!stream.is_open()) {
+    wxLogWarning("Cannot create version file.");
+    return;
+  }
+  stream << version << endl;
 }
 
+static int copy_data(struct archive* ar, struct archive* aw) {
+  int r;
+  const void* buff;
+  size_t size;
+  la_int64_t offset;
 
-static int copy_data(struct archive* ar, struct archive* aw)
-{
-    int r;
-    const void* buff;
-    size_t size;
-    la_int64_t offset;
-
-    while (true) {
-        r = archive_read_data_block(ar, &buff, &size, &offset);
-        if (r == ARCHIVE_EOF)
-            return (ARCHIVE_OK);
-        if (r < ARCHIVE_OK){
-            std::string s(archive_error_string(ar));
-            return (r);
-        }
-        r = archive_write_data_block(aw, buff, size, offset);
-        if (r < ARCHIVE_OK) {
-            std::string s(archive_error_string(aw));
-            wxLogWarning("Error copying install data: %s",
-                         archive_error_string(aw));
-            return (r);
-        }
+  while (true) {
+    r = archive_read_data_block(ar, &buff, &size, &offset);
+    if (r == ARCHIVE_EOF) return (ARCHIVE_OK);
+    if (r < ARCHIVE_OK) {
+      std::string s(archive_error_string(ar));
+      return (r);
     }
+    r = archive_write_data_block(aw, buff, size, offset);
+    if (r < ARCHIVE_OK) {
+      std::string s(archive_error_string(aw));
+      wxLogWarning("Error copying install data: %s", archive_error_string(aw));
+      return (r);
+    }
+  }
 }
-
 
 static bool win_entry_set_install_path(struct archive_entry* entry,
-                                       pathmap_t installPaths)
-{
-    using namespace std;
+                                       pathmap_t installPaths) {
+  using namespace std;
 
-    string path = archive_entry_pathname(entry);
+  string path = archive_entry_pathname(entry);
 
-    // Check # components, drop the single top-level path
-    int slashes = count(path.begin(), path.end(), '/');
-    if (slashes < 1) {
-        archive_entry_set_pathname(entry, "");
-        return true;
-    }
-    if (ocpn::startswith(path, "./")) {
-        path = path.substr(1);
-    }
-
-    // Remove top-level directory part
-    int slashpos = path.find_first_of('/', 1);
-    if(slashpos < 0){
-        archive_entry_set_pathname(entry, "");
-        return true;
-    }
-
-    string prefix = path.substr(0, slashpos);
-    path = path.substr(prefix.size() + 1);
-
-    // Map remaining path to installation directory
-    if (ocpn::endswith(path, ".dll") || ocpn::endswith(path, ".exe")) {
-        slashpos = path.find_first_of('/');
-        path = path.substr(slashpos + 1);
-        path = installPaths["bin"] + "\\" + path;
-    } else if (ocpn::startswith(path, "share")) {
-        // The "share" directory should be a direct sibling of "plugins" directory
-        wxFileName fn(installPaths["share"].c_str(), "");       // should point to .../opencpn/plugins
-        fn.RemoveLastDir();     // should point to ".../opencpn
-        path = fn.GetFullPath().ToStdString() + path;
-    } else if (ocpn::startswith(path, "plugins")) {
-        slashpos = path.find_first_of('/');
-       // share path already ends in plugins/, drop prefix from archive entry.
-        path = path.substr(slashpos + 1);
-        path = installPaths["share"] + "\\" + path;
-
-    } else if (archive_entry_filetype(entry) == AE_IFREG) {
-        wxString msg(_T("PluginHandler::Invalid install path on file: "));
-        msg += wxString(path.c_str());
-        wxLogDebug(msg);
-        return false;
-
-    }
-    wxString s(path);
-    s.Replace("/", "\\");      // std::regex_replace FTBS on gcc 4.8.4
-    s.Replace("\\\\", "\\");
-    archive_entry_set_pathname(entry, s.c_str());
+  // Check # components, drop the single top-level path
+  int slashes = count(path.begin(), path.end(), '/');
+  if (slashes < 1) {
+    archive_entry_set_pathname(entry, "");
     return true;
-}
+  }
+  if (ocpn::startswith(path, "./")) {
+    path = path.substr(1);
+  }
 
+  // Remove top-level directory part
+  int slashpos = path.find_first_of('/', 1);
+  if (slashpos < 0) {
+    archive_entry_set_pathname(entry, "");
+    return true;
+  }
+
+  string prefix = path.substr(0, slashpos);
+  path = path.substr(prefix.size() + 1);
+
+  // Map remaining path to installation directory
+  if (ocpn::endswith(path, ".dll") || ocpn::endswith(path, ".exe")) {
+    slashpos = path.find_first_of('/');
+    path = path.substr(slashpos + 1);
+    path = installPaths["bin"] + "\\" + path;
+  } else if (ocpn::startswith(path, "share")) {
+    // The "share" directory should be a direct sibling of "plugins" directory
+    wxFileName fn(installPaths["share"].c_str(),
+                  "");   // should point to .../opencpn/plugins
+    fn.RemoveLastDir();  // should point to ".../opencpn
+    path = fn.GetFullPath().ToStdString() + path;
+  } else if (ocpn::startswith(path, "plugins")) {
+    slashpos = path.find_first_of('/');
+    // share path already ends in plugins/, drop prefix from archive entry.
+    path = path.substr(slashpos + 1);
+    path = installPaths["share"] + "\\" + path;
+
+  } else if (archive_entry_filetype(entry) == AE_IFREG) {
+    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    msg += wxString(path.c_str());
+    wxLogDebug(msg);
+    return false;
+  }
+  wxString s(path);
+  s.Replace("/", "\\");  // std::regex_replace FTBS on gcc 4.8.4
+  s.Replace("\\\\", "\\");
+  archive_entry_set_pathname(entry, s.c_str());
+  return true;
+}
 
 static bool flatpak_entry_set_install_path(struct archive_entry* entry,
-                                           pathmap_t installPaths)
-{
-    using namespace std;
+                                           pathmap_t installPaths) {
+  using namespace std;
 
-    string path = archive_entry_pathname(entry);
-    int slashes = count(path.begin(), path.end(), '/');
-    if (slashes < 2) {
-        archive_entry_set_pathname(entry, "");
-        return true;
-    }
-    if (ocpn::startswith(path, "./")) {
-        path = path.substr(2);
-    }
-    int slashpos = path.find_first_of('/', 1);
-    string prefix = path.substr(0, slashpos);
-    path = path.substr(prefix.size() + 1);
-    slashpos = path.find_first_of('/');
-    string location = path.substr(0, slashpos);
-    string suffix = path.substr(slashpos + 1);
-    if (installPaths.find(location) == installPaths.end()
-        && archive_entry_filetype(entry) == AE_IFREG) {
-        wxString msg(_T("PluginHandler::Invalid install path on file: "));
-        msg += wxString(path.c_str());
-        wxLogDebug(msg);
-        return false;
-
-    }
-    string dest = installPaths[location] + "/" + suffix;
-    archive_entry_set_pathname(entry, dest.c_str());
-
+  string path = archive_entry_pathname(entry);
+  int slashes = count(path.begin(), path.end(), '/');
+  if (slashes < 2) {
+    archive_entry_set_pathname(entry, "");
     return true;
+  }
+  if (ocpn::startswith(path, "./")) {
+    path = path.substr(2);
+  }
+  int slashpos = path.find_first_of('/', 1);
+  string prefix = path.substr(0, slashpos);
+  path = path.substr(prefix.size() + 1);
+  slashpos = path.find_first_of('/');
+  string location = path.substr(0, slashpos);
+  string suffix = path.substr(slashpos + 1);
+  if (installPaths.find(location) == installPaths.end() &&
+      archive_entry_filetype(entry) == AE_IFREG) {
+    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    msg += wxString(path.c_str());
+    wxLogDebug(msg);
+    return false;
+  }
+  string dest = installPaths[location] + "/" + suffix;
+  archive_entry_set_pathname(entry, dest.c_str());
+
+  return true;
 }
-
-
 
 static bool linux_entry_set_install_path(struct archive_entry* entry,
-                                         pathmap_t installPaths)
-{
-    using namespace std;
+                                         pathmap_t installPaths) {
+  using namespace std;
 
-    string path = archive_entry_pathname(entry);
-    int slashes = count(path.begin(), path.end(), '/');
-    if (slashes < 2) {
-        archive_entry_set_pathname(entry, "");
-        return true;
-    }
-
-    int slashpos = path.find_first_of('/', 1);
-    if(ocpn::startswith(path, "./"))
-        slashpos = path.find_first_of('/', 2);  // skip the './'
-
-    string prefix = path.substr(0, slashpos);
-    path = path.substr(prefix.size() + 1);
-    if (ocpn::startswith(path, "usr/")) {
-        path = path.substr(strlen("usr/"));
-    }
-    if (ocpn::startswith(path, "local/")) {
-        path = path.substr(strlen("local/"));
-    }
-    slashpos = path.find_first_of('/');
-    string location = path.substr(0, slashpos);
-    string suffix = path.substr(slashpos + 1);
-    if (installPaths.find(location) == installPaths.end()
-        && archive_entry_filetype(entry) == AE_IFREG){
-        wxString msg(_T("PluginHandler::Invalid install path on file: "));
-        msg += wxString(path.c_str());
-        wxLogDebug(msg);
-        return false;
-    }
-
-    string dest = installPaths[location] + "/" + suffix;
-
-    if(g_bportable){
-        // A data dir?
-        if(ocpn::startswith(location, "share") && ocpn::startswith(suffix, "opencpn/plugins/") ){
-            slashpos = suffix.find_first_of("opencpn/plugins/");
-            suffix = suffix.substr(16);
-
-            dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/" + suffix;
-        }
-        if(ocpn::startswith(location, "lib") && ocpn::startswith(suffix, "opencpn/") ){
-            suffix = suffix.substr(8);
-
-            dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/lib/" + suffix;
-        }
-    }
-
-    archive_entry_set_pathname(entry, dest.c_str());
+  string path = archive_entry_pathname(entry);
+  int slashes = count(path.begin(), path.end(), '/');
+  if (slashes < 2) {
+    archive_entry_set_pathname(entry, "");
     return true;
+  }
+
+  int slashpos = path.find_first_of('/', 1);
+  if (ocpn::startswith(path, "./"))
+    slashpos = path.find_first_of('/', 2);  // skip the './'
+
+  string prefix = path.substr(0, slashpos);
+  path = path.substr(prefix.size() + 1);
+  if (ocpn::startswith(path, "usr/")) {
+    path = path.substr(strlen("usr/"));
+  }
+  if (ocpn::startswith(path, "local/")) {
+    path = path.substr(strlen("local/"));
+  }
+  slashpos = path.find_first_of('/');
+  string location = path.substr(0, slashpos);
+  string suffix = path.substr(slashpos + 1);
+  if (installPaths.find(location) == installPaths.end() &&
+      archive_entry_filetype(entry) == AE_IFREG) {
+    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    msg += wxString(path.c_str());
+    wxLogDebug(msg);
+    return false;
+  }
+
+  string dest = installPaths[location] + "/" + suffix;
+
+  if (g_bportable) {
+    // A data dir?
+    if (ocpn::startswith(location, "share") &&
+        ocpn::startswith(suffix, "opencpn/plugins/")) {
+      slashpos = suffix.find_first_of("opencpn/plugins/");
+      suffix = suffix.substr(16);
+
+      dest =
+          g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/" + suffix;
+    }
+    if (ocpn::startswith(location, "lib") &&
+        ocpn::startswith(suffix, "opencpn/")) {
+      suffix = suffix.substr(8);
+
+      dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/lib/" +
+             suffix;
+    }
+  }
+
+  archive_entry_set_pathname(entry, dest.c_str());
+  return true;
 }
 
-
 static bool apple_entry_set_install_path(struct archive_entry* entry,
-                                         pathmap_t installPaths)
-{
-    using namespace std;
+                                         pathmap_t installPaths) {
+  using namespace std;
 
-    const string base = PluginPaths::getInstance()->Homedir()
-        + "/Library/Application Support/OpenCPN";
+  const string base = PluginPaths::getInstance()->Homedir() +
+                      "/Library/Application Support/OpenCPN";
 
-    string path = archive_entry_pathname(entry);
-    if(ocpn::startswith(path, "./"))
-        path = path.substr(2);
+  string path = archive_entry_pathname(entry);
+  if (ocpn::startswith(path, "./")) path = path.substr(2);
 
-    string dest("");
-    size_t slashes = count(path.begin(), path.end(), '/');
-    if (slashes < 3) {
-        archive_entry_set_pathname(entry, "");
-        return true;
-    }
-    auto parts = split(path, "Contents/Resources");
-    if (parts.size() >= 2) {
-        dest = base  + "/Contents/Resources" + parts[1];
-    }
-    if (dest == "") {
-        parts = split(path, "Contents/SharedSupport");
-        if (parts.size() >= 2) {
-            dest = base + "/Contents/SharedSupport"  + parts[1];
-        }
-    }
-    if (dest == "") {
-        parts = split(path, "Contents/PlugIns");
-        if (parts.size() >= 2) {
-            dest = base +  "/Contents/PlugIns" + parts[1];
-        }
-    }
-    if (dest == "" && archive_entry_filetype(entry) == AE_IFREG) {
-        wxString msg(_T("PluginHandler::Invalid install path on file: "));
-        msg += wxString(path.c_str());
-        wxLogDebug(msg);
-        return false;
-    }
-    archive_entry_set_pathname(entry, dest.c_str());
+  string dest("");
+  size_t slashes = count(path.begin(), path.end(), '/');
+  if (slashes < 3) {
+    archive_entry_set_pathname(entry, "");
     return true;
+  }
+  auto parts = split(path, "Contents/Resources");
+  if (parts.size() >= 2) {
+    dest = base + "/Contents/Resources" + parts[1];
+  }
+  if (dest == "") {
+    parts = split(path, "Contents/SharedSupport");
+    if (parts.size() >= 2) {
+      dest = base + "/Contents/SharedSupport" + parts[1];
+    }
+  }
+  if (dest == "") {
+    parts = split(path, "Contents/PlugIns");
+    if (parts.size() >= 2) {
+      dest = base + "/Contents/PlugIns" + parts[1];
+    }
+  }
+  if (dest == "" && archive_entry_filetype(entry) == AE_IFREG) {
+    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    msg += wxString(path.c_str());
+    wxLogDebug(msg);
+    return false;
+  }
+  archive_entry_set_pathname(entry, dest.c_str());
+  return true;
 }
 
 static bool android_entry_set_install_path(struct archive_entry* entry,
-                                         pathmap_t installPaths)
-{
-    using namespace std;
+                                           pathmap_t installPaths) {
+  using namespace std;
 
-    string path = archive_entry_pathname(entry);
-    int slashes = count(path.begin(), path.end(), '/');
-    if (slashes < 2) {
-        archive_entry_set_pathname(entry, "");
-        return true;;
-    }
-
-    int slashpos = path.find_first_of('/', 1);
-    if(ocpn::startswith(path, "./"))
-        slashpos = path.find_first_of('/', 2);  // skip the './'
-
-    string prefix = path.substr(0, slashpos);
-    path = path.substr(prefix.size() + 1);
-    if (ocpn::startswith(path, "usr/")) {
-        path = path.substr(strlen("usr/"));
-    }
-    if (ocpn::startswith(path, "local/")) {
-        path = path.substr(strlen("local/"));
-    }
-    slashpos = path.find_first_of('/');
-    string location = path.substr(0, slashpos);
-    string suffix = path.substr(slashpos + 1);
-    if (installPaths.find(location) == installPaths.end()
-        && archive_entry_filetype(entry) == AE_IFREG){
-        wxString msg(_T("PluginHandler::Invalid install path on file: "));
-        msg += wxString(path.c_str());
-        wxLogDebug(msg);
-        return false;
-    }
-
-    if((location == "lib") && ocpn::startswith(suffix, "opencpn")){
-        auto parts = split(suffix, "/");
-        if(parts.size() == 2)
-            suffix = parts[1];
-    }
-
-    if((location == "share") && ocpn::startswith(suffix, "opencpn")){
-        auto parts = split(suffix, "opencpn/");
-        if(parts.size() == 2)
-            suffix = parts[1];
-    }
-
-    ///storage/emulated/0/android/data/org.opencpn.opencpn/files/opencpn/plugins/oesenc_pi/data/LUPPatch3.xml
-    string dest = installPaths[location] + "/" + suffix;
-
-    archive_entry_set_pathname(entry, dest.c_str());
+  string path = archive_entry_pathname(entry);
+  int slashes = count(path.begin(), path.end(), '/');
+  if (slashes < 2) {
+    archive_entry_set_pathname(entry, "");
     return true;
-}
+    ;
+  }
 
+  int slashpos = path.find_first_of('/', 1);
+  if (ocpn::startswith(path, "./"))
+    slashpos = path.find_first_of('/', 2);  // skip the './'
+
+  string prefix = path.substr(0, slashpos);
+  path = path.substr(prefix.size() + 1);
+  if (ocpn::startswith(path, "usr/")) {
+    path = path.substr(strlen("usr/"));
+  }
+  if (ocpn::startswith(path, "local/")) {
+    path = path.substr(strlen("local/"));
+  }
+  slashpos = path.find_first_of('/');
+  string location = path.substr(0, slashpos);
+  string suffix = path.substr(slashpos + 1);
+  if (installPaths.find(location) == installPaths.end() &&
+      archive_entry_filetype(entry) == AE_IFREG) {
+    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    msg += wxString(path.c_str());
+    wxLogDebug(msg);
+    return false;
+  }
+
+  if ((location == "lib") && ocpn::startswith(suffix, "opencpn")) {
+    auto parts = split(suffix, "/");
+    if (parts.size() == 2) suffix = parts[1];
+  }
+
+  if ((location == "share") && ocpn::startswith(suffix, "opencpn")) {
+    auto parts = split(suffix, "opencpn/");
+    if (parts.size() == 2) suffix = parts[1];
+  }
+
+  /// storage/emulated/0/android/data/org.opencpn.opencpn/files/opencpn/plugins/oesenc_pi/data/LUPPatch3.xml
+  string dest = installPaths[location] + "/" + suffix;
+
+  archive_entry_set_pathname(entry, dest.c_str());
+  return true;
+}
 
 static bool entry_set_install_path(struct archive_entry* entry,
-                                   pathmap_t installPaths)
-{
-    const std::string src = archive_entry_pathname(entry);
-    bool rv;
+                                   pathmap_t installPaths) {
+  const std::string src = archive_entry_pathname(entry);
+  bool rv;
 #ifdef __OCPN__ANDROID__
-    rv = android_entry_set_install_path(entry, installPaths);
+  rv = android_entry_set_install_path(entry, installPaths);
 #else
-    const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
-    if (g_Platform->isFlatpacked()) {
-        rv = flatpak_entry_set_install_path(entry, installPaths);
-    }
-    else if (osSystemId & wxOS_UNIX_LINUX) {
-        rv = linux_entry_set_install_path(entry, installPaths);
-    }
-    else if (osSystemId & wxOS_WINDOWS) {
-        rv = win_entry_set_install_path(entry, installPaths);
-    }
-    else if (osSystemId & wxOS_MAC) {
-        rv = apple_entry_set_install_path(entry, installPaths);
-    }
-    else {
-        wxLogMessage("set_install_path() invoked, unsupported platform %s",
-                     wxPlatformInfo::Get().GetOperatingSystemDescription());
-        rv = false;
-    }
+  const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
+  if (g_Platform->isFlatpacked()) {
+    rv = flatpak_entry_set_install_path(entry, installPaths);
+  } else if (osSystemId & wxOS_UNIX_LINUX) {
+    rv = linux_entry_set_install_path(entry, installPaths);
+  } else if (osSystemId & wxOS_WINDOWS) {
+    rv = win_entry_set_install_path(entry, installPaths);
+  } else if (osSystemId & wxOS_MAC) {
+    rv = apple_entry_set_install_path(entry, installPaths);
+  } else {
+    wxLogMessage("set_install_path() invoked, unsupported platform %s",
+                 wxPlatformInfo::Get().GetOperatingSystemDescription());
+    rv = false;
+  }
 #endif
-    const std::string dest = archive_entry_pathname(entry);
-    if(rv){
-        if(dest.size()){
-            MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
-        }
+  const std::string dest = archive_entry_pathname(entry);
+  if (rv) {
+    if (dest.size()) {
+      MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
     }
-    return rv;
+  }
+  return rv;
 }
 
+bool PluginHandler::archive_check(int r, const char* msg, struct archive* a) {
+  if (r < ARCHIVE_OK) {
+    std::string s(msg);
 
-bool PluginHandler::archive_check(int r, const char* msg, struct archive* a)
-{
-    if (r < ARCHIVE_OK) {
-        std::string s(msg);
-
-        if(archive_error_string(a))
-            s = s + ": " + archive_error_string(a);
-        wxLogMessage(s.c_str());
-        last_error_msg = s;
-    }
-    return r >= ARCHIVE_WARN;
+    if (archive_error_string(a)) s = s + ": " + archive_error_string(a);
+    wxLogMessage(s.c_str());
+    last_error_msg = s;
+  }
+  return r >= ARCHIVE_WARN;
 }
 
-
-bool PluginHandler::explodeTarball(struct archive* src,
-                                   struct archive* dest,
-                                   std::string& filelist)
-{
-    struct archive_entry* entry = 0;
-    pathmap_t pathmap = getInstallPaths();
-    while (true) {
-        int r = archive_read_next_header(src, &entry);
-        if (r == ARCHIVE_EOF) {
-            return true;
-        }
-        if (!archive_check(r, "archive read header error", src)) {
-            return false;
-        }
-
-        //  Ignore any occurrence of file "metadata.xml"
-        std::string path = archive_entry_pathname(entry);
-        if(std::string::npos != path.find("metadata.xml"))
-            continue;
-
-        if(!entry_set_install_path(entry, pathmap))
-            continue;
-        if (strlen(archive_entry_pathname(entry)) == 0) {
-            continue;
-        }
-        filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
-
-        r = archive_write_header(dest, entry);
-        archive_check(r, "archive write install header error", dest);
-        if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
-            r = copy_data(src, dest);
-            if (!archive_check(r, "archive copy data error", dest)) {
-                return false;
-            }
-        }
-        r = archive_write_finish_entry(dest);
-        if (!archive_check(r, "archive finish write error", dest)) {
-            return false;
-        }
-
+bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
+                                   std::string& filelist) {
+  struct archive_entry* entry = 0;
+  pathmap_t pathmap = getInstallPaths();
+  while (true) {
+    int r = archive_read_next_header(src, &entry);
+    if (r == ARCHIVE_EOF) {
+      return true;
     }
-    return false; // notreached
-}
+    if (!archive_check(r, "archive read header error", src)) {
+      return false;
+    }
 
+    //  Ignore any occurrence of file "metadata.xml"
+    std::string path = archive_entry_pathname(entry);
+    if (std::string::npos != path.find("metadata.xml")) continue;
+
+    if (!entry_set_install_path(entry, pathmap)) continue;
+    if (strlen(archive_entry_pathname(entry)) == 0) {
+      continue;
+    }
+    filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
+
+    r = archive_write_header(dest, entry);
+    archive_check(r, "archive write install header error", dest);
+    if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
+      r = copy_data(src, dest);
+      if (!archive_check(r, "archive copy data error", dest)) {
+        return false;
+      }
+    }
+    r = archive_write_finish_entry(dest);
+    if (!archive_check(r, "archive finish write error", dest)) {
+      return false;
+    }
+  }
+  return false;  // notreached
+}
 
 /*
  * Extract tarball into platform-specific user directories.
@@ -816,383 +745,356 @@ bool PluginHandler::explodeTarball(struct archive* src,
  *
  */
 bool PluginHandler::extractTarball(const std::string path,
-                                   std::string& filelist)
-{
-    struct archive* src = archive_read_new();
-    archive_read_support_filter_gzip(src);
-    archive_read_support_format_tar(src);
-    int r = archive_read_open_filename(src, path.c_str(), 10240);
-    if (r != ARCHIVE_OK) {
-        std::ostringstream os;
-        os << "Cannot read installation tarball: " << path;
-        wxLogWarning(os.str().c_str());
-        last_error_msg = os.str();
-        return false;
-    }
-    struct archive* dest = archive_write_disk_new();
-    archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
-    bool ok = explodeTarball(src, dest, filelist);
-    archive_read_free(src);
-    archive_write_free(dest);
-    return ok;
+                                   std::string& filelist) {
+  struct archive* src = archive_read_new();
+  archive_read_support_filter_gzip(src);
+  archive_read_support_format_tar(src);
+  int r = archive_read_open_filename(src, path.c_str(), 10240);
+  if (r != ARCHIVE_OK) {
+    std::ostringstream os;
+    os << "Cannot read installation tarball: " << path;
+    wxLogWarning(os.str().c_str());
+    last_error_msg = os.str();
+    return false;
+  }
+  struct archive* dest = archive_write_disk_new();
+  archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
+  bool ok = explodeTarball(src, dest, filelist);
+  archive_read_free(src);
+  archive_write_free(dest);
+  return ok;
 }
-
 
 PluginHandler* PluginHandler::getInstance() {
-    static PluginHandler* instance = 0;
-    if (!instance) {
-        instance = new(PluginHandler);
-    }
-    return instance;
+  static PluginHandler* instance = 0;
+  if (!instance) {
+    instance = new (PluginHandler);
+  }
+  return instance;
 }
 
-
-bool PluginHandler::isPluginWritable(std::string name)
-{
-
-    if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
-        return true;
-    }
-    if (!g_pi_manager) {
-        return false;
-    }
-    return PlugInIxByName(name, g_pi_manager->GetPlugInArray()) == -1;
+bool PluginHandler::isPluginWritable(std::string name) {
+  if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
+    return true;
+  }
+  if (!g_pi_manager) {
+    return false;
+  }
+  return PlugInIxByName(name, g_pi_manager->GetPlugInArray()) == -1;
 }
 
-
-static std::string computeMetadataPath(void)
-{
-    std::string path = g_Platform->GetPrivateDataDir().ToStdString();
-    path += SEP;
-    path += "ocpn-plugins.xml";
-    if (ocpn::exists(path)) {
-        return path;
-    }
-
-    // If default location for composit plugin metadata is not found,
-    // we look in the plugin cache directory, which will normally contain
-    // he last "master" catalog downloaded
-    path = ocpn::lookup_metadata();
-    if (path != "") {
-        return path;
-    }
-
-    // And if that does not work, use the empty metadata file found in the
-    // distribution "data" directory
-    path = g_Platform->GetSharedDataDir();
-    path += SEP ;
-    path += "ocpn-plugins.xml";
-    if (!ocpn::exists(path)) {
-        wxLogWarning("Non-existing plugins file: %s", path);
-    }
+static std::string computeMetadataPath(void) {
+  std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+  path += SEP;
+  path += "ocpn-plugins.xml";
+  if (ocpn::exists(path)) {
     return path;
+  }
+
+  // If default location for composit plugin metadata is not found,
+  // we look in the plugin cache directory, which will normally contain
+  // he last "master" catalog downloaded
+  path = ocpn::lookup_metadata();
+  if (path != "") {
+    return path;
+  }
+
+  // And if that does not work, use the empty metadata file found in the
+  // distribution "data" directory
+  path = g_Platform->GetSharedDataDir();
+  path += SEP;
+  path += "ocpn-plugins.xml";
+  if (!ocpn::exists(path)) {
+    wxLogWarning("Non-existing plugins file: %s", path);
+  }
+  return path;
 }
 
-
-std::string PluginHandler::getMetadataPath()
-{
-    if( metadataPath.size() > 0) {
-        return metadataPath;
-    }
-    metadataPath = computeMetadataPath();
-    wxLogDebug("Using metadata path: %s", metadataPath.c_str());
+std::string PluginHandler::getMetadataPath() {
+  if (metadataPath.size() > 0) {
     return metadataPath;
+  }
+  metadataPath = computeMetadataPath();
+  wxLogDebug("Using metadata path: %s", metadataPath.c_str());
+  return metadataPath;
 }
 
+static void parseMetadata(const std::string path, catalog_ctx& ctx) {
+  using namespace std;
 
-static void parseMetadata(const std::string path, catalog_ctx& ctx)
-{
-    using namespace std;
-
-    wxLogMessage("PluginHandler: using metadata path: %s", path);
-    ctx.depth = 0;
-    if (!ocpn::exists(path)) {
-        wxLogWarning("Non-existing plugins metadata file: %s", path.c_str());
-        return;
-    }
-    ifstream ifpath(path);
-    std::string xml((istreambuf_iterator<char>(ifpath)),
-                    istreambuf_iterator<char>());
-    ParseCatalog(xml, &ctx);
+  wxLogMessage("PluginHandler: using metadata path: %s", path);
+  ctx.depth = 0;
+  if (!ocpn::exists(path)) {
+    wxLogWarning("Non-existing plugins metadata file: %s", path.c_str());
+    return;
+  }
+  ifstream ifpath(path);
+  std::string xml((istreambuf_iterator<char>(ifpath)),
+                  istreambuf_iterator<char>());
+  ParseCatalog(xml, &ctx);
 }
 
-const std::map<std::string, int> PluginHandler::getCountByTarget()
-{
-    auto plugins = getInstalled();
-    auto a = getAvailable();
-    plugins.insert(plugins.end(), a.begin(), a.end());
-    std::map<std::string, int> count_by_target;
-    for (const auto& p: plugins) {
-        if (p.target == "") {
-            continue;    // Built-in plugins like  dashboard et. al.
-        }
-        auto key = p.target + ":" + p.target_version;
-        if (count_by_target.find(key) == count_by_target.end()) {
-            count_by_target[key] = 1;
-        }
-        else {
-            count_by_target[key] += 1;
-        }
+const std::map<std::string, int> PluginHandler::getCountByTarget() {
+  auto plugins = getInstalled();
+  auto a = getAvailable();
+  plugins.insert(plugins.end(), a.begin(), a.end());
+  std::map<std::string, int> count_by_target;
+  for (const auto& p : plugins) {
+    if (p.target == "") {
+      continue;  // Built-in plugins like  dashboard et. al.
     }
-    return count_by_target;
+    auto key = p.target + ":" + p.target_version;
+    if (count_by_target.find(key) == count_by_target.end()) {
+      count_by_target[key] = 1;
+    } else {
+      count_by_target[key] += 1;
+    }
+  }
+  return count_by_target;
 }
 
 void PluginHandler::cleanupFiles(const std::string& manifestFile,
-                                 const std::string& plugname)
-{
-    std::ifstream diskfiles(manifestFile);
-    if (diskfiles.is_open()) {
-        std::stringstream buffer;
-        buffer << diskfiles.rdbuf();
-        PluginHandler::cleanup(buffer.str(), plugname);
-    }
+                                 const std::string& plugname) {
+  std::ifstream diskfiles(manifestFile);
+  if (diskfiles.is_open()) {
+    std::stringstream buffer;
+    buffer << diskfiles.rdbuf();
+    PluginHandler::cleanup(buffer.str(), plugname);
+  }
 }
-
 
 void PluginHandler::cleanup(const std::string& filelist,
-                            const std::string& plugname)
-{
-    wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
+                            const std::string& plugname) {
+  wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
 
-    std::istringstream files(filelist);
-    while (!files.eof()) {
-        char line[256];
-        files.getline(line, sizeof(line));
-        if (isRegularFile(line)) {
-            int r = remove(line);
-            if (r != 0) {
-                wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
-            }
+  std::istringstream files(filelist);
+  while (!files.eof()) {
+    char line[256];
+    files.getline(line, sizeof(line));
+    if (isRegularFile(line)) {
+      int r = remove(line);
+      if (r != 0) {
+        wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
+      }
+    }
+  }
+
+  // Make another limited recursive pass, and remove any empty directories
+  bool done = false;
+  int iloop = 0;
+  while (!done && (iloop < 6)) {
+    done = true;
+    std::istringstream dirs(filelist);
+    while (!dirs.eof()) {
+      char line[256];
+      dirs.getline(line, sizeof(line));
+
+      wxFileName wxFile(line);
+      if (wxFile.IsDir() && wxFile.DirExists()) {
+        wxDir dir(wxFile.GetFullPath());
+        if (dir.IsOpened()) {
+          if (!dir.HasFiles() && !dir.HasSubDirs()) {
+            wxFile.Rmdir(wxPATH_RMDIR_RECURSIVE);
+            done = false;
+          }
         }
+      }
     }
+    iloop++;
+  }
 
-        // Make another limited recursive pass, and remove any empty directories
-    bool done = false;
-    int iloop = 0;
-    while(!done && (iloop < 6) ){
-        done = true;
-        std::istringstream dirs(filelist);
-        while (!dirs.eof()) {
-            char line[256];
-            dirs.getline(line, sizeof(line));
-
-            wxFileName wxFile(line);
-            if(wxFile.IsDir() && wxFile.DirExists()){
-                wxDir dir(wxFile.GetFullPath());
-                if(dir.IsOpened()){
-                    if(!dir.HasFiles() && !dir.HasSubDirs()){
-                        wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
-                        done = false;
-                    }
-                }
-            }
-        }
-        iloop++;
-    }
-
-
-
-    std::string path = PluginHandler::fileListPath(plugname);
-    if (ocpn::exists(path)) {
-        remove(path.c_str());
-    }
-    remove(dirListPath(plugname).c_str());  // Best effort try, failures
-    remove(PluginHandler::versionPath(plugname).c_str());  // are non-critical.
+  std::string path = PluginHandler::fileListPath(plugname);
+  if (ocpn::exists(path)) {
+    remove(path.c_str());
+  }
+  remove(dirListPath(plugname).c_str());  // Best effort try, failures
+  remove(PluginHandler::versionPath(plugname).c_str());  // are non-critical.
 }
 
+const std::vector<PluginMetadata> PluginHandler::getAvailable() {
+  using namespace std;
+  catalog_ctx ctx;
 
-const std::vector<PluginMetadata> PluginHandler::getAvailable()
-{
-    using namespace std;
-    catalog_ctx ctx;
+  auto catalogHandler = CatalogHandler::getInstance();
 
-    auto catalogHandler = CatalogHandler::getInstance();
-
-    //std::string path = g_Platform->GetPrivateDataDir().ToStdString();
-    //path += SEP;
-    //path += "ocpn-plugins.xml";
-    std::string path = getMetadataPath();
-    if (!ocpn::exists(path)) {
-        return ctx.plugins;
-    }
-    std::ifstream file;
-    file.open(path, std::ios::in);
-    if (file.is_open()) {
-        std::string xml((std::istreambuf_iterator<char>(file)),
-                        std::istreambuf_iterator<char>());
-        file.close();
-        auto status = catalogHandler->DoParseCatalog(xml, &ctx);
-        if (status == CatalogHandler::ServerStatus::OK) {
-            catalogData.undef = false;
-            catalogData.version = ctx.version;
-            catalogData.date = ctx.date;
-        }
-    }
-
+  // std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+  // path += SEP;
+  // path += "ocpn-plugins.xml";
+  std::string path = getMetadataPath();
+  if (!ocpn::exists(path)) {
     return ctx.plugins;
+  }
+  std::ifstream file;
+  file.open(path, std::ios::in);
+  if (file.is_open()) {
+    std::string xml((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+    file.close();
+    auto status = catalogHandler->DoParseCatalog(xml, &ctx);
+    if (status == CatalogHandler::ServerStatus::OK) {
+      catalogData.undef = false;
+      catalogData.version = ctx.version;
+      catalogData.date = ctx.date;
+    }
+  }
+
+  return ctx.plugins;
 }
 
+const std::vector<PluginMetadata> PluginHandler::getInstalled() {
+  using namespace std;
+  vector<PluginMetadata> plugins;
 
-const std::vector<PluginMetadata> PluginHandler::getInstalled()
-{
-    using namespace std;
-    vector<PluginMetadata> plugins;
+  if (g_pi_manager) {
+    ArrayOfPlugIns* mgr_plugins = g_pi_manager->GetPlugInArray();
+    for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
+      PlugInContainer* p = mgr_plugins->Item(i);
+      PluginMetadata plugin;
+      auto name = string(p->m_common_name);
+      // std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+      plugin.name = name;
+      std::stringstream ss;
+      ss << p->m_version_major << "." << p->m_version_minor;
+      plugin.version = ss.str();
+      plugin.readonly = !isPluginWritable(plugin.name);
+      string path = PluginHandler::versionPath(plugin.name);
+      if (path != "" && wxFileName::IsFileReadable(path)) {
+        std::ifstream stream;
+        stream.open(path, ifstream::in);
+        stream >> plugin.version;
+      }
+      plugins.push_back(plugin);
+    }
+  }
+  return plugins;
+}
 
-    if (g_pi_manager) {
-        ArrayOfPlugIns* mgr_plugins = g_pi_manager->GetPlugInArray();
-        for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
-            PlugInContainer* p = mgr_plugins->Item(i);
-            PluginMetadata plugin;
-            auto name = string(p->m_common_name);
-            //std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-            plugin.name = name;
-            std::stringstream ss;
-            ss << p->m_version_major << "." << p->m_version_minor;
-            plugin.version = ss.str();
-            plugin.readonly = !isPluginWritable(plugin.name);
-            string path = PluginHandler::versionPath(plugin.name);
-            if (path != "" && wxFileName::IsFileReadable(path)) {
-                std::ifstream stream;
-                stream.open(path, ifstream::in);
-                stream >> plugin.version;
-            }
-            plugins.push_back(plugin);
+bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
+  std::string filelist;
+  if (!extractTarball(path, filelist)) {
+    std::ostringstream os;
+    os << "Cannot unpack plugin: " << plugin.name << " at " << path;
+    last_error_msg = os.str();
+    PluginHandler::cleanup(filelist, plugin.name);
+    return false;
+  }
+  // remove(path.c_str());
+  saveFilelist(filelist, plugin.name);
+  saveDirlist(plugin.name);
+  saveVersion(plugin.name, plugin.version);
+
+  return true;
+}
+
+bool PluginHandler::installPlugin(PluginMetadata plugin) {
+  std::string path;
+  char fname[4096];
+
+  if (tmpnam(fname) == NULL) {
+    wxLogWarning("Cannot create temporary file");
+    path = "";
+    return false;
+  }
+  path = std::string(fname);
+  std::ofstream stream;
+  stream.open(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+  DEBUG_LOG << "Downloading: " << plugin.name << std::endl;
+  auto downloader = Downloader(plugin.tarball_url);
+  downloader.download(&stream);
+
+  return installPlugin(plugin, path);
+}
+
+bool PluginHandler::uninstall(const std::string plugin_name) {
+  using namespace std;
+
+  auto ix = PlugInIxByName(plugin_name, g_pi_manager->GetPlugInArray());
+  auto pic = g_pi_manager->GetPlugInArray()->Item(ix);
+  // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
+  g_pi_manager->UnLoadPlugIn(ix);
+  string path = PluginHandler::fileListPath(plugin_name);
+  if (!ocpn::exists(path)) {
+    wxLogWarning("Cannot find installation data for %s (%s)",
+                 plugin_name.c_str(), path);
+    return false;
+  }
+  ifstream files(path);
+  while (!files.eof()) {
+    char line[256];
+    files.getline(line, sizeof(line));
+    if (isRegularFile(line)) {
+      int r = remove(line);
+      if (r != 0) {
+        wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
+      }
+    }
+  }
+  files.close();
+
+  // Make another limited recursive pass, and remove any empty directories
+  bool done = false;
+  int iloop = 0;
+  while (!done && (iloop < 6)) {
+    done = true;
+    ifstream dirs(path);
+    while (!dirs.eof()) {
+      char line[256];
+      dirs.getline(line, sizeof(line));
+      string dirc(line);
+
+      wxFileName wxFile(line);
+      if (wxFile.IsDir() && wxFile.DirExists()) {
+        wxDir dir(wxFile.GetFullPath());
+        if (dir.IsOpened()) {
+          if (!dir.HasFiles() && !dir.HasSubDirs()) {
+            wxFile.Rmdir(wxPATH_RMDIR_RECURSIVE);
+            done = false;
+          }
         }
+      }
     }
-    return plugins;
+    dirs.close();
+
+    iloop++;
+  }
+
+  int r = remove(path.c_str());
+  if (r != 0) {
+    wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
+  }
+  remove(dirListPath(plugin_name).c_str());  // Best effort try, failures
+  remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
+
+  return true;
 }
 
+bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
+  // Look for the desired file
+  wxURI uri(wxString(plugin.tarball_url.c_str()));
+  wxFileName fn(uri.GetPath());
+  wxString tarballFile = fn.GetFullName();
+  auto cacheFile = ocpn::lookup_tarball(tarballFile);
 
-bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
-{
-    std::string filelist;
-    if ( !extractTarball(path, filelist)) {
-        std::ostringstream os;
-        os << "Cannot unpack plugin: " << plugin.name  << " at " << path;
-        last_error_msg = os.str();
-        PluginHandler::cleanup(filelist, plugin.name);
-        return false;
+  if (cacheFile != "") {
+    wxLogMessage("Installing %s from local cache", tarballFile.c_str());
+    bool bOK = installPlugin(plugin, cacheFile);
+    if (!bOK) {
+      wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
+      wxString message = _("Please check system log for more info.");
+      OCPNMessageBox(gFrame, message, _("Installation error"),
+                     wxICON_ERROR | wxOK | wxCENTRE);
+
+      return false;
     }
-    //remove(path.c_str());
-    saveFilelist(filelist, plugin.name);
-    saveDirlist(plugin.name);
-    saveVersion(plugin.name, plugin.version);
+
+    wxString message;
+    message.Printf("%s %s\n", plugin.name.c_str(), plugin.version.c_str());
+    message += _(" successfully installed from cache");
+    OCPNMessageBox(gFrame, message, _("Installation complete"),
+                   wxICON_INFORMATION | wxOK | wxCENTRE);
 
     return true;
-}
+  }
 
-
-bool PluginHandler::installPlugin(PluginMetadata plugin)
-{
-    std::string path;
-    char fname[4096];
-
-    if (tmpnam(fname) == NULL) {
-        wxLogWarning("Cannot create temporary file");
-        path = "";
-        return false;
-    }
-    path = std::string(fname);
-    std::ofstream stream;
-    stream.open(path.c_str(), std::ios::out|std::ios::binary|std::ios::trunc);
-    DEBUG_LOG << "Downloading: " << plugin.name << std::endl;
-    auto downloader = Downloader(plugin.tarball_url);
-    downloader.download(&stream);
-
-    return installPlugin(plugin, path);
-}
-
-
-bool PluginHandler::uninstall(const std::string plugin_name)
-{
-    using namespace std;
-
-    auto ix = PlugInIxByName(plugin_name, g_pi_manager->GetPlugInArray());
-    auto pic = g_pi_manager->GetPlugInArray()->Item(ix);
-    //g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
-    g_pi_manager->UnLoadPlugIn(ix);
-    string path = PluginHandler::fileListPath(plugin_name);
-    if (!ocpn::exists(path)) {
-        wxLogWarning("Cannot find installation data for %s (%s)",
-                     plugin_name.c_str(), path);
-        return false;
-    }
-    ifstream files(path);
-    while (!files.eof()) {
-        char line[256];
-        files.getline(line, sizeof(line));
-        if (isRegularFile(line)) {
-            int r = remove(line);
-            if (r != 0) {
-                wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
-            }
-        }
-    }
-    files.close();
-
-    // Make another limited recursive pass, and remove any empty directories
-    bool done = false;
-    int iloop = 0;
-    while(!done && (iloop < 6) ){
-        done = true;
-        ifstream dirs(path);
-        while (!dirs.eof()) {
-            char line[256];
-            dirs.getline(line, sizeof(line));
-            string dirc(line);
-
-            wxFileName wxFile(line);
-            if(wxFile.IsDir() && wxFile.DirExists()){
-                wxDir dir(wxFile.GetFullPath());
-                if(dir.IsOpened()){
-                    if(!dir.HasFiles() && !dir.HasSubDirs()){
-                        wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
-                        done = false;
-                    }
-                }
-            }
-        }
-        dirs.close();
-
-        iloop++;
-    }
-
-    int r = remove(path.c_str());
-    if (r != 0) {
-        wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
-    }
-    remove(dirListPath(plugin_name).c_str());  // Best effort try, failures
-    remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
-
-    return true;
-}
-
-bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
-{
-    // Look for the desired file
-    wxURI uri( wxString(plugin.tarball_url.c_str()));
-    wxFileName fn(uri.GetPath());
-    wxString tarballFile = fn.GetFullName();
-    auto cacheFile = ocpn::lookup_tarball(tarballFile);
-
-    if (cacheFile != "") {
-        wxLogMessage("Installing %s from local cache",  tarballFile.c_str());
-        bool bOK = installPlugin( plugin, cacheFile);
-        if(!bOK){
-            wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
-             wxString message = _("Please check system log for more info.");
-            OCPNMessageBox(gFrame, message, _("Installation error"), wxICON_ERROR | wxOK | wxCENTRE);
-
-            return false;
-        }
-
-        wxString message;
-        message.Printf("%s %s\n", plugin.name.c_str(),  plugin.version.c_str());
-        message += _(" successfully installed from cache");
-        OCPNMessageBox(gFrame, message, _("Installation complete"), wxICON_INFORMATION | wxOK | wxCENTRE);
-
-        return true;
-   }
-
-   return false;
+  return false;
 }

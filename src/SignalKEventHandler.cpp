@@ -22,7 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
- //Originally by balp on 2018-07-28.
+// Originally by balp on 2018-07-28.
 
 #include <cstddef>
 
@@ -37,113 +37,108 @@
 #include "pluginmanager.h"
 #include "logger.h"
 
-extern PlugInManager    *g_pi_manager;
-wxString                g_ownshipMMSI_SK;
-bool             bGPSValid_SK;
-extern int              g_priSats;
+extern PlugInManager *g_pi_manager;
+wxString g_ownshipMMSI_SK;
+bool bGPSValid_SK;
+extern int g_priSats;
 
-void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
-{
-    wxJSONReader jsonReader;
-    wxJSONValue root;
+void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event) {
+  wxJSONReader jsonReader;
+  wxJSONValue root;
 
-    LOG_DEBUG("%s\n", event.GetString().c_str());
+  LOG_DEBUG("%s\n", event.GetString().c_str());
 
-    std::string msgTerminated = event.GetString();
-    msgTerminated.append("\r\n");
+  std::string msgTerminated = event.GetString();
+  msgTerminated.append("\r\n");
 
-    int errors = jsonReader.Parse(msgTerminated, &root);
-    if (errors > 0) {
-        wxLogMessage( wxString::Format(_T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
-                      errors));
-        return;
-    }
+  int errors = jsonReader.Parse(msgTerminated, &root);
+  if (errors > 0) {
+    wxLogMessage(wxString::Format(
+        _T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
+        errors));
+    return;
+  }
 
-    if (root.HasMember(_T("version"))) {
-        wxString msg = _T("Connected to Signal K server version: ");
-        msg << (root[_T("version")].AsString());
-        wxLogMessage(msg);
-    }
+  if (root.HasMember(_T("version"))) {
+    wxString msg = _T("Connected to Signal K server version: ");
+    msg << (root[_T("version")].AsString());
+    wxLogMessage(msg);
+  }
 
-    if(root.HasMember("self")) {
-        if(root["self"].AsString().StartsWith(_T("vessels.")))
-            m_self = (root["self"].AsString());                                 // for java server, and OpenPlotter node.js server 1.20
-        else
-            m_self = _T("vessels.") + (root["self"].AsString());                // for Node.js server
-        g_ownshipMMSI_SK = m_self;
-    }
+  if (root.HasMember("self")) {
+    if (root["self"].AsString().StartsWith(_T("vessels.")))
+      m_self = (root["self"].AsString());  // for java server, and OpenPlotter
+                                           // node.js server 1.20
+    else
+      m_self =
+          _T("vessels.") + (root["self"].AsString());  // for Node.js server
+    g_ownshipMMSI_SK = m_self;
+  }
 
-    if(root.HasMember("context")
-       && root["context"].IsString()) {
-        auto context = root["context"].AsString();
-        if (context != m_self) {
+  if (root.HasMember("context") && root["context"].IsString()) {
+    auto context = root["context"].AsString();
+    if (context != m_self) {
 #if 0
             wxLogMessage(_T("** Ignore context of other ships.."));
 #endif
-            return;
-        }
+      return;
     }
+  }
 
-    if(root.HasMember("updates")
-       && root["updates"].IsArray()) {
-        wxJSONValue &updates = root["updates"];
-        for (int i = 0; i < updates.Size(); ++i) {
-            handleUpdate(updates[i]);
-        }
+  if (root.HasMember("updates") && root["updates"].IsArray()) {
+    wxJSONValue &updates = root["updates"];
+    for (int i = 0; i < updates.Size(); ++i) {
+      handleUpdate(updates[i]);
     }
+  }
 }
 
 void SignalKEventHandler::handleUpdate(wxJSONValue &update) const {
-    wxString sfixtime = "";
+  wxString sfixtime = "";
 
-    if(update.HasMember("timestamp")) {
-        sfixtime = update["timestamp"].AsString();
+  if (update.HasMember("timestamp")) {
+    sfixtime = update["timestamp"].AsString();
+  }
+  if (update.HasMember("values") && update["values"].IsArray()) {
+    for (int j = 0; j < update["values"].Size(); ++j) {
+      wxJSONValue &item = update["values"][j];
+      updateItem(item, sfixtime);
     }
-    if(update.HasMember("values")
-       && update["values"].IsArray())
-    {
-        for (int j = 0; j < update["values"].Size(); ++j) {
-            wxJSONValue &item = update["values"][j];
-            updateItem(item, sfixtime);
-        }
-    }
+  }
 }
 
-void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) const {
-    if (item.HasMember("path")
-        && item.HasMember("value")) {
-        const wxString &update_path = item["path"].AsString();
-        wxJSONValue &value = item["value"];
-        if (update_path == _T("navigation.position")) {
-            updateNavigationPosition(value, sfixtime);
-        }
-        else if (update_path == _T("navigation.speedOverGround") && bGPSValid_SK) {
-            updateNavigationSpeedOverGround(value, sfixtime);
-        }
-        else if (update_path == _T("navigation.courseOverGroundTrue") && bGPSValid_SK) {
-            updateNavigationCourseOverGround(value, sfixtime);
-        }
-        else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
-        }   // Ignore magnetic COG as OpenCPN don't handle yet.
-        else if (update_path == _T("navigation.gnss.satellites")) //From GGA sats in use
-        {
-            if (g_priSats >= 2)
-            updateGnssSatellites(value, sfixtime);
-        } else if(update_path == _T("navigation.gnss.satellitesInView")) //From GSV sats in view
-        {
-            if (g_priSats >= 3)
-            updateGnssSatellites(value, sfixtime);
-        } else if(update_path == _T("navigation.headingTrue"))
-        {
-            updateHeadingTrue(value, sfixtime);
-        } else if(update_path == _T("navigation.headingMagnetic"))
-        {
-            updateHeadingMagnetic(value, sfixtime);
-        } else if(update_path == _T("navigation.magneticVariation"))
-        {
-            updateMagneticVariance(value, sfixtime);
-        } else {
-            //wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"), update_path));
+void SignalKEventHandler::updateItem(wxJSONValue &item,
+                                     wxString &sfixtime) const {
+  if (item.HasMember("path") && item.HasMember("value")) {
+    const wxString &update_path = item["path"].AsString();
+    wxJSONValue &value = item["value"];
+    if (update_path == _T("navigation.position")) {
+      updateNavigationPosition(value, sfixtime);
+    } else if (update_path == _T("navigation.speedOverGround") &&
+               bGPSValid_SK) {
+      updateNavigationSpeedOverGround(value, sfixtime);
+    } else if (update_path == _T("navigation.courseOverGroundTrue") &&
+               bGPSValid_SK) {
+      updateNavigationCourseOverGround(value, sfixtime);
+    } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
+    }  // Ignore magnetic COG as OpenCPN don't handle yet.
+    else if (update_path ==
+             _T("navigation.gnss.satellites"))  // From GGA sats in use
+    {
+      if (g_priSats >= 2) updateGnssSatellites(value, sfixtime);
+    } else if (update_path ==
+               _T("navigation.gnss.satellitesInView"))  // From GSV sats in view
+    {
+      if (g_priSats >= 3) updateGnssSatellites(value, sfixtime);
+    } else if (update_path == _T("navigation.headingTrue")) {
+      updateHeadingTrue(value, sfixtime);
+    } else if (update_path == _T("navigation.headingMagnetic")) {
+      updateHeadingMagnetic(value, sfixtime);
+    } else if (update_path == _T("navigation.magneticVariation")) {
+      updateMagneticVariance(value, sfixtime);
+    } else {
+      // wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"),
+      // update_path));
 #if 0
             wxString dbg;
             wxJSONWriter writer;
@@ -152,70 +147,64 @@ void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) cons
             msg.append(dbg);
             wxLogMessage(msg);
 #endif
-        }
-
     }
+  }
 }
 
-void SignalKEventHandler::updateNavigationPosition(wxJSONValue &value, const wxString &sfixtime) const {
-    if ((value.HasMember("latitude" && value["latitude"].IsDouble()))
-        && (value.HasMember("longitude") && value["longitude"].IsDouble())) {
-        //wxLogMessage(_T(" ***** Position Update"));
-        m_frame->setPosition(value["latitude"].AsDouble(),
-                             value["longitude"].AsDouble());
-        m_frame->PostProcessNMEA(true, false, sfixtime);
-        bGPSValid_SK = true;
-    }
-    else {
-        bGPSValid_SK = false;
-    }
+void SignalKEventHandler::updateNavigationPosition(
+    wxJSONValue &value, const wxString &sfixtime) const {
+  if ((value.HasMember("latitude" && value["latitude"].IsDouble())) &&
+      (value.HasMember("longitude") && value["longitude"].IsDouble())) {
+    // wxLogMessage(_T(" ***** Position Update"));
+    m_frame->setPosition(value["latitude"].AsDouble(),
+                         value["longitude"].AsDouble());
+    m_frame->PostProcessNMEA(true, false, sfixtime);
+    bGPSValid_SK = true;
+  } else {
+    bGPSValid_SK = false;
+  }
 }
 
-void SignalKEventHandler::updateNavigationSpeedOverGround(wxJSONValue &value,
-                                                          const wxString &sfixtime) const {
-    double sog_ms = value.AsDouble();
-    double sog_knot = sog_ms * ms_to_knot_factor;
-    //wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
-    m_frame->setSpeedOverGround(sog_knot);
-    m_frame->PostProcessNMEA(false, true, sfixtime);
+void SignalKEventHandler::updateNavigationSpeedOverGround(
+    wxJSONValue &value, const wxString &sfixtime) const {
+  double sog_ms = value.AsDouble();
+  double sog_knot = sog_ms * ms_to_knot_factor;
+  // wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
+  m_frame->setSpeedOverGround(sog_knot);
+  m_frame->PostProcessNMEA(false, true, sfixtime);
 }
 
-void SignalKEventHandler::updateNavigationCourseOverGround(wxJSONValue &value,
-                                                           const wxString &sfixtime) const {
-    double cog_rad = value.AsDouble();
-    double cog_deg = GEODESIC_RAD2DEG(cog_rad);
-    //wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
-    m_frame->setCourseOverGround(cog_deg);
-    m_frame->PostProcessNMEA(false, true, sfixtime);
+void SignalKEventHandler::updateNavigationCourseOverGround(
+    wxJSONValue &value, const wxString &sfixtime) const {
+  double cog_rad = value.AsDouble();
+  double cog_deg = GEODESIC_RAD2DEG(cog_rad);
+  // wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
+  m_frame->setCourseOverGround(cog_deg);
+  m_frame->PostProcessNMEA(false, true, sfixtime);
 }
 
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,
-                                 const wxString &sfixtime) const {
-    if (value.IsInt()) {
-        m_frame->setSatelitesInView(value.AsInt());
-        g_priSats = 2;
-    }
-    else if ((value.HasMember("count") && value["count"].IsInt())) {
-        m_frame->setSatelitesInView(value["count"].AsInt());
-        g_priSats = 3;
-    }
+                                               const wxString &sfixtime) const {
+  if (value.IsInt()) {
+    m_frame->setSatelitesInView(value.AsInt());
+    g_priSats = 2;
+  } else if ((value.HasMember("count") && value["count"].IsInt())) {
+    m_frame->setSatelitesInView(value["count"].AsInt());
+    g_priSats = 3;
+  }
 }
-
 
 void SignalKEventHandler::updateHeadingTrue(wxJSONValue &value,
-                                            const wxString &sfixtime) const
-{
-    m_frame->setHeadingTrue(GEODESIC_RAD2DEG(value.AsDouble()));
+                                            const wxString &sfixtime) const {
+  m_frame->setHeadingTrue(GEODESIC_RAD2DEG(value.AsDouble()));
 }
 
-void SignalKEventHandler::updateHeadingMagnetic(wxJSONValue &value,
-                                            const wxString &sfixtime) const
-{
-    m_frame->setHeadingMagnetic(GEODESIC_RAD2DEG(value.AsDouble()));
+void SignalKEventHandler::updateHeadingMagnetic(
+    wxJSONValue &value, const wxString &sfixtime) const {
+  m_frame->setHeadingMagnetic(GEODESIC_RAD2DEG(value.AsDouble()));
 }
 
-void SignalKEventHandler::updateMagneticVariance(wxJSONValue &value,
-                                                 const wxString &sfixtime) const
-{
-    m_frame->setMagneticVariation(GEODESIC_RAD2DEG(value.AsDouble()));
+void SignalKEventHandler::updateMagneticVariance(
+    wxJSONValue &value, const wxString &sfixtime) const {
+  m_frame->setMagneticVariation(GEODESIC_RAD2DEG(value.AsDouble()));
 }

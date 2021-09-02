@@ -32,8 +32,8 @@
 #include "linmath.h"
 #include "shaders.h"
 #else
- #include <GL/gl.h>
- #include <GL/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #endif
 
 #if 0
@@ -61,154 +61,146 @@ TexFont *GetTexFont(wxFont *pFont)
 }
 #endif
 
-DepthFont::DepthFont( )
-{
+DepthFont::DepthFont() {
+  texobj = 0;
+  m_built = false;
+  m_scaleFactor = 0;
+}
+
+DepthFont::~DepthFont() { Delete(); }
+
+void DepthFont::Build(wxFont *font, double scale) {
+  /* avoid rebuilding if the parameters are the same */
+  if (m_built && (*font == m_font)) return;
+
+  m_font = *font;
+  m_scaleFactor = scale;
+
+  m_maxglyphw = 0;
+  m_maxglyphh = 0;
+
+  wxScreenDC sdc;
+
+  sdc.SetFont(*font);
+
+  for (int i = 0; i < 10; i++) {
+    wxCoord gw, gh;
+    wxString text;
+    text = wxString::Format(_T("%d"), i);
+    wxCoord descent, exlead;
+    sdc.GetTextExtent(text, &gw, &gh, &descent, &exlead,
+                      font);  // measure the text
+
+    tgi[i].width = gw;
+    tgi[i].height = gh;  // - descent;
+
+    tgi[i].advance = gw;
+
+    m_maxglyphw = wxMax(tgi[i].width, m_maxglyphw);
+    m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
+  }
+
+  int w = 10 * m_maxglyphw;
+  int h = m_maxglyphh;
+
+  /* make power of 2 */
+
+  for (tex_w = 1; tex_w < w; tex_w *= 2)
+    ;
+  for (tex_h = 1; tex_h < h; tex_h *= 2)
+    ;
+
+  wxBitmap tbmp(tex_w, tex_h);
+  wxMemoryDC dc;
+  dc.SelectObject(tbmp);
+  dc.SetFont(*font);
+
+  /* fill bitmap with black */
+  dc.SetBackground(wxBrush(wxColour(0, 0, 0)));
+  dc.Clear();
+
+  /* draw the text white */
+  dc.SetTextForeground(wxColour(255, 255, 255));
+
+  /*    wxPen pen(wxColour( 255, 255, 255 ));
+      wxBrush brush(wxColour( 255, 255, 255 ), wxTRANSPARENT);
+      dc.SetPen(pen);
+      dc.SetBrush(brush);
+   */
+  int row = 0, col = 0;
+  for (int i = 0; i < 10; i++) {
+    tgi[i].x = col * m_maxglyphw;
+    tgi[i].y = row * m_maxglyphh;
+
+    wxString text;
+    text = wxString::Format(_T("%d"), i);
+
+    dc.DrawText(text, tgi[i].x, tgi[i].y);
+
+    col++;
+  }
+
+  dc.SelectObject(wxNullBitmap);
+
+  wxImage image = tbmp.ConvertToImage();
+
+  GLuint format, internalformat;
+  int stride;
+
+  format = GL_ALPHA;
+  internalformat = format;
+  stride = 1;
+
+  unsigned char *imgdata = image.GetData();
+
+  if (imgdata) {
+    unsigned char *teximage = (unsigned char *)malloc(stride * tex_w * tex_h);
+
+    for (int j = 0; j < tex_w * tex_h; j++)
+      for (int k = 0; k < stride; k++)
+        teximage[j * stride + k] = imgdata[3 * j];
+
+    glGenTextures(1, &texobj);
+    glBindTexture(GL_TEXTURE_2D, texobj);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    GL_NEAREST /*GL_LINEAR*/);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, internalformat, tex_w, tex_h, 0, format,
+                 GL_UNSIGNED_BYTE, teximage);
+
+    free(teximage);
+  }
+
+  m_built = true;
+}
+
+void DepthFont::Delete() {
+  if (texobj) {
+    glDeleteTextures(1, &texobj);
     texobj = 0;
-    m_built = false;
-    m_scaleFactor = 0;
+  }
+  m_built = false;
+  m_scaleFactor = 0;
 }
 
-DepthFont::~DepthFont( )
-{
-    Delete( );
-}
-
-
-void DepthFont::Build( wxFont *font, double scale )
-{
-    /* avoid rebuilding if the parameters are the same */
-    if(m_built && (*font == m_font) )
-        return;
-
-    m_font = *font;
-    m_scaleFactor = scale;
-
-    m_maxglyphw = 0;
-    m_maxglyphh = 0;
-
-    wxScreenDC sdc;
-
-    sdc.SetFont( *font );
-
-    for( int i=0 ; i < 10 ; i++){
-        wxCoord gw, gh;
-        wxString text;
-        text = wxString::Format(_T("%d"), i);
-        wxCoord descent, exlead;
-        sdc.GetTextExtent( text, &gw, &gh, &descent, &exlead, font ); // measure the text
-
-        tgi[i].width = gw;
-        tgi[i].height = gh;// - descent;
-
-        tgi[i].advance = gw;
-
-
-        m_maxglyphw = wxMax(tgi[i].width,  m_maxglyphw);
-        m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
-    }
-
-    int w = 10 * m_maxglyphw;
-    int h = m_maxglyphh;
-
-    /* make power of 2 */
-
-    for(tex_w = 1; tex_w < w; tex_w *= 2);
-    for(tex_h = 1; tex_h < h; tex_h *= 2);
-
-    wxBitmap tbmp(tex_w, tex_h);
-    wxMemoryDC dc;
-    dc.SelectObject(tbmp);
-    dc.SetFont( *font );
-
-    /* fill bitmap with black */
-    dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
-    dc.Clear();
-
-    /* draw the text white */
-    dc.SetTextForeground( wxColour( 255, 255, 255 ) );
-
- /*    wxPen pen(wxColour( 255, 255, 255 ));
-     wxBrush brush(wxColour( 255, 255, 255 ), wxTRANSPARENT);
-     dc.SetPen(pen);
-     dc.SetBrush(brush);
-  */
-    int row = 0, col = 0;
-    for( int i = 0; i < 10; i++ ) {
-
-        tgi[i].x = col * m_maxglyphw;
-        tgi[i].y = row * m_maxglyphh;
-
-        wxString text;
-        text = wxString::Format(_T("%d"), i);
-
-        dc.DrawText(text, tgi[i].x, tgi[i].y );
-
-        col++;
-    }
-
-    dc.SelectObject(wxNullBitmap);
-
-    wxImage image = tbmp.ConvertToImage();
-
-    GLuint format, internalformat;
-    int stride;
-
-    format = GL_ALPHA;
-    internalformat = format;
-    stride = 1;
-
-    unsigned char *imgdata = image.GetData();
-
-    if(imgdata){
-        unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
-
-        for( int j = 0; j < tex_w*tex_h; j++ )
-            for( int k = 0; k < stride; k++ )
-                teximage[j * stride + k] = imgdata[3*j];
-
-        glGenTextures( 1, &texobj );
-        glBindTexture( GL_TEXTURE_2D, texobj );
-
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST/*GL_LINEAR*/ );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-        glTexImage2D( GL_TEXTURE_2D, 0, internalformat, tex_w, tex_h, 0,
-                    format, GL_UNSIGNED_BYTE, teximage );
-
-        free(teximage);
-    }
-
-    m_built = true;
-}
-
-void DepthFont::Delete( )
-{
-    if (texobj) {
-        glDeleteTextures(1, &texobj);
-        texobj = 0;
-    }
-    m_built = false;
-    m_scaleFactor = 0;
-}
-
-bool DepthFont::GetGLTextureRect(wxRect &texrect, int symIndex)
-{
-    if(symIndex < 10){
-        texrect.x = tgi[symIndex].x;
-        texrect.y = tgi[symIndex].y;
-        texrect.width = tgi[symIndex].width;
-        texrect.height = tgi[symIndex].height;
-        return true;
-    }
-    else{
-        texrect.x = tgi[0].x;
-        texrect.y = tgi[0].y;
-        texrect.width = tgi[0].width;
-        texrect.height = tgi[0].height;
-        return false;
-    }
+bool DepthFont::GetGLTextureRect(wxRect &texrect, int symIndex) {
+  if (symIndex < 10) {
+    texrect.x = tgi[symIndex].x;
+    texrect.y = tgi[symIndex].y;
+    texrect.width = tgi[symIndex].width;
+    texrect.height = tgi[symIndex].height;
+    return true;
+  } else {
+    texrect.x = tgi[0].x;
+    texrect.y = tgi[0].y;
+    texrect.width = tgi[0].width;
+    texrect.height = tgi[0].height;
+    return false;
+  }
 }
 
 #if 0
@@ -303,10 +295,10 @@ void DepthFont::RenderGlyph( int c )
 
     // For some reason, glDrawElements is busted on Android
     // So we do this a hard ugly way, drawing two triangles...
-    #if 0
+#if 0
     GLushort indices1[] = {0,1,3,2};
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
-    #else
+#else
 
     float co1[8];
     co1[0] = coords[0];
@@ -333,7 +325,7 @@ void DepthFont::RenderGlyph( int c )
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    #endif
+#endif
 
 
 

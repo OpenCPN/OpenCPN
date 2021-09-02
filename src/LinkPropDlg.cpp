@@ -27,107 +27,112 @@
 #include "navutil.h"
 #include "gui_lib.h"
 
-LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString& title,
-        const wxPoint& pos, const wxSize& size, long style )
-{
-    long wstyle = style; // wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
+LinkPropDlgDef::LinkPropDlgDef(wxWindow* parent, wxWindowID id,
+                               const wxString& title, const wxPoint& pos,
+                               const wxSize& size, long style) {
+  long wstyle = style;  // wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
 
-    wxDialog::Create( parent, id, title, pos, size, wstyle );
+  wxDialog::Create(parent, id, title, pos, size, wstyle);
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    SetFont( *qFont );
+  wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
+  SetFont(*qFont);
 
-    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+  this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-    wxBoxSizer* bSizerMain;
-    bSizerMain = new wxBoxSizer( wxVERTICAL );
+  wxBoxSizer* bSizerMain;
+  bSizerMain = new wxBoxSizer(wxVERTICAL);
 
-    wxStaticBoxSizer* sbSizerLnkProp;
-    sbSizerLnkProp = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Link") ),
-            wxVERTICAL );
+  wxStaticBoxSizer* sbSizerLnkProp;
+  sbSizerLnkProp = new wxStaticBoxSizer(
+      new wxStaticBox(this, wxID_ANY, _("Link")), wxVERTICAL);
 
-    m_staticTextLinkDesc = new wxStaticText( this, wxID_ANY, _("Link description"),
-            wxDefaultPosition, wxDefaultSize, 0 );
-    m_staticTextLinkDesc->Wrap( -1 );
-    sbSizerLnkProp->Add( m_staticTextLinkDesc, 0, wxALL, 5 );
+  m_staticTextLinkDesc = new wxStaticText(this, wxID_ANY, _("Link description"),
+                                          wxDefaultPosition, wxDefaultSize, 0);
+  m_staticTextLinkDesc->Wrap(-1);
+  sbSizerLnkProp->Add(m_staticTextLinkDesc, 0, wxALL, 5);
 
-    m_textCtrlLinkDescription = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxDefaultSize, 0 );
-    sbSizerLnkProp->Add( m_textCtrlLinkDescription, 0, wxALL | wxEXPAND, 5 );
+  m_textCtrlLinkDescription = new wxTextCtrl(
+      this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+  sbSizerLnkProp->Add(m_textCtrlLinkDescription, 0, wxALL | wxEXPAND, 5);
 
-    m_staticTextLinkUrl = new wxStaticText( this, wxID_ANY, _("URL"), wxDefaultPosition,
-            wxDefaultSize, 0 );
-    m_staticTextLinkUrl->Wrap( -1 );
-    sbSizerLnkProp->Add( m_staticTextLinkUrl, 0, wxALL, 5 );
+  m_staticTextLinkUrl = new wxStaticText(this, wxID_ANY, _("URL"),
+                                         wxDefaultPosition, wxDefaultSize, 0);
+  m_staticTextLinkUrl->Wrap(-1);
+  sbSizerLnkProp->Add(m_staticTextLinkUrl, 0, wxALL, 5);
 
-    m_textCtrlLinkUrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxDefaultSize, 0 );
-    sbSizerLnkProp->Add( m_textCtrlLinkUrl, 0, wxALL | wxEXPAND, 5 );
+  m_textCtrlLinkUrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
+                                     wxDefaultPosition, wxDefaultSize, 0);
+  sbSizerLnkProp->Add(m_textCtrlLinkUrl, 0, wxALL | wxEXPAND, 5);
 
-    m_buttonBrowseLocal = new wxButton( this, wxID_ANY, _("Local file..."), wxDefaultPosition,
-            wxDefaultSize, 0 );
-    sbSizerLnkProp->Add( m_buttonBrowseLocal, 0, wxALL, 5 );
+  m_buttonBrowseLocal = new wxButton(this, wxID_ANY, _("Local file..."),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+  sbSizerLnkProp->Add(m_buttonBrowseLocal, 0, wxALL, 5);
 
-    bSizerMain->Add( sbSizerLnkProp, 1, wxALL | wxEXPAND, 5 );
+  bSizerMain->Add(sbSizerLnkProp, 1, wxALL | wxEXPAND, 5);
 
-    m_sdbSizerButtons = new wxStdDialogButtonSizer();
-    m_sdbSizerButtonsOK = new wxButton( this, wxID_OK );
-    m_sdbSizerButtons->AddButton( m_sdbSizerButtonsOK );
-    m_sdbSizerButtonsCancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
-    m_sdbSizerButtons->AddButton( m_sdbSizerButtonsCancel );
-    m_sdbSizerButtons->Realize();
+  m_sdbSizerButtons = new wxStdDialogButtonSizer();
+  m_sdbSizerButtonsOK = new wxButton(this, wxID_OK);
+  m_sdbSizerButtons->AddButton(m_sdbSizerButtonsOK);
+  m_sdbSizerButtonsCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
+  m_sdbSizerButtons->AddButton(m_sdbSizerButtonsCancel);
+  m_sdbSizerButtons->Realize();
 
-    bSizerMain->Add( m_sdbSizerButtons, 0, wxALL | wxEXPAND, 5 );
+  bSizerMain->Add(m_sdbSizerButtons, 0, wxALL | wxEXPAND, 5);
 
-    this->SetSizer( bSizerMain );
-    this->Layout();
-    Fit();
+  this->SetSizer(bSizerMain);
+  this->Layout();
+  Fit();
 
-    this->Centre( wxBOTH );
+  this->Centre(wxBOTH);
 
-    // Connect Events
-    m_buttonBrowseLocal->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-            wxCommandEventHandler( LinkPropDlgDef::OnLocalFileClick ), NULL, this );
-    m_sdbSizerButtonsCancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-            wxCommandEventHandler( LinkPropDlgDef::OnCancelClick ), NULL, this );
-    m_sdbSizerButtonsOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-            wxCommandEventHandler( LinkPropDlgDef::OnOkClick ), NULL, this );
+  // Connect Events
+  m_buttonBrowseLocal->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(LinkPropDlgDef::OnLocalFileClick), NULL, this);
+  m_sdbSizerButtonsCancel->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(LinkPropDlgDef::OnCancelClick), NULL, this);
+  m_sdbSizerButtonsOK->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                               wxCommandEventHandler(LinkPropDlgDef::OnOkClick),
+                               NULL, this);
 }
 
-LinkPropDlgDef::~LinkPropDlgDef()
-{
-    // Disconnect Events
-    m_buttonBrowseLocal->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
-            wxCommandEventHandler( LinkPropDlgDef::OnLocalFileClick ), NULL, this );
-    m_sdbSizerButtonsCancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
-            wxCommandEventHandler( LinkPropDlgDef::OnCancelClick ), NULL, this );
-    m_sdbSizerButtonsOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
-            wxCommandEventHandler( LinkPropDlgDef::OnOkClick ), NULL, this );
+LinkPropDlgDef::~LinkPropDlgDef() {
+  // Disconnect Events
+  m_buttonBrowseLocal->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(LinkPropDlgDef::OnLocalFileClick), NULL, this);
+  m_sdbSizerButtonsCancel->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(LinkPropDlgDef::OnCancelClick), NULL, this);
+  m_sdbSizerButtonsOK->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(LinkPropDlgDef::OnOkClick), NULL, this);
 }
 
-LinkPropImpl::LinkPropImpl( wxWindow* parent, wxWindowID id, const wxString& title,
-        const wxPoint& pos, const wxSize& size, long style ) :
-        LinkPropDlgDef( parent, id, title, pos, size, style )
-{
-    m_parent = parent;
-    DimeControl( this );
+LinkPropImpl::LinkPropImpl(wxWindow* parent, wxWindowID id,
+                           const wxString& title, const wxPoint& pos,
+                           const wxSize& size, long style)
+    : LinkPropDlgDef(parent, id, title, pos, size, style) {
+  m_parent = parent;
+  DimeControl(this);
 }
 
-void LinkPropImpl::OnLocalFileClick( wxCommandEvent& event )
-{
-    wxString filename = wxFileSelector( _("Choose a file") );
-    if( !filename.empty() ) {
-        wxString url = wxFileSystem::FileNameToURL( filename );
-        url.Replace( _T("%3A"), _T(":") ); //The replace hack is a way to make it work on Windows... I hate it.
-        m_textCtrlLinkUrl->SetValue( url );
-    }
+void LinkPropImpl::OnLocalFileClick(wxCommandEvent& event) {
+  wxString filename = wxFileSelector(_("Choose a file"));
+  if (!filename.empty()) {
+    wxString url = wxFileSystem::FileNameToURL(filename);
+    url.Replace(_T("%3A"), _T(":"));  // The replace hack is a way to make it
+                                      // work on Windows... I hate it.
+    m_textCtrlLinkUrl->SetValue(url);
+  }
 }
 
-void LinkPropImpl::OnOkClick( wxCommandEvent& event )
-{
-    if( m_textCtrlLinkUrl->GetValue() == wxEmptyString )
-        OCPNMessageBox( NULL, _("Link not complete, can't be saved."), _("OpenCPN Info"), wxICON_HAND );
+void LinkPropImpl::OnOkClick(wxCommandEvent& event) {
+  if (m_textCtrlLinkUrl->GetValue() == wxEmptyString)
+    OCPNMessageBox(NULL, _("Link not complete, can't be saved."),
+                   _("OpenCPN Info"), wxICON_HAND);
 
-    else
-        event.Skip();
+  else
+    event.Skip();
 }

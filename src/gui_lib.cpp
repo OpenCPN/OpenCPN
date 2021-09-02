@@ -33,82 +33,84 @@
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 
-extern bool             g_bresponsive;
-extern OCPNPlatform*    g_Platform;
-extern int              g_GUIScaleFactor;
+extern bool g_bresponsive;
+extern OCPNPlatform* g_Platform;
+extern int g_GUIScaleFactor;
 
+wxFont* GetOCPNScaledFont(wxString item, int default_size) {
+  wxFont* dFont = FontMgr::Get().GetFont(item, default_size);
+  int req_size = dFont->GetPointSize();
 
-wxFont *GetOCPNScaledFont( wxString item, int default_size )
-{
-    wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
-    int req_size = dFont->GetPointSize();
+  if (g_bresponsive) {
+    //      Adjust font size to be no smaller than xx mm actual size
+    double scaled_font_size = dFont->GetPointSize();
 
-    if( g_bresponsive ){
-        //      Adjust font size to be no smaller than xx mm actual size
-        double scaled_font_size = dFont->GetPointSize();
+    {
+      double points_per_mm =
+          g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
+      double min_scaled_font_size =
+          3 * points_per_mm;  // smaller than 3 mm is unreadable
+      int nscaled_font_size =
+          wxMax(wxRound(scaled_font_size), min_scaled_font_size);
 
-        {
-
-            double points_per_mm  = g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
-            double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
-            int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
-
-            if(req_size >= nscaled_font_size)
-                return dFont;
-            else{
-                wxFont *qFont = FontMgr::Get().FindOrCreateFont( nscaled_font_size,
-                                                             dFont->GetFamily(),
-                                                             dFont->GetStyle(),
-                                                             dFont->GetWeight());
-                return qFont;
-            }
-        }
+      if (req_size >= nscaled_font_size)
+        return dFont;
+      else {
+        wxFont* qFont = FontMgr::Get().FindOrCreateFont(
+            nscaled_font_size, dFont->GetFamily(), dFont->GetStyle(),
+            dFont->GetWeight());
+        return qFont;
+      }
     }
-    return dFont;
+  }
+  return dFont;
 }
 
-wxFont GetOCPNGUIScaledFont( wxString item )
-{
-    wxFont *dFont = FontMgr::Get().GetFont( item, 0 );
-    int req_size = dFont->GetPointSize();
-    wxFont qFont = *dFont;
+wxFont GetOCPNGUIScaledFont(wxString item) {
+  wxFont* dFont = FontMgr::Get().GetFont(item, 0);
+  int req_size = dFont->GetPointSize();
+  wxFont qFont = *dFont;
 
-    if( g_bresponsive ){
-       double postmult =  exp( g_GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-       double scaled_font_size = dFont->GetPointSize() * postmult;
+  if (g_bresponsive) {
+    double postmult = exp(g_GUIScaleFactor * (0.693 / 5.0));  //  exp(2)
+    double scaled_font_size = dFont->GetPointSize() * postmult;
 
-       double points_per_mm  = g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
-       double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
-       int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
+    double points_per_mm =
+        g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
+    double min_scaled_font_size =
+        3 * points_per_mm;  // smaller than 3 mm is unreadable
+    int nscaled_font_size =
+        wxMax(wxRound(scaled_font_size), min_scaled_font_size);
 
-//        wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
-//                                                                  dFont->GetFamily(),
-//                                                                  dFont->GetStyle(),
-//                                                                  dFont->GetWeight());
-       qFont.SetPointSize(nscaled_font_size);
-    }
+    //        wxFont *qFont = wxTheFontList->FindOrCreateFont(
+    //        nscaled_font_size,
+    //                                                                  dFont->GetFamily(),
+    //                                                                  dFont->GetStyle(),
+    //                                                                  dFont->GetWeight());
+    qFont.SetPointSize(nscaled_font_size);
+  }
 
-    return qFont;
+  return qFont;
 }
 
-int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
-                    int timeout_sec, int x, int y  )
-{
+int OCPNMessageBox(wxWindow* parent, const wxString& message,
+                   const wxString& caption, int style, int timeout_sec, int x,
+                   int y) {
 #ifdef __OCPN__ANDROID__
-    androidDisableRotation();
+  androidDisableRotation();
 #endif
-    int ret =  wxID_OK;
+  int ret = wxID_OK;
 
-    TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
-    ret = tbox.GetRetVal() ;
+  TimedMessageBox tbox(parent, message, caption, style, timeout_sec,
+                       wxPoint(x, y));
+  ret = tbox.GetRetVal();
 
 #ifdef __OCPN__ANDROID__
-    androidEnableRotation();
+  androidEnableRotation();
 #endif
 
-    return ret;
+  return ret;
 }
-
 
 BEGIN_EVENT_TABLE(OCPNMessageDialog, wxDialog)
 EVT_BUTTON(wxID_YES, OCPNMessageDialog::OnYes)
@@ -117,156 +119,133 @@ EVT_BUTTON(wxID_CANCEL, OCPNMessageDialog::OnCancel)
 EVT_CLOSE(OCPNMessageDialog::OnClose)
 END_EVENT_TABLE()
 
-OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
-                                                const wxString& message,
-                                                const wxString& caption,
-                                                long style,
-                                                const wxPoint& pos)
-: wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
-{
-    m_style = style;
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    SetFont( *qFont );
+OCPNMessageDialog::OCPNMessageDialog(wxWindow* parent, const wxString& message,
+                                     const wxString& caption, long style,
+                                     const wxPoint& pos)
+    : wxDialog(parent, wxID_ANY, caption, pos, wxDefaultSize,
+               wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP) {
+  m_style = style;
+  wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
+  SetFont(*qFont);
 
-    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
+  wxBoxSizer* topsizer = new wxBoxSizer(wxVERTICAL);
 
-    wxBoxSizer *icon_text = new wxBoxSizer( wxHORIZONTAL );
+  wxBoxSizer* icon_text = new wxBoxSizer(wxHORIZONTAL);
 
-    #if wxUSE_STATBMP
-    // 1) icon
-    if (style & wxICON_MASK)
-    {
-        wxBitmap bitmap;
-        switch ( style & wxICON_MASK )
-        {
-            default:
-                wxFAIL_MSG(_T("incorrect log style"));
-                // fall through
+#if wxUSE_STATBMP
+  // 1) icon
+  if (style & wxICON_MASK) {
+    wxBitmap bitmap;
+    switch (style & wxICON_MASK) {
+      default:
+        wxFAIL_MSG(_T("incorrect log style"));
+        // fall through
 
-            case wxICON_ERROR:
-                bitmap = wxArtProvider::GetIcon(wxART_ERROR, wxART_MESSAGE_BOX);
-                break;
+      case wxICON_ERROR:
+        bitmap = wxArtProvider::GetIcon(wxART_ERROR, wxART_MESSAGE_BOX);
+        break;
 
-            case wxICON_INFORMATION:
-                bitmap = wxArtProvider::GetIcon(wxART_INFORMATION, wxART_MESSAGE_BOX);
-                break;
+      case wxICON_INFORMATION:
+        bitmap = wxArtProvider::GetIcon(wxART_INFORMATION, wxART_MESSAGE_BOX);
+        break;
 
-            case wxICON_WARNING:
-                bitmap = wxArtProvider::GetIcon(wxART_WARNING, wxART_MESSAGE_BOX);
-                break;
+      case wxICON_WARNING:
+        bitmap = wxArtProvider::GetIcon(wxART_WARNING, wxART_MESSAGE_BOX);
+        break;
 
-            case wxICON_QUESTION:
-                bitmap = wxArtProvider::GetIcon(wxART_QUESTION, wxART_MESSAGE_BOX);
-                break;
-        }
-        wxStaticBitmap *icon = new wxStaticBitmap(this, wxID_ANY, bitmap);
-        icon_text->Add( icon, 0, wxCENTER );
+      case wxICON_QUESTION:
+        bitmap = wxArtProvider::GetIcon(wxART_QUESTION, wxART_MESSAGE_BOX);
+        break;
     }
-    #endif // wxUSE_STATBMP
+    wxStaticBitmap* icon = new wxStaticBitmap(this, wxID_ANY, bitmap);
+    icon_text->Add(icon, 0, wxCENTER);
+  }
+#endif  // wxUSE_STATBMP
 
-    #if wxUSE_STATTEXT
-    // 2) text
-    icon_text->Add( CreateTextSizer( message ), 0, wxALIGN_CENTER | wxLEFT, 10 );
+#if wxUSE_STATTEXT
+  // 2) text
+  icon_text->Add(CreateTextSizer(message), 0, wxALIGN_CENTER | wxLEFT, 10);
 
-    topsizer->Add( icon_text, 1, wxCENTER | wxLEFT|wxRIGHT|wxTOP, 10 );
-    #endif // wxUSE_STATTEXT
+  topsizer->Add(icon_text, 1, wxCENTER | wxLEFT | wxRIGHT | wxTOP, 10);
+#endif  // wxUSE_STATTEXT
 
-    // 3) buttons
-    int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
-    int center_flag = wxEXPAND;
-    if (style & wxYES_NO)
-        center_flag = wxALIGN_CENTRE;
-    wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
-    if ( sizerBtn )
-        topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
+  // 3) buttons
+  int AllButtonSizerFlags =
+      wxOK | wxCANCEL | wxYES | wxNO | wxHELP | wxNO_DEFAULT;
+  int center_flag = wxEXPAND;
+  if (style & wxYES_NO) center_flag = wxALIGN_CENTRE;
+  wxSizer* sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
+  if (sizerBtn) topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10);
 
-    SetAutoLayout( true );
-    SetSizer( topsizer );
+  SetAutoLayout(true);
+  SetSizer(topsizer);
 
-    topsizer->SetSizeHints( this );
-    topsizer->Fit( this );
-    wxSize size( GetSize() );
-    if (size.x < size.y*3/2)
-    {
-        size.x = size.y*3/2;
-        SetSize( size );
-    }
+  topsizer->SetSizeHints(this);
+  topsizer->Fit(this);
+  wxSize size(GetSize());
+  if (size.x < size.y * 3 / 2) {
+    size.x = size.y * 3 / 2;
+    SetSize(size);
+  }
 
-    Centre( wxBOTH | wxCENTER_FRAME);
+  Centre(wxBOTH | wxCENTER_FRAME);
 }
 
-void OCPNMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_YES);
-    EndModal( wxID_YES );
+void OCPNMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event)) {
+  SetReturnCode(wxID_YES);
+  EndModal(wxID_YES);
 }
 
-void OCPNMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_NO);
-    EndModal( wxID_NO );
+void OCPNMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event)) {
+  SetReturnCode(wxID_NO);
+  EndModal(wxID_NO);
 }
 
-void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
-{
-    // Allow cancellation via ESC/Close button except if
-    // only YES and NO are specified.
-    if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
-    {
-        SetReturnCode(wxID_CANCEL);
-        EndModal( wxID_CANCEL );
-    }
-}
-
-void OCPNMessageDialog::OnClose( wxCloseEvent& event )
-{
+void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event)) {
+  // Allow cancellation via ESC/Close button except if
+  // only YES and NO are specified.
+  if ((m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL)) {
     SetReturnCode(wxID_CANCEL);
-    EndModal( wxID_CANCEL );
+    EndModal(wxID_CANCEL);
+  }
 }
 
+void OCPNMessageDialog::OnClose(wxCloseEvent& event) {
+  SetReturnCode(wxID_CANCEL);
+  EndModal(wxID_CANCEL);
+}
 
 BEGIN_EVENT_TABLE(TimedMessageBox, wxEvtHandler)
 EVT_TIMER(-1, TimedMessageBox::OnTimer)
 END_EVENT_TABLE()
 
 TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
-                                 const wxString& caption, long style, int timeout_sec, const wxPoint& pos )
-{
-    ret_val = 0;
-    m_timer.SetOwner( this, -1 );
+                                 const wxString& caption, long style,
+                                 int timeout_sec, const wxPoint& pos) {
+  ret_val = 0;
+  m_timer.SetOwner(this, -1);
 
-    if(timeout_sec > 0)
-        m_timer.Start( timeout_sec * 1000, wxTIMER_ONE_SHOT );
+  if (timeout_sec > 0) m_timer.Start(timeout_sec * 1000, wxTIMER_ONE_SHOT);
 
-    dlg = new OCPNMessageDialog( parent, message, caption, style, pos );
-    dlg->ShowModal();
+  dlg = new OCPNMessageDialog(parent, message, caption, style, pos);
+  dlg->ShowModal();
 
-    int ret= dlg->GetReturnCode();
+  int ret = dlg->GetReturnCode();
 
-    //  Not sure why we need this, maybe on wx3?
-    if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
-        ret = wxID_YES;
+  //  Not sure why we need this, maybe on wx3?
+  if (((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK)) ret = wxID_YES;
 
-    delete dlg;
-    dlg = NULL;
+  delete dlg;
+  dlg = NULL;
 
-    ret_val = ret;
+  ret_val = ret;
 }
 
+TimedMessageBox::~TimedMessageBox() {}
 
-TimedMessageBox::~TimedMessageBox()
-{
+void TimedMessageBox::OnTimer(wxTimerEvent& evt) {
+  if (dlg) dlg->EndModal(wxID_CANCEL);
 }
-
-void TimedMessageBox::OnTimer(wxTimerEvent &evt)
-{
-    if( dlg )
-        dlg->EndModal( wxID_CANCEL );
-}
-
-
-
-
 
 BEGIN_EVENT_TABLE(OCPN_TimedHTMLMessageDialog, wxDialog)
 EVT_BUTTON(wxID_YES, OCPN_TimedHTMLMessageDialog::OnYes)
@@ -276,128 +255,117 @@ EVT_CLOSE(OCPN_TimedHTMLMessageDialog::OnClose)
 EVT_TIMER(-1, OCPN_TimedHTMLMessageDialog::OnTimer)
 END_EVENT_TABLE()
 
-OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
-                                                    const wxString& message,
-                                                    const wxString& caption,
-                                                    int tSeconds,
-                                                    long style,
-                                                    bool bFixedFont,
-                                                    const wxPoint& pos)
-: wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
-{
-    m_style = style;
-    if(bFixedFont){
-        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
-        double font_size = dFont->GetPointSize();
-        wxFont *qFont = wxTheFontList->FindOrCreateFont( font_size,wxFONTFAMILY_TELETYPE, dFont->GetStyle(), dFont->GetWeight());
-        SetFont( *qFont );
-    }
+OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog(
+    wxWindow* parent, const wxString& message, const wxString& caption,
+    int tSeconds, long style, bool bFixedFont, const wxPoint& pos)
+    : wxDialog(parent, wxID_ANY, caption, pos, wxDefaultSize,
+               wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP) {
+  m_style = style;
+  if (bFixedFont) {
+    wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+    double font_size = dFont->GetPointSize();
+    wxFont* qFont =
+        wxTheFontList->FindOrCreateFont(font_size, wxFONTFAMILY_TELETYPE,
+                                        dFont->GetStyle(), dFont->GetWeight());
+    SetFont(*qFont);
+  }
 
-    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
+  wxBoxSizer* topsizer = new wxBoxSizer(wxVERTICAL);
 
-    msgWindow = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                                wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
-    msgWindow->SetBorders( 30 );
+  msgWindow = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                               wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
+  msgWindow->SetBorders(30);
 
-    topsizer->Add( msgWindow, 1, wxEXPAND, 5 );
+  topsizer->Add(msgWindow, 1, wxEXPAND, 5);
 
-    wxString html;
-    html << message;
+  wxString html;
+  html << message;
 
-    wxCharBuffer buf = html.ToUTF8();
-    if( buf.data() )                            // string OK?
-       msgWindow->SetPage( html );
+  wxCharBuffer buf = html.ToUTF8();
+  if (buf.data())  // string OK?
+    msgWindow->SetPage(html);
 
-    // 3) buttons
-       int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
-       int center_flag = wxEXPAND;
-       if (style & wxYES_NO)
-           center_flag = wxALIGN_CENTRE;
-       wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
-       if ( sizerBtn )
-           topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
+  // 3) buttons
+  int AllButtonSizerFlags =
+      wxOK | wxCANCEL | wxYES | wxNO | wxHELP | wxNO_DEFAULT;
+  int center_flag = wxEXPAND;
+  if (style & wxYES_NO) center_flag = wxALIGN_CENTRE;
+  wxSizer* sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
+  if (sizerBtn) topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10);
 
-       SetSizer( topsizer );
+  SetSizer(topsizer);
 
-       topsizer->Fit( this );
+  topsizer->Fit(this);
 
-       RecalculateSize();
-//       wxSize szyv = msgWindow->GetVirtualSize();
+  RecalculateSize();
+  //       wxSize szyv = msgWindow->GetVirtualSize();
 
-//       SetClientSize(szyv.x + 20, szyv.y + 20);
+  //       SetClientSize(szyv.x + 20, szyv.y + 20);
 
-       CentreOnScreen();
+  CentreOnScreen();
 
-       //msgWindow->SetBackgroundColour(wxColour(191, 183, 180));
-       msgWindow->SetBackgroundColour(GetBackgroundColour());
+  // msgWindow->SetBackgroundColour(wxColour(191, 183, 180));
+  msgWindow->SetBackgroundColour(GetBackgroundColour());
 
-       m_timer.SetOwner( this, -1 );
+  m_timer.SetOwner(this, -1);
 
-       if(tSeconds > 0)
-           m_timer.Start( tSeconds * 1000, wxTIMER_ONE_SHOT );
-
+  if (tSeconds > 0) m_timer.Start(tSeconds * 1000, wxTIMER_ONE_SHOT);
 }
 
-void OCPN_TimedHTMLMessageDialog::RecalculateSize( void )
-{
-    wxSize esize;
-    esize.x = GetCharWidth() * 60;
-    int sx, sy;
-    ::wxDisplaySize(&sx, &sy);
-    esize.x = wxMin(esize.x, sx * 6 / 10);
-    esize.y = -1;
-    SetClientSize(esize);     // This will force a recalc of internal representation
+void OCPN_TimedHTMLMessageDialog::RecalculateSize(void) {
+  wxSize esize;
+  esize.x = GetCharWidth() * 60;
+  int sx, sy;
+  ::wxDisplaySize(&sx, &sy);
+  esize.x = wxMin(esize.x, sx * 6 / 10);
+  esize.y = -1;
+  SetClientSize(esize);  // This will force a recalc of internal representation
 
-    int height1 = msgWindow->GetInternalRepresentation()->GetHeight();
+  int height1 = msgWindow->GetInternalRepresentation()->GetHeight();
 
-    int client_size_y = wxMin(::wxGetDisplaySize().y - 100, height1 + 70);    // Must fit on screen
+  int client_size_y =
+      wxMin(::wxGetDisplaySize().y - 100, height1 + 70);  // Must fit on screen
 
-    SetClientSize(wxSize(esize.x, client_size_y ));   // constant is 2xBorders + a little slop.
-
+  SetClientSize(wxSize(
+      esize.x, client_size_y));  // constant is 2xBorders + a little slop.
 }
 
-void OCPN_TimedHTMLMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_YES);
-    if(IsModal())
-        EndModal( wxID_YES );
-    else
-        Hide();
+void OCPN_TimedHTMLMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event)) {
+  SetReturnCode(wxID_YES);
+  if (IsModal())
+    EndModal(wxID_YES);
+  else
+    Hide();
 }
 
-void OCPN_TimedHTMLMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
-{
-    SetReturnCode(wxID_NO);
-    if(IsModal())
-        EndModal( wxID_NO );
-    else
-        Hide();
+void OCPN_TimedHTMLMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event)) {
+  SetReturnCode(wxID_NO);
+  if (IsModal())
+    EndModal(wxID_NO);
+  else
+    Hide();
 }
 
-void OCPN_TimedHTMLMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
-{
-    // Allow cancellation via ESC/Close button except if
-    // only YES and NO are specified.
-    if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
-    {
-        SetReturnCode(wxID_CANCEL);
-        EndModal( wxID_CANCEL );
-    }
-}
-
-void OCPN_TimedHTMLMessageDialog::OnClose( wxCloseEvent& event )
-{
+void OCPN_TimedHTMLMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event)) {
+  // Allow cancellation via ESC/Close button except if
+  // only YES and NO are specified.
+  if ((m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL)) {
     SetReturnCode(wxID_CANCEL);
-    if(IsModal())
-        EndModal( wxID_CANCEL );
-    else
-        Hide();
+    EndModal(wxID_CANCEL);
+  }
 }
 
-void OCPN_TimedHTMLMessageDialog::OnTimer(wxTimerEvent &evt)
-{
-    if(IsModal())
-        EndModal( m_style & wxNO_DEFAULT ? wxID_NO :  wxID_YES );
-    else
-        Hide();
+void OCPN_TimedHTMLMessageDialog::OnClose(wxCloseEvent& event) {
+  SetReturnCode(wxID_CANCEL);
+  if (IsModal())
+    EndModal(wxID_CANCEL);
+  else
+    Hide();
+}
+
+void OCPN_TimedHTMLMessageDialog::OnTimer(wxTimerEvent& evt) {
+  if (IsModal())
+    EndModal(m_style & wxNO_DEFAULT ? wxID_NO : wxID_YES);
+  else
+    Hide();
 }

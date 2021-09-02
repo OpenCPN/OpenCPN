@@ -82,8 +82,4 @@ private:
 
 TexFont *GetTexFont(wxFont *key);
 
-<<<<<<< HEAD
 #endif  //guard
-=======
-#endif  // guard
->>>>>>> 78b9f374b (headers, sources: Add missing includes)

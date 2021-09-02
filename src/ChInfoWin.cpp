@@ -31,105 +31,92 @@
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 
-
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #endif
 
 extern bool g_btouch;
-extern OCPNPlatform  *g_Platform;
+extern OCPNPlatform* g_Platform;
 
 BEGIN_EVENT_TABLE(ChInfoWin, wxPanel)
-    EVT_PAINT ( ChInfoWin::OnPaint )
-    EVT_ERASE_BACKGROUND(ChInfoWin::OnEraseBackground)
-    EVT_MOUSE_EVENTS ( ChInfoWin::MouseEvent )
+EVT_PAINT(ChInfoWin::OnPaint)
+EVT_ERASE_BACKGROUND(ChInfoWin::OnEraseBackground)
+EVT_MOUSE_EVENTS(ChInfoWin::MouseEvent)
 END_EVENT_TABLE()
 
 // Define a constructor
-ChInfoWin::ChInfoWin( wxWindow *parent )
-{
+ChInfoWin::ChInfoWin(wxWindow* parent) {
+  long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
-    long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
+  wxPanel::Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
 
-    wxPanel::Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
+  wxFont* dFont = FontMgr::Get().GetFont(_("Dialog"));
+  SetFont(*dFont);
 
-    wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
-    SetFont(*dFont);
+  int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
+  m_pInfoTextCtl = new wxStaticText(this, -1, _T ( "" ), wxDefaultPosition,
+                                    wxDefaultSize, ststyle);
 
-    int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
-    m_pInfoTextCtl = new wxStaticText( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize,
-                                       ststyle );
-
-    dbIndex = -1;
-    Hide();
+  dbIndex = -1;
+  Hide();
 }
 
-ChInfoWin::~ChInfoWin()
-{
-    delete m_pInfoTextCtl;
-}
+ChInfoWin::~ChInfoWin() { delete m_pInfoTextCtl; }
 
-void ChInfoWin::OnEraseBackground( wxEraseEvent& event )
-{
-}
+void ChInfoWin::OnEraseBackground(wxEraseEvent& event) {}
 
-void ChInfoWin::MouseEvent( wxMouseEvent& event )
-{
-    if(g_btouch){
-        if( event.LeftDown() ) {
-            Hide();
+void ChInfoWin::MouseEvent(wxMouseEvent& event) {
+  if (g_btouch) {
+    if (event.LeftDown()) {
+      Hide();
 
-            #ifdef __OCPN__ANDROID__
-            androidForceFullRepaint();
-            #endif
-        }
+#ifdef __OCPN__ANDROID__
+      androidForceFullRepaint();
+#endif
     }
+  }
 }
 
+void ChInfoWin::OnPaint(wxPaintEvent& event) {
+  int width, height;
+  GetClientSize(&width, &height);
+  wxPaintDC dc(this);
 
-void ChInfoWin::OnPaint( wxPaintEvent& event )
-{
-    int width, height;
-    GetClientSize( &width, &height );
-    wxPaintDC dc( this );
-
-    dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
-    dc.SetPen( wxPen( GetGlobalColor( _T ( "UITX1" ) ) ) );
-    dc.DrawRectangle( 0, 0, width, height );
+  dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
+  dc.SetPen(wxPen(GetGlobalColor(_T ( "UITX1" ))));
+  dc.DrawRectangle(0, 0, width, height);
 }
 
-void ChInfoWin::SetBitmap()
-{
-    SetBackgroundColour( GetGlobalColor( _T ( "UIBCK" ) ) );
+void ChInfoWin::SetBitmap() {
+  SetBackgroundColour(GetGlobalColor(_T ( "UIBCK" )));
 
-    m_pInfoTextCtl->SetBackgroundColour( GetGlobalColor( _T ( "UIBCK" ) ) );
-    m_pInfoTextCtl->SetForegroundColour( GetGlobalColor( _T ( "UITX1" ) ) );
+  m_pInfoTextCtl->SetBackgroundColour(GetGlobalColor(_T ( "UIBCK" )));
+  m_pInfoTextCtl->SetForegroundColour(GetGlobalColor(_T ( "UITX1" )));
 
-    m_pInfoTextCtl->SetSize( 1, 1, m_size.x - 2, m_size.y - 2 );
-    m_pInfoTextCtl->SetLabel( m_string );
+  m_pInfoTextCtl->SetSize(1, 1, m_size.x - 2, m_size.y - 2);
+  m_pInfoTextCtl->SetLabel(m_string);
 
-    wxPoint top_position = m_position; //GetParent()->ClientToScreen( m_position);
-    SetSize( top_position.x, top_position.y, m_size.x, m_size.y );
-    SetClientSize( m_size.x, m_size.y );
+  wxPoint top_position =
+      m_position;  // GetParent()->ClientToScreen( m_position);
+  SetSize(top_position.x, top_position.y, m_size.x, m_size.y);
+  SetClientSize(m_size.x, m_size.y);
 }
 
-void ChInfoWin::FitToChars( int char_width, int char_height )
-{
-    wxSize size;
+void ChInfoWin::FitToChars(int char_width, int char_height) {
+  wxSize size;
 
-    int adjust = 1;
+  int adjust = 1;
 
 #ifdef __WXOSX__
-    adjust = 2;
+  adjust = 2;
 #endif
 
 #ifdef __OCPN__ANDROID__
-    adjust = 4;
+  adjust = 4;
 #endif
 
-    size.x = GetCharWidth() * char_width;
-    size.y = GetCharHeight() * ( char_height + adjust );
-    size.x = wxMin(size.x, g_Platform->getDisplaySize().x-10);
-    SetWinSize( size );
+  size.x = GetCharWidth() * char_width;
+  size.y = GetCharHeight() * (char_height + adjust);
+  size.x = wxMin(size.x, g_Platform->getDisplaySize().x - 10);
+  SetWinSize(size);
 }
-

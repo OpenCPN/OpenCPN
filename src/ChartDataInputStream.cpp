@@ -28,9 +28,9 @@
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
-  #include "wx/wx.h"
-#endif //precompiled headers
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
 
 #include "wx/filename.h"
 #include "wx/wfstream.h"
@@ -40,187 +40,168 @@
 
 #ifdef OCPN_USE_LZMA
 
-wxCompressedFFileInputStream::wxCompressedFFileInputStream(const wxString& fileName)
-{
-    init_lzma();
-    m_file = new wxFFile(fileName, "rb");
+wxCompressedFFileInputStream::wxCompressedFFileInputStream(
+    const wxString &fileName) {
+  init_lzma();
+  m_file = new wxFFile(fileName, "rb");
 }
 
-wxCompressedFFileInputStream::~wxCompressedFFileInputStream()
-{
-    delete m_file;
+wxCompressedFFileInputStream::~wxCompressedFFileInputStream() {
+  delete m_file;
+  lzma_end(&strm);
+}
+
+size_t wxCompressedFFileInputStream::OnSysRead(void *buffer, size_t size) {
+  lzma_action action = LZMA_RUN;
+
+  strm.next_out = (uint8_t *)buffer;
+  strm.avail_out = size;
+
+  for (;;) {
+    if (strm.avail_in == 0) {
+      if (!m_file->Eof()) {
+        strm.next_in = inbuf;
+        strm.avail_in = m_file->Read(inbuf, sizeof inbuf);
+
+        if (m_file->Error()) return 0;
+
+      } else
+        action = LZMA_FINISH;
+    }
+
+    lzma_ret ret = lzma_code(&strm, action);
+
+    if (strm.avail_out == 0 || ret == LZMA_STREAM_END)
+      return size - strm.avail_out;
+
+    if (ret != LZMA_OK) {
+      m_lasterror = wxSTREAM_READ_ERROR;
+      return 0;
+    }
+  }
+  return 0;
+}
+
+wxFileOffset wxCompressedFFileInputStream::OnSysSeek(wxFileOffset pos,
+                                                     wxSeekMode mode) {
+  // rewind to start is possible
+  if (pos == 0 && mode == wxFromStart) {
     lzma_end(&strm);
+    init_lzma();
+    return m_file->Seek(pos, mode);
+  }
+
+  return wxInvalidOffset;
 }
 
-size_t wxCompressedFFileInputStream::OnSysRead(void *buffer, size_t size)
-{
-    lzma_action action = LZMA_RUN;
-
-    strm.next_out = (uint8_t*)buffer;
-    strm.avail_out = size;
-
-    for(;;) {
-        if (strm.avail_in == 0) {
-            if(!m_file->Eof()) {
-                strm.next_in = inbuf;
-                strm.avail_in = m_file->Read(inbuf, sizeof inbuf);
-
-                if(m_file->Error())
-                    return 0;
-
-            } else
-                action = LZMA_FINISH;
-        }
-
-        lzma_ret ret = lzma_code(&strm, action);
-
-        if (strm.avail_out == 0 || ret == LZMA_STREAM_END)
-            return size - strm.avail_out;
-
-        if(ret != LZMA_OK) {
-            m_lasterror = wxSTREAM_READ_ERROR;
-            return 0;
-        }
-    }
-    return 0;
+wxFileOffset wxCompressedFFileInputStream::OnSysTell() const {
+  return strm.total_out;
 }
 
-wxFileOffset wxCompressedFFileInputStream::OnSysSeek(wxFileOffset pos, wxSeekMode mode)
-{
-    // rewind to start is possible
-    if(pos == 0 && mode == wxFromStart) {
-        lzma_end(&strm);
-        init_lzma();
-        return m_file->Seek(pos, mode);
-    }
+void wxCompressedFFileInputStream::init_lzma() {
+  lzma_stream s = LZMA_STREAM_INIT;
+  memcpy(&strm, &s, sizeof s);
+  lzma_ret ret = lzma_stream_decoder(&strm, UINT64_MAX, LZMA_CONCATENATED);
 
-    return wxInvalidOffset;
+  if (ret != LZMA_OK) m_lasterror = wxSTREAM_READ_ERROR;
 }
 
-wxFileOffset wxCompressedFFileInputStream::OnSysTell() const
-{
-    return strm.total_out;
+ChartDataNonSeekableInputStream::ChartDataNonSeekableInputStream(
+    const wxString &fileName) {
+  if (fileName.Upper().EndsWith("XZ"))
+    m_stream = new wxCompressedFFileInputStream(fileName);
+  else
+    m_stream = new wxFFileInputStream(fileName);
 }
 
-void wxCompressedFFileInputStream::init_lzma()
-{
-    lzma_stream s = LZMA_STREAM_INIT;
-    memcpy(&strm, &s, sizeof s);
-    lzma_ret ret = lzma_stream_decoder(
-        &strm, UINT64_MAX, LZMA_CONCATENATED);
-
-    if(ret != LZMA_OK)
-        m_lasterror = wxSTREAM_READ_ERROR;
+ChartDataNonSeekableInputStream::~ChartDataNonSeekableInputStream() {
+  delete m_stream;
 }
 
-
-
-ChartDataNonSeekableInputStream::ChartDataNonSeekableInputStream(const wxString& fileName)
-{
-    if(fileName.Upper().EndsWith("XZ"))
-        m_stream = new wxCompressedFFileInputStream(fileName);
-    else
-        m_stream = new wxFFileInputStream(fileName);
+size_t ChartDataNonSeekableInputStream::OnSysRead(void *buffer, size_t size) {
+  m_stream->Read(buffer, size);
+  return m_stream->LastRead();
 }
 
-ChartDataNonSeekableInputStream::~ChartDataNonSeekableInputStream()
-{
-    delete m_stream;
+wxFileOffset ChartDataNonSeekableInputStream::OnSysSeek(wxFileOffset pos,
+                                                        wxSeekMode mode) {
+  return m_stream->SeekI(pos, mode);
 }
 
-size_t ChartDataNonSeekableInputStream::OnSysRead(void *buffer, size_t size)
-{
-    m_stream->Read(buffer, size);
-    return m_stream->LastRead();
+wxFileOffset ChartDataNonSeekableInputStream::OnSysTell() const {
+  return m_stream->TellI();
 }
 
-wxFileOffset ChartDataNonSeekableInputStream::OnSysSeek(wxFileOffset pos, wxSeekMode mode)
-{
-    return m_stream->SeekI(pos, mode);
-}
-
-wxFileOffset ChartDataNonSeekableInputStream::OnSysTell() const
-{
-    return m_stream->TellI();
-}
-
-
-
-ChartDataInputStream::ChartDataInputStream(const wxString& fileName)
-{
-    if(fileName.Upper().EndsWith("XZ")) {
-        // decompress to temp file to allow seeking
-        m_tempfilename = wxFileName::CreateTempFileName(wxFileName(fileName).GetFullName());
-        wxCompressedFFileInputStream stream(fileName);
-        wxFFileOutputStream tmp(m_tempfilename);
-
-        char buffer[8192];
-        int len;
-        do {
-            stream.Read(buffer, sizeof buffer);
-            len = stream.LastRead();
-            tmp.Write(buffer, len);
-        } while(len == sizeof buffer);
-
-        // do some error checking here?
-
-        tmp.Close();
-        m_stream = new wxFFileInputStream(m_tempfilename);
-    } else
-        m_stream = new wxFFileInputStream(fileName);
-}
-
-ChartDataInputStream::~ChartDataInputStream()
-{
-    // close it
-    delete m_stream;
-    // delete the temp file, how do we remove temp files if the program crashed?
-    if(!m_tempfilename.empty())
-        wxRemoveFile(m_tempfilename);
-}
-
-size_t ChartDataInputStream::OnSysRead(void *buffer, size_t size)
-{
-    m_stream->Read(buffer, size);
-    return m_stream->LastRead();
-}
-
-wxFileOffset ChartDataInputStream::OnSysSeek(wxFileOffset pos, wxSeekMode mode)
-{
-    return m_stream->SeekI(pos, mode);
-}
-
-wxFileOffset ChartDataInputStream::OnSysTell() const {
-    return m_stream->TellI();
-}
-
-bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
-{
-    if (!wxFileExists(input_path)) {
-        return false;
-    }
-    wxCompressedFFileInputStream in(input_path);
-    wxFFileOutputStream out(output_path);
+ChartDataInputStream::ChartDataInputStream(const wxString &fileName) {
+  if (fileName.Upper().EndsWith("XZ")) {
+    // decompress to temp file to allow seeking
+    m_tempfilename =
+        wxFileName::CreateTempFileName(wxFileName(fileName).GetFullName());
+    wxCompressedFFileInputStream stream(fileName);
+    wxFFileOutputStream tmp(m_tempfilename);
 
     char buffer[8192];
     int len;
     do {
-        in.Read(buffer, sizeof buffer);
-        len = in.LastRead();
-        out.Write(buffer, len);
-    } while(len == sizeof buffer);
+      stream.Read(buffer, sizeof buffer);
+      len = stream.LastRead();
+      tmp.Write(buffer, len);
+    } while (len == sizeof buffer);
 
-    return in.GetLastError() != wxSTREAM_READ_ERROR;
+    // do some error checking here?
+
+    tmp.Close();
+    m_stream = new wxFFileInputStream(m_tempfilename);
+  } else
+    m_stream = new wxFFileInputStream(fileName);
 }
 
-#else // OCPN_USE_LZMA
+ChartDataInputStream::~ChartDataInputStream() {
+  // close it
+  delete m_stream;
+  // delete the temp file, how do we remove temp files if the program crashed?
+  if (!m_tempfilename.empty()) wxRemoveFile(m_tempfilename);
+}
 
-bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
-{
-    wxLogMessage(_T("Failed to decompress: ") + input_path);
-    wxLogMessage(_T("OpenCPN compiled without liblzma support"));
+size_t ChartDataInputStream::OnSysRead(void *buffer, size_t size) {
+  m_stream->Read(buffer, size);
+  return m_stream->LastRead();
+}
 
+wxFileOffset ChartDataInputStream::OnSysSeek(wxFileOffset pos,
+                                             wxSeekMode mode) {
+  return m_stream->SeekI(pos, mode);
+}
+
+wxFileOffset ChartDataInputStream::OnSysTell() const {
+  return m_stream->TellI();
+}
+
+bool DecompressXZFile(const wxString &input_path, const wxString &output_path) {
+  if (!wxFileExists(input_path)) {
     return false;
+  }
+  wxCompressedFFileInputStream in(input_path);
+  wxFFileOutputStream out(output_path);
+
+  char buffer[8192];
+  int len;
+  do {
+    in.Read(buffer, sizeof buffer);
+    len = in.LastRead();
+    out.Write(buffer, len);
+  } while (len == sizeof buffer);
+
+  return in.GetLastError() != wxSTREAM_READ_ERROR;
 }
 
-#endif // OCPN_USE_LZMA
+#else  // OCPN_USE_LZMA
+
+bool DecompressXZFile(const wxString &input_path, const wxString &output_path) {
+  wxLogMessage(_T("Failed to decompress: ") + input_path);
+  wxLogMessage(_T("OpenCPN compiled without liblzma support"));
+
+  return false;
+}
+
+#endif  // OCPN_USE_LZMA
