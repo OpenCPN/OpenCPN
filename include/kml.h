@@ -29,7 +29,9 @@
 #ifndef KML_H
 #define KML_H
 
-#define KML_INSERT_EXTRADATA true // For QtVlm Routing.
+#include "tinyxml.h"
+
+#define KML_INSERT_EXTRADATA true  // For QtVlm Routing.
 
 enum KmlPastebufferType {
     KML_PASTE_WAYPOINT,

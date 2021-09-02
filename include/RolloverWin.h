@@ -28,13 +28,10 @@
 #include <wx/timer.h>
 #include "ocpn_types.h"
 
-//constants for rollovers fonts
-enum
-{
-    AIS_ROLLOVER =1,
-    LEG_ROLLOVER =2,
-    TC_ROLLOVER  =3
-};
+class ocpnDC;
+
+// constants for rollovers fonts
+enum { AIS_ROLLOVER = 1, LEG_ROLLOVER = 2, TC_ROLLOVER = 3 };
 
 class RolloverWin: public wxWindow
 {

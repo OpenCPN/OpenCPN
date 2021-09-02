@@ -22,6 +22,8 @@
  ***************************************************************************
  */
 
+#include <stdio.h>
+
 #ifndef __S57CLASSREGISTRAR_H__
 #define __S57CLASSREGISTRAR_H__
 

@@ -26,6 +26,7 @@
 #ifndef __DEPTHFONT_H__
 #define __DEPTHFONT_H__
 
+#include <wx/font.h>
 
 #define SOUND_MAX_GLYPH 50
 
@@ -65,5 +66,9 @@ private:
     double m_scaleFactor;
 };
 
+<<<<<<< HEAD
 
 #endif  //guard
+=======
+#endif  // guard
+>>>>>>> 78b9f374b (headers, sources: Add missing includes)

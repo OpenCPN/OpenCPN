@@ -35,6 +35,7 @@
 //#include <wx/wfstream.h>
 
 #include "dychart.h"
+#include "bbox.h"
 
 class OGRGeometry;
 class OGRPolygon;

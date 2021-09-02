@@ -26,6 +26,7 @@
  */
 
 #include "config.h"
+#include <wx/ffile.h>
 
 #ifdef OCPN_USE_LZMA
 #include <lzma.h>

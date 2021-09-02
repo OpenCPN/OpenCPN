@@ -26,6 +26,7 @@
 #define __TTYSCROLL_H__
 
 #include <wx/scrolwin.h>
+#include <wx/textctrl.h>
 
 //    Scrolled TTY-like window for logging, etc....
 class TTYScroll : public wxScrolledWindow

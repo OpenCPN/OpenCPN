@@ -25,6 +25,7 @@
 #ifndef __S57QUERYDIALOG_H__
 #define __S57QUERYDIALOG_H__
 
+#include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/html/htmlwin.h>
 

@@ -30,6 +30,8 @@
 #include <wx/gauge.h>
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
+#include "bbox.h"
+#include "viewport.h"
 
 #define MAX_INT_VAL 2147483647  //max possible integer value before 'rollover'
 #define SCAMIN_MIN 10000        //minimal allowed ScaMin setting. prevents always hiding

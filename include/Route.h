@@ -30,6 +30,8 @@
 
 #include "viewport.h"
 #include "RoutePoint.h"
+#include "wx28compat.h"
+#include "bbox.h"
 
 #define WIDTH_UNDEFINED -1
 

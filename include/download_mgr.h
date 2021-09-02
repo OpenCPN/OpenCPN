@@ -27,6 +27,7 @@
 #define DOWNLOAD_MGR_H__
 
 #include <wx/dialog.h>
+#include <wx/progdlg.h>
 #include <wx/window.h>
 
 #include "Downloader.h"

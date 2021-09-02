@@ -57,7 +57,11 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern about *g_pAboutDlgLegacy;
 extern bool g_bresponsive;
 
-wxString OpenCPNVersion =  wxString::Format( wxT("\n      Version %s"), VERSION_FULL);
+wxString OpenCPNVersion =
+    wxString::Format( wxT("\n      Version %s"), VERSION_FULL);
+
+#define xID_OK 10009
+
 
 
 const wxString AboutText =

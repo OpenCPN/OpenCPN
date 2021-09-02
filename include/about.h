@@ -38,10 +38,9 @@
 
 #define SYMBOL_ABOUT_TITLE _("About OpenCPN")
 
-#define xID_OK          10009
-#define ID_DONATE       10010
-#define ID_COPYINI      10011
-#define ID_COPYLOG      10012
+#define ID_DONATE  10010
+#define ID_COPYINI 10011
+#define ID_COPYLOG 10012
 
 #define ID_NOTEBOOK_HELP 10002
 

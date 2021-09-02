@@ -32,6 +32,7 @@
 
 #include "ocpn_types.h"
 #include "bbox.h"
+#include "viewport.h"
 
 class glTextureDescriptor;
 

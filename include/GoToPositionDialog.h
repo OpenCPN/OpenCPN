@@ -26,6 +26,8 @@
 #define __GOTOPOSITIONDIALOG_H__
 
 #include <wx/dialog.h>
+#include <wx/textctrl.h>
+
 #include "ocpn_types.h"
 
 class ChartCanvas;

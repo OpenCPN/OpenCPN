@@ -29,11 +29,14 @@
 
 #include <wx/progdlg.h>
 
-#include "vector2D.h"
-
-#include <vector>
-#include <list>
 #include <deque>
+#include <list>
+#include <vector>
+
+#include "bbox.h"
+#include "ocpndc.h"
+#include "Route.h"
+#include "vector2D.h"
 
 class HyperlinkList;
 class ChartCanvas;

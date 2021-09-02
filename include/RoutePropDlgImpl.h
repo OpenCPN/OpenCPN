@@ -27,6 +27,7 @@
 
 #include "RoutePropDlg.h"
 #include "Route.h"
+#include <wx/dataview.h>
 #include <wx/dvrenderers.h>
 #include "ocpn_types.h"
 #include <cmath>

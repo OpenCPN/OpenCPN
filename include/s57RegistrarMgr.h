@@ -25,6 +25,7 @@
 #ifndef __S57REGISTRARMGR_H__
 #define __S57REGISTRARMGR_H__
 
+#include <wx/hashmap.h>
 #include <wx/string.h>
 
 WX_DECLARE_STRING_HASH_MAP( int, CSVHash1 );

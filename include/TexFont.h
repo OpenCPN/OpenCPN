@@ -26,7 +26,11 @@
 #ifndef __TEXFONT_H__
 #define __TEXFONT_H__
 
-/* support ascii plus degree symbol for now pack font in a single texture 16x8 */
+#include <wx/colour.h>
+#include <wx/font.h>
+
+/* support ascii plus degree symbol for now pack font in a single texture 16x8
+ */
 #define DEGREE_GLYPH 127
 #define MIN_GLYPH 32
 #define MAX_GLYPH 128
@@ -78,4 +82,8 @@ private:
 
 TexFont *GetTexFont(wxFont *key);
 
+<<<<<<< HEAD
 #endif  //guard
+=======
+#endif  // guard
+>>>>>>> 78b9f374b (headers, sources: Add missing includes)
