@@ -2207,19 +2207,23 @@ bool MyApp::OnInit()
     }
 
     //  Check the global Tide/Current data source array
-    //  If empty, preset one default (US) Ascii data source
-    wxString default_tcdata =  ( g_Platform->GetSharedDataDir() + _T("tcdata") +
-             wxFileName::GetPathSeparator() + _T("HARMONIC.IDX"));
+    //  If empty, preset default (US + ROW) data sources
+    wxString default_tcdata0 =  ( g_Platform->GetSharedDataDir() + _T("tcdata") +
+             wxFileName::GetPathSeparator() + _T("harmonics-dwf-20210110-free.tcd"));
+    wxString default_tcdata1 =  ( g_Platform->GetSharedDataDir() + _T("tcdata") +
+             wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
 
     if(!TideCurrentDataSet.GetCount()) {
-        TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata) );
+        TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata0) );
+        TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1) );
     }
     else {
         wxString first_tide = TideCurrentDataSet[0];
         wxFileName ft(first_tide);
         if(!ft.FileExists()){
             TideCurrentDataSet.RemoveAt(0);
-            TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata), 0 );
+            TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata0), 0 );
+            TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1) );
         }
     }
 
@@ -9338,9 +9342,9 @@ void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 
     if( !g_bHDT_Rx ) {
         if( !std::isnan(gHdm)) {
-            //Set gVar if needed from manual entry. gVar will be overwritten if 
+            //Set gVar if needed from manual entry. gVar will be overwritten if
             // WMM plugin is available
-            if( std::isnan(gVar) && (g_UserVar != 0.0) ) gVar = g_UserVar; 
+            if( std::isnan(gVar) && (g_UserVar != 0.0) ) gVar = g_UserVar;
             gHdt = gHdm + gVar;
             if (gHdt < 0)
                 gHdt += 360.0;
