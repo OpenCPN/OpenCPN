@@ -1901,8 +1901,9 @@ set(
 if (OCPN_BUNDLE_TCDATA)
   set(
     tcData
-    data/tcdata/HARMONIC
-    data/tcdata/HARMONIC.IDX
+    data/tcdata/HARMONICS_NO_US
+    data/tcdata/HARMONICS_NO_US.IDX
+    data/tcdata/harmonics-dwf-20210110-free.tcd
     data/tcdata/README.harmonics
   )
 endif (OCPN_BUNDLE_TCDATA)
