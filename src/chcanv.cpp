@@ -11540,10 +11540,7 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
         double lon = pIDX->IDX_lon;
         double lat = pIDX->IDX_lat;
 
-        if (BBox.ContainsMarge(lat, lon, marge) &&
-            // try to eliminate double entry , but the only good way is to clean
-            // the file!
-            (lat != lat_last) && (lon != lon_last)) {
+        if (BBox.ContainsMarge(lat, lon, marge)) {
           wxPoint r;
           GetCanvasPointPix(lat, lon, &r);
           // draw standard icons
@@ -11706,28 +11703,18 @@ void ChartCanvas::RebuildCurrentSelectList(LLBBox &BBox) {
 
   pSelectTC->DeleteAllSelectableTypePoints(SELTYPE_CURRENTPOINT);
 
-  double lon_last = 0.;
-  double lat_last = 0.;
   for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
     const IDX_entry *pIDX = ptcmgr->GetIDX_entry(i);
     double lon = pIDX->IDX_lon;
     double lat = pIDX->IDX_lat;
 
     char type = pIDX->IDX_type;  // Entry "TCtcIUu" identifier
-    if (((type == 'c') || (type == 'C')) && (1 /*pIDX->IDX_Useable*/)) {
-      //  TODO This is a ---HACK---
-      //  try to avoid double current arrows.  Select the first in the list only
-      //  Proper fix is to correct the TCDATA index file for depth indication
-      bool b_dup = false;
-      if ((type == 'c') && (lat == lat_last) && (lon == lon_last)) b_dup = true;
-
-      if (!b_dup && (BBox.Contains(lat, lon))) {
+    if (((type == 'c') || (type == 'C')) && (!pIDX->b_skipTooDeep)) {
+      if ((BBox.Contains(lat, lon))) {
         //    Manage the point selection list
         pSelectTC->AddSelectablePoint(lat, lon, pIDX, SELTYPE_CURRENTPOINT);
       }
     }
-    lon_last = lon;
-    lat_last = lat;
   }
 }
 
@@ -11817,15 +11804,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
       char type = pIDX->IDX_type;  // Entry "TCtcIUu" identifier
       if (((type == 'c') || (type == 'C')) && (1 /*pIDX->IDX_Useable*/)) {
-        //  TODO This is a ---HACK---
-        //  try to avoid double current arrows.  Select the first in the list
-        //  only Proper fix is to correct the TCDATA index file for depth
-        //  indication
-        bool b_dup = false;
-        if ((type == 'c') && (lat == lat_last) && (lon == lon_last))
-          b_dup = true;
-
-        if (!b_dup && (BBox.ContainsMarge(lat, lon, marge))) {
+        if (!pIDX->b_skipTooDeep && (BBox.ContainsMarge(lat, lon, marge))) {
           wxPoint r;
           GetCanvasPointPix(lat, lon, &r);
 
@@ -11857,7 +11836,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
             } else
               continue;
 
-            if (type == 'c') {
+            if (1 /*type == 'c'*/) {
               {
                 //    Get the display pixel location of the current station
                 int pixxc, pixyc;

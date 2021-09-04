@@ -92,6 +92,8 @@ public:
   int first_year;
   time_t epoch;
   int epoch_year;
+  int current_depth;
+  bool b_skipTooDeep;
 
   // Cached values
   time_t recent_highlow_calc_time;

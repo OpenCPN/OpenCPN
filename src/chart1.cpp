@@ -2174,19 +2174,24 @@ bool MyApp::OnInit() {
   }
 
   //  Check the global Tide/Current data source array
-  //  If empty, preset one default (US) Ascii data source
-  wxString default_tcdata =
+  //  If empty, preset default (US + ROW) data sources
+  wxString default_tcdata0 =
       (g_Platform->GetSharedDataDir() + _T("tcdata") +
-       wxFileName::GetPathSeparator() + _T("HARMONIC.IDX"));
+       wxFileName::GetPathSeparator() + _T("harmonics-dwf-20210110-free.tcd"));
+  wxString default_tcdata1 =
+      (g_Platform->GetSharedDataDir() + _T("tcdata") +
+       wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
 
   if (!TideCurrentDataSet.GetCount()) {
-    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata));
+    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata0));
+    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
   } else {
     wxString first_tide = TideCurrentDataSet[0];
     wxFileName ft(first_tide);
     if (!ft.FileExists()) {
       TideCurrentDataSet.RemoveAt(0);
-      TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata), 0);
+      TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata0), 0);
+      TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
     }
   }
 
@@ -8851,7 +8856,8 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
               !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue)) {
             setCourseOverGround(m_NMEA0183.Vtg.TrackDegreesTrue);
 >>>>>>> 1f7f17e0a7cd430bc7d73457a91958a3d01eecfa
-#endif cog_sog_valid = true;
+#endif
+            cog_sog_valid = true;
           }
           break;
 

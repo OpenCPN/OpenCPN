@@ -23,7 +23,7 @@
 
 #include "TCDS_Binary_Harmonic.h"
 #include "tcmgr.h"
-
+#include <string>
 /* Declarations for zoneinfo compatibility */
 
 /* Most of these entries are loaded from the tzdata.h include file. That
@@ -384,8 +384,19 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
     if (tz_info) pIDX->IDX_time_zone = -tz_info->tzi.Bias;
 
     strncpy(pIDX->IDX_station_name, ptiderec->header.name, MAXNAMELEN);
-    //        if(strstr(ptiderec->header.name, "Beaufort") != NULL)
-    //            int yyp = 4;
+
+    // Extract a "depth" value from name string, if present.
+    //  Name string will contain  "(depth xx ft)"
+    std::string name(ptiderec->header.name);
+    size_t n = name.find("depth");
+    if (n != std::string::npos) {
+      std::string d = name.substr(n);
+      std::string dp = d.substr(6);
+      size_t nd = dp.find_first_of(' ');
+      std::string sval = dp.substr(0, nd);
+      int depth = std::stoi(sval);
+      pIDX->current_depth = depth;
+    }
 
     pIDX->IDX_flood_dir = ptiderec->max_direction;
     pIDX->IDX_ebb_dir = ptiderec->min_direction;

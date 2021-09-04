@@ -243,6 +243,7 @@ extern int g_FlushNavobjChangesTimeout;
 extern wxString g_CmdSoundString;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
+extern wxArrayString TideCurrentDataSet;
 
 static const char *const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -1384,6 +1385,9 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
 
     // Force a recalculation of default main toolbar location
     g_maintoolbar_x = -1;
+
+    // Force a reload of updated default tide/current datasets
+    TideCurrentDataSet.Clear();
   }
 }
 
