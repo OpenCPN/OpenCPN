@@ -808,6 +808,9 @@ void TCMgr::ScrubCurrentDepths()
               hash1[key1] = i;
               b->b_skipTooDeep = 1;           // mark deeper index to skip display
             }
+            else{
+              a->b_skipTooDeep = 1;           // mark deeper index to skip display
+            }
           }
         }
       }
