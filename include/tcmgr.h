@@ -81,6 +81,7 @@ typedef struct {
 } mru_entry;
 
 
+
 //----------------------------------------------------------------------------
 //   TCMgr
 //----------------------------------------------------------------------------
@@ -122,6 +123,7 @@ public:
     int GetStationIDXbyName(const wxString & prefix, double xlat, double xlon) const;
     int GetStationIDXbyNameType(const wxString & prefix, double xlat, double xlon, char type) const;
 
+    void ScrubCurrentDepths();
 private:
     void PurgeData();
 

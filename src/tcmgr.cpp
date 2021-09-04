@@ -28,6 +28,7 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 #include <wx/datetime.h>
+#include <wx/hashmap.h>
 
 #include <stdlib.h>
 #include <math.h>
@@ -762,7 +763,55 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
         OCPNMessageBox( NULL, _("It seems you have no tide/current harmonic data installed."),
                         _("OpenCPN Info"), wxOK | wxCENTER );
 
+    ScrubCurrentDepths();
     return  TC_NO_ERROR ;
+}
+
+void TCMgr::ScrubCurrentDepths()
+{
+
+  //  Process Current stations reporting values at multiple depths
+  //  Identify and mark the shallowest record, as being most usable to OCPN users
+
+  WX_DECLARE_STRING_HASH_MAP ( int, currentDepth_index_hash );
+
+  currentDepth_index_hash hash1;
+
+  for(unsigned int i = 1; i < m_Combined_IDX_array.Count(); i++){
+      IDX_entry *a = (IDX_entry *)GetIDX_entry(i);
+
+      if( a->IDX_type == 'C'){
+        if( a->current_depth > 0){
+          int depth_a = a->current_depth;
+
+
+          // We formulate the hash map with geo-location as the keys
+          //  Using "doubles" as hashmap key values is dangerous, especially cross-platform
+          //  So, we a printf-ed string of lat/lon for hash key,
+          //  This is relatively inefficient. but tolerable in this little used method.
+
+          wxString key1;
+          key1.Printf("%10.6f %10.6f", a->IDX_lat, a->IDX_lon);
+
+          currentDepth_index_hash::iterator it = hash1.find( key1 );
+          if( it == hash1.end() ){
+            //      Key not found, needs to be added
+              hash1[key1] = i;
+          }
+          else{
+            // Check the depth value at the referenced index
+            // if less than the current depth, replace the hashmap value
+            IDX_entry *b = (IDX_entry *)GetIDX_entry(it->second);
+            std::string bName(b->IDX_station_name);
+            int depth_b = b->current_depth;
+            if(depth_a < depth_b){
+              hash1[key1] = i;
+              b->b_skipTooDeep = 1;           // mark deeper index to skip display
+            }
+          }
+        }
+      }
+  }
 }
 
 const IDX_entry *TCMgr::GetIDX_entry(int index) const
