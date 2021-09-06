@@ -870,7 +870,7 @@ else( wxWidgets_VERSION_STRING)
     set(wxWidgets_VERSION_STRING "3.0")
 endif( wxWidgets_VERSION_STRING)
 
-if ( wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.1.1")
+if ( wxWidgets_VERSION_STRING VERSION_GREATER "3.1.0")
     add_definitions("-DHAVE_WX_GESTURE_EVENTS")
 endif()
 
