@@ -870,6 +870,10 @@ else( wxWidgets_VERSION_STRING)
     set(wxWidgets_VERSION_STRING "3.0")
 endif( wxWidgets_VERSION_STRING)
 
+if ( wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.1.1")
+    add_definitions("-DHAVE_WX_GESTURE_EVENTS")
+endif()
+
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")

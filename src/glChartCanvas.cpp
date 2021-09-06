@@ -651,6 +651,28 @@ void glChartCanvas::Init() {
 
 #endif
 
+//  Gesture support for platforms other than Android
+#ifdef HAVE_WX_GESTURE_EVENTS
+  if ( !EnableTouchEvents( wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES )){
+      wxLogError("Failed to enable touch events");
+  }
+
+  Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, m_pParentCanvas);
+  Bind(wxEVT_GESTURE_PAN, &ChartCanvas::OnPan, m_pParentCanvas);
+
+  Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, m_pParentCanvas);
+  Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, m_pParentCanvas);
+
+  Bind(wxEVT_RIGHT_UP, &ChartCanvas::OnRightUp, m_pParentCanvas);
+  Bind(wxEVT_RIGHT_DOWN, &ChartCanvas::OnRightDown, m_pParentCanvas);
+
+  Bind(wxEVT_LEFT_UP, &ChartCanvas::OnLeftUp, m_pParentCanvas);
+  Bind(wxEVT_LEFT_DOWN, &ChartCanvas::OnLeftDown, m_pParentCanvas);
+
+  Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, m_pParentCanvas);
+  Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, m_pParentCanvas);
+#endif /* HAVE_WX_GESTURE_EVENTS */
+
   if (!g_glTextureManager) g_glTextureManager = new glTextureManager;
 }
 
