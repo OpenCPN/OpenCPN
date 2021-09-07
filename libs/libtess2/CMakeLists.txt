@@ -13,10 +13,10 @@ IF(NOT WIN32 AND NOT APPLE )
     #  ADD_COMPILE_OPTIONS( " -g" "-fno-strict-aliasing" "-O2")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if (CMAKE_COMPILER_IS_GNUCXX)
     add_compile_options("-Wno-unknown-pragmas")
 endif ()
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
     add_compile_options("-Wno-format" "-Wno-unknown-pragmas")
 endif ()
 
