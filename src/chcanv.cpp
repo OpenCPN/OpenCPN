@@ -875,10 +875,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   SetMinSize(wxSize(200, 200));
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-//#ifndef ocpnUSE_GL
+  //#ifndef ocpnUSE_GL
 
-  if ( !EnableTouchEvents( wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES )){
-      wxLogError("Failed to enable touch events");
+  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES |
+                         wxTOUCH_PRESS_GESTURES)) {
+    wxLogError("Failed to enable touch events");
   }
 
   Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, this);
@@ -897,7 +898,6 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
 //#endif
 #endif
-
 }
 
 ChartCanvas::~ChartCanvas() {
@@ -1090,40 +1090,34 @@ void ChartCanvas::OnRouteFinishTimerEvent(wxTimerEvent &event) {
 }
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-void ChartCanvas::OnLongPress(wxLongPressEvent& event) {
-
+void ChartCanvas::OnLongPress(wxLongPressEvent &event) {
   /* we defer the popup menu call upon the leftup event
   else the menu disappears immediately,
-  (see http://wxwidgets.10942.n7.nabble.com/Popupmenu-disappears-immediately-if-called-from-QueueEvent-td92572.html)
+  (see
+  http://wxwidgets.10942.n7.nabble.com/Popupmenu-disappears-immediately-if-called-from-QueueEvent-td92572.html)
   */
   m_popupWanted = true;
-
 }
 
-void ChartCanvas::OnPressAndTap(wxPressAndTapEvent& event) {
+void ChartCanvas::OnPressAndTap(wxPressAndTapEvent &event) {
   // not implemented yet
 }
 
-void ChartCanvas::OnRightUp(wxMouseEvent& event) {
-  MouseEvent(event);
-}
+void ChartCanvas::OnRightUp(wxMouseEvent &event) { MouseEvent(event); }
 
-void ChartCanvas::OnRightDown(wxMouseEvent& event) {
-  MouseEvent(event);
-}
+void ChartCanvas::OnRightDown(wxMouseEvent &event) { MouseEvent(event); }
 
-void ChartCanvas::OnLeftUp(wxMouseEvent& event) {
-
+void ChartCanvas::OnLeftUp(wxMouseEvent &event) {
   wxPoint pos = event.GetPosition();
 
   m_leftdown = false;
 
   if (!m_popupWanted) {
-      wxMouseEvent ev(wxEVT_LEFT_UP);
-      ev.m_x = pos.x;
-      ev.m_y = pos.y;
-      MouseEvent(ev);
-      return;
+    wxMouseEvent ev(wxEVT_LEFT_UP);
+    ev.m_x = pos.x;
+    ev.m_y = pos.y;
+    MouseEvent(ev);
+    return;
   }
 
   m_popupWanted = false;
@@ -1135,60 +1129,55 @@ void ChartCanvas::OnLeftUp(wxMouseEvent& event) {
   MouseEvent(ev);
 }
 
-void ChartCanvas::OnLeftDown(wxMouseEvent& event) {
-
+void ChartCanvas::OnLeftDown(wxMouseEvent &event) {
   m_leftdown = true;
 
   wxPoint pos = event.GetPosition();
   MouseEvent(event);
-
 }
 
-void ChartCanvas::OnMotion(wxMouseEvent& event) {
-    /* This is a workaround, to the fact that on touchscreen, OnMotion comes with dragging,
-       upon simple click, and without the OnLeftDown event before
-       Thus, this consists in skiping it, and setting the leftdown bit according to a status
-       that we trust */
+void ChartCanvas::OnMotion(wxMouseEvent &event) {
+  /* This is a workaround, to the fact that on touchscreen, OnMotion comes with
+     dragging, upon simple click, and without the OnLeftDown event before Thus,
+     this consists in skiping it, and setting the leftdown bit according to a
+     status that we trust */
   event.m_leftDown = m_leftdown;
   MouseEvent(event);
 }
 
-void ChartCanvas::OnPan(wxPanGestureEvent& event) {
-
+void ChartCanvas::OnPan(wxPanGestureEvent &event) {
   wxPoint delta = event.GetDelta();
   PanCanvas(-delta.x, -delta.y);
 }
 
-void ChartCanvas::OnZoom(wxZoomGestureEvent& event)
-{
+void ChartCanvas::OnZoom(wxZoomGestureEvent &event) {
+  /* there are spurious end zoom events upon right-click */
+  if (event.IsGestureEnd()) return;
+
   double factor = event.GetZoomFactor();
 
   if (event.IsGestureStart() || m_oldVPSScale < 0) {
-      m_oldVPSScale = GetVPScale();
+    m_oldVPSScale = GetVPScale();
   }
 
   double current_vps = GetVPScale();
-  double wanted_factor = m_oldVPSScale/current_vps*factor;
+  double wanted_factor = m_oldVPSScale / current_vps * factor;
 
-  ZoomCanvas( wanted_factor, true, false );
+  ZoomCanvas(wanted_factor, true, false);
 
   //  Allow combined zoom/pan operation
-  if(event.IsGestureStart()){
+  if (event.IsGestureStart()) {
     m_zoomStartPoint = event.GetPosition();
-  }
-  else{
+  } else {
     wxPoint delta = event.GetPosition() - m_zoomStartPoint;
     PanCanvas(-delta.x, -delta.y);
     m_zoomStartPoint = event.GetPosition();
   }
-
 }
 
-void ChartCanvas::OnWheel(wxMouseEvent& event) {
-  MouseEvent(event);
-}
+void ChartCanvas::OnWheel(wxMouseEvent &event) { MouseEvent(event); }
 
-void ChartCanvas::OnDoubleLeftClick(wxMouseEvent& event) {
+void ChartCanvas::OnDoubleLeftClick(wxMouseEvent &event) {
   DoRotateCanvas(0.0);
 }
 #endif /* HAVE_WX_GESTURE_EVENTS */
@@ -8335,7 +8324,6 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               pSelect->AddSelectablePoint(
                   dragHandlePoint.m_y, dragHandlePoint.m_x,
                   m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE);
-
             }
           } else {  // Deselect everything
             if (m_lastRoutePointEditTarget) {

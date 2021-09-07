@@ -39,7 +39,7 @@
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch {
-public:
+ public:
   OCPNStopWatch() { Reset(); }
   void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
 
@@ -50,7 +50,7 @@ public:
            (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
   }
 
-private:
+ private:
   timespec tp;
 };
 #endif
@@ -98,7 +98,7 @@ private:
 #define GL_ETC1_RGB8_OES 0x8D64
 #endif
 
-#include "cm93.h"      // for chart outline draw
+#include "cm93.h"  // for chart outline draw
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "s52plib.h"
 
@@ -115,7 +115,7 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 
 #endif
 
-#include "cm93.h"      // for chart outline draw
+#include "cm93.h"  // for chart outline draw
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "s52plib.h"
 
@@ -239,7 +239,7 @@ extern float g_ChartScaleFactorExp;
 extern MyFrame *gFrame;
 
 //#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't
-//support vla */ const #endif extern int g_mipmap_max_level;
+// support vla */ const #endif extern int g_mipmap_max_level;
 int panx, pany;
 
 bool glChartCanvas::s_b_useScissorTest;
@@ -552,11 +552,11 @@ int attribs[] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE,
                  16,         WX_GL_STENCIL_SIZE, 8,
                  0};
 BEGIN_EVENT_TABLE(glChartCanvas, wxGLCanvas)
-EVT_PAINT(glChartCanvas::OnPaint) EVT_ACTIVATE(glChartCanvas::OnActivate)
-    EVT_SIZE(glChartCanvas::OnSize) EVT_MOUSE_EVENTS(glChartCanvas::MouseEvent)
-        END_EVENT_TABLE()
+EVT_PAINT(glChartCanvas::OnPaint)
+EVT_ACTIVATE(glChartCanvas::OnActivate) EVT_SIZE(glChartCanvas::OnSize)
+    EVT_MOUSE_EVENTS(glChartCanvas::MouseEvent) END_EVENT_TABLE()
 
-            glChartCanvas::glChartCanvas(wxWindow *parent, wxGLCanvas *share)
+        glChartCanvas::glChartCanvas(wxWindow *parent, wxGLCanvas *share)
     : wxGLCanvas(parent, wxID_ANY, attribs, wxDefaultPosition, wxSize(256, 256),
                  wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""))
 
@@ -621,13 +621,13 @@ void glChartCanvas::Init() {
       NULL, this);
 
   Connect(GESTURE_EVENT_TIMER, wxEVT_TIMER,
-          (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::
-              onGestureTimerEvent,
+          (wxObjectEventFunction)(
+              wxEventFunction)&glChartCanvas::onGestureTimerEvent,
           NULL, this);
 
   Connect(GESTURE_FINISH_TIMER, wxEVT_TIMER,
-          (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::
-              onGestureFinishTimerEvent,
+          (wxObjectEventFunction)(
+              wxEventFunction)&glChartCanvas::onGestureFinishTimerEvent,
           NULL, this);
 
   Connect(
@@ -653,8 +653,9 @@ void glChartCanvas::Init() {
 
 //  Gesture support for platforms other than Android
 #ifdef HAVE_WX_GESTURE_EVENTS
-  if ( !EnableTouchEvents( wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES )){
-      wxLogError("Failed to enable touch events");
+  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES |
+                         wxTOUCH_PRESS_GESTURES)) {
+    wxLogError("Failed to enable touch events");
   }
 
   Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, m_pParentCanvas);
@@ -1615,7 +1616,7 @@ void glChartCanvas::SetupCompression() {
     }
   }
 
-#ifdef ocpnUSE_GLES            /* gles doesn't have GetTexLevelParameter */
+#ifdef ocpnUSE_GLES /* gles doesn't have GetTexLevelParameter */
   g_tile_size = 512 * 512 / 2; /* 4bpp */
 #else
   /* determine compressed size of a level 0 single tile */
@@ -4329,7 +4330,7 @@ void glChartCanvas::Render() {
   // to accelerate drawing this frame (if overlapping)
   if (m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite
       //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality
-      //but slower
+      // but slower
   ) {
     //  Is this viewpoint the same as the previously painted one?
     bool b_newview = true;
