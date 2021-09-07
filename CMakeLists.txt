@@ -871,7 +871,7 @@ else( wxWidgets_VERSION_STRING)
 endif( wxWidgets_VERSION_STRING)
 
 # Enable zoom gesture
-if ( wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.1.1")
+if ( wxWidgets_VERSION_STRING VERSION_GREATER "3.1.0")
     add_definitions("-DHAVE_WX_GESTURE_EVENTS")
 endif()
 
