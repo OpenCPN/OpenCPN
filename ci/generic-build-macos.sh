@@ -26,6 +26,16 @@ for pkg in cairo cmake libarchive libexif pixman python3 wget xz; do
     brew link --overwrite $pkg || :
 done
 
+# replace libcairo
+wget -q https://www.dropbox.com/s/0egt1gz8oc9olmv/libcairo.2.dylib?dl=1 \
+    -O /tmp/libcairo.2.dylib
+
+pushd /usr/local/lib
+    ln -sf  /tmp/libcairo.2.dylib .
+    ln -sf  /tmp/libcairo.dylib .
+popd
+
+
 # Make sure cmake finds libarchive
 version=$(pkg_version libarchive)
 pushd /usr/local/include
