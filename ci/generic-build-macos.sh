@@ -29,6 +29,7 @@ done
 # replace libcairo
 wget -q https://www.dropbox.com/s/0egt1gz8oc9olmv/libcairo.2.dylib?dl=1 \
     -O /tmp/libcairo.2.dylib
+cp /tmp/libcairo.2.dylib /tmp/libcairo.dylib
 
 pushd /usr/local/lib
     ln -sf  /tmp/libcairo.2.dylib .
