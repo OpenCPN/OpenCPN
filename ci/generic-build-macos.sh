@@ -26,14 +26,21 @@ for pkg in cairo cmake libarchive libexif pixman python3 wget xz; do
     brew link --overwrite $pkg || :
 done
 
-# replace libcairo
+# replace libcairo and some dependents
 wget -q https://www.dropbox.com/s/0egt1gz8oc9olmv/libcairo.2.dylib?dl=1 \
     -O /tmp/libcairo.2.dylib
 cp /tmp/libcairo.2.dylib /tmp/libcairo.dylib
 
+wget -q https://www.dropbox.com/s/3nfroanhpln4hbk/libxcb-shm.0.0.0.dylib?dl=1 \
+    -O /tmp/libxcb-shm.0.0.0.dylib
+cp /tmp/libxcb-shm.0.0.0.dylib /tmp/libxcb-shm.0.dylib
+
 pushd /usr/local/lib
     ln -sf  /tmp/libcairo.2.dylib .
     ln -sf  /tmp/libcairo.dylib .
+
+    ln -sf  /tmp/libxcb-shm.0.0.0.dylib .
+    ln -sf  /tmp/libxcb-shm.0.dylib .
 popd
 
 
