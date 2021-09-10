@@ -23,9 +23,9 @@ port diagnose --quiet || {
 sudo port selfupdate
 #port diagnose
 
-sudo port install cairo
-sudo port install zstd
-sudo port install libarchive
+sudo port -q install cairo
+sudo port -q install zstd
+sudo port -q install libarchive
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
