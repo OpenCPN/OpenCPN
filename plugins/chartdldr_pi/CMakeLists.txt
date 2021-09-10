@@ -165,7 +165,7 @@ ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
     # FIXME: This is to broad, needs better handling after 5.0.0
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-overloaded-virtual)
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas)

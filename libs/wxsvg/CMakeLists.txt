@@ -159,7 +159,7 @@ target_include_directories(WXSVG
         ${wxWidgets_INCLUDE_DIRS}
 )
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
     target_compile_options(WXSVG PRIVATE
         "-Wno-varargs" "-Wno-unknown-pragmas" "-Wno-overloaded-virtual"
     )

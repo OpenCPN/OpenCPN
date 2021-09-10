@@ -183,7 +183,7 @@ else ()
   target_link_libraries(${PACKAGE_NAME} PRIVATE JASPER)
 endif ()
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
     # FIXME: Need better handling after 5.0.0
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-format)
 endif ()
@@ -269,7 +269,7 @@ IF( APPLE )
     )
 ENDIF(APPLE)
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
   target_compile_options(${PACKAGE_NAME} PRIVATE "-Wno-unknown-pragmas")
 endif ()
 

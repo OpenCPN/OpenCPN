@@ -102,11 +102,11 @@ target_compile_definitions(JASPER
 )
 
 # FIXME: this hides some nasty warnings, some of which fixed upstream.
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_definitions(JASPER PRIVATE "-D_GNU_SOURCE=1")
 endif ()
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
     target_compile_options(JASPER PRIVATE
         "-Wno-format"
         "-Wno-tautological-constant-out-of-range-compare"

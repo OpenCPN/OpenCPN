@@ -70,7 +70,7 @@ SET(SRC_JSON
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
     target_compile_options(${PACKAGE_NAME} PRIVATE
         -Wno-unknown-pragmas
         -Wno-overloaded-virtual
