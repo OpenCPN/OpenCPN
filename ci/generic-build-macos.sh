@@ -7,6 +7,21 @@ set -xe
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
+# allow shell to find Macports executable
+export PATH=/opt/local/bin:$PATH
+
+# Check if the cache is with us. If not, re-install macports
+port diagnose --quiet || {
+    curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
+    tar xf MacPorts-2.7.1.tar.bz2
+    cd MacPorts-2.7.1/
+    ./configure
+    make
+    sudo make install
+}
+
+port diagnose
+
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
