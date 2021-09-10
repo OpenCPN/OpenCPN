@@ -80,6 +80,14 @@ done
 #    ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.dylib .
 #popd
 
+pushd /usr/local/include
+    ln -sf /opt/local/include/archive.h .
+    ln -sf /opt/local/include/archive_entry.h .
+    cd ../lib
+    ln -sf  /opt/local/lib/libarchive.13.dylib .
+    ln -sf  /opt/local/lib/libarchive.dylib .
+popd
+
 if brew list --cask --versions packages; then
     version=$(pkg_version packages '--cask')
     sudo installer \
