@@ -7,6 +7,27 @@ set -xe
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
+# allow shell to find Macports executable
+export PATH=/opt/local/bin:$PATH
+
+# Check if the cache is with us. If not, re-install macports
+port diagnose --quiet || {
+    curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
+    tar xf MacPorts-2.7.1.tar.bz2
+    cd MacPorts-2.7.1/
+    ./configure
+    make
+    sudo make install
+    cd ..
+}
+
+sudo port selfupdate
+#port diagnose
+
+sudo port -q install cairo
+sudo port -q install zstd
+sudo port -q install libarchive
+
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
@@ -21,30 +42,43 @@ brew list --versions libexif || {
         fetch --unshallow
 }
 
-for pkg in cairo cmake libarchive libexif pixman python3 wget xz; do
+for pkg in cmake python3 wget ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
 
-# replace libcairo
-wget -q https://www.dropbox.com/s/0egt1gz8oc9olmv/libcairo.2.dylib?dl=1 \
-    -O /tmp/libcairo.2.dylib
+#for pkg in cairo cmake libarchive libexif pixman python3 wget xz; do
+#    brew list --versions $pkg || brew install $pkg || brew install $pkg || :
+#    brew link --overwrite $pkg || :
+#done
 
-pushd /usr/local/lib
-    ln -sf  /tmp/libcairo.2.dylib .
-    ln -sf  /tmp/libcairo.dylib .
-popd
+# replace libcairo and some dependents
+#wget -q https://www.dropbox.com/s/0egt1gz8oc9olmv/libcairo.2.dylib?dl=1 \
+#    -O /tmp/libcairo.2.dylib
+#cp /tmp/libcairo.2.dylib /tmp/libcairo.dylib
+
+#wget -q https://www.dropbox.com/s/3nfroanhpln4hbk/libxcb-shm.0.0.0.dylib?dl=1 \
+#    -O /tmp/libxcb-shm.0.0.0.dylib
+#cp /tmp/libxcb-shm.0.0.0.dylib /tmp/libxcb-shm.0.dylib
+
+#pushd /usr/local/lib
+#    ln -sf  /tmp/libcairo.2.dylib .
+#    ln -sf  /tmp/libcairo.dylib .
+
+#    ln -sf  /tmp/libxcb-shm.0.0.0.dylib .
+#    ln -sf  /tmp/libxcb-shm.0.dylib .
+#popd
 
 
 # Make sure cmake finds libarchive
-version=$(pkg_version libarchive)
-pushd /usr/local/include
-    ln -sf /usr/local/Cellar/libarchive/$version/include/archive.h .
-    ln -sf /usr/local/Cellar/libarchive/$version/include/archive_entry.h .
-    cd ../lib
-    ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.13.dylib .
-    ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.dylib .
-popd
+#version=$(pkg_version libarchive)
+#pushd /usr/local/include
+#    ln -sf /usr/local/Cellar/libarchive/$version/include/archive.h .
+#    ln -sf /usr/local/Cellar/libarchive/$version/include/archive_entry.h .
+#    cd ../lib
+#    ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.13.dylib .
+#    ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.dylib .
+#popd
 
 if brew list --cask --versions packages; then
     version=$(pkg_version packages '--cask')
