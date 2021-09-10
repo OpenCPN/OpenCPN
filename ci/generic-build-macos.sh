@@ -20,7 +20,7 @@ port diagnose --quiet || {
     sudo make install
 }
 
-port selfupdate
+sudo port selfupdate
 port diagnose
 
 # Return latest installed brew version of given package
