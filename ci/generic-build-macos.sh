@@ -18,6 +18,7 @@ port diagnose --quiet || {
     ./configure
     make
     sudo make install
+    cd ..
 }
 
 sudo port selfupdate
