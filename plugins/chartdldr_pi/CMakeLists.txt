@@ -134,7 +134,33 @@ ENDIF()
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
-FIND_PACKAGE(LibArchive)
+if (QT_ANDROID)
+  target_include_directories(${PACKAGE_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
+  target_link_libraries(${PACKAGE_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
+elseif ( APPLE )
+    if (OCPN_USE_SYSTEM_LIBARCHIVE)
+        list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+        find_package(LibArchive REQUIRED)
+        target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+        target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+        # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
+        set(LIBARCHIVE_COMMENT_START "<!--")
+        set(LIBARCHIVE_COMMENT_END "-->")
+    else()
+        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
+        set( LibArchive_INCLUDE_DIRS /opt/local/include)
+        set( LibArchive_LIBRARIES /opt/local/lib/libarchive.dylib)
+        set( LibArchive_FOUND 1)
+    endif()
+else ()
+  find_package(LibArchive REQUIRED)
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+endif (QT_ANDROID)
+
+#FIND_PACKAGE(LibArchive)
 IF(LibArchive_FOUND)
   message(STATUS "chartdldr_pi: going to use LibArchive...")
   message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
