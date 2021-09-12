@@ -1,0 +1,29 @@
+--- configure.orig	2018-10-19 15:20:08.000000000 -0500
++++ configure	2018-10-19 23:07:49.000000000 -0500
+@@ -31729,7 +31729,7 @@
+ 
+ 
+ 
+-SPECTRE_VERSION_REQUIRED=0.2.0
++SPECTRE_VERSION_REQUIRED=99999
+ test_ps=no
+ any2ppm_ps=no
+ if test "x$use_ps" = "xyes"; then
+@@ -32126,7 +32126,7 @@
+ 
+ 
+ # poppler-0.17.4 fixes text-pattern and text-transform
+-POPPLER_VERSION_REQUIRED=0.17.4
++POPPLER_VERSION_REQUIRED=99999
+ test_pdf=no
+ any2ppm_pdf=no
+ if test "x$use_pdf" = "xyes"; then
+@@ -32496,7 +32496,7 @@
+ 
+ 
+ 
+-LIBRSVG_VERSION_REQUIRED=2.35.0
++LIBRSVG_VERSION_REQUIRED=99999
+ test_svg=no
+ any2ppm_svg=no
+ if test "x$use_svg" = "xyes"; then
