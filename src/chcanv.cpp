@@ -7571,6 +7571,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       if (m_routeState)  // creating route?
       {
         double rlat, rlon;
+        bool appending = false;
+        bool inserting = false;
+        Route *tail;
 
         SetCursor(*pCursorPencil);
         rlat = m_cursor_lat;
@@ -7610,7 +7613,6 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 break;
               }
             }
-
             if (!brp_viz &&
                 pNearbyPoint->IsShared())  // is not visible as part of route,
                                            // but still exists as a waypoint
@@ -7634,6 +7636,28 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               if (m_routeState > 1)
                 undo->BeforeUndoableAction(Undo_AppendWaypoint, pMousePoint,
                                            Undo_HasParent, NULL);
+
+              tail = g_pRouteMan->FindRouteContainingWaypoint(pMousePoint);
+              if (tail) {
+                int dlg_return;
+                m_FinishRouteOnKillFocus = false;
+                if (m_routeState == 1) {  // first point in new route, preceeding route to be added?  Not touch case
+                  dlg_return = OCPNMessageBox(this, _("Insert (part of) this route in the new route?"),
+                    _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                  m_FinishRouteOnKillFocus = true;
+                  if (dlg_return == wxID_YES) {
+                    inserting = true;    // part of the other route will be preceeding the new route
+                  }
+                }
+                else {
+                  dlg_return = OCPNMessageBox(this, _("Append (part of) this route to the new route?"),
+                    _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                  m_FinishRouteOnKillFocus = true;
+                  if (dlg_return == wxID_YES) {
+                    appending = true;    // part of the other route will be appended to the new route
+                  }
+                }
+              }
 
               // check all other routes to see if this point appears in any
               // other route If it appears in NO other route, then it should e
@@ -7739,7 +7763,6 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             }
           }
         }
-
         m_prev_rlat = rlat;
         m_prev_rlon = rlon;
         m_prev_pMousePoint = pMousePoint;
@@ -7747,6 +7770,38 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
 
         m_routeState++;
+
+        if (appending || inserting) {    // Appending a route or making a new route
+          int connect = tail->GetIndexOf(pMousePoint);
+          if (connect == 1) {
+            inserting = false;  // there is nothing to insert
+            appending = true;   // so append
+          }
+          int length = tail->GetnPoints();
+
+          int i;
+          int start, stop;
+          if (appending) {
+            start = connect + 1;
+            stop = length;
+          }
+          else {  // inserting
+            start = 1;
+            stop = connect;
+            m_pMouseRoute->RemovePoint(m_pMouseRoute->GetLastPoint()); //Remove the first and only point
+          }
+          for (i = start; i <= stop; i++) {
+            m_pMouseRoute->AddPointAndSegment(tail->GetPoint(i), false);
+            if (m_pMouseRoute)
+              m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
+            m_routeState++;
+            gFrame->RefreshAllCanvas();
+            ret = true;
+          }
+          m_prev_rlat = m_pMouseRoute->GetPoint(m_pMouseRoute->GetnPoints())->m_lat;
+          m_prev_rlon = m_pMouseRoute->GetPoint(m_pMouseRoute->GetnPoints())->m_lon;
+          m_pMouseRoute->FinalizeForRendering();
+        }
         gFrame->RefreshAllCanvas();
         ret = true;
       }
@@ -8051,6 +8106,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         }
 
         double rlat, rlon;
+        bool appending = false;
+        bool inserting = false;
+        Route *tail;
 
         rlat = m_cursor_lat;
         rlon = m_cursor_lon;
@@ -8102,7 +8160,27 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             if (m_routeState > 1)
               undo->BeforeUndoableAction(Undo_AppendWaypoint, pMousePoint,
                                          Undo_HasParent, NULL);
-
+            tail = g_pRouteMan->FindRouteContainingWaypoint(pMousePoint);
+            if (tail) {
+              int dlg_return;
+              m_FinishRouteOnKillFocus = false;
+              if (m_routeState == 1) {  // first point in new route, preceeding route to be added?  Not touch case
+                dlg_return = OCPNMessageBox(this, _("Insert (part of) this route in the new route?"),
+                  _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                m_FinishRouteOnKillFocus = true;
+                if (dlg_return == wxID_YES) {
+                  inserting = true;    // part of the other route will be preceeding the new route
+                }
+              }
+              else {
+                dlg_return = OCPNMessageBox(this, _("Append (part of) this route to the new route"),
+                  _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                m_FinishRouteOnKillFocus = true;
+                if (dlg_return == wxID_YES) {
+                  appending = true;    // part of the other route will be appended to the new route
+                }
+              }
+            }
             // check all other routes to see if this point appears in any other
             // route If it appears in NO other route, then it should e
             // considered an isolated mark
@@ -8210,6 +8288,39 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
 
         m_routeState++;
+
+        if (appending || inserting) {    // Appending a route or making a new route
+          int connect = tail->GetIndexOf(pMousePoint);
+          if (connect == 1) {
+            inserting = false;  // there is nothing to insert
+            appending = true;   // so append
+          }
+          int length = tail->GetnPoints();
+
+          int i;
+          int start, stop;
+          if (appending) {
+            start = connect + 1;
+            stop = length;
+          }
+          else {  // inserting
+            start = 1;
+            stop = connect;
+            m_pMouseRoute->RemovePoint(m_pMouseRoute->GetLastPoint()); //Remove the first and only point
+          }
+          for (i = start; i <= stop; i++) {
+            m_pMouseRoute->AddPointAndSegment(tail->GetPoint(i), false);
+            if (m_pMouseRoute)
+              m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
+            m_routeState++;
+            gFrame->RefreshAllCanvas();
+            ret = true;
+          }
+          m_prev_rlat = m_pMouseRoute->GetPoint(m_pMouseRoute->GetnPoints())->m_lat;
+          m_prev_rlon = m_pMouseRoute->GetPoint(m_pMouseRoute->GetnPoints())->m_lon;
+          m_pMouseRoute->FinalizeForRendering();
+        }
+
         Refresh(true);
         ret = true;
       } else if (m_bMeasure_Active && m_nMeasureState)  // measure tool?
@@ -8418,13 +8529,18 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       if (b_start_rollover)
         m_RolloverPopupTimer.Start(m_rollover_popup_timer_msec,
                                    wxTIMER_ONE_SHOT);
-
+      Route *tail, *current;
+      bool appending = false;
+      bool inserting = false;
+      int connect;
       if (m_bRouteEditing /* && !b_startedit_route*/) {  // End of RoutePoint
                                                          // drag
         if (m_pRoutePointEditTarget) {
           // Check to see if there is a nearby point which may replace the
           // dragged one
           RoutePoint *pMousePoint = NULL;
+         
+          int index_last;
           if (m_bRoutePoinDragging && !m_pRoutePointEditTarget->m_bIsActive) {
             double nearby_radius_meters =
                 g_Platform->GetSelectRadiusPix() / m_true_scale_ppm;
@@ -8453,13 +8569,39 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 dlg_return =
                     OCPNMessageBox(this,
                                    _("Replace this RoutePoint by the nearby "
-                                     "isolated Waypoint?"),
+                                     "Waypoint?"),
                                    _("OpenCPN RoutePoint change"),
                                    (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                 if (dlg_return == wxID_YES) {
                   /*double confirmation if the dragged point has been manually
                    * created which can be important and could be deleted
                    * unintentionally*/
+
+                  tail = g_pRouteMan->FindRouteContainingWaypoint(pNearbyPoint);
+                  current = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePointEditTarget);
+
+                  if (tail && current) {   // dragging touch
+                    connect = tail->GetIndexOf(pNearbyPoint);
+                    int index_current_route = current->GetIndexOf(m_pRoutePointEditTarget);
+                    index_last = current->GetIndexOf(current->GetLastPoint());
+                    dlg_return = wxID_NO;
+                    if (index_last == index_current_route) {// we are dragging the last point of the route, touch case
+                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
+                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                      if (dlg_return == wxID_YES) {
+                        appending = true;
+                      }
+                    }
+                    else if (index_current_route == 1) {  // dragging the first point of the route, touch case
+                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
+                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                      if (dlg_return == wxID_YES) {
+                        inserting = true;
+                      }
+                    }
+
+                  }
+
                   if (m_pRoutePointEditTarget->IsShared()) {
                     //  dlg_return = wxID_NO;
                     dlg_return = OCPNMessageBox(
@@ -8566,10 +8708,55 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         m_bRouteEditing = false;
       }
       m_bRoutePoinDragging = false;
+
+      if (appending) {  // Appending to the route of which the last point is dragged onto another route
+
+        // copy tail from connect until length to end of current after dragging
+
+        int length = tail->GetnPoints();
+        for (int i = connect + 1; i <= length; i++) {
+          current->AddPointAndSegment(tail->GetPoint(i), false);
+          if (current)
+            current->m_lastMousePointIndex = current->GetnPoints();
+          m_routeState++;
+          gFrame->RefreshAllCanvas();
+          ret = true;
+        }
+        current->FinalizeForRendering();
+        current->m_bIsBeingEdited = false;
+      }
+      if (inserting) {
+        for (int i = 1; i < connect; i++) {  // numbering in the tail route
+          current->InsertPointAndSegment(tail->GetPoint(i), i - 1, false);
+        }
+        current->FinalizeForRendering();
+        current->m_bIsBeingEdited = false;
+      }
+
+      //    Update the RouteProperties Dialog, if currently shown
+      if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
+        if (m_pEditRouteArray) {
+          for (unsigned int ir = 0; ir < m_pEditRouteArray->GetCount();
+            ir++) {
+            Route *pr = (Route *)m_pEditRouteArray->Item(ir);
+            if (g_pRouteMan->IsRouteValid(pr)) {
+              if (pRoutePropDialog->GetRoute() == pr) {
+                pRoutePropDialog->SetRouteAndUpdate(pr, true);
+              }
+            }
+          }
+        }
+      }
+
     }  // g_btouch
 
     else {                    // !g_btouch
       if (m_bRouteEditing) {  // End of RoutePoint drag
+        Route *tail, *current;
+        bool appending = false;
+        bool inserting = false;
+        int connect;
+        int index_last;
         if (m_pRoutePointEditTarget) {
           m_pRoutePointEditTarget->m_bBlink = false;
           // Check to see if there is a nearby point which may replace the
@@ -8602,13 +8789,38 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 dlg_return =
                     OCPNMessageBox(this,
                                    _("Replace this RoutePoint by the nearby "
-                                     "isolated Waypoint?"),
+                                     "Waypoint?"),
                                    _("OpenCPN RoutePoint change"),
                                    (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                 if (dlg_return == wxID_YES) {
                   /*double confirmation if the dragged point has been manually
                    * created which can be important and could be deleted
                    * unintentionally*/
+
+                  tail = g_pRouteMan->FindRouteContainingWaypoint(pNearbyPoint);
+                  current = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePointEditTarget);
+
+                  if (tail && current) {
+                    connect = tail->GetIndexOf(pNearbyPoint);
+                    int index_current_route = current->GetIndexOf(m_pRoutePointEditTarget);
+                    index_last = current->GetIndexOf(current->GetLastPoint());
+                    dlg_return = wxID_NO;
+                    if (index_last == index_current_route) {// we are dragging the last point of the route
+                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
+                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                      if (dlg_return == wxID_YES) {
+                        appending = true;
+                      }
+                    }
+                    else if (index_current_route == 1) {  // dragging the first point of the route
+                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
+                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                      if (dlg_return == wxID_YES) {
+                        inserting = true;
+                      }
+                    }
+
+                  }
                   if (m_pRoutePointEditTarget->IsShared()) {
                     dlg_return = wxID_NO;
                     dlg_return = OCPNMessageBox(
@@ -8664,6 +8876,33 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             }
             Refresh(false);
           }
+
+          if (appending) {
+
+            // copy tail from connect until length to end of current after dragging
+
+            int length = tail->GetnPoints();
+            for (int i = connect + 1; i <= length; i++) {
+                current->AddPointAndSegment(tail->GetPoint(i), false);
+              if (current)
+                current->m_lastMousePointIndex = current->GetnPoints();
+              m_routeState++;
+              gFrame->RefreshAllCanvas();
+              ret = true;
+            }
+            current->FinalizeForRendering();
+            current->m_bIsBeingEdited = false;
+            FinishRoute();
+
+          }
+          if (inserting) {
+            for (int i = 1; i < connect; i++) {  // numbering in the tail route
+              current->InsertPointAndSegment(tail->GetPoint(i), i - 1, false);
+            }
+            current->FinalizeForRendering();
+            current->m_bIsBeingEdited = false;
+          }
+
 
           //    Update the RouteProperties Dialog, if currently shown
           if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
