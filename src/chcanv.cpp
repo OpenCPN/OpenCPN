@@ -7637,7 +7637,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 undo->BeforeUndoableAction(Undo_AppendWaypoint, pMousePoint,
                                            Undo_HasParent, NULL);
 
-              tail = g_pRouteMan->FindRouteContainingWaypoint(pMousePoint);
+              tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pMousePoint);
               if (tail) {
                 int dlg_return;
                 m_FinishRouteOnKillFocus = false;
@@ -8160,7 +8160,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             if (m_routeState > 1)
               undo->BeforeUndoableAction(Undo_AppendWaypoint, pMousePoint,
                                          Undo_HasParent, NULL);
-            tail = g_pRouteMan->FindRouteContainingWaypoint(pMousePoint);
+            tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pMousePoint);
             if (tail) {
               int dlg_return;
               m_FinishRouteOnKillFocus = false;
@@ -8577,7 +8577,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                    * created which can be important and could be deleted
                    * unintentionally*/
 
-                  tail = g_pRouteMan->FindRouteContainingWaypoint(pNearbyPoint);
+                  tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pNearbyPoint);
                   current = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePointEditTarget);
 
                   if (tail && current) {   // dragging touch
