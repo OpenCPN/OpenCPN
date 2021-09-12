@@ -134,6 +134,8 @@ ENDIF()
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
+
 if (QT_ANDROID)
   target_include_directories(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
@@ -188,8 +190,6 @@ IF(QT_ANDROID)
   ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS)
   ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
 ENDIF(QT_ANDROID)
-
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: This is to broad, needs better handling after 5.0.0
