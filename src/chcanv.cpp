@@ -8796,30 +8796,29 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   /*double confirmation if the dragged point has been manually
                    * created which can be important and could be deleted
                    * unintentionally*/
-
-                  tail = g_pRouteMan->FindRouteContainingWaypoint(pNearbyPoint);
+                  tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pNearbyPoint);
                   current = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePointEditTarget);
 
                   if (tail && current) {
+                    int dlg_return1;
                     connect = tail->GetIndexOf(pNearbyPoint);
                     int index_current_route = current->GetIndexOf(m_pRoutePointEditTarget);
                     index_last = current->GetIndexOf(current->GetLastPoint());
-                    dlg_return = wxID_NO;
+                    dlg_return1 = wxID_NO;
                     if (index_last == index_current_route) {// we are dragging the last point of the route
-                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
+                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
                         _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return == wxID_YES) {
+                      if (dlg_return1 == wxID_YES) {
                         appending = true;
                       }
                     }
                     else if (index_current_route == 1) {  // dragging the first point of the route
-                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
+                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
                         _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return == wxID_YES) {
+                      if (dlg_return1 == wxID_YES) {
                         inserting = true;
                       }
                     }
-
                   }
                   if (m_pRoutePointEditTarget->IsShared()) {
                     dlg_return = wxID_NO;
