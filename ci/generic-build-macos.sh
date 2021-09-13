@@ -32,6 +32,7 @@ pushd buildosx/macports/ports
 popd
 
 # install the local port libraries
+sudo port -q install OCPN_openssl
 sudo port -q install OCPN_libpixman
 sudo port -q install OCPN_cairo
 sudo port -q install zstd
