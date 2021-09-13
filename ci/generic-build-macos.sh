@@ -27,15 +27,15 @@ sudo port selfupdate
 sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
 
 # rebuild the port index
-pushd buildosx/macports/ports
-  portindex
-popd
+#pushd buildosx/macports/ports
+#  portindex
+#popd
 
 # install the local port libraries
-sudo port -q install OCPN_libpixman
+#sudo port -q install OCPN_libpixman
 #sudo port -q install OCPN_cairo
-sudo port -q install zstd
-sudo port -q install OCPN_libarchive
+#sudo port -q install zstd
+#sudo port -q install OCPN_libarchive
 #sudo port -q install OCPN_curl
 #sudo port -q install OCPN_openssl
 

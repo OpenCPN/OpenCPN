@@ -22,7 +22,7 @@ master_sites                    ${homepage}/download/:curl \
                                 https://curl.askapache.com/:curl
 use_xz                          yes
 distfiles                       curl-${version}${extract.suffix}
-        
+
 set curl_distfile               ${distfiles}
 distfiles                       ${curl_distfile}:curl
 
@@ -217,84 +217,3 @@ if {${name} eq ${subport}} {
     livecheck.type              none
 }
 
-subport curl-ca-bundle {
-    revision                    0
-    categories                  net
-    license                     {MPL-2 LGPL-2.1+}
-    supported_archs             noarch
-    installs_libs               no
-    conflicts                   certsync
-
-    description                 CA certificate bundle for curl
-
-    long_description            Installs a bundle of certification authority certificates \
-                                (CA certs) which curl (when linked with OpenSSL) uses to \
-                                verify the authenticity of secure web and FTP servers.
-
-    depends_extract-append      bin:unzip:unzip
-
-    depends_build-append        bin:perl:perl5
-
-    # The approximate time (in seconds since the epoch) when the port maintainer
-    # updated the certdata.txt file in this port. (The output of "date +%s".)
-    set certdata_updated        1625220659
-    # The upstream commit in which certdata.txt was last updated.
-    set certdata_commit         4d343134c8a3a46520e41d31e7cb26f718d9daec
-    # The date (in YYYYMMDD format) that commit was pushed.
-    set certdata_date           20210526
-    set certdata_file           certdata.txt
-    # Using tar.bz2 would be preferable because it's smaller but upstream has
-    # disabled the creation of all but zip archives:
-    # https://bugzilla.mozilla.org/show_bug.cgi?id=1596135
-    set certdata_extract_suffix .zip
-    set certdata_distfile       certdata-${certdata_date}-${certdata_commit}${certdata_extract_suffix}
-    set certdata_path           security/nss/lib/ckfw/builtins/${certdata_file}
-
-    # Only try to fetch from upstream shortly after the port is updated,
-    # to reduce load on their server:
-    # https://bugzilla.mozilla.org/show_bug.cgi?id=1596135
-    if {[clock seconds] - ${certdata_updated} < 86400} {
-        master_sites-append     https://hg.mozilla.org/mozilla-central/archive/${certdata_commit}${certdata_extract_suffix}/${certdata_path}?dummy=:certdata
-    } else {
-        master_sites-append     macports_distfiles::certdata
-    }
-
-    distfiles-append            ${certdata_distfile}:certdata
-
-    checksums-append            ${certdata_distfile} \
-                                rmd160  763c2ffbbc521d7cafb5644ff5d2692b5543197d \
-                                sha256  d3d290e88c6781ba81105205036a5da320d5eb5f58fd14561afee07c344d185d \
-                                size    248478
-
-    extract.only                ${curl_distfile}
-    extract.post_args-append    ${worksrcdir}/Makefile \
-                                ${worksrcdir}/lib/mk-ca-bundle.pl
-
-    post-extract {
-if {[vercmp [macports_version] 2.6.99] >= 0} {
-        system -W ${workpath} "unzip -q -a [shellescape ${distpath}/${certdata_distfile}]"
-} else {
-        system -W ${workpath} "unzip -q -a '${distpath}/${certdata_distfile}'"
-}
-        move ${workpath}/mozilla-central-${certdata_commit}/${certdata_path} ${worksrcpath}/${certdata_file}
-    }
-
-    patchfiles                  patch-no-autodownload.diff
-
-    use_configure               no
-
-    build.target                ca-bundle
-
-    destroot {
-        set ca_bundle_dir ${prefix}/share/curl
-        set openssl_dir ${prefix}/etc/openssl
-        xinstall -d ${destroot}${ca_bundle_dir} ${destroot}${openssl_dir}
-        xinstall -m 644 ${worksrcpath}/lib/ca-bundle.crt ${destroot}${ca_bundle_dir}/curl-ca-bundle.crt
-        ln -s ${ca_bundle_dir}/curl-ca-bundle.crt ${destroot}${openssl_dir}/cert.pem
-    }
-
-    livecheck.type              regexm
-    livecheck.url               https://hg.mozilla.org/mozilla-central/log/default/${certdata_path}
-    livecheck.version           [regsub {(....)(..)(..)} ${certdata_date} {\1-\2-\3}]
-    livecheck.regex             {[0-9a-f]+<br/>created <i>[^<]+</i>\n<br/>pushed <i>([0-9-]+)}
-}
