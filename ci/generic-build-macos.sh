@@ -11,7 +11,7 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 export PATH=/opt/local/bin:$PATH
 
 # Check if the cache is with us. If not, re-install macports
-port diagnose --quiet || {
+port info OCPN_cairo || {
     curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
     tar xf MacPorts-2.7.1.tar.bz2
     cd MacPorts-2.7.1/
@@ -23,7 +23,6 @@ port diagnose --quiet || {
 
 sudo port selfupdate
 
-pwd
 # add our local ports to the sources.conf
 sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
 
@@ -37,6 +36,7 @@ sudo port -q install OCPN_libpixman
 sudo port -q install OCPN_cairo
 sudo port -q install zstd
 sudo port -q install OCPN_libarchive
+sudo port -q install OCPN_curl
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
@@ -135,7 +135,7 @@ make install # Dunno why the second is needed but it is, otherwise
 
 sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 
-make create-pkg
+#make create-pkg
 make create-dmg
 
 # Install the stuff needed by upload.
