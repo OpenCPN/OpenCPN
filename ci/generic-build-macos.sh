@@ -32,12 +32,12 @@ pushd buildosx/macports/ports
 popd
 
 # install the local port libraries
-sudo port -q install OCPN_openssl
 sudo port -q install OCPN_libpixman
 sudo port -q install OCPN_cairo
 sudo port -q install zstd
 sudo port -q install OCPN_libarchive
 sudo port -q install OCPN_curl
+sudo port -q install OCPN_openssl
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
