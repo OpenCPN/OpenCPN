@@ -8581,21 +8581,22 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   current = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePointEditTarget);
 
                   if (tail && current) {   // dragging touch
+                    int dlg_return1;
                     connect = tail->GetIndexOf(pNearbyPoint);
                     int index_current_route = current->GetIndexOf(m_pRoutePointEditTarget);
                     index_last = current->GetIndexOf(current->GetLastPoint());
-                    dlg_return = wxID_NO;
+                    dlg_return1 = wxID_NO;
                     if (index_last == index_current_route) {// we are dragging the last point of the route, touch case
-                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
+                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
                         _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return == wxID_YES) {
+                      if (dlg_return1 == wxID_YES) {
                         appending = true;
                       }
                     }
                     else if (index_current_route == 1) {  // dragging the first point of the route, touch case
-                      dlg_return = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
+                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
                         _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return == wxID_YES) {
+                      if (dlg_return1 == wxID_YES) {
                         inserting = true;
                       }
                     }

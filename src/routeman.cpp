@@ -210,15 +210,13 @@ Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
   wxRouteListNode *node = pRouteList->GetFirst();
   while (node) {
     Route *proute = node->GetData();
-    if (!proute->IsVisible()) {
-      node = node->GetNext();
-      continue;
-    }
-    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
-      if (prp == pWP) return proute;
-      pnode = pnode->GetNext();
+    if (proute->IsVisible()) {
+      wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
+      while (pnode) {
+        RoutePoint *prp = pnode->GetData();
+        if (prp == pWP) return proute;
+        pnode = pnode->GetNext();
+      }
     }
 
     node = node->GetNext();
