@@ -59,13 +59,61 @@ ${LIBARCHIVE_COMMENT_START}
 															<integer>0</integer>
 														</dict>
 ${LIBARCHIVE_COMMENT_END}
+                            <dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/liblzo2.2.dylib</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>420</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+                            <dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libuuid.16.dylib</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>420</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+                           <dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libbrotlicommon.1.0.9.dylib</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>420</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
 														<dict>
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libcairo.2.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libbrotlicommon.1.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -81,6 +129,54 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libbrotlidec.1.0.9.dylib</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>420</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+ 														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libbrotlidec.1.dylib</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>420</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+ 														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libcairo.2.dylib</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>420</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+  														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
 															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libexpat.1.8.1.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
@@ -91,6 +187,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>UID</key>
 															<integer>0</integer>
 														</dict>
+                            <dict>
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
@@ -32461,7 +32558,7 @@ ${LIBARCHIVE_COMMENT_END}
 						<key>VALUE</key>
 						<dict>
 							<key>PATH</key>
-							<string>../build/GPLv2.txt</string>
+							<string>GPLv2.txt</string>
 							<key>PATH_TYPE</key>
 							<integer>1</integer>
 						</dict>
