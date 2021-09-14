@@ -5,6 +5,7 @@
 #
 set -xe
 
+# Build for legacy Mac machines
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
 # allow shell to find Macports executable
