@@ -1660,7 +1660,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
         m_ptentative_dsctarget->PositionReportTicks - last_report_ticks;
 
     //      Start a timer, looking for an expected DSE extension message
-    if (!b_take_dsc) m_dsc_timer.Start(500, wxTIMER_ONE_SHOT);
+    if (!b_take_dsc) m_dsc_timer.Start(1000, wxTIMER_ONE_SHOT);
   }
 
   //    Got an extension message, or the timer expired and no extension is

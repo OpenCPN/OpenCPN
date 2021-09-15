@@ -184,12 +184,24 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int user_default_size) {
   wxString nativefont = GetSimpleNativeFont(new_size, FaceName);
   wxFont *nf = wxFont::New(nativefont);
 
-  wxColor color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
+  wxColor color = GetDefaultFontColor( TextElement);
 
   MyFontDesc *pnewfd = new MyFontDesc(TextElement, configkey, nf, color);
   m_fontlist->Append(pnewfd);
 
   return pnewfd->m_font;
+}
+
+wxColour FontMgr::GetDefaultFontColor( const wxString &TextElement ){
+  wxColor defaultColor = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
+
+  // Special cases here
+  if(TextElement.IsSameAs( "Console Legend") )
+    defaultColor = wxColour( 0, 255, 0);
+  if(TextElement.IsSameAs( "Console Value") )
+    defaultColor = wxColour( 0, 255, 0);
+
+  return defaultColor;
 }
 
 wxString FontMgr::GetSimpleNativeFont(int size, wxString face) {

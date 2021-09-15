@@ -1,0 +1,148 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+PortGroup                   compiler_blacklist_versions 1.0
+PortGroup                   muniversal 1.0
+PortGroup                   xcodeversion 1.0
+
+# Please keep the cairo and cairo-devel ports as similar as possible.
+
+name                        OCPN_cairo
+conflicts                   cairo-devel
+set my_name                 cairo
+version                     1.16.0
+revision                    2
+checksums                   rmd160  cfd2ef6ec55b267e04600f6b1e36bb07f2566b35 \
+                            sha256  5e7b29b3f113ef870d1e3ecf8adf21f923396401604bda16d44be45e66052331 \
+                            size    41997432
+
+categories                  graphics
+maintainers                 {ryandesign @ryandesign}
+license                     {LGPL-2.1 MPL-1.1}
+homepage                    https://www.cairographics.org
+master_sites                ${homepage}/releases/
+platforms                   darwin macosx
+use_parallel_build          yes
+dist_subdir                 ${my_name}
+distname                    ${my_name}-${version}
+use_xz                      yes
+
+description                 a vector graphics library with cross-device output support
+
+long_description            Cairo is ${description}. It is designed to produce \
+                            identical output on all output media while taking \
+                            advantage of display hardware acceleration when \
+                            available (e.g. through the X Render Extension).
+
+depends_build               port:pkgconfig
+
+depends_lib                 path:lib/pkgconfig/pixman-1.pc:libpixman \
+                            path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                            port:fontconfig \
+                            port:freetype \
+                            port:libpng \
+                            port:zlib \
+                            port:expat
+
+minimum_xcodeversions       {8 2.4.1}
+
+# Prevent cairo from using librsvg, libspectre, poppler.
+patchfiles-append           patch-configure.diff
+
+# Don't check stderr in configure tests.
+patchfiles-append           dont-check-stderr.patch
+
+# Fix crash on macOS Big Sur and newer.
+# https://gitlab.freedesktop.org/cairo/cairo/-/issues/420
+# https://gitlab.freedesktop.org/cairo/cairo/-/merge_requests/52
+# https://gitlab.freedesktop.org/cairo/cairo/-/commit/ba2afdcacf42eccf263b39efc77b85f3a65dcd74
+# https://gitlab.freedesktop.org/cairo/cairo/-/merge_requests/119
+# https://gitlab.freedesktop.org/cairo/cairo/-/commit/38e486b34d435130f2fb38c429e6016c3c82cd53
+patchfiles-append           patch-cairo-quartz-surfaces.diff
+
+# https://trac.macports.org/ticket/34137
+compiler.blacklist-append   {clang < 318.0.61}
+
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+# https://trac.macports.org/ticket/27011
+if {${configure.build_arch} eq "x86_64" || (${universal_possible} && [variant_isset universal] && "x86_64" in ${configure.universal_archs})} {
+    compiler.blacklist-append gcc-4.0
+}
+configure.env-append        MACOSX_DEPLOYMENT_TARGET=10.9
+configure.cflags-append     "-mmacosx-version-min=10.9"
+
+configure.args              --disable-gl \
+                            --disable-quartz \
+                            --disable-quartz-font \
+                            --disable-quartz-image \
+                            --disable-silent-rules \
+                            --disable-symbol-lookup \
+                            --disable-xlib \
+                            --disable-xlib-xcb \
+                            --disable-xcb \
+                            --disable-xcb-shm \
+                            --without-x \
+                            --enable-ft \
+                            --enable-pdf \
+                            --enable-png \
+                            --enable-ps \
+                            --enable-script \
+                            --enable-svg \
+                            --enable-tee \
+                            --enable-xml
+
+# Prevent cairo from using ghostscript.
+configure.args-append       ac_cv_prog_GS=""
+
+# Prevent cairo from using lzo2 because its GPL license makes cairo's effective license GPL too.
+configure.args-append       ac_cv_lib_lzo2_lzo2a_decompress=no
+
+variant opengl requires x11 description {Add OpenGL graphics interface} {
+    depends_lib-append      port:mesa
+
+    configure.args-replace  --disable-gl --enable-gl
+    configure.args-append   --enable-glx
+}
+
+platform macosx {
+    variant quartz {
+        configure.args-replace  --disable-quartz --enable-quartz
+        configure.args-replace  --disable-quartz-font --enable-quartz-font
+        configure.args-replace  --disable-quartz-image --enable-quartz-image
+    }
+
+    default_variants        +quartz
+    # Don't allow Quartz support to be disabled. Keep the variant for awhile in
+    # case any dependents are using the active_variants portgroup to check for it.
+    variant_set             quartz
+}
+
+variant x11 {
+    depends_lib-append      port:xrender \
+                            port:xorg-libXext \
+                            port:xorg-xcb-util
+
+    configure.args-replace  --disable-xcb --enable-xcb
+    configure.args-replace  --disable-xlib --enable-xlib
+    configure.args-replace  --disable-xlib-xcb --enable-xlib-xcb
+    configure.args-replace  --without-x --with-x
+    configure.args-append   --enable-xlib-xrender \
+                            --x-include=${prefix}/include \
+                            --x-lib=${prefix}/lib
+}
+
+default_variants            +x11
+if {${os.platform} ne "darwin" || ${os.subplatform} ne "macosx"} {
+    # When not on macOS, don't allow X11 support to be disabled, since it is the
+    # only available option.
+    variant_set             x11
+}
+
+test.run                    yes
+test.target                 check
+
+livecheck.type              regex
+livecheck.url               ${homepage}/news/
+livecheck.regex             ${my_name}-(\[0-9\]+\\.\[0-9\]*\[02468\]\\.\[0-9\]+)

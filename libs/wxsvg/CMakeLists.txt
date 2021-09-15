@@ -138,6 +138,11 @@ target_include_directories(WXSVG_CAIRO INTERFACE
     ${EXPAT_INCLUDE_DIRS}
     ${GLIB2_INCLUDE_DIRS}
 )
+
+if (APPLE)
+  target_include_directories(WXSVG_CAIRO INTERFACE ${CAIRO_INCLUDE_DIRS}/..)
+endif ()
+
 target_link_libraries(WXSVG_CAIRO INTERFACE
     ${CAIRO_LIBRARIES}
     ${EXPAT_LIBRARIES}
