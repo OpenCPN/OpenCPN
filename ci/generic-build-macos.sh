@@ -86,10 +86,14 @@ else
     brew install --cask packages
 fi
 
+wget -q https://download.opencpn.org/s/MCiRiq4fJcKD56r/download \
+    -O /tmp/wx315_opencpn50_macos1010.tar.xz
+tar -C /tmp -xJf /tmp/wx315_opencpn50_macos1010.tar.xz
 
-wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
-    -O /tmp/wx312B_opencpn50_macos109.tar.xz
-tar -C /tmp -xJf /tmp/wx312B_opencpn50_macos109.tar.xz
+#wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
+#    -O /tmp/wx312B_opencpn50_macos109.tar.xz
+#tar -C /tmp -xJf /tmp/wx312B_opencpn50_macos109.tar.xz
+
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
 
@@ -101,8 +105,8 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_VERBOSE=ON \
   -DOCPN_USE_LIBCPP=ON \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
-  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx312B_opencpn50_macos109/bin/wx-config \
-  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx312B_opencpn50_macos109" \
+  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config \
+  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010" \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
 make -sj$(sysctl -n hw.physicalcpu)
