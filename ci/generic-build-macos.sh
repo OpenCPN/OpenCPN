@@ -55,7 +55,7 @@ sudo port -q install OCPN_libarchive
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
-#
+
 # Check if the cache is with us. If not, re-install brew.
 brew list --versions libexif || {
     brew update-reset
