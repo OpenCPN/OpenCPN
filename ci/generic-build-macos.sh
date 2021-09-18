@@ -14,6 +14,9 @@ export PATH=/opt/local/bin:$PATH
 # allow caching of macports state in $HOME
 sudo ln -s ${HOME}/opt_local_cache /opt/local
 
+ls ${HOME}/opt_local_cache
+ls ${HOME}/opt_local_cache/bin
+
 # Check if the cache is with us. If not, re-install macports
 port info OCPN_cairo || {
     sudo mkdir -p ${HOME}/opt_local_cache
