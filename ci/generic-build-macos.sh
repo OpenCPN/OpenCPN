@@ -25,11 +25,16 @@ port info OCPN_cairo || {
     sudo make install
     cd ..
 
-    # add our local ports to the sources.conf
-    sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
-
-    sudo port selfupdate
+    sudo port -v selfupdate
 }
+
+    # add our local ports to the sources.conf
+sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
+
+# rebuild the port index
+pushd buildosx/macports/ports
+  portindex
+popd
 
 sudo port deactivate OCPN_curl
 
@@ -40,10 +45,6 @@ sudo port deactivate curl
 
 sudo port deactivate openssl
 
-# rebuild the port index
-pushd buildosx/macports/ports
-  portindex
-popd
 
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
