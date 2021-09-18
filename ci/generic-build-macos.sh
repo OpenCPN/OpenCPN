@@ -11,6 +11,9 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 # allow shell to find Macports executable
 export PATH=/opt/local/bin:$PATH
 
+# allow caching of macports state in $HOME
+ln -s /opt/local $HOME/opt_local_cache
+
 # Check if the cache is with us. If not, re-install macports
 port info OCPN_cairo || {
     curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
