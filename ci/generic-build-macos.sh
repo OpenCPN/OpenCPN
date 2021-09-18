@@ -12,10 +12,11 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 export PATH=/opt/local/bin:$PATH
 
 # allow caching of macports state in $HOME
-ln -s ${HOME}/opt_local_cache /opt/local
+sudo ln -s ${HOME}/opt_local_cache /opt/local
 
 # Check if the cache is with us. If not, re-install macports
 port info OCPN_cairo || {
+    sudo mkdir -p ${HOME}/opt_local_cache
     curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
     tar xf MacPorts-2.7.1.tar.bz2
     cd MacPorts-2.7.1/
