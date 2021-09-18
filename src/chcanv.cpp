@@ -8941,15 +8941,39 @@ void ChartCanvas::LostMouseCapture(wxMouseCaptureLostEvent &event) {
 void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
   ChartPlugInWrapper *target_plugin_chart = NULL;
   s57chart *Chs57 = NULL;
+  wxFileName file;
+  wxArrayString files;
 
   ChartBase *target_chart = GetChartAtCursor();
   if (target_chart) {
+    file.Assign(target_chart->GetFullPath());  
     if ((target_chart->GetChartType() == CHART_TYPE_PLUGIN) &&
         (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR))
       target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
     else
       Chs57 = dynamic_cast<s57chart *>(target_chart);
   }
+  else { //target_chart = null, might be  mbtiles
+        std::vector<int> stackIndexArray = m_pQuilt->GetExtendedStackIndexArray();
+        unsigned int im = stackIndexArray.size();
+        int scale=2147483647; // max 32b integer
+        if (VPoint.b_quilt && im > 0) {
+            for (unsigned int is = 0; is < im; is++) {
+                if (ChartData->GetDBChartType(stackIndexArray[is]) == CHART_TYPE_MBTILES){
+                    if (IsTileOverlayIndexInNoShow(stackIndexArray[is])) 
+                        continue;
+                    double lat, lon;
+                    VPoint.GetLLFromPix( wxPoint(mouse_x, mouse_y), &lat, &lon);
+                    if (ChartData->GetChartTableEntry( stackIndexArray[is]).GetBBox().Contains( lat, lon) ){
+                        if ( ChartData->GetChartTableEntry(stackIndexArray[is]).GetScale() < scale ){
+                        scale = ChartData->GetChartTableEntry(stackIndexArray[is]).GetScale();                    
+                        file.Assign(ChartData->GetDBChartFileName(stackIndexArray[is]));
+                        }
+                    }
+                }
+            }
+        }
+    }
 
   std::vector<Ais8_001_22 *> area_notices;
 
@@ -9003,7 +9027,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     }
   }
 
-  if (target_plugin_chart || Chs57 || !area_notices.empty()) {
+  if (target_chart || !area_notices.empty() || file.HasName()  ) {
     // Go get the array of all objects at the cursor lat/lon
     int sel_rad_pix = 5;
     float SelectRadius = sel_rad_pix / (GetVP().view_scale_ppm * 1852 * 60);
@@ -9092,12 +9116,50 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
 
     objText << _T("</font>");
     if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) objText << _T("</i>");
+    
+    // Add the additional info files
+    wxString AddFiles;
+    if (!target_plugin_chart){ // plugincharts shoud take care of this in the plugin
+        
+        AddFiles = wxString::Format(
+            _T("<hr noshade><br><b>Additional info files attached to: </b> <font ")
+            _T("size=-2>%s</font><br><table border=0 cellspacing=0 cellpadding=3>"),
+            file.GetFullName());
+        file.Normalize();
+        file.Assign(file.GetPath(), wxT(""));
+        wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.TXT"), wxDIR_FILES);
+        wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.txt"), wxDIR_FILES);
+        wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.PNG"), wxDIR_FILES);
+        wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.png"), wxDIR_FILES);
+        if (files.Count() > 0) {
+            for (size_t i = 0; i < files.Count(); i++) {
+            file.Assign(files.Item(i));
+            AddFiles << wxString::Format(
+                _T("<tr><td valign=top><font size=-2><a ")
+                _T("href=\"%s\">%s</a></font></")
+                _T("td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>"),
+                file.GetFullPath(), file.GetFullName());
+            if (files.Count() > ++i) {
+                file.Assign(files.Item(i));
+                AddFiles << wxString::Format(
+                    _T("<td valign=top><font size=-2><a ")
+                    _T("href=\"%s\">%s</a></font></td>"),
+                    file.GetFullPath(), file.GetFullName());
+            }
+        }
+    }
+    objText << AddFiles << _T("</table>");
+  }    
 
     objText << _T("</body></html>");
+    
+    if (Chs57 || target_plugin_chart || (files.Count() > 0) ){
+        g_pObjectQueryDialog->SetHTMLPage(objText);
+        if ((!Chs57 && files.Count() == 1)) // only one file?, show direktly
+            g_pObjectQueryDialog->m_phtml->LoadPage(files[0]);
 
-    g_pObjectQueryDialog->SetHTMLPage(objText);
-
-    g_pObjectQueryDialog->Show();
+        g_pObjectQueryDialog->Show();
+    }
 
     if (rule_list) rule_list->Clear();
     delete rule_list;

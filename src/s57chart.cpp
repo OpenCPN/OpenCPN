@@ -5726,36 +5726,6 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
     }
   }  // Object for loop
 
-  // Add the additional info files
-  wxArrayString files;
-  file.Assign(GetFullPath());
-  wxString AddFiles = wxString::Format(
-      _T("<hr noshade><br><b>Additional info files attached to: </b> <font ")
-      _T("size=-2>%s</font><br><table border=0 cellspacing=0 cellpadding=3>"),
-      file.GetFullName());
-  file.Normalize();
-  file.Assign(file.GetPath(), wxT(""));
-  wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.TXT"), wxDIR_FILES);
-  wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.txt"), wxDIR_FILES);
-  if (files.Count() > 0) {
-    for (size_t i = 0; i < files.Count(); i++) {
-      file.Assign(files.Item(i));
-      AddFiles << wxString::Format(
-          _T("<tr><td valign=top><font size=-2><a ")
-          _T("href=\"%s\">%s</a></font></")
-          _T("td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>"),
-          file.GetFullPath(), file.GetFullName());
-      if (files.Count() > ++i) {
-        file.Assign(files.Item(i));
-        AddFiles << wxString::Format(
-            _T("<td valign=top><font size=-2><a ")
-            _T("href=\"%s\">%s</a></font></td>"),
-            file.GetFullPath(), file.GetFullName());
-      }
-    }
-    ret_val << AddFiles << _T("</table>");
-  }
-
   if (!lights.empty()) {
     assert(curLight != nullptr);
 
