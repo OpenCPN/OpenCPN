@@ -758,8 +758,6 @@ bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;
 
-bool g_bDarkDecorations;
-
 //                        OpenGL Globals
 int g_GPU_MemSize;
 
@@ -3095,7 +3093,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
 
 #if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
   bool darkMode = (cs == GLOBAL_COLOR_SCHEME_DUSK ||
-                   cs == GLOBAL_COLOR_SCHEME_NIGHT || g_bDarkDecorations);
+                   cs == GLOBAL_COLOR_SCHEME_NIGHT );
 
   if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
     setAppLevelDarkMode(darkMode);
@@ -5901,8 +5899,6 @@ int MyFrame::DoOptionsDialog() {
   if (NULL == g_options) {
     g_Platform->ShowBusySpinner();
     g_options = new options(this, -1, _("Options"));
-    // g_options->SetColorScheme(global_color_scheme);
-    // applyDarkAppearanceToWindow(g_options->MacGetTopLevelWindowRef());
 
     g_Platform->HideBusySpinner();
   }
@@ -6925,8 +6921,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
     case 4: {
       g_options = new options(this, -1, _("Options"));
-      // g_options->SetColorScheme(global_color_scheme);
-      // applyDarkAppearanceToWindow(g_options->MacGetTopLevelWindowRef());
 
       // needed to ensure that the chart window starts with keyboard focus
       SurfaceAllCanvasToolbars();

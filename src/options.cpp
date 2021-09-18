@@ -121,10 +121,6 @@ extern GLuint g_raster_format;
 #include <QtWidgets/QScroller>
 #endif
 
-#ifdef __WXOSX__
-#include "DarkMode.h"
-#endif
-
 #include "OCPNPlatform.h"
 #include "ConfigMgr.h"
 
@@ -356,7 +352,6 @@ extern bool g_bShowMuiZoomButtons;
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 extern bool g_bInlandEcdis;
-extern bool g_bDarkDecorations;
 extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;
@@ -6537,14 +6532,6 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pInlandEcdis->Hide();
 #endif
 
-#ifdef __WXOSX__
-  pDarkDecorations = new wxCheckBox(itemPanelFont, ID_DARKDECORATIONSBOX,
-                                    _("Use dark window decorations"));
-  miscOptions->Add(pDarkDecorations, 0, wxALL, border_size);
-  pDarkDecorations->Enable((osMajor >= 10) && (osMinor >= 12));
-
-#endif
-
   miscOptions->AddSpacer(10);
 
   wxFlexGridSizer* sliderSizer;
@@ -7115,9 +7102,6 @@ void options::SetInitialSettings(void) {
   // pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   // pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);
-#ifdef __WXOSX__
-  pDarkDecorations->SetValue(g_bDarkDecorations);
-#endif
   pOpenGL->SetValue(g_bopengl);
   if (pSmoothPanZoom) pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
   pCBTrueShow->SetValue(g_bShowTrue);
@@ -8711,16 +8695,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
     SwitchInlandEcdisMode(g_bInlandEcdis);
     m_returnChanges |= TOOLBAR_CHANGED;
   }
-#ifdef __WXOSX__
-  if (g_bDarkDecorations != pDarkDecorations->GetValue()) {
-    g_bDarkDecorations = pDarkDecorations->GetValue();
-
-    OCPNMessageBox(this,
-                   _("The changes to the window decorations will take full "
-                     "effect the next time you start OpenCPN."),
-                   _("OpenCPN"));
-  }
-#endif
   // PlugIn Manager Panel
 
   // Pick up any changes to selections

@@ -40,10 +40,6 @@
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
-#ifdef __WXOSX__
-#include "DarkMode.h"
-#endif
-
 #include <wx/listimpl.cpp>
 
 #include "chcanv.h"
@@ -8946,7 +8942,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
 
   ChartBase *target_chart = GetChartAtCursor();
   if (target_chart) {
-    file.Assign(target_chart->GetFullPath());  
+    file.Assign(target_chart->GetFullPath());
     if ((target_chart->GetChartType() == CHART_TYPE_PLUGIN) &&
         (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR))
       target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
@@ -8960,13 +8956,13 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
         if (VPoint.b_quilt && im > 0) {
             for (unsigned int is = 0; is < im; is++) {
                 if (ChartData->GetDBChartType(stackIndexArray[is]) == CHART_TYPE_MBTILES){
-                    if (IsTileOverlayIndexInNoShow(stackIndexArray[is])) 
+                    if (IsTileOverlayIndexInNoShow(stackIndexArray[is]))
                         continue;
                     double lat, lon;
                     VPoint.GetLLFromPix( wxPoint(mouse_x, mouse_y), &lat, &lon);
                     if (ChartData->GetChartTableEntry( stackIndexArray[is]).GetBBox().Contains( lat, lon) ){
                         if ( ChartData->GetChartTableEntry(stackIndexArray[is]).GetScale() < scale ){
-                        scale = ChartData->GetChartTableEntry(stackIndexArray[is]).GetScale();                    
+                        scale = ChartData->GetChartTableEntry(stackIndexArray[is]).GetScale();
                         file.Assign(ChartData->GetDBChartFileName(stackIndexArray[is]));
                         }
                     }
@@ -9116,11 +9112,11 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
 
     objText << _T("</font>");
     if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) objText << _T("</i>");
-    
+
     // Add the additional info files
     wxString AddFiles;
     if (!target_plugin_chart){ // plugincharts shoud take care of this in the plugin
-        
+
         AddFiles = wxString::Format(
             _T("<hr noshade><br><b>Additional info files attached to: </b> <font ")
             _T("size=-2>%s</font><br><table border=0 cellspacing=0 cellpadding=3>"),
@@ -9149,10 +9145,10 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
         }
     }
     objText << AddFiles << _T("</table>");
-  }    
+  }
 
     objText << _T("</body></html>");
-    
+
     if (Chs57 || target_plugin_chart || (files.Count() > 0) ){
         g_pObjectQueryDialog->SetHTMLPage(objText);
         if ((!Chs57 && files.Count() == 1)) // only one file?, show direktly
