@@ -234,6 +234,15 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
+void SetMenuItemColor( wxMenuItem *item ){
+#if defined(__WXMSW__)
+  wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
+  item->SetBackgroundColour(ctrl_back_color);
+  wxColour menu_text_color = GetGlobalColor(_T ( "UITX1" ));
+  item->SetTextColour(menu_text_color);
+#endif
+}
+
 void MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
@@ -245,6 +254,8 @@ void MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
   item->SetFont(sFont);
 #endif
+
+  SetMenuItemColor( item );
 
   if (g_btouch) menu->InsertSeparator(0);
   menu->Prepend(item);
@@ -262,6 +273,8 @@ void MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
   item->SetFont(sFont);
 #endif
+
+  SetMenuItemColor( item );
 
   menu->Append(item);
   if (g_btouch) menu->AppendSeparator();
@@ -939,6 +952,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                          (*it)->GetLabel(),
 #endif
                                          (*it)->GetHelp(), (*it)->GetKind());
+
+        SetMenuItemColor( pmi );
         submenu->Append(pmi);
         pmi->Check((*it)->IsChecked());
       }
@@ -955,6 +970,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #ifdef __WXMSW__
     pmi->SetFont(pimis->pmenu_item->GetFont());
 #endif
+
+    SetMenuItemColor( pmi );
+
     wxMenu *dst = contextMenu;
     if (pimis->m_in_menu == "Waypoint")
       dst = menuWaypoint;
