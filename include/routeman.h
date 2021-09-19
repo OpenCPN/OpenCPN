@@ -78,6 +78,7 @@ public:
   Route *FindRouteByGUID(const wxString &guid);
   Track *FindTrackByGUID(const wxString &guid);
   Route *FindRouteContainingWaypoint(RoutePoint *pWP);
+  Route *FindVisibleRouteContainingWaypoint(RoutePoint *pWP);
   wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
   bool DoesRouteContainSharedPoints(Route *pRoute);
   void RemovePointFromRoute(RoutePoint *point, Route *route, ChartCanvas *cc);
