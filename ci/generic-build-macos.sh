@@ -11,11 +11,11 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 # allow shell to find Macports executable
 export PATH=/opt/local/bin:$PATH
 
-# allow caching of macports state in $HOME
-sudo ln -s ${HOME}/opt_local_cache /opt/local
+# allow caching of macports state in $HOME    "/Users/distiller/project/opt_local_cache"
+sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 
-ls ${HOME}/opt_local_cache || echo "OK"
-ls ${HOME}/opt_local_cache/bin || echo "OK"
+ls ${HOME}/project/opt_local_cache || echo "OK"
+ls ${HOME}/project/opt_local_cache/bin || echo "OK"
 
 # Check if the cache is with us. If not, re-install macports
 port info OCPN_cairo || {
