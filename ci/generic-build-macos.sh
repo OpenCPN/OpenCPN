@@ -19,7 +19,7 @@ ls ${HOME}/project/opt_local_cache || echo "OK"
 ls ${HOME}/project/opt_local_cache/bin || echo "OK"
 
 # Check if the cache is with us. If not, re-install macports
-port info OCPN_cairo || {
+port info zstd || {
     curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
     tar xf MacPorts-2.7.1.tar.bz2
     cd MacPorts-2.7.1/
