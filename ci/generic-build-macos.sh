@@ -61,7 +61,6 @@ sudo port -q install OCPN_cairo
 sudo port -q install zstd
 sudo port -q install OCPN_libarchive
 
-#sudo port -q deactivate libpng || echo "OK"
 sudo port -q -f install OCPN_libpng
 
 

@@ -41,6 +41,8 @@ patchfiles-append       libpng.pc.in.patch
 
 configure.cflags-append  "-mmacosx-version-min=10.9"
 
+configure.args          --enable-intel-sse=no
+
 use_parallel_build      yes
 
 test.run                yes
