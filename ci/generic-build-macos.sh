@@ -54,7 +54,6 @@ sudo port deactivate openssl
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
 
-sudo port -q install OCPN_libpng
 sudo port -q install OCPN_openssl
 sudo port -q install OCPN_curl
 sudo port -q install OCPN_libpixman
@@ -63,6 +62,7 @@ sudo port -q install zstd
 sudo port -q install OCPN_libarchive
 
 #sudo port -q deactivate libpng || echo "OK"
+sudo port -q -f install OCPN_libpng
 
 # some build tools
 sudo port -q install cmake

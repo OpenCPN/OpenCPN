@@ -40,7 +40,7 @@ depends_lib                 path:lib/pkgconfig/pixman-1.pc:libpixman \
                             path:lib/pkgconfig/glib-2.0.pc:glib2 \
                             port:fontconfig \
                             port:freetype \
-                            port:OCPN_libpng \
+                            port:libpng \
                             port:zlib \
                             port:expat
 
