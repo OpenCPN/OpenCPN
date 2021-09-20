@@ -122,6 +122,7 @@ extern bool g_bBasicMenus;
 extern TrackPropDlg *pTrackPropDialog;
 extern double gHdt;
 extern bool g_FlushNavobjChanges;
+extern ColorScheme global_color_scheme;
 
 //    Constants for right click menus
 enum {
@@ -234,7 +235,7 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
-void SetMenuItemColor( wxMenuItem *item ){
+void PrepareMenuItem( wxMenuItem *item ){
 #if defined(__WXMSW__)
   wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
   item->SetBackgroundColour(ctrl_back_color);
@@ -255,7 +256,7 @@ void MenuPrepend1(wxMenu *menu, int id, wxString label) {
   item->SetFont(sFont);
 #endif
 
-  SetMenuItemColor( item );
+  PrepareMenuItem( item );
 
   if (g_btouch) menu->InsertSeparator(0);
   menu->Prepend(item);
@@ -274,7 +275,7 @@ void MenuAppend1(wxMenu *menu, int id, wxString label) {
   item->SetFont(sFont);
 #endif
 
-  SetMenuItemColor( item );
+  PrepareMenuItem( item );
 
   menu->Append(item);
   if (g_btouch) menu->AppendSeparator();
@@ -286,6 +287,8 @@ void SetMenuItemFont1(wxMenuItem *item) {
   wxFont *qFont = GetOCPNScaledFont(_("Menu"));
   item->SetFont(*qFont);
 #endif
+
+  PrepareMenuItem( item );
 }
 
 void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
@@ -872,7 +875,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
   int sub_menu = 0;
   if (!g_bBasicMenus && menuFocus != contextMenu) {
-    menuFocus->AppendSeparator();
+    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK ||
+                   global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT ){
+      menuFocus->AppendSeparator();
+    }
     wxMenuItem *subMenu1;
     if (menuWaypoint && menuFocus != menuWaypoint) {
       subMenu1 =
@@ -953,7 +959,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #endif
                                          (*it)->GetHelp(), (*it)->GetKind());
 
-        SetMenuItemColor( pmi );
+        PrepareMenuItem( pmi );
         submenu->Append(pmi);
         pmi->Check((*it)->IsChecked());
       }
@@ -971,7 +977,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     pmi->SetFont(pimis->pmenu_item->GetFont());
 #endif
 
-    SetMenuItemColor( pmi );
+    PrepareMenuItem( pmi );
 
     wxMenu *dst = contextMenu;
     if (pimis->m_in_menu == "Waypoint")
