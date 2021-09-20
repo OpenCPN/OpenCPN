@@ -61,6 +61,14 @@ sudo port -q install OCPN_cairo
 sudo port -q install zstd
 sudo port -q install OCPN_libarchive
 
+sudo port -q deactivate libpng || echo "OK"
+sudo port -q install OCPN_libpng
+
+# some build tools
+sudo port -q install cmake
+sudo port -q install wget
+
+
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
@@ -75,7 +83,7 @@ brew list --versions libexif || {
         fetch --unshallow
 }
 
-for pkg in cmake python3 wget ; do
+for pkg in python3  ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
