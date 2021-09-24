@@ -2,7 +2,7 @@
 #define OCPN_CONFIG_H
 
 #cmakedefine LINUX_CRASHRPT
-#cmakedefine OCPN_USE_CRASHRPT
+#cmakedefine OCPN_USE_CRASHREPORT
 #cmakedefine OCPN_HAVE_X11
 
 // Garmin Host Mode support

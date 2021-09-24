@@ -71,7 +71,7 @@
 #endif
 
 // Include CrashRpt Header
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 #include "CrashRpt.h"
 #endif
 #ifdef __MSVC__
@@ -339,7 +339,7 @@ void catch_signals(int signo) {
 }
 #endif
 
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 // Define the crash callback
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO *pInfo) {
   //  Flush log file
@@ -442,7 +442,7 @@ OCPN_OSDetail *OCPNPlatform::GetOSDetail() { return m_osDetail; }
 
 //  Called from MyApp() immediately upon entry to MyApp::OnInit()
 void OCPNPlatform::Initialize_1(void) {
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 #ifndef _DEBUG
   // Install Windows crash reporting
 
@@ -747,7 +747,7 @@ void OCPNPlatform::Initialize_4(void) {
 void OCPNPlatform::OnExit_1(void) {}
 
 void OCPNPlatform::OnExit_2(void) {
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 #ifndef _DEBUG
   // Uninstall Windows crash reporting
 //    crUninstall();
