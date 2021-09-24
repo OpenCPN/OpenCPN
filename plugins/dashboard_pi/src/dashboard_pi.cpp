@@ -2927,7 +2927,13 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add( itemStaticText09, 0, wxEXPAND | wxALL, border_size );
     wxString m_SpeedUnitChoices[] = { _("Honor OpenCPN settings"), _("Kts"), _("mph"), _("km/h"), _("m/s") };
     int m_SpeedUnitNChoices = sizeof( m_SpeedUnitChoices ) / sizeof( wxString );
-    m_pChoiceSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_SpeedUnitNChoices, m_SpeedUnitChoices, 0 );
+    wxSize szSpeedUnit = wxDefaultSize;
+    m_pChoiceSpeedUnit = new wxChoice(itemPanelNotebook02, wxID_ANY, wxDefaultPosition, szSpeedUnit,
+                                      m_SpeedUnitNChoices, m_SpeedUnitChoices, 0);
+    for (auto const &iUnit : m_SpeedUnitChoices) {
+      szSpeedUnit.IncTo(m_pChoiceSpeedUnit->GetTextExtent(iUnit));
+    }
+    m_pChoiceSpeedUnit->SetSize(szSpeedUnit);
     m_pChoiceSpeedUnit->SetSelection( g_iDashSpeedUnit + 1 );
     itemFlexGridSizer04->Add( m_pChoiceSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
@@ -2936,8 +2942,15 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add( itemStaticTextDepthU, 0, wxEXPAND | wxALL, border_size );
     wxString m_DepthUnitChoices[] = { _("Meters"), _("Feet"), _("Fathoms"), _("Inches"), _("Centimeters") };
     int m_DepthUnitNChoices = sizeof( m_DepthUnitChoices ) / sizeof( wxString );
-    m_pChoiceDepthUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_DepthUnitNChoices, m_DepthUnitChoices, 0 );
-    m_pChoiceDepthUnit->SetSelection( g_iDashDepthUnit - 3);
+    wxSize szDepthUnit = wxDefaultSize;
+    m_pChoiceDepthUnit =
+        new wxChoice(itemPanelNotebook02, wxID_ANY, wxDefaultPosition,
+                     szDepthUnit, m_DepthUnitNChoices, m_DepthUnitChoices, 0);
+    for (auto const &iUnit : m_DepthUnitChoices) {
+      szDepthUnit.IncTo(m_pChoiceDepthUnit->GetTextExtent(iUnit));
+    }
+    m_pChoiceDepthUnit->SetSize(szDepthUnit);
+    m_pChoiceDepthUnit->SetSelection(g_iDashDepthUnit - 3);
     itemFlexGridSizer04->Add( m_pChoiceDepthUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
     wxString dMess = wxString::Format(_("Depth Offset (%s):"),m_DepthUnitChoices[g_iDashDepthUnit-3]);
     wxStaticText* itemStaticDepthO = new wxStaticText(itemPanelNotebook02, wxID_ANY, dMess,
@@ -2966,10 +2979,18 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxStaticText* itemStaticText0b = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Distance units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer04->Add( itemStaticText0b, 0, wxEXPAND | wxALL, border_size );
-    wxString m_DistanceUnitChoices[] = { _("Honor OpenCPN settings"), _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
-    int m_DistanceUnitNChoices = sizeof( m_DistanceUnitChoices ) / sizeof( wxString );
-    m_pChoiceDistanceUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_DistanceUnitNChoices, m_DistanceUnitChoices, 0 );
-    m_pChoiceDistanceUnit->SetSelection( g_iDashDistanceUnit + 1 );
+    wxString m_DistanceUnitChoices[] = { _("Honor OpenCPN settings"), _("Nautical miles"),
+                                         _("Statute miles"), _("Kilometers"), _("Meters") };
+    wxSize szDistanceUnit = wxDefaultSize;
+    int m_DistanceUnitNChoices =
+        sizeof(m_DistanceUnitChoices) / sizeof(wxString);
+    m_pChoiceDistanceUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition,
+                                          szDistanceUnit, m_DistanceUnitNChoices, m_DistanceUnitChoices, 0 );
+    for (auto const &iUnit : m_DistanceUnitChoices) {
+      szDistanceUnit.IncTo(m_pChoiceDistanceUnit->GetTextExtent(iUnit));
+    }
+    m_pChoiceDistanceUnit->SetSize(szDistanceUnit);
+    m_pChoiceDistanceUnit->SetSelection(g_iDashDistanceUnit + 1);
     itemFlexGridSizer04->Add( m_pChoiceDistanceUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
     wxStaticText* itemStaticText0a = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Wind speed units:"),
@@ -2977,8 +2998,15 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add( itemStaticText0a, 0, wxEXPAND | wxALL, border_size );
     wxString m_WSpeedUnitChoices[] = { _("Kts"), _("mph"), _("km/h"), _("m/s") };
     int m_WSpeedUnitNChoices = sizeof( m_WSpeedUnitChoices ) / sizeof( wxString );
-    m_pChoiceWindSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_WSpeedUnitNChoices, m_WSpeedUnitChoices, 0 );
-    m_pChoiceWindSpeedUnit->SetSelection( g_iDashWindSpeedUnit );
+    wxSize szWSpeedUnit = wxDefaultSize;
+    m_pChoiceWindSpeedUnit = new wxChoice(
+        itemPanelNotebook02, wxID_ANY, wxDefaultPosition, szWSpeedUnit,
+        m_WSpeedUnitNChoices, m_WSpeedUnitChoices, 0);
+    for (auto const &iUnit : m_WSpeedUnitChoices) {
+      szWSpeedUnit.IncTo(m_pChoiceWindSpeedUnit->GetTextExtent(iUnit));
+    }
+    m_pChoiceWindSpeedUnit->SetSize(szWSpeedUnit);
+    m_pChoiceWindSpeedUnit->SetSelection(g_iDashWindSpeedUnit);
     itemFlexGridSizer04->Add( m_pChoiceWindSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
     wxStaticText* itemStaticText0c = new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Temperature units:"),
@@ -2986,12 +3014,19 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add(itemStaticText0c, 0, wxEXPAND | wxALL, border_size);
     wxString m_TempUnitChoices[] = { _("Celsius"), _("Fahrenheit"), _("Kelvin") };
     int m_TempUnitNChoices = sizeof(m_TempUnitChoices) / sizeof(wxString);
-    m_pChoiceTempUnit = new wxChoice(itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_TempUnitNChoices, m_TempUnitChoices, 0);
+    wxSize szTempUnit = wxDefaultSize;
+    m_pChoiceTempUnit =
+        new wxChoice(itemPanelNotebook02, wxID_ANY, wxDefaultPosition,
+                     szTempUnit, m_TempUnitNChoices, m_TempUnitChoices, 0);
+    for (auto const &iUnit : m_TempUnitChoices) {
+      szTempUnit.IncTo(m_pChoiceTempUnit->GetTextExtent(iUnit));
+    }
+    m_pChoiceTempUnit->SetSize(szTempUnit);
     m_pChoiceTempUnit->SetSelection(g_iDashTempUnit);
     itemFlexGridSizer04->Add(m_pChoiceTempUnit, 0, wxALIGN_RIGHT | wxALL, 0);
 
     m_pUseTrueWinddata = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
-        _("Use SignalK true wind data over ground. (Instead of through water)"));
+        _("Use SignalK true wind data over ground.\n(Instead of through water)"));
     m_pUseTrueWinddata->SetValue(g_iDashUsetruewinddata);
     itemFlexGridSizer04->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
 
