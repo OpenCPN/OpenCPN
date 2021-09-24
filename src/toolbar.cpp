@@ -624,12 +624,11 @@ void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid) {
 }
 
 void ocpnFloatingToolbarDialog::GetFrameRelativePosition(int *x, int *y) {
-  wxPoint parentFramePos = m_pparent->GetPosition();
-  int myPosx, myPosy;
-  GetPosition(&myPosx, &myPosy);
+  wxPoint myPos = GetPosition();
 
-  if (x) *x = myPosx - parentFramePos.x;
-  if (y) *y = myPosy - parentFramePos.y;
+  wxPoint relPos = gFrame->GetPrimaryCanvas()->ScreenToClient(myPos);
+  if (x) *x = relPos.x;
+  if (y) *y = relPos.y;
 }
 
 void ocpnFloatingToolbarDialog::RestoreRelativePosition(int x, int y) {
@@ -638,8 +637,7 @@ void ocpnFloatingToolbarDialog::RestoreRelativePosition(int x, int y) {
     return;
   }
 
-  wxPoint parentFramePos = m_pparent->GetPosition();
-  wxPoint screenPos = wxPoint(parentFramePos.x + x, parentFramePos.y + y);
+  wxPoint screenPos = gFrame->GetPrimaryCanvas()->ClientToScreen(wxPoint(x, y));
   Move(wxPoint(screenPos));
 }
 
