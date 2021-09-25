@@ -212,7 +212,7 @@ set(OCPN_TARGET_TUPLE "" CACHE STRING
   "List of target;version;arch like flatpak;20.08;aarch64 [\"\"]"
 )
 
-if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
+if (MSVC OR MINGW)
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
 else ()
   set(OCPN_USE_CRASHREPORT FALSE)
