@@ -7635,7 +7635,13 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                            Undo_HasParent, NULL);
 
               tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pMousePoint);
-              if (tail) {
+			  bool procede = false;
+			  if (tail) {
+				  procede = true;
+				  if (pMousePoint == tail->GetLastPoint()) procede = false;
+				  if (m_routeState > 1 && m_pMouseRoute && tail == m_pMouseRoute) procede = false;
+			  }
+			  if (procede) {
                 int dlg_return;
                 m_FinishRouteOnKillFocus = false;
                 if (m_routeState == 1) {  // first point in new route, preceeding route to be added?  Not touch case
@@ -8158,7 +8164,13 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               undo->BeforeUndoableAction(Undo_AppendWaypoint, pMousePoint,
                                          Undo_HasParent, NULL);
             tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pMousePoint);
-            if (tail) {
+			bool procede = false;
+			if (tail) {
+				procede = true;
+				if (pMousePoint == tail->GetLastPoint()) procede = false;
+				if (m_routeState > 1 && m_pMouseRoute && tail == m_pMouseRoute) procede = false;
+			}
+			if (procede) {
               int dlg_return;
               m_FinishRouteOnKillFocus = false;
               if (m_routeState == 1) {  // first point in new route, preceeding route to be added?  Not touch case
