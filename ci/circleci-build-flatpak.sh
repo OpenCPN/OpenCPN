@@ -40,8 +40,8 @@ runtime=$(sed -n '/runtime-version/s/.*://p' flatpak/org.opencpn.OpenCPN.yaml)
 runtime=${runtime/ /}
 flatpak --user remote-add --if-not-exists \
     flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak --user install -y org.freedesktop.Platform//$runtime
-flatpak --user install -y org.freedesktop.Sdk//$runtime
+flatpak --user install --noninteractive org.freedesktop.Platform//$runtime
+flatpak --user install --noninteractive org.freedesktop.Sdk//$runtime
 
 cd flatpak
 # By default, script packages master branch from main github repo, as a
