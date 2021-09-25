@@ -622,7 +622,7 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
       magString << wxString::Format(wxString("%03d°(M)", wxConvUTF8),
                                     (int)gFrame->GetMag(Brg));
     if (g_bShowTrue)
-      trueString << wxString::Format(wxString("%03d°  ", wxConvUTF8), (int)Brg);
+      trueString << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)Brg, 0x00B0 );
 
     brgStr << trueString << magString;
   } else

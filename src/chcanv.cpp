@@ -3824,7 +3824,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
             << segShow_point_b->GetName() << _T("\n");
 
           if (g_bShowTrue)
-            s << wxString::Format(wxString("%03d°  ", wxConvUTF8), (int)brg);
+            s << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)brg, 0x00B0 );
           if (g_bShowMag) {
             double latAverage =
                 (segShow_point_b->m_lat + segShow_point_a->m_lat) / 2;
@@ -3832,8 +3832,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
                 (segShow_point_b->m_lon + segShow_point_a->m_lon) / 2;
             double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
 
-            s << wxString::Format(wxString("%03d°(M)  ", wxConvUTF8),
-                                  (int)varBrg);
+            s << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)varBrg, 0x00B0 );
+
           }
 
           s << FormatDistanceAdaptive(dist);
@@ -4010,7 +4010,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
           s << _T("\n");
           if (g_bShowTrue)
-            s << wxString::Format(wxString("%03d°  ", wxConvUTF8), (int)brg);
+            s << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)brg, 0x00B0 );
+
           if (g_bShowMag) {
             double latAverage =
                 (segShow_point_b->m_lat + segShow_point_a->m_lat) / 2;
@@ -4018,8 +4019,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
                 (segShow_point_b->m_lon + segShow_point_a->m_lon) / 2;
             double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
 
-            s << wxString::Format(wxString("%03d°(M)  ", wxConvUTF8),
-                                  (int)varBrg);
+            s << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)varBrg, 0x00B0 );
+
           }
 
           s << FormatDistanceAdaptive(dist);
@@ -8535,7 +8536,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           // Check to see if there is a nearby point which may replace the
           // dragged one
           RoutePoint *pMousePoint = NULL;
-         
+
           int index_last;
           if (m_bRoutePoinDragging && !m_pRoutePointEditTarget->m_bIsActive) {
             double nearby_radius_meters =
@@ -10256,14 +10257,14 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
 
   wxString routeInfo;
   if (g_bShowTrue)
-    routeInfo << wxString::Format(wxString("%03d°  ", wxConvUTF8), (int)brg);
+    routeInfo << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)brg, 0x00B0 );
+
   if (g_bShowMag) {
     double latAverage = (m_cursor_lat + render_lat) / 2;
     double lonAverage = (m_cursor_lon + render_lon) / 2;
     double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
 
-    routeInfo << wxString::Format(wxString("%03d°(M)  ", wxConvUTF8),
-                                  (int)varBrg);
+    routeInfo << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)varBrg, 0x00B0 );
   }
 
   routeInfo << _T(" ") << FormatDistanceAdaptive(dist);
