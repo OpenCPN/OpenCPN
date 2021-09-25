@@ -291,7 +291,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
 
   if (plugin.abi() == "msvc" ||
       plugin.abi() == "darwin" ||
-      plugin.abi() == "darwin-wx31" ||
+      plugin.abi() == "darwin-wx315" ||
       plugin.abi() == "android-armeabi-v7a" ||
       plugin.abi() == "android-arm64-v8a") {
     bool ok = plugin.abi() == host.abi();
