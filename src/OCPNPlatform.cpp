@@ -355,10 +355,6 @@ bool OCPNPlatform::DetectOSDetail(OCPN_OSDetail *detail) {
   // We take some defaults from build-time definitions
   detail->osd_name = std::string(PKG_TARGET);
   detail->osd_version = std::string(PKG_TARGET_VERSION);
-  detail->osd_build_name = std::string(PKG_TARGET);
-  detail->osd_build_version = std::string(PKG_TARGET_VERSION);
-  detail->osd_build_arch = std::string(PKG_TARGET_ARCH);
-  detail->osd_build_gtk = std::string(PKG_BUILD_GTK);
 
   // Now parse by basic platform
 #ifdef __linux__
