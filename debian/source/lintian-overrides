@@ -1,2 +1,2 @@
-# Used to work around #831870
-debian-rules-contains-unnecessary-get-orig-source-target
+# Mute warnings due to lintian bug #994271 
+opencpn source: superfluous-file-pattern *
