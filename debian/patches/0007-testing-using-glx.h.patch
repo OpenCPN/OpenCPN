@@ -7,10 +7,10 @@ Subject: testing using glx.h
  1 file changed, 2 insertions(+)
 
 diff --git a/src/glChartCanvas.cpp b/src/glChartCanvas.cpp
-index 059d989..45cc856 100644
+index 80229df..8202728 100644
 --- a/src/glChartCanvas.cpp
 +++ b/src/glChartCanvas.cpp
-@@ -61,6 +61,8 @@ private:
+@@ -61,6 +61,8 @@ class OCPNStopWatch {
  #include <GL/glx.h>
  #endif
  

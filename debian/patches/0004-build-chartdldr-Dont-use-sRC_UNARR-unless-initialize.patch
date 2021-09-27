@@ -1,0 +1,52 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 27 Sep 2021 23:38:24 +0200
+Subject: build: chartdldr: Dont use sRC_UNARR unless initialized.
+
+---
+ plugins/chartdldr_pi/CMakeLists.txt | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/plugins/chartdldr_pi/CMakeLists.txt b/plugins/chartdldr_pi/CMakeLists.txt
+index c18baa3..13d81e7 100644
+--- a/plugins/chartdldr_pi/CMakeLists.txt
++++ b/plugins/chartdldr_pi/CMakeLists.txt
+@@ -134,6 +134,19 @@ ENDIF()
+ 
+ ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+ 
++INCLUDE_DIRECTORIES(src/unarr/)
++PKG_SEARCH_MODULE(UNARR libunarr unarr)
++USE_BUNDLED_LIB(USE_BUNDLED_UNARR unarr)
++IF (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
++  message (STATUS "chartdldr_pi: Building with system unarr")
++  INCLUDE_DIRECTORIES(${UNARR_INCLUDE_DIR})
++  SET(SRC_UNARR  "")
++ELSE ()
++  message (STATUS "chartdldr_pi: Building with bundled unarr")
++  ADD_LIBRARY(UNARR ${SRC_UNARR})
++  INCLUDE_DIRECTORIES(src/unarr)
++ENDIF ()
++
+ ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
+ 
+ if (QT_ANDROID)
+@@ -172,19 +185,6 @@ IF(LibArchive_FOUND)
+   ADD_DEFINITIONS(-DDLDR_USE_LIBARCHIVE)
+ ENDIF(LibArchive_FOUND)
+ 
+-INCLUDE_DIRECTORIES(src/unarr/)
+-PKG_SEARCH_MODULE(UNARR libunarr unarr)
+-USE_BUNDLED_LIB(USE_BUNDLED_UNARR unarr)
+-IF (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
+-  message (STATUS "chartdldr_pi: Building with system unarr")
+-  INCLUDE_DIRECTORIES(${UNARR_INCLUDE_DIR})
+-  SET(SRC_UNARR  "")
+-ELSE ()
+-  message (STATUS "chartdldr_pi: Building with bundled unarr")
+-  ADD_LIBRARY(UNARR ${SRC_UNARR})
+-  INCLUDE_DIRECTORIES(src/unarr)
+-ENDIF ()
+-
+ IF(QT_ANDROID)
+   ADD_DEFINITIONS(-D__STDC_LIMIT_MACROS)
+   ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS)
