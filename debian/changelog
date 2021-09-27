@@ -4,6 +4,8 @@ opencpn (5.5.920+dfsg1-1) UNRELEASED; urgency=medium
   * Temporary beta import
   * Update standards-version to 4.6.0, no changes.
   * Update compat-level to 13, drop override_dh_missing from rules.
+  * Drop walk-around for #831870 using zip download, clean up d/rules and
+    d/watch
 
  -- Alec Leamas <leamas.alec@gmail.com>  Mon, 27 Sep 2021 14:52:29 +0200
 
