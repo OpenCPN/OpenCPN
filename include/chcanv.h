@@ -154,7 +154,6 @@ public:
   void OnSetFocus(wxFocusEvent &WXUNUSED(event));
 #ifdef HAVE_WX_GESTURE_EVENTS
   void OnZoom(wxZoomGestureEvent& event);
-  void OnPan(wxPanGestureEvent& event);
   void OnLongPress(wxLongPressEvent& event);
   void OnPressAndTap(wxPressAndTapEvent& event);
 
