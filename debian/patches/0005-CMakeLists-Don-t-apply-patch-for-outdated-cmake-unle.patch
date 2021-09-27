@@ -1,0 +1,21 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 28 Sep 2021 00:15:35 +0200
+Subject: CMakeLists: Don't apply patch for outdated cmake unless required.
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 74c977e..f4a7201 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -777,7 +777,7 @@ if (NOT QT_ANDROID)
+   # As of cmake 3.11.2, these libraries are missing in list despite that we
+   # looked for them. This is a nasty fix which might fail miserably. Assumption:
+   # All builds using GTK uses unicode and wxWidgets 3.0
+-  if (GTK3_FOUND)
++  if (GTK3_FOUND AND CMAKE_VERSION VERSION_LESS 3.12)
+     if (NOT wxWidgets_VERSION_STRING VERSION_GREATER "3.0")
+       message (STATUS " Patching ${wxWidgets_LIBRARIES}")
+       list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")

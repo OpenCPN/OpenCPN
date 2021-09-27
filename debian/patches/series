@@ -2,3 +2,4 @@
 0005-build-Drop-CoC-909_2013-InlandECDIS_20170308s.pdf.patch
 0007-testing-using-glx.h.patch
 0004-build-chartdldr-Dont-use-sRC_UNARR-unless-initialize.patch
+0005-CMakeLists-Don-t-apply-patch-for-outdated-cmake-unle.patch
