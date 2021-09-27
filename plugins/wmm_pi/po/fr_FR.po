@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2020-09-28 03:05\n"
+"PO-Revision-Date: 2021-09-26 23:57\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -41,7 +41,7 @@ msgstr "\n"
 
 #: src/wmm_pi.cpp:108
 msgid "WMM Plugin"
-msgstr "Complément WMM"
+msgstr "World Magnetic Model"
 
 #: src/wmm_pi.cpp:167
 msgid "WMM_Live_Overlay"
@@ -67,7 +67,7 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 msgstr "Le complément World Model magnétique pour OpenCPN \n"
 "Implémente le modèle magnétique mondial du NOAA\n"
 "Plus d'informations: http://www.ngdc.noaa.gov/geomag/WMM/\n"
-" Le modèle WMM2015, qui est fourni ici, expirera le 31 Décembre 2025.\n"
+" Le modèle WMM2020, qui est fourni ici, expirera le 31 Décembre 2024.\n"
 "Après cette date, si aucun nouveau modèle ne vous est fourni par le site web d'OpenCPN,\n"
 " vous devrez obtenir par vous même le nouveau fichier WMM.COF de la NOAA et le placer dans le répertoire\n"
 " dont l'emplacement est indiqué dans le fichier du journal d'installation OpenCPN."
@@ -182,7 +182,7 @@ msgstr "Voir aussi pour la position du curseur"
 
 #: src/WmmUIDialog.cpp:298
 msgid "Show toolbar icon"
-msgstr "Voir l'icône de WMM dans la barre d'icônes"
+msgstr "Icône dans la barre d'icônes : Voir"
 
 #: src/WmmUIDialog.cpp:301
 msgid "Show data in toolbar icon"

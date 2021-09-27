@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 22:22-0400\n"
-"PO-Revision-Date: 2020-08-28 14:52\n"
+"POT-Creation-Date: 2021-09-21 20:21-0400\n"
+"PO-Revision-Date: 2021-09-26 23:57\n"
 "Last-Translator: \n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -31,15 +31,15 @@ msgstr "%s (%s μέχρι %s), μίλια ποταμού %3.1f - %3.1f"
 msgid "%s"
 msgstr "%s"
 
-#: src/chartdldr_pi.cpp:271
+#: src/chartdldr_pi.cpp:275
 msgid "ChartDownloader"
 msgstr "ChartDownloader"
 
-#: src/chartdldr_pi.cpp:276
+#: src/chartdldr_pi.cpp:280
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr "Πρόσθετο Κατεβάσματος Χαρτών για το OpenCPN"
 
-#: src/chartdldr_pi.cpp:281
+#: src/chartdldr_pi.cpp:285
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
@@ -47,73 +47,83 @@ msgstr "Το πρόσθετο Κατεβάσματος Χαρτών για το 
 "Οργανώνει το κατέβασμα των χαρτών και τις ανανεώσεις τους\n"
 "από πηγές που υποστηρίζουν το φορμά του καταλόγου της NOAA"
 
-#: src/chartdldr_pi.cpp:288 src/chartdldr_pi.cpp:950 src/chartdldr_pi.cpp:957
-#: src/chartdldr_pi.cpp:963 src/chartdldr_pi.cpp:983 src/chartdldr_pi.cpp:1020
-#: src/chartdldr_pi.cpp:1079 src/chartdldr_pi.cpp:1085 src/chartdldr_pi.cpp:1356
-#: src/chartdldr_pi.cpp:1448 src/chartdldr_pi.cpp:1451 src/chartdldr_pi.cpp:1544
-#: src/chartdldr_pi.cpp:1639 src/chartdldr_pi.cpp:2395
+#: src/chartdldr_pi.cpp:292 src/chartdldr_pi.cpp:929 src/chartdldr_pi.cpp:936
+#: src/chartdldr_pi.cpp:942 src/chartdldr_pi.cpp:962 src/chartdldr_pi.cpp:999
+#: src/chartdldr_pi.cpp:1058 src/chartdldr_pi.cpp:1064 src/chartdldr_pi.cpp:1414
+#: src/chartdldr_pi.cpp:1506 src/chartdldr_pi.cpp:1509 src/chartdldr_pi.cpp:1590
+#: src/chartdldr_pi.cpp:1687 src/chartdldr_pi.cpp:2443
 msgid "Chart Downloader"
 msgstr "Chart Downloader"
 
-#: src/chartdldr_pi.cpp:613 src/chartdldr_pi.cpp:635
+#: src/chartdldr_pi.cpp:617 src/chartdldr_pi.cpp:639
 msgid "Select all"
 msgstr "Επιλογή όλων"
 
-#: src/chartdldr_pi.cpp:617 src/chartdldr_pi.cpp:636
+#: src/chartdldr_pi.cpp:621 src/chartdldr_pi.cpp:640
 msgid "Deselect all"
 msgstr "Αποεπιλογή όλων"
 
-#: src/chartdldr_pi.cpp:621 src/chartdldr_pi.cpp:637
+#: src/chartdldr_pi.cpp:625 src/chartdldr_pi.cpp:641
 msgid "Invert selection"
 msgstr "Αντιστροφή επιλογής"
 
-#: src/chartdldr_pi.cpp:625 src/chartdldr_pi.cpp:638
+#: src/chartdldr_pi.cpp:629 src/chartdldr_pi.cpp:642
 msgid "Select updated"
 msgstr "Επιλογή ενημερωμένων"
 
-#: src/chartdldr_pi.cpp:629 src/chartdldr_pi.cpp:639
+#: src/chartdldr_pi.cpp:633 src/chartdldr_pi.cpp:643
 msgid "Select new"
 msgstr "Επιλογή νέων"
 
-#: src/chartdldr_pi.cpp:684
+#: src/chartdldr_pi.cpp:689
 #, c-format
 msgid "Charts: %s"
+msgstr "Χάρτες: %s"
+
+#: src/chartdldr_pi.cpp:689
+msgid " from "
 msgstr ""
 
-#: src/chartdldr_pi.cpp:690 src/chartdldrgui.cpp:285
+#: src/chartdldr_pi.cpp:697 src/chartdldrgui.cpp:284
 msgid "Charts"
 msgstr "Χάρτες"
 
-#: src/chartdldr_pi.cpp:761 src/chartdldr_pi.cpp:814 src/chartdldrgui.h:189
+#: src/chartdldr_pi.cpp:768 src/chartdldrgui.h:147 src/chartdldrgui.h:213
 msgid "New"
 msgstr "Νέο"
 
-#: src/chartdldr_pi.cpp:770 src/chartdldr_pi.cpp:823 src/chartdldrgui.h:190
-msgid "Update available"
-msgstr "Υπάρχει διαθέσιμη ενημέρωση"
+#: src/chartdldr_pi.cpp:777 src/chartdldrgui.h:148 src/chartdldrgui.h:214
+msgid "Out of date"
+msgstr ""
 
-#: src/chartdldr_pi.cpp:776 src/chartdldr_pi.cpp:829
+#: src/chartdldr_pi.cpp:783
 msgid "Up to date"
 msgstr "Ενημερωμένα"
 
-#: src/chartdldr_pi.cpp:837
+#: src/chartdldr_pi.cpp:812
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
 msgstr "%lu συνολικά γραφήματα, %lu ενημερωμένα, %lu νέα"
 
-#: src/chartdldr_pi.cpp:916 src/chartdldr_pi.cpp:1613
+#: src/chartdldr_pi.cpp:815 src/chartdldr_pi.cpp:1220 src/chartdldr_pi.cpp:1313
+#: src/chartdldr_pi.cpp:1331 src/chartdldr_pi.cpp:1348 src/chartdldr_pi.cpp:1366
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new, %lu selected"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:1661
 msgid "(Please update first)"
 msgstr "(Ενημερώσετε πρώτα)"
 
-#: src/chartdldr_pi.cpp:921 src/chartdldr_pi.cpp:1002
+#: src/chartdldr_pi.cpp:900 src/chartdldr_pi.cpp:981
 msgid "Error, the URL to the chart source data seems wrong."
 msgstr "Σφάλμα, η διεύθυνση URL για δεδομένα του χάρτη φαίνεται λάθος."
 
-#: src/chartdldr_pi.cpp:921 src/chartdldr_pi.cpp:1002 src/chartdldr_pi.cpp:1367
+#: src/chartdldr_pi.cpp:900 src/chartdldr_pi.cpp:981 src/chartdldr_pi.cpp:1425
 msgid "Error"
 msgstr "Σφάλμα"
 
-#: src/chartdldr_pi.cpp:949
+#: src/chartdldr_pi.cpp:928
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
@@ -121,7 +131,7 @@ msgstr "Επιλέξατε να ενημερώσετε όλους τους κα�
 "Κατεβάστε όλους τους νέους και τους ενημερωμένους χάρτες.\n"
 "Αυτό μπορεί να διαρκέσει πολύ."
 
-#: src/chartdldr_pi.cpp:956
+#: src/chartdldr_pi.cpp:935
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
@@ -129,7 +139,7 @@ msgstr "Επιλέξατε να ενημερώσετε όλους τους κα�
 "Κατεβάστε μόνο τους νέους (αλλά όχι τους ενημερωμένους) χάρτες.\n"
 "Αυτό μπορεί να διαρκέσει πολύ."
 
-#: src/chartdldr_pi.cpp:962
+#: src/chartdldr_pi.cpp:941
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
@@ -137,279 +147,322 @@ msgstr "Επιλέξατε να ενημερώσετε όλους τους κα�
 "Κατεβάστε μόνο τους ενημερωμένους (αλλά όχι τους νέους) χάρτες.\n"
 "Αυτό μπορεί να διαρκέσει πολύ."
 
-#: src/chartdldr_pi.cpp:982 src/chartdldr_pi.cpp:1446
+#: src/chartdldr_pi.cpp:961 src/chartdldr_pi.cpp:1504
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
 msgstr "%d από %d χάρτες δεν κατέβηκαν. \n"
 "Ελέγξτε τη λίστα, επιβεβαιώστε ότι υπάρχει ενεργή σύνδεση στο διαδίκτυο και επαναλάβετε, εάν χρειάζεται."
 
-#: src/chartdldr_pi.cpp:1020 src/chartdldr_pi.cpp:2371 src/chartdldr_pi.cpp:2395
+#: src/chartdldr_pi.cpp:999 src/chartdldr_pi.cpp:2419 src/chartdldr_pi.cpp:2443
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "Δεν μπορεί να δημιουργηθεί ο φάκελος \"%s\"."
 
-#: src/chartdldr_pi.cpp:1039 src/chartdldr_pi.cpp:1051
+#: src/chartdldr_pi.cpp:1018 src/chartdldr_pi.cpp:1030
 msgid "Downloading file"
 msgstr "Λήψη αρχείου"
 
-#: src/chartdldr_pi.cpp:1040 src/chartdldr_pi.cpp:1052
+#: src/chartdldr_pi.cpp:1019 src/chartdldr_pi.cpp:1031
 msgid "Reading Headers: "
 msgstr "Ανάγνωση επικεφαλίδων: "
 
-#: src/chartdldr_pi.cpp:1078
+#: src/chartdldr_pi.cpp:1057
 #, c-format
 msgid "Failed to Find New Catalog: %s "
 msgstr "Απέτυχε να βρει νέο κατάλογο: %s "
 
-#: src/chartdldr_pi.cpp:1084
+#: src/chartdldr_pi.cpp:1063
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
 msgstr "Απέτυχε η λήψη του κατάλογου %s \n"
 "Επιβεβαιώστε ότι υπάρχει ενεργή σύνδεση με το Internet."
 
-#: src/chartdldr_pi.cpp:1322
+#: src/chartdldr_pi.cpp:1243 src/chartdldr_pi.cpp:1252 src/chartdldrgui.cpp:340
+msgid "Select All"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1246 src/chartdldrgui.cpp:342 src/chartdldrgui.cpp:374
+msgid "Select None"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1247
+msgid "De-select all charts in the list."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1253 src/chartdldrgui.cpp:343
+msgid "Select all charts in the list."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1380
 msgid "No charts selected for download."
 msgstr "Δεν επιλέχθηκαν χάρτες για κατέβασμα."
 
-#: src/chartdldr_pi.cpp:1333
+#: src/chartdldr_pi.cpp:1391
 msgid "Abort download"
 msgstr "Ματαίωση λήψης"
 
-#: src/chartdldr_pi.cpp:1349
+#: src/chartdldr_pi.cpp:1407
 msgid "Unknown"
 msgstr "Άγνωστο"
 
-#: src/chartdldr_pi.cpp:1355
+#: src/chartdldr_pi.cpp:1413
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
 msgstr "Ο επιλεγμένος χάρτης '%s' δεν μπορεί να κατέβει αυτόματα. Θέλεις να ανοίξει ένα παράθυρο περιήγησης και να τον κατεβάσεις μόνος σου; \n\n"
 " Μετά τη λήψη των χαρτών, τοποθέτησέ τους στο %s"
 
-#: src/chartdldr_pi.cpp:1367
+#: src/chartdldr_pi.cpp:1425
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
 msgstr "Σφάλμα, η διεύθυνση URL για τα δεδομένα του χάρτη (%s) φαίνεται λάθος."
 
-#: src/chartdldr_pi.cpp:1404
+#: src/chartdldr_pi.cpp:1462
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
 msgstr "Λήψη χάρτη %u από %u, %u λήψεις απέτυχαν (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1408
+#: src/chartdldr_pi.cpp:1466
 #, c-format
 msgid "Downloading chart %u of %u (%s / %s)"
 msgstr "Κατεβάζει τον χάρτη %u από τους %u (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1442 src/chartdldrgui.cpp:306
+#: src/chartdldr_pi.cpp:1500 src/chartdldrgui.cpp:328 src/chartdldrgui.cpp:350
 msgid "Download selected charts"
 msgstr "Λήψη επιλεγμένων χαρτών"
 
-#: src/chartdldr_pi.cpp:1451
+#: src/chartdldr_pi.cpp:1509
 msgid "Chart download cancelled."
 msgstr "Η λήψη του χάρτη ακυρώθηκε."
 
-#: src/chartdldr_pi.cpp:1484 src/chartdldrgui.cpp:100
+#: src/chartdldr_pi.cpp:1540 src/chartdldrgui.cpp:100
 msgid "Catalog"
 msgstr "Κατάλογος"
 
-#: src/chartdldr_pi.cpp:1485
+#: src/chartdldr_pi.cpp:1541
 msgid "Released"
 msgstr "Κυκλοφόρησε"
 
-#: src/chartdldr_pi.cpp:1486
+#: src/chartdldr_pi.cpp:1542
 msgid "Local path"
 msgstr "Τοπικός φάκελος"
 
-#: src/chartdldr_pi.cpp:1491
-msgid "Title"
-msgstr "Τίτλος"
-
-#: src/chartdldr_pi.cpp:1492
-msgid "Status"
-msgstr "Κατάσταση"
-
-#: src/chartdldr_pi.cpp:1493
-msgid "Latest"
-msgstr "Πιο πρόσφατο"
-
-#: src/chartdldr_pi.cpp:1543
+#: src/chartdldr_pi.cpp:1589
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
-msgstr ""
+msgstr "Σίγουρα θέλετε να καταργήσετε την πηγή των χαρτών; \n"
+"Τα τοπικά αρχεία των χαρτών δεν θα διαγραφούν,\n"
+"αλλά δεν θα μπορείτε πια να ενημερώνετε τους χάρτες."
 
-#: src/chartdldr_pi.cpp:1604
+#: src/chartdldr_pi.cpp:1650
 msgid "Edit Chart Source"
 msgstr "Επεξεργασία της πηγής των χαρτών"
 
-#: src/chartdldr_pi.cpp:1638
+#: src/chartdldr_pi.cpp:1686
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "Ο φάκελος %s δεν φαίνεται να υπάρχει στους Φακέλους Χαρτών σας. \n"
 "Για να δείτε τους χάρτες πρέπει να ρυθμίσετε τις παραμέτρους στην καρτέλα 'Αρχεία Χαρτών'."
 
-#: src/chartdldr_pi.cpp:1736
+#: src/chartdldr_pi.cpp:1784
 msgid "Installing charts."
-msgstr ""
+msgstr "Εγκατάσταση χαρτών."
 
-#: src/chartdldr_pi.cpp:2356 src/chartdldr_pi.cpp:2359
+#: src/chartdldr_pi.cpp:2404 src/chartdldr_pi.cpp:2407
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "Πρέπει να επιλέξετε μία από τις προκαθορισμένες πηγές χαρτών ή να δημιουργήσετε ένα δικό σας.\n"
 
-#: src/chartdldr_pi.cpp:2362
+#: src/chartdldr_pi.cpp:2410
 msgid "The chart source must have a name.\n"
 msgstr "Η πηγή των χαρτών πρέπει να έχει όνομα.\n"
 
-#: src/chartdldr_pi.cpp:2365
+#: src/chartdldr_pi.cpp:2413
 msgid "The chart source must have a valid URL.\n"
 msgstr "Η πηγή των χαρτών πρέπει να έχει μια έγκυρη URL.\n"
 
-#: src/chartdldr_pi.cpp:2367
+#: src/chartdldr_pi.cpp:2415
 msgid "You must select a local folder to store the charts.\n"
 msgstr "Πρέπει να επιλέξετε ένα τοπικό φάκελο για να αποθηκεύσετε τους χάρτες. \n"
 
-#: src/chartdldr_pi.cpp:2374
+#: src/chartdldr_pi.cpp:2422
 msgid "Chart source definition problem"
 msgstr "Πρόβλημα καθορισμού του πηγής των χαρτών"
 
-#: src/chartdldrgui.cpp:109
+#: src/chartdldrgui.cpp:112
 msgid "Predefined"
 msgstr "Προκαθορισμένο"
 
-#: src/chartdldrgui.cpp:131
+#: src/chartdldrgui.cpp:134
 msgid "Name"
 msgstr "Όνομα"
 
-#: src/chartdldrgui.cpp:139
+#: src/chartdldrgui.cpp:142
 msgid "URL"
 msgstr "URL"
 
-#: src/chartdldrgui.cpp:151
+#: src/chartdldrgui.cpp:153
 msgid "Custom"
 msgstr "Προσαρμοσμένο"
 
-#: src/chartdldrgui.cpp:155
+#: src/chartdldrgui.cpp:156
 msgid "Chart Directory"
 msgstr "Κατάλογος χαρτών"
 
-#: src/chartdldrgui.cpp:164 src/chartdldrgui.cpp:485
+#: src/chartdldrgui.cpp:165 src/chartdldrgui.cpp:561
 msgid "Select a folder"
 msgstr "Επιλογή φακέλου"
 
-#: src/chartdldrgui.cpp:173 src/chartdldrgui.cpp:523
+#: src/chartdldrgui.cpp:174 src/chartdldrgui.cpp:599
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: src/chartdldrgui.cpp:204 src/chartdldrgui.cpp:584
+#: src/chartdldrgui.cpp:205 src/chartdldrgui.cpp:660
 msgid "Choose Chart File Directory"
 msgstr "Επιλογή φακέλου αρχείων χαρτών"
 
-#: src/chartdldrgui.cpp:230
+#: src/chartdldrgui.cpp:228
 msgid "Select Catalog..."
 msgstr "Επιλογή καταλόγου..."
 
-#: src/chartdldrgui.cpp:235
+#: src/chartdldrgui.cpp:233
 msgid "Chart Catalogs Available"
 msgstr "Υπάρχοντες κατάλογοι χαρτών"
 
-#: src/chartdldrgui.cpp:254
+#: src/chartdldrgui.cpp:252
 msgid "Add Catalog"
 msgstr "Προσθήκη καταλόγου"
 
-#: src/chartdldrgui.cpp:255
+#: src/chartdldrgui.cpp:253
 msgid "Add a new chart catalog."
 msgstr "Προσθήκη νέου καταλόγου χαρτών."
 
-#: src/chartdldrgui.cpp:259
+#: src/chartdldrgui.cpp:257
 msgid "Delete"
 msgstr "Διαγραφή"
 
-#: src/chartdldrgui.cpp:260
+#: src/chartdldrgui.cpp:258
 msgid "Delete the chart catalog. The downloaded charts are not deleted."
 msgstr "Διαγραφή του καταλόγου των χαρτών. Οι κατεβασμένοι χάρτες δεν θα διαγραφούν."
 
-#: src/chartdldrgui.cpp:264
+#: src/chartdldrgui.cpp:262
 msgid "Edit..."
 msgstr "Επεξεργασία..."
 
-#: src/chartdldrgui.cpp:267
+#: src/chartdldrgui.cpp:265
 msgid "Update"
 msgstr "Ενημέρωση"
 
-#: src/chartdldrgui.cpp:269
+#: src/chartdldrgui.cpp:267
 msgid "Download the current chart catalog and update the data."
 msgstr "Λήψη του τρέχοντος καταλόγου χαρτών και ενημέρωση των δεδομένων."
 
-#: src/chartdldrgui.cpp:273
+#: src/chartdldrgui.cpp:271
 msgid "Update All"
 msgstr "Ενημέρωση όλων"
 
-#: src/chartdldrgui.cpp:279
+#: src/chartdldrgui.cpp:272
+msgid "Download all chart catalogs, and then update charts."
+msgstr ""
+
+#: src/chartdldrgui.cpp:278
 msgid "Download Charts..."
 msgstr "Κατέβασμα χαρτών..."
 
-#: src/chartdldrgui.cpp:309
+#: src/chartdldrgui.cpp:300
+msgid "Status"
+msgstr "Κατάσταση"
+
+#: src/chartdldrgui.cpp:303
+msgid "Date"
+msgstr ""
+
+#: src/chartdldrgui.cpp:306
+msgid "Chart Description"
+msgstr ""
+
+#: src/chartdldrgui.cpp:331
+msgid "Select New"
+msgstr ""
+
+#: src/chartdldrgui.cpp:332
+msgid "Check all charts that are 'New' in the list."
+msgstr ""
+
+#: src/chartdldrgui.cpp:335
+msgid "Select Updated"
+msgstr ""
+
+#: src/chartdldrgui.cpp:336
+msgid "Select all charts that are 'Out of Date' in the list."
+msgstr ""
+
+#: src/chartdldrgui.cpp:346
+#, c-format
+msgid "%u charts total, %u updated, %u new, %u selected"
+msgstr ""
+
+#: src/chartdldrgui.cpp:353
 #, c-format
 msgid "%u charts total, %u updated, %u new"
 msgstr "%u συνολικά γραφήματα, %u ενημερωμένα, %u νέα"
 
-#: src/chartdldrgui.cpp:476
+#: src/chartdldrgui.cpp:552
 msgid "Default Path to Charts"
 msgstr "Προεπιλεγμένος φάκελος των χαρτών"
 
-#: src/chartdldrgui.cpp:492
+#: src/chartdldrgui.cpp:568
 msgid "Preferences"
 msgstr "Προτιμήσεις"
 
-#: src/chartdldrgui.cpp:496
+#: src/chartdldrgui.cpp:572
 msgid "After catalog update select for download"
 msgstr "Μετά την ενημέρωση το κατάλογου επιλέξτε για τη λήψη"
 
-#: src/chartdldrgui.cpp:500
+#: src/chartdldrgui.cpp:576
 msgid "All updated charts"
 msgstr "Όλοι οι ενημερωμένοι χάρτες"
 
-#: src/chartdldrgui.cpp:504
+#: src/chartdldrgui.cpp:580
 msgid "All new charts"
 msgstr "Όλοι οι νέοι χάρτες"
 
-#: src/chartdldrgui.cpp:510
+#: src/chartdldrgui.cpp:586
 msgid "Allow bulk update of all configured chart sources and charts"
 msgstr "Μαζική ενημέρωση όλων των ρυθμισμένων πηγών και χαρτών"
 
-#: src/chartdldrgui.cpp:514
+#: src/chartdldrgui.cpp:590
 msgid "Update chart source catalog"
 msgstr "Ανανέωση καταλόγου πηγών για χάρτες"
 
-#: src/chartdldrgui.cpp:548
+#: src/chartdldrgui.cpp:624
 msgid "Downloading chart sources"
 msgstr "Λήψη πηγών χάρτη"
 
-#: src/chartdldrgui.cpp:556
+#: src/chartdldrgui.cpp:632
 #, c-format
 msgid "Failed to save: %s "
 msgstr "Η αποθήκευση απέτυχε: %s "
 
-#: src/chartdldrgui.cpp:556 src/chartdldrgui.cpp:563
+#: src/chartdldrgui.cpp:632 src/chartdldrgui.cpp:639
 msgid "Chart downloader"
 msgstr "Για τη λήψη χαρτών"
 
-#: src/chartdldrgui.cpp:562
+#: src/chartdldrgui.cpp:638
 #, c-format
 msgid "Failed to download: %s \n"
 "Verify there is a working Internet connection."
 msgstr "Απέτυχε η λήψη του %s \n"
 " Βεβαιωθείτε ότι υπάρχει ενεργή σύνδεση με το Internet."
 
-#: src/chartdldrgui.h:84
+#: src/chartdldrgui.h:85
 msgid "New chart source"
 msgstr "Νέα πηγή χαρτών"
 
-#: src/chartdldrgui.h:176
+#: src/chartdldrgui.h:198
 msgid "Chart Downloader Preferences"
 msgstr "Προτιμήσεις του Chart Downloader"
 

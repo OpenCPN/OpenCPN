@@ -1,7 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="DOWNLOADING_FILE">Λήψη αρχείου...</string>
+    <string name="ocpn_GRIB_activity_Choose">Επιλογή τοπικού αρχείου GRIB</string>
+    <string name="ocpn_GRIB_activity_Request">Ζητήστε λήψη νέου αρχείου GRIB</string>
+    <string name="ocpn_GRIB_download_dialog_OK">Λήψη αρχείου GRIB OK</string>
+    <string name="ocpn_GRIB_download_dialog_NO_INTERNET">Δεν υπάρχει διαθέσιμο Internet\n Παρακαλώ ελέγξτε τα δεδομένα κινητής τηλεφωνίας ή τις ρυθμίσεις WiFi.</string>
+    <string name="ocpn_GRIB_download_dialog_NO_CONNECTION">Αποτυχία σύνδεσης</string>
+    <string name="ocpn_GRIB_download_dialog_DOWN_FAIL">Η λήψη απέτυχε\n Παρακαλούμε ελέγξτε τα αρχεία καταγραφής.</string>
+    <string name="ocpn_action_mob">Άνθρωπος στη Θάλασσα</string>
+    <string name="ocpn_action_tracktoggle_on">Έναρξη εντοπισμού</string>
+    <string name="ocpn_action_tracktoggle_off">Διακοπή εντοπισμού</string>
+    <string name="ocpn_action_createroute">Δημιουργία νέας διαδρομής</string>
+    <string name="ocpn_action_endroute">Ολοκλήρωση νέας διαδρομής</string>
+    <string name="ocpn_action_settings_basic">Ρυθμίσεις OpenCPN</string>
+    <string name="ocpn_action_encText">Εναλλαγή κειμένου ENC</string>
+    <string name="ocpn_action_encSoundings">Εναλλαγή ήχων ENC</string>
+    <string name="ocpn_action_encLights">Εναλλαγή φάρων ENC</string>
+    <string name="ocpn_action_googlemaps">Εναλλαγή σε Google Maps</string>
+    <string name="ocpn_action_toggle_fullscreen">Αλλαγή σε/από fullscreen</string>
     <!-- Preferences Headers -->
+    <string name="ocpn_prefs_header_charts">Χάρτες</string>
+    <string name="ocpn_prefs_header_connections">Συνδέσεις</string>
+    <string name="ocpn_prefs_header_summary_display">Επιλογές εμφάνισης χάρτη</string>
+    <string name="ocpn_prefs_header_summary_charts">Πηγές χαρτών και επιλογές</string>
+    <string name="ocpn_prefs_header_summary_connections">Επιλογές τοποθεσίας GPS/AIS</string>
     <!-- Display Preferences -->
+    <string name="ocpn_prefs_display_navigation_mode">Λειτουργία Πλοήγησης</string>
+    <string name="ocpn_prefs_display_showgrid">Εμφάνιση πλέγματος</string>
+    <string name="ocpn_prefs_display_confirmdelete">Επιβεβαίωση διαγραφής</string>
+    <string name="ocpn_prefs_display_showdepthunits">Εμφάνιση βαθυμετρικών μονάδων</string>
+    <string name="ocpn_prefs_display_expertmode">Για προχωρημένους</string>
+    <string name="ocpn_prefs_display_summary_grid">Προβολή γεωγραφικού πλάτους/μήκους σε επικάλυψη πλέγματος</string>
     <!-- Charts Preferences -->
     <!-- Connections Preferences -->
     <!-- Grib Display Headers -->

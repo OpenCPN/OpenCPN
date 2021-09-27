@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="DOWNLOADING_FILE">מוריד קובץ...</string>
+    <string name="DEFAULT">ברירת מחדל</string>
+    <string name="CUSTOM">מותאם אישית</string>
+    <string name="ocpn_GRIB_activity_Display">הגדרות תצוגה GRIB</string>
+    <string name="ocpn_GRIB_activity_Choose">השתמש בקובת GRIB מקומי</string>
+    <string name="ocpn_GRIB_activity_Request">בקש קובץ GRIB חדש להורדה</string>
+    <string name="ocpn_GRIB_download_dialog_Request">בקש GRIB להורדה</string>
+    <string name="ocpn_GRIB_download_dialog_OK">קובץ GRIB ירד OK</string>
+    <!-- Preferences Headers -->
+    <string name="ocpn_prefs_header_display">תצוגה</string>
+    <string name="ocpn_prefs_header_charts">מפות</string>
+    <string name="ocpn_prefs_header_connections">חיבורים</string>
+    <!-- Display Preferences -->
+    <string name="ocpn_prefs_display_navigation_mode">מצב ניווט</string>
+    <string name="ocpn_prefs_display_showgrid">הצגת רשת</string>
+    <string name="ocpn_prefs_display_expertmode">מצב מומחה</string>
+    <!-- Charts Preferences -->
+    <string name="ocpn_prefs_charts_positive">אישור</string>
+    <string name="ocpn_prefs_charts_vectordisplaycat">הצג קטגוריה</string>
+    <string name="ocpn_prefs_charts_vectordisplaycategory_Base">בסיס</string>
+    <string name="ocpn_prefs_charts_vectordisplaycategory_Standard">רגיל</string>
+    <string name="ocpn_prefs_charts_vectordisplaycategory_All">הכל</string>
+    <string name="ocpn_prefs_charts_vectordisplaygraphstyle_Simple">פישוט</string>
+    <string name="ocpn_prefs_charts_vectordisplaycolors_2">2 צבעים</string>
+    <string name="ocpn_prefs_charts_vectordisplaycolors_4">4 צבעים</string>
+    <!-- Connections Preferences -->
+    <!-- Grib Display Headers -->
+    <!-- Grib Fragment prefs -->
+    <!--  Grib Arrays   -->
+</resources>

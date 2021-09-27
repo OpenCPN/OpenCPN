@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2020-09-28 03:06\n"
+"POT-Creation-Date: 2021-09-21 20:19-0400\n"
+"PO-Revision-Date: 2021-09-26 23:57\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -301,7 +301,7 @@ msgstr "Ha elegido autorizar una interpolación.\n"
 "Esto ¡podrá bajar la precisión!"
 
 #: src/GribSettingsDialog.cpp:930 src/GribSettingsDialog.cpp:976
-#: src/grib_pi.cpp:875 src/GribRequestDialog.cpp:661
+#: src/grib_pi.cpp:875 src/GribRequestDialog.cpp:668
 msgid "Warning!"
 msgstr "¡Atención!"
 
@@ -765,8 +765,8 @@ msgstr "Utilice siempre esta Área"
 msgid "Max Lat"
 msgstr "Max Lat"
 
-#: src/GribUIDialogBase.cpp:1813 src/GribRequestDialog.cpp:320
-#: src/GribRequestDialog.cpp:323
+#: src/GribUIDialogBase.cpp:1813 src/GribRequestDialog.cpp:321
+#: src/GribRequestDialog.cpp:324
 msgid "N"
 msgstr "N"
 
@@ -774,8 +774,8 @@ msgstr "N"
 msgid "Max Long"
 msgstr "Max Long"
 
-#: src/GribUIDialogBase.cpp:1824 src/GribRequestDialog.cpp:321
-#: src/GribRequestDialog.cpp:322
+#: src/GribUIDialogBase.cpp:1824 src/GribRequestDialog.cpp:322
+#: src/GribRequestDialog.cpp:323
 msgid "E"
 msgstr "E"
 
@@ -783,8 +783,8 @@ msgstr "E"
 msgid "Min Lat"
 msgstr "Min Lat"
 
-#: src/GribUIDialogBase.cpp:1836 src/GribRequestDialog.cpp:320
-#: src/GribRequestDialog.cpp:323
+#: src/GribUIDialogBase.cpp:1836 src/GribRequestDialog.cpp:321
+#: src/GribRequestDialog.cpp:324
 msgid "S"
 msgstr "S"
 
@@ -792,8 +792,8 @@ msgstr "S"
 msgid "Min Long"
 msgstr "Min Long"
 
-#: src/GribUIDialogBase.cpp:1848 src/GribRequestDialog.cpp:321
-#: src/GribRequestDialog.cpp:322
+#: src/GribUIDialogBase.cpp:1848 src/GribRequestDialog.cpp:322
+#: src/GribRequestDialog.cpp:323
 msgid "W"
 msgstr "W"
 
@@ -869,8 +869,8 @@ msgstr "Escribir y enviar petición por email"
 msgid "Grib Data Table"
 msgstr "Tabla de Datos Grib"
 
-#: src/grib_pi.h:108 src/grib_pi.cpp:459 src/GribRequestDialog.cpp:127
-#: src/GribRequestDialog.cpp:199 src/GribRequestDialog.cpp:485
+#: src/grib_pi.h:108 src/grib_pi.cpp:459 src/GribRequestDialog.cpp:128
+#: src/GribRequestDialog.cpp:200 src/GribRequestDialog.cpp:492
 #: src/CursorData.cpp:152
 msgid "Dialog"
 msgstr "Cuadro de diálogo"
@@ -1007,44 +1007,44 @@ msgstr "Corriente, Dir."
 msgid "Current,Speed"
 msgstr "Corriente, Velo."
 
-#: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:988
+#: src/GribRequestDialog.cpp:121 src/GribRequestDialog.cpp:1030
 msgid "Send"
 msgstr "Enviar"
 
-#: src/GribRequestDialog.cpp:121
+#: src/GribRequestDialog.cpp:122
 msgid "Save"
 msgstr "Guardar"
 
-#: src/GribRequestDialog.cpp:138
+#: src/GribRequestDialog.cpp:139
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "Dirección utiliza para enviar solicitud por correo electrónico. (Obligatorio para LINUX)"
 
-#: src/GribRequestDialog.cpp:139
+#: src/GribRequestDialog.cpp:140
 msgid "This is your zyGrib's forum access Login"
 msgstr "Este es su Login de acceso al foro de ZyGrib"
 
-#: src/GribRequestDialog.cpp:140
+#: src/GribRequestDialog.cpp:141
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr "Coja este código en el foro de zyGrib (¡no es su pasword!)"
 
-#: src/GribRequestDialog.cpp:141
+#: src/GribRequestDialog.cpp:142
 msgid "Enter your forescasted Speed (in Knots)"
 msgstr "Entre su velocidad prevista (en nudos)"
 
-#: src/GribRequestDialog.cpp:142
+#: src/GribRequestDialog.cpp:143
 msgid "Enter your forecasted Course"
 msgstr "Entre su rumbo previsto"
 
-#: src/GribRequestDialog.cpp:495
+#: src/GribRequestDialog.cpp:502
 msgid "Coord. "
 msgstr "Coord. "
 
-#: src/GribRequestDialog.cpp:500 src/GribRequestDialog.cpp:880
-#: src/GribRequestDialog.cpp:883
+#: src/GribRequestDialog.cpp:507 src/GribRequestDialog.cpp:900
+#: src/GribRequestDialog.cpp:903
 msgid "MB"
 msgstr "MB"
 
-#: src/GribRequestDialog.cpp:660
+#: src/GribRequestDialog.cpp:667
 msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
@@ -1053,37 +1053,37 @@ msgstr "Está pidiendo una previsión para un horizonte superior a 8 días.\n"
 "Entra en conflicto con los dato de oleaje que serán eliminados de su petición.\n"
 "No olvide que tras los primeros 8 días, la resolución es de sólo 2.5\\x2.5\\n y el intervalo de tiempo 12 horas."
 
-#: src/GribRequestDialog.cpp:883
+#: src/GribRequestDialog.cpp:903
 msgid "Max"
 msgstr "( Max "
 
-#: src/GribRequestDialog.cpp:999
+#: src/GribRequestDialog.cpp:1041
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr "Antes de enviar un email a ZyBrib debe entrar su Login y el Código.\n"
 "Por favor visite www.zygrib.org/ y siga las instrucciones..."
 
-#: src/GribRequestDialog.cpp:1000
+#: src/GribRequestDialog.cpp:1042
 msgid "Too big file! zyGrib limit is 2Mb!"
 msgstr "¡Archivo demasiado grande! ¡limitados a 2 MB en zyGrib!"
 
-#: src/GribRequestDialog.cpp:1000
+#: src/GribRequestDialog.cpp:1042
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
 msgstr "¡Error! ¡Max Lat inferior a Min Lat o Max Lon menor que Min Lon!"
 
-#: src/GribRequestDialog.cpp:1001
+#: src/GribRequestDialog.cpp:1043
 msgid "Too large area! Each side must be less than 180°!"
 msgstr "¡Área demasiado grande! ¡cada lado debe ser inferior a 180º!"
 
-#: src/GribRequestDialog.cpp:1001
+#: src/GribRequestDialog.cpp:1043
 msgid "Too small area for this resolution!"
 msgstr "¡Área demasiado pequeña para esta resolución!"
 
-#: src/GribRequestDialog.cpp:1018 src/GribRequestDialog.cpp:1054
+#: src/GribRequestDialog.cpp:1060 src/GribRequestDialog.cpp:1107
 msgid "Continue..."
 msgstr "Continuar..."
 
-#: src/GribRequestDialog.cpp:1039 src/GribRequestDialog.cpp:1043
+#: src/GribRequestDialog.cpp:1092 src/GribRequestDialog.cpp:1096
 msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
@@ -1091,7 +1091,7 @@ msgstr "Su petición es correcta. Se prepara un email en su gestor de correo. \n
 "Debe verificarlo y enviarlo...\n"
 "Guardar o Cancelar para acabar... o Continuar..."
 
-#: src/GribRequestDialog.cpp:1046
+#: src/GribRequestDialog.cpp:1099
 msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
@@ -1099,7 +1099,7 @@ msgstr "Su petición se ha enviado \n"
 "(si su sistema tiene configurado un MTA y es capaz de enviar emails).\n"
 "Guardar o Cancelar para terminar... o Continuar..."
 
-#: src/GribRequestDialog.cpp:1051
+#: src/GribRequestDialog.cpp:1104
 msgid "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."

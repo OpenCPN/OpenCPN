@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2020-09-28 03:06\n"
+"POT-Creation-Date: 2021-09-21 20:19-0400\n"
+"PO-Revision-Date: 2021-09-26 23:57\n"
 "Last-Translator: \n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -178,7 +178,7 @@ msgstr "j/kg"
 
 #: src/GribSettingsDialog.cpp:39
 msgid "dBZ"
-msgstr ""
+msgstr "dBZ"
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:418
 #: src/GribUIDialogBase.cpp:927 src/GribUIDialogBase.cpp:1867
@@ -271,7 +271,7 @@ msgstr "Visa Iso CAPE"
 
 #: src/GribSettingsDialog.cpp:811
 msgid "Display Comp. Reflectivity"
-msgstr ""
+msgstr "Visa sammansatt reflektivitet"
 
 #: src/GribSettingsDialog.cpp:818 src/GribSettingsDialog.cpp:889
 #: src/GribUIDialogBase.cpp:837
@@ -301,7 +301,7 @@ msgstr "Du har valt att tillåta interpolation. \n"
 "minskad noggrannhet!"
 
 #: src/GribSettingsDialog.cpp:930 src/GribSettingsDialog.cpp:976
-#: src/grib_pi.cpp:875 src/GribRequestDialog.cpp:661
+#: src/grib_pi.cpp:875 src/GribRequestDialog.cpp:668
 msgid "Warning!"
 msgstr "Varning"
 
@@ -375,11 +375,11 @@ msgstr "Tillgänglig potentiell konvektionsenergi"
 
 #: src/GribUIDialogBase.cpp:557
 msgid "Comp. Refl."
-msgstr ""
+msgstr "Sam. Refl."
 
 #: src/GribUIDialogBase.cpp:561
 msgid "Composite Reflectivity"
-msgstr ""
+msgstr "Sammansatt reflektivitet"
 
 #: src/GribUIDialogBase.cpp:570 src/CursorData.cpp:241
 msgid "Altitude"
@@ -611,7 +611,7 @@ msgstr ""
 #: src/GribUIDialogBase.cpp:1331 src/GribUIDialogBase.cpp:1468
 #: src/GribUIDialogBase.cpp:2000
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: src/GribUIDialogBase.cpp:1414 src/GribUIDialogBase.cpp:1510
 msgid "General Options"
@@ -683,7 +683,7 @@ msgstr "Tidsinställningar"
 
 #: src/GribUIDialogBase.cpp:1499
 msgid "GRIB PlugIn Preferences"
-msgstr ""
+msgstr "Inställningar för GRIB PlugIn"
 
 #: src/GribUIDialogBase.cpp:1590
 msgid "Profile"
@@ -765,8 +765,8 @@ msgstr "Använd alltid detta område"
 msgid "Max Lat"
 msgstr "Max Lat"
 
-#: src/GribUIDialogBase.cpp:1813 src/GribRequestDialog.cpp:320
-#: src/GribRequestDialog.cpp:323
+#: src/GribUIDialogBase.cpp:1813 src/GribRequestDialog.cpp:321
+#: src/GribRequestDialog.cpp:324
 msgid "N"
 msgstr "N"
 
@@ -774,8 +774,8 @@ msgstr "N"
 msgid "Max Long"
 msgstr "Max Long"
 
-#: src/GribUIDialogBase.cpp:1824 src/GribRequestDialog.cpp:321
-#: src/GribRequestDialog.cpp:322
+#: src/GribUIDialogBase.cpp:1824 src/GribRequestDialog.cpp:322
+#: src/GribRequestDialog.cpp:323
 msgid "E"
 msgstr "E"
 
@@ -783,8 +783,8 @@ msgstr "E"
 msgid "Min Lat"
 msgstr "Min Lat"
 
-#: src/GribUIDialogBase.cpp:1836 src/GribRequestDialog.cpp:320
-#: src/GribRequestDialog.cpp:323
+#: src/GribUIDialogBase.cpp:1836 src/GribRequestDialog.cpp:321
+#: src/GribRequestDialog.cpp:324
 msgid "S"
 msgstr "S"
 
@@ -792,8 +792,8 @@ msgstr "S"
 msgid "Min Long"
 msgstr "Min Long"
 
-#: src/GribUIDialogBase.cpp:1848 src/GribRequestDialog.cpp:321
-#: src/GribRequestDialog.cpp:322
+#: src/GribUIDialogBase.cpp:1848 src/GribRequestDialog.cpp:322
+#: src/GribRequestDialog.cpp:323
 msgid "W"
 msgstr "W"
 
@@ -807,7 +807,7 @@ msgstr "Lufttemperatur(2m)"
 
 #: src/GribUIDialogBase.cpp:1889
 msgid "Comp. Reflect."
-msgstr ""
+msgstr "Sam. Refl."
 
 #: src/GribUIDialogBase.cpp:1892
 msgid "Sea Temperature(surf.)"
@@ -869,8 +869,8 @@ msgstr "Epostförfrågan om GRIB-data"
 msgid "Grib Data Table"
 msgstr "GRIB datatabell"
 
-#: src/grib_pi.h:108 src/grib_pi.cpp:459 src/GribRequestDialog.cpp:127
-#: src/GribRequestDialog.cpp:199 src/GribRequestDialog.cpp:485
+#: src/grib_pi.h:108 src/grib_pi.cpp:459 src/GribRequestDialog.cpp:128
+#: src/GribRequestDialog.cpp:200 src/GribRequestDialog.cpp:492
 #: src/CursorData.cpp:152
 msgid "Dialog"
 msgstr "Dialog"
@@ -989,7 +989,7 @@ msgstr "Vattentemp."
 
 #: src/GribTable.cpp:194
 msgid "C. Reflect."
-msgstr ""
+msgstr "S. Reflekt."
 
 #: src/GribTable.cpp:206
 msgid "Current,Dir"
@@ -999,44 +999,44 @@ msgstr "Strömriktning"
 msgid "Current,Speed"
 msgstr "Strömhastighet"
 
-#: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:988
+#: src/GribRequestDialog.cpp:121 src/GribRequestDialog.cpp:1030
 msgid "Send"
 msgstr "Skicka"
 
-#: src/GribRequestDialog.cpp:121
+#: src/GribRequestDialog.cpp:122
 msgid "Save"
 msgstr "Spara"
 
-#: src/GribRequestDialog.cpp:138
+#: src/GribRequestDialog.cpp:139
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "Adress för att skicka epostförfrågan. (obligatorisk för Linux)"
 
-#: src/GribRequestDialog.cpp:139
+#: src/GribRequestDialog.cpp:140
 msgid "This is your zyGrib's forum access Login"
 msgstr "Detta är din inloggning för zyGrib's forum"
 
-#: src/GribRequestDialog.cpp:140
+#: src/GribRequestDialog.cpp:141
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr "Hämta din kod i Zygrib's forum (Detta är inte ditt lösenord!)"
 
-#: src/GribRequestDialog.cpp:141
+#: src/GribRequestDialog.cpp:142
 msgid "Enter your forescasted Speed (in Knots)"
 msgstr "Ange beräknad fart (i knop)"
 
-#: src/GribRequestDialog.cpp:142
+#: src/GribRequestDialog.cpp:143
 msgid "Enter your forecasted Course"
 msgstr "Ange beräknad kurs"
 
-#: src/GribRequestDialog.cpp:495
+#: src/GribRequestDialog.cpp:502
 msgid "Coord. "
 msgstr "Coord. "
 
-#: src/GribRequestDialog.cpp:500 src/GribRequestDialog.cpp:880
-#: src/GribRequestDialog.cpp:883
+#: src/GribRequestDialog.cpp:507 src/GribRequestDialog.cpp:900
+#: src/GribRequestDialog.cpp:903
 msgid "MB"
 msgstr "MB"
 
-#: src/GribRequestDialog.cpp:660
+#: src/GribRequestDialog.cpp:667
 msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
@@ -1046,37 +1046,37 @@ msgstr "Du har begärt en prognos som sträcker sig längre än 8 dagar.\n"
 "Kom ihåg att efter de första 8 dagarna så är upplösningen endast 2.5°x2.5°\n"
 " med tidsintervall på 12 timmar."
 
-#: src/GribRequestDialog.cpp:883
+#: src/GribRequestDialog.cpp:903
 msgid "Max"
 msgstr "( Max "
 
-#: src/GribRequestDialog.cpp:999
+#: src/GribRequestDialog.cpp:1041
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr "Innan du skickar epost till Zygrib måste du ange dina inloggningsuppgifter.\n"
 "Besök www.zygrib.org/ och följ instruktionerna..."
 
-#: src/GribRequestDialog.cpp:1000
+#: src/GribRequestDialog.cpp:1042
 msgid "Too big file! zyGrib limit is 2Mb!"
 msgstr "För stor fil! Gränsen för zyGrib är 2Mb!"
 
-#: src/GribRequestDialog.cpp:1000
+#: src/GribRequestDialog.cpp:1042
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
 msgstr "Fel! Max Lat är mindre än Min Lat eller Max Lon mindre än Min Lon!"
 
-#: src/GribRequestDialog.cpp:1001
+#: src/GribRequestDialog.cpp:1043
 msgid "Too large area! Each side must be less than 180°!"
 msgstr "Alltför stort område! Ingen sida får vara större än 180°!"
 
-#: src/GribRequestDialog.cpp:1001
+#: src/GribRequestDialog.cpp:1043
 msgid "Too small area for this resolution!"
 msgstr "För litet område för denna skärmupplösning!"
 
-#: src/GribRequestDialog.cpp:1018 src/GribRequestDialog.cpp:1054
+#: src/GribRequestDialog.cpp:1060 src/GribRequestDialog.cpp:1107
 msgid "Continue..."
 msgstr "Fortsätt..."
 
-#: src/GribRequestDialog.cpp:1039 src/GribRequestDialog.cpp:1043
+#: src/GribRequestDialog.cpp:1092 src/GribRequestDialog.cpp:1096
 msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
@@ -1084,7 +1084,7 @@ msgstr "Din förfrågan är klar. Ett epostmeddelande har skapats i din epostlå
 "Klicka 'Sänd' för att skicka meddelandet.\n"
 "Spara eller Avbryt för att skicka... eller Fortsätt för ett nytt meddelande"
 
-#: src/GribRequestDialog.cpp:1046
+#: src/GribRequestDialog.cpp:1099
 msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
@@ -1092,7 +1092,7 @@ msgstr "Din förfrågan skickades\n"
 "(om ditt system har en konfigurerad MTA och möjligheten att skicka epost).\n"
 "Spara eller Avbryt för att fortsätta... eller nya parametrar för ett nytt meddelande"
 
-#: src/GribRequestDialog.cpp:1051
+#: src/GribRequestDialog.cpp:1104
 msgid "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
@@ -1160,5 +1160,5 @@ msgstr "Förkortat värdefält"
 
 #: src/CursorData.cpp:534
 msgid "Display Iso Reflectivity"
-msgstr ""
+msgstr "Visa Iso-reflektivitet"
 

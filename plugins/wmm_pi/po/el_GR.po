@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2020-08-28 14:52\n"
+"PO-Revision-Date: 2021-09-26 23:57\n"
 "Last-Translator: \n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -45,7 +45,7 @@ msgstr "Πρόσθετο WMM"
 
 #: src/wmm_pi.cpp:167
 msgid "WMM_Live_Overlay"
-msgstr ""
+msgstr "Ζωντανό WMM"
 
 #: src/wmm_pi.cpp:225 src/wmm_pi.cpp:313 src/WmmUIDialog.h:87
 msgid "WMM"
@@ -64,7 +64,13 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
+msgstr "Πρόσθετο Παγκόσμιου Μαγνητικού Μοντέλου για το OpenCPN\n"
+"Εφαρμόζει το Παγκόσμιο Μαγνητικό Μοντέλο (WMM) της NOAA\n"
+"Περισσότερες πληροφορίες στο http://www.ngdc.noaa.gov/geomag/WMM/DoDwmm.shtml\n"
+"Το μοντέλο WMM2015 λήγει στις 31 Δεκεμβρίου, 2025.\n"
+"Κατόπιν, αν δεν έχει εκδοθεί μια νέα έκδοση του προσθέτου\n"
+"έγκαιρα, κατεβάστε ένα νέο WMM.COF από την NOAA και τοποθετήστε το στη\n"
+"θέση που μπορείτε να βρείτε στο logfile του OpenCPN."
 
 #: src/wmm_pi.cpp:535 src/wmm_pi.cpp:675
 msgid "Error, see log."
