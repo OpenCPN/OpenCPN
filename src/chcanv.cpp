@@ -8596,17 +8596,21 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     index_last = current->GetIndexOf(current->GetLastPoint());
                     dlg_return1 = wxID_NO;
                     if (index_last == index_current_route) {// we are dragging the last point of the route, touch case
-                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
-                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return1 == wxID_YES) {
-                        appending = true;
+                      if(connect == 1){
+                        dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
+                          _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                        if (dlg_return1 == wxID_YES) {
+                          appending = true;
+                        }
                       }
                     }
                     else if (index_current_route == 1) {  // dragging the first point of the route, touch case
-                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
-                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return1 == wxID_YES) {
-                        inserting = true;
+                      if(connect == tail->GetnPoints()){
+                        dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
+                          _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                        if (dlg_return1 == wxID_YES) {
+                          inserting = true;
+                        }
                       }
                     }
 
@@ -8816,17 +8820,21 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     index_last = current->GetIndexOf(current->GetLastPoint());
                     dlg_return1 = wxID_NO;
                     if (index_last == index_current_route) {// we are dragging the last point of the route
-                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
-                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return1 == wxID_YES) {
-                        appending = true;
+                      if(connect == 1){
+                        dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be appended to dragged route?"),
+                          _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                        if (dlg_return1 == wxID_YES) {
+                          appending = true;
+                        }
                       }
                     }
                     else if (index_current_route == 1) {  // dragging the first point of the route
-                      dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
-                        _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                      if (dlg_return1 == wxID_YES) {
-                        inserting = true;
+                      if(connect == tail->GetnPoints()){
+                        dlg_return1 = OCPNMessageBox(this, _("(Part of) Route to be inserted in the dragged route?"),
+                          _("OpenCPN Route Create"), (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                        if (dlg_return1 == wxID_YES) {
+                          inserting = true;
+                        }
                       }
                     }
                   }
