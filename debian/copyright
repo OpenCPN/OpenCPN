@@ -40,11 +40,39 @@ Copyright: The OpenCPN
 License: GPL-2+
 
 Files: data/copyright
-Copyright: -format/1.0
+Copyright: 2008-2018, David S Register <bdbcat@yahoo.com>
 License: GPL-2+
 
 Files: data/opencpn.appdata.xml.in
 Copyright: 2018, Alec Leamas <leamas@nowhere.net> ->
+License: GPL-2+
+
+Files: debian/opencpn-data/DEBIAN/md5sums
+Copyright: 71540, f805343b9b6db1ea780fabf6fe7 usr/share/doc/opencpn-data/harmonics-dwf-20210110-free.tcd.gz
+License: GPL-2+
+
+Files: debian/opencpn-data/usr/share/doc/opencpn-data/copyright
+Copyright: 2011, 2014, Pavel Kalian
+License: GPL-2
+
+Files: debian/opencpn/DEBIAN/md5sums
+Copyright: 3dadf1fe3042bf561c071dcd2c2699fe usr/share/icons/hicolor/48x48/apps/opencpn.png
+License: GPL-2+
+
+Files: debian/opencpn/usr/share/doc/*
+Copyright: 2011, 2014, Pavel Kalian
+License: GPL-2
+
+Files: debian/tmp/usr/share/doc/opencpn/copyright
+Copyright: 2008-2018, David S Register <bdbcat@yahoo.com>
+License: CC0 and/or Expat and/or GPL-2 and/or public-domain
+
+Files: debian/tmp/usr/share/man/*
+Copyright: 2018, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: debian/tmp/usr/share/opencpn/LICENSING
+Copyright: The OpenCPN
 License: GPL-2+
 
 Files: include/*
@@ -75,14 +103,19 @@ License: GPL-2+
 
 Files: include/Downloader.h
   include/PluginHandler.h
+  include/cat_settings.h
   include/catalog_handler.h
   include/catalog_mgr.h
   include/catalog_parser.h
   include/download_mgr.h
+  include/linux_devices.h
   include/ocpn_utils.h
+  include/plugin_cache.h
   include/semantic_vers.h
+  include/udev_rule_mgr.h
   include/update_mgr.h
-Copyright: 2019, Alec Leamas
+  include/usb_devices.h
+Copyright: 2011, 2019, 2021, Alec Leamas
 License: GPL-2+
 
 Files: include/GL/*
@@ -117,7 +150,13 @@ License: Expat
 Comment: https://geographiclib.sourceforge.io/
 
 Files: include/gshhs.h
-Copyright: zUGrib: meteorologic GRIB file data viewer / 2012, David S. Register / 2008, - Jacques Zaninetti - http:www.zygrib.org
+Copyright: 2008, Jacques Zaninetti - http://www.zygrib.org
+  2012, David S. Register
+License: GPL-2+
+
+Files: include/macutils.h
+Copyright:  2007-2010 David S. Register
+  2007-2010 Richard M Smith
 License: GPL-2+
 
 Files: include/ogr_s57.h
@@ -151,8 +190,20 @@ Comment: https://github.com/yvz/zeroconf
 
 Files: libs/SQLiteCpp/*
 Copyright: 2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+License: Expat
+
+Files: libs/SQLiteCpp/include/SQLiteCpp/Backup.h
+Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
   2015, Shibao HONG (shibaohong@outlook.com)
+License: Expat
+
+Files: libs/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
+Copyright: 2016-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
   2016, Paul Dreik (github@pauldreik.se)
+License: Expat
+
+Files: libs/SQLiteCpp/src/Backup.cpp
+Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
   2015, Shibao HONG (shibaohong@outlook.com)
 License: Expat
 
@@ -170,7 +221,20 @@ Copyright: 2011, 2014, Pavel Kalian
   2000-2018, The OpenCPN Authors
   2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
   1995-1998, Brian Paul
- 2012, 2013, <dhbaird@gmail.com>
+  2012, 2013, <dhbaird@gmail.com>
+  2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
 License: Expat or GPL-2+
 
 Files: libs/easywsclient/Makefile
@@ -266,14 +330,38 @@ License: LGPL-2+
 
 Files: libs/gdal/*
 Copyright: 1998-2003, Frank Warmerdam
-   1998, Daniel Morissette
-   2003, Andrey Kiselev <dron@remotesensing.org>
-   1998, Daniel Morissette
-   1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
-   1999, Les Technologies SoftMap Inc.
-   1999, Les Technologies SoftMap Inc.
 License: Expat
 
+Files: libs/gdal/include/gdal/cpl_error.h
+  libs/gdal/include/gdal/cpl_string.h
+Copyright: 1998, Daniel Morissette
+License: Expat
+
+Files: libs/gdal/include/gdal/cpl_list.h
+Copyright: 2003, Andrey Kiselev <dron@remotesensing.org>
+License: Expat
+
+Files: libs/gdal/include/gdal/ogr_attrind.h
+Copyright: 1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: libs/gdal/include/gdal/ogr_feature.h
+  libs/gdal/include/gdal/ogr_spatialref.h
+  libs/gdal/include/gdal/ogrsf_frmts.h
+Copyright: 1999, Les Technologies SoftMap Inc.
+License: Expat
+
+Files: libs/gdal/src/cpl_error.cpp
+  libs/gdal/src/cpl_string.cpp
+Copyright: 1998, Daniel Morissette
+License: Expat
+
+Files: libs/gdal/src/ogrfeature.cpp
+  libs/gdal/src/ogrfeaturedefn.cpp
+  libs/gdal/src/ogrfielddefn.cpp
+  libs/gdal/src/ogrlayer.cpp
+Copyright: 1999, Les Technologies SoftMap Inc.
+License: Expat
 
 Files: libs/glshim/*
 Copyright: 2011, 2014, Pavel Kalian
@@ -351,10 +439,10 @@ Copyright: 1995-1998, Brian Paul
 License: LGPL-2+
 
 Files: libs/glshim/include/GL/internal/*
-Copyright:
-  2004 IBM Corporation
+Copyright: 2004 IBM Corporation 2004
   2007-2008, Red Hat, Inc.
   1998-1999, Precision Insight, Inc., Cedar Park, Texas.
+
 License: GPL-2+
 
 Files: libs/glshim/include/GLES/*
@@ -515,6 +603,42 @@ Files: libs/nmea0183/*
 Copyright: 2010, Samuel R. Blackburn, David S Register
 License: GPL-2+
 
+Files: libs/picosha2/*
+Copyright: 2017, okdshin
+License: Expat
+
+Files: libs/picosha2/example/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/picosha2/test/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
 Files: libs/sound/*
 Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
@@ -556,14 +680,14 @@ Files: libs/wxcurl/include/wx/curl/dialog.h
   libs/wxcurl/include/wx/curl/panel.h
   libs/wxcurl/include/wx/curl/thread.h
   libs/wxcurl/include/wx/curl/utils.h
-Copyright: 2005, 2007, Francesco Montorsi
+Copyright: 2007, Francesco Montorsi
 License: GPL-2+
 
 Files: libs/wxcurl/src/dialog.cpp
   libs/wxcurl/src/panel.cpp
   libs/wxcurl/src/thread.cpp
   libs/wxcurl/src/utils.cpp
-Copyright: 2005, 2007, Francesco Montorsi
+Copyright: 2007, Francesco Montorsi
 License: GPL-2+
 
 Files: libs/wxcurl/src/include/*
@@ -609,7 +733,7 @@ Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
 
 Files: plugins/chartdldr_pi/src/base64.h
-Copyright: 2005, Angelo Mandato (http:www.spaceblue.com)
+Copyright: 2005, Angelo Mandato (http://www.spaceblue.com)
 License: wxWidgets
 
 Files: plugins/chartdldr_pi/src/chartcatalog.cpp
@@ -618,11 +742,6 @@ Files: plugins/chartdldr_pi/src/chartcatalog.cpp
   plugins/chartdldr_pi/src/chartdldr_pi.h
 Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
-
-Files: plugins/chartdldr_pi/src/checkedlistctrl.cpp
-  plugins/chartdldr_pi/src/checkedlistctrl.h
-Copyright: 2005, 2007, Francesco Montorsi
-License: wxWidgets
 
 Files: plugins/chartdldr_pi/src/pugiconfig.hpp
   plugins/chartdldr_pi/src/pugixml.cpp
@@ -748,7 +867,7 @@ Files: plugins/grib_pi/src/GribReader.cpp
   plugins/grib_pi/src/IsoLine.h
   plugins/grib_pi/src/zuFile.cpp
   plugins/grib_pi/src/zuFile.h
-Copyright: 2008, - Jacques Zaninetti - http:www.zygrib.org
+Copyright: 2008, Jacques Zaninetti - http:www.zygrib.org
 License: GPL-3+
 
 Files: plugins/grib_pi/src/GribSettingsDialog.cpp
@@ -883,14 +1002,18 @@ License: GPL-2+
 
 Files: src/Downloader.cpp
   src/PluginHandler.cpp
+  src/cat_settings.cpp
   src/catalog_handler.cpp
   src/catalog_mgr.cpp
   src/catalog_parser.cpp
   src/download_mgr.cpp
+  src/linux_devices.cpp
   src/ocpn_utils.cpp
+  src/plugin_cache.cpp
   src/semantic_vers.cpp
+  src/udev_rule_mgr.cpp
   src/update_mgr.cpp
-Copyright: 2019, Alec Leamas
+Copyright: 2011, 2019, 2021, Alec Leamas
 License: GPL-2+
 
 Files: src/bbox.cpp
@@ -928,9 +1051,12 @@ License: Expat
 Comment: https://geographiclib.sourceforge.io/
 
 Files: src/gshhs.cpp
-Copyright:
+Copyright:  2008, Jacques Zaninetti
   2012, David S. Register
-  2008, Jacques Zaninetti
+License: GPL-2+
+
+Files: src/macutils.c
+Copyright: 2007-2010 David S Register
 License: GPL-2+
 
 Files: src/ocpnhelper.c
@@ -996,14 +1122,18 @@ License: Expat
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
 
-License: GPL-3
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation version 3
+License: GPL-2
+ This software is Copyright (c) 2021 by X. Ample.
  .
- On Debian systems, the full text of the GNU General Public
- License version 3 can be found in the file
- `/usr/share/common-licenses/GPL-3'.
+ This is free software, licensed under:
+ .
+   The GNU General Public License, Version 2, June 1991
+ .
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 dated June, 1991.
+ On Debian systems, the complete text of version 2 of the GNU General
+ Public License can be found in '/usr/share/common-licenses/GPL-2'.
 
 License: GPL-2+
  This program is free software; you can redistribute it and/or modify
