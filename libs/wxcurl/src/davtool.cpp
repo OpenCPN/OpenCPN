@@ -24,7 +24,7 @@
 #endif
 
 #ifdef __WXMSW__
-    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC 
+    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC
 #endif
 
 
@@ -76,10 +76,10 @@ wxCurlDAVFs::~wxCurlDAVFs()
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-wxCurlDAVTool::wxCurlDAVTool(const wxString& szURL /*= wxEmptyString*/, 
-                             const wxString& szUserName /*= wxEmptyString*/, 
-                             const wxString& szPassword /*= wxEmptyString*/, 
-                             wxEvtHandler* pEvtHandler /*= NULL*/, 
+wxCurlDAVTool::wxCurlDAVTool(const wxString& szURL /*= wxEmptyString*/,
+                             const wxString& szUserName /*= wxEmptyString*/,
+                             const wxString& szPassword /*= wxEmptyString*/,
+                             wxEvtHandler* pEvtHandler /*= NULL*/,
                              long flags/*= wxCURL_DEFAULT_FLAGS*/)
 : wxCurlDAV(szURL, szUserName, szPassword, pEvtHandler, flags)
 {
@@ -132,7 +132,7 @@ bool wxCurlDAVTool::GetDAVFs(wxArrayDAVFs& fs, const wxString& szRemoteLoc /*= w
 					else
 						pNode = pNode->GetNext();
 				}
-				
+
 				// Process "Response" tags...
 				while(pNode)
 				{

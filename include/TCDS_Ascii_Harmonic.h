@@ -35,56 +35,53 @@
 
 #define linelen 300
 
-class TCDS_Ascii_Harmonic : public TCDataFactory
-{
+class TCDS_Ascii_Harmonic : public TCDataFactory {
 public:
-    TCDS_Ascii_Harmonic();
-    ~TCDS_Ascii_Harmonic();
+  TCDS_Ascii_Harmonic();
+  ~TCDS_Ascii_Harmonic();
 
-    TC_Error_Code LoadData(const wxString &data_file_path);
+  TC_Error_Code LoadData(const wxString &data_file_path);
 
-    int GetMaxIndex(void) {
-        return num_IDX;
-    };
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
-    int pIDX_Ref;
+  int GetMaxIndex(void) { return num_IDX; };
+  IDX_entry *GetIndexEntry(int n_index);
+  TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
+  int pIDX_Ref;
 
 private:
-    long IndexFileIO(int func, long value);
-    TC_Error_Code init_index_file();
-    TC_Error_Code build_IDX_entry(IDX_entry *pIDX );
-    TC_Error_Code LoadHarmonicConstants(const wxString &data_file_path);
-    int read_next_line (FILE *fp, char linrec[linelen], int end_ok);
-    int skipnl (FILE *fp);
-    char *nojunk (char *line);
-    int slackcmp (char *a, char *b);
+  long IndexFileIO(int func, long value);
+  TC_Error_Code init_index_file();
+  TC_Error_Code build_IDX_entry(IDX_entry *pIDX);
+  TC_Error_Code LoadHarmonicConstants(const wxString &data_file_path);
+  int read_next_line(FILE *fp, char linrec[linelen], int end_ok);
+  int skipnl(FILE *fp);
+  char *nojunk(char *line);
+  int slackcmp(char *a, char *b);
 
-    void free_cst();
-    void free_nodes();
-    void free_epochs();
-    void free_data();
+  void free_cst();
+  void free_nodes();
+  void free_epochs();
+  void free_data();
 
-    ArrayOfStationData  m_msd_array;
+  ArrayOfStationData m_msd_array;
 
-    wxString            m_indexfile_name;
-    wxString            m_harmfile_name;
-    wxString            m_last_reference_not_found;
+  wxString m_indexfile_name;
+  wxString m_harmfile_name;
+  wxString m_last_reference_not_found;
 
-    char                index_line_buffer[1024];
-    FILE                *m_IndexFile;
-    std::vector<abbr_entry> m_abbreviation_array;
-    ArrayOfIDXEntry     m_IDX_array;
+  char index_line_buffer[1024];
+  FILE *m_IndexFile;
+  std::vector<abbr_entry> m_abbreviation_array;
+  ArrayOfIDXEntry m_IDX_array;
 
-    int         num_IDX;
-    int         num_nodes;
-    int         num_csts;
-    int         num_epochs;
-    double      *m_cst_speeds;
-    double      **m_cst_nodes;
-    double      **m_cst_epochs;
-    double      *m_work_buffer;
-    int         m_first_year;
+  int num_IDX;
+  int num_nodes;
+  int num_csts;
+  int num_epochs;
+  double *m_cst_speeds;
+  double **m_cst_nodes;
+  double **m_cst_epochs;
+  double *m_work_buffer;
+  int m_first_year;
 };
 
 #endif

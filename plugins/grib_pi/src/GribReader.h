@@ -64,7 +64,7 @@ class GribReader
 
       std::vector<GribRecord *> * getListOfGribRecords(int dataType,int levelType,int levelValue);
 
-//      double		 getHoursBeetweenGribRecords()  {return hoursBetweenRecords;}
+//      double       getHoursBeetweenGribRecords()  {return hoursBetweenRecords;}
       std::set<time_t>  getListDates()   {return setAllDates;}
       int        getNumberOfDates()      {return setAllDates.size();}
       time_t     getRefDate()            {return setAllDates.size()>0 ?
@@ -78,7 +78,7 @@ class GribReader
 
       double computeDewPoint(double lon, double lat, time_t date);
 
-      int	   getDewpointDataStatus(int levelType,int levelValue);
+      int      getDewpointDataStatus(int levelType,int levelValue);
 
       enum GribFileDataStatus {DATA_IN_FILE, NO_DATA_IN_FILE, COMPUTED_DATA};
 

@@ -28,19 +28,16 @@
  *
  */
 
-
 #ifndef __SERIALDATASTREAM_H__
 #define __SERIALDATASTREAM_H__
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
-  #include "wx/wx.h"
-#endif //precompiled header
-
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled header
 
 #include <wx/datetime.h>
-
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
@@ -55,7 +52,7 @@
 #endif
 
 #ifndef __WXMSW__
-#include <sys/socket.h>                 // needed for (some) Mac builds
+#include <sys/socket.h>  // needed for (some) Mac builds
 #include <netinet/in.h>
 #endif
 
@@ -70,51 +67,38 @@
 #include "dsPortType.h"
 #include "datastream.h"
 
-
 class SerialDataStream : public DataStream {
 public:
-    SerialDataStream(wxEvtHandler *input_consumer,
-                     const ConnectionType conn_type,
-                     const wxString &Port,
-                     const wxString &BaudRate,
-                     dsPortType io_select,
-                     int priority = 0,
-                     bool bGarmin = false,
-                     int EOS_type = DS_EOS_CRLF,
-                     int handshake_type = DS_HANDSHAKE_NONE) : DataStream(input_consumer,
-                                                                          conn_type,
-                                                                          Port,
-                                                                          BaudRate,
-                                                                          io_select,
-                                                                          priority,
-                                                                          bGarmin,
-                                                                          EOS_type,
-                                                                          handshake_type) {
-        Open();
-    }
+  SerialDataStream(wxEvtHandler *input_consumer, const ConnectionType conn_type,
+                   const wxString &Port, const wxString &BaudRate,
+                   dsPortType io_select, int priority = 0, bool bGarmin = false,
+                   int EOS_type = DS_EOS_CRLF,
+                   int handshake_type = DS_HANDSHAKE_NONE)
+      : DataStream(input_consumer, conn_type, Port, BaudRate, io_select,
+                   priority, bGarmin, EOS_type, handshake_type) {
+    Open();
+  }
 
-    SerialDataStream(wxEvtHandler *input_consumer,
-                     const ConnectionParams *params) : DataStream(input_consumer, params) {
-        Open();
-    }
+  SerialDataStream(wxEvtHandler *input_consumer, const ConnectionParams *params)
+      : DataStream(input_consumer, params) {
+    Open();
+  }
 
-    bool SendSentence( const wxString &sentence ) {
-        wxString payload = sentence;
-        if( !sentence.EndsWith(_T("\r\n")) )
-            payload += _T("\r\n");
-        return SendSentenceSerial(payload);
-    }
+  bool SendSentence(const wxString &sentence) {
+    wxString payload = sentence;
+    if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
+    return SendSentenceSerial(payload);
+  }
+
 private:
-    void Open();
-    virtual bool SendSentenceSerial(const wxString &payload);
+  void Open();
+  virtual bool SendSentenceSerial(const wxString &payload);
 };
 
 DataStream *makeSerialDataStream(wxEvtHandler *input_consumer,
                                  const ConnectionType conn_type,
-                                 const wxString &Port,
-                                 const wxString &BaudRate,
-                                 dsPortType io_select,
-                                 int priority,
+                                 const wxString &Port, const wxString &BaudRate,
+                                 dsPortType io_select, int priority,
                                  bool bGarmin);
 
-#endif // __SERIALDATASTREAM_H__
+#endif  // __SERIALDATASTREAM_H__

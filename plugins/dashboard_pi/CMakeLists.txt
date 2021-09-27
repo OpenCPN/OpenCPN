@@ -223,7 +223,7 @@ endif()
 
 IF(APPLE)
     INSTALL(TARGETS ${PACKAGE_NAME} BUNDLE LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
-   
+
    IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
     INSTALL(DIRECTORY data DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins/${PACKAGE_NAME})
     ENDIF()
@@ -241,13 +241,33 @@ ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32)
     INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
-  
+
     SET(INSTALL_DIRECTORY "plugins/${PACKAGE_NAME}")
 
     IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
     INSTALL(DIRECTORY data DESTINATION "${INSTALL_DIRECTORY}")
     ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
 ENDIF(WIN32)
+
+# Copy shared library to execution folder for debugging if not CI build
+if (NOT OCPN_CI_BUILD)
+  if (MSVC)
+    add_custom_command(
+      TARGET ${PACKAGE_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+    )
+      if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        add_custom_command(
+          TARGET ${PACKAGE_NAME} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+          COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+          COMMAND ${CMAKE_COMMAND} -E copy "$(OutputPath)/$(TargetName).pdb" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+        )
+      endif ()
+  endif (MSVC)
+endif (NOT OCPN_CI_BUILD)
 
 INCLUDE("../PluginLocalization.cmake")
 PLUGIN_LOCALIZATION()

@@ -30,40 +30,37 @@
 #include <string>
 #include <ostream>
 
-
 /** Default downloader, usable in a CLI context.*/
 class Downloader {
+public:
+  Downloader(std::string url);
 
-    public:
-        Downloader(std::string url);
+  /** Download url into stream, return false on errors. */
+  bool download(std::ostream* stream);
 
-        /** Download url into stream, return false on errors. */
-        bool download(std::ostream* stream);
+  /**
+   * Download url into path. If path is empty, set it to a
+   * temporary filename used. Return false on errors.
+   */
+  bool download(std::string& path);
 
-        /**
-         * Download url into path. If path is empty, set it to a
-         * temporary filename used. Return false on errors.
-         */
-        bool download(std::string& path);
+  /** Last error code, a CURLE return code. */
+  int last_errorcode();
 
-        /** Last error code, a CURLE return code. */
-        int last_errorcode();
+  /** Last Curl error message. */
+  std::string last_error();
 
-        /** Last Curl error message. */
-        std::string last_error();
+  /** Called when given bytes has been transferred from remote. */
+  virtual void on_chunk(const char* buff, unsigned bytes);
 
-        /** Called when given bytes has been transferred from remote. */
-        virtual void on_chunk(const char* buff, unsigned bytes);
+protected:
+  /** Try to get remote filesize, return 0 on failure. */
+  long get_filesize();
 
-    protected:
-        /** Try to get remote filesize, return 0 on failure. */
-        long get_filesize();
-
-        std::string url;
-        std::ostream* stream;
-        std::string error_msg;
-        int errorcode;
+  std::string url;
+  std::ostream* stream;
+  std::string error_msg;
+  int errorcode;
 };
 
-
-#endif // DOWNLOADER_H__
+#endif  // DOWNLOADER_H__

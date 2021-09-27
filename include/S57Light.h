@@ -27,13 +27,12 @@
 
 #include <wx/string.h>
 
-class S57Light
-{
+class S57Light {
 public:
-      wxArrayString attributeNames;
-      wxArrayString attributeValues;
-      wxString position;
-      bool hasSectors;
+  wxArrayString attributeNames;
+  wxArrayString attributeValues;
+  wxString position;
+  bool hasSectors;
 };
 
 #endif

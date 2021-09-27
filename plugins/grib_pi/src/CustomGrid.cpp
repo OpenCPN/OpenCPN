@@ -37,8 +37,8 @@
 //          custom grid implementation
 //------------------------------------------------------------------------------
 CustomGrid::CustomGrid( wxWindow *parent, wxWindowID id, const wxPoint &pos,
-					   const wxSize &size, long style,
-					   const wxString &name )
+                       const wxSize &size, long style,
+                       const wxString &name )
   : wxGrid( parent, id, pos, size, style, name )
 {
     //create grid
@@ -108,7 +108,7 @@ CustomGrid::CustomGrid( wxWindow *parent, wxWindowID id, const wxPoint &pos,
 void CustomGrid::DrawColLabel( wxDC& dc, int col )
 {
     //init dc font and colours
-	dc.SetFont(m_labelFont);
+    dc.SetFont(m_labelFont);
     if(col == m_gParent->m_pIndex){
         dc.SetBrush(wxBrush(m_greenColour, wxBRUSHSTYLE_SOLID));
         dc.SetPen(wxPen(m_greenColour, 1));
@@ -117,7 +117,7 @@ void CustomGrid::DrawColLabel( wxDC& dc, int col )
         dc.SetPen(wxPen(m_labelBackgroundColour, 1));
     }
     //draw retangle
-	wxRect tRect( GetColLeft(col), 1, GetColWidth(col)-2,  m_colLabelHeight -2);
+    wxRect tRect( GetColLeft(col), 1, GetColWidth(col)-2,  m_colLabelHeight -2);
     dc.DrawRectangle(tRect);
     //draw lines aroud label
     dc.SetPen(GetDefaultGridLinePen());
@@ -138,7 +138,7 @@ void CustomGrid::DrawRowLabel( wxDC& dc, int row )
     //init dc font and colours
     dc.SetFont( m_labelFont );
     dc.SetPen(GetDefaultGridLinePen());
-	dc.SetBrush( wxBrush( m_labelBackgroundColour, wxBRUSHSTYLE_SOLID ) );
+    dc.SetBrush( wxBrush( m_labelBackgroundColour, wxBRUSHSTYLE_SOLID ) );
     int w = dc.GetTextExtent(_T("Speed")).x;
     wxString label1,label2;
     label1 = GetRowLabelValue(row).BeforeFirst(',', &label2);
@@ -184,7 +184,7 @@ void CustomGrid::DrawRowLabel( wxDC& dc, int row )
 void CustomGrid::DrawCornerLabel( wxDC& dc )
 {
     dc.SetPen(GetDefaultGridLinePen());
-	dc.SetBrush( wxBrush( m_labelBackgroundColour, wxBRUSHSTYLE_SOLID ) );
+    dc.SetBrush( wxBrush( m_labelBackgroundColour, wxBRUSHSTYLE_SOLID ) );
     wxRect rect( 0, 0, m_rowLabelWidth, m_colLabelHeight );
     dc.DrawRectangle(rect);
     ////scale bitmap to near col label height
@@ -342,43 +342,43 @@ void CustomGrid::OnMouseEvent( wxMouseEvent& event )
 
 bool CustomGrid::IsRowVisible( int row )
 {
-	for( int i = 0; i < m_numCols; i++ ) {
-		if( IsVisible( row, i, false ) )
-			return true;
-	}
-	return false;
+    for( int i = 0; i < m_numCols; i++ ) {
+        if( IsVisible( row, i, false ) )
+            return true;
+    }
+    return false;
 }
 
 //find the first top/left visible cell coords
 void CustomGrid::GetFirstVisibleCell(int& frow, int& fcol)
 {
-	bool vis = false;
+    bool vis = false;
     frow = 0;
-	for(fcol = 0; fcol < m_numCols; fcol++){
-		for(frow = 0; frow < m_numRows; frow++) {
-			if(IsVisible(frow, fcol)){  //find the first row/col
-				vis = true;
+    for(fcol = 0; fcol < m_numCols; fcol++){
+        for(frow = 0; frow < m_numRows; frow++) {
+            if(IsVisible(frow, fcol)){  //find the first row/col
+                vis = true;
                 break;
             }
-		}
-		if(vis) break;
-	}
+        }
+        if(vis) break;
+    }
 }
 
 //find the visible cell coords
 void CustomGrid::GetLastVisibleCell(int& lrow, int& lcol)
 {
-	bool vis = false;
+    bool vis = false;
     lrow = wxMax(m_numRows - 1, 0);
-	for(lcol = wxMax(m_numCols - 1, 0); lcol > -1; lcol--){
-		for(lrow = m_numRows - 1; lrow > -1; lrow--) {
-			if(IsVisible(lrow, lcol)){
-				vis = true;
+    for(lcol = wxMax(m_numCols - 1, 0); lcol > -1; lcol--){
+        for(lrow = m_numRows - 1; lrow > -1; lrow--) {
+            if(IsVisible(lrow, lcol)){
+                vis = true;
                 break;
             }
-		}
-		if(vis) break;
-	}
+        }
+        if(vis) break;
+    }
 }
 
 //------------------------------------------------------------------------------

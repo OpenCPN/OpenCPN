@@ -20,6 +20,7 @@
 # - Free Software Foundation, Inc.,                                       *
 # - 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 # ***************************************************************************
+
 #[[
 
 Configuring opencpn
@@ -86,7 +87,7 @@ To build for android, use something like:
         -D_wx_selected_config=androideabi-qt
         -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
         -DwxQt_Build=build_android_53
-       	-DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+        -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
         -DQt_Base /home/dsr/Qt/5.3)
         ..
 
@@ -145,25 +146,21 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-IF(DEFINED _wx_selected_config)
-  MESSAGE (STATUS "selected config ${_wx_selected_config}")
-  IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Building for wxQt-Android, ANDROID_ARCH: ${ANDROID_ARCH}")
-    SET(QT_ANDROID "ON")
-    if(ANDROID_ARCH MATCHES "arm64")
-      add_definitions("-DANDROID_ARM64")
-    else ()
-      add_definitions("-DANDROID_ARMHF")
-    endif ()
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
-ENDIF(DEFINED _wx_selected_config)
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
+   message(STATUS "Building for wxQt-Android")
+   set(QT_ANDROID "ON")
+   if(PKG_ARCH STREQUAL "arm64")
+     add_definitions("-DANDROID_ARM64")
+   else ()
+     add_definitions("-DANDROID_ARMHF")
+   endif ()
+   set(PACKAGE_NAME gorp)
+endif ()
 
-if( QT_ANDROID )
-  set(PACKAGE_NAME gorp)
-endif( QT_ANDROID )
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
+include(CheckSymbolExists)
 
 #
 # Options
@@ -208,6 +205,12 @@ set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 option(OCPN_USE_GL "Enable OpenGL support" ON)
 option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
+option(OCPN_USE_UDEV_PORTS "Use udev to enumerate serial ports" ON)
+option(OCPN_USE_SYSFS_PORTS "Use sysfs to enumerate serial ports" OFF)
+
+set(OCPN_TARGET_TUPLE "" CACHE STRING
+  "List of target;version;arch like flatpak;20.08;aarch64 [\"\"]"
+)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -317,6 +320,10 @@ option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
   "Use aplay(1), afplay(1) etc. to play sounds if available" ON
 )
+
+if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
+  set(LINUX "1")
+endif ()
 
 IF (QT_ANDROID)
   SET(OCPN_NEW_SERIAL OFF)
@@ -542,7 +549,7 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
         set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
     else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")
     endif ()
     set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
         CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
@@ -771,9 +778,12 @@ if (NOT QT_ANDROID)
   # looked for them. This is a nasty fix which might fail miserably. Assumption:
   # All builds using GTK uses unicode and wxWidgets 3.0
   if (GTK3_FOUND)
-    list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
-    if (OPENGL_FOUND)
-      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
+    if (NOT wxWidgets_VERSION_STRING VERSION_GREATER "3.0")
+      message (STATUS " Patching ${wxWidgets_LIBRARIES}")
+      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
+      if (OPENGL_FOUND)
+        list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
+      endif ()
     endif ()
   endif ()
 
@@ -851,6 +861,20 @@ IF(QT_ANDROID)
   )
 ENDIF(QT_ANDROID)
 
+#  Make sure that the variable "wxWidgets_VERSION_STRING" is set, even on older CMake versions
+#  Seems safe to set to "3.0", since OCPN does not support earlier wxWidgets versions
+if( wxWidgets_VERSION_STRING)
+    message(STATUS "Found wxWidgets_VERSION_STRING: ${wxWidgets_VERSION_STRING}")
+else( wxWidgets_VERSION_STRING)
+    message(STATUS "Forcing wxWidgets_VERSION_STRING: ${wxWidgets_VERSION_STRING}")
+    set(wxWidgets_VERSION_STRING "3.0")
+endif( wxWidgets_VERSION_STRING)
+
+# Enable zoom gesture
+if ( wxWidgets_VERSION_STRING VERSION_GREATER "3.1.0")
+    add_definitions("-DHAVE_WX_GESTURE_EVENTS")
+endif()
+
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
@@ -916,6 +940,7 @@ set(
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
+  include/gui_lib.h
   include/gshhs.h
   include/Hyperlink.h
   include/IDX_entry.h
@@ -947,6 +972,7 @@ set(
   include/ocpn_utils.h
   include/options.h
   include/piano.h
+  include/plugin_cache.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -994,6 +1020,7 @@ set(
   include/TTYWindow.h
   include/undo.h
   include/update_mgr.h
+  include/usb_devices.h
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
@@ -1046,6 +1073,7 @@ set(
   src/geodesic.cpp
   src/georef.cpp
   src/GoToPositionDialog.cpp
+  src/gui_lib.cpp
   src/gshhs.cpp
   src/Hyperlink.cpp
   src/IDX_entry.cpp
@@ -1080,6 +1108,7 @@ set(
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
+  src/plugin_cache.cpp
   src/printtable.cpp
   src/pugixml.cpp
   src/Quilt.cpp
@@ -1098,6 +1127,7 @@ set(
   src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
   src/SerialDataStream.cpp
+  src/ser_ports.cpp
   src/SignalKDataStream.cpp
   src/SignalKEventHandler.cpp
   src/Station_Data.cpp
@@ -1126,6 +1156,7 @@ if (OCPN_USE_GARMINHOST)
   set(SRCS ${SRCS} src/garmin_wrapper.cpp)
 endif ()
 
+
 if (APPLE)
   if (DARWIN_VERSION LESS 16)
     message(
@@ -1136,6 +1167,11 @@ if (APPLE)
     add_definitions(-DOCPN_USE_DARKMODE)
   endif ()
 endif (APPLE)
+
+if (LINUX)
+  list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
+  list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
+endif ()
 
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   list(APPEND HDRS include/crashprint.h)
@@ -1205,6 +1241,46 @@ find_package(Gettext REQUIRED)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
+
+add_subdirectory(libs/picosha2)
+target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
+
+find_package(Libudev)
+if (UDEV_FOUND)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libudev)
+  set(HAVE_LIBUDEV 1)
+endif ()
+
+if (OCPN_USE_SYSFS_PORTS)
+  set(USE_SYSFS_PORTS 1)
+endif ()
+
+find_package(LIBUSB)
+if (LIBUSB_FOUND)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
+    set(HAVE_LIBUSB_10 1)
+endif ()
+
+find_package(PANGO)
+if (PANGO_FOUND)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
+    set(HAVE_PANGO 1)
+endif ()
+
+find_path(HAVE_UNISTD_H NAMES unistd.h)
+find_path(HAVE_LIBGEN_H NAMES libgen.h)
+find_path(HAVE_DIRENT_H NAMES dirent.h)
+find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
+find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
+find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
+find_path(HAVE_FCNTL_H  NAMES fcntl.h)
+if (NOT HAVE_FCNTL_H)
+  find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
+endif ()
+find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
+
+check_symbol_exists(readlink unistd.h HAVE_READLINK)
+
 
 #
 # Linux: set up GTK
@@ -1330,6 +1406,8 @@ if (UNIX)
       target_link_libraries(${PACKAGE_NAME} PRIVATE PNG::PNG)
       find_package(Pixman REQUIRED)
       target_link_libraries(${PACKAGE_NAME} PRIVATE Pixman::Pixman)
+      find_package(ZSTD REQUIRED)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE zstd::zstd)
     endif ()
   endif (NOT QT_ANDROID)
 endif (UNIX)
@@ -1370,6 +1448,10 @@ if (OCPN_USE_CURL)
   if (NOT QT_ANDROID)
     if (OCPN_USE_EXTERN_CURL)
       find_package(CURL REQUIRED)
+      message(STATUS "ocpn: using external curl libraries...")
+      message(STATUS "  curl includes: " ${CURL_INCLUDE_DIRS})
+      message(STATUS "  curl libraries: " ${CURL_LIBRARIES})
+
       target_include_directories(${PACKAGE_NAME} PRIVATE ${CURL_INCLUDE_DIRS})
     else (OCPN_USE_EXTERN_CURL)
       include("Curl")
@@ -1409,7 +1491,7 @@ if (OCPN_USE_CURL)
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
     target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ANDROID_ARCH}/libcurl.a)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -1538,7 +1620,7 @@ if (QT_ANDROID)
   target_include_directories(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
   target_link_libraries(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ANDROID_ARCH}/libarchive.a)
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
 elseif ( APPLE )
     if (OCPN_USE_SYSTEM_LIBARCHIVE)
         list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
@@ -1549,9 +1631,9 @@ elseif ( APPLE )
         set(LIBARCHIVE_COMMENT_START "<!--")
         set(LIBARCHIVE_COMMENT_END "-->")
     else()
-        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment 
-        target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
-        target_link_libraries(${PACKAGE_NAME} PRIVATE /usr/local/lib/libarchive.dylib)
+        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
+        target_include_directories(${PACKAGE_NAME} PRIVATE /opt/local/include)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE /opt/local/lib/libarchive.dylib)
     endif()
 else ()
   find_package(LibArchive REQUIRED)
@@ -1728,8 +1810,8 @@ endif (UNIX AND NOT APPLE)
 
 # Finalize config.h setup and deploy it.
 include(TargetSetup)
-if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u" AND PKG_TARGET STREQUAL "ubuntu")
-  set(PKG_TARGET "${PKG_TARGET}-gtk3")
+if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
+  string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
 configure_file(${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
@@ -1743,7 +1825,7 @@ if (CMAKE_HOST_WIN32)
   target_link_libraries(
     ${PACKAGE_NAME}
     PRIVATE setupapi.lib "GLU_static" psapi.lib
-    # glu32.lib 
+    # glu32.lib
   )
 
   # use gdi plus only on MSVC, it is not a free library
@@ -1773,7 +1855,7 @@ endif (UNIX)
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
 if (MSVC)
-  target_sources(${PACKAGE_NAME} PRIVATE src/opencpn.rc)
+  target_sources(${PACKAGE_NAME} PRIVATE ${CMAKE_BINARY_DIR}/opencpn.rc)
 endif ()
 
 if (OCPN_BUNDLE_GSHHS)
@@ -1828,8 +1910,9 @@ set(
 if (OCPN_BUNDLE_TCDATA)
   set(
     tcData
-    data/tcdata/HARMONIC
-    data/tcdata/HARMONIC.IDX
+    data/tcdata/HARMONICS_NO_US
+    data/tcdata/HARMONICS_NO_US.IDX
+    data/tcdata/harmonics-dwf-20210110-free.tcd
     data/tcdata/README.harmonics
   )
 endif (OCPN_BUNDLE_TCDATA)
@@ -2266,7 +2349,7 @@ if (NOT APPLE)
 
   IF(PACKAGE_FORMAT MATCHES "DEB")
         INSTALL(FILES "buildlinux/98-sglock-ocpn.rules"
-          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ 
+          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
           DESTINATION "/lib/udev/rules.d")
   ENDIF(PACKAGE_FORMAT MATCHES "DEB")
 
@@ -2393,13 +2476,14 @@ if (GETTEXT_MSGFMT_EXECUTABLE)
   gettext_build_mo(po/opencpn_fi_FI.po fi_FI)
   gettext_build_mo(po/opencpn_el_GR.po el_GR)
   gettext_build_mo(po/opencpn_zh_TW.po zh_TW)
-  gettext_build_mo(po/opencpn_zh_CN.po zh_TW)
+  gettext_build_mo(po/opencpn_zh_CN.po zh_CN)
   gettext_build_mo(po/opencpn_hu_HU.po hu_HU)
   gettext_build_mo(po/opencpn_gl_ES.po gl_ES)
   gettext_build_mo(po/opencpn_ca_ES.po ca_ES)
   gettext_build_mo(po/opencpn_ar_SA.po ar_SA)
   gettext_build_mo(po/opencpn_ja_JP.po ja_JP)
   gettext_build_mo(po/opencpn_vi_VN.po vi_VN)
+  gettext_build_mo(po/opencpn_he_IL.po he_IL)
   add_custom_target(i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
 
   if (NOT QT_ANDROID)
@@ -2525,7 +2609,7 @@ endif ()
 #
 if (MINGW)
   set(
-    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
+    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in > ${CMAKE_BINARY_DIR}/NSIS.template.in"
   )
   file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
   add_custom_target(
@@ -2538,7 +2622,7 @@ if (MINGW)
 else ()
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in COPYONLY
+    ${CMAKE_BINARY_DIR}/NSIS.template.in COPYONLY
   )
 endif ()
 
@@ -2582,7 +2666,7 @@ set(
 if (WIN32 AND NOT UNIX)
   if (NOT SKIP_VERSION_CONFIG)
     configure_file(
-      ${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc
+      ${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_BINARY_DIR}/opencpn.rc
     )
     configure_file(
       "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in"
@@ -2728,7 +2812,11 @@ if (UNIX AND NOT APPLE)
   # autogenerate additional dependency information
   set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   set(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
-  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
+  if ("${ARCH}" STREQUAL "x86_64")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+  else ()
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
+  endif ()
   set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
   set(CPACK_DEBIAN_PACKAGE_SECTION "misc")
   set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")

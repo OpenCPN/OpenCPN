@@ -27,12 +27,11 @@
 
 #include <wx/string.h>
 
-class S57ObjectDesc
-{
+class S57ObjectDesc {
 public:
-      wxString    S57ClassName;
-      wxString    S57ClassDesc;
-      wxString    Attributes;
+  wxString S57ClassName;
+  wxString S57ClassDesc;
+  wxString Attributes;
 };
 
 #endif

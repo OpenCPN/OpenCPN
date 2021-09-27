@@ -33,26 +33,23 @@
 #include "ssl/sha1.h"
 
 class FlexHash {
-
 public:
+  FlexHash(size_t output_octets);
 
-    FlexHash( size_t output_octets );
+  void Reset(void);
+  void Update(const void* input, size_t input_octets);
+  void Finish(void);
+  void Receive(void* output);
 
-    void Reset( void );
-    void Update( const void* input, size_t input_octets );
-    void Finish( void );
-    void Receive( void* output );
+  void Compute(const void* input, size_t input_octets, void* output);
+  static void Compute(const void* input, size_t input_octets, void* output,
+                      size_t output_octets);
 
-    void Compute( const void* input, size_t input_octets, void* output );
-    static void Compute( const void* input, size_t input_octets, void* output, size_t output_octets );
-
-    static bool Test( void );
+  static bool Test(void);
 
 protected:
-
-    sha1_context m_Context;
-    std::vector<unsigned char> m_Output;
-
+  sha1_context m_Context;
+  std::vector<unsigned char> m_Output;
 };
 
 #endif

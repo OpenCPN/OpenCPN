@@ -143,7 +143,7 @@ bool Adjacencies::CreateDatabase()
 
 	RadixSorter Core;
         udword i;
-        
+
 	udword* FaceNb = new udword[mNbEdges];	if(!FaceNb)	return false;
 	udword* VRefs0 = new udword[mNbEdges];	if(!VRefs0)	return false;
 	udword* VRefs1 = new udword[mNbEdges];	if(!VRefs1)	return false;

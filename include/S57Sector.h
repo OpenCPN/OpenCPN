@@ -29,12 +29,12 @@
 #include <wx/wx.h>
 
 typedef struct {
-    wxPoint2DDouble pos;
-    double sector1, sector2;
-    double range;
-    wxColor color;
-    bool iswhite;
-    bool isleading;
+  wxPoint2DDouble pos;
+  double sector1, sector2;
+  double range;
+  wxColor color;
+  bool iswhite;
+  bool isleading;
 } s57Sector_t;
 
 #endif

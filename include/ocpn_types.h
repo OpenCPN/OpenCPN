@@ -27,67 +27,56 @@
  *
  */
 
-
-
-
 #ifndef __OCPNTYPES_H__
 #define __OCPNTYPES_H__
 
+typedef struct _S52color {
+  char colName[20];
+  unsigned char R;
+  unsigned char G;
+  unsigned char B;
+} S52color;
 
-typedef struct _S52color{
-    char colName[20];
-    unsigned char  R;
-    unsigned char  G;
-    unsigned char  B;
-}S52color;
-
-WX_DECLARE_STRING_HASH_MAP( wxColour, wxColorHashMap );
-WX_DECLARE_STRING_HASH_MAP( S52color, colorHashMap );
+WX_DECLARE_STRING_HASH_MAP(wxColour, wxColorHashMap);
+WX_DECLARE_STRING_HASH_MAP(S52color, colorHashMap);
 
 typedef struct _colTable {
-    wxString *tableName;
-    wxString rasterFileName;
-    wxArrayPtrVoid *color;
-    colorHashMap colors;
-    wxColorHashMap wxColors;
+  wxString *tableName;
+  wxString rasterFileName;
+  wxArrayPtrVoid *color;
+  colorHashMap colors;
+  wxColorHashMap wxColors;
 } colTable;
 
-
-
 //    ChartType constants
-typedef enum ChartTypeEnum
-{
-      CHART_TYPE_UNKNOWN = 0,
-      CHART_TYPE_DUMMY,
-      CHART_TYPE_DONTCARE,
-      CHART_TYPE_KAP,
-      CHART_TYPE_GEO,
-      CHART_TYPE_S57,
-      CHART_TYPE_CM93,
-      CHART_TYPE_CM93COMP,
-      CHART_TYPE_PLUGIN,
-      CHART_TYPE_MBTILES
-}_ChartTypeEnum;
+typedef enum ChartTypeEnum {
+  CHART_TYPE_UNKNOWN = 0,
+  CHART_TYPE_DUMMY,
+  CHART_TYPE_DONTCARE,
+  CHART_TYPE_KAP,
+  CHART_TYPE_GEO,
+  CHART_TYPE_S57,
+  CHART_TYPE_CM93,
+  CHART_TYPE_CM93COMP,
+  CHART_TYPE_PLUGIN,
+  CHART_TYPE_MBTILES
+} _ChartTypeEnum;
 
 //    ChartFamily constants
-typedef enum ChartFamilyEnum
-{
-      CHART_FAMILY_UNKNOWN = 0,
-      CHART_FAMILY_RASTER,
-      CHART_FAMILY_VECTOR,
-      CHART_FAMILY_DONTCARE
-}_ChartFamilyEnum;
+typedef enum ChartFamilyEnum {
+  CHART_FAMILY_UNKNOWN = 0,
+  CHART_FAMILY_RASTER,
+  CHART_FAMILY_VECTOR,
+  CHART_FAMILY_DONTCARE
+} _ChartFamilyEnum;
 
-typedef enum ColorScheme
-{
-      GLOBAL_COLOR_SCHEME_RGB,
-      GLOBAL_COLOR_SCHEME_DAY,
-      GLOBAL_COLOR_SCHEME_DUSK,
-      GLOBAL_COLOR_SCHEME_NIGHT,
-      N_COLOR_SCHEMES
-}_ColorScheme;
-
-
+typedef enum ColorScheme {
+  GLOBAL_COLOR_SCHEME_RGB,
+  GLOBAL_COLOR_SCHEME_DAY,
+  GLOBAL_COLOR_SCHEME_DUSK,
+  GLOBAL_COLOR_SCHEME_NIGHT,
+  N_COLOR_SCHEMES
+} _ColorScheme;
 
 //----------------------------------------------------------------------------
 // ocpn Toolbar stuff
@@ -96,26 +85,25 @@ class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
 
-
 //    A generic Position Data structure
 typedef struct {
-    double kLat;
-    double kLon;
-    double kCog;
-    double kSog;
-    double kVar;            // Variation, typically from RMC message
-    double kHdm;            // Magnetic heading
-    double kHdt;            // true heading
-    time_t FixTime;
-    int    nSats;
+  double kLat;
+  double kLon;
+  double kCog;
+  double kSog;
+  double kVar;  // Variation, typically from RMC message
+  double kHdm;  // Magnetic heading
+  double kHdt;  // true heading
+  time_t FixTime;
+  int nSats;
 } GenericPosDatEx;
 
 //    A collection of active leg Data structure
 typedef struct {
-  double Xte;               // Left side of the track -> negative XTE
+  double Xte;  // Left side of the track -> negative XTE
   double Btw;
   double Dtw;
-  wxString wp_name;         // Name of destination waypoint for active leg;
+  wxString wp_name;  // Name of destination waypoint for active leg;
   bool arrival;
 } ActiveLegDat;
 

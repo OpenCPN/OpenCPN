@@ -126,16 +126,20 @@ Where:
     NumberOfMessages = sentence.Integer( 1 );
     MessageNumber = sentence.Integer( 2 );
     SatsInView = sentence.Integer( 3 );
-
+    bool valid_SNR = false;
     for (int idx = 0; idx < satInfoCnt; idx++)
     {
-        SatInfo[idx].SatNumber = sentence.Integer( idx*4+4 );
-        SatInfo[idx].ElevationDegrees = sentence.Integer( idx*4+5 );
-        SatInfo[idx].AzimuthDegreesTrue = sentence.Integer( idx*4+6 );
-        SatInfo[idx].SignalToNoiseRatio = sentence.Integer( idx*4+7 );
+        SatInfo[idx].SatNumber = sentence.Integer( idx * 4 + 4 );
+        SatInfo[idx].ElevationDegrees = sentence.Integer( idx * 4 + 5 );
+        SatInfo[idx].AzimuthDegreesTrue = sentence.Integer( idx * 4 + 6 );
+        SatInfo[idx].SignalToNoiseRatio = sentence.Integer( idx * 4 + 7 );
+        if (!valid_SNR) {
+          if (SatInfo[idx].SignalToNoiseRatio > 0) valid_SNR = true;
+        }
     }
-
-    return( TRUE );
+    // Don't PreParse GSV messages with only zero or NULL SNR.
+    if ( valid_SNR ) return(TRUE); 
+    else return(FALSE);
 }
 
 bool GSV::Write( SENTENCE& sentence )

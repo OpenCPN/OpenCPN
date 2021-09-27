@@ -35,7 +35,7 @@
 #endif
 
 #ifdef __WXMSW__
-    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC 
+    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC
 #endif
 
 #include <wx/wfstream.h>
@@ -147,7 +147,7 @@ wxStaticText *wxCurlTransferDialog::AddSizerRow(wxSizer *sz, const wxString &nam
     return ret;
 }
 
-void wxCurlTransferDialog::CreateControls(const wxString &url, const wxString &msg, 
+void wxCurlTransferDialog::CreateControls(const wxString &url, const wxString &msg,
                                       const wxString &sizeLabel, const wxBitmap &bitmap)
 {
     wxBoxSizer* main = new wxBoxSizer(wxVERTICAL);
@@ -250,7 +250,7 @@ void wxCurlTransferDialog::CreateControls(const wxString &url, const wxString &m
             btn->Add(new wxButton( this, PauseResumeButtonId, _("Pause") ), 0);
         if (HasFlag(wxCTDS_CAN_START))
             btn->Add(new wxButton( this, StartButtonId, _("Start") ), 0, wxLEFT, BORDER);
-            
+
         btn->SetMinSize( wxSize( -1, wxButton::GetDefaultSize().GetHeight() + 2 * OUTER_BORDER ) );
 
         main->Add(btn, 0, wxGROW|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM, OUTER_BORDER);
@@ -301,7 +301,7 @@ void wxCurlTransferDialog::UpdateLabels(wxCurlProgressBaseEvent *ev)
         if (m_pEstimatedTime)
             m_pEstimatedTime->SetLabel(ev->GetEstimatedTime().Format());
     }
-    
+
     if (m_pSize)
     {
         wxString currsize(ev->GetHumanReadableTransferredBytes().c_str(), wxConvUTF8);
@@ -627,7 +627,7 @@ bool wxCurlConnectionSettingsDialog::Create(const wxString& title,
                                             wxWindow *parent,
                                             long style)
 {
-    if (!wxDialog::Create(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, 
+    if (!wxDialog::Create(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
                           wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER))
         return false;
 

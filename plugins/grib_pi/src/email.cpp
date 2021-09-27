@@ -52,7 +52,7 @@ bool wxEmail::Send(wxMailMessage& message,  int sendMethod, const wxString& prof
 
     wxLaunchDefaultBrowser(mailURL);
     return true;
-#if 0    
+#if 0
    // wxASSERT (message.m_to.GetCount() > 0) ;
     wxASSERT (!message.m_to.IsEmpty()) ;
     wxString profile(profileName);
@@ -67,7 +67,7 @@ bool wxEmail::Send(wxMailMessage& message,  int sendMethod, const wxString& prof
         return FALSE;
 
     return session.Send(message);
-#endif    
+#endif
 }
 #elif defined(__UNIX__)
 bool wxEmail::Send(wxMailMessage& message,  int sendMethod, const wxString& profileName,

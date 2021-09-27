@@ -54,14 +54,14 @@ class DashboardInstrument_GPS: public DashboardInstrument
             ~DashboardInstrument_GPS(void){}
 
             wxSize GetSize( int orient, wxSize hint );
-            void SetData(int, double, wxString) {};
+            void SetData(DASH_CAP, double, wxString) {};
             void SetSatInfo(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
 
       private:
 
       protected:
 #define GNSS_SYSTEM 6
-            int m_cx, m_cy, m_radius;
+            int m_cx, m_cy, m_radius, m_refDim, m_scaleDelta, m_scaleBase;
             int m_SatCount;
             wxString talkerID;
             SAT_INFO m_SatInfo[12];

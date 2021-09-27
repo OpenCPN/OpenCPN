@@ -30,36 +30,33 @@
 #include "Station_Data.h"
 #include "IDX_entry.h"
 
-class TCDS_Binary_Harmonic : public TCDataFactory
-{
+class TCDS_Binary_Harmonic : public TCDataFactory {
 public:
-    TCDS_Binary_Harmonic();
-    ~TCDS_Binary_Harmonic();
+  TCDS_Binary_Harmonic();
+  ~TCDS_Binary_Harmonic();
 
-    TC_Error_Code LoadData(const wxString &data_file_path);
+  TC_Error_Code LoadData(const wxString &data_file_path);
 
-    int GetMaxIndex(void) {
-        return num_IDX;
-    };
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
+  int GetMaxIndex(void) { return num_IDX; };
+  IDX_entry *GetIndexEntry(int n_index);
+  TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
 
 private:
-    ArrayOfStationData  m_msd_array;
+  ArrayOfStationData m_msd_array;
 
-    wxString            m_last_reference_not_found;
+  wxString m_last_reference_not_found;
 
-    ArrayOfIDXEntry     m_IDX_array;
+  ArrayOfIDXEntry m_IDX_array;
 
-    int         num_IDX;
-    int         num_nodes;
-    int         num_csts;
-    int         num_epochs;
-    double      *m_cst_speeds;
-    double      **m_cst_nodes;
-    double      **m_cst_epochs;
-    double      *m_work_buffer;
-    int         m_first_year;
+  int num_IDX;
+  int num_nodes;
+  int num_csts;
+  int num_epochs;
+  double *m_cst_speeds;
+  double **m_cst_nodes;
+  double **m_cst_epochs;
+  double *m_work_buffer;
+  int m_first_year;
 };
 
 #endif

@@ -49,8 +49,8 @@ class CustomGrid: public wxGrid
 public:
 
     CustomGrid( wxWindow *parent, wxWindowID id, const wxPoint &pos,
-				const wxSize &size, long style,
-				const wxString &name );
+                const wxSize &size, long style,
+                const wxString &name );
 
     ~CustomGrid();
 
@@ -61,15 +61,15 @@ public:
     GRIBTable* m_gParent;
 
 private:
-	void DrawColLabel( wxDC& dc, int col );
-	void DrawRowLabel( wxDC& dc, int row );
+    void DrawColLabel( wxDC& dc, int col );
+    void DrawRowLabel( wxDC& dc, int row );
     void DrawCornerLabel(wxDC & dc);
     void OnScroll( wxScrollEvent& event );
     void OnMouseEvent( wxMouseEvent& event );
     void OnResize( wxSizeEvent& event );
     void OnLabeClick( wxGridEvent& event);
     void OnRefreshTimer( wxTimerEvent& event );
-	bool IsRowVisible( int row );
+    bool IsRowVisible( int row );
     int  GetRowIndex( int row );
 
     wxTimer m_tRefreshTimer;
@@ -92,20 +92,20 @@ private:
 class CustomRenderer : public wxGridCellRenderer
 {
 public:
-	CustomRenderer( double dir, bool isdigit)
+    CustomRenderer( double dir, bool isdigit)
         : wxGridCellRenderer(), m_dDir(dir), m_IsDigit(isdigit) {}
 
-	virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect, int row, int col, bool isSelected);
+    virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect, int row, int col, bool isSelected);
 
-	wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row, int col) {
-		return wxSize(-1, -1);
-	}
-	wxGridCellRenderer *Clone() const { return new CustomRenderer(m_dDir, m_IsDigit);}
+    wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row, int col) {
+        return wxSize(-1, -1);
+    }
+    wxGridCellRenderer *Clone() const { return new CustomRenderer(m_dDir, m_IsDigit);}
 
 private:
     void GetArrowsPoints( double si, double co, int di, int dj, int i, int j, int k, int l, double& ii, double& jj, double& kk, double& ll );
 
-	double m_dDir;
+    double m_dDir;
     bool m_IsDigit;
 };
 

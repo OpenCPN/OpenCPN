@@ -190,7 +190,7 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 #if defined (__WIN32__)
     if( !GPS_Serial_Chars_Ready(fd) )
         Sleep(1);
-#endif        
+#endif
     }
 
 

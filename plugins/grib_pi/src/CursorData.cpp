@@ -38,62 +38,62 @@ enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_ABBR, D_ARROWS, OVERLAY, NUMBERS, 
 //               GRIB Cursor Data  implementation
 //---------------------------------------------------------------------------------------
 CursorData::CursorData( wxWindow *window, GRIBUICtrlBar &parent )
-		: CursorDataBase(window),m_gparent(parent)
+        : CursorDataBase(window),m_gparent(parent)
 {
 
-	//transform checkboxes ID to have a formal link to data type and set the initial value
+    //transform checkboxes ID to have a formal link to data type and set the initial value
     wxWindowListNode *node =  this->GetChildren().GetFirst();
     while( node ) {
         wxWindow *win = node->GetData();
         if( win->IsKindOf(CLASSINFO(wxCheckBox)) ) {
-			int winId = ((wxCheckBox*) win )->GetId() - ID_CB_WIND;
-			if (m_gparent.InDataPlot(winId)) {
-			    ((wxCheckBox*) win )->SetId( winId );
-			    ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
+            int winId = ((wxCheckBox*) win )->GetId() - ID_CB_WIND;
+            if (m_gparent.InDataPlot(winId)) {
+                ((wxCheckBox*) win )->SetId( winId );
+                ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
             }
-		}
-		node = node->GetNext();
-	}
+        }
+        node = node->GetNext();
+    }
 
     m_bLeftDown = false;
 
     m_tCursorTrackTimer.Connect(wxEVT_TIMER, wxTimerEventHandler( CursorData::OnCursorTrackTimer ), NULL, this);
 
-	DimeWindow( this );
+    DimeWindow( this );
 }
 
 void CursorData::OnCBAny( wxCommandEvent& event )
 {
-	int id = event.GetId();
-	wxWindow *win = this->FindWindow( id );
-	if (m_gparent.InDataPlot(id))
-	    m_gparent.m_bDataPlot[id] = ((wxCheckBox*) win )->IsChecked();
+    int id = event.GetId();
+    wxWindow *win = this->FindWindow( id );
+    if (m_gparent.InDataPlot(id))
+        m_gparent.m_bDataPlot[id] = ((wxCheckBox*) win )->IsChecked();
     ResolveDisplayConflicts( id );
 }
 
 void CursorData::ResolveDisplayConflicts( int Id )
 {
     //allow multi selection only if there is no display type superposition
-	for( int i = 0; i < GribOverlaySettings::GEO_ALTITUDE; i++ ) {
-		if( i != Id && m_gparent.m_bDataPlot[i] ) {
-			if( (m_gparent.m_OverlaySettings.Settings[Id].m_bBarbedArrows &&
-					m_gparent.m_OverlaySettings.Settings[i].m_bBarbedArrows)
-					|| (m_gparent.m_OverlaySettings.Settings[Id].m_bDirectionArrows &&
-					m_gparent.m_OverlaySettings.Settings[i].m_bDirectionArrows)
-					|| (m_gparent.m_OverlaySettings.Settings[Id].m_bIsoBars &&
-					m_gparent.m_OverlaySettings.Settings[i].m_bIsoBars)
-					|| (m_gparent.m_OverlaySettings.Settings[Id].m_bNumbers &&
-					m_gparent.m_OverlaySettings.Settings[i].m_bNumbers)
-					|| (m_gparent.m_OverlaySettings.Settings[Id].m_bOverlayMap &&
-					m_gparent.m_OverlaySettings.Settings[i].m_bOverlayMap)
-					|| (m_gparent.m_OverlaySettings.Settings[Id].m_bParticles &&
-					m_gparent.m_OverlaySettings.Settings[i].m_bParticles) ) {
-				m_gparent.m_bDataPlot[i] = false;
-				wxWindow *win = FindWindow(i);
-				((wxCheckBox*) win )->SetValue( false );
-			}
-		}
-	}
+    for( int i = 0; i < GribOverlaySettings::GEO_ALTITUDE; i++ ) {
+        if( i != Id && m_gparent.m_bDataPlot[i] ) {
+            if( (m_gparent.m_OverlaySettings.Settings[Id].m_bBarbedArrows &&
+                    m_gparent.m_OverlaySettings.Settings[i].m_bBarbedArrows)
+                    || (m_gparent.m_OverlaySettings.Settings[Id].m_bDirectionArrows &&
+                    m_gparent.m_OverlaySettings.Settings[i].m_bDirectionArrows)
+                    || (m_gparent.m_OverlaySettings.Settings[Id].m_bIsoBars &&
+                    m_gparent.m_OverlaySettings.Settings[i].m_bIsoBars)
+                    || (m_gparent.m_OverlaySettings.Settings[Id].m_bNumbers &&
+                    m_gparent.m_OverlaySettings.Settings[i].m_bNumbers)
+                    || (m_gparent.m_OverlaySettings.Settings[Id].m_bOverlayMap &&
+                    m_gparent.m_OverlaySettings.Settings[i].m_bOverlayMap)
+                    || (m_gparent.m_OverlaySettings.Settings[Id].m_bParticles &&
+                    m_gparent.m_OverlaySettings.Settings[i].m_bParticles) ) {
+                m_gparent.m_bDataPlot[i] = false;
+                wxWindow *win = FindWindow(i);
+                ((wxCheckBox*) win )->SetValue( false );
+            }
+        }
+    }
     m_gparent.SetFactoryOptions();                     // Reload the visibility options
 }
 
@@ -146,7 +146,7 @@ void CursorData::PopulateTrackingControls( bool vertical )
     }
     else
         m_fgTrackingControls->SetCols( 2 );
-    
+
     this->Fit();
     //Get text controls sizing data
     wxFont *font = OCPNGetFont(_("Dialog"), 10);
@@ -169,10 +169,10 @@ void CursorData::PopulateTrackingControls( bool vertical )
         && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND, vertical, wd, ws);
     AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, 0, m_gparent.m_pTimelineSet
         && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
     AddTrackingControl(m_cbPressure, m_tcPressure, 0, 0, m_gparent.m_pTimelineSet
         && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
 
     /* tracking for wave is funky */
     AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWavePeriode, m_tcWaveDirection, false, vertical, 0, 0); //hide all waves's parameters
@@ -191,37 +191,37 @@ void CursorData::PopulateTrackingControls( bool vertical )
     AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, vertical? dummy: m_tcCurrentDirection, vertical? m_tcCurrentDirection: 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND
         && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn, ws);
+        && m_Altitude == 0, vertical, wn, ws);
     AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
     AddTrackingControl(m_cbCloud, m_tcCloud, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
     AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
     AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
     AddTrackingControl(m_cbCAPE, m_tcCAPE, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
     AddTrackingControl(m_cbReflC, m_tcReflC, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_COMP_REFL) != wxNOT_FOUND
-		&& m_Altitude == 0, vertical, wn);
+        && m_Altitude == 0, vertical, wn);
     //
     //init and show extra parameters for altitude tracking if necessary
-	AddTrackingControl(m_cbAltitude, m_tcAltitude, 0, 0,
+    AddTrackingControl(m_cbAltitude, m_tcAltitude, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_GEOP_HGT + m_Altitude) != wxNOT_FOUND
-		&& m_Altitude != 0, vertical, wn);
-	AddTrackingControl(m_cbTemp, m_tcTemp, 0, 0,
+        && m_Altitude != 0, vertical, wn);
+    AddTrackingControl(m_cbTemp, m_tcTemp, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP + m_Altitude) != wxNOT_FOUND
-		&& m_Altitude != 0, vertical, wn);
-	AddTrackingControl(m_cbRelHumid, m_tcRelHumid, 0, 0,
+        && m_Altitude != 0, vertical, wn);
+    AddTrackingControl(m_cbRelHumid, m_tcRelHumid, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HUMID_RE + m_Altitude) != wxNOT_FOUND
-		&& m_Altitude != 0, vertical, wn);
-	//
+        && m_Altitude != 0, vertical, wn);
+    //
     m_stTrackingText->SetLabel( _("Data at cursor position") );
     //add tooltips
     wxString t; double lev;
@@ -367,14 +367,14 @@ void CursorData::UpdateTrackingControls( void )
                                          RecordArray[Idx_SEACURRENT_VX],
                                          RecordArray[Idx_SEACURRENT_VY],
                                          m_cursor_lon, m_cursor_lat)) {
-       
-        // Current direction is generally reported as the "flow" direction, 
+
+        // Current direction is generally reported as the "flow" direction,
         // which is opposite from wind convention.
         // So, adjust.
         ang += 180;
         if(ang >= 360) ang -= 360;
         if( ang < 0 ) ang += 360;
-        
+
         vkn = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
 
         m_tcCurrentVelocity->SetValue( wxString::Format( _T("%4.1f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
@@ -442,7 +442,7 @@ void CursorData::UpdateTrackingControls( void )
 
         if( cape != GRIB_NOTDEF ) {
             cape = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::CAPE, cape);
-            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ") 
+            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ")
                 +m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CAPE), cape ) );
         } else
             m_tcCAPE->SetValue( _("N/A") );
@@ -579,8 +579,8 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
     }
 
     //if the current parameter type is selected then resolve display conflicts
-	if( m_gparent.InDataPlot(id) && m_gparent.m_bDataPlot[id] )
-		ResolveDisplayConflicts( id );
+    if( m_gparent.InDataPlot(id) && m_gparent.m_bDataPlot[id] )
+        ResolveDisplayConflicts( id );
 
     //save new config
     m_gparent.m_OverlaySettings.Write();
@@ -676,12 +676,12 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
         wxPoint pos_in_parent = GetOCPNCanvasWindow()->ScreenToClient( par_pos );
         wxPoint pos_in_parent_old = GetOCPNCanvasWindow()->ScreenToClient( par_pos_old );
 
-		// X
-		if( pos_in_parent.x < pos_in_parent_old.x ) {           // moving left
-			if( pos_in_parent.x < 10 ) {
-				pos_in_parent.x = 0;
-			}
-		} else
+        // X
+        if( pos_in_parent.x < pos_in_parent_old.x ) {           // moving left
+            if( pos_in_parent.x < 10 ) {
+                pos_in_parent.x = 0;
+            }
+        } else
         if( pos_in_parent.x > pos_in_parent_old.x ) {           // moving right
             int max_right = GetOCPNCanvasWindow()->GetClientSize().x - GetParent()->GetSize().x;
             if( pos_in_parent.x > ( max_right - 10 ) ) {
@@ -689,12 +689,12 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
             }
         }
 
-		// Y
-		if( pos_in_parent.y < pos_in_parent_old.y ) {            // moving up
-			if( pos_in_parent.y < 10 ) {
-				pos_in_parent.y = 0;
-			}
-		} else
+        // Y
+        if( pos_in_parent.y < pos_in_parent_old.y ) {            // moving up
+            if( pos_in_parent.y < 10 ) {
+                pos_in_parent.y = 0;
+            }
+        } else
         if( pos_in_parent.y > pos_in_parent_old.y ) {            // moving dow
             int max_down = GetOCPNCanvasWindow()->GetClientSize().y - GetParent()->GetSize().y;
             if( pos_in_parent.y > ( max_down - 10 ) ) {
@@ -702,9 +702,9 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
             }
         }
 
-		wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen( pos_in_parent );
+        wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen( pos_in_parent );
 
-		GetParent()->Move( final_pos );
+        GetParent()->Move( final_pos );
 
         s_gspt = spt;
 

@@ -53,7 +53,7 @@ class DECL_EXP TexFont {
 public:
     TexFont();
     ~TexFont();
-    
+
     void Build( wxFont &font, bool blur = false );
     void Delete();
 
@@ -76,7 +76,7 @@ private:
     int m_maxglyphw;
     int m_maxglyphh;
     bool m_built;
-    
+
     float m_dx;
     float m_dy;
 };

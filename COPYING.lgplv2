@@ -124,10 +124,10 @@
 
 
   <li id="tabLicenses" class="active">
-     <span class='no-display'>=</span> 
+     <span class='no-display'>=</span>
     <a href="/licenses/licenses.html">LICENSES</a>
     <span class="gnun-split"></span>
-     <span class='no-display'>=</span> 
+     <span class='no-display'>=</span>
   </li>
 
 
@@ -172,12 +172,12 @@ available here for historical reference.</p>
     of LGPLv2.0</a></li>
   <li>The GNU Library General Public License version 2.0 (LGPLv2.0) in other
     formats: <a href="/licenses/old-licenses/lgpl-2.0.txt">plain text</a>, <a
-    href="/licenses/old-licenses/lgpl-2.0-standalone.html">standalone 
-    HTML</a>, <a href="/licenses/old-licenses/lgpl-2.0.dbk">Docbook</a>, 
-    <a href="/licenses/old-licenses/lgpl-2.0.md">Markdown</a>, 
-    <a href="/licenses/old-licenses/lgpl-2.0.odt">ODF</a>, 
-    <a href="/licenses/old-licenses/lgpl-2.0.rtf">RTF</a>, 
-    <a href="/licenses/old-licenses/lgpl-2.0.tex">LaTeX</a>, 
+    href="/licenses/old-licenses/lgpl-2.0-standalone.html">standalone
+    HTML</a>, <a href="/licenses/old-licenses/lgpl-2.0.dbk">Docbook</a>,
+    <a href="/licenses/old-licenses/lgpl-2.0.md">Markdown</a>,
+    <a href="/licenses/old-licenses/lgpl-2.0.odt">ODF</a>,
+    <a href="/licenses/old-licenses/lgpl-2.0.rtf">RTF</a>,
+    <a href="/licenses/old-licenses/lgpl-2.0.tex">LaTeX</a>,
     <a href="/licenses/old-licenses/lgpl-2.0.texi">Texinfo</a>
   </li>
   <li><a href="/licenses/old-licenses/old-licenses.html#LGPL">Old versions of
@@ -189,7 +189,7 @@ available here for historical reference.</p>
 <h3>Table of Contents</h3>
 
 <ul>
-  <li><a id="TOC1" href="#SEC1">GNU LIBRARY GENERAL PUBLIC LICENSE</a> 
+  <li><a id="TOC1" href="#SEC1">GNU LIBRARY GENERAL PUBLIC LICENSE</a>
     <ul>
       <li><a id="TOC2" href="#SEC2">Preamble</a></li>
       <li><a id="TOC3" href="#SEC3">TERMS AND CONDITIONS FOR COPYING,

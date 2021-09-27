@@ -362,7 +362,7 @@ _math_de_casteljau_surf(GLfloat * cn, GLfloat * out, GLfloat * du,
                 for (j = 0; j < vorder - h; j++) {
                     /* for the derivative in u */
                     DCN(2, j) = vs * DCN(2, j) + v * DCN(2, j + 1);
-        
+
                     /* for the `point' */
                     DCN(0, j) = vs * DCN(0, j) + v * DCN(0, j + 1);
                 }

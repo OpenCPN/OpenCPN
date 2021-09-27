@@ -30,20 +30,18 @@
 #include <wx/colour.h>
 #include <wx/list.h>
 
-class MyFontDesc
-{
+class MyFontDesc {
 public:
+  MyFontDesc(wxString DialogString, wxString ConfigString, wxFont *pFont,
+             wxColour color);
+  ~MyFontDesc();
 
-      MyFontDesc(wxString DialogString, wxString ConfigString, wxFont *pFont, wxColour color);
-      ~MyFontDesc();
-
-      wxString    m_dialogstring;
-      wxString    m_configstring;
-      wxString    m_nativeInfo;
-      wxFont      *m_font;
-      wxColour    m_color;
+  wxString m_dialogstring;
+  wxString m_configstring;
+  wxString m_nativeInfo;
+  wxFont *m_font;
+  wxColour m_color;
 };
-
 
 WX_DECLARE_LIST(MyFontDesc, FontList);
 

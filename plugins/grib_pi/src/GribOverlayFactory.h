@@ -58,7 +58,7 @@ public:
     ~GribOverlay( void )
     {
 #ifdef ocpnUSE_GL
-        if(m_iTexture) 
+        if(m_iTexture)
         {
           glDeleteTextures( 1, &m_iTexture );
         }
@@ -68,7 +68,7 @@ public:
 
     unsigned int m_iTexture, m_iTextureDim[2]; /* opengl mode */
     unsigned int m_iTexDataDim[2];
-    
+
     wxBitmap *m_pDCBitmap; /* dc mode */
     unsigned char *m_pRGBA;
 
@@ -186,7 +186,7 @@ public:
     wxSize  m_ParentSize;
 
     pi_ocpnDC *m_oDC;
-    
+
 private:
     void InitColorsTable( );
 
@@ -212,7 +212,7 @@ private:
 
     void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
     void FillGrid(GribRecord *pGR);
-    
+
     wxString getLabelString(double value, int settings);
     wxImage &getLabel(double value, int settings, wxColour back_colour);
 
@@ -259,8 +259,8 @@ private:
 
     LineBuffer m_WindArrowCache[14];
     LineBuffer m_SingleArrow[2], m_DoubleArrow[2];
-    
+
     double m_pixelMM;
     int windArrowSize;
-    
+
 };

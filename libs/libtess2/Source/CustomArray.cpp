@@ -50,8 +50,8 @@ CustomArray::CustomArray(const char* filename) :  mCollapsed(null), mAddresses(n
 	FILE* fp = fopen(filename, "rb");
 	if(fp)
 	{
-		if (fread(mCurrentCell->Item.Addy, StartSize, 1, fp)) { 
-                    // Ignore 
+		if (fread(mCurrentCell->Item.Addy, StartSize, 1, fp)) {
+                    // Ignore
                 };
 		fclose(fp);
 	}
@@ -904,7 +904,7 @@ CustomArray& CustomArray::StoreASCII(const char *String)
 			StoreASCIICode((char)0x0d);
 			StoreASCIICode((char)0x0a);
 		}
-		else 
+		else
 			StoreASCIICode((char)String[i]);
 	}
 	return *this;

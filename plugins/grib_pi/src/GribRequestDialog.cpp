@@ -33,11 +33,12 @@
 #include "GribOverlayFactory.h"
 
 #include "TexFont.h"
+#include <unordered_map>
 
 #define RESOLUTIONS 4
 
 enum { SAILDOCS,ZYGRIB };                   //grib providers
-enum { GFS,COAMPS,RTOFS,HRRR };                  //forecast models
+enum { GFS,COAMPS,RTOFS,HRRR,ICON };        //forecast models
 
 wxString toMailFormat ( int NEflag, int a )                 //convert position to mail necessary format
 {
@@ -108,7 +109,7 @@ void GribRequestSetting::InitRequestConfig()
         m_RequestConfigBase = _T( "000220XX.............." );
     }
     //populate model, mail to, waves model choices
-    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS"),_T("HRRR")};
+    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS"),_T("HRRR"),_T("ICON")};
     for( unsigned int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
         m_pModel->Append( s1[i] );
     wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
@@ -205,17 +206,17 @@ void GribRequestSetting::SetRequestDialogSize()
 #ifdef __WXGTK__
     SetMinSize( wxSize( 0, 0 ) );
 #endif
-    
-     wxWindow *frame = wxTheApp->GetTopWindow();  
+
+     wxWindow *frame = wxTheApp->GetTopWindow();
 
     int w = frame->GetClientSize().x;           // the display size
     int h = frame->GetClientSize().y;
     int dMargin = 80;                                      //set a margin
     h -= ( m_rButton->GetSize().GetY() + dMargin );         //height available for the scrolled window
     w -= dMargin;                                           //width available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.x ), wxMin( h, scroll.y ) ) );		//set scrolled area size with margin
+    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.x ), wxMin( h, scroll.y ) ) );      //set scrolled area size with margin
 
-	Layout();
+    Layout();
     Fit();
 #ifdef __WXGTK__
     wxSize sd = GetSize();
@@ -259,7 +260,7 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
 //     wxWindow *win = wxDynamicCast(obj, wxWindow);
 //     if( win && (win != PluginGetFocusCanvas()))
 //         return false;
-    
+
     if( event.LeftDown() ) {
         m_parent.pParent->SetFocus();
         m_ZoneSelMode = DRAW_SELECTION;                         //restart a new drawing
@@ -281,7 +282,7 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
             m_StartPoint = event.GetPosition();                                    //starting selection point
             m_RenderZoneOverlay = 2;
         }
-		m_IsMaxLong = m_StartPoint.x > event.GetPosition().x? true: false;         //find if startpoint is max longitude 
+        m_IsMaxLong = m_StartPoint.x > event.GetPosition().x? true: false;         //find if startpoint is max longitude
         GetCanvasLLPix( m_Vp, event.GetPosition(), &m_Lat, &m_Lon);                //extend selection
         if( !m_tMouseEventTimer.IsRunning() ) m_tMouseEventTimer.Start( 20, wxTIMER_ONE_SHOT );
     }
@@ -303,7 +304,7 @@ void GribRequestSetting::OnMouseEventTimer( wxTimerEvent & event)
         m_spMaxLat->SetValue( (int) ceil(m_Lat) );
         m_spMinLat->SetValue( (int) floor(lat) );
     }
-	if(m_IsMaxLong) {
+    if(m_IsMaxLong) {
         m_spMaxLon->SetValue( (int) ceil(lon) );
         m_spMinLon->SetValue( (int) floor(m_Lon) );
     }
@@ -334,7 +335,7 @@ void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
 {
     if(!vp)
         return;
-        
+
     delete m_Vp;
     m_Vp = new PlugIn_ViewPort(*vp);
 
@@ -351,7 +352,8 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
         {_T("0.25"), _T("0.5"), _T("1.0"), _T("2.0")},
         {_T("0.2"), _T("0.8"), _T("1.6"), wxEmptyString},
         {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString},  // RTOFS
-        {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString}   // HRRR
+        {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString},   // HRRR
+        {_T("0.0625"), _T("0.125"), wxEmptyString, wxEmptyString}   // ICON
     };
 
     IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
@@ -359,18 +361,23 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     IsGFS = m_pModel->GetCurrentSelection() == GFS;
     bool IsRTOFS = m_pModel->GetCurrentSelection() == RTOFS;
     bool IsHRRR = m_pModel->GetCurrentSelection() == HRRR;
+    bool IsICON = m_pModel->GetCurrentSelection() == ICON;
 
     //populate resolution choice
     m_pResolution->Clear();
-    for( int i = 0; i < RESOLUTIONS; i++ ) {
-        if( res[m_pModel->GetCurrentSelection()][i] != wxEmptyString )
-            m_pResolution->Append(res[m_pModel->GetCurrentSelection()][i]);
+    if(m_pModel->GetCurrentSelection() >=0 ) {
+        for( int i = 0; i < RESOLUTIONS; i++ ) {
+            if( res[m_pModel->GetCurrentSelection()][i] != wxEmptyString ) {
+                wxString s = res[m_pModel->GetCurrentSelection()][i];
+                m_pResolution->Append(s);
+            }
+        }
     }
-     m_pResolution->SetSelection(rs);
+    m_pResolution->SetSelection(rs);
 
     unsigned l;
-     //populate time interval choice
-    l = IsGFS ? 3 : IsRTOFS ? 3 : IsHRRR ? 1: 6;
+    //populate time interval choice
+    l = (IsGFS || IsRTOFS || IsICON)? 3 : IsHRRR ? 1: 6;
 
     unsigned m;
     m = IsHRRR ? 2: 25;
@@ -381,7 +388,7 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     m_pInterval->SetSelection(wxMin(it,m_pInterval->GetCount()-1));
 
     //populate time range choice
-    l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : IsHRRR? 2: 3;
+    l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : IsICON ? 7: IsHRRR? 2: 3;
     m_pTimeRange->Clear();
     for( unsigned i=2; i<l+1; i++)
         m_pTimeRange->Append( wxString::Format(_T("%d"), i));
@@ -392,27 +399,27 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     m_pPress->SetValue( !IsRTOFS );
     m_pWaves->SetValue( m_RequestConfigBase.GetChar(8) == 'X' && IsGFS );
     m_pWaves->Enable( IsGFS && m_pTimeRange->GetCurrentSelection() < 7 );      //gfs & time range less than 8 days
-    m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' && (IsGFS || IsHRRR));
+    m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' && (IsGFS || IsHRRR ));
     m_pRainfall->Enable( IsGFS || IsHRRR);
     m_pCloudCover->SetValue( m_RequestConfigBase.GetChar(10) == 'X' && IsGFS );
     m_pCloudCover->Enable( IsGFS );
-    m_pAirTemp->SetValue( m_RequestConfigBase.GetChar(11) == 'X' && (IsGFS || IsHRRR) );
-    m_pAirTemp->Enable( IsGFS || IsHRRR);
-    m_pSeaTemp->SetValue( m_RequestConfigBase.GetChar(12) == 'X' && ((!IsZYGRIB && IsGFS) || IsRTOFS || IsHRRR));
-    m_pSeaTemp->Enable( !IsZYGRIB && (IsGFS || IsHRRR));
-    m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && (IsGFS || IsHRRR));
-    m_pWindGust->Enable( IsGFS || IsHRRR);
+    m_pAirTemp->SetValue( m_RequestConfigBase.GetChar(11) == 'X' && (IsGFS || IsHRRR || IsICON) );
+    m_pAirTemp->Enable( IsGFS || IsHRRR || IsICON);
+    m_pSeaTemp->SetValue( m_RequestConfigBase.GetChar(12) == 'X' && ((!IsZYGRIB && IsGFS) || IsRTOFS || IsHRRR || IsICON));
+    m_pSeaTemp->Enable( !IsZYGRIB && (IsGFS || IsHRRR || IsICON));
+    m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && (IsGFS || IsHRRR || IsICON));
+    m_pWindGust->Enable( IsGFS || IsHRRR || IsICON);
     m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && (IsGFS || IsHRRR) );
     m_pCAPE->Enable( IsGFS || IsHRRR);
     m_pReflectivity->Enable( false );
 
-    m_pAltitudeData->SetValue( IsGFS ? m_RequestConfigBase.GetChar(17) == 'X' : false );        //altitude data zigrib + saildocs only GFS
-    m_pAltitudeData->Enable( IsGFS );
+    m_pAltitudeData->SetValue( (IsGFS || IsICON) ? m_RequestConfigBase.GetChar(17) == 'X' : false );        //altitude data zigrib + saildocs GFS and ICON
+    m_pAltitudeData->Enable( IsGFS || IsICON);
     m_p850hpa->SetValue( IsZYGRIB ? m_RequestConfigBase.GetChar(18) == 'X' : false );           //only zygrib
     m_p850hpa->Enable( IsZYGRIB );
     m_p700hpa->SetValue(  IsZYGRIB ? m_RequestConfigBase.GetChar(19) == 'X' : false );          //only zigrib
     m_p700hpa->Enable( IsZYGRIB );
-    m_p500hpa->SetValue(  IsGFS ? m_RequestConfigBase.GetChar(20) == 'X' : false );             //zigrib + saildocs only GFS
+    m_p500hpa->SetValue(  (IsGFS || IsICON) ? m_RequestConfigBase.GetChar(20) == 'X' : false ); //zigrib + saildocs GFS and ICON
     m_p300hpa->SetValue(  IsZYGRIB ? m_RequestConfigBase.GetChar(21) == 'X' : false  );         //only zigrib
     m_p300hpa->Enable( IsZYGRIB );
 
@@ -534,8 +541,8 @@ bool GribRequestSetting::DoRenderZoneOverlay()
         im.InitAlpha();
         w = im.GetWidth(), h = im.GetHeight();
         for( int j = 0; j < h; j++ )
-			for( int i = 0; i < w; i++ )
-				im.SetAlpha( i, j, 155 );
+            for( int i = 0; i < w; i++ )
+                im.SetAlpha( i, j, 155 );
 
         m_pdc->DrawBitmap(im, x, y, true);
 
@@ -594,7 +601,7 @@ bool GribRequestSetting::DoRenderZoneOverlay()
    glDisable( GL_BLEND );
 
    glPopAttrib();
-   
+
 #endif
 #endif
     }
@@ -784,11 +791,11 @@ wxString GribRequestSetting::WriteMail()
         m_pTimeRange->GetStringSelection().ToDouble(&v);
         r_topmess.Append(wxString::Format(_T("..%d"), (int) v*24) + _T("|=\n"));
         break;
-	case ZYGRIB:                                                                         //Zygrib
-		double maxlon = (m_spMinLon->GetValue() > m_spMaxLon->GetValue() && m_spMaxLon->GetValue() < 0)?
-			m_spMaxLon->GetValue() + 360 : m_spMaxLon->GetValue();
-		r_zone = toMailFormat(1, m_spMinLat->GetValue() ) + toMailFormat(2, m_spMinLon->GetValue() ) + _T(" ")
-			+ toMailFormat(1, m_spMaxLat->GetValue() ) + toMailFormat(2, maxlon );
+    case ZYGRIB:                                                                         //Zygrib
+        double maxlon = (m_spMinLon->GetValue() > m_spMaxLon->GetValue() && m_spMaxLon->GetValue() < 0)?
+            m_spMaxLon->GetValue() + 360 : m_spMaxLon->GetValue();
+        r_zone = toMailFormat(1, m_spMinLat->GetValue() ) + toMailFormat(2, m_spMinLon->GetValue() ) + _T(" ")
+            + toMailFormat(1, m_spMaxLat->GetValue() ) + toMailFormat(2, maxlon );
         r_topmess = wxT("login : ");
         r_topmess.Append(m_pLogin->GetValue() + _T("\n"));
         r_topmess.Append(wxT("code :"));
@@ -857,6 +864,19 @@ wxString GribRequestSetting::WriteMail()
             r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][5] );
         if( m_pCAPE->IsChecked() )
             r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][6] );
+        break;
+    case ICON:                                                                            // ICON
+        r_parameters = wxT("WIND,PRMSL");                                 //the default parameters for this model
+        if( m_pAirTemp->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][2] );
+        if( m_pSeaTemp->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][4] );
+        if( m_pWindGust->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][5] );
+        if(m_pAltitudeData->IsChecked() ){
+            if( m_p500hpa->IsChecked() )
+                r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][9] );
+        }
         break;
     }
     if( !IsZYGRIB && m_cMovingGribEnabled->IsChecked())            //moving grib
@@ -978,6 +998,28 @@ int GribRequestSetting::EstimateFileSize( double *size )
     return 0;
 }
 
+const wxString EncodeURL(const wxString& uri)
+{
+    static std::unordered_map<int, wxString> sEncodeMap = {
+        { (int)'!', "%21" }, { (int)'#', "%23" }, { (int)'$', "%24" }, { (int)'&', "%26" }, { (int)'\'', "%27" },
+        { (int)'(', "%28" }, { (int)')', "%29" }, { (int)'*', "%2A" }, { (int)'+', "%2B" }, { (int)',', "%2C" },
+        { (int)';', "%3B" }, { (int)'=', "%3D" }, { (int)'?', "%3F" }, { (int)'@', "%40" }, { (int)'[', "%5B" },
+        { (int)']', "%5D" }, { (int)' ', "%20" }, { (int)'|', "%7C" }, { (int)':', "%3A" }, { (int)'\n', "%0A" }
+    };
+
+    wxString encoded;
+    for(size_t i = 0; i < uri.length(); ++i) {
+        wxChar ch = uri[i];
+        std::unordered_map<int, wxString>::iterator iter = sEncodeMap.find((int)ch);
+        if(iter != sEncodeMap.end()) {
+            encoded << iter->second;
+        } else {
+            encoded << ch;
+        }
+    }
+    return encoded;
+}
+
 void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
 {
     StopGraphicalZoneSelection();                    //eventually stop graphical zone display
@@ -1024,6 +1066,16 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         return;
     }
 
+#ifdef __WXMAC__
+    // macOS, at least Big Sur, requires the body to be URLEncoded, otherwise the invocation of the mail application via sh/open in wxEmail fails due to "invalid characters" in "filename" regardless of quotation used (which is weird, but real)
+    wxMailMessage *message = new wxMailMessage(
+        (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? _T("grib-request") : wxT("gribauto"),  //requested subject
+        (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
+            : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
+        EncodeURL(WriteMail()),                                                                                 //message image
+        m_pSenderAddress->GetValue()
+        );
+#else
     wxMailMessage *message = new wxMailMessage(
         (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? _T("grib-request") : wxT("gribauto"),  //requested subject
         (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
@@ -1031,7 +1083,8 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         WriteMail(),                                                                                 //message image
         m_pSenderAddress->GetValue()
         );
-    
+#endif
+
     wxEmail mail ;
     if(mail.Send( *message, m_SendMethod)) {
 #ifdef __WXMSW__

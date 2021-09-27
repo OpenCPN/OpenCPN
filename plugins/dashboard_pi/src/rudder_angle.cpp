@@ -68,7 +68,7 @@ wxSize DashboardInstrument_RudderAngle::GetSize( int orient, wxSize hint )
       return wxSize( w, m_TitleHeight+w*.7 );
 }
 
-void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)
+void DashboardInstrument_RudderAngle::SetData(DASH_CAP st, double data, wxString unit)
 {
       if (st == m_MainValueCap)
       {
@@ -122,10 +122,10 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
 void DashboardInstrument_RudderAngle::DrawBackground(wxGCDC* dc)
 {
       wxCoord x = m_cx - (m_radius * 0.3);
-      wxCoord y = m_cy - (m_radius * 0.5);
+      wxCoord y = m_cy - (m_radius*1.1);
       wxColour cl;
       GetGlobalColor(_T("DASH1"), &cl);
       dc->SetBrush( cl );
-      dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, 180);
+      dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, -180);
 }
 

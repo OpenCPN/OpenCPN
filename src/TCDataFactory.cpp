@@ -32,13 +32,11 @@ const unit TCDataFactory::known_units[NUMUNITS] = {
 };
 
 /* Find a unit; returns -1 if not found. */
-int TCDataFactory::findunit(const char *unit)
-{
-    for (int a=0; a<NUMUNITS; a++) {
-        if (!strcmp (unit, known_units[a].name) ||
-            !strcmp (unit, known_units[a].abbrv))
-            return a;
-    }
-    return -1;
+int TCDataFactory::findunit(const char *unit) {
+  for (int a = 0; a < NUMUNITS; a++) {
+    if (!strcmp(unit, known_units[a].name) ||
+        !strcmp(unit, known_units[a].abbrv))
+      return a;
+  }
+  return -1;
 }
-

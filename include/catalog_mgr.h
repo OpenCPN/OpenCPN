@@ -20,8 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
-*/
-
+ */
 
 #ifndef CATALOG_MGR_H__
 #define CATALOG_MGR_H__
@@ -31,25 +30,20 @@
 #include <wx/window.h>
 
 /** Catalog handler GUI.  */
-class AdvancedCatalogDialog: public wxFrame
-{
-    public:
-
-        /**
-         * Invoke the advanced catalog dialog after a status check.
-         */
-        AdvancedCatalogDialog(wxWindow* parent);
+class AdvancedCatalogDialog : public wxFrame {
+public:
+  /**
+   * Invoke the advanced catalog dialog after a status check.
+   */
+  AdvancedCatalogDialog(wxWindow* parent);
 };
 
-class SimpleCatalogDialog: public wxDialog
-{
-    public:
-
-        /**
-         * Perform a simple catalog update without options.
-         */
-        SimpleCatalogDialog(wxWindow* parent);
+class SimpleCatalogDialog : public wxDialog {
+public:
+  /**
+   * Perform a simple catalog update without options.
+   */
+  SimpleCatalogDialog(wxWindow* parent);
 };
 
-
-#endif // CATALOG_MGR_H__
+#endif  // CATALOG_MGR_H__

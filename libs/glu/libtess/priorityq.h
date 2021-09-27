@@ -102,7 +102,7 @@ struct PriorityQ {
   int		initialized;
   int		(*leq)(PQkey key1, PQkey key2);
 };
-  
+
 PriorityQ	*pqNewPriorityQ( int (*leq)(PQkey key1, PQkey key2) );
 void		pqDeletePriorityQ( PriorityQ *pq );
 

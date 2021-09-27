@@ -45,12 +45,12 @@ enum NumericalRows {R_WIND, R_WAVES, R_CURRENT};
 //----------------------------------------------------------------------------------------------------------
 //    GRIB table dialog Specification
 //----------------------------------------------------------------------------------------------------------
-class GRIBTable: public GRIBTableBase 
+class GRIBTable: public GRIBTableBase
 {
 public:
 
     GRIBTable( GRIBUICtrlBar &parent);
-    
+
      ~GRIBTable(){ delete m_pGribTable; }
 
     void InitGribTable( int zone, ArrayOfGribRecordSets *rsa);

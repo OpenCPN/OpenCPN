@@ -73,7 +73,7 @@ bool DBT::Parse( const SENTENCE& sentence )
    **        |   | |   | |   | |
    ** $--DBT,x.x,f,x.x,M,x.x,F*hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Depth, feet
    **  2) f = feet
    **  3) Depth, meters
@@ -91,7 +91,7 @@ bool DBT::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    DepthFeet    = sentence.Double( 1 );
    DepthMeters  = sentence.Double( 3 );
@@ -107,7 +107,7 @@ bool DBT::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += DepthFeet;

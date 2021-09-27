@@ -19,47 +19,39 @@
 // information
 //----------------------------------------------------------------------------
 
-
 //----------------------------------------------------------------------------
 // headers
 //----------------------------------------------------------------------------
 //! wxWidgets headers
-
 
 //============================================================================
 // declarations
 //============================================================================
 const int maxBtCount = 100;
 
-
 //----------------------------------------------------------------------------
 //!
-
 
 //----------------------------------------------------------------------------
 //! wxCrashPrint
 class wxCrashPrint {
-
 public:
+  //! constructor
+  wxCrashPrint(int flags = 0, const wxString &fname = wxEmptyString);
 
-    //! constructor
-    wxCrashPrint (int flags = 0, const wxString &fname = wxEmptyString);
+  //! destructor
+  ~wxCrashPrint(){};
 
-    //! destructor
-    ~wxCrashPrint () {};
-
-    // format and print report
-    void Report ();
+  // format and print report
+  void Report();
 
 private:
+  //! variables
+  int m_flags;
+  wxString m_fname;
 
-    //! variables
-    int m_flags;
-    wxString m_fname;
-
-    void *m_btBuffer [maxBtCount];
-    char **m_btStrings;
-
+  void *m_btBuffer[maxBtCount];
+  char **m_btStrings;
 };
 
-#endif // _WX_CRASHPRINT_H_
+#endif  // _WX_CRASHPRINT_H_

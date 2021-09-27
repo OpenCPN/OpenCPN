@@ -18,11 +18,11 @@ file(WRITE ${CMAKE_BINARY_DIR}/gitcheck.sh
     "
     if output=$(git status --porcelain) && [ -z \"$output\" ]; then
         echo 'Git status: clean'
-    else 
+    else
         echo 'WARNING: git status not clean' >&2
     fi"
 )
-add_custom_target(gitcheck 
+add_custom_target(gitcheck
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/gitcheck.cmake
 )
 if (GIT_STATUS)
@@ -38,27 +38,27 @@ if (TAR)
     endif()
     file(WRITE ${CMAKE_BINARY_DIR}/repack.sh
       "
-      tmpdir=repack.$$ 
-      rm -rf $tmpdir && mkdir repack.$$ 
+      tmpdir=repack.$$
+      rm -rf $tmpdir && mkdir repack.$$
       tar -C $tmpdir -xf $1
       tar -C $tmpdir -cjf $1 .
       rm -rf $tmpdir"
     )
-    add_custom_target(repack 
+    add_custom_target(repack
         COMMAND bash repack.sh ${TARBALL}
         COMMENT "Repacking ${TARBALL} using external tar(1)"
     )
 else ()
-    add_custom_target(repack 
+    add_custom_target(repack
         COMMAND bash :
         COMMENT "Cannot repack (no tar found)"
     )
 endif ()
 
 
-add_custom_target(dist 
+add_custom_target(dist
     COMMAND ${CMAKE_MAKE_PROGRAM} gitcheck
-    COMMAND ${CMAKE_COMMAND} 
+    COMMAND ${CMAKE_COMMAND}
         -D SOURCE_DIR=${CMAKE_SOURCE_DIR}
         -P ${CMAKE_SOURCE_DIR}/cmake/version_git.cmake
     COMMAND ${CMAKE_MAKE_PROGRAM} package_source

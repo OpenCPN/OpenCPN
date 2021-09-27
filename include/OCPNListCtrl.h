@@ -30,20 +30,18 @@
 #include "AISTargetListDialog.h"
 #include "ais.h"
 
-class OCPNListCtrl: public wxListCtrl
-{
+class OCPNListCtrl : public wxListCtrl {
 public:
-    OCPNListCtrl( AISTargetListDialog* parent, wxWindowID id, const wxPoint& pos,
-            const wxSize& size, long style );
-    ~OCPNListCtrl();
+  OCPNListCtrl(AISTargetListDialog* parent, wxWindowID id, const wxPoint& pos,
+               const wxSize& size, long style);
+  ~OCPNListCtrl();
 
-    wxString OnGetItemText( long item, long column ) const;
-    int OnGetItemColumnImage( long item, long column ) const;
+  wxString OnGetItemText(long item, long column) const;
+  int OnGetItemColumnImage(long item, long column) const;
 
-    wxString GetTargetColumnData( AIS_Target_Data *pAISTarget, long column ) const;
+  wxString GetTargetColumnData(AIS_Target_Data* pAISTarget, long column) const;
 
-    AISTargetListDialog *m_parent;
-
+  AISTargetListDialog* m_parent;
 };
 
 #endif

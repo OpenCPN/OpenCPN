@@ -42,7 +42,7 @@ void MipMap_32_sse2( int width, int height, unsigned char *source, unsigned char
     int newwidth = width / 2;
     int newheight = height / 2;
     int stride = width * 4;
-    
+
     unsigned char *s = target;
     unsigned char *t = source;
     unsigned char *u = t+stride;

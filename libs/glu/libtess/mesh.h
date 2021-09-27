@@ -37,7 +37,7 @@
 
 #include <GL/glu.h>
 
-typedef struct GLUmesh GLUmesh; 
+typedef struct GLUmesh GLUmesh;
 
 typedef struct GLUvertex GLUvertex;
 typedef struct GLUface GLUface;

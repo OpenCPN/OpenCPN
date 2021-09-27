@@ -36,7 +36,7 @@ if (NOT wxWidgets_INCLUDE_DIRS)
     find_package(GTK2)
     find_package(GTK3)
     if (GTK2_FOUND)
-        set(wxWidgets_CONFIG_OPTIONS 
+        set(wxWidgets_CONFIG_OPTIONS
             ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
         target_include_directories(TEXCMP PRIVATE ${GTK2_INCLUDE_DIRS})
         set(GTK_LIBRARIES ${GTK2_LIBRARIES})
@@ -45,7 +45,7 @@ if (NOT wxWidgets_INCLUDE_DIRS)
         target_include_directories(TEXCMP PRIVATE ${GTK3_INCLUDE_DIRS})
         set(GTK_LIBRARIES ${GTK3_LIBRARIES})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
-        set(wxWidgets_CONFIG_OPTIONS 
+        set(wxWidgets_CONFIG_OPTIONS
             ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
         message(STATUS "Building against GTK3...")
     endif ()
@@ -56,7 +56,7 @@ ENDIF( NOT QT_ANDROID)
 
 target_include_directories(TEXCMP PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/squish)
 target_include_directories(TEXCMP PRIVATE ${wxWidgets_INCLUDE_DIRS})
-   
+
 pkg_search_module(LZ4 liblz4 lz4)
 USE_BUNDLED_LIB(USE_BUNDLED_LZ4 lz4)
 if (LZ4_FOUND AND NOT USE_BUNDLED_LZ4)

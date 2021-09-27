@@ -14,7 +14,7 @@ fi
 set -xe
 
 # The flatpak manifest is setup to build the master branch. If we are
-# on another branch, make it match the manifest. However, unless 
+# on another branch, make it match the manifest. However, unless
 # FP_BUILD_ORIGINAL_BRANCH is set, this is not used anyway since the
 # default master branch from main github repo is used then.
 
@@ -32,14 +32,16 @@ sudo add-apt-repository -y ppa:alexlarsson/flatpak
 sudo apt update -y
 
 # Install required packages
-sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2 
+sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2
 
 
 # Set up flatpak
+runtime=$(sed -n '/runtime-version/s/.*://p' flatpak/org.opencpn.OpenCPN.yaml)
+runtime=${runtime/ /}
 flatpak --user remote-add --if-not-exists \
     flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak --user install -y org.freedesktop.Platform//18.08
-flatpak --user install -y org.freedesktop.Sdk//18.08
+flatpak --user install -y org.freedesktop.Platform//$runtime
+flatpak --user install -y org.freedesktop.Sdk//$runtime
 
 cd flatpak
 # By default, script packages master branch from main github repo, as a
@@ -90,7 +92,7 @@ if [ -n "$OCPN_CLOUD_TEST" ]; then
     rsync -a --info=stats --delete-after \
         --rsh="ssh -p 2222 -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
         website/ rsync@gafsan.crabdance.com:/home/rsync/flatpak/website
-    
+
     rm -f .ssh/id_opencpn*
 fi
 

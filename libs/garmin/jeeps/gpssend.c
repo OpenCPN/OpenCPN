@@ -132,7 +132,7 @@ int32 GPS_Serial_Write_Packet(gpsdevh *fd, GPS_PPacket packet)
     GPS_Serial_OPacket ser_pkt;
     UC ser_pkt_data[MAX_GPS_PACKET_SIZE * sizeof(UC)];
     US bytes;
-    
+
     if(!fd)
         return 0;
 

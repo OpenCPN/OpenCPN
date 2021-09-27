@@ -30,7 +30,7 @@
 #include <string>
 
 
-/** 
+/**
  * A sound loader loads data from a sound file into memory, making it
  * available to be played using a backend.
  */

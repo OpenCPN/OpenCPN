@@ -6,15 +6,15 @@
  */
 
 /* __START_OF_JASPER_LICENSE__
- * 
+ *
  * JasPer License Version 2.0
- * 
+ *
  * Copyright (c) 2001-2006 Michael David Adams
  * Copyright (c) 1999-2000 Image Power, Inc.
  * Copyright (c) 1999-2000 The University of British Columbia
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person (the
  * "User") obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction,
@@ -22,15 +22,15 @@
  * publish, distribute, and/or sell copies of the Software, and to permit
  * persons to whom the Software is furnished to do so, subject to the
  * following conditions:
- * 
+ *
  * 1.  The above copyright notices and this permission notice (which
  * includes the disclaimer below) shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * 2.  The name of a copyright holder shall not be used to endorse or
  * promote products derived from the Software without specific prior
  * written permission.
- * 
+ *
  * THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS
  * LICENSE.  NO USE OF THE SOFTWARE IS AUTHORIZED HEREUNDER EXCEPT UNDER
  * THIS DISCLAIMER.  THE SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
@@ -57,7 +57,7 @@
  * PERSONAL INJURY, OR SEVERE PHYSICAL OR ENVIRONMENTAL DAMAGE ("HIGH
  * RISK ACTIVITIES").  THE COPYRIGHT HOLDERS SPECIFICALLY DISCLAIM ANY
  * EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITIES.
- * 
+ *
  * __END_OF_JASPER_LICENSE__
  */
 
@@ -92,7 +92,7 @@ typedef int_fast32_t jpc_fix_t;
 typedef int_fast64_t jpc_fix_big_t;
 
 /* The number of bits used for the fractional part of a fixed-point number. */
-#define JPC_FIX_FRACBITS	13
+#define JPC_FIX_FRACBITS    13
 
 /******************************************************************************\
 * Instantiations of the generic fixed-point number macros for the
@@ -101,44 +101,44 @@ typedef int_fast64_t jpc_fix_big_t;
 * corresponding macros in the jasper/jas_fix.h header file.
 \******************************************************************************/
 
-#define	JPC_FIX_ZERO	JAS_FIX_ZERO(jpc_fix_t, JPC_FIX_FRACBITS)
-#define	JPC_FIX_ONE		JAS_FIX_ONE(jpc_fix_t, JPC_FIX_FRACBITS)
-#define	JPC_FIX_HALF	JAS_FIX_HALF(jpc_fix_t, JPC_FIX_FRACBITS)
+#define JPC_FIX_ZERO    JAS_FIX_ZERO(jpc_fix_t, JPC_FIX_FRACBITS)
+#define JPC_FIX_ONE     JAS_FIX_ONE(jpc_fix_t, JPC_FIX_FRACBITS)
+#define JPC_FIX_HALF    JAS_FIX_HALF(jpc_fix_t, JPC_FIX_FRACBITS)
 
-#define jpc_inttofix(x)	JAS_INTTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fixtoint(x)	JAS_FIXTOINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fixtodbl(x)	JAS_FIXTODBL(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_dbltofix(x)	JAS_DBLTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_inttofix(x) JAS_INTTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fixtoint(x) JAS_FIXTOINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fixtodbl(x) JAS_FIXTODBL(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_dbltofix(x) JAS_DBLTOFIX(jpc_fix_t, JPC_FIX_FRACBITS, x)
 
-#define	jpc_fix_add(x, y)	JAS_FIX_ADD(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_sub(x, y)	JAS_FIX_SUB(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_mul(x, y) \
-	JAS_FIX_MUL(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
-#define	jpc_fix_mulbyint(x, y) \
-	JAS_FIX_MULBYINT(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_div(x, y) \
-	JAS_FIX_DIV(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
-#define	jpc_fix_neg(x)		JAS_FIX_NEG(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_asl(x, n)	JAS_FIX_ASL(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
-#define	jpc_fix_asr(x, n)	JAS_FIX_ASR(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
+#define jpc_fix_add(x, y)   JAS_FIX_ADD(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_sub(x, y)   JAS_FIX_SUB(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_mul(x, y) \
+    JAS_FIX_MUL(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
+#define jpc_fix_mulbyint(x, y) \
+    JAS_FIX_MULBYINT(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_div(x, y) \
+    JAS_FIX_DIV(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
+#define jpc_fix_neg(x)      JAS_FIX_NEG(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_asl(x, n)   JAS_FIX_ASL(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
+#define jpc_fix_asr(x, n)   JAS_FIX_ASR(jpc_fix_t, JPC_FIX_FRACBITS, x, n)
 
-#define jpc_fix_pluseq(x, y)	JAS_FIX_PLUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define jpc_fix_minuseq(x, y)	JAS_FIX_MINUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
-#define	jpc_fix_muleq(x, y)	\
-	JAS_FIX_MULEQ(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
+#define jpc_fix_pluseq(x, y)    JAS_FIX_PLUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_minuseq(x, y)   JAS_FIX_MINUSEQ(jpc_fix_t, JPC_FIX_FRACBITS, x, y)
+#define jpc_fix_muleq(x, y) \
+    JAS_FIX_MULEQ(jpc_fix_t, JPC_FIX_FRACBITS, jpc_fix_big_t, x, y)
 
-#define	jpc_fix_abs(x)		JAS_FIX_ABS(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_isint(x)	JAS_FIX_ISINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fix_sgn(x)		JAS_FIX_SGN(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_round(x)	JAS_FIX_ROUND(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define	jpc_fix_floor(x)	JAS_FIX_FLOOR(jpc_fix_t, JPC_FIX_FRACBITS, x)
-#define jpc_fix_trunc(x)	JAS_FIX_TRUNC(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_abs(x)      JAS_FIX_ABS(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_isint(x)    JAS_FIX_ISINT(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_sgn(x)      JAS_FIX_SGN(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_round(x)    JAS_FIX_ROUND(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_floor(x)    JAS_FIX_FLOOR(jpc_fix_t, JPC_FIX_FRACBITS, x)
+#define jpc_fix_trunc(x)    JAS_FIX_TRUNC(jpc_fix_t, JPC_FIX_FRACBITS, x)
 
 /******************************************************************************\
 * Extra macros for convenience.
 \******************************************************************************/
 
 /* Compute the sum of three fixed-point numbers. */
-#define jpc_fix_add3(x, y, z)	jpc_fix_add(jpc_fix_add(x, y), z)
+#define jpc_fix_add3(x, y, z)   jpc_fix_add(jpc_fix_add(x, y), z)
 
 #endif

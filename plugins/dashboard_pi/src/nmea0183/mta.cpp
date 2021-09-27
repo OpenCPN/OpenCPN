@@ -68,10 +68,10 @@ bool MTA::Parse( const SENTENCE& sentence )
    ** MTA - Air Temperature
    **
    **        1   2 3
-   **        |   | | 
+   **        |   | |
    ** $--MTA,x.x,C*hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Degrees
    **  2) Unit of Measurement, Celcius
    **  3) Checksum
@@ -85,7 +85,7 @@ bool MTA::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    Temperature       = sentence.Double( 1 );
    UnitOfMeasurement = sentence.Field( 2 );
@@ -100,7 +100,7 @@ bool MTA::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += Temperature;

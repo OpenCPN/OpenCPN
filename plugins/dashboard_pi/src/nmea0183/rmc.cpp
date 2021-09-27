@@ -105,9 +105,9 @@ bool RMC::Parse( const SENTENCE& sentence )
    */
 
    int nFields = sentence.GetNumberOfDataFields( );
-   
+
    NMEA0183_BOOLEAN check = sentence.IsChecksumBad( nFields + 1 );
-   
+
    if ( check == NTrue )
    {
        /*
@@ -120,15 +120,15 @@ bool RMC::Parse( const SENTENCE& sentence )
            return( FALSE );
        }
    }
-   
+
    //   Is this at least a 2.3 message?
    bool bext_valid = true;
    wxString checksum_in_sentence = sentence.Field( nFields );
    if(!checksum_in_sentence.StartsWith(_T("*"))) {
-       if((checksum_in_sentence == _T("N")) || (checksum_in_sentence == _T("S"))) 
+       if((checksum_in_sentence == _T("N")) || (checksum_in_sentence == _T("S")))
            bext_valid = false;
    }
-   
+
    UTCTime                    = sentence.Field( 1 );
    IsDataValid                = sentence.Boolean( 2 );
    if( !bext_valid )

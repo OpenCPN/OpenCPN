@@ -32,10 +32,10 @@ class wxXmlNode;
 class WXDLLIMPEXP_CURL wxCurlDAV : public wxCurlHTTP
 {
 public:
-	wxCurlDAV(const wxString& szURL = wxEmptyString, 
-              const wxString& szUserName = wxEmptyString, 
-              const wxString& szPassword = wxEmptyString, 
-              wxEvtHandler* pEvtHandler = NULL, 
+	wxCurlDAV(const wxString& szURL = wxEmptyString,
+              const wxString& szUserName = wxEmptyString,
+              const wxString& szPassword = wxEmptyString,
+              wxEvtHandler* pEvtHandler = NULL,
               long flags = wxCURL_DEFAULT_FLAGS);
 	virtual ~wxCurlDAV();
 

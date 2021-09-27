@@ -88,7 +88,7 @@ public:
     //! Sets the list of URLs to query the size for.
     void SetURLs(const wxArrayString &urls)
         {
-            wxCHECK_RET(!IsAlive(), wxS("Call this function before creating the thread!")); 
+            wxCHECK_RET(!IsAlive(), wxS("Call this function before creating the thread!"));
             m_urls=urls;
         }
 

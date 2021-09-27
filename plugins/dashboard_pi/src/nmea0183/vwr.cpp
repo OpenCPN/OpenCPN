@@ -57,8 +57,8 @@ void VWR::Empty( void )
 {
 //   ASSERT_VALID( this );
 
-	WindDirectionMagnitude = 0.0;
-	DirectionOfWind = LR_Unknown;
+    WindDirectionMagnitude = 0.0;
+    DirectionOfWind = LR_Unknown;
     WindSpeedKnots = 0.0;
     WindSpeedms = 0.0;
     WindSpeedKmh = 0.0;
@@ -69,21 +69,21 @@ bool VWR::Parse( const SENTENCE& sentence )
 //   ASSERT_VALID( this );
 
    /*
-	** MWV - Wind Speed and Angle
-	**
-	**        1   2 3 4   5 6   7   8
-	**        |   | | |   | |   |   |
-	** $--VWR,x.x,L,x.x,N,x.x,M,x.x,K,*hh<CR><LF>
-	**
-	** 1) Wind direction magnitude in degrees
-	** 2) Wind direction Left/Right of bow
-	** 3) Speed
-	** 4) N = Knots
-	** 5) Speed
-	** 6) M = Meters Per Second
-	** 7) Speed
-	** 8) K = Kilometers Per Hour
-	** 9) Checksum
+    ** MWV - Wind Speed and Angle
+    **
+    **        1   2 3 4   5 6   7   8
+    **        |   | | |   | |   |   |
+    ** $--VWR,x.x,L,x.x,N,x.x,M,x.x,K,*hh<CR><LF>
+    **
+    ** 1) Wind direction magnitude in degrees
+    ** 2) Wind direction Left/Right of bow
+    ** 3) Speed
+    ** 4) N = Knots
+    ** 5) Speed
+    ** 6) M = Meters Per Second
+    ** 7) Speed
+    ** 8) K = Kilometers Per Hour
+    ** 9) Checksum
    */
 
    /*
@@ -94,7 +94,7 @@ bool VWR::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    WindDirectionMagnitude = sentence.Double( 1 );
    DirectionOfWind = sentence.LeftOrRight( 2 );
@@ -112,7 +112,7 @@ bool VWR::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += WindDirectionMagnitude;
@@ -128,12 +128,12 @@ bool VWR::Write( SENTENCE& sentence )
 const VWR& VWR::operator = ( const VWR& source )
 {
 //   ASSERT_VALID( this );
- 
+
    WindDirectionMagnitude   = source.WindDirectionMagnitude;
-   DirectionOfWind			= source.DirectionOfWind;
-   WindSpeedKnots			= source.WindSpeedKnots;
-   WindSpeedms				= source.WindSpeedms;
-   WindSpeedKmh				= source.WindSpeedKmh;
+   DirectionOfWind          = source.DirectionOfWind;
+   WindSpeedKnots           = source.WindSpeedKnots;
+   WindSpeedms              = source.WindSpeedms;
+   WindSpeedKmh             = source.WindSpeedKmh;
 
    return( *this );
 }
