@@ -10,10 +10,13 @@ usr/share/opencpn/gshhs
 usr/share/opencpn/plugins
 usr/share/opencpn/s57data
 usr/share/opencpn/sounds/*bells.wav
-usr/share/opencpn/tcdata/HARMONIC.IDX
-usr/share/opencpn/tcdata/HARMONIC
+usr/share/opencpn/sounds/beep*.wav
+usr/share/opencpn/sounds/phonering1.wav
+usr/share/opencpn/tcdata/HARMONICS_NO_US.IDX
+usr/share/opencpn/tcdata/HARMONICS_NO_US
 usr/share/opencpn/uidata
 usr/share/opencpn/doc/help_web.html
 usr/share/opencpn/LINUX_DEVICES.md usr/share/doc/opencpn-data
 usr/share/opencpn/sounds/README.bells usr/share/doc/opencpn-data
 usr/share/opencpn/tcdata/README.harmonics usr/share/doc/opencpn-data
+usr/share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd usr/share/doc/opencpn-data
