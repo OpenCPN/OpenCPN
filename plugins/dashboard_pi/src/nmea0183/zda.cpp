@@ -91,7 +91,7 @@ bool ZDA::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    UTCTime               = sentence.Field( 1 );
    Day                   = sentence.Integer( 2 );
@@ -110,7 +110,7 @@ bool ZDA::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += UTCTime;

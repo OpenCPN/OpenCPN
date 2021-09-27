@@ -90,7 +90,7 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Xte );
    response_table.Append( (RESPONSE *) &Mwd );
    response_table.Append( (RESPONSE *) &Mwv );
-   
+
 
 /*
    response_table.Add( (RESPONSE *) &Rot );
@@ -239,7 +239,7 @@ bool NMEA0183::PreParse( void )
       wxCharBuffer buf = sentence.Sentence.ToUTF8();
       if( !buf.data() )                            // badly formed sentence?
         return false;
-    
+
       if ( IsGood() )
       {
             wxString mnemonic = sentence.Field( 0 );
@@ -349,9 +349,9 @@ bool NMEA0183::Parse( void )
 wxArrayString NMEA0183::GetRecognizedArray(void)
 {
     wxArrayString ret;
-    
+
     wxMRLNode *node = response_table.GetFirst();
-    
+
     while(node)
     {
         RESPONSE *resp = node->GetData();
@@ -362,9 +362,9 @@ wxArrayString NMEA0183::GetRecognizedArray(void)
     return ret;
 }
 
-    
-    
-    
+
+
+
 NMEA0183& NMEA0183::operator << ( wxString & source )
 {
 //   ASSERT_VALID( this );

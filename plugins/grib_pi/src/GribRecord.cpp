@@ -43,10 +43,10 @@ static double interp_angle(double a0, double a1, double d, double p)
 //-------------------------------------------------------------------------------
 void GribRecord::print()
 {
-	printf("%d: idCenter=%d idModel=%d idGrid=%d dataType=%d levelType=%d levelValue=%d hr=%f\n",
-			id, idCenter, idModel, idGrid, dataType, levelType,levelValue,
-			(curDate-refDate)/3600.0
-			);
+    printf("%d: idCenter=%d idModel=%d idGrid=%d dataType=%d levelType=%d levelValue=%d hr=%f\n",
+            id, idCenter, idModel, idGrid, dataType, levelType,levelValue,
+            (curDate-refDate)/3600.0
+            );
 }
 
 //-------------------------------------------------------------------------------
@@ -192,11 +192,11 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
             if(data1 == GRIB_NOTDEF || data2 == GRIB_NOTDEF)
                 data[in] = GRIB_NOTDEF;
             else {
-				if( !dir )
-					data[in] = (1-d)*data1 + d*data2;
-				else
-					data[in] = interp_angle(data1, data2, d, 180.);
-			}
+                if( !dir )
+                    data[in] = (1-d)*data1 + d*data2;
+                else
+                    data[in] = interp_angle(data1, data2, d, 180.);
+            }
 
             if(BMSbits) {
                 int b1 = rec1.BMSbits[i1>>3] & 1<<(i1&7);
@@ -226,7 +226,7 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     ret->lonMin = Lo1, ret->lonMax = Lo2;
 
     ret->m_bfilled = false;
-    
+
     return ret;
 }
 
@@ -255,7 +255,7 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
        rec2x.Ni != rec2y.Ni ||rec2x.Nj != rec2y.Nj)
     {
         // could also make sure lat and lon min/max are the same...
-        // copy first 
+        // copy first
         rety = new GribRecord(rec1y);
 
         return new GribRecord(rec1x);
@@ -378,14 +378,14 @@ void GribRecord::Substract(const GribRecord &rec, bool pos)
 
     if (data == 0 || !isOk())
         return;
-        
-    if (Ni != rec.Ni || Nj != rec.Nj) 
+
+    if (Ni != rec.Ni || Nj != rec.Nj)
         return;
-        
+
     zuint size = Ni *Nj;
     for (zuint i=0; i<size; i++) {
         if (rec.data[i] == GRIB_NOTDEF)
-           continue; 
+           continue;
         if (data[i] == GRIB_NOTDEF) {
             data[i] = -rec.data[i];
             if (BMSbits != 0) {
@@ -400,7 +400,7 @@ void GribRecord::Substract(const GribRecord &rec, bool pos)
             // data type should be positive...
             data[i] = 0.;
         }
-    } 
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -449,19 +449,19 @@ void GribRecord::Average(const GribRecord &rec)
 //-------------------------------------------------------------------------------
 void  GribRecord::setDataType(const zuchar t)
 {
-	dataType = t;
-	dataKey = makeKey(dataType, levelType, levelValue);
+    dataType = t;
+    dataKey = makeKey(dataType, levelType, levelValue);
 }
 //------------------------------------------------------------------------------
 std::string GribRecord::makeKey(int dataType,int levelType,int levelValue)
 {   // Make data type key  sample:'11-100-850'
-//	char ktmp[32];
-//	wxSnprintf((wxChar *)ktmp, 32, "%d-%d-%d", dataType, levelType, levelValue);
-//	return std::string(ktmp);
+//  char ktmp[32];
+//  wxSnprintf((wxChar *)ktmp, 32, "%d-%d-%d", dataType, levelType, levelValue);
+//  return std::string(ktmp);
 
-	wxString k;
-	k.Printf(_T("%d-%d-%d"), dataType, levelType, levelValue);
-	return std::string(k.mb_str());
+    wxString k;
+    k.Printf(_T("%d-%d-%d"), dataType, levelType, levelValue);
+    return std::string(k.mb_str());
 
 }
 //-----------------------------------------
@@ -498,16 +498,16 @@ void  GribRecord::multiplyAllData(double k)
 //----------------------------------------------
 void  GribRecord::setRecordCurrentDate (time_t t)
 {
-	curDate = t;
+    curDate = t;
 
     struct tm *date = gmtime(&t);
 
     zuint year   = date->tm_year+1900;
     zuint month  = date->tm_mon+1;
-	zuint day    = date->tm_mday;
-	zuint hour   = date->tm_hour;
-	zuint minute = date->tm_min;
-	sprintf(strCurDate, "%04d-%02d-%02d %02d:%02d", year,month,day,hour,minute);
+    zuint day    = date->tm_mday;
+    zuint hour   = date->tm_hour;
+    zuint minute = date->tm_min;
+    sprintf(strCurDate, "%04d-%02d-%02d %02d:%02d", year,month,day,hour,minute);
 }
 
 //----------------------------------------------
@@ -575,10 +575,10 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
 
     if(i1 >= Ni)
         i1 = i0;
-    
+
     if(j1 >= Nj)
         j1 = j0;
-    
+
     // distances to 00
     double dx = pi-i0;
     double dy = pj-j0;
@@ -613,11 +613,11 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         nbval ++;
     if (getValue(i1, j1) != GRIB_NOTDEF)
         nbval ++;
-    
-    
-    
-    
-    
+
+
+
+
+
     if (nbval < 3)
         return GRIB_NOTDEF;
 
@@ -636,19 +636,19 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         double x01 = getValue(i0, j1);
         double x10 = getValue(i1, j0);
         double x11 = getValue(i1, j1);
-		if( !dir ) {
-			double x1 = (1.0-dx)*x00 + dx*x10;
-			double x2 = (1.0-dx)*x01 + dx*x11;
-			return (1.0-dy)*x1 + dy*x2;
-		} else {
-			double x1 = interp_angle(x00, x01, dx, 180.);
-			double x2 = interp_angle(x10, x11, dx, 180.);
-			return interp_angle(x1, x2, dy, 180.);
-		}
+        if( !dir ) {
+            double x1 = (1.0-dx)*x00 + dx*x10;
+            double x2 = (1.0-dx)*x01 + dx*x11;
+            return (1.0-dy)*x1 + dy*x2;
+        } else {
+            double x1 = interp_angle(x00, x01, dx, 180.);
+            double x2 = interp_angle(x10, x11, dx, 180.);
+            return interp_angle(x1, x2, dy, 180.);
+        }
     }
 
-	//interpolation with only three points is too hazardous for angles
-	if( dir ) return GRIB_NOTDEF;
+    //interpolation with only three points is too hazardous for angles
+    if( dir ) return GRIB_NOTDEF;
 
     // here nbval==3, check the corner without data
     if (getValue(i0, j0) == GRIB_NOTDEF) {

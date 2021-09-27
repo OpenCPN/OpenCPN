@@ -33,31 +33,31 @@ class wxTextCtrl;
 class TTYScroll;
 class WindowDestroyListener;
 
-class TTYWindow : public wxFrame
-{
-    DECLARE_DYNAMIC_CLASS( TTYWindow )
-    DECLARE_EVENT_TABLE()
+class TTYWindow : public wxFrame {
+  DECLARE_DYNAMIC_CLASS(TTYWindow)
+  DECLARE_EVENT_TABLE()
 
-    public:
-        TTYWindow();
-        TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * listener = NULL);
-        virtual ~TTYWindow();
+public:
+  TTYWindow();
+  TTYWindow(wxWindow *parent, int n_lines,
+            WindowDestroyListener *listener = NULL);
+  virtual ~TTYWindow();
 
-        void Add(const wxString &line);
-        void OnCloseWindow(wxCloseEvent& event);
-        void Close();
-        void OnPauseClick( wxCommandEvent& event );
-        void OnCopyClick(wxCommandEvent& event);
+  void Add(const wxString &line);
+  void OnCloseWindow(wxCloseEvent &event);
+  void Close();
+  void OnPauseClick(wxCommandEvent &event);
+  void OnCopyClick(wxCommandEvent &event);
 
-    protected:
-        void CreateLegendBitmap();
-        WindowDestroyListener * m_window_destroy_listener;
-        TTYScroll   *m_pScroll;
-        wxButton    *m_buttonPause;
-        wxButton    *m_buttonCopy;
-        bool        bpause;
-        wxBitmap    m_bm_legend;
-        wxTextCtrl *m_tFilter;
+protected:
+  void CreateLegendBitmap();
+  WindowDestroyListener *m_window_destroy_listener;
+  TTYScroll *m_pScroll;
+  wxButton *m_buttonPause;
+  wxButton *m_buttonCopy;
+  bool bpause;
+  wxBitmap m_bm_legend;
+  wxTextCtrl *m_tFilter;
 };
 
 #endif

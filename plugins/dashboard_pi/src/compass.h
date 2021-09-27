@@ -56,11 +56,11 @@
 class DashboardInstrument_Compass: public DashboardInstrument_Dial
 {
       public:
-            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title, int cap_flag);
+            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag);
 
             ~DashboardInstrument_Compass(void){}
 
-            void SetData(int, double, wxString);
+            void SetData(DASH_CAP, double, wxString);
 
       private:
 

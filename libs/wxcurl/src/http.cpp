@@ -24,7 +24,7 @@
 #endif
 
 #ifdef __WXMSW__
-    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC 
+    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC
 #endif
 
 #include <wx/mstream.h>
@@ -43,10 +43,10 @@ extern "C"
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-wxCurlHTTP::wxCurlHTTP(const wxString& szURL /*= wxEmptyString*/, 
-                    const wxString& szUserName /*= wxEmptyString*/, 
-                    const wxString& szPassword /*= wxEmptyString*/, 
-                    wxEvtHandler* pEvtHandler /*= NULL*/, 
+wxCurlHTTP::wxCurlHTTP(const wxString& szURL /*= wxEmptyString*/,
+                    const wxString& szUserName /*= wxEmptyString*/,
+                    const wxString& szPassword /*= wxEmptyString*/,
+                    wxEvtHandler* pEvtHandler /*= NULL*/,
                     int id /*= wxID_ANY*/,
                     long flags /*= wxCURL_DEFAULT_FLAGS*/)
 : wxCurlBase(szURL, szUserName, szPassword, pEvtHandler, id, flags),
@@ -121,7 +121,7 @@ bool wxCurlHTTP::AddBufferToForm(const bool& bClear, const wxString& szName,
 
     res = curl_formadd(&m_pPostHead, &m_pPostTail, CURLFORM_COPYNAME,
                        (const char*)szName.ToAscii(),
-                       CURLFORM_COPYCONTENTS, buffer, CURLFORM_CONTENTSLENGTH, 
+                       CURLFORM_COPYCONTENTS, buffer, CURLFORM_CONTENTSLENGTH,
                        len, CURLFORM_END);
 
     if (outErr != NULL)
@@ -162,7 +162,7 @@ bool wxCurlHTTP::Head(const wxString& szRemoteFile /*= wxEmptyString*/)
 
         SetOpt(CURLOPT_HTTPGET, TRUE);
         SetOpt(CURLOPT_NOBODY, TRUE);
-        
+
         if(Perform())
         {
             return IsResponseOk();
@@ -278,7 +278,7 @@ size_t wxCurlHTTP::Get(char*& buffer, const wxString& szRemoteFile /*= wxEmptySt
             buffer[iRetVal] = '\0';
             return iRetVal;
         }
-        
+
         free(buffer);
         buffer = NULL;
     }
@@ -302,7 +302,7 @@ bool wxCurlHTTP::Get(wxOutputStream& buffer, const wxString& szRemoteFile /*=wxE
             return IsResponseOk();
         }
     }
-    
+
     return false;
 }
 

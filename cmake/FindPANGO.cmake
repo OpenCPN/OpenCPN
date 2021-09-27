@@ -51,6 +51,7 @@ if(PANGO_LIBRARIES AND NOT PANGO_FOUND)
   target_compile_options(_PANGO INTERFACE "${PANGO_PKG_CFLAGS_OTHER}")
 
   find_path(PANGO_INCLUDE_DIR "pango/pango.h"
+      PATH_SUFFIXES pango-1.0
       HINTS ${PANGO_PKG_INCLUDE_DIRS})
   if(PANGO_INCLUDE_DIR)
     file(STRINGS "${PANGO_INCLUDE_DIR}/pango/pango-features.h"

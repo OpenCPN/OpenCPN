@@ -1,9 +1,9 @@
 ##---------------------------------------------------------------------------
 ## Author:      nohal aka. Pavel Kalian
-## Copyright:   
+## Copyright:
 ## License:     wxWidgets License
 ##---------------------------------------------------------------------------
- 
+
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 CMAKE_POLICY(SET CMP0043 NEW)
@@ -79,24 +79,24 @@ endif ()
 
 
 IF (NOT QT_ANDROID )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
     ${wxWidgets_LIBRARIES}
     ocpn::wxjson
     ocpn::wxsvg
-    ocpn::opencpn 
+    ocpn::opencpn
 )
 ELSE (NOT QT_ANDROID )
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
-    ocpn::wxjson 
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
+    ocpn::wxjson
     "-lGLESv1_CM"
     "-lGLESv2"
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so 
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
     ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
   )
-  
+
   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
 ENDIF(NOT QT_ANDROID)
@@ -104,7 +104,7 @@ ENDIF(NOT QT_ANDROID)
 IF(WIN32)
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "GLU_static" )
 ENDIF(WIN32)
-    
+
 
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE
@@ -117,6 +117,26 @@ IF( APPLE )
 ENDIF(APPLE)
 
 #target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
+
+# Copy shared library to execution folder for debugging if not CI build
+if (NOT OCPN_CI_BUILD)
+  if (MSVC)
+    add_custom_command(
+      TARGET ${PACKAGE_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+    )
+      if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        add_custom_command(
+          TARGET ${PACKAGE_NAME} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+          COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+          COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+        )
+      endif ()
+  endif (MSVC)
+endif (NOT OCPN_CI_BUILD)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

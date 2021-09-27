@@ -45,7 +45,7 @@ WX_DECLARE_LIST(MySegList, MySegListList);
 //  Cohen & Sutherland Line clipping algorithms
 //-------------------------------------------------------------------------------------------------------
 /*
- * 
+ *
  * Copyright (C) 1999,2000,2001,2002,2003 Percy Zahl
  *
  * Authors: Percy Zahl <zahl@users.sf.net>
@@ -145,7 +145,7 @@ class IsoLine
 
         MySegList       m_seglist;
         MySegListList   m_SegListList;
-        
+
         double m_pixelMM;
 };
 

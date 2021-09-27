@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# Check an OpenCPN pull request for whitespace errors.
+#
+
+function usage() {
+cat << EOT
+Usage:
+    check-pr [-l | -h]  <<PR url> | <Repo url> <branch>>
+
+Parameters:
+    PR url:
+        As copied from the Github UI, something like
+        https://github.com/Github6am/OpenCPN/tree/opti_amerz
+    Repo url:
+        As of the Github UI, the Code button; something like
+        https://github.com/Github6am/OpenCPN
+
+Options:
+    -l  Print a list of offending files rather than the complete diff.
+    -h  Print this help message and exit
+EOT
+}
+
+
+# Handle options and parameters
+if [ "$1" = "-h" ]; then usage; exit 0; fi
+if [ "$1" = "-l" ]; then list_opt='true'; shift; fi
+
+if [ $# -eq 1 ]; then
+    url=${1%%OpenCPN/*}/OpenCPN
+    branch=${1##*/tree/}
+elif [ $# -eq 2 ]; then
+    url=$1
+    branch=$2
+else
+    usage >&1
+    exit 1
+fi
+
+
+# Set up the pr-tmp remote and the empty tree we compare against
+if git config remote.pr-tmp.url >/dev/null; then
+    git remote remove pr-tmp
+fi
+git remote add pr-tmp $url
+git fetch pr-tmp $branch
+empty_tree=$(git hash-object -t tree /dev/null)
+
+
+# Do the check
+if [ -n "$list_opt" ]; then
+    exec > >(sed -e 's/:.*//' -e '/^+/d' | uniq)
+fi
+for f in $(git diff --name-only --diff-filter=ACMR HEAD pr-tmp/$branch); do
+    git diff-tree --check $empty_tree pr-tmp/$branch $f
+done
+
+
+# Cleanup (stdout possibly redirected).
+git remote remove pr-tmp

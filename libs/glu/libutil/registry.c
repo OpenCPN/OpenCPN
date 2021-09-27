@@ -53,7 +53,7 @@ gluGetString(GLenum name)
 }
 
 /* extName is an extension name.
- * extString is a string of extensions separated by blank(s). There may or 
+ * extString is a string of extensions separated by blank(s). There may or
  * may not be leading or trailing blank(s) in extString.
  * This works in cases of extensions being prefixes of another like
  * GL_EXT_texture and GL_EXT_texture3D.
@@ -69,7 +69,7 @@ gluCheckExtension(const GLubyte *extName, const GLubyte *extString)
 
   if (extString == NULL) return GL_FALSE;
 
-  deleteThis = lookHere = (char *)malloc(strlen((const char *)extString)+1); 
+  deleteThis = lookHere = (char *)malloc(strlen((const char *)extString)+1);
   if (lookHere == NULL)
      return GL_FALSE;
   /* strtok() will modify string, so copy it somewhere */
@@ -79,7 +79,7 @@ gluCheckExtension(const GLubyte *extName, const GLubyte *extString)
      if (strcmp(word,(const char *)extName) == 0) {
         flag = GL_TRUE;
 	break;
-     }  
+     }
      lookHere = NULL;		/* get next token */
   }
   free((void *)deleteThis);

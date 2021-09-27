@@ -1,5 +1,5 @@
 #
-# Build the opencpn repo 
+# Build the opencpn repo
 #
 # NOTE: this is supposed to be run from the build dir, like
 #

@@ -36,7 +36,7 @@ std::string ltrim(std::string s);
 
 std::string rtrim(std::string s);
 
-std::string trim(std::string s); 
+std::string trim(std::string s);
 
 std::string join(std::vector<std::string> v, char c);
 
@@ -52,4 +52,4 @@ bool replace(std::string& str, const std::string& from, const std::string& to);
 
 void copy_file(const std::string& src_path, const std::string& dest_path);
 
-}   // namespace ocpn
+}  // namespace ocpn

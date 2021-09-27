@@ -41,7 +41,7 @@
     #include <wx/wx.h>
 #endif
 
-DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag) :
       DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
@@ -49,11 +49,11 @@ DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWi
       SetOptionMainValue( _T("%.0f"), DIAL_POSITION_INSIDE);
 }
 
-void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
+void DashboardInstrument_Compass::SetData(DASH_CAP st, double data, wxString unit)
 {
     double cdata = data;
     m_gpsWD = false;
-    if (std::isnan(data)) 
+    if (std::isnan(data))
         m_gpsWD = true;
 
     if (st == m_MainValueCap)
@@ -74,9 +74,9 @@ void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
 
 void DashboardInstrument_Compass::DrawBackground(wxGCDC* dc)
 {
-    DrawBoat(dc, m_cx, m_cy, m_radius);    
+    DrawBoat(dc, m_cx, m_cy, m_radius);
     if (!m_gpsWD) //Don't draw if no GPS
-        DrawCompassRose(dc, m_cx, m_cy, 0.7 * m_radius, m_AngleStart, true);    
+        DrawCompassRose(dc, m_cx, m_cy, 0.7 * m_radius, m_AngleStart, true);
 }
 
 void DashboardInstrument_Compass::DrawForeground(wxGCDC* dc)

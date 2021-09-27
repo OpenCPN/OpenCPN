@@ -1,0 +1,2 @@
+# git-build-recipe format 0.4 deb-version 1+{revno}+{git-commit}
+lp:~bdbcat/opencpn/+git/trunk launchpad

@@ -74,7 +74,7 @@ bool VHW::Parse( const SENTENCE& sentence )
    **        |   | |   | |   | |   | |
    ** $--VHW,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Degress True
    **  2) T = True
    **  3) Degrees Magnetic
@@ -94,7 +94,7 @@ bool VHW::Parse( const SENTENCE& sentence )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    DegreesTrue       = sentence.Double( 1 );
    DegreesMagnetic   = sentence.Double( 3 );
@@ -111,7 +111,7 @@ bool VHW::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += DegreesTrue;

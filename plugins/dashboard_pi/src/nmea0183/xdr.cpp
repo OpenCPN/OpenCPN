@@ -34,7 +34,7 @@
 //IMPLEMENT_DYNAMIC( XDR, RESPONSE )
 
 XDR::XDR()
-{  
+{
    Mnemonic = _T("XDR");
    Empty();
 }
@@ -68,9 +68,9 @@ bool XDR::Parse( const SENTENCE& sentence )
    **        | |   | |            |
    ** $--XDR,a,x.x,a,c--c, ..... *hh<CR><LF>
    **
-   ** Field Number: 
+   ** Field Number:
    **  1) Transducer Type
-   **  2) Measurement Data 
+   **  2) Measurement Data
    **  3) Unit of Measurement, Celcius
    **  4) Name of transducer
    **  ...
@@ -112,7 +112,7 @@ bool XDR::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += TransducerCnt;
@@ -141,6 +141,6 @@ const XDR& XDR::operator = ( const XDR& source )
          TransducerInfo[idx].TransducerName = source.TransducerInfo[idx].TransducerName;
    }
 
-  
+
   return( *this );
 }

@@ -119,7 +119,7 @@ socket_t hostname_connect(const std::string& hostname, int port) {
         unsigned long ul = 1;
         ioctlsocket(sockfd, FIONBIO, &ul); //set as non-blocking
         bool ret = false;
-        
+
         if (connect(sockfd, p->ai_addr, p->ai_addrlen /*(struct sockaddr *)&ServerAddress, sizeof(ServerAddress)*/) == -1)
         {
                 tm.tv_sec = 10; // set the timeout. 10s
@@ -140,16 +140,16 @@ socket_t hostname_connect(const std::string& hostname, int port) {
         }
         else
                 ret = true;
-        
+
         ul = 0;
         ioctlsocket(sockfd, FIONBIO, &ul); //set as blocking
         if (ret) {
                 break;
         }
-///        
-#else        
-        
-        
+///
+#else
+
+
         if (connect(sockfd, p->ai_addr, p->ai_addrlen) != SOCKET_ERROR) {
             break;
         }
@@ -170,7 +170,7 @@ class _DummyWebSocket : public easywsclient::WebSocket
     void sendBinary(const std::string& message) { }
     void sendBinary(const std::vector<uint8_t>& message) { }
     void sendPing() { }
-    void close() { } 
+    void close() { }
     readyStateValues getReadyState() const { return CLOSED; }
     void _dispatch(Callback_Imp & callable) { }
     void _dispatchBinary(BytesCallback_Imp& callable) { }
@@ -391,7 +391,7 @@ class _RealWebSocket : public easywsclient::WebSocket
             // We got a whole message, now do something with it:
             if (false) { }
             else if (
-                   ws.opcode == wsheader_type::TEXT_FRAME 
+                   ws.opcode == wsheader_type::TEXT_FRAME
                 || ws.opcode == wsheader_type::BINARY_FRAME
                 || ws.opcode == wsheader_type::CONTINUATION
             ) {

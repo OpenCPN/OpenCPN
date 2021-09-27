@@ -204,7 +204,7 @@ class NMEA0183
       MTW Mtw;
       MWD Mwd;
       MWV Mwv;
-      MDA Mda; //Metrological comopsite	
+      MDA Mda; //Metrological comopsite
 /*
       OLN Oln;
       OSD Osd;
@@ -233,7 +233,7 @@ class NMEA0183
       VHW Vhw;
 	  VLW Vlw;
 /*
-      
+
       VPW Vpw;
 */
       VTG Vtg;

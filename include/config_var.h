@@ -9,49 +9,41 @@
 #include <wx/fileconf.h>
 #include <wx/window.h>
 
-
 namespace ocpn {
-
 
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);
-
 
 /**
  *  Helper class, not for public consumption. Basically a singleton map of
  *  listeners where singletons are managed by key, one for each key value.
  */
-class SingletonVar
-{
-    public:
-        static SingletonVar* getInstance(const std::string& key);
-        std::map<wxWindow*, wxEventType> listeners;
+class SingletonVar {
+public:
+  static SingletonVar* getInstance(const std::string& key);
+  std::map<wxWindow*, wxEventType> listeners;
 
-    private:
-        SingletonVar() {}
-        SingletonVar(const SingletonVar&);      // not implemented
-        void operator=(const SingletonVar&);    // not implemented
+private:
+  SingletonVar() {}
+  SingletonVar(const SingletonVar&);    // not implemented
+  void operator=(const SingletonVar&);  // not implemented
 };
-
 
 /**  The observable notify/listen basic nuts and bolts.  */
-class ObservedVar
-{
-    public:
-        ObservedVar(const std::string& key)
-            :singleton(SingletonVar::getInstance(key))
-        {}
+class ObservedVar {
+public:
+  ObservedVar(const std::string& key)
+      : singleton(SingletonVar::getInstance(key)) {}
 
-        /** Set object to send ev_type to listener on variable changes. */
-        void listen(wxWindow* listener, wxEventType ev_type);
+  /** Set object to send ev_type to listener on variable changes. */
+  void listen(wxWindow* listener, wxEventType ev_type);
 
-        /** Notify all listeners about variable change. */
-        const void notify();
+  /** Notify all listeners about variable change. */
+  const void notify();
 
-    private:
-        SingletonVar* const singleton;
+private:
+  SingletonVar* const singleton;
 };
-
 
 /**
  *  Wrapper for configuration variables which lives in the global wxFileConfig
@@ -77,25 +69,22 @@ class ObservedVar
  *
  */
 template <typename T = std::string>
-class ConfigVar: public ObservedVar
-{
-    public:
-        ConfigVar(const std::string& section_,
-                  const std::string& key_,
-                  wxConfigBase* cb);
+class ConfigVar : public ObservedVar {
+public:
+  ConfigVar(const std::string& section_, const std::string& key_,
+            wxConfigBase* cb);
 
-        void set(const T& arg);
+  void set(const T& arg);
 
-        const T get(const T& default_val);
+  const T get(const T& default_val);
 
-    private:
-        ConfigVar();                         // not implemented
+private:
+  ConfigVar();  // not implemented
 
-        const std::string section;
-        const std::string key;
-        wxConfigBase* const config;
+  const std::string section;
+  const std::string key;
+  wxConfigBase* const config;
 };
-
 
 /**
  *  Wrapper for global variable, supports notification events when value
@@ -125,23 +114,23 @@ class ConfigVar: public ObservedVar
  *
  */
 template <typename T>
-class GlobalVar: public ObservedVar
-{
-    public:
-        GlobalVar(T* ptr) : ObservedVar(ptr_key(ptr)), variable(ptr) {}
+class GlobalVar : public ObservedVar {
+public:
+  GlobalVar(T* ptr) : ObservedVar(ptr_key(ptr)), variable(ptr) {}
 
-        void set(const T& arg) { *variable = arg; ObservedVar::notify(); }
+  void set(const T& arg) {
+    *variable = arg;
+    ObservedVar::notify();
+  }
 
-        const T get() { return *variable; }
+  const T get() { return *variable; }
 
-    private:
-        GlobalVar();                         // not implemented
+private:
+  GlobalVar();  // not implemented
 
-        T* const variable;
+  T* const variable;
 };
 
-
 }  // namespace ocpn
-
 
 #endif

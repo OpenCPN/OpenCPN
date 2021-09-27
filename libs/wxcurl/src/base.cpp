@@ -20,7 +20,7 @@
 #endif
 
 #ifdef __WXMSW__
-    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC 
+    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC
 #endif
 
 #include <stdio.h>
@@ -41,7 +41,7 @@
 
 extern "C"
 {
-    int wxcurl_evt_progress_func(void* ptr, double rDlTotal, double rDlNow, 
+    int wxcurl_evt_progress_func(void* ptr, double rDlTotal, double rDlNow,
                                  double rUlTotal, double rUlNow)
     {
         wxCurlBase *curl = wx_static_cast(wxCurlBase*, ptr);
@@ -282,7 +282,7 @@ wxCurlDownloadEvent::wxCurlDownloadEvent()
 }
 
 wxCurlDownloadEvent::wxCurlDownloadEvent(int id, wxCurlBase *originator,
-                                        const double& rDownloadTotal, const double& rDownloadNow, 
+                                        const double& rDownloadTotal, const double& rDownloadNow,
                                         const std::string& szURL /*= wxEmptyString*/)
 : wxCurlProgressBaseEvent(id, wxCURL_DOWNLOAD_EVENT, originator, szURL),
 m_rDownloadTotal(rDownloadTotal), m_rDownloadNow(rDownloadNow)
@@ -317,7 +317,7 @@ wxCurlUploadEvent::wxCurlUploadEvent()
 }
 
 wxCurlUploadEvent::wxCurlUploadEvent(int id, wxCurlBase *originator,
-                                        const double& rUploadTotal, const double& rUploadNow, 
+                                        const double& rUploadTotal, const double& rUploadNow,
                                         const std::string& szURL /*= wxEmptyString*/)
 : wxCurlProgressBaseEvent(id, wxCURL_UPLOAD_EVENT, originator, szURL),
 m_rUploadTotal(rUploadTotal), m_rUploadNow(rUploadNow)
@@ -417,7 +417,7 @@ m_iHostPort(-1),
 m_iResponseCode(-1),
 m_pHeaders(NULL),
 m_bUseProxy(false),
-m_iProxyPort(-1), 
+m_iProxyPort(-1),
 m_bVerbose(false),
 m_pEvtHandler(pEvtHandler),
 m_nId(id),
@@ -490,7 +490,7 @@ bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
     //                 for all the time it's owned by libCURL
 
     /*  FIXME: converting to plain ASCII is not always the Best Thing. E.g.
-            for CURLOPT_USERPWD, we'd need to consult RFC2616 (HTTP) or 
+            for CURLOPT_USERPWD, we'd need to consult RFC2616 (HTTP) or
             another RFC depending on the authentication system in use, etc etc
             For now we convert to pure ASCII which in 99% of the cases will
             Just Do the Work
@@ -647,7 +647,7 @@ void wxCurlBase::SetURL(const wxString& szRelativeURL)
 }
 
 std::string wxCurlBase::GetURL() const
-{ 
+{
     wxString s = wxCURL_BUF2STRING(m_szCurrFullURL);
     return std::string(s.mb_str());
 }
@@ -837,8 +837,9 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
         SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
 #ifdef __WXMSW__
         SetOpt(CURLOPT_CAINFO, "curl-ca-bundle.crt"); //Use our local certificate list on Windows
-        SetOpt(CURLOPT_SSL_VERIFYPEER, true);		// FIXME: Temporary until we get certificates working
+        //SetOpt(CURLOPT_SSL_VERIFYPEER, true);		// FIXME: Temporary until we get certificates working
 #endif
+        SetOpt(CURLOPT_SSL_VERIFYPEER, false); //cURL does not support Authority Information Access (AIA) X.509 extension (https://github.com/curl/curl/issues/2793). Unfortunately as of 2021/07 at least LINZ does not provide full trust chain in their TLS certificate and depends on the client's ability to use AIA and download the missing certs which makes the site untrusted for us (And we have to ignore it here to be able to download the chart archives)
         SetOpt(CURLOPT_ENCODING, "gzip,deflate"); //Save bandwidth by using compression
 
         if(m_pEvtHandler && (m_nFlags & wxCURL_SEND_PROGRESS_EVENTS))

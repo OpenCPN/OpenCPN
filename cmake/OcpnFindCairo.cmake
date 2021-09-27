@@ -12,9 +12,11 @@ if (CMAKE_HOST_WIN32)
 else (CMAKE_HOST_WIN32)
   set(CAIRO_INC_LOOK_PATHS /usr/local/include /usr/include)
   if (APPLE)
+    set(CAIRO_INC_LOOK_PATHS /usr/local/include /usr/include /opt/local/include)
     if (NOT APPLE_MODERN)
-        SET(CAIRO_INC_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/include)
-        SET(LOOK_OPTION NO_DEFAULT_PATH)
+      file(GLOB _cairo_home /usr/local/Cellar/cairo/*/include)
+      set(CAIRO_INC_LOOK_PATHS ${_cairo_home})
+      set(LOOK_OPTION NO_DEFAULT_PATH)
     endif ()
   endif (APPLE)
   find_path(CAIRO_INCLUDE_DIRS cairo.h
@@ -22,7 +24,8 @@ else (CMAKE_HOST_WIN32)
             PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/
             ${LOOK_OPTION})
 endif (CMAKE_HOST_WIN32)
-  
+message(STATUS " Cairo includes: ${CAIRO_INCLUDE_DIRS}")
+
 if (CMAKE_HOST_WIN32)
   set(CAIRO_LIBRARIES
     ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
@@ -32,11 +35,11 @@ if (CMAKE_HOST_WIN32)
 else (CMAKE_HOST_WIN32)
   set(CAIRO_LIB_LOOK_PATHS ${LINUX_LIB_PATHS})
   if (APPLE AND NOT APPLE_MODERN)
-    set(CAIRO_LIB_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/lib)
+    set(CAIRO_LIB_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/lib /opt/local/lib)
     set(LOOK_OPTION NO_DEFAULT_PATH)
   endif ()
   find_library(CAIRO_LIBRARIES
-      NAMES libcairo cairo 
+      NAMES libcairo cairo
       PATHS ${CAIRO_LIB_LOOK_PATHS}
       ${LOOK_OPTION}
   )

@@ -88,7 +88,7 @@ wxSize DashboardInstrument_BaroHistory::GetSize( int orient, wxSize hint )
         return wxSize( wxMax(hint.x, DefaultWidth), wxMax(m_TitleHeight+140, hint.y) );
       }
 }
-void DashboardInstrument_BaroHistory::SetData(int st, double data, wxString unit)
+void DashboardInstrument_BaroHistory::SetData(DASH_CAP st, double data, wxString unit)
 {
     if (st == OCPN_DBP_STC_MDA) {
       m_Press = data;
@@ -238,10 +238,10 @@ void DashboardInstrument_BaroHistory::DrawBackground(wxGCDC* dc)
   dc->SetPen(pen);
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.25), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.25));
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.75), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.75));
-#ifdef __WXMSW__  
+#ifdef __WXMSW__
   pen.SetStyle(wxPENSTYLE_SHORT_DASH);
   dc->SetPen(pen);
-#endif  
+#endif
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.5), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.5));
 }
 
@@ -283,7 +283,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   else {
     wxDateTime localTime( m_ArrayRecTime[i] );
     min = localTime.GetMinute( );
-    hour=localTime.GetMinute( );
+    hour = localTime.GetHour( );
   }
   m_ratioW = double(m_DrawAreaRect.width) / (BARO_RECORD_COUNT-1);
  // dc->DrawText(wxString::Format(_(" Max %.1f Min %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),m_MaxPress,m_MinPress,hour,min,m_TotalMaxPress,m_TotalMinPress), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);

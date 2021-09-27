@@ -22,7 +22,7 @@
 #ifdef WIN32
 //#include "stdafx.h"
 #include <time.h>
-#include <windows.h> 
+#include <windows.h>
 
 const __int64 DELTA_EPOCH_IN_MICROSECS= 11644473600000000;
 
@@ -32,7 +32,7 @@ const __int64 DELTA_EPOCH_IN_MICROSECS= 11644473600000000;
  it will be next: tz_minuteswest is the real diffrence in minutes from GMT(UTC) and a tz_dsttime is a flag
  indicates whether daylight is now in use
 */
-struct timezone2 
+struct timezone2
 {
   __int32  tz_minuteswest; /* minutes W of Greenwich */
   BOOL  tz_dsttime;     /* type of dst correction */
@@ -61,14 +61,14 @@ int gettimeofday(struct timeval *tv/*in*/, struct timezone2 *tz/*in*/)
 
     /*converting file time to unix epoch*/
     tmpres /= 10;  /*convert into microseconds*/
-    tmpres -= DELTA_EPOCH_IN_MICROSECS; 
+    tmpres -= DELTA_EPOCH_IN_MICROSECS;
     tv->tv_sec = (__int32)(tmpres*0.000001);
     tv->tv_usec =(tmpres%1000000);
 
 
     if(!tz)
         return 0;
-    
+
     //_tzset(),don't work properly, so we use GetTimeZoneInformation
     rez=GetTimeZoneInformation(&tz_winapi);
     tz->tz_dsttime=(rez==2)?TRUE:FALSE;
@@ -362,7 +362,7 @@ void _cache(mdnsd d, struct resource *r)
         while(c = _c_next(d,c,r->name,r->type)) c->rr.ttl = 0;
         _c_expire(d,&d->cache[i]);
     }
-    
+
     if(r->ttl == 0)
     { // process deletes
         while(c = _c_next(d,c,r->name,r->type))
@@ -538,7 +538,7 @@ int mdnsd_out(mdnsd d, struct message *m, unsigned long int *ip, unsigned short 
     *ip = inet_addr("224.0.0.251");
     m->header.qr = 1;
     m->header.aa = 1;
-    
+
     if(d->uanswers)
     { // send out individual unicast answers
         struct unicast *u = d->uanswers;
@@ -691,7 +691,7 @@ struct timeval *mdnsd_sleep(mdnsd d)
     if(d->uanswers || d->a_now) return &d->sleep;
 
     gettimeofday(&d->now,0);
-    
+
     if(d->a_pause)
     { // then check for paused answers
         if((usec = _tvdiff(d->now,d->pause)) > 0) d->sleep.tv_usec = usec;

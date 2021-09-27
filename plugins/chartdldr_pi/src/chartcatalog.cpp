@@ -46,7 +46,7 @@ bool ChartCatalog::LoadFromFile( wxString path, bool headerOnly )
     title = _("Catalog is not valid.");      // Invalidate the title in case we read a bad file
     if( !wxFileExists(path) )
         return false;
-    
+
     pugi::xml_document *doc = new pugi::xml_document;
     bool ret = doc->load_file( path.mb_str() );
     if (ret)
@@ -83,11 +83,11 @@ wxDateTime ChartCatalog::GetReleaseDate()
     wxASSERT(dt_valid.IsValid());
     return dt_valid;
 }
- 
+
 bool ChartCatalog::LoadFromXml( pugi::xml_document * doc, bool headerOnly )
 {
     pugi::xml_node root = doc->first_child();
-    
+
     wxString rootName = wxString::FromUTF8( root.name() );
     charts.Clear();
     if( rootName.StartsWith( _T("RncProductCatalog") ) )
@@ -98,7 +98,7 @@ bool ChartCatalog::LoadFromXml( pugi::xml_document * doc, bool headerOnly )
         }
         if (headerOnly)
             return true;
-        
+
         for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
             if( !strcmp(element.name(), "chart") ){
                 charts.Add(new RasterChart(element));
@@ -113,7 +113,7 @@ bool ChartCatalog::LoadFromXml( pugi::xml_document * doc, bool headerOnly )
         }
         if (headerOnly)
             return true;
-        
+
         for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
             if( !strcmp(element.name(), "cell") ){
                 charts.Add(new EncCell(element));
@@ -131,7 +131,7 @@ bool ChartCatalog::LoadFromXml( pugi::xml_document * doc, bool headerOnly )
         }
         if( headerOnly )
             return true;
-        
+
         for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
             if( !strcmp(element.name(), "Cell") ){
                 charts.Add(new IEncCell(element));
@@ -217,7 +217,7 @@ Chart::Chart( pugi::xml_node &xmldata )
     zipfile_datetime_iso8601 = wxInvalidDateTime;
     nm = NULL;
     lnm = NULL;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "title")) {
             title = wxString::FromUTF8(element.first_child().value());
@@ -307,7 +307,7 @@ RasterChart::RasterChart( pugi::xml_node &xmldata ) : Chart( xmldata )
     source_edition_last_correction = wxEmptyString;
     raster_edition_last_correction = wxEmptyString;
     ntm_edition_last_correction = wxEmptyString;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "number")) {
             number = wxString::FromUTF8(element.first_child().value());
@@ -349,7 +349,7 @@ EncCell::EncCell( pugi::xml_node &xmldata ) : Chart( xmldata )
     updn = -1;
     uadt = wxInvalidDateTime;
     isdt = wxInvalidDateTime;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "name")) {
             number = wxString::FromUTF8(element.first_child().value());
@@ -390,7 +390,7 @@ IEncCell::IEncCell( pugi::xml_node &xmldata ) : Chart( xmldata )
     shp_file = NULL;
     s57_file = NULL;
     kml_file = NULL;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "name")) {
             //  Use number (not name) for zip file name and cell name  .Paul.
@@ -500,7 +500,7 @@ Area::Area( pugi::xml_node &xmldata )
     south = 0.0;
     east = 0.0;
     west = 0.0;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "north")) {
                 north = wxAtof(wxString::FromUTF8(element.first_child().value()));
@@ -551,7 +551,7 @@ NoticeToMariners::NoticeToMariners( pugi::xml_node &xmldata )
     agency = wxEmptyString;
     doc = wxEmptyString;
     date = wxInvalidDateTime;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "nm_agency")) {
             agency = wxString::FromUTF8(element.first_child().value());
@@ -571,7 +571,7 @@ NoticeToMariners::NoticeToMariners( pugi::xml_node &xmldata )
 Panel::Panel( pugi::xml_node &xmldata )
 {
     panel_no = -1;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "panel_no")) {
                 panel_no = wxAtoi(wxString::FromUTF8(element.first_child().value()));
@@ -592,7 +592,7 @@ RncPanel::RncPanel( pugi::xml_node &xmldata ) : Panel( xmldata )
     panel_title = wxEmptyString;
     file_name = wxEmptyString;
     scale = 0;
-    
+
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
         if( !strcmp(element.name(), "panel_title")) {
             panel_title = wxString::FromUTF8(element.first_child().value());

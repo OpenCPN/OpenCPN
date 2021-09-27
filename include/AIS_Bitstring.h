@@ -25,24 +25,21 @@
 #ifndef __AIS_BITSTRING_H__
 #define __AIS_BITSTRING_H__
 
-#define AIS_MAX_MESSAGE_LEN (10 * 82)           // AIS Spec allows up to 9 sentences per message, 82 bytes each
-class AIS_Bitstring
-{
+#define AIS_MAX_MESSAGE_LEN \
+  (10 * 82)  // AIS Spec allows up to 9 sentences per message, 82 bytes each
+class AIS_Bitstring {
 public:
+  AIS_Bitstring(const char *str);
+  unsigned char to_6bit(const char c);
 
-    AIS_Bitstring(const char *str);
-    unsigned char to_6bit(const char c);
-
-    /// sp is starting bit, 1-based
-    int GetInt(int sp, int len, bool signed_flag = false);
-    int GetStr(int sp, int bit_len, char *dest, int max_len);
-    int GetBitCount();
-
+  /// sp is starting bit, 1-based
+  int GetInt(int sp, int len, bool signed_flag = false);
+  int GetStr(int sp, int bit_len, char *dest, int max_len);
+  int GetBitCount();
 
 private:
-
-    unsigned char bitbytes[AIS_MAX_MESSAGE_LEN];
-    int byte_length;
+  unsigned char bitbytes[AIS_MAX_MESSAGE_LEN];
+  int byte_length;
 };
 
 #endif

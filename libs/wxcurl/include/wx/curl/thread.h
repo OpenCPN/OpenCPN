@@ -88,7 +88,7 @@ public:
         m_bAbort = false;
     }
 
-    ~wxCurlBaseThread() 
+    ~wxCurlBaseThread()
     {
         m_pCurl = 0;
     }
@@ -139,8 +139,8 @@ public:     // getters
 
     bool IsAborting()
         { return m_bAbort; }
-        
-        
+
+
     //! Returns the wxCurlBase-derived object which is being used for the transfer.
     //! Note that the returned value will be NULL if you've not called #SetURL yet.
     //! You can cast it to the wxCurlBase-derived class associated with the return
@@ -149,7 +149,7 @@ public:     // getters
     wxCurlBase *GetCurlSession() const
         { return m_pCurl.get(); }
 
-    std::shared_ptr<wxCurlBase> &GetCurlSharedPtr() 
+    std::shared_ptr<wxCurlBase> &GetCurlSharedPtr()
         { return m_pCurl; }
 
     //! Returns the protocol used for the transfer.
@@ -164,13 +164,13 @@ public:     // getters
 
 public:     // public utils
 
-    //! Returns the protocol which should be used to download the resource 
+    //! Returns the protocol which should be used to download the resource
     //! associated with the given URL.
     static wxCurlProtocol GetProtocolFromURL(const wxString &url);
 
     //! Returns a pointer to a wxCurlBase-derived class suitable for handling
     //! transfers on the given protocol.
-    //! You'll need to wx_static_cast the return value to the 
+    //! You'll need to wx_static_cast the return value to the
     //! right class in order to be able to set/get further options
     //! (e.g. url/username/password/proxy/etc etc).
     static std::shared_ptr<wxCurlBase>CreateHandlerFor(wxCurlProtocol prot);
@@ -221,7 +221,7 @@ public:
     wxOutputStream *GetRealStream() const
         { return m_stream; }
 
-    wxFileOffset GetLength() const 
+    wxFileOffset GetLength() const
         { return m_stream->GetLength(); }
 
     bool Close()
@@ -320,10 +320,10 @@ public:
     wxInputStream *GetRealStream() const
         { return m_stream; }
 
-    wxFileOffset GetLength() const 
+    wxFileOffset GetLength() const
         { return m_stream->GetLength(); }
 
-    char Peek() 
+    char Peek()
         { return m_stream->Peek(); }
 };
 

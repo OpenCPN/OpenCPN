@@ -20,12 +20,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
-*/
-
+ */
 
 #ifndef PLUG_SETTINGS_H_
 #define PLUG_SETTINGS_H_
-
 
 #include <wx/dialog.h>
 #include <wx/window.h>
@@ -33,12 +31,9 @@
 /**
  * Modal dialog, displays settings for plugin catalog.
  */
-class CatalogSettingsDialog: public wxDialog
-{
-    public:
-        CatalogSettingsDialog(wxWindow* parent);
-
-
+class CatalogSettingsDialog : public wxDialog {
+public:
+  CatalogSettingsDialog(wxWindow* parent);
 };
 
-#endif // PLUG_SETTINGS_H
+#endif  // PLUG_SETTINGS_H

@@ -108,7 +108,7 @@ public:
       void SetDialogFont( wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog"), 10) );
       void SetCurrentViewPort(PlugIn_ViewPort &vp) { m_current_vp = vp; }
       PlugIn_ViewPort &GetCurrentViewPort() { return m_current_vp; }
-      
+
       void OnGribCtrlBarClose();
 
       wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
@@ -123,13 +123,13 @@ public:
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
       void UpdatePrefs(GribPreferencesDialog *Pref);
-      
+
       int   m_MenuItem;
       bool  m_DialogStyleChanged;
 
       wxSize           m_coreToolbarSize;
       wxPoint          m_coreToolbarPosn;
-      
+
 private:
       bool LoadConfig(void);
       bool SaveConfig(void);
@@ -190,7 +190,7 @@ public:
     ~GribPreferencesDialog() {}
 
     void OnOKClick(wxCommandEvent& event);
-    
+
 private:
     void OnStartOptionChange(wxCommandEvent& event);
 };

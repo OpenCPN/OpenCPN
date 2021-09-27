@@ -1,5 +1,5 @@
 /*
-** SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008) 
+** SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
 ** Copyright (C) [dates of first publication] Silicon Graphics, Inc.
 ** All Rights Reserved.
 **
@@ -9,10 +9,10 @@
 ** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
 ** of the Software, and to permit persons to whom the Software is furnished to do so,
 ** subject to the following conditions:
-** 
+**
 ** The above copyright notice including the dates of first publication and either this
 ** permission notice or a reference to http://oss.sgi.com/projects/FreeB/ shall be
-** included in all copies or substantial portions of the Software. 
+** included in all copies or substantial portions of the Software.
 **
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 ** INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
@@ -20,7 +20,7 @@
 ** BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 ** TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 ** OR OTHER DEALINGS IN THE SOFTWARE.
-** 
+**
 ** Except as contained in this notice, the name of Silicon Graphics, Inc. shall not
 ** be used in advertising or otherwise to promote the sale, use or other dealings in
 ** this Software without prior written authorization from Silicon Graphics, Inc.
@@ -208,16 +208,16 @@ PQhandle pqHeapInsert( TESSalloc* alloc, PriorityQHeap *pq, PQkey keyNew )
 
 			// If the heap overflows, double its size.
 			pq->max <<= 1;
-			pq->nodes = (PQnode *)alloc->memrealloc( alloc->userData, pq->nodes, 
+			pq->nodes = (PQnode *)alloc->memrealloc( alloc->userData, pq->nodes,
 				(size_t)((pq->max + 1) * sizeof( pq->nodes[0] )));
 			if (pq->nodes == NULL) {
-				pq->nodes = saveNodes;	// restore ptr to free upon return 
+				pq->nodes = saveNodes;	// restore ptr to free upon return
 				return INV_HANDLE;
 			}
 			pq->handles = (PQhandleElem *)alloc->memrealloc( alloc->userData, pq->handles,
 				(size_t) ((pq->max + 1) * sizeof( pq->handles[0] )));
 			if (pq->handles == NULL) {
-				pq->handles = saveHandles; // restore ptr to free upon return 
+				pq->handles = saveHandles; // restore ptr to free upon return
 				return INV_HANDLE;
 			}
 		}
@@ -317,14 +317,14 @@ PriorityQ *pqNewPriorityQ( TESSalloc* alloc, int size, int (*leq)(PQkey key1, PQ
 	pq->max = size; //INIT_SIZE;
 	pq->initialized = FALSE;
 	pq->leq = leq;
-	
+
 	return pq;
 }
 
 /* really tessPqSortDeletePriorityQ */
 void pqDeletePriorityQ( TESSalloc* alloc, PriorityQ *pq )
 {
-	assert(pq != NULL); 
+	assert(pq != NULL);
 	if (pq->heap != NULL) pqHeapDeletePriorityQ( alloc, pq->heap );
 	if (pq->order != NULL) alloc->memfree( alloc->userData, pq->order );
 	if (pq->keys != NULL) alloc->memfree( alloc->userData, pq->keys );
@@ -418,7 +418,7 @@ int pqInit( TESSalloc* alloc, PriorityQ *pq )
 }
 
 /* really tessPqSortInsert */
-/* returns INV_HANDLE iff out of memory */ 
+/* returns INV_HANDLE iff out of memory */
 PQhandle pqInsert( TESSalloc* alloc, PriorityQ *pq, PQkey keyNew )
 {
 	int curr;
@@ -437,15 +437,15 @@ PQhandle pqInsert( TESSalloc* alloc, PriorityQ *pq, PQkey keyNew )
 			PQkey *saveKey= pq->keys;
 			// If the heap overflows, double its size.
 			pq->max <<= 1;
-			pq->keys = (PQkey *)alloc->memrealloc( alloc->userData, pq->keys, 
+			pq->keys = (PQkey *)alloc->memrealloc( alloc->userData, pq->keys,
 				(size_t)(pq->max * sizeof( pq->keys[0] )));
-			if (pq->keys == NULL) { 
-				pq->keys = saveKey;  // restore ptr to free upon return 
+			if (pq->keys == NULL) {
+				pq->keys = saveKey;  // restore ptr to free upon return
 				return INV_HANDLE;
 			}
 		}
 	}
-	assert(curr != INV_HANDLE); 
+	assert(curr != INV_HANDLE);
 	pq->keys[curr] = keyNew;
 
 	/* Negative handles index the sorted array. */

@@ -30,14 +30,13 @@
 #ifndef __OCPNVIEWPORT_H__
 #define __OCPNVIEWPORT_H__
 
-
 #include "bbox.h"
 class OCPNRegion;
 class LLRegion;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
-#define NAN (*(double*)&lNaN)
+#define NAN (*(double *)&lNaN)
 #endif
 
 #if 0
@@ -79,74 +78,79 @@ typedef enum ColorScheme
 //----------------------------------------------------------------------------
 // ViewPort Definition
 //----------------------------------------------------------------------------
-class ViewPort
-{
-      public:
-            ViewPort();
+class ViewPort {
+public:
+  ViewPort();
 
-            wxPoint GetPixFromLL(double lat, double lon);
-            void GetLLFromPix(const wxPoint &p, double *lat, double *lon) { GetLLFromPix(wxPoint2DDouble(p), lat, lon); }
-            void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
-            wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
+  wxPoint GetPixFromLL(double lat, double lon);
+  void GetLLFromPix(const wxPoint &p, double *lat, double *lon) {
+    GetLLFromPix(wxPoint2DDouble(p), lat, lon);
+  }
+  void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
+  wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
-            LLRegion GetLLRegion( const OCPNRegion &region );
-            OCPNRegion GetVPRegionIntersect( const OCPNRegion &region, const LLRegion &llregion, int chart_native_scale );
-            OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, int nPoints, float *llpoints,
-                                             int chart_native_scale, wxPoint *ppoints );
-            wxRect GetVPRectIntersect( size_t n, float *llpoints );
-            ViewPort BuildExpandedVP(int width, int height);
-            
-            void SetBoxes(void);
+  LLRegion GetLLRegion(const OCPNRegion &region);
+  OCPNRegion GetVPRegionIntersect(const OCPNRegion &region,
+                                  const LLRegion &llregion,
+                                  int chart_native_scale);
+  OCPNRegion GetVPRegionIntersect(const OCPNRegion &Region, int nPoints,
+                                  float *llpoints, int chart_native_scale,
+                                  wxPoint *ppoints);
+  wxRect GetVPRectIntersect(size_t n, float *llpoints);
+  ViewPort BuildExpandedVP(int width, int height);
 
-//  Accessors
-            void Invalidate() { bValid = false; }
-            void Validate() { bValid = true; }
-            bool IsValid() const { return bValid; }
+  void SetBoxes(void);
 
-            void SetRotationAngle(double angle_rad) { rotation = angle_rad;}
-            void SetProjectionType(int type){ m_projection_type = type; }
+  //  Accessors
+  void Invalidate() { bValid = false; }
+  void Validate() { bValid = true; }
+  bool IsValid() const { return bValid; }
 
-            LLBBox &GetBBox() { return vpBBox; }
+  void SetRotationAngle(double angle_rad) { rotation = angle_rad; }
+  void SetProjectionType(int type) { m_projection_type = type; }
 
-            void SetBBoxDirect( const LLBBox &bbox ) { vpBBox = bbox; }
-            void SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax);
+  LLBBox &GetBBox() { return vpBBox; }
 
-            void InvalidateTransformCache() { lat0_cache = NAN; }
-            
-//  Generic
-            double   clat;                   // center point
-            double   clon;
-            double   view_scale_ppm;
-            double   skew;
-            double   rotation;
-            double   tilt;  // For perspective view
+  void SetBBoxDirect(const LLBBox &bbox) { vpBBox = bbox; }
+  void SetBBoxDirect(double latmin, double lonmin, double latmax,
+                     double lonmax);
 
-            double    chart_scale;            // conventional chart displayed scale
-            double    ref_scale;              //  the nominal scale of the "reference chart" for this view
+  void InvalidateTransformCache() { lat0_cache = NAN; }
 
-            int      pix_width;
-            int      pix_height;
+  //  Generic
+  double clat;  // center point
+  double clon;
+  double view_scale_ppm;
+  double skew;
+  double rotation;
+  double tilt;  // For perspective view
 
-            bool     b_quilt;
-            bool     b_FullScreenQuilt;
+  double chart_scale;  // conventional chart displayed scale
+  double
+      ref_scale;  //  the nominal scale of the "reference chart" for this view
 
-            int      m_projection_type;
-            bool     b_MercatorProjectionOverride;
-            wxRect   rv_rect;
+  int pix_width;
+  int pix_height;
+
+  bool b_quilt;
+  bool b_FullScreenQuilt;
+
+  int m_projection_type;
+  bool b_MercatorProjectionOverride;
+  wxRect rv_rect;
 
 #ifdef USE_ANDROID_GLES2
-            float    vp_transform[16];
-            float    norm_transform[16];
+  float vp_transform[16];
+  float norm_transform[16];
 #endif
-            
-      private:
-            LLBBox   vpBBox;                // An un-skewed rectangular lat/lon bounding box
-                                            // which contains the entire vieport
 
-            bool     bValid;                 // This VP is valid
+private:
+  LLBBox vpBBox;  // An un-skewed rectangular lat/lon bounding box
+                  // which contains the entire vieport
 
-            double lat0_cache, cache0, cache1;
+  bool bValid;  // This VP is valid
+
+  double lat0_cache, cache0, cache1;
 };
-
 
 #endif

@@ -1,18 +1,75 @@
 #!/usr/bin/env bash
 
 #
-# Build the OSX artifacts 
+# Build the OSX artifacts
 #
 set -xe
 
+# Build for legacy Mac machines
 export MACOSX_DEPLOYMENT_TARGET=10.9
+
+# allow shell to find Macports executable
+export PATH=/opt/local/bin:$PATH
+
+# allow caching of macports state in $HOME    "/Users/distiller/project/opt_local_cache"
+sudo mkdir -p ${HOME}/project/opt_local_cache
+sudo ln -s ${HOME}/project/opt_local_cache /opt/local
+
+ls ${HOME}/project/opt_local_cache || echo "OK"
+ls ${HOME}/project/opt_local_cache/bin || echo "OK"
+
+# Check if the cache is with us. If not, re-install macports
+port info zstd || {
+    curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
+    tar xf MacPorts-2.7.1.tar.bz2
+    cd MacPorts-2.7.1/
+    ./configure
+    make
+    sudo make install
+    cd ..
+
+    sudo port -v selfupdate
+}
+
+    # add our local ports to the sources.conf
+sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
+
+# rebuild the port index
+pushd buildosx/macports/ports
+  portindex
+popd
+
+port deactivate OCPN_curl || {
+  echo "OK"
+}
+
+# Install curl to get the TLS certificate bundle
+# then immediately deactivate curl to make room for OCPN_curl later
+sudo port -q install curl
+sudo port deactivate curl
+
+sudo port deactivate openssl
+
+
+# install the local port libraries
+#  n.b.  ORDER IS IMPORTANT
+
+sudo port -q install OCPN_openssl
+sudo port -q install OCPN_curl
+sudo port -q install OCPN_libpixman
+sudo port -q install OCPN_cairo
+sudo port -q install zstd
+sudo port -q install OCPN_libarchive
+
+sudo port -q -f install OCPN_libpng
+
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
-#
+
 # Check if the cache is with us. If not, re-install brew.
-brew list --versions libexif || {
+brew list --versions wget || {
     brew update-reset
     # As indicated by warning message in CircleCI build log:
     git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core" \
@@ -21,19 +78,18 @@ brew list --versions libexif || {
         fetch --unshallow
 }
 
-for pkg in cairo cmake libarchive libexif pixman python3 wget xz; do
+for pkg in cmake python3 wget  ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
 
 # Make sure cmake finds libarchive
-version=$(pkg_version libarchive)
 pushd /usr/local/include
-    ln -sf /usr/local/Cellar/libarchive/$version/include/archive.h .
-    ln -sf /usr/local/Cellar/libarchive/$version/include/archive_entry.h .
+    ln -sf /opt/local/include/archive.h .
+    ln -sf /opt/local/include/archive_entry.h .
     cd ../lib
-    ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.13.dylib .
-    ln -sf  /usr/local/Cellar/libarchive/$version/lib/libarchive.dylib .
+    ln -sf  /opt/local/lib/libarchive.13.dylib .
+    ln -sf  /opt/local/lib/libarchive.dylib .
 popd
 
 if brew list --cask --versions packages; then
@@ -45,10 +101,14 @@ else
     brew install --cask packages
 fi
 
+wget -q https://download.opencpn.org/s/MCiRiq4fJcKD56r/download \
+    -O /tmp/wx315_opencpn50_macos1010.tar.xz
+tar -C /tmp -xJf /tmp/wx315_opencpn50_macos1010.tar.xz
 
-wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
-    -O /tmp/wx312B_opencpn50_macos109.tar.xz
-tar -C /tmp -xJf /tmp/wx312B_opencpn50_macos109.tar.xz 
+#wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
+#    -O /tmp/wx312B_opencpn50_macos109.tar.xz
+#tar -C /tmp -xJf /tmp/wx312B_opencpn50_macos109.tar.xz
+
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
 
@@ -57,10 +117,11 @@ mkdir build
 cd build
 test -n "$TRAVIS_TAG" && CI_BUILD=OFF || CI_BUILD=ON
 cmake -DOCPN_CI_BUILD=$CI_BUILD \
+  -DOCPN_VERBOSE=ON \
   -DOCPN_USE_LIBCPP=ON \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
-  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx312B_opencpn50_macos109/bin/wx-config \
-  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx312B_opencpn50_macos109" \
+  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config \
+  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010" \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
 make -sj$(sysctl -n hw.physicalcpu)
@@ -69,15 +130,6 @@ mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
 make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
-
-#  A truly awful hack...
-#  fixup_bundle (part of MacOS install step) seems to somehow miss the required copy of libpixman
-#  Or the second install kills it...
-#  So we do it explicitely.
-rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
-cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
-# and some dependencies which failed to get softlinks
-cp /usr/local/Cellar/zstd/1.4.8/lib/libzstd.1.4.8.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libzstd.1.dylib
 
 sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 

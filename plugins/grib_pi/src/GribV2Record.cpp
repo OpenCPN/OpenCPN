@@ -22,14 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **          NCAR/DSS
 **          dattore@ucar.edu
 **          (303) 497-1825
-**	latest
+**  latest
 **          14 Aug 2015:
 **             DRS Template 5.3 (complex packing and spatial differencing)
 
     copyright ?
 */
 
-#define __STDC_LIMIT_MACROS 
+#define __STDC_LIMIT_MACROS
 
 #include "wx/wxprec.h"
 
@@ -123,13 +123,13 @@ public:
     unsigned int num_groups;
     float primary_miss_sub,secondary_miss_sub;
     struct {
-	int ref,pack_width;
+    int ref,pack_width;
     } width;
     struct {
-	unsigned int ref,incr,last,pack_width;
+    unsigned int ref,incr,last,pack_width;
     } length;
     struct {
-	unsigned int order,order_vals_width;
+    unsigned int order,order_vals_width;
     } spatial_diff;
   } complex_pack;
   int drs_templ_num;
@@ -139,22 +139,22 @@ public:
   int bms_ind;
   unsigned char *bitmap;
   ///
-  zuchar	*bms;
-  int		bmssize;
+  zuchar    *bms;
+  int       bmssize;
 } ;
 
 class  GRIB2Grid {
 public:
   GRIB2Grid() : gridpoints(0) { };
   ~GRIB2Grid() { delete [] gridpoints; };
-  
+
   double *gridpoints;
 };
 
 class  GRIBMessage {
 public:
   GRIBMessage() : buffer(0) {};
-  ~GRIBMessage() { 
+  ~GRIBMessage() {
       delete [] buffer;
   };
   unsigned char *buffer;
@@ -177,7 +177,7 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 *   PRGMMR: Gilbert          ORG: W/NP11     DATE: 2002-12-02
 *
 * ABSTRACT: This Function decodes a JPEG2000 code stream specified in the
-*   JPEG2000 Part-1 standard (i.e., ISO/IEC 15444-1) using JasPer 
+*   JPEG2000 Part-1 standard (i.e., ISO/IEC 15444-1) using JasPer
 *   Software version 1.500.4 (or 1.700.2) written by the University of British
 *   Columbia and Image Power Inc, and others.
 *   JasPer is available at http://www.ece.uvic.ca/~mdadams/jasper/.
@@ -223,24 +223,24 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 //    jas_init();
 
     ier=0;
-//   
+//
 //     Create jas_stream_t containing input JPEG200 codestream in memory.
-//       
+//
 
     jpcstream=jas_stream_memopen(injpc,bufsize);
     if (jpcstream == nullptr) {
         printf(" dec_jpeg2000: no memory\n");
         return -2;
     }
-//   
+//
 //     Decode JPEG200 codestream into jas_image_t structure.
-//       
+//
     image=jpc_decode(jpcstream,opts);
     if ( image == 0 ) {
        printf(" jpc_decode return = %d \n",ier);
        return -3;
     }
-    
+
     pcmpt=image->cmpts_[0];
 
 //   Expecting jpeg2000 image to be grayscale only.
@@ -251,7 +251,7 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
        return (-5);
     }
 
-// 
+//
 //    Create a data matrix of grayscale image values decoded from
 //    the jpeg2000 codestream.
 //
@@ -262,8 +262,8 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 //    Copy data matrix to output integer array.
 //
     k=0;
-    for (i=0;i<pcmpt->height_;i++) 
-      for (j=0;j<pcmpt->width_;j++) 
+    for (i=0;i<pcmpt->height_;i++)
+      for (j=0;j<pcmpt->width_;j++)
         outfld[k++]=data->rows_[i][j];
 //
 //     Clean up JasPer work structures.
@@ -316,7 +316,7 @@ static float ieee2flt(unsigned const char *ieee) {
 
     exp = ((ieee[0] & 127) << 1) + (ieee[1] >> 7);
     fmant = (double) ((int) ieee[3] + (int) (ieee[2] << 8) + (int) ((ieee[1] | 128) << 16));
-    if (ieee[0] & 128) 
+    if (ieee[0] & 128)
         fmant = -fmant;
 
     return (float) (ldexp(fmant, (int) (exp - 128 - 22)));
@@ -419,71 +419,71 @@ static bool unpackGDS(GRIBMessage *grib_msg)
         grib_msg->md.nx          = uint4(b +30);  /* number of latitudes */
         grib_msg->md.ny          = uint4(b +34);  /* number of longitudes */
 
-	grib_msg->md.slat = int4(b +46)/1000000.; /* latitude of first gridpoint */
-	grib_msg->md.slon = int4(b +50)/1000000.; /* longitude of first gridpoint */
+    grib_msg->md.slat = int4(b +46)/1000000.; /* latitude of first gridpoint */
+    grib_msg->md.slon = int4(b +50)/1000000.; /* longitude of first gridpoint */
 
-	grib_msg->md.rescomp = b[54];             /* resolution and component flags */
+    grib_msg->md.rescomp = b[54];             /* resolution and component flags */
 
-	grib_msg->md.lats.elat = int4(b +55)/1000000.; /* latitude of last gridpoint */
-	grib_msg->md.lons.elon = int4(b +59)/1000000.; /* longitude of last gridpoint */
+    grib_msg->md.lats.elat = int4(b +55)/1000000.; /* latitude of last gridpoint */
+    grib_msg->md.lons.elon = int4(b +59)/1000000.; /* longitude of last gridpoint */
 
-	grib_msg->md.xinc.loinc = uint4(b +63)/1000000.; /* longitude increment */
+    grib_msg->md.xinc.loinc = uint4(b +63)/1000000.; /* longitude increment */
 
-	if (grib_msg->md.gds_templ_num == 0)
-	  grib_msg->md.yinc.lainc = uint4(b +67)/1000000.; /* latitude increment */
+    if (grib_msg->md.gds_templ_num == 0)
+      grib_msg->md.yinc.lainc = uint4(b +67)/1000000.; /* latitude increment */
 
-	grib_msg->md.scan_mode = b[71]; /* scanning mode flag */
-	break;
+    grib_msg->md.scan_mode = b[71]; /* scanning mode flag */
+    break;
     case 10: /* Mercator */
         parse_earth(grib_msg);
 
-	grib_msg->md.nx = uint4(b +30); 	/* number of points along a parallel */
-	grib_msg->md.ny = uint4(b +34); 	/* number of points along a meridian */
+    grib_msg->md.nx = uint4(b +30);     /* number of points along a parallel */
+    grib_msg->md.ny = uint4(b +34);     /* number of points along a meridian */
 
-	grib_msg->md.slat = int4(b + 38)/1000000.; /* latitude of first gridpoint */
-	grib_msg->md.slon = int4(b + 42)/1000000.; /* longitude of first gridpoint */
+    grib_msg->md.slat = int4(b + 38)/1000000.; /* latitude of first gridpoint */
+    grib_msg->md.slon = int4(b + 42)/1000000.; /* longitude of first gridpoint */
 
-	grib_msg->md.rescomp = b[46]; /* resolution and component flags */
-	grib_msg->md.latD    = int4(b +47)/1000000.; /* latitude at which the Mercator projection intersects the Earth 
+    grib_msg->md.rescomp = b[46]; /* resolution and component flags */
+    grib_msg->md.latD    = int4(b +47)/1000000.; /* latitude at which the Mercator projection intersects the Earth
                                                         (Latitude where Di and Dj are specified)   */
 
-	grib_msg->md.lats.elat = int4(b +51)/1000000.; /* latitude of last gridpoint */
-	grib_msg->md.lons.elon = int4(b +55)/1000000.; /* longitude of last gridpoint */
+    grib_msg->md.lats.elat = int4(b +51)/1000000.; /* latitude of last gridpoint */
+    grib_msg->md.lons.elon = int4(b +55)/1000000.; /* longitude of last gridpoint */
 
         grib_msg->md.scan_mode = b[59]; /* scanning mode flag */
 
-	grib_msg->md.xinc.loinc = uint4(b +64)/1000.; /* longitude increment */
-	grib_msg->md.yinc.lainc = uint4(b +68)/1000.; /* latitude increment */
+    grib_msg->md.xinc.loinc = uint4(b +64)/1000.; /* longitude increment */
+    grib_msg->md.yinc.lainc = uint4(b +68)/1000.; /* latitude increment */
         break;
     case 30: /* Lambert conformal grid */
         parse_earth(grib_msg);
 
-	grib_msg->md.nx = uint4(b +30); /* number of points along a parallel */
-	grib_msg->md.ny = uint4(b +34); /* number of points along a meridian */
+    grib_msg->md.nx = uint4(b +30); /* number of points along a parallel */
+    grib_msg->md.ny = uint4(b +34); /* number of points along a meridian */
 
-	grib_msg->md.slat = int4(b + 38)/1000000.; /* latitude of first gridpoint */
-	grib_msg->md.slon = int4(b + 42)/1000000.; /* longitude of first gridpoint */
+    grib_msg->md.slat = int4(b + 38)/1000000.; /* latitude of first gridpoint */
+    grib_msg->md.slon = int4(b + 42)/1000000.; /* longitude of first gridpoint */
 
-	grib_msg->md.rescomp = b[46]; /* resolution and component flags */
+    grib_msg->md.rescomp = b[46]; /* resolution and component flags */
 
-	grib_msg->md.lats.lad = int4(b +47)/1000000.; /* LaD */
-	grib_msg->md.lons.lov = int4(b +51)/1000000.; /* LoV */
+    grib_msg->md.lats.lad = int4(b +47)/1000000.; /* LaD */
+    grib_msg->md.lons.lov = int4(b +51)/1000000.; /* LoV */
 
-	grib_msg->md.xinc.dxinc = int4(b +55)/1000.; /* x-direction increment */
-	grib_msg->md.yinc.dyinc = int4(b +59)/1000.; /* y-direction increment */
+    grib_msg->md.xinc.dxinc = int4(b +55)/1000.; /* x-direction increment */
+    grib_msg->md.yinc.dyinc = int4(b +59)/1000.; /* y-direction increment */
 
-	grib_msg->md.proj_flag = b[63]; /* projection center flag */
+    grib_msg->md.proj_flag = b[63]; /* projection center flag */
         grib_msg->md.scan_mode = b[64]; /* scanning mode flag */
 
-	grib_msg->md.latin1 = int4(b +65)/1000000.; /* latin1 */
-	grib_msg->md.latin2 = int4(b +69)/1000000.; /* latin2 */
+    grib_msg->md.latin1 = int4(b +65)/1000000.; /* latin1 */
+    grib_msg->md.latin2 = int4(b +69)/1000000.; /* latin2 */
 
-	grib_msg->md.splat = int4(b +73)/1000000.; /* latitude of southern pole of projection */
-	grib_msg->md.splon = int4(b +77)/1000000.; /* longitude of southern pole of projection */
-	break;
+    grib_msg->md.splat = int4(b +73)/1000000.; /* latitude of southern pole of projection */
+    grib_msg->md.splon = int4(b +77)/1000000.; /* longitude of southern pole of projection */
+    break;
     default:
-	fprintf(stderr,"Grid template %d is not understood\n",grib_msg->md.gds_templ_num);
-	return false;
+    fprintf(stderr,"Grid template %d is not understood\n",grib_msg->md.gds_templ_num);
+    return false;
   }
   return true;
 }
@@ -520,7 +520,7 @@ static void unpack_stat_proc(GRIBMessage *grib_msg, unsigned const char *b)
   }
 }
 
-// Section 4: Product Definition Section 
+// Section 4: Product Definition Section
 static bool unpackPDS(GRIBMessage *grib_msg)
 {
   int num_coords,factor;
@@ -543,66 +543,66 @@ static bool unpackPDS(GRIBMessage *grib_msg)
     case 11:
     case 12:
     case 15:
-	grib_msg->md.ens_type=-1;
-	grib_msg->md.derived_fcst_code=-1;
-	grib_msg->md.spatial_proc.type=-1;
-	grib_msg->md.param_cat = b[9];         /* parameter category */
-	grib_msg->md.param_num = b[10];        /* parameter number */
-	grib_msg->md.gen_proc  = b[11];        /* generating process */
+    grib_msg->md.ens_type=-1;
+    grib_msg->md.derived_fcst_code=-1;
+    grib_msg->md.spatial_proc.type=-1;
+    grib_msg->md.param_cat = b[9];         /* parameter category */
+    grib_msg->md.param_num = b[10];        /* parameter number */
+    grib_msg->md.gen_proc  = b[11];        /* generating process */
 
-	grib_msg->md.time_unit = b[17];        /* time range indicator*/
-	grib_msg->md.fcst_time = uint4(b +18); /* forecast time */
+    grib_msg->md.time_unit = b[17];        /* time range indicator*/
+    grib_msg->md.fcst_time = uint4(b +18); /* forecast time */
 
-	grib_msg->md.lvl1_type = b[22];        /* type of first level */
-	factor = b[23];			       /* value of first level */
-	grib_msg->md.lvl1 = int4(b +24)/pow(10.,(double)factor);
+    grib_msg->md.lvl1_type = b[22];        /* type of first level */
+    factor = b[23];                /* value of first level */
+    grib_msg->md.lvl1 = int4(b +24)/pow(10.,(double)factor);
 
-	grib_msg->md.lvl2_type = b[28];        /* type of second level */
-	factor = b[29];                        /* value of second level */
-	grib_msg->md.lvl2 = int4(b +30)/pow(10.,(double)factor);
+    grib_msg->md.lvl2_type = b[28];        /* type of second level */
+    factor = b[29];                        /* value of second level */
+    grib_msg->md.lvl2 = int4(b +30)/pow(10.,(double)factor);
 
-	switch (grib_msg->md.pds_templ_num) {
-	  case 1:
-	  case 11:
-	    grib_msg->md.ens_type    = b[34];
-	    grib_msg->md.perturb_num = b[35];
-	    grib_msg->md.nfcst_in_ensemble = b[36];
+    switch (grib_msg->md.pds_templ_num) {
+      case 1:
+      case 11:
+        grib_msg->md.ens_type    = b[34];
+        grib_msg->md.perturb_num = b[35];
+        grib_msg->md.nfcst_in_ensemble = b[36];
 
-	    switch (grib_msg->md.pds_templ_num) {
-		case 11:
-		  unpack_stat_proc(grib_msg, b +37);
-		  break;
-	    }
-	    break;
-	  case 2:
-	  case 12:
-	    grib_msg->md.derived_fcst_code = b[34];
-	    grib_msg->md.nfcst_in_ensemble = b[35];
+        switch (grib_msg->md.pds_templ_num) {
+        case 11:
+          unpack_stat_proc(grib_msg, b +37);
+          break;
+        }
+        break;
+      case 2:
+      case 12:
+        grib_msg->md.derived_fcst_code = b[34];
+        grib_msg->md.nfcst_in_ensemble = b[35];
 
-	    switch (grib_msg->md.pds_templ_num) {
-		case 12:
-		  unpack_stat_proc(grib_msg, b +36);
-		  break;
-	    }
-	    break;
-	  case 8:
+        switch (grib_msg->md.pds_templ_num) {
+        case 12:
+          unpack_stat_proc(grib_msg, b +36);
+          break;
+        }
+        break;
+      case 8:
             unpack_stat_proc(grib_msg, b +34);
-	    break;
-	  case 15:
-	    grib_msg->md.spatial_proc.stat_proc  = b[34];
-	    grib_msg->md.spatial_proc.type       = b[35];
-	    grib_msg->md.spatial_proc.num_points = b[36];
-	    break;
-	}
-	break;
+        break;
+      case 15:
+        grib_msg->md.spatial_proc.stat_proc  = b[34];
+        grib_msg->md.spatial_proc.type       = b[35];
+        grib_msg->md.spatial_proc.num_points = b[36];
+        break;
+    }
+    break;
     default:
-	fprintf(stderr,"Product Definition Template %d is not understood\n",grib_msg->md.pds_templ_num);
-	return false;
+    fprintf(stderr,"Product Definition Template %d is not understood\n",grib_msg->md.pds_templ_num);
+    return false;
   }
   return true;
 }
 
-//  Section 5: Data Representation Section 
+//  Section 5: Data Representation Section
 static bool unpackDRS(GRIBMessage *grib_msg)
 {
   size_t ofs = grib_msg->offset/8;
@@ -612,10 +612,10 @@ static bool unpackDRS(GRIBMessage *grib_msg)
   grib_msg->md.drs_templ_num = uint2(b +9); /* data representation template number */
 
   switch (grib_msg->md.drs_templ_num) { // Table 5.0
-    case 4:        // Grid Point Data - Simple Packing 
+    case 4:        // Grid Point Data - Simple Packing
         grib_msg->md.precision = b[11];
         break;
-    case 0:        // Grid Point Data - Simple Packing 
+    case 0:        // Grid Point Data - Simple Packing
     case 2:        // Grid Point Data - Complex Packing
     case 3:        // Grid Point Data - Complex Packing and Spatial Differencing
 #ifdef JASPER
@@ -623,56 +623,56 @@ static bool unpackDRS(GRIBMessage *grib_msg)
     case 40000:
 #endif
    /* cf http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf p. 36*/
-	grib_msg->md.R = ieee2flt(b+ 11);
-	grib_msg->md.E = int2(b +15);
-	grib_msg->md.D = int2(b +17);
-	grib_msg->md.R /= pow(10.,grib_msg->md.D);
+    grib_msg->md.R = ieee2flt(b+ 11);
+    grib_msg->md.E = int2(b +15);
+    grib_msg->md.D = int2(b +17);
+    grib_msg->md.R /= pow(10.,grib_msg->md.D);
 
-	grib_msg->md.pack_width = b[19];
-	grib_msg->md.orig_val_type = b[20];
+    grib_msg->md.pack_width = b[19];
+    grib_msg->md.orig_val_type = b[20];
 
-	if (grib_msg->md.drs_templ_num == 3 || grib_msg->md.drs_templ_num == 2) {
-	  grib_msg->md.complex_pack.split_method = b[21];
-	  grib_msg->md.complex_pack.miss_val_mgmt = b[22];
-	  if (grib_msg->md.orig_val_type == 0) { // Table 5.1
-	    grib_msg->md.complex_pack.primary_miss_sub   = ieee2flt(b+ 23);
-	    grib_msg->md.complex_pack.secondary_miss_sub = ieee2flt(b+ 27);
-	  }
-	  else if (grib_msg->md.orig_val_type == 1) {
-	    grib_msg->md.complex_pack.primary_miss_sub   = uint4(b +23);
-	    grib_msg->md.complex_pack.secondary_miss_sub = uint4(b +27);
-	  }
-	  else {
-	    fprintf(stderr,"Unable to decode missing value substitutes for original value type %d\n",grib_msg->md.orig_val_type);
-	    return false;
-	  }
-	  grib_msg->md.complex_pack.num_groups = uint4(b +31);
+    if (grib_msg->md.drs_templ_num == 3 || grib_msg->md.drs_templ_num == 2) {
+      grib_msg->md.complex_pack.split_method = b[21];
+      grib_msg->md.complex_pack.miss_val_mgmt = b[22];
+      if (grib_msg->md.orig_val_type == 0) { // Table 5.1
+        grib_msg->md.complex_pack.primary_miss_sub   = ieee2flt(b+ 23);
+        grib_msg->md.complex_pack.secondary_miss_sub = ieee2flt(b+ 27);
+      }
+      else if (grib_msg->md.orig_val_type == 1) {
+        grib_msg->md.complex_pack.primary_miss_sub   = uint4(b +23);
+        grib_msg->md.complex_pack.secondary_miss_sub = uint4(b +27);
+      }
+      else {
+        fprintf(stderr,"Unable to decode missing value substitutes for original value type %d\n",grib_msg->md.orig_val_type);
+        return false;
+      }
+      grib_msg->md.complex_pack.num_groups = uint4(b +31);
 
-	  grib_msg->md.complex_pack.width.ref        = b[35];
-	  grib_msg->md.complex_pack.width.pack_width = b[36];
+      grib_msg->md.complex_pack.width.ref        = b[35];
+      grib_msg->md.complex_pack.width.pack_width = b[36];
 
-	  grib_msg->md.complex_pack.length.ref        = uint4(b +37);
-	  grib_msg->md.complex_pack.length.incr       = b[41];
-	  grib_msg->md.complex_pack.length.last       = uint4(b +42);
-	  grib_msg->md.complex_pack.length.pack_width = b[46];
-	}
-	if (grib_msg->md.drs_templ_num == 3) {
-	  grib_msg->md.complex_pack.spatial_diff.order = b[47];
-	  grib_msg->md.complex_pack.spatial_diff.order_vals_width = b[48];
-	}
-	else {
-	  grib_msg->md.complex_pack.spatial_diff.order = 0;
-	  grib_msg->md.complex_pack.spatial_diff.order_vals_width = 0;
-	}
-	break;
+      grib_msg->md.complex_pack.length.ref        = uint4(b +37);
+      grib_msg->md.complex_pack.length.incr       = b[41];
+      grib_msg->md.complex_pack.length.last       = uint4(b +42);
+      grib_msg->md.complex_pack.length.pack_width = b[46];
+    }
+    if (grib_msg->md.drs_templ_num == 3) {
+      grib_msg->md.complex_pack.spatial_diff.order = b[47];
+      grib_msg->md.complex_pack.spatial_diff.order_vals_width = b[48];
+    }
+    else {
+      grib_msg->md.complex_pack.spatial_diff.order = 0;
+      grib_msg->md.complex_pack.spatial_diff.order_vals_width = 0;
+    }
+    break;
     default:
-	fprintf(stderr,"Data template %d is not understood\n",grib_msg->md.drs_templ_num);
-	return false;
+    fprintf(stderr,"Data template %d is not understood\n",grib_msg->md.drs_templ_num);
+    return false;
   }
   return true;
 }
 
-//  Section 6: Bit-Map Section 
+//  Section 6: Bit-Map Section
 static bool unpackBMS(GRIBMessage *grib_msg)
 {
   int ind,len,n,bit;
@@ -682,34 +682,34 @@ static bool unpackBMS(GRIBMessage *grib_msg)
   ind = b[5]; /* bit map indicator */
   switch (ind) {
     case 0: // A bit map applies to this product and is specified in this section.
-	len = uint4(b);
-	if (len < 7)
-	    return false;
+    len = uint4(b);
+    if (len < 7)
+        return false;
         len -=6;
-	grib_msg->md.bmssize = len;
-	len *= 8;
+    grib_msg->md.bmssize = len;
+    len *= 8;
         delete [] grib_msg->md.bitmap;
         delete [] grib_msg->md.bms;
-	grib_msg->md.bitmap = new unsigned char[len];
-	grib_msg->md.bms = new zuchar[grib_msg->md.bmssize];
-	memcpy (grib_msg->md.bms, b + 6, grib_msg->md.bmssize);
-	for (n=0; n < len; n++) {
-	  getBits(grib_msg->buffer, &bit, grib_msg->offset+48+n, 1);
-	  grib_msg->md.bitmap[n]=bit;
-	}
-	break;
+    grib_msg->md.bitmap = new unsigned char[len];
+    grib_msg->md.bms = new zuchar[grib_msg->md.bmssize];
+    memcpy (grib_msg->md.bms, b + 6, grib_msg->md.bmssize);
+    for (n=0; n < len; n++) {
+      getBits(grib_msg->buffer, &bit, grib_msg->offset+48+n, 1);
+      grib_msg->md.bitmap[n]=bit;
+    }
+    break;
     case 254: // A bit map previously defined in the same GRIB2 message applies to this product.
-	break;
+    break;
     case 255:  // A bit map does not apply to this product.
         delete [] grib_msg->md.bitmap;
-	grib_msg->md.bitmap=NULL;
+    grib_msg->md.bitmap=NULL;
         delete [] grib_msg->md.bms;
-	grib_msg->md.bms=NULL;
-	grib_msg->md.bmssize = 0;
-	break;
+    grib_msg->md.bms=NULL;
+    grib_msg->md.bmssize = 0;
+    break;
     default:
-	fprintf(stderr,"This code is not currently set up to deal with predefined bit-maps\n");
-	return false;
+    fprintf(stderr,"This code is not currently set up to deal with predefined bit-maps\n");
+    return false;
   }
   return true;
 }
@@ -736,206 +736,206 @@ static bool unpackDS(GRIBMessage *grib_msg)
   int npoints = grib_msg->md.ny *grib_msg->md.nx;
   switch (grib_msg->md.drs_templ_num) {
     case 0:
-	grib_msg->grids.gridpoints = new double[npoints];
-	for (l=0; l < npoints; l++) {
-	  if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
-	    getBits(grib_msg->buffer,&pval,off,grib_msg->md.pack_width);
-	    grib_msg->grids.gridpoints[l]=grib_msg->md.R+pval*E/D;
-	    off+=grib_msg->md.pack_width;
-	  }
-	  else
-	    grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
-	}
-	break;
+    grib_msg->grids.gridpoints = new double[npoints];
+    for (l=0; l < npoints; l++) {
+      if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
+        getBits(grib_msg->buffer,&pval,off,grib_msg->md.pack_width);
+        grib_msg->grids.gridpoints[l]=grib_msg->md.R+pval*E/D;
+        off+=grib_msg->md.pack_width;
+      }
+      else
+        grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
+    }
+    break;
     case 3:
-	if (grib_msg->md.complex_pack.num_groups > 0) {
+    if (grib_msg->md.complex_pack.num_groups > 0) {
           if (grib_msg->md.complex_pack.spatial_diff.order) {
-	      groups.first_vals= new int[grib_msg->md.complex_pack.spatial_diff.order];
-	      for (n=0; n < grib_msg->md.complex_pack.spatial_diff.order; ++n) {
-	          getBits(grib_msg->buffer,&groups.first_vals[n],off,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8);
-	          off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
+          groups.first_vals= new int[grib_msg->md.complex_pack.spatial_diff.order];
+          for (n=0; n < grib_msg->md.complex_pack.spatial_diff.order; ++n) {
+              getBits(grib_msg->buffer,&groups.first_vals[n],off,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8);
+              off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
               }
-	  }
-	  getBits(grib_msg->buffer,&groups.sign,off,1);
-	  getBits(grib_msg->buffer,&groups.omin,off+1,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8-1);
-	  if (groups.sign == 1) {
-	    groups.omin=-groups.omin;
-	  }
-	  off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
-	}
-	// fall through
+      }
+      getBits(grib_msg->buffer,&groups.sign,off,1);
+      getBits(grib_msg->buffer,&groups.omin,off+1,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8-1);
+      if (groups.sign == 1) {
+        groups.omin=-groups.omin;
+      }
+      off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
+    }
+    // fall through
     case 2:
-	grib_msg->grids.gridpoints=new double[npoints];
-	if (grib_msg->md.complex_pack.num_groups == 0) {
-	  for (l = 0; l < npoints; ++l) {
- 	    grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
-	  }
-	  break;
-	}
+    grib_msg->grids.gridpoints=new double[npoints];
+    if (grib_msg->md.complex_pack.num_groups == 0) {
+      for (l = 0; l < npoints; ++l) {
+        grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
+      }
+      break;
+    }
         if (grib_msg->md.complex_pack.miss_val_mgmt > 0) {
-	  groups.miss_val=pow(2.,grib_msg->md.pack_width)-1;
-	}
-	else {
-	  groups.miss_val=GRIB_MISSING_VALUE;
-	}
+      groups.miss_val=pow(2.,grib_msg->md.pack_width)-1;
+    }
+    else {
+      groups.miss_val=GRIB_MISSING_VALUE;
+    }
 
-	groups.ref_vals = new int[grib_msg->md.complex_pack.num_groups];
-	groups.widths   = new int[grib_msg->md.complex_pack.num_groups];
-	groups.lengths  = new int[grib_msg->md.complex_pack.num_groups];
+    groups.ref_vals = new int[grib_msg->md.complex_pack.num_groups];
+    groups.widths   = new int[grib_msg->md.complex_pack.num_groups];
+    groups.lengths  = new int[grib_msg->md.complex_pack.num_groups];
 
-	for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
-	  getBits(grib_msg->buffer,&groups.ref_vals[n],off,grib_msg->md.pack_width);
-	  off+=grib_msg->md.pack_width;
-	}
-	off = (off + 7) & ~7; // byte boundary padding 
+    for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
+      getBits(grib_msg->buffer,&groups.ref_vals[n],off,grib_msg->md.pack_width);
+      off+=grib_msg->md.pack_width;
+    }
+    off = (off + 7) & ~7; // byte boundary padding
 
-	for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
-	  getBits(grib_msg->buffer,&groups.widths[n],off,grib_msg->md.complex_pack.width.pack_width);
+    for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
+      getBits(grib_msg->buffer,&groups.widths[n],off,grib_msg->md.complex_pack.width.pack_width);
           groups.widths[n] += grib_msg->md.complex_pack.width.ref;
-	  off+=grib_msg->md.complex_pack.width.pack_width;
-	}
-	off = (off + 7) & ~7;
+      off+=grib_msg->md.complex_pack.width.pack_width;
+    }
+    off = (off + 7) & ~7;
 
-	for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
-	  getBits(grib_msg->buffer,&groups.lengths[n],off,grib_msg->md.complex_pack.length.pack_width);
-	  off+=grib_msg->md.complex_pack.length.pack_width;
-	}
-	off = (off + 7) & ~7;
+    for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
+      getBits(grib_msg->buffer,&groups.lengths[n],off,grib_msg->md.complex_pack.length.pack_width);
+      off+=grib_msg->md.complex_pack.length.pack_width;
+    }
+    off = (off + 7) & ~7;
 
-	groups.max_length=0;
-	for (n=0; n < grib_msg->md.complex_pack.num_groups-1; ++n) {
-	  groups.lengths[n]=grib_msg->md.complex_pack.length.ref+groups.lengths[n]*grib_msg->md.complex_pack.length.incr;
-	  if (groups.lengths[n] > groups.max_length) {
-		groups.max_length=groups.lengths[n];
-	  }
-	}
-	groups.lengths[n]=grib_msg->md.complex_pack.length.last;
-	if (groups.lengths[n] > groups.max_length) {
-	  groups.max_length=groups.lengths[n];
-	}
-	// unpack the field of differences
-	for (n=0,l=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
-	  if (groups.widths[n] > 0) {
-		if (grib_msg->md.complex_pack.miss_val_mgmt > 0) {
-		  groups.group_miss_val=pow(2.,groups.widths[n])-1;
-		}
-		else {
-		  groups.group_miss_val=GRIB_MISSING_VALUE;
-		}
-		for (int i = 0; i < groups.lengths[n]; ) {
-		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
+    groups.max_length=0;
+    for (n=0; n < grib_msg->md.complex_pack.num_groups-1; ++n) {
+      groups.lengths[n]=grib_msg->md.complex_pack.length.ref+groups.lengths[n]*grib_msg->md.complex_pack.length.incr;
+      if (groups.lengths[n] > groups.max_length) {
+        groups.max_length=groups.lengths[n];
+      }
+    }
+    groups.lengths[n]=grib_msg->md.complex_pack.length.last;
+    if (groups.lengths[n] > groups.max_length) {
+      groups.max_length=groups.lengths[n];
+    }
+    // unpack the field of differences
+    for (n=0,l=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
+      if (groups.widths[n] > 0) {
+        if (grib_msg->md.complex_pack.miss_val_mgmt > 0) {
+          groups.group_miss_val=pow(2.,groups.widths[n])-1;
+        }
+        else {
+          groups.group_miss_val=GRIB_MISSING_VALUE;
+        }
+        for (int i = 0; i < groups.lengths[n]; ) {
+          if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
                     grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
                   }
                   else {
                     getBits(grib_msg->buffer,&pval,off,groups.widths[n]);
                     off+=groups.widths[n];
-		      if (pval == groups.group_miss_val) {
+              if (pval == groups.group_miss_val) {
                          grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
-		      }
-		      else {
-		          grib_msg->grids.gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
+              }
+              else {
+                  grib_msg->grids.gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
                     }
                     ++i;
-		  }
-		  ++l;
-		}
-	  }
-	  else { // constant group XXX bitmap?
+          }
+          ++l;
+        }
+      }
+      else { // constant group XXX bitmap?
             for (int i=0; i < groups.lengths[n]; ) {
-		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
-		    grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
-		  }
-		  else {
-		    if (groups.ref_vals[n] == groups.miss_val) {
+          if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
+            grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
+          }
+          else {
+            if (groups.ref_vals[n] == groups.miss_val) {
                       grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
                     }
                     else {
-		        grib_msg->grids.gridpoints[l]=groups.ref_vals[n]+groups.omin;
+                grib_msg->grids.gridpoints[l]=groups.ref_vals[n]+groups.omin;
                     }
-		    ++i;
-		  }
-		  ++l;
+            ++i;
+          }
+          ++l;
             }
-	  }
-	}
+      }
+    }
 
-	for (; l < npoints; ++l) {
-	  grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
-	}
+    for (; l < npoints; ++l) {
+      grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
+    }
 
-	if (grib_msg->md.drs_templ_num == 3) {
-      	   if (groups.first_vals != nullptr) {
-      	      for (n=grib_msg->md.complex_pack.spatial_diff.order-1; n > 0; --n) {
-  	         lastgp=groups.first_vals[n]-groups.first_vals[n-1];
-  	         for (l=0,m=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
-  	            if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
+    if (grib_msg->md.drs_templ_num == 3) {
+           if (groups.first_vals != nullptr) {
+              for (n=grib_msg->md.complex_pack.spatial_diff.order-1; n > 0; --n) {
+             lastgp=groups.first_vals[n]-groups.first_vals[n-1];
+             for (l=0,m=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
+                if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
                        if (m >= grib_msg->md.complex_pack.spatial_diff.order) {
                           grib_msg->grids.gridpoints[l]+=lastgp;
                           lastgp=grib_msg->grids.gridpoints[l];
                        }
                        ++m;
                     }
-  	         }
+             }
               }
-  	   }
-  	   for (l=0,m=0,lastgp=0; l < npoints; ++l) {
-  	     if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
-  	   	if (m < grib_msg->md.complex_pack.spatial_diff.order) {
-  	   	  grib_msg->grids.gridpoints[l]=grib_msg->md.R+groups.first_vals[m]*E/D;
-  	   	  lastgp=grib_msg->md.R*D/E+groups.first_vals[m];
-  	   	}
-  	   	else {
-  	   	  lastgp+=grib_msg->grids.gridpoints[l];
-  	   	  grib_msg->grids.gridpoints[l]=lastgp*E/D;
-  	   	}
-  	   	++m;
-  	     }
-  	   }
-  	   delete [] groups.first_vals;
-	}
-	else for (l=0; l < npoints; ++l) {
-  	   if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
+       }
+       for (l=0,m=0,lastgp=0; l < npoints; ++l) {
+         if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
+        if (m < grib_msg->md.complex_pack.spatial_diff.order) {
+          grib_msg->grids.gridpoints[l]=grib_msg->md.R+groups.first_vals[m]*E/D;
+          lastgp=grib_msg->md.R*D/E+groups.first_vals[m];
+        }
+        else {
+          lastgp+=grib_msg->grids.gridpoints[l];
+          grib_msg->grids.gridpoints[l]=lastgp*E/D;
+        }
+        ++m;
+         }
+       }
+       delete [] groups.first_vals;
+    }
+    else for (l=0; l < npoints; ++l) {
+       if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
                 grib_msg->grids.gridpoints[l]= grib_msg->md.R+grib_msg->grids.gridpoints[l]*E/D;
            }
-	}
-	delete [] groups.ref_vals;
-	delete [] groups.widths;
-	delete [] groups.lengths;
- 	break;
+    }
+    delete [] groups.ref_vals;
+    delete [] groups.widths;
+    delete [] groups.lengths;
+    break;
     case 4:
         {
 
- 	    // Grid point data - IEEE Floating Point Data
- 	    if (grib_msg->md.precision == 1) { // IEEE754 single precision
-     	        grib_msg->grids.gridpoints = new double[npoints];
-     	        for (int l=0; l < npoints; l++) {
- 	            if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
- 	                grib_msg->grids.gridpoints[l]= ieee2flt(grib_msg->buffer +off/8);
- 	                off += 32;
+        // Grid point data - IEEE Floating Point Data
+        if (grib_msg->md.precision == 1) { // IEEE754 single precision
+                grib_msg->grids.gridpoints = new double[npoints];
+                for (int l=0; l < npoints; l++) {
+                if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
+                    grib_msg->grids.gridpoints[l]= ieee2flt(grib_msg->buffer +off/8);
+                    off += 32;
                     }
                     else
                         grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
                 }
             }
- 	    else if (grib_msg->md.precision == 2) { // IEEE754 single precision
+        else if (grib_msg->md.precision == 2) { // IEEE754 single precision
                 static const int one = 1;
                 bool const is_lsb = *((char*)&one) == 1;
-     	        grib_msg->grids.gridpoints = new double[npoints];
-     	        for (l=0; l < npoints; l++) {
- 	            if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
- 	                double d;
- 	                if( is_lsb ) {
+                grib_msg->grids.gridpoints = new double[npoints];
+                for (l=0; l < npoints; l++) {
+                if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
+                    double d;
+                    if( is_lsb ) {
                             unsigned char temp[8];
- 	                    for(int j = 0; j < 8; j++ ) {
- 	                        temp[j] = grib_msg->buffer[off/8 + 7 - j];
+                        for(int j = 0; j < 8; j++ ) {
+                            temp[j] = grib_msg->buffer[off/8 + 7 - j];
                             }
                             memcpy(&d, temp, 8);
                         }
                         else {
                             memcpy(&d, grib_msg->buffer +off/8, 8);
                         }
- 	                grib_msg->grids.gridpoints[l]= d;
- 	                off += 64;
+                    grib_msg->grids.gridpoints[l]= d;
+                    off += 64;
                     }
                     else
                         grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
@@ -946,31 +946,31 @@ static bool unpackDS(GRIBMessage *grib_msg)
                 return false;
             }
         }
- 	break;
+    break;
 #ifdef JASPER
     case 40:
     case 40000:
         int len, *jvals, cnt;
-	getBits(grib_msg->buffer,&len,grib_msg->offset,32);
-	if (len < 5)
-	    return false;
-	len=len-5;
-	jvals= new int[npoints];
-	grib_msg->grids.gridpoints= new double[npoints];
-	if (len > 0)
-	  dec_jpeg2000((char *)&grib_msg->buffer[grib_msg->offset/8+5],len,jvals);
-	cnt=0;
-	for (l=0; l < npoints; l++) {
-	  if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
-	    if (len == 0)
-		jvals[cnt]=0;
-	    grib_msg->grids.gridpoints[l]=grib_msg->md.R+jvals[cnt++]*E/D;
-	  }
-	  else
-	    grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
-	}
-	delete [] jvals;
-	break;
+    getBits(grib_msg->buffer,&len,grib_msg->offset,32);
+    if (len < 5)
+        return false;
+    len=len-5;
+    jvals= new int[npoints];
+    grib_msg->grids.gridpoints= new double[npoints];
+    if (len > 0)
+      dec_jpeg2000((char *)&grib_msg->buffer[grib_msg->offset/8+5],len,jvals);
+    cnt=0;
+    for (l=0; l < npoints; l++) {
+      if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
+        if (len == 0)
+        jvals[cnt]=0;
+        grib_msg->grids.gridpoints[l]=grib_msg->md.R+jvals[cnt++]*E/D;
+      }
+      else
+        grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
+    }
+    delete [] jvals;
+    break;
 #endif
     default:
         erreur("Unknown packing %d", grib_msg->md.drs_templ_num);
@@ -1000,7 +1000,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 0: ret = GRB_HUMID_SPEC; break; //DATA_TO_GRBV2[DATA_HUMID_SPEC] = grb2DataType(0,1,0);
             case 1: ret = GRB_HUMID_REL; break; // DATA_TO_GRBV2[DATA_HUMID_REL] = grb2DataType(0,1,1);
             case 7: ret= GRB_PRECIP_RATE; break; // DATA_TO_GRBV2[DATA_PRECIP_RATE] = grb2DataType(0,1,7);
-            case 49:							 // Total Water Precipitation (Meteo France Arome 0.01
+            case 49:                             // Total Water Precipitation (Meteo France Arome 0.01
             case 52:                             // Total precipitation rate kg m–2 s–1
             case 8: ret = GRB_PRECIP_TOT; break; // DATA_TO_GRBV2[DATA_PRECIP_TOT] = grb2DataType(0,1,8);
             case 11: ret = GRB_SNOW_DEPTH; break; // DATA_TO_GRBV2[DATA_SNOW_DEPTH] = grb2DataType(0,1,11);
@@ -1008,13 +1008,13 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 195: ret = GRB_SNOW_CATEG; break; //DATA_TO_GRBV2[DATA_SNOW_CATEG] = grb2DataType(0,1,195);
             }
             break;
-        case 2: // dataCat  Momentum 
+        case 2: // dataCat  Momentum
             switch (dataNum) {
             case 0: ret = GRB_WIND_DIR; break;
             case 1: ret = GRB_WIND_SPEED; break;
             case 2: ret = GRB_WIND_VX; break; // DATA_TO_GRBV2[DATA_WIND_VX] = grb2DataType(0,2,2);
             case 3: ret = GRB_WIND_VY; break; // DATA_TO_GRBV2[DATA_WIND_VY] = grb2DataType(0,2,3);
-            case 22: ret = GRB_WIND_GUST; break; // 
+            case 22: ret = GRB_WIND_GUST; break; //
             }
             break;
         case 3: // dataCat mass
@@ -1044,10 +1044,10 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             break;
         }
         break;
-    case 10: // productDiscipline Oceanographic products 
+    case 10: // productDiscipline Oceanographic products
         switch (dataCat) {
         case 0:         // waves
-#if 0        
+#if 0
             switch (dataNum) {
             case 3: ret= GRB_WVHGT; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
             DATA_TO_GRBV2[DATA_WAVES_WND_DIR] = grb2DataType(10,0,4);
@@ -1073,7 +1073,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             }
             break;
 
-        case 1: // Currents 
+        case 1: // Currents
             switch (dataNum) {
                 case 0: ret = GRB_CUR_DIR; break;
                 case 1: ret = GRB_CUR_SPEED; break;
@@ -1086,7 +1086,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
                 case 0: ret = GRB_WTMP; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
             }
             break;
-            
+
         }
         break;
     }
@@ -1094,8 +1094,8 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     if (ret == 255) {
         erreur("unknown Discipline %d dataCat %d dataNum %d", productDiscipline,  dataCat, dataNum);
     }
-#endif    
-    return ret;    
+#endif
+    return ret;
 }
 
 /** Return UINT_MAX on errors. */
@@ -1105,19 +1105,19 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
    // not always the same.
   if (grid->md.time_unit == grid->md.stat_proc.t[0].time_unit) switch (grid->md.time_unit) { // table 4.4
     case 0:  // minute
-	// return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
+    // return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
     case 1:  // hour
          return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length;
-	 // return (grid->md.stat_proc.etime/10000- grid->time/10000);
+     // return (grid->md.stat_proc.etime/10000- grid->time/10000);
     case 2:  // Day
-	return (grid->md.stat_proc.edy -grid->dy);
+    return (grid->md.stat_proc.edy -grid->dy);
     case 3:
-	return (grid->md.stat_proc.emo -grid->mo);
+    return (grid->md.stat_proc.emo -grid->mo);
     case 4:
-	return (grid->md.stat_proc.eyr -grid->yr);
+    return (grid->md.stat_proc.eyr -grid->yr);
     default:
-	fprintf(stderr,"Unable to map end time with units %d to GRIB1\n",grid->md.time_unit);
-	return UINT_MAX;
+    fprintf(stderr,"Unable to map end time with units %d to GRIB1\n",grid->md.time_unit);
+    return UINT_MAX;
   }
 
   if (grid->md.time_unit == 0 && grid->md.stat_proc.t[0].time_unit == 1) {
@@ -1130,7 +1130,7 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
          return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length /60;
   }
 
-  fprintf(stderr, "Unable to map end time %d %d %d %d \n", grid->md.time_unit, grid->md.stat_proc.t[0].time_unit, grid->md.fcst_time, 
+  fprintf(stderr, "Unable to map end time %d %d %d %d \n", grid->md.time_unit, grid->md.stat_proc.t[0].time_unit, grid->md.fcst_time,
             grid->md.stat_proc.t[0].time_length);
   return UINT_MAX;
 }
@@ -1143,156 +1143,156 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
     case 1:
     case 2:
     case 15:
-	*t_range=0;
-	*p1=grid->md.fcst_time;
-	*p2=0;
-	*n_avg=*n_missing=0;
-	break;
+    *t_range=0;
+    *p1=grid->md.fcst_time;
+    *p2=0;
+    *n_avg=*n_missing=0;
+    break;
     case 8:
     case 11:
     case 12:
-	if (grid->md.stat_proc.num_ranges > 1) {
-	  if (center == 7 && grid->md.stat_proc.num_ranges == 2) {
+    if (grid->md.stat_proc.num_ranges > 1) {
+      if (center == 7 && grid->md.stat_proc.num_ranges == 2) {
 /* NCEP CFSR monthly grids */
-	    *p2=grid->md.stat_proc.t[0].incr_length;
-	    *p1=*p2 -grid->md.stat_proc.t[1].time_length;
-	    *n_avg=grid->md.stat_proc.t[0].time_length;
-	    switch (grid->md.stat_proc.t[0].proc_code) {
-		case 193:
-		  *t_range=113;
-		  break;
-		case 194:
-		  *t_range=123;
-		  break;
-		case 195:
-		  *t_range=128;
-		  break;
-		case 196:
-		  *t_range=129;
-		  break;
-		case 197:
-		  *t_range=130;
-		  break;
-		case 198:
-		  *t_range=131;
-		  break;
-		case 199:
-		  *t_range=132;
-		  break;
-		case 200:
-		  *t_range=133;
-		  break;
-		case 201:
-		  *t_range=134;
-		  break;
-		case 202:
-		  *t_range=135;
-		  break;
-		case 203:
-		  *t_range=136;
-		  break;
-		case 204:
-		  *t_range=137;
-		  break;
-		case 205:
-		  *t_range=138;
-		  break;
-		case 206:
-		  *t_range=139;
-		  break;
-		case 207:
-		  *t_range=140;
-		  break;
-		default:
-		  fprintf(stderr,"Unable to map NCEP statistical process code %d to GRIB1\n",grid->md.stat_proc.t[0].proc_code);
-		  return false;
-	    }
-	  }
-	  else {
-	    fprintf(stderr,"Unable to map multiple statistical processes to GRIB1\n");
-	    return false;
-	  }
-	}
-	else {
-	  switch (grid->md.stat_proc.t[0].proc_code) {
-	    case 0:
-	    case 1:
-	    case 4:
-		switch (grid->md.stat_proc.t[0].proc_code) {
-		  case 0: /* average */
-		    *t_range=3;
-		    break;
-		  case 1: /* accumulation */
-		    *t_range=4;
-		    break;
-		  case 4: /* difference */
-		    *t_range=5;
-		    break;
-		}
-		*p1=grid->md.fcst_time;
-		*p2=mapStatisticalEndTime(grid);
+        *p2=grid->md.stat_proc.t[0].incr_length;
+        *p1=*p2 -grid->md.stat_proc.t[1].time_length;
+        *n_avg=grid->md.stat_proc.t[0].time_length;
+        switch (grid->md.stat_proc.t[0].proc_code) {
+        case 193:
+          *t_range=113;
+          break;
+        case 194:
+          *t_range=123;
+          break;
+        case 195:
+          *t_range=128;
+          break;
+        case 196:
+          *t_range=129;
+          break;
+        case 197:
+          *t_range=130;
+          break;
+        case 198:
+          *t_range=131;
+          break;
+        case 199:
+          *t_range=132;
+          break;
+        case 200:
+          *t_range=133;
+          break;
+        case 201:
+          *t_range=134;
+          break;
+        case 202:
+          *t_range=135;
+          break;
+        case 203:
+          *t_range=136;
+          break;
+        case 204:
+          *t_range=137;
+          break;
+        case 205:
+          *t_range=138;
+          break;
+        case 206:
+          *t_range=139;
+          break;
+        case 207:
+          *t_range=140;
+          break;
+        default:
+          fprintf(stderr,"Unable to map NCEP statistical process code %d to GRIB1\n",grid->md.stat_proc.t[0].proc_code);
+          return false;
+        }
+      }
+      else {
+        fprintf(stderr,"Unable to map multiple statistical processes to GRIB1\n");
+        return false;
+      }
+    }
+    else {
+      switch (grid->md.stat_proc.t[0].proc_code) {
+        case 0:
+        case 1:
+        case 4:
+        switch (grid->md.stat_proc.t[0].proc_code) {
+          case 0: /* average */
+            *t_range=3;
+            break;
+          case 1: /* accumulation */
+            *t_range=4;
+            break;
+          case 4: /* difference */
+            *t_range=5;
+            break;
+        }
+        *p1=grid->md.fcst_time;
+        *p2=mapStatisticalEndTime(grid);
                 if (*p2 == UINT_MAX) {
                     return false;
                 }
-		if (grid->md.stat_proc.t[0].incr_length == 0)
-		  *n_avg=0;
-		else {
-		  fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
-		  return false;
-		}
-		break;
+        if (grid->md.stat_proc.t[0].incr_length == 0)
+          *n_avg=0;
+        else {
+          fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
+          return false;
+        }
+        break;
 
-	    case 2: // maximum
-	    case 3: // minimum 
-		*t_range=2;
-		*p1=grid->md.fcst_time;
-		*p2=mapStatisticalEndTime(grid);
+        case 2: // maximum
+        case 3: // minimum
+        *t_range=2;
+        *p1=grid->md.fcst_time;
+        *p2=mapStatisticalEndTime(grid);
                 if (*p2 == UINT_MAX) {
                     return false;
                 }
-		if (grid->md.stat_proc.t[0].incr_length == 0)
-		  *n_avg=0;
-		else {
-		  fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
-		  return false;
-		}
-		break;
-	    default:
+        if (grid->md.stat_proc.t[0].incr_length == 0)
+          *n_avg=0;
+        else {
+          fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
+          return false;
+        }
+        break;
+        default:
 // patch for NCEP grids
-		if (grid->md.stat_proc.t[0].proc_code == 255 && center == 7) {
- 		  if (grid->disc == 0) {
-		    if (grid->md.param_cat == 0) {
-			switch (grid->md.param_num) {
-			  case 4:
-			  case 5:
-			    *t_range=2;
-			    *p1=grid->md.fcst_time;
-			    *p2=mapStatisticalEndTime(grid);
+        if (grid->md.stat_proc.t[0].proc_code == 255 && center == 7) {
+          if (grid->disc == 0) {
+            if (grid->md.param_cat == 0) {
+            switch (grid->md.param_num) {
+              case 4:
+              case 5:
+                *t_range=2;
+                *p1=grid->md.fcst_time;
+                *p2=mapStatisticalEndTime(grid);
                             if (*p2 == UINT_MAX) {
                                 return false;
                             }
-			    if (grid->md.stat_proc.t[0].incr_length == 0)
-				*n_avg=0;
-			    else {
-				fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
-				return false;
-			    }
-			    break;
-			}
-		    }
-		  }
-		}
-		else {
-		  fprintf(stderr,"Unable to map statistical process %d to GRIB1\n",grid->md.stat_proc.t[0].proc_code);
-		  return false;
-		}
-	  }
-	}
-	*n_missing=grid->md.stat_proc.nmiss;
-	break;
+                if (grid->md.stat_proc.t[0].incr_length == 0)
+                *n_avg=0;
+                else {
+                fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
+                return false;
+                }
+                break;
+            }
+            }
+          }
+        }
+        else {
+          fprintf(stderr,"Unable to map statistical process %d to GRIB1\n",grid->md.stat_proc.t[0].proc_code);
+          return false;
+        }
+      }
+    }
+    *n_missing=grid->md.stat_proc.nmiss;
+    break;
     default:
-	fprintf(stderr,"Unable to map time range for Product Definition Template %d into GRIB1\n",grid->md.pds_templ_num);
-	return false;
+    fprintf(stderr,"Unable to map time range for Product Definition Template %d into GRIB1\n",grid->md.pds_templ_num);
+    return false;
   }
   return true;
 }
@@ -1307,10 +1307,10 @@ void  GribV2Record::translateDataType()
     //------------------------
     // NOAA GFS
     //------------------------
-    if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+    if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
         multiplyAllData( 3600.0 );
     }
-    if ( idCenter==7 && idModel==2 )		// NOAA
+    if ( idCenter==7 && idModel==2 )        // NOAA
     {
         dataCenterModel = NOAA_GFS;
         // altitude level (entire atmosphere vs entire atmosphere considered as 1 level)
@@ -1322,7 +1322,7 @@ void  GribV2Record::translateDataType()
             && levelValue == 0) dataType = GRB_WTMP;
     }
     //------------------------
-	//DNMI-NEurope.grb
+    //DNMI-NEurope.grb
     //------------------------
     else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
         dataCenterModel = NOAA_NCEP_WW3;
@@ -1355,47 +1355,47 @@ void  GribV2Record::translateDataType()
     {
         dataCenterModel = FNMOC_WW3_GLB;
     }
-	//------------------------
-	// Meteorem (Scannav)
-	//------------------------
+    //------------------------
+    // Meteorem (Scannav)
+    //------------------------
     else if (idCenter==59 && idModel==78 && idGrid==255)
     {
         //dataCenterModel = ??
-		if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
-			&& getLevelType()==LV_MSL
-			&& getLevelValue()==0)
-		{
-			levelType  = LV_ABOV_GND;
-			levelValue = 10;
-		}
-		if ( getDataType()==GRB_PRECIP_TOT
-			&& getLevelType()==LV_MSL
-			&& getLevelValue()==0)
-		{
-			levelType  = LV_GND_SURF;
-			levelValue = 0;
-		}
-	}
+        if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
+            && getLevelType()==LV_MSL
+            && getLevelValue()==0)
+        {
+            levelType  = LV_ABOV_GND;
+            levelValue = 10;
+        }
+        if ( getDataType()==GRB_PRECIP_TOT
+            && getLevelType()==LV_MSL
+            && getLevelValue()==0)
+        {
+            levelType  = LV_GND_SURF;
+            levelValue = 0;
+        }
+    }
     else if (idCenter==84 && idModel <= 5 && idGrid==0)
     {
     }
-	
-	//------------------------
-	// Unknown center
-	//------------------------
-	else
-	{
-        dataCenterModel = OTHER_DATA_CENTER;
-//		printf("Uncorrected GribRecord: ");
-//		this->print();
-//		this->knownData = false;
 
-	}
+    //------------------------
+    // Unknown center
+    //------------------------
+    else
+    {
+        dataCenterModel = OTHER_DATA_CENTER;
+//      printf("Uncorrected GribRecord: ");
+//      this->print();
+//      this->knownData = false;
+
+    }
     //translate significant wave height and dir
     if (this->knownData) {
         switch (levelType) {
             case 100: // LV_ISOBARIC
-                /* GRIB1 is in hectoPascal 
+                /* GRIB1 is in hectoPascal
                    GRIB2 in Pascal, convert to GRIB1
                 */
                 levelValue = levelValue /100;
@@ -1443,31 +1443,31 @@ void GribV2Record::readDataSet(ZUFILE* file)
         getBits(grib_msg->buffer, &len, grib_msg->offset, 32);
         getBits(grib_msg->buffer, &sec_num, grib_msg->offset +4*8, 8);
         switch (sec_num) {
-	case 2: //  Section 2: Local Use Section
-	     if (skip == true)  break;
+    case 2: //  Section 2: Local Use Section
+         if (skip == true)  break;
              ok = unpackLUS(grib_msg);
              break;
-	case 3: //  Section 3: Grid Definition Section
-	     if (skip == true)  break;
-	     ok = unpackGDS(grib_msg);
-	     if (ok) {
-	         Ni = grib_msg->md.nx;
-	         Nj = grib_msg->md.ny;
-	         La1 = grib_msg->md.slat;
-	         Lo1 = grib_msg->md.slon;
-	         La2 = grib_msg->md.lats.elat;
-	         Lo2 = grib_msg->md.lons.elon;
-	         Di = grib_msg->md.xinc.loinc;
-	         Dj = grib_msg->md.yinc.lainc;
+    case 3: //  Section 3: Grid Definition Section
+         if (skip == true)  break;
+         ok = unpackGDS(grib_msg);
+         if (ok) {
+             Ni = grib_msg->md.nx;
+             Nj = grib_msg->md.ny;
+             La1 = grib_msg->md.slat;
+             Lo1 = grib_msg->md.slon;
+             La2 = grib_msg->md.lats.elat;
+             Lo2 = grib_msg->md.lons.elon;
+             Di = grib_msg->md.xinc.loinc;
+             Dj = grib_msg->md.yinc.lainc;
                  scanFlags = grib_msg->md.scan_mode;
                  isScanIpositive = (scanFlags&0x80) ==0;
                  isScanJpositive = (scanFlags&0x40) !=0;
                  isAdjacentI     = (scanFlags&0x20) ==0;
                  if (Lo1>=0 && Lo1<=180 && Lo2<0)
                      Lo2 += 360.0;    // cross the 180 deg meridien,beetwen alaska and russia
-	                     
-	         if (isScanIpositive) while ( Lo1> Lo2 ) {   // horizontal size > 360 °
-	             Lo1 -= 360.0;
+
+             if (isScanIpositive) while ( Lo1> Lo2 ) {   // horizontal size > 360 °
+                 Lo1 -= 360.0;
                  }
                  if (Lo2 > Lo1) {
                      lonMin = Lo1;
@@ -1493,15 +1493,15 @@ void GribV2Record::readDataSet(ZUFILE* file)
                       Di = (Lo2-Lo1) / (Ni-1);
                       Dj = (La2-La1) / (Nj-1);
                   }
-	     }
-	     break;
-	case 4: //  Section 4: Product Definition Section 
-	     if (skip == true)  break;
-	     ok = unpackPDS(grib_msg);
-	     if (ok) {
-	         // printf("template %d 0 meteo data cat %d data num %d\n", grib_msg->md.pds_templ_num, grib_msg->md.param_cat, grib_msg->md.param_num);
-	         productTemplate = grib_msg->md.pds_templ_num;
-	         dataCat = grib_msg->md.param_cat;
+         }
+         break;
+    case 4: //  Section 4: Product Definition Section
+         if (skip == true)  break;
+         ok = unpackPDS(grib_msg);
+         if (ok) {
+             // printf("template %d 0 meteo data cat %d data num %d\n", grib_msg->md.pds_templ_num, grib_msg->md.param_cat, grib_msg->md.param_num);
+             productTemplate = grib_msg->md.pds_templ_num;
+             dataCat = grib_msg->md.param_cat;
                  dataNum = grib_msg->md.param_num;
                  dataType= GRBV2_TO_DATA(productDiscipline,dataCat,dataNum);
                  if (dataType == 255) {
@@ -1509,60 +1509,60 @@ void GribV2Record::readDataSet(ZUFILE* file)
                      skip = true;
                      break;
                  }
-                                            
-	         levelType = grib_msg->md.lvl1_type;
-	         levelValue = grib_msg->md.lvl1;
-	         if (grib_msg->md.lvl2_type == 8 && grib_msg->md.lvl1_type == 1) {
-	             // cf table 4.5:  8 Nominal top of the atmosphere 
-	             levelType = LV_ATMOS_ALL;
-	             levelValue = 0.;
-	         }
-	         int n_avg, n_missing;
-	          
-	         if (!mapTimeRange(grib_msg, &periodP1 , &periodP2, &timeRange , &n_avg, &n_missing, idCenter)) {
-	             skip = true;
-	             break;
+
+             levelType = grib_msg->md.lvl1_type;
+             levelValue = grib_msg->md.lvl1;
+             if (grib_msg->md.lvl2_type == 8 && grib_msg->md.lvl1_type == 1) {
+                 // cf table 4.5:  8 Nominal top of the atmosphere
+                 levelType = LV_ATMOS_ALL;
+                 levelValue = 0.;
+             }
+             int n_avg, n_missing;
+
+             if (!mapTimeRange(grib_msg, &periodP1 , &periodP2, &timeRange , &n_avg, &n_missing, idCenter)) {
+                 skip = true;
+                 break;
                  }
-	         periodsec = periodSeconds(grib_msg->md.time_unit, periodP1, periodP2, timeRange);
-	         setRecordCurrentDate(makeDate(refyear,refmonth,refday,refhour,refminute,periodsec));
-	         //printf("%d %d %d %d %d %d \n", refyear,refmonth,refday,refhour,refminute,periodsec);
-	         //printf("%d Periode %d P1=%d p2=%d %s\n", grib_msg->md.time_unit, periodsec, periodP1,periodP2, strCurDate);
-	         
-	     }
-	     break;
-	case 5: //  Section 5: Data Representation Section 
-	     if (skip == true)  break;
-	     ok = unpackDRS(grib_msg);
-	     break;
-	case 6: //  Section 6: Bit-Map Section 
-	     if (skip == true)  break;
-	     ok = unpackBMS(grib_msg);
-	     if (ok) {
-	        if (grib_msg->md.bmssize != 0) {
-	             hasBMS = true;
-	             BMSsize = grib_msg->md.bmssize;
-	             BMSbits = new zuchar[grib_msg->md.bmssize];
-	             memcpy (BMSbits, grib_msg->md.bms, grib_msg->md.bmssize);
+             periodsec = periodSeconds(grib_msg->md.time_unit, periodP1, periodP2, timeRange);
+             setRecordCurrentDate(makeDate(refyear,refmonth,refday,refhour,refminute,periodsec));
+             //printf("%d %d %d %d %d %d \n", refyear,refmonth,refday,refhour,refminute,periodsec);
+             //printf("%d Periode %d P1=%d p2=%d %s\n", grib_msg->md.time_unit, periodsec, periodP1,periodP2, strCurDate);
+
+         }
+         break;
+    case 5: //  Section 5: Data Representation Section
+         if (skip == true)  break;
+         ok = unpackDRS(grib_msg);
+         break;
+    case 6: //  Section 6: Bit-Map Section
+         if (skip == true)  break;
+         ok = unpackBMS(grib_msg);
+         if (ok) {
+            if (grib_msg->md.bmssize != 0) {
+                 hasBMS = true;
+                 BMSsize = grib_msg->md.bmssize;
+                 BMSbits = new zuchar[grib_msg->md.bmssize];
+                 memcpy (BMSbits, grib_msg->md.bms, grib_msg->md.bmssize);
                 }
-	     }
-	     break;
-	case 7:  // Section 7: Data Section
-	     if (skip == false) {
-    	         ok = unpackDS(grib_msg);
-    	         if (ok) {
-	             data = grib_msg->grids.gridpoints;
-	             grib_msg->grids.gridpoints = 0;
+         }
+         break;
+    case 7:  // Section 7: Data Section
+         if (skip == false) {
+                 ok = unpackDS(grib_msg);
+                 if (ok) {
+                 data = grib_msg->grids.gridpoints;
+                 grib_msg->grids.gridpoints = 0;
                  }
-	     }
-	     if (grib_msg->num_grids != 1)
-    	         DS = true;
-	     break;
+         }
+         if (grib_msg->num_grids != 1)
+                 DS = true;
+         break;
         }
         grib_msg->offset += len*8;
         if (ok == false || DS == true )
             break;
     }
-    
+
     //ok = false;
 if (false) {
 //if (true) {
@@ -1575,10 +1575,10 @@ printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",isScanIpositive,
 printf("hasBMS=%d\n", hasBMS);
 }
     if (ok) {
-        if (!skip) 
+        if (!skip)
         {
-		translateDataType();
-		setDataType(dataType);
+        translateDataType();
+        setDataType(dataType);
         }
     }
     if (!ok || !DS || strncmp(&((char *)grib_msg->buffer)[grib_msg->offset/8],"7777",4) == 0) {
@@ -1632,8 +1632,8 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
           b_haveReadGRIB = false;
     }
     ok = readGribSection0_IS(file, b_haveReadGRIB ); // Section 0: Indicator Section
-    
-    int len, sec_num;    
+
+    int len, sec_num;
     if (ok) {
         unpackIDS(grib_msg);  // Section 1: Identification Section
         int off;
@@ -1651,7 +1651,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
         // seek back if V1
         (void)zu_seek(file, start, SEEK_SET);
         return;
-    }   
+    }
     refyear  = grib_msg->yr;
     refmonth = grib_msg->mo;
     refday   = grib_msg->dy;
@@ -1676,7 +1676,7 @@ bool GribV2Record::hasMoreDataSet() const
 GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE* file, int id_)
 {
     GribV2Record *rec1 = new GribV2Record(*this);
-    // XXX should have a shallow copy constructor 
+    // XXX should have a shallow copy constructor
     delete [] rec1->data;
     delete [] rec1->BMSbits;
     // new records take ownership
@@ -1725,11 +1725,11 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
   }
   grib_msg->disc = temp[6];
   grib_msg->ed_num = temp[7];
-  
+
   //  Bail out early if this is not GRIB2
   if(grib_msg->ed_num != 2)
       return false;
-  
+
   getBits(temp,&grib_msg->total_len,96,32);
   // too small or overflow
   if ( grib_msg->total_len < 16 || grib_msg->total_len > (INT_MAX - 4))

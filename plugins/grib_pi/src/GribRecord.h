@@ -38,7 +38,7 @@ Elément de base d'un fichier GRIB
 #define GRIB_NOTDEF -999999999
 
 //--------------------------------------------------------
-// dataTypes	Cf function translateDataType()
+// dataTypes    Cf function translateDataType()
 //--------------------------------------------------------
 #define GRB_PRESSURE        2   /* Pa     */
 #define GRB_GEOPOT_HGT      7   /* gpm    */
@@ -48,13 +48,13 @@ Elément de base d'un fichier GRIB
 #define GRB_TMIN           16   /* K      */
 #define GRB_DEWPOINT       17   /* K      */
 
-#define GRB_WIND_DIR       31 	/* Deg. Wind Direction */
-#define GRB_WIND_SPEED     32 	/* m/s  Wind Speed     */
+#define GRB_WIND_DIR       31   /* Deg. Wind Direction */
+#define GRB_WIND_SPEED     32   /* m/s  Wind Speed     */
 #define GRB_WIND_VX        33   /* m/s U  */
 #define GRB_WIND_VY        34   /* m/s V  */
 
-#define GRB_CUR_DIR        47 	/* Deg. Direction of current  */
-#define GRB_CUR_SPEED      48 	/* m/s Speed of current       */
+#define GRB_CUR_DIR        47   /* Deg. Direction of current  */
+#define GRB_CUR_SPEED      48   /* m/s Speed of current       */
 #define GRB_UOGRD          49   /*"u-component of current", "m/s" */
 #define GRB_VOGRD          50   /*"v-component of current", "m/s" */
 
@@ -84,7 +84,7 @@ Elément de base d'un fichier GRIB
 #define GRB_CRAIN         140   /* "Categorical rain", "yes=1;no=0" */
 #define GRB_FRZRAIN_CATEG 141   /* 1=yes 0=no */
 #define GRB_SNOW_CATEG    143   /* 1=yes 0=no */
-#define GRB_CAPE 	  157   /* J/kg   */
+#define GRB_CAPE      157   /* J/kg   */
 
 #define GRB_TSEC          171   /* "Seconds prior to initial reference time (defined in bytes 18-20)" */
 #define GRB_WIND_GUST     180   /* m/s "wind gust */
@@ -127,19 +127,19 @@ enum DataCenterModel {
 //----------------------------------------------
 class GribCode
 {
-	public:
-		static zuint makeCode (zuchar dataType, zuchar levelType, zuint levelValue) {
-			return ((levelValue&0xFFFF)<<16)+((levelType&0xFF)<<8)+dataType;
-		}
-		static zuchar getDataType (zuint code) {
-			return code&0xFF;
-		}
-		static zuchar getLevelType (zuint code) {
-			return (code>>8)&0xFF;
-		}
-		static zuint getLevelValue (zuint code) {
-			return (code>>16)&0xFFFF;
-		}
+    public:
+        static zuint makeCode (zuchar dataType, zuchar levelType, zuint levelValue) {
+            return ((levelValue&0xFFFF)<<16)+((levelType&0xFF)<<8)+dataType;
+        }
+        static zuchar getDataType (zuint code) {
+            return code&0xFF;
+        }
+        static zuchar getLevelType (zuint code) {
+            return (code>>8)&0xFF;
+        }
+        static zuint getLevelValue (zuint code) {
+            return (code>>16)&0xFFFF;
+        }
 };
 
 //----------------------------------------------
@@ -148,10 +148,10 @@ class GribRecord
     public:
         GribRecord(const GribRecord &rec);
         GribRecord() { m_bfilled = false;}
-        
+
         virtual ~GribRecord();
-  
-  
+
+
         static GribRecord *InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d, bool dir=false);
         static GribRecord *Interpolated2DRecord(GribRecord *&rety,
                                                 const GribRecord &rec1x, const GribRecord &rec1y,
@@ -168,7 +168,7 @@ class GribRecord
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};
         bool  isEof() const   {return eof;};
-        bool  isDuplicated()  const   {return IsDuplicated;};                                          
+        bool  isDuplicated()  const   {return IsDuplicated;};
         //-----------------------------------------
         zuchar  getDataType() const         { return dataType; }
         void    setDataType(const zuchar t);
@@ -212,7 +212,7 @@ class GribRecord
         static bool getInterpolatedValues(double &M, double &A,
                                           const GribRecord *GRX, const GribRecord *GRY,
                                           double px, double py, bool numericalInterpolation=true);
-        
+
         // coordiantes of grid point
         inline double  getX(int i) const   { return Lo1+i*Di;}
         inline double  getY(int j) const   { return La1+j*Dj;}

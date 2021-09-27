@@ -34,8 +34,8 @@
 
 /*
 ** Author: Thomas Rauch
-** 
-** 
+**
+**
 **
 ** You can use it any way you like.
 */

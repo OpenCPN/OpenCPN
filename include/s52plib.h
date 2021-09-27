@@ -28,7 +28,7 @@
 
 #include <vector>
 
-#include "s52s57.h"                 //types
+#include "s52s57.h"  //types
 
 class wxGLContext;
 
@@ -36,29 +36,29 @@ class wxGLContext;
 #include "ocpn_types.h"
 #include "DepthFont.h"
 
-#include <wx/dcgraph.h>         // supplemental, for Mac
+#include <wx/dcgraph.h>  // supplemental, for Mac
 
 //    wxWindows Hash Map Declarations
 #include <wx/hashmap.h>
 class RuleHash;
 
-WX_DECLARE_HASH_MAP( wxString, Rule*, wxStringHash, wxStringEqual, RuleHash );
-WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, MyNatsurHash );
+WX_DECLARE_HASH_MAP(wxString, Rule *, wxStringHash, wxStringEqual, RuleHash);
+WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual, MyNatsurHash);
 
-WX_DEFINE_SORTED_ARRAY( LUPrec *, wxArrayOfLUPrec );
+WX_DEFINE_SORTED_ARRAY(LUPrec *, wxArrayOfLUPrec);
 
-WX_DECLARE_LIST( S52_TextC, TextObjList );
+WX_DECLARE_LIST(S52_TextC, TextObjList);
 
 struct CARC_Buffer {
-    unsigned char color[3][4];
-    float line_width[3];
-    int steps;
+  unsigned char color[3][4];
+  float line_width[3];
+  int steps;
 
-    int size;
-    float *data;
+  int size;
+  float *data;
 };
-WX_DECLARE_STRING_HASH_MAP( CARC_Buffer, CARC_Hash );
-WX_DECLARE_STRING_HASH_MAP( int, CARC_DL_Hash );
+WX_DECLARE_STRING_HASH_MAP(CARC_Buffer, CARC_Hash);
+WX_DECLARE_STRING_HASH_MAP(int, CARC_DL_Hash);
 
 class ViewPort;
 class PixelCache;
@@ -66,10 +66,9 @@ class PixelCache;
 class RenderFromHPGL;
 class TexFont;
 
-class noshow_element
-{
+class noshow_element {
 public:
-    char obj[7];
+  char obj[7];
 };
 
 WX_DECLARE_OBJARRAY(noshow_element, ArrayOfNoshow);
@@ -78,443 +77,466 @@ WX_DECLARE_OBJARRAY(noshow_element, ArrayOfNoshow);
 //      LUP Array container, and friends
 //-----------------------------------------------------------------------------
 typedef struct _LUPHashIndex {
-    int n_start;
-    int count;
+  int n_start;
+  int count;
 } LUPHashIndex;
 
-WX_DECLARE_STRING_HASH_MAP( LUPHashIndex*, LUPArrayIndexHash );
+WX_DECLARE_STRING_HASH_MAP(LUPHashIndex *, LUPArrayIndexHash);
 
 class LUPArrayContainer {
 public:
-    LUPArrayContainer();
-    ~LUPArrayContainer();
-    
-    wxArrayOfLUPrec     *GetLUPArray(void){ return LUPArray; }
-    LUPHashIndex        *GetArrayIndexHelper( const char *objectName );
-    
+  LUPArrayContainer();
+  ~LUPArrayContainer();
+
+  wxArrayOfLUPrec *GetLUPArray(void) { return LUPArray; }
+  LUPHashIndex *GetArrayIndexHelper(const char *objectName);
+
 private:
-    wxArrayOfLUPrec             *LUPArray;          // Sorted Array
-    LUPArrayIndexHash           IndexHash;
+  wxArrayOfLUPrec *LUPArray;  // Sorted Array
+  LUPArrayIndexHash IndexHash;
 };
 
-    
 //-----------------------------------------------------------------------------
 //    s52plib definition
 //-----------------------------------------------------------------------------
 
 class s52plib {
 public:
-     s52plib( const wxString& PLib, bool b_forceLegacy = false );
-    ~s52plib();
+  s52plib(const wxString &PLib, bool b_forceLegacy = false);
+  ~s52plib();
 
-    void SetPPMM( float ppmm );
-    float GetPPMM() { return canvas_pix_per_mm; }
+  void SetPPMM(float ppmm);
+  float GetPPMM() { return canvas_pix_per_mm; }
 
-    void SetOCPNVersion(int major, int minor, int patch);
-    
-    double GetRVScaleFactor() { return m_rv_scale_factor; }
-    
-    LUPrec *S52_LUPLookup( LUPname LUP_name, const char * objectName,
-        S57Obj *pObj, bool bStrict = 0 );
-    int _LUP2rules( LUPrec *LUP, S57Obj *pObj );
-    S52color* getColor( const char *colorName );
-    wxColour getwxColour( const wxString &colorName );
+  void SetOCPNVersion(int major, int minor, int patch);
 
-    void UpdateMarinerParams( void );
-    void ClearCNSYLUPArray( void );
+  double GetRVScaleFactor() { return m_rv_scale_factor; }
 
-    void GenerateStateHash();
-    long GetStateHash() { return m_state_hash;  }
+  LUPrec *S52_LUPLookup(LUPname LUP_name, const char *objectName, S57Obj *pObj,
+                        bool bStrict = 0);
+  int _LUP2rules(LUPrec *LUP, S57Obj *pObj);
+  S52color *getColor(const char *colorName);
+  wxColour getwxColour(const wxString &colorName);
 
-    void SetPLIBColorScheme( wxString scheme );
-    void SetPLIBColorScheme( ColorScheme cs );
-    wxString GetPLIBColorScheme( void ) { return m_ColorScheme; }
+  void UpdateMarinerParams(void);
+  void ClearCNSYLUPArray(void);
 
-    void SetGLRendererString(const wxString &renderer);
-    void SetGLOptions(bool b_useStencil,
-                      bool b_useStencilAP,
-                      bool b_useScissors,
-                      bool b_useFBO,
-                      bool b_useVBO,
-                      int  nTextureFormat);
-    
-    bool ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp );
-    bool ObjectRenderCheckRules( ObjRazRules *rzRules, ViewPort *vp, bool check_noshow = false );
-    bool ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp );
-    bool ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp );
-    bool ObjectRenderCheckCS( ObjRazRules *rzRules, ViewPort *vp );
+  void GenerateStateHash();
+  long GetStateHash() { return m_state_hash; }
 
-    static void DestroyLUP( LUPrec *pLUP );
-    static void ClearRulesCache( Rule *pR );
-    DisCat findLUPDisCat(const char *objectName, LUPname TNAM);
-    
-//    Temporarily save/restore the current colortable index
-//    Useful for Thumbnail rendering
-    void SaveColorScheme( void ) { m_colortable_index_save = m_colortable_index;}
-    void RestoreColorScheme( void ) {}
+  void SetPLIBColorScheme(wxString scheme);
+  void SetPLIBColorScheme(ColorScheme cs);
+  wxString GetPLIBColorScheme(void) { return m_ColorScheme; }
 
-//    Rendering stuff
-    void PrepareForRender( ViewPort *vp );
-    void PrepareForRender( void );
-    void AdjustTextList( int dx, int dy, int screenw, int screenh );
-    void ClearTextList( void );
-    int SetLineFeaturePriority( ObjRazRules *rzRules, int npriority );
-    void FlushSymbolCaches();
+  void SetGLRendererString(const wxString &renderer);
+  void SetGLOptions(bool b_useStencil, bool b_useStencilAP, bool b_useScissors,
+                    bool b_useFBO, bool b_useVBO, int nTextureFormat);
 
-    //    For DC's
-    int RenderObjectToDC( wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp );
-    int RenderObjectToDCText( wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp );
-    int RenderAreaToDC( wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp, render_canvas_parms *pb_spec );
+  bool ObjectRenderCheck(ObjRazRules *rzRules, ViewPort *vp);
+  bool ObjectRenderCheckRules(ObjRazRules *rzRules, ViewPort *vp,
+                              bool check_noshow = false);
+  bool ObjectRenderCheckPos(ObjRazRules *rzRules, ViewPort *vp);
+  bool ObjectRenderCheckCat(ObjRazRules *rzRules, ViewPort *vp);
+  bool ObjectRenderCheckCS(ObjRazRules *rzRules, ViewPort *vp);
+  bool ObjectRenderCheckDates(ObjRazRules *rzRules);
 
-    // Accessors
-    bool GetShowSoundings() { return m_bShowSoundg; }
-    void SetShowSoundings( bool f ) { m_bShowSoundg = f; GenerateStateHash(); }
+  static void DestroyLUP(LUPrec *pLUP);
+  static void ClearRulesCache(Rule *pR);
+  DisCat findLUPDisCat(const char *objectName, LUPname TNAM);
 
-    bool GetShowS57Text() { return m_bShowS57Text;  }
-    void SetShowS57Text( bool f ) { m_bShowS57Text = f;  GenerateStateHash(); }
+  //    Temporarily save/restore the current colortable index
+  //    Useful for Thumbnail rendering
+  void SaveColorScheme(void) { m_colortable_index_save = m_colortable_index; }
+  void RestoreColorScheme(void) {}
 
-    bool GetShowS57ImportantTextOnly() { return m_bShowS57ImportantTextOnly; }
-    void SetShowS57ImportantTextOnly( bool f ) { m_bShowS57ImportantTextOnly = f; GenerateStateHash(); }
+  //    Rendering stuff
+  void PrepareForRender(ViewPort *vp);
+  void PrepareForRender(void);
+  void AdjustTextList(int dx, int dy, int screenw, int screenh);
+  void ClearTextList(void);
+  int SetLineFeaturePriority(ObjRazRules *rzRules, int npriority);
+  void FlushSymbolCaches();
 
-    void SetLightsOff(bool val){ m_lightsOff = val; }
-    bool GetLightsOff(){ return m_lightsOff; }
-    
-    void SetAnchorOn(bool val);
-    bool GetAnchorOn();
+  //    For DC's
+  int RenderObjectToDC(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp);
+  int RenderObjectToDCText(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp);
+  int RenderAreaToDC(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp,
+                     render_canvas_parms *pb_spec);
 
-    void SetQualityOfData(bool val);
-    bool GetQualityOfData();
-    
-    int GetMajorVersion( void ) { return m_VersionMajor; }
-    int GetMinorVersion( void ) { return m_VersionMinor; }
+  // Accessors
+  bool GetShowSoundings() { return m_bShowSoundg; }
+  void SetShowSoundings(bool f) {
+    m_bShowSoundg = f;
+    GenerateStateHash();
+  }
 
-    void SetTextOverlapAvoid( bool f ) { m_bDeClutterText = f; }
-    void SetShowNationalText( bool f ) { m_bShowNationalTexts = f; }
-    void SetShowAtonText( bool f ) { m_bShowAtonText = f; }
-    void SetShowLdisText( bool f ) { m_bShowLdisText = f; }
-    void SetExtendLightSectors( bool f ) { m_bExtendLightSectors = f; }
+  bool GetShowS57Text() { return m_bShowS57Text; }
+  void SetShowS57Text(bool f) {
+    m_bShowS57Text = f;
+    GenerateStateHash();
+  }
 
-    void SetDisplayCategory( enum _DisCat cat );
-    DisCat GetDisplayCategory(){ return m_nDisplayCategory; }
+  bool GetShowS57ImportantTextOnly() { return m_bShowS57ImportantTextOnly; }
+  void SetShowS57ImportantTextOnly(bool f) {
+    m_bShowS57ImportantTextOnly = f;
+    GenerateStateHash();
+  }
 
-    void SetGLPolygonSmoothing( bool bset ){ m_GLPolygonSmoothing = bset;}
-    bool GetGLPolygonSmoothing( ){ return m_GLPolygonSmoothing; }
-    void SetGLLineSmoothing( bool bset ){ m_GLLineSmoothing = bset;}
-    bool GetGLLineSmoothing( ){ return m_GLLineSmoothing; }
+  void SetLightsOff(bool val) { m_lightsOff = val; }
+  bool GetLightsOff() { return m_lightsOff; }
 
-    wxArrayOfLUPrec* SelectLUPARRAY( LUPname TNAM );
-    LUPArrayContainer *SelectLUPArrayContainer( LUPname TNAM );
-        
-    void DestroyPatternRuleNode( Rule *pR );
-    void DestroyRuleNode( Rule *pR );
-    static void DestroyRulesChain( Rules *top );
-    
-    //    For OpenGL
-    int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp );
-    int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp );
-    int RenderObjectToGLText( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp );
-    
-    void RenderPolytessGL( ObjRazRules *rzRules, ViewPort *vp,double z_clip_geom, wxPoint *ptp );
-    
-    bool EnableGLLS(bool benable);
+  void SetAnchorOn(bool val);
+  bool GetAnchorOn();
 
-    bool IsObjNoshow( const char *objcl);
-    void AddObjNoshow( const char *objcl);
-    void RemoveObjNoshow( const char *objcl);
-    void ClearNoshow(void);
-    void SaveObjNoshow() { m_saved_noshow = m_noshow_array; };
-    void RestoreObjNoshow() { m_noshow_array = m_saved_noshow; };
-    
-    //Todo accessors
-    LUPname m_nSymbolStyle;
-    LUPname m_nBoundaryStyle;
-    bool m_bOK;
+  void SetQualityOfData(bool val);
+  bool GetQualityOfData();
 
-    bool m_bShowSoundg;
-    bool m_bShowMeta;
-    bool m_bShowS57Text;
-    bool m_bUseSCAMIN;
-    bool m_bShowAtonText;
-    bool m_bShowLdisText;
-    bool m_bExtendLightSectors;
-    bool m_bShowS57ImportantTextOnly;
-    bool m_bDeClutterText;
-    bool m_bShowNationalTexts;
-    int m_nSoundingFactor;
-    double m_SoundingsScaleFactor;
-    
-    int m_VersionMajor;
-    int m_VersionMinor;
+  int GetMajorVersion(void) { return m_VersionMajor; }
+  int GetMinorVersion(void) { return m_VersionMinor; }
 
-    int m_nDepthUnitDisplay;
+  void SetTextOverlapAvoid(bool f) { m_bDeClutterText = f; }
+  void SetShowNationalText(bool f) { m_bShowNationalTexts = f; }
+  void SetShowAtonText(bool f) { m_bShowAtonText = f; }
+  void SetShowLdisText(bool f) { m_bShowLdisText = f; }
+  void SetExtendLightSectors(bool f) { m_bExtendLightSectors = f; }
 
-    //    Library data
-    wxArrayPtrVoid *pAlloc;
+  void SetDisplayCategory(enum _DisCat cat);
+  DisCat GetDisplayCategory() { return m_nDisplayCategory; }
 
-    RuleHash *_line_sym; // line symbolisation rules
-    RuleHash *_patt_sym; // pattern symbolisation rules
-    RuleHash *_cond_sym; // conditional symbolisation rules
-    RuleHash *_symb_symR; // symbol symbolisation rules, Raster
+  void SetGLPolygonSmoothing(bool bset) { m_GLPolygonSmoothing = bset; }
+  bool GetGLPolygonSmoothing() { return m_GLPolygonSmoothing; }
+  void SetGLLineSmoothing(bool bset) { m_GLLineSmoothing = bset; }
+  bool GetGLLineSmoothing() { return m_GLLineSmoothing; }
 
-    LUPArrayContainer   *line_LAC;
-    LUPArrayContainer   *areaPlain_LAC;
-    LUPArrayContainer   *areaSymbol_LAC;
-    LUPArrayContainer   *pointSimple_LAC;
-    LUPArrayContainer   *pointPaper_LAC;
-    
-    wxArrayOfLUPrec *condSymbolLUPArray; // Dynamic Conditional Symbology
+  wxArrayOfLUPrec *SelectLUPARRAY(LUPname TNAM);
+  LUPArrayContainer *SelectLUPArrayContainer(LUPname TNAM);
 
-    wxArrayPtrVoid *pOBJLArray; // Used for Display Filtering
-    std::vector<wxString> OBJLDescriptions;
+  void DestroyPatternRuleNode(Rule *pR);
+  void DestroyRuleNode(Rule *pR);
+  static void DestroyRulesChain(Rules *top);
 
-    RuleHash *_symb_sym; // symbol symbolisation rules
-    MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
+  //    For OpenGL
+  int RenderObjectToGL(const wxGLContext &glcc, ObjRazRules *rzRules,
+                       ViewPort *vp);
+  int RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules,
+                     ViewPort *vp);
+  int RenderObjectToGLText(const wxGLContext &glcc, ObjRazRules *rzRules,
+                           ViewPort *vp);
 
-    wxRect m_last_clip_rect;
-    int m_myConfig;
-    
-    double lastLightLat;
-    double lastLightLon;
-    
+  void RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip_geom,
+                        wxPoint *ptp);
+
+  bool EnableGLLS(bool benable);
+
+  bool IsObjNoshow(const char *objcl);
+  void AddObjNoshow(const char *objcl);
+  void RemoveObjNoshow(const char *objcl);
+  void ClearNoshow(void);
+  void SaveObjNoshow() { m_saved_noshow = m_noshow_array; };
+  void RestoreObjNoshow() { m_noshow_array = m_saved_noshow; };
+
+  // Todo accessors
+  LUPname m_nSymbolStyle;
+  LUPname m_nBoundaryStyle;
+  bool m_bOK;
+
+  bool m_bShowSoundg;
+  bool m_bShowMeta;
+  bool m_bShowS57Text;
+  bool m_bUseSCAMIN;
+  bool m_bShowAtonText;
+  bool m_bShowLdisText;
+  bool m_bExtendLightSectors;
+  bool m_bShowS57ImportantTextOnly;
+  bool m_bDeClutterText;
+  bool m_bShowNationalTexts;
+  int m_nSoundingFactor;
+  double m_SoundingsScaleFactor;
+
+  int m_VersionMajor;
+  int m_VersionMinor;
+
+  int m_nDepthUnitDisplay;
+
+  //    Library data
+  wxArrayPtrVoid *pAlloc;
+
+  RuleHash *_line_sym;   // line symbolisation rules
+  RuleHash *_patt_sym;   // pattern symbolisation rules
+  RuleHash *_cond_sym;   // conditional symbolisation rules
+  RuleHash *_symb_symR;  // symbol symbolisation rules, Raster
+
+  LUPArrayContainer *line_LAC;
+  LUPArrayContainer *areaPlain_LAC;
+  LUPArrayContainer *areaSymbol_LAC;
+  LUPArrayContainer *pointSimple_LAC;
+  LUPArrayContainer *pointPaper_LAC;
+
+  wxArrayOfLUPrec *condSymbolLUPArray;  // Dynamic Conditional Symbology
+
+  wxArrayPtrVoid *pOBJLArray;  // Used for Display Filtering
+  std::vector<wxString> OBJLDescriptions;
+
+  RuleHash *_symb_sym;         // symbol symbolisation rules
+  MyNatsurHash m_natsur_hash;  // hash table for cacheing NATSUR string values
+                               // from int attributes
+
+  wxRect m_last_clip_rect;
+  int m_myConfig;
+
+  double lastLightLat;
+  double lastLightLon;
+
 private:
-    int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
-    bool S52_flush_Plib();
-    
-    void PLIB_LoadS57Config();
-    
-    bool PreloadOBJLFromCSV(const wxString &csv_file);
+  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
+  bool S52_flush_Plib();
 
-    int DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
-    int DoRenderObjectTextOnly( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
-    
-    //    Area Renderers
-    int RenderToBufferAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
-        render_canvas_parms *pb_spec );
-    int RenderToBufferAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
-	render_canvas_parms *pb_spec );
-    int RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+  void PLIB_LoadS57Config();
 
-    //    Object Renderers
-    int RenderTX( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderTE( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    char *RenderCS( ObjRazRules *rzRules, Rules *rules );
-    int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    
-    int RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    
-    void UpdateOBJLArray( S57Obj *obj );
+  bool PreloadOBJLFromCSV(const wxString &csv_file);
 
-    int reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest, int *maskIn, int **maskOut);
-    
-    int RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderGLLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderGLLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderLSPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    int RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    
-    int RenderLS_Dash_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    
-    void DrawDashLine( wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, ViewPort *vp);
-    
-    render_canvas_parms* CreatePatternBufferSpec( ObjRazRules *rzRules,
-        Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot = false );
+  int DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp);
+  int DoRenderObjectTextOnly(wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp);
 
-    void RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj,
-        S52color *c, render_canvas_parms *pb_spec,
-        render_canvas_parms *patt_spec, ViewPort *vp );
+  //    Area Renderers
+  int RenderToBufferAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
+                       render_canvas_parms *pb_spec);
+  int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
+                       render_canvas_parms *pb_spec);
+  int RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
 
-    void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, int *mask,
-        int npt, float sym_len, float sym_factor, Rule *draw_rule,
-        ViewPort *vp );
+  //    Object Renderers
+  int RenderTX(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderTE(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderSY(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderLC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderMPS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderCARC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  char *RenderCS(ObjRazRules *rzRules, Rules *rules);
+  int RenderGLLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderGLLC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
 
-    bool RenderHPGL( ObjRazRules *rzRules, Rule * rule_in, wxPoint &r,
-        ViewPort *vp, float rot_angle = 0. );
-    bool RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-        ViewPort *vp, float rot_angle = 0. );
-    bool RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-        ViewPort *vp, wxColor symColor, float rot_angle = 0. );
-    wxImage RuleXBMToImage( Rule *prule );
+  int RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
 
-    bool RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
-        wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap, ViewPort *vp );
+  void UpdateOBJLArray(S57Obj *obj);
 
-    bool CheckTextRectList( const wxRect &test_rect, S52_TextC *ptext );
-    int RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,	bool bTX );
+  int reduceLOD(double LOD_meters, int nPoints, double *source,
+                wxPoint2DDouble **dest, int *maskIn, int **maskOut);
 
-    int PrioritizeLineFeature( ObjRazRules *rzRules, int npriority );
+  int RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderLCLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderGLLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderGLLCLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
 
-    int dda_tri( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
-        render_canvas_parms *pPatt_spec );
-    int dda_trap( wxPoint *segs, int lseg, int rseg, int ytop, int ybot,
-        S52color *c, render_canvas_parms *pb_spec, render_canvas_parms *pPatt_spec );
+  int RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
 
-    LUPrec *FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex, unsigned int count,
-                              S57Obj *pObj, bool bStrict );
-    
-    void SetGLClipRect(const ViewPort &vp, const wxRect &rect);
-    
-    char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz );
-    S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd );
-    char *_parseTEXT( ObjRazRules *rzRules, S52_TextC *text, char *str0 );
-    S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd );
-    
-    
-    Rules *StringToRules( const wxString& str_in );
-    void GetAndAddCSRules( ObjRazRules *rzRules, Rules *rules );
+  void DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
+                    ViewPort *vp);
 
-    void DestroyPattRules( RuleHash *rh );
-    void DestroyRules( RuleHash *rh );
-    void DestroyLUPArray( wxArrayOfLUPrec *pLUPArray );
+  render_canvas_parms *CreatePatternBufferSpec(ObjRazRules *rzRules,
+                                               Rules *rules, ViewPort *vp,
+                                               bool b_revrgb,
+                                               bool b_pot = false);
 
-    bool TextRenderCheck( ObjRazRules *rzRules );
-    bool inter_tri_rect( wxPoint *ptp, render_canvas_parms *pb_spec );
+  void RenderToBufferFilledPolygon(ObjRazRules *rzRules, S57Obj *obj,
+                                   S52color *c, render_canvas_parms *pb_spec,
+                                   render_canvas_parms *patt_spec,
+                                   ViewPort *vp);
 
-    bool GetPointPixArray( ObjRazRules *rzRules, wxPoint2DDouble* pd, wxPoint *pp, int nv, ViewPort *vp );
-    bool GetPointPixSingle( ObjRazRules *rzRules, float north, float east, wxPoint *r, ViewPort *vp );
-    void GetPixPointSingle( int pixx, int pixy, double *plat, double *plon, ViewPort *vp );
-    void GetPixPointSingleNoRotate( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt );
-    
-    wxString m_plib_file;
+  void draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+                    int *mask, int npt, float sym_len, float sym_factor,
+                    Rule *draw_rule, ViewPort *vp);
 
-    float canvas_pix_per_mm; // Set by parent, used to scale symbols/lines/patterns
-    double m_rv_scale_factor;
-    float m_display_size_mm;
-    
-    S52color m_unused_color;
-    wxColor m_unused_wxColor;
+  bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r, ViewPort *vp,
+                  float rot_angle = 0.);
+  bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
+                          ViewPort *vp, float rot_angle = 0.);
+  bool RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
+                            ViewPort *vp, wxColor symColor,
+                            float rot_angle = 0.);
+  wxImage RuleXBMToImage(Rule *prule);
 
-    bool bUseRasterSym;
-    bool useLegacyRaster;
+  bool RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn,
+                  S57Obj *pobj, bool bCheckOverlap, ViewPort *vp);
 
-    wxDC *m_pdc; // The current DC
-    
-//#ifdef ocpnUSE_GL
-    wxGLContext *m_glcc;
-//#endif
+  bool CheckTextRectList(const wxRect &test_rect, S52_TextC *ptext);
+  int RenderT_All(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool bTX);
 
-    int *ledge;
-    int *redge;
+  int PrioritizeLineFeature(ObjRazRules *rzRules, int npriority);
 
-    int m_colortable_index;
-    int m_colortable_index_save;
+  int dda_tri(wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
+              render_canvas_parms *pPatt_spec);
+  int dda_trap(wxPoint *segs, int lseg, int rseg, int ytop, int ybot,
+               S52color *c, render_canvas_parms *pb_spec,
+               render_canvas_parms *pPatt_spec);
 
-    TextObjList m_textObjList;
+  LUPrec *FindBestLUP(wxArrayOfLUPrec *LUPArray, unsigned int startIndex,
+                      unsigned int count, S57Obj *pObj, bool bStrict);
 
-    wxString m_ColorScheme;
+  void SetGLClipRect(const ViewPort &vp, const wxRect &rect);
 
-    bool m_lightsOff;
-    bool m_anchorOn;
-    bool m_qualityOfDataOn;
+  char *_getParamVal(ObjRazRules *rzRules, char *str, char *buf, int bsz);
+  S52_TextC *S52_PL_parseTX(ObjRazRules *rzRules, Rules *rules, char *cmd);
+  char *_parseTEXT(ObjRazRules *rzRules, S52_TextC *text, char *str0);
+  S52_TextC *S52_PL_parseTE(ObjRazRules *rzRules, Rules *rules, char *cmd);
 
-    long m_state_hash;
+  Rules *StringToRules(const wxString &str_in);
+  void GetAndAddCSRules(ObjRazRules *rzRules, Rules *rules);
 
-    bool m_txf_ready;
-    int m_txf_avg_char_width;
-    int m_txf_avg_char_height;
-    CARC_Hash m_CARC_hashmap;
-    CARC_DL_Hash m_CARC_DL_hashmap;
-    RenderFromHPGL* HPGL;
+  void DestroyPattRules(RuleHash *rh);
+  void DestroyRules(RuleHash *rh);
+  void DestroyLUPArray(wxArrayOfLUPrec *pLUPArray);
 
-    TexFont *m_txf;
-    DepthFont m_texSoundings;
-    bool m_benableGLLS;
-    DisCat m_nDisplayCategory;
-    ArrayOfNoshow m_noshow_array;
-    ArrayOfNoshow m_saved_noshow;
-    
-    int m_coreVersionMajor;
-    int m_coreVersionMinor;
-    int m_coreVersionPatch;
+  bool TextRenderCheck(ObjRazRules *rzRules);
+  bool inter_tri_rect(wxPoint *ptp, render_canvas_parms *pb_spec);
 
-    // GL Options, set by core depending on hardware capability
-    bool m_useStencil;
-    bool m_useStencilAP;
-    bool m_useScissors;
-    bool m_useFBO;
-    bool m_useVBO;
-    int  m_TextureFormat;
-    bool m_GLLineSmoothing;
-    bool m_GLPolygonSmoothing;
-    wxFont *m_soundFont;
+  bool GetPointPixArray(ObjRazRules *rzRules, wxPoint2DDouble *pd, wxPoint *pp,
+                        int nv, ViewPort *vp);
+  bool GetPointPixSingle(ObjRazRules *rzRules, float north, float east,
+                         wxPoint *r, ViewPort *vp);
+  void GetPixPointSingle(int pixx, int pixy, double *plat, double *plon,
+                         ViewPort *vp);
+  void GetPixPointSingleNoRotate(int pixx, int pixy, double *plat, double *plon,
+                                 ViewPort *vpt);
+
+  wxString m_plib_file;
+
+  float
+      canvas_pix_per_mm;  // Set by parent, used to scale symbols/lines/patterns
+  double m_rv_scale_factor;
+  float m_display_size_mm;
+
+  S52color m_unused_color;
+  wxColor m_unused_wxColor;
+
+  bool bUseRasterSym;
+  bool useLegacyRaster;
+
+  wxDC *m_pdc;  // The current DC
+
+  //#ifdef ocpnUSE_GL
+  wxGLContext *m_glcc;
+  //#endif
+
+  int *ledge;
+  int *redge;
+
+  int m_colortable_index;
+  int m_colortable_index_save;
+
+  TextObjList m_textObjList;
+
+  wxString m_ColorScheme;
+
+  bool m_lightsOff;
+  bool m_anchorOn;
+  bool m_qualityOfDataOn;
+
+  long m_state_hash;
+
+  bool m_txf_ready;
+  int m_txf_avg_char_width;
+  int m_txf_avg_char_height;
+  CARC_Hash m_CARC_hashmap;
+  CARC_DL_Hash m_CARC_DL_hashmap;
+  RenderFromHPGL *HPGL;
+
+  TexFont *m_txf;
+  DepthFont m_texSoundings;
+  bool m_benableGLLS;
+  DisCat m_nDisplayCategory;
+  ArrayOfNoshow m_noshow_array;
+  ArrayOfNoshow m_saved_noshow;
+
+  int m_coreVersionMajor;
+  int m_coreVersionMinor;
+  int m_coreVersionPatch;
+
+  // GL Options, set by core depending on hardware capability
+  bool m_useStencil;
+  bool m_useStencilAP;
+  bool m_useScissors;
+  bool m_useFBO;
+  bool m_useVBO;
+  int m_TextureFormat;
+  bool m_GLLineSmoothing;
+  bool m_GLPolygonSmoothing;
+  wxFont *m_soundFont;
 };
-
 
 #define HPGL_FILLED true
 
 class RenderFromHPGL {
 public:
-    RenderFromHPGL( s52plib* plibarg );
-    ~RenderFromHPGL(  );
-    
-    void SetTargetDC( wxDC* pdc );
-    void SetTargetOpenGl();
+  RenderFromHPGL(s52plib *plibarg);
+  ~RenderFromHPGL();
+
+  void SetTargetDC(wxDC *pdc);
+  void SetTargetOpenGl();
 #if wxUSE_GRAPHICS_CONTEXT
-    void SetTargetGCDC( wxGCDC* gdc );
+  void SetTargetGCDC(wxGCDC *gdc);
 #endif
-    void SetVP( ViewPort *pVP ){ m_vp = pVP; }
-    bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin, float scale, double rot_angle, bool bSymbol);
-    wxBrush *getBrush(){ return brush; }
-    
-    GLUtesselator *m_tobj;
-    int          s_odc_tess_vertex_idx;
-    int          s_odc_tess_vertex_idx_this;
-    int          s_odc_tess_buf_len;
-    GLenum       s_odc_tess_mode;
-    int          s_odc_nvertex;
-    GLfloat     *s_odc_tess_work_buf;
+  void SetVP(ViewPort *pVP) { m_vp = pVP; }
+  bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
+              float scale, double rot_angle, bool bSymbol);
+  wxBrush *getBrush() { return brush; }
+
+  GLUtesselator *m_tobj;
+  int s_odc_tess_vertex_idx;
+  int s_odc_tess_vertex_idx_this;
+  int s_odc_tess_buf_len;
+  GLenum s_odc_tess_mode;
+  int s_odc_nvertex;
+  GLfloat *s_odc_tess_work_buf;
 
 private:
-    const char* findColorNameInRef( char colorCode, char* col );
-    void RotatePoint( wxPoint& point, wxPoint origin, double angle );
-    wxPoint ParsePoint( wxString& argument );
-    void SetPen();
-    void Line( wxPoint from, wxPoint to );
-    void Circle( wxPoint center, int radius, bool filled = false );
-    void Polygon();
+  const char *findColorNameInRef(char colorCode, char *col);
+  void RotatePoint(wxPoint &point, wxPoint origin, double angle);
+  wxPoint ParsePoint(wxString &argument);
+  void SetPen();
+  void Line(wxPoint from, wxPoint to);
+  void Circle(wxPoint center, int radius, bool filled = false);
+  void Polygon();
 
-    void DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset );
-    void DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset, float scale, float angle );
-    
-    s52plib* plib;
-    double scaleFactor;
+  void DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
+                              wxCoord yoffset);
+  void DrawPolygon(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
+                   float scale, float angle);
 
-    wxDC* targetDC;
+  s52plib *plib;
+  double scaleFactor;
+
+  wxDC *targetDC;
 #if wxUSE_GRAPHICS_CONTEXT
-    wxGCDC* targetGCDC;
+  wxGCDC *targetGCDC;
 #endif
 
-    wxColor penColor;
-    wxPen* pen;
-    wxColor brushColor;
-    wxBrush* brush;
-    long penWidth;
-    int transparency;
-    
-    int noPoints;
-    wxPoint polygon[100];
-    
-    float m_currentColor[4];
+  wxColor penColor;
+  wxPen *pen;
+  wxColor brushColor;
+  wxBrush *brush;
+  long penWidth;
+  int transparency;
 
-    bool renderToDC;
-    bool renderToOpenGl;
-    bool renderToGCDC;
-    ViewPort *m_vp;
-    
-     
-    float *workBuf;
-    size_t workBufSize;
-    unsigned int workBufIndex;
+  int noPoints;
+  wxPoint polygon[100];
 
+  float m_currentColor[4];
+
+  bool renderToDC;
+  bool renderToOpenGl;
+  bool renderToGCDC;
+  ViewPort *m_vp;
+
+  float *workBuf;
+  size_t workBufSize;
+  unsigned int workBufIndex;
 };
 
-#endif //_S52PLIB_H_
+#endif  //_S52PLIB_H_

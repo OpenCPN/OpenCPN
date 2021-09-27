@@ -23,29 +23,29 @@ public:
     //Constructors / Destructors
     wxMapiSession();
     ~wxMapiSession();
-    
+
     //Logon / Logoff Methods
     bool Logon(const wxString& sProfileName, const wxString& sPassword = wxEmptyString, wxWindow* pParentWnd = NULL);
     bool LoggedOn() const;
     bool Logoff();
-    
+
     //Send a message
     bool Send(wxMailMessage& message);
-    
+
     //General MAPI support
     bool MapiInstalled() const;
-    
+
     //Error Handling
     long GetLastError() const;
-    
+
 protected:
     //Methods
     void Initialise();
-    void Deinitialise(); 
+    void Deinitialise();
     bool Resolve(const wxString& sName, void* lppRecip1);
 
     wxMapiData* m_data;
-    
+
 };
 
 

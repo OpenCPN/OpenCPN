@@ -1,19 +1,19 @@
 /*
  * Mesa 3-D graphics library
  * Version:  6.5
- * 
+ *
  * Copyright (C) 1999-2006  Brian Paul   All Rights Reserved.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
@@ -465,14 +465,14 @@ typedef int (*PFNGLXGETSWAPINTERVALMESAPROC)(void);
 #define GLX_FRONT_EXT                      GLX_FRONT_LEFT_EXT
 #define GLX_BACK_EXT                       GLX_BACK_LEFT_EXT
 #define GLX_AUX0_EXT                       0x20E2
-#define GLX_AUX1_EXT                       0x20E3 
-#define GLX_AUX2_EXT                       0x20E4 
-#define GLX_AUX3_EXT                       0x20E5 
-#define GLX_AUX4_EXT                       0x20E6 
-#define GLX_AUX5_EXT                       0x20E7 
+#define GLX_AUX1_EXT                       0x20E3
+#define GLX_AUX2_EXT                       0x20E4
+#define GLX_AUX3_EXT                       0x20E5
+#define GLX_AUX4_EXT                       0x20E6
+#define GLX_AUX5_EXT                       0x20E7
 #define GLX_AUX6_EXT                       0x20E8
-#define GLX_AUX7_EXT                       0x20E9 
-#define GLX_AUX8_EXT                       0x20EA 
+#define GLX_AUX7_EXT                       0x20E9
+#define GLX_AUX8_EXT                       0x20EA
 #define GLX_AUX9_EXT                       0x20EB
 
 extern void glXBindTexImageEXT(Display *dpy, GLXDrawable drawable, int buffer, const int *attrib_list);

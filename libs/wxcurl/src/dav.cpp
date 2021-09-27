@@ -24,7 +24,7 @@
 #endif
 
 #ifdef __WXMSW__
-    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC 
+    #include <wx/msw/msvcrt.h>      // useful to catch memory leaks when compiling under MSVC
 #endif
 
 #include <wx/mstream.h>
@@ -39,10 +39,10 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-wxCurlDAV::wxCurlDAV(const wxString& szURL /*= wxEmptyString*/, 
-                     const wxString& szUserName /*= wxEmptyString*/, 
-                     const wxString& szPassword /*= wxEmptyString*/, 
-                     wxEvtHandler* pEvtHandler /*= NULL*/, 
+wxCurlDAV::wxCurlDAV(const wxString& szURL /*= wxEmptyString*/,
+                     const wxString& szUserName /*= wxEmptyString*/,
+                     const wxString& szPassword /*= wxEmptyString*/,
+                     wxEvtHandler* pEvtHandler /*= NULL*/,
                      long flags /*=wxCURL_DEFAULT_FLAGS*/)
 : wxCurlHTTP(szURL, szUserName, szPassword, pEvtHandler, flags)
 {
@@ -65,7 +65,7 @@ bool wxCurlDAV::Mkcol(const wxString& szRemoteCol /*= wxEmptyString*/)
 	if(m_pCURL)
 	{
         SetCurlHandleToDefaults(szRemoteCol);
-		
+
 		SetOpt(CURLOPT_CUSTOMREQUEST, "MKCOL");
 		SetStringWriteFunction(m_szResponseBody);
 
@@ -181,7 +181,7 @@ bool wxCurlDAV::Proppatch(wxInputStream& buffer, const wxString& szRemoteLoc /*=
 	return false;
 }
 
-bool wxCurlDAV::Copy(const wxString& szRemoteLocDest, const bool& bOverwrite /*= true*/, 
+bool wxCurlDAV::Copy(const wxString& szRemoteLocDest, const bool& bOverwrite /*= true*/,
                      const wxString& szRemoteLocSrc /*= wxEmptyString*/)
 {
 	if(m_pCURL)
@@ -189,7 +189,7 @@ bool wxCurlDAV::Copy(const wxString& szRemoteLocDest, const bool& bOverwrite /*=
 		SetCurlHandleToDefaults(szRemoteLocSrc);
 
 		m_arrHeaders.Add(wxS("Destination: ") + szRemoteLocDest);
-		
+
 		if(!bOverwrite)
 			m_arrHeaders.Add(wxS("Overwrite: F"));
 
@@ -211,7 +211,7 @@ bool wxCurlDAV::Copy(const wxString& szRemoteLocDest, const bool& bOverwrite /*=
 	return false;
 }
 
-bool wxCurlDAV::Move(const wxString& szRemoteLocDest, const bool& bOverwrite /*= true*/, 
+bool wxCurlDAV::Move(const wxString& szRemoteLocDest, const bool& bOverwrite /*= true*/,
                      const wxString& szRemoteLocSrc /*= wxEmptyString*/)
 {
 	if(m_pCURL)
@@ -219,7 +219,7 @@ bool wxCurlDAV::Move(const wxString& szRemoteLocDest, const bool& bOverwrite /*=
 		SetCurlHandleToDefaults(szRemoteLocSrc);
 
 		m_arrHeaders.Add(wxS("Destination: ") + szRemoteLocDest);
-		
+
 		if(!bOverwrite)
 			m_arrHeaders.Add(wxS("Overwrite: F"));
 
@@ -265,7 +265,7 @@ wxString wxCurlDAV::ConstructPropfindXml(const wxArrayString& arrTags)
 	if(arrTags.Count() > 0)
 	{
 		szXml += wxS("\t") wxS("<D:prop>") wxS("\n");
-	
+
 		for(unsigned int i = 0; i < arrTags.Count(); i++)
 		{
 			szXml += wxS("\t\t") wxS("<D:");

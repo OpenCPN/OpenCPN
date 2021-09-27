@@ -185,7 +185,7 @@ size_t SoundFileLoader::Get(void* buff, size_t length)
     return len;
 }
 
-unsigned SoundFileLoader::GetBytesPerSample() const 
+unsigned SoundFileLoader::GetBytesPerSample() const
 {
     return m_osdata->m_channels * m_osdata->m_bitsPerSample / 8;
 };

@@ -97,12 +97,12 @@ void GribGrabberWin::OnMouseEvent( wxMouseEvent& event )
         wxPoint pos_in_parent = GetOCPNCanvasWindow()->ScreenToClient( par_pos );
         wxPoint pos_in_parent_old = GetOCPNCanvasWindow()->ScreenToClient( par_pos_old );
 
-		// X
-		if( pos_in_parent.x < pos_in_parent_old.x ) {           // moving left
-			if( pos_in_parent.x < 10 ) {
-				pos_in_parent.x = 0;
-			}
-		} else
+        // X
+        if( pos_in_parent.x < pos_in_parent_old.x ) {           // moving left
+            if( pos_in_parent.x < 10 ) {
+                pos_in_parent.x = 0;
+            }
+        } else
         if( pos_in_parent.x > pos_in_parent_old.x ) {           // moving right
             int max_right = GetOCPNCanvasWindow()->GetClientSize().x - GetParent()->GetSize().x;
             if( pos_in_parent.x > ( max_right - 10 ) ) {
@@ -110,12 +110,12 @@ void GribGrabberWin::OnMouseEvent( wxMouseEvent& event )
             }
         }
 
-		// Y
-		if( pos_in_parent.y < pos_in_parent_old.y ) {            // moving up
-			if( pos_in_parent.y < 10 ) {
-				pos_in_parent.y = 0;
-			}
-		} else
+        // Y
+        if( pos_in_parent.y < pos_in_parent_old.y ) {            // moving up
+            if( pos_in_parent.y < 10 ) {
+                pos_in_parent.y = 0;
+            }
+        } else
         if( pos_in_parent.y > pos_in_parent_old.y ) {            // moving dow
             int max_down = GetOCPNCanvasWindow()->GetClientSize().y - GetParent()->GetSize().y;
             if( pos_in_parent.y > ( max_down - 10 ) ) {
@@ -123,9 +123,9 @@ void GribGrabberWin::OnMouseEvent( wxMouseEvent& event )
             }
         }
 
-		wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen( pos_in_parent );
+        wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen( pos_in_parent );
 
-		GetParent()->Move( final_pos );
+        GetParent()->Move( final_pos );
 
         s_gspt = spt;
 

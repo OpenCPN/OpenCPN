@@ -137,7 +137,7 @@
 <enum name="HintTarget">
     <value name="GENERATE_MIPMAP_HINT"/>
 </enum>
-<enum name="DataType">  
+<enum name="DataType">
     <value name="BYTE"/>
     <value name="UNSIGNED_BYTE"/>
     <value name="SHORT"/>
@@ -147,9 +147,9 @@
     <value name="FLOAT"/>
     <value name="FIXED"/>
 </enum>
-<enum name="PixelFormat"> 
-     <!-- XXX split up? used by various functions; 
-         ReadPixels only accepts ALPHA, RGB, RGBA 
+<enum name="PixelFormat">
+     <!-- XXX split up? used by various functions;
+         ReadPixels only accepts ALPHA, RGB, RGBA
          TexImage2D only accepts ALPHA, RGB, RGBA, LUMINANCE, LUMINANCE_ALPHA
          See also TextureInternalFormat
        -->
@@ -271,11 +271,11 @@
     <value name="RGBA"/>
 </enum>
 <enum name="RenderbufferInternalFormat"> <!-- RenderbufferStorage / GetRenderbufferParameter -->
-    <value name="RGBA4"/> 
-    <value name="RGB565"/> 
-    <value name="RGB5_A1"/> 
-    <value name="DEPTH_COMPONENT16"/> 
-    <value name="STENCIL_INDEX8"/> 
+    <value name="RGBA4"/>
+    <value name="RGB565"/>
+    <value name="RGB5_A1"/>
+    <value name="DEPTH_COMPONENT16"/>
+    <value name="STENCIL_INDEX8"/>
 </enum>
 <enum name="UniformType"> <!-- GetActiveAttrib/GetActiveUniform -->
     <value name="FLOAT"/>
@@ -314,7 +314,7 @@
 <enum name="RenderbufferTarget">
     <value name="RENDERBUFFER"/>
 </enum>
-<enum name="GetVertexAttribParameterPName"> 
+<enum name="GetVertexAttribParameterPName">
     <value name="VERTEX_ATTRIB_ARRAY_ENABLED"/>
     <value name="VERTEX_ATTRIB_ARRAY_SIZE"/>
     <value name="VERTEX_ATTRIB_ARRAY_STRIDE"/>
@@ -487,7 +487,7 @@
     <!-- None by default, provided by extensions -->
 </enum>
 <enum name="VertexAttribType"> <!-- subset of DataType -->
-    <!-- VertexAttribPointer only needs BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT, FIXED, FLOAT 
+    <!-- VertexAttribPointer only needs BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT, FIXED, FLOAT
          What about (UNSIGNED_)INT? Are these part of an extension?
      -->
     <value name="BYTE"/>

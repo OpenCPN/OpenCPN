@@ -1,0 +1,33 @@
+additional_commands:
+  foo:
+    flags:
+    - BAR
+    - BAZ
+    kwargs:
+      DEPENDS: '*'
+      HEADERS: '*'
+      SOURCES: '*'
+algorithm_order:
+- 0
+- 1
+- 2
+- 3
+always_wrap: []
+bullet_char: '-'
+command_case: lower
+dangle_parens: true
+emit_byteorder_mark: false
+enable_markup: true
+enum_char: .
+#fence_pattern: ^\s*([`~]{3}[`~]*)(.*)$
+first_comment_is_literal: false
+keyword_case: unchanged
+line_ending: unix
+line_width: 80
+literal_comment_pattern: null
+max_subargs_per_line: 3
+per_command: {}
+#ruler_pattern: ^\s*[^\w\s]{3}.*[^\w\s]{3}$
+separate_ctrl_name_with_space: true
+separate_fn_name_with_space: false
+tab_size: 2

@@ -39,93 +39,96 @@ class wxCloseEvent;
 class wxTextCtrl;
 class wxButton;
 class wxListCtrl;
+class wxChoice;
 
-WX_DECLARE_LIST(wxPoint, SplineList);           // for spline curve points
+WX_DECLARE_LIST(wxPoint, SplineList);  // for spline curve points
 
-class TCWin: public wxFrame
-{
+class TCWin : public wxFrame {
 public:
-      TCWin(ChartCanvas *parent, int x, int y, void *pvIDX);
-      ~TCWin();
+  TCWin(ChartCanvas *parent, int x, int y, void *pvIDX);
+  ~TCWin();
 
-      void OnSize(wxSizeEvent& event);
-      void OnPaint(wxPaintEvent& event);
-      void MouseEvent(wxMouseEvent& event);
-	  void OnTCWinPopupTimerEvent(wxTimerEvent& event);
-      void OKEvent(wxCommandEvent& event);
-      void NXEvent(wxCommandEvent& event);
-      void PREvent(wxCommandEvent& event);
-      void OnCloseWindow(wxCloseEvent& event);
+  void OnSize(wxSizeEvent &event);
+  void OnPaint(wxPaintEvent &event);
+  void MouseEvent(wxMouseEvent &event);
+  void OnTCWinPopupTimerEvent(wxTimerEvent &event);
+  void OKEvent(wxCommandEvent &event);
+  void NXEvent(wxCommandEvent &event);
+  void PREvent(wxCommandEvent &event);
+  void OnCloseWindow(wxCloseEvent &event);
+  void TimezoneOnChoice(wxCommandEvent &event);
 
-      void RePosition(void);
-      
-      void RecalculateSize();
+  void RePosition(void);
+
+  void RecalculateSize();
+  void SetTimeFactors();
 
 private:
-    wxTextCtrl   *m_ptextctrl;
-    wxTimer	  m_TCWinPopupTimer;
-    RolloverWin  *m_pTCRolloverWin;
-    int           curs_x;
-    int           curs_y;
-    int           m_plot_type;
-    wxSize        m_tc_size;
-    wxPoint       m_position; // window ULC in screen coordinates
-    int           m_x;        // x coord of mouse click that launched window
-    int           m_y;        // y coord of mouse click that launched window
-    bool          m_created;
-    int           m_refDIM;
-    bool          m_bcompactText;
-    int           m_tsx;      // test button width
-    int           m_tsy;      // test button height
-    float         m_tcwin_scaler; // factor to scale TCWin and contents by
-    
-      IDX_entry   *pIDX;
-      wxButton    *OK_button;
-      wxButton    *NX_button;
-      wxButton    *PR_button;
+  wxTextCtrl *m_ptextctrl;
+  wxTimer m_TCWinPopupTimer;
+  RolloverWin *m_pTCRolloverWin;
+  int curs_x;
+  int curs_y;
+  int m_plot_type;
+  wxSize m_tc_size;
+  wxPoint m_position;  // window ULC in screen coordinates
+  int m_x;             // x coord of mouse click that launched window
+  int m_y;             // y coord of mouse click that launched window
+  bool m_created;
+  int m_refDIM;
+  bool m_bcompactText;
+  int m_tsx;             // test button width
+  int m_tsy;             // test button height
+  float m_tcwin_scaler;  // factor to scale TCWin and contents by
 
-      int         im;  // span of values to graph
-      int         ib;  // minimum value to graph
-      int         it;  // maximum value to graph
-      int         val_off; // offset
-      int         i_skip; // vertical stride in graph
-      wxRect    m_graph_rect;
+  IDX_entry *pIDX;
+  wxButton *OK_button;
+  wxButton *NX_button;
+  wxButton *PR_button;
+  wxChoice *m_choiceTimezone;
+  int m_tzoneDisplay;
 
+  int im;       // span of values to graph
+  int ib;       // minimum value to graph
+  int it;       // maximum value to graph
+  int val_off;  // offset
+  int i_skip;   // vertical stride in graph
+  wxRect m_graph_rect;
 
-      float       tcv[26];
-      time_t      tt_tcv[26];
-      
-      wxListCtrl  *m_tList ;
-      bool        btc_valid;
-      ChartCanvas    *pParent;
-      int         m_corr_mins;
-      wxString    m_stz;
-      int         m_t_graphday_00_at_station;
-      wxDateTime  m_graphday;
-      int         m_plot_y_offset;
+  float tcv[26];
+  time_t tt_tcv[26];
 
-      SplineList  m_sList;
+  wxListCtrl *m_tList;
+  bool btc_valid;
+  ChartCanvas *pParent;
+  int m_stationOffset_mins;
+  int m_diff_mins;
+  wxString m_stz;
+  int m_t_graphday_GMT;
+  wxDateTime m_graphday;
+  int m_plot_y_offset;
 
-      wxFont *pSFont;
-      wxFont *pSMFont;
-      wxFont *pMFont;
-      wxFont *pLFont;
+  SplineList m_sList;
 
-      wxPen *pblack_1;
-      wxPen *pblack_2;
-      wxPen *pblack_3;
-      wxPen *pblack_4;
-      wxPen *pred_2;
-      wxBrush *pltgray;
-      wxBrush *pltgray2;
+  wxFont *pSFont;
+  wxFont *pSMFont;
+  wxFont *pMFont;
+  wxFont *pLFont;
 
-      int         m_button_height;
-      
-      int xSpot;
-      int ySpot;
+  wxPen *pblack_1;
+  wxPen *pblack_2;
+  wxPen *pblack_3;
+  wxPen *pblack_4;
+  wxPen *pred_2;
+  wxBrush *pltgray;
+  wxBrush *pltgray2;
 
-DECLARE_EVENT_TABLE()
+  int m_button_height;
+
+  int xSpot;
+  int ySpot;
+
+  DECLARE_EVENT_TABLE()
 };
-
 
 #endif

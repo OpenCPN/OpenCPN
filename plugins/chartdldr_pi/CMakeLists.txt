@@ -42,8 +42,8 @@ SET(SRC_CHARTDLDR
             src/icons.cpp
             src/chartdldrgui.h
             src/chartdldrgui.cpp
-            src/checkedlistctrl.cpp
-            src/checkedlistctrl.h
+#            src/checkedlistctrl.cpp
+#            src/checkedlistctrl.h
             src/base64.h
             src/chartcatalog.cpp
             src/chartcatalog.h
@@ -51,7 +51,7 @@ SET(SRC_CHARTDLDR
             src/pugixml.hpp
             src/pugixml.cpp
 )
-            
+
 IF(QT_ANDROID)
     SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
     SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
@@ -113,6 +113,20 @@ IF(CMAKE_HOST_WIN32)
   LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin")
 ENDIF()
 
+OPTION(OCPN_USE_CHART_LIST "Use wxDATAVIEWLISTCTRL for chart downloader" OFF)
+IF(MSVC)
+  set(OCPN_USE_CHART_LIST ON)
+ENDIF(MSVC)
+
+IF (wxWidgets_VERSION_STRING GREATER 2.9)
+  IF (OCPN_USE_CHART_LIST)
+    ADD_DEFINITIONS(-DCHART_LIST)
+    message(STATUS "chartdldr_pi: Building with wxDATAVIEWLISTCTRL chart listing")
+  ELSE(wxWidgets_VERSION_STRING GREATER 2.9)
+    message(STATUS "chartdldr_pi: Building without wxDATAVIEWLISTCTRL chart listing")
+  ENDIF (OCPN_USE_CHART_LIST)
+ENDIF(wxWidgets_VERSION_STRING GREATER 2.9)
+
 OPTION(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives instead of libarchive" ON)
 IF(CHARTDLDR_USE_UNARR)
     ADD_DEFINITIONS(-DCHARTDLDR_RAR_UNARR)
@@ -120,7 +134,35 @@ ENDIF()
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
-FIND_PACKAGE(LibArchive)
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
+
+if (QT_ANDROID)
+  target_include_directories(${PACKAGE_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
+  target_link_libraries(${PACKAGE_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
+elseif ( APPLE )
+    if (OCPN_USE_SYSTEM_LIBARCHIVE)
+        list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+        find_package(LibArchive REQUIRED)
+        target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+        target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+        # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
+        set(LIBARCHIVE_COMMENT_START "<!--")
+        set(LIBARCHIVE_COMMENT_END "-->")
+    else()
+        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
+        set( LibArchive_INCLUDE_DIRS /opt/local/include)
+        set( LibArchive_LIBRARIES /opt/local/lib/libarchive.dylib)
+        set( LibArchive_FOUND 1)
+    endif()
+else ()
+  find_package(LibArchive REQUIRED)
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+endif (QT_ANDROID)
+
+#FIND_PACKAGE(LibArchive)
 IF(LibArchive_FOUND)
   message(STATUS "chartdldr_pi: going to use LibArchive...")
   message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
@@ -149,8 +191,6 @@ IF(QT_ANDROID)
   ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
 ENDIF(QT_ANDROID)
 
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
-
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: This is to broad, needs better handling after 5.0.0
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-overloaded-virtual)
@@ -158,7 +198,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unused-variable)
 endif ()
 
-IF (UNARR_LIBRARIES)
+IF (UNARR_LIBRARIES AND NOT USE_BUNDLED_UNARR)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${UNARR_LIBRARIES})
 ENDIF()
 
@@ -186,23 +226,23 @@ ENDIF(LibArchive_FOUND)
 #target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
 
 IF (NOT QT_ANDROID )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
     ${wxWidgets_LIBRARIES}
     ocpn::wxjson
     ocpn::wxsvg
-    ocpn::opencpn 
+    ocpn::opencpn
 )
 ELSE (NOT QT_ANDROID )
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
-    ocpn::wxjson 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so 
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so 
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
+    ocpn::wxjson
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
     ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
-    "-lz" 
+    "-lz"
   )
-  
+
   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
   #SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
 ENDIF(NOT QT_ANDROID)
@@ -216,6 +256,26 @@ IF( APPLE )
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
+
+# Copy shared library to execution folder for debugging if not CI build
+if (NOT OCPN_CI_BUILD)
+  if (MSVC)
+    add_custom_command(
+      TARGET ${PACKAGE_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+    )
+      if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        add_custom_command(
+          TARGET ${PACKAGE_NAME} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+          COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+          COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+        )
+      endif ()
+  endif (MSVC)
+endif (NOT OCPN_CI_BUILD)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

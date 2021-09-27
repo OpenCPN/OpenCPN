@@ -16,7 +16,7 @@ set(SRC
     include/wx/jsonreader.h
     include/wx/jsonval.h
     include/wx/jsonwriter.h
-)   
+)
 
 if (NOT wxWidgets_INCLUDE_DIRS)
     include(SimpleWxConfig)

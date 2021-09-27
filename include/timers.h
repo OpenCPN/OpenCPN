@@ -25,19 +25,19 @@
 #ifndef __TIMERS_H__
 #define __TIMERS_H__
 
-#define RESCALE_TIMER     1
-#define PAN_TIMER         2
-#define CURTRACK_TIMER    3
-#define ROT_TIMER         4
-#define ROPOPUP_TIMER     5
-#define TCWININF_TIMER    6
-#define ROLLOVER_TIMER    7
-#define MOVEMENT_TIMER    8
-#define MOVEMENT_STOP_TIMER      9
-#define DBLCLICK_TIMER   10
-#define POPUP_TIMER      11
+#define RESCALE_TIMER 1
+#define PAN_TIMER 2
+#define CURTRACK_TIMER 3
+#define ROT_TIMER 4
+#define ROPOPUP_TIMER 5
+#define TCWININF_TIMER 6
+#define ROLLOVER_TIMER 7
+#define MOVEMENT_TIMER 8
+#define MOVEMENT_STOP_TIMER 9
+#define DBLCLICK_TIMER 10
+#define POPUP_TIMER 11
 #define MOUSEWHEEL_TIMER 12
 #define DEFERRED_FOCUS_TIMER 13
-#define ROUTEFINISH_TIMER  14
+#define ROUTEFINISH_TIMER 14
 
 #endif

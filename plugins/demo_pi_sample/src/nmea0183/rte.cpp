@@ -45,7 +45,7 @@ RTE::RTE()
 {
    m_complete_char = 'c';
    m_skip_checksum = 0;
-   
+
    Mnemonic = _T("RTE");
    Empty();
 }
@@ -74,7 +74,7 @@ bool RTE::Parse( const SENTENCE& sentence )
    /*
    ** RTE - Routes
    **
-   **        1   2   3 4	 5		       x    n
+   **        1   2   3 4     5             x    n
    **        |   |   | |    |           |    |
    ** $--RTE,x.x,x.x,a,c--c,c--c, ..... c--c*hh<CR><LF>
    **

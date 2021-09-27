@@ -131,7 +131,7 @@ void DDFField::Dump( FILE * fp )
     fprintf( fp, "      DataSize = %d\n", nDataSize );
 
     fprintf( fp, "      Data = \n" );
-    
+
     int il = 0;
     for( int i = 0; i < std::min(nDataSize,1000); i++ )
     {
@@ -144,7 +144,7 @@ void DDFField::Dump( FILE * fp )
                 fprintf( fp, "\n" );
                 il = 0;
             }
-            
+
     }
 
     if( nDataSize > 1000 )
@@ -385,7 +385,7 @@ const char *DDFField::GetInstanceData( int nInstance,
                                         nInstance );
         poLastSubfield->GetDataLength( pachLastData, nBytesRemaining2,
                                        &nLastSubfieldWidth );
-        
+
         if((pachLastData[nLastSubfieldWidth-1] == 0) && (pachLastData[nLastSubfieldWidth - 2] == DDF_FIELD_TERMINATOR))
             nLastSubfieldWidth -= 2;
 

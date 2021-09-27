@@ -28,14 +28,14 @@
 #include <wx/string.h>
 #include <wx/list.h>
 
-class Hyperlink // toh, 2009.02.14
+class Hyperlink  // toh, 2009.02.14
 {
-      public:
-            wxString DescrText;
-            wxString Link;
-            wxString LType;
+public:
+  wxString DescrText;
+  wxString Link;
+  wxString LType;
 };
 
-WX_DECLARE_LIST(Hyperlink, HyperlinkList);// establish class as list member
+WX_DECLARE_LIST(Hyperlink, HyperlinkList);  // establish class as list member
 
 #endif

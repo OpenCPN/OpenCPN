@@ -76,7 +76,7 @@ private:
     int m_maxglyphw;
     int m_maxglyphh;
     bool m_built;
-    
+
     float m_dx;
     float m_dy;
 };

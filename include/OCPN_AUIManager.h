@@ -1,5 +1,5 @@
 /***************************************************************************
- * 
+ *
  * Project:  OpenCPN
  * Purpose:  OCPN_AUIManager
  * Author:   David Register
@@ -24,27 +24,26 @@
  **************************************************************************/
 
 #ifndef WX_PRECOMP
-    #include "wx/wx.h"
+#include "wx/wx.h"
 #endif
 
 #include <wx/aui/aui.h>
 
-class OCPN_AUIManager : public wxAuiManager
-{
+class OCPN_AUIManager : public wxAuiManager {
 public:
-    OCPN_AUIManager(wxWindow* managed_wnd = NULL, unsigned int flags = wxAUI_MGR_DEFAULT);
-    ~OCPN_AUIManager();
- 
-    void OnMotionx(wxMouseEvent& event);
-    bool DoEndResizeAction(wxMouseEvent& event);
-    void OnLeftUp(wxMouseEvent& event);
-    bool ProcessDockResult(wxAuiPaneInfo& target, const wxAuiPaneInfo& new_pos);
+  OCPN_AUIManager(wxWindow* managed_wnd = NULL,
+                  unsigned int flags = wxAUI_MGR_DEFAULT);
+  ~OCPN_AUIManager();
 
-    wxAuiDockInfo* FindDock(wxAuiPaneInfo &pane);
-    void SetDockSize( wxAuiDockInfo *d, int size);
-    
-    wxRect  m_0actionHintRect;
-    
-    DECLARE_EVENT_TABLE()
-    
+  void OnMotionx(wxMouseEvent& event);
+  bool DoEndResizeAction(wxMouseEvent& event);
+  void OnLeftUp(wxMouseEvent& event);
+  bool ProcessDockResult(wxAuiPaneInfo& target, const wxAuiPaneInfo& new_pos);
+
+  wxAuiDockInfo* FindDock(wxAuiPaneInfo& pane);
+  void SetDockSize(wxAuiDockInfo* d, int size);
+
+  wxRect m_0actionHintRect;
+
+  DECLARE_EVENT_TABLE()
 };

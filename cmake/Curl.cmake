@@ -1,9 +1,9 @@
 ##---------------------------------------------------------------------------
 ## Author:      Pavel Kalian, Sean D'Epagnier
-## Copyright:   
+## Copyright:
 ## License:     GPLv3+
-## 
-## Invoke with windows libs available in ${PROJECT_SOURCE_DIR}/buildwin/ 
+##
+## Invoke with windows libs available in ${PROJECT_SOURCE_DIR}/buildwin/
 ## After invocation defines:
 ##    CURL_INCLUDE_DIRS   - headers location
 ##    CURL_LIBRARIES      - libraries, full path(s).
@@ -44,7 +44,7 @@ IF(CMAKE_HOST_WIN32)
     SET(CURL_LIBRARIES WIN32_LIBCURL)
     INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
   ENDIF(MSVC)
-    
+
   set(CURL_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/buildwin/include)
   SET(CURL_FOUND 1)
 ENDIF(CMAKE_HOST_WIN32)

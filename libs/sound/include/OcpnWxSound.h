@@ -31,11 +31,11 @@
 
 /**
  * Sound backend based on wxWidget's wxSound class. On Linux, this seems
- * to be broken -- at a minimum it requires the old OSS API which on 
+ * to be broken -- at a minimum it requires the old OSS API which on
  * pulseaudio platforms means to have the osspd service running. Even so,
  * there seems to be many quirks here.
  *
- * However, the backend might possibly work on MacOS and/or Windows. 
+ * However, the backend might possibly work on MacOS and/or Windows.
  * Supports synchronous and asynchronous mode.
  *
  */

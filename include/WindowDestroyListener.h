@@ -25,10 +25,9 @@
 #ifndef __WINDOWDESTROYLISTENER_H__
 #define __WINDOWDESTROYLISTENER_H__
 
-class WindowDestroyListener
-{
-    public:
-        virtual void DestroyWindow() = 0;
+class WindowDestroyListener {
+public:
+  virtual void DestroyWindow() = 0;
 };
 
 #endif

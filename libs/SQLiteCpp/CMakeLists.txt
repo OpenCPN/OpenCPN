@@ -30,7 +30,7 @@ add_library(ocpn::sqlite_cpp ALIAS SQLITE_CPP)
 
 target_link_libraries(SQLITE_CPP PRIVATE ocpn::sqlite)
 
-target_include_directories(SQLITE_CPP 
+target_include_directories(SQLITE_CPP
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3
     PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
