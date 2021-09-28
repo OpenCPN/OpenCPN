@@ -1220,9 +1220,9 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
     }
 
     // Safe mode? If so, refuse to load.
-    if (safe_mode::get_mode()) {
-      continue;
-    }
+    //if (safe_mode::get_mode()) {
+    //  continue;
+    //}
 
     PlugInContainer *pic = NULL;
     wxStopWatch sw;
@@ -1240,10 +1240,18 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
         pic->m_plugin_filename = plugin_file;
         pic->m_plugin_modification = plugin_modification;
         pic->m_bEnabled = enabled;
+
+        if (safe_mode::get_mode()) {
+          pic->m_bEnabled = false;
+          pConfig->Write(_T ( "bEnabled" ), false);
+          pConfig->Flush();
+        }
+
         if (pic->m_bEnabled) {
           wxStopWatch sw;
           pic->m_cap_flag = pic->m_pplugin->Init();
           pic->m_bInitState = true;
+
           if (g_options) {
             if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)) {
               if (!pic->m_bToolboxPanel) NotifySetupOptionsPlugin(pic);
