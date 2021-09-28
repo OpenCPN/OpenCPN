@@ -81,6 +81,12 @@
 #include <unistd.h>
 #endif
 
+#ifdef __linux__
+#include <termios.h>
+#include <linux/serial.h>
+#endif
+
+
 #ifdef __WXMSW__
 #include <windows.h>
 #include <setupapi.h>
@@ -517,6 +523,35 @@ wxArrayString* EnumerateSerialPorts(void) {
 
 #else  // Linux...
 
+
+int paternFilter(const struct dirent *dir) {
+  static const std::vector<std::string> devPatern = {
+      "ttyUSB", "ttyACM", "ttyGPS", "refcom"
+  };
+
+  bool found = false;
+  const std::string device(dir->d_name);
+  for (auto patern : devPatern) {
+    if (device.find(patern) != std::string::npos) {
+      found = true;
+      break;
+    }
+  }
+  if (!found) return 0;
+
+  auto path = std::string("/dev/") + device;
+  int fd = open(path.c_str(), O_RDWR | O_NDELAY | O_NOCTTY);
+  if (fd >= 0) {
+    // device name is pointing to a real device
+    close(fd);
+    return 1;
+  }
+
+  // file is not valid
+  wxLogDebug("Cannot open device %s: %s", path.c_str(), strerror(fd));
+  return 0;
+}
+
 wxArrayString* EnumerateSerialPorts(void) {
   wxArrayString* preturn = new wxArrayString;
 #ifdef OCPN_USE_NEWSERIAL
@@ -532,14 +567,14 @@ wxArrayString* EnumerateSerialPorts(void) {
   }
 
 #else  // OPCN_USE_NEWSERIAL
+/*
+ *     Enumerate all the serial ports on the system
+ *
+ *     wxArrayString *EnumerateSerialPorts(void)
 
-  // Initialize the pattern table
-  if (devPatern[0] == NULL) {
-    paternAdd("ttyUSB");
-    paternAdd("ttyACM");
-    paternAdd("ttyGPS");
-    paternAdd("refcom");
-  }
+ *     Very system specific, unavoidably.
+ */
+
 
   //  Looking for user privilege openable devices in /dev
   //  Fulup use scandir to improve user experience and support new generation of
