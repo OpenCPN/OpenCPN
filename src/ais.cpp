@@ -142,7 +142,7 @@ wxString ais_get_type(int index) {
       _("Towing Vessel"),                             // 31        1
       _("Towing Vessel, Long"),                       // 32        2
       _("Dredger"),                                   // 33        3
-      _("Diving Vessel"),                             // 34        4
+      _("Diving Ops Vessel"),                         // 34        4
       _("Military Vessel"),                           // 35        5
       _("Sailing Vessel"),                            // 36        6
       _("Pleasure craft"),                            // 37        7
