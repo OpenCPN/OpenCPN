@@ -1,6 +1,8 @@
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Tue, 28 Sep 2021 09:35:26 +0200
-Subject: Finalize Refactoring of ser_ports/chart1
+Subject: Finalize refactoring of ser_ports/chart1
+
+Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2402
 
 ---
  src/chart1.cpp    | 80 -------------------------------------------------------

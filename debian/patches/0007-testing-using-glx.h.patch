@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 15 Feb 2021 12:46:13 +0100
 Subject: testing using glx.h
 
+Forwarded: no   This patch is too dirty to be applied upstream
+
 ---
  src/glChartCanvas.cpp | 2 ++
  1 file changed, 2 insertions(+)
