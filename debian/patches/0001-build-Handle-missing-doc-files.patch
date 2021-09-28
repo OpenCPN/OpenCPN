@@ -10,9 +10,9 @@ Not acceptable upstream.
 
 Forwarded: not-needed
 ---
- CMakeLists.txt     |  8 ++++----
- data/help_web.html | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+), 4 deletions(-)
+ CMakeLists.txt                                |  8 ++---
+ data/help_web.html                            | 51 +++++++++++++++++++++++++++
+ 3 files changed, 55 insertions(+), 27 deletions(-)
  create mode 100644 data/help_web.html
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt

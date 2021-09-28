@@ -3,7 +3,6 @@ Date: Tue, 28 Sep 2021 00:15:35 +0200
 Subject: CMakeLists: Don't apply patch for outdated cmake unless required.
 
 Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2401
-
 ---
  CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
