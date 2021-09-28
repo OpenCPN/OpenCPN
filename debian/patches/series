@@ -3,3 +3,4 @@
 0007-testing-using-glx.h.patch
 0004-build-chartdldr-Dont-use-sRC_UNARR-unless-initialize.patch
 0005-CMakeLists-Don-t-apply-patch-for-outdated-cmake-unle.patch
+0006-Finalize-Refactoring-of-ser_ports-chart1.patch
