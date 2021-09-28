@@ -7647,7 +7647,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 m_FinishRouteOnKillFocus = false;
                 if (m_routeState == 1) {  // first point in new route, preceeding route to be added?  Not touch case
 
-                  wxString dmsg = _("Insert (part of) this route in the new route?");
+                  wxString dmsg = _("Insert first part of this route in the new route?");
                   if(tail->GetIndexOf(pMousePoint) == tail->GetnPoints())  //Starting on last point of another route?
                     dmsg = _("Insert this route in the new route?");
 
@@ -7662,7 +7662,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   }
                 }
                 else {
-                  wxString dmsg = _("Append (part of) this route to the new route?");
+                  wxString dmsg = _("Append last part of this route to the new route?");
                   if(tail->GetIndexOf(pMousePoint) == 1)
                     dmsg = _("Append this route to the new route?");   // Picking the first point of another route?
 
@@ -8193,7 +8193,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 m_FinishRouteOnKillFocus = false;
                 if (m_routeState == 1) {  // first point in new route, preceeding route to be added?  touch case
 
-                  wxString dmsg = _("Insert (part of) this route in the new route?");
+                  wxString dmsg = _("Insert first part of this route in the new route?");
                   if(tail->GetIndexOf(pMousePoint) == tail->GetnPoints())  //Starting on last point of another route?
                     dmsg = _("Insert this route in the new route?");
 
@@ -8208,7 +8208,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   }
                 }
                 else {
-                  wxString dmsg = _("Append (part of) this route to the new route?");
+                  wxString dmsg = _("Append last part of this route to the new route?");
                   if(tail->GetIndexOf(pMousePoint) == 1)
                     dmsg = _("Append this route to the new route?");   // Picking the first point of another route?
 
@@ -8633,7 +8633,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     if (index_last == index_current_route) {// we are dragging the last point of the route
                       if( connect != tail->GetnPoints()){     // anything to do?
 
-                        wxString dmsg(_("(Part of) Route to be appended to dragged route?") );
+                        wxString dmsg(_("Last part of route to be appended to dragged route?") );
                         if(connect == 1)
                           dmsg = _("Full route to be appended to dragged route?");
 
@@ -8647,7 +8647,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     else if (index_current_route == 1) {  // dragging the first point of the route
                       if(connect != 1){       // anything to do?
 
-                        wxString dmsg(_("(Part of) Route to be inserted into dragged route?"));
+                        wxString dmsg(_("First part of route to be inserted into dragged route?"));
                         if(connect == tail->GetnPoints())
                           dmsg = _("Full route to be inserted into dragged route?");
 
@@ -8866,7 +8866,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     if (index_last == index_current_route) {// we are dragging the last point of the route
                       if( connect != tail->GetnPoints()){     // anything to do?
 
-                        wxString dmsg(_("(Part of) Route to be appended to dragged route?") );
+                        wxString dmsg(_("Last part of route to be appended to dragged route?") );
                         if(connect == 1)
                           dmsg = _("Full route to be appended to dragged route?");
 
@@ -8880,7 +8880,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     else if (index_current_route == 1) {  // dragging the first point of the route
                       if(connect != 1){       // anything to do?
 
-                        wxString dmsg(_("(Part of) Route to be inserted into dragged route?"));
+                        wxString dmsg(_("First part of route to be inserted into dragged route?"));
                         if(connect == tail->GetnPoints())
                           dmsg = _("Full route to be inserted into dragged route?");
 
