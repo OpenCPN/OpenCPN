@@ -1,63 +1,64 @@
-##---------------------------------------------------------------------------
-## Author:      Pavel Kalian
-## Copyright:   2014
-## License:     GPLv2 License
-##---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Author:      Pavel Kalian Copyright:   2014 License:     GPLv2 License
+# ---------------------------------------------------------------------------
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
-CMAKE_POLICY(SET CMP0043 NEW)
+cmake_minimum_required(VERSION 3.1.1)
+cmake_policy(SET CMP0043 NEW)
 
-PROJECT(chartdldr_pi)
+project(chartdldr_pi)
 
-SET(PACKAGE_NAME chartdldr_pi)
-SET(VERBOSE_NAME ChartDownloader)
-SET(TITLE_NAME ChartDownloader)
-SET(CPACK_PACKAGE_CONTACT "Pavel Kalian")
+set(PACKAGE_NAME chartdldr_pi)
+set(VERBOSE_NAME ChartDownloader)
+set(TITLE_NAME ChartDownloader)
+set(CPACK_PACKAGE_CONTACT "Pavel Kalian")
 
-SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "4")
-SET(VERSION_PATCH "0")
-SET(VERSION_DATE "2019-12-09")
+set(VERSION_MAJOR "1")
+set(VERSION_MINOR "4")
+set(VERSION_PATCH "0")
+set(VERSION_DATE "2019-12-09")
 
-IF( NOT CMAKE_BUILD_TYPE )
-  SET( CMAKE_BUILD_TYPE Release CACHE STRING
-       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-       FORCE )
-ENDIF( NOT CMAKE_BUILD_TYPE )
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE
+      Release
+      CACHE
+        STRING
+        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+        FORCE
+  )
+endif (NOT CMAKE_BUILD_TYPE)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
-MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-#SET(CMAKE_BUILD_TYPE Debug)
-SET(CMAKE_MACOSX_RPATH "ON")
+# SET(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_MACOSX_RPATH "ON")
 
-INCLUDE("cmake/PluginConfigure.cmake")
+include("cmake/PluginConfigure.cmake")
 
-SET(SRC_CHARTDLDR
-            src/chartdldr_pi.h
-            src/chartdldr_pi.cpp
-            src/icons.h
-            src/icons.cpp
-            src/chartdldrgui.h
-            src/chartdldrgui.cpp
-#            src/checkedlistctrl.cpp
-#            src/checkedlistctrl.h
-            src/base64.h
-            src/chartcatalog.cpp
-            src/chartcatalog.h
-            src/pugiconfig.hpp
-            src/pugixml.hpp
-            src/pugixml.cpp
+set(SRC_CHARTDLDR
+    src/chartdldr_pi.h
+    src/chartdldr_pi.cpp
+    src/icons.h
+    src/icons.cpp
+    src/chartdldrgui.h
+    src/chartdldrgui.cpp
+    # src/checkedlistctrl.cpp src/checkedlistctrl.h
+    src/base64.h
+    src/chartcatalog.cpp
+    src/chartcatalog.h
+    src/pugiconfig.hpp
+    src/pugixml.hpp
+    src/pugixml.cpp
 )
 
-IF(QT_ANDROID)
-    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
-    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
-ENDIF(QT_ANDROID)
+if (QT_ANDROID)
+  set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.h)
+  set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
+endif (QT_ANDROID)
 
-SET(SRC_UNARR
+set(SRC_UNARR
     src/unarr/common/conv.c
     src/unarr/common/crc32.c
     src/unarr/common/custalloc.c
@@ -101,182 +102,211 @@ SET(SRC_UNARR
     src/unarr/zip/inflate.h
 )
 
-IF(APPLE)
-  #Homebrew does not link libarchive to /usr/local by default to avoid conflict with the system-wide one (which in turn does not provide includes...)
-  #We do not want the systemwide vrsion as it is too old and misses support for many archive formats
-  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
-ENDIF()
+if (APPLE)
+  # Homebrew does not link libarchive to /usr/local by default to avoid conflict
+  # with the system-wide one (which in turn does not provide includes...) We do
+  # not want the systemwide vrsion as it is too old and misses support for many
+  # archive formats
+  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
+endif ()
 
-IF(CMAKE_HOST_WIN32)
-  LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
-  LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin")
-ENDIF()
+if (CMAKE_HOST_WIN32)
+  list(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
+  list(APPEND CMAKE_PREFIX_PATH "../../buildwin")
+endif ()
 
-OPTION(OCPN_USE_CHART_LIST "Use wxDATAVIEWLISTCTRL for chart downloader" OFF)
-IF(MSVC)
+option(OCPN_USE_CHART_LIST "Use wxDATAVIEWLISTCTRL for chart downloader" OFF)
+if (MSVC)
   set(OCPN_USE_CHART_LIST ON)
-ENDIF(MSVC)
+endif (MSVC)
 
-IF (wxWidgets_VERSION_STRING GREATER 2.9)
-  IF (OCPN_USE_CHART_LIST)
-    ADD_DEFINITIONS(-DCHART_LIST)
-    message(STATUS "chartdldr_pi: Building with wxDATAVIEWLISTCTRL chart listing")
-  ELSE(wxWidgets_VERSION_STRING GREATER 2.9)
-    message(STATUS "chartdldr_pi: Building without wxDATAVIEWLISTCTRL chart listing")
-  ENDIF (OCPN_USE_CHART_LIST)
-ENDIF(wxWidgets_VERSION_STRING GREATER 2.9)
+if (wxWidgets_VERSION_STRING GREATER 2.9)
+  if (OCPN_USE_CHART_LIST)
+    add_definitions(-DCHART_LIST)
+    message(
+      STATUS "chartdldr_pi: Building with wxDATAVIEWLISTCTRL chart listing"
+    )
+  else (wxWidgets_VERSION_STRING GREATER 2.9)
+    message(
+      STATUS "chartdldr_pi: Building without wxDATAVIEWLISTCTRL chart listing"
+    )
+  endif (OCPN_USE_CHART_LIST)
+endif (wxWidgets_VERSION_STRING GREATER 2.9)
 
-OPTION(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives instead of libarchive" ON)
-IF(CHARTDLDR_USE_UNARR)
-    ADD_DEFINITIONS(-DCHARTDLDR_RAR_UNARR)
-ENDIF()
+option(CHARTDLDR_USE_UNARR
+       "Use unarr to extract RAR archives instead of libarchive" ON
+)
+if (CHARTDLDR_USE_UNARR)
+  add_definitions(-DCHARTDLDR_RAR_UNARR)
+endif ()
 
-ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+add_definitions(-D_FILE_OFFSET_BITS=64)
 
-INCLUDE_DIRECTORIES(src/unarr/)
-PKG_SEARCH_MODULE(UNARR libunarr unarr)
-USE_BUNDLED_LIB(USE_BUNDLED_UNARR unarr)
-IF (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
-  message (STATUS "chartdldr_pi: Building with system unarr")
-  INCLUDE_DIRECTORIES(${UNARR_INCLUDE_DIR})
-  SET(SRC_UNARR  "")
-ELSE ()
-  message (STATUS "chartdldr_pi: Building with bundled unarr")
-  ADD_LIBRARY(UNARR ${SRC_UNARR})
-  INCLUDE_DIRECTORIES(src/unarr)
-ENDIF ()
+include_directories(src/unarr/)
+pkg_search_module(UNARR libunarr unarr)
+use_bundled_lib(USE_BUNDLED_UNARR unarr)
+if (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
+  message(STATUS "chartdldr_pi: Building with system unarr")
+  include_directories(${UNARR_INCLUDE_DIR})
+  set(SRC_UNARR "")
+else ()
+  message(STATUS "chartdldr_pi: Building with bundled unarr")
+  add_library(UNARR ${SRC_UNARR})
+  include_directories(src/unarr)
+endif ()
 
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
+add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 
 if (QT_ANDROID)
-  target_include_directories(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
-  target_link_libraries(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
-elseif ( APPLE )
-    if (OCPN_USE_SYSTEM_LIBARCHIVE)
-        list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-        find_package(LibArchive REQUIRED)
-        target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
-        target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-        # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
-        set(LIBARCHIVE_COMMENT_START "<!--")
-        set(LIBARCHIVE_COMMENT_END "-->")
-    else()
-        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
-        set( LibArchive_INCLUDE_DIRS /opt/local/include)
-        set( LibArchive_LIBRARIES /opt/local/lib/libarchive.dylib)
-        set( LibArchive_FOUND 1)
-    endif()
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include
+  )
+  target_link_libraries(
+    ${PACKAGE_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a
+  )
+elseif (APPLE)
+  if (OCPN_USE_SYSTEM_LIBARCHIVE)
+    list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+    find_package(LibArchive REQUIRED)
+    target_include_directories(
+      ${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS}
+    )
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+    # If we use system libarchive, we do not bundel the dylib and need to
+    # comment it out from the pkg project file
+    set(LIBARCHIVE_COMMENT_START "<!--")
+    set(LIBARCHIVE_COMMENT_END "-->")
+  else ()
+    # TODO This is a hack, due to the way libarchive is built and installed in
+    # CI build environment
+    set(LibArchive_INCLUDE_DIRS /opt/local/include)
+    set(LibArchive_LIBRARIES /opt/local/lib/libarchive.dylib)
+    set(LibArchive_FOUND 1)
+  endif ()
 else ()
   find_package(LibArchive REQUIRED)
   target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
 endif (QT_ANDROID)
 
-#FIND_PACKAGE(LibArchive)
-IF(LibArchive_FOUND)
+# FIND_PACKAGE(LibArchive)
+if (LibArchive_FOUND)
   message(STATUS "chartdldr_pi: going to use LibArchive...")
   message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
   message(STATUS "chartdldr_pi: " ${LibArchive_LIBRARIES})
-  INCLUDE_DIRECTORIES(${LibArchive_INCLUDE_DIRS})
-  #Unset the unrar sources as we will not need them
-  ADD_DEFINITIONS(-DDLDR_USE_LIBARCHIVE)
-ENDIF(LibArchive_FOUND)
+  include_directories(${LibArchive_INCLUDE_DIRS})
+  # Unset the unrar sources as we will not need them
+  add_definitions(-DDLDR_USE_LIBARCHIVE)
+endif (LibArchive_FOUND)
 
-IF(QT_ANDROID)
-  ADD_DEFINITIONS(-D__STDC_LIMIT_MACROS)
-  ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS)
-  ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
-ENDIF(QT_ANDROID)
+if (QT_ANDROID)
+  add_definitions(-D__STDC_LIMIT_MACROS)
+  add_definitions(-D__STDC_CONSTANT_MACROS)
+  add_definitions(
+    "-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression"
+  )
+endif (QT_ANDROID)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
-    # FIXME: This is to broad, needs better handling after 5.0.0
-    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-overloaded-virtual)
-    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas)
-    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unused-variable)
+  # FIXME: This is to broad, needs better handling after 5.0.0
+  target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-overloaded-virtual)
+  target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas)
+  target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unused-variable)
 endif ()
 
-IF (UNARR_LIBRARIES AND NOT USE_BUNDLED_UNARR)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${UNARR_LIBRARIES})
-ENDIF()
+if (UNARR_LIBRARIES AND NOT USE_BUNDLED_UNARR)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${UNARR_LIBRARIES})
+endif ()
 
-IF(LibArchive_FOUND)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-ELSE(LibArchive_FOUND)
-  #We do not have libarchive, try to make unarr more powerful...
-  #ADD_DEFINITIONS(-DHAVE_7Z) #TODO if we decide it is needed, quite a bit more work here
-  FIND_PACKAGE(ZLIB)
-  IF(ZLIB_FOUND)
-    ADD_DEFINITIONS(-DHAVE_ZLIB)
-    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARIES})
-  ENDIF(ZLIB_FOUND)
-  FIND_PACKAGE(BZip2)
-  IF(BZIP2_FOUND)
-    ADD_DEFINITIONS(-DHAVE_BZIP2)
-    INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIRS})
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
-  ENDIF(BZIP2_FOUND)
-ENDIF(LibArchive_FOUND)
+if (LibArchive_FOUND)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+else (LibArchive_FOUND)
+  # We do not have libarchive, try to make unarr more powerful...
+  # ADD_DEFINITIONS(-DHAVE_7Z) #TODO if we decide it is needed, quite a bit more
+  # work here
+  find_package(ZLIB)
+  if (ZLIB_FOUND)
+    add_definitions(-DHAVE_ZLIB)
+    include_directories(${ZLIB_INCLUDE_DIRS})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARIES})
+  endif (ZLIB_FOUND)
+  find_package(BZip2)
+  if (BZIP2_FOUND)
+    add_definitions(-DHAVE_BZIP2)
+    include_directories(${BZIP2_INCLUDE_DIRS})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
+  endif (BZIP2_FOUND)
+endif (LibArchive_FOUND)
 
-#TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
+# TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
 
-#target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
+# target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
 
-IF (NOT QT_ANDROID )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
-    ${wxWidgets_LIBRARIES}
-    ocpn::wxjson
-    ocpn::wxsvg
-    ocpn::opencpn
-)
-ELSE (NOT QT_ANDROID )
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
-    ocpn::wxjson
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
-    ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
-    "-lz"
+if (NOT QT_ANDROID)
+  target_link_libraries(
+    ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson ocpn::wxsvg
+                            ocpn::opencpn
+  )
+else (NOT QT_ANDROID)
+  target_link_libraries(
+    ${PACKAGE_NAME}
+    PRIVATE ocpn::wxjson
+            ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+            ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
+            ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
+            ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+            ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
+            "-lz"
   )
 
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
-  #SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
-ENDIF(NOT QT_ANDROID)
+  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
+  # SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
+endif (NOT QT_ANDROID)
 
-IF( APPLE )
-    target_compile_options(${PACKAGE_NAME} PRIVATE
-        "-Wall" "-Wno-unused" "-fexceptions"
-        "-Wno-overloaded-virtual"
-        "-Wno-deprecated" "-Wno-deprecated-declarations"
-        "-Wno-unknown-pragmas"
-        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
-    )
-ENDIF(APPLE)
+if (APPLE)
+  target_compile_options(
+    ${PACKAGE_NAME}
+    PRIVATE "-Wall"
+            "-Wno-unused"
+            "-fexceptions"
+            "-Wno-overloaded-virtual"
+            "-Wno-deprecated"
+            "-Wno-deprecated-declarations"
+            "-Wno-unknown-pragmas"
+            "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+  )
+endif (APPLE)
 
 # Copy shared library to execution folder for debugging if not CI build
 if (NOT OCPN_CI_BUILD)
   if (MSVC)
     add_custom_command(
-      TARGET ${PACKAGE_NAME} POST_BUILD
+      TARGET ${PACKAGE_NAME}
+      POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
-      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>"
+              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>"
+              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
     )
-      if (CMAKE_BUILD_TYPE MATCHES "Debug")
-        add_custom_command(
-          TARGET ${PACKAGE_NAME} POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
-          COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-          COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-        )
-      endif ()
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+      add_custom_command(
+        TARGET ${PACKAGE_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+        COMMAND
+          ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
+          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+        COMMAND
+          ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
+          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+      )
+    endif ()
   endif (MSVC)
 endif (NOT OCPN_CI_BUILD)
 
-INCLUDE("cmake/PluginInstall.cmake")
-INCLUDE("cmake/PluginLocalization.cmake")
-INCLUDE("cmake/PluginPackage.cmake")
+include("cmake/PluginInstall.cmake")
+include("cmake/PluginLocalization.cmake")
+include("cmake/PluginPackage.cmake")

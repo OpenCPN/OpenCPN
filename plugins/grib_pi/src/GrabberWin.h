@@ -29,9 +29,9 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include "GribUIDialog.h"
 
@@ -42,19 +42,19 @@ class GribSpacerWin;
 // GrabberWindow Definition
 //----------------------------------------------------------------------------
 
-class GribGrabberWin: public wxPanel
-{
+class GribGrabberWin : public wxPanel {
 public:
-    GribGrabberWin( wxWindow *parent );
-    void OnPaint( wxPaintEvent& event );
-    void Size( double factor );
+  GribGrabberWin(wxWindow* parent);
+  void OnPaint(wxPaintEvent& event);
+  void Size(double factor);
+
 private:
-    void OnMouseEvent( wxMouseEvent& event );
+  void OnMouseEvent(wxMouseEvent& event);
 
-    wxBitmap m_bitmap;
-    bool m_bLeftDown;
+  wxBitmap m_bitmap;
+  bool m_bLeftDown;
 
-DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
 
 #endif

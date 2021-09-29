@@ -32,13 +32,13 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include "instrument.h"
@@ -46,35 +46,32 @@
 // Required for struct SAT_INFO
 #include "nmea0183/SatInfo.h"
 
-class DashboardInstrument_GPS: public DashboardInstrument
-{
-      public:
-            DashboardInstrument_GPS( wxWindow *parent, wxWindowID id, wxString title);
+class DashboardInstrument_GPS : public DashboardInstrument {
+public:
+  DashboardInstrument_GPS(wxWindow* parent, wxWindowID id, wxString title);
 
-            ~DashboardInstrument_GPS(void){}
+  ~DashboardInstrument_GPS(void) {}
 
-            wxSize GetSize( int orient, wxSize hint );
-            void SetData(DASH_CAP, double, wxString) {};
-            void SetSatInfo(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
+  wxSize GetSize(int orient, wxSize hint);
+  void SetData(DASH_CAP, double, wxString){};
+  void SetSatInfo(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
 
-      private:
-
-      protected:
+private:
+protected:
 #define GNSS_SYSTEM 6
-            int m_cx, m_cy, m_radius, m_refDim, m_scaleDelta, m_scaleBase;
-            int m_SatCount;
-            wxString talkerID;
-            SAT_INFO m_SatInfo[12];
-            bool b_shift;
-            wxDateTime m_lastShift;
-            wxDateTime m_Gtime[GNSS_SYSTEM];
-            int m_iMaster;
-            wxString s_gTalker;
-            void Draw(wxGCDC* dc);
-            void DrawFrame(wxGCDC* dc);
-            void DrawBackground(wxGCDC* dc);
-            void DrawForeground(wxGCDC* dc);
+  int m_cx, m_cy, m_radius, m_refDim, m_scaleDelta, m_scaleBase;
+  int m_SatCount;
+  wxString talkerID;
+  SAT_INFO m_SatInfo[12];
+  bool b_shift;
+  wxDateTime m_lastShift;
+  wxDateTime m_Gtime[GNSS_SYSTEM];
+  int m_iMaster;
+  wxString s_gTalker;
+  void Draw(wxGCDC* dc);
+  void DrawFrame(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc);
+  void DrawForeground(wxGCDC* dc);
 };
 
-#endif // __GPS_H__
-
+#endif  // __GPS_H__

@@ -32,40 +32,44 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include "instrument.h"
 
-class DashboardInstrument_FromOwnship : public DashboardInstrument
-{
+class DashboardInstrument_FromOwnship : public DashboardInstrument {
 public:
-    DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, DASH_CAP cap_flag1=OCPN_DBP_STC_PLA, DASH_CAP cap_flag2=OCPN_DBP_STC_PLO,DASH_CAP cap_flag3=OCPN_DBP_STC_LAT,DASH_CAP cap_flag4=OCPN_DBP_STC_LON);
-    ~DashboardInstrument_FromOwnship(){}
+  DashboardInstrument_FromOwnship(wxWindow* pparent, wxWindowID id,
+                                  wxString title,
+                                  DASH_CAP cap_flag1 = OCPN_DBP_STC_PLA,
+                                  DASH_CAP cap_flag2 = OCPN_DBP_STC_PLO,
+                                  DASH_CAP cap_flag3 = OCPN_DBP_STC_LAT,
+                                  DASH_CAP cap_flag4 = OCPN_DBP_STC_LON);
+  ~DashboardInstrument_FromOwnship() {}
 
-    void SetData(DASH_CAP st, double data, wxString unit);
-    wxSize GetSize( int orient, wxSize hint );
+  void SetData(DASH_CAP st, double data, wxString unit);
+  wxSize GetSize(int orient, wxSize hint);
 
 protected:
-    wxString          m_data1;
-    wxString          m_data2;
-    double            c_lat;
-    double            c_lon;
-    double            s_lat;
-    double            s_lon;
-    DASH_CAP          m_cap_flag1;
-    DASH_CAP          m_cap_flag2;
-    DASH_CAP          m_cap_flag3;
-    DASH_CAP          m_cap_flag4;
-    int               m_DataHeight;
+  wxString m_data1;
+  wxString m_data2;
+  double c_lat;
+  double c_lon;
+  double s_lat;
+  double s_lon;
+  DASH_CAP m_cap_flag1;
+  DASH_CAP m_cap_flag2;
+  DASH_CAP m_cap_flag3;
+  DASH_CAP m_cap_flag4;
+  int m_DataHeight;
 
-    void Draw(wxGCDC* dc);
+  void Draw(wxGCDC* dc);
 };
 
 #endif

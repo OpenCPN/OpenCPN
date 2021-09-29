@@ -28,9 +28,9 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include <wx/grid.h>
 #include "ocpn_plugin.h"
@@ -44,69 +44,70 @@ class GRIBTable;
 //------------------------------------------------------------------------------------
 //    A derived class from wxGrid
 //----------------------------------------------------------------------------------------------------------
-class CustomGrid: public wxGrid
-{
+class CustomGrid : public wxGrid {
 public:
+  CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+             const wxSize& size, long style, const wxString& name);
 
-    CustomGrid( wxWindow *parent, wxWindowID id, const wxPoint &pos,
-                const wxSize &size, long style,
-                const wxString &name );
+  ~CustomGrid();
 
-    ~CustomGrid();
+  void GetFirstVisibleCell(int& frow, int& fcol);
+  void GetLastVisibleCell(int& lrow, int& lcol);
+  void SetNumericalRow(int row, int col, int datatype, double value);
 
-    void GetFirstVisibleCell( int& frow, int& fcol );
-    void GetLastVisibleCell( int& lrow, int& lcol );
-    void SetNumericalRow( int row, int col, int datatype, double value );
-
-    GRIBTable* m_gParent;
+  GRIBTable* m_gParent;
 
 private:
-    void DrawColLabel( wxDC& dc, int col );
-    void DrawRowLabel( wxDC& dc, int row );
-    void DrawCornerLabel(wxDC & dc);
-    void OnScroll( wxScrollEvent& event );
-    void OnMouseEvent( wxMouseEvent& event );
-    void OnResize( wxSizeEvent& event );
-    void OnLabeClick( wxGridEvent& event);
-    void OnRefreshTimer( wxTimerEvent& event );
-    bool IsRowVisible( int row );
-    int  GetRowIndex( int row );
+  void DrawColLabel(wxDC& dc, int col);
+  void DrawRowLabel(wxDC& dc, int row);
+  void DrawCornerLabel(wxDC& dc);
+  void OnScroll(wxScrollEvent& event);
+  void OnMouseEvent(wxMouseEvent& event);
+  void OnResize(wxSizeEvent& event);
+  void OnLabeClick(wxGridEvent& event);
+  void OnRefreshTimer(wxTimerEvent& event);
+  bool IsRowVisible(int row);
+  int GetRowIndex(int row);
 
-    wxTimer m_tRefreshTimer;
-    wxColour m_greenColour;
-    wxColour m_greyColour;
+  wxTimer m_tRefreshTimer;
+  wxColour m_greenColour;
+  wxColour m_greyColour;
 
-    std::vector < std::vector <double> > m_NumRowVal;
-    std::vector <int> m_NumRow;
-    wxString m_IsDigit;
+  std::vector<std::vector<double> > m_NumRowVal;
+  std::vector<int> m_NumRow;
+  wxString m_IsDigit;
 
 #ifdef __WXOSX__
-    bool     m_bLeftDown;
+  bool m_bLeftDown;
 #endif
-
 };
 
 //----------------------------------------------------------------------------------------------------------
 //    A derived class from wxGridCellRenderer
 //----------------------------------------------------------------------------------------------------------
-class CustomRenderer : public wxGridCellRenderer
-{
+class CustomRenderer : public wxGridCellRenderer {
 public:
-    CustomRenderer( double dir, bool isdigit)
-        : wxGridCellRenderer(), m_dDir(dir), m_IsDigit(isdigit) {}
+  CustomRenderer(double dir, bool isdigit)
+      : wxGridCellRenderer(), m_dDir(dir), m_IsDigit(isdigit) {}
 
-    virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect, int row, int col, bool isSelected);
+  virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
+                    const wxRect& rect, int row, int col, bool isSelected);
 
-    wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row, int col) {
-        return wxSize(-1, -1);
-    }
-    wxGridCellRenderer *Clone() const { return new CustomRenderer(m_dDir, m_IsDigit);}
+  wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row,
+                     int col) {
+    return wxSize(-1, -1);
+  }
+  wxGridCellRenderer* Clone() const {
+    return new CustomRenderer(m_dDir, m_IsDigit);
+  }
 
 private:
-    void GetArrowsPoints( double si, double co, int di, int dj, int i, int j, int k, int l, double& ii, double& jj, double& kk, double& ll );
+  void GetArrowsPoints(double si, double co, int di, int dj, int i, int j,
+                       int k, int l, double& ii, double& jj, double& kk,
+                       double& ll);
 
-    double m_dDir;
-    bool m_IsDigit;
+  double m_dDir;
+  bool m_IsDigit;
 };
 
-#endif //__CUSTOMGRID_H__
+#endif  //__CUSTOMGRID_H__
