@@ -32,13 +32,13 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 // Warn: div by 0 if count == 1
@@ -46,29 +46,26 @@
 
 #include "instrument.h"
 
-class DashboardInstrument_Depth: public DashboardInstrument
-{
-      public:
-            DashboardInstrument_Depth( wxWindow *parent, wxWindowID id, wxString title);
+class DashboardInstrument_Depth : public DashboardInstrument {
+public:
+  DashboardInstrument_Depth(wxWindow* parent, wxWindowID id, wxString title);
 
-            ~DashboardInstrument_Depth(void){}
+  ~DashboardInstrument_Depth(void) {}
 
-            wxSize GetSize( int orient, wxSize hint );
-            void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint);
+  void SetData(DASH_CAP, double, wxString);
 
-      private:
+private:
+protected:
+  double m_ArrayDepth[DEPTH_RECORD_COUNT];
+  double m_MaxDepth;
+  double m_Depth;
+  wxString m_DepthUnit;
+  wxString m_Temp;
 
-      protected:
-            double m_ArrayDepth[DEPTH_RECORD_COUNT];
-            double m_MaxDepth;
-            double m_Depth;
-            wxString m_DepthUnit;
-            wxString m_Temp;
-
-            void Draw(wxGCDC* dc);
-            void DrawBackground(wxGCDC* dc);
-            void DrawForeground(wxGCDC* dc);
+  void Draw(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc);
+  void DrawForeground(wxGCDC* dc);
 };
 
-#endif // __DEPTH_H__
-
+#endif  // __DEPTH_H__

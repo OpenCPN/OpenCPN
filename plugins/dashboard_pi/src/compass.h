@@ -33,13 +33,13 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include "dial.h"
@@ -53,21 +53,19 @@
 //|    This class creates a compass style control
 //|
 //+------------------------------------------------------------------------------
-class DashboardInstrument_Compass: public DashboardInstrument_Dial
-{
-      public:
-            DashboardInstrument_Compass(wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag);
+class DashboardInstrument_Compass : public DashboardInstrument_Dial {
+public:
+  DashboardInstrument_Compass(wxWindow* parent, wxWindowID id, wxString title,
+                              DASH_CAP cap_flag);
 
-            ~DashboardInstrument_Compass(void){}
+  ~DashboardInstrument_Compass(void) {}
 
-            void SetData(DASH_CAP, double, wxString);
+  void SetData(DASH_CAP, double, wxString);
 
-      private:
-
-      protected:
-            void DrawBackground(wxGCDC* dc);
-            void DrawForeground(wxGCDC* dc);
+private:
+protected:
+  void DrawBackground(wxGCDC* dc);
+  void DrawForeground(wxGCDC* dc);
 };
 
-#endif // __Compass_H__
-
+#endif  // __Compass_H__

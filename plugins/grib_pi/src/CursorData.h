@@ -30,9 +30,9 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
+#ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif //precompiled headers
+#endif  // precompiled headers
 
 #include "GribUIDialogBase.h"
 #include "GribSettingsDialog.h"
@@ -44,29 +44,29 @@ class GribSpacerWin;
 //----------------------------------------------------------------------------------------------------------
 //    GRIB CtrlBar Specification
 //----------------------------------------------------------------------------------------------------------
-class CursorData: public CursorDataBase
-{
+class CursorData : public CursorDataBase {
 public:
+  CursorData(wxWindow *window, GRIBUICtrlBar &parent);
+  ~CursorData() {}
 
-    CursorData( wxWindow *window, GRIBUICtrlBar &parent );
-	~CursorData() {}
+  void OnCursorTrackTimer(wxTimerEvent &event) { UpdateTrackingControls(); }
+  void PopulateTrackingControls(bool vertical);
+  void UpdateTrackingControls();
+  void ResolveDisplayConflicts(int Id);
+  void OnMouseEvent(wxMouseEvent &event);
 
-    void OnCursorTrackTimer( wxTimerEvent & event) {UpdateTrackingControls();}
-	void PopulateTrackingControls( bool vertical );
-    void UpdateTrackingControls();
-    void ResolveDisplayConflicts( int Id );
-    void OnMouseEvent( wxMouseEvent &event );
+  wxTimer m_tCursorTrackTimer;
 
-    wxTimer m_tCursorTrackTimer;
 private:
-	void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, wxControl *ctrl4, bool show,
-            bool vertical, int wictrl2, int wictrl3 = 0 );
-    void MenuAppend( wxMenu *menu, int id, wxString label, int setting);
-	void OnCBAny( wxCommandEvent& event );
-	void OnMenuCallBack( wxMouseEvent& event );
+  void AddTrackingControl(wxControl *ctrl1, wxControl *ctrl2, wxControl *ctrl3,
+                          wxControl *ctrl4, bool show, bool vertical,
+                          int wictrl2, int wictrl3 = 0);
+  void MenuAppend(wxMenu *menu, int id, wxString label, int setting);
+  void OnCBAny(wxCommandEvent &event);
+  void OnMenuCallBack(wxMouseEvent &event);
 
-	GRIBUICtrlBar &m_gparent;
-	bool          m_bLeftDown;
+  GRIBUICtrlBar &m_gparent;
+  bool m_bLeftDown;
 };
 
 #endif

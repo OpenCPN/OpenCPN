@@ -16,38 +16,36 @@
 
 class WXDLLIMPEXP_NETUTILS wxMapiData;
 
-//The class which encapsulates the MAPI connection
-class WXDLLIMPEXP_NETUTILS wxMapiSession
-{
+// The class which encapsulates the MAPI connection
+class WXDLLIMPEXP_NETUTILS wxMapiSession {
 public:
-    //Constructors / Destructors
-    wxMapiSession();
-    ~wxMapiSession();
+  // Constructors / Destructors
+  wxMapiSession();
+  ~wxMapiSession();
 
-    //Logon / Logoff Methods
-    bool Logon(const wxString& sProfileName, const wxString& sPassword = wxEmptyString, wxWindow* pParentWnd = NULL);
-    bool LoggedOn() const;
-    bool Logoff();
+  // Logon / Logoff Methods
+  bool Logon(const wxString& sProfileName,
+             const wxString& sPassword = wxEmptyString,
+             wxWindow* pParentWnd = NULL);
+  bool LoggedOn() const;
+  bool Logoff();
 
-    //Send a message
-    bool Send(wxMailMessage& message);
+  // Send a message
+  bool Send(wxMailMessage& message);
 
-    //General MAPI support
-    bool MapiInstalled() const;
+  // General MAPI support
+  bool MapiInstalled() const;
 
-    //Error Handling
-    long GetLastError() const;
+  // Error Handling
+  long GetLastError() const;
 
 protected:
-    //Methods
-    void Initialise();
-    void Deinitialise();
-    bool Resolve(const wxString& sName, void* lppRecip1);
+  // Methods
+  void Initialise();
+  void Deinitialise();
+  bool Resolve(const wxString& sName, void* lppRecip1);
 
-    wxMapiData* m_data;
-
+  wxMapiData* m_data;
 };
 
-
-#endif //_WX_SMAPI_H_
-
+#endif  //_WX_SMAPI_H_

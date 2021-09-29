@@ -29,7 +29,11 @@
 #include "pi_TexFont.h"
 #include "GeomagnetismHeader.h"
 
-enum MagneticPlotType {DECLINATION_PLOT, INCLINATION_PLOT, FIELD_STRENGTH_PLOT};
+enum MagneticPlotType {
+  DECLINATION_PLOT,
+  INCLINATION_PLOT,
+  FIELD_STRENGTH_PLOT
+};
 
 class pi_ocpnDC;
 
@@ -40,84 +44,89 @@ class pi_ocpnDC;
 /* divisible by 8 and any closer to the pole than this plots
    horribly anyway on a flattened earth. */
 #define MAX_LAT 88
-#define LATITUDE_ZONES (2*MAX_LAT/ZONE_SIZE) /* perfectly divisible */
-#define LONGITUDE_ZONES (360/ZONE_SIZE)
+#define LATITUDE_ZONES (2 * MAX_LAT / ZONE_SIZE) /* perfectly divisible */
+#define LONGITUDE_ZONES (360 / ZONE_SIZE)
 
 /* a single line segment in the plot */
-class PlotLineSeg
-{
+class PlotLineSeg {
 public:
-    PlotLineSeg(double _lat1, double _lon1, double _lat2, double _lon2, double _contour)
-        : lat1(_lat1), lon1(_lon1), lat2(_lat2), lon2(_lon2), contour(_contour) {}
-    double lat1, lon1, lat2, lon2;
-    double contour;
+  PlotLineSeg(double _lat1, double _lon1, double _lat2, double _lon2,
+              double _contour)
+      : lat1(_lat1), lon1(_lon1), lat2(_lat2), lon2(_lon2), contour(_contour) {}
+  double lat1, lon1, lat2, lon2;
+  double contour;
 };
 
 /* cache values computed from wmm to improve speed */
-class ParamCache
-{
+class ParamCache {
 public:
-ParamCache() : values(NULL), m_step(0), m_lat(0.0) {}
-    ~ParamCache() { delete [] values; }
-    void Initialize(double step);
-    bool Read(double lat, double lon, double &value);
+  ParamCache() : values(NULL), m_step(0), m_lat(0.0) {}
+  ~ParamCache() { delete[] values; }
+  void Initialize(double step);
+  bool Read(double lat, double lon, double &value);
 
-    double *values;
-    double m_step;
-    double m_lat;
+  double *values;
+  double m_step;
+  double m_lat;
 };
 
 /* main model map suitable for a single plot type */
-class MagneticPlotMap
-{
+class MagneticPlotMap {
 public:
-    MagneticPlotMap(MagneticPlotType type,
-                    MAGtype_MagneticModel *&mm,
-                    MAGtype_MagneticModel *&tmm,
-                    MAGtype_Ellipsoid *ellip)
-        : m_type(type), m_bEnabled(false), m_Spacing(0.0), m_Step(0.0), m_PoleAccuracy(0.0), MagneticModel(mm), TimedMagneticModel(tmm), Ellip(ellip), lastx(0), lasty(0)
-    {
-        UserDate.Year = 2015;
-        UserDate.Month = 1;
-        UserDate.Day = 1;
-        UserDate.DecimalYear = 2015.0;
-    }
+  MagneticPlotMap(MagneticPlotType type, MAGtype_MagneticModel *&mm,
+                  MAGtype_MagneticModel *&tmm, MAGtype_Ellipsoid *ellip)
+      : m_type(type),
+        m_bEnabled(false),
+        m_Spacing(0.0),
+        m_Step(0.0),
+        m_PoleAccuracy(0.0),
+        MagneticModel(mm),
+        TimedMagneticModel(tmm),
+        Ellip(ellip),
+        lastx(0),
+        lasty(0) {
+    UserDate.Year = 2015;
+    UserDate.Month = 1;
+    UserDate.Day = 1;
+    UserDate.DecimalYear = 2015.0;
+  }
 
-    ~MagneticPlotMap() { ClearMap(); }
+  ~MagneticPlotMap() { ClearMap(); }
 
-    void ConfigureAccuracy(int stepsize, int poleaccuracy);
-    double CalcParameter(double lat, double lon);
-    void BuildParamCache(ParamCache &cache, double lat);
-    double CachedCalcParameter(double lat, double lon);
-    bool Interpolate(double x1, double x2, double y1, double y2, bool lat,
-                     double lonval, double &rx, double &ry);
-    void PlotRegion(std::list<PlotLineSeg*> &region,
-                    double lat1, double lon1, double lat2, double lon2);
-    bool Recompute(wxDateTime date);
-    void Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color);
+  void ConfigureAccuracy(int stepsize, int poleaccuracy);
+  double CalcParameter(double lat, double lon);
+  void BuildParamCache(ParamCache &cache, double lat);
+  double CachedCalcParameter(double lat, double lon);
+  bool Interpolate(double x1, double x2, double y1, double y2, bool lat,
+                   double lonval, double &rx, double &ry);
+  void PlotRegion(std::list<PlotLineSeg *> &region, double lat1, double lon1,
+                  double lat2, double lon2);
+  bool Recompute(wxDateTime date);
+  void Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color);
 
-    void ClearMap();
-    void DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon);
+  void ClearMap();
+  void DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double contour,
+                   double lat, double lon);
 
-    MagneticPlotType m_type;
-    bool m_bEnabled;
-    double m_Spacing;
-    double m_Step;
-    double m_PoleAccuracy;
+  MagneticPlotType m_type;
+  bool m_bEnabled;
+  double m_Spacing;
+  double m_Step;
+  double m_PoleAccuracy;
 
-    /* two caches for all longitudes alternate
-       places (step over each other) to cover the two latitudes
-       currently being built */
-    ParamCache m_Cache[2];
+  /* two caches for all longitudes alternate
+     places (step over each other) to cover the two latitudes
+     currently being built */
+  ParamCache m_Cache[2];
 
-    MAGtype_MagneticModel *&MagneticModel;
-    MAGtype_MagneticModel *&TimedMagneticModel;
-    MAGtype_Ellipsoid *Ellip;
-    MAGtype_Date UserDate;
+  MAGtype_MagneticModel *&MagneticModel;
+  MAGtype_MagneticModel *&TimedMagneticModel;
+  MAGtype_Ellipsoid *Ellip;
+  MAGtype_Date UserDate;
 
-    /* the line segments for the entire globe split into zones */
-    std::list<PlotLineSeg*> m_map[LATITUDE_ZONES][LONGITUDE_ZONES];
+  /* the line segments for the entire globe split into zones */
+  std::list<PlotLineSeg *> m_map[LATITUDE_ZONES][LONGITUDE_ZONES];
 
-    TexFont m_TexFont;
-    int lastx, lasty; /* when rendering to prevent overcluttering */
+  TexFont m_TexFont;
+  int lastx, lasty; /* when rendering to prevent overcluttering */
 };

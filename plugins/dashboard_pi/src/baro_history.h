@@ -32,13 +32,13 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 // Warn: div by 0 if count == 1
@@ -47,64 +47,56 @@
 #include "instrument.h"
 #include "dial.h"
 
+class DashboardInstrument_BaroHistory : public DashboardInstrument {
+public:
+  DashboardInstrument_BaroHistory(wxWindow* parent, wxWindowID id,
+                                  wxString title);
 
+  ~DashboardInstrument_BaroHistory(void) {}
 
-class DashboardInstrument_BaroHistory: public DashboardInstrument
-{
-      public:
-            DashboardInstrument_BaroHistory( wxWindow *parent, wxWindowID id, wxString title);
+  void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint);
 
-            ~DashboardInstrument_BaroHistory(void){}
+private:
+  int m_soloInPane;
+  int m_SpdRecCnt, m_DirRecCnt, m_SpdStartVal, m_DirStartVal;
+  int m_isNULL;
+  int m_WindDirShift;
 
-            void SetData(DASH_CAP, double, wxString);
-   wxSize GetSize( int orient, wxSize hint );
+protected:
+  double alpha;
+  double m_ArrayBaroHistory[BARO_RECORD_COUNT];
+  double m_ArrayPressHistory[BARO_RECORD_COUNT];
+  double m_ExpSmoothArrayPressure[BARO_RECORD_COUNT];
 
+  wxDateTime::Tm m_ArrayRecTime[BARO_RECORD_COUNT];
 
-      private:
-    int m_soloInPane ;
-    int    m_SpdRecCnt, m_DirRecCnt, m_SpdStartVal,m_DirStartVal;
-    int m_isNULL;
-    int m_WindDirShift;
+  double m_MaxPress;       //...in array
+  double m_MinPress;       //...in array
+  double m_TotalMaxPress;  // since O is started
+  double m_TotalMinPress;
+  double m_Press;
+  double m_MaxPressScale;
+  double m_ratioW;
 
-      protected:
-      double alpha;
-            double m_ArrayBaroHistory[BARO_RECORD_COUNT];
-            double m_ArrayPressHistory[BARO_RECORD_COUNT];
-            double m_ExpSmoothArrayPressure[BARO_RECORD_COUNT];
+  bool m_IsRunning;
+  int m_SampleCount;
 
-            wxDateTime::Tm m_ArrayRecTime[BARO_RECORD_COUNT];
+  wxRect m_WindowRect;
+  wxRect m_DrawAreaRect;  // the coordinates of the real darwing area
+  int m_DrawingWidth, m_TopLineHeight, m_DrawingHeight;
+  int m_width, m_height;
+  int m_LeftLegend, m_RightLegend;
+  int m_currSec, m_lastSec, m_SpdCntperSec;
+  double m_cntSpd, m_cntDir, m_avgSpd, m_avgDir;
 
+  void Draw(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc);
+  void DrawForeground(wxGCDC* dc);
+  void SetMinMaxWindScale();
 
-
-            double m_MaxPress;  //...in array
-            double m_MinPress;  //...in array
-            double m_TotalMaxPress; // since O is started
-            double m_TotalMinPress;
-            double m_Press;
-   double m_MaxPressScale;
-            double m_ratioW;
-
-   bool m_IsRunning;
-   int m_SampleCount;
-
-            wxRect m_WindowRect;
-            wxRect m_DrawAreaRect; //the coordinates of the real darwing area
-            int m_DrawingWidth,m_TopLineHeight,m_DrawingHeight;
-   int m_width,m_height;
-            int m_LeftLegend, m_RightLegend;
-            int m_currSec,m_lastSec,m_SpdCntperSec;
-            double m_cntSpd,m_cntDir,m_avgSpd,m_avgDir;
-
-            void Draw(wxGCDC* dc);
-            void DrawBackground(wxGCDC* dc);
-            void DrawForeground(wxGCDC* dc);
-            void SetMinMaxWindScale();
-
-   void DrawWindSpeedScale(wxGCDC* dc);
-   //wxString GetWindDirStr(wxString WindDir);
+  void DrawWindSpeedScale(wxGCDC* dc);
+  // wxString GetWindDirStr(wxString WindDir);
 };
 
-
-
-#endif // __BARO_HISTORY_H__
-
+#endif  // __BARO_HISTORY_H__

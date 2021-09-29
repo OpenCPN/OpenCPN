@@ -32,13 +32,13 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include "dial.h"
@@ -52,17 +52,15 @@
 //|    This class creates a speedometer style control
 //|
 //+------------------------------------------------------------------------------
-class DashboardInstrument_Speedometer: public DashboardInstrument_Dial
-{
-      public:
-            DashboardInstrument_Speedometer( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag,
-                                    int s_value, int e_value);
+class DashboardInstrument_Speedometer : public DashboardInstrument_Dial {
+public:
+  DashboardInstrument_Speedometer(wxWindow *parent, wxWindowID id,
+                                  wxString title, DASH_CAP cap_flag,
+                                  int s_value, int e_value);
 
-            ~DashboardInstrument_Speedometer(void){}
+  ~DashboardInstrument_Speedometer(void) {}
 
-      private:
-
+private:
 };
 
-#endif // __Speedometer_H__
-
+#endif  // __Speedometer_H__
