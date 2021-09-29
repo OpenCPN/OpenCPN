@@ -14,9 +14,9 @@ add_library(ocpn::libudev ALIAS _LIBUDEV)
 set(UDEV_ROOT_DIR "${UDEV_ROOT_DIR}" CACHE PATH "Directory to search for udev")
 
 find_package(PkgConfig QUIET)
-if(PKG_CONFIG_FOUND)
+if (PKG_CONFIG_FOUND)
   pkg_check_modules(PC_LIBUDEV libudev)
-endif()
+endif ()
 
 find_library(UDEV_LIBRARY
   NAMES udev
@@ -36,15 +36,15 @@ find_path(UDEV_INCLUDE_DIR
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
-  UDEV DEFAULT_MSG UDEV_LIBRARY UDEV_INCLUDE_DIR
+  LIBUDEV DEFAULT_MSG UDEV_LIBRARY UDEV_INCLUDE_DIR
 )
 
-if(UDEV_FOUND)
+if (LIBUDEV_FOUND)
   list(APPEND UDEV_LIBRARIES ${UDEV_LIBRARY})
   list(APPEND UDEV_INCLUDE_DIRS ${UDEV_INCLUDE_DIR})
   mark_as_advanced(UDEV_ROOT_DIR)
   target_include_directories(_LIBUDEV INTERFACE ${UDEV_INCLUDE_DIRS})
   target_link_libraries(_LIBUDEV INTERFACE ${UDEV_LIBRARIES})
-endif()
+endif ()
 
 mark_as_advanced(UDEV_INCLUDE_DIR UDEV_LIBRARY)
