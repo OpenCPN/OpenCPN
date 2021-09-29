@@ -62,149 +62,116 @@ wxString OpenCPNVersion =
 
 #define xID_OK 10009
 
-const wxString AboutText =
-    wxT("<br>OpenCPN<br>") wxT("(c) 2000-2019 The OpenCPN Authors<br><br>");
+// clang-format off
 
-const wxString OpenCPNInfo = wxT("<br><br>")
+const wxString AboutText =
+    wxT("<br>OpenCPN<br>")
+    wxT("(c) 2000-2019 The OpenCPN Authors<br><br>");
+
+const wxString OpenCPNInfo =
+    wxT("<br><br>")
     wxT("OpenCPN is a Free Software project, built by sailors. ")
-        wxT("It is freely available to download and distribute ")
-            wxT("without charge at opencpn.org.<br><br>") wxT(
-                "If you use OpenCPN, please consider contributing ")
-                wxT("or donating funds to the project.<br><br>") wxT(
-                    "For more information, visit http://opencpn.org<br><br>");
+    wxT("It is freely available to download and distribute ")
+    wxT("without charge at opencpn.org.<br><br>")
+    wxT("If you use OpenCPN, please consider contributing ")
+    wxT("or donating funds to the project.<br><br>")
+    wxT("For more information, visit http://opencpn.org<br><br>");
 
 const wxString OpenCPNInfoAlt =
-    wxT("<br><br>") wxT("OpenCPN is a Free Software project, built by sailors.")
-        wxT("The complete source code and many other resources ")
-            wxT("are freely available for your download and use, ") wxT(
-                "subject to applicable License agreements.") wxT("<br><br>")
-                wxT("For more information, visit http://opencpn.org<br><br>");
+    wxT("<br><br>")
+    wxT("OpenCPN is a Free Software project, built by sailors.")
+    wxT("The complete source code and many other resources ")
+    wxT("are freely available for your download and use, ")
+    wxT("subject to applicable License agreements.")
+    wxT("<br><br>")
+    wxT("For more information, visit http://opencpn.org<br><br>");
+
 
 const wxString AuthorText =
-    wxT("   David S Register\n") wxT("      OpenCPN Lead Developer\n\n") wxT(
-        "    Pavel Kalian\n") wxT("      Packaging and PlugIn development\n\n")
-        wxT("    Sean D'Epagnier\n") wxT("      OpenGL Architecture\n\n") wxT(
-            "    J.P. Joubert\n") wxT("      GRIB PlugIn enhancements\n\n")
-            wxT("    Thomas Höckne\n") wxT(
-                "      Documentation and Wiki support\n\n")
-                wxT("    Didier Gautheron\n") wxT(
-                    "      App debugging and optimization\n\n")
-                    wxT("    Wiets Wilken\n") wxT(
-                        "      Extended vector Icon implementation\n\n")
-                        wxT("    Gene Seybold\n") wxT(
-                            "      Extended vector Icon design\n\n")
-                            wxT("    Caesar Schinas\n") wxT(
-                                "      User Interface and OS X "
-                                "improvements\n\n")
-                                wxT("    Jesper Weissglas\n") wxT(
-                                    "      Vector Chart Rendering\n\n")
-                                    wxT("    Jean-Eudes Onfray\n") wxT(
-                                        "      Dashboard and Dialog "
-                                        "enhancements\n\n")
-                                        wxT("    Kathleen Boswell\n") wxT(
-                                            "      Icon design\n\n")
-                                            wxT("    Flavius Bindea\n") wxT(
-                                                "      CM93 Offset and AIS "
-                                                "enhancements\n\n")
-                                                wxT("    Gunther Pilz\n") wxT(
-                                                    "      Windows Installer "
-                                                    "enhancements\n\n")
-                                                    wxT("    Alan Bleasby\n") wxT(
-                                                        "      Garmin jeeps "
-                                                        "module\n\n")
-                                                        wxT("    Piotr "
-                                                            "Carlson\n") wxT(
-                                                            "      General "
-                                                            "usability "
-                                                            "enhancements\n\n")
-                                                            wxT("    Anders "
-                                                                "Lund\n") wxT(
-                                                                "      "
-                                                                "RouteManagerDi"
-                                                                "alog\n\n")
-                                                                wxT("    "
-                                                                    "Gordon "
-                                                                    "Mau\n") wxT(
-                                                                    "      "
-                                                                    "OpenCPN "
-                                                                    "Documentat"
-                                                                    "ion\n\n")
-                                                                    wxT("    "
-                                                                        "Tim "
-                                                                        "Franci"
-                                                                        "s\n") wxT(
-                                                                        "      "
-                                                                        "OpenCP"
-                                                                        "N "
-                                                                        "Docume"
-                                                                        "ntatio"
-                                                                        "n\n\n")
-                                                                        wxT("  "
-                                                                            "  "
-                                                                            "Ma"
-                                                                            "rk"
-                                                                            " A"
-                                                                            " S"
-                                                                            "ik"
-                                                                            "es"
-                                                                            "\n") wxT(
-                                                                            "  "
-                                                                            "  "
-                                                                            "  "
-                                                                            "Op"
-                                                                            "en"
-                                                                            "CP"
-                                                                            "N "
-                                                                            "Co"
-                                                                            "De"
-                                                                            "ve"
-                                                                            "lo"
-                                                                            "pe"
-                                                                            "r"
-                                                                            "\n"
-                                                                            "\n")
-                                                                            wxT("    Thomas Haller\n") wxT(
-                                                                                "      GPX Import/Export Implementation\n\n")
-                                                                                wxT("    Will Kamp\n") wxT(
-                                                                                    "      Toolbar Icon design\n\n")
-                                                                                    wxT("    Richard Smith\n") wxT(
-                                                                                        "      OpenCPN CoDeveloper, MacOSX\n\n")
-                                                                                        wxT("    David Herring\n") wxT(
-                                                                                            "      OpenCPN CoDeveloper, MacOSX\n\n")
-                                                                                            wxT("    Philip Lange\n") wxT(
-                                                                                                "      OpenCPN Documentation\n\n")
-                                                                                                wxT("    Ron Kuris\n") wxT(
-                                                                                                    "      wxWidgets Support\n\n")
-                                                                                                    wxT("    Julian Smart, Robert Roebling et al\n")
-                                                                                                        wxT("      wxWidgets Authors\n\n") wxT(
-                                                                                                            "    Sylvain Duclos\n")
-                                                                                                            wxT("      S52 Presentation Library code\n\n")
-                                                                                                                wxT("    Manish P. Pagey\n")
-                                                                                                                    wxT("      Serial Port Library\n\n")
-                                                                                                                        wxT("    David Flater\n")
-                                                                                                                            wxT("      XTIDE tide and current code\n\n")
-                                                                                                                                wxT("    Frank Warmerdam\n")
-                                                                                                                                    wxT("      GDAL Class Library\n\n")
-                                                                                                                                        wxT("    Mike Higgins\n")
-                                                                                                                                            wxT("      BSB Chart Format Detail\n\n")
-                                                                                                                                                wxT("    Samuel R. Blackburn\n") wxT(
-                                                                                                                                                    "      NMEA0183 Class Library\n\n")
-                                                                                                                                                    wxT("    Atul Narkhede\n") wxT(
-                                                                                                                                                        "      Polygon Graphics utilities\n\n")
-                                                                                                                                                        wxT("    Jan C. Depner\n") wxT(
-                                                                                                                                                            "      WVS Chart Library\n\n")
-                                                                                                                                                            wxT("    Stuart Cunningham, et al\n") wxT(
-                                                                                                                                                                "      BSB Chart Georeferencing Algorithms\n\n")
-                                                                                                                                                                wxT("    John F. Waers\n")
-                                                                                                                                                                    wxT("      UTM Conversion Algorithms\n\n") wxT(
-                                                                                                                                                                        "    Carsten Tschach\n")
-                                                                                                                                                                        wxT("      UTM Conversion Algorithms\n\n")
-                                                                                                                                                                            wxT("    Ed Williams\n") wxT(
-                                                                                                                                                                                "      Great Circle Formulary\n\n")
-                                                                                                                                                                                wxT("    Philippe Bekaert\n")
-                                                                                                                                                                                    wxT("      CIE->RGB Color Conversion Matrix\n\n")
-                                                                                                                                                                                        wxT("    Robert Lipe\n")
-                                                                                                                                                                                            wxT("      Garmin USB GPS Interface\n");
+    wxT("   David S Register\n")
+    wxT("      OpenCPN Lead Developer\n\n")
+    wxT("    Pavel Kalian\n")
+    wxT("      Packaging and PlugIn development\n\n")
+    wxT("    Sean D'Epagnier\n")
+    wxT("      OpenGL Architecture\n\n")
+    wxT("    J.P. Joubert\n")
+    wxT("      GRIB PlugIn enhancements\n\n")
+    wxT("    Thomas Höckne\n")
+    wxT("      Documentation and Wiki support\n\n")
+    wxT("    Didier Gautheron\n")
+    wxT("      App debugging and optimization\n\n")
+    wxT("    Wiets Wilken\n")
+    wxT("      Extended vector Icon implementation\n\n")
+    wxT("    Gene Seybold\n")
+    wxT("      Extended vector Icon design\n\n")
+    wxT("    Caesar Schinas\n")
+    wxT("      User Interface and OS X improvements\n\n")
+    wxT("    Jesper Weissglas\n")
+    wxT("      Vector Chart Rendering\n\n")
+    wxT("    Jean-Eudes Onfray\n")
+    wxT("      Dashboard and Dialog enhancements\n\n")
+    wxT("    Kathleen Boswell\n")
+    wxT("      Icon design\n\n")
+    wxT("    Flavius Bindea\n")
+    wxT("      CM93 Offset and AIS enhancements\n\n")
+    wxT("    Gunther Pilz\n")
+    wxT("      Windows Installer enhancements\n\n")
+    wxT("    Alan Bleasby\n")
+    wxT("      Garmin jeeps module\n\n")
+    wxT("    Piotr Carlson\n")
+    wxT("      General usability enhancements\n\n")
+    wxT("    Anders Lund\n")
+    wxT("      RouteManagerDialog\n\n")
+    wxT("    Gordon Mau\n")
+    wxT("      OpenCPN Documentation\n\n")
+    wxT("    Tim Francis\n")
+    wxT("      OpenCPN Documentation\n\n")
+    wxT("    Mark A Sikes\n")
+    wxT("      OpenCPN CoDeveloper\n\n")
+    wxT("    Thomas Haller\n")
+    wxT("      GPX Import/Export Implementation\n\n")
+    wxT("    Will Kamp\n")
+    wxT("      Toolbar Icon design\n\n")
+    wxT("    Richard Smith\n")
+    wxT("      OpenCPN CoDeveloper, MacOSX\n\n")
+    wxT("    David Herring\n")
+    wxT("      OpenCPN CoDeveloper, MacOSX\n\n")
+    wxT("    Philip Lange\n")
+    wxT("      OpenCPN Documentation\n\n")
+    wxT("    Ron Kuris\n")
+    wxT("      wxWidgets Support\n\n")
+    wxT("    Julian Smart, Robert Roebling et al\n")
+    wxT("      wxWidgets Authors\n\n")
+    wxT("    Sylvain Duclos\n")
+    wxT("      S52 Presentation Library code\n\n")
+    wxT("    Manish P. Pagey\n")
+    wxT("      Serial Port Library\n\n")
+    wxT("    David Flater\n")
+    wxT("      XTIDE tide and current code\n\n")
+    wxT("    Frank Warmerdam\n")
+    wxT("      GDAL Class Library\n\n")
+    wxT("    Mike Higgins\n")
+    wxT("      BSB Chart Format Detail\n\n")
+    wxT("    Samuel R. Blackburn\n")
+    wxT("      NMEA0183 Class Library\n\n")
+    wxT("    Atul Narkhede\n")
+    wxT("      Polygon Graphics utilities\n\n")
+    wxT("    Jan C. Depner\n")
+    wxT("      WVS Chart Library\n\n")
+    wxT("    Stuart Cunningham, et al\n")
+    wxT("      BSB Chart Georeferencing Algorithms\n\n")
+    wxT("    John F. Waers\n")
+    wxT("      UTM Conversion Algorithms\n\n")
+    wxT("    Carsten Tschach\n")
+    wxT("      UTM Conversion Algorithms\n\n")
+    wxT("    Ed Williams\n")
+    wxT("      Great Circle Formulary\n\n")
+    wxT("    Philippe Bekaert\n")
+    wxT("      CIE->RGB Color Conversion Matrix\n\n")
+    wxT("    Robert Lipe\n")
+    wxT("      Garmin USB GPS Interface\n");
+
+// clang-format on
 
 IMPLEMENT_DYNAMIC_CLASS(about, wxDialog)
 
