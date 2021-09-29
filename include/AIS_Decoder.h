@@ -106,6 +106,7 @@ private:
   AIS_Target_Data *ProcessDSx(const wxString &str, bool b_take_dsc = false);
   void SendJSONMsg(AIS_Target_Data *pTarget);
 
+  wxString DecodeDSEExpansionCharacters(wxString dseData);
   void getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
                     AIS_Target_Data *&pStaleTarget, bool &bnewtarget,
                     int &last_report_ticks, wxDateTime &now);
