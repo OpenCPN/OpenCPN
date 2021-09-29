@@ -19,10 +19,8 @@
 # - 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 # ***************************************************************************
 
-# define minimum cmake version
-cmake_minimum_required(VERSION 2.6.2)
-message(STATUS "*** Staging to build PlugIns ***")
-
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+MESSAGE (STATUS "*** Staging to build PlugIns ***")
 # These variables are inherited by all plugins
 set(PARENT opencpn)
 set(PREFIX_DATA share)
