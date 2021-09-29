@@ -8608,6 +8608,13 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   }
                 }
               }
+
+              // Special case:
+              // Allow "re-use" of a route's waypoints iff it is a simple isolated route.
+              // This allows, for instance, creation of a closed polygon route
+              if( m_pEditRouteArray->GetCount() == 1)
+                duplicate = false;
+
               if (!duplicate) {
                 int dlg_return;
                 dlg_return =
@@ -8624,7 +8631,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pNearbyPoint);
                   current = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePointEditTarget);
 
-                  if (tail && current) {
+                  if (tail && current && (tail != current)) {
                     int dlg_return1;
                     connect = tail->GetIndexOf(pNearbyPoint);
                     int index_current_route = current->GetIndexOf(m_pRoutePointEditTarget);
@@ -8829,19 +8836,26 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             if (pNearbyPoint && !pNearbyPoint->m_bIsInLayer &&
                 pWayPointMan->IsReallyVisible(pNearbyPoint)) {
               bool duplicate = false;  // don't create duplicate point in routes
-              if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
-                for (unsigned int ir = 0; ir < m_pEditRouteArray->GetCount();
-                     ir++) {
-                  Route *pr = (Route *)m_pEditRouteArray->Item(ir);
-                  if (pr && pr->pRoutePointList) {
-                    if (pr->pRoutePointList->IndexOf(pNearbyPoint) !=
-                        wxNOT_FOUND) {
-                      duplicate = true;
-                      break;
-                    }
-                  }
-                }
+               if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
+                 for (unsigned int ir = 0; ir < m_pEditRouteArray->GetCount();
+                      ir++) {
+                   Route *pr = (Route *)m_pEditRouteArray->Item(ir);
+                   if (pr && pr->pRoutePointList) {
+                     if (pr->pRoutePointList->IndexOf(pNearbyPoint) !=
+                         wxNOT_FOUND) {
+                       duplicate = true;
+                       break;
+                     }
+                   }
+                 }
               }
+
+              // Special case:
+              // Allow "re-use" of a route's waypoints iff it is a simple isolated route.
+              // This allows, for instance, creation of a closed polygon route
+              if( m_pEditRouteArray->GetCount() == 1)
+                duplicate = false;
+
               if (!duplicate) {
                 int dlg_return;
                 dlg_return =
@@ -8857,7 +8871,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pNearbyPoint);
                   current = g_pRouteMan->FindRouteContainingWaypoint(m_pRoutePointEditTarget);
 
-                  if (tail && current) {
+                  if (tail && current && ( tail != current)) {
                     int dlg_return1;
                     connect = tail->GetIndexOf(pNearbyPoint);
                     int index_current_route = current->GetIndexOf(m_pRoutePointEditTarget);
