@@ -7572,7 +7572,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         double rlat, rlon;
         bool appending = false;
         bool inserting = false;
-        Route *tail;
+        Route *tail = 0;
 
         SetCursor(*pCursorPencil);
         rlat = m_cursor_lat;
@@ -8149,7 +8149,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         double rlat, rlon;
         bool appending = false;
         bool inserting = false;
-        Route *tail;
+        Route *tail = 0;
 
         rlat = m_cursor_lat;
         rlon = m_cursor_lon;
