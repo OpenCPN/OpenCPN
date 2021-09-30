@@ -1268,20 +1268,24 @@ if (PANGO_FOUND)
     set(HAVE_PANGO 1)
 endif ()
 
-find_path(HAVE_UNISTD_H NAMES unistd.h)
-find_path(HAVE_LIBGEN_H NAMES libgen.h)
-find_path(HAVE_DIRENT_H NAMES dirent.h)
-find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
-find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
-find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
-find_path(HAVE_FCNTL_H  NAMES fcntl.h)
-if (NOT HAVE_FCNTL_H)
-  find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
-endif ()
-find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
+# Some of these "find_path" macros generate "false-positives" under Windows, especially if mingw is installed
+# For OpenCPN, these include files and related methods are really only valid in complete linux/unix environments
+#  So, pending further information, we disable these tests for non-UNIX-like builds.
+if ( UNIX )
+  find_path(HAVE_UNISTD_H NAMES unistd.h)
+  find_path(HAVE_LIBGEN_H NAMES libgen.h)
+  find_path(HAVE_DIRENT_H NAMES dirent.h)
+  find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
+  find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
+  find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
+  find_path(HAVE_FCNTL_H  NAMES fcntl.h)
+  if (NOT HAVE_FCNTL_H)
+    find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
+  endif ()
+  find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
 
-check_symbol_exists(readlink unistd.h HAVE_READLINK)
-
+  check_symbol_exists(readlink unistd.h HAVE_READLINK)
+endif( UNIX )
 
 #
 # Linux: set up GTK
