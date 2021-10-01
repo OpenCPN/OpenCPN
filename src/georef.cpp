@@ -28,7 +28,6 @@
  *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
  ***************************************************************************
  */
-
 #include <vector>
 #include <utility>
 #include <stdlib.h>
@@ -198,7 +197,6 @@ struct DATUM const gDatum[] = {
     {"WGS", 19, 0, 0, 5}
 
 };
-
 struct ELLIPSOID const gEllipsoid[] = {
     //      name                               a        1/f
     {"Airy 1830", 6377563.396, 299.3249646},              // 0
@@ -260,7 +258,6 @@ static int datumNameCmp(const char *n1, const char *n2) {
   }
   return 0;  // String match
 }
-
 static int isWGS84(int i) {
   // DATUM_INDEX_WGS84 is an optimization
   // but there's more than on in gDatum table
@@ -275,6 +272,7 @@ static int isWGS84(int i) {
   if (gDatum[i].dz != gDatum[DATUM_INDEX_WGS84].dz) return i;
 
   return DATUM_INDEX_WGS84;
+
 }
 
 int GetDatumIndex(const char *str) {
@@ -288,7 +286,6 @@ int GetDatumIndex(const char *str) {
 
   return -1;
 }
-
 /****************************************************************************/
 /* Convert degrees to dd mm'ss.s" (DMS-Format)                              */
 /****************************************************************************/
@@ -1017,6 +1014,10 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat,
               double *dlon) {
   double th1, costh1, sinth1, sina12, cosa12, M, N, c1, c2, D, P, s1;
   int merid, signS;
+
+  if((brg == 90.) || (brg == 180.)){
+    brg += 1e9;
+  }
 
   /*   Input/Output from geodesic functions   */
   double al12;   /* Forward azimuth */
