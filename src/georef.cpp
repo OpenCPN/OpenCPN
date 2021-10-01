@@ -1016,7 +1016,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat,
   int merid, signS;
 
   if((brg == 90.) || (brg == 180.)){
-    brg += 1e9;
+    brg += 1e-9;
   }
 
   /*   Input/Output from geodesic functions   */
