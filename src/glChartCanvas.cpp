@@ -605,7 +605,7 @@ void glChartCanvas::Init() {
 
   m_gldc.SetGLCanvas(this);
 
-  m_displayScale = GetContentScaleFactor();
+  m_displayScale = m_pParentCanvas->GetContentScaleFactor();
 
 #ifdef __OCPN__ANDROID__
   //  Create/connect a dynamic event handler slot for gesture and some timer

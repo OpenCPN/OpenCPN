@@ -1861,11 +1861,15 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
       GLDrawBlendData(x, y, w, h, GL_RGBA, e);
       delete[](e);
     } else {
-      glRasterPos2i(x, y);
-      glPixelZoom(1, -1); /* draw data from top to bottom */
-      if (image.GetData())
+      if( glcanvas && image.GetData() ){
+        int cw, ch;
+        glcanvas->GetSize(&cw, &ch);
+        double vsf = 1 - (1 / glcanvas->GetContentScaleFactor());
+        glRasterPos2i(x / glcanvas->GetContentScaleFactor(), ch * vsf + y);
+        glPixelZoom(1, -1); /* draw data from top to bottom */
         glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, image.GetData());
-      glPixelZoom(1, 1);
+        glPixelZoom(1, 1);
+      }
     }
 #endif  // GLES2
   }
@@ -2186,12 +2190,18 @@ void ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
                              int format, const unsigned char *data) {
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
-  glEnable(GL_BLEND);
-  glRasterPos2i(x, y);
-  glPixelZoom(1, -1);
-  glDrawPixels(w, h, format, GL_UNSIGNED_BYTE, data);
-  glPixelZoom(1, 1);
-  glDisable(GL_BLEND);
+
+  int cw,ch;
+  if( glcanvas ){
+    glcanvas->GetSize(&cw, &ch);
+    double vsf = 1 - (1 / glcanvas->GetContentScaleFactor());
+    glEnable(GL_BLEND);
+    glRasterPos2i(x / glcanvas->GetContentScaleFactor(), ch * vsf + y);
+    glPixelZoom(1, -1);
+    glDrawPixels(w, h, format, GL_UNSIGNED_BYTE, data);
+    glPixelZoom(1, 1);
+    glDisable(GL_BLEND);
+  }
 #endif
 #endif
 }
