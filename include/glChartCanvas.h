@@ -204,7 +204,6 @@ public:
   //    void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
   //    void FastZoom(float factor);
   void RenderCanvasBackingChart(ocpnDC &dc, OCPNRegion chart_get_region);
-  double GetRenderScaleFactor() { return m_displayScale; }
 
 #ifdef __OCPN__ANDROID__
   void OnEvtPanGesture(wxQT_PanGestureEvent &event);
@@ -378,7 +377,7 @@ protected:
   int m_tideTexHeight;
   int m_currentTexWidth;
   int m_currentTexHeight;
-  double m_displayScale;
+  int m_displayScale;
 
   DECLARE_EVENT_TABLE()
 };
