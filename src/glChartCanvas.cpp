@@ -605,7 +605,11 @@ void glChartCanvas::Init() {
 
   m_gldc.SetGLCanvas(this);
 
+  m_displayScale = 1.0;
+#ifdef __WXOSX__
+  // Support Mac Retina displays.
   m_displayScale = GetContentScaleFactor();
+#endif
 
 #ifdef __OCPN__ANDROID__
   //  Create/connect a dynamic event handler slot for gesture and some timer
