@@ -53,7 +53,7 @@ class MDA : public RESPONSE
       ** Data
       */
 
-      double  Pressure;
+      double  Pressure, AirTemp;
       wxString UnitOfMeasurement;
 
       /*

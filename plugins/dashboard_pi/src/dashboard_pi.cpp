@@ -1060,12 +1060,22 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
          double   m_NMEA0183.Mda.Pressure;
          wxString m_NMEA0183.Mda.UnitOfMeasurement;
          */
-
         if (m_NMEA0183.Mda.Pressure > .8 && m_NMEA0183.Mda.Pressure < 1.1) {
           SendSentenceToAllInstruments(
               OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure * 1000,
               _T("hPa"));  // Convert to hpa befor sending to instruments.
-          mMDA_Watchdog = gps_watchdog_timeout_ticks;
+          mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
+        }
+        if (mPriATMP >= 4) {
+          double airtemp = m_NMEA0183.Mda.AirTemp;
+          if (airtemp < 999.0) {
+            SendSentenceToAllInstruments(
+              OCPN_DBP_STC_ATMP,
+              toUsrTemp_Plugin(airtemp, g_iDashTempUnit),
+              getUsrTempUnit_Plugin(g_iDashTempUnit));
+            mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+            mPriATMP = 4;
+          }
         }
       }
 
