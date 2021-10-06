@@ -91,6 +91,7 @@ workflows:
             branches:
               only:
                 - flatpak
+                - master
       - build-macos:
           filters:
             branches:
