@@ -301,6 +301,57 @@ static wxArrayString* EnumerateUdevSerialPorts(void) {
 
 #endif  // HAVE_LIBUDEV
 
+#ifdef __linux__
+
+/** scandir(3) filter function, return true if dirent is an existing device. */
+static int patternFilter(const struct dirent *dir) {
+
+  static const std::vector<std::string> devPatterns = {
+      "ttyUSB", "ttyACM", "ttyGPS", "rfcomm"
+  };
+
+  bool found = false;
+  const std::string device(dir->d_name);
+  for (auto pattern : devPatterns) {
+    if (device.find(pattern) != std::string::npos) {
+      found = true;
+      break;
+    }
+  }
+  if (!found) return 0;
+
+  const auto path = std::string("/dev/") + device;
+  return isTTYreal(path.c_str());
+}
+
+static wxArrayString* enumerateLinuxSerialPorts(void) {
+  wxArrayString* preturn = new wxArrayString;
+
+  struct dirent** filelist = 0;
+
+  int fcount = scandir("/dev", &filelist, patternFilter, alphasort);
+  if (fcount == -1) {
+    wxLogWarning("Cannot scandir /dev: %s", strerror(errno));
+    return preturn;
+  }
+  for (int i = 0; i < fcount; i++) {
+    wxString sdev(filelist[i]->d_name, wxConvUTF8);
+    sdev.Prepend("/dev/");
+    preturn->Add(sdev);
+    free(filelist[i]);
+  }
+  free(filelist);
+
+  //  Try to add a few more, arbitrarily, for those systems that have
+  //  fixed, traditional COM ports
+
+  if (isTTYreal("/dev/ttyS0")) preturn->Add(_T("/dev/ttyS0"));
+  if (isTTYreal("/dev/ttyS1")) preturn->Add(_T("/dev/ttyS1"));
+  return preturn;
+}
+
+#endif  //__linux__
+
 #ifdef __WXMSW__
 static wxArrayString* EnumerateWindowsSerialPorts(void) {
   wxArrayString* preturn = new wxArrayString;
@@ -482,23 +533,28 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
 
 #endif  // __WXMSW__
 
+
 #if defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
+#pragma message("Using Linux sysfs serial ports enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) {
   return EnumerateSysfsSerialPorts();
 }
 
 #elif defined(OCPN_USE_UDEV_PORTS) && defined(HAVE_LIBUDEV)
+#pragma message("Using Linux libudev serial ports enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) { return EnumerateUdevSerialPorts(); }
 
 #elif defined(__OCPN__ANDROID__)
+#pragma message("Using Android serial ports enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) {
   return androidGetSerialPortsArray();
 }
 
 #elif defined(__WXOSX__)
+#pragma message("Using MacOS serial ports enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) {
   wxArrayString* preturn = new wxArrayString;
@@ -516,99 +572,38 @@ wxArrayString* EnumerateSerialPorts(void) {
 }
 
 #elif defined(__WXMSW__)
+#pragma message("Using Windows serial ports enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) {
   return EnumerateWindowsSerialPorts();
 }
 
-#else  // Linux...
-
-
-int paternFilter(const struct dirent *dir) {
-  static const std::vector<std::string> devPatern = {
-      "ttyUSB", "ttyACM", "ttyGPS", "refcom"
-  };
-
-  bool found = false;
-  const std::string device(dir->d_name);
-  for (auto patern : devPatern) {
-    if (device.find(patern) != std::string::npos) {
-      found = true;
-      break;
-    }
-  }
-  if (!found) return 0;
-
-  auto path = std::string("/dev/") + device;
-  int fd = open(path.c_str(), O_RDWR | O_NDELAY | O_NOCTTY);
-  if (fd >= 0) {
-    // device name is pointing to a real device
-    close(fd);
-    return 1;
-  }
-
-  // file is not valid
-  wxLogDebug("Cannot open device %s: %s", path.c_str(), strerror(fd));
-  return 0;
-}
+#elif defined(OCPN_USE_NEWSERIAL)
+#pragma message("Using Linux NEWSERIAL library serial ports enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) {
   wxArrayString* preturn = new wxArrayString;
-#ifdef OCPN_USE_NEWSERIAL
   std::vector<serial::PortInfo> ports = serial::list_ports();
   for (auto it = ports.begin(); it != ports.end(); ++it) {
-    wxString port((*it).port);
-    if ((*it).description.length() > 0 && (*it).description != "n/a") {
-      port.Append(_T(" - "));
-      wxString s_description = wxString::FromUTF8(((*it).description).c_str());
-      port.Append(s_description);
+    wxString port(it->port);
+    if (it->description.length() > 0 && it->description != "n/a") {
+      port.Append(" - ");
+      port.Append(wxString::FromUTF8((it->description).c_str()));
     }
     preturn->Add(port);
   }
-
-#else  // OPCN_USE_NEWSERIAL
-/*
- *     Enumerate all the serial ports on the system
- *
- *     wxArrayString *EnumerateSerialPorts(void)
-
- *     Very system specific, unavoidably.
- */
-
-
-  //  Looking for user privilege openable devices in /dev
-  //  Fulup use scandir to improve user experience and support new generation of
-  //  AIS devices.
-
-  wxString sdev;
-  int ind, fcount;
-  struct dirent** filelist = {0};
-
-  // scan directory filter is applied automatically by this call
-  fcount = scandir("/dev", &filelist, paternFilter, alphasort);
-
-  for (ind = 0; ind < fcount; ind++) {
-    wxString sdev(filelist[ind]->d_name, wxConvUTF8);
-    sdev.Prepend(_T("/dev/"));
-
-    preturn->Add(sdev);
-    free(filelist[ind]);
-  }
-
-  free(filelist);
-
-  //        We try to add a few more, arbitrarily, for those systems that have
-  //        fixed, traditional COM ports
-
-#ifdef __linux__
-  if (isTTYreal("/dev/ttyS0")) preturn->Add(_T("/dev/ttyS0"));
-
-  if (isTTYreal("/dev/ttyS1")) preturn->Add(_T("/dev/ttyS1"));
-#endif /* linux */
-
-#endif  // OCPN_USE_NEWSERIAL
-
   return preturn;
+}
+
+#else
+
+#ifndef __linux__
+#error "No implementation of EnumerateSerialPorts available"
+#endif
+
+#pragma message("Using Linux old school serial ports enumeration")
+wxArrayString* EnumerateSerialPorts(void) {
+  return enumerateLinuxSerialPorts();
 }
 
 #endif  // outermost if - elif - else
