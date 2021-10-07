@@ -482,6 +482,7 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
 
 #endif  // __WXMSW__
 
+
 #if defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
 
 wxArrayString* EnumerateSerialPorts(void) {
@@ -521,94 +522,24 @@ wxArrayString* EnumerateSerialPorts(void) {
   return EnumerateWindowsSerialPorts();
 }
 
-#else  // Linux...
-
-
-int paternFilter(const struct dirent *dir) {
-  static const std::vector<std::string> devPatern = {
-      "ttyUSB", "ttyACM", "ttyGPS", "refcom"
-  };
-
-  bool found = false;
-  const std::string device(dir->d_name);
-  for (auto patern : devPatern) {
-    if (device.find(patern) != std::string::npos) {
-      found = true;
-      break;
-    }
-  }
-  if (!found) return 0;
-
-  auto path = std::string("/dev/") + device;
-  int fd = open(path.c_str(), O_RDWR | O_NDELAY | O_NOCTTY);
-  if (fd >= 0) {
-    // device name is pointing to a real device
-    close(fd);
-    return 1;
-  }
-
-  // file is not valid
-  wxLogDebug("Cannot open device %s: %s", path.c_str(), strerror(fd));
-  return 0;
-}
+#elif defined(OCPN_USE_NEWSERIAL)
 
 wxArrayString* EnumerateSerialPorts(void) {
   wxArrayString* preturn = new wxArrayString;
-#ifdef OCPN_USE_NEWSERIAL
   std::vector<serial::PortInfo> ports = serial::list_ports();
   for (auto it = ports.begin(); it != ports.end(); ++it) {
-    wxString port((*it).port);
-    if ((*it).description.length() > 0 && (*it).description != "n/a") {
-      port.Append(_T(" - "));
-      wxString s_description = wxString::FromUTF8(((*it).description).c_str());
-      port.Append(s_description);
+    wxString port(it->port);
+    if (it->description.length() > 0 && it->description != "n/a") {
+      port.Append(" - ");
+      port.Append(wxString::FromUTF8((it->description).c_str()));
     }
     preturn->Add(port);
   }
-
-#else  // OPCN_USE_NEWSERIAL
-/*
- *     Enumerate all the serial ports on the system
- *
- *     wxArrayString *EnumerateSerialPorts(void)
-
- *     Very system specific, unavoidably.
- */
-
-
-  //  Looking for user privilege openable devices in /dev
-  //  Fulup use scandir to improve user experience and support new generation of
-  //  AIS devices.
-
-  wxString sdev;
-  int ind, fcount;
-  struct dirent** filelist = {0};
-
-  // scan directory filter is applied automatically by this call
-  fcount = scandir("/dev", &filelist, paternFilter, alphasort);
-
-  for (ind = 0; ind < fcount; ind++) {
-    wxString sdev(filelist[ind]->d_name, wxConvUTF8);
-    sdev.Prepend(_T("/dev/"));
-
-    preturn->Add(sdev);
-    free(filelist[ind]);
-  }
-
-  free(filelist);
-
-  //        We try to add a few more, arbitrarily, for those systems that have
-  //        fixed, traditional COM ports
-
-#ifdef __linux__
-  if (isTTYreal("/dev/ttyS0")) preturn->Add(_T("/dev/ttyS0"));
-
-  if (isTTYreal("/dev/ttyS1")) preturn->Add(_T("/dev/ttyS1"));
-#endif /* linux */
-
-#endif  // OCPN_USE_NEWSERIAL
-
   return preturn;
 }
+
+#else
+
+#error "Cannot enumerate serial ports (missing libudev.h?)"
 
 #endif  // outermost if - elif - else
