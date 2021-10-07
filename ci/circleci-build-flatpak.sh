@@ -31,6 +31,9 @@ sudo apt-key adv \
 sudo add-apt-repository -y ppa:alexlarsson/flatpak
 sudo apt update -y
 
+# Avoid using outdated TLS certificates, see #2419.
+sudo apt install --reinstall  ca-certificates
+
 # Install required packages
 sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2
 
