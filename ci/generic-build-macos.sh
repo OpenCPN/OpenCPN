@@ -46,9 +46,9 @@ port deactivate OCPN_curl || {
 # Install curl to get the TLS certificate bundle
 # then immediately deactivate curl to make room for OCPN_curl later
 sudo port -q install curl
-sudo port deactivate curl
+sudo port -N deactivate curl
 
-sudo port deactivate openssl
+sudo port -N deactivate openssl
 
 
 # install the local port libraries
