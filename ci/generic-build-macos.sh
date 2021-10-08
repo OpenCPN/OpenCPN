@@ -39,18 +39,19 @@ pushd buildosx/macports/ports
   portindex
 popd
 
-port deactivate OCPN_curl || {
+sudo port deactivate OCPN_curl || {
   echo "OK"
 }
 
 # Install curl to get the TLS certificate bundle
 # then immediately deactivate curl to make room for OCPN_curl later
-sudo port -q install curl
-sudo port -N deactivate curl
+#sudo port -q install curl
+#sudo port -N deactivate curl
 
-sudo port -N deactivate python39
-sudo port -N deactivate openssl
+#sudo port -N deactivate python39
+#sudo port -N deactivate openssl
 
+sudo port install curl-ca-bundle
 
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
