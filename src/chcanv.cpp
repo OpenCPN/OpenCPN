@@ -338,6 +338,8 @@ extern ChartCanvas *g_overlayCanvas;
 extern float g_toolbar_scalefactor;
 extern SENCThreadManager *g_SencThreadManager;
 
+wxString g_ObjQFileExt;
+
 // "Curtain" mode parameters
 wxDialog *g_pcurtain;
 extern double gLat, gLat;
@@ -9522,15 +9524,13 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
       file.Normalize();
       file.Assign(file.GetPath(), wxT(""));
       wxDir dir( file.GetFullPath() );
-      wxString filename;
-      wxString Extensions = wxString("txt,rtf,png,html,gif,tif");
-      
+      wxString filename; 
       bool cont = dir.GetFirst( &filename );
       while ( cont )
       {
           file.Assign( dir.GetNameWithSep().append( filename) );
           wxString FormatString = _T("<td valign=top><font size=-2><a href=\"%s\">%s</a></font>");
-          if( Extensions.Find( file.GetExt().Lower() )  != wxNOT_FOUND )
+          if( g_ObjQFileExt.Find( file.GetExt().Lower() )  != wxNOT_FOUND )
           {
               filenameOK=file.GetFullPath();//remember last valid name
               // we are making a 3 columns table. New row only every third file
