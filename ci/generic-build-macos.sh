@@ -51,7 +51,7 @@ sudo port deactivate OCPN_curl || {
 #sudo port -N deactivate python39
 #sudo port -N deactivate openssl
 
-sudo port install curl-ca-bundle
+sudo port -q install curl-ca-bundle
 
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
