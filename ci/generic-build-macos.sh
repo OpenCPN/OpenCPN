@@ -18,6 +18,9 @@ sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 ls ${HOME}/project/opt_local_cache || echo "OK"
 ls ${HOME}/project/opt_local_cache/bin || echo "OK"
 
+sudo cp buildosx/cacert.pem /opt/local/share/curl/curl-ca-bundle.crt
+sudo ln -s /opt/local/share/curl/curl-ca-bundle.crt /opt/local/etc/openssl/cert.pem
+
 # Check if the cache is with us. If not, re-install macports
 port info zstd || {
     curl -k -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
@@ -51,7 +54,7 @@ sudo port deactivate OCPN_curl || {
 #sudo port -N deactivate python39
 #sudo port -N deactivate openssl
 
-sudo port -q install curl-ca-bundle
+#sudo port -q install curl-ca-bundle
 
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT

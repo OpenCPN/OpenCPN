@@ -30,6 +30,7 @@ checksums                       ${curl_distfile} \
                                 rmd160  a3c6639da7482c5ed9aac36a16d1daa253e4a9d1 \
                                 sha256  be42766d5664a739c3974ee3dfbbcbe978a4ccb1fe628bb1d9b59ac79e445fb5 \
                                 size    2440640
+fetch.ignore_sslcert            yes
 
 if {${name} eq ${subport}} {
     PortGroup                   muniversal 1.0
