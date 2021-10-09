@@ -25,6 +25,7 @@ sudo ln -s /opt/local/share/curl/curl-ca-bundle.crt /opt/local/etc/openssl/cert.
 
 #openssl x509 -in /opt/local/share/curl/curl-ca-bundle.crt -out mycert.pem -outform PEM
 #sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "mycert.pem"
+#sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "buildosx/ISRGROOTX1.pem"
 
 # Check if the cache is with us. If not, re-install macports
 port info zstd || {
