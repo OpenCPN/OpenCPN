@@ -18,7 +18,9 @@ sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 ls ${HOME}/project/opt_local_cache || echo "OK"
 ls ${HOME}/project/opt_local_cache/bin || echo "OK"
 
+sudo mkdir -p /opt/local/share/curl
 sudo cp buildosx/cacert.pem /opt/local/share/curl/curl-ca-bundle.crt
+sudo mkdir -p /opt/local/etc/openssl
 sudo ln -s /opt/local/share/curl/curl-ca-bundle.crt /opt/local/etc/openssl/cert.pem
 
 # Check if the cache is with us. If not, re-install macports
