@@ -66,7 +66,10 @@ sudo port deactivate OCPN_curl || {
 
 sudo port -q install OCPN_openssl
 sudo port -q install OCPN_cairo
+
+sudo port -N deactivate libpixman
 sudo port -q install OCPN_libpixman
+
 sudo port -q install zstd
 sudo port -q install OCPN_libarchive
 sudo port -q -f install OCPN_libpng
