@@ -120,7 +120,7 @@ brew list --versions wget || {
         fetch --unshallow
 }
 
-for pkg in cmake python3 wget  ; do
+for pkg in python3 wget  ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
