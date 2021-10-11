@@ -64,11 +64,11 @@ sudo port -fN deactivate openssl
 #  n.b.  ORDER IS IMPORTANT
 
 sudo port -q install OCPN_openssl
-sudo port -q install OCPN_curl
+sudo port -fq install OCPN_curl
 sudo port -q install OCPN_libpixman
 
 sudo port -fN deactivate OCPN_curl
-sudo port -q install OCPN_cairo
+sudo port -fq install OCPN_cairo
 
 sudo port -q install zstd
 
