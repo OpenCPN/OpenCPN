@@ -111,7 +111,7 @@ pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
 
 # Check if the cache is with us. If not, re-install brew.
-brew list --versions wget || {
+brew list --versions python3 || {
     brew update-reset
     # As indicated by warning message in CircleCI build log:
     git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core" \
@@ -120,7 +120,7 @@ brew list --versions wget || {
         fetch --unshallow
 }
 
-for pkg in python3 wget  ; do
+for pkg in python3  ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
@@ -143,8 +143,12 @@ else
     brew install --cask packages
 fi
 
-wget -q https://download.opencpn.org/s/MCiRiq4fJcKD56r/download \
-    -O /tmp/wx315_opencpn50_macos1010.tar.xz
+#wget -q https://download.opencpn.org/s/MCiRiq4fJcKD56r/download \
+#    -O /tmp/wx315_opencpn50_macos1010.tar.xz
+
+curl -k -o /tmp/wx315_opencpn50_macos1010.tar.xz  \
+    https://download.opencpn.org/s/MCiRiq4fJcKD56r/download
+
 tar -C /tmp -xJf /tmp/wx315_opencpn50_macos1010.tar.xz
 
 #wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
