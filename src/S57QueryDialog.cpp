@@ -242,22 +242,21 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
   else{      
     wxTextFile txf( filen.GetFullPath() );
     if(txf.Open()){
-        wxString contents;
-        wxString str;
-        str = txf.GetFirstLine();
-        do {
-        MessageHardBreakWrapper wrapper(ExtraObjInfoDlg->m_phtml, str, m_phtml->GetSize().x * 9 / 10);
-        contents += wrapper.GetWrapped();
-        contents += _T("<br>");
+      wxString contents;
+      wxString str;
+      str = txf.GetFirstLine();
+      do {
+      MessageHardBreakWrapper wrapper(ExtraObjInfoDlg->m_phtml, str, m_phtml->GetSize().x * 9 / 10);
+      contents += wrapper.GetWrapped();
+      contents += _T("<br>");
 
-        str = txf.GetNextLine();
-        } while (!txf.Eof());
+      str = txf.GetNextLine();
+      } while (!txf.Eof());
 
-        ExtraObjInfoDlg->m_phtml->SetPage(contents);
+      ExtraObjInfoDlg->m_phtml->SetPage(contents);
     }
   }
 
-  //  ExtraObjInfoDlg->m_phtml->LoadPage(event.GetLinkInfo().GetHref());
   ExtraObjInfoDlg->SetColorScheme();
 
 #ifdef __OCPN__ANDROID__

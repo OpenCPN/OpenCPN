@@ -9528,21 +9528,21 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
       bool cont = dir.GetFirst( &filename );
       while ( cont )
       {
-          file.Assign( dir.GetNameWithSep().append( filename) );
-          wxString FormatString = _T("<td valign=top><font size=-2><a href=\"%s\">%s</a></font>");
-          if( g_ObjQFileExt.Find( file.GetExt().Lower() )  != wxNOT_FOUND )
-          {
-              filenameOK=file.GetFullPath();//remember last valid name
-              // we are making a 3 columns table. New row only every third file
-              if ( 3*((int)filecount/3) == filecount )
-                  FormatString.Prepend(_T("<tr>")); // new row
-              else
-                  FormatString.Prepend(_T("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>")); // an empty spacer column
-              
-              AddFiles << wxString::Format(FormatString, file.GetFullPath(), file.GetFullName());
-              filecount++;
-          }
-         cont = dir.GetNext(&filename);
+        file.Assign( dir.GetNameWithSep().append( filename) );
+        wxString FormatString = _T("<td valign=top><font size=-2><a href=\"%s\">%s</a></font></td>");
+        if( g_ObjQFileExt.Find( file.GetExt().Lower() )  != wxNOT_FOUND )
+        {
+          filenameOK=file.GetFullPath();//remember last valid name
+          // we are making a 3 columns table. New row only every third file
+          if ( 3*((int)filecount/3) == filecount )
+            FormatString.Prepend(_T("<tr>")); // new row
+          else
+            FormatString.Prepend(_T("<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>")); // an empty spacer column
+          
+          AddFiles << wxString::Format(FormatString, file.GetFullPath(), file.GetFullName());
+          filecount++;
+        }
+        cont = dir.GetNext(&filename);
       }
       objText << AddFiles << _T("</table>");
     }
@@ -9551,14 +9551,14 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
 
     if (Chs57 || target_plugin_chart || (filecount > 1)) {
       g_pObjectQueryDialog->SetHTMLPage(objText);
-        g_pObjectQueryDialog->Show();
+      g_pObjectQueryDialog->Show();
     } 
     if ((!Chs57 && filecount == 1)){  // only one file?, show direktly
-        //generate an event to avoid double code
-          wxHtmlLinkInfo hli(filenameOK);
-          wxHtmlLinkEvent hle(1, hli);
-          g_pObjectQueryDialog->OnHtmlLinkClicked(hle);
-      }
+      //generate an event to avoid double code
+      wxHtmlLinkInfo hli(filenameOK);
+      wxHtmlLinkEvent hle(1, hli);
+      g_pObjectQueryDialog->OnHtmlLinkClicked(hle);
+    }
 
     if (rule_list) rule_list->Clear();
     delete rule_list;
