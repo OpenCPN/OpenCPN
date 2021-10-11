@@ -93,18 +93,24 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
   talkerID = talk;
 
   /* Some GNSS receivers may emit more than (3*4)=12 sats info.
-     We accept a group of sentences containing up to 5 messages but
-     will only parse the first four.*/
-  if (seq < 1 || seq > 4) return;
+     There can be up to 9 sequences in one group so we divide
+     them in subgroups of 3 to be able to show all
+     with our limited space.*/
+  if (seq < 1) return;
+  if (seq > 3) {
+    if (seq < 7) seq -= 3;
+    else if (seq < 10) seq -= 6;
+    else return; // not to standard but u never know
+  }
 
   if (talkerID != wxEmptyString) {
     /* Switch view between the six GNSS system
        mentioned in NMEA0183, when available.
-       Show each system for 15 seconds.
+       Show each system for 30 seconds.
        Time to shift now? */
     wxDateTime now = wxDateTime::Now();
     wxTimeSpan sinceLastShift = now - m_lastShift;
-    if (sinceLastShift.GetSeconds() >= 15) {
+    if (sinceLastShift.GetSeconds() > 30) {
       b_shift = true;
       m_lastShift = now;
     }
