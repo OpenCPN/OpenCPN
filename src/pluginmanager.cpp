@@ -1142,7 +1142,8 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
     wxLog::FlushActive();
 
     wxString file_name = file_list[i];
-    if (file_name.Contains(_T("draw"))) int yyp = 3;
+//     if (file_name.Contains("aisradar"))
+//       int yyp = 3;
 
     wxString plugin_file = wxFileName(file_name).GetFullName();
     wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
@@ -1154,30 +1155,32 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
     // opencpn. For this reason we must check that we didn't already load this
     // plugin
     bool loaded = false;
+    PlugInContainer *loaded_pic = 0;
     for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-      PlugInContainer *pic = plugin_array[i];
+      PlugInContainer *pic_test = plugin_array[i];
 
       // Checking for dynamically updated plugins
-      if (pic->m_plugin_filename == plugin_file) {
+      if (pic_test->m_plugin_filename == plugin_file) {
         // Do not re-load same-name plugins from different directories.  Certain
         // to crash...
-        if (pic->m_plugin_file == file_name) {
-          if (pic->m_plugin_modification != plugin_modification) {
+        if (pic_test->m_plugin_file == file_name) {
+          if (pic_test->m_plugin_modification != plugin_modification) {
             // modification times don't match, reload plugin
-            plugin_array.Remove(pic);
+            plugin_array.Remove(pic_test);
             i--;
 
-            DeactivatePlugIn(pic);
-            pic->m_destroy_fn(pic->m_pplugin);
+            DeactivatePlugIn(pic_test);
+            pic_test->m_destroy_fn(pic_test->m_pplugin);
 
-            delete pic;
-            ret = true;
+            delete pic_test;
           } else {
             loaded = true;
+            loaded_pic= pic_test;
             break;
           }
         } else {
           loaded = true;
+          loaded_pic= pic_test;
           break;
         }
       }
@@ -1219,14 +1222,9 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
       wxLogMessage(dmsg);
     }
 
-    // Safe mode? If so, refuse to load.
-    //if (safe_mode::get_mode()) {
-    //  continue;
-    //}
-
     PlugInContainer *pic = NULL;
-    wxStopWatch sw;
-    if (b_compat) pic = LoadPlugIn(file_name);
+    if (b_compat)
+        pic = LoadPlugIn(file_name);
 
     wxLog::FlushActive();
 
@@ -1273,6 +1271,9 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
         pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
         pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
         pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+        wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
+              0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+        pic->m_bitmap = pbm;
 
         ret = true;
 
@@ -1509,11 +1510,16 @@ bool PlugInManager::UpdatePlugIns() {
       pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
       bret = true;
     } else if (!pic->m_bEnabled && pic->m_bInitState) {
+
+      // Save a local copy of the plugin icon before unloading
+      wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
+              0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+      pic->m_bitmap = pbm;
+
       bret = DeactivatePlugIn(pic);
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
       if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       pic->m_pplugin = NULL;
-      pic->m_bitmap = NULL;
       pic->m_bInitState = false;
     }
   }
