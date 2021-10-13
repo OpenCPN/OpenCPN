@@ -1521,7 +1521,7 @@ extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint);
 extern DECL_EXP bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint);
 
 extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute);
-extern DECL_EXP bool UpdatePlugInRouteRx(PlugIn_Route_Ex *proute);
+extern DECL_EXP bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute);
 
 extern DECL_EXP std::unique_ptr<PlugIn_Waypoint_Ex> GetWaypointEx_Plugin(const wxString &);
 extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString &);
