@@ -107,7 +107,6 @@ extern PlugInManager *g_pi_manager;
 extern wxColor GetDimColor(wxColor c);
 extern int g_trackFilterMax;
 
-double MAX_DISTANCE_BETWEEN_TWO_GPS_POINTS = 100.0; // Nm
 
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -456,7 +455,7 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
       if (trackPointState != firstPoint)
       {
         double distToLastGpsPoint = DistGreatCircle(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLon, gLat);
-        if (distToLastGpsPoint > MAX_DISTANCE_BETWEEN_TWO_GPS_POINTS) return;
+        if (distToLastGpsPoint > g_trackFilterMax) return;
       }
     }
 
