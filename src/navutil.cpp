@@ -458,6 +458,7 @@ extern int g_AndroidVersionCode;
 
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
+extern wxString g_ObjQFileExt;
 
 wxString g_gpx_path;
 bool g_bLayersLoaded;
@@ -681,6 +682,7 @@ int MyConfig::LoadMyConfig() {
 
   g_nAWDefault = 50;
   g_nAWMax = 1852;
+  g_ObjQFileExt = _T("txt,rtf,png,html,gif,tif");
 
   // Load the raw value, with no defaults, and no processing
   int ret_Val = LoadMyConfigRaw();
@@ -853,6 +855,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor);
   Read(_T ( "ShipScaleFactor" ), &g_ShipScaleFactor);
   Read(_T ( "ENCSoundingScaleFactor" ), &g_ENCSoundingScaleFactor);
+  Read( _T ( "ObjQueryAppendFilesExt" ),  &g_ObjQFileExt);
 
   // Plugin catalog handler persistent variables.
   Read("CatalogCustomURL", &g_catalog_custom_url);
@@ -2318,7 +2321,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor);
   Write(_T ( "ShipScaleFactor" ), g_ShipScaleFactor);
   Write(_T ( "ENCSoundingScaleFactor" ), g_ENCSoundingScaleFactor);
-
+  Write(_T ( "ObjQueryAppendFilesExt" ), g_ObjQFileExt);
+  
   // Plugin catalog persistent values.
   Write(_T( "CatalogCustomURL"), g_catalog_custom_url);
   Write(_T( "CatalogChannel"), g_catalog_channel);

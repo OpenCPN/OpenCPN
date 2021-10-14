@@ -338,6 +338,8 @@ extern ChartCanvas *g_overlayCanvas;
 extern float g_toolbar_scalefactor;
 extern SENCThreadManager *g_SencThreadManager;
 
+wxString g_ObjQFileExt;
+
 // "Curtain" mode parameters
 wxDialog *g_pcurtain;
 extern double gLat, gLat;
@@ -9508,7 +9510,8 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) objText << _T("</i>");
 
     // Add the additional info files
-    wxString AddFiles;
+    wxString AddFiles, filenameOK;
+    int filecount = 0;
     if (!target_plugin_chart) {  // plugincharts shoud take care of this in the
                                  // plugin
 
@@ -9520,38 +9523,41 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
           file.GetFullName());
       file.Normalize();
       file.Assign(file.GetPath(), wxT(""));
-      wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.TXT"), wxDIR_FILES);
-      wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.txt"), wxDIR_FILES);
-      wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.PNG"), wxDIR_FILES);
-      wxDir::GetAllFiles(file.GetFullPath(), &files, wxT("*.png"), wxDIR_FILES);
-      if (files.Count() > 0) {
-        for (size_t i = 0; i < files.Count(); i++) {
-          file.Assign(files.Item(i));
-          AddFiles << wxString::Format(
-              _T("<tr><td valign=top><font size=-2><a ")
-              _T("href=\"%s\">%s</a></font></")
-              _T("td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>"),
-              file.GetFullPath(), file.GetFullName());
-          if (files.Count() > ++i) {
-            file.Assign(files.Item(i));
-            AddFiles << wxString::Format(
-                _T("<td valign=top><font size=-2><a ")
-                _T("href=\"%s\">%s</a></font></td>"),
-                file.GetFullPath(), file.GetFullName());
-          }
+      wxDir dir( file.GetFullPath() );
+      wxString filename; 
+      bool cont = dir.GetFirst( &filename );
+      while ( cont )
+      {
+        file.Assign( dir.GetNameWithSep().append( filename) );
+        wxString FormatString = _T("<td valign=top><font size=-2><a href=\"%s\">%s</a></font></td>");
+        if( g_ObjQFileExt.Find( file.GetExt().Lower() )  != wxNOT_FOUND )
+        {
+          filenameOK=file.GetFullPath();//remember last valid name
+          // we are making a 3 columns table. New row only every third file
+          if ( 3*((int)filecount/3) == filecount )
+            FormatString.Prepend(_T("<tr>")); // new row
+          else
+            FormatString.Prepend(_T("<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>")); // an empty spacer column
+          
+          AddFiles << wxString::Format(FormatString, file.GetFullPath(), file.GetFullName());
+          filecount++;
         }
+        cont = dir.GetNext(&filename);
       }
       objText << AddFiles << _T("</table>");
     }
 
     objText << _T("</body></html>");
 
-    if (Chs57 || target_plugin_chart || (files.Count() > 0)) {
+    if (Chs57 || target_plugin_chart || (filecount > 1)) {
       g_pObjectQueryDialog->SetHTMLPage(objText);
-      if ((!Chs57 && files.Count() == 1))  // only one file?, show direktly
-        g_pObjectQueryDialog->m_phtml->LoadPage(files[0]);
-
       g_pObjectQueryDialog->Show();
+    } 
+    if ((!Chs57 && filecount == 1)){  // only one file?, show direktly
+      //generate an event to avoid double code
+      wxHtmlLinkInfo hli(filenameOK);
+      wxHtmlLinkEvent hle(1, hli);
+      g_pObjectQueryDialog->OnHtmlLinkClicked(hle);
     }
 
     if (rule_list) rule_list->Clear();
