@@ -232,25 +232,31 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
       GetParent(), wxID_ANY, _("Extra Object Info"),
       wxPoint(GetPosition().x + 20, GetPosition().y + 20),
       wxSize(g_S57_extradialog_sx, g_S57_extradialog_sy));
+  
+  //Check te kind of file, load text files serial and pictures direct
+  wxFileName filen( event.GetLinkInfo().GetHref() );
+  wxString Extensions = wxString("txt,html,rtf");
 
-  wxString fileName = event.GetLinkInfo().GetHref();
-  wxTextFile txf( fileName );
-  if(txf.Open()){
-    wxString contents;
-    wxString str;
-    str = txf.GetFirstLine();
-    do {
+  if( Extensions.Find( filen.GetExt().Lower() )  == wxNOT_FOUND )
+    ExtraObjInfoDlg->m_phtml->LoadPage(event.GetLinkInfo().GetHref());   
+  else{      
+    wxTextFile txf( filen.GetFullPath() );
+    if(txf.Open()){
+      wxString contents;
+      wxString str;
+      str = txf.GetFirstLine();
+      do {
       MessageHardBreakWrapper wrapper(ExtraObjInfoDlg->m_phtml, str, m_phtml->GetSize().x * 9 / 10);
       contents += wrapper.GetWrapped();
       contents += _T("<br>");
 
       str = txf.GetNextLine();
-    } while (!txf.Eof());
+      } while (!txf.Eof());
 
-    ExtraObjInfoDlg->m_phtml->SetPage(contents);
+      ExtraObjInfoDlg->m_phtml->SetPage(contents);
+    }
   }
 
-  //  ExtraObjInfoDlg->m_phtml->LoadPage(event.GetLinkInfo().GetHref());
   ExtraObjInfoDlg->SetColorScheme();
 
 #ifdef __OCPN__ANDROID__
