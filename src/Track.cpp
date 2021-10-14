@@ -106,6 +106,8 @@ extern wxColour g_colourTrackLineColour;
 extern PlugInManager *g_pi_manager;
 extern wxColor GetDimColor(wxColor c);
 
+double MAX_DISTANCE_BETWEEN_TWO_GPS_POINTS = 100.0; // Nm
+
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch {
@@ -443,6 +445,17 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
       if (!do_add_point) return;
 
   vector2D gpsPoint(gLon, gLat);
+  
+  // Check if gps point is not too far from the last point
+  // which, if it is the case, means that there is probably a GPS bug on the two positions...
+  // So, it is better not to add this false new point.
+    
+  // Calculate the distance between two points of the track based on georef lib
+    if (trackPointState != firstPoint)
+    {
+      double distToLastGpsPoint = DistGreatCircle(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLon, gLat);
+      if (distToLastGpsPoint > MAX_DISTANCE_BETWEEN_TWO_GPS_POINTS) return;
+    }
 
   // The dynamic interval algorithm will gather all track points in a queue,
   // and analyze the cross track errors for each point before actually adding
