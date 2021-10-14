@@ -466,6 +466,8 @@ bool g_bShowMuiZoomButtons = true;
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 
+int g_trackFilterMax;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -865,6 +867,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T ( "UseNMEA_GLL" ), &g_bUseGLL);
     Read(_T ( "UseMagAPB" ), &g_bMagneticAPB);
     Read(_T ( "TrackContinuous" ), &g_btrackContinuous, false);
+    Read(_T ( "FilterTrackDropLargeJump" ), &g_trackFilterMax, 0);
+
   }
 
   Read(_T ( "ShowTrue" ), &g_bShowTrue);
