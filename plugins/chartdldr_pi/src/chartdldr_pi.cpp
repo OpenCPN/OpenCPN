@@ -1555,36 +1555,34 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
   ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
   dialog->SetBasePath(pPlugIn->GetBaseChartDir());
 
-  //#ifdef __OCPN__ANDROID__
   wxSize sz = GetParent()
                   ->GetGrandParent()
                   ->GetSize();  // This is the options panel true size
   dialog->SetSize(sz.GetWidth(), sz.GetHeight());
   dialog->Center();
-  //#endif
 
-  dialog->ShowWindowModalThenDo([this, dialog](int retcode) {
-    if (retcode == wxID_OK) {
-      ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(),
-                                        dialog->m_tChartSourceUrl->GetValue(),
-                                        dialog->m_tcChartDirectory->GetValue());
-      pPlugIn->m_pChartSources->Add(cs);
-      AppendCatalog(cs);
-      bool covered = false;
-      for (size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++) {
-        if (cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i)))) {
-          covered = true;
-          break;
-        }
-      }
-      if (!covered) {
-        wxString dir = cs->GetDir();
-        AddChartDirectory(dir);
-      }
-      SelectCatalog(m_lbChartSources->GetItemCount() - 1);
-      pPlugIn->SaveConfig();
-    }
-  });
+  if (dialog->ShowModal() == wxID_OK){
+     ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(),
+                                       dialog->m_tChartSourceUrl->GetValue(),
+                                       dialog->m_tcChartDirectory->GetValue());
+     dialog->Destroy();
+     pPlugIn->m_pChartSources->Add(cs);
+     AppendCatalog(cs);
+     bool covered = false;
+     for (size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++) {
+       if (cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i)))) {
+         covered = true;
+         break;
+       }
+     }
+     if (!covered) {
+       wxString dir = cs->GetDir();
+       AddChartDirectory(dir);
+     }
+    SelectCatalog(m_lbChartSources->GetItemCount() - 1);
+    pPlugIn->SaveConfig();
+  }
+
   event.Skip();
 }
 
@@ -1861,9 +1859,9 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
     if (r < ARCHIVE_WARN) return false;
   }
   archive_read_close(a);
-  archive_read_free(a);
+  //archive_read_free(a);
   archive_write_close(ext);
-  archive_write_free(ext);
+  //archive_write_free(ext);
 
   if (aRemoveArchive) wxRemoveFile(aArchiveFile);
   return true;
