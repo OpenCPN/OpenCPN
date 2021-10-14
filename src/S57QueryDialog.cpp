@@ -246,7 +246,7 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
         MessageHardBreakWrapper wrapper(ExtraObjInfoDlg->m_phtml, str,
                                         m_phtml->GetSize().x * 9 / 10);
         contents += wrapper.GetWrapped();
-        contents += _T("<br>");
+        contents += "<br>";
 
         str = txf.GetNextLine();
       } while (!txf.Eof());
