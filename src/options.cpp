@@ -128,10 +128,6 @@ extern GLuint g_raster_format;
 #include "config_var.h"
 #include "ser_ports.h"
 
-#ifdef __linux__
-#include "udev_rule_mgr.h"
-#endif
-
 #if !defined(__WXOSX__)
 #define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
 #else
@@ -8023,7 +8019,8 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
 #ifdef __linux__
-  CheckSerialAccess(this, pConnectionParams->Port.ToStdString());
+  if (pConnectionParams->Type == SERIAL)
+    CheckSerialAccess(this, pConnectionParams->Port.ToStdString());
 #endif
 
   if ((pConnectionParams->Type != INTERNAL_GPS) &&
