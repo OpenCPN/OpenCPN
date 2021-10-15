@@ -9524,8 +9524,8 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
       file.Normalize();
       file.Assign(file.GetPath(), wxT(""));
       wxDir dir( file.GetFullPath() );
-      wxString filename; 
-      bool cont = dir.GetFirst( &filename );
+      wxString filename;
+      bool cont = dir.GetFirst( &filename, "", wxDIR_FILES );
       while ( cont )
       {
         file.Assign( dir.GetNameWithSep().append( filename) );
@@ -9538,7 +9538,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
             FormatString.Prepend(_T("<tr>")); // new row
           else
             FormatString.Prepend(_T("<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>")); // an empty spacer column
-          
+
           AddFiles << wxString::Format(FormatString, file.GetFullPath(), file.GetFullName());
           filecount++;
         }
@@ -9552,7 +9552,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     if (Chs57 || target_plugin_chart || (filecount > 1)) {
       g_pObjectQueryDialog->SetHTMLPage(objText);
       g_pObjectQueryDialog->Show();
-    } 
+    }
     if ((!Chs57 && filecount == 1)){  // only one file?, show direktly
       //generate an event to avoid double code
       wxHtmlLinkInfo hli(filenameOK);
