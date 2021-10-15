@@ -2877,6 +2877,15 @@ install(CODE "
   COMPONENT Runtime
 )
 
+#  For unknown reasons, fixup_bundle copies the wrong version of liblzma.5.dylib into the bundle.
+#  So, fix that here by grabbing the correct version as installed by macports.
+install(CODE "
+  include(BundleUtilities)
+  copy_resolved_item_into_bundle(\"/opt/local/lib/liblzma.5.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
+  "
+  COMPONENT Runtime
+)
+
   #Build standard MacOS installer package
   #  Copy a few generic files so the Packages installer builder can find them relative to ${CMAKE_CURRENT_BINARY_DIR}
   #  This avoids absolute paths in the XXX.pkgproj file
