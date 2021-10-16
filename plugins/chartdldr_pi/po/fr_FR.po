@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:21-0400\n"
-"PO-Revision-Date: 2021-09-29 01:43\n"
+"PO-Revision-Date: 2021-10-16 00:32\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -403,12 +403,12 @@ msgstr "Sélectionner la mise à jour"
 
 #: src/chartdldrgui.cpp:336
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr ""
+msgstr "Sélectionner toutes les cartes \"périmées\" de la liste"
 
 #: src/chartdldrgui.cpp:346
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr ""
+msgstr "%u total cartes, %u mises à jour, %u sélectionnées"
 
 #: src/chartdldrgui.cpp:353
 #, c-format

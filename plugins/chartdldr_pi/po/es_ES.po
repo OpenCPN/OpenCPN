@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:21-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"PO-Revision-Date: 2021-10-16 00:33\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -82,7 +82,7 @@ msgstr "Cartas: %s"
 
 #: src/chartdldr_pi.cpp:689
 msgid " from "
-msgstr ""
+msgstr "desde "
 
 #: src/chartdldr_pi.cpp:697 src/chartdldrgui.cpp:284
 msgid "Charts"
@@ -94,7 +94,7 @@ msgstr "Nuevo"
 
 #: src/chartdldr_pi.cpp:777 src/chartdldrgui.h:148 src/chartdldrgui.h:214
 msgid "Out of date"
-msgstr ""
+msgstr "Desactualizado"
 
 #: src/chartdldr_pi.cpp:783
 msgid "Up to date"
@@ -109,7 +109,7 @@ msgstr "%lu total cartas, %lu actualizadas, %lu nuevas"
 #: src/chartdldr_pi.cpp:1331 src/chartdldr_pi.cpp:1348 src/chartdldr_pi.cpp:1366
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
-msgstr ""
+msgstr "%lu cartas totales, %lu actualizadas, %lu nuevas, %lu seleccionadas"
 
 #: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:1661
 msgid "(Please update first)"
@@ -181,19 +181,19 @@ msgstr "No se pudo Descargar catálogo: %s \n"
 
 #: src/chartdldr_pi.cpp:1243 src/chartdldr_pi.cpp:1252 src/chartdldrgui.cpp:340
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar todo"
 
 #: src/chartdldr_pi.cpp:1246 src/chartdldrgui.cpp:342 src/chartdldrgui.cpp:374
 msgid "Select None"
-msgstr ""
+msgstr "Seleccionar nada"
 
 #: src/chartdldr_pi.cpp:1247
 msgid "De-select all charts in the list."
-msgstr ""
+msgstr "Deseleccionar todos las cartas de la lista."
 
 #: src/chartdldr_pi.cpp:1253 src/chartdldrgui.cpp:343
 msgid "Select all charts in the list."
-msgstr ""
+msgstr "Seleccionar todas las cartas de la lista."
 
 #: src/chartdldr_pi.cpp:1380
 msgid "No charts selected for download."
@@ -365,7 +365,7 @@ msgstr "Actualizar todo"
 
 #: src/chartdldrgui.cpp:272
 msgid "Download all chart catalogs, and then update charts."
-msgstr ""
+msgstr "Descargue todos los catálogos de cartas y, a continuación, actualice las cartas."
 
 #: src/chartdldrgui.cpp:278
 msgid "Download Charts..."
@@ -377,32 +377,32 @@ msgstr "Estado"
 
 #: src/chartdldrgui.cpp:303
 msgid "Date"
-msgstr ""
+msgstr "Fecha"
 
 #: src/chartdldrgui.cpp:306
 msgid "Chart Description"
-msgstr ""
+msgstr "Descripción de la carta"
 
 #: src/chartdldrgui.cpp:331
 msgid "Select New"
-msgstr ""
+msgstr "Seleccionar nuevo"
 
 #: src/chartdldrgui.cpp:332
 msgid "Check all charts that are 'New' in the list."
-msgstr ""
+msgstr "Marque todas las cartas que son 'Nuevas' en la lista."
 
 #: src/chartdldrgui.cpp:335
 msgid "Select Updated"
-msgstr ""
+msgstr "Seleccionar Actualizado"
 
 #: src/chartdldrgui.cpp:336
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr ""
+msgstr "Seleccione todos las cartas que están 'desactualizadas' en la lista."
 
 #: src/chartdldrgui.cpp:346
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr ""
+msgstr "%u cartas totales, %u actualizadas, %u nuevas, %u seleccionadas"
 
 #: src/chartdldrgui.cpp:353
 #, c-format

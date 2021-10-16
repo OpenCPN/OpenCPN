@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-27 21:58-0400\n"
-"PO-Revision-Date: 2021-09-29 01:43\n"
+"POT-Creation-Date: 2021-09-28 21:47-0400\n"
+"PO-Revision-Date: 2021-10-16 00:32\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -38,7 +38,7 @@ msgstr "OpenCPN AIS varsel"
 
 #: include/AISTargetQueryDialog.h:45 include/AISTargetQueryDialog.h:56
 #: include/S57QueryDialog.h:42 include/S57QueryDialog.h:51
-#: src/canvasMenu.cpp:414 src/canvasMenu.cpp:423 src/chcanv.cpp:9380
+#: src/canvasMenu.cpp:414 src/canvasMenu.cpp:423 src/chcanv.cpp:9394
 msgid "Object Query"
 msgstr "Objekt informasjon"
 
@@ -1312,7 +1312,7 @@ msgstr "Hydrofoil"
 msgid "%02X"
 msgstr "%02X"
 
-#: src/AIS_Decoder.cpp:3028 src/options.cpp:5844
+#: src/AIS_Decoder.cpp:3084 src/options.cpp:5844
 msgid "AIS Alert"
 msgstr "AIS varsel"
 
@@ -2478,7 +2478,7 @@ msgid "-"
 msgstr "-"
 
 #: src/AISTargetListDialog.cpp:328 src/chart1.cpp:1588 src/chart1.cpp:6574
-#: src/chcanv.cpp:11553 src/chcanv.cpp:11586 src/ChInfoWin.cpp:53
+#: src/chcanv.cpp:11567 src/chcanv.cpp:11600 src/ChInfoWin.cpp:53
 #: src/cm93.cpp:6436 src/concanv.cpp:97 src/ConnectionParams.cpp:290
 #: src/ConnectionParams.cpp:348 src/ConnectionParams.cpp:981
 #: src/glChartCanvas.cpp:4172 src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1854
@@ -2796,7 +2796,7 @@ msgstr "Deaktiver"
 msgid "Activate"
 msgstr "Aktiver"
 
-#: src/canvasMenu.cpp:660 src/chcanv.cpp:3812 src/chcanv.cpp:10349
+#: src/canvasMenu.cpp:660 src/chcanv.cpp:3812 src/chcanv.cpp:10363
 #: src/concanv.cpp:136 src/concanv.cpp:151 src/concanv.cpp:190
 msgid "Route"
 msgstr "Rute"
@@ -3080,7 +3080,7 @@ msgstr "Gjenværende tid : "
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN kart oppdatering"
 
-#: src/chart1.cpp:3215 src/chcanv.cpp:12463
+#: src/chart1.cpp:3215 src/chcanv.cpp:12477
 msgid "AIS Target Query"
 msgstr "AIS-mål informasjon"
 
@@ -3234,7 +3234,7 @@ msgstr "&Vis"
 msgid "Show AIS Targets"
 msgstr "Vis AIS-mål"
 
-#: src/chart1.cpp:5606 src/chcanv.cpp:12800 src/toolbar.cpp:1315
+#: src/chart1.cpp:5606 src/chcanv.cpp:12814 src/toolbar.cpp:1315
 msgid "Attenuate less critical AIS targets"
 msgstr "Demp mindre kritiske AIS-mål"
 
@@ -3459,7 +3459,7 @@ msgstr "OpenCPN gruppenotis"
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" er tom, bytter til gruppen \"Alle aktive kart\"."
 
-#: src/chcanv.cpp:3814 src/chcanv.cpp:10351
+#: src/chcanv.cpp:3814 src/chcanv.cpp:10365
 msgid "Layer Route: "
 msgstr "Rute i lag:"
 
@@ -3509,13 +3509,13 @@ msgstr "Benytte nærliggende veipunkt?"
 
 #: src/chcanv.cpp:7625 src/chcanv.cpp:7656 src/chcanv.cpp:7671
 #: src/chcanv.cpp:7731 src/chcanv.cpp:8169 src/chcanv.cpp:8202
-#: src/chcanv.cpp:8217 src/chcanv.cpp:8274 src/chcanv.cpp:8641
-#: src/chcanv.cpp:8655 src/chcanv.cpp:8874 src/chcanv.cpp:8888
+#: src/chcanv.cpp:8217 src/chcanv.cpp:8274 src/chcanv.cpp:8648
+#: src/chcanv.cpp:8662 src/chcanv.cpp:8888 src/chcanv.cpp:8902
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN ruteopprettelse"
 
 #: src/chcanv.cpp:7650 src/chcanv.cpp:8196
-msgid "Insert (part of) this route in the new route?"
+msgid "Insert first part of this route in the new route?"
 msgstr ""
 
 #: src/chcanv.cpp:7652 src/chcanv.cpp:8198
@@ -3523,7 +3523,7 @@ msgid "Insert this route in the new route?"
 msgstr ""
 
 #: src/chcanv.cpp:7665 src/chcanv.cpp:8211
-msgid "Append (part of) this route to the new route?"
+msgid "Append last part of this route to the new route?"
 msgstr ""
 
 #: src/chcanv.cpp:7667 src/chcanv.cpp:8213
@@ -3542,128 +3542,128 @@ msgstr " kortere enn loksodrom.\n\n"
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Ønsker du å inkludere storsirkel rutepunkter for denne leggen?"
 
-#: src/chcanv.cpp:8615 src/chcanv.cpp:8849
+#: src/chcanv.cpp:8622 src/chcanv.cpp:8863
 msgid "Replace this RoutePoint by the nearby Waypoint?"
 msgstr ""
 
-#: src/chcanv.cpp:8617 src/chcanv.cpp:8851
+#: src/chcanv.cpp:8624 src/chcanv.cpp:8865
 msgid "OpenCPN RoutePoint change"
 msgstr ""
 
-#: src/chcanv.cpp:8636 src/chcanv.cpp:8869
-msgid "(Part of) Route to be appended to dragged route?"
+#: src/chcanv.cpp:8643 src/chcanv.cpp:8883
+msgid "Last part of route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8638 src/chcanv.cpp:8871
+#: src/chcanv.cpp:8645 src/chcanv.cpp:8885
 msgid "Full route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8650 src/chcanv.cpp:8883
-msgid "(Part of) Route to be inserted into dragged route?"
+#: src/chcanv.cpp:8657 src/chcanv.cpp:8897
+msgid "First part of route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8652 src/chcanv.cpp:8885
+#: src/chcanv.cpp:8659 src/chcanv.cpp:8899
 msgid "Full route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8667 src/chcanv.cpp:8900
+#: src/chcanv.cpp:8674 src/chcanv.cpp:8914
 msgid "Do you really want to delete and replace this WayPoint"
 msgstr ""
 
-#: src/chcanv.cpp:8669 src/chcanv.cpp:8902
+#: src/chcanv.cpp:8676 src/chcanv.cpp:8916
 msgid "which has been created manually?"
 msgstr ""
 
-#: src/chcanv.cpp:9375 src/chcanv.cpp:9385 src/S57QueryDialog.cpp:87
+#: src/chcanv.cpp:9389 src/chcanv.cpp:9399 src/S57QueryDialog.cpp:87
 #: src/S57QueryDialog.cpp:249
 msgid "ObjectQuery"
 msgstr "Objekt info"
 
-#: src/chcanv.cpp:9531 src/chcanv.cpp:9535 src/routemanagerdialog.cpp:2444
+#: src/chcanv.cpp:9545 src/chcanv.cpp:9549 src/routemanagerdialog.cpp:2444
 #: src/routemanagerdialog.cpp:2448 src/RoutePropDlgImpl.cpp:921
 msgid "Waypoint Properties"
 msgstr "Veipunkt egenskaper"
 
-#: src/chcanv.cpp:9531 src/routemanagerdialog.cpp:2444
+#: src/chcanv.cpp:9545 src/routemanagerdialog.cpp:2444
 #: src/RoutePropDlgImpl.cpp:504
 msgid "Layer"
 msgstr "Lag"
 
-#: src/chcanv.cpp:9617
+#: src/chcanv.cpp:9631
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Det er et eksisterende veipunkt på samme sted som det du limer inn. Vil du koble det sammen med innlimt data?\n\n"
 
-#: src/chcanv.cpp:9619
+#: src/chcanv.cpp:9633
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Svarer du 'NEI' opprettes et nytt veipunkt på samme plass."
 
-#: src/chcanv.cpp:9620
+#: src/chcanv.cpp:9634
 msgid "Merge waypoint?"
 msgstr "Koble sammen veipunkt?"
 
-#: src/chcanv.cpp:9685
+#: src/chcanv.cpp:9699
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Det er eksisterende veipunkter på samme sted som noen av de du limer inn. Vil du koble de innlimte punktene sammen med de?\n\n"
 
-#: src/chcanv.cpp:9688
+#: src/chcanv.cpp:9702
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Svarer du 'NEI' opprettes det nye veipunkter for denne ruten."
 
-#: src/chcanv.cpp:9689
+#: src/chcanv.cpp:9703
 msgid "Merge waypoints?"
 msgstr "Koble sammen veipunkter?"
 
-#: src/chcanv.cpp:10170 src/chcanv.cpp:10199 src/RolloverWin.cpp:133
+#: src/chcanv.cpp:10184 src/chcanv.cpp:10213 src/RolloverWin.cpp:133
 #: src/RolloverWin.cpp:237 src/RolloverWin.cpp:387
 msgid "RouteLegInfoRollover"
 msgstr "RuteleggInfoMusOver"
 
-#: src/chcanv.cpp:10937
+#: src/chcanv.cpp:10951
 msgid "MBTile requires OpenGL to be enabled"
 msgstr "MBTile krever at OpenGL er aktivert"
 
-#: src/chcanv.cpp:11571 src/options.cpp:5429 src/options.cpp:5568
+#: src/chcanv.cpp:11585 src/options.cpp:5429 src/options.cpp:5568
 #: src/options.cpp:5715 src/options.cpp:5962
 msgid "Feet"
 msgstr "Fot"
 
-#: src/chcanv.cpp:11573 src/options.cpp:5401 src/options.cpp:5430
+#: src/chcanv.cpp:11587 src/options.cpp:5401 src/options.cpp:5430
 #: src/options.cpp:5547 src/options.cpp:5569 src/options.cpp:5688
 #: src/options.cpp:5715 src/options.cpp:5941 src/options.cpp:5962
 msgid "Meters"
 msgstr "Meter"
 
-#: src/chcanv.cpp:11575 src/options.cpp:5431 src/options.cpp:5570
+#: src/chcanv.cpp:11589 src/options.cpp:5431 src/options.cpp:5570
 #: src/options.cpp:5715 src/options.cpp:5962
 msgid "Fathoms"
 msgstr "Favner"
 
-#: src/chcanv.cpp:11578
+#: src/chcanv.cpp:11592
 msgid "OverZoom"
 msgstr "Overzoom"
 
-#: src/chcanv.cpp:11952 src/chcanv.cpp:11953
+#: src/chcanv.cpp:11966 src/chcanv.cpp:11967
 msgid "ExtendedTideIcon"
 msgstr "UtvidetTidevannsIkon"
 
-#: src/chcanv.cpp:12251
+#: src/chcanv.cpp:12265
 msgid "CurrentValue"
 msgstr "Strøm"
 
-#: src/chcanv.cpp:12799
+#: src/chcanv.cpp:12813
 msgid "Show all AIS Targets"
 msgstr "Vis alle AIS-målene"
 
-#: src/chcanv.cpp:12801 src/toolbar.cpp:1229 src/toolbar.cpp:1317
+#: src/chcanv.cpp:12815 src/toolbar.cpp:1229 src/toolbar.cpp:1317
 #: src/toolbar.cpp:1320
 msgid "Hide AIS Targets"
 msgstr "Skjul AIS-mål"
 
-#: src/chcanv.cpp:13459
+#: src/chcanv.cpp:13473
 msgid "Show This Chart"
 msgstr "Vis dette kartet"
 
-#: src/chcanv.cpp:13464
+#: src/chcanv.cpp:13478
 msgid "Hide This Chart"
 msgstr "Skjul dette kartet"
 

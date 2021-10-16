@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:21-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"PO-Revision-Date: 2021-10-16 00:32\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -82,7 +82,7 @@ msgstr "Kaardid: %s"
 
 #: src/chartdldr_pi.cpp:689
 msgid " from "
-msgstr ""
+msgstr " saadud "
 
 #: src/chartdldr_pi.cpp:697 src/chartdldrgui.cpp:284
 msgid "Charts"
@@ -94,7 +94,7 @@ msgstr "Uus"
 
 #: src/chartdldr_pi.cpp:777 src/chartdldrgui.h:148 src/chartdldrgui.h:214
 msgid "Out of date"
-msgstr ""
+msgstr "Vananenud"
 
 #: src/chartdldr_pi.cpp:783
 msgid "Up to date"
@@ -109,7 +109,7 @@ msgstr "%lu kaarte kokku, %lu uuendatud, %lu uued"
 #: src/chartdldr_pi.cpp:1331 src/chartdldr_pi.cpp:1348 src/chartdldr_pi.cpp:1366
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
-msgstr ""
+msgstr "%lu kaarte kokku, %lu uuendatud, %lu uued, %lu valitud"
 
 #: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:1661
 msgid "(Please update first)"
@@ -181,19 +181,19 @@ msgstr "Kataloogi allalaadimine nurjus: %s \n"
 
 #: src/chartdldr_pi.cpp:1243 src/chartdldr_pi.cpp:1252 src/chartdldrgui.cpp:340
 msgid "Select All"
-msgstr ""
+msgstr "Vali kõik"
 
 #: src/chartdldr_pi.cpp:1246 src/chartdldrgui.cpp:342 src/chartdldrgui.cpp:374
 msgid "Select None"
-msgstr ""
+msgstr "Ära vali midagi"
 
 #: src/chartdldr_pi.cpp:1247
 msgid "De-select all charts in the list."
-msgstr ""
+msgstr "Vali uuesti kõik kaardid nimekirjast."
 
 #: src/chartdldr_pi.cpp:1253 src/chartdldrgui.cpp:343
 msgid "Select all charts in the list."
-msgstr ""
+msgstr "Vali kõik kaardid nimekirjast."
 
 #: src/chartdldr_pi.cpp:1380
 msgid "No charts selected for download."
@@ -366,7 +366,7 @@ msgstr "Uuenda kõiki"
 
 #: src/chartdldrgui.cpp:272
 msgid "Download all chart catalogs, and then update charts."
-msgstr ""
+msgstr "Lae kõik kaardikataloogid alla ning siis kaasajasta kaardid."
 
 #: src/chartdldrgui.cpp:278
 msgid "Download Charts..."
@@ -378,32 +378,32 @@ msgstr "Olek"
 
 #: src/chartdldrgui.cpp:303
 msgid "Date"
-msgstr ""
+msgstr "Kuupäev"
 
 #: src/chartdldrgui.cpp:306
 msgid "Chart Description"
-msgstr ""
+msgstr "Kaardi kirjeldus"
 
 #: src/chartdldrgui.cpp:331
 msgid "Select New"
-msgstr ""
+msgstr "Vali uued"
 
 #: src/chartdldrgui.cpp:332
 msgid "Check all charts that are 'New' in the list."
-msgstr ""
+msgstr "Vali kõik kaardid, mis on nimekirjas 'Uued'."
 
 #: src/chartdldrgui.cpp:335
 msgid "Select Updated"
-msgstr ""
+msgstr "Vali uuendatud"
 
 #: src/chartdldrgui.cpp:336
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr ""
+msgstr "Vali kõik kaardid, mis on nimekirjas 'Vananenud'."
 
 #: src/chartdldrgui.cpp:346
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr ""
+msgstr "%u kaarte kokku, %u uuendatud, %u uued, %u valitud"
 
 #: src/chartdldrgui.cpp:353
 #, c-format
