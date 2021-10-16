@@ -4331,13 +4331,12 @@ bool ChartCanvas::GetCanvasPointPixVP(ViewPort &vp, double rlat, double rlon,
   // some projections give nan values when invisible values (other side of
   // world) are requested we should stop using integer coordinates or return
   // false here (and test it everywhere)
-  if (std::isnan(p.m_x)) {
-    *r = wxPoint(INVALID_COORD, INVALID_COORD);
-    return false;
+  if (std::isfinite(p.m_x) && std::isfinite(p.m_y)) {
+    *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+    return true;
   }
-
-  *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
-  return true;
+  *r = wxPoint(INVALID_COORD, INVALID_COORD);
+  return false;
 }
 
 void ChartCanvas::GetCanvasPixPoint(double x, double y, double &lat,
