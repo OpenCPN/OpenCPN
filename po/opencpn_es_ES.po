@@ -5913,7 +5913,7 @@ msgstr "Una sentencia NMEA tiene generalmente una longitud de 3 caracteres (como
 " Puede tener también un prefijo de dos letras que identifican la fuente, llamado TALKER, del mensaje.\n"
 " Una secuencia completa es similar a GPGGA o AITXT.\n"
 " Se pueden filtrar las sentencias con ciertos prefijos TALKER (como GP, AI etc.).\n"
-" El filtro acepta también Regular Expressions (REGEX) con 6 o más caracteres."
+" El filtro acepta también Regular Expressions (REGEX) con 6 o más caracteres. \n\n"
 
 #: src/options.cpp:11194
 msgid "REGEX syntax error: \n"

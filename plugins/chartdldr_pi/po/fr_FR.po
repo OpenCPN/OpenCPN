@@ -408,7 +408,7 @@ msgstr "Sélectionner toutes les cartes \"périmées\" de la liste"
 #: src/chartdldrgui.cpp:346
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr "%u total cartes, %u mises à jour, %u sélectionnées"
+msgstr "%u total cartes, %u mises à jour, %u Nouvelle(s), %u sélectionnées"
 
 #: src/chartdldrgui.cpp:353
 #, c-format

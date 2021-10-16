@@ -5913,7 +5913,7 @@ msgstr "Uma sentença NMEA é geralmente de 3 caracteres longo (como RMC, GGA et
 " também pode ter um prefixo de duas letras, identificando a origem, ou falador, da mensagem. \n"
 " as frases inteiras então parecem GPGGA ou AITXT.\n"
 " você pode filtrar todas as frases com determinado prefixo falador (como GP, AI etc.). \n"
-" o filtro aceita apenas esses três formatos."
+" o filtro aceita apenas esses três formatos.\n\n"
 
 #: src/options.cpp:11194
 msgid "REGEX syntax error: \n"
