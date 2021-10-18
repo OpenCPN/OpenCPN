@@ -271,6 +271,22 @@ MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
   m_pRoutePoint = NULL;
   m_SaveDefaultDlg = NULL;
   CenterOnScreen();
+
+#ifdef __WXOSX__
+  Connect(wxEVT_ACTIVATE,
+          wxActivateEventHandler(MarkInfoDlg::OnActivate),
+          NULL, this);
+#endif
+
+}
+
+void MarkInfoDlg::OnActivate(wxActivateEvent& event){
+    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+    long int style = pWin->GetWindowStyle();
+    if (event.GetActive())
+      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+    else
+      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
 void MarkInfoDlg::initialize_images(void) {

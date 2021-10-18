@@ -368,6 +368,8 @@ public:
   bool UpdateProperties(bool positionOnly = false);
   void ValidateMark(void);
   bool SaveChanges();
+  void OnActivate(wxActivateEvent& event);
+
   wxSimpleHtmlListBox* GetSimpleBox() {
     return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox);
   }

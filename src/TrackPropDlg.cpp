@@ -158,6 +158,12 @@ TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
           wxCommandEventHandler(TrackPropDlg::OnTrackPropMenuSelected), NULL,
           this);
 
+#ifdef __WXOSX__
+  Connect(wxEVT_ACTIVATE,
+          wxActivateEventHandler(TrackPropDlg::OnActivate),
+          NULL, this);
+#endif
+
   if (!m_bcompact) {
     m_buttonAddLink->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                              wxCommandEventHandler(TrackPropDlg::OnAddLink),
@@ -249,6 +255,16 @@ TrackPropDlg::~TrackPropDlg() {
 
   instanceFlag = false;
 }
+
+void TrackPropDlg::OnActivate(wxActivateEvent& event){
+    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+    long int style = pWin->GetWindowStyle();
+    if (event.GetActive())
+      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+    else
+      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
+}
+
 
 void TrackPropDlg::RecalculateSize(void) {
   //  Make an estimate of the dialog size, without scrollbars showing

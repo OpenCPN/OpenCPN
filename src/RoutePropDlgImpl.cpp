@@ -253,6 +253,12 @@ RoutePropDlgImpl::RoutePropDlgImpl(wxWindow* parent, wxWindowID id,
   Connect(wxEVT_COMMAND_MENU_SELECTED,
           wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected),
           NULL, this);
+
+#ifdef __WXOSX__
+  Connect(wxEVT_ACTIVATE,
+          wxActivateEventHandler(RoutePropDlgImpl::OnActivate),
+          NULL, this);
+#endif
 }
 
 RoutePropDlgImpl::~RoutePropDlgImpl() {
@@ -274,6 +280,15 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance(wxWindow* parent) {
     instanceFlag = true;
   }
   return single;
+}
+
+void RoutePropDlgImpl::OnActivate(wxActivateEvent& event){
+    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+    long int style = pWin->GetWindowStyle();
+    if (event.GetActive())
+      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+    else
+      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
 void RoutePropDlgImpl::RecalculateSize(void) {
