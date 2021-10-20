@@ -186,8 +186,8 @@ void LineBuffer::pushGrandeBarbule(int b, int l) {
 
 void LineBuffer::pushTriangle(int b, int l) {
   int dim = (l * 100) / 250;
-  pushLine(b, 0, b + dim, l);
-  pushLine(b + (dim * 2), 0, b + dim, l);
+  pushLine(b, 0, b + dim, -l);
+  pushLine(b + (dim * 2), 0, b + dim, -l);
 }
 
 void LineBuffer::Finalize() {
