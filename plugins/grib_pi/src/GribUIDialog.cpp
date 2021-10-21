@@ -56,6 +56,8 @@ int m_DialogStyle;
 int m_SavedZoneSelMode;
 int m_ZoneSelMode;
 
+extern grib_pi *g_pi;
+
 #ifdef __MSVC__
 #if _MSC_VER < 1700
 int round(double x) {
@@ -1655,7 +1657,10 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
     m_grib_dir = dialog->GetDirectory();
     dialog->GetPaths(m_file_names);
     OpenFile();
-    DoZoomToCenter();
+    if (g_pi){
+      if (g_pi->m_bZoomToCenterAtInit)
+        DoZoomToCenter();
+    }
     SetDialogsStyleSizePosition(true);
   }
   delete dialog;
