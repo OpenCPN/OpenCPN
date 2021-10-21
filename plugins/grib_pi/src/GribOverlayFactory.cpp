@@ -2434,7 +2434,14 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs(int settings, int x, int y,
   if (m_Settings.Settings[settings].m_iBarbedColour == 1)
     arrowColor = GetGraphicColor(settings, vkn);
 
+//TODO
+//  Needs investigation
+//  This conditional should not really be necessary, but is safe.
+#ifndef __MSVC__
+  float penWidth = .6 / m_pixelMM;
+#else
   float penWidth = .4 / m_pixelMM;
+#endif
 
   if (m_pdc) {
     wxPen pen(arrowColor, 2);
