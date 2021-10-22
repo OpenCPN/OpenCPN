@@ -150,6 +150,7 @@ IF(DEFINED _wx_selected_config)
   IF(_wx_selected_config MATCHES "androideabi-qt")
     MESSAGE (STATUS "Building for wxQt-Android, ANDROID_ARCH: ${ANDROID_ARCH}")
     SET(QT_ANDROID "ON")
+    add_definitions("-DwxDEBUG_LEVEL=0")
     if(ANDROID_ARCH MATCHES "arm64")
       add_definitions("-DANDROID_ARM64")
     else ()
@@ -541,7 +542,7 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
         set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
     else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")
     endif ()
     set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
         CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
@@ -1519,7 +1520,7 @@ if (QT_ANDROID)
   target_link_libraries(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ANDROID_ARCH}/libarchive.a)
 elseif ( APPLE )
-    #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment 
+    #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
     target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
     target_link_libraries(${PACKAGE_NAME} PRIVATE /usr/local/lib/libarchive.dylib)
 else ()
@@ -1712,7 +1713,7 @@ if (CMAKE_HOST_WIN32)
   target_link_libraries(
     ${PACKAGE_NAME}
     PRIVATE setupapi.lib "GLU_static" psapi.lib
-    # glu32.lib 
+    # glu32.lib
   )
 
   # use gdi plus only on MSVC, it is not a free library
@@ -2235,7 +2236,7 @@ if (NOT APPLE)
 
   IF(PACKAGE_FORMAT MATCHES "DEB")
         INSTALL(FILES "buildlinux/98-sglock-ocpn.rules"
-          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ 
+          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
           DESTINATION "/lib/udev/rules.d")
   ENDIF(PACKAGE_FORMAT MATCHES "DEB")
 
