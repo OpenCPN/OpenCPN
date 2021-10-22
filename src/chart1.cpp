@@ -2020,7 +2020,8 @@ bool MyApp::OnInit()
 
     if(g_useMUI){
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-        style->chartStatusWindowTransparent = true;
+        if(style)
+          style->chartStatusWindowTransparent = true;
     }
 
 
