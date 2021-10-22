@@ -1517,10 +1517,10 @@ public:
 extern DECL_EXP bool GetSingleWaypointEx(wxString GUID,
                                          PlugIn_Waypoint_Ex *pwaypoint);
 
-extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint);
+extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent = true);
 extern DECL_EXP bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint);
 
-extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute);
+extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute, bool b_permanent = true);
 extern DECL_EXP bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute);
 
 extern DECL_EXP std::unique_ptr<PlugIn_Waypoint_Ex> GetWaypointEx_Plugin(const wxString &);

@@ -4486,7 +4486,7 @@ bool AddPlugInTrack(PlugIn_Track *ptrack, bool b_permanent) {
   return true;
 }
 
-bool DeletePluginTrack(wxString &GUID) {
+bool DeletePlugInTrack(wxString &GUID) {
   bool b_found = false;
 
   //  Find the Route
@@ -8849,7 +8849,7 @@ bool GetSingleWaypointEx(wxString GUID, PlugIn_Waypoint_Ex *pwaypoint)
   return true;
 }
 
-bool AddSingleWaypointEX(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent) {
+bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent) {
   //  Validate the waypoint parameters a little bit
 
   //  GUID
@@ -8904,7 +8904,7 @@ bool AddSingleWaypointEX(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent) {
   return true;
 }
 
-bool UpdateSingleWaypointEX(PlugIn_Waypoint_Ex *pwaypoint) {
+bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint) {
   //  Find the RoutePoint
   bool b_found = false;
   RoutePoint *prp = pWayPointMan->FindRoutePointByGUID(pwaypoint->m_GUID);
