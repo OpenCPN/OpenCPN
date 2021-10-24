@@ -1508,6 +1508,7 @@ public:
   wxString m_StartString;
   wxString m_EndString;
   wxString m_GUID;
+  bool m_isActive;
 
   Plugin_WaypointExList *pWaypointList;
 };

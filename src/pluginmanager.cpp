@@ -8805,7 +8805,7 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex *dst,
   dst->m_lon = src->m_lon;
   dst->IconName = src->GetIconName();
   dst->m_MarkName = src->GetName();
-  dst->m_MarkDescription = src->m_MarkDescription;
+  dst->m_MarkDescription = pWayPointMan->GetIconDescription(src->GetIconName());
   dst->IsVisible = src->IsVisible();
   dst->m_CreateTime = src->GetCreateTime();  // not const
   dst->m_GUID = src->m_GUID;
@@ -9125,6 +9125,7 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString &GUID) {
   dst_route->m_StartString = route->m_RouteStartString;
   dst_route->m_EndString = route->m_RouteEndString;
   dst_route->m_GUID = route->m_GUID;
+  dst_route->m_isActive = g_pRouteMan->GetpActiveRoute() == route;
 
   return r;
 }

@@ -2145,6 +2145,19 @@ wxString *WayPointman::GetIconDescription(int index) {
   return pret;
 }
 
+wxString WayPointman::GetIconDescription(wxString icon_key) {
+  MarkIcon *pmi;
+  unsigned int i;
+
+  for (i = 0; i < m_pIconArray->GetCount(); i++) {
+    pmi = (MarkIcon *)m_pIconArray->Item(i);
+    if (pmi->icon_name.IsSameAs(icon_key))
+      return wxString(pmi->icon_description);
+  }
+
+  return wxEmptyString;
+}
+
 wxString *WayPointman::GetIconKey(int index) {
   wxString *pret = NULL;
 
