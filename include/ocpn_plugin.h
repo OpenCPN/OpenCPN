@@ -1485,8 +1485,10 @@ public:
   wxString m_MarkDescription;
   wxDateTime m_CreateTime;
   bool IsVisible;
+  bool IsActive;
 
   double scamin;
+  bool b_useScamin;
   bool IsNameVisible;
   int nrange_rings;
   double RangeRingSpace;

@@ -8843,7 +8843,8 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex *dst,
   // Get other extended info
   dst->IsNameVisible = src->m_bShowName;
   dst->scamin = src->GetScaMin();
-
+  dst->b_useScamin = src->GetUseSca();
+  dst->IsActive = src->m_bIsActive;
 }
 
 static void cloneHyperlinkListEx(RoutePoint *dst, const PlugIn_Waypoint_Ex *src) {
@@ -8909,12 +8910,8 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent) {
 
   pWP->m_MarkDescription = pwaypoint->m_MarkDescription;
 
-  if (pwaypoint->m_CreateTime.IsValid())
-    pWP->SetCreateTime(pwaypoint->m_CreateTime);
-  else {
-    wxDateTime dtnow(wxDateTime::Now());
-    pWP->SetCreateTime(dtnow);
-  }
+  wxDateTime dtnow(wxDateTime::Now());
+  pWP->SetCreateTime(dtnow);
 
   pWP->m_btemp = (b_permanent == false);
 
@@ -8924,7 +8921,9 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent) {
   pWP->SetWaypointRangeRingsStep( pwaypoint->RangeRingSpace );
   pWP->SetWaypointRangeRingsColour( pwaypoint->RangeRingColor );
   pWP->SetScaMin( pwaypoint->scamin);
+  pWP->SetUseSca( pwaypoint->b_useScamin );
   pWP->SetNameShown( pwaypoint->IsNameVisible );
+  pWP->SetVisible( pwaypoint->IsVisible );
 
   pSelect->AddSelectableRoutePoint(pwaypoint->m_lat, pwaypoint->m_lon, pWP);
   if (b_permanent) pConfig->AddNewWayPoint(pWP, -1);
@@ -8981,6 +8980,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint) {
       prp->SetWaypointRangeRingsStep( pwaypoint->RangeRingSpace );
       prp->SetWaypointRangeRingsColour( pwaypoint->RangeRingColor );
       prp->SetScaMin( pwaypoint->scamin);
+      prp->SetUseSca( pwaypoint->b_useScamin );
       prp->SetNameShown( pwaypoint->IsNameVisible );
 
     }
