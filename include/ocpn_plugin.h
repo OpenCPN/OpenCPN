@@ -1512,7 +1512,8 @@ public:
   Plugin_WaypointExList *pWaypointList;
 };
 
-
+extern DECL_EXP wxArrayString GetRouteGUIDArray(void);
+extern DECL_EXP wxArrayString GetTrackGUIDArray(void);
 
 extern DECL_EXP bool GetSingleWaypointEx(wxString GUID,
                                          PlugIn_Waypoint_Ex *pwaypoint);

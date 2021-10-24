@@ -4348,6 +4348,36 @@ wxArrayString GetWaypointGUIDArray(void) {
   return result;
 }
 
+wxArrayString GetRouteGUIDArray(void) {
+  wxArrayString result;
+  RouteList *list = pRouteList;
+
+  wxRouteListNode *prpnode = list->GetFirst();
+  while (prpnode) {
+    Route *proute = prpnode->GetData();
+    result.Add(proute->m_GUID);
+
+    prpnode = prpnode->GetNext();  // Route
+  }
+
+  return result;
+}
+
+wxArrayString GetTrackGUIDArray(void) {
+  wxArrayString result;
+  TrackList *list = pTrackList;
+
+  wxTrackListNode *prpnode = list->GetFirst();
+  while (prpnode) {
+    Track *ptrack = prpnode->GetData();
+    result.Add(ptrack->m_GUID);
+
+    prpnode = prpnode->GetNext();  // Track
+  }
+
+  return result;
+}
+
 wxArrayString GetIconNameArray(void) {
   wxArrayString result;
 
