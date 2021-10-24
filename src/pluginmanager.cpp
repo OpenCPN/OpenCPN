@@ -8805,7 +8805,8 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex *dst,
   dst->m_lon = src->m_lon;
   dst->IconName = src->GetIconName();
   dst->m_MarkName = src->GetName();
-  dst->m_MarkDescription = pWayPointMan->GetIconDescription(src->GetIconName());
+  dst->m_MarkDescription = src->GetDescription();
+  dst->IconDescription = pWayPointMan->GetIconDescription(src->GetIconName());
   dst->IsVisible = src->IsVisible();
   dst->m_CreateTime = src->GetCreateTime();  // not const
   dst->m_GUID = src->m_GUID;

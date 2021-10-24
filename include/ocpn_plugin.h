@@ -1493,6 +1493,7 @@ public:
   wxColour RangeRingColor;
 
   wxString IconName;
+  wxString IconDescription;
 
   Plugin_HyperlinkList *m_HyperlinkList;
 };
