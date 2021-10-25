@@ -63,11 +63,11 @@ wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
   wxString s = _T("");
   wxString f;
   if (format == INPUT_FORMAT)
-    f = _T("%m/%d/%Y %H:%M");
+    f = _T("%x %H:%M");
   else if (format == TIMESTAMP_FORMAT)
-    f = _T("%m/%d/%Y %H:%M:%S");
+    f = _T("%x %H:%M:%S");
   else
-    f = _T(" %m/%d %H:%M");
+    f = _T(" %x %H:%M");
   switch (tz_selection) {
     case UTCINPUT:
       s.Append(ts.Format(f));
