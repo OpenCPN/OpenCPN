@@ -2442,6 +2442,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs(int settings, int x, int y,
 #else
   float penWidth = .4 / m_pixelMM;
 #endif
+  penWidth = wxMax(penWidth, 2.0);
 
   if (m_pdc) {
     wxPen pen(arrowColor, 2);
