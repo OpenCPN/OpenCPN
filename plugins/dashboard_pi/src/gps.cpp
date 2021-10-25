@@ -47,11 +47,11 @@
 DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
                                                  wxWindowID id, wxString title)
     : DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS) {
-  m_refDim = GetCharHeight();
+  m_refDim = GetCharHeight() * 90 / 100;
 
   m_cx = 35;
-  m_cy = GetCharHeight() * 35 / 10;
-  m_radius = GetCharHeight() * 2;
+  m_cy = m_refDim * 35 / 10;
+  m_radius = m_refDim * 2;
   m_scaleDelta = m_refDim / 2;
   m_scaleBase = (m_radius * 2) + (2 * m_refDim);
 
@@ -278,7 +278,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   tdc.SetTextForeground(cl);
 
   int pitch = m_refDim;
-  int offset = m_refDim / 4;
+  int offset = m_refDim * 12 / 100;
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SatNumber)
       tdc.DrawText(wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber),
@@ -314,13 +314,13 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   int m_scaleDelta = m_refDim / 2;
   int m_scaleBase = (m_radius * 2) + (2 * m_refDim);
   int pitch = m_refDim;
-  int offset = m_refDim * 4 / 10;
+  int offset = m_refDim * 25 / 100;
 
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SignalToNoiseRatio) {
       int h = m_SatInfo[idx].SignalToNoiseRatio * m_refDim / 24;  // 0.4;
       dc->DrawRectangle(idx * pitch + offset,
-                        m_scaleBase + (4 * m_scaleDelta) - h, pitch / 2, h);
+                        m_scaleBase + (4 * m_scaleDelta) - h, pitch * 60 / 100, h);
     }
   }
 
