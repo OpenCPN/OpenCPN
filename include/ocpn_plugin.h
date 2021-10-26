@@ -1467,6 +1467,7 @@ public:
                                  const double RangeDistance = 1.0,
                                  const wxColor RangeColor = wxColor( 255,0,0 ) );
   ~PlugIn_Waypoint_Ex();
+  void InitDefaults();
 
   bool GetFSStatus();     // return "free standing" status
                           // To be a "free standing waypoint"(FSWP),
@@ -1530,5 +1531,9 @@ extern DECL_EXP bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute);
 
 extern DECL_EXP std::unique_ptr<PlugIn_Waypoint_Ex> GetWaypointEx_Plugin(const wxString &);
 extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString &);
+
+extern DECL_EXP wxString GetActiveWaypointGUID(void);	// if no active waypoint, returns wxEmptyString
+extern DECL_EXP wxString GetActiveRouteGUID(void);	// if no active route, returns wxEmptyString
+
 
 #endif  //_PLUGIN_H_
