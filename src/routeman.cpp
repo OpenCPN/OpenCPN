@@ -22,7 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -666,6 +665,8 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 
   if (pRouteActivatePoint) delete pRouteActivatePoint;
   pRouteActivatePoint = NULL;
+
+  pActivePoint = NULL;
 
   console->pCDI->ClearBackground();
 
