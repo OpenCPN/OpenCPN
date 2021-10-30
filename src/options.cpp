@@ -3180,7 +3180,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   dispOptions->Add(shipToActiveGrid, 0, wxALL | wxEXPAND, border_size);
   pShowshipToActive =
       new wxCheckBox(itemPanelShip, wxID_ANY,
-                     _("Show direct route from Own ship to Active point"));
+                     _("Show direction to Active Waypoint"));
   shipToActiveGrid->Add(pShowshipToActive, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
                         border_size);
 
