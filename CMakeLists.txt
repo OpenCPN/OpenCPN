@@ -2490,6 +2490,7 @@ if (GETTEXT_MSGFMT_EXECUTABLE)
   gettext_build_mo(po/opencpn_ja_JP.po ja_JP)
   gettext_build_mo(po/opencpn_vi_VN.po vi_VN)
   gettext_build_mo(po/opencpn_he_IL.po he_IL)
+  gettext_build_mo(po/opencpn_en_GB.po en_GB)
   add_custom_target(i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
 
   if (NOT QT_ANDROID)
