@@ -1594,6 +1594,41 @@ ${LIBARCHIVE_COMMENT_END}
 																	<key>GID</key>
 																	<integer>0</integer>
 																	<key>PATH</key>
+																	<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/en_GB.lproj/OpenCPN.mo</string>
+																	<key>PATH_TYPE</key>
+																	<integer>0</integer>
+																	<key>PERMISSIONS</key>
+																	<integer>420</integer>
+																	<key>TYPE</key>
+																	<integer>3</integer>
+																	<key>UID</key>
+																	<integer>0</integer>
+																</dict>
+															</array>
+															<key>EXPANDED</key>
+															<true/>
+															<key>GID</key>
+															<integer>0</integer>
+															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/en_GB.lproj</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+                            <dict>
+															<key>CHILDREN</key>
+															<array>
+																<dict>
+																	<key>CHILDREN</key>
+																	<array/>
+																	<key>GID</key>
+																	<integer>0</integer>
+																	<key>PATH</key>
 																	<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/ca.lproj/wxstd.mo</string>
 																	<key>PATH_TYPE</key>
 																	<integer>0</integer>
