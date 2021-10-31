@@ -390,7 +390,7 @@ static int lang_list[] = {
     //    wxLANGUAGE_CHINESE_SINGAPORE,
     wxLANGUAGE_CHINESE_TAIWAN, wxLANGUAGE_CORSICAN, wxLANGUAGE_CROATIAN,
     wxLANGUAGE_CZECH, wxLANGUAGE_DANISH, wxLANGUAGE_DUTCH,
-    wxLANGUAGE_DUTCH_BELGIAN, wxLANGUAGE_ENGLISH, wxLANGUAGE_ENGLISH_UK,
+    wxLANGUAGE_DUTCH_BELGIAN, wxLANGUAGE_ENGLISH_UK,
     wxLANGUAGE_ENGLISH_US, wxLANGUAGE_ENGLISH_AUSTRALIA,
     wxLANGUAGE_ENGLISH_BELIZE, wxLANGUAGE_ENGLISH_BOTSWANA,
     wxLANGUAGE_ENGLISH_CANADA, wxLANGUAGE_ENGLISH_CARIBBEAN,
@@ -9434,7 +9434,8 @@ void options::DoOnPageChange(size_t page) {
             wxString s0 =
                 wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
             wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-            if (wxNOT_FOUND == lang_array.Index(s0)) lang_array.Add(s0);
+            if (wxNOT_FOUND == lang_array.Index(s0))
+              lang_array.Add(s0);
           }
         }
       }
@@ -9785,6 +9786,9 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   } else if (lang_canonical == _T("he_IL")) {
     dir_suffix = _T("he_IL");
     return_string = wxString("Hebrew", wxConvUTF8);
+  } else if (lang_canonical == _T("en_GB")) {
+    dir_suffix = _T("en_GB");
+    return_string = wxString("English (U.K.)", wxConvUTF8);
   } else {
     dir_suffix = lang_canonical;
     const wxLanguageInfo* info = wxLocale::FindLanguageInfo(lang_canonical);
