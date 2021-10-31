@@ -9415,8 +9415,8 @@ void options::DoOnPageChange(size_t page) {
 
       for (int it = 0; it < nLang; it++) {
         {
-          wxLog::EnableLogging(
-              FALSE);  // avoid "Cannot set locale to..." log message
+//          wxLog::EnableLogging(
+//              FALSE);  // avoid "Cannot set locale to..." log message
 
           wxLocale ltest(lang_list[it], 0);
 #if wxCHECK_VERSION(2, 9, 0)
@@ -9444,6 +9444,8 @@ void options::DoOnPageChange(size_t page) {
             else
               wxLogMessage("skipping due to duplicate...");
           }
+          else
+            wxLogMessage("  Not loaded.");
         }
       }
 
