@@ -973,7 +973,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    pmi->SetFont(pimis->pmenu_item->GetFont());
+    wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
+    pmi->SetFont( *qFont);
 #endif
 
     PrepareMenuItem( pmi );
