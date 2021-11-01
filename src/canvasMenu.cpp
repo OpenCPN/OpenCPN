@@ -958,6 +958,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #endif
                                          (*it)->GetHelp(), (*it)->GetKind());
 
+#ifdef __WXMSW__
+        wxFont *qFont = GetOCPNScaledFont(_("Menu"));
+        pmi->SetFont( *qFont);
+#endif
         PrepareMenuItem( pmi );
         submenu->Append(pmi);
         pmi->Check((*it)->IsChecked());
@@ -973,7 +977,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     pmi->SetFont( *qFont);
 #endif
 
