@@ -1,11 +1,11 @@
-#: src/options.cpp:3652 src/options.cpp:4833 src/pluginmanager.cpp:261
+#: src/options.cpp:3648 src/options.cpp:4829 src/pluginmanager.cpp:261
 #: src/pluginmanager.cpp:271 src/pluginmanager.cpp:272 src/TCWin.cpp:113
 msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-28 21:47-0400\n"
-"PO-Revision-Date: 2021-10-16 00:32\n"
+"POT-Creation-Date: 2021-10-30 20:47-0400\n"
+"PO-Revision-Date: 2021-11-01 01:12\n"
 "Last-Translator: \n"
 "Language-Team: Hungarian\n"
 "Language: hu_HU\n"
@@ -38,7 +38,7 @@ msgstr ""
 
 #: include/AISTargetQueryDialog.h:45 include/AISTargetQueryDialog.h:56
 #: include/S57QueryDialog.h:42 include/S57QueryDialog.h:51
-#: src/canvasMenu.cpp:414 src/canvasMenu.cpp:423 src/chcanv.cpp:9394
+#: src/canvasMenu.cpp:414 src/canvasMenu.cpp:423 src/chcanv.cpp:9452
 msgid "Object Query"
 msgstr "Objektum lekérdezése"
 
@@ -52,7 +52,7 @@ msgid "Link Properties"
 msgstr "Hivatkozás tulajdonságai"
 
 #: include/options.h:86 src/chart1.cpp:5650 src/chart1.cpp:5901
-#: src/chart1.cpp:6925 src/chart1.cpp:9659 src/options.cpp:4369
+#: src/chart1.cpp:6925 src/chart1.cpp:9659 src/options.cpp:4365
 #: src/toolbar.cpp:1207
 msgid "Options"
 msgstr "Beállítások"
@@ -61,13 +61,13 @@ msgstr "Beállítások"
 msgid "Print Route Selection"
 msgstr "Kiválasztott út nyomtatása"
 
-#: include/RoutePropDlg.h:161 include/RoutePropDlgImpl.h:94
-#: src/canvasMenu.cpp:1717 src/chcanv.cpp:7533 src/RoutePropDlgImpl.cpp:500
+#: include/RoutePropDlg.h:161 include/RoutePropDlgImpl.h:96
+#: src/canvasMenu.cpp:1717 src/chcanv.cpp:7529 src/RoutePropDlgImpl.cpp:515
 msgid "Route Properties"
 msgstr "Útvonal tulajdonságok"
 
 #: include/S57QueryDialog.h:88 include/S57QueryDialog.h:94
-#: src/S57QueryDialog.cpp:201
+#: src/S57QueryDialog.cpp:229
 msgid "Extra Object Info"
 msgstr ""
 
@@ -78,8 +78,8 @@ msgstr ""
 msgid "Send to GPS"
 msgstr ""
 
-#: include/TrackPropDlg.h:190 src/TrackPropDlg.cpp:1202
-#: src/TrackPropDlg.cpp:1216
+#: include/TrackPropDlg.h:191 src/TrackPropDlg.cpp:1218
+#: src/TrackPropDlg.cpp:1232
 msgid "Track properties"
 msgstr ""
 
@@ -158,12 +158,12 @@ msgstr ""
 
 #: src/AboutFrameImpl.cpp:96 src/AISTargetQueryDialog.cpp:183
 #: src/chart1.cpp:3001 src/chart1.cpp:6270 src/LinkPropDlg.cpp:134
-#: src/navutil.cpp:3147 src/options.cpp:863 src/options.cpp:3939
-#: src/options.cpp:9072 src/options.cpp:9109 src/options.cpp:11182
-#: src/options.cpp:11195 src/pluginmanager.cpp:514 src/pluginmanager.cpp:1212
-#: src/pluginmanager.cpp:2196 src/pluginmanager.cpp:2255
-#: src/pluginmanager.cpp:2295 src/pluginmanager.cpp:2331 src/Route.cpp:1259
-#: src/RoutePoint.cpp:1213 src/tcmgr.cpp:692 src/MarkInfo.cpp:1914
+#: src/navutil.cpp:3158 src/options.cpp:859 src/options.cpp:3935
+#: src/options.cpp:9069 src/options.cpp:9106 src/options.cpp:11179
+#: src/options.cpp:11192 src/pluginmanager.cpp:514 src/pluginmanager.cpp:1215
+#: src/pluginmanager.cpp:2202 src/pluginmanager.cpp:2261
+#: src/pluginmanager.cpp:2301 src/pluginmanager.cpp:2337 src/Route.cpp:1259
+#: src/RoutePoint.cpp:1213 src/tcmgr.cpp:692 src/MarkInfo.cpp:1930
 msgid "OpenCPN Info"
 msgstr "OpenCPN információ"
 
@@ -650,395 +650,395 @@ msgstr ""
 msgid "APRS"
 msgstr ""
 
-#: src/ais.cpp:272
+#: src/ais.cpp:270
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
 msgstr "Elővigyázatos terület: tengeri emlősök élőhelye (NINCS bálnafigyelés)"
 
-#: src/ais.cpp:274
+#: src/ais.cpp:272
 msgid "Caution Area: Marine mammals in area - reduce speed"
 msgstr "Elővigyázatos terület: tengeri emlősök - csökkentse a sebességet"
 
-#: src/ais.cpp:275
+#: src/ais.cpp:273
 msgid "Caution Area: Marine mammals in area - stay clear"
 msgstr "Elővigyázatos terület: tengeri emlősök - tartózkodjon távol"
 
-#: src/ais.cpp:276
+#: src/ais.cpp:274
 msgid "Caution Area: Marine mammals in area - report sightings"
 msgstr "Elővigyázatos terület: tengeri emlősök - jelentse a mefigyelésüket"
 
-#: src/ais.cpp:277
+#: src/ais.cpp:275
 msgid "Caution Area: Protected habitat - reduce speed"
 msgstr "Elővigyázatos terület: védett élőhely - csökkentse a sebességet"
 
-#: src/ais.cpp:278
+#: src/ais.cpp:276
 msgid "Caution Area: Protected habitat - stay clear"
 msgstr "Elővigyázatos terület: védett élőhely - tartózkodjon távol"
 
-#: src/ais.cpp:279
+#: src/ais.cpp:277
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
 msgstr "Elővigyázatos terület: védett élőhely - halászat és horgonyzás tiltva"
 
-#: src/ais.cpp:280
+#: src/ais.cpp:278
 msgid "Caution Area: Derelicts (drifting objects)"
 msgstr "Elővigyázatos terület: Elhagyott (sodródó tárgyak)"
 
-#: src/ais.cpp:281
+#: src/ais.cpp:279
 msgid "Caution Area: Traffic congestion"
 msgstr "Elővigyázatos terület: forgalmi torlódás"
 
-#: src/ais.cpp:282
+#: src/ais.cpp:280
 msgid "Caution Area: Marine event"
 msgstr "Elővigyázatos terület: tengeri esemény"
 
-#: src/ais.cpp:283
+#: src/ais.cpp:281
 msgid "Caution Area: Divers down"
 msgstr "Elővigyázatos terület: búvárok"
 
-#: src/ais.cpp:284
+#: src/ais.cpp:282
 msgid "Caution Area: Swim area"
 msgstr "Elővigyázatos terület: úszók"
 
-#: src/ais.cpp:285
+#: src/ais.cpp:283
 msgid "Caution Area: Dredge operations"
 msgstr "Elővigyázatos terület: mederkotrás"
 
-#: src/ais.cpp:286
+#: src/ais.cpp:284
 msgid "Caution Area: Survey operations"
 msgstr "Elővigyázatos terület: felmérés"
 
-#: src/ais.cpp:287
+#: src/ais.cpp:285
 msgid "Caution Area: Underwater operation"
 msgstr "Elővigyázatos terület: vízalatti tevékenység"
 
-#: src/ais.cpp:288
+#: src/ais.cpp:286
 msgid "Caution Area: Seaplane operations"
 msgstr "Elővigyázatos terület: repülőgépek"
 
-#: src/ais.cpp:289
+#: src/ais.cpp:287
 msgid "Caution Area: Fishery - nets in water"
 msgstr "Elővigyázatos terület: halászhálók a vízben"
 
-#: src/ais.cpp:290
+#: src/ais.cpp:288
 msgid "Caution Area: Cluster of fishing vessels"
 msgstr "Elővigyázatos terület: halászhajók köteléke"
 
-#: src/ais.cpp:291
+#: src/ais.cpp:289
 msgid "Caution Area: Fairway closed"
 msgstr "Elővigyázatos terület: útvonal zárva"
 
-#: src/ais.cpp:292
+#: src/ais.cpp:290
 msgid "Caution Area: Harbour closed"
 msgstr "Elővigyázatos terület: kikötő zárva"
 
-#: src/ais.cpp:293
+#: src/ais.cpp:291
 msgid "Caution Area: Risk (define in Associated text field)"
 msgstr "Elővigyázatos terület: veszély (külön szövegben meghatározva)"
 
-#: src/ais.cpp:294
+#: src/ais.cpp:292
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "Elővigyázatos terület: vízalatti járművek"
 
-#: src/ais.cpp:295 src/ais.cpp:306 src/ais.cpp:314 src/ais.cpp:321
-#: src/ais.cpp:322 src/ais.cpp:323 src/ais.cpp:324 src/ais.cpp:325
-#: src/ais.cpp:326 src/ais.cpp:327 src/ais.cpp:328 src/ais.cpp:329
-#: src/ais.cpp:330 src/ais.cpp:334 src/ais.cpp:335 src/ais.cpp:336
-#: src/ais.cpp:337 src/ais.cpp:338 src/ais.cpp:352 src/ais.cpp:353
-#: src/ais.cpp:354 src/ais.cpp:363 src/ais.cpp:364 src/ais.cpp:386
-#: src/ais.cpp:387 src/ais.cpp:388 src/ais.cpp:390 src/ais.cpp:393
-#: src/ais.cpp:394 src/ais.cpp:395 src/ais.cpp:396 src/ais.cpp:397
-#: src/ais.cpp:401 src/ais.cpp:402
+#: src/ais.cpp:293 src/ais.cpp:304 src/ais.cpp:312 src/ais.cpp:319
+#: src/ais.cpp:320 src/ais.cpp:321 src/ais.cpp:322 src/ais.cpp:323
+#: src/ais.cpp:324 src/ais.cpp:325 src/ais.cpp:326 src/ais.cpp:327
+#: src/ais.cpp:328 src/ais.cpp:332 src/ais.cpp:333 src/ais.cpp:334
+#: src/ais.cpp:335 src/ais.cpp:336 src/ais.cpp:350 src/ais.cpp:351
+#: src/ais.cpp:352 src/ais.cpp:361 src/ais.cpp:362 src/ais.cpp:384
+#: src/ais.cpp:385 src/ais.cpp:386 src/ais.cpp:388 src/ais.cpp:391
+#: src/ais.cpp:392 src/ais.cpp:393 src/ais.cpp:394 src/ais.cpp:395
+#: src/ais.cpp:399 src/ais.cpp:400
 msgid "(reserved for future use)"
 msgstr "(későbbi felhasználásra foglalt)"
 
-#: src/ais.cpp:296
+#: src/ais.cpp:294
 msgid "Environmental Caution Area: Storm front (line squall)"
 msgstr "Meteorológiai elővigyázatos terület: vihar front"
 
-#: src/ais.cpp:297
+#: src/ais.cpp:295
 msgid "Environmental Caution Area: Hazardous sea ice"
 msgstr "Meteorológiai elővigyázatos terület: veszélyes úszó jég"
 
-#: src/ais.cpp:298
+#: src/ais.cpp:296
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
 msgstr "Meteorológiai elővigyázatos terület: viharjelzés (cella vagy front)"
 
-#: src/ais.cpp:300
+#: src/ais.cpp:298
 msgid "Environmental Caution Area: High wind"
 msgstr "Meteorológiai elővigyázatos terület: erős szél"
 
-#: src/ais.cpp:301
+#: src/ais.cpp:299
 msgid "Environmental Caution Area: High waves"
 msgstr "Meteorológiai elővigyázatos terület: magas hullámok"
 
-#: src/ais.cpp:302
+#: src/ais.cpp:300
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
 msgstr "Meteorológiai elővigyázatos terület: korlátozott látás (köd, eső stb.)"
 
-#: src/ais.cpp:304
+#: src/ais.cpp:302
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Meteorológiai elővigyázatos terület: erős áramlatok"
 
-#: src/ais.cpp:305
+#: src/ais.cpp:303
 msgid "Environmental Caution Area: Heavy icing"
 msgstr "Meteorológiai elővigyázatos terület: erős jegesedés"
 
-#: src/ais.cpp:307
+#: src/ais.cpp:305
 msgid "Restricted Area: Fishing prohibited"
 msgstr "Korlátozott terület: halászat tiltott"
 
-#: src/ais.cpp:308
+#: src/ais.cpp:306
 msgid "Restricted Area: No anchoring."
 msgstr "Korlátozott terület: horgonyzás tiltott"
 
-#: src/ais.cpp:309
+#: src/ais.cpp:307
 msgid "Restricted Area: Entry approval required prior to transit"
 msgstr "Korlátozott terület: belépés engedélyhez kötött"
 
-#: src/ais.cpp:310
+#: src/ais.cpp:308
 msgid "Restricted Area: Entry prohibited"
 msgstr "Korlátozott terület: belépés tiltott"
 
-#: src/ais.cpp:311
+#: src/ais.cpp:309
 msgid "Restricted Area: Active military OPAREA"
 msgstr "Korlátozott terület: katonai műveleti terület"
 
-#: src/ais.cpp:312
+#: src/ais.cpp:310
 msgid "Restricted Area: Firing - danger area."
 msgstr "Korlátozott terület: lövészet - veszélyes terület"
 
-#: src/ais.cpp:313
+#: src/ais.cpp:311
 msgid "Restricted Area: Drifting Mines"
 msgstr "Korlátozott terület: sodródó aknák"
 
-#: src/ais.cpp:315
+#: src/ais.cpp:313
 msgid "Anchorage Area: Anchorage open"
 msgstr "Horgonyzási terület: horgonyzóhely nyitva "
 
-#: src/ais.cpp:316
+#: src/ais.cpp:314
 msgid "Anchorage Area: Anchorage closed"
 msgstr "Horgonyzási terület: horgonyzóhely zárva"
 
-#: src/ais.cpp:317
+#: src/ais.cpp:315
 msgid "Anchorage Area: Anchoring prohibited"
 msgstr "Horgonyzási terület: horgonyzás tiltott"
 
-#: src/ais.cpp:318
+#: src/ais.cpp:316
 msgid "Anchorage Area: Deep draft anchorage"
 msgstr "Horgonyzási terület: mély merülésű horgonyzás"
 
-#: src/ais.cpp:319
+#: src/ais.cpp:317
 msgid "Anchorage Area: Shallow draft anchorage"
 msgstr "Horgonyzási terület: sekély merülésű horgonyzás"
 
-#: src/ais.cpp:320
+#: src/ais.cpp:318
 msgid "Anchorage Area: Vessel transfer operations"
 msgstr "Horgonyzási terület: hajó átvitel"
 
-#: src/ais.cpp:331
+#: src/ais.cpp:329
 msgid "Security Alert - Level 1"
 msgstr "Biztonsági riasztás: 1. szint"
 
-#: src/ais.cpp:332
+#: src/ais.cpp:330
 msgid "Security Alert - Level 2"
 msgstr "Biztonsági riasztás: 2. szint"
 
-#: src/ais.cpp:333
+#: src/ais.cpp:331
 msgid "Security Alert - Level 3"
 msgstr "Biztonsági riasztás: 3. szint"
 
-#: src/ais.cpp:339
+#: src/ais.cpp:337
 msgid "Distress Area: Vessel disabled and adrift"
 msgstr "Vészhelyzet terület: sodródó, műveletképtelen hajó"
 
-#: src/ais.cpp:340
+#: src/ais.cpp:338
 msgid "Distress Area: Vessel sinking"
 msgstr "Vészhelyzet terület: süllyedő hajó"
 
-#: src/ais.cpp:341
+#: src/ais.cpp:339
 msgid "Distress Area: Vessel abandoning ship"
 msgstr "Vészhelyzet terület: hajót elhagyó legénység"
 
-#: src/ais.cpp:342
+#: src/ais.cpp:340
 msgid "Distress Area: Vessel requests medical assistance"
 msgstr "Vészhelyzet terület: hajó orvosi segítséget kér"
 
-#: src/ais.cpp:343
+#: src/ais.cpp:341
 msgid "Distress Area: Vessel flooding"
 msgstr "Vészhelyzet terület: hajó elárasztva"
 
-#: src/ais.cpp:344
+#: src/ais.cpp:342
 msgid "Distress Area: Vessel fire/explosion"
 msgstr "Vészhelyzet terület: hajón tűz vagy robbanás"
 
-#: src/ais.cpp:345
+#: src/ais.cpp:343
 msgid "Distress Area: Vessel grounding"
 msgstr "Vészhelyzet terület: hajó megfeneklett"
 
-#: src/ais.cpp:346
+#: src/ais.cpp:344
 msgid "Distress Area: Vessel collision"
 msgstr "Vészhelyzet terület: hajó ütközött"
 
-#: src/ais.cpp:347
+#: src/ais.cpp:345
 msgid "Distress Area: Vessel listing/capsizing"
 msgstr "Vészhelyzet terület: hajó dől, felborul"
 
-#: src/ais.cpp:348
+#: src/ais.cpp:346
 msgid "Distress Area: Vessel under assault"
 msgstr "Vészhelyzet terület: hajó támadás alatt"
 
-#: src/ais.cpp:349
+#: src/ais.cpp:347
 msgid "Distress Area: Person overboard"
 msgstr "Vészhelyzet terület: ember a vízben"
 
-#: src/ais.cpp:350
+#: src/ais.cpp:348
 msgid "Distress Area: SAR area"
 msgstr "Vészhelyzet terület: kutatás-mentési terület"
 
-#: src/ais.cpp:351
+#: src/ais.cpp:349
 msgid "Distress Area: Pollution response area"
 msgstr "Vészhelyzet terület: szennyezés elhárítás"
 
-#: src/ais.cpp:355
+#: src/ais.cpp:353
 msgid "Instruction: Contact VTS at this point/juncture"
 msgstr "Utasítás: lépjen kapcsolatba a VTS-sel ennél a pontnál"
 
-#: src/ais.cpp:356
+#: src/ais.cpp:354
 msgid "Instruction: Contact Port Administration at this point/juncture"
 msgstr "Utasítás: Lépjen kapcsolatba a kikötői hatósággal ezen a ponton"
 
-#: src/ais.cpp:358
+#: src/ais.cpp:356
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "Utasítás: Ne haladjon tovább ennél a pontnál"
 
-#: src/ais.cpp:359
+#: src/ais.cpp:357
 msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
 msgstr "Utasítás: várjon utasításra, mielőtt továbbhalad ezen ponton"
 
-#: src/ais.cpp:361
+#: src/ais.cpp:359
 msgid "Proceed to this location - await instructions"
 msgstr "Haladjon tovább erre a pontra - várjon utasításra"
 
-#: src/ais.cpp:362
+#: src/ais.cpp:360
 msgid "Clearance granted - proceed to berth"
 msgstr "Engedély megadva - haladjon a kikötőhelyre"
 
-#: src/ais.cpp:365
+#: src/ais.cpp:363
 msgid "Information: Pilot boarding position"
 msgstr "Információ: révkalauz átszállási pont"
 
-#: src/ais.cpp:366
+#: src/ais.cpp:364
 msgid "Information: Icebreaker waiting area"
 msgstr "Információ: jégtörő várakozási terület"
 
-#: src/ais.cpp:367
+#: src/ais.cpp:365
 msgid "Information: Places of refuge"
 msgstr "Információ: menedékhely"
 
-#: src/ais.cpp:368
+#: src/ais.cpp:366
 msgid "Information: Position of icebreakers"
 msgstr "Információ: jégtörők helyzete"
 
-#: src/ais.cpp:369
+#: src/ais.cpp:367
 msgid "Information: Location of response units"
 msgstr "Információ: beavatkozó egységek helyzete"
 
-#: src/ais.cpp:370
+#: src/ais.cpp:368
 msgid "VTS active target"
 msgstr "VTS aktív célpontok"
 
-#: src/ais.cpp:371
+#: src/ais.cpp:369
 msgid "Rogue or suspicious vessel"
 msgstr "Rosszindulatú vagy gyanús hajó"
 
-#: src/ais.cpp:372
+#: src/ais.cpp:370
 msgid "Vessel requesting non-distress assistance"
 msgstr "Nem vészhelyzeti segítséget igénylő hajó"
 
-#: src/ais.cpp:373
+#: src/ais.cpp:371
 msgid "Chart Feature: Sunken vessel"
 msgstr "Térképi elem: elsüllyedt hajó"
 
-#: src/ais.cpp:374
+#: src/ais.cpp:372
 msgid "Chart Feature: Submerged object"
 msgstr "Térképi elem: vízalatti objektum"
 
-#: src/ais.cpp:375
+#: src/ais.cpp:373
 msgid "Chart Feature: Semi-submerged object"
 msgstr "Térképi elem: félig elsüllyedt objektum"
 
-#: src/ais.cpp:376
+#: src/ais.cpp:374
 msgid "Chart Feature: Shoal area"
 msgstr "Térképi elem: zátonyos terület"
 
-#: src/ais.cpp:377
+#: src/ais.cpp:375
 msgid "Chart Feature: Shoal area due north"
 msgstr "Térképi elem: zátonyos terület északra"
 
-#: src/ais.cpp:378
+#: src/ais.cpp:376
 msgid "Chart Feature: Shoal area due east"
 msgstr "Térképi elem: zátonyos terület keletre"
 
-#: src/ais.cpp:379
+#: src/ais.cpp:377
 msgid "Chart Feature: Shoal area due south"
 msgstr "Térképi elem: zátonyos terület délre"
 
-#: src/ais.cpp:380
+#: src/ais.cpp:378
 msgid "Chart Feature: Shoal area due west"
 msgstr "Térképi elem: zátonyos terület nyugatra"
 
-#: src/ais.cpp:381
+#: src/ais.cpp:379
 msgid "Chart Feature: Channel obstruction"
 msgstr "Térképi elem: csatorna akadály"
 
-#: src/ais.cpp:382
+#: src/ais.cpp:380
 msgid "Chart Feature: Reduced vertical clearance"
 msgstr "Térképi elem: csökkentett vízszint feletti magasság"
 
-#: src/ais.cpp:383
+#: src/ais.cpp:381
 msgid "Chart Feature: Bridge closed"
 msgstr "Térképi elem: lezárt híd"
 
-#: src/ais.cpp:384
+#: src/ais.cpp:382
 msgid "Chart Feature: Bridge partially open"
 msgstr "Térképi elem: részben nyitott híd"
 
-#: src/ais.cpp:385
+#: src/ais.cpp:383
 msgid "Chart Feature: Bridge fully open"
 msgstr "Térképi elem: teljesen nyitott híd"
 
-#: src/ais.cpp:389
+#: src/ais.cpp:387
 msgid "Report from ship: Icing info"
 msgstr "Jelentés más hajóról: jég információ"
 
-#: src/ais.cpp:391
+#: src/ais.cpp:389
 msgid "Report from ship: Miscellaneous information - define in Associated text field"
 msgstr "Jelentés más hajóról: egyéb információ - csatolt szövegben leírva"
 
-#: src/ais.cpp:398
+#: src/ais.cpp:396
 msgid "Route: Recommended route"
 msgstr "Útvonal: javasolt útvonal"
 
-#: src/ais.cpp:399
+#: src/ais.cpp:397
 msgid "Route: Alternative route"
 msgstr "Útvonal: alternatív útvonal"
 
-#: src/ais.cpp:400
+#: src/ais.cpp:398
 msgid "Route: Recommended route through ice"
 msgstr "Útvonal: javasolt útvonal jégben"
 
-#: src/ais.cpp:403
+#: src/ais.cpp:401
 msgid "Other - Define in associated text field"
 msgstr "Más: csatolt szövegben definiálva"
 
-#: src/ais.cpp:405
+#: src/ais.cpp:402
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "Törlés - csatolt üzenetben leírt területek törlése"
 
-#: src/ais.cpp:407
+#: src/ais.cpp:404
 msgid "Undefined (default)"
 msgstr "Nem definiált (alapértelmezett)"
 
-#: src/ais.cpp:1792 src/ais.cpp:1793
+#: src/ais.cpp:1789 src/ais.cpp:1790
 msgid "AIS Target Name"
 msgstr ""
 
@@ -1311,7 +1311,7 @@ msgstr ""
 msgid "%02X"
 msgstr ""
 
-#: src/AIS_Decoder.cpp:3084 src/options.cpp:5844
+#: src/AIS_Decoder.cpp:3084 src/options.cpp:5840
 msgid "AIS Alert"
 msgstr ""
 
@@ -1347,7 +1347,7 @@ msgid "SAR Aircraft"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:336 src/AIS_Target_Data.cpp:347
-#: src/AISTargetListDialog.cpp:569 src/options.cpp:732 src/options.cpp:1055
+#: src/AISTargetListDialog.cpp:569 src/options.cpp:728 src/options.cpp:1051
 msgid "MMSI"
 msgstr ""
 
@@ -1401,8 +1401,8 @@ msgstr "Jelentés kora"
 msgid "Report as of"
 msgstr "Jelentés időpontja"
 
-#: src/AIS_Target_Data.cpp:529 src/RoutePropDlgImpl.cpp:799
-#: src/TrackPropDlg.cpp:346 src/TrackPropDlg.cpp:1326
+#: src/AIS_Target_Data.cpp:529 src/RoutePropDlgImpl.cpp:814
+#: src/TrackPropDlg.cpp:362 src/TrackPropDlg.cpp:1342
 msgid "Destination"
 msgstr "Célállomás"
 
@@ -1418,9 +1418,9 @@ msgstr "Jobb"
 msgid "Left"
 msgstr "Bal"
 
-#: src/AIS_Target_Data.cpp:636 src/options.cpp:5413 src/options.cpp:5555
-#: src/options.cpp:5699 src/options.cpp:5949 src/RoutePropDlg.cpp:325
-#: src/TrackPropDlg.cpp:290 src/TrackPropDlg.cpp:1328
+#: src/AIS_Target_Data.cpp:636 src/options.cpp:5409 src/options.cpp:5551
+#: src/options.cpp:5695 src/options.cpp:5945 src/RoutePropDlg.cpp:325
+#: src/TrackPropDlg.cpp:306 src/TrackPropDlg.cpp:1344
 msgid "Speed"
 msgstr "Sebesség"
 
@@ -1441,7 +1441,7 @@ msgstr "Fordulási sebesség"
 msgid "Range"
 msgstr "Távolság"
 
-#: src/AIS_Target_Data.cpp:652 src/RoutePropDlg.cpp:300 src/TrackPropDlg.cpp:285
+#: src/AIS_Target_Data.cpp:652 src/RoutePropDlg.cpp:300 src/TrackPropDlg.cpp:301
 msgid "Bearing"
 msgstr "Iránylat"
 
@@ -1474,7 +1474,7 @@ msgstr "Szélesség"
 msgid " COG Unavailable"
 msgstr " COG nem elérhető"
 
-#: src/AIS_Target_Data.cpp:814 src/navutil.cpp:4242
+#: src/AIS_Target_Data.cpp:814 src/navutil.cpp:4253
 msgid "in"
 msgstr "Hivatkozás"
 
@@ -1494,7 +1494,7 @@ msgstr ""
 msgid "Aid to Navigation"
 msgstr "Hajózási jelzés"
 
-#: src/AIS_Target_Data.cpp:908 src/options.cpp:4409 src/options.cpp:4605
+#: src/AIS_Target_Data.cpp:908 src/options.cpp:4405 src/options.cpp:4601
 #: src/CanvasOptions.cpp:318
 msgid "Base"
 msgstr "Alap"
@@ -2125,346 +2125,350 @@ msgid "Philippines"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1316
-msgid "Papua New Guinea"
+msgid "East Timor"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1318
-msgid "Pitcairn Island"
+msgid "Papua New Guinea"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1320
-msgid "Solomon Islands"
+msgid "Pitcairn Island"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1322
-msgid "American Samoa"
+msgid "Solomon Islands"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1324
+msgid "American Samoa"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:1326
 msgid "Samoa"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1329
+#: src/AIS_Target_Data.cpp:1331
 msgid "Singapore"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1331
+#: src/AIS_Target_Data.cpp:1333
 msgid "Thailand"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1333
+#: src/AIS_Target_Data.cpp:1335
 msgid "Tonga"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1335
+#: src/AIS_Target_Data.cpp:1337
 msgid "Tuvalu"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1337
+#: src/AIS_Target_Data.cpp:1339
 msgid "Viet Nam"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1340
+#: src/AIS_Target_Data.cpp:1342
 msgid "Vanuatu"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1342
+#: src/AIS_Target_Data.cpp:1344
 msgid "Wallis and Futuna Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1344
+#: src/AIS_Target_Data.cpp:1346
 msgid "South Africa"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1346
+#: src/AIS_Target_Data.cpp:1348
 msgid "Angola"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1348
+#: src/AIS_Target_Data.cpp:1350
 msgid "Algeria"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1350
+#: src/AIS_Target_Data.cpp:1352
 msgid "Saint Paul"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1352
+#: src/AIS_Target_Data.cpp:1354
 msgid "Ascension Island"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1354
+#: src/AIS_Target_Data.cpp:1356
 msgid "Burundi"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1356
+#: src/AIS_Target_Data.cpp:1358
 msgid "Benin"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1358
+#: src/AIS_Target_Data.cpp:1360
 msgid "Botswana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1360
+#: src/AIS_Target_Data.cpp:1362
 msgid "Central African Republic"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1362
+#: src/AIS_Target_Data.cpp:1364
 msgid "Cameroon"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1364
+#: src/AIS_Target_Data.cpp:1366
 msgid "Congo"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1366
+#: src/AIS_Target_Data.cpp:1368
 msgid "Comoros"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1368
+#: src/AIS_Target_Data.cpp:1370
 msgid "Capo Verde"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1370
+#: src/AIS_Target_Data.cpp:1372
 msgid "Crozet Archipelago"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1372
+#: src/AIS_Target_Data.cpp:1374
 msgid "Ivory Coast"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1374
+#: src/AIS_Target_Data.cpp:1376
 msgid "Comoros (Union of the)"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1376
+#: src/AIS_Target_Data.cpp:1378
 msgid "Djibouti"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1378
+#: src/AIS_Target_Data.cpp:1380
 msgid "Egypt"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1380
+#: src/AIS_Target_Data.cpp:1382
 msgid "Ethiopia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1382
+#: src/AIS_Target_Data.cpp:1384
 msgid "Eritrea"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1384
+#: src/AIS_Target_Data.cpp:1386
 msgid "Gabonese Republic"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1386
+#: src/AIS_Target_Data.cpp:1388
 msgid "Ghana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1388
+#: src/AIS_Target_Data.cpp:1390
 msgid "Gambia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1390
+#: src/AIS_Target_Data.cpp:1392
 msgid "Guinea-Bissau"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1392
+#: src/AIS_Target_Data.cpp:1394
 msgid "Equatorial Guinea"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1394
+#: src/AIS_Target_Data.cpp:1396
 msgid "Guinea"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1396
+#: src/AIS_Target_Data.cpp:1398
 msgid "Burkina Faso"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1398
+#: src/AIS_Target_Data.cpp:1400
 msgid "Kenya"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1400
+#: src/AIS_Target_Data.cpp:1402
 msgid "Kerguelen Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1403
+#: src/AIS_Target_Data.cpp:1405
 msgid "Liberia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1405
+#: src/AIS_Target_Data.cpp:1407
 msgid "South Sudan (Republic of)"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1407
+#: src/AIS_Target_Data.cpp:1409
 msgid "Libya"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1409
+#: src/AIS_Target_Data.cpp:1411
 msgid "Lesotho"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1411
+#: src/AIS_Target_Data.cpp:1413
 msgid "Mauritius"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1413
+#: src/AIS_Target_Data.cpp:1415
 msgid "Madagascar"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1415
+#: src/AIS_Target_Data.cpp:1417
 msgid "Mali"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1417
+#: src/AIS_Target_Data.cpp:1419
 msgid "Mozambique"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1419
+#: src/AIS_Target_Data.cpp:1421
 msgid "Mauritania"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1421
+#: src/AIS_Target_Data.cpp:1423
 msgid "Malawi"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1423
+#: src/AIS_Target_Data.cpp:1425
 msgid "Niger"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1425
+#: src/AIS_Target_Data.cpp:1427
 msgid "Nigeria"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1427
+#: src/AIS_Target_Data.cpp:1429
 msgid "Namibia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1429
+#: src/AIS_Target_Data.cpp:1431
 msgid "Reunion"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1431
+#: src/AIS_Target_Data.cpp:1433
 msgid "Rwanda"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1433
+#: src/AIS_Target_Data.cpp:1435
 msgid "Sudan"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1435
+#: src/AIS_Target_Data.cpp:1437
 msgid "Senegal"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1437
+#: src/AIS_Target_Data.cpp:1439
 msgid "Seychelles"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1439
+#: src/AIS_Target_Data.cpp:1441
 msgid "Saint Helena"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1441
-msgid "Somali Democratic Republic"
-msgstr ""
-
 #: src/AIS_Target_Data.cpp:1443
-msgid "Sierra Leone"
+msgid "Somalia"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1445
-msgid "Sao Tome and Principe"
+msgid "Sierra Leone"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1447
-msgid "Eswatini"
+msgid "Sao Tome and Principe"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1449
-msgid "Chad"
+msgid "Eswatini"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1451
-msgid "Togolese Republic"
+msgid "Chad"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:1453
+msgid "Togolese Republic"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:1455
 msgid "Tunisia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1455 src/AIS_Target_Data.cpp:1461
+#: src/AIS_Target_Data.cpp:1457 src/AIS_Target_Data.cpp:1463
 msgid "Tanzania"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1457
+#: src/AIS_Target_Data.cpp:1459
 msgid "Uganda"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1459
+#: src/AIS_Target_Data.cpp:1461
 msgid "Dem Rep.of the Congo"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1463
+#: src/AIS_Target_Data.cpp:1465
 msgid "Zambia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1465
+#: src/AIS_Target_Data.cpp:1467
 msgid "Zimbabwe"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1467
+#: src/AIS_Target_Data.cpp:1469
 msgid "Argentine Republic"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1469
+#: src/AIS_Target_Data.cpp:1471
 msgid "Brazil"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1471
+#: src/AIS_Target_Data.cpp:1473
 msgid "Bolivia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1473
+#: src/AIS_Target_Data.cpp:1475
 msgid "Chile"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1475
+#: src/AIS_Target_Data.cpp:1477
 msgid "Colombia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1477
+#: src/AIS_Target_Data.cpp:1479
 msgid "Ecuador"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1479
+#: src/AIS_Target_Data.cpp:1481
 msgid "Falkland Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1481
+#: src/AIS_Target_Data.cpp:1483
 msgid "France - Guiana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1483
+#: src/AIS_Target_Data.cpp:1485
 msgid "Guyana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1485
+#: src/AIS_Target_Data.cpp:1487
 msgid "Paraguay"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1487
+#: src/AIS_Target_Data.cpp:1489
 msgid "Peru"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1489
+#: src/AIS_Target_Data.cpp:1491
 msgid "Suriname"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1491
+#: src/AIS_Target_Data.cpp:1493
 msgid "Uruguay"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1493
+#: src/AIS_Target_Data.cpp:1495
 msgid "Venezuela"
 msgstr ""
 
@@ -2477,17 +2481,17 @@ msgid "-"
 msgstr ""
 
 #: src/AISTargetListDialog.cpp:328 src/chart1.cpp:1588 src/chart1.cpp:6574
-#: src/chcanv.cpp:11567 src/chcanv.cpp:11600 src/ChInfoWin.cpp:53
+#: src/chcanv.cpp:11634 src/chcanv.cpp:11667 src/ChInfoWin.cpp:53
 #: src/cm93.cpp:6436 src/concanv.cpp:97 src/ConnectionParams.cpp:290
 #: src/ConnectionParams.cpp:348 src/ConnectionParams.cpp:981
-#: src/glChartCanvas.cpp:4172 src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1854
-#: src/OCPNPlatform.cpp:2242 src/OCPNPlatform.cpp:2281 src/options.cpp:1024
-#: src/options.cpp:1505 src/options.cpp:2418 src/options.cpp:9859
-#: src/options.cpp:10093 src/options.cpp:11234 src/options.cpp:11381
+#: src/glChartCanvas.cpp:4175 src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1854
+#: src/OCPNPlatform.cpp:2242 src/OCPNPlatform.cpp:2281 src/options.cpp:1020
+#: src/options.cpp:1501 src/options.cpp:2414 src/options.cpp:9856
+#: src/options.cpp:10090 src/options.cpp:11231 src/options.cpp:11378
 #: src/Osenc.cpp:1675 src/routemanagerdialog.cpp:298 src/RoutePropDlg.cpp:28
 #: src/TCWin.cpp:81 src/TCWin.cpp:174 src/toolbar.cpp:3139
-#: src/TrackPropDlg.cpp:107 src/TrackPropDlg.cpp:305 src/TrackPropDlg.cpp:632
-#: src/CanvasOptions.cpp:76 src/MarkInfo.cpp:254 src/MarkInfo.cpp:292
+#: src/TrackPropDlg.cpp:107 src/TrackPropDlg.cpp:321 src/TrackPropDlg.cpp:648
+#: src/CanvasOptions.cpp:76 src/MarkInfo.cpp:254 src/MarkInfo.cpp:308
 msgid "Dialog"
 msgstr ""
 
@@ -2500,8 +2504,8 @@ msgid "Trk"
 msgstr "Nyomvonal"
 
 #: src/AISTargetListDialog.cpp:551 src/routeprintout.cpp:365
-#: src/RoutePropDlg.cpp:46 src/RoutePropDlgImpl.cpp:797 src/TrackPropDlg.cpp:323
-#: src/TrackPropDlg.cpp:658 src/TrackPropDlg.cpp:1324 src/MarkInfo.cpp:366
+#: src/RoutePropDlg.cpp:46 src/RoutePropDlgImpl.cpp:812 src/TrackPropDlg.cpp:339
+#: src/TrackPropDlg.cpp:674 src/TrackPropDlg.cpp:1340 src/MarkInfo.cpp:382
 msgid "Name"
 msgstr "Név"
 
@@ -2511,7 +2515,7 @@ msgstr "Hívójel"
 
 #: src/AISTargetListDialog.cpp:587 src/ConnectionParams.cpp:387
 #: src/ConnectionParams.cpp:522 src/ConnectionParams.cpp:659
-#: src/ConnectionParams.cpp:777 src/options.cpp:2244 src/options.cpp:2957
+#: src/ConnectionParams.cpp:777 src/options.cpp:2240 src/options.cpp:2953
 msgid "Type"
 msgstr "Típus"
 
@@ -2594,10 +2598,10 @@ msgid "AISTargetQuery"
 msgstr "AIS Cél Lekérdezés"
 
 #: src/AISTargetQueryDialog.cpp:298 src/cm93.cpp:6521
-#: src/GoToPositionDialog.cpp:149 src/options.cpp:682 src/options.cpp:784
-#: src/options.cpp:6872 src/routeprintout.cpp:428 src/TCWin.cpp:120
-#: src/TCWin.cpp:129 src/toolbar.cpp:3206 src/TrackPropDlg.cpp:594
-#: src/TrackPropDlg.cpp:978
+#: src/GoToPositionDialog.cpp:149 src/options.cpp:678 src/options.cpp:780
+#: src/options.cpp:6868 src/routeprintout.cpp:428 src/TCWin.cpp:120
+#: src/TCWin.cpp:129 src/toolbar.cpp:3206 src/TrackPropDlg.cpp:610
+#: src/TrackPropDlg.cpp:994
 msgid "OK"
 msgstr "Rendben"
 
@@ -2623,7 +2627,7 @@ msgstr ""
 msgid "Anchorage created "
 msgstr "Horgonyzóhely létrehozva "
 
-#: src/canvasMenu.cpp:269 src/canvasMenu.cpp:287 src/options.cpp:976
+#: src/canvasMenu.cpp:269 src/canvasMenu.cpp:287 src/options.cpp:972
 msgid "Menu"
 msgstr ""
 
@@ -2716,7 +2720,7 @@ msgstr ""
 msgid "CM93 Offset Dialog..."
 msgstr ""
 
-#: src/canvasMenu.cpp:545 src/options.cpp:4870 src/options.cpp:4932
+#: src/canvasMenu.cpp:545 src/options.cpp:4866 src/options.cpp:4928
 msgid "Chart Groups"
 msgstr "Térkép csoportok"
 
@@ -2774,8 +2778,8 @@ msgstr ""
 
 #: src/canvasMenu.cpp:644 src/canvasMenu.cpp:662 src/canvasMenu.cpp:732
 #: src/canvasMenu.cpp:736 src/canvasMenu.cpp:757 src/canvasMenu.cpp:764
-#: src/canvasMenu.cpp:827 src/canvasMenu.cpp:831 src/options.cpp:1780
-#: src/MarkInfo.cpp:340
+#: src/canvasMenu.cpp:827 src/canvasMenu.cpp:831 src/options.cpp:1776
+#: src/MarkInfo.cpp:356
 msgid "Properties"
 msgstr "Tulajdonságok"
 
@@ -2792,7 +2796,7 @@ msgstr "Kikapcsol"
 msgid "Activate"
 msgstr "Bekapcsol"
 
-#: src/canvasMenu.cpp:660 src/chcanv.cpp:3812 src/chcanv.cpp:10363
+#: src/canvasMenu.cpp:660 src/chcanv.cpp:3806 src/chcanv.cpp:10430
 #: src/concanv.cpp:136 src/concanv.cpp:151 src/concanv.cpp:190
 msgid "Route"
 msgstr "Útvonal"
@@ -2815,9 +2819,9 @@ msgid "Copy as KML"
 msgstr ""
 
 #: src/canvasMenu.cpp:686 src/canvasMenu.cpp:738 src/canvasMenu.cpp:791
-#: src/canvasMenu.cpp:839 src/options.cpp:972 src/options.cpp:11064
-#: src/RoutePropDlg.cpp:400 src/TrackPropDlg.cpp:882 src/MarkInfo.cpp:493
-#: src/MarkInfo.cpp:1153 src/MarkInfo.cpp:1194
+#: src/canvasMenu.cpp:839 src/options.cpp:968 src/options.cpp:11061
+#: src/RoutePropDlg.cpp:400 src/TrackPropDlg.cpp:898 src/MarkInfo.cpp:509
+#: src/MarkInfo.cpp:1169 src/MarkInfo.cpp:1210
 msgid "Delete"
 msgstr "Törlés"
 
@@ -2845,7 +2849,7 @@ msgstr ""
 msgid "Layer Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:734 src/chcanv.cpp:3986
+#: src/canvasMenu.cpp:734 src/chcanv.cpp:3981
 msgid "Track"
 msgstr ""
 
@@ -2936,13 +2940,13 @@ msgstr ""
 msgid "Do you want to rename the waypoints?"
 msgstr ""
 
-#: src/canvasMenu.cpp:1557 src/RoutePropDlgImpl.cpp:1041
-#: src/TrackPropDlg.cpp:1295
+#: src/canvasMenu.cpp:1557 src/RoutePropDlgImpl.cpp:1056
+#: src/TrackPropDlg.cpp:1311
 msgid "_A"
 msgstr ""
 
-#: src/canvasMenu.cpp:1559 src/RoutePropDlgImpl.cpp:1042
-#: src/TrackPropDlg.cpp:1296
+#: src/canvasMenu.cpp:1559 src/RoutePropDlgImpl.cpp:1057
+#: src/TrackPropDlg.cpp:1312
 msgid "_B"
 msgstr ""
 
@@ -2950,7 +2954,7 @@ msgstr ""
 msgid "Are you sure you want to delete this track?"
 msgstr ""
 
-#: src/canvasMenu.cpp:1732 src/routeman.cpp:1072
+#: src/canvasMenu.cpp:1732 src/routeman.cpp:1073
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN nyomvonal törlése"
 
@@ -3070,11 +3074,11 @@ msgstr "Hátralévő idő : "
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN térkép frissítés"
 
-#: src/chart1.cpp:3215 src/chcanv.cpp:12477
+#: src/chart1.cpp:3215 src/chcanv.cpp:12544
 msgid "AIS Target Query"
 msgstr "AIS célpont lekérdezése"
 
-#: src/chart1.cpp:4212 src/chart1.cpp:4232 src/chcanv.cpp:5420
+#: src/chart1.cpp:4212 src/chart1.cpp:4232 src/chcanv.cpp:5416
 #: src/OCPNPlatform.cpp:2034
 msgid "StatusBar"
 msgstr "Állapotsor"
@@ -3164,17 +3168,17 @@ msgstr ""
 msgid "&Navigate"
 msgstr ""
 
-#: src/chart1.cpp:5542 src/chart1.cpp:5548 src/options.cpp:5062
-#: src/options.cpp:5243 src/CanvasOptions.cpp:185
+#: src/chart1.cpp:5542 src/chart1.cpp:5548 src/options.cpp:5058
+#: src/options.cpp:5239 src/CanvasOptions.cpp:185
 msgid "Enable Chart Quilting"
 msgstr "Térkép összefűzés engedélyezése"
 
-#: src/chart1.cpp:5544 src/chart1.cpp:5550 src/options.cpp:5107
-#: src/options.cpp:5292 src/CanvasOptions.cpp:199
+#: src/chart1.cpp:5544 src/chart1.cpp:5550 src/options.cpp:5103
+#: src/options.cpp:5288 src/CanvasOptions.cpp:199
 msgid "Show Chart Outlines"
 msgstr "Térkép körvonalak mutatása"
 
-#: src/chart1.cpp:5553 src/options.cpp:6424
+#: src/chart1.cpp:5553 src/options.cpp:6420
 msgid "Show Chart Bar"
 msgstr ""
 
@@ -3202,11 +3206,11 @@ msgstr ""
 msgid "Show Navobjects"
 msgstr ""
 
-#: src/chart1.cpp:5585 src/chcanv.cpp:1302 src/toolbar.cpp:1242
+#: src/chart1.cpp:5585 src/chcanv.cpp:1296 src/toolbar.cpp:1242
 msgid "Show Tides"
 msgstr "Árapály mutatása"
 
-#: src/chart1.cpp:5586 src/chcanv.cpp:1332 src/toolbar.cpp:1236
+#: src/chart1.cpp:5586 src/chcanv.cpp:1326 src/toolbar.cpp:1236
 #: src/CanvasOptions.cpp:248
 msgid "Show Currents"
 msgstr "Áramlatok mutatása"
@@ -3224,7 +3228,7 @@ msgstr ""
 msgid "Show AIS Targets"
 msgstr "AIS célpontok mutatása"
 
-#: src/chart1.cpp:5606 src/chcanv.cpp:12814 src/toolbar.cpp:1315
+#: src/chart1.cpp:5606 src/chcanv.cpp:12881 src/toolbar.cpp:1315
 msgid "Attenuate less critical AIS targets"
 msgstr ""
 
@@ -3273,7 +3277,7 @@ msgstr ""
 msgid "Drop MOB Marker"
 msgstr "Ember A Vízben jel lerakása"
 
-#: src/chart1.cpp:5644 src/pluginmanager.cpp:5811 src/pluginmanager.cpp:5832
+#: src/chart1.cpp:5644 src/pluginmanager.cpp:5850 src/pluginmanager.cpp:5871
 msgid "Preferences"
 msgstr "Beállítások"
 
@@ -3319,7 +3323,7 @@ msgstr " Hajó "
 msgid "AIS MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:9314 src/options.cpp:3049
+#: src/chart1.cpp:9314 src/options.cpp:3045
 msgid "Own ship"
 msgstr ""
 
@@ -3363,9 +3367,9 @@ msgstr " Térkép fájl:  "
 msgid " Name:  "
 msgstr " Név:  "
 
-#: src/chartdbs.cpp:1373 src/chartdbs.cpp:1375 src/chcanv.cpp:5378
-#: src/chcanv.cpp:5381 src/chcanv.cpp:5385 src/chcanv.cpp:5388
-#: src/chcanv.cpp:5391 src/chcanv.cpp:5429 src/routemanagerdialog.cpp:690
+#: src/chartdbs.cpp:1373 src/chartdbs.cpp:1375 src/chcanv.cpp:5374
+#: src/chcanv.cpp:5377 src/chcanv.cpp:5381 src/chcanv.cpp:5384
+#: src/chcanv.cpp:5387 src/chcanv.cpp:5425 src/routemanagerdialog.cpp:690
 msgid "Scale"
 msgstr ""
 
@@ -3425,235 +3429,235 @@ msgstr "OpenCPN könyvtár keresése...."
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN térkép hozzáadása...."
 
-#: src/chcanv.cpp:1303
+#: src/chcanv.cpp:1297
 msgid "Hide Tides"
 msgstr ""
 
-#: src/chcanv.cpp:1333
+#: src/chcanv.cpp:1327
 msgid "Hide Currents"
 msgstr ""
 
-#: src/chcanv.cpp:1423 src/chcanv.cpp:1438
+#: src/chcanv.cpp:1417 src/chcanv.cpp:1432
 msgid "Group \""
 msgstr "Csoport \""
 
-#: src/chcanv.cpp:1428
+#: src/chcanv.cpp:1422
 msgid "\" is empty."
 msgstr ""
 
-#: src/chcanv.cpp:1430 src/chcanv.cpp:1445
+#: src/chcanv.cpp:1424 src/chcanv.cpp:1439
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN Csoport Közlemény"
 
-#: src/chcanv.cpp:1443
+#: src/chcanv.cpp:1437
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" üres, átkapcsolva a \"Minden aktív térkép\" csoportra."
 
-#: src/chcanv.cpp:3814 src/chcanv.cpp:10365
+#: src/chcanv.cpp:3808 src/chcanv.cpp:10432
 msgid "Layer Route: "
 msgstr "Réteg útvonal: "
 
-#: src/chcanv.cpp:3817 src/chcanv.cpp:3991
+#: src/chcanv.cpp:3811 src/chcanv.cpp:3986
 msgid "(unnamed)"
 msgstr "(névtelen)"
 
-#: src/chcanv.cpp:3821
+#: src/chcanv.cpp:3815
 msgid "Total Length: "
 msgstr "Teljes hossz: "
 
-#: src/chcanv.cpp:3823
+#: src/chcanv.cpp:3817
 msgid "Leg: from "
 msgstr "Szakasz: honnan "
 
-#: src/chcanv.cpp:3823
+#: src/chcanv.cpp:3817
 msgid " to "
 msgstr " hova "
 
-#: src/chcanv.cpp:3872
+#: src/chcanv.cpp:3867
 msgid "From Ship To"
 msgstr ""
 
-#: src/chcanv.cpp:3894 src/concanv.cpp:382
+#: src/chcanv.cpp:3889 src/concanv.cpp:382
 msgid "%Dd %H:%M"
 msgstr ""
 
-#: src/chcanv.cpp:3895 src/TrackPropDlg.cpp:1158
+#: src/chcanv.cpp:3890 src/TrackPropDlg.cpp:1174
 msgid "%H:%M"
 msgstr ""
 
-#: src/chcanv.cpp:3988
+#: src/chcanv.cpp:3983
 msgid "Layer Track: "
 msgstr ""
 
-#: src/chcanv.cpp:3995
+#: src/chcanv.cpp:3990
 msgid "Total Track: "
 msgstr ""
 
-#: src/chcanv.cpp:4008
+#: src/chcanv.cpp:4003
 msgid "Segment Created: "
 msgstr ""
 
-#: src/chcanv.cpp:7625 src/chcanv.cpp:8169
+#: src/chcanv.cpp:7621 src/chcanv.cpp:8185
 msgid "Use nearby waypoint?"
 msgstr "Használjam a közeli útpontot?"
 
-#: src/chcanv.cpp:7625 src/chcanv.cpp:7656 src/chcanv.cpp:7671
-#: src/chcanv.cpp:7731 src/chcanv.cpp:8169 src/chcanv.cpp:8202
-#: src/chcanv.cpp:8217 src/chcanv.cpp:8274 src/chcanv.cpp:8648
-#: src/chcanv.cpp:8662 src/chcanv.cpp:8888 src/chcanv.cpp:8902
+#: src/chcanv.cpp:7621 src/chcanv.cpp:7659 src/chcanv.cpp:7680
+#: src/chcanv.cpp:7742 src/chcanv.cpp:8185 src/chcanv.cpp:8223
+#: src/chcanv.cpp:8243 src/chcanv.cpp:8301 src/chcanv.cpp:8688
+#: src/chcanv.cpp:8706 src/chcanv.cpp:8940 src/chcanv.cpp:8958
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN útvonal létrehozása"
 
-#: src/chcanv.cpp:7650 src/chcanv.cpp:8196
+#: src/chcanv.cpp:7651 src/chcanv.cpp:8215
 msgid "Insert first part of this route in the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7652 src/chcanv.cpp:8198
+#: src/chcanv.cpp:7655 src/chcanv.cpp:8219
 msgid "Insert this route in the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7665 src/chcanv.cpp:8211
+#: src/chcanv.cpp:7670 src/chcanv.cpp:8234
 msgid "Append last part of this route to the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7667 src/chcanv.cpp:8213
+#: src/chcanv.cpp:7673 src/chcanv.cpp:8237
 msgid "Append this route to the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7721 src/chcanv.cpp:8266
+#: src/chcanv.cpp:7732 src/chcanv.cpp:8293
 msgid "For this leg the Great Circle route is "
 msgstr "Erre az szakaszra a főkör útvonal "
 
-#: src/chcanv.cpp:7723 src/chcanv.cpp:8268
+#: src/chcanv.cpp:7734 src/chcanv.cpp:8295
 msgid " shorter than rhumbline.\n\n"
 msgstr " rövidebb mint a loxodróma.\n\n"
 
-#: src/chcanv.cpp:7724 src/chcanv.cpp:8269
+#: src/chcanv.cpp:7735 src/chcanv.cpp:8296
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Szeretnéd a főkör útvonal pontjait felvennie erre a szakaszra?"
 
-#: src/chcanv.cpp:8622 src/chcanv.cpp:8863
+#: src/chcanv.cpp:8654 src/chcanv.cpp:8907
 msgid "Replace this RoutePoint by the nearby Waypoint?"
 msgstr ""
 
-#: src/chcanv.cpp:8624 src/chcanv.cpp:8865
+#: src/chcanv.cpp:8656 src/chcanv.cpp:8909
 msgid "OpenCPN RoutePoint change"
 msgstr ""
 
-#: src/chcanv.cpp:8643 src/chcanv.cpp:8883
+#: src/chcanv.cpp:8681 src/chcanv.cpp:8933
 msgid "Last part of route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8645 src/chcanv.cpp:8885
+#: src/chcanv.cpp:8685 src/chcanv.cpp:8937
 msgid "Full route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8657 src/chcanv.cpp:8897
+#: src/chcanv.cpp:8699 src/chcanv.cpp:8951
 msgid "First part of route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8659 src/chcanv.cpp:8899
+#: src/chcanv.cpp:8703 src/chcanv.cpp:8955
 msgid "Full route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8674 src/chcanv.cpp:8914
+#: src/chcanv.cpp:8719 src/chcanv.cpp:8971
 msgid "Do you really want to delete and replace this WayPoint"
 msgstr ""
 
-#: src/chcanv.cpp:8676 src/chcanv.cpp:8916
+#: src/chcanv.cpp:8721 src/chcanv.cpp:8973
 msgid "which has been created manually?"
 msgstr ""
 
-#: src/chcanv.cpp:9389 src/chcanv.cpp:9399 src/S57QueryDialog.cpp:87
-#: src/S57QueryDialog.cpp:249
+#: src/chcanv.cpp:9447 src/chcanv.cpp:9457 src/S57QueryDialog.cpp:115
+#: src/S57QueryDialog.cpp:302
 msgid "ObjectQuery"
 msgstr "ObjektumLekérdezése"
 
-#: src/chcanv.cpp:9545 src/chcanv.cpp:9549 src/routemanagerdialog.cpp:2444
-#: src/routemanagerdialog.cpp:2448 src/RoutePropDlgImpl.cpp:921
+#: src/chcanv.cpp:9610 src/chcanv.cpp:9614 src/routemanagerdialog.cpp:2444
+#: src/routemanagerdialog.cpp:2448 src/RoutePropDlgImpl.cpp:936
 msgid "Waypoint Properties"
 msgstr "Útpont tulajdonságok"
 
-#: src/chcanv.cpp:9545 src/routemanagerdialog.cpp:2444
-#: src/RoutePropDlgImpl.cpp:504
+#: src/chcanv.cpp:9610 src/routemanagerdialog.cpp:2444
+#: src/RoutePropDlgImpl.cpp:519
 msgid "Layer"
 msgstr ""
 
-#: src/chcanv.cpp:9631
+#: src/chcanv.cpp:9696
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Már van egy útpont azon a helyen, ahová most másolsz. Szeretnéd összefésülni velük a másolt adatokat?\n\n"
 
-#: src/chcanv.cpp:9633
+#: src/chcanv.cpp:9698
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "'Nem' válasz esetén új útpont jön létre ugyanazon a helyen."
 
-#: src/chcanv.cpp:9634
+#: src/chcanv.cpp:9699
 msgid "Merge waypoint?"
 msgstr "Összefésüljem az útpontot?"
 
-#: src/chcanv.cpp:9699
+#: src/chcanv.cpp:9764
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Már vannak útpontok azon a helyen, ahová most másolsz. Szeretnéd összefésülni velük a másolt adatokat?\n\n"
 
-#: src/chcanv.cpp:9702
+#: src/chcanv.cpp:9767
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Nem' válasz esetén új útpontok jönnek létre ugyanazon a helyen."
 
-#: src/chcanv.cpp:9703
+#: src/chcanv.cpp:9768
 msgid "Merge waypoints?"
 msgstr "Összefésüljem az útpontokat?"
 
-#: src/chcanv.cpp:10184 src/chcanv.cpp:10213 src/RolloverWin.cpp:133
+#: src/chcanv.cpp:10249 src/chcanv.cpp:10278 src/RolloverWin.cpp:133
 #: src/RolloverWin.cpp:237 src/RolloverWin.cpp:387
 msgid "RouteLegInfoRollover"
 msgstr ""
 
-#: src/chcanv.cpp:10951
+#: src/chcanv.cpp:11018
 msgid "MBTile requires OpenGL to be enabled"
 msgstr ""
 
-#: src/chcanv.cpp:11585 src/options.cpp:5429 src/options.cpp:5568
-#: src/options.cpp:5715 src/options.cpp:5962
+#: src/chcanv.cpp:11652 src/options.cpp:5425 src/options.cpp:5564
+#: src/options.cpp:5711 src/options.cpp:5958
 msgid "Feet"
 msgstr "láb"
 
-#: src/chcanv.cpp:11587 src/options.cpp:5401 src/options.cpp:5430
-#: src/options.cpp:5547 src/options.cpp:5569 src/options.cpp:5688
-#: src/options.cpp:5715 src/options.cpp:5941 src/options.cpp:5962
+#: src/chcanv.cpp:11654 src/options.cpp:5397 src/options.cpp:5426
+#: src/options.cpp:5543 src/options.cpp:5565 src/options.cpp:5684
+#: src/options.cpp:5711 src/options.cpp:5937 src/options.cpp:5958
 msgid "Meters"
 msgstr "méter"
 
-#: src/chcanv.cpp:11589 src/options.cpp:5431 src/options.cpp:5570
-#: src/options.cpp:5715 src/options.cpp:5962
+#: src/chcanv.cpp:11656 src/options.cpp:5427 src/options.cpp:5566
+#: src/options.cpp:5711 src/options.cpp:5958
 msgid "Fathoms"
 msgstr "öl"
 
-#: src/chcanv.cpp:11592
+#: src/chcanv.cpp:11659
 msgid "OverZoom"
 msgstr "Túlnagyítás"
 
-#: src/chcanv.cpp:11966 src/chcanv.cpp:11967
+#: src/chcanv.cpp:12033 src/chcanv.cpp:12034
 msgid "ExtendedTideIcon"
 msgstr ""
 
-#: src/chcanv.cpp:12265
+#: src/chcanv.cpp:12332
 msgid "CurrentValue"
 msgstr "Áramlat"
 
-#: src/chcanv.cpp:12813
+#: src/chcanv.cpp:12880
 msgid "Show all AIS Targets"
 msgstr ""
 
-#: src/chcanv.cpp:12815 src/toolbar.cpp:1229 src/toolbar.cpp:1317
+#: src/chcanv.cpp:12882 src/toolbar.cpp:1229 src/toolbar.cpp:1317
 #: src/toolbar.cpp:1320
 msgid "Hide AIS Targets"
 msgstr "AIS célpontok elrejtése"
 
-#: src/chcanv.cpp:13473
+#: src/chcanv.cpp:13540
 msgid "Show This Chart"
 msgstr "Ezt a térképet mutatni"
 
-#: src/chcanv.cpp:13478
+#: src/chcanv.cpp:13545
 msgid "Hide This Chart"
 msgstr "Ezt a térképet eltüntetni"
 
@@ -3689,9 +3693,9 @@ msgstr "Felhasználói X eltolás"
 msgid "User Y Offset"
 msgstr "Felhasználói Y eltolás"
 
-#: src/cm93.cpp:6495 src/cm93.cpp:6509 src/options.cpp:4538 src/options.cpp:4548
-#: src/options.cpp:4558 src/options.cpp:4746 src/options.cpp:4755
-#: src/options.cpp:4764 src/options.cpp:7592
+#: src/cm93.cpp:6495 src/cm93.cpp:6509 src/options.cpp:4534 src/options.cpp:4544
+#: src/options.cpp:4554 src/options.cpp:4742 src/options.cpp:4751
+#: src/options.cpp:4760 src/options.cpp:7588
 msgid "meters"
 msgstr ""
 
@@ -3743,12 +3747,12 @@ msgid "ETA  @SOG"
 msgstr ""
 
 #: src/ConnectionParams.cpp:139 src/ConnectionParams.cpp:430
-#: src/ConnectionParams.cpp:917 src/options.cpp:1789 src/options.cpp:2441
+#: src/ConnectionParams.cpp:917 src/options.cpp:1785 src/options.cpp:2437
 msgid "Serial"
 msgstr "Soros"
 
 #: src/ConnectionParams.cpp:141 src/ConnectionParams.cpp:565
-#: src/ConnectionParams.cpp:947 src/options.cpp:1794 src/options.cpp:2446
+#: src/ConnectionParams.cpp:947 src/options.cpp:1790 src/options.cpp:2442
 msgid "Network"
 msgstr "Hálózat"
 
@@ -3764,19 +3768,19 @@ msgstr ""
 msgid "Internal"
 msgstr ""
 
-#: src/ConnectionParams.cpp:168 src/options.cpp:1876 src/options.cpp:2528
+#: src/ConnectionParams.cpp:168 src/options.cpp:1872 src/options.cpp:2524
 msgid "TCP"
 msgstr ""
 
-#: src/ConnectionParams.cpp:170 src/options.cpp:1882 src/options.cpp:2534
+#: src/ConnectionParams.cpp:170 src/options.cpp:1878 src/options.cpp:2530
 msgid "UDP"
 msgstr ""
 
-#: src/ConnectionParams.cpp:172 src/options.cpp:1888 src/options.cpp:2540
+#: src/ConnectionParams.cpp:172 src/options.cpp:1884 src/options.cpp:2536
 msgid "GPSD"
 msgstr ""
 
-#: src/ConnectionParams.cpp:174 src/options.cpp:1893 src/options.cpp:2545
+#: src/ConnectionParams.cpp:174 src/options.cpp:1889 src/options.cpp:2541
 msgid "Signal K"
 msgstr ""
 
@@ -3824,7 +3828,7 @@ msgstr ""
 msgid ", Out: None"
 msgstr ""
 
-#: src/ConnectionParams.cpp:367 src/options.cpp:2957
+#: src/ConnectionParams.cpp:367 src/options.cpp:2953
 msgid "Enable"
 msgstr "Engedélyezés"
 
@@ -3834,8 +3838,8 @@ msgid "Direction"
 msgstr ""
 
 #: src/ConnectionParams.cpp:405 src/ConnectionParams.cpp:540
-#: src/options.cpp:1866 src/options.cpp:1953 src/options.cpp:2519
-#: src/options.cpp:2615
+#: src/options.cpp:1862 src/options.cpp:1949 src/options.cpp:2515
+#: src/options.cpp:2611
 msgid "Protocol"
 msgstr "Protokoll"
 
@@ -3843,13 +3847,13 @@ msgstr "Protokoll"
 msgid "Serial Port"
 msgstr ""
 
-#: src/ConnectionParams.cpp:417 src/options.cpp:1936 src/options.cpp:2598
+#: src/ConnectionParams.cpp:417 src/options.cpp:1932 src/options.cpp:2594
 msgid "Baudrate"
 msgstr ""
 
 #: src/ConnectionParams.cpp:423 src/ConnectionParams.cpp:558
 #: src/ConnectionParams.cpp:695 src/ConnectionParams.cpp:813
-#: src/options.cpp:1969 src/options.cpp:2631 src/options.cpp:2958
+#: src/options.cpp:1965 src/options.cpp:2627 src/options.cpp:2954
 msgid "Priority"
 msgstr "Prioritás"
 
@@ -3868,11 +3872,11 @@ msgstr ""
 msgid "Network Port"
 msgstr ""
 
-#: src/ConnectionParams.cpp:702 src/options.cpp:1800 src/options.cpp:2452
+#: src/ConnectionParams.cpp:702 src/options.cpp:1796 src/options.cpp:2448
 msgid "Built-in GPS"
 msgstr ""
 
-#: src/ConnectionParams.cpp:820 src/options.cpp:1809
+#: src/ConnectionParams.cpp:820 src/options.cpp:1805
 msgid "Built-in Bluetooth"
 msgstr ""
 
@@ -3888,31 +3892,31 @@ msgstr ""
 msgid "Vectorchart Zoom/Scale Weighting"
 msgstr ""
 
-#: src/glChartCanvas.cpp:2179 src/s52plib.cpp:2245 src/s52plib.cpp:2270
+#: src/glChartCanvas.cpp:2182 src/s52plib.cpp:2245 src/s52plib.cpp:2270
 #: src/s52plib.cpp:2374 src/s52plib.cpp:2547
 msgid "ChartTexts"
 msgstr "TérképSzövegek"
 
-#: src/glChartCanvas.cpp:4989
+#: src/glChartCanvas.cpp:4992
 msgid "Waiting for raster chart compression thread exit."
 msgstr ""
 
 #: src/GoToPositionDialog.cpp:119 src/RoutePropDlg.cpp:309
-#: src/TrackPropDlg.cpp:286 src/MarkInfo.cpp:416
+#: src/TrackPropDlg.cpp:302 src/MarkInfo.cpp:432
 msgid "Latitude"
 msgstr "Szélesség"
 
 #: src/GoToPositionDialog.cpp:131 src/RoutePropDlg.cpp:313
-#: src/TrackPropDlg.cpp:287 src/MarkInfo.cpp:425
+#: src/TrackPropDlg.cpp:303 src/MarkInfo.cpp:441
 msgid "Longitude"
 msgstr "Hosszúság"
 
-#: src/GoToPositionDialog.cpp:145 src/LinkPropDlg.cpp:76 src/navutil.cpp:3721
-#: src/options.cpp:679 src/options.cpp:781 src/options.cpp:6876
-#: src/options.cpp:11068 src/options.cpp:11297 src/routeprintout.cpp:424
+#: src/GoToPositionDialog.cpp:145 src/LinkPropDlg.cpp:76 src/navutil.cpp:3732
+#: src/options.cpp:675 src/options.cpp:777 src/options.cpp:6872
+#: src/options.cpp:11065 src/options.cpp:11294 src/routeprintout.cpp:424
 #: src/RoutePropDlg.cpp:479 src/SendToGpsDlg.cpp:193 src/toolbar.cpp:3202
-#: src/TrackPropDlg.cpp:588 src/TrackPropDlg.cpp:973 src/MarkInfo.cpp:760
-#: src/MarkInfo.cpp:1884
+#: src/TrackPropDlg.cpp:604 src/TrackPropDlg.cpp:989 src/MarkInfo.cpp:776
+#: src/MarkInfo.cpp:1900
 msgid "Cancel"
 msgstr "Mégsem"
 
@@ -3976,174 +3980,174 @@ msgstr ""
 msgid "Connected to "
 msgstr ""
 
-#: src/navutil.cpp:1748 src/navutil.cpp:3109 src/options.cpp:757
-#: src/options.cpp:920
+#: src/navutil.cpp:1755 src/navutil.cpp:3120 src/options.cpp:753
+#: src/options.cpp:916
 msgid "Persistent"
 msgstr ""
 
-#: src/navutil.cpp:2814 src/navutil.cpp:2922
+#: src/navutil.cpp:2825 src/navutil.cpp:2933
 msgid "Export GPX file"
 msgstr "GPX fájl exportálása"
 
-#: src/navutil.cpp:2824
+#: src/navutil.cpp:2835
 msgid "Overwrite existing file?"
 msgstr "Felülírjam a létező fájlt?"
 
-#: src/navutil.cpp:3016 src/navutil.cpp:3048
+#: src/navutil.cpp:3027 src/navutil.cpp:3059
 msgid "Import GPX file"
 msgstr "GPX fájl importálása"
 
-#: src/navutil.cpp:3109
+#: src/navutil.cpp:3120
 msgid "Temporary"
 msgstr ""
 
-#: src/navutil.cpp:3144
+#: src/navutil.cpp:3155
 msgid "duplicate waypoints detected during import and ignored."
 msgstr ""
 
-#: src/navutil.cpp:3614
+#: src/navutil.cpp:3625
 msgid "&Font family:"
 msgstr "Font család:"
 
-#: src/navutil.cpp:3622 src/navutil.cpp:3623
+#: src/navutil.cpp:3633 src/navutil.cpp:3634
 msgid "The font family."
 msgstr "A font család."
 
-#: src/navutil.cpp:3630
+#: src/navutil.cpp:3641
 msgid "&Style:"
 msgstr "Stílus:"
 
-#: src/navutil.cpp:3636 src/navutil.cpp:3637
+#: src/navutil.cpp:3647 src/navutil.cpp:3648
 msgid "The font style."
 msgstr "A font stílus."
 
-#: src/navutil.cpp:3644
+#: src/navutil.cpp:3655
 msgid "&Weight:"
 msgstr "Vastagság:"
 
-#: src/navutil.cpp:3650 src/navutil.cpp:3651
+#: src/navutil.cpp:3661 src/navutil.cpp:3662
 msgid "The font weight."
 msgstr "A betűtípus vastagsága."
 
-#: src/navutil.cpp:3659
+#: src/navutil.cpp:3670
 msgid "C&olour:"
 msgstr "Szín:"
 
-#: src/navutil.cpp:3669 src/navutil.cpp:3670
+#: src/navutil.cpp:3680 src/navutil.cpp:3681
 msgid "The font colour."
 msgstr "A betűtípus színe."
 
-#: src/navutil.cpp:3678
+#: src/navutil.cpp:3689
 msgid "&Point size:"
 msgstr "Pont méret:"
 
-#: src/navutil.cpp:3685 src/navutil.cpp:3686
+#: src/navutil.cpp:3696 src/navutil.cpp:3697
 msgid "The font point size."
 msgstr "A betűtípus mérete pontokban."
 
-#: src/navutil.cpp:3694
+#: src/navutil.cpp:3705
 msgid "&Underline"
 msgstr "Aláhúzás"
 
-#: src/navutil.cpp:3697 src/navutil.cpp:3699
+#: src/navutil.cpp:3708 src/navutil.cpp:3710
 msgid "Whether the font is underlined."
 msgstr "Aláhúzott betűtípus."
 
-#: src/navutil.cpp:3707
+#: src/navutil.cpp:3718
 msgid "Preview:"
 msgstr "Előnézet:"
 
-#: src/navutil.cpp:3713 src/navutil.cpp:3714
+#: src/navutil.cpp:3724 src/navutil.cpp:3725
 msgid "Shows the font preview."
 msgstr "Előnézet mutatása."
 
-#: src/navutil.cpp:3725
+#: src/navutil.cpp:3736
 msgid "Click to cancel the font selection."
 msgstr "Font válsztás megszakítása mégsem választásával."
 
-#: src/navutil.cpp:3728
+#: src/navutil.cpp:3739
 msgid "&OK"
 msgstr "Rendben"
 
-#: src/navutil.cpp:3731 src/navutil.cpp:3733
+#: src/navutil.cpp:3742 src/navutil.cpp:3744
 msgid "Click to confirm the font selection."
 msgstr "Font választás elfogadása."
 
-#: src/navutil.cpp:4224 src/MarkInfo.cpp:1522
+#: src/navutil.cpp:4235 src/MarkInfo.cpp:1538
 msgid "NMi"
 msgstr "tmf"
 
-#: src/navutil.cpp:4227
+#: src/navutil.cpp:4238
 msgid "mi"
 msgstr ""
 
-#: src/navutil.cpp:4230 src/MarkInfo.cpp:1525
+#: src/navutil.cpp:4241 src/MarkInfo.cpp:1541
 msgid "km"
 msgstr ""
 
-#: src/navutil.cpp:4233
+#: src/navutil.cpp:4244
 msgid "m"
 msgstr ""
 
-#: src/navutil.cpp:4236
+#: src/navutil.cpp:4247
 msgid "ft"
 msgstr "Bal"
 
-#: src/navutil.cpp:4239
+#: src/navutil.cpp:4250
 msgid "fa"
 msgstr ""
 
-#: src/navutil.cpp:4245
+#: src/navutil.cpp:4256
 msgid "cm"
 msgstr ""
 
-#: src/navutil.cpp:4305
+#: src/navutil.cpp:4316
 msgid "kts"
 msgstr "Csomó"
 
-#: src/navutil.cpp:4308
+#: src/navutil.cpp:4319
 msgid "mph"
 msgstr ""
 
-#: src/navutil.cpp:4311 src/options.cpp:5415 src/options.cpp:5557
-#: src/options.cpp:5701 src/options.cpp:5951
+#: src/navutil.cpp:4322 src/options.cpp:5411 src/options.cpp:5553
+#: src/options.cpp:5697 src/options.cpp:5947
 msgid "km/h"
 msgstr ""
 
-#: src/navutil.cpp:4314 src/options.cpp:5415 src/options.cpp:5557
-#: src/options.cpp:5701 src/options.cpp:5951
+#: src/navutil.cpp:4325 src/options.cpp:5411 src/options.cpp:5553
+#: src/options.cpp:5697 src/options.cpp:5947
 msgid "m/s"
 msgstr ""
 
-#: src/navutil.cpp:4368
+#: src/navutil.cpp:4379
 msgid "C"
 msgstr ""
 
-#: src/navutil.cpp:4371
+#: src/navutil.cpp:4382
 msgid "F"
 msgstr ""
 
-#: src/navutil.cpp:4374
+#: src/navutil.cpp:4385
 msgid "K"
 msgstr ""
 
-#: src/navutil.cpp:4391
+#: src/navutil.cpp:4402
 #, c-format
 msgid "%dd "
 msgstr ""
 
-#: src/navutil.cpp:4393
+#: src/navutil.cpp:4404
 #, c-format
 msgid "%2dH %2dM"
 msgstr ""
 
-#: src/navutil.cpp:4394
+#: src/navutil.cpp:4405
 #, c-format
 msgid "%2dM %2dS"
 msgstr ""
 
-#: src/navutil.cpp:4405 src/RoutePropDlgImpl.cpp:341
-#: src/RoutePropDlgImpl.cpp:346
+#: src/navutil.cpp:4416 src/RoutePropDlgImpl.cpp:356
+#: src/RoutePropDlgImpl.cpp:361
 msgid "N/A"
 msgstr ""
 
@@ -4159,125 +4163,125 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: src/options.cpp:645 src/ConfigMgr.cpp:541
+#: src/options.cpp:641 src/ConfigMgr.cpp:541
 msgid "Title"
 msgstr ""
 
-#: src/options.cpp:655 src/routeprintout.cpp:116 src/routeprintout.cpp:409
-#: src/RoutePropDlg.cpp:333 src/RoutePropDlg.cpp:358 src/TrackPropDlg.cpp:847
-#: src/ConfigMgr.cpp:546 src/MarkInfo.cpp:436 src/MarkInfo.cpp:534
+#: src/options.cpp:651 src/routeprintout.cpp:116 src/routeprintout.cpp:409
+#: src/RoutePropDlg.cpp:333 src/RoutePropDlg.cpp:358 src/TrackPropDlg.cpp:863
+#: src/ConfigMgr.cpp:546 src/MarkInfo.cpp:452 src/MarkInfo.cpp:550
 msgid "Description"
 msgstr "Leírás"
 
-#: src/options.cpp:669
+#: src/options.cpp:665
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
 msgstr ""
 
-#: src/options.cpp:727
+#: src/options.cpp:723
 msgid "MMSI Extended Properties"
 msgstr ""
 
-#: src/options.cpp:741
+#: src/options.cpp:737
 msgid "Tracking"
 msgstr ""
 
-#: src/options.cpp:746
+#: src/options.cpp:742
 msgid "Default tracking"
 msgstr ""
 
-#: src/options.cpp:751
+#: src/options.cpp:747
 msgid "Always track"
 msgstr ""
 
-#: src/options.cpp:754
+#: src/options.cpp:750
 msgid " Never track"
 msgstr ""
 
-#: src/options.cpp:763
+#: src/options.cpp:759
 msgid "Ignore this MMSI"
 msgstr ""
 
-#: src/options.cpp:767
+#: src/options.cpp:763
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr ""
 
-#: src/options.cpp:771
+#: src/options.cpp:767
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr ""
 
-#: src/options.cpp:775
+#: src/options.cpp:771
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr ""
 
-#: src/options.cpp:861
+#: src/options.cpp:857
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr ""
 
-#: src/options.cpp:908 src/options.cpp:3083 src/options.cpp:3196
-#: src/RoutePropDlg.cpp:223 src/RoutePropDlg.cpp:244 src/TrackPropDlg.cpp:479
-#: src/TrackPropDlg.cpp:499 src/TrackPropDlg.cpp:721 src/TrackPropDlg.cpp:734
+#: src/options.cpp:904 src/options.cpp:3079 src/options.cpp:3192
+#: src/RoutePropDlg.cpp:223 src/RoutePropDlg.cpp:244 src/TrackPropDlg.cpp:495
+#: src/TrackPropDlg.cpp:515 src/TrackPropDlg.cpp:737 src/TrackPropDlg.cpp:750
 msgid "Default"
 msgstr "Alap"
 
-#: src/options.cpp:911 src/routemanagerdialog.cpp:2192
+#: src/options.cpp:907 src/routemanagerdialog.cpp:2192
 #: src/routemanagerdialog.cpp:2391
 msgid "Always"
 msgstr ""
 
-#: src/options.cpp:914
+#: src/options.cpp:910
 msgid "Never"
 msgstr ""
 
-#: src/options.cpp:951 src/options.cpp:998
+#: src/options.cpp:947 src/options.cpp:994
 msgid "Edit MMSI Properties"
 msgstr ""
 
-#: src/options.cpp:967 src/options.cpp:6038 src/options.cpp:6045
+#: src/options.cpp:963 src/options.cpp:6034 src/options.cpp:6041
 msgid "MMSI Properties"
 msgstr ""
 
-#: src/options.cpp:969 src/RoutePropDlg.cpp:390 src/RoutePropDlg.cpp:420
-#: src/TrackPropDlg.cpp:872 src/TrackPropDlg.cpp:905 src/MarkInfo.cpp:498
-#: src/MarkInfo.cpp:1154 src/MarkInfo.cpp:1202
+#: src/options.cpp:965 src/RoutePropDlg.cpp:390 src/RoutePropDlg.cpp:420
+#: src/TrackPropDlg.cpp:888 src/TrackPropDlg.cpp:921 src/MarkInfo.cpp:514
+#: src/MarkInfo.cpp:1170 src/MarkInfo.cpp:1218
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: src/options.cpp:1063
+#: src/options.cpp:1059
 msgid "Track Mode"
 msgstr ""
 
-#: src/options.cpp:1072
+#: src/options.cpp:1068
 msgid "Ignore"
 msgstr ""
 
-#: src/options.cpp:1081
+#: src/options.cpp:1077
 msgid "MOB"
 msgstr ""
 
-#: src/options.cpp:1089
+#: src/options.cpp:1085
 msgid "VDM->VDO"
 msgstr ""
 
-#: src/options.cpp:1098
+#: src/options.cpp:1094
 msgid "Ship name"
 msgstr ""
 
-#: src/options.cpp:1107
+#: src/options.cpp:1103
 msgid "Follower"
 msgstr ""
 
-#: src/options.cpp:1112
+#: src/options.cpp:1108
 msgid "New..."
 msgstr ""
 
-#: src/options.cpp:1135
+#: src/options.cpp:1131
 msgid "Add MMSI Properties"
 msgstr ""
 
-#: src/options.cpp:1540
+#: src/options.cpp:1536
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -4288,7 +4292,7 @@ msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1551
+#: src/options.cpp:1547
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -4300,1574 +4304,1574 @@ msgid "\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1671 src/options.cpp:2293
+#: src/options.cpp:1667 src/options.cpp:2289
 msgid "NMEA"
 msgstr ""
 
-#: src/options.cpp:1681 src/options.cpp:2303 src/options.cpp:5007
+#: src/options.cpp:1677 src/options.cpp:2299 src/options.cpp:5003
 msgid "General"
 msgstr "Általános"
 
-#: src/options.cpp:1690
+#: src/options.cpp:1686
 msgid "Filter NMEA COG/SOG"
 msgstr ""
 
-#: src/options.cpp:1700 src/options.cpp:2321
+#: src/options.cpp:1696 src/options.cpp:2317
 msgid "Filter period (sec)"
 msgstr "Szűrési periódus (mp)"
 
-#: src/options.cpp:1721 src/options.cpp:2341
+#: src/options.cpp:1717 src/options.cpp:2337
 msgid "Show NMEA Debug Window"
 msgstr "NMEA nyomkövető ablak mutatása"
 
-#: src/options.cpp:1727
+#: src/options.cpp:1723
 msgid "Use Furuno GP3X for uploads"
 msgstr ""
 
-#: src/options.cpp:1733
+#: src/options.cpp:1729
 msgid "Use GRMN for uploads"
 msgstr ""
 
-#: src/options.cpp:1740 src/options.cpp:2360
+#: src/options.cpp:1736 src/options.cpp:2356
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr ""
 
-#: src/options.cpp:1751 src/options.cpp:2371
+#: src/options.cpp:1747 src/options.cpp:2367
 msgid "Data Connections"
 msgstr "Adat kapcsolatok"
 
-#: src/options.cpp:1766 src/options.cpp:4912 src/options.cpp:11063
-#: src/RoutePropDlg.cpp:415 src/TrackPropDlg.cpp:901
+#: src/options.cpp:1762 src/options.cpp:4908 src/options.cpp:11060
+#: src/RoutePropDlg.cpp:415 src/TrackPropDlg.cpp:917
 msgid "Add"
 msgstr "Hozzáad"
 
-#: src/options.cpp:1770
+#: src/options.cpp:1766
 msgid "Remove"
 msgstr ""
 
-#: src/options.cpp:1814 src/options.cpp:2465 src/options.cpp:10368
+#: src/options.cpp:1810 src/options.cpp:2461 src/options.cpp:10365
 msgid "BT Scan"
 msgstr ""
 
-#: src/options.cpp:1822
+#: src/options.cpp:1818
 msgid "BT Sources"
 msgstr ""
 
-#: src/options.cpp:1903 src/options.cpp:2552
+#: src/options.cpp:1899 src/options.cpp:2548
 msgid "Address"
 msgstr "Cím"
 
-#: src/options.cpp:1912 src/options.cpp:1927 src/options.cpp:2561
-#: src/options.cpp:2589 src/options.cpp:2957
+#: src/options.cpp:1908 src/options.cpp:1923 src/options.cpp:2557
+#: src/options.cpp:2585 src/options.cpp:2953
 msgid "DataPort"
 msgstr "Adatport"
 
-#: src/options.cpp:1942 src/options.cpp:2604
+#: src/options.cpp:1938 src/options.cpp:2600
 msgid "150"
 msgstr ""
 
-#: src/options.cpp:1942 src/options.cpp:2604
+#: src/options.cpp:1938 src/options.cpp:2600
 msgid "300"
 msgstr ""
 
-#: src/options.cpp:1942 src/options.cpp:2604
+#: src/options.cpp:1938 src/options.cpp:2600
 msgid "600"
 msgstr ""
 
-#: src/options.cpp:1942 src/options.cpp:2604
+#: src/options.cpp:1938 src/options.cpp:2600
 msgid "1200"
 msgstr ""
 
-#: src/options.cpp:1942 src/options.cpp:2604
+#: src/options.cpp:1938 src/options.cpp:2600
 msgid "2400"
 msgstr ""
 
-#: src/options.cpp:1943 src/options.cpp:2605
+#: src/options.cpp:1939 src/options.cpp:2601
 msgid "4800"
 msgstr ""
 
-#: src/options.cpp:1943 src/options.cpp:2605
+#: src/options.cpp:1939 src/options.cpp:2601
 msgid "9600"
 msgstr ""
 
-#: src/options.cpp:1943 src/options.cpp:2605
+#: src/options.cpp:1939 src/options.cpp:2601
 msgid "19200"
 msgstr ""
 
-#: src/options.cpp:1943 src/options.cpp:2605
+#: src/options.cpp:1939 src/options.cpp:2601
 msgid "38400"
 msgstr ""
 
-#: src/options.cpp:1943 src/options.cpp:2605
+#: src/options.cpp:1939 src/options.cpp:2601
 msgid "57600"
 msgstr ""
 
-#: src/options.cpp:1944 src/options.cpp:2606
+#: src/options.cpp:1940 src/options.cpp:2602
 msgid "115200"
 msgstr ""
 
-#: src/options.cpp:1944 src/options.cpp:2606
+#: src/options.cpp:1940 src/options.cpp:2602
 msgid "230400"
 msgstr ""
 
-#: src/options.cpp:1944 src/options.cpp:2606
+#: src/options.cpp:1940 src/options.cpp:2602
 msgid "460800"
 msgstr ""
 
-#: src/options.cpp:1944 src/options.cpp:2606
+#: src/options.cpp:1940 src/options.cpp:2602
 msgid "921600"
 msgstr ""
 
-#: src/options.cpp:1958 src/options.cpp:2620
+#: src/options.cpp:1954 src/options.cpp:2616
 msgid "NMEA 0183"
 msgstr ""
 
-#: src/options.cpp:1958 src/options.cpp:2620
+#: src/options.cpp:1954 src/options.cpp:2616
 msgid "NMEA 2000"
 msgstr ""
 
-#: src/options.cpp:1959 src/options.cpp:2621
+#: src/options.cpp:1955 src/options.cpp:2617
 msgid "Seatalk"
 msgstr ""
 
-#: src/options.cpp:1974 src/options.cpp:2636
+#: src/options.cpp:1970 src/options.cpp:2632
 msgid "0"
 msgstr ""
 
-#: src/options.cpp:1974 src/options.cpp:2636
+#: src/options.cpp:1970 src/options.cpp:2632
 msgid "1"
 msgstr ""
 
-#: src/options.cpp:1974 src/options.cpp:2636
+#: src/options.cpp:1970 src/options.cpp:2632
 msgid "2"
 msgstr ""
 
-#: src/options.cpp:1974 src/options.cpp:2636
+#: src/options.cpp:1970 src/options.cpp:2632
 msgid "3"
 msgstr ""
 
-#: src/options.cpp:1974 src/options.cpp:2636
+#: src/options.cpp:1970 src/options.cpp:2632
 msgid "4"
 msgstr ""
 
-#: src/options.cpp:1975 src/options.cpp:2637
+#: src/options.cpp:1971 src/options.cpp:2633
 msgid "5"
 msgstr ""
 
-#: src/options.cpp:1975 src/options.cpp:2637
+#: src/options.cpp:1971 src/options.cpp:2633
 msgid "6"
 msgstr ""
 
-#: src/options.cpp:1975 src/options.cpp:2637
+#: src/options.cpp:1971 src/options.cpp:2633
 msgid "7"
 msgstr ""
 
-#: src/options.cpp:1975 src/options.cpp:2637
+#: src/options.cpp:1971 src/options.cpp:2633
 msgid "8"
 msgstr ""
 
-#: src/options.cpp:1975 src/options.cpp:2637
+#: src/options.cpp:1971 src/options.cpp:2633
 msgid "9"
 msgstr ""
 
-#: src/options.cpp:1986 src/options.cpp:2663
+#: src/options.cpp:1982 src/options.cpp:2659
 msgid "Control checksum"
 msgstr "Ellenőrzőösszeg"
 
-#: src/options.cpp:1990 src/options.cpp:2667
+#: src/options.cpp:1986 src/options.cpp:2663
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "He bejelölve, akkor csak az érvényes ellenőrzőösszeggel rendelkező üzenetek jutnak át"
 
-#: src/options.cpp:1995
+#: src/options.cpp:1991
 msgid "Use GRMN mode for input"
 msgstr ""
 
-#: src/options.cpp:2004 src/options.cpp:2681
+#: src/options.cpp:2000 src/options.cpp:2677
 msgid "Receive Input on this Port"
 msgstr ""
 
-#: src/options.cpp:2008 src/options.cpp:2687
+#: src/options.cpp:2004 src/options.cpp:2683
 msgid "Output on this port"
 msgstr ""
 
-#: src/options.cpp:2016 src/options.cpp:2694
+#: src/options.cpp:2012 src/options.cpp:2690
 msgid "Talker ID"
 msgstr ""
 
-#: src/options.cpp:2027 src/options.cpp:2705
+#: src/options.cpp:2023 src/options.cpp:2701
 msgid "APB bearing precision"
 msgstr ""
 
-#: src/options.cpp:2048 src/options.cpp:2745
+#: src/options.cpp:2044 src/options.cpp:2741
 msgid "Input filtering"
 msgstr "Bemenet szűrés"
 
-#: src/options.cpp:2054 src/options.cpp:2751 src/options.cpp:11112
+#: src/options.cpp:2050 src/options.cpp:2747 src/options.cpp:11109
 msgid "Accept only sentences"
 msgstr "Mondatok elfogadása"
 
-#: src/options.cpp:2058 src/options.cpp:2755 src/options.cpp:11113
+#: src/options.cpp:2054 src/options.cpp:2751 src/options.cpp:11110
 msgid "Ignore sentences"
 msgstr "Mondatok figyelmen kívül hagyása"
 
-#: src/options.cpp:2081 src/options.cpp:2779
+#: src/options.cpp:2077 src/options.cpp:2775
 msgid "Output filtering"
 msgstr "Kimenet szűrés"
 
-#: src/options.cpp:2088 src/options.cpp:2786 src/options.cpp:11110
+#: src/options.cpp:2084 src/options.cpp:2782 src/options.cpp:11107
 msgid "Transmit sentences"
 msgstr "Mondatok továbbítása"
 
-#: src/options.cpp:2092 src/options.cpp:2790 src/options.cpp:11110
+#: src/options.cpp:2088 src/options.cpp:2786 src/options.cpp:11107
 msgid "Drop sentences"
 msgstr "Mondatok eldobása"
 
-#: src/options.cpp:2244
+#: src/options.cpp:2240
 msgid "On"
 msgstr ""
 
-#: src/options.cpp:2244
+#: src/options.cpp:2240
 msgid "Data Port"
 msgstr ""
 
-#: src/options.cpp:2244
+#: src/options.cpp:2240
 msgid "Prio"
 msgstr ""
 
-#: src/options.cpp:2245
+#: src/options.cpp:2241
 msgid "Parm"
 msgstr ""
 
-#: src/options.cpp:2245
+#: src/options.cpp:2241
 msgid "I/O"
 msgstr ""
 
-#: src/options.cpp:2245 src/options.cpp:2959
+#: src/options.cpp:2241 src/options.cpp:2955
 msgid "Filters"
 msgstr "Szűrők"
 
-#: src/options.cpp:2315
+#: src/options.cpp:2311
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA irány és sebesség adatok szűrése"
 
-#: src/options.cpp:2347
+#: src/options.cpp:2343
 msgid "Format uploads for Furuno GP3X"
 msgstr "Formátum feltöltés Furuno GP3X-re"
 
-#: src/options.cpp:2353
+#: src/options.cpp:2349
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Használja a Garmin GRMN (Host) módot a feltöltéséhez"
 
-#: src/options.cpp:2406
+#: src/options.cpp:2402
 msgid "Add Connection"
 msgstr "Kapcsolat hozzáadása"
 
-#: src/options.cpp:2410
+#: src/options.cpp:2406
 msgid "Remove Connection"
 msgstr "Kapcsolat eltávolítása"
 
-#: src/options.cpp:2430 src/options.cpp:10958
+#: src/options.cpp:2426 src/options.cpp:10955
 msgid "Edit Selected Connection"
 msgstr ""
 
-#: src/options.cpp:2461
+#: src/options.cpp:2457
 msgid "Built-in Bluetooth SPP"
 msgstr ""
 
-#: src/options.cpp:2475
+#: src/options.cpp:2471
 msgid "Bluetooth Data Sources"
 msgstr ""
 
-#: src/options.cpp:2571 src/options.cpp:2654
+#: src/options.cpp:2567 src/options.cpp:2650
 msgid "User Comment"
 msgstr ""
 
-#: src/options.cpp:2672
+#: src/options.cpp:2668
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Használja a Garmin (GRMN) módot a bevitelhez"
 
-#: src/options.cpp:2688
+#: src/options.cpp:2684
 msgid "as autopilot or NMEA repeater"
 msgstr ""
 
-#: src/options.cpp:2694
+#: src/options.cpp:2690
 msgid "blank = default ID"
 msgstr ""
 
-#: src/options.cpp:2711
+#: src/options.cpp:2707
 msgid "x"
 msgstr ""
 
-#: src/options.cpp:2711
+#: src/options.cpp:2707
 msgid "x.x"
 msgstr ""
 
-#: src/options.cpp:2711
+#: src/options.cpp:2707
 msgid "x.xx"
 msgstr ""
 
-#: src/options.cpp:2712
+#: src/options.cpp:2708
 msgid "x.xxx"
 msgstr ""
 
-#: src/options.cpp:2712
+#: src/options.cpp:2708
 msgid "x.xxxx"
 msgstr ""
 
-#: src/options.cpp:2723
+#: src/options.cpp:2719
 msgid "Automatic server discovery"
 msgstr ""
 
-#: src/options.cpp:2727
+#: src/options.cpp:2723
 msgid "If checked, signal K server will be discovered automatically"
 msgstr ""
 
-#: src/options.cpp:2731
+#: src/options.cpp:2727
 msgid "Discover now..."
 msgstr ""
 
-#: src/options.cpp:2958
+#: src/options.cpp:2954
 msgid "Parameters"
 msgstr "Paraméterek"
 
-#: src/options.cpp:2958
+#: src/options.cpp:2954
 msgid "Connection"
 msgstr "Kapcsolatok"
 
-#: src/options.cpp:3056 src/CanvasOptions.cpp:180
+#: src/options.cpp:3052 src/CanvasOptions.cpp:180
 msgid "Display Options"
 msgstr "Megjelenítési beállítások"
 
-#: src/options.cpp:3066
+#: src/options.cpp:3062
 msgid "COG Predictor Length (min)"
 msgstr "COG előrejelzés hossza (perc):"
 
-#: src/options.cpp:3073
+#: src/options.cpp:3069
 msgid "Heading Predictor Length (NMi)"
 msgstr ""
 
-#: src/options.cpp:3080
+#: src/options.cpp:3076
 msgid "Ship Icon Type"
 msgstr "Hajó ikon típusa"
 
-#: src/options.cpp:3083
+#: src/options.cpp:3079
 msgid "Real Scale Bitmap"
 msgstr "Valós méretarányú bitmap"
 
-#: src/options.cpp:3084
+#: src/options.cpp:3080
 msgid "Real Scale Vector"
 msgstr "Valós méretarányú vektor"
 
-#: src/options.cpp:3099
+#: src/options.cpp:3095
 msgid "Length Over All (m)"
 msgstr "Teljess hossz (m)"
 
-#: src/options.cpp:3105
+#: src/options.cpp:3101
 msgid "Width Over All (m)"
 msgstr "Teljes szélesség (m)"
 
-#: src/options.cpp:3111
+#: src/options.cpp:3107
 msgid "GPS Offset from Bow (m)"
 msgstr "GPS eltolás az orrtól (m)"
 
-#: src/options.cpp:3117
+#: src/options.cpp:3113
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS eltolás a középvonaltól (m)"
 
-#: src/options.cpp:3123
+#: src/options.cpp:3119
 msgid "Minimum Screen Size (mm)"
 msgstr "Minimális képernyőméret (mm)"
 
-#: src/options.cpp:3135
+#: src/options.cpp:3131
 msgid "Show range rings"
 msgstr ""
 
-#: src/options.cpp:3138 src/options.cpp:3356 src/options.cpp:3724
-#: src/MarkInfo.cpp:606
+#: src/options.cpp:3134 src/options.cpp:3352 src/options.cpp:3720
+#: src/MarkInfo.cpp:622
 msgid "None"
 msgstr "Semmi"
 
-#: src/options.cpp:3152 src/options.cpp:3502
+#: src/options.cpp:3148 src/options.cpp:3498
 msgid "Distance between rings"
 msgstr ""
 
-#: src/options.cpp:3161 src/options.cpp:3513
+#: src/options.cpp:3157 src/options.cpp:3509
 msgid "Distance Unit"
 msgstr "Távolság egység"
 
-#: src/options.cpp:3164 src/options.cpp:3354 src/options.cpp:5400
-#: src/options.cpp:5546 src/options.cpp:5687 src/options.cpp:5940
+#: src/options.cpp:3160 src/options.cpp:3350 src/options.cpp:5396
+#: src/options.cpp:5542 src/options.cpp:5683 src/options.cpp:5936
 msgid "Nautical miles"
 msgstr "Tengeri mérföld"
 
-#: src/options.cpp:3164 src/options.cpp:3354 src/options.cpp:5401
-#: src/options.cpp:5547 src/options.cpp:5688 src/options.cpp:5941
+#: src/options.cpp:3160 src/options.cpp:3350 src/options.cpp:5397
+#: src/options.cpp:5543 src/options.cpp:5684 src/options.cpp:5937
 msgid "Kilometers"
 msgstr "Kilométer"
 
-#: src/options.cpp:3171
+#: src/options.cpp:3167
 msgid "Range Ring Colour"
 msgstr ""
 
-#: src/options.cpp:3187
-msgid "Show direct route from Own ship to Active point"
+#: src/options.cpp:3183
+msgid "Show direction to Active Waypoint"
 msgstr ""
 
-#: src/options.cpp:3192 src/RoutePropDlg.cpp:218 src/TrackPropDlg.cpp:474
-#: src/TrackPropDlg.cpp:716
+#: src/options.cpp:3188 src/RoutePropDlg.cpp:218 src/TrackPropDlg.cpp:490
+#: src/TrackPropDlg.cpp:732
 msgid "Style"
 msgstr "Stílus:"
 
-#: src/options.cpp:3196 src/RoutePropDlg.cpp:223 src/TrackPropDlg.cpp:479
-#: src/TrackPropDlg.cpp:721
+#: src/options.cpp:3192 src/RoutePropDlg.cpp:223 src/TrackPropDlg.cpp:495
+#: src/TrackPropDlg.cpp:737
 msgid "Solid"
 msgstr "Szilárd"
 
-#: src/options.cpp:3197 src/RoutePropDlg.cpp:224 src/TrackPropDlg.cpp:480
-#: src/TrackPropDlg.cpp:721
+#: src/options.cpp:3193 src/RoutePropDlg.cpp:224 src/TrackPropDlg.cpp:496
+#: src/TrackPropDlg.cpp:737
 msgid "Dot"
 msgstr "Pont"
 
-#: src/options.cpp:3197 src/RoutePropDlg.cpp:224 src/TrackPropDlg.cpp:480
-#: src/TrackPropDlg.cpp:722
+#: src/options.cpp:3193 src/RoutePropDlg.cpp:224 src/TrackPropDlg.cpp:496
+#: src/TrackPropDlg.cpp:738
 msgid "Long dash"
 msgstr "Hosszú vonás"
 
-#: src/options.cpp:3198 src/RoutePropDlg.cpp:225 src/TrackPropDlg.cpp:481
-#: src/TrackPropDlg.cpp:722
+#: src/options.cpp:3194 src/RoutePropDlg.cpp:225 src/TrackPropDlg.cpp:497
+#: src/TrackPropDlg.cpp:738
 msgid "Short dash"
 msgstr "Rövid vonás"
 
-#: src/options.cpp:3198 src/RoutePropDlg.cpp:225 src/TrackPropDlg.cpp:481
-#: src/TrackPropDlg.cpp:722
+#: src/options.cpp:3194 src/RoutePropDlg.cpp:225 src/TrackPropDlg.cpp:497
+#: src/TrackPropDlg.cpp:738
 msgid "Dot dash"
 msgstr "Pont vonás"
 
-#: src/options.cpp:3207 src/RoutePropDlg.cpp:195 src/TrackPropDlg.cpp:455
-#: src/TrackPropDlg.cpp:699 src/MarkInfo.cpp:603
+#: src/options.cpp:3203 src/RoutePropDlg.cpp:195 src/TrackPropDlg.cpp:471
+#: src/TrackPropDlg.cpp:715 src/MarkInfo.cpp:619
 msgid "Color"
 msgstr "Szín:"
 
-#: src/options.cpp:3212 src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:461
-#: src/TrackPropDlg.cpp:705
+#: src/options.cpp:3208 src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:477
+#: src/TrackPropDlg.cpp:721
 msgid "Black"
 msgstr "Fekete"
 
-#: src/options.cpp:3212 src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:461
-#: src/TrackPropDlg.cpp:705
+#: src/options.cpp:3208 src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:477
+#: src/TrackPropDlg.cpp:721
 msgid "Dark Red"
 msgstr "Sötétpiros"
 
-#: src/options.cpp:3212 src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:461
-#: src/TrackPropDlg.cpp:705
+#: src/options.cpp:3208 src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:477
+#: src/TrackPropDlg.cpp:721
 msgid "Dark Green"
 msgstr "Sötétzöld"
 
-#: src/options.cpp:3213 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:462
-#: src/TrackPropDlg.cpp:706
+#: src/options.cpp:3209 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:478
+#: src/TrackPropDlg.cpp:722
 msgid "Dark Yellow"
 msgstr "Sötét-sárga"
 
-#: src/options.cpp:3213 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:462
-#: src/TrackPropDlg.cpp:706
+#: src/options.cpp:3209 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:478
+#: src/TrackPropDlg.cpp:722
 msgid "Dark Blue"
 msgstr "Sötétkék"
 
-#: src/options.cpp:3213 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:462
-#: src/TrackPropDlg.cpp:706
+#: src/options.cpp:3209 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:478
+#: src/TrackPropDlg.cpp:722
 msgid "Dark Magenta"
 msgstr "Sötét-magenta"
 
-#: src/options.cpp:3213 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:462
-#: src/TrackPropDlg.cpp:706
+#: src/options.cpp:3209 src/RoutePropDlg.cpp:202 src/TrackPropDlg.cpp:478
+#: src/TrackPropDlg.cpp:722
 msgid "Dark Cyan"
 msgstr "Sötétlila"
 
-#: src/options.cpp:3214 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:463
-#: src/TrackPropDlg.cpp:707
+#: src/options.cpp:3210 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:479
+#: src/TrackPropDlg.cpp:723
 msgid "Light Gray"
 msgstr "Sötétszürke"
 
-#: src/options.cpp:3214 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:463
-#: src/TrackPropDlg.cpp:707
+#: src/options.cpp:3210 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:479
+#: src/TrackPropDlg.cpp:723
 msgid "Dark Gray"
 msgstr "Sötétszürke"
 
-#: src/options.cpp:3214 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:463
-#: src/TrackPropDlg.cpp:707
+#: src/options.cpp:3210 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:479
+#: src/TrackPropDlg.cpp:723
 msgid "Red"
 msgstr "Vörös"
 
-#: src/options.cpp:3214 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:463
-#: src/TrackPropDlg.cpp:707
+#: src/options.cpp:3210 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:479
+#: src/TrackPropDlg.cpp:723
 msgid "Green"
 msgstr "Zöld"
 
-#: src/options.cpp:3215 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:464
-#: src/TrackPropDlg.cpp:708
+#: src/options.cpp:3211 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:480
+#: src/TrackPropDlg.cpp:724
 msgid "Yellow"
 msgstr "Sárga"
 
-#: src/options.cpp:3215 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:464
-#: src/TrackPropDlg.cpp:708
+#: src/options.cpp:3211 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:480
+#: src/TrackPropDlg.cpp:724
 msgid "Blue"
 msgstr "Kék"
 
-#: src/options.cpp:3215 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:464
-#: src/TrackPropDlg.cpp:708
+#: src/options.cpp:3211 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:480
+#: src/TrackPropDlg.cpp:724
 msgid "Magenta"
 msgstr ""
 
-#: src/options.cpp:3215 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:464
-#: src/TrackPropDlg.cpp:708
+#: src/options.cpp:3211 src/RoutePropDlg.cpp:204 src/TrackPropDlg.cpp:480
+#: src/TrackPropDlg.cpp:724
 msgid "Cyan"
 msgstr "Lila"
 
-#: src/options.cpp:3216 src/RoutePropDlg.cpp:205 src/TrackPropDlg.cpp:465
-#: src/TrackPropDlg.cpp:709
+#: src/options.cpp:3212 src/RoutePropDlg.cpp:205 src/TrackPropDlg.cpp:481
+#: src/TrackPropDlg.cpp:725
 msgid "White"
 msgstr "Fehér"
 
-#: src/options.cpp:3226 src/routemanagerdialog.cpp:494
+#: src/options.cpp:3222 src/routemanagerdialog.cpp:494
 msgid "Tracks"
 msgstr "Nyomvonalak"
 
-#: src/options.cpp:3232
+#: src/options.cpp:3228
 msgid "Automatic Daily Tracks at midnight"
 msgstr ""
 
-#: src/options.cpp:3241
+#: src/options.cpp:3237
 msgid "Automatic Daily Tracks at"
 msgstr ""
 
-#: src/options.cpp:3259
+#: src/options.cpp:3255
 msgid "Computer"
 msgstr ""
 
-#: src/options.cpp:3265 src/RoutePropDlg.cpp:178 src/TCWin.cpp:152
-#: src/TrackPropDlg.cpp:425 src/TrackPropDlg.cpp:433 src/TrackPropDlg.cpp:797
+#: src/options.cpp:3261 src/RoutePropDlg.cpp:178 src/TCWin.cpp:152
+#: src/TrackPropDlg.cpp:441 src/TrackPropDlg.cpp:449 src/TrackPropDlg.cpp:813
 msgid "UTC"
 msgstr ""
 
-#: src/options.cpp:3271
+#: src/options.cpp:3267
 msgid "LMT"
 msgstr ""
 
-#: src/options.cpp:3284
+#: src/options.cpp:3280
 msgid "Highlight Tracks"
 msgstr "Nyomvonal kiemelése"
 
-#: src/options.cpp:3288
+#: src/options.cpp:3284
 msgid "Track Colour"
 msgstr ""
 
-#: src/options.cpp:3303
+#: src/options.cpp:3299
 msgid "Tracking Precision"
 msgstr "Nyomvonal pontosság"
 
-#: src/options.cpp:3306
+#: src/options.cpp:3302
 msgid "Low"
 msgstr "Alacsony"
 
-#: src/options.cpp:3306
+#: src/options.cpp:3302
 msgid "Medium"
 msgstr "Közepes"
 
-#: src/options.cpp:3306
+#: src/options.cpp:3302
 msgid "High"
 msgstr "Magas"
 
-#: src/options.cpp:3314
+#: src/options.cpp:3310
 msgid "Calculate values"
 msgstr ""
 
-#: src/options.cpp:3328
+#: src/options.cpp:3324
 msgid "Calculate SOG and COG from position changes"
 msgstr ""
 
-#: src/options.cpp:3333
+#: src/options.cpp:3329
 msgid "Min seconds between updates"
 msgstr ""
 
-#: src/options.cpp:3349
+#: src/options.cpp:3345
 msgid "Routes/Points"
 msgstr ""
 
-#: src/options.cpp:3362
+#: src/options.cpp:3358
 msgid "New Routes"
 msgstr ""
 
-#: src/options.cpp:3376 src/options.cpp:3439
+#: src/options.cpp:3372 src/options.cpp:3435
 msgid "Waypoint default icon"
 msgstr ""
 
-#: src/options.cpp:3381 src/options.cpp:3444 src/MarkInfo.cpp:394
+#: src/options.cpp:3377 src/options.cpp:3440 src/MarkInfo.cpp:410
 msgid "Combo!"
 msgstr ""
 
-#: src/options.cpp:3402
+#: src/options.cpp:3398
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr ""
 
-#: src/options.cpp:3411
+#: src/options.cpp:3407
 msgid "Advance route waypoint on arrival only"
 msgstr ""
 
-#: src/options.cpp:3424
+#: src/options.cpp:3420
 msgid "New Waypoints"
 msgstr ""
 
-#: src/options.cpp:3465
+#: src/options.cpp:3461
 msgid "Show waypoints only at a chartscale greater than 1 :"
 msgstr ""
 
-#: src/options.cpp:3474
+#: src/options.cpp:3470
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr ""
 
-#: src/options.cpp:3487
+#: src/options.cpp:3483
 msgid "Waypoint range rings"
 msgstr ""
 
-#: src/options.cpp:3524
+#: src/options.cpp:3520
 msgid "Waypoint Range Ring Colours"
 msgstr ""
 
-#: src/options.cpp:3545
+#: src/options.cpp:3541
 msgid "Control Options"
 msgstr ""
 
-#: src/options.cpp:3554
+#: src/options.cpp:3550
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "Minden útpont zárolása (ha az útpont dialógus nem látható)"
 
-#: src/options.cpp:3560
+#: src/options.cpp:3556
 msgid "Confirm deletion of tracks and routes"
 msgstr "Erősítsd meg a nyomvonalak és útvonalak törlését"
 
-#: src/options.cpp:3618
+#: src/options.cpp:3614
 msgid "Chart Files"
 msgstr ""
 
-#: src/options.cpp:3624
+#: src/options.cpp:3620
 msgid "Directories"
 msgstr "Könyvtárak"
 
-#: src/options.cpp:3669
+#: src/options.cpp:3665
 msgid "Add Directory..."
 msgstr "Könyvtár hozzáadása..."
 
-#: src/options.cpp:3673 src/options.cpp:4852 src/RoutePropDlgImpl.cpp:927
+#: src/options.cpp:3669 src/options.cpp:4848 src/RoutePropDlgImpl.cpp:942
 msgid "Remove Selected"
 msgstr "Kiválsztottak törlése"
 
-#: src/options.cpp:3679
+#: src/options.cpp:3675
 msgid "Compress Selected"
 msgstr ""
 
-#: src/options.cpp:3687
+#: src/options.cpp:3683
 msgid "Update Control"
 msgstr "Frissítés"
 
-#: src/options.cpp:3696
+#: src/options.cpp:3692
 msgid "Scan Charts and Update Database"
 msgstr "Térképek átnézése és adatbázis frissítése"
 
-#: src/options.cpp:3700
+#: src/options.cpp:3696
 msgid "Force Full Database Rebuild"
 msgstr "Teljes adatbázis újraépítés kényszerítése"
 
-#: src/options.cpp:3704
+#: src/options.cpp:3700
 msgid "Prepare all ENC Charts"
 msgstr ""
 
-#: src/options.cpp:3721
+#: src/options.cpp:3717
 msgid " [Modified]"
 msgstr ""
 
-#: src/options.cpp:3729
+#: src/options.cpp:3725
 msgid "Templates"
 msgstr ""
 
-#: src/options.cpp:3741
+#: src/options.cpp:3737
 msgid "Template Status"
 msgstr ""
 
-#: src/options.cpp:3751
+#: src/options.cpp:3747
 msgid "Last Applied Template Title:"
 msgstr ""
 
-#: src/options.cpp:3764
+#: src/options.cpp:3760
 msgid "Saved Templates"
 msgstr ""
 
-#: src/options.cpp:3791
+#: src/options.cpp:3787
 msgid "Create Config..."
 msgstr ""
 
-#: src/options.cpp:3803
+#: src/options.cpp:3799
 msgid "Delete Selected Config..."
 msgstr ""
 
-#: src/options.cpp:3811
+#: src/options.cpp:3807
 msgid "Apply Selected Config"
 msgstr ""
 
-#: src/options.cpp:3884
+#: src/options.cpp:3880
 msgid "Create Config"
 msgstr ""
 
-#: src/options.cpp:3938
+#: src/options.cpp:3934
 msgid "Problem applying selected configuration."
 msgstr ""
 
-#: src/options.cpp:4011 src/RoutePropDlg.cpp:455 src/TrackPropDlg.cpp:921
+#: src/options.cpp:4007 src/RoutePropDlg.cpp:455 src/TrackPropDlg.cpp:937
 msgid "Advanced"
 msgstr ""
 
-#: src/options.cpp:4031
+#: src/options.cpp:4027
 msgid "De-skew Raster Charts"
 msgstr ""
 
-#: src/options.cpp:4042 src/options.cpp:4360
+#: src/options.cpp:4038 src/options.cpp:4356
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Grafikus gyorsítás használata (OpenGL)"
 
-#: src/options.cpp:4047
+#: src/options.cpp:4043
 msgid "OpenGL Options"
 msgstr ""
 
-#: src/options.cpp:4061 src/options.cpp:4222
+#: src/options.cpp:4057 src/options.cpp:4218
 msgid "Chart Rotation Averaging Time"
 msgstr ""
 
-#: src/options.cpp:4077 src/options.cpp:4234 src/options.cpp:6445
+#: src/options.cpp:4073 src/options.cpp:4230 src/options.cpp:6441
 msgid "seconds"
 msgstr ""
 
-#: src/options.cpp:4085 src/options.cpp:4243
+#: src/options.cpp:4081 src/options.cpp:4239
 msgid "Chart Zoom/Scale Weighting"
 msgstr ""
 
-#: src/options.cpp:4094 src/options.cpp:4268
+#: src/options.cpp:4090 src/options.cpp:4264
 msgid "Raster"
 msgstr ""
 
-#: src/options.cpp:4108 src/options.cpp:4281
+#: src/options.cpp:4104 src/options.cpp:4277
 msgid "Vector"
 msgstr ""
 
-#: src/options.cpp:4122 src/options.cpp:4298
+#: src/options.cpp:4118 src/options.cpp:4294
 msgid "CM93 Detail level"
 msgstr ""
 
-#: src/options.cpp:4141 src/options.cpp:4321
+#: src/options.cpp:4137 src/options.cpp:4317
 msgid "Physical Screen Width"
 msgstr ""
 
-#: src/options.cpp:4146 src/options.cpp:4326
+#: src/options.cpp:4142 src/options.cpp:4322
 msgid "Auto"
 msgstr ""
 
-#: src/options.cpp:4150 src/options.cpp:4330
+#: src/options.cpp:4146 src/options.cpp:4326
 msgid "Manual:"
 msgstr ""
 
-#: src/options.cpp:4161 src/options.cpp:4338
+#: src/options.cpp:4157 src/options.cpp:4334
 msgid "mm"
 msgstr ""
 
-#: src/options.cpp:4192 src/options.cpp:5056 src/options.cpp:5237
+#: src/options.cpp:4188 src/options.cpp:5052 src/options.cpp:5233
 msgid "Chart Display"
 msgstr ""
 
-#: src/options.cpp:4198
+#: src/options.cpp:4194
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Torzított raszter térképeket észak fent módon jeleníti meg"
 
-#: src/options.cpp:4251
+#: src/options.cpp:4247
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr ""
 
-#: src/options.cpp:4354
+#: src/options.cpp:4350
 msgid "Graphics"
 msgstr ""
 
-#: src/options.cpp:4387
+#: src/options.cpp:4383
 msgid "Vector Chart Display"
 msgstr ""
 
-#: src/options.cpp:4407 src/options.cpp:4603 src/CanvasOptions.cpp:316
+#: src/options.cpp:4403 src/options.cpp:4599 src/CanvasOptions.cpp:316
 msgid "Display Category"
 msgstr "Megjelenítési kategória"
 
-#: src/options.cpp:4409 src/options.cpp:4605 src/CanvasOptions.cpp:318
+#: src/options.cpp:4405 src/options.cpp:4601 src/CanvasOptions.cpp:318
 msgid "Standard"
 msgstr ""
 
-#: src/options.cpp:4409 src/options.cpp:4605 src/CanvasOptions.cpp:318
+#: src/options.cpp:4405 src/options.cpp:4601 src/CanvasOptions.cpp:318
 msgid "All"
 msgstr "Mind, kivéve"
 
-#: src/options.cpp:4410 src/options.cpp:4606
+#: src/options.cpp:4406 src/options.cpp:4602
 msgid "Mariner's Standard"
 msgstr ""
 
-#: src/options.cpp:4421 src/options.cpp:6133 src/options.cpp:6882
+#: src/options.cpp:4417 src/options.cpp:6129 src/options.cpp:6878
 msgid "Display"
 msgstr "Megjelenítés"
 
-#: src/options.cpp:4429 src/options.cpp:4621
+#: src/options.cpp:4425 src/options.cpp:4617
 msgid "Depth Soundings"
 msgstr "Mélység adatok"
 
-#: src/options.cpp:4435 src/options.cpp:4626
+#: src/options.cpp:4431 src/options.cpp:4622
 msgid "Chart Information Objects"
 msgstr "Térkép informcáiós objektumok"
 
-#: src/options.cpp:4440
+#: src/options.cpp:4436
 msgid "Buoys/Lights"
 msgstr ""
 
-#: src/options.cpp:4447 src/options.cpp:4634 src/CanvasOptions.cpp:277
+#: src/options.cpp:4443 src/options.cpp:4630 src/CanvasOptions.cpp:277
 msgid "Buoy/Light Labels"
 msgstr "Bója/fény címkék"
 
-#: src/options.cpp:4452 src/options.cpp:4639 src/CanvasOptions.cpp:291
+#: src/options.cpp:4448 src/options.cpp:4635 src/CanvasOptions.cpp:291
 msgid "Light Descriptions"
 msgstr "Fények leírása"
 
-#: src/options.cpp:4457 src/options.cpp:4644
+#: src/options.cpp:4453 src/options.cpp:4640
 msgid "Extended Light Sectors"
 msgstr "Kiterjesztett fény szektorok"
 
-#: src/options.cpp:4462
+#: src/options.cpp:4458
 msgid "Chart Texts"
 msgstr ""
 
-#: src/options.cpp:4469 src/options.cpp:4652
+#: src/options.cpp:4465 src/options.cpp:4648
 msgid "National text on chart"
 msgstr ""
 
-#: src/options.cpp:4474 src/options.cpp:4657
+#: src/options.cpp:4470 src/options.cpp:4653
 msgid "Important Text Only"
 msgstr "Csak a fontos szövegek"
 
-#: src/options.cpp:4479 src/options.cpp:4662
+#: src/options.cpp:4475 src/options.cpp:4658
 msgid "De-Cluttered Text"
 msgstr "Szöveg kitisztázása"
 
-#: src/options.cpp:4483
+#: src/options.cpp:4479
 msgid "Chart Detail"
 msgstr ""
 
-#: src/options.cpp:4486 src/options.cpp:4667
+#: src/options.cpp:4482 src/options.cpp:4663
 msgid "Reduced Detail at Small Scale"
 msgstr "Csökkentett részletesség kis méretaránynál"
 
-#: src/options.cpp:4495 src/options.cpp:4683
+#: src/options.cpp:4491 src/options.cpp:4679
 msgid "Graphics Style"
 msgstr ""
 
-#: src/options.cpp:4498 src/options.cpp:4686
+#: src/options.cpp:4494 src/options.cpp:4682
 msgid "Paper Chart"
 msgstr "Papír térkép"
 
-#: src/options.cpp:4499 src/options.cpp:4687
+#: src/options.cpp:4495 src/options.cpp:4683
 msgid "Simplified"
 msgstr "Egyszerűsített"
 
-#: src/options.cpp:4505 src/options.cpp:4698
+#: src/options.cpp:4501 src/options.cpp:4694
 msgid "Boundaries"
 msgstr "Határok"
 
-#: src/options.cpp:4508 src/options.cpp:4701
+#: src/options.cpp:4504 src/options.cpp:4697
 msgid "Plain"
 msgstr "Sima"
 
-#: src/options.cpp:4509 src/options.cpp:4702
+#: src/options.cpp:4505 src/options.cpp:4698
 msgid "Symbolized"
 msgstr "Szimbólumos"
 
-#: src/options.cpp:4515 src/options.cpp:4713
+#: src/options.cpp:4511 src/options.cpp:4709
 msgid "Colors"
 msgstr "Színek"
 
-#: src/options.cpp:4518 src/options.cpp:4717
+#: src/options.cpp:4514 src/options.cpp:4713
 msgid "2 Color"
 msgstr "2 színű"
 
-#: src/options.cpp:4519 src/options.cpp:4718
+#: src/options.cpp:4515 src/options.cpp:4714
 msgid "4 Color"
 msgstr "4 színű"
 
-#: src/options.cpp:4530 src/options.cpp:4740
+#: src/options.cpp:4526 src/options.cpp:4736
 msgid "Shallow Depth"
 msgstr "Sekély"
 
-#: src/options.cpp:4541 src/options.cpp:4749
+#: src/options.cpp:4537 src/options.cpp:4745
 msgid "Safety Depth"
 msgstr "Biztonságos"
 
-#: src/options.cpp:4551 src/options.cpp:4758
+#: src/options.cpp:4547 src/options.cpp:4754
 msgid "Deep Depth"
 msgstr "Mély"
 
-#: src/options.cpp:4566 src/options.cpp:4776
+#: src/options.cpp:4562 src/options.cpp:4772
 msgid "User Standard Objects"
 msgstr ""
 
-#: src/options.cpp:4577 src/options.cpp:4783 src/options.cpp:11061
+#: src/options.cpp:4573 src/options.cpp:4779 src/options.cpp:11058
 msgid "Select All"
 msgstr "Minden kijelölése"
 
-#: src/options.cpp:4579 src/options.cpp:4785 src/options.cpp:11062
+#: src/options.cpp:4575 src/options.cpp:4781 src/options.cpp:11059
 msgid "Clear All"
 msgstr "Minden törlése"
 
-#: src/options.cpp:4585 src/options.cpp:4791
+#: src/options.cpp:4581 src/options.cpp:4787
 msgid "Reset to STANDARD"
 msgstr ""
 
-#: src/options.cpp:4811
+#: src/options.cpp:4807
 msgid "Tides && Currents"
 msgstr "Árapály és áramlatok"
 
-#: src/options.cpp:4816
+#: src/options.cpp:4812
 msgid "Active Datasets"
 msgstr "Aktív adatok"
 
-#: src/options.cpp:4850
+#: src/options.cpp:4846
 msgid "Add Dataset..."
 msgstr "Adatok hozzáadása..."
 
-#: src/options.cpp:4892
+#: src/options.cpp:4888
 msgid "All Available Charts"
 msgstr "Minden elérhető térkép"
 
-#: src/options.cpp:4914
+#: src/options.cpp:4910
 msgid "Remove Chart"
 msgstr "Térkép eltávolítása"
 
-#: src/options.cpp:4951
+#: src/options.cpp:4947
 msgid "All Charts"
 msgstr "Minden térkép"
 
-#: src/options.cpp:4970
+#: src/options.cpp:4966
 msgid "New Group..."
 msgstr "Új csoport..."
 
-#: src/options.cpp:4972
+#: src/options.cpp:4968
 msgid "Delete Group"
 msgstr "Csoport törlése"
 
-#: src/options.cpp:5029 src/options.cpp:5210 src/CanvasOptions.cpp:136
+#: src/options.cpp:5025 src/options.cpp:5206 src/CanvasOptions.cpp:136
 msgid "Navigation Mode"
 msgstr ""
 
-#: src/options.cpp:5037 src/options.cpp:5218 src/CanvasOptions.cpp:143
+#: src/options.cpp:5033 src/options.cpp:5214 src/CanvasOptions.cpp:143
 msgid "North Up"
 msgstr ""
 
-#: src/options.cpp:5040 src/options.cpp:5221 src/CanvasOptions.cpp:151
+#: src/options.cpp:5036 src/options.cpp:5217 src/CanvasOptions.cpp:151
 msgid "Course Up"
 msgstr ""
 
-#: src/options.cpp:5047 src/options.cpp:5228 src/CanvasOptions.cpp:169
+#: src/options.cpp:5043 src/options.cpp:5224 src/CanvasOptions.cpp:169
 msgid "Look Ahead Mode"
 msgstr "Előretekintő mód"
 
-#: src/options.cpp:5067 src/options.cpp:5248
+#: src/options.cpp:5063 src/options.cpp:5244
 msgid "Preserve scale when switching charts"
 msgstr ""
 
-#: src/options.cpp:5076 src/options.cpp:5257
+#: src/options.cpp:5072 src/options.cpp:5253
 msgid "Controls"
 msgstr ""
 
-#: src/options.cpp:5082 src/options.cpp:5263
+#: src/options.cpp:5078 src/options.cpp:5259
 msgid "Smooth Panning / Zooming"
 msgstr "Folyamatos görgetés / zoomolás"
 
-#: src/options.cpp:5086 src/options.cpp:5266
+#: src/options.cpp:5082 src/options.cpp:5262
 msgid "Zoom to Cursor"
 msgstr "Kurzorhoz nagyítás"
 
-#: src/options.cpp:5097 src/options.cpp:5282
+#: src/options.cpp:5093 src/options.cpp:5278
 msgid "Display Features"
 msgstr ""
 
-#: src/options.cpp:5103 src/options.cpp:5288 src/CanvasOptions.cpp:192
+#: src/options.cpp:5099 src/options.cpp:5284 src/CanvasOptions.cpp:192
 msgid "Show Grid"
 msgstr "Rács mutatása"
 
-#: src/options.cpp:5111 src/options.cpp:5296 src/CanvasOptions.cpp:206
+#: src/options.cpp:5107 src/options.cpp:5292 src/CanvasOptions.cpp:206
 msgid "Show Depth Units"
 msgstr "Mélység mértékegység mutatása"
 
-#: src/options.cpp:5127
+#: src/options.cpp:5123
 msgid "Status Bar Option"
 msgstr ""
 
-#: src/options.cpp:5134 src/options.cpp:5319
+#: src/options.cpp:5130 src/options.cpp:5315
 msgid "Live ETA at Cursor"
 msgstr ""
 
-#: src/options.cpp:5142 src/options.cpp:5327
+#: src/options.cpp:5138 src/options.cpp:5323
 msgid "Default Boat Speed "
 msgstr ""
 
-#: src/options.cpp:5157 src/options.cpp:5342
+#: src/options.cpp:5153 src/options.cpp:5338
 msgid "Canvas Layout"
 msgstr ""
 
-#: src/options.cpp:5312
+#: src/options.cpp:5308
 msgid "Status Bar"
 msgstr ""
 
-#: src/options.cpp:5379
+#: src/options.cpp:5375
 msgid "Units"
 msgstr ""
 
-#: src/options.cpp:5398 src/options.cpp:5544 src/options.cpp:5685
-#: src/options.cpp:5938 src/routeprintout.cpp:113 src/routeprintout.cpp:397
-#: src/RoutePropDlg.cpp:90 src/RoutePropDlg.cpp:296 src/TrackPropDlg.cpp:284
-#: src/MarkInfo.cpp:599
+#: src/options.cpp:5394 src/options.cpp:5540 src/options.cpp:5681
+#: src/options.cpp:5934 src/routeprintout.cpp:113 src/routeprintout.cpp:397
+#: src/RoutePropDlg.cpp:90 src/RoutePropDlg.cpp:296 src/TrackPropDlg.cpp:300
+#: src/MarkInfo.cpp:615
 msgid "Distance"
 msgstr "Távolság"
 
-#: src/options.cpp:5400 src/options.cpp:5546 src/options.cpp:5687
-#: src/options.cpp:5940
+#: src/options.cpp:5396 src/options.cpp:5542 src/options.cpp:5683
+#: src/options.cpp:5936
 msgid "Statute miles"
 msgstr ""
 
-#: src/options.cpp:5415 src/options.cpp:5557 src/options.cpp:5701
-#: src/options.cpp:5951
+#: src/options.cpp:5411 src/options.cpp:5553 src/options.cpp:5697
+#: src/options.cpp:5947
 msgid "Knots"
 msgstr ""
 
-#: src/options.cpp:5415 src/options.cpp:5557 src/options.cpp:5701
-#: src/options.cpp:5951
+#: src/options.cpp:5411 src/options.cpp:5553 src/options.cpp:5697
+#: src/options.cpp:5947
 msgid "Mph"
 msgstr ""
 
-#: src/options.cpp:5426 src/options.cpp:5565 src/options.cpp:5712
-#: src/options.cpp:5959
+#: src/options.cpp:5422 src/options.cpp:5561 src/options.cpp:5708
+#: src/options.cpp:5955
 msgid "Depth"
 msgstr ""
 
-#: src/options.cpp:5442 src/options.cpp:5578
+#: src/options.cpp:5438 src/options.cpp:5574
 msgid "Temperature"
 msgstr ""
 
-#: src/options.cpp:5445 src/options.cpp:5581
+#: src/options.cpp:5441 src/options.cpp:5577
 msgid "Celsius"
 msgstr ""
 
-#: src/options.cpp:5446 src/options.cpp:5582
+#: src/options.cpp:5442 src/options.cpp:5578
 msgid "Fahrenheit"
 msgstr ""
 
-#: src/options.cpp:5447 src/options.cpp:5583
+#: src/options.cpp:5443 src/options.cpp:5579
 msgid "Kelvin"
 msgstr ""
 
-#: src/options.cpp:5462 src/options.cpp:5595 src/options.cpp:5730
-#: src/options.cpp:5974
+#: src/options.cpp:5458 src/options.cpp:5591 src/options.cpp:5726
+#: src/options.cpp:5970
 msgid "Lat/Long"
 msgstr ""
 
-#: src/options.cpp:5464 src/options.cpp:5597 src/options.cpp:5732
-#: src/options.cpp:5976
+#: src/options.cpp:5460 src/options.cpp:5593 src/options.cpp:5728
+#: src/options.cpp:5972
 msgid "Degrees, Decimal Minutes"
 msgstr "Fok, tizedes percek"
 
-#: src/options.cpp:5465 src/options.cpp:5598 src/options.cpp:5733
-#: src/options.cpp:5977
+#: src/options.cpp:5461 src/options.cpp:5594 src/options.cpp:5729
+#: src/options.cpp:5973
 msgid "Decimal Degrees"
 msgstr "Tizedes fokok"
 
-#: src/options.cpp:5466 src/options.cpp:5599 src/options.cpp:5734
-#: src/options.cpp:5978
+#: src/options.cpp:5462 src/options.cpp:5595 src/options.cpp:5730
+#: src/options.cpp:5974
 msgid "Degrees, Minutes, Seconds"
 msgstr "Fok, perc, másodperc"
 
-#: src/options.cpp:5481 src/options.cpp:5611 src/options.cpp:5749
-#: src/options.cpp:5990
+#: src/options.cpp:5477 src/options.cpp:5607 src/options.cpp:5745
+#: src/options.cpp:5986
 msgid "Bearings"
 msgstr ""
 
-#: src/options.cpp:5486 src/options.cpp:5754
+#: src/options.cpp:5482 src/options.cpp:5750
 msgid "Show true"
 msgstr ""
 
-#: src/options.cpp:5491 src/options.cpp:5758
+#: src/options.cpp:5487 src/options.cpp:5754
 msgid "Show magnetic"
 msgstr ""
 
-#: src/options.cpp:5507 src/options.cpp:5771
+#: src/options.cpp:5503 src/options.cpp:5767
 msgid "Assumed magnetic variation"
 msgstr ""
 
-#: src/options.cpp:5522 src/options.cpp:5644 src/options.cpp:5783
-#: src/options.cpp:6021
+#: src/options.cpp:5518 src/options.cpp:5640 src/options.cpp:5779
+#: src/options.cpp:6017
 msgid "deg (-W, +E)"
 msgstr ""
 
-#: src/options.cpp:5619 src/options.cpp:5998
+#: src/options.cpp:5615 src/options.cpp:5994
 msgid "Show true bearings and headings"
 msgstr ""
 
-#: src/options.cpp:5622 src/options.cpp:6001
+#: src/options.cpp:5618 src/options.cpp:5997
 msgid "Show magnetic bearings and headings."
 msgstr ""
 
-#: src/options.cpp:5634 src/options.cpp:6012 src/options.cpp:7117
+#: src/options.cpp:5630 src/options.cpp:6008 src/options.cpp:7113
 msgid "WMM Plugin calculated magnetic variation"
 msgstr ""
 
-#: src/options.cpp:5652 src/options.cpp:6026
+#: src/options.cpp:5648 src/options.cpp:6022
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr ""
 
-#: src/options.cpp:5665
+#: src/options.cpp:5661
 msgid "Sounds"
 msgstr ""
 
-#: src/options.cpp:5809
+#: src/options.cpp:5805
 msgid "Anchor Alarm"
 msgstr ""
 
-#: src/options.cpp:5815
+#: src/options.cpp:5811
 msgid "Play Sound on Anchor Alarm."
 msgstr ""
 
-#: src/options.cpp:5820 src/options.cpp:5855 src/options.cpp:5886
-#: src/options.cpp:5918 src/options.cpp:9621 src/options.cpp:9644
-#: src/options.cpp:9666 src/options.cpp:9688
+#: src/options.cpp:5816 src/options.cpp:5851 src/options.cpp:5882
+#: src/options.cpp:5914 src/options.cpp:9618 src/options.cpp:9641
+#: src/options.cpp:9663 src/options.cpp:9685
 msgid " Audio file name: "
 msgstr ""
 
-#: src/options.cpp:5831
+#: src/options.cpp:5827
 msgid "Select Anchor Alarm Sound"
 msgstr ""
 
-#: src/options.cpp:5837
+#: src/options.cpp:5833
 msgid "Test Anchor Alarm Sound"
 msgstr ""
 
-#: src/options.cpp:5850
+#: src/options.cpp:5846
 msgid "Play Sound on AIS Alert."
 msgstr ""
 
-#: src/options.cpp:5863
+#: src/options.cpp:5859
 msgid "Select AIS Alert Sound"
 msgstr ""
 
-#: src/options.cpp:5868
+#: src/options.cpp:5864
 msgid "Test AIS Alert Sound"
 msgstr ""
 
-#: src/options.cpp:5875
+#: src/options.cpp:5871
 msgid "SART Alert"
 msgstr ""
 
-#: src/options.cpp:5881
+#: src/options.cpp:5877
 msgid "Play Sound on AIS SART Alert."
 msgstr ""
 
-#: src/options.cpp:5894
+#: src/options.cpp:5890
 msgid "Select AIS SART Alert Sound"
 msgstr ""
 
-#: src/options.cpp:5900
+#: src/options.cpp:5896
 msgid "Test AIS SART Alert Sound"
 msgstr ""
 
-#: src/options.cpp:5907
+#: src/options.cpp:5903
 msgid "DSC Alert"
 msgstr ""
 
-#: src/options.cpp:5913
+#: src/options.cpp:5909
 msgid "Play Sound on DSC notification."
 msgstr ""
 
-#: src/options.cpp:5926
+#: src/options.cpp:5922
 msgid "Select DSC notification Sound"
 msgstr ""
 
-#: src/options.cpp:5931
+#: src/options.cpp:5927
 msgid "Test DSC notification Sound"
 msgstr ""
 
-#: src/options.cpp:6061
+#: src/options.cpp:6057
 msgid "AIS Targets"
 msgstr "AIS célpontok"
 
-#: src/options.cpp:6068
+#: src/options.cpp:6064
 msgid "CPA Calculation"
 msgstr "CPA számítás"
 
-#: src/options.cpp:6079
+#: src/options.cpp:6075
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr ""
 
-#: src/options.cpp:6086
+#: src/options.cpp:6082
 msgid "Warn if CPA less than (NMi)"
 msgstr "Figyelmeztetés, ha a CPA kevesebb mint (tmf)"
 
-#: src/options.cpp:6098
+#: src/options.cpp:6094
 msgid "...and TCPA is less than (min)"
 msgstr "  .. és a TCPA kevesebb mint (perc)"
 
-#: src/options.cpp:6106
+#: src/options.cpp:6102
 msgid "Lost Targets"
 msgstr "Eltűnt célpontok"
 
-#: src/options.cpp:6115
+#: src/options.cpp:6111
 msgid "Mark targets as lost after (min)"
 msgstr "Célpont eltűntnek nyilvánítása ennyi idő után (perc)"
 
-#: src/options.cpp:6123
+#: src/options.cpp:6119
 msgid "Remove lost targets after (min)"
 msgstr "Eltűnt célpontok eltávolítása (perc)"
 
-#: src/options.cpp:6142
+#: src/options.cpp:6138
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "COG előrejelző nyíl mutatása, hossz (perc)"
 
-#: src/options.cpp:6150
+#: src/options.cpp:6146
 msgid "Show target tracks, length (min)"
 msgstr "Célpont nyomvonalának mutatása, hossz (perc)"
 
-#: src/options.cpp:6158
+#: src/options.cpp:6154
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr ""
 
-#: src/options.cpp:6166
+#: src/options.cpp:6162
 msgid "Draw AIS realtime prediction, target speed min (kn)"
 msgstr ""
 
-#: src/options.cpp:6176
+#: src/options.cpp:6172
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr ""
 
-#: src/options.cpp:6184
+#: src/options.cpp:6180
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Területi közlemények mutatása (AIS bináris üzenetekből)"
 
-#: src/options.cpp:6191
+#: src/options.cpp:6187
 msgid "Show AIS targets real size"
 msgstr "AIS célpontok mutatása valós méretben"
 
-#: src/options.cpp:6198
+#: src/options.cpp:6194
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr ""
 
-#: src/options.cpp:6206
+#: src/options.cpp:6202
 msgid "Use WPL position messages. Action when received:"
 msgstr ""
 
-#: src/options.cpp:6209
+#: src/options.cpp:6205
 msgid "APRS position report"
 msgstr ""
 
-#: src/options.cpp:6209
+#: src/options.cpp:6205
 msgid "Create mark"
 msgstr ""
 
-#: src/options.cpp:6215
+#: src/options.cpp:6211
 msgid "Rollover"
 msgstr "Görgetés"
 
-#: src/options.cpp:6221
+#: src/options.cpp:6217
 msgid "Enable route/AIS info block"
 msgstr ""
 
-#: src/options.cpp:6229
+#: src/options.cpp:6225
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Hajó neve\" MMSI (hívónév)"
 
-#: src/options.cpp:6233
+#: src/options.cpp:6229
 msgid "[Class] Type (Status)"
 msgstr "[Osztály] Típus (Állapot)"
 
-#: src/options.cpp:6236
+#: src/options.cpp:6232
 msgid "SOG COG"
 msgstr ""
 
-#: src/options.cpp:6239
+#: src/options.cpp:6235
 msgid "CPA TCPA"
 msgstr ""
 
-#: src/options.cpp:6244
+#: src/options.cpp:6240
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA risztás"
 
-#: src/options.cpp:6253
+#: src/options.cpp:6249
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "CPA/TCPA riasztás dialógus mutatása"
 
-#: src/options.cpp:6272
+#: src/options.cpp:6268
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Hangjelzés CPA/TCPA risztás esetén"
 
-#: src/options.cpp:6290
+#: src/options.cpp:6286
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr ""
 
-#: src/options.cpp:6297
+#: src/options.cpp:6293
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Célpont riasztás visszaigazolás időzítés engedélyezése (perc)"
 
-#: src/options.cpp:6309
+#: src/options.cpp:6305
 msgid "General Options"
 msgstr "Általános beállítások"
 
-#: src/options.cpp:6318
+#: src/options.cpp:6314
 msgid "Language"
 msgstr "Nyelv"
 
-#: src/options.cpp:6333
+#: src/options.cpp:6329
 msgid "Fonts"
 msgstr "Betűtípus"
 
-#: src/options.cpp:6369
+#: src/options.cpp:6365
 msgid "Choose Font..."
 msgstr "Betűtípus választása..."
 
-#: src/options.cpp:6374
+#: src/options.cpp:6370
 msgid "Choose Font Color..."
 msgstr "Betűtípus választása..."
 
-#: src/options.cpp:6378
+#: src/options.cpp:6374
 msgid "Sample"
 msgstr ""
 
-#: src/options.cpp:6386
+#: src/options.cpp:6382
 msgid "Toolbar and Window Style"
 msgstr "Eszköztár és ablak stílus"
 
-#: src/options.cpp:6404
+#: src/options.cpp:6400
 msgid "Interface Options"
 msgstr ""
 
-#: src/options.cpp:6410
+#: src/options.cpp:6406
 msgid "Show Status Bar"
 msgstr "Állapotsor mutatása"
 
-#: src/options.cpp:6415
+#: src/options.cpp:6411
 msgid "Show Menu Bar"
 msgstr ""
 
-#: src/options.cpp:6429
+#: src/options.cpp:6425
 msgid "Show Compass/GPS Status Window"
 msgstr ""
 
-#: src/options.cpp:6437
+#: src/options.cpp:6433
 msgid "Enable Toolbar auto-hide"
 msgstr ""
 
-#: src/options.cpp:6452
+#: src/options.cpp:6448
 msgid "Play Ships Bells"
 msgstr "Hajóharang kongatása"
 
-#: src/options.cpp:6463
+#: src/options.cpp:6459
 msgid "Audio Play command:"
 msgstr ""
 
-#: src/options.cpp:6482
+#: src/options.cpp:6478
 msgid "Unknown device :"
 msgstr ""
 
-#: src/options.cpp:6497
+#: src/options.cpp:6493
 msgid "Sound Device"
 msgstr ""
 
-#: src/options.cpp:6509
+#: src/options.cpp:6505
 msgid "Enable Touchscreen interface"
 msgstr ""
 
-#: src/options.cpp:6513
+#: src/options.cpp:6509
 msgid "Enable Scaled Graphics interface"
 msgstr ""
 
-#: src/options.cpp:6523
+#: src/options.cpp:6519
 msgid "Show Zoom buttons"
 msgstr ""
 
-#: src/options.cpp:6530
+#: src/options.cpp:6526
 msgid "Use Inland ECDIS V2.3"
 msgstr ""
 
-#: src/options.cpp:6550
+#: src/options.cpp:6546
 msgid "User Interface scale factor"
 msgstr ""
 
-#: src/options.cpp:6564
+#: src/options.cpp:6560
 msgid "Chart Object scale factor"
 msgstr ""
 
-#: src/options.cpp:6578
+#: src/options.cpp:6574
 msgid "Ship scale factor"
 msgstr ""
 
-#: src/options.cpp:6592
+#: src/options.cpp:6588
 msgid "ENC Sounding factor"
 msgstr ""
 
-#: src/options.cpp:6851 src/options.cpp:6911
+#: src/options.cpp:6847 src/options.cpp:6907
 msgid "Connections"
 msgstr "Kapcsolatok"
 
-#: src/options.cpp:6879
+#: src/options.cpp:6875
 msgid "Apply"
 msgstr "Alkalmaz"
 
-#: src/options.cpp:6888
+#: src/options.cpp:6884
 msgid "Charts"
 msgstr "Térképek"
 
-#: src/options.cpp:6921
+#: src/options.cpp:6917
 msgid "Ships"
 msgstr "Hajók"
 
-#: src/options.cpp:6930
+#: src/options.cpp:6926
 msgid "User Interface"
 msgstr "Felhasználói felület"
 
-#: src/options.cpp:6934 src/options.cpp:6935
+#: src/options.cpp:6930 src/options.cpp:6931
 msgid "Plugins"
 msgstr "Modulok"
 
-#: src/options.cpp:7122
+#: src/options.cpp:7118
 msgid "User set magnetic variation"
 msgstr ""
 
-#: src/options.cpp:7592
+#: src/options.cpp:7588
 msgid "feet"
 msgstr ""
 
-#: src/options.cpp:7592
+#: src/options.cpp:7588
 msgid "fathoms"
 msgstr ""
 
-#: src/options.cpp:7831
+#: src/options.cpp:7827
 msgid "Add a directory containing chart files"
 msgstr "Térkép állományokat tartalmazó könyvtárak hozzáadása"
 
-#: src/options.cpp:8087
+#: src/options.cpp:8084
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - hajód hosszának > 0 kell lennie."
 
-#: src/options.cpp:8089
+#: src/options.cpp:8086
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - hajód szélességének > 0 kell lennie."
 
-#: src/options.cpp:8092
+#: src/options.cpp:8089
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - a GPS eltolásnak a középvonaltól a szélességen belül kell lennie."
 
-#: src/options.cpp:8096
+#: src/options.cpp:8093
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - a GPS eltolásnak az orrtól a hosszon belül kell lennie."
 
-#: src/options.cpp:8098
+#: src/options.cpp:8095
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - a minimális hajó ikon méretnek 1 és 100 mm között kell lennie"
 
-#: src/options.cpp:8100
+#: src/options.cpp:8097
 msgid "The settings for own ship real size are not correct:"
 msgstr "A saját hajó valós méreteinek beállításai nem jók"
 
-#: src/options.cpp:8101 src/routemanagerdialog.cpp:1723
+#: src/options.cpp:8098 src/routemanagerdialog.cpp:1723
 msgid "OpenCPN info"
 msgstr "OpenCPN információ"
 
-#: src/options.cpp:9014
+#: src/options.cpp:9011
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
 msgstr ""
 
-#: src/options.cpp:9018 src/routeman.cpp:932 src/routeman.cpp:1020
+#: src/options.cpp:9015 src/routeman.cpp:933 src/routeman.cpp:1021
 msgid "OpenCPN Warning"
 msgstr ""
 
-#: src/options.cpp:9035 src/options.cpp:9079
+#: src/options.cpp:9032 src/options.cpp:9076
 msgid "OpenCPN Compress Charts"
 msgstr ""
 
-#: src/options.cpp:9072
+#: src/options.cpp:9069
 msgid "No charts found to compress."
 msgstr ""
 
-#: src/options.cpp:9104
+#: src/options.cpp:9101
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
 msgstr ""
 
-#: src/options.cpp:9574 src/options.cpp:9585
+#: src/options.cpp:9571 src/options.cpp:9582
 msgid "Select Sound File"
 msgstr "Hang fájl kiválasztása"
 
-#: src/options.cpp:10096
+#: src/options.cpp:10093
 msgid "Enter Group Name"
 msgstr "Csoport nevének megadása"
 
-#: src/options.cpp:10096
+#: src/options.cpp:10093
 msgid "New Chart Group"
 msgstr "Új térkép csoport"
 
-#: src/options.cpp:10257 src/options.cpp:10271
+#: src/options.cpp:10254 src/options.cpp:10268
 msgid "Select Tide/Current Data"
 msgstr "Árapály és áramlat adatok kiválasztása"
 
-#: src/options.cpp:10314
+#: src/options.cpp:10311
 msgid "Stop Scan"
 msgstr ""
 
-#: src/options.cpp:10888
+#: src/options.cpp:10885
 msgid "Configure new connection"
 msgstr ""
 
-#: src/options.cpp:10983
+#: src/options.cpp:10980
 msgid "Signal K server available."
 msgstr ""
 
-#: src/options.cpp:10985
+#: src/options.cpp:10982
 msgid "Signal K server not found."
 msgstr ""
 
-#: src/options.cpp:11049
+#: src/options.cpp:11046
 msgid "Sentence Filter"
 msgstr "Mondat szűrő"
 
-#: src/options.cpp:11159
+#: src/options.cpp:11156
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
 msgstr ""
 
-#: src/options.cpp:11161
+#: src/options.cpp:11158
 msgid "Enter the NMEA sentence"
 msgstr "Add meg az NMEA mondatot"
 
-#: src/options.cpp:11177
+#: src/options.cpp:11174
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -5875,67 +5879,67 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
 msgstr ""
 
-#: src/options.cpp:11194
+#: src/options.cpp:11191
 msgid "REGEX syntax error: \n"
 msgstr ""
 
-#: src/options.cpp:11242
+#: src/options.cpp:11239
 msgid "Texture Compression"
 msgstr ""
 
-#: src/options.cpp:11243
+#: src/options.cpp:11240
 msgid "Texture Compression with Caching"
 msgstr ""
 
-#: src/options.cpp:11245
+#: src/options.cpp:11242
 msgid "Texture Compression Caching"
 msgstr ""
 
-#: src/options.cpp:11247
+#: src/options.cpp:11244
 msgid "Texture Memory Size (MB)"
 msgstr ""
 
-#: src/options.cpp:11251 src/options.cpp:11426
+#: src/options.cpp:11248 src/options.cpp:11423
 msgid "Size: "
 msgstr ""
 
-#: src/options.cpp:11253
+#: src/options.cpp:11250
 msgid "Rebuild Texture Cache"
 msgstr ""
 
-#: src/options.cpp:11255
+#: src/options.cpp:11252
 msgid "Clear Texture Cache"
 msgstr ""
 
-#: src/options.cpp:11259
+#: src/options.cpp:11256
 msgid "Show FPS"
 msgstr ""
 
-#: src/options.cpp:11260
+#: src/options.cpp:11257
 msgid "Polygon Smoothing"
 msgstr ""
 
-#: src/options.cpp:11261
+#: src/options.cpp:11258
 msgid "Line Smoothing"
 msgstr ""
 
-#: src/options.cpp:11263
+#: src/options.cpp:11260
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr ""
 
-#: src/options.cpp:11265
+#: src/options.cpp:11262
 msgid "Use Accelerated Panning"
 msgstr "Grafikus gyorsítás használata (OpenGL)"
 
-#: src/options.cpp:11267
+#: src/options.cpp:11264
 msgid "Texture Settings"
 msgstr ""
 
-#: src/options.cpp:11274
+#: src/options.cpp:11271
 msgid "Texture Cache"
 msgstr ""
 
-#: src/options.cpp:11281
+#: src/options.cpp:11278
 msgid "Miscellaneous"
 msgstr ""
 
@@ -6004,183 +6008,183 @@ msgstr ""
 msgid "Un-Installation complete"
 msgstr ""
 
-#: src/pluginmanager.cpp:1209
+#: src/pluginmanager.cpp:1212
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
 msgstr ""
 
-#: src/pluginmanager.cpp:2227
+#: src/pluginmanager.cpp:2233
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
-" Please update this PlugIn at the opencpn.org website."
+" Please update this PlugIn using the PlugIn manager master catalog."
 msgstr ""
 
-#: src/pluginmanager.cpp:2232 src/pluginmanager.cpp:2245
+#: src/pluginmanager.cpp:2238 src/pluginmanager.cpp:2251
 msgid "Blacklisted plugin detected..."
 msgstr ""
 
-#: src/pluginmanager.cpp:2240
+#: src/pluginmanager.cpp:2246
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
-" Please update this PlugIn at the opencpn.org website."
+" Please update this PlugIn using the PlugIn manager master catalog."
 msgstr ""
 
-#: src/pluginmanager.cpp:2292
+#: src/pluginmanager.cpp:2298
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
 msgstr ""
 
-#: src/pluginmanager.cpp:2318
+#: src/pluginmanager.cpp:2324
 msgid "Incompatible plugin detected"
 msgstr ""
 
-#: src/pluginmanager.cpp:2322
+#: src/pluginmanager.cpp:2328
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
 msgstr ""
 
-#: src/pluginmanager.cpp:2328
+#: src/pluginmanager.cpp:2334
 msgid ", and all previous versions,"
 msgstr ""
 
-#: src/pluginmanager.cpp:2329
+#: src/pluginmanager.cpp:2335
 msgid " is incompatible with this version of OpenCPN."
 msgstr ""
 
-#: src/pluginmanager.cpp:4811
+#: src/pluginmanager.cpp:4850
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr ""
 
-#: src/pluginmanager.cpp:4827
+#: src/pluginmanager.cpp:4866
 msgid "Plugin Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:4844 src/pluginmanager.cpp:4889
-#: src/pluginmanager.cpp:4902 src/pluginmanager.cpp:5417
+#: src/pluginmanager.cpp:4883 src/pluginmanager.cpp:4928
+#: src/pluginmanager.cpp:4941 src/pluginmanager.cpp:5456
 msgid "Update Plugin Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:4850 src/pluginmanager.cpp:4917
+#: src/pluginmanager.cpp:4889 src/pluginmanager.cpp:4956
 msgid "Import plugin..."
 msgstr ""
 
-#: src/pluginmanager.cpp:4857 src/pluginmanager.cpp:4910
+#: src/pluginmanager.cpp:4896 src/pluginmanager.cpp:4949
 msgid "Settings..."
 msgstr ""
 
-#: src/pluginmanager.cpp:4865
+#: src/pluginmanager.cpp:4904
 msgid "Disabled"
 msgstr ""
 
-#: src/pluginmanager.cpp:4959
+#: src/pluginmanager.cpp:4998
 msgid "Cannot download data from url"
 msgstr ""
 
-#: src/pluginmanager.cpp:4960 src/pluginmanager.cpp:4972
-#: src/pluginmanager.cpp:4982 src/pluginmanager.cpp:4991
-#: src/pluginmanager.cpp:5016
+#: src/pluginmanager.cpp:4999 src/pluginmanager.cpp:5011
+#: src/pluginmanager.cpp:5021 src/pluginmanager.cpp:5030
+#: src/pluginmanager.cpp:5055
 msgid "OpenCPN Catalog update"
 msgstr ""
 
-#: src/pluginmanager.cpp:4971 src/pluginmanager.cpp:4981
+#: src/pluginmanager.cpp:5010 src/pluginmanager.cpp:5020
 msgid "Unable to copy catalog file"
 msgstr ""
 
-#: src/pluginmanager.cpp:4990
+#: src/pluginmanager.cpp:5029
 msgid "Unable to copy catalog file to cache"
 msgstr ""
 
-#: src/pluginmanager.cpp:5015
+#: src/pluginmanager.cpp:5054
 msgid "Catalog update successful"
 msgstr ""
 
-#: src/pluginmanager.cpp:5129
+#: src/pluginmanager.cpp:5168
 msgid "Select tarball file"
 msgstr ""
 
-#: src/pluginmanager.cpp:5224
+#: src/pluginmanager.cpp:5263
 msgid "Error extracting import plugin tarball."
 msgstr ""
 
-#: src/pluginmanager.cpp:5225 src/pluginmanager.cpp:5234
-#: src/pluginmanager.cpp:5248 src/pluginmanager.cpp:5256
+#: src/pluginmanager.cpp:5264 src/pluginmanager.cpp:5273
+#: src/pluginmanager.cpp:5287 src/pluginmanager.cpp:5295
 msgid "OpenCPN Plugin Import Error"
 msgstr ""
 
-#: src/pluginmanager.cpp:5233
+#: src/pluginmanager.cpp:5272
 msgid "Error, import plugin tarball does not contain required metadata."
 msgstr ""
 
-#: src/pluginmanager.cpp:5247
+#: src/pluginmanager.cpp:5286
 msgid "Error processing import plugin metadata."
 msgstr ""
 
-#: src/pluginmanager.cpp:5255
+#: src/pluginmanager.cpp:5294
 msgid "Incompatible import plugin detected."
 msgstr ""
 
-#: src/pluginmanager.cpp:5385
+#: src/pluginmanager.cpp:5424
 msgid "Plugin imported successfully"
 msgstr ""
 
-#: src/pluginmanager.cpp:5387
+#: src/pluginmanager.cpp:5426
 msgid "Active catalog updated."
 msgstr ""
 
-#: src/pluginmanager.cpp:5389
+#: src/pluginmanager.cpp:5428
 msgid "Plugin may be installed or updated now."
 msgstr ""
 
-#: src/pluginmanager.cpp:5390
+#: src/pluginmanager.cpp:5429
 msgid "OpenCPN Plugin Import Successful"
 msgstr ""
 
-#: src/pluginmanager.cpp:5396
+#: src/pluginmanager.cpp:5435
 msgid "Active Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:5396
+#: src/pluginmanager.cpp:5435
 msgid "Last Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:5410
+#: src/pluginmanager.cpp:5449
 msgid "Last change: "
 msgstr ""
 
-#: src/pluginmanager.cpp:5411
+#: src/pluginmanager.cpp:5450
 msgid "Please Update Plugin Catalog."
 msgstr ""
 
-#: src/pluginmanager.cpp:5740 src/pluginmanager.cpp:5790
+#: src/pluginmanager.cpp:5779 src/pluginmanager.cpp:5829
 msgid "Enabled"
 msgstr ""
 
-#: src/pluginmanager.cpp:5822 src/pluginmanager.cpp:5847
+#: src/pluginmanager.cpp:5861 src/pluginmanager.cpp:5886
 msgid "Uninstall"
 msgstr ""
 
-#: src/pluginmanager.cpp:6002
+#: src/pluginmanager.cpp:6041
 msgid "Upgrade to Version "
 msgstr ""
 
-#: src/pluginmanager.cpp:6009
+#: src/pluginmanager.cpp:6048
 msgid "Install..."
 msgstr ""
 
-#: src/pluginmanager.cpp:6015
+#: src/pluginmanager.cpp:6054
 msgid "Update to "
 msgstr ""
 
-#: src/pluginmanager.cpp:6022
+#: src/pluginmanager.cpp:6061
 msgid "Reinstall"
 msgstr ""
 
-#: src/pluginmanager.cpp:6028
+#: src/pluginmanager.cpp:6067
 msgid "Downgrade"
 msgstr ""
 
-#: src/pluginmanager.cpp:6236
+#: src/pluginmanager.cpp:6275
 msgid "Website"
 msgstr ""
 
@@ -6285,7 +6289,7 @@ msgstr "Nyomvonal indítása"
 msgid "Route from Track"
 msgstr "Útvonal nyomvonalból"
 
-#: src/routemanagerdialog.cpp:628 src/TrackPropDlg.cpp:512
+#: src/routemanagerdialog.cpp:628 src/TrackPropDlg.cpp:528
 msgid "Waypoints"
 msgstr "Útpontok"
 
@@ -6293,7 +6297,7 @@ msgstr "Útpontok"
 msgid "Show all waypoints"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:688 src/MarkInfo.cpp:389 src/MarkInfo.cpp:1836
+#: src/routemanagerdialog.cpp:688 src/MarkInfo.cpp:405 src/MarkInfo.cpp:1852
 msgid "Icon"
 msgstr "Kép"
 
@@ -6353,8 +6357,8 @@ msgstr ""
 msgid "Create Persistent layer"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:895 src/TrackPropDlg.cpp:359
-#: src/TrackPropDlg.cpp:695 src/MarkInfo.cpp:565
+#: src/routemanagerdialog.cpp:895 src/TrackPropDlg.cpp:375
+#: src/TrackPropDlg.cpp:711 src/MarkInfo.cpp:581
 msgid "Show on chart"
 msgstr "Térképen mutatni"
 
@@ -6461,17 +6465,17 @@ msgstr ""
 msgid "(Unnamed Layer)"
 msgstr "(Névtelen réteg)"
 
-#: src/routeman.cpp:930 src/routeman.cpp:1018
+#: src/routeman.cpp:931 src/routeman.cpp:1019
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
 msgstr ""
 
-#: src/routeman.cpp:1167
+#: src/routeman.cpp:1168
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
 msgstr "Az útpontokat átnevezem az új sorrend szerint. A nevek '001', '002' stb. lesz.\n\n"
 "Át akarod nevezni az útpontokat?"
 
-#: src/routeman.cpp:1173
+#: src/routeman.cpp:1174
 msgid "Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
 msgstr ""
@@ -6505,7 +6509,7 @@ msgstr ""
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr ""
 
-#: src/routeprintout.cpp:101 src/RoutePropDlg.cpp:288 src/TrackPropDlg.cpp:283
+#: src/routeprintout.cpp:101 src/RoutePropDlg.cpp:288 src/TrackPropDlg.cpp:299
 msgid "Leg"
 msgstr "Szakasz"
 
@@ -6541,11 +6545,11 @@ msgstr "Útpont leírás mutatása"
 msgid "Route Print"
 msgstr "Útvonal nyomtatása"
 
-#: src/RoutePropDlg.cpp:60 src/TrackPropDlg.cpp:671
+#: src/RoutePropDlg.cpp:60 src/TrackPropDlg.cpp:687
 msgid "From"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:69 src/TrackPropDlg.cpp:680
+#: src/RoutePropDlg.cpp:69 src/TrackPropDlg.cpp:696
 msgid "To"
 msgstr "Hova"
 
@@ -6573,11 +6577,11 @@ msgstr ""
 msgid "LMT@Location"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:461 src/TrackPropDlg.cpp:705
+#: src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:477 src/TrackPropDlg.cpp:721
 msgid "Default color"
 msgstr "Alapszín"
 
-#: src/RoutePropDlg.cpp:238 src/TrackPropDlg.cpp:495 src/TrackPropDlg.cpp:729
+#: src/RoutePropDlg.cpp:238 src/TrackPropDlg.cpp:511 src/TrackPropDlg.cpp:745
 msgid "Width"
 msgstr "Szélesség:"
 
@@ -6649,38 +6653,38 @@ msgstr "Következő árapály esemény"
 msgid "ETD"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:352 src/TrackPropDlg.cpp:618 src/MarkInfo.cpp:333
+#: src/RoutePropDlg.cpp:352 src/TrackPropDlg.cpp:634 src/MarkInfo.cpp:349
 msgid "Basic"
 msgstr "Alap"
 
-#: src/RoutePropDlg.cpp:370 src/TrackPropDlg.cpp:858 src/MarkInfo.cpp:464
-#: src/MarkInfo.cpp:477
+#: src/RoutePropDlg.cpp:370 src/TrackPropDlg.cpp:874 src/MarkInfo.cpp:480
+#: src/MarkInfo.cpp:493
 msgid "Links"
 msgstr "Hivatkozások"
 
-#: src/RoutePropDlg.cpp:382 src/TrackPropDlg.cpp:867
+#: src/RoutePropDlg.cpp:382 src/TrackPropDlg.cpp:883
 msgid "wxFB Website"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:395 src/RoutePropDlg.cpp:439 src/TrackPropDlg.cpp:877
-#: src/MarkInfo.cpp:503 src/MarkInfo.cpp:510
+#: src/RoutePropDlg.cpp:395 src/RoutePropDlg.cpp:439 src/TrackPropDlg.cpp:893
+#: src/MarkInfo.cpp:519 src/MarkInfo.cpp:526
 msgid "Add new"
 msgstr "Új hozzáadása"
 
-#: src/RoutePropDlg.cpp:426 src/RoutePropDlgImpl.cpp:1347
-#: src/TrackPropDlg.cpp:910 src/TrackPropDlg.cpp:1618
+#: src/RoutePropDlg.cpp:426 src/RoutePropDlgImpl.cpp:1362
+#: src/TrackPropDlg.cpp:926 src/TrackPropDlg.cpp:1634
 msgid "Links are opened in the default browser."
 msgstr "Hivatkozások az alapértelmezett böngészőben nyílnak."
 
-#: src/RoutePropDlg.cpp:462 src/TrackPropDlg.cpp:554 src/TrackPropDlg.cpp:940
+#: src/RoutePropDlg.cpp:462 src/TrackPropDlg.cpp:570 src/TrackPropDlg.cpp:956
 msgid "Print"
 msgstr "Nyomtatás"
 
-#: src/RoutePropDlg.cpp:466 src/TrackPropDlg.cpp:569
+#: src/RoutePropDlg.cpp:466 src/TrackPropDlg.cpp:585
 msgid "Extend"
 msgstr "Kiterjesztett"
 
-#: src/RoutePropDlg.cpp:470 src/TrackPropDlg.cpp:563 src/TrackPropDlg.cpp:949
+#: src/RoutePropDlg.cpp:470 src/TrackPropDlg.cpp:579 src/TrackPropDlg.cpp:965
 msgid "Split"
 msgstr "Útvonal felbontása"
 
@@ -6708,86 +6712,86 @@ msgstr ""
 msgid "Nighttime"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:393
+#: src/RoutePropDlgImpl.cpp:408
 msgid "Arrived"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:798 src/TrackPropDlg.cpp:332
-#: src/TrackPropDlg.cpp:1325
+#: src/RoutePropDlgImpl.cpp:813 src/TrackPropDlg.cpp:348
+#: src/TrackPropDlg.cpp:1341
 msgid "Depart From"
 msgstr "Indulás honnan"
 
-#: src/RoutePropDlgImpl.cpp:800 src/TrackPropDlg.cpp:370
-#: src/TrackPropDlg.cpp:753 src/TrackPropDlg.cpp:1327
+#: src/RoutePropDlgImpl.cpp:815 src/TrackPropDlg.cpp:386
+#: src/TrackPropDlg.cpp:769 src/TrackPropDlg.cpp:1343
 msgid "Total distance"
 msgstr "Összes távolság"
 
-#: src/RoutePropDlgImpl.cpp:801
+#: src/RoutePropDlgImpl.cpp:816
 msgid "Speed (Kts)"
 msgstr "Sebesség (csomó)"
 
-#: src/RoutePropDlgImpl.cpp:803 src/TrackPropDlg.cpp:1330
+#: src/RoutePropDlgImpl.cpp:818 src/TrackPropDlg.cpp:1346
 msgid "Departure Time"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:805 src/TrackPropDlg.cpp:772
-#: src/TrackPropDlg.cpp:1332
+#: src/RoutePropDlgImpl.cpp:820 src/TrackPropDlg.cpp:788
+#: src/TrackPropDlg.cpp:1348
 msgid "Time enroute"
 msgstr "Út időtartama"
 
-#: src/RoutePropDlgImpl.cpp:850
+#: src/RoutePropDlgImpl.cpp:865
 msgid "Are you sure you want to move Up this waypoint?"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:851
+#: src/RoutePropDlgImpl.cpp:866
 msgid "Are you sure you want to move Down this waypoint?"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:853
+#: src/RoutePropDlgImpl.cpp:868
 msgid "OpenCPN Move Waypoint"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:887
+#: src/RoutePropDlgImpl.cpp:902
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Biztos, hogy törölni akarod ezt az útpontot?"
 
-#: src/RoutePropDlgImpl.cpp:888
+#: src/RoutePropDlgImpl.cpp:903
 msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN útpont eltávolítása"
 
-#: src/RoutePropDlgImpl.cpp:923
+#: src/RoutePropDlgImpl.cpp:938
 msgid "Move Up"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:925
+#: src/RoutePropDlgImpl.cpp:940
 msgid "Move Down"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:963 src/TrackPropDlg.cpp:1380
+#: src/RoutePropDlgImpl.cpp:978 src/TrackPropDlg.cpp:1396
 msgid "&Copy all as text"
 msgstr "Másol mindent szövegként"
 
-#: src/RoutePropDlgImpl.cpp:1085 src/TrackPropDlg.cpp:1271
+#: src/RoutePropDlgImpl.cpp:1100 src/TrackPropDlg.cpp:1287
 msgid "_plus"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:1160
+#: src/RoutePropDlgImpl.cpp:1175
 msgid "Invalid date/time!"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:1164
+#: src/RoutePropDlgImpl.cpp:1179
 msgid "Unknown station!"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:1179
+#: src/RoutePropDlgImpl.cpp:1194
 msgid "Unavailable: "
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:1188
+#: src/RoutePropDlgImpl.cpp:1203
 msgid "Local"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:1345 src/TrackPropDlg.cpp:1615
+#: src/RoutePropDlgImpl.cpp:1360 src/TrackPropDlg.cpp:1631
 msgid "Links are opened for editing."
 msgstr "Hivatkozások megnyitva szerkesztésre."
 
@@ -6919,111 +6923,111 @@ msgstr "Az Ember a Vízben gomb egy fontos biztonsági eszköz.\n"
 msgid "Choose Toolbar Icons"
 msgstr ""
 
-#: src/TrackPropDlg.cpp:289
+#: src/TrackPropDlg.cpp:305
 msgid "Timestamp"
 msgstr "Időbélyeg"
 
-#: src/TrackPropDlg.cpp:384 src/TrackPropDlg.cpp:763
+#: src/TrackPropDlg.cpp:400 src/TrackPropDlg.cpp:779
 msgid "Avg. speed"
 msgstr "Átlagos sebesség (csomó)"
 
-#: src/TrackPropDlg.cpp:397
+#: src/TrackPropDlg.cpp:413
 msgid "Time Enroute"
 msgstr "Út időtartama"
 
-#: src/TrackPropDlg.cpp:425 src/TrackPropDlg.cpp:439 src/TrackPropDlg.cpp:801
+#: src/TrackPropDlg.cpp:441 src/TrackPropDlg.cpp:455 src/TrackPropDlg.cpp:817
 msgid "Local @ PC"
 msgstr "Számítógép helyi idő"
 
-#: src/TrackPropDlg.cpp:425 src/TrackPropDlg.cpp:445
+#: src/TrackPropDlg.cpp:441 src/TrackPropDlg.cpp:461
 msgid "LMT @ Location"
 msgstr "LMT az adott helyen"
 
-#: src/TrackPropDlg.cpp:428 src/TrackPropDlg.cpp:792
+#: src/TrackPropDlg.cpp:444 src/TrackPropDlg.cpp:808
 msgid "Time shown as"
 msgstr "Idők mutatása mint"
 
-#: src/TrackPropDlg.cpp:499 src/TrackPropDlg.cpp:734
+#: src/TrackPropDlg.cpp:515 src/TrackPropDlg.cpp:750
 msgid "1 pixel"
 msgstr ""
 
-#: src/TrackPropDlg.cpp:499 src/TrackPropDlg.cpp:734
+#: src/TrackPropDlg.cpp:515 src/TrackPropDlg.cpp:750
 msgid "2 pixels"
 msgstr "2 pixel"
 
-#: src/TrackPropDlg.cpp:500 src/TrackPropDlg.cpp:735
+#: src/TrackPropDlg.cpp:516 src/TrackPropDlg.cpp:751
 msgid "3 pixels"
 msgstr "3 pixel"
 
-#: src/TrackPropDlg.cpp:500 src/TrackPropDlg.cpp:735
+#: src/TrackPropDlg.cpp:516 src/TrackPropDlg.cpp:751
 msgid "4 pixels"
 msgstr "4 pixel"
 
-#: src/TrackPropDlg.cpp:500 src/TrackPropDlg.cpp:735
+#: src/TrackPropDlg.cpp:516 src/TrackPropDlg.cpp:751
 msgid "5 pixels"
 msgstr "5 pixel"
 
-#: src/TrackPropDlg.cpp:501 src/TrackPropDlg.cpp:736
+#: src/TrackPropDlg.cpp:517 src/TrackPropDlg.cpp:752
 msgid "6 pixels"
 msgstr "6 pixel"
 
-#: src/TrackPropDlg.cpp:501 src/TrackPropDlg.cpp:736
+#: src/TrackPropDlg.cpp:517 src/TrackPropDlg.cpp:752
 msgid "7 pixels"
 msgstr "7 pixel"
 
-#: src/TrackPropDlg.cpp:501 src/TrackPropDlg.cpp:736
+#: src/TrackPropDlg.cpp:517 src/TrackPropDlg.cpp:752
 msgid "8 pixels"
 msgstr "8 pixel"
 
-#: src/TrackPropDlg.cpp:502 src/TrackPropDlg.cpp:737
+#: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:753
 msgid "9 pixels"
 msgstr "9 pixel"
 
-#: src/TrackPropDlg.cpp:502 src/TrackPropDlg.cpp:737
+#: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:753
 msgid "10 pixels"
 msgstr "10 pixel"
 
-#: src/TrackPropDlg.cpp:574 src/TrackPropDlg.cpp:960
+#: src/TrackPropDlg.cpp:590 src/TrackPropDlg.cpp:976
 msgid "To route"
 msgstr "Út időtartama"
 
-#: src/TrackPropDlg.cpp:691
+#: src/TrackPropDlg.cpp:707
 msgid "Display parameters"
 msgstr "Megjelenítési kategória"
 
-#: src/TrackPropDlg.cpp:746
+#: src/TrackPropDlg.cpp:762
 msgid "Statistics"
 msgstr ""
 
-#: src/TrackPropDlg.cpp:786
+#: src/TrackPropDlg.cpp:802
 msgid "Recorded points"
 msgstr "Összefésüljem az útpontokat?"
 
-#: src/TrackPropDlg.cpp:806
+#: src/TrackPropDlg.cpp:822
 msgid "LMT @ Track Start"
 msgstr ""
 
-#: src/TrackPropDlg.cpp:955
+#: src/TrackPropDlg.cpp:971
 msgid "Extend track"
 msgstr ""
 
-#: src/TrackPropDlg.cpp:965
+#: src/TrackPropDlg.cpp:981
 msgid "Export"
 msgstr "Útpont export..."
 
-#: src/TrackPropDlg.cpp:1156
+#: src/TrackPropDlg.cpp:1172
 msgid "%D Days, %H:%M"
 msgstr ""
 
-#: src/TrackPropDlg.cpp:1330
+#: src/TrackPropDlg.cpp:1346
 msgid "(m/d/y h:m)"
 msgstr ""
 
-#: src/TrackPropDlg.cpp:1434
+#: src/TrackPropDlg.cpp:1450
 msgid "track"
 msgstr "Nyomvonal"
 
-#: src/TrackPropDlg.cpp:1860
+#: src/TrackPropDlg.cpp:1876
 msgid "--"
 msgstr ""
 
@@ -7036,7 +7040,7 @@ msgstr ""
 msgid "Pause"
 msgstr ""
 
-#: src/TTYWindow.cpp:81 src/MarkInfo.cpp:1312
+#: src/TTYWindow.cpp:81 src/MarkInfo.cpp:1328
 msgid "Copy"
 msgstr ""
 
@@ -7232,116 +7236,116 @@ msgstr ""
 msgid "User Standard"
 msgstr ""
 
-#: src/MarkInfo.cpp:356
+#: src/MarkInfo.cpp:372
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr ""
 
-#: src/MarkInfo.cpp:380
+#: src/MarkInfo.cpp:396
 msgid "Show name"
 msgstr ""
 
-#: src/MarkInfo.cpp:551
+#: src/MarkInfo.cpp:567
 msgid "Extended"
 msgstr ""
 
-#: src/MarkInfo.cpp:555
+#: src/MarkInfo.cpp:571
 msgid "Extended Properties"
 msgstr ""
 
-#: src/MarkInfo.cpp:574
+#: src/MarkInfo.cpp:590
 msgid "Show at scale > 1 :"
 msgstr ""
 
-#: src/MarkInfo.cpp:585
+#: src/MarkInfo.cpp:601
 msgid "Show waypoint name"
 msgstr ""
 
-#: src/MarkInfo.cpp:590 src/MarkInfo.cpp:1850
+#: src/MarkInfo.cpp:606 src/MarkInfo.cpp:1866
 msgid "Range rings"
 msgstr ""
 
-#: src/MarkInfo.cpp:596
+#: src/MarkInfo.cpp:612
 msgid "Number"
 msgstr ""
 
-#: src/MarkInfo.cpp:616
+#: src/MarkInfo.cpp:632
 msgid "0.05"
 msgstr ""
 
-#: src/MarkInfo.cpp:640
+#: src/MarkInfo.cpp:656
 msgid "GUID"
 msgstr ""
 
-#: src/MarkInfo.cpp:654
+#: src/MarkInfo.cpp:670
 msgid "Tide Station"
 msgstr ""
 
-#: src/MarkInfo.cpp:682
+#: src/MarkInfo.cpp:698
 msgid "Arrival Radius"
 msgstr ""
 
-#: src/MarkInfo.cpp:697
+#: src/MarkInfo.cpp:713
 msgid "Planned Speed"
 msgstr ""
 
-#: src/MarkInfo.cpp:712
+#: src/MarkInfo.cpp:728
 msgid "ETD (UTC)"
 msgstr ""
 
-#: src/MarkInfo.cpp:1156 src/MarkInfo.cpp:1211
+#: src/MarkInfo.cpp:1172 src/MarkInfo.cpp:1227
 msgid "Add New"
 msgstr ""
 
-#: src/MarkInfo.cpp:1313
+#: src/MarkInfo.cpp:1329
 msgid "Copy lat/long"
 msgstr ""
 
-#: src/MarkInfo.cpp:1314
+#: src/MarkInfo.cpp:1330
 msgid "Paste"
 msgstr ""
 
-#: src/MarkInfo.cpp:1315
+#: src/MarkInfo.cpp:1331
 msgid "Paste lat/long"
 msgstr ""
 
-#: src/MarkInfo.cpp:1808
+#: src/MarkInfo.cpp:1824
 msgid "Save some defaults"
 msgstr ""
 
-#: src/MarkInfo.cpp:1817
+#: src/MarkInfo.cpp:1833
 msgid "Check which properties of current waypoint\n"
 " should be set as default for NEW waypoints."
 msgstr ""
 
-#: src/MarkInfo.cpp:1824 src/MarkInfo.cpp:1844
+#: src/MarkInfo.cpp:1840 src/MarkInfo.cpp:1860
 msgid "Do use"
 msgstr ""
 
-#: src/MarkInfo.cpp:1825 src/MarkInfo.cpp:1849
+#: src/MarkInfo.cpp:1841 src/MarkInfo.cpp:1865
 msgid "Don't use"
 msgstr ""
 
-#: src/MarkInfo.cpp:1827
+#: src/MarkInfo.cpp:1843
 msgid "Show Waypoint Name"
 msgstr ""
 
-#: src/MarkInfo.cpp:1858
+#: src/MarkInfo.cpp:1874
 msgid "Arrival radius"
 msgstr ""
 
-#: src/MarkInfo.cpp:1869
+#: src/MarkInfo.cpp:1885
 msgid "Show only if"
 msgstr ""
 
-#: src/MarkInfo.cpp:1871
+#: src/MarkInfo.cpp:1887
 msgid "Show always"
 msgstr ""
 
-#: src/MarkInfo.cpp:1872
+#: src/MarkInfo.cpp:1888
 msgid "Show only at scale"
 msgstr ""
 
-#: src/MarkInfo.cpp:1911
+#: src/MarkInfo.cpp:1927
 msgid "Tide Station not found"
 msgstr ""
 

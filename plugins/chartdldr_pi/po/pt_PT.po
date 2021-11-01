@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:21-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"PO-Revision-Date: 2021-10-27 20:19\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -82,7 +82,7 @@ msgstr "Cartas: %s"
 
 #: src/chartdldr_pi.cpp:689
 msgid " from "
-msgstr ""
+msgstr "de"
 
 #: src/chartdldr_pi.cpp:697 src/chartdldrgui.cpp:284
 msgid "Charts"
@@ -94,7 +94,7 @@ msgstr "Novo"
 
 #: src/chartdldr_pi.cpp:777 src/chartdldrgui.h:148 src/chartdldrgui.h:214
 msgid "Out of date"
-msgstr ""
+msgstr "Desatualizado"
 
 #: src/chartdldr_pi.cpp:783
 msgid "Up to date"
@@ -109,7 +109,7 @@ msgstr "%lu total de cartas, %lu atualizadas, %lu novas"
 #: src/chartdldr_pi.cpp:1331 src/chartdldr_pi.cpp:1348 src/chartdldr_pi.cpp:1366
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
-msgstr ""
+msgstr "%lu cartas totais, %lu atualizadas, %lu novas, %lu selecionadas"
 
 #: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:1661
 msgid "(Please update first)"
@@ -181,19 +181,19 @@ msgstr "Falha a descarregar Catálogo: %s \n"
 
 #: src/chartdldr_pi.cpp:1243 src/chartdldr_pi.cpp:1252 src/chartdldrgui.cpp:340
 msgid "Select All"
-msgstr ""
+msgstr "Selecionar tudo"
 
 #: src/chartdldr_pi.cpp:1246 src/chartdldrgui.cpp:342 src/chartdldrgui.cpp:374
 msgid "Select None"
-msgstr ""
+msgstr "Selecionar nada"
 
 #: src/chartdldr_pi.cpp:1247
 msgid "De-select all charts in the list."
-msgstr ""
+msgstr "Deselecionar todas as cartas na lista."
 
 #: src/chartdldr_pi.cpp:1253 src/chartdldrgui.cpp:343
 msgid "Select all charts in the list."
-msgstr ""
+msgstr "Selecionar todas as cartas na lista."
 
 #: src/chartdldr_pi.cpp:1380
 msgid "No charts selected for download."
@@ -265,8 +265,8 @@ msgstr "Editar a fonte de cartas"
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
-msgstr "O caminho %s parece não estar coberto pelas Directorias de Cartas configuradsa.\n"
-"Parsa ver as cartas deve ajustar a configuração no separador 'Ficheiros de cartas'."
+msgstr "O caminho %s parece não estar coberto pelas Diretorias de Cartas configuradas.\n"
+"Para ver as cartas deve ajustar a configuração no separador 'Ficheiros de cartas'."
 
 #: src/chartdldr_pi.cpp:1784
 msgid "Installing charts."
@@ -366,7 +366,7 @@ msgstr "Actualizar tudo"
 
 #: src/chartdldrgui.cpp:272
 msgid "Download all chart catalogs, and then update charts."
-msgstr ""
+msgstr "Descarregar todos os catálogos de cartas, e atualizar cartas."
 
 #: src/chartdldrgui.cpp:278
 msgid "Download Charts..."
@@ -378,32 +378,32 @@ msgstr "Estado"
 
 #: src/chartdldrgui.cpp:303
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #: src/chartdldrgui.cpp:306
 msgid "Chart Description"
-msgstr ""
+msgstr "Descrição da carta"
 
 #: src/chartdldrgui.cpp:331
 msgid "Select New"
-msgstr ""
+msgstr "Selecionar novo"
 
 #: src/chartdldrgui.cpp:332
 msgid "Check all charts that are 'New' in the list."
-msgstr ""
+msgstr "Marque na lista todas as cartas que são 'Novas'."
 
 #: src/chartdldrgui.cpp:335
 msgid "Select Updated"
-msgstr ""
+msgstr "Selecionar atualizadas"
 
 #: src/chartdldrgui.cpp:336
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr ""
+msgstr "Selecionar todas as cartas 'Out of Date' (desatualizadas) da lista."
 
 #: src/chartdldrgui.cpp:346
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr ""
+msgstr "%u cartas totais, %u atualizadas, %u novas, %u selecionadas"
 
 #: src/chartdldrgui.cpp:353
 #, c-format
