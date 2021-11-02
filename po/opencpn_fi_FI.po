@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-02 02:05\n"
+"PO-Revision-Date: 2021-11-02 02:39\n"
 "Last-Translator: \n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -5489,7 +5489,7 @@ msgstr "Soita ääni ankkurihälytyksen yhteydessä."
 #: src/options.cpp:5913 src/options.cpp:9618 src/options.cpp:9641
 #: src/options.cpp:9663 src/options.cpp:9685
 msgid "Audio file name:"
-msgstr ""
+msgstr "Äänitiedoston nimi:"
 
 #: src/options.cpp:5827
 msgid "Select Anchor Alarm Sound"
@@ -5925,8 +5925,8 @@ msgstr "NMEA-lause on yleensä 3 merkkiä pitkä (kuten RMC, GGA jne.)\n"
 "            Sillä voi myös olla kaksikirjaiminen etuliite viestin lähteen (=TALKER) tunnistamiseksi.\n"
 "           Kokonainen lause näyttää esim. seuraavalta GPGGA tai AITXT.\n"
 "           Voit suodattaa pois kaikki lauseet valittujen lähteiden etuliitteiden (kuten GP, AI jne.) avulla.\n"
-"           Suodatin hyväksyy myös \"säännölliset lausekkeet\" (REGEX) sisältäen 6 tai useampia merkkejä"
-".\n\n"
+"           Suodatin hyväksyy myös \"säännölliset lausekkeet\" (REGEX) sisältäen 6 tai useampia merkkejä\n\n"
+"."
 
 #: src/options.cpp:11195
 msgid "REGEX syntax error: \n"

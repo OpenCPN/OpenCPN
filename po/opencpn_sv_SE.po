@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-02 02:05\n"
+"PO-Revision-Date: 2021-11-02 02:40\n"
 "Last-Translator: \n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -5484,7 +5484,7 @@ msgstr "Spela upp ljud vid ankarlarm."
 #: src/options.cpp:5913 src/options.cpp:9618 src/options.cpp:9641
 #: src/options.cpp:9663 src/options.cpp:9685
 msgid "Audio file name:"
-msgstr ""
+msgstr "Namn på ljudfilen:"
 
 #: src/options.cpp:5827
 msgid "Select Anchor Alarm Sound"
