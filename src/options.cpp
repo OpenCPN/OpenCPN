@@ -5812,8 +5812,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer1->Add(m_pCheck_AnchorAudio, 1, wxALL, border_size);
 
     m_anchorAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_anchorAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_anchorwatch_sound_file));
+    m_anchorAudioFileNameText->SetLabel( " " + _("Audio file name:") + " " +
+                g_anchorwatch_sound_file);
     StaticBoxSizer1->Add(m_anchorAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer1 = new wxFlexGridSizer(2);
@@ -5847,8 +5847,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer2->Add(m_pCheck_AISAudio, 1, wxALL, border_size);
 
     m_aisAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_aisAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_AIS_sound_file));
+    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+            g_AIS_sound_file);
     StaticBoxSizer2->Add(m_aisAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer2 = new wxFlexGridSizer(2);
@@ -5878,8 +5878,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer3->Add(m_pCheck_SARTAudio, 1, wxALL, border_size);
 
     m_sartAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_sartAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_SART_sound_file));
+    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+            g_SART_sound_file);
     StaticBoxSizer3->Add(m_sartAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer3 = new wxFlexGridSizer(2);
@@ -5910,8 +5910,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer4->Add(m_pCheck_DSCAudio, 1, wxALL, border_size);
 
     m_dscAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_dscAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_DSC_sound_file));
+    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+            g_DSC_sound_file);
     StaticBoxSizer4->Add(m_dscAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer4 = new wxFlexGridSizer(2);
@@ -8560,7 +8560,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
     assert(itemIndex >= 0);
     OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(itemIndex));
-    if (pOLE->nViz != ps57CtlListBox->IsChecked(iPtr)) bUserStdChange = true;
+    if (pOLE->nViz != (int)(ps57CtlListBox->IsChecked(iPtr))) bUserStdChange = true;
     pOLE->nViz = ps57CtlListBox->IsChecked(iPtr);
   }
 
@@ -9615,8 +9615,8 @@ void options::OnButtonSelectAnchorSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_anchorwatch_sound_file = g_Platform->NormalizePath(sel_file);
-    m_anchorAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_anchorwatch_sound_file));
+    m_anchorAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_anchorwatch_sound_file);
     g_anchorwatch_sound->Stop();
   }
 }
@@ -9638,8 +9638,8 @@ void options::OnButtonSelectDSCSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_DSC_sound_file = g_Platform->NormalizePath(sel_file);
-    m_dscAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_DSC_sound_file));
+    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_DSC_sound_file);
   }
 }
 
@@ -9660,8 +9660,8 @@ void options::OnButtonSelectSARTSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_SART_sound_file = g_Platform->NormalizePath(sel_file);
-    m_sartAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_SART_sound_file));
+    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_SART_sound_file);
   }
 }
 
@@ -9682,8 +9682,8 @@ void options::OnButtonSelectAISSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_AIS_sound_file = g_Platform->NormalizePath(sel_file);
-    m_aisAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_AIS_sound_file));
+    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_AIS_sound_file);
   }
 }
 
