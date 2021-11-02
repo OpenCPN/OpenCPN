@@ -253,25 +253,25 @@ struct EnumClassHash {
   }
 };
 
-static std::unordered_map<PluginStatus, const char *, EnumClassHash>
-    message_by_status(
-        {{PluginStatus::System, _("Plugin is a standard system plugin")},
-         {PluginStatus::Managed, _("Plugin is managed by OpenCPN")},
-         {PluginStatus::Unmanaged, _("Plugin is not managed by OpenCPN")},
-         {PluginStatus::Ghost, _("")},
-         {PluginStatus::Unknown, _("Plugin status unknown")},
-         {PluginStatus::LegacyUpdateAvailable,
-          _("Update to managed Plugin is available")},
-         {PluginStatus::ManagedInstallAvailable,
-          _("New managed Plugin installation available")},
-         {PluginStatus::ManagedInstalledUpdateAvailable,
-          _("Update to installed Plugin is available")},
-         {PluginStatus::ManagedInstalledCurrentVersion,
-          _("Plugin is latest available")},
-         {PluginStatus::ManagedInstalledDowngradeAvailable, _("")},
-         {PluginStatus::PendingListRemoval, _("")}
 
-        });
+wxString message_by_status( PluginStatus stat ){
+  switch (stat){
+    case     PluginStatus::System: return _("Plugin is a standard system plugin");
+    case     PluginStatus::Managed: return  _("Plugin is managed by OpenCPN");
+    case     PluginStatus::Unmanaged: return  _("Plugin is not managed by OpenCPN");
+    case     PluginStatus::Ghost: return  ("");
+    case     PluginStatus::Unknown: return  _("Plugin status unknown");
+    case     PluginStatus::LegacyUpdateAvailable: return _("Update to managed Plugin is available");
+    case     PluginStatus::ManagedInstallAvailable: return _("New managed Plugin installation available");
+    case     PluginStatus::ManagedInstalledUpdateAvailable: return _("Update to installed Plugin is available");
+    case     PluginStatus::ManagedInstalledCurrentVersion: return  _("Plugin is latest available");
+    case     PluginStatus::ManagedInstalledDowngradeAvailable: return  ("");
+    case     PluginStatus::PendingListRemoval: return  ("");
+    default:  return  ("");
+    }
+}
+
+
 
 static std::unordered_map<PluginStatus, const char *, EnumClassHash>
     icon_by_status(
@@ -5909,7 +5909,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   }
 
   m_itemStatusIconBitmap = new wxStaticBitmap(this, wxID_ANY, statusBitmap);
-  m_itemStatusIconBitmap->SetToolTip(message_by_status[stat]);
+  m_itemStatusIconBitmap->SetToolTip( message_by_status(stat) );
 
   itemBoxSizer01->Add(m_itemStatusIconBitmap, 0, wxEXPAND | wxALL, 20);
 
