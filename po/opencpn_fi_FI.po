@@ -5925,8 +5925,8 @@ msgstr "NMEA-lause on yleensä 3 merkkiä pitkä (kuten RMC, GGA jne.)\n"
 "            Sillä voi myös olla kaksikirjaiminen etuliite viestin lähteen (=TALKER) tunnistamiseksi.\n"
 "           Kokonainen lause näyttää esim. seuraavalta GPGGA tai AITXT.\n"
 "           Voit suodattaa pois kaikki lauseet valittujen lähteiden etuliitteiden (kuten GP, AI jne.) avulla.\n"
-"           Suodatin hyväksyy myös \"säännölliset lausekkeet\" (REGEX) sisältäen 6 tai useampia merkkejä\n"
-"."
+"           Suodatin hyväksyy myös \"säännölliset lausekkeet\" (REGEX) sisältäen 6 tai useampia merkkejä"
+".\n\n"
 
 #: src/options.cpp:11195
 msgid "REGEX syntax error: \n"
