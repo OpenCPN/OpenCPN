@@ -247,12 +247,12 @@ void PrepareMenuItem( wxMenuItem *item ){
 void MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
+  wxFont *qFont = GetOCPNScaledFont(_("Menu"));
   item->SetFont(*qFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
-  wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
   item->SetFont(sFont);
 #endif
 
