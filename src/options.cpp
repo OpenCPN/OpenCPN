@@ -3623,7 +3623,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   pActiveChartsList =
       new wxListCtrl(chartPanelWin, ID_LISTBOX, wxDefaultPosition,
-                     wxSize(100, -1), wxLC_REPORT | wxLC_NO_HEADER);
+                     wxSize(100, -1), wxLC_LIST | wxLC_NO_HEADER);
 #ifdef __OCPN__ANDROID__
   pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
@@ -3642,13 +3642,15 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   if (pActiveChartsList) {
     pActiveChartsList->DeleteAllItems();
 
-    // Add first column
-    wxListItem col0;
-    col0.SetId(0);
-    col0.SetText(_(""));
-    col0.SetAlign(wxLIST_FORMAT_LEFT);
-    col0.SetWidth(500);
-    pActiveChartsList->InsertColumn(0, col0);
+    // Add first column if in LC_REPORT mode
+    if (pActiveChartsList->InReportView()){
+      wxListItem col0;
+      col0.SetId(0);
+      col0.SetText(_(""));
+      col0.SetAlign(wxLIST_FORMAT_LEFT);
+      col0.SetWidth(500);
+      pActiveChartsList->InsertColumn(0, col0);
+    }
 
     for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
       wxString dirname = m_CurrentDirList[i].fullpath;
