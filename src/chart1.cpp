@@ -6152,6 +6152,15 @@ int MyFrame::DoOptionsDialog() {
   SetAllToolbarScale();
   RequestNewToolbars();
 
+  //  Rebuild cursors
+  // ..For each canvas...
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      cc->RebuildCursors();
+    }
+  }
+
   // Change of master toolbar scale?
   bool b_masterScaleChange = false;
   if (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)

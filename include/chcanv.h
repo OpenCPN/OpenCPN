@@ -266,6 +266,7 @@ public:
   ColorScheme GetColorScheme() { return m_cs; }
 
   void CanvasApplyLocale();
+  void RebuildCursors();
 
   //    Accessors
   int GetCanvasWidth() { return m_canvas_width; }

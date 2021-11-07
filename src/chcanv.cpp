@@ -344,6 +344,8 @@ wxString g_ObjQFileExt;
 wxDialog *g_pcurtain;
 extern double gLat, gLat;
 
+extern int g_GUIScaleFactor;
+
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
 
@@ -546,123 +548,15 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   //    Build the cursors
 
-  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  pCursorLeft = NULL;
+  pCursorRight = NULL;
+  pCursorUp = NULL;
+  pCursorDown = NULL;
+  pCursorArrow = NULL;
+  pCursorPencil = NULL;
+  pCursorCross = NULL;
 
-#if !defined(__WXMSW__) && !defined(__WXQT__)
-
-  wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
-  wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
-  wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
-  wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
-  wxImage ICursorPencil = style->GetIcon(_T("pencil")).ConvertToImage();
-  wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
-
-  //#if wxCHECK_VERSION(2, 8, 12)
-  //#else
-  ICursorLeft.ConvertAlphaToMask(128);
-  ICursorRight.ConvertAlphaToMask(128);
-  ICursorUp.ConvertAlphaToMask(128);
-  ICursorDown.ConvertAlphaToMask(128);
-  ICursorPencil.ConvertAlphaToMask(10);
-  ICursorCross.ConvertAlphaToMask(10);
-  //#endif
-
-  if (ICursorLeft.Ok()) {
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorLeft = new wxCursor(ICursorLeft);
-  } else
-    pCursorLeft = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorRight.Ok()) {
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 31);
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorRight = new wxCursor(ICursorRight);
-  } else
-    pCursorRight = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorUp.Ok()) {
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 0);
-    pCursorUp = new wxCursor(ICursorUp);
-  } else
-    pCursorUp = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorDown.Ok()) {
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 31);
-    pCursorDown = new wxCursor(ICursorDown);
-  } else
-    pCursorDown = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorPencil.Ok()) {
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16);
-    pCursorPencil = new wxCursor(ICursorPencil);
-  } else
-    pCursorPencil = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorCross.Ok()) {
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 13);
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 12);
-    pCursorCross = new wxCursor(ICursorCross);
-  } else
-    pCursorCross = new wxCursor(wxCURSOR_ARROW);
-
-#else
-
-  wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
-  wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
-  wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
-  wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
-  wxImage ICursorPencil = style->GetIcon(_T("pencil")).ConvertToImage();
-  wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
-
-  if (ICursorLeft.Ok()) {
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorLeft = new wxCursor(ICursorLeft);
-  } else
-    pCursorLeft = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorRight.Ok()) {
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 31);
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorRight = new wxCursor(ICursorRight);
-  } else
-    pCursorRight = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorUp.Ok()) {
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 0);
-    pCursorUp = new wxCursor(ICursorUp);
-  } else
-    pCursorUp = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorDown.Ok()) {
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 31);
-    pCursorDown = new wxCursor(ICursorDown);
-  } else
-    pCursorDown = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorPencil.Ok()) {
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorPencil = new wxCursor(ICursorPencil);
-  } else
-    pCursorPencil = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorCross.Ok()) {
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 13);
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 12);
-    pCursorCross = new wxCursor(ICursorCross);
-  } else
-    pCursorCross = new wxCursor(wxCURSOR_ARROW);
-
-#endif  // MSW, X11
-  pCursorArrow = new wxCursor(wxCURSOR_ARROW);
-  pPlugIn_Cursor = NULL;
+  RebuildCursors();
 
   SetCursor(*pCursorArrow);
 
@@ -738,6 +632,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   CreateOZEmbossMapData(GLOBAL_COLOR_SCHEME_DAY);
 
   //    Build icons for tide/current points
+  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   m_bmTideDay = style->GetIcon(_T("tidesml"));
 
   //    Dusk
@@ -873,7 +768,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   SetMinSize(wxSize(200, 200));
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | 
+  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE |
                          wxTOUCH_PRESS_GESTURES)) {
     wxLogError("Failed to enable touch events");
   }
@@ -964,6 +859,80 @@ ChartCanvas::~ChartCanvas() {
   m_muiBar = 0;
   delete muiBar;
   delete m_pQuilt;
+}
+
+void ChartCanvas::RebuildCursors() {
+  delete pCursorLeft;
+  delete pCursorRight;
+  delete pCursorUp;
+  delete pCursorDown;
+  delete pCursorArrow;
+  delete pCursorPencil;
+  delete pCursorCross;
+
+  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  double cursorScale = exp(g_GUIScaleFactor * (0.693 / 5.0));
+
+  wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
+  wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
+  wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
+  wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
+  wxImage ICursorPencil = style->GetIcon(_T("pencil"), cursorScale).ConvertToImage();
+  wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
+
+#if !defined(__WXMSW__) && !defined(__WXQT__)
+  ICursorLeft.ConvertAlphaToMask(128);
+  ICursorRight.ConvertAlphaToMask(128);
+  ICursorUp.ConvertAlphaToMask(128);
+  ICursorDown.ConvertAlphaToMask(128);
+  ICursorPencil.ConvertAlphaToMask(10);
+  ICursorCross.ConvertAlphaToMask(10);
+#endif
+
+  if (ICursorLeft.Ok()) {
+    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
+    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
+    pCursorLeft = new wxCursor(ICursorLeft);
+  } else
+    pCursorLeft = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorRight.Ok()) {
+    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 31);
+    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
+    pCursorRight = new wxCursor(ICursorRight);
+  } else
+    pCursorRight = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorUp.Ok()) {
+    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
+    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 0);
+    pCursorUp = new wxCursor(ICursorUp);
+  } else
+    pCursorUp = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorDown.Ok()) {
+    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
+    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 31);
+    pCursorDown = new wxCursor(ICursorDown);
+  } else
+    pCursorDown = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorPencil.Ok()) {
+    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 * cursorScale);
+    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16 * cursorScale);
+    pCursorPencil = new wxCursor(ICursorPencil);
+  } else
+    pCursorPencil = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorCross.Ok()) {
+    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 13);
+    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 12);
+    pCursorCross = new wxCursor(ICursorCross);
+  } else
+    pCursorCross = new wxCursor(wxCURSOR_ARROW);
+
+  pCursorArrow = new wxCursor(wxCURSOR_ARROW);
+  pPlugIn_Cursor = NULL;
 }
 
 void ChartCanvas::CanvasApplyLocale() {
