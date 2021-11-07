@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-02 02:05\n"
+"PO-Revision-Date: 2021-11-07 15:31\n"
 "Last-Translator: \n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -2126,7 +2126,7 @@ msgstr "Φιλιππίνες"
 
 #: src/AIS_Target_Data.cpp:1316
 msgid "East Timor"
-msgstr ""
+msgstr "Ανατολικό Τιμόρ"
 
 #: src/AIS_Target_Data.cpp:1318
 msgid "Papua New Guinea"
@@ -2370,7 +2370,7 @@ msgstr "Αγία Ελένη"
 
 #: src/AIS_Target_Data.cpp:1443
 msgid "Somalia"
-msgstr ""
+msgstr "Σομαλία"
 
 #: src/AIS_Target_Data.cpp:1445
 msgid "Sierra Leone"
@@ -4115,7 +4115,7 @@ msgstr "cm"
 
 #: src/navutil.cpp:4316
 msgid "kts"
-msgstr "κόμβοι"
+msgstr "κόμβους"
 
 #: src/navutil.cpp:4319
 msgid "mph"
@@ -4745,7 +4745,7 @@ msgstr "Χρώμα δακτυλίων απόστασης"
 
 #: src/options.cpp:3183
 msgid "Show direction to Active Waypoint"
-msgstr ""
+msgstr "Κατεύθυνση προς ενεργό Σημείο Πορείας"
 
 #: src/options.cpp:3188 src/RoutePropDlg.cpp:218 src/TrackPropDlg.cpp:490
 #: src/TrackPropDlg.cpp:732
@@ -5484,7 +5484,7 @@ msgstr "Ηχητικό σήμα σε συναγερμό αγκυροβολίου
 #: src/options.cpp:5913 src/options.cpp:9618 src/options.cpp:9641
 #: src/options.cpp:9663 src/options.cpp:9685
 msgid "Audio file name:"
-msgstr ""
+msgstr "Όνομα αρχείου ήχου:"
 
 #: src/options.cpp:5827
 msgid "Select Anchor Alarm Sound"
@@ -6065,7 +6065,9 @@ msgstr "Το πρόσθετο %s δεν είναι συμβατό με αυτή�
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "Πρόσθετο %s (%s), εκδοχή %i.%i.\n"
+"Αυτή η εκδοχή είναι ασταθής και δεν θα εγκατασταθεί.\n"
+"Ανανεώστε το πρόσθετο χρησιμοποιώντας τον κύριο (master) κατάλογο προσθέτων."
 
 #: src/pluginmanager.cpp:2238 src/pluginmanager.cpp:2251
 msgid "Blacklisted plugin detected..."
@@ -6076,7 +6078,9 @@ msgstr "Ακατάλληλο πρόσθετο..."
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "Πρόσθετο %s (%s), εκδοχή %i.%i.\n"
+"Αυτή η εκδοχή είναι ασταθής.\n"
+"Ανανεώστε το πρόσθετο χρησιμοποιώντας τον κύριο (master) κατάλογο προσθέτων."
 
 #: src/pluginmanager.cpp:2298
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-02 02:39\n"
+"PO-Revision-Date: 2021-11-07 15:31\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -2126,7 +2126,7 @@ msgstr "Filipinas"
 
 #: src/AIS_Target_Data.cpp:1316
 msgid "East Timor"
-msgstr ""
+msgstr "Timor Leste"
 
 #: src/AIS_Target_Data.cpp:1318
 msgid "Papua New Guinea"
@@ -2370,7 +2370,7 @@ msgstr "Santa Helena"
 
 #: src/AIS_Target_Data.cpp:1443
 msgid "Somalia"
-msgstr ""
+msgstr "Somália"
 
 #: src/AIS_Target_Data.cpp:1445
 msgid "Sierra Leone"
@@ -4744,7 +4744,7 @@ msgstr "Cor dos círculos de distância"
 
 #: src/options.cpp:3183
 msgid "Show direction to Active Waypoint"
-msgstr ""
+msgstr "Mostrar direção para o Ponto de passagem Ativo"
 
 #: src/options.cpp:3188 src/RoutePropDlg.cpp:218 src/TrackPropDlg.cpp:490
 #: src/TrackPropDlg.cpp:732
@@ -6064,7 +6064,9 @@ msgstr "A extensão %s não é compatível com a versão do OpenCPN, por favor i
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "PlugIn %s (%s), versão %i.%i foi detectado. \n"
+" esta versão é conhecida por ser instável e não será carregado. \n"
+"Por favor atualize este PlugIn utilizando o catálogo principal do gestor de plugins."
 
 #: src/pluginmanager.cpp:2238 src/pluginmanager.cpp:2251
 msgid "Blacklisted plugin detected..."
@@ -6075,7 +6077,9 @@ msgstr "Detectado Plugin na lista negra..."
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "PlugIn %s (%s), versão %i.%i foi detectado. \n"
+" esta versão é conhecida por ser instável.\n"
+"Por favor atualize este PlugIn utilizando o catálogo principal do gestor de Plugins."
 
 #: src/pluginmanager.cpp:2298
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"

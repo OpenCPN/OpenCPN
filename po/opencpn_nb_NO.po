@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-02 02:05\n"
+"PO-Revision-Date: 2021-11-07 15:31\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -169,7 +169,7 @@ msgstr "OpenCPN info"
 
 #: src/ais.cpp:113
 msgid "Underway using Engine"
-msgstr ""
+msgstr "Underveis med motor"
 
 #: src/ais.cpp:114
 msgid "At Anchor"
@@ -201,7 +201,7 @@ msgstr "Driver fiske"
 
 #: src/ais.cpp:121
 msgid "Underway Sailing"
-msgstr ""
+msgstr "Underveis for seil"
 
 #: src/ais.cpp:122 src/ais.cpp:149
 msgid "High Speed Craft"
@@ -259,15 +259,15 @@ msgstr "AtoN Virkelig (Utenfor posisjon)"
 
 #: src/ais.cpp:141
 msgid "Fishing Vessel"
-msgstr ""
+msgstr "Fiskefartøy"
 
 #: src/ais.cpp:142
 msgid "Towing Vessel"
-msgstr ""
+msgstr "Towing fartøy"
 
 #: src/ais.cpp:143
 msgid "Towing Vessel, Long"
-msgstr ""
+msgstr "Towing fartøy, Langt"
 
 #: src/ais.cpp:144
 msgid "Dredger"
@@ -275,7 +275,7 @@ msgstr ""
 
 #: src/ais.cpp:145
 msgid "Diving Ops Vessel"
-msgstr ""
+msgstr "Støvende Ops fartøy"
 
 #: src/ais.cpp:146
 msgid "Military Vessel"
@@ -2126,7 +2126,7 @@ msgstr "Filippinene"
 
 #: src/AIS_Target_Data.cpp:1316
 msgid "East Timor"
-msgstr ""
+msgstr "Øst-Timor"
 
 #: src/AIS_Target_Data.cpp:1318
 msgid "Papua New Guinea"
@@ -2370,7 +2370,7 @@ msgstr "Sankt Helena"
 
 #: src/AIS_Target_Data.cpp:1443
 msgid "Somalia"
-msgstr ""
+msgstr "Somalia"
 
 #: src/AIS_Target_Data.cpp:1445
 msgid "Sierra Leone"
@@ -5469,7 +5469,7 @@ msgstr " For å sette magnetisk variasjon manuelt,\n"
 
 #: src/options.cpp:5661
 msgid "Sounds"
-msgstr ""
+msgstr "Lyd"
 
 #: src/options.cpp:5805
 msgid "Anchor Alarm"
@@ -5477,25 +5477,25 @@ msgstr ""
 
 #: src/options.cpp:5811
 msgid "Play Sound on Anchor Alarm."
-msgstr ""
+msgstr "Spill lyd på Anchor Alarm."
 
 #: src/options.cpp:5815 src/options.cpp:5850 src/options.cpp:5881
 #: src/options.cpp:5913 src/options.cpp:9618 src/options.cpp:9641
 #: src/options.cpp:9663 src/options.cpp:9685
 msgid "Audio file name:"
-msgstr ""
+msgstr "Lydfilnavn:"
 
 #: src/options.cpp:5827
 msgid "Select Anchor Alarm Sound"
-msgstr ""
+msgstr "Velg Anker Alarmlyd"
 
 #: src/options.cpp:5833
 msgid "Test Anchor Alarm Sound"
-msgstr ""
+msgstr "Prøvings ankeralarm lyd"
 
 #: src/options.cpp:5846
 msgid "Play Sound on AIS Alert."
-msgstr ""
+msgstr "Spill lyd på AIS varsling."
 
 #: src/options.cpp:5859
 msgid "Select AIS Alert Sound"
