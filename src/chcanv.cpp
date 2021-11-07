@@ -873,6 +873,17 @@ void ChartCanvas::RebuildCursors() {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   double cursorScale = exp(g_GUIScaleFactor * (0.693 / 5.0));
 
+  // On MSW, custom cursors created from images are automatically scaled to maximum size of 32x32.
+  // On a high def display, this renders the "pencil" cursor too small to easily use.
+  // Detect this configuration, and avoid using "pencil" cursor in this case.
+  // TODO  Investigate alternative means of defining custom cursors on MSW
+  bool bUsePencil = true;
+#ifdef __WXMSW__
+  wxSize ds = g_Platform->getDisplaySize();
+  if (ds.x > 3000)        // somewhat arbitrary detection of hi-def display
+    bUsePencil = false;
+#endif
+
   wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
   wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
   wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
@@ -917,7 +928,7 @@ void ChartCanvas::RebuildCursors() {
   } else
     pCursorDown = new wxCursor(wxCURSOR_ARROW);
 
-  if (ICursorPencil.Ok()) {
+  if (ICursorPencil.Ok() && bUsePencil) {
     ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 * cursorScale);
     ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16 * cursorScale);
     pCursorPencil = new wxCursor(ICursorPencil);
