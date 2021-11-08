@@ -633,10 +633,11 @@ void MarkInfoDlg::Create() {
                      wxDefaultPosition, wxDefaultSize, 0);
   gbRRExtProperties->Add(m_textWaypointRangeRingsStep, 0, wxALL | wxEXPAND, 5);
 
-  m_RangeRingUnits = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
-                                      wxID_ANY, getUsrDistanceUnit());
-  gbRRExtProperties->Add(m_RangeRingUnits, 0,
-                         wxALIGN_CENTRE_VERTICAL | wxALIGN_LEFT, 0);
+  wxString pDistUnitsStrings[] = {_("NMi"), _("km")};
+  m_RangeRingUnits =
+      new wxChoice(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxDefaultPosition,
+                   wxDefaultSize, 2, pDistUnitsStrings);
+  gbRRExtProperties->Add(m_RangeRingUnits, 0, wxALIGN_CENTRE_VERTICAL, 0);
 
   m_PickColor = new wxColourPickerCtrl(sbSizerExtProperties->GetStaticBox(),
                                        wxID_ANY, wxColour(0, 0, 0),
@@ -1532,19 +1533,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     m_textArrivalRadius->SetValue(buf);
 
     int nUnits = m_pRoutePoint->GetWaypointRangeRingsStepUnits();
-    wxString units(getUsrDistanceUnit());
-    switch (nUnits) {
-      case 0:
-        units = _("NMi");
-        break;
-      case 1:
-        units = _("km");
-        break;
-      default:
-        break;
-    }
-
-    m_RangeRingUnits->SetLabel(units);
+    m_RangeRingUnits->SetSelection( nUnits );
 
     wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
     m_PickColor->SetColour(col);
@@ -1745,6 +1734,9 @@ bool MarkInfoDlg::SaveChanges() {
       m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1));
     if (m_textArrivalRadius->GetValue().ToDouble(&value))
       m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
+
+    if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND)
+      m_pRoutePoint->SetWaypointRangeRingsStepUnits( m_RangeRingUnits->GetSelection());
 
     m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
     if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {
