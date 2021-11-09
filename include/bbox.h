@@ -6,7 +6,6 @@
 #include "wx/wx.h"
 #endif
 
-#include "wx/matrix.h"
 #include "wx/geometry.h"
 
 enum OVERLAP { _IN, _ON, _OUT };
