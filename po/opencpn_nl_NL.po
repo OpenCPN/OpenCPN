@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-02 02:05\n"
+"PO-Revision-Date: 2021-11-09 02:12\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -68,7 +68,7 @@ msgstr "Route-eigenschappen"
 #: include/S57QueryDialog.h:88 include/S57QueryDialog.h:94
 #: src/S57QueryDialog.cpp:229
 msgid "Extra Object Info"
-msgstr "Extra Object Informatie"
+msgstr "Extra Object-informatie"
 
 #: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:701 src/canvasMenu.cpp:795
 #: src/canvasMenu.cpp:843 src/canvasMenu.cpp:1612 src/canvasMenu.cpp:1623
@@ -201,7 +201,7 @@ msgstr "bezig met vissen"
 
 #: src/ais.cpp:121
 msgid "Underway Sailing"
-msgstr "Onderweg Zeilend"
+msgstr "Onder zeil"
 
 #: src/ais.cpp:122 src/ais.cpp:149
 msgid "High Speed Craft"
@@ -239,11 +239,11 @@ msgstr "AtoN virtueel"
 
 #: src/ais.cpp:130
 msgid "AtoN Virtual (On Position)"
-msgstr "AtoN virtueel (op positie)"
+msgstr "AtoN virtueel (in positie)"
 
 #: src/ais.cpp:131
 msgid "AtoN Virtual (Off Position)"
-msgstr "AtoN virtueel (niet op positie)"
+msgstr "AtoN virtueel (uit positie)"
 
 #: src/ais.cpp:132
 msgid "AtoN Real"
@@ -251,15 +251,15 @@ msgstr "AtoN echt"
 
 #: src/ais.cpp:133
 msgid "AtoN Real (On Position)"
-msgstr "AtoN echt (op positie)"
+msgstr "AtoN echt (in positie)"
 
 #: src/ais.cpp:134
 msgid "AtoN Real(Off Position)"
-msgstr "AtoN echt (niet op positie)"
+msgstr "AtoN echt (uit positie)"
 
 #: src/ais.cpp:141
 msgid "Fishing Vessel"
-msgstr "Visserij Vaartuig"
+msgstr "Vissersschip"
 
 #: src/ais.cpp:142
 msgid "Towing Vessel"
@@ -2581,7 +2581,7 @@ msgstr "Sluiten"
 
 #: src/AISTargetListDialog.cpp:1217
 msgid "Undock Target List"
-msgstr ""
+msgstr "Loskoppelen verzendlijst"
 
 #: src/AISTargetQueryDialog.cpp:144 src/AISTargetQueryDialog.cpp:293
 #: src/AISTargetQueryDialog.cpp:324
@@ -2816,7 +2816,7 @@ msgstr "Routepunt toevoegen"
 
 #: src/canvasMenu.cpp:682
 msgid "Split around Leg"
-msgstr ""
+msgstr "Splits rond een Been"
 
 #: src/canvasMenu.cpp:684 src/canvasMenu.cpp:736 src/canvasMenu.cpp:787
 #: src/canvasMenu.cpp:835
@@ -5483,7 +5483,7 @@ msgstr "Speel Anker Alarm geluid af."
 #: src/options.cpp:5913 src/options.cpp:9618 src/options.cpp:9641
 #: src/options.cpp:9663 src/options.cpp:9685
 msgid "Audio file name:"
-msgstr ""
+msgstr "naam van geluidsbestand:"
 
 #: src/options.cpp:5827
 msgid "Select Anchor Alarm Sound"
@@ -5511,31 +5511,31 @@ msgstr "SART waarschuwing"
 
 #: src/options.cpp:5877
 msgid "Play Sound on AIS SART Alert."
-msgstr ""
+msgstr "AIS waarschuwingsgeluid afspelen."
 
 #: src/options.cpp:5890
 msgid "Select AIS SART Alert Sound"
-msgstr ""
+msgstr "Selecteer AIS SART waarschuwingsgeluid"
 
 #: src/options.cpp:5896
 msgid "Test AIS SART Alert Sound"
-msgstr ""
+msgstr "Test AIS waarschuwingsgeluid"
 
 #: src/options.cpp:5903
 msgid "DSC Alert"
-msgstr ""
+msgstr "DSC Waarschuwing"
 
 #: src/options.cpp:5909
 msgid "Play Sound on DSC notification."
-msgstr ""
+msgstr "Speel geluid af voor DSC-melding"
 
 #: src/options.cpp:5922
 msgid "Select DSC notification Sound"
-msgstr ""
+msgstr "Selecteer DSC-meldingsgeluid"
 
 #: src/options.cpp:5927
 msgid "Test DSC notification Sound"
-msgstr ""
+msgstr "Test DSC-meldingsgeluid"
 
 #: src/options.cpp:6057
 msgid "AIS Targets"
@@ -5603,15 +5603,15 @@ msgstr "Toon namen bij AIS-objecten met een schaal > 1:"
 
 #: src/options.cpp:6202
 msgid "Use WPL position messages. Action when received:"
-msgstr ""
+msgstr "Gebruik WPL positieberichten. Actie bij ontvangen:"
 
 #: src/options.cpp:6205
 msgid "APRS position report"
-msgstr ""
+msgstr "APRS positierapport"
 
 #: src/options.cpp:6205
 msgid "Create mark"
-msgstr ""
+msgstr "Markeer"
 
 #: src/options.cpp:6211
 msgid "Rollover"
@@ -5902,7 +5902,8 @@ msgstr "Stringfilter"
 #: src/options.cpp:11160
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
-msgstr ""
+msgstr "Voer de NMEA string in (2, 3 of 5 tekens)\n"
+"  of een geldige REGEX expressie (6 tekens of langer)"
 
 #: src/options.cpp:11162
 msgid "Enter the NMEA sentence"
@@ -5914,11 +5915,15 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
 "           You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
-msgstr ""
+msgstr "Een NMEA-string is in het algemeen 3 tekens lang (RMC, GGA enz.). \n"
+" De string kan ook een voorvoegsel van twee letters hebben die de bron (TALKER of zender) van het bericht identificeert. \n"
+" De hele string ziet er dan bijvoorbeeld uit als GPGGA of AITXT.\n"
+" U kunt filteren op het TALKER-voorvoegsel (zoals GP, AI). \n"
+" Het filter accepteert slechts de genoemde drie formaten."
 
 #: src/options.cpp:11195
 msgid "REGEX syntax error: \n"
-msgstr ""
+msgstr "REGEX syntaxisfout: \n"
 
 #: src/options.cpp:11243
 msgid "Texture Compression"
@@ -6060,7 +6065,9 @@ msgstr "De PlugIn %s is niet compatibel met deze versie van OpenCPN, gebruik een
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "PlugIn %s (%s), versie %i.%i is gedetecteerd. Deze versie is\n"
+" onstabiel. Ga naar de PlugIn downloadpagina van opencpn.org\n"
+"en download de laatste stabiele versie van deze PlugIn."
 
 #: src/pluginmanager.cpp:2238 src/pluginmanager.cpp:2251
 msgid "Blacklisted plugin detected..."
@@ -6071,7 +6078,9 @@ msgstr "Foute PlugIn gedetecteerd ..."
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "PlugIn %s (%s), versie %i.%i is gedetecteerd.\n"
+" Deze versie is bekend als onstabiel.\n"
+" Werk deze PlugIn bij met behulp van de PlugIn manager hoofdcatalogus."
 
 #: src/pluginmanager.cpp:2298
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -6096,7 +6105,7 @@ msgstr " zijn niet-compatibel met deze versie van OpenCPN."
 
 #: src/pluginmanager.cpp:4850
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
-msgstr ""
+msgstr "Deze instellingen kunnen OpenCPN destabiliseren en zijn standaard uitgeschakeld. Om ze ondanks de risico's toch in te schakelen kunt u handmatig een CatalogExpert=1 regel toevoegen in de [PlugIns] sectie in het configuratiebestand."
 
 #: src/pluginmanager.cpp:4866
 msgid "Plugin Catalog"
@@ -6113,15 +6122,15 @@ msgstr "Importeer plugin..."
 
 #: src/pluginmanager.cpp:4896 src/pluginmanager.cpp:4949
 msgid "Settings..."
-msgstr ""
+msgstr "Instellingen ..."
 
 #: src/pluginmanager.cpp:4904
 msgid "Disabled"
-msgstr ""
+msgstr "Uitgeschakeld"
 
 #: src/pluginmanager.cpp:4998
 msgid "Cannot download data from url"
-msgstr ""
+msgstr "Kan gegevens niet downloaden van url"
 
 #: src/pluginmanager.cpp:4999 src/pluginmanager.cpp:5011
 #: src/pluginmanager.cpp:5021 src/pluginmanager.cpp:5030
@@ -6192,7 +6201,7 @@ msgstr "Laatste catalogus"
 
 #: src/pluginmanager.cpp:5449
 msgid "Last change: "
-msgstr ""
+msgstr "Laatste wijziging:"
 
 #: src/pluginmanager.cpp:5450
 msgid "Please Update Plugin Catalog."
@@ -6208,7 +6217,7 @@ msgstr "De-installeer"
 
 #: src/pluginmanager.cpp:6041
 msgid "Upgrade to Version "
-msgstr ""
+msgstr "Upgrade naar versie "
 
 #: src/pluginmanager.cpp:6048
 msgid "Install..."
@@ -6262,7 +6271,7 @@ msgstr "Filter"
 
 #: src/routemanagerdialog.cpp:370
 msgid "Show all routes"
-msgstr ""
+msgstr "Toon alle routes"
 
 #: src/routemanagerdialog.cpp:407 src/routemanagerdialog.cpp:561
 msgid "Show"
@@ -6313,7 +6322,7 @@ msgstr "Alles &verwijderen"
 
 #: src/routemanagerdialog.cpp:519
 msgid "Show all tracks"
-msgstr ""
+msgstr "Toon alle tracks"
 
 #: src/routemanagerdialog.cpp:563
 msgid "Track Name"
@@ -6337,7 +6346,7 @@ msgstr "Markeringspunten"
 
 #: src/routemanagerdialog.cpp:654
 msgid "Show all waypoints"
-msgstr ""
+msgstr "Toon waypoints"
 
 #: src/routemanagerdialog.cpp:688 src/MarkInfo.cpp:405 src/MarkInfo.cpp:1852
 msgid "Icon"
@@ -6377,7 +6386,7 @@ msgstr "Kaartlagen"
 
 #: src/routemanagerdialog.cpp:821
 msgid "Show all layers"
-msgstr ""
+msgstr "Toon alle kaartlagen"
 
 #: src/routemanagerdialog.cpp:857
 msgid "Layer Name"
@@ -6523,7 +6532,8 @@ msgstr "Markeringspunten kunnen hernoemd worden om de nieuwe volgorde weer te ge
 #: src/routeman.cpp:1174
 msgid "Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "De waypoints worden hernoemd om de natuurlijke volgorde weer te geven, de namen worden '001', '002' etc.\n\n"
+"Wilt u de waypoints hernoemen?"
 
 #: src/RoutePoint.cpp:635 src/RoutePoint.cpp:636 src/RoutePoint.cpp:799
 #: src/RoutePoint.cpp:800
@@ -6676,11 +6686,11 @@ msgstr "Naar waypoint"
 
 #: src/RoutePropDlg.cpp:268
 msgid "To WP"
-msgstr ""
+msgstr "Naar WP"
 
 #: src/RoutePropDlg.cpp:304
 msgid "Total Distance"
-msgstr ""
+msgstr "Totale afstand"
 
 #: src/RoutePropDlg.cpp:317
 msgid "ETE"
@@ -6786,15 +6796,15 @@ msgstr "Vaartijd"
 
 #: src/RoutePropDlgImpl.cpp:865
 msgid "Are you sure you want to move Up this waypoint?"
-msgstr ""
+msgstr "Weet u zeker dat u dit waypoint omhoog wilt plaatsen?"
 
 #: src/RoutePropDlgImpl.cpp:866
 msgid "Are you sure you want to move Down this waypoint?"
-msgstr ""
+msgstr "Weet u zeker dat u dit waypoint omlaag wilt plaatsen?"
 
 #: src/RoutePropDlgImpl.cpp:868
 msgid "OpenCPN Move Waypoint"
-msgstr ""
+msgstr "OpenCPN Verplaats waypoint"
 
 #: src/RoutePropDlgImpl.cpp:902
 msgid "Are you sure you want to remove this waypoint?"
@@ -6806,11 +6816,11 @@ msgstr "OpenCPN Verwijder waypoint"
 
 #: src/RoutePropDlgImpl.cpp:938
 msgid "Move Up"
-msgstr ""
+msgstr "Verplaats omhoog"
 
 #: src/RoutePropDlgImpl.cpp:940
 msgid "Move Down"
-msgstr ""
+msgstr "Verplaats omlaag"
 
 #: src/RoutePropDlgImpl.cpp:978 src/TrackPropDlg.cpp:1396
 msgid "&Copy all as text"
@@ -6830,7 +6840,7 @@ msgstr "Onbekend station!"
 
 #: src/RoutePropDlgImpl.cpp:1194
 msgid "Unavailable: "
-msgstr ""
+msgstr "Niet beschikbaar: "
 
 #: src/RoutePropDlgImpl.cpp:1203
 msgid "Local"
@@ -6906,7 +6916,7 @@ msgstr "Volgende"
 
 #: src/TCWin.cpp:152
 msgid "LMT@Station"
-msgstr ""
+msgstr "LMT@Lokatie"
 
 #: src/TCWin.cpp:243
 msgid "Reference Station :"
@@ -7277,7 +7287,7 @@ msgstr "Ankerinfo"
 
 #: src/CanvasOptions.cpp:306
 msgid "Show visible sector lights"
-msgstr ""
+msgstr "Toon zichtbare sectorlichten"
 
 #: src/CanvasOptions.cpp:319
 msgid "User Standard"
@@ -7337,7 +7347,7 @@ msgstr "Verwachte vaart"
 
 #: src/MarkInfo.cpp:728
 msgid "ETD (UTC)"
-msgstr ""
+msgstr "ETD (UTC)"
 
 #: src/MarkInfo.cpp:1172 src/MarkInfo.cpp:1227
 msgid "Add New"

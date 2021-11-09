@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-07 15:31\n"
+"PO-Revision-Date: 2021-11-09 02:12\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -271,7 +271,7 @@ msgstr "Towing fartøy, Langt"
 
 #: src/ais.cpp:144
 msgid "Dredger"
-msgstr ""
+msgstr "Mudringsfartøy"
 
 #: src/ais.cpp:145
 msgid "Diving Ops Vessel"
@@ -2581,7 +2581,7 @@ msgstr "Lukk"
 
 #: src/AISTargetListDialog.cpp:1217
 msgid "Undock Target List"
-msgstr ""
+msgstr "Undock target liste"
 
 #: src/AISTargetQueryDialog.cpp:144 src/AISTargetQueryDialog.cpp:293
 #: src/AISTargetQueryDialog.cpp:324
@@ -2816,7 +2816,7 @@ msgstr "Legg til veipunkt"
 
 #: src/canvasMenu.cpp:682
 msgid "Split around Leg"
-msgstr ""
+msgstr "Del rundt legg"
 
 #: src/canvasMenu.cpp:684 src/canvasMenu.cpp:736 src/canvasMenu.cpp:787
 #: src/canvasMenu.cpp:835
@@ -2836,15 +2836,15 @@ msgstr "Reverser..."
 
 #: src/canvasMenu.cpp:690
 msgid "Hide Waypoint Names"
-msgstr ""
+msgstr "Skjul veipunktnavn"
 
 #: src/canvasMenu.cpp:693
 msgid "Show Waypoint Names"
-msgstr ""
+msgstr "Vis veipunktnavn"
 
 #: src/canvasMenu.cpp:696
 msgid "Resequence Waypoints..."
-msgstr ""
+msgstr "Sorter veipunkter..."
 
 #: src/canvasMenu.cpp:710 src/canvasMenu.cpp:804
 msgid "Send to new GPS"
@@ -2876,7 +2876,7 @@ msgstr "Fjern fra rute"
 
 #: src/canvasMenu.cpp:784
 msgid "Split Route at Waypoint"
-msgstr ""
+msgstr "Del rute ved veipunkt"
 
 #: src/canvasMenu.cpp:833
 msgid "Navigate To This"
@@ -2939,11 +2939,11 @@ msgstr "OpenCPN slett rute"
 
 #: src/canvasMenu.cpp:1490
 msgid "Waypoints can be renamed to include the new one, the names will be '001', '002' etc."
-msgstr ""
+msgstr "Veipunkter kan gis nytt navn for å inkludere det nye, navnene vil være '001', '002' osv."
 
 #: src/canvasMenu.cpp:1492
 msgid "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "Vil du endre navn på veipunktene?"
 
 #: src/canvasMenu.cpp:1561 src/RoutePropDlgImpl.cpp:1056
 #: src/TrackPropDlg.cpp:1311
@@ -3521,19 +3521,19 @@ msgstr "OpenCPN ruteopprettelse"
 
 #: src/chcanv.cpp:7651 src/chcanv.cpp:8215
 msgid "Insert first part of this route in the new route?"
-msgstr ""
+msgstr "Sett inn første del av denne ruten i den nye ruten?"
 
 #: src/chcanv.cpp:7655 src/chcanv.cpp:8219
 msgid "Insert this route in the new route?"
-msgstr ""
+msgstr "Sett inn denne ruten i den nye ruten?"
 
 #: src/chcanv.cpp:7670 src/chcanv.cpp:8234
 msgid "Append last part of this route to the new route?"
-msgstr ""
+msgstr "Tilføy den siste delen av denne ruten til den nye ruten?"
 
 #: src/chcanv.cpp:7673 src/chcanv.cpp:8237
 msgid "Append this route to the new route?"
-msgstr ""
+msgstr "Legg til denne ruten i den nye ruten?"
 
 #: src/chcanv.cpp:7732 src/chcanv.cpp:8293
 msgid "For this leg the Great Circle route is "
@@ -3549,35 +3549,35 @@ msgstr "Ønsker du å inkludere storsirkel rutepunkter for denne leggen?"
 
 #: src/chcanv.cpp:8654 src/chcanv.cpp:8907
 msgid "Replace this RoutePoint by the nearby Waypoint?"
-msgstr ""
+msgstr "Erstatte dette rutepunktet ved veipunktet?"
 
 #: src/chcanv.cpp:8656 src/chcanv.cpp:8909
 msgid "OpenCPN RoutePoint change"
-msgstr ""
+msgstr "OpenCPN endring av rutepunkt"
 
 #: src/chcanv.cpp:8681 src/chcanv.cpp:8933
 msgid "Last part of route to be appended to dragged route?"
-msgstr ""
+msgstr "Siste del av ruten som skal legges til dradd rute?"
 
 #: src/chcanv.cpp:8685 src/chcanv.cpp:8937
 msgid "Full route to be appended to dragged route?"
-msgstr ""
+msgstr "Fullrute som skal legges til dratt rute?"
 
 #: src/chcanv.cpp:8699 src/chcanv.cpp:8951
 msgid "First part of route to be inserted into dragged route?"
-msgstr ""
+msgstr "Første del av ruten som skal settes inn i dradd rute?"
 
 #: src/chcanv.cpp:8703 src/chcanv.cpp:8955
 msgid "Full route to be inserted into dragged route?"
-msgstr ""
+msgstr "Fullrute som skal settes inn i dratt rute?"
 
 #: src/chcanv.cpp:8719 src/chcanv.cpp:8971
 msgid "Do you really want to delete and replace this WayPoint"
-msgstr ""
+msgstr "Vil du virkelig slette og erstatte dette veipunktet?"
 
 #: src/chcanv.cpp:8721 src/chcanv.cpp:8973
 msgid "which has been created manually?"
-msgstr ""
+msgstr "som er opprettet manuelt?"
 
 #: src/chcanv.cpp:9447 src/chcanv.cpp:9457 src/S57QueryDialog.cpp:115
 #: src/S57QueryDialog.cpp:302
@@ -3981,15 +3981,15 @@ msgstr "Lenken er ikke komplett, kan ikke lagres."
 
 #: src/multiplexer.cpp:413
 msgid "Route Upload"
-msgstr ""
+msgstr "Last opp rute"
 
 #: src/multiplexer.cpp:642 src/multiplexer.cpp:1257
 msgid "Connecting to "
-msgstr ""
+msgstr "Kobler til "
 
 #: src/multiplexer.cpp:663 src/multiplexer.cpp:1276
 msgid "Connected to "
-msgstr ""
+msgstr "Koblet til "
 
 #: src/navutil.cpp:1755 src/navutil.cpp:3120 src/options.cpp:753
 #: src/options.cpp:916
@@ -4132,15 +4132,15 @@ msgstr "m/s"
 
 #: src/navutil.cpp:4379
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: src/navutil.cpp:4382
 msgid "F"
-msgstr ""
+msgstr "F"
 
 #: src/navutil.cpp:4385
 msgid "K"
-msgstr ""
+msgstr "K"
 
 #: src/navutil.cpp:4402
 #, c-format
@@ -4744,7 +4744,7 @@ msgstr "Avstandsring farge"
 
 #: src/options.cpp:3183
 msgid "Show direction to Active Waypoint"
-msgstr ""
+msgstr "Vis retning til aktivt veipunkt"
 
 #: src/options.cpp:3188 src/RoutePropDlg.cpp:218 src/TrackPropDlg.cpp:490
 #: src/TrackPropDlg.cpp:732
@@ -5393,19 +5393,19 @@ msgstr "Dybde"
 
 #: src/options.cpp:5438 src/options.cpp:5574
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatur"
 
 #: src/options.cpp:5441 src/options.cpp:5577
 msgid "Celsius"
-msgstr ""
+msgstr "Celcius"
 
 #: src/options.cpp:5442 src/options.cpp:5578
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenheit"
 
 #: src/options.cpp:5443 src/options.cpp:5579
 msgid "Kelvin"
-msgstr ""
+msgstr "Kelvin"
 
 #: src/options.cpp:5458 src/options.cpp:5591 src/options.cpp:5726
 #: src/options.cpp:5970
@@ -5473,7 +5473,7 @@ msgstr "Lyd"
 
 #: src/options.cpp:5805
 msgid "Anchor Alarm"
-msgstr ""
+msgstr "Anker Alarm"
 
 #: src/options.cpp:5811
 msgid "Play Sound on Anchor Alarm."
@@ -5499,43 +5499,43 @@ msgstr "Spill lyd på AIS varsling."
 
 #: src/options.cpp:5859
 msgid "Select AIS Alert Sound"
-msgstr ""
+msgstr "Velg AIS varsel lyd"
 
 #: src/options.cpp:5864
 msgid "Test AIS Alert Sound"
-msgstr ""
+msgstr "Test AIS varsel lyd"
 
 #: src/options.cpp:5871
 msgid "SART Alert"
-msgstr ""
+msgstr "SART Varsel"
 
 #: src/options.cpp:5877
 msgid "Play Sound on AIS SART Alert."
-msgstr ""
+msgstr "Spill lyd på AIS SART varsling."
 
 #: src/options.cpp:5890
 msgid "Select AIS SART Alert Sound"
-msgstr ""
+msgstr "Velg AIS SART alarmlyd"
 
 #: src/options.cpp:5896
 msgid "Test AIS SART Alert Sound"
-msgstr ""
+msgstr "Test AIS SART alarmlyd"
 
 #: src/options.cpp:5903
 msgid "DSC Alert"
-msgstr ""
+msgstr "DSC Varsel"
 
 #: src/options.cpp:5909
 msgid "Play Sound on DSC notification."
-msgstr ""
+msgstr "Spill lyd ved DSC varsel."
 
 #: src/options.cpp:5922
 msgid "Select DSC notification Sound"
-msgstr ""
+msgstr "Velg DSC varslingslyd"
 
 #: src/options.cpp:5927
 msgid "Test DSC notification Sound"
-msgstr ""
+msgstr "Test DSC varslingslyd"
 
 #: src/options.cpp:6057
 msgid "AIS Targets"
@@ -5603,15 +5603,15 @@ msgstr "Vis navn ved AISmål ved skala større enn 1:"
 
 #: src/options.cpp:6202
 msgid "Use WPL position messages. Action when received:"
-msgstr ""
+msgstr "Bruk WPL posisjons meldinger. Handling når mottatt:"
 
 #: src/options.cpp:6205
 msgid "APRS position report"
-msgstr ""
+msgstr "APRS posisjons rapport"
 
 #: src/options.cpp:6205
 msgid "Create mark"
-msgstr ""
+msgstr "Opprett merke"
 
 #: src/options.cpp:6211
 msgid "Rollover"
@@ -5751,7 +5751,7 @@ msgstr "Skipets skalerings faktor"
 
 #: src/options.cpp:6588
 msgid "ENC Sounding factor"
-msgstr ""
+msgstr "ENC loddskudd visningsstørrelse"
 
 #: src/options.cpp:6847 src/options.cpp:6907
 msgid "Connections"
@@ -5901,7 +5901,8 @@ msgstr "Setningsfilter"
 #: src/options.cpp:11160
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
-msgstr ""
+msgstr "Skriv inn NMEA setning (2, 3 eller 5 tegn)\n"
+"  eller et gyldig REGEX-uttrykk (6 tegn eller lenger)"
 
 #: src/options.cpp:11162
 msgid "Enter the NMEA sentence"
@@ -5913,11 +5914,15 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
 "           You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
-msgstr ""
+msgstr "En NMEA setning er normalt 3 tegn lang (f.eks. RMC, GGA osv.)\n"
+" Den kan også ha 2 prefiks tegn, eller TALKER, som identifiserer hvor meldingen kommer fra.\n"
+" Hele setningen kan da se ut som GPGGA eller AITXT.\n"
+" Du vil kanskje filtrere ut en bestemt TALKER (slik som GP, AI osv.).\n"
+" Filteret aksepterer kun disse tre formatene."
 
 #: src/options.cpp:11195
 msgid "REGEX syntax error: \n"
-msgstr ""
+msgstr "REGEX syntaksfeil: \n"
 
 #: src/options.cpp:11243
 msgid "Texture Compression"
@@ -6059,7 +6064,9 @@ msgstr "Denne utvidelsen %s er ikke kompatibel med denne versjonen av OpenCPN, v
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "Plugin %s (%s), versjon %i.%i ble oppdaget.\n"
+" Denne versjonen er kjent for å være ustabil.\n"
+" Vennligst oppdater denne programtillegget ved å bruke hovedkatalogen for Plugin-administrator."
 
 #: src/pluginmanager.cpp:2238 src/pluginmanager.cpp:2251
 msgid "Blacklisted plugin detected..."
@@ -6070,7 +6077,9 @@ msgstr "Defekt utvidelse oppdaget..."
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "Plugin %s (%s), versjon %i.%i ble oppdaget.\n"
+" Denne versjonen er kjent for å være ustabil.\n"
+" Vennligst oppdater denne programtillegget ved å bruke hovedkatalogen for Plugin-administrator."
 
 #: src/pluginmanager.cpp:2298
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -6095,7 +6104,7 @@ msgstr " er ikke kompatibel med denne versjonen av OpenCPN."
 
 #: src/pluginmanager.cpp:4850
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
-msgstr ""
+msgstr "Disse innstillingene kan destabilisere OpenCPN og er som standard deaktivert. Til tross for farene kan du manuelt enable dem ved å legge til en CatalogExpert=1 linje i [PlugIns] -delen av konfigurasjonsfilen."
 
 #: src/pluginmanager.cpp:4866
 msgid "Plugin Catalog"
@@ -6112,15 +6121,15 @@ msgstr "Importer utvidelse..."
 
 #: src/pluginmanager.cpp:4896 src/pluginmanager.cpp:4949
 msgid "Settings..."
-msgstr ""
+msgstr "Innstillinger..."
 
 #: src/pluginmanager.cpp:4904
 msgid "Disabled"
-msgstr ""
+msgstr "Deaktivert"
 
 #: src/pluginmanager.cpp:4998
 msgid "Cannot download data from url"
-msgstr ""
+msgstr "Kan ikke laste ned data fra URL"
 
 #: src/pluginmanager.cpp:4999 src/pluginmanager.cpp:5011
 #: src/pluginmanager.cpp:5021 src/pluginmanager.cpp:5030
@@ -6191,7 +6200,7 @@ msgstr "Siste katalog"
 
 #: src/pluginmanager.cpp:5449
 msgid "Last change: "
-msgstr ""
+msgstr "Sist endret"
 
 #: src/pluginmanager.cpp:5450
 msgid "Please Update Plugin Catalog."
@@ -6261,7 +6270,7 @@ msgstr "Filter"
 
 #: src/routemanagerdialog.cpp:370
 msgid "Show all routes"
-msgstr ""
+msgstr "Vis alle ruter"
 
 #: src/routemanagerdialog.cpp:407 src/routemanagerdialog.cpp:561
 msgid "Show"
@@ -6312,7 +6321,7 @@ msgstr "&Slett Alle"
 
 #: src/routemanagerdialog.cpp:519
 msgid "Show all tracks"
-msgstr ""
+msgstr "Vis alle spor"
 
 #: src/routemanagerdialog.cpp:563
 msgid "Track Name"
@@ -6336,7 +6345,7 @@ msgstr "Veipunkter"
 
 #: src/routemanagerdialog.cpp:654
 msgid "Show all waypoints"
-msgstr ""
+msgstr "Vis alle veipunkter"
 
 #: src/routemanagerdialog.cpp:688 src/MarkInfo.cpp:405 src/MarkInfo.cpp:1852
 msgid "Icon"
@@ -6376,7 +6385,7 @@ msgstr "Lag"
 
 #: src/routemanagerdialog.cpp:821
 msgid "Show all layers"
-msgstr ""
+msgstr "Vis alle lag"
 
 #: src/routemanagerdialog.cpp:857
 msgid "Layer Name"
@@ -6519,7 +6528,8 @@ msgstr "Veipunkter kan døpes om for å reflektere den nye sorteringen, navnene 
 #: src/routeman.cpp:1174
 msgid "Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "Veipunkter kan døpes om for å reflektere den nye sorteringen, navnene vil bli '001', '002' osv.\n\n"
+"Ønsker du å døpe om veipunktene?"
 
 #: src/RoutePoint.cpp:635 src/RoutePoint.cpp:636 src/RoutePoint.cpp:799
 #: src/RoutePoint.cpp:800
@@ -6672,11 +6682,11 @@ msgstr "Til veipunkt"
 
 #: src/RoutePropDlg.cpp:268
 msgid "To WP"
-msgstr ""
+msgstr "Til WP"
 
 #: src/RoutePropDlg.cpp:304
 msgid "Total Distance"
-msgstr ""
+msgstr "Total distanse"
 
 #: src/RoutePropDlg.cpp:317
 msgid "ETE"
@@ -6782,15 +6792,15 @@ msgstr "Tid underveis"
 
 #: src/RoutePropDlgImpl.cpp:865
 msgid "Are you sure you want to move Up this waypoint?"
-msgstr ""
+msgstr "Er du sikker på at du vil flytte opp dette veipunktet?"
 
 #: src/RoutePropDlgImpl.cpp:866
 msgid "Are you sure you want to move Down this waypoint?"
-msgstr ""
+msgstr "Er du sikker på at du vil flytte ned dette veipunktet?"
 
 #: src/RoutePropDlgImpl.cpp:868
 msgid "OpenCPN Move Waypoint"
-msgstr ""
+msgstr "OpenCPN Flytt veipunkt"
 
 #: src/RoutePropDlgImpl.cpp:902
 msgid "Are you sure you want to remove this waypoint?"
@@ -6802,11 +6812,11 @@ msgstr "OpenCPN fjern veipunkt"
 
 #: src/RoutePropDlgImpl.cpp:938
 msgid "Move Up"
-msgstr ""
+msgstr "Flytt opp"
 
 #: src/RoutePropDlgImpl.cpp:940
 msgid "Move Down"
-msgstr ""
+msgstr "Flytt ned"
 
 #: src/RoutePropDlgImpl.cpp:978 src/TrackPropDlg.cpp:1396
 msgid "&Copy all as text"
@@ -6826,7 +6836,7 @@ msgstr "Ukjent stasjon!"
 
 #: src/RoutePropDlgImpl.cpp:1194
 msgid "Unavailable: "
-msgstr ""
+msgstr "Utilgjengelig: "
 
 #: src/RoutePropDlgImpl.cpp:1203
 msgid "Local"
@@ -6902,7 +6912,7 @@ msgstr "Neste"
 
 #: src/TCWin.cpp:152
 msgid "LMT@Station"
-msgstr ""
+msgstr "LMT@Station"
 
 #: src/TCWin.cpp:243
 msgid "Reference Station :"
@@ -7273,7 +7283,7 @@ msgstr "Ankrings info"
 
 #: src/CanvasOptions.cpp:306
 msgid "Show visible sector lights"
-msgstr ""
+msgstr "Vis synlige sektorlys"
 
 #: src/CanvasOptions.cpp:319
 msgid "User Standard"
@@ -7333,7 +7343,7 @@ msgstr "Planlagt fart"
 
 #: src/MarkInfo.cpp:728
 msgid "ETD (UTC)"
-msgstr ""
+msgstr "ETD (UTC)"
 
 #: src/MarkInfo.cpp:1172 src/MarkInfo.cpp:1227
 msgid "Add New"

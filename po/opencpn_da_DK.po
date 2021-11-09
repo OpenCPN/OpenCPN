@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-01 22:02-0400\n"
-"PO-Revision-Date: 2021-11-02 02:05\n"
+"PO-Revision-Date: 2021-11-09 02:12\n"
 "Last-Translator: \n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -133,7 +133,7 @@ msgstr "Kopier til Udklipsholder"
 
 #: src/AboutFrame.cpp:182
 msgid "Plugin API: "
-msgstr ""
+msgstr "Plugin API: "
 
 #: src/AboutFrame.cpp:226
 msgid "OpenCPN Website"
@@ -168,7 +168,7 @@ msgstr "OpenCPN Info"
 
 #: src/ais.cpp:113
 msgid "Underway using Engine"
-msgstr ""
+msgstr "Undervejs med motor"
 
 #: src/ais.cpp:114
 msgid "At Anchor"
@@ -200,7 +200,7 @@ msgstr "Beskæftiget med fiskeri"
 
 #: src/ais.cpp:121
 msgid "Underway Sailing"
-msgstr ""
+msgstr "Undervejs Sejlads"
 
 #: src/ais.cpp:122 src/ais.cpp:149
 msgid "High Speed Craft"
@@ -258,15 +258,15 @@ msgstr "AtoN Faktisk(Off Position)"
 
 #: src/ais.cpp:141
 msgid "Fishing Vessel"
-msgstr ""
+msgstr "Fiskerfartøjet"
 
 #: src/ais.cpp:142
 msgid "Towing Vessel"
-msgstr ""
+msgstr "Bugserbåde"
 
 #: src/ais.cpp:143
 msgid "Towing Vessel, Long"
-msgstr ""
+msgstr "Towing Fartøj, Lang"
 
 #: src/ais.cpp:144
 msgid "Dredger"
@@ -274,7 +274,7 @@ msgstr ""
 
 #: src/ais.cpp:145
 msgid "Diving Ops Vessel"
-msgstr ""
+msgstr "Dykning Ops Fartøj"
 
 #: src/ais.cpp:146
 msgid "Military Vessel"
@@ -1283,7 +1283,7 @@ msgstr "Almindelig fragtskib"
 
 #: src/AIS_Decoder.cpp:339
 msgid "Unit carrier maritime"
-msgstr ""
+msgstr "Enhedstransportør til søs"
 
 #: src/AIS_Decoder.cpp:340
 msgid "Bulk carrier maritime"
@@ -2125,7 +2125,7 @@ msgstr "Filippinerne"
 
 #: src/AIS_Target_Data.cpp:1316
 msgid "East Timor"
-msgstr ""
+msgstr "Østtimor"
 
 #: src/AIS_Target_Data.cpp:1318
 msgid "Papua New Guinea"
@@ -2369,7 +2369,7 @@ msgstr "Sankt Helena"
 
 #: src/AIS_Target_Data.cpp:1443
 msgid "Somalia"
-msgstr ""
+msgstr "Somalia"
 
 #: src/AIS_Target_Data.cpp:1445
 msgid "Sierra Leone"
@@ -2381,7 +2381,7 @@ msgstr "Sao Tome og Principe"
 
 #: src/AIS_Target_Data.cpp:1449
 msgid "Eswatini"
-msgstr ""
+msgstr "Eswatini"
 
 #: src/AIS_Target_Data.cpp:1451
 msgid "Chad"
@@ -2813,7 +2813,7 @@ msgstr "Tilføj waypoint"
 
 #: src/canvasMenu.cpp:682
 msgid "Split around Leg"
-msgstr ""
+msgstr "Opdel rundt om benet"
 
 #: src/canvasMenu.cpp:684 src/canvasMenu.cpp:736 src/canvasMenu.cpp:787
 #: src/canvasMenu.cpp:835
@@ -2833,15 +2833,15 @@ msgstr "Ombyt fra/til..."
 
 #: src/canvasMenu.cpp:690
 msgid "Hide Waypoint Names"
-msgstr ""
+msgstr "Skjul Rutepunkt Navne"
 
 #: src/canvasMenu.cpp:693
 msgid "Show Waypoint Names"
-msgstr ""
+msgstr "Vis waypointnavn."
 
 #: src/canvasMenu.cpp:696
 msgid "Resequence Waypoints..."
-msgstr ""
+msgstr "Gøre om Rutepunkt nummer..."
 
 #: src/canvasMenu.cpp:710 src/canvasMenu.cpp:804
 msgid "Send to new GPS"
@@ -2873,7 +2873,7 @@ msgstr "Fjern fra rute"
 
 #: src/canvasMenu.cpp:784
 msgid "Split Route at Waypoint"
-msgstr ""
+msgstr "Opdel rute ved rutepunkt"
 
 #: src/canvasMenu.cpp:833
 msgid "Navigate To This"
@@ -2936,11 +2936,11 @@ msgstr "OpenCPN slet rute"
 
 #: src/canvasMenu.cpp:1490
 msgid "Waypoints can be renamed to include the new one, the names will be '001', '002' etc."
-msgstr ""
+msgstr "Rutepunkter kan omdøbes til at inkludere den nye, navnene vil være '001', '002' osv."
 
 #: src/canvasMenu.cpp:1492
 msgid "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "Vil du omdøbe rutepunkterna?"
 
 #: src/canvasMenu.cpp:1561 src/RoutePropDlgImpl.cpp:1056
 #: src/TrackPropDlg.cpp:1311
@@ -2992,19 +2992,19 @@ msgstr "Skift til fuldskærmstilstand ved start."
 
 #: src/chart1.cpp:1124
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr ""
+msgstr "Deaktivér OpenGL- videoacceleration. Denne indstilling vil blive husket."
 
 #: src/chart1.cpp:1132
 msgid "Amount of logging: error, warning, message, info, debug or trace"
-msgstr ""
+msgstr "Mængden af logning: fejl, advarsel, besked, info, fejlfinding eller sporing"
 
 #: src/chart1.cpp:1134
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
-msgstr ""
+msgstr "Vis et diasshow af <num> diagrammer og afslut derefter. Nul eller negativ <num> angiver ingen grænse."
 
 #: src/chart1.cpp:1591
 msgid "OpenCPN ENC Prepare"
-msgstr ""
+msgstr "OpenCPN Forbered ENC "
 
 #: src/chart1.cpp:1622
 #, c-format
@@ -3013,12 +3013,13 @@ msgstr "Afstand fra eget skib: %4.0f sm"
 
 #: src/chart1.cpp:1653
 msgid "ENC Completed."
-msgstr ""
+msgstr "ENC Fuldført."
 
 #: src/chart1.cpp:1779
 msgid "Sorry, an existing instance of OpenCPN may be too busy too respond.\n"
 "Please retry."
-msgstr ""
+msgstr "Beklager, en eksisterende udgave af OpenCPN kan være for travlt med at svare.\n"
+"Prøv igen."
 
 #: src/chart1.cpp:1996 src/chart1.cpp:2003
 msgid "Failed to initialize the user interface. "
@@ -3055,7 +3056,7 @@ msgstr "OpenCPN initialiseret efter %ld ms."
 
 #: src/chart1.cpp:2998
 msgid "OpenCPN needs to update the chart database from config file entries...."
-msgstr ""
+msgstr "OpenCPN skal opdatere diagramdatabasen fra config fil indgange..."
 
 #: src/chart1.cpp:3010
 msgid "Rebuilding chart database from configuration file entries..."
@@ -3088,11 +3089,11 @@ msgstr "Statusbjælke"
 
 #: src/chart1.cpp:4669 src/chart1.cpp:4782
 msgid "Show Toolbar"
-msgstr ""
+msgstr "Vis værktøjslinje"
 
 #: src/chart1.cpp:4670 src/chart1.cpp:4784 src/chart1.cpp:9652
 msgid "Hide Toolbar"
-msgstr ""
+msgstr "Skjul værktøjslinie"
 
 #: src/chart1.cpp:4989 src/chart1.cpp:5052
 msgid "MAN OVERBOARD"
@@ -3100,11 +3101,11 @@ msgstr "MOB (mand over bord)"
 
 #: src/chart1.cpp:4990 src/chart1.cpp:9295
 msgid " at "
-msgstr ""
+msgstr " ved "
 
 #: src/chart1.cpp:4992 src/chart1.cpp:9297
 msgid " on "
-msgstr ""
+msgstr " tænd "
 
 #: src/chart1.cpp:5012
 msgid "1.0 NM along COG"
@@ -3120,11 +3121,11 @@ msgstr "Formodet 1 sømil punkt"
 
 #: src/chart1.cpp:5053 src/chart1.cpp:9353 src/chart1.cpp:9394
 msgid " Time: "
-msgstr ""
+msgstr " Tid: "
 
 #: src/chart1.cpp:5055
 msgid "  Position: "
-msgstr ""
+msgstr "  Position: "
 
 #: src/chart1.cpp:5072
 msgid "Disable Tracking"
@@ -3145,7 +3146,7 @@ msgstr "Centrer position automatisk"
 
 #: src/chart1.cpp:5519
 msgid "Head Up Mode"
-msgstr ""
+msgstr "Nord Op Tilstand"
 
 #: src/chart1.cpp:5522 src/chart1.cpp:5525 src/toolbar.cpp:1165
 msgid "Zoom In"
@@ -3187,7 +3188,7 @@ msgstr "Vis kortlinie"
 
 #: src/chart1.cpp:5558 src/chart1.cpp:5571 src/toolbar.cpp:1220
 msgid "Show ENC text"
-msgstr ""
+msgstr "Vis ENC tekst "
 
 #: src/chart1.cpp:5560 src/chart1.cpp:5573
 msgid "Show ENC Lights"
@@ -3203,11 +3204,11 @@ msgstr "Vis ENC ankringsinfo"
 
 #: src/chart1.cpp:5566 src/chart1.cpp:5580
 msgid "Show ENC Data Quality"
-msgstr ""
+msgstr "Vis ENC Datakvalitet"
 
 #: src/chart1.cpp:5568 src/chart1.cpp:5582
 msgid "Show Navobjects"
-msgstr ""
+msgstr "Vis Navobjects"
 
 #: src/chart1.cpp:5585 src/chcanv.cpp:1296 src/toolbar.cpp:1242
 msgid "Show Tides"
@@ -3233,7 +3234,7 @@ msgstr "Vis AIS-objekter"
 
 #: src/chart1.cpp:5606 src/chcanv.cpp:12881 src/toolbar.cpp:1315
 msgid "Attenuate less critical AIS targets"
-msgstr ""
+msgstr "Formild mindre kritiske AIS-mål"
 
 #: src/chart1.cpp:5609
 msgid "Hide Moored AIS Targets"
@@ -3290,7 +3291,7 @@ msgstr "Værktøjer"
 
 #: src/chart1.cpp:5656
 msgid "&Window"
-msgstr ""
+msgstr "Vindue"
 
 #: src/chart1.cpp:5661
 msgid "OpenCPN Help"
@@ -3328,7 +3329,7 @@ msgstr "AIS MAND OVER BORD"
 
 #: src/chart1.cpp:9314 src/options.cpp:3045
 msgid "Own ship"
-msgstr ""
+msgstr " Eget fartøj"
 
 #: src/chart1.cpp:9326
 msgid "Temporary AISMOB Route"
@@ -3336,15 +3337,15 @@ msgstr "Midlertidig AISMOB rute"
 
 #: src/chart1.cpp:9327
 msgid "Present own ship"
-msgstr ""
+msgstr "Eget fartøj"
 
 #: src/chart1.cpp:9355 src/chart1.cpp:9396
 msgid "  Ownship Position: "
-msgstr ""
+msgstr "  Ejerskibsposition: "
 
 #: src/chart1.cpp:9359 src/chart1.cpp:9400
 msgid "  MOB Position: "
-msgstr ""
+msgstr "  Position: "
 
 #: src/chart1.cpp:9393
 msgid "AIS MAN OVERBOARD UPDATE"
@@ -3374,7 +3375,7 @@ msgstr " Navn:  "
 #: src/chcanv.cpp:5377 src/chcanv.cpp:5381 src/chcanv.cpp:5384
 #: src/chcanv.cpp:5387 src/chcanv.cpp:5425 src/routemanagerdialog.cpp:690
 msgid "Scale"
-msgstr ""
+msgstr "Skalér"
 
 #: src/chartdbs.cpp:1384
 msgid " ID:  "
@@ -3410,7 +3411,7 @@ msgstr "Polykonisk"
 
 #: src/chartdbs.cpp:1426
 msgid "Web Mercator (EPSG:3857)"
-msgstr ""
+msgstr "Web Mercator (EPSG:3857)"
 
 #: src/chartdbs.cpp:1434
 msgid " Source Edition:  "
@@ -3446,7 +3447,7 @@ msgstr "Gruppen \""
 
 #: src/chcanv.cpp:1422
 msgid "\" is empty."
-msgstr ""
+msgstr "er tom (Automatic Translation)"
 
 #: src/chcanv.cpp:1424 src/chcanv.cpp:1439
 msgid "OpenCPN Group Notice"
@@ -3478,11 +3479,11 @@ msgstr " til "
 
 #: src/chcanv.cpp:3867
 msgid "From Ship To"
-msgstr ""
+msgstr "Fra Skib Til"
 
 #: src/chcanv.cpp:3889 src/concanv.cpp:382
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %H:%M"
 
 #: src/chcanv.cpp:3890 src/TrackPropDlg.cpp:1174
 msgid "%H:%M"
@@ -3490,15 +3491,15 @@ msgstr "%H:%M"
 
 #: src/chcanv.cpp:3983
 msgid "Layer Track: "
-msgstr ""
+msgstr "Spor på lag: "
 
 #: src/chcanv.cpp:3990
 msgid "Total Track: "
-msgstr ""
+msgstr "Samlet Spor: "
 
 #: src/chcanv.cpp:4003
 msgid "Segment Created: "
-msgstr ""
+msgstr "Segment Oprettet: "
 
 #: src/chcanv.cpp:7621 src/chcanv.cpp:8185
 msgid "Use nearby waypoint?"
@@ -3513,19 +3514,19 @@ msgstr "OpenCPN opret rute"
 
 #: src/chcanv.cpp:7651 src/chcanv.cpp:8215
 msgid "Insert first part of this route in the new route?"
-msgstr ""
+msgstr "Indsæt første del af denne rute på den nye rute?"
 
 #: src/chcanv.cpp:7655 src/chcanv.cpp:8219
 msgid "Insert this route in the new route?"
-msgstr ""
+msgstr "Indsæt denne rute på den nye rute?"
 
 #: src/chcanv.cpp:7670 src/chcanv.cpp:8234
 msgid "Append last part of this route to the new route?"
-msgstr ""
+msgstr "Tilføj sidste del af denne rute til den nye rute?"
 
 #: src/chcanv.cpp:7673 src/chcanv.cpp:8237
 msgid "Append this route to the new route?"
-msgstr ""
+msgstr "Tilføj denne rute til den nye rute?"
 
 #: src/chcanv.cpp:7732 src/chcanv.cpp:8293
 msgid "For this leg the Great Circle route is "
@@ -3541,35 +3542,35 @@ msgstr "Vil du indsætte storcirkelpunkter for denne strækning?"
 
 #: src/chcanv.cpp:8654 src/chcanv.cpp:8907
 msgid "Replace this RoutePoint by the nearby Waypoint?"
-msgstr ""
+msgstr "Erstat denne rutepunkt med det nærliggende Waypoint?"
 
 #: src/chcanv.cpp:8656 src/chcanv.cpp:8909
 msgid "OpenCPN RoutePoint change"
-msgstr ""
+msgstr "OpenCPN ændring av rutepunkt  "
 
 #: src/chcanv.cpp:8681 src/chcanv.cpp:8933
 msgid "Last part of route to be appended to dragged route?"
-msgstr ""
+msgstr "Skal den sidste del af ruten, føjes til trukket rute?"
 
 #: src/chcanv.cpp:8685 src/chcanv.cpp:8937
 msgid "Full route to be appended to dragged route?"
-msgstr ""
+msgstr "Skal hele ruten tilføjes til trukket rute?"
 
 #: src/chcanv.cpp:8699 src/chcanv.cpp:8951
 msgid "First part of route to be inserted into dragged route?"
-msgstr ""
+msgstr "Skal første del af ruten indsættes i trukket rute?"
 
 #: src/chcanv.cpp:8703 src/chcanv.cpp:8955
 msgid "Full route to be inserted into dragged route?"
-msgstr ""
+msgstr "Skal hele ruten tilføjes til trukket rute?"
 
 #: src/chcanv.cpp:8719 src/chcanv.cpp:8971
 msgid "Do you really want to delete and replace this WayPoint"
-msgstr ""
+msgstr "Vil du virkelig slette og erstatte denne WayPoint"
 
 #: src/chcanv.cpp:8721 src/chcanv.cpp:8973
 msgid "which has been created manually?"
-msgstr ""
+msgstr "som er blevet oprettet manuelt?"
 
 #: src/chcanv.cpp:9447 src/chcanv.cpp:9457 src/S57QueryDialog.cpp:115
 #: src/S57QueryDialog.cpp:302
@@ -3584,7 +3585,7 @@ msgstr "Egenskaber for waypoint"
 #: src/chcanv.cpp:9610 src/routemanagerdialog.cpp:2444
 #: src/RoutePropDlgImpl.cpp:519
 msgid "Layer"
-msgstr ""
+msgstr "Lag"
 
 #: src/chcanv.cpp:9696
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
@@ -3617,7 +3618,7 @@ msgstr "RouteLegInfoRollover"
 
 #: src/chcanv.cpp:11018
 msgid "MBTile requires OpenGL to be enabled"
-msgstr ""
+msgstr "MBTile kræver at OpenGL er aktiveret"
 
 #: src/chcanv.cpp:11652 src/options.cpp:5425 src/options.cpp:5564
 #: src/options.cpp:5711 src/options.cpp:5958
@@ -3735,19 +3736,19 @@ msgstr "AFV. H"
 
 #: src/concanv.cpp:341 src/concanv.cpp:406
 msgid "TTG  @VMG"
-msgstr ""
+msgstr "TTG  @VMG"
 
 #: src/concanv.cpp:343 src/concanv.cpp:409
 msgid "TTG  @SOG"
-msgstr ""
+msgstr "TTG  @SOG"
 
 #: src/concanv.cpp:407
 msgid "ETA  @VMG"
-msgstr ""
+msgstr "ETA  @VMG"
 
 #: src/concanv.cpp:410
 msgid "ETA  @SOG"
-msgstr ""
+msgstr "ETA  @SOG"
 
 #: src/ConnectionParams.cpp:139 src/ConnectionParams.cpp:430
 #: src/ConnectionParams.cpp:917 src/options.cpp:1785 src/options.cpp:2437
@@ -3785,7 +3786,7 @@ msgstr "GPSD"
 
 #: src/ConnectionParams.cpp:174 src/options.cpp:1889 src/options.cpp:2541
 msgid "Signal K"
-msgstr ""
+msgstr "Signal K"
 
 #: src/ConnectionParams.cpp:197
 msgid "Input"
@@ -3797,7 +3798,7 @@ msgstr "Output"
 
 #: src/ConnectionParams.cpp:201
 msgid "In/Out"
-msgstr ""
+msgstr "Ind/Ud"
 
 #: src/ConnectionParams.cpp:208
 msgid "Reject"
@@ -3838,7 +3839,7 @@ msgstr "Aktiv"
 #: src/ConnectionParams.cpp:399 src/ConnectionParams.cpp:534
 #: src/ConnectionParams.cpp:671 src/ConnectionParams.cpp:789
 msgid "Direction"
-msgstr ""
+msgstr "Retning"
 
 #: src/ConnectionParams.cpp:405 src/ConnectionParams.cpp:540
 #: src/options.cpp:1862 src/options.cpp:1949 src/options.cpp:2515
@@ -3848,7 +3849,7 @@ msgstr "Protokol"
 
 #: src/ConnectionParams.cpp:411
 msgid "Serial Port"
-msgstr ""
+msgstr "Seriel port"
 
 #: src/ConnectionParams.cpp:417 src/options.cpp:1932 src/options.cpp:2594
 msgid "Baudrate"
@@ -3865,15 +3866,15 @@ msgstr "Prioritet"
 #: src/ConnectionParams.cpp:924 src/ConnectionParams.cpp:954
 #: src/ConnectionParams.cpp:956 src/ConnectionParams.cpp:960
 msgid "Comment: "
-msgstr ""
+msgstr "Kommentarer:"
 
 #: src/ConnectionParams.cpp:546
 msgid "Network Address"
-msgstr ""
+msgstr "Netværksadresse"
 
 #: src/ConnectionParams.cpp:552
 msgid "Network Port"
-msgstr ""
+msgstr "Netværks Port"
 
 #: src/ConnectionParams.cpp:702 src/options.cpp:1796 src/options.cpp:2448
 msgid "Built-in GPS"
@@ -3889,11 +3890,11 @@ msgstr "CM93 detaljeringsgrad"
 
 #: src/DetailSlider.cpp:92
 msgid "Rasterchart Zoom/Scale Weighting"
-msgstr ""
+msgstr "Rasterchart Zoom/Skala Vægtning"
 
 #: src/DetailSlider.cpp:96
 msgid "Vectorchart Zoom/Scale Weighting"
-msgstr ""
+msgstr "Vektordiagram Zoom/skala Vægtning"
 
 #: src/glChartCanvas.cpp:2182 src/s52plib.cpp:2245 src/s52plib.cpp:2270
 #: src/s52plib.cpp:2374 src/s52plib.cpp:2547
@@ -3902,7 +3903,7 @@ msgstr "Korttekster"
 
 #: src/glChartCanvas.cpp:4992
 msgid "Waiting for raster chart compression thread exit."
-msgstr ""
+msgstr "Venter på afslutning av rasterkortkomprimering."
 
 #: src/GoToPositionDialog.cpp:119 src/RoutePropDlg.cpp:309
 #: src/TrackPropDlg.cpp:302 src/MarkInfo.cpp:432
@@ -3973,15 +3974,15 @@ msgstr "Link ikke komplet, kan ikke gemmes."
 
 #: src/multiplexer.cpp:413
 msgid "Route Upload"
-msgstr ""
+msgstr "Rute uploade"
 
 #: src/multiplexer.cpp:642 src/multiplexer.cpp:1257
 msgid "Connecting to "
-msgstr ""
+msgstr "Opretter forbindelse til"
 
 #: src/multiplexer.cpp:663 src/multiplexer.cpp:1276
 msgid "Connected to "
-msgstr ""
+msgstr "Forbundet til"
 
 #: src/navutil.cpp:1755 src/navutil.cpp:3120 src/options.cpp:753
 #: src/options.cpp:916
@@ -4002,11 +4003,11 @@ msgstr "Importer GPX-fil"
 
 #: src/navutil.cpp:3120
 msgid "Temporary"
-msgstr ""
+msgstr "Midlertidig"
 
 #: src/navutil.cpp:3155
 msgid "duplicate waypoints detected during import and ignored."
-msgstr ""
+msgstr "dublerede waypoints opdaget under import og ignoreret."
 
 #: src/navutil.cpp:3625
 msgid "&Font family:"
@@ -4168,7 +4169,7 @@ msgstr "Nej"
 
 #: src/options.cpp:641 src/ConfigMgr.cpp:541
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: src/options.cpp:651 src/routeprintout.cpp:116 src/routeprintout.cpp:409
 #: src/RoutePropDlg.cpp:333 src/RoutePropDlg.cpp:358 src/TrackPropDlg.cpp:863
@@ -4180,7 +4181,9 @@ msgstr "Beskrivelse"
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
-msgstr ""
+msgstr "Opret en privat konfigurationsskabelon baseret på aktuelle indstillinger.\n"
+"Denne skabelon vil blive gemt og kan vælges til videre brug når som helst.\n"
+"               "
 
 #: src/options.cpp:723
 msgid "MMSI Extended Properties"
@@ -4294,7 +4297,14 @@ msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
-msgstr ""
+msgstr "Den valgte enhed er ikke tilgængelig; opencpn vil sandsynligvis ikke kunne\n"
+"bruge denne enhed som-is. Du ønsker måske at afslutte OpenCPN, genstarte og\n"
+"genprøve efter oprettelse af en fil kaldet /etc/udev/rules.d/70-opencpn. l\n"
+"med følgende indhold:\n\n"
+"            KERNEL==\"ttyUSB*\" MODE=\"0666\"\n"
+"            KERNEL==\"ttyACM*\" MODE=\"0666\"\n"
+"            KERNEL==\"ttyS*\" MODE=\"0666\"\n\n"
+"For mere info, se filen LřX_DEVICES. d i distributionsdokumentet.\n"
 
 #: src/options.cpp:1547
 msgid "\n"
@@ -4306,7 +4316,14 @@ msgid "\n"
 "            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
-msgstr ""
+msgstr "Den valgte enhed er ikke tilgængelig; opencpn vil sandsynligvis ikke kunne\n"
+"bruge denne enhed som-is. Du ønsker måske at afslutte OpenCPN, genstarte og\n"
+"genprøve efter oprettelse af en fil kaldet /etc/udev/rules.d/70-opencpn. l\n"
+"med følgende indhold:\n\n"
+"            KERNEL==\"ttyUSB*\" MODE=\"0666\"\n"
+"            KERNEL==\"ttyACM*\" MODE=\"0666\"\n"
+"            KERNEL==\"ttyS*\" MODE=\"0666\"\n\n"
+"For mere info, se filen LřX_DEVICES. d i distributionsdokumentet.\n"
 
 #: src/options.cpp:1667 src/options.cpp:2289
 msgid "NMEA"
@@ -4576,11 +4593,11 @@ msgstr "Fjern forbindelse"
 
 #: src/options.cpp:2426 src/options.cpp:10959
 msgid "Edit Selected Connection"
-msgstr ""
+msgstr "Rediger Valgt Forbindelse"
 
 #: src/options.cpp:2457
 msgid "Built-in Bluetooth SPP"
-msgstr ""
+msgstr "Indbygget Bluetooth SPP"
 
 #: src/options.cpp:2471
 msgid "Bluetooth Data Sources"
@@ -4588,7 +4605,7 @@ msgstr "Bluetooth-datakilder"
 
 #: src/options.cpp:2567 src/options.cpp:2650
 msgid "User Comment"
-msgstr ""
+msgstr "Brugerkommentar"
 
 #: src/options.cpp:2668
 msgid "Use Garmin (GRMN) mode for input"
@@ -4596,11 +4613,11 @@ msgstr "Brug Garmin GRMN/GRMN (Host) Mode for at udlæse waypoints og ruter."
 
 #: src/options.cpp:2684
 msgid "as autopilot or NMEA repeater"
-msgstr ""
+msgstr "som autopilot eller NMEA repeater"
 
 #: src/options.cpp:2690
 msgid "blank = default ID"
-msgstr ""
+msgstr "blank = default ID"
 
 #: src/options.cpp:2707
 msgid "x"
@@ -4624,15 +4641,15 @@ msgstr "x.xxxx"
 
 #: src/options.cpp:2719
 msgid "Automatic server discovery"
-msgstr ""
+msgstr "Automatisk serveropdagelse"
 
 #: src/options.cpp:2723
 msgid "If checked, signal K server will be discovered automatically"
-msgstr ""
+msgstr "Hvis markeret, vil signalet K-server blive opdaget automatisk"
 
 #: src/options.cpp:2727
 msgid "Discover now..."
-msgstr ""
+msgstr "Opdag nu..."
 
 #: src/options.cpp:2954
 msgid "Parameters"
@@ -4697,7 +4714,7 @@ msgstr "Ingen"
 
 #: src/options.cpp:3148 src/options.cpp:3498
 msgid "Distance between rings"
-msgstr ""
+msgstr "Afstand mellem ringe"
 
 #: src/options.cpp:3157 src/options.cpp:3509
 msgid "Distance Unit"
@@ -4715,11 +4732,11 @@ msgstr "Kilometer"
 
 #: src/options.cpp:3167
 msgid "Range Ring Colour"
-msgstr ""
+msgstr "Række Ring Farve"
 
 #: src/options.cpp:3183
 msgid "Show direction to Active Waypoint"
-msgstr ""
+msgstr "Vis retning til aktivt rutepunkt"
 
 #: src/options.cpp:3188 src/RoutePropDlg.cpp:218 src/TrackPropDlg.cpp:490
 #: src/TrackPropDlg.cpp:732
@@ -4867,7 +4884,7 @@ msgstr "Fremhæv spor"
 
 #: src/options.cpp:3284
 msgid "Track Colour"
-msgstr ""
+msgstr "Spor farve"
 
 #: src/options.cpp:3299
 msgid "Tracking Precision"
@@ -4891,23 +4908,23 @@ msgstr "Beregn værdier"
 
 #: src/options.cpp:3324
 msgid "Calculate SOG and COG from position changes"
-msgstr ""
+msgstr "Beregn SOG og COG ud fra positionsændringer"
 
 #: src/options.cpp:3329
 msgid "Min seconds between updates"
-msgstr ""
+msgstr "Min. sekunder mellem opdateringer"
 
 #: src/options.cpp:3345
 msgid "Routes/Points"
-msgstr ""
+msgstr "Rout/Point"
 
 #: src/options.cpp:3358
 msgid "New Routes"
-msgstr ""
+msgstr "Ny Rute"
 
 #: src/options.cpp:3372 src/options.cpp:3435
 msgid "Waypoint default icon"
-msgstr ""
+msgstr "Waypoint standard-ikon"
 
 #: src/options.cpp:3377 src/options.cpp:3440 src/MarkInfo.cpp:410
 msgid "Combo!"
@@ -4923,15 +4940,15 @@ msgstr "Gå til næste rutepunkt kun ved ankomst"
 
 #: src/options.cpp:3420
 msgid "New Waypoints"
-msgstr ""
+msgstr "Nye Waypoints"
 
 #: src/options.cpp:3461
 msgid "Show waypoints only at a chartscale greater than 1 :"
-msgstr ""
+msgstr "Vis kun waypoints på en kortskala større end 1 :"
 
 #: src/options.cpp:3470
 msgid "Override the settings for chartscale based visibility and show always"
-msgstr ""
+msgstr "Tilsidesæt indstillingerne for kortskala-baseret synlighed og vis altid"
 
 #: src/options.cpp:3483
 msgid "Waypoint range rings"
@@ -4943,7 +4960,7 @@ msgstr "Waypoint afstandsring-farver"
 
 #: src/options.cpp:3541
 msgid "Control Options"
-msgstr ""
+msgstr "Generelle indstillinger"
 
 #: src/options.cpp:3550
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
@@ -4971,7 +4988,7 @@ msgstr "Slet valgte"
 
 #: src/options.cpp:3675
 msgid "Compress Selected"
-msgstr ""
+msgstr "Komprimer Valgte"
 
 #: src/options.cpp:3683
 msgid "Update Control"
@@ -4987,47 +5004,47 @@ msgstr "Genindl"
 
 #: src/options.cpp:3700
 msgid "Prepare all ENC Charts"
-msgstr ""
+msgstr "Forbered alle ENC kort"
 
 #: src/options.cpp:3717
 msgid " [Modified]"
-msgstr ""
+msgstr "[ændret]"
 
 #: src/options.cpp:3725
 msgid "Templates"
-msgstr ""
+msgstr "Skabeloner"
 
 #: src/options.cpp:3737
 msgid "Template Status"
-msgstr ""
+msgstr "Skabelon Status"
 
 #: src/options.cpp:3747
 msgid "Last Applied Template Title:"
-msgstr ""
+msgstr "Sidst Anvendt Skabelon Titel:"
 
 #: src/options.cpp:3760
 msgid "Saved Templates"
-msgstr ""
+msgstr "Beholde Skabeloner"
 
 #: src/options.cpp:3787
 msgid "Create Config..."
-msgstr ""
+msgstr "Opret Indstilling..."
 
 #: src/options.cpp:3799
 msgid "Delete Selected Config..."
-msgstr ""
+msgstr "Slet Valgte Indstilling..."
 
 #: src/options.cpp:3807
 msgid "Apply Selected Config"
-msgstr ""
+msgstr "Anvend Valgt Konfiguration"
 
 #: src/options.cpp:3880
 msgid "Create Config"
-msgstr ""
+msgstr "Opret Konfiguration"
 
 #: src/options.cpp:3934
 msgid "Problem applying selected configuration."
-msgstr ""
+msgstr "Problem med at anvende valgte konfiguration."
 
 #: src/options.cpp:4007 src/RoutePropDlg.cpp:455 src/TrackPropDlg.cpp:937
 msgid "Advanced"
@@ -5035,7 +5052,7 @@ msgstr "Avanceret"
 
 #: src/options.cpp:4027
 msgid "De-skew Raster Charts"
-msgstr ""
+msgstr "De-skew Raster Charts"
 
 #: src/options.cpp:4038 src/options.cpp:4356
 msgid "Use Accelerated Graphics (OpenGL)"
@@ -5043,11 +5060,11 @@ msgstr "Brug accelereret grafik (OpenGL)"
 
 #: src/options.cpp:4043
 msgid "OpenGL Options"
-msgstr ""
+msgstr "Opengl Indstillinger"
 
 #: src/options.cpp:4057 src/options.cpp:4218
 msgid "Chart Rotation Averaging Time"
-msgstr ""
+msgstr "Kartrotation. Gennemsnit tid"
 
 #: src/options.cpp:4073 src/options.cpp:4230 src/options.cpp:6441
 msgid "seconds"
@@ -5059,15 +5076,15 @@ msgstr "Kort zoomniveau/vægtning"
 
 #: src/options.cpp:4090 src/options.cpp:4264
 msgid "Raster"
-msgstr ""
+msgstr "Raster"
 
 #: src/options.cpp:4104 src/options.cpp:4277
 msgid "Vector"
-msgstr ""
+msgstr "Vector"
 
 #: src/options.cpp:4118 src/options.cpp:4294
 msgid "CM93 Detail level"
-msgstr ""
+msgstr "CM93 detaljeringsgrad"
 
 #: src/options.cpp:4137 src/options.cpp:4317
 msgid "Physical Screen Width"
@@ -5096,7 +5113,8 @@ msgstr " Vis projektionsforskudte raster kort som 'Nord op'"
 #: src/options.cpp:4247
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Med en lavere værdi viser det samme zoomniveau et mindre detaljeret kort. \n"
+"Med en højere værdi, det samme zoomniveau viser et mere detaljeret kort."
 
 #: src/options.cpp:4350
 msgid "Graphics"
@@ -5224,7 +5242,7 @@ msgstr "Stor dybde"
 
 #: src/options.cpp:4562 src/options.cpp:4772
 msgid "User Standard Objects"
-msgstr ""
+msgstr "Bruger Standard Objekter"
 
 #: src/options.cpp:4573 src/options.cpp:4779 src/options.cpp:11062
 msgid "Select All"
@@ -5236,7 +5254,7 @@ msgstr "Blank alle"
 
 #: src/options.cpp:4581 src/options.cpp:4787
 msgid "Reset to STANDARD"
-msgstr ""
+msgstr "Genindstille til STANDARD"
 
 #: src/options.cpp:4807
 msgid "Tides && Currents"
@@ -5288,7 +5306,7 @@ msgstr "'Se forud '-tilstand"
 
 #: src/options.cpp:5063 src/options.cpp:5244
 msgid "Preserve scale when switching charts"
-msgstr ""
+msgstr "Fasthold skael ved skift til andet kort"
 
 #: src/options.cpp:5072 src/options.cpp:5253
 msgid "Controls"
@@ -5316,23 +5334,23 @@ msgstr "Vis enhed for havdybde"
 
 #: src/options.cpp:5123
 msgid "Status Bar Option"
-msgstr ""
+msgstr "Status Bar Mulighed"
 
 #: src/options.cpp:5130 src/options.cpp:5315
 msgid "Live ETA at Cursor"
-msgstr ""
+msgstr "Levende ETA på markøren"
 
 #: src/options.cpp:5138 src/options.cpp:5323
 msgid "Default Boat Speed "
-msgstr ""
+msgstr "Standard Bådhastighed "
 
 #: src/options.cpp:5153 src/options.cpp:5338
 msgid "Canvas Layout"
-msgstr ""
+msgstr "Canvas Layout"
 
 #: src/options.cpp:5308
 msgid "Status Bar"
-msgstr ""
+msgstr "Status Bar"
 
 #: src/options.cpp:5375
 msgid "Units"
@@ -5367,19 +5385,19 @@ msgstr "Dybde"
 
 #: src/options.cpp:5438 src/options.cpp:5574
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatur"
 
 #: src/options.cpp:5441 src/options.cpp:5577
 msgid "Celsius"
-msgstr ""
+msgstr "Celsius"
 
 #: src/options.cpp:5442 src/options.cpp:5578
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenheit"
 
 #: src/options.cpp:5443 src/options.cpp:5579
 msgid "Kelvin"
-msgstr ""
+msgstr "Kelvin"
 
 #: src/options.cpp:5458 src/options.cpp:5591 src/options.cpp:5726
 #: src/options.cpp:5970
@@ -5408,11 +5426,11 @@ msgstr "Pejlinger"
 
 #: src/options.cpp:5482 src/options.cpp:5750
 msgid "Show true"
-msgstr ""
+msgstr "Vis sand"
 
 #: src/options.cpp:5487 src/options.cpp:5754
 msgid "Show magnetic"
-msgstr ""
+msgstr "Vis magnetisk"
 
 #: src/options.cpp:5503 src/options.cpp:5767
 msgid "Assumed magnetic variation"
@@ -5421,7 +5439,7 @@ msgstr "Formodet misvisning"
 #: src/options.cpp:5518 src/options.cpp:5640 src/options.cpp:5779
 #: src/options.cpp:6017
 msgid "deg (-W, +E)"
-msgstr ""
+msgstr "grader (-W, +E)"
 
 #: src/options.cpp:5615 src/options.cpp:5994
 msgid "Show true bearings and headings"
@@ -5433,82 +5451,83 @@ msgstr ""
 
 #: src/options.cpp:5630 src/options.cpp:6008 src/options.cpp:7113
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "WMM Plugin beregnet magnetisk variation"
 
 #: src/options.cpp:5648 src/options.cpp:6022
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " For at indstille den magnetiske variation manuelt,\n"
+" skal du deaktivere WMM plugin."
 
 #: src/options.cpp:5661
 msgid "Sounds"
-msgstr ""
+msgstr "Lyd"
 
 #: src/options.cpp:5805
 msgid "Anchor Alarm"
-msgstr ""
+msgstr "Anker Alarm"
 
 #: src/options.cpp:5811
 msgid "Play Sound on Anchor Alarm."
-msgstr ""
+msgstr "Afspil lyd ved Anchor Alarm."
 
 #: src/options.cpp:5815 src/options.cpp:5850 src/options.cpp:5881
 #: src/options.cpp:5913 src/options.cpp:9618 src/options.cpp:9641
 #: src/options.cpp:9663 src/options.cpp:9685
 msgid "Audio file name:"
-msgstr ""
+msgstr "Navn på lydfil:"
 
 #: src/options.cpp:5827
 msgid "Select Anchor Alarm Sound"
-msgstr ""
+msgstr "Vælg Anker AlarmLyd"
 
 #: src/options.cpp:5833
 msgid "Test Anchor Alarm Sound"
-msgstr ""
+msgstr "Test Anker Alarmlyd"
 
 #: src/options.cpp:5846
 msgid "Play Sound on AIS Alert."
-msgstr ""
+msgstr "Afspil lyd ved AIS Alert."
 
 #: src/options.cpp:5859
 msgid "Select AIS Alert Sound"
-msgstr ""
+msgstr "Vælg AIS Alarmlyd"
 
 #: src/options.cpp:5864
 msgid "Test AIS Alert Sound"
-msgstr ""
+msgstr "Vælg AIS Alarmlyd"
 
 #: src/options.cpp:5871
 msgid "SART Alert"
-msgstr ""
+msgstr "SART Alert"
 
 #: src/options.cpp:5877
 msgid "Play Sound on AIS SART Alert."
-msgstr ""
+msgstr "Afspil lyd på AIS SART Alert."
 
 #: src/options.cpp:5890
 msgid "Select AIS SART Alert Sound"
-msgstr ""
+msgstr "Vælg AIS SART Alarmlyd"
 
 #: src/options.cpp:5896
 msgid "Test AIS SART Alert Sound"
-msgstr ""
+msgstr "Test AIS SART Alarmlyd"
 
 #: src/options.cpp:5903
 msgid "DSC Alert"
-msgstr ""
+msgstr "DSC Alarm"
 
 #: src/options.cpp:5909
 msgid "Play Sound on DSC notification."
-msgstr ""
+msgstr "Afspil lyd ved DSC notifikation."
 
 #: src/options.cpp:5922
 msgid "Select DSC notification Sound"
-msgstr ""
+msgstr "Vælg DSC notifikationslyd"
 
 #: src/options.cpp:5927
 msgid "Test DSC notification Sound"
-msgstr ""
+msgstr "Test DSC notifikation Lyd"
 
 #: src/options.cpp:6057
 msgid "AIS Targets"
@@ -5520,7 +5539,7 @@ msgstr "Fremskrivning til korteste afstand(CPA) og tid til korteste afstand (TCP
 
 #: src/options.cpp:6075
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
-msgstr ""
+msgstr "Ingen (T)CPA adviserer, hvis afstand er større end (NM)"
 
 #: src/options.cpp:6082
 msgid "Warn if CPA less than (NMi)"
@@ -5552,15 +5571,15 @@ msgstr "Vis spor for fartøjers (minutter)"
 
 #: src/options.cpp:6154
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr ""
+msgstr "Skjul opankrede/fortøjede fartøjer, fartgrænse (knob)"
 
 #: src/options.cpp:6162
 msgid "Draw AIS realtime prediction, target speed min (kn)"
-msgstr ""
+msgstr "Tegn AIS realtime forudsigelse, målhastighed min (kn)"
 
 #: src/options.cpp:6172
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "Tillad dæmpning af mindre kritiske mål, hvis mere end ... mål"
 
 #: src/options.cpp:6180
 msgid "Show area notices (from AIS binary messages)"
@@ -5576,15 +5595,15 @@ msgstr "Vis navne på AIS-mål med skala større end 1:"
 
 #: src/options.cpp:6202
 msgid "Use WPL position messages. Action when received:"
-msgstr ""
+msgstr "Brug WPL positionsbeskeder. Handling når modtaget:"
 
 #: src/options.cpp:6205
 msgid "APRS position report"
-msgstr ""
+msgstr "APRS positionsrapport"
 
 #: src/options.cpp:6205
 msgid "Create mark"
-msgstr ""
+msgstr "Opret mærke"
 
 #: src/options.cpp:6211
 msgid "Rollover"
@@ -5592,7 +5611,7 @@ msgstr "Rollover"
 
 #: src/options.cpp:6217
 msgid "Enable route/AIS info block"
-msgstr ""
+msgstr "Aktiver rute/AIS info blok"
 
 #: src/options.cpp:6225
 msgid "\"Ship Name\" MMSI (Call Sign)"
@@ -5624,7 +5643,7 @@ msgstr "Afspil lydsignal ved CPA/TCPA advarsler."
 
 #: src/options.cpp:6286
 msgid "Suppress Alerts for anchored/moored targets"
-msgstr ""
+msgstr "Skjul advarsler for opankrede/fortøjede fartøjer"
 
 #: src/options.cpp:6293
 msgid "Enable Target Alert Acknowledge timeout (min)"
@@ -5652,7 +5671,7 @@ msgstr "Vælg skriftfarve..."
 
 #: src/options.cpp:6374
 msgid "Sample"
-msgstr ""
+msgstr "Eksempler"
 
 #: src/options.cpp:6382
 msgid "Toolbar and Window Style"
@@ -5684,15 +5703,15 @@ msgstr " Ring med skibsklokker"
 
 #: src/options.cpp:6459
 msgid "Audio Play command:"
-msgstr ""
+msgstr "Lydafspilnings kommando:"
 
 #: src/options.cpp:6478
 msgid "Unknown device :"
-msgstr ""
+msgstr "Ukendt enhed"
 
 #: src/options.cpp:6493
 msgid "Sound Device"
-msgstr ""
+msgstr "Lydenhed"
 
 #: src/options.cpp:6505
 msgid "Enable Touchscreen interface"
@@ -5700,15 +5719,15 @@ msgstr "Aktiver betjening med touch-skærm"
 
 #: src/options.cpp:6509
 msgid "Enable Scaled Graphics interface"
-msgstr ""
+msgstr "Aktivér skaleret grafikgrænseflade"
 
 #: src/options.cpp:6519
 msgid "Show Zoom buttons"
-msgstr ""
+msgstr "Vis Zoom-knapper"
 
 #: src/options.cpp:6526
 msgid "Use Inland ECDIS V2.3"
-msgstr ""
+msgstr "Brug Indlands-ECDIS V2.3"
 
 #: src/options.cpp:6546
 msgid "User Interface scale factor"
@@ -5720,11 +5739,11 @@ msgstr "Kortobjekt skalelingsfaktor"
 
 #: src/options.cpp:6574
 msgid "Ship scale factor"
-msgstr ""
+msgstr "Skibsskala faktor"
 
 #: src/options.cpp:6588
 msgid "ENC Sounding factor"
-msgstr ""
+msgstr "ENC dybfaktor"
 
 #: src/options.cpp:6847 src/options.cpp:6907
 msgid "Connections"
@@ -5752,7 +5771,7 @@ msgstr "Tilføjelser"
 
 #: src/options.cpp:7118
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Bruger indstillede magnetisk variation"
 
 #: src/options.cpp:7588
 msgid "feet"
@@ -5809,7 +5828,10 @@ msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
-msgstr ""
+msgstr "Kompression vil ændre kortfiler på disken.\n"
+"Dette kan gøre dem uforenelige med andre programmer eller ældre versioner af OpenCPN.\n"
+"Komprimerede kort kan tage lidt længere tid at indlæse og vise på nogle systemer.\n"
+"De kan dekomprimeres igen ved hjælp af unxz eller 7 zip-programmer."
 
 #: src/options.cpp:9015 src/routeman.cpp:933 src/routeman.cpp:1021
 msgid "OpenCPN Warning"
@@ -5817,11 +5839,11 @@ msgstr "OpenCPN advarsel"
 
 #: src/options.cpp:9032 src/options.cpp:9076
 msgid "OpenCPN Compress Charts"
-msgstr ""
+msgstr "OpenCPN Komprimer kort"
 
 #: src/options.cpp:9069
 msgid "No charts found to compress."
-msgstr ""
+msgstr "Ingen kort fundet til komprimering."
 
 #: src/options.cpp:9101
 #, c-format
@@ -5848,19 +5870,19 @@ msgstr "Vælg data med tidevand/strøm"
 
 #: src/options.cpp:10315
 msgid "Stop Scan"
-msgstr ""
+msgstr "Stop Scanning"
 
 #: src/options.cpp:10889
 msgid "Configure new connection"
-msgstr ""
+msgstr "Konfigurer ny forbindelse"
 
 #: src/options.cpp:10984
 msgid "Signal K server available."
-msgstr ""
+msgstr "Signal K server tilgængelig."
 
 #: src/options.cpp:10986
 msgid "Signal K server not found."
-msgstr ""
+msgstr "Signal K server ikke fundet."
 
 #: src/options.cpp:11050
 msgid "Sentence Filter"
@@ -5869,7 +5891,8 @@ msgstr "Sætningsfilter"
 #: src/options.cpp:11160
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
-msgstr ""
+msgstr "Indtast NMEA sætning (2, 3 eller 5 tegn)\n"
+"  eller et gyldigt REGEX udtryk (6 tegn eller længere)"
 
 #: src/options.cpp:11162
 msgid "Enter the NMEA sentence"
@@ -5881,11 +5904,15 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
 "           You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
-msgstr ""
+msgstr "En NMEA sætning er generelt 3 tegn lang (såsom RMC, GGA osv.)\n"
+" Den kan også have et to-bogstav præfiks der identificerer kilde eller TALKER  for sætningen. \n"
+" Hele sætninger  ligner derfor GPGGA eller AITXT.\n"
+" Du kan filtrere alle sætninger med visse TALKER præfiks (som GP, AI osv.).\n"
+" Filteret accepterer blot disse tre formater."
 
 #: src/options.cpp:11195
 msgid "REGEX syntax error: \n"
-msgstr ""
+msgstr "REGEX syntaksfejl: \n"
 
 #: src/options.cpp:11243
 msgid "Texture Compression"
@@ -5905,7 +5932,7 @@ msgstr "Tekstur hukommelsesstørrelse (MB)"
 
 #: src/options.cpp:11252 src/options.cpp:11427
 msgid "Size: "
-msgstr ""
+msgstr "Størelse: "
 
 #: src/options.cpp:11254
 msgid "Rebuild Texture Cache"
@@ -5921,15 +5948,15 @@ msgstr "Vis FPS"
 
 #: src/options.cpp:11261
 msgid "Polygon Smoothing"
-msgstr ""
+msgstr "Polygon Udglatning"
 
 #: src/options.cpp:11262
 msgid "Line Smoothing"
-msgstr ""
+msgstr "Linjeudglatning"
 
 #: src/options.cpp:11264
 msgid "Software OpenGL (restart OpenCPN)"
-msgstr ""
+msgstr "Software OpenGL (genstart OpenCPN)"
 
 #: src/options.cpp:11266
 msgid "Use Accelerated Panning"
@@ -5945,7 +5972,7 @@ msgstr ""
 
 #: src/options.cpp:11282
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diverse"
 
 #: src/Osenc.cpp:1173
 msgid "S57 Cell Update failed.\n"
@@ -5970,47 +5997,47 @@ msgstr "OpenCPN rute oprettelse"
 
 #: src/pluginmanager.cpp:259
 msgid "Plugin is a standard system plugin"
-msgstr ""
+msgstr "Plugin er et standard system- plugin"
 
 #: src/pluginmanager.cpp:260
 msgid "Plugin is managed by OpenCPN"
-msgstr ""
+msgstr "Plugin administreres af OpenCPN"
 
 #: src/pluginmanager.cpp:261
 msgid "Plugin is not managed by OpenCPN"
-msgstr ""
+msgstr "Plugin administreres ikke af OpenCPN"
 
 #: src/pluginmanager.cpp:263
 msgid "Plugin status unknown"
-msgstr ""
+msgstr "Plugin status ukendt"
 
 #: src/pluginmanager.cpp:264
 msgid "Update to managed Plugin is available"
-msgstr ""
+msgstr "Opdatering til administreret plugin er tilgængelig"
 
 #: src/pluginmanager.cpp:265
 msgid "New managed Plugin installation available"
-msgstr ""
+msgstr "Ny administreret Plugin installation tilgængelig"
 
 #: src/pluginmanager.cpp:266
 msgid "Update to installed Plugin is available"
-msgstr ""
+msgstr "Opdatering til installeret plugin er tilgængelig"
 
 #: src/pluginmanager.cpp:267
 msgid "Plugin is latest available"
-msgstr ""
+msgstr "Plugin er senest tilgængelig"
 
 #: src/pluginmanager.cpp:512
 msgid "The plugin is not compatible with this version of OpenCPN, and will be uninstalled."
-msgstr ""
+msgstr "Plugin er ikke kompatibel med denne version af OpenCPN, og vil blive afinstalleret."
 
 #: src/pluginmanager.cpp:751
 msgid "successfully un-installed"
-msgstr ""
+msgstr "afinstalleret succesfuldt"
 
 #: src/pluginmanager.cpp:763
 msgid "Un-Installation complete"
-msgstr ""
+msgstr "Un-installation fuldført"
 
 #: src/pluginmanager.cpp:1212
 #, c-format
@@ -6022,7 +6049,9 @@ msgstr "Plugin %s er ikke kompatibel med denne version af OpenCPN, hent en opdat
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "PlugIn %s (%s), version %i.%i blev fundet.\n"
+" Denne version er kendt for at være ustabil og vil ikke blive indlæst.\n"
+" Opdater venligst dette PlugIn ved hjælp af PlugIn manager masterkataloget."
 
 #: src/pluginmanager.cpp:2238 src/pluginmanager.cpp:2251
 msgid "Blacklisted plugin detected..."
@@ -6033,7 +6062,9 @@ msgstr "Sortlistet plugin fundet..."
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
 " Please update this PlugIn using the PlugIn manager master catalog."
-msgstr ""
+msgstr "PlugIn %s (%s), version %i.%i blev fundet.\n"
+" Denne version er kendt for at være ustabil og vil ikke blive indlæst.\n"
+" Opdater venligst dette PlugIn ved hjælp af PlugIn manager masterkataloget."
 
 #: src/pluginmanager.cpp:2298
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -6041,7 +6072,7 @@ msgstr "Ulæselig PlugIn bibliotek fundet, kontroller filtilladelser: \n"
 
 #: src/pluginmanager.cpp:2324
 msgid "Incompatible plugin detected"
-msgstr ""
+msgstr "Ikke kompatibelt PlugIn fundet"
 
 #: src/pluginmanager.cpp:2328
 #, c-format
@@ -6058,139 +6089,139 @@ msgstr " er ikke kompatibel med denne version af OpenCPN."
 
 #: src/pluginmanager.cpp:4850
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
-msgstr ""
+msgstr "Disse indstillinger kan destabilisere OpenCPN og er som standard deaktiveret. Til trods for farerne kan du aktivere dem manuelt tilføje en CatalogExpert=1 linje i [PlugIns] sektionen i konfigurationsfilen."
 
 #: src/pluginmanager.cpp:4866
 msgid "Plugin Catalog"
-msgstr ""
+msgstr "Plugin Katalog"
 
 #: src/pluginmanager.cpp:4883 src/pluginmanager.cpp:4928
 #: src/pluginmanager.cpp:4941 src/pluginmanager.cpp:5456
 msgid "Update Plugin Catalog"
-msgstr ""
+msgstr "Opdatere Plugin-katalogen"
 
 #: src/pluginmanager.cpp:4889 src/pluginmanager.cpp:4956
 msgid "Import plugin..."
-msgstr ""
+msgstr "Importér plugin..."
 
 #: src/pluginmanager.cpp:4896 src/pluginmanager.cpp:4949
 msgid "Settings..."
-msgstr ""
+msgstr "Indstillinger..."
 
 #: src/pluginmanager.cpp:4904
 msgid "Disabled"
-msgstr ""
+msgstr "Deaktiveret"
 
 #: src/pluginmanager.cpp:4998
 msgid "Cannot download data from url"
-msgstr ""
+msgstr "Kan ikke downloade data fra url"
 
 #: src/pluginmanager.cpp:4999 src/pluginmanager.cpp:5011
 #: src/pluginmanager.cpp:5021 src/pluginmanager.cpp:5030
 #: src/pluginmanager.cpp:5055
 msgid "OpenCPN Catalog update"
-msgstr ""
+msgstr "Opdatering af OpenCPN katalog"
 
 #: src/pluginmanager.cpp:5010 src/pluginmanager.cpp:5020
 msgid "Unable to copy catalog file"
-msgstr ""
+msgstr "Kunne ikke kopiere katalogfil"
 
 #: src/pluginmanager.cpp:5029
 msgid "Unable to copy catalog file to cache"
-msgstr ""
+msgstr "Kan ikke kopiere katalogfil til cache"
 
 #: src/pluginmanager.cpp:5054
 msgid "Catalog update successful"
-msgstr ""
+msgstr "Katalog opdatering gennemført"
 
 #: src/pluginmanager.cpp:5168
 msgid "Select tarball file"
-msgstr ""
+msgstr "Vælg tarball- fil"
 
 #: src/pluginmanager.cpp:5263
 msgid "Error extracting import plugin tarball."
-msgstr ""
+msgstr "Fejl ved udpakning af importplugin tarball."
 
 #: src/pluginmanager.cpp:5264 src/pluginmanager.cpp:5273
 #: src/pluginmanager.cpp:5287 src/pluginmanager.cpp:5295
 msgid "OpenCPN Plugin Import Error"
-msgstr ""
+msgstr "OpenCPN Plugin- Importfejl"
 
 #: src/pluginmanager.cpp:5272
 msgid "Error, import plugin tarball does not contain required metadata."
-msgstr ""
+msgstr "Fejl, importplugin tarball indeholder ikke krævede metadata."
 
 #: src/pluginmanager.cpp:5286
 msgid "Error processing import plugin metadata."
-msgstr ""
+msgstr "Fejl under behandling af plugin metadata."
 
 #: src/pluginmanager.cpp:5294
 msgid "Incompatible import plugin detected."
-msgstr ""
+msgstr "Ikke kompatibelt PlugIn fundet."
 
 #: src/pluginmanager.cpp:5424
 msgid "Plugin imported successfully"
-msgstr ""
+msgstr "Plugin importeret med succes"
 
 #: src/pluginmanager.cpp:5426
 msgid "Active catalog updated."
-msgstr ""
+msgstr "Aktivt katalog opdateret."
 
 #: src/pluginmanager.cpp:5428
 msgid "Plugin may be installed or updated now."
-msgstr ""
+msgstr "Plugin kan installeres eller opdateres nu."
 
 #: src/pluginmanager.cpp:5429
 msgid "OpenCPN Plugin Import Successful"
-msgstr ""
+msgstr "Import af OpenCPN Plugin lykkedes"
 
 #: src/pluginmanager.cpp:5435
 msgid "Active Catalog"
-msgstr ""
+msgstr "Aktiv Katalog"
 
 #: src/pluginmanager.cpp:5435
 msgid "Last Catalog"
-msgstr ""
+msgstr "Sidste Katalog"
 
 #: src/pluginmanager.cpp:5449
 msgid "Last change: "
-msgstr ""
+msgstr "Seneste ændring"
 
 #: src/pluginmanager.cpp:5450
 msgid "Please Update Plugin Catalog."
-msgstr ""
+msgstr "Opdatere Plugin-katalogen."
 
 #: src/pluginmanager.cpp:5779 src/pluginmanager.cpp:5829
 msgid "Enabled"
-msgstr ""
+msgstr "Aktiveret"
 
 #: src/pluginmanager.cpp:5861 src/pluginmanager.cpp:5886
 msgid "Uninstall"
-msgstr ""
+msgstr "Afinstaller"
 
 #: src/pluginmanager.cpp:6041
 msgid "Upgrade to Version "
-msgstr ""
+msgstr "Opgradér til version "
 
 #: src/pluginmanager.cpp:6048
 msgid "Install..."
-msgstr ""
+msgstr "Installer..."
 
 #: src/pluginmanager.cpp:6054
 msgid "Update to "
-msgstr ""
+msgstr "Opdater til"
 
 #: src/pluginmanager.cpp:6061
 msgid "Reinstall"
-msgstr ""
+msgstr "Installere igen"
 
 #: src/pluginmanager.cpp:6067
 msgid "Downgrade"
-msgstr ""
+msgstr "Nedgrader"
 
 #: src/pluginmanager.cpp:6275
 msgid "Website"
-msgstr ""
+msgstr "Webside:"
 
 #: src/RolloverWin.cpp:126 src/RolloverWin.cpp:234 src/RolloverWin.cpp:378
 msgid "AISRollover"
@@ -6202,15 +6233,15 @@ msgstr "TideCurrentGraphRollover"
 
 #: src/Route.cpp:1252
 msgid "Route Transmitted."
-msgstr ""
+msgstr "Rute Overført."
 
 #: src/Route.cpp:1255
 msgid "Error on Route Upload.  Garmin GPS not connected"
-msgstr ""
+msgstr "Fejl ved Route Upload. Garmin GPS ikke tilsluttet"
 
 #: src/Route.cpp:1257
 msgid "Error on Route Upload.  Please check logfiles..."
-msgstr ""
+msgstr "Fejl under Route Upload. Kontroller logfiler..."
 
 #: src/routemanagerdialog.cpp:333
 msgid "Routes"
@@ -6224,7 +6255,7 @@ msgstr "Filter"
 
 #: src/routemanagerdialog.cpp:370
 msgid "Show all routes"
-msgstr ""
+msgstr "Vis alle ruter"
 
 #: src/routemanagerdialog.cpp:407 src/routemanagerdialog.cpp:561
 msgid "Show"
@@ -6236,7 +6267,7 @@ msgstr "Rutenavn"
 
 #: src/routemanagerdialog.cpp:411
 msgid "From <-> To"
-msgstr ""
+msgstr "Fra <-> Til"
 
 #: src/routemanagerdialog.cpp:428 src/routemanagerdialog.cpp:587
 #: src/routemanagerdialog.cpp:716
@@ -6275,7 +6306,7 @@ msgstr "&Slet alle"
 
 #: src/routemanagerdialog.cpp:519
 msgid "Show all tracks"
-msgstr ""
+msgstr "Vis alle spor"
 
 #: src/routemanagerdialog.cpp:563
 msgid "Track Name"
@@ -6299,7 +6330,7 @@ msgstr "Waypoints"
 
 #: src/routemanagerdialog.cpp:654
 msgid "Show all waypoints"
-msgstr ""
+msgstr "Vis alle waypoints"
 
 #: src/routemanagerdialog.cpp:688 src/MarkInfo.cpp:405 src/MarkInfo.cpp:1852
 msgid "Icon"
@@ -6339,7 +6370,7 @@ msgstr "Lag"
 
 #: src/routemanagerdialog.cpp:821
 msgid "Show all layers"
-msgstr ""
+msgstr "Vis alle lag"
 
 #: src/routemanagerdialog.cpp:857
 msgid "Layer Name"
@@ -6351,15 +6382,15 @@ msgstr "Antal enheder"
 
 #: src/routemanagerdialog.cpp:861
 msgid "Layer type"
-msgstr ""
+msgstr " Lagets navn"
 
 #: src/routemanagerdialog.cpp:877
 msgid "Create Temporary layer"
-msgstr ""
+msgstr "Opret midlertidigt lag"
 
 #: src/routemanagerdialog.cpp:883
 msgid "Create Persistent layer"
-msgstr ""
+msgstr "Opret vedvarende lag"
 
 #: src/routemanagerdialog.cpp:895 src/TrackPropDlg.cpp:375
 #: src/TrackPropDlg.cpp:711 src/MarkInfo.cpp:581
@@ -6466,7 +6497,7 @@ msgstr "Er du sikker på du vil slette dette lag og <ALT> indhold?"
 
 #: src/routemanagerdialog.cpp:2801
 msgid "The file will also be deleted from OpenCPN's layer directory."
-msgstr ""
+msgstr "Filen vil også blive slettet fra OpenCPN's lagmappe."
 
 #: src/routemanagerdialog.cpp:3090
 msgid "(Unnamed Layer)"
@@ -6485,7 +6516,8 @@ msgstr "Waypoints kan omdøbes til ny rækkefølge, '001', '002' etc.\n\n"
 #: src/routeman.cpp:1174
 msgid "Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "Waypoints vil blive omdøbt til at afspejle den naturlige orden, navnene vil være '001', '002' osv.\n\n"
+"Vil du omdøbe waypoints?"
 
 #: src/RoutePoint.cpp:635 src/RoutePoint.cpp:636 src/RoutePoint.cpp:799
 #: src/RoutePoint.cpp:800
@@ -6506,15 +6538,15 @@ msgstr "Fejl ved Waypointudlæsning.  Kontroller logfiler..."
 
 #: src/RoutePoint.cpp:1280
 msgid "The ScaMin value for new waypoints is set to"
-msgstr ""
+msgstr "ScaMin værdi for nye waypoints er sat til"
 
 #: src/RoutePoint.cpp:1281
 msgid "but current chartscale is"
-msgstr ""
+msgstr "men nuværende kortskala er"
 
 #: src/RoutePoint.cpp:1283
 msgid "Therefore the new waypoint will not be visible at this zoom level."
-msgstr ""
+msgstr "Derfor vil det nye waypoint ikke være synligt på dette zoomniveau."
 
 #: src/routeprintout.cpp:101 src/RoutePropDlg.cpp:288 src/TrackPropDlg.cpp:299
 msgid "Leg"
@@ -6566,23 +6598,23 @@ msgstr "Planlagt hastighed"
 
 #: src/RoutePropDlg.cpp:124
 msgid "Enroute"
-msgstr ""
+msgstr "Enroute"
 
 #: src/RoutePropDlg.cpp:140
 msgid "Departure"
-msgstr ""
+msgstr "Afgang"
 
 #: src/RoutePropDlg.cpp:173
 msgid "Time"
-msgstr ""
+msgstr "Tidspunkt"
 
 #: src/RoutePropDlg.cpp:178
 msgid "Local@PC"
-msgstr ""
+msgstr "Lokal @ PC"
 
 #: src/RoutePropDlg.cpp:179
 msgid "LMT@Location"
-msgstr ""
+msgstr "LMT @ Location"
 
 #: src/RoutePropDlg.cpp:201 src/TrackPropDlg.cpp:477 src/TrackPropDlg.cpp:721
 msgid "Default color"
@@ -6594,11 +6626,11 @@ msgstr "Bredde"
 
 #: src/RoutePropDlg.cpp:244
 msgid "1 px"
-msgstr ""
+msgstr "1 px"
 
 #: src/RoutePropDlg.cpp:244
 msgid "2px"
-msgstr ""
+msgstr "2px"
 
 #: src/RoutePropDlg.cpp:244
 msgid "3 px"
@@ -6634,15 +6666,15 @@ msgstr ""
 
 #: src/RoutePropDlg.cpp:258
 msgid "To waypoint"
-msgstr ""
+msgstr "Til waypoint"
 
 #: src/RoutePropDlg.cpp:268
 msgid "To WP"
-msgstr ""
+msgstr "Til WP"
 
 #: src/RoutePropDlg.cpp:304
 msgid "Total Distance"
-msgstr ""
+msgstr "Total distance"
 
 #: src/RoutePropDlg.cpp:317
 msgid "ETE"
@@ -6658,7 +6690,7 @@ msgstr "Næste tidevandshændelse"
 
 #: src/RoutePropDlg.cpp:341
 msgid "ETD"
-msgstr ""
+msgstr "ETD"
 
 #: src/RoutePropDlg.cpp:352 src/TrackPropDlg.cpp:634 src/MarkInfo.cpp:349
 msgid "Basic"
@@ -6721,7 +6753,7 @@ msgstr "Nattetimer"
 
 #: src/RoutePropDlgImpl.cpp:408
 msgid "Arrived"
-msgstr ""
+msgstr "Ankommet"
 
 #: src/RoutePropDlgImpl.cpp:813 src/TrackPropDlg.cpp:348
 #: src/TrackPropDlg.cpp:1341
@@ -6748,15 +6780,15 @@ msgstr "Tid undervejs"
 
 #: src/RoutePropDlgImpl.cpp:865
 msgid "Are you sure you want to move Up this waypoint?"
-msgstr ""
+msgstr "Er du sikker på, at du vil flytte op på dette waypoint?"
 
 #: src/RoutePropDlgImpl.cpp:866
 msgid "Are you sure you want to move Down this waypoint?"
-msgstr ""
+msgstr "Er du sikker på, at du vil flytte ned på dette waypoint?"
 
 #: src/RoutePropDlgImpl.cpp:868
 msgid "OpenCPN Move Waypoint"
-msgstr ""
+msgstr "Opencpn Flyt Vejpunkt"
 
 #: src/RoutePropDlgImpl.cpp:902
 msgid "Are you sure you want to remove this waypoint?"
@@ -6768,11 +6800,11 @@ msgstr "OpenCPN fjern waypoint"
 
 #: src/RoutePropDlgImpl.cpp:938
 msgid "Move Up"
-msgstr ""
+msgstr "Flyt op"
 
 #: src/RoutePropDlgImpl.cpp:940
 msgid "Move Down"
-msgstr ""
+msgstr "Flyt Ned"
 
 #: src/RoutePropDlgImpl.cpp:978 src/TrackPropDlg.cpp:1396
 msgid "&Copy all as text"
@@ -6784,19 +6816,19 @@ msgstr "_plus"
 
 #: src/RoutePropDlgImpl.cpp:1175
 msgid "Invalid date/time!"
-msgstr ""
+msgstr "Ugyldig dato/tid!"
 
 #: src/RoutePropDlgImpl.cpp:1179
 msgid "Unknown station!"
-msgstr ""
+msgstr "Ukendt station!"
 
 #: src/RoutePropDlgImpl.cpp:1194
 msgid "Unavailable: "
-msgstr ""
+msgstr "Ikke tilgængelig"
 
 #: src/RoutePropDlgImpl.cpp:1203
 msgid "Local"
-msgstr ""
+msgstr "Lokal"
 
 #: src/RoutePropDlgImpl.cpp:1360 src/TrackPropDlg.cpp:1631
 msgid "Links are opened for editing."
@@ -6812,23 +6844,23 @@ msgstr "S57 cell opdateringskæde ufuldstændig. \n"
 
 #: src/s57chart.cpp:5622
 msgid "this file is not available"
-msgstr ""
+msgstr "denne fil er ikke tilgængelig"
 
 #: src/s57chart.cpp:5653
 msgid "Period ends: "
-msgstr ""
+msgstr "Periode slutter: "
 
 #: src/s57chart.cpp:5655
 msgid "Period starts: "
-msgstr ""
+msgstr "Periode starter"
 
 #: src/s57chart.cpp:5657
 msgid "Date ending: "
-msgstr ""
+msgstr "Dato for slutning: "
 
 #: src/s57chart.cpp:5659
 msgid "Date starting: "
-msgstr ""
+msgstr "Dato for start: "
 
 #: src/s57chart.cpp:5754
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
@@ -6868,7 +6900,7 @@ msgstr "Næste"
 
 #: src/TCWin.cpp:152
 msgid "LMT@Station"
-msgstr ""
+msgstr "LMT@Station"
 
 #: src/TCWin.cpp:243
 msgid "Reference Station :"
@@ -6904,7 +6936,7 @@ msgstr "Skift til kort med mindre skala(zoom ud)"
 
 #: src/toolbar.cpp:1218
 msgid "Hide ENC text"
-msgstr ""
+msgstr "Skjul ENC tekst"
 
 #: src/toolbar.cpp:1541 src/toolbar.cpp:1554 src/toolbar.cpp:1568
 msgid "ToolTips"
@@ -7018,7 +7050,7 @@ msgstr "Soltid ved start"
 
 #: src/TrackPropDlg.cpp:971
 msgid "Extend track"
-msgstr ""
+msgstr "Udvid spor"
 
 #: src/TrackPropDlg.cpp:981
 msgid "Export"
@@ -7030,7 +7062,7 @@ msgstr "%D dage, %H:%M"
 
 #: src/TrackPropDlg.cpp:1346
 msgid "(m/d/y h:m)"
-msgstr ""
+msgstr "(m/d/y h:m)"
 
 #: src/TrackPropDlg.cpp:1450
 msgid "track"
@@ -7055,7 +7087,7 @@ msgstr "Kopier"
 
 #: src/TTYWindow.cpp:83
 msgid "Copy NMEA Debug window to clipboard."
-msgstr ""
+msgstr "Kopier NMEA fejlsøgningsvindue til udklipsholderen."
 
 #: src/TTYWindow.cpp:124
 msgid "Message accepted"
@@ -7091,7 +7123,7 @@ msgstr "Flyt Waypoint"
 
 #: libs/wxcurl/src/dialog.cpp:137
 msgid "Not available"
-msgstr ""
+msgstr "Ikke tilgængelig"
 
 #: libs/wxcurl/src/dialog.cpp:168
 msgid "URL:"
@@ -7099,27 +7131,27 @@ msgstr ""
 
 #: libs/wxcurl/src/dialog.cpp:187
 msgid "Speed:"
-msgstr ""
+msgstr "Hastighed:"
 
 #: libs/wxcurl/src/dialog.cpp:196
 msgid "Elapsed time:"
-msgstr ""
+msgstr "Forløbet tid:"
 
 #: libs/wxcurl/src/dialog.cpp:198
 msgid "Estimated total time:"
-msgstr ""
+msgstr "Anslået samlet tid:"
 
 #: libs/wxcurl/src/dialog.cpp:200
 msgid "Estimated remaining time:"
-msgstr ""
+msgstr "Anslået resterende tid:"
 
 #: libs/wxcurl/src/dialog.cpp:243 libs/wxcurl/src/dialog.cpp:399
 msgid "Abort"
-msgstr ""
+msgstr "Afbryd"
 
 #: libs/wxcurl/src/dialog.cpp:245
 msgid "Settings"
-msgstr ""
+msgstr "Indstillinger"
 
 #: libs/wxcurl/src/dialog.cpp:252
 msgid "Start"
@@ -7131,59 +7163,59 @@ msgstr ""
 
 #: libs/wxcurl/src/dialog.cpp:461
 msgid "Connection settings"
-msgstr ""
+msgstr "Indstillinger for forbindelse"
 
 #: libs/wxcurl/src/dialog.cpp:461
 msgid "Connection settings used for the transfer:"
-msgstr ""
+msgstr "Forbindelsesindstillinger, der bruges til overførslen:"
 
 #: libs/wxcurl/src/dialog.cpp:516
 msgid "0 (transfer completed)"
-msgstr ""
+msgstr "0 (overførsel afsluttet)"
 
 #: libs/wxcurl/src/dialog.cpp:537
 msgid "Downloaded:"
-msgstr ""
+msgstr "Hentet"
 
 #: libs/wxcurl/src/dialog.cpp:585
 msgid "Uploaded:"
-msgstr ""
+msgstr "Uploadet:"
 
 #: libs/wxcurl/src/panel.cpp:111
 msgid "Username:"
-msgstr ""
+msgstr "Brugernavn:"
 
 #: libs/wxcurl/src/panel.cpp:112
 msgid "Password:"
-msgstr ""
+msgstr "Kodeord:"
 
 #: libs/wxcurl/src/panel.cpp:120
 msgid "Port:"
-msgstr ""
+msgstr "Port:"
 
 #: libs/wxcurl/src/panel.cpp:134
 msgid "Proxy settings"
-msgstr ""
+msgstr "Proxy-indstillinger"
 
 #: libs/wxcurl/src/panel.cpp:136
 msgid "Use proxy"
-msgstr ""
+msgstr "Brug proxy"
 
 #: libs/wxcurl/src/panel.cpp:141
 msgid "Proxy host:"
-msgstr ""
+msgstr "Proxy host:"
 
 #: libs/wxcurl/src/panel.cpp:142
 msgid "Proxy username:"
-msgstr ""
+msgstr "Proxy brugernavn:"
 
 #: libs/wxcurl/src/panel.cpp:143
 msgid "Proxy password:"
-msgstr ""
+msgstr "Proxy kodeord:"
 
 #: libs/wxcurl/src/panel.cpp:144
 msgid "Proxy port:"
-msgstr ""
+msgstr "Proxyport:"
 
 #: src/ConfigMgr.cpp:623
 msgid "Recovery Template"
@@ -7191,170 +7223,171 @@ msgstr ""
 
 #: src/ConfigMgr.cpp:625
 msgid "Apply this template to return to a known safe configuration"
-msgstr ""
+msgstr "Anvend denne skabelon for at vende tilbage til en kendt sikker konfiguration"
 
 #: src/CanvasOptions.cpp:111
 msgid "Chart Panel Options"
-msgstr ""
+msgstr "Kortpanel Indstillinger"
 
 #: src/CanvasOptions.cpp:160
 msgid "Heading Up"
-msgstr ""
+msgstr "Kurs op"
 
 #: src/CanvasOptions.cpp:218
 msgid "Show AIS targets"
-msgstr ""
+msgstr "Vis AIS-mål"
 
 #: src/CanvasOptions.cpp:225
 msgid "Minimize less critical targets"
-msgstr ""
+msgstr "Minimer mindre kritiske mål"
 
 #: src/CanvasOptions.cpp:236
 msgid "Tides and Currents"
-msgstr ""
+msgstr "Tider og strømme"
 
 #: src/CanvasOptions.cpp:241
 msgid "Show Tide stations"
-msgstr ""
+msgstr "Vis Tide-stationer"
 
 #: src/CanvasOptions.cpp:259
 msgid "Vector Charts"
-msgstr ""
+msgstr "Vektor kort"
 
 #: src/CanvasOptions.cpp:263
 msgid "Show text"
-msgstr ""
+msgstr "Vis tekst"
 
 #: src/CanvasOptions.cpp:270
 msgid "Show depths"
-msgstr ""
+msgstr "Vis dybder"
 
 #: src/CanvasOptions.cpp:284
 msgid "Lights"
-msgstr ""
+msgstr "Lys"
 
 #: src/CanvasOptions.cpp:298
 msgid "Anchoring Info"
-msgstr ""
+msgstr "Ankerende Info"
 
 #: src/CanvasOptions.cpp:306
 msgid "Show visible sector lights"
-msgstr ""
+msgstr "Vis synlige sektorlyskilder"
 
 #: src/CanvasOptions.cpp:319
 msgid "User Standard"
-msgstr ""
+msgstr "Bruger Standard"
 
 #: src/MarkInfo.cpp:372
 msgid "This waypoint is part of a layer and can't be edited"
-msgstr ""
+msgstr "Dette waypoint er en del af et lag og kan ikke redigeres"
 
 #: src/MarkInfo.cpp:396
 msgid "Show name"
-msgstr ""
+msgstr "Vis navn"
 
 #: src/MarkInfo.cpp:567
 msgid "Extended"
-msgstr ""
+msgstr "Udvidet"
 
 #: src/MarkInfo.cpp:571
 msgid "Extended Properties"
-msgstr ""
+msgstr "Udvidede Egenskaber"
 
 #: src/MarkInfo.cpp:590
 msgid "Show at scale > 1 :"
-msgstr ""
+msgstr "Vis på skala > 1 :"
 
 #: src/MarkInfo.cpp:601
 msgid "Show waypoint name"
-msgstr ""
+msgstr "Vis waypointnavn"
 
 #: src/MarkInfo.cpp:606 src/MarkInfo.cpp:1866
 msgid "Range rings"
-msgstr ""
+msgstr "Afstandscirkler"
 
 #: src/MarkInfo.cpp:612
 msgid "Number"
-msgstr ""
+msgstr "Tal"
 
 #: src/MarkInfo.cpp:632
 msgid "0.05"
-msgstr ""
+msgstr "0.05"
 
 #: src/MarkInfo.cpp:656
 msgid "GUID"
-msgstr ""
+msgstr "GUID"
 
 #: src/MarkInfo.cpp:670
 msgid "Tide Station"
-msgstr ""
+msgstr "Tidestation"
 
 #: src/MarkInfo.cpp:698
 msgid "Arrival Radius"
-msgstr ""
+msgstr "Ankomst Radius"
 
 #: src/MarkInfo.cpp:713
 msgid "Planned Speed"
-msgstr ""
+msgstr "Planlagt Hastighed"
 
 #: src/MarkInfo.cpp:728
 msgid "ETD (UTC)"
-msgstr ""
+msgstr "ETD (UTC)"
 
 #: src/MarkInfo.cpp:1172 src/MarkInfo.cpp:1227
 msgid "Add New"
-msgstr ""
+msgstr "Tilføj ny"
 
 #: src/MarkInfo.cpp:1329
 msgid "Copy lat/long"
-msgstr ""
+msgstr "Kopier lat/lang"
 
 #: src/MarkInfo.cpp:1330
 msgid "Paste"
-msgstr ""
+msgstr "Indsæt"
 
 #: src/MarkInfo.cpp:1331
 msgid "Paste lat/long"
-msgstr ""
+msgstr "Indsæt lat/lang"
 
 #: src/MarkInfo.cpp:1824
 msgid "Save some defaults"
-msgstr ""
+msgstr "Gem som standard"
 
 #: src/MarkInfo.cpp:1833
 msgid "Check which properties of current waypoint\n"
 " should be set as default for NEW waypoints."
-msgstr ""
+msgstr "Kontroller, hvilke egenskaber for det aktuelle waypoint\n"
+" der skal sættes som standard for NYE waypoints."
 
 #: src/MarkInfo.cpp:1840 src/MarkInfo.cpp:1860
 msgid "Do use"
-msgstr ""
+msgstr "Må anvendes"
 
 #: src/MarkInfo.cpp:1841 src/MarkInfo.cpp:1865
 msgid "Don't use"
-msgstr ""
+msgstr "Brug ikke"
 
 #: src/MarkInfo.cpp:1843
 msgid "Show Waypoint Name"
-msgstr ""
+msgstr "Vis waypointnavn."
 
 #: src/MarkInfo.cpp:1874
 msgid "Arrival radius"
-msgstr ""
+msgstr "Ankomst Radius"
 
 #: src/MarkInfo.cpp:1885
 msgid "Show only if"
-msgstr ""
+msgstr "Vis kun hvis"
 
 #: src/MarkInfo.cpp:1887
 msgid "Show always"
-msgstr ""
+msgstr "Vis altid"
 
 #: src/MarkInfo.cpp:1888
 msgid "Show only at scale"
-msgstr ""
+msgstr "Vis kun i skala"
 
 #: src/MarkInfo.cpp:1927
 msgid "Tide Station not found"
-msgstr ""
+msgstr "Tidestation ikke fundet"
 
