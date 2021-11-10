@@ -41,8 +41,7 @@ Package: opencpn
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, wx3.0-i18n
 Breaks: opencpn-gshhs-crude (<< ${source:Version}),
- opencpn-tcdata (<< ${source:Version}),
- opencpn-data (<< ${source:Version})
+ opencpn-tcdata (<< ${source:Version})
 Provides: opencpn-plugin-wmm, opencpn-plugin-chartdldr
 Conflicts: opencpn-plugin-wmm, opencpn-plugin-chartdldr
 Replaces: opencpn-plugin-wmm, opencpn-plugin-chartdldr,
