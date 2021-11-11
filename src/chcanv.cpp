@@ -12356,6 +12356,12 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   scale_factor *= user_scale_factor;
 
+  //  TODO  Convert this method to "DPI-Pixel aware"
+#ifdef __WXMSW__
+  double csf = GetContentScaleFactor();
+  scale_factor /= csf;
+#endif
+
   {
     for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
       const IDX_entry *pIDX = ptcmgr->GetIDX_entry(i);
