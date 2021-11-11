@@ -7836,6 +7836,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                                  wxString(_T ( "circle" )),
                                                  wxEmptyString, wxEmptyString);
         pMousePoint->m_bShowName = false;
+        pMousePoint->SetShowWaypointRangeRings( false );
 
         m_pMeasureRoute->AddPoint(pMousePoint);
 
