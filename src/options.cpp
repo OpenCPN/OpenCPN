@@ -10782,6 +10782,10 @@ void options::SetDefaultConnectionParams(void) {
   bserial = FALSE;
 #endif
 
+#ifdef __WXOSX__
+  bserial = FALSE;
+#endif
+
 #ifdef __OCPN__ANDROID__
   if (m_rbTypeInternalGPS) {
     m_rbTypeInternalGPS->SetValue(true);
