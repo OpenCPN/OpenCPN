@@ -236,7 +236,7 @@ bool Style::NativeToolIconExists(const wxString& name) {
 // Tools and Icons perform on-demand loading and dimming of bitmaps.
 // Changing color scheme invalidates all loaded bitmaps.
 
-wxBitmap Style::GetIcon(const wxString& name, double scaleFactor,
+wxBitmap Style::GetIconScaled(const wxString& name, double scaleFactor,
                         bool bforceReload) {
   if (iconIndex.find(name) == iconIndex.end()) {
     wxString msg(_T("The requested icon was not found in the style: "));

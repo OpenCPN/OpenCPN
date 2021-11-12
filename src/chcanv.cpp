@@ -888,7 +888,7 @@ void ChartCanvas::RebuildCursors() {
   wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
   wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
   wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
-  wxImage ICursorPencil = style->GetIcon(_T("pencil"), cursorScale).ConvertToImage();
+  wxImage ICursorPencil = style->GetIconScaled(_T("pencil"), cursorScale).ConvertToImage();
   wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
 
 #if !defined(__WXMSW__) && !defined(__WXQT__)
