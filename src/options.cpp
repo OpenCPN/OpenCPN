@@ -10970,7 +10970,7 @@ void options::SetSelectedConnectionPanel(ConnectionParamsPanel* panel) {
     m_buttonAdd->Enable();
     m_buttonAdd->Show();
     m_sbConnEdit->SetLabel(_T(""));
-    //ClearNMEAForm();
+    ClearNMEAForm();
   }
 }
 
