@@ -2992,9 +2992,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 #endif
   FillSourceList();
 
-  ShowNMEACommon(FALSE);
-  ShowNMEASerial(FALSE);
-  ShowNMEANet(FALSE);
+  ShowNMEACommon(true);
+  ShowNMEASerial(true);
+  ShowNMEANet(true);
   connectionsaved = TRUE;
 }
 
@@ -10970,7 +10970,7 @@ void options::SetSelectedConnectionPanel(ConnectionParamsPanel* panel) {
     m_buttonAdd->Enable();
     m_buttonAdd->Show();
     m_sbConnEdit->SetLabel(_T(""));
-    ClearNMEAForm();
+    //ClearNMEAForm();
   }
 }
 
