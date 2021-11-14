@@ -2348,8 +2348,10 @@ bool MyApp::OnInit() {
 
   if (g_bframemax) gFrame->Maximize(true);
 
+#ifdef __OCPN__ANDROID__
   if (g_bresponsive && (gFrame->GetPrimaryCanvas()->GetPixPerMM() > 4.0))
     gFrame->Maximize(true);
+#endif
 
   //  Yield to pick up the OnSize() calls that result from Maximize()
   Yield();
