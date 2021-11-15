@@ -196,10 +196,11 @@ public:
     static const std::vector<std::string> debian_versions = {
         "9;ubuntu-x86_64;16.04",
         // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
+        "10;ubuntu-x86_64;18.04",
+        "11;ubuntu-gtk3-x86_64;20.04",
         "sid;ubuntu-gtk3-x86_64;20.04"};
     if (ocpn::startswith(m_abi, "debian-x86_64")) {
-      wxLogDebug("Checking for debian and ubuntu");
+      wxLogDebug("Checking for debian and ubuntu, debian-x86_64 host");
       const std::string host_version =
           m_major_version + ";" + plugin.abi() + ";" + plugin.abi_version();
       for (auto& v : debian_versions) {
@@ -227,6 +228,25 @@ public:
     }
     return false;
   }
+
+  // Check the plugin for host run-time ID match.
+  // This test is necessary for cross-built hosts.
+  // For example, Ubuntu PPA builds for armhf define PKG_TARGET as ubuntu-armhf
+  // But run-time reports as raspbian on "Raspberry Pi OS".
+  bool is_plugin_compatible_runtime(const Plugin& plugin) const {
+    OCPN_OSDetail* os_detail = g_Platform->GetOSDetail();
+    const std::string osd_abi = os_detail->osd_ID + "-" + os_detail->osd_arch;
+    wxLogDebug("Checking for compatible run-time, %s", osd_abi);
+    if (osd_abi == plugin.abi()) {
+      wxLogDebug("Checking for compatible run-time, OK1");
+      if (os_detail->osd_version == plugin.major_version()) {
+        wxLogDebug("Checking for compatible run-time, OK2");
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   const std::string& abi() const { return m_abi; }
 
@@ -308,6 +328,9 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   } else if (host.is_debian_plugin_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found Ubuntu version matching Debian host");
+  } else if(host.is_plugin_compatible_runtime(plugin)) {
+    rv = true;
+    wxLogDebug("Found host OCPN_OSDetail run-time match");
   }
   DEBUG_LOG << "Plugin compatibility check Final: "
             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
