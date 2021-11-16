@@ -2883,8 +2883,8 @@ void PlugInManager::SendJSONMessageToAllPlugins(const wxString &message_id,
   wxString out;
   w.Write(v, out);
   SendMessageToAllPlugins(message_id, out);
-  //   wxLogMessage(message_id);
-  //   wxLogMessage(out);
+  wxLogDebug(message_id);
+  wxLogDebug(out);
 }
 
 void PlugInManager::SendMessageToAllPlugins(const wxString &message_id,
