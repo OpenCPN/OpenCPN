@@ -238,9 +238,7 @@ public:
     const std::string osd_abi = os_detail->osd_ID + "-" + os_detail->osd_arch;
     wxLogDebug("Checking for compatible run-time, %s", osd_abi);
     if (osd_abi == plugin.abi()) {
-      wxLogDebug("Checking for compatible run-time, OK1");
       if (os_detail->osd_version == plugin.major_version()) {
-        wxLogDebug("Checking for compatible run-time, OK2");
         return true;
       }
     }
@@ -328,10 +326,14 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   } else if (host.is_debian_plugin_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found Ubuntu version matching Debian host");
-  } else if(host.is_plugin_compatible_runtime(plugin)) {
+  }
+#ifdef ocpnARM
+  //TODO  This conditional may not be needed.  Test on O57+
+  else if(host.is_plugin_compatible_runtime(plugin)) {
     rv = true;
     wxLogDebug("Found host OCPN_OSDetail run-time match");
   }
+#endif
   DEBUG_LOG << "Plugin compatibility check Final: "
             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
