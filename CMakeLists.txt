@@ -645,6 +645,9 @@ endif ()
 # required
 if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
   add_definitions(-DocpnARM)
+  if (ARCH STREQUAL "armhf")
+    add_definitions(-DocpnARMHF)
+  endif (ARCH STREQUAL armhf)
 endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
 
 IF(DEFINED _wx_selected_config)
