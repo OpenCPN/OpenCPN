@@ -235,9 +235,11 @@ public:
   // But run-time reports as raspbian on "Raspberry Pi OS".
   bool is_plugin_compatible_runtime(const Plugin& plugin) const {
     OCPN_OSDetail* os_detail = g_Platform->GetOSDetail();
-    const std::string osd_abi = os_detail->osd_ID + "-" + os_detail->osd_arch;
-    wxLogDebug("Checking for compatible run-time, %s : %s", osd_abi, os_detail->osd_version);
-    if (osd_abi == plugin.abi()) {
+    const std::string host_osd_abi = os_detail->osd_ID + "-" + os_detail->osd_arch;
+    wxLogDebug("Checking for compatible run-time, host_osd_abi: %s : %s", host_osd_abi, os_detail->osd_version);
+    wxLogDebug("   plugin_abi + version: %s %s", plugin.abi(), plugin.major_version());
+    if (host_osd_abi == plugin.abi()) {
+      wxLogDebug("   plugin_version: %s", major_version());
       if (os_detail->osd_version == plugin.major_version()) {
         return true;
       }

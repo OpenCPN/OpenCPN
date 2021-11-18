@@ -1883,6 +1883,16 @@ bool MyApp::OnInit() {
   wxLogMessage(_T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"),
                g_mem_total / 1024, g_mem_initial / 1024);
 
+  OCPN_OSDetail *detail = g_Platform->GetOSDetail();
+  wxString msgplat;
+  msgplat.Printf( "OCPN_OSDetail:  %s ; %s ; %s ; %s ; %s",
+              detail->osd_arch.c_str(),
+              detail->osd_name.c_str(),
+              detail->osd_version.c_str(),
+              detail->osd_ID.c_str(),
+              detail->osd_names_like[0].c_str() );
+  wxLogMessage(msgplat);
+
   //    Initialize embedded PNG icon graphics
   ::wxInitAllImageHandlers();
 
