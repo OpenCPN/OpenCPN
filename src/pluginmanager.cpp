@@ -6174,6 +6174,9 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent &event) {
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent &event) {
   SetEnabled(!m_pPlugin->m_bEnabled);
+  if (m_pVersion->GetLabel().IsEmpty())
+    m_pVersion->SetLabel(m_pPlugin->GetVersion().to_string());
+
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent &event) {
