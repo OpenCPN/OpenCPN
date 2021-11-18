@@ -8725,6 +8725,8 @@ PlugIn_Waypoint_Ex::PlugIn_Waypoint_Ex(double lat, double lon,
                                  const int nRangeRings,
                                  const double RangeDistance,
                                  const wxColor RangeColor ) {
+  InitDefaults();
+
   wxDateTime now = wxDateTime::Now();
   m_CreateTime = now.ToUTC();
   m_HyperlinkList = NULL;
@@ -8754,6 +8756,9 @@ void PlugIn_Waypoint_Ex::InitDefaults()
   RangeRingColor = *wxBLACK;
   m_CreateTime = wxDateTime::Now();
   IsActive = false;
+  m_lat = 0;
+  m_lon = 0;
+
 }
 
 bool PlugIn_Waypoint_Ex::GetFSStatus()
