@@ -787,6 +787,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   GetglEntryPoints(pcaps);
 
+  pcaps->bOldIntel = false;
   if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
     if (pcaps->Renderer.Upper().Find(_T("965")) != wxNOT_FOUND) {
       pcaps->bOldIntel = true;
