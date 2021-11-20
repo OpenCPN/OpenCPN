@@ -2356,6 +2356,11 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   wxSize sd = g_Platform->getDisplaySize();
   double max_physical = wxMax(sd.x, sd.y);
 
+#ifdef __WXOSX__
+  // Support Mac Retina displays.
+  max_physical /= GetContentScaleFactor();
+#endif
+
   m_pix_per_mm = (max_physical) / ((double)m_display_size_mm);
   m_canvas_scale_factor = (max_physical) / (m_display_size_mm / 1000.);
 
