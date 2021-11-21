@@ -61,7 +61,7 @@ sudo port -fN deactivate OCPN_curl || {
 sudo port -q install curl
 sudo port -fN deactivate curl
 
-sudo port -fN deactivate openssl
+#sudo port -fN deactivate openssl
 
 
 # install the local port libraries
