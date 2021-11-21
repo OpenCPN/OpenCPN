@@ -17,7 +17,7 @@ export PATH=/opt/local/bin:$PATH
 
 curl -k -o /tmp/opt_macports.tar.xz  \
     https://download.opencpn.org/s/FpPXeWqEif8cLCT/download
-tar -C / -xJf /tmp/opt_macports.tar.xz
+sudo tar -C / -xJf /tmp/opt_macports.tar.xz
 
 #ls ${HOME}/project/opt_local_cache || echo "OK"
 #ls ${HOME}/project/opt_local_cache/bin || echo "OK"
