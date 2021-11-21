@@ -12,11 +12,15 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 export PATH=/opt/local/bin:$PATH
 
 # allow caching of macports state in $HOME    "/Users/distiller/project/opt_local_cache"
-sudo mkdir -p ${HOME}/project/opt_local_cache
-sudo ln -s ${HOME}/project/opt_local_cache /opt/local
+#sudo mkdir -p ${HOME}/project/opt_local_cache
+#sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 
-ls ${HOME}/project/opt_local_cache || echo "OK"
-ls ${HOME}/project/opt_local_cache/bin || echo "OK"
+curl -k -o /tmp/opt_macports.tar.xz  \
+    https://download.opencpn.org/s/FpPXeWqEif8cLCT/download
+tar -C / -xJf /tmp/opt_macports.tar.xz
+
+#ls ${HOME}/project/opt_local_cache || echo "OK"
+#ls ${HOME}/project/opt_local_cache/bin || echo "OK"
 
 #sudo mkdir -p /opt/local/share/curl
 #sudo cp buildosx/cacert.pem /opt/local/share/curl/curl-ca-bundle.crt
