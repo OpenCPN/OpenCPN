@@ -124,7 +124,7 @@ brew list --versions python3 || {
         fetch --unshallow
 }
 
-for pkg in python3  ; do
+for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
