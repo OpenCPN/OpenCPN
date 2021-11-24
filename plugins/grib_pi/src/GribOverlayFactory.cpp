@@ -523,6 +523,9 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
                 wxFONTWEIGHT_NORMAL);
 #endif
     m_TexFontNumbers.Build(font);
+
+    if (m_oDC)
+      m_oDC->SetFont(font);
   }
 
   m_Message_Hiden.Empty();
