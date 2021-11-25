@@ -966,14 +966,15 @@ static ColorMap AirTempMap[] = {
     {82, _T("#ff8100")}, {86, _T("#f1780c")}, {90, _T("#e26a23")},
     {95, _T("#d5453c")}, {100, _T("#b53c59")}};
 
+
+    //  Color map similar to:
+    //  https://www.ospo.noaa.gov/data/sst/contour/global.cf.gif
 static ColorMap SeaTempMap[] = {
-    {0, _T("#0000d9")},  {1, _T("#002ad9")},  {2, _T("#006ed9")},
-    {3, _T("#00b2d9")},  {4, _T("#00d4d4")},  {5, _T("#00d9a6")},
-    {7, _T("#00d900")},  {9, _T("#95d900")},  {12, _T("#d9d900")},
-    {15, _T("#d9ae00")}, {18, _T("#d98300")}, {21, _T("#d95700")},
-    {24, _T("#d90000")}, {27, _T("#ae0000")}, {30, _T("#8c0000")},
-    {36, _T("#870000")}, {42, _T("#690000")}, {48, _T("#550000")},
-    {56, _T("#410000")}};
+    {-2, _T("#cc04ae")}, {2, _T("#8f06e4")}, {6, _T("#486afa")},
+    {10, _T("#00ffff")}, {15, _T("#00d54b")}, {19, _T("#59d800")},
+    {23, _T("#f2fc00")}, {27, _T("#ff1500")}, {32, _T("#ff0000")},
+    {36, _T("#d80000")}, {40, _T("#a90000")}, {44, _T("#870000")},
+    {48, _T("#690000")}, {52, _T("#550000")}, {56, _T("#330000")}};
 
 //    HTML colors taken from ZyGrib representation
 static ColorMap PrecipitationMap[] = {
@@ -1693,7 +1694,8 @@ void GRIBOverlayFactory::RenderGribOverlayMap(int settings, GribRecord **pGR,
             _("Overlays not supported by this graphics hardware (Disable "
               "OpenGL)"));
       else {
-        if (!pGO->m_iTexture) CreateGribGLTexture(pGO, settings, pGRA);
+        if (!pGO->m_iTexture)
+          CreateGribGLTexture(pGO, settings, pGRA);
 
         if (pGO->m_iTexture)
           DrawGLTexture(pGO, pGRA, vp);
