@@ -9442,6 +9442,13 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
     wxColor fg = FontMgr::Get().GetFontColor(_("ObjectQuery"));
 
+#ifdef __WXOSX__
+    // Adjustment for dark mode
+    fg = GetGlobalColor(_T ( "UITX1" ));
+    if(bg.Blue() < 128)
+      fg = GetGlobalColor(_T ( "DILG0" ));
+#endif
+
     objText.Printf(
         _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>"),
         bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue());
