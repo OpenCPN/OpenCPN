@@ -140,6 +140,10 @@ void RolloverWin::SetBitmap(int rollover) {
 
   mdc.SetTextForeground(FontMgr::Get().GetFontColor(text));
 
+#ifdef __WXOSX__
+  mdc.SetTextForeground(wxColour(0,0,0));
+#endif
+
   if (m_plabelFont && m_plabelFont->IsOk()) {
     //    Draw the text
     mdc.SetFont(*m_plabelFont);
