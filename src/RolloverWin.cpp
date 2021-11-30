@@ -366,10 +366,30 @@ void RolloverWin::Draw(ocpnDC &dc) {
 #endif
     glDisable(g_texture_rectangle_format);
     glDisable(GL_BLEND);
-  } else
-//#endif
+  } else {
+#ifdef __WXOSX__
+      // Support MacBook Retina display
+      if(g_bopengl){
+        double scale = m_parent->GetContentScaleFactor();
+        if(scale > 1){
+          wxImage image = m_pbm->ConvertToImage();
+          image.Rescale( image.GetWidth() * scale, image.GetHeight() * scale);
+          wxBitmap bmp( image );
+          dc.DrawBitmap(bmp, m_position.x, m_position.y, false);
+        }
+        else
+          dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+      }
+      else
+        dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+#else
+      dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
 #endif
+  }
+
+#else
     dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+#endif
 }
 
 void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
