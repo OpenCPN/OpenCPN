@@ -153,7 +153,6 @@ void ocpnCompass::Paint(ocpnDC& dc) {
         dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
 #else
       dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
-    }
 #endif
     }
 
