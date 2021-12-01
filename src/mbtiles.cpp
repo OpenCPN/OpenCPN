@@ -928,6 +928,12 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
     glDisable(GL_TEXTURE_2D);
     return false;
   } else {
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+    // If ever is implemented variable transparency for MBTiles,
+    // this is the place to do it for legacy (direct) mode.
+    // Set the alpha value in the glColor4f call here
+    glColor4f(1,1,1,1.0);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -956,6 +962,8 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   glChartCanvas::RenderSingleTexture(coords, texcoords, &vp, 0, 0, 0);
 
   glDisable(GL_BLEND);
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
 
   return true;
 }
