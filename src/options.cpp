@@ -9935,7 +9935,11 @@ void ChartGroupsUI::PopulateTreeCtrl(wxTreeCtrl* ptc,
       // wxWidgets bug workaraound (Ticket #10085)
       ptc->SetItemText(id, dirname);
       if (pFont) ptc->SetItemFont(id, *pFont);
+
+      // On MacOS, use the default system dialog color, to honor Dark mode.
+#ifndef __WXOSX__
       ptc->SetItemTextColour(id, col);
+#endif
       ptc->SetItemHasChildren(id);
     }
   }
