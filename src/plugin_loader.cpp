@@ -70,7 +70,16 @@
 #include <dlfcn.h>
 #endif
 
-extern wxConfigBase* pConfig;
+#ifndef CLIAPP
+#include "navutil.h"
+#endif
+
+#ifdef CLIAPP
+extern wxConfigBase* pBaseConfig;
+#else
+extern MyConfig* pConfig;
+#endif
+
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
 
@@ -288,7 +297,11 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   //    Check the config file to see if this PlugIn is user-enabled
 
   const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
+#ifdef CLIAPP
+  ConfigVar<bool> enabled(path, "bEnabled", pBaseConfig);
+#else
   ConfigVar<bool> enabled(path, "bEnabled", pConfig);
+#endif
 
   // only loading enabled plugins? check that it is enabled
   if (load_enabled && !enabled.get(true)) {

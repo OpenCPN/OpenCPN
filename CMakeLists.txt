@@ -993,6 +993,7 @@ set(
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
+  src/ocpn_plugin.cpp
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
   src/OCPN_SignalKEvent.cpp
@@ -2854,4 +2855,59 @@ if (NOT TARGET uninstall)
     uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/uninstall.cmake
   )
+endif ()
+
+if (NOT QT_ANDROID)
+  #
+  # Piggy-back the console application on the main setup.
+  #
+  set(SRC_CONSOLE
+    src/api_shim.cpp
+    src/BasePlatform.cpp
+    src/catalog_handler.cpp
+    src/catalog_parser.cpp
+    src/console.cpp
+    src/Downloader.cpp
+    src/logger.cpp
+    src/observable.cpp
+    src/ocpn_plugin.cpp
+    src/ocpn_utils.cpp
+    src/plugin_cache.cpp
+    src/PluginHandler.cpp
+    src/plugin_loader.cpp
+    src/PluginPaths.cpp
+    src/pugixml.cpp
+    src/semantic_vers.cpp
+  )
+  add_executable(opencpn-cmd ${SRC_CONSOLE})
+
+  target_include_directories(
+    opencpn-cmd PRIVATE ${PROJECT_SOURCE_DIR}/include
+  )
+
+  target_compile_definitions(opencpn-cmd PUBLIC CLIAPP)
+
+
+  if (TARGET ocpn::wxcurl)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)
+  else ()
+    target_link_libraries(opencpn-cmd PRIVATE ${SYS_WXCURL_LIBRARIES})
+  endif ()
+
+  target_link_libraries(opencpn-cmd PRIVATE ${wxWidgets_LIBRARIES})
+  if (TARGET ocpn::wxsvg)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
+  endif ()
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
+  target_link_libraries(opencpn-cmd PRIVATE ${LibArchive_LIBRARIES})
+  target_include_directories(opencpn-cmd PRIVATE ${LibArchive_INCLUDE_DIRS})
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
+    target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
+    target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
+  endif ()
+  install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()
