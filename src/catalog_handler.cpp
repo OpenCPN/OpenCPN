@@ -37,7 +37,7 @@
 #include "catalog_parser.h"
 #include "Downloader.h"
 #include "ocpn_utils.h"
-#include "OCPNPlatform.h"
+#include "BasePlatform.h"
 #include "PluginHandler.h"
 
 #ifdef _WIN32
@@ -48,7 +48,7 @@ static const std::string SEP("/");
 
 extern wxString g_catalog_custom_url;
 extern wxString g_catalog_channel;
-extern OCPNPlatform* g_Platform;
+extern BasePlatform* g_Platform;
 
 static const char* const DOWNLOAD_REPO =
     "https://raw.githubusercontent.com/OpenCPN/plugins";

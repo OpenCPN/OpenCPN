@@ -6,13 +6,13 @@
 #include <wx/filename.h>
 #include <wx/sizer.h>
 
-#include "OCPNPlatform.h"
+#include "BasePlatform.h"
 #include "ocpn_utils.h"
 #include "gui_lib.h"
 
 #include "safe_mode.h"
 
-extern OCPNPlatform* g_Platform;
+extern BasePlatform* g_Platform;
 extern bool g_bdisable_opengl;
 
 namespace safe_mode {

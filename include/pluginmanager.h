@@ -367,6 +367,9 @@ private:
   bool LoadPlugInDirectory(const wxString &plugin_dir, bool enabled_plugins,
                            bool b_enable_blackdialog);
   void ProcessLateInit(PlugInContainer *pic);
+  void OnPluginDeactivate(const PlugInContainer* pic);
+  void HandlePluginLoaderEvents();
+  void HandlePluginHandlerEvents();
 
   MyFrame *pParent;
   std::unique_ptr<BlacklistUI> m_blacklist_ui;

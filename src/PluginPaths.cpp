@@ -1,7 +1,7 @@
 #include <sstream>
 
 #include "config.h"
-#include "OCPNPlatform.h"
+#include "BasePlatform.h"
 #include "PluginPaths.h"
 #include "ocpn_plugin.h"
 
@@ -15,7 +15,7 @@
 const char* const LINUX_DATA_PATH =
     "~/.local/share:/usr/local/share:/usr/share";
 
-extern OCPNPlatform* g_Platform;
+extern BasePlatform* g_Platform;
 extern bool g_bportable;
 
 static std::vector<std::string> split(const std::string& s, char delimiter) {
@@ -152,7 +152,7 @@ void PluginPaths::initApplePaths() {
   m_userDatadir = mac_home + "/Contents";
 
   m_libdirs.push_back(m_userLibdir);
-  wxFileName fn_exe(GetOCPN_ExePath());
+  wxFileName fn_exe(g_Platform->GetExePath());
   fn_exe.RemoveLastDir();
   string exeLibDir =
       fn_exe.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR).ToStdString() +

@@ -68,6 +68,7 @@
 #include <archive.h>
 
 #include "catalog_parser.h"
+#include "observable.h"
 
 bool isRegularFile(const char* path);
 
@@ -85,6 +86,10 @@ private:
 
 class PluginHandler {
 public:
+
+  EventVar evt_download_ok;
+  EventVar evt_download_failed;
+
   static PluginHandler* getInstance();
 
   /** Cleanup failed installation attempt using filelist for plugin. */
@@ -138,8 +143,7 @@ public:
   CatalogData* GetCatalogData() { return &catalogData; }
 
 protected:
-  /** Initiats the handler and set up LD_LIBRARY_PATH. */
-  PluginHandler() {}
+  PluginHandler();
 
 private:
   std::string metadataPath;

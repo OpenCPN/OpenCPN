@@ -11110,8 +11110,3 @@ void ApplyLocale() {
     gFrame->RequestNewMasterToolbar(true);
   }
 }
-
-void appendOSDirSlash(wxString *pString) {
-  wxChar sep = wxFileName::GetPathSeparator();
-  if (pString->Last() != sep) pString->Append(sep);
-}
