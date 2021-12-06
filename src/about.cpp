@@ -66,7 +66,7 @@ wxString OpenCPNVersion =
 
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2019 The OpenCPN Authors<br><br>");
+    wxT("(c) 2000-2021  The OpenCPN Authors<br><br>");
 
 const wxString OpenCPNInfo =
     wxT("<br><br>")
