@@ -33,45 +33,42 @@ extern "C" {
 #include <zlib.h>
 #include <bzlib.h>
 
-#define ZU_COMPRESS_AUTO  -1
-#define ZU_COMPRESS_NONE   0
-#define ZU_COMPRESS_GZIP   1
-#define ZU_COMPRESS_BZIP   2
+#define ZU_COMPRESS_AUTO -1
+#define ZU_COMPRESS_NONE 0
+#define ZU_COMPRESS_GZIP 1
+#define ZU_COMPRESS_BZIP 2
 
-#define ZU_BUFREADSIZE   256000
+#define ZU_BUFREADSIZE 256000
 
+typedef struct {
+  int type;
+  int ok;
+  char *fname;
+  long pos;
 
-typedef struct
-{
-    int   type;
-    int   ok;
-    char  *fname;
-    long  pos;
+  void *zfile;  // exact file type depends of compress type
 
-    void *zfile;   // exact file type depends of compress type
-
-    FILE *faux;   // auxiliary file for bzip
+  FILE *faux;  // auxiliary file for bzip
 } ZUFILE;
 
+ZUFILE *zu_open(const char *fname, const char *mode,
+                int type = ZU_COMPRESS_AUTO);
+int zu_close(ZUFILE *f);
 
-ZUFILE * zu_open(const char *fname, const char *mode, int type=ZU_COMPRESS_AUTO);
-int    zu_close(ZUFILE *f);
+int zu_can_read_file(const char *fname);
 
-int    zu_can_read_file(const char *fname);
+int zu_read(ZUFILE *f, void *buf, long len);
 
-int    zu_read(ZUFILE *f, void *buf, long len);
+long zu_tell(ZUFILE *f);
 
-long   zu_tell(ZUFILE *f);
+int zu_seek(ZUFILE *f, long offset, int whence);  // TODO: whence=SEEK_END
 
-int    zu_seek(ZUFILE *f, long offset, int whence);        // TODO: whence=SEEK_END
+void zu_rewind(ZUFILE *f);
 
-void   zu_rewind(ZUFILE *f);
-
-long   zu_filesize(ZUFILE *f);
+long zu_filesize(ZUFILE *f);
 
 // for internal use :
 int zu_bzSeekForward(ZUFILE *f, unsigned long nbytes);
-
 
 #ifdef __cplusplus
 }

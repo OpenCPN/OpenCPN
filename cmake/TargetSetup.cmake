@@ -32,7 +32,7 @@ elseif (MSVC)
         set(PKG_TARGET_VERSION 10)
     endif ()
 elseif (APPLE)
-    set(PKG_TARGET "darwin")
+    set(PKG_TARGET "darwin-wx315")
     execute_process(COMMAND "sw_vers" "-productVersion"
                     OUTPUT_VARIABLE PKG_TARGET_VERSION)
 elseif (UNIX)

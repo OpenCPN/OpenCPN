@@ -25,6 +25,7 @@ else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
             -DCMAKE_INSTALL_LIBDIR=lib
 else
 	dh_auto_configure -- \
-	    -DCMAKE_INSTALL_LIBDIR=lib
+	    -DCMAKE_INSTALL_LIBDIR=lib                 \
+            -DCMAKE_BUILD_TYPE=Release
 
 endif

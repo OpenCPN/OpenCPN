@@ -2,7 +2,7 @@
 #define OCPN_CONFIG_H
 
 #cmakedefine LINUX_CRASHRPT
-#cmakedefine OCPN_USE_CRASHRPT
+#cmakedefine OCPN_USE_CRASHREPORT
 #cmakedefine OCPN_HAVE_X11
 
 // Garmin Host Mode support
@@ -57,9 +57,6 @@
 
 // The architecture compatible plugins are built for
 #define PKG_TARGET_ARCH "${ARCH}"
-
-// The version of gtk that has been used in the plugin build
-#define PKG_BUILD_GTK "${PKG_BUILD_GTK}"
 
 // Command line to play a sound in system(3), like "aplay %s".
 #define SYSTEM_SOUND_CMD  ${SYSTEM_SOUND_CMD}

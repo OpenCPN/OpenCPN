@@ -102,6 +102,8 @@ const BlackListedPlugin PluginBlacklist[] = {
 #ifdef __WXOSX__
     {_T("s63_pi"), 0, 6, true, true},
 #endif
+    {_T("oesenc_pi"), 4, 2, true, true},
+
 };
 
 //----------------------------------------------------------------------------

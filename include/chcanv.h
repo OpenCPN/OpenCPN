@@ -154,7 +154,6 @@ public:
   void OnSetFocus(wxFocusEvent &WXUNUSED(event));
 #ifdef HAVE_WX_GESTURE_EVENTS
   void OnZoom(wxZoomGestureEvent& event);
-  void OnPan(wxPanGestureEvent& event);
   void OnLongPress(wxLongPressEvent& event);
   void OnPressAndTap(wxPressAndTapEvent& event);
 
@@ -267,6 +266,7 @@ public:
   ColorScheme GetColorScheme() { return m_cs; }
 
   void CanvasApplyLocale();
+  void RebuildCursors();
 
   //    Accessors
   int GetCanvasWidth() { return m_canvas_width; }

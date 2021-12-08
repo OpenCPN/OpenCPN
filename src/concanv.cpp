@@ -396,7 +396,7 @@ void ConsoleCanvas::UpdateRouteData() {
 
         if (speed > 0.) {
           // Show date, e.g. Feb 15, if TTG > 24 h
-          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%b %d %H:%M"))
+          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%e/%m %H:%M"))
                                             : eta.Format(_T("%H:%M"));
         } else {
           seta = _T("---");
@@ -511,7 +511,7 @@ void AnnunText::CalculateMinSize(void) {
     GetTextExtent(_T("1234"), &wl, &hl, NULL, NULL, m_plabelFont);
 
   if (m_pvalueFont)
-    GetTextExtent(_T("123.456"), &wv, &hv, NULL, NULL, m_pvalueFont);
+    GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
 
   wxSize min;
   min.x = wl + wv;

@@ -156,8 +156,8 @@ public:
     m_abi_version = metadata.target_version;
     m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
     m_name = metadata.name;
-    wxLogDebug("Plugin: setting up, name: %s", m_name);
-    wxLogDebug("Plugin: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
+    wxLogMessage("Plugin: setting up, name: %s", m_name);
+    wxLogMessage("Plugin: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
                m_abi_version, m_major_version);
   }
   const std::string& abi() const { return m_abi; }
@@ -179,7 +179,7 @@ public:
     m_abi = compatOs->name();
     m_abi_version = compatOs->version();
     m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
-    wxLogDebug("Host: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
+    wxLogMessage("Host: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
                m_abi_version, m_major_version);
   }
 
@@ -196,10 +196,11 @@ public:
     static const std::vector<std::string> debian_versions = {
         "9;ubuntu-x86_64;16.04",
         // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
+        "10;ubuntu-x86_64;18.04",
+        "11;ubuntu-gtk3-x86_64;20.04",
         "sid;ubuntu-gtk3-x86_64;20.04"};
     if (ocpn::startswith(m_abi, "debian-x86_64")) {
-      wxLogDebug("Checking for debian and ubuntu");
+      wxLogDebug("Checking for debian and ubuntu, debian-x86_64 host");
       const std::string host_version =
           m_major_version + ";" + plugin.abi() + ";" + plugin.abi_version();
       for (auto& v : debian_versions) {
@@ -227,6 +228,25 @@ public:
     }
     return false;
   }
+
+  // Check the plugin for host run-time ID match.
+  // This test is necessary for cross-built hosts.
+  // For example, Ubuntu PPA builds for armhf define PKG_TARGET as ubuntu-armhf
+  // But run-time reports as raspbian on "Raspberry Pi OS".
+  bool is_plugin_compatible_runtime(const Plugin& plugin) const {
+    OCPN_OSDetail* os_detail = g_Platform->GetOSDetail();
+    const std::string host_osd_abi = os_detail->osd_ID + "-" + os_detail->osd_arch;
+    wxLogDebug("Checking for compatible run-time, host_osd_abi: %s : %s", host_osd_abi, os_detail->osd_version);
+    wxLogDebug("   plugin_abi + version: %s %s", plugin.abi(), plugin.major_version());
+    if (host_osd_abi == plugin.abi()) {
+      wxLogDebug("   plugin_version: %s", major_version());
+      if (os_detail->osd_version == plugin.major_version()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   const std::string& abi() const { return m_abi; }
 
@@ -289,11 +309,14 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   Host host(compatOS);
   Plugin plugin(metadata);
 
-  if (plugin.abi() == "msvc" || plugin.abi() == "darwin" ||
+  if (plugin.abi() == "msvc" ||
+      plugin.abi() == "darwin" ||
+      plugin.abi() == "darwin-wx315" ||
       plugin.abi() == "android-armeabi-v7a" ||
       plugin.abi() == "android-arm64-v8a") {
     bool ok = plugin.abi() == host.abi();
-    wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
+    wxLogMessage("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
+    wxLogMessage(" ");
     return ok;
   }
   bool rv = false;
@@ -307,6 +330,13 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
     rv = true;
     wxLogDebug("Found Ubuntu version matching Debian host");
   }
+#ifdef ocpnARM
+  //TODO  This conditional may not be needed.  Test on O57+
+  else if(host.is_plugin_compatible_runtime(plugin)) {
+    rv = true;
+    wxLogDebug("Found host OCPN_OSDetail run-time match");
+  }
+#endif
   DEBUG_LOG << "Plugin compatibility check Final: "
             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
@@ -1073,7 +1103,21 @@ bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
   wxURI uri(wxString(plugin.tarball_url.c_str()));
   wxFileName fn(uri.GetPath());
   wxString tarballFile = fn.GetFullName();
-  auto cacheFile = ocpn::lookup_tarball(tarballFile);
+  std::string cacheFile = ocpn::lookup_tarball(tarballFile);
+
+#ifdef __WXOSX__
+  // Depending on the browser settings, MacOS will sometimes automatically
+  // de-compress the tar.gz file, leaving a simple ".tar" file in its expected place.
+  // Check for this case, and "do the right thing"
+  if (cacheFile == ""){
+    fn.ClearExt();
+    wxFileName fn1(fn.GetFullName());
+    if (fn1.GetExt().IsSameAs("tar")){
+      tarballFile = fn.GetFullName();
+      cacheFile = ocpn::lookup_tarball(tarballFile);
+    }
+  }
+#endif
 
   if (cacheFile != "") {
     wxLogMessage("Installing %s from local cache", tarballFile.c_str());

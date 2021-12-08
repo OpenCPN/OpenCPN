@@ -32,6 +32,23 @@ void setAppLevelDarkMode(bool enabled)
     }
 }
 
+bool isDarkMode()
+{
+    // Discussiopn here:
+    // https://stackoverflow.com/questions/51672124/how-can-dark-mode-be-detected-on-macos-10-14
+
+    NSAppearance *appearance = NSApp.mainWindow.effectiveAppearance;
+    if (@available(macOS 10.14, *)) {
+      NSAppearanceName basicAppearance = [appearance bestMatchFromAppearancesWithNames:@[
+            NSAppearanceNameAqua,
+            NSAppearanceNameDarkAqua
+        ]];
+      return [basicAppearance isEqualToString:NSAppearanceNameDarkAqua];
+    }
+
+    return false;
+}
+
 void setWindowLevelDarkMode(NSWindow *window, bool enabled)
 {
     NSAppearance *appearance = (enabled ? [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark] : nil);

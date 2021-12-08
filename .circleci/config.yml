@@ -42,9 +42,6 @@ jobs:
        - save_cache:
           key: macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
           paths:
-            - /usr/local/Homebrew
-            - /usr/local/Caskroom
-            - /usr/local/Cellar
             - /usr/local/bin
             - /usr/local/include
             - /usr/local/lib
@@ -54,7 +51,7 @@ jobs:
    build-flatpak:
      working_directory: ~/OpenCPN
      machine:
-         image: ubuntu-1604:201903-01
+       image: ubuntu-2004:202101-01
      environment:
        - OCPN_TARGET:  flatpak
      steps:
@@ -91,6 +88,7 @@ workflows:
             branches:
               only:
                 - flatpak
+                - master
       - build-macos:
           filters:
             branches:

@@ -427,7 +427,7 @@ void NetworkDataStream::OnServerSocketEvent(wxSocketEvent& event) {
 
       if (GetSock()) {
         GetSock()->SetTimeout(2);
-        GetSock()->SetFlags(wxSOCKET_BLOCK);
+//        GetSock()->SetFlags(wxSOCKET_BLOCK);
         GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
         int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
         if (GetPortType() != DS_TYPE_INPUT) {

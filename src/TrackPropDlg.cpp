@@ -63,11 +63,11 @@ wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
   wxString s = _T("");
   wxString f;
   if (format == INPUT_FORMAT)
-    f = _T("%m/%d/%Y %H:%M");
+    f = _T("%x %H:%M");
   else if (format == TIMESTAMP_FORMAT)
-    f = _T("%m/%d/%Y %H:%M:%S");
+    f = _T("%x %H:%M:%S");
   else
-    f = _T(" %m/%d %H:%M");
+    f = _T(" %x %H:%M");
   switch (tz_selection) {
     case UTCINPUT:
       s.Append(ts.Format(f));
@@ -157,6 +157,12 @@ TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
   Connect(wxEVT_COMMAND_MENU_SELECTED,
           wxCommandEventHandler(TrackPropDlg::OnTrackPropMenuSelected), NULL,
           this);
+
+#ifdef __WXOSX__
+  Connect(wxEVT_ACTIVATE,
+          wxActivateEventHandler(TrackPropDlg::OnActivate),
+          NULL, this);
+#endif
 
   if (!m_bcompact) {
     m_buttonAddLink->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -249,6 +255,16 @@ TrackPropDlg::~TrackPropDlg() {
 
   instanceFlag = false;
 }
+
+void TrackPropDlg::OnActivate(wxActivateEvent& event){
+    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+    long int style = pWin->GetWindowStyle();
+    if (event.GetActive())
+      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+    else
+      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
+}
+
 
 void TrackPropDlg::RecalculateSize(void) {
   //  Make an estimate of the dialog size, without scrollbars showing

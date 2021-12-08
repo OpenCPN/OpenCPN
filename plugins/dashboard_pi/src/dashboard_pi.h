@@ -30,15 +30,15 @@
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
-  #include "wx/wx.h"
-#endif //precompiled headers
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
 
-#define     PLUGIN_VERSION_MAJOR    1
-#define     PLUGIN_VERSION_MINOR    2
+#define PLUGIN_VERSION_MAJOR 1
+#define PLUGIN_VERSION_MINOR 2
 
-#define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    6
+#define MY_API_VERSION_MAJOR 1
+#define MY_API_VERSION_MINOR 6
 
 #include <wx/notebook.h>
 #include <wx/fileconf.h>
@@ -49,7 +49,7 @@
 #include <wx/fontpicker.h>
 #include <wx/jsonval.h>
 
-//wx2.9 #include <wx/wrapsizer.h>
+// wx2.9 #include <wx/wrapsizer.h>
 #include "../../../include/ocpn_plugin.h"
 
 #ifdef __OCPN__ANDROID__
@@ -71,53 +71,67 @@
 #include "iirfilter.h"
 
 #ifndef PI
-#define PI        3.1415926535897931160E0      /* pi */
+#define PI 3.1415926535897931160E0 /* pi */
 #endif
 
 class DashboardWindow;
 class DashboardWindowContainer;
 class DashboardInstrumentContainer;
 
-#define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
+#define DASHBOARD_TOOL_POSITION \
+  -1  // Request default positioning of toolbar tool
 
-#define gps_watchdog_timeout_ticks  10
-#define no_nav_watchdog_timeout_ticks 40    // SignalK motor & environ instr defaults 30 sec
-#define GEODESIC_RAD2DEG(r) ((r)*(180.0/M_PI))
-#define MS2KNOTS(r) ((r)*(1.9438444924406))
-#define KELVIN2C(r) ((r)-(273.15))
-#define PA2HPA(r) ((r)/(100))
-#define METERS2NM(r) ((r)/(1852))
+#define gps_watchdog_timeout_ticks 10
+#define no_nav_watchdog_timeout_ticks \
+  40  // SignalK motor & environ instr defaults 30 sec
+#define GEODESIC_RAD2DEG(r) ((r) * (180.0 / M_PI))
+#define MS2KNOTS(r) ((r) * (1.9438444924406))
+#define KELVIN2C(r) ((r) - (273.15))
+#define PA2HPA(r) ((r) / (100))
+#define METERS2NM(r) ((r) / (1852))
 
 #define wxFontPickerCtrl OCPNFontButton
 class OCPNFontButton;
 
-class DashboardWindowContainer
-{
-      public:
-            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString name, wxString caption, wxString orientation, wxArrayInt inst) {
-                  m_pDashboardWindow = dashboard_window; m_sName = name; m_sCaption = caption; m_sOrientation = orientation; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
+class DashboardWindowContainer {
+public:
+  DashboardWindowContainer(DashboardWindow *dashboard_window, wxString name,
+                           wxString caption, wxString orientation,
+                           wxArrayInt inst) {
+    m_pDashboardWindow = dashboard_window;
+    m_sName = name;
+    m_sCaption = caption;
+    m_sOrientation = orientation;
+    m_aInstrumentList = inst;
+    m_bIsVisible = false;
+    m_bIsDeleted = false;
+  }
 
-            ~DashboardWindowContainer(){}
-            DashboardWindow              *m_pDashboardWindow;
-            bool                          m_bIsVisible;
-            bool                          m_bIsDeleted;
-            bool                          m_bPersVisible;  // Persists visibility, even when Dashboard tool is toggled off.
-            wxString                      m_sName;
-            wxString                      m_sCaption;
-            wxString                      m_sOrientation;
-            wxArrayInt                    m_aInstrumentList;
+  ~DashboardWindowContainer() {}
+  DashboardWindow *m_pDashboardWindow;
+  bool m_bIsVisible;
+  bool m_bIsDeleted;
+  bool m_bPersVisible;  // Persists visibility, even when Dashboard tool is
+                        // toggled off.
+  wxString m_sName;
+  wxString m_sCaption;
+  wxString m_sOrientation;
+  wxArrayInt m_aInstrumentList;
 };
 
-class DashboardInstrumentContainer
-{
-      public:
-            DashboardInstrumentContainer(int id, DashboardInstrument *instrument, CapType capa){
-                  m_ID = id; m_pInstrument = instrument; m_cap_flag = capa; }
-            ~DashboardInstrumentContainer(){ delete m_pInstrument; }
+class DashboardInstrumentContainer {
+public:
+  DashboardInstrumentContainer(int id, DashboardInstrument *instrument,
+                               CapType capa) {
+    m_ID = id;
+    m_pInstrument = instrument;
+    m_cap_flag = capa;
+  }
+  ~DashboardInstrumentContainer() { delete m_pInstrument; }
 
-            DashboardInstrument    *m_pInstrument;
-            int                     m_ID;
-            CapType m_cap_flag;
+  DashboardInstrument *m_pInstrument;
+  int m_ID;
+  CapType m_cap_flag;
 };
 
 //    Dynamic arrays of pointers need explicit macros in wx261
@@ -133,239 +147,233 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-
-class dashboard_pi : public wxTimer, opencpn_plugin_16
-{
+class dashboard_pi : public wxTimer, opencpn_plugin_16 {
 public:
-      dashboard_pi(void *ppimgr);
-      ~dashboard_pi(void);
+  dashboard_pi(void *ppimgr);
+  ~dashboard_pi(void);
 
-//    The required PlugIn Methods
-      int Init(void);
-      bool DeInit(void);
+  //    The required PlugIn Methods
+  int Init(void);
+  bool DeInit(void);
 
-      void Notify();
+  void Notify();
 
-      int GetAPIVersionMajor();
-      int GetAPIVersionMinor();
-      int GetPlugInVersionMajor();
-      int GetPlugInVersionMinor();
-      wxBitmap *GetPlugInBitmap();
-      wxString GetCommonName();
-      wxString GetShortDescription();
-      wxString GetLongDescription();
+  int GetAPIVersionMajor();
+  int GetAPIVersionMinor();
+  int GetPlugInVersionMajor();
+  int GetPlugInVersionMinor();
+  wxBitmap *GetPlugInBitmap();
+  wxString GetCommonName();
+  wxString GetShortDescription();
+  wxString GetLongDescription();
 
-//    The optional method overrides
-      void SetNMEASentence(wxString &sentence);
-      void SetPositionFix(PlugIn_Position_Fix &pfix);
-      void SetCursorLatLon(double lat, double lon);
-      int GetToolbarToolCount(void);
-      void OnToolbarToolCallback(int id);
-      void ShowPreferencesDialog( wxWindow* parent );
-      void SetColorScheme(PI_ColorScheme cs);
-      void OnPaneClose( wxAuiManagerEvent& event );
-      void UpdateAuiStatus(void);
-      bool SaveConfig(void);
-      void PopulateContextMenu( wxMenu* menu );
-      void ShowDashboard( size_t id, bool visible );
-      int GetToolbarItemId(){ return m_toolbar_item_id; }
-      int GetDashboardWindowShownCount();
-      void SetPluginMessage(wxString &message_id, wxString &message_body);
+  //    The optional method overrides
+  void SetNMEASentence(wxString &sentence);
+  void SetPositionFix(PlugIn_Position_Fix &pfix);
+  void SetCursorLatLon(double lat, double lon);
+  int GetToolbarToolCount(void);
+  void OnToolbarToolCallback(int id);
+  void ShowPreferencesDialog(wxWindow *parent);
+  void SetColorScheme(PI_ColorScheme cs);
+  void OnPaneClose(wxAuiManagerEvent &event);
+  void UpdateAuiStatus(void);
+  bool SaveConfig(void);
+  void PopulateContextMenu(wxMenu *menu);
+  void ShowDashboard(size_t id, bool visible);
+  int GetToolbarItemId() { return m_toolbar_item_id; }
+  int GetDashboardWindowShownCount();
+  void SetPluginMessage(wxString &message_id, wxString &message_body);
 
 private:
-      bool LoadConfig(void);
-      void LoadFont(wxFont **target, wxString native_info);
+  bool LoadConfig(void);
+  void LoadFont(wxFont **target, wxString native_info);
 
-      void ApplyConfig(void);
-      void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
-      void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
-      void SendUtcTimeToAllInstruments( wxDateTime value );
+  void ApplyConfig(void);
+  void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
+  void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk,
+                                   SAT_INFO sats[4]);
+  void SendUtcTimeToAllInstruments(wxDateTime value);
 
-      void CalculateAndUpdateTWDS( double awsKnots, double awaDegrees);
+  void CalculateAndUpdateTWDS(double awsKnots, double awaDegrees);
 
-      void ParseSignalK( wxString &msg);
-      void handleSKUpdate(wxJSONValue &update);
-      void updateSKItem(wxJSONValue &item, wxString &sfixtime);
-      wxString          m_self;
+  void ParseSignalK(wxString &msg);
+  void handleSKUpdate(wxJSONValue &update);
+  void updateSKItem(wxJSONValue &item, wxString &sfixtime);
+  wxString m_self;
 
-      wxFileConfig     *m_pconfig;
-      wxAuiManager     *m_pauimgr;
-      int              m_toolbar_item_id;
+  wxFileConfig *m_pconfig;
+  wxAuiManager *m_pauimgr;
+  int m_toolbar_item_id;
 
-      wxArrayOfDashboard       m_ArrayOfDashboardWindow;
-      int               m_show_id;
-      int               m_hide_id;
+  wxArrayOfDashboard m_ArrayOfDashboardWindow;
+  int m_show_id;
+  int m_hide_id;
 
-      NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
-      short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT;
-      short                mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
-      short                mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
-      //Prio: Pos from O, SK gnss.satellites, GGA sats in use, SK gnss satellitesinView, GSV sats in view
-      short                mPriSatUsed;
-      double               mVar;
-      // FFU
-      int                  mSatsInView;
-      double               mHdm;
-      wxDateTime           mUTCDateTime;
-      int                  m_config_version;
-      wxString             m_VDO_accumulator;
-      int                  mHDx_Watchdog;
-      int                  mHDT_Watchdog;
-      int                  mSatsUsed_Wdog;
-      int                  mSatStatus_Wdog;
-      int                  mVar_Watchdog;
-      int                  mMWVA_Watchdog;
-      int                  mMWVT_Watchdog;
-      int                  mDPT_DBT_Watchdog;
-      int                  mSTW_Watchdog;
-      int                  mWTP_Watchdog;
-      int                  mRSA_Watchdog;
-      int                  mVMG_Watchdog;
-      int                  mUTC_Watchdog;
-      int                  mATMP_Watchdog;
-      int                  mWDN_Watchdog;
-      int                  mMDA_Watchdog;
-      int                  mPITCH_Watchdog;
-      int                  mHEEL_Watchdog;
+  NMEA0183 m_NMEA0183;  // Used to parse NMEA Sentences
+  short mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT;
+  short mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
+  short mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
+  // Prio: Pos from O, SK gnss.satellites, GGA sats in use, SK gnss
+  // satellitesinView, GSV sats in view
+  short mPriSatUsed;
+  double mVar;
+  // FFU
+  int mSatsInView;
+  double mHdm;
+  wxDateTime mUTCDateTime;
+  int m_config_version;
+  wxString m_VDO_accumulator;
+  int mHDx_Watchdog;
+  int mHDT_Watchdog;
+  int mSatsUsed_Wdog;
+  int mSatStatus_Wdog;
+  int mVar_Watchdog;
+  int mMWVA_Watchdog;
+  int mMWVT_Watchdog;
+  int mDPT_DBT_Watchdog;
+  int mSTW_Watchdog;
+  int mWTP_Watchdog;
+  int mRSA_Watchdog;
+  int mVMG_Watchdog;
+  int mUTC_Watchdog;
+  int mATMP_Watchdog;
+  int mWDN_Watchdog;
+  int mMDA_Watchdog;
+  int mPITCH_Watchdog;
+  int mHEEL_Watchdog;
 
-      iirfilter            mSOGFilter;
-      iirfilter            mCOGFilter;
-//protected:
-//      DECLARE_EVENT_TABLE();
+  iirfilter mSOGFilter;
+  iirfilter mCOGFilter;
+  // protected:
+  //      DECLARE_EVENT_TABLE();
 };
 
-class DashboardPreferencesDialog : public wxDialog
-{
+class DashboardPreferencesDialog : public wxDialog {
 public:
-      DashboardPreferencesDialog( wxWindow *pparent, wxWindowID id, wxArrayOfDashboard config );
-      ~DashboardPreferencesDialog() {}
+  DashboardPreferencesDialog(wxWindow *pparent, wxWindowID id,
+                             wxArrayOfDashboard config);
+  ~DashboardPreferencesDialog() {}
 
-      void OnCloseDialog(wxCloseEvent& event);
-      void OnDashboardSelected(wxListEvent& event);
-      void OnDashboardAdd(wxCommandEvent& event);
-      void OnDashboardDelete(wxCommandEvent& event);
-      void OnInstrumentSelected(wxListEvent& event);
-      void OnInstrumentAdd(wxCommandEvent& event);
-      void OnInstrumentEdit(wxCommandEvent& event);
-      void OnInstrumentDelete(wxCommandEvent& event);
-      void OnInstrumentUp(wxCommandEvent& event);
-      void OnInstrumentDown(wxCommandEvent& event);
-      void SaveDashboardConfig();
-      void RecalculateSize( void );
+  void OnCloseDialog(wxCloseEvent &event);
+  void OnDashboardSelected(wxListEvent &event);
+  void OnDashboardAdd(wxCommandEvent &event);
+  void OnDashboardDelete(wxCommandEvent &event);
+  void OnInstrumentSelected(wxListEvent &event);
+  void OnInstrumentAdd(wxCommandEvent &event);
+  void OnInstrumentEdit(wxCommandEvent &event);
+  void OnInstrumentDelete(wxCommandEvent &event);
+  void OnInstrumentUp(wxCommandEvent &event);
+  void OnInstrumentDown(wxCommandEvent &event);
+  void SaveDashboardConfig();
+  void RecalculateSize(void);
 
-      wxArrayOfDashboard            m_Config;
-      wxFontPickerCtrl             *m_pFontPickerTitle;
-      wxFontPickerCtrl             *m_pFontPickerData;
-      wxFontPickerCtrl             *m_pFontPickerLabel;
-      wxFontPickerCtrl             *m_pFontPickerSmall;
-      wxSpinCtrl                   *m_pSpinSpeedMax;
-      wxSpinCtrl                   *m_pSpinCOGDamp;
-      wxSpinCtrl                   *m_pSpinSOGDamp;
-      wxChoice                     *m_pChoiceUTCOffset;
-      wxChoice                     *m_pChoiceSpeedUnit;
-      wxChoice                     *m_pChoiceDepthUnit;
-      wxSpinCtrlDouble             *m_pSpinDBTOffset;
-      wxChoice                     *m_pChoiceDistanceUnit;
-      wxChoice                     *m_pChoiceWindSpeedUnit;
-      wxCheckBox                   *m_pUseTrueWinddata;
-      wxChoice                     *m_pChoiceTempUnit;
+  wxArrayOfDashboard m_Config;
+  wxFontPickerCtrl *m_pFontPickerTitle;
+  wxFontPickerCtrl *m_pFontPickerData;
+  wxFontPickerCtrl *m_pFontPickerLabel;
+  wxFontPickerCtrl *m_pFontPickerSmall;
+  wxSpinCtrl *m_pSpinSpeedMax;
+  wxSpinCtrl *m_pSpinCOGDamp;
+  wxSpinCtrl *m_pSpinSOGDamp;
+  wxChoice *m_pChoiceUTCOffset;
+  wxChoice *m_pChoiceSpeedUnit;
+  wxChoice *m_pChoiceDepthUnit;
+  wxSpinCtrlDouble *m_pSpinDBTOffset;
+  wxChoice *m_pChoiceDistanceUnit;
+  wxChoice *m_pChoiceWindSpeedUnit;
+  wxCheckBox *m_pUseTrueWinddata;
+  wxChoice *m_pChoiceTempUnit;
 
 private:
-      void UpdateDashboardButtonsState(void);
-      void UpdateButtonsState(void);
-      int                           curSel;
-      wxListCtrl                   *m_pListCtrlDashboards;
-      wxBitmapButton               *m_pButtonAddDashboard;
-      wxBitmapButton               *m_pButtonDeleteDashboard;
-      wxPanel                      *m_pPanelDashboard;
-      wxTextCtrl                   *m_pTextCtrlCaption;
-      wxCheckBox                   *m_pCheckBoxIsVisible;
-      wxChoice                     *m_pChoiceOrientation;
-      wxListCtrl                   *m_pListCtrlInstruments;
-      wxButton                     *m_pButtonAdd;
-      wxButton                     *m_pButtonEdit;
-      wxButton                     *m_pButtonDelete;
-      wxButton                     *m_pButtonUp;
-      wxButton                     *m_pButtonDown;
+  void UpdateDashboardButtonsState(void);
+  void UpdateButtonsState(void);
+  int curSel;
+  wxListCtrl *m_pListCtrlDashboards;
+  wxBitmapButton *m_pButtonAddDashboard;
+  wxBitmapButton *m_pButtonDeleteDashboard;
+  wxPanel *m_pPanelDashboard;
+  wxTextCtrl *m_pTextCtrlCaption;
+  wxCheckBox *m_pCheckBoxIsVisible;
+  wxChoice *m_pChoiceOrientation;
+  wxListCtrl *m_pListCtrlInstruments;
+  wxButton *m_pButtonAdd;
+  wxButton *m_pButtonEdit;
+  wxButton *m_pButtonDelete;
+  wxButton *m_pButtonUp;
+  wxButton *m_pButtonDown;
 };
 
-class AddInstrumentDlg : public wxDialog
-{
+class AddInstrumentDlg : public wxDialog {
 public:
-      AddInstrumentDlg(wxWindow *pparent, wxWindowID id);
-      ~AddInstrumentDlg() {}
+  AddInstrumentDlg(wxWindow *pparent, wxWindowID id);
+  ~AddInstrumentDlg() {}
 
-      unsigned int GetInstrumentAdded();
+  unsigned int GetInstrumentAdded();
 
 private:
-      wxListCtrl*                   m_pListCtrlInstruments;
+  wxListCtrl *m_pListCtrlInstruments;
 };
 
-enum
-{
-      ID_DASHBOARD_WINDOW
+enum { ID_DASHBOARD_WINDOW };
+
+enum {
+  ID_DASH_PREFS = 999,
+  ID_DASH_VERTICAL,
+  ID_DASH_HORIZONTAL,
+  ID_DASH_RESIZE,
+  ID_DASH_UNDOCK
 };
 
-enum
-{
-      ID_DASH_PREFS = 999,
-      ID_DASH_VERTICAL,
-      ID_DASH_HORIZONTAL,
-      ID_DASH_RESIZE,
-      ID_DASH_UNDOCK
-};
-
-class DashboardWindow : public wxWindow
-{
+class DashboardWindow : public wxWindow {
 public:
-    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin,
-             int orient, DashboardWindowContainer* mycont );
-    ~DashboardWindow();
+  DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr,
+                  dashboard_pi *plugin, int orient,
+                  DashboardWindowContainer *mycont);
+  ~DashboardWindow();
 
-    void SetColorScheme( PI_ColorScheme cs );
-    void SetSizerOrientation( int orient );
-    int GetSizerOrientation();
-    void OnSize( wxSizeEvent& evt );
-    void OnContextMenu( wxContextMenuEvent& evt );
-    void OnContextMenuSelect( wxCommandEvent& evt );
+  void SetColorScheme(PI_ColorScheme cs);
+  void SetSizerOrientation(int orient);
+  int GetSizerOrientation();
+  void OnSize(wxSizeEvent &evt);
+  void OnContextMenu(wxContextMenuEvent &evt);
+  void OnContextMenuSelect(wxCommandEvent &evt);
 
-    void OnMouseEvent( wxMouseEvent& event );
+  void OnMouseEvent(wxMouseEvent &event);
 
 #ifdef __OCPN__ANDROID__
-    void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
-    void OnEvtPanGesture( wxQT_PanGestureEvent &event);
+  void OnEvtPinchGesture(wxQT_PinchGestureEvent &event);
+  void OnEvtPanGesture(wxQT_PanGestureEvent &event);
 #endif
 
-    bool isInstrumentListEqual( const wxArrayInt& list );
-    void SetInstrumentList( wxArrayInt list );
-    void SendSentenceToAllInstruments( DASH_CAP st, double value, wxString unit );
-    void SendSatInfoToAllInstruments( int cnt, int seq, wxString talk, SAT_INFO sats[4] );
-    void SendUtcTimeToAllInstruments( wxDateTime value );
-    void ChangePaneOrientation( int orient, bool updateAUImgr );
-/*TODO: OnKeyPress pass event to main window or disable focus*/
+  bool isInstrumentListEqual(const wxArrayInt &list);
+  void SetInstrumentList(wxArrayInt list);
+  void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
+  void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk,
+                                   SAT_INFO sats[4]);
+  void SendUtcTimeToAllInstruments(wxDateTime value);
+  void ChangePaneOrientation(int orient, bool updateAUImgr);
+  /*TODO: OnKeyPress pass event to main window or disable focus*/
 
-    DashboardWindowContainer* m_Container;
+  DashboardWindowContainer *m_Container;
 
-    bool m_binPinch;
-    bool m_binPan;
+  bool m_binPinch;
+  bool m_binPan;
 
-    wxPoint m_resizeStartPoint;
-    wxSize m_resizeStartSize;
-    bool m_binResize;
-    bool m_binResize2;
+  wxPoint m_resizeStartPoint;
+  wxSize m_resizeStartSize;
+  bool m_binResize;
+  bool m_binResize2;
 
 private:
-      wxAuiManager         *m_pauimgr;
-      dashboard_pi*         m_plugin;
+  wxAuiManager *m_pauimgr;
+  dashboard_pi *m_plugin;
 
-//wx2.9      wxWrapSizer*          itemBoxSizer;
-      wxBoxSizer*          itemBoxSizer;
-      wxArrayOfInstrument  m_ArrayOfInstrument;
+  // wx2.9      wxWrapSizer*          itemBoxSizer;
+  wxBoxSizer *itemBoxSizer;
+  wxArrayOfInstrument m_ArrayOfInstrument;
 
-      wxButton*            m_tButton;
+  wxButton *m_tButton;
 };
-
-
 
 #include "wx/button.h"
 #include "wx/fontdata.h"
@@ -374,69 +382,58 @@ private:
 // OCPNFontButton: a button which brings up a wxFontDialog
 //-----------------------------------------------------------------------------
 
-class OCPNFontButton : public wxButton
-{
+class OCPNFontButton : public wxButton {
 public:
-    OCPNFontButton() {}
-    OCPNFontButton(wxWindow *parent,
-                        wxWindowID id,
-                        const wxFont &initial = wxNullFont,
-                        const wxPoint& pos = wxDefaultPosition,
-                        const wxSize& size = wxDefaultSize,
-                        long style = wxFONTBTN_DEFAULT_STYLE,
-                        const wxValidator& validator = wxDefaultValidator,
-                        const wxString& name = wxFontPickerWidgetNameStr)
-    {
-        Create(parent, id, initial, pos, size, style, validator, name);
-    }
+  OCPNFontButton() {}
+  OCPNFontButton(wxWindow *parent, wxWindowID id,
+                 const wxFont &initial = wxNullFont,
+                 const wxPoint &pos = wxDefaultPosition,
+                 const wxSize &size = wxDefaultSize,
+                 long style = wxFONTBTN_DEFAULT_STYLE,
+                 const wxValidator &validator = wxDefaultValidator,
+                 const wxString &name = wxFontPickerWidgetNameStr) {
+    Create(parent, id, initial, pos, size, style, validator, name);
+  }
 
-    virtual wxColour GetSelectedColour() const
-    { return m_data.GetColour(); }
+  virtual wxColour GetSelectedColour() const { return m_data.GetColour(); }
 
-    virtual void SetSelectedColour(const wxColour &colour)
-    { m_data.SetColour(colour); UpdateFont(); }
+  virtual void SetSelectedColour(const wxColour &colour) {
+    m_data.SetColour(colour);
+    UpdateFont();
+  }
 
-    virtual ~OCPNFontButton() {}
+  virtual ~OCPNFontButton() {}
 
+public:  // API extensions specific for OCPNFontButton
+  // user can override this to init font data in a different way
+  virtual void InitFontData();
 
-    public:     // API extensions specific for OCPNFontButton
+  // returns the font data shown in wxFontDialog
+  wxFontData *GetFontData() { return &m_data; }
 
-    // user can override this to init font data in a different way
-    virtual void InitFontData();
-
-    // returns the font data shown in wxFontDialog
-    wxFontData *GetFontData() { return &m_data; }
-
-    // get the font chosen
-    wxFont GetSelectedFont() const { return m_selectedFont; }
-
+  // get the font chosen
+  wxFont GetSelectedFont() const { return m_selectedFont; }
 
 public:
+  bool Create(wxWindow *parent, wxWindowID id,
+              const wxFont &initial = *wxNORMAL_FONT,
+              const wxPoint &pos = wxDefaultPosition,
+              const wxSize &size = wxDefaultSize,
+              long style = wxFONTBTN_DEFAULT_STYLE,
+              const wxValidator &validator = wxDefaultValidator,
+              const wxString &name = wxFontPickerWidgetNameStr);
 
-    bool Create(wxWindow *parent,
-                wxWindowID id,
-                const wxFont &initial = *wxNORMAL_FONT,
-                const wxPoint& pos = wxDefaultPosition,
-                const wxSize& size = wxDefaultSize,
-                long style = wxFONTBTN_DEFAULT_STYLE,
-                const wxValidator& validator = wxDefaultValidator,
-                const wxString& name = wxFontPickerWidgetNameStr);
-
-    void OnButtonClick(wxCommandEvent &);
-
-
+  void OnButtonClick(wxCommandEvent &);
 
 protected:
+  void UpdateFont();
 
-    void UpdateFont();
+  wxFontData m_data;
 
-    wxFontData m_data;
-
-    wxFont m_selectedFont;
+  wxFont m_selectedFont;
 
 private:
-    DECLARE_DYNAMIC_CLASS(OCPNFontButton)
+  DECLARE_DYNAMIC_CLASS(OCPNFontButton)
 };
 
 #endif
-
