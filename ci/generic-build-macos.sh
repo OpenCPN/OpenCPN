@@ -12,15 +12,28 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 export PATH=/opt/local/bin:$PATH
 
 # allow caching of macports state in $HOME    "/Users/distiller/project/opt_local_cache"
-sudo mkdir -p ${HOME}/project/opt_local_cache
-sudo ln -s ${HOME}/project/opt_local_cache /opt/local
+#sudo mkdir -p ${HOME}/project/opt_local_cache
+#sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 
-ls ${HOME}/project/opt_local_cache || echo "OK"
-ls ${HOME}/project/opt_local_cache/bin || echo "OK"
+curl -k -o /tmp/opt_macports.tar.xz  \
+    https://download.opencpn.org/s/FpPXeWqEif8cLCT/download
+sudo tar -C / -xJf /tmp/opt_macports.tar.xz
+
+#ls ${HOME}/project/opt_local_cache || echo "OK"
+#ls ${HOME}/project/opt_local_cache/bin || echo "OK"
+
+#sudo mkdir -p /opt/local/share/curl
+#sudo cp buildosx/cacert.pem /opt/local/share/curl/curl-ca-bundle.crt
+#sudo mkdir -p /opt/local/etc/openssl
+#sudo ln -s /opt/local/share/curl/curl-ca-bundle.crt /opt/local/etc/openssl/cert.pem
+
+#openssl x509 -in /opt/local/share/curl/curl-ca-bundle.crt -out mycert.pem -outform PEM
+#sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "mycert.pem"
+#sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "buildosx/ISRGROOTX1.pem"
 
 # Check if the cache is with us. If not, re-install macports
 port info zstd || {
-    curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
+    curl -k -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
     tar xf MacPorts-2.7.1.tar.bz2
     cd MacPorts-2.7.1/
     ./configure
@@ -39,37 +52,70 @@ pushd buildosx/macports/ports
   portindex
 popd
 
-port deactivate OCPN_curl || {
+sudo port -fN deactivate OCPN_curl || {
   echo "OK"
 }
 
 # Install curl to get the TLS certificate bundle
 # then immediately deactivate curl to make room for OCPN_curl later
 sudo port -q install curl
-sudo port deactivate curl
+sudo port -fN deactivate curl
 
-sudo port deactivate openssl
+#sudo port -fN deactivate openssl
 
 
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
 
 sudo port -q install OCPN_openssl
-sudo port -q install OCPN_curl
+sudo port -fq install OCPN_curl
 sudo port -q install OCPN_libpixman
-sudo port -q install OCPN_cairo
+
+sudo port -fN deactivate OCPN_curl
+sudo port -fq install OCPN_cairo
+
 sudo port -q install zstd
+
+#sudo port -fN deactivate libarchive
 sudo port -q install OCPN_libarchive
 
 sudo port -q -f install OCPN_libpng
 
+#sudo port -fN deactivate curl
+sudo port -q activate OCPN_curl
+
+# Install curl to get the TLS certificate bundle
+# then immediately deactivate curl to make room for OCPN_curl later
+#sudo port -q install curl
+#sudo port -N deactivate curl
+
+#sudo port -N deactivate python39
+#sudo port -N deactivate openssl
+
+#sudo port -q install curl-ca-bundle
+
+# install the local port libraries
+#  n.b.  ORDER IS IMPORTANT
+
+#sudo port -q install OCPN_openssl
+#sudo port -q install OCPN_cairo
+
+#sudo port -N deactivate libpixman
+#sudo port -q install OCPN_libpixman
+
+#sudo port -q install zstd
+#sudo port -q install OCPN_libarchive
+#sudo port -q -f install OCPN_libpng
+
+#sudo port -N deactivate curl
+#sudo port -q install OCPN_curl
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
 
 # Check if the cache is with us. If not, re-install brew.
-brew list --versions wget || {
+brew list --versions python3 || {
     brew update-reset
     # As indicated by warning message in CircleCI build log:
     git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core" \
@@ -78,7 +124,7 @@ brew list --versions wget || {
         fetch --unshallow
 }
 
-for pkg in cmake python3 wget  ; do
+for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
@@ -101,13 +147,13 @@ else
     brew install --cask packages
 fi
 
-wget -q https://download.opencpn.org/s/MCiRiq4fJcKD56r/download \
-    -O /tmp/wx315_opencpn50_macos1010.tar.xz
-tar -C /tmp -xJf /tmp/wx315_opencpn50_macos1010.tar.xz
+#wget -q https://download.opencpn.org/s/MCiRiq4fJcKD56r/download \
+#    -O /tmp/wx315_opencpn50_macos1010.tar.xz
 
-#wget -q https://download.opencpn.org/s/rwoCNGzx6G34tbC/download \
-#    -O /tmp/wx312B_opencpn50_macos109.tar.xz
-#tar -C /tmp -xJf /tmp/wx312B_opencpn50_macos109.tar.xz
+curl -k -o /tmp/wx315_opencpn50_macos1010.tar.xz  \
+    https://download.opencpn.org/s/MCiRiq4fJcKD56r/download
+
+tar -C /tmp -xJf /tmp/wx315_opencpn50_macos1010.tar.xz
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
@@ -116,7 +162,7 @@ echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
 mkdir build
 cd build
 test -n "$TRAVIS_TAG" && CI_BUILD=OFF || CI_BUILD=ON
-cmake -DOCPN_CI_BUILD=$CI_BUILD \
+cmake -DOCPN_CI_BUILD=OFF \
   -DOCPN_VERBOSE=ON \
   -DOCPN_USE_LIBCPP=ON \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
@@ -134,7 +180,7 @@ make install # Dunno why the second is needed but it is, otherwise
 sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 
 make create-pkg
-make create-dmg
+#make create-dmg
 
 # Install the stuff needed by upload.
-pip3 install -q cloudsmith-cli
+sudo pip3 install -q cloudsmith-cli

@@ -29,6 +29,7 @@
 //#include "chcanv.h"
 #include "navutil.h"
 #include "gui_lib.h"
+#include <wx/textwrapper.h>
 
 extern ColorScheme global_color_scheme;
 extern S57QueryDialog* g_pObjectQueryDialog;
@@ -38,6 +39,33 @@ extern int g_S57_extradialog_sx;
 extern int g_S57_extradialog_sy;
 extern bool g_bresponsive;
 extern bool g_btouch;
+
+// Private class implementations
+class MessageHardBreakWrapper : public wxTextWrapper {
+public:
+  MessageHardBreakWrapper(wxWindow* win, const wxString& text, int widthMax) {
+    m_lineCount = 0;
+    Wrap(win, text, widthMax);
+  }
+  wxString const& GetWrapped() const { return m_wrapped; }
+  int const GetLineCount() const { return m_lineCount; }
+  wxArrayString GetLineArray() { return m_array; }
+
+protected:
+  virtual void OnOutputLine(const wxString& line) {
+    m_wrapped += line;
+    m_array.Add(line);
+  }
+  virtual void OnNewLine() {
+    m_wrapped += '\n';
+    m_lineCount++;
+  }
+
+private:
+  wxString m_wrapped;
+  int m_lineCount;
+  wxArrayString m_array;
+};
 
 IMPLEMENT_CLASS(S57QueryDialog, wxFrame)
 // S57QueryDialog event table definition
@@ -201,7 +229,32 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
       GetParent(), wxID_ANY, _("Extra Object Info"),
       wxPoint(GetPosition().x + 20, GetPosition().y + 20),
       wxSize(g_S57_extradialog_sx, g_S57_extradialog_sy));
-  ExtraObjInfoDlg->m_phtml->LoadPage(event.GetLinkInfo().GetHref());
+
+  // Check te kind of file, load text files serial and pictures direct
+  wxFileName filen(event.GetLinkInfo().GetHref());
+  wxString Extensions = wxString("txt,html,rtf");
+
+  if (Extensions.Find(filen.GetExt().Lower()) == wxNOT_FOUND)
+    ExtraObjInfoDlg->m_phtml->LoadPage(event.GetLinkInfo().GetHref());
+  else {
+    wxTextFile txf(filen.GetFullPath());
+    if (txf.Open()) {
+      wxString contents;
+      wxString str;
+      str = txf.GetFirstLine();
+      do {
+        MessageHardBreakWrapper wrapper(ExtraObjInfoDlg->m_phtml, str,
+                                        m_phtml->GetSize().x * 9 / 10);
+        contents += wrapper.GetWrapped();
+        contents += "<br>";
+
+        str = txf.GetNextLine();
+      } while (!txf.Eof());
+
+      ExtraObjInfoDlg->m_phtml->SetPage(contents);
+    }
+  }
+
   ExtraObjInfoDlg->SetColorScheme();
 
 #ifdef __OCPN__ANDROID__

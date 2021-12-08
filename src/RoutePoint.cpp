@@ -500,6 +500,7 @@ void RoutePoint::ReLoadIcon(void) {
 #endif
 
   m_IconScaleFactor = -1;  // Force scaled icon reload
+  m_pMarkFont = 0;         // Force Font color reload
 }
 
 bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz) {

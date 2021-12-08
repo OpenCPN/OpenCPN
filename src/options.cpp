@@ -128,10 +128,6 @@ extern GLuint g_raster_format;
 #include "config_var.h"
 #include "ser_ports.h"
 
-#ifdef __linux__
-#include "udev_rule_mgr.h"
-#endif
-
 #if !defined(__WXOSX__)
 #define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
 #else
@@ -394,7 +390,7 @@ static int lang_list[] = {
     //    wxLANGUAGE_CHINESE_SINGAPORE,
     wxLANGUAGE_CHINESE_TAIWAN, wxLANGUAGE_CORSICAN, wxLANGUAGE_CROATIAN,
     wxLANGUAGE_CZECH, wxLANGUAGE_DANISH, wxLANGUAGE_DUTCH,
-    wxLANGUAGE_DUTCH_BELGIAN, wxLANGUAGE_ENGLISH, wxLANGUAGE_ENGLISH_UK,
+    wxLANGUAGE_DUTCH_BELGIAN, wxLANGUAGE_ENGLISH_UK,
     wxLANGUAGE_ENGLISH_US, wxLANGUAGE_ENGLISH_AUSTRALIA,
     wxLANGUAGE_ENGLISH_BELIZE, wxLANGUAGE_ENGLISH_BOTSWANA,
     wxLANGUAGE_ENGLISH_CANADA, wxLANGUAGE_ENGLISH_CARIBBEAN,
@@ -1600,6 +1596,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
     /* Only remove the tab from listbook, we still have original content in
      * {page} */
     m_pListbook->InsertPage(parent, nb, toptitle, FALSE, parent);
+    m_pListbook->SetSelection( 0 );   // avoid gtk assertions
     m_pListbook->RemovePage(parent + 1);
     wxString previoustitle = page->GetName();
     page->Reparent(nb);
@@ -1621,6 +1618,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
     sw->SetScrollRate(m_scrollRate, m_scrollRate);
     wxString toptitle = m_pListbook->GetPageText(parent);
     m_pListbook->InsertPage(parent, sw, toptitle, FALSE, parent);
+    m_pListbook->SetSelection( 0 );   // avoid gtk assertions
     m_pListbook->DeletePage(parent + 1);
   }
 
@@ -2994,9 +2992,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 #endif
   FillSourceList();
 
-  ShowNMEACommon(FALSE);
-  ShowNMEASerial(FALSE);
-  ShowNMEANet(FALSE);
+  ShowNMEACommon(true);
+  ShowNMEASerial(true);
+  ShowNMEANet(true);
   connectionsaved = TRUE;
 }
 
@@ -3182,7 +3180,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   dispOptions->Add(shipToActiveGrid, 0, wxALL | wxEXPAND, border_size);
   pShowshipToActive =
       new wxCheckBox(itemPanelShip, wxID_ANY,
-                     _("Show direct route from Own ship to Active point"));
+                     _("Show direction to Active Waypoint"));
   shipToActiveGrid->Add(pShowshipToActive, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
                         border_size);
 
@@ -3625,7 +3623,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   pActiveChartsList =
       new wxListCtrl(chartPanelWin, ID_LISTBOX, wxDefaultPosition,
-                     wxSize(100, -1), wxLC_REPORT | wxLC_NO_HEADER);
+                     wxSize(100, -1), wxLC_LIST | wxLC_NO_HEADER);
 #ifdef __OCPN__ANDROID__
   pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
@@ -3644,13 +3642,15 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   if (pActiveChartsList) {
     pActiveChartsList->DeleteAllItems();
 
-    // Add first column
-    wxListItem col0;
-    col0.SetId(0);
-    col0.SetText(_(""));
-    col0.SetAlign(wxLIST_FORMAT_LEFT);
-    col0.SetWidth(500);
-    pActiveChartsList->InsertColumn(0, col0);
+    // Add first column if in LC_REPORT mode
+    if (pActiveChartsList->InReportView()){
+      wxListItem col0;
+      col0.SetId(0);
+      col0.SetText(_(""));
+      col0.SetAlign(wxLIST_FORMAT_LEFT);
+      col0.SetWidth(500);
+      pActiveChartsList->InsertColumn(0, col0);
+    }
 
     for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
       wxString dirname = m_CurrentDirList[i].fullpath;
@@ -5814,8 +5814,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer1->Add(m_pCheck_AnchorAudio, 1, wxALL, border_size);
 
     m_anchorAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_anchorAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_anchorwatch_sound_file));
+    m_anchorAudioFileNameText->SetLabel( " " + _("Audio file name:") + " " +
+                g_anchorwatch_sound_file);
     StaticBoxSizer1->Add(m_anchorAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer1 = new wxFlexGridSizer(2);
@@ -5849,8 +5849,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer2->Add(m_pCheck_AISAudio, 1, wxALL, border_size);
 
     m_aisAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_aisAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_AIS_sound_file));
+    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+            g_AIS_sound_file);
     StaticBoxSizer2->Add(m_aisAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer2 = new wxFlexGridSizer(2);
@@ -5880,8 +5880,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer3->Add(m_pCheck_SARTAudio, 1, wxALL, border_size);
 
     m_sartAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_sartAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_SART_sound_file));
+    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+            g_SART_sound_file);
     StaticBoxSizer3->Add(m_sartAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer3 = new wxFlexGridSizer(2);
@@ -5912,8 +5912,8 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StaticBoxSizer4->Add(m_pCheck_DSCAudio, 1, wxALL, border_size);
 
     m_dscAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_dscAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_DSC_sound_file));
+    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+            g_DSC_sound_file);
     StaticBoxSizer4->Add(m_dscAudioFileNameText, 0, wxLEFT, border_size);
 
     wxFlexGridSizer* soundSizer4 = new wxFlexGridSizer(2);
@@ -8021,7 +8021,8 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
 #ifdef __linux__
-  CheckSerialAccess(this, pConnectionParams->Port.ToStdString());
+  if (pConnectionParams->Type == SERIAL)
+    CheckSerialAccess(this, pConnectionParams->Port.ToStdString());
 #endif
 
   if ((pConnectionParams->Type != INTERNAL_GPS) &&
@@ -8561,7 +8562,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
     assert(itemIndex >= 0);
     OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(itemIndex));
-    if (pOLE->nViz != ps57CtlListBox->IsChecked(iPtr)) bUserStdChange = true;
+    if (pOLE->nViz != (int)(ps57CtlListBox->IsChecked(iPtr))) bUserStdChange = true;
     pOLE->nViz = ps57CtlListBox->IsChecked(iPtr);
   }
 
@@ -9366,6 +9367,8 @@ void options::DoOnPageChange(size_t page) {
   }
 
   else if (m_pageUI == i) {  // 5 is the index of "User Interface" page
+    if(!m_itemLangListBox)
+      return;
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 
     if (!m_bVisitLang) {
@@ -9433,7 +9436,8 @@ void options::DoOnPageChange(size_t page) {
             wxString s0 =
                 wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
             wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-            if (wxNOT_FOUND == lang_array.Index(s0)) lang_array.Add(s0);
+            if (wxNOT_FOUND == lang_array.Index(s0))
+              lang_array.Add(s0);
           }
         }
       }
@@ -9613,8 +9617,8 @@ void options::OnButtonSelectAnchorSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_anchorwatch_sound_file = g_Platform->NormalizePath(sel_file);
-    m_anchorAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_anchorwatch_sound_file));
+    m_anchorAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_anchorwatch_sound_file);
     g_anchorwatch_sound->Stop();
   }
 }
@@ -9636,8 +9640,8 @@ void options::OnButtonSelectDSCSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_DSC_sound_file = g_Platform->NormalizePath(sel_file);
-    m_dscAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_DSC_sound_file));
+    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_DSC_sound_file);
   }
 }
 
@@ -9658,8 +9662,8 @@ void options::OnButtonSelectSARTSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_SART_sound_file = g_Platform->NormalizePath(sel_file);
-    m_sartAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_SART_sound_file));
+    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_SART_sound_file);
   }
 }
 
@@ -9680,8 +9684,8 @@ void options::OnButtonSelectAISSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_AIS_sound_file = g_Platform->NormalizePath(sel_file);
-    m_aisAudioFileNameText->SetLabel(
-        _(" Audio file name: " + g_AIS_sound_file));
+    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+        g_AIS_sound_file);
   }
 }
 
@@ -9784,6 +9788,9 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   } else if (lang_canonical == _T("he_IL")) {
     dir_suffix = _T("he_IL");
     return_string = wxString("Hebrew", wxConvUTF8);
+  } else if (lang_canonical == _T("en_GB")) {
+    dir_suffix = _T("en_GB");
+    return_string = wxString("English (U.K.)", wxConvUTF8);
   } else {
     dir_suffix = lang_canonical;
     const wxLanguageInfo* info = wxLocale::FindLanguageInfo(lang_canonical);
@@ -9928,7 +9935,11 @@ void ChartGroupsUI::PopulateTreeCtrl(wxTreeCtrl* ptc,
       // wxWidgets bug workaraound (Ticket #10085)
       ptc->SetItemText(id, dirname);
       if (pFont) ptc->SetItemFont(id, *pFont);
+
+      // On MacOS, use the default system dialog color, to honor Dark mode.
+#ifndef __WXOSX__
       ptc->SetItemTextColour(id, col);
+#endif
       ptc->SetItemHasChildren(id);
     }
   }
@@ -10751,8 +10762,10 @@ void options::SetConnectionParams(ConnectionParams* cp) {
 }
 
 void options::SetDefaultConnectionParams(void) {
-  m_comboPort->Select(0);
-  m_comboPort->SetValue(wxEmptyString);
+  if (m_comboPort && !m_comboPort->IsListEmpty()){
+    m_comboPort->Select(0);
+    m_comboPort->SetValue(wxEmptyString);  // These two broke it
+  }
   m_cbCheckCRC->SetValue(TRUE);
   m_cbGarminHost->SetValue(FALSE);
   m_cbInput->SetValue(TRUE);
@@ -10772,6 +10785,10 @@ void options::SetDefaultConnectionParams(void) {
 
   bool bserial = TRUE;
 #ifdef __WXGTK__
+  bserial = FALSE;
+#endif
+
+#ifdef __WXOSX__
   bserial = FALSE;
 #endif
 
@@ -10875,12 +10892,14 @@ void options::UpdateSourceList(bool bResort) {
 }
 
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
+
   //  Unselect all panels
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
     g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected(false);
 
   connectionsaved = FALSE;
   SetDefaultConnectionParams();
+
   m_sbConnEdit->SetLabel(_("Configure new connection"));
 
   m_buttonRemove->Hide();  // Disable();

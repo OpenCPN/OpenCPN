@@ -131,11 +131,14 @@ void SignalKEventHandler::updateItem(wxJSONValue &item,
     {
       if (g_priSats >= 3) updateGnssSatellites(value, sfixtime);
     } else if (update_path == _T("navigation.headingTrue")) {
-      updateHeadingTrue(value, sfixtime);
+      if(!value.IsNull())
+        updateHeadingTrue(value, sfixtime);
     } else if (update_path == _T("navigation.headingMagnetic")) {
-      updateHeadingMagnetic(value, sfixtime);
+      if(!value.IsNull())
+        updateHeadingMagnetic(value, sfixtime);
     } else if (update_path == _T("navigation.magneticVariation")) {
-      updateMagneticVariance(value, sfixtime);
+      if(!value.IsNull())
+        updateMagneticVariance(value, sfixtime);
     } else {
       // wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"),
       // update_path));

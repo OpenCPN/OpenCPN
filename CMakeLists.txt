@@ -212,7 +212,7 @@ set(OCPN_TARGET_TUPLE "" CACHE STRING
   "List of target;version;arch like flatpak;20.08;aarch64 [\"\"]"
 )
 
-if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
+if (MSVC OR MINGW)
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
 else ()
   set(OCPN_USE_CRASHREPORT FALSE)
@@ -645,6 +645,9 @@ endif ()
 # required
 if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
   add_definitions(-DocpnARM)
+  if (ARCH STREQUAL "armhf")
+    add_definitions(-DocpnARMHF)
+  endif (ARCH STREQUAL armhf)
 endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
 
 IF(DEFINED _wx_selected_config)
@@ -777,7 +780,7 @@ if (NOT QT_ANDROID)
   # As of cmake 3.11.2, these libraries are missing in list despite that we
   # looked for them. This is a nasty fix which might fail miserably. Assumption:
   # All builds using GTK uses unicode and wxWidgets 3.0
-  if (GTK3_FOUND)
+  if (GTK3_FOUND AND CMAKE_VERSION VERSION_LESS 3.12)
     if (NOT wxWidgets_VERSION_STRING VERSION_GREATER "3.0")
       message (STATUS " Patching ${wxWidgets_LIBRARIES}")
       list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
@@ -870,8 +873,9 @@ else( wxWidgets_VERSION_STRING)
     set(wxWidgets_VERSION_STRING "3.0")
 endif( wxWidgets_VERSION_STRING)
 
-# Enable zoom gesture
-if ( wxWidgets_VERSION_STRING VERSION_GREATER "3.1.0")
+# Enable gestures on all platforms except MacOS
+# There are no touch capable MacOS machines
+if (( wxWidgets_VERSION_STRING VERSION_GREATER "3.1.0") AND (NOT APPLE))
     add_definitions("-DHAVE_WX_GESTURE_EVENTS")
 endif()
 
@@ -1245,8 +1249,8 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 add_subdirectory(libs/picosha2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
 
-find_package(Libudev)
-if (UDEV_FOUND)
+find_package(LIBUDEV)
+if (LIBUDEV_FOUND)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libudev)
   set(HAVE_LIBUDEV 1)
 endif ()
@@ -1267,20 +1271,24 @@ if (PANGO_FOUND)
     set(HAVE_PANGO 1)
 endif ()
 
-find_path(HAVE_UNISTD_H NAMES unistd.h)
-find_path(HAVE_LIBGEN_H NAMES libgen.h)
-find_path(HAVE_DIRENT_H NAMES dirent.h)
-find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
-find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
-find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
-find_path(HAVE_FCNTL_H  NAMES fcntl.h)
-if (NOT HAVE_FCNTL_H)
-  find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
-endif ()
-find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
+# Some of these "find_path" macros generate "false-positives" under Windows, especially if mingw is installed
+# For OpenCPN, these include files and related methods are really only valid in complete linux/unix environments
+#  So, pending further information, we disable these tests for non-UNIX-like builds.
+if ( UNIX )
+  find_path(HAVE_UNISTD_H NAMES unistd.h)
+  find_path(HAVE_LIBGEN_H NAMES libgen.h)
+  find_path(HAVE_DIRENT_H NAMES dirent.h)
+  find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
+  find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
+  find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
+  find_path(HAVE_FCNTL_H  NAMES fcntl.h)
+  if (NOT HAVE_FCNTL_H)
+    find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
+  endif ()
+  find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
 
-check_symbol_exists(readlink unistd.h HAVE_READLINK)
-
+  check_symbol_exists(readlink unistd.h HAVE_READLINK)
+endif( UNIX )
 
 #
 # Linux: set up GTK
@@ -1884,6 +1892,7 @@ set(
   src/bitmaps/DragHandle.svg
   src/bitmaps/eye.svg
   src/bitmaps/eyex.svg
+  src/bitmaps/eyeGray.svg
   src/bitmaps/iENC_All.svg
   src/bitmaps/iENC_Minimum.svg
   src/bitmaps/iENC_Standard.svg
@@ -2484,6 +2493,7 @@ if (GETTEXT_MSGFMT_EXECUTABLE)
   gettext_build_mo(po/opencpn_ja_JP.po ja_JP)
   gettext_build_mo(po/opencpn_vi_VN.po vi_VN)
   gettext_build_mo(po/opencpn_he_IL.po he_IL)
+  gettext_build_mo(po/opencpn_en_GB.po en_GB)
   add_custom_target(i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
 
   if (NOT QT_ANDROID)
@@ -2868,6 +2878,15 @@ install(CODE "
   include(BundleUtilities)
   set(BU_CHMOD_BUNDLE_ITEMS TRUE)
   fixup_bundle(\"${APPS}\"  \"${LIBS}\"  \"${DIRS}\")
+  "
+  COMPONENT Runtime
+)
+
+#  For unknown reasons, fixup_bundle copies the wrong version of liblzma.5.dylib into the bundle.
+#  So, fix that here by grabbing the correct version as installed by macports.
+install(CODE "
+  include(BundleUtilities)
+  copy_resolved_item_into_bundle(\"/opt/local/lib/liblzma.5.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
   "
   COMPONENT Runtime
 )

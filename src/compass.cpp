@@ -136,7 +136,24 @@ void ocpnCompass::Paint(ocpnDC& dc) {
       glDisable(GL_TEXTURE_2D);
 
     } else {
+#ifdef __WXOSX__
+      // Support MacBook Retina display
+      if(g_bopengl){
+        double scale = m_parent->GetContentScaleFactor();
+        if(scale > 1){
+          wxImage image = m_StatBmp.ConvertToImage();
+          image.Rescale( image.GetWidth() * scale, image.GetHeight() * scale);
+          wxBitmap bmp( image );
+          dc.DrawBitmap(bmp, m_rect.x, m_rect.y, true);
+        }
+        else
+          dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
+      }
+      else
+        dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
+#else
       dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
+#endif
     }
 
 #else

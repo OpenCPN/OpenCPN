@@ -32,32 +32,30 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include "dial.h"
 
-class DashboardInstrument_RudderAngle: public DashboardInstrument_Dial
-{
-      public:
-            DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title);
-            ~DashboardInstrument_RudderAngle(void){}
+class DashboardInstrument_RudderAngle : public DashboardInstrument_Dial {
+public:
+  DashboardInstrument_RudderAngle(wxWindow* parent, wxWindowID id,
+                                  wxString title);
+  ~DashboardInstrument_RudderAngle(void) {}
 
-            wxSize GetSize( int orient, wxSize hint );
-            void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint);
+  void SetData(DASH_CAP, double, wxString);
 
-      private:
-
-      protected:
-            void DrawFrame(wxGCDC* dc);
-            void DrawBackground(wxGCDC* dc);
+private:
+protected:
+  void DrawFrame(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc);
 };
 
-#endif // __RudderAngle_H__
-
+#endif  // __RudderAngle_H__

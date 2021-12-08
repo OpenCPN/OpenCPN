@@ -605,7 +605,11 @@ void glChartCanvas::Init() {
 
   m_gldc.SetGLCanvas(this);
 
+  m_displayScale = 1.0;
+#ifdef __WXOSX__
+  // Support Mac Retina displays.
   m_displayScale = GetContentScaleFactor();
+#endif
 
 #ifdef __OCPN__ANDROID__
   //  Create/connect a dynamic event handler slot for gesture and some timer
@@ -653,13 +657,12 @@ void glChartCanvas::Init() {
 
 //  Gesture support for platforms other than Android
 #ifdef HAVE_WX_GESTURE_EVENTS
-  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES |
+  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE |
                          wxTOUCH_PRESS_GESTURES)) {
     wxLogError("Failed to enable touch events");
   }
 
   Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, m_pParentCanvas);
-  Bind(wxEVT_GESTURE_PAN, &ChartCanvas::OnPan, m_pParentCanvas);
 
   Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, m_pParentCanvas);
   Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, m_pParentCanvas);

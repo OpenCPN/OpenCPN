@@ -1524,6 +1524,11 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
 
   int dsc_mmsi = 0;
   int dse_mmsi = 0;
+  double dse_cog = 0.;
+  double dse_sog = 0.;
+  wxString dse_shipName = wxEmptyString;
+  wxString dseSymbol;
+
   int mmsi = 0;
 
   AIS_Target_Data *pTargetData = NULL;
@@ -1602,6 +1607,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
     token.ToDouble(&dse_addr);
     dse_mmsi = 0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
 
+# if 0
     token = tkz.GetNextToken();  // code field
     token =
         tkz.GetNextToken();  // data field - position - 2*4 digits latlon .mins
@@ -1610,6 +1616,36 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
     dse_lon = (int)(dse_tmp - dse_lat * 10000.0);
     dse_lat = dse_lat / 600000.0;
     dse_lon = dse_lon / 600000.0;
+#endif
+     // DSE Sentence may contain multiple dse expansion data items
+   while (tkz.HasMoreTokens())	{
+       dseSymbol = tkz.GetNextToken(); //dse expansion data symbol
+       token = tkz.GetNextToken(); // dse expansion data
+       if (dseSymbol.IsSameAs(_T("00"))) { // Position
+           token.ToDouble(&dse_tmp);
+           dse_lat = (int)(dse_tmp / 10000.0);
+           dse_lon = (int)(dse_tmp - dse_lat * 10000.0);
+           dse_lat = dse_lat / 600000.0;
+           dse_lon = dse_lon / 600000.0;
+       }
+       else if (dseSymbol.IsSameAs(_T("01"))) { // Source & Datum
+       }
+       else if (dseSymbol.IsSameAs(_T("02"))) { // SOG
+           token.ToDouble(&dse_tmp);
+           dse_sog = dse_tmp / 10.0;
+       }
+       else if (dseSymbol.IsSameAs(_T("03"))) { // COG
+           token.ToDouble(&dse_tmp);
+           dse_cog = dse_tmp / 10.0;
+       }
+       else if (dseSymbol.IsSameAs(_T("04"))) { // Station Information
+           dse_shipName = DecodeDSEExpansionCharacters(token);
+       }
+       else if (dseSymbol.IsSameAs(_T("05"))) { // Geographic Information
+       }
+       else if (dseSymbol.IsSameAs(_T("06"))) { // Persons On Board
+       }
+   }
 
     mmsi = (int)dse_mmsi;
   }
@@ -1678,6 +1714,12 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
         m_ptentative_dsctarget->Lon =
             m_ptentative_dsctarget->Lon +
             ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
+        if (dse_shipName.length() > 0) {
+            memset(m_ptentative_dsctarget->ShipName,'\0',SHIP_NAME_LEN);
+            snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(), "%s", dse_shipName.ToAscii().data());
+        }
+        m_ptentative_dsctarget->COG = dse_cog;
+        m_ptentative_dsctarget->SOG = dse_sog;
       }
 
       //     Update the most recent report period
@@ -1730,6 +1772,20 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   }
 
   return pTargetData;
+}
+
+// DSE Expansion characters, decode table from ITU-R M.825
+wxString AIS_Decoder::DecodeDSEExpansionCharacters(wxString dseData) {
+    wxString result;
+    char lookupTable[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+        'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+        'Y', 'Z', '.', ',', '-', '/', ' ' };
+
+    for (size_t i = 0; i < dseData.length(); i += 2) {
+        result.append(1, lookupTable[strtol(dseData.Mid(i, 2).data(), NULL, 10)]);
+    }
+    return result;
 }
 
 //----------------------------------------------------------------------------

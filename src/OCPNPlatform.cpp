@@ -71,7 +71,7 @@
 #endif
 
 // Include CrashRpt Header
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 #include "CrashRpt.h"
 #endif
 #ifdef __MSVC__
@@ -339,7 +339,7 @@ void catch_signals(int signo) {
 }
 #endif
 
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 // Define the crash callback
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO *pInfo) {
   //  Flush log file
@@ -355,10 +355,6 @@ bool OCPNPlatform::DetectOSDetail(OCPN_OSDetail *detail) {
   // We take some defaults from build-time definitions
   detail->osd_name = std::string(PKG_TARGET);
   detail->osd_version = std::string(PKG_TARGET_VERSION);
-  detail->osd_build_name = std::string(PKG_TARGET);
-  detail->osd_build_version = std::string(PKG_TARGET_VERSION);
-  detail->osd_build_arch = std::string(PKG_TARGET_ARCH);
-  detail->osd_build_gtk = std::string(PKG_BUILD_GTK);
 
   // Now parse by basic platform
 #ifdef __linux__
@@ -426,8 +422,13 @@ bool OCPNPlatform::DetectOSDetail(OCPN_OSDetail *detail) {
   if (arch == wxARCH_32) detail->osd_arch = std::string("i386");
 
 #ifdef ocpnARM
+  //  arm supports a multiarch runtime environment
+  //  That is, the OS may be 64 bit, but OCPN may be built as a 32 bit binary
+  //  So, we cannot trust the wxPlatformInfo architecture determination.
   detail->osd_arch = std::string("arm64");
-  if (arch == wxARCH_32) detail->osd_arch = std::string("armhf");
+#ifdef ocpnARMHF
+    detail->osd_arch = std::string("armhf");
+#endif
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -442,7 +443,7 @@ OCPN_OSDetail *OCPNPlatform::GetOSDetail() { return m_osDetail; }
 
 //  Called from MyApp() immediately upon entry to MyApp::OnInit()
 void OCPNPlatform::Initialize_1(void) {
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 #ifndef _DEBUG
   // Install Windows crash reporting
 
@@ -747,7 +748,7 @@ void OCPNPlatform::Initialize_4(void) {
 void OCPNPlatform::OnExit_1(void) {}
 
 void OCPNPlatform::OnExit_2(void) {
-#ifdef OCPN_USE_CRASHRPT
+#ifdef OCPN_USE_CRASHREPORT
 #ifndef _DEBUG
   // Uninstall Windows crash reporting
 //    crUninstall();
@@ -786,6 +787,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   GetglEntryPoints(pcaps);
 
+  pcaps->bOldIntel = false;
   if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
     if (pcaps->Renderer.Upper().Find(_T("965")) != wxNOT_FOUND) {
       pcaps->bOldIntel = true;

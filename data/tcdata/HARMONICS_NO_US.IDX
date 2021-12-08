@@ -3380,6 +3380,529 @@ tNAA:Can:NovS: -67.05 45.0667 -4:0 St. Andrews, Passamaquoddy Bay
 tNAA:Can:NovS: -67.2 45.1667 -4:0 The Ledge, St Croix Rvr
 &17 1 -0.8 30 1 0 595 1 Saint John, New Brunswick
 
+
+CNAP:Can:BC: -123.1833 48.8167 -8:0 Boat Passage, British Columbia Current
+CNAP:Can:BC: -123.55 48.7833 -8:0 Sansum Narrows, British Columbia Current
+CCar:PR:: -65.6183 18.1883 -4:0 Vieques Passage, Puerto Rico Current
+CCar:PR:: -65.6193 18.1883 -4:0 Vieques Passage, Puerto Rico Current (2)
+
+
+cNAA:XX:XX: -122.9333  48.7667 -8:0 Sucia I., 0.5 mile WNW of Lawson Bluff
+^54   0.20 0 53   0.40 0   1845 25 205 1 Active Pass, British Columbia Current
+
+cNAA:XX:XX: -123.5500  48.7823 -8:0 Sansum Narrows
+^24   0.50 0 -37   0.50 0   1849 0 180 1 Active Pass, British Columbia Current
+
+cNAA:XX:XX: -123.3077  48.867 -8:0 ACTIVE PASS
+^0   0.00 0 0   0.00 0   1853 45 225 1 Active Pass, British Columbia Current
+
+cNAA:XX:XX: -123.5833  49.0167 -8:0 Porlier Pass
+^-20   1.30 0 -28   1.30 0   1857 45 225 1 Active Pass, British Columbia Current
+
+cNAA:XX:XX: -123.7000  49.1292 -8:0 Gabriola Pass
+^-35   1.10 0 -32   1.10 0   1861 90 270 1 Active Pass, British Columbia Current
+
+cNAA:XX:XX: -123.8167  49.1333 -8:0 Dodd Narrows
+^-45   1.40 0 -45   1.40 0   1865 315 135 1 Active Pass, British Columbia Current
+
+cNAA:XX:XX: -124.42062  49.4916 -8:0 Stevens Pass
+^15   0.20 0 15   0.20 0   1881 310 130 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -124.8000  49.7167 -8:0 Cape Lazo
+^15   0.20 0 15   0.20 0   1885 355 175 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.0667  49.8833 -8:0 Kuhushan Point
+^10   0.20 0 10   0.20 0   1889 325 145 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.1667  49.9500 -8:0 Shelter Point
+^10   0.20 0 10   0.20 0   1893 145 325 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.2137  50.0000 -8:0 Off Cape Mudge
+^15   0.50 0 15   0.50 0   1897 165 345 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.2600  50.0726 -8:0 Orange Point
+^10   0.50 0 10   0.50 0   1901 145 325 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.3200  50.1167 -8:0 Race Point
+^5   0.70 0 5   0.70 0   1905 125 305 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.3667  50.1833 -8:0 Separation Head
+^-5   0.40 0 -5   0.40 0   1913 170 350 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX:  -125.3966 50.2667 -8:0 Moriarty Point
+^-10   0.30 0 -10   0.30 0   1917 170 350 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX:  -125.4285 50.3333 -8:0 Chatham Point
+^-20   0.30 0 -20   0.30 0   1921 165 345 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.5833   50.3760-8:0 Ripple Point
+^-40   0.40 0 -40   0.40 0   1925 105 285 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.8265  50.3884 -8:0 Camp Point
+^-60   0.40 0 -60   0.40 0   1929 90 270 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX:  -125.8833  50.3901-8:0 Race Passage
+^-58   0.50 0 -58   0.50 0   1933 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.8509  50.4075 -8:0 Current Passage
+^-60   0.50 0 -60   0.50 0   1937 120 300 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.0640  50.4727 -8:0 Ransom Point
+^-60   0.30 0 -60   0.30 0   1941 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.2833  50.5000 -8:0 Off Broken Island
+^-60   0.30 0 -60   0.30 0   1945 100 280 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.5833  50.5011 -8:0 Robson Bight (off)
+^-75   0.30 0 -75   0.30 0   1949 100 280 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.8261  50.5571 -8:0 Ella Point, Weynton Passage
+^-85   0.40 0 -85   0.40 0   1953 105 285 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.9000  50.5833 -8:0 Pearse Passage, Cormorant Island
+^-90   0.40 0 -90   0.40 0   1957 165 345 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.9667  50.6000 -8:0 Leonard Point, Cormorant Island
+^-95   0.30 0 -95   0.30 0   1961 90 270 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.0667  50.6000 -8:0 Ledge Point
+^-100   0.30 0 -100   0.30 0   1965 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX:  -127.1602  50.6248-8:0 Pulteney Point
+^-105   0.30 0 -105   0.30 0   1969 120 300 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.2833  50.6833 -8:0 False Head, 2 miles north from
+^-140   0.30 0 -140   0.30 0   1973 130 310 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.4167  50.7667 -8:0 Dillon Point, 1 mile north
+^-150   0.30 0 -150   0.30 0   1977 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.6667  50.9167 -8:0 Gordon Channel
+^-160   0.30 0 -160   0.30 0   1981 125 305 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.5000  50.8000 -8:0 Duval Point
+^-185   0.30 0 -185   0.30 0   1985 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.6500  50.8167 -8:0 Boxer Point
+^-195   0.30 0 -195   0.30 0   1989 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.7667  50.8500 -8:0 Lemon Point
+^-200   0.30 0 -200   0.30 0   1993 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -127.8833  50.8833 -8:0 Heath Point
+^-205   0.30 0 -205   0.30 0   1997 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -128.0000  50.9000 -8:0 Nawhitti Bar
+^-270   0.40 0 -287   0.40 0   2001 100 280 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.1580  50.2313 -8:0 Surge Narrows, Okisollo Channel
+^-45   0.70 0 -45   0.70 0   2005 140 320 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.2093  50.3000 -8:0 Hole In The Wall, Okisollo Channel
+^-55   0.80 0 -50   0.80 0   2009 50 230 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.2667  50.3167 -8:0 Rapids, near Barnes Bay, Okisollo Channel
+^-50   0.70 0 -55   0.70 0   2013 72 252 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.1366  50.4215 -8:0 Arran Rapids, north of Stuart Island
+^-45   0.70 0 -45   0.70 0   2017 65 245 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.1448  50.3593 -8:0 Yuculta Rapids, SW of Stuart Island
+^-40   0.50 0 -40   0.50 0   2021 145 325 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.4066  50.4586  -8:0 Godwin Point, Cordero Island
+^-55   0.20 0 -55   0.20 0   2025 50 230 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX:  -125.4990  50.4198 -8:0 Shell Point, Blind Channel
+^-70   0.50 0 -70   0.50 0   2029 355 175 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX:  -125.5106  50.4411 -8:0 Green Point Rapids, Cordero Channel
+^-85   0.50 0 -95   0.50 0   2033 130 310 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.7620  50.4593 8:0 Whirlpool Rapids, Wellbore Channel
+^-110   0.60 0 -110   0.60 0   2037 130 310 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.9333  50.4667 -8:0 Shaw Point, Sunderland Channel
+^-65   0.20 0 -65   0.20 0   2041 60 240 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX:  -126.2075  50.5795 -8:0 Root Point, Chatham Channel
+^-65   0.60 0 -65   0.60 0   2045 110 290 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.3039  50.6240 -8:0 Littleton Point, Chatham Channel
+^-65   0.40 0 -65   0.40 0   2049 130 310 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.5167  50.6389 -8:0 Ripple Bluff, Knight Inlet
+^-75   0.30 0 -75   0.30 0   2053 105 285 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -126.6833  50.6333 -8:0 Owl Island, main ent. to Knight Inlet
+^-80   0.30 0 -80   0.30 0   2057 120 300 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -123.8501  50.1642 -8:0 MALIBU RAPIDS, Princess Louisa Inlet
+^0    0.00 0 0    0.00 0   1879 60 240 1 Princess Louisa Inlet, British Columbia Current
+
+cNAA:XX:XX: -123.5906  49.0107 -8:0 PORLIER PASS
+^0   0.00 0 0   0.00 0   12001 30 210 1 Porlier Pass, British Columbia Current
+
+cNAA:XX:XX: -123.7172  49.1283 -8:0 GABRIOLA PASSAGE
+^0   0.00 0 0   0.00 0   12002 90 270 1 Gabriola Passage, British Columbia Current
+
+cNAA:XX:XX: -123.8174  49.1353 -8:0 DODD NARROWS
+^0   0.00 0 0   0.00 0   12003 350 170  1 Dodd Narrows, British Columbia Current
+
+cNAA:XX:XX: -123.8983  49.7383 -8:0 SECHELT RAPIDS
+^0   0.00 0 0   0.00 0   12004 135 315 1 Sechelt Rapids, British Columbia Current
+
+cNAA:XX:XX: -125.1595  50.3930 -8:0 GILLARD PASS, Dent Rapids
+^0   0.00 0 0   0.00 0   12005 90 270 1 Gillard Pass, British Columbia Current
+
+cNAA:XX:XX: -126.1333  50.4667 -8:0 JOHNSTONE STR. CEN.
+^0   0.00 0 0   0.00 0   12006 90 270 1 Johnstone Strait Central, British Columbia Current
+
+cNAA:XX:XX: -127.505279  51.095855-8:0 NAKWAKTO RAPIDS, Seymour Inlet
+^0   0.00 0 0   0.00 0   12007 0 180 1 Nakwakto Rapids, British Columbia Current
+
+cNAA:XX:XX: -123.5300  48.2317 -8:0 JUAN DE FUCA EAST
+^0   0.00 0 0   0.00 0   12008 90 270 1 Juan De Fuca Strait (East), British Columbia Current
+
+cNAA:XX:XX: -126.8167  50.6000 -8:0 WEYNTON PASSAGE
+^0   0.00 0 0   0.00 0   12009 220 40 1 Weynton Passage, British Columbia Current
+
+cNAA:XX:XX: -123.5367  48.3067 -8:0 RACE PASSAGE, Race Rocks
+^0   0.00 0 0   0.00 0   12010 90 270 1 Race Passage, British Columbia Current
+
+cNAA:XX:XX: -127.5584  50.5522 -8:0 QUATSINO NARROWS
+^0   0.00 0 0   0.00 0   12011 10 190 1 Quatsino Narrows, British Columbia Current
+
+cNAA:XX:XX: -123.1403  49.3159 -8:0 FIRST NARROWS, Burrard Inlet
+^0   0.00 0 0   0.00 0   12013 112 296 1 First Narrows, British Columbia Current
+
+cNAA:XX:XX: -123.0228  49.2948 -8:0 SECOND NARROWS, Burrard Inlet
+^0   0.00 0 0   0.00 0   12014 90 270 1 Second Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.1434  50.2260 -8:0 SURGE NARROWS, Beazely Passage
+^0   0.00 0 0   0.00 0   12015 120 300 1 Surge Narrows, British Columbia Current
+
+cNAA:XX:XX: -125.3543  50.1333 -8:0 SEYMOUR NARROWS
+^0   0.00 0 0   0.00 0   12016 180 000 1 Seymour Narrows, British Columbia Current
+
+cNAA:XX:XX: -128.4810  52.8616 -8:0 HEIKISH NARROWS
+^0   0.00 0 0   0.00 0   12017 325 122 1 Heikish Narrows, British Columbia Current
+
+cNAP:Can:BC: -123.4003  48.4463 -8:0 Gorge-Tillicum Bridge
+^0   0.00 0 0   0.00 0   12018 300 120 1 Gorge-Tillicum Bridge, British Columbia Current
+
+cNAA:XX:XX: -65.3000  43.3667 -4:0 Brazil Rock, 6 miles east of
+^-122   0.40 0 -116   0.40 0   0001 275 50 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -65.6333  43.3333 -4:0 Cape Sable, 3 miles south of
+^-182   1.00 0 -81   0.80 0   0006 275 95 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -65.6167  43.1833 -4:0 Cape Sable, 12 miles south of
+^-72   0.70 0 -46   0.70 0   0011 285 90 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -65.9833  43.2500 -4:0 Blonde Rock, 5 miles south of
+^-62   0.90 0 -36   0.80 0   0016 310 125 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.2500  43.2667 -4:0 Seal Island, 13 miles southwest of
+^-17   1.10 0 39   0.70 0   0021 325 140 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.4000  43.5667 -4:0 Cape Fourchu, 17 miles southwest of
+^38   0.50 0 44   0.50 0   0026 355 145 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.2500  43.7833 -4:0 Cape Fourchu, 4 miles west of
+^-12   0.90 0 9   0.70 0   0031 0 175 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.3500  43.8667 -4:0 Lurcher Shoal, 6 miles east of
+^8   0.90 0 39   0.80 0   0036 355 175 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.7000  43.7667 -4:0 Lurcher Shoal, 10 miles west of
+^23   0.60 0 -34   0.70 0   0041 0 160 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.6167  43.9833 -4:0 Lurcher Shoal, 10 miles northwest of
+^-2   0.80 0 49   0.50 0   0046 5 175 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.5000  44.2167 -4:0 Brier Island, 5 miles west of
+^43   1.20 0 54   1.00 0   0051 5 185 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.7333  44.2833 -4:0 Brier Island, 15 miles west of
+^-42   0.60 0 14   0.50 0   0056 60 250 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.6833  44.4833 -4:0 Gannet Rock, 5 miles southeast of
+^38   1.10 0 9   1.60 0   0061 40 230 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.3833  44.5167 -4:0 Boars Head, 10 miles northwest of
+^48   0.80 0 59   0.80 0   0066 20 205 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.2500  44.7333 -4:0 Prim Point, 20 miles west of
+^38   0.70 0 54   0.60 0   0071 40 235 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -65.9500  44.9667 -4:0 Cape Spencer, 14 miles south of
+^51   0.70 0 57   0.70 0   0076 50 245 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.9317  44.7533 -4:0 BAY OF FUNDY ENTRANCE
+^0   0.00 0 0   0.00 0   0081 32 212 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -66.9833  44.9000 -5:0 Eastport, Friar Roads
+^0   1.20 0 0   1.20 0   0086 210 40 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -67.0000  44.9317 -5:0 Western Passage, off Kendall Head
+^27   1.40 0 13   1.30 0   0091 319 142 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -67.0317  44.9650 -5:0 Western Passage, off Frost Ledge
+^33   0.90 0 -16   0.70 0   0096 330 150 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -67.5033  44.3350 -5:0 Pond Point, 7.6 miles SSE of
+^13   0.20 0 -93   0.50 0   0101 15 215 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -67.5727  44.5285 -5:0 Moosabec Reach, east end
+^-165   0.40 0 -193   0.40 0   0106 110 258 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -67.6500  44.5208 -5:0 Moosabec Reach, west end
+^-103   0.40 0 -120   0.50 0   0111 92 253 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.4650  44.1950 -5:0 Casco Passage, east end, Blue Hill Bay
+^-109   0.30 0 -62   0.30 0   0121 86 284 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.4950  44.1333 -5:0 Hat Island, SE of, Jericho Bay
+^-62   0.40 0 -50   0.50 0   0126 318 124 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.6038  44.1645 -5:0 Clam I., NW of, Deer I. Thorofare
+^-134   0.10 0 -57   0.10 0   0131 4 199 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.6205  44.1620 -5:0 Grog Island, E of, Deer Island Thorofare
+^-136   0.10 0 -147   0.10 0   0136 20 235 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.6463  44.1530 -5:0 Russ Island, N of, Deer Island Thorofare
+^-132   0.20 0 -149   0.20 0   0141 74 265 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.5833  44.0833 -5:0 Isle au Haut, 0.8 mile E of Rich's Pt
+^-53   0.60 0 -67   0.60 0   0151 336 139 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7028  44.1367 -5:0 East Penobscot Bay, Mark Island, north of
+^-18   0.10 0 -147   0.20 0   0156 13 164 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8250  44.1325 -5:0 East Penobscot Bay, Widow Island-Stimpson Island,
+^-43   0.30 0 4   0.20 0   0161 302 118 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7822  44.1938 -5:0 East Penobscot Bay, Eagle Island, 0.4 nautical mil
+^-18   0.40 0 -140   0.40 0   0166 336 147 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8188  44.1912 -5:0 East Penobscot Bay, Burnt Island-Oak Island, betwe
+^-18   0.30 0 -142   0.50 0   0171 290 98 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7778  44.2222 -5:0 East Penobscot Bay, Butter I., 0.3 nautical mile S
+^-163   0.10 0 -25   0.30 0   0176 50 194 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7345  44.2338 -5:0 East Penobscot Bay, Bradbury Island, ESE of
+^11   0.20 0 -53   0.30 0   0181 25 225 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8555  44.2167 -5:0 East Penobscot Bay, Compass Island, 0.4 nmi. ENE o
+^-104   0.10 0 -85   0.10 0   0186 15 175 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8437  44.2222 -5:0 East Penobscot Bay, Scrag Island, 0.3 nautical mil
+^-45   0.20 0 -55   0.10 0   0191 10 197 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8363  44.2383 -5:0 East Penobscot Bay, Great Spruce Head Island, west
+^-74   0.20 0 -26   0.10 0   0196 3 174 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7563  44.2605 -5:0 East Penobscot Bay, Pickering Island, south of
+^-165   0.20 0 -116   0.20 0   0206 300 150 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7312  44.2742 -5:0 East Penobscot Bay, Little Eaton Island, NNE of
+^-43   0.20 0 2   0.10 0   0211 300 106 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7812  44.2753 -5:0 East Penobscot Bay, Hog Island, ESE of
+^-13   0.10 0 -33   0.20 0   0221 24 180 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7238  44.2797 -5:0 East Penobscot Bay, Little Deer I.-Sheep I., betwe
+^-13   0.20 0 33   0.20 0   0226 310 124 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7312  44.2855 -5:0 East Penobscot Bay, Swains Ledge, 0.3 nautical mil
+^-46   0.20 0 -55   0.20 0   0236 358 170 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8167  44.2930 -5:0 East Penobscot Bay, Pond Island-Western Island, be
+^-104   0.20 0 -116   0.20 0   0241 356 172 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7558  44.3028 -5:0 East Penobscot Bay, Birch Island, northwest of
+^-104   0.10 0 -56   0.10 0   0246 22 200 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7403  44.3133 -5:0 East Penobscot Bay, Pumpkin Island, north of
+^-194   0.10 0 -114   0.10 0   0271 290 90 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8547  44.3762 -5:0 Turtle Head Pt., ESE of, Penobscot Bay
+^-60   0.30 0 -36   0.30 0   0286 338 171 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.8103  44.3792 -5:0 Castine Harbor
+^11   0.50 0 -25   0.60 0   0291 75 252 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+
+cNAA:XX:XX: -68.8453  44.3795 -5:0 Dice Head, west of, Penobscot Bay
+^-136   0.20 0 -87   0.20 0   0296 28 198 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+
+cNAA:XX:XX: -68.7583  44.4258 -5:0 Jones Point, Bagaduce River
+^-37   1.80 0 -39   1.80 0   0306 53 237 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7955  44.4658 -5:0 Fort Point, Cape Jellison, Penobscot Bay
+^-8   0.40 0 -15   0.40 0   0311 3 166 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.7967  44.4638 -5:0 Fort Point, Cape Jellison, Penobscot Bay
+^-151   0.40 0 -22   0.30 0   0311 6 206 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8050  44.5288 -5:0 Verona Island, west of, Penobscot River
+^66   0.60 0 -92   1.50 0   0316 339 176 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+
+cNAA:XX:XX: -68.7812  44.5678 -5:0 Verona I., N of, Easter Ch., Penobscot R
+^114   0.30 0 -114   0.50 0   0321 273 115 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8063  44.5712 -5:0 Bucksport, Penobscot River
+^42   0.70 0 -86   1.10 0   0326 275 99 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+"^-13   0.80 0 -99   1.00 0   0326 281 98 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8420  44.6313 -5:0 Winterport, Penobscot Bay
+^-65   0.80 0 -56   0.30 0   0331 7 188 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8130  44.6683 -5:0 Oak Point, Penobscot River
+^-19   0.40 0 -39   0.40 0   0336 38 233 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.8400  44.7045 -5:0 Snub Point, Penobscot River
+^-11   0.20 0 -50   0.60 0   0341 310 136 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -69.0130  43.9942 -5:0 West Penobscot Bay, Andrews Island, ESE of
+^-20   0.20 0 -55   0.30 0   0346 11 155 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.9178  44.0230 -5:0 West Penobscot Bay, Little Hurricane Island, south
+^-5   0.20 0 -18   0.30 0   0351 331 157 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.8730  44.0297 -5:0 West Penobscot Bay, Heron Neck, Green Island
+^-107   0.40 0 -58   0.30 0   0356 344 165 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.7580  44.0412 -5:0 Isle au Haut Bay, Triangle Ledge, SSE of
+^14   0.30 0 -26   0.40 0   0366 354 197 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.6925  44.0422 -5:0 Isle au Haut Bay, Moore Harbor, W of
+^0   0.20 0 -16   0.40 0   0371 344 135 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+
+cNAA:XX:XX: -68.8597  44.0428 -5:0 West Penobscot Bay, The Reach, NNE of, Green Islan
+^-203   0.20 0 -115   0.20 0   0376 284 111 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9067  44.0500 -5:0 West Penobscot Bay, White Islands, northeast of
+^-108   0.20 0 -115   0.20 0   0381 322 165 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -69.0450  44.0520 -5:0 West Penobscot Bay, Fisherman Island Passage
+^-164   0.20 0 -146   0.30 0   0386 53 240 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9072  44.0603 -5:0 West Penobscot Bay, Crotch Island, east of
+^-49   0.80 0 -81   0.80 0   0391 343 163 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8963  44.0603 -5:0 West Penobscot Bay, Laireys Island, south of
+^-48   0.20 0 -51   0.40 0   0396 335 155 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -69.0578  44.0647 -5:0 West Penobscot Bay, Sheep Island
+^-164   0.20 0 -117   0.30 0   0401 23 220 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8983  44.0678 -5:0 West Penobscot Bay, Leadbetter I., SSW of southern
+^-43   0.60 0 -28   0.50 0   0406 320 126 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8937  44.0692 -5:0 West Penobscot Bay, Leadbetter Island, E of southe
+^-18   0.20 0 37   0.20 0   0411 360 175 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9112  44.0838 -5:0 West Penobscot Bay, Leadbetter Island, northwest t
+^-48   0.30 0 -53   0.40 0   0416 16 214 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -69.0437  44.0853 -5:0 West Penobscot Bay, Dodge Point-Monroe Island, bet
+^-223   0.20 0 -175   0.20 0   0421 15 205 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9133  44.0920 -5:0 West Penobscot Bay, Dogfish Island, NNE of
+^-134   0.20 0 -175   0.20 0   0426 325 147 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -69.0778  44.1022 -5:0 West Penobscot Bay, Rockland Harbor Breakwater
+^-78   0.10 0 -64   0.20 0   0431 315 97 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9122  44.1130 -5:0 West Penobscot Bay, Browshead, Vinalhaven Island,
+^-108   0.10 0 -55   0.10 0   0436 16 221 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9237  44.1150 -5:0 West Penobscot Bay, Crabtree Pt., North Haven I.,
+^-43   0.10 0 -55   0.10 0   0441 3 228 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8930  44.1270 -5:0 West Penobscot Ba SEYMOUR NARROWSy, Fox Island Thorofare
+^-193   0.10 0 -205   0.20 0   0446 70 278 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9805  44.1667 -5:0 West Penobscot Bay, Mark Island, 0.3 nmi., SSE of
+^-101   0.20 0 -119   0.20 0   0451 44 246 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9550  44.1808 -5:0 West Penobscot Bay, Saddle Island, northwest of
+^-223   0.10 0 -236   0.20 0   0456 10 225 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9470  44.1867 -5:0 West Penobscot Bay, Lasell Island, SSW of
+^-107   0.20 0 -174   0.20 0   0466 22 217 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9680  44.1895 -5:0 West Penobscot Bay, East Goose Rock, NNE of
+^-225   0.20 0 -237   0.20 0   0471 0 210 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -69.0467  44.2028 -5:0 West Penobscot Bay, Camden Harbor Entrance
+^-164   0.10 0 -146   0.10 0   0476 354 190 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9587  44.2233 -5:0 West Penobscot Bay, Ensign Island, SSE of
+^-90   0.20 0 32   0.10 0   0481 22 220 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9537  44.2758 -5:0 West Penobscot Bay, Warren Island, northwest of
+^-137   0.20 0 -83   0.10 0   0486 36 248 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9397  44.3000 -5:0 West Penobscot Bay, Ducktrap Harbor, northeast of
+^-67   0.20 0 -83   0.20 0   0491 355 185 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.9558  44.3045 -5:0 West Penobscot Bay, Ducktrap Harbor, NNE of
+^-59   0.20 0 -19   0.10 0   0496 14 203 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.9592  44.3050 -5:0 West Penobscot Bay, Ducktrap Harbor, NNE of
+^33   0.20 0 -56   0.20 0   0501 58 202 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.9242  44.3138 -5:0 West Penobscot Bay, Flat Island, SSW of
+^-73   0.20 0 -55   0.20 0   0506 45 230 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8797  44.3162 -5:0 Isleboro Harbor, NE of, Penobscot Bay
+^-64   0.10 0 -96   0.10 0   0511 4 166 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8778  44.3172 -5:0 Isleboro Harbor, NE of, Penobscot Bay
+^26   0.10 0 -82   0.10 0   0516 334 154 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.8467  44.3208 -5:0 Head of the Cape, 0.8 nmi. W, of Penobscot Bay
+^-24   0.20 0 -24   0.20 0   0521 325 125 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.8362  44.3178 -5:0 Head of the Cape, NNW of, Penobscot Bay
+^-46   0.30 0 -18   0.20 0   0526 332 163 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.9158  44.3547 -5:0 Ram Island, west of, West Penobscot Bay
+^-223   0.20 0 -173   0.10 0   0531 4 189 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+cNAA:XX:XX: -68.9222  44.3563 -5:0 Temple Heights, NE of, W Penobscot Bay
+^-62   0.20 0 -123   0.20 0   0536 0 189 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+cNAA:XX:XX: -68.9437  44.3575 -5:0 Temple Heights, NNE of, W Penobscot Bay
+^-34   0.30 0 -35   0.30 0   0541 5 175 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
+
+
+
 Subreg d:\misc\navigation\tides\substa\subreg.23 file start - - - - - - - - -
 INAA:US:ME: 0 0 0:0        MAINE
 &9 1 0 8 1 0 599 1 Eastport, Maine

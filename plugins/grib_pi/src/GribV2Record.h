@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-
 /******************************************
 Elément de base d'un fichier GRIB V2
 ******************************************/
@@ -30,82 +29,75 @@ Elément de base d'un fichier GRIB V2
 #include "zuFile.h"
 #include "GribRecord.h"
 
-class  GRIBMessage;
+class GRIBMessage;
 
 //----------------------------------------------
-class GribV2Record : public GribRecord
-{
-    public:
-        GribV2Record(ZUFILE* file, int id_);
-        GribV2Record(const GribRecord &rec);
-        GribV2Record() { grib_msg = 0;}
+class GribV2Record : public GribRecord {
+public:
+  GribV2Record(ZUFILE* file, int id_);
+  GribV2Record(const GribRecord& rec);
+  GribV2Record() { grib_msg = 0; }
 
-        ~GribV2Record();
+  ~GribV2Record();
 
-        // return a new record for next data set
-        GribV2Record *GribV2NextDataSet(ZUFILE* file, int id_);
-        bool hasMoreDataSet() const;
+  // return a new record for next data set
+  GribV2Record* GribV2NextDataSet(ZUFILE* file, int id_);
+  bool hasMoreDataSet() const;
 
-    private:
-        zuint  periodSeconds(zuchar unit, zuint P1, zuint P2, zuchar range);
-        void   readDataSet(ZUFILE* file);
-        class  GRIBMessage *grib_msg;
+private:
+  zuint periodSeconds(zuchar unit, zuint P1, zuint P2, zuchar range);
+  void readDataSet(ZUFILE* file);
+  class GRIBMessage* grib_msg;
 
-        //-----------------------------------------
-        void    translateDataType();  // adapte les codes des différents centres météo
+  //-----------------------------------------
+  void translateDataType();  // adapte les codes des différents centres météo
 
-        //---------------------------------------------
-        // SECTION 0: THE INDICATOR SECTION (IS)
-        //---------------------------------------------
-        zuint  fileOffset0;
-        zuint  seekStart, totalSize;
-        // zuchar editionNumber;
-        bool   b_len_add_8;
+  //---------------------------------------------
+  // SECTION 0: THE INDICATOR SECTION (IS)
+  //---------------------------------------------
+  zuint fileOffset0;
+  zuint seekStart, totalSize;
+  // zuchar editionNumber;
+  bool b_len_add_8;
 
-        // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
-        zuint  fileOffset1;
-        zuint  sectionSize1;
-        zuchar tableVersion;
-        zuchar data1[28];
-        bool   hasGDS;
-        // bool   hasBMS;
-        double  decimalFactorD;
-        // SECTION 2: THE GRID DESCRIPTION SECTION (GDS)
-        zuint  fileOffset2;
-        zuint  sectionSize2;
-        // SECTION 3: BIT MAP SECTION (BMS)
-        zuint  fileOffset3;
-        zuint  sectionSize3;
-        // zuchar *BMSbits;
-        // SECTION 4: BINARY DATA SECTION (BDS)
-       int productTemplate;
-       int productDiscipline;
-       int gridTemplateNum;
-       int dataCat;
-       int dataNum;
+  // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
+  zuint fileOffset1;
+  zuint sectionSize1;
+  zuchar tableVersion;
+  zuchar data1[28];
+  bool hasGDS;
+  // bool   hasBMS;
+  double decimalFactorD;
+  // SECTION 2: THE GRID DESCRIPTION SECTION (GDS)
+  zuint fileOffset2;
+  zuint sectionSize2;
+  // SECTION 3: BIT MAP SECTION (BMS)
+  zuint fileOffset3;
+  zuint sectionSize3;
+  // zuchar *BMSbits;
+  // SECTION 4: BINARY DATA SECTION (BDS)
+  int productTemplate;
+  int productDiscipline;
+  int gridTemplateNum;
+  int dataCat;
+  int dataNum;
 
+  zuint fileOffset4;
+  zuint sectionSize4;
+  zuchar unusedBitsEndBDS;
+  bool isGridData;  // not spherical harmonics
+  bool isSimplePacking;
+  bool isFloatValues;
+  int scaleFactorE;
+  double scaleFactorEpow2;
+  double refValue;
+  zuint nbBitsInPack;
+  // SECTION 5: END SECTION (ES)
 
-        zuint  fileOffset4;
-        zuint  sectionSize4;
-        zuchar unusedBitsEndBDS;
-        bool  isGridData;          // not spherical harmonics
-        bool  isSimplePacking;
-        bool  isFloatValues;
-        int   scaleFactorE;
-        double scaleFactorEpow2;
-        double refValue;
-        zuint  nbBitsInPack;
-        // SECTION 5: END SECTION (ES)
-
-        //---------------------------------------------
-        // Data Access
-        //---------------------------------------------
-        bool readGribSection0_IS (ZUFILE* file, bool b_skip_initial_GRIB);
-
+  //---------------------------------------------
+  // Data Access
+  //---------------------------------------------
+  bool readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB);
 };
 
-
 #endif
-
-
-

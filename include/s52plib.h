@@ -468,6 +468,8 @@ private:
   bool m_GLLineSmoothing;
   bool m_GLPolygonSmoothing;
   wxFont *m_soundFont;
+
+  double m_displayScale;
 };
 
 #define HPGL_FILLED true

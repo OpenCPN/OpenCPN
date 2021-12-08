@@ -32,13 +32,13 @@
 #include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include "dial.h"
@@ -52,73 +52,67 @@
 //|    This class creates a wind style control
 //|
 //+------------------------------------------------------------------------------
-class DashboardInstrument_Wind: public DashboardInstrument_Dial
-{
-      public:
-            DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag);
+class DashboardInstrument_Wind : public DashboardInstrument_Dial {
+public:
+  DashboardInstrument_Wind(wxWindow* parent, wxWindowID id, wxString title,
+                           DASH_CAP cap_flag);
 
-            ~DashboardInstrument_Wind(void){}
+  ~DashboardInstrument_Wind(void) {}
 
-      private:
-
-      protected:
-            void DrawBackground(wxGCDC* dc);
+private:
+protected:
+  void DrawBackground(wxGCDC* dc);
 };
 
-class DashboardInstrument_WindCompass: public DashboardInstrument_Dial
-{
-      public:
-            DashboardInstrument_WindCompass( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag);
+class DashboardInstrument_WindCompass : public DashboardInstrument_Dial {
+public:
+  DashboardInstrument_WindCompass(wxWindow* parent, wxWindowID id,
+                                  wxString title, DASH_CAP cap_flag);
 
-            ~DashboardInstrument_WindCompass(void){}
+  ~DashboardInstrument_WindCompass(void) {}
 
-      private:
-
-      protected:
-            void DrawBackground(wxGCDC* dc);
+private:
+protected:
+  void DrawBackground(wxGCDC* dc);
 };
 
-class DashboardInstrument_TrueWindAngle: public DashboardInstrument_Dial
-{
-      public:
-            DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag);
+class DashboardInstrument_TrueWindAngle : public DashboardInstrument_Dial {
+public:
+  DashboardInstrument_TrueWindAngle(wxWindow* parent, wxWindowID id,
+                                    wxString title, DASH_CAP cap_flag);
 
-            ~DashboardInstrument_TrueWindAngle(void){}
+  ~DashboardInstrument_TrueWindAngle(void) {}
 
-      private:
-
-      protected:
-
-            void DrawBackground(wxGCDC* dc);
+private:
+protected:
+  void DrawBackground(wxGCDC* dc);
 };
 /*****************************************************************************
 Apparent & True wind angle combined in one dial instrument
 Author: Thomas Rauch
 ******************************************************************************/
-class DashboardInstrument_AppTrueWindAngle : public DashboardInstrument_Dial
-{
+class DashboardInstrument_AppTrueWindAngle : public DashboardInstrument_Dial {
 public:
-	DashboardInstrument_AppTrueWindAngle(wxWindow *parent, wxWindowID id, wxString title, DASH_CAP cap_flag);
+  DashboardInstrument_AppTrueWindAngle(wxWindow* parent, wxWindowID id,
+                                       wxString title, DASH_CAP cap_flag);
 
-	~DashboardInstrument_AppTrueWindAngle(void){}
-	void SetData(DASH_CAP, double, wxString);
-
+  ~DashboardInstrument_AppTrueWindAngle(void) {}
+  void SetData(DASH_CAP, double, wxString);
 
 private:
-
 protected:
-	double m_MainValueApp, m_MainValueTrue;
-	double m_ExtraValueApp, m_ExtraValueTrue;
+  double m_MainValueApp, m_MainValueTrue;
+  double m_ExtraValueApp, m_ExtraValueTrue;
 
-	wxString m_ExtraValueAppUnit, m_ExtraValueTrueUnit, m_MainValueAppUnit, m_MainValueTrueUnit;
-	DialPositionOption m_MainValueOption1, m_MainValueOption2, m_ExtraValueOption1, m_ExtraValueOption2;
-	void DrawBackground(wxGCDC* dc);
-	virtual void Draw(wxGCDC* dc);
-	virtual void DrawForeground(wxGCDC* dc);
-	virtual void DrawData(wxGCDC* dc, double value, wxString unit, wxString format, DialPositionOption position);
-
-
+  wxString m_ExtraValueAppUnit, m_ExtraValueTrueUnit, m_MainValueAppUnit,
+      m_MainValueTrueUnit;
+  DialPositionOption m_MainValueOption1, m_MainValueOption2,
+      m_ExtraValueOption1, m_ExtraValueOption2;
+  void DrawBackground(wxGCDC* dc);
+  virtual void Draw(wxGCDC* dc);
+  virtual void DrawForeground(wxGCDC* dc);
+  virtual void DrawData(wxGCDC* dc, double value, wxString unit,
+                        wxString format, DialPositionOption position);
 };
 
-#endif // __Wind_H__
-
+#endif  // __Wind_H__

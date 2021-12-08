@@ -31,6 +31,9 @@ sudo apt-key adv \
 sudo add-apt-repository -y ppa:alexlarsson/flatpak
 sudo apt update -y
 
+# Avoid using outdated TLS certificates, see #2419.
+sudo apt install --reinstall  ca-certificates
+
 # Install required packages
 sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2
 
@@ -40,8 +43,8 @@ runtime=$(sed -n '/runtime-version/s/.*://p' flatpak/org.opencpn.OpenCPN.yaml)
 runtime=${runtime/ /}
 flatpak --user remote-add --if-not-exists \
     flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak --user install -y org.freedesktop.Platform//$runtime
-flatpak --user install -y org.freedesktop.Sdk//$runtime
+flatpak --user install --noninteractive org.freedesktop.Platform//$runtime
+flatpak --user install --noninteractive org.freedesktop.Sdk//$runtime
 
 cd flatpak
 # By default, script packages master branch from main github repo, as a

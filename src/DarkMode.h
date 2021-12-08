@@ -28,3 +28,5 @@
 void setAppLevelDarkMode(bool enabled = true);
 
 void setWindowLevelDarkMode(NSWindow *window, bool enabled = true);
+
+bool isDarkMode();

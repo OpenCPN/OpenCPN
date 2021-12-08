@@ -22,7 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -666,6 +665,8 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 
   if (pRouteActivatePoint) delete pRouteActivatePoint;
   pRouteActivatePoint = NULL;
+
+  pActivePoint = NULL;
 
   console->pCDI->ClearBackground();
 
@@ -2143,6 +2144,19 @@ wxString *WayPointman::GetIconDescription(int index) {
     pret = &pmi->icon_description;
   }
   return pret;
+}
+
+wxString WayPointman::GetIconDescription(wxString icon_key) {
+  MarkIcon *pmi;
+  unsigned int i;
+
+  for (i = 0; i < m_pIconArray->GetCount(); i++) {
+    pmi = (MarkIcon *)m_pIconArray->Item(i);
+    if (pmi->icon_name.IsSameAs(icon_key))
+      return wxString(pmi->icon_description);
+  }
+
+  return wxEmptyString;
 }
 
 wxString *WayPointman::GetIconKey(int index) {

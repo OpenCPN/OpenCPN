@@ -1883,6 +1883,19 @@ bool MyApp::OnInit() {
   wxLogMessage(_T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"),
                g_mem_total / 1024, g_mem_initial / 1024);
 
+  OCPN_OSDetail *detail = g_Platform->GetOSDetail();
+  wxString msgplat;
+  wxString like0;
+  if(!detail->osd_names_like.empty())
+    like0 = detail->osd_names_like[0].c_str();
+  msgplat.Printf( "OCPN_OSDetail:  %s ; %s ; %s ; %s ; %s",
+              detail->osd_arch.c_str(),
+              detail->osd_name.c_str(),
+              detail->osd_version.c_str(),
+              detail->osd_ID.c_str(),
+              like0.mb_str() );
+  wxLogMessage(msgplat);
+
   //    Initialize embedded PNG icon graphics
   ::wxInitAllImageHandlers();
 
@@ -2348,8 +2361,10 @@ bool MyApp::OnInit() {
 
   if (g_bframemax) gFrame->Maximize(true);
 
+#ifdef __OCPN__ANDROID__
   if (g_bresponsive && (gFrame->GetPrimaryCanvas()->GetPixPerMM() > 4.0))
     gFrame->Maximize(true);
+#endif
 
   //  Yield to pick up the OnSize() calls that result from Maximize()
   Yield();
@@ -6152,6 +6167,15 @@ int MyFrame::DoOptionsDialog() {
   SetAllToolbarScale();
   RequestNewToolbars();
 
+  //  Rebuild cursors
+  // ..For each canvas...
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      cc->RebuildCursors();
+    }
+  }
+
   // Change of master toolbar scale?
   bool b_masterScaleChange = false;
   if (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
@@ -6690,6 +6714,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   msg.Printf(_T("OnInitTimer...%d"), m_iInitCount);
   wxLogMessage(msg);
 
+  wxLog::FlushActive();
+
   switch (m_iInitCount++) {
     case 0: {
       if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, false);
@@ -6996,6 +7022,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   }  // switch
 
   if (!g_bDeferredInitDone) InitTimer.Start(100, wxTIMER_ONE_SHOT);
+
+  wxLog::FlushActive();
 
   RefreshAllCanvas(true);
 }
@@ -9978,86 +10006,6 @@ void MyPrintout::GenerateGLbmp() {
 //        GPS Positioning Device Detection
 //
 //---------------------------------------------------------------------------------------
-
-/*
- *     Enumerate all the serial ports on the system
- *
- *     wxArrayString *EnumerateSerialPorts(void)
-
- *     Very system specific, unavoidably.
- */
-
-#if (__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-extern "C" int wait(int *);  // POSIX wait() for process
-
-#include <termios.h>
-#include <sys/ioctl.h>
-#ifdef __linux__
-#include <linux/serial.h>
-#endif
-
-#endif
-
-// ****************************************
-// Fulup devices selection with scandir
-// ****************************************
-
-// reserve 4 pattern for plugins
-char *devPatern[] = {NULL, NULL, NULL, NULL,      NULL,
-                     NULL, NULL, NULL, (char *)-1};
-
-// This function allow external plugin to search for a special device name
-// ------------------------------------------------------------------------
-int paternAdd(const char *patern) {
-  int ind;
-
-  // snan table for a free slot inside devpatern table
-  for (ind = 0; devPatern[ind] != (char *)-1; ind++)
-    if (devPatern[ind] == NULL) break;
-
-  // table if full
-  if (devPatern[ind] == (char *)-1) return -1;
-
-  // store a copy of the patern in case calling routine had it on its stack
-  devPatern[ind] = strdup(patern);
-  return 0;
-}
-
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-// This filter verify is device is withing searched patern and verify it is
-// openable
-// -----------------------------------------------------------------------------------
-int paternFilter(const struct dirent *dir) {
-  char *res = NULL;
-  char devname[272];
-  int fd, ind;
-
-  // search if devname fits with searched paterns
-  for (ind = 0; devPatern[ind] != (char *)-1; ind++) {
-    if (devPatern[ind] != NULL)
-      res = (char *)strcasestr(dir->d_name, devPatern[ind]);
-    if (res != NULL) break;
-  }
-
-  // File does not fit researched patern
-  if (res == NULL) return 0;
-
-  // Check if we may open this file
-  snprintf(devname, sizeof(devname), "/dev/%s", dir->d_name);
-  fd = open(devname, O_RDWR | O_NDELAY | O_NOCTTY);
-
-  // device name is pointing to a real device
-  if (fd >= 0) {
-    close(fd);
-    return 1;
-  }
-
-  // file is not valid
-  perror(devname);
-  return 0;
-}
-
-#endif
 
 /*************************************************************************
  * Global color management routines

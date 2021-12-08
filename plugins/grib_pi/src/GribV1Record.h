@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-
 /******************************************
 Elément de base d'un fichier GRIB V1
 ******************************************/
@@ -30,87 +29,80 @@ Elément de base d'un fichier GRIB V1
 #include "zuFile.h"
 #include "GribRecord.h"
 
-
 //----------------------------------------------
-class GribV1Record : public GribRecord
-{
-    public:
-        GribV1Record(ZUFILE* file, int id_);
-        GribV1Record(const GribRecord &rec);
-        GribV1Record() {}
+class GribV1Record : public GribRecord {
+public:
+  GribV1Record(ZUFILE* file, int id_);
+  GribV1Record(const GribRecord& rec);
+  GribV1Record() {}
 
-        ~GribV1Record();
+  ~GribV1Record();
 
-    protected:
+protected:
+private:
+  zuint periodSeconds(zuchar unit, zuchar P1, zuchar P2, zuchar range);
+  //-----------------------------------------
+  void translateDataType();  // adapte les codes des différents centres météo
+  //---------------------------------------------
+  // SECTION 0: THE INDICATOR SECTION (IS)
+  //---------------------------------------------
+  zuint fileOffset0;
+  zuint seekStart, totalSize;
+  // zuchar editionNumber;
+  bool b_len_add_8;
 
-    private:
-        zuint  periodSeconds(zuchar unit, zuchar P1, zuchar P2, zuchar range);
-        //-----------------------------------------
-        void    translateDataType();  // adapte les codes des différents centres météo
-        //---------------------------------------------
-        // SECTION 0: THE INDICATOR SECTION (IS)
-        //---------------------------------------------
-        zuint  fileOffset0;
-        zuint  seekStart, totalSize;
-        // zuchar editionNumber;
-        bool   b_len_add_8;
+  // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
+  zuint fileOffset1;
+  zuint sectionSize1;
+  zuchar tableVersion;
+  zuchar data1[28];
+  bool hasGDS;
+  // bool   hasBMS;
+  double decimalFactorD;
+  // SECTION 2: THE GRID DESCRIPTION SECTION (GDS)
+  zuint fileOffset2;
+  zuint sectionSize2;
+  // SECTION 3: BIT MAP SECTION (BMS)
+  zuint fileOffset3;
+  zuint sectionSize3;
+  // zuchar *BMSbits;
+  // SECTION 4: BINARY DATA SECTION (BDS)
+  zuint fileOffset4;
+  zuint sectionSize4;
+  zuchar unusedBitsEndBDS;
+  bool isGridData;  // not spherical harmonics
+  bool isSimplePacking;
+  bool isFloatValues;
+  int scaleFactorE;
+  double scaleFactorEpow2;
+  double refValue;
+  zuint nbBitsInPack;
+  // SECTION 5: END SECTION (ES)
 
-        // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
-        zuint  fileOffset1;
-        zuint  sectionSize1;
-        zuchar tableVersion;
-        zuchar data1[28];
-        bool   hasGDS;
-        // bool   hasBMS;
-        double  decimalFactorD;
-        // SECTION 2: THE GRID DESCRIPTION SECTION (GDS)
-        zuint  fileOffset2;
-        zuint  sectionSize2;
-        // SECTION 3: BIT MAP SECTION (BMS)
-        zuint  fileOffset3;
-        zuint  sectionSize3;
-        // zuchar *BMSbits;
-        // SECTION 4: BINARY DATA SECTION (BDS)
-        zuint  fileOffset4;
-        zuint  sectionSize4;
-        zuchar unusedBitsEndBDS;
-        bool  isGridData;          // not spherical harmonics
-        bool  isSimplePacking;
-        bool  isFloatValues;
-        int   scaleFactorE;
-        double scaleFactorEpow2;
-        double refValue;
-        zuint  nbBitsInPack;
-        // SECTION 5: END SECTION (ES)
+  //---------------------------------------------
+  // Data Access
+  //---------------------------------------------
+  bool readGribSection0_IS(ZUFILE* file, unsigned int b_skip_initial_GRIB);
+  bool readGribSection1_PDS(ZUFILE* file);
+  bool readGribSection2_GDS(ZUFILE* file);
+  bool readGribSection3_BMS(ZUFILE* file);
+  bool readGribSection4_BDS(ZUFILE* file);
+  bool readGribSection5_ES(ZUFILE* file);
 
-        //---------------------------------------------
-        // Data Access
-        //---------------------------------------------
-        bool readGribSection0_IS (ZUFILE* file, unsigned int b_skip_initial_GRIB);
-        bool readGribSection1_PDS(ZUFILE* file);
-        bool readGribSection2_GDS(ZUFILE* file);
-        bool readGribSection3_BMS(ZUFILE* file);
-        bool readGribSection4_BDS(ZUFILE* file);
-        bool readGribSection5_ES (ZUFILE* file);
+  //---------------------------------------------
+  // Utility functions
+  //---------------------------------------------
+  zuchar readChar(ZUFILE* file);
+  int readSignedInt3(ZUFILE* file);
+  int readSignedInt2(ZUFILE* file);
+  zuint readInt2(ZUFILE* file);
+  zuint readInt3(ZUFILE* file);
+  double readFloat4(ZUFILE* file);
 
-        //---------------------------------------------
-        // Utility functions
-        //---------------------------------------------
-        zuchar readChar(ZUFILE* file);
-        int    readSignedInt3(ZUFILE* file);
-        int    readSignedInt2(ZUFILE* file);
-        zuint  readInt2(ZUFILE* file);
-        zuint  readInt3(ZUFILE* file);
-        double readFloat4(ZUFILE* file);
+  zuint makeInt3(zuchar a, zuchar b, zuchar c);
+  zuint makeInt2(zuchar b, zuchar c);
 
-        zuint  makeInt3(zuchar a, zuchar b, zuchar c);
-        zuint  makeInt2(zuchar b, zuchar c);
-
-//        void   print();
+  //        void   print();
 };
 
-
 #endif
-
-
-
