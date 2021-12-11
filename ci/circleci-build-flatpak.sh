@@ -59,7 +59,10 @@ fi
 # The build heavy lifting
 test -d ../build || mkdir ../build
 cd ../build
-make -f ../flatpak/Makefile build
+flatpak-builder --repo=repo --force-clean --default-branch=devel \
+    --state-dir=../cache  --delete-build-dirs \
+    app ../flatpak/org.opencpn.OpenCPN.yaml
+flatpak install -y --user --reinstall repo org.opencpn.OpenCPN
 flatpak list
 
 # Decrypt and unpack gpg keys, sign and install into website/
