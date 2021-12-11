@@ -190,7 +190,7 @@ public:
     return plugin.major_version() == m_major_version;
   }
 
-  // Test if plugin abi is a Debian version compatible with hosts's
+  // Test if host abi is a Debian version compatible with plugins's
   // ubuntu version.
   bool is_debian_plugin_compatible(const Plugin& plugin) const {
     static const std::vector<std::string> debian_versions = {
