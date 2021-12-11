@@ -1,14 +1,12 @@
 opencpn (5.6.0+dfsg1-1) unstable; urgency=medium
 
-  * New upstream release
-  * Drop upstreamed patches
+  * New upstream maintenance release
   * Update standards-version to 4.6.0, no changes.
-  * Drop repck suffix, dfsg1 -> dfsg
-  * Update compat-level to 13, drop override_dh_missing from rules.
+  * Update compat-level to 13, drop override_dh_missing from d/rules.
   * Drop walk-around for #831870 using zip download, clean up d/rules and
     d/watch
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Dec 2021 11:51:49 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 11 Dec 2021 21:05:00 +0100
 
 opencpn (5.2.4.210213gitcad0d456+dfsg1-1) unstable; urgency=medium
 
