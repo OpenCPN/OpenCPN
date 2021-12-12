@@ -35,33 +35,15 @@ Copyright: 2011, 2014, Pavel Kalian
   1995-1998, Brian Paul
 License: GPL-2+
 
-Files: LICENSING
-Copyright: The OpenCPN
-License: GPL-2+
-
-Files: data/copyright
-Copyright: 2008-2018, David S Register <bdbcat@yahoo.com>
-License: GPL-2+
-
-Files: data/opencpn.appdata.xml.in
-Copyright: 2018, Alec Leamas <leamas@nowhere.net> ->
-License: GPL-2+
-
-Files: debian/opencpn-data/DEBIAN/md5sums
-Copyright: 71540, f805343b9b6db1ea780fabf6fe7 usr/share/doc/opencpn-data/harmonics-dwf-20210110-free.tcd.gz
-License: GPL-2+
-
-Files: debian/opencpn-data/usr/share/doc/opencpn-data/copyright
-Copyright: 2011, 2021, Pavel Kalian
-License: GPL-2
-
-Files: debian/opencpn/DEBIAN/md5sums
-Copyright: 3dadf1fe3042bf561c071dcd2c2699fe usr/share/icons/hicolor/48x48/apps/opencpn.png
-License: GPL-2+
-
-Files: debian/opencpn/usr/share/doc/*
-Copyright: 2011, 2021, Pavel Kalian
-License: GPL-2
+Files: data/tcdata
+Copyright: No copyright
+License: public-domain
+ The information on government servers are in the public domain, unless
+ specifically annotated otherwise, and may be used freely by the
+ public. Before using information obtained from this server, special
+ attention should be given to the date and time of the data and products
+ being displayed. This information shall not be modified in content and
+ then presented as official government material.
 
 Files: include/*
 Copyright: 2010, 2012-2019, David S. Register
