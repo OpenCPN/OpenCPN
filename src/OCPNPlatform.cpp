@@ -2710,7 +2710,7 @@ void OCPNPlatform::DoHelpDialog(void) {
   if (!g_pAboutDlgLegacy)
     g_pAboutDlgLegacy = new about(gFrame, GetSharedDataDir());
   else
-    g_pAboutDlg->SetFocus();
+    g_pAboutDlgLegacy->SetFocus();
   g_pAboutDlgLegacy->Show();
 
 #endif
