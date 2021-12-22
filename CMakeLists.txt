@@ -526,6 +526,7 @@ if (QT_ANDROID)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
+  add_definitions(-DNOASSERT)
   set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
 
   add_compile_options("-Wno-inconsistent-missing-override"
