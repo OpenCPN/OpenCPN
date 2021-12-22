@@ -149,6 +149,7 @@ set(
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
    message(STATUS "Building for wxQt-Android")
    set(QT_ANDROID "ON")
+   add_definitions("-DwxDEBUG_LEVEL=0")
    if(PKG_ARCH STREQUAL "arm64")
      add_definitions("-DANDROID_ARM64")
    else ()
