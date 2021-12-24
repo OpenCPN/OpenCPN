@@ -1,8 +1,8 @@
 version=4
 opts=\
-dversionmangle=s/\+(debian|dfsg1|ds|deb)\.?\d*$//,\
+dversionmangle=s/\+(debian|dfsg|ds|deb)\.?\d*$//,\
 filenamemangle=s/_Beta//;s|^.*tags/|opencpn-|;,\
 uversionmangle=s/((Beta|Alpha|v|V|Release)[\.\-\+_]?)?//;,\
-repacksuffix=+dfsg1 \
+repacksuffix=+dfsg \
 https://github.com/OpenCPN/OpenCPN/tags \
 archive/refs/tags/(Beta|OA|v|V|Release)_([\d\.]+).zip
