@@ -6149,7 +6149,6 @@ int MyFrame::DoOptionsDialog() {
 
   delete pWorkDirArray;
 
-  gFrame->Raise();
   DoChartUpdate();
 
   //  We set the compass size first, since that establishes the available space
