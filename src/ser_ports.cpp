@@ -41,6 +41,11 @@
 #include <windows.h>
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#include "qdebug.h"
+#endif
+
 #include <wx/arrstr.h>
 #include <wx/log.h>
 #include <wx/utils.h>

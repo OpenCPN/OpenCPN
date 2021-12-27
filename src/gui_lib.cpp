@@ -33,6 +33,11 @@
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#include "qdebug.h"
+#endif
+
 extern bool g_bresponsive;
 extern OCPNPlatform* g_Platform;
 extern int g_GUIScaleFactor;

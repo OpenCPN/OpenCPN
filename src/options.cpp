@@ -8020,7 +8020,7 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
-#ifdef __linux__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__)
   if (pConnectionParams->Type == SERIAL)
     CheckSerialAccess(this, pConnectionParams->Port.ToStdString());
 #endif

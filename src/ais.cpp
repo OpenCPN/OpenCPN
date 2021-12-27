@@ -1614,13 +1614,13 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
                       ais_follow_stroke[2].y + TargetPoint.y);
       } else {
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
 
         glPushMatrix();
         glTranslated(TargetPoint.x, TargetPoint.y, 0);
         glScalef(AIS_scale_factor, AIS_scale_factor, AIS_scale_factor);
 
         glLineWidth(AIS_width_target_outline);
-#ifndef USE_ANDROID_GLES2
         glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
 
         glBegin(GL_LINE_STRIP);

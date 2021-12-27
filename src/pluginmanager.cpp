@@ -6116,7 +6116,7 @@ void PluginPanel::SetSelected(bool selected) {
   // m_pButtonUninstall->Hide();
 
   Fit();
-  m_PluginListPanel->m_pitemBoxSizer01->Layout();
+  //m_PluginListPanel->m_pitemBoxSizer01->Layout();
 #endif
 }
 

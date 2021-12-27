@@ -2613,7 +2613,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#ifdef __linux__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__)
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams *cp = g_pConnectionParams->Item(i);
     if (cp->bEnabled) {
