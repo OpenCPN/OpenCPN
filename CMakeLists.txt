@@ -522,10 +522,11 @@ endif (MSVC)
 
 
 if (QT_ANDROID)
-  set(CMAKE_BUILD_TYPE Debug)
+  #set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
+  add_definitions(-DNOASSERT)
   set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
 
   add_compile_options("-Wno-inconsistent-missing-override"
@@ -536,6 +537,10 @@ if (QT_ANDROID)
         "-O3"
         "-fPIC"
   )
+  if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_compile_options("-g" "-O0")
+  endif ()
+
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
 endif (QT_ANDROID)
 
@@ -1605,16 +1610,16 @@ endif ()
 # directories, flags, etc must be stated explicitly without trying to locate
 # them on the host build system.
 if (QT_ANDROID)
-  message(STATUS "Using GLESv1 for Android")
+  #message(STATUS "Using GLESv1 for Android")
   add_definitions(-DocpnUSE_GLES)
   add_definitions(-DocpnUSE_GL)
-  add_definitions(-DARMHF)
+  #add_definitions(-DARMHF)
 
-  set(OPENGLES_FOUND "YES")
-  set(OPENGL_FOUND "YES")
+  #set(OPENGLES_FOUND "YES")
+  #set(OPENGL_FOUND "YES")
 
   # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
-  add_subdirectory(libs/glshim)
+  #add_subdirectory(libs/glshim)
 endif (QT_ANDROID)
 
 message(STATUS "    Adding local GLU")

@@ -172,7 +172,7 @@ void Multiplexer::StartAllStreams(void) {
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams *cp = g_pConnectionParams->Item(i);
     if (cp->bEnabled) {
-#ifdef __linux__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__)
       if (cp->GetDSPort().Contains(_T("Serial"))) {
         CheckSerialAccess(0, cp->Port.ToStdString());
       }

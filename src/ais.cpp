@@ -1596,43 +1596,22 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     // Draw stroke "inverted v" for GPS Follower
     if (td->b_isFollower) {
       wxPoint ais_follow_stroke[3];
-      ais_follow_stroke[0] = wxPoint(-3, -20);
-      ais_follow_stroke[1] = wxPoint(0, 0);
-      ais_follow_stroke[2] = wxPoint(3, -20);
+      ais_follow_stroke[0] = wxPoint(-3, -20) * AIS_scale_factor;
+      ais_follow_stroke[1] = wxPoint(0, 0) * AIS_scale_factor;
+      ais_follow_stroke[2] = wxPoint(3, -20) * AIS_scale_factor;
 
       transrot_pts(3, ais_follow_stroke, sin_theta, cos_theta);
 
-      if (dc.GetDC()) {
-        dc.SetPen(wxPen(UBLCK, 2));
-        dc.StrokeLine(ais_follow_stroke[0].x + TargetPoint.x,
+      int penWidth = wxMax(target_outline_pen.GetWidth(), 2);
+      dc.SetPen(wxPen(UBLCK, penWidth));
+      dc.StrokeLine(ais_follow_stroke[0].x + TargetPoint.x,
                       ais_follow_stroke[0].y + TargetPoint.y,
                       ais_follow_stroke[1].x + TargetPoint.x,
                       ais_follow_stroke[1].y + TargetPoint.y);
-        dc.StrokeLine(ais_follow_stroke[1].x + TargetPoint.x,
+      dc.StrokeLine(ais_follow_stroke[1].x + TargetPoint.x,
                       ais_follow_stroke[1].y + TargetPoint.y,
                       ais_follow_stroke[2].x + TargetPoint.x,
                       ais_follow_stroke[2].y + TargetPoint.y);
-      } else {
-#ifdef ocpnUSE_GL
-
-        glPushMatrix();
-        glTranslated(TargetPoint.x, TargetPoint.y, 0);
-        glScalef(AIS_scale_factor, AIS_scale_factor, AIS_scale_factor);
-
-        glLineWidth(AIS_width_target_outline);
-#ifndef USE_ANDROID_GLES2
-        glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
-
-        glBegin(GL_LINE_STRIP);
-        for (int i = 0; i < 3; i++)
-          glVertex2i(ais_follow_stroke[i].x, ais_follow_stroke[i].y);
-        glEnd();
-
-        glPopMatrix();
-#endif
-
-#endif
-      }
     }
 
     if (g_bDrawAISSize && bcan_draw_size) {

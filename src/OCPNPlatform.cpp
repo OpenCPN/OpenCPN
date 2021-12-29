@@ -656,6 +656,9 @@ void OCPNPlatform::Initialize_1(void) {
 
 #ifdef __OCPN__ANDROID__
   qDebug() << "Initialize_1()";
+#ifdef NOASSERT
+  wxDisableAsserts( );      // No asserts at all in Release mode
+#endif
   androidUtilInit();
 #endif
 }
@@ -2707,7 +2710,7 @@ void OCPNPlatform::DoHelpDialog(void) {
   if (!g_pAboutDlgLegacy)
     g_pAboutDlgLegacy = new about(gFrame, GetSharedDataDir());
   else
-    g_pAboutDlg->SetFocus();
+    g_pAboutDlgLegacy->SetFocus();
   g_pAboutDlgLegacy->Show();
 
 #endif

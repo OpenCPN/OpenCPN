@@ -72,6 +72,7 @@
 #include "routeman.h"
 #include "CanvasOptions.h"
 #include "SerialDataStream.h"
+#include "gui_lib.h"
 
 const wxString AndroidSuppLicense = wxT(
     "<br><br>The software included in this product contains copyrighted "

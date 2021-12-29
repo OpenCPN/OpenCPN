@@ -10335,6 +10335,10 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
 
   if (!route) return;
 
+    //      Validate route pointer
+  if( !g_pRouteMan->IsRouteValid(route) )
+    return;
+
   double render_lat = m_cursor_lat;
   double render_lon = m_cursor_lon;
 

@@ -463,6 +463,10 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                             wxDefaultSize, 0);
   wSizerCustomBtns->Add(m_btnPrint, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
+#ifdef __OCPN__ANDROID__
+  m_btnPrint->Hide();
+#endif
+
   m_btnExtend = new wxButton(this, wxID_ANY, _("Extend"), wxDefaultPosition,
                              wxDefaultSize, 0);
   wSizerCustomBtns->Add(m_btnExtend, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);

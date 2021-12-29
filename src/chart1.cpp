@@ -2021,7 +2021,8 @@ bool MyApp::OnInit() {
 
   if (g_useMUI) {
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-    style->chartStatusWindowTransparent = true;
+    if (style)
+      style->chartStatusWindowTransparent = true;
   }
 
   //      Init the WayPoint Manager
@@ -2612,7 +2613,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#ifdef __linux__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__)
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams *cp = g_pConnectionParams->Item(i);
     if (cp->bEnabled) {
@@ -6148,7 +6149,6 @@ int MyFrame::DoOptionsDialog() {
 
   delete pWorkDirArray;
 
-  gFrame->Raise();
   DoChartUpdate();
 
   //  We set the compass size first, since that establishes the available space

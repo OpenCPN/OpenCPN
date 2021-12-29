@@ -928,12 +928,14 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
     glDisable(GL_TEXTURE_2D);
     return false;
   } else {
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
+#ifndef USE_ANDROID_GLES2
     // If ever is implemented variable transparency for MBTiles,
     // this is the place to do it for legacy (direct) mode.
     // Set the alpha value in the glColor4f call here
+    // n.b. There will be other logic required for GLES2 mode.
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     glColor4f(1,1,1,1.0);
+#endif
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -962,8 +964,11 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   glChartCanvas::RenderSingleTexture(coords, texcoords, &vp, 0, 0, 0);
 
   glDisable(GL_BLEND);
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
+  // Restore default Texture ENV_MODE
+#ifndef USE_ANDROID_GLES2
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+#endif
 
   return true;
 }

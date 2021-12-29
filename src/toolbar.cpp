@@ -41,6 +41,7 @@
 #include "FontMgr.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
+#include "gui_lib.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

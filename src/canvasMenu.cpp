@@ -1234,9 +1234,11 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           g_pMarkInfoDialog->UpdateProperties();
         }
 
-        if (pRouteManagerDialog) {
-          if (pRouteManagerDialog->IsShown())
-            pRouteManagerDialog->UpdateWptListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+          if (pRouteManagerDialog) {
+            if (pRouteManagerDialog->IsShown())
+              pRouteManagerDialog->UpdateWptListCtrl();
+          }
         }
 
         gFrame->RefreshAllCanvas(false);
@@ -1438,8 +1440,10 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute)) break;
 
-        if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-          pRouteManagerDialog->UpdateRouteListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+          if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        }
 
         if (g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown()) {
           g_pMarkInfoDialog->ValidateMark();
@@ -1677,9 +1681,11 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
             pRoutePropDialog->Hide();
         }
 
-        if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
-          pRouteManagerDialog->UpdateWptListCtrl();
-          pRouteManagerDialog->UpdateRouteListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+          if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
+            pRouteManagerDialog->UpdateWptListCtrl();
+            pRouteManagerDialog->UpdateRouteListCtrl();
+          }
         }
 
         gFrame->InvalidateAllGL();
