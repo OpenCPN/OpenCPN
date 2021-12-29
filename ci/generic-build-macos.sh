@@ -118,10 +118,10 @@ pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 brew list --versions python3 || {
     brew update-reset
     # As indicated by warning message in CircleCI build log:
-    git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core" \
-        fetch --unshallow
-    git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask" \
-        fetch --unshallow
+    #git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core" \
+        #fetch --unshallow
+    #git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask" \
+        #fetch --unshallow
 }
 
 for pkg in python3  cmake ; do
