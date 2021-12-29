@@ -1,3 +1,14 @@
+opencpn (5.6.0+dfsg1-1~bpo20.04.1) focal-backports; urgency=medium
+
+  * Backported from Jammy
+  * Closes: #1956004
+  * Update d/control VCS url
+  * d/gbp.conf: Update default branch
+  * d/control: debhelper compat 13 -> 12.
+  * d/watch: dfsg1 -> dfsg, lintian warning affecting next release.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 29 Dec 2021 22:19:02 +0100
+
 opencpn (5.6.0+dfsg1-1) unstable; urgency=medium
 
   * New upstream maintenance release

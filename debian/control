@@ -2,7 +2,7 @@ Source: opencpn
 Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
-Build-Depends: debhelper-compat (= 13),
+Build-Depends: debhelper-compat (= 12),
  cmake,
  libarchive-dev,
  libbz2-dev,
@@ -27,7 +27,7 @@ Build-Depends: debhelper-compat (= 13),
  portaudio19-dev
 Standards-Version: 4.6.0
 Vcs-Browser: https://gitlab.com/leamas/opencpn
-Vcs-Git: https://gitlab.com/leamas/opencpn.git -b debian/sid
+Vcs-Git: https://gitlab.com/leamas/opencpn.git -b focal-backports
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
