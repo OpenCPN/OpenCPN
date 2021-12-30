@@ -54,6 +54,7 @@ Description: Open Source Chartplotter and Marine GPS Navigation Software
 
 Package: opencpn-data
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}
 Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
  Chart Plotter and Navigational software program for use underway
