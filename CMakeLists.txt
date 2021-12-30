@@ -149,7 +149,7 @@ set(
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
    message(STATUS "Building for wxQt-Android")
    set(QT_ANDROID "ON")
-   if(PKG_ARCH STREQUAL "arm64")
+   if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
      add_definitions("-DANDROID_ARM64")
    else ()
      add_definitions("-DANDROID_ARMHF")
@@ -527,18 +527,17 @@ if (QT_ANDROID)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   add_definitions(-DNOASSERT)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC")
+  set(CMAKE_C_FLAGS "-pthread -fPIC")
 
   add_compile_options("-Wno-inconsistent-missing-override"
         "-Wno-potentially-evaluated-expression"
         "-Wno-overloaded-virtual"
         "-Wno-unused-command-line-argument"
         "-Wno-unknown-pragmas"
-        "-O3"
-        "-fPIC"
   )
   if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_compile_options("-g" "-O0")
+    add_compile_options("-O0")
   endif ()
 
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
@@ -661,7 +660,6 @@ IF(DEFINED _wx_selected_config)
     MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DARMHF)
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
