@@ -1,3 +1,13 @@
+opencpn 5.6.0 buster backport
+-----------------------------
+
+The backport suffers from a crash on startup in a Wayland session.
+No fix is available, but it can be worked-around by selecting the
+"Gnome on Xorg" option before logging in.
+
+See: https://github.com/OpenCPN/OpenCPN/issues/1166
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Dec 2020 20:20:36 +0200
 opencpn for Debian
 ------------------
 

@@ -3,7 +3,7 @@ opencpn (5.6.0+dfsg0-1~bpo10+1) buster-backports-sloppy; urgency=medium
   * Rebuild for buster-backports-sloppy.
   * Update VCS urls and gbp.conf default branch
   * Downgrade debhelper compat, 13 -> 12
-  * Drop libwxsvg build dep 
+  * Drop libwxsvg build dep
   * Don't strip libwxsvg in d/copyright, repack sources with bundled
     library in place. Use dfsg0 to make it precede dfsg1 in bullseye.
 
