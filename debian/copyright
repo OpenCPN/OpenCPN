@@ -702,6 +702,7 @@ License: wxWidgets
 Files: libs/wxsvg/include/wxSVG/NodeListCls.h
 Copyright: 2005, Jonathan Hurtrel
 License: wxWidgets
+
 Files: mingw/*
 Copyright: fedorainfracloud.org/coprs/leamas/opencpn-mingw.
 License: GPL-2+
