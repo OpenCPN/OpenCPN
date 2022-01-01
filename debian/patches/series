@@ -1,3 +1,5 @@
 0001-build-Handle-missing-doc-files.patch
 0002-build-Drop-CoC-909_2013-InlandECDIS_20170308s.pdf.patch
 0003-wxsvg-CMakeLists-claim-leamas-s-copyright.patch
+0004-CMakeLists-Add-effective-target-debian-debian-gtk3.patch
+0005-PluginHandler-Accept-ubuntu-gtk3-18.04-plugins.patch

@@ -3,7 +3,6 @@ Date: Thu, 6 Jan 2022 17:57:57 +0100
 Subject: wxsvg/CMakeLists: claim leamas's copyright
 
 Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2511
-
 ---
  libs/wxsvg/CMakeLists.txt | 3 +++
  1 file changed, 3 insertions(+)
