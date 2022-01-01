@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 
 #
-# Build the Travis Debian artifacts
+# Build the Debian artifacts
 #
 set -xe
 sudo apt-get -qq update
 sudo apt-get install -q devscripts equivs
+
+if [ "$OCPN_TARGET" = focal-gtk3 ]; then
+    # Build against temporary wxWidgets 3.1 packaging (#2396)
+    sudo apt install -y software-properties-common
+    sudo add-apt-repository -y ppa:leamas-alec/wxwidgets
+    sudo apt-get -qq update
+fi
 
 mk-build-deps ./ci/control --install --root-cmd=sudo --remove
 sudo apt-get --allow-unauthenticated install -f
