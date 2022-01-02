@@ -669,6 +669,25 @@ void OCPNPlatform::Initialize_1(void) {
 void OCPNPlatform::Initialize_2(void) {
 #ifdef __OCPN__ANDROID__
   wxLogMessage(androidGetDeviceInfo());
+
+  // Create some directories in App private directory
+  // Mainly required for Android 11+, but useable on all versions.
+    wxChar sep = wxFileName::GetPathSeparator();
+
+    wxString ChartDir = GetPrivateDataDir();
+    if (ChartDir.Last() != sep) ChartDir.Append(sep);
+    ChartDir.Append( "Charts");
+    if (!::wxDirExists(ChartDir)) {
+      ::wxMkdir(ChartDir);
+    }
+
+    wxString GRIBDir = GetPrivateDataDir();
+    if (GRIBDir.Last() != sep) GRIBDir.Append(sep);
+    GRIBDir.Append( "GRIBS");
+    if (!::wxDirExists(GRIBDir)) {
+      ::wxMkdir(GRIBDir);
+    }
+
 #endif
 
   //  Set a global toolbar scale factor
