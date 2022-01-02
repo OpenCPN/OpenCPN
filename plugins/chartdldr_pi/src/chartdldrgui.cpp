@@ -294,6 +294,10 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
                                wxDefaultPosition, wxDefaultSize, 0);
   bSizerCatalogBtns->Add(m_bEditSource, 0, wxALL | wxEXPAND, 5);
 
+#ifdef __OCPN__ANDROID__
+  m_bEditSource->Hide();
+#endif
+
   m_bUpdateChartList = new wxButton(catalogPanel, wxID_ANY, _("Update"),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_bUpdateChartList->SetDefault();
