@@ -1,0 +1,46 @@
+From: wxWidgets Maintainers <team+wx@tracker.debian.org>
+Date: Mon, 15 Feb 2021 10:41:56 +0100
+Subject: doxyfile-update
+
+Forwarded: not-needed
+
+---
+ docs/doxygen/Doxyfile | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/docs/doxygen/Doxyfile b/docs/doxygen/Doxyfile
+index 47f6c81..4305837 100644
+--- a/docs/doxygen/Doxyfile
++++ b/docs/doxygen/Doxyfile
+@@ -29,7 +29,6 @@ MULTILINE_CPP_IS_BRIEF = NO
+ INHERIT_DOCS           = YES
+ SEPARATE_MEMBER_PAGES  = NO
+ TAB_SIZE               = 4
+-TCL_SUBST              =
+ OPTIMIZE_OUTPUT_FOR_C  = NO
+ OPTIMIZE_OUTPUT_JAVA   = NO
+ OPTIMIZE_FOR_FORTRAN   = NO
+@@ -338,7 +337,6 @@ VERBATIM_HEADERS       = NO # Default: YES
+ #---------------------------------------------------------------------------
+ 
+ ALPHABETICAL_INDEX     = YES
+-COLS_IN_ALPHA_INDEX    = 5
+ IGNORE_PREFIX          = wx
+ 
+ 
+@@ -539,7 +537,6 @@ GENERATE_TAGFILE       = $(GENERATE_TAGFILE)
+ ALLEXTERNALS           = NO
+ EXTERNAL_GROUPS        = YES
+ EXTERNAL_PAGES         = YES
+-PERL_PATH              = /usr/bin/perl
+ 
+ 
+ #---------------------------------------------------------------------------
+@@ -547,7 +544,6 @@ PERL_PATH              = /usr/bin/perl
+ #---------------------------------------------------------------------------
+ 
+ CLASS_DIAGRAMS         = YES
+-MSCGEN_PATH            =
+ DIA_PATH               =
+ HIDE_UNDOC_RELATIONS   = YES
+ HAVE_DOT               = YES # Default: NO
