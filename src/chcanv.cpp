@@ -8399,19 +8399,24 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           r_rband.y = y;
         }
 
-        RoutePoint *pMousePoint = new RoutePoint(m_cursor_lat, m_cursor_lon,
+        if (m_pMeasureRoute){
+          RoutePoint *pMousePoint = new RoutePoint(m_cursor_lat, m_cursor_lon,
                                                  wxString(_T ( "circle" )),
                                                  wxEmptyString, wxEmptyString);
-        pMousePoint->m_bShowName = false;
+          pMousePoint->m_bShowName = false;
 
-        m_pMeasureRoute->AddPoint(pMousePoint);
+          m_pMeasureRoute->AddPoint(pMousePoint);
 
-        m_prev_rlat = m_cursor_lat;
-        m_prev_rlon = m_cursor_lon;
-        m_prev_pMousePoint = pMousePoint;
-        m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+          m_prev_rlat = m_cursor_lat;
+          m_prev_rlon = m_cursor_lon;
+          m_prev_pMousePoint = pMousePoint;
+          m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
 
-        m_nMeasureState++;
+          m_nMeasureState++;
+        }
+        else {
+          CancelMeasureRoute();
+        }
 
         Refresh(true);
         ret = true;
