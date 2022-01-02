@@ -298,7 +298,14 @@ bool chartdldr_pi::LoadConfig(void) {
 
     pConf->Read(_T ( "BaseChartDir" ), &m_base_chart_dir, fn.GetPath());
     wxLogMessage(_T ( "chartdldr_pi: " ) + m_base_chart_dir);
-    wxLogMessage(_T ( "chartdldr_pi: " ) + fn.GetPath());
+
+    // Check to see if the directory is writeable, esp. on App updates.
+    wxFileName testFN(m_base_chart_dir);
+    if (!testFN.IsDirWritable()){
+      wxLogMessage("Cannot write to m_base_chart_dir, override to GetWritableDocumentsDir()" );
+      m_base_chart_dir = fn.GetPath();
+      wxLogMessage(_T ( "chartdldr_pi: Corrected:" ) + m_base_chart_dir);
+    }
 
     pConf->Read(_T ( "PreselectNew" ), &m_preselect_new, true);
     pConf->Read(_T ( "PreselectUpdated" ), &m_preselect_updated, true);
