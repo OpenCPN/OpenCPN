@@ -2731,7 +2731,8 @@ void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort &vp) {
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_ONPAINT_VIEWPORT) {
         PlugIn_ViewPort pivp = CreatePlugInViewport(vp);
-        pic->m_pplugin->SetCurrentViewPort(pivp);
+        if (pic->m_pplugin)
+          pic->m_pplugin->SetCurrentViewPort(pivp);
       }
     }
   }
@@ -2742,7 +2743,8 @@ void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
     PlugInContainer *pic = plugin_array[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_CURSOR_LATLON)
-        pic->m_pplugin->SetCursorLatLon(lat, lon);
+        if (pic->m_pplugin)
+          pic->m_pplugin->SetCursorLatLon(lat, lon);
     }
   }
 }
@@ -3013,7 +3015,8 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
     PlugInContainer *pic = plugin_array[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_EVENTS)
-        pic->m_pplugin->SetPositionFix(pfix);
+        if (pic->m_pplugin)
+          pic->m_pplugin->SetPositionFix(pfix);
     }
   }
 
