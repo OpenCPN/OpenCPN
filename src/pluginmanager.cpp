@@ -146,6 +146,29 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "glChartCanvas.h"
 #endif
 
+#ifndef __WXMSW__
+#include <signal.h>
+#include <setjmp.h>
+
+struct sigaction sa_all_PIM;
+struct sigaction sa_all_PIM_previous;
+
+sigjmp_buf env_PIM;  // the context saved by sigsetjmp();
+
+void catch_signals_PIM(int signo) {
+  switch (signo) {
+    case SIGSEGV:
+      siglongjmp(env_PIM, 1);  // jump back to the setjmp() point
+      break;
+
+    default:
+      break;
+  }
+}
+
+#endif
+
+
 extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
 extern MyConfig *pConfig;
@@ -2840,13 +2863,52 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence) {
   wxString decouple_sentence(
       sentence);  // decouples 'const wxString &' and 'wxString &' to keep bin
                   // compat for plugins
+#ifndef __WXMSW__
+  // Set up a framework to catch (some) sigsegv faults from plugins.
+  sigaction(SIGSEGV, NULL, &sa_all_PIM_previous);  // save existing
+                                                   // action for this signal
+  struct sigaction temp;
+  sigaction(SIGSEGV, NULL, &temp);  // inspect existing action for this signal
+
+  temp.sa_handler = catch_signals_PIM;  // point to my handler
+  sigemptyset(&temp.sa_mask);             // make the blocking set
+                                            // empty, so that all
+                                            // other signals will be
+                                            // unblocked during my handler
+  temp.sa_flags = 0;
+  sigaction(SIGSEGV, &temp, NULL);
+#endif
+
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer *pic = plugin_array[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
-      if (pic->m_cap_flag & WANTS_NMEA_SENTENCES)
-        pic->m_pplugin->SetNMEASentence(decouple_sentence);
+      if (pic->m_cap_flag & WANTS_NMEA_SENTENCES){
+
+
+#ifndef __WXMSW__
+        if (sigsetjmp(env_PIM, 1)){ //  Something in the "else" code block faulted.
+
+          // Probably safest to assume that all variables in this method are trash..
+          // So, simply clean up and return.
+          sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);  // reset signal handler
+          return;
+        }
+        else
+#endif
+        {
+          //volatile int *x = 0;
+          //*x = 0;
+          if (pic->m_pplugin)
+            pic->m_pplugin->SetNMEASentence(decouple_sentence);
+        }
+      }
     }
   }
+
+#ifndef __WXMSW__
+    sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);  // reset signal handler
+#endif
+
 }
 
 int PlugInManager::GetJSONMessageTargetCount() {
