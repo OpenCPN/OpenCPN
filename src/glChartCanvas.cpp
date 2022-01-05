@@ -120,7 +120,7 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 #include "s52plib.h"
 
 #ifdef USE_ANDROID_GLES2
-#include <gl2.h>
+#include <GLES2/gl2.h>
 #include "linmath.h"
 #include "shaders.h"
 #endif
