@@ -22,30 +22,30 @@ endfunction (print_no_nl)
 print_no_nl("Probing for compiler -msse support ")
 try_compile(HAVE_MSSE ${CMAKE_BINARY_DIR}/msse
             SOURCES  ${CMAKE_SOURCE_DIR}/cmake/dummy.c
-            COMPILE_DEFINITIONS -msse)
+            COMPILE_DEFINITIONS -Werror -msse)
 print_ok_fail(${HAVE_MSSE})
 
 print_no_nl("Probing for compiler -msse2 support ")
 try_compile(HAVE_MSSE2 ${CMAKE_BINARY_DIR}/msse2
             SOURCES  ${CMAKE_SOURCE_DIR}/cmake/dummy.c
-            COMPILE_DEFINITIONS -msse2)
+            COMPILE_DEFINITIONS -Werror -msse2)
 print_ok_fail(${HAVE_MSSE2})
 
 print_no_nl("Probing for compiler -msse3 support ")
 try_compile(HAVE_MSSE3 ${CMAKE_BINARY_DIR}/msse3
             SOURCES  ${CMAKE_SOURCE_DIR}/cmake/dummy.c
-            COMPILE_DEFINITIONS -msse3)
+            COMPILE_DEFINITIONS -Werror -msse3)
 print_ok_fail(${HAVE_MSSE3})
 
 print_no_nl("Probing for compiler -mavx2 support ")
 try_compile(HAVE_MAVX2 ${CMAKE_BINARY_DIR}/mavx2
             SOURCES  ${CMAKE_SOURCE_DIR}/cmake/dummy.c
-            COMPILE_DEFINITIONS -mavx2)
+            COMPILE_DEFINITIONS -Werror -mavx2)
 print_ok_fail(${HAVE_MAVX2})
 
 print_no_nl("Probing for compiler -mfpu=neon support ")
 try_compile(HAVE_MFPU_NEON ${CMAKE_BINARY_DIR}/fpu_neon
             SOURCES  ${CMAKE_SOURCE_DIR}/cmake/dummy.c
-            COMPILE_DEFINITIONS -mfpu=neon)
+            COMPILE_DEFINITIONS -Werror -mfpu=neon)
 print_ok_fail(${HAVE_MFPU_NEON})
 
