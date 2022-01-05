@@ -61,7 +61,7 @@
 
 #ifdef USE_ANDROID_GLES2
 #include "pi_shaders.h"
-#include <gl2.h>
+#include <GLES2/gl2.h>
 #endif
 
 #ifdef __OCPN__ANDROID__
