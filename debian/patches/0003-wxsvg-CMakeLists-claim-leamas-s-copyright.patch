@@ -1,0 +1,19 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Thu, 6 Jan 2022 17:57:57 +0100
+Subject: wxsvg/CMakeLists: claim leamas's copyright
+
+---
+ libs/wxsvg/CMakeLists.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/libs/wxsvg/CMakeLists.txt b/libs/wxsvg/CMakeLists.txt
+index 654a10e..eebf939 100644
+--- a/libs/wxsvg/CMakeLists.txt
++++ b/libs/wxsvg/CMakeLists.txt
+@@ -1,3 +1,6 @@
++# Copyright (c) 2019 Alec Leamas
++# License: wxWidgets license
++
+ cmake_minimum_required(VERSION 3.1)
+ 
+ if (TARGET ocpn::wxsvg)

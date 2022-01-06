@@ -10,16 +10,16 @@ Not acceptable upstream.
 
 Forwarded: not-needed
 ---
- CMakeLists.txt                                |  8 ++---
- data/help_web.html                            | 51 +++++++++++++++++++++++++++
- 3 files changed, 55 insertions(+), 27 deletions(-)
+ CMakeLists.txt     |  8 ++++----
+ data/help_web.html | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+), 4 deletions(-)
  create mode 100644 data/help_web.html
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 98f3e8d..499be2c 100644
+index 837cbda..5a8c10e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2108,7 +2108,7 @@ if (APPLE)
+@@ -2117,7 +2117,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -28,7 +28,7 @@ index 98f3e8d..499be2c 100644
      PROPERTIES
        MACOSX_PACKAGE_LOCATION SharedSupport/doc
    )
-@@ -2165,12 +2165,12 @@ if (APPLE)
+@@ -2174,12 +2174,12 @@ if (APPLE)
    if (OCPN_BUNDLE_DOCS )
      set(
        DOC_FILES
@@ -43,7 +43,7 @@ index 98f3e8d..499be2c 100644
    endif (OCPN_BUNDLE_DOCS )
  
    target_sources(
-@@ -2321,7 +2321,7 @@ if (NOT APPLE)
+@@ -2330,7 +2330,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS )
      install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
    else (OCPN_BUNDLE_DOCS )
