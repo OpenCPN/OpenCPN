@@ -680,6 +680,28 @@ Files: libs/wxservdisc/wxServDisc.cpp
 Copyright: 2008, Christian Beier <dontmind@freeshell.org>
 License: GPL-2+
 
+Files: libs/wxsvg/*
+Copyright: 2005-2014 Alex Thuering
+License: wxWidgets
+
+Files: libs/wxsvg/include/wxSVGXML/svgxml.h
+ libs/wxsvg/include/wxSVGXML/svgxmlhelpr.h
+ libs/wxsvg/src/svgxml/svgxml.cpp
+ libs/wxsvg/src/svgxml/svgxmlhelpr.cpp
+Copyright: 2000, Vaclav Slavik
+License: wxWidgets
+
+Files: libs/wxsvg/CMakeLists.txt
+Copyright: 2019, Alec Leamas
+License: wxWidgets
+
+Files: libs/wxsvg/src/NodeList.cpp
+Copyright: 2005, Edouard TISSERANT
+License: wxWidgets
+
+Files: libs/wxsvg/include/wxSVG/NodeListCls.h
+Copyright: 2005, Jonathan Hurtrel
+License: wxWidgets
 Files: mingw/*
 Copyright: fedorainfracloud.org/coprs/leamas/opencpn-mingw.
 License: GPL-2+
