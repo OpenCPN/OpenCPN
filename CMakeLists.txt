@@ -124,6 +124,12 @@ endif ()
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set(OpenGL_GL_PREFERENCE "LEGACY")
 
+if (APPLE)
+  set(PACKAGE_NAME OpenCPN)
+else (APPLE)
+  set(PACKAGE_NAME opencpn)
+endif (APPLE)
+
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
    message(STATUS "Building for wxQt-Android")
    set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
@@ -144,12 +150,6 @@ if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
 endif ()
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
-
-if (APPLE)
-  set(PACKAGE_NAME OpenCPN)
-else (APPLE)
-  set(PACKAGE_NAME opencpn)
-endif (APPLE)
 
 # Locations where cmake looks for cmake modules.
 set(
