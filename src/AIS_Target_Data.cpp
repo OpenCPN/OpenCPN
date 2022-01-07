@@ -350,7 +350,7 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
          << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
          << ClassStr << rowEnd << _T("</table></td></tr>");
 
-  if ((Class != AIS_SART) && (Class != AIS_DSC))
+  if ((Class != AIS_SART) ) //&& (Class != AIS_DSC))
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
             _T("cellspacing=0>")
          << rowStart
@@ -478,7 +478,22 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
     html << rowEnd << _T("<tr><td colspan=2>")
          << _T("<b>") << sizeString << rowEnd;
   }
-
+  else if (Class == AIS_DSC && (ShipType == 12 || ShipType == 16) ) {
+    if (ShipType == 16) {  //Distress relay
+      html << _T("<tr><td colspan=2>") << _T("<b>") << _("Distress relay");
+      if (m_dscTXmmsi > 2000000) {
+        wxString mmsirelay = wxString::Format(_T(" %09d"), abs(m_dscTXmmsi));
+        html << _T(" ") << _("by:") << mmsirelay;
+      }
+      html << _T("<b>") << sizeString << rowEnd;
+    }
+    html << _T("<tr><td colspan=2>") << _("Nature of distress: ")
+         << rowEnd << _T("<tr><td colspan=2>");
+    if (m_dscNature < 13) {
+      html << _T("<tr><td colspan=2>") << _T("<b>") << GetNatureofDistress(m_dscNature)
+           << _T("<b>") << sizeString << rowEnd << _T("<tr><td colspan=2>");
+    }
+  }
   else if ((Class != AIS_BASE) && (Class != AIS_DSC)) {
     html << _T("<tr><td colspan=2>")
          << _T("<b>") << AISTypeStr;
@@ -753,7 +768,7 @@ wxString AIS_Target_Data::GetRolloverString(void) {
       }
 
       if ((Class != AIS_CLASS_B) && (Class != AIS_SART) &&
-          !b_SarAircraftPosnReport) {
+          Class != AIS_DSC && !b_SarAircraftPosnReport) {
         if ((NavStatus <= 15) && (NavStatus >= 0)) {
           result.Append(_T(" ("));
           result.Append(wxGetTranslation(ais_get_status(NavStatus)));
@@ -765,7 +780,10 @@ wxString AIS_Target_Data::GetRolloverString(void) {
           result.Append(_("Active"));
         else if (NavStatus == UNDEFINED)
           result.Append(_("Testing"));
-
+        result.Append(_T(")"));
+      } else if (Class == AIS_DSC) {
+        result.Append(_T(" ("));
+        result.Append(GetNatureofDistress(m_dscNature));
         result.Append(_T(")"));
       }
     }
@@ -888,7 +906,7 @@ wxString AIS_Target_Data::Get_vessel_type_string(bool b_short) {
   else if (Class == AIS_APRS)
     i = 56;
   else if (Class == AIS_DSC)
-    i = (ShipType == 12) ? 54 : 53;  // 12 is distress
+    i = (ShipType == 12 || ShipType == 16) ? 54 : 53;  // 12 & 16 is distress
 
   if (!b_short)
     return ais_get_type(i);
@@ -909,7 +927,7 @@ wxString AIS_Target_Data::Get_class_string(bool b_short) {
     case AIS_GPSG_BUDDY:
       return b_short ? _("Buddy") : _("GPSGate Buddy");
     case AIS_DSC:
-      if (ShipType == 12)
+      if (ShipType == 12 || ( ShipType == 16 && m_dscNature < 13))
         return b_short ? _("DSC") : _("DSC Distress");
       else
         return b_short ? _("DSC") : _("DSC Position Report");
@@ -923,6 +941,20 @@ wxString AIS_Target_Data::Get_class_string(bool b_short) {
     default:
       return b_short ? _("Unk") : _("Unknown");
   }
+}
+
+wxString AIS_Target_Data::GetNatureofDistress(int dscnature) {
+  // Natures of distress from: Rec. ITU-R M.493-10. 
+  wxString dscDistressType[] = { _("Fire, explosion"), _("Floding"),
+                                     _("Collision"), _("Grounding"),
+                 _("Listing, in danger of capsazing"), _("Sinking"),
+               _("Disabled and adrift"), _("Undesignated distress"),
+             _("Abandoning ship"), _("Pirazy/armed robbery attack"),
+                 _("Man overboard"), _T("-"), _("EPIRB emission") };
+  if (dscnature >= 0 && dscnature < 13)
+    return dscDistressType[dscnature];
+  
+  return wxEmptyString;
 }
 
 void AIS_Target_Data::Toggle_AIS_CPA(void) {

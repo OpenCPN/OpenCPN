@@ -1517,12 +1517,13 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   double dsc_lat = 0.;
   double dsc_lon = 0.;
   double dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
-  double dse_tmp, dse_addr;
+  double dse_tmp;
   double dse_lat = 0.;
   double dse_lon = 0.;
-  long dsc_fmt, dsc_quadrant;
+  long dsc_fmt, dsc_quadrant,dsc_cat, dsc_nature;
 
   int dsc_mmsi = 0;
+  int dsc_tx_mmsi = 0;
   int dse_mmsi = 0;
   double dse_cog = 0.;
   double dse_sog = 0.;
@@ -1544,26 +1545,47 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   if (str.Mid(3, 3).IsSameAs(_T("DSC"))) {
     m_dsc_last_string = str;
 
-    token =
-        tkz.GetNextToken();  // format specifier
-                             // (02-area,12-distress,16-allships,20-individual,...)
-    token.ToLong(&dsc_fmt);
+    token = tkz.GetNextToken();  // format specifier
+    token.ToLong(&dsc_fmt);      // (02-area,12-distress,16-allships,20-individual,...)
 
     token = tkz.GetNextToken();  // address i.e. mmsi*10 for received msg, or
-                                 // area spec
-    token.ToDouble(&dsc_addr);
-    dsc_mmsi = 0 - (int)(dsc_addr / 10);  // as per NMEA 0183 3.01
+                                 // area spec or sender mmsi for (12) and (16)
+    if (dsc_fmt == 12 || dsc_fmt == 16) {
+      dsc_mmsi = wxAtoi(token.Mid(0, 9));
+    }
+    else {
+      token.ToDouble(&dsc_addr);
+      dsc_mmsi = 0 - (int)( dsc_addr / 10 );  // as per NMEA 0183 3.01
+    }
 
     token = tkz.GetNextToken();  // category
+    token.ToLong(&dsc_cat);      // 12 - Distress (relayed)
+
     token = tkz.GetNextToken();  // nature of distress or telecommand1
+    if (!token.IsSameAs(wxEmptyString)) { // 00-12 = nature of distress
+      token.ToLong(&dsc_nature);
+    }
+    else dsc_nature = 99;
+
     token = tkz.GetNextToken();  // comm type or telecommand2
 
     token = tkz.GetNextToken();  // position or channel/freq
     token.ToDouble(&dsc_tmp);
 
     token = tkz.GetNextToken();  // time or tel. no.
-    token = tkz.GetNextToken();  // mmsi of ship in distress
-    token = tkz.GetNextToken();  // nature of distress
+    token = tkz.GetNextToken();  // mmsi of ship in distress, relay
+    if (dsc_fmt == 16 && dsc_cat == 12 && !token.IsSameAs(wxEmptyString) ) {
+      //wxString dmmsi = token.Mid(0,9);
+      dsc_tx_mmsi = dsc_mmsi;    // mmsi of relay issuer
+      dsc_mmsi = wxAtoi(token.Mid(0, 9));
+    }
+    token = tkz.GetNextToken();  // nature of distress, relay
+    if (dsc_fmt == 16 && dsc_cat == 12) {
+      if (!token.IsSameAs(wxEmptyString)) { // 00-12 = nature of distress
+        token.ToLong(&dsc_nature);
+      }
+      else dsc_nature = 99;
+    }
     token = tkz.GetNextToken();  // acknowledgement
     token = tkz.GetNextToken();  // expansion indicator
 
@@ -1599,13 +1621,15 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
         break;
     }
     if (dsc_fmt != 02) mmsi = (int)dsc_mmsi;
+
   } else if (str.Mid(3, 3).IsSameAs(_T("DSE"))) {
     token = tkz.GetNextToken();  // total number of sentences
     token = tkz.GetNextToken();  // sentence number
     token = tkz.GetNextToken();  // query/rely flag
     token = tkz.GetNextToken();  // vessel MMSI
-    token.ToDouble(&dse_addr);
-    dse_mmsi = 0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
+    dse_mmsi = wxAtoi(token.Mid(0, 9)); // ITU-R M.493-10 §5.2
+    //token.ToDouble(&dse_addr);
+    //0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
 
 # if 0
     token = tkz.GetNextToken();  // code field
@@ -1646,7 +1670,6 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
        else if (dseSymbol.IsSameAs(_T("06"))) { // Persons On Board
        }
    }
-
     mmsi = (int)dse_mmsi;
   }
 
@@ -1682,9 +1705,11 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
     m_ptentative_dsctarget->ShipType = dsc_fmt;  // DSC report
     m_ptentative_dsctarget->Class = AIS_DSC;
     m_ptentative_dsctarget->b_nameValid = true;
-    if (dsc_fmt == 12) {
+    if (dsc_fmt == 12 || (dsc_fmt == 16 && dsc_cat == 12)) {
       snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d",
                std::abs(mmsi));
+      m_ptentative_dsctarget->m_dscNature = int(dsc_nature);
+      m_ptentative_dsctarget->m_dscTXmmsi = dsc_tx_mmsi;
     } else {
       snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d",
                std::abs(mmsi));
@@ -2615,7 +2640,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
           m_bGeneralAlert = true;
 
         //  DSC Distress targets always alert
-        if ((td->Class == AIS_DSC) && (td->ShipType == 12))
+        if (( td->Class == AIS_DSC ) && ( ( td->ShipType == 12 ) || ( td->ShipType == 16 ) ))
           m_bGeneralAlert = true;
       }
 
@@ -2626,7 +2651,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
         this_alarm = AIS_ALERT_SET;
 
       //  DSC Distress targets always alert
-      if ((td->Class == AIS_DSC) && (td->ShipType == 12))
+      if ((td->Class == AIS_DSC) && (( td->ShipType == 12 ) || ( td->ShipType == 16 )) )
         this_alarm = AIS_ALERT_SET;
 
       if (g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
@@ -2676,7 +2701,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
       //  SART and DSC targets always maintain ack timeout
 
       if (g_bAIS_ACK_Timeout || (td->Class == AIS_SART) ||
-          ((td->Class == AIS_DSC) && (td->ShipType == 12))) {
+          ((td->Class == AIS_DSC) && ((td->ShipType == 12) || (td->ShipType == 16)) )) {
         if (td->b_in_ack_timeout) {
           wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
           if (delta.GetMinutes() > g_AckTimeout_Mins)
@@ -3019,7 +3044,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
               }
             }
           }
-        } else if ((td->Class == AIS_DSC) && (td->ShipType == 12)) {
+        } else if ((td->Class == AIS_DSC) && ((td->ShipType == 12) || (td->ShipType == 16)) ) {
           if (td->b_active) {
             if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
               palert_target_dsc = td;
@@ -3139,7 +3164,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
       wxDateTime now = wxDateTime::Now();
       if (((AIS_ALERT_SET == palert_target->n_alert_state) &&
            !palert_target->b_in_ack_timeout) ||
-          (palert_target->Class == AIS_SART)) {
+          (palert_target->Class == AIS_SART) ) {
         g_pais_alert_dialog_active->UpdateText();
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
