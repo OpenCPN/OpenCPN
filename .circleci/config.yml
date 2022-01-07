@@ -70,14 +70,14 @@ jobs:
              - build/.flatpak-builder/downloads
              - build/.flatpak-builder/rofiles
 
-  build-android-armhf:
-    docker:
-      - image: circleci/android:api-28-ndk
-    environment:
-      - OCPN_TARGET:  android-armhf
-    steps:
-      - checkout
-      - run: ci/circleci-build-android-corelib-armhf.sh
+   build-android-armhf:
+     docker:
+       - image: circleci/android:api-28-ndk
+     environment:
+       - OCPN_TARGET:  android-armhf
+     steps:
+       - checkout
+       - run: ci/circleci-build-android-corelib-armhf.sh
 
 workflows:
   version: 2
