@@ -7,6 +7,9 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 %:
 	dh $@
 
+override_dh_missing:
+	dh_missing --fail-missing
+
 override_dh_auto_configure:
 	dh_auto_configure -- \
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
