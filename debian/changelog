@@ -1,7 +1,7 @@
 opencpn (5.6.0+dfsg1-1~bpo20.04.1) focal-backports; urgency=medium
 
   * Backported from Jammy
-  * Closes: #1956004
+  * LP: #1956004
   * Update d/control VCS url
   * d/gbp.conf: Update default branch
   * d/control: debhelper compat 13 -> 12.
