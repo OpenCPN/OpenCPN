@@ -38,8 +38,8 @@ Depends: opencpn-data (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
 Recommends: wx3.0-i18n
-Breaks: opencpn-plugins (<< 4.8.8~)
-Replaces: opencpn-plugins (<< 4.8.8~)
+Breaks: opencpn-plugins
+Replaces: opencpn-plugins
 Suggests: binutils
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
