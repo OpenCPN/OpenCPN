@@ -124,30 +124,15 @@ endif ()
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set(OpenGL_GL_PREFERENCE "LEGACY")
 
-project(OpenCPN)
-
-if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
-  set(CMAKE_VERBOSE_MAKEFILE ON)
-endif ()
-
-message(STATUS "cmake version: ${CMAKE_VERSION}")
-
 if (APPLE)
   set(PACKAGE_NAME OpenCPN)
 else (APPLE)
   set(PACKAGE_NAME opencpn)
 endif (APPLE)
 
-# Locations where cmake looks for cmake modules.
-set(
-  CMAKE_MODULE_PATH
-  ${CMAKE_SOURCE_DIR}/build
-  ${CMAKE_SOURCE_DIR}/
-  ${CMAKE_SOURCE_DIR}/cmake
-)
-
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
    message(STATUS "Building for wxQt-Android")
+   set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
    set(QT_ANDROID "ON")
    if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
      add_definitions("-DANDROID_ARM64")
@@ -158,9 +143,31 @@ if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
 endif ()
 
 
+project(OpenCPN)
+
+if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+endif ()
+
+message(STATUS "cmake version: ${CMAKE_VERSION}")
+
+# Locations where cmake looks for cmake modules.
+set(
+  CMAKE_MODULE_PATH
+  ${CMAKE_SOURCE_DIR}/build
+  ${CMAKE_SOURCE_DIR}/
+  ${CMAKE_SOURCE_DIR}/cmake
+)
+
+
+
 include(FindPkgConfig)
 include(CMakeDependentOption)
 include(CheckSymbolExists)
+
+if (QT_ANDROID)
+  #include(libs/AndroidLibs.cmake)
+endif ()
 
 #
 # Options
@@ -656,19 +663,19 @@ endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
 
 IF(DEFINED _wx_selected_config)
   IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
-    MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
-    ADD_DEFINITIONS(-DocpnUSE_GLES)
-    ADD_DEFINITIONS(-DocpnUSE_GL)
+    #MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+    #MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
+    #ADD_DEFINITIONS(-DocpnUSE_GLES)
+    #ADD_DEFINITIONS(-DocpnUSE_GL)
 
-    SET(OPENGLES_FOUND "YES")
-    SET(OPENGL_FOUND "YES")
+    #SET(OPENGLES_FOUND "YES")
+    #SET(OPENGL_FOUND "YES")
 
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
-    SET(USE_GLES2 ON )
-    MESSAGE (STATUS "Using GLESv2 for Android")
-    ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
-    ADD_DEFINITIONS(-DUSE_GLSL)
+    #ADD_DEFINITIONS(-DUSE_GLU_TESS)
+    #SET(USE_GLES2 ON )
+    #MESSAGE (STATUS "Using GLESv2 for Android")
+    #ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
+    #ADD_DEFINITIONS(-DUSE_GLSL)
     INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/libs/glshim/include/GLES )
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
@@ -840,32 +847,6 @@ if (GTK3_FOUND)
   endif ()
 endif ()
 
-IF(QT_ANDROID)
-  SET( wxWidgets_LIBRARIES
-
-    # Link order is critical to avoid circular dependencies
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
-
-  )
-ENDIF(QT_ANDROID)
 
 #  Make sure that the variable "wxWidgets_VERSION_STRING" is set, even on older CMake versions
 #  Seems safe to set to "3.0", since OCPN does not support earlier wxWidgets versions
@@ -886,22 +867,6 @@ message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
-
-IF(QT_ANDROID)
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
-
-  INCLUDE_DIRECTORIES(
-      "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-  include_directories("${CMAKE_SOURCE_DIR}/include")
-
-  add_definitions(-DQT_WIDGETS_LIB)
-endif (QT_ANDROID)
 
 set(
   HDRS
@@ -1175,7 +1140,7 @@ if (APPLE)
   endif ()
 endif (APPLE)
 
-if (LINUX)
+if (LINUX AND NOT QT_ANDROID)
   list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
   list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
 endif ()
@@ -1213,6 +1178,10 @@ else ()
   add_executable(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
 
+if (QT_ANDROID)
+  include(libs/AndroidLibs.cmake)
+endif ()
+
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(
@@ -1228,6 +1197,7 @@ set_target_properties(
     OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
+  message(STATUS "PackageNem debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(
   ${PACKAGE_NAME}
@@ -1306,10 +1276,10 @@ endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 if (DEFINED _wx_selected_config)
   message(STATUS "selected config ${_wx_selected_config}")
   if (_wx_selected_config MATCHES "androideabi-qt")
-    message(STATUS "Building for wxQt-Android")
-    message(STATUS "Qt_Base: " ${Qt_Base})
-    message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
-    set(QT_ANDROID "ON")
+    #message(STATUS "Building for wxQt-Android")
+    #message(STATUS "Qt_Base: " ${Qt_Base})
+    #message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
+    #set(QT_ANDROID "ON")
   endif (_wx_selected_config MATCHES "androideabi-qt")
 endif (DEFINED _wx_selected_config)
 
@@ -1325,8 +1295,8 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
     message(STATUS "Found OpenGLESv1")
     add_definitions(-DocpnUSE_GL) # ocpnUSE_GLES is in config.h
 
-    set(OPENGLES_FOUND "YES")
-    set(OPENGL_FOUND "YES")
+    #set(OPENGLES_FOUND "YES")
+    #set(OPENGL_FOUND "YES")
 
     set(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm")
   endif ()
@@ -1577,8 +1547,8 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
     add_definitions(-DocpnUSE_GLES)
     add_definitions(-DocpnUSE_GL)
 
-    set(OPENGLES_FOUND "YES")
-    set(OPENGL_FOUND "YES")
+    #set(OPENGLES_FOUND "YES")
+    #set(OPENGL_FOUND "YES")
 
     # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
     add_subdirectory(libs/glshim)
