@@ -80,3 +80,5 @@ src/wind.cpp
 src/wind.h
 src/wind_history.cpp
 src/wind_history.h
+src/altitude.cpp
+src/altitude.h

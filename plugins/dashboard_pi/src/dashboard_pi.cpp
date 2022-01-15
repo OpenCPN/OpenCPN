@@ -4231,7 +4231,8 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list) {
             _T("%6.1f"));
         break;
       case ID_DBP_D_ALTI:
-        instrument = new DashboardInstrument_Depth(this, wxID_ANY,
+        printf("case ID_DBP_D_ALTI \n");
+        instrument = new DashboardInstrument_Altitude(this, wxID_ANY,
                                                    getInstrumentCaption(id));
         break;
       case ID_DBP_I_DPT:

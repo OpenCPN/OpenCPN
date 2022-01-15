@@ -64,6 +64,7 @@
 #include "rudder_angle.h"
 #include "gps.h"
 #include "depth.h"
+#include "altitude.h"
 #include "clock.h"
 #include "wind_history.h"
 #include "baro_history.h"
