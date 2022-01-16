@@ -3,7 +3,7 @@
  *
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin, display altitude trace
- * Author:   derived from Jean-Eudes Onfray depth.h by Andreas Merz
+ * Author:   derived from Jean-Eudes Onfray's depth.h by Andreas Merz
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -56,8 +56,10 @@ public:
   void SetData(DASH_CAP, double, wxString);
 
 private:
+
 protected:
   double m_ArrayAltitude[ALTITUDE_RECORD_COUNT];   // FIFO
+  double m_MinAltitude;
   double m_MaxAltitude;
   double m_Altitude;
   wxString m_AltitudeUnit;
