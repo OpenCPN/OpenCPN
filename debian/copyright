@@ -7,6 +7,7 @@ Files-Excluded:
  buildandroid*
  buildwin*
  data/doc*
+ debian*
  Docs/*
  flatpak*
  mingw*
