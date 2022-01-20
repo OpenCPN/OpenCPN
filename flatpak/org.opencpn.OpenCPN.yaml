@@ -72,6 +72,10 @@ modules:
             path: src/Fix-missing-mouse-events-when-using-gesture-events-i.patch
           - type: patch
             path: src/warn-for-compiler-abi-mismatch.patch
+          - type: patch
+            path: src/0002-Fix-wxGTK-build-after-WXSetInitialFittingClientSize-.patch
+          - type: patch
+            path: src/0003-Make-wxSizer-SetSizeHints-work-again.patch
       config-opts:
           - --with-gtk=3
           - --with-opengl

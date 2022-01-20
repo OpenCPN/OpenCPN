@@ -1,0 +1,91 @@
+From 136574b1e0ca3a7165d379261952dfb3fb2f5ca6 Mon Sep 17 00:00:00 2001
+From: Vadim Zeitlin <vadim@wxwidgets.org>
+Date: Sat, 24 Jul 2021 16:59:14 +0100
+Subject: [PATCH] Make wxSizer::SetSizeHints() work again
+
+This function was broken when it was called for a window which was not
+the window the sizer was associated with since the recent (pre-3.1.5)
+changes trying to work around the problem with the initial windows size
+when using GTK 3, see 9c0a8be1dc (Merge branch 'gtk-initial-size',
+2021-04-13).
+
+Fix it by passing the sizer to use for calculating the size explicitly
+to WXSetInitialFittingClientSize() when we have it, and only falling
+back on the window's own sizer if we don't.
+
+Closes #19170.
+Applied-upstream: https://github.com/wxWidgets/wxWidgets/commit/136574b1e0ca3a
+---
+ include/wx/window.h   |  6 +++++-
+ src/common/sizer.cpp  |  5 +++--
+ src/common/wincmn.cpp | 12 +++++++++---
+ 3 files changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/include/wx/window.h b/include/wx/window.h
+index 794d7a0a15..393d71ba49 100644
+--- a/include/wx/window.h
++++ b/include/wx/window.h
+@@ -1571,7 +1571,11 @@ public:
+     // that we really need to use is not known until the window is actually
+     // shown, as is the case for TLWs with recent GTK versions, as it will
+     // update the size again when it does become known, if necessary.
+-    virtual void WXSetInitialFittingClientSize(int flags);
++    //
++    // The optional sizer argument can be passed to use the given sizer for
++    // laying out the window, which is useful if this function is called before
++    // SetSizer(). By default the window sizer is used.
++    virtual void WXSetInitialFittingClientSize(int flags, wxSizer* sizer = NULL);
+ 
+         // get the handle of the window for the underlying window system: this
+         // is only used for wxWin itself or for user code which wants to call
+diff --git a/src/common/sizer.cpp b/src/common/sizer.cpp
+index 755ba7fd3e..3b18ac910f 100644
+--- a/src/common/sizer.cpp
++++ b/src/common/sizer.cpp
+@@ -1079,7 +1079,7 @@ wxSize wxSizer::Fit( wxWindow *window )
+     wxCHECK_MSG( window, wxDefaultSize, "window can't be NULL" );
+ 
+     // set client size
+-    window->WXSetInitialFittingClientSize(wxSIZE_SET_CURRENT);
++    window->WXSetInitialFittingClientSize(wxSIZE_SET_CURRENT, this);
+ 
+     // return entire size
+     return window->GetSize();
+@@ -1119,7 +1119,8 @@ void wxSizer::SetSizeHints( wxWindow *window )
+ {
+     // Preserve the window's max size hints, but set the
+     // lower bound according to the sizer calculations.
+-    window->WXSetInitialFittingClientSize(wxSIZE_SET_CURRENT | wxSIZE_SET_MIN);
++    window->WXSetInitialFittingClientSize(wxSIZE_SET_CURRENT | wxSIZE_SET_MIN,
++                                          this);
+ }
+ 
+ #if WXWIN_COMPATIBILITY_2_8
+diff --git a/src/common/wincmn.cpp b/src/common/wincmn.cpp
+index bb8127670c..a851b371ce 100644
+--- a/src/common/wincmn.cpp
++++ b/src/common/wincmn.cpp
+@@ -999,11 +999,17 @@ wxSize wxWindowBase::WindowToClientSize(const wxSize& size) const
+                   size.y == -1 ? -1 : size.y - diff.y);
+ }
+ 
+-void wxWindowBase::WXSetInitialFittingClientSize(int flags)
++void wxWindowBase::WXSetInitialFittingClientSize(int flags, wxSizer* sizer)
+ {
+-    wxSizer* const sizer = GetSizer();
++    // Use the window sizer by default.
+     if ( !sizer )
+-        return;
++    {
++        sizer = GetSizer();
++
++        // If there is none, we can't compute the fitting size.
++        if ( !sizer )
++            return;
++    }
+ 
+     const wxSize
+         size = sizer->ComputeFittingClientSize(static_cast<wxWindow *>(this));
+-- 
+2.33.0
+

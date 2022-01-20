@@ -1,0 +1,50 @@
+From 912f4b76ac42a79ff772cc9ea5cf8cb5c3f09960 Mon Sep 17 00:00:00 2001
+From: Vadim Zeitlin <vadim@wxwidgets.org>
+Date: Sat, 24 Jul 2021 19:15:55 +0200
+Subject: [PATCH] Fix wxGTK build after WXSetInitialFittingClientSize() change
+
+This should have been part of 136574b1e0 (Make wxSizer::SetSizeHints()
+work again, 2021-07-24).
+
+See #19170.
+
+Applied-upstream: https://github.com/wxWidgets/wxWidgets/commit/912f4b7
+---
+ include/wx/gtk/toplevel.h | 2 +-
+ src/gtk/toplevel.cpp      | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/include/wx/gtk/toplevel.h b/include/wx/gtk/toplevel.h
+index 88abfd03cf..b057a4a0ce 100644
+--- a/include/wx/gtk/toplevel.h
++++ b/include/wx/gtk/toplevel.h
+@@ -143,7 +143,7 @@ public:
+ 
+     virtual void SetMinSize(const wxSize& minSize) wxOVERRIDE;
+ 
+-    virtual void WXSetInitialFittingClientSize(int flags) wxOVERRIDE;
++    virtual void WXSetInitialFittingClientSize(int flags, wxSizer* sizer = NULL) wxOVERRIDE;
+ 
+ private:
+     // Flags to call WXSetInitialFittingClientSize() with if != 0.
+diff --git a/src/gtk/toplevel.cpp b/src/gtk/toplevel.cpp
+index 6060a7a3ac..6b01391e3e 100644
+--- a/src/gtk/toplevel.cpp
++++ b/src/gtk/toplevel.cpp
+@@ -1567,10 +1567,11 @@ void wxTopLevelWindowGTK::SetMinSize(const wxSize& minSize)
+     m_pendingFittingClientSizeFlags &= ~wxSIZE_SET_MIN;
+ }
+ 
+-void wxTopLevelWindowGTK::WXSetInitialFittingClientSize(int flags)
++void
++wxTopLevelWindowGTK::WXSetInitialFittingClientSize(int flags, wxSizer* sizer)
+ {
+     // In any case, update the size immediately.
+-    wxTopLevelWindowBase::WXSetInitialFittingClientSize(flags);
++    wxTopLevelWindowBase::WXSetInitialFittingClientSize(flags, sizer);
+ 
+     // But if we're not shown yet, the fitting size may be wrong because GTK
+     // style cache hasn't been updated yet and we need to do it again when the
+-- 
+2.33.0
+
