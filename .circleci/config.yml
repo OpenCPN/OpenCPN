@@ -104,6 +104,7 @@ workflows:
             branches:
               only:
                 - master
+                - m1
       - build-android-armhf:
           filters:
             branches:
