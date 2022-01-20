@@ -4415,6 +4415,11 @@ void glChartCanvas::Render() {
             b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
       }
 
+      //  FBO swapping has trouble with Retina display on MacOS Monterey.
+      //  So, disable accelerated pan ops on this case.
+      if (m_displayScale > 1)
+         accelerated_pan = false;
+
       // do we allow accelerated panning?  can we perform it here?
 #ifndef USE_ANDROID_GLES2
       // enable rendering to texture in framebuffer object
