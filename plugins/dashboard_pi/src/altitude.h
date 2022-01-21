@@ -58,16 +58,26 @@ public:
 private:
 
 protected:
+  const int    c_GridLines = 4;
   double m_ArrayAltitude[ALTITUDE_RECORD_COUNT];   // FIFO
   double m_MinAltitude;
   double m_MaxAltitude;
-  double m_Altitude;
+  double m_Range = c_GridLines;    // will change in 1 2 5 steps
+  double m_Altitude;               // the actual measurement value
+  double m_meanAltitude = 0.0;     // moving average
+  int    m_Attenuation = 1;   // 1 2 5
+  int    m_Decade = 1;        // 1 10 100 1000 ..
   wxString m_AltitudeUnit;
   wxString m_Temp;
 
   void Draw(wxGCDC* dc);
   void DrawBackground(wxGCDC* dc);
   void DrawForeground(wxGCDC* dc);
+  
+  // plot scaling utilities
+  void setAttenuation(int steps);
+  int  getAttenuation();
+
 };
 
 #endif  // __ALTITUDE_H__

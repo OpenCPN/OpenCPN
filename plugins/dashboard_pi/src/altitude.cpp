@@ -74,8 +74,9 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
                                         wxString unit) {
   if (st == OCPN_DBP_STC_ALTI) {
     m_Altitude = std::isnan(data) ? 0.0 : data;
-
+    //m_Altitude = m_Altitude*10.0 +1000;       // inject fake testdata
     //printf("Altitude = %3.3f\n", m_Altitude); // debug output
+
     for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
       m_ArrayAltitude[idx - 1] = m_ArrayAltitude[idx];      // shift FIFO
     }
@@ -89,6 +90,45 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
     }
   }
 }
+
+void   DashboardInstrument_Altitude::setAttenuation(int steps) {
+  // increase the attenuation in 1 2 5 10 20 50 steps
+  if (steps > 0)
+    while (steps-- ) {
+      switch (m_Attenuation) {
+        case 1:
+          m_Attenuation=2; break;
+        case 2:
+          m_Attenuation=5; break;
+        default:
+          m_Attenuation=1;
+	  m_Decade*=10;
+      }
+    }
+  // decrease the attenuation in 1 2 5 10 20 50 steps
+  else if (steps<0)
+    while ( steps++ ) {
+      switch (m_Attenuation) {
+        case 5:
+          m_Attenuation=2; break;
+        case 2:
+          m_Attenuation=1; break;
+        default:
+          m_Attenuation=5;
+	  m_Decade/=10;
+      }
+    }
+   // bottom limit: unity
+   if (m_Decade < 1) {
+     m_Decade = 1;
+     m_Attenuation=1;
+   }
+}
+
+int DashboardInstrument_Altitude::getAttenuation() {
+  return m_Attenuation*m_Decade;
+}
+
 
 void DashboardInstrument_Altitude::Draw(wxGCDC* dc) {
   DrawBackground(dc);
@@ -131,31 +171,52 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
 
   double MaxAltitude =   -9999.0;
   double MinAltitude = 9999999.0;
+  double meanAltitude = 0.0;
+  double varAltitude = 0.0;   // sum of squares
+  // evaluate buffered data
   for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
+    meanAltitude += m_ArrayAltitude[idx];
+    varAltitude  += m_ArrayAltitude[idx]*m_ArrayAltitude[idx];
     if (m_ArrayAltitude[idx] > MaxAltitude) MaxAltitude = m_ArrayAltitude[idx];
     if (m_ArrayAltitude[idx] < MinAltitude) MinAltitude = m_ArrayAltitude[idx];
   }
-  // limit zooming, the 4 grid lines will be spaced 1m at least
-  if( MaxAltitude-MinAltitude < 4.0 ) {
-    MinAltitude -= 1.0;
-    MaxAltitude = MinAltitude + 4.0;
-  }
-  // only update axes on major changes
-  if( MaxAltitude - m_MaxAltitude >  0.6 || 
-      MaxAltitude - m_MaxAltitude < -4.0 || 
-      MinAltitude - m_MinAltitude < -1.0 ||
-      MinAltitude - m_MinAltitude >  4.0 ) {
-    m_MaxAltitude = round(MaxAltitude);
-    m_MinAltitude = round(MinAltitude);
-  }
+
+  // calculate 1st and 2nd Moments
+  meanAltitude /= ALTITUDE_RECORD_COUNT;
+  varAltitude  /= ALTITUDE_RECORD_COUNT;  // biased estimator, avoid / N-1
+  varAltitude  -= meanAltitude*meanAltitude;
+  m_meanAltitude = meanAltitude;
   
+  // do AGC to adjust scaling
+  double range  = MaxAltitude-MinAltitude;
+  if (range > 1.1*m_Range )
+    setAttenuation(+1);
+  if (range < 0.3*m_Range )  // some hysteresis
+    setAttenuation(-1);
+  double grid = getAttenuation();
+  m_Range = grid*c_GridLines;
+  //printf("m_Range = %5.1f  range = %5.1f  att=%d , mean=%3.2f, std=%3.2f\n", 
+  //  m_Range, range, getAttenuation(), meanAltitude, sqrt(varAltitude));  // debug output
+
+  // only update axes on major corridor changes
+  if( (MaxAltitude - m_MaxAltitude)/grid >  0.25 || 
+      (MaxAltitude - m_MaxAltitude)/grid < -0.75*c_GridLines ) {
+    m_MaxAltitude = (round(MaxAltitude/grid) + 1)*grid;
+    m_MinAltitude = m_MaxAltitude - m_Range;
+  }
+  if( (MinAltitude - m_MinAltitude)/grid < -0.25 ||
+      (MinAltitude - m_MinAltitude)/grid >  0.75*c_GridLines ) {
+    m_MinAltitude = (round(MinAltitude/grid) - 1)*grid;
+    m_MaxAltitude = m_MinAltitude + m_Range;
+  }
+ 
   wxString label;
-  label.Printf(_T("%.0f ") + m_AltitudeUnit, m_MaxAltitude);
+  label.Printf(_T("+/-%.1f %8.0f ") + m_AltitudeUnit, sqrt(varAltitude), m_MaxAltitude);
   int width, height;
   dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
   dc->DrawText(label, size.x - width - 1, 40 - height);
 
-  label.Printf(_T("%.0f ") + m_AltitudeUnit, m_MinAltitude);
+  label.Printf(_T("%.1f/ %8.0f ") + m_AltitudeUnit, m_Range/c_GridLines, m_MinAltitude);
   dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
   dc->DrawText(label, size.x - width - 1, size.y - height);
 }
@@ -171,7 +232,7 @@ void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
   dc->SetBrush(brush);
   dc->SetPen(*wxTRANSPARENT_PEN);
 
-  double ratioH = m_MaxAltitude-m_MinAltitude < 1.0 ? 96.0 : 96.0 / (m_MaxAltitude-m_MinAltitude);  // 140-44=96
+  double ratioH = 96.0 / m_Range;  // 140-44=96
   double ratioW = double(size.x - 6) / (ALTITUDE_RECORD_COUNT - 1);
   wxPoint points[ALTITUDE_RECORD_COUNT + 2];
 #ifdef __OCPN__ANDROID__
@@ -216,9 +277,7 @@ void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
   dc->SetTextForeground(cl);
   dc->SetFont(*g_pFontData);
   if (m_AltitudeUnit != _T("-")) {  // Watchdog
-    wxString s_alti = wxString::Format(_T("%.2f"), m_Altitude);
-    // We want only one decimal but for security not rounded up.
-    s_alti = s_alti.Mid(0, s_alti.length() - 1);
+    wxString s_alti = wxString::Format(_T("%.1f"), m_meanAltitude);
     dc->DrawText(s_alti + _T(" ") + m_AltitudeUnit, 10, m_TitleHeight);
   } else
     dc->DrawText(_T("---"), 10, m_TitleHeight);
