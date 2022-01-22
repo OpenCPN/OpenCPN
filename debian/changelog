@@ -1,3 +1,9 @@
+opencpn (5.6.0+dfsg1-1~wx31.2) focal; urgency=medium
+
+  * Force new build also for armhf.
+
+ -- Alec Leamas <leamas.laec@nowhere.net>  Sat, 22 Jan 2022 17:35:24 +0100
+
 opencpn (5.6.0+dfsg1-1~wx31) focal; urgency=medium
 
   * Rebuilt using wxWidgets 3.1.
