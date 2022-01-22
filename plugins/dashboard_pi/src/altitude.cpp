@@ -77,6 +77,10 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
     //m_Altitude = m_Altitude*10.0 +1000;       // inject fake testdata
     //printf("Altitude = %3.3f\n", m_Altitude); // debug output
 
+    // save FLOPS by just accumulating the FIFO changes
+    m_meanAltitude += (m_Altitude - m_ArrayAltitude[0]) / ALTITUDE_RECORD_COUNT;
+    m_sum2Altitude += (m_Altitude*m_Altitude - m_ArrayAltitude[0]*m_ArrayAltitude[0]);
+    
     for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
       m_ArrayAltitude[idx - 1] = m_ArrayAltitude[idx];      // shift FIFO
     }
@@ -92,6 +96,7 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
 }
 
 void   DashboardInstrument_Altitude::setAttenuation(int steps) {
+  // fast int stuff
   // increase the attenuation in 1 2 5 10 20 50 steps
   if (steps > 0)
     while (steps-- ) {
@@ -102,7 +107,7 @@ void   DashboardInstrument_Altitude::setAttenuation(int steps) {
           m_Attenuation=5; break;
         default:
           m_Attenuation=1;
-	  m_Decade*=10;
+          m_Decade*=10;
       }
     }
   // decrease the attenuation in 1 2 5 10 20 50 steps
@@ -115,7 +120,7 @@ void   DashboardInstrument_Altitude::setAttenuation(int steps) {
           m_Attenuation=1; break;
         default:
           m_Attenuation=5;
-	  m_Decade/=10;
+          m_Decade/=10;
       }
     }
    // bottom limit: unity
@@ -171,21 +176,15 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
 
   double MaxAltitude =   -9999.0;
   double MinAltitude = 9999999.0;
-  double meanAltitude = 0.0;
-  double varAltitude = 0.0;   // sum of squares
   // evaluate buffered data
   for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
-    meanAltitude += m_ArrayAltitude[idx];
-    varAltitude  += m_ArrayAltitude[idx]*m_ArrayAltitude[idx];
     if (m_ArrayAltitude[idx] > MaxAltitude) MaxAltitude = m_ArrayAltitude[idx];
     if (m_ArrayAltitude[idx] < MinAltitude) MinAltitude = m_ArrayAltitude[idx];
   }
 
   // calculate 1st and 2nd Moments
-  meanAltitude /= ALTITUDE_RECORD_COUNT;
-  varAltitude  /= ALTITUDE_RECORD_COUNT;  // biased estimator, avoid / N-1
-  varAltitude  -= meanAltitude*meanAltitude;
-  m_meanAltitude = meanAltitude;
+  double varAltitude = m_sum2Altitude / ALTITUDE_RECORD_COUNT;  // biased estimator, avoid / N-1
+  varAltitude  -= m_meanAltitude*m_meanAltitude;
   
   // do AGC to adjust scaling
   double range  = MaxAltitude-MinAltitude;
