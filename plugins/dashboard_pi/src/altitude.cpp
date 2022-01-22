@@ -178,8 +178,8 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   double MinAltitude = 9999999.0;
   // evaluate buffered data
   for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
-    if (m_ArrayAltitude[idx] > MaxAltitude) MaxAltitude = m_ArrayAltitude[idx];
-    if (m_ArrayAltitude[idx] < MinAltitude) MinAltitude = m_ArrayAltitude[idx];
+    if      (m_ArrayAltitude[idx] > MaxAltitude) MaxAltitude = m_ArrayAltitude[idx];
+    else if (m_ArrayAltitude[idx] < MinAltitude) MinAltitude = m_ArrayAltitude[idx];
   }
 
   // calculate 1st and 2nd Moments
