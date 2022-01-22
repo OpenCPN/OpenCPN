@@ -1,3 +1,9 @@
+opencpn (5.6.0+dfsg1-1~wx31) focal; urgency=medium
+
+  * Rebuilt using wxWidgets 3.1.
+
+ -- Alec Leamas <leamas.laec@nowhere.net>  Sat, 22 Jan 2022 05:06:39 +0100
+
 opencpn (5.6.0+dfsg1-1~bpo20.04.1) focal-backports; urgency=medium
 
   * Backported from Jammy
