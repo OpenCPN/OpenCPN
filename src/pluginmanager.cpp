@@ -6597,6 +6597,11 @@ InitReturn ChartPlugInWrapper::Init(const wxString &name,
 
       bReadyToRender = m_ppicb->IsReadyToRender();
     }
+    else{
+      //  Mark the chart as unable to render
+      m_ChartType = CHART_TYPE_UNKNOWN;
+      m_ChartFamily = CHART_FAMILY_UNKNOWN;
+    }
 
     //  PlugIn may invoke wxExecute(), which steals the keyboard focus
     //  So take it back
