@@ -527,12 +527,14 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
 
 
 #if defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
+#pragma message("Using SYSFS port enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) {
   return EnumerateSysfsSerialPorts();
 }
 
 #elif defined(OCPN_USE_UDEV_PORTS) && defined(HAVE_LIBUDEV)
+#pragma message("Using UDEV port enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) { return EnumerateUdevSerialPorts(); }
 
@@ -566,6 +568,7 @@ wxArrayString* EnumerateSerialPorts(void) {
 }
 
 #elif defined(OCPN_USE_NEWSERIAL)
+#pragma message("Using NEWSERIAL port enumeration")
 
 wxArrayString* EnumerateSerialPorts(void) {
   wxArrayString* preturn = new wxArrayString;
