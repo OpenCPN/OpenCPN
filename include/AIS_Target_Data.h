@@ -109,8 +109,9 @@ public:
   bool b_positionOnceValid;
   bool b_nameValid;
   bool b_isFollower;
+  bool b_isDSCtarget; // DSC flag to a possible simultaneous AIS target
   int  m_dscNature;
-  int  m_dscTXmmsi;
+  int  m_dscTXmmsi;   // MMSI for the DSC relay issuer
 
   //                     MMSI Properties
   bool b_NoTrack;

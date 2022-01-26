@@ -105,6 +105,9 @@ AIS_Target_Data::AIS_Target_Data() {
   SyncState = 888;
   SlotTO = 999;
   ShipType = 19;  // "Unknown"
+  b_isDSCtarget = false;
+  m_dscNature = 99;
+  m_dscTXmmsi = 666;
 
   CPA = 100;  // Large values avoid false alarms
   TCPA = 100;
@@ -193,6 +196,9 @@ void AIS_Target_Data::CloneFrom(AIS_Target_Data *q) {
   SyncState = q->SyncState;
   SlotTO = q->SlotTO;
   ShipType = q->ShipType;
+  b_isDSCtarget = q->b_isDSCtarget;
+  m_dscNature = q->m_dscNature;
+  m_dscTXmmsi = q->m_dscTXmmsi;
 
   CPA = q->CPA;
   TCPA = q->TCPA;
