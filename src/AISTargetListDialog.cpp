@@ -703,6 +703,14 @@ void AISTargetListDialog::CreateControls() {
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnTargetScrollTo), NULL, this);
   bsRouteButtonsInner->Add(m_pButtonJumpTo, 0, wxEXPAND | wxALL, 0);
+  
+  m_pButtonJumpTo_Close =
+    new wxButton(winr, wxID_ANY, _("Center-Info-Close"), wxDefaultPosition,
+                 wxDefaultSize, wxBU_AUTODRAW);
+  m_pButtonJumpTo_Close->Connect(
+    wxEVT_COMMAND_BUTTON_CLICKED,
+    wxCommandEventHandler(AISTargetListDialog::OnTargetScrollToClose), NULL, this);
+  bsRouteButtonsInner->Add(m_pButtonJumpTo_Close, 0, wxEXPAND | wxALL, 0);
 
   m_pButtonCreateWpt =
       new wxButton(winr, wxID_ANY, _("Create WPT"), wxDefaultPosition,
@@ -846,6 +854,7 @@ void AISTargetListDialog::UpdateButtons() {
     if (pAISTargetSel && (!pAISTargetSel->b_positionOnceValid)) enable = false;
   }
   m_pButtonJumpTo->Enable(enable);
+  m_pButtonJumpTo_Close->Enable(enable);
   m_pButtonCreateWpt->Enable(enable);
   m_pButtonToggleTrack->Enable(enable);
   m_pButtonCopyMMSI->Enable(enable);
@@ -927,20 +936,11 @@ void AISTargetListDialog::OnTargetListColumnClicked(wxListEvent &event) {
 }
 
 void AISTargetListDialog::OnTargetScrollTo(wxCommandEvent &event) {
-  long selItemID = -1;
-  selItemID = m_pListCtrlAISTargets->GetNextItem(selItemID, wxLIST_NEXT_ALL,
-                                                 wxLIST_STATE_SELECTED);
-  if (selItemID == -1) return;
+  CenterToTarget(false);
+}
 
-  AisTargetData *pAISTarget = NULL;
-  if (m_pdecoder)
-    pAISTarget =
-        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
-
-  if (pAISTarget)
-    gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                           pAISTarget->Lon,
-                           gFrame->GetFocusCanvas()->GetVPScale());
+void AISTargetListDialog::OnTargetScrollToClose(wxCommandEvent &event) {
+  CenterToTarget(true);
 }
 
 void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
@@ -1018,6 +1018,35 @@ void AISTargetListDialog::OnCopyMMSI(wxCommandEvent &event) {
                                                  wxLIST_STATE_SELECTED);
   if (selItemID == -1) return;
   CopyMMSItoClipBoard((int)m_pMMSI_array->Item(selItemID));
+}
+
+void AISTargetListDialog::CenterToTarget(bool close) {
+  long selItemID = -1;
+  selItemID = m_pListCtrlAISTargets->GetNextItem(selItemID, wxLIST_NEXT_ALL,
+                                                 wxLIST_STATE_SELECTED);
+  if (selItemID == -1) return;
+
+  AisTargetData *pAISTarget = NULL;
+  if (m_pdecoder)
+    pAISTarget =
+    m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
+
+  if (pAISTarget) {
+    double scale = gFrame->GetFocusCanvas()->GetVPScale();
+    gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                           pAISTarget->Lon, scale);
+    if (close) {
+      // Set a resonable (1:5000) chart scale to see the target.
+      if (scale < 0.7) {  // Don't zoom if already close.
+        ChartCanvas* cc = gFrame->GetFocusCanvas();
+        double factor = cc->GetScaleValue() / 5000.0;
+        cc->DoZoomCanvas(factor, false);
+      }
+      DoTargetQuery(pAISTarget->MMSI);
+      // Close AIS target list
+      Shutdown();
+    }
+  }
 }
 
 void AISTargetListDialog::CopyMMSItoClipBoard(int mmsi) {
