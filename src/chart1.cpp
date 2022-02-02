@@ -5914,7 +5914,13 @@ int MyFrame::DoOptionsDialog() {
 
   if (NULL == g_options) {
     g_Platform->ShowBusySpinner();
-    g_options = new options(this, -1, _("Options"));
+
+    int sx, sy;
+    pConfig->SetPath("/Settings");
+    pConfig->Read("OptionsSizeX", &sx, -1);
+    pConfig->Read("OptionsSizeY", &sy, -1);
+
+    g_options = new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy) );
 
     g_Platform->HideBusySpinner();
   }
@@ -6946,7 +6952,12 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     }
 
     case 4: {
-      g_options = new options(this, -1, _("Options"));
+      int sx, sy;
+      pConfig->SetPath("/Settings");
+      pConfig->Read("OptionsSizeX", &sx, -1);
+      pConfig->Read("OptionsSizeY", &sy, -1);
+
+      g_options = new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
 
       // needed to ensure that the chart window starts with keyboard focus
       SurfaceAllCanvasToolbars();
