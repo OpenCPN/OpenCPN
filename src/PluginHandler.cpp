@@ -190,9 +190,9 @@ public:
     return plugin.major_version() == m_major_version;
   }
 
-  // Test if plugin abi is a Debian version compatible with hosts's
-  // ubuntu version.
-  bool is_debian_plugin_compatible(const Plugin& plugin) const {
+  // Test if plugin abi is a Ubuntu version compatible with hosts's
+  // Debian version.
+  bool is_ubuntu_plugin_compatible(const Plugin& plugin) const {
     static const std::vector<std::string> debian_versions = {
         "9;ubuntu-x86_64;16.04",
         // Assuming Debian 10 users sticks to gtk2:
@@ -326,7 +326,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   } else if (host.is_similar_plugin_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found similar abi");
-  } else if (host.is_debian_plugin_compatible(plugin)) {
+  } else if (host.is_ubuntu_plugin_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found Ubuntu version matching Debian host");
   }
