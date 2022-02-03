@@ -197,6 +197,7 @@ public:
         // Assuming Debian 10 users sticks to gtk2:
         "10;ubuntu-x86_64;18.04",
         "11;ubuntu-gtk3-x86_64;20.04",
+        "11;ubuntu-x86_64;22.04",
         "sid;ubuntu-gtk3-x86_64;20.04"};
     if (ocpn::startswith(m_abi, "debian-x86_64")) {
       wxLogDebug("Checking for ubuntu plugin on a debian-x86_64 host");
@@ -219,6 +220,7 @@ public:
         // Assuming Debian 10 users sticks to gtk2:
         "10;ubuntu-x86_64;18.04",
         "11;ubuntu-gtk3-x86_64;20.04",
+        "11;ubuntu-x86_64;22.04",
         "sid;ubuntu-gtk3-x86_64;20.04"};
     if (ocpn::startswith(plugin.abi(), "debian-x86_64")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
