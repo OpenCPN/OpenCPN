@@ -799,6 +799,11 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     if (!m_pMarkFont) {
       m_pMarkFont = FontMgr::Get().GetFont(_("Marks"));
       m_FontColor = FontMgr::Get().GetFontColor(_("Marks"));
+      if (m_iTextTexture) {
+        glDeleteTextures(1, &m_iTextTexture);
+        m_iTextTexture = 0;
+      }
+
       CalculateNameExtents();
     }
 
