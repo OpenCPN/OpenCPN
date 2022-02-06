@@ -515,7 +515,7 @@ bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz) {
   if (b_UseScamin) {
     if (g_bOverruleScaMin)
       return true;
-    else if (canvas->GetScaleValue() > m_ScaMin)
+    else if (canvas->GetScaleValue() >= (double)(m_ScaMin + 1))
       return false;
   }
   return true;
