@@ -55,6 +55,7 @@
 #include "wx/odcombo.h"
 #include <wx/statline.h>
 #include <wx/regex.h>
+#include <wx/textwrapper.h>
 #include "SignalKDataStream.h"
 
 #if wxCHECK_VERSION(2, 9, \
@@ -514,6 +515,283 @@ int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
   return it2.GetText().CmpNoCase(it1.GetText());
 #endif
 }
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+class ChartDirPanelHardBreakWrapper : public wxTextWrapper {
+public:
+  ChartDirPanelHardBreakWrapper(wxWindow *win, const wxString &text, int widthMax) {
+    m_lineCount = 0;
+
+    // Replace all spaces in the string with a token character '^'
+    wxString textMod = text;
+    textMod.Replace(" ", "^");
+
+    // Replace all path separators with spaces
+    wxString sep = wxFileName::GetPathSeparator();
+    textMod.Replace(sep, " ");
+
+    Wrap(win, textMod, widthMax);
+
+    // walk the output array, repairing the substitutions
+    for (size_t i=0; i < m_array.GetCount(); i++){
+      wxString a = m_array[i];
+      a.Replace(" ", sep);
+      if (m_array.GetCount() > 1){
+        if (i < m_array.GetCount()-1)
+          a += sep;
+      }
+      a.Replace("^", " ");
+      m_array[i] = a;
+    }
+  }
+  wxString const &GetWrapped() const { return m_wrapped; }
+  int const GetLineCount() const { return m_lineCount; }
+  wxArrayString GetLineArray() { return m_array; }
+
+protected:
+  virtual void OnOutputLine(const wxString &line) {
+    m_wrapped += line;
+    m_array.Add(line);
+  }
+  virtual void OnNewLine() {
+    m_wrapped += '\n';
+    m_lineCount++;
+  }
+
+private:
+  wxString m_wrapped;
+  int m_lineCount;
+  wxArrayString m_array;
+};
+
+
+
+class OCPNChartDirPanel: public wxPanel
+{
+public:
+    OCPNChartDirPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ChartDirInfo &cdi);
+    ~OCPNChartDirPanel();
+
+    void DoChartSelected(  );
+    void SetSelected( bool selected );
+    void OnPaint( wxPaintEvent &event );
+    void OnEraseBackground( wxEraseEvent &event );
+    void OnSize(wxSizeEvent &event);
+    ChartDirInfo GetCDI() { return m_cdi; }
+    int GetUnselectedHeight(){ return m_unselectedHeight; }
+    int GetRefHeight(){ return m_refHeight; }
+    bool IsSelected(){ return m_bSelected; }
+    void OnClickDown( wxMouseEvent &event );
+    void OnClickUp( wxMouseEvent &event );
+
+private:
+    //shopPanel *m_pContainer;
+    bool m_bSelected;
+    wxColour m_boxColour;
+    int m_unselectedHeight;
+    wxString m_pChartDir;
+    int m_refHeight;
+    ChartDirInfo m_cdi;
+
+    DECLARE_EVENT_TABLE()
+};
+
+
+BEGIN_EVENT_TABLE(OCPNChartDirPanel, wxPanel)
+EVT_PAINT ( OCPNChartDirPanel::OnPaint )
+EVT_ERASE_BACKGROUND( OCPNChartDirPanel::OnEraseBackground)
+EVT_SIZE( OCPNChartDirPanel::OnSize)
+END_EVENT_TABLE()
+
+OCPNChartDirPanel::OCPNChartDirPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ChartDirInfo &cdi)
+:wxPanel(parent, id, pos, size, wxBORDER_NONE)
+{
+    m_pChartDir = cdi.fullpath;
+    m_cdi = cdi;
+    m_bSelected = false;
+
+    m_refHeight = GetCharHeight();
+
+    m_unselectedHeight = 2 * m_refHeight;
+
+#ifdef __OCPN__ANDROID__
+    m_unselectedHeight = 4 * m_refHeight;
+#endif
+
+    SetMinSize(wxSize(-1, m_unselectedHeight));
+
+    Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(OCPNChartDirPanel::OnClickDown), NULL, this);
+#ifdef __OCPN__ANDROID__
+    Connect(wxEVT_LEFT_UP, wxMouseEventHandler(OCPNChartDirPanel::OnClickUp), NULL, this);
+#endif
+
+}
+
+OCPNChartDirPanel::~OCPNChartDirPanel()
+{
+}
+
+static  wxStopWatch swclick;
+#ifdef __OCPN__ANDROID__
+static  int downx, downy;
+#endif
+
+void OCPNChartDirPanel::OnClickDown( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__
+    swclick.Start();
+    event.GetPosition( &downx, &downy );
+#else
+    DoChartSelected();
+#endif
+}
+
+void OCPNChartDirPanel::OnClickUp( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__
+    qDebug() << swclick.Time();
+    if(swclick.Time() < 200){
+        int upx, upy;
+        event.GetPosition(&upx, &upy);
+        if( (fabs(upx-downx) < GetCharWidth()) && (fabs(upy-downy) < GetCharWidth()) ){
+            DoChartSelected();
+        }
+    }
+    swclick.Start();
+#endif
+}
+
+
+void OCPNChartDirPanel::DoChartSelected( )
+{
+
+    if(!m_bSelected){
+        SetSelected( true );
+//        m_pContainer->SelectChart( this );
+    }
+    else{
+        SetSelected( false );
+//        m_pContainer->SelectChart( (OCPNChartDirPanel*)NULL );
+    }
+
+}
+
+void OCPNChartDirPanel::SetSelected( bool selected )
+{
+    m_bSelected = selected;
+    wxColour colour;
+
+    if (selected)
+    {
+       GetGlobalColor(_T("UIBCK"), &colour);
+       m_boxColour = colour;
+    }
+    else
+    {
+       GetGlobalColor(_T("DILG0"), &colour);
+       m_boxColour = colour;
+    }
+
+    Refresh( true );
+
+    g_pOptions->SetDirActionButtons();
+}
+
+
+
+void OCPNChartDirPanel::OnEraseBackground( wxEraseEvent &event )
+{
+}
+
+void OCPNChartDirPanel::OnSize(wxSizeEvent &event)
+{
+  if (m_pChartDir.Length()){
+    int x, y;
+    GetClientSize(&x, &y);
+
+    ChartDirPanelHardBreakWrapper wrapper(this, m_pChartDir, x * 9 / 10);
+    wxArrayString nameWrapped = wrapper.GetLineArray();
+
+    SetMinSize(wxSize(-1, (nameWrapped.GetCount()+1) *  m_refHeight));
+  }
+
+  event.Skip();
+}
+
+void OCPNChartDirPanel::OnPaint( wxPaintEvent &event )
+{
+    int width, height;
+    GetSize( &width, &height );
+    wxPaintDC dc( this );
+
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(GetBackgroundColour()));
+    dc.DrawRectangle(GetVirtualSize());
+
+    wxColour c;
+
+    wxString nameString = m_pChartDir;
+    ChartDirPanelHardBreakWrapper wrapper(this, nameString, width * 9 / 10);
+    wxArrayString nameWrapped = wrapper.GetLineArray();
+
+    if (height < (int)(nameWrapped.GetCount()+1) *  m_refHeight){
+      SetMinSize(wxSize(-1, (nameWrapped.GetCount()+1) *  m_refHeight));
+      GetParent()->GetSizer()->Layout();
+    }
+
+    if(m_bSelected){
+
+        dc.SetBrush( wxBrush( m_boxColour ) );
+
+        GetGlobalColor( _T ( "UITX1" ), &c );
+        dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
+
+        dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
+
+        int offset = height / 10;
+        int text_x = offset * 2;
+
+        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+        dc.SetFont( *dFont );
+
+        dc.SetTextForeground(wxColour(64, 64, 64));
+
+
+        int yd = height * 20 / 100;
+        for (size_t i=0 ; i < nameWrapped.GetCount(); i++){
+          dc.DrawText(nameWrapped[i], text_x, yd);
+          yd += GetCharHeight();
+        }
+    }   // selected
+    else{
+        dc.SetBrush( wxBrush( m_boxColour ) );
+
+        GetGlobalColor( _T ( "GREY1" ), &c );
+        dc.SetPen( wxPen( c, 1 ) );
+
+        int offset = height / 10;
+        dc.DrawRoundedRectangle( offset, offset, width - (2 * offset), height - (2 * offset), height/10);
+
+        int text_x = offset * 2;
+
+        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+        dc.SetFont( *dFont );
+
+        dc.SetTextForeground(wxColour(64, 64, 64));
+
+        int yd = height * 20 / 100;
+        for (size_t i=0 ; i < nameWrapped.GetCount(); i++){
+          dc.DrawText(nameWrapped[i], text_x, yd);
+          yd += GetCharHeight();
+        }
+
+    }   // not selected
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
 
 WX_DECLARE_LIST(wxCheckBox, CBList);
 
@@ -1425,7 +1703,8 @@ void options::Init(void) {
   pShowMenuBar = NULL;
   pShowCompassWin = NULL;
   pSelCtl = NULL;
-  pActiveChartsList = NULL;
+  //pActiveChartsList = NULL;
+  m_scrollWinChartList = NULL;
   ps57CtlListBox = NULL;
   pDispCat = NULL;
   m_pSerialArray = NULL;
@@ -3630,6 +3909,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   activeSizer = new wxStaticBoxSizer(loadedBox, wxHORIZONTAL);
   chartPanel->Add(activeSizer, 1, wxALL | wxEXPAND, border_size);
 
+#if 0
   pActiveChartsList =
       new wxListCtrl(chartPanelWin, ID_LISTBOX, wxDefaultPosition,
                      wxSize(100, -1), wxLC_LIST | wxLC_NO_HEADER);
@@ -3642,9 +3922,6 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   pActiveChartsList->Connect(
       wxEVT_COMMAND_LIST_ITEM_SELECTED,
       wxCommandEventHandler(options::OnChartDirListSelect), NULL, this);
-
-  wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
-  activeSizer->Add(cmdButtonSizer, 0, wxALL, border_size);
 
   // Currently loaded chart dirs
   wxString dirname;
@@ -3671,6 +3948,44 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
       long idx = pActiveChartsList->InsertItem(li);
     }
   }
+#endif
+
+
+    wxPanel *cPanel = new wxPanel(chartPanelWin, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBG_STYLE_ERASE );
+    activeSizer->Add(cPanel, 1, wxALL|wxEXPAND, 5);
+
+    wxBoxSizer *boxSizercPanel = new wxBoxSizer(wxVERTICAL);
+    cPanel->SetSizer(boxSizercPanel);
+
+    m_scrollWinChartList = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE );
+
+#ifndef __OCPN__ANDROID__
+    m_scrollRate = 5;
+#else
+    m_scrollRate = 1;
+#endif
+    m_scrollWinChartList->SetScrollRate(m_scrollRate, m_scrollRate);
+
+    boxSizercPanel->Add(m_scrollWinChartList, 1, wxALL|wxEXPAND, 5);
+
+    boxSizerCharts = new wxBoxSizer(wxVERTICAL);
+    m_scrollWinChartList->SetSizer(boxSizerCharts);
+
+    int size_scrollerLines = 15;
+    //if(bCompact)
+    //  size_scrollerLines = 10;
+
+    //activeSizer->SetMinSize(wxSize(-1,size_scrollerLines * GetCharHeight()));
+    //staticBoxSizerChartList->SetMinSize(wxSize(-1,(size_scrollerLines + 1) * GetCharHeight()));
+
+      // Currently loaded chart dirs
+    ActiveChartArray.Clear();
+    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+      ActiveChartArray.Add(m_CurrentDirList[i]);
+    }
+
+    wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
+    activeSizer->Add(cmdButtonSizer, 0, wxALL, border_size);
 
   wxButton* addBtn =
       new wxButton(chartPanelWin, ID_BUTTONADD, _("Add Directory..."));
@@ -3713,8 +4028,39 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   itemStaticBoxSizerUpdate->Add(itemFlexGridSizerUpdate, 1, wxEXPAND, 5);
 
+  UpdateChartDirList();
+
   chartPanel->Layout();
 }
+
+void options::UpdateChartDirList( )
+{
+    m_scrollWinChartList->ClearBackground();
+
+    // Clear any existing panels
+    for(unsigned int i = 0 ; i < panelVector.size() ; i++){
+        delete panelVector[i];
+    }
+    panelVector.clear();
+
+    // Add new panels
+    for (size_t i = 0; i < ActiveChartArray.GetCount(); i++) {
+      OCPNChartDirPanel *chartPanel = new OCPNChartDirPanel( m_scrollWinChartList, wxID_ANY,
+                                                             wxDefaultPosition, wxSize(-1, -1),
+                                                             ActiveChartArray[i]);
+      chartPanel->SetSelected(false);
+
+      boxSizerCharts->Add( chartPanel, 0, wxEXPAND|wxALL, 0 );
+      panelVector.push_back( chartPanel );
+    }
+
+    //SelectChartByID(m_ChartSelectedID, m_ChartSelectedOrder);
+
+    m_scrollWinChartList->ClearBackground();
+    m_scrollWinChartList->GetSizer()->Layout();
+    m_scrollWinChartList->ClearBackground();
+}
+
 
 void options::UpdateTemplateTitleText() {
   if (!m_templateTitleText) return;
@@ -7053,22 +7399,16 @@ void options::SetInitialSettings(void) {
   }
   m_screenConfig = g_canvasConfig;
 
-  // ChartsLoad
+  // Initial Charts Load
 
-  if (pActiveChartsList) {
-    pActiveChartsList->DeleteAllItems();
-
-    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
-      wxString dirname = m_CurrentDirList[i].fullpath;
-      wxListItem li;
-      li.SetId(i);
-      li.SetAlign(wxLIST_FORMAT_LEFT);
-      li.SetText(dirname);
-      li.SetColumn(0);
-      long idx = pActiveChartsList->InsertItem(li);
-    }
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+    ActiveChartArray.Add(m_CurrentDirList[i]);
   }
 
+  UpdateChartDirList();
+
+#if 0
   // ChartGroups
   if (pActiveChartsList && m_pWorkDirList) {
     UpdateWorkArrayFromTextCtl();
@@ -7081,6 +7421,7 @@ void options::SetInitialSettings(void) {
     groupsPanel->SetGroupArray(m_pGroupArray);
     groupsPanel->SetInitialSettings();
   }
+#endif
 
   if (m_pConfig) {
     pShowStatusBar->SetValue(g_bShowStatusBar);
@@ -7778,9 +8119,11 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
 }
 
 void options::OnChartDirListSelect(wxCommandEvent& event) {
+#if 0
   bool selected = (pActiveChartsList->GetSelectedItemCount() > 0);
   m_removeBtn->Enable(selected);
   if (m_compressBtn) m_compressBtn->Enable(selected);
+#endif
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
@@ -7857,14 +8200,11 @@ void options::AddChartDir(const wxString& dir) {
     dirAdd = dir;
   }
 
-  wxListItem li;
-  int id = pActiveChartsList->GetItemCount();  // next index
-  li.SetId(id);
-  li.SetAlign(wxLIST_FORMAT_LEFT);
-  li.SetText(dirAdd);
-  li.SetColumn(0);
+  ChartDirInfo cdi;
+  cdi.fullpath = dir;
+  ActiveChartArray.Add(cdi);
 
-  long idx = pActiveChartsList->InsertItem(li);
+  UpdateChartDirList();
 
   k_charts |= CHANGE_CHARTS;
 
@@ -7872,28 +8212,23 @@ void options::AddChartDir(const wxString& dir) {
 }
 
 void options::UpdateDisplayedChartDirList(ArrayOfCDI p) {
-  if (pActiveChartsList) {
-    pActiveChartsList->DeleteAllItems();
-    for (size_t i = 0; i < p.GetCount(); i++) {
-      wxString dirname = p[i].fullpath;
-      wxListItem li;
-      li.SetId(i);
-      li.SetAlign(wxLIST_FORMAT_LEFT);
-      li.SetText(dirname);
-      li.SetColumn(0);
-      long idx = pActiveChartsList->InsertItem(li);
-    }
+  // Called by pluginmanager after adding single chart to database
+
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < p.GetCount(); i++) {
+      ActiveChartArray.Add(p[i]);
   }
+
+  UpdateChartDirList();
 }
 
-void options::UpdateWorkArrayFromTextCtl(void) {
+void options::UpdateWorkArrayFromDisplayPanel(void) {
   wxString dirname;
-
-  int n = pActiveChartsList->GetItemCount();
+  int n = ActiveChartArray.GetCount();
   if (m_pWorkDirList) {
     m_pWorkDirList->Clear();
     for (int i = 0; i < n; i++) {
-      dirname = pActiveChartsList->GetItemText(i);
+      dirname = ActiveChartArray[i].fullpath;
       if (!dirname.IsEmpty()) {
         //    This is a fix for OSX, which appends EOL to results of
         //    GetLineText()
@@ -8142,17 +8477,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (m_bfontChanged) m_returnChanges |= FONT_CHANGED;
 
   // Handle Chart Tab
-  if (pActiveChartsList) {
-    UpdateWorkArrayFromTextCtl();
-  } else {
-    m_pWorkDirList->Clear();
-    int nDir = m_CurrentDirList.GetCount();
+  UpdateWorkArrayFromDisplayPanel();
 
-    for (int i = 0; i < nDir; i++) {
-      ChartDirInfo cdi = m_CurrentDirList[i];
-      m_pWorkDirList->Add(cdi);
-    }
-  }
   groupsPanel->SetDBDirs(*m_pWorkDirList);  // update the Groups tab
   groupsPanel->m_treespopulated = FALSE;
 
@@ -8786,25 +9112,54 @@ void options::Finish(void) {
   EndModal(m_returnChanges);
 }
 
-void options::OnButtondeleteClick(wxCommandEvent& event) {
-  long item = -1;
-  for (;;) {
-    item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL,
-                                          wxLIST_STATE_SELECTED);
-    if (item == -1) break;
-    pActiveChartsList->DeleteItem(item);
-
-    // On Android, there is some trouble with wxLIST_STATE_SELECTED.
-    // So, only allow deletion of one item per click.
-#ifdef __OCPN__ANDROID__
-    break;
-#endif
-
-    item = -1;  // Restart
+ArrayOfCDI options::GetSelectedChartDirs()
+{
+  ArrayOfCDI rv;
+  for (size_t i=0 ; i < panelVector.size(); i++) {
+    if (panelVector[i]->IsSelected()){
+      rv.Add(panelVector[i]->GetCDI());
+    }
   }
 
-  UpdateWorkArrayFromTextCtl();
+  return rv;
+}
 
+ArrayOfCDI options::GetUnSelectedChartDirs()
+{
+  ArrayOfCDI rv;
+  for (size_t i=0 ; i < panelVector.size(); i++) {
+    if (!panelVector[i]->IsSelected()){
+      rv.Add(panelVector[i]->GetCDI());
+    }
+  }
+
+  return rv;
+}
+
+void options::SetDirActionButtons()
+{
+  ArrayOfCDI selArray = GetSelectedChartDirs();
+  if(selArray.GetCount())
+    m_removeBtn->Enable();
+  else
+    m_removeBtn->Disable();
+
+}
+
+
+
+void options::OnButtondeleteClick(wxCommandEvent& event) {
+  ArrayOfCDI unselArray = GetUnSelectedChartDirs();
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < unselArray.GetCount(); i++) {
+      ActiveChartArray.Add(unselArray[i]);
+  }
+
+  UpdateChartDirList();
+
+  UpdateWorkArrayFromDisplayPanel();
+
+#if 0
   if (m_pWorkDirList) {
     pActiveChartsList->DeleteAllItems();
     for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
@@ -8817,6 +9172,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
       long idx = pActiveChartsList->InsertItem(li);
     }
   }
+#endif
 
   k_charts |= CHANGE_CHARTS;
 
@@ -9014,13 +9370,14 @@ static bool CompressChart(wxString in, wxString out) {
 }
 
 void options::OnButtoncompressClick(wxCommandEvent& event) {
+#if 0
   wxArrayInt pListBoxSelections;
   long item = -1;
   for (;;) {
     item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL,
                                           wxLIST_STATE_SELECTED);
     if (item == -1) break;
-    pListBoxSelections.Add((int)item);
+    //pListBoxSelections.Add((int)item);
     item = -1;  // Restart
   }
 
@@ -9141,6 +9498,7 @@ They can be decompressed again using unxz or 7 zip programs."),
   pScanCheckBox->Disable();
 
   event.Skip();
+#endif
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }

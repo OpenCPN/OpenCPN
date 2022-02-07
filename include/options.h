@@ -79,6 +79,7 @@ class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
 class OCPNIconCombo;
 class OCPNColourPickerCtrl;
+class OCPNChartDirPanel;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -371,7 +372,11 @@ public:
   void onBTScanTimer(wxTimerEvent &event);
   void StopBTScan(void);
 
-  void UpdateWorkArrayFromTextCtl(void);
+  void UpdateWorkArrayFromDisplayPanel(void);
+  ArrayOfCDI GetSelectedChartDirs();
+  ArrayOfCDI GetUnSelectedChartDirs();
+  void SetDirActionButtons();
+
 
   void OnCreateConfig(wxCommandEvent &event);
   void OnEditConfig(wxCommandEvent &event);
@@ -507,6 +512,7 @@ public:
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(wxString stat);
   void OnAISRolloverClick(wxCommandEvent &event);
+  void UpdateChartDirList( );
 
   void OnCanvasConfigSelectClick(int ID, bool selected);
 
@@ -547,13 +553,19 @@ public:
   wxStaticBoxSizer *activeSizer;
   wxBoxSizer *chartPanel;
   wxTextCtrl *pSelCtl;
-  wxListCtrl *pActiveChartsList;
+
+  ArrayOfCDI ActiveChartArray;
+
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
   wxButton *pParseENCButton;
   wxButton *m_removeBtn, *m_compressBtn;
   int k_charts;
   int m_nCharWidthMax;
+  wxBoxSizer *boxSizerCharts;
+  wxScrolledWindow *m_scrollWinChartList;
+  std::vector<OCPNChartDirPanel *> panelVector;
+  wxArrayString activeChartList;
 
   // For the "Charts->Display Options" page
   wxScrolledWindow *m_ChartDisplayPage;
