@@ -10,16 +10,20 @@
 find_program(APLAY aplay)
 find_program(AFPLAY afplay)
 find_program(OMXPLAYER omxplayer)
-set(SYSTEM_SOUND_CMD "\"\"")
-if (APLAY)
-  SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
-elseif (AFPLAY)
-  SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
-elseif(OMXPLAYER)
-  SET(SYSTEM_SOUND_CMD "\"omxplayer -o both %s\"")
-elseif (WIN32)
-  SET(SYSTEM_SOUND_CMD
-    "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
+set(SYSTEM_SOUND_CMD "" CACHE STRING
+    "Hardcoded value for command used as SYSTEM_SOUND_CMD"
+)
+if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
+  if (APLAY)
+    SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
+  elseif (AFPLAY)
+    SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
+  elseif(OMXPLAYER)
+    SET(SYSTEM_SOUND_CMD "\"omxplayer -o both %s\"")
+  elseif (WIN32)
+    SET(SYSTEM_SOUND_CMD
+      "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
+  endif ()
 endif ()
 
 message(STATUS "SYSTEM_SOUND_CMD selected : ${SYSTEM_SOUND_CMD}")
