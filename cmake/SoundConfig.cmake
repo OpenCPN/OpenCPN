@@ -7,25 +7,24 @@
 #     HAVE_PORTAUDIO        - build portaudio backend.
 #     HAVE_SNDFILE          - build libsndfile support for portaudio.
 
-find_program(APLAY aplay)
-find_program(AFPLAY afplay)
-find_program(OMXPLAYER omxplayer)
 set(SYSTEM_SOUND_CMD "" CACHE STRING
     "Hardcoded value for command used as SYSTEM_SOUND_CMD"
 )
 if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
+  find_program(APLAY aplay)
+  find_program(AFPLAY afplay)
+  find_program(OMXPLAYER omxplayer)
   if (APLAY)
-    SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
+    set(SYSTEM_SOUND_CMD "\"${APLAY} %s\"")
   elseif (AFPLAY)
-    SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
+    set(SYSTEM_SOUND_CMD "\"${AFPLAY} %s\"")
   elseif(OMXPLAYER)
-    SET(SYSTEM_SOUND_CMD "\"omxplayer -o both %s\"")
+    set(SYSTEM_SOUND_CMD "\"${OMXPLAYER} -o both %s\"")
   elseif (WIN32)
-    SET(SYSTEM_SOUND_CMD
+    set(SYSTEM_SOUND_CMD
       "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
   endif ()
 endif ()
-
 message(STATUS "SYSTEM_SOUND_CMD selected : ${SYSTEM_SOUND_CMD}")
 
 set(HAVE_SYSTEM_CMD_SOUND "")
@@ -36,7 +35,10 @@ if (OCPN_ENABLE_SYSTEM_CMD_SOUND)
     message(STATUS "OCPN_ENABLE_SYSTEM_CMD_SOUND is set"
                    " but I cannot find aplay(1) or afplay(1) or omxplayer(1)")
   endif ()
-  message(STATUS "HAVE_SYSTEM_CMD_SOUND = ${HAVE_SYSTEM_CMD_SOUND}")
+endif ()
+message(STATUS "HAVE_SYSTEM_CMD_SOUND = ${HAVE_SYSTEM_CMD_SOUND}")
+if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
+  set(SYSTEM_SOUND_CMD "\"\"")
 endif ()
 
 set(HAVE_PORTAUDIO "")
