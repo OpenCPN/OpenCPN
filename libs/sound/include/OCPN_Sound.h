@@ -98,12 +98,6 @@ class OcpnSound
         /** Reflects loading errors. */
         virtual bool IsOk() const { return m_OK; }
 
-        /**
-         * Set system command string in case program wants to change from
-         * default string.
-         */
-        virtual void SetCmd( const char *cmd ) { };    // does nothing if not overridden
-
     protected:
 
         /** Default ctor. Load() must be called before actual usage. */

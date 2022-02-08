@@ -144,6 +144,7 @@
 #include "SoundFactory.h"
 #include "PluginHandler.h"
 #include "SignalKEventHandler.h"
+#include "SystemCmdSound.h"
 #include "gui_lib.h"
 
 #ifdef __linux__
@@ -3058,7 +3059,8 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
 
   OcpnSound *sound = bells_sound[bells - 1];
   sound->SetFinishedCallback(onBellsFinishedCB, this);
-  sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
   sound->Load(soundfile);
   if (!sound->IsOk()) {
     wxLogMessage(_T("Failed to load bells sound file: ") + soundfile);

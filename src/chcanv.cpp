@@ -74,6 +74,7 @@
 #include "Quilt.h"
 #include "SelectItem.h"
 #include "Select.h"
+#include "SystemCmdSound.h"
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
@@ -6345,7 +6346,8 @@ void ChartCanvas::AlertDraw(ocpnDC &dc) {
     AnchorAlertOn2 = false;
 
   if (play_sound && !bAnchorSoundPlaying) {
-    g_anchorwatch_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+    auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_anchorwatch_sound);
+    if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
     g_anchorwatch_sound->Load(g_anchorwatch_sound_file);
     if (g_anchorwatch_sound->IsOk()) {
       bAnchorSoundPlaying = true;
