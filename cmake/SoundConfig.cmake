@@ -30,19 +30,11 @@ message(STATUS "SYSTEM_SOUND_CMD selected : ${SYSTEM_SOUND_CMD}")
 
 set(HAVE_SYSTEM_CMD_SOUND "")
 if (OCPN_ENABLE_SYSTEM_CMD_SOUND)
-  if (OMXPLAYER OR APLAY OR AFPLAY OR WIN32)
+  if (NOT "${SYSTEM_SOUND_CMD}" STREQUAL "")
     set(HAVE_SYSTEM_CMD_SOUND 1)
   else ()
     message(STATUS "OCPN_ENABLE_SYSTEM_CMD_SOUND is set"
                    " but I cannot find aplay(1) or afplay(1) or omxplayer(1)")
-    # If OCPN_ENABLE_SYSTEM_CMD_SOUND is "ON", then provionally enable aplay(1) on non-WIN32 systems
-    # The covers the case for generic CI builds, which may have minimal utilities installed,
-    # and thus somtimes do not find any useful sound command.
-    if(NOT WIN32)
-        message(STATUS "Provisionally enabling aplay(1) anyway.")
-        SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
-        set(HAVE_SYSTEM_CMD_SOUND 1)
-    endif()
   endif ()
   message(STATUS "HAVE_SYSTEM_CMD_SOUND = ${HAVE_SYSTEM_CMD_SOUND}")
 endif ()
