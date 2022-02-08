@@ -30,19 +30,6 @@ Help:
     Opencpn configuration options can be listed using
         cmake -LH  | grep -B1 OCPN_
 
-Renamed options:
-    From version 5.0.0 all OpenCPN configuration options have a OCPN_ prefix
-    Many older options are renamed, some examples:
-
-        ENABLE_SYSTEM_CMD_SOUND -> OCPN_ENABLE_SYSTEM_CMD_SOUND
-        USE_BUNDLED_LIBS -> OCPN_USE_BUNDLED_LIBS
-        BUNDLE_DOCS ->  OCPN_BUNDLE_DOCS
-        BUNDLE_TCDATA -> OCPN_BUNDLE_TCDATA
-        ENABLE_PORTAUDIO -> OCPN_ENABLE_PORTAUDIO
-        USE_GARMINHOST -> OCPN_USE_GARMINHOST
-        ENABLE_CPPCHECK -> OCPN_ENABLE_CPPCHECK
-
-
 Installation paths:
   - Since 5.0.0 OpenCPN supports the GNU install paths, see
     https://cmake.org/cmake/help/v3.0/module/GNUInstallDirs.html
@@ -51,14 +38,18 @@ Installation paths:
     Debian.
 
 Sound:
-  - Without options, defaults to MswSound on Windows, PortAudioSound
-    on Linux and WxSound on OSX.
-  - With OCPN_ENABLE_SYSTEM_CMD_SOUND enabled SystemCmdSound will be the
-    backend used on all platforms.
-  - With OCPN_ENABLE_PORTAUDIO activated PortAudioSound can be used on all
-    platforms if the necessary headers and libraries are available.
-  - OCPN_ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
-    supports a wide range of audio formats instead of .wav only.
+  - On Android the native AndroidSound backend is always used.
+  - On Windows, the  MswSound backend is the default.
+    OCPN_ENABLE_SYSTEM_CMD_SOUND can be used to use the SystemCmdSound
+    backend, OCPN_ENABLE_PORTAUDIO to enable possible existing portaudio.
+  - On Linux, portaudio is used if found, else SystemCmdSound.
+    OCPN_ENABLE_PORTAUDIO can be used to disable portaudio, and
+    OCPN_ENABLE_SYSTEM_CMD_SOUND to disable SystemCmdSound in which case
+    the wxWidgets wxSound backend is used.
+  - MacOS works basically as Linux, but portaudio is normally not available
+  - On all platforms OCPN_SOUND_CMD can be used to preset the command used
+    in SystemCmdSound. The default is computed by probing the build  host
+    for commands like aplay, afplay or omxplayer.
 
 Bundled libraries:
   - OCPN_USE_BUNDLED_LIBS forces use of external/bundled libraries including
@@ -81,15 +72,6 @@ Tidal/current wallpaper
 
 GSHHS charts
   - OCPN_BUNDLE_GSHHS (boolean) includes gshhs charts in package
-
-To build for android, use something like:
-    $cmake -DUSE_GARMINHOST=OFF
-        -D_wx_selected_config=androideabi-qt
-        -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
-        -DwxQt_Build=build_android_53
-        -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-        -DQt_Base /home/dsr/Qt/5.3)
-        ..
 
 Silent/Verbose builds:
     cmake's handling of these issues is underwhelming. On most platforms the
@@ -234,21 +216,18 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   endif ()
 endif ()
 
-if (NOT WIN32 AND NOT APPLE AND NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-  set(PA_DEFAULT "ON")
-else ()
+if (WIN32 OR APPLE OR QT_ANDROID)
   set(PA_DEFAULT "OFF")
+else ()
+  set(PA_DEFAULT "ON")
 endif ()
 option(
   OCPN_ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available"
   ${PA_DEFAULT}
 )
 cmake_dependent_option(
-  OCPN_ENABLE_SNDFILE
-  "Use libsndfile for portaudio if available."
-  ON
-  "OCPN_ENABLE_PORTAUDIO"
-  ON
+  OCPN_ENABLE_SNDFILE "Use libsndfile for portaudio if available."
+  ON "OCPN_ENABLE_PORTAUDIO" ON
 )
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
@@ -323,24 +302,30 @@ option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the system on MacOS" ON)
 
+if (WIN32)
+  set(cmd_snd_default OFF)
+else ()
+  set(cmd_snd_default ON)
+endif ()
+
 option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
-  "Use aplay(1), afplay(1) etc. to play sounds if available" ON
+  "Use aplay(1), afplay(1) etc. to play sounds if available" ${cmd_snd_default}
+)
+set(SYSTEM_SOUND_CMD "" CACHE STRING
+    "Hardcoded value for command used as SYSTEM_SOUND_CMD"
 )
 
 if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
   set(LINUX "1")
 endif ()
 
-IF (QT_ANDROID)
-  SET(OCPN_NEW_SERIAL OFF)
-  SET(OCPN_USE_NEWSERIAL OFF)
-  SET(OCPN_USE_CURL ON)
-  SET(ENABLE_PORTAUDIO OFF)
-  SET(ENABLE_SYSTEM_CMD_SOUND OFF)
-  SET(ENABLE_SNDFILE OFF)
-  SET(OCPN_USE_LZMA OFF)
-ENDIF (QT_ANDROID)
+if (QT_ANDROID)
+  set(OCPN_NEW_SERIAL OFF)
+  set(OCPN_USE_NEWSERIAL OFF)
+  set(OCPN_USE_CURL ON)
+  set(OCPN_USE_LZMA OFF)
+endif (QT_ANDROID)
 
 # Check if a given library should use the bundled source
 macro (USE_BUNDLED_LIB _result library)

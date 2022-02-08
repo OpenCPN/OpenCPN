@@ -34,18 +34,18 @@ OcpnSound* SoundFactory(const char* not_used) { return new AndroidSound(); }
 
 OcpnSound* SoundFactory(const char* not_used) { return new PortAudioSound(); }
 
-#elif defined(__WXMSW__)
-#include "MswSound.h"
-
-OcpnSound* SoundFactory(const char* not_used) { return new MswSound(); }
-
-
 #elif defined(HAVE_SYSTEM_CMD_SOUND)
 #include "SystemCmdSound.h"
 
 OcpnSound* SoundFactory(const char* sound_cmd) {
     return new SystemCmdSound(sound_cmd ? sound_cmd : SYSTEM_SOUND_CMD);
 }
+
+#elif defined(__WXMSW__)
+#include "MswSound.h"
+
+OcpnSound* SoundFactory(const char* not_used) { return new MswSound(); }
+
 
 #else
 #include  "OcpnWxSound.h"

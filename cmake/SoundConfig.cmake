@@ -7,9 +7,6 @@
 #     HAVE_PORTAUDIO        - build portaudio backend.
 #     HAVE_SNDFILE          - build libsndfile support for portaudio.
 
-set(SYSTEM_SOUND_CMD "" CACHE STRING
-    "Hardcoded value for command used as SYSTEM_SOUND_CMD"
-)
 if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
   find_program(APLAY aplay)
   find_program(AFPLAY afplay)
@@ -21,8 +18,11 @@ if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
   elseif(OMXPLAYER)
     set(SYSTEM_SOUND_CMD "\"${OMXPLAYER} -o both %s\"")
   elseif (WIN32)
-    set(SYSTEM_SOUND_CMD
-      "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
+    string(CONCAT _win_cmd
+      "\"PowerShell "
+      "(New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\""
+    )
+    set(SYSTEM_SOUND_CMD ${_win_cmd})
   endif ()
 endif ()
 message(STATUS "SYSTEM_SOUND_CMD selected : ${SYSTEM_SOUND_CMD}")
