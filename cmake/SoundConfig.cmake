@@ -15,7 +15,7 @@ if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
     set(SYSTEM_SOUND_CMD "\"${APLAY} %s\"")
   elseif (AFPLAY)
     set(SYSTEM_SOUND_CMD "\"${AFPLAY} %s\"")
-  elseif(OMXPLAYER)
+  elseif (OMXPLAYER)
     set(SYSTEM_SOUND_CMD "\"${OMXPLAYER} -o both %s\"")
   elseif (WIN32)
     string(CONCAT _win_cmd

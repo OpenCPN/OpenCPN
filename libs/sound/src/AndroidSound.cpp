@@ -27,8 +27,6 @@
 
 #include "OCPN_Sound.h"
 
-#ifdef __OCPN__ANDROID__
-
 #include "AndroidSound.h"
 
 
@@ -66,8 +64,5 @@ bool AndroidSound::Play(void)
 {
     return androidPlaySound(m_soundfile, m_onFinished, m_callbackData);
 }
-
-
-#endif                  // __OCPN__ANDROID__
 
 #endif  //  OCPN_ANDROID_SOUND
