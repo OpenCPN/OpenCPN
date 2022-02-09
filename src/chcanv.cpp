@@ -510,8 +510,8 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_pQuilt = new Quilt(this);
   SetQuiltMode(true);
   SetAlertString(_T(""));
-  m_sector_glat = 200;
-  m_sector_glon = 200;
+  m_sector_glat = 0;
+  m_sector_glon = 0;
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   m_oldVPSScale = -1.0;
@@ -4810,6 +4810,7 @@ void ChartCanvas::LoadVP(ViewPort &vp, bool b_adjust) {
 
   SetViewPoint(vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.rotation,
                vp.m_projection_type, b_adjust);
+
 }
 
 void ChartCanvas::SetQuiltRefChart(int dbIndex) {
@@ -10445,7 +10446,12 @@ void ChartCanvas::RenderVisibleSectorLights(ocpnDC &dc) {
 
   if (g_bDeferredInitDone) {
     // need to re-evaluate sectors?
-    if ((m_sector_glat != gLat) || (m_sector_glon != gLon)) {
+    double rhumbBearing, rhumbDist;
+    DistanceBearingMercator(gLat, gLon, m_sector_glat, m_sector_glon,
+                                      &rhumbBearing, &rhumbDist);
+
+    if (rhumbDist > 0.05)   // miles
+    {
       s57_GetVisibleLightSectors(this, gLat, gLon, GetVP(),
                                  m_sectorlegsVisible);
       m_sector_glat = gLat;

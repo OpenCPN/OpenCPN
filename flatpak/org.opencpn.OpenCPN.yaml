@@ -93,6 +93,7 @@ modules:
           - -DOCPN_BUNDLE_TCDATA=ON
           - -DOCPN_CI_BUILD=ON
           - -DOCPN_FLATPAK=ON
+          - -DOCPN_USE_SYSFS_PORTS=ON
           - -DBUILD_SHARED_LIBS=OFF
           - -DOCPN_TARGET_TUPLE=flatpak-x86_64;20.08;x86_64
           - -DCMAKE_FIND_ROOT_PATH=/app

@@ -89,12 +89,6 @@ void FontMgr::SetLocale(wxString &newLocale) { s_locale = newLocale; }
 
 wxColour FontMgr::GetFontColor(const wxString &TextElement) const {
 
-#ifdef __WXOSX__
-    wxColour rv;
-    GetGlobalColor("CHBLK", &rv);
-    return rv;
-#endif
-
   //    Look thru the font list for a match
   MyFontDesc *pmfd;
   auto node = m_fontlist->GetFirst();

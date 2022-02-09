@@ -358,6 +358,7 @@ extern bool g_bUseWptScaMin;
 bool g_bOverruleScaMin;
 extern int osMajor, osMinor;
 extern bool g_bShowMuiZoomButtons;
+extern MyConfig *pConfig;
 
 extern wxString GetShipNameFromFile(int);
 
@@ -1339,6 +1340,11 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
   CreateControls();
   RecalculateSize();
 
+  // Protect against unreasonable small size
+  // And also handle the empty config file init case.
+  if ( ( (size.x < 200) || (size.y < 200) ) && !g_bresponsive)
+    Fit();
+
   Center();
 }
 
@@ -1376,6 +1382,9 @@ bool options::SendIdleEvents(wxIdleEvent& event) {
 
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
+    m_nCharWidthMax = GetSize().x / GetCharWidth();
+    return;
+#if 0
     wxSize canvas_size = gFrame->GetSize();
     wxSize fitted_size = GetSize();
 
@@ -1385,9 +1394,9 @@ void options::RecalculateSize(void) {
     SetSize(fitted_size);
 
     Fit();
-    m_nCharWidthMax = GetSize().x / GetCharWidth();
 
     return;
+#endif
   }
 
   wxSize esize;
@@ -8768,6 +8777,11 @@ void options::Finish(void) {
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
+
+  pConfig->SetPath("/Settings");
+  pConfig->Write("OptionsSizeX", lastWindowSize.x);
+  pConfig->Write("OptionsSizeY", lastWindowSize.y);
+
   SetReturnCode(m_returnChanges);
   EndModal(m_returnChanges);
 }
@@ -9139,6 +9153,10 @@ void options::OnCancelClick(wxCommandEvent& event) {
 
   if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxCANCEL);
 
+  pConfig->SetPath("/Settings");
+  pConfig->Write("OptionsSizeX", lastWindowSize.x);
+  pConfig->Write("OptionsSizeY", lastWindowSize.y);
+
   EndModal(0);
 }
 
@@ -9150,6 +9168,10 @@ void options::OnClose(wxCloseEvent& event) {
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
+
+  pConfig->SetPath("/Settings");
+  pConfig->Write("OptionsSizeX", lastWindowSize.x);
+  pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
   EndModal(0);
 }
@@ -10507,7 +10529,7 @@ void options::SetNMEAFormToSerial(void) {
   ShowNMEASerial(TRUE);
 
   m_pNMEAForm->FitInside();
-  Fit();
+  //Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -10519,7 +10541,7 @@ void options::SetNMEAFormToNet(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  Fit();
+  //Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -10531,7 +10553,7 @@ void options::SetNMEAFormToGPS(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  Fit();
+  //Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -10544,7 +10566,7 @@ void options::SetNMEAFormToBT(void) {
   ShowNMEABT(TRUE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  Fit();
+  //Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -10556,7 +10578,7 @@ void options::ClearNMEAForm(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  Fit();
+  //Fit();
   RecalculateSize();
 }
 

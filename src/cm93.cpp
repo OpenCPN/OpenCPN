@@ -5227,7 +5227,7 @@ bool cm93compchart::DoRenderRegionViewOnGL(const wxGLContext &glc,
 
     } else  // Single chart mode
     {
-      if (!m_pcm93chart_current) {
+      if (m_pcm93chart_current) {
         render_return = m_pcm93chart_current->RenderRegionViewOnGL(
             glc, vp, RectRegion, Region);
         m_Name = m_pcm93chart_current->GetLastFileName();

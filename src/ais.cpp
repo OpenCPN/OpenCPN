@@ -1798,21 +1798,19 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     }
   }
 
-  if ((!b_noshow && td->b_show_track) || b_forceshow) {
+  int TrackLength = td->m_ptrack->GetCount();
+  if (((!b_noshow && td->b_show_track) || b_forceshow) && (TrackLength > 1)) {
     //  create vector of x-y points
-    int TrackLength = td->m_ptrack->GetCount();
     int TrackPointCount;
     wxPoint *TrackPoints = 0;
-    if (TrackLength > 1) {
-      TrackPoints = new wxPoint[TrackLength];
-      wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-      for (TrackPointCount = 0; node && (TrackPointCount < TrackLength);
-           TrackPointCount++) {
-        AISTargetTrackPoint *ptrack_point = node->GetData();
-        GetCanvasPointPix(vp, cp, ptrack_point->m_lat, ptrack_point->m_lon,
-                          &TrackPoints[TrackPointCount]);
-        node = node->GetNext();
-      }
+    TrackPoints = new wxPoint[TrackLength];
+    wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+    for (TrackPointCount = 0; node && (TrackPointCount < TrackLength);
+         TrackPointCount++) {
+      AISTargetTrackPoint *ptrack_point = node->GetData();
+      GetCanvasPointPix(vp, cp, ptrack_point->m_lat, ptrack_point->m_lon,
+                        &TrackPoints[TrackPointCount]);
+      node = node->GetNext();
     }
 
     wxColour c = GetGlobalColor(_T ( "CHMGD" ));
@@ -1820,7 +1818,7 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
 
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
-    if (TrackLength > 1) {
+    if (!dc.GetDC()) {
       glLineWidth(2);
       glColor3ub(c.Red(), c.Green(), c.Blue());
       glBegin(GL_LINE_STRIP);
@@ -1832,17 +1830,20 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
 
       glEnd();
     }
+    else {
+      dc.DrawLines(TrackPointCount, TrackPoints);
+    }
 #else
-    if (TrackLength > 1) dc.DrawLines(TrackPointCount, TrackPoints);
+    dc.DrawLines(TrackPointCount, TrackPoints);
 #endif
 
 #else
-    if (dc.GetDC() && (TrackLength > 1))
+    if (dc.GetDC())
       dc.StrokeLines(TrackPointCount, TrackPoints);
 
 #endif
 
-    if (TrackLength > 1) delete[] TrackPoints;
+    delete[] TrackPoints;
 
   }  // Draw tracks
 }
