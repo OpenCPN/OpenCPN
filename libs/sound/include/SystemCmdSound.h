@@ -50,7 +50,7 @@ class SystemCmdSound: public OcpnSound
          * Set system command string in case program wants to change from
          * default string.
          */
-        void SetCmd( const char *cmd ) { m_cmd = cmd; };
+        void SetCmd(const char* cmd ) { m_cmd = cmd; };
 
     private:
         void worker();
