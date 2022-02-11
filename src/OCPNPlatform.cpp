@@ -1395,7 +1395,7 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Force a generally useable sound command, overriding any previous user's
     // selection
     //  that may not be available on new build.
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
     pConfig->SetPath(_T ( "/Settings" ));
     pConfig->Write(_T( "CmdSoundString" ), g_CmdSoundString);
 

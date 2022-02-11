@@ -39,7 +39,7 @@ class SystemCmdSound: public OcpnSound
 {
 
     public:
-        SystemCmdSound(const char* cmd = SYSTEM_SOUND_CMD)
+        SystemCmdSound(const char* cmd = OCPN_SOUND_CMD)
             :m_isPlaying(false), m_cmd(cmd), m_path("")  {};
         ~SystemCmdSound() {};
 

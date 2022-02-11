@@ -254,8 +254,8 @@ option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
   "Use aplay(1), afplay(1) etc. to play sounds if available" ${cmd_snd_default}
 )
-set(SYSTEM_SOUND_CMD "" CACHE STRING
-    "Hardcoded value for command used as SYSTEM_SOUND_CMD"
+set(OCPN_SOUND_CMD "" CACHE STRING
+  "Hardcoded value for CLI command used in SystemCmdSound backend"
 )
 
 if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)

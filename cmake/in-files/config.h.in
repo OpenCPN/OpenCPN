@@ -59,7 +59,7 @@
 #define PKG_TARGET_ARCH "${ARCH}"
 
 // Command line to play a sound in system(3), like "aplay %s".
-#define SYSTEM_SOUND_CMD  ${SYSTEM_SOUND_CMD}
+#define OCPN_SOUND_CMD  ${OCPN_SOUND_CMD}
 
 // Flag for ancient compilers without C++11 support
 #cmakedefine COMPILER_SUPPORTS_CXX11

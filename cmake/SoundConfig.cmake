@@ -3,33 +3,33 @@
 #  OCPN_ENABLE_SNDFILE sets:
 #
 #     HAVE_SYSTEM_CMD_SOUND - build SystemCmdSound backend
-#     SYSTEM_SOUND_CMD      - CLI command used by SystemCmdSound.
+#     OCPN_SOUND_CMD        - CLI command used by SystemCmdSound.
 #     HAVE_PORTAUDIO        - build portaudio backend.
 #     HAVE_SNDFILE          - build libsndfile support for portaudio.
 
-if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
+if ("${OCPN_SOUND_CMD}" STREQUAL "")
   find_program(APLAY aplay)
   find_program(AFPLAY afplay)
   find_program(OMXPLAYER omxplayer)
   if (APLAY)
-    set(SYSTEM_SOUND_CMD "\"${APLAY} %s\"")
+    set(OCPN_SOUND_CMD "\"${APLAY} %s\"")
   elseif (AFPLAY)
-    set(SYSTEM_SOUND_CMD "\"${AFPLAY} %s\"")
+    set(OCPN_SOUND_CMD "\"${AFPLAY} %s\"")
   elseif (OMXPLAYER)
-    set(SYSTEM_SOUND_CMD "\"${OMXPLAYER} -o both %s\"")
+    set(OCPN_SOUND_CMD "\"${OMXPLAYER} -o both %s\"")
   elseif (WIN32)
     string(CONCAT _win_cmd
       "\"PowerShell "
       "(New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\""
     )
-    set(SYSTEM_SOUND_CMD ${_win_cmd})
+    set(OCPN_SOUND_CMD ${_win_cmd})
   endif ()
 endif ()
-message(STATUS "SYSTEM_SOUND_CMD selected : ${SYSTEM_SOUND_CMD}")
+message(STATUS "OCPN_SOUND_CMD selected : ${OCPN_SOUND_CMD}")
 
 set(HAVE_SYSTEM_CMD_SOUND "")
 if (OCPN_ENABLE_SYSTEM_CMD_SOUND)
-  if (NOT "${SYSTEM_SOUND_CMD}" STREQUAL "")
+  if (NOT "${OCPN_SOUND_CMD}" STREQUAL "")
     set(HAVE_SYSTEM_CMD_SOUND 1)
   else ()
     message(STATUS "OCPN_ENABLE_SYSTEM_CMD_SOUND is set"
@@ -37,8 +37,8 @@ if (OCPN_ENABLE_SYSTEM_CMD_SOUND)
   endif ()
 endif ()
 message(STATUS "HAVE_SYSTEM_CMD_SOUND = ${HAVE_SYSTEM_CMD_SOUND}")
-if ("${SYSTEM_SOUND_CMD}" STREQUAL "")
-  set(SYSTEM_SOUND_CMD "\"\"")
+if ("${OCPN_SOUND_CMD}" STREQUAL "")
+  set(OCPN_SOUND_CMD "\"\"")
 endif ()
 
 set(HAVE_PORTAUDIO "")

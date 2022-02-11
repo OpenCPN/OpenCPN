@@ -8397,7 +8397,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (g_bUIexpert && pCmdSoundString) {
     g_CmdSoundString = pCmdSoundString->GetValue();
     if (wxIsEmpty(g_CmdSoundString)) {
-      g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+      g_CmdSoundString = wxString(OCPN_SOUND_CMD);
       pCmdSoundString->SetValue(g_CmdSoundString);
     }
   }
