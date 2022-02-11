@@ -41,7 +41,7 @@ typedef std::function<void(void* userPtr)>  AudioDoneCallback;
 
 class OcpnSound
 {
-    friend OcpnSound* SoundFactory();
+    friend OcpnSound* SoundFactory(const char* system_command);
 
     public:
 
