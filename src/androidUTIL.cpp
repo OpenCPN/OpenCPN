@@ -28,6 +28,8 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include <sstream>
+
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
 #include <wx/fontpicker.h>
@@ -57,6 +59,7 @@
 #include "ocpn_plugin.h"
 #include "about.h"
 #include "OCPNPlatform.h"
+#include "logger.h"
 #include "multiplexer.h"
 #include "chartdbs.h"
 #include "glChartCanvas.h"
@@ -73,6 +76,7 @@
 #include "CanvasOptions.h"
 #include "SerialDataStream.h"
 #include "gui_lib.h"
+#include "AndroidSound.h"
 
 const wxString AndroidSuppLicense = wxT(
     "<br><br>The software included in this product contains copyrighted "
@@ -952,6 +956,19 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env,
 }
 
 extern "C" {
+JNIEXPORT jint JNICALL
+    Java_org_opencpn_OCPNNativeLib_onSoundDone(JNIEnv *env,
+                                              jobject obj,
+                                              long soundPtr) {
+        auto sound = reinterpret_cast<AndroidSound*>(soundPtr);
+        DEBUG_LOG << "on SoundDone, ptr: " << soundPtr;
+        sound->OnSoundDone();
+        return 57;
+}
+}
+
+
+extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(
     JNIEnv *env, jobject obj, double WindAngleMagnetic, double WindSpeedKnots) {
   //  The NMEA message target handler may not be setup yet, if no connections
@@ -1780,8 +1797,8 @@ wxString callActivityMethod_ss(const char *method, wxString parm) {
   return return_string;
 }
 
-wxString callActivityMethod_s2s(const char *method, wxString parm1,
-                                wxString parm2) {
+wxString callActivityMethod_s2s(const char *method, const wxString parm1,
+                                const wxString parm2) {
   if (CheckPendingJNIException()) return _T("NOK");
   JNIEnv *jenv;
 
@@ -3924,13 +3941,12 @@ wxString getFontQtStylesheet(wxFont *font) {
   return qstyle;
 }
 
-bool androidPlaySound(wxString soundfile, AudioDoneCallback callBack,
-                      void *data) {
-  // qDebug() << "androidPlay";
-  s_soundCallBack = callBack;
-  s_soundData = data;
-  wxString result = callActivityMethod_ss("playSound", soundfile);
-
+bool androidPlaySound(const wxString soundfile, AndroidSound* sound) {
+  DEBUG_LOG << "androidPlaySound";
+  std::ostringstream oss;
+  oss << sound;
+  wxString wxSound(oss.str());
+  wxString result = callActivityMethod_s2s("playSound", soundfile, wxSound);
   return true;
 }
 
