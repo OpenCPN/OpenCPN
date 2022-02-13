@@ -124,6 +124,7 @@
 
 extern float g_ChartScaleFactorExp;
 extern float g_ShipScaleFactorExp;
+extern double g_mouse_zoom_sensitivity;
 
 #include <vector>
 //#include <wx-3.0/wx/aui/auibar.h>
@@ -9154,7 +9155,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     int mouse_wheel_oneshot = abs(wheel_dir) * 4;  // msec
     wheel_dir = wheel_dir > 0 ? 1 : -1;            // normalize
 
-    double factor = 1.2;
+    double factor = g_mouse_zoom_sensitivity;
     if (wheel_dir < 0) factor = 1 / factor;
 
     if (g_bsmoothpanzoom) {

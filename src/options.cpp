@@ -289,6 +289,8 @@ extern wxString g_compatOS;
 extern wxLocale* plocale_def_lang;
 #endif
 
+extern double g_mouse_zoom_sensitivity;
+
 extern OcpnSound* g_anchorwatch_sound;
 extern wxString g_anchorwatch_sound_file;
 extern wxString g_DSC_sound_file;
@@ -6967,6 +6969,20 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __OCPN__ANDROID__
   m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
+  m_pMouse_Zoom_Slider =
+      new wxSlider(itemPanelFont, wxID_ANY, 13, 11, 30, wxDefaultPosition,
+                   m_sliderSize, SLIDER_STYLE);
+  m_pSlider_Text_Factor->Hide();
+  sliderSizer->Add(
+      new wxStaticText(itemPanelFont, wxID_ANY, "Mouse zoom sensitivity"),
+      inputFlags);
+  sliderSizer->Add(m_pMouse_Zoom_Slider, 0, wxALL, border_size);
+  m_pMouse_Zoom_Slider->Show();
+
+#ifdef __OCPN__ANDROID__
+  m_pMouse_Zoom_Slider->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
+
 
   miscOptions->Add(sliderSizer, 0, wxEXPAND, 5);
   miscOptions->AddSpacer(20);
@@ -7735,6 +7751,7 @@ void options::SetInitialSettings(void) {
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
   m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
   m_pSlider_Text_Factor->SetValue(g_ENCSoundingScaleFactor);
+  m_pMouse_Zoom_Slider->SetValue(g_mouse_zoom_sensitivity * 10.0);
   wxString screenmm;
 
   if (!g_config_display_size_manual) {
@@ -8883,6 +8900,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
   g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
   g_ENCSoundingScaleFactor = m_pSlider_Text_Factor->GetValue();
+  g_mouse_zoom_sensitivity = m_pMouse_Zoom_Slider->GetValue()/10.0;
 
   //  Only reload the icons if user has actually visted the UI page
   // if(m_bVisitLang)
