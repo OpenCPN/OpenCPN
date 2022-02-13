@@ -760,8 +760,11 @@ void OCPNChartDirPanel::OnPaint( wxPaintEvent &event )
 
         int yd = height * 20 / 100;
         for (size_t i=0 ; i < nameWrapped.GetCount(); i++){
+        if( i == 0 )
           dc.DrawText(nameWrapped[i], text_x, yd);
-          yd += GetCharHeight();
+        else
+          dc.DrawText(nameWrapped[i], text_x + GetCharWidth(), yd);
+        yd += GetCharHeight();
         }
     }   // selected
     else{
@@ -782,7 +785,10 @@ void OCPNChartDirPanel::OnPaint( wxPaintEvent &event )
 
         int yd = height * 20 / 100;
         for (size_t i=0 ; i < nameWrapped.GetCount(); i++){
-          dc.DrawText(nameWrapped[i], text_x, yd);
+          if( i == 0 )
+            dc.DrawText(nameWrapped[i], text_x, yd);
+          else
+            dc.DrawText(nameWrapped[i], text_x + GetCharWidth(), yd);
           yd += GetCharHeight();
         }
 
