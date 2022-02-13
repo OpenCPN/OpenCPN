@@ -1153,12 +1153,9 @@ endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
-ENDIF(QT_ANDROID)
-
-IF(USE_GLES2)
   SET(HDRS ${HDRS} include/shaders.h)
   SET(SRCS ${SRCS} src/shaders.cpp)
-ENDIF(USE_GLES2)
+ENDIF(QT_ANDROID)
 
 SET(SRC_TINYXML
   src/tinyxml.cpp
