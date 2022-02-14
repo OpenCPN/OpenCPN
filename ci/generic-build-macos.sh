@@ -183,4 +183,4 @@ make create-pkg
 #make create-dmg
 
 # Install the stuff needed by upload.
-sudo pip3 install -q cloudsmith-cli
+pip3 install --user  -q cloudsmith-cli
