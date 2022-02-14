@@ -108,9 +108,10 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
        mentioned in NMEA0183, when available.
        Show each system for 30 seconds.
        Time to shift now? */
+       //pmx-2022.02.14 : changed to 10s
     wxDateTime now = wxDateTime::Now();
     wxTimeSpan sinceLastShift = now - m_lastShift;
-    if (sinceLastShift.GetSeconds() > 30) {
+    if (sinceLastShift.GetSeconds() > 10 /*30*/) {
       b_shift = true;
       m_lastShift = now;
     }
