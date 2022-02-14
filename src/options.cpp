@@ -1805,11 +1805,6 @@ void options::Init(void) {
   // This variable is used by plugin callback function AddOptionsPage
   g_pOptions = this;
 
-  m_bcompact = false;
-
-#ifdef __OCPN__ANDROID__
-  m_bcompact = true;
-#endif
   pCmdSoundString = NULL;
 
   m_sconfigSelect_single = NULL;
@@ -1821,6 +1816,13 @@ void options::Init(void) {
   dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, dialogFont);
 
   m_colourPickerDefaultSize = wxSize(4 * height, height * 2);
+
+  m_bcompact = false;
+
+  wxSize dSize = g_Platform->getDisplaySize();
+  if ( dSize.x < width * 40)
+    m_bcompact = true;
+
 }
 
 #if defined(__GNUC__) && __GNUC__ < 8
@@ -3993,18 +3995,28 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
     wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
     activeSizer->Add(cmdButtonSizer, 0, wxALL, border_size);
 
+  wxString b1 = _("Add Directory...");
+  wxString b2 = _("Remove Selected");
+  wxString b3 = _("Compress Selected");
+
+  if ( m_bcompact){
+    b1 = _("Add..");
+    b2 = _("Remove");
+    b3 = _("Compress");
+  }
+
   wxButton* addBtn =
-      new wxButton(chartPanelWin, ID_BUTTONADD, _("Add Directory..."));
+      new wxButton(chartPanelWin, ID_BUTTONADD, b1);
   cmdButtonSizer->Add(addBtn, 1, wxALL | wxEXPAND, group_item_spacing);
 
   m_removeBtn =
-      new wxButton(chartPanelWin, ID_BUTTONDELETE, _("Remove Selected"));
+      new wxButton(chartPanelWin, ID_BUTTONDELETE, b2);
   cmdButtonSizer->Add(m_removeBtn, 1, wxALL | wxEXPAND, group_item_spacing);
   m_removeBtn->Disable();
 
 #ifdef OCPN_USE_LZMA
   m_compressBtn =
-      new wxButton(chartPanelWin, ID_BUTTONCOMPRESS, _("Compress Selected"));
+      new wxButton(chartPanelWin, ID_BUTTONCOMPRESS, b3);
   cmdButtonSizer->Add(m_compressBtn, 1, wxALL | wxEXPAND, group_item_spacing);
   m_compressBtn->Disable();
 #else
@@ -7414,10 +7426,10 @@ void options::SetInitialSettings(void) {
 
   UpdateChartDirList();
 
-#if 0
+#if 1
   // ChartGroups
-  if (pActiveChartsList && m_pWorkDirList) {
-    UpdateWorkArrayFromTextCtl();
+  if (m_pWorkDirList) {
+    UpdateWorkArrayFromDisplayPanel();
     groupsPanel->SetDBDirs(*m_pWorkDirList);
 
     // Make a deep copy of the current global Group Array
@@ -10488,6 +10500,10 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
 
   pd->Create(m_panel, _("Enter Group Name"), _("New Chart Group"));
 
+#ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+#endif
+
   if (pd->ShowModal() == wxID_OK) {
     if (pd->GetValue().Length()) {
       AddEmptyGroupPage(pd->GetValue());
@@ -10503,6 +10519,11 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
     }
   }
   delete pd;
+
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
+
 }
 
 void ChartGroupsUI::OnDeleteGroup(wxCommandEvent& event) {
@@ -11555,17 +11576,24 @@ void SentenceListDlg::OnCLBSelect(wxCommandEvent& e) {
 }
 
 void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
+#ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+#endif
+
   wxTextEntryDialog textdlg(
       this,
       _("Enter the NMEA sentence (2, 3 or 5 characters)\n  or a valid REGEX "
         "expression (6 characters or longer)"),
       _("Enter the NMEA sentence"));
-#if wxCHECK_VERSION(2, 9, 0)
-//  textdlg.SetMaxLength(5);
-#endif
 
   textdlg.SetTextValidator(wxFILTER_ASCII);
-  if (textdlg.ShowModal() == wxID_CANCEL) return;
+  int result = textdlg.ShowModal();
+
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
+
+  if (result == wxID_CANCEL) return;
   wxString stc = textdlg.GetValue();
 
   if (stc.Length() == 2 || stc.Length() == 3 || stc.Length() == 5) {
