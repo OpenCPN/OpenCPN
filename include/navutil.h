@@ -59,6 +59,7 @@ enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 
 enum { TEMPERATURE_C = 0, TEMPERATURE_F = 1, TEMPERATURE_K = 2 };
 
+double mouseZoom2config(int slider_pos);
 extern bool LogMessageOnce(const wxString &msg);
 extern double toUsrDistance(double nm_distance, int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit = -1);
