@@ -1735,15 +1735,25 @@ void dashboard_pi::handleSKUpdate(wxJSONValue &update) {
   if (update.HasMember("timestamp")) {
     sfixtime = update["timestamp"].AsString();
   }
-  if (update.HasMember("values") && update["values"].IsArray()) {
+
+  if (update.HasMember("values") && update["values"].IsArray() ) {
+           wxString talker = "";
+        if (update.HasMember("source")) {
+            if (update["source"].HasMember("talker")) {
+                if (update["source"]["talker"].IsString()) {
+                    talker = update["source"]["talker"].AsString();
+                }
+            }
+        }
+
     for (int j = 0; j < update["values"].Size(); ++j) {
       wxJSONValue &item = update["values"][j];
-      updateSKItem(item, sfixtime);
+      updateSKItem(item, talker, sfixtime);
     }
   }
 }
 
-void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
+void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime) {
   if (item.HasMember("path") && item.HasMember("value")) {
     const wxString &update_path = item["path"].AsString();
     wxJSONValue &value = item["value"];
@@ -2041,7 +2051,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 // TODO. Add talkerID to talk when SignalK has incorporated
                 // that.
                 SendSatInfoToAllInstruments(iNumSats, iMesNum + 1,
-                                            wxEmptyString, SK_SatInfo);
+                                            talker/*wxEmptyString*/, SK_SatInfo);
                 mPriSatStatus = 2;
                 mSatStatus_Wdog = gps_watchdog_timeout_ticks;
               }
