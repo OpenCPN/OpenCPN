@@ -4412,9 +4412,16 @@ void DashboardWindow::SendSatInfoToAllInstruments(int cnt, int seq,
   for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++) {
     if ((m_ArrayOfInstrument.Item(i)->m_cap_flag.test(OCPN_DBP_STC_GPS)) &&
         m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(
-            CLASSINFO(DashboardInstrument_GPS)))
-      ((DashboardInstrument_GPS *)m_ArrayOfInstrument.Item(i)->m_pInstrument)
-          ->SetSatInfo(cnt, seq, talk, sats);
+            CLASSINFO(DashboardInstrument_GPS))) {
+            // pmx-2022.02.14 Correct GLONASS SV (Space Vehicule) numbers
+            if (talker == "GL") {
+                for (int i=0; i<4; i++) {
+                    if (sats[i].SatNumber > 0) sats[i].SatNumber -= 64;
+                }
+            }
+          ((DashboardInstrument_GPS *)m_ArrayOfInstrument.Item(i)->m_pInstrument)
+              ->SetSatInfo(cnt, seq, talk, sats);
+          }
   }
 }
 
