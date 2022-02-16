@@ -8911,7 +8911,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
   g_ENCSoundingScaleFactor = m_pSlider_Text_Factor->GetValue();
   g_mouse_zoom_sensitivity_ui = m_pMouse_Zoom_Slider->GetValue();
-  g_mouse_zoom_sensitivity = mouseZoom2config(g_mouse_zoom_sensitivity_ui);
+  g_mouse_zoom_sensitivity =
+    MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui);
 
 
 

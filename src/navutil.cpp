@@ -502,17 +502,6 @@ void appendOSDirSlash(wxString *pString);
 //-----------------------------------------------------------------------------
 //
 
-
-/** Convert a slider scale 1-100 value to configuration value 1.0..3.0. */
-double mouseZoom2config(int slider_pos) {
-  return (2.0/100) * static_cast<double>(slider_pos) + 1.05;
-}
-
-/** Convert configuration 1.05..3.0 value to slider scale 1..100. */
-static int mouseZoom2slider(double value) {
-  return std::round((100.0 * (static_cast<double>(value) - 1.05)) / 2.0);
-}
-
 MyConfig::MyConfig(const wxString &LocalFileName)
     : wxFileConfig(_T (""), _T (""), LocalFileName, _T (""),
                    wxCONFIG_USE_LOCAL_FILE) {
@@ -961,7 +950,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
   Read(_T ( "PlusMinusZoomFactor" ), &g_plus_minus_zoom_factor, 2.0);
   Read("MouseZoomSensitivity", &g_mouse_zoom_sensitivity, 1.3);
-  g_mouse_zoom_sensitivity_ui = mouseZoom2slider(g_mouse_zoom_sensitivity);
+  g_mouse_zoom_sensitivity_ui =
+      MouseZoom::config_to_ui(g_mouse_zoom_sensitivity);
   Read(_T ( "CM93DetailFactor" ), &g_cm93_zoom_factor);
 
   Read(_T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x);
@@ -2365,7 +2355,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "OverzoomVectorScale" ), g_oz_vector_scale);
   Write(_T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base);
   Write(_T ( "PlusMinusZoomFactor" ), g_plus_minus_zoom_factor);
-  Write("MouseZoomSensitivity", mouseZoom2config(g_mouse_zoom_sensitivity_ui));
+  Write("MouseZoomSensitivity",
+        MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui));
   Write(_T ( "ShowMUIZoomButtons" ), g_bShowMuiZoomButtons);
 
 #ifdef ocpnUSE_GL
