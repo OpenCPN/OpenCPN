@@ -40,4 +40,6 @@ public class OCPNNativeLib {
   public native int onMouseWheel(int dir);
   public native int notifyFullscreenChange( boolean bFull );
 
+  public native int onSoundDone(long androidSoundPtr);
+
 }

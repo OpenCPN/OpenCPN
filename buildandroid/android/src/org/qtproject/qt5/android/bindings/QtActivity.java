@@ -1149,22 +1149,21 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     /**
-     * it will play the given file, when it finishes, or fails, it will play the next from the list
+     * Play the given file, invoking onSoundDone when completed.
+     * the next from the list
      *
      * @param fileName: the file name to start playing from it
+     * @param sound: String representation of a opaque pointer handled
+     *        to onSoundDone()
      */
-    public String playSound(final String fileName) {
+    public String playSound(final String fileName, final String sound) {
         Log.i("DEBUGGER_TAG", "playSound " + fileName);
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
         }
 
-
         if (mediaPlayer != null) {
-            //if (!mediaPlayer.isPlaying())
-
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1172,23 +1171,23 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(fileName);
                         mediaPlayer.prepare();
-                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                //playNextSoundTrack();
+                        mediaPlayer.setOnCompletionListener(
+                            new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    long ptr = Long.parseUnsignedLong(sound);
+                                    nativeLib.onSoundDone(ptr);
+                                }
                             }
-                        });
+                        );
                         //Log.i("DEBUGGER_TAG", "playSoundStart");
                         mediaPlayer.start();
                     } catch (Exception e) {
                         // TODO: Remove this error checking before publishing
                     }
-
-
                  }});
 
         }
-
         return "OK";
     }
 

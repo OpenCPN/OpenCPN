@@ -24,36 +24,32 @@
 #include "config.h"
 #include "SoundFactory.h"
 
-// I dunno why this is necessary, maybe due to clang?
-#ifdef __OCPN__ANDROID__
-#undef HAVE_PORTAUDIO
-#undef HAVE_SYSTEM_CMD_SOUND
-#endif
+#if defined(__OCPN__ANDROID__)
+#include "AndroidSound.h"
 
-#if defined(HAVE_SYSTEM_CMD_SOUND)
-#include "SystemCmdSound.h"
-
-OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
+OcpnSound* SoundFactory(const char* not_used) { return new AndroidSound(); }
 
 #elif defined(HAVE_PORTAUDIO)
 #include "PortAudioSound.h"
 
-OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
+OcpnSound* SoundFactory(const char* not_used) { return new PortAudioSound(); }
 
-#elif defined(__OCPN__ANDROID__)
-#include "AndroidSound.h"
+#elif defined(HAVE_SYSTEM_CMD_SOUND)
+#include "SystemCmdSound.h"
 
-OcpnSound* SoundFactory(void) { return new AndroidSound(); }
-
+OcpnSound* SoundFactory(const char* sound_cmd) {
+    return new SystemCmdSound(sound_cmd ? sound_cmd : OCPN_SOUND_CMD);
+}
 
 #elif defined(__WXMSW__)
 #include "MswSound.h"
 
-OcpnSound* SoundFactory(void) { return new MswSound(); }
+OcpnSound* SoundFactory(const char* not_used) { return new MswSound(); }
+
 
 #else
 #include  "OcpnWxSound.h"
 
-OcpnSound* SoundFactory(void) { return new OcpnWxSound(); }
+OcpnSound* SoundFactory(const char* not_used) { return new OcpnWxSound(); }
 
 #endif

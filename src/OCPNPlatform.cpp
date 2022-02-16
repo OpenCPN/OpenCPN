@@ -1408,11 +1408,9 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Force a generally useable sound command, overriding any previous user's
     // selection
     //  that may not be available on new build.
-#ifdef SYSTEM_SOUND_CMD
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
     pConfig->SetPath(_T ( "/Settings" ));
     pConfig->Write(_T( "CmdSoundString" ), g_CmdSoundString);
-#endif /* SYSTEM_SOUND_CMD */
 
     // Force AIS specific sound effects ON, leaving the master control
     // (g_bAIS_CPA_Alert_Audio) as configured
