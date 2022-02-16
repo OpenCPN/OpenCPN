@@ -6987,9 +6987,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
-  sliderSizer->Add(
-      new wxStaticText(itemPanelFont, wxID_ANY, "Mouse zoom sensitivity"),
-      inputFlags);
+  sliderSizer->Add(new wxStaticText(itemPanelFont,
+                                    wxID_ANY,
+                                    "Mouse wheel zoom sensitivity"),
+                   inputFlags);
   m_pMouse_Zoom_Slider = new MouseZoomSlider(itemPanelFont, m_sliderSize);
   sliderSizer->Add(m_pMouse_Zoom_Slider, 0, wxALL, border_size);
 
