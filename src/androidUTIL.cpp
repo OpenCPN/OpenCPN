@@ -3946,7 +3946,7 @@ bool androidPlaySound(const wxString soundfile, AndroidSound* sound) {
   std::ostringstream oss;
   oss << sound;
   wxString wxSound(oss.str());
-  wxString result = callActivityMethod_s2s("playSound", soundfile, wxSound);
+  wxString result = callActivityMethod_s2s("playSound", soundfile, wxSound.Mid(2));
   return true;
 }
 
