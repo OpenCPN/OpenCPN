@@ -235,6 +235,9 @@ set(
     STRING
     "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
 )
+set(OCPN_RELEASE "" CACHE STRING
+  "Hardcoded value for build number when using OCPN_CI_BUILD"
+)
 
 option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
@@ -242,7 +245,6 @@ option(OCPN_USE_SVG "Use SVG graphics" ON)
 option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
-option(OCPN_RELEASE "Hardcoded value for build number when using OCPN_CI_BUILD" OFF)
 option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the system on MacOS" ON)
 
 if (WIN32)
