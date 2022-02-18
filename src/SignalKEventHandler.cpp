@@ -112,13 +112,13 @@ void SignalKEventHandler::updateItem(wxJSONValue &item,
   if (item.HasMember("path") && item.HasMember("value")) {
     const wxString &update_path = item["path"].AsString();
     wxJSONValue &value = item["value"];
-    if (update_path == _T("navigation.position")) {
+    if (update_path == _T("navigation.position") && !value.IsNull()) {
       updateNavigationPosition(value, sfixtime);
     } else if (update_path == _T("navigation.speedOverGround") &&
-               bGPSValid_SK) {
+               bGPSValid_SK && !value.IsNull()) {
       updateNavigationSpeedOverGround(value, sfixtime);
     } else if (update_path == _T("navigation.courseOverGroundTrue") &&
-               bGPSValid_SK) {
+               bGPSValid_SK && !value.IsNull()) {
       updateNavigationCourseOverGround(value, sfixtime);
     } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
     }  // Ignore magnetic COG as OpenCPN don't handle yet.
