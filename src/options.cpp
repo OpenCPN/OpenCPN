@@ -1819,8 +1819,12 @@ void options::Init(void) {
 
   m_bcompact = false;
 
-  wxSize dSize = g_Platform->getDisplaySize();
-  if ( dSize.x < width * 40)
+  //wxSize dSize = g_Platform->getDisplaySize();
+  //if ( dSize.x < width * 40)
+  //  m_bcompact = true;
+
+  double dsizemm = g_Platform->GetDisplaySizeMM();
+  if (dsizemm < 80)   // Probably and Android Phone, portrait mode
     m_bcompact = true;
 
 }
