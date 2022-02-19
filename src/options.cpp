@@ -3921,83 +3921,29 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   activeSizer = new wxStaticBoxSizer(loadedBox, wxHORIZONTAL);
   chartPanel->Add(activeSizer, 1, wxALL | wxEXPAND, border_size);
 
-#if 0
-  pActiveChartsList =
-      new wxListCtrl(chartPanelWin, ID_LISTBOX, wxDefaultPosition,
-                     wxSize(100, -1), wxLC_LIST | wxLC_NO_HEADER);
-#ifdef __OCPN__ANDROID__
-  pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
-#endif
+  m_scrollWinChartList = new wxScrolledWindow(chartPanelWin, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBORDER_RAISED | wxVSCROLL  );
 
-  activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
+  activeSizer->Add(m_scrollWinChartList, 1, wxALL|wxEXPAND, 5);
 
-  pActiveChartsList->Connect(
-      wxEVT_COMMAND_LIST_ITEM_SELECTED,
-      wxCommandEventHandler(options::OnChartDirListSelect), NULL, this);
-
-  // Currently loaded chart dirs
-  wxString dirname;
-  if (pActiveChartsList) {
-    pActiveChartsList->DeleteAllItems();
-
-    // Add first column if in LC_REPORT mode
-    if (pActiveChartsList->InReportView()){
-      wxListItem col0;
-      col0.SetId(0);
-      col0.SetText(_(""));
-      col0.SetAlign(wxLIST_FORMAT_LEFT);
-      col0.SetWidth(500);
-      pActiveChartsList->InsertColumn(0, col0);
-    }
-
-    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
-      wxString dirname = m_CurrentDirList[i].fullpath;
-      wxListItem li;
-      li.SetId(i);
-      li.SetAlign(wxLIST_FORMAT_LEFT);
-      li.SetText(dirname);
-      li.SetColumn(0);
-      long idx = pActiveChartsList->InsertItem(li);
-    }
-  }
-#endif
-
-
-    wxPanel *cPanel = new wxPanel(chartPanelWin, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBG_STYLE_ERASE );
-    activeSizer->Add(cPanel, 1, wxALL|wxEXPAND, 5);
-
-    wxBoxSizer *boxSizercPanel = new wxBoxSizer(wxVERTICAL);
-    cPanel->SetSizer(boxSizercPanel);
-
-    m_scrollWinChartList = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE );
 
 #ifndef __OCPN__ANDROID__
     m_scrollRate = 5;
 #else
     m_scrollRate = 1;
 #endif
-    m_scrollWinChartList->SetScrollRate(m_scrollRate, m_scrollRate);
+  m_scrollWinChartList->SetScrollRate(m_scrollRate, m_scrollRate);
 
-    boxSizercPanel->Add(m_scrollWinChartList, 1, wxALL|wxEXPAND, 5);
-
-    boxSizerCharts = new wxBoxSizer(wxVERTICAL);
-    m_scrollWinChartList->SetSizer(boxSizerCharts);
-
-    int size_scrollerLines = 15;
-    //if(bCompact)
-    //  size_scrollerLines = 10;
-
-    //activeSizer->SetMinSize(wxSize(-1,size_scrollerLines * GetCharHeight()));
-    //staticBoxSizerChartList->SetMinSize(wxSize(-1,(size_scrollerLines + 1) * GetCharHeight()));
+  boxSizerCharts = new wxBoxSizer(wxVERTICAL);
+  m_scrollWinChartList->SetSizer(boxSizerCharts);
 
       // Currently loaded chart dirs
-    ActiveChartArray.Clear();
-    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
-      ActiveChartArray.Add(m_CurrentDirList[i]);
-    }
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+    ActiveChartArray.Add(m_CurrentDirList[i]);
+  }
 
-    wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
-    activeSizer->Add(cmdButtonSizer, 0, wxALL, border_size);
+  wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
+  activeSizer->Add(cmdButtonSizer, 0, wxALL, border_size);
 
   wxString b1 = _("Add Directory...");
   wxString b2 = _("Remove Selected");
@@ -4013,10 +3959,14 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
       new wxButton(chartPanelWin, ID_BUTTONADD, b1);
   cmdButtonSizer->Add(addBtn, 1, wxALL | wxEXPAND, group_item_spacing);
 
+  cmdButtonSizer->AddSpacer( GetCharHeight());
+
   m_removeBtn =
       new wxButton(chartPanelWin, ID_BUTTONDELETE, b2);
   cmdButtonSizer->Add(m_removeBtn, 1, wxALL | wxEXPAND, group_item_spacing);
   m_removeBtn->Disable();
+
+  cmdButtonSizer->AddSpacer( GetCharHeight());
 
 #ifdef OCPN_USE_LZMA
   m_compressBtn =
@@ -4057,12 +4007,9 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
 void options::UpdateChartDirList( )
 {
-    m_scrollWinChartList->ClearBackground();
+    // Clear the sizer, and delete all the child panels
+    m_scrollWinChartList->GetSizer()->Clear( true );
 
-    // Clear any existing panels
-    for(unsigned int i = 0 ; i < panelVector.size() ; i++){
-        delete panelVector[i];
-    }
     panelVector.clear();
 
     // Add new panels
@@ -4072,15 +4019,29 @@ void options::UpdateChartDirList( )
                                                              ActiveChartArray[i]);
       chartPanel->SetSelected(false);
 
-      boxSizerCharts->Add( chartPanel, 0, wxEXPAND|wxALL, 0 );
+      m_scrollWinChartList->GetSizer()->Add( chartPanel, 0, wxEXPAND|wxALL, 0 );
+
       panelVector.push_back( chartPanel );
     }
 
-    //SelectChartByID(m_ChartSelectedID, m_ChartSelectedOrder);
-
-    m_scrollWinChartList->ClearBackground();
     m_scrollWinChartList->GetSizer()->Layout();
-    m_scrollWinChartList->ClearBackground();
+
+    // There are some problems with wxScrolledWindow after add/removing items.
+    // Typically, the problem is that blank space remains at the top of the
+    // scrollable range of the window.
+    // Workarounds here...
+    // n.b. according to wx docs, none of this should be necessary...
+#ifdef __OCPN__ANDROID__
+    // This works on Android, but seems pretty drastic
+     wxSize sza = GetSize();
+     sza.y -= 1;
+     SetSize(sza);
+#else
+    // This works, except on Android
+    m_scrollWinChartList->GetParent()->Layout();
+#endif
+
+    m_scrollWinChartList->Scroll(0,0);
 }
 
 
