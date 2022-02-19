@@ -2599,13 +2599,16 @@ double GetAndroidDisplaySize() {
   if (ldpi < 160) ldpi = 160.;
 
   // Find the max dimension among all possibilities
-  double maxDim = wxMax(screen_size.x, screen_size.y);
-  maxDim = wxMax(maxDim, androidHeight);
+//   double maxDim = wxMax(screen_size.x, screen_size.y);
+//   maxDim = wxMax(maxDim, androidHeight);
+//   maxDim = wxMax(maxDim, androidWidth);
+
+  double maxDim = screen_size.x;
   maxDim = wxMax(maxDim, androidWidth);
 
   ret = (maxDim / ldpi) * 25.4;
 
-  if (ret < 75) {  // 3 inches is too small....
+  if (ret < 50) {  // 2 inches wide is too small....
     double ret_bad = ret;
     ret = 100;
     msg.Printf(
