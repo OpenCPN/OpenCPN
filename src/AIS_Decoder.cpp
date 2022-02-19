@@ -1700,7 +1700,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
     m_ptentative_dsctarget->StaticReportTicks = now.GetTicks();
 
     m_ptentative_dsctarget->MMSI = mmsi;
-    m_ptentative_dsctarget->NavStatus = 0;  // underway
+    m_ptentative_dsctarget->NavStatus = 99; //Undefind. "-" in the AIS target list
     m_ptentative_dsctarget->Lat = dsc_lat;
     m_ptentative_dsctarget->Lon = dsc_lon;
     m_ptentative_dsctarget->b_positionOnceValid = true;
