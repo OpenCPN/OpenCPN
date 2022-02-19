@@ -608,6 +608,11 @@ OCPNChartDirPanel::OCPNChartDirPanel(wxWindow *parent, wxWindowID id, const wxPo
 :wxPanel(parent, id, pos, size, wxBORDER_NONE)
 {
     m_pChartDir = cdi.fullpath;
+
+    // On Android, shorten the displayed path name by removing well-known prefix
+    if (cdi.fullpath.StartsWith("/storage/emulated/0/Android/data/org.opencpn.opencpn/files"))
+      m_pChartDir = "..." + cdi.fullpath.Mid(58);
+
     m_cdi = cdi;
     m_bSelected = false;
 
