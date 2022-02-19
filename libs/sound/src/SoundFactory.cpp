@@ -33,7 +33,7 @@
 #if defined(HAVE_SYSTEM_CMD_SOUND)
 #include "SystemCmdSound.h"
 
-OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
+OcpnSound* SoundFactory(void) { return new SystemCmdSound(OCPN_SOUND_CMD); }
 
 #elif defined(HAVE_PORTAUDIO)
 #include "PortAudioSound.h"
