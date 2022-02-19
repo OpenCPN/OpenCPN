@@ -37,7 +37,7 @@ endif ()
 #set(_master_base "/home/dsr/Projects/OCPNAndroidCoreBuildSupport")
 
 # Setup directories and libraries
-if ("${Qt_Build}" MATCHES "arm64")
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
   file(GLOB _wx_setup
     ${_master_base}/wxWidgets/libs/arm64/lib/wx/include/arm-linux-*-static-*
   )
