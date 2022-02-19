@@ -325,7 +325,10 @@ option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the sy
 
 option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
-  "Use aplay(1), afplay(1) etc. to play sounds if available" ON
+  "Use aplay(1), afplay(1) etc. to play sounds if available" ${cmd_snd_default}
+)
+set(OCPN_SOUND_CMD "" CACHE STRING
+  "Hardcoded value for CLI command used in SystemCmdSound backend"
 )
 
 if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)

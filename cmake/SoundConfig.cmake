@@ -3,30 +3,33 @@
 #  OCPN_ENABLE_SNDFILE sets:
 #
 #     HAVE_SYSTEM_CMD_SOUND - build SystemCmdSound backend
-#     SYSTEM_SOUND_CMD      - CLI command used by SystemCmdSound.
+#     OCPN_SOUND_CMD        - CLI command used by SystemCmdSound.
 #     HAVE_PORTAUDIO        - build portaudio backend.
 #     HAVE_SNDFILE          - build libsndfile support for portaudio.
 
-find_program(APLAY aplay)
-find_program(AFPLAY afplay)
-find_program(OMXPLAYER omxplayer)
-set(SYSTEM_SOUND_CMD "\"\"")
-if (APLAY)
-  SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
-elseif (AFPLAY)
-  SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
-elseif(OMXPLAYER)
-  SET(SYSTEM_SOUND_CMD "\"omxplayer -o both %s\"")
-elseif (WIN32)
-  SET(SYSTEM_SOUND_CMD
-    "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
+if ("${OCPN_SOUND_CMD}" STREQUAL "")
+  find_program(APLAY aplay)
+  find_program(AFPLAY afplay)
+  find_program(OMXPLAYER omxplayer)
+  if (APLAY)
+    set(OCPN_SOUND_CMD "\"${APLAY} %s\"")
+  elseif (AFPLAY)
+    set(OCPN_SOUND_CMD "\"${AFPLAY} %s\"")
+  elseif (OMXPLAYER)
+    set(OCPN_SOUND_CMD "\"${OMXPLAYER} -o both %s\"")
+  elseif (WIN32)
+    string(CONCAT _win_cmd
+      "\"PowerShell "
+      "(New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\""
+    )
+    set(OCPN_SOUND_CMD ${_win_cmd})
+  endif ()
 endif ()
-
-message(STATUS "SYSTEM_SOUND_CMD selected : ${SYSTEM_SOUND_CMD}")
+message(STATUS "OCPN_SOUND_CMD selected : ${OCPN_SOUND_CMD}")
 
 set(HAVE_SYSTEM_CMD_SOUND "")
-if (NOT (OCPN_ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
-  if (OMXPLAYER OR APLAY OR AFPLAY OR WIN32)
+if (OCPN_ENABLE_SYSTEM_CMD_SOUND)
+  if (NOT "${OCPN_SOUND_CMD}" STREQUAL "")
     set(HAVE_SYSTEM_CMD_SOUND 1)
   elseif (OCPN_ENABLE_SYSTEM_CMD_SOUND MATCHES "ON")
     message(STATUS "OCPN_ENABLE_SYSTEM_CMD_SOUND is set"
@@ -42,7 +45,10 @@ if (NOT (OCPN_ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
         set(HAVE_SYSTEM_CMD_SOUND "")
     endif()
   endif ()
-  message(STATUS "HAVE_SYSTEM_CMD_SOUND = ${HAVE_SYSTEM_CMD_SOUND}")
+endif ()
+message(STATUS "HAVE_SYSTEM_CMD_SOUND = ${HAVE_SYSTEM_CMD_SOUND}")
+if ("${OCPN_SOUND_CMD}" STREQUAL "")
+  set(OCPN_SOUND_CMD "\"\"")
 endif ()
 
 set(HAVE_PORTAUDIO "")

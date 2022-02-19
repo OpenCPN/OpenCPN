@@ -779,9 +779,9 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   // Some undocumented values
   Read(_T ( "ConfigVersionString" ), &g_config_version_string);
-  Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(SYSTEM_SOUND_CMD));
+  Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(OCPN_SOUND_CMD));
   if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Read(_T ( "NavMessageShown" ), &n_NavMessageShown);
 
   Read(_T ( "AndroidVersionCode" ), &g_AndroidVersionCode);
@@ -2276,7 +2276,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "CompatOsVersion" ), g_compatOsVersion);
   Write(_T ( "ConfigVersionString" ), g_config_version_string);
   if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Write(_T( "CmdSoundString" ), g_CmdSoundString);
   Write(_T ( "NavMessageShown" ), n_NavMessageShown);
   Write(_T ( "InlandEcdis" ), g_bInlandEcdis);

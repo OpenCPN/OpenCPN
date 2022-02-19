@@ -45,6 +45,9 @@ OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
 
 OcpnSound* SoundFactory(void) { return new AndroidSound(); }
 
+OcpnSound* SoundFactory(const char* sound_cmd) {
+    return new SystemCmdSound(sound_cmd ? sound_cmd : OCPN_SOUND_CMD);
+}
 
 #elif defined(__WXMSW__)
 #include "MswSound.h"
