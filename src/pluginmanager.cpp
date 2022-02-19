@@ -4972,8 +4972,8 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 #else  // Android
   SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
   ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
-  if (expert.get(false)) {
-    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog"),
+  if (!expert.get(false)) {
+    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog: master"),
                                   wxDefaultPosition, wxDefaultSize, 0);
     itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT);
     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -4986,7 +4986,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
                              wxSizerFlags().Border().Proportion(1));
     m_catalogText->SetLabel(GetCatalogText(false));
 
-    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog"),
+    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog:master"),
                                   wxDefaultPosition, wxDefaultSize, 0);
     itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT);
     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -5007,6 +5007,12 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
                              2 * GetCharWidth());
     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                           &CatalogMgrPanel::OnTarballButton, this);
+
+    ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+    wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+    catalog.listen(this, EVT_CATALOG_CHANGE);
+    Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
+
   }
 
 #endif
@@ -5206,7 +5212,17 @@ static void populatePluginNode(pugi::xml_node &pluginNode,
 
 void CatalogMgrPanel::OnPluginSettingsButton(wxCommandEvent &event) {
   auto dialog = new CatalogSettingsDialog(this);
+
+#ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+#endif
+
   dialog->ShowModal();
+
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
+
 }
 
 void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
