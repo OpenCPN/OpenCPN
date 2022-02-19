@@ -88,10 +88,9 @@ extern GLuint g_raster_format;
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "SoundFactory.h"
-
-#ifndef __OCPN__ANDROID__
 #include "SystemCmdSound.h"
-#endif
+
+#include "SystemCmdSound.h"
 
 #include "NMEALogWindow.h"
 #include "wx28compat.h"
@@ -9970,11 +9969,8 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
   sound->Play();
@@ -9993,11 +9989,8 @@ void options::OnButtonSelectAnchorSound(wxCommandEvent& event) {
 
 void options::OnButtonTestAnchorSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_anchorwatch_sound_file, g_iSoundDeviceIndex);
   sound->Play();
@@ -10015,11 +10008,8 @@ void options::OnButtonSelectDSCSound(wxCommandEvent& event) {
 
 void options::OnButtonTestDSCSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_DSC_sound_file, g_iSoundDeviceIndex);
   sound->Play();
@@ -10037,11 +10027,8 @@ void options::OnButtonSelectSARTSound(wxCommandEvent& event) {
 
 void options::OnButtonTestSARTSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_SART_sound_file, g_iSoundDeviceIndex);
   sound->Play();
@@ -10059,11 +10046,8 @@ void options::OnButtonSelectAISSound(wxCommandEvent& event) {
 
 void options::OnButtonTestAISSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_AIS_sound_file, g_iSoundDeviceIndex);
   sound->Play();

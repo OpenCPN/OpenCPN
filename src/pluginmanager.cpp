@@ -117,6 +117,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "routemanagerdialog.h"
 #include "NavObjectCollection.h"
 #include "OCPNRegion.h"
+#include "SystemCmdSound.h"
 #include "s52plib.h"
 #include "ocpn_pixel.h"
 #include "s52utils.h"
@@ -7877,7 +7878,8 @@ bool PlugInPlaySoundEx(wxString &sound_file, int deviceIndex) {
     wxLogWarning("Cannot load sound file: %s", sound_file);
     return false;
   }
-  g_PluginSound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_PluginSound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
 
   g_PluginSound->SetFinishedCallback(onPlugInPlaySoundExFinished, NULL);
   ok = g_PluginSound->Play();
