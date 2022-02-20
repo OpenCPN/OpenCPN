@@ -55,6 +55,7 @@
 #include "wx/odcombo.h"
 #include <wx/statline.h>
 #include <wx/regex.h>
+#include <wx/textwrapper.h>
 #include "SignalKDataStream.h"
 
 #if wxCHECK_VERSION(2, 9, \
@@ -87,10 +88,9 @@ extern GLuint g_raster_format;
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "SoundFactory.h"
-
-#ifndef __OCPN__ANDROID__
 #include "SystemCmdSound.h"
-#endif
+
+#include "SystemCmdSound.h"
 
 #include "NMEALogWindow.h"
 #include "wx28compat.h"
@@ -514,6 +514,294 @@ int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
   return it2.GetText().CmpNoCase(it1.GetText());
 #endif
 }
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+class ChartDirPanelHardBreakWrapper : public wxTextWrapper {
+public:
+  ChartDirPanelHardBreakWrapper(wxWindow *win, const wxString &text, int widthMax) {
+    m_lineCount = 0;
+
+    // Replace all spaces in the string with a token character '^'
+    wxString textMod = text;
+    textMod.Replace(" ", "^");
+
+    // Replace all path separators with spaces
+    wxString sep = wxFileName::GetPathSeparator();
+    textMod.Replace(sep, " ");
+
+    Wrap(win, textMod, widthMax);
+
+    // walk the output array, repairing the substitutions
+    for (size_t i=0; i < m_array.GetCount(); i++){
+      wxString a = m_array[i];
+      a.Replace(" ", sep);
+      if (m_array.GetCount() > 1){
+        if (i < m_array.GetCount()-1)
+          a += sep;
+      }
+      a.Replace("^", " ");
+      m_array[i] = a;
+    }
+  }
+  wxString const &GetWrapped() const { return m_wrapped; }
+  int const GetLineCount() const { return m_lineCount; }
+  wxArrayString GetLineArray() { return m_array; }
+
+protected:
+  virtual void OnOutputLine(const wxString &line) {
+    m_wrapped += line;
+    m_array.Add(line);
+  }
+  virtual void OnNewLine() {
+    m_wrapped += '\n';
+    m_lineCount++;
+  }
+
+private:
+  wxString m_wrapped;
+  int m_lineCount;
+  wxArrayString m_array;
+};
+
+
+
+class OCPNChartDirPanel: public wxPanel
+{
+public:
+    OCPNChartDirPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ChartDirInfo &cdi);
+    ~OCPNChartDirPanel();
+
+    void DoChartSelected(  );
+    void SetSelected( bool selected );
+    void OnPaint( wxPaintEvent &event );
+    void OnEraseBackground( wxEraseEvent &event );
+    void OnSize(wxSizeEvent &event);
+    ChartDirInfo GetCDI() { return m_cdi; }
+    int GetUnselectedHeight(){ return m_unselectedHeight; }
+    int GetRefHeight(){ return m_refHeight; }
+    bool IsSelected(){ return m_bSelected; }
+    void OnClickDown( wxMouseEvent &event );
+    void OnClickUp( wxMouseEvent &event );
+
+private:
+    //shopPanel *m_pContainer;
+    bool m_bSelected;
+    wxColour m_boxColour;
+    int m_unselectedHeight;
+    wxString m_pChartDir;
+    int m_refHeight;
+    ChartDirInfo m_cdi;
+
+    DECLARE_EVENT_TABLE()
+};
+
+
+BEGIN_EVENT_TABLE(OCPNChartDirPanel, wxPanel)
+EVT_PAINT ( OCPNChartDirPanel::OnPaint )
+EVT_ERASE_BACKGROUND( OCPNChartDirPanel::OnEraseBackground)
+EVT_SIZE( OCPNChartDirPanel::OnSize)
+END_EVENT_TABLE()
+
+OCPNChartDirPanel::OCPNChartDirPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ChartDirInfo &cdi)
+:wxPanel(parent, id, pos, size, wxBORDER_NONE)
+{
+    m_pChartDir = cdi.fullpath;
+
+    // On Android, shorten the displayed path name by removing well-known prefix
+    if (cdi.fullpath.StartsWith("/storage/emulated/0/Android/data/org.opencpn.opencpn/files"))
+      m_pChartDir = "..." + cdi.fullpath.Mid(58);
+
+    m_cdi = cdi;
+    m_bSelected = false;
+
+    m_refHeight = GetCharHeight();
+
+    m_unselectedHeight = 2 * m_refHeight;
+
+#ifdef __OCPN__ANDROID__
+    m_unselectedHeight = 4 * m_refHeight;
+#endif
+
+    SetMinSize(wxSize(-1, m_unselectedHeight));
+
+    Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(OCPNChartDirPanel::OnClickDown), NULL, this);
+#ifdef __OCPN__ANDROID__
+    Connect(wxEVT_LEFT_UP, wxMouseEventHandler(OCPNChartDirPanel::OnClickUp), NULL, this);
+#endif
+
+}
+
+OCPNChartDirPanel::~OCPNChartDirPanel()
+{
+}
+
+static  wxStopWatch swclick;
+#ifdef __OCPN__ANDROID__
+static  int downx, downy;
+#endif
+
+void OCPNChartDirPanel::OnClickDown( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__
+    swclick.Start();
+    event.GetPosition( &downx, &downy );
+#else
+    DoChartSelected();
+#endif
+}
+
+void OCPNChartDirPanel::OnClickUp( wxMouseEvent &event )
+{
+#ifdef __OCPN__ANDROID__
+    qDebug() << swclick.Time();
+    if(swclick.Time() < 200){
+        int upx, upy;
+        event.GetPosition(&upx, &upy);
+        if( (fabs(upx-downx) < GetCharWidth()) && (fabs(upy-downy) < GetCharWidth()) ){
+            DoChartSelected();
+        }
+    }
+    swclick.Start();
+#endif
+}
+
+
+void OCPNChartDirPanel::DoChartSelected( )
+{
+
+    if(!m_bSelected){
+        SetSelected( true );
+//        m_pContainer->SelectChart( this );
+    }
+    else{
+        SetSelected( false );
+//        m_pContainer->SelectChart( (OCPNChartDirPanel*)NULL );
+    }
+
+}
+
+void OCPNChartDirPanel::SetSelected( bool selected )
+{
+    m_bSelected = selected;
+    wxColour colour;
+
+    if (selected)
+    {
+       GetGlobalColor(_T("UIBCK"), &colour);
+       m_boxColour = colour;
+    }
+    else
+    {
+       GetGlobalColor(_T("DILG0"), &colour);
+       m_boxColour = colour;
+    }
+
+    Refresh( true );
+
+    g_pOptions->SetDirActionButtons();
+}
+
+
+
+void OCPNChartDirPanel::OnEraseBackground( wxEraseEvent &event )
+{
+}
+
+void OCPNChartDirPanel::OnSize(wxSizeEvent &event)
+{
+  if (m_pChartDir.Length()){
+    int x, y;
+    GetClientSize(&x, &y);
+
+    ChartDirPanelHardBreakWrapper wrapper(this, m_pChartDir, x * 9 / 10);
+    wxArrayString nameWrapped = wrapper.GetLineArray();
+
+    SetMinSize(wxSize(-1, (nameWrapped.GetCount()+1) *  m_refHeight));
+  }
+
+  event.Skip();
+}
+
+void OCPNChartDirPanel::OnPaint( wxPaintEvent &event )
+{
+    int width, height;
+    GetSize( &width, &height );
+    wxPaintDC dc( this );
+
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(GetBackgroundColour()));
+    dc.DrawRectangle(GetVirtualSize());
+
+    wxColour c;
+
+    wxString nameString = m_pChartDir;
+    ChartDirPanelHardBreakWrapper wrapper(this, nameString, width * 9 / 10);
+    wxArrayString nameWrapped = wrapper.GetLineArray();
+
+    if (height < (int)(nameWrapped.GetCount()+1) *  m_refHeight){
+      SetMinSize(wxSize(-1, (nameWrapped.GetCount()+1) *  m_refHeight));
+      GetParent()->GetSizer()->Layout();
+    }
+
+    if(m_bSelected){
+
+        dc.SetBrush( wxBrush( m_boxColour ) );
+
+        GetGlobalColor( _T ( "UITX1" ), &c );
+        dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
+
+        dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
+
+        int offset = height / 10;
+        int text_x = offset * 2;
+
+        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+        dc.SetFont( *dFont );
+
+        dc.SetTextForeground(wxColour(64, 64, 64));
+
+
+        int yd = height * 20 / 100;
+        for (size_t i=0 ; i < nameWrapped.GetCount(); i++){
+        if( i == 0 )
+          dc.DrawText(nameWrapped[i], text_x, yd);
+        else
+          dc.DrawText(nameWrapped[i], text_x + GetCharWidth(), yd);
+        yd += GetCharHeight();
+        }
+    }   // selected
+    else{
+        dc.SetBrush( wxBrush( m_boxColour ) );
+
+        GetGlobalColor( _T ( "GREY1" ), &c );
+        dc.SetPen( wxPen( c, 1 ) );
+
+        int offset = height / 10;
+        dc.DrawRoundedRectangle( offset, offset, width - (2 * offset), height - (2 * offset), height/10);
+
+        int text_x = offset * 2;
+
+        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+        dc.SetFont( *dFont );
+
+        dc.SetTextForeground(wxColour(64, 64, 64));
+
+        int yd = height * 20 / 100;
+        for (size_t i=0 ; i < nameWrapped.GetCount(); i++){
+          if( i == 0 )
+            dc.DrawText(nameWrapped[i], text_x, yd);
+          else
+            dc.DrawText(nameWrapped[i], text_x + GetCharWidth(), yd);
+          yd += GetCharHeight();
+        }
+
+    }   // not selected
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
 
 WX_DECLARE_LIST(wxCheckBox, CBList);
 
@@ -1425,7 +1713,8 @@ void options::Init(void) {
   pShowMenuBar = NULL;
   pShowCompassWin = NULL;
   pSelCtl = NULL;
-  pActiveChartsList = NULL;
+  //pActiveChartsList = NULL;
+  m_scrollWinChartList = NULL;
   ps57CtlListBox = NULL;
   pDispCat = NULL;
   m_pSerialArray = NULL;
@@ -1520,11 +1809,6 @@ void options::Init(void) {
   // This variable is used by plugin callback function AddOptionsPage
   g_pOptions = this;
 
-  m_bcompact = false;
-
-#ifdef __OCPN__ANDROID__
-  m_bcompact = true;
-#endif
   pCmdSoundString = NULL;
 
   m_sconfigSelect_single = NULL;
@@ -1536,6 +1820,17 @@ void options::Init(void) {
   dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, dialogFont);
 
   m_colourPickerDefaultSize = wxSize(4 * height, height * 2);
+
+  m_bcompact = false;
+
+  //wxSize dSize = g_Platform->getDisplaySize();
+  //if ( dSize.x < width * 40)
+  //  m_bcompact = true;
+
+  double dsizemm = g_Platform->GetDisplaySizeMM();
+  if (dsizemm < 80)   // Probably and Android Phone, portrait mode
+    m_bcompact = true;
+
 }
 
 #if defined(__GNUC__) && __GNUC__ < 8
@@ -3630,60 +3925,56 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   activeSizer = new wxStaticBoxSizer(loadedBox, wxHORIZONTAL);
   chartPanel->Add(activeSizer, 1, wxALL | wxEXPAND, border_size);
 
-  pActiveChartsList =
-      new wxListCtrl(chartPanelWin, ID_LISTBOX, wxDefaultPosition,
-                     wxSize(100, -1), wxLC_LIST | wxLC_NO_HEADER);
-#ifdef __OCPN__ANDROID__
-  pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+  m_scrollWinChartList = new wxScrolledWindow(chartPanelWin, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBORDER_RAISED | wxVSCROLL  );
+
+  activeSizer->Add(m_scrollWinChartList, 1, wxALL|wxEXPAND, 5);
+
+
+#ifndef __OCPN__ANDROID__
+    m_scrollRate = 5;
+#else
+    m_scrollRate = 1;
 #endif
+  m_scrollWinChartList->SetScrollRate(m_scrollRate, m_scrollRate);
 
-  activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
+  boxSizerCharts = new wxBoxSizer(wxVERTICAL);
+  m_scrollWinChartList->SetSizer(boxSizerCharts);
 
-  pActiveChartsList->Connect(
-      wxEVT_COMMAND_LIST_ITEM_SELECTED,
-      wxCommandEventHandler(options::OnChartDirListSelect), NULL, this);
+      // Currently loaded chart dirs
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+    ActiveChartArray.Add(m_CurrentDirList[i]);
+  }
 
   wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
   activeSizer->Add(cmdButtonSizer, 0, wxALL, border_size);
 
-  // Currently loaded chart dirs
-  wxString dirname;
-  if (pActiveChartsList) {
-    pActiveChartsList->DeleteAllItems();
+  wxString b1 = _("Add Directory...");
+  wxString b2 = _("Remove Selected");
+  wxString b3 = _("Compress Selected");
 
-    // Add first column if in LC_REPORT mode
-    if (pActiveChartsList->InReportView()){
-      wxListItem col0;
-      col0.SetId(0);
-      col0.SetText(_(""));
-      col0.SetAlign(wxLIST_FORMAT_LEFT);
-      col0.SetWidth(500);
-      pActiveChartsList->InsertColumn(0, col0);
-    }
-
-    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
-      wxString dirname = m_CurrentDirList[i].fullpath;
-      wxListItem li;
-      li.SetId(i);
-      li.SetAlign(wxLIST_FORMAT_LEFT);
-      li.SetText(dirname);
-      li.SetColumn(0);
-      long idx = pActiveChartsList->InsertItem(li);
-    }
+  if ( m_bcompact){
+    b1 = _("Add..");
+    b2 = _("Remove");
+    b3 = _("Compress");
   }
 
   wxButton* addBtn =
-      new wxButton(chartPanelWin, ID_BUTTONADD, _("Add Directory..."));
+      new wxButton(chartPanelWin, ID_BUTTONADD, b1);
   cmdButtonSizer->Add(addBtn, 1, wxALL | wxEXPAND, group_item_spacing);
 
+  cmdButtonSizer->AddSpacer( GetCharHeight());
+
   m_removeBtn =
-      new wxButton(chartPanelWin, ID_BUTTONDELETE, _("Remove Selected"));
+      new wxButton(chartPanelWin, ID_BUTTONDELETE, b2);
   cmdButtonSizer->Add(m_removeBtn, 1, wxALL | wxEXPAND, group_item_spacing);
   m_removeBtn->Disable();
 
+  cmdButtonSizer->AddSpacer( GetCharHeight());
+
 #ifdef OCPN_USE_LZMA
   m_compressBtn =
-      new wxButton(chartPanelWin, ID_BUTTONCOMPRESS, _("Compress Selected"));
+      new wxButton(chartPanelWin, ID_BUTTONCOMPRESS, b3);
   cmdButtonSizer->Add(m_compressBtn, 1, wxALL | wxEXPAND, group_item_spacing);
   m_compressBtn->Disable();
 #else
@@ -3713,8 +4004,50 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   itemStaticBoxSizerUpdate->Add(itemFlexGridSizerUpdate, 1, wxEXPAND, 5);
 
+  UpdateChartDirList();
+
   chartPanel->Layout();
 }
+
+void options::UpdateChartDirList( )
+{
+    // Clear the sizer, and delete all the child panels
+    m_scrollWinChartList->GetSizer()->Clear( true );
+
+    panelVector.clear();
+
+    // Add new panels
+    for (size_t i = 0; i < ActiveChartArray.GetCount(); i++) {
+      OCPNChartDirPanel *chartPanel = new OCPNChartDirPanel( m_scrollWinChartList, wxID_ANY,
+                                                             wxDefaultPosition, wxSize(-1, -1),
+                                                             ActiveChartArray[i]);
+      chartPanel->SetSelected(false);
+
+      m_scrollWinChartList->GetSizer()->Add( chartPanel, 0, wxEXPAND|wxALL, 0 );
+
+      panelVector.push_back( chartPanel );
+    }
+
+    m_scrollWinChartList->GetSizer()->Layout();
+
+    // There are some problems with wxScrolledWindow after add/removing items.
+    // Typically, the problem is that blank space remains at the top of the
+    // scrollable range of the window.
+    // Workarounds here...
+    // n.b. according to wx docs, none of this should be necessary...
+#ifdef __OCPN__ANDROID__
+    // This works on Android, but seems pretty drastic
+     wxSize sza = GetSize();
+     sza.y -= 1;
+     SetSize(sza);
+#else
+    // This works, except on Android
+    m_scrollWinChartList->GetParent()->Layout();
+#endif
+
+    m_scrollWinChartList->Scroll(0,0);
+}
+
 
 void options::UpdateTemplateTitleText() {
   if (!m_templateTitleText) return;
@@ -7053,25 +7386,19 @@ void options::SetInitialSettings(void) {
   }
   m_screenConfig = g_canvasConfig;
 
-  // ChartsLoad
+  // Initial Charts Load
 
-  if (pActiveChartsList) {
-    pActiveChartsList->DeleteAllItems();
-
-    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
-      wxString dirname = m_CurrentDirList[i].fullpath;
-      wxListItem li;
-      li.SetId(i);
-      li.SetAlign(wxLIST_FORMAT_LEFT);
-      li.SetText(dirname);
-      li.SetColumn(0);
-      long idx = pActiveChartsList->InsertItem(li);
-    }
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+    ActiveChartArray.Add(m_CurrentDirList[i]);
   }
 
+  UpdateChartDirList();
+
+#if 1
   // ChartGroups
-  if (pActiveChartsList && m_pWorkDirList) {
-    UpdateWorkArrayFromTextCtl();
+  if (m_pWorkDirList) {
+    UpdateWorkArrayFromDisplayPanel();
     groupsPanel->SetDBDirs(*m_pWorkDirList);
 
     // Make a deep copy of the current global Group Array
@@ -7081,6 +7408,7 @@ void options::SetInitialSettings(void) {
     groupsPanel->SetGroupArray(m_pGroupArray);
     groupsPanel->SetInitialSettings();
   }
+#endif
 
   if (m_pConfig) {
     pShowStatusBar->SetValue(g_bShowStatusBar);
@@ -7778,9 +8106,11 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
 }
 
 void options::OnChartDirListSelect(wxCommandEvent& event) {
+#if 0
   bool selected = (pActiveChartsList->GetSelectedItemCount() > 0);
   m_removeBtn->Enable(selected);
   if (m_compressBtn) m_compressBtn->Enable(selected);
+#endif
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
@@ -7857,14 +8187,11 @@ void options::AddChartDir(const wxString& dir) {
     dirAdd = dir;
   }
 
-  wxListItem li;
-  int id = pActiveChartsList->GetItemCount();  // next index
-  li.SetId(id);
-  li.SetAlign(wxLIST_FORMAT_LEFT);
-  li.SetText(dirAdd);
-  li.SetColumn(0);
+  ChartDirInfo cdi;
+  cdi.fullpath = dir;
+  ActiveChartArray.Add(cdi);
 
-  long idx = pActiveChartsList->InsertItem(li);
+  UpdateChartDirList();
 
   k_charts |= CHANGE_CHARTS;
 
@@ -7872,28 +8199,23 @@ void options::AddChartDir(const wxString& dir) {
 }
 
 void options::UpdateDisplayedChartDirList(ArrayOfCDI p) {
-  if (pActiveChartsList) {
-    pActiveChartsList->DeleteAllItems();
-    for (size_t i = 0; i < p.GetCount(); i++) {
-      wxString dirname = p[i].fullpath;
-      wxListItem li;
-      li.SetId(i);
-      li.SetAlign(wxLIST_FORMAT_LEFT);
-      li.SetText(dirname);
-      li.SetColumn(0);
-      long idx = pActiveChartsList->InsertItem(li);
-    }
+  // Called by pluginmanager after adding single chart to database
+
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < p.GetCount(); i++) {
+      ActiveChartArray.Add(p[i]);
   }
+
+  UpdateChartDirList();
 }
 
-void options::UpdateWorkArrayFromTextCtl(void) {
+void options::UpdateWorkArrayFromDisplayPanel(void) {
   wxString dirname;
-
-  int n = pActiveChartsList->GetItemCount();
+  int n = ActiveChartArray.GetCount();
   if (m_pWorkDirList) {
     m_pWorkDirList->Clear();
     for (int i = 0; i < n; i++) {
-      dirname = pActiveChartsList->GetItemText(i);
+      dirname = ActiveChartArray[i].fullpath;
       if (!dirname.IsEmpty()) {
         //    This is a fix for OSX, which appends EOL to results of
         //    GetLineText()
@@ -8142,17 +8464,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (m_bfontChanged) m_returnChanges |= FONT_CHANGED;
 
   // Handle Chart Tab
-  if (pActiveChartsList) {
-    UpdateWorkArrayFromTextCtl();
-  } else {
-    m_pWorkDirList->Clear();
-    int nDir = m_CurrentDirList.GetCount();
+  UpdateWorkArrayFromDisplayPanel();
 
-    for (int i = 0; i < nDir; i++) {
-      ChartDirInfo cdi = m_CurrentDirList[i];
-      m_pWorkDirList->Add(cdi);
-    }
-  }
   groupsPanel->SetDBDirs(*m_pWorkDirList);  // update the Groups tab
   groupsPanel->m_treespopulated = FALSE;
 
@@ -8398,7 +8711,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (g_bUIexpert && pCmdSoundString) {
     g_CmdSoundString = pCmdSoundString->GetValue();
     if (wxIsEmpty(g_CmdSoundString)) {
-      g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+      g_CmdSoundString = wxString(OCPN_SOUND_CMD);
       pCmdSoundString->SetValue(g_CmdSoundString);
     }
   }
@@ -8786,25 +9099,54 @@ void options::Finish(void) {
   EndModal(m_returnChanges);
 }
 
-void options::OnButtondeleteClick(wxCommandEvent& event) {
-  long item = -1;
-  for (;;) {
-    item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL,
-                                          wxLIST_STATE_SELECTED);
-    if (item == -1) break;
-    pActiveChartsList->DeleteItem(item);
-
-    // On Android, there is some trouble with wxLIST_STATE_SELECTED.
-    // So, only allow deletion of one item per click.
-#ifdef __OCPN__ANDROID__
-    break;
-#endif
-
-    item = -1;  // Restart
+ArrayOfCDI options::GetSelectedChartDirs()
+{
+  ArrayOfCDI rv;
+  for (size_t i=0 ; i < panelVector.size(); i++) {
+    if (panelVector[i]->IsSelected()){
+      rv.Add(panelVector[i]->GetCDI());
+    }
   }
 
-  UpdateWorkArrayFromTextCtl();
+  return rv;
+}
 
+ArrayOfCDI options::GetUnSelectedChartDirs()
+{
+  ArrayOfCDI rv;
+  for (size_t i=0 ; i < panelVector.size(); i++) {
+    if (!panelVector[i]->IsSelected()){
+      rv.Add(panelVector[i]->GetCDI());
+    }
+  }
+
+  return rv;
+}
+
+void options::SetDirActionButtons()
+{
+  ArrayOfCDI selArray = GetSelectedChartDirs();
+  if(selArray.GetCount())
+    m_removeBtn->Enable();
+  else
+    m_removeBtn->Disable();
+
+}
+
+
+
+void options::OnButtondeleteClick(wxCommandEvent& event) {
+  ArrayOfCDI unselArray = GetUnSelectedChartDirs();
+  ActiveChartArray.Clear();
+  for (size_t i = 0; i < unselArray.GetCount(); i++) {
+      ActiveChartArray.Add(unselArray[i]);
+  }
+
+  UpdateChartDirList();
+
+  UpdateWorkArrayFromDisplayPanel();
+
+#if 0
   if (m_pWorkDirList) {
     pActiveChartsList->DeleteAllItems();
     for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
@@ -8817,6 +9159,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
       long idx = pActiveChartsList->InsertItem(li);
     }
   }
+#endif
 
   k_charts |= CHANGE_CHARTS;
 
@@ -9014,13 +9357,14 @@ static bool CompressChart(wxString in, wxString out) {
 }
 
 void options::OnButtoncompressClick(wxCommandEvent& event) {
+#if 0
   wxArrayInt pListBoxSelections;
   long item = -1;
   for (;;) {
     item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL,
                                           wxLIST_STATE_SELECTED);
     if (item == -1) break;
-    pListBoxSelections.Add((int)item);
+    //pListBoxSelections.Add((int)item);
     item = -1;  // Restart
   }
 
@@ -9141,6 +9485,7 @@ They can be decompressed again using unxz or 7 zip programs."),
   pScanCheckBox->Disable();
 
   event.Skip();
+#endif
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
@@ -9624,11 +9969,8 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
   sound->Play();
@@ -9647,11 +9989,8 @@ void options::OnButtonSelectAnchorSound(wxCommandEvent& event) {
 
 void options::OnButtonTestAnchorSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_anchorwatch_sound_file, g_iSoundDeviceIndex);
   sound->Play();
@@ -9669,11 +10008,8 @@ void options::OnButtonSelectDSCSound(wxCommandEvent& event) {
 
 void options::OnButtonTestDSCSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_DSC_sound_file, g_iSoundDeviceIndex);
   sound->Play();
@@ -9691,11 +10027,8 @@ void options::OnButtonSelectSARTSound(wxCommandEvent& event) {
 
 void options::OnButtonTestSARTSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_SART_sound_file, g_iSoundDeviceIndex);
   sound->Play();
@@ -9713,11 +10046,8 @@ void options::OnButtonSelectAISSound(wxCommandEvent& event) {
 
 void options::OnButtonTestAISSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-#ifndef __OCPN__ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(sound)) {
-    sound->SetCmd(g_CmdSoundString.mb_str());
-  }
-#endif
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([sound](void*) { delete sound; });
   sound->Load(g_AIS_sound_file, g_iSoundDeviceIndex);
   sound->Play();
@@ -10124,6 +10454,10 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
 
   pd->Create(m_panel, _("Enter Group Name"), _("New Chart Group"));
 
+#ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+#endif
+
   if (pd->ShowModal() == wxID_OK) {
     if (pd->GetValue().Length()) {
       AddEmptyGroupPage(pd->GetValue());
@@ -10139,6 +10473,11 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
     }
   }
   delete pd;
+
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
+
 }
 
 void ChartGroupsUI::OnDeleteGroup(wxCommandEvent& event) {
@@ -11191,17 +11530,24 @@ void SentenceListDlg::OnCLBSelect(wxCommandEvent& e) {
 }
 
 void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
+#ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+#endif
+
   wxTextEntryDialog textdlg(
       this,
       _("Enter the NMEA sentence (2, 3 or 5 characters)\n  or a valid REGEX "
         "expression (6 characters or longer)"),
       _("Enter the NMEA sentence"));
-#if wxCHECK_VERSION(2, 9, 0)
-//  textdlg.SetMaxLength(5);
-#endif
 
   textdlg.SetTextValidator(wxFILTER_ASCII);
-  if (textdlg.ShowModal() == wxID_CANCEL) return;
+  int result = textdlg.ShowModal();
+
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
+
+  if (result == wxID_CANCEL) return;
   wxString stc = textdlg.GetValue();
 
   if (stc.Length() == 2 || stc.Length() == 3 || stc.Length() == 5) {

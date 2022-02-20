@@ -1568,6 +1568,10 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
   dialog->SetSize(sz.GetWidth(), sz.GetHeight());
   dialog->Center();
 
+#ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+#endif
+
   if (dialog->ShowModal() == wxID_OK){
      ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(),
                                        dialog->m_tChartSourceUrl->GetValue(),
@@ -1589,6 +1593,9 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
     SelectCatalog(m_lbChartSources->GetItemCount() - 1);
     pPlugIn->SaveConfig();
   }
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
 
   event.Skip();
 }
@@ -2267,6 +2274,7 @@ void ChartDldrGuiAddSourceDlg::OnSourceSelected(wxTreeEvent &event) {
     m_tChartSourceUrl->SetValue(cs->GetUrl());
     if (m_tcChartDirectory->GetValue() == m_last_path) {
       m_tcChartDirectory->SetValue(FixPath(cs->GetDir()));
+      m_buttonChartDirectory->Enable();
       m_last_path = m_tcChartDirectory->GetValue();
     }
   }
@@ -2280,6 +2288,7 @@ void ChartDldrGuiAddSourceDlg::SetSourceEdit(ChartSource *cs) {
   m_tSourceName->SetValue(cs->GetName());
   m_tChartSourceUrl->SetValue(cs->GetUrl());
   m_tcChartDirectory->SetValue(FixPath(cs->GetDir()));
+  m_buttonChartDirectory->Enable();
 }
 
 ChartDldrPrefsDlgImpl::ChartDldrPrefsDlgImpl(wxWindow *parent)

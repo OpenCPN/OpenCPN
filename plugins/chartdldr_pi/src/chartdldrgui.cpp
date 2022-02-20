@@ -162,28 +162,31 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
 
   wxStaticBoxSizer* sbSizerChartDir;
   sbSizerChartDir = new wxStaticBoxSizer(
-      new wxStaticBox(this, wxID_ANY, _("Chart Directory")), wxVERTICAL);
+      new wxStaticBox(this, wxID_ANY, _("Proposed chart installation directory")), wxVERTICAL);
+  bSizerMain->Add(sbSizerChartDir, 0, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* dirbox = new wxBoxSizer(wxHORIZONTAL);
   sbSizerChartDir->Add(dirbox);
 
   m_tcChartDirectory = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition,
-                                      wxSize(200, -1));
-  dirbox->Add(m_tcChartDirectory, 3, wxALL | wxEXPAND, 5);
+                                      wxSize(200, -1), wxTE_READONLY);
+  m_tcChartDirectory->SetSizeHints(5000, -1);
+  dirbox->Add(m_tcChartDirectory, 1, wxALL | wxEXPAND, 5);
 
-  m_buttonChartDirectory = new wxButton(this, wxID_ANY, _("Select a folder"));
-  dirbox->Add(m_buttonChartDirectory, 1, wxALL | wxEXPAND, 5);
 
-  bSizerMain->Add(sbSizerChartDir, 0, wxALL | wxEXPAND, 5);
+  wxBoxSizer* dirbox1 = new wxBoxSizer(wxHORIZONTAL);
+  sbSizerChartDir->Add(dirbox1, 0, wxALIGN_RIGHT);
+  m_buttonChartDirectory = new wxButton(this, wxID_ANY, _("Select a different directory"));
+  dirbox1->Add(m_buttonChartDirectory, 0, wxALL | wxEXPAND | wxALIGN_RIGHT, 5);
+  m_buttonChartDirectory->Disable();
 
-  m_sdbSizerBtns = new wxStdDialogButtonSizer();
-  m_sdbSizerBtnsOK = new wxButton(this, wxID_OK);
-  m_sdbSizerBtns->AddButton(m_sdbSizerBtnsOK);
+  wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
+  bSizerMain->Add(buttons, 0, wxALIGN_RIGHT);
+
+  m_sdbSizerBtnsOK = new wxButton(this, wxID_OK, _("OK"));
+  buttons->Add(m_sdbSizerBtnsOK, 1, wxALL , 5);
   m_sdbSizerBtnsCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
-  m_sdbSizerBtns->AddButton(m_sdbSizerBtnsCancel);
-  m_sdbSizerBtns->Realize();
-
-  bSizerMain->Add(m_sdbSizerBtns, 0, wxALL | wxEXPAND, 5);
+  buttons->Add(m_sdbSizerBtnsCancel, 1, wxALL , 5);
 
   this->Layout();
 

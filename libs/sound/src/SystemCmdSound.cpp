@@ -77,11 +77,9 @@ static int do_play(const char* cmd, const char* path)
 bool SystemCmdSound::Load(const char* path, int deviceIndex)
 {
     m_path = path;
-#ifdef _DEBUG
     if (deviceIndex != -1) {
-        wxLogWarning("Selecting device is not supported by SystemCmdSound");
+        wxLogMessage("Selecting device is not supported by SystemCmdSound");
     }
-#endif /* _DEBUG */
     m_OK = wxFileExists(m_path);
     return m_OK;
 }
@@ -100,9 +98,7 @@ bool SystemCmdSound::canPlay(void)
 
 void SystemCmdSound::worker(void)
 {
-#ifdef _DEBUG
-    wxLogMessage("SystemCmdSound::worker()");
-#endif /* _DEBUG */
+    wxLogDebug("SystemCmdSound::worker()");
     m_isPlaying = true;
     do_play(m_cmd.c_str(), m_path.c_str());
     m_onFinished(m_callbackData);
@@ -113,9 +109,7 @@ void SystemCmdSound::worker(void)
 
 bool SystemCmdSound::Play()
 {
-#ifdef _DEBUG
-    wxLogInfo("SystemCmdSound::Play()");
-#endif /* _DEBUG */
+    wxLogDebug("SystemCmdSound::Play()");
     if (m_isPlaying) {
         wxLogWarning("SystemCmdSound: cannot play: already playing");
         return false;

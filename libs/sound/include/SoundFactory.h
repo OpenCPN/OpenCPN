@@ -32,6 +32,6 @@
  * enshrined in config.h.
  */
 
-OcpnSound* SoundFactory();
+OcpnSound* SoundFactory(const char* system_command = 0);
 
 #endif // SOUND_FACTORY_H

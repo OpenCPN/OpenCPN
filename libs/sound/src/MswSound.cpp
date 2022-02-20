@@ -49,7 +49,7 @@ bool MswSound::Stop(void)
 
 void MswSound::worker(void)
 {
-    wxLogInfo("mswSound::worker()");
+    wxLogDebug("mswSound::worker()");
     m_isPlaying = true;
     PlaySound(m_path.c_str(), NULL, SND_FILENAME);
     if  (m_onFinished) {
@@ -62,7 +62,7 @@ void MswSound::worker(void)
 
 bool MswSound::Play()
 {
-    wxLogMessage("mswSound::Play()");
+    wxLogDebug("mswSound::Play()");
     if( !m_OK || m_isPlaying) {
         wxLogWarning("MswSound: cannot play: not loaded or busy playing.");
         return false;

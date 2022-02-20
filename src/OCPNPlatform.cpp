@@ -886,12 +886,19 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   wxString locale_location = GetSharedDataDir();
   locale_location += _T("share\\locale");
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
+  wxString imsg = _T("Adding catalog lookup path:  ");
+  imsg += locale_location;
+  wxLogMessage(imsg);
+
 
   // Managed plugin location
   wxFileName usrShare(GetWinPluginBaseDir() + wxFileName::GetPathSeparator());
   usrShare.RemoveLastDir();
   locale_location = usrShare.GetFullPath() + ("share\\locale");
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
+  imsg = _T("Adding catalog lookup path:  ");
+  imsg += locale_location;
+  wxLogMessage(imsg);
 
 #elif defined(__OCPN__ANDROID__)
 
@@ -1078,10 +1085,16 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     //  precedent.
 
     for (unsigned int i = 0; i < g_locale_catalog_array.GetCount(); i++) {
-      wxString imsg = _T("Loading catalog for:  ");
-      imsg += g_locale_catalog_array[i];
-      wxLogMessage(imsg);
-      locale->AddCatalog(g_locale_catalog_array[i]);
+      if(!locale->AddCatalog(g_locale_catalog_array[i])){
+        wxString emsg = _T("ERROR Loading translation catalog for:  ");
+        emsg += g_locale_catalog_array[i];
+        wxLogMessage(emsg);
+      }
+      else {
+        wxString imsg = _T("Loaded translation catalog for:  ");
+        imsg += g_locale_catalog_array[i];
+        wxLogMessage(imsg);
+      }
     }
 
     // Get core opencpn catalog translation (.mo) file
@@ -1395,11 +1408,9 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Force a generally useable sound command, overriding any previous user's
     // selection
     //  that may not be available on new build.
-#ifdef SYSTEM_SOUND_CMD
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
     pConfig->SetPath(_T ( "/Settings" ));
     pConfig->Write(_T( "CmdSoundString" ), g_CmdSoundString);
-#endif /* SYSTEM_SOUND_CMD */
 
     // Force AIS specific sound effects ON, leaving the master control
     // (g_bAIS_CPA_Alert_Audio) as configured

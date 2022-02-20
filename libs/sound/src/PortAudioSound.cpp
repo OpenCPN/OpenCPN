@@ -105,7 +105,8 @@ static bool openStream(PaStream** stream,
     outputParameters.device = deviceIx;
     outputParameters.channelCount = soundLoader->GetChannelCount();
     outputParameters.sampleFormat = paInt16;
-    outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultHighOutputLatency;; //0;
+    outputParameters.suggestedLatency =
+        Pa_GetDeviceInfo(outputParameters.device)->defaultHighOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;
     PaError err = Pa_OpenStream(stream,
                                 NULL, /* no input channels */
@@ -166,7 +167,7 @@ PortAudioSound::PortAudioSound()
     SetDeviceIndex(-1);
     for (int i = 0; i < DeviceCount(); i += 1) {
         const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
-//	wxLogDebug("Device: %d: %s", i, info->name);
+	wxLogDebug("Device: %d: %s", i, info->name);
     }
 }
 
