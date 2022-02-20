@@ -117,13 +117,17 @@ extern MyConfig *pConfig;
 // pixel size of 0.3mm
 static const double OSM_zoomScale[] = {
     5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7, 1.0e7, 4.0e6, 2.0e6, 1.0e6,
-    5.0e5, 2.5e5, 1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3, 2.0e3, 1.0e3};
+    5.0e5, 2.5e5, 1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3, 2.0e3, 1.0e3,
+    5.0e2, 2.5e2
+};
 
 //  Meters per pixel, by zoom factor
 static const double OSM_zoomMPP[] = {
     156412, 78206, 39103, 19551,   9776,    4888,   2444,
     1222,   610,   984,   305.492, 152.746, 76.373, 38.187,
-    19.093, 9.547, 4.773, 2.387,   1.193,   0.596,  0.298};
+    19.093, 9.547, 4.773, 2.387,   1.193,   0.596,  0.298,
+    0.149, 0.075
+};
 
 static const double eps = 6e-6;  // about 1cm on earth's surface at equator
 extern MyFrame *gFrame;
@@ -236,7 +240,7 @@ ChartMBTiles::ChartMBTiles() {
   m_b_cdebug = 0;
 
   m_minZoom = 0;
-  m_maxZoom = 19;
+  m_maxZoom = 21;
 
   m_nNoCOVREntries = 0;
   m_nCOVREntries = 0;
