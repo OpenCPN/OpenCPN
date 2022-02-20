@@ -1273,33 +1273,6 @@ bool WayPointman::AddRoutePoint(RoutePoint *prp) {
   wxRoutePointListNode *prpnode = m_pWayPointList->Append(prp);
   prp->SetManagerListNode(prpnode);
 
-  // scrub the list, looking for duplicate GUIDs
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-    wxString GUIDa = pr->m_GUID;
-
-    int count = 0;
-    wxRoutePointListNode *nodeInner = m_pWayPointList->GetFirst();
-    while (nodeInner) {
-      RoutePoint *pri = nodeInner->GetData();
-      wxString GUIDb = pri->m_GUID;
-      if (GUIDb.IsSameAs(GUIDa) ){
-        count++;
-      }
-      nodeInner = nodeInner->GetNext();
-    }
-
-    if (count > 1){
-      wxString msg("Multiple GUIDs found in Waypoint List");
-      wxLogMessage(msg);
-    }
-
-    node = node->GetNext();
-
-  }
-
-
   return true;
 }
 
