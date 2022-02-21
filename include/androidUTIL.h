@@ -126,6 +126,7 @@ androidGetSharedDir();  // Used for assets like uidata, s57data, etc
 extern wxString
 androidGetCacheDir();  // Used for raster_texture_cache, mmsitoname.csv, etc
 extern wxString androidGetExtStorageDir();  // Used for Chart storage, typically
+extern wxString androidGetDownloadDirectory();
 
 extern int startAndroidFileDownload(const wxString &url,
                                     const wxString &destination,
