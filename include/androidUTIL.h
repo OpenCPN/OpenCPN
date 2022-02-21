@@ -63,6 +63,7 @@ class ArrayOfCDI;
 extern bool androidUtilInit(void);
 
 extern wxString androidGetDeviceInfo();
+extern void CheckMigrateCharts();
 
 extern bool androidGetMemoryStatus(int *mem_total, int *mem_used);
 
