@@ -330,6 +330,8 @@ wxString g_androidExtCacheDir;
 wxString g_androidExtStorageDir;
 wxString g_androidGetFilesDirs0;
 wxString g_androidGetFilesDirs1;
+wxString g_androidDownloadDirectory;
+
 
 int g_mask;
 int g_sel;
@@ -889,6 +891,9 @@ bool androidUtilInit(void) {
     g_androidGetFilesDirs0 = token;
     token = tk.GetNextToken();
     g_androidGetFilesDirs1 = token;
+
+    token = tk.GetNextToken();
+    g_androidDownloadDirectory = token;
 
   }
 
@@ -4742,6 +4747,11 @@ void CheckMigrateCharts()
   androidShowDisclaimer("Chart Migration Required",  msg);
 
 
+}
+
+wxString androidGetDownloadDirectory()
+{
+  return g_androidDownloadDirectory;
 }
 
 
