@@ -81,6 +81,8 @@ height: 30px;\
 #include "qdebug.h"
 #endif
 
+extern chartdldr_pi *g_pi;
+
 void AddSourceDlg::applyStyle() {
 #ifdef __OCPN__ANDROID__
   m_panelPredefined->GetHandle()->setStyleSheet(qtStyleSheet);
@@ -230,6 +232,13 @@ void AddSourceDlg::OnDirSelClick(wxCommandEvent& event) {
                                            m_tcChartDirectory->GetValue());
 
   if (response == wxID_OK) {
+    wxFileName fn(m_dirExpanded);
+
+    if (!dir_spec.EndsWith(fn.GetName())){
+      dir_spec += wxFileName::GetPathSeparator();
+      dir_spec += fn.GetName();
+    }
+
     m_tcChartDirectory->SetValue(dir_spec);
   }
 }

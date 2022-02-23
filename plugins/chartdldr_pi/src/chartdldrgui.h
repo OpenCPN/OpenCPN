@@ -79,6 +79,7 @@ public:
   wxTextCtrl* m_tcChartDirectory;
   wxButton* m_buttonChartDirectory;
   wxScrolledWindow* m_sourceswin;
+  wxString m_dirExpanded;
 
   AddSourceDlg(wxWindow* parent, wxWindowID id = wxID_ANY,
                const wxString& title = _("New chart source"),

@@ -2270,6 +2270,8 @@ void ChartDldrGuiAddSourceDlg::OnSourceSelected(wxTreeEvent &event) {
   wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
   ChartSource *cs = (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
   if (cs) {
+    m_dirExpanded = FixPath(cs->GetDir());
+
     m_tSourceName->SetValue(cs->GetName());
     m_tChartSourceUrl->SetValue(cs->GetUrl());
     if (m_tcChartDirectory->GetValue() == m_last_path) {
