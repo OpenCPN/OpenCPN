@@ -1,5 +1,8 @@
 #
 # Export variables used in plugin setup: PKG_TARGET, PKG_TARGET_VERSION.
+#
+# For Debian/Ubuntu also export variables used in .de package generation
+# like PACKAGE_FORMAT, PACKAGE_RECS, TENTATIVE_PREFIX
 
 if (NOT OCPN_TARGET_TUPLE STREQUAL "")
     list(GET OCPN_TARGET_TUPLE 0 PKG_TARGET)
@@ -52,7 +55,6 @@ else ()
     set(PKG_TARGET_VERSION 1)
 endif ()
 
-
 string(STRIP ${PKG_TARGET} PKG_TARGET)
 string(TOLOWER ${PKG_TARGET} PKG_TARGET)
 string(STRIP ${PKG_TARGET_VERSION} PKG_TARGET_VERSION)
@@ -62,3 +64,12 @@ string(CONCAT _msg
   "${PKG_TARGET}\; ${PKG_TARGET_VERSION}\; ${ARCH}"
 )
 message(STATUS ${_msg})
+
+# Set some target-related support variables, notably to build a .deb package:
+set(LIB_INSTALL_DIR "lib")
+if (${PKG_TARGET} MATCHES "ubuntu|debian|raspbian")
+    set(PACKAGE_FORMAT "DEB")
+    set(PACKAGE_RECS "xcalib,xdg-utils")
+    set(TENTATIVE_PREFIX "/usr/local")
+    message(STATUS "Setting up a Debian package.")
+endif ()
