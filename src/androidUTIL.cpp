@@ -4688,11 +4688,39 @@ void CheckMigrateCharts()
   wxArrayString migrateDirs;
 
   for (unsigned int i=0; i < chartDirs.GetCount(); i++){
-    //  Check to see if there are any readable files
-    // If there are none, it means that the dir is not accessible
-    wxArrayString files;
-    size_t nfiles = wxDir::GetAllFiles (chartDirs[i], &files);
-    if (!nfiles) {
+#if 0     // Found to be unreliable...
+    //  Check to see if it is possible to write on selected directory
+    wxString testFile(chartDirs[i] + wxFileName::GetPathSeparator() + "testfile");
+    qDebug() << "tesfile  " << testFile.mb_str();
+    wxFile ftest( testFile, wxFile::write);
+    bool btestWrite = ftest.IsOpened();
+    if(btestWrite){
+      int buf = 1;
+      size_t nWrite = ftest.Write( &buf, 4);
+      qDebug() << "nWrite " << nWrite;
+      if (nWrite != 4)
+        btestWrite = false;
+    }
+
+    if (!btestWrite) {
+      migrateDirs.Add(chartDirs[i]);
+    }
+    else{
+      ftest.Close();
+      if (wxFileExists(testFile))
+        wxRemoveFile(testFile);
+    }
+#endif
+
+    bool bOK = false;
+    if ( chartDirs[i].StartsWith(g_androidGetFilesDirs0) )
+      bOK = true;
+
+    else if (!g_androidGetFilesDirs1.StartsWith("?")){
+      if ( chartDirs[i].StartsWith(g_androidGetFilesDirs1) )
+        bOK = true;
+    }
+    if (!bOK) {
       migrateDirs.Add(chartDirs[i]);
     }
   }
@@ -4702,7 +4730,7 @@ void CheckMigrateCharts()
 
   //  Found some migration targets, so build a message
 
-  wxString m1(_("OpenCPN has detected installed charts which are no longer accessible in this version of Android.\n\n  \
+  wxString m1(_("OpenCPN has detected installed charts which are no longer fully accessible in this version of Android.\n\n  \
     The chart directories are:\n\n"));
 
   wxString m2(_("These chart directories, and their contents, must be manually moved to a location compatible with OpenCPN on this version of Android.\n\n\
@@ -4730,7 +4758,7 @@ void CheckMigrateCharts()
   msg += wxString("    ");
   msg += g_androidGetFilesDirs0;
   msg += wxString("/Charts");
-  msg += wxString("\n");
+  msg += wxString("\n\n");
 
   if (!g_androidGetFilesDirs1.StartsWith("?")){
     msg += m3;
@@ -4746,6 +4774,8 @@ void CheckMigrateCharts()
 
   androidShowDisclaimer("Chart Migration Required",  msg);
 
+  // Force access to correct home directory, as a hint....
+  pInit_Chart_Dir->Clear();
 
 }
 
