@@ -701,6 +701,31 @@ void Track::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box) {
     if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
 
+    switch (style) {
+    case wxDOT: {
+      glLineStipple(1, 0x3333);
+      glEnable(GL_LINE_STIPPLE);
+      break;
+    }
+    case wxLONG_DASH: {
+      glLineStipple(1, 0xFFF8);
+      glEnable(GL_LINE_STIPPLE);
+      break;
+    }
+    case wxSHORT_DASH: {
+      glLineStipple(1, 0x3F3F);
+      glEnable(GL_LINE_STIPPLE);
+      break;
+    }
+    case wxDOT_DASH: {
+      glLineStipple(1, 0x8FF1);
+      glEnable(GL_LINE_STIPPLE);
+      break;
+    }
+    default:
+      break;
+  }
+
     int size = 0;
     // convert from linked list to array, allocate array just once
     for (std::list<std::list<wxPoint> >::iterator lines = pointlists.begin();
@@ -728,6 +753,7 @@ void Track::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box) {
     delete[] points;
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
+    glDisable(GL_LINE_STIPPLE);
   }
 #endif
 #endif
