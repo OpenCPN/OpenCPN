@@ -568,8 +568,10 @@ static Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
         pTentRoute->AddPoint(pWp, false, true);  // defer BBox calculation
         pWp->m_bIsInRoute = true;                // Hack
 
-        if (new_wpt)
-          pWayPointMan->AddRoutePoint(pWp);
+        if (new_wpt){
+          if (erp == NULL)
+            pWayPointMan->AddRoutePoint(pWp);
+        }
         else
           delete tpWp;
       } else if (ChildName == _T ( "name" )) {
@@ -1234,6 +1236,7 @@ static void UpdateRouteA(Route *pTentRoute) {
     } else {
       pChangeRoute->AddPoint(prp);
       pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
+      pWayPointMan->AddRoutePoint(prp);
     }
 
     if (ip)
