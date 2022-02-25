@@ -2278,10 +2278,12 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file) {
   PlugInContainer *pic = new PlugInContainer;
-  if (!LoadPlugIn(plugin_file, pic))
+  if (!LoadPlugIn(plugin_file, pic)) {
+    delete pic;
     return NULL;
-  else
+  } else {
     return pic;
+  }
 }
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
