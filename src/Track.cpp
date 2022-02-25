@@ -731,6 +731,14 @@ void Track::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box) {
     for (std::list<std::list<wxPoint> >::iterator lines = pointlists.begin();
          lines != pointlists.end(); lines++)
       size = wxMax(size, lines->size());
+
+    // Some OpenGL graphics drivers have trouble with GL_LINE_STRIP
+    // Problem manifests as styled tracks (e.g. LONG-DASH) disappear at certain screen scale values.
+    // Oddly, simple solid pen line drawing is OK.
+    // This can be resolved by using direct GL_LINES draw mathod, at significant performance loss.
+    // For OCPN Release, we will stay with the GL_LINE_STRIP/vertex array method.
+    // I document this here for future reference.
+#if 1
     int *points = new int[2 * size];
     glVertexPointer(2, GL_INT, 0, points);
 
@@ -749,8 +757,27 @@ void Track::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box) {
       if (i > 2) glDrawArrays(GL_LINE_STRIP, 0, i >> 1);
     }
     glDisableClientState(GL_VERTEX_ARRAY);
-
     delete[] points;
+
+#else
+    //  Simplistic draw, using GL_LINES.  Slow....
+    for (std::list<std::list<wxPoint> >::iterator lines = pointlists.begin();
+         lines != pointlists.end(); lines++) {
+
+      glBegin(GL_LINES);
+      std::list<wxPoint>::iterator line0 = lines->begin();
+      wxPoint p0 = *line0;
+
+      for (std::list<wxPoint>::iterator line = lines->begin();
+           line != lines->end(); line++) {
+        glVertex2f(p0.x, p0.y);
+        glVertex2f(line->x, line->y);
+        p0 = *line;
+      }
+      glEnd();
+    }
+#endif
+
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
     glDisable(GL_LINE_STIPPLE);
