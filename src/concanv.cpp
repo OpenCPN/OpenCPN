@@ -83,6 +83,10 @@ ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
 
   long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
+#ifdef __WXMSW__
+  style |= wxFRAME_NO_TASKBAR;
+#endif
+
   wxFrame::Create(frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
                   style);
 
