@@ -553,10 +553,10 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d°(M)", wxConvUTF8),
+          magString << wxString::Format(wxString("%03d\u00B0(M)"),
                                         (int)gFrame->GetMag(crs));
         if (g_bShowTrue)
-          trueString << wxString::Format(wxString("%03d°  ", wxConvUTF8),
+          trueString << wxString::Format(wxString("%03d\u00B0  "),
                                          (int)crs);
 
         courseStr << trueString << magString;
@@ -619,10 +619,10 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
       (fabs(Lat) < 85.)) {
     wxString magString, trueString;
     if (g_bShowMag)
-      magString << wxString::Format(wxString("%03d°(M)", wxConvUTF8),
+      magString << wxString::Format(wxString("%03d\u00B0(M)"),
                                     (int)gFrame->GetMag(Brg));
     if (g_bShowTrue)
-      trueString << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)Brg, 0x00B0 );
+      trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
 
     brgStr << trueString << magString;
   } else
@@ -791,10 +791,10 @@ wxString AIS_Target_Data::GetRolloverString(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d°(M)  ", wxConvUTF8),
+          magString << wxString::Format(wxString("%03d\u00B0(M)  "),
                                         (int)gFrame->GetMag(crs));
         if (g_bShowTrue)
-          trueString << wxString::Format(wxString("%03d°  ", wxConvUTF8),
+          trueString << wxString::Format(wxString("%03d\u00B0  "),
                                          (int)crs);
 
         result << trueString << magString;
@@ -803,7 +803,7 @@ wxString AIS_Target_Data::GetRolloverString(void) {
       else if (COG == 360.0)
         result << _(" COG Unavailable");
       else if (crs == 360)
-        result << wxString(" COG 000°", wxConvUTF8);
+        result << wxString(" COG 000\u00B0");
     } else
       result << _(" COG Unavailable");
   }
