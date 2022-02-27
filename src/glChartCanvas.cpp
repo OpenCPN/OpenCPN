@@ -606,8 +606,8 @@ void glChartCanvas::Init() {
   m_gldc.SetGLCanvas(this);
 
   m_displayScale = 1.0;
-#ifdef __WXOSX__
-  // Support Mac Retina displays.
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
 
