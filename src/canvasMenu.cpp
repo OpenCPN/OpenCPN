@@ -1489,14 +1489,6 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_RT_MENU_INSERT: {
       if (m_pSelectedRoute->m_bIsInLayer) break;
       bool rename = false;
-      int ask_return = OCPNMessageBox(
-          parent,
-          _("Waypoints can be renamed to include the new one, the names will "
-            "be '001', '002' etc.") +
-              _T("\n\n") + _("Do you want to rename the waypoints?"),
-          _("Rename Waypoints?"), wxYES_NO | wxCANCEL);
-      if (ask_return == wxID_YES) rename = true;
-
       m_pSelectedRoute->InsertPointAfter(m_pFoundRoutePoint, zlat, zlon,
                                          rename);
 
