@@ -240,6 +240,62 @@ enum { CurlThreadId = wxID_HIGHEST + 1 };
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 
+/**
+ * Handle messages for blacklisted plugins. Messages are deferred until
+ * show_deferred_messages() is invoked, signaling that the UI is ready.
+ */
+class BlacklistUI {
+public:
+
+  void message(plug_status status, const plug_data& data) {
+    wxString msg;
+    if (status == plug_status::hard) {
+      msg = wxString::Format(
+          _("PlugIn %s, version %i.%i was detected.\n This version is "
+            "known to be unstable and will not be loaded.\n Please update "
+            "this PlugIn using the PlugIn manager master catalog."),
+            data.name.c_str(), data.major, data.minor);
+      wxLogMessage(
+          "PlugIn %s, version %i.%i detected. Hard blacklisted, not loaded",
+          data.name.c_str(), data.major, data.minor);
+    } else if (status == plug_status::soft) {
+      msg = wxString::Format(
+          _("PlugIn %s, version %i.%i was detected.\n This version is "
+            "known to be unstable.\n Please update this PlugIn using the "
+            "PlugIn manager master catalog."),
+            data.name.c_str(), data.major, data.minor);
+      wxLogMessage(
+          _("PlugIn %s, version %i.%i was detected. Soft blacklisted, loaded"),
+            data.name.c_str(), data.major, data.minor);
+    } else if (status == plug_status::unloadable) {
+      msg = wxString::Format("The plugin %s can not be loaded",
+                             data.name.c_str());
+      wxLogMessage(msg);
+    }
+
+    if (m_defer)
+      m_deferred_messages.push_back(msg);
+    else
+      show_msg(msg);
+  }
+
+  void show_deferred_messages() {
+    for (auto m : m_deferred_messages) show_msg(m);
+    m_defer = false;
+  }
+
+  BlacklistUI(): m_defer(true) {};
+
+private:
+  void show_msg(wxString msg) {
+    OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
+                   wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
+  }
+
+  bool m_defer;            // defer dialogs until setup completed
+  std::vector<wxString>  m_deferred_messages;
+};
+
 class PanelHardBreakWrapper : public wxTextWrapper {
 public:
   PanelHardBreakWrapper(wxWindow *win, const wxString &text, int widthMax) {
@@ -475,6 +531,9 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
   }
 
   auto update = dialog.GetUpdate();
+  if (!g_pi_manager->CheckBlacklistedPlugin(update)) {
+    return;
+  }
 
   wxLogMessage("Installing %s", update.name.c_str());
 
@@ -1014,10 +1073,10 @@ PlugInManager::PlugInManager(MyFrame *parent) {
 #endif
 #endif
 
-  m_benable_blackdialog_done = false;
-
   m_utilHandler = new pluginUtilHandler();
   m_listPanel = NULL;
+  m_blacklist = blacklist_factory();
+  m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI);
 }
 
 PlugInManager::~PlugInManager() {
@@ -1120,8 +1179,6 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
 
   //  Enable the compatibility dialogs if requested, and has not been already
   //  done once.
-  m_benable_blackdialog = b_enable_blackdialog && !m_benable_blackdialog_done;
-
   m_plugin_location = plugin_dir;
 
   wxString msg(_T("PlugInManager searching for PlugIns in location "));
@@ -1175,7 +1232,12 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
     wxString plugin_file = wxFileName(file_name).GetFullName();
     wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
     wxDateTime plugin_modification =
-        wxFileName(file_name).GetModificationTime();
+      wxFileName(file_name).GetModificationTime();
+
+    if (!m_blacklist->is_loadable(plugin_file.ToStdString())) {
+      wxLogDebug("Skipping blacklisted plugin (unloadable)");
+      continue;
+    }
 
     // this gets called every time we switch to the plugins tab.
     // this allows plugins to be installed and enabled without restarting
@@ -1230,10 +1292,8 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
 
     bool b_compat = CheckPluginCompatibility(file_name);
 
-    if (m_benable_blackdialog && !b_compat) {
-      wxLogMessage(wxString::Format(_T("    %s: %s"),
-                                    _T("Incompatible plugin detected"),
-                                    file_name.c_str()));
+    if (!b_compat) {
+      wxLogMessage("    Incompatible plugin detected: %s", file_name.c_str());
       OCPNMessageBox(NULL,
                      wxString::Format(
                          _("The plugin %s is not compatible with this version "
@@ -1242,19 +1302,24 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
                      wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK,
                      10);
     }
-
-    if (!b_compat) {
-      wxString dmsg(wxString::Format(_T("%s: %s"), _T("Jailing"), plugin_file));
-      wxRenameFile(plugin_file, plugin_file + _T(".jail"));
-      wxLogMessage(dmsg);
-    }
+    if (!b_compat)
+      m_blacklist->mark_unloadable(plugin_file.ToStdString());
 
     PlugInContainer *pic = NULL;
     if (b_compat) pic = LoadPlugIn(file_name);
-
     wxLog::FlushActive();
 
-    if (pic) {
+    if (!pic) {
+      wxLogMessage("Cannot load plugin library %s",
+                   static_cast<const char*>(plugin_file));
+      OCPNMessageBox(NULL,
+                     wxString::Format(
+                         _("The plugin library %s can not be loaded."),
+                         static_cast<const char*>(plugin_file)),
+                     wxString(_("OpenCPN Info")), wxICON_WARNING | wxOK,
+                     10);
+      m_blacklist->mark_unloadable(plugin_file.ToStdString());
+   } else {
       if (pic->m_pplugin) {
         plugin_array.Add(pic);
 
@@ -1405,9 +1470,6 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
   // Inform plugins of the current color scheme
   SetColorSchemeForAllPlugIns(global_color_scheme);
 
-  //  Only allow the PlugIn compatibility dialogs once per instance of
-  //  application.
-  if (b_enable_blackdialog) m_benable_blackdialog_done = true;
 
   // Tell all the PlugIns about the current OCPN configuration
   SendBaseConfigToAllPlugIns();
@@ -2279,21 +2341,22 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file) {
 }
 
 void PlugInManager::ShowDeferredBlacklistMessages() {
-  for (unsigned int i = 0; i < m_deferred_blacklist_messages.GetCount(); i++) {
-    OCPNMessageBox(NULL, m_deferred_blacklist_messages[i],
-                   wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK,
-                   10);  // 10 second timeout
-  }
+  m_blacklist_ui->show_deferred_messages();
 }
 
+bool PlugInManager::CheckBlacklistedPlugin(const PluginMetadata plugin) {
+  auto v = SemanticVersion::parse(plugin.version);
+  return CheckBlacklistedPlugin(wxString(plugin.name), v.major, v.minor);
+}
+
+
 bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
-  int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
   int major = plugin->GetPlugInVersionMajor();
   int minor = plugin->GetPlugInVersionMinor();
 
 #ifdef __WXMSW__
   wxString name = wxString::FromAscii(typeid(*plugin).name());
-  name.Replace(_T("class "), wxEmptyString);
+  name.Replace("class ", wxEmptyString);
 #else
   const std::type_info &ti = typeid(*plugin);
   int status;
@@ -2301,57 +2364,17 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
   wxString name = wxString::FromAscii(realname);
   free(realname);
 #endif  // __WXMSW__
-  for (int i = 0; i < len; i++) {
-    if ((PluginBlacklist[i].all_lower && name == PluginBlacklist[i].name &&
-         PluginBlacklist[i].version_major >= major &&
-         PluginBlacklist[i].version_minor >= minor) ||
-        (!PluginBlacklist[i].all_lower && name == PluginBlacklist[i].name &&
-         PluginBlacklist[i].version_major == major &&
-         PluginBlacklist[i].version_minor == minor)) {
-      wxString msg;
-      wxString msg1;
-      if (PluginBlacklist[i].hard) {
-        msg = wxString::Format(
-            _("PlugIn %s (%s), version %i.%i was detected.\n This version is "
-              "known to be unstable and will not be loaded.\n Please update "
-              "this PlugIn using the PlugIn manager master catalog."),
-            PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(),
-            major, minor),
-        _("Blacklisted plugin detected...");
-        msg1 = wxString::Format(
-            _T("    PlugIn %s (%s), version %i.%i was detected. Hard ")
-            _T("blacklisted. Not loaded."),
-            PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(),
-            major, minor);
-      } else {
-        msg = wxString::Format(
-            _("PlugIn %s (%s), version %i.%i was detected.\n This version is "
-              "known to be unstable.\n Please update this PlugIn using the "
-              "PlugIn manager master catalog."),
-            PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(),
-            major, minor),
-        _("Blacklisted plugin detected...");
-        msg1 = wxString::Format(
-            _T("    PlugIn %s (%s), version %i.%i was detected. Soft ")
-            _T("blacklisted. Loaded."),
-            PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(),
-            major, minor);
-      }
+  return CheckBlacklistedPlugin(name, major, minor);
+}
 
-      wxLogMessage(msg1);
-      if (!PluginBlacklist[i].mute_dialog) {
-        if (m_benable_blackdialog)
-          OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
-                         wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
-        else
-          m_deferred_blacklist_messages.Add(msg);
-      }
-
-      return PluginBlacklist[i].hard;
-    }
-  }
+bool PlugInManager::CheckBlacklistedPlugin(wxString name, int major, int minor) {
+  auto block_status = m_blacklist->get_status(name.ToStdString(), major, minor);
+  if (block_status == plug_status::unblocked) return true;
+  plug_data data(name.ToStdString(), major, minor);
+  m_blacklist_ui->message(block_status, data);
   return false;
 }
+
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file) {
   PlugInContainer *pic = new PlugInContainer;
@@ -2379,7 +2402,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
 
   pic->m_library.Load(plugin_file);
 
-  if (m_benable_blackdialog && !wxIsReadable(plugin_file)) {
+  if (!wxIsReadable(plugin_file)) {
     msg =
         _("Unreadable PlugIn library detected, check the file permissions:\n");
     msg += plugin_file;
@@ -2387,56 +2410,28 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
     OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
                    wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
   } else if (!pic->m_library.IsLoaded()) {
-    if (m_benable_blackdialog) {
-      //  Look in the Blacklist, try to match a filename, to give some kind of
-      //  message extract the probable plugin name
-      wxFileName fn(plugin_file);
-      wxString prob_pi_name;
-      wxString name = fn.GetName();
-      prob_pi_name = name;
 
-#ifdef __WXGTK__
-      prob_pi_name = name.Mid(3);  // lop off "lib"
-#endif
-#ifdef __WXOSX__
-      prob_pi_name = name.Mid(3);  // lop off "lib"
-#endif
-
-      int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
-      for (int i = 0; i < len; i++) {
-        wxString candidate = PluginBlacklist[i].name.Lower();
-        if (prob_pi_name.Lower().EndsWith(candidate)) {
-          wxString msg(wxString::Format(_T("%s:\n%s\n\n"),
-                                        _("Incompatible plugin detected"),
-                                        plugin_file));
-
-          wxString msg1;
-          msg1 = wxString::Format(_("PlugIn [ %s ] version %i.%i"),
-                                  PluginBlacklist[i].name.c_str(),
-                                  PluginBlacklist[i].version_major,
-                                  PluginBlacklist[i].version_minor);
-          msg += msg1;
-          if (PluginBlacklist[i].all_lower)
-            msg += _(", and all previous versions,");
-          msg += _(" is incompatible with this version of OpenCPN."),
-
-              OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
-                             wxICON_INFORMATION | wxOK,
-                             10);  // 10 second timeout
-          break;
-        }
-      }
+    //  Look in the Blacklist, try to match a filename, to give some kind of
+    //  message extract the probable plugin name
+    wxFileName fn(plugin_file);
+    wxString prob_pi_name;
+    std::string name = fn.GetName().ToStdString();
+    wxString msg(wxString::Format("%s:\n%s\n\n",
+                                  _("Incompatible plugin detected"),
+                                  name.c_str()));
+    auto found = m_blacklist->get_library_data(name);
+    if (found.name != "") {
+      auto msg1 = wxString::Format(_("PlugIn [ %s ] version %i.%i"),
+                                   found.name.c_str(), found.major,
+                                   found.minor);
+      msg += msg1;
+      //if (PluginBlacklist[i].all_lower)
+      //  msg += _(", and all previous versions,");
+      msg += _(" is incompatible with this version of OpenCPN."),
+      OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
+                     wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
     }
-
-    wxString msg(_T("   PlugInManager: Cannot load library: "));
-    msg += plugin_file;
-    msg += _T(" ");
-    wxLogMessage(msg);
-
-    wxString dmsg(wxString::Format(_T("%s: %s"), _T("Jailing"), plugin_file));
-    wxRenameFile(plugin_file, plugin_file + _T(".jail"));
-    wxLogMessage(dmsg);
-
+    wxLogMessage("   PlugInManager: Cannot load library: %s", plugin_file);
     return NULL;
   }
 
@@ -2470,15 +2465,23 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
 
   int pi_major = plug_in->GetPlugInVersionMajor();
   int pi_minor = plug_in->GetPlugInVersionMinor();
+  wxString pi_name =  plug_in->GetCommonName();
   SemanticVersion pi_ver(pi_major, pi_minor, -1);
 
-  if (CheckBlacklistedPlugin(plug_in)) {
-    wxString dmsg(wxString::Format(_T("%s: %s"), _T("Jailing due to Blacklist"),
-                                   plugin_file));
-    wxRenameFile(plugin_file, plugin_file + _T(".jail.blacklist"));
-    wxLogMessage(dmsg);
+  wxLogMessage("blacklist: Get status for %s %d %d",
+               pi_name, pi_major, pi_minor);
+  const auto status = m_blacklist->get_status(pi_name.ToStdString(),
+                                              pi_major, pi_minor);
+  if (status != plug_status::unblocked) {
+    wxLogDebug("Ignoring blacklisted plugin.");
+    if (status != plug_status::unloadable) {
+      plug_data data(pi_name.ToStdString(), pi_major, pi_minor);
+      m_blacklist_ui->message(status, data);
+      m_blacklist->mark_unloadable(plugin_file.ToStdString());
+    }
     return NULL;
   }
+  wxLogMessage("blacklist: not blocked.");
 
   switch (api_ver) {
     case 105:
