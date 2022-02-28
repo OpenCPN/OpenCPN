@@ -325,6 +325,8 @@ void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
         td->m_ack_time = wxDateTime::Now();
         td->b_in_ack_timeout = true;
       }
+      if (td->b_isDSCtarget)
+        td->b_isDSCtarget = false;
     }
   }
 
