@@ -6820,8 +6820,8 @@ void options::CreatePanel_UI(size_t parent, int border_size,
         std::ostringstream stm;
         stm << i;
         label = _("Unknown device :") + stm.str();
-        labels.Add(label);
       }
+      labels.Add(label);
     }
     pSoundDeviceIndex = new wxChoice();
     if (pSoundDeviceIndex) {
