@@ -307,7 +307,7 @@ private:
 class PluginTextPanel : public wxPanel {
 public:
   PluginTextPanel(wxWindow* parent, const PluginMetadata* plugin,
-                  CandidateButtonsPanel* buttons)
+                  CandidateButtonsPanel* buttons, bool bshowTuple = false)
       : wxPanel(parent), m_descr(0), m_buttons(buttons) {
     auto flags = wxSizerFlags().Border();
 
@@ -320,7 +320,9 @@ public:
     sum_hbox->Add(m_more, wxSizerFlags());
 
     auto vbox = new wxBoxSizer(wxVERTICAL);
-    auto name = staticText(plugin->name + "    " + plugin->version);
+    wxString nameText(plugin->name + "    " + plugin->version);
+    if (bshowTuple) nameText += "   " + plugin->target;
+    auto name = staticText(nameText);
     m_descr = staticText(plugin->description);
     m_descr->Hide();
     vbox->Add(name, flags);
@@ -444,7 +446,7 @@ public:
       }
       grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
       auto buttons = new CandidateButtonsPanel(this, &plugin);
-      grid->Add(new PluginTextPanel(this, &plugin, buttons),
+      grid->Add(new PluginTextPanel(this, &plugin, buttons, unique_plugins.size() > 1),
                 flags.Proportion(1).Right());
       grid->Add(buttons, flags.DoubleBorder());
       grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
