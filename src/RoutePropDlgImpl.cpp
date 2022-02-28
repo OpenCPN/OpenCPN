@@ -41,8 +41,8 @@
 #define ID_RCLK_MENU_MOVEUP_WP 7026
 #define ID_RCLK_MENU_MOVEDOWN_WP 7027
 
-#define COLUMN_PLANNED_SPEED 8
-#define COLUMN_ETD 12
+#define COLUMN_PLANNED_SPEED 9
+#define COLUMN_ETD 13
 
 extern wxString GetLayerName(int id);
 
