@@ -965,7 +965,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ShowCompassWindow" ), &g_bShowCompassWin);
   Read(_T ( "ShowGrid" ), &g_bDisplayGrid);
   Read(_T ( "PlayShipsBells" ), &g_bPlayShipsBells);
-  Read(_T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex);
+  Read(_T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex, 0);
   Read(_T ( "FullscreenToolbar" ), &g_bFullscreenToolbar);
   Read(_T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon);
   Read(_T ( "ShowLayers" ), &g_bShowLayers);
@@ -2318,7 +2318,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "ShipScaleFactor" ), g_ShipScaleFactor);
   Write(_T ( "ENCSoundingScaleFactor" ), g_ENCSoundingScaleFactor);
   Write(_T ( "ObjQueryAppendFilesExt" ), g_ObjQFileExt);
-  
+
   // Plugin catalog persistent values.
   Write(_T( "CatalogCustomURL"), g_catalog_custom_url);
   Write(_T( "CatalogChannel"), g_catalog_channel);
