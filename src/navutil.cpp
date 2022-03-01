@@ -965,7 +965,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ShowCompassWindow" ), &g_bShowCompassWin);
   Read(_T ( "ShowGrid" ), &g_bDisplayGrid);
   Read(_T ( "PlayShipsBells" ), &g_bPlayShipsBells);
-  Read(_T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex, 0);
+  Read(_T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex);
   Read(_T ( "FullscreenToolbar" ), &g_bFullscreenToolbar);
   Read(_T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon);
   Read(_T ( "ShowLayers" ), &g_bShowLayers);
