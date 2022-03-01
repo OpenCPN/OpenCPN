@@ -186,10 +186,6 @@
 #include "crashprint.h"
 #endif
 
-#ifdef __WXOSX__
-#include "DarkMode.h"
-#endif
-
 #ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
 #endif
@@ -1887,14 +1883,12 @@ bool MyApp::OnInit() {
   OCPN_OSDetail *detail = g_Platform->GetOSDetail();
   wxString msgplat;
   wxString like0;
-  if(!detail->osd_names_like.empty())
+  if (!detail->osd_names_like.empty())
     like0 = detail->osd_names_like[0].c_str();
-  msgplat.Printf( "OCPN_OSDetail:  %s ; %s ; %s ; %s ; %s",
-              detail->osd_arch.c_str(),
-              detail->osd_name.c_str(),
-              detail->osd_version.c_str(),
-              detail->osd_ID.c_str(),
-              like0.mb_str() );
+  msgplat.Printf("OCPN_OSDetail:  %s ; %s ; %s ; %s ; %s",
+                 detail->osd_arch.c_str(), detail->osd_name.c_str(),
+                 detail->osd_version.c_str(), detail->osd_ID.c_str(),
+                 like0.mb_str());
   wxLogMessage(msgplat);
 
   //    Initialize embedded PNG icon graphics
@@ -2022,8 +2016,7 @@ bool MyApp::OnInit() {
 
   if (g_useMUI) {
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-    if (style)
-      style->chartStatusWindowTransparent = true;
+    if (style) style->chartStatusWindowTransparent = true;
   }
 
   //      Init the WayPoint Manager
@@ -2772,12 +2765,14 @@ void MyApp::TrackOff(void) {
 wxDEFINE_EVENT(BELLS_PLAYED_EVTYPE, wxCommandEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-EVT_CLOSE(MyFrame::OnCloseWindow) EVT_MENU(wxID_EXIT, MyFrame::OnExit) EVT_SIZE(
-    MyFrame::OnSize) EVT_MOVE(MyFrame::OnMove) EVT_ICONIZE(MyFrame::OnIconize)
-    EVT_MENU(-1, MyFrame::OnToolLeftClick) EVT_TIMER(INIT_TIMER,
-                                                     MyFrame::OnInitTimer)
-        EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
-            EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
+EVT_CLOSE(MyFrame::OnCloseWindow)
+EVT_MENU(wxID_EXIT, MyFrame::OnExit)
+EVT_SIZE(MyFrame::OnSize) EVT_MOVE(MyFrame::OnMove)
+    EVT_ICONIZE(MyFrame::OnIconize) EVT_MENU(-1, MyFrame::OnToolLeftClick)
+        EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
+            EVT_TIMER(FRAME_TIMER_1,
+                      MyFrame::OnFrameTimer1) EVT_TIMER(FRAME_TC_TIMER,
+                                                        MyFrame::OnFrameTCTimer)
                 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
                     EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
                         EVT_MAXIMIZE(MyFrame::OnMaximize)
@@ -3059,7 +3054,7 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
 
   OcpnSound *sound = bells_sound[bells - 1];
   sound->SetFinishedCallback(onBellsFinishedCB, this);
-  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  auto cmd_sound = dynamic_cast<SystemCmdSound *>(sound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
   sound->Load(soundfile);
   if (!sound->IsOk()) {
@@ -3108,17 +3103,6 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
       SchemeName = _T("DAY");
       break;
   }
-
-#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
-  bool darkMode = (cs == GLOBAL_COLOR_SCHEME_DUSK ||
-                   cs == GLOBAL_COLOR_SCHEME_NIGHT );
-
-  if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
-    setAppLevelDarkMode(darkMode);
-  } else if (wxPlatformInfo::Get().CheckOSVersion(10, 12)) {
-    setWindowLevelDarkMode(MacGetTopLevelWindowRef(), darkMode);
-  }
-#endif
 
   g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
 
@@ -5922,7 +5906,8 @@ int MyFrame::DoOptionsDialog() {
     pConfig->Read("OptionsSizeX", &sx, -1);
     pConfig->Read("OptionsSizeY", &sy, -1);
 
-    g_options = new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy) );
+    g_options =
+        new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
 
     g_Platform->HideBusySpinner();
   }
@@ -6622,10 +6607,10 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
   ChartData->SaveBinary(ChartListFileName);
   wxLogMessage(_T("Finished chart database Update"));
   wxLogMessage(_T("   "));
-  if (gWorldMapLocation
-          .empty()) {  // Last resort. User might have deleted all GSHHG data,
-                       // but we still might have the default dataset distributed
-                       // with OpenCPN or from the package repository...
+  if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
+                                    // GSHHG data, but we still might have the
+                                    // default dataset distributed with OpenCPN
+                                    // or from the package repository...
     gWorldMapLocation = gDefaultWorldMapLocation;
     gshhg_chart_loc = wxEmptyString;
   }
@@ -6959,7 +6944,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       pConfig->Read("OptionsSizeX", &sx, -1);
       pConfig->Read("OptionsSizeY", &sy, -1);
 
-      g_options = new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
+      g_options =
+          new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
 
       // needed to ensure that the chart window starts with keyboard focus
       SurfaceAllCanvasToolbars();
@@ -8891,8 +8877,7 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
               !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue)) {
             setCourseOverGround(m_NMEA0183.Vtg.TrackDegreesTrue);
 >>>>>>> 1f7f17e0a7cd430bc7d73457a91958a3d01eecfa
-#endif
-            cog_sog_valid = true;
+#endif cog_sog_valid = true;
           }
           break;
 
@@ -9105,8 +9090,7 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool cog_sog_valid,
         cogs.Printf("COG ---\u00B0");
       else {
         if (g_bShowTrue)
-          cogs << wxString::Format(wxString("COG %03d\u00B0  "),
-                                   (int)gCog);
+          cogs << wxString::Format(wxString("COG %03d\u00B0  "), (int)gCog);
         if (g_bShowMag)
           cogs << wxString::Format(wxString("COG %03d\u00B0(M)  "),
                                    (int)gFrame->GetMag(gCog));
@@ -10555,24 +10539,25 @@ double AnchorDistFix(double const d, double const AnchorPointMinDist,
       return d;
 
   else
-      // if ( d < 0.0 )
-      if (d > -AnchorPointMinDist)
-    return -AnchorPointMinDist;
-  else if (d < -AnchorPointMaxDist)
-    return -AnchorPointMaxDist;
-  else
-    return d;
+    // if ( d < 0.0 )
+    if (d > -AnchorPointMinDist)
+      return -AnchorPointMinDist;
+    else if (d < -AnchorPointMaxDist)
+      return -AnchorPointMaxDist;
+    else
+      return d;
 }
 
 //      Auto timed popup Window implementation
 
 BEGIN_EVENT_TABLE(TimedPopupWin, wxWindow)
-EVT_PAINT(TimedPopupWin::OnPaint) EVT_TIMER(POPUP_TIMER, TimedPopupWin::OnTimer)
+EVT_PAINT(TimedPopupWin::OnPaint)
+EVT_TIMER(POPUP_TIMER, TimedPopupWin::OnTimer)
 
-    END_EVENT_TABLE()
+END_EVENT_TABLE()
 
-    // Define a constructor
-    TimedPopupWin::TimedPopupWin(wxWindow *parent, int timeout)
+// Define a constructor
+TimedPopupWin::TimedPopupWin(wxWindow *parent, int timeout)
     : wxWindow(parent, wxID_ANY, wxPoint(0, 0), wxSize(1, 1), wxNO_BORDER) {
   m_pbm = NULL;
 
