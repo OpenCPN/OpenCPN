@@ -430,7 +430,7 @@ if (APPLE)
 
   set(
     CMAKE_EXE_LINKER_FLAGS
-    "-O2 ${OCPN_LIBCPP} -arch ${ARCH} ${CMAKE_EXE_LINKER_FLAGS}"
+    "-O2 ${OCPN_LIBCPP} -arch ${ARCH} ${CMAKE_EXE_LINKER_FLAGS} -framework CoreGraphics"
   )
   set(CMAKE_SHARED_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   set(CMAKE_MODULE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
