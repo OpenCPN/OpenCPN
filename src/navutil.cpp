@@ -93,10 +93,6 @@
 #include "androidUTIL.h"
 #endif
 
-#ifdef __WXOSX__
-#include "DarkMode.h"
-#endif
-
 //    Statics
 
 extern OCPNPlatform *g_Platform;
@@ -780,8 +776,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // Some undocumented values
   Read(_T ( "ConfigVersionString" ), &g_config_version_string);
   Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(OCPN_SOUND_CMD));
-  if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
+  if (wxIsEmpty(g_CmdSoundString)) g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Read(_T ( "NavMessageShown" ), &n_NavMessageShown);
 
   Read(_T ( "AndroidVersionCode" ), &g_AndroidVersionCode);
@@ -853,7 +848,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor);
   Read(_T ( "ShipScaleFactor" ), &g_ShipScaleFactor);
   Read(_T ( "ENCSoundingScaleFactor" ), &g_ENCSoundingScaleFactor);
-  Read( _T ( "ObjQueryAppendFilesExt" ),  &g_ObjQFileExt);
+  Read(_T ( "ObjQueryAppendFilesExt" ), &g_ObjQFileExt);
 
   // Plugin catalog handler persistent variables.
   Read("CatalogCustomURL", &g_catalog_custom_url);
@@ -869,7 +864,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T ( "UseMagAPB" ), &g_bMagneticAPB);
     Read(_T ( "TrackContinuous" ), &g_btrackContinuous, false);
     Read(_T ( "FilterTrackDropLargeJump" ), &g_trackFilterMax, 0);
-
   }
 
   Read(_T ( "ShowTrue" ), &g_bShowTrue);
@@ -2275,8 +2269,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "CompatOS" ), g_compatOS);
   Write(_T ( "CompatOsVersion" ), g_compatOsVersion);
   Write(_T ( "ConfigVersionString" ), g_config_version_string);
-  if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
+  if (wxIsEmpty(g_CmdSoundString)) g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Write(_T( "CmdSoundString" ), g_CmdSoundString);
   Write(_T ( "NavMessageShown" ), n_NavMessageShown);
   Write(_T ( "InlandEcdis" ), g_bInlandEcdis);
@@ -3171,7 +3164,7 @@ void SwitchInlandEcdisMode(bool Switch) {
     // g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
     g_iDistanceFormat = 2;  // 0 = "Nautical miles"), 1 = "Statute miles", 2 =
                             // "Kilometers", 3 = "Meters"
-    g_iSpeedFormat = 2;  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+    g_iSpeedFormat = 2;     // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
     if (ps52plib) ps52plib->SetDisplayCategory(STANDARD);
     g_bDrawAISSize = false;
     if (gFrame) gFrame->RequestNewToolbars(true);
@@ -4863,18 +4856,6 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
 
     ctrl->SetBackgroundColour(window_back_color);
     if (darkMode) ctrl->SetForegroundColour(text_color);
-
-#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
-    // On macOS 10.12, enable dark mode at the window level if appropriate.
-    // This will enable dark window decorations but will not darken the rest of
-    // the UI.
-    if (wxPlatformInfo::Get().CheckOSVersion(10, 12)) {
-      setWindowLevelDarkMode(ctrl->MacGetTopLevelWindowRef(), darkMode);
-    }
-    // Force consistent coloured UI text; dark in light mode and light in dark
-    // mode.
-    uitext = darkMode ? wxColor(228, 228, 228) : wxColor(0, 0, 0);
-#endif
   }
 
   wxWindowList kids = ctrl->GetChildren();
