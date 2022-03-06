@@ -2264,11 +2264,13 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
       }
 
       wxLogMessage(msg1);
-      if (m_benable_blackdialog)
-        OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
+      if (!PluginBlacklist[i].mute_dialog) {
+        if (m_benable_blackdialog)
+          OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
                        wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
-      else
-        m_deferred_blacklist_messages.Add(msg);
+        else
+          m_deferred_blacklist_messages.Add(msg);
+      }
 
       return PluginBlacklist[i].hard;
     }
