@@ -59,6 +59,7 @@ enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 
 enum { TEMPERATURE_C = 0, TEMPERATURE_F = 1, TEMPERATURE_K = 2 };
 
+
 extern bool LogMessageOnce(const wxString &msg);
 extern double toUsrDistance(double nm_distance, int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit = -1);
@@ -139,6 +140,22 @@ bool ExportGPXTracks(wxWindow *parent, TrackList *pRoutes,
                      const wxString suggestedName = _T("tracks"));
 bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
                         const wxString suggestedName = _T("waypoints"));
+
+
+class MouseZoom {
+public:
+
+  /** Convert a slider scale 1-100 value to configuration value 1.02..3.0. */
+  static double ui_to_config(int slider_pos) {
+    return (2.0/100) * static_cast<double>(slider_pos) + 1.02;
+  }
+
+  /** Convert configuration 1.02..3.0 value to slider scale 1..100. */
+  static int config_to_ui(double value) {
+    return std::round((100.0 * (static_cast<double>(value) - 1.02)) / 2.0);
+  }
+};
+
 
 //----------------------------------------------------------------------------
 //    Config

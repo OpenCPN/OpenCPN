@@ -468,6 +468,8 @@ wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 
 int g_trackFilterMax;
+double g_mouse_zoom_sensitivity;
+int g_mouse_zoom_sensitivity_ui;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -498,6 +500,7 @@ void appendOSDirSlash(wxString *pString);
 //-----------------------------------------------------------------------------
 //          MyConfig Implementation
 //-----------------------------------------------------------------------------
+//
 
 MyConfig::MyConfig(const wxString &LocalFileName)
     : wxFileConfig(_T (""), _T (""), LocalFileName, _T (""),
@@ -624,6 +627,7 @@ int MyConfig::LoadMyConfig() {
   g_benableAISNameCache = true;
   g_n_arrival_circle_radius = 0.05;
   g_plus_minus_zoom_factor = 2.0;
+  g_mouse_zoom_sensitivity = 1.5;
 
   g_AISShowTracks_Mins = 20;
   g_AISShowTracks_Limit = 300.0;
@@ -945,7 +949,9 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier);
   Read(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
   Read(_T ( "PlusMinusZoomFactor" ), &g_plus_minus_zoom_factor, 2.0);
-
+  Read("MouseZoomSensitivity", &g_mouse_zoom_sensitivity, 1.3);
+  g_mouse_zoom_sensitivity_ui =
+      MouseZoom::config_to_ui(g_mouse_zoom_sensitivity);
   Read(_T ( "CM93DetailFactor" ), &g_cm93_zoom_factor);
 
   Read(_T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x);
@@ -2349,6 +2355,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "OverzoomVectorScale" ), g_oz_vector_scale);
   Write(_T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base);
   Write(_T ( "PlusMinusZoomFactor" ), g_plus_minus_zoom_factor);
+  Write("MouseZoomSensitivity",
+        MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui));
   Write(_T ( "ShowMUIZoomButtons" ), g_bShowMuiZoomButtons);
 
 #ifdef ocpnUSE_GL
