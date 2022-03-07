@@ -1475,6 +1475,13 @@ void GribV2Record::translateDataType() {
     }
   } else if (idCenter == 84 && idModel <= 5 && idGrid == 0) {
   }
+  // MeteoFrance
+  else if (idCenter==85) {
+    if (dataType == GRB_CLOUD_TOT && levelType == LV_GND_SURF && 
+        levelValue == 0) {
+      levelType = LV_ATMOS_ALL;
+    }
+  }
 
   //------------------------
   // Unknown center
