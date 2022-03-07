@@ -289,6 +289,9 @@ extern wxString g_compatOS;
 extern wxLocale* plocale_def_lang;
 #endif
 
+extern double g_mouse_zoom_sensitivity;
+extern int g_mouse_zoom_sensitivity_ui;
+
 extern OcpnSound* g_anchorwatch_sound;
 extern wxString g_anchorwatch_sound_file;
 extern wxString g_DSC_sound_file;
@@ -5714,6 +5717,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
   }
 }
 
+
+
 void options::CreatePanel_Units(size_t parent, int border_size,
                                 int group_item_spacing) {
   wxScrolledWindow* panelUnits = AddPage(parent, _("Units"));
@@ -6644,6 +6649,20 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   panelAIS->Layout();
 }
 
+class MouseZoomSlider : public wxSlider {
+    public:
+        MouseZoomSlider(wxWindow* parent, wxSize size) :
+            wxSlider(parent, wxID_ANY, 10, 1, 100, wxDefaultPosition,
+                     size, SLIDER_STYLE)
+        {
+            Show();
+#ifdef __OCPN__ANDROID__
+            GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
+        }
+};
+
+
 void options::CreatePanel_UI(size_t parent, int border_size,
                              int group_item_spacing) {
   wxScrolledWindow* itemPanelFont = AddPage(parent, _("General Options"));
@@ -6952,6 +6971,13 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __OCPN__ANDROID__
   m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
+
+  sliderSizer->Add(new wxStaticText(itemPanelFont,
+                                    wxID_ANY,
+                                    "Mouse wheel zoom sensitivity"),
+                   inputFlags);
+  m_pMouse_Zoom_Slider = new MouseZoomSlider(itemPanelFont, m_sliderSize);
+  sliderSizer->Add(m_pMouse_Zoom_Slider, 0, wxALL, border_size);
 
   miscOptions->Add(sliderSizer, 0, wxEXPAND, 5);
   miscOptions->AddSpacer(20);
@@ -7720,6 +7746,7 @@ void options::SetInitialSettings(void) {
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
   m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
   m_pSlider_Text_Factor->SetValue(g_ENCSoundingScaleFactor);
+  m_pMouse_Zoom_Slider->SetValue(g_mouse_zoom_sensitivity_ui);
   wxString screenmm;
 
   if (!g_config_display_size_manual) {
@@ -8868,6 +8895,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
   g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
   g_ENCSoundingScaleFactor = m_pSlider_Text_Factor->GetValue();
+  g_mouse_zoom_sensitivity_ui = m_pMouse_Zoom_Slider->GetValue();
+  g_mouse_zoom_sensitivity =
+    MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui);
+
+
 
   //  Only reload the icons if user has actually visted the UI page
   // if(m_bVisitLang)

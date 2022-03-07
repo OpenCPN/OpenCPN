@@ -433,6 +433,7 @@ public:
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
       *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
+  wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
   // LIVE ETA OPTION
