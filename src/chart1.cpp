@@ -7302,7 +7302,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     GPSData.kHdt = gHdt;
     GPSData.nSats = g_SatsInView;
 
-    GPSData.FixTime = m_fixtime;
+    wxDateTime tCheck( (time_t) m_fixtime);
+
+    if (tCheck.IsValid())
+      GPSData.FixTime = m_fixtime;
+    else
+      GPSData.FixTime = wxDateTime::Now().GetTicks();
+
 
     g_pi_manager->SendPositionFixToAllPlugIns(&GPSData);
   }
