@@ -2772,10 +2772,12 @@ void MyApp::TrackOff(void) {
 wxDEFINE_EVENT(BELLS_PLAYED_EVTYPE, wxCommandEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-EVT_CLOSE(MyFrame::OnCloseWindow) EVT_MENU(wxID_EXIT, MyFrame::OnExit) EVT_SIZE(
-    MyFrame::OnSize) EVT_MOVE(MyFrame::OnMove) EVT_ICONIZE(MyFrame::OnIconize)
-    EVT_MENU(-1, MyFrame::OnToolLeftClick) EVT_TIMER(INIT_TIMER,
-                                                     MyFrame::OnInitTimer)
+EVT_CLOSE(MyFrame::OnCloseWindow)
+EVT_MENU(wxID_EXIT, MyFrame::OnExit)
+EVT_SIZE(MyFrame::OnSize)
+EVT_MOVE(MyFrame::OnMove)
+EVT_ICONIZE(MyFrame::OnIconize) EVT_MENU(-1, MyFrame::OnToolLeftClick)
+    EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
         EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
             EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
                 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
@@ -8896,7 +8898,6 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
           if (!g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
               !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue)) {
             setCourseOverGround(m_NMEA0183.Vtg.TrackDegreesTrue);
->>>>>>> 1f7f17e0a7cd430bc7d73457a91958a3d01eecfa
 #endif
             cog_sog_valid = true;
           }
