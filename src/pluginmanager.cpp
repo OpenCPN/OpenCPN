@@ -1545,6 +1545,17 @@ bool PlugInManager::UpdatePlugIns() {
 
   UpDateChartDataTypes();
 
+    // Tell all the PlugIns about the current OCPN configuration
+  SendBaseConfigToAllPlugIns();
+  SendS52ConfigToAllPlugIns(true);
+  SendSKConfigToAllPlugIns();
+
+  // Inform Plugins of OpenGL configuration, if enabled
+  if (g_bopengl) {
+    if (gFrame->GetPrimaryCanvas()->GetglCanvas())
+      gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+  }
+
   return bret;
 }
 
