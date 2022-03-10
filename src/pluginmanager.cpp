@@ -2461,8 +2461,8 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
   wxString pi_name =  plug_in->GetCommonName();
   SemanticVersion pi_ver(pi_major, pi_minor, -1);
 
-  wxLogMessage("blacklist: Get status for %s %d %d",
-               pi_name, pi_major, pi_minor);
+  wxLogDebug("blacklist: Get status for %s %d %d",
+             pi_name, pi_major, pi_minor);
   const auto status = m_blacklist->get_status(pi_name.ToStdString(),
                                               pi_major, pi_minor);
   if (status != plug_status::unblocked) {
@@ -2474,7 +2474,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
     }
     return NULL;
   }
-  wxLogMessage("blacklist: not blocked.");
 
   switch (api_ver) {
     case 105:
