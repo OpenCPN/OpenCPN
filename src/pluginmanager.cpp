@@ -1301,23 +1301,16 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
                          plugin_file.c_str()),
                      wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK,
                      10);
-    }
-    if (!b_compat)
       m_blacklist->mark_unloadable(plugin_file.ToStdString());
+    }
 
     PlugInContainer *pic = NULL;
     if (b_compat) pic = LoadPlugIn(file_name);
     wxLog::FlushActive();
 
     if (!pic) {
-      wxLogMessage("Cannot load plugin library %s",
-                   static_cast<const char*>(plugin_file));
-      OCPNMessageBox(NULL,
-                     wxString::Format(
-                         _("The plugin library %s can not be loaded."),
-                         static_cast<const char*>(plugin_file)),
-                     wxString(_("OpenCPN Info")), wxICON_WARNING | wxOK,
-                     10);
+      m_blacklist_ui->message(plug_status::unloadable,
+                              plug_data(plugin_file.ToStdString(), -1, -1));
       m_blacklist->mark_unloadable(plugin_file.ToStdString());
    } else {
       if (pic->m_pplugin) {
