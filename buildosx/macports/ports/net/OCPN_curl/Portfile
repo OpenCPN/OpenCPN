@@ -69,7 +69,7 @@ if {${name} eq ${subport}} {
                                 --with-zlib=${prefix} \
                                 ac_cv_prog_AWK=/usr/bin/awk
 
-    configure.cflags-append     -mmacosx-version-min=10.9
+    configure.cflags-append     -mmacosx-version-min=10.10
 
     configure.env               PKG_CONFIG_PATH=${prefix}
 
