@@ -93,15 +93,9 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
   talkerID = talk;
 
   /* Some GNSS receivers may emit more than (3*4)=12 sats info.
-     There can be up to 9 sequences in one group so we divide
-     them in subgroups of 3 to be able to show all
-     with our limited space.*/
-  if (seq < 1) return;
-  if (seq > 3) {
-    if (seq < 7) seq -= 3;
-    else if (seq < 10) seq -= 6;
-    else return; // not to standard but u never know
-  }
+     We read the three first only since our graphic is
+     is not adapted for more than 12 satellites*/
+  if (seq < 1 || seq > 3) return;
 
   if (talkerID != wxEmptyString) {
     /* Switch view between the six GNSS system
