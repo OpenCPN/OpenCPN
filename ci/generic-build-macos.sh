@@ -6,7 +6,10 @@
 set -xe
 
 # Build for legacy Mac machines
-export MACOSX_DEPLOYMENT_TARGET=10.9
+export MACOSX_DEPLOYMENT_TARGET=10.10
+
+# Required to build libcurl for legacy machines
+export macosx_deployment_target=10.10
 
 # allow shell to find Macports executable
 export PATH=/opt/local/bin:$PATH
@@ -59,7 +62,7 @@ sudo port -fN deactivate OCPN_curl || {
 # Install curl to get the TLS certificate bundle
 # then immediately deactivate curl to make room for OCPN_curl later
 sudo port -q install curl
-sudo port -fN deactivate curl
+#sudo port -fN deactivate curl
 
 #sudo port -fN deactivate openssl
 
@@ -68,10 +71,10 @@ sudo port -fN deactivate curl
 #  n.b.  ORDER IS IMPORTANT
 
 sudo port -q install OCPN_openssl
-sudo port -fq install OCPN_curl
+#sudo port -fq install OCPN_curl
 sudo port -q install OCPN_libpixman
 
-sudo port -fN deactivate OCPN_curl
+#sudo port -fN deactivate OCPN_curl
 sudo port -fq install OCPN_cairo
 
 sudo port -q install zstd
@@ -82,7 +85,7 @@ sudo port -q install OCPN_libarchive
 sudo port -q -f install OCPN_libpng
 
 #sudo port -fN deactivate curl
-sudo port -q activate OCPN_curl
+#sudo port -q activate OCPN_curl
 
 # Install curl to get the TLS certificate bundle
 # then immediately deactivate curl to make room for OCPN_curl later
@@ -168,7 +171,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
   -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config \
   -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010" \
-  -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
+  -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
   ..
 make -sj$(sysctl -n hw.physicalcpu)
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
