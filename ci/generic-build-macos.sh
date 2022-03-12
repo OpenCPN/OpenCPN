@@ -127,7 +127,7 @@ brew list --versions python3 || {
         #fetch --unshallow
 }
 
-for pkg in libcurl python3  cmake ; do
+for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
@@ -182,8 +182,8 @@ make install # Dunno why the second is needed but it is, otherwise
 
 sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 
-make create-pkg
-#make create-dmg
+#make create-pkg
+make create-dmg
 
 # Install the stuff needed by upload.
 pip3 install --user  -q cloudsmith-cli
