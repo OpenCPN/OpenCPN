@@ -487,7 +487,7 @@ void OCPNPlatform::Initialize_1(void) {
 
   // URL for sending error reports over HTTP.
 
-  if (1 /*g_bEmailCrashReport*/) {
+  if (g_bEmailCrashReport) {
     info.pszUrl = _T("https://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
     info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP
   } else {
