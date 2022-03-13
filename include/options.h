@@ -384,6 +384,7 @@ public:
   void ClearConfigList();
   void BuildConfigList();
   void OnConfigMouseSelected(wxMouseEvent &event);
+  void OnDialogInit(wxInitDialogEvent& event);
 
   void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
 
@@ -562,6 +563,9 @@ public:
   int m_nCharWidthMax;
   wxBoxSizer *boxSizerCharts;
   wxScrolledWindow *m_scrollWinChartList;
+  wxScrolledWindow* chartPanelWin;
+  wxBoxSizer* cmdButtonSizer;
+  wxStaticBox* loadedBox;
   std::vector<OCPNChartDirPanel *> panelVector;
   wxArrayString activeChartList;
 

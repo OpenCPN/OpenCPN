@@ -6034,6 +6034,14 @@ int MyFrame::DoOptionsDialog() {
   if (g_MainToolbar) g_MainToolbar->EnableTooltips();
 
   options_lastPage = g_options->lastPage;
+#ifdef __OCPN__ANDROID__
+  //  This is necessary to force a manual change to charts page,
+  //  in order to properly refresh the chart directory list.
+  //  Root cause:  In Android, trouble with clearing the wxScrolledWindow
+  if (options_lastPage == 1)
+    options_lastPage = 0;
+#endif
+
   options_subpage = g_options->lastSubPage;
 
   options_lastWindowPos = g_options->lastWindowPos;
