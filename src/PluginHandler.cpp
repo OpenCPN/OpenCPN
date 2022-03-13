@@ -156,8 +156,8 @@ public:
     m_abi_version = metadata.target_version;
     m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
     m_name = metadata.name;
-    wxLogMessage("Plugin: setting up, name: %s", m_name);
-    wxLogMessage("Plugin: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
+    wxLogDebug("Plugin: setting up, name: %s", m_name);
+    wxLogDebug("Plugin: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
                m_abi_version, m_major_version);
   }
   const std::string& abi() const { return m_abi; }
@@ -179,7 +179,7 @@ public:
     m_abi = compatOs->name();
     m_abi_version = compatOs->version();
     m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
-    wxLogMessage("Host: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
+    wxLogDebug("Host: init: abi: %s, abi_version: %s, major ver: %s", m_abi,
                m_abi_version, m_major_version);
   }
 
@@ -339,8 +339,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
       plugin.abi() == "android-armhf" ||
       plugin.abi() == "android-arm64") {
     bool ok = plugin.abi() == host.abi();
-    wxLogMessage("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
-    wxLogMessage(" ");
+    wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
+    wxLogDebug(" ");
     return ok;
   }
   bool rv = false;
