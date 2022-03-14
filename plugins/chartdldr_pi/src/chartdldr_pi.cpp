@@ -2276,6 +2276,8 @@ void ChartDldrGuiAddSourceDlg::OnSourceSelected(wxTreeEvent &event) {
     m_tChartSourceUrl->SetValue(cs->GetUrl());
     if (m_tcChartDirectory->GetValue() == m_last_path) {
       m_tcChartDirectory->SetValue(FixPath(cs->GetDir()));
+      m_panelChartDirectory->SetText(FixPath(cs->GetDir()));
+
       m_buttonChartDirectory->Enable();
       m_last_path = m_tcChartDirectory->GetValue();
     }
@@ -2290,6 +2292,8 @@ void ChartDldrGuiAddSourceDlg::SetSourceEdit(ChartSource *cs) {
   m_tSourceName->SetValue(cs->GetName());
   m_tChartSourceUrl->SetValue(cs->GetUrl());
   m_tcChartDirectory->SetValue(FixPath(cs->GetDir()));
+  m_panelChartDirectory->SetText(FixPath(cs->GetDir()));
+
   m_buttonChartDirectory->Enable();
 }
 
