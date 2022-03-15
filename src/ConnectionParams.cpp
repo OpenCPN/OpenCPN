@@ -455,74 +455,44 @@ void ConnectionParamsPanel::CreateControls(void) {
                  this);
 
     // line 2
-    t2 = new wxStaticText(this, wxID_ANY, _("Serial"));
-    t2->SetFont(*bFont);
+    t2 = new ConnBoldLabel(this, _("Serial"));
     serialGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL);
-    t2->Connect(wxEVT_LEFT_DOWN,
-                wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                this);
 
-    t4 = new wxStaticText(this, wxID_ANY, _T(""));
+    t4 = new ConnBoldLabel(this, "");
     serialGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL);
-    t4->Connect(wxEVT_LEFT_DOWN,
-                wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                this);
 
-    t6 = new wxStaticText(this, wxID_ANY, ioDir);
-    t6->SetFont(*bFont);
+    t6 = new ConnBoldLabel(this, ioDir);
     serialGrid->Add(t6, 0, wxALIGN_CENTER_HORIZONTAL);
-    t6->Connect(wxEVT_LEFT_DOWN,
-                wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                this);
 
     wxString proto;
     switch (m_pConnectionParams->Protocol) {
       case PROTO_NMEA0183:
-        proto = _T("NMEA 0183");
+        proto = "NMEA 0183";
         break;
       case PROTO_SEATALK:
-        proto = _T("SEATALK");
+        proto = "SEATALK";
         break;
       case PROTO_NMEA2000:
-        proto = _T("NMEA 2000");
+        proto = "NMEA 2000";
         break;
       default:
-        proto = _("Undefined");
+        proto = "Undefined";
         break;
     }
 
-    t12 = new wxStaticText(this, wxID_ANY, proto);
-    t12->SetFont(*bFont);
+    t12 = new ConnBoldLabel(this, proto);
     serialGrid->Add(t12, 0, wxALIGN_CENTER_HORIZONTAL);
-    t12->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
 
-    wxString serialPort = m_pConnectionParams->Port;
-    t14 = new wxStaticText(this, wxID_ANY, serialPort);
-    t14->SetFont(*bFont);
+    t14 = new ConnBoldLabel(this, m_pConnectionParams->Port);
     serialGrid->Add(t14, 0, wxALIGN_CENTER_HORIZONTAL);
-    t14->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
 
-    wxString baudRate;
-    baudRate.Printf(_T("%d"), m_pConnectionParams->Baudrate);
-    t16 = new wxStaticText(this, wxID_ANY, baudRate);
-    t16->SetFont(*bFont);
+    auto baudRate = wxString::Format("%d", m_pConnectionParams->Baudrate);
+    t16 = new ConnBoldLabel(this, baudRate);
     serialGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL);
-    t16->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
 
-    wxString priority;
-    priority.Printf(_T("%d"), m_pConnectionParams->Priority);
-    t18 = new wxStaticText(this, wxID_ANY, priority);
-    t18->SetFont(*bFont);
+    auto priority = wxString::Format("%d", m_pConnectionParams->Priority);
+    t18 = new ConnBoldLabel(this, priority);
     serialGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL);
-    t18->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
 
     wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                           wxDefaultSize, wxLI_HORIZONTAL);
