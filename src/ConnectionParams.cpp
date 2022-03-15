@@ -476,7 +476,7 @@ void ConnectionParamsPanel::CreateControls(void) {
         proto = "NMEA 2000";
         break;
       default:
-        proto = "Undefined";
+        proto = _("Undefined");
         break;
     }
 
