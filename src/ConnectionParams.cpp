@@ -40,6 +40,34 @@
 #define wxAtoi(arg) atoi(arg)
 #endif
 
+
+/** A wxStaticText bold label with correct width, see #2538 */
+class ConnBoldLabel: public wxStaticText {
+public:
+  ConnBoldLabel(wxWindow* parent, const wxString& label)
+      : wxStaticText(parent, wxID_ANY, "") {
+    font = parent->GetFont();
+    font.MakeBold();
+    SetFont(font);
+    SetLabel(label);
+    Connect(wxEVT_LEFT_DOWN,
+            wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
+            parent);
+  }
+
+  void SetLabel(const wxString& label) {
+    wxStaticText::SetLabel(label);
+    dc.SetFont(font);
+    auto size = dc.GetTextExtent(label).Scale(1.1, 1.1);
+    SetMinSize(size);
+  }
+
+private:
+  wxScreenDC dc;
+  wxFont font;
+};
+
+
 ConnectionParams::ConnectionParams(const wxString &configStr) {
   m_optionsPanel = NULL;
   Deserialize(configStr);
