@@ -42,6 +42,7 @@
 #include "thumbwin.h"
 #include "mbtiles.h"
 #include "CanvasConfig.h"
+#include "androidUTIL.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -478,8 +479,17 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
     } else
       b_group_add = true;
 
+    bool b_writable_add = true;
+    //  On android, SDK > 29, we require that the directory of charts be "writable"
+    //  as determined by Android Java file system
+#ifdef __OCPN__ANDROID__
+    wxFileName fn(cte.GetFullSystemPath());
+    if (!androidIsDirWritable( fn.GetPath()))
+      b_writable_add = false;
+#endif
+
     bool b_pos_add = false;
-    if (b_group_add) {
+    if (b_group_add && b_writable_add) {
       //  Plugin loading is deferred, so the chart may have been disabled
       //  elsewhere. Tentatively reenable the chart so that it appears in the
       //  piano. It will get disabled later if really not useable

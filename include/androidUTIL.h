@@ -197,5 +197,6 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
                         unsigned int height);
 
 wxString androidGetAndroidSystemLocale();
+bool androidIsDirWritable( wxString dir );
 
 #endif  // guard

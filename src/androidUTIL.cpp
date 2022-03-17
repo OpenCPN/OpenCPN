@@ -2354,6 +2354,20 @@ wxString androidGetDeviceInfo() {
   return g_deviceInfo;
 }
 
+bool androidIsDirWritable( wxString dir )
+{
+  if (g_SDK_Version < 30)
+    return true;
+  else{
+    // This is theorectically most accurate, but slow to execute
+    //wxString result = callActivityMethod_ss("isDirWritable", dir);
+    //return (result.IsSameAs("YES"));
+
+    // This is a practical alternative, for things like chart storage qualification.
+    return (dir.Contains("org.opencpn.opencpn"));
+  }
+}
+
 wxString androidGetHomeDir() { return g_androidFilesDir + _T("/"); }
 
 wxString

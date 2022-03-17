@@ -31,6 +31,7 @@
 #include "chcanv.h"
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "chartimg.h"
+#include "androidUTIL.h"
 
 #include <algorithm>
 
@@ -1313,6 +1314,14 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       continue;
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+
+    //  On android, SDK > 29, we require that the directory of charts be "writable"
+    //  as determined by Android Java file system
+#ifdef __OCPN__ANDROID__
+    wxFileName fn(cte.GetFullSystemPath());
+    if (!androidIsDirWritable( fn.GetPath()))
+      continue;
+#endif
 
     if (reference_family != cte.GetChartFamily()) continue;
 
