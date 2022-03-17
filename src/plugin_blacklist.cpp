@@ -26,8 +26,11 @@
 
 #include <algorithm>
 #include <cctype>
+#include <regex>
 #include <unordered_map>
 #include <vector>
+
+#include <wx/translation.h>
 
 #include "logger.h"
 
@@ -52,31 +55,39 @@ typedef struct config_block {
   int version_minor;
   bool hard;             /** If true, unconditional hard block; else load
                              plugin with a warning.  */
+  const char* message;
 } config_block;
+
+static const char* const STD_HARD_MSG = _(R"""(
+PlugIn %s, version %i.%i was detected.
+This version is known to be unstable and will not be loaded.
+Please update this PlugIn using the PlugIn manager master catalog.
+)""");
+
+static const char* const STD_SOFT_MSG = _(R"""(
+PlugIn %s, version %i.%i was detected.
+This version is known to be unstable.
+Please update this PlugIn using the PlugIn manager master catalog.
+)""");
+
+static const char* const OCHART_OBSOLETED_MSG = _(R"""(
+PlugIn %s, version %i.%i was detected.
+This plugin is obsolete, the o-charts plugin should be used
+instead. Please uninstall this plugin and install o-charts
+using the PlugIn manager master catalog.
+)""");
 
 
 static const config_block plugin_blacklist[] = {
-  { "AIS Radar view",  0, 95, true},
-  { "Radar",     0, 95, true},
-  { "Watchdog",  1, 0,  true},
-  { "squiddio",  0, 2,  true},
-  { "ObjSearch", 0, 3 , true},
+  { "Radar",     0, 95, true, STD_HARD_MSG},
+  { "Watchdog",  1, 0,  true, STD_HARD_MSG},
+  { "squiddio",  0, 2,  true, STD_HARD_MSG},
+  { "ObjSearch", 0, 3,  true, STD_HARD_MSG},
 #ifdef __WXOSX__
-  { "S63",       0, 6, true},
+  { "S63",       0, 6,  true, STD_HARD_MSG},
 #endif
-  { "oeSENC",    4, 2, true}
+  { "oeSENC",   99, 99, true, OCHART_OBSOLETED_MSG}
 };
-
-static std::string status2string(plug_status sts){
-   std::string rval;
-   switch (sts) {
-       case plug_status::unblocked:  rval = "unblocked"; break;
-       case plug_status::unloadable: rval = "unloadable"; break;
-       case plug_status::hard: rval = "hard"; break;
-       case plug_status::soft: rval = "soft"; break;
-   }
-   return rval;
-}
 
 
 /** Runtime representation of a plugin block. */
@@ -84,16 +95,21 @@ typedef struct block {
   int major;
   int minor;
   plug_status status;
+  const char* message;
 
   block()
-    : major(0), minor(0), status(plug_status::unblocked) {};
+    : major(0), minor(0), status(plug_status::unblocked), message("") {};
 
-  block(int _major, int _minor, bool _exact)
-    : major(_major), minor(_minor), status(plug_status::unblocked) {};
+  block(int _major, int _minor)
+    : major(_major), minor(_minor), status(plug_status::unblocked),
+      message("")
+    {};
 
   block(const struct config_block& cb)
     : major(cb.version_major), minor(cb.version_minor),
-      status(cb.hard ? plug_status::hard : plug_status::soft) {};
+      status(cb.hard ? plug_status::hard : plug_status::soft),
+      message(cb.message)
+    {};
 
   /** Return true if _major/_minor matches the blocked plugin. */
   bool is_matching(int _major, int _minor) const {
@@ -132,20 +148,11 @@ static std::string to_lower(const std::string& arg) {
 }
 
 
-static std::unordered_map<std::string, block>::iterator
-  find_block(std::unordered_map<std::string, block>& blocks,
-             const std::string& needle)
-{
-  const auto s = to_lower(needle);
-  for (auto it = blocks.begin(); it != blocks.end(); it++) {
-    if (to_lower(it->first) == s) return it;
-  }
-  return blocks.end();
-}
-
 class PlugBlacklist: public AbstractBlacklist {
 
 friend std::unique_ptr<AbstractBlacklist> blacklist_factory();
+
+typedef std::unordered_map<std::string, block> block_map;
 
 private:
   PlugBlacklist() {
@@ -155,24 +162,44 @@ private:
     }
   }
 
-  std::unordered_map<std::string, block> m_blocks;
+  block_map m_blocks;
+
+  block_map::iterator find_block(const std::string& name) {
+    const auto s = to_lower(name);
+    for (auto it = m_blocks.begin(); it != m_blocks.end(); it++) {
+      if (to_lower(it->first) == s) return it;
+    }
+    return m_blocks.end();
+  }
+
+  void update_block(const std::string& name, int major, int minor) {
+    if (m_blocks.find(name) == m_blocks.end())
+      m_blocks[name] = block(major, minor);
+    m_blocks[name].status = plug_status::unloadable;
+    m_blocks[name].major = major;
+    m_blocks[name].minor = minor;
+  }
+
+  /** Avoid pulling in wx libraries in low-level model code. */
+  std::string format_message(const std::string msg, const  plug_data& data) {
+    int size = std::snprintf(nullptr, 0, msg.c_str(),
+                             data.name.c_str(), data.major, data.minor);
+    if (size < 0) {
+      wxLogWarning("Cannot format message for %s", data.name.c_str());
+      return "Internal error: Cannot format message(!)";
+    }
+    std::unique_ptr<char[]> buf(new char[size]);
+    std::snprintf(buf.get(), size, msg.c_str(),
+                  data.name.c_str(), data.major, data.minor);
+    return std::string(buf.get(), buf.get() + size - 1);
+  }
 
 public:
   virtual plug_data get_library_data(const std::string library_file) {
     std::string filename(normalize_lib(library_file));
-    auto found = find_block(m_blocks, filename);
+    auto found = find_block(filename);
     if (found == m_blocks.end()) return plug_data("", -1, -1);
     return plug_data(found->first, found->second.major, found->second.minor);
-  }
-
-
-
-  void update_blocks(const std::string& name, int major, int minor) {
-    if (m_blocks.find(name) == m_blocks.end())
-      m_blocks[name] = block(major, minor, true);
-    m_blocks[name].status = plug_status::unloadable;
-    m_blocks[name].major = major;
-    m_blocks[name].minor = minor;
   }
 
   plug_status get_status(const std::string& name, int major, int minor) {
@@ -190,7 +217,7 @@ public:
     auto slashpos = filename.rfind(SEP);
     if (slashpos != std::string::npos)
       filename = filename.substr(slashpos + 1);
-    update_blocks(filename, -1, -1);
+    update_block(filename, -1, -1);
   }
 
   bool is_loadable(const std::string path) {
@@ -202,10 +229,23 @@ public:
     return m_blocks[filename].status != plug_status::unloadable;
   }
 
-  void get_message(plug_status status, const plug_data& data) {
-
+  std::string get_message(plug_status status, const plug_data& data) {
+    if (status == plug_status::unloadable) {
+      std::string msg(_("Plugin library %s can not be loaded"));
+      msg = std::regex_replace(msg, std::regex("%s"), data.name);
+      return msg;
+    }
+    if (status == plug_status::unblocked) {
+      wxLogMessage("Attempt to get message for unblocked plugin %s",
+                   data.name.c_str());
+      return "No applicable message";
+    }
+    auto found = find_block(data.name);
+    if (found == m_blocks.end())
+      return format_message("No known message for %s version %d.%d", data);
+    else
+      return format_message(found->second.message, data);
   }
-
 };
 
 

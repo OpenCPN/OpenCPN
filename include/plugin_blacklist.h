@@ -53,11 +53,6 @@ typedef struct plug_data {
   plug_data(std::string n, int _major, int _minor)
     : name(n), major(_major), minor(_minor) {}
 
-  std::string to_string() {
-    std::stringstream ss;
-    ss << name << " " << major << " " << minor;
-    return ss.str();
-  }
 } plug_data;
 
 
@@ -90,7 +85,7 @@ public:
   virtual bool is_loadable(const std::string path) = 0;
 
   /** Return plugin-specific message, possibly "". */
-  virtual void get_message(plug_status status, const plug_data& data) = 0;
+  virtual std::string get_message(plug_status sts, const plug_data& data) = 0;
 
 };
 

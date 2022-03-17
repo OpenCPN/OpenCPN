@@ -247,36 +247,11 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 class BlacklistUI {
 public:
 
-  void message(plug_status status, const plug_data& data) {
-    wxString msg;
-    if (status == plug_status::hard) {
-      msg = wxString::Format(
-          _("PlugIn %s, version %i.%i was detected.\n This version is "
-            "known to be unstable and will not be loaded.\n Please update "
-            "this PlugIn using the PlugIn manager master catalog."),
-            data.name.c_str(), data.major, data.minor);
-      wxLogMessage(
-          "PlugIn %s, version %i.%i detected. Hard blacklisted, not loaded",
-          data.name.c_str(), data.major, data.minor);
-    } else if (status == plug_status::soft) {
-      msg = wxString::Format(
-          _("PlugIn %s, version %i.%i was detected.\n This version is "
-            "known to be unstable.\n Please update this PlugIn using the "
-            "PlugIn manager master catalog."),
-            data.name.c_str(), data.major, data.minor);
-      wxLogMessage(
-          _("PlugIn %s, version %i.%i was detected. Soft blacklisted, loaded"),
-            data.name.c_str(), data.major, data.minor);
-    } else if (status == plug_status::unloadable) {
-      msg = wxString::Format("The plugin %s can not be loaded",
-                             data.name.c_str());
-      wxLogMessage(msg);
-    }
-
+  void message(const std::string& message) {
     if (m_defer)
-      m_deferred_messages.push_back(msg);
+      m_deferred_messages.push_back(message);
     else
-      show_msg(msg);
+      show_msg(message);
   }
 
   void show_deferred_messages() {
@@ -284,7 +259,7 @@ public:
     m_defer = false;
   }
 
-  BlacklistUI(): m_defer(true) {};
+  BlacklistUI() : m_defer(true) {};
 
 private:
   void show_msg(wxString msg) {
@@ -1076,7 +1051,7 @@ PlugInManager::PlugInManager(MyFrame *parent) {
   m_utilHandler = new pluginUtilHandler();
   m_listPanel = NULL;
   m_blacklist = blacklist_factory();
-  m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI);
+  m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
 }
 
 PlugInManager::~PlugInManager() {
@@ -1309,8 +1284,9 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
     wxLog::FlushActive();
 
     if (!pic) {
-      m_blacklist_ui->message(plug_status::unloadable,
-                              plug_data(plugin_file.ToStdString(), -1, -1));
+      auto data = plug_data(plugin_file.ToStdString(), -1, -1);
+      auto msg = m_blacklist->get_message(plug_status::unloadable, data);
+      m_blacklist_ui->message(msg);
       m_blacklist->mark_unloadable(plugin_file.ToStdString());
    } else {
       if (pic->m_pplugin) {
@@ -2364,7 +2340,8 @@ bool PlugInManager::CheckBlacklistedPlugin(wxString name, int major, int minor) 
   auto block_status = m_blacklist->get_status(name.ToStdString(), major, minor);
   if (block_status == plug_status::unblocked) return true;
   plug_data data(name.ToStdString(), major, minor);
-  m_blacklist_ui->message(block_status, data);
+  auto msg = m_blacklist->get_message(block_status, data);
+  m_blacklist_ui->message(msg);
   return false;
 }
 
@@ -2469,7 +2446,8 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
     wxLogDebug("Ignoring blacklisted plugin.");
     if (status != plug_status::unloadable) {
       plug_data data(pi_name.ToStdString(), pi_major, pi_minor);
-      m_blacklist_ui->message(status, data);
+      auto msg = m_blacklist->get_message(status, data);
+      m_blacklist_ui->message(msg);
       m_blacklist->mark_unloadable(plugin_file.ToStdString());
     }
     return NULL;
