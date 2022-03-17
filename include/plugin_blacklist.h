@@ -89,6 +89,9 @@ public:
   /** Return true iff plugin (a path) is loadable. */
   virtual bool is_loadable(const std::string path) = 0;
 
+  /** Return plugin-specific message, possibly "". */
+  virtual void get_message(plug_status status, const plug_data& data) = 0;
+
 };
 
 std::unique_ptr<AbstractBlacklist> blacklist_factory();

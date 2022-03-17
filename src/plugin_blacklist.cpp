@@ -52,20 +52,19 @@ typedef struct config_block {
   int version_minor;
   bool hard;             /** If true, unconditional hard block; else load
                              plugin with a warning.  */
-  bool lower_versions;   /** If true, block also all lower versions. */
 } config_block;
 
 
 static const config_block plugin_blacklist[] = {
-  { "AIS Radar view",  0, 95, true, true},
-  { "Radar",     0, 95, true, true},
-  { "Watchdog",  1, 0,  true, true},
-  { "squiddio",  0, 2,  true, true},
-  { "ObjSearch", 0, 3 , true, true},
+  { "AIS Radar view",  0, 95, true},
+  { "Radar",     0, 95, true},
+  { "Watchdog",  1, 0,  true},
+  { "squiddio",  0, 2,  true},
+  { "ObjSearch", 0, 3 , true},
 #ifdef __WXOSX__
-  { "S63", 0, 6, true, false},
+  { "S63",       0, 6, true},
 #endif
-  { "oeSENC", 4, 2, true, false}
+  { "oeSENC",    4, 2, true}
 };
 
 static std::string status2string(plug_status sts){
@@ -84,20 +83,16 @@ static std::string status2string(plug_status sts){
 typedef struct block {
   int major;
   int minor;
-  bool exact_match;  /// Match just this version vs also all lower versions.
   plug_status status;
 
   block()
-    : major(0), minor(0), exact_match(false),
-      status(plug_status::unblocked) {};
+    : major(0), minor(0), status(plug_status::unblocked) {};
 
   block(int _major, int _minor, bool _exact)
-    : major(_major), minor(_minor), exact_match(_exact),
-      status(plug_status::unblocked) {};
+    : major(_major), minor(_minor), status(plug_status::unblocked) {};
 
   block(const struct config_block& cb)
     : major(cb.version_major), minor(cb.version_minor),
-      exact_match(!cb.lower_versions),
       status(cb.hard ? plug_status::hard : plug_status::soft) {};
 
   /** Return true if _major/_minor matches the blocked plugin. */
@@ -106,8 +101,7 @@ typedef struct block {
     if (_major == -1) return false;
     if (_major > major) return false;
     if (_minor > minor) return false;
-    if (_major == major && _minor == minor) return true;
-    return !exact_match;
+    return true;
   };
 
   plug_data to_plug_data(std::string name) {
@@ -207,6 +201,11 @@ public:
     if (m_blocks.find(filename) == m_blocks.end()) return true;
     return m_blocks[filename].status != plug_status::unloadable;
   }
+
+  void get_message(plug_status status, const plug_data& data) {
+
+  }
+
 };
 
 
