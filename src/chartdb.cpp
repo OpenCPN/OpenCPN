@@ -534,6 +534,8 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
   //    actually a directory, then windows fails to produce a valid file
   //    modification time.  Detect GetFileTime() == 0, and skip the test in this
   //    case
+  //    Extended to also check for "identical" charts, having exact same EditionDate
+
   for (int id = 0; id < j - 1; id++) {
     if (cstk->GetDBIndex(id) != -1) {
       const ChartTableEntry &ctem = GetChartTableEntry(cstk->GetDBIndex(id));
@@ -542,12 +544,17 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
         if (cstk->GetDBIndex(jd) != -1) {
           const ChartTableEntry &cten =
               GetChartTableEntry(cstk->GetDBIndex(jd));
+          bool bsameTime = false;
           if (ctem.GetFileTime() && cten.GetFileTime()) {
-            if (labs(ctem.GetFileTime() - cten.GetFileTime()) <
-                60) {  // simple test
+            if (labs(ctem.GetFileTime() - cten.GetFileTime()) < 60)
+              bsameTime = true;
+          }
+          if (ctem.GetChartEditionDate() == cten.GetChartEditionDate() )
+            bsameTime = true;
+
+          if(bsameTime) {
               if (cten.GetpFileName()->IsSameAs(*(ctem.GetpFileName())))
                 cstk->SetDBIndex(jd, -1);  // mark to remove
-            }
           }
         }
       }

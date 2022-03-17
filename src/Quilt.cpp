@@ -1380,18 +1380,24 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
           //    same mod time These charts can be in the database due to having
           //    the exact same chart in different directories, as may be desired
           //    for some grouping schemes
+          //    Extended to also check for "identical" charts, having exact same EditionDate
           bool b_noadd = false;
           ChartTableEntry *pn = ChartData->GetpChartTableEntry(i);
           for (unsigned int id = 0; id < m_extended_stack_array.size(); id++) {
             if (m_extended_stack_array[id] != -1) {
               ChartTableEntry *pm =
                   ChartData->GetpChartTableEntry(m_extended_stack_array[id]);
+              bool bsameTime = false;
               if (pm->GetFileTime() && pn->GetFileTime()) {
-                if (labs(pm->GetFileTime() - pn->GetFileTime()) <
-                    60) {  // simple test
+                if (labs(pm->GetFileTime() - pn->GetFileTime()) < 60)
+                  bsameTime = true;
+              }
+              if (pm->GetChartEditionDate() == pn->GetChartEditionDate() )
+                bsameTime = true;
+
+              if (bsameTime) {
                   if (pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
                     b_noadd = true;
-                }
               }
             }
           }
