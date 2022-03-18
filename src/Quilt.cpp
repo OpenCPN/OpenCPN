@@ -31,8 +31,9 @@
 #include "chcanv.h"
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "chartimg.h"
-#include "androidUTIL.h"
-
+#ifdef __OCPN__ANDROID__
+ #include "androidUTIL.h"
+#endif
 #include <algorithm>
 
 #include "s57chart.h"
