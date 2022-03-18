@@ -42,7 +42,9 @@
 #include "thumbwin.h"
 #include "mbtiles.h"
 #include "CanvasConfig.h"
-#include "androidUTIL.h"
+#ifdef __OCPN__ANDROID__
+ #include "androidUTIL.h"
+#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
