@@ -553,11 +553,10 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d\u00B0(M)"),
-                                        (int)gFrame->GetMag(crs));
+          magString << wxString::Format(wxString("%03d%c(M)"),
+                                        (int)gFrame->GetMag(crs), 0x00B0);
         if (g_bShowTrue)
-          trueString << wxString::Format(wxString("%03d\u00B0  "),
-                                         (int)crs);
+          trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
         courseStr << trueString << magString;
       } else if (COG == 360.0)
@@ -791,11 +790,10 @@ wxString AIS_Target_Data::GetRolloverString(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d\u00B0(M)  "),
-                                        (int)gFrame->GetMag(crs));
+          magString << wxString::Format(wxString("%03d%c(M)  "),
+                                        (int)gFrame->GetMag(crs), 0x00B0);
         if (g_bShowTrue)
-          trueString << wxString::Format(wxString("%03d\u00B0  "),
-                                         (int)crs);
+          trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
         result << trueString << magString;
       }
