@@ -4008,8 +4008,7 @@ wxString androidGetSupplementalLicense(void) {
 
 wxArrayString androidTraverseDir(wxString dir, wxString filespec) {
   wxArrayString result;
-  if (strncmp(android_plat_spc.msdk, "17",
-              2))  // skip unless running Android 4.2.2, especially Samsung...
+  if (g_SDK_Version != 17)  // skip unless running Android 4.2.2, especially Samsung...
     return result;
 
   wxString ir =
