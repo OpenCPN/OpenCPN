@@ -99,11 +99,13 @@ workflows:
               only:
                 - flatpak
                 - master
+                - v5.6.x
       - build-macos:
           filters:
             branches:
               only:
                 - master
+                - v5.6.x
       - build-android-armhf:
           filters:
             branches:
