@@ -992,7 +992,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     // set current direction
     if (CURRENT_PLOT == m_plot_type) {
-      s.Printf("%3.0f\u00B0", d);
+      s.Printf("%3.0f%c", d, 0x00B0);
       p.Append(_T("\n"));
       p.Append(s);
     }
