@@ -618,8 +618,8 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
       (fabs(Lat) < 85.)) {
     wxString magString, trueString;
     if (g_bShowMag)
-      magString << wxString::Format(wxString("%03d\u00B0(M)"),
-                                    (int)gFrame->GetMag(Brg));
+      magString << wxString::Format(wxString("%03d%c(M)"),
+                                    (int)gFrame->GetMag(Brg), 0x00B0);
     if (g_bShowTrue)
       trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
 

@@ -1838,7 +1838,7 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
     case 2:
       DistanceBearingMercator(this_point->m_lat, this_point->m_lon, slat, slon,
                               &gt_brg, &gt_leg_dist);
-      ret.Printf("%03.0f \u00B0T", gt_brg);
+      ret.Printf("%03.0f %cT", gt_brg, 0x00B0);
       break;
 
     case 3:

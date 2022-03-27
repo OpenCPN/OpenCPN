@@ -9101,13 +9101,13 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool cog_sog_valid,
 
       wxString cogs;
       if (std::isnan(gCog))
-        cogs.Printf("COG ---\u00B0");
+        cogs.Printf("COG ---%c"), 0x00B0;
       else {
         if (g_bShowTrue)
-          cogs << wxString::Format(wxString("COG %03d\u00B0  "), (int)gCog);
+          cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
         if (g_bShowMag)
-          cogs << wxString::Format(wxString("COG %03d\u00B0(M)  "),
-                                   (int)gFrame->GetMag(gCog));
+          cogs << wxString::Format(wxString("COG %03d%c(M)  "),
+                                   (int)gFrame->GetMag(gCog), 0x00B0);
       }
 
       sogcog.Append(cogs);

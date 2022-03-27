@@ -512,10 +512,10 @@ void wmm_pi::SetCursorLatLon(double lat, double lon) {
   m_pWmmDialog->m_tcZ->SetValue(
       wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.Z));
   m_pWmmDialog->m_tcD->SetValue(
-      wxString::Format(_T("%-5.1lf\u00B0 (%s)"), GeoMagneticElements.Decl,
+      wxString::Format(_T("%-5.1lf%c (%s)"), GeoMagneticElements.Decl, 0x00B0,
                        AngleToText(GeoMagneticElements.Decl).c_str()));
   m_pWmmDialog->m_tcI->SetValue(
-      wxString::Format(_T("%-5.1lf\u00B0"), GeoMagneticElements.Incl));
+      wxString::Format(_T("%-5.1lf%c"), GeoMagneticElements.Incl, 0x00B0));
 
   m_cursorVariation = GeoMagneticElements;
   SendCursorVariation();
@@ -653,10 +653,10 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   m_pWmmDialog->m_tbZ->SetValue(
       wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.Z));
   m_pWmmDialog->m_tbD->SetValue(
-      wxString::Format(_T("%-5.1lf\u00B0 (%s)"), GeoMagneticElements.Decl,
+      wxString::Format(_T("%-5.1lf%c (%s)"), GeoMagneticElements.Decl, 0x00B0,
                        AngleToText(GeoMagneticElements.Decl).c_str()));
   m_pWmmDialog->m_tbI->SetValue(
-      wxString::Format(_T("%-5.1lf\u00B0"), GeoMagneticElements.Incl));
+      wxString::Format(_T("%-5.1lf%c"), GeoMagneticElements.Incl, 0x00B0));
 }
 
 // Demo implementation of response mechanism
@@ -781,9 +781,9 @@ wxString wmm_pi::AngleToText(double angle) {
   int deg = (int)fabs(angle);
   int min = (fabs(angle) - deg) * 60;
   if (angle < 0)
-    return wxString::Format(_T("%u\u00B0%u' W"), deg, min);
+    return wxString::Format(_T("%u%c%u' W"), deg, 0x00B0, min);
   else
-    return wxString::Format(_T("%u\u00B0%u' E"), deg, min);
+    return wxString::Format(_T("%u%c%u' E"), deg, 0x00B0, min);
 }
 
 bool wmm_pi::LoadConfig(void) {
