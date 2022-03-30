@@ -389,7 +389,7 @@ void CustomRenderer::Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
   dc.DrawRectangle(rect);
   if (m_IsDigit || m_dDir == GRIB_NOTDEF) {  // digital format
     wxString text(wxEmptyString);
-    if (m_dDir != GRIB_NOTDEF) text.Printf(_T("%03d\u00B0"), (int)m_dDir);
+    if (m_dDir != GRIB_NOTDEF) text.Printf(_T("%03d%c"), (int)m_dDir, 0x00B0);
     dc.DrawLabel(text, rect,
                  wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL);
   } else {  // graphical format
