@@ -377,7 +377,8 @@ void *s_soundData;
 bool g_detect_smt590;
 int g_orientation;
 int g_SDK_Version;
-extern MigrateAssistantDialog *g_migrateDialog;
+
+MigrateAssistantDialog *g_migrateDialog;
 
 //      Some dummy devices to ensure plugins have static access to these classes
 //      not used elsewhere
