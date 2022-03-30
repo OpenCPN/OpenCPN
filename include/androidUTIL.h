@@ -198,5 +198,56 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
 
 wxString androidGetAndroidSystemLocale();
 bool androidIsDirWritable( wxString dir );
+wxArrayString GetConfigChartDirectories();
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class MigrateAssistantDialog
+///////////////////////////////////////////////////////////////////////////////
+#define ID_MIGRATE_OK 8791
+#define ID_MIGRATE_CANCEL 8792
+#define ID_MIGRATE_START 8793
+#define ID_MIGRATE_CONTINUE 8794
+#define MIGRATION_STATUS_TIMER 8795
+
+class MigrateAssistantDialog : public wxDialog {
+public:
+  explicit MigrateAssistantDialog(wxWindow *parent,
+                          wxWindowID id = wxID_ANY,
+                          const wxString &caption = wxEmptyString,
+                          const wxPoint &pos = wxDefaultPosition,
+                          const wxSize &size = wxDefaultSize, long style = 0);
+  ~MigrateAssistantDialog(void);
+
+  void CreateControls(void);
+  void OnMigrateCancelClick(wxCommandEvent &event);
+  void OnMigrateOKClick(wxCommandEvent &event);
+  void OnMigrateClick(wxCommandEvent &event);
+  void OnMigrate1Click(wxCommandEvent &event);
+  void OnCtlUpdated(wxCommandEvent &event);
+  void onPermissionGranted(wxString);
+  void setStatus( wxString s ){ m_statusText->SetLabel(s); }
+  void onTimerEvent(wxTimerEvent &event);
+  void FinishMigration();
+
+  wxButton *m_CancelButton, *m_OKButton;
+  wxButton *m_migrateButton, *m_migrateButton1;
+  wxStaticText *m_infoText, *m_infoDirs, *m_migrateStep1, *m_statusText;;
+	wxRadioButton *m_radioSDCard, *m_radioInternal;
+
+  wxArrayString m_migrateDirs;
+  wxString m_Status;
+  wxString m_permissionResult;
+  wxTimer m_statusTimer;
+  wxString m_migrateSourceFolder;
+  wxString m_migrateDestinationFolder;  // something like "/storage/emulated/0/Android/data/org.opencpn.opencpn/files/Charts
+                                        // or             "/storage/xxx-yyyy/Android/data/org.opencpn.opencpn/files/Charts
+  bool m_bsdcard;
+
+private:
+
+  DECLARE_EVENT_TABLE()
+};
 
 #endif  // guard

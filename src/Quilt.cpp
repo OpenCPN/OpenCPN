@@ -32,7 +32,7 @@
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "chartimg.h"
 #ifdef __OCPN__ANDROID__
- #include "androidUTIL.h"
+  #include "androidUTIL.h"
 #endif
 #include <algorithm>
 
