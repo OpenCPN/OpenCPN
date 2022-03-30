@@ -1523,6 +1523,14 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   for (unsigned int j = 0; j < dir_array.GetCount(); j++) {
     ChartDirInfo dir_info = dir_array[j];
 
+    // On Android, with SDK >= 30, traversal of a folder that is
+    //  on within the "scoped storage" domain is very slow.
+    //  Aviod it....
+#ifdef __OCPN__ANDROID__
+    if (!androidIsDirWritable(dir_info.fullpath))
+      continue;
+#endif
+
     wxString dir_magic;
 
     if (dir_info.fullpath.Find(_T("GSHHG")) != wxNOT_FOUND) {
