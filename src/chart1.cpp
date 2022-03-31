@@ -8705,7 +8705,9 @@ void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event) {
 
 void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
   wxString sfixtime;
-  bool pos_valid = false, cog_sog_valid = false;
+  bool pos_valid = false;
+  bool cog_valid = false;
+  bool sog_valid = false;
   bool bis_recognized_sentence = true;
 
   wxString str_buf = event.ProcessNMEA4Tags();
@@ -8757,15 +8759,20 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
           if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
             pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
 
-            // course is not valid in this case
-            // but also my gps occasionally outputs RMC
-            // messages with valid lat and lon but
-            // 0.0 for speed and course which messes up the filter
-            if (!g_own_ship_sog_cog_calc &&
-                m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
-              gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-              gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-              cog_sog_valid = true;
+
+            if (!g_own_ship_sog_cog_calc ){
+              if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
+                gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+                sog_valid = true;
+              }
+              if(!std::isnan(gSog) && (gSog > 0)){
+                gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+                cog_valid = true;
+              }
+              else{
+                gCog = NAN;
+                cog_valid = true;
+              }
             }
 
             // Any device sending VAR=0.0 can be assumed to not really know
@@ -8891,7 +8898,6 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
               !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue)) {
             setCourseOverGround(m_NMEA0183.Vtg.TrackDegreesTrue);
 #endif
-            cog_sog_valid = true;
           }
           break;
 
@@ -8949,7 +8955,8 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
       } else {
         UpdatePositionCalculatedSogCog();
       }
-      cog_sog_valid = true;
+      cog_valid = true;
+      sog_valid = true;
 
       if (!std::isnan(gpd.kHdt)) {
         gHdt = gpd.kHdt;
@@ -8982,15 +8989,18 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
     }
   }
 
-  if (g_own_ship_sog_cog_calc) cog_sog_valid = true;
+  if (g_own_ship_sog_cog_calc){
+    sog_valid = true;
+    cog_valid = true;
+  }
 
   if (bis_recognized_sentence)
-    PostProcessNMEA(pos_valid, cog_sog_valid, sfixtime);
+    PostProcessNMEA(pos_valid, sog_valid, cog_valid, sfixtime);
 }
 
-void MyFrame::PostProcessNMEA(bool pos_valid, bool cog_sog_valid,
-                              const wxString &sfixtime) {
-  if (cog_sog_valid) {
+void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
+                              bool cog_valid, const wxString &sfixtime) {
+  if (cog_valid) {
     //    Maintain average COG for Course Up Mode
     if (!std::isnan(gCog)) {
       if (g_COGAvgSec > 0) {
@@ -9091,28 +9101,31 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool cog_sog_valid,
       if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
     }
 
-    if (cog_sog_valid) {
-      wxString sogcog;
-      if (std::isnan(gSog))
-        sogcog.Printf(_T("SOG --- ") + getUsrSpeedUnit() + _T("     "));
-      else
+    wxString sogcog;
+    if(sog_valid){
+      if (!std::isnan(gSog))
         sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
-                      toUsrSpeed(gSog));
+                    toUsrSpeed(gSog));
+      else
+        sogcog.Printf(_T("SOG --- ")) ;
+    }
 
-      wxString cogs;
-      if (std::isnan(gCog))
-        cogs.Printf("COG ---%c"), 0x00B0;
-      else {
+    wxString cogs;
+    if (cog_valid){
+      // We show COG only if SOG is > 0
+      if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)){
         if (g_bShowTrue)
           cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
         if (g_bShowMag)
           cogs << wxString::Format(wxString("COG %03d%c(M)  "),
-                                   (int)gFrame->GetMag(gCog), 0x00B0);
-      }
-
-      sogcog.Append(cogs);
-      SetStatusText(sogcog, STAT_FIELD_SOGCOG);
+                                 (int)GetMag(gCog), 0x00B0);
+        }
+      else
+        cogs.Printf(("COG ---%c"), 0x00B0);
     }
+
+    sogcog.Append(cogs);
+    SetStatusText(sogcog, STAT_FIELD_SOGCOG);
   }
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
