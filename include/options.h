@@ -391,6 +391,7 @@ public:
   bool GetNeedNew() { return m_bneedNew; }
   void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
   int GetScrollRate() { return m_scrollRate; }
+  void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -675,6 +676,7 @@ public:
   MyFrame *pParent;
 
   int k_plugins;
+  bool m_bForceNewToolbaronCancel;
 
   // Sounds panel
   wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio,
