@@ -55,6 +55,8 @@ pushd buildosx/macports/ports
   portindex
 popd
 
+# Remove any leftover libcurl coming from earlier cached macports build
+sudo rm /opt/local/lib/libcurl.4.dylib
 
 # Install curl to get the TLS certificate bundle
 ##sudo port -q install curl
