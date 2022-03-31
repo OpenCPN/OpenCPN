@@ -57,6 +57,7 @@ popd
 
 # Remove any leftover libcurl coming from earlier cached macports build
 sudo rm /opt/local/lib/libcurl.4.dylib
+sudo rm /opt/local/lib/libcurl.a
 
 # Install curl to get the TLS certificate bundle
 ##sudo port -q install curl
