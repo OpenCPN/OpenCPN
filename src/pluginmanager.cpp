@@ -1274,6 +1274,12 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
               if (!pic->m_bToolboxPanel) NotifySetupOptionsPlugin(pic);
             }
           }
+
+          if (g_options && g_boptionsactive){
+            if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
+              g_options->SetForceNewToolbarOnCancel( true );
+          }
+
         }
         wxLog::FlushActive();
 
@@ -1527,6 +1533,12 @@ bool PlugInManager::UpdatePlugIns() {
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
       pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+
+      if(g_options && g_boptionsactive){
+        if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
+          g_options->SetForceNewToolbarOnCancel( true );
+      }
+
       bret = true;
     } else if (!pic->m_bEnabled && pic->m_bInitState) {
 
@@ -1773,6 +1785,10 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic) {
           (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
         ChartData->PurgeCachePlugins();
         gFrame->InvalidateAllQuilts();
+      }
+      if(g_pOptions && g_boptionsactive){
+        if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
+          g_pOptions->SetForceNewToolbarOnCancel( true );
       }
 
       pic->m_bInitState = false;
