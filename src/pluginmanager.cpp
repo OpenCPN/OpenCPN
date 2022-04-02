@@ -1295,7 +1295,11 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
         pic->m_long_description = pic->m_pplugin->GetLongDescription();
         pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
         pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-        pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+
+        //pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+
         wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
               0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
         pic->m_bitmap = pbm;
@@ -1532,7 +1536,10 @@ bool PlugInManager::UpdatePlugIns() {
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-      pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+
+      //pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+      ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+      pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
 
       if(g_options && g_boptionsactive){
         if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
