@@ -777,7 +777,7 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
           blobWidth = blobImage.GetWidth();
           blobHeight = blobImage.GetHeight();
           // Support MapTiler HiDPI tiles, 512x512
-          if ((blobWidth == 512) && (blobHeight == 512))
+          if ((blobWidth != 256) || (blobHeight != 256))
             blobImage.Rescale(256, 256, wxIMAGE_QUALITY_NORMAL);
           imgdata = blobImage.GetData();
         }
