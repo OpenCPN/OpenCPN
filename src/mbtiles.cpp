@@ -452,11 +452,10 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
       }
 
-      // Not very interesting as it may be wrong, we better find out from first
-      // loaded tile and adjust m_imageType accordingly
-      // else if(!strncmp(colName, "format", 6) ){
-      //    m_bPNG = !strncmp(colValue, "png", 3);
-      //}
+
+      else if(!strncmp(colName, "format", 6) ){
+          m_format = std::string(colValue);
+      }
 
       // Get the min and max zoom values present in the db
       else if (!strncmp(colName, "minzoom", 7)) {
@@ -770,11 +769,20 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
         wxMemoryInputStream blobStream(blob, length);
         wxImage blobImage;
 
-        blobImage = wxImage(blobStream, m_imageType);
+        blobImage = wxImage(blobStream, wxBITMAP_TYPE_ANY);
+        int blobWidth, blobHeight;
+        unsigned char *imgdata;
 
-        int blobWidth = blobImage.GetWidth();
-        int blobHeight = blobImage.GetHeight();
-        unsigned char *imgdata = blobImage.GetData();
+        if (blobImage.IsOk()){
+          blobWidth = blobImage.GetWidth();
+          blobHeight = blobImage.GetHeight();
+          // Support MapTiler HiDPI tiles, 512x512
+          if ((blobWidth == 512) && (blobHeight == 512))
+            blobImage.Rescale(256, 256, wxIMAGE_QUALITY_NORMAL);
+          imgdata = blobImage.GetData();
+        }
+        else
+          return false;
 
         if ((m_global_color_scheme != GLOBAL_COLOR_SCHEME_RGB) &&
             (m_global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)) {
@@ -826,7 +834,6 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
         int tex_w = 256;
         int tex_h = 256;
         if (!imgdata) return false;
-        m_imageType = blobImage.GetType();
 
         unsigned char *teximage =
             (unsigned char *)malloc(stride * tex_w * tex_h);

@@ -142,6 +142,7 @@ protected:
 
   SQLite::Database *m_pDB;
   int m_nTiles;
+  std::string m_format;
 
 private:
   void InitFromTiles(const wxString &name);
