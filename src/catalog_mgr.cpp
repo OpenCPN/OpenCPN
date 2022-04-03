@@ -145,9 +145,9 @@ public:
 
 protected:
   const char* const HIDE =
-      _("<span foreground='blue'>Hide &lt;&lt;&lt;</span>");
+      ("<span foreground='blue'>Hide &lt;&lt;&lt;</span>");
   const char* const ADVANCED =
-      _("<span foreground='blue'>Ultra advanced &gt;&gt;&gt;</span>");
+      ("<span foreground='blue'>Ultra advanced &gt;&gt;&gt;</span>");
 
   wxBoxSizer* m_url_box;
   ActiveCatalogGrid* m_catalog_grid;
@@ -554,13 +554,13 @@ public:
       auto flags =
           wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL);
       grid->Add(staticText(_("Server is reachable...")), flags);
-      grid->Add(staticText(_("")), flags);
+      grid->Add(staticText(""), flags);
       grid->Add(staticText(_("Check channel...")), flags);
-      grid->Add(staticText(_("")), flags);
+      grid->Add(staticText(""), flags);
       grid->Add(staticText(_("Check latest release...")), flags);
-      grid->Add(staticText(_("")), flags);
-      grid->Add(staticText(_("")), flags);
-      grid->Add(staticText(_("")), flags);
+      grid->Add(staticText(""), flags);
+      grid->Add(staticText(""), flags);
+      grid->Add(staticText(""), flags);
       auto url = CatalogHandler::getInstance()->GetCustomUrl();
       if (url != "") {
         grid->Add(staticText(_("Custom URL")), flags);
@@ -582,7 +582,7 @@ public:
         cell->SetLabel(event.GetString().ToStdString());
       } else {
         auto msg = std::string(_("Fail: ")) + event.GetString().ToStdString();
-        cell->SetLabel(_(msg.c_str()));
+        cell->SetLabel(msg.c_str());
       }
       Fit();
     }

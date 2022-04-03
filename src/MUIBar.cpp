@@ -179,7 +179,7 @@ void SetScaleDialog::CreateControls() {
   itemBoxSizer2->Add(itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5);
 
   wxStaticText* itemStaticText5 = new wxStaticText(
-      itemDialog1, wxID_STATIC, _(""), wxDefaultPosition, wxDefaultSize, 0);
+      itemDialog1, wxID_STATIC, _T(""), wxDefaultPosition, wxDefaultSize, 0);
   itemStaticBoxSizer4->Add(itemStaticText5, 0,
                            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
 
@@ -680,7 +680,7 @@ void MUIBar::CreateControls() {
 
 #ifndef __OCPN__ANDROID__
     //  Scale
-    m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
+    m_scaleTextBox = new wxStaticText(this, wxID_ANY, _T("1:400000"));
     wxColour textbackColor = GetGlobalColor(_T("GREY1"));
     m_scaleTextBox->SetForegroundColour(textbackColor);
     barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL);
