@@ -214,6 +214,7 @@ wxArrayString GetConfigChartDirectories();
 class MigrateAssistantDialog : public wxDialog {
 public:
   explicit MigrateAssistantDialog(wxWindow *parent,
+                          bool bskipScan,
                           wxWindowID id = wxID_ANY,
                           const wxString &caption = wxEmptyString,
                           const wxPoint &pos = wxDefaultPosition,
@@ -244,6 +245,7 @@ public:
   wxString m_migrateDestinationFolder;  // something like "/storage/emulated/0/Android/data/org.opencpn.opencpn/files/Charts
                                         // or             "/storage/xxx-yyyy/Android/data/org.opencpn.opencpn/files/Charts
   bool m_bsdcard;
+  bool m_bskipScan;
 
 private:
 
