@@ -5200,7 +5200,7 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   // Add first column
   wxListItem col0;
   col0.SetId(0);
-  col0.SetText(_(""));
+  col0.SetText(_T(""));
   col0.SetWidth(500);
   col0.SetAlign(wxLIST_FORMAT_LEFT);
 
