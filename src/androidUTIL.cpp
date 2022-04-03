@@ -376,7 +376,7 @@ void *s_soundData;
 
 bool g_detect_smt590;
 int g_orientation;
-int g_SDK_Version;
+int g_Android_SDK_Version;
 MigrateAssistantDialog *g_migrateDialog;
 
 //      Some dummy devices to ensure plugins have static access to these classes
@@ -2401,7 +2401,7 @@ wxString androidGetDeviceInfo() {
         wxString b = s1.Mid(a + 1, 2);
         memset(android_plat_spc.msdk, 0, sizeof(android_plat_spc.msdk));
         strncpy(android_plat_spc.msdk, b.c_str(), 2);
-        g_SDK_Version = atoi( android_plat_spc.msdk );
+        g_Android_SDK_Version = atoi( android_plat_spc.msdk );
       }
     }
     if (wxNOT_FOUND != s1.Find(_T("opencpn"))) {
@@ -2424,7 +2424,7 @@ wxString androidGetDeviceInfo() {
 
 bool androidIsDirWritable( wxString dir )
 {
-  if (g_SDK_Version < 30)
+  if (g_Android_SDK_Version < 30)
     return true;
   else{
     // This is theorectically most accurate, but slow to execute
@@ -2505,7 +2505,7 @@ androidGetCacheDir()  // Used for raster_texture_cache, mmsitoname.csv, etc
 
 wxString androidGetExtStorageDir()  // Used for Chart storage, typically
 {
-  if (g_SDK_Version >= 30)
+  if (g_Android_SDK_Version >= 30)
     return g_androidExtFilesDir;      // Scoped storage model
   else
     return g_androidExtStorageDir;
@@ -4076,7 +4076,7 @@ wxString androidGetSupplementalLicense(void) {
 
 wxArrayString androidTraverseDir(wxString dir, wxString filespec) {
   wxArrayString result;
-  if (g_SDK_Version != 17)  // skip unless running Android 4.2.2, especially Samsung...
+  if (g_Android_SDK_Version != 17)  // skip unless running Android 4.2.2, especially Samsung...
     return result;
 
   wxString ir =
@@ -4762,7 +4762,7 @@ Java_org_opencpn_OCPNNativeLib_ScheduleCleanExit(JNIEnv *env, jobject obj) {
 void CheckMigrateCharts()
 {
   qDebug() << "CheckMigrateCharts";
-  if (g_SDK_Version < 30)   // Only on Android/11 +
+  if (g_Android_SDK_Version < 30)   // Only on Android/11 +
     return;
 
     qDebug() << "CheckMigrateCharts1";
@@ -4796,7 +4796,7 @@ void CheckMigrateCharts()
   pInit_Chart_Dir->Clear();
 
   // Run the chart migration assistant
-  g_migrateDialog = new MigrateAssistantDialog(gFrame);
+  g_migrateDialog = new MigrateAssistantDialog(gFrame, false);
   g_migrateDialog->SetSize( gFrame->GetSize());
   g_migrateDialog->Centre();
   g_migrateDialog->Raise();
@@ -4898,7 +4898,7 @@ EVT_BUTTON(ID_MIGRATE_CONTINUE, MigrateAssistantDialog::OnMigrate1Click)
 EVT_TIMER(MIGRATION_STATUS_TIMER, MigrateAssistantDialog::onTimerEvent)
 END_EVENT_TABLE()
 
-MigrateAssistantDialog::MigrateAssistantDialog(wxWindow* parent,
+MigrateAssistantDialog::MigrateAssistantDialog(wxWindow* parent, bool bskipScan,
                                wxWindowID id, const wxString& caption,
                                const wxPoint& pos, const wxSize& size,
                                long style)
@@ -4909,6 +4909,7 @@ MigrateAssistantDialog::MigrateAssistantDialog(wxWindow* parent,
   m_permissionResult = "";
   m_bsdcard = false;
   m_radioSDCard = 0;
+  m_bskipScan = bskipScan;
 
   m_statusTimer.SetOwner(this, MIGRATION_STATUS_TIMER);
 
@@ -4935,59 +4936,73 @@ void MigrateAssistantDialog::CreateControls(void) {
   wxStaticBoxSizer* infoSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
   mainSizer->Add(infoSizer, 0, wxEXPAND | wxALL, 5);
 
-  wxString infoText1(_("OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"));
+  if (!m_bskipScan){
+    // Scan the  chart directory array from the config file.
+    wxArrayString chartDirs = GetConfigChartDirectories();
 
-  wxString infoText1w = WrapText(this, infoText1, gFrame->GetSize().x * 9 / 10);
-
-  m_infoText = new wxStaticText(this, wxID_STATIC, infoText1w);
-
-  infoSizer->AddSpacer( 2 * GetCharWidth());
-  infoSizer->Add(m_infoText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
-  infoSizer->AddSpacer( 2 * GetCharWidth());
-
-
-  wxString dirsMsg;
-
-    // Scan the global chart directory array from the config file.
-  //wxArrayString chartDirs = ChartData->GetChartDirArrayString();
-  wxArrayString chartDirs = GetConfigChartDirectories();
-
-  for (unsigned int i=0; i < chartDirs.GetCount(); i++){
-
-    bool bOK = false;
-    if ( chartDirs[i].StartsWith(g_androidGetFilesDirs0) )
-      bOK = true;
-
-    else if (!g_androidGetFilesDirs1.StartsWith("?")){
-      if ( chartDirs[i].StartsWith(g_androidGetFilesDirs1) )
+    for (unsigned int i=0; i < chartDirs.GetCount(); i++){
+      bool bOK = false;
+      if ( chartDirs[i].StartsWith(g_androidGetFilesDirs0) )
         bOK = true;
-    }
-    if (!bOK) {
-      m_migrateDirs.Add(chartDirs[i]);
+
+      else if (!g_androidGetFilesDirs1.StartsWith("?")){
+        if ( chartDirs[i].StartsWith(g_androidGetFilesDirs1) )
+          bOK = true;
+      }
+      if (!bOK) {
+        m_migrateDirs.Add(chartDirs[i]);
+      }
     }
   }
 
-  for (unsigned int i=0; i < m_migrateDirs.GetCount(); i++){
-    dirsMsg += wxString("     ");
-    dirsMsg += m_migrateDirs[i];
+  if (m_migrateDirs.GetCount()){
+    wxString infoText1(_("OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"));
+
+    wxString infoText1w = WrapText(this, infoText1, gFrame->GetSize().x * 9 / 10);
+
+    m_infoText = new wxStaticText(this, wxID_STATIC, infoText1w);
+
+    infoSizer->AddSpacer( 2 * GetCharWidth());
+    infoSizer->Add(m_infoText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
+    infoSizer->AddSpacer( 2 * GetCharWidth());
+
+    wxString dirsMsg;
+
+    for (unsigned int i=0; i < m_migrateDirs.GetCount(); i++){
+      dirsMsg += wxString("     ");
+      dirsMsg += m_migrateDirs[i];
+      dirsMsg += wxString("\n");
+    }
     dirsMsg += wxString("\n");
+
+    m_infoDirs = new wxStaticText(this, wxID_STATIC, dirsMsg);
+
+    infoSizer->Add(m_infoDirs, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
+
+    wxString migrateMsg1 = _("OpenCPN can move these chart folders to a suitable location, if desired.");
+    migrateMsg1 += "\n\n";
+    migrateMsg1 += _("To proceed with chart folder migration, choose the chart source folder, and follow the instructions given.");
+
+    wxString migrateMsg1w = WrapText(this, migrateMsg1, gFrame->GetSize().x * 9 / 10);
+
+    m_migrateStep1 = new wxStaticText(this, wxID_STATIC, migrateMsg1w);
+    infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
+
   }
-  dirsMsg += wxString("\n");
+  else {
 
-  m_infoDirs = new wxStaticText(this, wxID_STATIC, dirsMsg);
+    wxString migrateMsg1 = _("Some chart folders may be inaccessible to OpenCPN on this version of Android. ");
+    migrateMsg1 += _("OpenCPN can move these chart folders to a suitable location, if desired.");
+    migrateMsg1 += "\n\n";
+    migrateMsg1 += _("To proceed with chart folder migration, choose the chart source folder, and follow the instructions given.");
 
-  infoSizer->Add(m_infoDirs, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
+    wxString migrateMsg1w = WrapText(this, migrateMsg1, gFrame->GetSize().x * 9 / 10);
 
-  wxString migrateMsg1 = _("OpenCPN can move these chart folders to a suitable location, if desired.");
-  migrateMsg1 += "\n\n";
-  migrateMsg1 += _("To proceed with the migration, choose the chart source folder, and follow the instructions given.");
+    m_migrateStep1 = new wxStaticText(this, wxID_STATIC, migrateMsg1w);
+    infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
+  }
 
-  wxString migrateMsg1w = WrapText(this, migrateMsg1, gFrame->GetSize().x * 9 / 10);
-
-  m_migrateStep1 = new wxStaticText(this, wxID_STATIC, migrateMsg1w);
-  infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
-
-  mainSizer->AddSpacer( 2 * GetCharWidth());
+   mainSizer->AddSpacer( 2 * GetCharWidth());
 
   // Is SDCard available?
   if (!g_androidGetFilesDirs1.StartsWith("?")){

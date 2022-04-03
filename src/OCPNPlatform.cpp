@@ -244,7 +244,7 @@ extern wxString g_CmdSoundString;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
 extern wxArrayString TideCurrentDataSet;
-extern int g_SDK_Version;
+extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
 
@@ -692,7 +692,7 @@ void OCPNPlatform::Initialize_2(void) {
     }
 
     // Set the default Import/Export directory for A11+
-    if (g_SDK_Version >= 30){
+    if (g_Android_SDK_Version >= 30){
       if (!g_gpx_path.StartsWith(androidGetDownloadDirectory())){
         g_gpx_path = androidGetDownloadDirectory();
       }

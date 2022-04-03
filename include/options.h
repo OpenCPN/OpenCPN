@@ -223,7 +223,8 @@ enum {
   ID_AISALERTDIALOG,
   ID_AISALERTSELECTSOUND,
   ID_AISALERTTESTSOUND,
-  ID_TEMPUNITSCHOICE
+  ID_TEMPUNITSCHOICE,
+  ID_BUTTONMIGRATE
 };
 
 /* Define an int bit field for dialog return value
@@ -318,6 +319,7 @@ public:
   void OnButtondeleteClick(wxCommandEvent &event);
   void OnButtonParseENC(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
+  void OnButtonmigrateClick(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
   void OnApplyClick(wxCommandEvent &event);
   void OnXidOkClick(wxCommandEvent &event);
@@ -560,6 +562,7 @@ public:
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
   wxButton *pParseENCButton;
   wxButton *m_removeBtn, *m_compressBtn;
+  wxButton *m_migrateBtn;
   int k_charts;
   int m_nCharWidthMax;
   wxBoxSizer *boxSizerCharts;
