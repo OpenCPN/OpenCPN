@@ -257,7 +257,7 @@ public:
   wxButton *m_migrateButton, *m_migrateButton1;
   wxStaticText *m_infoText, *m_infoDirs, *m_migrateStep1, *m_statusText;;
 	wxRadioButton *m_radioSDCard, *m_radioInternal;
-  InProgressIndicator *g_ipGauge;
+  InProgressIndicator *m_ipGauge;
 
   wxArrayString m_migrateDirs;
   wxString m_Status;

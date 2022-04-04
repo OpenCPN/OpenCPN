@@ -5013,20 +5013,25 @@ void MigrateAssistantDialog::CreateControls(void) {
     mainSizer->AddSpacer( 2 * GetCharWidth());
 
     m_radioInternal = new	wxRadioButton (this, wxID_ANY, _("Internal Storage"),wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-    sourceSizer->Add( m_radioInternal, 0, wxEXPAND | wxALL, 5);
+    sourceSizer->Add( m_radioInternal, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
     m_radioSDCard = new	wxRadioButton (this, wxID_ANY, _("SDCard Storage"),wxDefaultPosition, wxDefaultSize);
-    sourceSizer->Add( m_radioSDCard, 0, wxEXPAND | wxALL, 5);
+    sourceSizer->Add( m_radioSDCard, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
     m_radioInternal->SetValue( true );
   }
 
-  //m_ipGauge = new InProgressIndicator(this, wxID_ANY, 100, wxDefaultPosition, wxSize(ref_len * 12, ref_len));
-  //mainSizer->Add(m_ipGauge, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
   // control buttons
   m_migrateButton = new wxButton(this, ID_MIGRATE_START, _("Choose chart source folder."));
   mainSizer->Add(m_migrateButton, 0, wxEXPAND | wxALL, 5);
+
+  mainSizer->AddSpacer( 2 * GetCharWidth());
+
+  m_ipGauge = new InProgressIndicator(this, wxID_ANY, 100, wxDefaultPosition,
+                                      wxSize(gFrame->GetSize().x * 8 / 10, gFrame->GetCharHeight() * 2));
+  mainSizer->Add(m_ipGauge, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+  m_ipGauge->Hide();
 
   mainSizer->AddSpacer( 2 * GetCharWidth());
 
@@ -5109,7 +5114,10 @@ void MigrateAssistantDialog::OnMigrate1Click(wxCommandEvent& event) {
   m_Status = _("Migration started...");
   setStatus( m_Status );
 
-  m_statusTimer.Start(1000, wxTIMER_CONTINUOUS);
+  m_statusTimer.Start(500, wxTIMER_CONTINUOUS);
+  m_ipGauge->Show();
+  Layout();
+
 
 }
 
@@ -5174,6 +5182,29 @@ void MigrateAssistantDialog::onTimerEvent(wxTimerEvent &event)
 
     m_Status = callActivityMethod_vs("getMigrateStatus");
     setStatus( m_Status );
+
+    if (m_Status.StartsWith("Counting"))
+      m_ipGauge->Pulse();
+
+    if (m_Status.StartsWith("Migrating")){
+      wxString prog = m_Status.Mid(10);
+      //qDebug() << prog.mb_str();
+      wxString np = prog.BeforeFirst('/');
+      //qDebug() << np.mb_str();
+      wxString np1 = prog.AfterFirst('/');
+      wxString np2 = np1.BeforeFirst(';');
+      //qDebug() << np2.mb_str();
+
+      long i, n;
+      np.ToLong(&i);
+      np2.ToLong(&n);
+      if (m_ipGauge->GetRange() != n)
+        m_ipGauge->SetRange( n );
+      m_ipGauge->SetValue( i );
+    }
+
+
+
 
     // Finished?
     if (m_Status.Contains("Migration complete")){
@@ -5346,6 +5377,53 @@ void MigrateAssistantDialog::FinishMigration()
 
 }
 
+ BEGIN_EVENT_TABLE( InProgressIndicator, wxGauge )
+ EVT_TIMER( 4356, InProgressIndicator::OnTimer )
+ END_EVENT_TABLE()
+
+ InProgressIndicator::InProgressIndicator()
+ {
+ }
+
+ InProgressIndicator::InProgressIndicator(wxWindow* parent, wxWindowID id, int range,
+                     const wxPoint& pos, const wxSize& size,
+                     long style, const wxValidator& validator, const wxString& name)
+{
+    wxGauge::Create(parent, id, range, pos, size, style, validator, name);
+
+    m_timer.SetOwner( this, 4356 );
+
+    SetValue(0);
+    m_bAlive = false;
+
+}
+
+InProgressIndicator::~InProgressIndicator()
+{
+    Stop();
+}
+
+void InProgressIndicator::OnTimer(wxTimerEvent &evt)
+{
+    if(m_bAlive)
+        Pulse();
+}
+
+
+void InProgressIndicator::Start()
+{
+     m_bAlive = true;
+     m_timer.Start( 50 );
+
+}
+
+void InProgressIndicator::Stop()
+{
+     m_bAlive = false;
+     SetValue(0);
+     m_timer.Stop();
+
+}
 
 
 
