@@ -75,10 +75,6 @@
 #include <archive_entry.h>
 typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
-#ifdef ocpnUSE_SVG
-#include <wxSVG/svg.h>
-#endif  // ocpnUSE_SVG
-
 #ifdef USE_LIBELF
 #include <elf.h>
 #include <libelf.h>
@@ -137,6 +133,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "update_mgr.h"
 #include "cat_settings.h"
 #include "config_var.h"
+#include "svg_utils.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -168,8 +165,6 @@ void catch_signals_PIM(int signo) {
 }
 
 #endif
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
 extern MyConfig *pConfig;
 extern AIS_Decoder *g_pAIS;
@@ -934,8 +929,7 @@ class StatusIconPanel: public wxPanel
 
 
             if (path.IsFileReadable()) {
-                wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
-                bitmap = wxBitmap(img);
+                bitmap = LoadSVG(path.GetFullPath(), size, size);
                 ok = bitmap.IsOk();
             }
 
@@ -3791,19 +3785,7 @@ wxString GetActiveStyleName() {
 
 wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
                               unsigned int height) {
-#ifdef ocpnUSE_SVG
-#ifndef __OCPN__ANDROID__
-  wxSVGDocument svgDoc;
-  if ((width > 0) && (height > 0) && svgDoc.Load(filename))
-    return wxBitmap(svgDoc.Render(width, height, NULL, false, true));
-  else
-    return wxBitmap(1, 1);
-#else
-  return loadAndroidSVG(filename, width, height);
-#endif
-#else
-  return wxBitmap(width, height);
-#endif  // ocpnUSE_SVG
+  return LoadSVG(filename, width, height);
 }
 
 bool IsTouchInterface_PlugIn(void) { return g_btouch; }
@@ -4926,13 +4908,6 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget) {
 //    PluginListPanel & PluginPanel Implementation
 //-------------------------------------------------------------------------------
 
-static void LoadSVGIcon(wxFileName path, int size, wxBitmap &bitmap) {
-  wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
-  if (img.IsOk()) {
-    bitmap = wxBitmap(img);
-  }
-}
-
 #define DISABLED_SETTINGS_MSG                                               \
   _("These settings might destabilize OpenCPN and are by default disabled." \
     " To despite the dangers enable them manually add a CatalogExpert=1"    \
@@ -5836,8 +5811,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
     wxFileName path(g_Platform->GetSharedDataDir(), "packageBox.svg");
     path.AppendDir("uidata");
     path.AppendDir("traditional");
-    wxImage img = LoadSVGIcon(path.GetFullPath(), iconSize, iconSize);
-    bitmap = wxBitmap(img);
+    bitmap = LoadSVG(path.GetFullPath(), iconSize, iconSize);
   } else {
     bitmap = wxBitmap(style->GetIcon(_T("default_pi"), iconSize, iconSize));
   }
@@ -6008,8 +5982,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   bool ok = false;
   int bmsize = GetCharWidth() * 3;
   if (path.IsFileReadable()) {
-    wxImage img = LoadSVGIcon(path.GetFullPath(), bmsize, bmsize);
-    statusBitmap = wxBitmap(img);
+    statusBitmap = LoadSVG(path.GetFullPath(), bmsize, bmsize);
     ok = statusBitmap.IsOk();
   }
   if (!ok) {

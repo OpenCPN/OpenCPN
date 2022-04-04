@@ -63,10 +63,7 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 #include "chcanv.h"
-
-#ifdef ocpnUSE_SVG
-#include "wxSVG/svg.h"
-#endif  // ocpnUSE_SVG
+#include "svg_utils.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -132,31 +129,6 @@ WX_DEFINE_LIST(markicon_description_list_type);
 
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);
-
-wxImage LoadSVGIcon(wxString filename, int width, int height) {
-#ifdef ocpnUSE_SVG
-
-#ifndef USE_ANDROID_GLES2
-  wxSVGDocument svgDoc;
-  if (svgDoc.Load(filename))
-    return svgDoc.Render(width, height, NULL, true, true);
-  else {
-    wxLogMessage(filename);
-    return wxImage(32, 32);
-  }
-#else
-  wxBitmap bmp = loadAndroidSVG(filename, width, height);
-  if (bmp.IsOk())
-    return bmp.ConvertToImage();
-  else
-    return wxImage(32, 32);
-
-#endif
-
-#else
-  return wxImage(32, 32);
-#endif  // ocpnUSE_SVG
-}
 
 static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
   return (mi1->icon_name.CmpNoCase(mi2->icon_name));
@@ -681,11 +653,10 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 bool Routeman::UpdateAutopilot() {
   // Send all known Autopilot messages upstream
 
-    // Set max WP name length
+  // Set max WP name length
   int maxName = 6;
   if ((g_maxWPNameLength >= 3) && (g_maxWPNameLength <= 32))
     maxName = g_maxWPNameLength;
-
 
   // Avoid a possible not initiated SOG/COG. APs can be confused if in NAV mode
   // wo valid GPS
@@ -720,7 +691,8 @@ bool Routeman::UpdateAutopilot() {
       m_NMEA0183.Rmb.DirectionToSteer = Right;
 
     m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(maxName);
-    m_NMEA0183.Rmb.From = pActiveRouteSegmentBeginPoint->GetName().Truncate(maxName);
+    m_NMEA0183.Rmb.From =
+        pActiveRouteSegmentBeginPoint->GetName().Truncate(maxName);
 
     if (pActivePoint->m_lat < 0.)
       m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat,
@@ -1313,10 +1285,12 @@ void WayPointman::ProcessUserIcons(ocpnStyle::Style *style) {
         }
       }
       if (fn.GetExt().Lower() == _T("svg")) {
-        // double bm_size = 16.0 * g_Platform->GetDisplayDPmm() *
-        // g_ChartScaleFactorExp;
-        double bm_size = 62 * g_ChartScaleFactorExp;
-        wxBitmap iconSVG = LoadSVGIcon(name, bm_size, bm_size);
+        unsigned int w, h;
+        SVGDocumentPixelSize(name, w, h);
+        w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
+                                     // icons, 15px (approx 3mm) be it
+        const unsigned int bm_size = SVGPixelsToDisplay(w);
+        wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size);
         MarkIcon *pmi = ProcessIcon(iconSVG, iconname, iconname);
         if (pmi) pmi->preScaled = true;
       }
@@ -1527,7 +1501,7 @@ void WayPointman::ProcessDefaultIcons() {
             wxFileName fn( name );
 
             if( fn.GetExt().Lower() == _T("svg") ) {
-                wxBitmap bmt = LoadSVGIcon(name, -1, -1 );
+                wxBitmap bmt = LoadSVG(name, -1, -1 );
                 bm_size = bmt.GetWidth() * g_ChartScaleFactorExp;
                 break;
             }
@@ -1541,22 +1515,13 @@ void WayPointman::ProcessDefaultIcons() {
         wxString iconname = fn.GetName();
         wxBitmap icon1;
         if( fn.GetExt().Lower() == _T("svg") ) {
-            wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
+            wxImage iconSVG = LoadSVG( name, (int)bm_size, (int)bm_size );
             MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
             if(pmi)
                 pmi->preScaled = true;
         }
     }
 #else
-  // Look for cached icons
-
-  wxString iconCacheDir = g_Platform->GetPrivateDataDir();
-  appendOSDirSlash(&iconCacheDir);
-  iconCacheDir.append(_T("iconCache"));
-  appendOSDirSlash(&iconCacheDir);
-
-  //  Create the cache dir here if necessary
-  if (!wxDir::Exists(iconCacheDir)) wxFileName::Mkdir(iconCacheDir);
 
   wxArrayString FileList;
   double bm_size =
@@ -1564,72 +1529,35 @@ void WayPointman::ProcessDefaultIcons() {
                        12.0));  // nominal size, but not less than 4 pixel
   bm_size *= g_ChartScaleFactorExp;
 
-  bool bcacheLoaded = false;
-
   int n_files = wxDir::GetAllFiles(iconDir, &FileList);
 
-  // To expedite icon loading, look in the iconCache first
-  wxArrayString cacheFileList;
-  int n_cache_files = wxDir::GetAllFiles(iconCacheDir, &cacheFileList);
-  if (n_cache_files) {
-    bool bReload = false;
-    //  Load a cached icon file and get it's size for comparison
-    for (int ifile = 0; ifile < n_cache_files; ifile++) {
-      wxString name = cacheFileList[ifile];
+  g_Platform->ShowBusySpinner();
 
-      wxImage imagePNG;
-      if (imagePNG.LoadFile(name)) {
-        int w = imagePNG.GetWidth();
-        if (fabs(w - bm_size) > 1) bReload = true;
-        break;
-      }
-    }
+  for (int ifile = 0; ifile < n_files; ifile++) {
+    wxString name = FileList[ifile];
 
-    // If cached files are the proper size(scale)...
-    if (!bReload) {
-      for (int ifile = 0; ifile < n_cache_files; ifile++) {
-        wxString name = cacheFileList[ifile];
+    wxFileName fn(name);
+    wxString iconname = fn.GetName();
+    wxBitmap icon1;
 
-        wxFileName fn(name);
-        wxString iconname = fn.GetName();
+    if (fn.GetExt().Lower() == _T("svg")) {
+      unsigned int w, h;
+      SVGDocumentPixelSize(name, w, h);
+      w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
+                                   // icons, 15px (approx 3mm) be it
+      bm_size = SVGPixelsToDisplay(w);
+      wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
+      if (bmp.IsOk()) {
+        wxImage iconSVG = bmp.ConvertToImage();
 
-        wxImage imagePNG;
-        if (imagePNG.LoadFile(name)) {
-          MarkIcon *pmi = ProcessExtendedIcon(imagePNG, iconname, iconname);
-          if (pmi) pmi->preScaled = true;
-          bcacheLoaded = true;  // At least one icon was loaded
-        }
-      }
-    }
-  }
-
-  // Possibly an upgrade of App, with more icons available
-  //  So, reload them all
-  if (n_cache_files < 50) bcacheLoaded = false;
-
-  //  Cache was unusable, so load from original
-  if (!bcacheLoaded) {
-    g_Platform->ShowBusySpinner();
-
-    for (int ifile = 0; ifile < n_files; ifile++) {
-      wxString name = FileList[ifile];
-
-      wxFileName fn(name);
-      wxString iconname = fn.GetName();
-      wxBitmap icon1;
-
-      if (fn.GetExt().Lower() == _T("svg")) {
-        wxImage iconSVG = LoadSVGIcon(name, (int)bm_size, (int)bm_size);
-
-        // Cache the icon as .png file
-        wxString filePNG = iconCacheDir + iconname + _T(".png");
-        iconSVG.SaveFile(filePNG, wxBITMAP_TYPE_PNG);
         MarkIcon *pmi = ProcessExtendedIcon(iconSVG, iconname, iconname);
         if (pmi) pmi->preScaled = true;
+      } else {
+        wxLogMessage("Failed loading mark icon " + name);
       }
     }
-    g_Platform->HideBusySpinner();
   }
+  g_Platform->HideBusySpinner();
 #endif
 
   // Walk the two sorted lists, adding icons to the un-sorted master list
@@ -1731,16 +1659,17 @@ MarkIcon *WayPointman::ProcessLegacyIcon(wxString fileName, const wxString &key,
                                          const wxString &description) {
   double bm_size = -1.0;
 
+#ifndef ocpnUSE_wxBitmapBundle
 #ifndef __OCPN__ANDROID__
   if (fabs(g_ChartScaleFactorExp - 1.0) > 0.1) {
-    wxImage img = LoadSVGIcon(fileName, -1, -1);
+    wxBitmap img = LoadSVG(fileName, -1, -1);
     bm_size = img.GetWidth() * g_ChartScaleFactorExp;
   }
 #else
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
   //  Develop empirically, making a "diamond" symbol about 4 mm square
-  //  Android uses "density buckets", so simpple math produces poor results.
+  //  Android uses "density buckets", so simple math produces poor results.
   //  Thus, these factors have been empirically tweaked to provide good results
   //  on a variety of devices
   float nominal_legacy_icon_size_pixels =
@@ -1748,11 +1677,20 @@ MarkIcon *WayPointman::ProcessLegacyIcon(wxString fileName, const wxString &key,
   float pix_factor =
       nominal_legacy_icon_size_pixels / 68.0;  // legacy icon size
 
-  wxImage img = LoadSVGIcon(fileName, -1, -1);
+  wxBitmap img = LoadSVG(fileName, -1, -1);
   bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
 #endif
+#else
+  unsigned int w, h;
+  SVGDocumentPixelSize(fileName, w, h);
+  w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the icons,
+                               // 15px (approx 3mm) be it
+  bm_size = SVGPixelsToDisplay(w);
+#endif
 
-  wxImage image = LoadSVGIcon(fileName, (int)bm_size, (int)bm_size);
+  wxImage image =
+      LoadSVG(fileName, (int)bm_size, (int)bm_size).ConvertToImage();
+
   wxRect rClip = CropImageOnAlpha(image);
   wxImage imageClip = image.GetSubImage(rClip);
 

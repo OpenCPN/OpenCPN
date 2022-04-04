@@ -236,7 +236,7 @@ set(OCPN_RELEASE "" CACHE STRING
 )
 option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
-option(OCPN_USE_SVG "Use SVG graphics" ON)
+option(OCPN_USE_SVG "Use SVG graphics via wxSVG or wxBitmapBundle" ON)
 option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
@@ -917,7 +917,7 @@ set(
   include/viewport.h
   include/WindowDestroyListener.h
   ${CMAKE_BINARY_DIR}/include/config.h
-)
+  include/svg_utils.h)
 
 set(
   SRCS
@@ -1041,7 +1041,7 @@ set(
   src/undo.cpp
   src/update_mgr.cpp
   src/viewport.cpp
-)
+  src/svg_utils.cpp)
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -1144,10 +1144,12 @@ if (LIBUSB_FOUND)
   set(HAVE_LIBUSB_10 1)
 endif ()
 
-find_package(PANGO)
-if (PANGO_FOUND)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
-  set(HAVE_PANGO 1)
+if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
+  find_package(PANGO)
+  if (PANGO_FOUND)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
+    set(HAVE_PANGO 1)
+  endif ()
 endif ()
 
 # Some of these "find_path" macros generate "false-positives" under Windows, especially if mingw is installed
@@ -1285,14 +1287,17 @@ if (UNIX)
       find_package(TinyXML)
     endif (NOT APPLE)
     if (APPLE)
-      find_package(Freetype REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE Freetype::Freetype)
-      find_package(Fontconfig REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE Fontconfig::Fontconfig)
-      find_package(PNG REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE PNG::PNG)
-      find_package(Pixman REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE Pixman::Pixman)
+      if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
+        #Only needed if we build with wxSVG implementation of SVG support
+        find_package(Freetype REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE Freetype::Freetype)
+        find_package(Fontconfig REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE Fontconfig::Fontconfig)
+        find_package(PNG REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE PNG::PNG)
+        find_package(Pixman REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE Pixman::Pixman)
+      endif()
       find_package(ZSTD REQUIRED)
       target_link_libraries(${PACKAGE_NAME} PRIVATE zstd::zstd)
     endif ()
@@ -1388,54 +1393,63 @@ endif (QT_ANDROID)
 
 if (OCPN_USE_SVG)
   message(STATUS "SVG support enabled...")
-  if (NOT QT_ANDROID)
-    include(OcpnFindCairo)
-    include(OcpnFindExpat)
-    if (CMAKE_HOST_WIN32)
-      # On Windows, we have our own expat and cairo
-      file(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
-      install(FILES ${gtkdll_files} DESTINATION ".")
-      file(
-        GLOB
-          expatdll_files
-          "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll"
-      )
-      install(FILES ${expatdll_files} DESTINATION ".")
-      message(STATUS "GTK and Expat DLLs bundled into the installer package...")
-    else (CMAKE_HOST_WIN32)
-      # Include(OcpnFindFmpeg)  -- FFMPEG is not enabled currently.
-      # target_link_libraries(${PACKAGE_NAME} ocpn::ffmpeg)
-      include(FindEXIF)
-      target_link_libraries(
-        ${PACKAGE_NAME}
-        PRIVATE ${EXIF_LIBRARIES} ${GTK_LIBRARIES}
-      )
-      target_include_directories(${PACKAGE_NAME} PRIVATE ${EXIF_INCLUDE_DIRS})
-    endif (CMAKE_HOST_WIN32)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
-
+  if (wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.1.6")
+    message(STATUS "wxWidgets 3.1.6+ detected, using wxBitmapBundle for SVG")
     add_definitions(-DocpnUSE_SVG) # Goes into config.h, leave as global
+    add_definitions(-DocpnUSE_wxBitmapBundle)
+    set(PKGPROJ_TEMPLATE OpenCPN.newsvg.pkgproj.in)
+  else()
+    message(STATUS "wxWidgets older than 3.1.6 detected, using wxSVG")
+    set(PKGPROJ_TEMPLATE OpenCPN.pkgproj.in)
+    if (NOT QT_ANDROID)
+      include(OcpnFindCairo)
+      include(OcpnFindExpat)
+      if (CMAKE_HOST_WIN32)
+        # On Windows, we have our own expat and cairo
+        file(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
+        install(FILES ${gtkdll_files} DESTINATION ".")
+        file(
+          GLOB
+            expatdll_files
+            "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll"
+        )
+        install(FILES ${expatdll_files} DESTINATION ".")
+        message(STATUS "GTK and Expat DLLs bundled into the installer package...")
+      else (CMAKE_HOST_WIN32)
+        # Include(OcpnFindFmpeg)  -- FFMPEG is not enabled currently.
+        # target_link_libraries(${PACKAGE_NAME} ocpn::ffmpeg)
+        include(FindEXIF)
+        target_link_libraries(
+          ${PACKAGE_NAME}
+          PRIVATE ${EXIF_LIBRARIES} ${GTK_LIBRARIES}
+        )
+        target_include_directories(${PACKAGE_NAME} PRIVATE ${EXIF_INCLUDE_DIRS})
+      endif (CMAKE_HOST_WIN32)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
 
-    pkg_search_module(WXSVG libwxsvg wxsvg)
-    use_bundled_lib(USE_BUNDLED_WXSVG wxsvg)
-    if (WXSVG_FOUND AND NOT USE_BUNDLED_WXSVG)
-      message(STATUS "Building with system wxsvg includes")
-      add_library(WXSVG INTERFACE)
-      add_library(ocpn::wxsvg ALIAS WXSVG)
-      target_include_directories(WXSVG INTERFACE ${WXSVG_INCLUDE_DIR})
-      target_link_libraries(WXSVG INTERFACE ${WXSVG_LIBRARIES})
-    else ()
-      add_subdirectory("libs/wxsvg")
-    endif ()
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+      add_definitions(-DocpnUSE_SVG) # Goes into config.h, leave as global
 
-  else(NOT QT_ANDROID)
-    ADD_DEFINITIONS(-DocpnUSE_SVG)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/src)
-  endif (NOT QT_ANDROID)
+      pkg_search_module(WXSVG libwxsvg wxsvg)
+      use_bundled_lib(USE_BUNDLED_WXSVG wxsvg)
+      if (WXSVG_FOUND AND NOT USE_BUNDLED_WXSVG)
+        message(STATUS "Building with system wxsvg includes")
+        add_library(WXSVG INTERFACE)
+        add_library(ocpn::wxsvg ALIAS WXSVG)
+        target_include_directories(WXSVG INTERFACE ${WXSVG_INCLUDE_DIR})
+        target_link_libraries(WXSVG INTERFACE ${WXSVG_LIBRARIES})
+      else ()
+        add_subdirectory("libs/wxsvg")
+      endif ()
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+
+    else(NOT QT_ANDROID)
+      ADD_DEFINITIONS(-DocpnUSE_SVG)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/src)
+    endif (NOT QT_ANDROID)
+  endif()
 endif (OCPN_USE_SVG)
 
 if (OCPN_USE_NEWSERIAL)
@@ -1595,9 +1609,7 @@ target_link_libraries(
 )
 
 IF(NOT QT_ANDROID)
-   target_link_libraries(S57ENC PUBLIC
-      ocpn::wxsvg
-    ocpn::wxcurl
+   target_link_libraries(S57ENC PUBLIC ocpn::wxcurl
 )
 ENDIF(NOT QT_ANDROID)
 
@@ -2758,7 +2770,7 @@ install(CODE "
   # This avoids absolute paths in the XXX.pkgproj file
 
   configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/OpenCPN.pkgproj.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/${PKGPROJ_TEMPLATE}
     ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
     )
   configure_file(${PROJECT_SOURCE_DIR}/COPYING.gplv2 ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY)

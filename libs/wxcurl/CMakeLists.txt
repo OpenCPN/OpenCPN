@@ -51,7 +51,7 @@ target_include_directories(WXCURL
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC ${CURL_INCLUDE_DIRS}
 )
-target_link_libraries(WXCURL ${CURL_LIBRARIES})
+target_link_libraries(WXCURL ${CURL_LIBRARIES})# ${wxWidgets_LIBRARIES})
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
   target_compile_options(WXCURL  PRIVATE "-Wno-unknown-pragmas")
 endif ()

@@ -15,8 +15,6 @@
 extern OCPNPlatform* g_Platform;
 extern bool g_bdisable_opengl;
 
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
-
 namespace safe_mode {
 
 static const char* LAST_RUN_ERROR_MSG =

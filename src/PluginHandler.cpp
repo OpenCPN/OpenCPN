@@ -43,7 +43,7 @@
 #include <archive_entry.h>
 typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
-#include <expat.h>
+//#include <expat.h>
 
 #if defined(__MINGW32__) && defined(Yield)
 #undef Yield  // from win.h, conflicts with mingw headers
@@ -195,10 +195,8 @@ public:
   bool is_ubuntu_plugin_compatible(const Plugin& plugin) const {
     static const std::vector<std::string> debian_versions = {
         // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04",
-        "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64;22.04",
-        "sid;ubuntu-gtk3-x86_64;20.04"};
+        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
+        "11;ubuntu-x86_64;22.04", "sid;ubuntu-gtk3-x86_64;20.04"};
     if (ocpn::startswith(m_abi, "debian-x86_64")) {
       wxLogDebug("Checking for ubuntu plugin on a debian-x86_64 host");
       const std::string host_version =
@@ -218,10 +216,8 @@ public:
     if (!ocpn::startswith(m_abi, "ubuntu")) return false;
     static const std::vector<std::string> compat_versions = {
         // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04",
-        "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64;22.04",
-        "sid;ubuntu-gtk3-x86_64;20.04"};
+        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
+        "11;ubuntu-x86_64;22.04", "sid;ubuntu-gtk3-x86_64;20.04"};
     if (ocpn::startswith(plugin.abi(), "debian-x86_64")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
       const std::string compat_version =
@@ -234,7 +230,6 @@ public:
     }
     return false;
   }
-
 
   // Plugin and host abi differs. Check if plugin is compatible anyway
   // by comparing the plugin abi with the list of abis similar to the
@@ -259,9 +254,12 @@ public:
   // But run-time reports as raspbian on "Raspberry Pi OS".
   bool is_plugin_compatible_runtime(const Plugin& plugin) const {
     OCPN_OSDetail* os_detail = g_Platform->GetOSDetail();
-    const std::string host_osd_abi = os_detail->osd_ID + "-" + os_detail->osd_arch;
-    wxLogDebug("Checking for compatible run-time, host_osd_abi: %s : %s", host_osd_abi, os_detail->osd_version);
-    wxLogDebug("   plugin_abi + version: %s %s", plugin.abi(), plugin.major_version());
+    const std::string host_osd_abi =
+        os_detail->osd_ID + "-" + os_detail->osd_arch;
+    wxLogDebug("Checking for compatible run-time, host_osd_abi: %s : %s",
+               host_osd_abi, os_detail->osd_version);
+    wxLogDebug("   plugin_abi + version: %s %s", plugin.abi(),
+               plugin.major_version());
     if (host_osd_abi == plugin.abi()) {
       wxLogDebug("   plugin_version: %s", major_version());
       if (os_detail->osd_version == plugin.major_version()) {
@@ -270,7 +268,6 @@ public:
     }
     return false;
   }
-
 
   const std::string& abi() const { return m_abi; }
 
@@ -333,10 +330,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   Host host(compatOS);
   Plugin plugin(metadata);
 
-  if (plugin.abi() == "msvc" ||
-      plugin.abi() == "darwin" ||
-      plugin.abi() == "darwin-wx315" ||
-      plugin.abi() == "android-armhf" ||
+  if (plugin.abi() == "msvc" || plugin.abi() == "darwin" ||
+      plugin.abi() == "darwin-wx315" || plugin.abi() == "android-armhf" ||
       plugin.abi() == "android-arm64") {
     bool ok = plugin.abi() == host.abi();
     wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
@@ -358,8 +353,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
     wxLogDebug("Found Debian version matching Ubuntu host");
   }
 #ifdef ocpnARM
-  //TODO  This conditional may not be needed.  Test on O57+
-  else if(host.is_plugin_compatible_runtime(plugin)) {
+  // TODO  This conditional may not be needed.  Test on O57+
+  else if (host.is_plugin_compatible_runtime(plugin)) {
     rv = true;
     wxLogDebug("Found host OCPN_OSDetail run-time match");
   }
@@ -1134,12 +1129,12 @@ bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
 
 #ifdef __WXOSX__
   // Depending on the browser settings, MacOS will sometimes automatically
-  // de-compress the tar.gz file, leaving a simple ".tar" file in its expected place.
-  // Check for this case, and "do the right thing"
-  if (cacheFile == ""){
+  // de-compress the tar.gz file, leaving a simple ".tar" file in its expected
+  // place. Check for this case, and "do the right thing"
+  if (cacheFile == "") {
     fn.ClearExt();
     wxFileName fn1(fn.GetFullName());
-    if (fn1.GetExt().IsSameAs("tar")){
+    if (fn1.GetExt().IsSameAs("tar")) {
       tarballFile = fn.GetFullName();
       cacheFile = ocpn::lookup_tarball(tarballFile);
     }

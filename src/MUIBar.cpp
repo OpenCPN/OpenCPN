@@ -42,10 +42,7 @@
 #include "CanvasOptions.h"
 #include "styles.h"
 #include "navutil.h"
-
-#ifdef ocpnUSE_SVG
-#include "wxSVG/svg.h"
-#endif  // ocpnUSE_SVG
+#include "svg_utils.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -60,24 +57,6 @@ extern OCPNPlatform* g_Platform;
 extern ChartCanvas* g_focusCanvas;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool g_bShowMuiZoomButtons;
-
-//  Helper utilities
-static wxBitmap LoadSVG(const wxString filename, unsigned int width,
-                        unsigned int height) {
-#ifdef ocpnUSE_SVG
-#ifdef __OCPN__ANDROID__
-  return loadAndroidSVG(filename, width, height);
-#else
-  wxSVGDocument svgDoc;
-  if (svgDoc.Load(filename))
-    return wxBitmap(svgDoc.Render(width, height, NULL, true, true));
-  else
-    return wxBitmap(width, height);
-#endif
-#else
-  return wxBitmap(width, height);
-#endif  // ocpnUSE_SVG
-}
 
 double getValue(int animationType, double t);
 
