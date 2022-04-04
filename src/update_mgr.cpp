@@ -368,8 +368,8 @@ public:
   bool m_isDesc;
 
 protected:
-  const char* const MORE = _("<span foreground='blue'>More...</span>");
-  const char* const LESS = _("<span foreground='blue'>Less...</span>");
+  const char* const MORE = ("<span foreground='blue'>More...</span>");
+  const char* const LESS = ("<span foreground='blue'>Less...</span>");
 
   wxStaticText* staticText(const wxString& text) {
     return new wxStaticText(this, wxID_ANY, text, wxDefaultPosition,
