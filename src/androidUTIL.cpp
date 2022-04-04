@@ -4764,7 +4764,8 @@ void CheckMigrateCharts()
   if (g_Android_SDK_Version < 30)   // Only on Android/11 +
     return;
 
-    qDebug() << "CheckMigrateCharts1";
+  // Force access to correct home directory, as a hint....
+  pInit_Chart_Dir->Clear();
 
   // Scan the config file chart directory array.
   wxArrayString chartDirs = GetConfigChartDirectories(); //GetChartDirArrayString();
@@ -4786,13 +4787,10 @@ void CheckMigrateCharts()
       migrateDirs.Add(chartDirs[i]);
     }
   }
-  qDebug() << migrateDirs.GetCount();
 
   if (!migrateDirs.GetCount())
     return;
 
-    // Force access to correct home directory, as a hint....
-  pInit_Chart_Dir->Clear();
 
   // Run the chart migration assistant
   g_migrateDialog = new MigrateAssistantDialog(gFrame, false);
@@ -4801,53 +4799,6 @@ void CheckMigrateCharts()
   g_migrateDialog->Raise();
   g_migrateDialog->ShowModal();
 
-#if 0
-  //  Found some migration targets, so build a message
-
-  wxString m1(_("OpenCPN has detected installed charts which are no longer fully accessible in this version of Android.\n\n  \
-    The chart directories are:\n\n"));
-
-  wxString m2(_("These chart directories, and their contents, must be manually moved to a location compatible with OpenCPN on this version of Android.\n\n\
-    For internal storage, the compatible location directory is:\n\n"));
-
-  wxString m3(_("For SD Card storage, if available, the compatible location directory is:\n\n"));
-
-  wxString m4(_("To move the chart directories, there are three possible methods:\n  \
-    1.  For downloaded charts, such as o-charts, or charts installed by the ChartDownloader Plugin, the simplest method is to perform a fresh download of the charts in question. Select a compatible installation directory, either in internal storage, or SD Card, when prompted by OpenCPN.\n\n \
-    2.  Alternatively, you may use a compatible FileManager on your Android device to manually move the chart directories to a compatible location.  If you choose this method, remember to adjust your chart directories in the OpenCPN Settings->Charts->Chart Files dialog.\n\n \
-    3.  Finally, if convenient, you may connect your Android device by USB cable to a Windows desktop or laptop computer.  Use the Windows File Explorer to manually move the chart directories to a compatible location.  As above, if you choose this method, remember to adjust your chart directories in the OpenCPN Settings->Charts->Chart Files dialog.\n\n" \
-    ));
-
-  wxString msg;
-  msg += m1;
-
-  for (unsigned int i=0; i < migrateDirs.GetCount(); i++){
-    msg += wxString("     ");
-    msg += migrateDirs[i];
-    msg += wxString("\n\n");
-  }
-  msg += wxString("\n");
-
-  msg += m2;
-  msg += wxString("    ");
-  msg += g_androidGetFilesDirs0;
-  msg += wxString("/Charts");
-  msg += wxString("\n\n");
-
-  if (!g_androidGetFilesDirs1.StartsWith("?")){
-    msg += m3;
-    msg += wxString("    ");
-    msg += g_androidGetFilesDirs1;
-    msg += wxString("/Charts");
-    msg += wxString("\n");
-  }
-
-  msg += wxString("\n");
-
-  msg += m4;
-
-  androidShowDisclaimer("Chart Migration Required",  msg);
-#endif
 
 
 }
