@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 5.6.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-03 21:41+0200\n"
+"POT-Creation-Date: 2022-04-04 11:21-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,7 +97,7 @@ msgid "Track properties"
 msgstr ""
 
 #: src/about.cpp:219 src/about.cpp:263 src/about.cpp:397 src/about.cpp:515
-#: src/AISTargetListDialog.cpp:328 src/androidUTIL.cpp:4916
+#: src/AISTargetListDialog.cpp:328 src/androidUTIL.cpp:4866
 #: src/CanvasOptions.cpp:76 src/chart1.cpp:1585 src/chart1.cpp:6599
 #: src/chcanv.cpp:11647 src/chcanv.cpp:11680 src/ChInfoWin.cpp:53
 #: src/cm93.cpp:6436 src/concanv.cpp:101 src/ConnectionParams.cpp:290
@@ -2647,7 +2647,7 @@ msgstr ""
 msgid "AISTargetQuery"
 msgstr ""
 
-#: src/AISTargetQueryDialog.cpp:298 src/androidUTIL.cpp:5041
+#: src/AISTargetQueryDialog.cpp:298 src/androidUTIL.cpp:4998
 #: src/catalog_mgr.cpp:188 src/catalog_mgr.cpp:580 src/catalog_mgr.cpp:601
 #: src/cm93.cpp:6521 src/GoToPositionDialog.cpp:149 src/MUIBar.cpp:198
 #: src/options.cpp:975 src/options.cpp:1077 src/options.cpp:7280
@@ -2661,115 +2661,70 @@ msgstr ""
 msgid "Stop Tracking"
 msgstr ""
 
-#: src/androidUTIL.cpp:2188
+#: src/androidUTIL.cpp:2187
 msgid ""
 "OpenCPN Help is not installed.\n"
 "Would you like to install from Google PlayStore now?"
 msgstr ""
 
-#: src/androidUTIL.cpp:3011
+#: src/androidUTIL.cpp:3010
 msgid ""
 "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to "
 "enable GPS"
 msgstr ""
 
-#: src/androidUTIL.cpp:3148
+#: src/androidUTIL.cpp:3147
 msgid "Nothing found"
 msgstr ""
 
-#: src/androidUTIL.cpp:4672 src/chart1.cpp:3808
+#: src/androidUTIL.cpp:4671 src/chart1.cpp:3808
 msgid "Anchorage created "
 msgstr ""
 
-#: src/androidUTIL.cpp:4808
-msgid ""
-"OpenCPN has detected installed charts which are no longer fully accessible in "
-"this version of Android.\n"
-"\n"
-"      The chart directories are:\n"
-"\n"
-msgstr ""
-
-#: src/androidUTIL.cpp:4811
-msgid ""
-"These chart directories, and their contents, must be manually moved to a "
-"location compatible with OpenCPN on this version of Android.\n"
-"\n"
-"    For internal storage, the compatible location directory is:\n"
-"\n"
-msgstr ""
-
-#: src/androidUTIL.cpp:4814
-msgid ""
-"For SD Card storage, if available, the compatible location directory is:\n"
-"\n"
-msgstr ""
-
-#: src/androidUTIL.cpp:4816
-msgid ""
-"To move the chart directories, there are three possible methods:\n"
-"      1.  For downloaded charts, such as o-charts, or charts installed by the "
-"ChartDownloader Plugin, the simplest method is to perform a fresh download of "
-"the charts in question. Select a compatible installation directory, either in "
-"internal storage, or SD Card, when prompted by OpenCPN.\n"
-"\n"
-"     2.  Alternatively, you may use a compatible FileManager on your Android "
-"device to manually move the chart directories to a compatible location.  If "
-"you choose this method, remember to adjust your chart directories in the "
-"OpenCPN Settings->Charts->Chart Files dialog.\n"
-"\n"
-"     3.  Finally, if convenient, you may connect your Android device by USB "
-"cable to a Windows desktop or laptop computer.  Use the Windows File Explorer "
-"to manually move the chart directories to a compatible location.  As above, "
-"if you choose this method, remember to adjust your chart directories in the "
-"OpenCPN Settings->Charts->Chart Files dialog.\n"
-"\n"
-msgstr ""
-
-#: src/androidUTIL.cpp:4934 src/androidUTIL.cpp:5065 src/androidUTIL.cpp:5143
-#: src/androidUTIL.cpp:5178
+#: src/androidUTIL.cpp:4884 src/androidUTIL.cpp:5026 src/androidUTIL.cpp:5108
+#: src/androidUTIL.cpp:5167
 msgid "OpenCPN for Android Migration Assistant"
 msgstr ""
 
-#: src/androidUTIL.cpp:4959
+#: src/androidUTIL.cpp:4909
 msgid ""
 "OpenCPN has detected chart folders in your configuration file that cannot be "
 "accessed on this version of Android"
 msgstr ""
 
-#: src/androidUTIL.cpp:4982 src/androidUTIL.cpp:4995
+#: src/androidUTIL.cpp:4932 src/androidUTIL.cpp:4945
 msgid "OpenCPN can move these chart folders to a suitable location, if desired."
 msgstr ""
 
-#: src/androidUTIL.cpp:4984 src/androidUTIL.cpp:4997
+#: src/androidUTIL.cpp:4934 src/androidUTIL.cpp:4947
 msgid ""
 "To proceed with chart folder migration, choose the chart source folder, and "
 "follow the instructions given."
 msgstr ""
 
-#: src/androidUTIL.cpp:4994
+#: src/androidUTIL.cpp:4944
 msgid ""
 "Some chart folders may be inaccessible to OpenCPN on this version of Android. "
 msgstr ""
 
-#: src/androidUTIL.cpp:5011
+#: src/androidUTIL.cpp:4961
 msgid "Migrate destination"
 msgstr ""
 
-#: src/androidUTIL.cpp:5015
+#: src/androidUTIL.cpp:4965
 msgid "Internal Storage"
 msgstr ""
 
-#: src/androidUTIL.cpp:5018
+#: src/androidUTIL.cpp:4968
 msgid "SDCard Storage"
 msgstr ""
 
-#: src/androidUTIL.cpp:5026
+#: src/androidUTIL.cpp:4976
 msgid "Choose chart source folder."
 msgstr ""
 
-#: src/androidUTIL.cpp:5037 src/catalog_mgr.cpp:599
+#: src/androidUTIL.cpp:4994 src/catalog_mgr.cpp:599
 #: src/GoToPositionDialog.cpp:145 src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:777
 #: src/MarkInfo.cpp:1892 src/MUIBar.cpp:194 src/navutil.cpp:3731
 #: src/options.cpp:972 src/options.cpp:1074 src/options.cpp:7284
@@ -2779,7 +2734,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/androidUTIL.cpp:5059
+#: src/androidUTIL.cpp:5020
 msgid ""
 "On the next page, find and choose the root folder containing chart files to "
 "migrate\n"
@@ -2788,63 +2743,63 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/androidUTIL.cpp:5061
+#: src/androidUTIL.cpp:5022
 msgid "This entire folder will be migrated.\n"
 msgstr ""
 
-#: src/androidUTIL.cpp:5062
+#: src/androidUTIL.cpp:5023
 msgid "Proceed?"
 msgstr ""
 
-#: src/androidUTIL.cpp:5069
+#: src/androidUTIL.cpp:5030
 msgid "Waiting for permission grant...."
 msgstr ""
 
-#: src/androidUTIL.cpp:5103
+#: src/androidUTIL.cpp:5064
 msgid "Migration started..."
 msgstr ""
 
-#: src/androidUTIL.cpp:5115
+#: src/androidUTIL.cpp:5080
 msgid "Permission granted to "
 msgstr ""
 
-#: src/androidUTIL.cpp:5126
+#: src/androidUTIL.cpp:5091
 msgid ""
 "OpenCPN has obtained temporary permission to access the selected chart "
 "folders."
 msgstr ""
 
-#: src/androidUTIL.cpp:5128
+#: src/androidUTIL.cpp:5093
 msgid "Chart migration is ready to proceed."
 msgstr ""
 
-#: src/androidUTIL.cpp:5130
+#: src/androidUTIL.cpp:5095
 msgid "Source: "
 msgstr ""
 
-#: src/androidUTIL.cpp:5134
+#: src/androidUTIL.cpp:5099
 msgid "Destination: OpenCPN Internal Storage"
 msgstr ""
 
-#: src/androidUTIL.cpp:5136
+#: src/androidUTIL.cpp:5101
 msgid "Destination: OpenCPN SDCard Storage"
 msgstr ""
 
-#: src/androidUTIL.cpp:5138
+#: src/androidUTIL.cpp:5103
 msgid "Migrate charts now?"
 msgstr ""
 
-#: src/androidUTIL.cpp:5174
+#: src/androidUTIL.cpp:5163
 msgid ""
 "Chart migration is finished.\n"
 "\n"
 msgstr ""
 
-#: src/androidUTIL.cpp:5175
+#: src/androidUTIL.cpp:5164
 msgid "OpenCPN will now restart to apply changes."
 msgstr ""
 
-#: src/androidUTIL.cpp:5210
+#: src/androidUTIL.cpp:5199
 msgid "Finishing migration"
 msgstr ""
 
