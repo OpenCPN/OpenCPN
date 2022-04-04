@@ -720,7 +720,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
 
     case ACTION_SAF_PERMISSION_END:  //  Handle android SAF Dialog
     {
-      qDebug() << "SAF chooser poll";
+      qDebug() << "SAF permission chooser poll";
 
       QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
           "org/qtproject/qt5/android/QtNative", "activity",
@@ -751,8 +751,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
           // qDebug() << "isFileChooserFinished returned null";
         } else if ((jenv)->GetStringLength(s)) {
           const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-          //                        qDebug() << "isFileChooserFinished returned
-          //                        " << ret_string;
+          //qDebug() << "isFileChooserFinished returned" << ret_string;
           if (!strncmp(ret_string, "cancel:", 7)) {
             m_migratePermissionSetDone = true;
             m_stringResult = _T("cancel:");
@@ -5021,6 +5020,8 @@ void MigrateAssistantDialog::CreateControls(void) {
     m_radioInternal->SetValue( true );
   }
 
+  //m_ipGauge = new InProgressIndicator(this, wxID_ANY, 100, wxDefaultPosition, wxSize(ref_len * 12, ref_len));
+  //mainSizer->Add(m_ipGauge, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
   // control buttons
   m_migrateButton = new wxButton(this, ID_MIGRATE_START, _("Choose chart source folder."));
@@ -5046,6 +5047,10 @@ void MigrateAssistantDialog::CreateControls(void) {
 
 
 void MigrateAssistantDialog::OnMigrateCancelClick(wxCommandEvent& event) {
+
+  m_statusTimer.Stop();
+  callActivityMethod_vs("cancelMigration");
+
   EndModal(wxID_CANCEL);
 }
 
@@ -5109,6 +5114,7 @@ void MigrateAssistantDialog::OnMigrate1Click(wxCommandEvent& event) {
 
 void MigrateAssistantDialog::onPermissionGranted( wxString result ) {
   m_permissionResult = result;
+  qDebug() << "onPermissionGranted " << result.mb_str();
   if(result.StartsWith("file")){
     m_migrateSourceFolder = result.Mid(5);
 
@@ -5163,6 +5169,7 @@ void MigrateAssistantDialog::onPermissionGranted( wxString result ) {
 void MigrateAssistantDialog::onTimerEvent(wxTimerEvent &event)
 {
     // Get and show the current status from Java upstream
+    qDebug() << "Migration: onTimerEvent";
 
     m_Status = callActivityMethod_vs("getMigrateStatus");
     setStatus( m_Status );

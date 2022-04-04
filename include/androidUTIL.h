@@ -200,6 +200,27 @@ wxString androidGetAndroidSystemLocale();
 bool androidIsDirWritable( wxString dir );
 wxArrayString GetConfigChartDirectories();
 
+class InProgressIndicator: public wxGauge
+{
+    DECLARE_EVENT_TABLE()
+
+public:
+    InProgressIndicator();
+    InProgressIndicator(wxWindow* parent, wxWindowID id, int range,
+                        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                        long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = "inprogress");
+
+    ~InProgressIndicator();
+
+    void OnTimer(wxTimerEvent &evt);
+    void Start();
+    void Stop();
+
+
+    wxTimer m_timer;
+    int msec;
+    bool m_bAlive;
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -236,6 +257,7 @@ public:
   wxButton *m_migrateButton, *m_migrateButton1;
   wxStaticText *m_infoText, *m_infoDirs, *m_migrateStep1, *m_statusText;;
 	wxRadioButton *m_radioSDCard, *m_radioInternal;
+  InProgressIndicator *g_ipGauge;
 
   wxArrayString m_migrateDirs;
   wxString m_Status;
@@ -251,5 +273,6 @@ private:
 
   DECLARE_EVENT_TABLE()
 };
+
 
 #endif  // guard
