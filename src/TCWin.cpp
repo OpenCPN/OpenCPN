@@ -110,7 +110,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   // Add first column
   wxListItem col0;
   col0.SetId(0);
-  col0.SetText(_(""));
+  col0.SetText(_T(""));
   col0.SetAlign(wxLIST_FORMAT_LEFT);
   col0.SetWidth(sx * 30 / 100);
   m_tList->InsertColumn(0, col0);
