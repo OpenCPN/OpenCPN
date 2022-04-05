@@ -311,6 +311,13 @@ public:
       : wxPanel(parent), m_descr(0), m_buttons(buttons) {
     auto flags = wxSizerFlags().Border();
 
+    MORE = "<span foreground=\'blue\'>";
+    MORE += _("More");
+    MORE += "...</span>";
+    LESS = "<span foreground=\'blue\'>";
+    LESS += _("Less");
+    LESS += "...</span>";
+
     auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
     m_summary = staticText(plugin->summary);
     sum_hbox->Add(m_summary);
@@ -345,8 +352,7 @@ public:
   }
 
 protected:
-  const char* const MORE = _("<span foreground='blue'>More...</span>");
-  const char* const LESS = _("<span foreground='blue'>Less...</span>");
+  wxString MORE, LESS;
 
   wxStaticText* staticText(const wxString& text) {
     return new wxStaticText(this, wxID_ANY, text, wxDefaultPosition,
