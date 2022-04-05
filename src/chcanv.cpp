@@ -4323,7 +4323,7 @@ bool ChartCanvas::GetCanvasPointPixVP(ViewPort &vp, double rlat, double rlon,
     return false;
   }
 
-  if( (abs(p.m_x) < 10000) && (abs(p.m_y) < 10000) )
+  if( (abs(p.m_x) < 100000) && (abs(p.m_y) < 100000) )
     *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
   else
     *r = wxPoint(INVALID_COORD, INVALID_COORD);
