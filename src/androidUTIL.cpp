@@ -4885,6 +4885,7 @@ void MigrateAssistantDialog::CreateControls(void) {
 
   wxStaticBoxSizer* infoSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
   mainSizer->Add(infoSizer, 0, wxEXPAND | wxALL, 5);
+  m_infoText = NULL;
 
   if (!m_bskipScan){
     // Scan the  chart directory array from the config file.
@@ -4908,13 +4909,13 @@ void MigrateAssistantDialog::CreateControls(void) {
   if (m_migrateDirs.GetCount()){
     wxString infoText1(_("OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"));
 
-    wxString infoText1w = WrapText(this, infoText1, gFrame->GetSize().x * 9 / 10);
+    wxString infoText1w = WrapText(this, infoText1, gFrame->GetSize().x * 95 / 100);
 
     m_infoText = new wxStaticText(this, wxID_STATIC, infoText1w);
 
-    infoSizer->AddSpacer( 2 * GetCharWidth());
+    infoSizer->AddSpacer( 1 * GetCharWidth());
     infoSizer->Add(m_infoText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
-    infoSizer->AddSpacer( 2 * GetCharWidth());
+    infoSizer->AddSpacer( 1 * GetCharWidth());
 
     wxString dirsMsg;
 
@@ -4923,17 +4924,17 @@ void MigrateAssistantDialog::CreateControls(void) {
       dirsMsg += m_migrateDirs[i];
       dirsMsg += wxString("\n");
     }
-    dirsMsg += wxString("\n");
+    //dirsMsg += wxString("\n");
 
     m_infoDirs = new wxStaticText(this, wxID_STATIC, dirsMsg);
 
     infoSizer->Add(m_infoDirs, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
 
-    wxString migrateMsg1 = _("OpenCPN can move these chart folders to a suitable location, if desired.");
+    wxString migrateMsg1 = _("OpenCPN can copy these chart folders to a suitable location, if desired.");
     migrateMsg1 += "\n\n";
     migrateMsg1 += _("To proceed with chart folder migration, choose the chart source folder, and follow the instructions given.");
 
-    wxString migrateMsg1w = WrapText(this, migrateMsg1, gFrame->GetSize().x * 9 / 10);
+    wxString migrateMsg1w = WrapText(this, migrateMsg1, gFrame->GetSize().x * 95/ 100);
 
     m_migrateStep1 = new wxStaticText(this, wxID_STATIC, migrateMsg1w);
     infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
@@ -4942,7 +4943,7 @@ void MigrateAssistantDialog::CreateControls(void) {
   else {
 
     wxString migrateMsg1 = _("Some chart folders may be inaccessible to OpenCPN on this version of Android. ");
-    migrateMsg1 += _("OpenCPN can move these chart folders to a suitable location, if desired.");
+    migrateMsg1 += _("OpenCPN can copy these chart folders to a suitable location, if desired.");
     migrateMsg1 += "\n\n";
     migrateMsg1 += _("To proceed with chart folder migration, choose the chart source folder, and follow the instructions given.");
 
@@ -4952,7 +4953,7 @@ void MigrateAssistantDialog::CreateControls(void) {
     infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
   }
 
-   mainSizer->AddSpacer( 2 * GetCharWidth());
+   mainSizer->AddSpacer( 1 * GetCharWidth());
 
   // Is SDCard available?
   if (!g_androidGetFilesDirs1.StartsWith("?")){
@@ -4962,10 +4963,10 @@ void MigrateAssistantDialog::CreateControls(void) {
     mainSizer->Add(sourceSizer, 0, wxEXPAND | wxALL, 5);
     mainSizer->AddSpacer( 2 * GetCharWidth());
 
-    m_radioInternal = new	wxRadioButton (this, wxID_ANY, _("Internal Storage"),wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    m_radioInternal = new	wxRadioButton (this, wxID_ANY, _("OpenCPN Internal Storage"),wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
     sourceSizer->Add( m_radioInternal, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
-    m_radioSDCard = new	wxRadioButton (this, wxID_ANY, _("SDCard Storage"),wxDefaultPosition, wxDefaultSize);
+    m_radioSDCard = new	wxRadioButton (this, wxID_ANY, _("OpenCPN SDCard Storage"),wxDefaultPosition, wxDefaultSize);
     sourceSizer->Add( m_radioSDCard, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
     m_radioInternal->SetValue( true );
@@ -4976,18 +4977,23 @@ void MigrateAssistantDialog::CreateControls(void) {
   m_migrateButton = new wxButton(this, ID_MIGRATE_START, _("Choose chart source folder."));
   mainSizer->Add(m_migrateButton, 0, wxEXPAND | wxALL, 5);
 
-  mainSizer->AddSpacer( 2 * GetCharWidth());
+  //mainSizer->AddSpacer( 1 * GetCharWidth());
+
+  statusSizer = new wxStaticBoxSizer(
+        new wxStaticBox(this, wxID_ANY, _("Status")), wxVERTICAL);
+    mainSizer->Add(statusSizer, 0, wxEXPAND | wxALL, 5);
+
 
   m_ipGauge = new InProgressIndicator(this, wxID_ANY, 100, wxDefaultPosition,
                                       wxSize(gFrame->GetSize().x * 8 / 10, gFrame->GetCharHeight() * 2));
-  mainSizer->Add(m_ipGauge, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
-  m_ipGauge->Hide();
+  statusSizer->Add(m_ipGauge, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
-  mainSizer->AddSpacer( 2 * GetCharWidth());
+  mainSizer->AddSpacer( 1 * GetCharWidth());
 
   m_statusText = new wxStaticText(this, wxID_STATIC, m_Status);
-  mainSizer->Add(m_statusText, 0, wxEXPAND | wxALL, 5);
+  statusSizer->Add(m_statusText, 0, wxEXPAND | wxALL, 5);
 
+  GetSizer()->Hide(statusSizer);
 
   wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
   mainSizer->Add(btnSizer, 0, wxALIGN_RIGHT | wxALL, 5);
@@ -5014,8 +5020,8 @@ void MigrateAssistantDialog::OnMigrateOKClick(wxCommandEvent& event) {
   EndModal(wxID_OK);
 }
 
-void MigrateAssistantDialog::OnMigrateClick(wxCommandEvent& event) {
-
+void MigrateAssistantDialog::OnMigrateClick(wxCommandEvent& event)
+{
 
   wxString clickText1(_("On the next page, find and choose the root folder containing chart files to migrate\n\n\
 Example: /storage/emulated/0/Charts\n\n"));
@@ -5024,6 +5030,11 @@ Example: /storage/emulated/0/Charts\n\n"));
 
   if (wxID_OK == OCPNMessageBox(
         NULL, clickText1, _("OpenCPN for Android Migration Assistant"), wxOK | wxCANCEL )){
+
+    if(m_infoText) m_infoText->Hide();
+    m_migrateStep1->Hide();
+    GetSizer()->Show(statusSizer);
+    Layout();
 
     if (g_androidUtilHandler) {
 
@@ -5082,7 +5093,8 @@ void MigrateAssistantDialog::onPermissionGranted( wxString result ) {
     setStatus( m_Status );
 
     // Carry on to the next step
-    m_migrateButton->Disable();
+    m_migrateButton->Hide();
+    Layout();
 
     // Capture the destination
     if(m_radioSDCard)
@@ -5115,7 +5127,8 @@ void MigrateAssistantDialog::onPermissionGranted( wxString result ) {
      m_Status = "";
      setStatus( m_Status );
 
-     m_migrateButton->Enable();
+     m_migrateButton->Show();
+     Layout();
     }
   }
   else{
@@ -5160,7 +5173,12 @@ void MigrateAssistantDialog::onTimerEvent(wxTimerEvent &event)
     if (m_Status.Contains("Migration complete")){
       m_statusTimer.Stop();
 
-      wxString clickText3(_("Chart migration is finished.\n\n"));
+      wxString clickText3(_("Chart migration is finished."));
+      clickText3 += "\n\n";
+      clickText3 += _("Migrated chart folders are now accessible to OpenCPN.");
+      clickText3 += "\n";
+      clickText3 += _("You may need to adjust your chart folders further, to accommodate individual chart groups");
+      clickText3 += "\n\n";
       clickText3 += _("OpenCPN will now restart to apply changes.");
 
       if (wxID_OK == OCPNMessageBox(
