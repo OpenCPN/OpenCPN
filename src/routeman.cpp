@@ -115,6 +115,7 @@ extern float g_ChartScaleFactorExp;
 
 extern bool g_bShowShipToActive;
 extern bool g_bAllowShipToActive;
+extern int g_maxWPNameLength;
 
 bool g_bPluginHandleAutopilotRoute;
 
@@ -680,6 +681,12 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 bool Routeman::UpdateAutopilot() {
   // Send all known Autopilot messages upstream
 
+    // Set max WP name length
+  int maxName = 6;
+  if ((g_maxWPNameLength >= 3) && (g_maxWPNameLength <= 32))
+    maxName = g_maxWPNameLength;
+
+
   // Avoid a possible not initiated SOG/COG. APs can be confused if in NAV mode
   // wo valid GPS
   double r_Sog(0.0), r_Cog(0.0);
@@ -695,7 +702,7 @@ bool Routeman::UpdateAutopilot() {
   if (XTEDir < 0) {
     leg_info.Xte = -leg_info.Xte;  // Left side of the track -> negative XTE
   }
-  leg_info.wp_name = pActivePoint->GetName().Truncate(6);
+  leg_info.wp_name = pActivePoint->GetName().Truncate(maxName);
   leg_info.arrival = m_bArrival;
   g_pi_manager->SendActiveLegInfoToAllPlugIns(&leg_info);
 
@@ -712,8 +719,8 @@ bool Routeman::UpdateAutopilot() {
     else
       m_NMEA0183.Rmb.DirectionToSteer = Right;
 
-    m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(6);
-    m_NMEA0183.Rmb.From = pActiveRouteSegmentBeginPoint->GetName().Truncate(6);
+    m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(maxName);
+    m_NMEA0183.Rmb.From = pActiveRouteSegmentBeginPoint->GetName().Truncate(maxName);
 
     if (pActivePoint->m_lat < 0.)
       m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat,
@@ -823,7 +830,7 @@ bool Routeman::UpdateAutopilot() {
     //  reaching this point
     m_NMEA0183.Apb.IsPerpendicular = NFalse;
 
-    m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate(6);
+    m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate(maxName);
 
     double brg1, dist1;
     DistanceBearingMercator(pActivePoint->m_lat, pActivePoint->m_lon,
