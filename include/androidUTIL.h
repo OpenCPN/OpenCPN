@@ -258,6 +258,7 @@ public:
   wxStaticText *m_infoText, *m_infoDirs, *m_migrateStep1, *m_statusText;;
 	wxRadioButton *m_radioSDCard, *m_radioInternal;
   InProgressIndicator *m_ipGauge;
+  wxStaticBoxSizer *statusSizer;
 
   wxArrayString m_migrateDirs;
   wxString m_Status;
