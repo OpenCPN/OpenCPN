@@ -94,6 +94,14 @@ public:
                  wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxSTAY_ON_TOP),
         Helpers(this),
         m_show_edit(true) {
+
+    HIDE = "<span foreground=\'blue\'>";
+    HIDE += _("Hide");
+    HIDE += " &lt;&lt;&lt;</span>";
+    ADVANCED = "<span foreground=\'blue\'>";
+    ADVANCED += _("Ultra advanced");
+    ADVANCED += " &gt;&gt;&gt;</span>";
+
     auto sizer = new wxBoxSizer(wxVERTICAL);
     auto flags = wxSizerFlags().Expand().Border();
 
@@ -144,10 +152,7 @@ public:
   }
 
 protected:
-  const char* const HIDE =
-      ("<span foreground='blue'>Hide &lt;&lt;&lt;</span>");
-  const char* const ADVANCED =
-      ("<span foreground='blue'>Ultra advanced &gt;&gt;&gt;</span>");
+  wxString HIDE, ADVANCED;
 
   wxBoxSizer* m_url_box;
   ActiveCatalogGrid* m_catalog_grid;

@@ -303,6 +303,13 @@ public:
     auto flags = wxSizerFlags().Border();
     m_isDesc = false;
 
+    MORE = "<span foreground=\'blue\'>";
+    MORE += _("More");
+    MORE += "...</span>";
+    LESS = "<span foreground=\'blue\'>";
+    LESS += _("Less");
+    LESS += "...</span>";
+
     auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
     m_widthDescription = g_options->GetSize().x / 2;
 
@@ -368,8 +375,7 @@ public:
   bool m_isDesc;
 
 protected:
-  const char* const MORE = ("<span foreground='blue'>More...</span>");
-  const char* const LESS = ("<span foreground='blue'>Less...</span>");
+  wxString MORE, LESS;
 
   wxStaticText* staticText(const wxString& text) {
     return new wxStaticText(this, wxID_ANY, text, wxDefaultPosition,
