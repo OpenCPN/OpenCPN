@@ -1,34 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="none" points="0,0 1800,0 1800,1800 0,1800 "/>
-  <g id="_310382120">
-   <path fill="none" stroke="red" stroke-width="25" d="M556 1214c234,-183 399,-62 616,-62 170,1 265,-58 264,-252m-880 -314c234,183 399,62 616,62 170,-1 265,58 264,252"/>
-   <path fill="none" stroke="red" stroke-width="25" d="M772 683c223,91 212,365 0,434"/>
-   <path fill="black" d="M880 860c-28,0 -37,16 -51,37 -77,0 -160,-83 -229,12 69,96 152,12 229,12 14,22 23,38 51,38 -28,-27 -28,-72 0,-99z"/>
-   <line fill="none" stroke="red" stroke-width="7.62" x1="923" y1="681" x2="863" y2= "741" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1066" y1="656" x2="913" y2= "810" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1193" y1="648" x2="935" y2= "906" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1297" y1="663" x2="847" y2= "1113" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1373" y1="706" x2="953" y2= "1125" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1419" y1="778" x2="1055" y2= "1142" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1436" y1="880" x2="1164" y2= "1152" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1422" y1="1013" x2="1298" y2= "1137" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="924" y1="1121" x2="866" y2= "1062" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1066" y1="1143" x2="915" y2= "993" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1193" y1="1152" x2="935" y2= "894" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1297" y1="1137" x2="847" y2= "687" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1373" y1="1094" x2="953" y2= "675" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1419" y1="1021" x2="1055" y2= "658" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1436" y1="920" x2="1164" y2= "648" />
-   <line fill="none" stroke="red" stroke-width="7.62" x1="1422" y1="787" x2="1298" y2= "663" />
-   <path fill="black" d="M644 1005c-28,-1 -36,15 -51,37 -76,0 -160,-84 -229,12 69,96 153,12 229,12 15,21 23,37 51,37 -28,-27 -28,-72 0,-98z"/>
-   <path fill="black" d="M717 738c-29,-1 -37,15 -51,37 -77,0 -160,-84 -230,12 70,96 153,12 230,12 14,21 22,37 51,37 -28,-27 -28,-72 0,-98z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="red" stroke-width="25" d="M556 1214c234-183 399-62 616-62 170 1 265-58 264-252M556 586c234 183 399 62 616 62 170-1 265 58 264 252"/>
+    <path fill="none" stroke="red" stroke-width="25" d="M772 683c223 91 212 365 0 434"/>
+    <path d="M880 860c-28 0-37 16-51 37-77 0-160-83-229 12 69 96 152 12 229 12 14 22 23 38 51 38-28-27-28-72 0-99z"/>
+    <path fill="none" stroke="red" stroke-width="7.62" d="m923 681-60 60m203-85L913 810m280-162L935 906m362-243-450 450m526-407-420 419m466-347-364 364m381-262-272 272m258-139-124 124m-374-16-58-59m200 81L915 993m278 159L935 894m362 243L847 687m526 407L953 675m466 346-364-363m381 262-272-272m258 139-124-124"/>
+    <path d="M644 1005c-28-1-36 15-51 37-76 0-160-84-229 12 69 96 153 12 229 12 15 21 23 37 51 37-28-27-28-72 0-98zm73-267c-29-1-37 15-51 37-77 0-160-84-230 12 70 96 153 12 230 12 14 21 22 37 51 37-28-27-28-72 0-98z"/>
 </svg>

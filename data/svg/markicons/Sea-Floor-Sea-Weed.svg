@@ -1,29 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_304989288">
-   <g>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M389 771c66,0 79,2 144,-16 74,-20 94,-21 170,-27 96,-9 75,-26 166,21 67,34 36,46 78,87 14,14 18,13 27,22"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M892 762c9,-3 104,-5 115,1 8,5 48,7 60,7"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M962 753c5,-22 20,-3 24,-21 7,-33 60,-35 73,-35"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M809 722c-4,-26 78,-63 100,-69l5 -2"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M580 744c8,19 87,101 115,107 5,1 0,43 77,43"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M645 817c15,-8 58,-26 115,-22"/>
-   </g>
-   <g>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M733 1029c67,0 79,-2 144,16 74,20 95,21 171,27 96,9 74,26 166,-21 67,-34 36,-46 78,-87 14,-14 17,-13 27,-22"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M1236 1038c10,3 105,5 116,-1 7,-5 48,-7 59,-7"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M1306 1047c5,22 20,3 25,21 7,33 60,35 73,35"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M1154 1078c-5,26 78,63 100,69l5 2"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M924 1056c8,-19 88,-101 115,-107 6,-1 0,-43 77,-43"/>
-    <path fill="none" stroke="#00A859" stroke-width="35" d="M990 983c15,8 57,26 114,22"/>
-   </g>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <g fill="none">
+        <path d="M0 0h1800v1800H0z"/>
+        <g stroke="#00A859" stroke-width="35">
+            <path d="M389 771c66 0 79 2 144-16 74-20 94-21 170-27 96-9 75-26 166 21 67 34 36 46 78 87 14 14 18 13 27 22"/>
+            <path d="M892 762c9-3 104-5 115 1 8 5 48 7 60 7m-105-17c5-22 20-3 24-21 7-33 60-35 73-35m-250 25c-4-26 78-63 100-69l5-2m-334 93c8 19 87 101 115 107 5 1 0 43 77 43"/>
+            <path d="M645 817c15-8 58-26 115-22m-27 234c67 0 79-2 144 16 74 20 95 21 171 27 96 9 74 26 166-21 67-34 36-46 78-87 14-14 17-13 27-22"/>
+            <path d="M1236 1038c10 3 105 5 116-1 7-5 48-7 59-7m-105 17c5 22 20 3 25 21 7 33 60 35 73 35m-250-25c-5 26 78 63 100 69l5 2m-335-93c8-19 88-101 115-107 6-1 0-43 77-43"/>
+            <path d="M990 983c15 8 57 26 114 22"/>
+        </g>
+    </g>
 </svg>

@@ -1,40 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-    <mask id="id0">
-      <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="964.84" y1="652.81" x2="1440.86" y2="652.81">
-       <stop offset="0" stop-opacity="1" stop-color="white"/>
-       <stop offset="1" stop-opacity="0" stop-color="white"/>
-      </linearGradient>
-     <rect fill="url(#id1)" x="955" y="492" width="496" height="323"/>
-    </mask>
-    <mask id="id2">
-      <linearGradient id="id3" gradientUnits="userSpaceOnUse" x1="835.17" y1="652.81" x2="359.15" y2="652.81">
-       <stop offset="0" stop-opacity="1" stop-color="white"/>
-       <stop offset="1" stop-opacity="0" stop-color="white"/>
-      </linearGradient>
-     <rect fill="url(#id3)" x="349" y="492" width="496" height="323"/>
-    </mask>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <g id="_304775032">
-   <polygon fill="#FFCC00" mask="url(#id0)" points="965,704 965,617 1441,502 1441,804 "/>
-   <polygon fill="#FFCC00" mask="url(#id2)" points="835,704 835,617 359,502 359,804 "/>
-   <g>
-    <polygon fill="white" stroke="black" stroke-width="20" points="833,728 967,728 1034,1256 766,1256 "/>
-    <rect fill="white" stroke="#373435" stroke-width="20" x="823" y="704" width="153.247" height="23.5756"/>
-    <rect fill="black" stroke="black" stroke-width="20" x="746" y="1256" width="308.85" height="42.4374"/>
-    <rect fill="#FFCC00" stroke="black" stroke-width="20" x="835" y="617" width="129.671" height="87.2316"/>
-    <polygon fill="black" stroke="black" stroke-width="20" points="985,617 815,617 900,577 "/>
-    <polygon fill="red" stroke="black" stroke-width="20" points="984,860 1001,992 799,992 816,860 "/>
-    <polygon fill="red" stroke="black" stroke-width="20" points="1018,1124 1034,1256 766,1256 782,1124 "/>
-   </g>
-  </g>
-  <rect fill="none" width="1800" height="1800"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <mask id="c">
+            <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="964.84" y1="652.81" x2="1440.86" y2="652.81">
+                <stop offset="0" stop-color="#fff"/>
+                <stop offset="1" stop-opacity="0" stop-color="#fff"/>
+            </linearGradient>
+            <path fill="url(#a)" d="M955 492h496v323H955z"/>
+        </mask>
+        <mask id="d">
+            <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="835.17" y1="652.81" x2="359.15" y2="652.81">
+                <stop offset="0" stop-color="#fff"/>
+                <stop offset="1" stop-opacity="0" stop-color="#fff"/>
+            </linearGradient>
+            <path fill="url(#b)" d="M349 492h496v323H349z"/>
+        </mask>
+    </defs>
+    <path fill="#FC0" mask="url(#c)" d="M965 704v-87l476-115v302z"/>
+    <path fill="#FC0" mask="url(#d)" d="M835 704v-87L359 502v302z"/>
+    <g stroke-width="20">
+        <path fill="#fff" stroke="#000" d="M833 728h134l67 528H766z"/>
+        <path fill="#fff" stroke="#373435" d="M823 704h153.247v23.576H823z"/>
+        <path stroke="#000" d="M746 1256h308.85v42.437H746z"/>
+        <path fill="#FC0" stroke="#000" d="M835 617h129.671v87.232H835z"/>
+        <path stroke="#000" d="M985 617H815l85-40z"/>
+        <path fill="red" stroke="#000" d="m984 860 17 132H799l17-132zm34 264 16 132H766l16-132z"/>
+    </g>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
 </svg>

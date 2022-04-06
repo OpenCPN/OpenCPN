@@ -1,22 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_527080272">
-   <path fill="#0C85CA" d="M914 838l130 0 0 101 -131 15 1 -116zm-34 120l-77 8 -37 -128 116 0c2,24 4,101 -2,120zm195 -120l110 0c-1,25 -7,66 -18,86l-93 11 1 -97zm-162 -132l131 -1 0 103 -116 0 -15 0 0 -102zm161 -1l137 0 -15 81c-6,32 -5,22 -122,22l0 -103zm-348 2l13 -2 144 0 -1 103 -108 0 -4 0 -15 -1 -29 -100zm53 353c-2,-24 -2,-25 20,-28l292 -35c89,-11 129,-2 139,-50 11,-52 20,-103 30,-155 35,-181 55,-150 -182,-150 -118,0 -258,7 -373,-1 -5,-21 -18,-71 -26,-90 -13,-29 -56,-20 -94,-20 -33,0 -80,2 -62,45 12,29 68,19 97,19 14,8 24,61 29,79 13,46 97,309 92,326 -7,28 -25,51 -6,85 27,49 110,31 166,27 67,-5 133,-10 200,-13 21,-1 92,3 104,-4 11,-7 17,-24 7,-37 -18,-23 -213,-4 -246,-2 -45,3 -155,21 -187,4z"/>
-   <polygon fill="#FDFDFD" points="755,807 770,808 774,808 882,808 883,705 739,705 726,707 "/>
-   <polygon fill="#FDFDFD" points="913,954 1044,939 1044,838 914,838 "/>
-   <polygon fill="#FDFDFD" points="913,808 928,808 1044,808 1044,705 913,706 "/>
-   <path fill="#FDFDFD" d="M1074 808c117,0 116,10 122,-22l15 -81 -137 0 0 103z"/>
-   <path fill="#0C85CA" d="M714 1218c13,79 135,66 126,-19 -9,-82 -140,-68 -126,19z"/>
-   <path fill="#0C85CA" d="M1077 1218c12,79 135,64 125,-19 -9,-80 -139,-67 -125,19z"/>
-   <path fill="#FDFDFD" d="M803 966l77 -8c6,-19 4,-96 2,-120l-116 0 37 128z"/>
-   <path fill="#FDFDFD" d="M1074 935l93 -11c11,-20 17,-61 18,-86l-110 0 -1 97z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#0C85CA" d="M914 838h130v101l-131 15 1-116zm-34 120-77 8-37-128h116c2 24 4 101-2 120zm195-120h110c-1 25-7 66-18 86l-93 11 1-97zM913 706l131-1v103H913V706zm161-1h137l-15 81c-6 32-5 22-122 22V705zm-348 2 13-2h144l-1 103H770l-15-1-29-100zm53 353c-2-24-2-25 20-28l292-35c89-11 129-2 139-50 11-52 20-103 30-155 35-181 55-150-182-150-118 0-258 7-373-1-5-21-18-71-26-90-13-29-56-20-94-20-33 0-80 2-62 45 12 29 68 19 97 19 14 8 24 61 29 79 13 46 97 309 92 326-7 28-25 51-6 85 27 49 110 31 166 27 67-5 133-10 200-13 21-1 92 3 104-4 11-7 17-24 7-37-18-23-213-4-246-2-45 3-155 21-187 4z"/>
+    <path fill="#FDFDFD" d="m755 807 15 1h112l1-103H739l-13 2zm158 147 131-15V838H914zm0-146h131V705l-131 1zm161 0c117 0 116 10 122-22l15-81h-137v103z"/>
+    <path fill="#0C85CA" d="M714 1218c13 79 135 66 126-19-9-82-140-68-126 19zm363 0c12 79 135 64 125-19-9-80-139-67-125 19z"/>
+    <path fill="#FDFDFD" d="m803 966 77-8c6-19 4-96 2-120H766l37 128zm271-31 93-11c11-20 17-61 18-86h-110l-1 97z"/>
 </svg>

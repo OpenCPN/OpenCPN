@@ -1,23 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_336465904">
-   <polygon fill="#C1FEFE" points="318,1011 1268,1011 1268,634 318,634 "/>
-   <path fill="#CC9933" d="M317 951c149,-48 241,-150 353,-150 203,0 391,210 598,210l0 189 -950 0c0,-83 -1,-166 -1,-249z"/>
-   <g>
-    <path fill="none" stroke="red" stroke-width="25" d="M1344 1011c46,0 93,0 139,0"/>
-    <path fill="none" stroke="red" stroke-width="25" d="M1344 886c46,0 93,0 139,0"/>
-    <path fill="none" stroke="red" stroke-width="25" d="M1344 760c46,0 93,0 139,0"/>
-   </g>
-   <line fill="none" stroke="red" stroke-width="25" x1="1344" y1="634" x2="1483" y2= "634" />
-   <line fill="none" stroke="red" stroke-width="25" x1="1453" y1="1049" x2="1453" y2= "600" />
-   <rect fill="none" stroke="black" stroke-width="7.62" x="318" y="634" width="950" height="566"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#C1FEFE" d="M318 1011h950V634H318z"/>
+    <path fill="#C93" d="M317 951c149-48 241-150 353-150 203 0 391 210 598 210v189H318c0-83-1-166-1-249z"/>
+    <path d="M1344 1011h139m-139-125h139m-139-126h139m-139-126h139m-30 415V600" fill="none" stroke="red" stroke-width="25"/>
+    <path fill="none" stroke="#000" stroke-width="7.62" d="M318 634h950v566H318z"/>
 </svg>

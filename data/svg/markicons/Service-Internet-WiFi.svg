@@ -1,17 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_302568712">
-   <path fill="#030303" d="M589 806l0 22c38,58 61,2 94,-25 9,-7 24,-18 34,-24 125,-81 284,-70 397,22 34,28 59,86 97,27l0 -22c-28,-40 -68,-72 -119,-101 -21,-12 -49,-24 -76,-31 -76,-22 -161,-23 -236,1 -29,9 -53,18 -76,32 -52,32 -85,56 -115,99z"/>
-   <path fill="#030303" d="M852 869c78,-19 140,4 192,55 6,6 21,20 23,21 35,23 84,-33 -3,-94 -31,-22 -66,-43 -114,-52 -88,-16 -194,17 -249,82 -35,41 6,99 46,50 21,-26 58,-50 105,-62z"/>
-   <path fill="#030303" d="M880 1003c75,-19 106,70 139,24 38,-54 -84,-122 -184,-82 -90,36 -63,103 -24,94 22,-5 28,-25 69,-36z"/>
-   <circle fill="black" cx="900" cy="1101" r="42"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#030303" d="M589 806v22c38 58 61 2 94-25 9-7 24-18 34-24 125-81 284-70 397 22 34 28 59 86 97 27v-22c-28-40-68-72-119-101-21-12-49-24-76-31-76-22-161-23-236 1-29 9-53 18-76 32-52 32-85 56-115 99z"/>
+    <path fill="#030303" d="M852 869c78-19 140 4 192 55 6 6 21 20 23 21 35 23 84-33-3-94-31-22-66-43-114-52-88-16-194 17-249 82-35 41 6 99 46 50 21-26 58-50 105-62z"/>
+    <path fill="#030303" d="M880 1003c75-19 106 70 139 24 38-54-84-122-184-82-90 36-63 103-24 94 22-5 28-25 69-36z"/>
+    <circle cx="900" cy="1101" r="42"/>
 </svg>

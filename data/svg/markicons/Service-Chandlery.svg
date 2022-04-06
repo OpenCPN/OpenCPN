@@ -1,15 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="none" points="0,0 1800,0 1800,1800 0,1800 "/>
-  <g id="_647193488">
-   <path fill="blue" d="M900 650l8 0 135 0 72 125 71 125 -71 125 -72 125 -141 0 -2 0 0 -152 4 0c52,-2 94,-45 94,-98 0,-52 -41,-95 -92,-98 -2,0 -4,0 -6,0l0 -152z"/>
-   <path fill="blue" d="M614 900l71 -125 72 -125 143 0 0 152c-54,0 -98,44 -98,98 0,54 44,98 98,98l0 152 -143 0 -72 -125 -71 -125z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M900 650h143l72 125 71 125-71 125-72 125H900V998h4c52-2 94-45 94-98 0-52-41-95-92-98h-6V650zM614 900l71-125 72-125h143v152c-54 0-98 44-98 98s44 98 98 98v152H757l-72-125-71-125z" fill="#00f"/>
 </svg>
