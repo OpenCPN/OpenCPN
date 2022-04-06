@@ -4538,9 +4538,6 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
               if (ps52plib->ObjectRenderCheckCat(top, VPoint)) {
                 int attrCounter;
                 double valnmr = -1;
-                double sectr1 = -1;
-                double sectr2 = -1;
-                double bearing, distance;
                 wxString curAttrName;
                 curr_att = top->obj->att_array;
                 n_attr = top->obj->n_attr;
@@ -4560,53 +4557,42 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
 
                     S57attVal *pAttrVal = NULL;
                     if (attValArray) {
+                      // if(Chs57)
                       pAttrVal = attValArray->Item(attrCounter);
+                      // else if( target_plugin_chart )
+                      // pAttrVal = attValArray->Item(attrCounter);
                     }
                     wxString value = s57chart::GetAttributeValueAsString(
                         pAttrVal, curAttrName);
 
                     if (curAttrName == _T("LITVIS")) {
                       if (value.StartsWith(_T("obsc"))) bviz = false;
-                    } else if (curAttrName == _T("VALNMR")){
-                        value.ToDouble(&valnmr);
-                    } else if (curAttrName == _T("SECTR1")){
-                        value.ToDouble(&sectr1);
-                    } else if (curAttrName == _T("SECTR2")){
-                        value.ToDouble(&sectr2);
-                    }
-
+                    } else if (curAttrName == _T("VALNMR"))
+                      value.ToDouble(&valnmr);
 
                     attrCounter++;
                     curr_att += 6;
                   }
 
                   if (bviz && (valnmr > 0.1)) {
-                     double olon, olat;
-                     fromSM(
-                         (top->obj->x * top->obj->x_rate) + top->obj->x_origin,
-                         (top->obj->y * top->obj->y_rate) + top->obj->y_origin,
-                         ref_lat, ref_lon, &olat, &olon);
+                    // As a quick check, compare the mercator-manhattan distance
+                    double olon, olat;
+                    fromSM(
+                        (top->obj->x * top->obj->x_rate) + top->obj->x_origin,
+                        (top->obj->y * top->obj->y_rate) + top->obj->y_origin,
+                        ref_lat, ref_lon, &olat, &olon);
 
-//                    // As a quick check, compare the mercator-manhattan distance
-//                     double dlat = lat - olat;
-//                     double dy = dlat * 60 / cos(olat * PI / 180.);
-//                     double dlon = lon - olon;
-//                     double dx = dlon * 60;
-//                     double manhat = abs(dy) + abs(dx);
-
+                    double dlat = lat - olat;
+                    double dy = dlat * 60 / cos(olat * PI / 180.);
+                    double dlon = lon - olon;
+                    double dx = dlon * 60;
+                    double manhat = abs(dy) + abs(dx);
                     if (1 /*(abs(dy) + abs(dx)) < valnmr*/) {
                       // close...Check precisely
-                      DistanceBearingMercator(lat, lon, olat, olon, &bearing, &distance);
-                      if (distance < valnmr) {
-                        //Check sector angles, if present and reasonable
-                        if((sectr1 >= 0) && (sectr2 >= 0)){
-                          double brg_from_light = bearing + 180;
-                          if (brg_from_light > 360)
-                            brg_from_light -= 360;
-                          if( (brg_from_light >= sectr1) && (brg_from_light <= sectr2) ){
-                            ret_ptr->Append(top);
-                          }
-                        }
+                      double br, dd;
+                      DistanceBearingMercator(lat, lon, olat, olon, &br, &dd);
+                      if (dd < valnmr) {
+                        ret_ptr->Append(top);
                       }
                     }
                   }
@@ -6343,16 +6329,9 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
                 bhas_red_green = true;
               }
 
-              else if (value == _T("green(4)")) {
+              if (value == _T("green(4)")) {
                 color = wxColor(0, 255, 0, opacity);
                 sector.iswhite = false;
-                bhas_red_green = true;
-              }
-
-              // Mixed colour lights, just show in white, if present
-              else if (value.Contains( "white") ){
-                color = wxColor(255, 255, 0, yOpacity);
-                sector.iswhite = true;
                 bhas_red_green = true;
               }
             }
@@ -6363,8 +6342,7 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
 
             if (curAttrName == _T("CATLIT")) {
               if (value.Upper().StartsWith(_T("DIRECT")) ||
-                  value.Upper().StartsWith(_T("LEAD")) ||
-                  value.Upper().StartsWith(_T("BEARING")))
+                  value.Upper().StartsWith(_T("LEAD")))
                 bleading_attribute = true;
             }
 
@@ -6430,7 +6408,7 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
   }
 
   //  Work with the sector legs vector to identify  and mark "Leading Lights"
-  //  Sectors with CATLIT "Leading", "Bearing", or "Directional" attribute set have already
+  //  Sectors with CATLIT "Leading" or "Directional" attribute set have already
   //  been marked
   for (unsigned int i = 0; i < sectorlegs.size(); i++) {
     if (((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15)) {
