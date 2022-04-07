@@ -131,6 +131,23 @@ void write_file(const wxString extract_file, char *data,
   f.Close();
 }
 
+int g_Android_SDK_Version;
+
+bool IsDLDirWritable( wxFileName fn){
+#ifndef __OCPN__ANDROID__
+  return fn.IsDirWritable();
+#else
+  if ( g_Android_SDK_Version >= 30){       // scoped storage?
+    // Use a simple test here
+    return (fn.GetFullPath().Contains("org.opencpn.opencpn"));  // fast test
+  }
+  else
+    return fn.IsDirWritable();
+
+#endif
+}
+
+
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
@@ -191,6 +208,10 @@ int chartdldr_pi::Init(void) {
   m_pChartSources = new wxArrayOfChartSources();
   m_pChartCatalog = new ChartCatalog;
   m_pChartSource = NULL;
+
+#ifdef __OCPN__ANDROID__
+  androidGetSDKVersion();
+#endif
 
   //    And load the configuration items
   LoadConfig();
@@ -291,20 +312,18 @@ bool chartdldr_pi::LoadConfig(void) {
     pConf->Read(_T ( "ChartSources" ), &m_schartdldr_sources, wxEmptyString);
     pConf->Read(_T ( "Source" ), &m_selected_source, -1);
 
-    //        wxFileName fn(wxStandardPaths::Get().GetDocumentsDir(),
-    //        wxEmptyString);
     wxFileName fn(GetWritableDocumentsDir(), wxEmptyString);
     fn.AppendDir(_T(CHART_DIR));
 
     pConf->Read(_T ( "BaseChartDir" ), &m_base_chart_dir, fn.GetPath());
-    wxLogMessage(_T ( "chartdldr_pi: " ) + m_base_chart_dir);
+    wxLogMessage(_T ( "chartdldr_pi:m_base_chart_dir: " ) + m_base_chart_dir);
 
     // Check to see if the directory is writeable, esp. on App updates.
     wxFileName testFN(m_base_chart_dir);
-    if (!testFN.IsDirWritable()){
+    if (!IsDLDirWritable( testFN )){
       wxLogMessage("Cannot write to m_base_chart_dir, override to GetWritableDocumentsDir()" );
       m_base_chart_dir = fn.GetPath();
-      wxLogMessage(_T ( "chartdldr_pi: Corrected:" ) + m_base_chart_dir);
+      wxLogMessage(_T ( "chartdldr_pi: Corrected: " ) + m_base_chart_dir);
     }
 
     pConf->Read(_T ( "PreselectNew" ), &m_preselect_new, true);
