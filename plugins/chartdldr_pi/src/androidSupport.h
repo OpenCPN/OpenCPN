@@ -45,5 +45,6 @@ void androidShowBusyIcon();
 void androidHideBusyIcon();
 void androidEnableRotation();
 void androidDisableRotation();
+int androidGetSDKVersion();
 
 #endif
