@@ -400,7 +400,7 @@ void ConsoleCanvas::UpdateRouteData() {
 
         if (speed > 0.) {
           // Show date, e.g. Feb 15, if TTG > 24 h
-          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%e/%m %H:%M"))
+          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%d/%m %H:%M"))
                                             : eta.Format(_T("%H:%M"));
         } else {
           seta = _T("---");
