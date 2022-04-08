@@ -189,8 +189,10 @@ void SignalKEventHandler::updateNavigationCourseOverGround(
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,
                                                const wxString &sfixtime) const {
   if (value.IsInt()) {
-    m_frame->setSatelitesInView(value.AsInt());
-    g_priSats = 2;
+    if (value.AsInt() > 0) {
+      m_frame->setSatelitesInView(value.AsInt());
+      g_priSats = 2;
+    }
   } else if ((value.HasMember("count") && value["count"].IsInt())) {
     m_frame->setSatelitesInView(value["count"].AsInt());
     g_priSats = 3;
