@@ -5073,6 +5073,8 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 }
 
 CatalogMgrPanel::~CatalogMgrPanel() {
+  ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+  catalog.unlisten(this);
   m_updateButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
                          &CatalogMgrPanel::OnUpdateButton, this);
   if (m_tarballButton)
