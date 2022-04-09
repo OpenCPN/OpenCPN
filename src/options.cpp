@@ -1647,6 +1647,8 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
 }
 
 options::~options(void) {
+  ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+  compat_os.unlisten(this);
   wxNotebook* nb =
       dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
   if (nb)
