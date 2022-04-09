@@ -149,8 +149,11 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
       m_Gtime[0] = now;
       if (m_iMaster != 0) return;
       s_gTalker = wxString::Format(_T("QZSS\n%d"), m_SatCount);
-    } else
-      s_gTalker = wxEmptyString;
+    }
+    else {
+      // Would be a not known N2k PGP type like "Combined GPS/GLONASS"
+      s_gTalker = wxString::Format(_T("%s\n%d"), talkerID , m_SatCount);
+    }
   }
 
   int lidx = (seq - 1) * 4;
