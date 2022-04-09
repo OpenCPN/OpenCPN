@@ -1644,6 +1644,15 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
     Fit();
 
   Center();
+
+  wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
+  ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+  compat_os.listen(this, EVT_COMPAT_OS_CHANGE);
+  Bind(EVT_COMPAT_OS_CHANGE, [&](wxCommandEvent&) {
+    g_pi_manager->LoadAllPlugIns(false);
+    auto plugins = g_pi_manager->GetPlugInArray();
+    m_pPlugInCtrl->ReloadPluginPanels(plugins);
+  });
 }
 
 options::~options(void) {
@@ -9978,15 +9987,7 @@ void options::DoOnPageChange(size_t page) {
 
       ::wxEndBusyCursor();
 
-      wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
-      ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
-      compat_os.listen(this, EVT_COMPAT_OS_CHANGE);
-      Bind(EVT_COMPAT_OS_CHANGE, [&](wxCommandEvent&) {
-        g_pi_manager->LoadAllPlugIns(false);
-        auto plugins = g_pi_manager->GetPlugInArray();
-        m_pPlugInCtrl->ReloadPluginPanels(plugins);
-      });
-    }
+   }
 
     k_plugins = TOOLBAR_CHANGED;
   }
