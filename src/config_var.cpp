@@ -36,6 +36,13 @@ void ObservedVar::listen(wxWindow* listener, wxEventType ev_type) {
   singleton->listeners[listener] = ev_type;
 }
 
+bool ObservedVar::unlisten(wxWindow* listener) {
+  auto& listeners = singleton->listeners;
+  if (listeners.find(listener) == listeners.end()) return false;
+  listeners.erase(listener);
+  return true;
+}
+
 const void ObservedVar::notify() {
   auto& listeners = singleton->listeners;
   for (auto l = listeners.begin(); l != listeners.end(); l++) {

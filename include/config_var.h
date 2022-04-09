@@ -41,6 +41,9 @@ public:
   /** Notify all listeners about variable change. */
   const void notify();
 
+  /** Remove window from list of listeners, return true if listener exists */
+  bool unlisten(wxWindow* listener);
+
 private:
   SingletonVar* const singleton;
 };
