@@ -1307,6 +1307,11 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
               0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
           pic->m_bitmap = pbm;
         }
+        else {
+          ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+          pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+        }
+
 
         ret = true;
 
@@ -1316,6 +1321,11 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
                 0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
             pic->m_bitmap = pbm;
           }
+          else {
+            ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+            pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+          }
+
           pic->m_destroy_fn(pic->m_pplugin);
           pic->m_destroy_fn = NULL;
           pic->m_pplugin = NULL;
@@ -1544,6 +1554,16 @@ bool PlugInManager::UpdatePlugIns() {
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
       pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
 
+      if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
+        wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
+            0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+        pic->m_bitmap = pbm;
+      }
+      else {
+        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+      }
+
       if (g_options && g_boptionsactive) {
         if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
           g_options->SetForceNewToolbarOnCancel(true);
@@ -1557,6 +1577,11 @@ bool PlugInManager::UpdatePlugIns() {
             0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
         pic->m_bitmap = pbm;
       }
+      else {
+        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+      }
+
 
       bret = DeactivatePlugIn(pic);
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
