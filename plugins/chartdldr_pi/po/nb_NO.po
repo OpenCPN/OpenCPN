@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:21-0400\n"
-"PO-Revision-Date: 2021-11-09 02:12\n"
+"PO-Revision-Date: 2022-04-10 02:29\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -78,11 +78,11 @@ msgstr "Velg ny"
 #: src/chartdldr_pi.cpp:689
 #, c-format
 msgid "Charts: %s"
-msgstr ""
+msgstr "Karter: %s"
 
 #: src/chartdldr_pi.cpp:689
 msgid " from "
-msgstr ""
+msgstr " fra "
 
 #: src/chartdldr_pi.cpp:697 src/chartdldrgui.cpp:284
 msgid "Charts"
@@ -94,7 +94,7 @@ msgstr "Ny"
 
 #: src/chartdldr_pi.cpp:777 src/chartdldrgui.h:148 src/chartdldrgui.h:214
 msgid "Out of date"
-msgstr ""
+msgstr "Utgått på dato"
 
 #: src/chartdldr_pi.cpp:783
 msgid "Up to date"
@@ -109,7 +109,7 @@ msgstr "%lu karter totalt, %lu oppdatert, %lu nye"
 #: src/chartdldr_pi.cpp:1331 src/chartdldr_pi.cpp:1348 src/chartdldr_pi.cpp:1366
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
-msgstr ""
+msgstr "%lu karter totalt, %lu oppdatert, %lu nye, %lu valgte"
 
 #: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:1661
 msgid "(Please update first)"
@@ -181,19 +181,19 @@ msgstr "Kunne ikke laste ned katalog: %s \n"
 
 #: src/chartdldr_pi.cpp:1243 src/chartdldr_pi.cpp:1252 src/chartdldrgui.cpp:340
 msgid "Select All"
-msgstr ""
+msgstr "Velg alle"
 
 #: src/chartdldr_pi.cpp:1246 src/chartdldrgui.cpp:342 src/chartdldrgui.cpp:374
 msgid "Select None"
-msgstr ""
+msgstr "Velg ingen"
 
 #: src/chartdldr_pi.cpp:1247
 msgid "De-select all charts in the list."
-msgstr ""
+msgstr "Fjern alle valgte kart i listen."
 
 #: src/chartdldr_pi.cpp:1253 src/chartdldrgui.cpp:343
 msgid "Select all charts in the list."
-msgstr ""
+msgstr "Velg alle karter i listen."
 
 #: src/chartdldr_pi.cpp:1380
 msgid "No charts selected for download."
@@ -253,7 +253,9 @@ msgstr "Lokal sti"
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
-msgstr ""
+msgstr "Vil du virkelig fjerne kartkilden?\n"
+"De lokale kartene vil ikke bli fjernet,\n"
+"men du vil ikke kunne oppdatere kartene lengre."
 
 #: src/chartdldr_pi.cpp:1650
 msgid "Edit Chart Source"
@@ -268,7 +270,7 @@ msgstr "Sti %s ser ikke ut til å være dekket av dine konfigurerte kartmapper.\
 
 #: src/chartdldr_pi.cpp:1784
 msgid "Installing charts."
-msgstr ""
+msgstr "Installerer kart."
 
 #: src/chartdldr_pi.cpp:2404 src/chartdldr_pi.cpp:2407
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
@@ -364,7 +366,7 @@ msgstr "Oppdater alle"
 
 #: src/chartdldrgui.cpp:272
 msgid "Download all chart catalogs, and then update charts."
-msgstr ""
+msgstr "Last ned alle kartkataloger, og deretter oppdater kartene."
 
 #: src/chartdldrgui.cpp:278
 msgid "Download Charts..."
@@ -376,32 +378,32 @@ msgstr "Status"
 
 #: src/chartdldrgui.cpp:303
 msgid "Date"
-msgstr ""
+msgstr "Dato"
 
 #: src/chartdldrgui.cpp:306
 msgid "Chart Description"
-msgstr ""
+msgstr "Kartbeskrivelse"
 
 #: src/chartdldrgui.cpp:331
 msgid "Select New"
-msgstr ""
+msgstr "Velg ny"
 
 #: src/chartdldrgui.cpp:332
 msgid "Check all charts that are 'New' in the list."
-msgstr ""
+msgstr "Sjekk alle karter som er 'Nye' i listen."
 
 #: src/chartdldrgui.cpp:335
 msgid "Select Updated"
-msgstr ""
+msgstr "Velg oppdaterte"
 
 #: src/chartdldrgui.cpp:336
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr ""
+msgstr "Velg alle karter som er 'utdatert' i listen."
 
 #: src/chartdldrgui.cpp:346
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr ""
+msgstr "%u karter totalt, %u oppdatert, %u nye, %u valgte"
 
 #: src/chartdldrgui.cpp:353
 #, c-format
