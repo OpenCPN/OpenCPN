@@ -1490,7 +1490,8 @@ void glTextureManager::BuildCompressedCache() {
 
     glTexFactory *tex_fact = new glTexFactory(pchart, g_raster_format);
 
-    m_progMsg.Printf(_("Distance from Ownship:  %4.0f NMi\n"), distance);
+    m_progMsg.Printf(_("Distance from Ownship:  %4.0f NMi"), distance);
+    m_progMsg += "\n";
     m_progMsg.Prepend(_T("Preparing RNC Cache...\n"));
 
     if (m_skipout) {
