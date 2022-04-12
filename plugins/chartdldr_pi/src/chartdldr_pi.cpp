@@ -133,20 +133,18 @@ void write_file(const wxString extract_file, char *data,
 
 int g_Android_SDK_Version;
 
-bool IsDLDirWritable( wxFileName fn){
+bool IsDLDirWritable(wxFileName fn) {
 #ifndef __OCPN__ANDROID__
   return fn.IsDirWritable();
 #else
-  if ( g_Android_SDK_Version >= 30){       // scoped storage?
+  if (g_Android_SDK_Version >= 30) {  // scoped storage?
     // Use a simple test here
     return (fn.GetFullPath().Contains("org.opencpn.opencpn"));  // fast test
-  }
-  else
+  } else
     return fn.IsDirWritable();
 
 #endif
 }
-
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -320,8 +318,10 @@ bool chartdldr_pi::LoadConfig(void) {
 
     // Check to see if the directory is writeable, esp. on App updates.
     wxFileName testFN(m_base_chart_dir);
-    if (!IsDLDirWritable( testFN )){
-      wxLogMessage("Cannot write to m_base_chart_dir, override to GetWritableDocumentsDir()" );
+    if (!IsDLDirWritable(testFN)) {
+      wxLogMessage(
+          "Cannot write to m_base_chart_dir, override to "
+          "GetWritableDocumentsDir()");
       m_base_chart_dir = fn.GetPath();
       wxLogMessage(_T ( "chartdldr_pi: Corrected: " ) + m_base_chart_dir);
     }
@@ -1409,14 +1409,16 @@ After downloading the charts, please extract them to %s"),
     OCPN_downloadFileBackground(url.BuildURI(), file_path, this, &handle);
 
     if (idx >= 0) {
-      pPlugIn->ProcessFile(
-          downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
-          pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
-
-      cs->ChartUpdated(pPlugIn->m_pChartCatalog->charts.Item(idx).number,
-                       pPlugIn->m_pChartCatalog->charts.Item(idx)
-                           .GetUpdateDatetime()
-                           .GetTicks());
+      if (pPlugIn->ProcessFile(
+              downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
+              pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime())) {
+        cs->ChartUpdated(pPlugIn->m_pChartCatalog->charts.Item(idx).number,
+                         pPlugIn->m_pChartCatalog->charts.Item(idx)
+                             .GetUpdateDatetime()
+                             .GetTicks());
+      } else {
+        m_failed_downloads++;
+      }
       idx = -1;
     }
 
@@ -1452,14 +1454,16 @@ After downloading the charts, please extract them to %s"),
     }
   }
   if (idx >= 0) {
-    pPlugIn->ProcessFile(
-        downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
-        pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
-
-    cs->ChartUpdated(pPlugIn->m_pChartCatalog->charts.Item(idx).number,
-                     pPlugIn->m_pChartCatalog->charts.Item(idx)
-                         .GetUpdateDatetime()
-                         .GetTicks());
+    if (pPlugIn->ProcessFile(
+            downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
+            pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime())) {
+      cs->ChartUpdated(pPlugIn->m_pChartCatalog->charts.Item(idx).number,
+                       pPlugIn->m_pChartCatalog->charts.Item(idx)
+                           .GetUpdateDatetime()
+                           .GetTicks());
+    } else {
+      m_failed_downloads++;
+    }
   }
   DisableForDownload(true);
   m_bDnldCharts->SetLabel(_("Download selected charts"));
@@ -1591,24 +1595,24 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
   androidDisableRotation();
 #endif
 
-  if (dialog->ShowModal() == wxID_OK){
-     ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(),
-                                       dialog->m_tChartSourceUrl->GetValue(),
-                                       dialog->m_tcChartDirectory->GetValue());
-     dialog->Destroy();
-     pPlugIn->m_pChartSources->Add(cs);
-     AppendCatalog(cs);
-     bool covered = false;
-     for (size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++) {
-       if (cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i)))) {
-         covered = true;
-         break;
-       }
-     }
-     if (!covered) {
-       wxString dir = cs->GetDir();
-       AddChartDirectory(dir);
-     }
+  if (dialog->ShowModal() == wxID_OK) {
+    ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(),
+                                      dialog->m_tChartSourceUrl->GetValue(),
+                                      dialog->m_tcChartDirectory->GetValue());
+    dialog->Destroy();
+    pPlugIn->m_pChartSources->Add(cs);
+    AppendCatalog(cs);
+    bool covered = false;
+    for (size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++) {
+      if (cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i)))) {
+        covered = true;
+        break;
+      }
+    }
+    if (!covered) {
+      wxString dir = cs->GetDir();
+      AddChartDirectory(dir);
+    }
     SelectCatalog(m_lbChartSources->GetItemCount() - 1);
     pPlugIn->SaveConfig();
   }
@@ -1892,9 +1896,9 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
     if (r < ARCHIVE_WARN) return false;
   }
   archive_read_close(a);
-  //archive_read_free(a);
+  // archive_read_free(a);
   archive_write_close(ext);
-  //archive_write_free(ext);
+  // archive_write_free(ext);
 
   if (aRemoveArchive) wxRemoveFile(aArchiveFile);
   return true;
@@ -2438,8 +2442,8 @@ bool ChartDldrGuiAddSourceDlg::ValidateUrl(const wxString Url,
     re.Compile(
         _T("^https?\\://[a-zA-Z0-9\\./_-]*\\.[xX][mM][lL]$"));  // TODO: wxRegEx
                                                                 // sucks a bit,
-                                                                // this RE is way
-                                                                // too naive
+                                                                // this RE is
+                                                                // way too naive
   else
     re.Compile(
         _T("^https?\\://[a-zA-Z0-9\\./_-]*$"));  // TODO: wxRegEx sucks a bit,
