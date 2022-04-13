@@ -1,8 +1,11 @@
 #!/usr/bin/make -f
 
 include  /usr/share/dpkg/pkg-info.mk
+include  /usr/share/dpkg/architecture.mk
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+TARGET      = $(subst amd64,x86_64,$(DEB_HOST_ARCH))
 
 %:
 	dh $@
@@ -18,4 +21,5 @@ override_dh_auto_configure:
             -DOCPN_USE_BUNDLED_LIBS=OFF \
             -DOCPN_USE_NEWSERIAL=OFF \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
-	    -DOCPN_FORCE_GTK3=OFF
+	    -DOCPN_FORCE_GTK3=OFF \
+	    -DOCPN_TARGET_TUPLE="debian-$(TARGET);10;$(TARGET)"
