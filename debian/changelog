@@ -1,8 +1,8 @@
 opencpn (5.6.0+dfsg0-1~bpo10+2) buster-backports-sloppy; urgency=medium
 
-  * Link gtk2  intead of gtk3 to match available plugins.
+  * Link to gtk2 instead of gtk3 to match available plugins.
 
- -- Alec Leamas <al@buster.localdomain>  Wed, 13 Apr 2022 18:11:14 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 13 Apr 2022 18:11:14 +0200
 
 opencpn (5.6.0+dfsg0-1~bpo10+1) buster-backports-sloppy; urgency=medium
 
