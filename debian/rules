@@ -18,4 +18,4 @@ override_dh_auto_configure:
             -DOCPN_USE_BUNDLED_LIBS=OFF \
             -DOCPN_USE_NEWSERIAL=OFF \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
-            -DOCPN_FORCE_GTK3=ON
+	    -DOCPN_FORCE_GTK3=OFF
