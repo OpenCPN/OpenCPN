@@ -11,7 +11,6 @@
 #include <wx/scrolwin.h>
 #include <wx/textwrapper.h>
 
-
 ///////////////////////////////////////////////////////////////////////////
 
 #ifdef __OCPN__ANDROID__
@@ -83,11 +82,12 @@ height: 30px;\
 #include "qdebug.h"
 #endif
 
-extern chartdldr_pi *g_pi;
+extern chartdldr_pi* g_pi;
 
 class DLDR_ChartDirPanelHardBreakWrapper : public wxTextWrapper {
 public:
-  DLDR_ChartDirPanelHardBreakWrapper(wxWindow *win, const wxString &text, int widthMax) {
+  DLDR_ChartDirPanelHardBreakWrapper(wxWindow* win, const wxString& text,
+                                     int widthMax) {
     m_lineCount = 0;
 
     // Replace all spaces in the string with a token character '^'
@@ -101,23 +101,22 @@ public:
     Wrap(win, textMod, widthMax);
 
     // walk the output array, repairing the substitutions
-    for (size_t i=0; i < m_array.GetCount(); i++){
+    for (size_t i = 0; i < m_array.GetCount(); i++) {
       wxString a = m_array[i];
       a.Replace(" ", sep);
-      if (m_array.GetCount() > 1){
-        if (i < m_array.GetCount()-1)
-          a += sep;
+      if (m_array.GetCount() > 1) {
+        if (i < m_array.GetCount() - 1) a += sep;
       }
       a.Replace("^", " ");
       m_array[i] = a;
     }
   }
-  wxString const &GetWrapped() const { return m_wrapped; }
+  wxString const& GetWrapped() const { return m_wrapped; }
   int const GetLineCount() const { return m_lineCount; }
   wxArrayString GetLineArray() { return m_array; }
 
 protected:
-  virtual void OnOutputLine(const wxString &line) {
+  virtual void OnOutputLine(const wxString& line) {
     m_wrapped += line;
     m_array.Add(line);
   }
@@ -132,104 +131,93 @@ private:
   wxArrayString m_array;
 };
 
-
-
 BEGIN_EVENT_TABLE(DLDR_OCPNChartDirPanel, wxPanel)
-EVT_PAINT ( DLDR_OCPNChartDirPanel::OnPaint )
+EVT_PAINT(DLDR_OCPNChartDirPanel::OnPaint)
 END_EVENT_TABLE()
 
-DLDR_OCPNChartDirPanel::DLDR_OCPNChartDirPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size)
-:wxPanel(parent, id, pos, size, wxBORDER_NONE)
-{
-    // On Android, shorten the displayed path name by removing well-known prefix
-    //if (cdi.fullpath.StartsWith("/storage/emulated/0/Android/data/org.opencpn.opencpn/files"))
-    //  m_ChartDir = "..." + cdi.fullpath.Mid(58);
+DLDR_OCPNChartDirPanel::DLDR_OCPNChartDirPanel(wxWindow* parent, wxWindowID id,
+                                               const wxPoint& pos,
+                                               const wxSize& size)
+    : wxPanel(parent, id, pos, size, wxBORDER_NONE) {
+  // On Android, shorten the displayed path name by removing well-known prefix
+  // if
+  // (cdi.fullpath.StartsWith("/storage/emulated/0/Android/data/org.opencpn.opencpn/files"))
+  //  m_ChartDir = "..." + cdi.fullpath.Mid(58);
 
-    m_refHeight = GetCharHeight();
+  m_refHeight = GetCharHeight();
 
-    m_unselectedHeight = 2 * m_refHeight;
+  m_unselectedHeight = 2 * m_refHeight;
 
-    SetMinSize(wxSize(-1, m_unselectedHeight));
+  SetMinSize(wxSize(-1, m_unselectedHeight));
 
-    wxColour colour;
-    GetGlobalColor(_T("UIBCK"), &colour);
-    m_boxColour = colour;
+  wxColour colour;
+  GetGlobalColor(_T("UIBCK"), &colour);
+  m_boxColour = colour;
 }
 
-DLDR_OCPNChartDirPanel::~DLDR_OCPNChartDirPanel()
-{
-}
+DLDR_OCPNChartDirPanel::~DLDR_OCPNChartDirPanel() {}
 
-void DLDR_OCPNChartDirPanel::SetText( wxString text )
-{
+void DLDR_OCPNChartDirPanel::SetText(wxString text) {
   m_ChartDir = text;
 
   int maxWidth = GetParent()->GetSize().x * 75 / 100;
   DLDR_ChartDirPanelHardBreakWrapper wrapper(this, m_ChartDir, maxWidth);
   wxArrayString nameWrapped = wrapper.GetLineArray();
   int lineCount = nameWrapped.GetCount();
-  if(lineCount > 1)
-    lineCount++;
-  SetMinSize(wxSize(-1, (lineCount *  m_refHeight * 3 / 2)));
+  if (lineCount > 1) lineCount++;
+  SetMinSize(wxSize(-1, (lineCount * m_refHeight * 3 / 2)));
   GetParent()->Layout();
   Refresh();
 }
 
-void DLDR_OCPNChartDirPanel::OnPaint( wxPaintEvent &event )
-{
-    int width, height;
-    GetSize( &width, &height );
-    wxPaintDC dc( this );
+void DLDR_OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
+  int width, height;
+  GetSize(&width, &height);
+  wxPaintDC dc(this);
 
-    dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetBrush(wxBrush(GetBackgroundColour()));
-    dc.DrawRectangle(GetVirtualSize());
+  dc.SetPen(*wxTRANSPARENT_PEN);
+  dc.SetBrush(wxBrush(GetBackgroundColour()));
+  dc.DrawRectangle(GetVirtualSize());
 
-    wxColour c;
+  wxColour c;
 
-    wxString nameString = m_ChartDir;
-    int maxWidth = GetParent()->GetSize().x * 75 / 100;
+  wxString nameString = m_ChartDir;
+  int maxWidth = GetParent()->GetSize().x * 75 / 100;
 
-    DLDR_ChartDirPanelHardBreakWrapper wrapper(this, nameString, maxWidth);
-    wxArrayString nameWrapped = wrapper.GetLineArray();
+  DLDR_ChartDirPanelHardBreakWrapper wrapper(this, nameString, maxWidth);
+  wxArrayString nameWrapped = wrapper.GetLineArray();
 
-    if (height < (int)(nameWrapped.GetCount()+1) *  m_refHeight){
-      SetMinSize(wxSize(-1, (nameWrapped.GetCount()+1) *  m_refHeight));
-      GetParent()->GetSizer()->Layout();
+  if (height < (int)(nameWrapped.GetCount() + 1) * m_refHeight) {
+    SetMinSize(wxSize(-1, (nameWrapped.GetCount() + 1) * m_refHeight));
+    GetParent()->GetSizer()->Layout();
+  }
+
+  if (1) {
+    dc.SetBrush(wxBrush(m_boxColour));
+
+    GetGlobalColor(_T ( "UITX1" ), &c);
+    dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
+
+    dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
+
+    int offset = height / 10;
+    int text_x = offset;
+
+    wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+    dc.SetFont(*dFont);
+
+    dc.SetTextForeground(wxColour(64, 64, 64));
+
+    int yd = height * 5 / 100;
+    for (size_t i = 0; i < nameWrapped.GetCount(); i++) {
+      if (i == 0)
+        dc.DrawText(nameWrapped[i], text_x, yd);
+      else
+        dc.DrawText(nameWrapped[i], text_x + GetCharWidth() / 2, yd);
+      yd += GetCharHeight();
     }
-
-    if(1){
-
-        dc.SetBrush( wxBrush( m_boxColour ) );
-
-        GetGlobalColor( _T ( "UITX1" ), &c );
-        dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
-
-        dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
-
-        int offset = height / 10;
-        int text_x = offset;
-
-        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
-        dc.SetFont( *dFont );
-
-        dc.SetTextForeground(wxColour(64, 64, 64));
-
-
-        int yd = height * 5 / 100;
-        for (size_t i=0 ; i < nameWrapped.GetCount(); i++){
-        if( i == 0 )
-          dc.DrawText(nameWrapped[i], text_x, yd);
-        else
-          dc.DrawText(nameWrapped[i], text_x + GetCharWidth() / 2, yd);
-        yd += GetCharHeight();
-        }
-    }   // selected
+  }  // selected
 }
-
-
-
-
 
 void AddSourceDlg::applyStyle() {
 #ifdef __OCPN__ANDROID__
@@ -312,7 +300,9 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
 
   wxStaticBoxSizer* sbSizerChartDir;
   sbSizerChartDir = new wxStaticBoxSizer(
-      new wxStaticBox(this, wxID_ANY, _("Proposed chart installation directory")), wxVERTICAL);
+      new wxStaticBox(this, wxID_ANY,
+                      _("Proposed chart installation directory")),
+      wxVERTICAL);
   bSizerMain->Add(sbSizerChartDir, 0, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* dirbox = new wxBoxSizer(wxVERTICAL);
@@ -323,23 +313,25 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
   dirbox->Add(m_tcChartDirectory, 1, wxALL | wxEXPAND, 5);
   m_tcChartDirectory->Hide();
 
-  m_panelChartDirectory = new DLDR_OCPNChartDirPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1));
-  //m_panelChartDirectory->SetSizeHints(5000, -1);
+  m_panelChartDirectory = new DLDR_OCPNChartDirPanel(
+      this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1));
+  // m_panelChartDirectory->SetSizeHints(5000, -1);
   dirbox->Add(m_panelChartDirectory, 1, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* dirbox1 = new wxBoxSizer(wxHORIZONTAL);
   sbSizerChartDir->Add(dirbox1, 0, wxALIGN_RIGHT);
-  m_buttonChartDirectory = new wxButton(this, wxID_ANY, _("Select a different directory"));
-  dirbox1->Add(m_buttonChartDirectory, 0, wxALL | wxEXPAND | wxALIGN_RIGHT, 5);
+  m_buttonChartDirectory =
+      new wxButton(this, wxID_ANY, _("Select a different directory"));
+  dirbox1->Add(m_buttonChartDirectory, 0, wxALL | wxEXPAND, 5);
   m_buttonChartDirectory->Disable();
 
   wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
   bSizerMain->Add(buttons, 0, wxALIGN_RIGHT);
 
   m_sdbSizerBtnsOK = new wxButton(this, wxID_OK, _("OK"));
-  buttons->Add(m_sdbSizerBtnsOK, 1, wxALL , 5);
+  buttons->Add(m_sdbSizerBtnsOK, 1, wxALL, 5);
   m_sdbSizerBtnsCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
-  buttons->Add(m_sdbSizerBtnsCancel, 1, wxALL , 5);
+  buttons->Add(m_sdbSizerBtnsCancel, 1, wxALL, 5);
 
   this->Layout();
 
@@ -385,7 +377,7 @@ void AddSourceDlg::OnDirSelClick(wxCommandEvent& event) {
   if (response == wxID_OK) {
     wxFileName fn(m_dirExpanded);
 
-    if (!dir_spec.EndsWith(fn.GetName())){
+    if (!dir_spec.EndsWith(fn.GetName())) {
       dir_spec += wxFileName::GetPathSeparator();
       dir_spec += fn.GetName();
     }
@@ -755,7 +747,6 @@ ChartPanel::ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 #ifdef __WXGTK__
   bUseSysColors = true;
 #endif
-
 
   if (bUseSysColors) {
     wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
