@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-10 11:30-0400\n"
-"PO-Revision-Date: 2022-04-10 15:32\n"
+"PO-Revision-Date: 2022-04-13 13:57\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -6053,15 +6053,15 @@ msgstr "Alarme sonore pour l'alerte de mouillage"
 #: src/options.cpp:6300 src/options.cpp:10079 src/options.cpp:10099
 #: src/options.cpp:10118 src/options.cpp:10137
 msgid "Audio file name:"
-msgstr "Nom du fichier son:"
+msgstr "Fichier son :"
 
 #: src/options.cpp:6214
 msgid "Select Anchor Alarm Sound"
-msgstr "Choisir l'alarme de mouillage"
+msgstr "Mouillage : Choisir le son joué "
 
 #: src/options.cpp:6220
 msgid "Test Anchor Alarm Sound"
-msgstr "Test de l'alarme de mouillage"
+msgstr "Test"
 
 #: src/options.cpp:6233
 msgid "Play Sound on AIS Alert."
@@ -6069,11 +6069,11 @@ msgstr "Si alerte AIS : Jouer le son"
 
 #: src/options.cpp:6246
 msgid "Select AIS Alert Sound"
-msgstr "Choisir l'alarme AIS"
+msgstr "AIS : Choisir le son joué"
 
 #: src/options.cpp:6251
 msgid "Test AIS Alert Sound"
-msgstr "Test de l'alerte AIS"
+msgstr "Tester"
 
 #: src/options.cpp:6258
 msgid "SART Alert"
@@ -6085,11 +6085,11 @@ msgstr "Si alerte SART : Jouer le son "
 
 #: src/options.cpp:6277
 msgid "Select AIS SART Alert Sound"
-msgstr "Choisir AIS Sart Alarme"
+msgstr "SART : Choisir le son joué"
 
 #: src/options.cpp:6283
 msgid "Test AIS SART Alert Sound"
-msgstr "Test de l'alarme AIS-SART"
+msgstr "Tester"
 
 #: src/options.cpp:6290
 msgid "DSC Alert"
@@ -6105,7 +6105,7 @@ msgstr "DSC : Choisir le son joué"
 
 #: src/options.cpp:6314
 msgid "Test DSC notification Sound"
-msgstr "Test Alarme DSC"
+msgstr "Test"
 
 #: src/options.cpp:6444
 msgid "AIS Targets"
@@ -6329,7 +6329,7 @@ msgstr "Cartes vectorielles, sondes : Zoom"
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Zoom par molette souris : Sensibilité"
 
 #: src/options.cpp:7270 src/options.cpp:7330
 msgid "Connections"
