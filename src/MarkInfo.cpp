@@ -724,7 +724,6 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(m_staticTextPlSpeedUnits, 0,
                                   wxALIGN_CENTRE_VERTICAL, 0);
 
-#ifndef __OCPN__ANDROID__
   m_staticTextEta = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
                                      wxID_ANY, _("ETD (UTC)"));
   gbSizerInnerExtProperties1->Add(m_staticTextEta, 0, wxALIGN_CENTRE_VERTICAL,
@@ -752,7 +751,6 @@ void MarkInfoDlg::Create() {
 
   bsTimestamp->Add(m_EtaTimePickerCtrl, 0, wxALL | wxEXPAND, 5);
   gbSizerInnerExtProperties1->Add(bsTimestamp, 0, wxEXPAND, 0);
-#endif
   sbSizerExtProperties->Add(gbSizerInnerExtProperties, 0, wxALL | wxEXPAND, 5);
   sbSizerExtProperties->Add(sbRangeRingsExtProperties, 0, wxALL | wxEXPAND, 5);
   sbSizerExtProperties->Add(gbSizerInnerExtProperties2, 0, wxALL | wxEXPAND, 5);
@@ -916,14 +914,12 @@ MarkInfoDlg::~MarkInfoDlg() {
   m_notebookProperties->Disconnect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
       wxNotebookEventHandler(MarkInfoDlg::OnNotebookPageChanged), NULL, this);
-#ifndef __OCPN__ANDROID__
   m_EtaTimePickerCtrl->Disconnect(
       wxEVT_TIME_CHANGED, wxDateEventHandler(MarkInfoDlg::OnTimeChanged), NULL,
       this);
   m_EtaDatePickerCtrl->Disconnect(
       wxEVT_DATE_CHANGED, wxDateEventHandler(MarkInfoDlg::OnTimeChanged), NULL,
       this);
-#endif
 
 #ifdef __OCPN__ANDROID__
   androidEnableBackButton(true);
@@ -1555,7 +1551,6 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textCtrlPlSpeed->SetValue(wxEmptyString);
     }
 
-#ifndef __OCPN__ANDROID__
     wxDateTime etd;
     etd = m_pRoutePoint->GetManualETD();
     if (etd.IsValid()) {
@@ -1565,16 +1560,13 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     } else {
       m_cbEtaPresent->SetValue(false);
     }
-#endif
 
     m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
     m_textCtrlPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
-#ifndef __OCPN__ANDROID__
     m_staticTextEta->Show(m_pRoutePoint->m_bIsInRoute);
     m_EtaDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
     m_EtaTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
     m_cbEtaPresent->Show(m_pRoutePoint->m_bIsInRoute);
-#endif
     m_staticTextPlSpeedUnits->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextArrivalUnits->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1602,11 +1594,9 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textWaypointRangeRingsStep->SetEditable(false);
       m_PickColor->Enable(false);
       DefaultsBtn->Enable(false);
-#ifndef __OCPN__ANDROID__
       m_EtaDatePickerCtrl->Enable(false);
       m_EtaTimePickerCtrl->Enable(false);
       m_cbEtaPresent->Enable(false);
-#endif
       if (!m_textDescription->IsEmpty()) {
         m_notebookProperties->SetSelection(1);  // Show Description page
       }
@@ -1630,11 +1620,9 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textWaypointRangeRingsStep->SetEditable(true);
       m_PickColor->Enable(true);
       DefaultsBtn->Enable(true);
-#ifndef __OCPN__ANDROID__
       m_EtaDatePickerCtrl->Enable(true);
       m_EtaTimePickerCtrl->Enable(true);
       m_cbEtaPresent->Enable(true);
-#endif
       m_notebookProperties->SetSelection(0);
       m_comboBoxTideStation->Enable(true);
     }
@@ -1748,7 +1736,6 @@ bool MarkInfoDlg::SaveChanges() {
       }
     }
 
-#ifndef __OCPN__ANDROID__
     if (m_cbEtaPresent->GetValue()) {
       wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
       dt.SetHour(m_EtaTimePickerCtrl->GetValue().GetHour());
@@ -1760,9 +1747,6 @@ bool MarkInfoDlg::SaveChanges() {
     } else {
       m_pRoutePoint->SetETD(wxEmptyString);
     }
-#else
-    m_pRoutePoint->SetETD(wxEmptyString);
-#endif
     // Here is some logic....
     // If the Markname is completely numeric, and is part of a route,
     // Then declare it to be of attribute m_bDynamicName = true

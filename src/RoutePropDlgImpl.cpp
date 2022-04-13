@@ -599,7 +599,6 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     m_tcDescription->SetValue(m_pRoute->m_RouteDescription);
 
     m_tcName->SetFocus();
-#ifndef __OCPN__ANDROID__
     if (m_pRoute->m_PlannedDeparture.IsValid() &&
         m_pRoute->m_PlannedDeparture.GetValue() > 0) {
       m_dpDepartureDate->SetValue(
@@ -618,7 +617,6 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
           wxDateTime::Now(), m_tz_selection,
           m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
     }
-#endif
   }
 
   m_btnSplit->Enable(false);
@@ -671,7 +669,6 @@ void RoutePropDlgImpl::DepartureTimeOnTimeChanged(wxDateEvent& event) {
 
 void RoutePropDlgImpl::TimezoneOnChoice(wxCommandEvent& event) {
   m_tz_selection = m_choiceTimezone->GetSelection();
-#ifndef __OCPN__ANDROID__
   m_dpDepartureDate->SetValue(
       toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
                     m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)
@@ -679,7 +676,6 @@ void RoutePropDlgImpl::TimezoneOnChoice(wxCommandEvent& event) {
   m_tpDepartureTime->SetValue(
       toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
                     m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
-#endif
   UpdatePoints();
   event.Skip();
 }
@@ -790,7 +786,6 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged(
 }
 
 wxDateTime RoutePropDlgImpl::GetDepartureTS() {
-#ifndef __OCPN__ANDROID__
   wxDateTime dt = m_dpDepartureDate->GetValue();
   dt.SetHour(m_tpDepartureTime->GetValue().GetHour());
   dt.SetMinute(m_tpDepartureTime->GetValue().GetMinute());
@@ -799,9 +794,6 @@ wxDateTime RoutePropDlgImpl::GetDepartureTS() {
       dt, m_tz_selection,
       m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);
   ;
-#else
-  return wxDateTime::Now();
-#endif
 }
 
 void RoutePropDlgImpl::OnRoutepropCopyTxtClick(wxCommandEvent& event) {

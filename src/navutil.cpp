@@ -4876,9 +4876,7 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     if (win->IsKindOf(CLASSINFO(wxListBox)) ||
         win->IsKindOf(CLASSINFO(wxListCtrl)) ||
         win->IsKindOf(CLASSINFO(wxTextCtrl))
-#ifndef __OCPN__ANDROID__
         || win->IsKindOf(CLASSINFO(wxTimePickerCtrl))
-#endif
     ) {
       win->SetBackgroundColour(col);
     } else if (win->IsKindOf(CLASSINFO(wxStaticText)) ||
