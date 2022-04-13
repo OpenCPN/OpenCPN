@@ -1,0 +1,114 @@
+From: Alec Leamas <leamas.alec@nowhere.net>
+Date: Wed, 23 Feb 2022 22:01:30 +0100
+Subject: cmake: Refactor target-related variables setup (#2549).
+
+The Debian .deb package generation requires som support variables.
+These have been setup in cmake/GetArch, but this is just not logical
+since they depend on the target being Ubuntu/Debian rather than
+the architecture.
+
+Move the code from GetArch to TargetSetup, re-factor and simplify
+remaining code in GetArch.
+
+Builds with a Debian/Ubuntu/Raspbian target, implicit or set
+using OCPN_TARGET_TUPLE, will build a .deb package.
+---
+ cmake/GetArch.cmake     | 45 ++++++++++++---------------------------------
+ cmake/TargetSetup.cmake | 10 +++++++++-
+ 2 files changed, 21 insertions(+), 34 deletions(-)
+
+diff --git a/cmake/GetArch.cmake b/cmake/GetArch.cmake
+index ea69972..9471600 100644
+--- a/cmake/GetArch.cmake
++++ b/cmake/GetArch.cmake
+@@ -1,14 +1,8 @@
+-
+-# Set ARCH and LIB_INSTALL_DIR  and PACKAGE_RECS in parent
+-# using cmake probes and various heuristics.
+-
+-#Red Hat:/etc/redhat-release
+-#Gentoo: /etc/gentoo-release
+-#Ubuntu: /etc/debian_version
+-#Suse:   /etc/suse-release or /etc/SuSE-release
+-
++# Set ARCH in parent using cmake probes and various heuristics.
+ # Based on code from nohal
++
+ function(GetArch)
++  # Set up ARCH
+   if (NOT OCPN_TARGET_TUPLE STREQUAL "")
+     list(GET OCPN_TARGET_TUPLE 2 ARCH)
+   elseif (WIN32)
+@@ -18,7 +12,6 @@ function(GetArch)
+   else ()
+     # Defaults:
+     set (ARCH "x86_64")
+-    set (LIB_INSTALL_DIR "lib")
+     if (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+       if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+         set (ARCH "arm64")
+@@ -28,30 +21,16 @@ function(GetArch)
+     else (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+       set (ARCH ${CMAKE_SYSTEM_PROCESSOR})
+     endif ()
+-    if (EXISTS /etc/debian_version)
+-      set (PACKAGE_FORMAT "DEB")
+-      set (PACKAGE_RECS "xcalib,xdg-utils")
+-      set (LIB_INSTALL_DIR "lib")
+-      set(TENTATIVE_PREFIX "/usr/local")
+-    elseif (EXISTS /etc/redhat-release)
+-      set (LIB_INSTALL_DIR "lib64")
+-      if (ARCH STREQUAL "arm64")
++    if (ARCH STREQUAL "arm64")
++      if (OCPN_FLATPAK)
++        set(ARCH "aarch64")
++      elseif (EXISTS /etc/redhat-release)
++        set (ARCH "aarch64")
++      elseif (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
+         set (ARCH "aarch64")
+       endif ()
+-    elseif (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
+-      if (ARCH STREQUAL "arm64")
+-         set (ARCH "aarch64")
+-      endif ()
+-    elseif (EXISTS /etc/gentoo-release)
+-      set (LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
+-    endif ()
+-    if (OCPN_FLATPAK AND ARCH STREQUAL "arm64")
+-      set(ARCH "aarch64")
+     endif ()
+   endif ()
+-  set (LIB_INSTALL_DIR ${LIB_INSTALL_DIR} PARENT_SCOPE)
+-  set (ARCH ${ARCH} PARENT_SCOPE)
+-  set (PACKAGE_FORMAT ${PACKAGE_FORMAT} PARENT_SCOPE)
+-  set (PACKAGE_RECS ${PACKAGE_RECS} PARENT_SCOPE)
+-  set (TENTATIVE_PREFIX ${TENTATIVE_PREFIX} PARENT_SCOPE)
+-endfunction(GetArch)
++
++  set(ARCH ${ARCH} PARENT_SCOPE)
++endfunction (GetArch)
+diff --git a/cmake/TargetSetup.cmake b/cmake/TargetSetup.cmake
+index 1aafc11..eb1fffa 100644
+--- a/cmake/TargetSetup.cmake
++++ b/cmake/TargetSetup.cmake
+@@ -52,7 +52,6 @@ else ()
+     set(PKG_TARGET_VERSION 1)
+ endif ()
+ 
+-
+ string(STRIP ${PKG_TARGET} PKG_TARGET)
+ string(TOLOWER ${PKG_TARGET} PKG_TARGET)
+ string(STRIP ${PKG_TARGET_VERSION} PKG_TARGET_VERSION)
+@@ -62,3 +61,12 @@ string(CONCAT _msg
+   "${PKG_TARGET}\; ${PKG_TARGET_VERSION}\; ${ARCH}"
+ )
+ message(STATUS ${_msg})
++
++# Set some target-related support variables, notably to build a .deb package:
++set(LIB_INSTALL_DIR "lib")
++if (${PKG_TARGET} MATCHES "ubuntu|debian|raspbian")
++    set(PACKAGE_FORMAT "DEB")
++    set(PACKAGE_RECS "xcalib,xdg-utils")
++    set(TENTATIVE_PREFIX "/usr/local")
++    message(STATUS "Setting up a Debian package.")
++endif ()
