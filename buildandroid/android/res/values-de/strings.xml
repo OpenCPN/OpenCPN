@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="DOWNLOADING_FILE">Datei wird heruntergeladen…</string>
+    <string name="DOWNLOADING_FILE">Lade Datei herunter…</string>
     <string name="DEFAULT">Voreinstellung</string>
     <string name="CUSTOM">Angepasst</string>
     <string name="ocpn_GRIB_activity_Display">GRIB Anzeigeeinstellungen</string>

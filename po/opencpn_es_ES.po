@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-10 11:30-0400\n"
-"PO-Revision-Date: 2022-04-10 15:32\n"
+"PO-Revision-Date: 2022-04-13 13:57\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -6327,7 +6327,7 @@ msgstr "Factor tamaño sondas en ENC"
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Sensibilidad Zoom por rueda del ratón"
 
 #: src/options.cpp:7270 src/options.cpp:7330
 msgid "Connections"

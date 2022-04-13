@@ -23,7 +23,7 @@
     <string name="ocpn_action_settings_basic">Paramètres OpenCPN</string>
     <string name="ocpn_action_encText">Textes : Voir/Cacher</string>
     <string name="ocpn_action_encSoundings">Sondes : Voir/Cacher</string>
-    <string name="ocpn_action_encLights">Feux : Montrer/Cacher</string>
+    <string name="ocpn_action_encLights">Feux : Voir/Cacher</string>
     <string name="ocpn_action_googlemaps">Utiliser Google Maps</string>
     <string name="ocpn_action_toggle_fullscreen">Plein écran : Oui/Non</string>
     <!-- Preferences Headers -->

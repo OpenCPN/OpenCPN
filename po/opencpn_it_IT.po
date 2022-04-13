@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-10 11:30-0400\n"
-"PO-Revision-Date: 2022-04-10 16:05\n"
+"PO-Revision-Date: 2022-04-13 13:57\n"
 "Last-Translator: \n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: include/about.h:38 include/AboutFrame.h:87 include/AboutFrameImpl.h:68
 #: src/chart1.cpp:5662 src/chart1.cpp:9745 src/toolbar.cpp:1279
 msgid "About OpenCPN"
-msgstr "Informazioni su OpenCPN"
+msgstr "Su OpenCPN"
 
 #: include/AISTargetAlertDialog.h:48 src/routemanagerdialog.cpp:1321
 #: src/routemanagerdialog.cpp:1365 src/routemanagerdialog.cpp:2044
@@ -28,7 +28,7 @@ msgstr "Informazioni su OpenCPN"
 #: src/routemanagerdialog.cpp:2526 src/routemanagerdialog.cpp:2662
 #: src/routemanagerdialog.cpp:2827 src/toolbar.cpp:3052
 msgid "OpenCPN Alert"
-msgstr "OpenCPN Conferma"
+msgstr "Avviso OpenCPN"
 
 #: include/AISTargetAlertDialog.h:67
 msgid "OpenCPN AIS Alert"
@@ -3148,7 +3148,7 @@ msgstr "Modalità 'Più Spazio Avanti' (Look Ahead)"
 
 #: src/CanvasOptions.cpp:180 src/options.cpp:3383
 msgid "Display Options"
-msgstr "Opzioni Visualizzazione Imbarcazione Propria"
+msgstr "Opzioni vedere barca propria"
 
 #: src/CanvasOptions.cpp:185 src/chart1.cpp:5544 src/chart1.cpp:5550
 #: src/options.cpp:5443 src/options.cpp:5624
@@ -3223,7 +3223,7 @@ msgstr "Faro : Mostra settore visibili"
 
 #: src/CanvasOptions.cpp:316 src/options.cpp:4788 src/options.cpp:4984
 msgid "Display Category"
-msgstr "Preset Visualizzazione"
+msgstr "Contenuto visualizzato"
 
 #: src/CanvasOptions.cpp:318 src/options.cpp:4790 src/options.cpp:4986
 msgid "Standard"
@@ -3418,7 +3418,7 @@ msgstr "Quantità di registrazioni: errore, avviso, messaggio, info, debug o tra
 
 #: src/chart1.cpp:1131
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
-msgstr "Visualizzare una presentazione di <num> carte. Poi lasciare. Uno zero o negativa numero di carte <num> specifica alcun limite."
+msgstr "Vedere una presentazione di <num> carte. Poi lasciare. Uno zero o negativa numero di carte <num> specifica alcun limite."
 
 #: src/chart1.cpp:1588
 msgid "OpenCPN ENC Prepare"
@@ -5731,7 +5731,7 @@ msgstr "mm"
 
 #: src/options.cpp:4573 src/options.cpp:5437 src/options.cpp:5618
 msgid "Chart Display"
-msgstr "Display Carta"
+msgstr "Vedere Carta"
 
 #: src/options.cpp:4579
 msgid "Show Skewed Raster Charts as North-Up"
@@ -5750,7 +5750,7 @@ msgstr "Grafica"
 
 #: src/options.cpp:4768
 msgid "Vector Chart Display"
-msgstr "Display grafico vettoriale"
+msgstr "Carte vettoriale"
 
 #: src/options.cpp:4791 src/options.cpp:4987
 msgid "Mariner's Standard"
@@ -5758,7 +5758,7 @@ msgstr "Oggetti S-57/ENC"
 
 #: src/options.cpp:4802 src/options.cpp:6516 src/options.cpp:7301
 msgid "Display"
-msgstr "Visualizzazione"
+msgstr "Vedere"
 
 #: src/options.cpp:4810 src/options.cpp:5002
 msgid "Depth Soundings"
@@ -5914,7 +5914,7 @@ msgstr "Zoom sul cursore"
 
 #: src/options.cpp:5478 src/options.cpp:5663
 msgid "Display Features"
-msgstr "Funzioni Visualizzazione"
+msgstr "Vedere"
 
 #: src/options.cpp:5508
 msgid "Status Bar Option"
@@ -6046,49 +6046,49 @@ msgstr "Allarme Ancoraggio"
 
 #: src/options.cpp:6198
 msgid "Play Sound on Anchor Alarm."
-msgstr "Riproduci Suono con Allarme di Ancoraggio."
+msgstr "Se allerta Ancoraggio: riproduce l'audio."
 
 #: src/options.cpp:6202 src/options.cpp:6237 src/options.cpp:6268
 #: src/options.cpp:6300 src/options.cpp:10079 src/options.cpp:10099
 #: src/options.cpp:10118 src/options.cpp:10137
 msgid "Audio file name:"
-msgstr "Nome file audio:"
+msgstr "File audio:"
 
 #: src/options.cpp:6214
 msgid "Select Anchor Alarm Sound"
-msgstr "Seleziona Suono Allarme Ancoraggio"
+msgstr "Seleziona suono per Ancoraggio"
 
 #: src/options.cpp:6220
 msgid "Test Anchor Alarm Sound"
-msgstr "Prova Suono Allarme Ancoraggio"
+msgstr "Provare"
 
 #: src/options.cpp:6233
 msgid "Play Sound on AIS Alert."
-msgstr "Riproduci Suono con Allarme di Ancoraggio."
+msgstr "Se allerta AIS: riproduce l'audio"
 
 #: src/options.cpp:6246
 msgid "Select AIS Alert Sound"
-msgstr "Selezionare suono di avviso"
+msgstr "Seleziona suono per AIS"
 
 #: src/options.cpp:6251
 msgid "Test AIS Alert Sound"
-msgstr "Selezionare suono di avviso"
+msgstr "Provare"
 
 #: src/options.cpp:6258
 msgid "SART Alert"
-msgstr "Avviso AIS"
+msgstr "Avviso SART"
 
 #: src/options.cpp:6264
 msgid "Play Sound on AIS SART Alert."
-msgstr "Riproduci Suono con Allarme di Ancoraggio."
+msgstr "Se allerta SART: riproduce l'audio"
 
 #: src/options.cpp:6277
 msgid "Select AIS SART Alert Sound"
-msgstr "Selezionare suono di avviso"
+msgstr "Seleziona suono per SART"
 
 #: src/options.cpp:6283
 msgid "Test AIS SART Alert Sound"
-msgstr "Selezionare suono di avviso"
+msgstr "Provare"
 
 #: src/options.cpp:6290
 msgid "DSC Alert"
@@ -6096,15 +6096,15 @@ msgstr "Avviso DSC"
 
 #: src/options.cpp:6296
 msgid "Play Sound on DSC notification."
-msgstr "Riproduci suono su notifica DSC."
+msgstr "Se allerta DSC: riproduce l'audio."
 
 #: src/options.cpp:6309
 msgid "Select DSC notification Sound"
-msgstr "Seleziona il suono di notifica SMS"
+msgstr "Seleziona suono per DSC"
 
 #: src/options.cpp:6314
 msgid "Test DSC notification Sound"
-msgstr "Seleziona il suono di notifica SMS"
+msgstr "Provare"
 
 #: src/options.cpp:6444
 msgid "AIS Targets"
@@ -6328,7 +6328,7 @@ msgstr "ENC Fattore sonoro"
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Sensibilità zoom rotellina del mouse"
 
 #: src/options.cpp:7270 src/options.cpp:7330
 msgid "Connections"
@@ -7636,7 +7636,7 @@ msgstr "Rotta da Traccia"
 
 #: src/TrackPropDlg.cpp:707
 msgid "Display parameters"
-msgstr "Visualizzazione"
+msgstr "Vedere impostazioni"
 
 #: src/TrackPropDlg.cpp:762
 msgid "Statistics"

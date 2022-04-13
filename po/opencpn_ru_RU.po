@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-10 11:30-0400\n"
-"PO-Revision-Date: 2022-04-10 15:32\n"
+"PO-Revision-Date: 2022-04-13 13:57\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -89,7 +89,7 @@ msgstr "(безымянный путь)"
 
 #: include/trackprintout.h:78 src/trackprintout.cpp:274
 msgid "Print Track Selection"
-msgstr ""
+msgstr "Печать выбранного трека"
 
 #: include/TrackPropDlg.h:191 src/TrackPropDlg.cpp:1218
 #: src/TrackPropDlg.cpp:1232
@@ -117,23 +117,23 @@ msgstr "Диалог (шрифт)"
 
 #: src/about.cpp:393
 msgid "The Open Source Chart Plotter/Navigator"
-msgstr ""
+msgstr "Электронно-Картографическая Система с открытым исходным кодом"
 
 #: src/about.cpp:415
 msgid "Copy Log File to Clipboard"
-msgstr ""
+msgstr "Скопировать файл журнала в буфер обмена"
 
 #: src/about.cpp:418
 msgid "Copy Settings File to Clipboard"
-msgstr ""
+msgstr "Скопировать файл настроек в буфер обмена"
 
 #: src/about.cpp:442
 msgid "About"
-msgstr ""
+msgstr "О программе"
 
 #: src/about.cpp:459
 msgid "Authors"
-msgstr ""
+msgstr "Авторы"
 
 #: src/about.cpp:475 src/AboutFrame.cpp:249
 msgid "License"
@@ -2679,43 +2679,43 @@ msgstr "Якорная стоянка "
 #: src/androidUTIL.cpp:4884 src/androidUTIL.cpp:5032 src/androidUTIL.cpp:5120
 #: src/androidUTIL.cpp:5185
 msgid "OpenCPN for Android Migration Assistant"
-msgstr ""
+msgstr "Помощник по миграции Android для OpenCPN"
 
 #: src/androidUTIL.cpp:4910
 msgid "OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"
-msgstr ""
+msgstr "OpenCPN обнаружил папки карт в конфигурационном файле, к которым в этой версии Android не удалось получить доступ"
 
 #: src/androidUTIL.cpp:4933 src/androidUTIL.cpp:4946
 msgid "OpenCPN can copy these chart folders to a suitable location, if desired."
-msgstr ""
+msgstr "OpenCPN при желании может скопировать эти папки в нужное место."
 
 #: src/androidUTIL.cpp:4935 src/androidUTIL.cpp:4948
 msgid "To proceed with chart folder migration, choose the chart source folder, and follow the instructions given."
-msgstr ""
+msgstr "Чтобы продолжить перенос папок с картами, выберите папку с исходным кодом карт и следуйте инструкциям, приведенным ниже."
 
 #: src/androidUTIL.cpp:4945
 msgid "Some chart folders may be inaccessible to OpenCPN on this version of Android. "
-msgstr ""
+msgstr "Некоторые папки карт могут быть недоступны для OpenCPN на этой версии Android. "
 
 #: src/androidUTIL.cpp:4962
 msgid "Migrate destination"
-msgstr ""
+msgstr "Перенос назначение"
 
 #: src/androidUTIL.cpp:4966
 msgid "OpenCPN Internal Storage"
-msgstr ""
+msgstr "OpenCPN — Внутреннее хранилище"
 
 #: src/androidUTIL.cpp:4969
 msgid "OpenCPN SDCard Storage"
-msgstr ""
+msgstr "OpenCPN — SDCard"
 
 #: src/androidUTIL.cpp:4977
 msgid "Choose chart source folder."
-msgstr ""
+msgstr "Выберите папку с картами"
 
 #: src/androidUTIL.cpp:4983
 msgid "Status"
-msgstr ""
+msgstr "Состояние"
 
 #: src/androidUTIL.cpp:5000 src/catalog_mgr.cpp:604
 #: src/GoToPositionDialog.cpp:145 src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:777
@@ -2730,71 +2730,72 @@ msgstr "Отменить"
 #: src/androidUTIL.cpp:5026
 msgid "On the next page, find and choose the root folder containing chart files to migrate\n\n"
 "Example: /storage/emulated/0/Charts\n\n"
-msgstr ""
+msgstr "На следующей странице найдите и выберите корневую папку, содержащую файлы карт для переноса\n\n"
+"Пример: /storage/emulated/0/Charts\n\n"
 
 #: src/androidUTIL.cpp:5028
 msgid "This entire folder will be migrated.\n"
-msgstr ""
+msgstr "Эта папка будет перенесена.\n"
 
 #: src/androidUTIL.cpp:5029
 msgid "Proceed?"
-msgstr ""
+msgstr "Продолжить?"
 
 #: src/androidUTIL.cpp:5041
 msgid "Waiting for permission grant...."
-msgstr ""
+msgstr "Ожидание предоставления разрешения...."
 
 #: src/androidUTIL.cpp:5075
 msgid "Migration started..."
-msgstr ""
+msgstr "Начало переноса"
 
 #: src/androidUTIL.cpp:5091
 msgid "Permission granted to "
-msgstr ""
+msgstr "Разрешение предоставлено!"
 
 #: src/androidUTIL.cpp:5103
 msgid "OpenCPN has obtained temporary permission to access the selected chart folders."
-msgstr ""
+msgstr "OpenCPN получил временное разрешение на доступ к выбранным папкам карт"
 
 #: src/androidUTIL.cpp:5105
 msgid "Chart migration is ready to proceed."
-msgstr ""
+msgstr "Перенос карт готов к продолжению."
 
 #: src/androidUTIL.cpp:5107
 msgid "Source: "
-msgstr ""
+msgstr "Источник: "
 
 #: src/androidUTIL.cpp:5111
 msgid "Destination: OpenCPN Internal Storage"
-msgstr ""
+msgstr "Назначение: OpenCPN Внутреннее хранилище"
 
 #: src/androidUTIL.cpp:5113
 msgid "Destination: OpenCPN SDCard Storage"
-msgstr ""
+msgstr "Назначение: OpenCPN SDCard Storage"
 
 #: src/androidUTIL.cpp:5115
 msgid "Migrate charts now?"
-msgstr ""
+msgstr "Перенести карты?"
 
 #: src/androidUTIL.cpp:5176
 msgid "Chart migration is finished."
-msgstr ""
+msgstr "Перенос карт завершен."
 
 #: src/androidUTIL.cpp:5178
 msgid "Migrated chart folders are now accessible to OpenCPN."
-msgstr ""
+msgstr "Перенесенные папки карт теперь доступны для OpenCPN."
 
 #: src/androidUTIL.cpp:5180
 msgid "You may need to adjust your chart folders further, to accommodate individual chart groups"
-msgstr ""
+msgstr "Возможно, вам придется дополнительно настроить папки с картами, чтобы разместить отдельные группы карт."
 
 #: src/androidUTIL.cpp:5182
 msgid "OpenCPN will now restart to apply changes."
-msgstr ""
+msgstr "OpenCPN будет перезапущен, чтобы применить изменения."
 
 #: src/androidUTIL.cpp:5217
 msgid "Finishing migration"
-msgstr ""
+msgstr "Завершение переноса"
 
 #: src/canvasMenu.cpp:250 src/canvasMenu.cpp:255 src/canvasMenu.cpp:269
 #: src/canvasMenu.cpp:287 src/canvasMenu.cpp:962 src/canvasMenu.cpp:980
@@ -3139,7 +3140,7 @@ msgstr "По Курсу"
 
 #: src/CanvasOptions.cpp:160
 msgid "Heading Up"
-msgstr "По Путевому углу"
+msgstr "По Направлению"
 
 #: src/CanvasOptions.cpp:169 src/options.cpp:5428 src/options.cpp:5609
 msgid "Look Ahead Mode"
@@ -3238,40 +3239,40 @@ msgstr "Пользовательский"
 
 #: src/cat_settings.cpp:95
 msgid "Select new flavour"
-msgstr ""
+msgstr "Выбрать новый статус"
 
 #: src/cat_settings.cpp:96
 msgid "Default setting"
-msgstr ""
+msgstr "Настройка по умолчанию"
 
 #: src/cat_settings.cpp:162
 msgid "Active catalog"
-msgstr ""
+msgstr "Активный каталог"
 
 #: src/cat_settings.cpp:164
 msgid "Select plugin catalog"
-msgstr ""
+msgstr "Выберите каталог модулей"
 
 #: src/cat_settings.cpp:177
 msgid "Compatibility"
-msgstr ""
+msgstr "Совместимость"
 
 #: src/cat_settings.cpp:179
 msgid "Active setting:"
-msgstr ""
+msgstr "Активные настройки:"
 
 #: src/cat_settings.cpp:191
 msgid "Cache"
-msgstr ""
+msgstr "Кэш"
 
 #: src/cat_settings.cpp:200
 msgid "Clear cache"
-msgstr ""
+msgstr "Очистить кэш"
 
 #: src/cat_settings.cpp:217
 #, c-format
 msgid "Size: %d MB in %d files"
-msgstr ""
+msgstr "Размер: %d МБ в %d файлах"
 
 #: src/cat_settings.cpp:228 src/catalog_mgr.cpp:129 src/download_mgr.cpp:382
 msgid "Done"
@@ -3279,43 +3280,43 @@ msgstr "Готово"
 
 #: src/cat_settings.cpp:236
 msgid "Plugin Catalog Settings"
-msgstr ""
+msgstr "Настройки каталога модулей"
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
-msgstr ""
+msgstr "Управление каталогом модулей"
 
 #: src/catalog_mgr.cpp:99
 msgid "Hide"
-msgstr ""
+msgstr "Скрыть"
 
 #: src/catalog_mgr.cpp:102
 msgid "Ultra advanced"
-msgstr ""
+msgstr "Дополнительно"
 
 #: src/catalog_mgr.cpp:190
 msgid "Catalog URL status: "
-msgstr ""
+msgstr "URL-адрес каталога: "
 
 #: src/catalog_mgr.cpp:193
 msgid "Error"
-msgstr ""
+msgstr "Oшибка"
 
 #: src/catalog_mgr.cpp:222
 msgid "Current active plugin catalog"
-msgstr ""
+msgstr "Текущий каталог активных модулей"
 
 #: src/catalog_mgr.cpp:229
 msgid "Default catalog"
-msgstr ""
+msgstr "Каталог по умолчанию"
 
 #: src/catalog_mgr.cpp:232 src/catalog_mgr.cpp:242
 msgid "Use as active catalog"
-msgstr ""
+msgstr "Использовать в качестве активного каталога"
 
 #: src/catalog_mgr.cpp:239
 msgid "Latest available catalog:"
-msgstr ""
+msgstr "Последний доступный каталог:"
 
 #: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:5134
 msgid "Cannot download data from url"
@@ -3323,55 +3324,55 @@ msgstr "Не удается загрузить данные из url"
 
 #: src/catalog_mgr.cpp:296
 msgid "Cannot parse downloaded data"
-msgstr ""
+msgstr "Не удается разобрать загруженные данные"
 
 #: src/catalog_mgr.cpp:299
 msgid "Catalog update problem"
-msgstr ""
+msgstr "Проблема обновления каталога"
 
 #: src/catalog_mgr.cpp:345
 msgid "Use default location"
-msgstr ""
+msgstr "Использовать стандартные расположения"
 
 #: src/catalog_mgr.cpp:350
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: src/catalog_mgr.cpp:384
 msgid "Catalog channel: "
-msgstr ""
+msgstr "Канал каталога: "
 
 #: src/catalog_mgr.cpp:418
 msgid "Custom catalog URL: "
-msgstr ""
+msgstr "URL каталога: "
 
 #: src/catalog_mgr.cpp:467 src/catalog_mgr.cpp:565
 msgid "Check latest release..."
-msgstr ""
+msgstr "Проверить последнюю версию..."
 
 #: src/catalog_mgr.cpp:497
 msgid "Catalog updated"
-msgstr ""
+msgstr "Каталог обновлён"
 
 #: src/catalog_mgr.cpp:561
 msgid "Server is reachable..."
-msgstr ""
+msgstr "Сервер доступен..."
 
 #: src/catalog_mgr.cpp:563
 msgid "Check channel..."
-msgstr ""
+msgstr "Проверить канал..."
 
 #: src/catalog_mgr.cpp:571
 msgid "Custom URL"
-msgstr ""
+msgstr "Пользовательский URL"
 
 #: src/catalog_mgr.cpp:589
 msgid "Fail: "
-msgstr ""
+msgstr "Ошибка: "
 
 #: src/catalog_mgr.cpp:630 src/catalog_mgr.cpp:655
 msgid "Catalog Manager"
-msgstr ""
+msgstr "Менеджер Каталогов"
 
 #: src/chart1.cpp:1027
 msgid "\n"
@@ -3557,7 +3558,7 @@ msgstr "Автоматически центрировать"
 
 #: src/chart1.cpp:5521
 msgid "Head Up Mode"
-msgstr "Ориентация по путевому углу"
+msgstr "Ориентация по Направлению"
 
 #: src/chart1.cpp:5524 src/chart1.cpp:5527 src/toolbar.cpp:1166
 msgid "Zoom In"
@@ -4324,11 +4325,11 @@ msgstr "Понизить версию"
 
 #: src/download_mgr.cpp:315 src/update_mgr.cpp:307
 msgid "More"
-msgstr ""
+msgstr "Еще"
 
 #: src/download_mgr.cpp:318 src/update_mgr.cpp:310
 msgid "Less"
-msgstr ""
+msgstr "Меньше"
 
 #: src/download_mgr.cpp:391
 msgid "Update plugin catalog"
@@ -4364,11 +4365,11 @@ msgstr "Ошибка установки"
 
 #: src/garmin_wrapper.cpp:295
 msgid "Overwrite Garmin device route number 1?"
-msgstr ""
+msgstr "Перезаписать маршрут Garmin устройства номер 1?"
 
 #: src/garmin_wrapper.cpp:296
 msgid "OpenCPN Message"
-msgstr ""
+msgstr "OpenCPN сообщение"
 
 #: src/glChartCanvas.cpp:2182 src/s52plib.cpp:2263 src/s52plib.cpp:2288
 #: src/s52plib.cpp:2392 src/s52plib.cpp:2565
@@ -4381,7 +4382,7 @@ msgstr "Ожидается завершение сжатия растровой 
 
 #: src/glTextureManager.cpp:1456
 msgid "OpenCPN Compressed Cache Update"
-msgstr ""
+msgstr "OpenCPN — Обновление кэша текстур"
 
 #: src/GoToPositionDialog.cpp:119 src/MarkInfo.cpp:432 src/RoutePropDlg.cpp:309
 #: src/TrackPropDlg.cpp:302
@@ -4619,11 +4620,11 @@ msgstr "Приливная станция не найдена"
 
 #: src/MUIBar.cpp:97 src/MUIBar.cpp:106
 msgid "Set scale"
-msgstr ""
+msgstr "Установить масштаб"
 
 #: src/MUIBar.cpp:175
 msgid "Chart Scale"
-msgstr ""
+msgstr "Масштаб Карты"
 
 #: src/multiplexer.cpp:413
 msgid "Route Upload"
@@ -5612,7 +5613,7 @@ msgstr "Сжать"
 
 #: src/options.cpp:4007
 msgid "Migrate Charts.."
-msgstr ""
+msgstr "Перенос Карт..."
 
 #: src/options.cpp:4015
 msgid "Update Control"
@@ -6323,7 +6324,7 @@ msgstr "Размер отметок глубин ENC"
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Чувств. масштаб. колесом мыши"
 
 #: src/options.cpp:7270 src/options.cpp:7330
 msgid "Connections"
@@ -6584,11 +6585,11 @@ msgstr "OpenCPN — Преобразование карт S-57 в систем�
 
 #: src/PluginHandler.cpp:1154
 msgid "Please check system log for more info."
-msgstr ""
+msgstr "Пожалуйста, проверьте системный журнал для получения дополнительной информации."
 
 #: src/PluginHandler.cpp:1163
 msgid " successfully installed from cache"
-msgstr ""
+msgstr " успешно установлен из кэша"
 
 #: src/pluginmanager.cpp:282
 msgid "Plugin is a standard system plugin"
@@ -7289,7 +7290,7 @@ msgstr "Гиперссылки открываются в веб-браузер�
 
 #: src/RoutePropDlg.cpp:462 src/TrackPropDlg.cpp:570 src/TrackPropDlg.cpp:956
 msgid "Print"
-msgstr "Напечатать"
+msgstr "Печать"
 
 #: src/RoutePropDlg.cpp:470 src/TrackPropDlg.cpp:585
 msgid "Extend"
@@ -7442,15 +7443,17 @@ msgstr "<font size=-2>(Углы секторов являются истинны
 msgid "The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
-msgstr ""
+msgstr "Последний запуск opencpn, похоже, не удался. Вы хотите запустить\n"
+"безопасный режим без подключаемых модулей и других\n"
+"возможно проблемных функций?\n"
 
 #: src/safe_mode.cpp:65
 msgid "Safe restart"
-msgstr ""
+msgstr "Безопасный перезапуск"
 
 #: src/SencManager.cpp:158 src/SencManager.cpp:190
 msgid "Preparing vector chart  "
-msgstr ""
+msgstr "Подготовка векторных карт"
 
 #: src/SendToGpsDlg.cpp:90
 msgid "GPS/Plotter Port"
@@ -7552,15 +7555,15 @@ msgstr "Выбор значков на панели инструментов"
 
 #: src/trackprintout.cpp:334
 msgid "Show Time."
-msgstr ""
+msgstr "Показать Время"
 
 #: src/trackprintout.cpp:343
 msgid "Show Speed."
-msgstr ""
+msgstr "Показать Скорость"
 
 #: src/trackprintout.cpp:399
 msgid "Track Print"
-msgstr ""
+msgstr "Печать Пути"
 
 #: src/TrackPropDlg.cpp:305
 msgid "Timestamp"
@@ -7717,7 +7720,7 @@ msgstr "Передвинуть путевую точку"
 
 #: src/update_mgr.cpp:409
 msgid "Dismiss"
-msgstr ""
+msgstr "Отклонить"
 
 #: libs/wxcurl/src/dialog.cpp:137
 msgid "Not available"

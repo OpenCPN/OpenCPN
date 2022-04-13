@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-10 11:30-0400\n"
-"PO-Revision-Date: 2022-04-10 16:04\n"
+"PO-Revision-Date: 2022-04-13 13:57\n"
 "Last-Translator: \n"
 "Language-Team: Hungarian\n"
 "Language: hu_HU\n"
@@ -89,7 +89,7 @@ msgstr "(Névtelen nyomvonal)"
 
 #: include/trackprintout.h:78 src/trackprintout.cpp:274
 msgid "Print Track Selection"
-msgstr ""
+msgstr "Kiválasztott nyomvonal nyomtatása"
 
 #: include/TrackPropDlg.h:191 src/TrackPropDlg.cpp:1218
 #: src/TrackPropDlg.cpp:1232
@@ -117,23 +117,23 @@ msgstr "Párbeszédablak"
 
 #: src/about.cpp:393
 msgid "The Open Source Chart Plotter/Navigator"
-msgstr ""
+msgstr "A nyílt forráskódú chartplotter/navigátor"
 
 #: src/about.cpp:415
 msgid "Copy Log File to Clipboard"
-msgstr ""
+msgstr "Napló vágólapra másolása"
 
 #: src/about.cpp:418
 msgid "Copy Settings File to Clipboard"
-msgstr ""
+msgstr "Beállítások vágolapra másolása"
 
 #: src/about.cpp:442
 msgid "About"
-msgstr ""
+msgstr "Névjegy"
 
 #: src/about.cpp:459
 msgid "Authors"
-msgstr ""
+msgstr "Szerzők"
 
 #: src/about.cpp:475 src/AboutFrame.cpp:249
 msgid "License"
@@ -2679,7 +2679,7 @@ msgstr "Horgonyzóhely létrehozva "
 #: src/androidUTIL.cpp:4884 src/androidUTIL.cpp:5032 src/androidUTIL.cpp:5120
 #: src/androidUTIL.cpp:5185
 msgid "OpenCPN for Android Migration Assistant"
-msgstr ""
+msgstr "OpenCPN for Android migrálási segéd"
 
 #: src/androidUTIL.cpp:4910
 msgid "OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"
@@ -2703,19 +2703,19 @@ msgstr ""
 
 #: src/androidUTIL.cpp:4966
 msgid "OpenCPN Internal Storage"
-msgstr ""
+msgstr "OpenCPN belső tárhely"
 
 #: src/androidUTIL.cpp:4969
 msgid "OpenCPN SDCard Storage"
-msgstr ""
+msgstr "OpenCPN SD kértya tárhely"
 
 #: src/androidUTIL.cpp:4977
 msgid "Choose chart source folder."
-msgstr ""
+msgstr "Térkép forrás mappa kiválasztása"
 
 #: src/androidUTIL.cpp:4983
 msgid "Status"
-msgstr ""
+msgstr "Állapot"
 
 #: src/androidUTIL.cpp:5000 src/catalog_mgr.cpp:604
 #: src/GoToPositionDialog.cpp:145 src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:777
@@ -2738,19 +2738,19 @@ msgstr ""
 
 #: src/androidUTIL.cpp:5029
 msgid "Proceed?"
-msgstr ""
+msgstr "Tovább?"
 
 #: src/androidUTIL.cpp:5041
 msgid "Waiting for permission grant...."
-msgstr ""
+msgstr "Várakozás az engedélyezésekre..."
 
 #: src/androidUTIL.cpp:5075
 msgid "Migration started..."
-msgstr ""
+msgstr "Migrálás elindult..."
 
 #: src/androidUTIL.cpp:5091
 msgid "Permission granted to "
-msgstr ""
+msgstr "Hozzáférés engedélyezve"
 
 #: src/androidUTIL.cpp:5103
 msgid "OpenCPN has obtained temporary permission to access the selected chart folders."
@@ -2762,15 +2762,15 @@ msgstr ""
 
 #: src/androidUTIL.cpp:5107
 msgid "Source: "
-msgstr ""
+msgstr "Forrás:"
 
 #: src/androidUTIL.cpp:5111
 msgid "Destination: OpenCPN Internal Storage"
-msgstr ""
+msgstr "Cél: OpenCPN belső tárhely"
 
 #: src/androidUTIL.cpp:5113
 msgid "Destination: OpenCPN SDCard Storage"
-msgstr ""
+msgstr "Cél: OpenCPN SD kártya tárhely"
 
 #: src/androidUTIL.cpp:5115
 msgid "Migrate charts now?"
@@ -3139,7 +3139,7 @@ msgstr "Irány fent"
 
 #: src/CanvasOptions.cpp:160
 msgid "Heading Up"
-msgstr ""
+msgstr "Irány fent"
 
 #: src/CanvasOptions.cpp:169 src/options.cpp:5428 src/options.cpp:5609
 msgid "Look Ahead Mode"
@@ -3242,7 +3242,7 @@ msgstr ""
 
 #: src/cat_settings.cpp:96
 msgid "Default setting"
-msgstr ""
+msgstr "Alapértelmezett beállítások"
 
 #: src/cat_settings.cpp:162
 msgid "Active catalog"
@@ -3250,23 +3250,23 @@ msgstr ""
 
 #: src/cat_settings.cpp:164
 msgid "Select plugin catalog"
-msgstr ""
+msgstr "A plugin katalógus kiválasztása"
 
 #: src/cat_settings.cpp:177
 msgid "Compatibility"
-msgstr ""
+msgstr "Kompatibilitás"
 
 #: src/cat_settings.cpp:179
 msgid "Active setting:"
-msgstr ""
+msgstr "TAktív beállítások:"
 
 #: src/cat_settings.cpp:191
 msgid "Cache"
-msgstr ""
+msgstr "Gyorsítótár"
 
 #: src/cat_settings.cpp:200
 msgid "Clear cache"
-msgstr ""
+msgstr "Gyorsítótár ürítése"
 
 #: src/cat_settings.cpp:217
 #, c-format
@@ -3283,11 +3283,11 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
-msgstr ""
+msgstr "A plugin katalógus kezelése"
 
 #: src/catalog_mgr.cpp:99
 msgid "Hide"
-msgstr ""
+msgstr "Elrejt"
 
 #: src/catalog_mgr.cpp:102
 msgid "Ultra advanced"
@@ -6100,7 +6100,7 @@ msgstr ""
 
 #: src/options.cpp:6309
 msgid "Select DSC notification Sound"
-msgstr ""
+msgstr "Válasszon DSC értesítés hangot"
 
 #: src/options.cpp:6314
 msgid "Test DSC notification Sound"
@@ -6180,7 +6180,7 @@ msgstr "APRS pozíció jelentés"
 
 #: src/options.cpp:6592
 msgid "Create mark"
-msgstr ""
+msgstr "Jel létrehozása"
 
 #: src/options.cpp:6598
 msgid "Rollover"
@@ -6288,7 +6288,7 @@ msgstr "Ismeretlen eszköz:"
 
 #: src/options.cpp:6881
 msgid "Input device :"
-msgstr ""
+msgstr "Beviteli eszköz:"
 
 #: src/options.cpp:6909
 msgid "Sound Device"
@@ -6328,7 +6328,7 @@ msgstr ""
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Egér görgő zoom érzékenység"
 
 #: src/options.cpp:7270 src/options.cpp:7330
 msgid "Connections"
@@ -6460,7 +6460,7 @@ msgstr ""
 
 #: src/options.cpp:11454
 msgid "Signal K server available."
-msgstr ""
+msgstr "Signal K szerver elérhető"
 
 #: src/options.cpp:11456
 msgid "Signal K server not found."
@@ -6501,7 +6501,7 @@ msgstr "Textúratömörítés"
 
 #: src/options.cpp:11721
 msgid "Texture Compression with Caching"
-msgstr ""
+msgstr "Textúratömörítés gyorsítótárazással"
 
 #: src/options.cpp:11723
 msgid "Texture Compression Caching"
@@ -6509,7 +6509,7 @@ msgstr "Textúratömörítés gyorsítótárazás"
 
 #: src/options.cpp:11725
 msgid "Texture Memory Size (MB)"
-msgstr ""
+msgstr "Textúra memória méret (MB)"
 
 #: src/options.cpp:11729 src/options.cpp:11904
 msgid "Size: "
@@ -6545,7 +6545,7 @@ msgstr "Grafikus gyorsítás használata (OpenGL)"
 
 #: src/options.cpp:11745
 msgid "Texture Settings"
-msgstr ""
+msgstr "Textúra beállítások"
 
 #: src/options.cpp:11752
 msgid "Texture Cache"
@@ -6614,11 +6614,11 @@ msgstr ""
 
 #: src/pluginmanager.cpp:298
 msgid "Plugin is latest available"
-msgstr ""
+msgstr "A plugin a legfrissebb elérhető verzió"
 
 #: src/pluginmanager.cpp:546
 msgid "The plugin is not compatible with this version of OpenCPN, and will be uninstalled."
-msgstr ""
+msgstr "A plugin nem kompatibilis az OpenCPN jelenlegi verziójával és el lesz távolítva."
 
 #: src/pluginmanager.cpp:778
 msgid "successfully un-installed"
@@ -6631,7 +6631,7 @@ msgstr "Eltávolítás befejezve"
 #: src/pluginmanager.cpp:1239
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
-msgstr ""
+msgstr "A %s plugin nem kompatibilis az OpenCPN jelenlegi verziójával, szerezd be a frissített verziót."
 
 #: src/pluginmanager.cpp:2315
 #, c-format
@@ -6642,7 +6642,7 @@ msgstr ""
 
 #: src/pluginmanager.cpp:2320 src/pluginmanager.cpp:2333
 msgid "Blacklisted plugin detected..."
-msgstr ""
+msgstr "Tiltólistán lévő plugint találtam..."
 
 #: src/pluginmanager.cpp:2328
 #, c-format
@@ -6657,12 +6657,12 @@ msgstr ""
 
 #: src/pluginmanager.cpp:2410
 msgid "Incompatible plugin detected"
-msgstr ""
+msgstr "Nem kompatibilis plugint találtam"
 
 #: src/pluginmanager.cpp:2414
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
-msgstr ""
+msgstr "PlugIn [ %s ] verzió %i.%i"
 
 #: src/pluginmanager.cpp:2420
 msgid ", and all previous versions,"
@@ -6678,7 +6678,7 @@ msgstr ""
 
 #: src/pluginmanager.cpp:4990
 msgid "Plugin Catalog"
-msgstr ""
+msgstr "Plugin katalógus"
 
 #: src/pluginmanager.cpp:5007 src/pluginmanager.cpp:5603
 msgid "Update Plugin Catalog"
@@ -6698,11 +6698,11 @@ msgstr "Letiltva"
 
 #: src/pluginmanager.cpp:5053
 msgid "Update Plugin Catalog: master"
-msgstr ""
+msgstr "A plugin mester-katalógus frissítése"
 
 #: src/pluginmanager.cpp:5069
 msgid "Update Plugin Catalog:master"
-msgstr ""
+msgstr "A plugin mester-katalógus frissítése"
 
 #: src/pluginmanager.cpp:5135 src/pluginmanager.cpp:5147
 #: src/pluginmanager.cpp:5157 src/pluginmanager.cpp:5166
@@ -6712,15 +6712,15 @@ msgstr "OpenCPN katalógus frissítés"
 
 #: src/pluginmanager.cpp:5146 src/pluginmanager.cpp:5156
 msgid "Unable to copy catalog file"
-msgstr ""
+msgstr "A katalógus fájl másolása sikertelen"
 
 #: src/pluginmanager.cpp:5165
 msgid "Unable to copy catalog file to cache"
-msgstr ""
+msgstr "A katalógus fájl gyorsítótárba másolása sikertelen"
 
 #: src/pluginmanager.cpp:5192
 msgid "Catalog update successful"
-msgstr ""
+msgstr "Katalógus frissítése sikeres"
 
 #: src/pluginmanager.cpp:5315
 msgid "Select tarball file"
@@ -6797,7 +6797,7 @@ msgstr "Telepítés..."
 
 #: src/pluginmanager.cpp:6203
 msgid "Update to "
-msgstr ""
+msgstr "Frissítés"
 
 #: src/pluginmanager.cpp:6426 src/update_mgr.cpp:258
 msgid "Website"
@@ -6817,7 +6817,7 @@ msgstr ""
 
 #: src/Route.cpp:1258
 msgid "Error on Route Upload.  Garmin GPS not connected"
-msgstr ""
+msgstr "Hiba történt az útvonal feltöltés közben. Garmin GPS nincs csatlakoztatva."
 
 #: src/Route.cpp:1260
 msgid "Error on Route Upload.  Please check logfiles..."
@@ -6894,7 +6894,7 @@ msgstr "Útvonal exportálása..."
 
 #: src/routemanagerdialog.cpp:473
 msgid "&Resequence Waypoints"
-msgstr ""
+msgstr "Útvonapont átrendezése"
 
 #: src/routemanagerdialog.cpp:479 src/routemanagerdialog.cpp:753
 msgid "&Send to GPS"
@@ -7401,7 +7401,7 @@ msgstr ""
 
 #: src/s57chart.cpp:5623
 msgid "this file is not available"
-msgstr ""
+msgstr "Ez a fájl nem érhető el"
 
 #: src/s57chart.cpp:5654
 msgid "Period ends: "
@@ -7702,7 +7702,7 @@ msgstr "Útpont mozgatása"
 
 #: src/update_mgr.cpp:409
 msgid "Dismiss"
-msgstr ""
+msgstr "Bezárás"
 
 #: libs/wxcurl/src/dialog.cpp:137
 msgid "Not available"
@@ -7742,7 +7742,7 @@ msgstr "Indulás"
 
 #: libs/wxcurl/src/dialog.cpp:413
 msgid "0 (transfer paused)"
-msgstr ""
+msgstr "0 (átvitel szünetel)"
 
 #: libs/wxcurl/src/dialog.cpp:461
 msgid "Connection settings"
@@ -7754,7 +7754,7 @@ msgstr ""
 
 #: libs/wxcurl/src/dialog.cpp:516
 msgid "0 (transfer completed)"
-msgstr ""
+msgstr "0 (átvitel befejezôdött)"
 
 #: libs/wxcurl/src/dialog.cpp:537
 msgid "Downloaded:"
