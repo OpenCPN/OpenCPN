@@ -118,6 +118,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   wSizerParams->Add(bSizerSpeed, 1, wxEXPAND, 0);
 
+  //
   wxBoxSizer* bSizerEnroute;
   bSizerEnroute = new wxBoxSizer(wxVERTICAL);
 
@@ -134,6 +135,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   wSizerParams->Add(bSizerEnroute, 1, wxEXPAND, 0);
 
+  //
   wxBoxSizer* bSizerDeparture;
   bSizerDeparture = new wxBoxSizer(wxVERTICAL);
 
@@ -146,7 +148,6 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   bSizerDepartureTS = new wxBoxSizer(wxHORIZONTAL);
   bSizerDeparture->Add(bSizerDepartureTS, 0, 0, 5);
 
-#ifndef __OCPN__ANDROID__
   m_dpDepartureDate =
       new wxDatePickerCtrl(m_pnlBasic, wxID_ANY, wxDefaultDateTime,
                            wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT);
@@ -165,7 +166,6 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                          5);
 
   wSizerParams->Add(bSizerDeparture, 1, wxEXPAND, 0);
-#endif
 
   wxBoxSizer* bSizerTime;
   bSizerTime = new wxBoxSizer(wxVERTICAL);
@@ -511,14 +511,12 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_tcPlanSpeed->Connect(
       wxEVT_COMMAND_TEXT_UPDATED,
       wxCommandEventHandler(RoutePropDlg::PlanSpeedOnTextEnter), NULL, this);
-#ifndef __OCPN__ANDROID__
   m_dpDepartureDate->Connect(
       wxEVT_DATE_CHANGED,
       wxDateEventHandler(RoutePropDlg::DepartureDateOnDateChanged), NULL, this);
   m_tpDepartureTime->Connect(
       wxEVT_TIME_CHANGED,
       wxDateEventHandler(RoutePropDlg::DepartureTimeOnTimeChanged), NULL, this);
-#endif
   m_choiceTimezone->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(RoutePropDlg::TimezoneOnChoice), NULL, this);
@@ -597,14 +595,12 @@ RoutePropDlg::~RoutePropDlg() {
   m_tcPlanSpeed->Disconnect(
       wxEVT_COMMAND_TEXT_UPDATED,
       wxCommandEventHandler(RoutePropDlg::PlanSpeedOnTextEnter), NULL, this);
-#ifndef __OCPN__ANDROID__
   m_dpDepartureDate->Disconnect(
       wxEVT_DATE_CHANGED,
       wxDateEventHandler(RoutePropDlg::DepartureDateOnDateChanged), NULL, this);
   m_tpDepartureTime->Disconnect(
       wxEVT_TIME_CHANGED,
       wxDateEventHandler(RoutePropDlg::DepartureTimeOnTimeChanged), NULL, this);
-#endif
   m_choiceTimezone->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(RoutePropDlg::TimezoneOnChoice), NULL, this);

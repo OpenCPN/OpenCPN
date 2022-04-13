@@ -66,13 +66,11 @@ protected:
   wxStaticText* m_stEnroute;
   wxTextCtrl* m_tcEnroute;
   wxStaticText* m_stDeparture;
-#ifndef __OCPN__ANDROID__
   wxDatePickerCtrl* m_dpDepartureDate;
 #ifdef __WXGTK__
   TimeCtrl* m_tpDepartureTime;
 #else
   wxTimePickerCtrl* m_tpDepartureTime;
-#endif
 #endif
   wxStaticText* m_stTimeZone;
   wxChoice* m_choiceTimezone;
