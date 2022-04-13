@@ -350,6 +350,17 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
   m_buttonChartDirectory->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AddSourceDlg::OnDirSelClick), NULL, this);
+  m_nbChoice->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                      wxNotebookEventHandler(AddSourceDlg::OnNbPage), NULL,
+                      this);
+}
+
+void AddSourceDlg::OnNbPage(wxNotebookEvent& event) {
+  if (event.GetSelection() == 1) {
+    m_buttonChartDirectory->Enable();
+  } else {
+    m_buttonChartDirectory->Disable();
+  }
 }
 
 AddSourceDlg::~AddSourceDlg() {
@@ -366,6 +377,9 @@ AddSourceDlg::~AddSourceDlg() {
   m_buttonChartDirectory->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AddSourceDlg::OnDirSelClick), NULL, this);
+  m_nbChoice->Disconnect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                         wxNotebookEventHandler(AddSourceDlg::OnNbPage), NULL,
+                         this);
 }
 
 void AddSourceDlg::OnDirSelClick(wxCommandEvent& event) {

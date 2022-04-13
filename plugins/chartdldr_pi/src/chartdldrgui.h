@@ -49,27 +49,26 @@ class ChartDldrPanelImpl;
 WX_DECLARE_OBJARRAY(ChartPanel*, ArrayOfChartPanels);
 #endif /* CHART_LIST */
 
-class DLDR_OCPNChartDirPanel: public wxPanel
-{
+class DLDR_OCPNChartDirPanel : public wxPanel {
 public:
-    DLDR_OCPNChartDirPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size);
-    ~DLDR_OCPNChartDirPanel();
+  DLDR_OCPNChartDirPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+                         const wxSize& size);
+  ~DLDR_OCPNChartDirPanel();
 
-    void OnPaint( wxPaintEvent &event );
-    int GetUnselectedHeight(){ return m_unselectedHeight; }
-    int GetRefHeight(){ return m_refHeight; }
-    void SetText( wxString text );
+  void OnPaint(wxPaintEvent& event);
+  int GetUnselectedHeight() { return m_unselectedHeight; }
+  int GetRefHeight() { return m_refHeight; }
+  void SetText(wxString text);
 
 private:
-    //bool m_bSelected;
-    wxColour m_boxColour;
-    int m_unselectedHeight;
-    wxString m_ChartDir;
-    int m_refHeight;
+  // bool m_bSelected;
+  wxColour m_boxColour;
+  int m_unselectedHeight;
+  wxString m_ChartDir;
+  int m_refHeight;
 
-    DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE()
 };
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class AddSourceDlg
@@ -99,7 +98,7 @@ public:
   wxTextCtrl* m_tChartSourceUrl;
   // wxDirPickerCtrl* m_dpChartDirectory;
   wxTextCtrl* m_tcChartDirectory;
-  DLDR_OCPNChartDirPanel *m_panelChartDirectory;
+  DLDR_OCPNChartDirPanel* m_panelChartDirectory;
 
   wxButton* m_buttonChartDirectory;
   wxScrolledWindow* m_sourceswin;
@@ -111,6 +110,7 @@ public:
                const wxSize& size = wxDefaultSize,
                long style = wxDEFAULT_DIALOG_STYLE);
   ~AddSourceDlg();
+  void OnNbPage(wxNotebookEvent& event);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -210,7 +210,7 @@ protected:
   wxButton* m_buttonChartDirectory;
   wxButton* m_buttonDownloadMasterCatalog;
   wxTextCtrl* m_tcDefaultDir;
-  DLDR_OCPNChartDirPanel *m_panelChartDirectory;
+  DLDR_OCPNChartDirPanel* m_panelChartDirectory;
 
   void OnDirSelClick(wxCommandEvent& event);
   void OnDownloadMasterCatalog(wxCommandEvent& event);
