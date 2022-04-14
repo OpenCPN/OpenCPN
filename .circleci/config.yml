@@ -111,3 +111,4 @@ workflows:
             branches:
               only:
                 - master
+                - v5.6.x
