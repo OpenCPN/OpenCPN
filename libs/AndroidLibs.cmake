@@ -19,7 +19,7 @@ message(STATUS "Android Build support file base:  ${OCPN_ANDROID_CACHEDIR}/OCPNA
 if (NOT EXISTS ${OCPN_ANDROID_CACHEDIR}/support.zip)
   file(
     DOWNLOAD
-      https://github.com/bdbcat/OCPNAndroidCoreBuildSupport/releases/download/v1.0/OCPNAndroidCoreBuildSupport.zip
+      https://github.com/bdbcat/OCPNAndroidCoreBuildSupport/releases/download/v1.1/OCPNAndroidCoreBuildSupport.zip
       ${OCPN_ANDROID_CACHEDIR}/support.zip
 #    EXPECTED_HASH
 #      SHA256=ac36afaf4f026e9b2624a963f5356f5b1fb2c45dec1134209333a8b46fb05ca0
