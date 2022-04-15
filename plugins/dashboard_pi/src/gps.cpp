@@ -130,7 +130,7 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
     if (talkerID == _T("GP")) {
       m_Gtime[1] = now;
       if (m_iMaster != 1) return;
-      // If two groups of messages in this sequence 
+      // If two groups of messages in this sequence
       // show only the first one with most(12) satellites
       if (m_MaxSatCount > m_SatCount) return;
       else m_MaxSatCount = m_SatCount;
@@ -378,5 +378,5 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
       dc->DrawBitmap(tbm, posx, posy, false);
     }
   }
-  if (talkerID != wxEmptyString) dc->DrawText(s_gTalker, 1, m_refDim);
+  if (talkerID != wxEmptyString) dc->DrawText(s_gTalker, 1, m_refDim * 3/2);
 }
