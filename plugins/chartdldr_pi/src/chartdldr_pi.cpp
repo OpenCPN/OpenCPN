@@ -86,7 +86,7 @@ WX_DEFINE_OBJARRAY(ArrayOfChartPanels);
 #ifdef __OCPN__ANDROID__
 
 #define CATALOGS_NAME_WIDTH 350
-#define CATALOGS_DATE_WIDTH 230
+#define CATALOGS_DATE_WIDTH 500
 #define CATALOGS_PATH_WIDTH 1000
 #define CHARTS_NAME_WIDTH 520
 #define CHARTS_STATUS_WIDTH 150
@@ -1613,6 +1613,10 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
       wxString dir = cs->GetDir();
       AddChartDirectory(dir);
     }
+
+    long itemSelectedNow = GetSelectedCatalog();
+    m_lbChartSources->SetItemState(itemSelectedNow, 0, wxLIST_STATE_SELECTED);
+
     SelectCatalog(m_lbChartSources->GetItemCount() - 1);
     pPlugIn->SaveConfig();
   }
