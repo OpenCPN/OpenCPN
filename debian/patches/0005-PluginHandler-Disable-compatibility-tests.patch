@@ -1,0 +1,37 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Fri, 15 Apr 2022 10:52:32 +0200
+Subject: PluginHandler: Disable compatibility tests.
+
+This is for Debian 10, nothing else. Here, we don't want to
+check for Ubuntu compatibility since we do build Debian plugins.
+Same logic applies for the "similar" check as well as the
+raspbian one.
+---
+ src/PluginHandler.cpp | 13 -------------
+ 1 file changed, 13 deletions(-)
+
+diff --git a/src/PluginHandler.cpp b/src/PluginHandler.cpp
+index 913d8de..c12e885 100644
+--- a/src/PluginHandler.cpp
++++ b/src/PluginHandler.cpp
+@@ -323,20 +323,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
+   if (host.abi() == plugin.abi() && host.is_version_compatible(plugin)) {
+     rv = true;
+     wxLogDebug("Found matching abi version %s", plugin.abi_version());
+-  } else if (host.is_similar_plugin_compatible(plugin)) {
+-    rv = true;
+-    wxLogDebug("Found similar abi");
+-  } else if (host.is_debian_plugin_compatible(plugin)) {
+-    rv = true;
+-    wxLogDebug("Found Ubuntu version matching Debian host");
+   }
+-#ifdef ocpnARM
+-  //TODO  This conditional may not be needed.  Test on O57+
+-  else if(host.is_plugin_compatible_runtime(plugin)) {
+-    rv = true;
+-    wxLogDebug("Found host OCPN_OSDetail run-time match");
+-  }
+-#endif
+   DEBUG_LOG << "Plugin compatibility check Final: "
+             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
+   return rv;

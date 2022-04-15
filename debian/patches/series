@@ -2,3 +2,4 @@
 0002-build-Drop-CoC-909_2013-InlandECDIS_20170308s.pdf.patch
 0003-wxsvg-CMakeLists-claim-leamas-s-copyright.patch
 0005-cmake-Refactor-target-related-variables-setup-2549.patch
+0005-PluginHandler-Disable-compatibility-tests.patch
