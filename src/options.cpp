@@ -6198,10 +6198,10 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                           _("Play Sound on Anchor Alarm."));
     StaticBoxSizer1->Add(m_pCheck_AnchorAudio, 1, wxALL, group_item_spacing);
 
-    m_anchorAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
+    m_anchorAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T("a\nb"));
     m_anchorAudioFileNameText->SetLabel( " " + _("Audio file name:") + "\n " +
                 g_anchorwatch_sound_file);
-    StaticBoxSizer1->Add(m_anchorAudioFileNameText, 1, wxALL | wxEXPAND, group_item_spacing);
+    StaticBoxSizer1->Add(m_anchorAudioFileNameText, 0, wxALL | wxEXPAND, border_size);
 
     wxFlexGridSizer* soundSizer1 = new wxFlexGridSizer(3);
     soundSizer1->SetHGap(border_size * 2);
@@ -6230,10 +6230,11 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                        _("Play Sound on AIS Alert."));
     StaticBoxSizer2->Add(m_pCheck_AISAudio, 1, wxALL, group_item_spacing);
 
-    m_aisAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
+    m_aisAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T("a\nb"));
     m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
             g_AIS_sound_file);
-    StaticBoxSizer2->Add(m_aisAudioFileNameText, 0, wxALL | wxEXPAND, group_item_spacing);
+    StaticBoxSizer2->Add(m_aisAudioFileNameText, 0, wxALL | wxEXPAND, border_size);
+    StaticBoxSizer2->AddSpacer(group_item_spacing);
 
     wxFlexGridSizer* soundSizer2 = new wxFlexGridSizer(3);
     soundSizer2->SetHGap(group_item_spacing *2);
@@ -6262,10 +6263,11 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                         _("Play Sound on AIS SART Alert."));
     StaticBoxSizer3->Add(m_pCheck_SARTAudio, 1, wxALL, group_item_spacing);
 
-    m_sartAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
+    m_sartAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T("a\nb"));
     m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
             g_SART_sound_file);
     StaticBoxSizer3->Add(m_sartAudioFileNameText, 0, wxALL | wxEXPAND, border_size);
+    StaticBoxSizer3->AddSpacer(group_item_spacing);
 
     wxFlexGridSizer* soundSizer3 = new wxFlexGridSizer(3);
     soundSizer3->SetHGap(border_size);
@@ -6295,10 +6297,12 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                        _("Play Sound on DSC notification."));
     StaticBoxSizer4->Add(m_pCheck_DSCAudio, 1, wxALL, group_item_spacing);
 
-    m_dscAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
+    m_dscAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T("a\nb"));
     m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
             g_DSC_sound_file);
-    StaticBoxSizer4->Add(m_dscAudioFileNameText, 0, wxALL | wxEXPAND, group_item_spacing);
+    StaticBoxSizer4->Add(m_dscAudioFileNameText, 0, wxALL | wxEXPAND, border_size);
+
+    StaticBoxSizer4->AddSpacer(group_item_spacing);
 
     wxFlexGridSizer* soundSizer4 = new wxFlexGridSizer(3);
     soundSizer4->SetHGap(group_item_spacing*2);
@@ -10076,7 +10080,7 @@ void options::OnButtonSelectAnchorSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_anchorwatch_sound_file = g_Platform->NormalizePath(sel_file);
-    m_anchorAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
+    m_anchorAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
         g_anchorwatch_sound_file);
     g_anchorwatch_sound->Stop();
   }
@@ -10096,7 +10100,7 @@ void options::OnButtonSelectDSCSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_DSC_sound_file = g_Platform->NormalizePath(sel_file);
-    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
+    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
         g_DSC_sound_file);
   }
 }
@@ -10115,7 +10119,7 @@ void options::OnButtonSelectSARTSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_SART_sound_file = g_Platform->NormalizePath(sel_file);
-    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
+    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
         g_SART_sound_file);
   }
 }
@@ -10134,7 +10138,7 @@ void options::OnButtonSelectAISSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_AIS_sound_file = g_Platform->NormalizePath(sel_file);
-    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
+    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
         g_AIS_sound_file);
   }
 }
