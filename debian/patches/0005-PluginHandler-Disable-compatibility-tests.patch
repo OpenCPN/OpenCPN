@@ -2,10 +2,14 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Fri, 15 Apr 2022 10:52:32 +0200
 Subject: PluginHandler: Disable compatibility tests.
 
+Forwarded: not-needed
+
 This is for Debian 10, nothing else. Here, we don't want to
 check for Ubuntu compatibility since we do build Debian plugins.
 Same logic applies for the "similar" check as well as the
 raspbian one.
+
+The patch is not generally applicable.
 ---
  src/PluginHandler.cpp | 13 -------------
  1 file changed, 13 deletions(-)

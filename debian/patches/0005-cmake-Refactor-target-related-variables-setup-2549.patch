@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Wed, 23 Feb 2022 22:01:30 +0100
 Subject: cmake: Refactor target-related variables setup (#2549).
 
+Bug: https://github.com/OpenCPN/OpenCPN/issues/2549
+
 The Debian .deb package generation requires som support variables.
 These have been setup in cmake/GetArch, but this is just not logical
 since they depend on the target being Ubuntu/Debian rather than
