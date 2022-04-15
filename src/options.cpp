@@ -6196,28 +6196,25 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
     m_pCheck_AnchorAudio = new wxCheckBox(panelSounds, ID_ANCHORALERTAUDIO,
                                           _("Play Sound on Anchor Alarm."));
-    StaticBoxSizer1->Add(m_pCheck_AnchorAudio, 1, wxALL, border_size);
+    StaticBoxSizer1->Add(m_pCheck_AnchorAudio, 1, wxALL, group_item_spacing);
 
     m_anchorAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_anchorAudioFileNameText->SetLabel( " " + _("Audio file name:") + " " +
+    m_anchorAudioFileNameText->SetLabel( " " + _("Audio file name:") + "\n " +
                 g_anchorwatch_sound_file);
-    StaticBoxSizer1->Add(m_anchorAudioFileNameText, 0, wxLEFT, border_size);
+    StaticBoxSizer1->Add(m_anchorAudioFileNameText, 1, wxALL | wxEXPAND, group_item_spacing);
 
-    wxFlexGridSizer* soundSizer1 = new wxFlexGridSizer(2);
-    soundSizer1->SetHGap(border_size);
-    StaticBoxSizer1->Add(soundSizer1, 1, wxALL | wxALIGN_CENTER, border_size);
-    // spacer
-    // unitsSizer->Add(0, border_size * 4);
-    // unitsSizer->Add(0, border_size * 4);
+    wxFlexGridSizer* soundSizer1 = new wxFlexGridSizer(3);
+    soundSizer1->SetHGap(border_size * 2);
+    StaticBoxSizer1->Add(soundSizer1, 1, wxALL | wxLEFT, border_size);
 
     wxButton* SelSoundAnchor = new wxButton(
         panelSounds, ID_ANCHORSELECTSOUND, _("Select Anchor Alarm Sound"),
         wxDefaultPosition, m_small_button_size, 0);
     soundSizer1->Add(SelSoundAnchor, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
-
+    soundSizer1->AddSpacer(group_item_spacing * 4);
     wxButton* pPlay_AnchorSound = new wxButton(
-        panelSounds, ID_ANCHORTESTSOUND, _("Test Anchor Alarm Sound"),
+        panelSounds, ID_ANCHORTESTSOUND, _("Test"),
         wxDefaultPosition, m_small_button_size, 0);
     soundSizer1->Add(pPlay_AnchorSound, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
@@ -6231,24 +6228,25 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
     m_pCheck_AISAudio = new wxCheckBox(panelSounds, ID_AISALERTAUDIO,
                                        _("Play Sound on AIS Alert."));
-    StaticBoxSizer2->Add(m_pCheck_AISAudio, 1, wxALL, border_size);
+    StaticBoxSizer2->Add(m_pCheck_AISAudio, 1, wxALL, group_item_spacing);
 
     m_aisAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
             g_AIS_sound_file);
-    StaticBoxSizer2->Add(m_aisAudioFileNameText, 0, wxLEFT, border_size);
+    StaticBoxSizer2->Add(m_aisAudioFileNameText, 0, wxALL | wxEXPAND, group_item_spacing);
 
-    wxFlexGridSizer* soundSizer2 = new wxFlexGridSizer(2);
-    soundSizer2->SetHGap(border_size);
-    StaticBoxSizer2->Add(soundSizer2, 1, wxALL | wxALIGN_CENTER, border_size);
+    wxFlexGridSizer* soundSizer2 = new wxFlexGridSizer(3);
+    soundSizer2->SetHGap(group_item_spacing *2);
+    StaticBoxSizer2->Add(soundSizer2, 1, wxALL | wxLEFT, group_item_spacing);
 
     wxButton* SelSoundAIS = new wxButton(
         panelSounds, ID_AISSELECTSOUND, _("Select AIS Alert Sound"),
         wxDefaultPosition, m_small_button_size, 0);
     soundSizer2->Add(SelSoundAIS, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
+    soundSizer2->AddSpacer(group_item_spacing * 4);
 
     wxButton* pPlay_AISSound =
-        new wxButton(panelSounds, ID_AISTESTSOUND, _("Test AIS Alert Sound"),
+        new wxButton(panelSounds, ID_AISTESTSOUND, _("Test"),
                      wxDefaultPosition, m_small_button_size, 0);
     soundSizer2->Add(pPlay_AISSound, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
@@ -6262,25 +6260,26 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
     m_pCheck_SARTAudio = new wxCheckBox(panelSounds, ID_SARTALERTAUDIO,
                                         _("Play Sound on AIS SART Alert."));
-    StaticBoxSizer3->Add(m_pCheck_SARTAudio, 1, wxALL, border_size);
+    StaticBoxSizer3->Add(m_pCheck_SARTAudio, 1, wxALL, group_item_spacing);
 
     m_sartAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
             g_SART_sound_file);
-    StaticBoxSizer3->Add(m_sartAudioFileNameText, 0, wxLEFT, border_size);
+    StaticBoxSizer3->Add(m_sartAudioFileNameText, 0, wxALL | wxEXPAND, border_size);
 
-    wxFlexGridSizer* soundSizer3 = new wxFlexGridSizer(2);
+    wxFlexGridSizer* soundSizer3 = new wxFlexGridSizer(3);
     soundSizer3->SetHGap(border_size);
-    StaticBoxSizer3->Add(soundSizer3, 1, wxALL | wxALIGN_CENTER, border_size);
+    StaticBoxSizer3->Add(soundSizer3, 1, wxALL | wxLEFT, border_size);
 
     wxButton* SelSoundSART = new wxButton(
         panelSounds, ID_SARTELECTSOUND, _("Select AIS SART Alert Sound"),
         wxDefaultPosition, m_small_button_size, 0);
     soundSizer3->Add(SelSoundSART, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
+    soundSizer3->AddSpacer(group_item_spacing * 4);
 
     wxButton* pPlay_SARTSound = new wxButton(
-        panelSounds, ID_SARTTESTSOUND, _("Test AIS SART Alert Sound"),
+        panelSounds, ID_SARTTESTSOUND, _("Test"),
         wxDefaultPosition, m_small_button_size, 0);
     soundSizer3->Add(pPlay_SARTSound, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
@@ -6294,24 +6293,25 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
     m_pCheck_DSCAudio = new wxCheckBox(panelSounds, ID_DSCALERTAUDIO,
                                        _("Play Sound on DSC notification."));
-    StaticBoxSizer4->Add(m_pCheck_DSCAudio, 1, wxALL, border_size);
+    StaticBoxSizer4->Add(m_pCheck_DSCAudio, 1, wxALL, group_item_spacing);
 
     m_dscAudioFileNameText = new wxStaticText(panelSounds, wxID_ANY, _T(""));
-    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + "\n " +
             g_DSC_sound_file);
-    StaticBoxSizer4->Add(m_dscAudioFileNameText, 0, wxLEFT, border_size);
+    StaticBoxSizer4->Add(m_dscAudioFileNameText, 0, wxALL | wxEXPAND, group_item_spacing);
 
-    wxFlexGridSizer* soundSizer4 = new wxFlexGridSizer(2);
-    soundSizer4->SetHGap(border_size);
-    StaticBoxSizer4->Add(soundSizer4, 1, wxALL | wxALIGN_CENTER, border_size);
+    wxFlexGridSizer* soundSizer4 = new wxFlexGridSizer(3);
+    soundSizer4->SetHGap(group_item_spacing*2);
+    StaticBoxSizer4->Add(soundSizer4, 1, wxALL | wxLEFT, group_item_spacing);
 
     wxButton* SelSoundDSC = new wxButton(
         panelSounds, ID_DSCSELECTSOUND, _("Select DSC notification Sound"),
         wxDefaultPosition, m_small_button_size, 0);
     soundSizer4->Add(SelSoundDSC, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
+    soundSizer4->AddSpacer(group_item_spacing * 4);
 
     wxButton* pPlay_DSCSound = new wxButton(
-        panelSounds, ID_DSCTESTSOUND, _("Test DSC notification Sound"),
+        panelSounds, ID_DSCTESTSOUND, _("Test"),
         wxDefaultPosition, m_small_button_size, 0);
     soundSizer4->Add(pPlay_DSCSound, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
@@ -7173,7 +7173,7 @@ void options::CreateControls(void) {
 #endif
 
   m_small_button_size =
-      wxSize(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
+      wxSize(-1, (int)(1.2 * (font_size_y + font_descent /*+ font_lead*/)));
 
   m_nCharWidthMax = GetSize().x / GetCharWidth();
 
@@ -10076,7 +10076,7 @@ void options::OnButtonSelectAnchorSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_anchorwatch_sound_file = g_Platform->NormalizePath(sel_file);
-    m_anchorAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+    m_anchorAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
         g_anchorwatch_sound_file);
     g_anchorwatch_sound->Stop();
   }
@@ -10096,7 +10096,7 @@ void options::OnButtonSelectDSCSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_DSC_sound_file = g_Platform->NormalizePath(sel_file);
-    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+    m_dscAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
         g_DSC_sound_file);
   }
 }
@@ -10115,7 +10115,7 @@ void options::OnButtonSelectSARTSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_SART_sound_file = g_Platform->NormalizePath(sel_file);
-    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+    m_sartAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
         g_SART_sound_file);
   }
 }
@@ -10134,7 +10134,7 @@ void options::OnButtonSelectAISSound(wxCommandEvent& event) {
 
   if (!sel_file.IsEmpty()) {
     g_AIS_sound_file = g_Platform->NormalizePath(sel_file);
-    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + " " +
+    m_aisAudioFileNameText->SetLabel(" " + _("Audio file name:") + "/n " +
         g_AIS_sound_file);
   }
 }
