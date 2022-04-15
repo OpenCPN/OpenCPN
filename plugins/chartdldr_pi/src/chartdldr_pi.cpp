@@ -1060,6 +1060,10 @@ void ChartDldrPanelImpl::UpdateChartList(wxCommandEvent &event) {
       wxASSERT(false);  // This should never happen because we handle all
                         // possible cases of ret
   }
+
+   if ((ret == OCPN_DL_NO_ERROR) && bok)
+     m_DLoadNB->SetSelection(1);
+
 }
 
 void ChartSource::GetLocalFiles() {
