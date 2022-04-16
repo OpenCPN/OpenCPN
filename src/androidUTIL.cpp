@@ -50,6 +50,7 @@
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
 #include "options.h"
+#include "plugin_loader.h"
 #include "routemanagerdialog.h"
 #include "chartdb.h"
 #include "s52plib.h"
@@ -104,6 +105,7 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 class androidUtilHandler;
+class PlugInManager;
 
 extern MyFrame *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
@@ -4624,9 +4626,7 @@ int doAndroidPersistState() {
   }
 
   //    Deactivate the PlugIns, allowing them to save state
-  if (g_pi_manager) {
-    g_pi_manager->DeactivateAllPlugIns();
-  }
+  PluginLoader::getInstance()->DeactivateAllPlugIns();
 
   /*
    Automatically drop an anchorage waypoint, if enabled
@@ -4737,8 +4737,8 @@ int doAndroidPersistState() {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
+  PluginLoader::getInstance()->UnLoadAllPlugIns();
   if (g_pi_manager) {
-    g_pi_manager->UnLoadAllPlugIns();
     delete g_pi_manager;
     g_pi_manager = NULL;
   }

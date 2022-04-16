@@ -867,6 +867,7 @@ set(
   include/plugin_cache.h
   include/plugin_blacklist.h
   include/PluginHandler.h
+  include/plugin_loader.h
   include/pluginmanager.h
   include/PluginPaths.h
   include/PositionParser.h
@@ -995,9 +996,11 @@ set(
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
   src/OCPN_SignalKEvent.cpp
+  src/ocpn_plugin.cpp
   src/ocpn_utils.cpp
   src/options.cpp
   src/piano.cpp
+  src/plugin_loader.cpp
   src/PluginHandler.cpp
   src/pluginmanager.cpp
   src/PluginPaths.cpp

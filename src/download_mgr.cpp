@@ -201,7 +201,8 @@ public:
   InstallButton(wxWindow* parent, PluginMetadata metadata)
       : wxPanel(parent), m_metadata(metadata), m_remove(false) {
     PlugInContainer* found =
-        PlugInByName(metadata.name, g_pi_manager->GetPlugInArray());
+        PlugInByName(metadata.name,
+                     PluginLoader::getInstance()->GetPlugInArray());
     std::string label(_("Install"));
     if (found) {
       label = getUpdateLabel(found, metadata);
@@ -230,7 +231,8 @@ public:
     if (!cacheResult) {
       auto downloader = new GuiDownloader(this, m_metadata);
       downloader->run(this, m_remove);
-      auto pic = PlugInByName(m_metadata.name, g_pi_manager->GetPlugInArray());
+      auto loader = PluginLoader::getInstance();
+      auto pic = PlugInByName(m_metadata.name, loader->GetPlugInArray());
       if (!pic) {
         wxLogMessage("Installation of %s failed", m_metadata.name.c_str());
         return;
@@ -241,7 +243,7 @@ public:
       auto listPanels = dynamic_cast<PluginListPanel*>(
           main_window->GetRealParent()->GetPrevSibling());
       wxASSERT(listPanels != 0);
-      listPanels->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+      listPanels->ReloadPluginPanels();
       auto window = GetSizer()->GetItem((size_t)0)->GetWindow();
       auto btn = dynamic_cast<wxButton*>(window);
       wxASSERT(btn != 0);

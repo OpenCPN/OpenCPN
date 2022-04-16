@@ -68,6 +68,7 @@
 #include <archive.h>
 
 #include "catalog_parser.h"
+#include "observable.h"
 
 bool isRegularFile(const char* path);
 
@@ -85,6 +86,9 @@ private:
 
 class PluginHandler {
 public:
+
+  EventVar evt_download_ok;
+  EventVar evt_download_failed;
 
   static PluginHandler* getInstance();
 

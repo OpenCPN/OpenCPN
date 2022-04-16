@@ -61,7 +61,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "ocpn_utils.h"
 #include "PluginHandler.h"
 #include "plugin_cache.h"
-#include "pluginmanager.h"
+#include "plugin_loader.h"
 #include "PluginPaths.h"
 
 #ifdef _WIN32
@@ -75,13 +75,9 @@ static std::string SEP("/");
 #endif
 
 extern BasePlatform* g_BasePlatform;
-extern PlugInManager* g_pi_manager;
 extern wxString g_winPluginDir;
 extern MyConfig* pConfig;
 extern bool g_bportable;
-
-class MyFrame;
-extern MyFrame* gFrame;
 
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
@@ -837,10 +833,8 @@ bool PluginHandler::isPluginWritable(std::string name) {
   if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
     return true;
   }
-  if (!g_pi_manager) {
-    return false;
-  }
-  return PlugInIxByName(name, g_pi_manager->GetPlugInArray()) == -1;
+  auto loader = PluginLoader::getInstance();
+  return PlugInIxByName(name, loader->GetPlugInArray()) == -1;
 }
 
 static std::string computeMetadataPath(void) {
@@ -1005,26 +999,25 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   using namespace std;
   vector<PluginMetadata> plugins;
 
-  if (g_pi_manager) {
-    ArrayOfPlugIns* mgr_plugins = g_pi_manager->GetPlugInArray();
-    for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
-      PlugInContainer* p = mgr_plugins->Item(i);
-      PluginMetadata plugin;
-      auto name = string(p->m_common_name);
-      // std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-      plugin.name = name;
-      std::stringstream ss;
-      ss << p->m_version_major << "." << p->m_version_minor;
-      plugin.version = ss.str();
-      plugin.readonly = !isPluginWritable(plugin.name);
-      string path = PluginHandler::versionPath(plugin.name);
-      if (path != "" && wxFileName::IsFileReadable(path)) {
-        std::ifstream stream;
-        stream.open(path, ifstream::in);
-        stream >> plugin.version;
-      }
-      plugins.push_back(plugin);
+  auto loader = PluginLoader::getInstance();
+  ArrayOfPlugIns* mgr_plugins = loader->GetPlugInArray();
+  for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
+    PlugInContainer* p = mgr_plugins->Item(i);
+    PluginMetadata plugin;
+    auto name = string(p->m_common_name);
+    // std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    plugin.name = name;
+    std::stringstream ss;
+    ss << p->m_version_major << "." << p->m_version_minor;
+    plugin.version = ss.str();
+    plugin.readonly = !isPluginWritable(plugin.name);
+    string path = PluginHandler::versionPath(plugin.name);
+    if (path != "" && wxFileName::IsFileReadable(path)) {
+      std::ifstream stream;
+      stream.open(path, ifstream::in);
+      stream >> plugin.version;
     }
+    plugins.push_back(plugin);
   }
   return plugins;
 }
@@ -1097,10 +1090,11 @@ bool PluginHandler::installPlugin(std::string path) {
 bool PluginHandler::uninstall(const std::string plugin_name) {
   using namespace std;
 
-  auto ix = PlugInIxByName(plugin_name, g_pi_manager->GetPlugInArray());
-  auto pic = g_pi_manager->GetPlugInArray()->Item(ix);
+  auto loader = PluginLoader::getInstance();
+  auto ix = PlugInIxByName(plugin_name, loader->GetPlugInArray());
+  auto pic = loader->GetPlugInArray()->Item(ix);
   // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
-  g_pi_manager->UnLoadPlugIn(ix);
+  loader->UnLoadPlugIn(ix);
   string path = PluginHandler::fileListPath(plugin_name);
   if (!ocpn::exists(path)) {
     wxLogWarning("Cannot find installation data for %s (%s)",
@@ -1183,19 +1177,11 @@ bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
     bool bOK = installPlugin(plugin, cacheFile);
     if (!bOK) {
       wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
-      wxString message = _("Please check system log for more info.");
-      OCPNMessageBox(gFrame, message, _("Installation error"),
-                     wxICON_ERROR | wxOK | wxCENTRE);
+      evt_download_failed.notify(cacheFile);
       return false;
     }
-
-    wxString message;
-    message.Printf("%s %s\n", plugin.name.c_str(), plugin.version.c_str());
-    message += _(" successfully installed from cache");
-    OCPNMessageBox(gFrame, message, _("Installation complete"),
-                   wxICON_INFORMATION | wxOK | wxCENTRE);
+    evt_download_ok.notify(plugin.name + " " + plugin.version);
     return true;
   }
-
   return false;
 }
