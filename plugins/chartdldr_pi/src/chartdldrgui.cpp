@@ -230,7 +230,7 @@ void AddSourceDlg::applyStyle() {
 AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
                            const wxString& title, const wxPoint& pos,
                            const wxSize& size, long style)
-    : wxDialog(parent, id, title, pos, size, style) {
+    : wxDialog(parent, id, title, pos, size, style | wxRESIZE_BORDER) {
   this->SetSizeHints(wxSize(500, -1), wxDefaultSize);
 
   wxBoxSizer* bSizerMain = new wxBoxSizer(wxVERTICAL);
