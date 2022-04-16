@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 21:37-0400\n"
-"PO-Revision-Date: 2022-04-15 01:43\n"
+"PO-Revision-Date: 2022-04-16 15:48\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -299,7 +299,7 @@ msgstr "Problème de définition de la source des cartes"
 
 #: src/chartdldrgui.cpp:206
 msgid "Dialog"
-msgstr ""
+msgstr "Dialogue"
 
 #: src/chartdldrgui.cpp:253
 msgid "Predefined"
@@ -319,15 +319,15 @@ msgstr "Personnaliser"
 
 #: src/chartdldrgui.cpp:304
 msgid "Proposed chart installation directory"
-msgstr ""
+msgstr "Dossier proposé d'installation de cartes"
 
 #: src/chartdldrgui.cpp:324
 msgid "Select a different directory"
-msgstr ""
+msgstr "Sélectionnez un dossier différent"
 
 #: src/chartdldrgui.cpp:331
 msgid "OK"
-msgstr ""
+msgstr "Ok"
 
 #: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:908
 msgid "Cancel"
