@@ -80,6 +80,7 @@ class CanvasConfigSelect;
 class OCPNIconCombo;
 class OCPNColourPickerCtrl;
 class OCPNChartDirPanel;
+class OCPNSoundPanel;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -208,21 +209,9 @@ enum {
   ID_CONFIGEDIT_CANCEL,
   ID_ZOOMBUTTONS,
   ID_RASTERZOOM,
-  ID_ANCHORSELECTSOUND,
-  ID_ANCHORTESTSOUND,
   ID_ANCHORALERTAUDIO,
   ID_AISALERTAUDIO,
-  ID_AISSELECTSOUND,
-  ID_AISTESTSOUND,
-  ID_SARTALERTAUDIO,
-  ID_SARTELECTSOUND,
-  ID_SARTTESTSOUND,
-  ID_DSCALERTAUDIO,
-  ID_DSCSELECTSOUND,
-  ID_DSCTESTSOUND,
   ID_AISALERTDIALOG,
-  ID_AISALERTSELECTSOUND,
-  ID_AISALERTTESTSOUND,
   ID_TEMPUNITSCHOICE,
   ID_BUTTONMIGRATE
 };
@@ -348,14 +337,6 @@ public:
   wxString SelectSoundFile();
   void OnButtonSelectSound(wxCommandEvent &event);
   void OnButtonTestSound(wxCommandEvent &event);
-  void OnButtonSelectAnchorSound(wxCommandEvent &event);
-  void OnButtonTestAnchorSound(wxCommandEvent &event);
-  void OnButtonSelectAISSound(wxCommandEvent &event);
-  void OnButtonTestAISSound(wxCommandEvent &event);
-  void OnButtonSelectSARTSound(wxCommandEvent &event);
-  void OnButtonTestSARTSound(wxCommandEvent &event);
-  void OnButtonSelectDSCSound(wxCommandEvent &event);
-  void OnButtonTestDSCSound(wxCommandEvent &event);
 
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void OnZTCCheckboxClick(wxCommandEvent &event);
@@ -682,10 +663,11 @@ public:
   bool m_bForceNewToolbaronCancel;
 
   // Sounds panel
-  wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio,
-      *m_pCheck_DSCAudio;
-  wxStaticText *m_anchorAudioFileNameText, *m_aisAudioFileNameText,
-      *m_sartAudioFileNameText, *m_dscAudioFileNameText;
+
+  OCPNSoundPanel *m_soundPanelAnchor;
+  OCPNSoundPanel *m_soundPanelAIS;
+  OCPNSoundPanel *m_soundPanelSART;
+  OCPNSoundPanel *m_soundPanelDSC;
 
 private:
   void Init(void);
