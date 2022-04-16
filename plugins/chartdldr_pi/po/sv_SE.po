@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 21:37-0400\n"
-"PO-Revision-Date: 2022-04-15 01:43\n"
+"PO-Revision-Date: 2022-04-16 15:48\n"
 "Last-Translator: \n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -293,7 +293,7 @@ msgstr "Problem med att hitta källan för sjökorten"
 
 #: src/chartdldrgui.cpp:206
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #: src/chartdldrgui.cpp:253
 msgid "Predefined"
@@ -313,15 +313,15 @@ msgstr "Anpassad"
 
 #: src/chartdldrgui.cpp:304
 msgid "Proposed chart installation directory"
-msgstr ""
+msgstr "Föreslagen katalog för sjökort"
 
 #: src/chartdldrgui.cpp:324
 msgid "Select a different directory"
-msgstr ""
+msgstr "Välj en annan katalog"
 
 #: src/chartdldrgui.cpp:331
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:908
 msgid "Cancel"

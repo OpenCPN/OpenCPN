@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 21:36-0400\n"
-"PO-Revision-Date: 2022-04-15 01:43\n"
+"PO-Revision-Date: 2022-04-16 15:48\n"
 "Last-Translator: \n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -117,23 +117,23 @@ msgstr "Dialogi"
 
 #: src/about.cpp:393
 msgid "The Open Source Chart Plotter/Navigator"
-msgstr ""
+msgstr "Avoimen lähdekoodin karttaplotteri/navigaattori"
 
 #: src/about.cpp:415
 msgid "Copy Log File to Clipboard"
-msgstr ""
+msgstr "Kopioi lokitiedosto leikepöydälle"
 
 #: src/about.cpp:418
 msgid "Copy Settings File to Clipboard"
-msgstr ""
+msgstr "Kopioi asetustiedosto leikepöydälle"
 
 #: src/about.cpp:442
 msgid "About"
-msgstr ""
+msgstr "Tietoja"
 
 #: src/about.cpp:459
 msgid "Authors"
-msgstr ""
+msgstr "Tekijät"
 
 #: src/about.cpp:475 src/AboutFrame.cpp:249
 msgid "License"
@@ -158,7 +158,7 @@ msgstr "OpenCPN"
 
 #: src/AboutFrame.cpp:74
 msgid "(c) 2000-2021"
-msgstr ""
+msgstr "(c) 2000-2021"
 
 #: src/AboutFrame.cpp:81
 msgid "The OpenCPN Authors"
@@ -2703,11 +2703,11 @@ msgstr ""
 
 #: src/androidUTIL.cpp:4967
 msgid "OpenCPN Internal Storage"
-msgstr ""
+msgstr "OpenCPN sisäinen tallennustila"
 
 #: src/androidUTIL.cpp:4970
 msgid "OpenCPN SDCard Storage"
-msgstr ""
+msgstr "OpenCPN SD-kortin tallennustila"
 
 #: src/androidUTIL.cpp:4978
 msgid "Choose chart source folder."
@@ -2715,7 +2715,7 @@ msgstr ""
 
 #: src/androidUTIL.cpp:4984
 msgid "Status"
-msgstr ""
+msgstr "Tila"
 
 #: src/androidUTIL.cpp:5001 src/catalog_mgr.cpp:604
 #: src/GoToPositionDialog.cpp:145 src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:775
@@ -2738,7 +2738,7 @@ msgstr ""
 
 #: src/androidUTIL.cpp:5030
 msgid "Proceed?"
-msgstr ""
+msgstr "Jatka?"
 
 #: src/androidUTIL.cpp:5042
 msgid "Waiting for permission grant...."
@@ -2790,7 +2790,7 @@ msgstr ""
 
 #: src/androidUTIL.cpp:5183
 msgid "OpenCPN will now restart to apply changes."
-msgstr ""
+msgstr "OpenCPN käynnistyy nyt uudelleen, jotta muutokset tulevat voimaan."
 
 #: src/androidUTIL.cpp:5218
 msgid "Finishing migration"
@@ -3242,52 +3242,52 @@ msgstr ""
 
 #: src/cat_settings.cpp:96
 msgid "Default setting"
-msgstr ""
+msgstr "Oletusasetukset"
 
 #: src/cat_settings.cpp:162
 msgid "Active catalog"
-msgstr ""
+msgstr "Aktiivinen luettelo"
 
 #: src/cat_settings.cpp:164
 msgid "Select plugin catalog"
-msgstr ""
+msgstr "Valitse lisäosaluettelo"
 
 #: src/cat_settings.cpp:177
 msgid "Compatibility"
-msgstr ""
+msgstr "Yhteensopivuus"
 
 #: src/cat_settings.cpp:179
 msgid "Active setting:"
-msgstr ""
+msgstr "Aktiivinen asetus:"
 
 #: src/cat_settings.cpp:191
 msgid "Cache"
-msgstr ""
+msgstr "Välimuisti"
 
 #: src/cat_settings.cpp:200
 msgid "Clear cache"
-msgstr ""
+msgstr "Tyhjennä välimuisti"
 
 #: src/cat_settings.cpp:217
 #, c-format
 msgid "Size: %d MB in %d files"
-msgstr ""
+msgstr "Koko: %d Mt %d tiedostossa"
 
 #: src/cat_settings.cpp:228 src/catalog_mgr.cpp:129 src/download_mgr.cpp:382
 msgid "Done"
-msgstr ""
+msgstr "Valmis"
 
 #: src/cat_settings.cpp:236
 msgid "Plugin Catalog Settings"
-msgstr ""
+msgstr "Lisäosaluettelon asetukset"
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
-msgstr ""
+msgstr "Hallitse lisäosaluetteloa"
 
 #: src/catalog_mgr.cpp:99
 msgid "Hide"
-msgstr ""
+msgstr "Piilota"
 
 #: src/catalog_mgr.cpp:102
 msgid "Ultra advanced"
@@ -3295,27 +3295,27 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:190
 msgid "Catalog URL status: "
-msgstr ""
+msgstr "Luettelon URL:n tila:"
 
 #: src/catalog_mgr.cpp:193
 msgid "Error"
-msgstr ""
+msgstr "Virhe"
 
 #: src/catalog_mgr.cpp:222
 msgid "Current active plugin catalog"
-msgstr ""
+msgstr "Valittu aktiivinen lisäosaluettelo"
 
 #: src/catalog_mgr.cpp:229
 msgid "Default catalog"
-msgstr ""
+msgstr "Oletusluettelo"
 
 #: src/catalog_mgr.cpp:232 src/catalog_mgr.cpp:242
 msgid "Use as active catalog"
-msgstr ""
+msgstr "Käytä aktiivisena luettelona"
 
 #: src/catalog_mgr.cpp:239
 msgid "Latest available catalog:"
-msgstr ""
+msgstr "Viimeisin saatavilla oleva luettelo:"
 
 #: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:5131
 msgid "Cannot download data from url"
@@ -3327,31 +3327,31 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:299
 msgid "Catalog update problem"
-msgstr ""
+msgstr "Luettelon päivitysongelma"
 
 #: src/catalog_mgr.cpp:345
 msgid "Use default location"
-msgstr ""
+msgstr "Käytä oletussijaintia"
 
 #: src/catalog_mgr.cpp:350
 msgid "Save"
-msgstr ""
+msgstr "Tallenna"
 
 #: src/catalog_mgr.cpp:384
 msgid "Catalog channel: "
-msgstr ""
+msgstr "Luettelon kanava:"
 
 #: src/catalog_mgr.cpp:418
 msgid "Custom catalog URL: "
-msgstr ""
+msgstr "Mukautetun luettelon URL: "
 
 #: src/catalog_mgr.cpp:467 src/catalog_mgr.cpp:565
 msgid "Check latest release..."
-msgstr ""
+msgstr "Tarkista viimeisin versio..."
 
 #: src/catalog_mgr.cpp:497
 msgid "Catalog updated"
-msgstr ""
+msgstr "Luettelo päivitettiin"
 
 #: src/catalog_mgr.cpp:561
 msgid "Server is reachable..."
@@ -3359,19 +3359,19 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:563
 msgid "Check channel..."
-msgstr ""
+msgstr "Tarkista kanava..."
 
 #: src/catalog_mgr.cpp:571
 msgid "Custom URL"
-msgstr ""
+msgstr "Mukautettu URL"
 
 #: src/catalog_mgr.cpp:589
 msgid "Fail: "
-msgstr ""
+msgstr "Epäonnistui: "
 
 #: src/catalog_mgr.cpp:630 src/catalog_mgr.cpp:655
 msgid "Catalog Manager"
-msgstr ""
+msgstr "Luettelon hallintasovellus"
 
 #: src/chart1.cpp:1031
 msgid "\n"
@@ -4313,7 +4313,7 @@ msgstr "Vektorikartan zoomaus/mittakaava -painotus"
 
 #: src/download_mgr.cpp:212 src/update_mgr.cpp:209
 msgid "Install"
-msgstr ""
+msgstr "Asenna"
 
 #: src/download_mgr.cpp:255 src/download_mgr.cpp:272 src/pluginmanager.cpp:6208
 #: src/update_mgr.cpp:245
@@ -4322,7 +4322,7 @@ msgstr "Asenna uudelleen"
 
 #: src/download_mgr.cpp:270 src/update_mgr.cpp:243
 msgid "Update"
-msgstr ""
+msgstr "Päivitä"
 
 #: src/download_mgr.cpp:274 src/pluginmanager.cpp:6214 src/update_mgr.cpp:247
 msgid "Downgrade"
@@ -4330,43 +4330,43 @@ msgstr "Palauta edellinen"
 
 #: src/download_mgr.cpp:315 src/update_mgr.cpp:307
 msgid "More"
-msgstr ""
+msgstr "Enemmän"
 
 #: src/download_mgr.cpp:318 src/update_mgr.cpp:310
 msgid "Less"
-msgstr ""
+msgstr "Vähemmän"
 
 #: src/download_mgr.cpp:391
 msgid "Update plugin catalog"
-msgstr ""
+msgstr "Päivitä lisäosaluettelo"
 
 #: src/download_mgr.cpp:404
 msgid "Advanced catalog update..."
-msgstr ""
+msgstr "Edistynyt luettelon päivitys..."
 
 #: src/download_mgr.cpp:482 src/update_mgr.cpp:454
 msgid "Plugin Manager"
-msgstr ""
+msgstr "Lisäosien hallinta"
 
 #: src/download_mgr.cpp:516
 msgid "Downloading "
-msgstr ""
+msgstr "Ladataan "
 
 #: src/download_mgr.cpp:519
 msgid "Downloading"
-msgstr ""
+msgstr "Ladataan"
 
 #: src/download_mgr.cpp:575
 msgid " successfully installed"
-msgstr ""
+msgstr " asennettu onnistuneesti"
 
 #: src/download_mgr.cpp:576 src/PluginHandler.cpp:1164
 msgid "Installation complete"
-msgstr ""
+msgstr "Asennus on valmis"
 
 #: src/download_mgr.cpp:592 src/PluginHandler.cpp:1155
 msgid "Installation error"
-msgstr ""
+msgstr "Asennusvirhe"
 
 #: src/garmin_wrapper.cpp:295
 msgid "Overwrite Garmin device route number 1?"
@@ -4374,7 +4374,7 @@ msgstr ""
 
 #: src/garmin_wrapper.cpp:296
 msgid "OpenCPN Message"
-msgstr ""
+msgstr "OpenCPN Viesti"
 
 #: src/glChartCanvas.cpp:2182 src/s52plib.cpp:2263 src/s52plib.cpp:2288
 #: src/s52plib.cpp:2392 src/s52plib.cpp:2565
@@ -4626,11 +4626,11 @@ msgstr "Vuorovesiasemaa ei löytynyt"
 
 #: src/MUIBar.cpp:97 src/MUIBar.cpp:106
 msgid "Set scale"
-msgstr ""
+msgstr "Aseta mittakaava"
 
 #: src/MUIBar.cpp:175
 msgid "Chart Scale"
-msgstr ""
+msgstr "Kartan mittakaava"
 
 #: src/multiplexer.cpp:413
 msgid "Route Upload"
@@ -5613,11 +5613,11 @@ msgstr "Pakkaa valitut"
 
 #: src/options.cpp:3977
 msgid "Add.."
-msgstr ""
+msgstr "Lisää..."
 
 #: src/options.cpp:3979
 msgid "Compress"
-msgstr ""
+msgstr "Pakkaa"
 
 #: src/options.cpp:4007
 msgid "Migrate Charts.."
@@ -6066,7 +6066,7 @@ msgstr "Valitse ankkurihälytyksen ääni"
 #: src/options.cpp:6217 src/options.cpp:6249 src/options.cpp:6282
 #: src/options.cpp:6314
 msgid "Test"
-msgstr ""
+msgstr "Testaa"
 
 #: src/options.cpp:6230
 msgid "Play Sound on AIS Alert."
@@ -6282,7 +6282,7 @@ msgstr "Tuntematon laite :"
 
 #: src/options.cpp:6881
 msgid "Input device :"
-msgstr ""
+msgstr "Syöttölaite:"
 
 #: src/options.cpp:6909
 msgid "Sound Device"
@@ -6584,7 +6584,7 @@ msgstr "OpenCPN S57 SENC-tiedoston luominen..."
 
 #: src/PluginHandler.cpp:1154
 msgid "Please check system log for more info."
-msgstr ""
+msgstr "Katso lisätietoja järjestemän lokista."
 
 #: src/PluginHandler.cpp:1163
 msgid " successfully installed from cache"
@@ -6708,11 +6708,11 @@ msgstr "Poistettu käytöstä"
 
 #: src/pluginmanager.cpp:5050
 msgid "Update Plugin Catalog: master"
-msgstr ""
+msgstr "Päivitä lisäosaluettelo: master"
 
 #: src/pluginmanager.cpp:5065
 msgid "Update Plugin Catalog:master"
-msgstr ""
+msgstr "Päivitä lisäosaluettelo:master"
 
 #: src/pluginmanager.cpp:5132 src/pluginmanager.cpp:5144
 #: src/pluginmanager.cpp:5154 src/pluginmanager.cpp:5163
@@ -6904,7 +6904,7 @@ msgstr "&Vie valittu..."
 
 #: src/routemanagerdialog.cpp:473
 msgid "&Resequence Waypoints"
-msgstr ""
+msgstr "&Järjestä reittipisteet uudelleen"
 
 #: src/routemanagerdialog.cpp:479 src/routemanagerdialog.cpp:753
 msgid "&Send to GPS"
@@ -7442,15 +7442,17 @@ msgstr "<font size=-2> (Sektorikulmat ovat tosisuuntia mereltä alukseen)</font>
 msgid "The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
-msgstr ""
+msgstr "Viimeisin OpenCPN suoritus on päättynyt epänormaalisti.\n"
+"Haluatko käynnistää ohjelman turvallisessa tilassa ilman\n"
+"liitännäisiä ja muita mahdollisesti ongelmallisia ominaisuuksia?\n"
 
 #: src/safe_mode.cpp:65
 msgid "Safe restart"
-msgstr ""
+msgstr "Turvallinen uudelleenkäynnistys"
 
 #: src/SencManager.cpp:158 src/SencManager.cpp:190
 msgid "Preparing vector chart  "
-msgstr ""
+msgstr "Valmistellaan vektorikarttaa  "
 
 #: src/SendToGpsDlg.cpp:90
 msgid "GPS/Plotter Port"
@@ -7552,11 +7554,11 @@ msgstr "Valitse työkalurivin kuvakkeet"
 
 #: src/trackprintout.cpp:334
 msgid "Show Time."
-msgstr ""
+msgstr "Näytä aika"
 
 #: src/trackprintout.cpp:343
 msgid "Show Speed."
-msgstr ""
+msgstr "Näytä nopeus"
 
 #: src/trackprintout.cpp:399
 msgid "Track Print"
@@ -7717,7 +7719,7 @@ msgstr "Siirrä reittipistettä"
 
 #: src/update_mgr.cpp:409
 msgid "Dismiss"
-msgstr ""
+msgstr "Hylkää"
 
 #: libs/wxcurl/src/dialog.cpp:137
 msgid "Not available"
