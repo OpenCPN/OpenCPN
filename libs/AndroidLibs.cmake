@@ -34,7 +34,7 @@ if (NOT EXISTS ${_master_base})
 endif ()
 
 # testing
-#set(_master_base "/home/dsr/Projects/OCPNAndroidCoreBuildSupport")
+set(_master_base "/home/dsr/Projects/OCPNAndroidCoreBuildSupport")
 
 # Setup directories and libraries
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
