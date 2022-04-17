@@ -6080,6 +6080,9 @@ OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &
               wxString *pSoundFile)
 :wxPanel(parent, id, pos, size, wxBORDER_NONE)
 {
+  wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
+  SetFont( *pif );
+
   m_pSoundFile = pSoundFile;
   if(pSoundFile)
     m_sound_file = *pSoundFile;
