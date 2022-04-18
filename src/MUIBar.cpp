@@ -632,13 +632,13 @@ void MUIBar::OnScaleSelected(wxMouseEvent& event) {
       dScale = wxMax(dScale, 1000);
       double displayScaleNow = pcc->GetScaleValue();
       double factor = displayScaleNow / dScale;
-      pcc->DoZoomCanvas(factor);
+      pcc->DoZoomCanvas(factor, false);
 
       // Run the calculation again, to reduce roundoff error in large scale
       // jumps.
       displayScaleNow = pcc->GetScaleValue();
       factor = displayScaleNow / dScale;
-      pcc->DoZoomCanvas(factor);
+      pcc->DoZoomCanvas(factor, false);
     }
   }
 }
