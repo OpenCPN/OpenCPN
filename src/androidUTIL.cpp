@@ -407,6 +407,7 @@ public:
   void OnScheduledEvent(wxCommandEvent &event);
 
   wxString GetStringResult() { return m_stringResult; }
+  void LoadAuxClasses();
 
   wxTimer m_eventTimer;
   int m_action;
@@ -438,6 +439,11 @@ androidUtilHandler::androidUtilHandler() {
 
   m_bskipConfirm = false;
 
+  LoadAuxClasses();
+}
+
+void androidUtilHandler::LoadAuxClasses()
+{
   // We do a few little dummy class accesses here, to cause the static link to
   // wxWidgets to bring in some class members required by some plugins, that
   // would be missing otherwise.
@@ -449,6 +455,9 @@ androidUtilHandler::androidUtilHandler() {
   wxFilePickerCtrl *pfpc = new wxFilePickerCtrl();
 
   wxZipEntry *entry = new wxZipEntry();
+
+  wxSplitterWindow *swin = new wxSplitterWindow();
+
 }
 
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
@@ -986,6 +995,7 @@ bool androidUtilInit(void) {
 
   return true;
 }
+
 
 wxSize getAndroidConfigSize() { return config_size; }
 
