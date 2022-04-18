@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 21:36-0400\n"
-"PO-Revision-Date: 2022-04-15 01:43\n"
+"PO-Revision-Date: 2022-04-18 17:54\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -2870,7 +2870,7 @@ msgstr "Ориентация Карты Согласно Карте"
 
 #: src/canvasMenu.cpp:476 src/canvasMenu.cpp:483 src/chart1.cpp:5619
 msgid "Toggle Full Screen"
-msgstr "Переключиться в полноэкранный режим"
+msgstr "Полноэкранный режим"
 
 #: src/canvasMenu.cpp:489 src/canvasMenu.cpp:653 src/canvasMenu.cpp:671
 msgid "Zero XTE"
@@ -3404,7 +3404,7 @@ msgstr "Работать в портативном режиме."
 
 #: src/chart1.cpp:1122
 msgid "Switch to full screen mode on start."
-msgstr "Переключиться в полноэкранный режим при запуске."
+msgstr "Полноэкранный режим при запуске."
 
 #: src/chart1.cpp:1125
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
