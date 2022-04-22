@@ -33,6 +33,7 @@ jobs:
        xcode: "11.4.1"
      environment:
        - OCPN_TARGET:  macos
+       - TRAVIS_TAG: ON
      steps:
        - checkout
        - restore_cache:
