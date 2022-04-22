@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 21:36-0400\n"
-"PO-Revision-Date: 2022-04-15 01:43\n"
+"PO-Revision-Date: 2022-04-21 14:20\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -89,7 +89,7 @@ msgstr "(Acompanhamento sem Nome)"
 
 #: include/trackprintout.h:78 src/trackprintout.cpp:274
 msgid "Print Track Selection"
-msgstr ""
+msgstr "Imprimir seleção de rota"
 
 #: include/TrackPropDlg.h:191 src/TrackPropDlg.cpp:1218
 #: src/TrackPropDlg.cpp:1232
@@ -117,23 +117,23 @@ msgstr "Diálogo"
 
 #: src/about.cpp:393
 msgid "The Open Source Chart Plotter/Navigator"
-msgstr ""
+msgstr "O Plotter/Navegador de código aberto "
 
 #: src/about.cpp:415
 msgid "Copy Log File to Clipboard"
-msgstr ""
+msgstr "Copiar o arquivo de Log para área de transferência"
 
 #: src/about.cpp:418
 msgid "Copy Settings File to Clipboard"
-msgstr ""
+msgstr "Copiar Arquivo de Configurações para Área de Transferência"
 
 #: src/about.cpp:442
 msgid "About"
-msgstr ""
+msgstr "Sobre"
 
 #: src/about.cpp:459
 msgid "Authors"
-msgstr ""
+msgstr "Autores"
 
 #: src/about.cpp:475 src/AboutFrame.cpp:249
 msgid "License"
@@ -158,7 +158,7 @@ msgstr "OpenCPN"
 
 #: src/AboutFrame.cpp:74
 msgid "(c) 2000-2021"
-msgstr ""
+msgstr "(c) 2000-2021"
 
 #: src/AboutFrame.cpp:81
 msgid "The OpenCPN Authors"
@@ -2679,43 +2679,43 @@ msgstr "Fundeadouro criado "
 #: src/androidUTIL.cpp:4885 src/androidUTIL.cpp:5033 src/androidUTIL.cpp:5121
 #: src/androidUTIL.cpp:5186
 msgid "OpenCPN for Android Migration Assistant"
-msgstr ""
+msgstr "OpenCPN para Android Assistente de Migração "
 
 #: src/androidUTIL.cpp:4911
 msgid "OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"
-msgstr ""
+msgstr "OpenCPN detectou pastas de cartas no seu arquivo de configuração que não pode ser acessado nesta versão do Android"
 
 #: src/androidUTIL.cpp:4934 src/androidUTIL.cpp:4947
 msgid "OpenCPN can copy these chart folders to a suitable location, if desired."
-msgstr ""
+msgstr "OpenCPN pode copiar estas pastas de cartas para um local adequado, se desejado."
 
 #: src/androidUTIL.cpp:4936 src/androidUTIL.cpp:4949
 msgid "To proceed with chart folder migration, choose the chart source folder, and follow the instructions given."
-msgstr ""
+msgstr "Para prosseguir com a migração da pasta de cartas, escolha a pasta de origem da carta e siga as instruções fornecidas."
 
 #: src/androidUTIL.cpp:4946
 msgid "Some chart folders may be inaccessible to OpenCPN on this version of Android. "
-msgstr ""
+msgstr "Algumas pastas de cartas podem estar inacessíveis para OpenCPN nesta versão do Android. "
 
 #: src/androidUTIL.cpp:4963
 msgid "Migrate destination"
-msgstr ""
+msgstr "Migrar destino"
 
 #: src/androidUTIL.cpp:4967
 msgid "OpenCPN Internal Storage"
-msgstr ""
+msgstr "OpenCPN Armazenamento Interno"
 
 #: src/androidUTIL.cpp:4970
 msgid "OpenCPN SDCard Storage"
-msgstr ""
+msgstr "OpenCPN Armazenamento cartão SD "
 
 #: src/androidUTIL.cpp:4978
 msgid "Choose chart source folder."
-msgstr ""
+msgstr "Escolha a pasta fonte da carta"
 
 #: src/androidUTIL.cpp:4984
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: src/androidUTIL.cpp:5001 src/catalog_mgr.cpp:604
 #: src/GoToPositionDialog.cpp:145 src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:775
@@ -2730,71 +2730,72 @@ msgstr "Cancelar"
 #: src/androidUTIL.cpp:5027
 msgid "On the next page, find and choose the root folder containing chart files to migrate\n\n"
 "Example: /storage/emulated/0/Charts\n\n"
-msgstr ""
+msgstr "Na próxima página, encontre e escolha a pasta raiz contendo arquivos de cartas para migração\n\n"
+"Exemplo: /storage/emulated/0/Charts\n\n"
 
 #: src/androidUTIL.cpp:5029
 msgid "This entire folder will be migrated.\n"
-msgstr ""
+msgstr "Esta pasta inteira será migrada.\n"
 
 #: src/androidUTIL.cpp:5030
 msgid "Proceed?"
-msgstr ""
+msgstr "Continuar?"
 
 #: src/androidUTIL.cpp:5042
 msgid "Waiting for permission grant...."
-msgstr ""
+msgstr "Aguardando permissões..."
 
 #: src/androidUTIL.cpp:5076
 msgid "Migration started..."
-msgstr ""
+msgstr "Migração iniciada..."
 
 #: src/androidUTIL.cpp:5092
 msgid "Permission granted to "
-msgstr ""
+msgstr "Permissão concedida"
 
 #: src/androidUTIL.cpp:5104
 msgid "OpenCPN has obtained temporary permission to access the selected chart folders."
-msgstr ""
+msgstr "OpenCPN obteve permissão temporária para acessar as pastas de cartas selecionadas."
 
 #: src/androidUTIL.cpp:5106
 msgid "Chart migration is ready to proceed."
-msgstr ""
+msgstr "A migração da carta está pronta para continuar."
 
 #: src/androidUTIL.cpp:5108
 msgid "Source: "
-msgstr ""
+msgstr "Fonte: "
 
 #: src/androidUTIL.cpp:5112
 msgid "Destination: OpenCPN Internal Storage"
-msgstr ""
+msgstr "Destino: OpenCPN Armazenamento Interno"
 
 #: src/androidUTIL.cpp:5114
 msgid "Destination: OpenCPN SDCard Storage"
-msgstr ""
+msgstr "Destino: OpenCPN Armazenamento do Cartão SD "
 
 #: src/androidUTIL.cpp:5116
 msgid "Migrate charts now?"
-msgstr ""
+msgstr "Migrar cartas agora?"
 
 #: src/androidUTIL.cpp:5177
 msgid "Chart migration is finished."
-msgstr ""
+msgstr "A migração de cartas está terminada."
 
 #: src/androidUTIL.cpp:5179
 msgid "Migrated chart folders are now accessible to OpenCPN."
-msgstr ""
+msgstr "Pastas de cartas migradas agora são acessíveis ao OpenCPN."
 
 #: src/androidUTIL.cpp:5181
 msgid "You may need to adjust your chart folders further, to accommodate individual chart groups"
-msgstr ""
+msgstr "Você pode precisar ajustar as pastas de cartas para acomodar grupos individuais de cartas"
 
 #: src/androidUTIL.cpp:5183
 msgid "OpenCPN will now restart to apply changes."
-msgstr ""
+msgstr "OpenCPN irá agora reiniciar para aplicar as alterações."
 
 #: src/androidUTIL.cpp:5218
 msgid "Finishing migration"
-msgstr ""
+msgstr "Concluindo a migração"
 
 #: src/canvasMenu.cpp:250 src/canvasMenu.cpp:255 src/canvasMenu.cpp:269
 #: src/canvasMenu.cpp:287 src/canvasMenu.cpp:962 src/canvasMenu.cpp:980
@@ -3238,84 +3239,84 @@ msgstr "Usuário padrão"
 
 #: src/cat_settings.cpp:95
 msgid "Select new flavour"
-msgstr ""
+msgstr "Selecione novo Layout"
 
 #: src/cat_settings.cpp:96
 msgid "Default setting"
-msgstr ""
+msgstr "Definições padrão"
 
 #: src/cat_settings.cpp:162
 msgid "Active catalog"
-msgstr ""
+msgstr "Catálogo Ativo"
 
 #: src/cat_settings.cpp:164
 msgid "Select plugin catalog"
-msgstr ""
+msgstr "Selecionar catálogo de plugins"
 
 #: src/cat_settings.cpp:177
 msgid "Compatibility"
-msgstr ""
+msgstr "Compatibilidade"
 
 #: src/cat_settings.cpp:179
 msgid "Active setting:"
-msgstr ""
+msgstr "Configurações de atividade"
 
 #: src/cat_settings.cpp:191
 msgid "Cache"
-msgstr ""
+msgstr "Cache"
 
 #: src/cat_settings.cpp:200
 msgid "Clear cache"
-msgstr ""
+msgstr "Limpar cache"
 
 #: src/cat_settings.cpp:217
 #, c-format
 msgid "Size: %d MB in %d files"
-msgstr ""
+msgstr "Tamanho: %d MB em %d arquivos"
 
 #: src/cat_settings.cpp:228 src/catalog_mgr.cpp:129 src/download_mgr.cpp:382
 msgid "Done"
-msgstr ""
+msgstr "Feito"
 
 #: src/cat_settings.cpp:236
 msgid "Plugin Catalog Settings"
-msgstr ""
+msgstr "Configurações de Catálogo de Plugins"
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
-msgstr ""
+msgstr "Gerenciar Catálogo de Plugins"
 
 #: src/catalog_mgr.cpp:99
 msgid "Hide"
-msgstr ""
+msgstr "Ocultar"
 
 #: src/catalog_mgr.cpp:102
 msgid "Ultra advanced"
-msgstr ""
+msgstr "Ultra avançado"
 
 #: src/catalog_mgr.cpp:190
 msgid "Catalog URL status: "
-msgstr ""
+msgstr "Status da URL do catálogo: "
 
 #: src/catalog_mgr.cpp:193
 msgid "Error"
-msgstr ""
+msgstr "Erro"
 
 #: src/catalog_mgr.cpp:222
 msgid "Current active plugin catalog"
-msgstr ""
+msgstr "Catálogo do plugin ativo "
 
 #: src/catalog_mgr.cpp:229
 msgid "Default catalog"
-msgstr ""
+msgstr "Catálogo padrão"
 
 #: src/catalog_mgr.cpp:232 src/catalog_mgr.cpp:242
 msgid "Use as active catalog"
-msgstr ""
+msgstr "Usar como catálogo ativo"
 
 #: src/catalog_mgr.cpp:239
 msgid "Latest available catalog:"
-msgstr ""
+msgstr "Último catálogo disponível:"
 
 #: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:5131
 msgid "Cannot download data from url"
@@ -3323,55 +3324,55 @@ msgstr "Não é possível baixar dados da url"
 
 #: src/catalog_mgr.cpp:296
 msgid "Cannot parse downloaded data"
-msgstr ""
+msgstr "Não é possível analisar dados baixados"
 
 #: src/catalog_mgr.cpp:299
 msgid "Catalog update problem"
-msgstr ""
+msgstr "Problema ao atualizar catálogo"
 
 #: src/catalog_mgr.cpp:345
 msgid "Use default location"
-msgstr ""
+msgstr "Usar local padrão"
 
 #: src/catalog_mgr.cpp:350
 msgid "Save"
-msgstr ""
+msgstr "Salvar"
 
 #: src/catalog_mgr.cpp:384
 msgid "Catalog channel: "
-msgstr ""
+msgstr "Canal do catálogo: "
 
 #: src/catalog_mgr.cpp:418
 msgid "Custom catalog URL: "
-msgstr ""
+msgstr "URL do catálogo personalizado: "
 
 #: src/catalog_mgr.cpp:467 src/catalog_mgr.cpp:565
 msgid "Check latest release..."
-msgstr ""
+msgstr "Verifique a versão mais recente..."
 
 #: src/catalog_mgr.cpp:497
 msgid "Catalog updated"
-msgstr ""
+msgstr "Catálogo atualizado"
 
 #: src/catalog_mgr.cpp:561
 msgid "Server is reachable..."
-msgstr ""
+msgstr "Servidor está disponível..."
 
 #: src/catalog_mgr.cpp:563
 msgid "Check channel..."
-msgstr ""
+msgstr "Verificar canal..."
 
 #: src/catalog_mgr.cpp:571
 msgid "Custom URL"
-msgstr ""
+msgstr "URL personalizada"
 
 #: src/catalog_mgr.cpp:589
 msgid "Fail: "
-msgstr ""
+msgstr "Falhou: "
 
 #: src/catalog_mgr.cpp:630 src/catalog_mgr.cpp:655
 msgid "Catalog Manager"
-msgstr ""
+msgstr "Gerenciador de catálogos"
 
 #: src/chart1.cpp:1031
 msgid "\n"
@@ -4309,7 +4310,7 @@ msgstr "Zoom Carta Vetor/Ponderação de Escala"
 
 #: src/download_mgr.cpp:212 src/update_mgr.cpp:209
 msgid "Install"
-msgstr ""
+msgstr "Instalar"
 
 #: src/download_mgr.cpp:255 src/download_mgr.cpp:272 src/pluginmanager.cpp:6208
 #: src/update_mgr.cpp:245
@@ -4318,7 +4319,7 @@ msgstr "Reinstalar"
 
 #: src/download_mgr.cpp:270 src/update_mgr.cpp:243
 msgid "Update"
-msgstr ""
+msgstr "Atualizar"
 
 #: src/download_mgr.cpp:274 src/pluginmanager.cpp:6214 src/update_mgr.cpp:247
 msgid "Downgrade"
@@ -4326,51 +4327,51 @@ msgstr "Rebaixar"
 
 #: src/download_mgr.cpp:315 src/update_mgr.cpp:307
 msgid "More"
-msgstr ""
+msgstr "Mais"
 
 #: src/download_mgr.cpp:318 src/update_mgr.cpp:310
 msgid "Less"
-msgstr ""
+msgstr "Menos"
 
 #: src/download_mgr.cpp:391
 msgid "Update plugin catalog"
-msgstr ""
+msgstr "Atualizar Catálogo de Plugins"
 
 #: src/download_mgr.cpp:404
 msgid "Advanced catalog update..."
-msgstr ""
+msgstr "Atualização de catálogo avançado..."
 
 #: src/download_mgr.cpp:482 src/update_mgr.cpp:454
 msgid "Plugin Manager"
-msgstr ""
+msgstr "Gerenciador de plugin"
 
 #: src/download_mgr.cpp:516
 msgid "Downloading "
-msgstr ""
+msgstr "Baixando "
 
 #: src/download_mgr.cpp:519
 msgid "Downloading"
-msgstr ""
+msgstr "Baixando"
 
 #: src/download_mgr.cpp:575
 msgid " successfully installed"
-msgstr ""
+msgstr " instalado com sucesso!"
 
 #: src/download_mgr.cpp:576 src/PluginHandler.cpp:1164
 msgid "Installation complete"
-msgstr ""
+msgstr "Instalação concluída"
 
 #: src/download_mgr.cpp:592 src/PluginHandler.cpp:1155
 msgid "Installation error"
-msgstr ""
+msgstr "Erro na instalação"
 
 #: src/garmin_wrapper.cpp:295
 msgid "Overwrite Garmin device route number 1?"
-msgstr ""
+msgstr "Substituir o itinerário do dispositivo Garmin número 1?"
 
 #: src/garmin_wrapper.cpp:296
 msgid "OpenCPN Message"
-msgstr ""
+msgstr "OpenCPN Mensagem"
 
 #: src/glChartCanvas.cpp:2182 src/s52plib.cpp:2263 src/s52plib.cpp:2288
 #: src/s52plib.cpp:2392 src/s52plib.cpp:2565
@@ -4383,7 +4384,7 @@ msgstr "Esperando por linha de saída para compressão de cartas raster."
 
 #: src/glTextureManager.cpp:1456
 msgid "OpenCPN Compressed Cache Update"
-msgstr ""
+msgstr "OpenCPN Atualização de Cache Compactado"
 
 #: src/GoToPositionDialog.cpp:119 src/MarkInfo.cpp:432 src/RoutePropDlg.cpp:309
 #: src/TrackPropDlg.cpp:302
@@ -4621,11 +4622,11 @@ msgstr "Estação de Maré não encontrada"
 
 #: src/MUIBar.cpp:97 src/MUIBar.cpp:106
 msgid "Set scale"
-msgstr ""
+msgstr "Definir escala"
 
 #: src/MUIBar.cpp:175
 msgid "Chart Scale"
-msgstr ""
+msgstr "Escala da Carta"
 
 #: src/multiplexer.cpp:413
 msgid "Route Upload"
@@ -5606,15 +5607,15 @@ msgstr "Selecionado Compactar"
 
 #: src/options.cpp:3977
 msgid "Add.."
-msgstr ""
+msgstr "Adicionar.."
 
 #: src/options.cpp:3979
 msgid "Compress"
-msgstr ""
+msgstr "Compactar"
 
 #: src/options.cpp:4007
 msgid "Migrate Charts.."
-msgstr ""
+msgstr "Migrar Charts.."
 
 #: src/options.cpp:4015
 msgid "Update Control"
@@ -6059,7 +6060,7 @@ msgstr "Selecionar Som do Alarme Âncora"
 #: src/options.cpp:6217 src/options.cpp:6249 src/options.cpp:6282
 #: src/options.cpp:6314
 msgid "Test"
-msgstr ""
+msgstr "Teste"
 
 #: src/options.cpp:6230
 msgid "Play Sound on AIS Alert."
@@ -6275,7 +6276,7 @@ msgstr "Dispositivo desconhecido :"
 
 #: src/options.cpp:6881
 msgid "Input device :"
-msgstr ""
+msgstr "Dispositivo de entrada"
 
 #: src/options.cpp:6909
 msgid "Sound Device"
@@ -6315,7 +6316,7 @@ msgstr "Fator de Sondagem ENC"
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Sensitividade da roda do mouse"
 
 #: src/options.cpp:7270 src/options.cpp:7330
 msgid "Connections"
@@ -6576,11 +6577,11 @@ msgstr "OpenCPN S57 SENC  criar arquivo..."
 
 #: src/PluginHandler.cpp:1154
 msgid "Please check system log for more info."
-msgstr ""
+msgstr "Por favor, verifique o log do sistema para mais informações."
 
 #: src/PluginHandler.cpp:1163
 msgid " successfully installed from cache"
-msgstr ""
+msgstr " instalado do cache com sucesso"
 
 #: src/pluginmanager.cpp:283
 msgid "Plugin is a standard system plugin"
@@ -6700,11 +6701,11 @@ msgstr "Desabilitado"
 
 #: src/pluginmanager.cpp:5050
 msgid "Update Plugin Catalog: master"
-msgstr ""
+msgstr "Atualizar Catálogo de Plugin: mestre"
 
 #: src/pluginmanager.cpp:5065
 msgid "Update Plugin Catalog:master"
-msgstr ""
+msgstr "Atualizar Catálogo de Plugins: Mestre"
 
 #: src/pluginmanager.cpp:5132 src/pluginmanager.cpp:5144
 #: src/pluginmanager.cpp:5154 src/pluginmanager.cpp:5163
@@ -6896,7 +6897,7 @@ msgstr "&Exportar Selecionado..."
 
 #: src/routemanagerdialog.cpp:473
 msgid "&Resequence Waypoints"
-msgstr ""
+msgstr "&Renumerar Waypoints"
 
 #: src/routemanagerdialog.cpp:479 src/routemanagerdialog.cpp:753
 msgid "&Send to GPS"
@@ -7434,15 +7435,17 @@ msgstr "<font size=-2> (setores de ângulos são direções verdadeiras do lado 
 msgid "The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
-msgstr ""
+msgstr "A última execução de opencpn parece ter falhado. Você quer executar\n"
+"no modo de segurança sem plugins e outros recursos\n"
+"possivelmente problemáticos?\n"
 
 #: src/safe_mode.cpp:65
 msgid "Safe restart"
-msgstr ""
+msgstr "Reinício seguro"
 
 #: src/SencManager.cpp:158 src/SencManager.cpp:190
 msgid "Preparing vector chart  "
-msgstr ""
+msgstr "Preparando a carta vetorial  "
 
 #: src/SendToGpsDlg.cpp:90
 msgid "GPS/Plotter Port"
@@ -7544,15 +7547,15 @@ msgstr "Escolher os ícones da barra de ferramentas"
 
 #: src/trackprintout.cpp:334
 msgid "Show Time."
-msgstr ""
+msgstr "Exibir Hora"
 
 #: src/trackprintout.cpp:343
 msgid "Show Speed."
-msgstr ""
+msgstr "Exibir Velocidade"
 
 #: src/trackprintout.cpp:399
 msgid "Track Print"
-msgstr ""
+msgstr "Impressão da trilha"
 
 #: src/TrackPropDlg.cpp:305
 msgid "Timestamp"
@@ -7709,7 +7712,7 @@ msgstr "Mover o Ponto da Derrota"
 
 #: src/update_mgr.cpp:409
 msgid "Dismiss"
-msgstr ""
+msgstr "Dispensar"
 
 #: libs/wxcurl/src/dialog.cpp:137
 msgid "Not available"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 21:36-0400\n"
-"PO-Revision-Date: 2022-04-15 01:43\n"
+"PO-Revision-Date: 2022-04-21 14:20\n"
 "Last-Translator: \n"
 "Language-Team: Hungarian\n"
 "Language: hu_HU\n"
@@ -2683,23 +2683,23 @@ msgstr "OpenCPN for Android migrálási segéd"
 
 #: src/androidUTIL.cpp:4911
 msgid "OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"
-msgstr ""
+msgstr "Az OpenCPN olyan térkép mappákat érzékelt a konfigurációban, amelyek az Android ezen verzióján nem érhetőek el."
 
 #: src/androidUTIL.cpp:4934 src/androidUTIL.cpp:4947
 msgid "OpenCPN can copy these chart folders to a suitable location, if desired."
-msgstr ""
+msgstr "Az OpenCPN a megfeleleő helyere tudja másolni ezeket a térkép mappákat, ha szükséges."
 
 #: src/androidUTIL.cpp:4936 src/androidUTIL.cpp:4949
 msgid "To proceed with chart folder migration, choose the chart source folder, and follow the instructions given."
-msgstr ""
+msgstr "A térkép mappák átmozgatásáház válaszd ki a forrás mappát és kövesd az utasításokat!"
 
 #: src/androidUTIL.cpp:4946
 msgid "Some chart folders may be inaccessible to OpenCPN on this version of Android. "
-msgstr ""
+msgstr "Az OpenCPN nem tud elérni néhány térkép mappát ezen az Android verzión."
 
 #: src/androidUTIL.cpp:4963
 msgid "Migrate destination"
-msgstr ""
+msgstr "Mozgatási célpont"
 
 #: src/androidUTIL.cpp:4967
 msgid "OpenCPN Internal Storage"
@@ -2730,11 +2730,12 @@ msgstr "Mégsem"
 #: src/androidUTIL.cpp:5027
 msgid "On the next page, find and choose the root folder containing chart files to migrate\n\n"
 "Example: /storage/emulated/0/Charts\n\n"
-msgstr ""
+msgstr "A következő oldalon keresd meg és válaszd ki a migrálni  kívánt térkép állományokat tartalmazó gyökér mappát.\n\n"
+"Például:  /storage/emulated/0/Charts\n\n"
 
 #: src/androidUTIL.cpp:5029
 msgid "This entire folder will be migrated.\n"
-msgstr ""
+msgstr "Az egész mappa migrálva lesz.\n"
 
 #: src/androidUTIL.cpp:5030
 msgid "Proceed?"
@@ -2754,11 +2755,11 @@ msgstr "Hozzáférés engedélyezve"
 
 #: src/androidUTIL.cpp:5104
 msgid "OpenCPN has obtained temporary permission to access the selected chart folders."
-msgstr ""
+msgstr "Az OpenCPN ideiglenes engedélyt kapott a kiválasztott térkép mappák eléréséhez."
 
 #: src/androidUTIL.cpp:5106
 msgid "Chart migration is ready to proceed."
-msgstr ""
+msgstr "Térkép migrálás kész az indulásra."
 
 #: src/androidUTIL.cpp:5108
 msgid "Source: "
@@ -2774,27 +2775,27 @@ msgstr "Cél: OpenCPN SD kártya tárhely"
 
 #: src/androidUTIL.cpp:5116
 msgid "Migrate charts now?"
-msgstr ""
+msgstr "Térképek migráása most?"
 
 #: src/androidUTIL.cpp:5177
 msgid "Chart migration is finished."
-msgstr ""
+msgstr "Térkép migrálás befejezve."
 
 #: src/androidUTIL.cpp:5179
 msgid "Migrated chart folders are now accessible to OpenCPN."
-msgstr ""
+msgstr "Az átmigrált térkép mappák most már elérhetőek az OpenCPN-nek."
 
 #: src/androidUTIL.cpp:5181
 msgid "You may need to adjust your chart folders further, to accommodate individual chart groups"
-msgstr ""
+msgstr "Lehet, hogy további beállításokat kell tenni a mappákon az egyedi térkép csoportok elhelyezéséhez."
 
 #: src/androidUTIL.cpp:5183
 msgid "OpenCPN will now restart to apply changes."
-msgstr ""
+msgstr "A módosítások érvénybe léptetéséhez az OpenCPN újra indul."
 
 #: src/androidUTIL.cpp:5218
 msgid "Finishing migration"
-msgstr ""
+msgstr "Migrálás befejezése."
 
 #: src/canvasMenu.cpp:250 src/canvasMenu.cpp:255 src/canvasMenu.cpp:269
 #: src/canvasMenu.cpp:287 src/canvasMenu.cpp:962 src/canvasMenu.cpp:980
@@ -3123,7 +3124,7 @@ msgstr "OpenCPN nyomvonal törlése"
 
 #: src/CanvasOptions.cpp:111
 msgid "Chart Panel Options"
-msgstr ""
+msgstr "Térkép panel beálltások."
 
 #: src/CanvasOptions.cpp:136 src/options.cpp:5410 src/options.cpp:5591
 msgid "Navigation Mode"
@@ -3173,7 +3174,7 @@ msgstr "AIS célpontok megjelenítése"
 
 #: src/CanvasOptions.cpp:225
 msgid "Minimize less critical targets"
-msgstr ""
+msgstr "Kevésbé kritikus célpontok minimalizálása."
 
 #: src/CanvasOptions.cpp:236
 msgid "Tides and Currents"
@@ -3181,7 +3182,7 @@ msgstr "Árapály és áramlatok"
 
 #: src/CanvasOptions.cpp:241
 msgid "Show Tide stations"
-msgstr ""
+msgstr "Árapály állomások mutatása"
 
 #: src/CanvasOptions.cpp:248 src/chart1.cpp:5606 src/chcanv.cpp:1308
 #: src/toolbar.cpp:1237
@@ -3234,11 +3235,11 @@ msgstr "Mind, kivéve"
 
 #: src/CanvasOptions.cpp:319
 msgid "User Standard"
-msgstr ""
+msgstr "Szabványos használata"
 
 #: src/cat_settings.cpp:95
 msgid "Select new flavour"
-msgstr ""
+msgstr "Új kinézet használata"
 
 #: src/cat_settings.cpp:96
 msgid "Default setting"
@@ -3246,7 +3247,7 @@ msgstr "Alapértelmezett beállítások"
 
 #: src/cat_settings.cpp:162
 msgid "Active catalog"
-msgstr ""
+msgstr "Aktív katalógus"
 
 #: src/cat_settings.cpp:164
 msgid "Select plugin catalog"
@@ -3271,7 +3272,7 @@ msgstr "Gyorsítótár ürítése"
 #: src/cat_settings.cpp:217
 #, c-format
 msgid "Size: %d MB in %d files"
-msgstr ""
+msgstr "Méret: %d MB %d állományban"
 
 #: src/cat_settings.cpp:228 src/catalog_mgr.cpp:129 src/download_mgr.cpp:382
 msgid "Done"
@@ -3279,7 +3280,7 @@ msgstr "Kész"
 
 #: src/cat_settings.cpp:236
 msgid "Plugin Catalog Settings"
-msgstr ""
+msgstr "Plugin katalógus beállítások"
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
@@ -3291,31 +3292,31 @@ msgstr "Elrejt"
 
 #: src/catalog_mgr.cpp:102
 msgid "Ultra advanced"
-msgstr ""
+msgstr "Ultra haladó"
 
 #: src/catalog_mgr.cpp:190
 msgid "Catalog URL status: "
-msgstr ""
+msgstr "Katalógus URL státusz:"
 
 #: src/catalog_mgr.cpp:193
 msgid "Error"
-msgstr ""
+msgstr "Hiba"
 
 #: src/catalog_mgr.cpp:222
 msgid "Current active plugin catalog"
-msgstr ""
+msgstr "Jelenlegi aktív plugin katalógus"
 
 #: src/catalog_mgr.cpp:229
 msgid "Default catalog"
-msgstr ""
+msgstr "Alapértelmezett katalógus"
 
 #: src/catalog_mgr.cpp:232 src/catalog_mgr.cpp:242
 msgid "Use as active catalog"
-msgstr ""
+msgstr "Akvív katalógusként használ"
 
 #: src/catalog_mgr.cpp:239
 msgid "Latest available catalog:"
-msgstr ""
+msgstr "Lgefrissebb elérhető katalógus:"
 
 #: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:5131
 msgid "Cannot download data from url"
@@ -3323,55 +3324,55 @@ msgstr "Nem tölthető le adat az urlről"
 
 #: src/catalog_mgr.cpp:296
 msgid "Cannot parse downloaded data"
-msgstr ""
+msgstr "A letöltött adat nem értemezhető"
 
 #: src/catalog_mgr.cpp:299
 msgid "Catalog update problem"
-msgstr ""
+msgstr "Katalógus frissítési probléma"
 
 #: src/catalog_mgr.cpp:345
 msgid "Use default location"
-msgstr ""
+msgstr "Alapértelmezett hely használata"
 
 #: src/catalog_mgr.cpp:350
 msgid "Save"
-msgstr ""
+msgstr "Mentés"
 
 #: src/catalog_mgr.cpp:384
 msgid "Catalog channel: "
-msgstr ""
+msgstr "Katalógus csatorna:"
 
 #: src/catalog_mgr.cpp:418
 msgid "Custom catalog URL: "
-msgstr ""
+msgstr "Egyéni katalógus URL:"
 
 #: src/catalog_mgr.cpp:467 src/catalog_mgr.cpp:565
 msgid "Check latest release..."
-msgstr ""
+msgstr "Legújabb verzió ellenőrzése..."
 
 #: src/catalog_mgr.cpp:497
 msgid "Catalog updated"
-msgstr ""
+msgstr "Katalógus frissítve"
 
 #: src/catalog_mgr.cpp:561
 msgid "Server is reachable..."
-msgstr ""
+msgstr "A szerver elérhető."
 
 #: src/catalog_mgr.cpp:563
 msgid "Check channel..."
-msgstr ""
+msgstr "Csatorna ellenőrzése..."
 
 #: src/catalog_mgr.cpp:571
 msgid "Custom URL"
-msgstr ""
+msgstr "Egyéni URL"
 
 #: src/catalog_mgr.cpp:589
 msgid "Fail: "
-msgstr ""
+msgstr "Sikertelen:"
 
 #: src/catalog_mgr.cpp:630 src/catalog_mgr.cpp:655
 msgid "Catalog Manager"
-msgstr ""
+msgstr "Katalógus kezelő"
 
 #: src/chart1.cpp:1031
 msgid "\n"
@@ -4159,7 +4160,7 @@ msgstr "Leírás"
 
 #: src/ConfigMgr.cpp:623
 msgid "Recovery Template"
-msgstr ""
+msgstr "Helyreállítási sablon"
 
 #: src/ConfigMgr.cpp:625
 msgid "Apply this template to return to a known safe configuration"
@@ -4330,11 +4331,11 @@ msgstr "Visszaállás korábbi verzióra"
 
 #: src/download_mgr.cpp:315 src/update_mgr.cpp:307
 msgid "More"
-msgstr ""
+msgstr "Több"
 
 #: src/download_mgr.cpp:318 src/update_mgr.cpp:310
 msgid "Less"
-msgstr ""
+msgstr "Kevesebb"
 
 #: src/download_mgr.cpp:391
 msgid "Update plugin catalog"
@@ -4370,11 +4371,11 @@ msgstr "Hiba a telepítés során"
 
 #: src/garmin_wrapper.cpp:295
 msgid "Overwrite Garmin device route number 1?"
-msgstr ""
+msgstr "Felülírjam a Garmin eszköz 1-es útvonalát?"
 
 #: src/garmin_wrapper.cpp:296
 msgid "OpenCPN Message"
-msgstr ""
+msgstr "OpenCPN üzenet"
 
 #: src/glChartCanvas.cpp:2182 src/s52plib.cpp:2263 src/s52plib.cpp:2288
 #: src/s52plib.cpp:2392 src/s52plib.cpp:2565
@@ -4387,7 +4388,7 @@ msgstr "Raszteres térkép tömörítésének befejezésére vár."
 
 #: src/glTextureManager.cpp:1456
 msgid "OpenCPN Compressed Cache Update"
-msgstr ""
+msgstr "OpenCPN tömörített gyorsítótár frissítés"
 
 #: src/GoToPositionDialog.cpp:119 src/MarkInfo.cpp:432 src/RoutePropDlg.cpp:309
 #: src/TrackPropDlg.cpp:302
@@ -4547,11 +4548,11 @@ msgstr "GUID"
 
 #: src/MarkInfo.cpp:671
 msgid "Tide Station"
-msgstr ""
+msgstr "Árapály állomás"
 
 #: src/MarkInfo.cpp:699
 msgid "Arrival Radius"
-msgstr ""
+msgstr "Érkezési kör sugara"
 
 #: src/MarkInfo.cpp:714
 msgid "Planned Speed"
@@ -4588,7 +4589,7 @@ msgstr "Néhány alapértelmezés mentése"
 #: src/MarkInfo.cpp:1809
 msgid "Check which properties of current waypoint\n"
 " should be set as default for NEW waypoints."
-msgstr ""
+msgstr "Jelöld be, hogy az aktuális útvonalpont melyik tulajdonságai legyenek az alapértelmezettek az új útvonalpontoknál."
 
 #: src/MarkInfo.cpp:1816 src/MarkInfo.cpp:1836
 msgid "Do use"
@@ -4604,7 +4605,7 @@ msgstr "Útvonapont nevének mutatása"
 
 #: src/MarkInfo.cpp:1850
 msgid "Arrival radius"
-msgstr ""
+msgstr "Érkezési kör sugara"
 
 #: src/MarkInfo.cpp:1861
 msgid "Show only if"
@@ -4616,19 +4617,19 @@ msgstr "Mindig mutassa"
 
 #: src/MarkInfo.cpp:1864
 msgid "Show only at scale"
-msgstr ""
+msgstr "Csak adott méretaránynál mutassa"
 
 #: src/MarkInfo.cpp:1903
 msgid "Tide Station not found"
-msgstr ""
+msgstr "Árapály állomás nem találhtó"
 
 #: src/MUIBar.cpp:97 src/MUIBar.cpp:106
 msgid "Set scale"
-msgstr ""
+msgstr "Méretarány beállítása"
 
 #: src/MUIBar.cpp:175
 msgid "Chart Scale"
-msgstr ""
+msgstr "Térkép méretarány"
 
 #: src/multiplexer.cpp:413
 msgid "Route Upload"
@@ -5617,7 +5618,7 @@ msgstr "Tömörít"
 
 #: src/options.cpp:4007
 msgid "Migrate Charts.."
-msgstr ""
+msgstr "Térképek migrálása..."
 
 #: src/options.cpp:4015
 msgid "Update Control"
@@ -5851,7 +5852,7 @@ msgstr "Mély"
 
 #: src/options.cpp:4947 src/options.cpp:5157
 msgid "User Standard Objects"
-msgstr ""
+msgstr "Szabványos objektumok használata"
 
 #: src/options.cpp:4958 src/options.cpp:5164 src/options.cpp:11532
 msgid "Select All"
@@ -5915,7 +5916,7 @@ msgstr "Kurzorhoz nagyítás"
 
 #: src/options.cpp:5478 src/options.cpp:5663
 msgid "Display Features"
-msgstr ""
+msgstr "Elemek megjelenítése"
 
 #: src/options.cpp:5508
 msgid "Status Bar Option"
@@ -5923,7 +5924,7 @@ msgstr "Állapotsor opciók"
 
 #: src/options.cpp:5515 src/options.cpp:5700
 msgid "Live ETA at Cursor"
-msgstr ""
+msgstr "Aktuális ETA a kurzornál"
 
 #: src/options.cpp:5523 src/options.cpp:5708
 msgid "Default Boat Speed "
@@ -5931,7 +5932,7 @@ msgstr "Alapértelmezett hajó sebesség"
 
 #: src/options.cpp:5538 src/options.cpp:5723
 msgid "Canvas Layout"
-msgstr ""
+msgstr "Canvas Layout"
 
 #: src/options.cpp:5693
 msgid "Status Bar"
@@ -6021,20 +6022,20 @@ msgstr "fok (-Ny, +K)"
 
 #: src/options.cpp:6002 src/options.cpp:6381
 msgid "Show true bearings and headings"
-msgstr ""
+msgstr "Valós iránylatok és irányok mutatása"
 
 #: src/options.cpp:6005 src/options.cpp:6384
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Mágneses iránylatok és irányok mutatása."
 
 #: src/options.cpp:6017 src/options.cpp:6395 src/options.cpp:7527
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "WMM plugin által számolt mágneses variáció"
 
 #: src/options.cpp:6035 src/options.cpp:6409
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr "A mágneses variáció kézzel történő beállításához kapcsold ki a WMM plugint!"
 
 #: src/options.cpp:6048
 msgid "Sounds"
@@ -6061,7 +6062,7 @@ msgstr "Horgonyőr riasztás hang kiválasztása"
 #: src/options.cpp:6217 src/options.cpp:6249 src/options.cpp:6282
 #: src/options.cpp:6314
 msgid "Test"
-msgstr ""
+msgstr "Teszt"
 
 #: src/options.cpp:6230
 msgid "Play Sound on AIS Alert."
@@ -6089,7 +6090,7 @@ msgstr "DSC riasztás"
 
 #: src/options.cpp:6295
 msgid "Play Sound on DSC notification."
-msgstr ""
+msgstr "Hang lejátszása DSC értesítésnél."
 
 #: src/options.cpp:6308
 msgid "Select DSC notification Sound"
@@ -6141,11 +6142,11 @@ msgstr "Veszteglő/kikötött célpontok elnyomása, max sebesség (csomó)"
 
 #: src/options.cpp:6549
 msgid "Draw AIS realtime prediction, target speed min (kn)"
-msgstr ""
+msgstr "Valósidejű AIS predikciók rajzolása, minimális célpont sebesség (csomó)"
 
 #: src/options.cpp:6559
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "Kevésbé kritikus célpontok rejtése, ha több mint ... céélpont van"
 
 #: src/options.cpp:6567
 msgid "Show area notices (from AIS binary messages)"
@@ -6157,11 +6158,11 @@ msgstr "AIS célpontok mutatása valós méretben"
 
 #: src/options.cpp:6581
 msgid "Show names with AIS targets at scale greater than 1:"
-msgstr ""
+msgstr "Nevek mutatása az AIS célpontokkal ha a méretarány nagyobb, mint 1:"
 
 #: src/options.cpp:6589
 msgid "Use WPL position messages. Action when received:"
-msgstr ""
+msgstr "WPL pozíció üzenetek használata. Vételük esetén végrehajtandó:"
 
 #: src/options.cpp:6592
 msgid "APRS position report"
@@ -6177,7 +6178,7 @@ msgstr "Görgetés"
 
 #: src/options.cpp:6604
 msgid "Enable route/AIS info block"
-msgstr ""
+msgstr "Útvonal/AIS infó engedélyezése"
 
 #: src/options.cpp:6612
 msgid "\"Ship Name\" MMSI (Call Sign)"
@@ -6257,11 +6258,11 @@ msgstr "Menüsor megjelenítése"
 
 #: src/options.cpp:6826
 msgid "Show Compass/GPS Status Window"
-msgstr ""
+msgstr "Kompassz/GPS státusz ablak mutatása"
 
 #: src/options.cpp:6834
 msgid "Enable Toolbar auto-hide"
-msgstr ""
+msgstr "Eszköztár automatikus elrejtése"
 
 #: src/options.cpp:6849
 msgid "Play Ships Bells"
@@ -6269,7 +6270,7 @@ msgstr "Hajóharang kongatása"
 
 #: src/options.cpp:6860
 msgid "Audio Play command:"
-msgstr ""
+msgstr "Audio Play parancs:"
 
 #: src/options.cpp:6876
 msgid "Unknown device :"
@@ -6289,7 +6290,7 @@ msgstr "Érintőképernyő engedélyezése"
 
 #: src/options.cpp:6925
 msgid "Enable Scaled Graphics interface"
-msgstr ""
+msgstr "Átméretezett grafikus felület engedélyezése"
 
 #: src/options.cpp:6935
 msgid "Show Zoom buttons"
@@ -6297,23 +6298,23 @@ msgstr "Zoom gombok megjelenítése"
 
 #: src/options.cpp:6942
 msgid "Use Inland ECDIS V2.3"
-msgstr ""
+msgstr "Belvízi ECDIS V2.3 használata"
 
 #: src/options.cpp:6962
 msgid "User Interface scale factor"
-msgstr ""
+msgstr "Felhasználói felület méretaránya"
 
 #: src/options.cpp:6976
 msgid "Chart Object scale factor"
-msgstr ""
+msgstr "Térkép objektumok méretaránya"
 
 #: src/options.cpp:6990
 msgid "Ship scale factor"
-msgstr ""
+msgstr "Hajó méretaránya"
 
 #: src/options.cpp:7004
 msgid "ENC Sounding factor"
-msgstr ""
+msgstr "ENC mélység faktor"
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
@@ -6410,11 +6411,11 @@ msgstr "OpenCPN figyelmeztetés"
 
 #: src/options.cpp:9489 src/options.cpp:9533
 msgid "OpenCPN Compress Charts"
-msgstr ""
+msgstr "OpenCPN térképek tömörítése"
 
 #: src/options.cpp:9526
 msgid "No charts found to compress."
-msgstr ""
+msgstr "Nincs tömöríthető térkép"
 
 #: src/options.cpp:9558
 #, c-format
@@ -6445,7 +6446,7 @@ msgstr "Keresés leállítása"
 
 #: src/options.cpp:11359
 msgid "Configure new connection"
-msgstr ""
+msgstr "Új kapcsolat beállítása"
 
 #: src/options.cpp:11454
 msgid "Signal K server available."
@@ -6567,11 +6568,11 @@ msgstr "OpenCPN S57 SENC fájl létrehozása..."
 
 #: src/PluginHandler.cpp:1154
 msgid "Please check system log for more info."
-msgstr ""
+msgstr "További nformációért nézd meg a naplóűllományt!"
 
 #: src/PluginHandler.cpp:1163
 msgid " successfully installed from cache"
-msgstr ""
+msgstr "sikeresen telepítve a gyorsítótárból"
 
 #: src/pluginmanager.cpp:283
 msgid "Plugin is a standard system plugin"
@@ -6742,7 +6743,7 @@ msgstr "Plugin sikeresen importálva"
 
 #: src/pluginmanager.cpp:5571
 msgid "Active catalog updated."
-msgstr ""
+msgstr "Aktív katalógus frissítve."
 
 #: src/pluginmanager.cpp:5573
 msgid "Plugin may be installed or updated now."
@@ -6754,11 +6755,11 @@ msgstr ""
 
 #: src/pluginmanager.cpp:5580
 msgid "Active Catalog"
-msgstr ""
+msgstr "Aktív katalógus"
 
 #: src/pluginmanager.cpp:5580
 msgid "Last Catalog"
-msgstr ""
+msgstr "Utolsó katalógus"
 
 #: src/pluginmanager.cpp:5594
 msgid "Last change: "
@@ -6802,7 +6803,7 @@ msgstr "TideCurrentGraphRollover"
 
 #: src/Route.cpp:1255
 msgid "Route Transmitted."
-msgstr ""
+msgstr "Útvonal átküldve."
 
 #: src/Route.cpp:1258
 msgid "Error on Route Upload.  Garmin GPS not connected"
@@ -6971,11 +6972,11 @@ msgstr "Réteg típus"
 
 #: src/routemanagerdialog.cpp:883
 msgid "Create Temporary layer"
-msgstr ""
+msgstr "Ideiglenes réteg létrehozása"
 
 #: src/routemanagerdialog.cpp:889
 msgid "Create Persistent layer"
-msgstr ""
+msgstr "Állandó réteg létrehozása"
 
 #: src/routemanagerdialog.cpp:909
 msgid "Show WPT names"
@@ -7051,7 +7052,7 @@ msgstr "Biztos, hogy MINDEGYIK nyomvonalat törölni akarod?"
 
 #: src/routemanagerdialog.cpp:2214
 msgid "Overruled"
-msgstr ""
+msgstr "Felülbírálva"
 
 #: src/routemanagerdialog.cpp:2524
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
@@ -7336,7 +7337,7 @@ msgstr ""
 
 #: src/RoutePropDlgImpl.cpp:860
 msgid "OpenCPN Move Waypoint"
-msgstr ""
+msgstr "OpenCPN útvonalpont mozgatása"
 
 #: src/RoutePropDlgImpl.cpp:894
 msgid "Are you sure you want to remove this waypoint?"
@@ -7424,7 +7425,7 @@ msgstr ""
 
 #: src/SencManager.cpp:158 src/SencManager.cpp:190
 msgid "Preparing vector chart  "
-msgstr ""
+msgstr "Vektor térkép előkészítése"
 
 #: src/SendToGpsDlg.cpp:90
 msgid "GPS/Plotter Port"
@@ -7432,11 +7433,11 @@ msgstr "GPS/Plotter Port"
 
 #: src/SendToGpsDlg.cpp:177
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr ""
+msgstr "Készítsd fel a GPS-t az útvonal/útpont feltötlésére és nyomd meg a Küldést"
 
 #: src/SendToGpsDlg.cpp:181
 msgid "Progress..."
-msgstr ""
+msgstr "Folyamat..."
 
 #: src/tcmgr.cpp:691
 msgid "It seems you have no tide/current harmonic data installed."
@@ -7460,11 +7461,11 @@ msgstr "Következő"
 
 #: src/TCWin.cpp:152
 msgid "LMT@Station"
-msgstr ""
+msgstr "LMT az adott helyen"
 
 #: src/TCWin.cpp:243
 msgid "Reference Station :"
-msgstr ""
+msgstr "Referencia állomás:"
 
 #: src/TCWin.cpp:257
 msgid "Data Source :"
@@ -7472,11 +7473,11 @@ msgstr "Adatforrás:"
 
 #: src/TCWin.cpp:648
 msgid "HW"
-msgstr ""
+msgstr "HW"
 
 #: src/TCWin.cpp:648
 msgid "LW"
-msgstr ""
+msgstr "LW"
 
 #: src/TCWin.cpp:849
 msgid "Today"
@@ -7526,15 +7527,15 @@ msgstr "Eszköztár ikonok kiválasztása"
 
 #: src/trackprintout.cpp:334
 msgid "Show Time."
-msgstr ""
+msgstr "Idő megjelenítése."
 
 #: src/trackprintout.cpp:343
 msgid "Show Speed."
-msgstr ""
+msgstr "Sebesség megjelenítése."
 
 #: src/trackprintout.cpp:399
 msgid "Track Print"
-msgstr ""
+msgstr "Nyomvonal nyomtatása"
 
 #: src/TrackPropDlg.cpp:305
 msgid "Timestamp"
@@ -7739,7 +7740,7 @@ msgstr "Kapcsolat beállításai"
 
 #: libs/wxcurl/src/dialog.cpp:461
 msgid "Connection settings used for the transfer:"
-msgstr ""
+msgstr "Csatlakozási beállíátsok az átvitelhez:"
 
 #: libs/wxcurl/src/dialog.cpp:516
 msgid "0 (transfer completed)"
