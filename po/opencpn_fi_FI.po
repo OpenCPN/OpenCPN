@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 21:36-0400\n"
-"PO-Revision-Date: 2022-04-17 00:45\n"
+"PO-Revision-Date: 2022-04-21 14:20\n"
 "Last-Translator: \n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -89,7 +89,7 @@ msgstr "(Nimeämätön jälki)"
 
 #: include/trackprintout.h:78 src/trackprintout.cpp:274
 msgid "Print Track Selection"
-msgstr ""
+msgstr "Jäljen tulostuksen valinnat"
 
 #: include/TrackPropDlg.h:191 src/TrackPropDlg.cpp:1218
 #: src/TrackPropDlg.cpp:1232
@@ -2679,27 +2679,27 @@ msgstr "Ankkuri luotu "
 #: src/androidUTIL.cpp:4885 src/androidUTIL.cpp:5033 src/androidUTIL.cpp:5121
 #: src/androidUTIL.cpp:5186
 msgid "OpenCPN for Android Migration Assistant"
-msgstr ""
+msgstr "OpenCPN Android karttojen kopiointiavustin"
 
 #: src/androidUTIL.cpp:4911
 msgid "OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"
-msgstr ""
+msgstr "OpenCPN:n asetustiedostossa on määritelty karttojen tallennushakemistoja, joita ei voi käyttää tässä Android-versiossa."
 
 #: src/androidUTIL.cpp:4934 src/androidUTIL.cpp:4947
 msgid "OpenCPN can copy these chart folders to a suitable location, if desired."
-msgstr ""
+msgstr "Mikäli haluat, OpenCPN voi kopioida näissä hakemistoissa olevat kartat sopivaan paikkaan."
 
 #: src/androidUTIL.cpp:4936 src/androidUTIL.cpp:4949
 msgid "To proceed with chart folder migration, choose the chart source folder, and follow the instructions given."
-msgstr ""
+msgstr "Jatkaaksesi karttojen kopiointia, valitse karttojen lähdehakemisto ja noudata annettuja ohjeita."
 
 #: src/androidUTIL.cpp:4946
 msgid "Some chart folders may be inaccessible to OpenCPN on this version of Android. "
-msgstr ""
+msgstr "Joitakin karttojen tallennushakemistoja ei ehkä voida käyttää OpenCPN:ssä tässä Android-versiossa. "
 
 #: src/androidUTIL.cpp:4963
 msgid "Migrate destination"
-msgstr ""
+msgstr "Kopioinnin kohdehakemisto"
 
 #: src/androidUTIL.cpp:4967
 msgid "OpenCPN Internal Storage"
@@ -2711,7 +2711,7 @@ msgstr "OpenCPN SD-kortin tallennustila"
 
 #: src/androidUTIL.cpp:4978
 msgid "Choose chart source folder."
-msgstr ""
+msgstr "Valitse karttojen lähdehakemisto."
 
 #: src/androidUTIL.cpp:4984
 msgid "Status"
@@ -2730,11 +2730,12 @@ msgstr "Peruuta"
 #: src/androidUTIL.cpp:5027
 msgid "On the next page, find and choose the root folder containing chart files to migrate\n\n"
 "Example: /storage/emulated/0/Charts\n\n"
-msgstr ""
+msgstr "Etsi ja valitse seuraavalla sivulla kopioitavien karttojen juurihakemisto\n\n"
+"Example: /storage/emulated/0/Charts\n\n"
 
 #: src/androidUTIL.cpp:5029
 msgid "This entire folder will be migrated.\n"
-msgstr ""
+msgstr "Kansio kopioidaan kokonaisuudessaan.\n"
 
 #: src/androidUTIL.cpp:5030
 msgid "Proceed?"
@@ -2742,51 +2743,51 @@ msgstr "Jatka?"
 
 #: src/androidUTIL.cpp:5042
 msgid "Waiting for permission grant...."
-msgstr ""
+msgstr "Odotetaan käyttöoikeuden antamista..."
 
 #: src/androidUTIL.cpp:5076
 msgid "Migration started..."
-msgstr ""
+msgstr "Kopiointi alkoi..."
 
 #: src/androidUTIL.cpp:5092
 msgid "Permission granted to "
-msgstr ""
+msgstr "Käyttöoikeus on annettu hakemistoon "
 
 #: src/androidUTIL.cpp:5104
 msgid "OpenCPN has obtained temporary permission to access the selected chart folders."
-msgstr ""
+msgstr "OpenCPN on saanut väliaikaisen luvan käyttää valittuja karttahakemistoja."
 
 #: src/androidUTIL.cpp:5106
 msgid "Chart migration is ready to proceed."
-msgstr ""
+msgstr "Karttojen kopiointi voidaan aloittaa."
 
 #: src/androidUTIL.cpp:5108
 msgid "Source: "
-msgstr ""
+msgstr "Lähdehakemisto: "
 
 #: src/androidUTIL.cpp:5112
 msgid "Destination: OpenCPN Internal Storage"
-msgstr ""
+msgstr "Kohde: OpenCPN sisäinen tallennustila"
 
 #: src/androidUTIL.cpp:5114
 msgid "Destination: OpenCPN SDCard Storage"
-msgstr ""
+msgstr "Kohde: OpenCPN SD-kortin tallennustila"
 
 #: src/androidUTIL.cpp:5116
 msgid "Migrate charts now?"
-msgstr ""
+msgstr "Kopioidaanko kartat?"
 
 #: src/androidUTIL.cpp:5177
 msgid "Chart migration is finished."
-msgstr ""
+msgstr "Karttojen kopiointi on valmis."
 
 #: src/androidUTIL.cpp:5179
 msgid "Migrated chart folders are now accessible to OpenCPN."
-msgstr ""
+msgstr "Kopioidut kartat ovat nyt käytettävissä OpenCPN:ssä."
 
 #: src/androidUTIL.cpp:5181
 msgid "You may need to adjust your chart folders further, to accommodate individual chart groups"
-msgstr ""
+msgstr "Voit joutua muuttamaan karttahakemistojasi, jotta erilliset karttaryhmät saadaan mahtumaan."
 
 #: src/androidUTIL.cpp:5183
 msgid "OpenCPN will now restart to apply changes."
@@ -2794,7 +2795,7 @@ msgstr "OpenCPN käynnistyy nyt uudelleen, jotta muutokset tulevat voimaan."
 
 #: src/androidUTIL.cpp:5218
 msgid "Finishing migration"
-msgstr ""
+msgstr "Viimeistelään kopiointia"
 
 #: src/canvasMenu.cpp:250 src/canvasMenu.cpp:255 src/canvasMenu.cpp:269
 #: src/canvasMenu.cpp:287 src/canvasMenu.cpp:962 src/canvasMenu.cpp:980
@@ -3238,7 +3239,7 @@ msgstr "Käyttäjän valitsemat"
 
 #: src/cat_settings.cpp:95
 msgid "Select new flavour"
-msgstr ""
+msgstr "Valitse uusi asetus"
 
 #: src/cat_settings.cpp:96
 msgid "Default setting"
@@ -3258,7 +3259,7 @@ msgstr "Yhteensopivuus"
 
 #: src/cat_settings.cpp:179
 msgid "Active setting:"
-msgstr "Aktiivinen asetus:"
+msgstr "Nykyinen asetus:"
 
 #: src/cat_settings.cpp:191
 msgid "Cache"
@@ -3291,7 +3292,7 @@ msgstr "Piilota"
 
 #: src/catalog_mgr.cpp:102
 msgid "Ultra advanced"
-msgstr ""
+msgstr "Erittäin edistyneet"
 
 #: src/catalog_mgr.cpp:190
 msgid "Catalog URL status: "
@@ -3323,7 +3324,7 @@ msgstr "Tietoja ei voi ladata URL-osoitteesta"
 
 #: src/catalog_mgr.cpp:296
 msgid "Cannot parse downloaded data"
-msgstr ""
+msgstr "Ladattua dataa ei voi purkaa"
 
 #: src/catalog_mgr.cpp:299
 msgid "Catalog update problem"
@@ -3355,7 +3356,7 @@ msgstr "Luettelo päivitettiin"
 
 #: src/catalog_mgr.cpp:561
 msgid "Server is reachable..."
-msgstr ""
+msgstr "Yhteys palvelimeen OK..."
 
 #: src/catalog_mgr.cpp:563
 msgid "Check channel..."
@@ -4370,7 +4371,7 @@ msgstr "Asennusvirhe"
 
 #: src/garmin_wrapper.cpp:295
 msgid "Overwrite Garmin device route number 1?"
-msgstr ""
+msgstr "Korvataanko Garmin-laitteen reitti numero 1?"
 
 #: src/garmin_wrapper.cpp:296
 msgid "OpenCPN Message"
@@ -4387,7 +4388,7 @@ msgstr "Odotetaan rasterikartan pakkaussäikeen loppumista."
 
 #: src/glTextureManager.cpp:1456
 msgid "OpenCPN Compressed Cache Update"
-msgstr ""
+msgstr "OpenCPN:n karttavälimuistin päivitys"
 
 #: src/GoToPositionDialog.cpp:119 src/MarkInfo.cpp:432 src/RoutePropDlg.cpp:309
 #: src/TrackPropDlg.cpp:302
@@ -5621,7 +5622,7 @@ msgstr "Pakkaa"
 
 #: src/options.cpp:4007
 msgid "Migrate Charts.."
-msgstr ""
+msgstr "Kopioidaan karttoja..."
 
 #: src/options.cpp:4015
 msgid "Update Control"
@@ -6322,7 +6323,7 @@ msgstr "ENC syvyystietojen suurennuskerroin"
 
 #: src/options.cpp:7015
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Hiiren rullan zoomausherkkyys"
 
 #: src/options.cpp:7270 src/options.cpp:7330
 msgid "Connections"
@@ -6588,7 +6589,7 @@ msgstr "Katso lisätietoja järjestemän lokista."
 
 #: src/PluginHandler.cpp:1163
 msgid " successfully installed from cache"
-msgstr ""
+msgstr " asennettiin onnistuneesti välimuistista"
 
 #: src/pluginmanager.cpp:283
 msgid "Plugin is a standard system plugin"
@@ -7562,7 +7563,7 @@ msgstr "Näytä nopeus"
 
 #: src/trackprintout.cpp:399
 msgid "Track Print"
-msgstr ""
+msgstr "Jäljen tulostus"
 
 #: src/TrackPropDlg.cpp:305
 msgid "Timestamp"
