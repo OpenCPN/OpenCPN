@@ -22,82 +22,6 @@
 # ***************************************************************************
 
 #[[
-
-Configuring opencpn
-===================
-
-Help:
-    Opencpn configuration options can be listed using
-        cmake -LH  | grep -B1 OCPN_
-
-Renamed options:
-    From version 5.0.0 all OpenCPN configuration options have a OCPN_ prefix
-    Many older options are renamed, some examples:
-
-        ENABLE_SYSTEM_CMD_SOUND -> OCPN_ENABLE_SYSTEM_CMD_SOUND
-        USE_BUNDLED_LIBS -> OCPN_USE_BUNDLED_LIBS
-        BUNDLE_DOCS ->  OCPN_BUNDLE_DOCS
-        BUNDLE_TCDATA -> OCPN_BUNDLE_TCDATA
-        ENABLE_PORTAUDIO -> OCPN_ENABLE_PORTAUDIO
-        USE_GARMINHOST -> OCPN_USE_GARMINHOST
-        ENABLE_CPPCHECK -> OCPN_ENABLE_CPPCHECK
-
-
-Installation paths:
-  - Since 5.0.0 OpenCPN supports the GNU install paths, see
-    https://cmake.org/cmake/help/v3.0/module/GNUInstallDirs.html
-  - Use CMAKE_INSTALL_LIBDIR to change the base directory for plugins;
-    defaults to library location on most platforms, but is 'lib' on
-    Debian.
-
-Sound:
-  - Without options, defaults to MswSound on Windows, PortAudioSound
-    on Linux and WxSound on OSX.
-  - With OCPN_ENABLE_SYSTEM_CMD_SOUND enabled SystemCmdSound will be the
-    backend used on all platforms.
-  - With OCPN_ENABLE_PORTAUDIO activated PortAudioSound can be used on all
-    platforms if the necessary headers and libraries are available.
-  - OCPN_ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
-    supports a wide range of audio formats instead of .wav only.
-
-Bundled libraries:
-  - OCPN_USE_BUNDLED_LIBS forces use of external/bundled libraries including
-    wxsvg and liblz4. It's either:
-      - ON => use all bundled libraries.
-      - OFF => Always use external (system) libraries if available.
-      - A comma-separated list of libraries where the bundled variant
-        should be used. For other libraries, system libs is preferred.
-  - If found, the system tinyxml library is used unconditionally.
-
-Documentation:
-  - OCPN_BUNDLE_DOCS governs inclusion of docs in the package.
-  - Note that documentation is available in a separate download from
-    opencpn website.
-
-
-Tidal/current wallpaper
-  - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in
-    package.
-
-GSHHS charts
-  - OCPN_BUNDLE_GSHHS (boolean) includes gshhs charts in package
-
-To build for android, use something like:
-    $cmake -DUSE_GARMINHOST=OFF
-        -D_wx_selected_config=androideabi-qt
-        -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
-        -DwxQt_Build=build_android_53
-        -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-        -DQt_Base /home/dsr/Qt/5.3)
-        ..
-
-Silent/Verbose builds:
-    cmake's handling of these issues is underwhelming. On most platforms the
-    builds are by default verbose. Use 'cmake OCPN_VERBOSE=OFF' to make
-    a silent build. The OCPN_VERBOSE value can be overridden using
-    'make VERBOSE=1' or 'make -s'
-#]]
-#[[
 TODO:
 - Profiling opt
 - test with Win & OSX
@@ -124,6 +48,25 @@ endif ()
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set(OpenGL_GL_PREFERENCE "LEGACY")
 
+if (APPLE)
+  set(PACKAGE_NAME OpenCPN)
+else (APPLE)
+  set(PACKAGE_NAME opencpn)
+endif (APPLE)
+
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
+   message(STATUS "Building for wxQt-Android")
+   set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
+   set(QT_ANDROID "ON")
+   if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
+     add_definitions("-DANDROID_ARM64")
+   else ()
+     add_definitions("-DANDROID_ARMHF")
+   endif ()
+   set(PACKAGE_NAME gorp)
+endif ()
+
+
 project(OpenCPN)
 
 if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
@@ -131,12 +74,6 @@ if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
 endif ()
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
-
-if (APPLE)
-  set(PACKAGE_NAME OpenCPN)
-else (APPLE)
-  set(PACKAGE_NAME opencpn)
-endif (APPLE)
 
 # Locations where cmake looks for cmake modules.
 set(
@@ -146,21 +83,15 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
-   message(STATUS "Building for wxQt-Android")
-   set(QT_ANDROID "ON")
-   if(PKG_ARCH STREQUAL "arm64")
-     add_definitions("-DANDROID_ARM64")
-   else ()
-     add_definitions("-DANDROID_ARMHF")
-   endif ()
-   set(PACKAGE_NAME gorp)
-endif ()
 
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
 include(CheckSymbolExists)
+
+if (QT_ANDROID)
+  #include(libs/AndroidLibs.cmake)
+endif ()
 
 #
 # Options
@@ -227,21 +158,18 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   endif ()
 endif ()
 
-if (NOT WIN32 AND NOT APPLE AND NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-  set(PA_DEFAULT "ON")
-else ()
+if (WIN32 OR APPLE OR QT_ANDROID)
   set(PA_DEFAULT "OFF")
+else ()
+  set(PA_DEFAULT "ON")
 endif ()
 option(
   OCPN_ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available"
   ${PA_DEFAULT}
 )
 cmake_dependent_option(
-  OCPN_ENABLE_SNDFILE
-  "Use libsndfile for portaudio if available."
-  ON
-  "OCPN_ENABLE_PORTAUDIO"
-  ON
+  OCPN_ENABLE_SNDFILE "Use libsndfile for portaudio if available."
+  ON "OCPN_ENABLE_PORTAUDIO" ON
 )
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
@@ -316,24 +244,30 @@ option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the system on MacOS" ON)
 
+if (WIN32)
+  set(cmd_snd_default OFF)
+else ()
+  set(cmd_snd_default ON)
+endif ()
+
 option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
-  "Use aplay(1), afplay(1) etc. to play sounds if available" ON
+  "Use aplay(1), afplay(1) etc. to play sounds if available" ${cmd_snd_default}
+)
+set(OCPN_SOUND_CMD "" CACHE STRING
+  "Hardcoded value for CLI command used in SystemCmdSound backend"
 )
 
 if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
   set(LINUX "1")
 endif ()
 
-IF (QT_ANDROID)
-  SET(OCPN_NEW_SERIAL OFF)
-  SET(OCPN_USE_NEWSERIAL OFF)
-  SET(OCPN_USE_CURL ON)
-  SET(ENABLE_PORTAUDIO OFF)
-  SET(ENABLE_SYSTEM_CMD_SOUND OFF)
-  SET(ENABLE_SNDFILE OFF)
-  SET(OCPN_USE_LZMA OFF)
-ENDIF (QT_ANDROID)
+if (QT_ANDROID)
+  set(OCPN_NEW_SERIAL OFF)
+  set(OCPN_USE_NEWSERIAL OFF)
+  set(OCPN_USE_CURL ON)
+  set(OCPN_USE_LZMA OFF)
+endif (QT_ANDROID)
 
 # Check if a given library should use the bundled source
 macro (USE_BUNDLED_LIB _result library)
@@ -522,20 +456,24 @@ endif (MSVC)
 
 
 if (QT_ANDROID)
-  set(CMAKE_BUILD_TYPE Debug)
+  #set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
+  add_definitions(-DNOASSERT)
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC")
+  set(CMAKE_C_FLAGS "-pthread -fPIC")
 
   add_compile_options("-Wno-inconsistent-missing-override"
         "-Wno-potentially-evaluated-expression"
         "-Wno-overloaded-virtual"
         "-Wno-unused-command-line-argument"
         "-Wno-unknown-pragmas"
-        "-O3"
-        "-fPIC"
   )
+  if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_compile_options("-O0")
+  endif ()
+
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
 endif (QT_ANDROID)
 
@@ -652,20 +590,19 @@ endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
 
 IF(DEFINED _wx_selected_config)
   IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
-    MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
-    ADD_DEFINITIONS(-DocpnUSE_GLES)
-    ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DARMHF)
+    #MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+    #MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
+    #ADD_DEFINITIONS(-DocpnUSE_GLES)
+    #ADD_DEFINITIONS(-DocpnUSE_GL)
 
-    SET(OPENGLES_FOUND "YES")
-    SET(OPENGL_FOUND "YES")
+    #SET(OPENGLES_FOUND "YES")
+    #SET(OPENGL_FOUND "YES")
 
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
-    SET(USE_GLES2 ON )
-    MESSAGE (STATUS "Using GLESv2 for Android")
-    ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
-    ADD_DEFINITIONS(-DUSE_GLSL)
+    #ADD_DEFINITIONS(-DUSE_GLU_TESS)
+    #SET(USE_GLES2 ON )
+    #MESSAGE (STATUS "Using GLESv2 for Android")
+    #ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
+    #ADD_DEFINITIONS(-DUSE_GLSL)
     INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/libs/glshim/include/GLES )
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
@@ -837,32 +774,6 @@ if (GTK3_FOUND)
   endif ()
 endif ()
 
-IF(QT_ANDROID)
-  SET( wxWidgets_LIBRARIES
-
-    # Link order is critical to avoid circular dependencies
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
-
-  )
-ENDIF(QT_ANDROID)
 
 #  Make sure that the variable "wxWidgets_VERSION_STRING" is set, even on older CMake versions
 #  Seems safe to set to "3.0", since OCPN does not support earlier wxWidgets versions
@@ -883,22 +794,6 @@ message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
-
-IF(QT_ANDROID)
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
-
-  INCLUDE_DIRECTORIES(
-      "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-  include_directories("${CMAKE_SOURCE_DIR}/include")
-
-  add_definitions(-DQT_WIDGETS_LIB)
-endif (QT_ANDROID)
 
 set(
   HDRS
@@ -1172,7 +1067,7 @@ if (APPLE)
   endif ()
 endif (APPLE)
 
-if (LINUX)
+if (LINUX AND NOT QT_ANDROID)
   list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
   list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
 endif ()
@@ -1185,12 +1080,9 @@ endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
-ENDIF(QT_ANDROID)
-
-IF(USE_GLES2)
   SET(HDRS ${HDRS} include/shaders.h)
   SET(SRCS ${SRCS} src/shaders.cpp)
-ENDIF(USE_GLES2)
+ENDIF(QT_ANDROID)
 
 SET(SRC_TINYXML
   src/tinyxml.cpp
@@ -1210,6 +1102,10 @@ else ()
   add_executable(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
 
+if (QT_ANDROID)
+  include(libs/AndroidLibs.cmake)
+endif ()
+
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(
@@ -1225,6 +1121,7 @@ set_target_properties(
     OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
+  message(STATUS "PackageNem debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(
   ${PACKAGE_NAME}
@@ -1303,10 +1200,10 @@ endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 if (DEFINED _wx_selected_config)
   message(STATUS "selected config ${_wx_selected_config}")
   if (_wx_selected_config MATCHES "androideabi-qt")
-    message(STATUS "Building for wxQt-Android")
-    message(STATUS "Qt_Base: " ${Qt_Base})
-    message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
-    set(QT_ANDROID "ON")
+    #message(STATUS "Building for wxQt-Android")
+    #message(STATUS "Qt_Base: " ${Qt_Base})
+    #message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
+    #set(QT_ANDROID "ON")
   endif (_wx_selected_config MATCHES "androideabi-qt")
 endif (DEFINED _wx_selected_config)
 
@@ -1322,8 +1219,8 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
     message(STATUS "Found OpenGLESv1")
     add_definitions(-DocpnUSE_GL) # ocpnUSE_GLES is in config.h
 
-    set(OPENGLES_FOUND "YES")
-    set(OPENGL_FOUND "YES")
+    #set(OPENGLES_FOUND "YES")
+    #set(OPENGL_FOUND "YES")
 
     set(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm")
   endif ()
@@ -1574,8 +1471,8 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
     add_definitions(-DocpnUSE_GLES)
     add_definitions(-DocpnUSE_GL)
 
-    set(OPENGLES_FOUND "YES")
-    set(OPENGL_FOUND "YES")
+    #set(OPENGLES_FOUND "YES")
+    #set(OPENGL_FOUND "YES")
 
     # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
     add_subdirectory(libs/glshim)
@@ -1605,16 +1502,16 @@ endif ()
 # directories, flags, etc must be stated explicitly without trying to locate
 # them on the host build system.
 if (QT_ANDROID)
-  message(STATUS "Using GLESv1 for Android")
+  #message(STATUS "Using GLESv1 for Android")
   add_definitions(-DocpnUSE_GLES)
   add_definitions(-DocpnUSE_GL)
-  add_definitions(-DARMHF)
+  #add_definitions(-DARMHF)
 
-  set(OPENGLES_FOUND "YES")
-  set(OPENGL_FOUND "YES")
+  #set(OPENGLES_FOUND "YES")
+  #set(OPENGL_FOUND "YES")
 
   # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
-  add_subdirectory(libs/glshim)
+  #add_subdirectory(libs/glshim)
 endif (QT_ANDROID)
 
 message(STATUS "    Adding local GLU")
@@ -1819,7 +1716,9 @@ endif (UNIX AND NOT APPLE)
 # Finalize config.h setup and deploy it.
 include(TargetSetup)
 if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
-  string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
+  if (${PKG_TARGET_VERSION} VERSION_LESS 22.04)
+    string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
+  endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
 configure_file(${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)

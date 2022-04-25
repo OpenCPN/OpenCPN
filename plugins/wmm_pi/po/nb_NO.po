@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2021-11-09 02:12\n"
+"PO-Revision-Date: 2022-04-10 02:29\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -45,7 +45,7 @@ msgstr "MVM Utvidelse"
 
 #: src/wmm_pi.cpp:167
 msgid "WMM_Live_Overlay"
-msgstr ""
+msgstr "WMM_Live_Overlegg"
 
 #: src/wmm_pi.cpp:225 src/wmm_pi.cpp:313 src/WmmUIDialog.h:87
 msgid "WMM"
@@ -64,7 +64,14 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
+msgstr "Magnetisk Verdens-modell utvidelse for OpenCPN\n"
+"Integrerer NOAA Magnetisk Verdens-modell\n"
+"Mer informasjon:\n"
+"https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
+"Den vedlagte WMM2020 modellen utgår Desember 31, 2025.\n"
+"Etter det, hvis ikke en nye versjon av utvidelsen er kommet\n"
+"tidsnok, hent en ny WMM.COF fra NOAA og lim den inn\n"
+"der den skal være ihht. loggfilen til OpenCPN."
 
 #: src/wmm_pi.cpp:535 src/wmm_pi.cpp:675
 msgid "Error, see log."

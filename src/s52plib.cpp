@@ -9304,7 +9304,7 @@ void RotateToViewPort(const ViewPort &vp) {
 int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 #ifdef USE_ANDROID_GLES2
   return RenderToGLAP_GLSL(rzRules, rules, vp);
-#endif
+#else
 
 #ifdef ocpnUSE_GL
   if (rules->razRule == NULL) return 0;
@@ -9588,9 +9588,11 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   }
 
   free(ptp);
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
   return 1;
+#endif  // #ifdef USE_ANDROID_GLES2
+
 }
 
 int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules,
@@ -12513,7 +12515,7 @@ void PLIBDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 
 #ifdef USE_ANDROID_GLES2
 
-#include <gl2.h>
+#include <GLES2/gl2.h>
 
 // Simple colored triangle shader
 

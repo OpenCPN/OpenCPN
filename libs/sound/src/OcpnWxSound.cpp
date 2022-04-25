@@ -52,7 +52,7 @@ bool OcpnWxSound::Stop(void)
 
 void OcpnWxSound::worker(void)
 {
-    wxLogInfo("wxSound::worker()");
+    wxLogDebug("wxSound::worker()");
     m_isPlaying = true;
     m_sound.Play(wxSOUND_SYNC);
     if  (m_onFinished) {
@@ -65,7 +65,7 @@ void OcpnWxSound::worker(void)
 
 bool OcpnWxSound::Play()
 {
-    wxLogMessage("wxSound::Play()");
+    wxLogDebug("wxSound::Play()");
     if( !m_OK || m_isPlaying) {
         wxLogWarning("OcpnWxSound: cannot play: not loaded or busy playing.");
         return false;

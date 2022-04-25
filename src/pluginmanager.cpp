@@ -117,6 +117,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "routemanagerdialog.h"
 #include "NavObjectCollection.h"
 #include "OCPNRegion.h"
+#include "SystemCmdSound.h"
 #include "s52plib.h"
 #include "ocpn_pixel.h"
 #include "s52utils.h"
@@ -145,6 +146,29 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
+
+#ifndef __WXMSW__
+#include <signal.h>
+#include <setjmp.h>
+
+struct sigaction sa_all_PIM;
+struct sigaction sa_all_PIM_previous;
+
+sigjmp_buf env_PIM;  // the context saved by sigsetjmp();
+
+void catch_signals_PIM(int signo) {
+  switch (signo) {
+    case SIGSEGV:
+      siglongjmp(env_PIM, 1);  // jump back to the setjmp() point
+      break;
+
+    default:
+      break;
+  }
+}
+
+#endif
+
 
 extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
@@ -428,7 +452,7 @@ static void gui_uninstall(PlugInContainer *pic, const char *plugin) {
 }
 
 static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
-                              bool uninstall, const char *name = 0) {
+                              bool uninstall, const char *name = 0, bool b_forceEnable = false) {
   wxString pluginName = pic->m_common_name;
   const char *plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
   auto updates = getUpdates(plugin);
@@ -498,6 +522,7 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
 
   std::string manifestPath = PluginHandler::fileListPath(update.name);
   wxTextFile manifest_file(manifestPath);
+  wxString pluginFile;
   if (manifest_file.Open()) {
     wxString val;
     for (wxString str = manifest_file.GetFirstLine(); !manifest_file.Eof();
@@ -516,9 +541,20 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
 
           PluginHandler::cleanupFiles(manifestPath, update.name);
         }
+        else {
+          pluginFile = str;
+        }
         break;
       }
     }
+  }
+
+  if (b_forceEnable && pluginFile.Length()){
+    wxString config_section = (_T ( "/PlugIns/" ));
+    wxFileName fn(pluginFile);
+    config_section += fn.GetFullName();
+    pConfig->SetPath(config_section);
+    pConfig->Write(_T ( "bEnabled" ), true);
   }
 
   //  Reload all plugins, which will bring in the action results.
@@ -1238,6 +1274,12 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
               if (!pic->m_bToolboxPanel) NotifySetupOptionsPlugin(pic);
             }
           }
+
+          if (g_options && g_boptionsactive){
+            if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
+              g_options->SetForceNewToolbarOnCancel( true );
+          }
+
         }
         wxLog::FlushActive();
 
@@ -1254,16 +1296,30 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
         pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
         pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
         pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-        wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
+
+        if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
+          wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
               0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-        pic->m_bitmap = pbm;
+          pic->m_bitmap = pbm;
+        }
+        else {
+          ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+          pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+        }
 
         ret = true;
 
         if (!pic->m_bEnabled && pic->m_destroy_fn) {
-          wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-              0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-          pic->m_bitmap = pbm;
+          if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
+            wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
+                0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+            pic->m_bitmap = pbm;
+          }
+          else {
+            ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+            pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+          }
+
           pic->m_destroy_fn(pic->m_pplugin);
           pic->m_destroy_fn = NULL;
           pic->m_pplugin = NULL;
@@ -1491,13 +1547,35 @@ bool PlugInManager::UpdatePlugIns() {
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
       pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+
+      if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
+        wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
+            0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+        pic->m_bitmap = pbm;
+      }
+      else {
+        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+      }
+
+      if (g_options && g_boptionsactive) {
+        if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
+          g_options->SetForceNewToolbarOnCancel( true );
+      }
+
       bret = true;
     } else if (!pic->m_bEnabled && pic->m_bInitState) {
 
       // Save a local copy of the plugin icon before unloading
-      wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-              0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-      pic->m_bitmap = pbm;
+      if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
+        wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
+            0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
+        pic->m_bitmap = pbm;
+      }
+      else {
+        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
+      }
 
       bret = DeactivatePlugIn(pic);
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
@@ -1508,6 +1586,17 @@ bool PlugInManager::UpdatePlugIns() {
   }
 
   UpDateChartDataTypes();
+
+    // Tell all the PlugIns about the current OCPN configuration
+  SendBaseConfigToAllPlugIns();
+  SendS52ConfigToAllPlugIns(true);
+  SendSKConfigToAllPlugIns();
+
+  // Inform Plugins of OpenGL configuration, if enabled
+  if (g_bopengl) {
+    if (gFrame->GetPrimaryCanvas()->GetglCanvas())
+      gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+  }
 
   return bret;
 }
@@ -1726,6 +1815,10 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic) {
           (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
         ChartData->PurgeCachePlugins();
         gFrame->InvalidateAllQuilts();
+      }
+      if(g_pOptions && g_boptionsactive){
+        if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
+          g_pOptions->SetForceNewToolbarOnCancel( true );
       }
 
       pic->m_bInitState = false;
@@ -2240,11 +2333,13 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
       }
 
       wxLogMessage(msg1);
-      if (m_benable_blackdialog)
-        OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
+      if (!PluginBlacklist[i].mute_dialog) {
+        if (m_benable_blackdialog)
+          OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
                        wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
-      else
-        m_deferred_blacklist_messages.Add(msg);
+        else
+          m_deferred_blacklist_messages.Add(msg);
+      }
 
       return PluginBlacklist[i].hard;
     }
@@ -2254,10 +2349,12 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file) {
   PlugInContainer *pic = new PlugInContainer;
-  if (!LoadPlugIn(plugin_file, pic))
+  if (!LoadPlugIn(plugin_file, pic)) {
+    delete pic;
     return NULL;
-  else
+  } else {
     return pic;
+  }
 }
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
@@ -2708,7 +2805,8 @@ void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort &vp) {
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_ONPAINT_VIEWPORT) {
         PlugIn_ViewPort pivp = CreatePlugInViewport(vp);
-        pic->m_pplugin->SetCurrentViewPort(pivp);
+        if (pic->m_pplugin)
+          pic->m_pplugin->SetCurrentViewPort(pivp);
       }
     }
   }
@@ -2719,7 +2817,8 @@ void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
     PlugInContainer *pic = plugin_array[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_CURSOR_LATLON)
-        pic->m_pplugin->SetCursorLatLon(lat, lon);
+        if (pic->m_pplugin)
+          pic->m_pplugin->SetCursorLatLon(lat, lon);
     }
   }
 }
@@ -2840,13 +2939,52 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence) {
   wxString decouple_sentence(
       sentence);  // decouples 'const wxString &' and 'wxString &' to keep bin
                   // compat for plugins
+#ifndef __WXMSW__
+  // Set up a framework to catch (some) sigsegv faults from plugins.
+  sigaction(SIGSEGV, NULL, &sa_all_PIM_previous);  // save existing
+                                                   // action for this signal
+  struct sigaction temp;
+  sigaction(SIGSEGV, NULL, &temp);  // inspect existing action for this signal
+
+  temp.sa_handler = catch_signals_PIM;  // point to my handler
+  sigemptyset(&temp.sa_mask);             // make the blocking set
+                                            // empty, so that all
+                                            // other signals will be
+                                            // unblocked during my handler
+  temp.sa_flags = 0;
+  sigaction(SIGSEGV, &temp, NULL);
+#endif
+
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer *pic = plugin_array[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
-      if (pic->m_cap_flag & WANTS_NMEA_SENTENCES)
-        pic->m_pplugin->SetNMEASentence(decouple_sentence);
+      if (pic->m_cap_flag & WANTS_NMEA_SENTENCES){
+
+
+#ifndef __WXMSW__
+        if (sigsetjmp(env_PIM, 1)){ //  Something in the "else" code block faulted.
+
+          // Probably safest to assume that all variables in this method are trash..
+          // So, simply clean up and return.
+          sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);  // reset signal handler
+          return;
+        }
+        else
+#endif
+        {
+          //volatile int *x = 0;
+          //*x = 0;
+          if (pic->m_pplugin)
+            pic->m_pplugin->SetNMEASentence(decouple_sentence);
+        }
+      }
     }
   }
+
+#ifndef __WXMSW__
+    sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);  // reset signal handler
+#endif
+
 }
 
 int PlugInManager::GetJSONMessageTargetCount() {
@@ -2951,7 +3089,8 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
     PlugInContainer *pic = plugin_array[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_EVENTS)
-        pic->m_pplugin->SetPositionFix(pfix);
+        if (pic->m_pplugin)
+          pic->m_pplugin->SetPositionFix(pfix);
     }
   }
 
@@ -4907,13 +5046,15 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 #else  // Android
   SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
   ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
-  if (expert.get(false)) {
-    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog"),
+  if (!expert.get(false)) {
+    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog: master"),
                                   wxDefaultPosition, wxDefaultSize, 0);
     itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT);
     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                          &CatalogMgrPanel::OnUpdateButton, this);
     SetUpdateButtonLabel();
+    m_tarballButton = NULL;
+    m_adv_button = NULL;
   } else {
     // First line
     m_catalogText = new wxStaticText(this, wxID_STATIC, _T(""));
@@ -4921,7 +5062,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
                              wxSizerFlags().Border().Proportion(1));
     m_catalogText->SetLabel(GetCatalogText(false));
 
-    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog"),
+    m_updateButton = new wxButton(this, wxID_ANY, _("Update Plugin Catalog:master"),
                                   wxDefaultPosition, wxDefaultSize, 0);
     itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT);
     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -4942,15 +5083,24 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
                              2 * GetCharWidth());
     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                           &CatalogMgrPanel::OnTarballButton, this);
+
+    ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+    wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+    catalog.listen(this, EVT_CATALOG_CHANGE);
+    Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
+
   }
 
 #endif
 }
 
 CatalogMgrPanel::~CatalogMgrPanel() {
+  ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+  catalog.unlisten(this);
   m_updateButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
                          &CatalogMgrPanel::OnUpdateButton, this);
-  m_tarballButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
+  if (m_tarballButton)
+    m_tarballButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
                           &CatalogMgrPanel::OnTarballButton, this);
 }
 
@@ -5030,7 +5180,9 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent &event) {
   g_pi_manager->LoadAllPlugIns(false);
 
   // Update this Panel, and the entire list.
+#ifndef __OCPN__ANDROID__
   m_catalogText->SetLabel(GetCatalogText(true));
+#endif
   if (m_PluginListPanel)
     m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
 
@@ -5141,7 +5293,17 @@ static void populatePluginNode(pugi::xml_node &pluginNode,
 
 void CatalogMgrPanel::OnPluginSettingsButton(wxCommandEvent &event) {
   auto dialog = new CatalogSettingsDialog(this);
+
+#ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+#endif
+
   dialog->ShowModal();
+
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
+
 }
 
 void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
@@ -5965,7 +6127,9 @@ void PluginPanel::DoPluginSelect() {
     // auto dialog = dynamic_cast<PluginListPanel*>(GetParent());
     // auto dialog = dynamic_cast<PluginListPanel*>(m_parent);
     // wxASSERT(dialog != 0);
-    run_update_dialog(m_PluginListPanel, m_pPlugin, false);
+
+    // Install the new plugin, auto-enabling as a convenience measure.
+    run_update_dialog(m_PluginListPanel, m_pPlugin, false, 0, true);
   } else if (m_bSelected) {
     SetSelected(false);
     m_PluginListPanel->SelectPlugin(NULL);
@@ -6116,7 +6280,7 @@ void PluginPanel::SetSelected(bool selected) {
   // m_pButtonUninstall->Hide();
 
   Fit();
-  m_PluginListPanel->m_pitemBoxSizer01->Layout();
+  //m_PluginListPanel->m_pitemBoxSizer01->Layout();
 #endif
 }
 
@@ -6531,6 +6695,11 @@ InitReturn ChartPlugInWrapper::Init(const wxString &name,
       }
 
       bReadyToRender = m_ppicb->IsReadyToRender();
+    }
+    else{
+      //  Mark the chart as unable to render
+      m_ChartType = CHART_TYPE_UNKNOWN;
+      m_ChartFamily = CHART_FAMILY_UNKNOWN;
     }
 
     //  PlugIn may invoke wxExecute(), which steals the keyboard focus
@@ -7791,7 +7960,8 @@ bool PlugInPlaySoundEx(wxString &sound_file, int deviceIndex) {
     wxLogWarning("Cannot load sound file: %s", sound_file);
     return false;
   }
-  g_PluginSound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_PluginSound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
 
   g_PluginSound->SetFinishedCallback(onPlugInPlaySoundExFinished, NULL);
   ok = g_PluginSound->Play();

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:19-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"PO-Revision-Date: 2022-04-21 14:20\n"
 "Last-Translator: \n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -24,11 +24,11 @@ msgstr "Inizia una richiesta"
 #: src/GribUIDialog.cpp:352
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
+msgstr "Disegna la richiesta area o Clicca qui per interrompere la richiesta"
 
 #: src/GribUIDialog.cpp:356 src/GribUIDialog.cpp:885
 msgid "Valid Area and Continue"
-msgstr ""
+msgstr "Area valida e Continua"
 
 #: src/GribUIDialog.cpp:398
 msgid "File: "
@@ -92,7 +92,7 @@ msgstr "Impostazioni"
 
 #: src/GribUIDialog.cpp:885
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "Disegna la richiesta area o Clicca qui per interrompere la richiesta"
 
 #: src/GribUIDialog.cpp:1540 src/GribUIDialog.cpp:1562
 msgid "Select a GRIB file"
@@ -177,7 +177,7 @@ msgstr "j/kg"
 
 #: src/GribSettingsDialog.cpp:39
 msgid "dBZ"
-msgstr ""
+msgstr "dBZ"
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:418
 #: src/GribUIDialogBase.cpp:927 src/GribUIDialogBase.cpp:1867
@@ -203,7 +203,7 @@ msgstr "Onde"
 #: src/GribSettingsDialog.cpp:50 src/GribUIDialogBase.cpp:474
 #: src/GribUIDialogBase.cpp:927 src/GribUIDialogBase.cpp:1895
 msgid "Current"
-msgstr "Velocità Corrente (nodi)"
+msgstr "Corrente"
 
 #: src/GribSettingsDialog.cpp:51 src/GribUIDialogBase.cpp:490
 #: src/GribUIDialogBase.cpp:927 src/GribUIDialogBase.cpp:1876
@@ -270,7 +270,7 @@ msgstr "Visualizza iso CAPE"
 
 #: src/GribSettingsDialog.cpp:811
 msgid "Display Comp. Reflectivity"
-msgstr ""
+msgstr "Mostra la massima riflettività"
 
 #: src/GribSettingsDialog.cpp:818 src/GribSettingsDialog.cpp:889
 #: src/GribUIDialogBase.cpp:837
@@ -324,7 +324,7 @@ msgstr "Seleziona altezza geopotenziale"
 
 #: src/GribUIDialogBase.cpp:405
 msgid "MyLabel"
-msgstr ""
+msgstr "MyLabel"
 
 #: src/GribUIDialogBase.cpp:446
 msgid "Mean Sea Level Pressure (MSLP)"
@@ -372,11 +372,11 @@ msgstr "Energia Potenziale Convettiva Disponibile"
 
 #: src/GribUIDialogBase.cpp:557
 msgid "Comp. Refl."
-msgstr ""
+msgstr "Mass.riflet."
 
 #: src/GribUIDialogBase.cpp:561
 msgid "Composite Reflectivity"
-msgstr ""
+msgstr "Massima riflettività"
 
 #: src/GribUIDialogBase.cpp:570 src/CursorData.cpp:241
 msgid "Altitude"
@@ -408,7 +408,7 @@ msgstr "Colore di deafult"
 
 #: src/GribUIDialogBase.cpp:786
 msgid "Controlled Colours"
-msgstr ""
+msgstr "Colori Controllati"
 
 #: src/GribUIDialogBase.cpp:798 src/GribUIDialogBase.cpp:885
 #: src/GribUIDialogBase.cpp:941
@@ -435,7 +435,7 @@ msgstr "Isobare"
 
 #: src/GribUIDialogBase.cpp:860
 msgid "Abbreviated Numbers"
-msgstr ""
+msgstr "Numero Abbreviato"
 
 #: src/GribUIDialogBase.cpp:866 src/CursorData.cpp:539 src/CursorData.cpp:544
 msgid "Direction Arrows"
@@ -469,7 +469,7 @@ msgstr "Sovrapponi mappa"
 
 #: src/GribUIDialogBase.cpp:923
 msgid "Color scheme"
-msgstr ""
+msgstr "Scala dei colori "
 
 #: src/GribUIDialogBase.cpp:927
 msgid "Generic"
@@ -608,7 +608,7 @@ msgstr ""
 #: src/GribUIDialogBase.cpp:1331 src/GribUIDialogBase.cpp:1468
 #: src/GribUIDialogBase.cpp:2000
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #: src/GribUIDialogBase.cpp:1414 src/GribUIDialogBase.cpp:1510
 msgid "General Options"
@@ -632,11 +632,11 @@ msgstr "Copia i record mancanti relativi al moto ondoso"
 
 #: src/GribUIDialogBase.cpp:1433 src/GribUIDialogBase.cpp:1525
 msgid "Draw Barbed Arrows Head"
-msgstr ""
+msgstr "Disegna Frecce Spinato Testa"
 
 #: src/GribUIDialogBase.cpp:1436 src/GribUIDialogBase.cpp:1528
 msgid "Zoom to file center when opened"
-msgstr ""
+msgstr "Ingrandisci al centro della area quando aperto"
 
 #: src/GribUIDialogBase.cpp:1444 src/GribUIDialogBase.cpp:1531
 msgid "Load the More Recent File in Directory"
@@ -680,7 +680,7 @@ msgstr "Impostazioni tempo"
 
 #: src/GribUIDialogBase.cpp:1499
 msgid "GRIB PlugIn Preferences"
-msgstr ""
+msgstr "Preferenze del Plugin GRIB"
 
 #: src/GribUIDialogBase.cpp:1590
 msgid "Profile"
@@ -804,7 +804,7 @@ msgstr "Temperatura aria(2m)"
 
 #: src/GribUIDialogBase.cpp:1889
 msgid "Comp. Reflect."
-msgstr ""
+msgstr "Mass.riflet."
 
 #: src/GribUIDialogBase.cpp:1892
 msgid "Sea Temperature(surf.)"
@@ -878,7 +878,7 @@ msgstr "Attenzione: dati ad altezza geopotenziale"
 
 #: src/GribOverlayFactory.cpp:1318
 msgid "IsoBar Unable to compute record magnitude"
-msgstr ""
+msgstr "Isobar: impossibile calcolare il valore "
 
 #: src/GribOverlayFactory.cpp:1345
 msgid "Building Isobar map"
@@ -886,7 +886,7 @@ msgstr "Sto costruendo la mappa delle isobare"
 
 #: src/GribOverlayFactory.cpp:1627
 msgid "OverlayMap Unable to compute record magnitude"
-msgstr ""
+msgstr "Sovrapposizione: impossibile calcolare il valore "
 
 #: src/GribOverlayFactory.cpp:1665
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
@@ -906,7 +906,7 @@ msgstr "Zoom out o riduci scala per vedere HTSGW GRIB soppressi"
 
 #: src/GribOverlayFactory.cpp:1731
 msgid "GribNumbers Unable to compute record magnitude"
-msgstr ""
+msgstr "Valore: Impossibile calcolarlo "
 
 #: src/grib_pi.cpp:153
 msgid "Grib"
@@ -958,7 +958,7 @@ msgstr "Si è scelto di autorizzare l'interpolazione.\n"
 
 #: src/GribTable.cpp:97
 msgid "Wind,Dir"
-msgstr ""
+msgstr "Vento, Dir"
 
 #: src/GribTable.cpp:103
 msgid "Wind,Speed"
@@ -966,19 +966,19 @@ msgstr "Vento, Velocità"
 
 #: src/GribTable.cpp:111
 msgid "Wind,Gust"
-msgstr ""
+msgstr "Vento, Raffiche"
 
 #: src/GribTable.cpp:136
 msgid "Waves,Dir"
-msgstr ""
+msgstr "Onde,Dir"
 
 #: src/GribTable.cpp:141
 msgid "Waves,Hsig"
-msgstr ""
+msgstr "Onde, alt signif"
 
 #: src/GribTable.cpp:146
 msgid "Waves,Per"
-msgstr ""
+msgstr "Onde, Periodo"
 
 #: src/GribTable.cpp:170
 msgid "Air Temp."
@@ -990,15 +990,15 @@ msgstr "Temperatura mare"
 
 #: src/GribTable.cpp:194
 msgid "C. Reflect."
-msgstr ""
+msgstr "M.riflet."
 
 #: src/GribTable.cpp:206
 msgid "Current,Dir"
-msgstr ""
+msgstr "Corrente, Dir"
 
 #: src/GribTable.cpp:212
 msgid "Current,Speed"
-msgstr ""
+msgstr "Corrente, velocità"
 
 #: src/GribRequestDialog.cpp:121 src/GribRequestDialog.cpp:1030
 msgid "Send"
@@ -1042,7 +1042,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "E' stata richiesta una previsione con un orizzonte temporale di più di 8 giorni.\n"
+"Ciò è in conflitto con i dati relativi al moto ondoso che saranno rimossi dalla richiesta.\n"
+"Non dimenticare che dopo i primi 8 giorni, la risoluzione sarà solamente di 2,5°x2,5°\n"
+" e l'intervallo di tempo di 12 ore."
 
 #: src/GribRequestDialog.cpp:903
 msgid "Max"
@@ -1064,7 +1067,7 @@ msgstr "Errore! Max Lat minore di Min Lat o Max Lon minore di Min Lon!"
 
 #: src/GribRequestDialog.cpp:1043
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "Area troppo grande! Ogni lato deve essere minore di 180°!"
 
 #: src/GribRequestDialog.cpp:1043
 msgid "Too small area for this resolution!"
@@ -1154,9 +1157,9 @@ msgstr "N/A"
 
 #: src/CursorData.cpp:516
 msgid "Abbreviated Isobars Numbers"
-msgstr ""
+msgstr "Numeri Isobar Abbreviati"
 
 #: src/CursorData.cpp:534
 msgid "Display Iso Reflectivity"
-msgstr ""
+msgstr "Mostra la riflettività iso "
 

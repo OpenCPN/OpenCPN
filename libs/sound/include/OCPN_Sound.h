@@ -41,7 +41,7 @@ typedef std::function<void(void* userPtr)>  AudioDoneCallback;
 
 class OcpnSound
 {
-    friend OcpnSound* SoundFactory();
+    friend OcpnSound* SoundFactory(const char* system_command);
 
     public:
 
@@ -97,12 +97,6 @@ class OcpnSound
 
         /** Reflects loading errors. */
         virtual bool IsOk() const { return m_OK; }
-
-        /**
-         * Set system command string in case program wants to change from
-         * default string.
-         */
-        virtual void SetCmd( const char *cmd ) { };    // does nothing if not overridden
 
     protected:
 

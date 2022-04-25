@@ -1168,10 +1168,11 @@ bool TrackPropDlg::UpdateProperties() {
   //  Time
   wxString time_form;
   wxTimeSpan time(0, 0, (int)total_seconds, 0);
+  //TODO  Construct a readable time string, e.g. "xx Days, 15:34"
   if (total_seconds > 3600. * 24.)
-    time_form = time.Format(_("%D Days, %H:%M"));
+    time_form = time.Format("%H:%M");
   else if (total_seconds > 0.)
-    time_form = time.Format(_("%H:%M"));
+    time_form = time.Format("%H:%M");
   else
     time_form = _T("--");
   m_tTimeEnroute->SetValue(time_form);
@@ -1838,7 +1839,7 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
     case 2:
       DistanceBearingMercator(this_point->m_lat, this_point->m_lon, slat, slon,
                               &gt_brg, &gt_leg_dist);
-      ret.Printf(_T("%03.0f \u00B0T"), gt_brg);
+      ret.Printf("%03.0f %cT", gt_brg, 0x00B0);
       break;
 
     case 3:

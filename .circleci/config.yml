@@ -30,9 +30,10 @@ jobs:
        - run: ci/generic-upload.sh
    build-macos:
      macos:
-       xcode: "11.3.0"
+       xcode: "11.4.1"
      environment:
        - OCPN_TARGET:  macos
+       - TRAVIS_TAG: ON
      steps:
        - checkout
        - restore_cache:
@@ -69,6 +70,16 @@ jobs:
              - build/.flatpak-builder/checksums
              - build/.flatpak-builder/downloads
              - build/.flatpak-builder/rofiles
+
+   build-android-armhf:
+     docker:
+       - image: circleci/android:api-28-ndk
+     environment:
+       - OCPN_TARGET:  android-armhf
+     steps:
+       - checkout
+       - run: ci/circleci-build-android-corelib-armhf.sh
+
 workflows:
   version: 2
   build_all:
@@ -89,8 +100,16 @@ workflows:
               only:
                 - flatpak
                 - master
+                - v5.6.x
       - build-macos:
           filters:
             branches:
               only:
                 - master
+                - v5.6.x
+      - build-android-armhf:
+          filters:
+            branches:
+              only:
+                - master
+                - v5.6.x

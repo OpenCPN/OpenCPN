@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:19-0400\n"
-"PO-Revision-Date: 2021-11-09 02:12\n"
+"PO-Revision-Date: 2022-04-10 02:29\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -178,7 +178,7 @@ msgstr "j/kg"
 
 #: src/GribSettingsDialog.cpp:39
 msgid "dBZ"
-msgstr ""
+msgstr "dBZ"
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:418
 #: src/GribUIDialogBase.cpp:927 src/GribUIDialogBase.cpp:1867
@@ -271,7 +271,7 @@ msgstr "Vis Iso CAPE"
 
 #: src/GribSettingsDialog.cpp:811
 msgid "Display Comp. Reflectivity"
-msgstr ""
+msgstr "Vis Komposit Refleksjon"
 
 #: src/GribSettingsDialog.cpp:818 src/GribSettingsDialog.cpp:889
 #: src/GribUIDialogBase.cpp:837
@@ -375,11 +375,11 @@ msgstr "Potensiell konvektiv tilgjengelig energi"
 
 #: src/GribUIDialogBase.cpp:557
 msgid "Comp. Refl."
-msgstr ""
+msgstr "Komp. Refl."
 
 #: src/GribUIDialogBase.cpp:561
 msgid "Composite Reflectivity"
-msgstr ""
+msgstr "Kompositt reflektivitet "
 
 #: src/GribUIDialogBase.cpp:570 src/CursorData.cpp:241
 msgid "Altitude"
@@ -611,7 +611,7 @@ msgstr "GUI"
 #: src/GribUIDialogBase.cpp:1331 src/GribUIDialogBase.cpp:1468
 #: src/GribUIDialogBase.cpp:2000
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: src/GribUIDialogBase.cpp:1414 src/GribUIDialogBase.cpp:1510
 msgid "General Options"
@@ -683,7 +683,7 @@ msgstr "Alternativer for Tid"
 
 #: src/GribUIDialogBase.cpp:1499
 msgid "GRIB PlugIn Preferences"
-msgstr ""
+msgstr "GRIB utvidelse innstillinger"
 
 #: src/GribUIDialogBase.cpp:1590
 msgid "Profile"
@@ -807,7 +807,7 @@ msgstr "Lufttemperatur(2m)"
 
 #: src/GribUIDialogBase.cpp:1889
 msgid "Comp. Reflect."
-msgstr ""
+msgstr "Komp. Refleksj."
 
 #: src/GribUIDialogBase.cpp:1892
 msgid "Sea Temperature(surf.)"
@@ -997,7 +997,7 @@ msgstr "Sjø temp."
 
 #: src/GribTable.cpp:194
 msgid "C. Reflect."
-msgstr ""
+msgstr "K. Refleksj."
 
 #: src/GribTable.cpp:206
 msgid "Current,Dir"
@@ -1168,5 +1168,5 @@ msgstr "Forkortede isobar siffer"
 
 #: src/CursorData.cpp:534
 msgid "Display Iso Reflectivity"
-msgstr ""
+msgstr "Vis Iso Refleksjon"
 

@@ -31,7 +31,9 @@
 #include "chcanv.h"
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "chartimg.h"
-
+#ifdef __OCPN__ANDROID__
+ #include "androidUTIL.h"
+#endif
 #include <algorithm>
 
 #include "s57chart.h"
@@ -1314,6 +1316,14 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
 
+    //  On android, SDK > 29, we require that the directory of charts be "writable"
+    //  as determined by Android Java file system
+#ifdef __OCPN__ANDROID__
+    wxFileName fn(cte.GetFullSystemPath());
+    if (!androidIsDirWritable( fn.GetPath()))
+      continue;
+#endif
+
     if (reference_family != cte.GetChartFamily()) continue;
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
@@ -1380,18 +1390,24 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
           //    same mod time These charts can be in the database due to having
           //    the exact same chart in different directories, as may be desired
           //    for some grouping schemes
+          //    Extended to also check for "identical" charts, having exact same EditionDate
           bool b_noadd = false;
           ChartTableEntry *pn = ChartData->GetpChartTableEntry(i);
           for (unsigned int id = 0; id < m_extended_stack_array.size(); id++) {
             if (m_extended_stack_array[id] != -1) {
               ChartTableEntry *pm =
                   ChartData->GetpChartTableEntry(m_extended_stack_array[id]);
+              bool bsameTime = false;
               if (pm->GetFileTime() && pn->GetFileTime()) {
-                if (labs(pm->GetFileTime() - pn->GetFileTime()) <
-                    60) {  // simple test
+                if (labs(pm->GetFileTime() - pn->GetFileTime()) < 60)
+                  bsameTime = true;
+              }
+              if (pm->GetChartEditionDate() == pn->GetChartEditionDate() )
+                bsameTime = true;
+
+              if (bsameTime) {
                   if (pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
                     b_noadd = true;
-                }
               }
             }
           }

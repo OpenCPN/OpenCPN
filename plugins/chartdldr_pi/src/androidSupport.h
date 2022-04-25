@@ -43,5 +43,8 @@ wxString AndroidGetCacheDir();
 bool AndroidSecureCopyFile(wxString in, wxString out);
 void androidShowBusyIcon();
 void androidHideBusyIcon();
+void androidEnableRotation();
+void androidDisableRotation();
+int androidGetSDKVersion();
 
 #endif

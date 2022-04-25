@@ -35,7 +35,7 @@
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
 #define SCAMIN_MIN \
-  10000  // minimal allowed ScaMin setting. prevents always hiding
+  800  // minimal allowed ScaMin setting. prevents always hiding
 
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"

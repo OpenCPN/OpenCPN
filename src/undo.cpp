@@ -164,8 +164,10 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
     cc->undo->InvalidateRedo();
   }
 
-  if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-    pRouteManagerDialog->UpdateWptListCtrl();
+  if(RouteManagerDialog::getInstanceFlag()){
+    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+      pRouteManagerDialog->UpdateWptListCtrl();
+  }
 
   if (cc->m_routeState > 1) {
     cc->m_routeState--;
