@@ -16663,7 +16663,7 @@
             <radar-prio>On Top</radar-prio>
             <table-name>Simplified</table-name>
             <attrib-code index="0">$SCODEDNGHILIT</attrib-code>
-            <instruction>SY(DNGHILIT))</instruction>
+            <instruction>SY(DNGHILIT)</instruction>
             <display-cat>Mariners</display-cat>
             <comment>53010</comment>
         </lookup>
@@ -30105,7 +30105,7 @@
             <radar-prio>On Top</radar-prio>
             <table-name>Paper</table-name>
             <attrib-code index="0">$SCODEDNGHILIT</attrib-code>
-            <instruction>SY(DNGHILIT))</instruction>
+            <instruction>SY(DNGHILIT)</instruction>
             <display-cat>Mariners</display-cat>
             <comment>53010</comment>
         </lookup>
