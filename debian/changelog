@@ -1,3 +1,18 @@
+opencpn (5.6.2+dfsg-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Remove upstream debian packaging in source tarball.
+  * Add patch for wrong desktop filename (tracker.debian.org warning).
+  * d/rules: Add explicit CMAKE_BUILD_TYPE setting (upstream discussion
+    in https://github.com/OpenCPN/OpenCPN/issues/2612)
+  * d/watch: dfsg1 -> dfsg (lintian warning)
+  * d/control: Add missing -b branch to Vcs-Git:
+  * d/control: Make opencpn-data Multi-arch: foreign (tracker.debian.org
+    warning).
+  * d/copyright: Remove unused GPL-2 license.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 25 Apr 2022 22:44:41 +0200
+
 opencpn (5.6.0+dfsg1-1) unstable; urgency=medium
 
   * New upstream maintenance release
