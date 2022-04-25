@@ -28,7 +28,7 @@
 #ifdef USE_ANDROID_GLES2
 #include "qdebug.h"
 
-#include <gl2.h>
+#include <GLES2/gl2.h>
 
 // Simple colored triangle shader
 

@@ -63,6 +63,7 @@ class ArrayOfCDI;
 extern bool androidUtilInit(void);
 
 extern wxString androidGetDeviceInfo();
+extern void CheckMigrateCharts();
 
 extern bool androidGetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -125,6 +126,7 @@ androidGetSharedDir();  // Used for assets like uidata, s57data, etc
 extern wxString
 androidGetCacheDir();  // Used for raster_texture_cache, mmsitoname.csv, etc
 extern wxString androidGetExtStorageDir();  // Used for Chart storage, typically
+extern wxString androidGetDownloadDirectory();
 
 extern int startAndroidFileDownload(const wxString &url,
                                     const wxString &destination,
@@ -142,8 +144,8 @@ extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
 
-bool androidPlaySound(wxString soundfile, AudioDoneCallback callBack,
-                      void *data);
+class AndroidSound;
+bool androidPlaySound(const wxString soundfile, AndroidSound* sound);
 
 bool androidGetFullscreen();
 bool androidSetFullscreen(bool bFull);
@@ -195,5 +197,83 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
                         unsigned int height);
 
 wxString androidGetAndroidSystemLocale();
+bool androidIsDirWritable( wxString dir );
+wxArrayString GetConfigChartDirectories();
+
+class InProgressIndicator: public wxGauge
+{
+    DECLARE_EVENT_TABLE()
+
+public:
+    InProgressIndicator();
+    InProgressIndicator(wxWindow* parent, wxWindowID id, int range,
+                        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                        long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = "inprogress");
+
+    ~InProgressIndicator();
+
+    void OnTimer(wxTimerEvent &evt);
+    void Start();
+    void Stop();
+
+
+    wxTimer m_timer;
+    int msec;
+    bool m_bAlive;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class MigrateAssistantDialog
+///////////////////////////////////////////////////////////////////////////////
+#define ID_MIGRATE_OK 8791
+#define ID_MIGRATE_CANCEL 8792
+#define ID_MIGRATE_START 8793
+#define ID_MIGRATE_CONTINUE 8794
+#define MIGRATION_STATUS_TIMER 8795
+
+class MigrateAssistantDialog : public wxDialog {
+public:
+  explicit MigrateAssistantDialog(wxWindow *parent,
+                          bool bskipScan,
+                          wxWindowID id = wxID_ANY,
+                          const wxString &caption = wxEmptyString,
+                          const wxPoint &pos = wxDefaultPosition,
+                          const wxSize &size = wxDefaultSize, long style = 0);
+  ~MigrateAssistantDialog(void);
+
+  void CreateControls(void);
+  void OnMigrateCancelClick(wxCommandEvent &event);
+  void OnMigrateOKClick(wxCommandEvent &event);
+  void OnMigrateClick(wxCommandEvent &event);
+  void OnMigrate1Click(wxCommandEvent &event);
+  void OnCtlUpdated(wxCommandEvent &event);
+  void onPermissionGranted(wxString);
+  void setStatus( wxString s ){ m_statusText->SetLabel(s); }
+  void onTimerEvent(wxTimerEvent &event);
+  void FinishMigration();
+
+  wxButton *m_CancelButton, *m_OKButton;
+  wxButton *m_migrateButton, *m_migrateButton1;
+  wxStaticText *m_infoText, *m_infoDirs, *m_migrateStep1, *m_statusText;;
+	wxRadioButton *m_radioSDCard, *m_radioInternal;
+  InProgressIndicator *m_ipGauge;
+  wxStaticBoxSizer *statusSizer;
+
+  wxArrayString m_migrateDirs;
+  wxString m_Status;
+  wxString m_permissionResult;
+  wxTimer m_statusTimer;
+  wxString m_migrateSourceFolder;
+  wxString m_migrateDestinationFolder;  // something like "/storage/emulated/0/Android/data/org.opencpn.opencpn/files/Charts
+                                        // or             "/storage/xxx-yyyy/Android/data/org.opencpn.opencpn/files/Charts
+  bool m_bsdcard;
+  bool m_bskipScan;
+
+private:
+
+  DECLARE_EVENT_TABLE()
+};
+
 
 #endif  // guard

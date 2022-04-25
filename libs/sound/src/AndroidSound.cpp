@@ -25,27 +25,21 @@
 #ifndef OCPN_ANDROID_SOUND
 #define OCPN_ANDROID_SOUND
 
-#include "OCPN_Sound.h"
+#include <thread>
 
-#ifdef __OCPN__ANDROID__
+#include "OCPN_Sound.h"
 
 #include "AndroidSound.h"
 
+AndroidSound::~AndroidSound() {}
 
-AndroidSound::~AndroidSound()
-{
-    Stop();
-}
-
-void AndroidSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
+void AndroidSound::SetFinishedCallback(AudioDoneCallback cb, void* userData) {
     m_onFinished = cb;
     m_callbackData = userData;
 }
 
 
-bool AndroidSound::Load(const char* path, int deviceIndex)
-{
+bool AndroidSound::Load(const char* path, int deviceIndex) {
     m_soundfile = path;
     m_OK = true;
     if (deviceIndex != -1) {
@@ -54,20 +48,37 @@ bool AndroidSound::Load(const char* path, int deviceIndex)
     return true;
 }
 
+bool AndroidSound::canPlay(void) {
+    if (m_isPlaying)
+        wxLogWarning("SystemCmdSound: cannot play: already playing");
+    return m_OK && !m_isPlaying;
+}
 
-bool AndroidSound::Stop(void)
-{
-    //m_OK = false;
+bool AndroidSound::Stop(void) { return false; }
+
+void AndroidSound::OnSoundDone() {
+    std::unique_lock<std::mutex> lock(mtx);
+    if (m_onFinished) m_onFinished(m_callbackData);
+    m_onFinished = 0;
+    m_isPlaying = false;
+    done.notify_one();
+}
+
+bool AndroidSound::Play() {
+    std::unique_lock<std::mutex> lock(mtx);
+    wxLogDebug("AndroidSound::Play()");
+    if (m_isPlaying) {
+        wxLogWarning("AndroidSound: cannot play: already playing");
+        return false;
+    }
+    m_isPlaying = true;
+    bool ok = androidPlaySound(m_soundfile, this);
+    if (!m_onFinished) {
+        wxLogDebug("AndroidSound: waiting for completion");
+        done.wait(lock);
+        return ok;
+    }
     return true;
 }
-
-
-bool AndroidSound::Play(void)
-{
-    return androidPlaySound(m_soundfile, m_onFinished, m_callbackData);
-}
-
-
-#endif                  // __OCPN__ANDROID__
 
 #endif  //  OCPN_ANDROID_SOUND

@@ -5,18 +5,16 @@ if (TARGET ocpn::sound)
 endif ()
 
 if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+    set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
 
 set(SRC
-    src/AndroidSound.cpp
     src/OCPN_Sound.cpp
     src/OcpnWxSound.cpp
     src/SoundFactory.cpp
     src/SoundFileLoader.cpp
     src/SoundLoaderFactory.cpp
     src/SystemCmdSound.cpp
-    include/AndroidSound.h
     include/OCPN_Sound.h
     include/OcpnWxSound.h
     include/SoundFactory.h
@@ -25,14 +23,13 @@ set(SRC
     include/SystemCmdSound.h
 )
 
-#if (NOT wxWidgets_INCLUDE_DIRS)
-#    include(SimpleWxConfig)
-#    SimpleWxConfig()
-#endif ()
-
-IF (WIN32)
+if (WIN32)
     list(APPEND SRC src/MswSound.cpp include/MswSound.h)
-ENDIF ()
+endif ()
+
+if (QT_ANDROID)
+    list(APPEND SRC src/AndroidSound.cpp include/AndroidSound.h)
+endif ()
 
 if (PORTAUDIO_FOUND)
     list(APPEND SRC include/PortAudioSound.h src/PortAudioSound.cpp)
@@ -53,6 +50,7 @@ target_include_directories(SOUND
         ${CMAKE_BINARY_DIR}/include
         ${wxWidgets_INCLUDE_DIRS}
         ${CMAKE_CURRENT_BINARY_DIR}/../../include
+        ${CMAKE_CURRENT_BINARY_DIR}/../../../include
 )
 
 target_link_libraries(SOUND PRIVATE "${SOUND_SUPPORT_LIBS}")

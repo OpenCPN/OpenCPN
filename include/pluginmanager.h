@@ -91,18 +91,20 @@ typedef struct {
               // it and just warn the user
   bool all_lower;  // if true, blacklist also all the lower versions of the
                    // plugin
+  bool mute_dialog;  // if true, don't warn the user by dialog.
 } BlackListedPlugin;
 
 const BlackListedPlugin PluginBlacklist[] = {
-    {_T("aisradar_pi"), 0, 95, true, true},
-    {_T("radar_pi"), 0, 95, true, true},  // GCC alias for aisradar_pi
-    {_T("watchdog_pi"), 1, 00, true, true},
-    {_T("squiddio_pi"), 0, 2, true, true},
-    {_T("objsearch_pi"), 0, 3, true, true},
+    {_T("aisradar_pi"), 0, 95, true, true, false},
+    {_T("radar_pi"), 0, 95, true, true, false},  // GCC alias for aisradar_pi
+    {_T("watchdog_pi"), 1, 00, true, true, false},
+    {_T("squiddio_pi"), 0, 2, true, true, false},
+    {_T("objsearch_pi"), 0, 3, true, true, false},
 #ifdef __WXOSX__
-    {_T("s63_pi"), 0, 6, true, true},
+    {_T("s63_pi"), 0, 6, true, true, false},
 #endif
-    {_T("oesenc_pi"), 4, 2, true, true},
+    {_T("oesenc_pi"), 4, 3, true, true, true},
+    {_T("oernc_pi"), 1, 2, true, true, true},
 
 };
 

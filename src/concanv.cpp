@@ -83,6 +83,10 @@ ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
 
   long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
+#ifdef __WXMSW__
+  style |= wxFRAME_NO_TASKBAR;
+#endif
+
   wxFrame::Create(frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
                   style);
 
@@ -396,7 +400,7 @@ void ConsoleCanvas::UpdateRouteData() {
 
         if (speed > 0.) {
           // Show date, e.g. Feb 15, if TTG > 24 h
-          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%e/%m %H:%M"))
+          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%d/%m %H:%M"))
                                             : eta.Format(_T("%H:%M"));
         } else {
           seta = _T("---");

@@ -35,6 +35,8 @@
 #include <QtAndroidExtras/QAndroidJniObject>
 #include "qdebug.h"
 
+extern int g_Android_SDK_Version;
+
 extern JavaVM *java_vm;  // found in androidUtil.cpp, accidentally exported....
 extern JNIEnv *jenv;
 
@@ -368,3 +370,30 @@ void androidHideBusyIcon() {
 
   b_androidBusyShown = false;
 }
+
+void androidEnableRotation(void) {
+  callActivityMethod_vs("EnableRotation");
+}
+
+void androidDisableRotation(void) {
+  callActivityMethod_vs("DisableRotation");
+}
+
+int androidGetSDKVersion() {
+  wxString deviceInfo = callActivityMethod_vs("getDeviceInfo");
+  wxStringTokenizer tkz(deviceInfo, _T("\n"));
+  while (tkz.HasMoreTokens()) {
+    wxString s1 = tkz.GetNextToken();
+    if (wxNOT_FOUND != s1.Find(_T("OS API Level"))) {
+      int a = s1.Find(_T("{"));
+      if (wxNOT_FOUND != a) {
+        wxString b = s1.Mid(a + 1, 2);
+        long SDK;
+        b.ToLong(&SDK);
+        g_Android_SDK_Version = SDK;
+      }
+    }
+  }
+  return g_Android_SDK_Version;
+}
+
