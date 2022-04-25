@@ -9,7 +9,8 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
-	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+   	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
 	    -DCMAKE_INSTALL_PREFIX=/usr \
 	    -DCMAKE_INSTALL_LIBDIR=/usr/lib \
             -DBUILD_SHARED_LIBS=OFF \
