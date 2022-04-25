@@ -128,7 +128,7 @@ Copyright: 2008, Jacques Zaninetti - http://www.zygrib.org
 License: GPL-2+
 
 Files: include/macutils.h
-Copyright:  2007-2010 David S. Register
+Copyright: 2007-2010 David S. Register
   2007-2010 Richard M Smith
 License: GPL-2+
 
@@ -1020,7 +1020,7 @@ License: Expat
 Comment: https://geographiclib.sourceforge.io/
 
 Files: src/gshhs.cpp
-Copyright:  2008, Jacques Zaninetti
+Copyright: 2008, Jacques Zaninetti
   2012, David S. Register
 License: GPL-2+
 
@@ -1091,19 +1091,6 @@ License: Expat
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
 
-License: GPL-2
- This software is Copyright (c) 2021 by X. Ample.
- .
- This is free software, licensed under:
- .
-   The GNU General Public License, Version 2, June 1991
- .
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; version 2 dated June, 1991.
- On Debian systems, the complete text of version 2 of the GNU General
- Public License can be found in '/usr/share/common-licenses/GPL-2'.
-
 License: GPL-2+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1122,7 +1109,6 @@ License: GPL-3
  On Debian systems, the full text of the GNU General Public
  License version 3 can be found in the file
  `/usr/share/common-licenses/GPL-3'.
-
 
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
