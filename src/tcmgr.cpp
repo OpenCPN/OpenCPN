@@ -7345,8 +7345,9 @@ NV_U_INT32 bit_unpack(NV_U_BYTE buffer[], NV_U_INT32 start,
 
     /*  For the last byte we mask out anything after the end bit and    */
     /*  then shift to the right (8 - end_bit) bits.                     */
-
-    value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
+    if (mask[end_bit]) {
+      value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
+    }
   }
 
   return (value);
