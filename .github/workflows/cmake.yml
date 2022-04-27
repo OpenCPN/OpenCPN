@@ -29,6 +29,9 @@ jobs:
           - name: Ubuntu latest wxGTK 3
             runner: ubuntu-latest
             cmake_generator: Unix Makefiles
+          - name: Ubuntu 18.04 wxGTK 3
+            runner: ubuntu-18.04
+            cmake_generator: Unix Makefiles
           - name: macOS latest Homebrew wxOSX
             runner: macos-12
             cmake_generator: Xcode
