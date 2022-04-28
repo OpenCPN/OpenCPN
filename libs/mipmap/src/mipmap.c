@@ -135,15 +135,18 @@ void MipMap_ResolveRoutines()
     //  Detect Features
     if (nIds >= 0x00000001) {
         cpuid(info,0x00000001);
-
-        if(info[3] & bit_SSE2)
-            MipMap_32 = MipMap_32_sse2;
-        else
+#if defined(__SSE__)
         if(info[3] & bit_SSE)
             MipMap_32 = MipMap_32_sse;
-
+#endif
+#if defined(__SSE2__)
+        if(info[3] & bit_SSE2)
+            MipMap_32 = MipMap_32_sse2;
+#endif
+#if defined(__SSE3__)
         if(info[2] & bit_SSSE3)
             MipMap_24 = MipMap_24_ssse3;
+#endif
     }
 
 #if defined(__AVX2__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700))
