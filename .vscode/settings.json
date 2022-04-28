@@ -2,20 +2,21 @@
     "files.associations": {
         "condition_variable": "cpp"
     },
-    
+
        "C_Cpp.default.includePath": [
         ".",
-        "/usr/include", 
+        "/usr/include",
         "include",
         "/usr/include/wx-3.1",
+        "/usr/local/include/wx-3.1",
+        "/usr/include/wx-3.0",
+        "/usr/local/include/wx-3.0",
         "build/include",
         "libs/nmea0183/src",
         "libs/gdal/include",
         "libs/sound/include",
         "libs/iso8211/include",
         "libs/wxcurl/include",
-        "libs/wxJSON/include",
-    ],
+        "libs/wxJSON/include"
+    ]
 }
-
-
