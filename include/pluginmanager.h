@@ -43,6 +43,7 @@
 #include "OCPN_Sound.h"
 #include "chartimg.h"
 #include "catalog_parser.h"
+#include "plugin_blacklist.h"
 
 #include "s57chart.h"  // for Object list
 #include "semantic_vers.h"
@@ -82,31 +83,6 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
 class PluginListPanel;
 class PluginPanel;
 class pluginUtilHandler;
-
-typedef struct {
-  wxString name;      // name of the plugin
-  int version_major;  // major version
-  int version_minor;  // minor version
-  bool hard;  // hard blacklist - if true, don't load it at all, if false, load
-              // it and just warn the user
-  bool all_lower;  // if true, blacklist also all the lower versions of the
-                   // plugin
-  bool mute_dialog;  // if true, don't warn the user by dialog.
-} BlackListedPlugin;
-
-const BlackListedPlugin PluginBlacklist[] = {
-    {_T("aisradar_pi"), 0, 95, true, true, false},
-    {_T("radar_pi"), 0, 95, true, true, false},  // GCC alias for aisradar_pi
-    {_T("watchdog_pi"), 1, 00, true, true, false},
-    {_T("squiddio_pi"), 0, 2, true, true, false},
-    {_T("objsearch_pi"), 0, 3, true, true, false},
-#ifdef __WXOSX__
-    {_T("s63_pi"), 0, 6, true, true, false},
-#endif
-    {_T("oesenc_pi"), 4, 3, true, true, true},
-    {_T("oernc_pi"), 1, 2, true, true, true},
-
-};
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
@@ -258,6 +234,8 @@ WX_DEFINE_ARRAY_PTR(PlugInToolbarToolContainer *, ArrayOfPlugInToolbarTools);
 //
 //-----------------------------------------------------------------------------------------------------
 
+class BlacklistUI;
+
 class PlugInManager : public wxEvtHandler {
 public:
   PlugInManager(MyFrame *parent);
@@ -356,6 +334,7 @@ public:
   void SendSKConfigToAllPlugIns();
 
   void UpdateManagedPlugins();
+  bool CheckBlacklistedPlugin(const PluginMetadata plugin);
 
   wxArrayString GetPlugInChartClassNameArray(void);
 
@@ -378,7 +357,9 @@ public:
       ChartPlugInWrapper *target, float zlat, float zlon, const ViewPort &vp);
 
 private:
+  bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin *plugin);
+
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);
   bool UpDateChartDataTypes(void);
@@ -387,6 +368,7 @@ private:
   void ProcessLateInit(PlugInContainer *pic);
 
   MyFrame *pParent;
+  std::unique_ptr<BlacklistUI> m_blacklist_ui;
 
   ArrayOfPlugIns plugin_array;
   wxString m_last_error_string;
@@ -400,16 +382,13 @@ private:
   int m_plugin_menu_item_id_next;
   wxBitmap m_cached_overlay_bm;
 
-  bool m_benable_blackdialog;
-  bool m_benable_blackdialog_done;
-  wxArrayString m_deferred_blacklist_messages;
-
   wxArrayString m_plugin_order;
   void SetPluginOrder(wxString serialized_names);
   wxString GetPluginOrder();
 
   pluginUtilHandler *m_utilHandler;
   PluginListPanel *m_listPanel;
+  std::unique_ptr<AbstractBlacklist> m_blacklist; 
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL

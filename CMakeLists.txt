@@ -872,6 +872,7 @@ set(
   include/options.h
   include/piano.h
   include/plugin_cache.h
+  include/plugin_blacklist.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -1007,6 +1008,7 @@ set(
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
+  src/plugin_blacklist.cpp
   src/plugin_cache.cpp
   src/printtable.cpp
   src/pugixml.cpp
