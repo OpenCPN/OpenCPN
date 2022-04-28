@@ -264,8 +264,8 @@ if (NOT OCPN_CI_BUILD)
         add_custom_command(
           TARGET ${PACKAGE_NAME} POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
-          COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-          COMMAND ${CMAKE_COMMAND} -E copy "$(OutputPath)/$(TargetName).pdb" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+          COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+          COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>" "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
         )
       endif ()
   endif (MSVC)
