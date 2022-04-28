@@ -10,7 +10,7 @@ GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
 RSYNC_RSH       ?= ssh
-RSYNC_HOST      ?= mumin.crabdance.com
+RSYNC_HOST      ?= opencpnci@ocpnci.kalian.cz
 REPO_URL        ?= http://opencpn.duckdns.org/opencpn
 
 all: build sign
