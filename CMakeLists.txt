@@ -229,20 +229,21 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 else ()
   set(BUNDLED_LIBS_DEFAULT "OFF")
 endif ()
-set(
-  OCPN_USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT}
-  CACHE
-    STRING
-    "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
+set(OCPN_USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT} CACHE STRING
+  "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
 )
-
+set(OCPN_RELEASE "" CACHE STRING
+  "Hardcoded value for build number when using OCPN_CI_BUILD"
+)
 option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
 option(OCPN_USE_SVG "Use SVG graphics" ON)
 option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
-option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the system on MacOS" ON)
+option(OCPN_USE_SYSTEM_LIBARCHIVE
+  "Use the libarchive version provided by the system on MacOS" ON
+)
 
 if (WIN32)
   set(cmd_snd_default OFF)
@@ -532,6 +533,9 @@ if (OCPN_CI_BUILD)
   today(DATE)
   commit_id(COMMIT)
   build_num(BUILD_NUMBER)
+  if (NOT "${OCPN_RELEASE}" STREQUAL "")
+    set(BUILD_NUMBER ${OCPN_RELEASE})
+  endif ()
   set(VERSION_TAIL "+${COMMIT}")
   if (NOT "${BUILD_NUMBER}" STREQUAL "")
       set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
