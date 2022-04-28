@@ -1,3 +1,6 @@
+# Copyright (c) 2019 Alec Leamas
+# License: wxWidgets license
+
 cmake_minimum_required(VERSION 3.1)
 
 if (TARGET ocpn::wxsvg)
