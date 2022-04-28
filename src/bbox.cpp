@@ -266,39 +266,6 @@ wxBoundingBox& wxBoundingBox::operator=(const wxBoundingBox& other) {
   return *this;
 }
 
-void wxBoundingBox::MapBbox(const wxTransformMatrix& matrix) {
-  assert(m_validbbox == TRUE);
-
-  double x1, y1, x2, y2, x3, y3, x4, y4;
-
-  matrix.TransformPoint(m_minx, m_miny, x1, y1);
-  matrix.TransformPoint(m_minx, m_maxy, x2, y2);
-  matrix.TransformPoint(m_maxx, m_maxy, x3, y3);
-  matrix.TransformPoint(m_maxx, m_miny, x4, y4);
-
-  double xmin = wxMin(x1, x2);
-  xmin = wxMin(xmin, x3);
-  xmin = wxMin(xmin, x4);
-
-  double xmax = wxMax(x1, x2);
-  xmax = wxMax(xmax, x3);
-  xmax = wxMax(xmax, x4);
-
-  double ymin = wxMin(y1, y2);
-  ymin = wxMin(ymin, y3);
-  ymin = wxMin(ymin, y4);
-
-  double ymax = wxMax(y1, y2);
-  ymax = wxMax(ymax, y3);
-  ymax = wxMax(ymax, y4);
-
-  // Use these min and max values to set the new boundingbox
-  m_minx = xmin;
-  m_miny = ymin;
-  m_maxx = xmax;
-  m_maxy = ymax;
-}
-
 //----------------------------------------------------------------
 //    LLBBox Implementation
 //----------------------------------------------------------------
