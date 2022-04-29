@@ -1,42 +1,36 @@
 #!/usr/bin/env bash
 
 #
-# Build the travis flatpak artifacts.
+# Build the circleci flatpak artifacts.
 #
-
-# bailout on errors and echo commands.
 set -xe
 if [ -z "$FLATPAK_KEY" ]; then
     echo "Reguired \$FLATPAK_KEY not found, giving up"
     exit 1
 fi
 
-set -xe
-
 # The flatpak manifest is setup to build the master branch. If we are
 # on another branch, make it match the manifest. However, unless
 # FP_BUILD_ORIGINAL_BRANCH is set, this is not used anyway since the
 # default master branch from main github repo is used then.
-
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 if [ "$current_branch" != "master" ]; then
     git branch -m $current_branch master
 fi
 
+# Use most updated flatpak PPA
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
     | sudo apt-key add -
 sudo apt-key adv \
     --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
-
 sudo add-apt-repository -y ppa:alexlarsson/flatpak
-sudo apt update -y
+sudo apt update -q -y
 
 # Avoid using outdated TLS certificates, see #2419.
 sudo apt install --reinstall  ca-certificates
 
 # Install required packages
 sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2
-
 
 # Set up flatpak
 runtime=$(sed -n '/runtime-version/s/.*://p' flatpak/org.opencpn.OpenCPN.yaml)
@@ -80,7 +74,6 @@ rsync -a --info=stats --delete-after \
     --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
     website/  opencpnci@ocpnci.kalian.cz:web/flatpak-repo
 rm -f .ssh/id_opencpn*
-
 
 # Restore the patched file so the caching works.
 git checkout ../flatpak/org.opencpn.OpenCPN.yaml
