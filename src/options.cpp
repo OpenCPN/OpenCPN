@@ -8127,7 +8127,7 @@ void options::AddChartDir(const wxString& dir) {
   }
 
   ChartDirInfo cdi;
-  cdi.fullpath = dir;
+  cdi.fullpath = dirAdd;
   ActiveChartArray.Add(cdi);
 
   UpdateChartDirList();
