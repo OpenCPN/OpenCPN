@@ -203,6 +203,8 @@ enum {
   ID_DBP_I_GPSLCL,
   ID_DBP_I_CPULCL,
   ID_DBP_I_SUNLCL,
+  ID_DBP_I_ALTI,
+  ID_DBP_D_ALTI,
   ID_DBP_LAST_ENTRY  // this has a reference in one of the routines; defining a
                      // "LAST_ENTRY" and setting the reference to it, is one
                      // codeline less to change (and find) when adding new
@@ -251,6 +253,10 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("App. Wind Speed");
     case ID_DBP_D_TW:
       return _("True Wind Angle & Speed");
+    case ID_DBP_I_ALTI:
+      return _("Altitude");
+    case ID_DBP_D_ALTI:
+      return _("Altitude Trace");
     case ID_DBP_I_DPT:
       return _("Depth");
     case ID_DBP_D_DPT:
@@ -351,6 +357,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_I_FOS:
     case ID_DBP_I_PITCH:
     case ID_DBP_I_HEEL:
+    case ID_DBP_I_ALTI:
       item.SetImage(0);
       break;
     case ID_DBP_D_SOG:
@@ -370,6 +377,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_D_MON:
     case ID_DBP_D_WDH:
     case ID_DBP_D_BPH:
+    case ID_DBP_D_ALTI:
       item.SetImage(1);
       break;
   }
@@ -848,6 +856,22 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
     // TODO: GBS - GPS Satellite fault detection
     else if (m_NMEA0183.LastSentenceIDReceived == _T("GGA")) {
+      if (0)  // debug output
+        printf("GGA mPriPosition=%d mPriSatUsed=%d \tnSat=%d alt=%3.2f\n",
+                mPriPosition, mPriSatUsed,
+                m_NMEA0183.Gga.NumberOfSatellitesInUse,
+                m_NMEA0183.Gga.AntennaAltitudeMeters);
+      if (mPriPosition >= 1 || mPriSatUsed >= 1) {
+        if (m_NMEA0183.Parse()) {
+          if (m_NMEA0183.Gga.GPSQuality > 0 &&
+              m_NMEA0183.Gga.NumberOfSatellitesInUse >= 5) {
+            // Altimeter, takes altitude from gps GGA message, which is
+            // typically less accurate than lon and lat.
+            double alt = m_NMEA0183.Gga.AntennaAltitudeMeters;
+            SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, alt, _T("m"));
+          }
+        }
+      }
       if (mPriPosition >= 4 || mPriSatUsed >= 3) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gga.GPSQuality > 0) {
@@ -4244,6 +4268,15 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list) {
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionExtraValue(OCPN_DBP_STC_TWS2, _T("%.1f"),
                                   DIAL_POSITION_INSIDE);
+        break;
+      case ID_DBP_I_ALTI:
+        instrument = new DashboardInstrument_Single(
+            this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_ALTI,
+            _T("%6.1f"));
+        break;
+      case ID_DBP_D_ALTI:
+        instrument = new DashboardInstrument_Altitude(this, wxID_ANY,
+                                                   getInstrumentCaption(id));
         break;
       case ID_DBP_I_DPT:
         instrument = new DashboardInstrument_Single(

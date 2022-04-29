@@ -280,7 +280,7 @@ public:
     vbox->Add(1, 1, 1, wxEXPAND);  // Expanding, stretchable spacer
     m_info_btn = new UpdateWebsiteButton(this, plugin->info_url.c_str());
     m_info_btn->Hide();
-    vbox->Add(m_info_btn, flags.DoubleBorder().Bottom().Right());
+    vbox->Add(m_info_btn, flags.DoubleBorder().Right());
     SetSizer(vbox);
     Fit();
   }
@@ -408,7 +408,7 @@ public:
     auto butt_box = new wxBoxSizer(wxHORIZONTAL);
     auto cancel_btn = new wxButton(this, wxID_CANCEL, _("Dismiss"));
     butt_box->Add(1, 1, 1, wxEXPAND);  // Expanding, stretchable spacer
-    butt_box->Add(cancel_btn, wxSizerFlags().Right().Border());
+    butt_box->Add(cancel_btn, wxSizerFlags().Border());
     box->Add(butt_box, wxSizerFlags().Proportion(0).Expand());
 
     SetSizer(box);
@@ -431,7 +431,8 @@ public:
     for (auto plugin : m_updates) {
       grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
       auto buttons = new CandidateButtonsPanel(this, &plugin);
-      PluginTextPanel* tpanel = new PluginTextPanel(this, &plugin, buttons, m_updates.size() > 1);
+      PluginTextPanel* tpanel =
+          new PluginTextPanel(this, &plugin, buttons, m_updates.size() > 1);
       tpanel->m_isDesc = true;
       grid->Add(tpanel, flags.Proportion(1).Right());
       grid->Add(buttons, flags.DoubleBorder());

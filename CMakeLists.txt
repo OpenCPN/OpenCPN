@@ -229,20 +229,21 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 else ()
   set(BUNDLED_LIBS_DEFAULT "OFF")
 endif ()
-set(
-  OCPN_USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT}
-  CACHE
-    STRING
-    "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
+set(OCPN_USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT} CACHE STRING
+  "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
 )
-
+set(OCPN_RELEASE "" CACHE STRING
+  "Hardcoded value for build number when using OCPN_CI_BUILD"
+)
 option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
 option(OCPN_USE_SVG "Use SVG graphics" ON)
 option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
-option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the system on MacOS" ON)
+option(OCPN_USE_SYSTEM_LIBARCHIVE
+  "Use the libarchive version provided by the system on MacOS" ON
+)
 
 if (WIN32)
   set(cmd_snd_default OFF)
@@ -532,6 +533,9 @@ if (OCPN_CI_BUILD)
   today(DATE)
   commit_id(COMMIT)
   build_num(BUILD_NUMBER)
+  if (NOT "${OCPN_RELEASE}" STREQUAL "")
+    set(BUILD_NUMBER ${OCPN_RELEASE})
+  endif ()
   set(VERSION_TAIL "+${COMMIT}")
   if (NOT "${BUILD_NUMBER}" STREQUAL "")
       set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
@@ -758,7 +762,7 @@ if (GTK3_FOUND)
     }
   ]=])
   set (TRY_COMPILE
-    "echo '${_VERSPROG}' > wx-32.c; cc $(wx-config --cflags) wx-32.c; ./a.out")
+    "echo '${_VERSPROG}' > wx-32.c; cc $(${wxWidgets_CONFIG_EXECUTABLE} --cflags) wx-32.c; ./a.out")
   execute_process(
     COMMAND "/bin/sh" "-c" "${TRY_COMPILE}"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -872,6 +876,7 @@ set(
   include/options.h
   include/piano.h
   include/plugin_cache.h
+  include/plugin_blacklist.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -1007,6 +1012,7 @@ set(
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
+  src/plugin_blacklist.cpp
   src/plugin_cache.cpp
   src/printtable.cpp
   src/pugixml.cpp
@@ -1705,7 +1711,9 @@ endif (UNIX AND NOT APPLE)
 include(TargetSetup)
 if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   if (${PKG_TARGET_VERSION} VERSION_LESS 22.04)
-    string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
+    if (NOT ${PKG_TARGET} MATCHES "-gtk3")
+      string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
+    endif ()
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
@@ -2841,8 +2849,8 @@ if (MSVC)
   add_custom_command(
     TARGET ${PACKAGE_NAME} POST_BUILD
     COMMAND
-    cmake -E copy "${CMAKE_BINARY_DIR}/$<CONFIG>/opencpn.pdb"
-    "${CMAKE_BINARY_DIR}/$<CONFIG>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+    cmake -E copy "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+          "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
 

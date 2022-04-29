@@ -1,0 +1,99 @@
+---
+# yamllint disable rule:line-length
+name: CMake
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'buildandroid/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - 'buildandroid/**'
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu latest wxGTK 3
+            runner: ubuntu-latest
+            cmake_generator: Unix Makefiles
+          - name: Ubuntu 18.04 wxGTK 3
+            runner: ubuntu-18.04
+            cmake_generator: Unix Makefiles
+          - name: macOS latest Homebrew wxOSX
+            runner: macos-12
+            cmake_generator: Xcode
+            cmake_defines: -DCMAKE_CXX_STANDARD=11
+            use_homebrew: 1
+          - name: macOS 11 wxOSX
+            runner: macos-11
+            cmake_generator: Xcode
+            cmake_defines: -DCMAKE_CXX_STANDARD=11 -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010"
+          - name: macOS 10.15 wxOSX
+            runner: macos-10.15
+            cmake_generator: Xcode
+            cmake_defines: -DCMAKE_CXX_STANDARD=11 -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010"
+          # Prepare for the moment when we do not need Windows XP support anymore (v141_xp toolcahin not available in VS 2022 builders anymore, so we can't link against our usual dependency bundle)
+          # - name: Windows MSVC
+          #   runner: windows-latest
+          #   no_sudo: 1
+          #   cmake_defines: -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_COMPILER=cl.exe -DCMAKE_CXX_COMPILER=cl.exe
+          #   cmake_generator: Ninja
+
+    env:
+      wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
+
+    # Use bash as the shell, even under MSW where the default is PowerShell.
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Before build
+        run: |
+          ./ci/github-pre-build.sh
+        env:
+          USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
+
+      # required for CMake to find Ninja
+      - name: "[Windows] Set up MSVC Developer Command Prompt"
+        if: runner.os == 'Windows'
+        uses: seanmiddleditch/gha-setup-vsdevenv@v3
+        with:
+          host_arch: x86
+          arch: win32
+
+      - name: "[Windows] Dependencies, configure, build"
+        if: runner.os == 'Windows'
+        run: |
+          call ci/github-win_deps.bat
+          wget https://download.opencpn.org/s/i3QdxibNL732mgJ/download -O OpenCPN_buildwin-4.99c.7z
+          7z x -y OpenCPN_buildwin-4.99c.7z -obuildwin
+          cmake -A win32 -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{ matrix.cmake_defines }}
+          cmake --build build
+        shell: cmd
+
+      - name: Configure CMake
+        if: runner.os != 'Windows'
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{ matrix.cmake_defines }}
+
+      - name: Build
+        if: runner.os != 'Windows'
+        run: cmake --build build --config ${{env.BUILD_TYPE}}
+...
