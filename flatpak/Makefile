@@ -11,7 +11,7 @@ DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
 RSYNC_RSH       ?= ssh
 RSYNC_HOST      ?= opencpnci@ocpnci.kalian.cz
-REPO_URL        ?= http://opencpn.duckdns.org/opencpn
+REPO_URL        ?= https://flatpak.ocpnci.kalian.cz
 
 all: build sign
 
@@ -19,9 +19,9 @@ build:
 	flatpak-builder --repo=$(CURDIR)/repo --force-clean \
 	    --default-branch=devel \
 	    app ../flatpak/org.opencpn.OpenCPN.yaml
-	-flatpak uninstall --user -y org.opencpn.OpenCPN.Locale
+	-flatpak uninstall --user -y org.opencpn.OpenCPN.Locale//devel
 	flatpak install -y --user --reinstall \
-	    $(CURDIR)/repo org.opencpn.OpenCPN
+	    $(CURDIR)/repo org.opencpn.OpenCPN//devel
 
 install: .phony
 	rm -rf $(DESTDIR); mkdir $(DESTDIR)
