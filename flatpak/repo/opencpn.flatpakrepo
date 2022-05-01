@@ -1,7 +1,7 @@
 [Flatpak Repo]
 Title=OpenCPN - Concise ChartPLotter - Upstream repository
 Description=Repository for opencpn app and plugins
-Url=http://opencpn.duckdns.org/opencpn/repo
+Url=https://flatpak.ocpnci.kalian.cz
 Homepage=https://opencpn.org
 Comment=Repository for opencpn app and plugins
 Icon=https://opencpn.org/OpenCPN/assets/img/logoOriginal.png
