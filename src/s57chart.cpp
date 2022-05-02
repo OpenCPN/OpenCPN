@@ -133,6 +133,7 @@ WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(ListOfS57Obj);  // Implement a list of S57 Objects
+WX_DEFINE_LIST(ListOfPI_S57Obj); 
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 
