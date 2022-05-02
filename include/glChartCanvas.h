@@ -94,7 +94,7 @@ class ChartCanvas;
 #define GESTURE_FINISH_TIMER 78336
 #define TEX_FADE_TIMER 78337
 
-typedef class {
+class OCPN_GLCaps {
 public:
   wxString Renderer;
   GLenum TextureRectangleFormat;
@@ -124,7 +124,7 @@ public:
   PFNGLCOMPRESSEDTEXIMAGE2DPROC m_glCompressedTexImage2D;
   PFNGLGETCOMPRESSEDTEXIMAGEPROC m_glGetCompressedTexImage;
 
-} OCPN_GLCaps;
+};
 
 void GetglEntryPoints(OCPN_GLCaps *pcaps);
 GLboolean QueryExtension(const char *extName);
