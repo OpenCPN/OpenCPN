@@ -6024,7 +6024,7 @@ void cm93compchart::UpdateLUPs(s57chart *pOwner) {
   }
 }
 
-ListOfS57Obj *cm93compchart::GetAssociatedObjects(S57Obj *obj) {
+std::list<S57Obj*> *cm93compchart::GetAssociatedObjects(S57Obj *obj) {
   if (m_pcm93chart_current)
     return m_pcm93chart_current->GetAssociatedObjects(obj);
   else

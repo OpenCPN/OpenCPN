@@ -132,7 +132,6 @@ static jmp_buf env_ogrf;  // the context saved by setjmp();
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST(ListOfS57Obj);  // Implement a list of S57 Objects
 WX_DEFINE_LIST(ListOfPI_S57Obj); 
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
@@ -3364,12 +3363,11 @@ bool s57chart::GetNearestSafeContour(double safe_cnt, double &next_safe_cnt) {
  --------------------------------------------------------------------------
  */
 
-ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj) {
+std::list<S57Obj*> *s57chart::GetAssociatedObjects(S57Obj *obj) {
   int disPrioIdx;
   bool gotit;
 
-  ListOfS57Obj *pobj_list = new ListOfS57Obj;
-  pobj_list->Clear();
+  std::list<S57Obj*> *pobj_list = new std::list<S57Obj*>();
 
   double lat, lon;
   fromSM((obj->x * obj->x_rate) + obj->x_origin,
@@ -3394,7 +3392,7 @@ ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj) {
         if (top->obj->bIsAssociable) {
           if (top->obj->BBObj.Contains(lat, lon)) {
             if (IsPointInObjArea(lat, lon, 0.0, top->obj)) {
-              pobj_list->Append(top->obj);
+              pobj_list->push_back(top->obj);
               gotit = true;
               break;
             }
@@ -3411,7 +3409,7 @@ ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj) {
           if (top->obj->bIsAssociable) {
             if (top->obj->BBObj.Contains(lat, lon)) {
               if (IsPointInObjArea(lat, lon, 0.0, top->obj)) {
-                pobj_list->Append(top->obj);
+                pobj_list->push_back(top->obj);
                 break;
               }
             }
