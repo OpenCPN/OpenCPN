@@ -195,6 +195,7 @@ private:
   }
 
 public:
+
   virtual plug_data get_library_data(const std::string library_file) {
     std::string filename(normalize_lib(library_file));
     auto found = find_block(filename);

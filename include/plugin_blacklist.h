@@ -67,6 +67,7 @@ typedef struct plug_data {
  */
 class AbstractBlacklist {
 public:
+  virtual ~AbstractBlacklist() = default;
 
   /** Return status for given official plugin name and version. */
   virtual plug_status get_status(const std::string& name,
@@ -86,7 +87,6 @@ public:
 
   /** Return plugin-specific message, possibly "". */
   virtual std::string get_message(plug_status sts, const plug_data& data) = 0;
-
 };
 
 std::unique_ptr<AbstractBlacklist> blacklist_factory();
