@@ -3160,9 +3160,7 @@ void cm93chart::translate_colmar(const wxString &sclass,
     free(pattValTmp->value);  // free the old int pointer
 
     pattValTmp->valType = OGR_STR;
-    pattValTmp->value =
-        (char *)malloc(lstring.Len() + 1);  // create a new Lstring attribute
-    strcpy((char *)pattValTmp->value, lstring.mb_str());
+    pattValTmp->value = strdup(lstring.mb_str());
   }
 }
 
@@ -3283,19 +3281,13 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
         break;
 
       case 'S':
-        nlen = strlen((const char *)aval);
-        pAVS = (char *)malloc(nlen + 1);
-        ;
-        strcpy(pAVS, (char *)aval);
+        pAVS = strdup((char*)aval);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
 
       case 'C':
-        nlen = strlen((const char *)&aval[3]);
-        pAVS = (char *)malloc(nlen + 1);
-        ;
-        strcpy(pAVS, (const char *)&aval[3]);
+        pAVS = strdup((const char*)&aval[3]);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
@@ -3310,10 +3302,7 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
         }
         if (strlen(val)) val[strlen(val) - 1] = 0;  // strip last ","
 
-        int nlen = strlen(val);
-        pAVS = (char *)malloc(nlen + 1);
-        ;
-        strcpy(pAVS, val);
+        pAVS = strdup(val);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
@@ -3352,10 +3341,7 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
       int v = *(int *)pattValTmp->value;
       free(pattValTmp->value);
       sprintf(val, "%d", v);
-      int nlen = strlen(val);
-      pAVS = (char *)malloc(nlen + 1);
-      ;
-      strcpy(pAVS, val);
+      pAVS = strdup(val);
       pattValTmp->valType = OGR_STR;
       pattValTmp->value = pAVS;
     }
@@ -3365,8 +3351,7 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
         sattr.IsSameAs(_T ( "$SCODE" ))) {
       if (!strcmp((char *)pattValTmp->value, "II25")) {
         free(pattValTmp->value);
-        pattValTmp->value = (char *)malloc(strlen("BACKGROUND") + 1);
-        strcpy((char *)pattValTmp->value, "BACKGROUND");
+        pattValTmp->value = strdup("BACKGROUND");
       }
     }
 
