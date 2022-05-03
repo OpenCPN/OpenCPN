@@ -874,7 +874,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
   int sub_menu = 0;
   if (!g_bBasicMenus && menuFocus != contextMenu) {
-    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK ||
+    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK &&
                    global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT ){
       menuFocus->AppendSeparator();
     }
