@@ -694,9 +694,7 @@ static void *DEPARE01(void *param) {
 
   rule_str.Append('\037');
 
-  char *r = (char *)malloc(rule_str.Len() + 1);
-  strcpy(r, rule_str.mb_str());
-  return r;
+  return strdup(rule_str.mb_str());
 }
 /*
 static void *DEPCNT02A(void *param)
@@ -922,9 +920,7 @@ while (NULL != (geoTmp = S57_nextObj(geoTmp))) {
 
   rule_str.Append('\037');
 
-  char *r = (char *)malloc(rule_str.Len() + 1);
-  strcpy(r, rule_str.mb_str());
-  return r;
+  return strdup(rule_str.mb_str());
 
   //            return depcnt02;
 }
