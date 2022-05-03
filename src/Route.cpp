@@ -1093,6 +1093,7 @@ void Route::UpdateSegmentDistance(RoutePoint *prp0, RoutePoint *prp,
             m_PlannedDeparture + wxTimeSpan(0, 0, m_route_time - duration);
       }
     }
+
     prp->m_seg_eta = prp0->GetETD() + ts;
     if (!prp->m_manual_etd || !prp->GetETD().IsValid()) {
       prp->m_seg_etd = prp->m_seg_eta;
@@ -1114,8 +1115,10 @@ void Route::UpdateSegmentDistances(double planspeed) {
   wxRoutePointListNode *node = pRoutePointList->GetFirst();
 
   if (node) {
+    //  Route start point
     RoutePoint *prp0 = node->GetData();
     if (!prp0->m_manual_etd) {
+      prp0->m_seg_eta = m_PlannedDeparture;
       prp0->m_seg_etd = m_PlannedDeparture;
     }
     node = node->GetNext();

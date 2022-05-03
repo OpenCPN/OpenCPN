@@ -41,6 +41,11 @@
 #include <windows.h>
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#include "qdebug.h"
+#endif
+
 #include <wx/arrstr.h>
 #include <wx/log.h>
 #include <wx/utils.h>
@@ -126,29 +131,67 @@ struct symlink {
   symlink(const std::string& p, const std::string& t) : path(p), target(t) {}
 };
 
-static int isTTYreal(const char* dev) {
-  int ret = 0;
 #ifdef __NetBSD__
+static int isTTYreal(const char* dev) {
   if (strncmp("/dev/tty0", dev, 9) == 0) return 1;
   if (strncmp("/dev/ttyU", dev, 9) == 0) return 1;
   if (strcmp("/dev/gps", dev) == 0) return 1;
   return 0;
-#elif defined(HAVE_LINUX_SERIAL_H) && defined(HAVE_SYS_STAT_H)
-  struct serial_struct serinfo;
-
-  int fd = open(dev, O_RDONLY | O_NONBLOCK | O_NOCTTY);
-
-  // device name is pointing to a real device
-  if (fd >= 0) {
-    if (ioctl(fd, TIOCGSERIAL, &serinfo) == 0) {
-      // If device type is no PORT_UNKNOWN we accept the port
-      if (serinfo.type != PORT_UNKNOWN) ret = 1;
-    }
-    close(fd);
-  }
-#endif /* !NetBSD */
-  return ret;
 }
+
+#elif defined(HAVE_LINUX_SERIAL_H) && defined(HAVE_SYS_STAT_H)
+
+/** For /sysfs paths return corresponding /dev path, otherwise return dev */
+static std::string device_path(const char* dev) {
+    if (strstr(dev, "/sysfs/") != 0) return std::string(dev);
+    std::string path(dev);
+    return std::string("/dev") + path.substr(path.rfind('/'));
+}
+
+static int isTTYreal(const char* dev) {
+
+  // Drop non-readable devices
+  std::string path = device_path(dev);
+  int fd = open(path.c_str(), O_RDONLY | O_NONBLOCK | O_NOCTTY);
+  if (fd < 0) return 0;
+
+  // This original check does not work in kernels > 5.12.
+  // See: https://github.com/torvalds/linux/commit/f64d74a59c476
+  bool ok = false;
+  struct serial_struct serinfo;
+  if (ioctl(fd, TIOCGSERIAL, &serinfo) == 0) {
+    ok = serinfo.type != PORT_UNKNOWN;
+  }
+  if (!ok) {
+    // Accept any device with hardware lines DSR or CTS set.
+    int modem_sts;
+    if (ioctl(fd, TIOCMGET, &modem_sts) == 0) {
+      ok = (modem_sts & (TIOCM_CTS | TIOCM_LE | TIOCM_DSR)) != 0;
+    }
+  }
+  if (!ok) {
+    // Accept standard ttyS0..ttyS3 + devices configured by udev:
+    static const std::vector<std::regex> patterns = {
+      std::regex("ttyS[0-3]$", std::regex_constants::ECMAScript),
+      std::regex("ttyUSB", std::regex_constants::ECMAScript),
+      std::regex("ttyACM", std::regex_constants::ECMAScript),
+      std::regex("ttyAMA", std::regex_constants::ECMAScript)
+    };
+    for (auto re : patterns) {
+      if (std::regex_search(dev, re)) {
+          ok = true;
+          break;
+      }
+    }
+  }
+  close(fd);
+  return ok ? 1 : 0;
+}
+
+#else
+static int isTTYreal(const char* dev) { return 1; }
+
+#endif /* !NetBSD */
 
 static bool isTTYreal(const device_data& data) {
   return isTTYreal(data.path.c_str());

@@ -468,6 +468,8 @@ wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 
 int g_trackFilterMax;
+double g_mouse_zoom_sensitivity;
+int g_mouse_zoom_sensitivity_ui;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -498,6 +500,7 @@ void appendOSDirSlash(wxString *pString);
 //-----------------------------------------------------------------------------
 //          MyConfig Implementation
 //-----------------------------------------------------------------------------
+//
 
 MyConfig::MyConfig(const wxString &LocalFileName)
     : wxFileConfig(_T (""), _T (""), LocalFileName, _T (""),
@@ -624,6 +627,7 @@ int MyConfig::LoadMyConfig() {
   g_benableAISNameCache = true;
   g_n_arrival_circle_radius = 0.05;
   g_plus_minus_zoom_factor = 2.0;
+  g_mouse_zoom_sensitivity = 1.5;
 
   g_AISShowTracks_Mins = 20;
   g_AISShowTracks_Limit = 300.0;
@@ -779,11 +783,9 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   // Some undocumented values
   Read(_T ( "ConfigVersionString" ), &g_config_version_string);
-#ifdef SYSTEM_SOUND_CMD
-  Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(SYSTEM_SOUND_CMD));
+  Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(OCPN_SOUND_CMD));
   if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
-#endif /* SYSTEM_SOUND_CMD */
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Read(_T ( "NavMessageShown" ), &n_NavMessageShown);
 
   Read(_T ( "AndroidVersionCode" ), &g_AndroidVersionCode);
@@ -947,7 +949,9 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier);
   Read(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
   Read(_T ( "PlusMinusZoomFactor" ), &g_plus_minus_zoom_factor, 2.0);
-
+  Read("MouseZoomSensitivity", &g_mouse_zoom_sensitivity, 1.3);
+  g_mouse_zoom_sensitivity_ui =
+      MouseZoom::config_to_ui(g_mouse_zoom_sensitivity);
   Read(_T ( "CM93DetailFactor" ), &g_cm93_zoom_factor);
 
   Read(_T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x);
@@ -2277,11 +2281,9 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "CompatOS" ), g_compatOS);
   Write(_T ( "CompatOsVersion" ), g_compatOsVersion);
   Write(_T ( "ConfigVersionString" ), g_config_version_string);
-#ifdef SYSTEM_SOUND_CMD
   if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Write(_T( "CmdSoundString" ), g_CmdSoundString);
-#endif /* SYSTEM_SOUND_CMD */
   Write(_T ( "NavMessageShown" ), n_NavMessageShown);
   Write(_T ( "InlandEcdis" ), g_bInlandEcdis);
 
@@ -2322,7 +2324,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "ShipScaleFactor" ), g_ShipScaleFactor);
   Write(_T ( "ENCSoundingScaleFactor" ), g_ENCSoundingScaleFactor);
   Write(_T ( "ObjQueryAppendFilesExt" ), g_ObjQFileExt);
-  
+
   // Plugin catalog persistent values.
   Write(_T( "CatalogCustomURL"), g_catalog_custom_url);
   Write(_T( "CatalogChannel"), g_catalog_channel);
@@ -2353,6 +2355,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "OverzoomVectorScale" ), g_oz_vector_scale);
   Write(_T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base);
   Write(_T ( "PlusMinusZoomFactor" ), g_plus_minus_zoom_factor);
+  Write("MouseZoomSensitivity",
+        MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui));
   Write(_T ( "ShowMUIZoomButtons" ), g_bShowMuiZoomButtons);
 
 #ifdef ocpnUSE_GL
@@ -4493,21 +4497,21 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
         if (hi_precision)
-          s.Printf(_T ( "%d\u00B0 %02ld.%04ld'" ), d, m / 10000, m % 10000);
+          s.Printf(_T ( "%d%c %02ld.%04ld'" ), d, 0x00B0, m / 10000, m % 10000);
         else
-          s.Printf(_T ( "%d\u00B0 %02ld.%01ld'" ), d, m / 10, m % 10);
+          s.Printf(_T ( "%d%c %02ld.%01ld'" ), d, 0x00B0, m / 10, m % 10);
       } else {
         if (hi_precision)
           if (NEflag == 1)
-            s.Printf(_T ( "%02d\u00B0 %02ld.%04ld' %c" ), d, m / 10000,
+            s.Printf(_T ( "%02d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
                      (m % 10000), c);
           else
-            s.Printf(_T ( "%03d\u00B0 %02ld.%04ld' %c" ), d, m / 10000,
+            s.Printf(_T ( "%03d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
                      (m % 10000), c);
         else if (NEflag == 1)
-          s.Printf(_T ( "%02d\u00B0 %02ld.%01ld' %c" ), d, m / 10, (m % 10), c);
+          s.Printf(_T ( "%02d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
         else
-          s.Printf(_T ( "%03d\u00B0 %02ld.%01ld' %c" ), d, m / 10, (m % 10), c);
+          s.Printf(_T ( "%03d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
       }
       break;
     case 1:
@@ -4528,23 +4532,23 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
         if (hi_precision)
-          s.Printf(_T ( "%d\u00B0 %ld'%ld.%ld\"" ), d, m, sec / 1000,
+          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 1000,
                    sec % 1000);
         else
-          s.Printf(_T ( "%d\u00B0 %ld'%ld.%ld\"" ), d, m, sec / 10, sec % 10);
+          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 10, sec % 10);
       } else {
         if (hi_precision)
           if (NEflag == 1)
-            s.Printf(_T ( "%02d\u00B0 %02ld' %02ld.%03ld\" %c" ), d, m,
+            s.Printf(_T ( "%02d%c %02ld' %02ld.%03ld\" %c" ), d, 0x00B0, m,
                      sec / 1000, sec % 1000, c);
           else
-            s.Printf(_T ( "%03d\u00B0 %02ld' %02ld.%03ld\" %c" ), d, m,
+            s.Printf(_T ( "%03d%c %02ld' %02ld.%03ld\" %c" ), d, 0x00B0, m,
                      sec / 1000, sec % 1000, c);
         else if (NEflag == 1)
-          s.Printf(_T ( "%02d\u00B0 %02ld' %02ld.%ld\" %c" ), d, m, sec / 10,
+          s.Printf(_T ( "%02d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m, sec / 10,
                    sec % 10, c);
         else
-          s.Printf(_T ( "%03d\u00B0 %02ld' %02ld.%ld\" %c" ), d, m, sec / 10,
+          s.Printf(_T ( "%03d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m, sec / 10,
                    sec % 10, c);
       }
       break;
@@ -4643,12 +4647,12 @@ double fromDMM(wxString sdms) {
 wxString formatAngle(double angle) {
   wxString out;
   if (g_bShowMag && g_bShowTrue) {
-    out.Printf(wxT("%03.0f \u00B0T (%.0f \u00B0M)"), angle,
-               gFrame->GetMag(angle));
+    out.Printf(wxT("%03.0f %cT (%.0f %cM)"), angle, 0x00B0,
+               gFrame->GetMag(angle), 0x00B0);
   } else if (g_bShowTrue) {
-    out.Printf(wxT("%03.0f \u00B0T"), angle);
+    out.Printf(wxT("%03.0f %cT"), angle, 0x00B0);
   } else {
-    out.Printf(wxT("%03.0f \u00B0M"), gFrame->GetMag(angle));
+    out.Printf(wxT("%03.0f %cM"), gFrame->GetMag(angle), 0x00B0);
   }
   return out;
 }
@@ -4889,9 +4893,7 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     if (win->IsKindOf(CLASSINFO(wxListBox)) ||
         win->IsKindOf(CLASSINFO(wxListCtrl)) ||
         win->IsKindOf(CLASSINFO(wxTextCtrl))
-#ifndef __OCPN__ANDROID__
         || win->IsKindOf(CLASSINFO(wxTimePickerCtrl))
-#endif
     ) {
       win->SetBackgroundColour(col);
     } else if (win->IsKindOf(CLASSINFO(wxStaticText)) ||

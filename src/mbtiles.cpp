@@ -117,13 +117,17 @@ extern MyConfig *pConfig;
 // pixel size of 0.3mm
 static const double OSM_zoomScale[] = {
     5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7, 1.0e7, 4.0e6, 2.0e6, 1.0e6,
-    5.0e5, 2.5e5, 1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3, 2.0e3, 1.0e3};
+    5.0e5, 2.5e5, 1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3, 2.0e3, 1.0e3,
+    5.0e2, 2.5e2
+};
 
 //  Meters per pixel, by zoom factor
 static const double OSM_zoomMPP[] = {
     156412, 78206, 39103, 19551,   9776,    4888,   2444,
     1222,   610,   984,   305.492, 152.746, 76.373, 38.187,
-    19.093, 9.547, 4.773, 2.387,   1.193,   0.596,  0.298};
+    19.093, 9.547, 4.773, 2.387,   1.193,   0.596,  0.298,
+    0.149, 0.075
+};
 
 static const double eps = 6e-6;  // about 1cm on earth's surface at equator
 extern MyFrame *gFrame;
@@ -236,7 +240,7 @@ ChartMBTiles::ChartMBTiles() {
   m_b_cdebug = 0;
 
   m_minZoom = 0;
-  m_maxZoom = 19;
+  m_maxZoom = 21;
 
   m_nNoCOVREntries = 0;
   m_nCOVREntries = 0;
@@ -448,11 +452,10 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
       }
 
-      // Not very interesting as it may be wrong, we better find out from first
-      // loaded tile and adjust m_imageType accordingly
-      // else if(!strncmp(colName, "format", 6) ){
-      //    m_bPNG = !strncmp(colValue, "png", 3);
-      //}
+
+      else if(!strncmp(colName, "format", 6) ){
+          m_format = std::string(colValue);
+      }
 
       // Get the min and max zoom values present in the db
       else if (!strncmp(colName, "minzoom", 7)) {
@@ -766,11 +769,20 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
         wxMemoryInputStream blobStream(blob, length);
         wxImage blobImage;
 
-        blobImage = wxImage(blobStream, m_imageType);
+        blobImage = wxImage(blobStream, wxBITMAP_TYPE_ANY);
+        int blobWidth, blobHeight;
+        unsigned char *imgdata;
 
-        int blobWidth = blobImage.GetWidth();
-        int blobHeight = blobImage.GetHeight();
-        unsigned char *imgdata = blobImage.GetData();
+        if (blobImage.IsOk()){
+          blobWidth = blobImage.GetWidth();
+          blobHeight = blobImage.GetHeight();
+          // Support MapTiler HiDPI tiles, 512x512
+          if ((blobWidth != 256) || (blobHeight != 256))
+            blobImage.Rescale(256, 256, wxIMAGE_QUALITY_NORMAL);
+          imgdata = blobImage.GetData();
+        }
+        else
+          return false;
 
         if ((m_global_color_scheme != GLOBAL_COLOR_SCHEME_RGB) &&
             (m_global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)) {
@@ -822,7 +834,6 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
         int tex_w = 256;
         int tex_h = 256;
         if (!imgdata) return false;
-        m_imageType = blobImage.GetType();
 
         unsigned char *teximage =
             (unsigned char *)malloc(stride * tex_w * tex_h);
@@ -928,12 +939,9 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
     glDisable(GL_TEXTURE_2D);
     return false;
   } else {
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
-    // If ever is implemented variable transparency for MBTiles,
-    // this is the place to do it for legacy (direct) mode.
-    // Set the alpha value in the glColor4f call here
-    glColor4f(1,1,1,1.0);
+#ifndef USE_ANDROID_GLES2
+    glColor4f(1,1,1,1);
+#endif
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -962,8 +970,6 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   glChartCanvas::RenderSingleTexture(coords, texcoords, &vp, 0, 0, 0);
 
   glDisable(GL_BLEND);
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
 
   return true;
 }

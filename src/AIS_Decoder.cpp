@@ -3171,11 +3171,10 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
 
   if (m_bAIS_Audio_Alert_On) {
     if (!m_AIS_Sound) {
-      m_AIS_Sound = SoundFactory();
+      m_AIS_Sound = SoundFactory(g_CmdSoundString.mb_str(wxConvUTF8));
     }
     if (!AIS_AlertPlaying()) {
       m_bAIS_AlertPlaying = true;
-      m_AIS_Sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
       wxString soundFile;
       switch (audioType) {
         case AISAUDIO_CPA:

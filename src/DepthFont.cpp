@@ -28,7 +28,7 @@
 #include "DepthFont.h"
 
 #ifdef USE_ANDROID_GLES2
-#include <gl2.h>
+#include <GLES2/gl2.h>
 #include "linmath.h"
 #include "shaders.h"
 #else

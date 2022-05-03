@@ -110,7 +110,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   // Add first column
   wxListItem col0;
   col0.SetId(0);
-  col0.SetText(_(""));
+  col0.SetText(_T(""));
   col0.SetAlign(wxLIST_FORMAT_LEFT);
   col0.SetWidth(sx * 30 / 100);
   m_tList->InsertColumn(0, col0);
@@ -992,7 +992,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     // set current direction
     if (CURRENT_PLOT == m_plot_type) {
-      s.Printf(wxString("%3.0f°", wxConvUTF8), d);
+      s.Printf("%3.0f%c", d, 0x00B0);
       p.Append(_T("\n"));
       p.Append(s);
     }

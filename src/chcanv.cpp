@@ -74,6 +74,7 @@
 #include "Quilt.h"
 #include "SelectItem.h"
 #include "Select.h"
+#include "SystemCmdSound.h"
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
@@ -123,6 +124,7 @@
 
 extern float g_ChartScaleFactorExp;
 extern float g_ShipScaleFactorExp;
+extern double g_mouse_zoom_sensitivity;
 
 #include <vector>
 //#include <wx-3.0/wx/aui/auibar.h>
@@ -510,8 +512,8 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_pQuilt = new Quilt(this);
   SetQuiltMode(true);
   SetAlertString(_T(""));
-  m_sector_glat = 200;
-  m_sector_glon = 200;
+  m_sector_glat = 0;
+  m_sector_glon = 0;
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   m_oldVPSScale = -1.0;
@@ -4126,9 +4128,9 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   wxString s;
   DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
   if (g_bShowMag)
-    s.Printf(wxString("%03d°(M)  ", wxConvUTF8), (int)gFrame->GetMag(brg));
+    s.Printf("%03d%c(M)  ", (int)gFrame->GetMag(brg), 0x00B0);
   else
-    s.Printf(wxString("%03d°  ", wxConvUTF8), (int)brg);
+    s.Printf("%03d%c  ", (int)brg, 0x00B0);
 
   s << FormatDistanceAdaptive(dist);
 
@@ -4321,7 +4323,11 @@ bool ChartCanvas::GetCanvasPointPixVP(ViewPort &vp, double rlat, double rlon,
     return false;
   }
 
-  *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+  if( (abs(p.m_x) < 10e6) && (abs(p.m_y) < 10e6) )
+    *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+  else
+    *r = wxPoint(INVALID_COORD, INVALID_COORD);
+
   return true;
 }
 
@@ -4810,6 +4816,7 @@ void ChartCanvas::LoadVP(ViewPort &vp, bool b_adjust) {
 
   SetViewPoint(vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.rotation,
                vp.m_projection_type, b_adjust);
+
 }
 
 void ChartCanvas::SetQuiltRefChart(int dbIndex) {
@@ -6344,7 +6351,8 @@ void ChartCanvas::AlertDraw(ocpnDC &dc) {
     AnchorAlertOn2 = false;
 
   if (play_sound && !bAnchorSoundPlaying) {
-    g_anchorwatch_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+    auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_anchorwatch_sound);
+    if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
     g_anchorwatch_sound->Load(g_anchorwatch_sound_file);
     if (g_anchorwatch_sound->IsOk()) {
       bAnchorSoundPlaying = true;
@@ -8399,19 +8407,24 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           r_rband.y = y;
         }
 
-        RoutePoint *pMousePoint = new RoutePoint(m_cursor_lat, m_cursor_lon,
+        if (m_pMeasureRoute){
+          RoutePoint *pMousePoint = new RoutePoint(m_cursor_lat, m_cursor_lon,
                                                  wxString(_T ( "circle" )),
                                                  wxEmptyString, wxEmptyString);
-        pMousePoint->m_bShowName = false;
+          pMousePoint->m_bShowName = false;
 
-        m_pMeasureRoute->AddPoint(pMousePoint);
+          m_pMeasureRoute->AddPoint(pMousePoint);
 
-        m_prev_rlat = m_cursor_lat;
-        m_prev_rlon = m_cursor_lon;
-        m_prev_pMousePoint = pMousePoint;
-        m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+          m_prev_rlat = m_cursor_lat;
+          m_prev_rlon = m_cursor_lon;
+          m_prev_pMousePoint = pMousePoint;
+          m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
 
-        m_nMeasureState++;
+          m_nMeasureState++;
+        }
+        else {
+          CancelMeasureRoute();
+        }
 
         Refresh(true);
         ret = true;
@@ -9146,7 +9159,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     int mouse_wheel_oneshot = abs(wheel_dir) * 4;  // msec
     wheel_dir = wheel_dir > 0 ? 1 : -1;            // normalize
 
-    double factor = 2.0;
+    double factor = g_mouse_zoom_sensitivity;
     if (wheel_dir < 0) factor = 1 / factor;
 
     if (g_bsmoothpanzoom) {
@@ -10335,6 +10348,10 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
 
   if (!route) return;
 
+    //      Validate route pointer
+  if( !g_pRouteMan->IsRouteValid(route) )
+    return;
+
   double render_lat = m_cursor_lat;
   double render_lon = m_cursor_lon;
 
@@ -10436,7 +10453,12 @@ void ChartCanvas::RenderVisibleSectorLights(ocpnDC &dc) {
 
   if (g_bDeferredInitDone) {
     // need to re-evaluate sectors?
-    if ((m_sector_glat != gLat) || (m_sector_glon != gLon)) {
+    double rhumbBearing, rhumbDist;
+    DistanceBearingMercator(gLat, gLon, m_sector_glat, m_sector_glon,
+                                      &rhumbBearing, &rhumbDist);
+
+    if (rhumbDist > 0.05)   // miles
+    {
       s57_GetVisibleLightSectors(this, gLat, gLon, GetVP(),
                                  m_sectorlegsVisible);
       m_sector_glat = gLat;

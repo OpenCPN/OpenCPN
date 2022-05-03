@@ -50,6 +50,9 @@ before_build:
   - cd build
   - ps: Start-FileDownload https://download.opencpn.org/s/i3QdxibNL732mgJ/download -FileName OpenCPN_buildwin-4.99c.7z
   - cmd: 7z x -y OpenCPN_buildwin-4.99c.7z -oc:\project\opencpn\buildwin
+
+  # OCPN_CI_BUILD=ON   : Generated extended package name for Beta test tracking
+  # OCPN_CI_BUILD=OFF  : Generated simplified package name for Production Release
   - cmake -T v141_xp -DOCPN_CI_BUILD=OFF ..
 
 build_script:

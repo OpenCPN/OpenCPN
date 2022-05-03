@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-21 20:21-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"POT-Creation-Date: 2022-04-14 21:37-0400\n"
+"PO-Revision-Date: 2022-04-15 01:43\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Language: id_ID\n"
@@ -17,29 +17,29 @@ msgstr ""
 "X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
 "X-Crowdin-File-ID: 160\n"
 
-#: src/chartcatalog.cpp:46
+#: src/chartcatalog.cpp:44
 msgid "Catalog is not valid."
 msgstr "Katalog tidak valid."
 
-#: src/chartcatalog.cpp:447
+#: src/chartcatalog.cpp:392
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
 msgstr "%s (%s ke %s), mil sungai %3.1f - %3.1f"
 
-#: src/chartcatalog.cpp:454
+#: src/chartcatalog.cpp:400
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: src/chartdldr_pi.cpp:275
+#: src/chartdldr_pi.cpp:260
 msgid "ChartDownloader"
 msgstr "GrafikDownloader"
 
-#: src/chartdldr_pi.cpp:280
+#: src/chartdldr_pi.cpp:263
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr "Plugin Grafik Downloader untuk OpenCPN"
 
-#: src/chartdldr_pi.cpp:285
+#: src/chartdldr_pi.cpp:268
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
@@ -47,83 +47,83 @@ msgstr "Grafik Downloader PlugIn untuk OpenCPN\n"
 "Mengelola unduhan dan pembaruan grafik dari daftar berkas yang mendukung\n"
 "NOAA Grafik Catalog"
 
-#: src/chartdldr_pi.cpp:292 src/chartdldr_pi.cpp:929 src/chartdldr_pi.cpp:936
-#: src/chartdldr_pi.cpp:942 src/chartdldr_pi.cpp:962 src/chartdldr_pi.cpp:999
-#: src/chartdldr_pi.cpp:1058 src/chartdldr_pi.cpp:1064 src/chartdldr_pi.cpp:1414
-#: src/chartdldr_pi.cpp:1506 src/chartdldr_pi.cpp:1509 src/chartdldr_pi.cpp:1590
-#: src/chartdldr_pi.cpp:1687 src/chartdldr_pi.cpp:2443
+#: src/chartdldr_pi.cpp:275 src/chartdldr_pi.cpp:893 src/chartdldr_pi.cpp:900
+#: src/chartdldr_pi.cpp:907 src/chartdldr_pi.cpp:934 src/chartdldr_pi.cpp:968
+#: src/chartdldr_pi.cpp:1035 src/chartdldr_pi.cpp:1044 src/chartdldr_pi.cpp:1369
+#: src/chartdldr_pi.cpp:1479 src/chartdldr_pi.cpp:1483 src/chartdldr_pi.cpp:1570
+#: src/chartdldr_pi.cpp:1684 src/chartdldr_pi.cpp:2415
 msgid "Chart Downloader"
 msgstr "Grafik Downloader"
 
-#: src/chartdldr_pi.cpp:617 src/chartdldr_pi.cpp:639
+#: src/chartdldr_pi.cpp:588 src/chartdldr_pi.cpp:611
 msgid "Select all"
 msgstr "Pilih Semua"
 
-#: src/chartdldr_pi.cpp:621 src/chartdldr_pi.cpp:640
+#: src/chartdldr_pi.cpp:592 src/chartdldr_pi.cpp:612
 msgid "Deselect all"
 msgstr "Hapus semua"
 
-#: src/chartdldr_pi.cpp:625 src/chartdldr_pi.cpp:641
+#: src/chartdldr_pi.cpp:597 src/chartdldr_pi.cpp:613
 msgid "Invert selection"
 msgstr "Balikkan seleksi"
 
-#: src/chartdldr_pi.cpp:629 src/chartdldr_pi.cpp:642
+#: src/chartdldr_pi.cpp:601 src/chartdldr_pi.cpp:614
 msgid "Select updated"
 msgstr "Pilih yang diperbarui"
 
-#: src/chartdldr_pi.cpp:633 src/chartdldr_pi.cpp:643
+#: src/chartdldr_pi.cpp:605 src/chartdldr_pi.cpp:615
 msgid "Select new"
 msgstr "Pilih baru"
 
-#: src/chartdldr_pi.cpp:689
+#: src/chartdldr_pi.cpp:663
 #, c-format
 msgid "Charts: %s"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:689
+#: src/chartdldr_pi.cpp:663
 msgid " from "
 msgstr ""
 
-#: src/chartdldr_pi.cpp:697 src/chartdldrgui.cpp:284
+#: src/chartdldr_pi.cpp:669 src/chartdldrgui.cpp:497
 msgid "Charts"
 msgstr "Grafik"
 
-#: src/chartdldr_pi.cpp:768 src/chartdldrgui.h:147 src/chartdldrgui.h:213
+#: src/chartdldr_pi.cpp:733 src/chartdldrgui.h:171 src/chartdldrgui.h:242
 msgid "New"
 msgstr "Baru"
 
-#: src/chartdldr_pi.cpp:777 src/chartdldrgui.h:148 src/chartdldrgui.h:214
+#: src/chartdldr_pi.cpp:740 src/chartdldrgui.h:174 src/chartdldrgui.h:243
 msgid "Out of date"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:783
+#: src/chartdldr_pi.cpp:743
 msgid "Up to date"
 msgstr "Terbaru"
 
-#: src/chartdldr_pi.cpp:812
+#: src/chartdldr_pi.cpp:778
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
 msgstr "%lu total grafik, %lu diperbarui, %lu baru"
 
-#: src/chartdldr_pi.cpp:815 src/chartdldr_pi.cpp:1220 src/chartdldr_pi.cpp:1313
-#: src/chartdldr_pi.cpp:1331 src/chartdldr_pi.cpp:1348 src/chartdldr_pi.cpp:1366
+#: src/chartdldr_pi.cpp:783 src/chartdldr_pi.cpp:1181 src/chartdldr_pi.cpp:1264
+#: src/chartdldr_pi.cpp:1282 src/chartdldr_pi.cpp:1299 src/chartdldr_pi.cpp:1318
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:1661
+#: src/chartdldr_pi.cpp:856 src/chartdldr_pi.cpp:1651
 msgid "(Please update first)"
 msgstr "(Pertama silahkan update)"
 
-#: src/chartdldr_pi.cpp:900 src/chartdldr_pi.cpp:981
+#: src/chartdldr_pi.cpp:861 src/chartdldr_pi.cpp:949
 msgid "Error, the URL to the chart source data seems wrong."
 msgstr "Kesalahan, URL ke data sumber grafik nampaknya salah."
 
-#: src/chartdldr_pi.cpp:900 src/chartdldr_pi.cpp:981 src/chartdldr_pi.cpp:1425
+#: src/chartdldr_pi.cpp:862 src/chartdldr_pi.cpp:950 src/chartdldr_pi.cpp:1385
 msgid "Error"
 msgstr "Kesalahan"
 
-#: src/chartdldr_pi.cpp:928
+#: src/chartdldr_pi.cpp:891
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
@@ -131,7 +131,7 @@ msgstr "Anda telah memilih untuk memperbarui semua katalog grafik.\n"
 "Kemudian unduh semua grafik baru dan yang diperbarui.\n"
 "Ini mungkin memakan waktu lama."
 
-#: src/chartdldr_pi.cpp:935
+#: src/chartdldr_pi.cpp:898
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
@@ -139,7 +139,7 @@ msgstr "Anda telah memilih untuk memperbarui semua katalog grafik.\n"
 "Kemudian hanya mengunduh grafik baru (namun tidak diperbarui).\n"
 "Ini mungkin memerlukan waktu lama."
 
-#: src/chartdldr_pi.cpp:941
+#: src/chartdldr_pi.cpp:905
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
@@ -147,319 +147,331 @@ msgstr "Anda telah memilih untuk memperbarui semua katalog grafik.\n"
 "Kemudian hanya mengunduh grafik yang diperbarui (namun tidak baru).\n"
 "Ini mungkin memerlukan waktu lama."
 
-#: src/chartdldr_pi.cpp:961 src/chartdldr_pi.cpp:1504
+#: src/chartdldr_pi.cpp:930 src/chartdldr_pi.cpp:1475
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
 msgstr "%d dari %d grafik gagal diunduh.\n"
 "Periksa daftar, verifikasi apakah ada koneksi Internet yang berfungsi dan ulangi operasi jika diperlukan."
 
-#: src/chartdldr_pi.cpp:999 src/chartdldr_pi.cpp:2419 src/chartdldr_pi.cpp:2443
+#: src/chartdldr_pi.cpp:966 src/chartdldr_pi.cpp:2388 src/chartdldr_pi.cpp:2413
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "Direktori %s tidak dapat dibuat."
 
-#: src/chartdldr_pi.cpp:1018 src/chartdldr_pi.cpp:1030
+#: src/chartdldr_pi.cpp:988 src/chartdldr_pi.cpp:1002
 msgid "Downloading file"
 msgstr "Mengunduh berkas"
 
-#: src/chartdldr_pi.cpp:1019 src/chartdldr_pi.cpp:1031
+#: src/chartdldr_pi.cpp:989 src/chartdldr_pi.cpp:1003
 msgid "Reading Headers: "
 msgstr "Topik Membaca: "
 
-#: src/chartdldr_pi.cpp:1057
+#: src/chartdldr_pi.cpp:1033
 #, c-format
 msgid "Failed to Find New Catalog: %s "
 msgstr "Gagal Menemukan Katalog Baru: %s "
 
-#: src/chartdldr_pi.cpp:1063
+#: src/chartdldr_pi.cpp:1041
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
 msgstr "Gagal Download Katalog: %s \n"
 "Verify ada koneksi Internet yang berfungsi."
 
-#: src/chartdldr_pi.cpp:1243 src/chartdldr_pi.cpp:1252 src/chartdldrgui.cpp:340
+#: src/chartdldr_pi.cpp:1202 src/chartdldr_pi.cpp:1208 src/chartdldrgui.cpp:564
 msgid "Select All"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1246 src/chartdldrgui.cpp:342 src/chartdldrgui.cpp:374
+#: src/chartdldr_pi.cpp:1204 src/chartdldrgui.cpp:568 src/chartdldrgui.cpp:622
 msgid "Select None"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1247
+#: src/chartdldr_pi.cpp:1205
 msgid "De-select all charts in the list."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1253 src/chartdldrgui.cpp:343
+#: src/chartdldr_pi.cpp:1209 src/chartdldrgui.cpp:569
 msgid "Select all charts in the list."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1380
+#: src/chartdldr_pi.cpp:1333
 msgid "No charts selected for download."
 msgstr "Tidak ada grafik yang dipilih untuk diunduh."
 
-#: src/chartdldr_pi.cpp:1391
+#: src/chartdldr_pi.cpp:1344
 msgid "Abort download"
 msgstr "Menggugurkan download"
 
-#: src/chartdldr_pi.cpp:1407
+#: src/chartdldr_pi.cpp:1357
 msgid "Unknown"
 msgstr "Tidal diketahui"
 
-#: src/chartdldr_pi.cpp:1413
+#: src/chartdldr_pi.cpp:1365
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
 msgstr "Grafik yang dipilih '%s' tidak dapat didownload secara otomatis, apakah Anda ingin saya membuka jendela browser dan mendownloadnya secara manual?\n\n"
 " Setelah mendownload grafik, silahkan ekstrak ke %s"
 
-#: src/chartdldr_pi.cpp:1425
+#: src/chartdldr_pi.cpp:1383
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
 msgstr "Kesalahan, data URL ke grafik (%s) nampaknya salah."
 
-#: src/chartdldr_pi.cpp:1462
+#: src/chartdldr_pi.cpp:1428
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
 msgstr "Mengunduh grafik %u dari %u, %u unduhan gagal (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1466
+#: src/chartdldr_pi.cpp:1433
 #, c-format
 msgid "Downloading chart %u of %u (%s / %s)"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1500 src/chartdldrgui.cpp:328 src/chartdldrgui.cpp:350
+#: src/chartdldr_pi.cpp:1469 src/chartdldrgui.cpp:548 src/chartdldrgui.cpp:580
 msgid "Download selected charts"
 msgstr "Download grafik yang dipilih"
 
-#: src/chartdldr_pi.cpp:1509
+#: src/chartdldr_pi.cpp:1482
 msgid "Chart download cancelled."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1540 src/chartdldrgui.cpp:100
+#: src/chartdldr_pi.cpp:1517 src/chartdldrgui.cpp:240
 msgid "Catalog"
 msgstr "Katalog"
 
-#: src/chartdldr_pi.cpp:1541
+#: src/chartdldr_pi.cpp:1519
 msgid "Released"
 msgstr "Dirilis"
 
-#: src/chartdldr_pi.cpp:1542
+#: src/chartdldr_pi.cpp:1521
 msgid "Local path"
 msgstr "Jalan lokal"
 
-#: src/chartdldr_pi.cpp:1589
+#: src/chartdldr_pi.cpp:1567
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1650
+#: src/chartdldr_pi.cpp:1636
 msgid "Edit Chart Source"
 msgstr "Edit Sumber Grafik"
 
-#: src/chartdldr_pi.cpp:1686
+#: src/chartdldr_pi.cpp:1680
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "Jalan %s sepertinya tidak ditutupi oleh Direktori Grafik yang Anda konfigurasikan.\n"
 "Untuk melihat grafik Anda harus menyesuaikan konfigurasi pada tab 'File Grafik'."
 
-#: src/chartdldr_pi.cpp:1784
+#: src/chartdldr_pi.cpp:1775
 msgid "Installing charts."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:2404 src/chartdldr_pi.cpp:2407
+#: src/chartdldr_pi.cpp:2368 src/chartdldr_pi.cpp:2372
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "Anda harus memilih salah satu sumber grafik yang telah ditentukan atau buat salah satu dari Anda sendiri.\n"
 
-#: src/chartdldr_pi.cpp:2410
+#: src/chartdldr_pi.cpp:2377
 msgid "The chart source must have a name.\n"
 msgstr "Sumber grafik harus memiliki nama.\n"
 
-#: src/chartdldr_pi.cpp:2413
+#: src/chartdldr_pi.cpp:2382
 msgid "The chart source must have a valid URL.\n"
 msgstr "Sumber grafik harus memiliki URL yang berlaku.\n"
 
-#: src/chartdldr_pi.cpp:2415
+#: src/chartdldr_pi.cpp:2384
 msgid "You must select a local folder to store the charts.\n"
 msgstr "Anda harus memilih folder lokal untuk menyimpan grafik.\n"
 
-#: src/chartdldr_pi.cpp:2422
+#: src/chartdldr_pi.cpp:2393
 msgid "Chart source definition problem"
 msgstr "Grafik sumber masalah definisi"
 
-#: src/chartdldrgui.cpp:112
-msgid "Predefined"
-msgstr "Predefined"
-
-#: src/chartdldrgui.cpp:134
-msgid "Name"
-msgstr "Nama"
-
-#: src/chartdldrgui.cpp:142
-msgid "URL"
-msgstr "URL"
-
-#: src/chartdldrgui.cpp:153
-msgid "Custom"
-msgstr "Kustom"
-
-#: src/chartdldrgui.cpp:156
-msgid "Chart Directory"
-msgstr "Direktori grafik"
-
-#: src/chartdldrgui.cpp:165 src/chartdldrgui.cpp:561
-msgid "Select a folder"
-msgstr "Pilih folder"
-
-#: src/chartdldrgui.cpp:174 src/chartdldrgui.cpp:599
-msgid "Cancel"
-msgstr ""
-
-#: src/chartdldrgui.cpp:205 src/chartdldrgui.cpp:660
-msgid "Choose Chart File Directory"
-msgstr "Pilih Direktori File Grafik"
-
-#: src/chartdldrgui.cpp:228
-msgid "Select Catalog..."
-msgstr ""
-
-#: src/chartdldrgui.cpp:233
-msgid "Chart Catalogs Available"
-msgstr ""
-
-#: src/chartdldrgui.cpp:252
-msgid "Add Catalog"
+#: src/chartdldrgui.cpp:206
+msgid "Dialog"
 msgstr ""
 
 #: src/chartdldrgui.cpp:253
-msgid "Add a new chart catalog."
-msgstr "Tambahkan katalog grafik baru."
+msgid "Predefined"
+msgstr "Predefined"
 
-#: src/chartdldrgui.cpp:257
-msgid "Delete"
-msgstr "Hapus"
+#: src/chartdldrgui.cpp:276
+msgid "Name"
+msgstr "Nama"
 
-#: src/chartdldrgui.cpp:258
-msgid "Delete the chart catalog. The downloaded charts are not deleted."
-msgstr "Hapus katalog grafik. Grafik yang didownload tidak terhapus."
+#: src/chartdldrgui.cpp:286
+msgid "URL"
+msgstr "URL"
 
-#: src/chartdldrgui.cpp:262
-msgid "Edit..."
-msgstr "Edit..."
+#: src/chartdldrgui.cpp:299
+msgid "Custom"
+msgstr "Kustom"
 
-#: src/chartdldrgui.cpp:265
-msgid "Update"
-msgstr "Perbarui"
-
-#: src/chartdldrgui.cpp:267
-msgid "Download the current chart catalog and update the data."
-msgstr "Download katalog grafik terkini dan perbarui data."
-
-#: src/chartdldrgui.cpp:271
-msgid "Update All"
-msgstr "Perbarui Semua"
-
-#: src/chartdldrgui.cpp:272
-msgid "Download all chart catalogs, and then update charts."
+#: src/chartdldrgui.cpp:304
+msgid "Proposed chart installation directory"
 msgstr ""
 
-#: src/chartdldrgui.cpp:278
-msgid "Download Charts..."
-msgstr ""
-
-#: src/chartdldrgui.cpp:300
-msgid "Status"
-msgstr "Status"
-
-#: src/chartdldrgui.cpp:303
-msgid "Date"
-msgstr ""
-
-#: src/chartdldrgui.cpp:306
-msgid "Chart Description"
+#: src/chartdldrgui.cpp:324
+msgid "Select a different directory"
 msgstr ""
 
 #: src/chartdldrgui.cpp:331
+msgid "OK"
+msgstr ""
+
+#: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:908
+msgid "Cancel"
+msgstr ""
+
+#: src/chartdldrgui.cpp:391 src/chartdldrgui.cpp:992
+msgid "Choose Chart File Directory"
+msgstr "Pilih Direktori File Grafik"
+
+#: src/chartdldrgui.cpp:426
+msgid "Select Catalog..."
+msgstr ""
+
+#: src/chartdldrgui.cpp:432
+msgid "Chart Catalogs Available"
+msgstr ""
+
+#: src/chartdldrgui.cpp:453
+msgid "Add Catalog"
+msgstr ""
+
+#: src/chartdldrgui.cpp:455
+msgid "Add a new chart catalog."
+msgstr "Tambahkan katalog grafik baru."
+
+#: src/chartdldrgui.cpp:459
+msgid "Delete"
+msgstr "Hapus"
+
+#: src/chartdldrgui.cpp:462
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
+msgstr "Hapus katalog grafik. Grafik yang didownload tidak terhapus."
+
+#: src/chartdldrgui.cpp:466
+msgid "Edit..."
+msgstr "Edit..."
+
+#: src/chartdldrgui.cpp:474
+msgid "Update"
+msgstr "Perbarui"
+
+#: src/chartdldrgui.cpp:478
+msgid "Download the current chart catalog and update the data."
+msgstr "Download katalog grafik terkini dan perbarui data."
+
+#: src/chartdldrgui.cpp:482
+msgid "Update All"
+msgstr "Perbarui Semua"
+
+#: src/chartdldrgui.cpp:485
+msgid "Download all chart catalogs, and then update charts."
+msgstr ""
+
+#: src/chartdldrgui.cpp:491
+msgid "Download Charts..."
+msgstr ""
+
+#: src/chartdldrgui.cpp:516
+msgid "Status"
+msgstr "Status"
+
+#: src/chartdldrgui.cpp:520
+msgid "Date"
+msgstr ""
+
+#: src/chartdldrgui.cpp:524
+msgid "Chart Description"
+msgstr ""
+
+#: src/chartdldrgui.cpp:552
 msgid "Select New"
 msgstr ""
 
-#: src/chartdldrgui.cpp:332
+#: src/chartdldrgui.cpp:554
 msgid "Check all charts that are 'New' in the list."
 msgstr ""
 
-#: src/chartdldrgui.cpp:335
+#: src/chartdldrgui.cpp:557
 msgid "Select Updated"
 msgstr ""
 
-#: src/chartdldrgui.cpp:336
+#: src/chartdldrgui.cpp:560
 msgid "Select all charts that are 'Out of Date' in the list."
 msgstr ""
 
-#: src/chartdldrgui.cpp:346
+#: src/chartdldrgui.cpp:574
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
 msgstr ""
 
-#: src/chartdldrgui.cpp:353
+#: src/chartdldrgui.cpp:585
 #, c-format
 msgid "%u charts total, %u updated, %u new"
 msgstr "%u total grafik, %u diperbarui, %u baru"
 
-#: src/chartdldrgui.cpp:552
+#: src/chartdldrgui.cpp:850
 msgid "Default Path to Charts"
 msgstr "Jalan Default ke Grafik"
 
-#: src/chartdldrgui.cpp:568
+#: src/chartdldrgui.cpp:861
+msgid "Select a folder"
+msgstr "Pilih folder"
+
+#: src/chartdldrgui.cpp:868
 msgid "Preferences"
 msgstr "Preferensi"
 
-#: src/chartdldrgui.cpp:572
+#: src/chartdldrgui.cpp:873
 msgid "After catalog update select for download"
 msgstr "Setelah diperbarui katalog pilih untuk download"
 
-#: src/chartdldrgui.cpp:576
+#: src/chartdldrgui.cpp:878
 msgid "All updated charts"
 msgstr "Semua grafik diperbarui"
 
-#: src/chartdldrgui.cpp:580
+#: src/chartdldrgui.cpp:883
 msgid "All new charts"
 msgstr "Semua grafik baru"
 
-#: src/chartdldrgui.cpp:586
+#: src/chartdldrgui.cpp:893
 msgid "Allow bulk update of all configured chart sources and charts"
 msgstr "Izinkan pembaruan massal semua sumber grafik dan grafik terkonfigurasi"
 
-#: src/chartdldrgui.cpp:590
+#: src/chartdldrgui.cpp:898
 msgid "Update chart source catalog"
 msgstr ""
 
-#: src/chartdldrgui.cpp:624
+#: src/chartdldrgui.cpp:943 src/chartdldrgui.cpp:944
 msgid "Downloading chart sources"
 msgstr ""
 
-#: src/chartdldrgui.cpp:632
+#: src/chartdldrgui.cpp:958
 #, c-format
 msgid "Failed to save: %s "
 msgstr ""
 
-#: src/chartdldrgui.cpp:632 src/chartdldrgui.cpp:639
+#: src/chartdldrgui.cpp:960 src/chartdldrgui.cpp:970
 msgid "Chart downloader"
 msgstr ""
 
-#: src/chartdldrgui.cpp:638
+#: src/chartdldrgui.cpp:967
 #, c-format
 msgid "Failed to download: %s \n"
 "Verify there is a working Internet connection."
 msgstr ""
 
-#: src/chartdldrgui.h:85
+#: src/chartdldrgui.h:108
 msgid "New chart source"
 msgstr "Sumber grafik baru"
 
-#: src/chartdldrgui.h:198
+#: src/chartdldrgui.h:224
 msgid "Chart Downloader Preferences"
 msgstr "Preferensi Grafik Downloader"
 

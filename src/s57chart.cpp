@@ -65,6 +65,7 @@
 #include "SencManager.h"
 #include "gui_lib.h"
 #include "logger.h"
+#include "Quilt.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -6431,7 +6432,16 @@ bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
   ChartPlugInWrapper *target_plugin_chart = NULL;
   s57chart *Chs57 = NULL;
 
-  ChartBase *target_chart = cc->GetChartAtCursor();
+  // Find the chart that is currently shown at the given lat/lon
+  wxPoint calcPoint = viewport.GetPixFromLL(lat, lon);
+  ChartBase *target_chart;
+  if (cc->m_singleChart && (cc->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR))
+    target_chart = cc->m_singleChart;
+  else if (viewport.b_quilt)
+    target_chart = cc->m_pQuilt->GetChartAtPix(viewport, calcPoint);
+  else
+    target_chart = NULL;
+
   if (target_chart) {
     if ((target_chart->GetChartType() == CHART_TYPE_PLUGIN) &&
         (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR))

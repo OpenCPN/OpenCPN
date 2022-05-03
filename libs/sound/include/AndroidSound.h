@@ -25,6 +25,8 @@
 #ifndef ANDROID_SOUND_H__
 #define ANDROID_SOUND_H__
 
+#include <mutex>
+#include <condition_variable>
 
 #include "OCPN_Sound.h"
 #include "androidUTIL.h"
@@ -43,9 +45,16 @@ class AndroidSound: public OcpnSound
         bool Play() override;
         bool Stop() override;
         void SetFinishedCallback(AudioDoneCallback cb, void* userData);
+        void OnSoundDone();
 
-   protected:
+    protected:
+        bool canPlay();
         std::string m_soundfile;
+        bool m_isPlaying;
+
+   private:
+        std::mutex mtx;
+        std::condition_variable done;
 };
 
 

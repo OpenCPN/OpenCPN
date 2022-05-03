@@ -1523,6 +1523,14 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   for (unsigned int j = 0; j < dir_array.GetCount(); j++) {
     ChartDirInfo dir_info = dir_array[j];
 
+    // On Android, with SDK >= 30, traversal of a folder that is
+    //  on within the "scoped storage" domain is very slow.
+    //  Aviod it....
+#ifdef __OCPN__ANDROID__
+    if (!androidIsDirWritable(dir_info.fullpath))
+      continue;
+#endif
+
     wxString dir_magic;
 
     if (dir_info.fullpath.Find(_T("GSHHG")) != wxNOT_FOUND) {
@@ -1992,32 +2000,30 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   }
 
   if (!b_found_cm93) {
-    // Note that `wxDir::GetAllFiles()` appends to the list rather than replaces
-    // existing contents.
+
     wxDir dir(dir_name);
     dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
 
 #ifdef __OCPN__ANDROID__
     if (!FileList.GetCount()) {
       wxArrayString afl = androidTraverseDir(dir_name, filespec);
-
       for (wxArrayString::const_iterator item = afl.begin(); item != afl.end();
            item++)
         FileList.Add(*item);
     }
 #endif
-    // add xz compressed files;
-    dir.GetAllFiles(dir_name, &FileList, filespecXZ, gaf_flags);
+
+
 #ifndef __WXMSW__
     if (filespec != lowerFileSpec) {
       // add lowercase filespec files too
       wxArrayString lowerFileList;
       dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
 
+
 #ifdef __OCPN__ANDROID__
       if (!lowerFileList.GetCount()) {
         wxArrayString afl = androidTraverseDir(dir_name, lowerFileSpec);
-
         for (wxArrayString::const_iterator item = afl.begin();
              item != afl.end(); item++)
           lowerFileList.Add(*item);
@@ -2027,10 +2033,16 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       for (wxArrayString::const_iterator item = lowerFileList.begin();
            item != lowerFileList.end(); item++)
         FileList.Add(*item);
-
-      dir.GetAllFiles(dir_name, &FileList, lowerFileSpecXZ, gaf_flags);
     }
 #endif
+
+#ifdef OCPN_USE_LZMA
+      // add xz compressed files;
+     dir.GetAllFiles(dir_name, &FileList, filespecXZ, gaf_flags);
+     dir.GetAllFiles(dir_name, &FileList, lowerFileSpecXZ, gaf_flags);
+#endif
+
+
     FileList.Sort();  // Sorted processing order makes the progress bar more
                       // meaningful to the user.
   } else {            // This is a cm93 dataset, specified as yada/yada/cm93
