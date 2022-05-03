@@ -105,9 +105,6 @@ class ChartPlugInWrapper;
 // Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
 
-// And also a list
-WX_DECLARE_LIST(S57Obj, ListOfS57Obj);
-
 WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
 
 //----------------------------------------------------------------------------
@@ -199,7 +196,7 @@ public:
   //    DEPCNT VALDCO array access
   bool GetNearestSafeContour(double safe_cnt, double &next_safe_cnt);
 
-  virtual ListOfS57Obj *GetAssociatedObjects(S57Obj *obj);
+  virtual std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
 
   virtual VE_Hash &Get_ve_hash(void) { return m_ve_hash; }
   virtual VC_Hash &Get_vc_hash(void) { return m_vc_hash; }
@@ -333,7 +330,7 @@ private:
                                        ChartPlugInWrapper *target_plugin_chart,
                                        s57chart *Chs57,
                                        ListOfObjRazRules *rule_list,
-                                       ListOfPI_S57Obj *pi_rule_list,
+                                       std::list<S57Obj*> *pi_rule_list,
                                        std::vector<s57Sector_t> &sectorlegs);
 
   // Private Data
