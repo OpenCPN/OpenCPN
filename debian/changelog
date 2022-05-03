@@ -1,6 +1,11 @@
 opencpn (5.6.0+dfsg0-1~bpo10+2) buster-backports-sloppy; urgency=medium
 
   * Link to gtk2 instead of gtk3 to match available plugins.
+    Closes: #1009701
+  * Add upstream patches to make it possible to define the target as
+    a compile time constant.
+  * Add patch to avoid getting multiple possible plugins to load besides
+    the Debian version.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Wed, 13 Apr 2022 18:11:14 +0200
 
