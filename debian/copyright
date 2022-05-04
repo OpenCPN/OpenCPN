@@ -3,6 +3,7 @@ Upstream-Name: OpenCPN
 Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
 Source: https://github.com/OpenCPN/OpenCPN.git
 Files-Excluded:
+ */NSIS.template.in*
  buildosx*
  buildandroid*
  buildwin*
@@ -14,7 +15,7 @@ Files-Excluded:
  plugins/chartdldr_pi/src/tinyxml*
  plugins/chartdldr_pi/src/unarr*
  plugins/chartdldr_pi/data/doc/highlight.min.js
- plugins/chartdldr_pi/data/doc/MathJax.js
+ plugins/chartdldr_pi/data/doc
  plugins/grib_pi/src/bzip2*
  libs/lz4*
  libs/serial*
