@@ -38,7 +38,7 @@ extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
 
 extern RouteList *pRouteList;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
 // extern bool g_bIsNewLayer;
 
@@ -1163,7 +1163,7 @@ static bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
   //    TODO  All this trouble for a tentative track.......Should make some
   //    Track methods????
   if (bAddtrack) {
-    pTrackList->Append(pTentTrack);
+    g_TrackList.push_back(pTentTrack);
 
     //    Do the (deferred) calculation of Track BBox
     //        pTentTrack->FinalizeForRendering();
@@ -1301,15 +1301,11 @@ bool NavObjectCollection1::CreateNavObjGPXRoutes(void) {
 
 bool NavObjectCollection1::CreateNavObjGPXTracks(void) {
   // Tracks
-  wxTrackListNode *node1 = pTrackList->GetFirst();
-  while (node1) {
-    Track *pTrack = node1->GetData();
-
+  for (Track *pTrack : g_TrackList) {
     if (pTrack->GetnPoints()) {
       if (!pTrack->m_bIsInLayer && !pTrack->m_btemp)
         GPXCreateTrk(m_gpx_root.append_child("trk"), pTrack, 0);
     }
-    node1 = node1->GetNext();
   }
 
   return true;
@@ -1354,14 +1350,11 @@ void NavObjectCollection1::AddGPXRoutesList(RouteList *pRoutes) {
   }
 }
 
-void NavObjectCollection1::AddGPXTracksList(TrackList *pTracks) {
+void NavObjectCollection1::AddGPXTracksList(std::vector<Track*> *pTracks) {
   SetRootGPXNode();
 
-  wxTrackListNode *pTrack = pTracks->GetFirst();
-  while (pTrack) {
-    Track *pRData = pTrack->GetData();
+  for (Track *pRData : *pTracks) {
     AddGPXTrack(pRData);
-    pTrack = pTrack->GetNext();
   }
 }
 
@@ -1690,16 +1683,18 @@ bool NavObjectChanges::ApplyChanges(void) {
     object = object.next_sibling();
   }
   // Check to make sure we haven't loaded tracks with less than 2 points
-  wxTrackListNode *node1 = pTrackList->GetFirst();
-  while (node1) {
-    Track *pTrack = node1->GetData();
+  auto it = g_TrackList.begin();
+  while (it != g_TrackList.end()) {
+    Track *pTrack = *it;
+    ++it;
     if (pTrack->GetnPoints() < 2) {
-      wxTrackListNode *tnode = node1->GetNext();
+      auto to_erase = it;
+      ++it;
+      g_TrackList.erase(to_erase);
       delete pTrack;
-      pTrackList->DeleteNode(node1);
-      node1 = tnode;
-    } else
-      node1 = node1->GetNext();
+    } else {
+      ++it;
+    }
   }
 
   return true;

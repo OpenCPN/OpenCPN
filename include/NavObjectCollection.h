@@ -29,9 +29,9 @@
 #include <wx/string.h>
 #include <wx/checkbox.h>
 #include "bbox.h"
+#include <vector>
 
 class Track;
-class TrackList;
 class TrackPoint;
 class RouteList;
 class RoutePointList;
@@ -88,7 +88,7 @@ public:
   bool CreateNavObjGPXTracks(void);
 
   void AddGPXRoutesList(RouteList *pRoutes);
-  void AddGPXTracksList(TrackList *pTracks);
+  void AddGPXTracksList(std::vector<Track*> *pTracks);
   bool AddGPXPointsList(RoutePointList *pRoutePoints);
   bool AddGPXRoute(Route *pRoute);
   bool AddGPXTrack(Track *pTrk);

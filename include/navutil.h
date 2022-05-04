@@ -96,7 +96,6 @@ class ocpnDC;
 class NavObjectCollection1;
 class NavObjectChanges;
 class TrackPoint;
-class TrackList;
 class RouteList;
 class canvasConfig;
 class RoutePointList;
@@ -136,7 +135,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer = false,
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
                      const wxString suggestedName = _T("routes"));
-bool ExportGPXTracks(wxWindow *parent, TrackList *pRoutes,
+bool ExportGPXTracks(wxWindow *parent, std::vector<Track*> *pRoutes,
                      const wxString suggestedName = _T("tracks"));
 bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
                         const wxString suggestedName = _T("waypoints"));

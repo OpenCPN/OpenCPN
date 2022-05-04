@@ -102,7 +102,7 @@ extern double g_ChartNotRenderScaleFactor;
 extern int g_restore_stackindex;
 extern int g_restore_dbindex;
 extern RouteList *pRouteList;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern LayerList *pLayerList;
 extern int g_LayerIdx;
 extern MyConfig *pConfig;
@@ -2873,7 +2873,7 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
   return false;
 }
 
-bool ExportGPXTracks(wxWindow *parent, TrackList *pTracks,
+bool ExportGPXTracks(wxWindow *parent, std::vector<Track*> *pTracks,
                      const wxString suggestedName) {
   wxFileName fn = exportFileName(parent, suggestedName);
   if (fn.IsOk()) {
@@ -2978,10 +2978,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
       node1 = node1->GetNext();
     }
 
-    wxTrackListNode *node2 = pTrackList->GetFirst();
-    while (node2) {
-      Track *pTrack = node2->GetData();
-
+    for (Track* pTrack : g_TrackList) {
       bool b_add = true;
 
       if (bviz_only && !pTrack->IsVisible()) b_add = false;
@@ -2989,7 +2986,6 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
       if (pTrack->m_bIsInLayer && !blayer) b_add = false;
 
       if (b_add) pgpx->AddGPXTrack(pTrack);
-      node2 = node2->GetNext();
     }
 
     // Android 5+ requires special handling to support native app file writes to
@@ -3293,14 +3289,8 @@ Route *RouteExists(Route *pTentRoute) {
 }
 
 Track *TrackExists(const wxString &guid) {
-  wxTrackListNode *track_node = pTrackList->GetFirst();
-
-  while (track_node) {
-    Track *ptrack = track_node->GetData();
-
+  for (Track* ptrack : g_TrackList) {
     if (guid == ptrack->m_GUID) return ptrack;
-
-    track_node = track_node->GetNext();
   }
   return NULL;
 }

@@ -241,7 +241,7 @@ double g_ChartNotRenderScaleFactor;
 int g_nDepthUnitDisplay;
 
 RouteList *pRouteList;
-TrackList *pTrackList;
+std::vector<Track*> g_TrackList;
 LayerList *pLayerList;
 bool g_bIsNewLayer;
 int g_LayerIdx;
@@ -1948,8 +1948,6 @@ bool MyApp::OnInit() {
   pLayerList = new LayerList;
   //  Routes
   pRouteList = new RouteList;
-  // Tracks
-  pTrackList = new TrackList;
 
   //      (Optionally) Capture the user and file(effective) ids
   //  Some build environments may need root privileges for hardware
@@ -2695,12 +2693,10 @@ int MyApp::OnExit() {
   delete phost_name;
   delete pInit_Chart_Dir;
 
-  if (pTrackList) {
-    pTrackList->DeleteContents(true);
-    pTrackList->Clear();
-    delete pTrackList;
-    pTrackList = NULL;
+  for (Track* track : g_TrackList) {
+    delete track;
   }
+  g_TrackList.clear();
 
   delete g_pRouteMan;
   delete pWayPointMan;
@@ -5064,7 +5060,7 @@ void MyFrame::TrackOn(void) {
   g_bTrackActive = true;
   g_pActiveTrack = new ActiveTrack();
 
-  pTrackList->Append(g_pActiveTrack);
+  g_TrackList.push_back(g_pActiveTrack);
   if (pConfig) pConfig->AddNewTrack(g_pActiveTrack);
 
   g_pActiveTrack->Start();
@@ -8329,13 +8325,12 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
 
     wxJSONValue v;
     v[_T("Track_ID")] = trk_id;
-    for (TrackList::iterator it = pTrackList->begin(); it != pTrackList->end();
-         it++) {
+    for (Track* ptrack : g_TrackList) {
       wxString name = wxEmptyString;
-      if ((*it)->m_GUID == trk_id) {
-        name = (*it)->GetName();
+      if (ptrack->m_GUID == trk_id) {
+        name = ptrack->GetName();
         if (name.IsEmpty()) {
-          TrackPoint *rp = (*it)->GetPoint(0);
+          TrackPoint *rp = ptrack->GetPoint(0);
           if (rp && rp->GetCreateTime().IsValid())
             name = rp->GetCreateTime().FormatISODate() + _T(" ") +
                    rp->GetCreateTime().FormatISOTime();
@@ -8347,9 +8342,9 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
          * It's up to the plugin to collect the data. */
         int i = 1;
         v[_T("error")] = false;
-        v[_T("TotalNodes")] = (*it)->GetnPoints();
-        for (int j = 0; j < (*it)->GetnPoints(); j++) {
-          TrackPoint *tp = (*it)->GetPoint(j);
+        v[_T("TotalNodes")] = ptrack->GetnPoints();
+        for (int j = 0; j < ptrack->GetnPoints(); j++) {
+          TrackPoint *tp = ptrack->GetPoint(j);
           v[_T("lat")] = tp->m_lat;
           v[_T("lon")] = tp->m_lon;
           v[_T("NodeNr")] = i;
@@ -8450,11 +8445,10 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           i++;
         }
       } else {  // track
-        for (TrackList::iterator it = pTrackList->begin();
-             it != pTrackList->end(); it++) {
-          wxString name = (*it)->GetName();
+        for (Track *ptrack : g_TrackList) {
+          wxString name = ptrack->GetName();
           if (name.IsEmpty()) {
-            TrackPoint *tp = (*it)->GetPoint(0);
+            TrackPoint *tp = ptrack->GetPoint(0);
             if (tp && tp->GetCreateTime().IsValid())
               name = tp->GetCreateTime().FormatISODate() + _T(" ") +
                      tp->GetCreateTime().FormatISOTime();
@@ -8463,8 +8457,8 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           }
           v[i][_T("error")] = false;
           v[i][_T("name")] = name;
-          v[i][_T("GUID")] = (*it)->m_GUID;
-          v[i][_T("active")] = g_pActiveTrack == (*it);
+          v[i][_T("GUID")] = ptrack->m_GUID;
+          v[i][_T("active")] = g_pActiveTrack == ptrack;
           i++;
         }
       }

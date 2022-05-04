@@ -49,7 +49,7 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
 
@@ -165,7 +165,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
           node = node->GetNext();
         }
 
-        pTrackList->Append(t);
+        g_TrackList.push_back(t);
         pConfig->AddNewTrack(t);
         //                t->RebuildGUIDList(); // ensure the GUID list is
         //                intact and good

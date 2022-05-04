@@ -163,7 +163,7 @@ extern ConsoleCanvas *console;
 extern OCPNPlatform *g_Platform;
 
 extern RouteList *pRouteList;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern MyConfig *pConfig;
 extern Select *pSelect;
 extern Routeman *g_pRouteMan;
@@ -9886,7 +9886,7 @@ void pupHandler_PasteTrack() {
     prevPoint = newPoint;
   }
 
-  pTrackList->Append(newTrack);
+  g_TrackList.push_back(newTrack);
   pConfig->AddNewTrack(newTrack);
 
   gFrame->InvalidateAllGL();
@@ -11789,10 +11789,7 @@ emboss_data *ChartCanvas::CreateEmbossMapData(wxFont &font, int width,
 
 void ChartCanvas::DrawAllTracksInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Track *active_track = NULL;
-  for (wxTrackListNode *node = pTrackList->GetFirst(); node;
-       node = node->GetNext()) {
-    Track *pTrackDraw = node->GetData();
-
+  for (Track* pTrackDraw : g_TrackList) {
     if (g_pActiveTrack == pTrackDraw) {
       active_track = pTrackDraw;
       continue;
@@ -11806,10 +11803,7 @@ void ChartCanvas::DrawAllTracksInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 
 void ChartCanvas::DrawActiveTrackInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Track *active_track = NULL;
-  for (wxTrackListNode *node = pTrackList->GetFirst(); node;
-       node = node->GetNext()) {
-    Track *pTrackDraw = node->GetData();
-
+  for (Track* pTrackDraw : g_TrackList) {
     if (g_pActiveTrack == pTrackDraw) {
       active_track = pTrackDraw;
       break;

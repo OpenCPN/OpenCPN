@@ -185,8 +185,6 @@ private:
   wxString m_TrackNameString;
 };
 
-WX_DECLARE_LIST(Track, TrackList);  // establish class Route as list member
-
 class Route;
 class ActiveTrack : public wxEvtHandler, public Track {
 public:
