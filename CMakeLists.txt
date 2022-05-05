@@ -644,6 +644,7 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
     message(STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
     message(STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     add_definitions(-DocpnUSE_GL)
+    add_definitions(-DocpnUSE_GLSL)
 
     # We need to remove GLU from the OPENGL_LIBRARIES list
     foreach (_currentLibFile ${OPENGL_LIBRARIES})
@@ -927,6 +928,7 @@ set(
   include/usb_devices.h
   include/vector2D.h
   include/viewport.h
+  include/shaders.h
   include/WindowDestroyListener.h
   ${CMAKE_BINARY_DIR}/include/config.h
 )
@@ -1053,7 +1055,11 @@ set(
   src/undo.cpp
   src/update_mgr.cpp
   src/viewport.cpp
+  src/shaders.cpp
 )
+
+  SET(HDRS ${HDRS} include/shaders.h)
+  SET(SRCS ${SRCS} src/shaders.cpp)
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -1074,8 +1080,6 @@ endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
-  SET(HDRS ${HDRS} include/shaders.h)
-  SET(SRCS ${SRCS} src/shaders.cpp)
 ENDIF(QT_ANDROID)
 
 SET(SRC_TINYXML

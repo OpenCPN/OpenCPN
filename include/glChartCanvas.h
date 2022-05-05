@@ -216,6 +216,7 @@ public:
 
   wxString GetRendererString() { return m_renderer; }
   wxString GetVersionString() { return m_version; }
+  wxString GetGLSLVersionString() { return m_GLSLversion; }
   void EnablePaint(bool b_enable) { m_b_paint_enable = b_enable; }
 
   void Invalidate();
@@ -299,7 +300,7 @@ protected:
   bool m_bsetup;
 
   wxString m_renderer;
-  wxString m_version;
+  wxString m_version, m_GLSLversion;
   wxString m_extensions;
 
   ViewPort m_cache_vp;
@@ -378,6 +379,8 @@ protected:
   int m_currentTexWidth;
   int m_currentTexHeight;
   int m_displayScale;
+
+  bool m_bUseGLSL;
 
   DECLARE_EVENT_TABLE()
 };

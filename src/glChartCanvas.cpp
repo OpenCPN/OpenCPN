@@ -58,7 +58,10 @@ class OCPNStopWatch {
 #if defined(__OCPN__ANDROID__)
 #include "androidUTIL.h"
 #elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glx.h>
+//#include <GL/glx.h>
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
 #endif
 
 #include "dychart.h"
@@ -93,6 +96,7 @@ class OCPNStopWatch {
 #include "mbtiles.h"
 #include <vector>
 #include <algorithm>
+#include "shaders.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64
@@ -1254,6 +1258,14 @@ void glChartCanvas::SetupOpenGL() {
   msg += m_version;
   wxLogMessage(msg);
 
+  char GLSL_version_string[80];
+  strncpy(GLSL_version_string, (char *)glGetString(GL_SHADING_LANGUAGE_VERSION), 79);
+  msg.Printf(_T("OpenGL-> GLSL Version reported:  "));
+  m_GLSLversion = wxString(GLSL_version_string, wxConvUTF8);
+  msg += m_GLSLversion;
+  wxLogMessage(msg);
+
+
   const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
   m_extensions = wxString((const char *)ext_str, wxConvUTF8);
 #ifdef __WXQT__
@@ -1474,6 +1486,9 @@ void glChartCanvas::SetupOpenGL() {
 #ifdef USE_ANDROID_GLES2
   s_b_useStencilAP = s_b_useStencil;  // required for GLES2 platform
 #endif
+
+  //  Check and determine if GLSL is to be used
+  m_bUseGLSL = true;
 
   if (m_b_BuiltFBO) {
     wxLogMessage(_T("OpenGL-> Using Framebuffer Objects"));
@@ -4212,6 +4227,12 @@ void glChartCanvas::Render() {
     return;
   }
 
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+  loadShaders(0);
+  configureShaders(m_pParentCanvas->VPoint);
+#endif
+
+
 #ifdef USE_ANDROID_GLES2
 
   OCPNStopWatch sw;
@@ -4226,8 +4247,6 @@ void glChartCanvas::Render() {
   // if(m_pParentCanvas->m_canvasIndex == 0) return;
 
   // Do any setup required...
-  loadShaders(0 /*m_pParentCanvas->m_canvasIndex*/);
-  configureShaders(m_pParentCanvas->VPoint);
 
   bool recompose = false;
   if (m_pParentCanvas->VPoint.b_quilt && m_pParentCanvas->m_pQuilt &&
