@@ -4980,7 +4980,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 
   ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
   wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
-  catalog.listen(this, EVT_CATALOG_CHANGE);
+  catalog_listener = catalog.get_listener(this, EVT_CATALOG_CHANGE);
   Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
 
 #else  // Android
@@ -5028,16 +5028,12 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 
     ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
     wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
-    catalog.listen(this, EVT_CATALOG_CHANGE);
-    Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
   }
 
 #endif
 }
 
 CatalogMgrPanel::~CatalogMgrPanel() {
-  ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
-  catalog.unlisten(this);
   m_updateButton->Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
                          &CatalogMgrPanel::OnUpdateButton, this);
   if (m_tarballButton)
