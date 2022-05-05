@@ -26,7 +26,7 @@
 
 #include <wx/log.h>
 
-#include "config_var.h"
+#include "observable.h"
 
 namespace ocpn {
 
