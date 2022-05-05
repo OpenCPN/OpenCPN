@@ -29,7 +29,17 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#if defined(__OCPN__ANDROID__)
 #include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif
+
+#include <memory>
+#include <vector>
+#include <fstream>
 
 extern GLint color_tri_shader_program;
 extern GLint texture_2D_shader_program;

@@ -23,10 +23,148 @@
 
 #include "shaders.h"
 
-#ifdef USE_ANDROID_GLES2
-#include "qdebug.h"
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
+#ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
+#include "qdebug.h"
+#endif
+
+
+class GLShaderProgram
+{
+public:
+
+    class Builder {
+    public:
+        Builder() : linked_(false) {
+            programId_ = glCreateProgram();
+        }
+
+        Builder &addShaderFromSource(std::string const &shaderSource, GLenum shaderType) {
+            char const *shaderCStr = shaderSource.c_str();
+            GLuint shaderId = glCreateShader(shaderType);
+            glShaderSource(shaderId, 1, &shaderCStr, nullptr);
+            glCompileShader(shaderId);
+            glAttachShader(programId_, shaderId);
+            return *this;
+        }
+
+        Builder &addShaderFromFile(std::string const &shaderFile, GLenum shaderType) {
+            std::ifstream fileName(shaderFile);
+            std::istreambuf_iterator<char> fileBegin(fileName), fileEnd;
+            std::string fileContents(fileBegin, fileEnd);
+            return addShaderFromSource(fileContents, shaderType);
+        }
+
+        GLShaderProgram linkProgram() {
+            glLinkProgram(programId_);
+            GLShaderProgram theProgram(programId_);
+            //deleteAttachedShaders(programId_);
+            linked_ = true;
+            return theProgram;
+        }
+
+        ~Builder() {
+             if(!linked_) {
+                 glDeleteProgram(programId_);
+             }
+         }
+    private:
+        GLuint programId_;
+        bool linked_;
+    };
+
+    GLShaderProgram() : programId_(0) { }
+
+    GLShaderProgram(GLShaderProgram &&other) {
+        *this = std::move(other);
+    }
+
+    GLShaderProgram &operator=(GLShaderProgram &&other)
+    {
+        programId_ = other.programId_;
+        other.programId_ = 0;
+
+        if (other.programId_ != 0) {
+            glDeleteProgram(other.programId_);
+        }
+
+        return *this;
+    }
+
+    ~GLShaderProgram() {
+        glDeleteShader(programId_);
+    }
+
+    GLuint programId() const { return programId_; }
+
+    GLShaderProgram(GLShaderProgram const &other) = delete;
+    GLShaderProgram &operator=(GLShaderProgram const &other) = delete;
+private:
+    GLShaderProgram(GLuint programId) : programId_(programId) { }
+    GLuint programId_;
+};
+
+/*
+auto shaderProgram = GLShaderProgram::Builder()
+    .addShaderFromFile("vertex.glsl", GL_VERTEX_SHADER)
+    .addShaderFromFile("fragment.glsl", GL_FRAGMENT_SHADER)
+    .linkProgram();
+
+glUseProgram(shaderProgram.programId());
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//typedef GLint GLShaderProgram;
+
+struct ProgramStage
+{
+    enum Type
+    {
+        Vertex,
+        Fragment,
+        Geometry,
+        // ... what have you ...
+    };
+
+    Type type;
+    std::string filename; // This could also be a source code string instead if it suits you.
+};
+
+std::unique_ptr<GLShaderProgram> createGLShaderProgram(const std::vector<ProgramStage> & stages);
+
+
+// const GLchar* preamble = R"(
+// #version 140
+// #define lowp
+// #define mediump
+// #define highp
+// )";
+
+#ifdef USE_ANDROID_GLES2
+const GLchar* preamble =
+"#version 100\n";
+#else
+const GLchar* preamble =
+"#version 140\n"
+"#define lowp\n"
+"#define mediump\n"
+"#define highp\n";
+#endif
+
 
 // Simple colored triangle shader
 
@@ -229,11 +367,24 @@ bool loadShaders(int index) {
 
   // Simple colored triangle shader
 
+  auto shaderProgram = GLShaderProgram::Builder()
+    .addShaderFromFile("vertex.glsl", GL_VERTEX_SHADER)
+    .addShaderFromFile("fragment.glsl", GL_FRAGMENT_SHADER)
+    .linkProgram();
+
+
+
   if (!color_tri_vertex_shader_p[index]) {
     /* Vertex shader */
     color_tri_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(color_tri_vertex_shader_p[index], 1,
-                   &color_tri_vertex_shader_source, NULL);
+    GLchar const* files[] = { preamble, color_tri_vertex_shader_source };
+    GLint lengths[]       = { (GLint)strlen(preamble),  (GLint)strlen(color_tri_vertex_shader_source)  };
+
+    glShaderSource(color_tri_vertex_shader_p[index], 2,
+                   files, lengths);
+
+//    glShaderSource(color_tri_vertex_shader_p[index], 1,
+//                   &color_tri_vertex_shader_source, NULL);
     glCompileShader(color_tri_vertex_shader_p[index]);
     glGetShaderiv(color_tri_vertex_shader_p[index], GL_COMPILE_STATUS,
                   &success);
@@ -395,7 +546,7 @@ bool loadShaders(int index) {
       glGetShaderInfoLog(circle_filled_vertex_shader_p[index], INFOLOG_LEN,
                          NULL, infoLog);
       printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -412,7 +563,7 @@ bool loadShaders(int index) {
       glGetShaderInfoLog(circle_filled_fragment_shader_p[index], INFOLOG_LEN,
                          NULL, infoLog);
       printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -431,7 +582,7 @@ bool loadShaders(int index) {
       glGetProgramInfoLog(circle_filled_shader_program_p[index], INFOLOG_LEN,
                           NULL, infoLog);
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -503,7 +654,7 @@ bool loadShaders(int index) {
       glGetShaderInfoLog(texture_2DA_vertex_shader_p[index], INFOLOG_LEN, NULL,
                          infoLog);
       printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -520,7 +671,7 @@ bool loadShaders(int index) {
       glGetShaderInfoLog(texture_2DA_fragment_shader_p[index], INFOLOG_LEN,
                          NULL, infoLog);
       printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -539,12 +690,12 @@ bool loadShaders(int index) {
       glGetProgramInfoLog(texture_2DA_shader_program_p[index], INFOLOG_LEN,
                           NULL, infoLog);
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
 
-  qDebug() << "Shader Load " << ret_val;
+  //qDebug() << "Shader Load " << ret_val;
 
   bShadersLoaded[index] = true;
   reConfigureShaders(index);
