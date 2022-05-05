@@ -160,7 +160,7 @@ extern PlugInManager *g_pi_manager;
 
 extern WayPointman *pWayPointMan;
 extern RouteList *pRouteList;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern bool b_inCompressAllCharts;
 extern bool g_bGLexpert;
 extern bool g_bcompression_wait;
@@ -1821,9 +1821,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
   if (!m_pParentCanvas->m_bShowNavobjects) return;
   ocpnDC dc(*this);
 
-  for (wxTrackListNode *node = pTrackList->GetFirst(); node;
-       node = node->GetNext()) {
-    Track *pTrackDraw = node->GetData();
+  for (Track* pTrackDraw : g_TrackList) {
     /* defer rendering active tracks until later */
     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
     if (pActiveTrack && pActiveTrack->IsRunning()) continue;
@@ -1862,9 +1860,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
 void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
   ocpnDC dc(*this);
 
-  for (wxTrackListNode *node = pTrackList->GetFirst(); node;
-       node = node->GetNext()) {
-    Track *pTrackDraw = node->GetData();
+  for (Track* pTrackDraw : g_TrackList) {
     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
     if (pActiveTrack && pActiveTrack->IsRunning())
       pTrackDraw->Draw(m_pParentCanvas, dc, vp,

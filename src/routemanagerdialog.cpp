@@ -70,7 +70,7 @@ enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
 
 // GLOBALS :0
 extern RouteList *pRouteList;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern LayerList *pLayerList;
 extern wxString GetLayerName(int id);
 extern RoutePropDlgImpl *pRoutePropDialog;
@@ -1861,14 +1861,12 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
   m_pTrkListCtrl->DeleteAllItems();
 
   // then add tracks to the listctrl
-  TrackList::iterator it;
+  std::vector<Track*>::iterator it;
   int index = 0;
   int list_index = 0;
   bool bpartialViz = false;
 
-  for (it = (*pTrackList).begin(); it != (*pTrackList).end(); ++it, ++index) {
-    ;
-    Track *trk = *it;
+  for (Track *trk : g_TrackList) {
     if (!trk->IsVisible()) bpartialViz = true;
 
     if (!trk->IsListed()) continue;
@@ -2037,7 +2035,7 @@ void RouteManagerDialog::OnTrkPropertiesClick(wxCommandEvent &event) {
 }
 
 void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
-  TrackList list;
+  std::vector<Track*> list;
 
   int answer = OCPNMessageBox(
       this, _("Are you sure you want to delete the selected object(s)"),
@@ -2059,12 +2057,12 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
 
     Track *ptrack_to_delete = (Track *)m_pTrkListCtrl->GetItemData(item);
 
-    if (ptrack_to_delete) list.Append(ptrack_to_delete);
+    if (ptrack_to_delete) list.push_back(ptrack_to_delete);
   }
 
   if (busy) {
-    for (unsigned int i = 0; i < list.GetCount(); i++) {
-      Track *track = (list.Item(i)->GetData());
+    for (unsigned int i = 0; i < list.size(); i++) {
+      Track *track = list.at(i);
       if (track) {
         g_pAIS->DeletePersistentTrack(track);
         pConfig->DeleteConfigTrack(track);
@@ -2083,7 +2081,7 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
 }
 
 void RouteManagerDialog::OnTrkExportClick(wxCommandEvent &event) {
-  TrackList list;
+  std::vector<Track*> list;
   wxString suggested_name = _T("tracks");
 
   long item = -1;
@@ -2095,7 +2093,7 @@ void RouteManagerDialog::OnTrkExportClick(wxCommandEvent &event) {
     Track *ptrack_to_export = (Track *)m_pTrkListCtrl->GetItemData(item);
 
     if (ptrack_to_export) {
-      list.Append(ptrack_to_export);
+      list.push_back(ptrack_to_export);
       if (ptrack_to_export->GetName() != wxEmptyString)
         suggested_name = ptrack_to_export->GetName();
     }
@@ -2851,16 +2849,12 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     node1 = next_node;
   }
 
-  wxTrackListNode *node2 = pTrackList->GetFirst();
-  while (node2) {
-    Track *pTrack = node2->GetData();
-    wxTrackListNode *next_node = node2->GetNext();
+  for (Track *pTrack : g_TrackList) {
     if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID)) {
       pTrack->m_bIsInLayer = false;
       pTrack->m_LayerID = 0;
       g_pRouteMan->DeleteTrack(pTrack);
     }
-    node2 = next_node;
   }
 
   // Process waypoints in this layer
@@ -2924,12 +2918,9 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
     node1 = node1->GetNext();
   }
 
-  wxTrackListNode *node2 = pTrackList->GetFirst();
-  while (node2) {
-    Track *pTrack = node2->GetData();
+  for (Track* pTrack : g_TrackList) {
     if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID))
       pTrack->SetVisible(layer->IsVisibleOnChart());
-    node2 = node2->GetNext();
   }
 
   // Process waypoints in this layer
@@ -3034,12 +3025,9 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
     node1 = node1->GetNext();
   }
 
-  wxTrackListNode *node2 = pTrackList->GetFirst();
-  while (node2) {
-    Track *pTrack = node2->GetData();
+  for (Track *pTrack : g_TrackList) {
     if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID))
       pTrack->SetListed(layer->IsVisibleOnListing());
-    node2 = node2->GetNext();
   }
 
   // Process waypoints in this layer

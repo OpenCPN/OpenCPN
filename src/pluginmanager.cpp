@@ -191,7 +191,7 @@ extern WayPointman *pWayPointMan;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList *pRouteList;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern PlugInManager *g_pi_manager;
 extern s52plib *ps52plib;
 extern wxString ChartListFileName;
@@ -4465,14 +4465,8 @@ wxArrayString GetRouteGUIDArray(void) {
 
 wxArrayString GetTrackGUIDArray(void) {
   wxArrayString result;
-  TrackList *list = pTrackList;
-
-  wxTrackListNode *prpnode = list->GetFirst();
-  while (prpnode) {
-    Track *ptrack = prpnode->GetData();
+  for (Track *ptrack : g_TrackList) {
     result.Add(ptrack->m_GUID);
-
-    prpnode = prpnode->GetNext();  // Track
   }
 
   return result;
@@ -4606,7 +4600,7 @@ bool AddPlugInTrack(PlugIn_Track *ptrack, bool b_permanent) {
   track->m_GUID = ptrack->m_GUID;
   track->m_btemp = (b_permanent == false);
 
-  pTrackList->Append(track);
+  g_TrackList.push_back(track);
 
   if (b_permanent) pConfig->AddNewTrack(track);
 

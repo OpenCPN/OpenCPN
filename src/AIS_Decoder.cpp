@@ -101,7 +101,7 @@ extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
 extern wxString g_default_wp_icon;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern OCPNPlatform *g_Platform;
 extern PlugInManager *g_pi_manager;
 extern Multiplexer *g_pMUX;
@@ -2532,7 +2532,7 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
                                   ptarget->GetFullName().c_str(), ptarget->MMSI,
                                   wxDateTime::Now().FormatISODate().c_str(),
                                   wxDateTime::Now().FormatISOTime().c_str()));
-      pTrackList->Append(t);
+      g_TrackList.push_back(t);
       pConfig->AddNewTrack(t);
       m_persistent_tracks[ptarget->MMSI] = t;
     } else {
