@@ -9356,7 +9356,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
   if (g_pAIS && m_bShowAIS && g_bShowAreaNotices) {
     float vp_scale = GetVPScale();
 
-    for (const auto& target : g_pAIS->GetAreaNoticeSourcesList()) {
+    for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
       AIS_Target_Data *target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (AIS_Area_Notice_Hash::iterator ani =

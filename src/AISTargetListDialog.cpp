@@ -972,7 +972,7 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
 
 void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
-    for (const auto& it : m_pdecoder->GetTargetList()) {
+    for (const auto &it : m_pdecoder->GetTargetList()) {
       AIS_Target_Data *pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = true;
@@ -984,7 +984,7 @@ void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
 
 void AISTargetListDialog::OnHideAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
-    for (const auto& it : m_pdecoder->GetTargetList()) {
+    for (const auto &it : m_pdecoder->GetTargetList()) {
       AIS_Target_Data *pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = false;

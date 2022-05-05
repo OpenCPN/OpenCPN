@@ -152,8 +152,7 @@ void AISshipNameCache(AIS_Target_Data *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
 
-AIS_Decoder::AIS_Decoder(wxFrame *parent)
-    : m_signalk_selfid("") {
+AIS_Decoder::AIS_Decoder(wxFrame *parent) : m_signalk_selfid("") {
   // Load cached AIS target names from a file
   AISTargetNamesC = new AIS_Target_Name_Hash;
   AISTargetNamesNC = new AIS_Target_Name_Hash;
@@ -208,7 +207,7 @@ AIS_Decoder::AIS_Decoder(wxFrame *parent)
 }
 
 AIS_Decoder::~AIS_Decoder(void) {
-  for (const auto& it : GetTargetList()) {
+  for (const auto &it : GetTargetList()) {
     AIS_Target_Data *td = it.second;
 
     delete td;
@@ -2466,7 +2465,7 @@ bool AIS_Decoder::NMEACheckSumOK(const wxString &str_in) {
 
 void AIS_Decoder::UpdateAllCPA(void) {
   //    Iterate thru all the targets
-  for (const auto& it : GetTargetList()) {
+  for (const auto &it : GetTargetList()) {
     AIS_Target_Data *td = it.second;
 
     if (NULL != td) UpdateOneCPA(td);
@@ -2475,7 +2474,7 @@ void AIS_Decoder::UpdateAllCPA(void) {
 
 void AIS_Decoder::UpdateAllTracks(void) {
   //    Iterate thru all the targets
-  for (const auto& it : GetTargetList()) {
+  for (const auto &it : GetTargetList()) {
     AIS_Target_Data *td = it.second;
 
     if (NULL != td) UpdateOneTrack(td);
@@ -2567,7 +2566,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
   m_bGeneralAlert = false;  // no alerts yet
 
   //    Iterate thru all the targets
-  for (const auto& it : GetTargetList()) {
+  for (const auto &it : GetTargetList()) {
     AIS_Target_Data *td = it.second;
 
     if (NULL != td) {
@@ -2832,7 +2831,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
   wxDateTime now = wxDateTime::Now();
   now.MakeGMT();
 
-  std::unordered_map<int, AIS_Target_Data*> &current_targets = GetTargetList();
+  std::unordered_map<int, AIS_Target_Data *> &current_targets = GetTargetList();
 
   auto it = current_targets.begin();
   std::vector<int> remove_array;  // collector for MMSI of targets to be removed
@@ -2984,8 +2983,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
     AIS_Target_Data *palert_target_sart = NULL;
     AIS_Target_Data *palert_target_dsc = NULL;
 
-    for (it = current_targets.begin(); it != current_targets.end();
-         ++it) {
+    for (it = current_targets.begin(); it != current_targets.end(); ++it) {
       AIS_Target_Data *td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
@@ -3081,8 +3079,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
     double tcpa_min = 1e6;  // really long
     AIS_Target_Data *palert_target_lowestcpa = NULL;
 
-    for (it = current_targets.begin(); it != current_targets.end();
-         ++it) {
+    for (it = current_targets.begin(); it != current_targets.end(); ++it) {
       AIS_Target_Data *td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
@@ -3193,8 +3190,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
 }
 
 AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI(int mmsi) {
-  if (AISTargetList.find(mmsi) ==
-      AISTargetList.end())
+  if (AISTargetList.find(mmsi) == AISTargetList.end())
     return NULL;
   else
     return AISTargetList[mmsi];

@@ -345,7 +345,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (g_pAIS && parent->GetShowAIS() && g_bShowAreaNotices) {
     float vp_scale = parent->GetVPScale();
 
-    for (const auto& target : g_pAIS->GetAreaNoticeSourcesList()) {
+    for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
       AIS_Target_Data *target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (AIS_Area_Notice_Hash::iterator ani =
