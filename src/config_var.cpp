@@ -1,3 +1,29 @@
+/*************************************************************************
+ *
+ * Project: OpenCPN
+ * Purpose: Implement observable.h
+ *
+ * Copyright (C) 2022 Alec Leamas
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
+ **************************************************************************/
+
+#include <atomic>
+#include <sstream>
+
 #include <wx/log.h>
 
 #include "config_var.h"
@@ -22,7 +48,7 @@ std::istream& operator>>(std::istream& input, wxString& ws) {
 }
 
 SingletonVar* SingletonVar::getInstance(const std::string& key) {
-  static std::map<std::string, SingletonVar*> instances;
+  static std::unordered_map<std::string, SingletonVar*> instances;
 
   if (instances.find(key) == instances.end()) {
     instances[key] = new SingletonVar();
@@ -30,26 +56,49 @@ SingletonVar* SingletonVar::getInstance(const std::string& key) {
   return instances[key];
 }
 
+
 /* ObservedVar implementation. */
 
-void ObservedVar::listen(wxWindow* listener, wxEventType ev_type) {
+void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
+  const auto& listeners = singleton->listeners;
+  if (listeners.find(listener) != listeners.end())
+    wxLogWarning("Duplicate window listener %",  listener);
   singleton->listeners[listener] = ev_type;
 }
 
-bool ObservedVar::unlisten(wxWindow* listener) {
+bool ObservedVar::unlisten(wxEvtHandler* listener) {
   auto& listeners = singleton->listeners;
   if (listeners.find(listener) == listeners.end()) return false;
   listeners.erase(listener);
   return true;
 }
 
-const void ObservedVar::notify() {
+const void ObservedVar::notify(const std::string& s, void* client_data) {
   auto& listeners = singleton->listeners;
   for (auto l = listeners.begin(); l != listeners.end(); l++) {
     wxCommandEvent ev(l->second);
+    ev.SetClientData(client_data);
+    ev.SetString(s);
     wxPostEvent(l->first, ev);
   }
 }
+
+const void ObservedVar::notify() { notify("", 0); }
+
+using Listener = ObservedVar::Listener;
+
+Listener ObservedVar::get_listener(wxEvtHandler* eh, wxEventType ev) {
+  return Listener(new ObservedVarListener(*this, eh, ev));
+}
+
+
+/* EventVar implementation. */
+
+std::string EventVar::autokey() {
+  static  std::atomic<unsigned long> last_ix(0);
+  return std::string("!@%/+") + std::to_string(last_ix++);
+}
+
 
 /* ConfigVar implementation. */
 
