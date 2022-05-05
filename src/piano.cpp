@@ -800,7 +800,7 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
    Allows us to get rid of global statics...
 
    wxCommandEvent ev(MyPianoEvent);    // Private event
-   ..set up event to specify action...SelectChart, SetChartThumbnail, etc
+   ..set up event to specify action...SelectChart,  etc
    ::PostEvent(pEventReceiver, ev);    // event receiver passed to ctor
 
    */

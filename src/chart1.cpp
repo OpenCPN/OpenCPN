@@ -3181,7 +3181,6 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
 
   if (ChartData) ChartData->ApplyColorSchemeToCachedCharts(cs);
 
-  SetChartThumbnail(-1);
 
   if (g_options) {
     g_options->SetColorScheme(cs);
@@ -7870,118 +7869,6 @@ void MyFrame::SetChartUpdatePeriod() {
   if (bskewdc) g_ChartUpdatePeriod = g_SkewCompUpdatePeriod;
 
   m_ChartUpdatePeriod = g_ChartUpdatePeriod;
-}
-
-void MyFrame::SetChartThumbnail(int index) {
-  // TODO
-#if 0
-    if( bDBUpdateInProgress ) return;
-
-    if( NULL == pCurrentStack ) return;
-    assert(ChartData != 0);
-
-    if( NULL == pthumbwin ) return;
-
-    if( NULL == cc1 ) return;
-
-    bool bneedmove = false;
-
-    if( index == -1 ) {
-        wxRect thumb_rect_in_parent = pthumbwin->GetRect();
-
-        pthumbwin->pThumbChart = NULL;
-        pthumbwin->Show( false );
-        cc1->RefreshRect( thumb_rect_in_parent, FALSE );
-    }
-
-<<<<<<< HEAD
-    //    Search the no-show array
-    bool b_is_in_noshow = false;
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == selected_dbIndex ) // chart is in the noshow list
-=======
-    else
-        if( index < pCurrentStack->nEntry ) {
-            if( ( ChartData->GetCSChartType( pCurrentStack, index ) == CHART_TYPE_KAP )
-                    || ( ChartData->GetCSChartType( pCurrentStack, index ) == CHART_TYPE_GEO )
-                    || ( ChartData->GetCSChartType( pCurrentStack, index ) == CHART_TYPE_PLUGIN ) ) {
-                ChartBase *new_pThumbChart = ChartData->OpenChartFromStack( pCurrentStack, index );
-                if( new_pThumbChart )         // chart opened ok
->>>>>>> multicanvas
-                {
-
-                    ThumbData *pTD = new_pThumbChart->GetThumbData( 150, 150, gLat, gLon );
-                    if( pTD ) {
-                        pthumbwin->pThumbChart = new_pThumbChart;
-
-                        pthumbwin->Resize();
-                        pthumbwin->Show( true );
-                        pthumbwin->Refresh( FALSE );
-                        pthumbwin->Move( wxPoint( 4, 4 ) );
-                        bneedmove = true;
-                    }
-
-                    else {
-                        wxLogMessage(
-                                _T("    chart1.cpp:SetChartThumbnail...Could not create thumbnail") );
-                        pthumbwin->pThumbChart = NULL;
-                        pthumbwin->Show( false );
-                        cc1->Refresh( FALSE );
-                    }
-
-                } else                            // some problem opening chart
-                {
-                    wxString fp = ChartData->GetFullPath( pCurrentStack, index );
-                    fp.Prepend( _T("    chart1.cpp:SetChartThumbnail...Could not open chart ") );
-                    wxLogMessage( fp );
-                    pthumbwin->pThumbChart = NULL;
-                    pthumbwin->Show( false );
-                    cc1->Refresh( FALSE );
-                }
-
-            } else {
-                ChartBase *new_pThumbChart = ChartData->OpenChartFromStack( pCurrentStack, index,
-                        THUMB_ONLY );
-
-                pthumbwin->pThumbChart = new_pThumbChart;
-
-                if( new_pThumbChart ) {
-                    ThumbData *pTD = new_pThumbChart->GetThumbData( 200, 200, gLat, gLon );
-                    if( pTD ) {
-                        pthumbwin->Resize();
-                        pthumbwin->Show( true );
-                        pthumbwin->Refresh( true );
-                        pthumbwin->Move( wxPoint( 4, 4 ) );
-                        bneedmove = true;
-                    } else
-                        pthumbwin->Show( false );
-
-                    cc1->Refresh( FALSE );
-                }
-            }
-
-            if(bneedmove && pthumbwin){         // Adjust position to avoid bad overlap
-                wxPoint pos = wxPoint(4,4);
-
-                wxPoint tLocn = ClientToScreen(pos);
-                wxRect tRect = wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y);
-
-                // Simplistic overlap avoidance works best when toolbar is horizontal near the top of screen.
-                // Other difficult cases simply center the thumbwin on the canvas....
-                if( g_MainToolbar && !g_MainToolbar->isSubmergedToGrabber()){
-                    if( g_MainToolbar->GetScreenRect().Intersects( tRect ) ) {
-                        wxPoint tbpos = cc1->ScreenToClient(g_MainToolbar->GetPosition());
-                        pos = wxPoint(4, g_MainToolbar->GetSize().y + tbpos.y + 4);
-                        tLocn = ClientToScreen(pos);
-                    }
-                }
-
-                pthumbwin->Move( pos );
-
-            }
-
-        }
-#endif
 }
 
 void MyFrame::UpdateControlBar(ChartCanvas *cc) {

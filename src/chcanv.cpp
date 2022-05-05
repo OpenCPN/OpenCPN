@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
@@ -1496,9 +1496,6 @@ void ChartCanvas::canvasChartsRefresh(int dbi_hint) {
         GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry(
             GetpCurrentStack(), m_singleChart->GetFullPath());
       }
-      // else
-      // SetChartThumbnail( dbi_hint );       // need to reset thumbnail on
-      // failed chart open
     }
 
     // refresh_Piano();
@@ -2098,8 +2095,6 @@ void ChartCanvas::SetupCanvasQuiltMode(void) {
       SelectQuiltRefdbChart(-1, false);
 
     m_singleChart = NULL;  // Bye....
-
-    // TODOSetChartThumbnail( -1 );            //Turn off thumbnails for sure
 
     //  Re-qualify the quilt reference chart selection
     AdjustQuiltRefChart();
@@ -13085,9 +13080,6 @@ void ChartCanvas::SelectChartFromStack(int index, bool bDir,
       GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry(
           GetpCurrentStack(), m_singleChart->GetFullPath());
     }
-    // else
-    //    SetChartThumbnail( -1 );   // need to reset thumbnail on failed chart
-    //    open
 
     //      Setup the view
     double zLat, zLon;
@@ -13142,9 +13134,6 @@ void ChartCanvas::SelectdbChart(int dbindex) {
       GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry(
           GetpCurrentStack(), m_singleChart->GetFullPath());
     }
-    // else
-    //    SetChartThumbnail( -1 );       // need to reset thumbnail on failed
-    //    chart open
 
     //      Setup the view
     double zLat, zLon;
@@ -13394,7 +13383,6 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
   wxPoint key_location = m_Piano->GetKeyOrigin(selected_index);
 
   if (!GetQuiltMode()) {
-    // SetChartThumbnail( selected_index );
     ShowChartInfoWindow(key_location.x, selected_dbIndex);
   } else {
     std::vector<int> piano_chart_index_array =
@@ -13416,7 +13404,6 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
         ShowChartInfoWindow(key_location.x, selected_dbIndex);
       }
     }
-    // SetChartThumbnail( -1 );        // hide all thumbs in quilt mode
   }
 }
 
@@ -13493,7 +13480,6 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
   wxString new_hash = m_Piano->GenerateAndStoreNewHash();
   if (new_hash != old_hash) {
     m_Piano->FormatKeys();
-    // SetChartThumbnail( -1 );
     HideChartInfoWindow();
     m_Piano->ResetRollover();
     SetQuiltChartHiLiteIndex(-1);
