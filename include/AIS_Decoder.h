@@ -28,6 +28,7 @@
 #include "ais.h"
 #include "OCPN_SignalKEvent.h"
 #include <map>
+#include <unordered_map>
 
 #define TRACKTYPE_DEFAULT 0
 #define TRACKTYPE_ALWAYS 1
@@ -75,8 +76,8 @@ public:
   void OnEvtAIS(OCPN_DataStreamEvent &event);
   void OnEvtSignalK(OCPN_SignalKEvent &event);
   AIS_Error Decode(const wxString &str);
-  AIS_Target_Hash *GetTargetList(void) { return AISTargetList; }
-  AIS_Target_Hash *GetAreaNoticeSourcesList(void) {
+  std::unordered_map<int, AIS_Target_Data*> &GetTargetList(void) { return AISTargetList; }
+  std::unordered_map<int, AIS_Target_Data*> &GetAreaNoticeSourcesList(void) {
     return AIS_AreaNotice_Sources;
   }
   AIS_Target_Data *Get_Target_Data_From_MMSI(int mmsi);
@@ -117,8 +118,8 @@ private:
                   wxJSONValue &item, wxString &sfixtime) const;
 
   wxString m_signalk_selfid;
-  AIS_Target_Hash *AISTargetList;
-  AIS_Target_Hash *AIS_AreaNotice_Sources;
+  std::unordered_map<int, AIS_Target_Data*> AISTargetList;
+  std::unordered_map<int, AIS_Target_Data*> AIS_AreaNotice_Sources;
   AIS_Target_Name_Hash *AISTargetNamesC;
   AIS_Target_Name_Hash *AISTargetNamesNC;
 
