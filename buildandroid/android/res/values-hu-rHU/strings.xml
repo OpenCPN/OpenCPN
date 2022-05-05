@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="DOWNLOADING_FILE">Fájl letöltése...</string>
+    <string name="DEFAULT">Alapértelmezett</string>
+    <string name="CUSTOM">Egyéni</string>
+    <string name="ocpn_GRIB_activity_Display">GRIB megjelenítési beállítások</string>
     <!-- Preferences Headers -->
     <!-- Display Preferences -->
     <!-- Charts Preferences -->

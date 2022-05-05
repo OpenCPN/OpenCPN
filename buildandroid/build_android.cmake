@@ -3,18 +3,27 @@
 #Toolchain and options definition file for OpenCPN Android build
 
 
-#  Locations of the cross-compiler tools
-# this one is important
 SET(CMAKE_SYSTEM_NAME Generic)
-#this one not so much
-SET(CMAKE_SYSTEM_VERSION 1)
+SET(CMAKE_SYSTEM_PROCESSOR arm)
 
+# specify the cross compilers and tools
 
-# specify the cross compiler
-#SET(CMAKE_C_COMPILER     /home/dsr/Android/android-ndk-r10d/tools_19_48/bin/arm-linux-androideabi-gcc)
-#SET(CMAKE_CXX_COMPILER   /home/dsr/Android/android-ndk-r10d/tools_19_48/bin/arm-linux-androideabi-g++)
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
+  set(CMAKE_AR ${tool_base}/bin/aarch64-linux-android-ar)
+  set(CMAKE_CXX_COMPILER ${tool_base}/bin/aarch64-linux-android21-clang++)
+  set(CMAKE_C_COMPILER ${tool_base}/bin/aarch64-linux-android21-clang)
+else ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
+  set(CMAKE_AR ${tool_base}/bin/arm-linux-androideabi-ar)
+  set(CMAKE_CXX_COMPILER ${tool_base}/bin/armv7a-linux-androideabi19-clang++)
+  set(CMAKE_C_COMPILER ${tool_base}/bin/armv7a-linux-androideabi19-clang)
+endif ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
 
-SET(TARGET_SUPPORTS_SHARED_LIBS TRUE)
+# Avoid compiler tests, which fail on linking from sysroot.
+set(CMAKE_C_COMPILER_WORKS 1)
+set(CMAKE_CXX_COMPILER_WORKS 1)
 
-#Location of the root of the Android NDK
-#SET(NDK_Base /home/dsr/Android/android-ndk-r10d )
+set(TARGET_SUPPORTS_SHARED_LIBS TRUE)
+
+set(CMAKE_SYSROOT ${tool_base}/sysroot)
+set(CMAKE_INCLUDE_PATH ${tool_base}/sysroot/usr/include)
+

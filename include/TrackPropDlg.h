@@ -108,6 +108,7 @@ private:
   void OnHyperLinkClick(wxHyperlinkEvent& event);
   wxHyperlinkCtrl* m_pEditedLink;
   void PopupMenuHandler(wxCommandEvent& event);
+  void OnActivate(wxActivateEvent& event);
 
 protected:
   wxNotebook* m_notebook1;

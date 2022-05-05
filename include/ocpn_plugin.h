@@ -996,7 +996,6 @@ class DECL_EXP PI_S57Obj {
 public:
   //  Public Methods
   PI_S57Obj();
-  ~PI_S57Obj();
 
 public:
   // Instance Data
@@ -1467,6 +1466,7 @@ public:
                                  const double RangeDistance = 1.0,
                                  const wxColor RangeColor = wxColor( 255,0,0 ) );
   ~PlugIn_Waypoint_Ex();
+  void InitDefaults();
 
   bool GetFSStatus();     // return "free standing" status
                           // To be a "free standing waypoint"(FSWP),
@@ -1485,14 +1485,17 @@ public:
   wxString m_MarkDescription;
   wxDateTime m_CreateTime;
   bool IsVisible;
+  bool IsActive;
 
   double scamin;
+  bool b_useScamin;
   bool IsNameVisible;
   int nrange_rings;
   double RangeRingSpace;
   wxColour RangeRingColor;
 
   wxString IconName;
+  wxString IconDescription;
 
   Plugin_HyperlinkList *m_HyperlinkList;
 };
@@ -1508,22 +1511,28 @@ public:
   wxString m_StartString;
   wxString m_EndString;
   wxString m_GUID;
+  bool m_isActive;
 
   Plugin_WaypointExList *pWaypointList;
 };
 
-
+extern DECL_EXP wxArrayString GetRouteGUIDArray(void);
+extern DECL_EXP wxArrayString GetTrackGUIDArray(void);
 
 extern DECL_EXP bool GetSingleWaypointEx(wxString GUID,
                                          PlugIn_Waypoint_Ex *pwaypoint);
 
-extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint);
+extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent = true);
 extern DECL_EXP bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint);
 
-extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute);
+extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute, bool b_permanent = true);
 extern DECL_EXP bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute);
 
 extern DECL_EXP std::unique_ptr<PlugIn_Waypoint_Ex> GetWaypointEx_Plugin(const wxString &);
 extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString &);
+
+extern DECL_EXP wxString GetActiveWaypointGUID(void);	// if no active waypoint, returns wxEmptyString
+extern DECL_EXP wxString GetActiveRouteGUID(void);	// if no active route, returns wxEmptyString
+
 
 #endif  //_PLUGIN_H_

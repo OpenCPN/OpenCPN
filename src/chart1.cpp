@@ -144,6 +144,7 @@
 #include "SoundFactory.h"
 #include "PluginHandler.h"
 #include "SignalKEventHandler.h"
+#include "SystemCmdSound.h"
 #include "gui_lib.h"
 
 #ifdef __linux__
@@ -183,10 +184,6 @@
 
 #ifdef LINUX_CRASHRPT
 #include "crashprint.h"
-#endif
-
-#ifdef __WXOSX__
-#include "DarkMode.h"
 #endif
 
 #ifdef OCPN_USE_NEWSERIAL
@@ -1883,6 +1880,17 @@ bool MyApp::OnInit() {
   wxLogMessage(_T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"),
                g_mem_total / 1024, g_mem_initial / 1024);
 
+  OCPN_OSDetail *detail = g_Platform->GetOSDetail();
+  wxString msgplat;
+  wxString like0;
+  if (!detail->osd_names_like.empty())
+    like0 = detail->osd_names_like[0].c_str();
+  msgplat.Printf("OCPN_OSDetail:  %s ; %s ; %s ; %s ; %s",
+                 detail->osd_arch.c_str(), detail->osd_name.c_str(),
+                 detail->osd_version.c_str(), detail->osd_ID.c_str(),
+                 like0.mb_str());
+  wxLogMessage(msgplat);
+
   //    Initialize embedded PNG icon graphics
   ::wxInitAllImageHandlers();
 
@@ -2008,7 +2016,7 @@ bool MyApp::OnInit() {
 
   if (g_useMUI) {
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-    style->chartStatusWindowTransparent = true;
+    if (style) style->chartStatusWindowTransparent = true;
   }
 
   //      Init the WayPoint Manager
@@ -2348,8 +2356,10 @@ bool MyApp::OnInit() {
 
   if (g_bframemax) gFrame->Maximize(true);
 
+#ifdef __OCPN__ANDROID__
   if (g_bresponsive && (gFrame->GetPrimaryCanvas()->GetPixPerMM() > 4.0))
     gFrame->Maximize(true);
+#endif
 
   //  Yield to pick up the OnSize() calls that result from Maximize()
   Yield();
@@ -2597,7 +2607,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#ifdef __linux__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__)
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams *cp = g_pConnectionParams->Item(i);
     if (cp->bEnabled) {
@@ -2755,10 +2765,12 @@ void MyApp::TrackOff(void) {
 wxDEFINE_EVENT(BELLS_PLAYED_EVTYPE, wxCommandEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-EVT_CLOSE(MyFrame::OnCloseWindow) EVT_MENU(wxID_EXIT, MyFrame::OnExit) EVT_SIZE(
-    MyFrame::OnSize) EVT_MOVE(MyFrame::OnMove) EVT_ICONIZE(MyFrame::OnIconize)
-    EVT_MENU(-1, MyFrame::OnToolLeftClick) EVT_TIMER(INIT_TIMER,
-                                                     MyFrame::OnInitTimer)
+EVT_CLOSE(MyFrame::OnCloseWindow)
+EVT_MENU(wxID_EXIT, MyFrame::OnExit)
+EVT_SIZE(MyFrame::OnSize)
+EVT_MOVE(MyFrame::OnMove)
+EVT_ICONIZE(MyFrame::OnIconize) EVT_MENU(-1, MyFrame::OnToolLeftClick)
+    EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
         EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
             EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
                 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
@@ -3042,7 +3054,8 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
 
   OcpnSound *sound = bells_sound[bells - 1];
   sound->SetFinishedCallback(onBellsFinishedCB, this);
-  sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+  auto cmd_sound = dynamic_cast<SystemCmdSound *>(sound);
+  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
   sound->Load(soundfile);
   if (!sound->IsOk()) {
     wxLogMessage(_T("Failed to load bells sound file: ") + soundfile);
@@ -3090,17 +3103,6 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
       SchemeName = _T("DAY");
       break;
   }
-
-#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
-  bool darkMode = (cs == GLOBAL_COLOR_SCHEME_DUSK ||
-                   cs == GLOBAL_COLOR_SCHEME_NIGHT );
-
-  if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
-    setAppLevelDarkMode(darkMode);
-  } else if (wxPlatformInfo::Get().CheckOSVersion(10, 12)) {
-    setWindowLevelDarkMode(MacGetTopLevelWindowRef(), darkMode);
-  }
-#endif
 
   g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
 
@@ -3179,7 +3181,6 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
 
   if (ChartData) ChartData->ApplyColorSchemeToCachedCharts(cs);
 
-  SetChartThumbnail(-1);
 
   if (g_options) {
     g_options->SetColorScheme(cs);
@@ -5898,7 +5899,14 @@ int MyFrame::DoOptionsDialog() {
 
   if (NULL == g_options) {
     g_Platform->ShowBusySpinner();
-    g_options = new options(this, -1, _("Options"));
+
+    int sx, sy;
+    pConfig->SetPath("/Settings");
+    pConfig->Read("OptionsSizeX", &sx, -1);
+    pConfig->Read("OptionsSizeY", &sy, -1);
+
+    g_options =
+        new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
 
     g_Platform->HideBusySpinner();
   }
@@ -6025,6 +6033,14 @@ int MyFrame::DoOptionsDialog() {
   if (g_MainToolbar) g_MainToolbar->EnableTooltips();
 
   options_lastPage = g_options->lastPage;
+#ifdef __OCPN__ANDROID__
+  //  This is necessary to force a manual change to charts page,
+  //  in order to properly refresh the chart directory list.
+  //  Root cause:  In Android, trouble with clearing the wxScrolledWindow
+  if (options_lastPage == 1)
+    options_lastPage = 0;
+#endif
+
   options_subpage = g_options->lastSubPage;
 
   options_lastWindowPos = g_options->lastWindowPos;
@@ -6133,7 +6149,6 @@ int MyFrame::DoOptionsDialog() {
 
   delete pWorkDirArray;
 
-  gFrame->Raise();
   DoChartUpdate();
 
   //  We set the compass size first, since that establishes the available space
@@ -6151,6 +6166,15 @@ int MyFrame::DoOptionsDialog() {
 
   SetAllToolbarScale();
   RequestNewToolbars();
+
+  //  Rebuild cursors
+  // ..For each canvas...
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      cc->RebuildCursors();
+    }
+  }
 
   // Change of master toolbar scale?
   bool b_masterScaleChange = false;
@@ -6590,10 +6614,10 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
   ChartData->SaveBinary(ChartListFileName);
   wxLogMessage(_T("Finished chart database Update"));
   wxLogMessage(_T("   "));
-  if (gWorldMapLocation
-          .empty()) {  // Last resort. User might have deleted all GSHHG data,
-                       // but we still might have the default dataset distributed
-                       // with OpenCPN or from the package repository...
+  if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
+                                    // GSHHG data, but we still might have the
+                                    // default dataset distributed with OpenCPN
+                                    // or from the package repository...
     gWorldMapLocation = gDefaultWorldMapLocation;
     gshhg_chart_loc = wxEmptyString;
   }
@@ -6922,7 +6946,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     }
 
     case 4: {
-      g_options = new options(this, -1, _("Options"));
+      int sx, sy;
+      pConfig->SetPath("/Settings");
+      pConfig->Read("OptionsSizeX", &sx, -1);
+      pConfig->Read("OptionsSizeY", &sy, -1);
+
+      g_options =
+          new options(this, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
 
       // needed to ensure that the chart window starts with keyboard focus
       SurfaceAllCanvasToolbars();
@@ -7265,7 +7295,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     GPSData.kHdt = gHdt;
     GPSData.nSats = g_SatsInView;
 
-    GPSData.FixTime = m_fixtime;
+    wxDateTime tCheck( (time_t) m_fixtime);
+
+    if (tCheck.IsValid())
+      GPSData.FixTime = m_fixtime;
+    else
+      GPSData.FixTime = wxDateTime::Now().GetTicks();
+
 
     g_pi_manager->SendPositionFixToAllPlugIns(&GPSData);
   }
@@ -7833,118 +7869,6 @@ void MyFrame::SetChartUpdatePeriod() {
   if (bskewdc) g_ChartUpdatePeriod = g_SkewCompUpdatePeriod;
 
   m_ChartUpdatePeriod = g_ChartUpdatePeriod;
-}
-
-void MyFrame::SetChartThumbnail(int index) {
-  // TODO
-#if 0
-    if( bDBUpdateInProgress ) return;
-
-    if( NULL == pCurrentStack ) return;
-    assert(ChartData != 0);
-
-    if( NULL == pthumbwin ) return;
-
-    if( NULL == cc1 ) return;
-
-    bool bneedmove = false;
-
-    if( index == -1 ) {
-        wxRect thumb_rect_in_parent = pthumbwin->GetRect();
-
-        pthumbwin->pThumbChart = NULL;
-        pthumbwin->Show( false );
-        cc1->RefreshRect( thumb_rect_in_parent, FALSE );
-    }
-
-<<<<<<< HEAD
-    //    Search the no-show array
-    bool b_is_in_noshow = false;
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == selected_dbIndex ) // chart is in the noshow list
-=======
-    else
-        if( index < pCurrentStack->nEntry ) {
-            if( ( ChartData->GetCSChartType( pCurrentStack, index ) == CHART_TYPE_KAP )
-                    || ( ChartData->GetCSChartType( pCurrentStack, index ) == CHART_TYPE_GEO )
-                    || ( ChartData->GetCSChartType( pCurrentStack, index ) == CHART_TYPE_PLUGIN ) ) {
-                ChartBase *new_pThumbChart = ChartData->OpenChartFromStack( pCurrentStack, index );
-                if( new_pThumbChart )         // chart opened ok
->>>>>>> multicanvas
-                {
-
-                    ThumbData *pTD = new_pThumbChart->GetThumbData( 150, 150, gLat, gLon );
-                    if( pTD ) {
-                        pthumbwin->pThumbChart = new_pThumbChart;
-
-                        pthumbwin->Resize();
-                        pthumbwin->Show( true );
-                        pthumbwin->Refresh( FALSE );
-                        pthumbwin->Move( wxPoint( 4, 4 ) );
-                        bneedmove = true;
-                    }
-
-                    else {
-                        wxLogMessage(
-                                _T("    chart1.cpp:SetChartThumbnail...Could not create thumbnail") );
-                        pthumbwin->pThumbChart = NULL;
-                        pthumbwin->Show( false );
-                        cc1->Refresh( FALSE );
-                    }
-
-                } else                            // some problem opening chart
-                {
-                    wxString fp = ChartData->GetFullPath( pCurrentStack, index );
-                    fp.Prepend( _T("    chart1.cpp:SetChartThumbnail...Could not open chart ") );
-                    wxLogMessage( fp );
-                    pthumbwin->pThumbChart = NULL;
-                    pthumbwin->Show( false );
-                    cc1->Refresh( FALSE );
-                }
-
-            } else {
-                ChartBase *new_pThumbChart = ChartData->OpenChartFromStack( pCurrentStack, index,
-                        THUMB_ONLY );
-
-                pthumbwin->pThumbChart = new_pThumbChart;
-
-                if( new_pThumbChart ) {
-                    ThumbData *pTD = new_pThumbChart->GetThumbData( 200, 200, gLat, gLon );
-                    if( pTD ) {
-                        pthumbwin->Resize();
-                        pthumbwin->Show( true );
-                        pthumbwin->Refresh( true );
-                        pthumbwin->Move( wxPoint( 4, 4 ) );
-                        bneedmove = true;
-                    } else
-                        pthumbwin->Show( false );
-
-                    cc1->Refresh( FALSE );
-                }
-            }
-
-            if(bneedmove && pthumbwin){         // Adjust position to avoid bad overlap
-                wxPoint pos = wxPoint(4,4);
-
-                wxPoint tLocn = ClientToScreen(pos);
-                wxRect tRect = wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y);
-
-                // Simplistic overlap avoidance works best when toolbar is horizontal near the top of screen.
-                // Other difficult cases simply center the thumbwin on the canvas....
-                if( g_MainToolbar && !g_MainToolbar->isSubmergedToGrabber()){
-                    if( g_MainToolbar->GetScreenRect().Intersects( tRect ) ) {
-                        wxPoint tbpos = cc1->ScreenToClient(g_MainToolbar->GetPosition());
-                        pos = wxPoint(4, g_MainToolbar->GetSize().y + tbpos.y + 4);
-                        tLocn = ClientToScreen(pos);
-                    }
-                }
-
-                pthumbwin->Move( pos );
-
-            }
-
-        }
-#endif
 }
 
 void MyFrame::UpdateControlBar(ChartCanvas *cc) {
@@ -8668,7 +8592,9 @@ void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event) {
 
 void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
   wxString sfixtime;
-  bool pos_valid = false, cog_sog_valid = false;
+  bool pos_valid = false;
+  bool cog_valid = false;
+  bool sog_valid = false;
   bool bis_recognized_sentence = true;
 
   wxString str_buf = event.ProcessNMEA4Tags();
@@ -8720,15 +8646,20 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
           if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
             pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
 
-            // course is not valid in this case
-            // but also my gps occasionally outputs RMC
-            // messages with valid lat and lon but
-            // 0.0 for speed and course which messes up the filter
-            if (!g_own_ship_sog_cog_calc &&
-                m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
-              gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-              gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-              cog_sog_valid = true;
+
+            if (!g_own_ship_sog_cog_calc ){
+              if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
+                gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+                sog_valid = true;
+              }
+              if(!std::isnan(gSog) && (gSog > 0)){
+                gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+                cog_valid = true;
+              }
+              else{
+                gCog = NAN;
+                cog_valid = true;
+              }
             }
 
             // Any device sending VAR=0.0 can be assumed to not really know
@@ -8853,9 +8784,7 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
           if (!g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
               !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue)) {
             setCourseOverGround(m_NMEA0183.Vtg.TrackDegreesTrue);
->>>>>>> 1f7f17e0a7cd430bc7d73457a91958a3d01eecfa
 #endif
-            cog_sog_valid = true;
           }
           break;
 
@@ -8913,7 +8842,8 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
       } else {
         UpdatePositionCalculatedSogCog();
       }
-      cog_sog_valid = true;
+      cog_valid = true;
+      sog_valid = true;
 
       if (!std::isnan(gpd.kHdt)) {
         gHdt = gpd.kHdt;
@@ -8946,15 +8876,18 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
     }
   }
 
-  if (g_own_ship_sog_cog_calc) cog_sog_valid = true;
+  if (g_own_ship_sog_cog_calc){
+    sog_valid = true;
+    cog_valid = true;
+  }
 
   if (bis_recognized_sentence)
-    PostProcessNMEA(pos_valid, cog_sog_valid, sfixtime);
+    PostProcessNMEA(pos_valid, sog_valid, cog_valid, sfixtime);
 }
 
-void MyFrame::PostProcessNMEA(bool pos_valid, bool cog_sog_valid,
-                              const wxString &sfixtime) {
-  if (cog_sog_valid) {
+void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
+                              bool cog_valid, const wxString &sfixtime) {
+  if (cog_valid) {
     //    Maintain average COG for Course Up Mode
     if (!std::isnan(gCog)) {
       if (g_COGAvgSec > 0) {
@@ -9055,29 +8988,28 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool cog_sog_valid,
       if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
     }
 
-    if (cog_sog_valid) {
-      wxString sogcog;
-      if (std::isnan(gSog))
-        sogcog.Printf(_T("SOG --- ") + getUsrSpeedUnit() + _T("     "));
-      else
-        sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
-                      toUsrSpeed(gSog));
+    wxString sogcog;
+    if (!std::isnan(gSog))
+      sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
+                  toUsrSpeed(gSog));
+    else
+      sogcog.Printf(_T("SOG --- ")) ;
 
-      wxString cogs;
-      if (std::isnan(gCog))
-        cogs.Printf(wxString("COG ---\u00B0", wxConvUTF8));
-      else {
-        if (g_bShowTrue)
-          cogs << wxString::Format(wxString("COG %03d°  ", wxConvUTF8),
-                                   (int)gCog);
-        if (g_bShowMag)
-          cogs << wxString::Format(wxString("COG %03d°(M)  ", wxConvUTF8),
-                                   (int)gFrame->GetMag(gCog));
+    wxString cogs;
+      // We show COG only if SOG is > 0
+    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)){
+      if (g_bShowTrue)
+        cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
+      if (g_bShowMag)
+        cogs << wxString::Format(wxString("COG %03d%c(M)  "),
+                               (int)GetMag(gCog), 0x00B0);
       }
+    else
+      cogs.Printf(("COG ---%c"), 0x00B0);
 
-      sogcog.Append(cogs);
-      SetStatusText(sogcog, STAT_FIELD_SOGCOG);
-    }
+
+    sogcog.Append(cogs);
+    SetStatusText(sogcog, STAT_FIELD_SOGCOG);
   }
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
@@ -10518,24 +10450,25 @@ double AnchorDistFix(double const d, double const AnchorPointMinDist,
       return d;
 
   else
-      // if ( d < 0.0 )
-      if (d > -AnchorPointMinDist)
-    return -AnchorPointMinDist;
-  else if (d < -AnchorPointMaxDist)
-    return -AnchorPointMaxDist;
-  else
-    return d;
+    // if ( d < 0.0 )
+    if (d > -AnchorPointMinDist)
+      return -AnchorPointMinDist;
+    else if (d < -AnchorPointMaxDist)
+      return -AnchorPointMaxDist;
+    else
+      return d;
 }
 
 //      Auto timed popup Window implementation
 
 BEGIN_EVENT_TABLE(TimedPopupWin, wxWindow)
-EVT_PAINT(TimedPopupWin::OnPaint) EVT_TIMER(POPUP_TIMER, TimedPopupWin::OnTimer)
+EVT_PAINT(TimedPopupWin::OnPaint)
+EVT_TIMER(POPUP_TIMER, TimedPopupWin::OnTimer)
 
-    END_EVENT_TABLE()
+END_EVENT_TABLE()
 
-    // Define a constructor
-    TimedPopupWin::TimedPopupWin(wxWindow *parent, int timeout)
+// Define a constructor
+TimedPopupWin::TimedPopupWin(wxWindow *parent, int timeout)
     : wxWindow(parent, wxID_ANY, wxPoint(0, 0), wxSize(1, 1), wxNO_BORDER) {
   m_pbm = NULL;
 

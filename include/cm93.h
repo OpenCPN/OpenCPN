@@ -452,7 +452,7 @@ public:
 
   void UpdateLUPs(s57chart *pOwner);
   void ForceEdgePriorityEvaluate(void);
-  ListOfS57Obj *GetAssociatedObjects(S57Obj *obj);
+  std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
   cm93chart *GetCurrentSingleScaleChart() { return m_pcm93chart_current; }
 
   void SetSpecialOutlineCellIndex(int cell_index, int object_id, int subcell) {

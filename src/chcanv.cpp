@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
@@ -74,6 +74,7 @@
 #include "Quilt.h"
 #include "SelectItem.h"
 #include "Select.h"
+#include "SystemCmdSound.h"
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
@@ -123,6 +124,7 @@
 
 extern float g_ChartScaleFactorExp;
 extern float g_ShipScaleFactorExp;
+extern double g_mouse_zoom_sensitivity;
 
 #include <vector>
 //#include <wx-3.0/wx/aui/auibar.h>
@@ -344,6 +346,8 @@ wxString g_ObjQFileExt;
 wxDialog *g_pcurtain;
 extern double gLat, gLat;
 
+extern int g_GUIScaleFactor;
+
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
 
@@ -508,8 +512,8 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_pQuilt = new Quilt(this);
   SetQuiltMode(true);
   SetAlertString(_T(""));
-  m_sector_glat = 200;
-  m_sector_glon = 200;
+  m_sector_glat = 0;
+  m_sector_glon = 0;
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   m_oldVPSScale = -1.0;
@@ -546,123 +550,15 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   //    Build the cursors
 
-  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  pCursorLeft = NULL;
+  pCursorRight = NULL;
+  pCursorUp = NULL;
+  pCursorDown = NULL;
+  pCursorArrow = NULL;
+  pCursorPencil = NULL;
+  pCursorCross = NULL;
 
-#if !defined(__WXMSW__) && !defined(__WXQT__)
-
-  wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
-  wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
-  wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
-  wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
-  wxImage ICursorPencil = style->GetIcon(_T("pencil")).ConvertToImage();
-  wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
-
-  //#if wxCHECK_VERSION(2, 8, 12)
-  //#else
-  ICursorLeft.ConvertAlphaToMask(128);
-  ICursorRight.ConvertAlphaToMask(128);
-  ICursorUp.ConvertAlphaToMask(128);
-  ICursorDown.ConvertAlphaToMask(128);
-  ICursorPencil.ConvertAlphaToMask(10);
-  ICursorCross.ConvertAlphaToMask(10);
-  //#endif
-
-  if (ICursorLeft.Ok()) {
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorLeft = new wxCursor(ICursorLeft);
-  } else
-    pCursorLeft = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorRight.Ok()) {
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 31);
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorRight = new wxCursor(ICursorRight);
-  } else
-    pCursorRight = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorUp.Ok()) {
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 0);
-    pCursorUp = new wxCursor(ICursorUp);
-  } else
-    pCursorUp = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorDown.Ok()) {
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 31);
-    pCursorDown = new wxCursor(ICursorDown);
-  } else
-    pCursorDown = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorPencil.Ok()) {
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16);
-    pCursorPencil = new wxCursor(ICursorPencil);
-  } else
-    pCursorPencil = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorCross.Ok()) {
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 13);
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 12);
-    pCursorCross = new wxCursor(ICursorCross);
-  } else
-    pCursorCross = new wxCursor(wxCURSOR_ARROW);
-
-#else
-
-  wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
-  wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
-  wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
-  wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
-  wxImage ICursorPencil = style->GetIcon(_T("pencil")).ConvertToImage();
-  wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
-
-  if (ICursorLeft.Ok()) {
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorLeft = new wxCursor(ICursorLeft);
-  } else
-    pCursorLeft = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorRight.Ok()) {
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 31);
-    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorRight = new wxCursor(ICursorRight);
-  } else
-    pCursorRight = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorUp.Ok()) {
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 0);
-    pCursorUp = new wxCursor(ICursorUp);
-  } else
-    pCursorUp = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorDown.Ok()) {
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
-    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 31);
-    pCursorDown = new wxCursor(ICursorDown);
-  } else
-    pCursorDown = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorPencil.Ok()) {
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
-    pCursorPencil = new wxCursor(ICursorPencil);
-  } else
-    pCursorPencil = new wxCursor(wxCURSOR_ARROW);
-
-  if (ICursorCross.Ok()) {
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 13);
-    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 12);
-    pCursorCross = new wxCursor(ICursorCross);
-  } else
-    pCursorCross = new wxCursor(wxCURSOR_ARROW);
-
-#endif  // MSW, X11
-  pCursorArrow = new wxCursor(wxCURSOR_ARROW);
-  pPlugIn_Cursor = NULL;
+  RebuildCursors();
 
   SetCursor(*pCursorArrow);
 
@@ -738,6 +634,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   CreateOZEmbossMapData(GLOBAL_COLOR_SCHEME_DAY);
 
   //    Build icons for tide/current points
+  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   m_bmTideDay = style->GetIcon(_T("tidesml"));
 
   //    Dusk
@@ -873,15 +770,12 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   SetMinSize(wxSize(200, 200));
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-  //#ifndef ocpnUSE_GL
-
-  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES |
+  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE |
                          wxTOUCH_PRESS_GESTURES)) {
     wxLogError("Failed to enable touch events");
   }
 
   Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, this);
-  Bind(wxEVT_GESTURE_PAN, &ChartCanvas::OnPan, this);
 
   Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, this);
   Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, this);
@@ -894,7 +788,6 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, this);
   Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
-//#endif
 #endif
 }
 
@@ -968,6 +861,91 @@ ChartCanvas::~ChartCanvas() {
   m_muiBar = 0;
   delete muiBar;
   delete m_pQuilt;
+}
+
+void ChartCanvas::RebuildCursors() {
+  delete pCursorLeft;
+  delete pCursorRight;
+  delete pCursorUp;
+  delete pCursorDown;
+  delete pCursorArrow;
+  delete pCursorPencil;
+  delete pCursorCross;
+
+  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  double cursorScale = exp(g_GUIScaleFactor * (0.693 / 5.0));
+
+  // On MSW, custom cursors created from images are automatically scaled to maximum size of 32x32.
+  // On a high def display, this renders the "pencil" cursor too small to easily use.
+  // Detect this configuration, and avoid using "pencil" cursor in this case.
+  // TODO  Investigate alternative means of defining custom cursors on MSW
+  bool bUsePencil = true;
+#ifdef __WXMSW__
+  wxSize ds = g_Platform->getDisplaySize();
+  if (ds.x > 3000)        // somewhat arbitrary detection of hi-def display
+    bUsePencil = false;
+#endif
+
+  wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
+  wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
+  wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
+  wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
+  wxImage ICursorPencil = style->GetIconScaled(_T("pencil"), cursorScale).ConvertToImage();
+  wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
+
+#if !defined(__WXMSW__) && !defined(__WXQT__)
+  ICursorLeft.ConvertAlphaToMask(128);
+  ICursorRight.ConvertAlphaToMask(128);
+  ICursorUp.ConvertAlphaToMask(128);
+  ICursorDown.ConvertAlphaToMask(128);
+  ICursorPencil.ConvertAlphaToMask(10);
+  ICursorCross.ConvertAlphaToMask(10);
+#endif
+
+  if (ICursorLeft.Ok()) {
+    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0);
+    ICursorLeft.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
+    pCursorLeft = new wxCursor(ICursorLeft);
+  } else
+    pCursorLeft = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorRight.Ok()) {
+    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 31);
+    ICursorRight.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 15);
+    pCursorRight = new wxCursor(ICursorRight);
+  } else
+    pCursorRight = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorUp.Ok()) {
+    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
+    ICursorUp.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 0);
+    pCursorUp = new wxCursor(ICursorUp);
+  } else
+    pCursorUp = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorDown.Ok()) {
+    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 15);
+    ICursorDown.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 31);
+    pCursorDown = new wxCursor(ICursorDown);
+  } else
+    pCursorDown = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorPencil.Ok() && bUsePencil) {
+    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 * cursorScale);
+    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16 * cursorScale);
+    pCursorPencil = new wxCursor(ICursorPencil);
+  } else
+    pCursorPencil = new wxCursor(wxCURSOR_ARROW);
+
+  if (ICursorCross.Ok()) {
+    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 13);
+    ICursorCross.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 12);
+    pCursorCross = new wxCursor(ICursorCross);
+  } else
+    pCursorCross = new wxCursor(wxCURSOR_ARROW);
+
+  pCursorArrow = new wxCursor(wxCURSOR_ARROW);
+  pPlugIn_Cursor = NULL;
 }
 
 void ChartCanvas::CanvasApplyLocale() {
@@ -1141,11 +1119,6 @@ void ChartCanvas::OnMotion(wxMouseEvent &event) {
      status that we trust */
   event.m_leftDown = m_leftdown;
   MouseEvent(event);
-}
-
-void ChartCanvas::OnPan(wxPanGestureEvent &event) {
-  wxPoint delta = event.GetDelta();
-  PanCanvas(-delta.x, -delta.y);
 }
 
 void ChartCanvas::OnZoom(wxZoomGestureEvent &event) {
@@ -1523,9 +1496,6 @@ void ChartCanvas::canvasChartsRefresh(int dbi_hint) {
         GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry(
             GetpCurrentStack(), m_singleChart->GetFullPath());
       }
-      // else
-      // SetChartThumbnail( dbi_hint );       // need to reset thumbnail on
-      // failed chart open
     }
 
     // refresh_Piano();
@@ -2126,8 +2096,6 @@ void ChartCanvas::SetupCanvasQuiltMode(void) {
 
     m_singleChart = NULL;  // Bye....
 
-    // TODOSetChartThumbnail( -1 );            //Turn off thumbnails for sure
-
     //  Re-qualify the quilt reference chart selection
     AdjustQuiltRefChart();
 
@@ -2384,6 +2352,11 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   // Calculate pixels per mm for later reference
   wxSize sd = g_Platform->getDisplaySize();
   double max_physical = wxMax(sd.x, sd.y);
+
+#ifdef __WXOSX__
+  // Support Mac Retina displays.
+  max_physical /= GetContentScaleFactor();
+#endif
 
   m_pix_per_mm = (max_physical) / ((double)m_display_size_mm);
   m_canvas_scale_factor = (max_physical) / (m_display_size_mm / 1000.);
@@ -4150,9 +4123,9 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   wxString s;
   DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
   if (g_bShowMag)
-    s.Printf(wxString("%03d°(M)  ", wxConvUTF8), (int)gFrame->GetMag(brg));
+    s.Printf("%03d%c(M)  ", (int)gFrame->GetMag(brg), 0x00B0);
   else
-    s.Printf(wxString("%03d°  ", wxConvUTF8), (int)brg);
+    s.Printf("%03d%c  ", (int)brg, 0x00B0);
 
   s << FormatDistanceAdaptive(dist);
 
@@ -4345,7 +4318,11 @@ bool ChartCanvas::GetCanvasPointPixVP(ViewPort &vp, double rlat, double rlon,
     return false;
   }
 
-  *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+  if( (abs(p.m_x) < 10e6) && (abs(p.m_y) < 10e6) )
+    *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+  else
+    *r = wxPoint(INVALID_COORD, INVALID_COORD);
+
   return true;
 }
 
@@ -4834,6 +4811,7 @@ void ChartCanvas::LoadVP(ViewPort &vp, bool b_adjust) {
 
   SetViewPoint(vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.rotation,
                vp.m_projection_type, b_adjust);
+
 }
 
 void ChartCanvas::SetQuiltRefChart(int dbIndex) {
@@ -6368,7 +6346,8 @@ void ChartCanvas::AlertDraw(ocpnDC &dc) {
     AnchorAlertOn2 = false;
 
   if (play_sound && !bAnchorSoundPlaying) {
-    g_anchorwatch_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+    auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_anchorwatch_sound);
+    if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
     g_anchorwatch_sound->Load(g_anchorwatch_sound_file);
     if (g_anchorwatch_sound->IsOk()) {
       bAnchorSoundPlaying = true;
@@ -7865,6 +7844,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                                  wxString(_T ( "circle" )),
                                                  wxEmptyString, wxEmptyString);
         pMousePoint->m_bShowName = false;
+        pMousePoint->SetShowWaypointRangeRings( false );
 
         m_pMeasureRoute->AddPoint(pMousePoint);
 
@@ -8422,19 +8402,24 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           r_rband.y = y;
         }
 
-        RoutePoint *pMousePoint = new RoutePoint(m_cursor_lat, m_cursor_lon,
+        if (m_pMeasureRoute){
+          RoutePoint *pMousePoint = new RoutePoint(m_cursor_lat, m_cursor_lon,
                                                  wxString(_T ( "circle" )),
                                                  wxEmptyString, wxEmptyString);
-        pMousePoint->m_bShowName = false;
+          pMousePoint->m_bShowName = false;
 
-        m_pMeasureRoute->AddPoint(pMousePoint);
+          m_pMeasureRoute->AddPoint(pMousePoint);
 
-        m_prev_rlat = m_cursor_lat;
-        m_prev_rlon = m_cursor_lon;
-        m_prev_pMousePoint = pMousePoint;
-        m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+          m_prev_rlat = m_cursor_lat;
+          m_prev_rlon = m_cursor_lon;
+          m_prev_pMousePoint = pMousePoint;
+          m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
 
-        m_nMeasureState++;
+          m_nMeasureState++;
+        }
+        else {
+          CancelMeasureRoute();
+        }
 
         Refresh(true);
         ret = true;
@@ -9169,7 +9154,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     int mouse_wheel_oneshot = abs(wheel_dir) * 4;  // msec
     wheel_dir = wheel_dir > 0 ? 1 : -1;            // normalize
 
-    double factor = 2.0;
+    double factor = g_mouse_zoom_sensitivity;
     if (wheel_dir < 0) factor = 1 / factor;
 
     if (g_bsmoothpanzoom) {
@@ -9465,6 +9450,11 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
     wxColor fg = FontMgr::Get().GetFontColor(_("ObjectQuery"));
 
+#ifdef __WXOSX__
+    // Auto Adjustment for dark mode
+    fg = g_pObjectQueryDialog->GetForegroundColour();
+#endif
+
     objText.Printf(
         _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>"),
         bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue());
@@ -9524,8 +9514,8 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
       file.Normalize();
       file.Assign(file.GetPath(), wxT(""));
       wxDir dir( file.GetFullPath() );
-      wxString filename; 
-      bool cont = dir.GetFirst( &filename );
+      wxString filename;
+      bool cont = dir.GetFirst( &filename, "", wxDIR_FILES );
       while ( cont )
       {
         file.Assign( dir.GetNameWithSep().append( filename) );
@@ -9538,7 +9528,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
             FormatString.Prepend(_T("<tr>")); // new row
           else
             FormatString.Prepend(_T("<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>")); // an empty spacer column
-          
+
           AddFiles << wxString::Format(FormatString, file.GetFullPath(), file.GetFullName());
           filecount++;
         }
@@ -9552,7 +9542,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     if (Chs57 || target_plugin_chart || (filecount > 1)) {
       g_pObjectQueryDialog->SetHTMLPage(objText);
       g_pObjectQueryDialog->Show();
-    } 
+    }
     if ((!Chs57 && filecount == 1)){  // only one file?, show direktly
       //generate an event to avoid double code
       wxHtmlLinkInfo hli(filenameOK);
@@ -10284,7 +10274,7 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   AlphaBlending(dc, xp, yp, w, h, 0.0, GetGlobalColor(_T ( "YELO1" )), 172);
 
   dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" ))));
-  dc.SetTextForeground(FontMgr::Get().GetFontColor(_("RouteLegInfoRollover")));
+  dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
 
   dc.DrawText(first, xp, yp);
   if (second.Len()) dc.DrawText(second, xp, yp + h1);
@@ -10352,6 +10342,10 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
     route = m_pMeasureRoute;
 
   if (!route) return;
+
+    //      Validate route pointer
+  if( !g_pRouteMan->IsRouteValid(route) )
+    return;
 
   double render_lat = m_cursor_lat;
   double render_lon = m_cursor_lon;
@@ -10454,7 +10448,12 @@ void ChartCanvas::RenderVisibleSectorLights(ocpnDC &dc) {
 
   if (g_bDeferredInitDone) {
     // need to re-evaluate sectors?
-    if ((m_sector_glat != gLat) || (m_sector_glon != gLon)) {
+    double rhumbBearing, rhumbDist;
+    DistanceBearingMercator(gLat, gLon, m_sector_glat, m_sector_glon,
+                                      &rhumbBearing, &rhumbDist);
+
+    if (rhumbDist > 0.05)   // miles
+    {
       s57_GetVisibleLightSectors(this, gLat, gLon, GetVP(),
                                  m_sectorlegsVisible);
       m_sector_glat = gLat;
@@ -12385,6 +12384,12 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   scale_factor *= user_scale_factor;
 
+  //  TODO  Convert this method to "DPI-Pixel aware"
+#ifdef __WXMSW__
+  double csf = GetContentScaleFactor();
+  scale_factor /= csf;
+#endif
+
   {
     for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
       const IDX_entry *pIDX = ptcmgr->GetIDX_entry(i);
@@ -13075,9 +13080,6 @@ void ChartCanvas::SelectChartFromStack(int index, bool bDir,
       GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry(
           GetpCurrentStack(), m_singleChart->GetFullPath());
     }
-    // else
-    //    SetChartThumbnail( -1 );   // need to reset thumbnail on failed chart
-    //    open
 
     //      Setup the view
     double zLat, zLon;
@@ -13132,9 +13134,6 @@ void ChartCanvas::SelectdbChart(int dbindex) {
       GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry(
           GetpCurrentStack(), m_singleChart->GetFullPath());
     }
-    // else
-    //    SetChartThumbnail( -1 );       // need to reset thumbnail on failed
-    //    chart open
 
     //      Setup the view
     double zLat, zLon;
@@ -13384,7 +13383,6 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
   wxPoint key_location = m_Piano->GetKeyOrigin(selected_index);
 
   if (!GetQuiltMode()) {
-    // SetChartThumbnail( selected_index );
     ShowChartInfoWindow(key_location.x, selected_dbIndex);
   } else {
     std::vector<int> piano_chart_index_array =
@@ -13406,7 +13404,6 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
         ShowChartInfoWindow(key_location.x, selected_dbIndex);
       }
     }
-    // SetChartThumbnail( -1 );        // hide all thumbs in quilt mode
   }
 }
 
@@ -13483,7 +13480,6 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
   wxString new_hash = m_Piano->GenerateAndStoreNewHash();
   if (new_hash != old_hash) {
     m_Piano->FormatKeys();
-    // SetChartThumbnail( -1 );
     HideChartInfoWindow();
     m_Piano->ResetRollover();
     SetQuiltChartHiLiteIndex(-1);

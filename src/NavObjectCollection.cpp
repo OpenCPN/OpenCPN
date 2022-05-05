@@ -299,8 +299,11 @@ static TrackPoint *GPXLoadTrackPoint1(pugi::xml_node &wpt_node) {
     }    // extensions
   }      // for
 
-  // Create waypoint
-  return new TrackPoint(rlat, rlon, TimeString);
+  // Create waypoint, if all data are available
+  if(TimeString.Length())
+    return new TrackPoint(rlat, rlon, TimeString);
+  else
+    return NULL;
 }
 
 static Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
@@ -332,8 +335,10 @@ static Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
           wxString tpChildName = wxString::FromUTF8(tpchild.name());
           if (tpChildName == _T("trkpt")) {
             pWp = ::GPXLoadTrackPoint1(tpchild);
-            pTentTrack->AddPoint(pWp);  // defer BBox calculation
-            pWp->m_GPXTrkSegNo = GPXSeg;
+            if (pWp){
+              pTentTrack->AddPoint(pWp);  // defer BBox calculation
+              pWp->m_GPXTrkSegNo = GPXSeg;
+            }
           }
         }
       } else if (ChildName == _T ( "name" ))
@@ -568,8 +573,10 @@ static Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
         pTentRoute->AddPoint(pWp, false, true);  // defer BBox calculation
         pWp->m_bIsInRoute = true;                // Hack
 
-        if (new_wpt)
-          pWayPointMan->AddRoutePoint(pWp);
+        if (new_wpt){
+          if (erp == NULL)
+            pWayPointMan->AddRoutePoint(pWp);
+        }
         else
           delete tpWp;
       } else if (ChildName == _T ( "name" )) {
@@ -659,10 +666,13 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
       child.append_child(pugi::node_pcdata)
           .set_value(pr->m_timestring.mb_str());
     else {
-      wxString t = pr->GetCreateTime()
-                       .FormatISODate()
+      wxDateTime dt = pr->GetCreateTime();
+      if ( !dt.IsValid() )
+        dt = wxDateTime::Now();
+
+      wxString t = dt.FormatISODate()
                        .Append(_T("T"))
-                       .Append(pr->GetCreateTime().FormatISOTime())
+                       .Append(dt.FormatISOTime())
                        .Append(_T("Z"));
       child.append_child(pugi::node_pcdata).set_value(t.mb_str());
     }
@@ -1231,6 +1241,7 @@ static void UpdateRouteA(Route *pTentRoute) {
     } else {
       pChangeRoute->AddPoint(prp);
       pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
+      pWayPointMan->AddRoutePoint(prp);
     }
 
     if (ip)
@@ -1669,7 +1680,7 @@ bool NavObjectChanges::ApplyChanges(void) {
 
       Track *pExistingTrack = TrackExists(track_GUID);
 
-      if (!strcmp(child.first_child().value(), "add") && pExistingTrack) {
+      if (!strcmp(child.first_child().value(), "add") && pExistingTrack && pWp) {
         pExistingTrack->AddPoint(pWp);
         pWp->m_GPXTrkSegNo = pExistingTrack->GetCurrentTrackSeg() + 1;
       } else

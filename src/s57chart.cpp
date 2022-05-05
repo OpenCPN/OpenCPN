@@ -65,6 +65,7 @@
 #include "SencManager.h"
 #include "gui_lib.h"
 #include "logger.h"
+#include "Quilt.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -131,7 +132,7 @@ static jmp_buf env_ogrf;  // the context saved by setjmp();
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST(ListOfS57Obj);  // Implement a list of S57 Objects
+WX_DEFINE_LIST(ListOfPI_S57Obj); 
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 
@@ -3362,12 +3363,11 @@ bool s57chart::GetNearestSafeContour(double safe_cnt, double &next_safe_cnt) {
  --------------------------------------------------------------------------
  */
 
-ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj) {
+std::list<S57Obj*> *s57chart::GetAssociatedObjects(S57Obj *obj) {
   int disPrioIdx;
   bool gotit;
 
-  ListOfS57Obj *pobj_list = new ListOfS57Obj;
-  pobj_list->Clear();
+  std::list<S57Obj*> *pobj_list = new std::list<S57Obj*>();
 
   double lat, lon;
   fromSM((obj->x * obj->x_rate) + obj->x_origin,
@@ -3392,7 +3392,7 @@ ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj) {
         if (top->obj->bIsAssociable) {
           if (top->obj->BBObj.Contains(lat, lon)) {
             if (IsPointInObjArea(lat, lon, 0.0, top->obj)) {
-              pobj_list->Append(top->obj);
+              pobj_list->push_back(top->obj);
               gotit = true;
               break;
             }
@@ -3409,7 +3409,7 @@ ListOfS57Obj *s57chart::GetAssociatedObjects(S57Obj *obj) {
           if (top->obj->bIsAssociable) {
             if (top->obj->BBObj.Contains(lat, lon)) {
               if (IsPointInObjArea(lat, lon, 0.0, top->obj)) {
-                pobj_list->Append(top->obj);
+                pobj_list->push_back(top->obj);
                 break;
               }
             }
@@ -6431,7 +6431,16 @@ bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
   ChartPlugInWrapper *target_plugin_chart = NULL;
   s57chart *Chs57 = NULL;
 
-  ChartBase *target_chart = cc->GetChartAtCursor();
+  // Find the chart that is currently shown at the given lat/lon
+  wxPoint calcPoint = viewport.GetPixFromLL(lat, lon);
+  ChartBase *target_chart;
+  if (cc->m_singleChart && (cc->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR))
+    target_chart = cc->m_singleChart;
+  else if (viewport.b_quilt)
+    target_chart = cc->m_pQuilt->GetChartAtPix(viewport, calcPoint);
+  else
+    target_chart = NULL;
+
   if (target_chart) {
     if ((target_chart->GetChartType() == CHART_TYPE_PLUGIN) &&
         (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR))

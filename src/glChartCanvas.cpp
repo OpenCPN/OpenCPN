@@ -120,7 +120,7 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 #include "s52plib.h"
 
 #ifdef USE_ANDROID_GLES2
-#include <gl2.h>
+#include <GLES2/gl2.h>
 #include "linmath.h"
 #include "shaders.h"
 #endif
@@ -606,8 +606,8 @@ void glChartCanvas::Init() {
   m_gldc.SetGLCanvas(this);
 
   m_displayScale = 1.0;
-#ifdef __WXOSX__
-  // Support Mac Retina displays.
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
 
@@ -657,13 +657,12 @@ void glChartCanvas::Init() {
 
 //  Gesture support for platforms other than Android
 #ifdef HAVE_WX_GESTURE_EVENTS
-  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PAN_GESTURES |
+  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE |
                          wxTOUCH_PRESS_GESTURES)) {
     wxLogError("Failed to enable touch events");
   }
 
   Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, m_pParentCanvas);
-  Bind(wxEVT_GESTURE_PAN, &ChartCanvas::OnPan, m_pParentCanvas);
 
   Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, m_pParentCanvas);
   Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, m_pParentCanvas);
@@ -4415,6 +4414,11 @@ void glChartCanvas::Render() {
         accelerated_pan =
             b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
       }
+
+      //  FBO swapping has trouble with Retina display on MacOS Monterey.
+      //  So, disable accelerated pan ops on this case.
+      if (m_displayScale > 1)
+         accelerated_pan = false;
 
       // do we allow accelerated panning?  can we perform it here?
 #ifndef USE_ANDROID_GLES2

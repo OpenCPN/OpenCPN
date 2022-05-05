@@ -161,10 +161,9 @@ public:
   CatalogSizer(wxWindow* parent)
       : wxStaticBoxSizer(wxHORIZONTAL, parent, _("Active catalog")) {
     auto flags = wxSizerFlags().Border();
-    Add(new wxStaticText(parent, wxID_ANY, _("Select plugin catalog")),
-        flags.Center());
+    Add(new wxStaticText(parent, wxID_ANY, _("Select plugin catalog")), flags);
     auto custom_ctrl = new CustomCatalogCtrl(parent);
-    Add(new CatalogChoice(parent, custom_ctrl), flags.Expand());
+    Add(new CatalogChoice(parent, custom_ctrl), flags);
     Add(custom_ctrl, flags.Expand().Proportion(1));
     Layout();
   }
@@ -224,7 +223,8 @@ private:
 class ButtonsSizer : public wxStdDialogButtonSizer {
 public:
   ButtonsSizer(wxWindow* parent) : wxStdDialogButtonSizer() {
-    auto button = new wxButton(parent, wxID_OK);
+    auto button = new wxButton(parent, wxID_OK, "LongLabel", wxDefaultPosition,
+                               wxSize(10 * parent->GetCharWidth(), -1));
     button->SetLabel(_("Done"));
     SetAffirmativeButton(button);
     Realize();
@@ -236,10 +236,15 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Plugin Catalog Settings"),
                wxDefaultPosition, wxDefaultSize,
                wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
+#ifdef __OCPN__ANDROID__
+  SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
+#endif
   auto vbox = new wxBoxSizer(wxVERTICAL);
 
   vbox->Add(new CatalogSizer(this), wxSizerFlags().Expand().DoubleBorder());
+#ifndef __OCPN__ANDROID__
   vbox->Add(new CompatSizer(this), wxSizerFlags().Expand().DoubleBorder());
+#endif
   vbox->Add(new CacheSizer(this), wxSizerFlags().Expand().DoubleBorder());
   vbox->Add(new ButtonsSizer(this), wxSizerFlags().Expand().DoubleBorder());
 

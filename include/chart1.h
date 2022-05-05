@@ -408,7 +408,6 @@ public:
   void RegisterGlobalMenuItems();
   void UpdateGlobalMenuItems();
   void UpdateGlobalMenuItems(ChartCanvas *cc);
-  void SetChartThumbnail(int index);
   int DoOptionsDialog();
   bool ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray);
   void DoPrint(void);
@@ -558,8 +557,8 @@ private:
   void FilterCogSog(void);
 
   void ApplyGlobalColorSchemetoStatusBar(void);
-  void PostProcessNMEA(bool pos_valid, bool cog_sog_valid,
-                       const wxString &sfixtime);
+  void PostProcessNMEA(bool pos_valid, bool sog_valid,
+                       bool cog_valid, const wxString &sfixtime);
 
   bool ScrubGroupArray();
   wxString GetGroupName(int igroup);

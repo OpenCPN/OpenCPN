@@ -47,11 +47,11 @@
 DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
                                                  wxWindowID id, wxString title)
     : DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS) {
-  m_refDim = GetCharHeight();
+  m_refDim = GetCharHeight() * 90 / 100;
 
   m_cx = 35;
-  m_cy = GetCharHeight() * 35 / 10;
-  m_radius = GetCharHeight() * 2;
+  m_cy = m_refDim * 35 / 10;
+  m_radius = m_refDim * 2;
   m_scaleDelta = m_refDim / 2;
   m_scaleBase = (m_radius * 2) + (2 * m_refDim);
 
@@ -70,6 +70,7 @@ DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
   b_shift = false;
   s_gTalker = wxEmptyString;
   m_iMaster = 1;  // Start with the GPS system
+  m_MaxSatCount = 0;
 }
 
 wxSize DashboardInstrument_GPS::GetSize(int orient, wxSize hint) {
@@ -93,15 +94,9 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
   talkerID = talk;
 
   /* Some GNSS receivers may emit more than (3*4)=12 sats info.
-     There can be up to 9 sequences in one group so we divide
-     them in subgroups of 3 to be able to show all
-     with our limited space.*/
-  if (seq < 1) return;
-  if (seq > 3) {
-    if (seq < 7) seq -= 3;
-    else if (seq < 10) seq -= 6;
-    else return; // not to standard but u never know
-  }
+     We read the three first only since our graphic is
+     is not adapted for more than 12 satellites*/
+  if (seq < 1 || seq > 3) return;
 
   if (talkerID != wxEmptyString) {
     /* Switch view between the six GNSS system
@@ -123,6 +118,7 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         if (lastUpdate.GetSeconds() < 6) {
           m_iMaster = i;
           b_shift = false;
+          m_MaxSatCount = 0;
           break;
         }
         if (i == 5 && !secondturn) {
@@ -134,29 +130,51 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
     if (talkerID == _T("GP")) {
       m_Gtime[1] = now;
       if (m_iMaster != 1) return;
+      // If two groups of messages in this sequence
+      // show only the first one with most(12) satellites
+      if (m_MaxSatCount > m_SatCount) return;
+      else m_MaxSatCount = m_SatCount;
       s_gTalker = wxString::Format(_T("GPS\n%d"), m_SatCount);
     } else if (talkerID == _T("GL")) {
       m_Gtime[2] = now;
       if (m_iMaster != 2) return;
+      // See "GP" above
+      if (m_MaxSatCount > m_SatCount) return;
+      else m_MaxSatCount = m_SatCount;
       s_gTalker = wxString::Format(_T("GLONASS\n%d"), m_SatCount);
     } else if (talkerID == _T("GA")) {
       m_Gtime[3] = now;
       if (m_iMaster != 3) return;
+      // See "GP" above
+      if (m_MaxSatCount > m_SatCount) return;
+      else m_MaxSatCount = m_SatCount;
       s_gTalker = wxString::Format(_T("Galileo\n%d"), m_SatCount);
     } else if (talkerID == _T("GB")) {  // BeiDou  BDS
       m_Gtime[4] = now;
       if (m_iMaster != 4) return;
+      // See "GP" above
+      if (m_MaxSatCount > m_SatCount) return;
+      else m_MaxSatCount = m_SatCount;
       s_gTalker = wxString::Format(_T("BeiDou\n%d"), m_SatCount);
     } else if (talkerID == _T("GI")) {
       m_Gtime[5] = now;
       if (m_iMaster != 5) return;
+      // See "GP" above
+      if (m_MaxSatCount > m_SatCount) return;
+      else m_MaxSatCount = m_SatCount;
       s_gTalker = wxString::Format(_T("NavIC\n%d"), m_SatCount);
     } else if (talkerID == _T("GQ")) {
       m_Gtime[0] = now;
       if (m_iMaster != 0) return;
+      // See "GP" above
+      if (m_MaxSatCount > m_SatCount) return;
+      else m_MaxSatCount = m_SatCount;
       s_gTalker = wxString::Format(_T("QZSS\n%d"), m_SatCount);
-    } else
-      s_gTalker = wxEmptyString;
+    }
+    else {
+      // Would be a not known N2k PGP type like "Combined GPS/GLONASS"
+      s_gTalker = wxString::Format(_T("%s\n%d"), talkerID , m_SatCount);
+    }
   }
 
   int lidx = (seq - 1) * 4;
@@ -278,7 +296,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   tdc.SetTextForeground(cl);
 
   int pitch = m_refDim;
-  int offset = m_refDim / 4;
+  int offset = m_refDim * 12 / 100;
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SatNumber)
       tdc.DrawText(wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber),
@@ -314,13 +332,13 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   int m_scaleDelta = m_refDim / 2;
   int m_scaleBase = (m_radius * 2) + (2 * m_refDim);
   int pitch = m_refDim;
-  int offset = m_refDim * 4 / 10;
+  int offset = m_refDim * 25 / 100;
 
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SignalToNoiseRatio) {
       int h = m_SatInfo[idx].SignalToNoiseRatio * m_refDim / 24;  // 0.4;
       dc->DrawRectangle(idx * pitch + offset,
-                        m_scaleBase + (4 * m_scaleDelta) - h, pitch / 2, h);
+                        m_scaleBase + (4 * m_scaleDelta) - h, pitch * 60 / 100, h);
     }
   }
 
@@ -360,5 +378,5 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
       dc->DrawBitmap(tbm, posx, posy, false);
     }
   }
-  if (talkerID != wxEmptyString) dc->DrawText(s_gTalker, 1, m_refDim);
+  if (talkerID != wxEmptyString) dc->DrawText(s_gTalker, 1, m_refDim * 3/2);
 }

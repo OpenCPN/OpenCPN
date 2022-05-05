@@ -614,7 +614,7 @@ double GribOverlaySettings::GetMin(int settings) {
       min = 273.15 - 40;
       break; /* kelvin */
     case SEA_TEMPERATURE:
-      min = 273.15 - 40;
+      min = 273.15 - 2;
       break; /* kelvin */
   }
   return CalibrateValue(settings, min);
@@ -648,7 +648,7 @@ double GribOverlaySettings::GetMax(int settings) {
       max = 273.15 + 50;
       break; /* kelvin */
     case SEA_TEMPERATURE:
-      max = 273.15 + 50;
+      max = 273.15 + 56;
       break; /* kelvin */
     case CAPE:
       max = 3500;

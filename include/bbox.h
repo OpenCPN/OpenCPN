@@ -6,7 +6,6 @@
 #include "wx/wx.h"
 #endif
 
-#include "wx/matrix.h"
 #include "wx/geometry.h"
 
 enum OVERLAP { _IN, _ON, _OUT };
@@ -49,7 +48,6 @@ public:
   void Reset();
 
   void Translate(wxPoint2DDouble&);
-  void MapBbox(const wxTransformMatrix& matrix);
 
   double GetWidth() const { return m_maxx - m_minx; };
   double GetHeight() const { return m_maxy - m_miny; };

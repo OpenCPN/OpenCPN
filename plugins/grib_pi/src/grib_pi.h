@@ -130,6 +130,7 @@ public:
 
   wxSize m_coreToolbarSize;
   wxPoint m_coreToolbarPosn;
+  bool m_bZoomToCenterAtInit;
 
 private:
   bool LoadConfig(void);
@@ -160,7 +161,6 @@ private:
   bool m_bGRIBUseHiDef;
   bool m_bGRIBUseGradualColors;
   bool m_bDrawBarbedArrowHead;
-  bool m_bZoomToCenterAtInit;
   int m_bTimeZone;
   bool m_bCopyFirstCumRec;
   bool m_bCopyMissWaveRec;

@@ -140,6 +140,10 @@ void RolloverWin::SetBitmap(int rollover) {
 
   mdc.SetTextForeground(FontMgr::Get().GetFontColor(text));
 
+#ifdef __WXOSX__
+  mdc.SetTextForeground(wxColour(0,0,0));
+#endif
+
   if (m_plabelFont && m_plabelFont->IsOk()) {
     //    Draw the text
     mdc.SetFont(*m_plabelFont);
@@ -362,10 +366,30 @@ void RolloverWin::Draw(ocpnDC &dc) {
 #endif
     glDisable(g_texture_rectangle_format);
     glDisable(GL_BLEND);
-  } else
-//#endif
+  } else {
+#ifdef __WXOSX__
+      // Support MacBook Retina display
+      if(g_bopengl){
+        double scale = m_parent->GetContentScaleFactor();
+        if(scale > 1){
+          wxImage image = m_pbm->ConvertToImage();
+          image.Rescale( image.GetWidth() * scale, image.GetHeight() * scale);
+          wxBitmap bmp( image );
+          dc.DrawBitmap(bmp, m_position.x, m_position.y, false);
+        }
+        else
+          dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+      }
+      else
+        dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+#else
+      dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
 #endif
+  }
+
+#else
     dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+#endif
 }
 
 void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,

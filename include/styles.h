@@ -105,6 +105,9 @@ public:
   void HasBackground(bool b) { hasBackground = b; }
   wxBitmap GetIcon(const wxString& name, int width = -1, int height = -1,
                    bool bforceReload = false);
+  wxBitmap GetIconScaled(const wxString& name, double scaleFactor,
+                        bool bforceReload = false );
+
   wxBitmap GetToolIcon(const wxString& toolname, int iconType = TOOLICON_NORMAL,
                        bool rollover = false, int width = -1, int height = -1);
   wxBitmap BuildPluginIcon(wxBitmap& bm, int iconType, double scale = 1.0);

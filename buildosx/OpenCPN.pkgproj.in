@@ -48,22 +48,6 @@ ${LIBARCHIVE_COMMENT_START}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libcurl.4.dylib</string>
-															<key>PATH_TYPE</key>
-															<integer>0</integer>
-															<key>PERMISSIONS</key>
-															<integer>493</integer>
-															<key>TYPE</key>
-															<integer>3</integer>
-															<key>UID</key>
-															<integer>0</integer>
-														</dict>
-														<dict>
-															<key>CHILDREN</key>
-															<array/>
-															<key>GID</key>
-															<integer>20</integer>
-															<key>PATH</key>
 															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libarchive.13.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
@@ -178,86 +162,6 @@ ${LIBARCHIVE_COMMENT_END}
 															<integer>20</integer>
 															<key>PATH</key>
 															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libxml2.2.dylib</string>
-															<key>PATH_TYPE</key>
-															<integer>0</integer>
-															<key>PERMISSIONS</key>
-															<integer>420</integer>
-															<key>TYPE</key>
-															<integer>3</integer>
-															<key>UID</key>
-															<integer>0</integer>
-														</dict>
-                            <dict>
-															<key>CHILDREN</key>
-															<array/>
-															<key>GID</key>
-															<integer>20</integer>
-															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libunistring.2.dylib</string>
-															<key>PATH_TYPE</key>
-															<integer>0</integer>
-															<key>PERMISSIONS</key>
-															<integer>420</integer>
-															<key>TYPE</key>
-															<integer>3</integer>
-															<key>UID</key>
-															<integer>0</integer>
-														</dict>
-                            <dict>
-															<key>CHILDREN</key>
-															<array/>
-															<key>GID</key>
-															<integer>20</integer>
-															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libcrypto.1.1.dylib</string>
-															<key>PATH_TYPE</key>
-															<integer>0</integer>
-															<key>PERMISSIONS</key>
-															<integer>420</integer>
-															<key>TYPE</key>
-															<integer>3</integer>
-															<key>UID</key>
-															<integer>0</integer>
-														</dict>
-                            <dict>
-															<key>CHILDREN</key>
-															<array/>
-															<key>GID</key>
-															<integer>20</integer>
-															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libssl.1.1.dylib</string>
-															<key>PATH_TYPE</key>
-															<integer>0</integer>
-															<key>PERMISSIONS</key>
-															<integer>420</integer>
-															<key>TYPE</key>
-															<integer>3</integer>
-															<key>UID</key>
-															<integer>0</integer>
-														</dict>
-                            <dict>
-															<key>CHILDREN</key>
-															<array/>
-															<key>GID</key>
-															<integer>20</integer>
-															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libpsl.5.dylib</string>
-															<key>PATH_TYPE</key>
-															<integer>0</integer>
-															<key>PERMISSIONS</key>
-															<integer>420</integer>
-															<key>TYPE</key>
-															<integer>3</integer>
-															<key>UID</key>
-															<integer>0</integer>
-														</dict>
-                            <dict>
-															<key>CHILDREN</key>
-															<array/>
-															<key>GID</key>
-															<integer>20</integer>
-															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libidn2.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -1586,6 +1490,41 @@ ${LIBARCHIVE_COMMENT_END}
 															<integer>0</integer>
 														</dict>
 														<dict>
+															<key>CHILDREN</key>
+															<array>
+																<dict>
+																	<key>CHILDREN</key>
+																	<array/>
+																	<key>GID</key>
+																	<integer>0</integer>
+																	<key>PATH</key>
+																	<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/en_GB.lproj/OpenCPN.mo</string>
+																	<key>PATH_TYPE</key>
+																	<integer>0</integer>
+																	<key>PERMISSIONS</key>
+																	<integer>420</integer>
+																	<key>TYPE</key>
+																	<integer>3</integer>
+																	<key>UID</key>
+																	<integer>0</integer>
+																</dict>
+															</array>
+															<key>EXPANDED</key>
+															<true/>
+															<key>GID</key>
+															<integer>0</integer>
+															<key>PATH</key>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/en_GB.lproj</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+                            <dict>
 															<key>CHILDREN</key>
 															<array>
 																<dict>
@@ -23742,6 +23681,54 @@ ${LIBARCHIVE_COMMENT_END}
 																	<integer>0</integer>
 																	<key>PATH</key>
 																	<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/sounds/2bells.wav</string>
+																	<key>PATH_TYPE</key>
+																	<integer>0</integer>
+																	<key>PERMISSIONS</key>
+																	<integer>493</integer>
+																	<key>TYPE</key>
+																	<integer>3</integer>
+																	<key>UID</key>
+																	<integer>0</integer>
+																</dict>
+																<dict>
+																	<key>CHILDREN</key>
+																	<array/>
+																	<key>GID</key>
+																	<integer>0</integer>
+																	<key>PATH</key>
+																	<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/sounds/beep3.wav</string>
+																	<key>PATH_TYPE</key>
+																	<integer>0</integer>
+																	<key>PERMISSIONS</key>
+																	<integer>493</integer>
+																	<key>TYPE</key>
+																	<integer>3</integer>
+																	<key>UID</key>
+																	<integer>0</integer>
+																</dict>
+																<dict>
+																	<key>CHILDREN</key>
+																	<array/>
+																	<key>GID</key>
+																	<integer>0</integer>
+																	<key>PATH</key>
+																	<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/sounds/beep_ssl.wav</string>
+																	<key>PATH_TYPE</key>
+																	<integer>0</integer>
+																	<key>PERMISSIONS</key>
+																	<integer>493</integer>
+																	<key>TYPE</key>
+																	<integer>3</integer>
+																	<key>UID</key>
+																	<integer>0</integer>
+																</dict>
+																<dict>
+																	<key>CHILDREN</key>
+																	<array/>
+																	<key>GID</key>
+																	<integer>0</integer>
+																	<key>PATH</key>
+																	<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/SharedSupport/sounds/phonering1.wav</string>
 																	<key>PATH_TYPE</key>
 																	<integer>0</integer>
 																	<key>PERMISSIONS</key>

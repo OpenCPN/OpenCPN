@@ -203,6 +203,8 @@ enum {
   ID_DBP_I_GPSLCL,
   ID_DBP_I_CPULCL,
   ID_DBP_I_SUNLCL,
+  ID_DBP_I_ALTI,
+  ID_DBP_D_ALTI,
   ID_DBP_LAST_ENTRY  // this has a reference in one of the routines; defining a
                      // "LAST_ENTRY" and setting the reference to it, is one
                      // codeline less to change (and find) when adding new
@@ -251,6 +253,10 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("App. Wind Speed");
     case ID_DBP_D_TW:
       return _("True Wind Angle & Speed");
+    case ID_DBP_I_ALTI:
+      return _("Altitude");
+    case ID_DBP_D_ALTI:
+      return _("Altitude Trace");
     case ID_DBP_I_DPT:
       return _("Depth");
     case ID_DBP_D_DPT:
@@ -351,6 +357,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_I_FOS:
     case ID_DBP_I_PITCH:
     case ID_DBP_I_HEEL:
+    case ID_DBP_I_ALTI:
       item.SetImage(0);
       break;
     case ID_DBP_D_SOG:
@@ -370,6 +377,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_D_MON:
     case ID_DBP_D_WDH:
     case ID_DBP_D_BPH:
+    case ID_DBP_D_ALTI:
       item.SetImage(1);
       break;
   }
@@ -848,6 +856,22 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
     // TODO: GBS - GPS Satellite fault detection
     else if (m_NMEA0183.LastSentenceIDReceived == _T("GGA")) {
+      if (0)  // debug output
+        printf("GGA mPriPosition=%d mPriSatUsed=%d \tnSat=%d alt=%3.2f\n",
+                mPriPosition, mPriSatUsed,
+                m_NMEA0183.Gga.NumberOfSatellitesInUse,
+                m_NMEA0183.Gga.AntennaAltitudeMeters);
+      if (mPriPosition >= 1 || mPriSatUsed >= 1) {
+        if (m_NMEA0183.Parse()) {
+          if (m_NMEA0183.Gga.GPSQuality > 0 &&
+              m_NMEA0183.Gga.NumberOfSatellitesInUse >= 5) {
+            // Altimeter, takes altitude from gps GGA message, which is
+            // typically less accurate than lon and lat.
+            double alt = m_NMEA0183.Gga.AntennaAltitudeMeters;
+            SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, alt, _T("m"));
+          }
+        }
+      }
       if (mPriPosition >= 4 || mPriSatUsed >= 3) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gga.GPSQuality > 0) {
@@ -1736,17 +1760,29 @@ void dashboard_pi::handleSKUpdate(wxJSONValue &update) {
     sfixtime = update["timestamp"].AsString();
   }
   if (update.HasMember("values") && update["values"].IsArray()) {
+    wxString talker = wxEmptyString;
+    if (update.HasMember("source")) {
+      if (update["source"].HasMember("talker")) {
+        if (update["source"]["talker"].IsString()) {
+          talker = update["source"]["talker"].AsString();
+        }
+      }
+    }
     for (int j = 0; j < update["values"].Size(); ++j) {
       wxJSONValue &item = update["values"][j];
-      updateSKItem(item, sfixtime);
+      updateSKItem(item, talker, sfixtime);
     }
   }
 }
 
-void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
+void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime) {
   if (item.HasMember("path") && item.HasMember("value")) {
     const wxString &update_path = item["path"].AsString();
     wxJSONValue &value = item["value"];
+
+    // Container for last received sat-system info from SK-N2k
+    // TODO Watchdog?
+    static wxString talkerID = wxEmptyString;
 
     if (update_path == _T("navigation.position")) {
       if (mPriPosition >= 2) {
@@ -1758,24 +1794,27 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
           mPriPosition = 2;
         }
       }
-    } else if (update_path == _T("navigation.speedOverGround") &&
-               2 == mPriPosition) {
+    }
+    else if (update_path == _T("navigation.speedOverGround") &&
+             2 == mPriPosition) {
       double sog_knot = GetJsonDouble(value);
       if (std::isnan(sog_knot)) return;
 
       SendSentenceToAllInstruments(
-          OCPN_DBP_STC_SOG,
-          toUsrSpeed_Plugin(mSOGFilter.filter(sog_knot), g_iDashSpeedUnit),
-          getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-    } else if (update_path == _T("navigation.courseOverGroundTrue") &&
-               2 == mPriPosition) {
+        OCPN_DBP_STC_SOG,
+        toUsrSpeed_Plugin(mSOGFilter.filter(sog_knot), g_iDashSpeedUnit),
+        getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+    }
+    else if (update_path == _T("navigation.courseOverGroundTrue") &&
+             2 == mPriPosition) {
       double cog_rad = GetJsonDouble(value);
       if (std::isnan(cog_rad)) return;
 
       double cog_deg = GEODESIC_RAD2DEG(cog_rad);
       SendSentenceToAllInstruments(OCPN_DBP_STC_COG, mCOGFilter.filter(cog_deg),
                                    _T("\u00B0"));
-    } else if (update_path == _T("navigation.headingTrue")) {
+    }
+    else if (update_path == _T("navigation.headingTrue")) {
       if (mPriHeadingT >= 1) {
         double hdt = GetJsonDouble(value);
         if (std::isnan(hdt)) return;
@@ -1785,7 +1824,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         mPriHeadingT = 1;
         mHDT_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("navigation.headingMagnetic")) {
+    }
+    else if (update_path == _T("navigation.headingMagnetic")) {
       if (mPriHeadingM >= 1) {
         double hdm = GetJsonDouble(value);
         if (std::isnan(hdm)) return;
@@ -1796,7 +1836,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
         // If no higher priority HDT, calculate it here.
-        if (mPriHeadingT >= 5 && (!std::isnan(mVar))) {
+        if (mPriHeadingT >= 5 && ( !std::isnan(mVar) )) {
           double heading = hdm + mVar;
           if (heading < 0)
             heading += 360;
@@ -1807,19 +1847,21 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
           mHDT_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
-    } else if (update_path == _T("navigation.speedThroughWater")) {
+    }
+    else if (update_path == _T("navigation.speedThroughWater")) {
       if (mPriSTW >= 1) {
         double stw_knots = GetJsonDouble(value);
         if (std::isnan(stw_knots)) return;
 
         stw_knots = MS2KNOTS(stw_knots);
         SendSentenceToAllInstruments(
-            OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
-            getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+          OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
+          getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
         mPriSTW = 1;
         mSTW_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("navigation.magneticVariation")) {
+    }
+    else if (update_path == _T("navigation.magneticVariation")) {
       if (mPriVar >= 2) {
         double dvar = GetJsonDouble(value);
         if (std::isnan(dvar)) return;
@@ -1831,7 +1873,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
           mVar_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
-    } else if (update_path == _T("environment.wind.angleApparent")) {
+    }
+    else if (update_path == _T("environment.wind.angleApparent")) {
       if (mPriAWA >= 1) {
         double m_awaangle = GetJsonDouble(value);
         if (std::isnan(m_awaangle)) return;
@@ -1846,21 +1889,23 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         mPriAWA = 1;  // Set prio only here. No need to catch speed if no angle.
         mMWVA_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.wind.speedApparent")) {
+    }
+    else if (update_path == _T("environment.wind.speedApparent")) {
       if (mPriAWA >= 1) {
         double m_awaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_awaspeed_kn)) return;
 
         m_awaspeed_kn = MS2KNOTS(m_awaspeed_kn);
         SendSentenceToAllInstruments(
-            OCPN_DBP_STC_AWS,
-            toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
-            getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+          OCPN_DBP_STC_AWS,
+          toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
+          getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
       }
-    } else if ((update_path == _T("environment.wind.angleTrueWater") &&
-                !g_iDashUsetruewinddata) ||
-               (update_path == _T("environment.wind.angleTrueGround") &&
-                g_iDashUsetruewinddata)) {
+    }
+    else if (( update_path == _T("environment.wind.angleTrueWater") &&
+              !g_iDashUsetruewinddata ) ||
+              ( update_path == _T("environment.wind.angleTrueGround") &&
+               g_iDashUsetruewinddata )) {
       if (mPriTWA >= 1) {
         double m_twaangle = GetJsonDouble(value);
         if (std::isnan(m_twaangle)) return;
@@ -1882,40 +1927,41 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
           // If no TWD with higher priority is present and
           // true heading is available calculate it.
           if (g_dHDT < 361. && g_dHDT >= 0.0) {
-            double g_dCalWdir = (m_twaangle_raw) + g_dHDT;
+            double g_dCalWdir = (m_twaangle_raw)+g_dHDT;
             if (g_dCalWdir > 360.) {
               g_dCalWdir -= 360;
-            } else if (g_dCalWdir < 0.) {
+            }
+            else if (g_dCalWdir < 0.) {
               g_dCalWdir += 360;
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir,
                                          _T("\u00B0"));
             mPriWDN = 3;
             mWDN_Watchdog = gps_watchdog_timeout_ticks;
-            mPriWDN = 3;
-            mWDN_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
       }
-    } else if ((update_path == _T("environment.wind.speedTrue") &&
-                !g_iDashUsetruewinddata) ||
-               (update_path == _T("environment.wind.speedOverGround") &&
-                g_iDashUsetruewinddata)) {
+    }
+    else if (( update_path == _T("environment.wind.speedTrue") &&
+              !g_iDashUsetruewinddata ) ||
+              ( update_path == _T("environment.wind.speedOverGround") &&
+               g_iDashUsetruewinddata )) {
       if (mPriTWA >= 1) {
         double m_twaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_twaspeed_kn)) return;
 
         m_twaspeed_kn = MS2KNOTS(m_twaspeed_kn);
         SendSentenceToAllInstruments(
-            OCPN_DBP_STC_TWS,
-            toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
-            getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+          OCPN_DBP_STC_TWS,
+          toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
+          getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
         SendSentenceToAllInstruments(
-            OCPN_DBP_STC_TWS2,
-            toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
-            getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+          OCPN_DBP_STC_TWS2,
+          toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
+          getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
       }
-    } else if (update_path == _T("environment.depth.belowSurface")) {
+    }
+    else if (update_path == _T("environment.depth.belowSurface")) {
       if (mPriDepth >= 1) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
@@ -1924,11 +1970,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         depth += g_dDashDBTOffset;
         depth /= 1852.0;
         SendSentenceToAllInstruments(
-            OCPN_DBP_STC_DPT, toUsrDistance_Plugin(depth, g_iDashDepthUnit),
-            getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
+          OCPN_DBP_STC_DPT, toUsrDistance_Plugin(depth, g_iDashDepthUnit),
+          getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
         mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.depth.belowTransducer")) {
+    }
+    else if (update_path == _T("environment.depth.belowTransducer")) {
       if (mPriDepth >= 2) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
@@ -1937,11 +1984,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         depth += g_dDashDBTOffset;
         depth /= 1852.0;
         SendSentenceToAllInstruments(
-            OCPN_DBP_STC_DPT, toUsrDistance_Plugin(depth, g_iDashDepthUnit),
-            getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
+          OCPN_DBP_STC_DPT, toUsrDistance_Plugin(depth, g_iDashDepthUnit),
+          getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
         mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.water.temperature")) {
+    }
+    else if (update_path == _T("environment.water.temperature")) {
       if (mPriWTP >= 1) {
         double m_wtemp = GetJsonDouble(value);
         if (std::isnan(m_wtemp)) return;
@@ -1949,21 +1997,22 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         m_wtemp = KELVIN2C(m_wtemp);
         if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
           SendSentenceToAllInstruments(
-              OCPN_DBP_STC_TMP, toUsrTemp_Plugin(m_wtemp, g_iDashTempUnit),
-              getUsrTempUnit_Plugin(g_iDashTempUnit));
+            OCPN_DBP_STC_TMP, toUsrTemp_Plugin(m_wtemp, g_iDashTempUnit),
+            getUsrTempUnit_Plugin(g_iDashTempUnit));
           mPriWTP = 1;
           mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
-    } else if (update_path ==
-               _T("navigation.courseRhumbline.nextPoint.velocityMadeGood")) {
+    }
+    else if (update_path ==
+             _T("navigation.courseRhumbline.nextPoint.velocityMadeGood")) {
       double m_vmg_kn = GetJsonDouble(value);
       if (std::isnan(m_vmg_kn)) return;
 
       m_vmg_kn = MS2KNOTS(m_vmg_kn);
       SendSentenceToAllInstruments(
-          OCPN_DBP_STC_VMG, toUsrSpeed_Plugin(m_vmg_kn, g_iDashSpeedUnit),
-          getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+        OCPN_DBP_STC_VMG, toUsrSpeed_Plugin(m_vmg_kn, g_iDashSpeedUnit),
+        getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
       mVMG_Watchdog = gps_watchdog_timeout_ticks;
     }
 
@@ -1974,19 +2023,37 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
       m_rudangle = GEODESIC_RAD2DEG(m_rudangle);
       SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
       mRSA_Watchdog = gps_watchdog_timeout_ticks;
-    } else if (update_path ==
-               _T("navigation.gnss.satellites")) {  // GNSS satellites in use
-                                                    // (GGA)
+    }
+    else if (update_path ==
+             _T("navigation.gnss.satellites")) {  // GNSS satellites in use
       if (mPriSatUsed >= 2) {
-        int usedSats = (value).AsInt();
+        int usedSats = ( value ).AsInt();
+        if (usedSats < 1 ) return;
         SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, usedSats, _T (""));
         mPriSatUsed = 2;
         mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path ==
+    }
+    else if (update_path == _T("navigation.gnss.type") ) {
+      if (value.IsString() && value.AsString() != wxEmptyString) {
+        talkerID = (value.AsString()); //Like "Combined GPS/GLONASS"
+        talkerID.MakeUpper();
+        if (( talkerID.Contains(_T("GPS")) ) && ( talkerID.Contains(_T("GLONASS")) ))
+          talkerID = _T("GPS+GLONASS");
+        else if (talkerID.Contains(_T("GPS")))
+          talkerID = _T("GP");
+        else if (talkerID.Contains(_T("GLONASS")))
+          talkerID = _T("GL");
+        else if (talkerID.Contains(_T("GALILEO")))
+          talkerID = _T("GA");
+        else if (talkerID.Contains(_T("BEIDOU")))
+          talkerID = _T("GI");
+      }
+    } 
+    else if (update_path ==
                _T("navigation.gnss.satellitesInView")) {  // GNSS satellites in
                                                           // view
-      if (mPriSatUsed >= 4 || mPriSatStatus >= 2) {
+      if (mPriSatUsed >= 4 ) {
         if (value.HasMember("count") && value["count"].IsInt()) {
           double m_SK_SatsInView = (value["count"].AsInt());
           SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, m_SK_SatsInView,
@@ -1998,7 +2065,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
       if (mPriSatStatus >= 2) {
         if (value.HasMember("satellites") && value["satellites"].IsArray()) {
           // Update satellites data.
-          int iNumSats = value[_T ("satellites")].Size();
+          int iNumSats;
+          if (value.HasMember("count") && value["count"].IsInt()) {
+            iNumSats = ( value["count"].AsInt() );
+          }
+          else iNumSats = value[_T ("satellites")].Size();
+
           SAT_INFO SK_SatInfo[4];
           for (int idx = 0; idx < 4; idx++) {
             SK_SatInfo[idx].SatNumber = 0;
@@ -2018,7 +2090,6 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             for (int iMesNum = 0; iMesNum < 3; iMesNum++) {
               for (idx = 0; idx < 4; idx++) {
                 arr = idx + 4 * iMesNum;
-                try {
                   if (value["satellites"][arr]["id"].IsInt())
                     iID = value["satellites"][arr]["id"].AsInt();
                   if (value["satellites"][arr]["elevation"].IsDouble())
@@ -2027,10 +2098,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                     dAzimRad = value["satellites"][arr]["azimuth"].AsDouble();
                   if (value["satellites"][arr]["SNR"].IsInt())
                     iSNR = value["satellites"][arr]["SNR"].AsInt();
-                } catch (int e) {
-                  wxLogMessage(
-                      ("_T(SignalK: Could not parse all satellite data: ") + e);
-                }
+
                 if (iID < 1) break;
                 SK_SatInfo[idx].SatNumber = iID;
                 SK_SatInfo[idx].ElevationDegrees = GEODESIC_RAD2DEG(dElevRad);
@@ -2038,10 +2106,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 SK_SatInfo[idx].SignalToNoiseRatio = iSNR;
               }
               if (idx > 0) {
-                // TODO. Add talkerID to talk when SignalK has incorporated
-                // that.
-                SendSatInfoToAllInstruments(iNumSats, iMesNum + 1,
-                                            wxEmptyString, SK_SatInfo);
+                if (talker != wxEmptyString && talker.StartsWith(_T("G"))) {
+                  talkerID = talker; //Origin NMEA0183
+                }
+                SendSatInfoToAllInstruments(iNumSats, iMesNum + 1, talkerID, SK_SatInfo);
                 mPriSatStatus = 2;
                 mSatStatus_Wdog = gps_watchdog_timeout_ticks;
               }
@@ -4200,6 +4268,15 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list) {
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionExtraValue(OCPN_DBP_STC_TWS2, _T("%.1f"),
                                   DIAL_POSITION_INSIDE);
+        break;
+      case ID_DBP_I_ALTI:
+        instrument = new DashboardInstrument_Single(
+            this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_ALTI,
+            _T("%6.1f"));
+        break;
+      case ID_DBP_D_ALTI:
+        instrument = new DashboardInstrument_Altitude(this, wxID_ANY,
+                                                   getInstrumentCaption(id));
         break;
       case ID_DBP_I_DPT:
         instrument = new DashboardInstrument_Single(

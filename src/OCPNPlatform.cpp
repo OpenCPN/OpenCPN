@@ -244,6 +244,9 @@ extern wxString g_CmdSoundString;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
 extern wxArrayString TideCurrentDataSet;
+extern int g_Android_SDK_Version;
+extern wxString g_androidDownloadDirectory;
+extern wxString g_gpx_path;
 
 static const char *const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -422,8 +425,13 @@ bool OCPNPlatform::DetectOSDetail(OCPN_OSDetail *detail) {
   if (arch == wxARCH_32) detail->osd_arch = std::string("i386");
 
 #ifdef ocpnARM
+  //  arm supports a multiarch runtime environment
+  //  That is, the OS may be 64 bit, but OCPN may be built as a 32 bit binary
+  //  So, we cannot trust the wxPlatformInfo architecture determination.
   detail->osd_arch = std::string("arm64");
-  if (arch == wxARCH_32) detail->osd_arch = std::string("armhf");
+#ifdef ocpnARMHF
+    detail->osd_arch = std::string("armhf");
+#endif
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -479,7 +487,7 @@ void OCPNPlatform::Initialize_1(void) {
 
   // URL for sending error reports over HTTP.
 
-  if (1 /*g_bEmailCrashReport*/) {
+  if (g_bEmailCrashReport) {
     info.pszUrl = _T("https://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
     info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP
   } else {
@@ -651,6 +659,9 @@ void OCPNPlatform::Initialize_1(void) {
 
 #ifdef __OCPN__ANDROID__
   qDebug() << "Initialize_1()";
+#ifdef NOASSERT
+  wxDisableAsserts( );      // No asserts at all in Release mode
+#endif
   androidUtilInit();
 #endif
 }
@@ -661,6 +672,32 @@ void OCPNPlatform::Initialize_1(void) {
 void OCPNPlatform::Initialize_2(void) {
 #ifdef __OCPN__ANDROID__
   wxLogMessage(androidGetDeviceInfo());
+
+  // Create some directories in App private directory
+  // Mainly required for Android 11+, but useable on all versions.
+    wxChar sep = wxFileName::GetPathSeparator();
+
+    wxString ChartDir = GetPrivateDataDir();
+    if (ChartDir.Last() != sep) ChartDir.Append(sep);
+    ChartDir.Append( "Charts");
+    if (!::wxDirExists(ChartDir)) {
+      ::wxMkdir(ChartDir);
+    }
+
+    wxString GRIBDir = GetPrivateDataDir();
+    if (GRIBDir.Last() != sep) GRIBDir.Append(sep);
+    GRIBDir.Append( "GRIBS");
+    if (!::wxDirExists(GRIBDir)) {
+      ::wxMkdir(GRIBDir);
+    }
+
+    // Set the default Import/Export directory for A11+
+    if (g_Android_SDK_Version >= 30){
+      if (!g_gpx_path.StartsWith(androidGetDownloadDirectory())){
+        g_gpx_path = androidGetDownloadDirectory();
+      }
+    }
+
 #endif
 
   //  Set a global toolbar scale factor
@@ -782,6 +819,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   GetglEntryPoints(pcaps);
 
+  pcaps->bOldIntel = false;
   if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
     if (pcaps->Renderer.Upper().Find(_T("965")) != wxNOT_FOUND) {
       pcaps->bOldIntel = true;
@@ -858,12 +896,19 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   wxString locale_location = GetSharedDataDir();
   locale_location += _T("share\\locale");
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
+  wxString imsg = _T("Adding catalog lookup path:  ");
+  imsg += locale_location;
+  wxLogMessage(imsg);
+
 
   // Managed plugin location
   wxFileName usrShare(GetWinPluginBaseDir() + wxFileName::GetPathSeparator());
   usrShare.RemoveLastDir();
   locale_location = usrShare.GetFullPath() + ("share\\locale");
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
+  imsg = _T("Adding catalog lookup path:  ");
+  imsg += locale_location;
+  wxLogMessage(imsg);
 
 #elif defined(__OCPN__ANDROID__)
 
@@ -1050,10 +1095,16 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     //  precedent.
 
     for (unsigned int i = 0; i < g_locale_catalog_array.GetCount(); i++) {
-      wxString imsg = _T("Loading catalog for:  ");
-      imsg += g_locale_catalog_array[i];
-      wxLogMessage(imsg);
-      locale->AddCatalog(g_locale_catalog_array[i]);
+      if(!locale->AddCatalog(g_locale_catalog_array[i])){
+        wxString emsg = _T("ERROR Loading translation catalog for:  ");
+        emsg += g_locale_catalog_array[i];
+        wxLogMessage(emsg);
+      }
+      else {
+        wxString imsg = _T("Loaded translation catalog for:  ");
+        imsg += g_locale_catalog_array[i];
+        wxLogMessage(imsg);
+      }
     }
 
     // Get core opencpn catalog translation (.mo) file
@@ -1367,11 +1418,9 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Force a generally useable sound command, overriding any previous user's
     // selection
     //  that may not be available on new build.
-#ifdef SYSTEM_SOUND_CMD
-    g_CmdSoundString = wxString(SYSTEM_SOUND_CMD);
+    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
     pConfig->SetPath(_T ( "/Settings" ));
     pConfig->Write(_T( "CmdSoundString" ), g_CmdSoundString);
-#endif /* SYSTEM_SOUND_CMD */
 
     // Force AIS specific sound effects ON, leaving the master control
     // (g_bAIS_CPA_Alert_Audio) as configured
@@ -2701,7 +2750,7 @@ void OCPNPlatform::DoHelpDialog(void) {
   if (!g_pAboutDlgLegacy)
     g_pAboutDlgLegacy = new about(gFrame, GetSharedDataDir());
   else
-    g_pAboutDlg->SetFocus();
+    g_pAboutDlgLegacy->SetFocus();
   g_pAboutDlgLegacy->Show();
 
 #endif

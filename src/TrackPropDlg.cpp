@@ -63,11 +63,11 @@ wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
   wxString s = _T("");
   wxString f;
   if (format == INPUT_FORMAT)
-    f = _T("%m/%d/%Y %H:%M");
+    f = _T("%x %H:%M");
   else if (format == TIMESTAMP_FORMAT)
-    f = _T("%m/%d/%Y %H:%M:%S");
+    f = _T("%x %H:%M:%S");
   else
-    f = _T(" %m/%d %H:%M");
+    f = _T(" %x %H:%M");
   switch (tz_selection) {
     case UTCINPUT:
       s.Append(ts.Format(f));
@@ -157,6 +157,12 @@ TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
   Connect(wxEVT_COMMAND_MENU_SELECTED,
           wxCommandEventHandler(TrackPropDlg::OnTrackPropMenuSelected), NULL,
           this);
+
+#ifdef __WXOSX__
+  Connect(wxEVT_ACTIVATE,
+          wxActivateEventHandler(TrackPropDlg::OnActivate),
+          NULL, this);
+#endif
 
   if (!m_bcompact) {
     m_buttonAddLink->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -249,6 +255,16 @@ TrackPropDlg::~TrackPropDlg() {
 
   instanceFlag = false;
 }
+
+void TrackPropDlg::OnActivate(wxActivateEvent& event){
+    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+    long int style = pWin->GetWindowStyle();
+    if (event.GetActive())
+      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+    else
+      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
+}
+
 
 void TrackPropDlg::RecalculateSize(void) {
   //  Make an estimate of the dialog size, without scrollbars showing
@@ -1152,10 +1168,11 @@ bool TrackPropDlg::UpdateProperties() {
   //  Time
   wxString time_form;
   wxTimeSpan time(0, 0, (int)total_seconds, 0);
+  //TODO  Construct a readable time string, e.g. "xx Days, 15:34"
   if (total_seconds > 3600. * 24.)
-    time_form = time.Format(_("%D Days, %H:%M"));
+    time_form = time.Format("%H:%M");
   else if (total_seconds > 0.)
-    time_form = time.Format(_("%H:%M"));
+    time_form = time.Format("%H:%M");
   else
     time_form = _T("--");
   m_tTimeEnroute->SetValue(time_form);
@@ -1822,7 +1839,7 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
     case 2:
       DistanceBearingMercator(this_point->m_lat, this_point->m_lon, slat, slon,
                               &gt_brg, &gt_leg_dist);
-      ret.Printf(_T("%03.0f \u00B0T"), gt_brg);
+      ret.Printf("%03.0f %cT", gt_brg, 0x00B0);
       break;
 
     case 3:

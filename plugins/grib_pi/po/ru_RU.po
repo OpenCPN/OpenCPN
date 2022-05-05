@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:19-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"PO-Revision-Date: 2022-04-18 17:54\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -178,7 +178,7 @@ msgstr "Дж/кг"
 
 #: src/GribSettingsDialog.cpp:39
 msgid "dBZ"
-msgstr ""
+msgstr "dBZ"
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:418
 #: src/GribUIDialogBase.cpp:927 src/GribUIDialogBase.cpp:1867
@@ -271,7 +271,7 @@ msgstr "Изолинии конвекции"
 
 #: src/GribSettingsDialog.cpp:811
 msgid "Display Comp. Reflectivity"
-msgstr ""
+msgstr "Отображение Отраж. Способности"
 
 #: src/GribSettingsDialog.cpp:818 src/GribSettingsDialog.cpp:889
 #: src/GribUIDialogBase.cpp:837
@@ -1151,5 +1151,5 @@ msgstr "Сокращенные Номера Изобар"
 
 #: src/CursorData.cpp:534
 msgid "Display Iso Reflectivity"
-msgstr ""
+msgstr "Отображение Iso Reflectivity"
 

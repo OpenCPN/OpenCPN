@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:19-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"PO-Revision-Date: 2022-04-21 14:20\n"
 "Last-Translator: \n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -28,7 +28,7 @@ msgstr "Posizione"
 
 #: src/dashboard_pi.cpp:185
 msgid "SOG"
-msgstr "Kilometri"
+msgstr "SOG"
 
 #: src/dashboard_pi.cpp:187
 msgid "Speedometer"
@@ -44,7 +44,7 @@ msgstr "Mag COG"
 
 #: src/dashboard_pi.cpp:193
 msgid "GNSS Compass"
-msgstr ""
+msgstr "Bussola GNSS"
 
 #: src/dashboard_pi.cpp:195
 msgid "True Compass"
@@ -124,11 +124,11 @@ msgstr "Angolo di barra"
 
 #: src/dashboard_pi.cpp:244
 msgid "GNSS in use"
-msgstr ""
+msgstr "GNSS in uso"
 
 #: src/dashboard_pi.cpp:246
 msgid "GNSS Status"
-msgstr ""
+msgstr "Stato GNSS"
 
 #: src/dashboard_pi.cpp:248
 msgid "Cursor"
@@ -136,7 +136,7 @@ msgstr "Cursore"
 
 #: src/dashboard_pi.cpp:250
 msgid "GNSS Clock"
-msgstr ""
+msgstr "Orologio GNSS"
 
 #: src/dashboard_pi.cpp:252
 msgid "Sunrise/Sunset"
@@ -168,7 +168,7 @@ msgstr "Dalla barca"
 
 #: src/dashboard_pi.cpp:266
 msgid "Pitch"
-msgstr "Inclinazione longitudinale"
+msgstr "Intonazione"
 
 #: src/dashboard_pi.cpp:268
 msgid "Heel"
@@ -176,7 +176,7 @@ msgstr "Inclinazione laterale"
 
 #: src/dashboard_pi.cpp:270
 msgid "Local GNSS Clock"
-msgstr ""
+msgstr "Ora locale GNSS"
 
 #: src/dashboard_pi.cpp:272
 msgid "Local CPU Clock"
@@ -212,11 +212,11 @@ msgstr "Giù"
 
 #: src/dashboard_pi.cpp:1461 src/dashboard_pi.cpp:2029
 msgid "Stbd"
-msgstr ""
+msgstr "Dritta"
 
 #: src/dashboard_pi.cpp:1464 src/dashboard_pi.cpp:2031
 msgid "Port"
-msgstr ""
+msgstr "Babordo"
 
 #: src/dashboard_pi.cpp:2627
 msgid "Dashboard preferences"
@@ -373,23 +373,23 @@ msgstr "Velocità Vento"
 
 #: src/dashboard_pi.cpp:2984
 msgid "Temperature units:"
-msgstr ""
+msgstr "Unità temperatura:"
 
 #: src/dashboard_pi.cpp:2987
 msgid "Celsius"
-msgstr ""
+msgstr "Celsius"
 
 #: src/dashboard_pi.cpp:2987
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenheit"
 
 #: src/dashboard_pi.cpp:2987
 msgid "Kelvin"
-msgstr ""
+msgstr "Kelvin"
 
 #: src/dashboard_pi.cpp:2994
 msgid "Use SignalK true wind data over ground. (Instead of through water)"
-msgstr ""
+msgstr "Usa i dati del vento vero SignalK a terra. (Invece che attraverso l'acqua)"
 
 #: src/dashboard_pi.cpp:3269
 msgid "Add instrument"
@@ -405,7 +405,7 @@ msgstr "Preferenze..."
 
 #: src/dashboard_pi.cpp:3703
 msgid "Resize..."
-msgstr ""
+msgstr "Ridimensiona..."
 
 #: src/dashboard_pi.cpp:3713
 msgid "Undock"
@@ -413,7 +413,7 @@ msgstr "Sgancia"
 
 #: src/dashboard_pi.cpp:4192
 msgid "Choose font"
-msgstr ""
+msgstr "Choose font"
 
 #: src/dial.cpp:529 src/wind.cpp:66 src/wind_history.cpp:441
 msgid "NE"

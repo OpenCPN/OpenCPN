@@ -553,11 +553,10 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d°(M)", wxConvUTF8),
-                                        (int)gFrame->GetMag(crs));
+          magString << wxString::Format(wxString("%03d%c(M)"),
+                                        (int)gFrame->GetMag(crs), 0x00B0);
         if (g_bShowTrue)
-          trueString << wxString::Format(wxString("%03d°  ", wxConvUTF8),
-                                         (int)crs);
+          trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
         courseStr << trueString << magString;
       } else if (COG == 360.0)
@@ -619,10 +618,10 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
       (fabs(Lat) < 85.)) {
     wxString magString, trueString;
     if (g_bShowMag)
-      magString << wxString::Format(wxString("%03d°(M)", wxConvUTF8),
-                                    (int)gFrame->GetMag(Brg));
+      magString << wxString::Format(wxString("%03d%c(M)"),
+                                    (int)gFrame->GetMag(Brg), 0x00B0);
     if (g_bShowTrue)
-      trueString << wxString::Format( wxString("%03d%c ", wxConvUTF8 ), (int)Brg, 0x00B0 );
+      trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
 
     brgStr << trueString << magString;
   } else
@@ -791,11 +790,10 @@ wxString AIS_Target_Data::GetRolloverString(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d°(M)  ", wxConvUTF8),
-                                        (int)gFrame->GetMag(crs));
+          magString << wxString::Format(wxString("%03d%c(M)  "),
+                                        (int)gFrame->GetMag(crs), 0x00B0);
         if (g_bShowTrue)
-          trueString << wxString::Format(wxString("%03d°  ", wxConvUTF8),
-                                         (int)crs);
+          trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
         result << trueString << magString;
       }
@@ -803,7 +801,7 @@ wxString AIS_Target_Data::GetRolloverString(void) {
       else if (COG == 360.0)
         result << _(" COG Unavailable");
       else if (crs == 360)
-        result << wxString(" COG 000°", wxConvUTF8);
+        result << wxString(" COG 000\u00B0");
     } else
       result << _(" COG Unavailable");
   }
@@ -1312,6 +1310,8 @@ wxString AIS_Target_Data::GetCountryCode(
       return b_CntryLongStr ? _("French Polynesia") : _T("PF");
     case 548:
       return b_CntryLongStr ? _("Philippines") : _T("PH");
+    case 550:
+      return b_CntryLongStr ? _("East Timor") : _T("TL");
     case 553:
       return b_CntryLongStr ? _("Papua New Guinea") : _T("PG");
     case 555:
@@ -1438,7 +1438,7 @@ wxString AIS_Target_Data::GetCountryCode(
     case 665:
       return b_CntryLongStr ? _("Saint Helena") : _T("SH");
     case 666:
-      return b_CntryLongStr ? _("Somali Democratic Republic") : _T("SO");
+      return b_CntryLongStr ? _("Somalia") : _T("SO");
     case 667:
       return b_CntryLongStr ? _("Sierra Leone") : _T("SL");
     case 668:

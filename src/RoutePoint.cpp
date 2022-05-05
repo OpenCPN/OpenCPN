@@ -500,6 +500,7 @@ void RoutePoint::ReLoadIcon(void) {
 #endif
 
   m_IconScaleFactor = -1;  // Force scaled icon reload
+  m_pMarkFont = 0;         // Force Font color reload
 }
 
 bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz) {
@@ -514,7 +515,7 @@ bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz) {
   if (b_UseScamin) {
     if (g_bOverruleScaMin)
       return true;
-    else if (canvas->GetScaleValue() > m_ScaMin)
+    else if (canvas->GetScaleValue() >= (double)(m_ScaMin + 1))
       return false;
   }
   return true;
@@ -798,6 +799,11 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     if (!m_pMarkFont) {
       m_pMarkFont = FontMgr::Get().GetFont(_("Marks"));
       m_FontColor = FontMgr::Get().GetFontColor(_("Marks"));
+      if (m_iTextTexture) {
+        glDeleteTextures(1, &m_iTextTexture);
+        m_iTextTexture = 0;
+      }
+
       CalculateNameExtents();
     }
 
@@ -943,6 +949,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
   if (m_bShowName && m_pMarkFont) {
     int w = m_NameExtents.x, h = m_NameExtents.y;
     if (!m_iTextTexture && w && h) {
+#if 0
       wxBitmap tbm(w, h); /* render text on dc */
       wxMemoryDC dc;
       dc.SelectObject(tbm);
@@ -975,6 +982,66 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_ALPHA, GL_UNSIGNED_BYTE,
                       e);
       delete[] e;
+#else
+      wxScreenDC sdc;
+      sdc.SetFont(*m_pMarkFont);
+      sdc.GetTextExtent(m_MarkName, &w, &h, NULL, NULL, m_pMarkFont);
+
+      /* create bitmap of appropriate size and select it */
+      wxBitmap bmp( w, h );
+      wxMemoryDC temp_dc;
+      temp_dc.SelectObject( bmp );
+
+      /* fill bitmap with black */
+      temp_dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
+      temp_dc.Clear();
+
+      /* draw the text white */
+      temp_dc.SetFont( *m_pMarkFont );
+      temp_dc.SetTextForeground( wxColour( 255, 255, 255 ) );
+      temp_dc.DrawText( m_MarkName, 0, 0 );
+      temp_dc.SelectObject( wxNullBitmap );
+
+      /* use the data in the bitmap for alpha channel,
+       and set the color to text foreground */
+      wxImage image = bmp.ConvertToImage();
+
+      unsigned char *data = new unsigned char[w * h * 4];
+      unsigned char *im = image.GetData();
+
+
+      if(im){
+          unsigned int r = m_FontColor.Red();
+          unsigned int g = m_FontColor.Green();
+          unsigned int b = m_FontColor.Blue();
+          for( int i = 0; i < h; i++ ){
+              for(int j=0 ; j < w ; j++){
+                  unsigned int index = ((i*w) + j) * 4;
+                  data[index] = r;
+                  data[index+1] = g;
+                  data[index+2] = b;
+                  data[index+3] = im[((i*w) + j) * 3];
+              }
+          }
+      }
+
+      glGenTextures(1, &m_iTextTexture);
+
+      glBindTexture(GL_TEXTURE_2D, m_iTextTexture);
+
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+      m_iTextTextureWidth = NextPow2(w);
+      m_iTextTextureHeight = NextPow2(h);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_iTextTextureWidth, m_iTextTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+      glEnable(GL_TEXTURE_2D);
+      glEnable(GL_BLEND);
+      glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+#endif
     }
 
     if (m_iTextTexture) {
@@ -988,7 +1055,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       float u = (float)w / m_iTextTextureWidth,
             v = (float)h / m_iTextTextureHeight;
 #ifndef USE_ANDROID_GLES2
-      glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
+      glColor3ub(255, 255, 255);
 
       glBegin(GL_QUADS);
       glTexCoord2f(0, 0);

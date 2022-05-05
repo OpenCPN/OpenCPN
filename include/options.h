@@ -79,6 +79,8 @@ class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
 class OCPNIconCombo;
 class OCPNColourPickerCtrl;
+class OCPNChartDirPanel;
+class OCPNSoundPanel;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -201,29 +203,17 @@ enum {
   // LIVE ETA OPTION
   ID_CHECK_LIVEETA,
   ID_DEFAULT_BOAT_SPEED,
-  ID_DARKDECORATIONSBOX,
   ID_SCREENCONFIG1,
   ID_SCREENCONFIG2,
   ID_CONFIGEDIT_OK,
   ID_CONFIGEDIT_CANCEL,
   ID_ZOOMBUTTONS,
   ID_RASTERZOOM,
-  ID_ANCHORSELECTSOUND,
-  ID_ANCHORTESTSOUND,
   ID_ANCHORALERTAUDIO,
   ID_AISALERTAUDIO,
-  ID_AISSELECTSOUND,
-  ID_AISTESTSOUND,
-  ID_SARTALERTAUDIO,
-  ID_SARTELECTSOUND,
-  ID_SARTTESTSOUND,
-  ID_DSCALERTAUDIO,
-  ID_DSCSELECTSOUND,
-  ID_DSCTESTSOUND,
   ID_AISALERTDIALOG,
-  ID_AISALERTSELECTSOUND,
-  ID_AISALERTTESTSOUND,
-  ID_TEMPUNITSCHOICE
+  ID_TEMPUNITSCHOICE,
+  ID_BUTTONMIGRATE
 };
 
 /* Define an int bit field for dialog return value
@@ -318,6 +308,7 @@ public:
   void OnButtondeleteClick(wxCommandEvent &event);
   void OnButtonParseENC(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
+  void OnButtonmigrateClick(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
   void OnApplyClick(wxCommandEvent &event);
   void OnXidOkClick(wxCommandEvent &event);
@@ -346,14 +337,6 @@ public:
   wxString SelectSoundFile();
   void OnButtonSelectSound(wxCommandEvent &event);
   void OnButtonTestSound(wxCommandEvent &event);
-  void OnButtonSelectAnchorSound(wxCommandEvent &event);
-  void OnButtonTestAnchorSound(wxCommandEvent &event);
-  void OnButtonSelectAISSound(wxCommandEvent &event);
-  void OnButtonTestAISSound(wxCommandEvent &event);
-  void OnButtonSelectSARTSound(wxCommandEvent &event);
-  void OnButtonTestSARTSound(wxCommandEvent &event);
-  void OnButtonSelectDSCSound(wxCommandEvent &event);
-  void OnButtonTestDSCSound(wxCommandEvent &event);
 
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void OnZTCCheckboxClick(wxCommandEvent &event);
@@ -371,7 +354,10 @@ public:
   void onBTScanTimer(wxTimerEvent &event);
   void StopBTScan(void);
 
-  void UpdateWorkArrayFromTextCtl(void);
+  void UpdateWorkArrayFromDisplayPanel(void);
+  ArrayOfCDI GetSelectedChartDirs();
+  ArrayOfCDI GetUnSelectedChartDirs();
+  void SetDirActionButtons();
 
   void OnCreateConfig(wxCommandEvent &event);
   void OnEditConfig(wxCommandEvent &event);
@@ -381,12 +367,14 @@ public:
   void ClearConfigList();
   void BuildConfigList();
   void OnConfigMouseSelected(wxMouseEvent &event);
+  void OnDialogInit(wxInitDialogEvent& event);
 
   void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
 
   bool GetNeedNew() { return m_bneedNew; }
   void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
   int GetScrollRate() { return m_scrollRate; }
+  void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -420,8 +408,7 @@ public:
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
   //  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis,
   //  *pRollover;
-  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover,
-      *pDarkDecorations;
+  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxCheckBox *pZoomButtons;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
@@ -431,6 +418,7 @@ public:
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
       *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
+  wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
   // LIVE ETA OPTION
@@ -507,6 +495,7 @@ public:
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(wxString stat);
   void OnAISRolloverClick(wxCommandEvent &event);
+  void UpdateChartDirList();
 
   void OnCanvasConfigSelectClick(int ID, bool selected);
 
@@ -547,13 +536,23 @@ public:
   wxStaticBoxSizer *activeSizer;
   wxBoxSizer *chartPanel;
   wxTextCtrl *pSelCtl;
-  wxListCtrl *pActiveChartsList;
+
+  ArrayOfCDI ActiveChartArray;
+
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
   wxButton *pParseENCButton;
   wxButton *m_removeBtn, *m_compressBtn;
+  wxButton *m_migrateBtn;
   int k_charts;
   int m_nCharWidthMax;
+  wxBoxSizer *boxSizerCharts;
+  wxScrolledWindow *m_scrollWinChartList;
+  wxScrolledWindow* chartPanelWin;
+  wxBoxSizer* cmdButtonSizer;
+  wxStaticBox* loadedBox;
+  std::vector<OCPNChartDirPanel *> panelVector;
+  wxArrayString activeChartList;
 
   // For the "Charts->Display Options" page
   wxScrolledWindow *m_ChartDisplayPage;
@@ -661,12 +660,14 @@ public:
   MyFrame *pParent;
 
   int k_plugins;
+  bool m_bForceNewToolbaronCancel;
 
   // Sounds panel
-  wxCheckBox *m_pCheck_AnchorAudio, *m_pCheck_AISAudio, *m_pCheck_SARTAudio,
-      *m_pCheck_DSCAudio;
-  wxStaticText *m_anchorAudioFileNameText, *m_aisAudioFileNameText,
-      *m_sartAudioFileNameText, *m_dscAudioFileNameText;
+
+  OCPNSoundPanel *m_soundPanelAnchor;
+  OCPNSoundPanel *m_soundPanelAIS;
+  OCPNSoundPanel *m_soundPanelSART;
+  OCPNSoundPanel *m_soundPanelDSC;
 
 private:
   void Init(void);

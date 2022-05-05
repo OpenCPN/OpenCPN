@@ -275,7 +275,7 @@ protected:
   wxStaticText* m_staticTextShowNameExt;
   wxStaticText* m_staticTextRR1;
   wxStaticText* m_staticTextRR2;
-  wxStaticText* m_RangeRingUnits;
+  wxChoice* m_RangeRingUnits;
   wxStaticText* m_staticTextRR4;
   wxStaticText* m_staticTextArrivalUnits;
   wxStaticText* m_staticTextPlSpeed;
@@ -308,13 +308,11 @@ protected:
   wxButton* m_sdbSizerButtonsCancel;
   wxButton* m_sdbSizerButtonsOK;
 
-#ifndef __OCPN__ANDROID__
   wxDatePickerCtrl* m_EtaDatePickerCtrl;
 #ifdef __WXGTK__
   TimeCtrl* m_EtaTimePickerCtrl;
 #else
   wxTimePickerCtrl* m_EtaTimePickerCtrl;
-#endif
 #endif
   wxArrayString m_choiceTideChoices;
   wxBitmap m_bmTide;
@@ -368,6 +366,8 @@ public:
   bool UpdateProperties(bool positionOnly = false);
   void ValidateMark(void);
   bool SaveChanges();
+  void OnActivate(wxActivateEvent& event);
+
   wxSimpleHtmlListBox* GetSimpleBox() {
     return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox);
   }

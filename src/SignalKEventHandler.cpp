@@ -112,13 +112,13 @@ void SignalKEventHandler::updateItem(wxJSONValue &item,
   if (item.HasMember("path") && item.HasMember("value")) {
     const wxString &update_path = item["path"].AsString();
     wxJSONValue &value = item["value"];
-    if (update_path == _T("navigation.position")) {
+    if (update_path == _T("navigation.position") && !value.IsNull()) {
       updateNavigationPosition(value, sfixtime);
     } else if (update_path == _T("navigation.speedOverGround") &&
-               bGPSValid_SK) {
+               bGPSValid_SK && !value.IsNull()) {
       updateNavigationSpeedOverGround(value, sfixtime);
     } else if (update_path == _T("navigation.courseOverGroundTrue") &&
-               bGPSValid_SK) {
+               bGPSValid_SK && !value.IsNull()) {
       updateNavigationCourseOverGround(value, sfixtime);
     } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
     }  // Ignore magnetic COG as OpenCPN don't handle yet.
@@ -131,11 +131,14 @@ void SignalKEventHandler::updateItem(wxJSONValue &item,
     {
       if (g_priSats >= 3) updateGnssSatellites(value, sfixtime);
     } else if (update_path == _T("navigation.headingTrue")) {
-      updateHeadingTrue(value, sfixtime);
+      if(!value.IsNull())
+        updateHeadingTrue(value, sfixtime);
     } else if (update_path == _T("navigation.headingMagnetic")) {
-      updateHeadingMagnetic(value, sfixtime);
+      if(!value.IsNull())
+        updateHeadingMagnetic(value, sfixtime);
     } else if (update_path == _T("navigation.magneticVariation")) {
-      updateMagneticVariance(value, sfixtime);
+      if(!value.IsNull())
+        updateMagneticVariance(value, sfixtime);
     } else {
       // wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"),
       // update_path));
@@ -158,7 +161,7 @@ void SignalKEventHandler::updateNavigationPosition(
     // wxLogMessage(_T(" ***** Position Update"));
     m_frame->setPosition(value["latitude"].AsDouble(),
                          value["longitude"].AsDouble());
-    m_frame->PostProcessNMEA(true, false, sfixtime);
+    m_frame->PostProcessNMEA(true, false, false, sfixtime);
     bGPSValid_SK = true;
   } else {
     bGPSValid_SK = false;
@@ -171,7 +174,7 @@ void SignalKEventHandler::updateNavigationSpeedOverGround(
   double sog_knot = sog_ms * ms_to_knot_factor;
   // wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
   m_frame->setSpeedOverGround(sog_knot);
-  m_frame->PostProcessNMEA(false, true, sfixtime);
+  m_frame->PostProcessNMEA(false, true, false, sfixtime);
 }
 
 void SignalKEventHandler::updateNavigationCourseOverGround(
@@ -180,14 +183,16 @@ void SignalKEventHandler::updateNavigationCourseOverGround(
   double cog_deg = GEODESIC_RAD2DEG(cog_rad);
   // wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
   m_frame->setCourseOverGround(cog_deg);
-  m_frame->PostProcessNMEA(false, true, sfixtime);
+  m_frame->PostProcessNMEA(false, false, true, sfixtime);
 }
 
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,
                                                const wxString &sfixtime) const {
   if (value.IsInt()) {
-    m_frame->setSatelitesInView(value.AsInt());
-    g_priSats = 2;
+    if (value.AsInt() > 0) {
+      m_frame->setSatelitesInView(value.AsInt());
+      g_priSats = 2;
+    }
   } else if ((value.HasMember("count") && value["count"].IsInt())) {
     m_frame->setSatelitesInView(value["count"].AsInt());
     g_priSats = 3;

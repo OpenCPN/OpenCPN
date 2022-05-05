@@ -247,12 +247,12 @@ void PrepareMenuItem( wxMenuItem *item ){
 void MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
+  wxFont *qFont = GetOCPNScaledFont(_("Menu"));
   item->SetFont(*qFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
-  wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
   item->SetFont(sFont);
 #endif
 
@@ -305,28 +305,12 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   popx = x;
   popy = y;
 
-  if (seltype == SELTYPE_ROUTECREATE) {
-    MenuAppend1(contextMenu, ID_RC_MENU_FINISH,
-                _menuText(_("End Route"), _T("Esc")));
-  }
-
-  if (!parent->m_pMouseRoute) {
-    if (parent->m_bMeasure_Active)
-      MenuPrepend1(contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE,
-                   _menuText(_("Measure Off"), _T("Esc")));
-    else
-      MenuPrepend1(contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE,
-                   _menuText(_("Measure"), _T("M")));
-    //            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText(
-    //            _( "Measure" ), _T("F4") ) );
-  }
-
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
     if (parent->undo->AnythingToUndo()) {
       wxString undoItem;
       undoItem << _("Undo") << _T(" ")
                << parent->undo->GetNextUndoableAction()->Description();
-      MenuPrepend1(contextMenu, ID_UNDO, _menuText(undoItem, _T("Ctrl-Z")));
+      MenuAppend1(contextMenu, ID_UNDO, _menuText(undoItem, _T("Ctrl-Z")));
     }
 
     if (parent->undo->AnythingToRedo()) {
@@ -334,13 +318,28 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       redoItem << _("Redo") << _T(" ")
                << parent->undo->GetNextRedoableAction()->Description();
 #ifdef __WXOSX__
-      MenuPrepend1(contextMenu, ID_REDO,
+      MenuAppend1(contextMenu, ID_REDO,
                    _menuText(redoItem, _T("Shift-Ctrl-Z")));
 #else
-      MenuPrepend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Ctrl-Y")));
+      MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Ctrl-Y")));
 #endif
     }
   }
+
+  if (seltype == SELTYPE_ROUTECREATE) {
+    MenuAppend1(contextMenu, ID_RC_MENU_FINISH,
+                _menuText(_("End Route"), _T("Esc")));
+  }
+
+  if (!parent->m_pMouseRoute) {
+    if (parent->m_bMeasure_Active)
+      MenuAppend1(contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE,
+                   _menuText(_("Measure Off"), _T("Esc")));
+    else
+      MenuAppend1(contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE,
+                   _menuText(_("Measure"), _T("M")));
+  }
+
 
   bool ais_areanotice = false;
   if (g_pAIS && parent->GetShowAIS() && g_bShowAreaNotices) {
@@ -875,7 +874,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
   int sub_menu = 0;
   if (!g_bBasicMenus && menuFocus != contextMenu) {
-    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK ||
+    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK &&
                    global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT ){
       menuFocus->AppendSeparator();
     }
@@ -959,6 +958,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #endif
                                          (*it)->GetHelp(), (*it)->GetKind());
 
+#ifdef __WXMSW__
+        wxFont *qFont = GetOCPNScaledFont(_("Menu"));
+        pmi->SetFont( *qFont);
+#endif
         PrepareMenuItem( pmi );
         submenu->Append(pmi);
         pmi->Check((*it)->IsChecked());
@@ -974,7 +977,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    pmi->SetFont(pimis->pmenu_item->GetFont());
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
+    pmi->SetFont( *qFont);
 #endif
 
     PrepareMenuItem( pmi );
@@ -1230,9 +1234,11 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           g_pMarkInfoDialog->UpdateProperties();
         }
 
-        if (pRouteManagerDialog) {
-          if (pRouteManagerDialog->IsShown())
-            pRouteManagerDialog->UpdateWptListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+          if (pRouteManagerDialog) {
+            if (pRouteManagerDialog->IsShown())
+              pRouteManagerDialog->UpdateWptListCtrl();
+          }
         }
 
         gFrame->RefreshAllCanvas(false);
@@ -1434,8 +1440,10 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute)) break;
 
-        if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-          pRouteManagerDialog->UpdateRouteListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+          if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        }
 
         if (g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown()) {
           g_pMarkInfoDialog->ValidateMark();
@@ -1481,14 +1489,6 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_RT_MENU_INSERT: {
       if (m_pSelectedRoute->m_bIsInLayer) break;
       bool rename = false;
-      int ask_return = OCPNMessageBox(
-          parent,
-          _("Waypoints can be renamed to include the new one, the names will "
-            "be '001', '002' etc.") +
-              _T("\n\n") + _("Do you want to rename the waypoints?"),
-          _("Rename Waypoints?"), wxYES_NO | wxCANCEL);
-      if (ask_return == wxID_YES) rename = true;
-
       m_pSelectedRoute->InsertPointAfter(m_pFoundRoutePoint, zlat, zlon,
                                          rename);
 
@@ -1673,9 +1673,11 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
             pRoutePropDialog->Hide();
         }
 
-        if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
-          pRouteManagerDialog->UpdateWptListCtrl();
-          pRouteManagerDialog->UpdateRouteListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+          if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
+            pRouteManagerDialog->UpdateWptListCtrl();
+            pRouteManagerDialog->UpdateRouteListCtrl();
+          }
         }
 
         gFrame->InvalidateAllGL();

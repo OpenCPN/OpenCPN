@@ -64,6 +64,7 @@
 #include "rudder_angle.h"
 #include "gps.h"
 #include "depth.h"
+#include "altitude.h"
 #include "clock.h"
 #include "wind_history.h"
 #include "baro_history.h"
@@ -198,7 +199,7 @@ private:
 
   void ParseSignalK(wxString &msg);
   void handleSKUpdate(wxJSONValue &update);
-  void updateSKItem(wxJSONValue &item, wxString &sfixtime);
+  void updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime);
   wxString m_self;
 
   wxFileConfig *m_pconfig;

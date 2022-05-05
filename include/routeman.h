@@ -198,6 +198,7 @@ public:
   wxBitmap GetIconBitmapForList(int index, int height);
   wxString *GetIconDescription(int index);
   wxString *GetIconKey(int index);
+  wxString GetIconDescription(wxString icon_key);
 
   wxImageList *Getpmarkicon_image_list(int nominal_height);
 

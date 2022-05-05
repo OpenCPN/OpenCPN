@@ -545,7 +545,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
 
     // get area DEPARE & DRGARE that intersect this point/line/area
 
-    ListOfS57Obj *pobj_list = NULL;
+    std::list<S57Obj*> *pobj_list = NULL;
 
     if (obj->m_chart_context->chart)
       pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
@@ -556,9 +556,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
     }
 
     if (pobj_list) {
-      wxListOfS57ObjNode *node = pobj_list->GetFirst();
-      while (node) {
-        S57Obj *ptest_obj = node->GetData();
+      for (S57Obj* ptest_obj: *pobj_list) {
         if (GEO_LINE == ptest_obj->Primitive_type) {
           double drval2 = 0.0;
           GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
@@ -584,7 +582,6 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
             break;
           }
         }
-        node = node->GetNext();
       }
 
       delete pobj_list;
@@ -697,9 +694,7 @@ static void *DEPARE01(void *param) {
 
   rule_str.Append('\037');
 
-  char *r = (char *)malloc(rule_str.Len() + 1);
-  strcpy(r, rule_str.mb_str());
-  return r;
+  return strdup(rule_str.mb_str());
 }
 /*
 static void *DEPCNT02A(void *param)
@@ -925,9 +920,7 @@ while (NULL != (geoTmp = S57_nextObj(geoTmp))) {
 
   rule_str.Append('\037');
 
-  char *r = (char *)malloc(rule_str.Len() + 1);
-  strcpy(r, rule_str.mb_str());
-  return r;
+  return strdup(rule_str.mb_str());
 
   //            return depcnt02;
 }

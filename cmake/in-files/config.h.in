@@ -58,11 +58,8 @@
 // The architecture compatible plugins are built for
 #define PKG_TARGET_ARCH "${ARCH}"
 
-// The version of gtk that has been used in the plugin build
-#define PKG_BUILD_GTK "${PKG_BUILD_GTK}"
-
 // Command line to play a sound in system(3), like "aplay %s".
-#define SYSTEM_SOUND_CMD  ${SYSTEM_SOUND_CMD}
+#define OCPN_SOUND_CMD  ${OCPN_SOUND_CMD}
 
 // Flag for ancient compilers without C++11 support
 #cmakedefine COMPILER_SUPPORTS_CXX11

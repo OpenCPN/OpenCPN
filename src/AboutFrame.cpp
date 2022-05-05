@@ -58,7 +58,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
   bSizerAbout->Add(m_staticTextOCPN, 0, wxALL, 5);
 
   m_staticTextVersion =
-      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, _T("5.0.0"),
+      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, _T("5.6.0"),
                        wxDefaultPosition, wxDefaultSize, 0);
   m_staticTextVersion->Wrap(-1);
   m_staticTextVersion->SetFont(wxFont(wxNORMAL_FONT->GetPointSize(),
@@ -71,7 +71,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
   bSizerAuthors1 = new wxBoxSizer(wxHORIZONTAL);
 
   m_staticTextCopyYears =
-      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, _("(c) 2000-2019"),
+      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, _("(c) 2000-2021"),
                        wxDefaultPosition, wxDefaultSize, 0);
   m_staticTextCopyYears->Wrap(-1);
   bSizerAuthors1->Add(m_staticTextCopyYears, 0, wxALL, 5);

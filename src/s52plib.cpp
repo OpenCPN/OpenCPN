@@ -433,6 +433,9 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_display_size_mm = 300;
   SetGLPolygonSmoothing(true);
   SetGLLineSmoothing(true);
+
+  m_displayScale = 1.0;
+
 }
 
 s52plib::~s52plib() {
@@ -477,6 +480,12 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
 }
 
 void s52plib::SetPPMM(float ppmm) {
+
+#ifdef __WXOSX__
+  // Support Mac Retina displays.
+  m_displayScale = GetOCPNCanvasWindow()->GetContentScaleFactor();
+#endif
+
   canvas_pix_per_mm = ppmm;
 
   // We need a supplemental scale factor for HPGL vector symbol rendering.
@@ -488,9 +497,12 @@ void s52plib::SetPPMM(float ppmm) {
   // raster.
 
   // Referring to the chartsymbols.xml file, we find that the dimension of a
-  // flare light is 810 units, and a raster BOYLAT is 16 pix.
+  // flare light is 810 units, and a raster BOYLAT is nominally 16 pix.
+  // However, elsewhere we declare that the nominal size of of a flare
+  //  should be 6 mm instead of 8.1 mm
+  // So, do the math with 600 instead of 810.
 
-  m_rv_scale_factor = 2.0 * (1600. / (810 * ppmm));
+  m_rv_scale_factor = 2.0 * (1600. / (600 * ppmm));
 
   // Estimate the display size
 
@@ -498,6 +510,12 @@ void s52plib::SetPPMM(float ppmm) {
   ::wxDisplaySize(&ww, &hh);
   m_display_size_mm =
       wxMax(ww, hh) / GetPPMM();  // accurate enough for internal use
+
+  m_display_size_mm /= m_displayScale;
+
+  wxString msg;
+  msg.Printf("Core s52plib:  ppmm: %g rv_scale_factor: %g  calc_display_size_mm: %g", ppmm, m_rv_scale_factor, m_display_size_mm);
+  wxLogMessage(msg);
 }
 
 //      Various static helper methods
@@ -9286,7 +9304,7 @@ void RotateToViewPort(const ViewPort &vp) {
 int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 #ifdef USE_ANDROID_GLES2
   return RenderToGLAP_GLSL(rzRules, rules, vp);
-#endif
+#else
 
 #ifdef ocpnUSE_GL
   if (rules->razRule == NULL) return 0;
@@ -9570,9 +9588,11 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   }
 
   free(ptp);
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
   return 1;
+#endif  // #ifdef USE_ANDROID_GLES2
+
 }
 
 int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules,
@@ -12495,7 +12515,7 @@ void PLIBDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 
 #ifdef USE_ANDROID_GLES2
 
-#include <gl2.h>
+#include <GLES2/gl2.h>
 
 // Simple colored triangle shader
 

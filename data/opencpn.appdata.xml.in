@@ -10,7 +10,7 @@
   <provides>
     <binary>opencpn</binary>
   </provides>
-  <launchable type="desktop-id">org.opencpn.OpenCPN.desktop</launchable>
+  <launchable type="desktop-id">opencpn.desktop</launchable>
   <description>
     <p>
       A cross-platform ship-borne GUI navigation application made

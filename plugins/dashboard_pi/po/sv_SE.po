@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-21 20:19-0400\n"
-"PO-Revision-Date: 2021-09-26 23:57\n"
+"PO-Revision-Date: 2022-04-21 14:21\n"
 "Last-Translator: \n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -32,7 +32,7 @@ msgstr "SOG"
 
 #: src/dashboard_pi.cpp:187
 msgid "Speedometer"
-msgstr "Hastighetsmätare"
+msgstr "Fartmätare"
 
 #: src/dashboard_pi.cpp:189
 msgid "COG"

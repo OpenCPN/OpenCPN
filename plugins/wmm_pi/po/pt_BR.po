@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2021-06-20 00:50\n"
+"PO-Revision-Date: 2022-04-21 14:20\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -45,7 +45,7 @@ msgstr "Plugin WMM"
 
 #: src/wmm_pi.cpp:167
 msgid "WMM_Live_Overlay"
-msgstr ""
+msgstr "WMM_Live_Overlay"
 
 #: src/wmm_pi.cpp:225 src/wmm_pi.cpp:313 src/WmmUIDialog.h:87
 msgid "WMM"

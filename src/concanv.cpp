@@ -83,6 +83,10 @@ ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
 
   long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
+#ifdef __WXMSW__
+  style |= wxFRAME_NO_TASKBAR;
+#endif
+
   wxFrame::Create(frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
                   style);
 
@@ -396,7 +400,7 @@ void ConsoleCanvas::UpdateRouteData() {
 
         if (speed > 0.) {
           // Show date, e.g. Feb 15, if TTG > 24 h
-          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%b %d %H:%M"))
+          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%d/%m %H:%M"))
                                             : eta.Format(_T("%H:%M"));
         } else {
           seta = _T("---");
@@ -511,7 +515,7 @@ void AnnunText::CalculateMinSize(void) {
     GetTextExtent(_T("1234"), &wl, &hl, NULL, NULL, m_plabelFont);
 
   if (m_pvalueFont)
-    GetTextExtent(_T("123.456"), &wv, &hv, NULL, NULL, m_pvalueFont);
+    GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
 
   wxSize min;
   min.x = wl + wv;

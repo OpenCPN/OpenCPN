@@ -190,6 +190,7 @@ struct ChartTableEntry {
 
   void SetValid(bool valid) { bValid = valid; }
   time_t GetFileTime() const { return file_date; }
+  time_t GetChartEditionDate() const { return edition_date; }
 
   int GetnPlyEntries() const { return nPlyEntries; }
   float *GetpPlyTable() const { return pPlyTable; }

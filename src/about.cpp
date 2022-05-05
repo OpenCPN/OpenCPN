@@ -66,7 +66,7 @@ wxString OpenCPNVersion =
 
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2019 The OpenCPN Authors<br><br>");
+    wxT("(c) 2000-2021  The OpenCPN Authors<br><br>");
 
 const wxString OpenCPNInfo =
     wxT("<br><br>")
@@ -92,6 +92,10 @@ const wxString AuthorText =
     wxT("      OpenCPN Lead Developer\n\n")
     wxT("    Pavel Kalian\n")
     wxT("      Packaging and PlugIn development\n\n")
+    wxT("    Håkan Svensson\n")
+    wxT("      Comms and Plugin integration\n\n")
+    wxT("    Rick Gleason\n")
+    wxT("      Plugin adaptation and maintenance\n\n")
     wxT("    Sean D'Epagnier\n")
     wxT("      OpenGL Architecture\n\n")
     wxT("    J.P. Joubert\n")

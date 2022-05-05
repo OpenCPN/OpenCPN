@@ -179,7 +179,7 @@ void SetScaleDialog::CreateControls() {
   itemBoxSizer2->Add(itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5);
 
   wxStaticText* itemStaticText5 = new wxStaticText(
-      itemDialog1, wxID_STATIC, _(""), wxDefaultPosition, wxDefaultSize, 0);
+      itemDialog1, wxID_STATIC, _T(""), wxDefaultPosition, wxDefaultSize, 0);
   itemStaticBoxSizer4->Add(itemStaticText5, 0,
                            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
 
@@ -553,7 +553,7 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor,
   // wxWindow::Create(parent, id, pos, size, style, name);
   // long mstyle = wxSIMPLE_BORDER;
   long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED |
-                wxFRAME_FLOAT_ON_PARENT;
+                wxFRAME_FLOAT_ON_PARENT | wxFRAME_TOOL_WINDOW;
 
   m_scaleFactor = size_factor;
   m_cs = (ColorScheme)-1;
@@ -632,13 +632,13 @@ void MUIBar::OnScaleSelected(wxMouseEvent& event) {
       dScale = wxMax(dScale, 1000);
       double displayScaleNow = pcc->GetScaleValue();
       double factor = displayScaleNow / dScale;
-      pcc->DoZoomCanvas(factor);
+      pcc->DoZoomCanvas(factor, false);
 
       // Run the calculation again, to reduce roundoff error in large scale
       // jumps.
       displayScaleNow = pcc->GetScaleValue();
       factor = displayScaleNow / dScale;
-      pcc->DoZoomCanvas(factor);
+      pcc->DoZoomCanvas(factor, false);
     }
   }
 }
@@ -680,7 +680,7 @@ void MUIBar::CreateControls() {
 
 #ifndef __OCPN__ANDROID__
     //  Scale
-    m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
+    m_scaleTextBox = new wxStaticText(this, wxID_ANY, _T("1:400000"));
     wxColour textbackColor = GetGlobalColor(_T("GREY1"));
     m_scaleTextBox->SetForegroundColour(textbackColor);
     barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL);
