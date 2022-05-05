@@ -9359,10 +9359,8 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
       AIS_Target_Data *target_data = target.second;
       if (!target_data->area_notices.empty()) {
-        for (AIS_Area_Notice_Hash::iterator ani =
-                 target_data->area_notices.begin();
-             ani != target_data->area_notices.end(); ++ani) {
-          Ais8_001_22 &area_notice = ani->second;
+        for (auto &ani : target_data->area_notices) {
+          Ais8_001_22 &area_notice = ani.second;
 
           wxBoundingBox bbox;
 

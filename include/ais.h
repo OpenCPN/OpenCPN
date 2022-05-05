@@ -195,10 +195,6 @@ struct Ais8_001_22 {
   Ais8_001_22_SubAreaList sub_areas;
 };
 
-// key is link_id, which should be unique for a given mmsi
-WX_DECLARE_HASH_MAP(int, Ais8_001_22, wxIntegerHash, wxIntegerEqual,
-                    AIS_Area_Notice_Hash);
-
 //---------------------------------------------------------------------------------
 //
 //  AIS_Decoder Helpers
