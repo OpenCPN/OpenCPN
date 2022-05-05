@@ -8741,10 +8741,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   //   Update all the current targets
   if (g_pAIS) {
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash* current_targets = g_pAIS->GetTargetList();
-    for (it = current_targets->begin(); it != current_targets->end(); ++it) {
-      AIS_Target_Data* pAISTarget = it->second;
+    for (const auto& it : g_pAIS->GetTargetList()) {
+      AIS_Target_Data* pAISTarget = it.second;
       if (NULL != pAISTarget) pAISTarget->b_show_track = g_bAISShowTracks;
     }
   }

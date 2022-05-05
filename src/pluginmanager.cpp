@@ -3826,12 +3826,8 @@ ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void) {
   ArrayOfPlugIn_AIS_Targets *pret = new ArrayOfPlugIn_AIS_Targets;
 
   //      Iterate over the AIS Target Hashmap
-  AIS_Target_Hash::iterator it;
-
-  AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
-
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : g_pAIS->GetTargetList()) {
+    AIS_Target_Data *td = it.second;
     PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(td);
     pret->Add(ptarget);
   }

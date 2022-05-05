@@ -152,10 +152,7 @@ void AISshipNameCache(AIS_Target_Data *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
 
-AIS_Decoder::AIS_Decoder(wxFrame *parent)
-    : m_signalk_selfid(""), AISTargetList(new AIS_Target_Hash()) {
-  AISTargetList = new AIS_Target_Hash;
-
+AIS_Decoder::AIS_Decoder(wxFrame *parent) : m_signalk_selfid("") {
   // Load cached AIS target names from a file
   AISTargetNamesC = new AIS_Target_Name_Hash;
   AISTargetNamesNC = new AIS_Target_Name_Hash;
@@ -184,7 +181,6 @@ AIS_Decoder::AIS_Decoder(wxFrame *parent)
     infile.Close();
   }
 
-  AIS_AreaNotice_Sources = new AIS_Target_Hash;
   BuildERIShipTypeHash();
 
   g_pais_alert_dialog_active = NULL;
@@ -211,18 +207,11 @@ AIS_Decoder::AIS_Decoder(wxFrame *parent)
 }
 
 AIS_Decoder::~AIS_Decoder(void) {
-  AIS_Target_Hash::iterator it;
-  AIS_Target_Hash *current_targets = GetTargetList();
-
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : GetTargetList()) {
+    AIS_Target_Data *td = it.second;
 
     delete td;
   }
-
-  delete AISTargetList;
-
-  delete AIS_AreaNotice_Sources;
 
   // Write mmsi-shipsname to file in a safe way
   wxTempFile outfile;
@@ -447,7 +436,7 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event) {
       pTargetData->Class = AIS_SART;
     }
     pTargetData->b_OwnShip = false;
-    (*AISTargetList)[pTargetData->MMSI] = pTargetData;
+    AISTargetList[pTargetData->MMSI] = pTargetData;
   }
 }
 
@@ -1214,8 +1203,8 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
     if (!mmsi) mmsi = strbit.GetInt(9, 30);
     long mmsi_long = mmsi;
     //  Search the current AISTargetList for an MMSI match
-    AIS_Target_Hash::iterator it = AISTargetList->find(mmsi);
-    if (it == AISTargetList->end())  // not found
+    auto it = AISTargetList.find(mmsi);
+    if (it == AISTargetList.end())  // not found
     {
       pTargetData = new AIS_Target_Data;
       bnewtarget = true;
@@ -1423,14 +1412,13 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
     //  Update the AIS Target information
     if (bdecode_result) {
       AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
-      (*AISTargetList)[pTargetData->MMSI] =
+      AISTargetList[pTargetData->MMSI] =
           pTargetData;  // update the hash table entry
 
       if (!pTargetData->area_notices.empty()) {
-        AIS_Target_Hash::iterator it =
-            AIS_AreaNotice_Sources->find(pTargetData->MMSI);
-        if (it == AIS_AreaNotice_Sources->end())
-          (*AIS_AreaNotice_Sources)[pTargetData->MMSI] = pTargetData;
+        auto it = AIS_AreaNotice_Sources.find(pTargetData->MMSI);
+        if (it == AIS_AreaNotice_Sources.end())
+          AIS_AreaNotice_Sources[pTargetData->MMSI] = pTargetData;
       }
 
       //  If this is not an ownship message, update the AIS Target in the
@@ -1488,9 +1476,8 @@ void AIS_Decoder::getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
                                AIS_Target_Data *&pStaleTarget, bool &bnewtarget,
                                int &last_report_ticks, wxDateTime &now) {
   now = wxDateTime::Now();
-  AIS_Target_Hash_wxImplementation_HashTable::iterator it =
-      AISTargetList->find(mmsi);
-  if (it == AISTargetList->end())  // not found
+  auto it = AISTargetList.find(mmsi);
+  if (it == AISTargetList.end())  // not found
   {
     pTargetData = new AIS_Target_Data;
     bnewtarget = true;
@@ -1656,9 +1643,9 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   int last_report_ticks = now.GetTicks();
 
   //  Search the current AISTargetList for an MMSI match
-  AIS_Target_Hash::iterator it = AISTargetList->find(mmsi);
+  auto it = AISTargetList.find(mmsi);
   AIS_Target_Data *pStaleTarget = NULL;
-  if (it == AISTargetList->end()) {  // not found
+  if (it == AISTargetList.end()) {  // not found
   } else {
     pStaleTarget = it->second;  // find current entry
     last_report_ticks = pStaleTarget->PositionReportTicks;
@@ -1729,8 +1716,8 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
       //  And post the target
 
       //  Search the current AISTargetList for an MMSI match
-      AIS_Target_Hash::iterator it = AISTargetList->find(mmsi);
-      if (it == AISTargetList->end()) {  // not found
+      auto it = AISTargetList.find(mmsi);
+      if (it == AISTargetList.end()) {  // not found
         pTargetData = m_ptentative_dsctarget;
       } else {
         pTargetData = it->second;  // find current entry
@@ -1749,7 +1736,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
 
       m_pLatestTargetData = pTargetData;
 
-      (*AISTargetList)[pTargetData->MMSI] =
+      AISTargetList[pTargetData->MMSI] =
           pTargetData;  // update the hash table entry
 
       long mmsi_long = pTargetData->MMSI;
@@ -2478,11 +2465,8 @@ bool AIS_Decoder::NMEACheckSumOK(const wxString &str_in) {
 
 void AIS_Decoder::UpdateAllCPA(void) {
   //    Iterate thru all the targets
-  AIS_Target_Hash::iterator it;
-  AIS_Target_Hash *current_targets = GetTargetList();
-
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : GetTargetList()) {
+    AIS_Target_Data *td = it.second;
 
     if (NULL != td) UpdateOneCPA(td);
   }
@@ -2490,11 +2474,8 @@ void AIS_Decoder::UpdateAllCPA(void) {
 
 void AIS_Decoder::UpdateAllTracks(void) {
   //    Iterate thru all the targets
-  AIS_Target_Hash::iterator it;
-  AIS_Target_Hash *current_targets = GetTargetList();
-
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : GetTargetList()) {
+    AIS_Target_Data *td = it.second;
 
     if (NULL != td) UpdateOneTrack(td);
   }
@@ -2585,11 +2566,8 @@ void AIS_Decoder::UpdateAllAlarms(void) {
   m_bGeneralAlert = false;  // no alerts yet
 
   //    Iterate thru all the targets
-  AIS_Target_Hash::iterator it;
-  AIS_Target_Hash *current_targets = GetTargetList();
-
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : GetTargetList()) {
+    AIS_Target_Data *td = it.second;
 
     if (NULL != td) {
       //  Maintain General Alert
@@ -2853,18 +2831,17 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
   wxDateTime now = wxDateTime::Now();
   now.MakeGMT();
 
-  AIS_Target_Hash::iterator it;
-  AIS_Target_Hash *current_targets = GetTargetList();
+  std::unordered_map<int, AIS_Target_Data *> &current_targets = GetTargetList();
 
-  it = (*current_targets).begin();
+  auto it = current_targets.begin();
   std::vector<int> remove_array;  // collector for MMSI of targets to be removed
 
-  while (it != (*current_targets).end()) {
+  while (it != current_targets.end()) {
     AIS_Target_Data *td = it->second;
 
     if (NULL == td)  // This should never happen, but I saw it once....
     {
-      current_targets->erase(it);
+      current_targets.erase(it);
       break;  // leave the loop
     }
 
@@ -2969,10 +2946,10 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
 
   //  Remove all the targets collected in remove_array in one pass
   for (unsigned int i = 0; i < remove_array.size(); i++) {
-    AIS_Target_Hash::iterator itd = current_targets->find(remove_array[i]);
-    if (itd != current_targets->end()) {
+    auto itd = current_targets.find(remove_array[i]);
+    if (itd != current_targets.end()) {
       AIS_Target_Data *td = itd->second;
-      current_targets->erase(itd);
+      current_targets.erase(itd);
       delete td;
     }
   }
@@ -3006,8 +2983,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
     AIS_Target_Data *palert_target_sart = NULL;
     AIS_Target_Data *palert_target_dsc = NULL;
 
-    for (it = (*current_targets).begin(); it != (*current_targets).end();
-         ++it) {
+    for (it = current_targets.begin(); it != current_targets.end(); ++it) {
       AIS_Target_Data *td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
@@ -3103,8 +3079,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
     double tcpa_min = 1e6;  // really long
     AIS_Target_Data *palert_target_lowestcpa = NULL;
 
-    for (it = (*current_targets).begin(); it != (*current_targets).end();
-         ++it) {
+    for (it = current_targets.begin(); it != current_targets.end(); ++it) {
       AIS_Target_Data *td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
@@ -3215,11 +3190,10 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
 }
 
 AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI(int mmsi) {
-  if (AISTargetList->find(mmsi) ==
-      AISTargetList->end())  // if entry does not exist....
+  if (AISTargetList.find(mmsi) == AISTargetList.end())
     return NULL;
   else
-    return (*AISTargetList)[mmsi];  // find current entry
+    return AISTargetList[mmsi];
 }
 
 ArrayOfMMSIProperties g_MMSI_Props_Array;

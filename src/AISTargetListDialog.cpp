@@ -972,11 +972,8 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
 
 void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
-    for (it = (*current_targets).begin(); it != (*current_targets).end();
-         ++it) {
-      AIS_Target_Data *pAISTarget = it->second;
+    for (const auto &it : m_pdecoder->GetTargetList()) {
+      AIS_Target_Data *pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = true;
       }
@@ -987,11 +984,8 @@ void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
 
 void AISTargetListDialog::OnHideAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
-    for (it = (*current_targets).begin(); it != (*current_targets).end();
-         ++it) {
-      AIS_Target_Data *pAISTarget = it->second;
+    for (const auto &it : m_pdecoder->GetTargetList()) {
+      AIS_Target_Data *pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = false;
       }
@@ -1059,14 +1053,13 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
     int selMMSI = -1;
     if (selItemID != -1) selMMSI = m_pMMSI_array->Item(selItemID);
 
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
+    const auto &current_targets = m_pdecoder->GetTargetList();
     wxListItem item;
 
     int index = 0;
     m_pMMSI_array->Clear();
 
-    for (it = (*current_targets).begin(); it != (*current_targets).end();
+    for (auto it = current_targets.begin(); it != current_targets.end();
          ++it, ++index) {
       AIS_Target_Data *pAISTarget = it->second;
       item.SetId(index);
@@ -1134,14 +1127,13 @@ void AISTargetListDialog::UpdateNVAISTargetList(void) {
     int selMMSI = -1;
     if (selItemID != -1) selMMSI = m_pMMSI_array->Item(selItemID);
 
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
+    const auto &current_targets = m_pdecoder->GetTargetList();
     wxListItem item;
 
     int index = 0;
     m_pMMSI_array->Clear();
 
-    for (it = (*current_targets).begin(); it != (*current_targets).end();
+    for (auto it = current_targets.begin(); it != current_targets.end();
          ++it, ++index) {
       AIS_Target_Data *pAISTarget = it->second;
       item.SetId(index);

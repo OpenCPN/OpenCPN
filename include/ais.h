@@ -208,9 +208,6 @@ WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
 
 //      Implement the AISTargetList as a wxHashMap
 
-WX_DECLARE_HASH_MAP(int, AIS_Target_Data *, wxIntegerHash, wxIntegerEqual,
-                    AIS_Target_Hash);
-
 wxString trimAISField(char *data);
 wxString ais_get_status(int index);
 wxString ais_get_type(int index);
