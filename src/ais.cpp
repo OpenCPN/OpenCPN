@@ -491,10 +491,8 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
         b_pens_set = true;
       }
 
-      for (AIS_Area_Notice_Hash::iterator ani =
-               target_data->area_notices.begin();
-           ani != target_data->area_notices.end(); ++ani) {
-        Ais8_001_22 &area_notice = ani->second;
+      for (auto &ani : target_data->area_notices) {
+        Ais8_001_22 &area_notice = ani.second;
 
         if (area_notice.expiry_time > now) {
           std::vector<wxPoint> points;

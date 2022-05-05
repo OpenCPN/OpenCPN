@@ -27,6 +27,7 @@
 
 #include <wx/string.h>
 #include <wx/datetime.h>
+#include <unordered_map>
 
 #include "ais.h"
 
@@ -138,7 +139,7 @@ public:
 
   AISTargetTrackList* m_ptrack;
 
-  AIS_Area_Notice_Hash area_notices;
+  std::unordered_map<int, Ais8_001_22> area_notices;
   bool b_SarAircraftPosnReport;
   int altitude;  // Metres, from special position report(9)
   bool b_nameFromCache;
