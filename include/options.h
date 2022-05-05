@@ -737,7 +737,7 @@ private:
   void UpdateSourceList(bool bResort);
   bool SortSourceList(void);
 
-  ocpn::ObservedVar::Listener compat_os_listener;
+  ObservedVar::Listener compat_os_listener;
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
   ConnectionParams *UpdateConnectionParamsFromSelectedItem(
       ConnectionParams *pConnectionParams);

@@ -28,8 +28,6 @@
 
 #include "observable.h"
 
-namespace ocpn {
-
 std::string ptr_key(const void* ptr) {
   std::ostringstream oss;
   oss << ptr;
@@ -144,5 +142,3 @@ template class ConfigVar<double>;
 template class ConfigVar<int>;
 template class ConfigVar<std::string>;
 template class ConfigVar<wxString>;
-
-}  // namespace ocpn

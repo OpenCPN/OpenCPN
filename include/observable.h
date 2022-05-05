@@ -32,8 +32,6 @@
 #include <wx/config.h>
 #include <wx/event.h>
 
-namespace ocpn {
-
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);
 
@@ -173,7 +171,7 @@ private:
  *
  *  Client usage when reading, setting a value and notifying listeners:
  *
- *    ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
+ *    ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
  *    bool old_value = expert.get(false);
  *    expert.set(false);
  *
@@ -182,8 +180,7 @@ private:
  *    class Foo: public wxEventHandler {
  *    public:
  *      Foo(...) {
- *        ocpn::ConfigVar<bool>
- *           expert("/PlugIns", "CatalogExpert", &g_pConfig);
+ *        ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
  *
  *        // expert sends a wxCommandEvent of type EVT_FOO to this on changes:
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
@@ -194,7 +191,7 @@ private:
  *        ...
  *      }
  *    private:
- *      ocpn::ObservedVar::Listener expert_listener;
+ *      ObservedVar::Listener expert_listener;
  *      ...
  *    }
  *
@@ -224,12 +221,12 @@ private:
  *
  *  Client usage, writing a value + notifying listeners:
  *
- *    ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+ *    GlobalVar<wxString> compat_os(&g_compatOS);
  *    compat_os.set("ubuntu-gtk3-x86_64");
  *
  *  Client usage, modifying a value + notifying listeners:
  *
- *    ocpn::GlobalVar<wxString> plugin_array_var(&plugin_array);
+ *    GlobalVar<wxString> plugin_array_var(&plugin_array);
  *    plugin_array.Add(new_pic);
  *    plugin_array_var.notify();
  *
@@ -238,7 +235,7 @@ private:
  *    class Foo: public wxEvtHandler {
  *    public:
  *      Foo(...) {
- *        ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+ *        GlobalVar<wxString> compat_os(&g_compatOS);
  *
  *        // compat_os sends a wxCommandEvent type EVT_FOO to this on changes:
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
@@ -249,7 +246,7 @@ private:
  *        ...
  *      }
  *    private:
- *      ocpn::ObservedVar::Listener compat_os_listener;
+ *      ObservedVar::Listener compat_os_listener;
  *      ...
  *    }
  */
@@ -271,6 +268,4 @@ private:
   T* const variable;
 };
 
-}  // namespace ocpn
-
-#endif   // OBSERVABLE_H
+#endif  // OBSERVABLE_H

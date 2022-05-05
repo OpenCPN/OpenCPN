@@ -1586,7 +1586,7 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
   Center();
 
   wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
-  ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+  GlobalVar<wxString> compat_os(&g_compatOS);
   compat_os_listener = compat_os.get_listener(this, EVT_COMPAT_OS_CHANGE);
   Bind(EVT_COMPAT_OS_CHANGE, [&](wxCommandEvent&) {
     g_pi_manager->LoadAllPlugIns(false);

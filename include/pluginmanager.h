@@ -458,7 +458,7 @@ protected:
   wxStaticText *m_catalogText;
   wxWindow *m_parent;
   PluginListPanel *m_PluginListPanel;
-  ocpn::ObservedVar::Listener catalog_listener;
+  ObservedVar::Listener catalog_listener;
 };
 
 #define ID_CMD_BUTTON_PERFORM_ACTION 27663

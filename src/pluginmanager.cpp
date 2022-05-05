@@ -4957,7 +4957,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
   rowSizer2->AddSpacer(4 * GetCharWidth());
   m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                               wxDefaultPosition, wxDefaultSize, 0);
-  ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+  ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
   if (expert.get(false)) {
     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                        &CatalogMgrPanel::OnPluginSettingsButton, this);
@@ -4978,14 +4978,14 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
   SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
   Fit();
 
-  ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+  GlobalVar<wxString> catalog(&g_catalog_channel);
   wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
   catalog_listener = catalog.get_listener(this, EVT_CATALOG_CHANGE);
   Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
 
 #else  // Android
   SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
-  ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+  ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
   if (!expert.get(false)) {
     m_updateButton =
         new wxButton(this, wxID_ANY, _("Update Plugin Catalog: master"),
@@ -5026,7 +5026,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                           &CatalogMgrPanel::OnTarballButton, this);
 
-    ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+    GlobalVar<wxString> catalog(&g_catalog_channel);
     wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
   }
 
