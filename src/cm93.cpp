@@ -39,6 +39,7 @@
 #include <wx/regex.h>
 
 #include <algorithm>
+#include <unordered_map>
 
 #include "gdal/ogr_api.h"
 #include "s57chart.h"
@@ -257,8 +258,6 @@ OCPNRegion M_COVR_Desc::GetRegion(const ViewPort &vp, wxPoint *pwp) {
 // relating to cm93 cell MCOVR objects of a particular scale
 //----------------------------------------------------------------------------
 
-WX_DECLARE_HASH_MAP(int, int, wxIntegerHash, wxIntegerEqual, cm93cell_hash);
-
 char sig_version[] = "COVR1002";
 
 class covr_set {
@@ -281,12 +280,12 @@ public:
 
   wxString m_cachefile;
 
-  Array_Of_M_COVR_Desc
-      m_covr_array_outlines;  // array, for chart outline rendering
+  // array, for chart outline rendering
+  Array_Of_M_COVR_Desc m_covr_array_outlines;
 
-  cm93cell_hash m_cell_hash;  // This is a hash, indexed by cell index, elements
-                              // contain the number of M_COVRs
-                              // found on this particular cell
+  // This is a hash, indexed by cell index, elements
+  // contain the number of M_COVRs found on this particular cell
+  std::unordered_map<int, int> m_cell_hash;
 };
 
 covr_set::covr_set(cm93chart *parent) { m_pParent = parent; }

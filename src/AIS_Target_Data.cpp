@@ -23,6 +23,7 @@
  */
 
 #include "AIS_Target_Data.h"
+#include <unordered_map>
 
 extern bool bGPSValid;
 extern bool g_bAISRolloverShowClass;
@@ -33,12 +34,7 @@ extern bool g_bShowTrue;
 extern MyFrame *gFrame;
 extern bool g_bAISShowTracks;
 
-//    Define and declare a hasmap for ERI Ship type strings, keyed by their UN
-//    Codes.
-WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
-                    ERIShipTypeHash);
-
-static ERIShipTypeHash s_ERI_hash;
+static std::unordered_map<int, wxString> s_ERI_hash;
 
 void make_hash_ERI(int key, const wxString &description) {
   s_ERI_hash[key] = description;
@@ -396,7 +392,7 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
     AISTypeStr = wxGetTranslation(Get_vessel_type_string());
 
     if (b_isEuroInland && UN_shiptype) {
-      ERIShipTypeHash::iterator it = s_ERI_hash.find(UN_shiptype);
+      auto it = s_ERI_hash.find(UN_shiptype);
       wxString type;
       if (it == s_ERI_hash.end())
         type = _("Undefined");
