@@ -31,6 +31,7 @@
 #include "bbox.h"
 #include "ocpn_types.h"
 
+#include <unordered_map>
 #include <vector>
 
 #define CURRENT_SENC_FORMAT_VERSION 201
@@ -41,6 +42,8 @@
 class wxArrayOfS57attVal;
 class OGREnvelope;
 class OGRGeometry;
+class VE_Element;
+class VC_Element;
 
 // name of the addressed look up table set (fifth letter)
 typedef enum _LUPname {
@@ -312,9 +315,9 @@ class PolyTessGeo;
 class line_segment_element;
 class PI_line_segment_element;
 
-typedef struct _chart_context {
-  void *m_pvc_hash;
-  void *m_pve_hash;
+struct chart_context {
+  std::unordered_map<unsigned, VC_Element *> *m_pvc_hash;
+  std::unordered_map<unsigned, VE_Element *> *m_pve_hash;
   double ref_lat;
   double ref_lon;
   wxArrayPtrVoid *pFloatingATONArray;
@@ -322,8 +325,7 @@ typedef struct _chart_context {
   s57chart *chart;
   double safety_contour;
   float *vertex_buffer;
-
-} chart_context;
+};
 
 class LineGeometryDescriptor {
 public:
@@ -570,11 +572,6 @@ public:
 };
 
 #endif
-
-WX_DECLARE_HASH_MAP(unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual,
-                    VE_Hash);
-WX_DECLARE_HASH_MAP(unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual,
-                    VC_Hash);
 
 class connector_key {
 public:

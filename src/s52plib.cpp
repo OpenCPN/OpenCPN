@@ -4538,11 +4538,9 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   int x0, y0, x1, y1;
 
   if (rzRules->obj->m_n_lsindex) {
-    VE_Hash *ve_hash;
-    VC_Hash *vc_hash;
-    ve_hash =
-        (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash;  // This is cm93
-    vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash;
+    // This is cm93
+    auto ve_hash = rzRules->obj->m_chart_context->m_pve_hash;
+    auto vc_hash = rzRules->obj->m_chart_context->m_pvc_hash;
 
     //  Get the current display priority
     //  Default comes from the LUP, unless overridden
@@ -5494,8 +5492,8 @@ int s52plib::RenderLCLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   if (rzRules->obj->m_DPRI >= 0) priority_current = rzRules->obj->m_DPRI;
 
   if (rzRules->obj->m_n_lsindex) {
-    VE_Hash *ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash;
-    VC_Hash *vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash;
+    auto ve_hash = rzRules->obj->m_chart_context->m_pve_hash;
+    auto vc_hash = rzRules->obj->m_chart_context->m_pvc_hash;
 
     unsigned int nls_max;
     if (rzRules->obj->m_n_edge_max_points >

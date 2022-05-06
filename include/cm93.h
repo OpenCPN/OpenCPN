@@ -447,8 +447,8 @@ public:
                                             int selection_mask = MASK_ALL);
   S57ObjectDesc *CreateObjDescription(const ObjRazRules *obj);
 
-  VE_Hash &Get_ve_hash(void);
-  VC_Hash &Get_vc_hash(void);
+  std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void);
+  std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void);
 
   void UpdateLUPs(s57chart *pOwner);
   void ForceEdgePriorityEvaluate(void);
