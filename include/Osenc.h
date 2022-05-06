@@ -459,7 +459,7 @@ public:
   int GetBaseFileInfo(const wxString &FullPath000,
                       const wxString &SENCFileName);
 
-  std::unique_lock<std::mutex> lockCR;
+  std::mutex m_Mutex;
 
 private:
   void init();
