@@ -137,7 +137,7 @@ public:
 
   bool b_show_track;
 
-  AISTargetTrackList* m_ptrack;
+  std::vector<AISTargetTrackPoint> m_ptrack;
 
   std::unordered_map<int, Ais8_001_22> area_notices;
   bool b_SarAircraftPosnReport;
