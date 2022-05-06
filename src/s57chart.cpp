@@ -298,8 +298,8 @@ s57chart::~s57chart() {
   m_pcs_vector.clear();
   m_pve_vector.clear();
 
-  for (VE_Hash::iterator it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it) {
-    VE_Element *pedge = it->second;
+  for (const auto &it : m_ve_hash) {
+    VE_Element *pedge = it.second;
     if (pedge) {
       free(pedge->pPoints);
       delete pedge;
@@ -307,9 +307,8 @@ s57chart::~s57chart() {
   }
   m_ve_hash.clear();
 
-  for (VC_Hash::iterator itc = m_vc_hash.begin(); itc != m_vc_hash.end();
-       ++itc) {
-    VC_Element *pcs = itc->second;
+  for (const auto &it : m_vc_hash) {
+    VC_Element *pcs = it.second;
     if (pcs) {
       free(pcs->pPoint);
       delete pcs;
@@ -986,9 +985,8 @@ void s57chart::AssembleLineGeometry(void) {
 
   //  Start with the edge hash table
   size_t nPoints = 0;
-  VE_Hash::iterator it;
-  for (it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it) {
-    VE_Element *pedge = it->second;
+  for (const auto &it : m_ve_hash) {
+    VE_Element *pedge = it.second;
     if (pedge) {
       nPoints += pedge->nCount;
     }
@@ -1284,8 +1282,8 @@ void s57chart::AssembleLineGeometry(void) {
 
   //      Copy and edge points as floats,
   //      and recording each segment's offset in the array
-  for (it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it) {
-    VE_Element *pedge = it->second;
+  for (const auto &it : m_ve_hash) {
+    VE_Element *pedge = it.second;
     if (pedge) {
       memcpy(lvr, pedge->pPoints, pedge->nCount * 2 * sizeof(float));
       lvr += pedge->nCount * 2;
@@ -1355,8 +1353,8 @@ void s57chart::AssembleLineGeometry(void) {
   // We can convert the edge hashmap to a vector, to allow  us to destroy the
   // hashmap and at the same time free up the point storage in the VE_Elements,
   // since all the points are now in the VBO buffer
-  for (it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it) {
-    VE_Element *pedge = it->second;
+  for (const auto &it : m_ve_hash) {
+    VE_Element *pedge = it.second;
     if (pedge) {
       m_pve_vector.push_back(pedge);
       free(pedge->pPoints);
@@ -1367,9 +1365,8 @@ void s57chart::AssembleLineGeometry(void) {
   // and we can empty the connector hashmap,
   // and at the same time free up the point storage in the VC_Elements, since
   // all the points are now in the VBO buffer
-  for (VC_Hash::iterator itc = m_vc_hash.begin(); itc != m_vc_hash.end();
-       ++itc) {
-    VC_Element *pcs = itc->second;
+  for (const auto &it : m_vc_hash) {
+    VC_Element *pcs = it.second;
     if (pcs) free(pcs->pPoint);
     delete pcs;
   }

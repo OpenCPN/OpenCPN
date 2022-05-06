@@ -2075,8 +2075,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       AssembleLineGeometry();
 
       //  Set up the chart context
-      m_this_chart_context->m_pvc_hash = (void *)&Get_vc_hash();
-      m_this_chart_context->m_pve_hash = (void *)&Get_ve_hash();
+      m_this_chart_context->m_pvc_hash = &Get_vc_hash();
+      m_this_chart_context->m_pve_hash = &Get_ve_hash();
 
       m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
       m_this_chart_context->pRigidATONArray = pRigidATONArray;
@@ -2170,7 +2170,7 @@ std::vector<int> cm93chart::GetVPCellArray(const ViewPort &vpt) {
 void cm93chart::ProcessVectorEdges(void) {
   //    Create the vector(edge) map for this cell, appending to the existing
   //    member hash map
-  VE_Hash &vehash = Get_ve_hash();
+  auto &vehash = Get_ve_hash();
 
   m_current_cell_vearray_offset =
       vehash.size();  // keys start at the current size
@@ -6079,11 +6079,11 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon(float lat, float lon,
   }
 }
 
-VE_Hash &cm93compchart::Get_ve_hash(void) {
+std::unordered_map<unsigned, VE_Element *> &cm93compchart::Get_ve_hash(void) {
   return m_pcm93chart_current->Get_ve_hash();
 }
 
-VC_Hash &cm93compchart::Get_vc_hash(void) {
+std::unordered_map<unsigned, VC_Element *> &cm93compchart::Get_vc_hash(void) {
   return m_pcm93chart_current->Get_vc_hash();
 }
 

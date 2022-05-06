@@ -51,6 +51,7 @@
 #include "SencManager.h"
 #include <memory>
 #include "ocpn_plugin.h"
+#include <unordered_map>
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes
@@ -198,8 +199,12 @@ public:
 
   virtual std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
 
-  virtual VE_Hash &Get_ve_hash(void) { return m_ve_hash; }
-  virtual VC_Hash &Get_vc_hash(void) { return m_vc_hash; }
+  virtual std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void) {
+    return m_ve_hash;
+  }
+  virtual std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void) {
+    return m_vc_hash;
+  }
 
   virtual void ForceEdgePriorityEvaluate(void);
 
@@ -267,7 +272,7 @@ public:
   bool m_b2lineLUPS;
   bool m_RAZBuilt;
 
-  struct _chart_context *m_this_chart_context;
+  chart_context *m_this_chart_context;
 
   int FindOrCreateSenc(const wxString &name, bool b_progress = true);
   void DisableBackgroundSENC() { m_disableBackgroundSENC = true; }
@@ -380,8 +385,8 @@ private:
 
   int m_LineVBO_name;
 
-  VE_Hash m_ve_hash;
-  VC_Hash m_vc_hash;
+  std::unordered_map<unsigned, VE_Element *> m_ve_hash;
+  std::unordered_map<unsigned, VC_Element *> m_vc_hash;
   std::vector<connector_segment *> m_pcs_vector;
   std::vector<VE_Element *> m_pve_vector;
 
