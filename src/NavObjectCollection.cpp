@@ -1686,15 +1686,13 @@ bool NavObjectChanges::ApplyChanges(void) {
   auto it = g_TrackList.begin();
   while (it != g_TrackList.end()) {
     Track *pTrack = *it;
-    ++it;
     if (pTrack->GetnPoints() < 2) {
       auto to_erase = it;
-      ++it;
+      --it;
       g_TrackList.erase(to_erase);
       delete pTrack;
-    } else {
-      ++it;
     }
+    ++it;
   }
 
   return true;
