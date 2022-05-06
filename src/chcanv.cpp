@@ -1436,19 +1436,19 @@ bool ChartCanvas::CheckGroup(int igroup) {
                                         //  and auto-shift to group 0
     return false;
 
-  for (auto &elem : pGroup->m_element_array) {
+  for (const auto &elem : pGroup->m_element_array) {
     for (unsigned int ic = 0;
          ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
       ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
       wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
 
-      if (chart_full_path.StartsWith(elem->m_element_name)) return true;
+      if (chart_full_path.StartsWith(elem.m_element_name)) return true;
     }
   }
 
   //  If necessary, check for GSHHS
-  for (auto &elem : pGroup->m_element_array) {
-    wxString element_root = elem->m_element_name;
+  for (const auto &elem : pGroup->m_element_array) {
+    const wxString &element_root = elem.m_element_name;
     wxString test_string = _T("GSHH");
     if (element_root.Upper().Contains(test_string)) return true;
   }

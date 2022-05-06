@@ -6451,13 +6451,13 @@ bool MyFrame::CheckGroup(int igroup) {
   if (!pGroup->m_element_array.size())  //  truly empty group is OK
     return true;
 
-  for (auto &elem : pGroup->m_element_array) {
+  for (const auto &elem : pGroup->m_element_array) {
     for (unsigned int ic = 0;
          ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
       ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
       wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
 
-      if (chart_full_path.StartsWith(elem->m_element_name)) return true;
+      if (chart_full_path.StartsWith(elem.m_element_name)) return true;
     }
   }
 
@@ -6476,7 +6476,7 @@ bool MyFrame::ScrubGroupArray() {
     ChartGroup *pGroup = g_pGroupArray->Item(igroup);
 
     for (unsigned int j = 0; j < pGroup->m_element_array.size(); j++) {
-      wxString element_root = pGroup->m_element_array[j]->m_element_name;
+      const wxString &element_root = pGroup->m_element_array[j].m_element_name;
 
       for (unsigned int ic = 0;
            ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {

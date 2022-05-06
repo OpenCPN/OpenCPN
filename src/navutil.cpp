@@ -1940,10 +1940,10 @@ void MyConfig::CreateConfigGroups(ChartGroupArray *pGroupArray) {
       sg.Printf(_T("Group%d/Item%d"), i + 1, j);
       sg.Prepend(_T ( "/Groups/" ));
       SetPath(sg);
-      Write(_T ( "IncludeItem" ), pGroup->m_element_array[j]->m_element_name);
+      Write(_T ( "IncludeItem" ), pGroup->m_element_array[j].m_element_name);
 
       wxString t;
-      wxArrayString u = pGroup->m_element_array[j]->m_missing_name_array;
+      wxArrayString u = pGroup->m_element_array[j].m_missing_name_array;
       if (u.GetCount()) {
         for (unsigned int k = 0; k < u.GetCount(); k++) {
           t += u[k];
@@ -1985,19 +1985,19 @@ void MyConfig::LoadConfigGroups(ChartGroupArray *pGroupArray) {
 
       wxString v;
       Read(_T ( "IncludeItem" ), &v);
-      ChartGroupElement *pelement = new ChartGroupElement{v};
-      pGroup->m_element_array.emplace_back(pelement);
 
+      ChartGroupElement pelement{v};
       wxString u;
       if (Read(_T ( "ExcludeItems" ), &u)) {
         if (!u.IsEmpty()) {
           wxStringTokenizer tk(u, _T(";"));
           while (tk.HasMoreTokens()) {
             wxString token = tk.GetNextToken();
-            pelement->m_missing_name_array.Add(token);
+            pelement.m_missing_name_array.Add(token);
           }
         }
       }
+      pGroup->m_element_array.push_back(std::move(pelement));
     }
     pGroupArray->Add(pGroup);
   }

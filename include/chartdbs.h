@@ -429,7 +429,7 @@ public:
 class ChartGroup {
 public:
   wxString m_group_name;
-  std::vector<std::unique_ptr<ChartGroupElement>> m_element_array;
+  std::vector<ChartGroupElement> m_element_array;
 };
 
 #endif

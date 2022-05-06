@@ -10048,7 +10048,7 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
     pdg->m_element_array.reserve(psg->m_element_array.size());
 
     for (auto& elem : psg->m_element_array)
-      pdg->m_element_array.emplace_back(new ChartGroupElement(*elem));
+      pdg->m_element_array.push_back(elem);
 
     d->Add(pdg);
   }
@@ -10200,8 +10200,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
           if (wxDir::Exists(insert_candidate)) ptree->SetItemHasChildren(id);
         }
 
-        pGroup->m_element_array.emplace_back(
-            new ChartGroupElement{insert_candidate});
+        pGroup->m_element_array.push_back({insert_candidate});
       }
     }
   }
@@ -10233,18 +10232,18 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
           int group_item_index =
               FindGroupBranch(pGroup, ptree, id, &branch_adder);
           if (group_item_index >= 0) {
-            ChartGroupElement* pelement =
-                pGroup->m_element_array[group_item_index].get();
+            ChartGroupElement &pelement =
+                pGroup->m_element_array[group_item_index];
             bool b_duplicate = FALSE;
-            for (unsigned int k = 0; k < pelement->m_missing_name_array.size();
+            for (unsigned int k = 0; k < pelement.m_missing_name_array.size();
                  k++) {
-              if (pelement->m_missing_name_array[k] == sel_item) {
+              if (pelement.m_missing_name_array[k] == sel_item) {
                 b_duplicate = TRUE;
                 break;
               }
             }
             if (!b_duplicate) {
-              pelement->m_missing_name_array.Add(sel_item);
+              pelement.m_missing_name_array.Add(sel_item);
             }
 
             //    Special case...
@@ -10391,7 +10390,7 @@ int ChartGroupsUI::FindGroupBranch(ChartGroup* pGroup, wxTreeCtrl* ptree,
   unsigned int target_item_index = -1;
 
   for (unsigned int i = 0; i < pGroup->m_element_array.size(); i++) {
-    wxString target = pGroup->m_element_array[i]->m_element_name;
+    const wxString &target = pGroup->m_element_array[i].m_element_name;
     if (branch_name == target) {
       target_item_index = i;
       break;
@@ -10415,13 +10414,13 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
   wxString branch_adder;
   int target_item_index = FindGroupBranch(pGroup, ptree, node, &branch_adder);
   if (target_item_index < 0) return;
-  ChartGroupElement* target_element =
-      pGroup->m_element_array[target_item_index].get();
-  wxString branch_name = target_element->m_element_name;
+  const ChartGroupElement& target_element =
+      pGroup->m_element_array[target_item_index];
+  const wxString &branch_name = target_element.m_element_name;
 
   // Walk the children of the expanded node, marking any items which appear in
   // the "missing" list
-  if (!target_element->m_missing_name_array.GetCount()) return;
+  if (!target_element.m_missing_name_array.GetCount()) return;
   wxString full_root = branch_name;
   full_root += branch_adder;
   full_root += wxString(wxFILE_SEP_PATH);
@@ -10433,8 +10432,8 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
     target_string += ptree->GetItemText(child);
 
     for (unsigned int k = 0;
-         k < target_element->m_missing_name_array.GetCount(); k++) {
-      if (target_element->m_missing_name_array[k] == target_string) {
+         k < target_element.m_missing_name_array.GetCount(); k++) {
+      if (target_element.m_missing_name_array[k] == target_string) {
         ptree->SetItemTextColour(child, wxColour(128, 128, 128));
         break;
       }
@@ -10453,7 +10452,7 @@ void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray) {
     wxString itemname;
     int nItems = pGroup->m_element_array.size();
     for (int i = 0; i < nItems; i++) {
-      wxString itemname = pGroup->m_element_array[i]->m_element_name;
+      const wxString &itemname = pGroup->m_element_array[i].m_element_name;
       if (!itemname.IsEmpty()) {
         wxDirItemData* dir_item = new wxDirItemData(itemname, itemname, TRUE);
         wxTreeItemId id =

@@ -89,7 +89,6 @@ struct catalog_ctx {
   std::string date;
 
   // Internal data used while parsing, undefined on exit.
-  std::unique_ptr<PluginMetadata> plugin;
   std::string buff;
   std::string meta_url;
   int depth;
