@@ -105,9 +105,6 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(AISTargetTrackList);
-
 wxString ais_get_status(int index) {
   static const wxString ais_status[] = {
       _("Underway using Engine"),
@@ -931,12 +928,11 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
   else
       //  If AIS tracks are shown, is the first point of the track on-screen?
       if (1 /*g_bAISShowTracks*/ && td->b_show_track) {
-    wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-    if (node) {
-      AISTargetTrackPoint *ptrack_point = node->GetData();
-      if (vp.GetBBox().Contains(ptrack_point->m_lat, ptrack_point->m_lon))
-        drawit++;
-    }
+        if (td->m_ptrack.size() > 0) {
+          const AISTargetTrackPoint &ptrack_point = td->m_ptrack.front();
+          if (vp.GetBBox().Contains(ptrack_point.m_lat, ptrack_point.m_lon))
+            drawit++;
+        }
   }
 
   //    Calculate AIS target Position Predictor, using global static variable
@@ -1793,19 +1789,19 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     }
   }
 
-  int TrackLength = td->m_ptrack->GetCount();
+  int TrackLength = td->m_ptrack.size();
   if (((!b_noshow && td->b_show_track) || b_forceshow) && (TrackLength > 1)) {
     //  create vector of x-y points
     int TrackPointCount;
     wxPoint *TrackPoints = 0;
     TrackPoints = new wxPoint[TrackLength];
-    wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-    for (TrackPointCount = 0; node && (TrackPointCount < TrackLength);
-         TrackPointCount++) {
-      AISTargetTrackPoint *ptrack_point = node->GetData();
-      GetCanvasPointPix(vp, cp, ptrack_point->m_lat, ptrack_point->m_lon,
+    auto it = td->m_ptrack.begin();
+    for (TrackPointCount = 0;
+         it != td->m_ptrack.end() && (TrackPointCount < TrackLength);
+         TrackPointCount++, ++it) {
+      const AISTargetTrackPoint &ptrack_point = *it;
+      GetCanvasPointPix(vp, cp, ptrack_point.m_lat, ptrack_point.m_lon,
                         &TrackPoints[TrackPointCount]);
-      node = node->GetNext();
     }
 
     wxColour c = GetGlobalColor(_T ( "CHMGD" ));

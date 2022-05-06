@@ -1721,12 +1721,13 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
         pTargetData = m_ptentative_dsctarget;
       } else {
         pTargetData = it->second;  // find current entry
-        AISTargetTrackList *ptrack = pTargetData->m_ptrack;
+        std::vector<AISTargetTrackPoint> ptrack =
+            std::move(pTargetData->m_ptrack);
         pTargetData->CloneFrom(
             m_ptentative_dsctarget);  // this will make an empty track list
 
-        delete pTargetData->m_ptrack;    // get rid of the new empty one
-        pTargetData->m_ptrack = ptrack;  // and substitute the old track list
+        pTargetData->m_ptrack =
+            std::move(ptrack);  // and substitute the old track list
 
         delete m_ptentative_dsctarget;
       }
@@ -2484,26 +2485,25 @@ void AIS_Decoder::UpdateAllTracks(void) {
 void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
   if (!ptarget->b_positionOnceValid) return;
   // Reject for unbelievable jumps (corrupted/bad data)
-  if (ptarget->m_ptrack->GetCount() > 0) {
-    AISTargetTrackPoint *LastTrackpoint =
-        ptarget->m_ptrack->GetLast()->GetData();
-    if (fabs(LastTrackpoint->m_lat - ptarget->Lat) > .1 ||
-        fabs(LastTrackpoint->m_lon - ptarget->Lon) > .1) {
+  if (ptarget->m_ptrack.size() > 0) {
+    const AISTargetTrackPoint &LastTrackpoint = ptarget->m_ptrack.back();
+    if (fabs(LastTrackpoint.m_lat - ptarget->Lat) > .1 ||
+        fabs(LastTrackpoint.m_lon - ptarget->Lon) > .1) {
       // after an unlikely jump in pos, the last trackpoint might also be wrong
       // just to be sure we do delete this one as well.
-      ptarget->m_ptrack->pop_back();
+      ptarget->m_ptrack.pop_back();
       ptarget->b_positionDoubtful = true;
       return;
     }
   }
 
   //    Add the newest point
-  AISTargetTrackPoint *ptrackpoint = new AISTargetTrackPoint;
-  ptrackpoint->m_lat = ptarget->Lat;
-  ptrackpoint->m_lon = ptarget->Lon;
-  ptrackpoint->m_time = wxDateTime::Now().GetTicks();
+  AISTargetTrackPoint ptrackpoint;
+  ptrackpoint.m_lat = ptarget->Lat;
+  ptrackpoint.m_lon = ptarget->Lon;
+  ptrackpoint.m_time = wxDateTime::Now().GetTicks();
 
-  ptarget->m_ptrack->Append(ptrackpoint);
+  ptarget->m_ptrack.push_back(ptrackpoint);
 
   if (ptarget->b_PersistTrack) {
     Track *t;
@@ -2520,9 +2520,9 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
       t = m_persistent_tracks[ptarget->MMSI];
     }
     TrackPoint *tp = t->GetLastPoint();
-    vector2D point(ptrackpoint->m_lon, ptrackpoint->m_lat);
+    vector2D point(ptrackpoint.m_lon, ptrackpoint.m_lat);
     TrackPoint *tp1 =
-        t->AddNewPoint(point, wxDateTime(ptrackpoint->m_time).ToUTC());
+        t->AddNewPoint(point, wxDateTime(ptrackpoint.m_time).ToUTC());
     if (tp) {
       pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
                                          tp1->m_lon, tp, tp1, t);
@@ -2539,17 +2539,12 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
   time_t test_time =
       wxDateTime::Now().GetTicks() - (time_t)(g_AISShowTracks_Mins * 60);
 
-  wxAISTargetTrackListNode *node = ptarget->m_ptrack->GetFirst();
-  while (node) {
-    AISTargetTrackPoint *ptrack_point = node->GetData();
-
-    if (ptrack_point->m_time < test_time) {
-      if (ptarget->m_ptrack->DeleteObject(ptrack_point)) {
-        node = ptarget->m_ptrack->GetFirst();  // restart the list
-      }
-    } else
-      node = node->GetNext();
-  }
+  ptarget->m_ptrack.erase(
+      std::remove_if(ptarget->m_ptrack.begin(), ptarget->m_ptrack.end(),
+                     [=](const AISTargetTrackPoint &track) {
+                       return track.m_time < test_time;
+                     }),
+      ptarget->m_ptrack.end());
 }
 
 void AIS_Decoder::DeletePersistentTrack(Track *track) {

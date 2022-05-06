@@ -145,8 +145,6 @@ public:
   time_t m_time;
 };
 
-WX_DECLARE_LIST(AISTargetTrackPoint, AISTargetTrackList);
-
 // IMO Circ. 289 Area Notices, based on libais
 const size_t AIS8_001_22_NUM_NAMES = 128;
 const size_t AIS8_001_22_SUBAREA_SIZE = 87;
