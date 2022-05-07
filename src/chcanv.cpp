@@ -36,6 +36,12 @@
 #include <wx/aui/aui.h>
 #include "wx/progdlg.h"
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 #include "config.h"
 #include "dychart.h"
 #include "OCPNPlatform.h"

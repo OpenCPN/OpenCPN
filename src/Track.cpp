@@ -74,6 +74,12 @@ millions of points.
 
 #include "wx/wxprec.h"
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 #include "Route.h"
 #include "Track.h"
 #include "routeman.h"

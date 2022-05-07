@@ -58,12 +58,22 @@
 #define PROJECTION_MERCATOR 1
 #endif
 
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 #include "linmath.h"
+#include "shaders.h"
 #endif
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
+#endif
+
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
 #endif
 
 extern float g_GLMinCartographicLineWidth;
@@ -106,7 +116,8 @@ typedef struct {
 static TexFontCache s_txf[TXF_CACHE];
 #endif
 
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
 GLint S52color_tri_shader_program;
 GLint S52texture_2D_shader_program;
@@ -8736,9 +8747,9 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 
   c = getColor(str);
 
-#ifndef ocpnUSE_GLES  // linestipple is emulated poorly
-  glColor3ub(c->R, c->G, c->B);
-#endif
+// #ifndef ocpnUSE_GLES  // linestipple is emulated poorly
+//   glColor3ub(c->R, c->G, c->B);
+// #endif
 
   LLBBox BBView = vp->GetBBox();
   // please untangle this logic with the logic below
@@ -8764,8 +8775,8 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
     // Set up the OpenGL transform matrix for this object
     // We transform from SENC SM vertex data to screen.
 
-#ifndef USE_ANDROID_GLES2
-
+//#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     glColor3ub(c->R, c->G, c->B);
 
     //  First, the VP transform
@@ -8962,7 +8973,7 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
           }
 
           // upload data to VBO
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
           glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
 #endif
           glBufferData(GL_ARRAY_BUFFER, ppg_vbo->single_buffer_size,
@@ -8985,7 +8996,7 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
             return 0;
           }
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
           glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
 #endif
         }
@@ -8997,7 +9008,7 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
     TriPrim *p_tp = ppg->tri_prim_head;
     GLintptr vbo_offset = 0;
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
 #endif
     //      Set up the stride sizes for the array
@@ -9014,7 +9025,8 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
       array_gl_type = GL_SHORT;
     }
 
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2)
     glUseProgram(S52color_tri_shader_program);
 
     // Disable VBO's (vertex buffer objects) for attributes.
@@ -9096,7 +9108,8 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
         box = p_tp->tri_box;
 
       if (!BBView.IntersectOut(box)) {
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2)
 
         if (b_useVBO) {
           glVertexAttribPointer(pos, 2, array_gl_type, GL_FALSE, 0,
@@ -9160,7 +9173,7 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 
     if (b_useVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2)
     glDisableClientState(GL_VERTEX_ARRAY);  // deactivate vertex array
 
     if (b_transform) glPopMatrix();
@@ -12513,9 +12526,11 @@ void PLIBDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 #endif
 }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2)
 
-#include <GLES2/gl2.h>
+#ifdef USE_ANDROID_GLES2
+//#include <GLES2/gl2.h>
+#endif
 
 // Simple colored triangle shader
 

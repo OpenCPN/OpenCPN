@@ -41,6 +41,8 @@
 #include <vector>
 #include <fstream>
 
+enum Consts { INFOLOG_LEN = 512 };
+
 extern GLint color_tri_shader_program;
 extern GLint texture_2D_shader_program;
 extern GLint fade_texture_2D_shader_program;

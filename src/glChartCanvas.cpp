@@ -58,10 +58,7 @@ class OCPNStopWatch {
 #if defined(__OCPN__ANDROID__)
 #include "androidUTIL.h"
 #elif defined(__WXQT__) || defined(__WXGTK__)
-//#include <GL/glx.h>
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include <GL/glew.h>
 #endif
 
 #include "dychart.h"
@@ -125,6 +122,9 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
+#endif
+
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 #include "linmath.h"
 #include "shaders.h"
 #endif
@@ -217,9 +217,9 @@ PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
 #define glDeleteRenderbuffers(a, b) (s_glDeleteRenderbuffers)(a, b);
 #endif
 
-typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
-                                                  GLint *data);
-PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
+// typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
+//                                                   GLint *data);
+// PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
 #include <wx/arrimpl.cpp>
 // WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
@@ -742,10 +742,11 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   GetClientSize(&m_pParentCanvas->m_canvas_width,
                 &m_pParentCanvas->m_canvas_height);
 
-#ifdef USE_ANDROID_GLES2
-  qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex
-           << m_pParentCanvas->m_canvas_width
-           << m_pParentCanvas->m_canvas_height;
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+  //qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex
+  //         << m_pParentCanvas->m_canvas_width
+  //         << m_pParentCanvas->m_canvas_height;
 
   if (m_pParentCanvas->m_canvasIndex > 0) {
     int xnew = gFrame->GetClientSize().x - m_pParentCanvas->m_canvas_width;
@@ -1265,6 +1266,18 @@ void glChartCanvas::SetupOpenGL() {
   msg += m_GLSLversion;
   wxLogMessage(msg);
 
+#ifndef __OCPN__ANDROID__
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
+  {
+    printf("GLEW init failed: %s!n", glewGetErrorString(err));
+    exit(1);
+  }
+  else
+  {
+  printf("GLEW init success!n");
+  }
+#endif
 
   const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
   m_extensions = wxString((const char *)ext_str, wxConvUTF8);
@@ -1717,6 +1730,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
 
 //   These routines allow reusable coordinates
 bool glChartCanvas::HasNormalizedViewPort(const ViewPort &vp) {
+  return false;
 #ifndef USE_ANDROID_GLES2
   return vp.m_projection_type == PROJECTION_MERCATOR ||
          vp.m_projection_type == PROJECTION_POLAR ||
@@ -3884,7 +3898,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
 
   // clear background
   if (!world_view) {
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     // set gl color to water
     glColor3ub(water.Red(), water.Green(), water.Blue());
 
@@ -3931,7 +3945,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
 
     if (!world_view) {
       int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       glUseProgram(color_tri_shader_program);
 
       float pf[6];
@@ -4305,7 +4319,8 @@ void glChartCanvas::Render() {
   glViewport(0, 0, (GLint)gl_width * m_displayScale,
              (GLint)gl_height * m_displayScale);
 
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
@@ -4313,6 +4328,7 @@ void glChartCanvas::Render() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 #endif
+
   if (s_b_useStencil) {
     glEnable(GL_STENCIL_TEST);
     glStencilMask(0xff);
@@ -4443,6 +4459,8 @@ void glChartCanvas::Render() {
 #ifndef USE_ANDROID_GLES2
       // enable rendering to texture in framebuffer object
       (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+
+      accelerated_pan = false;
 
       if (accelerated_pan) {
         if ((dx != 0) || (dy != 0)) {   // Anything to do?
@@ -4806,7 +4824,7 @@ void glChartCanvas::Render() {
     tx = (m_fbo_offsetx + m_fbo_swidth) / divx;
     ty = (m_fbo_offsety + m_fbo_sheight) / divy;
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2)  && not defined(ocpnUSE_GLSL)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glBegin(GL_QUADS);
     glTexCoord2f(tx0, ty);
@@ -4844,8 +4862,9 @@ void glChartCanvas::Render() {
 
     if (!m_inFade) {
       RenderTextures(coords, uv, 4, m_pParentCanvas->GetpVP());
-    } else
-      qDebug() << "skip FBO update for inFade";
+    }
+//    else
+  //    qDebug() << "skip FBO update for inFade";
 
 #endif
 
@@ -6123,9 +6142,10 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 }
 
 #endif
+int ics;
 
     void glChartCanvas::configureShaders(ViewPort & vp) {
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       mat4x4 I;
       mat4x4_identity(I);
 
@@ -6138,6 +6158,8 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
       GLint transloc =
           glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+
+      printf("config shaders  %d\n", ics++);
 
       glUseProgram(texture_2D_shader_program);
       matloc = glGetUniformLocation(texture_2D_shader_program, "MVMatrix");
@@ -6162,6 +6184,8 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
       transloc =
           glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+
+      glUseProgram(0);
 
 #endif
     }
@@ -6516,7 +6540,8 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 
   void glChartCanvas::RenderTextures(float *coords, float *uvCoords,
                                      int nVertex, ViewPort *vp) {
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     int nl = nVertex / 4;
     float *lc = coords;
     float *luv = uvCoords;
@@ -6545,7 +6570,9 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
                                           ViewPort *vp, float dx, float dy,
                                           float angle_rad) {
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+
     // build_texture_shaders();
     glUseProgram(texture_2D_shader_program);
 

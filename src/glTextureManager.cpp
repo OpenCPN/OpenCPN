@@ -29,6 +29,12 @@
 #include <wx/wx.h>
 #include <wx/thread.h>
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 #include "dychart.h"
 #include "viewport.h"
 #include "glTexCache.h"

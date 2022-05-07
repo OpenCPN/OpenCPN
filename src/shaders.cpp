@@ -30,6 +30,17 @@
 #include "qdebug.h"
 #endif
 
+#ifdef USE_ANDROID_GLES2
+const GLchar* preamble =
+"\n";
+#else
+const GLchar* preamble =
+"#version 140\n"
+"#define precision\n"
+"#define lowp\n"
+"#define mediump\n"
+"#define highp\n";
+#endif
 
 class GLShaderProgram
 {
@@ -44,8 +55,21 @@ public:
         Builder &addShaderFromSource(std::string const &shaderSource, GLenum shaderType) {
             char const *shaderCStr = shaderSource.c_str();
             GLuint shaderId = glCreateShader(shaderType);
-            glShaderSource(shaderId, 1, &shaderCStr, nullptr);
+
+            GLchar const* files[] = { preamble, shaderCStr };
+            GLint lengths[]       = { (GLint)strlen(preamble),  (GLint)strlen(shaderCStr)  };
+
+            glShaderSource(shaderId, 2, files, lengths);
+            //glShaderSource(shaderId, 1, &shaderCStr, nullptr);
+
             glCompileShader(shaderId);
+            glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+            if (!success) {
+              glGetShaderInfoLog(shaderId, INFOLOG_LEN, NULL, infoLog);
+              printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", infoLog);
+              //ret_val = false;
+            }
+
             glAttachShader(programId_, shaderId);
             return *this;
         }
@@ -73,6 +97,8 @@ public:
     private:
         GLuint programId_;
         bool linked_;
+        GLint success;
+        GLchar infoLog[INFOLOG_LEN];
     };
 
     GLShaderProgram() : programId_(0) { }
@@ -127,9 +153,7 @@ glUseProgram(shaderProgram.programId());
 
 
 
-
-//typedef GLint GLShaderProgram;
-
+/*
 struct ProgramStage
 {
     enum Type
@@ -147,6 +171,19 @@ struct ProgramStage
 std::unique_ptr<GLShaderProgram> createGLShaderProgram(const std::vector<ProgramStage> & stages);
 
 
+  std::vector<ProgramStage> shaderStages;
+  ProgramStage psv;
+  psv.type = GL_VERTEX_SHADER;
+  psv.source = color_tri_vertex_shader_source;
+  shaderStages.push_back(psv);
+
+  ProgramStage psf;
+  psf.type = GL_FRAGMENT_SHADER;
+  psf.source = color_tri_vertex_shader_source;
+  shaderStages.push_back(psf);
+  auto shaderProgram = createGLShaderProgram(shaderStages);
+*/
+
 // const GLchar* preamble = R"(
 // #version 140
 // #define lowp
@@ -154,16 +191,6 @@ std::unique_ptr<GLShaderProgram> createGLShaderProgram(const std::vector<Program
 // #define highp
 // )";
 
-#ifdef USE_ANDROID_GLES2
-const GLchar* preamble =
-"#version 100\n";
-#else
-const GLchar* preamble =
-"#version 140\n"
-"#define lowp\n"
-"#define mediump\n"
-"#define highp\n";
-#endif
 
 
 // Simple colored triangle shader
@@ -300,58 +327,59 @@ static const GLchar* texture_2DA_fragment_shader_source =
     "   gl_FragColor = texture2D(uTex, varCoord) + color;\n"
     "}\n";
 
-GLint color_tri_fragment_shader;
+//GLint color_tri_fragment_shader;
 GLint color_tri_shader_program;
-GLint color_tri_vertex_shader;
+//GLint color_tri_vertex_shader;
 
-GLint texture_2D_fragment_shader;
+//GLint texture_2D_fragment_shader;
 GLint texture_2D_shader_program;
-GLint texture_2D_vertex_shader;
+//GLint texture_2D_vertex_shader;
 
-GLint fade_texture_2D_fragment_shader;
+//GLint fade_texture_2D_fragment_shader;
 GLint fade_texture_2D_shader_program;
-GLint fade_texture_2D_vertex_shader;
+//GLint fade_texture_2D_vertex_shader;
 
 GLint circle_filled_shader_program;
-GLint circle_filled_vertex_shader;
-GLint circle_filled_fragment_shader;
+//GLint circle_filled_vertex_shader;
+//GLint circle_filled_fragment_shader;
 
-GLint FBO_texture_2D_fragment_shader;
+//GLint FBO_texture_2D_fragment_shader;
 GLint FBO_texture_2D_shader_program;
-GLint FBO_texture_2D_vertex_shader;
+//GLint FBO_texture_2D_vertex_shader;
 
-GLint texture_2DA_fragment_shader;
+//GLint texture_2DA_fragment_shader;
 GLint texture_2DA_shader_program;
-GLint texture_2DA_vertex_shader;
+//GLint texture_2DA_vertex_shader;
 
 // Protos
-GLint color_tri_fragment_shader_p[2];
+//GLint color_tri_fragment_shader_p[2];
 GLint color_tri_shader_program_p[2];
-GLint color_tri_vertex_shader_p[2];
+//GLint color_tri_vertex_shader_p[2];
 
-GLint texture_2D_fragment_shader_p[2];
+//GLint texture_2D_fragment_shader_p[2];
 GLint texture_2D_shader_program_p[2];
-GLint texture_2D_vertex_shader_p[2];
+//GLint texture_2D_vertex_shader_p[2];
 
-GLint fade_texture_2D_fragment_shader_p[2];
+//GLint fade_texture_2D_fragment_shader_p[2];
 GLint fade_texture_2D_shader_program_p[2];
-GLint fade_texture_2D_vertex_shader_p[2];
+//GLint fade_texture_2D_vertex_shader_p[2];
 
 GLint circle_filled_shader_program_p[2];
-GLint circle_filled_vertex_shader_p[2];
-GLint circle_filled_fragment_shader_p[2];
+//GLint circle_filled_vertex_shader_p[2];
+//GLint circle_filled_fragment_shader_p[2];
 
-GLint FBO_texture_2D_fragment_shader_p[2];
+//GLint FBO_texture_2D_fragment_shader_p[2];
 GLint FBO_texture_2D_shader_program_p[2];
-GLint FBO_texture_2D_vertex_shader_p[2];
+//GLint FBO_texture_2D_vertex_shader_p[2];
 
-GLint texture_2DA_fragment_shader_p[2];
+//GLint texture_2DA_fragment_shader_p[2];
 GLint texture_2DA_shader_program_p[2];
-GLint texture_2DA_vertex_shader_p[2];
+//GLint texture_2DA_vertex_shader_p[2];
 
 bool bShadersLoaded[2];
 
 bool loadShaders(int index) {
+  // Are the shaders ready?
   if (bShadersLoaded[index]) {
     reConfigureShaders(index);
     return true;
@@ -360,28 +388,28 @@ bool loadShaders(int index) {
   bool ret_val = true;
   GLint success;
 
-  enum Consts { INFOLOG_LEN = 512 };
   GLchar infoLog[INFOLOG_LEN];
 
-  // Are the shaders ready?
 
   // Simple colored triangle shader
+  if (!color_tri_shader_program_p[index]) {
+    auto shaderProgram = GLShaderProgram::Builder()
+     .addShaderFromSource(color_tri_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(color_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
 
-  auto shaderProgram = GLShaderProgram::Builder()
-    .addShaderFromFile("vertex.glsl", GL_VERTEX_SHADER)
-    .addShaderFromFile("fragment.glsl", GL_FRAGMENT_SHADER)
-    .linkProgram();
+    color_tri_shader_program_p[index] = shaderProgram.programId();
+  }
 
-
-
+#if 0
   if (!color_tri_vertex_shader_p[index]) {
     /* Vertex shader */
     color_tri_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
-    GLchar const* files[] = { preamble, color_tri_vertex_shader_source };
-    GLint lengths[]       = { (GLint)strlen(preamble),  (GLint)strlen(color_tri_vertex_shader_source)  };
+     GLchar const* files[] = { preamble, color_tri_vertex_shader_source };
+     GLint lengths[]       = { (GLint)strlen(preamble),  (GLint)strlen(color_tri_vertex_shader_source)  };
 
-    glShaderSource(color_tri_vertex_shader_p[index], 2,
-                   files, lengths);
+     glShaderSource(color_tri_vertex_shader_p[index], 2,
+                    files, lengths);
 
 //    glShaderSource(color_tri_vertex_shader_p[index], 1,
 //                   &color_tri_vertex_shader_source, NULL);
@@ -428,9 +456,19 @@ bool loadShaders(int index) {
       ret_val = false;
     }
   }
+#endif
 
   // Simple 2D texture shader
+  if (!texture_2D_shader_program_p[index]) {
+    auto shaderProgram = GLShaderProgram::Builder()
+     .addShaderFromSource(texture_2D_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
 
+    texture_2D_shader_program_p[index] = shaderProgram.programId();
+  }
+
+#if 0
   if (!texture_2D_vertex_shader_p[index]) {
     /* Vertex shader */
     texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -480,8 +518,18 @@ bool loadShaders(int index) {
       ret_val = false;
     }
   }
+#endif
 
   // Fade texture shader
+  if (!fade_texture_2D_shader_program_p[index]) {
+    auto shaderProgram = GLShaderProgram::Builder()
+     .addShaderFromSource(fade_texture_2D_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(fade_texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
+
+    fade_texture_2D_shader_program_p[index] = shaderProgram.programId();
+  }
+#if 0
   if (!fade_texture_2D_vertex_shader_p[index]) {
     /* Vertex shader */
     fade_texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -532,8 +580,18 @@ bool loadShaders(int index) {
       ret_val = false;
     }
   }
+#endif
 
   // Circle shader
+  if (!circle_filled_shader_program_p[index]) {
+    auto shaderProgram = GLShaderProgram::Builder()
+     .addShaderFromSource(circle_filled_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(circle_filled_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
+
+    circle_filled_shader_program_p[index] = shaderProgram.programId();
+  }
+#if 0
   if (!circle_filled_vertex_shader_p[index]) {
     /* Vertex shader */
     circle_filled_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -586,9 +644,17 @@ bool loadShaders(int index) {
       ret_val = false;
     }
   }
-
+#endif
   // FBO 2D texture shader
+  if (!FBO_texture_2D_shader_program_p[index]) {
+    auto shaderProgram = GLShaderProgram::Builder()
+     .addShaderFromSource(FBO_texture_2D_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(FBO_texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
 
+    FBO_texture_2D_shader_program_p[index] = shaderProgram.programId();
+  }
+#if 0
   if (!FBO_texture_2D_vertex_shader_p[index]) {
     /* Vertex shader */
     FBO_texture_2D_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -639,9 +705,17 @@ bool loadShaders(int index) {
       ret_val = false;
     }
   }
-
+#endif
   // 2D Alpha color texture shader
+  if (!texture_2DA_shader_program_p[index]) {
+    auto shaderProgram = GLShaderProgram::Builder()
+     .addShaderFromSource(texture_2DA_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(texture_2DA_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
 
+    texture_2DA_shader_program_p[index] = shaderProgram.programId();
+  }
+#if 0
   if (!texture_2DA_vertex_shader_p[index]) {
     /* Vertex shader */
     texture_2DA_vertex_shader_p[index] = glCreateShader(GL_VERTEX_SHADER);
@@ -694,7 +768,7 @@ bool loadShaders(int index) {
       ret_val = false;
     }
   }
-
+#endif
   //qDebug() << "Shader Load " << ret_val;
 
   bShadersLoaded[index] = true;
@@ -704,73 +778,73 @@ bool loadShaders(int index) {
 }
 
 void reConfigureShaders(int index) {
-  color_tri_fragment_shader = color_tri_fragment_shader_p[index];
+  //color_tri_fragment_shader = color_tri_fragment_shader_p[index];
   color_tri_shader_program = color_tri_shader_program_p[index];
-  color_tri_vertex_shader = color_tri_vertex_shader_p[index];
+  //color_tri_vertex_shader = color_tri_vertex_shader_p[index];
 
-  texture_2D_fragment_shader = texture_2D_fragment_shader_p[index];
+//  texture_2D_fragment_shader = texture_2D_fragment_shader_p[index];
   texture_2D_shader_program = texture_2D_shader_program_p[index];
-  texture_2D_vertex_shader = texture_2D_vertex_shader_p[index];
+//  texture_2D_vertex_shader = texture_2D_vertex_shader_p[index];
 
-  fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[index];
+//  fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[index];
   fade_texture_2D_shader_program = fade_texture_2D_shader_program_p[index];
-  fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[index];
+//  fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[index];
 
   circle_filled_shader_program = circle_filled_shader_program_p[index];
-  circle_filled_vertex_shader = circle_filled_vertex_shader_p[index];
-  circle_filled_fragment_shader = circle_filled_fragment_shader_p[index];
+//  circle_filled_vertex_shader = circle_filled_vertex_shader_p[index];
+//  circle_filled_fragment_shader = circle_filled_fragment_shader_p[index];
 
-  FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[index];
+//  FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[index];
   FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[index];
-  FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[index];
+//  FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[index];
 
-  texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[index];
+//  texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[index];
   texture_2DA_shader_program = texture_2DA_shader_program_p[index];
-  texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[index];
+//  texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[index];
 }
 
 void unloadShaders() {
-  color_tri_fragment_shader = color_tri_fragment_shader_p[0] =
-      color_tri_fragment_shader_p[1] = 0;
+  //color_tri_fragment_shader = color_tri_fragment_shader_p[0] =
+  //    color_tri_fragment_shader_p[1] = 0;
   color_tri_shader_program = color_tri_shader_program_p[0] =
       color_tri_shader_program_p[1] = 0;
-  color_tri_vertex_shader = color_tri_vertex_shader_p[0] =
-      color_tri_vertex_shader_p[1] = 0;
+  //color_tri_vertex_shader = color_tri_vertex_shader_p[0] =
+  //    color_tri_vertex_shader_p[1] = 0;
 
-  texture_2D_fragment_shader = texture_2D_fragment_shader_p[0] =
-      texture_2D_fragment_shader_p[1];
+//  texture_2D_fragment_shader = texture_2D_fragment_shader_p[0] =
+//      texture_2D_fragment_shader_p[1];
   texture_2D_shader_program = texture_2D_shader_program_p[0] =
       texture_2D_shader_program_p[1] = 0;
-  texture_2D_vertex_shader = texture_2D_vertex_shader_p[0] =
-      texture_2D_vertex_shader_p[1] = 0;
+//  texture_2D_vertex_shader = texture_2D_vertex_shader_p[0] =
+//      texture_2D_vertex_shader_p[1] = 0;
 
-  fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[0] =
-      fade_texture_2D_fragment_shader_p[1] = 0;
+//  fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[0] =
+//      fade_texture_2D_fragment_shader_p[1] = 0;
   fade_texture_2D_shader_program = fade_texture_2D_shader_program_p[0] =
       fade_texture_2D_shader_program_p[1] = 0;
-  fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[0] =
-      fade_texture_2D_vertex_shader_p[1] = 0;
+//  fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[0] =
+//      fade_texture_2D_vertex_shader_p[1] = 0;
 
   circle_filled_shader_program = circle_filled_shader_program_p[0] =
       circle_filled_shader_program_p[1] = 0;
-  circle_filled_vertex_shader = circle_filled_vertex_shader_p[0] =
-      circle_filled_vertex_shader_p[1] = 0;
-  circle_filled_fragment_shader = circle_filled_fragment_shader_p[0] =
-      circle_filled_fragment_shader_p[1] = 0;
+//  circle_filled_vertex_shader = circle_filled_vertex_shader_p[0] =
+//      circle_filled_vertex_shader_p[1] = 0;
+//  circle_filled_fragment_shader = circle_filled_fragment_shader_p[0] =
+//      circle_filled_fragment_shader_p[1] = 0;
 
-  FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[0] =
-      FBO_texture_2D_fragment_shader_p[1] = 0;
+//  FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[0] =
+//      FBO_texture_2D_fragment_shader_p[1] = 0;
   FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[0] =
       FBO_texture_2D_shader_program_p[1] = 0;
-  FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[0] =
-      FBO_texture_2D_vertex_shader_p[1] = 0;
+//  FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[0] =
+//      FBO_texture_2D_vertex_shader_p[1] = 0;
 
-  texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[0] =
-      texture_2DA_fragment_shader_p[1] = 0;
+//  texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[0] =
+//      texture_2DA_fragment_shader_p[1] = 0;
   texture_2DA_shader_program = texture_2DA_shader_program_p[0] =
       texture_2DA_shader_program_p[1] = 0;
-  texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[0] =
-      texture_2DA_vertex_shader_p[1] = 0;
+//  texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[0] =
+//      texture_2DA_vertex_shader_p[1] = 0;
 
   bShadersLoaded[0] = bShadersLoaded[1] = false;
 }

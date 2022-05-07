@@ -662,6 +662,10 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
     set(OPENGL_LIBRARIES ${REVISED_OPENGL_LIBRARIES})
     message(STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
 
+    find_package(GLEW REQUIRED)
+    include_directories(${GLEW_INCLUDE_DIRS})
+    link_libraries(${GLEW_LIBRARIES})
+
   else (OPENGL_FOUND)
     message(STATUS "OpenGL not found...")
   endif (OPENGL_FOUND)

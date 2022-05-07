@@ -39,7 +39,7 @@
 #include "TexFont.h"
 
 #ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
+//#include <wx/glcanvas.h>
 #endif
 
 class ViewPort;

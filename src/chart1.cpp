@@ -123,7 +123,7 @@
 #include "AIS_Decoder.h"
 #include "OCP_DataStreamInput_Thread.h"
 #include "TrackPropDlg.h"
-#include "gshhs.h"
+//#include "gshhs.h"
 #include "cutil.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
