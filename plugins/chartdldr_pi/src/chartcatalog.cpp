@@ -28,12 +28,7 @@
 
 #include "chartcatalog.h"
 #include <wx/tokenzr.h>
-
-#include <wx/arrimpl.cpp>
-// WX_DEFINE_OBJARRAY(wxArrayOfNoticeToMariners);
-WX_DEFINE_OBJARRAY(wxArrayOfVertexes);
-WX_DEFINE_OBJARRAY(wxArrayOfPanels);
-WX_DEFINE_OBJARRAY(wxArrayOfCharts);
+#include <memory>
 
 // Chart Catalog implementation
 bool ChartCatalog::LoadFromFile(wxString path, bool headerOnly) {
@@ -45,14 +40,12 @@ bool ChartCatalog::LoadFromFile(wxString path, bool headerOnly) {
                                        // bad file
   if (!wxFileExists(path)) return false;
 
-  pugi::xml_document *doc = new pugi::xml_document;
-  bool ret = doc->load_file(path.mb_str());
+  pugi::xml_document doc;
+  bool ret = doc.load_file(path.mb_str());
   if (ret)
-    ret = LoadFromXml(doc, headerOnly);
+    ret = LoadFromXml(&doc, headerOnly);
   else
-    charts.Clear();
-
-  wxDELETE(doc);
+    charts.clear();
 
   return ret;
 }
@@ -80,7 +73,7 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
   pugi::xml_node root = doc->first_child();
 
   wxString rootName = wxString::FromUTF8(root.name());
-  charts.Clear();
+  charts.clear();
   if (rootName.StartsWith(_T("RncProductCatalog"))) {
     if (!ParseNoaaHeader(root.first_child())) {
       return false;
@@ -90,7 +83,7 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
     for (pugi::xml_node element = root.first_child(); element;
          element = element.next_sibling()) {
       if (!strcmp(element.name(), "chart")) {
-        charts.Add(new RasterChart(element));
+        charts.push_back(std::make_unique<RasterChart>(element));
       }
     }
   } else if (rootName.StartsWith(_T("EncProductCatalog"))) {
@@ -102,7 +95,7 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
     for (pugi::xml_node element = root.first_child(); element;
          element = element.next_sibling()) {
       if (!strcmp(element.name(), "cell")) {
-        charts.Add(new EncCell(element));
+        charts.push_back(std::make_unique<EncCell>(element));
       }
     }
   }
@@ -119,7 +112,7 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
     for (pugi::xml_node element = root.first_child(); element;
          element = element.next_sibling()) {
       if (!strcmp(element.name(), "Cell")) {
-        charts.Add(new IEncCell(element));
+        charts.push_back(std::make_unique<IEncCell>(element));
       }
     }
   } else {
@@ -231,7 +224,7 @@ Chart::Chart(pugi::xml_node &xmldata) {
     } else if (!strcmp(element.name(), "cov")) {
       for (pugi::xml_node subElement = element.first_child(); subElement;
            subElement = subElement.next_sibling()) {
-        coverage.Add(new Panel(subElement));
+        coverage.push_back(std::make_unique<Panel>(subElement));
       }
     } else if (!strcmp(element.name(), "target_filename")) {
       target_filename = wxString::FromUTF8(element.first_child().value());

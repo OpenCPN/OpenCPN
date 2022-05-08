@@ -63,9 +63,6 @@ class ChartDldrPanelImpl;
 class ChartDldrGuiAddSourceDlg;
 class ChartDldrPrefsDlgImpl;
 
-WX_DEFINE_ARRAY_PTR(ChartSource*, wxArrayOfChartSources);
-WX_DECLARE_OBJARRAY(wxDateTime, wxArrayOfDateTime);
-
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
@@ -119,9 +116,9 @@ public:
   void UpdatePrefs(ChartDldrPrefsDlgImpl* dialog);
 
   //    Public properties
-  wxArrayOfChartSources* m_pChartSources;
+  std::vector<std::unique_ptr<ChartSource>> m_ChartSources;
   wxWindow* m_parent_window;
-  ChartCatalog* m_pChartCatalog;
+  ChartCatalog m_pChartCatalog;
   ChartSource* m_pChartSource;
   void SetSourceId(int id) { m_selected_source = id; }
   int GetSourceId() { return m_selected_source; }
@@ -167,7 +164,7 @@ public:
 
 private:
   wxArrayString m_localfiles;
-  wxArrayOfDateTime m_localdt;
+  std::vector<wxDateTime> m_localdt;
   void GetLocalFiles();
   wxString m_name;
   wxString m_url;
@@ -192,7 +189,7 @@ private:
 
   void OnPopupClick(wxCommandEvent& evt);
   int GetSelectedCatalog();
-  void AppendCatalog(ChartSource* cs);
+  void AppendCatalog(std::unique_ptr<ChartSource>& cs);
   void DoEditSource();
 
   bool m_bTransferComplete;
@@ -294,7 +291,7 @@ public:
   ChartDldrGuiAddSourceDlg(wxWindow* parent);
   ~ChartDldrGuiAddSourceDlg();
   void SetBasePath(const wxString path) { m_base_path = path; }
-  void SetSourceEdit(ChartSource* cs);
+  void SetSourceEdit(std::unique_ptr<ChartSource>& cs);
 
 private:
   bool ValidateUrl(const wxString Url, bool catalog_xml = true);
