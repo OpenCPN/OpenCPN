@@ -8743,7 +8743,25 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (g_pAIS) {
     for (const auto& it : g_pAIS->GetTargetList()) {
       AIS_Target_Data* pAISTarget = it.second;
-      if (NULL != pAISTarget) pAISTarget->b_show_track = g_bAISShowTracks;
+      if (NULL != pAISTarget) {
+        pAISTarget->b_show_track = g_bAISShowTracks;
+        // Check for exceptions in MMSI properties
+        for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+          if (pAISTarget->MMSI == g_MMSI_Props_Array[i]->MMSI) {
+            MMSIProperties *props = g_MMSI_Props_Array[i];
+            if (TRACKTYPE_NEVER == props->TrackType) {
+              pAISTarget->b_show_track = false;
+              break;
+            }
+            else if (TRACKTYPE_ALWAYS == props->TrackType) {
+              pAISTarget->b_show_track = true;
+              break;
+            }
+            else
+              break;
+          }
+        }
+      }
     }
   }
 

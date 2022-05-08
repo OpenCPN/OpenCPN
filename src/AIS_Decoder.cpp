@@ -1219,6 +1219,14 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
         // Check to see if this target has been flagged as a "follower"
         if (props->m_bFollower) follower_mmsi = mmsi;
 
+        // Check if this target has a dedicated tracktype
+        if (TRACKTYPE_NEVER == props->TrackType) {
+          pTargetData->b_show_track = false;
+        }
+        else if (TRACKTYPE_ALWAYS == props->TrackType) {
+          pTargetData->b_show_track = true;
+        }
+
         // Check to see if this MMSI has been configured to be ignored
         // completely...
         if (props->m_bignore) return AIS_NoError;
