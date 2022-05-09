@@ -48,11 +48,11 @@ class SingletonVar {
 
 private:
   static SingletonVar* getInstance(const std::string& key);
-  std::unordered_map<wxEvtHandler*, wxEventType> listeners;
+  std::vector<std::pair<wxEvtHandler*, wxEventType>>  listeners;
 
   SingletonVar() {}
-  SingletonVar(const SingletonVar&);    // not implemented
-  void operator=(const SingletonVar&);  // not implemented
+  SingletonVar(const SingletonVar&) = delete;
+  void operator=(const SingletonVar&) = delete;
 
   friend class ObservedVar;
 };

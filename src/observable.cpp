@@ -21,6 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
 
+#include <algorithm>
 #include <atomic>
 #include <sstream>
 
@@ -57,17 +58,26 @@ SingletonVar* SingletonVar::getInstance(const std::string& key) {
 
 /* ObservedVar implementation. */
 
+using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
+
 void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
   const auto& listeners = singleton->listeners;
-  if (listeners.find(listener) != listeners.end())
+  auto found = std::find_if(listeners.begin(), listeners.end(),
+          [listener](const ev_pair p) { return p.first == listener; });
+  if (found != listeners.end()) {
     wxLogWarning("Duplicate window listener %",  listener);
-  singleton->listeners[listener] = ev_type;
+  }
+  else {
+    singleton->listeners.push_back(ev_pair(listener, ev_type));
+  }
 }
 
 bool ObservedVar::unlisten(wxEvtHandler* listener) {
   auto& listeners = singleton->listeners;
-  if (listeners.find(listener) == listeners.end()) return false;
-  listeners.erase(listener);
+  auto found = std::find_if(listeners.begin(), listeners.end(),
+          [listener](const ev_pair p) { return p.first == listener; });
+  if (found == listeners.end()) return false;
+  listeners.erase(found);
   return true;
 }
 
