@@ -5064,6 +5064,7 @@ void MyFrame::TrackOn(void) {
 
   g_pActiveTrack->Start();
 
+  // The main toolbar may still be NULL here and we will do nothing...
   SetMasterToolbarItemState(ID_TRACK, g_bTrackActive);
   if (g_MainToolbar)
     g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
@@ -9650,6 +9651,11 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
     if (!pttc->b_viz) continue;
 
     if (pttc->kind == wxITEM_CHECK) tb->ToggleTool(pttc->id, pttc->b_toggle);
+  }
+
+  SetMasterToolbarItemState(ID_TRACK, g_bTrackActive);
+  if(g_bTrackActive) {
+    g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
   }
 
   return tb;
