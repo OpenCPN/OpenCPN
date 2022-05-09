@@ -1048,8 +1048,11 @@ void Routeman::DeleteAllRoutes(void) {
 void Routeman::DeleteAllTracks(void) {
   ::wxBeginBusyCursor();
 
-  //    Iterate on the RouteList
-  for (Track *ptrack : g_TrackList) {
+  // Iterate on the RouteList, we delete from g_TrackList in DeleteTrack,
+  // bigger refactoring is viable, but for now, we simply make a copy
+  // that goes out of scope soon.
+  std::vector<Track*> to_del = g_TrackList;
+  for (Track *ptrack : to_del) {
     if (ptrack->m_bIsInLayer) continue;
 
     g_pAIS->DeletePersistentTrack(ptrack);
