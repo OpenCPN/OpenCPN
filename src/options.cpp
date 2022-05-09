@@ -10381,6 +10381,10 @@ void ChartGroupsUI::OnDeleteGroup(wxCommandEvent& event) {
     m_GroupNB->DeletePage(m_GroupSelectedPage);
     modified = TRUE;
   }
+  if (m_GroupSelectedPage <= 0) {
+    m_pAddButton->Disable();
+    m_pDeleteGroupButton->Disable();
+  }
 }
 
 int ChartGroupsUI::FindGroupBranch(ChartGroup* pGroup, wxTreeCtrl* ptree,
