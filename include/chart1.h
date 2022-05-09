@@ -310,7 +310,7 @@ public:
   bool OnExceptionInMainLoop();
 #endif
 
-  void TrackOff(void);
+  Track* TrackOff(void);
 
   wxSingleInstanceChecker *m_checker;
 

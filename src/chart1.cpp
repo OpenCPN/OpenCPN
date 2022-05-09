@@ -2747,8 +2747,11 @@ int MyApp::OnExit() {
 void MyApp::OnFatalException() { g_crashprint.Report(); }
 #endif
 
-void MyApp::TrackOff(void) {
-  if (gFrame) gFrame->TrackOff();
+Track* MyApp::TrackOff(void) {
+  if (gFrame)
+    return gFrame->TrackOff();
+  else
+    return nullptr;
 }
 
 #include <wx/power.h>

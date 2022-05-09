@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  CanvasMenuHandler
@@ -1732,7 +1732,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       if (dlg_return == wxID_YES) {
         if (m_pSelectedTrack == g_pActiveTrack)
-          parent->parent_frame->TrackOff();
+            m_pSelectedTrack = parent->parent_frame->TrackOff();
         g_pAIS->DeletePersistentTrack(m_pSelectedTrack);
         pConfig->DeleteConfigTrack(m_pSelectedTrack);
         g_pRouteMan->DeleteTrack(m_pSelectedTrack);
