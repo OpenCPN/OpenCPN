@@ -299,11 +299,8 @@ static TrackPoint *GPXLoadTrackPoint1(pugi::xml_node &wpt_node) {
     }    // extensions
   }      // for
 
-  // Create waypoint, if all data are available
-  if(TimeString.Length())
-    return new TrackPoint(rlat, rlon, TimeString);
-  else
-    return NULL;
+  // Create trackpoint
+  return new TrackPoint(rlat, rlon, TimeString);
 }
 
 static Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
