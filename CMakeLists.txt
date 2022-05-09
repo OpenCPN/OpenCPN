@@ -662,15 +662,31 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
     set(OPENGL_LIBRARIES ${REVISED_OPENGL_LIBRARIES})
     message(STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
 
-    find_package(GLEW REQUIRED)
-    include_directories(${GLEW_INCLUDE_DIRS})
-    link_libraries(${GLEW_LIBRARIES})
-
   else (OPENGL_FOUND)
     message(STATUS "OpenGL not found...")
   endif (OPENGL_FOUND)
 
 endif ()
+
+  # configure GLEW
+if (OPENGL_FOUND)
+  if (CMAKE_HOST_WIN32)
+    # Pull the the required items from local directory for Windows
+    #list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
+    #list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
+    #find_package(GLEW REQUIRED)
+    #message(STATUS "+++GLEW: " ${GLEW_INCLUDE_DIRS})
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
+    link_libraries(${CMAKE_SOURCE_DIR}/buildwin/glew32.lib )
+
+  else (CMAKE_HOST_WIN32)
+    if (NOT APPLE)
+      find_package(GLEW REQUIRED)
+      include_directories(${GLEW_INCLUDE_DIRS})
+      link_libraries(${GLEW_LIBRARIES})
+    endif (NOT APPLE)
+  endif (CMAKE_HOST_WIN32)
+endif (OPENGL_FOUND)
 
 if (NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins. These
@@ -2507,6 +2523,14 @@ if (MSVC AND OCPN_USE_CRASHREPORT)
   )
   message(STATUS "CrashRpt bundled into the installer package...")
 endif (MSVC AND OCPN_USE_CRASHREPORT)
+
+# Install glew dll
+if (MSVC AND OCPN_USE_GL)
+  install(
+    FILES ${CMAKE_SOURCE_DIR}/buildwin/glew32.dll
+    DESTINATION ${PREFIX_PKGDATA}
+  )
+endif ()
 
 if (MINGW)
   install(SCRIPT ${CMAKE_SOURCE_DIR}/cmake/BundleMingwLibs.cmake)

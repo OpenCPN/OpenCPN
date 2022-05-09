@@ -32,15 +32,12 @@
 
 #include <vector>
 
-#ifdef USE_ANDROID_GLES2
+#include "dychart.h"
+
 #include "linmath.h"
-#endif
 
 #include "TexFont.h"
 
-#ifdef ocpnUSE_GL
-//#include <wx/glcanvas.h>
-#endif
 
 class ViewPort;
 class GLUtesselator;

@@ -27,6 +27,7 @@
 #define _S52PLIB_H_
 
 #include <vector>
+#include "dychart.h"
 
 #include "s52s57.h"  //types
 

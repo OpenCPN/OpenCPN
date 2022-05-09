@@ -68,13 +68,13 @@
 #include "qdebug.h"
 #endif
 
-#if defined(__OCPN__ANDROID__)
-#include <GLES2/gl2.h>
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#include <GL/glext.h>
-#endif
+// #if defined(__OCPN__ANDROID__)
+// #include <GLES2/gl2.h>
+// #elif defined(__WXQT__) || defined(__WXGTK__)
+// #define GL_GLEXT_PROTOTYPES
+// #include <GL/gl.h>
+// #include <GL/glext.h>
+// #endif
 
 extern float g_GLMinCartographicLineWidth;
 extern float g_GLMinSymbolLineWidth;
@@ -12185,7 +12185,7 @@ typedef union {
 } GLvertex;
 
 #ifndef USE_ANDROID_GLES2
-void APIENTRY s52DCcombineCallback(GLdouble coords[3], GLdouble *vertex_data[4],
+void s52DCcombineCallback(GLdouble coords[3], GLdouble *vertex_data[4],
                                    GLfloat weight[4], GLdouble **dataOut) {
   GLvertex *vertex;
 
@@ -12204,21 +12204,21 @@ void APIENTRY s52DCcombineCallback(GLdouble coords[3], GLdouble *vertex_data[4],
   *dataOut = &(vertex->data[0]);
 }
 
-void APIENTRY s52DCvertexCallback(GLvoid *arg) {
+void s52DCvertexCallback(GLvoid *arg) {
   GLvertex *vertex;
   vertex = (GLvertex *)arg;
   glVertex2f((float)vertex->info.x, (float)vertex->info.y);
 }
 
-void APIENTRY s52DCerrorCallback(GLenum errorCode) {
+void s52DCerrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
   // wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
 }
 
-void APIENTRY s52DCbeginCallback(GLenum type) { glBegin(type); }
+void s52DCbeginCallback(GLenum type) { glBegin(type); }
 
-void APIENTRY s52DCendCallback() { glEnd(); }
+void s52DCendCallback() { glEnd(); }
 #endif
 
 // GLSL callbacks

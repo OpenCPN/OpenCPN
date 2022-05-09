@@ -25,41 +25,9 @@
 
 #include <wx/wx.h>
 
+#include "dychart.h"
 #include "TexFont.h"
 
-#ifdef USE_ANDROID_GLES2
-#include <GLES2/gl2.h>
-#include "linmath.h"
-#include "shaders.h"
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-
-#if 0
-#define TXF_CACHE 8
-static TexFontCache s_txf[TXF_CACHE];
-
-TexFont *GetTexFont(wxFont *pFont)
-{
-    // rebuild font if needed
-    TexFont *f_cache;
-    unsigned int i;
-    for (i = 0; i < TXF_CACHE && s_txf[i].key != nullptr; i++)
-    {
-        if (s_txf[i].key == pFont) {
-            return &s_txf[i].cache;
-        }
-    }
-    if (i == TXF_CACHE) {
-        i = rand() & (TXF_CACHE -1);
-    }
-    s_txf[i].key = pFont;
-    f_cache = &s_txf[i].cache;
-    f_cache->Build(*pFont);
-    return f_cache;
-}
-#endif
 
 TexFont::TexFont() {
   texobj = 0;

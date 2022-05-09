@@ -1538,7 +1538,7 @@ typedef union {
 } GLvertex;
 
 #ifndef USE_ANDROID_GLES2
-void APIENTRY ocpnDCcombineCallback(GLdouble coords[3],
+void ocpnDCcombineCallback(GLdouble coords[3],
                                     GLdouble *vertex_data[4], GLfloat weight[4],
                                     GLdouble **dataOut) {
   GLvertex *vertex;
@@ -1558,21 +1558,21 @@ void APIENTRY ocpnDCcombineCallback(GLdouble coords[3],
   *dataOut = &(vertex->data[0]);
 }
 
-void APIENTRY ocpnDCvertexCallback(GLvoid *arg) {
+void ocpnDCvertexCallback(GLvoid *arg) {
   GLvertex *vertex;
   vertex = (GLvertex *)arg;
   glVertex2f((float)vertex->info.x, (float)vertex->info.y);
 }
 
-void APIENTRY ocpnDCerrorCallback(GLenum errorCode) {
+void ocpnDCerrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
   // wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
 }
 
-void APIENTRY ocpnDCbeginCallback(GLenum type) { glBegin(type); }
+void ocpnDCbeginCallback(GLenum type) { glBegin(type); }
 
-void APIENTRY ocpnDCendCallback() { glEnd(); }
+void ocpnDCendCallback() { glEnd(); }
 #endif
 
 // GLSL callbacks

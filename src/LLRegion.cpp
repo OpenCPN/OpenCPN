@@ -29,6 +29,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "dychart.h"
+
 #include "LLRegion.h"
 #include "logger.h"
 
