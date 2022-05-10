@@ -298,7 +298,6 @@ message(STATUS "Setting C++11 standard via cmake standard mechanism")
 if (NOT MSVC)
   set(OBJ_VISIBILITY "-fvisibility=hidden")
 endif ()
-include(CompilerSupport)
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (OCPN_ENABLE_CLANG_TIDY)
