@@ -514,7 +514,9 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,
       pTargetData->ROTAIS = 4.733 * sqrt(value.AsDouble());
     } else if (update_path == _T("design.aisShipType")) {
       if (value.HasMember(_T("id"))) {
-        pTargetData->ShipType = value[_T("id")].AsUInt();
+        if (!pTargetData->b_isDSCtarget) {
+          pTargetData->ShipType = value[_T("id")].AsUInt();
+        }
       }
     } else if (update_path == _T("atonType")) {
       if (value.HasMember(_T("id"))) {
@@ -557,9 +559,11 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,
     } else if (update_path == _T("sensors.ais.class")) {
       auto aisclass = value.AsString();
       if (aisclass == _T("A")) {
-        pTargetData->Class = AIS_CLASS_A;
+        if(!pTargetData->b_isDSCtarget)
+          pTargetData->Class = AIS_CLASS_A;
       } else if (aisclass == _T("B")) {
-        pTargetData->Class = AIS_CLASS_B;
+        if (!pTargetData->b_isDSCtarget)
+          pTargetData->Class = AIS_CLASS_B;
         pTargetData->NavStatus =
             UNDEFINED;  // Class B targets have no status.  Enforce this...
       } else if (aisclass == _T("BASE")) {
@@ -1546,12 +1550,13 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   double dsc_lat = 0.;
   double dsc_lon = 0.;
   double dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
-  double dse_tmp, dse_addr;
+  double dse_tmp;
   double dse_lat = 0.;
   double dse_lon = 0.;
-  long dsc_fmt, dsc_quadrant;
+  long dsc_fmt, dsc_quadrant,dsc_cat, dsc_nature;
 
   int dsc_mmsi = 0;
+  int dsc_tx_mmsi = 0;
   int dse_mmsi = 0;
   double dse_cog = 0.;
   double dse_sog = 0.;
@@ -1573,26 +1578,47 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   if (str.Mid(3, 3).IsSameAs(_T("DSC"))) {
     m_dsc_last_string = str;
 
-    token =
-        tkz.GetNextToken();  // format specifier
-                             // (02-area,12-distress,16-allships,20-individual,...)
-    token.ToLong(&dsc_fmt);
+    token = tkz.GetNextToken();  // format specifier
+    token.ToLong(&dsc_fmt);      // (02-area,12-distress,16-allships,20-individual,...)
 
     token = tkz.GetNextToken();  // address i.e. mmsi*10 for received msg, or
-                                 // area spec
-    token.ToDouble(&dsc_addr);
-    dsc_mmsi = 0 - (int)(dsc_addr / 10);  // as per NMEA 0183 3.01
+                                 // area spec or sender mmsi for (12) and (16)
+    if (dsc_fmt == 12 || dsc_fmt == 16) {
+      dsc_mmsi = wxAtoi(token.Mid(0, 9));
+    }
+    else {
+      token.ToDouble(&dsc_addr);
+      dsc_mmsi = 0 - (int)( dsc_addr / 10 );  // as per NMEA 0183 3.01
+    }
 
     token = tkz.GetNextToken();  // category
+    token.ToLong(&dsc_cat);      // 12 - Distress (relayed)
+
     token = tkz.GetNextToken();  // nature of distress or telecommand1
+    if (!token.IsSameAs(wxEmptyString)) { // 00-12 = nature of distress
+      token.ToLong(&dsc_nature);
+    }
+    else dsc_nature = 99;
+
     token = tkz.GetNextToken();  // comm type or telecommand2
 
     token = tkz.GetNextToken();  // position or channel/freq
     token.ToDouble(&dsc_tmp);
 
     token = tkz.GetNextToken();  // time or tel. no.
-    token = tkz.GetNextToken();  // mmsi of ship in distress
-    token = tkz.GetNextToken();  // nature of distress
+    token = tkz.GetNextToken();  // mmsi of ship in distress, relay
+    if (dsc_fmt == 16 && dsc_cat == 12 && !token.IsSameAs(wxEmptyString) ) {
+      //wxString dmmsi = token.Mid(0,9);
+      dsc_tx_mmsi = dsc_mmsi;    // mmsi of relay issuer
+      dsc_mmsi = wxAtoi(token.Mid(0, 9));
+    }
+    token = tkz.GetNextToken();  // nature of distress, relay
+    if (dsc_fmt == 16 && dsc_cat == 12) {
+      if (!token.IsSameAs(wxEmptyString)) { // 00-12 = nature of distress
+        token.ToLong(&dsc_nature);
+      }
+      else dsc_nature = 99;
+    }
     token = tkz.GetNextToken();  // acknowledgement
     token = tkz.GetNextToken();  // expansion indicator
 
@@ -1628,13 +1654,15 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
         break;
     }
     if (dsc_fmt != 02) mmsi = (int)dsc_mmsi;
+
   } else if (str.Mid(3, 3).IsSameAs(_T("DSE"))) {
     token = tkz.GetNextToken();  // total number of sentences
     token = tkz.GetNextToken();  // sentence number
     token = tkz.GetNextToken();  // query/rely flag
     token = tkz.GetNextToken();  // vessel MMSI
-    token.ToDouble(&dse_addr);
-    dse_mmsi = 0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
+    dse_mmsi = wxAtoi(token.Mid(0, 9)); // ITU-R M.493-10 §5.2
+    //token.ToDouble(&dse_addr);
+    //0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
 
 # if 0
     token = tkz.GetNextToken();  // code field
@@ -1675,8 +1703,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
        else if (dseSymbol.IsSameAs(_T("06"))) { // Persons On Board
        }
    }
-
-    mmsi = (int)dse_mmsi;
+    mmsi = abs((int)dse_mmsi);
   }
 
   //  Get the last report time for this target, if it exists
@@ -1702,18 +1729,21 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
     m_ptentative_dsctarget->StaticReportTicks = now.GetTicks();
 
     m_ptentative_dsctarget->MMSI = mmsi;
-    m_ptentative_dsctarget->NavStatus = 0;  // underway
+    m_ptentative_dsctarget->NavStatus = 99; //Undefind. "-" in the AIS target list
     m_ptentative_dsctarget->Lat = dsc_lat;
     m_ptentative_dsctarget->Lon = dsc_lon;
     m_ptentative_dsctarget->b_positionOnceValid = true;
     m_ptentative_dsctarget->COG = 0;
     m_ptentative_dsctarget->SOG = 0;
-    m_ptentative_dsctarget->ShipType = dsc_fmt;  // DSC report
+    m_ptentative_dsctarget->ShipType = dsc_fmt;
     m_ptentative_dsctarget->Class = AIS_DSC;
+    m_ptentative_dsctarget->b_isDSCtarget = true;
     m_ptentative_dsctarget->b_nameValid = true;
-    if (dsc_fmt == 12) {
+    if (dsc_fmt == 12 || (dsc_fmt == 16 && dsc_cat == 12)) {
       snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d",
                std::abs(mmsi));
+      m_ptentative_dsctarget->m_dscNature = int(dsc_nature);
+      m_ptentative_dsctarget->m_dscTXmmsi = dsc_tx_mmsi;
     } else {
       snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d",
                std::abs(mmsi));
@@ -1910,7 +1940,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
       ptd->blue_paddle = bstr->GetInt(144, 2);
       ptd->b_blue_paddle = (ptd->blue_paddle == 2);  // paddle is set
 
-      ptd->Class = AIS_CLASS_A;
+      if (!ptd->b_isDSCtarget)
+        ptd->Class = AIS_CLASS_A;
 
       //    Check for SART and friends by looking at first two digits of MMSI
       int mmsi_start = ptd->MMSI / 10000000;
@@ -1970,7 +2001,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
 
       ptd->m_utc_sec = bstr->GetInt(134, 6);
 
-      ptd->Class = AIS_CLASS_B;
+      if (!ptd->b_isDSCtarget)
+        ptd->Class = AIS_CLASS_B;
 
       parse_result = true;  // so far so good
       b_posn_report = true;
@@ -2010,13 +2042,16 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
       // From bit 140 and forward data as of mes 5
       bstr->GetStr(144, 120, &ptd->ShipName[0], 20);
       ptd->b_nameValid = true;
-      ptd->ShipType = (unsigned char)bstr->GetInt(264, 8);
+      if (!ptd->b_isDSCtarget) {
+        ptd->ShipType = (unsigned char)bstr->GetInt(264, 8);
+      }
       ptd->DimA = bstr->GetInt(272, 9);
       ptd->DimB = bstr->GetInt(281, 9);
       ptd->DimC = bstr->GetInt(290, 6);
       ptd->DimD = bstr->GetInt(296, 6);
 
-      ptd->Class = AIS_CLASS_B;
+      if (!ptd->b_isDSCtarget)
+        ptd->Class = AIS_CLASS_B;
       parse_result = true;  // so far so good
       b_posn_report = true;
 
@@ -2046,7 +2081,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
       // It can be both a CLASS A and a CLASS B vessel - We have decided for
       // CLASS A
       // TODO: Lookup to see if we have seen it as a CLASS B, and adjust.
-      ptd->Class = AIS_CLASS_A;
+      if (!ptd->b_isDSCtarget)
+        ptd->Class = AIS_CLASS_A;
 
       ptd->NavStatus = bstr->GetInt(39, 4);
 
@@ -2108,7 +2144,8 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
 
     case 5: {
       n_msg5++;
-      ptd->Class = AIS_CLASS_A;
+      if (!ptd->b_isDSCtarget)
+        ptd->Class = AIS_CLASS_A;
 
       //          Get the AIS Version indicator
       //          0 = station compliant with Recommendation ITU-R M.1371-1
@@ -2121,8 +2158,9 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
         bstr->GetStr(71, 42, &ptd->CallSign[0], 7);
         bstr->GetStr(113, 120, &ptd->ShipName[0], 20);
         ptd->b_nameValid = true;
-
-        ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
+        if (!ptd->b_isDSCtarget) {
+          ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
+        }
 
         ptd->DimA = bstr->GetInt(241, 9);
         ptd->DimB = bstr->GetInt(250, 9);
@@ -2146,7 +2184,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
       break;
     }
 
-    case 24: {
+    case 24: {  // Static data report
       int part_number = bstr->GetInt(39, 2);
       if (0 == part_number) {
         bstr->GetStr(41, 120, &ptd->ShipName[0], 20);
@@ -2154,7 +2192,9 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
         parse_result = true;
         n_msg24++;
       } else if (1 == part_number) {
-        ptd->ShipType = (unsigned char)bstr->GetInt(41, 8);
+        if (!ptd->b_isDSCtarget) {
+          ptd->ShipType = (unsigned char)bstr->GetInt(41, 8);
+        }
         bstr->GetStr(91, 42, &ptd->CallSign[0], 7);
 
         ptd->DimA = bstr->GetInt(133, 9);
@@ -2659,7 +2699,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
           m_bGeneralAlert = true;
 
         //  DSC Distress targets always alert
-        if ((td->Class == AIS_DSC) && (td->ShipType == 12))
+        if (( td->Class == AIS_DSC ) && ( ( td->ShipType == 12 ) || ( td->ShipType == 16 ) ))
           m_bGeneralAlert = true;
       }
 
@@ -2670,7 +2710,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
         this_alarm = AIS_ALERT_SET;
 
       //  DSC Distress targets always alert
-      if ((td->Class == AIS_DSC) && (td->ShipType == 12))
+      if ((td->Class == AIS_DSC) && (( td->ShipType == 12 ) || ( td->ShipType == 16 )) )
         this_alarm = AIS_ALERT_SET;
 
       if (g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
@@ -2720,7 +2760,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
       //  SART and DSC targets always maintain ack timeout
 
       if (g_bAIS_ACK_Timeout || (td->Class == AIS_SART) ||
-          ((td->Class == AIS_DSC) && (td->ShipType == 12))) {
+          ((td->Class == AIS_DSC) && ((td->ShipType == 12) || (td->ShipType == 16)) )) {
         if (td->b_in_ack_timeout) {
           wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
           if (delta.GetMinutes() > g_AckTimeout_Mins)
@@ -3061,10 +3101,13 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
               }
             }
           }
-        } else if ((td->Class == AIS_DSC) && (td->ShipType == 12)) {
+        } else if ((td->Class == AIS_DSC) && ((td->ShipType == 12) || (td->ShipType == 16)) ) {
           if (td->b_active) {
             if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
               palert_target_dsc = td;
+            }
+            else {  // Reset DCS flag to open for a real AIS for the same target
+              td->b_isDSCtarget = false;
             }
           }
         }
@@ -3180,7 +3223,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
       wxDateTime now = wxDateTime::Now();
       if (((AIS_ALERT_SET == palert_target->n_alert_state) &&
            !palert_target->b_in_ack_timeout) ||
-          (palert_target->Class == AIS_SART)) {
+          (palert_target->Class == AIS_SART) ) {
         g_pais_alert_dialog_active->UpdateText();
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
