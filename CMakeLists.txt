@@ -55,15 +55,15 @@ else (APPLE)
 endif (APPLE)
 
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
-   message(STATUS "Building for wxQt-Android")
-   set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
-   set(QT_ANDROID "ON")
-   if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
-     add_definitions("-DANDROID_ARM64")
-   else ()
-     add_definitions("-DANDROID_ARMHF")
-   endif ()
-   set(PACKAGE_NAME gorp)
+  message(STATUS "Building for wxQt-Android")
+  set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
+  set(QT_ANDROID "ON")
+  if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
+    add_definitions("-DANDROID_ARM64")
+  else ()
+    add_definitions("-DANDROID_ARMHF")
+  endif ()
+  set(PACKAGE_NAME gorp)
 endif ()
 
 
@@ -82,7 +82,6 @@ set(
   ${CMAKE_SOURCE_DIR}/
   ${CMAKE_SOURCE_DIR}/cmake
 )
-
 
 
 include(FindPkgConfig)
@@ -330,13 +329,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.4)
   # ADD_EXECUTABLE)
   set_property(
     CACHE ENABLE_SANITIZER
-    PROPERTY
-      STRINGS
-      none
-      address
-      memory
-      thread
-      undefined
+    PROPERTY STRINGS none address memory thread undefined
   )
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
     add_compile_options(-fsanitize=${ENABLE_SANITIZER})
@@ -483,16 +476,17 @@ endif (QT_ANDROID)
 # Installation directory setup
 #
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-    if (EXISTS "/usr/lib64")
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
-    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
-    else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")
-    endif ()
-    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
-        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
-    )
+  if (EXISTS "/usr/lib64")
+    set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+  elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
+    set(_LIBDIRS
+        "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
+  else ()
+    set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")
+  endif ()
+  set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
+      CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
+  )
 endif ()
 
 
@@ -538,7 +532,7 @@ if (OCPN_CI_BUILD)
   endif ()
   set(VERSION_TAIL "+${COMMIT}")
   if (NOT "${BUILD_NUMBER}" STREQUAL "")
-      set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
+    set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
   endif ()
   set(VERSION_DATE "${DATE}")
 endif (OCPN_CI_BUILD)
@@ -552,10 +546,7 @@ message(STATUS "Building version ${PACKAGE_VERSION}")
 # Detect the Apple Version of the build machine
 if (APPLE)
   exec_program(uname ARGS -v OUTPUT_VARIABLE DARWIN_VERSION)
-  string(
-    REGEX
-      MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION}
-  )
+  string( REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
   message(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
   if (DARWIN_VERSION GREATER 11)
     set(APPLE_MODERN 1 INTERNAL)
@@ -568,8 +559,6 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 #
 # Bundled data: docs, tcdata
 #
-
-
 if (OCPN_BUNDLE_DOCS)
   message(STATUS "*** Package will include documentation ***")
 else (OCPN_BUNDLE_DOCS)
@@ -589,11 +578,11 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
   add_definitions(-DocpnARM)
   if (ARCH STREQUAL "armhf")
     add_definitions(-DocpnARMHF)
-  endif (ARCH STREQUAL armhf)
-endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+  endif ()
+endif ()
 
-IF(DEFINED _wx_selected_config)
-  IF(_wx_selected_config MATCHES "androideabi-qt")
+if(DEFINED _wx_selected_config)
+  if(_wx_selected_config MATCHES "androideabi-qt")
     #MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
     #MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
     #ADD_DEFINITIONS(-DocpnUSE_GLES)
@@ -608,8 +597,8 @@ IF(DEFINED _wx_selected_config)
     #ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
     #ADD_DEFINITIONS(-DUSE_GLSL)
     INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/libs/glshim/include/GLES )
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
-ENDIF(DEFINED _wx_selected_config)
+  endif (_wx_selected_config MATCHES "androideabi-qt")
+endif (DEFINED _wx_selected_config)
 
 if (APPLE)
   # Bundle all of wxWidgets as a courtesy for plugins, see #2153
@@ -664,7 +653,6 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   else (OPENGL_FOUND)
     message(STATUS "OpenGL not found...")
   endif (OPENGL_FOUND)
-
 endif ()
 
 if (NOT QT_ANDROID)
@@ -1152,14 +1140,14 @@ endif ()
 
 find_package(LIBUSB)
 if (LIBUSB_FOUND)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
-    set(HAVE_LIBUSB_10 1)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
+  set(HAVE_LIBUSB_10 1)
 endif ()
 
 find_package(PANGO)
 if (PANGO_FOUND)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
-    set(HAVE_PANGO 1)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
+  set(HAVE_PANGO 1)
 endif ()
 
 # Some of these "find_path" macros generate "false-positives" under Windows, especially if mingw is installed
@@ -1521,19 +1509,19 @@ if (QT_ANDROID)
   target_link_libraries(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
 elseif ( APPLE )
-    if (OCPN_USE_SYSTEM_LIBARCHIVE)
-        list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-        find_package(LibArchive REQUIRED)
-        target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
-        target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-        # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
-        set(LIBARCHIVE_COMMENT_START "<!--")
-        set(LIBARCHIVE_COMMENT_END "-->")
-    else()
-        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
-        target_include_directories(${PACKAGE_NAME} PRIVATE /opt/local/include)
-        target_link_libraries(${PACKAGE_NAME} PRIVATE /opt/local/lib/libarchive.dylib)
-    endif()
+  if (OCPN_USE_SYSTEM_LIBARCHIVE)
+    list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+    find_package(LibArchive REQUIRED)
+    target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+    # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
+    set(LIBARCHIVE_COMMENT_START "<!--")
+    set(LIBARCHIVE_COMMENT_END "-->")
+  else()
+    #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
+    target_include_directories(${PACKAGE_NAME} PRIVATE /opt/local/include)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE /opt/local/lib/libarchive.dylib)
+  endif()
 else ()
   find_package(LibArchive REQUIRED)
   target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
@@ -1726,16 +1714,12 @@ endif ()
 
 if (CMAKE_HOST_WIN32)
   target_link_libraries(
-    ${PACKAGE_NAME}
-    PRIVATE setupapi.lib "GLU_static" psapi.lib
-    # glu32.lib
+    ${PACKAGE_NAME} PRIVATE setupapi.lib "GLU_static" psapi.lib # glu32.lib
   )
-
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
     target_link_libraries(${PACKAGE_NAME} PRIVATE gdiplus.lib)
   endif ()
-
 endif (CMAKE_HOST_WIN32)
 
 if (MINGW)
@@ -1762,12 +1746,12 @@ if (MSVC)
 endif ()
 
 if (OCPN_BUNDLE_GSHHS)
-    set(
-        gshhs
-        data/gshhs/poly-c-1.dat
-        data/gshhs/wdb_borders_c.b
-        data/gshhs/wdb_rivers_c.b
-    )
+  set(
+    gshhs
+    data/gshhs/poly-c-1.dat
+    data/gshhs/wdb_borders_c.b
+    data/gshhs/wdb_rivers_c.b
+  )
 endif (OCPN_BUNDLE_GSHHS)
 
 # Various data files
@@ -1861,45 +1845,38 @@ if (APPLE)
   )
   set_source_files_properties(
     ${s57data}
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport/s57data
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data
   )
   if (OCPN_BUNDLE_TCDATA)
     set_source_files_properties(
       ${tcData}
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
+      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
     )
   endif (OCPN_BUNDLE_TCDATA)
 
   set_source_files_properties(
     data/license.html
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/authors.html
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/opencpn.png
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/CoC-909_2013-InlandECDIS_20170308.pdf
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
   install(
       FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
@@ -1937,8 +1914,7 @@ if (APPLE)
   foreach (_currentConfigFile ${CONFIG_FILES})
     set_source_files_properties(
       ${_currentConfigFile}
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION SharedSupport/configs
+      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/configs
     )
   endforeach (_currentConfigFile)
 
@@ -2013,15 +1989,13 @@ if (APPLE)
 
   set_source_files_properties(
     data/doc/help_web.html
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport/doc
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc
   )
 
   if (OCPN_BUNDLE_DOCS )
     set_source_files_properties(
       data/doc/help_en_US.html
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION SharedSupport/doc
+      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc
     )
 
     file(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
@@ -2040,8 +2014,7 @@ if (APPLE)
       # Destination: "  ${_location})
       set_source_files_properties(
         ${_currentWikiDocFile}
-        PROPERTIES
-          MACOSX_PACKAGE_LOCATION ${_location}
+        PROPERTIES MACOSX_PACKAGE_LOCATION ${_location}
       )
     endforeach (_currentWikiDocFile)
 
@@ -2049,14 +2022,12 @@ if (APPLE)
 
   set_source_files_properties(
     buildosx/opencpn.icns
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION Resources
+    PROPERTIES MACOSX_PACKAGE_LOCATION Resources
   )
 
   set_source_files_properties(
     buildosx/MainMenu.xib
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION Resources/English.lproj
+    PROPERTIES MACOSX_PACKAGE_LOCATION Resources/English.lproj
   )
 
   # These variables get substituted into the Info.plist template file at build
@@ -2401,22 +2372,18 @@ endif (GETTEXT_MSGFMT_EXECUTABLE)
 # Install wxstd.mo in Windows
 #
 if (WIN32)
-
   file(
     GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo
   )
-
   foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
     get_filename_component(_mlang ${_absFile} NAME_WE)
-
     install(
         FILES ${_current_wx_mofile}
         DESTINATION ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
         RENAME wxstd.mo
-          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-      )
-
+        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+    )
   endforeach (_current_wx_mofile)
 
 endif (WIN32)
@@ -2429,7 +2396,6 @@ if (APPLE)
   file(
     GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildosx/wxWidgets/locale/*.mo
   )
-
   foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
     get_filename_component(_mlang ${_absFile} NAME_WE)
@@ -2786,9 +2752,10 @@ install(CODE "
   COMPONENT Runtime
 )
 
-  #Build standard MacOS installer package
-  #  Copy a few generic files so the Packages installer builder can find them relative to ${CMAKE_CURRENT_BINARY_DIR}
-  #  This avoids absolute paths in the XXX.pkgproj file
+  # Build standard MacOS installer package
+  # Copy a few generic files so the Packages installer builder can find them
+  # relative to ${CMAKE_CURRENT_BINARY_DIR}
+  # This avoids absolute paths in the XXX.pkgproj file
 
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/OpenCPN.pkgproj.in
