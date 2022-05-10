@@ -1266,7 +1266,7 @@ void glChartCanvas::SetupOpenGL() {
   msg += m_GLSLversion;
   wxLogMessage(msg);
 
-#ifndef __OCPN__ANDROID__
+#if not defined(__OCPN__ANDROID__) && not defined(__WXOSX__)
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
