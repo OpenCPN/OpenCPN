@@ -143,6 +143,7 @@ AIS_Target_Data::AIS_Target_Data() {
   b_NoTrack = false;
   b_OwnShip = false;
   b_PersistTrack = false;
+  b_mPropPersistTrack = false;
   b_in_ack_timeout = false;
 
   b_active = false;
