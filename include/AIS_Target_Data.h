@@ -113,7 +113,8 @@ public:
   //                     MMSI Properties
   bool b_NoTrack;
   bool b_OwnShip;
-  bool b_PersistTrack;
+  bool b_PersistTrack; // For AIS target query
+  bool b_mPropPersistTrack; // For mmsi_prop
 
   int m_utc_hour;
   int m_utc_min;

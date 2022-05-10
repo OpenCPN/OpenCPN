@@ -113,7 +113,7 @@ private:
   void getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
                     AIS_Target_Data *&pStaleTarget, bool &bnewtarget,
                     int &last_report_ticks, wxDateTime &now);
-
+  void getMMSIProperties(AIS_Target_Data *&pTargetData);
   void handleUpdate(AIS_Target_Data *pTargetData, bool bnewtarget,
                     wxJSONValue &update);
   void updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,

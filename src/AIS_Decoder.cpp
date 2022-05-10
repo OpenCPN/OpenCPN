@@ -407,6 +407,15 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event) {
   if (mmsi == 0) {
     return;  // Only handle ships with MMSI for now
   }
+  // Stop here if the target shall be ignored
+  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
+      MMSIProperties * props = g_MMSI_Props_Array[i];
+      if (props->m_bignore) {
+        return;
+      }
+    }
+  }
 #if 0
     wxString dbg;
     wxJSONWriter writer;
@@ -424,6 +433,7 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event) {
   getAISTarget(mmsi, pTargetData, pStaleTarget, bnewtarget, last_report_ticks,
                now);
   if (pTargetData) {
+    getMMSIProperties(pTargetData);
     if (root.HasMember(_T("updates")) && root[_T("updates")].IsArray()) {
       wxJSONValue &updates = root[_T("updates")];
       for (int i = 0; i < updates.Size(); ++i) {
@@ -1409,9 +1419,16 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
       if (0 == m_persistent_tracks.count(mmsi)) {
         // Normal target
         pTargetData->b_PersistTrack = false;
+        // Or first decode for this target
+        for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+          if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
+            MMSIProperties *props = g_MMSI_Props_Array[i];
+            pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
+            break;
+          }
+        }
       } else {
-        // The track persistency enabled in the query window
-        pTargetData->b_PersistTrack = true;
+        // The track persistency enabled in the query window or mmsi-props
       }
       pTargetData->b_NoTrack = false;
     }
@@ -1506,6 +1523,23 @@ void AIS_Decoder::getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
   // Delete the stale AIS Target selectable point
   if (pStaleTarget)
     pSelectAIS->DeleteSelectablePoint((void *)mmsi, SELTYPE_AISTARGET);
+}
+
+void AIS_Decoder::getMMSIProperties(AIS_Target_Data *&pTargetData) {
+  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
+      MMSIProperties * props = g_MMSI_Props_Array[i];
+      pTargetData->b_isFollower = props->m_bFollower;
+      pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
+      if (TRACKTYPE_NEVER == props->TrackType) {
+        pTargetData->b_show_track = false;
+      }
+      else if (TRACKTYPE_ALWAYS == props->TrackType) {
+        pTargetData->b_show_track = true;
+      }
+      break;
+    }
+  }
 }
 
 AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
@@ -2513,7 +2547,7 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
 
   ptarget->m_ptrack.push_back(ptrackpoint);
 
-  if (ptarget->b_PersistTrack) {
+  if (ptarget->b_PersistTrack || ptarget->b_mPropPersistTrack) {
     Track *t;
     if (0 == m_persistent_tracks.count(ptarget->MMSI)) {
       t = new Track();
@@ -2540,26 +2574,55 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
     //        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
     //                pRouteManagerDialog->UpdateTrkListCtrl();
   }
+  else {
 
-  //    Walk the list, removing any track points that are older than the
-  //    stipulated time
+    //    Walk the list, removing any track points that are older than the
+    //    stipulated time
 
-  time_t test_time =
-      wxDateTime::Now().GetTicks() - (time_t)(g_AISShowTracks_Mins * 60);
+    time_t test_time =
+      wxDateTime::Now().GetTicks() - (time_t)( g_AISShowTracks_Mins * 60 );
 
-  ptarget->m_ptrack.erase(
+    ptarget->m_ptrack.erase(
       std::remove_if(ptarget->m_ptrack.begin(), ptarget->m_ptrack.end(),
                      [=](const AISTargetTrackPoint &track) {
-                       return track.m_time < test_time;
-                     }),
+      return track.m_time < test_time;
+    }),
       ptarget->m_ptrack.end());
+  }
 }
 
 void AIS_Decoder::DeletePersistentTrack(Track *track) {
   for (std::map<int, Track *>::iterator iterator = m_persistent_tracks.begin();
        iterator != m_persistent_tracks.end(); iterator++) {
     if (iterator->second == track) {
+      int mmsi = iterator->first;
       m_persistent_tracks.erase(iterator);
+      //Last tracks for this target?
+      if (0 == m_persistent_tracks.count(mmsi)) {
+        for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+          if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
+            MMSIProperties *props = g_MMSI_Props_Array[i];
+            if (props->m_bPersistentTrack) {
+              // Ask if mmsi props should be changed.
+              // Avoid creation of a new track while messaging
+              if (AIS_Target_Data *td = Get_Target_Data_From_MMSI(mmsi)) {
+                props->m_bPersistentTrack = false;
+                td->b_mPropPersistTrack = false;
+              }
+              if (wxID_NO ==
+                  OCPNMessageBox(
+                    NULL,
+                    _("This AIS target has Persistent tracking selected by MMSI properties\n"
+                      "A Persistent track recording will therefore be restarted for this target.\n\n"
+                      "Do you instead want to stop Persistent tracking for this target?"),
+                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60)) {
+                props->m_bPersistentTrack = true;
+              }              
+            }
+            break;
+          }
+        }
+      }
       break;
     }
   }
