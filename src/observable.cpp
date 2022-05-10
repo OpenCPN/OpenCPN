@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <atomic>
 #include <sstream>
+#include <unordered_map>
 
 #include <wx/log.h>
 
