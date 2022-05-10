@@ -61,8 +61,8 @@ private:
 /**  The observable notify/listen basic nuts and bolts.  */
 class ObservedVar {
 public:
-  ObservedVar(const std::string& key)
-      : singleton(SingletonVar::getInstance(key)) {}
+  ObservedVar(const std::string& _key)
+      : key(_key), singleton(SingletonVar::getInstance(_key)) {}
 
   /** Notify all listeners about variable change. */
   virtual const void notify();
@@ -70,11 +70,11 @@ public:
   /** Remove window from list of listeners, return true if listener exists */
   bool unlisten(wxEvtHandler* listener);
 
+  /** The key used to create and clone. */
+  const std::string key;
 
-  /** Get listening object which unlisten() on destruction. */
-  typedef std::unique_ptr<ObservedVarListener> Listener;
-  Listener get_listener(wxEvtHandler* handler, wxEventType ev);
-
+  /** Shorthand for ObservedVarListener(this, handler, event_type) CTOR: */
+  ObservedVarListener get_listener(wxEvtHandler* handler, wxEventType ev);
 
 protected:
   /**
@@ -90,27 +90,54 @@ private:
 
   SingletonVar* const singleton;
 
+
   friend class ObservedVarListener;
 };
 
 
 /**
  *  Keeps listening over it's lifespan, removes itself on destruction.
- *  Basically private, only available through ObservedVar::get_listener().
  */
 class ObservedVarListener final {
 public:
-  ~ObservedVarListener() { var.unlisten(listener); };
+
+  /** Default constructor, does not listen to anything. */
+  ObservedVarListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
+
+  /** Set object to send wxEventType ev to handler on variable changes. */
+  ObservedVarListener(ObservedVar* v, wxEvtHandler* w, wxEventType ev)
+    : key(v->key), listener(w), ev_type(ev) { listen(); }
+
+  ~ObservedVarListener() { unlisten(); };
+
+  void operator=(const ObservedVarListener& other) {
+    unlisten();
+    listener = other.listener;
+    key = other.key;
+    ev_type = other.ev_type;
+    listen();
+  }
 
 private:
-  /** Set object to send ev_type to window on variable changes. */
-  ObservedVarListener(ObservedVar v, wxEvtHandler* w, wxEventType ev)
-    : var(v), listener(w)  { var.listen(listener, ev); }
+  void listen() {
+    if (key != "") {
+      assert(listener);
+      ObservedVar var(key);
+      var.listen(listener, ev_type);
+    }
+  }
 
-  ObservedVar var;
+  void unlisten() {
+    if (key != "") {
+      assert(listener);
+      ObservedVar var(key);
+      var.unlisten(listener);
+    }
+  }
+
+  std::string key;
   wxEvtHandler* listener;
-
-  friend class ObservedVar;
+  wxEventType ev_type;
 };
 
 
@@ -191,7 +218,7 @@ private:
  *        ...
  *      }
  *    private:
- *      ObservedVar::Listener expert_listener;
+ *      ObservedVarListener expert_listener;
  *      ...
  *    }
  *
@@ -246,7 +273,7 @@ private:
  *        ...
  *      }
  *    private:
- *      ObservedVar::Listener compat_os_listener;
+ *      ObservedVarListener compat_os_listener;
  *      ...
  *    }
  */

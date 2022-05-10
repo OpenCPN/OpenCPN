@@ -46,6 +46,8 @@ std::istream& operator>>(std::istream& input, wxString& ws) {
   return input;
 }
 
+/* SingletonVar implementation. */
+
 SingletonVar* SingletonVar::getInstance(const std::string& key) {
   static std::unordered_map<std::string, SingletonVar*> instances;
 
@@ -93,10 +95,10 @@ const void ObservedVar::notify(const std::string& s, void* client_data) {
 
 const void ObservedVar::notify() { notify("", 0); }
 
-using Listener = ObservedVar::Listener;
+using Listener = ObservedVarListener;
 
 Listener ObservedVar::get_listener(wxEvtHandler* eh, wxEventType ev) {
-  return Listener(new ObservedVarListener(*this, eh, ev));
+  return Listener(this, eh, ev);
 }
 
 
@@ -146,7 +148,7 @@ void ConfigVar<T>::set(const T& arg) {
   ObservedVar::notify();
 }
 
-/* Explicitly instantiate the types we support. */
+/* Explicitly instantiate the ConfigVar types supported. */
 template class ConfigVar<bool>;
 template class ConfigVar<double>;
 template class ConfigVar<int>;
