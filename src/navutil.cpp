@@ -391,7 +391,7 @@ extern bool g_bresponsive;
 extern bool g_bGLexpert;
 
 extern int g_SENC_LOD_pixels;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern std::vector<std::unique_ptr<MMSIProperties>> g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -1505,15 +1505,14 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   SetPath(_T ( "/MMSIProperties" ));
   int iPMax = GetNumberOfEntries();
   if (iPMax) {
-    g_MMSI_Props_Array.Empty();
+    g_MMSI_Props_Array.clear();
     wxString str, val;
     long dummy;
     bool bCont = pConfig->GetFirstEntry(str, dummy);
     while (bCont) {
       pConfig->Read(str, &val);  // Get an entry
 
-      MMSIProperties *pProps = new MMSIProperties(val);
-      g_MMSI_Props_Array.Add(pProps);
+      g_MMSI_Props_Array.push_back(std::make_unique<MMSIProperties>(val));
 
       bCont = pConfig->GetNextEntry(str, dummy);
     }
@@ -2780,7 +2779,7 @@ void MyConfig::UpdateSettings() {
 
   DeleteGroup(_T ( "/MMSIProperties" ));
   SetPath(_T ( "/MMSIProperties" ));
-  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+  for (unsigned int i = 0; i < g_MMSI_Props_Array.size(); i++) {
     wxString p;
     p.Printf(_T("Props%d"), i);
     Write(p, g_MMSI_Props_Array[i]->Serialize());

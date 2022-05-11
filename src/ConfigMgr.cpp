@@ -325,7 +325,7 @@ extern bool g_bresponsive;
 extern bool g_bGLexpert;
 
 extern int g_SENC_LOD_pixels;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern std::vector<std::unique_ptr<MMSIProperties>> g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -1846,9 +1846,8 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
       conf->Read(str, &val);  // Get an entry
 
       bool bfound = false;
-      for (unsigned int j = 0; j < g_MMSI_Props_Array.GetCount(); j++) {
-        MMSIProperties *pProps = g_MMSI_Props_Array.Item(j);
-        if (pProps->Serialize().IsSameAs(val)) {
+      for (const auto &props : g_MMSI_Props_Array) {
+        if (props->Serialize().IsSameAs(val)) {
           bfound = true;
           break;
         }
