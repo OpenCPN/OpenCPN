@@ -866,7 +866,7 @@ void OCPNCheckedListCtrl::Clear() {
 // Helper for conditional file name separator
 void appendOSDirSlash(wxString* pString);
 
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern std::vector<std::unique_ptr<MMSIProperties>> g_MMSI_Props_Array;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ConfigCreateDialog
@@ -1147,7 +1147,7 @@ MMSIListCtrl::~MMSIListCtrl(void) {}
 
 wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
-  MMSIProperties* props = g_MMSI_Props_Array[item];
+  const auto& props = g_MMSI_Props_Array[item];
 
   if (!props) return ret;
   switch (column) {
@@ -1196,19 +1196,16 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
 void MMSIListCtrl::OnListItemClick(wxListEvent& event) {}
 
 void MMSIListCtrl::OnListItemActivated(wxListEvent& event) {
-  MMSIProperties* props = g_MMSI_Props_Array.Item(event.GetIndex());
-  MMSIProperties* props_new = new MMSIProperties(*props);
+  const auto& props = g_MMSI_Props_Array.at(event.GetIndex());
+  auto props_new = std::make_unique<MMSIProperties>(*props);
 
-  MMSIEditDialog* pd =
-      new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
-                         wxDefaultPosition, wxSize(200, 200));
+  MMSIEditDialog* pd = new MMSIEditDialog(props_new.get(), m_parent, -1,
+                                          _("Edit MMSI Properties"),
+                                          wxDefaultPosition, wxSize(200, 200));
 
   if (pd->ShowModal() == wxID_OK) {
-    g_MMSI_Props_Array.RemoveAt(event.GetIndex());
-    delete props;
-    g_MMSI_Props_Array.Insert(props_new, event.GetIndex());
-  } else
-    delete props_new;
+    g_MMSI_Props_Array[event.GetIndex()] = std::move(props_new);
+  }
 
   pd->Destroy();
 }
@@ -1233,37 +1230,32 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
   wxPoint p = ScreenToClient(wxGetMousePosition());
   PopupMenu(menu, p.x, p.y);
 
-  SetItemCount(g_MMSI_Props_Array.GetCount());
+  SetItemCount(g_MMSI_Props_Array.size());
   Refresh(TRUE);
 }
 
 void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
   int context_item = m_context_item;
-  MMSIProperties* props = g_MMSI_Props_Array[context_item];
+  const auto& props = g_MMSI_Props_Array[context_item];
 
   if (!props) return;
 
   switch (event.GetId()) {
     case ID_DEF_MENU_MMSI_EDIT: {
-      MMSIProperties* props_new = new MMSIProperties(*props);
-      MMSIEditDialog* pd =
-          new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
-                             wxDefaultPosition, wxSize(200, 200));
+      auto props_new = std::make_unique<MMSIProperties>(*props);
+      MMSIEditDialog* pd = new MMSIEditDialog(
+          props_new.get(), m_parent, -1, _("Edit MMSI Properties"),
+          wxDefaultPosition, wxSize(200, 200));
 
       if (pd->ShowModal() == wxID_OK) {
-        g_MMSI_Props_Array.RemoveAt(context_item);
-        delete props;
+        g_MMSI_Props_Array[context_item] = std::move(props_new);
         props_new->m_ShipName = GetShipNameFromFile(props_new->MMSI);
-        g_MMSI_Props_Array.Insert(props_new, context_item);
-      } else {
-        delete props_new;
       }
       pd->Destroy();
       break;
     }
     case ID_DEF_MENU_MMSI_DELETE:
-      g_MMSI_Props_Array.RemoveAt(context_item);
-      delete props;
+      g_MMSI_Props_Array.erase(g_MMSI_Props_Array.begin() + context_item);
       break;
   }
 }
@@ -1381,20 +1373,20 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
 MMSI_Props_Panel::~MMSI_Props_Panel(void) {}
 
 void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
-  MMSIProperties* props = new MMSIProperties(-1);
+  std::unique_ptr<MMSIProperties> props = std::make_unique<MMSIProperties>(-1);
 
   MMSIEditDialog* pd =
-      new MMSIEditDialog(props, m_parent, -1, _("Add MMSI Properties"),
+      new MMSIEditDialog(props.get(), m_parent, -1, _("Add MMSI Properties"),
                          wxDefaultPosition, wxSize(200, 200));
 
   DimeControl(pd);
-  pd->ShowWindowModalThenDo([this, pd, props](int retcode) {
-    if (retcode == wxID_OK) {
-      g_MMSI_Props_Array.Add(props);
+  g_MMSI_Props_Array.push_back(std::move(props));
+  pd->ShowWindowModalThenDo([this](int retcode) {
+    if (retcode != wxID_OK) {
+      UpdateMMSIList();
     } else {
-      delete props;
+      g_MMSI_Props_Array.pop_back();
     }
-    UpdateMMSIList();
   });
 }
 
@@ -1407,12 +1399,12 @@ void MMSI_Props_Panel::UpdateMMSIList(void) {
   int selMMSI = wxNOT_FOUND;
   if (selItemID != wxNOT_FOUND) selMMSI = g_MMSI_Props_Array[selItemID]->MMSI;
 
-  m_pListCtrlMMSI->SetItemCount(g_MMSI_Props_Array.GetCount());
+  m_pListCtrlMMSI->SetItemCount(g_MMSI_Props_Array.size());
 
   // Restore selected item
   long item_sel = wxNOT_FOUND;
   if (selItemID != wxNOT_FOUND && selMMSI != wxNOT_FOUND) {
-    for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    for (unsigned int i = 0; i < g_MMSI_Props_Array.size(); i++) {
       if (g_MMSI_Props_Array[i]->MMSI == selMMSI) {
         item_sel = i;
         break;
@@ -1420,7 +1412,7 @@ void MMSI_Props_Panel::UpdateMMSIList(void) {
     }
   }
 
-  if (g_MMSI_Props_Array.GetCount() > 0)
+  if (g_MMSI_Props_Array.size() > 0)
     m_pListCtrlMMSI->SetItemState(item_sel,
                                   wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
                                   wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
@@ -8689,9 +8681,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = g_bAISShowTracks;
         // Check for exceptions in MMSI properties
-        for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-          if (pAISTarget->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-            MMSIProperties *props = g_MMSI_Props_Array[i];
+        for (const auto& props : g_MMSI_Props_Array) {
+          if (pAISTarget->MMSI == props->MMSI) {
             if (TRACKTYPE_NEVER == props->TrackType) {
               pAISTarget->b_show_track = false;
               break;

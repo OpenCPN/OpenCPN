@@ -94,7 +94,7 @@ int g_ScaledNumWeightRange;
 int g_ScaledNumWeightSizeOfT;
 int g_ScaledSizeMinimal;
 
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern std::vector<std::unique_ptr<MMSIProperties>> g_MMSI_Props_Array;
 
 extern float g_ShipScaleFactorExp;
 
@@ -1775,9 +1775,8 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
   //  Check the Special MMSI Properties array
   bool b_noshow = false;
   bool b_forceshow = false;
-  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-    if (td->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-      MMSIProperties *props = g_MMSI_Props_Array[i];
+  for (const auto &props : g_MMSI_Props_Array) {
+    if (td->MMSI == props->MMSI) {
       if (TRACKTYPE_NEVER == props->TrackType) {
         b_noshow = true;
         break;
