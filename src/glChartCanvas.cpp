@@ -1266,7 +1266,8 @@ void glChartCanvas::SetupOpenGL() {
   msg += m_GLSLversion;
   wxLogMessage(msg);
 
-#if not defined(__OCPN__ANDROID__) && not defined(__WXOSX__)
+#ifndef __OCPN__ANDROID__
+#ifndef __WXOSX__
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
@@ -1277,6 +1278,7 @@ void glChartCanvas::SetupOpenGL() {
   {
   printf("GLEW init success!n");
   }
+#endif
 #endif
 
   const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
