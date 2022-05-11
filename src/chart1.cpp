@@ -8972,6 +8972,7 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
   }
 
   //    Show gLat/gLon in StatusWindow0
+  //    And also update live ETA
 
   if (NULL != GetStatusBar()) {
     if (pos_valid) {
@@ -9010,6 +9011,13 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
 
     sogcog.Append(cogs);
     SetStatusText(sogcog, STAT_FIELD_SOGCOG);
+
+    // Also update Live ETA
+    // (even if the mouseEvent is not triggered)
+    double cursor_lat, cursor_lon;
+    GetPrimaryCanvas()->GetCursorLatLon( &cursor_lat, &cursor_lon );
+    GetPrimaryCanvas()->SetCursorStatus(cursor_lat, cursor_lon);
+
   }
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
