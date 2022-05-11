@@ -2036,7 +2036,11 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
 
     //    The cell is not in place, so go load it
     if (!bcell_is_in) {
-#ifndef __OCPN__ANDROID__
+
+// On MacOS the spinner is buggy
+// showing half a second every time you move the mouse... Better to disable it.
+//#ifndef __OCPN__ANDROID__
+#if !defined(__OCPN__ANDROID__) && !defined(__WXMAC__)
       OCPNPlatform::ShowBusySpinner();
 #endif
       int cell_index = vpcells[i];
