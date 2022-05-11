@@ -8970,7 +8970,6 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
   }
 
   //    Show gLat/gLon in StatusWindow0
-  //    And also update live ETA
 
   if (NULL != GetStatusBar()) {
     if (pos_valid) {
