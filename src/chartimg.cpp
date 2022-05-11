@@ -160,7 +160,7 @@ ChartBase::ChartBase() {
   m_pNoCOVRTable = NULL;
   m_pNoCOVRTablePoints = NULL;
 
-  m_EdDate.Set(1, wxDateTime::Jan, 2000);
+  m_EdDate = wxInvalidDateTime;
 
   m_lon_datum_adjust = 0.;
   m_lat_datum_adjust = 0.;
