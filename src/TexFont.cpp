@@ -27,6 +27,8 @@
 
 #include "dychart.h"
 #include "TexFont.h"
+#include "shaders.h"
+#include "linmath.h"
 
 
 TexFont::TexFont() {
