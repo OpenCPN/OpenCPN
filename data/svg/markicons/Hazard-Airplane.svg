@@ -1,15 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <g id="_307350128">
-   <path fill="black" d="M641 1050c15,-2 139,-52 169,-63 13,-5 44,-19 56,-20 4,34 -2,69 6,101 -12,9 -26,18 -40,27 -12,9 -29,18 -39,26l0 43c22,-5 93,-41 107,-41 13,0 85,36 108,40 0,-51 8,-37 -40,-68 -11,-7 -29,-22 -39,-26 3,-47 3,-59 5,-103 20,4 203,82 225,84l0 -53 -57 -44c-18,-16 -37,-29 -55,-44l-113 -88c-8,-15 8,-121 -10,-158 -6,-12 -11,-28 -28,-27 -13,8 -25,33 -27,52 -2,21 -2,88 -2,115 1,19 0,17 -11,26l-215 168 0 53z"/>
-   <circle fill="none" stroke="black" stroke-width="20" cx="900" cy="900" r="325"/>
-  </g>
-  <rect fill="none" width="1800" height="1800"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path d="M641 1050c15-2 139-52 169-63 13-5 44-19 56-20 4 34-2 69 6 101-12 9-26 18-40 27-12 9-29 18-39 26v43c22-5 93-41 107-41 13 0 85 36 108 40 0-51 8-37-40-68-11-7-29-22-39-26 3-47 3-59 5-103 20 4 203 82 225 84v-53l-57-44c-18-16-37-29-55-44l-113-88c-8-15 8-121-10-158-6-12-11-28-28-27-13 8-25 33-27 52-2 21-2 88-2 115 1 19 0 17-11 26L641 997v53z"/>
+    <circle fill="none" stroke="#000" stroke-width="20" cx="900" cy="900" r="325"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
 </svg>

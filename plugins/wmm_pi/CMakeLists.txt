@@ -80,8 +80,7 @@ endif ()
 
 if (NOT QT_ANDROID)
   target_link_libraries(
-    ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson ocpn::wxsvg
-                            ocpn::opencpn
+    ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson ocpn::opencpn
   )
 else (NOT QT_ANDROID)
   target_link_libraries(

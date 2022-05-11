@@ -1,17 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="none" points="0,0 1800,0 1800,1800 0,1800 "/>
-  <g id="_653177392">
-   <polygon fill="black" points="528,650 1272,650 1272,1150 528,1150 "/>
-   <polygon fill="white" points="570,685 1230,685 1230,1115 570,1115 "/>
-   <path fill="black" d="M1047 911c-3,-2 -3,-2 -5,-5 -1,-1 -1,-2 -2,-3 -2,-2 0,-1 -3,-2l-68 42c-6,4 -18,12 -23,14 -8,-6 -15,-15 -22,-23 -8,-7 -15,-15 -22,-23 -29,-31 -59,-61 -88,-92 -7,-8 -14,-15 -22,-23 -5,-5 -19,-18 -22,-24 -2,-1 0,0 -2,-1 0,-1 -1,-1 -1,-2 -2,-1 -2,-2 -4,-3 -3,3 -112,249 -120,268 -5,12 -13,27 -17,39l548 0c-4,-7 -11,-14 -16,-20l-48 -61c-5,-6 -62,-77 -63,-81z"/>
-   <path fill="black" d="M1073 717c38,0 68,30 68,67 0,38 -30,68 -68,68 -37,0 -67,-30 -67,-68 0,-37 30,-67 67,-67z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M528 650h744v500H528z"/>
+    <path fill="#fff" d="M570 685h660v430H570z"/>
+    <path d="M1047 911c-3-2-3-2-5-5-1-1-1-2-2-3-2-2 0-1-3-2l-68 42c-6 4-18 12-23 14-8-6-15-15-22-23-8-7-15-15-22-23-29-31-59-61-88-92-7-8-14-15-22-23-5-5-19-18-22-24l-2-1c0-1-1-1-1-2-2-1-2-2-4-3-3 3-112 249-120 268-5 12-13 27-17 39h548c-4-7-11-14-16-20l-48-61c-5-6-62-77-63-81zm26-194c38 0 68 30 68 67 0 38-30 68-68 68-37 0-67-30-67-68 0-37 30-67 67-67z"/>
 </svg>

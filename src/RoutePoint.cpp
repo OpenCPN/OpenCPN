@@ -40,6 +40,7 @@
 #include "Select.h"
 #include "gui_lib.h"
 #include "Route.h"
+#include "svg_utils.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -60,8 +61,6 @@ extern float g_ChartScaleFactorExp;
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;
 extern bool g_bOverruleScaMin;
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(RoutePointList);
@@ -355,14 +354,10 @@ void RoutePoint::EnableDragHandle(bool bEnable) {
       wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") +
                               wxFileName::GetPathSeparator();
 
-      wxImage iconSVG =
-          LoadSVGIcon(UserIconPath + _T("DragHandle.svg"), bm_size, bm_size);
-      if (iconSVG.IsOk())
-        m_dragIcon = wxBitmap(iconSVG);
-      else
-        m_dragIcon = *m_pbmIcon;  // Drag handle icon not found
+      m_dragIcon = LoadSVG(UserIconPath + _T("DragHandle.svg"), bm_size,
+                           bm_size, m_pbmIcon);
 
-        // build a texture
+      // build a texture
 #ifdef ocpnUSE_GL
       /* make rgba texture */
       if (m_dragIconTexture == 0) {
@@ -373,7 +368,7 @@ void RoutePoint::EnableDragHandle(bool bEnable) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-        wxImage image = iconSVG;
+        wxImage image = m_dragIcon.ConvertToImage();
         int w = image.GetWidth(), h = image.GetHeight();
 
         m_dragIconTextureWidth = NextPow2(w);
@@ -414,7 +409,7 @@ void RoutePoint::EnableDragHandle(bool bEnable) {
 #endif
 
       // set the drawing metrics
-      if (iconSVG.IsOk()) {
+      if (m_dragIcon.IsOk()) {
         m_drag_line_length_man = bm_size;
         m_drag_icon_offset = bm_size;
       } else {
@@ -786,7 +781,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     pbm = m_pbmIcon;
 
   //  If icon is corrupt, there is really nothing else to do...
-  if (!pbm->IsOk()) return;
+  if (!pbm || !pbm->IsOk()) return;
 
   int sx2 = pbm->GetWidth() / 2;
   int sy2 = pbm->GetHeight() / 2;
@@ -988,19 +983,19 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       sdc.GetTextExtent(m_MarkName, &w, &h, NULL, NULL, m_pMarkFont);
 
       /* create bitmap of appropriate size and select it */
-      wxBitmap bmp( w, h );
+      wxBitmap bmp(w, h);
       wxMemoryDC temp_dc;
-      temp_dc.SelectObject( bmp );
+      temp_dc.SelectObject(bmp);
 
       /* fill bitmap with black */
-      temp_dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
+      temp_dc.SetBackground(wxBrush(wxColour(0, 0, 0)));
       temp_dc.Clear();
 
       /* draw the text white */
-      temp_dc.SetFont( *m_pMarkFont );
-      temp_dc.SetTextForeground( wxColour( 255, 255, 255 ) );
-      temp_dc.DrawText( m_MarkName, 0, 0 );
-      temp_dc.SelectObject( wxNullBitmap );
+      temp_dc.SetFont(*m_pMarkFont);
+      temp_dc.SetTextForeground(wxColour(255, 255, 255));
+      temp_dc.DrawText(m_MarkName, 0, 0);
+      temp_dc.SelectObject(wxNullBitmap);
 
       /* use the data in the bitmap for alpha channel,
        and set the color to text foreground */
@@ -1009,37 +1004,38 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       unsigned char *data = new unsigned char[w * h * 4];
       unsigned char *im = image.GetData();
 
-
-      if(im){
-          unsigned int r = m_FontColor.Red();
-          unsigned int g = m_FontColor.Green();
-          unsigned int b = m_FontColor.Blue();
-          for( int i = 0; i < h; i++ ){
-              for(int j=0 ; j < w ; j++){
-                  unsigned int index = ((i*w) + j) * 4;
-                  data[index] = r;
-                  data[index+1] = g;
-                  data[index+2] = b;
-                  data[index+3] = im[((i*w) + j) * 3];
-              }
+      if (im) {
+        unsigned int r = m_FontColor.Red();
+        unsigned int g = m_FontColor.Green();
+        unsigned int b = m_FontColor.Blue();
+        for (int i = 0; i < h; i++) {
+          for (int j = 0; j < w; j++) {
+            unsigned int index = ((i * w) + j) * 4;
+            data[index] = r;
+            data[index + 1] = g;
+            data[index + 2] = b;
+            data[index + 3] = im[((i * w) + j) * 3];
           }
+        }
       }
 
       glGenTextures(1, &m_iTextTexture);
 
       glBindTexture(GL_TEXTURE_2D, m_iTextTexture);
 
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
       m_iTextTextureWidth = NextPow2(w);
       m_iTextTextureHeight = NextPow2(h);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_iTextTextureWidth, m_iTextTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_iTextTextureWidth,
+                   m_iTextTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
+                      data);
 
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
-      glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 #endif
     }

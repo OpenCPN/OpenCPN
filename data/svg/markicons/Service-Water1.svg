@@ -1,18 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_486498512">
-   <circle fill="#0C85CA" cx="900" cy="900" r="370"/>
-   <g>
-    <path fill="#FEFEFE" d="M659 694c2,-28 31,-45 57,-21 32,1 65,1 97,1 13,-19 41,-19 51,0 29,0 58,0 88,0 21,-26 57,-9 57,17 0,27 -32,47 -57,21 -30,0 -59,0 -88,0 -3,3 -6,5 -9,8 0,7 0,14 0,21 12,0 25,0 38,0 12,0 18,7 19,16 0,24 1,47 2,71 37,1 73,1 110,1 42,0 75,33 75,64 1,22 1,44 1,66 17,3 17,32 0,32 -37,1 -79,0 -116,1 -15,-1 -20,-25 -7,-30 0,-15 -4,-30 -22,-30 -17,0 -34,0 -52,0 -29,54 -106,51 -127,0 -48,0 -96,0 -144,0 0,-34 0,-69 0,-103 43,0 86,0 129,0 1,-23 1,-46 2,-68 0,-10 9,-20 23,-20 12,0 24,0 37,0 0,-7 0,-14 0,-21 -3,-3 -6,-5 -9,-8 -33,0 -66,0 -98,0 -19,23 -56,11 -57,-18z"/>
-    <path fill="#FEFEFE" d="M1040 1201c-76,1 -69,-75 0,-189 68,114 75,190 0,189z"/>
-   </g>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <circle fill="#0C85CA" cx="900" cy="900" r="370"/>
+    <path d="M659 694c2-28 31-45 57-21 32 1 65 1 97 1 13-19 41-19 51 0h88c21-26 57-9 57 17 0 27-32 47-57 21h-88c-3 3-6 5-9 8v21h38c12 0 18 7 19 16 0 24 1 47 2 71 37 1 73 1 110 1 42 0 75 33 75 64 1 22 1 44 1 66 17 3 17 32 0 32-37 1-79 0-116 1-15-1-20-25-7-30 0-15-4-30-22-30h-52c-29 54-106 51-127 0H632V829h129c1-23 1-46 2-68 0-10 9-20 23-20h37v-21c-3-3-6-5-9-8h-98c-19 23-56 11-57-18zm381 507c-76 1-69-75 0-189 68 114 75 190 0 189z" fill="#FEFEFE"/>
 </svg>

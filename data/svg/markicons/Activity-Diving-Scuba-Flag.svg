@@ -1,15 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_348950384">
-   <rect fill="red" x="653" y="750" width="495" height="300"/>
-   <polygon fill="white" points="707,750 1147,1017 1147,1050 1093,1050 653,783 653,750 "/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="red" d="M653 750h495v300H653z"/>
+    <path fill="#fff" d="m707 750 440 267v33h-54L653 783v-33z"/>
 </svg>

@@ -1,48 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-    <radialGradient id="id0" gradientUnits="userSpaceOnUse" cx="899.99" cy="900" r="370.32" fx="899.99" fy="900">
-     <stop offset="0" stop-color="#CC0000"/>
-     <stop offset="0.431373" stop-color="#CC0000"/>
-     <stop offset="0.631373" stop-color="red"/>
-     <stop offset="0.729412" stop-color="#CC0000"/>
-     <stop offset="1" stop-color="#CF0000"/>
-    </radialGradient>
-    <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="907.66" y1="529.11" x2="892.21" y2="705.81">
-     <stop offset="0" stop-color="#CCCCCC"/>
-     <stop offset="0.278431" stop-color="white"/>
-     <stop offset="1" stop-color="#CCCCCC"/>
-    </linearGradient>
-    <linearGradient id="id2" gradientUnits="userSpaceOnUse" x1="907.66" y1="1270.88" x2="892.21" y2="1094.18">
-     <stop offset="0" stop-color="#CCCCCC"/>
-     <stop offset="0.278431" stop-color="white"/>
-     <stop offset="1" stop-color="#CCCCCC"/>
-    </linearGradient>
-    <linearGradient id="id3" gradientUnits="userSpaceOnUse" x1="527.44" y1="892.18" x2="705.8" y2="907.78">
-     <stop offset="0" stop-color="#CCCCCC"/>
-     <stop offset="0.278431" stop-color="white"/>
-     <stop offset="1" stop-color="#CCCCCC"/>
-    </linearGradient>
-    <linearGradient id="id4" gradientUnits="userSpaceOnUse" x1="1272.55" y1="907.78" x2="1094.21" y2="892.18">
-     <stop offset="0" stop-color="#CCCCCC"/>
-     <stop offset="0.278431" stop-color="white"/>
-     <stop offset="1" stop-color="#CCCCCC"/>
-    </linearGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_434053232">
-   <path fill="url(#id0)" d="M638 638c145,-144 379,-144 524,0 144,145 144,379 0,524 -145,144 -379,144 -524,0 -144,-145 -144,-379 0,-524zm123 123c77,-77 201,-77 278,0 77,77 77,201 0,278 -77,77 -201,77 -278,0 -77,-77 -77,-201 0,-278z"/>
-   <path fill="url(#id1)" d="M930 531l0 175c-20,-2 -39,-2 -60,0l0 -175c20,-2 40,-2 60,0z"/>
-   <path fill="black" d="M879 879c11,-12 30,-12 42,0 12,12 12,30 0,42 -12,12 -31,12 -42,0 -12,-12 -12,-30 0,-42z"/>
-   <path fill="url(#id2)" d="M930 1269l0 -175c-20,2 -39,2 -60,0l0 175c20,2 40,2 60,0z"/>
-   <path fill="url(#id3)" d="M531 870l175 0c-2,20 -2,39 0,60l-175 0c-2,-20 -2,-40 0,-60z"/>
-   <path fill="url(#id4)" d="M1269 930l-175 0c2,-20 2,-39 0,-60l175 0c2,20 2,40 0,60z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="907.66" y1="529.11" x2="892.21" y2="705.81">
+            <stop offset="0" stop-color="#CCC"/>
+            <stop offset=".278" stop-color="#fff"/>
+            <stop offset="1" stop-color="#CCC"/>
+        </linearGradient>
+        <linearGradient id="c" gradientUnits="userSpaceOnUse" x1="907.66" y1="1270.88" x2="892.21" y2="1094.18">
+            <stop offset="0" stop-color="#CCC"/>
+            <stop offset=".278" stop-color="#fff"/>
+            <stop offset="1" stop-color="#CCC"/>
+        </linearGradient>
+        <linearGradient id="d" gradientUnits="userSpaceOnUse" x1="527.44" y1="892.18" x2="705.8" y2="907.78">
+            <stop offset="0" stop-color="#CCC"/>
+            <stop offset=".278" stop-color="#fff"/>
+            <stop offset="1" stop-color="#CCC"/>
+        </linearGradient>
+        <linearGradient id="e" gradientUnits="userSpaceOnUse" x1="1272.55" y1="907.78" x2="1094.21" y2="892.18">
+            <stop offset="0" stop-color="#CCC"/>
+            <stop offset=".278" stop-color="#fff"/>
+            <stop offset="1" stop-color="#CCC"/>
+        </linearGradient>
+        <radialGradient id="a" gradientUnits="userSpaceOnUse" cx="899.99" cy="900" r="370.32" fx="899.99" fy="900">
+            <stop offset="0" stop-color="#C00"/>
+            <stop offset=".431" stop-color="#C00"/>
+            <stop offset=".631" stop-color="red"/>
+            <stop offset=".729" stop-color="#C00"/>
+            <stop offset="1" stop-color="#CF0000"/>
+        </radialGradient>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="url(#a)" d="M638 638c145-144 379-144 524 0 144 145 144 379 0 524-145 144-379 144-524 0-144-145-144-379 0-524zm123 123c77-77 201-77 278 0s77 201 0 278-201 77-278 0-77-201 0-278z"/>
+    <path fill="url(#b)" d="M930 531v175c-20-2-39-2-60 0V531c20-2 40-2 60 0z"/>
+    <path d="M879 879c11-12 30-12 42 0s12 30 0 42-31 12-42 0c-12-12-12-30 0-42z"/>
+    <path fill="url(#c)" d="M930 1269v-175c-20 2-39 2-60 0v175c20 2 40 2 60 0z"/>
+    <path fill="url(#d)" d="M531 870h175c-2 20-2 39 0 60H531c-2-20-2-40 0-60z"/>
+    <path fill="url(#e)" d="M1269 930h-175c2-20 2-39 0-60h175c2 20 2 40 0 60z"/>
 </svg>

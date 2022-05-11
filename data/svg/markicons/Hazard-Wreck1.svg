@@ -1,33 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_347394544">
-   <line fill="none" stroke="black" stroke-width="25" x1="659" y1="917" x2="1190" y2= "917" />
-   <line fill="none" stroke="black" stroke-width="25" x1="951" y1="1102" x2="951" y2= "731" />
-   <line fill="none" stroke="black" stroke-width="25" x1="1109" y1="1049" x2="1109" y2= "784" />
-   <line fill="none" stroke="black" stroke-width="25" x1="792" y1="1048" x2="792" y2= "785" />
-   <rect fill="black" x="460" y="869" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="1278" y="869" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="909" y="600" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="909" y="1137" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="636" y="664" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="518" y="746" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="520" y="993" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="649" y="1079" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="1039" y="617" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="1164" y="674" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="1040" y="1120" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="1249" y="764" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="771" y="617" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="790" y="1125" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="1156" y="1069" width="62.6488" height="62.6644"/>
-   <rect fill="black" x="1241" y="986" width="62.6488" height="62.6644"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="#000" stroke-width="25" d="M659 917h531m-239 185V731m158 318V784m-317 264V785"/>
+    <path d="M460 869h62.649v62.664H460zm818 0h62.649v62.664H1278zM909 600h62.649v62.664H909zm0 537h62.649v62.664H909zM636 664h62.649v62.664H636zm-118 82h62.649v62.664H518zm2 247h62.649v62.664H520zm129 86h62.649v62.664H649zm390-462h62.649v62.664H1039zm125 57h62.649v62.664H1164zm-124 446h62.649v62.664H1040zm209-356h62.649v62.664H1249zM771 617h62.649v62.664H771zm19 508h62.649v62.664H790zm366-56h62.649v62.664H1156zm85-83h62.649v62.664H1241z"/>
 </svg>

@@ -50,13 +50,12 @@
 #include "semantic_vers.h"
 #include "styles.h"
 #include "options.h"
+#include "svg_utils.h"
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern OCPNPlatform* g_Platform;
 extern options* g_options;
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
 #undef major  // walk around gnu's major() and minor() macros.
 #undef minor
@@ -123,12 +122,6 @@ static void LoadPNGIcon(const char* path, int size, wxBitmap& bitmap) {
   bitmap = wxBitmap(*img);
 }
 
-/** Load a svg icon rescaled to size x size. */
-static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap) {
-  wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
-  bitmap = wxBitmap(img);
-}
-
 /**
  * A plugin icon, scaled to about 2/3 of available space
  *
@@ -171,8 +164,7 @@ protected:
     bool ok = false;
 
     if (path.IsFileReadable()) {
-      wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
-      bitmap = wxBitmap(img);
+      bitmap = LoadSVG(path.GetFullPath(), size, size);
       ok = bitmap.IsOk();
     }
 

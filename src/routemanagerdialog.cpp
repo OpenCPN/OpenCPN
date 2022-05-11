@@ -54,8 +54,7 @@
 #include "Track.h"
 #include "Route.h"
 #include "chcanv.h"
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
+#include "svg_utils.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -262,9 +261,9 @@ void RouteManagerDialog::OnTabSwitch(wxNotebookEvent &event) {
   if (!m_pNotebook) return;
   int current_page = m_pNotebook->GetSelection();
   if (current_page == 3) {
-            if( btnImport ) btnImport->Enable( false );
-            if( btnExport ) btnExport->Enable( false );
-            if( btnExportViz ) btnExportViz->Enable( false );
+    if (btnImport) btnImport->Enable(false);
+    if (btnExport) btnExport->Enable(false);
+    if (btnExportViz) btnExportViz->Enable(false);
   } else {
     if (btnImport) btnImport->Enable(true);
     if (btnExport) btnExport->Enable(true);
@@ -471,10 +470,12 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteExportClick), NULL, this);
 
   btnRteResequence = new wxButton(winr, -1, _("&Resequence Waypoints"));
-  bsRouteButtonsInner->Add(btnRteResequence, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
+  bsRouteButtonsInner->Add(btnRteResequence, 0, wxALL | wxEXPAND,
+                           DIALOG_MARGIN);
   btnRteResequence->Connect(
-	  wxEVT_COMMAND_BUTTON_CLICKED,
-	  wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL, this);
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL,
+      this);
 
   btnRteSendToGPS = new wxButton(winr, -1, _("&Send to GPS"));
   bsRouteButtonsInner->Add(btnRteSendToGPS, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
@@ -905,9 +906,9 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnLayToggleChartClick), NULL,
       this);
 
-  cbLayToggleNames = new wxCheckBox(
-      winl, -1, _("Show WPT names"), wxDefaultPosition, wxDefaultSize,
-      wxCHK_3STATE );
+  cbLayToggleNames =
+      new wxCheckBox(winl, -1, _("Show WPT names"), wxDefaultPosition,
+                     wxDefaultSize, wxCHK_3STATE);
 
   bsLayButtonsInner->Add(cbLayToggleNames, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   cbLayToggleNames->Connect(
@@ -932,22 +933,24 @@ void RouteManagerDialog::Create() {
   wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") +
                           wxFileName::GetPathSeparator();
   wxImage iconSVG =
-      LoadSVGIcon(UserIconPath + _T("eye.svg"), imageRefSize, imageRefSize);
+      LoadSVG(UserIconPath + _T("eye.svg"), imageRefSize, imageRefSize)
+          .ConvertToImage();
   if (iconSVG.IsOk()) {
     iconSVG.Resize(wxSize(imageRefSize, imageRefSize),
                    wxPoint(0, 0));  // Avoid wxImageList size asserts
     imglist->Add(wxBitmap(iconSVG));
   }
 
-  iconSVG =
-      LoadSVGIcon(UserIconPath + _T("eyex.svg"), imageRefSize, imageRefSize);
+  iconSVG = LoadSVG(UserIconPath + _T("eyex.svg"), imageRefSize, imageRefSize)
+                .ConvertToImage();
   if (iconSVG.IsOk()) {
     iconSVG.Resize(wxSize(imageRefSize, imageRefSize), wxPoint(0, 0));
     imglist->Add(wxBitmap(iconSVG));
   }
 
   iconSVG =
-      LoadSVGIcon(UserIconPath + _T("eyeGray.svg"), imageRefSize, imageRefSize);
+      LoadSVG(UserIconPath + _T("eyeGray.svg"), imageRefSize, imageRefSize)
+          .ConvertToImage();
   if (iconSVG.IsOk()) {
     iconSVG.Resize(wxSize(imageRefSize, imageRefSize), wxPoint(0, 0));
     imglist->Add(wxBitmap(iconSVG));
@@ -1492,16 +1495,16 @@ void RouteManagerDialog::OnRteExportClick(wxCommandEvent &event) {
 }
 
 void RouteManagerDialog::OnRteResequenceClick(wxCommandEvent &event) {
-	long item = -1;
-	item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
-		wxLIST_STATE_SELECTED);
-	if (item == -1) return;
+  long item = -1;
+  item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
+                                       wxLIST_STATE_SELECTED);
+  if (item == -1) return;
 
-	Route *route = (Route *)m_pRouteListCtrl->GetItemData(item);
+  Route *route = (Route *)m_pRouteListCtrl->GetItemData(item);
 
-	if (!route) return;
-	if (route->m_bIsInLayer) return;
-	route->RenameRoutePoints();
+  if (!route) return;
+  if (route->m_bIsInLayer) return;
+  route->RenameRoutePoints();
 }
 
 void RouteManagerDialog::OnRteActivateClick(wxCommandEvent &event) {
@@ -2397,19 +2400,19 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
 
     gFrame->RefreshAllCanvas();
   } else  //  clicked on ScaMin column??
-      if (clicked_index > -1 &&
-          event.GetX() > m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) &&
-          event.GetX() < (m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
-                          m_pWptListCtrl->GetColumnWidth(colWPTSCALE)) &&
-          !g_bOverruleScaMin) {
-    RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
-    wp->SetUseSca(!wp->GetUseSca());
-    pConfig->UpdateWayPoint(wp);
-    gFrame->RefreshAllCanvas();
-    wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
-    if (!wp->GetUseSca()) scamin = _("Always");
-    m_pWptListCtrl->SetItem(clicked_index, colWPTSCALE, scamin);
-  }
+    if (clicked_index > -1 &&
+        event.GetX() > m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) &&
+        event.GetX() < (m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
+                        m_pWptListCtrl->GetColumnWidth(colWPTSCALE)) &&
+        !g_bOverruleScaMin) {
+      RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
+      wp->SetUseSca(!wp->GetUseSca());
+      pConfig->UpdateWayPoint(wp);
+      gFrame->RefreshAllCanvas();
+      wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
+      if (!wp->GetUseSca()) scamin = _("Always");
+      m_pWptListCtrl->SetItem(clicked_index, colWPTSCALE, scamin);
+    }
 
   // Allow wx to process...
   event.Skip();

@@ -1,16 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_456210008">
-   <path fill="black" d="M792 1079c0,-1 1,1 2,1 -10,8 -10,23 -5,35 13,30 78,19 128,19 60,0 43,7 75,-23 14,-13 58,-14 82,-16l0 43 97 0 0 -262 -97 0 0 33c-33,0 -18,3 -36,-26 -7,-11 -9,-13 -20,-21 -47,-31 -95,-45 -120,-82 -8,-12 -6,-21 -13,-29 -27,2 -37,8 -51,23 -18,19 -9,29 1,51 12,28 9,25 33,39 14,8 35,20 41,29 -42,-1 -85,-1 -127,-1 -21,1 -35,7 -41,25 -6,22 7,30 17,41 -8,10 -17,14 -15,34 2,17 11,24 24,27 -6,14 -11,23 -3,40 7,13 14,12 26,19 1,0 2,1 2,1z"/>
-   <path fill="black" d="M824 719c10,-24 0,-36 -12,-53 -11,-17 -37,-45 -54,-56 -14,-10 -9,-4 -26,-2 6,23 28,64 29,83 -19,19 -42,29 -78,29l-31 -79c-24,8 -20,17 -23,44 -2,22 0,43 4,63 4,25 10,29 30,38 23,10 34,8 59,8l38 88 83 -1c-4,-17 -17,-41 -25,-59 -6,-14 -22,-48 -25,-61 13,-9 24,-22 31,-42z"/>
-   <path fill="black" d="M884 1148c12,27 13,50 52,48 31,-2 54,-32 27,-48l-79 0z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M792 1079c0-1 1 1 2 1-10 8-10 23-5 35 13 30 78 19 128 19 60 0 43 7 75-23 14-13 58-14 82-16v43h97V876h-97v33c-33 0-18 3-36-26-7-11-9-13-20-21-47-31-95-45-120-82-8-12-6-21-13-29-27 2-37 8-51 23-18 19-9 29 1 51 12 28 9 25 33 39 14 8 35 20 41 29-42-1-85-1-127-1-21 1-35 7-41 25-6 22 7 30 17 41-8 10-17 14-15 34 2 17 11 24 24 27-6 14-11 23-3 40 7 13 14 12 26 19 1 0 2 1 2 1z"/>
+    <path d="M824 719c10-24 0-36-12-53-11-17-37-45-54-56-14-10-9-4-26-2 6 23 28 64 29 83-19 19-42 29-78 29l-31-79c-24 8-20 17-23 44-2 22 0 43 4 63 4 25 10 29 30 38 23 10 34 8 59 8l38 88 83-1c-4-17-17-41-25-59-6-14-22-48-25-61 13-9 24-22 31-42zm60 429c12 27 13 50 52 48 31-2 54-32 27-48h-79z"/>
 </svg>

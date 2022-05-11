@@ -1,53 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-    <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="900" y1="967.05" x2="900" y2="845.33">
-     <stop offset="0" stop-color="#663333"/>
-     <stop offset="0.14902" stop-color="#996633"/>
-     <stop offset="0.290196" stop-color="#CC9933"/>
-     <stop offset="0.490196" stop-color="#996633"/>
-     <stop offset="0.670588" stop-color="#663333"/>
-     <stop offset="0.811765" stop-color="#CC6633"/>
-     <stop offset="0.94902" stop-color="#996633"/>
-     <stop offset="1" stop-color="#CC9933"/>
-    </linearGradient>
-    <clipPath id="id1">
-     <path d="M1473 845l-204 122 -957 0 0 -122 1161 0z"/>
-    </clipPath>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_527065096">
-   <rect fill="#614A1C" x="574" y="637" width="50.27" height="246.07"/>
-   <rect fill="#1A1A1A" x="574" y="883" width="50.27" height="147.51"/>
-   <rect fill="#614A1C" x="1031" y="637" width="50.27" height="246.07"/>
-   <rect fill="#1A1A1A" x="1031" y="883" width="50.27" height="147.51"/>
-   <rect fill="#614A1C" x="1438" y="637" width="50.27" height="246.07"/>
-   <rect fill="#1A1A1A" x="1438" y="883" width="50.27" height="147.51"/>
-   <polygon fill="url(#id0)" points="1473,845 1269,967 312,967 312,845 "/>
-   <g clip-path="url(#id1)">
-    <g>
-     <g>
-      <rect fill="#C2A06B" x="277" y="845" width="1232.96" height="25.4"/>
-      <rect fill="#E8D7BB" x="277" y="871" width="1232.96" height="25.4"/>
-      <rect fill="#C2A06B" x="277" y="896" width="1232.96" height="25.4"/>
-      <rect fill="#D9B986" x="277" y="922" width="1232.96" height="25.4"/>
-      <rect fill="#554539" x="277" y="947" width="1232.96" height="25.4"/>
-     </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="900" y1="967.05" x2="900" y2="845.33">
+            <stop offset="0" stop-color="#633"/>
+            <stop offset=".149" stop-color="#963"/>
+            <stop offset=".29" stop-color="#C93"/>
+            <stop offset=".49" stop-color="#963"/>
+            <stop offset=".671" stop-color="#633"/>
+            <stop offset=".812" stop-color="#C63"/>
+            <stop offset=".949" stop-color="#963"/>
+            <stop offset="1" stop-color="#C93"/>
+        </linearGradient>
+        <clipPath id="b">
+            <path d="m1473 845-204 122H312V845h1161z"/>
+        </clipPath>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#614A1C" d="M574 637h50.27v246.07H574z"/>
+    <path fill="#1A1A1A" d="M574 883h50.27v147.51H574z"/>
+    <path fill="#614A1C" d="M1031 637h50.27v246.07H1031z"/>
+    <path fill="#1A1A1A" d="M1031 883h50.27v147.51H1031z"/>
+    <path fill="#614A1C" d="M1438 637h50.27v246.07H1438z"/>
+    <path fill="#1A1A1A" d="M1438 883h50.27v147.51H1438z"/>
+    <path fill="url(#a)" d="m1473 845-204 122H312V845z"/>
+    <g clip-path="url(#b)">
+        <path fill="#C2A06B" d="M277 845h1232.96v25.4H277z"/>
+        <path fill="#E8D7BB" d="M277 871h1232.96v25.4H277z"/>
+        <path fill="#C2A06B" d="M277 896h1232.96v25.4H277z"/>
+        <path fill="#D9B986" d="M277 922h1232.96v25.4H277z"/>
+        <path fill="#554539" d="M277 947h1232.96v25.4H277z"/>
     </g>
-   </g>
-   <polygon fill="none" stroke="#996633" stroke-width="7.62" points="1473,845 1269,967 312,967 312,845 "/>
-   <rect fill="#614A1C" x="391" y="769" width="50.27" height="246.07"/>
-   <rect fill="#614A1C" x="818" y="769" width="50.27" height="246.07"/>
-   <rect fill="#614A1C" x="1245" y="769" width="50.27" height="246.07"/>
-   <rect fill="#1A1A1A" x="391" y="1015" width="50.27" height="147.51"/>
-   <rect fill="#1A1A1A" x="818" y="1015" width="50.27" height="147.51"/>
-   <rect fill="#1A1A1A" x="1245" y="1015" width="50.27" height="147.51"/>
-  </g>
- </g>
+    <path fill="none" stroke="#963" stroke-width="7.62" d="m1473 845-204 122H312V845z"/>
+    <path fill="#614A1C" d="M391 769h50.27v246.07H391zm427 0h50.27v246.07H818zm427 0h50.27v246.07H1245z"/>
+    <path fill="#1A1A1A" d="M391 1015h50.27v147.51H391zm427 0h50.27v147.51H818zm427 0h50.27v147.51H1245z"/>
 </svg>
