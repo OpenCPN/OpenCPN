@@ -68,7 +68,7 @@ void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
   auto found = std::find_if(listeners.begin(), listeners.end(),
           [listener](const ev_pair p) { return p.first == listener; });
   if (found != listeners.end()) {
-    wxLogWarning("Duplicate window listener %",  listener);
+    wxLogWarning("Duplicate event listener %s (ignored)", ptr_key(listener));
   }
   else {
     singleton->listeners.push_back(ev_pair(listener, ev_type));
