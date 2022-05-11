@@ -1985,8 +1985,10 @@ bool cm93chart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
 //-----------------------------------------------------------------------
 
 void cm93chart::SetVPParms(const ViewPort &vpt) {
+  if (m_vp_current == vpt) {
+    return;
+  }
   //    Save a copy for later reference
-
   m_vp_current = vpt;
 
   //  Set up local SM rendering constants
@@ -4728,7 +4730,7 @@ void cm93compchart::SetVPParms(const ViewPort &vpt) {
   //    Continuoesly update the composite chart edition date to the latest cell
   //    decoded
   if (m_pcm93chart_array[cmscale]) {
-    if (m_pcm93chart_array[cmscale]->GetEditionDate().IsLaterThan(m_EdDate))
+    if (!m_EdDate.IsValid() || !m_pcm93chart_array[cmscale]->GetEditionDate().IsValid() || m_pcm93chart_array[cmscale]->GetEditionDate().IsLaterThan(m_EdDate))
       m_EdDate = m_pcm93chart_array[cmscale]->GetEditionDate();
   }
 }
