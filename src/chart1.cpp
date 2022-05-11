@@ -9013,8 +9013,8 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
     // Also update Live ETA
     // (even if the mouseEvent is not triggered)
     double cursor_lat, cursor_lon;
-    GetPrimaryCanvas()->GetCursorLatLon( &cursor_lat, &cursor_lon );
-    GetPrimaryCanvas()->SetCursorStatus(cursor_lat, cursor_lon);
+    GetCanvasUnderMouse()->GetCursorLatLon(&cursor_lat, &cursor_lon);
+    GetCanvasUnderMouse()->SetCursorStatus(cursor_lat, cursor_lon);
 
   }
 
