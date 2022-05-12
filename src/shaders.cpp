@@ -35,7 +35,7 @@ const GLchar* preamble =
 "\n";
 #else
 const GLchar* preamble =
-"#version 140\n"
+"#version 120\n"
 "#define precision\n"
 "#define lowp\n"
 "#define mediump\n"
@@ -83,6 +83,12 @@ public:
 
         GLShaderProgram linkProgram() {
             glLinkProgram(programId_);
+            glGetProgramiv( programId_, GL_LINK_STATUS, &linkSuccess); //requesting the status
+            if (linkSuccess == GL_FALSE) {
+              glGetProgramInfoLog(programId_, INFOLOG_LEN, NULL, infoLog);
+              printf("ERROR::SHADER::LINK_FAILED\n%s\n", infoLog);
+            }
+
             GLShaderProgram theProgram(programId_);
             //deleteAttachedShaders(programId_);
             linked_ = true;
@@ -98,6 +104,7 @@ public:
         GLuint programId_;
         bool linked_;
         GLint success;
+        GLint linkSuccess;
         GLchar infoLog[INFOLOG_LEN];
     };
 
@@ -119,9 +126,7 @@ public:
         return *this;
     }
 
-    ~GLShaderProgram() {
-        glDeleteShader(programId_);
-    }
+    ~GLShaderProgram() { }
 
     GLuint programId() const { return programId_; }
 
@@ -327,54 +332,20 @@ static const GLchar* texture_2DA_fragment_shader_source =
     "   gl_FragColor = texture2D(uTex, varCoord) + color;\n"
     "}\n";
 
-//GLint color_tri_fragment_shader;
 GLint color_tri_shader_program;
-//GLint color_tri_vertex_shader;
-
-//GLint texture_2D_fragment_shader;
 GLint texture_2D_shader_program;
-//GLint texture_2D_vertex_shader;
-
-//GLint fade_texture_2D_fragment_shader;
 GLint fade_texture_2D_shader_program;
-//GLint fade_texture_2D_vertex_shader;
-
 GLint circle_filled_shader_program;
-//GLint circle_filled_vertex_shader;
-//GLint circle_filled_fragment_shader;
-
-//GLint FBO_texture_2D_fragment_shader;
 GLint FBO_texture_2D_shader_program;
-//GLint FBO_texture_2D_vertex_shader;
-
-//GLint texture_2DA_fragment_shader;
 GLint texture_2DA_shader_program;
-//GLint texture_2DA_vertex_shader;
 
 // Protos
-//GLint color_tri_fragment_shader_p[2];
 GLint color_tri_shader_program_p[2];
-//GLint color_tri_vertex_shader_p[2];
-
-//GLint texture_2D_fragment_shader_p[2];
 GLint texture_2D_shader_program_p[2];
-//GLint texture_2D_vertex_shader_p[2];
-
-//GLint fade_texture_2D_fragment_shader_p[2];
 GLint fade_texture_2D_shader_program_p[2];
-//GLint fade_texture_2D_vertex_shader_p[2];
-
 GLint circle_filled_shader_program_p[2];
-//GLint circle_filled_vertex_shader_p[2];
-//GLint circle_filled_fragment_shader_p[2];
-
-//GLint FBO_texture_2D_fragment_shader_p[2];
 GLint FBO_texture_2D_shader_program_p[2];
-//GLint FBO_texture_2D_vertex_shader_p[2];
-
-//GLint texture_2DA_fragment_shader_p[2];
 GLint texture_2DA_shader_program_p[2];
-//GLint texture_2DA_vertex_shader_p[2];
 
 bool bShadersLoaded[2];
 

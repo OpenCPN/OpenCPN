@@ -6144,7 +6144,6 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 }
 
 #endif
-int ics;
 
     void glChartCanvas::configureShaders(ViewPort & vp) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -6160,8 +6159,6 @@ int ics;
       GLint transloc =
           glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
-
-      printf("config shaders  %d\n", ics++);
 
       glUseProgram(texture_2D_shader_program);
       matloc = glGetUniformLocation(texture_2D_shader_program, "MVMatrix");
