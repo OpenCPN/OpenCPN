@@ -44,7 +44,7 @@
 #endif
 
 #ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
+#include "shaders.h"
 #endif
 
 #include <wx/graphics.h>
@@ -64,7 +64,7 @@ extern ocpnGLOptions g_GLOptions;
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 extern GLint color_tri_shader_program;
 extern GLint circle_filled_shader_program;
 extern GLint texture_2D_shader_program;
@@ -94,7 +94,7 @@ ocpnDC::ocpnDC(wxGLCanvas &canvas)
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   s_odc_tess_vertex_idx = 0;
   s_odc_tess_vertex_idx_this = 0;
   s_odc_tess_buf_len = 0;
@@ -244,7 +244,7 @@ void ocpnDC::SetGLAttrs(bool highQuality) {
 void ocpnDC::SetGLStipple() const {
 #ifdef ocpnUSE_GL
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   switch (m_pen.GetStyle()) {
     case wxPENSTYLE_DOT: {
       glLineStipple(1, 0x3333);
@@ -276,7 +276,7 @@ void ocpnDC::SetGLStipple() const {
 #ifdef ocpnUSE_GL
 /* draw a half circle using triangles */
 void DrawEndCap(float x1, float y1, float t1, float angle) {
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   const int steps = 16;
   float xa, ya;
   bool first = true;
@@ -308,7 +308,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
   float t2sina1 = t1 / 2 * sinf(angle);
   float t2cosa1 = t1 / 2 * cosf(angle);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glBegin(GL_TRIANGLES);
 
   //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in
@@ -564,7 +564,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         glLineWidth(pen_width);
     }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     if (b_draw_thick)
       DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
@@ -709,7 +709,7 @@ void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
 #ifdef ocpnUSE_GL
   if (n < 2) return;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   wxPoint p0 = points[0];
   for (int i = 1; i < n; i++) {
     DrawGLThickLine(p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset,
@@ -861,7 +861,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
 
     glBegin(GL_LINE_STRIP);
     for (int i = 0; i < n; i++)
@@ -952,7 +952,7 @@ void ocpnDC::DrawRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h) {
   if (dc) dc->DrawRectangle(x, y, w, h);
 #ifdef ocpnUSE_GL
   else {
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     if (ConfigureBrush()) {
       glBegin(GL_QUADS);
       glVertex2i(x, y);
@@ -1013,7 +1013,7 @@ void ocpnDC::DrawRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h) {
 static void drawrrhelper(wxCoord x0, wxCoord y0, wxCoord r, int quadrant,
                          int steps) {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   float step = 1.0 / steps, rs = 2.0 * r * step, rss = rs * step, x, y, dx, dy,
         ddx, ddy;
   switch (quadrant) {
@@ -1091,7 +1091,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     wxCoord x1 = x + r, x2 = x + w - r;
     wxCoord y1 = y + r, y2 = y + h - r;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     ConfigureBrush();
     ConfigurePen();
@@ -1194,7 +1194,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 }
 
 void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   //      Enable anti-aliased lines, at best quality
   glEnable(GL_BLEND);
@@ -1310,7 +1310,7 @@ void ocpnDC::DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height) {
         wxMax(sqrtf(sqrtf((float)(width * width + height * height))), 1) *
         M_PI);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     if (ConfigureBrush()) {
       glBegin(GL_TRIANGLE_FAN);
       glVertex2f(cx, cy);
@@ -1344,7 +1344,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
     SetGLAttrs(true);
 #endif
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     ConfigurePen();
     glEnable(GL_BLEND);
@@ -1537,7 +1537,7 @@ typedef union {
   } info;
 } GLvertex;
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
 void ocpnDCcombineCallback(GLdouble coords[3],
                                     GLdouble *vertex_data[4], GLfloat weight[4],
                                     GLdouble **dataOut) {
@@ -1577,7 +1577,7 @@ void ocpnDCendCallback() { glEnd(); }
 
 // GLSL callbacks
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
 static std::list<double *> odc_combine_work_data;
 static void odc_combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
@@ -1674,7 +1674,7 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     m_tobj = gluNewTess();
     s_odc_tess_vertex_idx = 0;
 
@@ -1820,7 +1820,7 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
     return;          // this should not be hit anymore ever anyway
 #endif
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     wxImage image = bmp.ConvertToImage();
     int w = image.GetWidth(), h = image.GetHeight();
 
@@ -1889,7 +1889,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         glEnable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
         glPushMatrix();
         glTranslatef(x, y, 0);
 
@@ -1989,7 +1989,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
 
       float u = (float)w / TextureWidth, v = (float)h / TextureHeight;
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
       glColor3ub(0, 0, 0);
 
       glBegin(GL_QUADS);
@@ -2162,7 +2162,7 @@ bool ocpnDC::ConfigurePen() {
   wxColour c = m_pen.GetColour();
   int width = m_pen.GetWidth();
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
 #endif
   glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));
@@ -2175,7 +2175,7 @@ bool ocpnDC::ConfigureBrush() {
     return false;
 #ifdef ocpnUSE_GL
   wxColour c = m_brush.GetColour();
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
 #endif
 #endif
@@ -2185,7 +2185,7 @@ bool ocpnDC::ConfigureBrush() {
 void ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
                              int format, const unsigned char *data) {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glEnable(GL_BLEND);
   glRasterPos2i(x, y);
   glPixelZoom(1, -1);

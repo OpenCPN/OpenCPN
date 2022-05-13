@@ -119,7 +119,7 @@ public:
   GLfloat *s_odc_tess_work_buf;
 #endif
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   int s_odc_tess_vertex_idx;
   int s_odc_tess_vertex_idx_this;
   int s_odc_tess_buf_len;
