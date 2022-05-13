@@ -6675,7 +6675,7 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   }
 
   void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     glUseProgram(color_tri_shader_program);
 
     float pf[8];
@@ -6730,7 +6730,7 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   void glChartCanvas::RenderScene(bool bRenderCharts, bool bRenderOverlays) {
     // qDebug() << "RenderScene";
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     ViewPort VPoint = m_pParentCanvas->VPoint;
     ocpnDC gldc(*this);

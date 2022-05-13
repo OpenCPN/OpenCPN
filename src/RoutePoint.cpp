@@ -900,7 +900,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     float ys = r.y - hs / 2.;
     float u = (float)w / glw, v = (float)h / glh;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     float coords[8];
     float uv[8];
     // normal uv
@@ -1054,7 +1054,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       int x = r.x + m_NameLocationOffsetX, y = r.y + m_NameLocationOffsetY;
       float u = (float)w / m_iTextTextureWidth,
             v = (float)h / m_iTextTextureHeight;
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
       glColor3ub(255, 255, 255);
 
       glBegin(GL_QUADS);
@@ -1170,7 +1170,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     float u = (float)w / m_dragIconTextureWidth,
           v = (float)h / m_dragIconTextureWidth;
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
