@@ -1608,10 +1608,6 @@ target_link_libraries(
     ocpn::tinyxml
 )
 
-if (NOT QT_ANDROID)
-  target_link_libraries(S57ENC PUBLIC ocpn::wxsvg)
-endif ()
-
 if (OCPN_USE_CURL)
   target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
 endif ()
