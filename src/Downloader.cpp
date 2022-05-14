@@ -98,7 +98,7 @@ bool Downloader::download(std::string& path) {
 
 long Downloader::get_filesize() {
   CURL* curl;
-  char curl_errbuf[CURL_ERROR_SIZE];
+  char curl_errbuf[CURL_ERROR_SIZE] = {0};
   double filesize = 0.0;
 
   curl = curl_easy_init();
