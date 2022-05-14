@@ -156,9 +156,6 @@
 #include "glChartCanvas.h"
 #endif
 
-#include <wx/image.h>
-#include "wx/apptrait.h"
-
 #ifdef __WXOSX__
 #include "macutils.h"
 #endif
