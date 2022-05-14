@@ -230,6 +230,9 @@ public:
     return m_blocks[filename].status != plug_status::unloadable;
   }
 
+// gcc 12 bogus regex warning
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
   std::string get_message(plug_status status, const plug_data& data) {
     if (status == plug_status::unloadable) {
       std::string msg(_("Plugin library %s can not be loaded"));
@@ -247,6 +250,7 @@ public:
     else
       return format_message(found->second.message, data);
   }
+#pragma GCC diagnostic pop
 };
 
 
