@@ -1,6 +1,19 @@
 ---
 version: 2
 jobs:
+   build-bionic:
+     docker:
+       - image: circleci/buildpack-deps:bionic-scm
+         auth:
+           username: $DOCKER_USER
+           password: $DOCKER_PW
+     environment:
+       - OCPN_TARGET:  bionic
+     steps:
+       - checkout
+       - run: cat /etc/apt/sources.list
+       - run: ci/generic-build-debian.sh
+       - run: ci/generic-upload.sh
    build-focal:
      docker:
        - image: circleci/buildpack-deps:focal-scm
@@ -70,6 +83,11 @@ workflows:
   version: 2
   build_all:
     jobs:
+      - build-bionic:
+          filters:
+            branches:
+              only:
+                - master
       - build-focal:
           filters:
             branches:
