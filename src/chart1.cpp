@@ -24,7 +24,6 @@
  **************************************************************************/
 #include "config.h"
 
-#include <memory>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -40,112 +39,114 @@
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-#include <wx/settings.h>
-#include <wx/print.h>
-#include <wx/printdlg.h>
-#include <wx/artprov.h>
-#include <wx/stdpaths.h>
-#include <wx/intl.h>
-#include <wx/listctrl.h>
-#include <wx/aui/aui.h>
-#include <wx/dialog.h>
-#include <wx/progdlg.h>
-#include <wx/clrpicker.h>
-#include <wx/tokenzr.h>
-#include <wx/dir.h>
-#include <wx/dialog.h>
-
-#include "dychart.h"
-
-#include <limits.h>
 #include <algorithm>
+#include <limits.h>
+#include <memory>
 
 #ifdef __WXMSW__
-#include <stdlib.h>
 #include <math.h>
-#include <time.h>
 #include <psapi.h>
+#include <stdlib.h>
+#include <time.h>
 #endif
 
 #ifndef __WXMSW__
-#include <signal.h>
 #include <setjmp.h>
+#include <signal.h>
 #endif
 
 #ifdef OCPN_HAVE_X11
-#include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <X11/Xlib.h>
 #endif
 
-#include "config.h"
-#include "chart1.h"
-#include "chcanv.h"
-#include "chartdb.h"
-#include "logger.h"
-#include "navutil.h"
-#include "styles.h"
-#include "routeman.h"
-#include "piano.h"
-#include "concanv.h"
-#include "options.h"
+#include <wx/apptrait.h>
+#include <wx/arrimpl.cpp>
+#include <wx/artprov.h>
+#include <wx/aui/aui.h>
+#include <wx/clrpicker.h>
+#include <wx/dialog.h>
+#include <wx/dialog.h>
+#include <wx/dir.h>
+#include <wx/image.h>
+#include <wx/intl.h>
+#include <wx/ipc.h>
+#include <wx/jsonreader.h>
+#include <wx/listctrl.h>
+#include <wx/printdlg.h>
+#include <wx/print.h>
+#include <wx/progdlg.h>
+#include <wx/settings.h>
+#include <wx/stdpaths.h>
+#include <wx/tokenzr.h>
+
 #include "AboutFrameImpl.h"
 #include "about.h"
-#include "safe_mode.h"
-#include "thumbwin.h"
-#include "tcmgr.h"
-
-#ifdef __linux__
-#include "udev_rule_mgr.h"
-#endif
-
-#include "ais.h"
-#include "chartimg.h"  // for ChartBaseBSB
-#include "MarkInfo.h"
-#include "RoutePropDlgImpl.h"
-#include "toolbar.h"
-#include "compass.h"
-#include "datastream.h"
-#ifdef __WXMSW__
-#include "GarminProtocolHandler.h"  // Used for port probing on Windows
-#endif
-
-#include "OCPN_DataStreamEvent.h"
-#include "OCPN_SignalKEvent.h"
-#include "multiplexer.h"
-#include "routeprintout.h"
-#include "Select.h"
-#include "FontMgr.h"
-#include "NMEALogWindow.h"
-#include "Layer.h"
-#include "NavObjectCollection.h"
-#include "AISTargetListDialog.h"
-#include "AISTargetAlertDialog.h"
 #include "AIS_Decoder.h"
-#include "OCP_DataStreamInput_Thread.h"
-#include "TrackPropDlg.h"
-#include "gshhs.h"
-#include "cutil.h"
-#include "routemanagerdialog.h"
-#include "pluginmanager.h"
+#include "ais.h"
+#include "AISTargetAlertDialog.h"
 #include "AIS_Target_Data.h"
-#include "OCPNPlatform.h"
+#include "AISTargetListDialog.h"
 #include "AISTargetQueryDialog.h"
-#include "S57QueryDialog.h"
+#include "CanvasConfig.h"
+#include "chart1.h"
+#include "chartdb.h"
+#include "chartimg.h"  // for ChartBaseBSB
+#include "chcanv.h"
+#include "cm93.h"
+#include "compass.h"
+#include "concanv.h"
+#include "config.h"
+#include "ConfigMgr.h"
+#include "cutil.h"
+#include "datastream.h"
+#include "dychart.h"
+#include "FontMgr.h"
+#include "gdal/cpl_csv.h"
 #include "glTexCache.h"
-#include "Track.h"
+#include "gshhs.h"
+#include "gui_lib.h"
 #include "iENCToolbar.h"
+#include "Layer.h"
+#include "logger.h"
+#include "MarkInfo.h"
+#include "MUIBar.h"
+#include "multiplexer.h"
+#include "NavObjectCollection.h"
+#include "navutil.h"
+#include "NMEALogWindow.h"
+#include "OCP_DataStreamInput_Thread.h"
+#include "OCPN_AUIManager.h"
+#include "OCPN_DataStreamEvent.h"
+#include "OCPNPlatform.h"
+#include "OCPN_SignalKEvent.h"
+#include "OCPN_Sound.h"
+#include "options.h"
+#include "piano.h"
+#include "PluginHandler.h"
+#include "pluginmanager.h"
 #include "Quilt.h"
 #include "Route.h"
-#include "OCPN_AUIManager.h"
-#include "CanvasConfig.h"
-#include "ConfigMgr.h"
-#include "MUIBar.h"
-#include "OCPN_Sound.h"
-#include "SoundFactory.h"
-#include "PluginHandler.h"
+#include "routemanagerdialog.h"
+#include "routeman.h"
+#include "routeprintout.h"
+#include "RoutePropDlgImpl.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#include "s57chart.h"
+#include "S57QueryDialog.h"
+#include "safe_mode.h"
+#include "Select.h"
 #include "SignalKEventHandler.h"
+#include "SoundFactory.h"
+#include "styles.h"
 #include "SystemCmdSound.h"
-#include "gui_lib.h"
+#include "tcmgr.h"
+#include "thumbwin.h"
+#include "toolbar.h"
+#include "Track.h"
+#include "TrackPropDlg.h"
+#include "usb_devices.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -155,49 +156,32 @@
 #include "glChartCanvas.h"
 #endif
 
-#include <wx/image.h>
-#include "wx/apptrait.h"
-
 #ifdef __WXOSX__
 #include "macutils.h"
 #endif
 
-#include "cm93.h"
-#include "s52plib.h"
-#include "s57chart.h"
-#include "gdal/cpl_csv.h"
-#include "s52utils.h"
-#include "usb_devices.h"
-
 #ifdef __WXMSW__
-//#define __MSVC__LEAK
-#ifdef __MSVC__LEAK
+#include "GarminProtocolHandler.h"  // Used for port probing on Windows
+void RedirectIOToConsole();
+#endif
+
+#if defined(__WXMSW__) && defined (__MSVC__LEAK)
 #include "Stackwalker.h"
-#endif
-#endif
-
-#include <wx/jsonreader.h>
-
-#ifdef __OCPN__ANDROID__
-#include "androidUTIL.h"
 #endif
 
 #ifdef LINUX_CRASHRPT
 #include "crashprint.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
 #endif
 
-#include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
-#ifdef __WXMSW__
-void RedirectIOToConsole();
-#endif
-
-#include "wx/ipc.h"
 
 //------------------------------------------------------------------------------
 //      Fwd Declarations
@@ -206,6 +190,8 @@ void RedirectIOToConsole();
 //------------------------------------------------------------------------------
 //      Static variable definition
 //------------------------------------------------------------------------------
+
+WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
 OCPNPlatform *g_Platform;
 wxString g_vs;
