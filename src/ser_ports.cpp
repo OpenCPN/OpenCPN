@@ -148,7 +148,12 @@ static std::string device_path(const char* dev) {
     return std::string("/dev") + path.substr(path.rfind('/'));
 }
 
+
 static int isTTYreal(const char* dev) {
+
+// gcc 12 bogus regex warning
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 
   // Drop non-readable devices
   std::string path = device_path(dev);
@@ -186,6 +191,8 @@ static int isTTYreal(const char* dev) {
   }
   close(fd);
   return ok ? 1 : 0;
+
+#pragma GCC diagnostic pop
 }
 
 #else
@@ -289,6 +296,10 @@ static std::string get_device_info(struct udev_device* ud) {
   return info;
 }
 
+// gcc bogus regex warning
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 /** Return list of device links pointing to dev. */
 static std::vector<struct device_data> get_links(struct udev_device* dev,
                                                  const std::regex& exclude) {
@@ -332,6 +343,7 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
   return items;
 }
 
+#pragma GCC diagnostic pop
 static wxArrayString* EnumerateUdevSerialPorts(void) {
   struct udev* udev = udev_new();
   auto dev_items = enumerate_udev_ports(udev);
