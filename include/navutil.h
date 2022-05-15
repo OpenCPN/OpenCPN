@@ -184,10 +184,10 @@ public:
   virtual void LoadConfigGroups(ChartGroupArray *pGroupArray);
 
   virtual void LoadCanvasConfigs(bool bApplyAsTemplate = false);
-  virtual void LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate);
+  virtual void LoadConfigCanvas(canvasConfig &cConfig, bool bApplyAsTemplate);
 
   virtual void SaveCanvasConfigs();
-  virtual void SaveConfigCanvas(canvasConfig *cc);
+  virtual void SaveConfigCanvas(canvasConfig &cc);
 
   virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
   virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);

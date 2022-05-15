@@ -70,7 +70,7 @@ extern int g_memCacheLimit;
 extern s52plib *ps52plib;
 extern ChartDB *ChartData;
 extern unsigned int g_canvasConfig;
-extern arrayofCanvasConfigPtr g_canvasConfigArray;
+extern std::vector<canvasConfig> g_canvasConfigArray;
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y);
 bool GetMemoryStatus(int *mem_total, int *mem_used);
@@ -1337,52 +1337,46 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
             canvasConfig *cc;
             ChartCanvas *canvas = NULL;
             switch (g_canvasConfig) {
-              case 1:
-                cc = g_canvasConfigArray.Item(0);
-                if (cc) {
-                  ChartCanvas *canvas = cc->canvas;
-                  if (canvas)
-                    b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
-                }
-                cc = g_canvasConfigArray.Item(1);
-                if (cc) {
-                  ChartCanvas *canvas = cc->canvas;
-                  if (canvas)
-                    b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
-                }
-                break;
-              default:
-                cc = g_canvasConfigArray.Item(0);
-                if (cc) {
-                  ChartCanvas *canvas = cc->canvas;
+              case 1: {
+                auto &cc = g_canvasConfigArray.at(0);
+                ChartCanvas *canvas = cc.canvas;
+                if (canvas)
+                  b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
+              }
+                {
+                  auto &cc = g_canvasConfigArray.at(1);
+                  ChartCanvas *canvas = cc.canvas;
                   if (canvas)
                     b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
                 }
                 break;
+              default: {
+                auto &cc = g_canvasConfigArray.at(0);
+                ChartCanvas *canvas = cc.canvas;
+                if (canvas)
+                  b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
+              } break;
             }
 
             //  Add to all canvas noshow arrays
             if (!b_clicked) {
               switch (g_canvasConfig) {
-                case 1:
-                  cc = g_canvasConfigArray.Item(0);
-                  if (cc) {
-                    ChartCanvas *canvas = cc->canvas;
-                    if (canvas) canvas->AddTileOverlayIndexToNoShow(dbindex);
-                  }
-                  cc = g_canvasConfigArray.Item(1);
-                  if (cc) {
-                    ChartCanvas *canvas = cc->canvas;
-                    if (canvas) canvas->AddTileOverlayIndexToNoShow(dbindex);
-                  }
-                  break;
-                default:
-                  cc = g_canvasConfigArray.Item(0);
-                  if (cc) {
-                    ChartCanvas *canvas = cc->canvas;
+                case 1: {
+                  auto &cc = g_canvasConfigArray.at(0);
+                  ChartCanvas *canvas = cc.canvas;
+                  if (canvas) canvas->AddTileOverlayIndexToNoShow(dbindex);
+                }
+                  {
+                    auto &cc = g_canvasConfigArray.at(1);
+                    ChartCanvas *canvas = cc.canvas;
                     if (canvas) canvas->AddTileOverlayIndexToNoShow(dbindex);
                   }
                   break;
+                default: {
+                  auto &cc = g_canvasConfigArray.at(0);
+                  ChartCanvas *canvas = cc.canvas;
+                  if (canvas) canvas->AddTileOverlayIndexToNoShow(dbindex);
+                } break;
               }
             }
           }
@@ -1763,22 +1757,22 @@ bool ChartDB::CheckExclusiveTileGroup(int canvasIndex) {
   // checks are very fast.
 
   // Get the chart canvas indexed by canvasIndex
-  canvasConfig *cc;
   ChartCanvas *canvas = NULL;
   switch (g_canvasConfig) {
     case 1:
       if (canvasIndex == 0) {
-        cc = g_canvasConfigArray.Item(0);
-        if (cc) canvas = cc->canvas;
+        auto &cc = g_canvasConfigArray.at(0);
+        canvas = cc.canvas;
       } else {
-        cc = g_canvasConfigArray.Item(1);
-        if (cc) canvas = cc->canvas;
+        auto &cc = g_canvasConfigArray.at(1);
+        canvas = cc.canvas;
       }
       break;
 
-    default:
-      cc = g_canvasConfigArray.Item(0);
-      if (cc) canvas = cc->canvas;
+    default: {
+      auto &cc = g_canvasConfigArray.at(0);
+      canvas = cc.canvas;
+    }
   }
 
   if (!canvas) return false;
@@ -1802,22 +1796,20 @@ bool ChartDB::CheckAnyCanvasExclusiveTileGroup() {
 
   bool rv = false;
 
-  canvasConfig *cc;
   ChartCanvas *canvas = NULL;
   switch (g_canvasConfig) {
-    case 1:
-      cc = g_canvasConfigArray.Item(0);
-      if (cc) {
-        ChartCanvas *canvas = cc->canvas;
-        if (canvas) {
-          if (canvas->m_groupIndex == m_checkGroupIndex[0])
-            rv |= m_checkedTileOnly[0];
-        }
+    case 1: {
+      auto &cc = g_canvasConfigArray.at(0);
+      ChartCanvas *canvas = cc.canvas;
+      if (canvas) {
+        if (canvas->m_groupIndex == m_checkGroupIndex[0])
+          rv |= m_checkedTileOnly[0];
       }
+    }
 
-      cc = g_canvasConfigArray.Item(1);
-      if (cc) {
-        ChartCanvas *canvas = cc->canvas;
+      {
+        auto &cc = g_canvasConfigArray.at(1);
+        ChartCanvas *canvas = cc.canvas;
         if (canvas) {
           if (canvas->m_groupIndex == m_checkGroupIndex[1])
             rv |= m_checkedTileOnly[1];
@@ -1825,15 +1817,14 @@ bool ChartDB::CheckAnyCanvasExclusiveTileGroup() {
       }
       break;
 
-    default:
-      cc = g_canvasConfigArray.Item(0);
-      if (cc) {
-        ChartCanvas *canvas = cc->canvas;
-        if (canvas) {
-          if (canvas->m_groupIndex == m_checkGroupIndex[0])
-            rv |= m_checkedTileOnly[0];
-        }
+    default: {
+      auto &cc = g_canvasConfigArray.at(0);
+      ChartCanvas *canvas = cc.canvas;
+      if (canvas) {
+        if (canvas->m_groupIndex == m_checkGroupIndex[0])
+          rv |= m_checkedTileOnly[0];
       }
+    }
   }
 
   return rv;

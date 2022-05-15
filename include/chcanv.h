@@ -216,7 +216,7 @@ public:
 
   void ClearS52PLIBStateHash() { m_s52StateHash = 0; }
   void SetupCanvasQuiltMode(void);
-  void ApplyCanvasConfig(canvasConfig *pcc);
+  void ApplyCanvasConfig(canvasConfig &pcc);
 
   void SetVPRotation(double angle) { VPoint.rotation = angle; }
   double GetVPRotation(void) { return GetVP().rotation; }

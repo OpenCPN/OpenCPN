@@ -445,7 +445,7 @@ extern bool g_useMUI;
 int g_nCPUCount;
 
 extern unsigned int g_canvasConfig;
-extern arrayofCanvasConfigPtr g_canvasConfigArray;
+extern std::vector<canvasConfig> g_canvasConfigArray;
 extern wxString g_lastAppliedTemplateGUID;
 
 extern int g_route_prop_x, g_route_prop_y;
@@ -2004,15 +2004,14 @@ void MyConfig::LoadConfigGroups(ChartGroupArray *pGroupArray) {
 
 void MyConfig::LoadCanvasConfigs(bool bApplyAsTemplate) {
   wxString s;
-  canvasConfig *pcc;
 
   SetPath(_T ( "/Canvas" ));
 
   //  If the canvas config has never been set/persisted, use the global settings
   if (!HasEntry(_T ( "CanvasConfig" ))) {
-    pcc = new canvasConfig(0);
-    pcc->LoadFromLegacyConfig(this);
-    g_canvasConfigArray.Add(pcc);
+    canvasConfig pcc(0);
+    pcc.LoadFromLegacyConfig(this);
+    g_canvasConfigArray.push_back(std::move(pcc));
 
     return;
   }
@@ -2020,48 +2019,47 @@ void MyConfig::LoadCanvasConfigs(bool bApplyAsTemplate) {
   Read(_T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0);
 
   // Do not recreate canvasConfigs when applying config dynamically
-  if (g_canvasConfigArray.GetCount() ==
-      0) {  // This is initial load from startup
+  if (g_canvasConfigArray.size() == 0) {  // This is initial load from startup
     s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
     SetPath(s);
-    canvasConfig *pcca = new canvasConfig(0);
+    canvasConfig pcca(0);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
-    g_canvasConfigArray.Add(pcca);
+    g_canvasConfigArray.push_back(pcca);
 
     s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
     SetPath(s);
-    pcca = new canvasConfig(1);
+    pcca = canvasConfig(1);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
-    g_canvasConfigArray.Add(pcca);
+    g_canvasConfigArray.push_back(pcca);
   } else {  // This is a dynamic (i.e. Template) load
-    canvasConfig *pcca = g_canvasConfigArray[0];
+    canvasConfig &pcca = g_canvasConfigArray[0];
     s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
     SetPath(s);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
 
-    if (g_canvasConfigArray.GetCount() > 1) {
-      canvasConfig *pcca = g_canvasConfigArray[1];
+    if (g_canvasConfigArray.size() > 1) {
+      canvasConfig &pcca = g_canvasConfigArray[1];
       s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
       SetPath(s);
       LoadConfigCanvas(pcca, bApplyAsTemplate);
     } else {
       s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
       SetPath(s);
-      pcca = new canvasConfig(1);
+      pcca = canvasConfig(1);
       LoadConfigCanvas(pcca, bApplyAsTemplate);
-      g_canvasConfigArray.Add(pcca);
+      g_canvasConfigArray.push_back(pcca);
     }
   }
 }
 
-void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
+void MyConfig::LoadConfigCanvas(canvasConfig &cConfig, bool bApplyAsTemplate) {
   wxString st;
   double st_lat, st_lon;
 
   if (!bApplyAsTemplate) {
     //    Reasonable starting point
-    cConfig->iLat = START_LAT;  // display viewpoint
-    cConfig->iLon = START_LON;
+    cConfig.iLat = START_LAT;  // display viewpoint
+    cConfig.iLon = START_LON;
 
     if (Read(_T ( "canvasVPLatLon" ), &st)) {
       sscanf(st.mb_str(wxConvUTF8), "%lf,%lf", &st_lat, &st_lon);
@@ -2072,14 +2070,14 @@ void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
 
         while (st_lon > 180.) st_lon -= 360.;
 
-        cConfig->iLon = st_lon;
+        cConfig.iLon = st_lon;
       }
 
-      if (fabs(st_lat) < 90.0) cConfig->iLat = st_lat;
+      if (fabs(st_lat) < 90.0) cConfig.iLat = st_lat;
     }
 
-    cConfig->iScale = .0003;  // decent initial value
-    cConfig->iRotation = 0;
+    cConfig.iScale = .0003;  // decent initial value
+    cConfig.iRotation = 0;
 
     double st_view_scale;
     if (Read(wxString(_T ( "canvasVPScale" )), &st)) {
@@ -2087,7 +2085,7 @@ void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
       //    Sanity check the scale
       st_view_scale = fmax(st_view_scale, .001 / 32);
       st_view_scale = fmin(st_view_scale, 4);
-      cConfig->iScale = st_view_scale;
+      cConfig.iScale = st_view_scale;
     }
 
     double st_rotation;
@@ -2096,52 +2094,52 @@ void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
       //    Sanity check the rotation
       st_rotation = fmin(st_rotation, 360);
       st_rotation = fmax(st_rotation, 0);
-      cConfig->iRotation = st_rotation * PI / 180.;
+      cConfig.iRotation = st_rotation * PI / 180.;
     }
 
-    Read(_T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0);
-    Read(_T ( "canvasbFollow" ), &cConfig->bFollow, 0);
+    Read(_T ( "canvasInitialdBIndex" ), &cConfig.DBindex, 0);
+    Read(_T ( "canvasbFollow" ), &cConfig.bFollow, 0);
 
-    Read(_T ( "canvasCourseUp" ), &cConfig->bCourseUp, 0);
-    Read(_T ( "canvasHeadUp" ), &cConfig->bHeadUp, 0);
-    Read(_T ( "canvasLookahead" ), &cConfig->bLookahead, 0);
+    Read(_T ( "canvasCourseUp" ), &cConfig.bCourseUp, 0);
+    Read(_T ( "canvasHeadUp" ), &cConfig.bHeadUp, 0);
+    Read(_T ( "canvasLookahead" ), &cConfig.bLookahead, 0);
   }
 
-  Read(_T ( "ActiveChartGroup" ), &cConfig->GroupID, 0);
+  Read(_T ( "ActiveChartGroup" ), &cConfig.GroupID, 0);
 
   // Special check for group selection when applied as template
-  if (cConfig->GroupID && bApplyAsTemplate) {
-    if (cConfig->GroupID > (int)g_pGroupArray->GetCount()) cConfig->GroupID = 0;
+  if (cConfig.GroupID && bApplyAsTemplate) {
+    if (cConfig.GroupID > (int)g_pGroupArray->GetCount()) cConfig.GroupID = 0;
   }
 
-  Read(_T ( "canvasShowTides" ), &cConfig->bShowTides, 0);
-  Read(_T ( "canvasShowCurrents" ), &cConfig->bShowCurrents, 0);
+  Read(_T ( "canvasShowTides" ), &cConfig.bShowTides, 0);
+  Read(_T ( "canvasShowCurrents" ), &cConfig.bShowCurrents, 0);
 
-  Read(_T ( "canvasQuilt" ), &cConfig->bQuilt, 1);
-  Read(_T ( "canvasShowGrid" ), &cConfig->bShowGrid, 0);
-  Read(_T ( "canvasShowOutlines" ), &cConfig->bShowOutlines, 0);
-  Read(_T ( "canvasShowDepthUnits" ), &cConfig->bShowDepthUnits, 0);
+  Read(_T ( "canvasQuilt" ), &cConfig.bQuilt, 1);
+  Read(_T ( "canvasShowGrid" ), &cConfig.bShowGrid, 0);
+  Read(_T ( "canvasShowOutlines" ), &cConfig.bShowOutlines, 0);
+  Read(_T ( "canvasShowDepthUnits" ), &cConfig.bShowDepthUnits, 0);
 
-  Read(_T ( "canvasShowAIS" ), &cConfig->bShowAIS, 1);
-  Read(_T ( "canvasAttenAIS" ), &cConfig->bAttenAIS, 0);
+  Read(_T ( "canvasShowAIS" ), &cConfig.bShowAIS, 1);
+  Read(_T ( "canvasAttenAIS" ), &cConfig.bAttenAIS, 0);
 
   // ENC options
-  Read(_T ( "canvasShowENCText" ), &cConfig->bShowENCText, 1);
-  Read(_T ( "canvasENCDisplayCategory" ), &cConfig->nENCDisplayCategory,
+  Read(_T ( "canvasShowENCText" ), &cConfig.bShowENCText, 1);
+  Read(_T ( "canvasENCDisplayCategory" ), &cConfig.nENCDisplayCategory,
        STANDARD);
-  Read(_T ( "canvasENCShowDepths" ), &cConfig->bShowENCDepths, 1);
-  Read(_T ( "canvasENCShowBuoyLabels" ), &cConfig->bShowENCBuoyLabels, 1);
+  Read(_T ( "canvasENCShowDepths" ), &cConfig.bShowENCDepths, 1);
+  Read(_T ( "canvasENCShowBuoyLabels" ), &cConfig.bShowENCBuoyLabels, 1);
   Read(_T ( "canvasENCShowLightDescriptions" ),
-       &cConfig->bShowENCLightDescriptions, 1);
-  Read(_T ( "canvasENCShowLights" ), &cConfig->bShowENCLights, 1);
+       &cConfig.bShowENCLightDescriptions, 1);
+  Read(_T ( "canvasENCShowLights" ), &cConfig.bShowENCLights, 1);
   Read(_T ( "canvasENCShowVisibleSectorLights" ),
-       &cConfig->bShowENCVisibleSectorLights, 0);
-  Read(_T ( "canvasENCShowAnchorInfo" ), &cConfig->bShowENCAnchorInfo, 0);
+       &cConfig.bShowENCVisibleSectorLights, 0);
+  Read(_T ( "canvasENCShowAnchorInfo" ), &cConfig.bShowENCAnchorInfo, 0);
 
   int sx, sy;
   Read(_T ( "canvasSizeX" ), &sx, 0);
   Read(_T ( "canvasSizeY" ), &sy, 0);
-  cConfig->canvasSize = wxSize(sx, sy);
+  cConfig.canvasSize = wxSize(sx, sy);
 }
 
 void MyConfig::SaveCanvasConfigs() {
@@ -2149,7 +2147,6 @@ void MyConfig::SaveCanvasConfigs() {
   Write(_T ( "CanvasConfig" ), (int)g_canvasConfig);
 
   wxString s;
-  canvasConfig *pcc;
 
   switch (g_canvasConfig) {
     case 0:
@@ -2158,40 +2155,34 @@ void MyConfig::SaveCanvasConfigs() {
       s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
       SetPath(s);
 
-      if (g_canvasConfigArray.GetCount() > 0) {
-        pcc = g_canvasConfigArray.Item(0);
-        if (pcc) {
-          SaveConfigCanvas(pcc);
-        }
+      if (g_canvasConfigArray.size() > 0) {
+        auto &pcc = g_canvasConfigArray.at(0);
+        SaveConfigCanvas(pcc);
       }
       break;
 
     case 1:
 
-      if (g_canvasConfigArray.GetCount() > 1) {
+      if (g_canvasConfigArray.size() > 1) {
         s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
         SetPath(s);
-        pcc = g_canvasConfigArray.Item(0);
-        if (pcc) {
-          SaveConfigCanvas(pcc);
-        }
+        auto &pcc = g_canvasConfigArray.at(0);
+        SaveConfigCanvas(pcc);
 
         s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
         SetPath(s);
-        pcc = g_canvasConfigArray.Item(1);
-        if (pcc) {
-          SaveConfigCanvas(pcc);
-        }
+        pcc = g_canvasConfigArray.at(1);
+        SaveConfigCanvas(pcc);
       }
       break;
   }
 }
 
-void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
+void MyConfig::SaveConfigCanvas(canvasConfig &cConfig) {
   wxString st1;
 
-  if (cConfig->canvas) {
-    ViewPort vp = cConfig->canvas->GetVP();
+  if (cConfig.canvas) {
+    ViewPort vp = cConfig.canvas->GetVP();
 
     if (vp.IsValid()) {
       st1.Printf(_T ( "%10.4f,%10.4f" ), vp.clat, vp.clon);
@@ -2203,53 +2194,52 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
     }
 
     int restore_dbindex = 0;
-    ChartStack *pcs = cConfig->canvas->GetpCurrentStack();
+    ChartStack *pcs = cConfig.canvas->GetpCurrentStack();
     if (pcs) restore_dbindex = pcs->GetCurrentEntrydbIndex();
-    if (cConfig->canvas->GetQuiltMode())
-      restore_dbindex = cConfig->canvas->GetQuiltReferenceChartIndex();
+    if (cConfig.canvas->GetQuiltMode())
+      restore_dbindex = cConfig.canvas->GetQuiltReferenceChartIndex();
     Write(_T ( "canvasInitialdBIndex" ), restore_dbindex);
 
-    Write(_T ( "canvasbFollow" ), cConfig->canvas->m_bFollow);
-    Write(_T ( "ActiveChartGroup" ), cConfig->canvas->m_groupIndex);
+    Write(_T ( "canvasbFollow" ), cConfig.canvas->m_bFollow);
+    Write(_T ( "ActiveChartGroup" ), cConfig.canvas->m_groupIndex);
 
     Write(_T ( "canvasToolbarConfig" ),
-          cConfig->canvas->GetToolbarConfigString());
+          cConfig.canvas->GetToolbarConfigString());
     Write(_T ( "canvasShowToolbar" ),
-          0);  // cConfig->canvas->GetToolbarEnable() );
+          0);  // cConfig.canvas->GetToolbarEnable() );
 
-    Write(_T ( "canvasQuilt" ), cConfig->canvas->GetQuiltMode());
-    Write(_T ( "canvasShowGrid" ), cConfig->canvas->GetShowGrid());
-    Write(_T ( "canvasShowOutlines" ), cConfig->canvas->GetShowOutlines());
-    Write(_T ( "canvasShowDepthUnits" ), cConfig->canvas->GetShowDepthUnits());
+    Write(_T ( "canvasQuilt" ), cConfig.canvas->GetQuiltMode());
+    Write(_T ( "canvasShowGrid" ), cConfig.canvas->GetShowGrid());
+    Write(_T ( "canvasShowOutlines" ), cConfig.canvas->GetShowOutlines());
+    Write(_T ( "canvasShowDepthUnits" ), cConfig.canvas->GetShowDepthUnits());
 
-    Write(_T ( "canvasShowAIS" ), cConfig->canvas->GetShowAIS());
-    Write(_T ( "canvasAttenAIS" ), cConfig->canvas->GetAttenAIS());
+    Write(_T ( "canvasShowAIS" ), cConfig.canvas->GetShowAIS());
+    Write(_T ( "canvasAttenAIS" ), cConfig.canvas->GetAttenAIS());
 
-    Write(_T ( "canvasShowTides" ), cConfig->canvas->GetbShowTide());
-    Write(_T ( "canvasShowCurrents" ), cConfig->canvas->GetbShowCurrent());
+    Write(_T ( "canvasShowTides" ), cConfig.canvas->GetbShowTide());
+    Write(_T ( "canvasShowCurrents" ), cConfig.canvas->GetbShowCurrent());
 
     // ENC options
-    Write(_T ( "canvasShowENCText" ), cConfig->canvas->GetShowENCText());
+    Write(_T ( "canvasShowENCText" ), cConfig.canvas->GetShowENCText());
     Write(_T ( "canvasENCDisplayCategory" ),
-          cConfig->canvas->GetENCDisplayCategory());
-    Write(_T ( "canvasENCShowDepths" ), cConfig->canvas->GetShowENCDepth());
+          cConfig.canvas->GetENCDisplayCategory());
+    Write(_T ( "canvasENCShowDepths" ), cConfig.canvas->GetShowENCDepth());
     Write(_T ( "canvasENCShowBuoyLabels" ),
-          cConfig->canvas->GetShowENCBuoyLabels());
+          cConfig.canvas->GetShowENCBuoyLabels());
     Write(_T ( "canvasENCShowLightDescriptions" ),
-          cConfig->canvas->GetShowENCLightDesc());
-    Write(_T ( "canvasENCShowLights" ), cConfig->canvas->GetShowENCLights());
+          cConfig.canvas->GetShowENCLightDesc());
+    Write(_T ( "canvasENCShowLights" ), cConfig.canvas->GetShowENCLights());
     Write(_T ( "canvasENCShowVisibleSectorLights" ),
-          cConfig->canvas->GetShowVisibleSectors());
-    Write(_T ( "canvasENCShowAnchorInfo" ),
-          cConfig->canvas->GetShowENCAnchor());
+          cConfig.canvas->GetShowVisibleSectors());
+    Write(_T ( "canvasENCShowAnchorInfo" ), cConfig.canvas->GetShowENCAnchor());
 
     Write(_T ( "canvasCourseUp" ),
-          cConfig->canvas->GetUpMode() == COURSE_UP_MODE);
-    Write(_T ( "canvasHeadUp" ), cConfig->canvas->GetUpMode() == HEAD_UP_MODE);
-    Write(_T ( "canvasLookahead" ), cConfig->canvas->GetLookahead());
+          cConfig.canvas->GetUpMode() == COURSE_UP_MODE);
+    Write(_T ( "canvasHeadUp" ), cConfig.canvas->GetUpMode() == HEAD_UP_MODE);
+    Write(_T ( "canvasLookahead" ), cConfig.canvas->GetLookahead());
 
-    int width = cConfig->canvas->GetSize().x;
-    //         if(cConfig->canvas->IsPrimaryCanvas()){
+    int width = cConfig.canvas->GetSize().x;
+    //         if(cConfig.canvas->IsPrimaryCanvas()){
     //             width = wxMax(width, gFrame->GetClientSize().x / 10);
     //         }
     //         else{
@@ -2257,7 +2247,7 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
     //         }
 
     Write(_T ( "canvasSizeX" ), width);
-    Write(_T ( "canvasSizeY" ), cConfig->canvas->GetSize().y);
+    Write(_T ( "canvasSizeY" ), cConfig.canvas->GetSize().y);
   }
 }
 

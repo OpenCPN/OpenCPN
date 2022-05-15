@@ -82,8 +82,6 @@ public:
   CatalogEntryValue v;
 };
 
-WX_DEFINE_ARRAY(CatalogEntry *, ArrayOfCatalogEntries);
-
 class glTexTile {
 public:
   glTexTile() {

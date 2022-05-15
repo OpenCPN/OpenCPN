@@ -1153,51 +1153,51 @@ void ChartCanvas::OnDoubleLeftClick(wxMouseEvent &event) {
 }
 #endif /* HAVE_WX_GESTURE_EVENTS */
 
-void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
-  SetViewPoint(pcc->iLat, pcc->iLon, pcc->iScale, 0., pcc->iRotation);
-  m_vLat = pcc->iLat;
-  m_vLon = pcc->iLon;
+void ChartCanvas::ApplyCanvasConfig(canvasConfig &pcc) {
+  SetViewPoint(pcc.iLat, pcc.iLon, pcc.iScale, 0., pcc.iRotation);
+  m_vLat = pcc.iLat;
+  m_vLon = pcc.iLon;
 
-  m_restore_dbindex = pcc->DBindex;
-  m_bFollow = pcc->bFollow;
-  if (pcc->GroupID < 0) pcc->GroupID = 0;
+  m_restore_dbindex = pcc.DBindex;
+  m_bFollow = pcc.bFollow;
+  if (pcc.GroupID < 0) pcc.GroupID = 0;
 
-  if (pcc->GroupID > (int)g_pGroupArray->GetCount())
+  if (pcc.GroupID > (int)g_pGroupArray->GetCount())
     m_groupIndex = 0;
   else
-    m_groupIndex = pcc->GroupID;
+    m_groupIndex = pcc.GroupID;
 
-  if (pcc->bQuilt != GetQuiltMode()) ToggleCanvasQuiltMode();
+  if (pcc.bQuilt != GetQuiltMode()) ToggleCanvasQuiltMode();
 
-  ShowTides(pcc->bShowTides);
-  ShowCurrents(pcc->bShowCurrents);
+  ShowTides(pcc.bShowTides);
+  ShowCurrents(pcc.bShowCurrents);
 
-  SetShowDepthUnits(pcc->bShowDepthUnits);
-  SetShowGrid(pcc->bShowGrid);
-  SetShowOutlines(pcc->bShowOutlines);
+  SetShowDepthUnits(pcc.bShowDepthUnits);
+  SetShowGrid(pcc.bShowGrid);
+  SetShowOutlines(pcc.bShowOutlines);
 
-  SetShowAIS(pcc->bShowAIS);
-  SetAttenAIS(pcc->bAttenAIS);
+  SetShowAIS(pcc.bShowAIS);
+  SetAttenAIS(pcc.bAttenAIS);
 
   // ENC options
-  SetShowENCText(pcc->bShowENCText);
-  m_encDisplayCategory = pcc->nENCDisplayCategory;
-  m_encShowDepth = pcc->bShowENCDepths;
-  m_encShowLightDesc = pcc->bShowENCLightDescriptions;
-  m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
-  m_encShowLights = pcc->bShowENCLights;
-  m_bShowVisibleSectors = pcc->bShowENCVisibleSectorLights;
-  m_encShowAnchor = pcc->bShowENCAnchorInfo;
+  SetShowENCText(pcc.bShowENCText);
+  m_encDisplayCategory = pcc.nENCDisplayCategory;
+  m_encShowDepth = pcc.bShowENCDepths;
+  m_encShowLightDesc = pcc.bShowENCLightDescriptions;
+  m_encShowBuoyLabels = pcc.bShowENCBuoyLabels;
+  m_encShowLights = pcc.bShowENCLights;
+  m_bShowVisibleSectors = pcc.bShowENCVisibleSectorLights;
+  m_encShowAnchor = pcc.bShowENCAnchorInfo;
 
-  bool courseUp = pcc->bCourseUp;
-  bool headUp = pcc->bHeadUp;
+  bool courseUp = pcc.bCourseUp;
+  bool headUp = pcc.bHeadUp;
   m_upMode = NORTH_UP_MODE;
   if (courseUp)
     m_upMode = COURSE_UP_MODE;
   else if (headUp)
     m_upMode = HEAD_UP_MODE;
 
-  m_bLookAhead = pcc->bLookahead;
+  m_bLookAhead = pcc.bLookahead;
 
   m_singleChart = NULL;
 }

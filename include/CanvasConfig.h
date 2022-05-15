@@ -76,6 +76,4 @@ public:
   bool bShowENCAnchorInfo;
 };
 
-WX_DEFINE_ARRAY_PTR(canvasConfig *, arrayofCanvasConfigPtr);
-
 #endif
