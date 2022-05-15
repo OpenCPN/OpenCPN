@@ -2000,7 +2000,7 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
   else
     color = GetGlobalColor(_T ( "UINFR" ));
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
 
   glColor3ub(color.Red(), color.Green(), color.Blue());
@@ -3451,7 +3451,7 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp,
 
   /* setup opengl parameters */
   glEnable(GL_TEXTURE_2D);
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -3498,7 +3498,7 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp,
         }
       }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       RenderTextures(coords, tile->m_texcoords, 4, m_pParentCanvas->GetpVP());
 #else
       if (!texture) {  // failed to load, draw red
@@ -3518,7 +3518,7 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp,
 
   glDisable(GL_TEXTURE_2D);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   if (use_norm_vp) glPopMatrix();
 
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -4458,11 +4458,9 @@ void glChartCanvas::Render() {
          accelerated_pan = false;
 
       // do we allow accelerated panning?  can we perform it here?
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
       // enable rendering to texture in framebuffer object
       (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
-
-      accelerated_pan = false;
 
       if (accelerated_pan) {
         if ((dx != 0) || (dy != 0)) {   // Anything to do?
@@ -4560,6 +4558,8 @@ void glChartCanvas::Render() {
 
       if (b_full) accelerated_pan = false;
 
+      //accelerated_pan = false;
+
       if (accelerated_pan) {
         // qDebug() << "AccPan";
         if ((dx != 0) || (dy != 0)) {   // Anything to do?
@@ -4595,7 +4595,7 @@ void glChartCanvas::Render() {
           wxColour color = GetGlobalColor(_T ( "NODTA" ));
           glClearColor(color.Red() / 256., color.Green() / 256.,
                        color.Blue() / 256., 1.0);
-          // glClearColor(1.0f, 0.0f, 0.f, 1.0f);
+          glClearColor(1.0f, 0.0f, 0.f, 1.0f);
           glClear(GL_COLOR_BUFFER_BIT);
 
           // Render the new content

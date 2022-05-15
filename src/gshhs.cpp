@@ -652,9 +652,9 @@ void GshhsPolyCell::drawMapPlain(ocpnDC &pnt, double dx, ViewPort &vp,
 #endif
     DRAW_POLY_FILLED_GL(1, landColor);
     DRAW_POLY_FILLED_GL(2, seaColor);
-    DRAW_POLY_FILLED_GL(3, landColor);
-    DRAW_POLY_FILLED_GL(4, seaColor);
-    DRAW_POLY_FILLED_GL(5, landColor);
+    //DRAW_POLY_FILLED_GL(3, landColor);
+    //DRAW_POLY_FILLED_GL(4, seaColor);
+    //DRAW_POLY_FILLED_GL(5, landColor);
 
 #if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
     if (dx) glPopMatrix();
