@@ -812,6 +812,7 @@ set(
   include/chartdbs.h
   include/chartimg.h
   include/chcanv.h
+  include/check_platform.h
   include/ChInfoWin.h
   include/compass.h
   include/concanv.h
@@ -946,6 +947,7 @@ set(
   src/chartdbs.cpp
   src/chartimg.cpp
   src/chcanv.cpp
+  src/check_platform.cpp
   src/ChInfoWin.cpp
   src/compass.cpp
   src/concanv.cpp

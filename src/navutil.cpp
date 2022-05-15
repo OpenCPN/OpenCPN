@@ -476,6 +476,8 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
 
+bool g_hide_no_plugins_dlg;
+
 // Layer helper function
 
 wxString GetLayerName(int id) {
@@ -571,6 +573,7 @@ int MyConfig::LoadMyConfig() {
   wxDisplaySize(&display_width, &display_height);
 
   //  Set up any defaults not set elsewhere
+  g_hide_no_plugins_dlg = false;
   g_useMUI = true;
   g_TalkerIdText = _T("EC");
   g_maxWPNameLength = 6;
@@ -804,6 +807,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     g_memCacheLimit = mem_limit * 1024;  // convert from MBytes to kBytes
 
   Read(_T ( "UseModernUI5" ), &g_useMUI);
+  Read("HideNoPluginsDlg", &g_hide_no_plugins_dlg);
 
   Read(_T( "NCPUCount" ), &g_nCPUCount);
 
@@ -2408,6 +2412,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "TrackRotateAt" ), g_track_rotate_time);
   Write(_T ( "TrackRotateTimeType" ), g_track_rotate_time_type);
   Write(_T ( "HighlightTracks" ), g_bHighliteTracks);
+  Write("HideNoPluginsDlg", g_hide_no_plugins_dlg);
 
   Write(_T ( "InitialStackIndex" ), g_restore_stackindex);
   Write(_T ( "InitialdBIndex" ), g_restore_dbindex);

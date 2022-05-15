@@ -95,6 +95,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "chartbase.h"  // for ChartPlugInWrapper
 #include "chartdb.h"
 #include "chartdbs.h"
+#include "check_platform.h"
 #include "Downloader.h"
 #include "ocpndc.h"
 #include "styles.h"
@@ -598,6 +599,8 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
   g_pi_manager->LoadAllPlugIns(false);
 
   parent->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+  wxLogDebug("Loaded %d plugins", g_pi_manager->GetPlugInArray()->GetCount());
+  check_platform(parent, g_pi_manager->GetPlugInArray()->GetCount());
   // wxString name(plugin);
   // g_pi_manager->GetListPanelPtr()->SelectByName(name);
 }
@@ -5126,6 +5129,8 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent &event) {
 #endif
   if (m_PluginListPanel)
     m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+  wxLogDebug("Loaded %d plugins", g_pi_manager->GetPlugInArray()->GetCount());
+  check_platform(this, g_pi_manager->GetPlugInArray()->GetCount());
 
   OCPNMessageBox(this, _("Catalog update successful"),
                  _("OpenCPN Catalog update"), wxICON_INFORMATION | wxOK);
