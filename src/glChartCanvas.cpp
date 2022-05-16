@@ -1390,6 +1390,8 @@ void glChartCanvas::SetupOpenGL() {
   if (!QueryExtension("GL_EXT_framebuffer_object")) m_b_DisableFBO = true;
 #endif
 
+  //m_b_DisableFBO = true;
+
 #ifdef __OCPN__ANDROID__
   g_texture_rectangle_format = GL_TEXTURE_2D;
 #endif
@@ -3866,6 +3868,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
                                                            rect_region, region);
     }
   }
+  glUseProgram(0);
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region,
@@ -4457,6 +4460,8 @@ void glChartCanvas::Render() {
       if (m_displayScale > 1)
          accelerated_pan = false;
 
+      //accelerated_pan = false;
+
       // do we allow accelerated panning?  can we perform it here?
 #if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
       // enable rendering to texture in framebuffer object
@@ -4645,8 +4650,6 @@ void glChartCanvas::Render() {
           uv[6] = tx1;
           uv[7] = ty2;
 
-          //<<<<<<< HEAD
-
           coords[0] = -dx;
           coords[1] = dy;
           coords[2] = -dx + sx;
@@ -4656,14 +4659,6 @@ void glChartCanvas::Render() {
           coords[6] = -dx;
           coords[7] = dy + sy;
 
-          //                         qDebug() << coords[0] << coords[1] <<
-          //                         coords[2] << coords[3]; qDebug() <<
-          //                         coords[4] << coords[5] << coords[6] <<
-          //                         coords[7]; qDebug() << uv[0] << uv[1] <<
-          //                         uv[2] << uv[3]; qDebug() << uv[4] << uv[5]
-          //                         << uv[6] << uv[7];
-
-          // build_texture_shaders();
           glUseProgram(FBO_texture_2D_shader_program);
 
           // Get pointers to the attributes in the program.
@@ -4736,15 +4731,10 @@ void glChartCanvas::Render() {
 
           glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-          // qDebug() << "RenderTime2" << sw.GetTime();
-
           // Render the new content
           RenderCharts(m_gldc, update_region);
-          // qDebug() << "RenderTime3" << sw.GetTime();
-
-          // qDebug() << "RenderTime4" << sw.GetTime();
-
           glDisable(g_texture_rectangle_format);
+          glUseProgram(0);
         }
 
       }  // accelerated pan
@@ -4766,8 +4756,6 @@ void glChartCanvas::Render() {
         // color.Blue()/ 256. ,1.0 ); glClear(GL_COLOR_BUFFER_BIT);
 
         RenderCharts(m_gldc, screen_region);
-
-        // qDebug() << "RenderTimeFULL" << sw.GetTime();
 
         m_cache_page = !m_cache_page; /* page flip */
 
@@ -4865,8 +4853,6 @@ void glChartCanvas::Render() {
     if (!m_inFade) {
       RenderTextures(coords, uv, 4, m_pParentCanvas->GetpVP());
     }
-//    else
-  //    qDebug() << "skip FBO update for inFade";
 
 #endif
 
@@ -4879,7 +4865,6 @@ void glChartCanvas::Render() {
 
   } else  // useFBO
   {
-    // qDebug() << "RenderCharts No FBO";
     RenderCharts(m_gldc, screen_region);
   }
 

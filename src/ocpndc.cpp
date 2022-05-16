@@ -518,6 +518,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     //         }
     //
   }
+  glUseProgram(0);
 
 #endif
 
@@ -640,6 +641,8 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
         glDrawArrays(GL_LINES, 0, 2);
       }
+      glUseProgram(0);
+
     }
 
 #else
@@ -903,6 +906,8 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
     glUniform4fv(colloc, 1, colorv);
 
     glDrawArrays(GL_LINE_STRIP, 0, n);
+
+    glUseProgram(0);
 
 #endif
 
@@ -1170,6 +1175,8 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     // Perform the actual drawing.
     glDrawArrays(GL_LINE_LOOP, 0, workBufIndex / 2);
 
+    glUseProgram(0);
+
 #else
     if (ConfigureBrush()) {
       glBegin(GL_TRIANGLE_FAN);
@@ -1271,6 +1278,8 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
 
   //      Enable anti-aliased lines, at best quality
   glDisable(GL_BLEND);
+
+  glUseProgram(0);
 
 #else
   DrawEllipse(x - radius, y - radius, 2 * radius, 2 * radius);
@@ -1407,6 +1416,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Perform the actual drawing.
       glDrawArrays(GL_LINE_LOOP, 0, n);
+      glUseProgram(0);
 
     } else {  // n = 3 or 4, most common case for pre-tesselated shapes
 
@@ -1485,6 +1495,9 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       } else if (n == 3) {
         glDrawArrays(GL_TRIANGLES, 0, 3);
       }
+
+      glUseProgram(0);
+
     }
 
 #else
@@ -1654,6 +1667,8 @@ void odc_endCallbackD_GLSL(void *data) {
   glUniform4fv(colloc, 1, colorv);
 
   glDrawArrays(pDC->s_odc_tess_mode, 0, pDC->s_odc_nvertex);
+  glUseProgram(0);
+
 #endif
 }
 #endif
@@ -2099,6 +2114,8 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      glUseProgram(0);
 
 #endif
 

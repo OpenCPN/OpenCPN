@@ -344,6 +344,8 @@ void TexFont::RenderGlyph(int c) {
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+  glUseProgram(0);
+
 #endif
 
   m_dx += tgic.advance;
