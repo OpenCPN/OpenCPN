@@ -1608,7 +1608,7 @@ target_link_libraries(
     ocpn::tinyxml
 )
 
-if (OCPN_USE_CURL)
+if (OCPN_USE_CURL AND NOT QT_ANDROID)
   target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
 endif ()
 
