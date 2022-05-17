@@ -3953,21 +3953,6 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       glUseProgram(color_tri_shader_program);
 
-      float pf[6];
-      pf[0] = x1;
-      pf[1] = y1;
-      pf[2] = x2;
-      pf[3] = y1;
-      pf[4] = x2;
-      pf[5] = y2;
-
-      GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
-      glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pf);
-      glEnableVertexAttribArray(pos);
-
-      GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)vp.vp_transform);
-
       float colorv[4];
       colorv[0] = water.Red() / float(256);
       colorv[1] = water.Green() / float(256);
@@ -3977,20 +3962,21 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
       GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
       glUniform4fv(colloc, 1, colorv);
 
-      // qDebug() << "triuni" << matloc << colloc;
-
-      glDrawArrays(GL_TRIANGLES, 0, 3);
-
+      float pf[8];
       pf[0] = x2;
-      pf[1] = y2;
-      pf[2] = x1;
+      pf[1] = y1;
+      pf[2] = x2;
       pf[3] = y2;
       pf[4] = x1;
       pf[5] = y1;
+      pf[6] = x1;
+      pf[7] = y2;
+
+      GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
       glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pf);
       glEnableVertexAttribArray(pos);
 
-      glDrawArrays(GL_TRIANGLES, 0, 3);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 #else
       glColor3ub(water.Red(), water.Green(), water.Blue());
@@ -4580,7 +4566,7 @@ void glChartCanvas::Render() {
           // scale
           OCPNRegion update_region;
 
-          int fluff = 0;
+          int fluff = 2;
 
           // Avoid rendering artifacts caused by Multi Sampling (MSAA)
           if (VPoint.chart_scale < 10000) fluff = 8;
@@ -4604,8 +4590,6 @@ void glChartCanvas::Render() {
           glClear(GL_COLOR_BUFFER_BIT);
 
           // Render the new content
-          // OCPNStopWatch swr1;
-          //                   RenderCharts(gldc, update_region);
           glViewport(0, 0, (GLint)sx, (GLint)sy);
 
           // using the old framebuffer
