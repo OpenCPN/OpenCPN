@@ -95,7 +95,7 @@ extern double gSog;
 extern double gHdt;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
-extern std::vector<std::unique_ptr<MMSIProperties>> g_MMSI_Props_Array;
+extern ArrayOfMMSIProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
 extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
@@ -408,8 +408,9 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event) {
     return;  // Only handle ships with MMSI for now
   }
   // Stop here if the target shall be ignored
-  for (const auto &props : g_MMSI_Props_Array) {
-    if (mmsi == props->MMSI) {
+  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
+      MMSIProperties * props = g_MMSI_Props_Array[i];
       if (props->m_bignore) {
         return;
       }
@@ -1226,7 +1227,8 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
       pTargetData = it->second;    // find current entry
       pStaleTarget = pTargetData;  // save a pointer to stale data
     }
-    for (const auto &props : g_MMSI_Props_Array) {
+    for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+      MMSIProperties *props = g_MMSI_Props_Array[i];
       if (mmsi == props->MMSI) {
         // Check to see if this target has been flagged as a "follower"
         if (props->m_bFollower) follower_mmsi = mmsi;
@@ -1422,8 +1424,9 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
         // Normal target
         pTargetData->b_PersistTrack = false;
         // Or first decode for this target
-        for (const auto &props : g_MMSI_Props_Array) {
-          if (pTargetData->MMSI == props->MMSI) {
+        for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+          if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
+            MMSIProperties *props = g_MMSI_Props_Array[i];
             pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
             break;
           }
@@ -1527,8 +1530,9 @@ void AIS_Decoder::getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
 }
 
 void AIS_Decoder::getMMSIProperties(AIS_Target_Data *&pTargetData) {
-  for (const auto &props : g_MMSI_Props_Array) {
-    if (pTargetData->MMSI == props->MMSI) {
+  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
+      MMSIProperties * props = g_MMSI_Props_Array[i];
       pTargetData->b_isFollower = props->m_bFollower;
       pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
       if (TRACKTYPE_NEVER == props->TrackType) {
@@ -1656,9 +1660,8 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
     token = tkz.GetNextToken();  // sentence number
     token = tkz.GetNextToken();  // query/rely flag
     token = tkz.GetNextToken();  // vessel MMSI
-    dse_mmsi = wxAtoi(token.Mid(
-        0, 9));  // ITU-R M.493-10 ï¿½5.2
-                 //token.ToDouble(&dse_addr);
+    dse_mmsi = wxAtoi(token.Mid(0, 9)); // ITU-R M.493-10 §5.2
+    //token.ToDouble(&dse_addr);
     //0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
 
 # if 0
@@ -1671,7 +1674,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
     dse_lat = dse_lat / 600000.0;
     dse_lon = dse_lon / 600000.0;
 #endif
-                 // DSE Sentence may contain multiple dse expansion data items
+     // DSE Sentence may contain multiple dse expansion data items
    while (tkz.HasMoreTokens())	{
        dseSymbol = tkz.GetNextToken(); //dse expansion data symbol
        token = tkz.GetNextToken(); // dse expansion data
@@ -2636,8 +2639,9 @@ void AIS_Decoder::DeletePersistentTrack(Track *track) {
       m_persistent_tracks.erase(iterator);
       //Last tracks for this target?
       if (0 == m_persistent_tracks.count(mmsi)) {
-        for (const auto &props : g_MMSI_Props_Array) {
-          if (mmsi == props->MMSI) {
+        for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+          if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
+            MMSIProperties *props = g_MMSI_Props_Array[i];
             if (props->m_bPersistentTrack) {
               // Ask if mmsi props should be changed.
               // Avoid creation of a new track while messaging
@@ -3031,7 +3035,8 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
 
     // Remove any targets specified as to be "ignored", so that they won't
     // trigger phantom alerts (e.g. SARTs)
-    for (const auto &props : g_MMSI_Props_Array) {
+    for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+      MMSIProperties *props = g_MMSI_Props_Array[i];
       if (td->MMSI == props->MMSI) {
         if (props->m_bignore) {
           remove_array.push_back(td->MMSI);  // Add this target to removal list
@@ -3279,8 +3284,8 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
   //  If a SART Alert is active, check to see if the MMSI has special properties
   //  set indicating that this Alert is a MOB for THIS ship.
   if (palert_target && (palert_target->Class == AIS_SART)) {
-    for (const auto &props : g_MMSI_Props_Array) {
-      if (palert_target->MMSI == props->MMSI) {
+    for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+      if (palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI) {
         if (pAISMOBRoute)
           gFrame->UpdateAISMOBRoute(palert_target);
         else
@@ -3300,7 +3305,7 @@ AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI(int mmsi) {
     return AISTargetList[mmsi];
 }
 
-std::vector<std::unique_ptr<MMSIProperties>> g_MMSI_Props_Array;
+ArrayOfMMSIProperties g_MMSI_Props_Array;
 
 //      MMSIProperties Implementation
 
