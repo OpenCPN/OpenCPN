@@ -1,0 +1,32 @@
+From cf0fa8b7b5a70185d4d8fbd773b22a758dcc99b2 Mon Sep 17 00:00:00 2001
+From: Pavel Kalian <pavel@kalian.cz>
+Date: Mon, 9 May 2022 13:09:29 -0300
+Subject: Dont enable deleting non-existing user-defined chart groups.
+
+Disable buttons in case no more user defined chart groups are
+left. Fixes #2679
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/cf0fa8b7b
+
+---
+ src/options.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/options.cpp b/src/options.cpp
+index 34f52072a..d747a1859 100644
+--- a/src/options.cpp
++++ b/src/options.cpp
+@@ -10381,6 +10381,10 @@ void ChartGroupsUI::OnDeleteGroup(wxCommandEvent& event) {
+     m_GroupNB->DeletePage(m_GroupSelectedPage);
+     modified = TRUE;
+   }
++  if (m_GroupSelectedPage <= 0) {
++    m_pAddButton->Disable();
++    m_pDeleteGroupButton->Disable();
++  }
+ }
+ 
+ int ChartGroupsUI::FindGroupBranch(ChartGroup* pGroup, wxTreeCtrl* ptree,
+-- 
+2.36.1
+

@@ -2,3 +2,4 @@
 0002-build-Drop-CoC-909_2013-InlandECDIS_20170308s.pdf.patch
 0003-Fix-wrong-desktop-filename-in-appdata.patch
 0004-Allow-loading-GPX-TrackPoint-with-unspecified-timest.patch
+0005-Disable-buttons-in-case-no-more-user-defined-chart-g.patch
