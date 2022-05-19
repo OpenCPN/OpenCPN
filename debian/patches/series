@@ -3,3 +3,4 @@
 0003-Fix-wrong-desktop-filename-in-appdata.patch
 0004-Allow-loading-GPX-TrackPoint-with-unspecified-timest.patch
 0005-Disable-buttons-in-case-no-more-user-defined-chart-g.patch
+0006-Tracking-can-be-started-before-the-main-toolbar-is-c.patch
