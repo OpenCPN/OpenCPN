@@ -1,4 +1,3 @@
-From 618a67218253ab3a97d8982e59a24fece6f6085f Mon Sep 17 00:00:00 2001
 From: Pavel Kalian <pavel@kalian.cz>
 Date: Mon, 9 May 2022 13:46:58 -0300
 Subject: Handle tracking started before toolbar exists
@@ -7,16 +6,15 @@ Tracking can be started before the main toolbar is created,
 the state still must be taken into account. Fixes #2660
 
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/618a67218
-
 ---
  src/chart1.cpp | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/src/chart1.cpp b/src/chart1.cpp
-index db790968b..9187db375 100644
+index fc021bf..826ce90 100644
 --- a/src/chart1.cpp
 +++ b/src/chart1.cpp
-@@ -5064,6 +5064,7 @@ void MyFrame::TrackOn(void) {
+@@ -5087,6 +5087,7 @@ void MyFrame::TrackOn(void) {
  
    g_pActiveTrack->Start();
  
@@ -24,7 +22,7 @@ index db790968b..9187db375 100644
    SetMasterToolbarItemState(ID_TRACK, g_bTrackActive);
    if (g_MainToolbar)
      g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
-@@ -9652,6 +9653,11 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
+@@ -9787,6 +9788,11 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
      if (pttc->kind == wxITEM_CHECK) tb->ToggleTool(pttc->id, pttc->b_toggle);
    }
  
@@ -36,6 +34,3 @@ index db790968b..9187db375 100644
    return tb;
  }
  
--- 
-2.36.1
-

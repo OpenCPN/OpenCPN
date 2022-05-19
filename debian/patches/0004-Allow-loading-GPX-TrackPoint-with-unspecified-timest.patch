@@ -1,17 +1,15 @@
-From c0c10ff50b8b1f7a0af38db278d83eebbba2e237 Mon Sep 17 00:00:00 2001
 From: dsr <bdbcat@yahoo.com>
 Date: Mon, 9 May 2022 12:16:03 -0400
 Subject: [PATCH] Allow loading GPX TrackPoint with unspecified timestamp.
  Closes #2680
 
 Applied-Upstream: https://github.com/OpenCPN/OpenCPN/commit/c0c10ff50b8b
-
 ---
  src/NavObjectCollection.cpp | 7 ++-----
  1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/src/NavObjectCollection.cpp b/src/NavObjectCollection.cpp
-index 6f2927de3..282c7a4b5 100644
+index 4754c02..8d657b2 100644
 --- a/src/NavObjectCollection.cpp
 +++ b/src/NavObjectCollection.cpp
 @@ -299,11 +299,8 @@ static TrackPoint *GPXLoadTrackPoint1(pugi::xml_node &wpt_node) {
@@ -28,6 +26,3 @@ index 6f2927de3..282c7a4b5 100644
  }
  
  static Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
--- 
-2.36.1
-
