@@ -1440,7 +1440,7 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
 
       line.Empty();
       wxDateTime ed = pc->GetEditionDate();
-      if (ed != wxInvalidDateTime) {
+      if (ed.IsValid()) {
         line = _(" Updated:  ");
         line += ed.FormatISODate();
         line += _T("\n");
