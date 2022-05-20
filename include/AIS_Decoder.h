@@ -65,6 +65,8 @@ public:
   wxString m_ShipName;
 };
 
+WX_DEFINE_ARRAY_PTR(MMSIProperties *, ArrayOfMMSIProperties);
+
 class AIS_Decoder : public wxEvtHandler {
 public:
   AIS_Decoder(wxFrame *parent);
