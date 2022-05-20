@@ -443,6 +443,9 @@ s57RegistrarMgr *m_pRegistrarMan;
 
 CM93OffsetDialog *g_pCM93OffsetDialog;
 
+extern float g_GLMinSymbolLineWidth;
+extern float g_GLMinCartographicLineWidth;
+
 #ifdef __WXOSX__
 #include "macutils.h"
 #endif
@@ -1343,6 +1346,9 @@ void LoadS57() {
     if (gFrame->GetPrimaryCanvas())
       ps52plib->SetPPMM(gFrame->GetPrimaryCanvas()->GetPixPerMM());
 
+    // Setup initial Rendering scale factors
+    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
+
 #ifdef ocpnUSE_GL
 
     // Setup PLIB OpenGL options, if enabled
@@ -1352,7 +1358,9 @@ void LoadS57() {
       ps52plib->SetGLOptions(
           glChartCanvas::s_b_useStencil, glChartCanvas::s_b_useStencilAP,
           glChartCanvas::s_b_useScissorTest, glChartCanvas::s_b_useFBO,
-          g_b_EnableVBO, g_texture_rectangle_format);
+          g_b_EnableVBO, g_texture_rectangle_format,
+          g_GLMinCartographicLineWidth,
+          g_GLMinSymbolLineWidth);
 #endif
 
   } else {
@@ -6401,6 +6409,11 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     g_pi_manager->SendS52ConfigToAllPlugIns(
         (rrt == S52_CHANGED) ||
         (g_last_ChartScaleFactor != g_ChartScaleFactor));
+  }
+
+  // update S52 PLIB scale factors
+  if (ps52plib){
+    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
   }
 
   if (g_MainToolbar) {

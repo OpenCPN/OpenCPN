@@ -1205,7 +1205,9 @@ void glChartCanvas::SetupOpenGL() {
   if (ps52plib)
     ps52plib->SetGLOptions(s_b_useStencil, s_b_useStencilAP, s_b_useScissorTest,
                            s_b_useFBO, g_b_EnableVBO,
-                           g_texture_rectangle_format);
+                           g_texture_rectangle_format,
+                           g_GLMinCartographicLineWidth,
+                           g_GLMinSymbolLineWidth );
 
   m_bsetup = true;
 

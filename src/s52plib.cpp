@@ -68,13 +68,6 @@
 #include "qdebug.h"
 #endif
 
-extern float g_GLMinCartographicLineWidth;
-extern float g_GLMinSymbolLineWidth;
-extern double g_overzoom_emphasis_base;
-extern bool g_oz_vector_scale;
-extern float g_ChartScaleFactorExp;
-extern int g_chart_zoom_modifier_vector;
-
 float g_scaminScale;
 
 
@@ -416,7 +409,9 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_useVBO = false;
   m_TextureFormat = -1;
   m_useGLSL = false;
-
+  m_TextureRectangleFormat = -1;
+  m_GLMinCartographicLineWidth = 1.0;
+  m_GLMinSymbolLineWidth = 1.0;
 
   m_display_size_mm = 300;
   SetGLPolygonSmoothing(true);
@@ -457,7 +452,10 @@ void s52plib::SetOCPNVersion(int major, int minor, int patch) {
 
 void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
                            bool b_useScissors, bool b_useFBO, bool b_useVBO,
-                           int nTextureFormat) {
+                           int nTextureFormat,
+                           float MinCartographicLineWidth,
+                           float MinSymbolLineWidth)
+{
   // Set GL Options/capabilities
   m_useStencil = b_useStencil;
   m_useStencilAP = b_useStencilAP;
@@ -466,6 +464,10 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
   m_useVBO = b_useVBO;
   m_TextureFormat = nTextureFormat;
   m_useGLSL = true;
+  m_TextureRectangleFormat = nTextureFormat;
+  m_GLMinCartographicLineWidth = MinCartographicLineWidth;
+  m_GLMinSymbolLineWidth = MinSymbolLineWidth;
+
 }
 
 void s52plib::SetPPMM(float ppmm) {
@@ -505,6 +507,11 @@ void s52plib::SetPPMM(float ppmm) {
   wxString msg;
   msg.Printf("Core s52plib:  ppmm: %g rv_scale_factor: %g  calc_display_size_mm: %g", ppmm, m_rv_scale_factor, m_display_size_mm);
   wxLogMessage(msg);
+}
+
+void s52plib::SetGuiScaleFactors(double ChartScaleFactorExp, int chart_zoom_modifier_vector) {
+  m_ChartScaleFactorExp = ChartScaleFactorExp;
+  m_chart_zoom_modifier_vector = chart_zoom_modifier_vector;
 }
 
 //      Various static helper methods
@@ -1799,9 +1806,9 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
   wxCoord exlead = 0;
 
   double sfactor = vp->ref_scale / vp->chart_scale;
-  double scale_factor = wxMax((sfactor - g_overzoom_emphasis_base) / 4., 1.);
+  double scale_factor = wxMax((sfactor) / 4., 1.);
 
-  if (!g_oz_vector_scale || !vp->b_quilt) scale_factor = 1.0;
+  if (true/*!g_oz_vector_scale*/ || !vp->b_quilt) scale_factor = 1.0;
 
   //  Place an upper bound on the scaled text size
   scale_factor = wxMin(scale_factor, 4);
@@ -2011,9 +2018,8 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
         }
 
         if (bdraw) {
-          extern GLenum g_texture_rectangle_format;
+extern GLenum g_texture_rectangle_format;
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
 
           int draw_width = ptext->text_width;
           int draw_height = ptext->text_height;
@@ -2034,7 +2040,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
           float tx1 = 0, tx2 = draw_width;
           float ty1 = 0, ty2 = draw_height;
 
-          if (g_texture_rectangle_format == GL_TEXTURE_2D) {
+          if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
             tx1 /= ptext->RGBA_width, tx2 /= ptext->RGBA_width;
             ty1 /= ptext->RGBA_height, ty2 /= ptext->RGBA_height;
           }
@@ -2054,7 +2060,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
 
           glPopMatrix();
 
-          glDisable(g_texture_rectangle_format);
+          glDisable(m_TextureRectangleFormat);
           glDisable(GL_BLEND);
 #else
           glEnable(GL_BLEND);
@@ -2689,7 +2695,7 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     fsf *= xscale;
   }
 
-  xscale *= g_ChartScaleFactorExp;
+  xscale *= m_ChartScaleFactorExp;
 
   //  Special case for GEO_AREA objects with centred symbols
   if (rzRules->obj->Primitive_type == GEO_AREA) {
@@ -2924,7 +2930,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                                  ViewPort *vp, float rot_angle) {
   double scale_factor = 1.0;
 
-  scale_factor *= g_ChartScaleFactorExp;
+  scale_factor *= m_ChartScaleFactorExp;
   scale_factor *= g_scaminScale;
 
   if (m_display_size_mm <
@@ -2956,13 +2962,6 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     // judgement: all OK
 
     scale_factor *= pix_factor;
-  }
-
-  if (g_oz_vector_scale && vp->b_quilt) {
-    double sfactor = vp->ref_scale / vp->chart_scale;
-    scale_factor =
-        wxMax((sfactor - g_overzoom_emphasis_base) / 4., scale_factor);
-    scale_factor = wxMin(scale_factor, 20);
   }
 
   // a few special cases here
@@ -3186,7 +3185,6 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     glEnable(GL_BLEND);
 
     if (texture) {
-      extern GLenum g_texture_rectangle_format;
 
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, texture);
@@ -3199,7 +3197,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-      if (g_texture_rectangle_format == GL_TEXTURE_2D) {
+      if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
         wxSize size = ChartSymbols::GLTextureSize();
         tx1 /= size.x, tx2 /= size.x;
         ty1 /= size.y, ty2 /= size.y;
@@ -3228,7 +3226,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       }
 #else
 
-      if (g_texture_rectangle_format == GL_TEXTURE_2D) {
+      if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
         // Normalize the sybmol texture coordinates against the next higher POT
         // size
         wxSize size = ChartSymbols::GLTextureSize();
@@ -3333,7 +3331,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
 
 #endif  // GLES2
-      glDisable(g_texture_rectangle_format);
+      glDisable(m_TextureRectangleFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
               */
       float cr = cosf(vp->rotation);
@@ -3444,9 +3442,6 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   if (rzRules->obj->Primitive_type == GEO_POINT)
     rzRules->obj->BBObj.Expand(symbox);
 
-  //  Dump the cache for next time
-  if (g_oz_vector_scale && (scale_factor > 1.0)) ClearRulesCache(prule);
-
   return true;
 }
 
@@ -3502,7 +3497,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                                    float rot_angle) {
   double scale_factor = 1.0;
 
-  scale_factor *= g_ChartScaleFactorExp;
+  scale_factor *= m_ChartScaleFactorExp;
   scale_factor *= g_scaminScale;
 
   if (m_display_size_mm <
@@ -3677,8 +3672,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
     glEnable(GL_BLEND);
 
     if (texture) {
-      extern GLenum g_texture_rectangle_format;
-
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
       glBindTexture(GL_TEXTURE_2D, texture);
@@ -3694,7 +3687,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       //            );
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-      if (g_texture_rectangle_format == GL_TEXTURE_2D) {
+      if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
         wxSize size = m_texSoundings.GLTextureSize();
         tx1 /= size.x, tx2 /= size.x;
         ty1 /= size.y, ty2 /= size.y;
@@ -3725,7 +3718,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       }
 #else
 
-      if (g_texture_rectangle_format == GL_TEXTURE_2D) {
+      if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
         // Normalize the sybmol texture coordinates against the next higher POT
         // size
         wxSize size = m_texSoundings.GLTextureSize();
@@ -3827,7 +3820,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
 
 #endif  // GLES2
-      glDisable(g_texture_rectangle_format);
+      glDisable(m_TextureRectangleFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
               */
       float cr = cosf(vp->rotation);
@@ -3953,7 +3946,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 
   //    Set drawing width
   float lineWidth = w;
-  lineWidth = wxMax(g_GLMinCartographicLineWidth, w);
+  lineWidth = wxMax(m_GLMinCartographicLineWidth, w);
 
   // Manage super high density displays
   float target_w_mm = 0.5 * w;
@@ -3965,7 +3958,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
               //  "nominal" pixels
               // the value "6" comes from semi-standard LCD display densities
               // or something like 0.18 mm pitch, or 6 pix per mm.
-    lineWidth = wxMax(g_GLMinCartographicLineWidth, target_w_mm * GetPPMM());
+    lineWidth = wxMax(m_GLMinCartographicLineWidth, target_w_mm * GetPPMM());
   }
 
   glDisable(GL_LINE_SMOOTH);
@@ -4234,9 +4227,8 @@ int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 
   double scale_factor = vp->ref_scale / vp->chart_scale;
   double scaled_line_width =
-      wxMax((scale_factor - g_overzoom_emphasis_base), 1);
-  bool b_wide_line = g_oz_vector_scale && vp->b_quilt &&
-                     (scale_factor > g_overzoom_emphasis_base);
+      wxMax((scale_factor), 1);
+  bool b_wide_line = false;
 
   wxPen wide_pen(*wxBLACK_PEN);
   wxDash dashw[2];
@@ -4297,11 +4289,11 @@ int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
       GLint parms[2];
       glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
       if (w > parms[1])
-        glLineWidth(wxMax(g_GLMinCartographicLineWidth, parms[1]));
+        glLineWidth(wxMax(m_GLMinCartographicLineWidth, parms[1]));
       else
-        glLineWidth(wxMax(g_GLMinCartographicLineWidth, w));
+        glLineWidth(wxMax(m_GLMinCartographicLineWidth, w));
     } else
-      glLineWidth(wxMax(g_GLMinCartographicLineWidth, 1));
+      glLineWidth(wxMax(m_GLMinCartographicLineWidth, 1));
 
 #ifndef ocpnUSE_GLES  // linestipple is emulated poorly
     if (!strncmp(str, "DASH", 4)) {
@@ -4439,9 +4431,8 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 
   double scale_factor = vp->ref_scale / vp->chart_scale;
   double scaled_line_width =
-      wxMax((scale_factor - g_overzoom_emphasis_base), 1);
-  bool b_wide_line = g_oz_vector_scale && vp->b_quilt &&
-                     (scale_factor > g_overzoom_emphasis_base);
+      wxMax((scale_factor), 1);
+  bool b_wide_line = false;
 
   wxPen wide_pen(*wxBLACK_PEN);
   wxDash dashw[2];
@@ -4502,11 +4493,11 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
       GLint parms[2];
       glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
       if (w > parms[1])
-        glLineWidth(wxMax(g_GLMinCartographicLineWidth, parms[1]));
+        glLineWidth(wxMax(m_GLMinCartographicLineWidth, parms[1]));
       else
-        glLineWidth(wxMax(g_GLMinCartographicLineWidth, w));
+        glLineWidth(wxMax(m_GLMinCartographicLineWidth, w));
     } else
-      glLineWidth(wxMax(g_GLMinCartographicLineWidth, 1));
+      glLineWidth(wxMax(m_GLMinCartographicLineWidth, 1));
 
 #ifndef ocpnUSE_GLES  // linestipple is emulated poorly
     if (!strncmp(str, "DASH", 4)) {
@@ -4723,9 +4714,8 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 
   double scale_factor = vp->ref_scale / vp->chart_scale;
   double scaled_line_width =
-      wxMax((scale_factor - g_overzoom_emphasis_base), 1);
-  bool b_wide_line = g_oz_vector_scale && vp->b_quilt &&
-                     (scale_factor > g_overzoom_emphasis_base);
+      wxMax((scale_factor), 1);
+  bool b_wide_line = false;
 
   wxPen wide_pen(*wxBLACK_PEN);
   wxDash dashw[2];
@@ -4783,11 +4773,11 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
       GLint parms[2];
       glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
       if (w > parms[1])
-        glLineWidth(wxMax(g_GLMinCartographicLineWidth, parms[1]));
+        glLineWidth(wxMax(m_GLMinCartographicLineWidth, parms[1]));
       else
-        glLineWidth(wxMax(g_GLMinCartographicLineWidth, w));
+        glLineWidth(wxMax(m_GLMinCartographicLineWidth, w));
     } else
-      glLineWidth(wxMax(g_GLMinCartographicLineWidth, 1));
+      glLineWidth(wxMax(m_GLMinCartographicLineWidth, 1));
 
 #ifndef ocpnUSE_GLES  // linestipple is emulated poorly
     if (!strncmp(str, "DASH", 4)) {
@@ -4981,7 +4971,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
 
   double scale_factor = vp->ref_scale / vp->chart_scale;
   double scaled_line_width =
-      wxMax((scale_factor - g_overzoom_emphasis_base), 1);
+      wxMax((scale_factor), 1);
 
 #if 0
   wxPen thispen(color, w, wxPENSTYLE_SOLID);
@@ -5990,7 +5980,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 
     // Adjust line width up a bit, to improve render quality for
     // GL_BLEND/GL_LINE_SMOOTH
-    float awidth = wxMax(g_GLMinCartographicLineWidth, (float)width * 0.7);
+    float awidth = wxMax(m_GLMinCartographicLineWidth, (float)width * 0.7);
     awidth = wxMax(awidth, 1.5);
     glLineWidth(awidth);
 
@@ -6266,7 +6256,7 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   //  adjust the inclusion test bounding box
 
   double scale_factor = vp->ref_scale / vp->chart_scale;
-  double box_mult = wxMax((scale_factor - g_overzoom_emphasis_base), 1);
+  double box_mult = wxMax((scale_factor), 1);
   int box_dim = 32 * box_mult;
 
   // We need a pixel bounding rectangle of the passed ViewPort.
@@ -6918,7 +6908,7 @@ int s52plib::RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
       buffer.color[0][2] = colorb.Blue();
       buffer.color[0][3] = 150;
       buffer.line_width[0] =
-          wxMax(g_GLMinSymbolLineWidth, outline_width * scale_factor);
+          wxMax(m_GLMinSymbolLineWidth, outline_width * scale_factor);
 
       int steps = ceil((sectr2 - sectr1) / 12) + 1;  // max of 12 degree step
       float step = (sectr2 - sectr1) / (steps - 1);
@@ -6941,7 +6931,7 @@ int s52plib::RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
       buffer.color[1][2] = colorb.Blue();
       buffer.color[1][3] = 150;
       buffer.line_width[1] =
-          wxMax(g_GLMinSymbolLineWidth, (arc_width * scale_factor) + .8);
+          wxMax(m_GLMinSymbolLineWidth, (arc_width * scale_factor) + .8);
 
       //    Draw the sector legs
       if (sector_radius > 0) {
@@ -11212,7 +11202,7 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules, ViewPort *vp) {
         //                if( vp->chart_scale > rzRules->obj->Scamin ) b_visible
         //                = false;
 
-        double zoom_mod = (double)g_chart_zoom_modifier_vector;
+        double zoom_mod = (double)m_chart_zoom_modifier_vector;
 
         double modf = zoom_mod / 5.;  // -1->1
         double mod = pow(8., modf);
@@ -12015,7 +12005,7 @@ void RenderFromHPGL::SetPen() {
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glColor4ub(penColor.Red(), penColor.Green(), penColor.Blue(), transparency);
 #endif
-    int line_width = wxMax(g_GLMinSymbolLineWidth, (float)penWidth * 0.7);
+    int line_width = wxMax(plib->m_GLMinSymbolLineWidth, (float)penWidth * 0.7);
     glLineWidth(line_width);
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)

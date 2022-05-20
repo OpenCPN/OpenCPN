@@ -175,7 +175,9 @@ public:
 
   void SetGLRendererString(const wxString &renderer);
   void SetGLOptions(bool b_useStencil, bool b_useStencilAP, bool b_useScissors,
-                    bool b_useFBO, bool b_useVBO, int nTextureFormat);
+                    bool b_useFBO, bool b_useVBO, int nTextureFormat,
+                    float MinCartographicLineWidth,
+                    float MinSymbolLineWidth);
 
   bool ObjectRenderCheck(ObjRazRules *rzRules, ViewPort *vp);
   bool ObjectRenderCheckRules(ObjRazRules *rzRules, ViewPort *vp,
@@ -235,6 +237,8 @@ public:
 
   void SetQualityOfData(bool val);
   bool GetQualityOfData();
+
+  void SetGuiScaleFactors(double ChartScaleFactor, int chart_zoom_modifier_vector);
 
   int GetMajorVersion(void) { return m_VersionMajor; }
   int GetMinorVersion(void) { return m_VersionMinor; }
@@ -298,6 +302,9 @@ public:
   int m_nSoundingFactor;
   double m_SoundingsScaleFactor;
 
+  double m_ChartScaleFactorExp;
+  int m_chart_zoom_modifier_vector;
+
   int m_VersionMajor;
   int m_VersionMinor;
 
@@ -330,6 +337,8 @@ public:
 
   double lastLightLat;
   double lastLightLon;
+  float m_GLMinCartographicLineWidth;
+  float m_GLMinSymbolLineWidth;
 
 private:
   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
@@ -512,7 +521,7 @@ private:
   bool m_useScissors;
   bool m_useFBO;
   bool m_useVBO;
-  int m_TextureFormat;
+  int m_TextureRectangleFormat;
   bool m_GLLineSmoothing;
   bool m_GLPolygonSmoothing;
   wxFont *m_soundFont;
