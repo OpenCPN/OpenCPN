@@ -36,6 +36,7 @@ class wxGLContext;
 #include "LLRegion.h"
 #include "ocpn_types.h"
 #include "DepthFont.h"
+#include "chartsymbols.h"
 
 #include <wx/dcgraph.h>  // supplemental, for Mac
 
@@ -339,6 +340,8 @@ public:
   double lastLightLon;
   float m_GLMinCartographicLineWidth;
   float m_GLMinSymbolLineWidth;
+
+  ChartSymbols m_chartSymbols;
 
 private:
   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);

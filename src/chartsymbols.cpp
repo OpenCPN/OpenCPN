@@ -38,25 +38,13 @@
 #include <wx/glcanvas.h>
 #endif
 
+#include "s52plib.h"
+
 extern bool g_bopengl;
 
 #ifdef ocpnUSE_GL
 extern GLenum g_texture_rectangle_format;
 #endif
-
-//--------------------------------------------------------------------------------------
-// The below data is global since there will ever only be one ChartSymbols
-// instance, and some methods+data of class S52plib are needed inside
-// ChartSymbol, and s2plib needs some methods from ChartSymbol. So s52plib only
-// calls static methods in order to resolve circular include file dependencies.
-
-wxArrayPtrVoid *colorTables;
-unsigned int rasterSymbolsTexture;
-wxSize rasterSymbolsTextureSize;
-wxBitmap rasterSymbols;
-int rasterSymbolsLoadedColorMapNumber;
-wxString configFileDirectory;
-int ColorTableIndex;
 
 WX_DECLARE_STRING_HASH_MAP(wxRect, symbolGraphicsHashMap);
 

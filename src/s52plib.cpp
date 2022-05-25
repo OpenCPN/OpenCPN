@@ -344,7 +344,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_txf_ready = false;
   m_txf = NULL;
 
-  ChartSymbols::InitializeGlobals();
+  m_chartSymbols.InitializeGlobals();
 
   m_bOK = !(S52_load_Plib(PLib, b_forceLegacy) == 0);
 
@@ -439,7 +439,7 @@ s52plib::~s52plib() {
   delete[] ledge;
   delete[] redge;
 
-  ChartSymbols::DeleteGlobals();
+  m_chartSymbols.DeleteGlobals();
 
   delete HPGL;
 }
@@ -1164,9 +1164,8 @@ int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
         }
     }
 #endif
-  ChartSymbols chartSymbols;
   useLegacyRaster = false;
-  if (!chartSymbols.LoadConfigFile(this, PLib)) {
+  if (!m_chartSymbols.LoadConfigFile(this, PLib)) {
     wxString msg(_T("Could not load XML PLib symbol file: "));
     msg += PLib;
     wxLogMessage(msg);
@@ -1271,7 +1270,7 @@ void s52plib::DestroyRules(RuleHash *rh) {
 
 void s52plib::FlushSymbolCaches(void) {
   if (!useLegacyRaster)
-    ChartSymbols::LoadRasterFileForColorTable(m_colortable_index, true);
+    m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true);
 
   RuleHash *rh = _symb_sym;
 
@@ -1441,25 +1440,25 @@ void s52plib::SetPLIBColorScheme(wxString scheme) {
   if ((GetMajorVersion() == 3) && (GetMinorVersion() == 2)) {
     if (scheme.IsSameAs(_T ( "DAY" ))) str_find = _T ( "DAY_BRIGHT" );
   }
-  m_colortable_index = ChartSymbols::FindColorTable(scheme);
+  m_colortable_index = m_chartSymbols.FindColorTable(scheme);
 
-  //    if( !useLegacyRaster ) ChartSymbols::LoadRasterFileForColorTable(
+  //    if( !useLegacyRaster ) m_chartSymbols.LoadRasterFileForColorTable(
   //    m_colortable_index );
 
-  if (!useLegacyRaster) ChartSymbols::SetColorTableIndex(m_colortable_index);
+  if (!useLegacyRaster) m_chartSymbols.SetColorTableIndex(m_colortable_index);
 
   m_ColorScheme = scheme;
 }
 
 S52color *s52plib::getColor(const char *colorName) {
   S52color *c;
-  c = ChartSymbols::GetColor(colorName, m_colortable_index);
+  c = m_chartSymbols.GetColor(colorName, m_colortable_index);
   return c;
 }
 
 wxColour s52plib::getwxColour(const wxString &colorName) {
   wxColor c;
-  c = ChartSymbols::GetwxColor(colorName, m_colortable_index);
+  c = m_chartSymbols.GetwxColor(colorName, m_colortable_index);
   return c;
 }
 
@@ -2970,7 +2969,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       !strncmp(prule->name.SYNM, "ADDMRK", 6)) {
     // get the symbol size
     wxRect trect;
-    ChartSymbols::GetGLTextureRect(trect, prule->name.SYNM);
+    m_chartSymbols.GetGLTextureRect(trect, prule->name.SYNM);
 
     int scale_dim = wxMax(trect.width, trect.height);
 
@@ -2996,7 +2995,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   unsigned int texture = 0;
   wxRect texrect;
   if (!m_pdc) {
-    texture = ChartSymbols::GetGLTextureRect(texrect, prule->name.SYNM);
+    texture = m_chartSymbols.GetGLTextureRect(texrect, prule->name.SYNM);
     if (texture) {
       prule->parm2 = texrect.width * scale_factor;
       prule->parm3 = texrect.height * scale_factor;
@@ -3018,7 +3017,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     // If the requested scaled symbol size is not the same as is currently
     // cached, we have to dump the cache
     wxRect trect;
-    ChartSymbols::GetGLTextureRect(trect, prule->name.SYNM);
+    m_chartSymbols.GetGLTextureRect(trect, prule->name.SYNM);
     if (prule->parm2 != trect.width * scale_factor) b_dump_cache = true;
 
     wxBitmap *pbm = NULL;
@@ -3028,7 +3027,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     if ((prule->pixelPtr == NULL) || (prule->parm1 != m_colortable_index) ||
         b_dump_cache) {
       Image = useLegacyRaster ? RuleXBMToImage(prule)
-                              : ChartSymbols::GetImage(prule->name.SYNM);
+                              : m_chartSymbols.GetImage(prule->name.SYNM);
 
       // delete any old private data
       ClearRulesCache(prule);
@@ -3198,7 +3197,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
       if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
-        wxSize size = ChartSymbols::GLTextureSize();
+        wxSize size = m_chartSymbols.GLTextureSize();
         tx1 /= size.x, tx2 /= size.x;
         ty1 /= size.y, ty2 /= size.y;
       }
@@ -3379,7 +3378,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         wxImage im_back = b1.ConvertToImage();
 
         //    Get the scaled symbol as a wxImage
-        wxImage im_sym = ChartSymbols::GetImage(prule->name.SYNM);
+        wxImage im_sym = m_chartSymbols.GetImage(prule->name.SYNM);
         im_sym.Rescale(b_width, b_height, wxIMAGE_QUALITY_HIGH);
 
         wxImage im_result(b_width, b_height);
@@ -10559,7 +10558,7 @@ render_canvas_parms *s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules,
   //      Create a wxImage of the pattern drawn on an "unused_color" field
   if (prule->definition.SYDF == 'R') {
     Image = useLegacyRaster ? RuleXBMToImage(prule)
-                            : ChartSymbols::GetImage(prule->name.PANM);
+                            : m_chartSymbols.GetImage(prule->name.PANM);
   }
 
   else  // Vector
