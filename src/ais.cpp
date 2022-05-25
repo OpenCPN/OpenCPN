@@ -1422,31 +1422,31 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     wxPoint SarRot[15];
 
     if (airtype == 5) {
-      SarIcon[0] = wxPoint(0, 9);
-      SarIcon[1] = wxPoint(1, 1);
-      SarIcon[2] = wxPoint(2, 1);
-      SarIcon[3] = wxPoint(9, 8);
-      SarIcon[4] = wxPoint(9, 7);
-      SarIcon[5] = wxPoint(3, 0);
-      SarIcon[6] = wxPoint(3, -5);
-      SarIcon[7] = wxPoint(9, -12);
-      SarIcon[8] = wxPoint(9, -13);
-      SarIcon[9] = wxPoint(2, -5);
-      SarIcon[10] = wxPoint(1, -15);
-      SarIcon[11] = wxPoint(3, -16);
-      SarIcon[12] = wxPoint(4, -18);
-      SarIcon[13] = wxPoint(1, -18);
-      SarIcon[14] = wxPoint(0, -19);
+      SarIcon[0] = wxPoint(0, 9) * AIS_scale_factor * 1.4;
+      SarIcon[1] = wxPoint(1, 1) * AIS_scale_factor * 1.4;
+      SarIcon[2] = wxPoint(2, 1) * AIS_scale_factor * 1.4;
+      SarIcon[3] = wxPoint(9, 8) * AIS_scale_factor * 1.4;
+      SarIcon[4] = wxPoint(9, 7) * AIS_scale_factor * 1.4;
+      SarIcon[5] = wxPoint(3, 0) * AIS_scale_factor * 1.4;
+      SarIcon[6] = wxPoint(3, -5) * AIS_scale_factor * 1.4;
+      SarIcon[7] = wxPoint(9, -12) * AIS_scale_factor * 1.4;
+      SarIcon[8] = wxPoint(9, -13) * AIS_scale_factor * 1.4;
+      SarIcon[9] = wxPoint(2, -5) * AIS_scale_factor * 1.4;
+      SarIcon[10] = wxPoint(1, -15) * AIS_scale_factor * 1.4;
+      SarIcon[11] = wxPoint(3, -16) * AIS_scale_factor * 1.4;
+      SarIcon[12] = wxPoint(4, -18) * AIS_scale_factor * 1.4;
+      SarIcon[13] = wxPoint(1, -18) * AIS_scale_factor * 1.4;
+      SarIcon[14] = wxPoint(0, -19) * AIS_scale_factor * 1.4;
     } else {
-      SarIcon[0] = wxPoint(0, 12);
-      SarIcon[1] = wxPoint(4, 2);
-      SarIcon[2] = wxPoint(16, -2);
-      SarIcon[3] = wxPoint(16, -8);
-      SarIcon[4] = wxPoint(4, -8);
-      SarIcon[5] = wxPoint(3, -16);
-      SarIcon[6] = wxPoint(10, -18);
-      SarIcon[7] = wxPoint(10, -22);
-      SarIcon[8] = wxPoint(0, -22);
+      SarIcon[0] = wxPoint(0, 12) * AIS_scale_factor;
+      SarIcon[1] = wxPoint(4, 2) * AIS_scale_factor;
+      SarIcon[2] = wxPoint(16, -2) * AIS_scale_factor;
+      SarIcon[3] = wxPoint(16, -8) * AIS_scale_factor;
+      SarIcon[4] = wxPoint(4, -8) * AIS_scale_factor;
+      SarIcon[5] = wxPoint(3, -16) * AIS_scale_factor;
+      SarIcon[6] = wxPoint(10, -18) * AIS_scale_factor;
+      SarIcon[7] = wxPoint(10, -22) * AIS_scale_factor;
+      SarIcon[8] = wxPoint(0, -22) * AIS_scale_factor;
     }
 
     // Draw icon as two halves
@@ -1629,59 +1629,67 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
       switch (navstatus) {
         case MOORED:
         case AT_ANCHOR: {
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
           break;
         }
         case RESTRICTED_MANOEUVRABILITY: {
           wxPoint diamond[4];
-          diamond[0] = wxPoint(4, 0);
-          diamond[1] = wxPoint(0, -6);
-          diamond[2] = wxPoint(-4, 0);
-          diamond[3] = wxPoint(0, 6);
-          dc.StrokePolygon(4, diamond, TargetPoint.x, TargetPoint.y - 11);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 22, 4);
+          diamond[0] = wxPoint(4, 0) * AIS_scale_factor;
+          diamond[1] = wxPoint(0, -6) * AIS_scale_factor;
+          diamond[2] = wxPoint(-4, 0) * AIS_scale_factor;
+          diamond[3] = wxPoint(0, 6) * AIS_scale_factor;
+          dc.StrokePolygon(4, diamond, TargetPoint.x, TargetPoint.y - (11 * AIS_scale_factor));
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - ( 22 * AIS_scale_factor ), 4 * AIS_scale_factor);
           break;
           break;
         }
         case CONSTRAINED_BY_DRAFT: {
-          wxPoint can[4] = {wxPoint(-3, 0), wxPoint(3, 0), wxPoint(3, -16),
-                            wxPoint(-3, -16)};
+          wxPoint can[4] = {wxPoint(-3, 0) * AIS_scale_factor,
+                            wxPoint(3, 0) * AIS_scale_factor,
+                            wxPoint(3, -16) * AIS_scale_factor,
+                            wxPoint(-3, -16) * AIS_scale_factor };
           dc.StrokePolygon(4, can, TargetPoint.x, TargetPoint.y);
           break;
         }
         case NOT_UNDER_COMMAND: {
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4 * AIS_scale_factor);
           break;
         }
         case FISHING: {
           wxPoint tri[3];
-          tri[0] = wxPoint(-4, 0);
-          tri[1] = wxPoint(4, 0);
-          tri[2] = wxPoint(0, -9);
+          tri[0] = wxPoint(-4, 0) * AIS_scale_factor;
+          tri[1] = wxPoint(4, 0) * AIS_scale_factor;
+          tri[2] = wxPoint(0, -9) * AIS_scale_factor;
           dc.StrokePolygon(3, tri, TargetPoint.x, TargetPoint.y);
-          tri[0] = wxPoint(0, -9);
-          tri[1] = wxPoint(4, -18);
-          tri[2] = wxPoint(-4, -18);
+          tri[0] = wxPoint(0, -9) * AIS_scale_factor;
+          tri[1] = wxPoint(4, -18) * AIS_scale_factor;
+          tri[2] = wxPoint(-4, -18) * AIS_scale_factor;
           dc.StrokePolygon(3, tri, TargetPoint.x, TargetPoint.y);
           break;
         }
         case AGROUND: {
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 18, 4);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 18, 4 * AIS_scale_factor);
           break;
         }
         case HSC:
         case WIG: {
           dc.SetBrush(target_brush);
 
-          wxPoint arrow1[3] = {wxPoint(-4, 20), wxPoint(0, 27), wxPoint(4, 20)};
+          wxPoint arrow1[3] = {
+            wxPoint(-4, 20) * AIS_scale_factor,
+            wxPoint(0, 27) * AIS_scale_factor,
+            wxPoint(4, 20) * AIS_scale_factor };
           transrot_pts(3, arrow1, sin_theta, cos_theta, TargetPoint);
           dc.StrokePolygon(3, arrow1);
 
-          wxPoint arrow2[3] = {wxPoint(-4, 27), wxPoint(0, 34), wxPoint(4, 27)};
+          wxPoint arrow2[3] = {
+            wxPoint(-4, 27) * AIS_scale_factor,
+            wxPoint(0, 34) * AIS_scale_factor,
+            wxPoint(4, 27) * AIS_scale_factor };
           transrot_pts(3, arrow2, sin_theta, cos_theta, TargetPoint);
           dc.StrokePolygon(3, arrow2);
           break;
