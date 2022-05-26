@@ -348,7 +348,11 @@ private:
                        render_canvas_parms *pb_spec);
   int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                        render_canvas_parms *pb_spec);
+
   int RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+
   int RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
   int RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
 

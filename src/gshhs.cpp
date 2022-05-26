@@ -604,6 +604,8 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
     glDrawArrays(GL_TRIANGLES, 0, *pvc);
     delete[] pvt;
     glDeleteBuffers(1, &vbo);
+    glUseProgram(0);
+
   }
 
 #else
@@ -640,7 +642,7 @@ void GshhsPolyCell::drawMapPlain(ocpnDC &pnt, double dx, ViewPort &vp,
                                  bool idl) {
 #ifdef ocpnUSE_GL
   if (!pnt.GetDC()) {  // opengl
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 #define NORM_FACTOR 4096.0
     if (dx && (vp.m_projection_type == PROJECTION_MERCATOR ||
                vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)) {
@@ -656,7 +658,7 @@ void GshhsPolyCell::drawMapPlain(ocpnDC &pnt, double dx, ViewPort &vp,
     DRAW_POLY_FILLED_GL(4, seaColor);
     DRAW_POLY_FILLED_GL(5, landColor);
 
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     if (dx) glPopMatrix();
 #endif
 
@@ -982,7 +984,7 @@ void GshhsPolyReader::drawGshhsPolyMapPlain(ocpnDC &pnt, ViewPort &vp,
         for (int clat = 0; clat < 180; clat++)
           if (allCells[clon][clat]) allCells[clon][clat]->ClearPolyV();
     }
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // use a viewport that allows the vertexes to be reused over many frames
@@ -1037,7 +1039,7 @@ void GshhsPolyReader::drawGshhsPolyMapPlain(ocpnDC &pnt, ViewPort &vp,
   }
 
 #ifdef ocpnUSE_GL
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (!pnt.GetDC()) {  // opengl
     if (glChartCanvas::HasNormalizedViewPort(vp)) glPopMatrix();
     glDisableClientState(GL_VERTEX_ARRAY);

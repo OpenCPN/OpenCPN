@@ -410,7 +410,7 @@ void Route::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
   LLBBox bbox = vp.GetBBox();
 
   // dc is passed for thicker highlighted lines (performance not very important)
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (!dc) glBegin(GL_LINES);
 #endif
 
@@ -493,7 +493,7 @@ void Route::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
         } else
           dc->DrawLine(r1.m_x, r1.m_y, r2.m_x, r2.m_y);
       else {
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
         glVertex2f(r1.m_x, r1.m_y);
         if (adder) {
           float adderc = cos(vp.rotation) * adder,
@@ -519,7 +519,7 @@ void Route::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
     }
   }
 
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (!dc) glEnd();
 #endif
 
@@ -743,7 +743,7 @@ void Route::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
   float theta = atan2f((float)yb - ya, (float)xb - xa);
   theta -= (float)PI;
 
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glPushMatrix();
   glTranslatef(xb, yb, 0);
   glScalef(icon_scale_factor, icon_scale_factor, 1);

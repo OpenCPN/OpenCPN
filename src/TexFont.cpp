@@ -219,7 +219,7 @@ void TexFont::RenderGlyph(int c) {
   float ty1 = (float)y / (float)tex_h;
   float ty2 = (float)(y + h) / (float)tex_h;
 
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   glBegin(GL_QUADS);
 
@@ -354,7 +354,7 @@ void TexFont::RenderGlyph(int c) {
 }
 
 void TexFont::RenderString(const char *string, int x, int y) {
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   glPushMatrix();
   glTranslatef(x, y, 0);
