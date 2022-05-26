@@ -662,7 +662,11 @@ void TCWin::OnPaint(wxPaintEvent &event) {
         if (CURRENT_PLOT == m_plot_type) {
           wxDateTime thx;  // write date
           wxString s, s1;
-          thx.Set((time_t)(tt + (m_stationOffset_mins * 60)));
+
+          thx.Set((time_t)tt - (m_diff_mins * 60));
+          if (m_tzoneDisplay == 0)  // LMT @ Station
+                thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
+
           s.Printf(thx.Format(_T("%H:%M  ")));
           s1.Printf(_T("%05.2f "), fabs(tcv[i]));  // write value
           s.Append(s1);
