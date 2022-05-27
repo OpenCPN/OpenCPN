@@ -68,6 +68,8 @@ WX_DEFINE_ARRAY(float *, MyFloatPtrArray);
 sigjmp_buf env_osenc_ogrf;  // the context saved by sigsetjmp();
 #endif
 
+std::mutex m;
+
 /************************************************************************/
 /*                       OpenCPN_OGRErrorHandler()                      */
 /*                       Use Global wxLog Class                         */
@@ -248,6 +250,8 @@ void Osenc::init(void) {
   //      Especially CE_Fatal type errors
   //      Discovered/debugged on US5MD11M.017.  VI 548 geometry deleted
   CPLPushErrorHandler(OpenCPN_OGR_OSENC_ErrorHandler);
+
+  lockCR = std::unique_lock<std::mutex>(m, std::defer_lock);
 }
 
 void Osenc::setVerbose(bool verbose) {
@@ -1469,7 +1473,7 @@ bool Osenc::GetBaseFileAttr(const wxString &FullPath000) {
 
 int Osenc::createSenc200(const wxString &FullPath000,
                          const wxString &SENCFileName, bool b_showProg) {
-  std::lock_guard<std::mutex> guard(m_Mutex);
+  lockCR.lock();
 
   m_FullPath000 = FullPath000;
 
@@ -1491,6 +1495,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
     if (!SENCfile.Mkdir(SENCfile.GetPath())) {
       errorMessage =
           _T("Cannot create SENC file directory for ") + SENCfile.GetFullPath();
+      lockCR.unlock();
       return ERROR_CANNOT_CREATE_SENC_DIR;
     }
   }
@@ -1520,12 +1525,14 @@ int Osenc::createSenc200(const wxString &FullPath000,
   if (!stream->Open(tmp_file)) {
     errorMessage = _T("Unable to create temp SENC file: ");
     errorMessage += tmp_file;
+    lockCR.unlock();
     return ERROR_CANNOT_CREATE_TEMP_SENC_FILE;
   }
 
   //  Take a quick scan of the 000 file to get some basic attributes of the
   //  exchange set.
   if (!GetBaseFileAttr(FullPath000)) {
+    lockCR.unlock();
     return ERROR_BASEFILE_ATTRIBUTES;
   }
 
@@ -1537,6 +1544,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
 
   if (ingestCell(poS57DS, FullPath000, SENCfile.GetPath())) {
     errorMessage = _T("Error ingesting: ") + FullPath000;
+    lockCR.unlock();
     return ERROR_INGESTING000;
   }
 
@@ -1544,6 +1552,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
 
   //  Create the Coverage table Records, which also calculates the chart extents
   if (!CreateCOVRTables(poReader, m_poRegistrar)) {
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
@@ -1570,11 +1579,13 @@ int Osenc::createSenc200(const wxString &FullPath000,
   if (!WriteHeaderRecord200(stream, HEADER_SENC_VERSION,
                             (uint16_t)m_senc_file_create_version)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
   if (!WriteHeaderRecord200(stream, HEADER_CELL_NAME, sname)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
@@ -1582,6 +1593,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
   string sdata = date000.ToStdString();
   if (!WriteHeaderRecord200(stream, HEADER_CELL_PUBLISHDATE, sdata)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
@@ -1589,24 +1601,28 @@ int Osenc::createSenc200(const wxString &FullPath000,
   m_edtn000.ToLong(&n000);
   if (!WriteHeaderRecord200(stream, HEADER_CELL_EDITION, (uint16_t)n000)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
   sdata = m_LastUpdateDate.ToStdString();
   if (!WriteHeaderRecord200(stream, HEADER_CELL_UPDATEDATE, sdata)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
   if (!WriteHeaderRecord200(stream, HEADER_CELL_UPDATE,
                             (uint16_t)m_last_applied_update)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
   if (!WriteHeaderRecord200(stream, HEADER_CELL_NATIVESCALE,
                             (uint32_t)m_native_scale)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
@@ -1615,12 +1631,14 @@ int Osenc::createSenc200(const wxString &FullPath000,
   sdata = dateNow.ToStdString();
   if (!WriteHeaderRecord200(stream, HEADER_CELL_SENCCREATEDATE, sdata)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
   //  Write the Coverage table Records
   if (!CreateCovrRecords(stream)) {
     stream->Close();
+    lockCR.unlock();
     return ERROR_SENCFILE_ABORT;
   }
 
@@ -1753,6 +1771,8 @@ int Osenc::createSenc200(const wxString &FullPath000,
 #if wxUSE_PROGRESSDLG
   delete m_ProgDialog;
 #endif
+
+  lockCR.unlock();
 
   return ret_code;
 }
@@ -2217,9 +2237,9 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader,
 
   if (!poly->getExteriorRing()) return false;
 
-  m_Mutex.unlock();
+  lockCR.unlock();
   ppg = new PolyTessGeo(poly, true, m_ref_lat, m_ref_lon, m_LOD_meters);
-  m_Mutex.lock();
+  lockCR.lock();
 
   error_code = ppg->ErrorCode;
 
