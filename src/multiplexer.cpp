@@ -1190,8 +1190,8 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
         baud = _T("4800");
       }
 
-      DataStream *dstr = makeSerialDataStream(this, SERIAL, com_name, baud,
-                                              DS_TYPE_INPUT_OUTPUT, 0, false);
+      dstr = makeSerialDataStream(this, SERIAL, com_name, baud,
+                                  DS_TYPE_INPUT_OUTPUT, 0, false);
       btempStream = true;
 
 #ifdef __OCPN__ANDROID__
