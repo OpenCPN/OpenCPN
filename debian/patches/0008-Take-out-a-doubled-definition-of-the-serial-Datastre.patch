@@ -1,0 +1,29 @@
+From: Hakan <momo@stupan.se>
+Date: Sun, 29 May 2022 17:21:49 +0200
+Subject: Take out a doubled definition of the serial Datastream variable: dstr
+
+Closes: #2705
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/ad298173
+
+
+
+---
+ src/multiplexer.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/multiplexer.cpp b/src/multiplexer.cpp
+index a14999f..f66eef5 100644
+--- a/src/multiplexer.cpp
++++ b/src/multiplexer.cpp
+@@ -1190,8 +1190,8 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
+         baud = _T("4800");
+       }
+ 
+-      DataStream *dstr = makeSerialDataStream(this, SERIAL, com_name, baud,
+-                                              DS_TYPE_INPUT_OUTPUT, 0, false);
++      dstr = makeSerialDataStream(this, SERIAL, com_name, baud,
++                                  DS_TYPE_INPUT_OUTPUT, 0, false);
+       btempStream = true;
+ 
+ #ifdef __OCPN__ANDROID__
