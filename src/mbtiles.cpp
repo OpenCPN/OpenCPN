@@ -939,7 +939,7 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
     glDisable(GL_TEXTURE_2D);
     return false;
   } else {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glColor4f(1,1,1,1);
 #endif
     glEnable(GL_TEXTURE_2D);

@@ -132,7 +132,7 @@ static jmp_buf env_ogrf;  // the context saved by setjmp();
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST(ListOfPI_S57Obj); 
+WX_DEFINE_LIST(ListOfPI_S57Obj);
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 
@@ -1549,7 +1549,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         // for now I will revert to the faster rectangle clipping now that
         // rendering order is resolved
         //                glChartCanvas::SetClipRegion(cvp, chart_region);
-        glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+        //glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
         ps52plib->m_last_clip_rect = upd.GetRect();
       } else {
 #ifdef OPT_USE_ANDROID_GLES2
