@@ -96,12 +96,17 @@ class ChartCanvas;
 
 class OCPN_GLCaps {
 public:
-  wxString Renderer;
+  std::string Renderer;
+  std::string Version;
+  std::string GLSL_Version;
+
+  double dGLSL_Version;
   GLenum TextureRectangleFormat;
 
   bool bOldIntel;
   bool bCanDoVBO;
   bool bCanDoFBO;
+  bool bCanDoGLSL;
 
   //      Vertex Buffer Object (VBO) support
   PFNGLGENBUFFERSPROC m_glGenBuffers;

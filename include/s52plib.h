@@ -517,6 +517,7 @@ private:
   bool m_GLLineSmoothing;
   bool m_GLPolygonSmoothing;
   wxFont *m_soundFont;
+  bool m_useGLSL;
 
   double m_displayScale;
 };

@@ -412,12 +412,6 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
 
   HPGL = new RenderFromHPGL(this);
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-  loadS52Shaders();
-#endif
-  // workBuf = NULL;;
-  // workBufSize = 0;;
-
   //  Set defaults for OCPN version, may be overridden later
   m_coreVersionMajor = 4;
   m_coreVersionMinor = 6;
@@ -432,6 +426,8 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_useFBO = false;
   m_useVBO = false;
   m_TextureFormat = -1;
+  m_useGLSL = false;
+
 
   m_display_size_mm = 300;
   SetGLPolygonSmoothing(true);
@@ -480,6 +476,7 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
   m_useFBO = b_useFBO;
   m_useVBO = b_useVBO;
   m_TextureFormat = nTextureFormat;
+  m_useGLSL = true;
 }
 
 void s52plib::SetPPMM(float ppmm) {
@@ -6331,11 +6328,10 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 }
 
 int s52plib::RenderCARC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-  return RenderCARC_GLSL(rzRules, rules, vp);
-#endif
-
-  return RenderCARC_VBO(rzRules, rules, vp);
+  if (m_useGLSL)
+    return RenderCARC_GLSL(rzRules, rules, vp);
+  else
+    return RenderCARC_VBO(rzRules, rules, vp);
 }
 
 int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
@@ -11529,7 +11525,7 @@ void s52plib::PrepareForRender(ViewPort *vp) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   void PrepareS52ShaderUniforms(ViewPort * vp);
-  if (vp) PrepareS52ShaderUniforms(vp);
+  if (m_useGLSL && vp) PrepareS52ShaderUniforms(vp);
 #endif
 
 #ifdef BUILDING_PLUGIN
@@ -13292,6 +13288,8 @@ GLint S52Dash_fragment_shader;
 GLint S52AP_vertex_shader;
 GLint S52AP_fragment_shader;
 
+bool shadersLoaded = false;
+
 bool loadS52Shaders() {
   bool ret_val = true;
   GLint success;
@@ -13300,6 +13298,8 @@ bool loadS52Shaders() {
   GLchar infoLog[INFOLOG_LEN];
 
   // Are the shaders ready?
+  if(shadersLoaded)
+    return true;
 
   // Simple colored triangle shader
 
@@ -13670,10 +13670,15 @@ bool loadS52Shaders() {
     }
   }
 #endif
+  shadersLoaded = true;
+
   return ret_val;
 }
 
 void PrepareS52ShaderUniforms(ViewPort *vp) {
+
+  loadS52Shaders();
+
   mat4x4 m;
   float vp_transform[16];
   mat4x4_identity(m);
