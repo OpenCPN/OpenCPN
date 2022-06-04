@@ -26,6 +26,7 @@ finish-args:
     - --filesystem=home
     - --share=network
     - --device=all
+    - --allow=canbus
 
 add-extensions:
     org.opencpn.OpenCPN.Plugin:
