@@ -4912,6 +4912,8 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 // Line Simple Style, Dashed, using GLSL
 int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
                                 ViewPort *vp) {
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+
 #if 0
         GLuint format = GL_RGBA;
         GLuint internalformat = format;
@@ -5223,7 +5225,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
   }
 
 //    delete odc;
-
+#endif
   return 1;
 }
 
@@ -8756,6 +8758,8 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 
 int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
 #ifdef ocpnUSE_GL
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+
   GLint id;
   glGetIntegerv(GL_CURRENT_PROGRAM,&id);
 
@@ -9109,6 +9113,7 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp)
   }  // if pPolyTessGeo
 
 #endif  //#ifdef ocpnUSE_GL
+#endif
   return 1;
 }
 
