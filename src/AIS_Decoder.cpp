@@ -1440,7 +1440,10 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
     //  If the message was decoded correctly
     //  Update the AIS Target information
     if (bdecode_result) {
-      AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
+      // Print to name cache only if not mmsi = 0
+      if (mmsi) {
+        AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
+      }
       AISTargetList[pTargetData->MMSI] =
           pTargetData;  // update the hash table entry
 
