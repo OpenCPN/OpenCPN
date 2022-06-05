@@ -2106,7 +2106,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
                 SK_SatInfo[idx].SignalToNoiseRatio = iSNR;
               }
               if (idx > 0) {
-                if (talker != wxEmptyString && talker.StartsWith(_T("G"))) {
+                if (talker != wxEmptyString && (talker.StartsWith(_T("G")) || talker.StartsWith(_T("BD"))) ) {
                   talkerID = talker; //Origin NMEA0183
                 }
                 SendSatInfoToAllInstruments(iNumSats, iMesNum + 1, talkerID, SK_SatInfo);
@@ -4238,7 +4238,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list) {
             ->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("T %.1f"),
                                   DIAL_POSITION_BOTTOMRIGHT);
         break;
-      case ID_DBP_D_TW:  // True Wind angle +-180Â° on boat axis
+      case ID_DBP_D_TW:  // True Wind angle +-180° on boat axis
         instrument = new DashboardInstrument_TrueWindAngle(
             this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TWA);
         ((DashboardInstrument_Dial *)instrument)
@@ -4247,7 +4247,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list) {
             ->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f"),
                                   DIAL_POSITION_INSIDE);
         break;
-      case ID_DBP_D_AWA_TWA:  // App/True Wind angle +-180Â° on boat axis
+      case ID_DBP_D_AWA_TWA:  // App/True Wind angle +-180° on boat axis
         instrument = new DashboardInstrument_AppTrueWindAngle(
             this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWA);
         ((DashboardInstrument_Dial *)instrument)->SetCapFlag(OCPN_DBP_STC_TWA);
