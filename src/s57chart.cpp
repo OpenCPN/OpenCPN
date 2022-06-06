@@ -4688,12 +4688,29 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
 
 
   // Sort Point objects by distance to searched lat/lon
-  auto sortObjs = [lat, lon] (const ObjRazRules* obj1, const ObjRazRules* obj2) -> bool
+  auto sortObjs = [lat, lon, this] (const ObjRazRules* obj1, const ObjRazRules* obj2) -> bool
   {
     double br1, dd1, br2, dd2;
-    DistanceBearingMercator(lat, lon, obj1->obj->m_lat, obj1->obj->m_lon, &br1, &dd1);
-    DistanceBearingMercator(lat, lon, obj2->obj->m_lat, obj2->obj->m_lon, &br2, &dd2);
-    return dd1>dd2;
+    if(obj1->obj->Primitive_type == GEO_POINT && obj2->obj->Primitive_type == GEO_POINT){
+      double lat1, lat2, lon1, lon2;
+      fromSM((obj1->obj->x * obj1->obj->x_rate) + obj1->obj->x_origin,
+        (obj1->obj->y * obj1->obj->y_rate) + obj1->obj->y_origin,
+        ref_lat, ref_lon, &lat1, &lon1);
+
+      if (lon1 > 180.0) lon1 -= 360.;
+
+      fromSM((obj2->obj->x * obj2->obj->x_rate) + obj2->obj->x_origin,
+        (obj2->obj->y * obj2->obj->y_rate) + obj2->obj->y_origin,
+        ref_lat, ref_lon, &lat2, &lon2);
+
+      if (lon2 > 180.0) lon2 -= 360.;
+
+      DistanceBearingMercator(lat, lon, lat1, lon1, &br1, &dd1);
+      DistanceBearingMercator(lat, lon, lat2, lon2, &br2, &dd2);
+      return dd1>dd2;
+    }
+    return false;
+    
   };
   std::sort(selected_points.begin(), selected_points.end(), sortObjs);
 
