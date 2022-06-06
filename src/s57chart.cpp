@@ -4611,6 +4611,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
                                                     ViewPort *VPoint,
                                                     int selection_mask) {
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+  std::vector<ObjRazRules *> selected_points;
 
   //    Iterate thru the razRules array, by object/rule type
 
@@ -4629,9 +4630,11 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
         {
           if (ps52plib->ObjectRenderCheck(top, VPoint)) {
             if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-              ret_ptr->Append(top);
+              selected_points.push_back(top);
           }
         }
+
+        
 
         //    Check the child branch, if any.
         //    This is where Multipoint soundings are captured individually
@@ -4641,7 +4644,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
             if (ps52plib->ObjectRenderCheck(child_item, VPoint)) {
               if (DoesLatLonSelectObject(lat, lon, select_radius,
                                          child_item->obj))
-                ret_ptr->Append(child_item);
+                selected_points.push_back(child_item);
             }
 
             child_item = child_item->next;
@@ -4661,7 +4664,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       while (top != NULL) {
         if (ps52plib->ObjectRenderCheck(top, VPoint)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-            ret_ptr->Append(top);
+            selected_points.push_back(top);
         }
 
         top = top->next;
@@ -4675,12 +4678,27 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       while (top != NULL) {
         if (ps52plib->ObjectRenderCheck(top, VPoint)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-            ret_ptr->Append(top);
+            selected_points.push_back(top);
         }
 
         top = top->next;
       }
     }
+  }
+
+
+  // Sort Point objects by distance to searched lat/lon
+  auto sortObjs = [lat, lon] (const ObjRazRules* obj1, const ObjRazRules* obj2) -> bool
+  {
+    double br1, dd1, br2, dd2;
+    DistanceBearingMercator(lat, lon, obj1->obj->m_lat, obj1->obj->m_lon, &br1, &dd1);
+    DistanceBearingMercator(lat, lon, obj2->obj->m_lat, obj2->obj->m_lon, &br2, &dd2);
+    return dd1>dd2;
+  };
+  std::sort(selected_points.begin(), selected_points.end(), sortObjs);
+
+  for(std::size_t i = 0; i < selected_points.size(); ++i) {
+    ret_ptr->Append(selected_points[i]);
   }
 
   return ret_ptr;
