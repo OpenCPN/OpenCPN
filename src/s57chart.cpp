@@ -4509,6 +4509,7 @@ void s57chart::UpdateLUPs(s57chart *pOwner) {
 ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
     float lat, float lon, ViewPort *VPoint) {
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+  std::vector<ObjRazRules *> selected_rules;
 
   //    Iterate thru the razRules array, by object/rule type
 
@@ -4588,7 +4589,7 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
                       double br, dd;
                       DistanceBearingMercator(lat, lon, olat, olon, &br, &dd);
                       if (dd < valnmr) {
-                        ret_ptr->Append(top);
+                        selected_rules.push_back(top);
                       }
                     }
                   }
@@ -4601,6 +4602,11 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
         top = top->next;
       }
     }
+  }
+
+  // Copy the rules in order into a wxList so the function returns the correct type
+  for(std::size_t i = 0; i < selected_rules.size(); ++i) {
+    ret_ptr->Append(selected_rules[i]);
   }
 
   return ret_ptr;
@@ -5430,7 +5436,7 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
 
 bool s57chart::CompareLights(const S57Light *l1, const S57Light *l2) {
   int positionDiff = l1->position.Cmp(l2->position);
-  if (positionDiff < 0) return true;
+  if (positionDiff < 0) return false;
 
   int attrIndex1 = l1->attributeNames.Index(_T("SECTR1"));
   int attrIndex2 = l2->attributeNames.Index(_T("SECTR1"));
