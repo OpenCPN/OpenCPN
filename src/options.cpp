@@ -188,6 +188,7 @@ extern bool g_bRemoveLost;
 extern double g_RemoveLost_Mins;
 extern bool g_bShowCOG;
 extern double g_ShowCOG_Mins;
+extern bool g_bSyncCogPredictors;
 extern bool g_bAISShowTracks;
 extern double g_AISShowTracks_Mins;
 extern double g_ShowMoored_Kts;
@@ -6338,6 +6339,16 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pDisplayGrid->Add(m_pText_COG_Predictor, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
+  m_pCheck_Sync_OCOG_ACOG = new wxCheckBox(
+    panelAIS, -1, _("Sync AIS arrow length with own ship's COG predictor"));
+  pDisplayGrid->Add(m_pCheck_Sync_OCOG_ACOG, 1, wxALL, group_item_spacing);
+  m_pCheck_Sync_OCOG_ACOG->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                             wxCommandEventHandler(options::OnSyncCogPredClick),
+                             NULL, this);
+
+  wxStaticText* pStatic_Dummy4a = new wxStaticText(panelAIS, -1, _T(""));
+  pDisplayGrid->Add(pStatic_Dummy4a, 1, wxALL, group_item_spacing);
+
   m_pCheck_Show_Tracks =
       new wxCheckBox(panelAIS, -1, _("Show target tracks, length (min)"));
   pDisplayGrid->Add(m_pCheck_Show_Tracks, 1, wxALL, group_item_spacing);
@@ -7504,6 +7515,9 @@ void options::SetInitialSettings(void) {
   s.Printf(_T("%4.0f"), g_ShowCOG_Mins);
   m_pText_COG_Predictor->SetValue(s);
 
+  m_pCheck_Sync_OCOG_ACOG->SetValue(g_bSyncCogPredictors);
+  if(g_bSyncCogPredictors) m_pText_COG_Predictor->Disable();
+
   m_pCheck_Show_Tracks->SetValue(g_bAISShowTracks);
 
   s.Printf(_T("%4.0f"), g_AISShowTracks_Mins);
@@ -7879,6 +7893,19 @@ void options::OnCPAWarnClick(wxCommandEvent& event) {
   } else {
     m_pCheck_CPA_WarnT->SetValue(FALSE);
     m_pCheck_CPA_WarnT->Disable();
+  }
+}
+
+void options::OnSyncCogPredClick(wxCommandEvent &event) {
+  if (m_pCheck_Sync_OCOG_ACOG->GetValue()) {
+    m_pText_COG_Predictor->SetValue(m_pText_OSCOG_Predictor->GetValue());
+    m_pText_COG_Predictor->Disable();
+  }
+  else {
+    wxString s;
+    s.Printf(_T("%4.0f"), g_ShowCOG_Mins);
+    m_pText_COG_Predictor->SetValue(s);
+    m_pText_COG_Predictor->Enable();
   }
 }
 
@@ -8677,6 +8704,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   //   Display
   g_bShowCOG = m_pCheck_Show_COG->GetValue();
+  // If synchronized with own ship predictor
+  g_bSyncCogPredictors = m_pCheck_Sync_OCOG_ACOG->GetValue();
+  if (g_bSyncCogPredictors) {
+    m_pText_COG_Predictor->SetValue(m_pText_OSCOG_Predictor->GetValue());
+  }
   m_pText_COG_Predictor->GetValue().ToDouble(&g_ShowCOG_Mins);
 
   g_bAISShowTracks = m_pCheck_Show_Tracks->GetValue();

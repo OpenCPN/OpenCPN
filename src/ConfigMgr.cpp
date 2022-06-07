@@ -161,6 +161,7 @@ extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;
 extern double g_RemoveLost_Mins;
 extern bool g_bShowCOG;
+extern bool g_bSyncCogPredictors;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern bool g_bTrackCarryOver;
@@ -1519,6 +1520,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "bRemoveLostTargets" ), &g_bRemoveLost);
   CHECK_FLT(_T ( "RemoveLost_Minutes" ), &g_RemoveLost_Mins, 1)
   CHECK_INT(_T ( "bShowCOGArrows" ), &g_bShowCOG);
+  CHECK_INT(_T ( "bSyncCogPredictors" ), &g_bSyncCogPredictors);
   CHECK_FLT(_T ( "CogArrowMinutes" ), &g_ShowCOG_Mins, 1);
   CHECK_INT(_T ( "bShowTargetTracks" ), &g_bAISShowTracks);
   CHECK_FLT(_T ( "TargetTracksMinutes" ), &g_AISShowTracks_Mins, 1)
