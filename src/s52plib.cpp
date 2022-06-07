@@ -77,6 +77,7 @@ extern int g_chart_zoom_modifier_vector;
 
 float g_scaminScale;
 
+#if 0
 extern PFNGLGENBUFFERSPROC s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC s_glBindBuffer;
 extern PFNGLBUFFERDATAPROC s_glBufferData;
@@ -87,6 +88,7 @@ extern PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
 #define glBindBuffer(a, b) (s_glBindBuffer)(a, b);
 #define glBufferData(a, b, c, d) (s_glBufferData)(a, b, c, d);
 #define glDeleteBuffers(a, b) (s_glDeleteBuffers)(a, b);
+#endif
 #endif
 
 void DrawAALine(wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,

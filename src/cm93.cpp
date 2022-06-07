@@ -5720,7 +5720,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
     glDisable(GL_LINE_STIPPLE);
     dc.SetGLStipple();
 
-    if (g_b_EnableVBO) s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    if (g_b_EnableVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glEnableClientState(GL_VERTEX_ARRAY);

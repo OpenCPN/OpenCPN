@@ -96,6 +96,7 @@ void OpenCPN_OGRErrorHandler(
     CPLErr eErrClass, int nError,
     const char *pszErrorMsg);  // installed GDAL OGR library error handler
 
+#if 0
 #ifdef ocpnUSE_GL
 extern PFNGLGENBUFFERSPROC s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC s_glBindBuffer;
@@ -107,6 +108,7 @@ extern PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
 #define glBindBuffer(a, b) (s_glBindBuffer)(a, b);
 #define glBufferData(a, b, c, d) (s_glBufferData)(a, b, c, d);
 #define glDeleteBuffers(a, b) (s_glDeleteBuffers)(a, b);
+#endif
 #endif
 
 #endif
@@ -318,7 +320,7 @@ s57chart::~s57chart() {
   m_vc_hash.clear();
 
 #ifdef ocpnUSE_GL
-  if (s_glDeleteBuffers && (m_LineVBO_name > 0))
+  if ((m_LineVBO_name > 0))
     glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
   free(m_this_chart_context);

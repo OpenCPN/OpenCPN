@@ -192,29 +192,29 @@ wxColor s_regionColor;
 bool g_b_EnableVBO;
 bool g_b_needFinish;  // Need glFinish() call on each frame?
 
-PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
-PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
-PFNGLBINDFRAMEBUFFEREXTPROC s_glBindFramebuffer;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbuffer;
-PFNGLRENDERBUFFERSTORAGEEXTPROC s_glRenderbufferStorage;
-PFNGLBINDRENDERBUFFEREXTPROC s_glBindRenderbuffer;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC s_glCheckFramebufferStatus;
-PFNGLDELETEFRAMEBUFFERSEXTPROC s_glDeleteFramebuffers;
-PFNGLDELETERENDERBUFFERSEXTPROC s_glDeleteRenderbuffers;
+//PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
+//PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
+//PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
+//PFNGLBINDFRAMEBUFFEREXTPROC s_glBindFramebuffer;
+//PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbuffer;
+//PFNGLRENDERBUFFERSTORAGEEXTPROC s_glRenderbufferStorage;
+//PFNGLBINDRENDERBUFFEREXTPROC s_glBindRenderbuffer;
+//PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC s_glCheckFramebufferStatus;
+//PFNGLDELETEFRAMEBUFFERSEXTPROC s_glDeleteFramebuffers;
+//PFNGLDELETERENDERBUFFERSEXTPROC s_glDeleteRenderbuffers;
 
 PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 
 //      Vertex Buffer Object (VBO) support
-PFNGLGENBUFFERSPROC s_glGenBuffers;
-PFNGLBINDBUFFERPROC s_glBindBuffer;
-PFNGLBUFFERDATAPROC s_glBufferData;
-PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
+//PFNGLGENBUFFERSPROC s_glGenBuffers;
+//PFNGLBINDBUFFERPROC s_glBindBuffer;
+//PFNGLBUFFERDATAPROC s_glBufferData;
+//PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
 
 #ifndef USE_ANDROID_GLES2
-#define glDeleteFramebuffers(a, b) (s_glDeleteFramebuffers)(a, b);
-#define glDeleteRenderbuffers(a, b) (s_glDeleteRenderbuffers)(a, b);
+//#define glDeleteFramebuffers(a, b) (s_glDeleteFramebuffers)(a, b);
+//#define glDeleteRenderbuffers(a, b) (s_glDeleteRenderbuffers)(a, b);
 #endif
 
 // typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
@@ -464,49 +464,47 @@ static void GetglEntryPoints(void) {
 
   unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
 
-  unsigned int i;
-  for (i = 0; i < n_ext; i++) {
-    if ((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-             "glGenFramebuffers", extensions[i])))
-      break;
-  }
+  unsigned int i = 0;
+//   for (i = 0; i < n_ext; i++) {
+//     if ((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
+//              "glGenFramebuffers", extensions[i])))
+//       break;
+//   }
 
   if (i < n_ext) {
-    s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-        "glGenRenderbuffers", extensions[i]);
-    s_glFramebufferTexture2D =
-        (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)ocpnGetProcAddress(
-            "glFramebufferTexture2D", extensions[i]);
-    s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)ocpnGetProcAddress(
-        "glBindFramebuffer", extensions[i]);
-    s_glFramebufferRenderbuffer =
-        (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-            "glFramebufferRenderbuffer", extensions[i]);
-    s_glRenderbufferStorage =
-        (PFNGLRENDERBUFFERSTORAGEEXTPROC)ocpnGetProcAddress(
-            "glRenderbufferStorage", extensions[i]);
-    s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-        "glBindRenderbuffer", extensions[i]);
-    s_glCheckFramebufferStatus =
-        (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)ocpnGetProcAddress(
-            "glCheckFramebufferStatus", extensions[i]);
-    s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-        "glDeleteFramebuffers", extensions[i]);
-    s_glDeleteRenderbuffers =
-        (PFNGLDELETERENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-            "glDeleteRenderbuffers", extensions[i]);
+//    s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)ocpnGetProcAddress(
+//        "glGenRenderbuffers", extensions[i]);
+//    s_glFramebufferTexture2D =
+//        (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)ocpnGetProcAddress(
+//            "glFramebufferTexture2D", extensions[i]);
+//    s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)ocpnGetProcAddress(
+//        "glBindFramebuffer", extensions[i]);
+//    s_glFramebufferRenderbuffer =
+//        (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)ocpnGetProcAddress(
+//            "glFramebufferRenderbuffer", extensions[i]);
+//     s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)ocpnGetProcAddress(
+//         "glBindRenderbuffer", extensions[i]);
+//     s_glCheckFramebufferStatus =
+//         (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)ocpnGetProcAddress(
+//             "glCheckFramebufferStatus", extensions[i]);
+//     s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
+//         "glDeleteFramebuffers", extensions[i]);
+//     s_glDeleteRenderbuffers =
+//         (PFNGLDELETERENDERBUFFERSEXTPROC)ocpnGetProcAddress(
+//             "glDeleteRenderbuffers", extensions[i]);
 
     // VBO
-    s_glGenBuffers =
-        (PFNGLGENBUFFERSPROC)ocpnGetProcAddress("glGenBuffers", extensions[i]);
-    s_glBindBuffer =
-        (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer", extensions[i]);
-    s_glBufferData =
-        (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData", extensions[i]);
-    s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-        "glDeleteBuffers", extensions[i]);
+//     s_glGenBuffers =
+//         (PFNGLGENBUFFERSPROC)ocpnGetProcAddress("glGenBuffers", extensions[i]);
+//     s_glBindBuffer =
+//         (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer", extensions[i]);
+//     s_glBufferData =
+//         (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData", extensions[i]);
+//     s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
+//         "glDeleteBuffers", extensions[i]);
   }
 
+#if 0
   //  Retry VBO entry points with all extensions
   if (0 == s_glGenBuffers) {
     for (i = 0; i < n_ext; i++) {
@@ -524,6 +522,7 @@ static void GetglEntryPoints(void) {
           "glDeleteBuffers", extensions[i]);
     }
   }
+#endif
 
 #ifndef __OCPN__ANDROID__
   for (i = 0; i < n_ext; i++) {
@@ -840,8 +839,8 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 
   if (m_b_BuiltFBO) {
     glDeleteTextures(2, m_cache_tex);
-    (s_glDeleteFramebuffers)(1, &m_fb0);
-    (s_glDeleteRenderbuffers)(1, &m_renderbuffer);
+    glDeleteFramebuffers(1, &m_fb0);
+    glDeleteRenderbuffers(1, &m_renderbuffer);
     m_b_BuiltFBO = false;
   }
 
@@ -886,7 +885,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     }
   }
 
-  (s_glGenFramebuffers)(1, &m_fb0);
+  glGenFramebuffers(1, &m_fb0);
   err = glGetError();
   if (err) {
     wxString msg;
@@ -896,7 +895,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     retVal = false;
   }
 
-  (s_glGenRenderbuffers)(1, &m_renderbuffer);
+  glGenRenderbuffers(1, &m_renderbuffer);
   err = glGetError();
   if (err) {
     wxString msg;
@@ -906,7 +905,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     retVal = false;
   }
 
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
   err = glGetError();
   if (err) {
     wxString msg;
@@ -928,12 +927,12 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
                  m_cache_tex_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
   }
 
-  (s_glBindRenderbuffer)(GL_RENDERBUFFER_EXT, m_renderbuffer);
+  glBindRenderbuffer(GL_RENDERBUFFER_EXT, m_renderbuffer);
 
   if (m_b_useFBOStencil) {
     // initialize composite depth/stencil renderbuffer
 #if 1
-    (s_glRenderbufferStorage)(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
+    glRenderbufferStorage(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
                               m_cache_tex_x, m_cache_tex_y);
 
     int err = glGetError();
@@ -943,7 +942,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       wxLogMessage(msg);
     }
 
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                   GL_RENDERBUFFER_EXT, m_renderbuffer);
     err = glGetError();
     if (err) {
@@ -953,7 +952,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       wxLogMessage(msg);
     }
 
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
                                   GL_RENDERBUFFER_EXT, m_renderbuffer);
     err = glGetError();
     if (err) {
@@ -985,7 +984,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 #endif
 
     // initialize depth renderbuffer
-    (s_glRenderbufferStorage)(GL_RENDERBUFFER_EXT, depth_format, m_cache_tex_x,
+    glRenderbufferStorage(GL_RENDERBUFFER_EXT, depth_format, m_cache_tex_x,
                               m_cache_tex_y);
     int err = glGetError();
     if (err) {
@@ -997,7 +996,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       retVal = false;
     }
 
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                   GL_RENDERBUFFER_EXT, m_renderbuffer);
 
     err = glGetError();
@@ -1011,17 +1010,17 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
   }
 
   glBindTexture(GL_TEXTURE_2D, 0);
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
   // Check framebuffer completeness at the end of initialization.
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
 
-  (s_glFramebufferTexture2D)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+  glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                              g_texture_rectangle_format, m_cache_tex[0], 0);
 
-  GLenum fb_status = (s_glCheckFramebufferStatus)(GL_FRAMEBUFFER_EXT);
+  GLenum fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
 
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
   if (fb_status != GL_FRAMEBUFFER_COMPLETE_EXT) {
     wxString msg;
@@ -1398,6 +1397,7 @@ void glChartCanvas::SetupOpenGL() {
 
   GetglEntryPoints();
 
+#if 0
   if (!s_glGenFramebuffers || !s_glGenRenderbuffers ||
       !s_glFramebufferTexture2D || !s_glBindFramebuffer ||
       !s_glFramebufferRenderbuffer || !s_glRenderbufferStorage ||
@@ -1411,7 +1411,7 @@ void glChartCanvas::SetupOpenGL() {
   if (!s_glBindBuffer || !s_glBufferData || !s_glGenBuffers ||
       !s_glDeleteBuffers)
     g_b_EnableVBO = false;
-
+#endif
 #if defined(__WXMSW__) || defined(__WXOSX__)
   if (b_oldIntel) g_b_EnableVBO = false;
 #endif
@@ -1478,13 +1478,13 @@ void glChartCanvas::SetupOpenGL() {
 
   if (m_b_BuiltFBO) {
     // Check framebuffer completeness at the end of initialization.
-    (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+    glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
 
-    (s_glFramebufferTexture2D)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+    glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                g_texture_rectangle_format, m_cache_tex[0], 0);
 
-    GLenum fb_status = (s_glCheckFramebufferStatus)(GL_FRAMEBUFFER_EXT);
-    (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+    GLenum fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
+    glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
     if (fb_status != GL_FRAMEBUFFER_COMPLETE_EXT) {
       wxString msg;
