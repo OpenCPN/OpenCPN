@@ -4610,8 +4610,9 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
                                                     float select_radius,
                                                     ViewPort *VPoint,
                                                     int selection_mask) {
+
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
-  std::vector<ObjRazRules *> selected_points;
+  std::vector<ObjRazRules *> selected_rules;
 
   //    Iterate thru the razRules array, by object/rule type
 
@@ -4630,7 +4631,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
         {
           if (ps52plib->ObjectRenderCheck(top, VPoint)) {
             if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-              selected_points.push_back(top);
+              selected_rules.push_back(top);
           }
         }
 
@@ -4644,7 +4645,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
             if (ps52plib->ObjectRenderCheck(child_item, VPoint)) {
               if (DoesLatLonSelectObject(lat, lon, select_radius,
                                          child_item->obj))
-                selected_points.push_back(child_item);
+                selected_rules.push_back(child_item);
             }
 
             child_item = child_item->next;
@@ -4664,7 +4665,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       while (top != NULL) {
         if (ps52plib->ObjectRenderCheck(top, VPoint)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-            selected_points.push_back(top);
+            selected_rules.push_back(top);
         }
 
         top = top->next;
@@ -4678,7 +4679,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       while (top != NULL) {
         if (ps52plib->ObjectRenderCheck(top, VPoint)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-            selected_points.push_back(top);
+            selected_rules.push_back(top);
         }
 
         top = top->next;
@@ -4688,9 +4689,11 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
 
 
   // Sort Point objects by distance to searched lat/lon
+  // This lambda function could be modified to also sort GEO_LINES and GEO_AREAS if needed
   auto sortObjs = [lat, lon, this] (const ObjRazRules* obj1, const ObjRazRules* obj2) -> bool
   {
     double br1, dd1, br2, dd2;
+    
     if(obj1->obj->Primitive_type == GEO_POINT && obj2->obj->Primitive_type == GEO_POINT){
       double lat1, lat2, lon1, lon2;
       fromSM((obj1->obj->x * obj1->obj->x_rate) + obj1->obj->x_origin,
@@ -4712,10 +4715,13 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
     return false;
     
   };
-  std::sort(selected_points.begin(), selected_points.end(), sortObjs);
+  
+  // Sort the selected rules by using the lambda sort function defined above
+  std::sort(selected_rules.begin(), selected_rules.end(), sortObjs);
 
-  for(std::size_t i = 0; i < selected_points.size(); ++i) {
-    ret_ptr->Append(selected_points[i]);
+  // Copy the rules in order into a wxList so the function returns the correct type
+  for(std::size_t i = 0; i < selected_rules.size(); ++i) {
+    ret_ptr->Append(selected_rules[i]);
   }
 
   return ret_ptr;
