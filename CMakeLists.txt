@@ -469,6 +469,7 @@ if (QT_ANDROID)
         "-Wno-overloaded-virtual"
         "-Wno-unused-command-line-argument"
         "-Wno-unknown-pragmas"
+        "-g"
   )
   if (CMAKE_BUILD_TYPE MATCHES "Debug")
     add_compile_options("-O0")
