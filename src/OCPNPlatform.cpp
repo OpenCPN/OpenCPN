@@ -811,10 +811,6 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     return false;
   }
 
-//  char render_string[80];
-//  strncpy(render_string, str, 79);
-//  pcaps->Renderer = wxString(render_string, wxConvUTF8);
-
   pcaps->Renderer = std::string(str);
   pcaps->Version = std::string((char *)glGetString(GL_VERSION));
   pcaps->GLSL_Version = std::string((char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -839,20 +835,10 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   else if (QueryExtension("GL_ARB_texture_rectangle"))
     pcaps->TextureRectangleFormat = GL_TEXTURE_RECTANGLE_ARB;
 
-  GetglEntryPoints(pcaps);
-
   pcaps->bOldIntel = false;
-//   if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-//     if (pcaps->Renderer.Upper().Find(_T("965")) != wxNOT_FOUND) {
-//       pcaps->bOldIntel = true;
-//     }
-//   }
 
   // Can we use VBO?
   pcaps->bCanDoVBO = true;
-  if (!pcaps->m_glBindBuffer || !pcaps->m_glBufferData ||
-      !pcaps->m_glGenBuffers || !pcaps->m_glDeleteBuffers)
-    pcaps->bCanDoVBO = false;
 
 #if defined(__WXMSW__) || defined(__WXOSX__)
   if (pcaps->bOldIntel) pcaps->bCanDoVBO = false;
@@ -871,21 +857,6 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   //      We require certain extensions to support FBO rendering
   if (!QueryExtension("GL_EXT_framebuffer_object")) pcaps->bCanDoFBO = false;
-#endif
-
-  if (!pcaps->m_glGenFramebuffers || !pcaps->m_glGenRenderbuffers ||
-      !pcaps->m_glFramebufferTexture2D || !pcaps->m_glBindFramebuffer ||
-      !pcaps->m_glFramebufferRenderbuffer || !pcaps->m_glRenderbufferStorage ||
-      !pcaps->m_glBindRenderbuffer || !pcaps->m_glCheckFramebufferStatus ||
-      !pcaps->m_glDeleteFramebuffers || !pcaps->m_glDeleteRenderbuffers)
-    pcaps->bCanDoFBO = false;
-
-#ifdef __WXMSW__
-//   if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-//     if (pcaps->Renderer.Upper().Find(_T("MOBILE")) != wxNOT_FOUND) {
-//       pcaps->bCanDoFBO = false;
-//     }
-//   }
 #endif
 
   delete tcanvas;

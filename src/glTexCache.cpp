@@ -569,7 +569,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level,
       int size = TextureTileSize(level, true);
       int status = GetTextureLevel(ptd, rect, level, ptd->m_colorscheme);
       int dim = TextureDim(level);
-      s_glCompressedTexImage2D(GL_TEXTURE_2D, texture_level, g_raster_format,
+      glCompressedTexImage2D(GL_TEXTURE_2D, texture_level, g_raster_format,
                                dim, dim, 0, size, ptd->comp_array[level]);
 
       ptd->tex_mem_used += size;

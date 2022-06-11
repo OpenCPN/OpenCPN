@@ -192,35 +192,6 @@ wxColor s_regionColor;
 bool g_b_EnableVBO;
 bool g_b_needFinish;  // Need glFinish() call on each frame?
 
-//PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
-//PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
-//PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
-//PFNGLBINDFRAMEBUFFEREXTPROC s_glBindFramebuffer;
-//PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbuffer;
-//PFNGLRENDERBUFFERSTORAGEEXTPROC s_glRenderbufferStorage;
-//PFNGLBINDRENDERBUFFEREXTPROC s_glBindRenderbuffer;
-//PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC s_glCheckFramebufferStatus;
-//PFNGLDELETEFRAMEBUFFERSEXTPROC s_glDeleteFramebuffers;
-//PFNGLDELETERENDERBUFFERSEXTPROC s_glDeleteRenderbuffers;
-
-PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
-
-//      Vertex Buffer Object (VBO) support
-//PFNGLGENBUFFERSPROC s_glGenBuffers;
-//PFNGLBINDBUFFERPROC s_glBindBuffer;
-//PFNGLBUFFERDATAPROC s_glBufferData;
-//PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
-
-#ifndef USE_ANDROID_GLES2
-//#define glDeleteFramebuffers(a, b) (s_glDeleteFramebuffers)(a, b);
-//#define glDeleteRenderbuffers(a, b) (s_glDeleteRenderbuffers)(a, b);
-#endif
-
-// typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
-//                                                   GLint *data);
-// PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
-
 #include <wx/arrimpl.cpp>
 // WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
@@ -306,241 +277,6 @@ GLboolean QueryExtension(const char *extName) {
   return GL_FALSE;
 }
 
-typedef void (*GenericFunction)(void);
-
-#if defined(__WXMSW__)
-#define systemGetProcAddress(ADDR) wglGetProcAddress(ADDR)
-#elif defined(__WXOSX__)
-#include <dlfcn.h>
-#define systemGetProcAddress(ADDR) dlsym(RTLD_DEFAULT, ADDR)
-#elif defined(__OCPN__ANDROID__)
-#define systemGetProcAddress(ADDR) eglGetProcAddress(ADDR)
-#else
-#define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte *)ADDR)
-#endif
-
-GenericFunction ocpnGetProcAddress(const char *addr, const char *extension) {
-  char addrbuf[256];
-  if (!extension) return (GenericFunction)NULL;
-
-#ifndef __OCPN__ANDROID__
-  //  If this is an extension entry point,
-  //  We look explicitly in the extensions list to confirm
-  //  that the request is actually supported.
-  // This may be redundant, but is conservative, and only happens once per
-  // session.
-  if (extension && strlen(extension)) {
-    wxString s_extension(&addr[2], wxConvUTF8);
-    wxString s_family;
-    s_family = wxString(extension, wxConvUTF8);
-    s_extension.Prepend(_T("_"));
-    s_extension.Prepend(s_family);
-
-    s_extension.Prepend(_T("GL_"));
-
-    if (!QueryExtension(s_extension.mb_str())) {
-      return (GenericFunction)NULL;
-    }
-  }
-#endif
-
-  snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
-  return (GenericFunction)systemGetProcAddress(addrbuf);
-}
-
-bool b_glEntryPointsSet;
-
-void GetglEntryPoints(OCPN_GLCaps *pcaps) {
-  // the following are all part of framebuffer object,
-  // according to opengl spec, we cannot mix EXT and ARB extensions
-  // (I don't know that it could ever happen, but if it did, bad things would
-  // happen)
-
-#ifndef __OCPN__ANDROID__
-  const char *extensions[] = {"", "ARB", "EXT", 0};
-#else
-  const char *extensions[] = {"OES", 0};
-#endif
-
-  unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
-
-  unsigned int i;
-  for (i = 0; i < n_ext; i++) {
-    if ((pcaps->m_glGenFramebuffers =
-             (PFNGLGENFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-                 "glGenFramebuffers", extensions[i])))
-      break;
-  }
-
-  if (i < n_ext) {
-    pcaps->m_glGenRenderbuffers =
-        (PFNGLGENRENDERBUFFERSEXTPROC)ocpnGetProcAddress("glGenRenderbuffers",
-                                                         extensions[i]);
-    pcaps->m_glFramebufferTexture2D =
-        (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)ocpnGetProcAddress(
-            "glFramebufferTexture2D", extensions[i]);
-    pcaps->m_glBindFramebuffer =
-        (PFNGLBINDFRAMEBUFFEREXTPROC)ocpnGetProcAddress("glBindFramebuffer",
-                                                        extensions[i]);
-    pcaps->m_glFramebufferRenderbuffer =
-        (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-            "glFramebufferRenderbuffer", extensions[i]);
-    pcaps->m_glRenderbufferStorage =
-        (PFNGLRENDERBUFFERSTORAGEEXTPROC)ocpnGetProcAddress(
-            "glRenderbufferStorage", extensions[i]);
-    pcaps->m_glBindRenderbuffer =
-        (PFNGLBINDRENDERBUFFEREXTPROC)ocpnGetProcAddress("glBindRenderbuffer",
-                                                         extensions[i]);
-    pcaps->m_glCheckFramebufferStatus =
-        (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)ocpnGetProcAddress(
-            "glCheckFramebufferStatus", extensions[i]);
-    pcaps->m_glDeleteFramebuffers =
-        (PFNGLDELETEFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-            "glDeleteFramebuffers", extensions[i]);
-    pcaps->m_glDeleteRenderbuffers =
-        (PFNGLDELETERENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-            "glDeleteRenderbuffers", extensions[i]);
-
-    // VBO
-    pcaps->m_glGenBuffers =
-        (PFNGLGENBUFFERSPROC)ocpnGetProcAddress("glGenBuffers", extensions[i]);
-    pcaps->m_glBindBuffer =
-        (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer", extensions[i]);
-    pcaps->m_glBufferData =
-        (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData", extensions[i]);
-    pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-        "glDeleteBuffers", extensions[i]);
-  }
-
-  //  Retry VBO entry points with all extensions
-  if (0 == pcaps->m_glGenBuffers) {
-    for (i = 0; i < n_ext; i++) {
-      if ((pcaps->m_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress(
-               "glGenBuffers", extensions[i])))
-        break;
-    }
-
-    if (i < n_ext) {
-      pcaps->m_glBindBuffer = (PFNGLBINDBUFFERPROC)ocpnGetProcAddress(
-          "glBindBuffer", extensions[i]);
-      pcaps->m_glBufferData = (PFNGLBUFFERDATAPROC)ocpnGetProcAddress(
-          "glBufferData", extensions[i]);
-      pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-          "glDeleteBuffers", extensions[i]);
-    }
-  }
-
-#ifndef __OCPN__ANDROID__
-  for (i = 0; i < n_ext; i++) {
-    if ((pcaps->m_glCompressedTexImage2D =
-             (PFNGLCOMPRESSEDTEXIMAGE2DPROC)ocpnGetProcAddress(
-                 "glCompressedTexImage2D", extensions[i])))
-      break;
-  }
-
-  if (i < n_ext) {
-    pcaps->m_glGetCompressedTexImage =
-        (PFNGLGETCOMPRESSEDTEXIMAGEPROC)ocpnGetProcAddress(
-            "glGetCompressedTexImage", extensions[i]);
-  }
-#else
-  pcaps->m_glCompressedTexImage2D = glCompressedTexImage2D;
-#endif
-}
-
-static void GetglEntryPoints(void) {
-  b_glEntryPointsSet = true;
-
-  // the following are all part of framebuffer object,
-  // according to opengl spec, we cannot mix EXT and ARB extensions
-  // (I don't know that it could ever happen, but if it did, bad things would
-  // happen)
-
-#ifndef __OCPN__ANDROID__
-  const char *extensions[] = {"", "ARB", "EXT", 0};
-#else
-  const char *extensions[] = {"", "OES", 0};
-#endif
-
-  unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
-
-  unsigned int i = 0;
-//   for (i = 0; i < n_ext; i++) {
-//     if ((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-//              "glGenFramebuffers", extensions[i])))
-//       break;
-//   }
-
-  if (i < n_ext) {
-//    s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-//        "glGenRenderbuffers", extensions[i]);
-//    s_glFramebufferTexture2D =
-//        (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)ocpnGetProcAddress(
-//            "glFramebufferTexture2D", extensions[i]);
-//    s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)ocpnGetProcAddress(
-//        "glBindFramebuffer", extensions[i]);
-//    s_glFramebufferRenderbuffer =
-//        (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-//            "glFramebufferRenderbuffer", extensions[i]);
-//     s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-//         "glBindRenderbuffer", extensions[i]);
-//     s_glCheckFramebufferStatus =
-//         (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)ocpnGetProcAddress(
-//             "glCheckFramebufferStatus", extensions[i]);
-//     s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-//         "glDeleteFramebuffers", extensions[i]);
-//     s_glDeleteRenderbuffers =
-//         (PFNGLDELETERENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-//             "glDeleteRenderbuffers", extensions[i]);
-
-    // VBO
-//     s_glGenBuffers =
-//         (PFNGLGENBUFFERSPROC)ocpnGetProcAddress("glGenBuffers", extensions[i]);
-//     s_glBindBuffer =
-//         (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer", extensions[i]);
-//     s_glBufferData =
-//         (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData", extensions[i]);
-//     s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-//         "glDeleteBuffers", extensions[i]);
-  }
-
-#if 0
-  //  Retry VBO entry points with all extensions
-  if (0 == s_glGenBuffers) {
-    for (i = 0; i < n_ext; i++) {
-      if ((s_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress(
-               "glGenBuffers", extensions[i])))
-        break;
-    }
-
-    if (i < n_ext) {
-      s_glBindBuffer = (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer",
-                                                               extensions[i]);
-      s_glBufferData = (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData",
-                                                               extensions[i]);
-      s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-          "glDeleteBuffers", extensions[i]);
-    }
-  }
-#endif
-
-#ifndef __OCPN__ANDROID__
-  for (i = 0; i < n_ext; i++) {
-    if ((s_glCompressedTexImage2D =
-             (PFNGLCOMPRESSEDTEXIMAGE2DPROC)ocpnGetProcAddress(
-                 "glCompressedTexImage2D", extensions[i])))
-      break;
-  }
-
-  if (i < n_ext) {
-    s_glGetCompressedTexImage =
-        (PFNGLGETCOMPRESSEDTEXIMAGEPROC)ocpnGetProcAddress(
-            "glGetCompressedTexImage", extensions[i]);
-  }
-#else
-  s_glCompressedTexImage2D = glCompressedTexImage2D;
-#endif
-}
 
 int test_attribs[] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE,
                       16,         WX_GL_STENCIL_SIZE, 8,
@@ -1217,7 +953,7 @@ void glChartCanvas::BuildFBO() {
   //  All OK
 
   wxString msg;
-  msg.Printf(_T("OpenGL Framebuffer OK, size = %d"), m_cache_tex_x);
+  msg.Printf(_T("OpenGL-> Framebuffer OK, size = %d"), m_cache_tex_x);
   wxLogMessage(msg);
 
   /* invalidate cache */
@@ -1282,20 +1018,6 @@ void glChartCanvas::SetupOpenGL() {
 
   const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
   m_extensions = wxString((const char *)ext_str, wxConvUTF8);
-#ifdef __WXQT__
-  wxLogMessage(_T("OpenGL extensions available: "));
-  wxLogMessage(m_extensions);
-#endif
-
-  bool b_oldIntel = false;
-  if (GetRendererString().Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (GetRendererString().Upper().Find(_T("965")) != wxNOT_FOUND) {
-      wxLogMessage(
-          _T("OpenGL-> Detected early Intel renderer, disabling some GL ")
-          _T("features"));
-      b_oldIntel = true;
-    }
-  }
 
   //  Set the minimum line width
   GLint parms[2];
@@ -1328,16 +1050,7 @@ void glChartCanvas::SetupOpenGL() {
       wxNOT_FOUND)  // GeForce GTX 1070
     s_b_useScissorTest = false;
 
-  //  This little hack fixes a problem seen with some Intel 945 graphics chips
-  //  We need to not do anything that requires (some) complicated stencil
-  //  operations.
-
   bool bad_stencil_code = false;
-//   if (GetRendererString().Find(_T("Intel")) != wxNOT_FOUND) {
-//     wxLogMessage(
-//         _T("OpenGL-> Detected Intel renderer, disabling stencil buffer"));
-//     bad_stencil_code = true;
-//   }
 
   //      And for the lousy Unichrome drivers, too
   if (GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND)
@@ -1346,20 +1059,6 @@ void glChartCanvas::SetupOpenGL() {
   //      And for the lousy Mali drivers, too
   if (GetRendererString().Find(_T("Mali")) != wxNOT_FOUND)
     bad_stencil_code = true;
-
-  // XP  Generic Needs stencil buffer
-  // W7 Generic Needs stencil buffer
-  //      if( GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND ) {
-  //          wxLogMessage( _T("OpenGL-> Detected Generic renderer, disabling
-  //          stencil buffer") ); bad_stencil_code = true;
-  //      }
-
-  //          Seen with intel processor on VBox Win7
-  if (GetRendererString().Find(_T("Chromium")) != wxNOT_FOUND) {
-    wxLogMessage(
-        _T("OpenGL-> Detected Chromium renderer, disabling stencil buffer"));
-    bad_stencil_code = true;
-  }
 
   //      Stencil buffer test
   glEnable(GL_STENCIL_TEST);
@@ -1382,60 +1081,21 @@ void glChartCanvas::SetupOpenGL() {
   wxLogMessage(wxString::Format(_T("OpenGL-> Texture rectangle format: %x"),
                                 g_texture_rectangle_format));
 
-#ifndef __OCPN__ANDROID__
-  //      We require certain extensions to support FBO rendering
-  if (!g_texture_rectangle_format) m_b_DisableFBO = true;
-
-  if (!QueryExtension("GL_EXT_framebuffer_object")) m_b_DisableFBO = true;
-#endif
-
-  //m_b_DisableFBO = true;
-
 #ifdef __OCPN__ANDROID__
   g_texture_rectangle_format = GL_TEXTURE_2D;
 #endif
 
-  GetglEntryPoints();
-
-#if 0
-  if (!s_glGenFramebuffers || !s_glGenRenderbuffers ||
-      !s_glFramebufferTexture2D || !s_glBindFramebuffer ||
-      !s_glFramebufferRenderbuffer || !s_glRenderbufferStorage ||
-      !s_glBindRenderbuffer || !s_glCheckFramebufferStatus ||
-      !s_glDeleteFramebuffers || !s_glDeleteRenderbuffers)
-    m_b_DisableFBO = true;
-
   // VBO??
-
   g_b_EnableVBO = true;
-  if (!s_glBindBuffer || !s_glBufferData || !s_glGenBuffers ||
-      !s_glDeleteBuffers)
-    g_b_EnableVBO = false;
-#endif
-#if defined(__WXMSW__) || defined(__WXOSX__)
-  if (b_oldIntel) g_b_EnableVBO = false;
-#endif
 
 #ifdef __OCPN__ANDROID__
   g_b_EnableVBO = false;
 #endif
 
-#if defined(__WXMSW__)
-//   g_b_EnableVBO = false;
-//   wxLogMessage(_T("OpenGL-> DISABLING VBO for Intel test."));
-#endif
-
- //g_b_EnableVBO = false;
-
   if (g_b_EnableVBO)
     wxLogMessage(_T("OpenGL-> Using Vertexbuffer Objects"));
   else
     wxLogMessage(_T("OpenGL-> Vertexbuffer Objects unavailable"));
-
-    // #if defined(__WXOSX__)
-    //     wxLogMessage( _T("OpenGL-> DISABLING VBO for Mac/Intel test.") );
-    //     g_b_EnableVBO = false;
-    // #endif
 
     //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES
@@ -1451,30 +1111,11 @@ void glChartCanvas::SetupOpenGL() {
 
   g_GLOptions.m_bUseCanvasPanning = false;
 
-   //m_b_DisableFBO = true;
 
   //      Maybe build FBO(s)
-
   BuildFBO();
 
 #ifndef __OCPN__ANDROID__
-  /* this test sometimes fails when the fbo still works */
-  //  But we need to be ultra-conservative here, so run all the tests we can
-  //  think of
-
-  //  But we cannot even run this test on some platforms
-  //  So we simply have to declare FBO unavailable
-#ifdef __WXMSW__
-  if (GetRendererString().Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (GetRendererString().Upper().Find(_T("MOBILE")) != wxNOT_FOUND) {
-      wxLogMessage(
-          _T("OpenGL-> Detected Windows Intel Mobile renderer, disabling ")
-          _T("Frame Buffer Objects"));
-      m_b_DisableFBO = true;
-      BuildFBO();
-    }
-  }
-#endif
 
   if (m_b_BuiltFBO) {
     // Check framebuffer completeness at the end of initialization.
@@ -1541,12 +1182,6 @@ void glChartCanvas::SetupOpenGL() {
                g_GLMinSymbolLineWidth);
   wxLogMessage(lwmsg);
 
-  m_benableFog = true;
-  m_benableVScale = true;
-#ifdef __OCPN__ANDROID__
-  m_benableFog = false;
-  m_benableVScale = false;
-#endif
 
   if (!g_bGLexpert)
     g_GLOptions.m_bUseAcceleratedPanning = !m_b_DisableFBO && m_b_BuiltFBO;
@@ -1569,10 +1204,6 @@ void glChartCanvas::SetupOpenGL() {
 #endif
 
   s_b_useFBO = m_b_BuiltFBO;
-
-  // Some older Intel GL drivers need a glFinish() call after each full frame
-  // render
-  if (b_oldIntel) g_b_needFinish = true;
 
   //  Inform the S52 PLIB of options determined
   if (ps52plib)
@@ -1631,8 +1262,8 @@ void glChartCanvas::SetupCompression() {
        compress in software using libsquish for superior quality anyway */
 
     if ((QueryExtension("GL_EXT_texture_compression_s3tc") ||
-         QueryExtension("GL_EXT_texture_compression_dxt1")) &&
-        s_glCompressedTexImage2D) {
+         QueryExtension("GL_EXT_texture_compression_dxt1"))
+        ) {
       /* buggy opensource nvidia driver, renders incorrectly,
          workaround is to use format with alpha... */
       if (GetRendererString().Find(_T("Gallium")) != wxNOT_FOUND &&
@@ -1642,8 +1273,8 @@ void glChartCanvas::SetupCompression() {
         g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 
       wxLogMessage(_T("OpenGL-> Using s3tc dxt1 compression"));
-    } else if (QueryExtension("GL_3DFX_texture_compression_FXT1") &&
-               s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
+    } else if (QueryExtension("GL_3DFX_texture_compression_FXT1")
+               ) {
       g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
 
       wxLogMessage(_T("OpenGL-> Using 3dfx fxt1 compression"));
@@ -4358,10 +3989,10 @@ void glChartCanvas::Render() {
   //  If we plan to post process the display, don't use accelerated panning
   double scale_factor = VPoint.ref_scale / VPoint.chart_scale;
 
-  m_bfogit = m_benableFog && g_fog_overzoom &&
-             (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
-  bool scale_it = m_benableVScale && g_oz_vector_scale &&
-                  (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+//   m_bfogit = m_benableFog && g_fog_overzoom &&
+//              (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+//   bool scale_it = m_benableVScale && g_oz_vector_scale &&
+//                   (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
 
   bool bpost_hilite = !m_pParentCanvas->m_pQuilt->GetHiliteRegion().Empty();
   bool useFBO = false;
@@ -4370,7 +4001,7 @@ void glChartCanvas::Render() {
 
   // Try to use the framebuffer object's cache of the last frame
   // to accelerate drawing this frame (if overlapping)
-  if (m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite
+  if (m_b_BuiltFBO && !bpost_hilite
       //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality
       // but slower
   ) {
