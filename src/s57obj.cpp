@@ -81,9 +81,6 @@
 
 extern bool g_b_EnableVBO;
 
-// #ifdef ocpnUSE_GL
-// extern PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
-// #endif
 
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR

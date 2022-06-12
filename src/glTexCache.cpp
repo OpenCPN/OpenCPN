@@ -112,8 +112,6 @@ extern ocpnGLOptions g_GLOptions;
 
 extern int g_tile_size;
 
-extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-//extern PFNGLGENERATEMIPMAPEXTPROC s_glGenerateMipmap;
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 extern wxString CompressedCachePath(wxString path);

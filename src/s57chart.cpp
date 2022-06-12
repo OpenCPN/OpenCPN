@@ -96,22 +96,6 @@ void OpenCPN_OGRErrorHandler(
     CPLErr eErrClass, int nError,
     const char *pszErrorMsg);  // installed GDAL OGR library error handler
 
-#if 0
-#ifdef ocpnUSE_GL
-extern PFNGLGENBUFFERSPROC s_glGenBuffers;
-extern PFNGLBINDBUFFERPROC s_glBindBuffer;
-extern PFNGLBUFFERDATAPROC s_glBufferData;
-extern PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
-
-#ifndef USE_ANDROID_GLES2
-#define glGenBuffers(a, b) (s_glGenBuffers)(a, b);
-#define glBindBuffer(a, b) (s_glBindBuffer)(a, b);
-#define glBufferData(a, b, c, d) (s_glBufferData)(a, b, c, d);
-#define glDeleteBuffers(a, b) (s_glDeleteBuffers)(a, b);
-#endif
-#endif
-
-#endif
 
 extern s52plib *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;

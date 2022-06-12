@@ -667,7 +667,6 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 
   if (m_b_useFBOStencil) {
     // initialize composite depth/stencil renderbuffer
-#if 1
     glRenderbufferStorage(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
                               m_cache_tex_x, m_cache_tex_y);
 
@@ -698,17 +697,6 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
           err);
       wxLogMessage(msg);
     }
-
-#else
-    (s_glRenderbufferStorage)(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,
-                              m_cache_tex_x, m_cache_tex_y);
-
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                  GL_RENDERBUFFER, m_renderbuffer);
-
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                                  GL_RENDERBUFFER, m_renderbuffer);
-#endif
 
   } else {
     GLenum depth_format = GL_DEPTH_COMPONENT24;
@@ -1247,8 +1235,7 @@ void glChartCanvas::SetupCompression() {
 
   // On GLES, we prefer OES_ETC1 compression, if available
 #ifdef ocpnUSE_GLES
-  if (QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") &&
-      s_glCompressedTexImage2D) {
+  if (QueryExtension("GL_OES_compressed_ETC1_RGB8_texture")) {
     g_raster_format = GL_ETC1_RGB8_OES;
 
     wxLogMessage(_T("OpenGL-> Using oes etc1 compression"));
@@ -4095,14 +4082,14 @@ void glChartCanvas::Render() {
       // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       // enable rendering to texture in framebuffer object
-      (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+      glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
 
       if (accelerated_pan) {
         if ((dx != 0) || (dy != 0)) {   // Anything to do?
           m_cache_page = !m_cache_page; /* page flip */
 
           /* perform accelerated pan rendering to the new framebuffer */
-          (s_glFramebufferTexture2D)(
+          glFramebufferTexture2D(
               GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
               g_texture_rectangle_format, m_cache_tex[m_cache_page], 0);
 
@@ -4168,7 +4155,7 @@ void glChartCanvas::Render() {
         }
 
       } else {  // must redraw the entire screen
-        (s_glFramebufferTexture2D)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+        glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                    g_texture_rectangle_format,
                                    m_cache_tex[m_cache_page], 0);
 
@@ -4181,7 +4168,7 @@ void glChartCanvas::Render() {
       }
 
       // Disable Render to FBO
-      (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
 #else  // GLES2
        // enable rendering to texture in framebuffer object

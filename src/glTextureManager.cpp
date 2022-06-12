@@ -249,7 +249,6 @@ static void CompressDataETC(const unsigned char *data, int dim, int size,
 
 static bool CompressUsingGPU(const unsigned char *data, int dim, int size,
                              unsigned char *tex_data, int level, bool inplace) {
-  //if (!s_glGetCompressedTexImage) return false;
 #ifndef USE_ANDROID_GLES2
 
   GLuint comp_tex;
