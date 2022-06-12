@@ -57,7 +57,7 @@ class OCPNStopWatch {
 
 #if defined(__OCPN__ANDROID__)
 #include "androidUTIL.h"
-#elif defined(__WXQT__) || defined(__WXGTK__)
+#elif defined(__WXQT__) || defined(__WXGTK__) || defined(FLATPAK)
 #include <GL/glew.h>
 #endif
 
