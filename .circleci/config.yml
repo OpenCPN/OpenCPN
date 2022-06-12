@@ -101,7 +101,7 @@ workflows:
                 - flatpak
                 - master
                 - GLSL
-     - build-macos:
+      - build-macos:
           filters:
             branches:
               only:
