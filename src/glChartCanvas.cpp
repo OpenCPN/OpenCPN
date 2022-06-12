@@ -3976,10 +3976,6 @@ void glChartCanvas::Render() {
   //  If we plan to post process the display, don't use accelerated panning
   double scale_factor = VPoint.ref_scale / VPoint.chart_scale;
 
-//   m_bfogit = m_benableFog && g_fog_overzoom &&
-//              (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
-//   bool scale_it = m_benableVScale && g_oz_vector_scale &&
-//                   (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
 
   bool bpost_hilite = !m_pParentCanvas->m_pQuilt->GetHiliteRegion().Empty();
   bool useFBO = false;
@@ -5482,7 +5478,7 @@ void glChartCanvas::OnEvtPanGesture(wxQT_PanGestureEvent &event) {
 
     case GestureUpdated:
       if (m_binPan) {
-        if (!g_GLOptions.m_bUseCanvasPanning || m_bfogit) {
+        if (!g_GLOptions.m_bUseCanvasPanning) {
           // qDebug() << "slowpan" << dx << dy;
 
           m_pParentCanvas->FreezePiano();
