@@ -2722,29 +2722,29 @@ if (APPLE)
   set(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   set(DIRS "/usr/local/lib")
 
-  # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
+  # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/Plugins")
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
   set(
     LIBS
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
   )
 install(CODE "
   include(BundleUtilities)

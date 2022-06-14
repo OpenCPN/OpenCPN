@@ -1208,7 +1208,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>0</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -1224,7 +1224,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>0</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -1240,7 +1240,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>0</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -1256,7 +1256,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>0</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -1272,7 +1272,7 @@ ${LIBARCHIVE_COMMENT_END}
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns</string>
+													<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
