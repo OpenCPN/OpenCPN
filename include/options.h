@@ -316,6 +316,7 @@ public:
   void OnChooseFont(wxCommandEvent &event);
   void OnFontChoice(wxCommandEvent &event);
   void OnCPAWarnClick(wxCommandEvent &event);
+  void OnSyncCogPredClick(wxCommandEvent &event);
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
 
@@ -559,7 +560,8 @@ public:
 
   // For the "AIS" page
   wxCheckBox *m_pCheck_CPA_Max, *m_pCheck_CPA_Warn, *m_pCheck_CPA_WarnT;
-  wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost, *m_pCheck_Show_COG;
+  wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost;
+  wxCheckBox *m_pCheck_Show_COG, *m_pCheck_Sync_OCOG_ACOG;
   wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Hide_Moored,
       *m_pCheck_Scale_Priority;
   wxCheckBox *m_pCheck_AlertDialog, *m_pCheck_AlertAudio;

@@ -193,6 +193,7 @@ extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;
 extern double g_RemoveLost_Mins;
 extern bool g_bShowCOG;
+extern bool g_bSyncCogPredictors;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern bool g_bTrackCarryOver;
@@ -1144,6 +1145,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   s.ToDouble(&g_RemoveLost_Mins);
 
   Read(_T ( "bShowCOGArrows" ), &g_bShowCOG);
+
+  Read(_T ("bSyncCogPredictors"), &g_bSyncCogPredictors);
 
   Read(_T ( "CogArrowMinutes" ), &s);
   s.ToDouble(&g_ShowCOG_Mins);
@@ -2578,6 +2581,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "bRemoveLostTargets" ), g_bRemoveLost);
   Write(_T ( "RemoveLost_Minutes" ), g_RemoveLost_Mins);
   Write(_T ( "bShowCOGArrows" ), g_bShowCOG);
+  Write(_T ( "bSyncCogPredictors" ), g_bSyncCogPredictors);
   Write(_T ( "CogArrowMinutes" ), g_ShowCOG_Mins);
   Write(_T ( "bShowTargetTracks" ), g_bAISShowTracks);
   Write(_T ( "TargetTracksMinutes" ), g_AISShowTracks_Mins);

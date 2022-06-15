@@ -153,6 +153,7 @@ extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;
 extern double g_RemoveLost_Mins;
 extern bool g_bShowCOG;
+extern bool g_bSyncCogPredictors;
 extern double g_ShowCOG_Mins;
 extern bool g_bHideMoored;
 extern double g_ShowMoored_Kts;
@@ -1147,6 +1148,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   g_RemoveLost_Mins = 10;
   g_bShowCOG = true;
   g_ShowCOG_Mins = 6;
+  g_bSyncCogPredictors = false;
   g_bHideMoored = false;
   g_ShowMoored_Kts = 0.2;
   g_bTrackDaily = false;

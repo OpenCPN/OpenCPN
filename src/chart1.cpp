@@ -606,6 +606,7 @@ double g_MarkLost_Mins;
 bool g_bRemoveLost;
 double g_RemoveLost_Mins;
 bool g_bShowCOG;
+bool g_bSyncCogPredictors;
 double g_ShowCOG_Mins;
 bool g_bAISShowTracks;
 double g_AISShowTracks_Mins;
