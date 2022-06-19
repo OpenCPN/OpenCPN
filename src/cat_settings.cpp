@@ -34,7 +34,7 @@
 #include <wx/textctrl.h>
 
 #include "cat_settings.h"
-#include "config_var.h"
+#include "observable.h"
 #include "ocpn_utils.h"
 #include "plugin_cache.h"
 #include "PluginHandler.h"
@@ -69,7 +69,7 @@ private:
   wxStaticText* m_selected;
 
   void OnChoice(wxCommandEvent&) {
-    ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+    GlobalVar<wxString> compat_os(&g_compatOS);
     if (GetSelection() == 0) {
       // "Select new flavour"
       return;
@@ -140,7 +140,7 @@ private:
     } else {
       m_custom_ctrl->Hide();
     }
-    ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+    GlobalVar<wxString> catalog(&g_catalog_channel);
     catalog.set(selected);
     Layout();
   }

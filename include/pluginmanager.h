@@ -44,6 +44,7 @@
 #include "chartimg.h"
 #include "catalog_parser.h"
 #include "plugin_blacklist.h"
+#include "observable.h"
 
 #include "s57chart.h"  // for Object list
 #include "semantic_vers.h"
@@ -457,6 +458,7 @@ protected:
   wxStaticText *m_catalogText;
   wxWindow *m_parent;
   PluginListPanel *m_PluginListPanel;
+  ObservedVarListener catalog_listener;
 };
 
 #define ID_CMD_BUTTON_PERFORM_ACTION 27663
