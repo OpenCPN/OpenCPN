@@ -44,7 +44,7 @@
 #endif
 
 #ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
+#include "shaders.h"
 #endif
 
 #include <wx/graphics.h>
@@ -64,7 +64,7 @@ extern ocpnGLOptions g_GLOptions;
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 extern GLint color_tri_shader_program;
 extern GLint circle_filled_shader_program;
 extern GLint texture_2D_shader_program;
@@ -94,7 +94,7 @@ ocpnDC::ocpnDC(wxGLCanvas &canvas)
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   s_odc_tess_vertex_idx = 0;
   s_odc_tess_vertex_idx_this = 0;
   s_odc_tess_buf_len = 0;
@@ -232,6 +232,7 @@ void ocpnDC::SetGLAttrs(bool highQuality) {
   if (highQuality) {
     if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
     if (g_GLOptions.m_GLPolygonSmoothing) glEnable(GL_POLYGON_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glEnable(GL_BLEND);
   } else {
     glDisable(GL_LINE_SMOOTH);
@@ -244,7 +245,7 @@ void ocpnDC::SetGLAttrs(bool highQuality) {
 void ocpnDC::SetGLStipple() const {
 #ifdef ocpnUSE_GL
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   switch (m_pen.GetStyle()) {
     case wxPENSTYLE_DOT: {
       glLineStipple(1, 0x3333);
@@ -276,7 +277,7 @@ void ocpnDC::SetGLStipple() const {
 #ifdef ocpnUSE_GL
 /* draw a half circle using triangles */
 void DrawEndCap(float x1, float y1, float t1, float angle) {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   const int steps = 16;
   float xa, ya;
   bool first = true;
@@ -308,7 +309,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
   float t2sina1 = t1 / 2 * sinf(angle);
   float t2cosa1 = t1 / 2 * cosf(angle);
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glBegin(GL_TRIANGLES);
 
   //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in
@@ -518,6 +519,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     //         }
     //
   }
+  glUseProgram(0);
 
 #endif
 
@@ -564,22 +566,41 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         glLineWidth(pen_width);
     }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     if (b_draw_thick)
       DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
-      glUseProgram(color_tri_shader_program);
+      glUseProgram(AALine_shader_program);
 
       float fBuf[4];
-      GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
+      GLint pos = glGetAttribLocation(AALine_shader_program, "position");
       glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                             fBuf);
       glEnableVertexAttribArray(pos);
 
-      GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-      glUniformMatrix4fv(
-          matloc, 1, GL_FALSE,
-          (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+//       GLint matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
+//       glUniformMatrix4fv(
+//           matloc, 1, GL_FALSE,
+//           (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+
+      GLint lwloc = glGetUniformLocation(AALine_shader_program, "uLineWidth");
+      glUniform1f( lwloc, pen_width);
+
+      GLint bfloc = glGetUniformLocation(AALine_shader_program, "uBlendFactor");
+      glUniform1f( bfloc, 2.0);
+
+      float vpx[2];
+      if(!glcanvas){
+        //qDebug() << "Drawline glcanvas null";
+      }
+      else {
+        wxSize canvas_pixsize = glcanvas->GetSize();
+        vpx[0] = canvas_pixsize.x;
+        vpx[1] = canvas_pixsize.y;
+      }
+
+      GLint vpxloc = glGetUniformLocation(AALine_shader_program, "uViewPort");
+      glUniform2fv(vpxloc, 1, vpx);
 
       float colorv[4];
       colorv[0] = m_pen.GetColour().Red() / float(256);
@@ -587,7 +608,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       colorv[2] = m_pen.GetColour().Blue() / float(256);
       colorv[3] = 1.0;
 
-      GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
+      GLint colloc = glGetUniformLocation(AALine_shader_program, "color");
       glUniform4fv(colloc, 1, colorv);
 
       wxDash *dashes;
@@ -640,58 +661,11 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
         glDrawArrays(GL_LINES, 0, 2);
       }
+      glUseProgram(0);
+
     }
 
 #else
-    if (b_draw_thick)
-      DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
-    else {
-      wxDash *dashes;
-      int n_dashes = m_pen.GetDashes(&dashes);
-      if (n_dashes) {
-        float angle = atan2f((float)(y2 - y1), (float)(x2 - x1));
-        float cosa = cosf(angle);
-        float sina = sinf(angle);
-        float t1 = m_pen.GetWidth();
-
-        float lpix = sqrtf(powf(x1 - x2, 2) + powf(y1 - y2, 2));
-        float lrun = 0.;
-        float xa = x1;
-        float ya = y1;
-        float ldraw = t1 * dashes[0];
-        float lspace = t1 * dashes[1];
-
-        ldraw = wxMax(ldraw, 4.0);
-        lspace = wxMax(lspace, 4.0);
-
-        glBegin(GL_LINES);
-        while (lrun < lpix) {
-          //    Dash
-          float xb = xa + ldraw * cosa;
-          float yb = ya + ldraw * sina;
-
-          if ((lrun + ldraw) >= lpix)  // last segment is partial draw
-          {
-            xb = x2;
-            yb = y2;
-          }
-
-          glVertex2f(xa, ya);
-          glVertex2f(xb, yb);
-
-          xa = xa + (lspace + ldraw) * cosa;
-          ya = ya + (lspace + ldraw) * sina;
-          lrun += lspace + ldraw;
-        }
-        glEnd();
-      } else  // not dashed
-      {
-        glBegin(GL_LINES);
-        glVertex2i(x1, y1);
-        glVertex2i(x2, y2);
-        glEnd();
-      }
-    }
 #endif
     glDisable(GL_LINE_STIPPLE);
 
@@ -703,13 +677,14 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 #endif
 }
 
+
 // Draws thick lines from triangles
 void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
                       wxPen pen, bool b_hiqual) {
 #ifdef ocpnUSE_GL
   if (n < 2) return;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   wxPoint p0 = points[0];
   for (int i = 1; i < n; i++) {
     DrawGLThickLine(p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset,
@@ -861,7 +836,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
     glBegin(GL_LINE_STRIP);
     for (int i = 0; i < n; i++)
@@ -903,6 +878,8 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
     glUniform4fv(colloc, 1, colorv);
 
     glDrawArrays(GL_LINE_STRIP, 0, n);
+
+    glUseProgram(0);
 
 #endif
 
@@ -952,7 +929,7 @@ void ocpnDC::DrawRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h) {
   if (dc) dc->DrawRectangle(x, y, w, h);
 #ifdef ocpnUSE_GL
   else {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     if (ConfigureBrush()) {
       glBegin(GL_QUADS);
       glVertex2i(x, y);
@@ -1013,7 +990,7 @@ void ocpnDC::DrawRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h) {
 static void drawrrhelper(wxCoord x0, wxCoord y0, wxCoord r, int quadrant,
                          int steps) {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   float step = 1.0 / steps, rs = 2.0 * r * step, rss = rs * step, x, y, dx, dy,
         ddx, ddy;
   switch (quadrant) {
@@ -1091,7 +1068,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     wxCoord x1 = x + r, x2 = x + w - r;
     wxCoord y1 = y + r, y2 = y + h - r;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     ConfigureBrush();
     ConfigurePen();
@@ -1170,6 +1147,8 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     // Perform the actual drawing.
     glDrawArrays(GL_LINE_LOOP, 0, workBufIndex / 2);
 
+    glUseProgram(0);
+
 #else
     if (ConfigureBrush()) {
       glBegin(GL_TRIANGLE_FAN);
@@ -1194,7 +1173,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 }
 
 void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   //      Enable anti-aliased lines, at best quality
   glEnable(GL_BLEND);
@@ -1272,6 +1251,8 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
   //      Enable anti-aliased lines, at best quality
   glDisable(GL_BLEND);
 
+  glUseProgram(0);
+
 #else
   DrawEllipse(x - radius, y - radius, 2 * radius, 2 * radius);
 #endif
@@ -1310,7 +1291,7 @@ void ocpnDC::DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height) {
         wxMax(sqrtf(sqrtf((float)(width * width + height * height))), 1) *
         M_PI);
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     if (ConfigureBrush()) {
       glBegin(GL_TRIANGLE_FAN);
       glVertex2f(cx, cy);
@@ -1344,16 +1325,15 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
     SetGLAttrs(true);
 #endif
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     ConfigurePen();
-    glEnable(GL_BLEND);
 
     if (n > 4) {
       if (ConfigureBrush())  // Check for transparent brush
         DrawPolygonTessellated(n, points, xoffset, yoffset);
 
-      // Draw the ouline
+      // Draw the polygon ouline
       //  Grow the work buffer as necessary
       if (workBufSize < (size_t)n * 2) {
         workBuf = (float *)realloc(workBuf, (n * 4) * sizeof(float));
@@ -1365,28 +1345,40 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
       }
 
-      glUseProgram(color_tri_shader_program);
+      glUseProgram(AALine_shader_program);
 
-      // Get pointers to the attributes in the program.
-      GLint mPosAttrib =
-          glGetAttribLocation(color_tri_shader_program, "position");
-
-      // Disable VBO's (vertex buffer objects) for attributes.
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+      GLint mPosAttrib = glGetAttribLocation(AALine_shader_program, "position");
       glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, workBuf);
       glEnableVertexAttribArray(mPosAttrib);
 
-      //  Border color
-      float bcolorv[4];
-      bcolorv[0] = m_pen.GetColour().Red() / float(256);
-      bcolorv[1] = m_pen.GetColour().Green() / float(256);
-      bcolorv[2] = m_pen.GetColour().Blue() / float(256);
-      bcolorv[3] = m_pen.GetColour().Alpha() / float(256);
 
-      GLint bcolloc = glGetUniformLocation(color_tri_shader_program, "color");
-      glUniform4fv(bcolloc, 1, bcolorv);
+      GLint lwloc = glGetUniformLocation(AALine_shader_program, "uLineWidth");
+      glUniform1f( lwloc, m_pen.GetWidth());
+
+      GLint bfloc = glGetUniformLocation(AALine_shader_program, "uBlendFactor");
+      glUniform1f( bfloc, 2.0);
+
+      float vpx[2];
+      if(!glcanvas){
+        //qDebug() << "DrawPolygon glcanvas null";
+      }
+      else {
+        wxSize canvas_pixsize = glcanvas->GetSize();
+        vpx[0] = canvas_pixsize.x;
+        vpx[1] = canvas_pixsize.y;
+      }
+
+      GLint vpxloc = glGetUniformLocation(AALine_shader_program, "uViewPort");
+      glUniform2fv(vpxloc, 1, vpx);
+
+      float colorv[4];
+      colorv[0] = m_pen.GetColour().Red() / float(256);
+      colorv[1] = m_pen.GetColour().Green() / float(256);
+      colorv[2] = m_pen.GetColour().Blue() / float(256);
+      colorv[3] = 1.0;
+
+      GLint colloc = glGetUniformLocation(AALine_shader_program, "color");
+      glUniform4fv(colloc, 1, colorv);
 
       // Rotate
       mat4x4 I, Q;
@@ -1402,11 +1394,13 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
           X, (float(*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform,
           Q);
 
-      GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
+      GLint matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
       glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)X);
 
-      // Perform the actual drawing.
+      // Render the polygon outline.
       glDrawArrays(GL_LINE_LOOP, 0, n);
+
+      glUseProgram(0);
 
     } else {  // n = 3 or 4, most common case for pre-tesselated shapes
 
@@ -1421,11 +1415,12 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
       }
 
+      // Draw the triangle fill
+
       glUseProgram(color_tri_shader_program);
 
       // Get pointers to the attributes in the program.
-      GLint mPosAttrib =
-          glGetAttribLocation(color_tri_shader_program, "position");
+      GLint mPosAttrib = glGetAttribLocation(color_tri_shader_program, "position");
 
       // Disable VBO's (vertex buffer objects) for attributes.
       glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1434,12 +1429,12 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, workBuf);
       glEnableVertexAttribArray(mPosAttrib);
 
-      //  Border color
+      //  Fill color
       float bcolorv[4];
-      bcolorv[0] = m_pen.GetColour().Red() / float(256);
-      bcolorv[1] = m_pen.GetColour().Green() / float(256);
-      bcolorv[2] = m_pen.GetColour().Blue() / float(256);
-      bcolorv[3] = m_pen.GetColour().Alpha() / float(256);
+      bcolorv[0] = m_brush.GetColour().Red() / float(256);
+      bcolorv[1] = m_brush.GetColour().Green() / float(256);
+      bcolorv[2] = m_brush.GetColour().Blue() / float(256);
+      bcolorv[3] = m_brush.GetColour().Alpha() / float(256);
 
       GLint bcolloc = glGetUniformLocation(color_tri_shader_program, "color");
       glUniform4fv(bcolloc, 1, bcolorv);
@@ -1460,16 +1455,6 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
       glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)X);
 
-      // Perform the actual drawing.
-      glDrawArrays(GL_LINE_LOOP, 0, n);
-
-      //  Fill color
-      bcolorv[0] = m_brush.GetColour().Red() / float(256);
-      bcolorv[1] = m_brush.GetColour().Green() / float(256);
-      bcolorv[2] = m_brush.GetColour().Blue() / float(256);
-      bcolorv[3] = m_brush.GetColour().Alpha() / float(256);
-
-      glUniform4fv(bcolloc, 1, bcolorv);
 
       // For the simple common case of a convex rectangle...
       //  swizzle the array points to enable GL_TRIANGLE_STRIP
@@ -1485,35 +1470,83 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       } else if (n == 3) {
         glDrawArrays(GL_TRIANGLES, 0, 3);
       }
+
+      // Restore the default matrix
+      glUniformMatrix4fv( matloc, 1, GL_FALSE,
+        (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+
+      glUseProgram(0);
+
+      // Draw the polygon outline
+      // Reset the workbuf, corrupted in swizzle above
+      for (int i = 0; i < n; i++) {
+        workBuf[i * 2] = (points[i].x * scale);      // + xoffset;
+        workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
+      }
+
+      glUseProgram(AALine_shader_program);
+
+      mPosAttrib = glGetAttribLocation(AALine_shader_program, "position");
+      glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, workBuf);
+      glEnableVertexAttribArray(mPosAttrib);
+
+      GLint lwloc = glGetUniformLocation(AALine_shader_program, "uLineWidth");
+      glUniform1f( lwloc, m_pen.GetWidth());
+
+      GLint bfloc = glGetUniformLocation(AALine_shader_program, "uBlendFactor");
+      glUniform1f( bfloc, 2.0);
+
+      float vpx[2];
+      if(!glcanvas){
+        //qDebug() << "DrawPolygon glcanvas null";
+      }
+      else {
+        wxSize canvas_pixsize = glcanvas->GetSize();
+        vpx[0] = canvas_pixsize.x;
+        vpx[1] = canvas_pixsize.y;
+      }
+
+      GLint vpxloc = glGetUniformLocation(AALine_shader_program, "uViewPort");
+      glUniform2fv(vpxloc, 1, vpx);
+
+      float colorv[4];
+      colorv[0] = m_pen.GetColour().Red() / float(256);
+      colorv[1] = m_pen.GetColour().Green() / float(256);
+      colorv[2] = m_pen.GetColour().Blue() / float(256);
+      colorv[3] = 1.0;
+
+      GLint colloc = glGetUniformLocation(AALine_shader_program, "color");
+      glUniform4fv(colloc, 1, colorv);
+
+      // Rotate
+      mat4x4 IAA, QAA;
+      mat4x4_identity(IAA);
+      mat4x4_rotate_Z(QAA, IAA, angle);
+
+      // Translate
+      QAA[3][0] = xoffset;
+      QAA[3][1] = yoffset;
+
+      mat4x4 XAA;
+      mat4x4_mul(
+          XAA, (float(*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform,
+          QAA);
+
+      matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
+      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)XAA);
+
+      // Render the polygon outline.
+      glDrawArrays(GL_LINE_LOOP, 0, n);
+
+      // Restore the default matrix
+      //TODO  This will not work for multicanvas
+      glUniformMatrix4fv( matloc, 1, GL_FALSE,
+        (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+
+      glUseProgram(0);
     }
 
 #else
-
-    glPushMatrix();
-    glTranslatef(xoffset, yoffset, 0);
-
-    float deg = 180 / PI * (angle);
-    glRotatef(deg, 0, 0, 1);
-
-    if (ConfigureBrush()) {
-      if (g_GLOptions.m_GLPolygonSmoothing) glEnable(GL_POLYGON_SMOOTH);
-      glBegin(GL_POLYGON);
-      for (int i = 0; i < n; i++)
-        glVertex2f((points[i].x * scale), (points[i].y * scale));
-      glEnd();
-      glDisable(GL_POLYGON_SMOOTH);
-    }
-
-    if (ConfigurePen()) {
-      if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
-      glBegin(GL_LINE_LOOP);
-      for (int i = 0; i < n; i++)
-        glVertex2f((points[i].x * scale), (points[i].y * scale));
-      glEnd();
-      glDisable(GL_LINE_SMOOTH);
-    }
-
-    glPopMatrix();
 #endif
 
     SetGLAttrs(false);
@@ -1537,8 +1570,8 @@ typedef union {
   } info;
 } GLvertex;
 
-#ifndef USE_ANDROID_GLES2
-void APIENTRY ocpnDCcombineCallback(GLdouble coords[3],
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+void ocpnDCcombineCallback(GLdouble coords[3],
                                     GLdouble *vertex_data[4], GLfloat weight[4],
                                     GLdouble **dataOut) {
   GLvertex *vertex;
@@ -1558,26 +1591,26 @@ void APIENTRY ocpnDCcombineCallback(GLdouble coords[3],
   *dataOut = &(vertex->data[0]);
 }
 
-void APIENTRY ocpnDCvertexCallback(GLvoid *arg) {
+void ocpnDCvertexCallback(GLvoid *arg) {
   GLvertex *vertex;
   vertex = (GLvertex *)arg;
   glVertex2f((float)vertex->info.x, (float)vertex->info.y);
 }
 
-void APIENTRY ocpnDCerrorCallback(GLenum errorCode) {
+void ocpnDCerrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
   // wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
 }
 
-void APIENTRY ocpnDCbeginCallback(GLenum type) { glBegin(type); }
+void ocpnDCbeginCallback(GLenum type) { glBegin(type); }
 
-void APIENTRY ocpnDCendCallback() { glEnd(); }
+void ocpnDCendCallback() { glEnd(); }
 #endif
 
 // GLSL callbacks
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
 static std::list<double *> odc_combine_work_data;
 static void odc_combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
@@ -1654,6 +1687,8 @@ void odc_endCallbackD_GLSL(void *data) {
   glUniform4fv(colloc, 1, colorv);
 
   glDrawArrays(pDC->s_odc_tess_mode, 0, pDC->s_odc_nvertex);
+  glUseProgram(0);
+
 #endif
 }
 #endif
@@ -1674,7 +1709,7 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     m_tobj = gluNewTess();
     s_odc_tess_vertex_idx = 0;
 
@@ -1820,7 +1855,7 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
     return;          // this should not be hit anymore ever anyway
 #endif
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     wxImage image = bmp.ConvertToImage();
     int w = image.GetWidth(), h = image.GetHeight();
 
@@ -1889,7 +1924,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         glEnable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
         glPushMatrix();
         glTranslatef(x, y, 0);
 
@@ -1989,7 +2024,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
 
       float u = (float)w / TextureWidth, v = (float)h / TextureHeight;
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       glColor3ub(0, 0, 0);
 
       glBegin(GL_QUADS);
@@ -2100,6 +2135,8 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+      glUseProgram(0);
+
 #endif
 
 #endif
@@ -2162,7 +2199,7 @@ bool ocpnDC::ConfigurePen() {
   wxColour c = m_pen.GetColour();
   int width = m_pen.GetWidth();
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
 #endif
   glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));
@@ -2175,7 +2212,7 @@ bool ocpnDC::ConfigureBrush() {
     return false;
 #ifdef ocpnUSE_GL
   wxColour c = m_brush.GetColour();
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
 #endif
 #endif
@@ -2185,7 +2222,7 @@ bool ocpnDC::ConfigureBrush() {
 void ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
                              int format, const unsigned char *data) {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glEnable(GL_BLEND);
   glRasterPos2i(x, y);
   glPixelZoom(1, -1);

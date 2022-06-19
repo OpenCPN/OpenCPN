@@ -459,7 +459,7 @@ void Piano::DrawGL(int off) {
 
   glBindTexture(GL_TEXTURE_2D, m_tex);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   if (style->chartStatusWindowTransparent) {
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glColor4ub(255, 255, 255,
@@ -471,7 +471,7 @@ void Piano::DrawGL(int off) {
 
   glEnable(GL_TEXTURE_2D);
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   glEnable(GL_BLEND);
   m_parentCanvas->GetglCanvas()->RenderTextures(coords, texcoords, vc / 2,
                                                 m_parentCanvas->GetpVP());
@@ -547,7 +547,7 @@ void Piano::DrawGL(int off) {
 
   glDisable(GL_BLEND);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
 #endif

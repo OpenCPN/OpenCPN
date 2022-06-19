@@ -410,7 +410,7 @@ void Route::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
   LLBBox bbox = vp.GetBBox();
 
   // dc is passed for thicker highlighted lines (performance not very important)
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (!dc) glBegin(GL_LINES);
 #endif
 
@@ -493,7 +493,7 @@ void Route::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
         } else
           dc->DrawLine(r1.m_x, r1.m_y, r2.m_x, r2.m_y);
       else {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
         glVertex2f(r1.m_x, r1.m_y);
         if (adder) {
           float adderc = cos(vp.rotation) * adder,
@@ -519,7 +519,7 @@ void Route::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
     }
   }
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (!dc) glEnd();
 #endif
 
@@ -535,12 +535,12 @@ bool Route::ContainsSharedWP() {
   return false;
 }
 
-void Route::DrawGL(ViewPort &vp, ChartCanvas *canvas) {
+void Route::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
 #ifdef ocpnUSE_GL
   if (pRoutePointList->empty()) return;
 
   if (!vp.GetBBox().IntersectOut(GetBBox()) && m_bVisible)
-    DrawGLRouteLines(vp, canvas);
+    DrawGLRouteLines(vp, canvas, dc);
 
   /*  Route points  */
   for (wxRoutePointListNode *node = pRoutePointList->GetFirst(); node;
@@ -552,25 +552,25 @@ void Route::DrawGL(ViewPort &vp, ChartCanvas *canvas) {
     // fixed lat/lon extent.
     //  Maybe better to use the mark's drawn box, once it is known.
     if (vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)) {
-      if (m_bVisible || prp->IsShared()) prp->DrawGL(vp, canvas);
+      if (m_bVisible || prp->IsShared()) prp->DrawGL(vp, canvas, dc);
     }
   }
 
 #endif
 }
 
-void Route::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas) {
+void Route::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
 #ifdef ocpnUSE_GL
   //  Hiliting first
   //  Being special case to draw something for a 1 point route....
-  ocpnDC dc;
+  //ocpnDC dc;
   if (m_hiliteWidth) {
     wxColour y = GetGlobalColor(_T ( "YELO1" ));
     wxColour hilt(y.Red(), y.Green(), y.Blue(), 128);
 
     wxPen HiPen(hilt, m_hiliteWidth, wxPENSTYLE_SOLID);
 
-    ocpnDC dc;
+    //ocpnDC dc;
     dc.SetPen(HiPen);
 
     DrawGLLines(vp, &dc, canvas);
@@ -609,7 +609,7 @@ void Route::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas) {
 
   dc.SetGLStipple();
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   DrawGLLines(vp, &dc, canvas);
 #else
   glColor3ub(col.Red(), col.Green(), col.Blue());
@@ -743,7 +743,7 @@ void Route::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
   float theta = atan2f((float)yb - ya, (float)xb - xa);
   theta -= (float)PI;
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glPushMatrix();
   glTranslatef(xb, yb, 0);
   glScalef(icon_scale_factor, icon_scale_factor, 1);

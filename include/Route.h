@@ -96,8 +96,8 @@ public:
                    ViewPort &vp, bool bdraw_arrow);
 
   void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas);
-  void DrawGL(ViewPort &vp, ChartCanvas *canvas);
-  void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas);
+  void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
+  void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
 
   RoutePoint *GetLastPoint();
   void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);

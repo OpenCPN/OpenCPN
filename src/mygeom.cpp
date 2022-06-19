@@ -62,6 +62,17 @@
 #include <windows.h>
 #endif
 
+// #if defined(__OCPN__ANDROID__)
+// #include <qopengl.h>
+// #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+// #include <GLES2/gl2.h>
+// #elif defined(__WXQT__) || defined(__WXGTK__)
+// #define GL_GLEXT_PROTOTYPES
+// #include <GL/gl.h>
+// #include <GL/glext.h>
+// #include <GL/glu.h>
+// #endif
+
 static const double CM93_semimajor_axis_meters =
     6378388.0;  // CM93 semimajor axis
 

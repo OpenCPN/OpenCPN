@@ -74,6 +74,8 @@ millions of points.
 
 #include "wx/wxprec.h"
 
+#include "dychart.h"
+
 #include "Route.h"
 #include "Track.h"
 #include "routeman.h"
@@ -652,7 +654,7 @@ void Track::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box) {
     if (radius < 1.0) radius = 0;
   }
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   if (dc.GetDC() || radius)
 #else
   if (1)
@@ -694,7 +696,7 @@ void Track::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box) {
     }
   }
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   else {  // opengl version
     glColor3ub(col.Red(), col.Green(), col.Blue());
     glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));

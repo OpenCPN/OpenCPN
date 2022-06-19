@@ -96,20 +96,6 @@ void OpenCPN_OGRErrorHandler(
     CPLErr eErrClass, int nError,
     const char *pszErrorMsg);  // installed GDAL OGR library error handler
 
-#ifdef ocpnUSE_GL
-extern PFNGLGENBUFFERSPROC s_glGenBuffers;
-extern PFNGLBINDBUFFERPROC s_glBindBuffer;
-extern PFNGLBUFFERDATAPROC s_glBufferData;
-extern PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
-
-#ifndef USE_ANDROID_GLES2
-#define glGenBuffers(a, b) (s_glGenBuffers)(a, b);
-#define glBindBuffer(a, b) (s_glBindBuffer)(a, b);
-#define glBufferData(a, b, c, d) (s_glBufferData)(a, b, c, d);
-#define glDeleteBuffers(a, b) (s_glDeleteBuffers)(a, b);
-#endif
-
-#endif
 
 extern s52plib *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
@@ -132,7 +118,7 @@ static jmp_buf env_ogrf;  // the context saved by setjmp();
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST(ListOfPI_S57Obj); 
+WX_DEFINE_LIST(ListOfPI_S57Obj);
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 
@@ -318,7 +304,7 @@ s57chart::~s57chart() {
   m_vc_hash.clear();
 
 #ifdef ocpnUSE_GL
-  if (s_glDeleteBuffers && (m_LineVBO_name > 0))
+  if ((m_LineVBO_name > 0))
     glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
   free(m_this_chart_context);
@@ -1536,6 +1522,9 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
   // region always has either 1 or 2 rectangles (full screen or panning
   // rectangles)
   for (OCPNRegionIterator upd(RectRegion); upd.HaveRects(); upd.NextRect()) {
+    wxRect upr = upd.GetRect();
+    printf("updRect: %d %d %d %d\n",upr.x, upr.y, upr.width, upr.height);
+
     LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
     chart_region.Intersect(Region);
 
@@ -1550,7 +1539,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         // rendering order is resolved
         //                glChartCanvas::SetClipRegion(cvp, chart_region);
         glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
-        ps52plib->m_last_clip_rect = upd.GetRect();
+        //ps52plib->m_last_clip_rect = upd.GetRect();
       } else {
 #ifdef OPT_USE_ANDROID_GLES2
 
@@ -1586,28 +1575,23 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         mat4x4_dup((float(*)[4])vp->vp_transform, Q);
 
 #else
-        // glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
-        glChartCanvas::SetClipRegion(cvp, chart_region);
+        glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+        //glChartCanvas::SetClipRegion(cvp, chart_region);
 
-        ps52plib->m_last_clip_rect = upd.GetRect();
+        //ps52plib->m_last_clip_rect = upd.GetRect();
 
 #endif
       }
 
 //            ps52plib->m_last_clip_rect = upd.GetRect();
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       glPushMatrix();  //    Adjust for rotation
 #endif
       glChartCanvas::RotateToViewPort(VPoint);
 
-      wxRect r = upd.GetRect();
-      // qDebug() << "Rect" << r.x << r.y << r.width << r.height;
-
-      // qDebug() << "Start DoRender" << sw.GetTime();
       DoRenderOnGL(glc, cvp);
-      // qDebug() << "End DoRender" << sw.GetTime();
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       glPopMatrix();
 #endif
       glChartCanvas::DisableClipRegion();

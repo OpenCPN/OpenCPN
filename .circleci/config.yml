@@ -93,19 +93,23 @@ workflows:
             branches:
               only:
                 - master
+                - GLSL
       - build-flatpak:
           filters:
             branches:
               only:
                 - flatpak
                 - master
+                - GLSL
       - build-macos:
           filters:
             branches:
               only:
                 - master
+                - GLSL
       - build-android-armhf:
           filters:
             branches:
               only:
+                - GLSL
                 - master

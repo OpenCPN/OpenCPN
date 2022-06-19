@@ -42,50 +42,6 @@
 #include "wx/qt/private/wxQtGesture.h"
 #endif
 
-// Correct some deficincies in MacOS OpenGL include files
-#ifdef __WXOSX__
-typedef void (*PFNGLGENBUFFERSPROC)(GLsizei n, GLuint *buffers);
-typedef void (*PFNGLBINDBUFFERPROC)(GLenum target, GLuint buffer);
-typedef void (*PFNGLDELETEBUFFERSPROC)(GLsizei n, const GLuint *buffers);
-typedef void (*PFNGLGETBUFFERPARAMETERIVPROC)(GLenum target, GLenum pname,
-                                              GLint *params);
-typedef void (*PFNGLDELETERENDERBUFFERSEXTPROC)(GLsizei n,
-                                                const GLuint *renderbuffers);
-typedef void (*PFNGLDELETEFRAMEBUFFERSEXTPROC)(GLsizei n,
-                                               const GLuint *framebuffers);
-typedef void (*PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC)(GLenum target, GLint level,
-                                                 GLint xoffset, GLsizei width,
-                                                 GLenum format,
-                                                 GLsizei imageSize,
-                                                 const GLvoid *data);
-typedef void (*PFNGLGETCOMPRESSEDTEXIMAGEPROC)(GLenum target, GLint level,
-                                               GLvoid *img);
-typedef GLenum (*PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)(GLenum target);
-typedef void (*PFNGLBINDRENDERBUFFEREXTPROC)(GLenum target,
-                                             GLuint renderbuffer);
-typedef void (*PFNGLBUFFERDATAPROC)(GLenum target, GLsizeiptr size,
-                                    const GLvoid *data, GLenum usage);
-typedef void (*PFNGLGENFRAMEBUFFERSEXTPROC)(GLsizei n, GLuint *framebuffers);
-typedef void (*PFNGLGENRENDERBUFFERSEXTPROC)(GLsizei n, GLuint *renderbuffers);
-typedef void (*PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)(GLenum target,
-                                                 GLenum attachment,
-                                                 GLenum textarget,
-                                                 GLuint texture, GLint level);
-typedef void (*PFNGLCOMPRESSEDTEXIMAGE2DPROC)(GLenum target, GLint level,
-                                              GLenum internalformat,
-                                              GLsizei width, GLsizei height,
-                                              GLint border, GLsizei imageSize,
-                                              const GLvoid *data);
-typedef void (*PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)(GLenum target,
-                                                    GLenum attachment,
-                                                    GLenum renderbuffertarget,
-                                                    GLuint renderbuffer);
-typedef void (*PFNGLRENDERBUFFERSTORAGEEXTPROC)(GLenum target,
-                                                GLenum internalformat,
-                                                GLsizei width, GLsizei height);
-typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
-#endif
-
 class glTexFactory;
 class ChartCanvas;
 
@@ -96,37 +52,20 @@ class ChartCanvas;
 
 class OCPN_GLCaps {
 public:
-  wxString Renderer;
+  std::string Renderer;
+  std::string Version;
+  std::string GLSL_Version;
+
+  double dGLSL_Version;
   GLenum TextureRectangleFormat;
 
   bool bOldIntel;
   bool bCanDoVBO;
   bool bCanDoFBO;
-
-  //      Vertex Buffer Object (VBO) support
-  PFNGLGENBUFFERSPROC m_glGenBuffers;
-  PFNGLBINDBUFFERPROC m_glBindBuffer;
-  PFNGLBUFFERDATAPROC m_glBufferData;
-  PFNGLDELETEBUFFERSPROC m_glDeleteBuffers;
-
-  //      Frame Buffer Object (FBO) support
-  PFNGLGENFRAMEBUFFERSEXTPROC m_glGenFramebuffers;
-  PFNGLGENRENDERBUFFERSEXTPROC m_glGenRenderbuffers;
-  PFNGLFRAMEBUFFERTEXTURE2DEXTPROC m_glFramebufferTexture2D;
-  PFNGLBINDFRAMEBUFFEREXTPROC m_glBindFramebuffer;
-  PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC m_glFramebufferRenderbuffer;
-  PFNGLRENDERBUFFERSTORAGEEXTPROC m_glRenderbufferStorage;
-  PFNGLBINDRENDERBUFFEREXTPROC m_glBindRenderbuffer;
-  PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC m_glCheckFramebufferStatus;
-  PFNGLDELETEFRAMEBUFFERSEXTPROC m_glDeleteFramebuffers;
-  PFNGLDELETERENDERBUFFERSEXTPROC m_glDeleteRenderbuffers;
-
-  PFNGLCOMPRESSEDTEXIMAGE2DPROC m_glCompressedTexImage2D;
-  PFNGLGETCOMPRESSEDTEXIMAGEPROC m_glGetCompressedTexImage;
+  bool bCanDoGLSL;
 
 };
 
-void GetglEntryPoints(OCPN_GLCaps *pcaps);
 GLboolean QueryExtension(const char *extName);
 
 class ocpnGLOptions {
@@ -216,6 +155,7 @@ public:
 
   wxString GetRendererString() { return m_renderer; }
   wxString GetVersionString() { return m_version; }
+  wxString GetGLSLVersionString() { return m_GLSLversion; }
   void EnablePaint(bool b_enable) { m_b_paint_enable = b_enable; }
 
   void Invalidate();
@@ -268,7 +208,7 @@ protected:
   void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
   void RenderNoDTA(ViewPort &vp, const LLRegion &region,
                    int transparency = 255);
-  void RenderNoDTA(ViewPort &vp, ChartBase *chart);
+  //void RenderNoDTA(ViewPort &vp, ChartBase *chart);
   void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
                         bool &world_view);
 
@@ -299,7 +239,7 @@ protected:
   bool m_bsetup;
 
   wxString m_renderer;
-  wxString m_version;
+  wxString m_version, m_GLSLversion;
   wxString m_extensions;
 
   ViewPort m_cache_vp;
@@ -353,9 +293,6 @@ protected:
   bool m_binPinch;
   bool m_binPan;
   bool m_binGesture;
-  bool m_bfogit;
-  bool m_benableFog;
-  bool m_benableVScale;
 
   wxTimer m_gestureEeventTimer;
   wxTimer m_gestureFinishTimer;
@@ -378,6 +315,8 @@ protected:
   int m_currentTexWidth;
   int m_currentTexHeight;
   int m_displayScale;
+
+  bool m_bUseGLSL;
 
   DECLARE_EVENT_TABLE()
 };

@@ -4412,12 +4412,12 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pOpenGL = new wxCheckBox(m_ChartDisplayPage, ID_OPENGLBOX,
                              _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
-    pOpenGL->Enable(!g_bdisable_opengl);
+    pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
                                      _("OpenGL Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl);
+    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
 #ifdef __OCPN__ANDROID__
     pOpenGL->Hide();
@@ -4730,7 +4730,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     pOpenGL = new wxCheckBox(m_ChartDisplayPage, ID_OPENGLBOX,
                              _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
-    pOpenGL->Enable(!g_bdisable_opengl);
+    pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
 #ifdef __OCPN__ANDROID__
     pOpenGL->Disable();
@@ -4739,7 +4739,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
                                      _("Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl);
+    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     itemBoxSizerUI->Add(0, border_size * 3);
     /*
@@ -9943,7 +9943,7 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("English (U.S.)", wxConvUTF8);
   } else if (lang_canonical == _T("cs_CZ")) {
     dir_suffix = _T("cs");
-    return_string = wxString("Čeština", wxConvUTF8);
+    return_string = wxString("ÄeÅ¡tina", wxConvUTF8);
   } else if (lang_canonical == _T("da_DK")) {
     dir_suffix = _T("da");
     return_string = wxString("Dansk", wxConvUTF8);
@@ -9955,10 +9955,10 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("Eesti", wxConvUTF8);
   } else if (lang_canonical == _T("es_ES")) {
     dir_suffix = _T("es");
-    return_string = wxString("Español", wxConvUTF8);
+    return_string = wxString("EspaÃ±ol", wxConvUTF8);
   } else if (lang_canonical == _T("fr_FR")) {
     dir_suffix = _T("fr");
-    return_string = wxString("Français", wxConvUTF8);
+    return_string = wxString("FranÃ§ais", wxConvUTF8);
   } else if (lang_canonical == _T("it_IT")) {
     dir_suffix = _T("it");
     return_string = wxString("Italiano", wxConvUTF8);
@@ -9970,13 +9970,13 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("Polski", wxConvUTF8);
   } else if (lang_canonical == _T("pt_PT")) {
     dir_suffix = _T("pt_PT");
-    return_string = wxString("Português", wxConvUTF8);
+    return_string = wxString("PortuguÃªs", wxConvUTF8);
   } else if (lang_canonical == _T("pt_BR")) {
     dir_suffix = _T("pt_BR");
-    return_string = wxString("Português Brasileiro", wxConvUTF8);
+    return_string = wxString("PortuguÃªs Brasileiro", wxConvUTF8);
   } else if (lang_canonical == _T("ru_RU")) {
     dir_suffix = _T("ru");
-    return_string = wxString("Русский", wxConvUTF8);
+    return_string = wxString("Ð ÑÑÑÐºÐ¸Ð¹", wxConvUTF8);
   } else if (lang_canonical == _T("sv_SE")) {
     dir_suffix = _T("sv");
     return_string = wxString("Svenska", wxConvUTF8);
@@ -9988,16 +9988,16 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("Norsk", wxConvUTF8);
   } else if (lang_canonical == _T("tr_TR")) {
     dir_suffix = _T("tr_TR");
-    return_string = wxString("Türkçe", wxConvUTF8);
+    return_string = wxString("TÃ¼rkÃ§e", wxConvUTF8);
   } else if (lang_canonical == _T("el_GR")) {
     dir_suffix = _T("el_GR");
-    return_string = wxString("Ελληνικά", wxConvUTF8);
+    return_string = wxString("ÎÎ»Î»Î·Î½Î¹ÎºÎ¬", wxConvUTF8);
   } else if (lang_canonical == _T("hu_HU")) {
     dir_suffix = _T("hu_HU");
     return_string = wxString("Magyar", wxConvUTF8);
   } else if (lang_canonical == _T("zh_TW")) {
     dir_suffix = _T("zh_TW");
-    return_string = wxString("正體字", wxConvUTF8);
+    return_string = wxString("æ­£é«å­", wxConvUTF8);
   } else if (lang_canonical == _T("zh_CN")) {
     dir_suffix = _T("zh_CN");
     return_string = wxString("Simplified Chinese", wxConvUTF8);
@@ -11604,16 +11604,14 @@ int OpenGLOptionsDlg::GetTextureMemorySize(void) const {
 }
 
 void OpenGLOptionsDlg::Populate(void) {
-  extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-  extern bool b_glEntryPointsSet;
 
   m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
   /* disable caching if unsupported */
-  if (b_glEntryPointsSet && !s_glCompressedTexImage2D) {
-    g_GLOptions.m_bTextureCompressionCaching = FALSE;
-    m_cbTextureCompression->Disable();
-    m_cbTextureCompression->SetValue(FALSE);
-  }
+//   if (b_glEntryPointsSet && !s_glCompressedTexImage2D) {
+//     g_GLOptions.m_bTextureCompressionCaching = FALSE;
+//     m_cbTextureCompression->Disable();
+//     m_cbTextureCompression->SetValue(FALSE);
+//   }
 
   m_cbTextureCompressionCaching->Show(g_bGLexpert);
   m_memorySize->Show(g_bGLexpert);

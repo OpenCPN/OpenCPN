@@ -31,9 +31,6 @@
 #include <wx/dynarray.h>
 #include <wx/dynlib.h>
 
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
 
 #include "config.h"
 
@@ -47,6 +44,10 @@
 
 #include "s57chart.h"  // for Object list
 #include "semantic_vers.h"
+
+#ifdef ocpnUSE_GL
+//#include <wx/glcanvas.h>
+#endif
 
 // For widgets...
 #include "wx/hyperlink.h"
@@ -388,7 +389,7 @@ private:
 
   pluginUtilHandler *m_utilHandler;
   PluginListPanel *m_listPanel;
-  std::unique_ptr<AbstractBlacklist> m_blacklist; 
+  std::unique_ptr<AbstractBlacklist> m_blacklist;
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL

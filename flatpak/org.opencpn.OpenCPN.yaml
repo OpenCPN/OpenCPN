@@ -57,8 +57,8 @@ modules:
     - name: portaudio
       sources:
           - type: archive
-            url: http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz
-            sha256: f5a21d7dcd6ee84397446fa1fa1a0675bb2e8a4a6dceb4305a8404698d8d1513
+            url: https://github.com/PortAudio/portaudio/archive/refs/tags/v19.7.0.tar.gz
+            sha256: 5af29ba58bbdbb7bbcefaaecc77ec8fc413f0db6f4c4e286c40c3e1b83174fa0
       config-opts:
           - --disable-static
     - name: wxGTK3

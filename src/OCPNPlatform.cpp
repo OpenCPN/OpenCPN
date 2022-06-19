@@ -248,6 +248,8 @@ extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
 
+OCPN_GLCaps *GL_Caps;
+
 static const char *const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
 
@@ -725,6 +727,9 @@ void OCPNPlatform::Initialize_3(void) {
   bAndroid = true;
 #endif
 
+  g_bopengl &= bcapable;
+
+
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
 
@@ -800,15 +805,28 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
 
   char *str = (char *)glGetString(GL_RENDERER);
-  if (str == NULL) {
+  if (str == NULL) {    //No GL at all...
     delete tcanvas;
     delete pctx;
     return false;
   }
 
-  char render_string[80];
-  strncpy(render_string, str, 79);
-  pcaps->Renderer = wxString(render_string, wxConvUTF8);
+  pcaps->Renderer = std::string(str);
+  pcaps->Version = std::string((char *)glGetString(GL_VERSION));
+  pcaps->GLSL_Version = std::string((char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+  pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
+
+  if (pcaps->dGLSL_Version < 1.2){
+    wxString msg;
+    msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
+    msg += wxString(pcaps->GLSL_Version.c_str());
+    msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
+    wxLogMessage(msg);
+    pcaps->bCanDoGLSL = false;
+    return false;
+  }
+
+  pcaps->bCanDoGLSL = true;
 
   if (QueryExtension("GL_ARB_texture_non_power_of_two"))
     pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
@@ -817,20 +835,10 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   else if (QueryExtension("GL_ARB_texture_rectangle"))
     pcaps->TextureRectangleFormat = GL_TEXTURE_RECTANGLE_ARB;
 
-  GetglEntryPoints(pcaps);
-
   pcaps->bOldIntel = false;
-  if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (pcaps->Renderer.Upper().Find(_T("965")) != wxNOT_FOUND) {
-      pcaps->bOldIntel = true;
-    }
-  }
 
   // Can we use VBO?
   pcaps->bCanDoVBO = true;
-  if (!pcaps->m_glBindBuffer || !pcaps->m_glBufferData ||
-      !pcaps->m_glGenBuffers || !pcaps->m_glDeleteBuffers)
-    pcaps->bCanDoVBO = false;
 
 #if defined(__WXMSW__) || defined(__WXOSX__)
   if (pcaps->bOldIntel) pcaps->bCanDoVBO = false;
@@ -851,21 +859,6 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   if (!QueryExtension("GL_EXT_framebuffer_object")) pcaps->bCanDoFBO = false;
 #endif
 
-  if (!pcaps->m_glGenFramebuffers || !pcaps->m_glGenRenderbuffers ||
-      !pcaps->m_glFramebufferTexture2D || !pcaps->m_glBindFramebuffer ||
-      !pcaps->m_glFramebufferRenderbuffer || !pcaps->m_glRenderbufferStorage ||
-      !pcaps->m_glBindRenderbuffer || !pcaps->m_glCheckFramebufferStatus ||
-      !pcaps->m_glDeleteFramebuffers || !pcaps->m_glDeleteRenderbuffers)
-    pcaps->bCanDoFBO = false;
-
-#ifdef __WXMSW__
-  if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (pcaps->Renderer.Upper().Find(_T("MOBILE")) != wxNOT_FOUND) {
-      pcaps->bCanDoFBO = false;
-    }
-  }
-#endif
-
   delete tcanvas;
   delete pctx;
 
@@ -874,15 +867,20 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
 bool OCPNPlatform::IsGLCapable() {
 #ifndef __OCPN__ANDROID__
-  OCPN_GLCaps *pcaps = new OCPN_GLCaps;
-
-  BuildGLCaps(pcaps);
+  if (!GL_Caps){
+    GL_Caps = new OCPN_GLCaps;
+    BuildGLCaps(GL_Caps);
+  }
 
   // and so we decide....
 
+  // Require a modern GLSL implementation
+  if (!GL_Caps->bCanDoGLSL) return false;
+
+
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
-  if (!pcaps->bCanDoFBO) return false;
+  if (!GL_Caps->bCanDoFBO) return false;
 #endif
   return true;
 }

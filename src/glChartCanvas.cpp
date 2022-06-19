@@ -57,8 +57,8 @@ class OCPNStopWatch {
 
 #if defined(__OCPN__ANDROID__)
 #include "androidUTIL.h"
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glx.h>
+#elif defined(__WXQT__) || defined(__WXGTK__) || defined(FLATPAK)
+#include <GL/glew.h>
 #endif
 
 #include "dychart.h"
@@ -93,6 +93,7 @@ class OCPNStopWatch {
 #include "mbtiles.h"
 #include <vector>
 #include <algorithm>
+#include "shaders.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64
@@ -121,6 +122,9 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
+#endif
+
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 #include "linmath.h"
 #include "shaders.h"
 #endif
@@ -188,35 +192,6 @@ wxColor s_regionColor;
 bool g_b_EnableVBO;
 bool g_b_needFinish;  // Need glFinish() call on each frame?
 
-PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
-PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
-PFNGLBINDFRAMEBUFFEREXTPROC s_glBindFramebuffer;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbuffer;
-PFNGLRENDERBUFFERSTORAGEEXTPROC s_glRenderbufferStorage;
-PFNGLBINDRENDERBUFFEREXTPROC s_glBindRenderbuffer;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC s_glCheckFramebufferStatus;
-PFNGLDELETEFRAMEBUFFERSEXTPROC s_glDeleteFramebuffers;
-PFNGLDELETERENDERBUFFERSEXTPROC s_glDeleteRenderbuffers;
-
-PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
-
-//      Vertex Buffer Object (VBO) support
-PFNGLGENBUFFERSPROC s_glGenBuffers;
-PFNGLBINDBUFFERPROC s_glBindBuffer;
-PFNGLBUFFERDATAPROC s_glBufferData;
-PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
-
-#ifndef USE_ANDROID_GLES2
-#define glDeleteFramebuffers(a, b) (s_glDeleteFramebuffers)(a, b);
-#define glDeleteRenderbuffers(a, b) (s_glDeleteRenderbuffers)(a, b);
-#endif
-
-typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
-                                                  GLint *data);
-PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
-
 #include <wx/arrimpl.cpp>
 // WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
@@ -247,7 +222,7 @@ bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
 bool glChartCanvas::s_b_useFBO;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 static int s_tess_vertex_idx;
 static int s_tess_vertex_idx_this;
 static int s_tess_buf_len;
@@ -302,242 +277,6 @@ GLboolean QueryExtension(const char *extName) {
   return GL_FALSE;
 }
 
-typedef void (*GenericFunction)(void);
-
-#if defined(__WXMSW__)
-#define systemGetProcAddress(ADDR) wglGetProcAddress(ADDR)
-#elif defined(__WXOSX__)
-#include <dlfcn.h>
-#define systemGetProcAddress(ADDR) dlsym(RTLD_DEFAULT, ADDR)
-#elif defined(__OCPN__ANDROID__)
-#define systemGetProcAddress(ADDR) eglGetProcAddress(ADDR)
-#else
-#define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte *)ADDR)
-#endif
-
-GenericFunction ocpnGetProcAddress(const char *addr, const char *extension) {
-  char addrbuf[256];
-  if (!extension) return (GenericFunction)NULL;
-
-#ifndef __OCPN__ANDROID__
-  //  If this is an extension entry point,
-  //  We look explicitly in the extensions list to confirm
-  //  that the request is actually supported.
-  // This may be redundant, but is conservative, and only happens once per
-  // session.
-  if (extension && strlen(extension)) {
-    wxString s_extension(&addr[2], wxConvUTF8);
-    wxString s_family;
-    s_family = wxString(extension, wxConvUTF8);
-    s_extension.Prepend(_T("_"));
-    s_extension.Prepend(s_family);
-
-    s_extension.Prepend(_T("GL_"));
-
-    if (!QueryExtension(s_extension.mb_str())) {
-      return (GenericFunction)NULL;
-    }
-  }
-#endif
-
-  snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
-  return (GenericFunction)systemGetProcAddress(addrbuf);
-}
-
-bool b_glEntryPointsSet;
-
-void GetglEntryPoints(OCPN_GLCaps *pcaps) {
-  // the following are all part of framebuffer object,
-  // according to opengl spec, we cannot mix EXT and ARB extensions
-  // (I don't know that it could ever happen, but if it did, bad things would
-  // happen)
-
-#ifndef __OCPN__ANDROID__
-  const char *extensions[] = {"", "ARB", "EXT", 0};
-#else
-  const char *extensions[] = {"OES", 0};
-#endif
-
-  unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
-
-  unsigned int i;
-  for (i = 0; i < n_ext; i++) {
-    if ((pcaps->m_glGenFramebuffers =
-             (PFNGLGENFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-                 "glGenFramebuffers", extensions[i])))
-      break;
-  }
-
-  if (i < n_ext) {
-    pcaps->m_glGenRenderbuffers =
-        (PFNGLGENRENDERBUFFERSEXTPROC)ocpnGetProcAddress("glGenRenderbuffers",
-                                                         extensions[i]);
-    pcaps->m_glFramebufferTexture2D =
-        (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)ocpnGetProcAddress(
-            "glFramebufferTexture2D", extensions[i]);
-    pcaps->m_glBindFramebuffer =
-        (PFNGLBINDFRAMEBUFFEREXTPROC)ocpnGetProcAddress("glBindFramebuffer",
-                                                        extensions[i]);
-    pcaps->m_glFramebufferRenderbuffer =
-        (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-            "glFramebufferRenderbuffer", extensions[i]);
-    pcaps->m_glRenderbufferStorage =
-        (PFNGLRENDERBUFFERSTORAGEEXTPROC)ocpnGetProcAddress(
-            "glRenderbufferStorage", extensions[i]);
-    pcaps->m_glBindRenderbuffer =
-        (PFNGLBINDRENDERBUFFEREXTPROC)ocpnGetProcAddress("glBindRenderbuffer",
-                                                         extensions[i]);
-    pcaps->m_glCheckFramebufferStatus =
-        (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)ocpnGetProcAddress(
-            "glCheckFramebufferStatus", extensions[i]);
-    pcaps->m_glDeleteFramebuffers =
-        (PFNGLDELETEFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-            "glDeleteFramebuffers", extensions[i]);
-    pcaps->m_glDeleteRenderbuffers =
-        (PFNGLDELETERENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-            "glDeleteRenderbuffers", extensions[i]);
-
-    // VBO
-    pcaps->m_glGenBuffers =
-        (PFNGLGENBUFFERSPROC)ocpnGetProcAddress("glGenBuffers", extensions[i]);
-    pcaps->m_glBindBuffer =
-        (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer", extensions[i]);
-    pcaps->m_glBufferData =
-        (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData", extensions[i]);
-    pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-        "glDeleteBuffers", extensions[i]);
-  }
-
-  //  Retry VBO entry points with all extensions
-  if (0 == pcaps->m_glGenBuffers) {
-    for (i = 0; i < n_ext; i++) {
-      if ((pcaps->m_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress(
-               "glGenBuffers", extensions[i])))
-        break;
-    }
-
-    if (i < n_ext) {
-      pcaps->m_glBindBuffer = (PFNGLBINDBUFFERPROC)ocpnGetProcAddress(
-          "glBindBuffer", extensions[i]);
-      pcaps->m_glBufferData = (PFNGLBUFFERDATAPROC)ocpnGetProcAddress(
-          "glBufferData", extensions[i]);
-      pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-          "glDeleteBuffers", extensions[i]);
-    }
-  }
-
-#ifndef __OCPN__ANDROID__
-  for (i = 0; i < n_ext; i++) {
-    if ((pcaps->m_glCompressedTexImage2D =
-             (PFNGLCOMPRESSEDTEXIMAGE2DPROC)ocpnGetProcAddress(
-                 "glCompressedTexImage2D", extensions[i])))
-      break;
-  }
-
-  if (i < n_ext) {
-    pcaps->m_glGetCompressedTexImage =
-        (PFNGLGETCOMPRESSEDTEXIMAGEPROC)ocpnGetProcAddress(
-            "glGetCompressedTexImage", extensions[i]);
-  }
-#else
-  pcaps->m_glCompressedTexImage2D = glCompressedTexImage2D;
-#endif
-}
-
-static void GetglEntryPoints(void) {
-  b_glEntryPointsSet = true;
-
-  // the following are all part of framebuffer object,
-  // according to opengl spec, we cannot mix EXT and ARB extensions
-  // (I don't know that it could ever happen, but if it did, bad things would
-  // happen)
-
-#ifndef __OCPN__ANDROID__
-  const char *extensions[] = {"", "ARB", "EXT", 0};
-#else
-  const char *extensions[] = {"", "OES", 0};
-#endif
-
-  unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
-
-  unsigned int i;
-  for (i = 0; i < n_ext; i++) {
-    if ((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-             "glGenFramebuffers", extensions[i])))
-      break;
-  }
-
-  if (i < n_ext) {
-    s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-        "glGenRenderbuffers", extensions[i]);
-    s_glFramebufferTexture2D =
-        (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)ocpnGetProcAddress(
-            "glFramebufferTexture2D", extensions[i]);
-    s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)ocpnGetProcAddress(
-        "glBindFramebuffer", extensions[i]);
-    s_glFramebufferRenderbuffer =
-        (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-            "glFramebufferRenderbuffer", extensions[i]);
-    s_glRenderbufferStorage =
-        (PFNGLRENDERBUFFERSTORAGEEXTPROC)ocpnGetProcAddress(
-            "glRenderbufferStorage", extensions[i]);
-    s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)ocpnGetProcAddress(
-        "glBindRenderbuffer", extensions[i]);
-    s_glCheckFramebufferStatus =
-        (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)ocpnGetProcAddress(
-            "glCheckFramebufferStatus", extensions[i]);
-    s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)ocpnGetProcAddress(
-        "glDeleteFramebuffers", extensions[i]);
-    s_glDeleteRenderbuffers =
-        (PFNGLDELETERENDERBUFFERSEXTPROC)ocpnGetProcAddress(
-            "glDeleteRenderbuffers", extensions[i]);
-
-    // VBO
-    s_glGenBuffers =
-        (PFNGLGENBUFFERSPROC)ocpnGetProcAddress("glGenBuffers", extensions[i]);
-    s_glBindBuffer =
-        (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer", extensions[i]);
-    s_glBufferData =
-        (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData", extensions[i]);
-    s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-        "glDeleteBuffers", extensions[i]);
-  }
-
-  //  Retry VBO entry points with all extensions
-  if (0 == s_glGenBuffers) {
-    for (i = 0; i < n_ext; i++) {
-      if ((s_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress(
-               "glGenBuffers", extensions[i])))
-        break;
-    }
-
-    if (i < n_ext) {
-      s_glBindBuffer = (PFNGLBINDBUFFERPROC)ocpnGetProcAddress("glBindBuffer",
-                                                               extensions[i]);
-      s_glBufferData = (PFNGLBUFFERDATAPROC)ocpnGetProcAddress("glBufferData",
-                                                               extensions[i]);
-      s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)ocpnGetProcAddress(
-          "glDeleteBuffers", extensions[i]);
-    }
-  }
-
-#ifndef __OCPN__ANDROID__
-  for (i = 0; i < n_ext; i++) {
-    if ((s_glCompressedTexImage2D =
-             (PFNGLCOMPRESSEDTEXIMAGE2DPROC)ocpnGetProcAddress(
-                 "glCompressedTexImage2D", extensions[i])))
-      break;
-  }
-
-  if (i < n_ext) {
-    s_glGetCompressedTexImage =
-        (PFNGLGETCOMPRESSEDTEXIMAGEPROC)ocpnGetProcAddress(
-            "glGetCompressedTexImage", extensions[i]);
-  }
-#else
-  s_glCompressedTexImage2D = glCompressedTexImage2D;
-#endif
-}
 
 int test_attribs[] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE,
                       16,         WX_GL_STENCIL_SIZE, 8,
@@ -738,10 +477,11 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   GetClientSize(&m_pParentCanvas->m_canvas_width,
                 &m_pParentCanvas->m_canvas_height);
 
-#ifdef USE_ANDROID_GLES2
-  qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex
-           << m_pParentCanvas->m_canvas_width
-           << m_pParentCanvas->m_canvas_height;
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+  //qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex
+  //         << m_pParentCanvas->m_canvas_width
+  //         << m_pParentCanvas->m_canvas_height;
 
   if (m_pParentCanvas->m_canvasIndex > 0) {
     int xnew = gFrame->GetClientSize().x - m_pParentCanvas->m_canvas_width;
@@ -835,8 +575,8 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 
   if (m_b_BuiltFBO) {
     glDeleteTextures(2, m_cache_tex);
-    (s_glDeleteFramebuffers)(1, &m_fb0);
-    (s_glDeleteRenderbuffers)(1, &m_renderbuffer);
+    glDeleteFramebuffers(1, &m_fb0);
+    glDeleteRenderbuffers(1, &m_renderbuffer);
     m_b_BuiltFBO = false;
   }
 
@@ -881,7 +621,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     }
   }
 
-  (s_glGenFramebuffers)(1, &m_fb0);
+  glGenFramebuffers(1, &m_fb0);
   err = glGetError();
   if (err) {
     wxString msg;
@@ -891,7 +631,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     retVal = false;
   }
 
-  (s_glGenRenderbuffers)(1, &m_renderbuffer);
+  glGenRenderbuffers(1, &m_renderbuffer);
   err = glGetError();
   if (err) {
     wxString msg;
@@ -901,7 +641,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     retVal = false;
   }
 
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
   err = glGetError();
   if (err) {
     wxString msg;
@@ -923,12 +663,11 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
                  m_cache_tex_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
   }
 
-  (s_glBindRenderbuffer)(GL_RENDERBUFFER_EXT, m_renderbuffer);
+  glBindRenderbuffer(GL_RENDERBUFFER_EXT, m_renderbuffer);
 
   if (m_b_useFBOStencil) {
     // initialize composite depth/stencil renderbuffer
-#if 1
-    (s_glRenderbufferStorage)(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
+    glRenderbufferStorage(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
                               m_cache_tex_x, m_cache_tex_y);
 
     int err = glGetError();
@@ -938,7 +677,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       wxLogMessage(msg);
     }
 
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                   GL_RENDERBUFFER_EXT, m_renderbuffer);
     err = glGetError();
     if (err) {
@@ -948,7 +687,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       wxLogMessage(msg);
     }
 
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
                                   GL_RENDERBUFFER_EXT, m_renderbuffer);
     err = glGetError();
     if (err) {
@@ -958,17 +697,6 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
           err);
       wxLogMessage(msg);
     }
-
-#else
-    (s_glRenderbufferStorage)(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,
-                              m_cache_tex_x, m_cache_tex_y);
-
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                  GL_RENDERBUFFER, m_renderbuffer);
-
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                                  GL_RENDERBUFFER, m_renderbuffer);
-#endif
 
   } else {
     GLenum depth_format = GL_DEPTH_COMPONENT24;
@@ -980,7 +708,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 #endif
 
     // initialize depth renderbuffer
-    (s_glRenderbufferStorage)(GL_RENDERBUFFER_EXT, depth_format, m_cache_tex_x,
+    glRenderbufferStorage(GL_RENDERBUFFER_EXT, depth_format, m_cache_tex_x,
                               m_cache_tex_y);
     int err = glGetError();
     if (err) {
@@ -992,7 +720,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       retVal = false;
     }
 
-    (s_glFramebufferRenderbuffer)(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                   GL_RENDERBUFFER_EXT, m_renderbuffer);
 
     err = glGetError();
@@ -1006,17 +734,17 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
   }
 
   glBindTexture(GL_TEXTURE_2D, 0);
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
   // Check framebuffer completeness at the end of initialization.
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
 
-  (s_glFramebufferTexture2D)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+  glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                              g_texture_rectangle_format, m_cache_tex[0], 0);
 
-  GLenum fb_status = (s_glCheckFramebufferStatus)(GL_FRAMEBUFFER_EXT);
+  GLenum fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
 
-  (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
   if (fb_status != GL_FRAMEBUFFER_COMPLETE_EXT) {
     wxString msg;
@@ -1213,7 +941,7 @@ void glChartCanvas::BuildFBO() {
   //  All OK
 
   wxString msg;
-  msg.Printf(_T("OpenGL Framebuffer OK, size = %d"), m_cache_tex_x);
+  msg.Printf(_T("OpenGL-> Framebuffer OK, size = %d"), m_cache_tex_x);
   wxLogMessage(msg);
 
   /* invalidate cache */
@@ -1254,22 +982,30 @@ void glChartCanvas::SetupOpenGL() {
   msg += m_version;
   wxLogMessage(msg);
 
-  const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
-  m_extensions = wxString((const char *)ext_str, wxConvUTF8);
-#ifdef __WXQT__
-  wxLogMessage(_T("OpenGL extensions available: "));
-  wxLogMessage(m_extensions);
+  char GLSL_version_string[80];
+  strncpy(GLSL_version_string, (char *)glGetString(GL_SHADING_LANGUAGE_VERSION), 79);
+  msg.Printf(_T("OpenGL-> GLSL Version reported:  "));
+  m_GLSLversion = wxString(GLSL_version_string, wxConvUTF8);
+  msg += m_GLSLversion;
+  wxLogMessage(msg);
+
+#ifndef __OCPN__ANDROID__
+#ifndef __WXOSX__
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
+  {
+    printf("GLEW init failed: %s!n", glewGetErrorString(err));
+    exit(1);
+  }
+  else
+  {
+  printf("GLEW init success!n");
+  }
+#endif
 #endif
 
-  bool b_oldIntel = false;
-  if (GetRendererString().Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (GetRendererString().Upper().Find(_T("965")) != wxNOT_FOUND) {
-      wxLogMessage(
-          _T("OpenGL-> Detected early Intel renderer, disabling some GL ")
-          _T("features"));
-      b_oldIntel = true;
-    }
-  }
+  const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
+  m_extensions = wxString((const char *)ext_str, wxConvUTF8);
 
   //  Set the minimum line width
   GLint parms[2];
@@ -1302,16 +1038,7 @@ void glChartCanvas::SetupOpenGL() {
       wxNOT_FOUND)  // GeForce GTX 1070
     s_b_useScissorTest = false;
 
-  //  This little hack fixes a problem seen with some Intel 945 graphics chips
-  //  We need to not do anything that requires (some) complicated stencil
-  //  operations.
-
   bool bad_stencil_code = false;
-  if (GetRendererString().Find(_T("Intel")) != wxNOT_FOUND) {
-    wxLogMessage(
-        _T("OpenGL-> Detected Intel renderer, disabling stencil buffer"));
-    bad_stencil_code = true;
-  }
 
   //      And for the lousy Unichrome drivers, too
   if (GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND)
@@ -1320,20 +1047,6 @@ void glChartCanvas::SetupOpenGL() {
   //      And for the lousy Mali drivers, too
   if (GetRendererString().Find(_T("Mali")) != wxNOT_FOUND)
     bad_stencil_code = true;
-
-  // XP  Generic Needs stencil buffer
-  // W7 Generic Needs stencil buffer
-  //      if( GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND ) {
-  //          wxLogMessage( _T("OpenGL-> Detected Generic renderer, disabling
-  //          stencil buffer") ); bad_stencil_code = true;
-  //      }
-
-  //          Seen with intel processor on VBox Win7
-  if (GetRendererString().Find(_T("Chromium")) != wxNOT_FOUND) {
-    wxLogMessage(
-        _T("OpenGL-> Detected Chromium renderer, disabling stencil buffer"));
-    bad_stencil_code = true;
-  }
 
   //      Stencil buffer test
   glEnable(GL_STENCIL_TEST);
@@ -1356,55 +1069,21 @@ void glChartCanvas::SetupOpenGL() {
   wxLogMessage(wxString::Format(_T("OpenGL-> Texture rectangle format: %x"),
                                 g_texture_rectangle_format));
 
-#ifndef __OCPN__ANDROID__
-  //      We require certain extensions to support FBO rendering
-  if (!g_texture_rectangle_format) m_b_DisableFBO = true;
-
-  if (!QueryExtension("GL_EXT_framebuffer_object")) m_b_DisableFBO = true;
-#endif
-
 #ifdef __OCPN__ANDROID__
   g_texture_rectangle_format = GL_TEXTURE_2D;
 #endif
 
-  GetglEntryPoints();
-
-  if (!s_glGenFramebuffers || !s_glGenRenderbuffers ||
-      !s_glFramebufferTexture2D || !s_glBindFramebuffer ||
-      !s_glFramebufferRenderbuffer || !s_glRenderbufferStorage ||
-      !s_glBindRenderbuffer || !s_glCheckFramebufferStatus ||
-      !s_glDeleteFramebuffers || !s_glDeleteRenderbuffers)
-    m_b_DisableFBO = true;
-
   // VBO??
-
   g_b_EnableVBO = true;
-  if (!s_glBindBuffer || !s_glBufferData || !s_glGenBuffers ||
-      !s_glDeleteBuffers)
-    g_b_EnableVBO = false;
-
-#if defined(__WXMSW__) || defined(__WXOSX__)
-  if (b_oldIntel) g_b_EnableVBO = false;
-#endif
 
 #ifdef __OCPN__ANDROID__
   g_b_EnableVBO = false;
-#endif
-
-#if defined(__WXMSW__)
-  g_b_EnableVBO = false;
-  wxLogMessage(_T("OpenGL-> DISABLING VBO for Intel test."));
 #endif
 
   if (g_b_EnableVBO)
     wxLogMessage(_T("OpenGL-> Using Vertexbuffer Objects"));
   else
     wxLogMessage(_T("OpenGL-> Vertexbuffer Objects unavailable"));
-
-    // #if defined(__WXOSX__)
-    //     wxLogMessage( _T("OpenGL-> DISABLING VBO for Mac/Intel test.") );
-    //     g_b_EnableVBO = false;
-    // #endif
 
     //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES
@@ -1420,40 +1099,26 @@ void glChartCanvas::SetupOpenGL() {
 
   g_GLOptions.m_bUseCanvasPanning = false;
 
-  // m_b_DisableFBO = true;
+  // TODO
+  //  Temporarily disable FBO on Windows, pending implementation of MSAA to buffers
+#ifdef __WXMSW__
+    //m_b_DisableFBO = true;
+#endif
 
   //      Maybe build FBO(s)
-
   BuildFBO();
 
 #ifndef __OCPN__ANDROID__
-  /* this test sometimes fails when the fbo still works */
-  //  But we need to be ultra-conservative here, so run all the tests we can
-  //  think of
-
-  //  But we cannot even run this test on some platforms
-  //  So we simply have to declare FBO unavailable
-#ifdef __WXMSW__
-  if (GetRendererString().Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (GetRendererString().Upper().Find(_T("MOBILE")) != wxNOT_FOUND) {
-      wxLogMessage(
-          _T("OpenGL-> Detected Windows Intel Mobile renderer, disabling ")
-          _T("Frame Buffer Objects"));
-      m_b_DisableFBO = true;
-      BuildFBO();
-    }
-  }
-#endif
 
   if (m_b_BuiltFBO) {
     // Check framebuffer completeness at the end of initialization.
-    (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+    glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
 
-    (s_glFramebufferTexture2D)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+    glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                g_texture_rectangle_format, m_cache_tex[0], 0);
 
-    GLenum fb_status = (s_glCheckFramebufferStatus)(GL_FRAMEBUFFER_EXT);
-    (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+    GLenum fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
+    glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
     if (fb_status != GL_FRAMEBUFFER_COMPLETE_EXT) {
       wxString msg;
@@ -1474,6 +1139,9 @@ void glChartCanvas::SetupOpenGL() {
 #ifdef USE_ANDROID_GLES2
   s_b_useStencilAP = s_b_useStencil;  // required for GLES2 platform
 #endif
+
+  //  Check and determine if GLSL is to be used
+  m_bUseGLSL = true;
 
   if (m_b_BuiltFBO) {
     wxLogMessage(_T("OpenGL-> Using Framebuffer Objects"));
@@ -1507,12 +1175,6 @@ void glChartCanvas::SetupOpenGL() {
                g_GLMinSymbolLineWidth);
   wxLogMessage(lwmsg);
 
-  m_benableFog = true;
-  m_benableVScale = true;
-#ifdef __OCPN__ANDROID__
-  m_benableFog = false;
-  m_benableVScale = false;
-#endif
 
   if (!g_bGLexpert)
     g_GLOptions.m_bUseAcceleratedPanning = !m_b_DisableFBO && m_b_BuiltFBO;
@@ -1535,10 +1197,6 @@ void glChartCanvas::SetupOpenGL() {
 #endif
 
   s_b_useFBO = m_b_BuiltFBO;
-
-  // Some older Intel GL drivers need a glFinish() call after each full frame
-  // render
-  if (b_oldIntel) g_b_needFinish = true;
 
   //  Inform the S52 PLIB of options determined
   if (ps52plib)
@@ -1582,8 +1240,7 @@ void glChartCanvas::SetupCompression() {
 
   // On GLES, we prefer OES_ETC1 compression, if available
 #ifdef ocpnUSE_GLES
-  if (QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") &&
-      s_glCompressedTexImage2D) {
+  if (QueryExtension("GL_OES_compressed_ETC1_RGB8_texture")) {
     g_raster_format = GL_ETC1_RGB8_OES;
 
     wxLogMessage(_T("OpenGL-> Using oes etc1 compression"));
@@ -1597,8 +1254,8 @@ void glChartCanvas::SetupCompression() {
        compress in software using libsquish for superior quality anyway */
 
     if ((QueryExtension("GL_EXT_texture_compression_s3tc") ||
-         QueryExtension("GL_EXT_texture_compression_dxt1")) &&
-        s_glCompressedTexImage2D) {
+         QueryExtension("GL_EXT_texture_compression_dxt1"))
+        ) {
       /* buggy opensource nvidia driver, renders incorrectly,
          workaround is to use format with alpha... */
       if (GetRendererString().Find(_T("Gallium")) != wxNOT_FOUND &&
@@ -1608,8 +1265,8 @@ void glChartCanvas::SetupCompression() {
         g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 
       wxLogMessage(_T("OpenGL-> Using s3tc dxt1 compression"));
-    } else if (QueryExtension("GL_3DFX_texture_compression_FXT1") &&
-               s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
+    } else if (QueryExtension("GL_3DFX_texture_compression_FXT1")
+               ) {
       g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
 
       wxLogMessage(_T("OpenGL-> Using 3dfx fxt1 compression"));
@@ -1702,6 +1359,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
 
 //   These routines allow reusable coordinates
 bool glChartCanvas::HasNormalizedViewPort(const ViewPort &vp) {
+  return false;
 #ifndef USE_ANDROID_GLES2
   return vp.m_projection_type == PROJECTION_MERCATOR ||
          vp.m_projection_type == PROJECTION_POLAR ||
@@ -1843,7 +1501,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
     /* defer rendering routes being edited until later */
     if (pRouteDraw->m_bIsBeingEdited) continue;
 
-    pRouteDraw->DrawGL(vp, m_pParentCanvas);
+    pRouteDraw->DrawGL(vp, m_pParentCanvas, dc);
   }
 
   /* Waypoints not drawn as part of routes, and not being edited */
@@ -1854,7 +1512,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
       RoutePoint *pWP = pnode->GetData();
       if (pWP && (!pWP->m_bRPIsBeingEdited) && (!pWP->m_bIsInRoute))
         if (vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
-          pWP->DrawGL(vp, m_pParentCanvas);
+          pWP->DrawGL(vp, m_pParentCanvas, dc);
     }
   }
 }
@@ -1891,7 +1549,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
     if (drawit) {
       const LLBBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
       if (!vp_box.IntersectOut(test_box))
-        pRouteDraw->DrawGL(vp, m_pParentCanvas);
+        pRouteDraw->DrawGL(vp, m_pParentCanvas, dc);
     }
   }
 
@@ -1902,7 +1560,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
          pnode; pnode = pnode->GetNext()) {
       RoutePoint *pWP = pnode->GetData();
       if (pWP && pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute)
-        pWP->DrawGL(vp, m_pParentCanvas);
+        pWP->DrawGL(vp, m_pParentCanvas, dc);
     }
   }
 }
@@ -1969,7 +1627,7 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
   else
     color = GetGlobalColor(_T ( "UINFR" ));
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
 
   glColor3ub(color.Red(), color.Green(), color.Blue());
@@ -3038,7 +2696,7 @@ void glChartCanvas::DrawCloseMessage(wxString msg) {
 }
 
 void glChartCanvas::RotateToViewPort(const ViewPort &vp) {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   float angle = vp.rotation;
 
@@ -3063,7 +2721,7 @@ static void combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
   *dataOut = vertex;
 }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 void vertexCallbackD_GLSL(GLvoid *vertex) {
   // Grow the work buffer if necessary
   if (s_tess_vertex_idx > s_tess_buf_len - 8) {
@@ -3101,6 +2759,7 @@ void endCallbackD_GLSL() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   float *bufPt = &s_tess_work_buf[s_tess_vertex_idx_this];
+
   GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
   glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), bufPt);
   glEnableVertexAttribArray(pos);
@@ -3135,7 +2794,7 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
 
   GLUtesselator *tobj = gluNewTess();
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   gluTessCallback(tobj, GLU_TESS_VERTEX, (_GLUfuncptr)&vertexCallbackD_GLSL);
   gluTessCallback(tobj, GLU_TESS_BEGIN, (_GLUfuncptr)&beginCallbackD_GLSL);
   gluTessCallback(tobj, GLU_TESS_END, (_GLUfuncptr)&endCallbackD_GLSL);
@@ -3185,6 +2844,7 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
 
         double *p = new double[6];
         p[0] = q.m_x, p[1] = q.m_y, p[2] = 0;
+        //p[0] = wxRound(q.m_x), p[1] = wxRound(q.m_y), p[2] = 0;
         gluTessVertex(tobj, p, p);
         combine_work_data.push_back(p);
       }
@@ -3202,6 +2862,7 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
        i != combine_work_data.end(); i++)
     delete[] * i;
   combine_work_data.clear();
+  glUseProgram(0);
 }
 
 /* set stencil buffer to clip in this region, and optionally clear using the
@@ -3220,7 +2881,8 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region) {
     glStencilFunc(GL_ALWAYS, 1, 1);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
   }
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   else  //  Use depth buffer for clipping
   {
@@ -3245,6 +2907,7 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region) {
   }
 #endif
 
+  s_regionColor = wxColor(0,0,0,255);
   DrawRegion(vp, region);
 
   if (s_b_useStencil) {
@@ -3253,7 +2916,8 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region) {
     glStencilFunc(GL_EQUAL, 1, 1);
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
   }
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   else {
     glDepthFunc(GL_GREATER);  // Set the test value
     glDepthMask(GL_FALSE);    // disable depth buffer
@@ -3420,7 +3084,7 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp,
 
   /* setup opengl parameters */
   glEnable(GL_TEXTURE_2D);
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -3467,7 +3131,7 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp,
         }
       }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       RenderTextures(coords, tile->m_texcoords, 4, m_pParentCanvas->GetpVP());
 #else
       if (!texture) {  // failed to load, draw red
@@ -3487,7 +3151,7 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp,
 
   glDisable(GL_TEXTURE_2D);
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (use_norm_vp) glPopMatrix();
 
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -3551,14 +3215,14 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
 
           } else if (chart->GetChartFamily() == CHART_FAMILY_VECTOR) {
             if (chart->GetChartType() == CHART_TYPE_CM93COMP) {
-              RenderNoDTA(vp, get_region);
+              //RenderNoDTA(vp, get_region);
               chart->RenderRegionViewOnGL(*m_pcontext, vp, rect_region,
                                           get_region);
             } else {
               s57chart *Chs57 = dynamic_cast<s57chart *>(chart);
               if (Chs57) {
                 if (Chs57->m_RAZBuilt) {
-                  RenderNoDTA(vp, get_region);
+                  //RenderNoDTA(vp, get_region);
                   Chs57->RenderRegionViewOnGLNoText(*m_pcontext, vp,
                                                     rect_region, get_region);
                   DisableClipRegion();
@@ -3673,7 +3337,9 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
         break;
     }
 
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+
     glColor4f((float).8, (float).4, (float).4, (float)hitrans);
 #else
     s_regionColor = wxColor(204, 102, 102, hitrans * 256);
@@ -3835,12 +3501,13 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
                                                            rect_region, region);
     }
   }
+  glUseProgram(0);
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region,
                                 int transparency) {
-  wxColour color = GetGlobalColor(_T ( "NODTA" ));
-#ifndef USE_ANDROID_GLES2
+  wxColour color = wxColour(255,0,0); //GetGlobalColor(_T ( "NODTA" ));
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (color.IsOk())
     glColor4ub(color.Red(), color.Green(), color.Blue(), transparency);
   else
@@ -3856,10 +3523,10 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region,
 
   DrawRegion(vp, region);
 
-  glDisable(GL_BLEND);
+  //glDisable(GL_BLEND);
 }
 
-void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart) {}
+//void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart) {}
 
 /* render world chart, but only in this rectangle */
 void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
@@ -3867,9 +3534,13 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
   // set gl color to water
   wxColour water = m_pParentCanvas->pWorldBackgroundChart->water;
 
+  glEnable(GL_SCISSOR_TEST);
+  glScissor(rect.x, vp.pix_height - rect.height - rect.y, rect.width,
+                rect.height);
+
   // clear background
   if (!world_view) {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     // set gl color to water
     glColor3ub(water.Red(), water.Green(), water.Blue());
 
@@ -3916,23 +3587,8 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
 
     if (!world_view) {
       int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       glUseProgram(color_tri_shader_program);
-
-      float pf[6];
-      pf[0] = x1;
-      pf[1] = y1;
-      pf[2] = x2;
-      pf[3] = y1;
-      pf[4] = x2;
-      pf[5] = y2;
-
-      GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
-      glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pf);
-      glEnableVertexAttribArray(pos);
-
-      GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)vp.vp_transform);
 
       float colorv[4];
       colorv[0] = water.Red() / float(256);
@@ -3943,20 +3599,21 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
       GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
       glUniform4fv(colloc, 1, colorv);
 
-      // qDebug() << "triuni" << matloc << colloc;
-
-      glDrawArrays(GL_TRIANGLES, 0, 3);
-
+      float pf[8];
       pf[0] = x2;
-      pf[1] = y2;
-      pf[2] = x1;
+      pf[1] = y1;
+      pf[2] = x2;
       pf[3] = y2;
       pf[4] = x1;
       pf[5] = y1;
+      pf[6] = x1;
+      pf[7] = y2;
+
+      GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
       glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pf);
       glEnableVertexAttribArray(pos);
 
-      glDrawArrays(GL_TRIANGLES, 0, 3);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 #else
       glColor3ub(water.Red(), water.Green(), water.Blue());
@@ -3971,6 +3628,9 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
   }
 
   m_pParentCanvas->pWorldBackgroundChart->RenderViewOnDC(dc, vp);
+
+  glDisable(GL_SCISSOR_TEST);
+
 }
 
 /* these are the overlay objects which move with the charts and
@@ -4212,6 +3872,12 @@ void glChartCanvas::Render() {
     return;
   }
 
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+  loadShaders(0);
+  configureShaders(m_pParentCanvas->VPoint);
+#endif
+
+
 #ifdef USE_ANDROID_GLES2
 
   OCPNStopWatch sw;
@@ -4226,8 +3892,6 @@ void glChartCanvas::Render() {
   // if(m_pParentCanvas->m_canvasIndex == 0) return;
 
   // Do any setup required...
-  loadShaders(0 /*m_pParentCanvas->m_canvasIndex*/);
-  configureShaders(m_pParentCanvas->VPoint);
 
   bool recompose = false;
   if (m_pParentCanvas->VPoint.b_quilt && m_pParentCanvas->m_pQuilt &&
@@ -4286,7 +3950,8 @@ void glChartCanvas::Render() {
   glViewport(0, 0, (GLint)gl_width * m_displayScale,
              (GLint)gl_height * m_displayScale);
 
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
@@ -4294,6 +3959,7 @@ void glChartCanvas::Render() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 #endif
+
   if (s_b_useStencil) {
     glEnable(GL_STENCIL_TEST);
     glStencilMask(0xff);
@@ -4319,10 +3985,6 @@ void glChartCanvas::Render() {
   //  If we plan to post process the display, don't use accelerated panning
   double scale_factor = VPoint.ref_scale / VPoint.chart_scale;
 
-  m_bfogit = m_benableFog && g_fog_overzoom &&
-             (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
-  bool scale_it = m_benableVScale && g_oz_vector_scale &&
-                  (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
 
   bool bpost_hilite = !m_pParentCanvas->m_pQuilt->GetHiliteRegion().Empty();
   bool useFBO = false;
@@ -4331,7 +3993,7 @@ void glChartCanvas::Render() {
 
   // Try to use the framebuffer object's cache of the last frame
   // to accelerate drawing this frame (if overlapping)
-  if (m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite
+  if (m_b_BuiltFBO && !bpost_hilite
       //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality
       // but slower
   ) {
@@ -4420,17 +4082,19 @@ void glChartCanvas::Render() {
       if (m_displayScale > 1)
          accelerated_pan = false;
 
+      //accelerated_pan = false;
+
       // do we allow accelerated panning?  can we perform it here?
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       // enable rendering to texture in framebuffer object
-      (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, m_fb0);
+      glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fb0);
 
       if (accelerated_pan) {
         if ((dx != 0) || (dy != 0)) {   // Anything to do?
           m_cache_page = !m_cache_page; /* page flip */
 
           /* perform accelerated pan rendering to the new framebuffer */
-          (s_glFramebufferTexture2D)(
+          glFramebufferTexture2D(
               GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
               g_texture_rectangle_format, m_cache_tex[m_cache_page], 0);
 
@@ -4496,7 +4160,7 @@ void glChartCanvas::Render() {
         }
 
       } else {  // must redraw the entire screen
-        (s_glFramebufferTexture2D)(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+        glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                    g_texture_rectangle_format,
                                    m_cache_tex[m_cache_page], 0);
 
@@ -4509,7 +4173,7 @@ void glChartCanvas::Render() {
       }
 
       // Disable Render to FBO
-      (s_glBindFramebuffer)(GL_FRAMEBUFFER_EXT, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 
 #else  // GLES2
        // enable rendering to texture in framebuffer object
@@ -4521,22 +4185,18 @@ void glChartCanvas::Render() {
 
       if (b_full) accelerated_pan = false;
 
+      //accelerated_pan = false;
+
       if (accelerated_pan) {
         // qDebug() << "AccPan";
         if ((dx != 0) || (dy != 0)) {   // Anything to do?
-          m_cache_page = !m_cache_page; /* page flip */
-
-          /* perform accelerated pan rendering to the current target texture */
-          glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                 g_texture_rectangle_format,
-                                 m_cache_tex[m_cache_page], 0);
 
           // calculate the new regions to render
           // add extra pixels to avoid coordindate rounding issues at large
           // scale
           OCPNRegion update_region;
 
-          int fluff = 0;
+          int fluff = 2;
 
           // Avoid rendering artifacts caused by Multi Sampling (MSAA)
           if (VPoint.chart_scale < 10000) fluff = 8;
@@ -4553,23 +4213,42 @@ void glChartCanvas::Render() {
           else if (dx < 0)
             update_region.Union(wxRect(0, 0, -dx + fluff, VPoint.pix_height));
 
+          // Clear the color buffers, can be useful for debugging
           wxColour color = GetGlobalColor(_T ( "NODTA" ));
           glClearColor(color.Red() / 256., color.Green() / 256.,
                        color.Blue() / 256., 1.0);
-          // glClearColor(1.0f, 0.0f, 0.f, 1.0f);
-          glClear(GL_COLOR_BUFFER_BIT);
+          //glClear(GL_COLOR_BUFFER_BIT);
 
-          // Render the new content
-          // OCPNStopWatch swr1;
-          //                   RenderCharts(gldc, update_region);
-          glViewport(0, 0, (GLint)sx, (GLint)sy);
+          m_cache_page = !m_cache_page; /* page flip */
 
-          // using the old framebuffer
-          glBindTexture(g_texture_rectangle_format, m_cache_tex[!m_cache_page]);
-          glEnable(g_texture_rectangle_format);
+          // Bind the destination (target frame) texture to the frame buffer
+          glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                 GL_TEXTURE_2D,
+                                 m_cache_tex[m_cache_page], 0);
 
-          //    Render the reuseable portion of the cached texture
+          //glClear(GL_COLOR_BUFFER_BIT);
+
+#if 0  // maybe for __WXMSW__??
+
+          // Bind the source (previous frame) texture to the frame buffer
+          glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+                                 g_texture_rectangle_format,
+                                 m_cache_tex[!m_cache_page], 0);
+
+          glReadBuffer(GL_COLOR_ATTACHMENT1);
+          glDrawBuffer(GL_COLOR_ATTACHMENT0);
+          glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fb0);
+           glBlitFramebuffer(0, 0, sx+dx, sy-dy,
+                             -dx, dy, sx, sy,
+                             GL_COLOR_BUFFER_BIT, GL_LINEAR);
+#else
+
+
           // Render the cached texture as quad to FBO(m_blit_tex) with offsets
+          glBindTexture(GL_TEXTURE_2D, m_cache_tex[!m_cache_page]);
+          glEnable(GL_TEXTURE_2D);
+
+          //dx = dy = 0;
           float x1, x2, y1, y2;
 
           if (dx > 0)
@@ -4606,8 +4285,6 @@ void glChartCanvas::Render() {
           uv[6] = tx1;
           uv[7] = ty2;
 
-          //<<<<<<< HEAD
-
           coords[0] = -dx;
           coords[1] = dy;
           coords[2] = -dx + sx;
@@ -4617,14 +4294,6 @@ void glChartCanvas::Render() {
           coords[6] = -dx;
           coords[7] = dy + sy;
 
-          //                         qDebug() << coords[0] << coords[1] <<
-          //                         coords[2] << coords[3]; qDebug() <<
-          //                         coords[4] << coords[5] << coords[6] <<
-          //                         coords[7]; qDebug() << uv[0] << uv[1] <<
-          //                         uv[2] << uv[3]; qDebug() << uv[4] << uv[5]
-          //                         << uv[6] << uv[7];
-
-          // build_texture_shaders();
           glUseProgram(FBO_texture_2D_shader_program);
 
           // Get pointers to the attributes in the program.
@@ -4660,15 +4329,15 @@ void glChartCanvas::Render() {
           mat4x4 m, mvp;
 
           mat4x4_identity(m);
-          mat4x4_scale_aniso(mvp, m, 2.0 / sx, 2.0 / sy, 1.0);
-          mat4x4_translate_in_place(mvp, -sx / 2, -sy / 2, 0);
+          mat4x4_scale_aniso(mvp, m, 2.0 / (float)sx, 2.0 / (float)sy, 1.0);
+          mat4x4_translate_in_place(mvp, -(float)sx / 2, -(float)sy / 2, 0);
 
           glUniformMatrix4fv(matloc, 1, GL_FALSE, (const float *)mvp);
 
           // Select the active texture unit.
           glActiveTexture(GL_TEXTURE0);
           // Bind our texture to the texturing unit target.
-          glBindTexture(g_texture_rectangle_format, m_cache_tex[!m_cache_page]);
+          glBindTexture(GL_TEXTURE_2D, m_cache_tex[!m_cache_page]);
 
           // Perform the actual drawing.
 
@@ -4696,16 +4365,22 @@ void glChartCanvas::Render() {
           glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
 
           glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+          glBindTexture(g_texture_rectangle_format, 0);
 
-          // qDebug() << "RenderTime2" << sw.GetTime();
+          glUseProgram(0);
+
+
+#endif
+          // Clear the color buffers, can be useful for debugging
+          //wxColour color = GetGlobalColor(_T ( "NODTA" ));
+          //glClearColor(color.Red() / 256., color.Green() / 256.,
+          //             color.Blue() / 256., 1.0);
+          //glClear(GL_COLOR_BUFFER_BIT);
 
           // Render the new content
           RenderCharts(m_gldc, update_region);
-          // qDebug() << "RenderTime3" << sw.GetTime();
-
-          // qDebug() << "RenderTime4" << sw.GetTime();
-
           glDisable(g_texture_rectangle_format);
+          glUseProgram(0);
         }
 
       }  // accelerated pan
@@ -4722,13 +4397,12 @@ void glChartCanvas::Render() {
         m_fbo_sheight = sy;
 
         // Do not need to clear screen, especially annoying on pinch zoom
-        // wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-        // glClearColor( color.Red() / 256., color.Green() / 256. ,
-        // color.Blue()/ 256. ,1.0 ); glClear(GL_COLOR_BUFFER_BIT);
+        //wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+        //glClearColor( color.Red() / 256., color.Green() / 256. ,
+        //color.Blue()/ 256. ,1.0 );
+        //glClear(GL_COLOR_BUFFER_BIT);
 
         RenderCharts(m_gldc, screen_region);
-
-        // qDebug() << "RenderTimeFULL" << sw.GetTime();
 
         m_cache_page = !m_cache_page; /* page flip */
 
@@ -4768,6 +4442,15 @@ void glChartCanvas::Render() {
 #endif
 
   if (useFBO) {
+#ifndef USE_ANDROID_GLES2
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fb0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, sx, sy, 0, 0, sx, sy, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#else
+
     // Render the cached texture as quad to screen
     glBindTexture(g_texture_rectangle_format, m_cache_tex[m_cache_page]);
     glEnable(g_texture_rectangle_format);
@@ -4787,7 +4470,7 @@ void glChartCanvas::Render() {
     tx = (m_fbo_offsetx + m_fbo_swidth) / divx;
     ty = (m_fbo_offsety + m_fbo_sheight) / divy;
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glBegin(GL_QUADS);
     glTexCoord2f(tx0, ty);
@@ -4825,9 +4508,9 @@ void glChartCanvas::Render() {
 
     if (!m_inFade) {
       RenderTextures(coords, uv, 4, m_pParentCanvas->GetpVP());
-    } else
-      qDebug() << "skip FBO update for inFade";
+    }
 
+#endif
 #endif
 
     glDisable(g_texture_rectangle_format);
@@ -4839,13 +4522,12 @@ void glChartCanvas::Render() {
 
   } else  // useFBO
   {
-    // qDebug() << "RenderCharts No FBO";
     RenderCharts(m_gldc, screen_region);
   }
 
+#if 1
   // Done with base charts.
   // Now the overlays
-
   RenderS57TextOverlay(VPoint);
   RenderMBTilesOverlay(VPoint);
 
@@ -4990,6 +4672,7 @@ void glChartCanvas::Render() {
   if (m_pParentCanvas->m_Compass) m_pParentCanvas->m_Compass->Paint(gldc);
 
   RenderGLAlertMessage();
+#endif
 
   // quiting?
   if (g_bquiting) DrawQuiting();
@@ -5192,7 +4875,7 @@ void glChartCanvas::RenderMBTilesOverlay(ViewPort &VPoint) {
           break;
       }
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       glColor4f((float).8, (float).4, (float).4, (float)hitrans);
 #else
       s_regionColor = wxColor(204, 102, 102, hitrans * 256);
@@ -5212,7 +4895,7 @@ void glChartCanvas::RenderCanvasBackingChart(ocpnDC &dc,
   GetClientSize(&w, &h);
 
   glViewport(0, 0, (GLint)m_cache_tex_x, (GLint)m_cache_tex_y);
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
@@ -5233,7 +4916,7 @@ void glChartCanvas::RenderCanvasBackingChart(ocpnDC &dc,
 
   //  Reset matrices
   glViewport(0, 0, (GLint)w, (GLint)h);
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
@@ -5244,7 +4927,7 @@ void glChartCanvas::RenderCanvasBackingChart(ocpnDC &dc,
 }
 
 void glChartCanvas::FastPan(int dx, int dy) {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   int sx = GetSize().x;
   int sy = GetSize().y;
@@ -5826,7 +5509,7 @@ void glChartCanvas::OnEvtPanGesture(wxQT_PanGestureEvent &event) {
 
     case GestureUpdated:
       if (m_binPan) {
-        if (!g_GLOptions.m_bUseCanvasPanning || m_bfogit) {
+        if (!g_GLOptions.m_bUseCanvasPanning) {
           // qDebug() << "slowpan" << dx << dy;
 
           m_pParentCanvas->FreezePiano();
@@ -6106,7 +5789,7 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 #endif
 
     void glChartCanvas::configureShaders(ViewPort & vp) {
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       mat4x4 I;
       mat4x4_identity(I);
 
@@ -6143,6 +5826,13 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
       transloc =
           glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+
+      glUseProgram(AALine_shader_program);
+      matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
+      glUniformMatrix4fv(matloc, 1, GL_FALSE,
+                         (const GLfloat *)pvp->vp_transform);
+
+      glUseProgram(0);
 
 #endif
     }
@@ -6497,7 +6187,8 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 
   void glChartCanvas::RenderTextures(float *coords, float *uvCoords,
                                      int nVertex, ViewPort *vp) {
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     int nl = nVertex / 4;
     float *lc = coords;
     float *luv = uvCoords;
@@ -6526,7 +6217,9 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
                                           ViewPort *vp, float dx, float dy,
                                           float angle_rad) {
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+
     // build_texture_shaders();
     glUseProgram(texture_2D_shader_program);
 
@@ -6609,6 +6302,8 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+    glUseProgram(0);
+
 #endif
 
 #else
@@ -6630,7 +6325,7 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   }
 
   void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     glUseProgram(color_tri_shader_program);
 
     float pf[8];
@@ -6685,7 +6380,7 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   void glChartCanvas::RenderScene(bool bRenderCharts, bool bRenderOverlays) {
     // qDebug() << "RenderScene";
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     ViewPort VPoint = m_pParentCanvas->VPoint;
     ocpnDC gldc(*this);

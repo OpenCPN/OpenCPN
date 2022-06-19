@@ -29,19 +29,19 @@
 
 #include <list>
 
-#ifdef __WXMSW__
-#include "GL/gl.h"  // local copy for Windows
-#include "GL/glu.h"
-#else
-#ifndef __OCPN__ANDROID__
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glext.h>
-#else
-#include <qopengl.h>
-#include <GL/gl_private.h>  // this is a cut-down version of gl.h
-#endif
-#endif
+// #ifdef __WXMSW__
+// #include "GL/gl.h"  // local copy for Windows
+// #include "GL/glu.h"
+// #else
+// #ifndef __OCPN__ANDROID__
+// #include <GL/gl.h>
+// #include <GL/glu.h>
+// #include <GL/glext.h>
+// #else
+// #include <qopengl.h>
+// #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+// #endif
+// #endif
 
 #include "bbox.h"
 #include "cutil.h"

@@ -6885,7 +6885,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc,
 
           glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
 
-          ps52plib->m_last_clip_rect = upd.GetRect();
+          //ps52plib->m_last_clip_rect = upd.GetRect();
 
 #ifndef USE_ANDROID_GLES2
           glPushMatrix();  //    Adjust for rotation
@@ -6967,7 +6967,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(
 
           glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
 
-          ps52plib->m_last_clip_rect = upd.GetRect();
+          //ps52plib->m_last_clip_rect = upd.GetRect();
 #ifndef USE_ANDROID_GLES2
           glPushMatrix();  //    Adjust for rotation
 #endif

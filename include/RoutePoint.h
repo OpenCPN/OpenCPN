@@ -207,7 +207,7 @@ public:
   wxColour m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
-  void DrawGL(ViewPort &vp, ChartCanvas *canvas,
+  void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
               bool use_cached_screen_coords = false, bool bVizOverride = false);
   unsigned int m_iTextTexture;
   int m_iTextTextureWidth, m_iTextTextureHeight;

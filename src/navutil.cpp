@@ -4716,7 +4716,9 @@ void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
     dc.CalcBoundingBox(x + size_x, y + size_y);
   } else {
 #ifdef ocpnUSE_GL
-#ifdef USE_ANDROID_GLES2
+//#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+
     glEnable(GL_BLEND);
 
     float radMod = wxMax(radius, 2.0);

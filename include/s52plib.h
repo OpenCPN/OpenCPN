@@ -27,6 +27,7 @@
 #define _S52PLIB_H_
 
 #include <vector>
+#include "dychart.h"
 
 #include "s52s57.h"  //types
 
@@ -37,6 +38,50 @@ class wxGLContext;
 #include "DepthFont.h"
 
 #include <wx/dcgraph.h>  // supplemental, for Mac
+
+// Correct some deficincies in MacOS OpenGL include files
+#ifdef __WXOSX__
+typedef void (*PFNGLGENBUFFERSPROC)(GLsizei n, GLuint *buffers);
+typedef void (*PFNGLBINDBUFFERPROC)(GLenum target, GLuint buffer);
+typedef void (*PFNGLDELETEBUFFERSPROC)(GLsizei n, const GLuint *buffers);
+typedef void (*PFNGLGETBUFFERPARAMETERIVPROC)(GLenum target, GLenum pname,
+                                              GLint *params);
+typedef void (*PFNGLDELETERENDERBUFFERSEXTPROC)(GLsizei n,
+                                                const GLuint *renderbuffers);
+typedef void (*PFNGLDELETEFRAMEBUFFERSEXTPROC)(GLsizei n,
+                                               const GLuint *framebuffers);
+typedef void (*PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC)(GLenum target, GLint level,
+                                                 GLint xoffset, GLsizei width,
+                                                 GLenum format,
+                                                 GLsizei imageSize,
+                                                 const GLvoid *data);
+typedef void (*PFNGLGETCOMPRESSEDTEXIMAGEPROC)(GLenum target, GLint level,
+                                               GLvoid *img);
+typedef GLenum (*PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)(GLenum target);
+typedef void (*PFNGLBINDRENDERBUFFEREXTPROC)(GLenum target,
+                                             GLuint renderbuffer);
+typedef void (*PFNGLBUFFERDATAPROC)(GLenum target, GLsizeiptr size,
+                                    const GLvoid *data, GLenum usage);
+typedef void (*PFNGLGENFRAMEBUFFERSEXTPROC)(GLsizei n, GLuint *framebuffers);
+typedef void (*PFNGLGENRENDERBUFFERSEXTPROC)(GLsizei n, GLuint *renderbuffers);
+typedef void (*PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)(GLenum target,
+                                                 GLenum attachment,
+                                                 GLenum textarget,
+                                                 GLuint texture, GLint level);
+typedef void (*PFNGLCOMPRESSEDTEXIMAGE2DPROC)(GLenum target, GLint level,
+                                              GLenum internalformat,
+                                              GLsizei width, GLsizei height,
+                                              GLint border, GLsizei imageSize,
+                                              const GLvoid *data);
+typedef void (*PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)(GLenum target,
+                                                    GLenum attachment,
+                                                    GLenum renderbuffertarget,
+                                                    GLuint renderbuffer);
+typedef void (*PFNGLRENDERBUFFERSTORAGEEXTPROC)(GLenum target,
+                                                GLenum internalformat,
+                                                GLsizei width, GLsizei height);
+typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
+#endif
 
 //    wxWindows Hash Map Declarations
 #include <wx/hashmap.h>
@@ -281,7 +326,6 @@ public:
   MyNatsurHash m_natsur_hash;  // hash table for cacheing NATSUR string values
                                // from int attributes
 
-  wxRect m_last_clip_rect;
   int m_myConfig;
 
   double lastLightLat;
@@ -303,7 +347,11 @@ private:
                        render_canvas_parms *pb_spec);
   int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                        render_canvas_parms *pb_spec);
+
   int RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+
   int RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
   int RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
 
@@ -468,6 +516,7 @@ private:
   bool m_GLLineSmoothing;
   bool m_GLPolygonSmoothing;
   wxFont *m_soundFont;
+  bool m_useGLSL;
 
   double m_displayScale;
 };

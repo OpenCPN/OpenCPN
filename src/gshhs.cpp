@@ -41,13 +41,24 @@
 
 #include "dychart.h"
 
+// #if defined(__OCPN__ANDROID__)
+// #include <GLES2/gl2.h>
+// #elif defined(__WXQT__) || defined(__WXGTK__)
+// #include <GL/glew.h>
+// //#define GL_GLEXT_PROTOTYPES
+// //#include <GL/gl.h>
+// //#include <GL/glext.h>
+// #endif
+
+#include "ocpndc.h"
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
 
 #include "gshhs.h"
 #include "chartbase.h"  // for projections
-#include "wx28compat.h"
+//#include "wx28compat.h"
 
 #ifdef __WXMSW__
 #define __CALL_CONVENTION  //__stdcall
@@ -55,24 +66,26 @@
 #define __CALL_CONVENTION
 #endif
 
-#ifdef USE_ANDROID_GLES2
-#include <GLES2/gl2.h>
+//#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+//#include <GLES2/gl2.h>
 #include "linmath.h"
-#endif
+//#endif
+
 
 // typedef void (APIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
 
 extern wxString gWorldMapLocation;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 static const GLchar *vertex_shader_source =
     "attribute vec2 position;\n"
     "uniform mat4 MVMatrix;\n"
+    "uniform mat4 TransformMatrix;\n"
     "uniform vec4 color;\n"
     "varying vec4 fragColor;\n"
     "void main() {\n"
     "   fragColor = color;\n"
-    "   gl_Position = MVMatrix * vec4(position, 0.0, 1.0);\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
     "}\n";
 
 static const GLchar *fragment_shader_source =
@@ -93,9 +106,11 @@ static const GLfloat vertices3[] = {
 enum Consts { INFOLOG_LEN = 512 };
 GLchar infoLog[INFOLOG_LEN];
 GLint fragment_shader;
-GLint shader_program;
+//GLint shader_program;
 GLint success;
 GLint vertex_shader;
+
+extern GLint color_tri_shader_program;
 #endif
 
 //-------------------------------------------------------------------------
@@ -477,8 +492,9 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
     g_pv.clear();
   }
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
+#if 0
   // Are the shaders ready?
   if (!vertex_shader) {
     /* Vertex shader */
@@ -516,7 +532,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
     }
   }
-
+#endif
   GLuint vbo = 0;
 
   //  Build the shader viewport transform matrix
@@ -527,14 +543,18 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
   mat4x4_translate_in_place(mvp, -vp.pix_width / 2, vp.pix_height / 2, 0);
 
   if (glChartCanvas::HasNormalizedViewPort(vp)) {
-    GLint pos = glGetAttribLocation(shader_program, "position");
+    GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), *pv);
     glEnableVertexAttribArray(pos);
 
     // FIXME        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const
     // GLfloat*)vp.vp_transform);
+    mat4x4 m;
+    mat4x4_identity(m);
+    GLint tmatloc = glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
+    glUniformMatrix4fv(tmatloc, 1, GL_FALSE, (const GLfloat*)m);
 
-    glUseProgram(shader_program);
+    glUseProgram(color_tri_shader_program);
     glDrawArrays(GL_TRIANGLES, 0, *pvc);
 
   } else {
@@ -546,9 +566,9 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
       pvt[(i * 2) + 1] = q.m_y;
     }
 
-    glUseProgram(shader_program);
+    glUseProgram(color_tri_shader_program);
 
-    GLint pos = glGetAttribLocation(shader_program, "position");
+    GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pvt);
     glEnableVertexAttribArray(pos);
 
@@ -559,8 +579,16 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
     //         (float)-vp.pix_width/2, (float)-vp.pix_height/2, 0);
     //        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)mvp);
 
-    GLint matloc = glGetUniformLocation(shader_program, "MVMatrix");
-    glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)vp.vp_transform);
+    //GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
+    //glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)vp.vp_transform);
+
+//     mat4x4 m;
+//     mat4x4_identity(m);
+//     GLint tmatloc = glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
+//     glUniformMatrix4fv(tmatloc, 1, GL_FALSE, (const GLfloat*)m);
+
+    //GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
+    //glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)m);
 
     float colorv[4];
     colorv[0] = color.Red() / float(256);
@@ -568,7 +596,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
     colorv[2] = color.Blue() / float(256);
     colorv[3] = 1.0;
 
-    GLint colloc = glGetUniformLocation(shader_program, "color");
+    GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
 
     // qDebug() << "colortri" << matloc << colloc;
@@ -576,6 +604,8 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
     glDrawArrays(GL_TRIANGLES, 0, *pvc);
     delete[] pvt;
     glDeleteBuffers(1, &vbo);
+    glUseProgram(0);
+
   }
 
 #else
@@ -612,7 +642,7 @@ void GshhsPolyCell::drawMapPlain(ocpnDC &pnt, double dx, ViewPort &vp,
                                  bool idl) {
 #ifdef ocpnUSE_GL
   if (!pnt.GetDC()) {  // opengl
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 #define NORM_FACTOR 4096.0
     if (dx && (vp.m_projection_type == PROJECTION_MERCATOR ||
                vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)) {
@@ -628,7 +658,7 @@ void GshhsPolyCell::drawMapPlain(ocpnDC &pnt, double dx, ViewPort &vp,
     DRAW_POLY_FILLED_GL(4, seaColor);
     DRAW_POLY_FILLED_GL(5, landColor);
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     if (dx) glPopMatrix();
 #endif
 
@@ -954,7 +984,7 @@ void GshhsPolyReader::drawGshhsPolyMapPlain(ocpnDC &pnt, ViewPort &vp,
         for (int clat = 0; clat < 180; clat++)
           if (allCells[clon][clat]) allCells[clon][clat]->ClearPolyV();
     }
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // use a viewport that allows the vertexes to be reused over many frames
@@ -1009,7 +1039,7 @@ void GshhsPolyReader::drawGshhsPolyMapPlain(ocpnDC &pnt, ViewPort &vp,
   }
 
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (!pnt.GetDC()) {  // opengl
     if (glChartCanvas::HasNormalizedViewPort(vp)) glPopMatrix();
     glDisableClientState(GL_VERTEX_ARRAY);
