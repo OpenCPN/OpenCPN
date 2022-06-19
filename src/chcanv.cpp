@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
@@ -4318,7 +4318,7 @@ bool ChartCanvas::GetCanvasPointPixVP(ViewPort &vp, double rlat, double rlon,
     return false;
   }
 
-  if( (abs(p.m_x) < 10e6) && (abs(p.m_y) < 10e6) )
+  if( (abs(p.m_x) < 1e6) && (abs(p.m_y) < 1e6) )
     *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
   else
     *r = wxPoint(INVALID_COORD, INVALID_COORD);

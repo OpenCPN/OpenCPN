@@ -132,7 +132,7 @@ ViewPort::ViewPort() {
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) {
   wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
   if (wxFinite(p.m_x) && wxFinite(p.m_y)){
-    if( (abs(p.m_x) < 10000) && (abs(p.m_y) < 10000) )
+    if( (abs(p.m_x) < 1e6) && (abs(p.m_y) < 1e6) )
       return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
   }
   return wxPoint(INVALID_COORD, INVALID_COORD);
