@@ -1029,5 +1029,16 @@
         </catalog>
       </catalogs>
     </section>
+    <section>
+      <name>Layers (import as layer after download)</name>
+      <catalogs>
+        <catalog>
+          <name>Netherlands and surroundings waypoint layers</name>
+          <type>GPX</type>
+          <location>https://raw.githubusercontent.com/marcelrv/OpenCPN-Waypoints/main/chartcatalog/NL-waypoints.xml</location>
+          <dir>{USERDATA}/layers/NL-Waypoints</dir>
+        </catalog>
+      </catalogs>
+    </section>
   </sections>
 </ChartCatalog>
