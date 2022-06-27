@@ -48,7 +48,7 @@ static const std::string SEP("/");
 
 extern wxString g_catalog_custom_url;
 extern wxString g_catalog_channel;
-extern BasePlatform* g_Platform;
+extern BasePlatform* g_BasePlatform;
 
 static const char* const DOWNLOAD_REPO =
     "https://raw.githubusercontent.com/OpenCPN/plugins";
@@ -247,7 +247,7 @@ void CatalogHandler::LoadCatalogData(const std::string& path,
 CatalogData CatalogHandler::UserCatalogData() {
   if (user_data.undef) {
     auto plugin_handler = PluginHandler::getInstance();
-    std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+    std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
     path += SEP;
     path += "ocpn-plugins.xml";
     LoadCatalogData(path, user_data);
@@ -258,7 +258,7 @@ CatalogData CatalogHandler::UserCatalogData() {
 CatalogData CatalogHandler::DefaultCatalogData() {
   if (default_data.undef) {
     auto plugin_handler = PluginHandler::getInstance();
-    std::string path = g_Platform->GetSharedDataDir().ToStdString();
+    std::string path = g_BasePlatform->GetSharedDataDir().ToStdString();
     path += SEP;
     path += "ocpn-plugins.xml";
     LoadCatalogData(path, default_data);

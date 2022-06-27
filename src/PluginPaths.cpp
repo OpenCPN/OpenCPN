@@ -15,7 +15,7 @@
 const char* const LINUX_DATA_PATH =
     "~/.local/share:/usr/local/share:/usr/share";
 
-extern BasePlatform* g_Platform;
+extern BasePlatform* g_BasePlatform;
 extern bool g_bportable;
 
 static std::vector<std::string> split(const std::string& s, char delimiter) {
@@ -46,24 +46,27 @@ void PluginPaths::initWindowsPaths() {
   using namespace std;
 
   if (g_bportable) {
-    m_userLibdir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins";
+    m_userLibdir =
+      g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_libdirs.push_back(m_userLibdir);
-    m_userBindir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins";
+    m_userBindir =
+      g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_bindirs = m_libdirs;
-    m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins";
+    m_userDatadir =
+      g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_datadirs.push_back(m_userDatadir);
     return;
   }
 
-  const string platform_dir = g_Platform->GetPluginDir().ToStdString();
+  const string platform_dir = g_BasePlatform->GetPluginDir().ToStdString();
   const string winPluginBaseDir =
-      g_Platform->GetWinPluginBaseDir().ToStdString();
+      g_BasePlatform->GetWinPluginBaseDir().ToStdString();
   m_userLibdir = winPluginBaseDir;
   m_userBindir = winPluginBaseDir;
   m_userDatadir = winPluginBaseDir;
 
   m_libdirs.push_back(m_userLibdir);
-  m_libdirs.push_back(g_Platform->GetPluginDir().ToStdString());
+  m_libdirs.push_back(g_BasePlatform->GetPluginDir().ToStdString());
   m_bindirs = m_libdirs;
 
   m_datadirs.push_back(platform_dir + "\\plugins");
@@ -95,13 +98,13 @@ void PluginPaths::initLinuxPaths() {
   using namespace std;
 
   if (g_bportable) {
-    m_userLibdir = g_Platform->GetPrivateDataDir().ToStdString() +
+    m_userLibdir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
                    "/plugins/lib";  // m_home + "/.local/lib";
     m_libdirs.push_back(m_userLibdir);
-    m_userBindir = g_Platform->GetPrivateDataDir().ToStdString() +
+    m_userBindir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
                    "/plugins/bin";  // m_home + "/.local/bin";
     m_bindirs = m_libdirs;
-    m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString() +
+    m_userDatadir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
                     "/plugins/share";  // m_home + "/.local/share";
     m_datadirs.push_back(m_userDatadir);
     return;
@@ -111,7 +114,7 @@ void PluginPaths::initLinuxPaths() {
   m_userBindir = m_home + "/.local/bin";
   m_userDatadir = m_home + "/.local/share";
 
-  const string platform_dir = g_Platform->GetPluginDir().ToStdString();
+  const string platform_dir = g_BasePlatform->GetPluginDir().ToStdString();
   const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
   string dirlist = envdirs ? envdirs : OCPN_LINUX_LOAD_PATH;
   m_libdirs = split(dirlist, ':');
@@ -152,7 +155,7 @@ void PluginPaths::initApplePaths() {
   m_userDatadir = mac_home + "/Contents";
 
   m_libdirs.push_back(m_userLibdir);
-  wxFileName fn_exe(g_Platform->GetExePath());
+  wxFileName fn_exe(g_BasePlatform->GetExePath());
   fn_exe.RemoveLastDir();
   string exeLibDir =
       fn_exe.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR).ToStdString() +
@@ -168,14 +171,14 @@ void PluginPaths::initApplePaths() {
 void PluginPaths::initAndroidPaths() {
   using namespace std;
 
-  const string platform_dir = g_Platform->GetPluginDir().ToStdString();
+  const string platform_dir = g_BasePlatform->GetPluginDir().ToStdString();
 
   m_userLibdir =
       platform_dir + "/manPlug";  //("/data/user/0/org.opencpn.opencpn");
   m_userBindir =
       platform_dir + "/manPlug";  //("/data/user/0/org.opencpn.opencpn");
   m_userDatadir =
-      g_Platform->GetPrivateDataDir()
+      g_BasePlatform->GetPrivateDataDir()
           .ToStdString();  //(
                            //"/storage/emulated/0/android/data/org.opencpn.opencpn/files");
 
@@ -195,7 +198,7 @@ PluginPaths::PluginPaths() {
   auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
   if (osSystemId & wxOS_WINDOWS) {
     initWindowsPaths();
-  } else if (g_Platform->isFlatpacked()) {
+  } else if (g_BasePlatform->isFlatpacked()) {
     initFlatpackPaths();
   } else if (osSystemId & wxOS_UNIX_LINUX) {
 #ifdef __OCPN__ANDROID__
