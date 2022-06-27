@@ -32,6 +32,7 @@
 
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
+#include <wx/config.h>
 #include <wx/fontpicker.h>
 #include <wx/filepicker.h>
 #include <wx/zipstrm.h>
@@ -133,6 +134,8 @@ extern OCPNPlatform *g_Platform;
 // Static globals
 extern ChartDB *ChartData;
 extern MyConfig *pConfig;
+extern wxConfigBase *pBaseConfig;
+extern wxConfigBase *pBaseConfig;
 
 //   Preferences globals
 extern bool g_bShowOutlines;
@@ -4728,6 +4731,7 @@ int doAndroidPersistState() {
 
   delete pConfig;  // All done
   pConfig = NULL;
+  pBaseConfig = NULL;
 
   //    Unload the PlugIns
   //      Note that we are waiting until after the canvas is destroyed,

@@ -70,16 +70,7 @@
 #include <dlfcn.h>
 #endif
 
-#ifndef CLIAPP
-#include "navutil.h"
-#endif
-
-#ifdef CLIAPP
 extern wxConfigBase* pBaseConfig;
-#else
-extern MyConfig* pConfig;
-#endif
-
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
 
@@ -297,11 +288,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   //    Check the config file to see if this PlugIn is user-enabled
 
   const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
-#ifdef CLIAPP
   ConfigVar<bool> enabled(path, "bEnabled", pBaseConfig);
-#else
-  ConfigVar<bool> enabled(path, "bEnabled", pConfig);
-#endif
 
   // only loading enabled plugins? check that it is enabled
   if (load_enabled && !enabled.get(true)) {
@@ -339,7 +326,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
         enabled.set(false);
       }
 #ifndef CLIAPP
-      // The CLI has no graphics contest, but plugins assumes there is.
+      // The CLI has no graphics context, but plugins assumes there is.
       if (pic->m_bEnabled) {
         pic->m_cap_flag = pic->m_pplugin->Init();
         pic->m_bInitState = true;

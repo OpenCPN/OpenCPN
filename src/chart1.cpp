@@ -219,6 +219,7 @@ MyFrame *gFrame;
 ConsoleCanvas *console;
 
 MyConfig *pConfig;
+wxConfigBase *pBaseConfig;   // Always the same as pConfig, handles MS linker
 
 ChartBase *Current_Vector_Ch;
 ChartDB *ChartData;
@@ -1981,6 +1982,7 @@ bool MyApp::OnInit() {
 
   //      Open/Create the Config Object
   pConfig = g_Platform->GetConfigObject();
+  pBaseConfig = pConfig;
   pConfig->LoadMyConfig();
 
   //  Override for some safe and nice default values if the config file was
@@ -3931,6 +3933,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   delete pConfig;  // All done
   pConfig = NULL;
+  pBaseConfig = NULL;
 
   if (g_pAIS) {
     if (g_pMUX) g_pMUX->SetAISHandler(NULL);
