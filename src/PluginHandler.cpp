@@ -1149,23 +1149,17 @@ bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
     bool bOK = installPlugin(plugin, cacheFile);
     if (!bOK) {
       wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
-      evt_download_failed.notify(cacheFile);
-      /** FIXME
       wxString message = _("Please check system log for more info.");
       OCPNMessageBox(gFrame, message, _("Installation error"),
                      wxICON_ERROR | wxOK | wxCENTRE);
-      **/ 
       return false;
     }
 
     wxString message;
     message.Printf("%s %s\n", plugin.name.c_str(), plugin.version.c_str());
-    evt_download_ok.notify(message.ToStdString());
-/** FIXME
     message += _(" successfully installed from cache");
     OCPNMessageBox(gFrame, message, _("Installation complete"),
                    wxICON_INFORMATION | wxOK | wxCENTRE);
-**/
     return true;
   }
 
