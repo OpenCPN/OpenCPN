@@ -79,7 +79,9 @@ extern PlugInManager* g_pi_manager;
 extern wxString g_winPluginDir;
 extern MyConfig* pConfig;
 extern bool g_bportable;
-extern wxWindow* gFrame;
+
+class MyFrame;
+extern MyFrame* gFrame;
 
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
