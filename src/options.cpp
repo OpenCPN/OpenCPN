@@ -9826,8 +9826,9 @@ void options::DoOnPageChange(size_t page) {
 
       ::wxEndBusyCursor();
 
-   }
-
+      wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
+      GlobalVar<wxString> compat_os(&g_compatOS);
+    }
     k_plugins = TOOLBAR_CHANGED;
   }
 }

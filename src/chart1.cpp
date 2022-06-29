@@ -194,6 +194,8 @@ void RedirectIOToConsole();
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
 OCPNPlatform *g_Platform;
+BasePlatform *g_BasePlatform;   // points to g_platform, handles brain-dead MS linker.
+
 wxString g_vs;
 bool g_bFirstRun;
 bool g_bUpgradeInProcess;
@@ -1712,6 +1714,7 @@ bool MyApp::OnInit() {
 
   // Instantiate the global OCPNPlatform class
   g_Platform = new OCPNPlatform;
+  g_BasePlatform = g_Platform;
 
 #ifndef __OCPN__ANDROID__
   //  On Windows
@@ -11109,9 +11112,4 @@ void ApplyLocale() {
     gFrame->RequestNewToolbars(true);
     gFrame->RequestNewMasterToolbar(true);
   }
-}
-
-void appendOSDirSlash(wxString *pString) {
-  wxChar sep = wxFileName::GetPathSeparator();
-  if (pString->Last() != sep) pString->Append(sep);
 }

@@ -85,6 +85,7 @@ private:
 
 class PluginHandler {
 public:
+
   static PluginHandler* getInstance();
 
   /** Cleanup failed installation attempt using filelist for plugin. */
@@ -138,8 +139,7 @@ public:
   CatalogData* GetCatalogData() { return &catalogData; }
 
 protected:
-  /** Initiats the handler and set up LD_LIBRARY_PATH. */
-  PluginHandler() {}
+  PluginHandler();
 
 private:
   std::string metadataPath;

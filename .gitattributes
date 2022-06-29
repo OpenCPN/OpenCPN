@@ -38,6 +38,7 @@
 *.bat      text eol=crlf
 *.cmd      text eol=crlf
 *.ps1      text eol=crlf
+Langstrings_*.nsh.in text eol=crlf
 
 # Serialisation
 *.json     text
