@@ -58,6 +58,7 @@
 #include "BasePlatform.h"
 #include "logger.h"
 #include "ocpn_utils.h"
+#include "ocpn_plugin.h"
 
 #ifdef __ANDROID__
 #include <QDebug>
