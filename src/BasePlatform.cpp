@@ -75,10 +75,10 @@ static const char PATH_SEP = ';';
 static const char PATH_SEP = ':';
 #endif
 
-static const char *const
-  DEFAULT_XDG_DATA_DIRS = "~/.local/share:/usr/local/share:/usr/share";
+static const char* const DEFAULT_XDG_DATA_DIRS =
+    "~/.local/share:/usr/local/share:/usr/share";
 
-void appendOSDirSlash(wxString *pString);
+void appendOSDirSlash(wxString* pString);
 
 extern wxString g_winPluginDir;
 
@@ -100,7 +100,7 @@ static bool checkIfFlatpacked() {
   return id == "org.opencpn.OpenCPN";
 }
 
-static wxString ExpandPaths(wxString paths, BasePlatform *platform);
+static wxString ExpandPaths(wxString paths, BasePlatform* platform);
 
 static wxString GetLinuxDataPath() {
   wxString dirs;
@@ -124,7 +124,7 @@ static wxString GetLinuxDataPath() {
   return s;
 }
 
-static wxString ExpandPaths(wxString paths, BasePlatform *platform) {
+static wxString ExpandPaths(wxString paths, BasePlatform* platform) {
   wxStringTokenizer tokens(paths, ';');
   wxString s = "";
   while (tokens.HasMoreTokens()) {
@@ -138,8 +138,6 @@ static wxString ExpandPaths(wxString paths, BasePlatform *platform) {
   return s;
 }
 
-
-
 //  OCPN Platform implementation
 BasePlatform::BasePlatform() {
   m_isFlatpacked = checkIfFlatpacked();
@@ -148,27 +146,20 @@ BasePlatform::BasePlatform() {
   InitializeLogFile();
 }
 
-
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
 
-wxStandardPaths &BasePlatform::GetStdPaths() {
+wxStandardPaths& BasePlatform::GetStdPaths() {
 #ifndef __ANDROID__
-/**
-  return *dynamic_cast<wxStandardPaths *>(
-      &(wxGetApp().GetTraits()->GetStandardPaths()));
-**/
-  return  wxStandardPaths::Get();
+  return wxStandardPaths::Get();
 #else
-  //    return
-  //    *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
-  return *dynamic_cast<wxStandardPaths *>(
+  return *dynamic_cast<wxStandardPaths*>(
       &(wxTheApp->GetTraits())->GetStandardPaths());
 #endif
 }
 
-wxString BasePlatform::NormalizePath(const wxString &full_path) {
+wxString BasePlatform::NormalizePath(const wxString& full_path) {
   if (!g_bportable) {
     return full_path;
   } else {
@@ -182,16 +173,10 @@ wxString BasePlatform::NormalizePath(const wxString &full_path) {
   }
 }
 
-
-wxString &BasePlatform::GetHomeDir() {
+wxString& BasePlatform::GetHomeDir() {
   if (m_homeDir.IsEmpty()) {
     //      Establish a "home" location
-    //       wxStandardPaths& std_path =
-    //       *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
-    wxStandardPaths &std_path = GetStdPaths();
-    //        wxStandardPaths &std_path = ( wxStandardPaths)
-    //        wxGetApp().GetTraits()->GetStandardPaths();
-
+    wxStandardPaths& std_path = GetStdPaths();
     // TODO  Why is the following preferred?  Will not compile with gcc...
     //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
 
@@ -227,9 +212,9 @@ wxString &BasePlatform::GetHomeDir() {
   return m_homeDir;
 }
 
-wxString &BasePlatform::GetExePath() {
+wxString& BasePlatform::GetExePath() {
   if (m_exePath.IsEmpty()) {
-    wxStandardPaths &std_path = GetStdPaths();
+    wxStandardPaths& std_path = GetStdPaths();
     m_exePath = std_path.GetExecutablePath();
   }
 
@@ -252,7 +237,7 @@ wxString& BasePlatform::GetSharedDataDir() {
      * directory where the executable file is located Mac:
      * appname.app/Contents/SharedSupport bundle subdirectory
      */
-    wxStandardPaths &std_path = GetStdPaths();
+    wxStandardPaths& std_path = GetStdPaths();
     m_SData_Dir = std_path.GetDataDir();
     appendOSDirSlash(&m_SData_Dir);
 
@@ -266,9 +251,7 @@ wxString& BasePlatform::GetSharedDataDir() {
   return m_SData_Dir;
 }
 
-
-
-wxString GetPluginDataDir(const char *plugin_name) {
+wxString GetPluginDataDir(const char* plugin_name) {
   static const wxString sep = wxFileName::GetPathSeparator();
 
   wxString datadirs = g_BasePlatform->GetPluginDataPath();
@@ -295,10 +278,10 @@ wxString GetPluginDataDir(const char *plugin_name) {
   return "";
 }
 
-wxString &BasePlatform::GetPrivateDataDir() {
+wxString& BasePlatform::GetPrivateDataDir() {
   if (m_PrivateDataDir.IsEmpty()) {
     //      Establish the prefix of the location of user specific data files
-    wxStandardPaths &std_path = GetStdPaths();
+    wxStandardPaths& std_path = GetStdPaths();
 
 #ifdef __WXMSW__
     m_PrivateDataDir =
@@ -388,7 +371,7 @@ wxString BasePlatform::GetWinPluginBaseDir() {
 
 wxString& BasePlatform::GetPluginDir() {
   if (m_PluginsDir.IsEmpty()) {
-    wxStandardPaths &std_path = GetStdPaths();
+    wxStandardPaths& std_path = GetStdPaths();
 
     //  Get the PlugIns directory location
     m_PluginsDir = std_path.GetPluginsDir();  // linux:   {prefix}/lib/opencpn
@@ -411,8 +394,7 @@ wxString& BasePlatform::GetPluginDir() {
   return m_PluginsDir;
 }
 
-
-wxString *BasePlatform::GetPluginDirPtr() { return &m_PluginsDir; }
+wxString* BasePlatform::GetPluginDirPtr() { return &m_PluginsDir; }
 
 bool BasePlatform::isPlatformCapable(int flag) {
 #ifndef __ANDROID__
@@ -447,7 +429,7 @@ wxString BasePlatform::GetWritableDocumentsDir() {
 #ifdef __ANDROID__
   dir = androidGetExtStorageDir();  // Used for Chart storage, typically
 #else
-  wxStandardPaths &std_path = GetStdPaths();
+  wxStandardPaths& std_path = GetStdPaths();
   dir = std_path.GetDocumentsDir();
 #endif
   return dir;
@@ -531,7 +513,7 @@ bool BasePlatform::DetectOSDetail(OCPN_OSDetail* detail) {
   //  So, we cannot trust the wxPlatformInfo architecture determination.
   detail->osd_arch = std::string("arm64");
 #ifdef ocpnARMHF
-    detail->osd_arch = std::string("armhf");
+  detail->osd_arch = std::string("armhf");
 #endif
 #endif
 
@@ -546,7 +528,7 @@ bool BasePlatform::DetectOSDetail(OCPN_OSDetail* detail) {
 wxString& BasePlatform::GetConfigFileName() {
   if (m_config_file_name.IsEmpty()) {
     //      Establish the location of the config file
-    wxStandardPaths &std_path = GetStdPaths();
+    wxStandardPaths& std_path = GetStdPaths();
 
 #ifdef __WXMSW__
     m_config_file_name = "opencpn.ini";
@@ -672,7 +654,6 @@ void BasePlatform::CloseLogFile(void) {
   }
 }
 
-
 wxString BasePlatform::GetPluginDataPath() {
   if (g_bportable) {
     wxString sep = wxFileName::GetPathSeparator();
@@ -713,5 +694,3 @@ wxString BasePlatform::GetPluginDataPath() {
   wxLogMessage("Using plugin data path: %s", m_pluginDataPath.mb_str().data());
   return m_pluginDataPath;
 }
-
-
