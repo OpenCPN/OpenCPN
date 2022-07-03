@@ -1621,8 +1621,9 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     int navstatus = td->NavStatus;
 
     // HSC usually have correct ShipType but navstatus == 0...
+    // Class B can have (HSC)ShipType but never navstatus.
     if (((td->ShipType >= 40) && (td->ShipType < 50)) &&
-        navstatus == UNDERWAY_USING_ENGINE)
+        (navstatus == UNDERWAY_USING_ENGINE || td->Class == AIS_CLASS_B ))
       navstatus = HSC;
 
     if (targetscale > 90) {
