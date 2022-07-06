@@ -65,20 +65,20 @@ using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
 void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
   const auto& listeners = singleton->listeners;
-  auto found = std::find_if(listeners.begin(), listeners.end(),
-          [listener](const ev_pair p) { return p.first == listener; });
+  ev_pair keys(listener, ev_type);
+  auto found = std::find(listeners.begin(), listeners.end(), keys);
   if (found != listeners.end()) {
-    wxLogWarning("Duplicate event listener %s (ignored)", ptr_key(listener));
+      wxLogWarning("Duplicate listener, key: %s, listener: %s, ev_type: %d",
+                   key, ptr_key(listener), ev_type);
   }
-  else {
-    singleton->listeners.push_back(ev_pair(listener, ev_type));
-  }
+  singleton->listeners.push_back(ev_pair(listener, ev_type));
 }
 
-bool ObservedVar::unlisten(wxEvtHandler* listener) {
+bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   auto& listeners = singleton->listeners;
-  auto found = std::find_if(listeners.begin(), listeners.end(),
-          [listener](const ev_pair p) { return p.first == listener; });
+
+  ev_pair keys(listener, ev_type);
+  auto found = std::find(listeners.begin(), listeners.end(), keys);
   if (found == listeners.end()) return false;
   listeners.erase(found);
   return true;
