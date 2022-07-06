@@ -171,6 +171,7 @@ bool DepthFont::GetGLTextureRect(wxRect &texrect, int symIndex) {
   }
 }
 
+// All rendering of depth soundings is now performed in s52plib.
 #if 0
 void DepthFont::RenderGlyph( int c )
 {

@@ -259,29 +259,11 @@ void TexFont::RenderGlyph(int c) {
   coords[6] = 0;
   coords[7] = h;
 
-  glUseProgram(texture_2DA_shader_program);
+  GLShaderProgramA *shader = ptexture_2DA_shader_program[0];
+  shader->Bind();
 
-  // Get pointers to the attributes in the program.
-  GLint mPosAttrib = glGetAttribLocation(texture_2DA_shader_program, "aPos");
-  GLint mUvAttrib = glGetAttribLocation(texture_2DA_shader_program, "aUV");
-
-  // Set up the texture sampler to texture unit 0
-  GLint texUni = glGetUniformLocation(texture_2DA_shader_program, "uTex");
-  glUniform1i(texUni, 0);
-
-  // Disable VBO's (vertex buffer objects) for attributes.
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  // Set the attribute mPosAttrib with the vertices in the screen coordinates...
-  glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
-  // ... and enable it.
-  glEnableVertexAttribArray(mPosAttrib);
-
-  // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-  glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv);
-  // ... and enable it.
-  glEnableVertexAttribArray(mUvAttrib);
+   // Set up the texture sampler to texture unit 0
+  shader->SetUniform1i("uTex", 0);
 
   float colorv[4];
   colorv[0] = m_color.Red() / float(256);
@@ -289,8 +271,7 @@ void TexFont::RenderGlyph(int c) {
   colorv[2] = m_color.Blue() / float(256);
   colorv[3] = 0;
 
-  GLint colloc = glGetUniformLocation(texture_2DA_shader_program, "color");
-  glUniform4fv(colloc, 1, colorv);
+  shader->SetUniform4fv("color", colorv);
 
   // Rotate
   float angle = 0;
@@ -298,19 +279,11 @@ void TexFont::RenderGlyph(int c) {
   mat4x4_identity(I);
   mat4x4_rotate_Z(Q, I, angle);
 
-  // Translate
+    // Translate
   Q[3][0] = m_dx;
   Q[3][1] = m_dy;
 
-  // mat4x4 X;
-  // mat4x4_mul(X, (float (*)[4])vp->vp_transform, Q);
-
-  GLint matloc =
-      glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
-  glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
-
-  // Select the active texture unit.
-  glActiveTexture(GL_TEXTURE0);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
 
 // For some reason, glDrawElements is busted on Android
 // So we do this a hard ugly way, drawing two triangles...
@@ -339,12 +312,12 @@ void TexFont::RenderGlyph(int c) {
   tco1[6] = uv[4];
   tco1[7] = uv[5];
 
-  glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
-  glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
+  shader->SetAttributePointerf("aPos", co1);
+  shader->SetAttributePointerf("aUV", tco1);
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  glUseProgram(0);
+  shader->UnBind();
 
 #endif
 

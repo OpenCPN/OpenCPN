@@ -375,6 +375,39 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
   glEnd();
 #else
 
+  // Set up the shader
+    GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+    shader->Bind();
+
+    wxColor c = pen.GetColour();
+    float colorv[4];
+    colorv[0] = c.Red() / float(256);
+    colorv[1] = c.Green() / float(256);
+    colorv[2] = c.Blue() / float(256);
+    colorv[3] = c.Alpha() / float(256);
+    shader->SetUniform4fv("color", colorv);
+
+    // Build Transform matrix
+    mat4x4 I;
+    mat4x4_identity(I);
+
+    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+    shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+
+//     GLint matloc =
+//         glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
+//     glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)I);
+//
+//     matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
+//     glUniformMatrix4fv(
+//         matloc, 1, GL_FALSE,
+//         (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+
+
+    float vert[12];
+    shader->SetAttributePointerf("position", vert);
+
+
   //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in
   //    the dash table. The first is assumed drawn, second is assumed space
   wxDash *dashes;
@@ -387,9 +420,40 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     float ldraw = t1 * dashes[0];
     float lspace = t1 * dashes[1];
 
+//     GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+//     shader->Bind();
+//
+//     wxColor c = pen.GetColour();
+//     float colorv[4];
+//     colorv[0] = c.Red() / float(256);
+//     colorv[1] = c.Green() / float(256);
+//     colorv[2] = c.Blue() / float(256);
+//     colorv[3] = c.Alpha() / float(256);
+//     shader->SetUniform4fv("color", colorv);
+//
+//     // Build Transform matrix
+//     mat4x4 I;
+//     mat4x4_identity(I);
+//
+//     shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+//     shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+//
+//     GLint matloc =
+//         glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
+//     glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)I);
+//
+//     matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
+//     glUniformMatrix4fv(
+//         matloc, 1, GL_FALSE,
+//         (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+//
+//
+//     float vert[12];
+//     shader->SetAttributePointerf("position", vert);
+
+#if 0
     glUseProgram(color_tri_shader_program);
 
-    float vert[12];
 
     // Disable VBO's (vertex buffer objects) for attributes.
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -421,6 +485,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 
     GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
+#endif
 
     while (lrun < lpix) {
       //    Dash
@@ -460,8 +525,8 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
       ya = yb;
       lrun += lspace;
     }
+
   } else {
-    float vert[12];
     vert[0] = x1 + t2sina1;
     vert[1] = y1 - t2cosa1;
     vert[2] = x2 + t2sina1;
@@ -475,6 +540,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     vert[10] = x1 + t2sina1;
     vert[11] = y1 - t2cosa1;
 
+#if 0
     glUseProgram(color_tri_shader_program);
 
     // Disable VBO's (vertex buffer objects) for attributes.
@@ -507,6 +573,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 
     GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
+#endif
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -519,7 +586,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     //         }
     //
   }
-  glUseProgram(0);
+  shader->UnBind();
 
 #endif
 
@@ -570,24 +637,12 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
     if (b_draw_thick)
       DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
-      glUseProgram(AALine_shader_program);
+      GLShaderProgramA *shader = pAALine_shader_program[0];
+      shader->Bind();
 
-      float fBuf[4];
-      GLint pos = glGetAttribLocation(AALine_shader_program, "position");
-      glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                            fBuf);
-      glEnableVertexAttribArray(pos);
-
-//       GLint matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
-//       glUniformMatrix4fv(
-//           matloc, 1, GL_FALSE,
-//           (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
-
-      GLint lwloc = glGetUniformLocation(AALine_shader_program, "uLineWidth");
-      glUniform1f( lwloc, pen_width);
-
-      GLint bfloc = glGetUniformLocation(AALine_shader_program, "uBlendFactor");
-      glUniform1f( bfloc, 2.0);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+      shader->SetUniform1f("uLineWidth", pen_width);
+      shader->SetUniform1f("uBlendFactor", 2.0);
 
       float vpx[2];
       if(!glcanvas){
@@ -599,8 +654,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         vpx[1] = canvas_pixsize.y;
       }
 
-      GLint vpxloc = glGetUniformLocation(AALine_shader_program, "uViewPort");
-      glUniform2fv(vpxloc, 1, vpx);
+      shader->SetUniform2fv("uViewPort", vpx);
 
       float colorv[4];
       colorv[0] = m_pen.GetColour().Red() / float(256);
@@ -608,8 +662,11 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       colorv[2] = m_pen.GetColour().Blue() / float(256);
       colorv[3] = 1.0;
 
-      GLint colloc = glGetUniformLocation(AALine_shader_program, "color");
-      glUniform4fv(colloc, 1, colorv);
+      shader->SetUniform4fv("color", colorv);
+
+      float fBuf[4];
+      shader->SetAttributePointerf("position", fBuf);
+
 
       wxDash *dashes;
       int n_dashes = m_pen.GetDashes(&dashes);
@@ -661,7 +718,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
         glDrawArrays(GL_LINES, 0, 2);
       }
-      glUseProgram(0);
+      shader->UnBind();
 
     }
 
@@ -856,6 +913,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       workBuf[(i * 2) + 1] = points[i].y + yoffset;
     }
 
+#if 0
     glUseProgram(color_tri_shader_program);
 
     GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
@@ -880,7 +938,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
     glDrawArrays(GL_LINE_STRIP, 0, n);
 
     glUseProgram(0);
-
+#endif
 #endif
 
     if (b_hiqual) {
@@ -1089,6 +1147,38 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
       drawrrhelperGLES2(x2, y2, r, 3, steps);
     }
 
+    GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+    shader->Bind();
+
+    float fcolorv[4];
+    fcolorv[0] = m_brush.GetColour().Red() / float(256);
+    fcolorv[1] = m_brush.GetColour().Green() / float(256);
+    fcolorv[2] = m_brush.GetColour().Blue() / float(256);
+    fcolorv[3] = m_brush.GetColour().Alpha() / float(256);
+    shader->SetUniform4fv("color", fcolorv);
+
+    float angle = 0.;
+    float xoffset = 0;
+    float yoffset = 0;
+
+    // Rotate
+    mat4x4 I, Q;
+    mat4x4_identity(I);
+    mat4x4_rotate_Z(Q, I, angle);
+
+    // Translate
+    Q[3][0] = xoffset;
+    Q[3][1] = yoffset;
+
+    mat4x4 X;
+    mat4x4_mul(
+        X, (float(*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform, Q);
+    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
+
+
+    shader->SetAttributePointerf("position", workBuf);
+
+#if 0
     glUseProgram(color_tri_shader_program);
 
     // Get pointers to the attributes in the program.
@@ -1130,6 +1220,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
         X, (float(*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform, Q);
     GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
     glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)X);
+#endif
 
     // Perform the actual drawing.
     glDrawArrays(GL_TRIANGLE_FAN, 0, workBufIndex / 2);
@@ -1141,13 +1232,12 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     bcolorv[2] = m_pen.GetColour().Blue() / float(256);
     bcolorv[3] = m_pen.GetColour().Alpha() / float(256);
 
-    GLint bcolloc = glGetUniformLocation(color_tri_shader_program, "color");
-    glUniform4fv(bcolloc, 1, bcolorv);
+    shader->SetUniform4fv("color", bcolorv);
 
     // Perform the actual drawing.
     glDrawArrays(GL_LINE_LOOP, 0, workBufIndex / 2);
 
-    glUseProgram(0);
+    shader->UnBind();
 
 #else
     if (ConfigureBrush()) {
@@ -1175,7 +1265,6 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-  //      Enable anti-aliased lines, at best quality
   glEnable(GL_BLEND);
 
   float coords[8];
@@ -1188,6 +1277,47 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
   coords[6] = x + radius;
   coords[7] = y - radius;
 
+  GLShaderProgramA *shader = pcircle_filled_shader_program[0];
+  shader->Bind();
+
+  shader->SetUniform1f("circle_radius", radius);
+
+  //  Circle center point
+  float ctrv[2];
+  ctrv[0] = x;
+  ctrv[1] = gFrame->GetPrimaryCanvas()->GetSize().y - y;
+  shader->SetUniform2fv("circle_center", ctrv);
+
+    //  Circle color
+  float colorv[4];
+  colorv[0] = m_brush.GetColour().Red() / float(256);
+  colorv[1] = m_brush.GetColour().Green() / float(256);
+  colorv[2] = m_brush.GetColour().Blue() / float(256);
+  colorv[3] = (m_brush.GetStyle() == wxBRUSHSTYLE_TRANSPARENT) ? 0.0 : 1.0;
+
+  shader->SetUniform4fv("circle_color", colorv);
+
+  //  Border color
+  float bcolorv[4];
+  bcolorv[0] = m_pen.GetColour().Red() / float(256);
+  bcolorv[1] = m_pen.GetColour().Green() / float(256);
+  bcolorv[2] = m_pen.GetColour().Blue() / float(256);
+  bcolorv[3] = m_pen.GetColour().Alpha() / float(256);
+
+  shader->SetUniform4fv("border_color", bcolorv);
+
+  //  Border Width
+  shader->SetUniform1f("border_width", m_pen.GetWidth());
+
+  shader->SetAttributePointerf("aPos", coords);
+
+  // Perform the actual drawing.
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  shader->UnBind();
+
+
+#if 0
   glUseProgram(circle_filled_shader_program);
 
   // Get pointers to the attributes in the program.
@@ -1245,13 +1375,14 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
       matloc, 1, GL_FALSE,
       (const GLfloat *)(gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform));
 
-  // Perform the actual drawing.
+// Perform the actual drawing.
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  //      Enable anti-aliased lines, at best quality
+  glUseProgram(0);
+#endif
+
   glDisable(GL_BLEND);
 
-  glUseProgram(0);
 
 #else
   DrawEllipse(x - radius, y - radius, 2 * radius, 2 * radius);
@@ -1329,38 +1460,16 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
     ConfigurePen();
 
-    if (n > 4) {
-      if (ConfigureBrush())  // Check for transparent brush
-        DrawPolygonTessellated(n, points, xoffset, yoffset);
+    // Prepare the line rendering shader
+      GLShaderProgramA *shader = pAALine_shader_program[0];
+      shader->Bind();
 
-      // Draw the polygon ouline
-      //  Grow the work buffer as necessary
-      if (workBufSize < (size_t)n * 2) {
-        workBuf = (float *)realloc(workBuf, (n * 4) * sizeof(float));
-        workBufSize = n * 4;
-      }
-
-      for (int i = 0; i < n; i++) {
-        workBuf[i * 2] = (points[i].x * scale);      // + xoffset;
-        workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
-      }
-
-      glUseProgram(AALine_shader_program);
-
-      GLint mPosAttrib = glGetAttribLocation(AALine_shader_program, "position");
-      glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, workBuf);
-      glEnableVertexAttribArray(mPosAttrib);
-
-
-      GLint lwloc = glGetUniformLocation(AALine_shader_program, "uLineWidth");
-      glUniform1f( lwloc, m_pen.GetWidth());
-
-      GLint bfloc = glGetUniformLocation(AALine_shader_program, "uBlendFactor");
-      glUniform1f( bfloc, 2.0);
+      shader->SetUniform1f("uLineWidth", m_pen.GetWidth());
+      shader->SetUniform1f("uBlendFactor", 2.0);
 
       float vpx[2];
       if(!glcanvas){
-        //qDebug() << "DrawPolygon glcanvas null";
+        //qDebug() << "Drawline glcanvas null";
       }
       else {
         wxSize canvas_pixsize = glcanvas->GetSize();
@@ -1368,8 +1477,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         vpx[1] = canvas_pixsize.y;
       }
 
-      GLint vpxloc = glGetUniformLocation(AALine_shader_program, "uViewPort");
-      glUniform2fv(vpxloc, 1, vpx);
+      shader->SetUniform2fv("uViewPort", vpx);
 
       float colorv[4];
       colorv[0] = m_pen.GetColour().Red() / float(256);
@@ -1377,8 +1485,9 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       colorv[2] = m_pen.GetColour().Blue() / float(256);
       colorv[3] = 1.0;
 
-      GLint colloc = glGetUniformLocation(AALine_shader_program, "color");
-      glUniform4fv(colloc, 1, colorv);
+      shader->SetUniform4fv("color", colorv);
+
+      //shader->SetAttributePointerf("position", workBuf);
 
       // Rotate
       mat4x4 I, Q;
@@ -1394,13 +1503,39 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
           X, (float(*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform,
           Q);
 
-      GLint matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)X);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
+
+      shader->UnBind();
+
+    if (n > 4) {
+      if (ConfigureBrush())  // Check for transparent brush
+        DrawPolygonTessellated(n, points, xoffset, yoffset);
+
+      // Draw the polygon ouline
+      //  Grow the work buffer as necessary
+      if (workBufSize < (size_t)n * 2) {
+        workBuf = (float *)realloc(workBuf, (n * 4) * sizeof(float));
+        workBufSize = n * 4;
+      }
+
+      for (int i = 0; i < n; i++) {
+        workBuf[i * 2] = (points[i].x * scale);
+        workBuf[i * 2 + 1] = (points[i].y * scale);
+      }
+
+      GLShaderProgramA *shader = pAALine_shader_program[0];
+      shader->Bind();
+
+      shader->SetAttributePointerf("position", workBuf);
 
       // Render the polygon outline.
       glDrawArrays(GL_LINE_LOOP, 0, n);
 
-      glUseProgram(0);
+      // Restore the default matrix
+      //TODO  This will not work for multicanvas
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+
+      shader->UnBind();
 
     } else {  // n = 3 or 4, most common case for pre-tesselated shapes
 
@@ -1417,6 +1552,35 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Draw the triangle fill
 
+      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      shader->Bind();
+
+      //  Fill color
+      float bcolorv[4];
+      bcolorv[0] = m_brush.GetColour().Red() / float(256);
+      bcolorv[1] = m_brush.GetColour().Green() / float(256);
+      bcolorv[2] = m_brush.GetColour().Blue() / float(256);
+      bcolorv[3] = m_brush.GetColour().Alpha() / float(256);
+      shader->SetUniform4fv("color", bcolorv);
+
+      // Rotate
+      mat4x4 I, Q;
+      mat4x4_identity(I);
+      mat4x4_rotate_Z(Q, I, angle);
+
+      // Translate
+      Q[3][0] = xoffset;
+      Q[3][1] = yoffset;
+
+      mat4x4 X;
+      mat4x4_mul(
+          X, (float(*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform,
+          Q);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
+
+      shader->SetAttributePointerf("position", workBuf);
+
+#if 0
       glUseProgram(color_tri_shader_program);
 
       // Get pointers to the attributes in the program.
@@ -1454,6 +1618,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
           Q);
       GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
       glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)X);
+#endif
 
 
       // For the simple common case of a convex rectangle...
@@ -1472,10 +1637,9 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       }
 
       // Restore the default matrix
-      glUniformMatrix4fv( matloc, 1, GL_FALSE,
-        (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
 
-      glUseProgram(0);
+      shader->UnBind();
 
       // Draw the polygon outline
       // Reset the workbuf, corrupted in swizzle above
@@ -1484,66 +1648,18 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
       }
 
-      glUseProgram(AALine_shader_program);
+      shader = pAALine_shader_program[0];
+      shader->Bind();
 
-      mPosAttrib = glGetAttribLocation(AALine_shader_program, "position");
-      glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, workBuf);
-      glEnableVertexAttribArray(mPosAttrib);
+      shader->SetAttributePointerf("position", workBuf);
 
-      GLint lwloc = glGetUniformLocation(AALine_shader_program, "uLineWidth");
-      glUniform1f( lwloc, m_pen.GetWidth());
-
-      GLint bfloc = glGetUniformLocation(AALine_shader_program, "uBlendFactor");
-      glUniform1f( bfloc, 2.0);
-
-      float vpx[2];
-      if(!glcanvas){
-        //qDebug() << "DrawPolygon glcanvas null";
-      }
-      else {
-        wxSize canvas_pixsize = glcanvas->GetSize();
-        vpx[0] = canvas_pixsize.x;
-        vpx[1] = canvas_pixsize.y;
-      }
-
-      GLint vpxloc = glGetUniformLocation(AALine_shader_program, "uViewPort");
-      glUniform2fv(vpxloc, 1, vpx);
-
-      float colorv[4];
-      colorv[0] = m_pen.GetColour().Red() / float(256);
-      colorv[1] = m_pen.GetColour().Green() / float(256);
-      colorv[2] = m_pen.GetColour().Blue() / float(256);
-      colorv[3] = 1.0;
-
-      GLint colloc = glGetUniformLocation(AALine_shader_program, "color");
-      glUniform4fv(colloc, 1, colorv);
-
-      // Rotate
-      mat4x4 IAA, QAA;
-      mat4x4_identity(IAA);
-      mat4x4_rotate_Z(QAA, IAA, angle);
-
-      // Translate
-      QAA[3][0] = xoffset;
-      QAA[3][1] = yoffset;
-
-      mat4x4 XAA;
-      mat4x4_mul(
-          XAA, (float(*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform,
-          QAA);
-
-      matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)XAA);
-
-      // Render the polygon outline.
       glDrawArrays(GL_LINE_LOOP, 0, n);
 
       // Restore the default matrix
       //TODO  This will not work for multicanvas
-      glUniformMatrix4fv( matloc, 1, GL_FALSE,
-        (const GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
 
-      glUseProgram(0);
+      shader->UnBind();
     }
 
 #else
@@ -1655,11 +1771,29 @@ void odc_beginCallbackD_GLSL(GLenum mode, void *data) {
 }
 
 void odc_endCallbackD_GLSL(void *data) {
-  // qDebug() << "End" << s_odc_nvertex << s_odc_tess_buf_len <<
-  // s_odc_tess_vertex_idx << s_odc_tess_vertex_idx_this; End 5 100 10 0
 #if 1
   ocpnDC *pDC = (ocpnDC *)data;
 
+  GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+  shader->Bind();
+
+  float colorv[4];
+  wxColour c = pDC->GetBrush().GetColour();
+
+  colorv[0] = c.Red() / float(256);
+  colorv[1] = c.Green() / float(256);
+  colorv[2] = c.Blue() / float(256);
+  colorv[3] = c.Alpha() / float(256);
+  shader->SetUniform4fv("color", colorv);
+
+  float *bufPt = &(pDC->s_odc_tess_work_buf[pDC->s_odc_tess_vertex_idx_this]);
+  shader->SetAttributePointerf("position", bufPt);
+
+  glDrawArrays(pDC->s_odc_tess_mode, 0, pDC->s_odc_nvertex);
+
+  shader->UnBind();
+
+#if 0
   glUseProgram(color_tri_shader_program);
 
   // Disable VBO's (vertex buffer objects) for attributes.
@@ -1688,6 +1822,7 @@ void odc_endCallbackD_GLSL(void *data) {
 
   glDrawArrays(pDC->s_odc_tess_mode, 0, pDC->s_odc_nvertex);
   glUseProgram(0);
+#endif
 
 #endif
 }
@@ -2061,6 +2196,66 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       coords[6] = 0;
       coords[7] = h;
 
+    GLShaderProgramA *shader = ptexture_2D_shader_program[0];
+    shader->Bind();
+
+   // Set up the texture sampler to texture unit 0
+    shader->SetUniform1i("uTex", 0);
+
+    // Rotate
+    float angle = 0;
+    mat4x4 I, Q;
+    mat4x4_identity(I);
+    mat4x4_rotate_Z(Q, I, angle);
+
+    // Translate
+    Q[3][0] = x;
+    Q[3][1] = y;
+
+    shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
+
+    float co1[8];
+    float tco1[8];
+
+
+
+// Perform the actual drawing.
+
+// For some reason, glDrawElements is busted on Android
+// So we do this a hard ugly way, drawing two triangles...
+#if 0
+    GLushort indices1[] = {0,1,3,2};
+    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
+#else
+
+    co1[0] = coords[0];
+    co1[1] = coords[1];
+    co1[2] = coords[2];
+    co1[3] = coords[3];
+    co1[4] = coords[6];
+    co1[5] = coords[7];
+    co1[6] = coords[4];
+    co1[7] = coords[5];
+
+    tco1[0] = uv[0];
+    tco1[1] = uv[1];
+    tco1[2] = uv[2];
+    tco1[3] = uv[3];
+    tco1[4] = uv[6];
+    tco1[5] = uv[7];
+    tco1[6] = uv[4];
+    tco1[7] = uv[5];
+
+#endif
+    shader->SetAttributePointerf("aPos", co1);
+    shader->SetAttributePointerf("aUV", tco1);
+
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    shader->UnBind();
+
+#if 0
       glUseProgram(texture_2D_shader_program);
 
       // Get pointers to the attributes in the program.
@@ -2136,7 +2331,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
       glUseProgram(0);
-
+#endif
 #endif
 
 #endif

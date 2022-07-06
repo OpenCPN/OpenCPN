@@ -58,7 +58,7 @@
 
 #include "gshhs.h"
 #include "chartbase.h"  // for projections
-//#include "wx28compat.h"
+#include "shaders.h"
 
 #ifdef __WXMSW__
 #define __CALL_CONVENTION  //__stdcall
@@ -543,6 +543,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
   mat4x4_translate_in_place(mvp, -vp.pix_width / 2, vp.pix_height / 2, 0);
 
   if (glChartCanvas::HasNormalizedViewPort(vp)) {
+#if 0
     GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), *pv);
     glEnableVertexAttribArray(pos);
@@ -556,7 +557,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
 
     glUseProgram(color_tri_shader_program);
     glDrawArrays(GL_TRIANGLES, 0, *pvc);
-
+#endif
   } else {
     float *pvt = new float[2 * (*pvc)];
     for (int i = 0; i < *pvc; i++) {
@@ -566,68 +567,26 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
       pvt[(i * 2) + 1] = q.m_y;
     }
 
-    glUseProgram(color_tri_shader_program);
-
-    GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
-    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pvt);
-    glEnableVertexAttribArray(pos);
-
-    //         mat4x4 m, mvp;
-    //         mat4x4_identity(m);
-    //         mat4x4_scale_aniso(mvp, m, 2.0 / (float)vp.pix_width, -2.0 /
-    //         (float)vp.pix_height, 1.0); mat4x4_translate_in_place(mvp,
-    //         (float)-vp.pix_width/2, (float)-vp.pix_height/2, 0);
-    //        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)mvp);
-
-    //GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-    //glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)vp.vp_transform);
-
-//     mat4x4 m;
-//     mat4x4_identity(m);
-//     GLint tmatloc = glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
-//     glUniformMatrix4fv(tmatloc, 1, GL_FALSE, (const GLfloat*)m);
-
-    //GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-    //glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)m);
+    GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+    shader->Bind();
 
     float colorv[4];
     colorv[0] = color.Red() / float(256);
     colorv[1] = color.Green() / float(256);
     colorv[2] = color.Blue() / float(256);
     colorv[3] = 1.0;
+    shader->SetUniform4fv("color", colorv);
 
-    GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
-    glUniform4fv(colloc, 1, colorv);
-
-    // qDebug() << "colortri" << matloc << colloc;
+    shader->SetAttributePointerf("position", pvt);
 
     glDrawArrays(GL_TRIANGLES, 0, *pvc);
+
     delete[] pvt;
     glDeleteBuffers(1, &vbo);
-    glUseProgram(0);
-
+    shader->UnBind();
   }
 
 #else
-  glColor3ub(color.Red(), color.Green(), color.Blue());
-
-  if (glChartCanvas::HasNormalizedViewPort(vp)) {
-    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), *pv);
-    glDrawArrays(GL_TRIANGLES, 0, *pvc);
-  } else {
-    float_2Dpt *pvt = new float_2Dpt[*pvc];
-    for (int i = 0; i < *pvc; i++) {
-      float_2Dpt *pc = *pv + i;
-      wxPoint2DDouble q = vp.GetDoublePixFromLL(pc->y, pc->x);
-      pvt[i].x = q.m_y;
-      pvt[i].y = q.m_x;
-    }
-
-    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), pvt);
-    glDrawArrays(GL_TRIANGLES, 0, *pvc);
-
-    delete[] pvt;
-  }
 #endif
 }
 #endif  //#ifdef ocpnUSE_GL

@@ -2752,21 +2752,10 @@ void beginCallbackD_GLSL(GLenum mode) {
 }
 
 void endCallbackD_GLSL() {
-  glUseProgram(color_tri_shader_program);
+  GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+  shader->Bind();
 
-  // Disable VBO's (vertex buffer objects) for attributes.
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  float *bufPt = &s_tess_work_buf[s_tess_vertex_idx_this];
-
-  GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
-  glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), bufPt);
-  glEnableVertexAttribArray(pos);
-
-  GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-  glUniformMatrix4fv(matloc, 1, GL_FALSE,
-                     (const GLfloat *)s_tessVP.vp_transform);
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_transform);
 
   // Use color stored in static variable.
   float colorv[4];
@@ -2774,11 +2763,14 @@ void endCallbackD_GLSL() {
   colorv[1] = s_regionColor.Green() / float(256);
   colorv[2] = s_regionColor.Blue() / float(256);
   colorv[3] = s_regionColor.Alpha() / float(256);
+  shader->SetUniform4fv("color", colorv);
 
-  GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
-  glUniform4fv(colloc, 1, colorv);
+  float *bufPt = &s_tess_work_buf[s_tess_vertex_idx_this];
+  shader->SetAttributePointerf("position", bufPt);
 
   glDrawArrays(s_tess_mode, 0, s_nvertex);
+
+  shader->UnBind();
 }
 #else
 void vertexCallbackD(GLvoid *vertex) { glVertex3dv((GLdouble *)vertex); }
@@ -3588,16 +3580,16 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
     if (!world_view) {
       int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-      glUseProgram(color_tri_shader_program);
+
+      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      shader->Bind();
 
       float colorv[4];
       colorv[0] = water.Red() / float(256);
       colorv[1] = water.Green() / float(256);
       colorv[2] = water.Blue() / float(256);
       colorv[3] = 1.0;
-
-      GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
-      glUniform4fv(colloc, 1, colorv);
+      shader->SetUniform4fv("color", colorv);
 
       float pf[8];
       pf[0] = x2;
@@ -3608,12 +3600,11 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
       pf[5] = y1;
       pf[6] = x1;
       pf[7] = y2;
-
-      GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
-      glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pf);
-      glEnableVertexAttribArray(pos);
+      shader->SetAttributePointerf("position", pf);
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      shader->UnBind();
 
 #else
       glColor3ub(water.Red(), water.Green(), water.Blue());
@@ -5788,51 +5779,84 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 
 #endif
 
-    void glChartCanvas::configureShaders(ViewPort & vp) {
+void glChartCanvas::configureShaders(ViewPort & vp) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       mat4x4 I;
       mat4x4_identity(I);
 
       ViewPort *pvp = (ViewPort *)&vp;
 
-      glUseProgram(color_tri_shader_program);
-      GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE,
-                         (const GLfloat *)pvp->vp_transform);
-      GLint transloc =
-          glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+      shader->UnBind();
 
-      glUseProgram(texture_2D_shader_program);
-      matloc = glGetUniformLocation(texture_2D_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE,
-                         (const GLfloat *)pvp->vp_transform);
-      transloc =
-          glGetUniformLocation(texture_2D_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+//       glUseProgram(color_tri_shader_program);
+//       GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
+//       glUniformMatrix4fv(matloc, 1, GL_FALSE,
+//                          (const GLfloat *)pvp->vp_transform);
+//       GLint transloc =
+//           glGetUniformLocation(color_tri_shader_program, "TransformMatrix");
+//       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
-      glUseProgram(circle_filled_shader_program);
-      matloc = glGetUniformLocation(circle_filled_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE,
-                         (const GLfloat *)pvp->vp_transform);
-      transloc =
-          glGetUniformLocation(circle_filled_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+      GLint transloc;
+      GLint matloc;
 
-      glUseProgram(texture_2DA_shader_program);
-      matloc = glGetUniformLocation(texture_2DA_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE,
-                         (const GLfloat *)pvp->vp_transform);
-      transloc =
-          glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+//       glUseProgram(texture_2D_shader_program);
+//       matloc = glGetUniformLocation(texture_2D_shader_program, "MVMatrix");
+//       glUniformMatrix4fv(matloc, 1, GL_FALSE,
+//                          (const GLfloat *)pvp->vp_transform);
+//       transloc =
+//           glGetUniformLocation(texture_2D_shader_program, "TransformMatrix");
+//       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
-      glUseProgram(AALine_shader_program);
-      matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE,
-                         (const GLfloat *)pvp->vp_transform);
+      shader = ptexture_2D_shader_program[0];
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+      shader->UnBind();
 
-      glUseProgram(0);
+//       glUseProgram(circle_filled_shader_program);
+//       matloc = glGetUniformLocation(circle_filled_shader_program, "MVMatrix");
+//       glUniformMatrix4fv(matloc, 1, GL_FALSE,
+//                          (const GLfloat *)pvp->vp_transform);
+//       transloc =
+//           glGetUniformLocation(circle_filled_shader_program, "TransformMatrix");
+//       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+
+      shader = pcircle_filled_shader_program[0];
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+      shader->UnBind();
+
+
+//       glUseProgram(texture_2DA_shader_program);
+//       matloc = glGetUniformLocation(texture_2DA_shader_program, "MVMatrix");
+//       glUniformMatrix4fv(matloc, 1, GL_FALSE,
+//                          (const GLfloat *)pvp->vp_transform);
+//       transloc =
+//           glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
+//       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+
+      shader = ptexture_2DA_shader_program[0];
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+      shader->UnBind();
+
+      //glUseProgram(AALine_shader_program);
+      //matloc = glGetUniformLocation(AALine_shader_program, "MVMatrix");
+      //glUniformMatrix4fv(matloc, 1, GL_FALSE,
+      //                   (const GLfloat *)pvp->vp_transform);
+
+      shader = pAALine_shader_program[0];
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->UnBind();
+
+
 
 #endif
     }
@@ -6214,37 +6238,16 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
     return;
   }
 
-  void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
+void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
                                           ViewPort *vp, float dx, float dy,
                                           float angle_rad) {
-//#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-    // build_texture_shaders();
-    glUseProgram(texture_2D_shader_program);
+    GLShaderProgramA *shader = ptexture_2D_shader_program[0];
+    shader->Bind();
 
-    // Get pointers to the attributes in the program.
-    GLint mPosAttrib = glGetAttribLocation(texture_2D_shader_program, "aPos");
-    GLint mUvAttrib = glGetAttribLocation(texture_2D_shader_program, "aUV");
-
-    // Set up the texture sampler to texture unit 0
-    GLint texUni = glGetUniformLocation(texture_2D_shader_program, "uTex");
-    glUniform1i(texUni, 0);
-
-    // Disable VBO's (vertex buffer objects) for attributes.
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // Set the attribute mPosAttrib with the vertices in the screen
-    // coordinates...
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
-    // ... and enable it.
-    glEnableVertexAttribArray(mPosAttrib);
-
-    // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-    glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uvCoords);
-    // ... and enable it.
-    glEnableVertexAttribArray(mUvAttrib);
+   // Set up the texture sampler to texture unit 0
+    shader->SetUniform1i("uTex", 0);
 
     // Rotate
     mat4x4 I, Q;
@@ -6255,18 +6258,14 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
     Q[3][0] = dx;
     Q[3][1] = dy;
 
-    // mat4x4 X;
-    // mat4x4_mul(X, (float (*)[4])vp->vp_transform, Q);
+    shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
 
-    GLint matloc =
-        glGetUniformLocation(texture_2D_shader_program, "TransformMatrix");
-    glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+    float co1[8];
+    float tco1[8];
 
-    // Select the active texture unit.
-    glActiveTexture(GL_TEXTURE0);
+    shader->SetAttributePointerf("aPos", co1);
+    shader->SetAttributePointerf("aUV", tco1);
 
-// Bind our texture to the texturing target.
-// glBindTexture( GL_TEXTURE_2D, tex );
 
 // Perform the actual drawing.
 
@@ -6277,7 +6276,6 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
 #else
 
-    float co1[8];
     co1[0] = coords[0];
     co1[1] = coords[1];
     co1[2] = coords[2];
@@ -6287,7 +6285,6 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
     co1[6] = coords[4];
     co1[7] = coords[5];
 
-    float tco1[8];
     tco1[0] = uvCoords[0];
     tco1[1] = uvCoords[1];
     tco1[2] = uvCoords[2];
@@ -6297,73 +6294,50 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
     tco1[6] = uvCoords[4];
     tco1[7] = uvCoords[5];
 
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
-    glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
+    //glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
+    //glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    glUseProgram(0);
+    shader->UnBind();
 
 #endif
 
 #else
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-  glPushMatrix();
-  glTranslatef(dx, dy, 0);
-  glRotatef(180 / PI * angle_rad, 0, 0, 1);
-
-  glTexCoordPointer(2, GL_FLOAT, 2 * sizeof(GLfloat), uvCoords);
-  glVertexPointer(2, GL_FLOAT, 2 * sizeof(GLfloat), coords);
-  glDrawArrays(GL_QUADS, 0, 4);
-  glPopMatrix();
-
 #endif
 
     return;
   }
 
-  void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
+void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-    glUseProgram(color_tri_shader_program);
 
-    float pf[8];
-    pf[0] = r.x + r.width;
-    pf[1] = r.y;
-    pf[2] = r.x;
-    pf[3] = r.y;
-    pf[4] = r.x + r.width;
-    pf[5] = r.y + r.height;
-    pf[6] = r.x;
-    pf[7] = r.y + r.height;
+      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      shader->Bind();
 
-    GLint pos = glGetAttribLocation(color_tri_shader_program, "position");
-    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pf);
-    glEnableVertexAttribArray(pos);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_pParentCanvas->GetpVP()->vp_transform);
 
-    GLint matloc = glGetUniformLocation(color_tri_shader_program, "MVMatrix");
-    glUniformMatrix4fv(
-        matloc, 1, GL_FALSE,
-        (const GLfloat *)m_pParentCanvas->GetpVP()->vp_transform);
+      float colorv[4];
+      colorv[0] = color.Red() / float(256);
+      colorv[1] = color.Green() / float(256);
+      colorv[2] = color.Blue() / float(256);
+      colorv[3] = 1.0;
+      shader->SetUniform4fv("color", colorv);
 
-    float colorv[4];
-    colorv[0] = color.Red() / float(256);
-    colorv[1] = color.Green() / float(256);
-    colorv[2] = color.Blue() / float(256);
-    colorv[3] = 1.0;
+      float pf[8];
+      pf[0] = r.x + r.width;
+      pf[1] = r.y;
+      pf[2] = r.x;
+      pf[3] = r.y;
+      pf[4] = r.x + r.width;
+      pf[5] = r.y + r.height;
+      pf[6] = r.x;
+      pf[7] = r.y + r.height;
+      shader->SetAttributePointerf("position", pf);
 
-    GLint colloc = glGetUniformLocation(color_tri_shader_program, "color");
-    glUniform4fv(colloc, 1, colorv);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    //            pf[0] = r.x; pf[1] = r.y; pf[2] = r.x + r.width; pf[3] = r.y +
-    //            r.height; pf[4] = r.x; pf[5] = r.y + r.height;
-
-    //            glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE,
-    //            2*sizeof(float), pf); glEnableVertexAttribArray(pos);
-    //            glDrawArrays(GL_TRIANGLES, 0, 3);
+      shader->UnBind();
 
 #else
   glColor3ub(color.Red(), color.Green(), color.Blue());
@@ -6377,7 +6351,7 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 #endif
   }
 
-  void glChartCanvas::RenderScene(bool bRenderCharts, bool bRenderOverlays) {
+void glChartCanvas::RenderScene(bool bRenderCharts, bool bRenderOverlays) {
     // qDebug() << "RenderScene";
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)

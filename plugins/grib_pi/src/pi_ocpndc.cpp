@@ -2010,14 +2010,14 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       coords[6] = 0;
       coords[7] = h;
 
-      glUseProgram(texture_2D_shader_program);
+      glUseProgram(pi_texture_2D_shader_program);
 
       // Get pointers to the attributes in the program.
-      GLint mPosAttrib = glGetAttribLocation(texture_2D_shader_program, "aPos");
-      GLint mUvAttrib = glGetAttribLocation(texture_2D_shader_program, "aUV");
+      GLint mPosAttrib = glGetAttribLocation(pi_texture_2D_shader_program, "aPos");
+      GLint mUvAttrib = glGetAttribLocation(pi_texture_2D_shader_program, "aUV");
 
       // Set up the texture sampler to texture unit 0
-      GLint texUni = glGetUniformLocation(texture_2D_shader_program, "uTex");
+      GLint texUni = glGetUniformLocation(pi_texture_2D_shader_program, "uTex");
       glUniform1i(texUni, 0);
 
       // Disable VBO's (vertex buffer objects) for attributes.
@@ -2046,7 +2046,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       Q[3][1] = y;
 
       GLint matloc =
-          glGetUniformLocation(texture_2D_shader_program, "TransformMatrix");
+          glGetUniformLocation(pi_texture_2D_shader_program, "TransformMatrix");
       glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
 
       // Select the active texture unit.
