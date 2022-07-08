@@ -147,6 +147,7 @@ static const GLchar* AALine_vertex_shader_source =
 
 
 static const GLchar* AALine_fragment_shader_source =
+    "precision mediump float;\n"
     "uniform float uLineWidth;\n"
     "uniform vec4 color;\n"
     "uniform float uBlendFactor; //1.5..2.5\n"
