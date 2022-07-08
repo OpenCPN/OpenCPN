@@ -34,6 +34,7 @@
 #include <memory>
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 
 class GLShaderProgram;
 
@@ -103,25 +104,24 @@ public:
     void Bind() { glUseProgram(programId_); }
     void UnBind() { glUseProgram(0); }
 
-    void SetUniform1f( const char *name, float value) {
-        GLint loc = glGetUniformLocation(programId_, name);
+    void SetUniform1f( const std::string &name, float value) {
+        GLint loc = getUniformLocation(name);
         glUniform1f( loc, value);
     }
-    void SetUniform2fv( const char *name, float *value) {
-        GLint loc = glGetUniformLocation(programId_, name);
+    void SetUniform2fv( const std::string &name, float *value) {
+        GLint loc = getUniformLocation(name);
         glUniform2fv( loc, 1, value);
     }
-    void SetUniform4fv( const char *name, float *value) {
-        GLint loc = glGetUniformLocation(programId_, name);
+    void SetUniform4fv( const std::string &name, float *value) {
+        GLint loc = getUniformLocation(name);
         glUniform4fv( loc, 1, value);
     }
-    void SetUniform1i( const char *name, GLint value) {
-        GLint loc = glGetUniformLocation(programId_, name);
+    void SetUniform1i( const std::string &name, GLint value) {
+        GLint loc = getUniformLocation(name);
         glUniform1i( loc, value);
     }
-
-    void SetUniformMatrix4fv( const char *name, float *value) {
-      GLint matloc = glGetUniformLocation(programId_, name);
+    void SetUniformMatrix4fv( const std::string &name, float *value) {
+      GLint matloc = getUniformLocation(name);
       glUniformMatrix4fv(matloc, 1, GL_FALSE, value);
     }
 
@@ -143,10 +143,20 @@ public:
     bool isOK() const { return linked_; }
 
 private:
+    std::unordered_map<std::string, GLint> m_uniformLocationCache;
     GLuint programId_;
     bool linked_;
     GLint success;
     GLint linkSuccess;
+
+    GLint getUniformLocation(const std::string &name) {
+      if(m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
+        return m_uniformLocationCache[name];
+
+      GLint loc = glGetUniformLocation(programId_, name.c_str());
+      m_uniformLocationCache[name] = loc;
+      return loc;
+    }
 
 };
 
