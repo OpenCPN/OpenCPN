@@ -216,7 +216,7 @@ private:
   short mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
   // Prio: Pos from O, SK gnss.satellites, GGA sats in use, SK gnss
   // satellitesinView, GSV sats in view
-  short mPriSatUsed;
+  short mPriSatUsed, mPriAlt;
   double mVar;
   // FFU
   int mSatsInView;
@@ -242,6 +242,7 @@ private:
   int mMDA_Watchdog;
   int mPITCH_Watchdog;
   int mHEEL_Watchdog;
+  int mALT_Watchdog;
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;
