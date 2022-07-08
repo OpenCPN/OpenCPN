@@ -48,7 +48,6 @@ class ChartCanvas;
 #define GESTURE_EVENT_TIMER 78334
 #define ZOOM_TIMER 78335
 #define GESTURE_FINISH_TIMER 78336
-#define TEX_FADE_TIMER 78337
 
 class OCPN_GLCaps {
 public:
@@ -226,10 +225,6 @@ protected:
 
   void RendertoTexture(GLint tex);
 
-  void fboFade(GLint tex0, GLint tex1);
-  void onFadeTimerEvent(wxTimerEvent &event);
-  bool m_inFade;
-
   wxGLContext *m_pcontext;
 
   ocpnDC m_gldc;
@@ -300,8 +295,6 @@ protected:
   bool m_bpinchGuard;
   wxPoint m_pinchStart;
   double m_pinchlat, m_pinchlon;
-
-  wxTimer m_fadeTimer;
 
   OCPNRegion m_canvasregion;
   TexFont m_gridfont;

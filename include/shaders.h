@@ -35,32 +35,23 @@
 #include <vector>
 #include <fstream>
 
-class GLShaderProgramA;
+class GLShaderProgram;
 
-//extern GLint color_tri_shader_program;
-//extern GLint texture_2D_shader_program;
-//extern GLint circle_filled_shader_program;
-//extern GLint texture_2DA_shader_program;
-extern GLint fade_texture_2D_shader_program;
-extern GLint FBO_texture_2D_shader_program;
-
-extern GLShaderProgramA *pAALine_shader_program[2];
-extern GLShaderProgramA *pcolor_tri_shader_program[2];
-extern GLShaderProgramA *ptexture_2D_shader_program[2];
-extern GLShaderProgramA *pfade_texture_2D_shader_program[2];
-extern GLShaderProgramA *pcircle_filled_shader_program[2];
-extern GLShaderProgramA *pFBO_texture_2D_shader_program[2];
-extern GLShaderProgramA *ptexture_2DA_shader_program[2];
+extern GLShaderProgram *pAALine_shader_program[2];
+extern GLShaderProgram *pcolor_tri_shader_program[2];
+extern GLShaderProgram *ptexture_2D_shader_program[2];
+extern GLShaderProgram *pcircle_filled_shader_program[2];
+extern GLShaderProgram *ptexture_2DA_shader_program[2];
 
 extern const GLchar* preamble;
 
-class GLShaderProgramA
+class GLShaderProgram
 {
 public:
-    GLShaderProgramA() : programId_(0), linked_(false) {
+    GLShaderProgram() : programId_(0), linked_(false) {
       programId_ = glCreateProgram();
     }
-    ~GLShaderProgramA() { }
+    ~GLShaderProgram() { }
 
     bool addShaderFromSource(std::string const &shaderSource, GLenum shaderType) {
       char const *shaderCStr = shaderSource.c_str();
@@ -152,7 +143,6 @@ public:
     bool isOK() const { return linked_; }
 
 private:
-    //GLShaderProgram(GLuint programId) : programId_(programId) { }
     GLuint programId_;
     bool linked_;
     GLint success;

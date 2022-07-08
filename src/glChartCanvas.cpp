@@ -340,7 +340,6 @@ void glChartCanvas::Init() {
 
   m_tideTex = 0;
   m_currentTex = 0;
-  m_inFade = false;
 
   m_gldc.SetGLCanvas(this);
 
@@ -383,11 +382,11 @@ void glChartCanvas::Init() {
   zoomTimer.SetOwner(this, ZOOM_TIMER);
 
 #ifdef USE_ANDROID_GLES2
-  Connect(
-      TEX_FADE_TIMER, wxEVT_TIMER,
-      (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::onFadeTimerEvent,
-      NULL, this);
-  m_fadeTimer.SetOwner(this, TEX_FADE_TIMER);
+//   Connect(
+//       TEX_FADE_TIMER, wxEVT_TIMER,
+//       (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::onFadeTimerEvent,
+//       NULL, this);
+//   m_fadeTimer.SetOwner(this, TEX_FADE_TIMER);
 #endif
 
   m_bgestureGuard = false;
@@ -2752,7 +2751,7 @@ void beginCallbackD_GLSL(GLenum mode) {
 }
 
 void endCallbackD_GLSL() {
-  GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+  GLShaderProgram *shader = pcolor_tri_shader_program[0];
   shader->Bind();
 
   shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_transform);
@@ -3581,7 +3580,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
       int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      GLShaderProgram *shader = pcolor_tri_shader_program[0];
       shader->Bind();
 
       float colorv[4];
@@ -3872,8 +3871,6 @@ void glChartCanvas::Render() {
 #ifdef USE_ANDROID_GLES2
 
   OCPNStopWatch sw;
-
-  if (m_inFade) return;
 
   if (m_binPinch) return;
 
@@ -4285,52 +4282,19 @@ void glChartCanvas::Render() {
           coords[6] = -dx;
           coords[7] = dy + sy;
 
-          glUseProgram(FBO_texture_2D_shader_program);
-
-          // Get pointers to the attributes in the program.
-          GLint mPosAttrib =
-              glGetAttribLocation(FBO_texture_2D_shader_program, "aPos");
-          GLint mUvAttrib =
-              glGetAttribLocation(FBO_texture_2D_shader_program, "aUV");
+          GLShaderProgram *shader = ptexture_2D_shader_program[0];
+          shader->Bind();
 
           // Set up the texture sampler to texture unit 0
-          GLint texUni =
-              glGetUniformLocation(FBO_texture_2D_shader_program, "uTex");
-          glUniform1i(texUni, 0);
+          shader->SetUniform1i("uTex", 0);
 
-          // Disable VBO's (vertex buffer objects) for attributes.
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-          // Set the attribute mPosAttrib with the vertices in the screen
-          // coordinates...
-          glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
-          // ... and enable it.
-          glEnableVertexAttribArray(mPosAttrib);
-
-          // Set the attribute mUvAttrib with the vertices in the GL
-          // coordinates...
-          glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv);
-          // ... and enable it.
-          glEnableVertexAttribArray(mUvAttrib);
-
-          GLint matloc =
-              glGetUniformLocation(FBO_texture_2D_shader_program, "MVMatrix");
-
-          mat4x4 m, mvp;
-
+          mat4x4 m, mvp, I;
           mat4x4_identity(m);
           mat4x4_scale_aniso(mvp, m, 2.0 / (float)sx, 2.0 / (float)sy, 1.0);
           mat4x4_translate_in_place(mvp, -(float)sx / 2, -(float)sy / 2, 0);
-
-          glUniformMatrix4fv(matloc, 1, GL_FALSE, (const float *)mvp);
-
-          // Select the active texture unit.
-          glActiveTexture(GL_TEXTURE0);
-          // Bind our texture to the texturing unit target.
-          glBindTexture(GL_TEXTURE_2D, m_cache_tex[!m_cache_page]);
-
-          // Perform the actual drawing.
+          shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)mvp);
+          mat4x4_identity(I);
+          shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
 
           float co1[8];
           co1[0] = coords[0];
@@ -4352,13 +4316,16 @@ void glChartCanvas::Render() {
           tco1[6] = uv[4];
           tco1[7] = uv[5];
 
-          glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
-          glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
+          shader->SetAttributePointerf("aPos", co1);
+          shader->SetAttributePointerf("aUV", tco1);
 
           glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-          glBindTexture(g_texture_rectangle_format, 0);
 
-          glUseProgram(0);
+          // restore the shader matrix
+          shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)VPoint.vp_transform);
+
+          shader->UnBind();
+          glBindTexture(g_texture_rectangle_format, 0);
 
 
 #endif
@@ -4497,9 +4464,7 @@ void glChartCanvas::Render() {
     coords[6] = 0;
     coords[7] = sy;
 
-    if (!m_inFade) {
-      RenderTextures(coords, uv, 4, m_pParentCanvas->GetpVP());
-    }
+    RenderTextures(coords, uv, 4, m_pParentCanvas->GetpVP());
 
 #endif
 #endif
@@ -5362,31 +5327,11 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event) {
     if (m_zoomFinal) {
       // qDebug() << "onZoomTimerEvent FINALZOOM" << m_zoomFinalZoom;
 
-      if (m_zoomFinalZoom > 1) m_inFade = true;
-
       m_pParentCanvas->ZoomCanvas(m_zoomFinalZoom, false);
 
       if (m_zoomFinaldx || m_zoomFinaldy) {
         m_pParentCanvas->PanCanvas(m_zoomFinaldx, m_zoomFinaldy);
       }
-
-      if (m_zoomFinalZoom > 1) {  //  only fade on ZIN
-
-        if ((quiltHash != m_pParentCanvas->m_pQuilt->GetXStackHash()) ||
-            (refChartIndex !=
-             m_pParentCanvas->m_pQuilt->GetRefChartdbIndex())) {
-          // Make next full render happen on new page.
-          m_cache_page = !m_cache_page;
-
-          RenderScene();
-
-          // qDebug() << "fboFade()";
-          fboFade(m_cache_tex[0], m_cache_tex[1]);
-        } else
-          m_inFade = false;
-
-      } else
-        m_inFade = false;
     }
     m_zoomFinal = false;
   }
@@ -5637,13 +5582,10 @@ void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
           float dx = pinchPoint.x - m_lpinchPoint.x;
           float dy = pinchPoint.y - m_lpinchPoint.y;
 
-          if (!m_inFade) {
-            if ((projected_scale > max_zoom_scale) &&
+          if ((projected_scale > max_zoom_scale) &&
                 (projected_scale < min_zoom_scale))
               FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y,
                        -dx / total_zoom_val, dy / total_zoom_val);
-          } else
-            qDebug() << "Skip fastzoom on zin";
 
           m_lpinchPoint = pinchPoint;
 
@@ -5690,12 +5632,6 @@ void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
       dx = (cc_x - m_cc_x) * tzoom;
       dy = -(cc_y - m_cc_y) * tzoom;
 
-      if (m_inFade) {
-        qDebug() << "Fade interrupt";
-        m_binPinch = false;
-        m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
-        break;
-      }
 
       if (zoomTimer.IsRunning()) {
         //                qDebug() << "Final zoom";
@@ -5786,7 +5722,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       ViewPort *pvp = (ViewPort *)&vp;
 
-      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      GLShaderProgram *shader = pcolor_tri_shader_program[0];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
@@ -5861,355 +5797,8 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 #endif
     }
 
-  GLint m_fadeTexOld;
-  GLint m_fadeTexNew;
-  float m_fadeFactor;
-  int n_fade;
-  unsigned int s_cachepage;
 
-  void glChartCanvas::onFadeTimerEvent(wxTimerEvent & event) {
-#ifdef USE_ANDROID_GLES2
-    //     if(m_cache_page != s_cachepage)
-    //         qDebug() << "CACHE PAGE lost";
-
-    if (m_fadeFactor < 0.2) m_fadeFactor = 0;
-
-    // qDebug() << "fade" << m_fadeFactor << m_cache_page << n_fade;
-
-    SetCurrent(*m_pcontext);
-
-    int sx = GetSize().x;
-    int sy = GetSize().y;
-
-    float coords[8];
-    float uv[8];
-
-    float divx, divy;
-    //  Normalize, or not?
-    if (GL_TEXTURE_RECTANGLE_ARB == g_texture_rectangle_format) {
-      divx = divy = 1.0f;
-    } else {
-      divx = m_cache_tex_x;
-      divy = m_cache_tex_y;
-    }
-
-    ///    ZoomProject(m_runoffsetx, m_runoffsety, m_runswidth, m_runsheight);
-
-    ///
-    ///    tx = 1, ty = 1;
-
-    ///    tx0 = ty0 = 0.;
-
-    float tx0 = m_runoffsetx;
-    float ty0 = m_runoffsety;
-    float tx = m_runoffsetx + m_runswidth;
-    float ty = m_runoffsety + m_runsheight;
-
-    float vx0 = 0;
-    float vy0 = 0;
-    float vy = sy;
-    float vx = sx;
-
-    // pixels
-    coords[0] = vx0;
-    coords[1] = vy0;
-    coords[2] = vx;
-    coords[3] = vy0;
-    coords[4] = vx;
-    coords[5] = vy;
-    coords[6] = vx0;
-    coords[7] = vy;
-
-    // uv coordinates for first texture
-    uv[0] = tx0 / m_cache_tex_x;
-    uv[1] = ty / m_cache_tex_y;
-    uv[2] = tx / m_cache_tex_x;
-    uv[3] = ty / m_cache_tex_y;
-    uv[4] = tx / m_cache_tex_x;
-    uv[5] = ty0 / m_cache_tex_y;
-    uv[6] = tx0 / m_cache_tex_x;
-    uv[7] = ty0 / m_cache_tex_y;
-
-    // uv coordinates for second texture
-    float tx02 = m_fbo_offsetx / divx;
-    float ty02 = m_fbo_offsety / divy;
-    float tx2 = (m_fbo_offsetx + m_fbo_swidth) / divx;
-    float ty2 = (m_fbo_offsety + m_fbo_sheight) / divy;
-
-    // normal uv
-    float uv2[8];
-    uv2[0] = tx02;
-    uv2[1] = ty2;
-    uv2[2] = tx2;
-    uv2[3] = ty2;
-    uv2[4] = tx2;
-    uv2[5] = ty02;
-    uv2[6] = tx02;
-    uv2[7] = ty02;
-
-    ///
-
-    //     float tx0 = m_fbo_offsetx/divx;
-    //     float ty0 = m_fbo_offsety/divy;
-    //     float tx =  (m_fbo_offsetx + m_fbo_swidth)/divx;
-    //     float ty =  (m_fbo_offsety + m_fbo_sheight)/divy;
-    //
-    //     //normal uv
-    //     uv[0] = tx0; uv[1] = ty; uv[2] = tx; uv[3] = ty;
-    //     uv[4] = tx; uv[5] = ty0; uv[6] = tx0; uv[7] = ty0;
-    //
-    //     // pixels
-    //     coords[0] = 0; coords[1] = 0; coords[2] = sx; coords[3] = 0;
-    //     coords[4] = sx; coords[5] = sy; coords[6] = 0; coords[7] = sy;
-
-    glEnable(GL_BLEND);
-
-    // glClearColor(0.f, 0.f, 0.f, 1.0f);
-    wxColour color = GetGlobalColor(_T ( "NODTA" ));
-    glClearColor(color.Red() / 256., color.Green() / 256., color.Blue() / 256.,
-                 1.0);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Render old texture using shader
-    glUseProgram(fade_texture_2D_shader_program);
-
-    // Get pointers to the attributes in the program.
-    GLint mPosAttrib =
-        glGetAttribLocation(fade_texture_2D_shader_program, "aPos");
-    GLint mUvAttrib =
-        glGetAttribLocation(fade_texture_2D_shader_program, "aUV");
-    GLint mUvAttrib2 =
-        glGetAttribLocation(fade_texture_2D_shader_program, "aUV2");
-
-    // Set up the texture sampler to texture unit 0
-    GLint texUni = glGetUniformLocation(fade_texture_2D_shader_program, "uTex");
-    glUniform1i(texUni, 0);
-
-    GLint texUni2 =
-        glGetUniformLocation(fade_texture_2D_shader_program, "uTex2");
-    glUniform1i(texUni2, 1);
-
-    // Disable VBO's (vertex buffer objects) for attributes.
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // Set the attribute mPosAttrib with the vertices in the screen
-    // coordinates...
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
-    // ... and enable it.
-    glEnableVertexAttribArray(mPosAttrib);
-
-    // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-    glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv);
-    // ... and enable it.
-    glEnableVertexAttribArray(mUvAttrib);
-
-    // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-    glVertexAttribPointer(mUvAttrib2, 2, GL_FLOAT, GL_FALSE, 0, uv2);
-    // ... and enable it.
-    glEnableVertexAttribArray(mUvAttrib2);
-
-    GLint matloc =
-        glGetUniformLocation(fade_texture_2D_shader_program, "MVMatrix");
-    glUniformMatrix4fv(
-        matloc, 1, GL_FALSE,
-        (const GLfloat *)(m_pParentCanvas->GetpVP()->vp_transform));
-
-    //     GLint transloc =
-    //     glGetUniformLocation(fade_texture_2D_shader_program,"trans"); float
-    //     colVec[4] = {1.0, 1.0, 1.0, 1.0}; colVec[3] = m_fadeFactor;
-    //     glUniform4fv( transloc, 1, colVec );
-
-    GLint alphaloc =
-        glGetUniformLocation(fade_texture_2D_shader_program, "texAlpha");
-    glUniform1f(alphaloc, m_fadeFactor);
-
-    // Select the active texture unit.
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(g_texture_rectangle_format, m_cache_tex[!m_cache_page]);
-
-    // Select the active texture unit.
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-
-// Perform the actual drawing.
-
-// For some reason, glDrawElements is busted on Android
-// So we do this a hard ugly way, drawing two triangles...
-#if 1
-    GLushort indices1[] = {0, 1, 3, 2};
-    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
-#else
-
-    float co1[8];
-    co1[0] = coords[0];
-    co1[1] = coords[1];
-    co1[2] = coords[2];
-    co1[3] = coords[3];
-    co1[4] = coords[6];
-    co1[5] = coords[7];
-    co1[6] = coords[4];
-    co1[7] = coords[5];
-
-    float tco1[8];
-    tco1[0] = uv[0];
-    tco1[1] = uv[1];
-    tco1[2] = uv[2];
-    tco1[3] = uv[3];
-    tco1[4] = uv[6];
-    tco1[5] = uv[7];
-    tco1[6] = uv[4];
-    tco1[7] = uv[5];
-
-    glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
-    glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-#endif
-
-#if 0
-    // Render new texture using shader
-    if(0){
-
-             float tx0 = m_fbo_offsetx/divx;
-             float ty0 = m_fbo_offsety/divy;
-             float tx =  (m_fbo_offsetx + m_fbo_swidth)/divx;
-             float ty =  (m_fbo_offsety + m_fbo_sheight)/divy;
-
-             //normal uv
-             uv[0] = tx0; uv[1] = ty; uv[2] = tx; uv[3] = ty;
-             uv[4] = tx; uv[5] = ty0; uv[6] = tx0; uv[7] = ty0;
-
-             // pixels
-             coords[0] = 0; coords[1] = 0; coords[2] = sx; coords[3] = 0;
-             coords[4] = sx; coords[5] = sy; coords[6] = 0; coords[7] = sy;
-
-        glUseProgram( fade_texture_2D_shader_program );
-
-        // Get pointers to the attributes in the program.
-        GLint mPosAttrib = glGetAttribLocation( fade_texture_2D_shader_program, "aPos" );
-        GLint mUvAttrib  = glGetAttribLocation( fade_texture_2D_shader_program, "aUV" );
-
-        // Set up the texture sampler to texture unit 0
-        GLint texUni = glGetUniformLocation( fade_texture_2D_shader_program, "uTex" );
-        glUniform1i( texUni, 0 );
-
-        // Disable VBO's (vertex buffer objects) for attributes.
-        glBindBuffer( GL_ARRAY_BUFFER, 0 );
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-        // Set the attribute mPosAttrib with the vertices in the screen coordinates...
-        glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
-        // ... and enable it.
-        glEnableVertexAttribArray( mPosAttrib );
-
-        // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-        glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
-        // ... and enable it.
-        glEnableVertexAttribArray( mUvAttrib );
-
-
-        GLint matloc = glGetUniformLocation(fade_texture_2D_shader_program,"MVMatrix");
-        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)(cc1->GetpVP()->vp_transform) );
-
-        GLint transloc = glGetUniformLocation(fade_texture_2D_shader_program,"trans");
-        float colVec[4] = {1.0, 1.0, 1.0, 1.0};
-        colVec[3] = 1.0 - m_fadeFactor;
-        glUniform4fv( transloc, 1, colVec );
-
-        // Select the active texture unit.
-        glActiveTexture( GL_TEXTURE0 );
-
-        // Bind our texture to the texturing target.
-        glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-
-
-        // Perform the actual drawing.
-
-        // For some reason, glDrawElements is busted on Android
-        // So we do this a hard ugly way, drawing two triangles...
-#if 1
-        GLushort indices1[] = {0,1,3,2};
-        glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
-#else
-        float co1[8];
-        co1[0] = coords[0];
-        co1[1] = coords[1];
-        co1[2] = coords[2];
-        co1[3] = coords[3];
-        co1[4] = coords[6];
-        co1[5] = coords[7];
-        co1[6] = coords[4];
-        co1[7] = coords[5];
-
-        float tco1[8];
-        tco1[0] = uv[0];
-        tco1[1] = uv[1];
-        tco1[2] = uv[2];
-        tco1[3] = uv[3];
-        tco1[4] = uv[6];
-        tco1[5] = uv[7];
-        tco1[6] = uv[4];
-        tco1[7] = uv[5];
-
-        glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
-        glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
-
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-#endif
-    }
-#endif
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(g_texture_rectangle_format, 0);
-
-    // Select the active texture unit.
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(g_texture_rectangle_format, 0);
-
-    m_pParentCanvas->GetPiano()->DrawGL(
-        m_pParentCanvas->m_canvas_height -
-        m_pParentCanvas->GetPiano()->GetHeight());
-
-    SwapBuffers();
-
-    n_fade++;
-
-    m_fadeFactor *= 0.8;
-    if (m_fadeFactor > 0.1) {
-      m_fadeTimer.Start(5, wxTIMER_ONE_SHOT);
-    } else {
-      // qDebug() << "fade DONE";
-      m_inFade = false;
-      m_pParentCanvas->GetPiano()->DrawGL(
-          m_pParentCanvas->m_canvas_height -
-          m_pParentCanvas->GetPiano()->GetHeight());
-
-      glDisable(GL_BLEND);
-
-      Refresh();
-    }
-
-#endif
-  }
-
-  void glChartCanvas::fboFade(GLint tex0, GLint tex1) {
-    // we have 2 FBO textures, and we want to fade between the two
-    m_fadeTexOld = tex0;
-    m_fadeTexNew = tex1;
-    m_fadeFactor = 1.0;
-    n_fade = 0;
-
-    s_cachepage = m_cache_page;
-
-    m_inFade = true;
-
-    // Start a timer
-    m_fadeTimer.Start(10, wxTIMER_ONE_SHOT);
-  }
-
-  void glChartCanvas::RenderTextures(float *coords, float *uvCoords,
+void glChartCanvas::RenderTextures(float *coords, float *uvCoords,
                                      int nVertex, ViewPort *vp) {
 //#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -6243,7 +5832,7 @@ void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
                                           float angle_rad) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-    GLShaderProgramA *shader = ptexture_2D_shader_program[0];
+    GLShaderProgram *shader = ptexture_2D_shader_program[0];
     shader->Bind();
 
    // Set up the texture sampler to texture unit 0
@@ -6312,7 +5901,7 @@ void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
 void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      GLShaderProgram *shader = pcolor_tri_shader_program[0];
       shader->Bind();
 
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_pParentCanvas->GetpVP()->vp_transform);
@@ -6352,7 +5941,6 @@ void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
   }
 
 void glChartCanvas::RenderScene(bool bRenderCharts, bool bRenderOverlays) {
-    // qDebug() << "RenderScene";
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 

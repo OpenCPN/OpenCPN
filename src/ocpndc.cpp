@@ -376,7 +376,7 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 #else
 
   // Set up the shader
-    GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+    GLShaderProgram *shader = pcolor_tri_shader_program[0];
     shader->Bind();
 
     wxColor c = pen.GetColour();
@@ -637,7 +637,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
     if (b_draw_thick)
       DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
-      GLShaderProgramA *shader = pAALine_shader_program[0];
+      GLShaderProgram *shader = pAALine_shader_program[0];
       shader->Bind();
 
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform);
@@ -1147,7 +1147,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
       drawrrhelperGLES2(x2, y2, r, 3, steps);
     }
 
-    GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+    GLShaderProgram *shader = pcolor_tri_shader_program[0];
     shader->Bind();
 
     float fcolorv[4];
@@ -1277,7 +1277,7 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
   coords[6] = x + radius;
   coords[7] = y - radius;
 
-  GLShaderProgramA *shader = pcircle_filled_shader_program[0];
+  GLShaderProgram *shader = pcircle_filled_shader_program[0];
   shader->Bind();
 
   shader->SetUniform1f("circle_radius", radius);
@@ -1461,7 +1461,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
     ConfigurePen();
 
     // Prepare the line rendering shader
-      GLShaderProgramA *shader = pAALine_shader_program[0];
+      GLShaderProgram *shader = pAALine_shader_program[0];
       shader->Bind();
 
       shader->SetUniform1f("uLineWidth", m_pen.GetWidth());
@@ -1523,7 +1523,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         workBuf[i * 2 + 1] = (points[i].y * scale);
       }
 
-      GLShaderProgramA *shader = pAALine_shader_program[0];
+      GLShaderProgram *shader = pAALine_shader_program[0];
       shader->Bind();
 
       shader->SetAttributePointerf("position", workBuf);
@@ -1552,7 +1552,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Draw the triangle fill
 
-      GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+      GLShaderProgram *shader = pcolor_tri_shader_program[0];
       shader->Bind();
 
       //  Fill color
@@ -1774,7 +1774,7 @@ void odc_endCallbackD_GLSL(void *data) {
 #if 1
   ocpnDC *pDC = (ocpnDC *)data;
 
-  GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+  GLShaderProgram *shader = pcolor_tri_shader_program[0];
   shader->Bind();
 
   float colorv[4];
@@ -2196,7 +2196,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       coords[6] = 0;
       coords[7] = h;
 
-    GLShaderProgramA *shader = ptexture_2D_shader_program[0];
+    GLShaderProgram *shader = ptexture_2D_shader_program[0];
     shader->Bind();
 
    // Set up the texture sampler to texture unit 0

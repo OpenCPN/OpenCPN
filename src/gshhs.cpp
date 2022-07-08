@@ -567,7 +567,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
       pvt[(i * 2) + 1] = q.m_y;
     }
 
-    GLShaderProgramA *shader = pcolor_tri_shader_program[0];
+    GLShaderProgram *shader = pcolor_tri_shader_program[0];
     shader->Bind();
 
     float colorv[4];

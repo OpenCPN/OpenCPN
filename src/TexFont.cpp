@@ -259,7 +259,7 @@ void TexFont::RenderGlyph(int c) {
   coords[6] = 0;
   coords[7] = h;
 
-  GLShaderProgramA *shader = ptexture_2DA_shader_program[0];
+  GLShaderProgram *shader = ptexture_2DA_shader_program[0];
   shader->Bind();
 
    // Set up the texture sampler to texture unit 0
