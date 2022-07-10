@@ -129,7 +129,7 @@ private:
   void DrawPolygonFilled(ocpnDC &pnt, contour_list *poly, double dx,
                          ViewPort &vp, wxColor const &color);
 #ifdef ocpnUSE_GL
-  void DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv, int *pvc,
+  void DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv, int *pvc,
                            ViewPort &vp, wxColor const &color, bool idl);
 #endif
   void DrawPolygonContour(ocpnDC &pnt, contour_list *poly, double dx,

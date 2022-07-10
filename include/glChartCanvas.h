@@ -35,6 +35,7 @@
 #include "viewport.h"
 #include "TexFont.h"
 #include "ocpndc.h"
+#include "chcanv.h"
 
 #define FORMAT_BITS GL_RGB
 
@@ -110,9 +111,9 @@ public:
                           bool g_clear = false);
   static void DisableClipRegion();
   void SetColorScheme(ColorScheme cs);
-  void RenderTextures(float *coords, float *uvCoords, int nVertex,
+  void RenderTextures(ocpnDC &dc, float *coords, float *uvCoords, int nVertex,
                       ViewPort *vp);
-  static void RenderSingleTexture(float *coords, float *uvCoords, ViewPort *vp,
+  static void RenderSingleTexture(ocpnDC &dc, float *coords, float *uvCoords, ViewPort *vp,
                                   float dx, float dy, float angle);
   void RenderColorRect(wxRect r, wxColor &color);
 
@@ -129,6 +130,7 @@ public:
 
   void Init();
   void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
+  int GetCanvasIndex() { return m_pParentCanvas->m_canvasIndex; }
 
   void OnPaint(wxPaintEvent &event);
   void OnEraseBG(wxEraseEvent &evt);
@@ -187,6 +189,7 @@ public:
 
   void SetupOpenGL();
   ChartCanvas *m_pParentCanvas;
+  ocpnDC m_gldc;
 
 protected:
   void RenderS57TextOverlay(ViewPort &VPoint);
@@ -226,8 +229,6 @@ protected:
   void RendertoTexture(GLint tex);
 
   wxGLContext *m_pcontext;
-
-  ocpnDC m_gldc;
 
   int max_texture_dimension;
 

@@ -409,7 +409,7 @@ void __CALL_CONVENTION gshhsbeginCallback(GLenum type) {
 
 void __CALL_CONVENTION gshhsendCallback() {}
 
-void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
+void GshhsPolyCell::DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv,
                                         int *pvc, ViewPort &vp,
                                         wxColor const &color, bool idl) {
   if (!p->size())  // size of 0 is very common, exit early
@@ -567,7 +567,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
       pvt[(i * 2) + 1] = q.m_y;
     }
 
-    GLShaderProgram *shader = pcolor_tri_shader_program[0];
+    GLShaderProgram *shader = pcolor_tri_shader_program[pnt.m_canvasIndex];
     shader->Bind();
 
     float colorv[4];
@@ -586,6 +586,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
     shader->UnBind();
   }
 
+
 #else
 #endif
 }
@@ -594,7 +595,7 @@ void GshhsPolyCell::DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv,
 #define DRAW_POLY_FILLED(POLY, COL) \
   if (POLY) DrawPolygonFilled(pnt, POLY, dx, vp, COL);
 #define DRAW_POLY_FILLED_GL(NUM, COL) \
-  DrawPolygonFilledGL(&poly##NUM, &polyv[NUM], &polyc[NUM], vp, COL, idl);
+  DrawPolygonFilledGL(pnt,&poly##NUM, &polyv[NUM], &polyc[NUM], vp, COL, idl);
 
 void GshhsPolyCell::drawMapPlain(ocpnDC &pnt, double dx, ViewPort &vp,
                                  wxColor seaColor, wxColor landColor,

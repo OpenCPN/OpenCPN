@@ -251,4 +251,17 @@ void unloadShaders() {
   bShadersLoaded[0] = bShadersLoaded[1] = false;
 }
 
+GLShaderProgram *GetStaticTriShader() {
+  GLShaderProgram *shaderProgram = new GLShaderProgram;
+  shaderProgram->addShaderFromSource(color_tri_vertex_shader_source, GL_VERTEX_SHADER);
+  shaderProgram->addShaderFromSource(color_tri_fragment_shader_source, GL_FRAGMENT_SHADER);
+  shaderProgram->linkProgram();
+
+  if (shaderProgram->isOK())
+    return shaderProgram;
+  else
+    return NULL;
+}
+
+
 #endif

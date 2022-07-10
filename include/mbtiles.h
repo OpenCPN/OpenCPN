@@ -57,6 +57,8 @@ namespace SQLite {
 class Database;
 }
 
+class GLShaderProgram;
+
 //-----------------------------------------------------------------------------
 //    Helper classes
 //-----------------------------------------------------------------------------
@@ -143,6 +145,8 @@ protected:
   SQLite::Database *m_pDB;
   int m_nTiles;
   std::string m_format;
+
+  GLShaderProgram *m_tile_shader_program;
 
 private:
   void InitFromTiles(const wxString &name);

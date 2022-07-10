@@ -920,7 +920,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
     coords[5] = ys + hs;
     coords[6] = xs, coords[7] = ys + hs;
 
-    glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+    glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
 #else
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1088,7 +1088,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
       coords[5] = y + h;
       coords[6] = x, coords[7] = y + h;
 
-      glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+      glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
 #endif
       glDisable(GL_BLEND);
@@ -1209,7 +1209,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
     coords[5] = ys + hs;
     coords[6] = xs, coords[7] = ys + hs;
 
-    glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+    glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
 #endif
     glDisable(GL_BLEND);

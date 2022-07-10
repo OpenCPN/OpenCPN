@@ -473,8 +473,9 @@ void Piano::DrawGL(int off) {
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   glEnable(GL_BLEND);
-  m_parentCanvas->GetglCanvas()->RenderTextures(coords, texcoords, vc / 2,
-                                                m_parentCanvas->GetpVP());
+  m_parentCanvas->GetglCanvas()->RenderTextures(
+    m_parentCanvas->GetglCanvas()->m_gldc,
+    coords, texcoords, vc / 2, m_parentCanvas->GetpVP());
   glDisable(GL_BLEND);
 
 #else

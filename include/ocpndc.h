@@ -50,16 +50,18 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 //----------------------------------------------------------------------------
 
 class wxGLCanvas;
+class glChartCanvas;
 
 class ocpnDC {
 public:
+  ocpnDC(glChartCanvas &canvas);
   ocpnDC(wxGLCanvas &canvas);
   ocpnDC(wxDC &pdc);
   ocpnDC();
 
   ~ocpnDC();
 
-  void SetGLCanvas(wxGLCanvas *canvas) { glcanvas = canvas; }
+  void SetGLCanvas(glChartCanvas *canvas);
   void SetBackground(const wxBrush &brush);
   void SetPen(const wxPen &pen);
   void SetBrush(const wxBrush &brush);
@@ -78,6 +80,10 @@ public:
                 bool b_hiqual = true);
   void DrawLines(int n, wxPoint points[], wxCoord xoffset = 0,
                  wxCoord yoffset = 0, bool b_hiqual = true);
+  void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
+                     bool b_hiqual);
+  void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
+                      wxPen pen, bool b_hiqual);
 
   void StrokeLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
   void StrokeLine(wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
@@ -130,6 +136,7 @@ public:
   GLUtesselator *m_tobj;
 
 #endif
+  int m_canvasIndex;
 
 protected:
   bool ConfigurePen();
@@ -141,7 +148,9 @@ protected:
   void drawrrhelperGLES2(wxCoord x0, wxCoord y0, wxCoord r, int quadrant,
                          int steps);
 
-  wxGLCanvas *glcanvas;
+  glChartCanvas *m_glchartCanvas;
+  wxGLCanvas *m_glcanvas;
+
   wxDC *dc;
   wxPen m_pen;
   wxBrush m_brush;

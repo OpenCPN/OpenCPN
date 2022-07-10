@@ -61,6 +61,7 @@
 #include "chart1.h"
 #include "chcanv.h"
 #include "glChartCanvas.h"
+#include "shaders.h"
 
 //  Missing from MSW include files
 #ifdef _MSC_VER
@@ -131,6 +132,28 @@ static const double OSM_zoomMPP[] = {
 
 static const double eps = 6e-6;  // about 1cm on earth's surface at equator
 extern MyFrame *gFrame;
+
+// Private tile shader source
+static const GLchar* tile_vertex_shader_source =
+    "attribute vec2 aPos;\n"
+    "attribute vec2 aUV;\n"
+    "uniform mat4 MVMatrix;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   gl_Position = MVMatrix * vec4(aPos, 0.0, 1.0);\n"
+    "   varCoord = aUV;\n"
+    "}\n";
+
+static const GLchar* tile_fragment_shader_source =
+    "precision lowp float;\n"
+    "uniform sampler2D uTex;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   gl_FragColor = texture2D(uTex, varCoord);\n"
+    "}\n";
+
+
+GLShaderProgram *g_tile_shader_program;
 
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -967,7 +990,59 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   coords[6] = p.m_x;
   coords[7] = p.m_y;
 
-  glChartCanvas::RenderSingleTexture(coords, texcoords, &vp, 0, 0, 0);
+  if (!g_tile_shader_program) {
+    GLShaderProgram *shaderProgram = new GLShaderProgram;
+    shaderProgram->addShaderFromSource(tile_vertex_shader_source, GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(tile_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->linkProgram();
+    g_tile_shader_program = shaderProgram;
+  }
+
+    GLShaderProgram *shader = g_tile_shader_program;
+    shader->Bind();
+
+   // Set up the texture sampler to texture unit 0
+    shader->SetUniform1i("uTex", 0);
+
+    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)vp.vp_transform);
+
+    float co1[8];
+    float tco1[8];
+
+    shader->SetAttributePointerf("aPos", co1);
+    shader->SetAttributePointerf("aUV", tco1);
+
+    // Perform the actual drawing.
+
+// For some reason, glDrawElements is busted on Android
+// So we do this a hard ugly way, drawing two triangles...
+#if 0
+    GLushort indices1[] = {0,1,3,2};
+    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
+#else
+
+    co1[0] = coords[0];
+    co1[1] = coords[1];
+    co1[2] = coords[2];
+    co1[3] = coords[3];
+    co1[4] = coords[6];
+    co1[5] = coords[7];
+    co1[6] = coords[4];
+    co1[7] = coords[5];
+
+    tco1[0] = texcoords[0];
+    tco1[1] = texcoords[1];
+    tco1[2] = texcoords[2];
+    tco1[3] = texcoords[3];
+    tco1[4] = texcoords[6];
+    tco1[5] = texcoords[7];
+    tco1[6] = texcoords[4];
+    tco1[7] = texcoords[5];
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#endif
+
+    shader->UnBind();
 
   glDisable(GL_BLEND);
 
@@ -995,7 +1070,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
     LLRegion validRegion = m_minZoomRegion;
     validRegion.Intersect(screenLLRegion);
     glChartCanvas::SetClipRegion(vp, validRegion);
-  } else
+  }
+  else
     glChartCanvas::SetClipRegion(vp, m_minZoomRegion);
 
   /* setup opengl parameters */

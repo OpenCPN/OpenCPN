@@ -231,6 +231,7 @@ GLenum s_tess_mode;
 static int s_nvertex;
 static vec4 s_tess_color;
 ViewPort s_tessVP;
+static ocpnDC *s_pdc;
 #endif
 
 #if 0
@@ -416,6 +417,7 @@ void glChartCanvas::Init() {
 #endif /* HAVE_WX_GESTURE_EVENTS */
 
   if (!g_glTextureManager) g_glTextureManager = new glTextureManager;
+
 }
 
 glChartCanvas::~glChartCanvas() {
@@ -478,17 +480,17 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 
 //#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-  //qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex
-  //         << m_pParentCanvas->m_canvas_width
-  //         << m_pParentCanvas->m_canvas_height;
+//qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex
+//         << m_pParentCanvas->m_canvas_width
+//         << m_pParentCanvas->m_canvas_height;
 
-  if (m_pParentCanvas->m_canvasIndex > 0) {
-    int xnew = gFrame->GetClientSize().x - m_pParentCanvas->m_canvas_width;
-    // qDebug() << "XNEW" << xnew;
-    // SetPosition(wxPoint(xnew, 0));
-    SetSize(xnew, 0, m_pParentCanvas->m_canvas_width,
-            m_pParentCanvas->m_canvas_height);
-  }
+//   if (m_pParentCanvas->m_canvasIndex > 0) {
+//     int xnew = gFrame->GetClientSize().x - m_pParentCanvas->m_canvas_width;
+//     // qDebug() << "XNEW" << xnew;
+//     // SetPosition(wxPoint(xnew, 0));
+//     SetSize(0/*xnew*/, 0, m_pParentCanvas->m_canvas_width,
+//             m_pParentCanvas->m_canvas_height);
+//   }
 
   //  Set the shader viewport transform matrix
   mat4x4 m;
@@ -1103,6 +1105,8 @@ void glChartCanvas::SetupOpenGL() {
 #ifdef __WXMSW__
     //m_b_DisableFBO = true;
 #endif
+
+  m_b_DisableFBO = true;
 
   //      Maybe build FBO(s)
   BuildFBO();
@@ -2419,7 +2423,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         coords[6] = -w / 2;
         coords[7] = h / 2;
 
-        RenderSingleTexture(coords, uv, m_pParentCanvas->GetpVP(), x, y,
+        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(), x, y,
                             icon_rad - PI / 2);
 
         glDisable(GL_TEXTURE_2D);
@@ -2459,7 +2463,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         coords[6] = -w / 2;
         coords[7] = h / 2;
 
-        RenderSingleTexture(coords, uv, m_pParentCanvas->GetpVP(), x, y,
+        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(), x, y,
                             icon_rad - PI / 2);
 
         glDisable(GL_TEXTURE_2D);
@@ -2711,6 +2715,8 @@ void glChartCanvas::RotateToViewPort(const ViewPort &vp) {
 #endif
 }
 
+GLShaderProgram *pStaticShader;
+
 static std::list<double *> combine_work_data;
 static void combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
                              GLfloat weight[4], GLdouble **dataOut) {
@@ -2751,7 +2757,32 @@ void beginCallbackD_GLSL(GLenum mode) {
 }
 
 void endCallbackD_GLSL() {
-  GLShaderProgram *shader = pcolor_tri_shader_program[0];
+  GLShaderProgram *shader = pStaticShader;
+  shader->Bind();
+
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_transform);
+
+  mat4x4 identityMatrix;
+  mat4x4_identity(identityMatrix);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)identityMatrix);
+
+  // Use color stored in static variable.
+  float colorv[4];
+  colorv[0] = s_regionColor.Red() / float(256);
+  colorv[1] = s_regionColor.Green() / float(256);
+  colorv[2] = s_regionColor.Blue() / float(256);
+  colorv[3] = s_regionColor.Alpha() / float(256);
+  shader->SetUniform4fv("color", colorv);
+
+  float *bufPt = &s_tess_work_buf[s_tess_vertex_idx_this];
+  shader->SetAttributePointerf("position", bufPt);
+
+  glDrawArrays(s_tess_mode, 0, s_nvertex);
+
+  shader->UnBind();
+
+#if 0
+  GLShaderProgram *shader = pcolor_tri_shader_program[s_pdc->m_canvasIndex];
   shader->Bind();
 
   shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_transform);
@@ -2770,6 +2801,7 @@ void endCallbackD_GLSL() {
   glDrawArrays(s_tess_mode, 0, s_nvertex);
 
   shader->UnBind();
+#endif
 }
 #else
 void vertexCallbackD(GLvoid *vertex) { glVertex3dv((GLdouble *)vertex); }
@@ -2784,6 +2816,9 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
   GetLatLonCurveDist(vp, lat_dist, lon_dist);
 
   GLUtesselator *tobj = gluNewTess();
+  if (!pStaticShader)
+    pStaticShader = GetStaticTriShader();
+
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   gluTessCallback(tobj, GLU_TESS_VERTEX, (_GLUfuncptr)&vertexCallbackD_GLSL);
@@ -2853,7 +2888,6 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
        i != combine_work_data.end(); i++)
     delete[] * i;
   combine_work_data.clear();
-  glUseProgram(0);
 }
 
 /* set stencil buffer to clip in this region, and optionally clear using the
@@ -3023,7 +3057,6 @@ void glChartCanvas::DisableClipRegion() {
 
 void glChartCanvas::Invalidate() {
   /* should probably use a different flag for this */
-
   m_cache_vp.Invalidate();
 }
 
@@ -3123,7 +3156,7 @@ void glChartCanvas::RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp,
       }
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-      RenderTextures(coords, tile->m_texcoords, 4, m_pParentCanvas->GetpVP());
+      RenderTextures(m_gldc, coords, tile->m_texcoords, 4, m_pParentCanvas->GetpVP());
 #else
       if (!texture) {  // failed to load, draw red
         glDisable(GL_TEXTURE_2D);
@@ -3580,7 +3613,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
       int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-      GLShaderProgram *shader = pcolor_tri_shader_program[0];
+      GLShaderProgram *shader = pcolor_tri_shader_program[GetCanvasIndex()];
       shader->Bind();
 
       float colorv[4];
@@ -3863,10 +3896,12 @@ void glChartCanvas::Render() {
   }
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-  loadShaders(0);
+  loadShaders(GetCanvasIndex());
   configureShaders(m_pParentCanvas->VPoint);
 #endif
 
+//   if (GetCanvasIndex() == 0)
+//     return;
 
 #ifdef USE_ANDROID_GLES2
 
@@ -4282,7 +4317,7 @@ void glChartCanvas::Render() {
           coords[6] = -dx;
           coords[7] = dy + sy;
 
-          GLShaderProgram *shader = ptexture_2D_shader_program[0];
+          GLShaderProgram *shader = ptexture_2D_shader_program[GetCanvasIndex()];
           shader->Bind();
 
           // Set up the texture sampler to texture unit 0
@@ -4478,7 +4513,7 @@ void glChartCanvas::Render() {
 
   } else  // useFBO
   {
-    RenderCharts(m_gldc, screen_region);
+      RenderCharts(m_gldc, screen_region);
   }
 
 #if 1
@@ -5107,7 +5142,7 @@ void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth,
   coords[6] = vx0;
   coords[7] = vy;
 
-  RenderTextures(coords, uv, 4, m_pParentCanvas->GetpVP());
+  RenderTextures(m_gldc, coords, uv, 4, m_pParentCanvas->GetpVP());
 
   //     glBegin( GL_QUADS );
   //     glTexCoord2f( tx0/m_cache_tex_x, ty/m_cache_tex_y );  glVertex2f( vx0,
@@ -5722,7 +5757,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       ViewPort *pvp = (ViewPort *)&vp;
 
-      GLShaderProgram *shader = pcolor_tri_shader_program[0];
+      GLShaderProgram *shader = pcolor_tri_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
@@ -5747,7 +5782,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 //           glGetUniformLocation(texture_2D_shader_program, "TransformMatrix");
 //       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
-      shader = ptexture_2D_shader_program[0];
+      shader = ptexture_2D_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
@@ -5761,7 +5796,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 //           glGetUniformLocation(circle_filled_shader_program, "TransformMatrix");
 //       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
-      shader = pcircle_filled_shader_program[0];
+      shader = pcircle_filled_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
@@ -5776,7 +5811,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 //           glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
 //       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
-      shader = ptexture_2DA_shader_program[0];
+      shader = ptexture_2DA_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
@@ -5787,7 +5822,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       //glUniformMatrix4fv(matloc, 1, GL_FALSE,
       //                   (const GLfloat *)pvp->vp_transform);
 
-      shader = pAALine_shader_program[0];
+      shader = pAALine_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
       shader->UnBind();
@@ -5798,7 +5833,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
     }
 
 
-void glChartCanvas::RenderTextures(float *coords, float *uvCoords,
+void glChartCanvas::RenderTextures(ocpnDC &dc, float *coords, float *uvCoords,
                                      int nVertex, ViewPort *vp) {
 //#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -5807,7 +5842,7 @@ void glChartCanvas::RenderTextures(float *coords, float *uvCoords,
     float *luv = uvCoords;
 
     while (nl) {
-      RenderSingleTexture(lc, luv, vp, 0, 0, 0);
+      RenderSingleTexture(dc, lc, luv, vp, 0, 0, 0);
 
       lc += 8;
       luv += 8;
@@ -5827,12 +5862,12 @@ void glChartCanvas::RenderTextures(float *coords, float *uvCoords,
     return;
   }
 
-void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
+void glChartCanvas::RenderSingleTexture(ocpnDC &dc, float *coords, float *uvCoords,
                                           ViewPort *vp, float dx, float dy,
                                           float angle_rad) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-    GLShaderProgram *shader = ptexture_2D_shader_program[0];
+    GLShaderProgram *shader = ptexture_2D_shader_program[dc.m_canvasIndex];
     shader->Bind();
 
    // Set up the texture sampler to texture unit 0
@@ -5846,6 +5881,7 @@ void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
     // Translate
     Q[3][0] = dx;
     Q[3][1] = dy;
+
 
     shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
 
@@ -5901,7 +5937,7 @@ void glChartCanvas::RenderSingleTexture(float *coords, float *uvCoords,
 void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-      GLShaderProgram *shader = pcolor_tri_shader_program[0];
+      GLShaderProgram *shader = pcolor_tri_shader_program[GetCanvasIndex()];
       shader->Bind();
 
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_pParentCanvas->GetpVP()->vp_transform);

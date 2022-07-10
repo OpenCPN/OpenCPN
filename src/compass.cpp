@@ -114,7 +114,7 @@ void ocpnCompass::Paint(ocpnDC& dc) {
       coords[6] = m_rect.x;
       coords[7] = m_rect.y + m_rect.height;
 
-      m_parent->GetglCanvas()->RenderTextures(coords, uv, 4,
+      m_parent->GetglCanvas()->RenderTextures(dc, coords, uv, 4,
                                               m_parent->GetpVP());
 #else
 
