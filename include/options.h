@@ -481,7 +481,7 @@ public:
   void OnNetProtocolSelected(wxCommandEvent &event);
   void OnBaudrateChoice(wxCommandEvent &event) { OnConnValChange(event); }
   void OnProtocolChoice(wxCommandEvent &event) { OnConnValChange(event); }
-  void OnCrcCheck(wxCommandEvent &event) { OnValChange(event); }
+  void OnCrcCheck(wxCommandEvent &event) { OnConnValChange(event); }
   void OnRbAcceptInput(wxCommandEvent &event);
   void OnRbIgnoreInput(wxCommandEvent &event);
   void OnBtnIStcs(wxCommandEvent &event);
