@@ -5006,9 +5006,6 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
                              2 * GetCharWidth());
     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                           &CatalogMgrPanel::OnTarballButton, this);
-
-    GlobalVar<wxString> catalog(&g_catalog_channel);
-    wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
   }
 
 #endif

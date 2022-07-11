@@ -36,6 +36,7 @@
 #include "catalog_handler.h"
 #include "catalog_parser.h"
 #include "Downloader.h"
+#include "observable.h"
 #include "ocpn_utils.h"
 #include "BasePlatform.h"
 #include "PluginHandler.h"
@@ -194,7 +195,8 @@ std::vector<std::string> CatalogHandler::GetChannels() { return channels; }
 bool CatalogHandler::SetActiveChannel(const char* channel) {
   for (auto c : channels) {
     if (c == channel) {
-      g_catalog_channel = channel;
+      GlobalVar<wxString> catalog_channel(&g_catalog_channel);
+      catalog_channel.set(channel);
       return true;
     }
   }
