@@ -1,0 +1,106 @@
+/* API handling communication "drivers". */
+
+#include <memory>
+#include <vector>
+
+#include <wx/event.h>
+#include <wx/jsonreader.h>
+
+#include "datastream.h"
+
+#ifndef _DRIVER_API_H
+#define _DRIVER_API_H
+
+enum class NavBus {nmea0183, signalK, n2k, onenet, test_if};
+ 
+typedef uint64_t n2k_name_t;      // FIXME: Add a proper type.
+                                 
+/** Where messages are sent to or received from. */
+typedef struct { 
+   NavBus bus;
+   union {
+      const DataStream* nmea0183; // A specific RS485/nmea01831 interface 
+      struct in_addr sk_ipv4;     // signalK message over ipv4
+      struct in6_addr onenet;     // FIXME Probably too simplified
+      struct in6_addr test;       // Raw test messages injected over ipv6
+      n2k_name_t  name;               
+   } address;
+} nav_addr_t;
+
+typedef struct {
+  std::string id;       // For example 'GPGGA'
+  std::string payload;  // Remaining data after first ','
+} Nmea0183_msg;
+
+
+// See: https://github.com/OpenCPN/OpenCPN/issues/2729#issuecomment-1179506343
+typedef struct {
+  n2k_name_t name;      // Driver layer handles mapping to address.
+  std::vector<unsigned char> payload;
+} Nmea2000_msg;
+
+/** A parsed SignalK message over ipv4 */
+typedef struct {
+  struct in_addr dest;
+  struct in_addr src;
+  wxJSONValue* root;
+  const int depth;
+  std::vector<std::string> errors;
+  std::vector<std::string> warnings;
+} SignalK_ipv4_msg;
+
+/** Actual data sent between application and transport layer */
+typedef struct {
+  NavBus bus;
+  union {
+    Nmea2000_msg nmea2000;
+    Nmea0183_msg nmea0183;
+    SignalK_ipv4_msg sk_ipv4;
+  };
+} nav_msg;
+
+typedef const std::shared_ptr<nav_msg> nav_msg_ptr;
+
+                        
+                       
+class AbstractDriver;   // forward
+                        //
+/**
+ * Interface implemented by transport layer and possible other parties
+ * like test code which should handle incoming messages
+ */
+class DriverListener {
+public:
+  /** Handle a received message. */
+  virtual void notify(const nav_msg& message) = 0;
+
+  /** Handle driver status change. */
+  virtual void notify(const AbstractDriver& driver) = 0;
+};
+
+
+/** The common interface to all drivers. */
+class AbstractDriver {
+public:
+  const std::string name;   // Must be unique
+  const NavBus bus;
+
+  virtual void send_message(const nav_msg& msg, const nav_addr_t& addr) = 0;
+
+  virtual void set_listener(DriverListener listener) = 0;
+};
+
+
+/**
+ * The global driver registry, a singleton. Drivers register here when
+ * activated, transport layer finds them.
+ */
+class DriverRegistry {
+public:
+  void activate(const AbstractDriver& driver);
+  void deactivate(const AbstractDriver& driver);
+
+  static DriverRegistry* getInstance();
+};
+  
+#endif  // DRIVER_API_H
