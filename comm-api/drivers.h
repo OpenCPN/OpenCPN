@@ -83,21 +83,13 @@ public:
 };
 
 
-/**
- * Common interface for all drivers.
- *
- * nmea2000 drivers are responsible for address claiming, exposing a stable
- * n2k_name. It also handles fast packages fragmentation/defragmentation.
- *
- * Handling of list of attached devices and their human readable attributes
- * are NOT part of the driver.
-  */
+/** Common interface for all drivers.  */
 class AbstractDriver {
 public:
   const NavBus bus;
   const std::string interface;  /**< Physical device for 0183, else a
-                                 *   unique string
-                                 */
+                                     unique string */
+
   virtual void send_message(const nav_msg& msg, const nav_addr_t& addr) = 0;
 
   virtual void set_listener(DriverListener listener) = 0;
@@ -113,6 +105,33 @@ public:
     // FIXME: Requires some unique interface support in DriverRegistry.
     return std::pair<CommStatus, std::string>(CommStatus::not_implemented, "");
   }
+};
+
+
+/**
+ * nmea2000 drivers are responsible for address claiming, exposing a stable
+ * n2k_name. It also handles fast packages fragmentation/defragmentation.
+ *
+ * Handling of list of attached devices and their human readable attributes
+ * are NOT part of the driver.
+ */
+class N2kDriver : public AbstractDriver {
+public:
+
+  /** @return address to given name on this n2k bus. */
+  nav_addr_t get_address(n2k_name_t name);
+
+};
+
+/**
+ * Nmea0183 has no means to address a node. OTOH, there could be more
+ * then one physical interface handling it. Each interface has a
+ * separate driver instance.
+ */
+class Nmea0183Driver: public AbstractDriver {
+
+  /** @return address to this bus i. e., physical interface. */
+  nav_addr_t get_address();
 };
 
 
