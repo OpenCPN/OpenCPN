@@ -6,6 +6,7 @@
 #include <wx/event.h>
 #include <wx/jsonreader.h>
 
+#include "observable.h"
 #include "datastream.h"
 
 #ifndef _DRIVER_API_H
@@ -110,7 +111,7 @@ public:
    */
   virtual std::pair<CommStatus, std::string> clone() {
     // FIXME: Requires some unique interface support in DriverRegistry.
-    return CommStatus::not_implemented;
+    return std::pair<CommStatus, std::string>(CommStatus::not_implemented, "");
   }
 };
 
@@ -123,6 +124,12 @@ class DriverRegistry {
 public:
   void activate(const AbstractDriver& driver);
   void deactivate(const AbstractDriver& driver);
+
+  /** Notified by all driverlist updates. */
+  EventVar evt_driverlist_change;
+
+  /** @return List of all activated drivers. */
+  const std::vector<AbstractDriver>& get_drivers();
 
   static DriverRegistry* getInstance();
 };
