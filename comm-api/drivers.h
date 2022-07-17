@@ -41,6 +41,7 @@ typedef struct {
  * See: https://github.com/OpenCPN/OpenCPN/issues/2729#issuecomment-1179506343
  */
 typedef struct {
+  n2k_name_t name;
   std::vector<unsigned char> payload;
 } Nmea2000_msg;
 
