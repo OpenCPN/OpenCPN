@@ -107,6 +107,7 @@ extern const wxEventType wxEVT_OCPN_DATASTREAM;
 extern const wxEventType wxEVT_OCPN_THREADMSG;
 
 bool CheckSumCheck(const std::string &sentence);
+std::string SetChecksum(const std::string& sentence);
 
 //----------------------------------------------------------------------------
 // DataStream
@@ -163,6 +164,7 @@ public:
   bool SentencePassesFilter(const wxString &sentence,
                             FilterDirection direction);
   bool ChecksumOK(const std::string &sentence);
+  std::string FixChecksum(const std::string &sentence) const;
   bool GetGarminMode() const { return m_bGarmin_GRMN_mode; }
 
   wxString GetBaudRate() const { return m_BaudRate; }
