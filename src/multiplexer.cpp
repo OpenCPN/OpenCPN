@@ -278,8 +278,16 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler) {
 
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
   wxString message = event.ProcessNMEA4Tags();
-
+  std::string goodMessage(message);
+  OCPN_DataStreamEvent *goodEvent = static_cast <OCPN_DataStreamEvent*>(event.Clone());
+  bool checksumOK = CheckSumCheck(event.GetNMEAString());
   DataStream *stream = event.GetStream();
+
+  if (!checksumOK) {
+    goodMessage = stream->FixChecksum(goodMessage);
+    goodEvent->SetNMEAString(goodMessage);
+  }
+
   wxString port(_T("Virtual:"));
   if (stream) port = wxString(stream->GetPort());
 
@@ -298,9 +306,9 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
           message.Mid(3, 3).IsSameAs(_T("TTM")) ||
           message.Mid(3, 3).IsSameAs(_T("OSD")) ||
           (g_bWplUsePosition && message.Mid(3, 3).IsSameAs(_T("WPL")))) {
-        if (m_aisconsumer) m_aisconsumer->AddPendingEvent(event);
+        if (m_aisconsumer) m_aisconsumer->AddPendingEvent(*goodEvent);
       } else {
-        if (m_gpsconsumer) m_gpsconsumer->AddPendingEvent(event);
+        if (m_gpsconsumer) m_gpsconsumer->AddPendingEvent(*goodEvent);
       }
     }
 
@@ -327,15 +335,8 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
 
     if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
       // Send to plugins
-      if (g_pi_manager) {
-        if (stream) {  // Is this a real or a virtual stream?
-          if (stream->ChecksumOK(event.GetNMEAString()))
-            g_pi_manager->SendNMEASentenceToAllPlugIns(message);
-        } else {
-          if (CheckSumCheck(event.GetNMEAString()))
-            g_pi_manager->SendNMEASentenceToAllPlugIns(message);
-        }
-      }
+      if (g_pi_manager)
+        g_pi_manager->SendNMEASentenceToAllPlugIns(goodMessage);
 
       // Send to all the other outputs
       for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
@@ -366,6 +367,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
       }
     }
   }
+  delete goodEvent;
 }
 
 void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event) {

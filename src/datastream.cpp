@@ -51,6 +51,7 @@
 #include <wx/regex.h>
 
 #include <stdlib.h>
+#include <sstream>
 #include <math.h>
 #include <time.h>
 
@@ -133,6 +134,27 @@ bool CheckSumCheck(const std::string &sentence) {
   return calculated_checksum == checksum;
 }
 
+std::string SetChecksum(const std::string& sentence) {
+  std::string newSentence;
+  size_t check_start = sentence.find('*');
+  if (check_start == wxString::npos)
+    return newSentence;  // * not found
+
+  unsigned char checksum = 0;
+  for (std::string::const_iterator i = sentence.begin() + 1;
+       *i != '*'; ++i)
+    checksum ^= static_cast<unsigned char>(*i);
+
+  std::stringstream strSentence;
+  std::stringstream chkSum;
+  chkSum << std::hex << std::uppercase << int(checksum);
+  strSentence << sentence.substr(0, check_start + 1) << chkSum.str()
+              << "\r\n";
+  newSentence = strSentence.str();
+  return newSentence;
+}
+
+
 DataStream *makeDataStream(wxEvtHandler *input_consumer,
                            const ConnectionParams *params) {
   wxLogMessage(
@@ -203,8 +225,6 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
   m_BaudRate = wxString::Format(wxT("%i"), params->Baudrate),
   SetSecThreadInActive();
 
-  wxLogMessage(_T("ConnectionParams CTOR"));
-
   // Open();
 
   SetInputFilter(params->InputSentenceList);
@@ -212,6 +232,9 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
   SetOutputFilter(params->OutputSentenceList);
   SetOutputFilterType(params->OutputSentenceListType);
   SetChecksumCheck(params->ChecksumCheck);
+
+  wxLogMessage(wxString::Format(_T("ConnectionParams CTOR: ChecksumCheck = %s"),
+                               GetChecksumCheck() ? "true" : "false"));
 }
 
 void DataStream::Open(void) {
@@ -590,6 +613,14 @@ bool DataStream::ChecksumOK( const std::string &sentence )
 
 }
 
+std::string DataStream::FixChecksum(const std::string& sentence) const
+{
+  std::string newSentence = SetChecksum(sentence);
+  if (newSentence.empty())
+    return sentence;
+  else
+    return newSentence;
+}
 
 bool DataStream::SendSentence( const wxString &sentence )
 {

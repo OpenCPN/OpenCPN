@@ -66,8 +66,11 @@ public:
   /** Notify all listeners about variable change. */
   virtual const void notify();
 
-  /** Remove window from list of listeners, return true if listener exists */
-  bool unlisten(wxEvtHandler* listener);
+  /**
+   * Remove window listening to ev from list of listeners.
+   * @return true if such a listener existed, else false.
+   */
+  bool unlisten(wxEvtHandler* listener, wxEventType ev);
 
   /** The key used to create and clone. */
   const std::string key;
@@ -130,7 +133,7 @@ private:
     if (key != "") {
       assert(listener);
       ObservedVar var(key);
-      var.unlisten(listener);
+      var.unlisten(listener, ev_type);
     }
   }
 

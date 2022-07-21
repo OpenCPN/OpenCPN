@@ -88,7 +88,7 @@ void ConnectionParams::Deserialize(const wxString &configStr) {
   Protocol = (DataProtocol)wxAtoi(prms[4]);
   Port = prms[5];
   Baudrate = wxAtoi(prms[6]);
-  ChecksumCheck = !!wxAtoi(prms[7]);
+  ChecksumCheck = wxAtoi(prms[7]);
   int iotval = wxAtoi(prms[8]);
   IOSelect = ((iotval <= 2) ? static_cast<dsPortType>(iotval) : DS_TYPE_INPUT);
   InputSentenceListType = (ListType)wxAtoi(prms[9]);

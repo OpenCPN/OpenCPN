@@ -43,6 +43,7 @@
 
 #include "config.h"
 
+#include "BasePlatform.h"
 #include "dychart.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
@@ -249,8 +250,10 @@ extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
 
-static const char *const DEFAULT_XDG_DATA_DIRS =
-    "~/.local/share:/usr/local/share:/usr/share";
+#ifdef __ANDROID__
+extern PlatSpec android_plat_spc;
+#endif
+
 
 #ifdef __WXMSW__
 static const char PATH_SEP = ';';
@@ -266,7 +269,6 @@ static bool checkIfFlatpacked() {
   return id == "org.opencpn.OpenCPN";
 }
 
-//  OCPN Platform implementation
 
 OCPNPlatform::OCPNPlatform() {
   m_pt_per_pixel = 0;  // cached value
@@ -275,12 +277,7 @@ OCPNPlatform::OCPNPlatform() {
   m_displaySizeMM = wxSize(0, 0);
   m_monitorWidth = m_monitorHeight = 0;
   m_displaySizeMMOverride = 0;
-  m_isFlatpacked = checkIfFlatpacked();
   m_pluginDataPath = "";
-
-  // Detect the OS detail parameters
-  m_osDetail = new OCPN_OSDetail;
-  DetectOSDetail(m_osDetail);
 }
 
 OCPNPlatform::~OCPNPlatform() {}
@@ -352,98 +349,6 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO *pInfo) {
   return CR_CB_DODEFAULT;
 }
 #endif
-
-bool OCPNPlatform::DetectOSDetail(OCPN_OSDetail *detail) {
-  if (!detail) return false;
-
-  // We take some defaults from build-time definitions
-  detail->osd_name = std::string(PKG_TARGET);
-  detail->osd_version = std::string(PKG_TARGET_VERSION);
-
-  // Now parse by basic platform
-#ifdef __linux__
-  if (wxFileExists(_T("/etc/os-release"))) {
-    wxTextFile release_file(_T("/etc/os-release"));
-    if (release_file.Open()) {
-      wxString val;
-      for (wxString str = release_file.GetFirstLine(); !release_file.Eof();
-           str = release_file.GetNextLine()) {
-        if (str.StartsWith(_T("NAME"))) {
-          val = str.AfterFirst('=').Mid(1);
-          val = val.Mid(0, val.Length() - 1);
-          if (val.Length()) detail->osd_name = std::string(val.mb_str());
-        } else if (str.StartsWith(_T("VERSION_ID"))) {
-          val = str.AfterFirst('=').Mid(1);
-          val = val.Mid(0, val.Length() - 1);
-          if (val.Length()) detail->osd_version = std::string(val.mb_str());
-        } else if (str.StartsWith(_T("ID="))) {
-          val = str.AfterFirst('=');
-          if (val.Length()) detail->osd_ID = ocpn::split(val.mb_str(), " ")[0];
-        } else if (str.StartsWith(_T("ID_LIKE"))) {
-          if (val.StartsWith('"')) {
-            val = str.AfterFirst('=').Mid(1);
-            val = val.Mid(0, val.Length() - 1);
-          } else {
-            val = str.AfterFirst('=');
-          }
-
-          if (val.Length()) {
-            detail->osd_names_like = ocpn::split(val.mb_str(), " ");
-          }
-        }
-      }
-
-      release_file.Close();
-    }
-    if (detail->osd_name == _T("Linux Mint")) {
-      if (wxFileExists(_T("/etc/upstream-release/lsb-release"))) {
-        wxTextFile upstream_release_file(
-            _T("/etc/upstream-release/lsb-release"));
-        if (upstream_release_file.Open()) {
-          wxString val;
-          for (wxString str = upstream_release_file.GetFirstLine();
-               !upstream_release_file.Eof();
-               str = upstream_release_file.GetNextLine()) {
-            if (str.StartsWith(_T("DISTRIB_RELEASE"))) {
-              val = str.AfterFirst('=').Mid(0);
-              val = val.Mid(0, val.Length());
-              if (val.Length()) detail->osd_version = std::string(val.mb_str());
-            }
-          }
-          upstream_release_file.Close();
-        }
-      }
-    }
-  }
-#endif
-
-  //  Set the default processor architecture
-  detail->osd_arch = std::string("x86_64");
-
-  // then see what is actually running.
-  wxPlatformInfo platformInfo = wxPlatformInfo::Get();
-  wxArchitecture arch = platformInfo.GetArchitecture();
-  if (arch == wxARCH_32) detail->osd_arch = std::string("i386");
-
-#ifdef ocpnARM
-  //  arm supports a multiarch runtime environment
-  //  That is, the OS may be 64 bit, but OCPN may be built as a 32 bit binary
-  //  So, we cannot trust the wxPlatformInfo architecture determination.
-  detail->osd_arch = std::string("arm64");
-#ifdef ocpnARMHF
-    detail->osd_arch = std::string("armhf");
-#endif
-#endif
-
-#ifdef __OCPN__ANDROID__
-  detail->osd_arch = std::string("arm64");
-  if (arch == wxARCH_32) detail->osd_arch = std::string("armhf");
-#endif
-
-  return true;
-}
-
-OCPN_OSDetail *OCPNPlatform::GetOSDetail() { return m_osDetail; }
 
 //  Called from MyApp() immediately upon entry to MyApp::OnInit()
 void OCPNPlatform::Initialize_1(void) {
@@ -788,7 +693,8 @@ void OCPNPlatform::OnExit_2(void) {
 #endif
 #endif
 }
-
+#if 0
+//FIXME
 bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   // Investigate OpenGL capabilities
   gFrame->Show();
@@ -872,9 +778,16 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   return true;
 }
-
+#endif  // 0
 bool OCPNPlatform::IsGLCapable() {
-#ifndef __OCPN__ANDROID__
+// FIXME
+return false;
+#if 0
+#ifdef __OCPN__ANDROID__
+  return true;
+#elif defined(CLI)
+  return false;
+#else
   OCPN_GLCaps *pcaps = new OCPN_GLCaps;
 
   BuildGLCaps(pcaps);
@@ -885,7 +798,7 @@ bool OCPNPlatform::IsGLCapable() {
   // canvas panning..
   if (!pcaps->bCanDoFBO) return false;
 #endif
-  return true;
+#endif // 0
 }
 
 void OCPNPlatform::SetLocaleSearchPrefixes(void) {
@@ -1467,368 +1380,9 @@ wxString OCPNPlatform::GetSupplementalLicenseString() {
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
 
-wxStandardPaths &OCPNPlatform::GetStdPaths() {
-#ifndef __OCPN__ANDROID__
-  return *dynamic_cast<wxStandardPaths *>(
-      &(wxGetApp().GetTraits()->GetStandardPaths()));
-#else
-  //    return
-  //    *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
-  return *dynamic_cast<wxStandardPaths *>(
-      &(wxTheApp->GetTraits())->GetStandardPaths());
-#endif
-}
-
-wxString &OCPNPlatform::GetHomeDir() {
-  if (m_homeDir.IsEmpty()) {
-    //      Establish a "home" location
-    //       wxStandardPaths& std_path =
-    //       *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
-    wxStandardPaths &std_path = GetStdPaths();
-    //        wxStandardPaths &std_path = ( wxStandardPaths)
-    //        wxGetApp().GetTraits()->GetStandardPaths();
-
-    // TODO  Why is the following preferred?  Will not compile with gcc...
-    //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
-
-#ifdef __unix__
-    std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
-#endif
-
-#ifdef __WXMSW__
-    m_homeDir =
-        std_path
-            .GetConfigDir();  // on w98, produces "/windows/Application Data"
-#else
-    m_homeDir = std_path.GetUserConfigDir();
-#endif
-
-#ifdef __OCPN__ANDROID__
-    m_homeDir = androidGetHomeDir();
-#endif
-
-    if (g_bportable) {
-      wxFileName path(GetExePath());
-      m_homeDir = path.GetPath();
-    }
-
-#ifdef __WXOSX__
-    appendOSDirSlash(&m_homeDir);
-    m_homeDir.Append(_T("opencpn"));
-#endif
-
-    appendOSDirSlash(&m_homeDir);
-  }
-
-  return m_homeDir;
-}
-
-wxString &OCPNPlatform::GetExePath() {
-  if (m_exePath.IsEmpty()) {
-    wxStandardPaths &std_path = GetStdPaths();
-    m_exePath = std_path.GetExecutablePath();
-  }
-
-  return m_exePath;
-}
-
-wxString OCPNPlatform::GetWritableDocumentsDir() {
-  wxString dir;
-
-#ifdef __OCPN__ANDROID__
-  dir = androidGetExtStorageDir();  // Used for Chart storage, typically
-#else
-  wxStandardPaths &std_path = GetStdPaths();
-  dir = std_path.GetDocumentsDir();
-#endif
-  return dir;
-}
-
-wxString &OCPNPlatform::GetSharedDataDir() {
-  if (m_SData_Dir.IsEmpty()) {
-    //      Establish a "shared data" location
-    /*  From the wxWidgets documentation...
-     *
-     *     wxStandardPaths::GetDataDir
-     *     wxString GetDataDir() const
-     *     Return the location of the applications global, i.e. not
-     * user-specific, data files. Unix: prefix/share/appname Windows: the
-     * directory where the executable file is located Mac:
-     * appname.app/Contents/SharedSupport bundle subdirectory
-     */
-    wxStandardPaths &std_path = GetStdPaths();
-    m_SData_Dir = std_path.GetDataDir();
-    appendOSDirSlash(&m_SData_Dir);
-
-#ifdef __OCPN__ANDROID__
-    m_SData_Dir = androidGetSharedDir();
-#endif
-
-    if (g_bportable) m_SData_Dir = GetHomeDir();
-  }
-
-  return m_SData_Dir;
-}
-
-wxString &OCPNPlatform::GetPrivateDataDir() {
-  if (m_PrivateDataDir.IsEmpty()) {
-    //      Establish the prefix of the location of user specific data files
-    wxStandardPaths &std_path = GetStdPaths();
-
-#ifdef __WXMSW__
-    m_PrivateDataDir =
-        GetHomeDir();  // should be {Documents and Settings}\......
-#elif defined FLATPAK
-    std::string config_home;
-    if (getenv("XDG_CONFIG_HOME")) {
-      config_home = getenv("XDG_CONFIG_HOME");
-    } else {
-      config_home = getenv("HOME");
-      config_home += "/.var/app/org.opencpn.OpenCPN/config";
-    }
-    m_PrivateDataDir = config_home + "/opencpn";
-
-#elif defined __WXOSX__
-    m_PrivateDataDir =
-        std_path.GetUserConfigDir();  // should be ~/Library/Preferences
-    appendOSDirSlash(&m_PrivateDataDir);
-    m_PrivateDataDir.Append(_T("opencpn"));
-#else
-    m_PrivateDataDir = std_path.GetUserDataDir();    // should be ~/.opencpn
-#endif
-
-    if (g_bportable) {
-      m_PrivateDataDir = GetHomeDir();
-      if (m_PrivateDataDir.Last() == wxFileName::GetPathSeparator())
-        m_PrivateDataDir.RemoveLast();
-    }
-
-#ifdef __OCPN__ANDROID__
-    m_PrivateDataDir = androidGetPrivateDir();
-#endif
-  }
-  return m_PrivateDataDir;
-}
 
 static wxString ExpandPaths(wxString paths, OCPNPlatform *platform);
 
-static wxString GetLinuxDataPath() {
-  wxString dirs;
-  if (wxGetEnv("XDG_DATA_DIRS", &dirs)) {
-    dirs = wxString("~/.local/share:") + dirs;
-  } else {
-    dirs = DEFAULT_XDG_DATA_DIRS;
-  }
-  wxString s;
-  wxStringTokenizer tokens(dirs, ':');
-  while (tokens.HasMoreTokens()) {
-    wxString dir = tokens.GetNextToken();
-    if (dir.EndsWith("/")) {
-      dir = dir.SubString(0, dir.length() - 1);
-    }
-    if (!dir.EndsWith("/opencpn/plugins")) {
-      dir += "/opencpn/plugins";
-    }
-    s += dir + (tokens.HasMoreTokens() ? ";" : "");
-  }
-  return s;
-}
-
-wxString OCPNPlatform::GetPluginDataPath() {
-  if (g_bportable) {
-    wxString sep = wxFileName::GetPathSeparator();
-    wxString ret = GetPrivateDataDir() + sep + _T("plugins");
-    return ret;
-  }
-
-  if (m_pluginDataPath != "") {
-    return m_pluginDataPath;
-  }
-  wxString dirs("");
-#ifdef __OCPN__ANDROID__
-  wxString pluginDir = GetPrivateDataDir() + "/plugins";
-  dirs += pluginDir;
-#else
-  auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
-  if (g_Platform->isFlatpacked()) {
-    dirs = "~/.var/app/org.opencpn.OpenCPN/data/opencpn/plugins";
-  } else if (osSystemId & wxOS_UNIX_LINUX) {
-    dirs = GetLinuxDataPath();
-  } else if (osSystemId & wxOS_WINDOWS) {
-    dirs = GetWinPluginBaseDir();
-  } else if (osSystemId & wxOS_MAC) {
-    dirs = "/Applications/OpenCPN.app/Contents/SharedSupport/plugins;";
-    dirs +=
-        "~/Library/Application Support/OpenCPN/Contents/SharedSupport/plugins";
-  }
-#endif
-
-  m_pluginDataPath = ExpandPaths(dirs, this);
-  if (m_pluginDataPath != "") {
-    m_pluginDataPath += ";";
-  }
-  m_pluginDataPath += GetPluginDir();
-  if (m_pluginDataPath.EndsWith(wxFileName::GetPathSeparator())) {
-    m_pluginDataPath.RemoveLast();
-  }
-  wxLogMessage("Using plugin data path: %s", m_pluginDataPath.mb_str().data());
-  return m_pluginDataPath;
-}
-
-wxString OCPNPlatform::GetWinPluginBaseDir() {
-  if (g_winPluginDir != "") {
-    wxLogMessage("winPluginDir: Using value from ini file.");
-    wxFileName fn(g_winPluginDir);
-    if (!fn.DirExists()) {
-      wxLogWarning("Plugin dir %s does not exist",
-                   fn.GetFullPath().mb_str().data());
-    }
-    fn.Normalize();
-    return fn.GetFullPath();
-  }
-  wxString winPluginDir;
-  // Standard case: c:\Users\%USERPROFILE%\AppData\Local
-  bool ok = wxGetEnv(_T("LOCALAPPDATA"), &winPluginDir);
-  if (!ok) {
-    wxLogMessage("winPluginDir: Cannot lookup LOCALAPPDATA");
-    // Without %LOCALAPPDATA%: Use default location if it exists.
-    std::string path(wxGetHomeDir().ToStdString());
-    path += "\\AppData\\Local";
-    if (ocpn::exists(path)) {
-      winPluginDir = wxString(path.c_str());
-      wxLogMessage("winPluginDir: using %s", winPluginDir.mb_str().data());
-      ok = true;
-    }
-  }
-  if (!ok) {
-    // Usually: c:\Users\%USERPROFILE%\AppData\Roaming
-    ok = wxGetEnv(_T("APPDATA"), &winPluginDir);
-  }
-  if (!ok) {
-    // Without %APPDATA%: Use default location if it exists.
-    wxLogMessage("winPluginDir: Cannot lookup APPDATA");
-    std::string path(wxGetHomeDir().ToStdString());
-    path += "\\AppData\\Roaming";
-    if (ocpn::exists(path)) {
-      winPluginDir = wxString(path.c_str());
-      ok = true;
-      wxLogMessage("winPluginDir: using %s", winPluginDir.mb_str().data());
-    }
-  }
-  if (!ok) {
-    // {Documents and Settings}\.. on W7, else \ProgramData
-    winPluginDir = GetHomeDir();
-  }
-  wxFileName path(winPluginDir);
-  path.Normalize();
-  winPluginDir = path.GetFullPath() + "\\opencpn\\plugins";
-  wxLogMessage("Using private plugin dir: %s", winPluginDir);
-  return winPluginDir;
-}
-
-wxString &OCPNPlatform::GetPluginDir() {
-  if (m_PluginsDir.IsEmpty()) {
-    wxStandardPaths &std_path = GetStdPaths();
-
-    //  Get the PlugIns directory location
-    m_PluginsDir = std_path.GetPluginsDir();  // linux:   {prefix}/lib/opencpn
-    // Mac:     appname.app/Contents/PlugIns
-#ifdef __WXMSW__
-    m_PluginsDir += _T("\\plugins");  // Windows: {exe dir}/plugins
-#endif
-    if (g_bportable) {
-      m_PluginsDir = GetHomeDir();
-      m_PluginsDir += _T("plugins");
-    }
-
-#ifdef __OCPN__ANDROID__
-    // something like: data/data/org.opencpn.opencpn
-    wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
-    fdir.RemoveLastDir();
-    m_PluginsDir = fdir.GetPath();
-#endif
-  }
-  return m_PluginsDir;
-}
-
-wxString OCPNPlatform::NormalizePath(const wxString &full_path) {
-  if (!g_bportable) {
-    return full_path;
-  } else {
-    wxString path(full_path);
-    wxFileName f(path);
-    // If not on another voulme etc. make the portable relative path
-    if (f.MakeRelativeTo(g_Platform->GetPrivateDataDir())) {
-      path = f.GetFullPath();
-    }
-    return path;
-  }
-}
-
-static wxString ExpandPaths(wxString paths, OCPNPlatform *platform) {
-  wxStringTokenizer tokens(paths, ';');
-  wxString s = "";
-  while (tokens.HasMoreTokens()) {
-    wxFileName filename(tokens.GetNextToken());
-    filename.Normalize();
-    s += platform->NormalizePath(filename.GetFullPath());
-    if (tokens.HasMoreTokens()) {
-      s += ';';
-    }
-  }
-  return s;
-}
-
-wxString &OCPNPlatform::GetConfigFileName() {
-  if (m_config_file_name.IsEmpty()) {
-    //      Establish the location of the config file
-    wxStandardPaths &std_path = GetStdPaths();
-
-#ifdef __WXMSW__
-    m_config_file_name = _T("opencpn.ini");
-    m_config_file_name.Prepend(GetHomeDir());
-
-#elif defined __WXOSX__
-    m_config_file_name =
-        std_path.GetUserConfigDir();  // should be ~/Library/Preferences
-    appendOSDirSlash(&m_config_file_name);
-    m_config_file_name.Append(_T("opencpn"));
-    appendOSDirSlash(&m_config_file_name);
-    m_config_file_name.Append(_T("opencpn.ini"));
-#elif defined FLATPAK
-    m_config_file_name = GetPrivateDataDir();
-    m_config_file_name.Append(_T("/opencpn.conf"));
-    // Usually ~/.var/app/org.opencpn.OpenCPN/config/opencpn.conf
-#else
-    m_config_file_name = std_path.GetUserDataDir();  // should be ~/.opencpn
-    appendOSDirSlash(&m_config_file_name);
-    m_config_file_name.Append(_T("opencpn.conf"));
-#endif
-
-    if (g_bportable) {
-      m_config_file_name = GetHomeDir();
-#ifdef __WXMSW__
-      m_config_file_name += _T("opencpn.ini");
-#elif defined __WXOSX__
-      m_config_file_name += _T("opencpn.ini");
-#else
-      m_config_file_name += _T("opencpn.conf");
-#endif
-    }
-
-#ifdef __OCPN__ANDROID__
-    m_config_file_name = androidGetPrivateDir();
-    appendOSDirSlash(&m_config_file_name);
-    m_config_file_name += _T("opencpn.conf");
-#endif
-  }
-
-  return m_config_file_name;
-}
-
-wxString *OCPNPlatform::GetPluginDirPtr() { return &m_PluginsDir; }
-wxString *OCPNPlatform::GetSharedDataDirPtr() { return &m_SData_Dir; }
-wxString *OCPNPlatform::GetPrivateDataDirPtr() { return &m_PrivateDataDir; }
 
 int OCPNPlatform::DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
                                        wxString Title, wxString initDir,
@@ -1930,84 +1484,6 @@ int OCPNPlatform::DoDirSelectorDialog(wxWindow *parent, wxString *file_spec,
 #endif
 
   return result;
-}
-
-bool OCPNPlatform::InitializeLogFile(void) {
-  //      Establish Log File location
-  mlog_file = GetPrivateDataDir();
-  appendOSDirSlash(&mlog_file);
-
-#ifdef __WXOSX__
-
-  wxFileName LibPref(mlog_file);  // starts like "~/Library/Preferences/opencpn"
-  LibPref.RemoveLastDir();        // takes off "opencpn"
-  LibPref.RemoveLastDir();        // takes off "Preferences"
-
-  mlog_file = LibPref.GetFullPath();
-  appendOSDirSlash(&mlog_file);
-
-  mlog_file.Append(_T("Logs/"));  // so, on OS X, opencpn.log ends up in
-                                  // ~/Library/Logs which makes it accessible to
-                                  // Applications/Utilities/Console....
-#endif
-
-  // create the opencpn "home" directory if we need to
-  wxFileName wxHomeFiledir(GetHomeDir());
-  if (true != wxHomeFiledir.DirExists(wxHomeFiledir.GetPath()))
-    if (!wxHomeFiledir.Mkdir(wxHomeFiledir.GetPath())) {
-      wxASSERT_MSG(false, _T("Cannot create opencpn home directory"));
-      return false;
-    }
-
-  // create the opencpn "log" directory if we need to
-  wxFileName wxLogFiledir(mlog_file);
-  if (true != wxLogFiledir.DirExists(wxLogFiledir.GetPath())) {
-    if (!wxLogFiledir.Mkdir(wxLogFiledir.GetPath())) {
-      wxASSERT_MSG(false, _T("Cannot create opencpn log directory"));
-      return false;
-    }
-  }
-
-  mlog_file.Append(_T("opencpn.log"));
-  wxString logit = mlog_file;
-
-#ifdef __OCPN__ANDROID__
-  wxCharBuffer abuf = mlog_file.ToUTF8();
-  qDebug() << "logfile " << abuf.data();
-#endif
-
-  //  Constrain the size of the log file
-  if (::wxFileExists(mlog_file)) {
-    if (wxFileName::GetSize(mlog_file) > 1000000) {
-      wxString oldlog = mlog_file;
-      oldlog.Append(_T(".log"));
-      //  Defer the showing of this messagebox until the system locale is
-      //  established.
-      large_log_message = (_T("Old log will be moved to opencpn.log.log"));
-      ::wxRenameFile(mlog_file, oldlog);
-    }
-  }
-#ifdef __OCPN__ANDROID__
-  if (::wxFileExists(mlog_file)) {
-    //  Force new logfile for each instance
-    // TODO Remove this behaviour on Release
-    ::wxRemoveFile(mlog_file);
-  }
-
-  if (wxLog::GetLogLevel() > wxLOG_User) wxLog::SetLogLevel(wxLOG_Info);
-
-#endif
-  g_logger = new OcpnLog(mlog_file.mb_str());
-  m_Oldlogger = wxLog::SetActiveTarget(g_logger);
-
-  return true;
-}
-
-void OCPNPlatform::CloseLogFile(void) {
-  if (g_logger) {
-    wxLog::SetActiveTarget(m_Oldlogger);
-    delete g_logger;
-  }
 }
 
 MyConfig *OCPNPlatform::GetConfigObject() {
@@ -2715,7 +2191,6 @@ QString getQtStyleSheet(void) { return g_qtStyleSheet; }
 
 #endif
 
-PlatSpec android_plat_spc;
 
 bool OCPNPlatform::isPlatformCapable(int flag) {
 #ifndef __OCPN__ANDROID__

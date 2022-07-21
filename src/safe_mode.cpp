@@ -6,13 +6,13 @@
 #include <wx/filename.h>
 #include <wx/sizer.h>
 
-#include "OCPNPlatform.h"
+#include "BasePlatform.h"
 #include "ocpn_utils.h"
 #include "gui_lib.h"
 
 #include "safe_mode.h"
 
-extern OCPNPlatform* g_Platform;
+extern BasePlatform* g_BasePlatform;
 extern bool g_bdisable_opengl;
 
 namespace safe_mode {
@@ -33,7 +33,7 @@ static const int TIMEOUT_SECONDS = 15;
 static bool safe_mode = false;
 
 static std::string check_file_path() {
-  std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+  std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
   path += SEP;
   path += "startcheck.dat";
   return path;
