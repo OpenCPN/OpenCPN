@@ -524,7 +524,7 @@ private:
   bool m_useScissors;
   bool m_useFBO;
   bool m_useVBO;
-  int m_TextureRectangleFormat;
+  int m_TextureFormat;
   bool m_GLLineSmoothing;
   bool m_GLPolygonSmoothing;
   wxFont *m_soundFont;

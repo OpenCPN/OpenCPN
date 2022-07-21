@@ -409,7 +409,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_useVBO = false;
   m_TextureFormat = -1;
   m_useGLSL = false;
-  m_TextureRectangleFormat = -1;
+  m_TextureFormat = -1;
   m_GLMinCartographicLineWidth = 1.0;
   m_GLMinSymbolLineWidth = 1.0;
 
@@ -464,7 +464,7 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
   m_useVBO = b_useVBO;
   m_TextureFormat = nTextureFormat;
   m_useGLSL = true;
-  m_TextureRectangleFormat = nTextureFormat;
+  m_TextureFormat = nTextureFormat;
   m_GLMinCartographicLineWidth = MinCartographicLineWidth;
   m_GLMinSymbolLineWidth = MinSymbolLineWidth;
 
@@ -3225,10 +3225,10 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       }
 #else
 
-      if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
+      if (m_TextureFormat == GL_TEXTURE_2D) {
         // Normalize the sybmol texture coordinates against the next higher POT
         // size
-        wxSize size = ChartSymbols::GLTextureSize();
+        wxSize size = m_chartSymbols.GLTextureSize();
 #if 0
                                 int i=1;
                                 while(i < size.x) i <<= 1;
@@ -3330,7 +3330,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
 
 #endif  // GLES2
-      glDisable(m_TextureRectangleFormat);
+      glDisable(m_TextureFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
               */
       float cr = cosf(vp->rotation);
@@ -3717,7 +3717,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       }
 #else
 
-      if (m_TextureRectangleFormat == GL_TEXTURE_2D) {
+      if (m_TextureFormat == GL_TEXTURE_2D) {
         // Normalize the sybmol texture coordinates against the next higher POT
         // size
         wxSize size = m_texSoundings.GLTextureSize();
@@ -3819,7 +3819,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
 
 #endif  // GLES2
-      glDisable(m_TextureRectangleFormat);
+      glDisable(m_TextureFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
               */
       float cr = cosf(vp->rotation);
@@ -5022,11 +5022,11 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
 
   if (w > 1) {
     if (w > parms[1])
-      lineWidth = wxMax(g_GLMinCartographicLineWidth, parms[1]);
+      lineWidth = wxMax(m_GLMinCartographicLineWidth, parms[1]);
     else
-      lineWidth = wxMax(g_GLMinCartographicLineWidth, w);
+      lineWidth = wxMax(m_GLMinCartographicLineWidth, w);
   } else
-    lineWidth = wxMax(g_GLMinCartographicLineWidth, 1);
+    lineWidth = wxMax(m_GLMinCartographicLineWidth, 1);
 
   // Manage super high density displays
   float target_w_mm = 0.5 * w;
@@ -5038,7 +5038,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
     //  pixels
     // the value "6" comes from semi-standard LCD display densities
     // or something like 0.18 mm pitch, or 6 pix per mm.
-    lineWidth = wxMax(g_GLMinCartographicLineWidth, target_w_mm * GetPPMM());
+    lineWidth = wxMax(m_GLMinCartographicLineWidth, target_w_mm * GetPPMM());
   }
 
   glDisable(GL_LINE_SMOOTH);
@@ -12014,7 +12014,7 @@ void RenderFromHPGL::SetPen() {
                          5.0));  // 0.2 mm nominal, but not less than 1 pixel
     // qDebug() << nominal_line_width_pix;
     line_width =
-        wxMax(g_GLMinSymbolLineWidth, (float)penWidth * nominal_line_width_pix);
+        wxMax(1/*g_GLMinSymbolLineWidth*/, (float)penWidth * nominal_line_width_pix);
     glLineWidth(line_width);
 #endif
 
@@ -12178,7 +12178,7 @@ void RenderFromHPGL::Circle(wxPoint center, int radius, bool filled) {
         wxMax(1.0, floor(plib->GetPPMM() /
                          5.0));  // 0.2 mm nominal, but not less than 1 pixel
     float line_width =
-        wxMax(g_GLMinSymbolLineWidth, (float)penWidth * nominal_line_width_pix);
+        wxMax(1/*g_GLMinSymbolLineWidth*/, (float)penWidth * nominal_line_width_pix);
 
     GLint borderWidthloc =
         glGetUniformLocation(S52circle_filled_shader_program, "border_width");

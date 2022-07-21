@@ -33,6 +33,7 @@
 #include <wx/filename.h>
 #include <stdlib.h>
 
+#include "dychart.h"
 #include "chartsymbols.h"
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
