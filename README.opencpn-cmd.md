@@ -4,7 +4,7 @@ opencpn-cmd README
 This is a temporary file used under development of opencpn-cmd. It will 
 be replaced by a manual page. Please don't link to it.
 
-opencpn-cmd provides some basic commandline access to some OpenCPN functions.
+opencpn-cmd provides basic commandline access to some OpenCPN functions.
 At the time of writing it is mostly about plugins: list, install, remove,
 update, etc.
 
@@ -33,7 +33,7 @@ Make a local Flatpak build as described in
 https://opencpn-manuals.github.io/main/ocpn-dev-manual/od-compile-linux.html
 This will also make a local installation.
 
-opencpn-cmd needs to be run in the Flatpak sandbox. Do:
+opencpn-cmd needs to run in the Flatpak sandbox. Do:
 
     $ flatpak run --command=bash --devel org.opencpn.OpenCPN
     📦 $ opencpn-cmd --help
