@@ -631,6 +631,9 @@ void OCPNPlatform::Initialize_3(void) {
   bAndroid = true;
 #endif
 
+  if(!bcapable)
+    g_bopengl = false;
+
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
 
