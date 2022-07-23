@@ -783,7 +783,6 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 }
 
 
-
 bool OCPNPlatform::IsGLCapable() {
 #ifdef __OCPN__ANDROID__
   return true;
