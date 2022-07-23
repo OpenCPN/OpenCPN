@@ -1043,7 +1043,14 @@ set(
   src/undo.cpp
   src/update_mgr.cpp
   src/viewport.cpp
-  src/svg_utils.cpp)
+  src/svg_utils.cpp
+  src/commdriverBase.cpp
+  src/commdriverN2K.cpp
+  src/commdriverN2KSerial.cpp
+  src/commdriverN0183.cpp
+  src/commdriverN0183Serial.cpp
+  src/commdriverRegistry.cpp
+  )
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
