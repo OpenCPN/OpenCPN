@@ -696,8 +696,7 @@ void OCPNPlatform::OnExit_2(void) {
 #endif
 #endif
 }
-#if 0
-//FIXME
+
 bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   // Investigate OpenGL capabilities
   gFrame->Show();
@@ -781,11 +780,8 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   return true;
 }
-#endif  // 0
+
 bool OCPNPlatform::IsGLCapable() {
-// FIXME
-return false;
-#if 0
 #ifdef __OCPN__ANDROID__
   return true;
 #elif defined(CLI)
@@ -800,8 +796,9 @@ return false;
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
   if (!pcaps->bCanDoFBO) return false;
+
+  return true;
 #endif
-#endif // 0
 }
 
 void OCPNPlatform::SetLocaleSearchPrefixes(void) {
