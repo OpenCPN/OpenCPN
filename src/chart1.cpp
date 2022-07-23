@@ -147,6 +147,7 @@
 #include "Track.h"
 #include "TrackPropDlg.h"
 #include "usb_devices.h"
+#include "commdriverRegistry.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -7004,6 +7005,12 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       PositionIENCToolbar();
 
       g_bDeferredInitDone = true;
+
+      // Testing N2KSerial
+      ConnectionParams params;
+      params.Port = "/dev/ttyACM0";
+      commDriverRegistry::getInstance()->TestDriver(&params);
+
 
       GetPrimaryCanvas()->SetFocus();
       g_focusCanvas = GetPrimaryCanvas();
