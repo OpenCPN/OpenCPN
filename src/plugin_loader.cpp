@@ -538,7 +538,14 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
     wxLogMessage(msg + pic->m_plugin_file);
     pic->m_bInitState = false;
     pic->m_pplugin->DeInit();
-    evt_deactivate_plugin.notify(pic);
+    // pic is doomed and will be deleted. Make a copy to handler which
+    // can be used to look up items in toolbar etc.
+    // FIXME: Correct solution is to use a shared_ptr instead, expanding
+    // to a large patch covering many areas.
+    auto pic_copy =
+      static_cast<PlugInContainer*>(malloc(sizeof(PlugInContainer)));
+    memcpy(pic_copy, pic, sizeof(PlugInContainer));
+    evt_deactivate_plugin.notify(pic_copy);
   }
   return true;
 }

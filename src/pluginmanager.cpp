@@ -1269,6 +1269,8 @@ void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
       delete pimis;
     }
   }
+  // *pic is a malloc'ed copy of the original *pic, owned by us.
+  free(const_cast<PlugInContainer*>(pic));
 }
 
 

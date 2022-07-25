@@ -153,7 +153,10 @@ WX_DEFINE_ARRAY_PTR(PlugInContainer* , ArrayOfPlugIns);
 class PluginLoader {
 public:
   EventVar evt_blacklisted_plugin;
+
+  /** Receives a malloc'ed copy of a PlugInContainer owned by listener. */
   EventVar evt_deactivate_plugin;
+
   EventVar evt_incompatible_plugin;
   EventVar evt_load_directory;
   EventVar evt_load_plugin;
