@@ -68,6 +68,7 @@
 #include <archive.h>
 
 #include "catalog_parser.h"
+#include "observable.h"
 
 bool isRegularFile(const char* path);
 
@@ -85,6 +86,9 @@ private:
 
 class PluginHandler {
 public:
+
+  EventVar evt_download_ok;
+  EventVar evt_download_failed;
 
   static PluginHandler* getInstance();
 
@@ -128,6 +132,9 @@ public:
   /** Install a new, downloaded but not installed plugin tarball. */
   bool installPlugin(PluginMetadata plugin, std::string path);
 
+  /** Install a new, downloaded but not installed plugin tarball. */
+  bool installPlugin(std::string path);
+
   /** Uninstall an installed plugin. */
   bool uninstall(const std::string plugin);
 
@@ -147,8 +154,10 @@ private:
   CatalogData catalogData;
   std::string last_error_msg;
   bool explodeTarball(struct archive* src, struct archive* dest,
-                      std::string& filelist);
-  bool extractTarball(const std::string path, std::string& filelist);
+                      std::string& filelist,
+                      const std::string& metadata_path);
+  bool extractTarball(const std::string path, std::string& filelist,
+                      const std::string metadata_path = "");
   bool archive_check(int r, const char* msg, struct archive* a);
 };
 

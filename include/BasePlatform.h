@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Platform specific support utilities
+ * Purpose:  Basic platform specific support utilities without GUI deps.
  * Author:   David Register
  *
  ***************************************************************************
@@ -50,7 +50,6 @@ typedef struct {
   char msdk[20];
 } PlatSpec;
 
-
 void appendOSDirSlash(wxString* path);
 
 struct OCPN_OSDetail {
@@ -63,7 +62,6 @@ struct OCPN_OSDetail {
   std::string osd_arch;
   std::string osd_ID;
 };
-
 
 class BasePlatform {
 public:
@@ -102,7 +100,7 @@ public:
   wxString GetPluginDataPath();
 
   wxString& GetConfigFileName();
-  wxString &GetLogFileName() { return mlog_file; }
+  wxString& GetLogFileName() { return mlog_file; }
 
   bool isFlatpacked() { return m_isFlatpacked; }
 
@@ -111,10 +109,10 @@ public:
 
   void CloseLogFile(void);
   bool InitializeLogFile(void);
-  wxString &GetLargeLogMessage(void) { return large_log_message; }
+  wxString& GetLargeLogMessage(void) { return large_log_message; }
   FILE* GetLogFilePtr() { return flog; }
 
-  wxString NormalizePath(const wxString &full_path);
+  wxString NormalizePath(const wxString& full_path);
 
 protected:
   bool DetectOSDetail(OCPN_OSDetail* detail);
@@ -136,4 +134,4 @@ protected:
   wxString large_log_message;
 };
 
-#endif  // guard
+#endif  //  BASEPLATFORM_H

@@ -867,6 +867,7 @@ set(
   include/plugin_cache.h
   include/plugin_blacklist.h
   include/PluginHandler.h
+  include/plugin_loader.h
   include/pluginmanager.h
   include/PluginPaths.h
   include/PositionParser.h
@@ -992,12 +993,15 @@ set(
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
+  src/ocpn_plugin.cpp
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
   src/OCPN_SignalKEvent.cpp
+  src/ocpn_plugin.cpp
   src/ocpn_utils.cpp
   src/options.cpp
   src/piano.cpp
+  src/plugin_loader.cpp
   src/PluginHandler.cpp
   src/pluginmanager.cpp
   src/PluginPaths.cpp
@@ -1509,7 +1513,7 @@ if (QT_ANDROID)
   #set(OPENGL_FOUND "YES")
 
   # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
-  #add_subdirectory(libs/glshim)
+  # add_subdirectory(libs/glshim)
 endif (QT_ANDROID)
 
 message(STATUS "    Adding local GLU")
@@ -1519,30 +1523,17 @@ if (OCPN_VERBOSE)
   message(STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 endif ()
 
-if (QT_ANDROID)
-  target_include_directories(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
-  target_link_libraries(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
-elseif ( APPLE )
-  if (OCPN_USE_SYSTEM_LIBARCHIVE)
-    list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-    find_package(LibArchive REQUIRED)
-    target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-    # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
-    set(LIBARCHIVE_COMMENT_START "<!--")
-    set(LIBARCHIVE_COMMENT_END "-->")
-  else()
-    #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
-    target_include_directories(${PACKAGE_NAME} PRIVATE /opt/local/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE /opt/local/lib/libarchive.dylib)
-  endif()
-else ()
-  find_package(LibArchive REQUIRED)
-  target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-endif (QT_ANDROID)
+find_package(OcpnLibarchive)
+if (NOT TARGET ocpn::libarchive)
+  message(FATAL:_ERROR "No libarchive!!!")
+endif ()
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::libarchive)
+if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
+  # If we use system libarchive, we do not bundle the dylib and need to
+  # comment it out from the pkg project file
+  set(LIBARCHIVE_COMMENT_START "<!--")
+  set(LIBARCHIVE_COMMENT_END "-->")
+endif ()
 
 message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
@@ -2517,6 +2508,7 @@ endif ()
 # Build a CPack driven installer package
 #
 # include (InstallRequiredSystemLibraries)
+set(CPACK_BINDIR "${CMAKE_BINARY_DIR}")
 set(CPACK_PACKAGE_NAME "OpenCPN")
 set(CPACK_PACKAGE_VENDOR "opencpn.org")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
@@ -2744,6 +2736,12 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+  )
   set(
     LIBS
     "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
@@ -2851,4 +2849,58 @@ if (NOT TARGET uninstall)
     uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/uninstall.cmake
   )
+endif ()
+
+if (NOT QT_ANDROID)
+  #
+  # Piggy-back the console application on the main setup.
+  #
+  set(SRC_CONSOLE
+    src/api_shim.cpp
+    src/BasePlatform.cpp
+    src/catalog_handler.cpp
+    src/catalog_parser.cpp
+    src/console.cpp
+    src/Downloader.cpp
+    src/logger.cpp
+    src/observable.cpp
+    src/ocpn_plugin.cpp
+    src/ocpn_utils.cpp
+    src/plugin_cache.cpp
+    src/PluginHandler.cpp
+    src/plugin_loader.cpp
+    src/PluginPaths.cpp
+    src/pugixml.cpp
+    src/semantic_vers.cpp
+  )
+  add_executable(opencpn-cmd ${SRC_CONSOLE})
+
+  target_include_directories(
+    opencpn-cmd PRIVATE ${PROJECT_SOURCE_DIR}/include
+  )
+
+  target_compile_definitions(opencpn-cmd PUBLIC CLIAPP)
+
+
+  if (TARGET ocpn::wxcurl)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)
+  else ()
+    target_link_libraries(opencpn-cmd PRIVATE ${SYS_WXCURL_LIBRARIES})
+  endif ()
+
+  target_link_libraries(opencpn-cmd PRIVATE ${wxWidgets_LIBRARIES})
+  if (TARGET ocpn::wxsvg)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
+  endif ()
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
+    target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
+    target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
+  endif ()
+  install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()

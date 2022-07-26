@@ -61,7 +61,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "ocpn_utils.h"
 #include "PluginHandler.h"
 #include "plugin_cache.h"
-#include "pluginmanager.h"
+#include "plugin_loader.h"
 #include "PluginPaths.h"
 
 #ifdef _WIN32
@@ -75,13 +75,9 @@ static std::string SEP("/");
 #endif
 
 extern BasePlatform* g_BasePlatform;
-extern PlugInManager* g_pi_manager;
 extern wxString g_winPluginDir;
 extern MyConfig* pConfig;
 extern bool g_bportable;
-
-class MyFrame;
-extern MyFrame* gFrame;
 
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
@@ -735,7 +731,8 @@ bool PluginHandler::archive_check(int r, const char* msg, struct archive* a) {
 }
 
 bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
-                                   std::string& filelist) {
+                                   std::string& filelist,
+                                   const std::string& metadata_path) {
   struct archive_entry* entry = 0;
   pathmap_t pathmap = getInstallPaths();
   while (true) {
@@ -746,17 +743,19 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
     if (!archive_check(r, "archive read header error", src)) {
       return false;
     }
-
-    //  Ignore any occurrence of file "metadata.xml"
     std::string path = archive_entry_pathname(entry);
-    if (std::string::npos != path.find("metadata.xml")) continue;
-
-    if (!entry_set_install_path(entry, pathmap)) continue;
+    bool is_metadata = std::string::npos != path.find("metadata.xml");
+    if (is_metadata) {
+      if (metadata_path == "") continue;
+      archive_entry_set_pathname(entry, metadata_path.c_str());
+    }
+    else if (!entry_set_install_path(entry, pathmap)) continue;
     if (strlen(archive_entry_pathname(entry)) == 0) {
       continue;
     }
-    filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
-
+    if (!is_metadata) {
+      filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
+    }
     r = archive_write_header(dest, entry);
     archive_check(r, "archive write install header error", dest);
     if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
@@ -795,14 +794,14 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
  * For linux, the expected destinations are bin, lib and share.
  *
  * Parameters:
- *   - src: Readable libarchive source instance.
- *   - dest: Writable libarchive disk-writer instance.
- *   - filelist: On exit, list of installed files.
+ *   - path: path to tarball
+ *   - filelist: On return contains a list of files installed.
  *   - last_error_msg: Updated when returning false.
  *
  */
 bool PluginHandler::extractTarball(const std::string path,
-                                   std::string& filelist) {
+                                   std::string& filelist,
+                                   const std::string metadata_path) {
   struct archive* src = archive_read_new();
   archive_read_support_filter_gzip(src);
   archive_read_support_format_tar(src);
@@ -816,7 +815,7 @@ bool PluginHandler::extractTarball(const std::string path,
   }
   struct archive* dest = archive_write_disk_new();
   archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
-  bool ok = explodeTarball(src, dest, filelist);
+  bool ok = explodeTarball(src, dest, filelist, metadata_path);
   archive_read_free(src);
   archive_write_free(dest);
   return ok;
@@ -834,10 +833,8 @@ bool PluginHandler::isPluginWritable(std::string name) {
   if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
     return true;
   }
-  if (!g_pi_manager) {
-    return false;
-  }
-  return PlugInIxByName(name, g_pi_manager->GetPlugInArray()) == -1;
+  auto loader = PluginLoader::getInstance();
+  return PlugInIxByName(name, loader->GetPlugInArray()) == -1;
 }
 
 static std::string computeMetadataPath(void) {
@@ -1002,26 +999,25 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   using namespace std;
   vector<PluginMetadata> plugins;
 
-  if (g_pi_manager) {
-    ArrayOfPlugIns* mgr_plugins = g_pi_manager->GetPlugInArray();
-    for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
-      PlugInContainer* p = mgr_plugins->Item(i);
-      PluginMetadata plugin;
-      auto name = string(p->m_common_name);
-      // std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-      plugin.name = name;
-      std::stringstream ss;
-      ss << p->m_version_major << "." << p->m_version_minor;
-      plugin.version = ss.str();
-      plugin.readonly = !isPluginWritable(plugin.name);
-      string path = PluginHandler::versionPath(plugin.name);
-      if (path != "" && wxFileName::IsFileReadable(path)) {
-        std::ifstream stream;
-        stream.open(path, ifstream::in);
-        stream >> plugin.version;
-      }
-      plugins.push_back(plugin);
+  auto loader = PluginLoader::getInstance();
+  ArrayOfPlugIns* mgr_plugins = loader->GetPlugInArray();
+  for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
+    PlugInContainer* p = mgr_plugins->Item(i);
+    PluginMetadata plugin;
+    auto name = string(p->m_common_name);
+    // std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    plugin.name = name;
+    std::stringstream ss;
+    ss << p->m_version_major << "." << p->m_version_minor;
+    plugin.version = ss.str();
+    plugin.readonly = !isPluginWritable(plugin.name);
+    string path = PluginHandler::versionPath(plugin.name);
+    if (path != "" && wxFileName::IsFileReadable(path)) {
+      std::ifstream stream;
+      stream.open(path, ifstream::in);
+      stream >> plugin.version;
     }
+    plugins.push_back(plugin);
   }
   return plugins;
 }
@@ -1062,13 +1058,43 @@ bool PluginHandler::installPlugin(PluginMetadata plugin) {
   return installPlugin(plugin, path);
 }
 
+bool PluginHandler::installPlugin(std::string path) {
+  std::string filelist;
+  std::string temp_path(tmpnam(0));
+  if (!extractTarball(path, filelist, temp_path)) {
+    std::ostringstream os;
+    os << "Cannot unpack plugin tarball at : " << path;
+    if (filelist != "") cleanup(filelist, "unknown_name");
+    last_error_msg = os.str();
+    return false;
+  }
+  struct catalog_ctx ctx;
+  std::ifstream istream(temp_path);
+  std::stringstream buff;
+  buff << istream.rdbuf();
+  remove(temp_path.c_str());
+
+  auto xml = std::string("<plugins>") + buff.str() + "</plugins>";
+
+  ParseCatalog(xml, &ctx);
+  auto name = ctx.plugins[0].name;
+  auto version = ctx.plugins[0].version;
+
+  saveFilelist(filelist, name);
+  saveDirlist(name);
+  saveVersion(name, version);
+
+  return true;
+}
+
 bool PluginHandler::uninstall(const std::string plugin_name) {
   using namespace std;
 
-  auto ix = PlugInIxByName(plugin_name, g_pi_manager->GetPlugInArray());
-  auto pic = g_pi_manager->GetPlugInArray()->Item(ix);
+  auto loader = PluginLoader::getInstance();
+  auto ix = PlugInIxByName(plugin_name, loader->GetPlugInArray());
+  auto pic = loader->GetPlugInArray()->Item(ix);
   // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
-  g_pi_manager->UnLoadPlugIn(ix);
+  loader->UnLoadPlugIn(ix);
   string path = PluginHandler::fileListPath(plugin_name);
   if (!ocpn::exists(path)) {
     wxLogWarning("Cannot find installation data for %s (%s)",
@@ -1151,19 +1177,11 @@ bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
     bool bOK = installPlugin(plugin, cacheFile);
     if (!bOK) {
       wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
-      wxString message = _("Please check system log for more info.");
-      OCPNMessageBox(gFrame, message, _("Installation error"),
-                     wxICON_ERROR | wxOK | wxCENTRE);
+      evt_download_failed.notify(cacheFile);
       return false;
     }
-
-    wxString message;
-    message.Printf("%s %s\n", plugin.name.c_str(), plugin.version.c_str());
-    message += _(" successfully installed from cache");
-    OCPNMessageBox(gFrame, message, _("Installation complete"),
-                   wxICON_INFORMATION | wxOK | wxCENTRE);
+    evt_download_ok.notify(plugin.name + " " + plugin.version);
     return true;
   }
-
   return false;
 }

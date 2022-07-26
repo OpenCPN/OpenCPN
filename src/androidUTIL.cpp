@@ -32,6 +32,7 @@
 
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
+#include <wx/config.h>
 #include <wx/fontpicker.h>
 #include <wx/filepicker.h>
 #include <wx/zipstrm.h>
@@ -50,6 +51,7 @@
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
 #include "options.h"
+#include "plugin_loader.h"
 #include "routemanagerdialog.h"
 #include "chartdb.h"
 #include "s52plib.h"
@@ -104,6 +106,7 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 class androidUtilHandler;
+class PlugInManager;
 
 extern MyFrame *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
@@ -131,6 +134,8 @@ extern OCPNPlatform *g_Platform;
 // Static globals
 extern ChartDB *ChartData;
 extern MyConfig *pConfig;
+extern wxConfigBase *pBaseConfig;
+extern wxConfigBase *pBaseConfig;
 
 //   Preferences globals
 extern bool g_bShowOutlines;
@@ -4624,9 +4629,7 @@ int doAndroidPersistState() {
   }
 
   //    Deactivate the PlugIns, allowing them to save state
-  if (g_pi_manager) {
-    g_pi_manager->DeactivateAllPlugIns();
-  }
+  PluginLoader::getInstance()->DeactivateAllPlugIns();
 
   /*
    Automatically drop an anchorage waypoint, if enabled
@@ -4728,6 +4731,7 @@ int doAndroidPersistState() {
 
   delete pConfig;  // All done
   pConfig = NULL;
+  pBaseConfig = NULL;
 
   //    Unload the PlugIns
   //      Note that we are waiting until after the canvas is destroyed,
@@ -4737,8 +4741,8 @@ int doAndroidPersistState() {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
+  PluginLoader::getInstance()->UnLoadAllPlugIns();
   if (g_pi_manager) {
-    g_pi_manager->UnLoadAllPlugIns();
     delete g_pi_manager;
     g_pi_manager = NULL;
   }

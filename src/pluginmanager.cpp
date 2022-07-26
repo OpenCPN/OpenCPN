@@ -58,20 +58,23 @@
 #include <cxxabi.h>
 #endif  // __WXMSW__
 
-#include <stdint.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <cstdio>
-#include <memory>
-#include <iostream>
 
 #include <algorithm>
-#include <cstdio>
-#include <string>
-#include <set>
-#include <iostream>
-
 #include <archive.h>
+#include <cstdio>
+#include <cstdio>
+#include <errno.h>
+#include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <iostream>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <stdint.h>
+#include <string>
+#include <unordered_map>
+
 #include <archive_entry.h>
 typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
@@ -81,63 +84,65 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include <gelf.h>
 #endif
 
-#include <sstream>
-#include <fstream>
-#include <unordered_map>
-#include "config.h"
-#include "SoundFactory.h"
-#include "dychart.h"
-#include "PluginHandler.h"
-#include "plugin_cache.h"
-#include "pluginmanager.h"
-#include "navutil.h"
+
+#include "AIS_Decoder.h"
 #include "ais.h"
+#include "AIS_Target_Data.h"
+#include "canvasMenu.h"
+#include "catalog_handler.h"
+#include "cat_settings.h"
 #include "chartbase.h"  // for ChartPlugInWrapper
 #include "chartdb.h"
 #include "chartdbs.h"
+#include "chcanv.h"
+#include "config.h"
 #include "Downloader.h"
-#include "ocpndc.h"
-#include "styles.h"
-#include "options.h"
-#include "multiplexer.h"
-#include "logger.h"
-#include "ocpn_utils.h"
-#include "piano.h"
-#include "safe_mode.h"
-#include "routeman.h"
+#include "download_mgr.h"
+#include "dychart.h"
 #include "FontMgr.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
-#include "OCPN_DataStreamEvent.h"
 #include "georef.h"
-#include "routemanagerdialog.h"
-#include "NavObjectCollection.h"
-#include "OCPNRegion.h"
-#include "SystemCmdSound.h"
-#include "s52plib.h"
 #include "ocpn_pixel.h"
-#include "s52utils.h"
 #include "gshhs.h"
+#include "logger.h"
+#include "multiplexer.h"
 #include "mygeom.h"
+#include "NavObjectCollection.h"
+#include "navutil.h"
+#include "observable.h"
+#include "OCPN_AUIManager.h"
+#include "OCPN_DataStreamEvent.h"
+#include "ocpndc.h"
+#include "ocpn_pixel.h"
 #include "OCPNPlatform.h"
+#include "OCPNRegion.h"
+#include "ocpn_utils.h"
+#include "options.h"
+#include "piano.h"
+#include "plugin_cache.h"
+#include "PluginHandler.h"
+#include "plugin_loader.h"
+#include "pluginmanager.h"
 #include "PluginPaths.h"
+#include "Route.h"
+#include "routemanagerdialog.h"
+#include "routeman.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#include "safe_mode.h"
+#include "semantic_vers.h"
+#include "SoundFactory.h"
+#include "SystemCmdSound.h"
+#include "styles.h"
 #include "toolbar.h"
 #include "Track.h"
-#include "Route.h"
-#include "OCPN_AUIManager.h"
-#include "chcanv.h"
-#include "canvasMenu.h"
-#include "download_mgr.h"
-#include "catalog_handler.h"
-#include "semantic_vers.h"
 #include "update_mgr.h"
-#include "cat_settings.h"
+//#include "cat_settings.h"
 #include "svg_utils.h"
-#include "observable.h"
+//#include "observable.h"
 
 #ifdef __OCPN__ANDROID__
-#include "androidUTIL.h"
 #include <dlfcn.h>
+#include "androidUTIL.h"
 #endif
 
 #ifdef ocpnUSE_GL
@@ -227,7 +232,7 @@ extern arrayofCanvasPtr g_canvasArray;
 const char *const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char *const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
-void NotifySetupOptionsPlugin(PlugInContainer *pic);
+void NotifySetupOptionsPlugin(const PlugInContainer *pic);
 
 enum { CurlThreadId = wxID_HIGHEST + 1 };
 
@@ -475,14 +480,21 @@ static PluginMetadata getLatestUpdate() {
 /** Remove plugin and update GUI elements. */
 static void gui_uninstall(PlugInContainer *pic, const char *plugin) {
   g_Platform->ShowBusySpinner();
-  g_pi_manager->DeactivatePlugIn(pic);
+  PluginLoader::getInstance()->DeactivatePlugIn(pic);
   pic->m_bEnabled = false;
-  g_pi_manager->UpdatePlugIns();
+  PluginLoader::getInstance()->UpdatePlugIns();
 
   wxLogMessage("Uninstalling %s", plugin);
   PluginHandler::getInstance()->uninstall(plugin);
-  g_pi_manager->UpdatePlugIns();
+  PluginLoader::getInstance()->UpdatePlugIns();
   g_Platform->HideBusySpinner();
+}
+
+static bool LoadAllPlugIns(bool load_enabled) {
+  g_Platform->ShowBusySpinner();
+  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  g_Platform->HideBusySpinner();
+  return b;
 }
 
 static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
@@ -570,7 +582,8 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
           // Undocumented debug hook
           continue;
         }
-        if (!g_pi_manager->CheckPluginCompatibility(str)) {
+        auto loader = PluginLoader::getInstance();
+        if (!loader->CheckPluginCompatibility(str)) {
           wxString msg =
               _("The plugin is not compatible with this version of OpenCPN, "
                 "and will be uninstalled.");
@@ -595,9 +608,27 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
   }
 
   //  Reload all plugins, which will bring in the action results.
-  g_pi_manager->LoadAllPlugIns(false);
+  LoadAllPlugIns(false);
 
-  parent->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+  // Check to see if this plugin needs an options instance reload
+  if (g_options) {
+    bool b_newOptions = false;
+    auto loader = PluginLoader::getInstance();
+    for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount();
+         i++) {
+      PlugInContainer *pic = loader->GetPlugInArray()->Item(i);
+      wxString cname = pic->m_common_name;
+      if (pic->m_bInitState && (pluginName == cname)) {
+        if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)) {
+          g_options->SetNeedNew(true);
+
+          NotifySetupOptionsPlugin(pic);
+        }
+      }
+    }
+  }
+
+  parent->ReloadPluginPanels();
   // wxString name(plugin);
   // g_pi_manager->GetListPanelPtr()->SelectByName(name);
 }
@@ -659,38 +690,6 @@ ViewPort CreateCompatibleViewport(const PlugIn_ViewPort &pivp) {
   return vp;
 }
 
-PlugInContainer::PlugInContainer() {
-  m_pplugin = NULL;
-  m_bEnabled = false;
-  m_bInitState = false;
-  m_bToolboxPanel = false;
-  m_bitmap = NULL;
-  m_pluginStatus = PluginStatus::Unknown;
-  m_api_version = 0;
-}
-
-SemanticVersion PlugInContainer::GetVersion() {
-  if (m_ManagedMetadata.version.size()) {
-    return SemanticVersion::parse(m_ManagedMetadata.version);
-  }
-
-  if (!m_pplugin) {
-    return SemanticVersion(0, 0, 0);
-  }
-  auto plugin_117 = dynamic_cast<opencpn_plugin_117 *>(m_pplugin);
-  if (plugin_117) {
-    return SemanticVersion(
-        plugin_117->GetPlugInVersionMajor(),
-        plugin_117->GetPlugInVersionMinor(),
-        plugin_117->GetPlugInVersionPatch(), plugin_117->GetPlugInVersionPost(),
-        plugin_117->GetPlugInVersionPre(), plugin_117->GetPlugInVersionBuild());
-  } else {
-    return SemanticVersion(m_pplugin->GetPlugInVersionMajor(),
-                           m_pplugin->GetPlugInVersionMinor(),
-                           -1);  // Don't print .patch. It's unknown
-  }
-}
-
 class pluginUtilHandler : public wxEvtHandler {
 public:
   pluginUtilHandler();
@@ -719,6 +718,8 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
   // Perform the indicated action according to the verb...
   switch (panel->GetAction()) {
     case ActionVerb::UPGRADE_TO_MANAGED_VERSION: {
+      auto loader = PluginLoader::getInstance();
+
       // capture the plugin name
       std::string pluginName = actionPIC->m_ManagedMetadata.name;
 
@@ -731,24 +732,24 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
       std::string manifestPath = PluginHandler::fileListPath(pluginName);
       if (isRegularFile(manifestPath.c_str())) {
         // dynamically deactivate the legacy plugin, making way for the upgrade.
-        for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount();
+        for (unsigned i = 0; i < loader->GetPlugInArray()->GetCount();
              i += 1) {
           if (actionPIC->m_ManagedMetadata.name ==
-              g_pi_manager->GetPlugInArray()
+              loader->GetPlugInArray()
                   ->Item(i)
                   ->m_common_name.ToStdString()) {
-            g_pi_manager->UnLoadPlugIn(i);
+            loader->UnLoadPlugIn(i);
             break;
           }
         }
 
         //  Reload all plugins, which will bring in the new, managed version.
-        g_pi_manager->LoadAllPlugIns(false);
+        LoadAllPlugIns(false);
       } else {
         PluginHandler::cleanupFiles(manifestPath,
                                     actionPIC->m_ManagedMetadata.name);
       }
-      plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+      plugin_list_panel->ReloadPluginPanels();
       plugin_list_panel->SelectByName(name);
 
       break;
@@ -771,7 +772,7 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
     }
 
     case ActionVerb::UNINSTALL_MANAGED_VERSION: {
-      g_pi_manager->DeactivatePlugIn(actionPIC);
+      PluginLoader::getInstance()->DeactivatePlugIn(actionPIC);
 
       // Capture the confirmation dialog contents before the plugin goes away
       wxString message;
@@ -786,8 +787,9 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
           actionPIC->m_ManagedMetadata.name);
 
       //  Reload all plugins, which will bring in the action results.
-      g_pi_manager->LoadAllPlugIns(false);
-      plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+      auto loader =  PluginLoader::getInstance();
+      LoadAllPlugIns(false);
+      plugin_list_panel->ReloadPluginPanels();
 
       OCPNMessageBox(gFrame, message, _("Un-Installation complete"),
                      wxICON_INFORMATION | wxOK);
@@ -967,20 +969,35 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer() {
 PlugInManager *s_ppim;
 
 BEGIN_EVENT_TABLE(PlugInManager, wxEvtHandler)
-#ifndef __OCPN__ANDROID__
-#ifdef OCPN_USE_CURL
+#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
 EVT_CURL_END_PERFORM(CurlThreadId, PlugInManager::OnEndPerformCurlDownload)
 EVT_CURL_DOWNLOAD(CurlThreadId, PlugInManager::OnCurlDownload)
 #endif
-#endif
 END_EVENT_TABLE()
 
+static void event_message_box(const wxString& msg) {
+  OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
+                 wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
+}
+
+static void event_message_box(const wxString& msg, wxCommandEvent ev) {
+  auto s = wxString::Format(msg, ev.GetString());
+  event_message_box(s);
+}
+
+static void OnLoadPlugin(const PlugInContainer* pic) {
+  if (g_options) {
+    if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)) {
+      if (!pic->m_bToolboxPanel) NotifySetupOptionsPlugin(pic);
+    }
+  }
+}
+
+
 PlugInManager::PlugInManager(MyFrame *parent) {
-#ifndef __OCPN__ANDROID__
-#ifdef OCPN_USE_CURL
+#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
   m_pCurlThread = NULL;
   m_pCurl = 0;
-#endif
 #endif
   pParent = parent;
   s_ppim = this;
@@ -1007,28 +1024,107 @@ PlugInManager::PlugInManager(MyFrame *parent) {
 
 #endif
 
-#ifdef OCPN_USE_CURL
-#ifndef __OCPN__ANDROID__
+#if !defined(__OCPN__ANDROID__) && defined (OCPN_USE_CURL)
   wxCurlBase::Init();
   m_last_online = false;
   m_last_online_chk = -1;
-#endif
 #endif
 
   m_utilHandler = new pluginUtilHandler();
   m_listPanel = NULL;
   m_blacklist = blacklist_factory();
   m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
+  HandlePluginLoaderEvents();
+  auto loader = PluginLoader::getInstance();
 }
-
 PlugInManager::~PlugInManager() {
-#ifdef OCPN_USE_CURL
-#ifndef __OCPN__ANDROID__
+#if !defined(__OCPN__ANDROID__) && defined (OCPN_USE_CURL)
   wxCurlBase::Shutdown();
 #endif
-#endif
 }
 
+/**
+ * Set up actions to perform for messages generated by PluginLoader's
+ * evt_foo.notify() calls.
+ */
+
+wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
+wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
+wxDEFINE_EVENT(EVT_INCOMPATIBLE_PLUGIN, wxCommandEvent);
+wxDEFINE_EVENT(EVT_LOAD_DIRECTORY, wxCommandEvent);
+wxDEFINE_EVENT(EVT_LOAD_PLUGIN, wxCommandEvent);
+wxDEFINE_EVENT(EVT_PLUGIN_UNLOAD, wxCommandEvent);
+wxDEFINE_EVENT(EVT_PLUGLIST_CHANGE, wxCommandEvent);
+wxDEFINE_EVENT(EVT_UNREADABLE_PLUGIN, wxCommandEvent);
+wxDEFINE_EVENT(EVT_UPDATE_CHART_TYPES, wxCommandEvent);
+wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
+
+void PlugInManager::HandlePluginLoaderEvents() {
+  auto loader = PluginLoader::getInstance();
+
+  evt_blacklisted_plugin_listener =
+    loader->evt_blacklisted_plugin.get_listener(this, EVT_BLACKLISTED_PLUGIN);
+  Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent& ev) {
+    m_blacklist_ui->message(ev.GetString().ToStdString()); });
+
+  evt_deactivate_plugin_listener =
+    loader->evt_deactivate_plugin.get_listener(this, EVT_DEACTIVATE_PLUGIN);
+  Bind(EVT_DEACTIVATE_PLUGIN, [&](wxCommandEvent& ev) {
+    auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
+    OnPluginDeactivate(pic); });
+
+  evt_incompatible_plugin_listener =
+    loader->evt_incompatible_plugin.get_listener(this,
+                                                 EVT_INCOMPATIBLE_PLUGIN);
+  Bind(EVT_INCOMPATIBLE_PLUGIN,
+       [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
+
+  evt_pluglist_change_listener =
+    loader->evt_pluglist_change.get_listener(this, EVT_PLUGLIST_CHANGE);
+  Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
+    if (m_listPanel) m_listPanel->ReloadPluginPanels();
+    g_options->itemBoxSizerPanelPlugins->Layout(); });
+
+  evt_load_directory_listener =
+    loader->evt_load_directory.get_listener(this, EVT_LOAD_DIRECTORY);
+  Bind(EVT_LOAD_DIRECTORY, [&](wxCommandEvent&) {
+    pConfig->SetPath("/PlugIns/");
+    SetPluginOrder(pConfig->Read("PluginOrder", wxEmptyString)); });
+
+  evt_load_plugin_listener =
+    loader->evt_load_plugin.get_listener(this, EVT_LOAD_PLUGIN);
+  Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent& ev) {
+    auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
+    OnLoadPlugin(pic); });
+
+  evt_version_incompatible_plugin_listener = 
+    loader->evt_version_incompatible_plugin.get_listener(
+      this,
+      EVT_VERSION_INCOMPATIBLE_PLUGIN);
+  Bind(EVT_VERSION_INCOMPATIBLE_PLUGIN, [&](wxCommandEvent& ev) {
+    static const wxString msg =
+      _("The plugin %s is not compatible with this version "
+        "of OpenCPN, please get an updated version.");
+    event_message_box(msg, ev); });
+
+  evt_unreadable_plugin_listener =
+    loader->evt_blacklisted_plugin.get_listener(this, EVT_UNREADABLE_PLUGIN);
+  Bind(EVT_UNREADABLE_PLUGIN, [&](wxCommandEvent& ev) {
+    static const wxString msg =
+      _("Unreadable Plugin library %s detected, check file permissions:\n\n");
+    event_message_box(msg, ev); });
+
+  evt_incompatible_plugin_listener =
+    loader->evt_incompatible_plugin.get_listener(this,
+                                                 EVT_INCOMPATIBLE_PLUGIN);
+  Bind(EVT_INCOMPATIBLE_PLUGIN,
+       [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
+
+  evt_update_chart_types_listener = 
+    loader->evt_update_chart_types.get_listener(this, EVT_UPDATE_CHART_TYPES);
+  Bind(EVT_UPDATE_CHART_TYPES,
+       [&](wxCommandEvent& ev) { UpDateChartDataTypes(); });
+}
 
 /**
  * Set up actions to perform for messages generated by PluginHandlers's
@@ -1036,6 +1132,25 @@ PlugInManager::~PlugInManager() {
  */
 wxDEFINE_EVENT(EVT_DOWNLOAD_FAILED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_DOWNLOAD_OK, wxCommandEvent);
+
+void PlugInManager::HandlePluginHandlerEvents() {
+  auto loader = PluginLoader::getInstance();
+
+  evt_download_failed_listener =
+    loader->evt_update_chart_types.get_listener(this, EVT_DOWNLOAD_FAILED);
+  Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) { 
+      wxString message = _("Please check system log for more info.");
+      OCPNMessageBox(gFrame, message, _("Installation error"),
+                     wxICON_ERROR | wxOK | wxCENTRE); });
+
+  evt_download_ok_listener =
+    loader->evt_update_chart_types.get_listener(this, EVT_DOWNLOAD_OK);
+  Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent& ev) {
+    wxString message(ev.GetString());
+    message += _(" successfully installed from cache");
+    OCPNMessageBox(gFrame, message, _("Installation complete"),
+                   wxICON_INFORMATION | wxOK | wxCENTRE); });
+}
 
 /**
  *
@@ -1092,351 +1207,12 @@ static void setLoadPath() {
   }
 }
 
-bool PlugInManager::LoadAllPlugIns(bool load_enabled,
-                                   bool b_enable_blackdialog) {
-  using namespace std;
-  g_Platform->ShowBusySpinner();
-
-  static const wxString sep = wxFileName::GetPathSeparator();
-  vector<string> dirs = PluginPaths::getInstance()->Libdirs();
-  wxLogMessage(_T("PlugInManager: loading plugins from %s"),
-               ocpn::join(dirs, ';'));
-  setLoadPath();
-  bool any_dir_loaded = false;
-  for (auto dir : dirs) {
-    wxString wxdir(dir);
-    wxLogMessage("Loading plugins from dir: %s", wxdir.mb_str().data());
-    if (LoadPlugInDirectory(wxdir, load_enabled, b_enable_blackdialog))
-      any_dir_loaded = true;
-  }
-
-  // Read the default ocpn-plugins.xml, and update/merge the plugin array
-  // This only needs to happen when the entire universe (enabled and disabled)
-  // of plugins are loaded for management.
-  if (!load_enabled) UpdateManagedPlugins();
-
-  g_Platform->HideBusySpinner();
-
-  return any_dir_loaded;
-}
-
-// Static helper function: loads all plugins from a single directory
-bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir,
-                                        bool load_enabled,
-                                        bool b_enable_blackdialog) {
-  pConfig->SetPath(_T("/PlugIns/"));
-  SetPluginOrder(pConfig->Read(_T("PluginOrder"), wxEmptyString));
-
-  //  Enable the compatibility dialogs if requested, and has not been already
-  //  done once.
-  m_plugin_location = plugin_dir;
-
-  wxString msg(_T("PlugInManager searching for PlugIns in location "));
-  msg += m_plugin_location;
-  wxLogMessage(msg);
-
-#ifdef __WXMSW__
-  wxString pispec = _T("*_pi.dll");
-#elif defined(__WXOSX__)
-  wxString pispec = _T("*_pi.dylib");
-#else
-  wxString pispec = _T("*_pi.so");
-#endif
-
-  if (!::wxDirExists(m_plugin_location)) {
-    msg = m_plugin_location;
-    msg.Prepend(_T("   Directory "));
-    msg.Append(_T(" does not exist."));
-    wxLogMessage(msg);
-    return false;
-  }
-
-  if (!g_Platform->isPlatformCapable(PLATFORM_CAP_PLUGINS)) return false;
-
-  wxArrayString file_list;
-
-  int get_flags = wxDIR_FILES | wxDIR_DIRS;
-#ifdef __WXMSW__
-#ifdef _DEBUG
-  get_flags = wxDIR_FILES;
-#endif
-#endif
-
-#ifdef __OCPN__ANDROID__
-  get_flags = wxDIR_FILES;  // No subdirs, especially "/files" where PlugIns are
-                            // initially placed in APK
-#endif
-
-  bool ret =
-      false;  // return true if at least one new plugins gets loaded/unloaded
-  wxDir::GetAllFiles(m_plugin_location, &file_list, pispec, get_flags);
-
-  wxLogMessage("Found %d candidates", (int)file_list.GetCount());
-  for (unsigned int i = 0; i < file_list.GetCount(); i++) {
-    wxLog::FlushActive();
-
-    wxString file_name = file_list[i];
-    //     if (file_name.Contains("aisradar"))
-    //       int yyp = 3;
-
-    wxString plugin_file = wxFileName(file_name).GetFullName();
-    wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
-    wxDateTime plugin_modification =
-      wxFileName(file_name).GetModificationTime();
-
-    if (!m_blacklist->is_loadable(plugin_file.ToStdString())) {
-      wxLogDebug("Skipping blacklisted plugin (unloadable)");
-      continue;
-    }
-
-    // this gets called every time we switch to the plugins tab.
-    // this allows plugins to be installed and enabled without restarting
-    // opencpn. For this reason we must check that we didn't already load this
-    // plugin
-    bool loaded = false;
-    PlugInContainer *loaded_pic = 0;
-    for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-      PlugInContainer *pic_test = plugin_array[i];
-
-      // Checking for dynamically updated plugins
-      if (pic_test->m_plugin_filename == plugin_file) {
-        // Do not re-load same-name plugins from different directories.  Certain
-        // to crash...
-        if (pic_test->m_plugin_file == file_name) {
-          if (pic_test->m_plugin_modification != plugin_modification) {
-            // modification times don't match, reload plugin
-            plugin_array.Remove(pic_test);
-            i--;
-
-            DeactivatePlugIn(pic_test);
-            pic_test->m_destroy_fn(pic_test->m_pplugin);
-
-            delete pic_test;
-          } else {
-            loaded = true;
-            loaded_pic = pic_test;
-            break;
-          }
-        } else {
-          loaded = true;
-          loaded_pic = pic_test;
-          break;
-        }
-      }
-    }
-
-    if (loaded) continue;
-
-    //    Check the config file to see if this PlugIn is user-enabled
-    wxString config_section = (_T ( "/PlugIns/" ));
-    config_section += plugin_file;
-    pConfig->SetPath(config_section);
-    bool enabled;
-    pConfig->Read(_T ( "bEnabled" ), &enabled, false);
-
-    // only loading enabled plugins? check that it is enabled
-    if (load_enabled && !enabled) {
-      wxLogMessage("Skipping not enabled candidate.");
-      continue;
-    }
-
-    bool b_compat = CheckPluginCompatibility(file_name);
-
-    if (!b_compat) {
-      wxLogMessage("    Incompatible plugin detected: %s", file_name.c_str());
-      OCPNMessageBox(NULL,
-                     wxString::Format(
-                         _("The plugin %s is not compatible with this version "
-                           "of OpenCPN, please get an updated version."),
-                         plugin_file.c_str()),
-                     wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK,
-                     10);
-      m_blacklist->mark_unloadable(plugin_file.ToStdString());
-    }
-
-    PlugInContainer *pic = NULL;
-    if (b_compat) pic = LoadPlugIn(file_name);
-    wxLog::FlushActive();
-
-    if (!pic) {
-      auto data = plug_data(plugin_file.ToStdString(), -1, -1);
-      auto msg = m_blacklist->get_message(plug_status::unloadable, data);
-      m_blacklist_ui->message(msg);
-      m_blacklist->mark_unloadable(plugin_file.ToStdString());
-   } else {
-      if (pic->m_pplugin) {
-        plugin_array.Add(pic);
-
-        //    The common name is available without initialization and startup of
-        //    the PlugIn
-        pic->m_common_name = pic->m_pplugin->GetCommonName();
-        pic->m_plugin_filename = plugin_file;
-        pic->m_plugin_modification = plugin_modification;
-        pic->m_bEnabled = enabled;
-
-        if (safe_mode::get_mode()) {
-          pic->m_bEnabled = false;
-          pConfig->Write(_T ( "bEnabled" ), false);
-          pConfig->Flush();
-        }
-
-        if (pic->m_bEnabled) {
-          wxStopWatch sw;
-          pic->m_cap_flag = pic->m_pplugin->Init();
-          pic->m_bInitState = true;
-
-          if (g_options) {
-            if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)) {
-              if (!pic->m_bToolboxPanel) NotifySetupOptionsPlugin(pic);
-            }
-          }
-
-          if (g_options && g_boptionsactive) {
-            if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
-              g_options->SetForceNewToolbarOnCancel(true);
-          }
-        }
-        wxLog::FlushActive();
-
-        std::string found_version;
-        for (auto p : PluginHandler::getInstance()->getInstalled()) {
-          if (p.name == pic->m_common_name.Lower()) {
-            found_version = p.readonly ? "" : p.version;
-            break;
-          }
-        }
-        pic->m_version_str = found_version;
-        pic->m_short_description = pic->m_pplugin->GetShortDescription();
-        pic->m_long_description = pic->m_pplugin->GetLongDescription();
-        pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
-        pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-        pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-        if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
-          wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-              0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-          pic->m_bitmap = pbm;
-        }
-        else {
-          ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-          pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
-        }
-
-
-        ret = true;
-
-        if (!pic->m_bEnabled && pic->m_destroy_fn) {
-          if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
-            wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-                0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-            pic->m_bitmap = pbm;
-          }
-          else {
-            ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-            pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
-          }
-
-          pic->m_destroy_fn(pic->m_pplugin);
-          pic->m_destroy_fn = NULL;
-          pic->m_pplugin = NULL;
-          pic->m_bInitState = false;
-          if (pic->m_library.IsLoaded()) pic->m_library.Unload();
-        }
-
-      } else  // not loaded
-      {
-        wxString msg;
-        msg.Printf(
-            _T("    PlugInManager: Unloading invalid PlugIn, API version %d "),
-            pic->m_api_version);
-        wxLogMessage(msg);
-
-        pic->m_destroy_fn(pic->m_pplugin);
-
-        delete pic;
-      }
-    }
-  }
-
-  // Scrub the plugin array...
-  // Here, looking for duplicates caused by new installation of a plugin
-  // We want to remove the previous entry representing the uninstalled packaged
-  // plugin metadata
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
-    for (unsigned int j = i + 1; j < plugin_array.GetCount(); j++) {
-      PlugInContainer *pict = plugin_array[j];
-
-      if (pic->m_common_name == pict->m_common_name) {
-        if (pic->m_plugin_file.IsEmpty())
-          plugin_array.Item(i)->m_pluginStatus =
-              PluginStatus::PendingListRemoval;
-        else
-          plugin_array.Item(j)->m_pluginStatus =
-              PluginStatus::PendingListRemoval;
-      }
-    }
-  }
-
-  //  Remove any list items marked
-  size_t i = 0;
-  while ((i >= 0) && (i < plugin_array.GetCount())) {
-    PlugInContainer *pict = plugin_array.Item(i);
-    if (pict->m_pluginStatus == PluginStatus::PendingListRemoval) {
-      plugin_array.RemoveAt(i);
-      i = 0;
-    } else
-      i++;
-  }
-
-  /*
-      std::map<int, PlugInContainer*> ap;
-      for( unsigned int i = 0; i < plugin_array.GetCount(); i++ )
-      {
-          int index = m_plugin_order.Index( plugin_array[i]->m_common_name );
-          if( index != wxNOT_FOUND )
-          {
-              ap[index] = plugin_array[i];
-          }
-          else
-              ap[10000 + i] = plugin_array[i];
-      }
-      plugin_array.Empty();
-      for (std::map<int, PlugInContainer*>::reverse_iterator iter = ap.rbegin();
-     iter != ap.rend(); ++iter)
-      {
-          plugin_array.Insert( iter->second, 0 );
-      }
-      ap.clear();
-    */
-
-  UpDateChartDataTypes();
-
-  // Inform plugins of the current color scheme
-  SetColorSchemeForAllPlugIns(global_color_scheme);
-
-
-  // Tell all the PlugIns about the current OCPN configuration
-  SendBaseConfigToAllPlugIns();
-  SendS52ConfigToAllPlugIns(true);
-  SendSKConfigToAllPlugIns();
-
-  // Inform Plugins of OpenGL configuration, if enabled
-  if (g_bopengl) {
-    if (gFrame->GetPrimaryCanvas()->GetglCanvas())
-      gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
-  }
-
-  //  And then reload all catalogs.
-  ReloadLocale();
-
-  return ret;
-}
-
 bool PlugInManager::CallLateInit(void) {
   bool bret = true;
 
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = (*plugin_array)[i];
 
     switch (pic->m_api_version) {
       case 110:
@@ -1467,6 +1243,37 @@ void PlugInManager::ProcessLateInit(PlugInContainer *pic) {
   }
 }
 
+void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
+  // Unload chart cache if this plugin is responsible for any charts
+  if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
+      (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
+    ChartData->PurgeCachePlugins();
+    gFrame->InvalidateAllQuilts();
+
+  }
+  //    Deactivate (Remove) any ToolbarTools added by this PlugIn
+  for (unsigned int i = 0; i < m_PlugInToolbarTools.GetCount(); i++) {
+    PlugInToolbarToolContainer* pttc = m_PlugInToolbarTools[i];
+
+    if (pttc->m_pplugin == pic->m_pplugin) {
+      m_PlugInToolbarTools.Remove(pttc);
+      delete pttc;
+    }
+  }
+
+  //    Deactivate (Remove) any ContextMenu items addded by this PlugIn
+  for (unsigned int i = 0; i < m_PlugInMenuItems.GetCount(); i++) {
+    PlugInMenuItemContainer* pimis = m_PlugInMenuItems[i];
+    if (pimis->m_pplugin == pic->m_pplugin) {
+      m_PlugInMenuItems.Remove(pimis);
+      delete pimis;
+    }
+  }
+  // *pic is a malloc'ed copy of the original *pic, owned by us.
+  free(const_cast<PlugInContainer*>(pic));
+}
+
+
 void PlugInManager::SendVectorChartObjectInfo(const wxString &chart,
                                               const wxString &feature,
                                               const wxString &objname,
@@ -1475,8 +1282,9 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart,
   wxString decouple_chart(chart);
   wxString decouple_feature(feature);
   wxString decouple_objname(objname);
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = (*plugin_array)[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_VECTOR_CHART_OBJECT_INFO) {
         switch (pic->m_api_version) {
@@ -1505,8 +1313,9 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart,
 bool PlugInManager::IsAnyPlugInChartEnabled() {
   //  Is there a PlugIn installed and active that implements PlugIn Chart
   //  type(s)?
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = (*plugin_array)[i];
     if (pic->m_bEnabled && pic->m_bInitState) {
       if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
           (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))
@@ -1516,116 +1325,20 @@ bool PlugInManager::IsAnyPlugInChartEnabled() {
   return false;
 }
 
-bool PlugInManager::UpdatePlugIns() {
-  bool bret = false;
-
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
-
-    // Try to confirm that the m_pplugin member points to a valid plugin
-    // image...
-    if (pic->m_pplugin) {
-      opencpn_plugin *ppl = dynamic_cast<opencpn_plugin *>(pic->m_pplugin);
-      if (!ppl) {
-        pic->m_pplugin = NULL;
-        pic->m_bInitState = false;
-      }
-    }
-
-    // Installed and loaded?
-    if (!pic->m_pplugin) {  // Needs a reload?
-      if (pic->m_bEnabled) {
-        PluginStatus stat = pic->m_pluginStatus;
-        PlugInContainer *newpic = LoadPlugIn(pic->m_plugin_file, pic);
-        if (newpic) {
-          pic->m_pluginStatus = stat;
-          pic->m_bEnabled = true;
-        }
-      } else
-        continue;
-    }
-
-    if (pic->m_bEnabled && !pic->m_bInitState && pic->m_pplugin) {
-      wxString msg(_T("PlugInManager: Initializing PlugIn: "));
-      msg += pic->m_plugin_file;
-      wxLogMessage(msg);
-
-      pic->m_cap_flag = pic->m_pplugin->Init();
-      pic->m_pplugin->SetDefaults();
-      pic->m_bInitState = true;
-      ProcessLateInit(pic);
-      pic->m_short_description = pic->m_pplugin->GetShortDescription();
-      pic->m_long_description = pic->m_pplugin->GetLongDescription();
-      pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
-      pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-      pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-
-      if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
-        wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-            0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-        pic->m_bitmap = pbm;
-      }
-      else {
-        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-        pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
-      }
-
-      if (g_options && g_boptionsactive) {
-        if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
-          g_options->SetForceNewToolbarOnCancel(true);
-      }
-
-      bret = true;
-    } else if (!pic->m_bEnabled && pic->m_bInitState) {
-      // Save a local copy of the plugin icon before unloading
-      if (pic->m_bitmap && pic->m_bitmap->IsOk()) {
-        wxBitmap *pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-            0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-        pic->m_bitmap = pbm;
-      }
-      else {
-        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-        pic->m_bitmap = new wxBitmap(style->GetIcon(_T("default_pi")));
-      }
-
-
-      bret = DeactivatePlugIn(pic);
-      if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
-      if (pic->m_library.IsLoaded()) pic->m_library.Unload();
-      pic->m_pplugin = NULL;
-      pic->m_bInitState = false;
-    }
-  }
-
-  UpDateChartDataTypes();
-
-  // Tell all the PlugIns about the current OCPN configuration
-  SendBaseConfigToAllPlugIns();
-  SendS52ConfigToAllPlugIns(true);
-  SendSKConfigToAllPlugIns();
-
-  // Inform Plugins of OpenGL configuration, if enabled
-  if (g_bopengl) {
-    if (gFrame->GetPrimaryCanvas()->GetglCanvas())
-      gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
-  }
-
-  return bret;
-}
-
 void PlugInManager::UpdateManagedPlugins() {
   PlugInContainer *pict;
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   // Clear the status (to "unmanaged") on all plugins
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    pict = plugin_array.Item(i);
-    plugin_array.Item(i)->m_pluginStatus = PluginStatus::Unmanaged;
+  for (size_t i = 0; i < plugin_array->GetCount(); i++) {
+    pict = plugin_array->Item(i);
+    plugin_array->Item(i)->m_pluginStatus = PluginStatus::Unmanaged;
 
     // Pre-mark the default "system" plugins
     auto r =
         std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
-                  plugin_array.Item(i)->m_common_name.Lower().ToStdString());
+                  plugin_array->Item(i)->m_common_name.Lower().ToStdString());
     if (r != SYSTEM_PLUGINS.end())
-      plugin_array.Item(i)->m_pluginStatus = PluginStatus::System;
+      plugin_array->Item(i)->m_pluginStatus = PluginStatus::System;
   }
 
   std::vector<PluginMetadata> available = getCompatiblePlugins();
@@ -1634,8 +1347,8 @@ void PlugInManager::UpdateManagedPlugins() {
   // Remove any inactive/uninstalled managed plugins that are no longer
   // available in the current catalog Usually due to reverting from Alpha/Beta
   // catalog back to master
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    pict = plugin_array.Item(i);
+  for (size_t i = 0; i < plugin_array->GetCount(); i++) {
+    pict = plugin_array->Item(i);
     if (pict->m_ManagedMetadata.name
             .size()) {  // If metadata is good, must be a managed plugin
       bool bfound = false;
@@ -1647,7 +1360,7 @@ void PlugInManager::UpdateManagedPlugins() {
       }
       if (!bfound) {
         if (!pict->m_pplugin) {  // Only remove inactive plugins
-          plugin_array.Item(i)->m_pluginStatus =
+          plugin_array->Item(i)->m_pluginStatus =
               PluginStatus::PendingListRemoval;
         }
       }
@@ -1656,17 +1369,17 @@ void PlugInManager::UpdateManagedPlugins() {
 
   //  Remove any list items marked
   size_t i = 0;
-  while ((i >= 0) && (i < plugin_array.GetCount())) {
-    pict = plugin_array.Item(i);
+  while ((i >= 0) && (i < plugin_array->GetCount())) {
+    pict = plugin_array->Item(i);
     if (pict->m_pluginStatus == PluginStatus::PendingListRemoval) {
-      plugin_array.RemoveAt(i);
+      plugin_array->RemoveAt(i);
       i = 0;
     } else
       i++;
   }
 
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    pict = plugin_array.Item(i);
+  for (size_t i = 0; i < plugin_array->GetCount(); i++) {
+    pict = plugin_array->Item(i);
     int yyp = 4;
   }
 
@@ -1675,9 +1388,9 @@ void PlugInManager::UpdateManagedPlugins() {
     PlugInContainer *pic = NULL;
     // Search for an exact name match in the existing plugin array
     bool bfound = false;
-    for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-      pic = plugin_array.Item(i);
-      if (plugin_array.Item(i)->m_common_name.IsSameAs(
+    for (size_t i = 0; i < plugin_array->GetCount(); i++) {
+      pic = plugin_array->Item(i);
+      if (plugin_array->Item(i)->m_common_name.IsSameAs(
               wxString(plugin.name.c_str()))) {
         bfound = true;
         break;
@@ -1714,7 +1427,7 @@ void PlugInManager::UpdateManagedPlugins() {
           new_pic->m_pluginStatus = PluginStatus::Unknown;
       }
 
-      plugin_array.Add(new_pic);
+      plugin_array->Add(new_pic);
 
     }
     // Match found, so merge the info and determine the plugin status
@@ -1768,10 +1481,10 @@ void PlugInManager::UpdateManagedPlugins() {
 
   // Detach and hold the uninstalled, managed plugins
   std::map<std::string, PlugInContainer *> sortmap;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
-      plugin_array.Remove(pic);
+      plugin_array->Remove(pic);
 
       // Sort by name, lower cased.
       std::string name = pic->m_ManagedMetadata.name;
@@ -1786,20 +1499,21 @@ void PlugInManager::UpdateManagedPlugins() {
   for (std::map<std::string, PlugInContainer *>::iterator i = sortmap.begin();
        i != sortmap.end(); i++) {
     PlugInContainer *pic = i->second;
-    plugin_array.Insert(pic, 0);
+    plugin_array->Insert(pic, 0);
   }
 
-  if (m_listPanel) m_listPanel->ReloadPluginPanels(&plugin_array);
+  if (m_listPanel) m_listPanel->ReloadPluginPanels();
 
   g_options->itemBoxSizerPanelPlugins->Layout();
 }
 
-bool PlugInManager::UpDateChartDataTypes(void) {
+bool PlugInManager::UpDateChartDataTypes() {
   bool bret = false;
   if (NULL == ChartData) return bret;
 
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
 
     if (pic->m_bInitState) {
       if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
@@ -1809,58 +1523,6 @@ bool PlugInManager::UpDateChartDataTypes(void) {
   }
 
   if (bret) ChartData->UpdateChartClassDescriptorArray();
-
-  return bret;
-}
-
-bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic) {
-  bool bret = false;
-
-  if (pic) {
-    if (pic->m_bInitState) {
-      wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
-      msg += pic->m_plugin_file;
-      wxLogMessage(msg);
-
-      // Unload chart cache if this plugin is responsible for any charts
-      if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
-          (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
-        ChartData->PurgeCachePlugins();
-        gFrame->InvalidateAllQuilts();
-      }
-      if (g_pOptions && g_boptionsactive) {
-        if (pic->m_cap_flag & INSTALLS_TOOLBAR_TOOL)
-          g_pOptions->SetForceNewToolbarOnCancel(true);
-      }
-
-      pic->m_bInitState = false;
-      pic->m_pplugin->DeInit();
-    } else {
-      // Already deactivated
-      return true;
-    }
-
-    //    Deactivate (Remove) any ToolbarTools added by this PlugIn
-    for (unsigned int i = 0; i < m_PlugInToolbarTools.GetCount(); i++) {
-      PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools[i];
-
-      if (pttc->m_pplugin == pic->m_pplugin) {
-        m_PlugInToolbarTools.Remove(pttc);
-        delete pttc;
-      }
-    }
-
-    //    Deactivate (Remove) any ContextMenu items addded by this PlugIn
-    for (unsigned int i = 0; i < m_PlugInMenuItems.GetCount(); i++) {
-      PlugInMenuItemContainer *pimis = m_PlugInMenuItems[i];
-      if (pimis->m_pplugin == pic->m_pplugin) {
-        m_PlugInMenuItems.Remove(pimis);
-        delete pimis;
-      }
-    }
-
-    bret = true;
-  }
 
   return bret;
 }
@@ -1875,9 +1537,10 @@ void PlugInManager::SetPluginOrder(wxString serialized_names) {
 
 wxString PlugInManager::GetPluginOrder() {
   wxString plugins = wxEmptyString;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    plugins.Append(plugin_array[i]->m_common_name);
-    if (i < plugin_array.GetCount() - 1) plugins.Append(';');
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    plugins.Append(plugin_array->Item(i)->m_common_name);
+    if (i < plugin_array->GetCount() - 1) plugins.Append(';');
   }
   return plugins;
 }
@@ -1886,8 +1549,9 @@ bool PlugInManager::UpdateConfig() {
   //    pConfig->SetPath( _T("/PlugIns/") );
   //    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
 
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
 
     if (pic) {
       wxString config_section = (_T ( "/PlugIns/" ));
@@ -1900,390 +1564,6 @@ bool PlugInManager::UpdateConfig() {
   return true;
 }
 
-bool PlugInManager::UnLoadPlugIn(size_t ix) {
-  if (ix >= plugin_array.GetCount()) {
-    wxLogWarning("Attempt to remove non-existing plugin %d", ix);
-    return false;
-  }
-  PlugInContainer *pic = plugin_array[ix];
-  if (!DeactivatePlugIn(pic)) {
-    return false;
-  }
-  if (pic->m_pplugin) {
-    pic->m_destroy_fn(pic->m_pplugin);
-  }
-
-  delete pic;  // This will unload the PlugIn via DTOR of pic->m_library
-  plugin_array.RemoveAt(ix);
-  return true;
-}
-
-bool PlugInManager::UnLoadAllPlugIns() {
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    if (!UnLoadPlugIn(i)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool PlugInManager::DeactivateAllPlugIns() {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
-    if (pic && pic->m_bEnabled && pic->m_bInitState) DeactivatePlugIn(pic);
-  }
-  return true;
-}
-
-#ifdef __WXMSW__
-/*Convert Virtual Address to File Offset */
-DWORD Rva2Offset(DWORD rva, PIMAGE_SECTION_HEADER psh, PIMAGE_NT_HEADERS pnt) {
-  size_t i = 0;
-  PIMAGE_SECTION_HEADER pSeh;
-  if (rva == 0) {
-    return (rva);
-  }
-  pSeh = psh;
-  for (i = 0; i < pnt->FileHeader.NumberOfSections; i++) {
-    if (rva >= pSeh->VirtualAddress &&
-        rva < pSeh->VirtualAddress + pSeh->Misc.VirtualSize) {
-      break;
-    }
-    pSeh++;
-  }
-  return (rva - pSeh->VirtualAddress + pSeh->PointerToRawData);
-}
-#endif
-
-class ModuleInfo {
-public:
-  WX_DECLARE_HASH_SET(wxString, wxStringHash, wxStringEqual, DependencySet);
-  WX_DECLARE_HASH_MAP(wxString, wxString, wxStringHash, wxStringEqual,
-                      DependencyMap);
-
-  uint64_t type_magic;
-  DependencyMap dependencies;
-};
-
-#ifdef USE_LIBELF
-bool ReadModuleInfoFromELF(const wxString &file,
-                           const ModuleInfo::DependencySet &dependencies,
-                           ModuleInfo &info) {
-  static bool b_libelf_initialized = false;
-  static bool b_libelf_usable = false;
-
-  if (b_libelf_usable) {
-    // Nothing to do.
-  } else if (b_libelf_initialized) {
-    return false;
-  } else if (elf_version(EV_CURRENT) == EV_NONE) {
-    b_libelf_initialized = true;
-    b_libelf_usable = false;
-    wxLogError(_T("LibELF is outdated."));
-    return false;
-  } else {
-    b_libelf_initialized = true;
-    b_libelf_usable = true;
-  }
-
-  int file_handle;
-  Elf *elf_handle = NULL;
-  GElf_Ehdr elf_file_header;
-  Elf_Scn *elf_section_handle = NULL;
-
-  file_handle = open(file, O_RDONLY);
-  if (file_handle == -1) {
-    wxLogError(wxString::Format(
-        _T("Could not open file \"%s\" for reading with errno = %i."), file,
-        errno));
-    goto FailureEpilogue;
-  }
-
-  elf_handle = elf_begin(file_handle, ELF_C_READ, NULL);
-  if (elf_handle == NULL) {
-    wxLogError(wxString::Format(_T("Could not get %s %s from \"%s\"."),
-                                _T("ELF"), _T("structures"), file));
-    goto FailureEpilogue;
-  }
-
-  if (gelf_getehdr(elf_handle, &elf_file_header) != &elf_file_header) {
-    wxLogError(wxString::Format(_T("Could not get %s %s from \"%s\"."),
-                                _T("ELF"), _T("file header"), file));
-    goto FailureEpilogue;
-  }
-
-  switch (elf_file_header.e_type) {
-    case ET_EXEC:
-    case ET_DYN:
-      break;
-    default:
-      wxLogError(wxString::Format(
-          _T("Module \"%s\" is not an executable or shared library."), file));
-      goto FailureEpilogue;
-  }
-
-  info.type_magic =
-      (static_cast<uint64_t>(elf_file_header.e_ident[EI_CLASS])
-       << 0) |  // ELF class (32/64).
-      (static_cast<uint64_t>(elf_file_header.e_ident[EI_DATA])
-       << 8) |  // Endianness.
-      (static_cast<uint64_t>(elf_file_header.e_ident[EI_OSABI])
-       << 16) |  // OS ABI (Linux, FreeBSD, etc.).
-      (static_cast<uint64_t>(elf_file_header.e_ident[EI_ABIVERSION])
-       << 24) |  // OS ABI version.
-      (static_cast<uint64_t>(elf_file_header.e_machine)
-       << 32) |  // Instruction set.
-      0;
-
-  while ((elf_section_handle = elf_nextscn(elf_handle, elf_section_handle)) !=
-         NULL) {
-    GElf_Shdr elf_section_header;
-    Elf_Data *elf_section_data = NULL;
-    size_t elf_section_entry_count = 0;
-
-    if (gelf_getshdr(elf_section_handle, &elf_section_header) !=
-        &elf_section_header) {
-      wxLogError(wxString::Format(_T("Could not get %s %s from \"%s\"."),
-                                  _T("ELF"), _T("section header"), file));
-      goto FailureEpilogue;
-    } else if (elf_section_header.sh_type != SHT_DYNAMIC) {
-      continue;
-    }
-
-    elf_section_data = elf_getdata(elf_section_handle, NULL);
-    if (elf_section_data == NULL) {
-      wxLogError(wxString::Format(_T("Could not get %s %s from \"%s\"."),
-                                  _T("ELF"), _T("section data"), file));
-      goto FailureEpilogue;
-    }
-
-    if ((elf_section_data->d_size == 0) ||
-        (elf_section_header.sh_entsize == 0)) {
-      wxLogError(wxString::Format(_T("Got malformed %s %s from \"%s\"."),
-                                  _T("ELF"), _T("section metadata"), file));
-      goto FailureEpilogue;
-    }
-
-    elf_section_entry_count =
-        elf_section_data->d_size / elf_section_header.sh_entsize;
-    for (size_t elf_section_entry_index = 0;
-         elf_section_entry_index < elf_section_entry_count;
-         ++elf_section_entry_index) {
-      GElf_Dyn elf_dynamic_entry;
-      const char *elf_dynamic_entry_name = NULL;
-      if (gelf_getdyn(elf_section_data, elf_section_entry_index,
-                      &elf_dynamic_entry) != &elf_dynamic_entry) {
-        wxLogError(wxString::Format(_T("Could not get %s %s from \"%s\"."),
-                                    _T("ELF"), _T("dynamic section entry"),
-                                    file));
-        goto FailureEpilogue;
-      } else if (elf_dynamic_entry.d_tag != DT_NEEDED) {
-        continue;
-      }
-      elf_dynamic_entry_name = elf_strptr(
-          elf_handle, elf_section_header.sh_link, elf_dynamic_entry.d_un.d_val);
-      if (elf_dynamic_entry_name == NULL) {
-        wxLogError(wxString::Format(_T("Could not get %s %s from \"%s\"."),
-                                    _T("ELF"), _T("string entry"), file));
-        goto FailureEpilogue;
-      }
-      wxString name_full(elf_dynamic_entry_name);
-      wxString name_part(elf_dynamic_entry_name,
-                         strcspn(elf_dynamic_entry_name, "-."));
-      if (dependencies.find(name_part) != dependencies.end()) {
-        info.dependencies.insert(
-            ModuleInfo::DependencyMap::value_type(name_part, name_full));
-      }
-    }
-  };
-
-  goto SuccessEpilogue;
-
-SuccessEpilogue:
-  elf_end(elf_handle);
-  close(file_handle);
-  return true;
-
-FailureEpilogue:
-  if (elf_handle != NULL) elf_end(elf_handle);
-  if (file_handle >= 0) close(file_handle);
-  return false;
-}
-#endif  // USE_LIBELF
-
-bool PlugInManager::CheckPluginCompatibility(wxString plugin_file) {
-  bool b_compat = true;
-
-#ifdef __WXMSW__
-  char strver[22];  // Enough space even for very big integers...
-  sprintf(strver, "%i%i", wxMAJOR_VERSION, wxMINOR_VERSION);
-  LPCWSTR fNmae = plugin_file.wc_str();
-  HANDLE handle = CreateFile(fNmae, GENERIC_READ, 0, 0, OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL, 0);
-  DWORD byteread, size = GetFileSize(handle, NULL);
-  PVOID virtualpointer = VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
-  ReadFile(handle, virtualpointer, size, &byteread, NULL);
-  CloseHandle(handle);
-  // Get pointer to NT header
-  PIMAGE_NT_HEADERS ntheaders =
-      (PIMAGE_NT_HEADERS)(PCHAR(virtualpointer) +
-                          PIMAGE_DOS_HEADER(virtualpointer)->e_lfanew);
-  PIMAGE_SECTION_HEADER pSech =
-      IMAGE_FIRST_SECTION(ntheaders);  // Pointer to first section header
-  PIMAGE_IMPORT_DESCRIPTOR pImportDescriptor;  // Pointer to import descriptor
-  if (ntheaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT]
-          .Size !=
-      0) /*if size of the table is 0 - Import Table does not exist */
-  {
-    pImportDescriptor =
-        (PIMAGE_IMPORT_DESCRIPTOR)((DWORD_PTR)virtualpointer +
-                                   Rva2Offset(
-                                       ntheaders->OptionalHeader
-                                           .DataDirectory
-                                               [IMAGE_DIRECTORY_ENTRY_IMPORT]
-                                           .VirtualAddress,
-                                       pSech, ntheaders));
-    LPSTR libname[256];
-    size_t i = 0;
-    // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR
-    while (pImportDescriptor->Name != 0) {
-      // Get the name of each DLL
-      libname[i] =
-          (PCHAR)((DWORD_PTR)virtualpointer +
-                  Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));
-      // wxMessageBox(wxString::Format(_T("%s"), libname[i]));
-      if (strstr(libname[i], "wx") != NULL) {
-        if (strstr(libname[i], strver) == NULL) b_compat = false;
-        break;
-      }
-      pImportDescriptor++;  // advance to next IMAGE_IMPORT_DESCRIPTOR
-      i++;
-    }
-  } else {
-    wxLogMessage(
-        wxString::Format(_T("No Import Table! in %s"), plugin_file.c_str()));
-  }
-  if (virtualpointer) VirtualFree(virtualpointer, size, MEM_DECOMMIT);
-#endif
-#if defined(__WXGTK__) || defined(__WXQT__)
-#if defined(USE_LIBELF)
-
-  static bool b_own_info_queried = false;
-  static bool b_own_info_usable = false;
-  static ModuleInfo own_info;
-  static ModuleInfo::DependencySet dependencies;
-
-  if (!b_own_info_queried) {
-    dependencies.insert(_T("libwx_baseu"));
-    const wxApp &app = *wxTheApp;
-    if (app.argc && !app.argv[0].IsEmpty()) {
-      wxString app_path(app.argv[0]);
-      b_own_info_usable =
-          ReadModuleInfoFromELF(app_path, dependencies, own_info);
-    } else {
-      wxLogError(_T("Cannot get own executable path."));
-    }
-    b_own_info_queried = true;
-  }
-
-  if (b_own_info_usable) {
-    bool b_pi_info_usable = false;
-    ModuleInfo pi_info;
-    b_pi_info_usable =
-        ReadModuleInfoFromELF(plugin_file, dependencies, pi_info);
-    if (b_pi_info_usable) {
-      b_compat = (pi_info.type_magic == own_info.type_magic);
-      if (1 /*g_Platform->isFlatpacked()*/) {  // Ignore specific difference in
-                                               // OSABI field on flatpak builds
-        if ((pi_info.type_magic ^ own_info.type_magic) == 0x00030000)
-          b_compat = true;
-      }
-      if (!b_compat) {
-        pi_info.dependencies.clear();
-        wxLogError(
-            wxString::Format(_T("    Plugin \"%s\" is of another binary ")
-                             _T("flavor than the main module."),
-                             plugin_file));
-        wxLogDebug("host magic: %.8x, plugin magic: %.8x", own_info.type_magic,
-                   pi_info.type_magic);
-      }
-      for (ModuleInfo::DependencyMap::const_iterator own_dependency =
-               own_info.dependencies.begin();
-           own_dependency != own_info.dependencies.end(); ++own_dependency) {
-        ModuleInfo::DependencyMap::const_iterator pi_dependency =
-            pi_info.dependencies.find(own_dependency->first);
-        if ((pi_dependency != pi_info.dependencies.end()) &&
-            (pi_dependency->second != own_dependency->second)) {
-          b_compat = false;
-          wxLogError(wxString::Format(
-              _T("    Plugin \"%s\" depends on library \"%s\", but the main ")
-              _T("module was built for \"%s\"."),
-              plugin_file, pi_dependency->second, own_dependency->second));
-          break;
-        }
-      }
-    } else {
-      b_compat = false;
-      wxLogMessage(
-          wxString::Format(_T("    Plugin \"%s\" could not be reliably ")
-                           _T("checked for compatibility."),
-                           plugin_file));
-    }
-  } else {
-    // Allow any plugin when own info is not available.
-    b_compat = true;
-  }
-
-  wxLogMessage("Plugin is compatible by elf library scan: %s",
-               b_compat ? "true" : "false");
-  return b_compat;
-
-#endif  // LIBELF
-
-  //  But Android Plugins do not include the wxlib specification in their ELF
-  //  file. So we assume Android Plugins are compatible....
-#ifdef __OCPN__ANDROID__
-  return true;
-#endif
-
-  // If libelf is not available, then we must use a simplistic file scan method.
-  // This is easily fooled if the wxWidgets version in use is not exactly
-  // recognized. File scan is 3x faster than the ELF scan method
-
-  FILE *f = fopen(plugin_file, "r");
-  char strver[26];  // Enough space even for very big integers...
-
-  sprintf(strver,
-#if defined(__WXGTK3__)
-          "libwx_gtk3u_core-%i.%i"
-#elif defined(__WXGTK20__)
-          "libwx_gtk2u_core-%i.%i"
-#elif defined(__WXQT__)
-          "libwx_qtu_core-%i.%i"
-#else
-#error undefined plugin platform
-#endif
-          ,
-          wxMAJOR_VERSION, wxMINOR_VERSION);
-  b_compat = false;
-
-  int pos = 0, len = strlen(strver), c;
-  while ((c = fgetc(f)) != EOF) {
-    if (c == strver[pos]) {
-      if (++pos == len) {
-        b_compat = true;
-        break;
-      }
-    } else
-      pos = 0;
-  }
-  fclose(f);
-#endif  // __WXGTK__ or __WXQT__
-
-  wxLogMessage("Plugin is compatible: %s", b_compat ? "true" : "false");
-  return b_compat;
-}
-
 void PlugInManager::ShowDeferredBlacklistMessages() {
   m_blacklist_ui->show_deferred_messages();
 }
@@ -2292,7 +1572,6 @@ bool PlugInManager::CheckBlacklistedPlugin(const PluginMetadata plugin) {
   auto v = SemanticVersion::parse(plugin.version);
   return CheckBlacklistedPlugin(wxString(plugin.name), v.major, v.minor);
 }
-
 
 bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
   int major = plugin->GetPlugInVersionMajor();
@@ -2320,199 +1599,12 @@ bool PlugInManager::CheckBlacklistedPlugin(wxString name, int major, int minor) 
   return false;
 }
 
-
-PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file) {
-  PlugInContainer *pic = new PlugInContainer;
-  if (!LoadPlugIn(plugin_file, pic)) {
-    delete pic;
-    return NULL;
-  } else {
-    return pic;
-  }
-}
-
-PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file,
-                                           PlugInContainer *pic) {
-  wxString msg(_T("PlugInManager: Loading PlugIn: "));
-  msg += plugin_file;
-  wxLogMessage(msg);
-
-  pic->m_plugin_file = plugin_file;
-  pic->m_pluginStatus =
-      PluginStatus::Unmanaged;  // Status is updated later, if necessary
-
-  // load the library
-
-  if (pic->m_library.IsLoaded()) pic->m_library.Unload();
-
-  pic->m_library.Load(plugin_file);
-
-  if (!wxIsReadable(plugin_file)) {
-    msg =
-        _("Unreadable PlugIn library detected, check the file permissions:\n");
-    msg += plugin_file;
-    msg += _T("\n\n");
-    OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
-                   wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
-  } else if (!pic->m_library.IsLoaded()) {
-
-    //  Look in the Blacklist, try to match a filename, to give some kind of
-    //  message extract the probable plugin name
-    wxFileName fn(plugin_file);
-    wxString prob_pi_name;
-    std::string name = fn.GetName().ToStdString();
-    wxString msg(wxString::Format("%s:\n%s\n\n",
-                                  _("Incompatible plugin detected"),
-                                  name.c_str()));
-    auto found = m_blacklist->get_library_data(name);
-    if (found.name != "") {
-      auto msg1 = wxString::Format(_("PlugIn [ %s ] version %i.%i"),
-                                   found.name.c_str(), found.major,
-                                   found.minor);
-      msg += msg1;
-      //if (PluginBlacklist[i].all_lower)
-      //  msg += _(", and all previous versions,");
-      msg += _(" is incompatible with this version of OpenCPN."),
-      OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
-                     wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
-    }
-    wxLogMessage("   PlugInManager: Cannot load library: %s", plugin_file);
-    return NULL;
-  }
-
-  // load the factory symbols
-  create_t *create_plugin =
-      (create_t *)pic->m_library.GetSymbol(_T("create_pi"));
-  if (NULL == create_plugin) {
-    wxString msg(_T("   PlugInManager: Cannot load symbol create_pi: "));
-    msg += plugin_file;
-    wxLogMessage(msg);
-    return NULL;
-  }
-
-  destroy_t *destroy_plugin =
-      (destroy_t *)pic->m_library.GetSymbol(_T("destroy_pi"));
-  pic->m_destroy_fn = destroy_plugin;
-  if (NULL == destroy_plugin) {
-    wxString msg(_T("   PlugInManager: Cannot load symbol destroy_pi: "));
-    msg += plugin_file;
-    wxLogMessage(msg);
-    return NULL;
-  }
-
-  // create an instance of the plugin class
-  opencpn_plugin *plug_in = create_plugin(this);
-
-  int api_major = plug_in->GetAPIVersionMajor();
-  int api_minor = plug_in->GetAPIVersionMinor();
-  int api_ver = (api_major * 100) + api_minor;
-  pic->m_api_version = api_ver;
-
-  int pi_major = plug_in->GetPlugInVersionMajor();
-  int pi_minor = plug_in->GetPlugInVersionMinor();
-  wxString pi_name =  plug_in->GetCommonName();
-  SemanticVersion pi_ver(pi_major, pi_minor, -1);
-
-  wxLogDebug("blacklist: Get status for %s %d %d",
-             pi_name, pi_major, pi_minor);
-  const auto status = m_blacklist->get_status(pi_name.ToStdString(),
-                                              pi_major, pi_minor);
-  if (status != plug_status::unblocked) {
-    wxLogDebug("Ignoring blacklisted plugin.");
-    if (status != plug_status::unloadable) {
-      plug_data data(pi_name.ToStdString(), pi_major, pi_minor);
-      auto msg = m_blacklist->get_message(status, data);
-      m_blacklist_ui->message(msg);
-      m_blacklist->mark_unloadable(plugin_file.ToStdString());
-    }
-    return NULL;
-  }
-
-  switch (api_ver) {
-    case 105:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin *>(plug_in);
-      break;
-
-    case 106:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_16 *>(plug_in);
-      break;
-
-    case 107:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_17 *>(plug_in);
-      break;
-
-    case 108:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_18 *>(plug_in);
-      break;
-
-    case 109:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_19 *>(plug_in);
-      break;
-
-    case 110:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_110 *>(plug_in);
-      break;
-
-    case 111:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_111 *>(plug_in);
-      break;
-
-    case 112:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_112 *>(plug_in);
-      break;
-
-    case 113:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_113 *>(plug_in);
-      break;
-
-    case 114:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_114 *>(plug_in);
-      break;
-    case 115:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_115 *>(plug_in);
-      break;
-
-    case 116:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_116 *>(plug_in);
-      break;
-
-    case 117:
-      pic->m_pplugin = dynamic_cast<opencpn_plugin_117 *>(plug_in);
-      do /* force a local scope */ {
-        auto p = dynamic_cast<opencpn_plugin_117 *>(plug_in);
-        pi_ver =
-            SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
-                            p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
-                            p->GetPlugInVersionBuild());
-      } while (false);
-      break;
-
-    default:
-      break;
-  }
-
-  if (pic->m_pplugin) {
-    INFO_LOG << "PlugInManager:  " << plugin_file;
-    INFO_LOG << "        Plugin common name: "
-             << pic->m_pplugin->GetCommonName();
-    INFO_LOG << "        API Version detected: " << api_ver;
-    INFO_LOG << "        PlugIn Version detected: " << pi_ver;
-  } else {
-    wxString msg = _T("    ");
-    msg += plugin_file;
-    wxString msg1 = _T(" cannot be loaded");
-    msg += msg1;
-    wxLogMessage(msg);
-  }
-
-  return pic;
-}
-
 bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
                                                   const ViewPort &vp,
                                                   int canvasIndex) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_OVERLAY_CALLBACK) {
         PlugIn_ViewPort pivp = CreatePlugInViewport(vp);
@@ -2644,8 +1736,9 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
 bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
                                                     const ViewPort &vp,
                                                     int canvasIndex) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK) {
         PlugIn_ViewPort pivp = CreatePlugInViewport(vp);
@@ -2697,8 +1790,9 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
 
 bool PlugInManager::SendMouseEventToPlugins(wxMouseEvent &event) {
   bool bret = false;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_MOUSE_EVENTS) {
         switch (pic->m_api_version) {
@@ -2726,8 +1820,9 @@ bool PlugInManager::SendMouseEventToPlugins(wxMouseEvent &event) {
 
 bool PlugInManager::SendKeyEventToPlugins(wxKeyEvent &event) {
   bool bret = false;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_KEYBOARD_EVENTS) {
         {
@@ -2755,8 +1850,9 @@ bool PlugInManager::SendKeyEventToPlugins(wxKeyEvent &event) {
 }
 
 void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort &vp) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_ONPAINT_VIEWPORT) {
         PlugIn_ViewPort pivp = CreatePlugInViewport(vp);
@@ -2767,8 +1863,9 @@ void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort &vp) {
 }
 
 void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_CURSOR_LATLON)
         if (pic->m_pplugin) pic->m_pplugin->SetCursorLatLon(lat, lon);
@@ -2776,7 +1873,7 @@ void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
   }
 }
 
-void NotifySetupOptionsPlugin(PlugInContainer *pic) {
+void NotifySetupOptionsPlugin(const PlugInContainer *pic) {
   if (pic->m_bEnabled && pic->m_bInitState) {
     if (pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) {
       switch (pic->m_api_version) {
@@ -2793,7 +1890,7 @@ void NotifySetupOptionsPlugin(PlugInContainer *pic) {
               dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
           if (ppi) {
             ppi->OnSetupOptions();
-            pic->m_bToolboxPanel = true;
+            const_cast<PlugInContainer*>(pic)->m_bToolboxPanel = true;
           }
           break;
         }
@@ -2805,8 +1902,9 @@ void NotifySetupOptionsPlugin(PlugInContainer *pic) {
 }
 
 void PlugInManager::NotifySetupOptions() {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     NotifySetupOptionsPlugin(pic);
   }
 }
@@ -2822,8 +1920,9 @@ void PlugInManager::ClosePlugInPanel(PlugInContainer *pic,
 }
 
 void PlugInManager::CloseAllPlugInPanels(int ok_apply_cancel) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic) {
       ClosePlugInPanel(pic, ok_apply_cancel);
     }
@@ -2907,9 +2006,9 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence) {
   temp.sa_flags = 0;
   sigaction(SIGSEGV, &temp, NULL);
 #endif
-
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_SENTENCES) {
 #ifndef __WXMSW__
@@ -2940,8 +2039,9 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence) {
 
 int PlugInManager::GetJSONMessageTargetCount() {
   int rv = 0;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState &&
         (pic->m_cap_flag & WANTS_PLUGIN_MESSAGING))
       rv++;
@@ -2969,8 +2069,9 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id,
   wxString decouple_message_body(
       message_body);  // decouples 'const wxString &' and 'wxString &' to keep
                       // bin compat for plugins
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_PLUGIN_MESSAGING) {
         switch (pic->m_api_version) {
@@ -3016,8 +2117,9 @@ void PlugInManager::SendAISSentenceToAllPlugIns(const wxString &sentence) {
   wxString decouple_sentence(
       sentence);  // decouples 'const wxString &' and 'wxString &' to keep bin
                   // compat for plugins
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_AIS_SENTENCES)
         pic->m_pplugin->SetAISSentence(decouple_sentence);
@@ -3036,8 +2138,9 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
   pfix.FixTime = ppos->FixTime;
   pfix.nSats = ppos->nSats;
 
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_EVENTS)
         if (pic->m_pplugin) pic->m_pplugin->SetPositionFix(pfix);
@@ -3056,8 +2159,8 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
   pfix_ex.Hdt = ppos->kHdt;
   pfix_ex.Hdm = ppos->kHdm;
 
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_EVENTS) {
         switch (pic->m_api_version) {
@@ -3091,8 +2194,9 @@ void PlugInManager::SendActiveLegInfoToAllPlugIns(ActiveLegDat *leg_info) {
   leg.wp_name = leg_info->wp_name;
   leg.Xte = leg_info->Xte;
   leg.arrival = leg_info->arrival;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_EVENTS) {
         switch (pic->m_api_version) {
@@ -3121,16 +2225,18 @@ void PlugInManager::SendActiveLegInfoToAllPlugIns(ActiveLegDat *leg_info) {
 }
 
 void PlugInManager::SendResizeEventToAllPlugIns(int x, int y) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState)
       pic->m_pplugin->ProcessParentResize(x, y);
   }
 }
 
 void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState)
       pic->m_pplugin->SetColorScheme((PI_ColorScheme)cs);
   }
@@ -3140,8 +2246,9 @@ void PlugInManager::PrepareAllPluginContextMenus() {
   int canvasIndex = gFrame->GetCanvasIndexUnderMouse();
   if (canvasIndex < 0) return;
 
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & INSTALLS_CONTEXTMENU_ITEMS) {
         switch (pic->m_api_version) {
@@ -3242,8 +2349,9 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
 }
 
 void PlugInManager::NotifyAuiPlugIns(void) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState &&
         (pic->m_cap_flag & USES_AUI_MANAGER))
       pic->m_pplugin->UpdateAuiStatus();
@@ -3462,8 +2570,9 @@ opencpn_plugin *PlugInManager::FindToolOwner(const int id) {
 wxString PlugInManager::GetToolOwnerCommonName(const int id) {
   opencpn_plugin *ppi = FindToolOwner(id);
   if (ppi) {
-    for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-      PlugInContainer *pic = plugin_array[i];
+    auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+    for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+      PlugInContainer *pic = plugin_array->Item(i);
       if (pic && (pic->m_pplugin == ppi)) return pic->m_common_name;
     }
   }
@@ -3520,8 +2629,9 @@ wxBitmap *PlugInManager::BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
 
 wxArrayString PlugInManager::GetPlugInChartClassNameArray(void) {
   wxArrayString array;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer *pic = plugin_array->Item(i);
     if (pic->m_bEnabled && pic->m_bInitState &&
         ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
          (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))) {
@@ -3552,16 +2662,6 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray(void) {
   }
 
   return array;
-}
-
-bool PlugInManager::IsPlugInAvailable(wxString commonName) {
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer *pic = plugin_array[i];
-    if (pic && pic->m_bEnabled && (pic->m_common_name == commonName))
-      return true;
-  }
-
-  return false;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -4643,211 +3743,6 @@ void PlugInNormalizeViewport(PlugIn_ViewPort *vp, float lat, float lon) {
 #endif
 }
 
-//-----------------------------------------------------------------------------------------
-//    The opencpn_plugin base class implementation
-//-----------------------------------------------------------------------------------------
-
-opencpn_plugin::~opencpn_plugin() {}
-
-int opencpn_plugin::Init(void) { return 0; }
-
-bool opencpn_plugin::DeInit(void) { return true; }
-
-int opencpn_plugin::GetAPIVersionMajor() { return 1; }
-
-int opencpn_plugin::GetAPIVersionMinor() { return 2; }
-
-int opencpn_plugin::GetPlugInVersionMajor() { return 1; }
-
-int opencpn_plugin::GetPlugInVersionMinor() { return 0; }
-
-wxBitmap *opencpn_plugin::GetPlugInBitmap() {
-  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  return new wxBitmap(style->GetIcon(_T("default_pi")));
-}
-
-wxString opencpn_plugin::GetCommonName() { return _T("BaseClassCommonName"); }
-
-wxString opencpn_plugin::GetShortDescription() {
-  return _T("OpenCPN PlugIn Base Class");
-}
-
-wxString opencpn_plugin::GetLongDescription() {
-  return _T(
-      "OpenCPN PlugIn Base Class\n\
-PlugInManager created this base class");
-}
-
-void opencpn_plugin::SetPositionFix(PlugIn_Position_Fix &pfix) {}
-
-void opencpn_plugin::SetNMEASentence(wxString &sentence) {}
-
-void opencpn_plugin::SetAISSentence(wxString &sentence) {}
-
-int opencpn_plugin::GetToolbarToolCount(void) { return 0; }
-
-int opencpn_plugin::GetToolboxPanelCount(void) { return 0; }
-
-void opencpn_plugin::SetupToolboxPanel(int page_sel, wxNotebook *pnotebook) {}
-
-void opencpn_plugin::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel) {}
-
-void opencpn_plugin::ShowPreferencesDialog(wxWindow *parent) {}
-
-void opencpn_plugin::OnToolbarToolCallback(int id) {}
-
-void opencpn_plugin::OnContextMenuItemCallback(int id) {}
-
-bool opencpn_plugin::RenderOverlay(wxMemoryDC *dc, PlugIn_ViewPort *vp) {
-  return false;
-}
-
-void opencpn_plugin::SetCursorLatLon(double lat, double lon) {}
-
-void opencpn_plugin::SetCurrentViewPort(PlugIn_ViewPort &vp) {}
-
-void opencpn_plugin::SetDefaults(void) {}
-
-void opencpn_plugin::ProcessParentResize(int x, int y) {}
-
-void opencpn_plugin::SetColorScheme(PI_ColorScheme cs) {}
-
-void opencpn_plugin::UpdateAuiStatus(void) {}
-
-wxArrayString opencpn_plugin::GetDynamicChartClassNameArray() {
-  wxArrayString array;
-  return array;
-}
-
-//    Opencpn_Plugin_16 Implementation
-opencpn_plugin_16::opencpn_plugin_16(void *pmgr) : opencpn_plugin(pmgr) {}
-
-opencpn_plugin_16::~opencpn_plugin_16(void) {}
-
-bool opencpn_plugin_16::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
-  return false;
-}
-
-void opencpn_plugin_16::SetPluginMessage(wxString &message_id,
-                                         wxString &message_body) {}
-
-//    Opencpn_Plugin_17 Implementation
-opencpn_plugin_17::opencpn_plugin_17(void *pmgr) : opencpn_plugin(pmgr) {}
-
-opencpn_plugin_17::~opencpn_plugin_17(void) {}
-
-bool opencpn_plugin_17::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
-  return false;
-}
-
-bool opencpn_plugin_17::RenderGLOverlay(wxGLContext *pcontext,
-                                        PlugIn_ViewPort *vp) {
-  return false;
-}
-
-void opencpn_plugin_17::SetPluginMessage(wxString &message_id,
-                                         wxString &message_body) {}
-
-//    Opencpn_Plugin_18 Implementation
-opencpn_plugin_18::opencpn_plugin_18(void *pmgr) : opencpn_plugin(pmgr) {}
-
-opencpn_plugin_18::~opencpn_plugin_18(void) {}
-
-bool opencpn_plugin_18::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
-  return false;
-}
-
-bool opencpn_plugin_18::RenderGLOverlay(wxGLContext *pcontext,
-                                        PlugIn_ViewPort *vp) {
-  return false;
-}
-
-void opencpn_plugin_18::SetPluginMessage(wxString &message_id,
-                                         wxString &message_body) {}
-
-void opencpn_plugin_18::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {}
-
-//    Opencpn_Plugin_19 Implementation
-opencpn_plugin_19::opencpn_plugin_19(void *pmgr) : opencpn_plugin_18(pmgr) {}
-
-opencpn_plugin_19::~opencpn_plugin_19(void) {}
-
-void opencpn_plugin_19::OnSetupOptions(void) {}
-
-//    Opencpn_Plugin_110 Implementation
-opencpn_plugin_110::opencpn_plugin_110(void *pmgr) : opencpn_plugin_19(pmgr) {}
-
-opencpn_plugin_110::~opencpn_plugin_110(void) {}
-
-void opencpn_plugin_110::LateInit(void) {}
-
-//    Opencpn_Plugin_111 Implementation
-opencpn_plugin_111::opencpn_plugin_111(void *pmgr) : opencpn_plugin_110(pmgr) {}
-
-opencpn_plugin_111::~opencpn_plugin_111(void) {}
-
-//    Opencpn_Plugin_112 Implementation
-opencpn_plugin_112::opencpn_plugin_112(void *pmgr) : opencpn_plugin_111(pmgr) {}
-
-opencpn_plugin_112::~opencpn_plugin_112(void) {}
-
-bool opencpn_plugin_112::MouseEventHook(wxMouseEvent &event) { return false; }
-
-void opencpn_plugin_112::SendVectorChartObjectInfo(
-    wxString &chart, wxString &feature, wxString &objname, double lat,
-    double lon, double scale, int nativescale) {}
-
-//    Opencpn_Plugin_113 Implementation
-opencpn_plugin_113::opencpn_plugin_113(void *pmgr) : opencpn_plugin_112(pmgr) {}
-
-opencpn_plugin_113::~opencpn_plugin_113(void) {}
-
-bool opencpn_plugin_113::KeyboardEventHook(wxKeyEvent &event) { return false; }
-
-void opencpn_plugin_113::OnToolbarToolDownCallback(int id) {}
-void opencpn_plugin_113::OnToolbarToolUpCallback(int id) {}
-
-//    Opencpn_Plugin_114 Implementation
-opencpn_plugin_114::opencpn_plugin_114(void *pmgr) : opencpn_plugin_113(pmgr) {}
-
-opencpn_plugin_114::~opencpn_plugin_114(void) {}
-
-//    Opencpn_Plugin_115 Implementation
-opencpn_plugin_115::opencpn_plugin_115(void *pmgr) : opencpn_plugin_114(pmgr) {}
-
-opencpn_plugin_115::~opencpn_plugin_115(void) {}
-
-//    Opencpn_Plugin_116 Implementation
-opencpn_plugin_116::opencpn_plugin_116(void *pmgr) : opencpn_plugin_115(pmgr) {}
-
-opencpn_plugin_116::~opencpn_plugin_116(void) {}
-
-bool opencpn_plugin_116::RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
-                                                    PlugIn_ViewPort *vp,
-                                                    int max_canvas) {
-  return false;
-}
-
-bool opencpn_plugin_116::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
-                                                  int max_canvas) {
-  return false;
-}
-
-void opencpn_plugin_116::PrepareContextMenu(int canvasIndex) { return; }
-
-//    Opencpn_Plugin_117 Implementation
-opencpn_plugin_117::opencpn_plugin_117(void *pmgr) : opencpn_plugin_116(pmgr) {}
-
-int opencpn_plugin_117::GetPlugInVersionPatch() { return 0; };
-
-int opencpn_plugin_117::GetPlugInVersionPost() { return 0; };
-
-const char *opencpn_plugin_117::GetPlugInVersionPre() { return ""; };
-
-const char *opencpn_plugin_117::GetPlugInVersionBuild() { return ""; };
-
-void opencpn_plugin_117::SetActiveLegInfo(Plugin_Active_Leg_Info &leg_info) {}
-
 //          Helper and interface classes
 
 //-------------------------------------------------------------------------------
@@ -5092,15 +3987,14 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent &event) {
   pluginHandler->setMetadata("");
 
   //  Reload all plugins, which will also update the status fields
-  g_pi_manager->LoadAllPlugIns(false);
+  LoadAllPlugIns(false);
 
   // Update this Panel, and the entire list.
 #ifndef __OCPN__ANDROID__
   m_catalogText->SetLabel(GetCatalogText(true));
 #endif
   if (m_PluginListPanel)
-    m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-
+    m_PluginListPanel->ReloadPluginPanels();
   OCPNMessageBox(this, _("Catalog update successful"),
                  _("OpenCPN Catalog update"), wxICON_INFORMATION | wxOK);
 }
@@ -5473,11 +4367,13 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
     pluginHandler->setMetadata("");
 
     //  Reload all plugins, which will also update the status fields
-    g_pi_manager->LoadAllPlugIns(false);
+    LoadAllPlugIns(false);
 
     // Update this Panel, and the entire list.
-    if (m_PluginListPanel)
-      m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+    if (m_PluginListPanel) {
+      auto loader = PluginLoader::getInstance();
+      m_PluginListPanel->ReloadPluginPanels();
+    }
 
     // Success!
     wxString msg = _("Plugin imported successfully");
@@ -5542,7 +4438,7 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
     : wxScrolledWindow(parent, id, pos, size, wxTAB_TRAVERSAL | wxVSCROLL),
       m_PluginSelected(0) {
   SetSizer(new wxBoxSizer(wxVERTICAL));
-  ReloadPluginPanels(pPluginArray);
+  ReloadPluginPanels();
   // SetScrollRate(0, 1);
 }
 
@@ -5560,7 +4456,8 @@ void PluginListPanel::SelectByName(wxString &name) {
   }
 }
 
-void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns *plugins) {
+void PluginListPanel::ReloadPluginPanels() {
+  auto plugins = PluginLoader::getInstance()->GetPlugInArray();
   m_pPluginArray = plugins;
   m_PluginItems.Clear();
 
@@ -6260,7 +5157,7 @@ void PluginPanel::OnPluginAction(wxCommandEvent &event) {
 void PluginPanel::SetEnabled(bool enabled) {
   if (m_pPlugin->m_bEnabled != enabled) {
     m_pPlugin->m_bEnabled = enabled;
-    if (s_ppim) s_ppim->UpdatePlugIns();
+    PluginLoader::getInstance()->UpdatePlugIns();
     NotifySetupOptionsPlugin(m_pPlugin);
   }
   if (!enabled && !m_bSelected) {
@@ -7171,7 +6068,7 @@ wxString GetWritableDocumentsDir(void) {
 
 wxString GetPlugInPath(opencpn_plugin *pplugin) {
   wxString ret_val;
-  ArrayOfPlugIns *pi_array = g_pi_manager->GetPlugInArray();
+  ArrayOfPlugIns *pi_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < pi_array->GetCount(); i++) {
     PlugInContainer *pic = pi_array->Item(i);
     if (pic->m_pplugin == pplugin) {
@@ -8216,8 +7113,7 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString &url,
     wxSafeYield();
   }
 
-#else
-#ifdef OCPN_USE_CURL
+#elif defined(OCPN_USE_CURL)
   wxFileName tfn = wxFileName::CreateTempFileName(outputFile);
   wxFileOutputStream output(tfn.GetFullPath());
 
@@ -8250,9 +7146,9 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString &url,
   }
   if (wxFileExists(tfn.GetFullPath())) wxRemoveFile(tfn.GetFullPath());
   return result;
+
 #else
   return OCPN_DL_FAILED;
-#endif
 #endif
 }
 
@@ -8288,9 +7184,8 @@ _OCPN_DLStatus OCPN_downloadFileBackground(const wxString &url,
   if (handle) *handle = dl_ID;
 
   return OCPN_DL_STARTED;
-#else
-#ifdef OCPN_USE_CURL
 
+#elif defined(OCPN_USE_CURL)
   if (g_pi_manager->m_pCurlThread)  // We allow just one download at a time. Do
                                     // we want more? Or at least return some
                                     // other status in this case?
@@ -8343,12 +7238,12 @@ _OCPN_DLStatus OCPN_downloadFileBackground(const wxString &url,
     wxDELETE(g_pi_manager->m_pCurlThread);
     g_pi_manager->m_download_evHandler = NULL;
     g_pi_manager->m_downloadHandle = NULL;
+    return OCPN_DL_STARTED;
   }
   g_pi_manager->m_pCurl = 0;
-#else
-
   return OCPN_DL_FAILED;
-#endif
+
+#else
   return OCPN_DL_FAILED;
 #endif
 }
@@ -8376,10 +7271,16 @@ void OCPN_cancelDownloadFileBackground(long handle) {
 _OCPN_DLStatus OCPN_postDataHttp(const wxString &url,
                                  const wxString &parameters, wxString &result,
                                  int timeout_secs) {
-#ifndef __OCPN__ANDROID__
 
-#ifdef OCPN_USE_CURL
+#ifdef __OCPN__ANDROID__
+  wxString lparms = parameters;
+  wxString postResult = doAndroidPOST(url, lparms, timeout_secs * 1000);
+  if (postResult.IsSameAs(_T("NOK"))) return OCPN_DL_FAILED;
 
+  result = postResult;
+  return OCPN_DL_NO_ERROR;
+
+#elif  defined(OCPN_USE_CURL)
   wxCurlHTTP post;
   post.SetOpt(CURLOPT_TIMEOUT, timeout_secs);
   size_t res = post.Post(parameters.ToAscii(), parameters.Len(), url);
@@ -8391,18 +7292,9 @@ _OCPN_DLStatus OCPN_postDataHttp(const wxString &url,
     result = wxEmptyString;
 
   return OCPN_DL_FAILED;
+
 #else
   return OCPN_DL_FAILED;
-#endif
-#else
-
-  wxString lparms = parameters;
-  wxString postResult = doAndroidPOST(url, lparms, timeout_secs * 1000);
-  if (postResult.IsSameAs(_T("NOK"))) return OCPN_DL_FAILED;
-
-  result = postResult;
-  return OCPN_DL_NO_ERROR;
-
 #endif
 }
 
@@ -8411,9 +7303,7 @@ bool OCPN_isOnline() {
   return androidCheckOnline();
 #endif
 
-#ifndef __OCPN__ANDROID__
-#ifdef OCPN_USE_CURL
-
+#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
   if (wxDateTime::GetTimeNow() >
       g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY) {
     wxCurlHTTP get;
@@ -8426,12 +7316,9 @@ bool OCPN_isOnline() {
 #else
   return false;
 #endif
-#endif
 }
 
-#ifdef OCPN_USE_CURL
-
-#ifndef __OCPN__ANDROID__
+#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
 void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev) {
   OCPN_downloadEvent event(wxEVT_DOWNLOAD_EVENT, 0);
   if (ev.IsSuccessful()) {
@@ -8514,7 +7401,6 @@ bool PlugInManager::HandleCurlThreadError(wxCurlThreadError err,
   // this is an unrecoverable error:
   return false;
 }
-#endif
 #endif
 
 bool LaunchDefaultBrowser_Plugin(wxString url) {

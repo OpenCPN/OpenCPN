@@ -219,6 +219,7 @@ MyFrame *gFrame;
 ConsoleCanvas *console;
 
 MyConfig *pConfig;
+wxConfigBase *pBaseConfig;   // Always the same as pConfig, handles MS linker
 
 ChartBase *Current_Vector_Ch;
 ChartDB *ChartData;
@@ -854,6 +855,15 @@ void appendOSDirSlash(wxString *pString);
 static void InitializeUserColors(void);
 static void DeInitializeUserColors(void);
 static void SetSystemColors(ColorScheme cs);
+
+static bool LoadAllPlugIns(bool load_enabled) {
+  g_Platform->ShowBusySpinner();
+  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  g_Platform->HideBusySpinner();
+  return b;
+}
+
+
 
 #if 0
 // Refresh the Piano Bar
@@ -1776,7 +1786,6 @@ bool MyApp::OnInit() {
   if (getenv("OPENCPN_FATAL_ERROR") != 0) {
     wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
   }
-
   // Check if last run failed, set up safe_mode.
   if (!safe_mode::get_mode()) {
     safe_mode::check_last_start();
@@ -1973,6 +1982,7 @@ bool MyApp::OnInit() {
 
   //      Open/Create the Config Object
   pConfig = g_Platform->GetConfigObject();
+  pBaseConfig = pConfig;
   pConfig->LoadMyConfig();
 
   //  Override for some safe and nice default values if the config file was
@@ -2210,6 +2220,14 @@ bool MyApp::OnInit() {
   ::wxClientDisplayRect(&cx, &cy, &cw, &ch);
 
   InitializeUserColors();
+
+  auto style = g_StyleManager->GetCurrentStyle();
+  auto bitmap = new wxBitmap(style->GetIcon("default_pi", 32, 32));
+  if (bitmap->IsOk())
+    PluginLoader::getInstance()->SetPluginDefaultIcon(bitmap);
+  else
+    wxLogWarning("Cannot initiate plugin default jigsaw icon.");
+
 
   if ((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) &&
       (g_nframewin_y <= ch))
@@ -3807,8 +3825,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   pConfig->UpdateSettings();
 
   //    Deactivate the PlugIns
-  if (g_pi_manager) {
-    g_pi_manager->DeactivateAllPlugIns();
+  auto plugin_loader = PluginLoader::getInstance();
+  if (plugin_loader) {
+    plugin_loader->DeactivateAllPlugIns();
   }
 
   wxLogMessage(_T("opencpn::MyFrame exiting cleanly."));
@@ -3904,14 +3923,17 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
+  if (PluginLoader::getInstance())
+    PluginLoader::getInstance()->UnLoadAllPlugIns();
+
   if (g_pi_manager) {
-    g_pi_manager->UnLoadAllPlugIns();
     delete g_pi_manager;
     g_pi_manager = NULL;
   }
 
   delete pConfig;  // All done
   pConfig = NULL;
+  pBaseConfig = NULL;
 
   if (g_pAIS) {
     if (g_pMUX) g_pMUX->SetAISHandler(NULL);
@@ -6821,8 +6843,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 2: {
       if (m_initializing) break;
       m_initializing = true;
-      g_pi_manager->LoadAllPlugIns(true, false);
-
+      g_Platform->ShowBusySpinner();
+      PluginLoader::getInstance()->LoadAllPlugIns(true);
+      g_Platform->HideBusySpinner();
       //            RequestNewToolbars();
       RequestNewMasterToolbar();
       // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
@@ -7492,7 +7515,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   //    refresh thus, ensuring at least 1 Hz. callback.
   bool brq_dynamic = false;
   if (g_pi_manager) {
-    ArrayOfPlugIns *pplugin_array = g_pi_manager->GetPlugInArray();
+    auto *pplugin_array = PluginLoader::getInstance()->GetPlugInArray();
     for (unsigned int i = 0; i < pplugin_array->GetCount(); i++) {
       PlugInContainer *pic = pplugin_array->Item(i);
       if (pic->m_bEnabled && pic->m_bInitState) {
@@ -7618,7 +7641,8 @@ double MyFrame::GetMag(double a) {
 
 double MyFrame::GetMag(double a, double lat, double lon) {
   double Variance = std::isnan(gVar) ? g_UserVar : gVar;
-  if (g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))) {
+  auto loader = PluginLoader::getInstance();
+  if (loader && loader->IsPlugInAvailable(_T("WMM"))) {
     // Request variation at a specific lat/lon
 
     // Note that the requested value is returned sometime later in the event
@@ -11084,8 +11108,8 @@ void ApplyLocale() {
   //  Compliant Plugins will reload their locale message catalog during the
   //  Init() method. So it is sufficient to simply deactivate, and then
   //  re-activate, all "active" plugins.
-  g_pi_manager->DeactivateAllPlugIns();
-  g_pi_manager->UpdatePlugIns();
+  PluginLoader::getInstance()->DeactivateAllPlugIns();
+  PluginLoader::getInstance()->UpdatePlugIns();
 
   //         // Make sure the perspective saved in the config file is
   //         "reasonable"

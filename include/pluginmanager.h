@@ -76,6 +76,7 @@
 
 #include <wx/json_defs.h>
 #include <wx/jsonwriter.h>
+#include "plugin_loader.h"
 
 //    Assorted static helper routines
 
@@ -84,6 +85,7 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
 class PluginListPanel;
 class PluginPanel;
 class pluginUtilHandler;
+
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
@@ -117,20 +119,6 @@ private:
 
 extern const wxEventType wxEVT_OCPN_MSG;
 
-enum class PluginStatus {
-  System,     // One of the four system plugins, unmanaged.
-  Managed,    // Managed by installer.
-  Unmanaged,  // Unmanaged, probably a package.
-  Ghost,      // Managed, shadowing another (packaged?) plugin.
-  Unknown,
-  LegacyUpdateAvailable,
-  ManagedInstallAvailable,
-  ManagedInstalledUpdateAvailable,
-  ManagedInstalledCurrentVersion,
-  ManagedInstalledDowngradeAvailable,
-  PendingListRemoval
-};
-
 enum ActionVerb {
   NOP = 0,
   UPGRADE_TO_MANAGED_VERSION,
@@ -141,49 +129,6 @@ enum ActionVerb {
   INSTALL_MANAGED_VERSION
 };
 
-// Fwd definitions
-
-//-----------------------------------------------------------------------------------------------------
-//
-//          The PlugIn Container Specification
-//
-//-----------------------------------------------------------------------------------------------------
-class PlugInContainer {
-public:
-  PlugInContainer();
-
-  opencpn_plugin *m_pplugin;
-  bool m_bEnabled;
-  bool m_bInitState;
-  bool m_bToolboxPanel;
-  int m_cap_flag;                    // PlugIn Capabilities descriptor
-  wxString m_plugin_file;            // The full file path
-  wxString m_plugin_filename;        // The short file path
-  wxDateTime m_plugin_modification;  // used to detect upgraded plugins
-  destroy_t *m_destroy_fn;
-  wxDynamicLibrary m_library;
-  wxString m_common_name;  // A common name string for the plugin
-  wxString m_short_description;
-  wxString m_long_description;
-  int m_api_version;
-  int m_version_major;
-  int m_version_minor;
-  wxBitmap *m_bitmap;
-  /**
-   * Return version from plugin API. Older pre-117 plugins just
-   * support major and minor version, newer plugins have
-   * complete semantic version data.
-   */
-  SemanticVersion GetVersion();
-  wxString m_version_str;  // Complete version as of
-                           // semantic_vers
-  PluginStatus m_pluginStatus;
-  std::string m_InstalledManagedVersion;  // As detected from manifest
-  PluginMetadata m_ManagedMetadata;
-};
-
-//    Declare an array of PlugIn Containers
-WX_DEFINE_ARRAY_PTR(PlugInContainer *, ArrayOfPlugIns);
 
 class PlugInMenuItemContainer {
 public:
@@ -242,23 +187,6 @@ public:
   PlugInManager(MyFrame *parent);
   virtual ~PlugInManager();
 
-  bool LoadAllPlugIns(bool enabled_plugins, bool b_enable_blackdialog = true);
-
-  /** Unload, delete and remove item ix in GetPlugInArray(). */
-  bool UnLoadPlugIn(size_t ix);
-
-  bool UnLoadAllPlugIns();
-  bool DeactivateAllPlugIns();
-  bool DeactivatePlugIn(PlugInContainer *pic);
-  bool UpdatePlugIns();
-
-  bool UpdateConfig();
-
-  PlugInContainer *LoadPlugIn(wxString plugin_file);
-  PlugInContainer *LoadPlugIn(wxString plugin_file, PlugInContainer *pic);
-
-  ArrayOfPlugIns *GetPlugInArray() { return &plugin_array; }
-
   bool RenderAllCanvasOverlayPlugIns(ocpnDC &dc, const ViewPort &vp,
                                      int canvasIndex);
   bool RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
@@ -313,14 +241,14 @@ public:
   void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
   void SendMessageToAllPlugins(const wxString &message_id,
                                const wxString &message_body);
+  bool UpDateChartDataTypes();
   int GetJSONMessageTargetCount();
-
+  bool UpdateConfig();
   void SendResizeEventToAllPlugIns(int x, int y);
   void SetColorSchemeForAllPlugIns(ColorScheme cs);
   void NotifyAuiPlugIns(void);
   bool CallLateInit(void);
 
-  bool IsPlugInAvailable(wxString commonName);
   bool IsAnyPlugInChartEnabled();
 
   void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature,
@@ -352,7 +280,6 @@ public:
   void DimeWindow(wxWindow *win);
   pluginUtilHandler *GetUtilHandler() { return m_utilHandler; }
   void SetListPanelPtr(PluginListPanel *ptr) { m_listPanel = ptr; }
-  bool CheckPluginCompatibility(wxString plugin_file);
 
   ListOfPI_S57Obj *GetLightsObjRuleListVisibleAtLatLon(
       ChartPlugInWrapper *target, float zlat, float zlon, const ViewPort &vp);
@@ -361,11 +288,21 @@ private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin *plugin);
 
+  ObservedVarListener evt_blacklisted_plugin_listener;
+  ObservedVarListener evt_deactivate_plugin_listener;
+  ObservedVarListener evt_download_failed_listener;
+  ObservedVarListener evt_download_ok_listener;
+  ObservedVarListener evt_incompatible_plugin_listener;
+  ObservedVarListener evt_load_directory_listener;
+  ObservedVarListener evt_load_plugin_listener;
+  ObservedVarListener evt_pluglist_change_listener;
+  ObservedVarListener evt_unreadable_plugin_listener;
+  ObservedVarListener evt_update_chart_types_listener;
+  ObservedVarListener evt_version_incompatible_listener;
+  ObservedVarListener evt_version_incompatible_plugin_listener;
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);
-  bool UpDateChartDataTypes(void);
-  bool LoadPlugInDirectory(const wxString &plugin_dir, bool enabled_plugins,
-                           bool b_enable_blackdialog);
+
   void ProcessLateInit(PlugInContainer *pic);
   void OnPluginDeactivate(const PlugInContainer* pic);
   void HandlePluginLoaderEvents();
@@ -374,7 +311,6 @@ private:
   MyFrame *pParent;
   std::unique_ptr<BlacklistUI> m_blacklist_ui;
 
-  ArrayOfPlugIns plugin_array;
   wxString m_last_error_string;
 
   ArrayOfPlugInMenuItems m_PlugInMenuItems;
@@ -481,7 +417,7 @@ public:
   void UpdatePluginsOrder();
 
   /** Complete reload from plugins array. */
-  void ReloadPluginPanels(ArrayOfPlugIns *plugins);
+  void ReloadPluginPanels();
   void SelectByName(wxString &name);
 
 private:

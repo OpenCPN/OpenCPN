@@ -43,6 +43,7 @@
 
 #include "catalog_mgr.h"
 #include "update_mgr.h"
+#include "plugin_loader.h"
 #include "Downloader.h"
 #include "OCPNPlatform.h"
 #include "PluginHandler.h"
@@ -196,8 +197,9 @@ class InstallButton : public wxPanel {
 public:
   InstallButton(wxWindow* parent, PluginMetadata metadata)
       : wxPanel(parent), m_metadata(metadata), m_remove(false) {
+    auto loader = PluginLoader::getInstance();
     PlugInContainer* found =
-        PlugInByName(metadata.name, g_pi_manager->GetPlugInArray());
+        PlugInByName(metadata.name, loader->GetPlugInArray());
     std::string label(_("Install"));
     if (found &&
         ((found->m_version_major > 0) || (found->m_version_minor > 0))) {

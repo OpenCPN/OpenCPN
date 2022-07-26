@@ -31,8 +31,6 @@
 #include <wx/jsonreader.h>
 #include <wx/log.h>
 
-#include <curl/curl.h>
-
 #include "catalog_handler.h"
 #include "catalog_parser.h"
 #include "Downloader.h"

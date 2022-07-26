@@ -697,6 +697,7 @@ void OCPNPlatform::OnExit_2(void) {
 #endif
 }
 
+
 bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   // Investigate OpenGL capabilities
   gFrame->Show();
@@ -780,6 +781,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   return true;
 }
+
 
 bool OCPNPlatform::IsGLCapable() {
 #ifdef __OCPN__ANDROID__
