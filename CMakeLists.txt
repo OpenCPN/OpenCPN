@@ -1612,6 +1612,8 @@ target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 add_subdirectory(libs/gdal)
 target_link_libraries(S57ENC PUBLIC ocpn::gdal)
 
+add_subdirectory(libs/N2KParser)
+target_link_libraries(S57ENC PUBLIC ocpn::N2KParser)
 
 if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
   target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
