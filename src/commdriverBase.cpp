@@ -25,15 +25,15 @@
 
 #include "commdriverBase.h"
 
-/*    commDriverBase implementation
+/*    AbstractCommDriver implementation
  * */
 
-commDriverBase::commDriverBase()
+AbstractCommDriver::AbstractCommDriver()
 {
   bus = NavBus::undefined;
 }
 
-commDriverBase::~commDriverBase()
+AbstractCommDriver::~AbstractCommDriver()
 {
 }
 

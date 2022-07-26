@@ -27,7 +27,7 @@
 
 #include "commdriverBase.h"
 
-class commDriverN0183 : public commDriverBase {
+class commDriverN0183 : public AbstractCommDriver {
 
 public:
     commDriverN0183();
