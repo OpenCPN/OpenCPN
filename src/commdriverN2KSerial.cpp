@@ -122,6 +122,16 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
   auto p = event.GetPayload();
 
   std::vector<unsigned char> *data = p.get();
+
+  // Create the upstream message
+  Nmea2000_msg n2kmsg;
+  n2kmsg.id =   N2kId(data);
+  n2kmsg.payload = *data;
+
+  // This is where we want to build a "nav_msg", using a shared_ptr
+  // and then call notify()
+
+#if 0  // Debug output
   size_t packetLength = (size_t)data->at(1);
   size_t vector_length = data->size();
 
@@ -141,8 +151,7 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
     printf("%02X ", data->at(i));
   }
   printf("\n\n");
-
-  int yyp = 4;
+#endif
 
 }
 

@@ -38,14 +38,14 @@ public:
   commDriverRegistry();
   ~commDriverRegistry();
 
-  void activate(const AbstractDriver& driver);
-  void deactivate(const AbstractDriver& driver);
+  void activate(const commDriverBase& driver);
+  void deactivate(const commDriverBase& driver);
 
   /** Notified by all driverlist updates. */
   //EventVar evt_driverlist_change;
 
   /** @return List of all activated drivers. */
-  const std::vector<AbstractDriver>& get_drivers();
+  const std::vector<commDriverBase>& get_drivers();
 
   static commDriverRegistry* getInstance();
 

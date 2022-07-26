@@ -34,14 +34,51 @@ enum class CommStatus {ok, not_implemented, not_supported, name_in_use};
 enum class NavBus {nmea0183, signalK, n2k, onenet, test_if, undefined};
 
 /**
+ * N2k uses CAN which defines the basic properties of messages.
+ * The NAME is an unique identifier for a node. CAN standardizes
+ * an address claim protocol. The net effect is that upper layers
+ * sees a stable NAME even if the address chnages.
+ *
+ * The structure of the NAME is defined in the J/1939 standard, see
+ * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
+ */
+struct N2kName {
+  N2kName(uint64_t name);
+  uint32_t get_number() const;           /**< 21 bits */
+  uint16_t get_manufacturer() const;     /**< 9 bits */
+  uint8_t get_dev_instance_low() const;  /**< 3 bits */
+  uint8_t get_dev_instance_high() const; /**< 5 bits */
+  uint8_t get_dev_func() const;          /**< 8 bits */
+  uint8_t get_dev_class() const;         /**< 7 bits */
+  uint8_t get_sys_instance() const;      /**< 4 bits */
+  uint8_t get_industry_group() const;    /**< 4 bits */
+};
+
+/**
  * The n2k message id as defined by the J/1939 standard. See
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kId {
+  N2kId() {};
   N2kId(uint64_t id);
+  N2kId(std::vector<unsigned char> *raw_data){
+    // build pgn
+    uint32_t pgn = 0;
+    unsigned char *t = (unsigned char *)&pgn;
+    *t++ = raw_data->at(3);
+    *t++ = raw_data->at(4);
+    *t++ = raw_data->at(5);
+    id = (pgn << 8) + raw_data->at(7);
+    id += raw_data->at(2) << 26;
+  };
+
   uint8_t get_prio() const;   /**< 3 bits */
-  uint32_t get_png() const;   /**< a. k. a. PNG, 17 bits */
+  uint32_t get_png() const;   /**< a. k. a. PNG, 18 bits */
   uint32_t get_source() const;   /**< Source address,  8 bits */
+
+  private:
+    uint64_t id;
+
 };
 
 /** Where messages are sent to or received from. */
@@ -49,18 +86,19 @@ typedef struct {
    NavBus bus;
    std::string interface;         /**< Physical device for 0183, else a
                                        unique string */
-//    union {
+    union {
 //       const DataStream* nmea0183; /**< A specific RS485/nmea01831 interface  */
 //       struct in_addr sk_ipv4;     /**< signalK message over ipv4 */
 //       struct in6_addr onenet;     /**< FIXME Probably too simplified. */
-//       N2kName name;
-//    } address;
+       N2kName name;
+    } address;
 } nav_addr_t;
 
 typedef struct {
   std::string id;       /**<  For example 'GPGGA'  */
   std::string payload;  /**< Remaining data after first ',' */
 } Nmea0183_msg;
+
 typedef struct {
   N2kId id;
   std::vector<unsigned char> payload;
@@ -87,7 +125,7 @@ typedef struct {
   };
 } nav_msg;
 
-class AbstractDriver;   // forward
+class commDriverBase;   // forward
 
 /**
  * Interface implemented by transport layer and possible other parties
@@ -99,7 +137,7 @@ public:
   virtual void notify(const nav_msg& message) = 0;
 
   /** Handle driver status change. */
-  virtual void notify(const AbstractDriver& driver) = 0;
+  virtual void notify(const commDriverBase& driver) = 0;
 };
 
 /** Common interface for all drivers.  */
