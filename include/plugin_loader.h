@@ -164,6 +164,7 @@ public:
   EventVar evt_pluglist_change;
   EventVar evt_unreadable_plugin;
   EventVar evt_update_chart_types;
+  EventVar evt_plugin_loadall_finalize;
   EventVar evt_version_incompatible_plugin;
 
 

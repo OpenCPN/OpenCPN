@@ -242,6 +242,8 @@ public:
   void SendMessageToAllPlugins(const wxString &message_id,
                                const wxString &message_body);
   bool UpDateChartDataTypes();
+  void FinalizePluginLoadall();
+
   int GetJSONMessageTargetCount();
   bool UpdateConfig();
   void SendResizeEventToAllPlugIns(int x, int y);
@@ -295,6 +297,7 @@ private:
   ObservedVarListener evt_incompatible_plugin_listener;
   ObservedVarListener evt_load_directory_listener;
   ObservedVarListener evt_load_plugin_listener;
+  ObservedVarListener evt_plugin_loadall_finalize_listener;
   ObservedVarListener evt_pluglist_change_listener;
   ObservedVarListener evt_unreadable_plugin_listener;
   ObservedVarListener evt_update_chart_types_listener;
@@ -328,7 +331,7 @@ private:
 
   pluginUtilHandler *m_utilHandler;
   PluginListPanel *m_listPanel;
-  std::unique_ptr<AbstractBlacklist> m_blacklist; 
+  std::unique_ptr<AbstractBlacklist> m_blacklist;
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
