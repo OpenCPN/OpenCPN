@@ -29,7 +29,7 @@
  * */
 
 commDriverN2K::commDriverN2K()
-  : commDriverBase()
+  : AbstractCommDriver()
 {
   //bus = NavBus::undefined;
 }

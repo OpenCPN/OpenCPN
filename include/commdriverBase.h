@@ -125,7 +125,7 @@ typedef struct {
   };
 } nav_msg;
 
-class commDriverBase;   // forward
+class AbstractCommDriver;   // forward
 
 /**
  * Interface implemented by transport layer and possible other parties
@@ -137,16 +137,14 @@ public:
   virtual void notify(const nav_msg& message) = 0;
 
   /** Handle driver status change. */
-  virtual void notify(const commDriverBase& driver) = 0;
+  virtual void notify(const AbstractCommDriver& driver) = 0;
 };
 
 /** Common interface for all drivers.  */
-class commDriverBase {
+class AbstractCommDriver {
 public:
-  commDriverBase();
-  virtual ~commDriverBase();
-
-
+  AbstractCommDriver();
+  virtual ~AbstractCommDriver();
 
   NavBus bus;
   const std::string interface;  /**< Physical device for 0183, else a
