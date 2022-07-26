@@ -2234,15 +2234,14 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   // m_stSerProtocol->Wrap( -1 );
   fgSizer1->Add(m_stSerProtocol, 0, wxALL, 5);
 
-  wxString m_choiceSerialProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000"),
-                                              _("Seatalk")};
+  wxString m_choiceSerialProtocolChoices[] = {"NMEA 0183", "NMEA 2000"};
   int m_choiceSerialProtocolNChoices =
       sizeof(m_choiceSerialProtocolChoices) / sizeof(wxString);
   m_choiceSerialProtocol = new wxChoice(
       m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0);
   m_choiceSerialProtocol->SetSelection(0);
-  m_choiceSerialProtocol->Enable(FALSE);
+  m_choiceSerialProtocol->Enable(TRUE);
 
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
   m_stPriority = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Priority"),
@@ -2896,15 +2895,14 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_stSerProtocol->Wrap(-1);
   fgSizer1->Add(m_stSerProtocol, 0, wxALL, 5);
 
-  wxString m_choiceSerialProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000"),
-                                              _("Seatalk")};
+  wxString m_choiceSerialProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000")};
   int m_choiceSerialProtocolNChoices =
       sizeof(m_choiceSerialProtocolChoices) / sizeof(wxString);
   m_choiceSerialProtocol = new wxChoice(
       m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0);
   m_choiceSerialProtocol->SetSelection(0);
-  m_choiceSerialProtocol->Enable(FALSE);
+  m_choiceSerialProtocol->Enable(TRUE);
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
 
   m_stPriority = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Priority"),
