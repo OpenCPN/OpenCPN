@@ -128,7 +128,7 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
   n2kmsg.id =   N2kId(data);
   n2kmsg.payload = *data;
 
-  // This is where we want to build a "nav_msg", using a shared_ptr
+  // This is where we want to build a "NavMsg", using a shared_ptr
   // and then call notify()
 
 #if 0  // Debug output

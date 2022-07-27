@@ -30,9 +30,10 @@
 #include <windows.h>
 #endif
 
-#include <iostream>
-#include <iomanip>
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <memory>
 
 #include "wx/wxprec.h"
 
@@ -47,13 +48,15 @@
 #include <wx/fileconf.h>
 #include <wx/string.h>
 
+#include "BasePlatform.h"
 #include "catalog_handler.h"
 #include "ocpn_utils.h"
 #include "Downloader.h"
-#include "observable.h"
+#include "observable_msg.h"
+#include "drivers.h"
 #include "plugin_loader.h"
 #include "PluginHandler.h"
-#include "BasePlatform.h"
+#include "commTransport.h"
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -111,6 +114,113 @@ Commands:
 static const char *const DOWNLOAD_REPO_PROTO =
     "https://raw.githubusercontent.com/OpenCPN/plugins/@branch@/"
     "ocpn-plugins.xml";
+
+wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
+wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
+
+
+class Message {
+public:
+  Message() : payload("foobar") {};
+  virtual  ~Message() { std::cout << "Message: DTOR\n"; }
+  const std::string payload;
+};
+
+
+class MessagePtr {
+public:
+  MessagePtr(std::unique_ptr<Message> p) {ptr = std::move(p); }
+  std::unique_ptr<Message> ptr;
+  virtual  ~MessagePtr() { std::cout << "MessagePtr: DTOR\n"; }
+};
+
+
+class MsgSink:  public wxEvtHandler {
+private:
+  ObservedVarListener listener;
+public:
+  MsgSink() {
+    ObservableMsg observable("1234");
+    listener = observable.get_listener(this, EVT_BAR);
+    Bind(EVT_BAR, [&](wxCommandEvent ev) {
+      auto msg = get_message_ptr(ev);
+      std::cout << (msg->bus == NavBus::n2k ? "Type: N2k\n" : "wrong type\n");
+      auto n2000_msg = std::dynamic_pointer_cast<Nmea2000Msg>(msg);
+      std::string s(n2000_msg->payload.begin(), n2000_msg->payload.end());
+      std::cout << "Payload: " << s << "\n";
+    });
+  }
+};
+
+
+class TransportSource {
+public:
+  TransportSource(wxEvtHandler& sink) {
+    std::string s("payload data");
+    auto payload = std::vector<unsigned char>(s.begin(), s.end());
+    auto msg = new Nmea2000Msg(static_cast<uint64_t>(1234), payload);
+    auto t = Transport::getInstance();
+    t->notify(*msg);
+  }
+};
+
+
+class TransportSink: public wxEvtHandler {
+public:
+  TransportSink() {
+    auto t = Transport::getInstance();
+    Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
+    listener = t->get_listener(EVT_FOO, this, n2k_msg.key());
+
+    Bind(EVT_FOO, [&](wxCommandEvent ev) {
+      std::cout << "EVT_FOO: received\n" ;
+      auto message = get_message_ptr(ev);
+      auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
+      std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
+      std::cout << "payload: " + s + "\n";
+    });
+  }
+  ObservedVarListener listener;
+};
+
+
+class MsgSource {
+public:
+  MsgSource(wxEvtHandler& sink) {
+    std::string s("payload data");
+    auto payload = std::vector<unsigned char>(s.begin(), s.end());
+    Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234), payload);
+
+    ObservableMsg observable("1234");
+    observable.notify(n2k_msg);
+  }
+};
+
+class Sink: public wxEvtHandler {
+public:
+  Sink() {
+    Bind(EVT_FOO, [&](wxCommandEvent ev) {
+      std::cout << "EVT_FOO: received\n" ;
+      auto message = static_cast<MessagePtr*>(ev.GetClientData());
+      auto ptr = std::move(message->ptr);
+      std::cout << "payload: " + ptr->payload + "\n";
+      delete message;
+    });
+  }
+};
+
+class Source {
+public:
+  Source(wxEvtHandler& sink) {
+    auto evt = new wxCommandEvent(EVT_FOO);
+    evt->SetString("FOO string");
+    auto message = new Message();
+    auto ptr = std::unique_ptr<Message>(message);
+    auto message_ptr = new MessagePtr(std::move(ptr));
+    evt->SetClientData(message_ptr);
+    wxQueueEvent(&sink, evt);
+  }
+};
 
 class CliApp : public wxAppConsole {
 public:
@@ -205,6 +315,27 @@ public:
     exit(0);
   }
 
+  bool test_transport() {
+    TransportSink sink;
+    TransportSource source(sink);
+    ProcessPendingEvents();
+    exit(0);
+  }
+
+  bool test_voidptr() {
+    Sink sink;
+    Source source(sink);
+    ProcessPendingEvents();
+    exit(0);
+  }
+
+  bool test_observable() {
+    MsgSink sink;
+    MsgSource source(sink);
+    ProcessPendingEvents();
+    exit(0);
+  }
+
   bool load_plugin(const std::string& plugin) {
     auto loader = PluginLoader::getInstance();
     wxImage::AddHandler(new wxPNGHandler());
@@ -275,7 +406,19 @@ public:
       exit(1);
     }
     std::string command(parser.GetParam(0));
-    if (command == "load-plugin") {
+    if (command == "test-voidptr") {
+      check_param_count(parser, 0);
+      test_voidptr();
+    }
+    else if (command == "test-transport") {
+      check_param_count(parser, 0);
+      test_transport();
+    }
+    else if (command == "test-observable") {
+      check_param_count(parser, 0);
+      test_observable();
+    }
+    else if (command == "load-plugin") {
       check_param_count(parser, 2);
       load_plugin(parser.GetParam(1).ToStdString());
     }

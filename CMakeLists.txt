@@ -789,7 +789,6 @@ message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
 set(
   HDRS
-  include/observable.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
   include/about.h
@@ -814,6 +813,13 @@ set(
   include/chartimg.h
   include/chcanv.h
   include/ChInfoWin.h
+  include/commdriverBase.h
+  include/commdriverN0183.h
+  include/commdriverN0183Serial.h
+  include/commdriverN2K.h
+  include/commdriverN2KSerial.h
+  include/commdriverRegistry.h
+  include/commTransport.h
   include/compass.h
   include/concanv.h
   include/ConnectionParams.h
@@ -850,6 +856,8 @@ set(
   include/navutil.h
   include/NetworkDataStream.h
   include/NMEALogWindow.h
+  include/observable.h
+  include/observable_msg.h
   include/ocpCursor.h
   include/OCP_DataStreamInput_Thread.h
   include/OCPN_DataStreamEvent.h
@@ -923,7 +931,6 @@ set(
 
 set(
   SRCS
-  src/observable.cpp
   src/about.cpp
   src/AboutFrame.cpp
   src/AboutFrameImpl.cpp
@@ -943,6 +950,12 @@ set(
   src/catalog_mgr.cpp
   src/catalog_parser.cpp
   src/cat_settings.cpp
+  src/commdriverN2K.cpp
+  # src/commdriverN2KSerial.cpp    FIXME: Includes files outside the git repo
+  src/commdriverN0183.cpp
+  src/commdriverN0183Serial.cpp
+  src/commdriverRegistry.cpp
+  src/commTransport.cpp
   src/chart1.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
@@ -986,6 +999,8 @@ set(
   src/navutil.cpp
   src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
+  src/observable.cpp
+  src/observable_msg.cpp
   src/ocpCursor.cpp
   src/OCP_DataStreamInput_Thread.cpp
   src/OCPN_AUIManager.cpp
@@ -1048,13 +1063,7 @@ set(
   src/update_mgr.cpp
   src/viewport.cpp
   src/svg_utils.cpp
-  src/commdriverBase.cpp
-  src/commdriverN2K.cpp
-  # src/commdriverN2KSerial.cpp    FIXME: Includes files outside the git repo
-  src/commdriverN0183.cpp
-  src/commdriverN0183Serial.cpp
-  src/commdriverRegistry.cpp
-  )
+ )
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -2869,10 +2878,12 @@ if (NOT QT_ANDROID)
     src/BasePlatform.cpp
     src/catalog_handler.cpp
     src/catalog_parser.cpp
+    src/commTransport.cpp
     src/console.cpp
     src/Downloader.cpp
     src/logger.cpp
     src/observable.cpp
+    src/observable_msg.cpp
     src/ocpn_plugin.cpp
     src/ocpn_utils.cpp
     src/plugin_cache.cpp
