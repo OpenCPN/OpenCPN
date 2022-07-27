@@ -183,6 +183,8 @@ public:
   virtual void notify(const AbstractCommDriver& driver) = 0;
 };
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
 
 /** Common interface for all drivers.  */
 class AbstractCommDriver {
@@ -192,7 +194,6 @@ public:
                                  unique string */
 
   AbstractCommDriver() : bus(NavBus::undef) {};
-
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
 
   ///FIXME DSR virtual void set_listener(DriverListener listener) = 0;
@@ -208,8 +209,12 @@ public:
     // FIXME: Requires some unique interface support in DriverRegistry.
     return std::pair<CommStatus, std::string>(CommStatus::not_implemented, "");
   }
+
+protected:
+  AbstractCommDriver(NavBus _bus) : bus(_bus) {};
 };
 
+#pragma GCC diagnostic pop
 
 /**
  * Nmea2000 drivers are responsible for address claiming, exposing a stable
