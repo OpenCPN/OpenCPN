@@ -40,4 +40,8 @@ void commDriverN2K::send_message(const NavMsg& msg, const NavAddr& addr)
 {
 }
 
+void set_listener(DriverListener* listener)
+{
+}
+
 
