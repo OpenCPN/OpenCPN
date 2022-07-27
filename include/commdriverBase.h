@@ -84,9 +84,10 @@ private:
 class NavAddr {
 public:
   const NavBus bus;
-  const std::string interfaceName;
-  NavAddr(NavBus _bus, const std::string& iface)
-    : bus(_bus), interfaceName(iface) {};
+  const std::string iface;  /**< Physical device for 0183, else a unique
+				     string */
+  NavAddr(NavBus _bus, const std::string& _iface)
+    : bus(_bus), iface(_iface) {};
 };
 
 class NavAddr0183: public NavAddr {
@@ -187,8 +188,8 @@ public:
 class AbstractCommDriver {
 public:
   const NavBus bus;
-  const std::string interfaceName;  /**< Physical device for 0183, else a
-                                     unique string */
+  const std::string iface;  /**< Physical device for 0183, else a
+                                 unique string */
 
   AbstractCommDriver() : bus(NavBus::undef) {};
 
