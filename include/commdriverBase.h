@@ -27,6 +27,7 @@
 #define __COMMDRIVERBASE_H__
 
 #include <memory>
+#include <string>
 #include <vector>
 
 enum class CommStatus {ok, not_implemented, not_supported, name_in_use};

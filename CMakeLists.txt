@@ -1050,7 +1050,7 @@ set(
   src/svg_utils.cpp
   src/commdriverBase.cpp
   src/commdriverN2K.cpp
-  src/commdriverN2KSerial.cpp
+  # src/commdriverN2KSerial.cpp    FIXME: Includes files outside the git repo
   src/commdriverN0183.cpp
   src/commdriverN0183Serial.cpp
   src/commdriverRegistry.cpp
