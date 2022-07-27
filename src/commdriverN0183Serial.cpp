@@ -33,6 +33,64 @@ extern const wxEventType wxEVT_OCPN_THREADMSG;
 
 const wxEventType wxEVT_COMMDRIVER_N0183_SERIAL = wxNewEventType();
 
+typedef enum DS_ENUM_BUFFER_STATE {
+  DS_RX_BUFFER_EMPTY,
+  DS_RX_BUFFER_FULL
+} _DS_ENUM_BUFFER_STATE;
+
+template <class T>
+class circular_buffer {
+public:
+  explicit circular_buffer(size_t size)
+      : buf_(std::unique_ptr<T[]>(new T[size])), max_size_(size) {}
+
+  void reset();
+  size_t capacity() const;
+  size_t size() const;
+
+  bool empty() const {
+    // if head and tail are equal, we are empty
+    return (!full_ && (head_ == tail_));
+  }
+
+  bool full() const {
+    // If tail is ahead the head by 1, we are full
+    return full_;
+  }
+
+  void put(T item) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    buf_[head_] = item;
+    if (full_) tail_ = (tail_ + 1) % max_size_;
+
+    head_ = (head_ + 1) % max_size_;
+
+    full_ = head_ == tail_;
+  }
+
+  T get() {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (empty()) return T();
+
+    // Read data and advance the tail (we now have a free space)
+    auto val = buf_[tail_];
+    full_ = false;
+    tail_ = (tail_ + 1) % max_size_;
+
+    return val;
+  }
+
+private:
+  std::mutex mutex_;
+  std::unique_ptr<T[]> buf_;
+  size_t head_ = 0;
+  size_t tail_ = 0;
+  const size_t max_size_;
+  bool full_ = 0;
+};
+
+
 class commDriverN0183SerialEvent : public wxEvent {
 public:
   commDriverN0183SerialEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
@@ -85,8 +143,8 @@ commDriverN0183Serial::commDriverN0183Serial( const ConnectionParams *params)
 //                 }
 //                  );
 
-  m_EventHandler.Connect(wxEVT_COMMDRIVER_N0183_SERIAL,
-          (wxObjectEventFunction)(wxEventFunction)&commDriverN0183Serial::handle_N0183_MSG);
+   m_EventHandler.Connect(wxEVT_COMMDRIVER_N0183_SERIAL,
+           (wxObjectEventFunction)(wxEventFunction)&commDriverN0183Serial::handle_N0183_MSG);
 
 
   Open();
@@ -242,18 +300,17 @@ void *commDriverN0183SerialThread::Entry() {
     // device name).
   }
 
-  m_launcher->SetSecThreadActive();  // I am alive
+  m_pParentDriver->SetSecThreadActive();  // I am alive
 
   //    The main loop
   static size_t retries = 0;
 
-  while ((not_done) && (m_launcher->m_Thread_run_flag > 0)) {
+  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
     if (TestDestroy()) not_done = false;  // smooth exit
 
     uint8_t next_byte = 0;
     size_t newdata = 0;
     uint8_t rdata[2000];
-    char *ptmpbuf = temp_buf;
 
     if (m_serial.isOpen()) {
       try {
@@ -289,6 +346,8 @@ void *commDriverN0183SerialThread::Entry() {
 
       //    Found a NL char, thus end of message?
       if (nl_found) {
+        unsigned char *tptr;
+
         bool done = false;
         while (!done) {
           if (circle.empty()) {
@@ -296,33 +355,49 @@ void *commDriverN0183SerialThread::Entry() {
             break;
           }
 
-          //    Copy the message into a temporary circular buffer
+          //    Copy the message into a vector for tranmittal upstream
+          auto buffer = std::make_shared<std::vector<unsigned char>>();
+          std::vector<unsigned char> *vec = buffer.get();
+
+          tptr = tak_ptr;
+
+          while ((*tptr != 0x0a) && (tptr != put_ptr)) {
+            vec->push_back(*tptr++);
+
+            if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
+          }
+
+#if 1
           uint8_t take_byte = circle.get();
           while ((take_byte != 0x0a) && !circle.empty()) {
             circle_temp.put(take_byte);
             take_byte = circle.get();
           }
+#endif
 
-          circle_temp.put(take_byte);
-          if (take_byte == 0x0a) {
-            circle_temp.put(0);  // terminate the message
+          if (take_byte == 0x0a)
+          {
+            vec->push_back(*tptr++);
+            if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
 
-            //  Extract the message from temp circular buffer
-            while (*ptmpbuf = circle_temp.get()) {
-              ptmpbuf++;
-            }
+            vec->push_back('\0');
+
+            tak_ptr = tptr;
+
+
             //    Message is ready to parse and send out
             //    Messages may be coming in as <blah blah><lf><cr>.
             //    One example device is KVH1000 heading sensor.
             //    If that happens, the first character of a new captured message
             //    will the <cr>, and we need to discard it. This is out of spec,
             //    but we should handle it anyway
-            if (temp_buf[0] == '\r')
-              Parse_And_Send_Posn(&temp_buf[1]);
-            else
-              Parse_And_Send_Posn(temp_buf);
+            if (vec->at(0) == '\r')
+              vec->erase(vec->begin());
 
-            ptmpbuf = temp_buf;  // reset for next message
+            commDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+            Nevent.SetPayload(buffer);
+            m_pParentDriver->m_EventHandler.AddPendingEvent(Nevent);
+
           } else {
             done = true;
           }
@@ -356,8 +431,8 @@ void *commDriverN0183SerialThread::Entry() {
   }
   // thread_exit:
   CloseComPortPhysical();
-  m_launcher->SetSecThreadInActive();  // I am dead
-  m_launcher->m_Thread_run_flag = -1;
+  m_pParentDriver->SetSecThreadInActive();  // I am dead
+  m_pParentDriver->m_Thread_run_flag = -1;
 
   return 0;
 }
