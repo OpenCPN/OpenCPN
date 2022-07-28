@@ -136,6 +136,8 @@ public:
 
   virtual ~commDriverN2KSerial();
 
+  void set_listener(DriverListener* listener);
+
   bool Open();
 
   int m_Thread_run_flag;

@@ -28,10 +28,8 @@
 /*    commdriverN2K implementation
  * */
 
-commDriverN2K::commDriverN2K()
-  : AbstractCommDriver()
+commDriverN2K::commDriverN2K() : AbstractCommDriver(NavBus::n2k)
 {
-  //bus = NavBus::undefined;
 }
 
 commDriverN2K::~commDriverN2K()
@@ -39,6 +37,10 @@ commDriverN2K::~commDriverN2K()
 }
 
 void commDriverN2K::send_message(const NavMsg& msg, const NavAddr& addr)
+{
+}
+
+void set_listener(DriverListener* listener)
 {
 }
 

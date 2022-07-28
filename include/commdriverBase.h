@@ -84,9 +84,10 @@ private:
 class NavAddr {
 public:
   const NavBus bus;
-  const std::string interfaceName;
-  NavAddr(NavBus _bus, const std::string& iface)
-    : bus(_bus), interfaceName(iface) {};
+  const std::string iface;  /**< Physical device for 0183, else a unique
+				     string */
+  NavAddr(NavBus _bus, const std::string& _iface)
+    : bus(_bus), iface(_iface) {};
 };
 
 class NavAddr0183: public NavAddr {
@@ -182,19 +183,20 @@ public:
   virtual void notify(const AbstractCommDriver& driver) = 0;
 };
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
 
 /** Common interface for all drivers.  */
 class AbstractCommDriver {
 public:
   const NavBus bus;
-  const std::string interfaceName;  /**< Physical device for 0183, else a
-                                     unique string */
+  const std::string iface;  /**< Physical device for 0183, else a
+                                 unique string */
 
   AbstractCommDriver() : bus(NavBus::undef) {};
-
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
 
-  ///FIXME DSR virtual void set_listener(DriverListener listener) = 0;
+  virtual void set_listener(DriverListener* listener) = 0;
 
   /**
    * Create a new virtual interface using a new instance of this driver.
@@ -207,8 +209,12 @@ public:
     // FIXME: Requires some unique interface support in DriverRegistry.
     return std::pair<CommStatus, std::string>(CommStatus::not_implemented, "");
   }
+
+protected:
+  AbstractCommDriver(NavBus _bus) : bus(_bus) {};
 };
 
+#pragma GCC diagnostic pop
 
 /**
  * Nmea2000 drivers are responsible for address claiming, exposing a stable

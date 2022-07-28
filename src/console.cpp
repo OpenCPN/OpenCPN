@@ -135,32 +135,14 @@ public:
 };
 
 
-class MsgSink:  public wxEvtHandler {
-private:
-  ObservedVarListener listener;
-public:
-  MsgSink() {
-    ObservableMsg observable("1234");
-    listener = observable.get_listener(this, EVT_BAR);
-    Bind(EVT_BAR, [&](wxCommandEvent ev) {
-      auto msg = get_message_ptr(ev);
-      std::cout << (msg->bus == NavBus::n2k ? "Type: N2k\n" : "wrong type\n");
-      auto n2000_msg = std::dynamic_pointer_cast<Nmea2000Msg>(msg);
-      std::string s(n2000_msg->payload.begin(), n2000_msg->payload.end());
-      std::cout << "Payload: " << s << "\n";
-    });
-  }
-};
-
-
 class TransportSource {
 public:
   TransportSource(wxEvtHandler& sink) {
     std::string s("payload data");
     auto payload = std::vector<unsigned char>(s.begin(), s.end());
-    auto msg = new Nmea2000Msg(static_cast<uint64_t>(1234), payload);
+    Nmea2000Msg msg(static_cast<uint64_t>(1234), payload);
     auto t = Transport::getInstance();
-    t->notify(*msg);
+    t->notify(msg);
   }
 };
 
@@ -181,6 +163,24 @@ public:
     });
   }
   ObservedVarListener listener;
+};
+
+
+class MsgSink:  public wxEvtHandler {
+private:
+  ObservedVarListener listener;
+public:
+  MsgSink() {
+    ObservableMsg observable("1234");
+    listener = observable.get_listener(this, EVT_BAR);
+    Bind(EVT_BAR, [&](wxCommandEvent ev) {
+      auto msg = get_message_ptr(ev);
+      std::cout << (msg->bus == NavBus::n2k ? "Type: N2k\n" : "wrong type\n");
+      auto n2000_msg = std::dynamic_pointer_cast<Nmea2000Msg>(msg);
+      std::string s(n2000_msg->payload.begin(), n2000_msg->payload.end());
+      std::cout << "Payload: " << s << "\n";
+    });
+  }
 };
 
 
