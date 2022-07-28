@@ -185,7 +185,8 @@ void RedirectIOToConsole();
 
 
 //  comm event definitions
-wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N2K_129026, wxCommandEvent);
 
 
 //------------------------------------------------------------------------------
@@ -7005,19 +7006,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 6: {
 
       // Initialize the comm listeners
-
-      auto t = Transport::getInstance();
-      Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listener = t->get_listener(EVT_FOO, this, n2k_msg.key());
-
-      Bind(EVT_FOO, [&](wxCommandEvent ev) {
-        std::cout << "EVT_FOO: received\n" ;
-        auto message = get_message_ptr(ev);
-        auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
-        std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
-        std::cout << "payload: " + s + "\n";
-      });
-
+      InitCommListeners();
 
       break;
     }
@@ -7076,6 +7065,73 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   wxLog::FlushActive();
 
   RefreshAllCanvas(true);
+}
+
+void MyFrame::InitCommListeners(void) {
+
+  // Initialize the comm listeners
+
+  auto t = Transport::getInstance();
+
+  // GNSS Position Data PGN  129029
+  //----------------------------------
+  Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
+  listener_N2K_129029 = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
+  Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
+        auto message = get_message_ptr(ev);
+        auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
+        HandleN2K_129029( n2k_msg );
+      });
+
+  // COG SOG rapid   PGN 129026
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
+  listener_N2K_129026 = t->get_listener(EVT_N2K_129026, this, n2k_msg_129026.key());
+  Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
+        auto message = get_message_ptr(ev);
+        auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
+        HandleN2K_129026( n2k_msg );
+      });
+
+
+}
+
+bool MyFrame::HandleN2K_129029( std::shared_ptr <Nmea2000Msg> n2k_msg ) {
+
+  std::cout << "HandleN2K_129029\n" ;
+
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  // extract and verify PGN
+  uint64_t pgn = 0;
+  unsigned char *c = (unsigned char *)&pgn;
+  *c++ = v.at(3);
+  *c++ = v.at(4);
+  *c++ = v.at(5);
+
+#ifndef __WXMSW__
+  printf("PGN from payload: %" PRId64 "\n", pgn);
+#endif
+  return true;
+}
+
+bool MyFrame::HandleN2K_129026( std::shared_ptr <Nmea2000Msg> n2k_msg ) {
+
+  std::cout << "HandleN2K_129026\n" ;
+
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  // extract and verify PGN
+  uint64_t pgn = 0;
+  unsigned char *c = (unsigned char *)&pgn;
+  *c++ = v.at(3);
+  *c++ = v.at(4);
+  *c++ = v.at(5);
+
+#ifndef __WXMSW__
+  printf("PGN from payload: %" PRId64 "\n", pgn);
+#endif
+  return true;
 }
 
 //    Manage the application memory footprint on a periodic schedule

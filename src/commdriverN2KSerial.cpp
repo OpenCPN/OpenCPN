@@ -61,7 +61,6 @@ private:
 
 
 
-
 void commDriverN2KSerial::set_listener(DriverListener* listener) {
 }
 
@@ -86,16 +85,8 @@ commDriverN2KSerial::commDriverN2KSerial( const ConnectionParams *params)
   SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-
-//   m_EventHandler.Bind(wxEVT_COMMDRIVER_N2K_SERIAL,
-//                 [&](commDriverN2KSerialEvent& ev) {
-//                   handle_N2K_SERIAL_RAW(ev.GetPayload());
-//                 }
-//                  );
-
- //FIXME DSR
-  m_EventHandler.Connect(wxEVT_COMMDRIVER_N2K_SERIAL,
-          (wxObjectEventFunction)(wxEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
+  Connect( wxEVT_COMMDRIVER_N2K_SERIAL,
+           (wxObjectEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
 
 
   Open();
@@ -128,14 +119,18 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
 
   std::vector<unsigned char> *payload = p.get();
 
-
   // This is where we want to build a "NavMsg", using a shared_ptr
   // and then call notify()
 
-  //std::string s("payload data");
-  //auto payload = std::vector<unsigned char>(s.begin(), s.end());
+  // extract PGN
+  uint64_t pgn = 0;
+  unsigned char *c = (unsigned char *)&pgn;
+  *c++ = payload->at(3);
+  *c++ = payload->at(4);
+  *c++ = payload->at(5);
+  //memcpy(&v, &data[3], 1);
 
-  auto msg = new Nmea2000Msg(static_cast<uint64_t>(1234), *payload);
+  auto msg = new Nmea2000Msg(pgn, *payload);
   auto t = Transport::getInstance();
   t->notify(*msg);
 
@@ -292,7 +287,6 @@ void *commDriverN2KSerialThread::Entry() {
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(&next_byte, 1);
-        //printf("#%02X ", next_byte);
       } catch (std::exception &e) {
         // std::cerr << "Serial read exception: " << e.what() << std::endl;
         if (10 < retries++) {
@@ -333,16 +327,12 @@ void *commDriverN2KSerialThread::Entry() {
           std::vector<unsigned char> *vec = buffer.get();
 
           unsigned char *tptr;
-          printf("\n");
-
           tptr = tak_ptr;
 
           while ( (tptr != put_ptr)) {
             vec->push_back(*tptr++);
             if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
           }
-
-          //printf("\n");
 
           tak_ptr = tptr;
           bInMsg = false;
@@ -353,7 +343,7 @@ void *commDriverN2KSerialThread::Entry() {
           //  thereby releasing the thread for further data capture
           commDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
           Nevent.SetPayload(buffer);
-          m_pParentDriver->m_EventHandler.AddPendingEvent(Nevent);
+          m_pParentDriver->AddPendingEvent(Nevent);
 
         }
         else {

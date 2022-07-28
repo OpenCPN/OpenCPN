@@ -128,7 +128,7 @@ private:
 
 
 
-class commDriverN2KSerial : public commDriverN2K {
+class commDriverN2KSerial : public commDriverN2K, public wxEvtHandler {
 
 public:
   commDriverN2KSerial();
@@ -157,7 +157,7 @@ public:
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
-  wxEvtHandler m_EventHandler;
+  void handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event );
 
 private:
   bool m_bok;
@@ -169,8 +169,6 @@ private:
   bool m_bsec_thread_active;
 
   ConnectionParams m_params;
-
-  void handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event );
 
 };
 

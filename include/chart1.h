@@ -548,6 +548,11 @@ public:
   void setHeadingMagnetic(double heading);
   void setMagneticVariation(double var);
 
+  void InitCommListeners();
+
+  bool HandleN2K_129029( std::shared_ptr <Nmea2000Msg> n2k_msg );
+  bool HandleN2K_129026( std::shared_ptr <Nmea2000Msg> n2k_msg );
+
 private:
   void CheckToolbarPosition();
   void ODoSetSize(void);
@@ -616,7 +621,8 @@ private:
   SignalKEventHandler m_signalKHandler;
 
   //  comm event listeners
-  ObservedVarListener listener;
+  ObservedVarListener listener_N2K_129029;
+  ObservedVarListener listener_N2K_129026;
 
   DECLARE_EVENT_TABLE()
 };
