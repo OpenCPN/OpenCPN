@@ -1057,6 +1057,7 @@ wxDEFINE_EVENT(EVT_PLUGIN_UNLOAD, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGLIST_CHANGE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UNREADABLE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UPDATE_CHART_TYPES, wxCommandEvent);
+wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
 
 void PlugInManager::HandlePluginLoaderEvents() {
@@ -1097,7 +1098,7 @@ void PlugInManager::HandlePluginLoaderEvents() {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnLoadPlugin(pic); });
 
-  evt_version_incompatible_plugin_listener = 
+  evt_version_incompatible_plugin_listener =
     loader->evt_version_incompatible_plugin.get_listener(
       this,
       EVT_VERSION_INCOMPATIBLE_PLUGIN);
@@ -1120,10 +1121,16 @@ void PlugInManager::HandlePluginLoaderEvents() {
   Bind(EVT_INCOMPATIBLE_PLUGIN,
        [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
-  evt_update_chart_types_listener = 
+  evt_update_chart_types_listener =
     loader->evt_update_chart_types.get_listener(this, EVT_UPDATE_CHART_TYPES);
   Bind(EVT_UPDATE_CHART_TYPES,
        [&](wxCommandEvent& ev) { UpDateChartDataTypes(); });
+
+  evt_plugin_loadall_finalize_listener =
+    loader->evt_plugin_loadall_finalize.get_listener(this, EVT_PLUGIN_LOADALL_FINALIZE);
+  Bind(EVT_PLUGIN_LOADALL_FINALIZE,
+       [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
+
 }
 
 /**
@@ -1138,7 +1145,7 @@ void PlugInManager::HandlePluginHandlerEvents() {
 
   evt_download_failed_listener =
     loader->evt_update_chart_types.get_listener(this, EVT_DOWNLOAD_FAILED);
-  Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) { 
+  Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
       wxString message = _("Please check system log for more info.");
       OCPNMessageBox(gFrame, message, _("Installation error"),
                      wxICON_ERROR | wxOK | wxCENTRE); });
@@ -1525,6 +1532,28 @@ bool PlugInManager::UpDateChartDataTypes() {
   if (bret) ChartData->UpdateChartClassDescriptorArray();
 
   return bret;
+}
+
+void PlugInManager::FinalizePluginLoadall() {
+
+  //FIXME
+  //  Maybe this does not need to be done for CLI instance?
+  // Inform plugins of the current color scheme
+  SetColorSchemeForAllPlugIns( global_color_scheme );
+
+  // Tell all the PlugIns about the current OCPN configuration
+  SendBaseConfigToAllPlugIns();
+  SendS52ConfigToAllPlugIns( true );
+
+  // Inform Plugins of OpenGL configuration, if enabled
+  if(g_bopengl){
+      if(gFrame->GetPrimaryCanvas()->GetglCanvas())
+          gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+  }
+
+  //  And then reload all catalogs.
+  ReloadLocale();
+
 }
 
 void PlugInManager::SetPluginOrder(wxString serialized_names) {

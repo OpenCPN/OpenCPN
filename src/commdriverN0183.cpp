@@ -38,7 +38,7 @@ commDriverN0183::~commDriverN0183()
 {
 }
 
-void commDriverN0183::send_message(const nav_msg& msg, const nav_addr_t& addr)
+void commDriverN0183::send_message(const NavMsg& msg, const NavAddr& addr)
 {
 }
 

@@ -33,7 +33,7 @@ public:
     commDriverN0183();
     virtual ~commDriverN0183();
 
-    virtual void send_message(const nav_msg& msg, const nav_addr_t& addr);
+    virtual void send_message(const NavMsg& msg, const NavAddr& addr);
 
 };
 

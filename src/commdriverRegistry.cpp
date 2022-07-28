@@ -46,6 +46,6 @@ commDriverRegistry* commDriverRegistry::getInstance() {
 
 void commDriverRegistry::TestDriver(ConnectionParams *params)
 {
-  commDriverN2KSerial *t = new commDriverN2KSerial( params );
+   commDriverN2KSerial *t = new commDriverN2KSerial( params );
 }
 

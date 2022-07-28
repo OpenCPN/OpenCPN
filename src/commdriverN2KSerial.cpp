@@ -1,4 +1,3 @@
-#include <../../home/dsr/Projects/opencpn/include/commdriverN2KSerial.h>
 /***************************************************************************
  *
  * Project:  OpenCPN
@@ -89,8 +88,9 @@ commDriverN2KSerial::commDriverN2KSerial( const ConnectionParams *params)
 //                 }
 //                  );
 
-  m_EventHandler.Connect(wxEVT_COMMDRIVER_N2K_SERIAL,
-          (wxObjectEventFunction)(wxEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
+ //FIXME DSR
+  //m_EventHandler.Connect(wxEVT_COMMDRIVER_N2K_SERIAL,
+  //        (wxObjectEventFunction)(wxEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
 
 
   Open();
@@ -124,11 +124,11 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
   std::vector<unsigned char> *data = p.get();
 
   // Create the upstream message
-  Nmea2000_msg n2kmsg;
-  n2kmsg.id =   N2kId(data);
-  n2kmsg.payload = *data;
+//   Nmea2000_msg n2kmsg;
+//   n2kmsg.id =   N2kId(data);
+//   n2kmsg.payload = *data;
 
-  // This is where we want to build a "nav_msg", using a shared_ptr
+  // This is where we want to build a "NavMsg", using a shared_ptr
   // and then call notify()
 
 #if 0  // Debug output
@@ -411,6 +411,12 @@ void *commDriverN2KSerialThread::Entry() {
 
   return 0;
 }
+
+#else
+void *commDriverN2KSerialThread::Entry() {
+  return NULL;
+}
+
 #endif    //  wxmsw Entry()
 
 

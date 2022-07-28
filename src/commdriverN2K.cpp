@@ -38,7 +38,7 @@ commDriverN2K::~commDriverN2K()
 {
 }
 
-void commDriverN2K::send_message(const nav_msg& msg, const nav_addr_t& addr)
+void commDriverN2K::send_message(const NavMsg& msg, const NavAddr& addr)
 {
 }
 

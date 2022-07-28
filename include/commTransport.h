@@ -23,42 +23,45 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __COMMTRANSPORT_H__
-#define __COMMTRANSPORT_H__
+/* API handling raw partially decoded messages. */
 
-** The transport layer, a singleton. */
-class Transport: public DriverListener {
+#include <memory>
+#include <vector>
+
+#include <wx/event.h>
+#include <wx/jsonreader.h>
+
+#include "datastream.h"
+
+#include "commdriverBase.h"
+
+#ifndef _TRANSPORT_H
+#define _TRANSPORT_H
+
+/** The transport layer, a singleton. */
+class Transport : public DriverListener {
 public:
-
-  void send_message(const nav_msg& message, const nav_addr_t& address);
-
-  /**
-   * Send given eventType message to handler when receiving a mmea0183 message
-   * Message contains the payload as a wxString.
-   */
-  void listen(wxEventType, wxEvtHandler, const nmea0183_key&);
+  void send_message(const NavMsg& message, const NavAddr& address);
 
   /**
-   * Send given eventType message to handler when receiving a n2k message.
-   * Message contains the payload as a raw_msg_ptr;
+   * Return a listening object which generates wxEventType events sent to
+   * wxEvtHandler when a message with given key is received. The events
+   * contains a shared_ptr<NavMsg>, use get_message_ptr(event) to retrieve it.
    */
-  void listen(wxEventType, wxEvtHandler, const nmea2000_key&);
+  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
+                                   const std::string& key);
 
-  /**
-   * Send given eventType message to handler when receiving a signalK message.
-   * Message contains the parsed message tree root as a wxJSONValue*
-   * NOTE: Current implementation will return all signalK messages, effectively
-   * disregarding the key.
-   */
-  void listen(wxEventType, wxEvtHandler, const signalK_key&);
-
-
-  /*DriverListener implementation: */
-  void notify(const nav_msg& message);
-  void notify(const AbstractDriver& driver);
+  /* DriverListener implementation: */
+  void notify(const NavMsg& message);
+  void notify(const AbstractCommDriver& driver);
 
   /* Singleton implementation. */
   static Transport* getInstance();
+  Transport& operator=(Transport&) = delete;
+  Transport(const Transport&) = delete;
+
+private:
+  Transport() = default;
 };
 
-#endif    //guard
+#endif  // TRANSPORT_H

@@ -237,6 +237,11 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled) {
   // This only needs to happen when the entire universe (enabled and disabled)
   // of plugins are loaded for management.
   if (!load_enabled) UpdateManagedPlugins();
+
+  // Some additional actions needed after all plugins are loaded.
+  evt_update_chart_types.notify();
+  evt_plugin_loadall_finalize.notify();
+
   return any_dir_loaded;
 }
 
@@ -466,6 +471,7 @@ bool PluginLoader::LoadPlugInDirectory(const wxString& plugin_dir,
     } else
       i++;
   }
+
   return ret;
 }
 

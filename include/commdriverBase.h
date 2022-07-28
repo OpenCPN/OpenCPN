@@ -22,16 +22,26 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-#ifndef __COMMDRIVERBASE_H__
-#define __COMMDRIVERBASE_H__
+/* API handling communication "drivers". */
 
 #include <memory>
+#include <sstream>
 #include <vector>
+#include <string>
+
+#include <wx/event.h>
+#include <wx/jsonreader.h>
+
+#include "observable.h"
+#include "datastream.h"
+
+#ifndef _DRIVER_API_H
+#define _DRIVER_API_H
 
 enum class CommStatus {ok, not_implemented, not_supported, name_in_use};
 
-enum class NavBus {nmea0183, signalK, n2k, onenet, test_if, undefined};
+enum class  NavBus {nmea0183, signalK, n2k, onenet, test_if, undef};
+
 
 /**
  * N2k uses CAN which defines the basic properties of messages.
@@ -59,71 +69,103 @@ struct N2kName {
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kId {
-  N2kId() {};
-  N2kId(uint64_t id);
-  N2kId(std::vector<unsigned char> *raw_data){
-    // build pgn
-    uint32_t pgn = 0;
-    unsigned char *t = (unsigned char *)&pgn;
-    *t++ = raw_data->at(3);
-    *t++ = raw_data->at(4);
-    *t++ = raw_data->at(5);
-    id = (pgn << 8) + raw_data->at(7);
-    id += raw_data->at(2) << 26;
-  };
-
+  N2kId(uint64_t id) : value(id) {};
   uint8_t get_prio() const;   /**< 3 bits */
-  uint32_t get_png() const;   /**< a. k. a. PNG, 18 bits */
+  uint32_t get_png() const;   /**< a. k. a. PNG, 17 bits */
   uint32_t get_source() const;   /**< Source address,  8 bits */
-
-  private:
-    uint64_t id;
-
+  std::string to_string() const {
+    std::stringstream ss; ss << value; return ss.str();
+  }
+private:
+  uint64_t value;
 };
 
 /** Where messages are sent to or received from. */
-typedef struct {
-   NavBus bus;
-   std::string interface;         /**< Physical device for 0183, else a
-                                       unique string */
-    union {
-//       const DataStream* nmea0183; /**< A specific RS485/nmea01831 interface  */
-//       struct in_addr sk_ipv4;     /**< signalK message over ipv4 */
-//       struct in6_addr onenet;     /**< FIXME Probably too simplified. */
-       N2kName name;
-    } address;
-} nav_addr_t;
+class NavAddr {
+public:
+  const NavBus bus;
+  const std::string interfaceName;
+  NavAddr(NavBus _bus, const std::string& iface)
+    : bus(_bus), interfaceName(iface) {};
+};
 
-typedef struct {
-  std::string id;       /**<  For example 'GPGGA'  */
-  std::string payload;  /**< Remaining data after first ',' */
-} Nmea0183_msg;
+class NavAddr0183: public NavAddr {
+public:
+  const DataStream* nmea0183;   /**< A specific RS485/nmea01831 interface  */
 
-typedef struct {
-  N2kId id;
-  std::vector<unsigned char> payload;
-} Nmea2000_msg;
+  NavAddr0183(const std::string iface, const DataStream* stream)
+    : NavAddr(NavBus::nmea0183, iface), nmea0183(stream) {};
+};
 
-/** A parsed SignalK message over ipv4 */
-typedef struct {
-//   struct in_addr dest;
-//   struct in_addr src;
-//   wxJSONValue* root;
-  const int depth;
-  std::vector<std::string> errors;
-  std::vector<std::string> warnings;
-} SignalK_ipv4_msg;
+class NavAddr2000: public NavAddr {
+public:
+  const N2kName name;
+
+  NavAddr2000(const std::string& iface, const N2kName& _name)
+    : NavAddr(NavBus::n2k, iface), name(_name) {};
+};
+
+class NavAddrSignalK: public NavAddr {
+public:
+  NavAddrSignalK() : NavAddr(NavBus::signalK, "signalK") {};
+};
 
 
 /** Actual data sent between application and transport layer */
-typedef struct {
-  NavBus bus;
-  union {
-    Nmea2000_msg nmea2000;
-    Nmea0183_msg nmea0183;
-    SignalK_ipv4_msg sk_ipv4;
-  };
-} nav_msg;
+class NavMsg {
+public:
+  const NavBus bus;
+  virtual  std::string key() const = 0;
+
+  NavMsg() = delete;
+
+protected:
+  NavMsg(const NavBus& _bus) : bus(_bus) {};
+};
+
+/**
+ * See: https://github.com/OpenCPN/OpenCPN/issues/2729#issuecomment-1179506343
+ */
+class Nmea2000Msg: public NavMsg {
+public:
+  Nmea2000Msg(const N2kId& _id) : NavMsg(NavBus::n2k), id(_id)  {}
+  Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
+    : NavMsg(NavBus::n2k), id(_id), payload(_payload) {}
+
+  std::string key() const { return std::string("n2000-") + id.to_string(); };
+
+  N2kId id;
+  std::vector<unsigned char> payload;
+};
+
+
+class Nmea0183Msg: public NavMsg {
+public:
+  Nmea0183Msg() : NavMsg(NavBus::nmea0183) {}
+
+  Nmea0183Msg(const std::string _id, const std::string _payload)
+    : NavMsg(NavBus::nmea0183), id(_id), payload(_payload) {}
+
+  std::string key() const { return std::string("n0183-") + id; };
+
+  std::string id;       /**<  For example 'GPGGA'  */
+  std::string payload;  /**< Remaining data after first ',' */
+};
+
+/** A parsed SignalK message over ipv4 */
+class SignalK_Msg: public NavMsg {
+public:
+  SignalK_Msg(int _depth) : NavMsg(NavBus::signalK), depth(_depth) {}
+
+  struct in_addr dest;
+  struct in_addr src;
+  wxJSONValue* root;
+  const int depth;
+  std::vector<std::string> errors;
+  std::vector<std::string> warnings;
+  std::string key() const { return std::string("signalK"); };
+};
+
 
 class AbstractCommDriver;   // forward
 
@@ -134,25 +176,25 @@ class AbstractCommDriver;   // forward
 class DriverListener {
 public:
   /** Handle a received message. */
-  virtual void notify(const nav_msg& message) = 0;
+  virtual void notify(const NavMsg& message) = 0;
 
   /** Handle driver status change. */
   virtual void notify(const AbstractCommDriver& driver) = 0;
 };
 
+
 /** Common interface for all drivers.  */
 class AbstractCommDriver {
 public:
-  AbstractCommDriver();
-  virtual ~AbstractCommDriver();
-
-  NavBus bus;
-  const std::string interface;  /**< Physical device for 0183, else a
+  const NavBus bus;
+  const std::string interfaceName;  /**< Physical device for 0183, else a
                                      unique string */
 
-  virtual void send_message(const nav_msg& msg, const nav_addr_t& addr) = 0;
+  AbstractCommDriver() : bus(NavBus::undef) {};
 
-  //virtual void set_listener(DriverListener listener) = 0;
+  virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
+
+  ///FIXME DSR virtual void set_listener(DriverListener listener) = 0;
 
   /**
    * Create a new virtual interface using a new instance of this driver.
@@ -167,4 +209,50 @@ public:
   }
 };
 
-#endif    //guard
+
+/**
+ * Nmea2000 drivers are responsible for address claiming, exposing a stable
+ * n2k_name. It also handles fast packages fragmentation/defragmentation.
+ *
+ * Handling of list of attached devices and their human readable attributes
+ * are NOT part of the driver.
+ */
+class N2kDriver : public AbstractCommDriver {
+public:
+
+  /** @return address to given name on this n2k bus. */
+  NavAddr get_address(N2kName name);
+
+};
+
+/**
+ * Nmea0183 has no means to address a node. OTOH, there could be more
+ * than one physical interface handling it. Each interface has a
+ * separate driver instance.
+ */
+class Nmea0183Driver: public AbstractCommDriver {
+
+  /** @return address to this bus i. e., physical interface. */
+  NavAddr get_address();
+};
+
+
+/**
+ * The global driver registry, a singleton. Drivers register here when
+ * activated, transport layer finds them.
+ */
+class DriverRegistry {
+public:
+  void activate(const AbstractCommDriver& driver);
+  void deactivate(const AbstractCommDriver& driver);
+
+  /** Notified by all driverlist updates. */
+  EventVar evt_driverlist_change;
+
+  /** @return List of all activated drivers. */
+  const std::vector<AbstractCommDriver>& get_drivers();
+
+  static DriverRegistry* getInstance();
+};
+
+#endif  // DRIVER_API_H

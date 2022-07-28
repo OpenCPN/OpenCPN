@@ -143,8 +143,9 @@ commDriverN0183Serial::commDriverN0183Serial( const ConnectionParams *params)
 //                 }
 //                  );
 
-   m_EventHandler.Connect(wxEVT_COMMDRIVER_N0183_SERIAL,
-           (wxObjectEventFunction)(wxEventFunction)&commDriverN0183Serial::handle_N0183_MSG);
+ // FIXME DSR
+ // m_EventHandler.Connect(wxEVT_COMMDRIVER_N0183_SERIAL,
+ //          (wxObjectEventFunction)(wxEventFunction)&commDriverN0183Serial::handle_N0183_MSG);
 
 
   Open();
@@ -279,6 +280,23 @@ void commDriverN0183SerialThread::ThreadMessage(const wxString &msg) {
   event.SetSString(std::string(msg.mb_str()));
   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
+
+size_t commDriverN0183SerialThread::WriteComPortPhysical(char *msg) {
+  if (m_serial.isOpen()) {
+    ssize_t status;
+    try {
+      status = m_serial.write((uint8_t *)msg, strlen(msg));
+    } catch (std::exception &e) {
+      // std::cerr << "Unhandled Exception while writing to serial port: " <<
+      // e.what() << std::endl;
+      return -1;
+    }
+    return status;
+  } else {
+    return -1;
+  }
+}
+
 
 #ifdef __WXMSW__
 void *commDriverN0183SerialThread::Entry() {

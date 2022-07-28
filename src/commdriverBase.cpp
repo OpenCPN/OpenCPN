@@ -28,12 +28,13 @@
 /*    AbstractCommDriver implementation
  * */
 
-AbstractCommDriver::AbstractCommDriver()
-{
-  bus = NavBus::undefined;
-}
-
-AbstractCommDriver::~AbstractCommDriver()
-{
-}
+// FIXME DSR
+// AbstractCommDriver::AbstractCommDriver()
+// {
+//   bus = NavBus::undefined;
+// }
+//
+// AbstractCommDriver::~AbstractCommDriver()
+// {
+// }
 
