@@ -45,6 +45,7 @@
 #include "chartdbs.h"
 #include "s52s57.h"
 #include "SencManager.h"
+#include "observable_msg.h"
 
 #include "gdal/cpl_error.h"
 #include "SignalKEventHandler.h"
@@ -613,6 +614,9 @@ private:
   wxTimer m_recaptureTimer;
 
   SignalKEventHandler m_signalKHandler;
+
+  //  comm event listeners
+  ObservedVarListener listener;
 
   DECLARE_EVENT_TABLE()
 };

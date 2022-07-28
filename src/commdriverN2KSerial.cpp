@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "commdriverN2KSerial.h"
+#include "commTransport.h"
 
 #include "chart1.h"
 extern MyFrame *gFrame;
@@ -89,8 +90,8 @@ commDriverN2KSerial::commDriverN2KSerial( const ConnectionParams *params)
 //                  );
 
  //FIXME DSR
-  //m_EventHandler.Connect(wxEVT_COMMDRIVER_N2K_SERIAL,
-  //        (wxObjectEventFunction)(wxEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
+  m_EventHandler.Connect(wxEVT_COMMDRIVER_N2K_SERIAL,
+          (wxObjectEventFunction)(wxEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
 
 
   Open();
@@ -121,15 +122,19 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
 {
   auto p = event.GetPayload();
 
-  std::vector<unsigned char> *data = p.get();
+  std::vector<unsigned char> *payload = p.get();
 
-  // Create the upstream message
-//   Nmea2000_msg n2kmsg;
-//   n2kmsg.id =   N2kId(data);
-//   n2kmsg.payload = *data;
 
   // This is where we want to build a "NavMsg", using a shared_ptr
   // and then call notify()
+
+  //std::string s("payload data");
+  //auto payload = std::vector<unsigned char>(s.begin(), s.end());
+
+  auto msg = new Nmea2000Msg(static_cast<uint64_t>(1234), *payload);
+  auto t = Transport::getInstance();
+  t->notify(*msg);
+
 
 #if 0  // Debug output
   size_t packetLength = (size_t)data->at(1);

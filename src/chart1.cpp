@@ -148,6 +148,7 @@
 #include "TrackPropDlg.h"
 #include "usb_devices.h"
 #include "commdriverRegistry.h"
+#include "commTransport.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -182,6 +183,9 @@ void RedirectIOToConsole();
 #include "serial/serial.h"
 #endif
 
+
+//  comm event definitions
+wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 
 
 //------------------------------------------------------------------------------
@@ -6998,6 +7002,26 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       }
       break;
     }
+    case 6: {
+
+      // Initialize the comm listeners
+
+      auto t = Transport::getInstance();
+      Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
+      listener = t->get_listener(EVT_FOO, this, n2k_msg.key());
+
+      Bind(EVT_FOO, [&](wxCommandEvent ev) {
+        std::cout << "EVT_FOO: received\n" ;
+        auto message = get_message_ptr(ev);
+        auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
+        std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
+        std::cout << "payload: " + s + "\n";
+      });
+
+
+      break;
+    }
+
     default: {
       // Last call....
       wxLogMessage(_T("OnInitTimer...Last Call"));
