@@ -60,6 +60,10 @@ private:
 
 
 
+
+void commDriverN2KSerial::set_listener(DriverListener* listener) {
+}
+
 //========================================================================
 /*    commdriverN2KSerial implementation
  * */
