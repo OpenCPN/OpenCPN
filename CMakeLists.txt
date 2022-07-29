@@ -813,6 +813,7 @@ set(
   include/chartimg.h
   include/chcanv.h
   include/ChInfoWin.h
+  include/comm_app_msg.h
   include/commdriverBase.h
   include/commdriverN0183.h
   include/commdriverN0183Serial.h
@@ -950,6 +951,7 @@ set(
   src/catalog_mgr.cpp
   src/catalog_parser.cpp
   src/cat_settings.cpp
+  src/comm_app_msg.cpp
   src/commdriverN2K.cpp
   # src/commdriverN2KSerial.cpp    FIXME: Includes files outside the git repo
   src/commdriverN0183.cpp
