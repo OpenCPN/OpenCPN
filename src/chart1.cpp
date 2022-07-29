@@ -7078,7 +7078,7 @@ void MyFrame::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
   listener_N2K_129029 = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
   Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
-        auto message = get_message_ptr(ev);
+        auto message = get_navmsg_ptr(ev);
         auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
         HandleN2K_129029( n2k_msg );
       });
@@ -7088,7 +7088,7 @@ void MyFrame::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
   listener_N2K_129026 = t->get_listener(EVT_N2K_129026, this, n2k_msg_129026.key());
   Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
-        auto message = get_message_ptr(ev);
+        auto message = get_navmsg_ptr(ev);
         auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
         HandleN2K_129026( n2k_msg );
       });

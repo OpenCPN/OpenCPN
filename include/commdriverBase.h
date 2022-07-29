@@ -40,7 +40,7 @@
 
 enum class CommStatus {ok, not_implemented, not_supported, name_in_use};
 
-enum class  NavBus {nmea0183, signalK, n2k, onenet, test_if, undef};
+enum class NavBus {n0183, signalk, n2000, onenet, test_bus, undef};
 
 
 /**
@@ -85,9 +85,8 @@ class NavAddr {
 public:
   const NavBus bus;
   const std::string iface;  /**< Physical device for 0183, else a unique
-				     string */
-  NavAddr(NavBus _bus, const std::string& _iface)
-    : bus(_bus), iface(_iface) {};
+	                         string */
+  NavAddr(NavBus b, const std::string& i) : bus(b), iface(i) {};
 };
 
 class NavAddr0183: public NavAddr {
@@ -95,7 +94,7 @@ public:
   const DataStream* nmea0183;   /**< A specific RS485/nmea01831 interface  */
 
   NavAddr0183(const std::string iface, const DataStream* stream)
-    : NavAddr(NavBus::nmea0183, iface), nmea0183(stream) {};
+    : NavAddr(NavBus::n0183, iface), nmea0183(stream) {};
 };
 
 class NavAddr2000: public NavAddr {
@@ -103,12 +102,13 @@ public:
   const N2kName name;
 
   NavAddr2000(const std::string& iface, const N2kName& _name)
-    : NavAddr(NavBus::n2k, iface), name(_name) {};
+    : NavAddr(NavBus::n2000, iface), name(_name) {};
 };
 
+/** There is only support for a single signalK bus. */
 class NavAddrSignalK: public NavAddr {
 public:
-  NavAddrSignalK() : NavAddr(NavBus::signalK, "signalK") {};
+  NavAddrSignalK() : NavAddr(NavBus::signalk, "signalK") {};
 };
 
 
@@ -129,9 +129,9 @@ protected:
  */
 class Nmea2000Msg: public NavMsg {
 public:
-  Nmea2000Msg(const N2kId& _id) : NavMsg(NavBus::n2k), id(_id)  {}
+  Nmea2000Msg(const N2kId& _id) : NavMsg(NavBus::n2000), id(_id)  {}
   Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
-    : NavMsg(NavBus::n2k), id(_id), payload(_payload) {}
+    : NavMsg(NavBus::n2000), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n2000-") + id.to_string(); };
 
@@ -142,10 +142,10 @@ public:
 
 class Nmea0183Msg: public NavMsg {
 public:
-  Nmea0183Msg() : NavMsg(NavBus::nmea0183) {}
+  Nmea0183Msg() : NavMsg(NavBus::n0183) {}
 
   Nmea0183Msg(const std::string _id, const std::string _payload)
-    : NavMsg(NavBus::nmea0183), id(_id), payload(_payload) {}
+    : NavMsg(NavBus::n0183), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n0183-") + id; };
 
@@ -154,9 +154,9 @@ public:
 };
 
 /** A parsed SignalK message over ipv4 */
-class SignalK_Msg: public NavMsg {
+class SignalkMsg: public NavMsg {
 public:
-  SignalK_Msg(int _depth) : NavMsg(NavBus::signalK), depth(_depth) {}
+  SignalkMsg(int _depth) : NavMsg(NavBus::signalk), depth(_depth) {}
 
   struct in_addr dest;
   struct in_addr src;
@@ -182,6 +182,7 @@ public:
   /** Handle driver status change. */
   virtual void notify(const AbstractCommDriver& driver) = 0;
 };
+
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuninitialized"
@@ -216,6 +217,7 @@ protected:
 
 #pragma GCC diagnostic pop
 
+
 /**
  * Nmea2000 drivers are responsible for address claiming, exposing a stable
  * n2k_name. It also handles fast packages fragmentation/defragmentation.
@@ -230,6 +232,7 @@ public:
   NavAddr get_address(N2kName name);
 
 };
+
 
 /**
  * Nmea0183 has no means to address a node. OTOH, there could be more

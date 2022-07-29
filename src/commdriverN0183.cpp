@@ -29,7 +29,7 @@
  * */
 
 commDriverN0183::commDriverN0183()
-  : AbstractCommDriver(NavBus::nmea0183)
+  : AbstractCommDriver(NavBus::n0183)
 {
 }
 

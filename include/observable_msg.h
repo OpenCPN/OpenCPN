@@ -9,7 +9,7 @@
 #define _OBSERVABLE_MSG_H
 
 /** Return the message pointer available in wxCommandEvent.GetClientData() */
-std::shared_ptr<NavMsg> get_message_ptr(wxCommandEvent ev);
+std::shared_ptr<NavMsg> get_navmsg_ptr(wxCommandEvent ev);
 
 class ObservableMsg : public ObservedVar {
 public:
@@ -18,7 +18,7 @@ public:
   /* Send message to all listeners. */
   void notify(const Nmea2000Msg& msg);
   void notify(const Nmea0183Msg& msg);
-  void notify(const SignalK_Msg& msg);
+  void notify(const SignalkMsg& msg);
 
 protected:
   void notify(NavMsg* msg);

@@ -28,7 +28,7 @@
 /*    commdriverN2K implementation
  * */
 
-commDriverN2K::commDriverN2K() : AbstractCommDriver(NavBus::n2k)
+commDriverN2K::commDriverN2K() : AbstractCommDriver(NavBus::n2000)
 {
 }
 
