@@ -36,7 +36,10 @@
 
 #include "commdriverN2K.h"
 #include "ConnectionParams.h"
+
+#ifndef __OCPN__ANDROID__
 #include "serial/serial.h"
+#endif
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
@@ -96,7 +99,9 @@ public:
   void OnExit(void);
 
 private:
+#ifndef __OCPN__ANDROID__
   serial::Serial m_serial;
+#endif
   void ThreadMessage(const wxString &msg);
   bool OpenComPortPhysical(const wxString &com_name, int baud_rate);
   void CloseComPortPhysical();

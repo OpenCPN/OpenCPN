@@ -159,6 +159,7 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
 
 }
 
+#ifndef __OCPN__ANDROID__
 
 /**
  * This thread manages reading the N2K data stream provided by some N2K gateways
@@ -418,6 +419,7 @@ void *commDriverN2KSerialThread::Entry() {
 
 #endif    //  wxmsw Entry()
 
+#endif    // Android
 
 #if 0
 
