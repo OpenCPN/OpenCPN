@@ -28,93 +28,83 @@
 #include "commdriverN2KSerial.h"
 #include "commTransport.h"
 
+// BUG: driver cannot include code from upper layers.
 #include "chart1.h"
 extern MyFrame *gFrame;
+
 extern const wxEventType wxEVT_OCPN_THREADMSG;
 
-//wxDEFINE_EVENT(EVT_N2K_RAW_SERIAL, wxCommandEvent);
+// wxDEFINE_EVENT(EVT_N2K_RAW_SERIAL, wxCommandEvent);
 
 const wxEventType wxEVT_COMMDRIVER_N2K_SERIAL = wxNewEventType();
 
 class commDriverN2KSerialEvent : public wxEvent {
 public:
   commDriverN2KSerialEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
-    : wxEvent(id, commandType) {};
-  ~commDriverN2KSerialEvent() {};
+      : wxEvent(id, commandType){};
+  ~commDriverN2KSerialEvent(){};
 
   // accessors
-  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) { m_payload = data; }
+  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
+    m_payload = data;
+  }
   std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
   wxEvent *Clone() const {
-   commDriverN2KSerialEvent* newevent = new commDriverN2KSerialEvent(*this);
-   newevent->m_payload = this->m_payload;
-   return newevent;
- };
-
+    commDriverN2KSerialEvent *newevent = new commDriverN2KSerialEvent(*this);
+    newevent->m_payload = this->m_payload;
+    return newevent;
+  };
 
 private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
-
-
-
-void commDriverN2KSerial::set_listener(DriverListener* listener) {
-}
+void commDriverN2KSerial::set_listener(DriverListener *listener) {}
 
 //========================================================================
 /*    commdriverN2KSerial implementation
  * */
 
-commDriverN2KSerial::commDriverN2KSerial()
-  : commDriverN2K()
-{
-  //bus = NavBus::undefined;
+commDriverN2KSerial::commDriverN2KSerial() : commDriverN2K() {
+  // bus = NavBus::undefined;
 }
 
-commDriverN2KSerial::commDriverN2KSerial( const ConnectionParams *params)
+commDriverN2KSerial::commDriverN2KSerial(const ConnectionParams *params)
     : m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
-      m_params(*params)
-{
-  m_BaudRate = wxString::Format("%i", params->Baudrate),
-  SetSecThreadInActive();
+      m_params(*params) {
+  m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Connect( wxEVT_COMMDRIVER_N2K_SERIAL,
-           (wxObjectEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
-
+  Connect(wxEVT_COMMDRIVER_N2K_SERIAL,
+          (wxObjectEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
 
   Open();
-
 }
 
-commDriverN2KSerial::~commDriverN2KSerial()
-{
-}
+commDriverN2KSerial::~commDriverN2KSerial() {}
 
-bool commDriverN2KSerial::Open()
-{
+bool commDriverN2KSerial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
 
-  comx =  comx.BeforeFirst(' ');  // strip off any description provided by Windows
+  comx =
+      comx.BeforeFirst(' ');  // strip off any description provided by Windows
 
   //    Kick off the  RX thread
-  SetSecondaryThread(new commDriverN2KSerialThread( this, comx, "220"));
+  SetSecondaryThread(new commDriverN2KSerialThread(this, comx, "220"));
   SetThreadRunFlag(1);
   GetSecondaryThread()->Run();
 
   return true;
 }
 
-
-void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event )
-{
+void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
+    commDriverN2KSerialEvent &event) {
   auto p = event.GetPayload();
 
   std::vector<unsigned char> *payload = p.get();
@@ -128,12 +118,11 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
   *c++ = payload->at(3);
   *c++ = payload->at(4);
   *c++ = payload->at(5);
-  //memcpy(&v, &data[3], 1);
+  // memcpy(&v, &data[3], 1);
 
   auto msg = new Nmea2000Msg(pgn, *payload);
   auto t = Transport::getInstance();
   t->notify(*msg);
-
 
 #if 0  // Debug output
   size_t packetLength = (size_t)data->at(1);
@@ -156,7 +145,6 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
   }
   printf("\n\n");
 #endif
-
 }
 
 #ifndef __ANDROID__
@@ -167,15 +155,15 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
  *
  */
 
-
 // Commonly used raw format is actually inherited from an old paketizing format:
 // <10><02><application data><CRC (1)><10><03>
 
 // Actisense application data, from NGT-1 to PC
-// <data code=93><length (1)><priority (1)><PGN (3)><destination(1)><source (1)><time (4)><len (1)><data (len)>
+// <data code=93><length (1)><priority (1)><PGN (3)><destination(1)><source
+// (1)><time (4)><len (1)><data (len)>
 
-// As applied to a real application data element, after extraction from packet format:
-// 93 13 02 01 F8 01 FF 01 76 C2 52 00 08 08 70 EB 14 E8 8E 52 D2 BB 10
+// As applied to a real application data element, after extraction from packet
+// format: 93 13 02 01 F8 01 FF 01 76 C2 52 00 08 08 70 EB 14 E8 8E 52 D2 BB 10
 
 // length (1):      0x13
 // priority (1);    0x02
@@ -187,14 +175,11 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event
 // data (len):      08 70 EB 14 E8 8E 52 D2
 // packet CRC:      0xBB
 
-
 #define DS_RX_BUFFER_SIZE 4096
 
-commDriverN2KSerialThread::commDriverN2KSerialThread(commDriverN2KSerial *Launcher,
-                             const wxString &PortName,
-                             const wxString &strBaudRate)
-{
-
+commDriverN2KSerialThread::commDriverN2KSerialThread(
+    commDriverN2KSerial *Launcher, const wxString &PortName,
+    const wxString &strBaudRate) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
@@ -216,12 +201,10 @@ commDriverN2KSerialThread::~commDriverN2KSerialThread(void) {
   delete[] rx_buffer;
 }
 
-void commDriverN2KSerialThread::OnExit(void)
-{
-}
+void commDriverN2KSerialThread::OnExit(void) {}
 
 bool commDriverN2KSerialThread::OpenComPortPhysical(const wxString &com_name,
-                                                     int baud_rate) {
+                                                    int baud_rate) {
   try {
     m_serial.setPort(com_name.ToStdString());
     m_serial.setBaudrate(baud_rate);
@@ -250,9 +233,6 @@ void commDriverN2KSerialThread::ThreadMessage(const wxString &msg) {
   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
-
-
-
 #ifndef __WXMSW__
 void *commDriverN2KSerialThread::Entry() {
   bool not_done = true;
@@ -267,8 +247,8 @@ void *commDriverN2KSerialThread::Entry() {
     // goto thread_exit; // This means we will not be trying to connect = The
     // device must be connected when the thread is created. Does not seem to be
     // needed/what we want as the reconnection logic is able to pick it up
-    // whenever it actually appears (Of course given it appears with the expected
-    // device name).
+    // whenever it actually appears (Of course given it appears with the
+    // expected device name).
   }
 
   m_pParentDriver->SetSecThreadActive();  // I am alive
@@ -311,16 +291,16 @@ void *commDriverN2KSerialThread::Entry() {
     }
 
     if (newdata == 1) {
-      if (bInMsg){
-        if (bGotESC){
-          if (ESCAPE == next_byte){
+      if (bInMsg) {
+        if (bGotESC) {
+          if (ESCAPE == next_byte) {
             *put_ptr++ = next_byte;
             if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
             bGotESC = false;
           }
         }
 
-        if (bGotESC && (ENDOFTEXT == next_byte)){
+        if (bGotESC && (ENDOFTEXT == next_byte)) {
           // Process packet
           //    Copy the message into a std::vector
 
@@ -330,7 +310,7 @@ void *commDriverN2KSerialThread::Entry() {
           unsigned char *tptr;
           tptr = tak_ptr;
 
-          while ( (tptr != put_ptr)) {
+          while ((tptr != put_ptr)) {
             vec->push_back(*tptr++);
             if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
           }
@@ -346,26 +326,24 @@ void *commDriverN2KSerialThread::Entry() {
           Nevent.SetPayload(buffer);
           m_pParentDriver->AddPendingEvent(Nevent);
 
-        }
-        else {
-          bGotESC = (next_byte==ESCAPE);
+        } else {
+          bGotESC = (next_byte == ESCAPE);
 
-          if (!bGotESC){
+          if (!bGotESC) {
             *put_ptr++ = next_byte;
             if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
           }
         }
       }
 
-      else{
-        if (STARTOFTEXT == next_byte){
+      else {
+        if (STARTOFTEXT == next_byte) {
           bGotSOT = false;
           if (bGotESC) {
             bGotSOT = true;
           }
-        }
-        else {
-          bGotESC = (next_byte==ESCAPE);
+        } else {
+          bGotESC = (next_byte == ESCAPE);
           if (bGotSOT) {
             bGotSOT = false;
             bInMsg = true;
@@ -375,7 +353,7 @@ void *commDriverN2KSerialThread::Entry() {
           }
         }
       }
-    }    // if newdata > 0
+    }  // if newdata > 0
 
     //      Check for any pending output message
 #if 0
@@ -402,7 +380,7 @@ void *commDriverN2KSerialThread::Entry() {
     }  // while b_qdata
 
 #endif
-  }   //while ((not_done)
+  }  // while ((not_done)
 
   // thread_exit:
   CloseComPortPhysical();
@@ -413,16 +391,13 @@ void *commDriverN2KSerialThread::Entry() {
 }
 
 #else
-void *commDriverN2KSerialThread::Entry() {
-  return NULL;
-}
+void *commDriverN2KSerialThread::Entry() { return NULL; }
 
-#endif    //  wxmsw Entry()
+#endif  //  wxmsw Entry()
 
-#endif    // Android
+#endif  // Android
 
 #if 0
-
 
 #ifdef OCPN_USE_NEWSERIAL
 

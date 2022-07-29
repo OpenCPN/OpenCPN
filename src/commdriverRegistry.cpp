@@ -28,13 +28,9 @@
 /*    commDriverRegistry
  * */
 
-commDriverRegistry::commDriverRegistry()
-{
-}
+commDriverRegistry::commDriverRegistry() {}
 
-commDriverRegistry::~commDriverRegistry()
-{
-}
+commDriverRegistry::~commDriverRegistry() {}
 
 commDriverRegistry* commDriverRegistry::getInstance() {
   static commDriverRegistry* instance = 0;
@@ -44,8 +40,6 @@ commDriverRegistry* commDriverRegistry::getInstance() {
   return instance;
 }
 
-void commDriverRegistry::TestDriver(ConnectionParams *params)
-{
-   commDriverN2KSerial *t = new commDriverN2KSerial( params );
+void commDriverRegistry::TestDriver(ConnectionParams* params) {
+  commDriverN2KSerial* t = new commDriverN2KSerial(params);
 }
-
