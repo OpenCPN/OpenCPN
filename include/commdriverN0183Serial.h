@@ -43,7 +43,7 @@
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
-class commDriverN0183Serial;    // fwd
+class commDriverN0183Serial;  // fwd
 
 template <typename T>
 class n0183_atomic_queue {
@@ -78,14 +78,13 @@ private:
   mutable std::mutex m_mutex;
 };
 
-class commDriverN0183SerialEvent;   //fwd
-
+class commDriverN0183SerialEvent;  // fwd
 
 class commDriverN0183SerialThread : public wxThread {
 public:
   commDriverN0183SerialThread(commDriverN0183Serial *Launcher,
-                             const wxString &PortName,
-                             const wxString &strBaudRate);
+                              const wxString &PortName,
+                              const wxString &strBaudRate);
 
   ~commDriverN0183SerialThread(void);
   void *Entry();
@@ -122,13 +121,7 @@ private:
 #endif
 };
 
-
-
-
-
-
 class commDriverN0183Serial : public commDriverN0183 {
-
 public:
   commDriverN0183Serial();
   commDriverN0183Serial(const ConnectionParams *params);
@@ -167,9 +160,7 @@ private:
 
   ConnectionParams m_params;
 
-  void handle_N0183_MSG( commDriverN0183SerialEvent &event );
-
+  void handle_N0183_MSG(commDriverN0183SerialEvent &event);
 };
 
-
-#endif    //guard
+#endif  // guard
