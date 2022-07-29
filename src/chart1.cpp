@@ -149,6 +149,7 @@
 #include "usb_devices.h"
 #include "commdriverRegistry.h"
 #include "commTransport.h"
+#include "N2KParser.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -7112,6 +7113,29 @@ bool MyFrame::HandleN2K_129029( std::shared_ptr <Nmea2000Msg> n2k_msg ) {
 #ifndef __WXMSW__
   printf("PGN from payload: %" PRId64 "\n", pgn);
 #endif
+
+  unsigned char SID;
+  uint16_t DaysSince1970;
+  double SecondsSinceMidnight;
+  double Latitude, Longitude, Altitude;
+  tN2kGNSStype GNSStype;
+  tN2kGNSSmethod GNSSmethod;
+  unsigned char nSatellites;
+  double HDOP, PDOP, GeoidalSeparation;
+  unsigned char nReferenceStations;
+  tN2kGNSStype ReferenceStationType;
+  uint16_t ReferenceSationID;
+  double AgeOfCorrection;
+
+  ParseN2kPGN129029(v, SID, DaysSince1970, SecondsSinceMidnight,
+                     Latitude, Longitude, Altitude,
+                     GNSStype, GNSSmethod,
+                     nSatellites, HDOP, PDOP, GeoidalSeparation,
+                     nReferenceStations, ReferenceStationType, ReferenceSationID,
+                     AgeOfCorrection
+                    );
+
+
   return true;
 }
 
