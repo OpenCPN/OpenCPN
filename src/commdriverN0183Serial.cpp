@@ -191,7 +191,7 @@ void commDriverN0183Serial::handle_N0183_MSG( commDriverN0183SerialEvent &event 
 
 }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 
 /**
  * This thread manages reading the N2K data stream provided by some N2K gateways
