@@ -23,8 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __COMMDRIVERN0183SERIAL_H__
-#define __COMMDRIVERN0183SERIAL_H__
+#ifndef _COMMDRIVERN0183SERIAL_H__
+#define _COMMDRIVERN0183SERIAL_H__
 
 #include <wx/thread.h>
 //#include <wx/string.h>
