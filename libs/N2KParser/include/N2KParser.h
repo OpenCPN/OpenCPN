@@ -50,6 +50,11 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __N2KPARSER_H__
 #define __N2KPARSER_H__
 
+#include <vector>
+#include <stdint.h>
+
+#include "N2kTypes.h"
+#include "N2kMessages.h"
 
 // Raw data definition
 typedef std::vector<unsigned char> n2k_rawData;
@@ -62,7 +67,7 @@ unsigned long GetPGN( n2k_rawData *v);
 bool VerifyCRC( n2k_rawData *v);
 int GetSource(n2k_rawData *v);
 int GetDestination(n2k_rawData *v);
-time_t GetTime(n2k_rawData *v);
+//time_t GetTime(n2k_rawData *v);
 
 
 //-----------------------------------------------------------------------------
@@ -85,7 +90,7 @@ time_t GetTime(n2k_rawData *v);
 //  - HDOP                  Horizontal Dilution Of Precision in meters.
 //  - PDOP                  Probable dilution of precision in meters.
 //  - GeoidalSeparation     Geoidal separation in meters
-bool ParseN2kPGN129029(const tN2kMsg &N2kMsg, unsigned char &SID, uint16_t &DaysSince1970, double &SecondsSinceMidnight,
+bool ParseN2kPGN129029(std::vector<unsigned char> v, unsigned char &SID, uint16_t &DaysSince1970, double &SecondsSinceMidnight,
                      double &Latitude, double &Longitude, double &Altitude,
                      tN2kGNSStype &GNSStype, tN2kGNSSmethod &GNSSmethod,
                      unsigned char &nSatellites, double &HDOP, double &PDOP, double &GeoidalSeparation,
@@ -93,6 +98,7 @@ bool ParseN2kPGN129029(const tN2kMsg &N2kMsg, unsigned char &SID, uint16_t &Days
                      double &AgeOfCorrection
                      );
 
+#if 0
 //*****************************************************************************
 // GNSS DOP data
 // Input:
@@ -855,7 +861,7 @@ bool ParseN2kPGN128778(
 
 bool ParseN2kPGN130576(const tN2kMsg &N2kMsg, int8_t &PortTrimTab, int8_t &StbdTrimTab);
 
-
+#endif
 
 #endif  //guard
 

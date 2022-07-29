@@ -7,6 +7,8 @@ endif ()
 set (SRC
   src/N2KParser.cpp
   include/N2KParser.h
+  src/N2kMessages.cpp
+  src/N2kMsg.cpp
 )
 add_library(N2KPARSER STATIC ${SRC})
 set_property(TARGET N2KPARSER PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
