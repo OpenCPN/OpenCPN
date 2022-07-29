@@ -22,8 +22,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef __COMMDRIVERN2K_H__
-#define __COMMDRIVERN2K_H__
+#ifndef _COMMDRIVERN2K_H__
+#define _COMMDRIVERN2K_H__
 
 #include "commdriverBase.h"
 

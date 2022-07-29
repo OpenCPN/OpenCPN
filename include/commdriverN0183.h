@@ -22,20 +22,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef __COMMDRIVERN0183_H__
-#define __COMMDRIVERN0183_H__
+#ifndef _COMMDRIVERN0183_H__
+#define _COMMDRIVERN0183_H__
 
 #include "commdriverBase.h"
 
 class commDriverN0183 : public AbstractCommDriver {
-
 public:
-    commDriverN0183();
-    virtual ~commDriverN0183();
+  commDriverN0183();
+  virtual ~commDriverN0183();
 
-    virtual void send_message(const NavMsg& msg, const NavAddr& addr);
-    void set_listener(DriverListener* listener);
+  virtual void send_message(const NavMsg& msg, const NavAddr& addr);
+  void set_listener(DriverListener* listener);
 };
 
-#endif    //guard
-
+#endif  // guard

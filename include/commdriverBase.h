@@ -38,10 +38,9 @@
 #ifndef _DRIVER_API_H
 #define _DRIVER_API_H
 
-enum class CommStatus {ok, not_implemented, not_supported, name_in_use};
+enum class CommStatus { ok, not_implemented, not_supported, name_in_use };
 
-enum class  NavBus {nmea0183, signalK, n2k, onenet, test_if, undef};
-
+enum class NavBus { n0183, signalk, n2000, onenet, test_bus, undef };
 
 /**
  * N2k uses CAN which defines the basic properties of messages.
@@ -69,13 +68,16 @@ struct N2kName {
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kId {
-  N2kId(uint64_t id) : value(id) {};
-  uint8_t get_prio() const;   /**< 3 bits */
-  uint32_t get_png() const;   /**< a. k. a. PNG, 17 bits */
-  uint32_t get_source() const;   /**< Source address,  8 bits */
+  N2kId(uint64_t id) : value(id){};
+  uint8_t get_prio() const;    /**< 3 bits */
+  uint32_t get_png() const;    /**< a. k. a. PNG, 17 bits */
+  uint32_t get_source() const; /**< Source address,  8 bits */
   std::string to_string() const {
-    std::stringstream ss; ss << value; return ss.str();
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
   }
+
 private:
   uint64_t value;
 };
@@ -85,53 +87,53 @@ class NavAddr {
 public:
   const NavBus bus;
   const std::string iface;  /**< Physical device for 0183, else a unique
-				     string */
-  NavAddr(NavBus _bus, const std::string& _iface)
-    : bus(_bus), iface(_iface) {};
+                                 string */
+  NavAddr(NavBus b, const std::string& i) : bus(b), iface(i){};
 };
 
-class NavAddr0183: public NavAddr {
+class NavAddr0183 : public NavAddr {
 public:
-  const DataStream* nmea0183;   /**< A specific RS485/nmea01831 interface  */
+  const DataStream* nmea0183;  /**< A specific RS485/nmea01831 interface  */
 
   NavAddr0183(const std::string iface, const DataStream* stream)
-    : NavAddr(NavBus::nmea0183, iface), nmea0183(stream) {};
+      : NavAddr(NavBus::n0183, iface), nmea0183(stream){};
 };
 
-class NavAddr2000: public NavAddr {
+class NavAddr2000 : public NavAddr {
 public:
   const N2kName name;
 
   NavAddr2000(const std::string& iface, const N2kName& _name)
-    : NavAddr(NavBus::n2k, iface), name(_name) {};
+      : NavAddr(NavBus::n2000, iface), name(_name){};
 };
 
-class NavAddrSignalK: public NavAddr {
+/** There is only support for a single signalK bus. */
+class NavAddrSignalK : public NavAddr {
 public:
-  NavAddrSignalK() : NavAddr(NavBus::signalK, "signalK") {};
+  NavAddrSignalK() : NavAddr(NavBus::signalk, "signalK"){};
 };
-
 
 /** Actual data sent between application and transport layer */
 class NavMsg {
 public:
   const NavBus bus;
-  virtual  std::string key() const = 0;
+  virtual std::string key() const = 0;
 
   NavMsg() = delete;
 
 protected:
-  NavMsg(const NavBus& _bus) : bus(_bus) {};
+  NavMsg(const NavBus& _bus) : bus(_bus){};
 };
+
 
 /**
  * See: https://github.com/OpenCPN/OpenCPN/issues/2729#issuecomment-1179506343
  */
-class Nmea2000Msg: public NavMsg {
+class Nmea2000Msg : public NavMsg {
 public:
-  Nmea2000Msg(const N2kId& _id) : NavMsg(NavBus::n2k), id(_id)  {}
+  Nmea2000Msg(const N2kId& _id) : NavMsg(NavBus::n2000), id(_id) {}
   Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
-    : NavMsg(NavBus::n2k), id(_id), payload(_payload) {}
+      : NavMsg(NavBus::n2000), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n2000-") + id.to_string(); };
 
@@ -140,23 +142,23 @@ public:
 };
 
 
-class Nmea0183Msg: public NavMsg {
+class Nmea0183Msg : public NavMsg {
 public:
-  Nmea0183Msg() : NavMsg(NavBus::nmea0183) {}
+  Nmea0183Msg() : NavMsg(NavBus::n0183) {}
 
   Nmea0183Msg(const std::string _id, const std::string _payload)
-    : NavMsg(NavBus::nmea0183), id(_id), payload(_payload) {}
+      : NavMsg(NavBus::n0183), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n0183-") + id; };
 
-  std::string id;       /**<  For example 'GPGGA'  */
-  std::string payload;  /**< Remaining data after first ',' */
+  std::string id;      /**<  For example 'GPGGA'  */
+  std::string payload; /**< Remaining data after first ',' */
 };
 
 /** A parsed SignalK message over ipv4 */
-class SignalK_Msg: public NavMsg {
+class SignalkMsg : public NavMsg {
 public:
-  SignalK_Msg(int _depth) : NavMsg(NavBus::signalK), depth(_depth) {}
+  SignalkMsg(int _depth) : NavMsg(NavBus::signalk), depth(_depth) {}
 
   struct in_addr dest;
   struct in_addr src;
@@ -167,8 +169,7 @@ public:
   std::string key() const { return std::string("signalK"); };
 };
 
-
-class AbstractCommDriver;   // forward
+class AbstractCommDriver;  // forward
 
 /**
  * Interface implemented by transport layer and possible other parties
@@ -183,17 +184,16 @@ public:
   virtual void notify(const AbstractCommDriver& driver) = 0;
 };
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
 
 /** Common interface for all drivers.  */
 class AbstractCommDriver {
 public:
   const NavBus bus;
-  const std::string iface;  /**< Physical device for 0183, else a
-                                 unique string */
+  const std::string iface; /**< Physical device for 0183, else a
+                                unique string */
 
-  AbstractCommDriver() : bus(NavBus::undef) {};
+  AbstractCommDriver() : bus(NavBus::undef){};
+
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
 
   virtual void set_listener(DriverListener* listener) = 0;
@@ -214,7 +214,6 @@ protected:
   AbstractCommDriver(NavBus _bus) : bus(_bus) {};
 };
 
-#pragma GCC diagnostic pop
 
 /**
  * Nmea2000 drivers are responsible for address claiming, exposing a stable
@@ -228,7 +227,6 @@ public:
 
   /** @return address to given name on this n2k bus. */
   NavAddr get_address(N2kName name);
-
 };
 
 /**
@@ -236,12 +234,11 @@ public:
  * than one physical interface handling it. Each interface has a
  * separate driver instance.
  */
-class Nmea0183Driver: public AbstractCommDriver {
+class Nmea0183Driver : public AbstractCommDriver {
 
   /** @return address to this bus i. e., physical interface. */
   NavAddr get_address();
 };
-
 
 /**
  * The global driver registry, a singleton. Drivers register here when

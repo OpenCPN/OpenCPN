@@ -23,14 +23,14 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __COMMDRIVERREGISTRY_H__
-#define __COMMDRIVERREGISTRY_H__
+#ifndef _COMMDRIVERREGISTRY_H__
+#define _COMMDRIVERREGISTRY_H__
 
 #include "commdriverBase.h"
 #include "ConnectionParams.h"
 #include "commdriverN2KSerial.h"
 
- /*The global driver registry, a singleton. Drivers register here when
+/*The global driver registry, a singleton. Drivers register here when
  * activated, transport layer finds them.
  */
 class commDriverRegistry {
@@ -42,19 +42,17 @@ public:
   void deactivate(const AbstractCommDriver& driver);
 
   /** Notified by all driverlist updates. */
-  //EventVar evt_driverlist_change;
+  EventVar evt_driverlist_change;
 
   /** @return List of all activated drivers. */
   const std::vector<AbstractCommDriver>& get_drivers();
 
   static commDriverRegistry* getInstance();
 
-  //FIXME
-  // Stub method, to pretest drivers.
-  // Goes away for production
-  void TestDriver(ConnectionParams *params);
-
+  // FIXME
+  //  Stub method, to pretest drivers.
+  //  Goes away for production
+  void TestDriver(ConnectionParams* params);
 };
 
-
-#endif    //guard
+#endif  // guard

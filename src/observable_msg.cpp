@@ -25,7 +25,7 @@ private:
   std::shared_ptr<NavMsg> ptr;
 };
 
-std::shared_ptr<NavMsg> get_message_ptr(wxCommandEvent ev) {
+std::shared_ptr<NavMsg> get_navmsg_ptr(wxCommandEvent ev) {
   return NavPointerMsg::get_pointer(ev);
 }
 
@@ -45,6 +45,6 @@ void ObservableMsg::notify(const Nmea0183Msg& msg) {
   notify(new Nmea0183Msg(msg.id, msg.payload));
 }
 
-void ObservableMsg::notify(const SignalK_Msg& msg) {
-  notify(new SignalK_Msg(0));
+void ObservableMsg::notify(const SignalkMsg& msg) {
+  notify(new SignalkMsg(0));
 }

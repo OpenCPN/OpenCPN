@@ -13,14 +13,14 @@ ObservedVarListener Transport::get_listener(wxEventType et, wxEvtHandler* eh,
 void Transport::notify(const NavMsg& message) {
   ObservableMsg om(message.key());
   switch (message.bus) {
-    case NavBus::n2k:
+    case NavBus::n2000:
       om.notify(*dynamic_cast<const Nmea2000Msg*>(&message));
       break;
-    case NavBus::nmea0183:
+    case NavBus::n0183:
       om.notify(*dynamic_cast<const Nmea0183Msg*>(&message));
       break;
-    case NavBus::signalK:
-      om.notify(*dynamic_cast<const SignalK_Msg*>(&message));
+    case NavBus::signalk:
+      om.notify(*dynamic_cast<const SignalkMsg*>(&message));
       break;
     default:
       assert(false);
