@@ -1063,7 +1063,6 @@ set(
   src/update_mgr.cpp
   src/viewport.cpp
   src/svg_utils.cpp
-  src/commdriverBase.cpp
   src/commdriverN2K.cpp
   src/commdriverN2KSerial.cpp
   src/commdriverN0183.cpp
