@@ -445,7 +445,7 @@ void *commDriverN0183SerialThread::Entry() {
 
             commDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
             Nevent.SetPayload(buffer);
-            m_pParentDriver->m_EventHandler.AddPendingEvent(Nevent);
+            m_pParentDriver->AddPendingEvent(Nevent);
 
           } else {
             done = true;
