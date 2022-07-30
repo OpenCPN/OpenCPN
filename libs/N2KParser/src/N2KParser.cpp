@@ -56,9 +56,10 @@ uint32_t millis() {
   return 42;
 }
 
-tN2kMsg MakeN2kMsg(std::vector<unsigned char> v) {
+tN2kMsg MakeN2kMsg(std::vector<unsigned char> &v) {
 
   tN2kMsg Msg;
+  Msg.Clear();;
 
   unsigned char *Buf = v.data();
 
@@ -85,7 +86,7 @@ tN2kMsg MakeN2kMsg(std::vector<unsigned char> v) {
 }
 
 
-bool ParseN2kPGN129029(std::vector<unsigned char>v, unsigned char &SID, uint16_t &DaysSince1970, double &SecondsSinceMidnight,
+bool ParseN2kPGN129029(std::vector<unsigned char> &v, unsigned char &SID, uint16_t &DaysSince1970, double &SecondsSinceMidnight,
                      double &Latitude, double &Longitude, double &Altitude,
                      tN2kGNSStype &GNSStype, tN2kGNSSmethod &GNSSmethod,
                      uint8_t &nSatellites, double &HDOP, double &PDOP, double &GeoidalSeparation,
@@ -102,43 +103,15 @@ bool ParseN2kPGN129029(std::vector<unsigned char>v, unsigned char &SID, uint16_t
                      nReferenceStations, ReferenceStationType, ReferenceSationID,
                      AgeOfCorrection
                      );
+}
+
+bool ParseN2kPGN129026(std::vector<unsigned char> &v, unsigned char &SID,
+                       tN2kHeadingReference &ref, double &COG, double &SOG) {
+
+  tN2kMsg msg = MakeN2kMsg(v);
+
+  return ParseN2kPGN129026(msg, SID, ref, COG, SOG);
 
 }
 
-#if 0
-
-bool ParseN2kPGN129029(const tN2kMsg &N2kMsg, unsigned char &SID, uint16_t &DaysSince1970, double &SecondsSinceMidnight,
-                     double &Latitude, double &Longitude, double &Altitude,
-                     tN2kGNSStype &GNSStype, tN2kGNSSmethod &GNSSmethod,
-                     uint8_t &nSatellites, double &HDOP, double &PDOP, double &GeoidalSeparation,
-                     uint8_t &nReferenceStations, tN2kGNSStype &ReferenceStationType, uint16_t &ReferenceSationID,
-                     double &AgeOfCorrection
-                     ) {
-  if (N2kMsg.PGN!=129029L) return false;
-  int Index=0;
-  unsigned char vb;
-  int16_t vi;
-
-  SID=N2kMsg.GetByte(Index);
-  DaysSince1970=N2kMsg.Get2ByteUInt(Index);
-  SecondsSinceMidnight=N2kMsg.Get4ByteUDouble(0.0001,Index);
-  Latitude=N2kMsg.Get8ByteDouble(1e-16,Index);
-  Longitude=N2kMsg.Get8ByteDouble(1e-16,Index);
-  Altitude=N2kMsg.Get8ByteDouble(1e-6,Index);
-  vb=N2kMsg.GetByte(Index); GNSStype=(tN2kGNSStype)(vb & 0x0f); GNSSmethod=(tN2kGNSSmethod)((vb>>4) & 0x0f);
-  vb=N2kMsg.GetByte(Index);  // Integrity 2 bit, reserved 6 bits
-  nSatellites=N2kMsg.GetByte(Index);
-  HDOP=N2kMsg.Get2ByteDouble(0.01,Index);
-  PDOP=N2kMsg.Get2ByteDouble(0.01,Index);
-  GeoidalSeparation=N2kMsg.Get4ByteDouble(0.01,Index);
-  nReferenceStations=N2kMsg.GetByte(Index);
-  if (nReferenceStations!=N2kUInt8NA && nReferenceStations>0) {
-    // Note that we return real number of stations, but we only have variabes for one.
-    vi=N2kMsg.Get2ByteUInt(Index); ReferenceStationType=(tN2kGNSStype)(vi & 0x0f); ReferenceSationID=(vi>>4);
-    AgeOfCorrection=N2kMsg.Get2ByteUDouble(0.01,Index);
-  }
-  return true;
-}
-
-#endif
 

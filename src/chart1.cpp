@@ -7097,9 +7097,11 @@ void MyFrame::InitCommListeners(void) {
 
 }
 
+int n_026, n_029;
+
 bool MyFrame::HandleN2K_129029( std::shared_ptr <Nmea2000Msg> n2k_msg ) {
 
-  std::cout << "HandleN2K_129029\n" ;
+  printf("   HandleN2K_129029\n");
 
   std::vector<unsigned char> v = n2k_msg->payload;
 
@@ -7111,7 +7113,7 @@ bool MyFrame::HandleN2K_129029( std::shared_ptr <Nmea2000Msg> n2k_msg ) {
   *c++ = v.at(5);
 
 #ifndef __WXMSW__
-  printf("PGN from payload: %" PRId64 "\n", pgn);
+  printf("   %d PGN from payload: %" PRId64 "\n", n_029++, pgn);
 #endif
 
   unsigned char SID;
@@ -7127,13 +7129,17 @@ bool MyFrame::HandleN2K_129029( std::shared_ptr <Nmea2000Msg> n2k_msg ) {
   uint16_t ReferenceSationID;
   double AgeOfCorrection;
 
-  ParseN2kPGN129029(v, SID, DaysSince1970, SecondsSinceMidnight,
-                     Latitude, Longitude, Altitude,
-                     GNSStype, GNSSmethod,
-                     nSatellites, HDOP, PDOP, GeoidalSeparation,
-                     nReferenceStations, ReferenceStationType, ReferenceSationID,
-                     AgeOfCorrection
-                    );
+  if (ParseN2kPGN129029(v, SID, DaysSince1970, SecondsSinceMidnight,
+                        Latitude, Longitude, Altitude,
+                        GNSStype, GNSSmethod,
+                        nSatellites, HDOP, PDOP, GeoidalSeparation,
+                        nReferenceStations, ReferenceStationType, ReferenceSationID,
+                        AgeOfCorrection
+                        )) {
+    setPosition(Latitude, Longitude);
+    PostProcessNMEA(true, false, false, "");
+    setSatelitesInView(nSatellites);
+  }
 
 
   return true;
@@ -7153,8 +7159,19 @@ bool MyFrame::HandleN2K_129026( std::shared_ptr <Nmea2000Msg> n2k_msg ) {
   *c++ = v.at(5);
 
 #ifndef __WXMSW__
-  printf("PGN from payload: %" PRId64 "\n", pgn);
+  printf("%d PGN from payload: %" PRId64 "\n", n_026++, pgn);
 #endif
+
+  unsigned char SID;
+  tN2kHeadingReference ref;
+  double COG, SOG;
+
+  if (ParseN2kPGN129026(v, SID, ref, COG, SOG)) {
+    setCourseOverGround(COG);
+    setSpeedOverGround(SOG);
+    PostProcessNMEA(false, true, true, "");
+  }
+
   return true;
 }
 
@@ -9078,7 +9095,7 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
     //      Maintain the validity flags
     bool last_bGPSValid = bGPSValid;
     bGPSValid = true;
-    if (!last_bGPSValid) UpdateGPSCompassStatusBoxes();
+    if (!last_bGPSValid) UpdateGPSCompassStatusBoxes(true);
 
     //      Show a little heartbeat tick in StatusWindow0 on NMEA events
     //      But no faster than 10 hz.

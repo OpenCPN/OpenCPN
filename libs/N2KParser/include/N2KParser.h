@@ -47,8 +47,8 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef __N2KPARSER_H__
-#define __N2KPARSER_H__
+#ifndef _N2KPARSER_H__
+#define _N2KPARSER_H__
 
 #include <vector>
 #include <stdint.h>
@@ -90,7 +90,7 @@ int GetDestination(n2k_rawData *v);
 //  - HDOP                  Horizontal Dilution Of Precision in meters.
 //  - PDOP                  Probable dilution of precision in meters.
 //  - GeoidalSeparation     Geoidal separation in meters
-bool ParseN2kPGN129029(std::vector<unsigned char> v, unsigned char &SID, uint16_t &DaysSince1970, double &SecondsSinceMidnight,
+bool ParseN2kPGN129029(std::vector<unsigned char> &v, unsigned char &SID, uint16_t &DaysSince1970, double &SecondsSinceMidnight,
                      double &Latitude, double &Longitude, double &Altitude,
                      tN2kGNSStype &GNSStype, tN2kGNSSmethod &GNSSmethod,
                      unsigned char &nSatellites, double &HDOP, double &PDOP, double &GeoidalSeparation,
@@ -98,7 +98,6 @@ bool ParseN2kPGN129029(std::vector<unsigned char> v, unsigned char &SID, uint16_
                      double &AgeOfCorrection
                      );
 
-#if 0
 //*****************************************************************************
 // GNSS DOP data
 // Input:
@@ -109,19 +108,19 @@ bool ParseN2kPGN129029(std::vector<unsigned char> v, unsigned char &SID, uint16_
 //  - HDOP                  Horizontal Dilution Of Precision in meters.
 //  - PDOP                  Probable dilution of precision in meters.
 //  - TDOP                  Time dilution of precision
-bool ParseN2kPgn129539(const tN2kMsg& N2kMsg, unsigned char& SID, tN2kGNSSDOPmode& DesiredMode, tN2kGNSSDOPmode& ActualMode,
+bool ParseN2kPgn129539(std::vector<unsigned char> &v, unsigned char& SID, tN2kGNSSDOPmode& DesiredMode, tN2kGNSSDOPmode& ActualMode,
                        double& HDOP, double& VDOP, double& TDOP);
 
 
 //*****************************************************************************
-struct tSatelliteInfo {
-  unsigned char PRN;
-  double Elevation;
-  double Azimuth;
-  double SNR;
-  double RangeResiduals;
-  tN2kPRNUsageStatus UsageStatus;
-};
+// struct tSatelliteInfo {
+//   unsigned char PRN;
+//   double Elevation;
+//   double Azimuth;
+//   double SNR;
+//   double RangeResiduals;
+//   tN2kPRNUsageStatus UsageStatus;
+// };
 
 //*****************************************************************************
 // GNSS Satellites in View
@@ -140,7 +139,7 @@ struct tSatelliteInfo {
 // Return:
 //   true  - if function succeeds.
 //   false - when called with wrong message.
-bool ParseN2kPGN129540(const tN2kMsg& N2kMsg, unsigned char& SID, tN2kRangeResidualMode &Mode, uint8_t& NumberOfSVs);
+bool ParseN2kPGN129540(std::vector<unsigned char> &v, unsigned char& SID, tN2kRangeResidualMode &Mode, uint8_t& NumberOfSVs);
 
 //*****************************************************************************
 // Request specific satellite info from message.
@@ -160,14 +159,15 @@ bool ParseN2kPGN129540(const tN2kMsg& N2kMsg, uint8_t SVIndex, tSatelliteInfo& S
 // Input:
 //  - Latitude               Latitude in degrees
 //  - Longitude              Longitude in degrees
-bool ParseN2kPGN129025(const tN2kMsg &N2kMsg, double &Latitude, double &Longitude);
+bool ParseN2kPGN129025(std::vector<unsigned char> &v, double &Latitude, double &Longitude);
+
 
 //*****************************************************************************
 // COG SOG rapid
 // Input:
 //  - COG                   Cource Over Ground in radians
 //  - SOG                   Speed Over Ground in m/s
-bool ParseN2kPGN129026(const tN2kMsg &N2kMsg, unsigned char &SID, tN2kHeadingReference &ref, double &COG, double &SOG);
+bool ParseN2kPGN129026(std::vector<unsigned char> &v, unsigned char &SID, tN2kHeadingReference &ref, double &COG, double &SOG);
 
 //*****************************************************************************
 // Vessel Heading
@@ -178,7 +178,7 @@ bool ParseN2kPGN129026(const tN2kMsg &N2kMsg, unsigned char &SID, tN2kHeadingRef
 //  - Deviation             Magnetic deviation in radians. Use N2kDoubleNA for undefined value.
 //  - Variation             Magnetic variation in radians. Use N2kDoubleNA for undefined value.
 //  - ref                   Heading reference. See definition of tN2kHeadingReference.
-bool ParseN2kPGN127250(const tN2kMsg &N2kMsg, unsigned char &SID, double &Heading, double &Deviation, double &Variation, tN2kHeadingReference &ref);
+bool ParseN2kPGN127250(std::vector<unsigned char> &v, unsigned char &SID, double &Heading, double &Deviation, double &Variation, tN2kHeadingReference &ref);
 
 //*****************************************************************************
 // Magnetic Variation
@@ -203,7 +203,7 @@ bool ParseN2kPGN127258(const tN2kMsg &N2kMsg, unsigned char &SID, tN2kMagneticVa
 //  - SpeedThroughWater       In m/s
 //  - Set                     In radians
 //  - Drift                   In m/s
-bool ParseN2kPGN130577(const tN2kMsg &N2kMsg,tN2kDataMode &DataMode, tN2kHeadingReference &CogReference,unsigned char &SID,double &COG,
+bool ParseN2kPGN130577(std::vector<unsigned char> &v,tN2kDataMode &DataMode, tN2kHeadingReference &CogReference,unsigned char &SID,double &COG,
       double &SOG,double &Heading,double &SpeedThroughWater,double &Set,double &Drift);
 
 //*****************************************************************************
@@ -214,7 +214,7 @@ bool ParseN2kPGN130577(const tN2kMsg &N2kMsg,tN2kDataMode &DataMode, tN2kHeading
 //  - WaterReferenced        Speed over water in m/s
 //  - GroundReferenced      Ground referenced speed in m/s
 //  - SWRT                  Type of transducer. See definition for tN2kSpeedWaterReferenceType
-bool ParseN2kPGN128259(const tN2kMsg &N2kMsg, unsigned char &SID, double &WaterReferenced, double &GroundReferenced, tN2kSpeedWaterReferenceType &SWRT);
+bool ParseN2kPGN128259(std::vector<unsigned char> &v, unsigned char &SID, double &WaterReferenced, double &GroundReferenced, tN2kSpeedWaterReferenceType &SWRT);
 
 
 
@@ -229,7 +229,7 @@ bool ParseN2kPGN128259(const tN2kMsg &N2kMsg, unsigned char &SID, double &WaterR
 //  - SID                   Sequence ID. If your device is e.g. boat speed and heading at same time, you can set same SID for different messages
 //                          to indicate that they are measured at same time.
 //  - Rate of turn          Change in heading in radians per second
-bool ParseN2kPGN127251(const tN2kMsg &N2kMsg, unsigned char &SID, double &RateOfTurn);
+bool ParseN2kPGN127251(std::vector<unsigned char> &v, unsigned char &SID, double &RateOfTurn);
 
 //*****************************************************************************
 // Attitude
@@ -239,7 +239,7 @@ bool ParseN2kPGN127251(const tN2kMsg &N2kMsg, unsigned char &SID, double &RateOf
 //  - Yaw                   Heading in radians.
 //  - Pitch                 Pitch in radians. Positive, when your bow rises.
 //  - Roll                  Roll in radians. Positive, when tilted right.
-bool ParseN2kPGN127257(const tN2kMsg &N2kMsg, unsigned char &SID, double &Yaw, double &Pitch, double &Roll);
+bool ParseN2kPGN127257(std::vector<unsigned char> &v, unsigned char &SID, double &Yaw, double &Pitch, double &Roll);
 
 //*****************************************************************************
 // Leeway
@@ -247,7 +247,7 @@ bool ParseN2kPGN127257(const tN2kMsg &N2kMsg, unsigned char &SID, double &Yaw, d
 //  - SID            Sequence ID field
 //  - Leeway         Nautical Leeway Angle, which is defined as the angle between the vessel’s heading (direction to which the
 //                   vessel’s bow points) and its course (direction of its motion (track) through the water)
-bool ParseN2kPGN128000(const tN2kMsg &N2kMsg, unsigned char &SID, double &Leeway);
+bool ParseN2kPGN128000(std::vector<unsigned char> &v, unsigned char &SID, double &Leeway);
 
 
 //*****************************************************************************
@@ -258,7 +258,7 @@ bool ParseN2kPGN128000(const tN2kMsg &N2kMsg, unsigned char &SID, double &Leeway
 //  - DepthBelowTransducer  Depth below transducer in meters
 //  - Offset                Distance in meters between transducer and surface (positive) or transducer and keel (negative)
 //  - Range                 Measuring range
-bool ParseN2kPGN128267(const tN2kMsg &N2kMsg, unsigned char &SID, double &DepthBelowTransducer, double &Offset, double &Range);
+bool ParseN2kPGN128267(std::vector<unsigned char> &v, unsigned char &SID, double &DepthBelowTransducer, double &Offset, double &Range);
 
 //*****************************************************************************
 // Rudder
@@ -267,7 +267,7 @@ bool ParseN2kPGN128267(const tN2kMsg &N2kMsg, unsigned char &SID, double &DepthB
 // - Instance               Rudder instance.
 // - RudderDirectionOrder   See tN2kRudderDirectionOrder. Direction, where rudder should be turned.
 // - AngleOrder             In radians angle where rudder should be turned.
-bool ParseN2kPGN127245(const tN2kMsg &N2kMsg, double &RudderPosition, unsigned char &Instance,
+bool ParseN2kPGN127245(std::vector<unsigned char> &v, double &RudderPosition, unsigned char &Instance,
                      tN2kRudderDirectionOrder &RudderDirectionOrder, double &AngleOrder);
 
 
@@ -278,7 +278,7 @@ bool ParseN2kPGN127245(const tN2kMsg &N2kMsg, double &RudderPosition, unsigned c
 //  - SecondsSinceMidnight  Timestamp
 //  - Log                   Total meters travelled
 //  - Trip Log              Meters travelled since last reset
-bool ParseN2kPGN128275(const tN2kMsg &N2kMsg, uint16_t &DaysSince1970, double &SecondsSinceMidnight, uint32_t &Log, uint32_t &TripLog);
+bool ParseN2kPGN128275(std::vector<unsigned char> &v, uint16_t &DaysSince1970, double &SecondsSinceMidnight, uint32_t &Log, uint32_t &TripLog);
 
 
 //*****************************************************************************
@@ -322,12 +322,12 @@ bool ParseN2kPGN127237(const tN2kMsg &N2kMsg,
 
 //*****************************************************************************
 // Cross Track Error
-bool ParseN2kPGN129283(const tN2kMsg &N2kMsg, unsigned char& SID, tN2kXTEMode& XTEMode, bool& NavigationTerminated, double& XTE);
+bool ParseN2kPGN129283(std::vector<unsigned char> &v, unsigned char& SID, tN2kXTEMode& XTEMode, bool& NavigationTerminated, double& XTE);
 
 
 //*****************************************************************************
 // Navigation info
-bool ParseN2kPGN129284(const tN2kMsg &N2kMsg, unsigned char& SID, double& DistanceToWaypoint, tN2kHeadingReference& BearingReference,
+bool ParseN2kPGN129284(std::vector<unsigned char> &v, unsigned char& SID, double& DistanceToWaypoint, tN2kHeadingReference& BearingReference,
                       bool& PerpendicularCrossed, bool& ArrivalCircleEntered, tN2kDistanceCalculationType& CalculationType,
                       double& ETATime, int16_t& ETADate, double& BearingOriginToDestinationWaypoint, double& BearingPositionToDestinationWaypoint,
                       uint8_t& OriginWaypointNumber, uint8_t& DestinationWaypointNumber,
@@ -354,7 +354,7 @@ bool ParseN2kPGN129284(const tN2kMsg &N2kMsg, unsigned char& SID, double& Distan
 // Output:
 //  - N2kMsg                  NMEA2000 message ready to be send.
 
-bool ParseN2kPGN127233(const tN2kMsg &N2kMsg,
+bool ParseN2kPGN127233(std::vector<unsigned char> &v,
       unsigned char &SID,
       uint32_t &MobEmitterId,
       tN2kMOBStatus &MOBStatus,
@@ -379,14 +379,14 @@ bool ParseN2kPGN127233(const tN2kMsg &N2kMsg,
 // AIS position reports for Class A
 // Input:
 //  - N2kMsg                NMEA2000 message to decode
-bool ParseN2kPGN129038(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID, double &Latitude, double &Longitude,
+bool ParseN2kPGN129038(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID, double &Latitude, double &Longitude,
                         bool &Accuracy, bool &RAIM, uint8_t &Seconds, double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus);
 
 //*****************************************************************************
 // AIS position reports for Class B
 // Input:
 //  - N2kMsg                NMEA2000 message to decode
-bool ParseN2kPGN129039(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+bool ParseN2kPGN129039(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
                         double &Latitude, double &Longitude, bool &Accuracy, bool &RAIM, uint8_t &Seconds, double &COG,
                         double &SOG, tN2kAISTransceiverInformation &AISTransceiverInformation, double &Heading,
                         tN2kAISUnit &Unit, bool &Display, bool &DSC, bool &Band, bool &Msg22, tN2kAISMode &Mode, bool &State);
@@ -398,7 +398,7 @@ bool ParseN2kPGN129039(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat 
 //  - MessageID             Message type
 //  - Repeat                Repeat indicator
 //  - UserID                MMSI
-bool ParseN2kPGN129794(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+bool ParseN2kPGN129794(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
                         uint32_t &IMOnumber, char *Callsign, char *Name, uint8_t &VesselType, double &Length,
                         double &Beam, double &PosRefStbd, double &PosRefBow, uint16_t &ETAdate, double &ETAtime,
                         double &Draught, char *Destination, tN2kAISVersion &AISversion, tN2kGNSStype &GNSStype,
@@ -411,7 +411,7 @@ bool ParseN2kPGN129794(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat 
 //  - Repeat                Repeat indicator
 //  - UserID                MMSI
 //  - Name                  Vessel name
-bool ParseN2kPGN129809(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID, char *Name);
+bool ParseN2kPGN129809(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID, char *Name);
 
 
 //*****************************************************************************
@@ -421,7 +421,7 @@ bool ParseN2kPGN129809(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat 
 //  - Repeat                Repeat indicator
 //  - UserID                MMSI
 //  - Name                  Vessel name
-bool ParseN2kPGN129810(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+bool ParseN2kPGN129810(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
                       uint8_t &VesselType, char *Vendor, char *Callsign, double &Length, double &Beam,
                       double &PosRefStbd, double &PosRefBow, uint32_t &MothershipID);
 
@@ -449,7 +449,7 @@ bool ParseN2kPGN129810(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat 
 // - AISTransceiverInformation    see tN2kAISTransceiverInformation
 // - AtoNName
 //
-bool ParseN2kPGN129041(const tN2kMsg &N2kMsg, tN2kAISAtoNReportData &N2kData);
+bool ParseN2kPGN129041(std::vector<unsigned char> &v, tN2kAISAtoNReportData &N2kData);
 
 
 
@@ -465,9 +465,10 @@ bool ParseN2kPGN129041(const tN2kMsg &N2kMsg, tN2kAISAtoNReportData &N2kData);
 //  - EngineSpeed           RPM (Revolutions Per Minute)
 //  - EngineBoostPressure   in Pascal
 //  - EngineTiltTrim        in %
-bool ParseN2kPGN127488(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, double &EngineSpeed,
+bool ParseN2kPGN127488(std::vector<unsigned char> &v, unsigned char &EngineInstance, double &EngineSpeed,
                      double &EngineBoostPressure, int8_t &EngineTiltTrim);
 
+#if 0
 //*****************************************************************************
 // Engine parameters dynamic
 // Input:
@@ -482,12 +483,12 @@ bool ParseN2kPGN127488(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, dou
 //  - EngineFuelPress       in Pascal
 //  - EngineLoad            in %
 //  - EngineTorque          in %
-bool ParseN2kPGN127489(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, double &EngineOilPress,
+bool ParseN2kPGN127489(std::vector<unsigned char> &v, unsigned char &EngineInstance, double &EngineOilPress,
                       double &EngineOilTemp, double &EngineCoolantTemp, double &AltenatorVoltage,
                       double &FuelRate, double &EngineHours, double &EngineCoolantPress, double &EngineFuelPress,
                       int8_t &EngineLoad, int8_t &EngineTorque,
                       tN2kEngineDiscreteStatus1 &Status1, tN2kEngineDiscreteStatus2 &Status2);
-
+#endif
 
 //*****************************************************************************
 // Transmission parameters, dynamic
@@ -498,7 +499,7 @@ bool ParseN2kPGN127489(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, dou
 //  - OilTemperature        in K
 //  - EngineTiltTrim        in %
 
-bool ParseN2kPGN127493(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, tN2kTransmissionGear &TransmissionGear,
+bool ParseN2kPGN127493(std::vector<unsigned char> &v, unsigned char &EngineInstance, tN2kTransmissionGear &TransmissionGear,
                      double &OilPressure, double &OilTemperature, unsigned char &DiscreteStatus1);
 
 //*****************************************************************************
@@ -509,7 +510,7 @@ bool ParseN2kPGN127493(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, tN2
 //  - FuelRateAverage          in litres/hour
 //  - FuelRateEconomy          in litres/hour
 //  - InstantaneousFuelEconomy in litres/hour
-bool ParseN2kPGN127497(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, double &TripFuelUsed,
+bool ParseN2kPGN127497(std::vector<unsigned char> &v, unsigned char &EngineInstance, double &TripFuelUsed,
                      double &FuelRateAverage,
                      double &FuelRateEconomy, double &InstantaneousFuelEconomy);
 
@@ -527,7 +528,7 @@ bool ParseN2kPGN127497(const tN2kMsg &N2kMsg, unsigned char &EngineInstance, dou
 //  - WindSpeed             Measured wind speed in m/s
 //  - WindAngle             Measured wind angle in radians. If you have value in degrees, use function DegToRad(myval) in call.
 //  - WindReference         Wind reference, see definition of tN2kWindReference
-bool ParseN2kPGN130306(const tN2kMsg &N2kMsg, unsigned char &SID, double &WindSpeed, double &WindAngle, tN2kWindReference &WindReference);
+bool ParseN2kPGN130306(std::vector<unsigned char> &v, unsigned char &SID, double &WindSpeed, double &WindAngle, tN2kWindReference &WindReference);
 
 //*****************************************************************************
 // Outside Environmental parameters
@@ -536,7 +537,7 @@ bool ParseN2kPGN130306(const tN2kMsg &N2kMsg, unsigned char &SID, double &WindSp
 //  - WaterTemperature      Water temperature in K. Use function CToKelvin, if you want to use °C.
 //  - OutsideAmbientAirTemperature      Outside ambient temperature in K. Use function CToKelvin, if you want to use °C.
 //  - AtmosphericPressure   Atmospheric pressure in Pascals. Use function mBarToPascal, if you like to use mBar
-bool ParseN2kPGN130310(const tN2kMsg &N2kMsg, unsigned char &SID, double &WaterTemperature,
+bool ParseN2kPGN130310(std::vector<unsigned char> &v, unsigned char &SID, double &WaterTemperature,
                      double &OutsideAmbientAirTemperature, double &AtmosphericPressure);
 
 //*****************************************************************************
@@ -551,7 +552,7 @@ bool ParseN2kPGN130310(const tN2kMsg &N2kMsg, unsigned char &SID, double &WaterT
 //  - HumiditySource        see tN2kHumiditySource.
 //  - Humidity              Humidity in %
 //  - AtmosphericPressure   Atmospheric pressure in Pascals. Use function mBarToPascal, if you like to use mBar
-bool ParseN2kPGN130311(const tN2kMsg &N2kMsg, unsigned char &SID, tN2kTempSource &TempSource, double &Temperature,
+bool ParseN2kPGN130311(std::vector<unsigned char> &v, unsigned char &SID, tN2kTempSource &TempSource, double &Temperature,
                      tN2kHumiditySource &HumiditySource, double &Humidity, double &AtmosphericPressure);
 
 //*****************************************************************************
@@ -565,7 +566,7 @@ bool ParseN2kPGN130311(const tN2kMsg &N2kMsg, unsigned char &SID, tN2kTempSource
 //  - SetTemperature        Set temperature in K. Use function CToKelvin, if you want to use °C. This is meaningfull for temperatures,
 //                          which can be controlled like cabin, freezer, refridgeration temperature. God can use value for this for
 //                          outside and sea temperature values.
-bool ParseN2kPGN130312(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char &TempInstance, tN2kTempSource &TempSource,
+bool ParseN2kPGN130312(std::vector<unsigned char> &v, unsigned char &SID, unsigned char &TempInstance, tN2kTempSource &TempSource,
                      double &ActualTemperature, double &SetTemperature);
 
 //*****************************************************************************
@@ -576,7 +577,7 @@ bool ParseN2kPGN130312(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char 
 //  - HumidityInstance      This should be unic at least on one device. May be best to have it unic over all devices sending this PGN.
 //  - HumiditySource        see tN2kHumiditySource
 //  - Humidity              Humidity in percent
-bool ParseN2kPGN130313(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char &HumidityInstance,
+bool ParseN2kPGN130313(std::vector<unsigned char> &v, unsigned char &SID, unsigned char &HumidityInstance,
                        tN2kHumiditySource &HumiditySource, double &ActualHumidity, double &SetHumidity);
 
 //*****************************************************************************
@@ -587,7 +588,7 @@ bool ParseN2kPGN130313(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char 
 //  - PressureInstance      This should be unic at least on one device. May be best to have it unic over all devices sending this PGN.
 //  - PressureSource        see tN2kPressureSource
 //  - Pressure              Pressure in Pascals. Use function mBarToPascal, if you like to use mBar
-bool ParseN2kPGN130314(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char &PressureInstance,
+bool ParseN2kPGN130314(std::vector<unsigned char> &v, unsigned char &SID, unsigned char &PressureInstance,
                        tN2kPressureSource &PressureSource, double &Pressure);
 
 //*****************************************************************************
@@ -601,9 +602,10 @@ bool ParseN2kPGN130314(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char 
 //  - SetTemperature        Set temperature in K. Use function CToKelvin, if you want to use °C. This is meaningfull for temperatures,
 //                          which can be controlled like cabin, freezer, refridgeration temperature. God can use value for this for
 //                          outside and sea temperature values.
-bool ParseN2kPGN130316(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char &TempInstance, tN2kTempSource &TempSource,
+bool ParseN2kPGN130316(std::vector<unsigned char> &v, unsigned char &SID, unsigned char &TempInstance, tN2kTempSource &TempSource,
                      double &ActualTemperature, double &SetTemperature);
 
+#if 0
 //*****************************************************************************
 // Meteorlogical Station Data
 // Input:
@@ -664,8 +666,8 @@ struct tN2kMeteorlogicalStationData {
   }
 };
 
-bool ParseN2kPGN130323(const tN2kMsg &N2kMsg, tN2kMeteorlogicalStationData &N2kData);
-
+bool ParseN2kPGN130323(std::vector<unsigned char> &v, tN2kMeteorlogicalStationData &N2kData);
+#endif
 
 //-----------------------------------------------------------------------------
 //  Ship/System utility information parsing
@@ -683,7 +685,7 @@ bool ParseN2kPGN130323(const tN2kMsg &N2kMsg, tN2kMeteorlogicalStationData &N2kD
 //  - TimeSource            see tN2kTimeSource
 // Output:
 //  - N2kMsg                NMEA2000 message ready to be send.
-bool ParseN2kPGN126992(const tN2kMsg &N2kMsg, unsigned char &SID, uint16_t &SystemDate,
+bool ParseN2kPGN126992(std::vector<unsigned char> &v, unsigned char &SID, uint16_t &SystemDate,
                      double &SystemTime, tN2kTimeSource &TimeSource);
 
 //*****************************************************************************
@@ -693,7 +695,7 @@ bool ParseN2kPGN126992(const tN2kMsg &N2kMsg, unsigned char &SID, uint16_t &Syst
 //                          NMEA0183Messages.cpp on function NMEA0183ParseRMC_nc
 //  - Time                  Seconds since midnight
 //  - Local offset          Local offset in minutes
-bool ParseN2kPGN129033(const tN2kMsg &N2kMsg, uint16_t &DaysSince1970, double &SecondsSinceMidnight, int16_t &LocalOffset);
+bool ParseN2kPGN129033(std::vector<unsigned char> &v, uint16_t &DaysSince1970, double &SecondsSinceMidnight, int16_t &LocalOffset);
 
 
 
@@ -706,7 +708,7 @@ bool ParseN2kPGN129033(const tN2kMsg &N2kMsg, uint16_t &DaysSince1970, double &S
 //  - FluidType             Defines type of fluid. See definition of tN2kFluidType
 //  - Level                 Tank level in % of full tank.
 //  - Capacity              Tank Capacity in litres
-bool ParseN2kPGN127505(const tN2kMsg &N2kMsg, unsigned char &Instance, tN2kFluidType &FluidType, double &Level, double &Capacity);
+bool ParseN2kPGN127505(std::vector<unsigned char> &v, unsigned char &Instance, tN2kFluidType &FluidType, double &Level, double &Capacity);
 
 //*****************************************************************************
 // DC Detailed Status
@@ -720,7 +722,7 @@ bool ParseN2kPGN127505(const tN2kMsg &N2kMsg, unsigned char &Instance, tN2kFluid
 //  - TimeRemaining         Time remaining in seconds
 //  - RippleVoltage         DC output voltage ripple in V
 //  - Capacity              Battery capacity in coulombs
-bool ParseN2kPGN127506(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char &DCInstance, tN2kDCType &DCType,
+bool ParseN2kPGN127506(std::vector<unsigned char> &v, unsigned char &SID, unsigned char &DCInstance, tN2kDCType &DCType,
                      unsigned char &StateOfCharge, unsigned char &StateOfHealth, double &TimeRemaining, double &RippleVoltage, double &Capacity);
 
 //*****************************************************************************
@@ -734,7 +736,7 @@ bool ParseN2kPGN127506(const tN2kMsg &N2kMsg, unsigned char &SID, unsigned char 
 //  - Equalization Pending         boolean
 //  - Equalization Time Remaining  double seconds
 //
-bool ParseN2kPGN127507(tN2kMsg &N2kMsg, unsigned char &Instance, unsigned char &BatteryInstance,
+bool ParseN2kPGN127507(std::vector<unsigned char> &v, unsigned char &Instance, unsigned char &BatteryInstance,
                      tN2kChargeState &ChargeState, tN2kChargerMode &ChargerMode,
                      tN2kOnOff &Enabled, tN2kOnOff &EqualizationPending, double &EqualizationTimeRemaining);
 
@@ -746,7 +748,7 @@ bool ParseN2kPGN127507(tN2kMsg &N2kMsg, unsigned char &Instance, unsigned char &
 //  - BatteryCurrent        Current in A
 //  - BatteryTemperature    Battery temperature in K. Use function CToKelvin, if you want to use °C.
 //  - SID                   Sequence ID.
-bool ParseN2kPGN127508(const tN2kMsg &N2kMsg, unsigned char &BatteryInstance, double &BatteryVoltage, double &BatteryCurrent,
+bool ParseN2kPGN127508(std::vector<unsigned char> &v, unsigned char &BatteryInstance, double &BatteryVoltage, double &BatteryCurrent,
                      double &BatteryTemperature, unsigned char &SID);
 
 
@@ -765,7 +767,7 @@ bool ParseN2kPGN127508(const tN2kMsg &N2kMsg, unsigned char &BatteryInstance, do
 //  - BatTemperatureCoeff   Battery temperature coefficient in %
 //  - PeukertExponent       Peukert Exponent
 //  - ChargeEfficiencyFactor Charge efficiency factor
-bool ParseN2kPGN127513(const tN2kMsg &N2kMsg, unsigned char &BatInstance, tN2kBatType &BatType, tN2kBatEqSupport &SupportsEqual,
+bool ParseN2kPGN127513(std::vector<unsigned char> &v, unsigned char &BatInstance, tN2kBatType &BatType, tN2kBatEqSupport &SupportsEqual,
                      tN2kBatNomVolt &BatNominalVoltage, tN2kBatChem &BatChemistry, double &BatCapacity, int8_t &BatTemperatureCoefficient,
                     double &PeukertExponent, int8_t &ChargeEfficiencyFactor);
 
@@ -789,7 +791,7 @@ bool ParseN2kPGN127513(const tN2kMsg &N2kMsg, unsigned char &BatInstance, tN2kBa
 
 
 bool ParseN2kPGN128776(
-  const tN2kMsg &N2kMsg,
+  std::vector<unsigned char> &v,
   unsigned char &SID,
   unsigned char &WindlassIdentifier,
   tN2kWindlassDirectionControl &WindlassDirectionControl,
@@ -818,7 +820,7 @@ bool ParseN2kPGN128776(
 // -- WindlassOperatingEvents (optional) -- see tN2kWindlassOperatingEvents
 
 bool ParseN2kPGN128777(
-  const tN2kMsg &N2kMsg,
+  std::vector<unsigned char> &v,
   unsigned char &SID,
   unsigned char &WindlassIdentifier,
   double &RodeCounterValue,
@@ -841,7 +843,7 @@ bool ParseN2kPGN128777(
 // -- WindlassMonitoringEvents (optional) - see tN2kWindlassMonitoringEvents
 
 bool ParseN2kPGN128778(
-  const tN2kMsg &N2kMsg,
+  std::vector<unsigned char> &v,
   unsigned char &SID,
   unsigned char &WindlassIdentifier,
   double &TotalMotorTime,
@@ -859,9 +861,7 @@ bool ParseN2kPGN128778(
 //  - PortTrimTab           Port trim tab position
 //  - StbdTrimTab           Starboard trim tab position
 
-bool ParseN2kPGN130576(const tN2kMsg &N2kMsg, int8_t &PortTrimTab, int8_t &StbdTrimTab);
-
-#endif
+bool ParseN2kPGN130576(std::vector<unsigned char> &v, int8_t &PortTrimTab, int8_t &StbdTrimTab);
 
 #endif  //guard
 
