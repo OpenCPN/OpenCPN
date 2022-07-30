@@ -61,7 +61,7 @@ private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
-void commDriverN2KSerial::set_listener(DriverListener *listener) {}
+void commDriverN2KSerial::set_listener(DriverListener& listener) {}
 
 //========================================================================
 /*    commdriverN2KSerial implementation

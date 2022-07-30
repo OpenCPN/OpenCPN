@@ -141,7 +141,7 @@ public:
 
   virtual ~commDriverN2KSerial();
 
-  void set_listener(DriverListener* listener);
+  void set_listener(DriverListener& listener);
 
   bool Open();
 

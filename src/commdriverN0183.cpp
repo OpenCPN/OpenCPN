@@ -34,4 +34,4 @@ commDriverN0183::~commDriverN0183() {}
 
 void commDriverN0183::send_message(const NavMsg& msg, const NavAddr& addr) {}
 
-void commDriverN0183::set_listener(DriverListener* listener) {}
+void commDriverN0183::set_listener(DriverListener& listener) {}
