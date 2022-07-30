@@ -24,19 +24,91 @@
  **************************************************************************/
 
 #include <vector>
+#include <mutex>  // std::mutex
+#include <queue>  // std::queue
 
 #include "commdriverN2KSerial.h"
 #include "commTransport.h"
 
-// BUG: driver cannot include code from upper layers.
-#include "chart1.h"
-extern MyFrame *gFrame;
-
-extern const wxEventType wxEVT_OCPN_THREADMSG;
-
-// wxDEFINE_EVENT(EVT_N2K_RAW_SERIAL, wxCommandEvent);
-
 const wxEventType wxEVT_COMMDRIVER_N2K_SERIAL = wxNewEventType();
+
+template <typename T>
+class n2k_atomic_queue {
+public:
+  size_t size() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_queque.size();
+  }
+
+  bool empty() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_queque.empty();
+  }
+
+  const T &front() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_queque.front();
+  }
+
+  void push(const T &value) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_queque.push(value);
+  }
+
+  void pop() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_queque.pop();
+  }
+
+private:
+  std::queue<T> m_queque;
+  mutable std::mutex m_mutex;
+};
+
+class commDriverN2KSerialEvent;     //fwd
+
+class commDriverN2KSerialThread : public wxThread {
+public:
+  commDriverN2KSerialThread(commDriverN2KSerial *Launcher,
+                             const wxString &PortName,
+                             const wxString &strBaudRate);
+
+  ~commDriverN2KSerialThread(void);
+  void *Entry();
+  bool SetOutMsg(const wxString &msg);
+  void OnExit(void);
+
+private:
+#ifndef __OCPN__ANDROID__
+  serial::Serial m_serial;
+#endif
+  void ThreadMessage(const wxString &msg);
+  bool OpenComPortPhysical(const wxString &com_name, int baud_rate);
+  void CloseComPortPhysical();
+  size_t WriteComPortPhysical(char *msg);
+  size_t WriteComPortPhysical(const wxString &string);
+
+  commDriverN2KSerial *m_pParentDriver;
+  wxString m_PortName;
+  wxString m_FullPortName;
+
+  unsigned char *put_ptr;
+  unsigned char *tak_ptr;
+
+  unsigned char *rx_buffer;
+
+  int m_baud;
+  int m_n_timeout;
+
+  n2k_atomic_queue<char *> out_que;
+
+#ifdef __WXMSW__
+  HANDLE m_hSerialComm;
+  bool m_nl_found;
+#endif
+};
+
+
 
 class commDriverN2KSerialEvent : public wxEvent {
 public:
@@ -61,7 +133,6 @@ private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
-void commDriverN2KSerial::set_listener(DriverListener& listener) {}
 
 //========================================================================
 /*    commdriverN2KSerial implementation
@@ -102,6 +173,7 @@ bool commDriverN2KSerial::Open() {
 
   return true;
 }
+void commDriverN2KSerial::set_listener(DriverListener& listener) {}
 
 void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
     commDriverN2KSerialEvent &event) {
@@ -228,9 +300,9 @@ void commDriverN2KSerialThread::CloseComPortPhysical() {
 
 void commDriverN2KSerialThread::ThreadMessage(const wxString &msg) {
   //    Signal the main program thread
-  OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
-  event.SetSString(std::string(msg.mb_str()));
-  if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
+//   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
+//   event.SetSString(std::string(msg.mb_str()));
+//   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
 #ifndef __WXMSW__

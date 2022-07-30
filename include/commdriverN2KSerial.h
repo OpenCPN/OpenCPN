@@ -23,16 +23,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _COMMDRIVERN2KSERIAL_H__
-#define _COMMDRIVERN2KSERIAL_H__
+#ifndef _COMMDRIVERN2KSERIAL_H
+#define _COMMDRIVERN2KSERIAL_H
 
 #include <wx/thread.h>
-//#include <wx/string.h>
-//#include <wx/event.h>
-//#include <wx/arrstr.h>
-
-#include <mutex>  // std::mutex
-#include <queue>  // std::queue
 
 #include "commdriverN2K.h"
 #include "ConnectionParams.h"
@@ -50,91 +44,10 @@
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
 
-class commDriverN2KSerial;    // fwd
-
-template <typename T>
-class n2k_atomic_queue {
-public:
-  size_t size() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.size();
-  }
-
-  bool empty() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.empty();
-  }
-
-  const T &front() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.front();
-  }
-
-  void push(const T &value) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.push(value);
-  }
-
-  void pop() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.pop();
-  }
-
-private:
-  std::queue<T> m_queque;
-  mutable std::mutex m_mutex;
-};
-
-class commDriverN2KSerialEvent;     //fwd
-
-class commDriverN2KSerialThread : public wxThread {
-public:
-  commDriverN2KSerialThread(commDriverN2KSerial *Launcher,
-                             const wxString &PortName,
-                             const wxString &strBaudRate);
-
-  ~commDriverN2KSerialThread(void);
-  void *Entry();
-  bool SetOutMsg(const wxString &msg);
-  void OnExit(void);
-
-private:
-#ifndef __OCPN__ANDROID__
-  serial::Serial m_serial;
-#endif
-  void ThreadMessage(const wxString &msg);
-  bool OpenComPortPhysical(const wxString &com_name, int baud_rate);
-  void CloseComPortPhysical();
-  size_t WriteComPortPhysical(char *msg);
-  size_t WriteComPortPhysical(const wxString &string);
-
-  commDriverN2KSerial *m_pParentDriver;
-  wxString m_PortName;
-  wxString m_FullPortName;
-
-  unsigned char *put_ptr;
-  unsigned char *tak_ptr;
-
-   unsigned char *rx_buffer;
-
-  int m_baud;
-  int m_n_timeout;
-
-  n2k_atomic_queue<char *> out_que;
-
-#ifdef __WXMSW__
-  HANDLE m_hSerialComm;
-  bool m_nl_found;
-#endif
-};
-
-
-
-
-
+class commDriverN2KSerialThread;    // fwd
+class commDriverN2KSerialEvent;
 
 class commDriverN2KSerial : public commDriverN2K, public wxEvtHandler {
-
 public:
   commDriverN2KSerial();
   commDriverN2KSerial(const ConnectionParams *params);
