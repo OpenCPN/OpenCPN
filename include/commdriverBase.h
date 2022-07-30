@@ -152,7 +152,7 @@ public:
   std::string key() const { return std::string("n0183-") + id; };
 
   std::string id;      /**<  For example 'GPGGA'  */
-  std::string payload; /**< Remaining data after first ',' */
+  std::string payload; /**< Complete NMEA0183 sentence, including prefix */
 };
 
 /** A parsed SignalK message over ipv4 */
