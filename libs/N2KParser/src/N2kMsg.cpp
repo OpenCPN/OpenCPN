@@ -43,6 +43,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 #endif
 
+#if 0
 //*****************************************************************************
 // On Arduino round() is a macro, hence the definition check. On other systems
 // it is a function that may or may not be implemented so we do it ourselves.
@@ -52,6 +53,7 @@ double round(double val) {
       ? floor(val + 0.5)
       : ceil(val - 0.5);
 }
+#endif
 #endif
 
 //*****************************************************************************
