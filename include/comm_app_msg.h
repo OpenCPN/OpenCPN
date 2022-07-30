@@ -72,17 +72,19 @@ public:
 
 
 /** Application layer messaging, a singleton. */
-class AppMessages {
+class AppMsgBus {
 public:
 
   /** Send message to everyone listening to it. */
   void notify(const AppMsg& message);
   
   /**
-   * Send given event message to handler when receiving NavMsgType.
-   * Message contains a nav_msg_ptr.
+   * Return a listening object which generates wxEventType events sent to
+   * wxEvtHandler when a message with given key is received. The events
+   * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
    */
-  void listen(wxEventType, wxEvtHandler, AppMsgType);
+  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
+                                   const std::string& key);
 
   /**
    * Set the priority for a given data source providing data.
@@ -90,7 +92,8 @@ public:
    */
   void set_priority(AppMsgType data, const NavAddr& src, unsigned prio);
 
-  static AppMessages* getInstance();
+  static AppMsgBus* getInstance();
+  void notify(const AbstractCommDriver&) {}
 };
 
 #endif  // APP_MSG_H

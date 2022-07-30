@@ -1,3 +1,6 @@
+#ifndef _COMM_POINTER_MSG_H__
+#define _COMM_POINTER_MSG_H__
+
 #include <sstream>
 
 #include "wx/event.h"
@@ -13,10 +16,10 @@ public:
 
   /** Retrieve the pointer contained in an instance and delete instance. */
   static std::shared_ptr<T> get_pointer(wxCommandEvent ev) {
-    auto pm = static_cast<PointerMsg<T>*>(ev.GetClientData());
-    auto tmp = std::move(pm->ptr);
-    delete pm;
-    return tmp;
+    auto msg = static_cast<PointerMsg<T>*>(ev.GetClientData());
+    auto ptr = std::move(msg->ptr);
+    delete msg;
+    return ptr;
   };
 
 private:
@@ -24,3 +27,6 @@ private:
   std::shared_ptr<T> operator=(std::shared_ptr<T>&) = delete;
   std::shared_ptr<T> ptr;
 };
+
+
+#endif  // _COMM_POINTER_MSG_H__

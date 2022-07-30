@@ -859,6 +859,7 @@ set(
   include/NetworkDataStream.h
   include/NMEALogWindow.h
   include/observable.h
+  include/observable_appmsg.h
   include/observable_msg.h
   include/ocpCursor.h
   include/OCP_DataStreamInput_Thread.h
@@ -953,6 +954,7 @@ set(
   src/catalog_parser.cpp
   src/cat_settings.cpp
   src/comm_app_msg.cpp
+  src/comm_app_msg_bus.cpp
   src/commdriverN2K.cpp
   # src/commdriverN2KSerial.cpp    FIXME: Includes files outside the git repo
   src/commdriverN0183.cpp
@@ -1003,6 +1005,7 @@ set(
   src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
   src/observable.cpp
+  src/observable_appmsg.cpp
   src/observable_msg.cpp
   src/ocpCursor.cpp
   src/OCP_DataStreamInput_Thread.cpp
