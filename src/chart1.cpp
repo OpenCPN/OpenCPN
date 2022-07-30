@@ -150,6 +150,7 @@
 #include "commdriverRegistry.h"
 #include "commTransport.h"
 #include "N2KParser.h"
+#include "commUtilities.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -6838,7 +6839,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if (cp->bEnabled) {
-          g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
+          MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
         }
       }
@@ -7019,12 +7020,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       PositionIENCToolbar();
 
       g_bDeferredInitDone = true;
-
-      // Testing N2KSerial
-      ConnectionParams params;
-      params.Port = "/dev/ttyACM0";
-      commDriverRegistry::getInstance()->TestDriver(&params);
-
 
       GetPrimaryCanvas()->SetFocus();
       g_focusCanvas = GetPrimaryCanvas();

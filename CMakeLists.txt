@@ -822,6 +822,7 @@ set(
   include/commdriverN2KSerial.h
   include/commdriverRegistry.h
   include/commTransport.h
+  include/commUtilities.h
   include/compass.h
   include/concanv.h
   include/ConnectionParams.h
@@ -954,11 +955,12 @@ set(
   src/cat_settings.cpp
   src/comm_app_msg.cpp
   src/commdriverN2K.cpp
-  # src/commdriverN2KSerial.cpp    FIXME: Includes files outside the git repo
+  src/commdriverN2KSerial.cpp
   src/commdriverN0183.cpp
   src/commdriverN0183Serial.cpp
   src/commdriverRegistry.cpp
   src/commTransport.cpp
+  src/commUtilities.cpp
   src/chart1.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
