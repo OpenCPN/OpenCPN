@@ -26,22 +26,15 @@
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <vector>
-
-#include "commdriverN0183Serial.h"
 #include <wx/thread.h>
 
-#include "commdriverN0183.h"
+#include "commdriverN0183Serial.h"
+#include "commTransport.h"
 
 #ifndef __ANDROID__
 #include "serial/serial.h"
 #endif
 
-
-// BUG: driver cannot  include code from upper layers.
-#include "chart1.h"
-extern MyFrame *gFrame;
-
-extern const wxEventType wxEVT_OCPN_THREADMSG;
 
 const wxEventType wxEVT_COMMDRIVER_N0183_SERIAL = wxNewEventType();
 
@@ -222,16 +215,8 @@ commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params)
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-
-  //   m_EventHandler.Bind(wxEVT_COMMDRIVER_N2K_SERIAL,
-  //                 [&](commDriverN2KSerialEvent& ev) {
-  //                   handle_N2K_SERIAL_RAW(ev.GetPayload());
-  //                 }
-  //                  );
-
-  // FIXME DSR
-  // m_EventHandler.Connect(wxEVT_COMMDRIVER_N0183_SERIAL,
-  //          (wxObjectEventFunction)(wxEventFunction)&commDriverN0183Serial::handle_N0183_MSG);
+  Connect(wxEVT_COMMDRIVER_N0183_SERIAL,
+            (wxObjectEventFunction)&commDriverN0183Serial::handle_N0183_MSG);
 
   Open();
 }
@@ -246,7 +231,7 @@ bool commDriverN0183Serial::Open() {
       comx.BeforeFirst(' ');  // strip off any description provided by Windows
 
   //    Kick off the  RX thread
-  SetSecondaryThread(new commDriverN0183SerialThread(this, comx, "220"));
+  SetSecondaryThread(new commDriverN0183SerialThread(this, comx, m_BaudRate));
   SetThreadRunFlag(1);
   GetSecondaryThread()->Run();
 
@@ -256,48 +241,22 @@ bool commDriverN0183Serial::Open() {
 void commDriverN0183Serial::handle_N0183_MSG(
     commDriverN0183SerialEvent &event) {
   auto p = event.GetPayload();
+  std::vector<unsigned char> *payload = p.get();
 
-  std::vector<unsigned char> *data = p.get();
-  size_t packetLength = (size_t)data->at(1);
-  size_t vector_length = data->size();
+  // Extract the NMEA0183 sentence
+  std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  printf("Length: %ld\n", vector_length);
+  if (full_sentence[0] == '$'){   // Sanity check
+    std::string identifier;
+    identifier = full_sentence.substr(1,5);
 
-  for (size_t i = 0; i < vector_length; i++) {
-    printf("%c", data->at(i));
+    auto msg = new Nmea0183Msg(identifier, full_sentence);
+    auto t = Transport::getInstance();
+    t->notify(*msg);
   }
-  printf("\n\n");
-
-  int yyp = 4;
 }
 
 #ifndef __ANDROID__
-
-/**
- * This thread manages reading the N2K data stream provided by some N2K gateways
- * from the declared serial port.
- *
- */
-
-// Commonly used raw format is actually inherited from an old paketizing format:
-// <10><02><application data><CRC (1)><10><03>
-
-// Actisense application data, from NGT-1 to PC
-// <data code=93><length (1)><priority (1)><PGN (3)><destination(1)><source
-// (1)><time (4)><len (1)><data (len)>
-
-// As applied to a real application data element, after extraction from packet
-// format: 93 13 02 01 F8 01 FF 01 76 C2 52 00 08 08 70 EB 14 E8 8E 52 D2 BB 10
-
-// length (1):      0x13
-// priority (1);    0x02
-// PGN (3):         0x01 0xF8 0x01
-// destination(1):  0xFF
-// source (1):      0x01
-// time (4):        0x76 0xC2 0x52 0x00
-// len (1):         0x08
-// data (len):      08 70 EB 14 E8 8E 52 D2
-// packet CRC:      0xBB
 
 #define DS_RX_BUFFER_SIZE 4096
 
@@ -352,9 +311,9 @@ void commDriverN0183SerialThread::CloseComPortPhysical() {
 
 void commDriverN0183SerialThread::ThreadMessage(const wxString &msg) {
   //    Signal the main program thread
-  OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
-  event.SetSString(std::string(msg.mb_str()));
-  if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
+//   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
+//   event.SetSString(std::string(msg.mb_str()));
+//   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
 size_t commDriverN0183SerialThread::WriteComPortPhysical(char *msg) {
@@ -626,7 +585,7 @@ void *commDriverN0183SerialThread::Entry() {
 
           commDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
           Nevent.SetPayload(buffer);
-          m_pParentDriver->m_EventHandler.AddPendingEvent(Nevent);
+          m_pParentDriver->AddPendingEvent(Nevent);
         }
 
       }  // if nl

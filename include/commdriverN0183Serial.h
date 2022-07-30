@@ -23,8 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _COMMDRIVERN0183SERIAL_H__
-#define _COMMDRIVERN0183SERIAL_H__
+#ifndef _COMMDRIVERN0183SERIAL_H
+#define _COMMDRIVERN0183SERIAL_H
 
 #include <string>
 
@@ -37,7 +37,7 @@ class commDriverN0183SerialThread;  // Internal
 
 class commDriverN0183SerialEvent;  // Internal
 
-class commDriverN0183Serial : public commDriverN0183 {
+class commDriverN0183Serial : public commDriverN0183, public wxEvtHandler {
 
 public:
   commDriverN0183Serial();
@@ -63,8 +63,6 @@ public:
     return m_pSecondary_Thread;
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
-
-  wxEvtHandler m_EventHandler;
 
 private:
   bool m_bok;
