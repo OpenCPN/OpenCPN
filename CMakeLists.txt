@@ -814,6 +814,7 @@ set(
   include/chcanv.h
   include/ChInfoWin.h
   include/comm_app_msg.h
+  include/comm_pointer_msg.h
   include/commdriverBase.h
   include/commdriverN0183.h
   include/commdriverN0183Serial.h
