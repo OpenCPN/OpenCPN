@@ -1,4 +1,4 @@
-#include "commTransport.h"
+#include "comm_app_msg.h"
 
 #include "observable_appmsg.h"
 
@@ -10,11 +10,10 @@ ObservedVarListener AppMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
   return oam.get_listener(eh, et);
 }
 
-void AppMsgBus::notify(const AppMsg& message) {
-  ObservableAppMsg om(string("appmsg-") + message.name);
-  om.notify(message);
+void AppMsgBus::notify(std::shared_ptr<AppMsg> msg) {
+  ObservableAppMsg om(msg->key());
+  om.notify(msg);
 }
-
 AppMsgBus* AppMsgBus::getInstance() {
   static AppMsgBus* instance = 0;
 

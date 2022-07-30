@@ -9,9 +9,7 @@ std::shared_ptr<AppMsg> get_appmsg_ptr(wxCommandEvent ev) {
 
 /* ObservableMsg implementation */
 
-void ObservableAppMsg::notify(const AppMsg& msg) {
-  auto raw_ptr = new AppMsg(msg);
-  auto shared_ptr = new std::shared_ptr<AppMsg>(raw_ptr);
-  auto boxed_msg = new PointerMsg<AppMsg>(*shared_ptr);
+void ObservableAppMsg::notify(std::shared_ptr<AppMsg> msg) {
+  auto boxed_msg = new PointerMsg<AppMsg>(msg);
   ObservedVar::notify("", boxed_msg);
-}
+};

@@ -18,7 +18,7 @@ public:
   ObservableAppMsg(const std::string key) : ObservedVar(key) {};
 
   /* Send message to all listeners. */
-  void notify(const AppMsg& msg);
+  void notify(std::shared_ptr<AppMsg> msg);
 
 };
 

@@ -1,61 +1,111 @@
 /** Api handling decoded, binary messages. */
 
-#ifndef APP_MSG_H
-#define APP_MSG_H
+#ifndef _APP_MSG_H
+#define _APP_MSG_H
 
 #include <memory>
+#include <iomanip>
 
 #include <wx/event.h>
 
 #include "commdriverBase.h"
 
-enum class AppMsgType {gnss_fix, ais_data, data_prio_needed /*, ...*/};
+enum class AppMsgType {gnss_fix, ais_data, data_prio_needed, undef /*, ...*/};
 
-typedef struct {
+double PosPartsToDegrees(float degrees, float minutes, float percent_of_minute);
+
+struct Position{
+  enum class Type {NE, NW, SE, SW, Undef};
+  Type type;
   double lat;
   double lon;
-  bool N;   // N/S
-  bool E;   // E/W
-  // All sorts of ctors and other usable functions
-} position_t;
 
-/**
- * Issued when there are multiple sources providing 'what' with priority == 0.
- * Should result in GUI actions eventually calling set_priority()
- */
-static std::string type_to_string(AppMsgType);
+  std::string to_string() const {
+    std::stringstream buf;
+    buf << std::setw(2) << lat << " " << lon << TypeToStr(type);
+    return buf.str();
+  }
+
+  Position(double _lat, double _lon, Type t = Type::Undef)
+    : type(t), lat(_lat), lon(_lon) {}
+  Position() : type(Type::Undef), lat(0), lon(0) {};
+
+  std::string TypeToStr(const Type t) const {
+    switch (t) {
+      case Type::NE:  return "NE"; break;
+      case Type::NW:  return "NW"; break;
+      case Type::SE:  return "SE"; break;
+      case Type::SW:  return "SW"; break;
+      default: return "??"; break;
+    }
+  }
+};
 
 
 class AppMsg {
 public:
   const AppMsgType type;
-  const std::string name;  // Must be unique, probably using type_to_string().
+  const std::string name;  // Must be unique, probably using TypeToString().
   NavAddr source;
   unsigned short prio;     // Initially 0, modified using set_priority
+
+  virtual std::string key() const { return std::string("@!appmsg-") + name; }
+
+  std::string TypeToString(const AppMsgType t) {
+    switch (t) {
+        case AppMsgType::gnss_fix: return "gnss-fix"; break;
+        case AppMsgType::ais_data: return "ais-data"; break;
+        case AppMsgType::data_prio_needed: return "data-prio-needed"; break;
+        case AppMsgType::undef: return "??"; break;
+        default: return "????";
+    }
+  }
+    
+  AppMsg(AppMsgType t) 
+    : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
+
 protected:
   AppMsg(AppMsgType tp, const std::string& nm, NavAddr src)
     : type(tp), name(nm), source(src), prio(0) {};
+
+  AppMsg& operator=(const AppMsg&) = default;
 };
 
+
+/**
+ * Issued when there are multiple sources providing 'what' with priority == 0.
+ * Should result in GUI actions eventually calling set_priority()
+ */
 class DataPrioNeeded: public AppMsg {
 public:
   AppMsgType what;
   std::vector<NavAddr> sources;
 };
 
+
 class GnssFix: public AppMsg {
+public:
   enum class Quality {none, gnss, differential };
-  time_t time;
-  position_t pos;
+  const Position pos;
+  const time_t time;
   Quality quality;
   int satellites_used;
+  GnssFix(Position p, time_t t, Quality q = Quality::none, int s_used = -1) 
+    : AppMsg(AppMsgType::gnss_fix, "gnss-fix", NavAddr()),
+    pos(p), time(t), quality(q), satellites_used(s_used) {};
+
+  std::string to_string() const {
+    std::stringstream buf;
+    buf << time;
+    return pos.to_string() + " " + buf.str();
+  }
 };
 
 
 class AisData: public AppMsg {
 public:
   time_t time;
-  position_t pos;
+  Position pos;
   float sog;             // Speed over ground, knots.
   float cog;             // Course over ground, 0..360 degrees.
   float heading;         // Magnetic sensor, 0..360 degrees.
@@ -76,7 +126,7 @@ class AppMsgBus {
 public:
 
   /** Send message to everyone listening to it. */
-  void notify(const AppMsg& message);
+  void notify(std::shared_ptr<AppMsg> msg);
   
   /**
    * Return a listening object which generates wxEventType events sent to

@@ -2890,11 +2890,14 @@ if (NOT QT_ANDROID)
     src/catalog_handler.cpp
     src/catalog_parser.cpp
     src/commTransport.cpp
+    src/comm_app_msg.cpp
+    src/comm_app_msg_bus.cpp
     src/console.cpp
     src/Downloader.cpp
     src/logger.cpp
     src/observable.cpp
     src/observable_msg.cpp
+    src/observable_appmsg.cpp
     src/ocpn_plugin.cpp
     src/ocpn_utils.cpp
     src/plugin_cache.cpp
