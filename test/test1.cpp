@@ -51,7 +51,7 @@ public:
 };
 
 
-TEST(HelloTest, ObservableMsg) {
+TEST(Messaging, ObservableMsg) {
   CliApp1 app;
   EXPECT_STREQ(s_result.c_str(), "payload data");
 }
