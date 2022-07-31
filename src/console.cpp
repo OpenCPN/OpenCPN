@@ -162,7 +162,7 @@ public:
       std::cout << "EVT_FOO: received\n" ;
       auto message = get_appmsg_ptr(ev);
       std::cout << message->TypeToString(message->type) << "\n";
-      auto fix = std::dynamic_pointer_cast<GnssFix>(message);
+      auto fix = std::dynamic_pointer_cast<const GnssFix>(message);
       if (fix == 0) 
         std::cout << "Cannot cast pointer\n";
       else

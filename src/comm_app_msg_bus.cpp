@@ -10,7 +10,7 @@ ObservedVarListener AppMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
   return oam.get_listener(eh, et);
 }
 
-void AppMsgBus::notify(std::shared_ptr<AppMsg> msg) {
+void AppMsgBus::notify(std::shared_ptr<const AppMsg> msg) {
   ObservableAppMsg om(msg->key());
   om.notify(msg);
 }

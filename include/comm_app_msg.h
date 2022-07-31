@@ -51,7 +51,7 @@ public:
 
   virtual std::string key() const { return std::string("@!appmsg-") + name; }
 
-  std::string TypeToString(const AppMsgType t) {
+  std::string TypeToString(const AppMsgType t) const {
     switch (t) {
         case AppMsgType::gnss_fix: return "gnss-fix"; break;
         case AppMsgType::ais_data: return "ais-data"; break;
@@ -126,7 +126,7 @@ class AppMsgBus {
 public:
 
   /** Send message to everyone listening to it. */
-  void notify(std::shared_ptr<AppMsg> msg);
+  void notify(std::shared_ptr<const AppMsg> msg);
   
   /**
    * Return a listening object which generates wxEventType events sent to

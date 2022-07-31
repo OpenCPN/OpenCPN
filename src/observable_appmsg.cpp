@@ -3,13 +3,13 @@
 #include "comm_app_msg.h"
 
 
-std::shared_ptr<AppMsg> get_appmsg_ptr(wxCommandEvent ev) {
-  return PointerMsg<AppMsg>::get_pointer(ev);
+std::shared_ptr<const AppMsg> get_appmsg_ptr(wxCommandEvent ev) {
+  return PointerMsg<const AppMsg>::get_pointer(ev);
 }
 
 /* ObservableMsg implementation */
 
-void ObservableAppMsg::notify(std::shared_ptr<AppMsg> msg) {
-  auto boxed_msg = new PointerMsg<AppMsg>(msg);
+void ObservableAppMsg::notify(std::shared_ptr<const AppMsg> msg) {
+  auto boxed_msg = new PointerMsg<const AppMsg>(msg);
   ObservedVar::notify("", boxed_msg);
 };

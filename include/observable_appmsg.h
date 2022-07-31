@@ -11,14 +11,14 @@
 #define _OBSERVABLE_APPMSG_H
 
 /** Return the pointer available in wxCommandEvent.GetClientData() */
-std::shared_ptr<AppMsg> get_appmsg_ptr(wxCommandEvent ev);
+std::shared_ptr<const AppMsg> get_appmsg_ptr(wxCommandEvent ev);
 
 class ObservableAppMsg : public ObservedVar {
 public:
   ObservableAppMsg(const std::string key) : ObservedVar(key) {};
 
   /* Send message to all listeners. */
-  void notify(std::shared_ptr<AppMsg> msg);
+  void notify(std::shared_ptr<const AppMsg> msg);
 
 };
 
