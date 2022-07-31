@@ -27,7 +27,7 @@
 #define _COMM_UTIL_H
 
 #include "ConnectionParams.h"
-#include "commdriverBase.h"
+#include "comm_driver.h"
 
 AbstractCommDriver *MakeCommDriver(const ConnectionParams *params);
 

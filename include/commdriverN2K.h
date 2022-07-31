@@ -25,7 +25,7 @@
 #ifndef _COMMDRIVERN2K_H__
 #define _COMMDRIVERN2K_H__
 
-#include "commdriverBase.h"
+#include "comm_driver.h"
 
 class commDriverN2K : public AbstractCommDriver {
 

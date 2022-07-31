@@ -26,7 +26,7 @@
 #ifndef _COMMDRIVERREGISTRY_H__
 #define _COMMDRIVERREGISTRY_H__
 
-#include "commdriverBase.h"
+#include "comm_driver.h"
 #include "ConnectionParams.h"
 #include "commdriverN2KSerial.h"
 

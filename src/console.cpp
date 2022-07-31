@@ -56,7 +56,7 @@
 #include "Downloader.h"
 #include "observable_msg.h"
 #include "observable_appmsg.h"
-#include "commdriverBase.h"
+#include "comm_driver.h"
 #include "plugin_loader.h"
 #include "PluginHandler.h"
 #include "commTransport.h"

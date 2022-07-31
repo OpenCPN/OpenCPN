@@ -33,7 +33,7 @@
 
 #include "datastream.h"
 
-#include "commdriverBase.h"
+#include "comm_driver.h"
 
 #ifndef _TRANSPORT_H
 #define _TRANSPORT_H

@@ -8,7 +8,7 @@
 
 #include <wx/event.h>
 
-#include "commdriverBase.h"
+#include "comm_driver.h"
 
 enum class AppMsgType {gnss_fix, ais_data, data_prio_needed, undef /*, ...*/};
 
