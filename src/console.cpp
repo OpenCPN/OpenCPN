@@ -214,7 +214,7 @@ public:
     listener = observable.get_listener(this, EVT_BAR);
     Bind(EVT_BAR, [&](wxCommandEvent ev) {
       auto msg = get_navmsg_ptr(ev);
-      std::cout << (msg->bus == NavBus::n2000 ? "Type: N2k\n" : "wrong type\n");
+      std::cout << (msg->bus == NavAddr::Bus::N2000 ? "Type: N2k\n" : "wrong type\n");
       auto n2000_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
       std::string s(n2000_msg->payload.begin(), n2000_msg->payload.end());
       std::cout << "Payload: " << s << "\n";

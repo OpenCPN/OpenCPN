@@ -139,7 +139,7 @@ private:
  * */
 
 commDriverN2KSerial::commDriverN2KSerial() : commDriverN2K() {
-  // bus = NavBus::undefined;
+  // bus = NavAddr::Bus::Undefined;
 }
 
 commDriverN2KSerial::commDriverN2KSerial(const ConnectionParams *params)

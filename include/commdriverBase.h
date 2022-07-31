@@ -38,9 +38,8 @@
 #ifndef _DRIVER_API_H
 #define _DRIVER_API_H
 
-enum class CommStatus { ok, not_implemented, not_supported, name_in_use };
+enum class CommStatus { Ok, NotImplemented, NotSupported, NameInUse };
 
-enum class NavBus { n0183, signalk, n2000, onenet, test_bus, undef };
 
 /**
  * N2k uses CAN which defines the basic properties of messages.
@@ -85,11 +84,12 @@ private:
 /** Where messages are sent to or received from. */
 class NavAddr {
 public:
-  const NavBus bus;
+  enum class Bus {N0183, Signalk, N2000, Onenet, TestBus, Undef};
+  Bus bus;
   const std::string iface;  /**< Physical device for 0183, else a unique
                                  string */
-  NavAddr(NavBus b, const std::string& i) : bus(b), iface(i){};
-  NavAddr() : bus(NavBus::undef), iface("") {};
+  NavAddr(Bus b, const std::string& i) : bus(b), iface(i){};
+  NavAddr() : bus(Bus::Undef), iface("") {};
 };
 
 
@@ -98,7 +98,7 @@ public:
   const DataStream* nmea0183;  /**< A specific RS485/nmea01831 interface  */
 
   NavAddr0183(const std::string iface, const DataStream* stream)
-      : NavAddr(NavBus::n0183, iface), nmea0183(stream){};
+      : NavAddr(NavAddr::Bus::N0183, iface), nmea0183(stream){};
 };
 
 class NavAddr2000 : public NavAddr {
@@ -106,25 +106,25 @@ public:
   const N2kName name;
 
   NavAddr2000(const std::string& iface, const N2kName& _name)
-      : NavAddr(NavBus::n2000, iface), name(_name){};
+      : NavAddr(NavAddr::Bus::N2000, iface), name(_name){};
 };
 
 /** There is only support for a single signalK bus. */
 class NavAddrSignalK : public NavAddr {
 public:
-  NavAddrSignalK() : NavAddr(NavBus::signalk, "signalK"){};
+  NavAddrSignalK() : NavAddr(NavAddr::Bus::Signalk, "signalK"){};
 };
 
 /** Actual data sent between application and transport layer */
 class NavMsg {
 public:
-  const NavBus bus;
+  const NavAddr::Bus bus;
   virtual std::string key() const = 0;
 
   NavMsg() = delete;
 
 protected:
-  NavMsg(const NavBus& _bus) : bus(_bus){};
+  NavMsg(const NavAddr::Bus& _bus) : bus(_bus){};
 };
 
 
@@ -133,9 +133,9 @@ protected:
  */
 class Nmea2000Msg : public NavMsg {
 public:
-  Nmea2000Msg(const N2kId& _id) : NavMsg(NavBus::n2000), id(_id) {}
+  Nmea2000Msg(const N2kId& _id) : NavMsg(NavAddr::Bus::N2000), id(_id) {}
   Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
-      : NavMsg(NavBus::n2000), id(_id), payload(_payload) {}
+      : NavMsg(NavAddr::Bus::N2000), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n2000-") + id.to_string(); };
 
@@ -146,10 +146,10 @@ public:
 
 class Nmea0183Msg : public NavMsg {
 public:
-  Nmea0183Msg() : NavMsg(NavBus::n0183) {}
+  Nmea0183Msg() : NavMsg(NavAddr::Bus::N0183) {}
 
   Nmea0183Msg(const std::string _id, const std::string _payload)
-      : NavMsg(NavBus::n0183), id(_id), payload(_payload) {}
+      : NavMsg(NavAddr::Bus::N0183), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n0183-") + id; };
 
@@ -160,7 +160,7 @@ public:
 /** A parsed SignalK message over ipv4 */
 class SignalkMsg : public NavMsg {
 public:
-  SignalkMsg(int _depth) : NavMsg(NavBus::signalk), depth(_depth) {}
+  SignalkMsg(int _depth) : NavMsg(NavAddr::Bus::Signalk), depth(_depth) {}
 
   struct in_addr dest;
   struct in_addr src;
@@ -190,11 +190,11 @@ public:
 /** Common interface for all drivers.  */
 class AbstractCommDriver {
 public:
-  const NavBus bus;
+  const NavAddr::Bus bus;
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
 
-  AbstractCommDriver() : bus(NavBus::undef){};
+  AbstractCommDriver() : bus(NavAddr::Bus::Undef){};
 
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
 
@@ -209,11 +209,11 @@ public:
    */
   virtual std::pair<CommStatus, std::string> clone() {
     // FIXME: Requires some unique interface support in DriverRegistry.
-    return std::pair<CommStatus, std::string>(CommStatus::not_implemented, "");
+    return std::pair<CommStatus, std::string>(CommStatus::NotImplemented, "");
   }
 
 protected:
-  AbstractCommDriver(NavBus _bus) : bus(_bus) {};
+  AbstractCommDriver(NavAddr::Bus _bus) : bus(_bus) {};
 };
 
 

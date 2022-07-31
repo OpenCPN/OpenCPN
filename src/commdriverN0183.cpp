@@ -28,7 +28,7 @@
 /*    commDriverN0183 implementation
  * */
 
-commDriverN0183::commDriverN0183() : AbstractCommDriver(NavBus::n0183) {}
+commDriverN0183::commDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 
 commDriverN0183::~commDriverN0183() {}
 
