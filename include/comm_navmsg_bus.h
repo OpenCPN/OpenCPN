@@ -1,7 +1,9 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Raw messages layer, supports sending and recieving navmsg 
+ *           messages. This is the second layer in the three tier model
+ *           drivers, raw messages and application messages.
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
