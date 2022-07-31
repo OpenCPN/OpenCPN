@@ -1,6 +1,6 @@
 #include "observable_appmsg.h"
 #include "comm_pointer_msg.h"
-#include "comm_app_msg.h"
+#include "comm_appmsg.h"
 
 
 std::shared_ptr<const AppMsg> get_appmsg_ptr(wxCommandEvent ev) {

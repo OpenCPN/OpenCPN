@@ -60,7 +60,7 @@
 #include "plugin_loader.h"
 #include "PluginHandler.h"
 #include "comm_navmsg_bus.h"
-#include "comm_app_msg.h"
+#include "comm_appmsg_bus.h"
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -141,7 +141,7 @@ public:
 class AppMsgSource {
 public:
   AppMsgSource() {
-    Position pos(65.2, 21.4, Position::Type::NW);
+    Position pos(65.2211, 21.4433, Position::Type::NW);
     using namespace std::chrono;
     auto now = system_clock::to_time_t(system_clock::now());
 
@@ -155,7 +155,7 @@ class AppMsgSink: public wxEvtHandler {
 public:
   AppMsgSink() {
     auto a = AppMsgBus::getInstance();
-    AppMsg msg(AppMsgType::gnss_fix);
+    AppMsg msg(AppMsg::Type::gnss_fix);
     listener = a->get_listener(EVT_FOO, this, msg.key());
 
     Bind(EVT_FOO, [&](wxCommandEvent ev) {

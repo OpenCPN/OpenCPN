@@ -1,14 +1,15 @@
 /* API handling decoded application messages. */
 
+#ifndef _OBSERVABLE_APPMSG_H
+#define _OBSERVABLE_APPMSG_H
+
 #include <memory>
 
 #include <wx/event.h>
 #include "comm_navmsg_bus.h"
 #include "comm_pointer_msg.h"
-#include "comm_app_msg.h"
+#include "comm_appmsg.h"
 
-#ifndef _OBSERVABLE_APPMSG_H
-#define _OBSERVABLE_APPMSG_H
 
 /** Return the pointer available in wxCommandEvent.GetClientData() */
 std::shared_ptr<const AppMsg> get_appmsg_ptr(wxCommandEvent ev);

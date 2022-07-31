@@ -1,8 +1,9 @@
-#include "comm_app_msg.h"
-
-#include "observable_appmsg.h"
+#include "comm_appmsg_bus.h"
+#include "comm_appmsg.h"
 
 using namespace std;
+
+class AppMsg;
 
 ObservedVarListener AppMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
                                             const string& key) {
