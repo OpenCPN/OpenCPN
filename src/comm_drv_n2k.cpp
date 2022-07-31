@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "commdriverN2K.h"
+#include "comm_drv_n2k.h"
 
 /*    commdriverN2K implementation
  * */

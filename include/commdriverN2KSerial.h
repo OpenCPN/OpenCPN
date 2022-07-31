@@ -28,7 +28,7 @@
 
 #include <wx/thread.h>
 
-#include "commdriverN2K.h"
+#include "comm_drv_n2k.h"
 #include "ConnectionParams.h"
 
 #ifndef __OCPN__ANDROID__
