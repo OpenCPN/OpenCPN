@@ -7067,7 +7067,7 @@ void MyFrame::InitCommListeners(void) {
 
   // Initialize the comm listeners
 
-  auto t = Transport::getInstance();
+  auto t = NavMsgBus::getInstance();
 
   // GNSS Position Data PGN  129029
   //----------------------------------

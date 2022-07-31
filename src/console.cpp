@@ -181,7 +181,7 @@ public:
     auto payload = std::vector<unsigned char>(s.begin(), s.end());
     auto id = static_cast<uint64_t>(1234);
     auto msg = std::make_shared<Nmea2000Msg>(id, payload);
-    Transport::getInstance()->notify(msg);
+    NavMsgBus::getInstance()->notify(msg);
   }
 };
 
@@ -189,7 +189,7 @@ public:
 class TransportSink: public wxEvtHandler {
 public:
   TransportSink() {
-    auto t = Transport::getInstance();
+    auto t = NavMsgBus::getInstance();
     Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
     listener = t->get_listener(EVT_FOO, this, n2k_msg.key());
 

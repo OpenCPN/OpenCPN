@@ -38,8 +38,8 @@
 #ifndef _TRANSPORT_H
 #define _TRANSPORT_H
 
-/** The transport layer, a singleton. */
-class Transport : public DriverListener {
+/** The raw message layer, a singleton. */
+class NavMsgBus : public DriverListener {
 public:
   void send_message(const NavMsg& message, const NavAddr& address);
 
@@ -57,12 +57,12 @@ public:
   void notify(const AbstractCommDriver& driver);
 
   /* Singleton implementation. */
-  static Transport* getInstance();
-  Transport& operator=(Transport&) = delete;
-  Transport(const Transport&) = delete;
+  static NavMsgBus* getInstance();
+  NavMsgBus& operator=(NavMsgBus&) = delete;
+  NavMsgBus(const NavMsgBus&) = delete;
 
 private:
-  Transport() = default;
+  NavMsgBus() = default;
 };
 
 #endif  // TRANSPORT_H

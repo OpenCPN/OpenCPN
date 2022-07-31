@@ -193,7 +193,7 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
   // memcpy(&v, &data[3], 1);
 
   auto msg = std::make_shared<const Nmea2000Msg>(pgn, *payload);
-  auto t = Transport::getInstance();
+  auto t = NavMsgBus::getInstance();
   t->notify(msg);
 
 #if 0  // Debug output
