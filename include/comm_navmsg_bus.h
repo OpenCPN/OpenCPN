@@ -36,9 +36,10 @@
 #include "datastream.h"
 
 #include "comm_driver.h"
+#include "observable_msg.h"
 
-#ifndef _TRANSPORT_H
-#define _TRANSPORT_H
+#ifndef _NAVMSG_BUS_H__
+#define _NAVMSG_BUS_H__
 
 /** The raw message layer, a singleton. */
 class NavMsgBus : public DriverListener {
@@ -67,4 +68,4 @@ private:
   NavMsgBus() = default;
 };
 
-#endif  // TRANSPORT_H
+#endif  // NAVMSG_BUS_H

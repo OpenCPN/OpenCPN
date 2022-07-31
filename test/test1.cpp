@@ -4,7 +4,6 @@
 #include "wx/app.h"
 
 #include "comm_navmsg_bus.h"
-#include "observable_msg.h"
 
 wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
