@@ -52,14 +52,14 @@ enum class CommStatus { Ok, NotImplemented, NotSupported, NameInUse };
  */
 struct N2kName {
   N2kName(uint64_t name);
-  uint32_t get_number() const;           /**< 21 bits */
-  uint16_t get_manufacturer() const;     /**< 9 bits */
-  uint8_t get_dev_instance_low() const;  /**< 3 bits */
-  uint8_t get_dev_instance_high() const; /**< 5 bits */
-  uint8_t get_dev_func() const;          /**< 8 bits */
-  uint8_t get_dev_class() const;         /**< 7 bits */
-  uint8_t get_sys_instance() const;      /**< 4 bits */
-  uint8_t get_industry_group() const;    /**< 4 bits */
+  uint32_t GetNumber() const;         /**< 21 bits */
+  uint16_t GetManufacturer() const;   /**< 9 bits */
+  uint8_t GetDevInstanceLow() const;  /**< 3 bits */
+  uint8_t GetDevInstanceHigh() const; /**< 5 bits */
+  uint8_t GetDevFunc() const;         /**< 8 bits */
+  uint8_t GetDevClass() const;        /**< 7 bits */
+  uint8_t GetSysInstance() const;     /**< 4 bits */
+  uint8_t GetIndustryGroup() const;   /**< 4 bits */
 };
 
 /**
@@ -71,7 +71,7 @@ struct N2kId {
   uint8_t get_prio() const;    /**< 3 bits */
   uint32_t get_png() const;    /**< a. k. a. PNG, 17 bits */
   uint32_t get_source() const; /**< Source address,  8 bits */
-  std::string to_string() const {
+  std::string ToString() const {
     std::stringstream ss;
     ss << value;
     return ss.str();
@@ -85,6 +85,7 @@ private:
 class NavAddr {
 public:
   enum class Bus {N0183, Signalk, N2000, Onenet, TestBus, Undef};
+
   Bus bus;
   const std::string iface;  /**< Physical device for 0183, else a unique
                                  string */
@@ -137,7 +138,7 @@ public:
   Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
       : NavMsg(NavAddr::Bus::N2000), id(_id), payload(_payload) {}
 
-  std::string key() const { return std::string("n2000-") + id.to_string(); };
+  std::string key() const { return std::string("n2000-") + id.ToString(); };
 
   N2kId id;
   std::vector<unsigned char> payload;
@@ -207,7 +208,7 @@ public:
    *
    * @return <CommStatus::ok, interface> on success else <error_code, message>.
    */
-  virtual std::pair<CommStatus, std::string> clone() {
+  virtual std::pair<CommStatus, std::string> Clone() {
     // FIXME: Requires some unique interface support in DriverRegistry.
     return std::pair<CommStatus, std::string>(CommStatus::NotImplemented, "");
   }
@@ -248,8 +249,8 @@ class Nmea0183Driver : public AbstractCommDriver {
  */
 class DriverRegistry {
 public:
-  void activate(const AbstractCommDriver& driver);
-  void deactivate(const AbstractCommDriver& driver);
+  void Activate(const AbstractCommDriver& driver);
+  void Deactivate(const AbstractCommDriver& driver);
 
   /** Notified by all driverlist updates. */
   EventVar evt_driverlist_change;
