@@ -250,9 +250,9 @@ void commDriverN0183Serial::handle_N0183_MSG(
     std::string identifier;
     identifier = full_sentence.substr(1,5);
 
-    auto msg = new Nmea0183Msg(identifier, full_sentence);
-    auto t = Transport::getInstance();
-    t->notify(*msg);
+    auto msg =
+      std::make_shared<const Nmea0183Msg>(identifier, full_sentence);
+    Transport::getInstance()->notify(msg);
   }
 }
 
