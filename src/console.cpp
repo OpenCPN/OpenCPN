@@ -145,9 +145,8 @@ public:
     using namespace std::chrono;
     auto now = system_clock::to_time_t(system_clock::now());
 
-    auto fix = new GnssFix(pos, now);
-    auto shared_fix = std::shared_ptr<AppMsg>(fix);
-    AppMsgBus::getInstance()->notify(std::move(shared_fix));
+    auto fix = std::make_shared<GnssFix>(pos, now);
+    AppMsgBus::getInstance()->notify(std::move(fix));
   }
 };
 
@@ -180,9 +179,9 @@ public:
   TransportSource(wxEvtHandler& sink) {
     std::string s("payload data");
     auto payload = std::vector<unsigned char>(s.begin(), s.end());
-    Nmea2000Msg msg(static_cast<uint64_t>(1234), payload);
-    auto t = Transport::getInstance();
-    t->notify(msg);
+    auto id = static_cast<uint64_t>(1234);
+    auto msg = std::make_shared<Nmea2000Msg>(id, payload);
+    Transport::getInstance()->notify(msg);
   }
 };
 
@@ -229,8 +228,8 @@ public:
   MsgSource(wxEvtHandler& sink) {
     std::string s("payload data");
     auto payload = std::vector<unsigned char>(s.begin(), s.end());
-    Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234), payload);
-
+    auto id = static_cast<uint64_t>(1234);
+    auto n2k_msg = std::make_shared<const Nmea2000Msg>(id, payload);
     ObservableMsg observable("1234");
     observable.notify(n2k_msg);
   }

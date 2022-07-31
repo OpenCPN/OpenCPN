@@ -16,9 +16,7 @@ public:
   ObservableMsg(const std::string key) : ObservedVar(key){};
 
   /* Send message to all listeners. */
-  void notify(const Nmea2000Msg& msg);
-  void notify(const Nmea0183Msg& msg);
-  void notify(const SignalkMsg& msg);
+  void notify(std::shared_ptr<const NavMsg> msg);
 
 protected:
   void notify(NavMsg* msg);

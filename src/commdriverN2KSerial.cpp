@@ -192,9 +192,9 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
   *c++ = payload->at(5);
   // memcpy(&v, &data[3], 1);
 
-  auto msg = new Nmea2000Msg(pgn, *payload);
+  auto msg = std::make_shared<const Nmea2000Msg>(pgn, *payload);
   auto t = Transport::getInstance();
-  t->notify(*msg);
+  t->notify(msg);
 
 #if 0  // Debug output
   size_t packetLength = (size_t)data->at(1);
