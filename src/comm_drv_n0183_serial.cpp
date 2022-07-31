@@ -28,7 +28,7 @@
 #include <vector>
 #include <wx/thread.h>
 
-#include "commdriverN0183Serial.h"
+#include "comm_drv_n0183_serial.h"
 #include "comm_navmsg_bus.h"
 
 #ifndef __ANDROID__

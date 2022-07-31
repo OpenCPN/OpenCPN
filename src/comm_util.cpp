@@ -25,7 +25,7 @@
 
 #include "comm_util.h"
 #include "commdriverN2KSerial.h"
-#include "commdriverN0183Serial.h"
+#include "comm_drv_n0183_serial.h"
 
 AbstractCommDriver *MakeCommDriver(const ConnectionParams *params) {
   wxLogMessage(

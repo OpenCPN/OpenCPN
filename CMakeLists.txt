@@ -817,7 +817,7 @@ set(
   include/comm_pointer_msg.h
   include/comm_driver.h
   include/comm_drv_n0183.h
-  include/commdriverN0183Serial.h
+  include/comm_drv_n0183_serial.h
   include/commdriverN2K.h
   include/commdriverN2KSerial.h
   include/comm_drv_registry.h
@@ -959,7 +959,7 @@ set(
   src/commdriverN2K.cpp
   src/commdriverN2KSerial.cpp
   src/comm_drv_n0183.cpp
-  src/commdriverN0183Serial.cpp
+  src/comm_drv_n0183_serial.cpp
   src/comm_drv_registry.cpp
   src/comm_navmsg_bus.cpp
   src/comm_util.cpp
@@ -1074,7 +1074,7 @@ set(
   src/commdriverN2K.cpp
   src/commdriverN2KSerial.cpp
   src/comm_drv_n0183.cpp
-  src/commdriverN0183Serial.cpp
+  src/comm_drv_n0183_serial.cpp
   src/comm_drv_registry.cpp
   )
 
