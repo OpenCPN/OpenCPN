@@ -550,8 +550,8 @@ public:
 
   void InitCommListeners();
 
-  bool HandleN2K_129029( std::shared_ptr <Nmea2000Msg> n2k_msg );
-  bool HandleN2K_129026( std::shared_ptr <Nmea2000Msg> n2k_msg );
+  bool HandleN2K_129029( std::shared_ptr <const Nmea2000Msg> n2k_msg );
+  bool HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg );
 
 private:
   void CheckToolbarPosition();

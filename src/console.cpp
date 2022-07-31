@@ -196,7 +196,7 @@ public:
     Bind(EVT_FOO, [&](wxCommandEvent ev) {
       std::cout << "EVT_FOO: received\n" ;
       auto message = get_navmsg_ptr(ev);
-      auto n2k_msg = std::dynamic_pointer_cast<Nmea2000Msg>(message);
+      auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
       std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
       std::cout << "payload: " + s + "\n";
     });
@@ -215,7 +215,7 @@ public:
     Bind(EVT_BAR, [&](wxCommandEvent ev) {
       auto msg = get_navmsg_ptr(ev);
       std::cout << (msg->bus == NavBus::n2000 ? "Type: N2k\n" : "wrong type\n");
-      auto n2000_msg = std::dynamic_pointer_cast<Nmea2000Msg>(msg);
+      auto n2000_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
       std::string s(n2000_msg->payload.begin(), n2000_msg->payload.end());
       std::cout << "Payload: " << s << "\n";
     });

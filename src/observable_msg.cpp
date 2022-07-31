@@ -2,7 +2,7 @@
 #include "comm_pointer_msg.h"
 
 
-std::shared_ptr<NavMsg> get_navmsg_ptr(wxCommandEvent ev) {
+std::shared_ptr<const NavMsg> get_navmsg_ptr(wxCommandEvent ev) {
   return PointerMsg<NavMsg>::get_pointer(ev);
 }
 
