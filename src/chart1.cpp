@@ -148,7 +148,7 @@
 #include "TrackPropDlg.h"
 #include "usb_devices.h"
 #include "commdriverRegistry.h"
-#include "commTransport.h"
+#include "comm_navmsg_bus.h"
 #include "N2KParser.h"
 #include "commUtilities.h"
 

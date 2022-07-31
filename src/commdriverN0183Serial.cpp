@@ -29,7 +29,7 @@
 #include <wx/thread.h>
 
 #include "commdriverN0183Serial.h"
-#include "commTransport.h"
+#include "comm_navmsg_bus.h"
 
 #ifndef __ANDROID__
 #include "serial/serial.h"

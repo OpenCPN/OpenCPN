@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <wx/event.h>
-#include "commTransport.h"
+#include "comm_navmsg_bus.h"
 
 #ifndef _OBSERVABLE_MSG_H
 #define _OBSERVABLE_MSG_H

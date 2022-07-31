@@ -59,7 +59,7 @@
 #include "comm_driver.h"
 #include "plugin_loader.h"
 #include "PluginHandler.h"
-#include "commTransport.h"
+#include "comm_navmsg_bus.h"
 #include "comm_app_msg.h"
 
 BasePlatform* g_BasePlatform = 0;

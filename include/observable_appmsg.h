@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <wx/event.h>
-#include "commTransport.h"
+#include "comm_navmsg_bus.h"
 #include "comm_pointer_msg.h"
 #include "comm_app_msg.h"
 
