@@ -820,7 +820,7 @@ set(
   include/commdriverN0183Serial.h
   include/commdriverN2K.h
   include/commdriverN2KSerial.h
-  include/commdriverRegistry.h
+  include/comm_drv_registry.h
   include/comm_navmsg_bus.h
   include/commUtilities.h
   include/compass.h
@@ -960,7 +960,7 @@ set(
   src/commdriverN2KSerial.cpp
   src/commdriverN0183.cpp
   src/commdriverN0183Serial.cpp
-  src/commdriverRegistry.cpp
+  src/comm_drv_registry.cpp
   src/comm_navmsg_bus.cpp
   src/commUtilities.cpp
   src/chart1.cpp
@@ -1075,7 +1075,7 @@ set(
   src/commdriverN2KSerial.cpp
   src/commdriverN0183.cpp
   src/commdriverN0183Serial.cpp
-  src/commdriverRegistry.cpp
+  src/comm_drv_registry.cpp
   )
 
 if (OCPN_USE_GARMINHOST)

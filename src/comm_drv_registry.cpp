@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "commdriverRegistry.h"
+#include "comm_drv_registry.h"
 
 /*    commDriverRegistry
  * */
