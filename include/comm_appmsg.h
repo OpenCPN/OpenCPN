@@ -158,6 +158,10 @@ public:
 class CustomMsg: public AppMsg {
   const std::string id;   // Must be unique.
   std::shared_ptr<const void> payload;  
+
+  std::string key() const override {
+    return std::string("@##_appmsg-custom-") + id;
+  }
 };
 
 #endif  // APP_MSG_H
