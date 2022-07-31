@@ -1,7 +1,10 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Communication driver layer. Defines the generic driver model, 
+ *           messages sent to/from drivers and addresses. The driver layer
+ *           is the lowest of the three layers drivers, raw messages (navmsg)
+ *           and decoded application messages(appmsg).
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -22,7 +25,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-/* API handling communication "drivers". */
 
 #include <memory>
 #include <sstream>
