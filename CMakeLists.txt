@@ -822,7 +822,7 @@ set(
   include/commdriverN2KSerial.h
   include/comm_drv_registry.h
   include/comm_navmsg_bus.h
-  include/commUtilities.h
+  include/comm_util.h
   include/compass.h
   include/concanv.h
   include/ConnectionParams.h
@@ -962,7 +962,7 @@ set(
   src/commdriverN0183Serial.cpp
   src/comm_drv_registry.cpp
   src/comm_navmsg_bus.cpp
-  src/commUtilities.cpp
+  src/comm_util.cpp
   src/chart1.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
