@@ -28,7 +28,7 @@
 
 #include "comm_driver.h"
 #include "ConnectionParams.h"
-#include "commdriverN2KSerial.h"
+#include "comm_drv_n2K_serial.h"
 
 /*The global driver registry, a singleton. Drivers register here when
  * activated, transport layer finds them.

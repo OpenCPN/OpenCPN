@@ -24,7 +24,7 @@
  **************************************************************************/
 
 #include "comm_util.h"
-#include "commdriverN2KSerial.h"
+#include "comm_drv_n2K_serial.h"
 #include "comm_drv_n0183_serial.h"
 
 AbstractCommDriver *MakeCommDriver(const ConnectionParams *params) {

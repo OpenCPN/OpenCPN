@@ -27,7 +27,7 @@
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 
-#include "commdriverN2KSerial.h"
+#include "comm_drv_n2K_serial.h"
 #include "comm_navmsg_bus.h"
 
 const wxEventType wxEVT_COMMDRIVER_N2K_SERIAL = wxNewEventType();
