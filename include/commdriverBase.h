@@ -89,7 +89,9 @@ public:
   const std::string iface;  /**< Physical device for 0183, else a unique
                                  string */
   NavAddr(NavBus b, const std::string& i) : bus(b), iface(i){};
+  NavAddr() : bus(NavBus::undef), iface("") {};
 };
+
 
 class NavAddr0183 : public NavAddr {
 public:

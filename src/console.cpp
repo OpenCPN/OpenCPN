@@ -31,6 +31,8 @@
 #endif
 
 #include <algorithm>
+#include <chrono>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -53,10 +55,12 @@
 #include "ocpn_utils.h"
 #include "Downloader.h"
 #include "observable_msg.h"
+#include "observable_appmsg.h"
 #include "commdriverBase.h"
 #include "plugin_loader.h"
 #include "PluginHandler.h"
 #include "commTransport.h"
+#include "comm_app_msg.h"
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -133,6 +137,42 @@ public:
   std::unique_ptr<Message> ptr;
   virtual  ~MessagePtr() { std::cout << "MessagePtr: DTOR\n"; }
 };
+
+class AppMsgSource {
+public:
+  AppMsgSource() {
+    Position pos(65.2, 21.4, Position::Type::NW);
+    using namespace std::chrono;
+    auto now = system_clock::to_time_t(system_clock::now());
+
+    auto fix = new GnssFix(pos, now);
+    auto shared_fix = std::shared_ptr<AppMsg>(fix);
+    AppMsgBus::getInstance()->notify(std::move(shared_fix));
+  }
+};
+
+
+class AppMsgSink: public wxEvtHandler {
+public:
+  AppMsgSink() {
+    auto a = AppMsgBus::getInstance();
+    AppMsg msg(AppMsgType::gnss_fix);
+    listener = a->get_listener(EVT_FOO, this, msg.key());
+
+    Bind(EVT_FOO, [&](wxCommandEvent ev) {
+      std::cout << "EVT_FOO: received\n" ;
+      auto message = get_appmsg_ptr(ev);
+      std::cout << message->TypeToString(message->type) << "\n";
+      auto fix = std::dynamic_pointer_cast<GnssFix>(message);
+      if (fix == 0) 
+        std::cout << "Cannot cast pointer\n";
+      else
+        std::cout << fix->to_string() << "\n"; 
+    });
+  }
+  ObservedVarListener listener;
+};
+
 
 
 class TransportSource {
@@ -315,6 +355,14 @@ public:
     exit(0);
   }
 
+  bool test_appmsg() {
+    AppMsgSink sink;
+    AppMsgSource source;
+    ProcessPendingEvents();
+    exit(0);
+  }
+
+ 
   bool test_transport() {
     TransportSink sink;
     TransportSource source(sink);
@@ -406,7 +454,10 @@ public:
       exit(1);
     }
     std::string command(parser.GetParam(0));
-    if (command == "test-voidptr") {
+    if (command == "test-appmsg") {
+      check_param_count(parser, 0);
+      test_appmsg();
+    } else if (command == "test-voidptr") {
       check_param_count(parser, 0);
       test_voidptr();
     }
