@@ -4,6 +4,7 @@
 #include "wx/app.h"
 
 #include "comm_appmsg_bus.h"
+#include "comm_drv_registry.h"
 
 wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
@@ -130,6 +131,33 @@ public:
   };
 };
 
+class TestRegistry {
+public:
+
+  TestRegistry() {};
+
+  class SillyDriver: public AbstractCommDriver {
+  public:
+    SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
+
+    virtual void send_message(const NavMsg& msg, const NavAddr& addr) {}
+
+    virtual void set_listener(DriverListener& listener) {} ;
+  };
+
+
+  int run() {
+    auto driver = std::make_shared<const SillyDriver>();
+    registry = CommDriverRegistry::getInstance();
+    registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+    auto drivers = registry->get_drivers();
+    return drivers.size();
+  };
+
+  CommDriverRegistry* registry;
+
+};
+
 using namespace std;
 
 TEST(Messaging, ObservableMsg) {
@@ -155,3 +183,11 @@ TEST(Messaging, AppMsg) {
   EXPECT_EQ(s_result, string("65°22,11N 21°44,33W"));
   EXPECT_EQ(s_apptype, AppMsg::Type::GnssFix);
 };
+
+TEST(Drivers, registry1) {
+  TestRegistry t;
+  t.run();
+  EXPECT_EQ(t.registry->get_drivers().size(), 1);
+  EXPECT_EQ(t.registry->get_drivers()[0]->iface, string("silly"));
+  EXPECT_EQ(t.registry->get_drivers()[0]->bus, NavAddr::Bus::TestBus);
+}

@@ -216,7 +216,9 @@ public:
   }
 
 protected:
-  AbstractCommDriver(NavAddr::Bus _bus) : bus(_bus) {};
+  AbstractCommDriver(NavAddr::Bus b) : bus(b) {};
+  AbstractCommDriver(NavAddr::Bus b, const std::string& s)
+    : bus(b), iface(s) {};
 };
 
 

@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Driver registration container, a singleton.
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -27,32 +27,36 @@
 #define _COMMDRIVERREGISTRY_H__
 
 #include "comm_driver.h"
-#include "ConnectionParams.h"
-#include "comm_drv_n2K_serial.h"
 
-/*The global driver registry, a singleton. Drivers register here when
+/**
+ * The global driver registry, a singleton. Drivers register here when
  * activated, transport layer finds them.
  */
-class commDriverRegistry {
+class CommDriverRegistry final {
 public:
-  commDriverRegistry();
-  ~commDriverRegistry();
+  CommDriverRegistry() {}
 
-  void activate(const AbstractCommDriver& driver);
-  void deactivate(const AbstractCommDriver& driver);
+  /** Add driver to list of active drivers. */
+  void Activate(std::shared_ptr<const AbstractCommDriver> driver);
+
+  /** Remove driver from list of active drivers. */
+  void Deactivate(std::shared_ptr<const AbstractCommDriver> driver);
 
   /** Notified by all driverlist updates. */
   EventVar evt_driverlist_change;
 
   /** @return List of all activated drivers. */
-  const std::vector<AbstractCommDriver>& get_drivers();
+  const std::vector<std::shared_ptr<const AbstractCommDriver>>& get_drivers();
 
-  static commDriverRegistry* getInstance();
+  static CommDriverRegistry* getInstance();
 
   // FIXME
   //  Stub method, to pretest drivers.
   //  Goes away for production
   void TestDriver(ConnectionParams* params);
+
+private:
+  std::vector<std::shared_ptr<const AbstractCommDriver>> drivers;
 };
 
 #endif  // guard

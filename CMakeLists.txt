@@ -2896,6 +2896,7 @@ if (NOT QT_ANDROID)
     src/comm_navmsg_bus.cpp
     src/comm_appmsg.cpp
     src/comm_appmsg_bus.cpp
+    src/comm_drv_registry.cpp
     src/console.cpp
     src/Downloader.cpp
     src/logger.cpp

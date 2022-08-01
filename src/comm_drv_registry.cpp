@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Implements comm_drv_registry.h
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -22,24 +22,34 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <algorithm>
+#include <memory>
 
+#include "comm_driver.h"
 #include "comm_drv_registry.h"
 
-/*    commDriverRegistry
- * */
+using DriverPtr = std::shared_ptr<const AbstractCommDriver>;
 
-commDriverRegistry::commDriverRegistry() {}
+void CommDriverRegistry::Activate(DriverPtr driver) {
+  auto found = std::find(drivers.begin(), drivers.end(), driver);
+  if (found != drivers.end()) return;
+  drivers.push_back(driver);
+  evt_driverlist_change.notify();
+};
 
-commDriverRegistry::~commDriverRegistry() {}
-
-commDriverRegistry* commDriverRegistry::getInstance() {
-  static commDriverRegistry* instance = 0;
-  if (!instance) {
-    instance = new (commDriverRegistry);
-  }
-  return instance;
+void CommDriverRegistry::Deactivate(DriverPtr driver) {
+  auto found = std::find(drivers.begin(), drivers.end(), driver);
+  if (found == drivers.end()) return;
+  drivers.erase(found);
+  evt_driverlist_change.notify();
 }
 
-void commDriverRegistry::TestDriver(ConnectionParams* params) {
-  commDriverN2KSerial* t = new commDriverN2KSerial(params);
+const std::vector<DriverPtr>& CommDriverRegistry::get_drivers() {
+  return drivers;
+};
+
+CommDriverRegistry* CommDriverRegistry::getInstance() {
+  static CommDriverRegistry* instance = 0;
+  if (instance == 0) instance = new CommDriverRegistry();
+  return instance;
 }
