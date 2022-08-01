@@ -17,7 +17,7 @@ enable_testing()
 set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 
 add_executable(
-  test1 test1.cpp
+  messaging messaging.cpp
   ${PROJ_SRC}/observable.cpp
   ${PROJ_SRC}/observable_msg.cpp
   ${PROJ_SRC}/comm_navmsg_bus.cpp
@@ -28,14 +28,15 @@ add_executable(
 
 find_package(wxWidgets REQUIRED core base)
 include(${wxWidgets_USE_FILE})
-target_link_libraries(test1 PRIVATE ${wxWidgets_LIBRARIES})
-target_include_directories(test1 PRIVATE ${PROJECT_SOURCE_DIR}/../include)
+target_link_libraries(messaging PRIVATE ${wxWidgets_LIBRARIES})
+
+target_include_directories(messaging PRIVATE ${PROJECT_SOURCE_DIR}/../include)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/../libs/wxJSON ${CMAKE_BINARY_DIR}/wxJSON)
-target_link_libraries(test1 PRIVATE ocpn::wxjson)
+target_link_libraries(messaging PRIVATE ocpn::wxjson)
 
-target_link_libraries(test1 PRIVATE GTest::gtest_main)
+target_link_libraries(messaging PRIVATE GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(test1)
+gtest_discover_tests(messaging)
 

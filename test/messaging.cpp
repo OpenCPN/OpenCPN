@@ -130,12 +130,13 @@ public:
   };
 };
 
+using namespace std;
 
 TEST(Messaging, ObservableMsg) {
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   MsgCliApp app;
-  EXPECT_STREQ(s_result.c_str(), "payload data");
+  EXPECT_EQ(s_result, string("payload data"));
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
 
@@ -143,14 +144,14 @@ TEST(Messaging, NavMsg) {
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   TransportCliApp app;
-  EXPECT_STREQ(s_result.c_str(), "payload data");
+  EXPECT_EQ(s_result, string("payload data"));
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
 
-TEST(Messaging, ApppMsg) {
+TEST(Messaging, AppMsg) {
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   AppmsgCliApp app;
-  EXPECT_STREQ(s_result.c_str(), "65°22,11N 21°44,33W");
+  EXPECT_EQ(s_result, string("65°22,11N 21°44,33W"));
   EXPECT_EQ(s_apptype, AppMsg::Type::GnssFix);
 };
