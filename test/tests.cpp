@@ -131,34 +131,19 @@ public:
   };
 };
 
-class TestRegistry {
+using namespace std;
+
+class SillyDriver: public AbstractCommDriver {
 public:
+  SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
+  SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
 
-  TestRegistry() {};
+  virtual void send_message(const NavMsg& msg, const NavAddr& addr) {}
 
-  class SillyDriver: public AbstractCommDriver {
-  public:
-    SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
-
-    virtual void send_message(const NavMsg& msg, const NavAddr& addr) {}
-
-    virtual void set_listener(DriverListener& listener) {} ;
-  };
-
-
-  int run() {
-    auto driver = std::make_shared<const SillyDriver>();
-    registry = CommDriverRegistry::getInstance();
-    registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
-    auto drivers = registry->get_drivers();
-    return drivers.size();
-  };
-
-  CommDriverRegistry* registry;
-
+  virtual void set_listener(DriverListener& listener) {} ;
 };
 
-using namespace std;
+
 
 TEST(Messaging, ObservableMsg) {
   s_result = "";
@@ -185,9 +170,28 @@ TEST(Messaging, AppMsg) {
 };
 
 TEST(Drivers, registry1) {
-  TestRegistry t;
-  t.run();
-  EXPECT_EQ(t.registry->get_drivers().size(), 1);
-  EXPECT_EQ(t.registry->get_drivers()[0]->iface, string("silly"));
-  EXPECT_EQ(t.registry->get_drivers()[0]->bus, NavAddr::Bus::TestBus);
+  auto driver = std::make_shared<const SillyDriver>();
+  auto registry = CommDriverRegistry::getInstance();
+  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+  auto drivers = registry->get_drivers();
+  EXPECT_EQ(registry->get_drivers().size(), 1);
+  EXPECT_EQ(registry->get_drivers()[0]->iface, string("silly"));
+  EXPECT_EQ(registry->get_drivers()[0]->bus, NavAddr::Bus::TestBus);
+
+  /* Add it again, should be ignored. */
+  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+  EXPECT_EQ(registry->get_drivers().size(), 1);
+
+  /* Add another one, should be accepted */
+  auto driver2 = std::make_shared<const SillyDriver>("orvar");
+  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry->get_drivers().size(), 2);
+
+  /* Remove one, leaving one in place. */
+  registry->Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry->get_drivers().size(), 1);
+
+  /* Remove it again, should be ignored. */
+  registry->Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry->get_drivers().size(), 1);
 }
