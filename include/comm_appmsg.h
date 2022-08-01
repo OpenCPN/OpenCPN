@@ -55,7 +55,7 @@ public:
     const std::string NE(TypeToStr(type));
     auto  lat_s = DegreesToString(lat);
     auto  lon_s = DegreesToString(lon);
-    buf << lat_s << " " << NE[0] << " " << lon_s << " " << NE[1];
+    buf << lat_s << NE[0] << " " << lon_s << NE[1];
     return buf.str();
   }
 

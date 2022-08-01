@@ -15,7 +15,7 @@ std::string TimeToString(const time_t t) {
   return std::string(buffer);
 #else
   const char* r = ctime_r(&t, buff);
-  assert(res != NULL && "ctime_r failed...");
+  assert(r != NULL && "ctime_r failed...");
   return std::string(buff);
 #endif
 }

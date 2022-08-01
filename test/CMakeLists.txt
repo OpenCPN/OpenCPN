@@ -20,6 +20,10 @@ add_executable(
   test1 test1.cpp
   ${PROJ_SRC}/observable.cpp
   ${PROJ_SRC}/observable_msg.cpp
+  ${PROJ_SRC}/comm_navmsg_bus.cpp
+  ${PROJ_SRC}/comm_appmsg_bus.cpp
+  ${PROJ_SRC}/comm_appmsg.cpp
+  ${PROJ_SRC}/observable_appmsg.cpp
 )
 
 find_package(wxWidgets REQUIRED core base)
