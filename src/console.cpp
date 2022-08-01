@@ -155,7 +155,7 @@ class AppMsgSink: public wxEvtHandler {
 public:
   AppMsgSink() {
     auto a = AppMsgBus::getInstance();
-    AppMsg msg(AppMsg::Type::gnss_fix);
+    AppMsg msg(AppMsg::Type::GnssFix);
     listener = a->get_listener(EVT_FOO, this, msg.key());
 
     Bind(EVT_FOO, [&](wxCommandEvent ev) {

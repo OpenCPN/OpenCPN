@@ -32,10 +32,10 @@ std::string DegreesToString(double degrees) {
 
 std::string AppMsg::TypeToString(const AppMsg::Type t) const {
   switch (t) {
-    case AppMsg::Type::gnss_fix: return "gnss-fix"; break;
-    case AppMsg::Type::ais_data: return "ais-data"; break;
-    case AppMsg::Type::data_prio_needed: return "data-prio-needed"; break;
-    case AppMsg::Type::undef: return "??"; break;
+    case AppMsg::Type::GnssFix: return "gnss-fix"; break;
+    case AppMsg::Type::AisData: return "ais-data"; break;
+    case AppMsg::Type::DataPrioNeeded: return "data-prio-needed"; break;
+    case AppMsg::Type::Undef: return "??"; break;
     default: return "????";
   }
 }

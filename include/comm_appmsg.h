@@ -2,7 +2,7 @@
  *
  * Project:  OpenCPN
  * Purpose:  Decoded messages definitions. These messages are handled by the
- *           ApgMsgBus defined in comm_appmsg_bus.h. 
+ *           ApgMsgBus defined in comm_appmsg_bus.h.
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -86,8 +86,8 @@ public:
   virtual std::string key() const { return std::string("@!appmsg-") + name; }
 
   std::string TypeToString(const Type t) const;
-    
-  AppMsg(AppMsg::Type t) 
+
+  AppMsg(AppMsg::Type t)
     : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
 
 protected:
@@ -97,7 +97,7 @@ protected:
   AppMsg& operator=(const AppMsg&) = default;
 };
 
-enum class AppMsg::Type {gnss_fix, ais_data, data_prio_needed, undef /*, ...*/};
+enum class AppMsg::Type {GnssFix, AisData, DataPrioNeeded, CustomMsg, Undef};
 
 
 /**
@@ -118,8 +118,8 @@ public:
   const time_t time;
   Quality quality;
   int satellites_used;
-  GnssFix(Position p, time_t t, Quality q = Quality::none, int s_used = -1) 
-    : AppMsg(AppMsg::Type::gnss_fix, "gnss-fix", NavAddr()),
+  GnssFix(Position p, time_t t, Quality q = Quality::none, int s_used = -1)
+    : AppMsg(AppMsg::Type::GnssFix, "gnss-fix", NavAddr()),
     pos(p), time(t), quality(q), satellites_used(s_used) {};
 
   std::string to_string() const {
@@ -152,16 +152,18 @@ public:
 
 
 /**
- * A generic message containing a const pointer to basically anything, the 
- * pointer neds to be acsted to the proper type on the receiving side.
+ * A generic message containing a const pointer to basically anything, the
+ * pointer neds to be casted to the proper type on the receiving side.
  */
 class CustomMsg: public AppMsg {
   const std::string id;   // Must be unique.
-  std::shared_ptr<const void> payload;  
+  std::shared_ptr<const void> payload;
 
   std::string key() const override {
     return std::string("@##_appmsg-custom-") + id;
   }
+  CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
+    : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
 };
 
 #endif  // APP_MSG_H
