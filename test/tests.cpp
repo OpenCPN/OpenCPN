@@ -140,7 +140,7 @@ public:
 
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) {}
 
-  virtual void set_listener(DriverListener& listener) {} ;
+  virtual void set_listener(std::shared_ptr<const DriverListener> listener) {}
 };
 
 

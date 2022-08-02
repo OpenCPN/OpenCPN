@@ -201,7 +201,7 @@ public:
 
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
 
-  virtual void set_listener(DriverListener& listener) = 0;
+  virtual void set_listener(std::shared_ptr<const DriverListener> l) = 0;
 
   /**
    * Create a new virtual interface using a new instance of this driver.
