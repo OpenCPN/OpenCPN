@@ -7063,6 +7063,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   RefreshAllCanvas(true);
 }
 
+std::vector<ObservedVarListener> g_vlisteners;
+
 void MyFrame::InitCommListeners(void) {
 
   // Initialize the comm listeners
@@ -7072,7 +7074,19 @@ void MyFrame::InitCommListeners(void) {
   // GNSS Position Data PGN  129029
   //----------------------------------
   Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
-  listener_N2K_129029 = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
+
+  //FIXME
+  // If using this commented line, the events arrive at the lambda as expected.
+  //  Note: "ObservedVarListener listener_N2K_129029;" is defined as a class member, as usual.
+  //listener_N2K_129029 = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
+
+  //  However, if using the following two lines, the event never arrives.
+  //    g_vlisteners is a static std::vector<ObservedVarListener>
+  //  Doing a little tracing, I think there may be a problem with singleton variable structure.
+  //  Not sure...
+  const ObservedVarListener l = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
+  g_vlisteners.push_back(l);
+
   Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
         auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
@@ -7083,11 +7097,11 @@ void MyFrame::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
   listener_N2K_129026 = t->get_listener(EVT_N2K_129026, this, n2k_msg_129026.key());
-  Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
-        HandleN2K_129026( n2k_msg );
-      });
+   Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
+         auto message = get_navmsg_ptr(ev);
+         auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
+         HandleN2K_129026( n2k_msg );
+       });
 
 
 }
@@ -7142,7 +7156,7 @@ bool MyFrame::HandleN2K_129029( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
 
 bool MyFrame::HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
 
-  std::cout << "HandleN2K_129026\n" ;
+ // std::cout << "HandleN2K_129026\n" ;
 
   std::vector<unsigned char> v = n2k_msg->payload;
 
@@ -7154,7 +7168,7 @@ bool MyFrame::HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
   *c++ = v.at(5);
 
 #ifndef __WXMSW__
-  printf("%d PGN from payload: %" PRId64 "\n", n_026++, pgn);
+  //printf("%d PGN from payload: %" PRId64 "\n", n_026++, pgn);
 #endif
 
   unsigned char SID;
