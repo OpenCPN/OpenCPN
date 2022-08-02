@@ -54,7 +54,7 @@ public:
   ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
                                    const std::string& key);
 
-  void notify(std::shared_ptr<const NavMsg> message);
+  void notify(std::unique_ptr<const NavMsg> message);
 
   /* DriverListener implementation: */
   void notify(const AbstractCommDriver& driver);

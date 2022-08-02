@@ -16,6 +16,15 @@ std::string NavAddr::BusToString(NavAddr::Bus b) {
   return "????";
 }
 
+NavAddr::Bus NavAddr::StringToBus(const std::string& s) {
+  if (s == "nmea0183") return NavAddr::Bus::N0183;
+  if (s == "nmea2000") return NavAddr::Bus::N2000;
+  if (s == "SignalK") return NavAddr::Bus::Signalk;
+  if (s == "Onenet") return NavAddr::Bus::Onenet;
+  if (s == "TestBus") return NavAddr::Bus::TestBus;
+  return NavAddr::Bus::Undef;
+}
+
 static std::string CharToString(unsigned char c) {
   using namespace std;
   stringstream ss;

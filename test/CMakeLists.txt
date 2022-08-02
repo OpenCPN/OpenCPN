@@ -24,6 +24,7 @@ add_executable(
   ${PROJ_SRC}/comm_navmsg_bus.cpp
   ${PROJ_SRC}/comm_drv_file.cpp
   ${PROJ_SRC}/comm_drv_registry.cpp
+  ${PROJ_SRC}/ocpn_utils.cpp
   ${PROJ_SRC}/observable.cpp
   ${PROJ_SRC}/observable_msg.cpp
   ${PROJ_SRC}/observable_appmsg.cpp

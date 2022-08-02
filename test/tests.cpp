@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <cstdio>
@@ -14,6 +16,9 @@ wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
 
 std::string s_result;
+std::string s_result2;
+std::string s_result3;
+
 NavAddr::Bus s_bus;
 AppMsg::Type s_apptype;
 
@@ -63,8 +68,8 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto msg = std::make_shared<Nmea2000Msg>(id, payload);
-      NavMsgBus::getInstance()->notify(msg);
+      auto msg = std::make_unique<Nmea2000Msg>(id, payload);
+      NavMsgBus::getInstance()->notify(std::move(msg));
     }
   };
 
@@ -144,11 +149,31 @@ public:
 
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) {}
 
-  virtual void set_listener(std::shared_ptr<const DriverListener> listener) {}
+  virtual void set_listener(std::shared_ptr<DriverListener> listener) {}
 
   virtual void Activate() {};
 };
 
+
+class SillyListener: public DriverListener {
+public:
+  /** Handle a received message. */
+  virtual void notify(std::unique_ptr<const NavMsg> message)  {
+    s_result2 = NavAddr::BusToString(message->bus);
+
+    auto base_ptr = message.get();
+    auto n2k_msg = dynamic_cast<const Nmea2000Msg*>(base_ptr);
+    s_result3 = n2k_msg->id.to_string();
+
+    stringstream ss;
+    std::for_each(n2k_msg->payload.begin(), n2k_msg->payload.end(),
+                  [&ss](unsigned char c) {ss << static_cast<char>(c); });
+    s_result = ss.str();
+  }
+
+  /** Handle driver status change. */
+  virtual void notify(const AbstractCommDriver& driver) {}
+};
 
 
 TEST(Messaging, ObservableMsg) {
@@ -232,4 +257,23 @@ TEST(FileDriver, output) {
   ss << f.rdbuf();
   EXPECT_EQ(ss.str(),
             string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"));
+}
+
+
+TEST(FileDriver, input) {
+  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt", "");
+  std::string s("payload data");
+  auto payload = std::vector<unsigned char>(s.begin(), s.end());
+  auto id = static_cast<uint64_t>(1234);
+  Nmea2000Msg msg(id, payload);
+  remove("/tmp/output.txt");
+  driver->send_message(msg, NavAddr());
+  auto indriver = std::make_shared<FileCommDriver>("/tmp/output.txt",
+                                                   "/tmp/output.txt");
+  auto listener = make_shared<SillyListener>();
+  indriver->set_listener(listener);
+  indriver->Activate();
+  EXPECT_EQ(s_result2, string("nmea2000"));
+  EXPECT_EQ(s_result3, string("1234"));
+  EXPECT_EQ(s_result, string("payload data"));
 }

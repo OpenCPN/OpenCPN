@@ -77,12 +77,14 @@ struct N2kId {
   uint8_t get_prio() const;    /**< 3 bits */
   uint32_t get_png() const;    /**< a. k. a. PNG, 17 bits */
   uint32_t get_source() const; /**< Source address,  8 bits */
+
   std::string to_string() const {
-    std::stringstream ss;
-    ss << value;
-    return ss.str();
+    std::stringstream ss; ss << value; return ss.str();
   }
 
+  static uint64_t StringToId(const std::string& s) {
+    std::stringstream ss; uint64_t id; ss << s; ss >> id; return id;
+  }
 private:
   uint64_t value;
 };
@@ -101,6 +103,7 @@ public:
                                  string */
   NavAddr(Bus b, const std::string& i) : bus(b), iface(i){};
   NavAddr() : bus(Bus::Undef), iface("") {};
+  static Bus StringToBus(const std::string& s);
 };
 
 
@@ -164,7 +167,7 @@ public:
   std::vector<unsigned char> payload;
 };
 
-
+/** A regular Nmea0183 message. */
 class Nmea0183Msg : public NavMsg {
 public:
   Nmea0183Msg() : NavMsg(NavAddr::Bus::N0183) {}
@@ -175,7 +178,7 @@ public:
   std::string key() const { return std::string("n0183-") + id; };
 
   std::string to_string() const {
-    return NavMsg::to_string() + " " + id + " " + payload;
+    return NavMsg::to_string() + " " + id + " " + payload + "\n";
   }
 
   std::string id;      /**<  For example 'GPGGA'  */
@@ -196,6 +199,15 @@ public:
   std::string key() const { return std::string("signalK"); };
 };
 
+
+/** An invalid message, used as error return value. */
+class NullNavMsg : public NavMsg {
+public:
+  NullNavMsg() : NavMsg(NavAddr::Bus::Undef) {}
+
+  std::string key() const { return "navmsg-undef"; }
+};
+
 class AbstractCommDriver;  // forward
 
 /**
@@ -205,7 +217,7 @@ class AbstractCommDriver;  // forward
 class DriverListener {
 public:
   /** Handle a received message. */
-  virtual void notify(std::shared_ptr<const NavMsg> message) = 0;
+  virtual void notify(std::unique_ptr<const NavMsg> message) = 0;
 
   /** Handle driver status change. */
   virtual void notify(const AbstractCommDriver& driver) = 0;
@@ -225,7 +237,7 @@ public:
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
 
   /** Set the entity (normally a NavMsgBus) which receives incoming data. */
-  virtual void set_listener(std::shared_ptr<const DriverListener> l) = 0;
+  virtual void set_listener(std::shared_ptr<DriverListener> l) = 0;
 
   /** Register driver in  the driver Registry. */
   virtual void Activate() = 0;

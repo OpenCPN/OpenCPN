@@ -32,20 +32,28 @@
 #include "comm_driver.h"
 #include "comm_drv_registry.h"
 #include "comm_drv_file.h"
+#include "ocpn_utils.h"
 
-FileCommDriver::FileCommDriver(const std::string& opath,
-                               const std::string& ipath)
+using namespace std;
+
+FileCommDriver::FileCommDriver(const string& opath, const string& ipath)
     : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
       output_path(opath),
       input_path(ipath) {
-  std::cerr << "CTOR!!\n" << std::flush;
-  std::cerr << "CTOR:done\n" << std::flush;
 }
 
+FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
+                               std::shared_ptr<DriverListener> l)
+    : FileCommDriver(opath, ipath) {
+  listener = l;
+}
+
+
+
 void FileCommDriver::send_message(const NavMsg& msg, const NavAddr& addr) {
-  std::cerr << "Opening output file\n" << std::flush;
-  std::ofstream f;
-  f.open(output_path, std::ios::app);
+  cerr << "Opening output file\n" << flush;
+  ofstream f;
+  f.open(output_path, ios::app);
   if (!f.is_open()) {
     wxLogWarning("Cannot open file %s for writing", output_path.c_str());
     return;
@@ -54,7 +62,57 @@ void FileCommDriver::send_message(const NavMsg& msg, const NavAddr& addr) {
   f.close();
 }
 
+static vector<unsigned char> HexToChar(string hex) {
+  if (hex.size() % 2 == 1) hex = string("0") + hex;
+  vector<unsigned char> chars;
+  for (int i = 0; i <hex.size(); i += 2) {
+     istringstream ss(hex.substr(i, 2));
+     unsigned ival;
+     ss >> std::hex >> ival;
+     chars.push_back(static_cast<unsigned char>(ival));
+  }
+  return chars;
+}
+
+static unique_ptr<const NavMsg> LineToMessage(const string& line) {
+  auto words = ocpn::split(line.c_str(), " ");
+  NavAddr::Bus bus = NavAddr::StringToBus(words[0]);
+  switch (bus) {
+    case NavAddr::Bus::N2000:
+      if (true) {    // Create a separate scope.
+        N2kId id(N2kId::StringToId(words[2]));
+        vector<unsigned char> payload(HexToChar(words[3]));
+        return make_unique<Nmea2000Msg>(id, payload);
+      }
+      break;
+    case NavAddr::Bus::N0183:
+      if (true) {    // Create a separate scope.
+        const string id(words[2]);
+        return make_unique<Nmea0183Msg>(id, words[3]);
+      }
+      break;
+    default:
+      assert(false && "Not implemented message parsing");
+      return make_unique<NullNavMsg>();
+      break;
+  }
+  return make_unique<NullNavMsg>();   // for the compiler.
+}
+
 void FileCommDriver::Activate() {
   CommDriverRegistry::getInstance()->Activate(shared_from_this());
-  // TODO: Read input data.
+  if (!listener) {
+    wxLogWarning("No listener defined, ignoring input");
+    cerr << "No listener defined, ignoring input\n";
+  }
+  if (input_path != "") {
+    ifstream f(input_path);
+    string line;
+    while (getline(f, line)) {
+      auto msg = LineToMessage(line);
+      if (msg->bus != NavAddr::Bus::Undef && listener)
+        listener->notify(move(msg));
+    }
+  }
 }
+

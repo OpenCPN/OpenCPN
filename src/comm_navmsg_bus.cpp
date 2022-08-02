@@ -10,9 +10,10 @@ ObservedVarListener NavMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
   return om.get_listener(eh, et);
 }
 
-void NavMsgBus::notify(std::shared_ptr<const NavMsg> msg) {
-  ObservableMsg om(msg->key());
-  om.notify(msg);
+void NavMsgBus::notify(std::unique_ptr<const NavMsg> msg) {
+  std::shared_ptr<const NavMsg> shared_msg = std::move(msg);
+  ObservableMsg om(shared_msg->key());
+  om.notify(shared_msg);
 }
 
 NavMsgBus* NavMsgBus::getInstance() {

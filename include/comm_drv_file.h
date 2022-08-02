@@ -42,14 +42,18 @@ public:
   /** Ctor, the argument are paths to files for input/output.  */
   FileCommDriver(const std::string& opath, const std::string& ipath);
 
+  /** CTOR with a listener for initial data. */
+  FileCommDriver(const std::string& opath, const std::string& ipath,
+                 std::shared_ptr<DriverListener> l);
+
   void send_message(const NavMsg& msg, const NavAddr& addr);
 
   void Activate();
 
-  void set_listener(std::shared_ptr<const DriverListener> l) { listener = l; }
+  void set_listener(std::shared_ptr<DriverListener> l) { listener = l; }
 
 private:
-  std::shared_ptr<const DriverListener> listener;
+  std::shared_ptr<DriverListener> listener;
   std::string output_path;
   std::string input_path;
 };
