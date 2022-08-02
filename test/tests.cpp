@@ -1,10 +1,14 @@
 #include <gtest/gtest.h>
+#include <iostream>
+#include <fstream>
+#include <cstdio>
 
 #include "wx/event.h"
 #include "wx/app.h"
 
 #include "comm_appmsg_bus.h"
 #include "comm_drv_registry.h"
+#include "comm_drv_file.h"
 
 wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
@@ -141,6 +145,8 @@ public:
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) {}
 
   virtual void set_listener(std::shared_ptr<const DriverListener> listener) {}
+
+  virtual void Activate() {};
 };
 
 
@@ -203,4 +209,27 @@ TEST(Navmsg2000, to_string) {
   auto msg = std::make_shared<Nmea2000Msg>(id, payload);
   EXPECT_EQ(string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"),
             msg->to_string());
+}
+
+TEST(FileDriver, Registration) {
+  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt", "");
+  driver->Activate();
+  auto registry = CommDriverRegistry::getInstance();
+  auto drivers = registry->get_drivers();
+  EXPECT_EQ(registry->get_drivers().size(), 1);
+}
+
+TEST(FileDriver, output) {
+  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt", "");
+  std::string s("payload data");
+  auto payload = std::vector<unsigned char>(s.begin(), s.end());
+  auto id = static_cast<uint64_t>(1234);
+  Nmea2000Msg msg(id, payload);
+  remove("/tmp/output.txt");
+  driver->send_message(msg, NavAddr());
+  std::ifstream f("/tmp/output.txt");
+  stringstream ss;
+  ss << f.rdbuf();
+  EXPECT_EQ(ss.str(),
+            string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"));
 }
