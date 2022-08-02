@@ -469,9 +469,6 @@ void ConnectionParamsPanel::CreateControls(void) {
       case PROTO_NMEA0183:
         proto = "NMEA 0183";
         break;
-      case PROTO_SEATALK:
-        proto = "SEATALK";
-        break;
       case PROTO_NMEA2000:
         proto = "NMEA 2000";
         break;
@@ -900,9 +897,6 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
     switch (m_pConnectionParams->Protocol) {
       case PROTO_NMEA0183:
         proto = _T("NMEA 0183");
-        break;
-      case PROTO_SEATALK:
-        proto = _T("SEATALK");
         break;
       case PROTO_NMEA2000:
         proto = _T("NMEA 2000");

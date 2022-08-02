@@ -58,8 +58,7 @@ typedef enum { FILTER_INPUT = 0, FILTER_OUTPUT = 1 } FilterDirection;
 
 typedef enum {
   PROTO_NMEA0183 = 0,
-  PROTO_SEATALK = 1,
-  PROTO_NMEA2000 = 2
+  PROTO_NMEA2000 = 1
 } DataProtocol;
 
 #define CONN_ENABLE_ID 47621

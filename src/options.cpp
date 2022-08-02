@@ -8239,6 +8239,7 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->NetProtocol = PROTO_UNDEFINED;
 
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
+  pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection();
   pConnectionParams->Priority = wxAtoi(m_choicePriority->GetStringSelection());
   pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
   pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
@@ -8273,8 +8274,6 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(
   if ((pConnectionParams->Type != INTERNAL_GPS) &&
       (pConnectionParams->Type != INTERNAL_BT))
     CheckDeviceAccess(pConnectionParams->Port);
-
-  pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;
   pConnectionParams->b_IsSetup = FALSE;
