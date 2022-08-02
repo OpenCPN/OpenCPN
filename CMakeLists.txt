@@ -2893,6 +2893,7 @@ if (NOT QT_ANDROID)
     src/BasePlatform.cpp
     src/catalog_handler.cpp
     src/catalog_parser.cpp
+    src/comm_navmsg.cpp
     src/comm_navmsg_bus.cpp
     src/comm_appmsg.cpp
     src/comm_appmsg_bus.cpp

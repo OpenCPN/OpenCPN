@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Communication driver layer. Defines the generic driver model, 
+ * Purpose:  Communication driver layer. Defines the generic driver model,
  *           messages sent to/from drivers and addresses. The driver layer
  *           is the lowest of the three layers drivers, raw messages (navmsg)
  *           and decoded application messages(appmsg).
@@ -53,7 +53,11 @@ enum class CommStatus { Ok, NotImplemented, NotSupported, NameInUse };
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kName {
-  N2kName(uint64_t name);
+  uint64_t value;
+  N2kName(uint64_t name) : value(name) {}
+  std::string to_string() const {
+    std::stringstream ss; ss << value; return ss.str();
+  }
   uint32_t GetNumber() const;         /**< 21 bits */
   uint16_t GetManufacturer() const;   /**< 9 bits */
   uint8_t GetDevInstanceLow() const;  /**< 3 bits */
@@ -73,7 +77,7 @@ struct N2kId {
   uint8_t get_prio() const;    /**< 3 bits */
   uint32_t get_png() const;    /**< a. k. a. PNG, 17 bits */
   uint32_t get_source() const; /**< Source address,  8 bits */
-  std::string ToString() const {
+  std::string to_string() const {
     std::stringstream ss;
     ss << value;
     return ss.str();
@@ -87,6 +91,10 @@ private:
 class NavAddr {
 public:
   enum class Bus {N0183, Signalk, N2000, Onenet, TestBus, Undef};
+  static std::string BusToString(Bus b);
+  std::string to_string() const {
+     return NavAddr::BusToString(bus) + " " + iface;
+  }
 
   Bus bus;
   const std::string iface;  /**< Physical device for 0183, else a unique
@@ -102,11 +110,13 @@ public:
 
   NavAddr0183(const std::string iface, const DataStream* stream)
       : NavAddr(NavAddr::Bus::N0183, iface), nmea0183(stream){};
+  std::string to_string() const { return nmea0183->GetPort().ToStdString(); }
 };
 
 class NavAddr2000 : public NavAddr {
 public:
   const N2kName name;
+  std::string to_string() const { return name.to_string(); }
 
   NavAddr2000(const std::string& iface, const N2kName& _name)
       : NavAddr(NavAddr::Bus::N2000, iface), name(_name){};
@@ -125,6 +135,9 @@ public:
   virtual std::string key() const = 0;
 
   NavMsg() = delete;
+  virtual std::string to_string() const {
+    return NavAddr::BusToString(bus) + " " + key();
+  }
 
 protected:
   NavMsg(const NavAddr::Bus& _bus) : bus(_bus){};
@@ -140,7 +153,12 @@ public:
   Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
       : NavMsg(NavAddr::Bus::N2000), id(_id), payload(_payload) {}
 
-  std::string key() const { return std::string("n2000-") + id.ToString(); };
+  std::string key() const {
+    return std::string("n2000-") + id.to_string();
+  };
+
+  /** Print "bus key id payload" */
+  std::string to_string() const;
 
   N2kId id;
   std::vector<unsigned char> payload;
@@ -155,6 +173,10 @@ public:
       : NavMsg(NavAddr::Bus::N0183), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n0183-") + id; };
+
+  std::string to_string() const {
+    return NavMsg::to_string() + " " + id + " " + payload;
+  }
 
   std::string id;      /**<  For example 'GPGGA'  */
   std::string payload; /**< Complete NMEA0183 sentence, including prefix */
@@ -191,7 +213,8 @@ public:
 
 
 /** Common interface for all drivers.  */
-class AbstractCommDriver {
+class AbstractCommDriver
+  : public std::enable_shared_from_this<const AbstractCommDriver> {
 public:
   const NavAddr::Bus bus;
   const std::string iface; /**< Physical device for 0183, else a

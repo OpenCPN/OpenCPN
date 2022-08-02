@@ -20,6 +20,7 @@ add_executable(
   tests tests.cpp
   ${PROJ_SRC}/comm_appmsg.cpp
   ${PROJ_SRC}/comm_appmsg_bus.cpp
+  ${PROJ_SRC}/comm_navmsg.cpp
   ${PROJ_SRC}/comm_navmsg_bus.cpp
   ${PROJ_SRC}/comm_drv_registry.cpp
   ${PROJ_SRC}/observable.cpp
