@@ -54,7 +54,8 @@ public:
 
   virtual ~commDriverN2KSerial();
 
-  void set_listener(DriverListener& listener);
+  void set_listener(std::shared_ptr<const DriverListener> l);
+  void Activate();
 
   bool Open();
 

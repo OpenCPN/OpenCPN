@@ -964,6 +964,7 @@ set(
   src/comm_drv_n0183_serial.cpp
   src/comm_drv_registry.cpp
   src/comm_navmsg_bus.cpp
+  src/comm_navmsg.cpp
   src/comm_util.cpp
   src/chart1.cpp
   src/ChartDataInputStream.cpp

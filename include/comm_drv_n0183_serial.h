@@ -45,6 +45,8 @@ public:
 
   virtual ~commDriverN0183Serial();
 
+  void Activate();
+
   bool Open();
 
   int m_Thread_run_flag;

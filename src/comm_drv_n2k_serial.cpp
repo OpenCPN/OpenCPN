@@ -29,6 +29,7 @@
 
 #include "comm_drv_n2K_serial.h"
 #include "comm_navmsg_bus.h"
+#include "comm_drv_registry.h"
 
 const wxEventType wxEVT_COMMDRIVER_N2K_SERIAL = wxNewEventType();
 
@@ -173,7 +174,13 @@ bool commDriverN2KSerial::Open() {
 
   return true;
 }
-void commDriverN2KSerial::set_listener(DriverListener& listener) {}
+
+void commDriverN2KSerial::set_listener(std::shared_ptr<const DriverListener> l) {}
+
+void commDriverN2KSerial::Activate() {
+  CommDriverRegistry::getInstance()->Activate(shared_from_this());
+  // TODO: Read input data.
+}
 
 void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
     commDriverN2KSerialEvent &event) {
