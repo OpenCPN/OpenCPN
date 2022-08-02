@@ -169,7 +169,7 @@ TEST(Messaging, AppMsg) {
   EXPECT_EQ(s_apptype, AppMsg::Type::GnssFix);
 };
 
-TEST(Drivers, registry1) {
+TEST(Drivers, Registry) {
   auto driver = std::make_shared<const SillyDriver>();
   auto registry = CommDriverRegistry::getInstance();
   registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
@@ -194,4 +194,13 @@ TEST(Drivers, registry1) {
   /* Remove it again, should be ignored. */
   registry->Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
   EXPECT_EQ(registry->get_drivers().size(), 1);
+}
+
+TEST(Navmsg2000, to_string) {
+  std::string s("payload data");
+  auto payload = std::vector<unsigned char>(s.begin(), s.end());
+  auto id = static_cast<uint64_t>(1234);
+  auto msg = std::make_shared<Nmea2000Msg>(id, payload);
+  EXPECT_EQ(string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"),
+            msg->to_string());
 }
