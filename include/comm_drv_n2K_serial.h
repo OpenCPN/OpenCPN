@@ -54,8 +54,10 @@ public:
 
   virtual ~commDriverN2KSerial();
 
-  void set_listener(std::shared_ptr<const DriverListener> l);
+  /** Register driver and possibly do other post-ctor steps. */
   void Activate();
+
+  void set_listener(std::shared_ptr<DriverListener> l);
 
   bool Open();
 

@@ -175,7 +175,7 @@ bool commDriverN2KSerial::Open() {
   return true;
 }
 
-void commDriverN2KSerial::set_listener(std::shared_ptr<const DriverListener> l) {}
+void commDriverN2KSerial::set_listener(std::shared_ptr<DriverListener> l) {}
 
 void commDriverN2KSerial::Activate() {
   CommDriverRegistry::getInstance()->Activate(shared_from_this());
@@ -199,9 +199,9 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
   *c++ = payload->at(5);
   // memcpy(&v, &data[3], 1);
 
-  auto msg = std::make_shared<const Nmea2000Msg>(pgn, *payload);
+  auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload);
   auto t = NavMsgBus::getInstance();
-  t->notify(msg);
+  t->notify(std::move(msg));
 
 #if 0  // Debug output
   size_t packetLength = (size_t)data->at(1);

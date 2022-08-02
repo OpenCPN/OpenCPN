@@ -822,6 +822,7 @@ set(
   include/comm_drv_n2k.h
   include/comm_drv_n2K_serial.h
   include/comm_drv_registry.h
+  include/comm_drv_file.h
   include/comm_navmsg_bus.h
   include/comm_util.h
   include/compass.h
@@ -962,7 +963,9 @@ set(
   src/comm_drv_n0183.cpp
   src/comm_drv_n0183_net.cpp
   src/comm_drv_n0183_serial.cpp
+  src/comm_drv_file.cpp
   src/comm_drv_registry.cpp
+  src/comm_navmsg.cpp
   src/comm_navmsg_bus.cpp
   src/comm_navmsg.cpp
   src/comm_util.cpp
@@ -2895,10 +2898,12 @@ if (NOT QT_ANDROID)
     src/catalog_handler.cpp
     src/catalog_parser.cpp
     src/comm_navmsg.cpp
+    src/comm_navmsg.cpp
     src/comm_navmsg_bus.cpp
     src/comm_appmsg.cpp
     src/comm_appmsg_bus.cpp
     src/comm_drv_registry.cpp
+    src/comm_drv_file.cpp
     src/console.cpp
     src/Downloader.cpp
     src/logger.cpp

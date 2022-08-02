@@ -257,8 +257,8 @@ void commDriverN0183Serial::handle_N0183_MSG(
     identifier = full_sentence.substr(1,5);
 
     auto msg =
-      std::make_shared<const Nmea0183Msg>(identifier, full_sentence);
-    NavMsgBus::getInstance()->notify(msg);
+      std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
+    NavMsgBus::getInstance()->notify(std::move(msg));
   }
 }
 
