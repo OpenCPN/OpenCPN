@@ -224,7 +224,11 @@ public:
 
   virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
 
+  /** Set the entity (normally a NavMsgBus) which receives incoming data. */
   virtual void set_listener(std::shared_ptr<const DriverListener> l) = 0;
+
+  /** Register driver in  the driver Registry. */
+  virtual void Activate() = 0;
 
   /**
    * Create a new virtual interface using a new instance of this driver.
