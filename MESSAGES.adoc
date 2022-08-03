@@ -1,0 +1,91 @@
+# Handling Communications Messages in Plugins
+
+Since TBD, opencpn has a new system for handling messages in plugins. The new
+model is based on that a plugin subscribes to the messages it is interested
+in rather then the old model where plugins get all messages. Handling of
+messages consists of six steps:
+
+1. Define the type of message to work with
+2. Declare a listening object.
+3. Declare an event which will carry the message.
+4. Declare a method which handles the message.
+5. Subscribe to this message i. e., start listening to it
+6. Handle the messages as they arrives.
+
+
+All in all, an example could be like this:
+
+First, declare a listener on the class level, here with the shipdriver
+plugin _ShipDriver_pi.h_ header as an example:
+
+        class ShipDriver_pi : public opencpn_plugin_118 {
+        public:
+            ShipDriver_pi(void* ppimgr);
+            ~ShipDriver_pi(void);
+            ...
+        private:
+     ②      std::unique_ptr<ObservedVarListener> listener;
+            ...
+
+Then declare a method which handles the message, something like this:
+
+     ④ void HandleGPGA(wxCommandEvent ev) {
+     ①      NMEA0183 id("GPGGA");
+            std::string payload = GetN0183Payload(id, ev)
+            ...
+
+Then, in the constructor set up the listening:
+
+         ShipDriver_pi::ShipDriver_pi(void* ppimgr)
+         : opencpn_plugin_116(ppimgr)
+         {
+         ...
+     ①   NMEA0183Id id("GPGGA");
+     ③   wxDEFINE_EVENT(wxDEFINE_EVENT(EVT_SHIPDRIVER, wxCommandEvent);
+     ⑤   listener = std::move(GetListener(id, EVT_SHIPDRIVER, this);
+     ⑥   Bind(EVT_SHIPDRIVER [](wxCommandEvent ev) { HandleGPGA(ev); });
+
+Notes
+
+①:: This is the type of message we are listening to. There are similar types
+    for NMEA2000 and SignalK.
+
+②:: Boiler-plate code, makes sure the listener is destroyed together with
+    the plugin. It is important that the listener is declared in the class,
+    a variable defined in a method will not work.
+
+③:: This the event generated for our message which we will listen to. It should
+    have an unique name, including the plugin name is a good habit. However
+    the name, here _EVT_SHIPDRIVER_, could be anything.
+
+④:: The `GetN0183Payload()` method  gets the payload of the message into the
+    `payload` string. From here it can be processed as required.
+
+⑤:: This activates the listener. From this points system sends us an
+    _EVT_SHIPDRIVER_ for each received GPGGA message. `std::move()` is
+    boilerplate code required to assign a `unique_ptr`.
+
+⑥:: This is the final piece in the puzzle. It defines what should happen when
+    the _EVT_SHIPDRIVER_ arrives.  From this point all incoming GPGGA
+    messages will land in the `HandleGPGGA()` method and be processed.
+
+
+## Epilog: Using the lambda
+
+The last step above was 
+`Bind(EVT_SHIPDRIVER [](wxCommandEvent ev) { HandleGPGA(ev); })`. The part
+between the curly braces is actually a C++ lambda expression. There is no
+need to dive into this to get something running, but it offers far larger 
+possibilities than to just call a function. Actually, if written like 
+`Bind(EVT_SHIPDRIVER [&](wxCommandEvent ev) { ... })` any code could
+be written between the braces.
+
+The interesting part here is that the `[&]` prefix makes this code "see"
+anything defined in the plugin. This is a convenient way to access plugin
+variables in the handler, something which otherwise is a problem. 
+
+To get the feeling one need to experiment. But then again, C++ lambdas
+is a complex step which is not necessary to get something running.
+
+
+
