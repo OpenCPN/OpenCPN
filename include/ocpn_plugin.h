@@ -1534,5 +1534,45 @@ extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxStrin
 extern DECL_EXP wxString GetActiveWaypointGUID(void);	// if no active waypoint, returns wxEmptyString
 extern DECL_EXP wxString GetActiveRouteGUID(void);	// if no active route, returns wxEmptyString
 
+// API 1.18  listen-notify
+
+
+/* Listening to messages. */
+class ObservedVarListener;
+
+struct NMEA2000Id {
+  const uint64_t id;
+  NMEA2000Id(int value) : id(static_cast<uint64_t>(value)) {};
+};
+
+std::unique_ptr<ObservedVarListener> GetListener(NMEA2000Id id,
+                                                 wxCommandEvent ev,
+                                                 wxEvtHandler handler);
+
+struct NMEA0183Id {
+  const std::string id;
+  NMEA0183Id(const std::string& s) : id(s) {};
+};
+
+std::unique_ptr<ObservedVarListener> GetListener(NMEA0183Id id,
+                                                 wxCommandEvent ev,
+                                                 wxEvtHandler handler);
+
+struct SignalkId {
+  const std::string id;
+  SignalkId(const std::string& s) : id(s) {};
+};
+
+std::unique_ptr<ObservedVarListener> GetListener(SignalkId id,
+                                                 wxCommandEvent ev,
+                                                 wxEvtHandler handler);
+
+/** Return payload in a recieved n2000 message of type id in ev. */
+std::vector<uint8_t> GetN200Payload(NMEA2000Id id, wxCommandEvent ev); 
+
+/** Return payload in a recieved n0183 message of type id in ev. */
+std::string GetN0183Payload(NMEA0183Id id, wxCommandEvent ev);
+
+
 
 #endif  //_PLUGIN_H_
