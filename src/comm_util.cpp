@@ -26,6 +26,7 @@
 #include "comm_util.h"
 #include "comm_drv_n2K_serial.h"
 #include "comm_drv_n0183_serial.h"
+#include "comm_drv_n0183_net.h"
 
 AbstractCommDriver *MakeCommDriver(const ConnectionParams *params) {
   wxLogMessage(
@@ -39,14 +40,14 @@ AbstractCommDriver *MakeCommDriver(const ConnectionParams *params) {
         default:
           return new commDriverN0183Serial(params);
       }
-#if 0
     case NETWORK:
       switch (params->NetProtocol) {
-        case SIGNALK:
-          return new SignalKDataStream(input_consumer, params);
+//         case SIGNALK:
+//           return new SignalKDataStream(input_consumer, params);
         default:
-          return new NetworkDataStream(input_consumer, params);
+          return new commDriverN0183Net(params);
       }
+#if 0
     case INTERNAL_GPS:
       return new InternalGPSDataStream(input_consumer, params);
     case INTERNAL_BT:

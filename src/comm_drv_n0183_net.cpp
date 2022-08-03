@@ -113,7 +113,25 @@ END_EVENT_TABLE()
 commDriverN0183Net::commDriverN0183Net() : commDriverN0183() {}
 
 commDriverN0183Net::commDriverN0183Net(const ConnectionParams *params)
-    : m_params(*params) {
+    : m_params(*params),
+      m_net_port(wxString::Format(wxT("%i"), params->NetworkPort)),
+      m_net_protocol(params->NetProtocol),
+      m_sock(NULL),
+      m_tsock(NULL),
+      m_socket_server(NULL),
+      m_is_multicast(false),
+      m_txenter(0),
+      m_portstring(params->GetDSPort()),
+      m_io_select(params->IOSelect),
+      m_connection_type(params->Type),
+      m_bok(false)
+{
+  m_addr.Hostname(params->NetworkAddress);
+  m_addr.Service(params->NetworkPort);
+
+  m_socket_timer.SetOwner(this, TIMER_SOCKET);
+  m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
+
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Connect(wxEVT_COMMDRIVER_N0183_NET,
@@ -124,22 +142,6 @@ commDriverN0183Net::commDriverN0183Net(const ConnectionParams *params)
 
 commDriverN0183Net::~commDriverN0183Net() {}
 
-#if 0
-bool commDriverN0183Net::Open() {
-//   wxString comx;
-//   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
-//
-//   comx =
-//       comx.BeforeFirst(' ');  // strip off any description provided by Windows
-//
-//   //    Kick off the  RX thread
-//   SetSecondaryThread(new commDriverN0183SerialThread(this, comx, m_BaudRate));
-//   SetThreadRunFlag(1);
-//   GetSecondaryThread()->Run();
-
-  return true;
-}
-#endif
 
 void commDriverN0183Net::handle_N0183_MSG(
     commDriverN0183NetEvent &event) {
@@ -397,17 +399,17 @@ void commDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           if (nmea_start != wxString::npos) {
             nmea_line = nmea_line.substr(nmea_start);
             nmea_line += "\r\n";  // Add cr/lf, possibly superfluous
-            if (/*GetConsumer() && */ChecksumOK(nmea_line)) {
+            if (ChecksumOK(nmea_line)) {
               commDriverN0183NetEvent Nevent(wxEVT_COMMDRIVER_N0183_NET, 0);
-//               if (nmea_line.size()) {
-//                 // wxLogMessage(wxString::Format(_T("NetworkDataStream send to:
-//                 // %p"),
-//                 //                              GetConsumer()));
-//                 Nevent.SetNMEAString(nmea_line);
-//                 Nevent.SetStream(this);
-//
-//                 GetConsumer()->AddPendingEvent(Nevent);
-//               }
+              if (nmea_line.size()) {
+                //    Copy the message into a vector for tranmittal upstream
+                auto buffer = std::make_shared<std::vector<unsigned char>>();
+                std::vector<unsigned char> *vec = buffer.get();
+                std::copy(nmea_line.begin(), nmea_line.end(), std::back_inserter(*vec));
+
+                Nevent.SetPayload(buffer);
+                AddPendingEvent(Nevent);
+              }
             }
           }
         } else

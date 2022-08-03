@@ -134,6 +134,8 @@ private:
   dsPortType GetPortType() const { return m_io_select; }
   wxString GetPort() const { return m_portstring; }
 
+  ConnectionType GetConnectionType() const { return m_connection_type; }
+
   bool ChecksumOK(const std::string &sentence);
   void SetOk(bool ok) { m_bok = ok; };
 
@@ -153,6 +155,7 @@ private:
   wxDateTime m_connect_time;
   bool m_brx_connect_event;
   bool m_bchecksumCheck;
+  ConnectionType m_connection_type;
 
   wxTimer m_socket_timer;
   wxTimer m_socketread_watchdog_timer;
