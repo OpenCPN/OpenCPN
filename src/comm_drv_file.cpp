@@ -104,6 +104,7 @@ void FileCommDriver::Activate() {
   if (!listener) {
     wxLogWarning("No listener defined, ignoring input");
     cerr << "No listener defined, ignoring input\n";
+    return;
   }
   if (input_path != "") {
     ifstream f(input_path);
