@@ -65,7 +65,7 @@ void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
 static vector<unsigned char> HexToChar(string hex) {
   if (hex.size() % 2 == 1) hex = string("0") + hex;
   vector<unsigned char> chars;
-  for (int i = 0; i <hex.size(); i += 2) {
+  for (size_t i = 0; i <hex.size(); i += 2) {
      istringstream ss(hex.substr(i, 2));
      unsigned ival;
      ss >> std::hex >> ival;
