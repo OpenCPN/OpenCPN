@@ -98,6 +98,44 @@ public:
   }
 };
 
+class ListenerCliApp: public wxAppConsole {
+public:
+  class Source {
+  public:
+    Source() {
+      std::string s("payload data");
+      auto payload = std::vector<unsigned char>(s.begin(), s.end());
+      auto id = static_cast<uint64_t>(1234);
+      auto msg = std::make_unique<Nmea2000Msg>(id, payload);
+      NavMsgBus::getInstance()->notify(std::move(msg));
+    }
+  };
+
+  class Sink: public wxEvtHandler {
+  public:
+    Sink() {
+      auto t = NavMsgBus::getInstance();
+      Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
+      listeners.push_back(t->get_listener(EVT_FOO, this, n2k_msg.key()));
+      Bind(EVT_FOO, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
+        std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
+        s_result = s;
+        s_bus = n2k_msg->bus;
+      });
+    }
+    std::vector<ObservedVarListener> listeners;
+  };
+
+  ListenerCliApp() : wxAppConsole() {
+    Sink sink;
+    Source source;
+    ProcessPendingEvents();
+  }
+};
+
+
 class AppmsgCliApp: public wxAppConsole {
 public:
 
@@ -277,3 +315,11 @@ TEST(FileDriver, input) {
   EXPECT_EQ(s_result3, string("1234"));
   EXPECT_EQ(s_result, string("payload data"));
 }
+
+TEST(Listeners, vector) {
+  s_result = "";
+  s_bus = NavAddr::Bus::Undef;
+  ListenerCliApp app;
+  EXPECT_EQ(s_result, string("payload data"));
+  EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
+};
