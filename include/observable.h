@@ -110,14 +110,13 @@ public:
   ObservedVarListener(ObservedVar* v, wxEvtHandler* w, wxEventType ev)
     : key(v->key), listener(w), ev_type(ev) { listen(); }
 
+  ObservedVarListener(const ObservedVarListener& other) { copy(other); }
+
   ~ObservedVarListener() { unlisten(); };
 
   void operator=(const ObservedVarListener& other) {
     unlisten();
-    listener = other.listener;
-    key = other.key;
-    ev_type = other.ev_type;
-    listen();
+    copy(other);
   }
 
 private:
@@ -135,6 +134,13 @@ private:
       ObservedVar var(key);
       var.unlisten(listener, ev_type);
     }
+  }
+
+  void copy(const ObservedVarListener& other) {
+    listener = other.listener;
+    key = other.key;
+    ev_type = other.ev_type;
+    listen();
   }
 
   std::string key;
