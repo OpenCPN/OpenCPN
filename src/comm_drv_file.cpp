@@ -50,7 +50,7 @@ FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
 
 
 
-void FileCommDriver::send_message(const NavMsg& msg, const NavAddr& addr) {
+void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
   cerr << "Opening output file\n" << flush;
   ofstream f;
   f.open(output_path, ios::app);

@@ -44,7 +44,7 @@
 /** The raw message layer, a singleton. */
 class NavMsgBus : public DriverListener {
 public:
-  void send_message(const NavMsg& message, const NavAddr& address);
+  void SendMessage(const NavMsg& message, const NavAddr& address);
 
   /**
    * Return a listening object which generates wxEventType events sent to

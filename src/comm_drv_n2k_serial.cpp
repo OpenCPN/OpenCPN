@@ -175,7 +175,7 @@ bool commDriverN2KSerial::Open() {
   return true;
 }
 
-void commDriverN2KSerial::set_listener(std::shared_ptr<DriverListener> l) {}
+void commDriverN2KSerial::SetListener(std::shared_ptr<DriverListener> l) {}
 
 void commDriverN2KSerial::Activate() {
   CommDriverRegistry::getInstance()->Activate(shared_from_this());

@@ -32,8 +32,8 @@ public:
   commDriverN0183();
   virtual ~commDriverN0183();
 
-  virtual void send_message(const NavMsg& msg, const NavAddr& addr);
-  void set_listener(std::shared_ptr<DriverListener> l);
+  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr);
+  void SetListener(std::shared_ptr<DriverListener> l);
 
   void Activate();
 

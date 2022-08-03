@@ -48,7 +48,7 @@ public:
   /** Register driver and possibly do other post-ctor steps. */
   void Activate();
 
-  virtual void set_listener(std::shared_ptr<DriverListener> l) {}
+  virtual void SetListener(std::shared_ptr<DriverListener> l) {}
 
   bool Open();
 

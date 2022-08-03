@@ -46,11 +46,11 @@ public:
   FileCommDriver(const std::string& opath, const std::string& ipath,
                  std::shared_ptr<DriverListener> l);
 
-  void send_message(const NavMsg& msg, const NavAddr& addr);
+  void SendMessage(const NavMsg& msg, const NavAddr& addr);
 
   void Activate();
 
-  void set_listener(std::shared_ptr<DriverListener> l) { listener = l; }
+  void SetListener(std::shared_ptr<DriverListener> l) { listener = l; }
 
 private:
   std::shared_ptr<DriverListener> listener;

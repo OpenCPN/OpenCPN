@@ -234,10 +234,10 @@ public:
 
   AbstractCommDriver() : bus(NavAddr::Bus::Undef){};
 
-  virtual void send_message(const NavMsg& msg, const NavAddr& addr) = 0;
+  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) = 0;
 
   /** Set the entity (normally a NavMsgBus) which receives incoming data. */
-  virtual void set_listener(std::shared_ptr<DriverListener> l) = 0;
+  virtual void SetListener(std::shared_ptr<DriverListener> l) = 0;
 
   /** Register driver in  the driver Registry. */
   virtual void Activate() = 0;

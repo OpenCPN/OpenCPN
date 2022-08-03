@@ -32,8 +32,8 @@ commDriverN0183::commDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 
 commDriverN0183::~commDriverN0183() {}
 
-void commDriverN0183::send_message(const NavMsg& msg, const NavAddr& addr) {}
+void commDriverN0183::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
-void commDriverN0183::set_listener(std::shared_ptr<DriverListener> l) {}
+void commDriverN0183::SetListener(std::shared_ptr<DriverListener> l) {}
 
 void commDriverN0183::Activate() {}

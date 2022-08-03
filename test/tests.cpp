@@ -185,9 +185,9 @@ public:
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
   SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
 
-  virtual void send_message(const NavMsg& msg, const NavAddr& addr) {}
+  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
-  virtual void set_listener(std::shared_ptr<DriverListener> listener) {}
+  virtual void SetListener(std::shared_ptr<DriverListener> listener) {}
 
   virtual void Activate() {};
 };
@@ -289,7 +289,7 @@ TEST(FileDriver, output) {
   auto id = static_cast<uint64_t>(1234);
   Nmea2000Msg msg(id, payload);
   remove("/tmp/output.txt");
-  driver->send_message(msg, NavAddr());
+  driver->SendMessage(msg, NavAddr());
   std::ifstream f("/tmp/output.txt");
   stringstream ss;
   ss << f.rdbuf();
@@ -305,11 +305,11 @@ TEST(FileDriver, input) {
   auto id = static_cast<uint64_t>(1234);
   Nmea2000Msg msg(id, payload);
   remove("/tmp/output.txt");
-  driver->send_message(msg, NavAddr());
+  driver->SendMessage(msg, NavAddr());
   auto indriver = std::make_shared<FileCommDriver>("/tmp/output.txt",
                                                    "/tmp/output.txt");
   auto listener = make_shared<SillyListener>();
-  indriver->set_listener(listener);
+  indriver->SetListener(listener);
   indriver->Activate();
   EXPECT_EQ(s_result2, string("nmea2000"));
   EXPECT_EQ(s_result3, string("1234"));
