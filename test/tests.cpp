@@ -122,7 +122,6 @@ public:
         auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
-        s_bus = n2k_msg->bus;
       });
     }
     std::vector<ObservedVarListener> listeners;
@@ -318,7 +317,6 @@ TEST(FileDriver, input) {
 
 TEST(Listeners, vector) {
   s_result = "";
-  s_bus = NavAddr::Bus::Undef;
   ListenerCliApp app;
   EXPECT_EQ(s_result, string("payload data"));
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
