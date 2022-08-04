@@ -48,11 +48,7 @@ FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
 
 
 FileCommDriver::FileCommDriver(const string& opath)
-    : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
-      output_path(opath),
-      input_path(""),
-      listener(kVoidDriverListener) {
-}
+    : FileCommDriver(opath, "", kVoidDriverListener) {}
 
 
 void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
