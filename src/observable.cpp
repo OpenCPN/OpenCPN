@@ -47,13 +47,13 @@ std::istream& operator>>(std::istream& input, wxString& ws) {
   return input;
 }
 
-/* SingletonVar implementation. */
+/* ListenersByKey implementation. */
 
-SingletonVar* SingletonVar::getInstance(const std::string& key) {
-  static std::unordered_map<std::string, SingletonVar*> instances;
+ListenersByKey* ListenersByKey::getInstance(const std::string& key) {
+  static std::unordered_map<std::string, ListenersByKey*> instances;
 
   if (instances.find(key) == instances.end()) {
-    instances[key] = new SingletonVar();
+    instances[key] = new ListenersByKey();
   }
   return instances[key];
 }

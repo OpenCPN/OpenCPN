@@ -34,18 +34,16 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
   wxLogMessage(
       wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
 
+  auto& msgbus = NavMsgBus::getInstance();
+  auto registry = CommDriverRegistry::getInstance();
+
   switch (params->Type) {
     case SERIAL:
       switch (params->Protocol) {
 //         case PROTO_NMEA2000:
 //           return new commDriverN2KSerial(params);
         default:
-          //auto d = new commDriverN0183Serial(params);
-          auto driver = std::make_shared<commDriverN0183Serial>(params);
-//          auto listener = std::make_shared<NavMsgBus>();
-          auto listener = std::shared_ptr<NavMsgBus>(NavMsgBus::getInstance());
-          driver->SetListener(listener);
-          auto registry = CommDriverRegistry::getInstance();
+          auto driver = std::make_shared<commDriverN0183Serial>(params, msgbus);
           registry->Activate(driver);
 
           return driver;

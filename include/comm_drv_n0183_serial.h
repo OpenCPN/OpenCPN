@@ -40,18 +40,12 @@ class commDriverN0183SerialEvent;  // Internal
 class commDriverN0183Serial : public commDriverN0183, public wxEvtHandler {
 
 public:
-  commDriverN0183Serial();
-  commDriverN0183Serial(const ConnectionParams* params);
+  commDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
 
   virtual ~commDriverN0183Serial();
 
   /** Register driver and possibly do other post-ctor steps. */
   void Activate();
-
-  virtual void SetListener(std::shared_ptr<DriverListener> l)
-    {
-      listener = l;
-    }
 
   bool Open();
 
@@ -82,7 +76,7 @@ private:
   bool m_bsec_thread_active;
 
   ConnectionParams m_params;
-  std::shared_ptr<DriverListener> listener;
+  DriverListener& m_listener;
   void handle_N0183_MSG(commDriverN0183SerialEvent& event);
 };
 

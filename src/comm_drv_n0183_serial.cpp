@@ -205,14 +205,14 @@ private:
 /*    commdriverN0183Serial implementation
  * */
 
-commDriverN0183Serial::commDriverN0183Serial() : commDriverN0183() {}
-
-commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params)
+commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
+                                             DriverListener& listener)
     : m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
-      m_params(*params) {
+      m_params(*params),
+      m_listener(listener){
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
@@ -260,8 +260,9 @@ void commDriverN0183Serial::handle_N0183_MSG(
 
     auto msg =
       std::make_unique<const Nmea0183Msg>("RMC", full_sentence);
-    listener->notify(std::move(msg));
-//    NavMsgBus::getInstance()->notify(std::move(msg));
+
+    //m_listener.notify(std::move(msg));
+    NavMsgBus::getInstance().notify(std::move(msg));
 
   }
 }

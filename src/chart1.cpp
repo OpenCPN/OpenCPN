@@ -7069,20 +7069,13 @@ void MyFrame::InitCommListeners(void) {
 
   // Initialize the comm listeners
 
-  auto t = NavMsgBus::getInstance();
+  auto& msgbus = NavMsgBus::getInstance();
 
   // GNSS Position Data PGN  129029
   //----------------------------------
   Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
 
-  listener_N2K_129029 = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
-
-  //  However, if using the following two lines, the event never arrives.
-  //    g_vlisteners is a static std::vector<ObservedVarListener>
-  //  Doing a little tracing, I think there may be a problem with singleton variable structure.
-  //  Not sure...
-  //const ObservedVarListener l = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
-  //g_vlisteners.push_back(l);
+  listener_N2K_129029 = msgbus.get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
 
   Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -7093,7 +7086,7 @@ void MyFrame::InitCommListeners(void) {
   // COG SOG rapid   PGN 129026
   //-----------------------------
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
-  listener_N2K_129026 = t->get_listener(EVT_N2K_129026, this, n2k_msg_129026.key());
+  listener_N2K_129026 = msgbus.get_listener(EVT_N2K_129026, this, n2k_msg_129026.key());
    Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
          auto message = get_navmsg_ptr(ev);
          auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
@@ -7103,7 +7096,7 @@ void MyFrame::InitCommListeners(void) {
 
    //NMEA0183
   Nmea0183Msg n0183_msg_RMC("RMC", "");
-  listener_N0183_RMC = t->get_listener(EVT_N0183_RMC, this, n0183_msg_RMC.key());
+  listener_N0183_RMC = msgbus.get_listener(EVT_N0183_RMC, this, n0183_msg_RMC.key());
 
   Bind(EVT_N0183_RMC, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);

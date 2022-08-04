@@ -34,24 +34,28 @@
 #include "comm_drv_file.h"
 #include "ocpn_utils.h"
 
+static VoidDriverListener kVoidDriverListener;
+
 using namespace std;
 
-FileCommDriver::FileCommDriver(const string& opath, const string& ipath)
+FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
+                               DriverListener& l)
     : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
       output_path(opath),
-      input_path(ipath) {
+      input_path(ipath),
+      listener(l) {
 }
 
-FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
-                               std::shared_ptr<DriverListener> l)
-    : FileCommDriver(opath, ipath) {
-  listener = l;
-}
 
+FileCommDriver::FileCommDriver(const string& opath)
+    : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
+      output_path(opath),
+      input_path(""),
+      listener(kVoidDriverListener) {
+}
 
 
 void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
-  cerr << "Opening output file\n" << flush;
   ofstream f;
   f.open(output_path, ios::app);
   if (!f.is_open()) {
@@ -92,7 +96,7 @@ static unique_ptr<const NavMsg> LineToMessage(const string& line) {
       }
       break;
     default:
-      assert(false && "Not implemented message parsing");
+std::cerr << "Cannot parse line: \"" << line << "\"\n" << flush;
       return make_unique<NullNavMsg>();
       break;
   }
@@ -101,18 +105,13 @@ static unique_ptr<const NavMsg> LineToMessage(const string& line) {
 
 void FileCommDriver::Activate() {
   CommDriverRegistry::getInstance()->Activate(shared_from_this());
-  if (!listener) {
-    wxLogWarning("No listener defined, ignoring input");
-    cerr << "No listener defined, ignoring input\n";
-    return;
-  }
   if (input_path != "") {
     ifstream f(input_path);
     string line;
     while (getline(f, line)) {
       auto msg = LineToMessage(line);
-      if (msg->bus != NavAddr::Bus::Undef && listener)
-        listener->notify(move(msg));
+      if (msg->bus != NavAddr::Bus::Undef)
+        listener.notify(move(msg));
     }
   }
 }

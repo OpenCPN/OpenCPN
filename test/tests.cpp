@@ -69,16 +69,16 @@ public:
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
       auto msg = std::make_unique<Nmea2000Msg>(id, payload);
-      NavMsgBus::getInstance()->notify(std::move(msg));
+      NavMsgBus::getInstance().notify(std::move(msg));
     }
   };
 
   class Sink: public wxEvtHandler {
   public:
     Sink() {
-      auto t = NavMsgBus::getInstance();
+      auto& t = NavMsgBus::getInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listener = t->get_listener(EVT_FOO, this, n2k_msg.key());
+      listener = t.get_listener(EVT_FOO, this, n2k_msg.key());
 
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -107,21 +107,22 @@ public:
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
       auto msg = std::make_unique<Nmea2000Msg>(id, payload);
-      NavMsgBus::getInstance()->notify(std::move(msg));
+      NavMsgBus::getInstance().notify(std::move(msg));
     }
   };
 
   class Sink: public wxEvtHandler {
   public:
     Sink() {
-      auto t = NavMsgBus::getInstance();
+      auto& t = NavMsgBus::getInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listeners.push_back(t->get_listener(EVT_FOO, this, n2k_msg.key()));
+      listeners.push_back(t.get_listener(EVT_FOO, this, n2k_msg.key()));
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
         auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
+        s_bus = message->bus;
       });
     }
     std::vector<ObservedVarListener> listeners;
@@ -179,6 +180,29 @@ public:
 
 using namespace std;
 
+
+class GuernseyApp: public wxAppConsole {
+public:
+  GuernseyApp(vector<string>* log) : wxAppConsole() {
+    auto& msgbus = NavMsgBus::getInstance();
+    auto driver =
+        make_shared<FileCommDriver>("/tmp/output.txt",
+                                    "Guernesey-1659560590623.input.txt",
+                                    msgbus);
+    Nmea0183Msg msg("GPGLL");
+    auto listener = msgbus.get_listener(EVT_FOO, this, msg.key());
+    Bind(EVT_FOO, [log](wxCommandEvent ev) { 
+      auto message = get_navmsg_ptr(ev);
+      auto n0183_msg = dynamic_pointer_cast<const Nmea0183Msg>(message);
+      log->push_back(n0183_msg->to_string());
+    });
+    driver->Activate();
+    ProcessPendingEvents();
+  }
+};
+
+
+
 class SillyDriver: public AbstractCommDriver {
 public:
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
@@ -186,7 +210,7 @@ public:
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
-  virtual void SetListener(std::shared_ptr<DriverListener> listener) {}
+  virtual void SetListener(DriverListener& listener) {}
 
   virtual void Activate() {};
 };
@@ -274,7 +298,7 @@ TEST(Navmsg2000, to_string) {
 }
 
 TEST(FileDriver, Registration) {
-  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt", "");
+  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
   driver->Activate();
   auto registry = CommDriverRegistry::getInstance();
   auto drivers = registry->get_drivers();
@@ -282,7 +306,7 @@ TEST(FileDriver, Registration) {
 }
 
 TEST(FileDriver, output) {
-  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt", "");
+  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
@@ -298,17 +322,20 @@ TEST(FileDriver, output) {
 
 
 TEST(FileDriver, input) {
-  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt", "");
+
+  auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
   Nmea2000Msg msg(id, payload);
   remove("/tmp/output.txt");
   driver->SendMessage(msg, NavAddr());
-  auto indriver = std::make_shared<FileCommDriver>("/tmp/output.txt",
-                                                   "/tmp/output.txt");
-  auto listener = make_shared<SillyListener>();
-  indriver->SetListener(listener);
+
+  SillyListener listener;
+  auto indriver = std::make_shared<FileCommDriver>("/tmp/foo.txt",
+                                                   "/tmp/output.txt", 
+                                                   listener);
+  //indriver->SetListener(listener);
   indriver->Activate();
   EXPECT_EQ(s_result2, string("nmea2000"));
   EXPECT_EQ(s_result3, string("1234"));
@@ -321,3 +348,9 @@ TEST(Listeners, vector) {
   EXPECT_EQ(s_result, string("payload data"));
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
+
+TEST(Guernsey, play_log) {
+  vector<string> log;
+  GuernseyApp app(&log);
+  EXPECT_EQ(log.size(), 14522);
+}

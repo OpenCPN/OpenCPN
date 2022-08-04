@@ -43,15 +43,15 @@ class ObservedVarListener;
  *  Private helper class. Basically a singleton map of listeners where
  *  singletons are managed by key, one for each key value.
  */
-class SingletonVar {
+class ListenersByKey {
 
 private:
-  static SingletonVar* getInstance(const std::string& key);
+  static ListenersByKey* getInstance(const std::string& key);
   std::vector<std::pair<wxEvtHandler*, wxEventType>>  listeners;
 
-  SingletonVar() {}
-  SingletonVar(const SingletonVar&) = delete;
-  void operator=(const SingletonVar&) = delete;
+  ListenersByKey() {}
+  ListenersByKey(const ListenersByKey&) = delete;
+  void operator=(const ListenersByKey&) = delete;
 
   friend class ObservedVar;
 };
@@ -61,7 +61,7 @@ private:
 class ObservedVar {
 public:
   ObservedVar(const std::string& _key)
-      : key(_key), singleton(SingletonVar::getInstance(_key)) {}
+      : key(_key), singleton(ListenersByKey::getInstance(_key)) {}
 
   /** Notify all listeners about variable change. */
   virtual const void notify();
@@ -90,7 +90,7 @@ private:
   /** Set object to send ev_type to listener on variable changes. */
   void listen(wxEvtHandler* listener, wxEventType ev_type);
 
-  SingletonVar* const singleton;
+  ListenersByKey* const singleton;
 
 
   friend class ObservedVarListener;
