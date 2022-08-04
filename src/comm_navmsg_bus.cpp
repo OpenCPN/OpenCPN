@@ -16,10 +16,8 @@ void NavMsgBus::notify(std::unique_ptr<const NavMsg> msg) {
   om.notify(shared_msg);
 }
 
-NavMsgBus* NavMsgBus::getInstance() {
-  static NavMsgBus* instance = 0;
-
-  if (!instance) instance = new NavMsgBus();
+NavMsgBus& NavMsgBus::getInstance() {
+  static NavMsgBus instance;
   return instance;
 }
 

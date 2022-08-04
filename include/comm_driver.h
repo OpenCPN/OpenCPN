@@ -171,6 +171,7 @@ public:
 class Nmea0183Msg : public NavMsg {
 public:
   Nmea0183Msg() : NavMsg(NavAddr::Bus::N0183) {}
+  Nmea0183Msg(const std::string _id) : NavMsg(NavAddr::Bus::N0183), id(_id) {}
 
   Nmea0183Msg(const std::string _id, const std::string _payload)
       : NavMsg(NavAddr::Bus::N0183), id(_id), payload(_payload) {}
@@ -223,6 +224,15 @@ public:
   virtual void notify(const AbstractCommDriver& driver) = 0;
 };
 
+/** Default implementation, does nothing, used for initialiations */
+class VoidDriverListener : public DriverListener {
+  virtual void notify(std::unique_ptr<const NavMsg> message) {}
+  virtual void notify(const AbstractCommDriver& driver) {}
+};
+
+/** The global "Null driver" reference base */
+extern VoidDriverListener kVoidDriverListener;
+
 
 /** Common interface for all drivers.  */
 class AbstractCommDriver
@@ -235,9 +245,6 @@ public:
   AbstractCommDriver() : bus(NavAddr::Bus::Undef){};
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) = 0;
-
-  /** Set the entity (normally a NavMsgBus) which receives incoming data. */
-  virtual void SetListener(std::shared_ptr<DriverListener> l) = 0;
 
   /** Register driver in  the driver Registry. */
   virtual void Activate() = 0;

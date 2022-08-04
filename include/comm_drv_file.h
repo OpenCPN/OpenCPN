@@ -39,23 +39,22 @@
 /** Read and write data to/from files test driver  */
 class FileCommDriver : public AbstractCommDriver {
 public:
-  /** Ctor, the argument are paths to files for input/output.  */
-  FileCommDriver(const std::string& opath, const std::string& ipath);
-
-  /** CTOR with a listener for initial data. */
+  /** An instance which can write to file and play data from another. */
   FileCommDriver(const std::string& opath, const std::string& ipath,
-                 std::shared_ptr<DriverListener> l);
+                 DriverListener& l);
+
+  /** A write-only instance writing to file. */
+  FileCommDriver(const std::string& opath);
+
 
   void SendMessage(const NavMsg& msg, const NavAddr& addr);
 
   void Activate();
 
-  void SetListener(std::shared_ptr<DriverListener> l) { listener = l; }
-
 private:
-  std::shared_ptr<DriverListener> listener;
   std::string output_path;
   std::string input_path;
+  DriverListener& listener;
 };
 
 #endif  // COMM_DRV_FILE_H

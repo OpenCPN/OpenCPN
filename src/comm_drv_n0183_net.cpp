@@ -157,7 +157,7 @@ void commDriverN0183Net::handle_N0183_MSG(
 
     auto msg =
       std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
-    NavMsgBus::getInstance()->notify(std::move(msg));
+    NavMsgBus::getInstance().notify(std::move(msg));
   }
 }
 

@@ -60,7 +60,7 @@ public:
   void notify(const AbstractCommDriver& driver);
 
   /* Singleton implementation. */
-  static NavMsgBus* getInstance();
+  static NavMsgBus& getInstance();
   NavMsgBus& operator=(NavMsgBus&) = delete;
   NavMsgBus(const NavMsgBus&) = delete;
 
