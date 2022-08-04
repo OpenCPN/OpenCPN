@@ -4,8 +4,6 @@
 
 #include "comm_driver.h"
 
-VoidDriverListener kVoidDriverListener;    // FIXME (leamas) we need an cpp file for comm_driver.h
-
 std::string NavAddr::BusToString(NavAddr::Bus b) {
   switch (b) {
     case NavAddr::Bus::N0183: return "nmea0183"; break;

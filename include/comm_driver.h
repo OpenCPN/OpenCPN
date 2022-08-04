@@ -230,9 +230,6 @@ class VoidDriverListener : public DriverListener {
   virtual void notify(const AbstractCommDriver& driver) {}
 };
 
-/** The global "Null driver" reference base */
-extern VoidDriverListener kVoidDriverListener;
-
 
 /** Common interface for all drivers.  */
 class AbstractCommDriver

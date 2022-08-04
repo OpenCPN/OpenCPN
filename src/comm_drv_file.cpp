@@ -34,6 +34,8 @@
 #include "comm_drv_file.h"
 #include "ocpn_utils.h"
 
+static VoidDriverListener kVoidDriverListener;
+
 using namespace std;
 
 FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
