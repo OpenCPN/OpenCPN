@@ -222,7 +222,9 @@ commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params)
   Open();
 }
 
-commDriverN0183Serial::~commDriverN0183Serial() {}
+commDriverN0183Serial::~commDriverN0183Serial() {
+  int yyp = 4;
+}
 
 bool commDriverN0183Serial::Open() {
   wxString comx;
@@ -257,8 +259,10 @@ void commDriverN0183Serial::handle_N0183_MSG(
     identifier = full_sentence.substr(1,5);
 
     auto msg =
-      std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
-    NavMsgBus::getInstance()->notify(std::move(msg));
+      std::make_unique<const Nmea0183Msg>("RMC", full_sentence);
+    listener->notify(std::move(msg));
+//    NavMsgBus::getInstance()->notify(std::move(msg));
+
   }
 }
 

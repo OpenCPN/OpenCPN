@@ -189,7 +189,7 @@ void RedirectIOToConsole();
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N2K_129026, wxCommandEvent);
-
+wxDEFINE_EVENT(EVT_N0183_RMC, wxCommandEvent);
 
 //------------------------------------------------------------------------------
 //      Fwd Declarations
@@ -6839,7 +6839,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if (cp->bEnabled) {
-          MakeCommDriver(cp);
+          auto driver = MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
         }
       }
@@ -7075,17 +7075,14 @@ void MyFrame::InitCommListeners(void) {
   //----------------------------------
   Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
 
-  //FIXME
-  // If using this commented line, the events arrive at the lambda as expected.
-  //  Note: "ObservedVarListener listener_N2K_129029;" is defined as a class member, as usual.
-  //listener_N2K_129029 = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
+  listener_N2K_129029 = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
 
   //  However, if using the following two lines, the event never arrives.
   //    g_vlisteners is a static std::vector<ObservedVarListener>
   //  Doing a little tracing, I think there may be a problem with singleton variable structure.
   //  Not sure...
-  const ObservedVarListener l = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
-  g_vlisteners.push_back(l);
+  //const ObservedVarListener l = t->get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
+  //g_vlisteners.push_back(l);
 
   Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -7102,6 +7099,17 @@ void MyFrame::InitCommListeners(void) {
          auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
          HandleN2K_129026( n2k_msg );
        });
+
+
+   //NMEA0183
+  Nmea0183Msg n0183_msg_RMC("RMC", "");
+  listener_N0183_RMC = t->get_listener(EVT_N0183_RMC, this, n0183_msg_RMC.key());
+
+  Bind(EVT_N0183_RMC, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_RMC( n0183_msg );
+      });
 
 
 }
@@ -7183,6 +7191,14 @@ bool MyFrame::HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
 
   return true;
 }
+
+bool MyFrame::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {
+
+  int yyp = 4;
+
+  return true;
+}
+
 
 //    Manage the application memory footprint on a periodic schedule
 void MyFrame::OnMemFootTimer(wxTimerEvent &event) {

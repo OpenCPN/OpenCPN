@@ -48,7 +48,10 @@ public:
   /** Register driver and possibly do other post-ctor steps. */
   void Activate();
 
-  virtual void SetListener(std::shared_ptr<DriverListener> l) {}
+  virtual void SetListener(std::shared_ptr<DriverListener> l)
+    {
+      listener = l;
+    }
 
   bool Open();
 
@@ -79,7 +82,7 @@ private:
   bool m_bsec_thread_active;
 
   ConnectionParams m_params;
-
+  std::shared_ptr<DriverListener> listener;
   void handle_N0183_MSG(commDriverN0183SerialEvent& event);
 };
 

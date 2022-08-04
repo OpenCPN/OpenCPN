@@ -29,7 +29,7 @@
 #include "ConnectionParams.h"
 #include "comm_driver.h"
 
-AbstractCommDriver *MakeCommDriver(const ConnectionParams *params);
+std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *params);
 
 
 #endif  // DRIVER_API_H

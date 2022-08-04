@@ -27,26 +27,38 @@
 #include "comm_drv_n2K_serial.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
+#include "comm_navmsg_bus.h"
+#include "comm_drv_registry.h"
 
-AbstractCommDriver *MakeCommDriver(const ConnectionParams *params) {
+std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *params) {
   wxLogMessage(
       wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
 
   switch (params->Type) {
     case SERIAL:
       switch (params->Protocol) {
-         case PROTO_NMEA2000:
-           return new commDriverN2KSerial(params);
+//         case PROTO_NMEA2000:
+//           return new commDriverN2KSerial(params);
         default:
-          return new commDriverN0183Serial(params);
+          //auto d = new commDriverN0183Serial(params);
+          auto driver = std::make_shared<commDriverN0183Serial>(params);
+//          auto listener = std::make_shared<NavMsgBus>();
+          auto listener = std::shared_ptr<NavMsgBus>(NavMsgBus::getInstance());
+          driver->SetListener(listener);
+          auto registry = CommDriverRegistry::getInstance();
+          registry->Activate(driver);
+
+          return driver;
+          break;
+
       }
-    case NETWORK:
-      switch (params->NetProtocol) {
+//    case NETWORK:
+//      switch (params->NetProtocol) {
 //         case SIGNALK:
 //           return new SignalKDataStream(input_consumer, params);
-        default:
-          return new commDriverN0183Net(params);
-      }
+//        default:
+//          return new commDriverN0183Net(params);
+//      }
 #if 0
     case INTERNAL_GPS:
       return new InternalGPSDataStream(input_consumer, params);
@@ -55,7 +67,7 @@ AbstractCommDriver *MakeCommDriver(const ConnectionParams *params) {
 
 #endif
     default:
-      return NULL;
+      break;
   }
 
 }
