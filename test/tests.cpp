@@ -377,3 +377,16 @@ TEST(FindDriver, lookup) {
    found = FindDriver(drivers, "baz");
    EXPECT_FALSE(found);
 }
+
+TEST(Registry, persistence) {
+    if (true) {  // a scope
+      auto driver = std::make_shared<const SillyDriver>();
+      auto& registry = CommDriverRegistry::getInstance();
+      registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+    }
+    auto& registry = CommDriverRegistry::getInstance();
+    auto drivers = registry.get_drivers();
+    EXPECT_EQ(registry.get_drivers().size(), 1);
+    EXPECT_EQ(registry.get_drivers()[0]->iface, string("silly"));
+    EXPECT_EQ(registry.get_drivers()[0]->bus, NavAddr::Bus::TestBus);
+}
