@@ -8509,11 +8509,15 @@ void options::OnApplyClick(wxCommandEvent& event) {
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams* cp = g_pConnectionParams->Item(i);
 
-    // Stream is new, or edited
     if (cp->b_IsSetup) continue;
+
+    // Stream is new, or edited
+
     // Terminate and remove any existing stream with the same port name
-    DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
-    if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
+    StopAndRemoveCommDriver(cp->GetDSPort());
+
+    /DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
+    /if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
     //  Try to stop any previous stream to avoid orphans
     pds_existing = g_pMUX->FindStream(cp->GetLastDSPort());

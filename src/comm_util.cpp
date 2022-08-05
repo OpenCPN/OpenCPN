@@ -84,5 +84,9 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
 
 }
 
+void StopAndRemoveCommDriver(std:string ident) {
+
+}
+
 
 
