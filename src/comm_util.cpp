@@ -41,25 +41,34 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
     case SERIAL:
       switch (params->Protocol) {
          case PROTO_NMEA2000:
-//           auto driver = std::make_shared<commDriverN2KSerial>(params, msgbus);
-//           registry->Activate(driver);
-//           return driver;
-          break;
-        default:
-          auto driver = std::make_shared<commDriverN0183Serial>(params, msgbus);
-          registry->Activate(driver);
-          return driver;
+         {
+           auto driver = std::make_shared<commDriverN2KSerial>(params, msgbus);
+           registry->Activate(driver);
+           return driver;
+           break;
+         }
+         default:
+         {
+           auto driver = std::make_shared<commDriverN0183Serial>(params, msgbus);
+           registry->Activate(driver);
+           return driver;
 
-          break;
-
+           break;
+         }
       }
-//    case NETWORK:
-//      switch (params->NetProtocol) {
+    case NETWORK:
+      switch (params->NetProtocol) {
 //         case SIGNALK:
 //           return new SignalKDataStream(input_consumer, params);
-//        default:
-//          return new commDriverN0183Net(params);
-//      }
+        default:
+        {
+          auto driver = std::make_shared<commDriverN0183Net>(params, msgbus);
+          registry->Activate(driver);
+          return driver;
+          break;
+        }
+      }
+
 #if 0
     case INTERNAL_GPS:
       return new InternalGPSDataStream(input_consumer, params);
