@@ -37,8 +37,6 @@
 #endif
 
 
-const wxEventType wxEVT_COMMDRIVER_N0183_SERIAL = wxNewEventType();
-
 typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_EMPTY,
   DS_RX_BUFFER_FULL
@@ -177,9 +175,12 @@ private:
   bool full_ = 0;
 };
 
+class commDriverN0183SerialEvent;
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, commDriverN0183SerialEvent);
+
 class commDriverN0183SerialEvent : public wxEvent {
 public:
-  commDriverN0183SerialEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
+  commDriverN0183SerialEvent(wxEventType commandType = wxEVT_COMMDRIVER_N0183_SERIAL, int id = 0)
       : wxEvent(id, commandType){};
   ~commDriverN0183SerialEvent(){};
 
@@ -201,9 +202,11 @@ private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
+
 //========================================================================
 /*    commdriverN0183Serial implementation
  * */
+  wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, commDriverN0183SerialEvent);
 
 commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
                                              DriverListener& listener)
@@ -214,22 +217,16 @@ commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
       m_params(*params),
       m_listener(listener){
 
-//   auto msg = std::make_unique<const Nmea0183Msg>("GPGLL","GPGLL payload");
-//   listener.notify(std::move(msg));
-//
-//   m_listener.notify(std::move(msg));
-
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Connect(wxEVT_COMMDRIVER_N0183_SERIAL,
-            (wxObjectEventFunction)&commDriverN0183Serial::handle_N0183_MSG);
+  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &commDriverN0183Serial::handle_N0183_MSG, this);
 
   Open();
+
 }
 
-commDriverN0183Serial::~commDriverN0183Serial() {
-}
+commDriverN0183Serial::~commDriverN0183Serial() {}
 
 bool commDriverN0183Serial::Open() {
   wxString comx;
@@ -251,8 +248,10 @@ void commDriverN0183Serial::Activate() {
   // TODO: Read input data.
 }
 
+
 void commDriverN0183Serial::handle_N0183_MSG(
     commDriverN0183SerialEvent &event) {
+
   auto p = event.GetPayload();
   std::vector<unsigned char> *payload = p.get();
 
@@ -267,8 +266,7 @@ void commDriverN0183Serial::handle_N0183_MSG(
     auto msg =
       std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
 
-    NavMsgBus::getInstance().notify(std::move(msg));
-    //m_listener.notify(std::move(msg));
+    m_listener.notify(std::move(msg));
 
   }
 }

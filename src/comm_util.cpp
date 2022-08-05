@@ -35,7 +35,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
       wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
 
   auto& msgbus = NavMsgBus::getInstance();
-  auto registry = CommDriverRegistry::getInstance();
+  const auto& registry = CommDriverRegistry::getInstance();
 
   switch (params->Type) {
     case SERIAL:
