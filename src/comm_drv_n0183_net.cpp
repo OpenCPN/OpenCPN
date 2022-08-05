@@ -73,7 +73,10 @@
 
 #define N_DOG_TIMEOUT 5
 
-const wxEventType wxEVT_COMMDRIVER_N0183_NET = wxNewEventType();
+wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_NET, commDriverN0183NetEvent);
+
+class commDriverN0183NetEvent;
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_NET, commDriverN0183NetEvent);
 
 class commDriverN0183NetEvent : public wxEvent {
 public:
@@ -110,10 +113,12 @@ EVT_SOCKET(DS_SERVERSOCKET_ID, commDriverN0183Net::OnServerSocketEvent)
 EVT_TIMER(TIMER_SOCKET + 1, commDriverN0183Net::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
 
-commDriverN0183Net::commDriverN0183Net() : commDriverN0183() {}
+//commDriverN0183Net::commDriverN0183Net() : commDriverN0183() {}
 
-commDriverN0183Net::commDriverN0183Net(const ConnectionParams *params)
+commDriverN0183Net::commDriverN0183Net(const ConnectionParams *params,
+                                       DriverListener& listener)
     : m_params(*params),
+      m_listener(listener),
       m_net_port(wxString::Format(wxT("%i"), params->NetworkPort)),
       m_net_protocol(params->NetProtocol),
       m_sock(NULL),
@@ -125,6 +130,7 @@ commDriverN0183Net::commDriverN0183Net(const ConnectionParams *params)
       m_io_select(params->IOSelect),
       m_connection_type(params->Type),
       m_bok(false)
+
 {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
@@ -134,8 +140,7 @@ commDriverN0183Net::commDriverN0183Net(const ConnectionParams *params)
 
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Connect(wxEVT_COMMDRIVER_N0183_NET,
-            (wxObjectEventFunction)&commDriverN0183Net::handle_N0183_MSG);
+  Bind(wxEVT_COMMDRIVER_N0183_NET, &commDriverN0183Net::handle_N0183_MSG, this);
 
   Open();
 }
@@ -157,7 +162,7 @@ void commDriverN0183Net::handle_N0183_MSG(
 
     auto msg =
       std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
-    NavMsgBus::getInstance().notify(std::move(msg));
+    m_listener.notify(std::move(msg));
   }
 }
 

@@ -80,7 +80,8 @@ class commDriverN0183Net : public commDriverN0183, public wxEvtHandler {
 
 public:
   commDriverN0183Net();
-  commDriverN0183Net(const ConnectionParams* params);
+  commDriverN0183Net(const ConnectionParams* params,
+                     DriverListener& listener);
 
   virtual ~commDriverN0183Net();
 
@@ -99,6 +100,7 @@ public:
 
 private:
   ConnectionParams m_params;
+  DriverListener& m_listener;
 
   void handle_N0183_MSG(commDriverN0183NetEvent& event);
   wxString GetNetPort() const { return m_net_port; }
