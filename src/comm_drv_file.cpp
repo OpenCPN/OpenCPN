@@ -100,7 +100,7 @@ std::cerr << "Cannot parse line: \"" << line << "\"\n" << flush;
 }
 
 void FileCommDriver::Activate() {
-  CommDriverRegistry::getInstance()->Activate(shared_from_this());
+  CommDriverRegistry::getInstance().Activate(shared_from_this());
   if (input_path != "") {
     ifstream f(input_path);
     string line;

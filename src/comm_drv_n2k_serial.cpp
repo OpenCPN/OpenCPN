@@ -178,7 +178,7 @@ bool commDriverN2KSerial::Open() {
 void commDriverN2KSerial::SetListener(std::shared_ptr<DriverListener> l) {}
 
 void commDriverN2KSerial::Activate() {
-  CommDriverRegistry::getInstance()->Activate(shared_from_this());
+  CommDriverRegistry::getInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 

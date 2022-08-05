@@ -206,8 +206,10 @@ public:
 
 class SillyDriver: public AbstractCommDriver {
 public:
+
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
-  SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
+  SillyDriver(const string& s)
+      : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
@@ -215,6 +217,7 @@ public:
 
   virtual void Activate() {};
 };
+
 
 
 class SillyListener: public DriverListener {
@@ -268,28 +271,28 @@ TEST(Messaging, AppMsg) {
 TEST(Drivers, Registry) {
   auto driver = std::make_shared<const SillyDriver>();
   auto registry = CommDriverRegistry::getInstance();
-  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
-  auto drivers = registry->get_drivers();
-  EXPECT_EQ(registry->get_drivers().size(), 1);
-  EXPECT_EQ(registry->get_drivers()[0]->iface, string("silly"));
-  EXPECT_EQ(registry->get_drivers()[0]->bus, NavAddr::Bus::TestBus);
+  registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+  auto drivers = registry.get_drivers();
+  EXPECT_EQ(registry.get_drivers().size(), 1);
+  EXPECT_EQ(registry.get_drivers()[0]->iface, string("silly"));
+  EXPECT_EQ(registry.get_drivers()[0]->bus, NavAddr::Bus::TestBus);
 
   /* Add it again, should be ignored. */
-  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 
   /* Add another one, should be accepted */
   auto driver2 = std::make_shared<const SillyDriver>("orvar");
-  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
-  EXPECT_EQ(registry->get_drivers().size(), 2);
+  registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry.get_drivers().size(), 2);
 
   /* Remove one, leaving one in place. */
-  registry->Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  registry.Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 
   /* Remove it again, should be ignored. */
-  registry->Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  registry.Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 }
 
 
@@ -307,8 +310,8 @@ TEST(FileDriver, Registration) {
   auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
   driver->Activate();
   auto registry = CommDriverRegistry::getInstance();
-  auto drivers = registry->get_drivers();
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  auto drivers = registry.get_drivers();
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 }
 
 
@@ -360,4 +363,17 @@ TEST(Guernsey, play_log) {
   vector<string> log;
   GuernseyApp app(log);
   EXPECT_EQ(log.size(), 14522);
+}
+
+
+TEST(FindDriver, lookup) {
+   std::vector<DriverPtr> drivers;
+   std::vector<std::string> ifaces {"foo", "bar", "foobar"};
+   for (const auto iface : ifaces) {
+     drivers.push_back(std::make_shared<SillyDriver>(SillyDriver(iface)));
+   }
+   auto found = FindDriver(drivers, "bar");
+   EXPECT_EQ(found->iface, string("bar"));
+   found = FindDriver(drivers, "baz");
+   EXPECT_FALSE(found);
 }

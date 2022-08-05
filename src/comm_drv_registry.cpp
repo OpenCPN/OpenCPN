@@ -48,8 +48,16 @@ const std::vector<DriverPtr>& CommDriverRegistry::get_drivers() {
   return drivers;
 };
 
-CommDriverRegistry* CommDriverRegistry::getInstance() {
-  static CommDriverRegistry* instance = 0;
-  if (instance == 0) instance = new CommDriverRegistry();
+CommDriverRegistry& CommDriverRegistry::getInstance() {
+  static CommDriverRegistry instance;
   return instance;
+}
+
+const std::shared_ptr<AbstractCommDriver>kNoDriver(nullptr);
+
+const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
+                           const std::string& iface) {
+  auto func = [iface](const DriverPtr d) { return d->iface == iface; };
+  auto found = std::find_if(drivers.begin(), drivers.end(), func);
+  return found != drivers.end() ? *found : kNoDriver;
 }
