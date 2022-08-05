@@ -189,7 +189,16 @@ void RedirectIOToConsole();
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N2K_129026, wxCommandEvent);
+
 wxDEFINE_EVENT(EVT_N0183_RMC, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_HDT, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_HDG, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_HDM, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_VTG, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_GSV, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_GGA, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_GLL, wxCommandEvent);
+
 
 //------------------------------------------------------------------------------
 //      Fwd Declarations
@@ -7094,7 +7103,8 @@ void MyFrame::InitCommListeners(void) {
        });
 
 
-   //NMEA0183
+  //NMEA0183
+  //RMC
   Nmea0183Msg n0183_msg_RMC("RMC", "");
   listener_N0183_RMC = msgbus.get_listener(EVT_N0183_RMC, this, n0183_msg_RMC.key());
 
@@ -7104,6 +7114,75 @@ void MyFrame::InitCommListeners(void) {
         HandleN0183_RMC( n0183_msg );
       });
 
+  //HDT
+  Nmea0183Msg n0183_msg_HDT("HDT", "");
+  listener_N0183_HDT = msgbus.get_listener(EVT_N0183_HDT, this, n0183_msg_HDT.key());
+
+  Bind(EVT_N0183_HDT, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_HDT( n0183_msg );
+      });
+
+  //HDG
+  Nmea0183Msg n0183_msg_HDG("HDG", "");
+  listener_N0183_HDG = msgbus.get_listener(EVT_N0183_HDG, this, n0183_msg_HDG.key());
+
+  Bind(EVT_N0183_HDG, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_HDG( n0183_msg );
+      });
+
+  //HDM
+  Nmea0183Msg n0183_msg_HDM("HDM", "");
+  listener_N0183_HDM = msgbus.get_listener(EVT_N0183_HDM, this, n0183_msg_HDM.key());
+
+  Bind(EVT_N0183_HDM, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_HDM( n0183_msg );
+      });
+
+  //VTG
+  Nmea0183Msg n0183_msg_VTG("VTG", "");
+  listener_N0183_VTG = msgbus.get_listener(EVT_N0183_VTG, this, n0183_msg_VTG.key());
+
+  Bind(EVT_N0183_VTG, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_VTG( n0183_msg );
+      });
+
+  //GSV
+  Nmea0183Msg n0183_msg_GSV("GSV", "");
+  listener_N0183_GSV = msgbus.get_listener(EVT_N0183_GSV, this, n0183_msg_GSV.key());
+
+  Bind(EVT_N0183_GSV, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_GSV( n0183_msg );
+      });
+
+  //GGA
+  Nmea0183Msg n0183_msg_GGA("GGA", "");
+  listener_N0183_GGA = msgbus.get_listener(EVT_N0183_GGA, this, n0183_msg_GGA.key());
+
+  Bind(EVT_N0183_GGA, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_GGA( n0183_msg );
+      });
+
+  //GLL
+  Nmea0183Msg n0183_msg_GLL("GLL", "");
+  listener_N0183_GLL = msgbus.get_listener(EVT_N0183_GLL, this, n0183_msg_GLL.key());
+
+  Bind(EVT_N0183_GLL, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_GLL( n0183_msg );
+      });
 
 }
 
@@ -7187,7 +7266,242 @@ bool MyFrame::HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
 
 bool MyFrame::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {
 
-  int yyp = 4;
+  wxString sfixtime;
+  bool pos_valid = false;
+  bool cog_valid = false;
+  bool sog_valid = false;
+
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())\
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
+    pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
+
+    if (!g_own_ship_sog_cog_calc ){
+      if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
+        gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+        sog_valid = true;
+      }
+      if(!std::isnan(gSog) && (gSog > 0)){
+        gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+        cog_valid = true;
+      }
+      else{
+        gCog = NAN;
+        cog_valid = true;
+      }
+    }
+
+    // Any device sending VAR=0.0 can be assumed to not really know
+    // what the actual variation is, so in this case we use WMM if
+    // available
+    if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
+                0.0 != m_NMEA0183.Rmc.MagneticVariation) {
+      if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
+        gVar = m_NMEA0183.Rmc.MagneticVariation;
+      else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
+        gVar = -m_NMEA0183.Rmc.MagneticVariation;
+
+      g_bVAR_Rx = true;
+      gVAR_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
+    sfixtime = m_NMEA0183.Rmc.UTCTime;
+    gRmcTime = sfixtime;
+    gRmcDate = m_NMEA0183.Rmc.Date;
+    PostProcessNMEA(pos_valid, sog_valid, cog_valid, sfixtime);
+
+  }
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_HDT( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  gHdt = m_NMEA0183.Hdt.DegreesTrue;
+  if (!std::isnan(m_NMEA0183.Hdt.DegreesTrue)) {
+    g_bHDT_Rx = true;
+    gHDT_Watchdog = gps_watchdog_timeout_ticks;
+  }
+  PostProcessNMEA(false, false, false, "");
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_HDG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+  if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees))
+    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+
+  // Any device sending VAR=0.0 can be assumed to not really know
+  // what the actual variation is, so in this case we use WMM if
+  // available
+  if ((!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees)) &&
+              0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees) {
+    if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
+      gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
+    else if (m_NMEA0183.Hdg.MagneticVariationDirection == West)
+      gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
+
+    g_bVAR_Rx = true;
+    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+  }
+  PostProcessNMEA(false, false, false, "");
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_HDM( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+  if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic))
+    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+  PostProcessNMEA(false, false, false, "");
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_VTG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  bool bsog_valid = false;
+  bool bcog_valid = false;
+
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  // should we allow either Sog or Cog but not both to be valid?
+  if (!g_own_ship_sog_cog_calc &&
+      !std::isnan(m_NMEA0183.Vtg.SpeedKnots)){
+    gSog = m_NMEA0183.Vtg.SpeedKnots;
+    bsog_valid = true;
+  }
+
+  if (!g_own_ship_sog_cog_calc &&
+      !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue)){
+    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+    bcog_valid = true;
+  }
+
+  if (!g_own_ship_sog_cog_calc &&
+      !std::isnan(m_NMEA0183.Vtg.SpeedKnots) &&
+      !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue)) {
+    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+    bcog_valid = true;
+  }
+  PostProcessNMEA(false, bsog_valid, bcog_valid, "");
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  if (g_priSats >= 4) {
+    if (m_NMEA0183.Gsv.MessageNumber == 1) {
+      // Some GNSS print SatsInView in message #1 only
+      setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
+      g_priSats = 4;
+    }
+  }
+  PostProcessNMEA(false, false, false, "");
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  bool pos_valid = false;
+  wxString sfixtime;
+  if (m_NMEA0183.Gga.GPSQuality > 0) {
+    pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
+    sfixtime = m_NMEA0183.Gga.UTCTime;
+    if (g_priSats >= 1) {
+      setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
+      g_priSats = 1;
+    }
+  }
+  PostProcessNMEA(pos_valid, false, false, sfixtime);
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  std::string s = n0183_msg->payload;
+
+  wxString sentence(s.c_str());
+  m_NMEA0183 << sentence;
+
+  if (!m_NMEA0183.PreParse())
+    return false;
+  if (!m_NMEA0183.Parse())
+    return false;
+
+  bool pos_valid = false;
+  wxString sfixtime;
+
+  if (m_NMEA0183.Gll.IsDataValid == NTrue) {
+    pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
+    sfixtime = m_NMEA0183.Gll.UTCTime;
+  }
+  PostProcessNMEA(pos_valid, false, false, sfixtime);
 
   return true;
 }
@@ -8801,43 +9115,43 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
 #if 1
       switch (id) {
         case RMC:
-          if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
-            pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
-
-
-            if (!g_own_ship_sog_cog_calc ){
-              if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
-                gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-                sog_valid = true;
-              }
-              if(!std::isnan(gSog) && (gSog > 0)){
-                gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-                cog_valid = true;
-              }
-              else{
-                gCog = NAN;
-                cog_valid = true;
-              }
-            }
-
-            // Any device sending VAR=0.0 can be assumed to not really know
-            // what the actual variation is, so in this case we use WMM if
-            // available
-            if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
-                0.0 != m_NMEA0183.Rmc.MagneticVariation) {
-              if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
-                gVar = m_NMEA0183.Rmc.MagneticVariation;
-              else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
-                gVar = -m_NMEA0183.Rmc.MagneticVariation;
-
-              g_bVAR_Rx = true;
-              gVAR_Watchdog = gps_watchdog_timeout_ticks;
-            }
-
-            sfixtime = m_NMEA0183.Rmc.UTCTime;
-            gRmcTime = sfixtime;
-            gRmcDate = m_NMEA0183.Rmc.Date;
-          }
+//           if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
+//             pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
+//
+//
+//             if (!g_own_ship_sog_cog_calc ){
+//               if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
+//                 gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+//                 sog_valid = true;
+//               }
+//               if(!std::isnan(gSog) && (gSog > 0)){
+//                 gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+//                 cog_valid = true;
+//               }
+//               else{
+//                 gCog = NAN;
+//                 cog_valid = true;
+//               }
+//             }
+//
+//             // Any device sending VAR=0.0 can be assumed to not really know
+//             // what the actual variation is, so in this case we use WMM if
+//             // available
+//             if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
+//                 0.0 != m_NMEA0183.Rmc.MagneticVariation) {
+//               if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
+//                 gVar = m_NMEA0183.Rmc.MagneticVariation;
+//               else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
+//                 gVar = -m_NMEA0183.Rmc.MagneticVariation;
+//
+//               g_bVAR_Rx = true;
+//               gVAR_Watchdog = gps_watchdog_timeout_ticks;
+//             }
+//
+//             sfixtime = m_NMEA0183.Rmc.UTCTime;
+//             gRmcTime = sfixtime;
+//             gRmcDate = m_NMEA0183.Rmc.Date;
+//           }
           break;
 
         case HDT:

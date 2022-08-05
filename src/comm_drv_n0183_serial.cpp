@@ -213,6 +213,12 @@ commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
       m_pSecondary_Thread(NULL),
       m_params(*params),
       m_listener(listener){
+
+//   auto msg = std::make_unique<const Nmea0183Msg>("GPGLL","GPGLL payload");
+//   listener.notify(std::move(msg));
+//
+//   m_listener.notify(std::move(msg));
+
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
@@ -223,7 +229,6 @@ commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
 }
 
 commDriverN0183Serial::~commDriverN0183Serial() {
-  int yyp = 4;
 }
 
 bool commDriverN0183Serial::Open() {
@@ -256,13 +261,14 @@ void commDriverN0183Serial::handle_N0183_MSG(
 
   if (full_sentence[0] == '$'){   // Sanity check
     std::string identifier;
-    identifier = full_sentence.substr(1,5);
 
+    // We notify based on Mnemonic only, ignoring the Talker ID
+    identifier = full_sentence.substr(3, 3);
     auto msg =
-      std::make_unique<const Nmea0183Msg>("RMC", full_sentence);
+      std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
 
-    //m_listener.notify(std::move(msg));
     NavMsgBus::getInstance().notify(std::move(msg));
+    //m_listener.notify(std::move(msg));
 
   }
 }
