@@ -50,14 +50,13 @@ class commDriverN2KSerialEvent;
 class commDriverN2KSerial : public commDriverN2K, public wxEvtHandler {
 public:
   commDriverN2KSerial();
-  commDriverN2KSerial(const ConnectionParams *params);
+  commDriverN2KSerial(const ConnectionParams *params,
+                      DriverListener& listener);
 
   virtual ~commDriverN2KSerial();
 
   /** Register driver and possibly do other post-ctor steps. */
   void Activate();
-
-  void SetListener(std::shared_ptr<DriverListener> l);
 
   bool Open();
 
@@ -90,6 +89,7 @@ private:
   bool m_bsec_thread_active;
 
   ConnectionParams m_params;
+  DriverListener& m_listener;
 
 };
 

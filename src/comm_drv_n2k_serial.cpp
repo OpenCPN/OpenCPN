@@ -31,8 +31,6 @@
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
-const wxEventType wxEVT_COMMDRIVER_N2K_SERIAL = wxNewEventType();
-
 template <typename T>
 class n2k_atomic_queue {
 public:
@@ -109,6 +107,8 @@ private:
 #endif
 };
 
+class commDriverN2KSerialEvent;
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, commDriverN2KSerialEvent);
 
 
 class commDriverN2KSerialEvent : public wxEvent {
@@ -139,21 +139,21 @@ private:
 /*    commdriverN2KSerial implementation
  * */
 
-commDriverN2KSerial::commDriverN2KSerial() : commDriverN2K() {
-  // bus = NavAddr::Bus::Undefined;
-}
+wxDEFINE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, commDriverN2KSerialEvent);
 
-commDriverN2KSerial::commDriverN2KSerial(const ConnectionParams *params)
+commDriverN2KSerial::commDriverN2KSerial(const ConnectionParams *params,
+                                         DriverListener& listener)
     : m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
-      m_params(*params) {
+      m_params(*params),
+      m_listener(listener)
+  {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Connect(wxEVT_COMMDRIVER_N2K_SERIAL,
-          (wxObjectEventFunction)&commDriverN2KSerial::handle_N2K_SERIAL_RAW);
+  Bind(wxEVT_COMMDRIVER_N2K_SERIAL, &commDriverN2KSerial::handle_N2K_SERIAL_RAW, this);
 
   Open();
 }
@@ -175,7 +175,6 @@ bool commDriverN2KSerial::Open() {
   return true;
 }
 
-void commDriverN2KSerial::SetListener(std::shared_ptr<DriverListener> l) {}
 
 void commDriverN2KSerial::Activate() {
   CommDriverRegistry::getInstance()->Activate(shared_from_this());
@@ -188,9 +187,6 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
 
   std::vector<unsigned char> *payload = p.get();
 
-  // This is where we want to build a "NavMsg", using a shared_ptr
-  // and then call notify()
-
   // extract PGN
   uint64_t pgn = 0;
   unsigned char *c = (unsigned char *)&pgn;
@@ -200,8 +196,7 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
   // memcpy(&v, &data[3], 1);
 
   auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload);
-  auto& t = NavMsgBus::getInstance();
-  t.notify(std::move(msg));
+  m_listener.notify(std::move(msg));
 
 #if 0  // Debug output
   size_t packetLength = (size_t)data->at(1);
