@@ -143,7 +143,8 @@ wxDEFINE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, commDriverN2KSerialEvent);
 
 commDriverN2KSerial::commDriverN2KSerial(const ConnectionParams *params,
                                          DriverListener& listener)
-    : m_Thread_run_flag(-1),
+    : commDriverN2K(NavAddr::Bus::N2000, ((ConnectionParams *)params)->GetStrippedDSPort()),
+      m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
@@ -177,7 +178,7 @@ bool commDriverN2KSerial::Open() {
 
 
 void commDriverN2KSerial::Activate() {
-  CommDriverRegistry::getInstance()->Activate(shared_from_this());
+  CommDriverRegistry::getInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 

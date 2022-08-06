@@ -57,6 +57,7 @@
 #include <wx/regex.h>
 #include <wx/textwrapper.h>
 #include "SignalKDataStream.h"
+#include "comm_util.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -8511,16 +8512,14 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
     if (cp->b_IsSetup) continue;
 
-    // Stream is new, or edited
+    // Connection is new, or edited, or disabled
 
-    // Terminate and remove any existing stream with the same port name
-    StopAndRemoveCommDriver(cp->GetDSPort());
+    // Terminate and remove any existing driver, if present in registry
+    StopAndRemoveCommDriver(cp->GetStrippedDSPort());
 
-    /DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
-    /if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-
+#if 0  //FIXME
     //  Try to stop any previous stream to avoid orphans
-    pds_existing = g_pMUX->FindStream(cp->GetLastDSPort());
+    DataStream* pds_existing = g_pMUX->FindStream(cp->GetLastDSPort());
     if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
     //  This for Bluetooth, which has strange parameters
@@ -8532,9 +8531,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
     // Internal BlueTooth driver stacks commonly need a time delay to purge
     // their buffers, etc. before restating with new parameters...
     if (cp->Type == INTERNAL_BT) wxSleep(1);
+#endif
 
+    //Connection has been disabled
     if (!cp->bEnabled) continue;
-    g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
+
+    //Make any new or re-enabled drivers
+    MakeCommDriver(cp);
     cp->b_IsSetup = TRUE;
   }
 

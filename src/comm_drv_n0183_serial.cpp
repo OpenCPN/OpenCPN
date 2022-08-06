@@ -210,7 +210,8 @@ private:
 
 commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
                                              DriverListener& listener)
-    : m_Thread_run_flag(-1),
+    :  commDriverN0183(NavAddr::Bus::N0183, ((ConnectionParams *)params)->GetStrippedDSPort()),
+      m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
@@ -226,7 +227,9 @@ commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
 
 }
 
-commDriverN0183Serial::~commDriverN0183Serial() {}
+commDriverN0183Serial::~commDriverN0183Serial() {
+  Close();
+}
 
 bool commDriverN0183Serial::Open() {
   wxString comx;
@@ -243,8 +246,42 @@ bool commDriverN0183Serial::Open() {
   return true;
 }
 
+void commDriverN0183Serial::Close() {
+  wxLogMessage(
+      wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
+
+  //    Kill off the Secondary RX Thread if alive
+  if (m_pSecondary_Thread) {
+    if (m_bsec_thread_active)  // Try to be sure thread object is still alive
+    {
+      wxLogMessage(_T("Stopping Secondary Thread"));
+
+      m_Thread_run_flag = 0;
+      int tsec = 10;
+      while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
+
+      wxString msg;
+      if (m_Thread_run_flag < 0)
+        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+      else
+        msg.Printf(_T("Not Stopped after 10 sec."));
+      wxLogMessage(msg);
+    }
+
+    m_pSecondary_Thread = NULL;
+    m_bsec_thread_active = false;
+  }
+
+  //  FIXME Kill off the Garmin handler, if alive
+//  if (m_GarminHandler) {
+ //   m_GarminHandler->Close();
+ //   delete m_GarminHandler;
+//  }
+}
+
+
 void commDriverN0183Serial::Activate() {
-  CommDriverRegistry::getInstance()->Activate(shared_from_this());
+  CommDriverRegistry::getInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 

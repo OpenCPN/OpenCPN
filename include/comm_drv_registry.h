@@ -32,23 +32,25 @@
  * The global driver registry, a singleton. Drivers register here when
  * activated, transport layer finds them.
  */
+
+typedef std::shared_ptr<const AbstractCommDriver> DriverPtr;
 class CommDriverRegistry final {
 public:
   CommDriverRegistry() {}
 
   /** Add driver to list of active drivers. */
-  void Activate(std::shared_ptr<const AbstractCommDriver> driver);
+  void Activate(DriverPtr driver);
 
   /** Remove driver from list of active drivers. */
-  void Deactivate(std::shared_ptr<const AbstractCommDriver> driver);
+  void Deactivate(DriverPtr driver);
 
   /** Notified by all driverlist updates. */
   EventVar evt_driverlist_change;
 
   /** @return List of all activated drivers. */
-  const std::vector<std::shared_ptr<const AbstractCommDriver>>& get_drivers();
+  const std::vector<DriverPtr>& get_drivers();
 
-  static CommDriverRegistry* getInstance();
+  static CommDriverRegistry& getInstance();
 
   // FIXME
   //  Stub method, to pretest drivers.
@@ -56,7 +58,16 @@ public:
   void TestDriver(ConnectionParams* params);
 
 private:
-  std::vector<std::shared_ptr<const AbstractCommDriver>> drivers;
+  std::vector<DriverPtr> drivers;
 };
+
+/**
+ * Search list of drivers for a driver with given interface string.
+ * @return First found driver or shared_ptr<nullptr>, guaranteed to be false.
+ */
+const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
+                           const std::string& iface);
+
+
 
 #endif  // guard

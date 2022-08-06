@@ -30,10 +30,11 @@
 class commDriverN0183 : public AbstractCommDriver {
 public:
   commDriverN0183();
+  commDriverN0183(NavAddr::Bus b, const std::string& s);
+
   virtual ~commDriverN0183();
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr);
-  void SetListener(std::shared_ptr<DriverListener> l);
 
   void Activate();
 

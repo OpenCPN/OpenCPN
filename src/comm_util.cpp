@@ -35,7 +35,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
       wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
 
   auto& msgbus = NavMsgBus::getInstance();
-  const auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::getInstance();
 
   switch (params->Type) {
     case SERIAL:
@@ -43,14 +43,14 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
          case PROTO_NMEA2000:
          {
            auto driver = std::make_shared<commDriverN2KSerial>(params, msgbus);
-           registry->Activate(driver);
+           registry.Activate(driver);
            return driver;
            break;
          }
          default:
          {
            auto driver = std::make_shared<commDriverN0183Serial>(params, msgbus);
-           registry->Activate(driver);
+           registry.Activate(driver);
            return driver;
 
            break;
@@ -58,18 +58,18 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
       }
     case NETWORK:
       switch (params->NetProtocol) {
-//         case SIGNALK:
+//FIXME         case SIGNALK:
 //           return new SignalKDataStream(input_consumer, params);
         default:
         {
           auto driver = std::make_shared<commDriverN0183Net>(params, msgbus);
-          registry->Activate(driver);
+          registry.Activate(driver);
           return driver;
           break;
         }
       }
 
-#if 0
+#if 0  //FIXME
     case INTERNAL_GPS:
       return new InternalGPSDataStream(input_consumer, params);
     case INTERNAL_BT:
@@ -84,8 +84,20 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
 
 }
 
-void StopAndRemoveCommDriver(std:string ident) {
+bool StopAndRemoveCommDriver(std::string ident) {
+  auto& registry = CommDriverRegistry::getInstance();
+  const std::vector<DriverPtr>& drivers = registry.get_drivers();
+  DriverPtr target_driver = FindDriver(drivers, ident);
 
+  if(!target_driver)
+    return false;
+
+  // Deactivate the driver, and the last reference in shared_ptr
+  // will be removed.
+  // The driver DTOR will be called in due course.
+  registry.Deactivate(target_driver);
+
+  return true;
 }
 
 

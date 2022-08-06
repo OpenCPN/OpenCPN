@@ -48,6 +48,7 @@ public:
   void Activate();
 
   bool Open();
+  void Close();
 
   int m_Thread_run_flag;
 

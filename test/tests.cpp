@@ -22,6 +22,7 @@ std::string s_result3;
 NavAddr::Bus s_bus;
 AppMsg::Type s_apptype;
 
+
 class MsgCliApp : public wxAppConsole {
 public:
   class Sink:  public wxEvtHandler {
@@ -60,6 +61,7 @@ public:
   }
 };
 
+
 class TransportCliApp: public wxAppConsole {
 public:
   class Source {
@@ -97,6 +99,7 @@ public:
     ProcessPendingEvents();
   }
 };
+
 
 class ListenerCliApp: public wxAppConsole {
 public:
@@ -143,7 +146,6 @@ public:
   public:
     Source() {
       Position pos(65.2211, 21.4433, Position::Type::NW);
-      using namespace std::chrono;
       auto fix = std::make_shared<GnssFix>(pos, 1659345030);
       AppMsgBus::getInstance()->notify(std::move(fix));
     }
@@ -183,18 +185,18 @@ using namespace std;
 
 class GuernseyApp: public wxAppConsole {
 public:
-  GuernseyApp(vector<string>* log) : wxAppConsole() {
+  GuernseyApp(vector<string>& log) : wxAppConsole() {
     auto& msgbus = NavMsgBus::getInstance();
     auto driver =
         make_shared<FileCommDriver>("/tmp/output.txt",
                                     "Guernesey-1659560590623.input.txt",
                                     msgbus);
-    Nmea0183Msg msg("GPGLL");
-    auto listener = msgbus.get_listener(EVT_FOO, this, msg.key());
-    Bind(EVT_FOO, [log](wxCommandEvent ev) { 
+    auto listener = msgbus.get_listener(EVT_FOO, this,
+                                        Nmea0183Msg("GPGLL").key());
+    Bind(EVT_FOO, [&log](wxCommandEvent ev) {
       auto message = get_navmsg_ptr(ev);
       auto n0183_msg = dynamic_pointer_cast<const Nmea0183Msg>(message);
-      log->push_back(n0183_msg->to_string());
+      log.push_back(n0183_msg->to_string());
     });
     driver->Activate();
     ProcessPendingEvents();
@@ -202,11 +204,12 @@ public:
 };
 
 
-
 class SillyDriver: public AbstractCommDriver {
 public:
+
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
-  SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
+  SillyDriver(const string& s)
+      : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
@@ -214,6 +217,7 @@ public:
 
   virtual void Activate() {};
 };
+
 
 
 class SillyListener: public DriverListener {
@@ -245,6 +249,7 @@ TEST(Messaging, ObservableMsg) {
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
 
+
 TEST(Messaging, NavMsg) {
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
@@ -252,6 +257,7 @@ TEST(Messaging, NavMsg) {
   EXPECT_EQ(s_result, string("payload data"));
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
+
 
 TEST(Messaging, AppMsg) {
   s_result = "";
@@ -261,32 +267,34 @@ TEST(Messaging, AppMsg) {
   EXPECT_EQ(s_apptype, AppMsg::Type::GnssFix);
 };
 
+
 TEST(Drivers, Registry) {
   auto driver = std::make_shared<const SillyDriver>();
   auto registry = CommDriverRegistry::getInstance();
-  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
-  auto drivers = registry->get_drivers();
-  EXPECT_EQ(registry->get_drivers().size(), 1);
-  EXPECT_EQ(registry->get_drivers()[0]->iface, string("silly"));
-  EXPECT_EQ(registry->get_drivers()[0]->bus, NavAddr::Bus::TestBus);
+  registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+  auto drivers = registry.get_drivers();
+  EXPECT_EQ(registry.get_drivers().size(), 1);
+  EXPECT_EQ(registry.get_drivers()[0]->iface, string("silly"));
+  EXPECT_EQ(registry.get_drivers()[0]->bus, NavAddr::Bus::TestBus);
 
   /* Add it again, should be ignored. */
-  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 
   /* Add another one, should be accepted */
   auto driver2 = std::make_shared<const SillyDriver>("orvar");
-  registry->Activate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
-  EXPECT_EQ(registry->get_drivers().size(), 2);
+  registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry.get_drivers().size(), 2);
 
   /* Remove one, leaving one in place. */
-  registry->Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  registry.Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 
   /* Remove it again, should be ignored. */
-  registry->Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  registry.Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 }
+
 
 TEST(Navmsg2000, to_string) {
   std::string s("payload data");
@@ -297,13 +305,15 @@ TEST(Navmsg2000, to_string) {
             msg->to_string());
 }
 
+
 TEST(FileDriver, Registration) {
   auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
   driver->Activate();
   auto registry = CommDriverRegistry::getInstance();
-  auto drivers = registry->get_drivers();
-  EXPECT_EQ(registry->get_drivers().size(), 1);
+  auto drivers = registry.get_drivers();
+  EXPECT_EQ(registry.get_drivers().size(), 1);
 }
+
 
 TEST(FileDriver, output) {
   auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
@@ -322,7 +332,6 @@ TEST(FileDriver, output) {
 
 
 TEST(FileDriver, input) {
-
   auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
@@ -335,12 +344,12 @@ TEST(FileDriver, input) {
   auto indriver = std::make_shared<FileCommDriver>("/tmp/foo.txt",
                                                    "/tmp/output.txt", 
                                                    listener);
-  //indriver->SetListener(listener);
   indriver->Activate();
   EXPECT_EQ(s_result2, string("nmea2000"));
   EXPECT_EQ(s_result3, string("1234"));
   EXPECT_EQ(s_result, string("payload data"));
 }
+
 
 TEST(Listeners, vector) {
   s_result = "";
@@ -349,8 +358,35 @@ TEST(Listeners, vector) {
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
 
+
 TEST(Guernsey, play_log) {
   vector<string> log;
-  GuernseyApp app(&log);
+  GuernseyApp app(log);
   EXPECT_EQ(log.size(), 14522);
+}
+
+
+TEST(FindDriver, lookup) {
+   std::vector<DriverPtr> drivers;
+   std::vector<std::string> ifaces {"foo", "bar", "foobar"};
+   for (const auto iface : ifaces) {
+     drivers.push_back(std::make_shared<SillyDriver>(SillyDriver(iface)));
+   }
+   auto found = FindDriver(drivers, "bar");
+   EXPECT_EQ(found->iface, string("bar"));
+   found = FindDriver(drivers, "baz");
+   EXPECT_FALSE(found);
+}
+
+TEST(Registry, persistence) {
+    if (true) {  // a scope
+      auto driver = std::make_shared<const SillyDriver>();
+      auto& registry = CommDriverRegistry::getInstance();
+      registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+    }
+    auto& registry = CommDriverRegistry::getInstance();
+    auto drivers = registry.get_drivers();
+    EXPECT_EQ(registry.get_drivers().size(), 1);
+    EXPECT_EQ(registry.get_drivers()[0]->iface, string("silly"));
+    EXPECT_EQ(registry.get_drivers()[0]->bus, NavAddr::Bus::TestBus);
 }

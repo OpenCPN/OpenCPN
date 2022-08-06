@@ -239,7 +239,7 @@ public:
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
 
-  AbstractCommDriver() : bus(NavAddr::Bus::Undef){};
+  AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil") {};
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) = 0;
 

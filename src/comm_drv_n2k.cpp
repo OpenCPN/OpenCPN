@@ -29,9 +29,8 @@
  * */
 
 commDriverN2K::commDriverN2K() : AbstractCommDriver(NavAddr::Bus::N2000) {}
+commDriverN2K::commDriverN2K(NavAddr::Bus b, const std::string& s): AbstractCommDriver(NavAddr::Bus::N2000, s) {}
 
 commDriverN2K::~commDriverN2K() {}
 
 void commDriverN2K::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
-
-void SetListener(DriverListener* listener) {}

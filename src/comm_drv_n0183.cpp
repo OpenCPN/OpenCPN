@@ -30,10 +30,10 @@
 
 commDriverN0183::commDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 
+commDriverN0183::commDriverN0183(NavAddr::Bus b, const std::string& s) : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
+
 commDriverN0183::~commDriverN0183() {}
 
 void commDriverN0183::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
-
-void commDriverN0183::SetListener(std::shared_ptr<DriverListener> l) {}
 
 void commDriverN0183::Activate() {}

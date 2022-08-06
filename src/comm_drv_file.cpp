@@ -48,11 +48,7 @@ FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
 
 
 FileCommDriver::FileCommDriver(const string& opath)
-    : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
-      output_path(opath),
-      input_path(""),
-      listener(kVoidDriverListener) {
-}
+    : FileCommDriver(opath, "", kVoidDriverListener) {}
 
 
 void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
@@ -104,7 +100,7 @@ std::cerr << "Cannot parse line: \"" << line << "\"\n" << flush;
 }
 
 void FileCommDriver::Activate() {
-  CommDriverRegistry::getInstance()->Activate(shared_from_this());
+  CommDriverRegistry::getInstance().Activate(shared_from_this());
   if (input_path != "") {
     ifstream f(input_path);
     string line;

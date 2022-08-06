@@ -147,6 +147,8 @@ public:
   wxString GetLastDSPort() const;
   wxString GetPortStr() const { return Port; }
   void SetPortStr(wxString str) { Port = str; }
+  std::string GetStrippedDSPort();
+
 
   bool Valid;
   bool b_IsSetup;

@@ -31,6 +31,7 @@ class commDriverN2K : public AbstractCommDriver {
 
 public:
     commDriverN2K();
+    commDriverN2K(NavAddr::Bus b, const std::string& s);
     virtual ~commDriverN2K();
 
     virtual void SendMessage(const NavMsg& msg, const NavAddr& addr);

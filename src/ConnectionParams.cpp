@@ -290,6 +290,24 @@ wxString ConnectionParams::GetDSPort() const {
     return _T("");
 }
 
+std::string ConnectionParams::GetStrippedDSPort() {
+  if (Type == SERIAL){
+    wxString t = wxString::Format(_T("Serial:%s"), Port.c_str());
+    wxString comx = t.AfterFirst(':').BeforeFirst(' ');
+    return comx.ToStdString();
+  }
+  else if (Type == NETWORK) {
+    wxString proto = NetworkProtocolToString(NetProtocol);
+    wxString t = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
+                            NetworkAddress.c_str(), NetworkPort);
+    return t.ToStdString();
+
+  } else if (Type == INTERNAL_BT) {
+    return Port.ToStdString();
+  } else
+    return "";
+}
+
 wxString ConnectionParams::GetLastDSPort() const {
   if (Type == SERIAL)
     return wxString::Format(_T("Serial:%s"), Port.c_str());
