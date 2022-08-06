@@ -247,6 +247,13 @@ public:
   virtual void Activate() = 0;
 
   /**
+   * Set the entity which will receive incoming data. By default, such
+   * data is ignored
+  */
+  virtual void SetListener(std::shared_ptr<DriverListener> l) {}
+
+
+  /**
    * Create a new virtual interface using a new instance of this driver.
    * A successful return guarantees that the new driver is registered in
    * the device registry and activated.
@@ -276,7 +283,7 @@ class N2kDriver : public AbstractCommDriver {
 public:
 
   /** @return address to given name on this n2k bus. */
-  NavAddr get_address(N2kName name);
+  NavAddr GetAddress(N2kName name);
 };
 
 /**
@@ -287,7 +294,7 @@ public:
 class Nmea0183Driver : public AbstractCommDriver {
 
   /** @return address to this bus i. e., physical interface. */
-  NavAddr get_address();
+  NavAddr GetAddress();
 };
 
 /**
@@ -303,7 +310,7 @@ public:
   EventVar evt_driverlist_change;
 
   /** @return List of all activated drivers. */
-  const std::vector<AbstractCommDriver>& get_drivers();
+  const std::vector<AbstractCommDriver>& GetDrivers();
 
   static DriverRegistry* getInstance();
 };

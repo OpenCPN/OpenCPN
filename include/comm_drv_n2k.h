@@ -30,12 +30,12 @@
 class commDriverN2K : public AbstractCommDriver {
 
 public:
-    commDriverN2K();
-    commDriverN2K(NavAddr::Bus b, const std::string& s);
-    virtual ~commDriverN2K();
+  commDriverN2K();
+  commDriverN2K(NavAddr::Bus b, const std::string& s);
+  virtual ~commDriverN2K();
 
-    virtual void SendMessage(const NavMsg& msg, const NavAddr& addr);
-
+  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) override;
+  virtual void SetListener(std::shared_ptr<DriverListener> l) override;
 };
 
 #endif    //guard

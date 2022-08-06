@@ -96,7 +96,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
 
 bool StopAndRemoveCommDriver(std::string ident) {
   auto& registry = CommDriverRegistry::getInstance();
-  const std::vector<DriverPtr>& drivers = registry.get_drivers();
+  const std::vector<DriverPtr>& drivers = registry.GetDrivers();
   DriverPtr target_driver = FindDriver(drivers, ident);
 
   if(!target_driver)
