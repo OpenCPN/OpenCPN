@@ -224,13 +224,6 @@ public:
   virtual void notify(const AbstractCommDriver& driver) = 0;
 };
 
-/** Default implementation, does nothing, used for initialiations */
-class VoidDriverListener : public DriverListener {
-  virtual void notify(std::unique_ptr<const NavMsg> message) {}
-  virtual void notify(const AbstractCommDriver& driver) {}
-};
-
-
 /** Common interface for all drivers.  */
 class AbstractCommDriver
   : public std::enable_shared_from_this<const AbstractCommDriver> {
@@ -295,24 +288,6 @@ class Nmea0183Driver : public AbstractCommDriver {
 
   /** @return address to this bus i. e., physical interface. */
   NavAddr GetAddress();
-};
-
-/**
- * The global driver registry, a singleton. Drivers register here when
- * activated, transport layer finds them.
- */
-class DriverRegistry {
-public:
-  void Activate(const AbstractCommDriver& driver);
-  void Deactivate(const AbstractCommDriver& driver);
-
-  /** Notified by all driverlist updates. */
-  EventVar evt_driverlist_change;
-
-  /** @return List of all activated drivers. */
-  const std::vector<AbstractCommDriver>& GetDrivers();
-
-  static DriverRegistry* getInstance();
 };
 
 #endif  // DRIVER_API_H

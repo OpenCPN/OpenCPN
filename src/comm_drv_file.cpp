@@ -34,6 +34,11 @@
 #include "comm_drv_file.h"
 #include "ocpn_utils.h"
 
+class VoidDriverListener : public DriverListener {
+  virtual void notify(std::unique_ptr<const NavMsg> message) {}
+  virtual void notify(const AbstractCommDriver& driver) {}
+};
+
 static VoidDriverListener kVoidDriverListener;
 
 using namespace std;
