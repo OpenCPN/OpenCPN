@@ -23,6 +23,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// FIXME  Why is this needed?
+#ifdef __MSVC__
+#include "winsock2.h"
+#include "wx/msw/winundef.h"
+#endif
+
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
+
 #include "comm_util.h"
 #include "comm_drv_n2K_serial.h"
 #include "comm_drv_n0183_serial.h"
@@ -36,7 +48,6 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
 
   auto& msgbus = NavMsgBus::getInstance();
   auto& registry = CommDriverRegistry::getInstance();
-
   switch (params->Type) {
     case SERIAL:
       switch (params->Protocol) {
@@ -79,7 +90,6 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
     default:
       break;
   }
-
   return NULL;
 
 }

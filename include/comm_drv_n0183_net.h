@@ -26,6 +26,11 @@
 #ifndef _COMMDRIVERN0183NET_H
 #define _COMMDRIVERN0183NET_H
 
+#ifdef __MSVC__
+#include "winsock2.h"
+#include "wx/msw/winundef.h"
+#endif
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP

@@ -267,6 +267,9 @@ public:
   void UpdateManagedPlugins();
   bool CheckBlacklistedPlugin(const PluginMetadata plugin);
 
+  void InitCommListeners(void);
+  void HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+
   wxArrayString GetPlugInChartClassNameArray(void);
 
   ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper *target,
@@ -303,6 +306,9 @@ private:
   ObservedVarListener evt_update_chart_types_listener;
   ObservedVarListener evt_version_incompatible_listener;
   ObservedVarListener evt_version_incompatible_plugin_listener;
+
+  ObservedVarListener listener_N0183;
+
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);
 
