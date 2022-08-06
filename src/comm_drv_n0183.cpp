@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Implement the comm_drv_n0183.h -- Nmea0183 driver base
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -25,8 +25,6 @@
 
 #include "comm_drv_n0183.h"
 
-/*    commDriverN0183 implementation
- * */
 
 commDriverN0183::commDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 

@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Implement comm_drv_n2k.h -- Nmea2000 driver base.
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************

@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Implement comm_drv_file.h
+ * Purpose:  Implement comm_drv_file.h -- driver reading/writing to/from files
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
