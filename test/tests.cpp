@@ -182,15 +182,20 @@ public:
 
 using namespace std;
 
+#ifdef _MSC_VER
+const static string kSEP("\\");
+#else
+const static string kSEP("/");
+#endif
 
 class GuernseyApp: public wxAppConsole {
 public:
   GuernseyApp(vector<string>& log) : wxAppConsole() {
     auto& msgbus = NavMsgBus::getInstance();
+    string path("..");
+    path += kSEP + "testdata" + kSEP + "Guernesey-1659560590623.input.txt";
     auto driver =
-        make_shared<FileCommDriver>("/tmp/output.txt",
-                                    "Guernesey-1659560590623.input.txt",
-                                    msgbus);
+        make_shared<FileCommDriver>("/tmp/output.txt", path, msgbus);
     auto listener = msgbus.get_listener(EVT_FOO, this,
                                         Nmea0183Msg("GPGLL").key());
     Bind(EVT_FOO, [&log](wxCommandEvent ev) {
