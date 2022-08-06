@@ -270,7 +270,7 @@ TEST(Messaging, AppMsg) {
 
 TEST(Drivers, Registry) {
   auto driver = std::make_shared<const SillyDriver>();
-  auto registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::getInstance();
   registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
   auto drivers = registry.get_drivers();
   EXPECT_EQ(registry.get_drivers().size(), 1);
@@ -309,7 +309,7 @@ TEST(Navmsg2000, to_string) {
 TEST(FileDriver, Registration) {
   auto driver = std::make_shared<FileCommDriver>("/tmp/output.txt");
   driver->Activate();
-  auto registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::getInstance();
   auto drivers = registry.get_drivers();
   EXPECT_EQ(registry.get_drivers().size(), 1);
 }
@@ -382,7 +382,8 @@ TEST(Registry, persistence) {
     if (true) {  // a scope
       auto driver = std::make_shared<const SillyDriver>();
       auto& registry = CommDriverRegistry::getInstance();
-      registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver));
+      registry.Activate(
+        std::static_pointer_cast<const AbstractCommDriver>(driver));
     }
     auto& registry = CommDriverRegistry::getInstance();
     auto drivers = registry.get_drivers();
