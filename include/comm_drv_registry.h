@@ -50,7 +50,7 @@ public:
 
   static CommDriverRegistry& getInstance();
 
-  // FIXME
+  // FIXME (Dave)
   //  Stub method, to pretest drivers.
   //  Goes away for production
   void TestDriver(ConnectionParams* params);
