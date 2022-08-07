@@ -27,7 +27,7 @@
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 
-#include "comm_drv_n2K_serial.h"
+#include "comm_drv_n2k_serial.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 

@@ -820,7 +820,7 @@ set(
   include/comm_drv_n0183_net.h
   include/comm_drv_n0183_serial.h
   include/comm_drv_n2k.h
-  include/comm_drv_n2K_serial.h
+  include/comm_drv_n2k_serial.h
   include/comm_drv_registry.h
   include/comm_drv_file.h
   include/comm_navmsg.h
