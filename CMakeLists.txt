@@ -934,7 +934,34 @@ set(
   include/viewport.h
   include/WindowDestroyListener.h
   ${CMAKE_BINARY_DIR}/include/config.h
-  include/svg_utils.h)
+  include/svg_utils.h
+)
+
+set(MODEL_SRC
+  src/BasePlatform.cpp
+  src/catalog_handler.cpp
+  src/catalog_parser.cpp
+  src/comm_navmsg.cpp
+  src/comm_navmsg_bus.cpp
+  src/comm_appmsg.cpp
+  src/comm_appmsg_bus.cpp
+  src/comm_drv_registry.cpp
+  src/comm_drv_file.cpp
+  src/Downloader.cpp
+  src/logger.cpp
+  src/observable.cpp
+  src/observable_msg.cpp
+  src/observable_appmsg.cpp
+  src/ocpn_plugin.cpp
+  src/ocpn_utils.cpp
+  src/plugin_cache.cpp
+  src/PluginHandler.cpp
+  src/plugin_loader.cpp
+  src/PluginPaths.cpp
+  src/pugixml.cpp
+  src/semantic_vers.cpp
+)
+ 
 
 set(
   SRCS
@@ -953,21 +980,14 @@ set(
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
-  src/catalog_handler.cpp
   src/catalog_mgr.cpp
-  src/catalog_parser.cpp
   src/cat_settings.cpp
-  src/comm_appmsg.cpp
-  src/comm_appmsg_bus.cpp
   src/comm_drv_n2k.cpp
   src/comm_drv_n2k_serial.cpp
   src/comm_drv_n0183.cpp
   src/comm_drv_n0183_net.cpp
   src/comm_drv_n0183_serial.cpp
-  src/comm_drv_file.cpp
   src/comm_drv_registry.cpp
-  src/comm_navmsg.cpp
-  src/comm_navmsg_bus.cpp
   src/comm_navmsg.cpp
   src/comm_util.cpp
   src/chart1.cpp
@@ -985,7 +1005,6 @@ set(
   src/datastream.cpp
   src/DepthFont.cpp
   src/DetailSlider.cpp
-  src/Downloader.cpp
   src/download_mgr.cpp
   src/FlexHash.cpp
   src/FontDesc.cpp
@@ -1004,7 +1023,6 @@ set(
   src/Layer.cpp
   src/LinkPropDlg.cpp
   src/LLRegion.cpp
-  src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
   src/MUIBar.cpp
@@ -1013,9 +1031,6 @@ set(
   src/navutil.cpp
   src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
-  src/observable.cpp
-  src/observable_appmsg.cpp
-  src/observable_msg.cpp
   src/ocpCursor.cpp
   src/OCP_DataStreamInput_Thread.cpp
   src/OCPN_AUIManager.cpp
@@ -1027,19 +1042,13 @@ set(
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
   src/OCPN_SignalKEvent.cpp
-  src/ocpn_plugin.cpp
-  src/ocpn_utils.cpp
   src/options.cpp
   src/piano.cpp
-  src/plugin_loader.cpp
-  src/PluginHandler.cpp
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
   src/plugin_blacklist.cpp
-  src/plugin_cache.cpp
   src/printtable.cpp
-  src/pugixml.cpp
   src/Quilt.cpp
   src/RolloverWin.cpp
   src/Route.cpp
@@ -1053,7 +1062,6 @@ set(
   src/safe_mode.cpp
   src/Select.cpp
   src/SelectItem.cpp
-  src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
   src/SerialDataStream.cpp
   src/ser_ports.cpp
@@ -1083,7 +1091,9 @@ set(
   src/comm_drv_n0183.cpp
   src/comm_drv_n0183_serial.cpp
   src/comm_drv_registry.cpp
-  )
+)
+
+set(SRCS ${SRCS} ${MODEL_SRC})
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -2893,32 +2903,8 @@ if (NOT QT_ANDROID)
   #
   # Piggy-back the console application on the main setup.
   #
-  set(SRC_CONSOLE
-    src/api_shim.cpp
-    src/BasePlatform.cpp
-    src/catalog_handler.cpp
-    src/catalog_parser.cpp
-    src/comm_navmsg.cpp
-    src/comm_navmsg_bus.cpp
-    src/comm_appmsg.cpp
-    src/comm_appmsg_bus.cpp
-    src/comm_drv_registry.cpp
-    src/comm_drv_file.cpp
-    src/console.cpp
-    src/Downloader.cpp
-    src/logger.cpp
-    src/observable.cpp
-    src/observable_msg.cpp
-    src/observable_appmsg.cpp
-    src/ocpn_plugin.cpp
-    src/ocpn_utils.cpp
-    src/plugin_cache.cpp
-    src/PluginHandler.cpp
-    src/plugin_loader.cpp
-    src/PluginPaths.cpp
-    src/pugixml.cpp
-    src/semantic_vers.cpp
-  )
+  set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC})
+
   add_executable(opencpn-cmd ${SRC_CONSOLE})
 
   target_include_directories(
