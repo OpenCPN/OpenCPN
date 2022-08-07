@@ -33,8 +33,6 @@
 #include <wx/event.h>
 #include <wx/jsonreader.h>
 
-#include "datastream.h"
-
 #include "comm_driver.h"
 #include "observable_msg.h"
 

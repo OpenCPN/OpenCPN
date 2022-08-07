@@ -70,7 +70,7 @@
 #include <string>
 #include "ConnectionParams.h"
 #include "dsPortType.h"
-#include "datastream.h"
+//#include "datastream.h"
 
 
 #ifdef __WXMSW__

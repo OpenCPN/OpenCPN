@@ -28,9 +28,11 @@
 #include <vector>
 #include <string>
 
-#include <wx/jsonreader.h>
+#ifndef _MSC_VER
+#include <netinet/in.h>
+#endif
 
-#include "datastream.h"
+#include <wx/jsonreader.h>
 
 #ifndef _DRIVER_NAVMSG_H
 #define _DRIVER_NAVMSG_H
@@ -104,12 +106,10 @@ public:
 
 class NavAddr0183 : public NavAddr {
 public:
-  NavAddr0183(const std::string iface, const DataStream* stream)
-      : NavAddr(NavAddr::Bus::N0183, iface), nmea0183(stream){};
+  NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface) {};
 
-  std::string to_string() const { return nmea0183->GetPort().ToStdString(); }
+  std::string to_string() const { return iface; }
 
-  const DataStream* nmea0183;  /**< A specific RS485/nmea01831 interface  */
 };
 
 class NavAddr2000 : public NavAddr {

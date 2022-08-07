@@ -26,6 +26,9 @@
 #include "comm_navmsg_bus.h"
 #include "observable_msg.h"
 
+// FIXME(leamas) test junk
+#include "ConnectionParams.h"
+
 using namespace std;
 
 ObservedVarListener NavMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
