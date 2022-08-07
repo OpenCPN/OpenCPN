@@ -307,7 +307,7 @@ private:
   ObservedVarListener evt_version_incompatible_listener;
   ObservedVarListener evt_version_incompatible_plugin_listener;
 
-  ObservedVarListener listener_N0183;
+  ObservedVarListener m_listener_N0183_all;
 
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);

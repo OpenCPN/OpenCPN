@@ -1037,6 +1037,8 @@ PlugInManager::PlugInManager(MyFrame *parent) {
   m_blacklist = blacklist_factory();
   m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
   HandlePluginLoaderEvents();
+  InitCommListeners();
+
   auto loader = PluginLoader::getInstance();
 }
 PlugInManager::~PlugInManager() {
@@ -1054,7 +1056,7 @@ void PlugInManager::InitCommListeners(void) {
 
   //NMEA0183, all
   Nmea0183Msg n0183_msg("", "");
-  listener_N0183 = msgbus.get_listener(EVT_N0183_PLUGIN, this, n0183_msg.key());
+  m_listener_N0183_all = msgbus.get_listener(EVT_N0183_PLUGIN, this, n0183_msg.key());
 
   Bind(EVT_N0183_PLUGIN, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -1065,6 +1067,16 @@ void PlugInManager::InitCommListeners(void) {
 
 void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {
 
+  std::string s = n0183_msg->payload;
+  wxString sentence(s.c_str());
+  if (s[0] == '$') {
+    printf("Send to all: %s", s.c_str());
+    SendNMEASentenceToAllPlugIns(sentence);
+  }
+  else if (s[0] == '!'){
+    printf("AIS to all: %s", s.c_str());
+    SendAISSentenceToAllPlugIns(sentence);
+  }
 }
 
 /**

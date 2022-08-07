@@ -185,6 +185,8 @@ void RedirectIOToConsole();
 #include "serial/serial.h"
 #endif
 
+static void UpdatePositionCalculatedSogCog();
+
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
@@ -198,6 +200,7 @@ wxDEFINE_EVENT(EVT_N0183_VTG, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_GSV, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_GGA, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_GLL, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 
 
 //------------------------------------------------------------------------------
@@ -7184,9 +7187,18 @@ void MyFrame::InitCommListeners(void) {
         HandleN0183_GLL( n0183_msg );
       });
 
+  //AIVDO
+  Nmea0183Msg n0183_msg_AIVDO("AIVDO", "");
+  listener_N0183_AIVDO = msgbus.get_listener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO.key());
+
+  Bind(EVT_N0183_AIVDO, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_AIVDO( n0183_msg );
+      });
+
 }
 
-int n_026, n_029;
 
 bool MyFrame::HandleN2K_129029( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
 
@@ -7200,10 +7212,6 @@ bool MyFrame::HandleN2K_129029( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
   *c++ = v.at(3);
   *c++ = v.at(4);
   *c++ = v.at(5);
-
-#ifndef __WXMSW__
-  printf("   %d PGN from payload: %" PRId64 "\n", n_029++, pgn);
-#endif
 
   unsigned char SID;
   uint16_t DaysSince1970;
@@ -7247,10 +7255,6 @@ bool MyFrame::HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
   *c++ = v.at(4);
   *c++ = v.at(5);
 
-#ifndef __WXMSW__
-  //printf("%d PGN from payload: %" PRId64 "\n", n_026++, pgn);
-#endif
-
   unsigned char SID;
   tN2kHeadingReference ref;
   double COG, SOG;
@@ -7266,15 +7270,19 @@ bool MyFrame::HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg ) {
 
 bool MyFrame::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {
 
+  printf("HandleN0183_RMC \n");
   wxString sfixtime;
   bool pos_valid = false;
   bool cog_valid = false;
   bool sog_valid = false;
 
-  std::string s = n0183_msg->payload;
+  std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())\
     return false;
@@ -7324,10 +7332,13 @@ bool MyFrame::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {
 }
 
 bool MyFrame::HandleN0183_HDT( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-  std::string s = n0183_msg->payload;
+  std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())
     return false;
@@ -7345,10 +7356,13 @@ bool MyFrame::HandleN0183_HDT( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
 }
 
 bool MyFrame::HandleN0183_HDG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-  std::string s = n0183_msg->payload;
+  std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())
     return false;
@@ -7378,10 +7392,14 @@ bool MyFrame::HandleN0183_HDG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
 }
 
 bool MyFrame::HandleN0183_HDM( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-  std::string s = n0183_msg->payload;
+    printf("HandleN0183_HDM \n");
+    std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())
     return false;
@@ -7400,10 +7418,13 @@ bool MyFrame::HandleN0183_VTG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
   bool bsog_valid = false;
   bool bcog_valid = false;
 
-  std::string s = n0183_msg->payload;
+  std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())
     return false;
@@ -7435,10 +7456,13 @@ bool MyFrame::HandleN0183_VTG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
 }
 
 bool MyFrame::HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-  std::string s = n0183_msg->payload;
+  std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())
     return false;
@@ -7458,10 +7482,13 @@ bool MyFrame::HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
 }
 
 bool MyFrame::HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-  std::string s = n0183_msg->payload;
+  std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())
     return false;
@@ -7484,10 +7511,13 @@ bool MyFrame::HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
 }
 
 bool MyFrame::HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-  std::string s = n0183_msg->payload;
+  std::string str = n0183_msg->payload;
 
-  wxString sentence(s.c_str());
-  m_NMEA0183 << sentence;
+  wxString sentence(str.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+
+  //FIXME Evaluate priority here?
+  m_NMEA0183 << sentence3;
 
   if (!m_NMEA0183.PreParse())
     return false;
@@ -7502,6 +7532,53 @@ bool MyFrame::HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
     sfixtime = m_NMEA0183.Gll.UTCTime;
   }
   PostProcessNMEA(pos_valid, false, false, sfixtime);
+
+  return true;
+}
+
+bool MyFrame::HandleN0183_AIVDO( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  GenericPosDatEx gpd;
+  wxString sfixtime;
+  bool pos_valid = false;
+  bool cog_valid = false;
+  bool sog_valid = false;
+
+  std::string str = n0183_msg->payload;
+  wxString sentence(str.c_str());
+
+  AIS_Error nerr = AIS_GENERIC_ERROR;
+  if (g_pAIS)
+    nerr = g_pAIS->DecodeSingleVDO(sentence, &gpd, &m_VDO_accumulator);
+
+  if (nerr == AIS_NoError) {
+    if (!std::isnan(gpd.kLat)) gLat = gpd.kLat;
+    if (!std::isnan(gpd.kLon)) gLon = gpd.kLon;
+
+    if (!g_own_ship_sog_cog_calc) {
+      gCog = gpd.kCog;
+      gSog = gpd.kSog;
+    } else {
+      UpdatePositionCalculatedSogCog();
+    }
+    cog_valid = true;
+    sog_valid = true;
+
+    if (!std::isnan(gpd.kHdt)) {
+      gHdt = gpd.kHdt;
+      g_bHDT_Rx = true;
+      gHDT_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
+    if (!std::isnan(gpd.kLat) && !std::isnan(gpd.kLon)) {
+      gGPS_Watchdog = gps_watchdog_timeout_ticks;
+      wxDateTime now = wxDateTime::Now();
+      m_fixtime = now.GetTicks();
+
+      pos_valid = true;
+    }
+
+    PostProcessNMEA(pos_valid, sog_valid, cog_valid, sfixtime);
+  }
 
   return true;
 }

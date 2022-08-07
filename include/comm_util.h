@@ -35,4 +35,6 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
 
 bool StopAndRemoveCommDriver(std::string ident);
 
-#endif  // DRIVER_API_H
+wxString ProcessNMEA4Tags( wxString& msg );
+
+#endif  // _COMM_UTIL_H

@@ -64,6 +64,59 @@ private:
   mutable std::mutex m_mutex;
 };
 
+template <class T>
+class circular_buffer {
+public:
+  explicit circular_buffer(size_t size)
+      : buf_(std::unique_ptr<T[]>(new T[size])), max_size_(size) {}
+
+  void reset();
+  size_t capacity() const;
+  size_t size() const;
+
+  bool empty() const {
+    // if head and tail are equal, we are empty
+    return (!full_ && (head_ == tail_));
+  }
+
+  bool full() const {
+    // If tail is ahead the head by 1, we are full
+    return full_;
+  }
+
+  void put(T item) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    buf_[head_] = item;
+    if (full_) tail_ = (tail_ + 1) % max_size_;
+
+    head_ = (head_ + 1) % max_size_;
+
+    full_ = head_ == tail_;
+  }
+
+  T get() {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (empty()) return T();
+
+    // Read data and advance the tail (we now have a free space)
+    auto val = buf_[tail_];
+    full_ = false;
+    tail_ = (tail_ + 1) % max_size_;
+
+    return val;
+  }
+
+private:
+  std::mutex mutex_;
+  std::unique_ptr<T[]> buf_;
+  size_t head_ = 0;
+  size_t tail_ = 0;
+  const size_t max_size_;
+  bool full_ = 0;
+};
+
+
 class commDriverN2KSerialEvent;     //fwd
 
 class commDriverN2KSerialThread : public wxThread {
@@ -466,7 +519,175 @@ void *commDriverN2KSerialThread::Entry() {
 }
 
 #else
-void *commDriverN2KSerialThread::Entry() { return NULL; }
+void *commDriverN2KSerialThread::Entry() {
+  bool not_done = true;
+  bool nl_found = false;
+  wxString msg;
+  circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+
+  //    Request the com port from the comm manager
+  if (!OpenComPortPhysical(m_PortName, m_baud)) {
+    wxString msg(_T("NMEA input device open failed: "));
+    msg.Append(m_PortName);
+    ThreadMessage(msg);
+    // goto thread_exit; // This means we will not be trying to connect = The
+    // device must be connected when the thread is created. Does not seem to be
+    // needed/what we want as the reconnection logic is able to pick it up
+    // whenever it actually appears (Of course given it appears with the
+    // expected device name).
+  }
+
+  m_pParentDriver->SetSecThreadActive();  // I am alive
+
+  //    The main loop
+  static size_t retries = 0;
+
+  bool bInMsg = false;
+  bool bGotESC = false;
+  bool bGotSOT = false;
+
+  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
+    if (TestDestroy()) not_done = false;  // smooth exit
+
+    uint8_t next_byte = 0;
+    size_t newdata = -1;
+    uint8_t rdata[2000];
+
+    if (m_serial.isOpen()) {
+      try {
+        newdata = m_serial.read(rdata, 200);
+      } catch (std::exception &e) {
+        // std::cerr << "Serial read exception: " << e.what() << std::endl;
+        if (10 < retries++) {
+          // We timed out waiting for the next character 10 times, let's close
+          // the port so that the reconnection logic kicks in and tries to fix
+          // our connection.
+          CloseComPortPhysical();
+          retries = 0;
+        }
+      }
+    } else {
+      // Reconnection logic. Let's try to reopen the port while waiting longer
+      // every time (until we simply keep trying every 2.5 seconds)
+      // std::cerr << "Serial port seems closed." << std::endl;
+      wxMilliSleep(250 * retries);
+      CloseComPortPhysical();
+      if (OpenComPortPhysical(m_PortName, m_baud))
+        retries = 0;
+      else if (retries < 10)
+        retries++;
+    }
+
+    if (newdata > 0) {
+      for (int i = 0; i < newdata; i++) {
+        circle.put(rdata[i]);
+      }
+    }
+
+    while (!circle.empty()) {
+      uint8_t next_byte = circle.get();
+
+      if (1) {
+        if (bInMsg) {
+          if (bGotESC) {
+            if (ESCAPE == next_byte) {
+              *put_ptr++ = next_byte;
+              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
+              bGotESC = false;
+            }
+          }
+
+          if (bGotESC && (ENDOFTEXT == next_byte)) {
+            // Process packet
+            //    Copy the message into a std::vector
+
+            auto buffer = std::make_shared<std::vector<unsigned char>>();
+            std::vector<unsigned char> *vec = buffer.get();
+
+            unsigned char *tptr;
+            tptr = tak_ptr;
+
+            while ((tptr != put_ptr)) {
+              vec->push_back(*tptr++);
+              if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
+            }
+
+            tak_ptr = tptr;
+            bInMsg = false;
+            bGotESC = false;
+
+            // Message is finished
+            // Send the captured raw data vector pointer to the thread's "parent"
+            //  thereby releasing the thread for further data capture
+            commDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
+            Nevent.SetPayload(buffer);
+            m_pParentDriver->AddPendingEvent(Nevent);
+
+          } else {
+            bGotESC = (next_byte == ESCAPE);
+
+            if (!bGotESC) {
+              *put_ptr++ = next_byte;
+              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
+            }
+          }
+        }
+
+        else {
+          if (STARTOFTEXT == next_byte) {
+            bGotSOT = false;
+            if (bGotESC) {
+              bGotSOT = true;
+            }
+          } else {
+            bGotESC = (next_byte == ESCAPE);
+            if (bGotSOT) {
+              bGotSOT = false;
+              bInMsg = true;
+
+              *put_ptr++ = next_byte;
+              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
+            }
+          }
+        }
+      }  // if newdata > 0
+    } //while
+
+
+    //      Check for any pending output message
+#if 0
+    bool b_qdata = !out_que.empty();
+
+    while (b_qdata) {
+      //  Take a copy of message
+      char *qmsg = out_que.front();
+      out_que.pop();
+      // m_outCritical.Leave();
+      char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+      strncpy(msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH - 1);
+      free(qmsg);
+
+      if (static_cast<size_t>(-1) == WriteComPortPhysical(msg) &&
+          10 < retries++) {
+        // We failed to write the port 10 times, let's close the port so that
+        // the reconnection logic kicks in and tries to fix our connection.
+        retries = 0;
+        CloseComPortPhysical();
+      }
+
+      b_qdata = !out_que.empty();
+    }  // while b_qdata
+
+#endif
+  }  // while ((not_done)
+
+  // thread_exit:
+  CloseComPortPhysical();
+  m_pParentDriver->SetSecThreadInActive();  // I am dead
+  m_pParentDriver->m_Thread_run_flag = -1;
+
+  return 0;
+}
 
 #endif  //  wxmsw Entry()
 

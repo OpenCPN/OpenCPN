@@ -561,6 +561,7 @@ public:
   bool HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg );
   bool HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg );
   bool HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+  bool HandleN0183_AIVDO( std::shared_ptr <const Nmea0183Msg> n0183_msg );
 
 private:
   void CheckToolbarPosition();
@@ -641,6 +642,7 @@ private:
   ObservedVarListener listener_N0183_GSV;
   ObservedVarListener listener_N0183_GGA;
   ObservedVarListener listener_N0183_GLL;
+  ObservedVarListener listener_N0183_AIVDO;
 
   DECLARE_EVENT_TABLE()
 };

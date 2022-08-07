@@ -147,6 +147,7 @@ void Multiplexer::ClearStreams() {
   m_pdatastreams->Clear();
 }
 
+
 DataStream *Multiplexer::FindStream(const wxString &port) {
   for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
     DataStream *stream = m_pdatastreams->Item(i);
@@ -296,6 +297,8 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
     // if it passes the source's input filter
     //  If there is no datastream, as for PlugIns, then pass everything
     bool bpass = true;
+#if 0
+    //FIXME Done
     if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
 
     if (bpass) {
@@ -311,6 +314,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
         if (m_gpsconsumer) m_gpsconsumer->AddPendingEvent(*goodEvent);
       }
     }
+#endif
 
     // Send to the Debug Window, if open
     //  Special formatting for non-printable characters helps debugging NMEA
@@ -334,10 +338,14 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
     }
 
     if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
+#if 0
+      //FIXME  Done
       // Send to plugins
       if (g_pi_manager)
         g_pi_manager->SendNMEASentenceToAllPlugIns(goodMessage);
+#endif
 
+      //FIXME  TODO
       // Send to all the other outputs
       for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
         DataStream *s = m_pdatastreams->Item(i);

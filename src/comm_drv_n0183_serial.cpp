@@ -295,15 +295,27 @@ void commDriverN0183Serial::handle_N0183_MSG(
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  if (full_sentence[0] == '$'){   // Sanity check
-    std::string identifier;
+  //FIXME
+  //    if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
+  //      if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
+    //FIXME
+  //    if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
+  //      if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
+
+  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')){   // Sanity check
+    std::string identifier;
     // We notify based on Mnemonic only, ignoring the Talker ID
     identifier = full_sentence.substr(3, 3);
+
     auto msg =
       std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
-
     m_listener.notify(std::move(msg));
+
+    // Also notify for "all" N0183 messages, to support plugin API
+    auto msg_all =
+      std::make_unique<const Nmea0183Msg>("", full_sentence);
+    m_listener.notify(std::move(msg_all));
 
   }
 }
