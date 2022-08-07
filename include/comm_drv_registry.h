@@ -28,8 +28,8 @@
 
 #include "comm_driver.h"
 
-// FIXME(leamas) test junk
-#include "ConnectionParams.h"
+class ConnectionParams;
+
 /**
  * The global driver registry, a singleton. Drivers register here when
  * activated, transport layer finds them.
