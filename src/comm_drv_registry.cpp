@@ -44,7 +44,7 @@ void CommDriverRegistry::Deactivate(DriverPtr driver) {
   evt_driverlist_change.notify();
 }
 
-const std::vector<DriverPtr>& CommDriverRegistry::get_drivers() {
+const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() {
   return drivers;
 };
 

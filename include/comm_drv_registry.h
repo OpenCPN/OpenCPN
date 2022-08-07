@@ -34,6 +34,7 @@
  */
 
 typedef std::shared_ptr<const AbstractCommDriver> DriverPtr;
+
 class CommDriverRegistry final {
 public:
   CommDriverRegistry() {}
@@ -44,18 +45,18 @@ public:
   /** Remove driver from list of active drivers. */
   void Deactivate(DriverPtr driver);
 
-  /** Notified by all driverlist updates. */
-  EventVar evt_driverlist_change;
-
   /** @return List of all activated drivers. */
-  const std::vector<DriverPtr>& get_drivers();
+  const std::vector<DriverPtr>& GetDrivers();
 
   static CommDriverRegistry& getInstance();
 
-  // FIXME
+  // FIXME (Dave)
   //  Stub method, to pretest drivers.
   //  Goes away for production
   void TestDriver(ConnectionParams* params);
+
+  /** Notified by all driverlist updates. */
+  EventVar evt_driverlist_change;
 
 private:
   std::vector<DriverPtr> drivers;
@@ -63,11 +64,9 @@ private:
 
 /**
  * Search list of drivers for a driver with given interface string.
- * @return First found driver or shared_ptr<nullptr>, guaranteed to be false.
+ * @return First found driver or shared_ptr<>(nullptr), which is false.
  */
 const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
                            const std::string& iface);
-
-
 
 #endif  // guard

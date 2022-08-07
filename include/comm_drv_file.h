@@ -46,10 +46,9 @@ public:
   /** A write-only instance writing to file. */
   FileCommDriver(const std::string& opath);
 
+  void SendMessage(const NavMsg& msg, const NavAddr& addr) override;
 
-  void SendMessage(const NavMsg& msg, const NavAddr& addr);
-
-  void Activate();
+  void Activate() override;
 
 private:
   std::string output_path;

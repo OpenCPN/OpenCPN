@@ -823,6 +823,7 @@ set(
   include/comm_drv_n2K_serial.h
   include/comm_drv_registry.h
   include/comm_drv_file.h
+  include/comm_navmsg.h
   include/comm_navmsg_bus.h
   include/comm_util.h
   include/compass.h

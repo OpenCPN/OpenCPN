@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Implement comm_drv_n0183_net.h -- network nmea0183 driver
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************

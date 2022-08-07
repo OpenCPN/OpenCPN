@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Implement comm_drv_file.h
+ * Purpose:  Implement comm_drv_file.h -- driver reading/writing to/from files
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -33,6 +33,11 @@
 #include "comm_drv_registry.h"
 #include "comm_drv_file.h"
 #include "ocpn_utils.h"
+
+class VoidDriverListener : public DriverListener {
+  virtual void notify(std::unique_ptr<const NavMsg> message) {}
+  virtual void notify(const AbstractCommDriver& driver) {}
+};
 
 static VoidDriverListener kVoidDriverListener;
 
