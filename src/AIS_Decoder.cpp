@@ -115,6 +115,14 @@ wxString GetShipNameFromFile(int);
 
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
+wxDEFINE_EVENT(EVT_N0183_VDO, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_VDM, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_FRPOS, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_CD, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_TLL, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_TTM, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_OSD, wxCommandEvent);
+
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
 EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
 EVT_TIMER(TIMER_DSC, AIS_Decoder::OnTimerDSC)
@@ -200,10 +208,11 @@ AIS_Decoder::AIS_Decoder(wxFrame *parent) : m_signalk_selfid("") {
   m_dsc_timer.SetOwner(this, TIMER_DSC);
 
   //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
-  Connect(wxEVT_OCPN_DATASTREAM,
-          (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS);
+  //FIXME delete Connect(wxEVT_OCPN_DATASTREAM,
+  //        (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS);
   Connect(EVT_OCPN_SIGNALKSTREAM,
           (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtSignalK);
+  InitCommListeners();
 }
 
 AIS_Decoder::~AIS_Decoder(void) {
@@ -252,6 +261,85 @@ AIS_Decoder::~AIS_Decoder(void) {
       "%d\n",
       first_rx_ticks, rx_ticks, rx_ticks - first_rx_ticks);
 #endif
+}
+
+void AIS_Decoder::InitCommListeners(void) {
+  // Initialize the comm listeners
+
+  auto& msgbus = NavMsgBus::getInstance();
+
+  //NMEA0183
+  //VDM
+  Nmea0183Msg n0183_msg_VDM("VDM", "");
+  listener_N0183_VDM = msgbus.get_listener(EVT_N0183_VDM, this, n0183_msg_VDM.key());
+
+  Bind(EVT_N0183_VDM, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_AIS( n0183_msg );
+      });
+
+  //FRPOS
+  Nmea0183Msg n0183_msg_FRPOS("FRPOS", "");
+  listener_N0183_FRPOS = msgbus.get_listener(EVT_N0183_FRPOS, this, n0183_msg_FRPOS.key());
+
+  Bind(EVT_N0183_FRPOS, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_AIS( n0183_msg );
+      });
+
+  //CD
+  Nmea0183Msg n0183_msg_CD("CD ", "");
+  listener_N0183_CD = msgbus.get_listener(EVT_N0183_CD, this, n0183_msg_CD.key());
+
+  Bind(EVT_N0183_CD, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_AIS( n0183_msg );
+      });
+
+  //TLL
+  Nmea0183Msg n0183_msg_TLL("TLL", "");
+  listener_N0183_TLL = msgbus.get_listener(EVT_N0183_TLL, this, n0183_msg_TLL.key());
+
+  Bind(EVT_N0183_TLL, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_AIS( n0183_msg );
+      });
+
+  //TTM
+  Nmea0183Msg n0183_msg_TTM("TTM", "");
+  listener_N0183_TTM = msgbus.get_listener(EVT_N0183_TTM, this, n0183_msg_TTM.key());
+
+  Bind(EVT_N0183_TTM, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_AIS( n0183_msg );
+      });
+
+  //OSD
+  Nmea0183Msg n0183_msg_OSD("OSD", "");
+  listener_N0183_OSD = msgbus.get_listener(EVT_N0183_OSD, this, n0183_msg_OSD.key());
+
+  Bind(EVT_N0183_OSD, [&](wxCommandEvent ev) {
+        auto message = get_navmsg_ptr(ev);
+        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+        HandleN0183_AIS( n0183_msg );
+      });
+}
+
+
+bool AIS_Decoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+  std::string str = n0183_msg->payload;
+  wxString sentence(str.c_str());
+  Decode(sentence);
+
+  //FIXME  Should be a better way to do this...
+  gFrame->TouchAISActive();
+
+  return true;
 }
 
 void AIS_Decoder::BuildERIShipTypeHash(void) {
@@ -334,6 +422,8 @@ void AIS_Decoder::BuildERIShipTypeHash(void) {
   make_hash_ERI(1910, _("Hydrofoil"));
 }
 
+#if 0
+//FIXME delete
 //----------------------------------------------------------------------------------
 //     Handle events from AIS DataStream
 //----------------------------------------------------------------------------------
@@ -358,6 +448,7 @@ void AIS_Decoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
     }
   }
 }
+#endif
 
 //----------------------------------------------------------------------------------
 //     Handle events from SignalK DataStream
@@ -2660,7 +2751,7 @@ void AIS_Decoder::DeletePersistentTrack(Track *track) {
                       "Do you instead want to stop Persistent tracking for this target?"),
                     _("OpenCPN Info"), wxYES_NO | wxCENTER, 60)) {
                 props->m_bPersistentTrack = true;
-              }              
+              }
             }
             break;
           }

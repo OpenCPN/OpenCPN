@@ -119,11 +119,21 @@ private:
   void updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,
                   wxJSONValue &item, wxString &sfixtime) const;
 
+  void InitCommListeners(void);
+  bool HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+
   wxString m_signalk_selfid;
   std::unordered_map<int, AIS_Target_Data *> AISTargetList;
   std::unordered_map<int, AIS_Target_Data *> AIS_AreaNotice_Sources;
   AIS_Target_Name_Hash *AISTargetNamesC;
   AIS_Target_Name_Hash *AISTargetNamesNC;
+
+  ObservedVarListener listener_N0183_VDM;
+  ObservedVarListener listener_N0183_FRPOS;
+  ObservedVarListener listener_N0183_CD;
+  ObservedVarListener listener_N0183_TLL;
+  ObservedVarListener listener_N0183_TTM;
+  ObservedVarListener listener_N0183_OSD;
 
   bool m_busy;
   wxTimer TimerAIS;
