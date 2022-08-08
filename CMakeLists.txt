@@ -938,28 +938,29 @@ set(
 )
 
 set(MODEL_SRC
-  src/BasePlatform.cpp
-  src/catalog_handler.cpp
-  src/catalog_parser.cpp
-  src/comm_navmsg.cpp
-  src/comm_navmsg_bus.cpp
-  src/comm_appmsg.cpp
-  src/comm_appmsg_bus.cpp
-  src/comm_drv_registry.cpp
-  src/comm_drv_file.cpp
-  src/Downloader.cpp
-  src/logger.cpp
-  src/observable.cpp
-  src/observable_msg.cpp
-  src/observable_appmsg.cpp
-  src/ocpn_plugin.cpp
-  src/ocpn_utils.cpp
-  src/plugin_cache.cpp
-  src/PluginHandler.cpp
-  src/plugin_loader.cpp
-  src/PluginPaths.cpp
-  src/pugixml.cpp
-  src/semantic_vers.cpp
+  # Testable sources without GUI dependencies.
+  ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
+  ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_appmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
+  ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
+  ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${CMAKE_SOURCE_DIR}/src/observable.cpp
+  ${CMAKE_SOURCE_DIR}/src/observable_msg.cpp
+  ${CMAKE_SOURCE_DIR}/src/observable_appmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
+  ${CMAKE_SOURCE_DIR}/src/PluginHandler.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
+  ${CMAKE_SOURCE_DIR}/src/PluginPaths.cpp
+  ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
+  ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
 )
  
 
@@ -1139,6 +1140,7 @@ endif ()
 if (QT_ANDROID)
   include(libs/AndroidLibs.cmake)
 endif ()
+
 
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
@@ -1546,6 +1548,7 @@ if (OPENGL_FOUND)
   )
 endif ()
 
+
 # Building for QT_ANDROID involves a cross-building environment, So the include
 # directories, flags, etc must be stated explicitly without trying to locate
 # them on the host build system.
@@ -1793,6 +1796,13 @@ if (UNIX)
     )
   endif ()
 endif (UNIX)
+
+add_subdirectory(test)
+add_custom_target(run-tests
+  COMMAND ctest
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+)
+add_dependencies(run-tests tests)
 
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources

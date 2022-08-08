@@ -1,4 +1,5 @@
-#include <gtest/gtest.h>
+
+#include "config.h"
 
 #include <algorithm>
 #include <iostream>
@@ -8,9 +9,26 @@
 #include "wx/event.h"
 #include "wx/app.h"
 
+#include <gtest/gtest.h>
+
+#include "BasePlatform.h"
 #include "comm_appmsg_bus.h"
-#include "comm_drv_registry.h"
 #include "comm_drv_file.h"
+#include "comm_drv_registry.h"
+
+BasePlatform* g_BasePlatform = 0;
+bool g_bportable = false;
+wxString g_winPluginDir;
+wxConfigBase* pBaseConfig = 0;
+void* g_pi_manager = reinterpret_cast<void*>(1L);
+wxString g_compatOS = PKG_TARGET;
+wxString g_compatOsVersion = PKG_TARGET_VERSION;
+
+namespace safe_mode { bool get_mode() { return false; } }
+
+wxString g_catalog_custom_url;
+wxString g_catalog_channel;
+wxLog* g_logger;
 
 wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
@@ -193,7 +211,8 @@ public:
   GuernseyApp(vector<string>& log) : wxAppConsole() {
     auto& msgbus = NavMsgBus::getInstance();
     string path("..");
-    path += kSEP + "testdata" + kSEP + "Guernesey-1659560590623.input.txt";
+    path += kSEP + ".." +  kSEP + "test" + kSEP + "testdata" + kSEP
+        +  "Guernesey-1659560590623.input.txt";
     auto driver =
         make_shared<FileCommDriver>("/tmp/output.txt", path, msgbus);
     auto listener = msgbus.get_listener(EVT_FOO, this,
