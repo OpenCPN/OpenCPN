@@ -16,6 +16,7 @@
 #include "OCPNPlatform.h"
 #include "navutil.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;

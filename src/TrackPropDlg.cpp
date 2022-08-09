@@ -36,6 +36,7 @@
 #include "Route.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

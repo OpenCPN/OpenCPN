@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Route Manager
@@ -26,7 +26,6 @@
 #ifndef __ROUTEMAN_H__
 #define __ROUTEMAN_H__
 
-#include "chart1.h"  // for ColorScheme definition
 #include <wx/imaglist.h>
 #include "styles.h"
 #include "Select.h"
@@ -48,6 +47,7 @@ extern bool g_bPluginHandleAutopilotRoute;
 class Route;
 class RoutePoint;
 class RoutePointList;
+class MyApp;
 
 //    List definitions for Waypoint Manager Icons
 

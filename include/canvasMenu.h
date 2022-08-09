@@ -35,7 +35,6 @@
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
 
-#include "chart1.h"  // for enum types
 #include "ocpndc.h"
 #include "undo.h"
 
@@ -48,7 +47,6 @@
 #include "timers.h"
 #include "emboss_data.h"
 
-//#include "s57chart.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -75,6 +73,7 @@ class Quilt;
 class PixelCache;
 class ChInfoWin;
 class glChartCanvas;
+class Track;
 
 //----------------------------------------------------------------------------
 // CanvasMenuHandler

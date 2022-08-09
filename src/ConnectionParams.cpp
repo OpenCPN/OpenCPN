@@ -33,8 +33,8 @@
 #include "ConnectionParams.h"
 
 #include "ocpn_plugin.h"
-#include "chart1.h"
 #include "options.h"
+#include "ocpn_frame.h"
 
 #if !wxUSE_XLOCALE && wxCHECK_VERSION(3, 0, 0)
 #define wxAtoi(arg) atoi(arg)

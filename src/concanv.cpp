@@ -48,6 +48,7 @@
 #include "FontMgr.h"
 #include "wx28compat.h"
 #include "Route.h"
+#include "ocpn_frame.h"
 
 extern Routeman* g_pRouteMan;
 extern MyFrame* gFrame;

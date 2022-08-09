@@ -39,10 +39,9 @@
 #include "dychart.h"
 
 #include "thumbwin.h"
-#include "chart1.h"
 #include "chartdb.h"
 #include "wx28compat.h"
-
+#include "ocpn_frame.h"  //FIXME (dave)  color
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
 //------------------------------------------------------------------------------

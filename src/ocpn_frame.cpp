@@ -39,46 +39,57 @@
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-#include <algorithm>
-#include <limits.h>
-#include <memory>
+#include "ocpn_frame.h"
+#include "idents.h"
 
+// #include <algorithm>
+// #include <limits.h>
+// #include <memory>
+//
 #ifdef __WXMSW__
 #include <math.h>
 #include <psapi.h>
 #include <stdlib.h>
 #include <time.h>
 #endif
-
-#ifndef __WXMSW__
-#include <setjmp.h>
-#include <signal.h>
-#endif
-
-#ifdef OCPN_HAVE_X11
-#include <X11/Xatom.h>
-#include <X11/Xlib.h>
-#endif
-
-#include <wx/apptrait.h>
-#include <wx/arrimpl.cpp>
-#include <wx/artprov.h>
-#include <wx/aui/aui.h>
-#include <wx/clrpicker.h>
-#include <wx/dialog.h>
-#include <wx/dialog.h>
-#include <wx/dir.h>
-#include <wx/image.h>
-#include <wx/intl.h>
-#include <wx/ipc.h>
-#include <wx/jsonreader.h>
-#include <wx/listctrl.h>
-#include <wx/printdlg.h>
-#include <wx/print.h>
-#include <wx/progdlg.h>
-#include <wx/settings.h>
+//
+// #ifndef __WXMSW__
+// #include <setjmp.h>
+// #include <signal.h>
+// #endif
+//
+ #ifdef OCPN_HAVE_X11
+   #include <X11/Xatom.h>
+   #include <X11/Xlib.h>
+ #endif
+//
+// #include <wx/apptrait.h>
+// #include <wx/arrimpl.cpp>
+// #include <wx/artprov.h>
+// #include <wx/aui/aui.h>
+// #include <wx/clrpicker.h>
+// #include <wx/dialog.h>
+// #include <wx/dialog.h>
+// #include <wx/dir.h>
+// #include <wx/image.h>
+// #include <wx/intl.h>
+// #include <wx/ipc.h>
+// #include <wx/jsonreader.h>
+// #include <wx/listctrl.h>
+// #include <wx/printdlg.h>
+// #include <wx/print.h>
+// #include <wx/progdlg.h>
+// #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
+//
+#include "OCPN_AUIManager.h"
+#include "chartbase.h"
+#include "georef.h"
+#include "glChartCanvas.h"
+#include "plugin_loader.h"
+#include "timers.h"
+#include "comm_util.h"  //FIXME(dave) this one goes away
 
 #include "AboutFrameImpl.h"
 #include "about.h"
@@ -89,102 +100,101 @@
 #include "AISTargetListDialog.h"
 #include "AISTargetQueryDialog.h"
 #include "CanvasConfig.h"
-#include "chart1.h"
 #include "chartdb.h"
-#include "chartimg.h"  // for ChartBaseBSB
+// #include "chartimg.h"  // for ChartBaseBSB
 #include "chcanv.h"
 #include "cm93.h"
 #include "compass.h"
-#include "concanv.h"
-#include "config.h"
+ #include "concanv.h"
+// #include "config.h"
 #include "ConfigMgr.h"
-#include "cutil.h"
-#include "datastream.h"
-#include "dychart.h"
+// #include "cutil.h"
+// #include "datastream.h"
+// #include "dychart.h"
 #include "FontMgr.h"
-#include "gdal/cpl_csv.h"
-#include "glTexCache.h"
-#include "gshhs.h"
+// #include "gdal/cpl_csv.h"
+// #include "glTexCache.h"
+// #include "gshhs.h"
 #include "gui_lib.h"
 #include "iENCToolbar.h"
 #include "Layer.h"
-#include "logger.h"
+// #include "logger.h"
 #include "MarkInfo.h"
-#include "MUIBar.h"
+// #include "MUIBar.h"
 #include "multiplexer.h"
 #include "NavObjectCollection.h"
 #include "navutil.h"
 #include "NMEALogWindow.h"
-#include "OCP_DataStreamInput_Thread.h"
-#include "OCPN_AUIManager.h"
-#include "OCPN_DataStreamEvent.h"
+// #include "OCP_DataStreamInput_Thread.h"
+// #include "OCPN_AUIManager.h"
+// #include "OCPN_DataStreamEvent.h"
 #include "OCPNPlatform.h"
 #include "OCPN_SignalKEvent.h"
 #include "OCPN_Sound.h"
 #include "options.h"
-#include "piano.h"
-#include "PluginHandler.h"
+// #include "piano.h"
+// #include "PluginHandler.h"
 #include "pluginmanager.h"
-#include "Quilt.h"
-#include "Route.h"
-#include "routemanagerdialog.h"
+// #include "Quilt.h"
+// #include "Route.h"
+ #include "routemanagerdialog.h"
 #include "routeman.h"
-#include "routeprintout.h"
+// #include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
-#include "s52plib.h"
-#include "s52utils.h"
+ #include "s52plib.h"
+// #include "s52utils.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
-#include "safe_mode.h"
+// #include "safe_mode.h"
 #include "Select.h"
-#include "SignalKEventHandler.h"
-#include "SoundFactory.h"
-#include "styles.h"
+// #include "SignalKEventHandler.h"
+// #include "SoundFactory.h"
+// #include "styles.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
-#include "thumbwin.h"
+// #include "thumbwin.h"
 #include "toolbar.h"
 #include "Track.h"
 #include "TrackPropDlg.h"
-#include "usb_devices.h"
-#include "comm_drv_registry.h"
-#include "comm_navmsg_bus.h"
+// #include "usb_devices.h"
+// #include "comm_drv_registry.h"
+// #include "comm_navmsg_bus.h"
 #include "N2KParser.h"
-#include "comm_util.h"
-
-#ifdef __linux__
-#include "udev_rule_mgr.h"
-#endif
-
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
-
-#ifdef __WXOSX__
-#include "macutils.h"
-#endif
-
-#ifdef __WXMSW__
-#include "GarminProtocolHandler.h"  // Used for port probing on Windows
-void RedirectIOToConsole();
-#endif
-
-#if defined(__WXMSW__) && defined (__MSVC__LEAK)
-#include "Stackwalker.h"
-#endif
-
-#ifdef LINUX_CRASHRPT
-#include "crashprint.h"
-#endif
-
-#ifdef __OCPN__ANDROID__
-#include "androidUTIL.h"
-#endif
-
-#ifdef OCPN_USE_NEWSERIAL
-#include "serial/serial.h"
-#endif
-
+// #include "comm_util.h"
+//
+// #ifdef __linux__
+// #include "udev_rule_mgr.h"
+// #endif
+//
+// #ifdef ocpnUSE_GL
+// #include "glChartCanvas.h"
+// #endif
+//
+// #ifdef __WXOSX__
+// #include "macutils.h"
+// #endif
+//
+// #ifdef __WXMSW__
+// #include "GarminProtocolHandler.h"  // Used for port probing on Windows
+// void RedirectIOToConsole();
+// #endif
+//
+// #if defined(__WXMSW__) && defined (__MSVC__LEAK)
+// #include "Stackwalker.h"
+// #endif
+//
+// #ifdef LINUX_CRASHRPT
+// #include "crashprint.h"
+// #endif
+//
+// #ifdef __OCPN__ANDROID__
+// #include "androidUTIL.h"
+// #endif
+//
+// #ifdef OCPN_USE_NEWSERIAL
+// #include "serial/serial.h"
+// #endif
+//
 static void UpdatePositionCalculatedSogCog();
 
 
@@ -435,6 +445,31 @@ extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
 
 
+#ifdef __WXMSW__
+// System color control support
+
+typedef DWORD(WINAPI *SetSysColors_t)(DWORD, DWORD *, DWORD *);
+typedef DWORD(WINAPI *GetSysColor_t)(DWORD);
+
+SetSysColors_t pSetSysColors;
+GetSysColor_t pGetSysColor;
+
+void SaveSystemColors(void);
+void RestoreSystemColors(void);
+
+DWORD color_3dface;
+DWORD color_3dhilite;
+DWORD color_3dshadow;
+DWORD color_3ddkshadow;
+DWORD color_3dlight;
+DWORD color_activecaption;
+DWORD color_gradientactivecaption;
+DWORD color_captiontext;
+DWORD color_windowframe;
+DWORD color_inactiveborder;
+
+#endif
+
 #if 0
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
@@ -661,30 +696,6 @@ int osMajor, osMinor;
 
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-#ifdef __WXMSW__
-// System color control support
-
-typedef DWORD(WINAPI *SetSysColors_t)(DWORD, DWORD *, DWORD *);
-typedef DWORD(WINAPI *GetSysColor_t)(DWORD);
-
-SetSysColors_t pSetSysColors;
-GetSysColor_t pGetSysColor;
-
-void SaveSystemColors(void);
-void RestoreSystemColors(void);
-
-DWORD color_3dface;
-DWORD color_3dhilite;
-DWORD color_3dshadow;
-DWORD color_3ddkshadow;
-DWORD color_3dlight;
-DWORD color_activecaption;
-DWORD color_gradientactivecaption;
-DWORD color_captiontext;
-DWORD color_windowframe;
-DWORD color_inactiveborder;
-
-#endif
 
 // AIS Global configuration
 bool g_bCPAMax;
@@ -1091,7 +1102,6 @@ static bool isTransparentToolbarInOpenGLOK(void) {
 }
 
 
-#include <wx/power.h>
 
 //------------------------------------------------------------------------------
 // MyFrame
@@ -5824,7 +5834,7 @@ bool MyFrame::HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
   std::string str = n0183_msg->payload;
 
   wxString sentence(str.c_str());
-  wxString sentence3 = ProcessNMEA4Tags(sentence);
+  wxString sentence3 = sentence; //ProcessNMEA4Tags(sentence);
 
   //FIXME Evaluate priority here?
   m_NMEA0183 << sentence3;
@@ -7456,7 +7466,7 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
   bool sog_valid = false;
   bool bis_recognized_sentence = true;
 
-  wxString str_buf = event.ProcessNMEA4Tags();
+  wxString str_buf;// = event.ProcessNMEA4Tags();
 
   if (g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug)) {
     g_total_NMEAerror_messages++;
@@ -7468,20 +7478,20 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
   //  The message must be at least reasonably formed...
   if ((str_buf[0] != '$') && (str_buf[0] != '!')) return;
 
-  if (event.GetStream()) {
-    if (!event.GetStream()->ChecksumOK(event.GetNMEAString())) {
-      if (g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug)) {
-        g_total_NMEAerror_messages++;
-        wxString msg(_T(">>>>>>NMEA Sentence Checksum Bad..."));
-        msg.Append(str_buf);
-        wxLogMessage(msg);
-      }
-      return;
-    }
-  }
+//   if (event.GetStream()) {
+//     if (!event.GetStream()->ChecksumOK(event.GetNMEAString())) {
+//       if (g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug)) {
+//         g_total_NMEAerror_messages++;
+//         wxString msg(_T(">>>>>>NMEA Sentence Checksum Bad..."));
+//         msg.Append(str_buf);
+//         wxLogMessage(msg);
+//       }
+//       return;
+//     }
+//   }
 
-  bool b_accept = EvalPriority(str_buf, event.GetStream());
-  if (!b_accept) return;
+//   bool b_accept = EvalPriority(str_buf, event.GetStream());
+//   if (!b_accept) return;
 
   m_NMEA0183 << str_buf;
 
@@ -9857,7 +9867,8 @@ void LoadS57() {
   g_SencThreadManager = new SENCThreadManager();
 
   //      Set up a useable CPL library error handler for S57 stuff
-  CPLSetErrorHandler(MyCPLErrorHandler);
+  //FIXME (dave) Verify after moving LoadS57
+  //CPLSetErrorHandler(MyCPLErrorHandler);
 
   //      Init the s57 chart object, specifying the location of the required csv
   //      files

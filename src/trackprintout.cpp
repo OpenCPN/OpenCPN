@@ -46,6 +46,7 @@ using namespace std;
 
 #include <wx/dialog.h>
 #include "dychart.h"
+#include "ocpn_frame.h"
 
 #ifdef __WXMSW__
 #include <stdlib.h>

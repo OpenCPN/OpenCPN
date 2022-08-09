@@ -34,6 +34,7 @@
 #include "OCPNPlatform.h"
 #include "RoutePoint.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -190,7 +191,7 @@ void AISTargetAlertDialog::CreateControls() {
                                      wxDefaultPosition, wxDefaultSize, 0);
     AckBox->Add(silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
   }
-    
+
   if (m_bjumpto) {
     wxButton *jumpto = new wxButton(this, ID_JUMPTO, _("&Jump To"),
                                     wxDefaultPosition, wxDefaultSize, 0);
@@ -358,7 +359,7 @@ void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
         td->b_isDSCtarget = false;
         if (td->n_alert_state) {
           td->n_alert_state = AIS_NO_ALERT;
-        }              
+        }
       }
     }
   }

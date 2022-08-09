@@ -33,9 +33,9 @@
 #include "geodesic.h"
 #include "SignalKEventHandler.h"
 #include "OCPN_SignalKEvent.h"
-#include "chart1.h"
 #include "pluginmanager.h"
 #include "logger.h"
+#include "ocpn_frame.h"
 
 extern PlugInManager *g_pi_manager;
 wxString g_ownshipMMSI_SK;

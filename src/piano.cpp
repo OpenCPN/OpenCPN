@@ -36,13 +36,13 @@
 #include "chcanv.h"
 #include "piano.h"
 #include "chartdb.h"
-#include "chart1.h"
 #include "chartbase.h"
 #include "styles.h"
 #include "ocpndc.h"
 #include "cutil.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "ocpn_frame.h"   //FIXME (dave) color
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"

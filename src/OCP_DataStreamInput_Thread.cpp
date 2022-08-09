@@ -31,6 +31,7 @@
 #include "OCPN_DataStreamEvent.h"
 #include "datastream.h"
 #include "dychart.h"
+#include "ocpn_frame.h"
 
 #ifdef __WXQT__
 #define __POSIX__
@@ -49,7 +50,6 @@
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 const wxEventType wxEVT_OCPN_THREADMSG = wxNewEventType();
 
-#include "chart1.h"
 extern MyFrame *gFrame;
 
 #ifdef __WXMSW__

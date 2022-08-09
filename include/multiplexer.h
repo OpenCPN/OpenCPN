@@ -26,6 +26,7 @@
 #ifndef __MULTIPLEXER_H__
 #define __MULTIPLEXER_H__
 
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -34,6 +35,8 @@
 
 #include "pluginmanager.h"  // for PlugInManager
 #include "datastream.h"
+#include "OCPN_DataStreamEvent.h"
+#include "OCPN_SignalKEvent.h"
 
 class RoutePoint;
 class Route;

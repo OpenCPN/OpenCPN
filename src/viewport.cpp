@@ -52,7 +52,6 @@
 #include "thumbwin.h"
 #include "chartdb.h"
 #include "chartimg.h"
-#include "chart1.h"
 #include "cutil.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"

@@ -25,10 +25,11 @@
 #ifndef __QUIT_H__
 #define __QUIT_H__
 
-#include "chart1.h"
 #include "LLRegion.h"
 #include "OCPNRegion.h"
-//#include "chcanv.h"
+#include "chcanv.h"
+#include "viewport.h"
+#include "chartdb.h"
 
 extern bool g_bopengl;
 

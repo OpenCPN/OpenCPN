@@ -1,9 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
+ * Purpose:  OpenCPN Main wxWidgets Program
+ * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,37 +23,41 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __CHINFOWIN_H__
-#define __CHINFOWIN_H__
+#ifndef __OCPN_APP_H
+#define __OCPN_APP_H
 
-#include <wx/window.h>
-#include <wx/stattext.h>
-#include <wx/panel.h>
+#include "wx/wxprec.h"
 
-class ChInfoWin : public wxPanel {
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
+
+#include <wx/snglinst.h>
+
+class Track;
+
+class MyApp : public wxApp {
 public:
-  ChInfoWin(wxWindow* parent);
-  ~ChInfoWin();
+  bool OnInit();
+  int OnExit();
+  void OnInitCmdLine(wxCmdLineParser &parser);
+  bool OnCmdLineParsed(wxCmdLineParser &parser);
+  void OnActivateApp(wxActivateEvent &event);
 
-  void SetString(const wxString& s) { m_string = s; }
-  const wxString& GetString(void) { return m_string; }
-  void MouseEvent(wxMouseEvent& event);
+#ifdef LINUX_CRASHRPT
+  //! fatal exeption handling
+  void OnFatalException();
+#endif
 
-  void SetPosition(wxPoint pt) { m_position = pt; }
-  void SetWinSize(wxSize sz) { m_size = sz; }
-  void SetBitmap(void);
-  void FitToChars(int char_width, int char_height);
-  wxSize GetWinSize(void) { return m_size; }
-  void OnPaint(wxPaintEvent& event);
-  void OnEraseBackground(wxEraseEvent& event);
+#ifdef __WXMSW__
+  //  Catch malloc/new fail exceptions
+  //  All the rest will be caught be CrashRpt
+  bool OnExceptionInMainLoop();
+#endif
 
-  wxStaticText* m_pInfoTextCtl;
-  int dbIndex;
+  Track* TrackOff(void);
 
-private:
-  wxString m_string;
-  wxSize m_size;
-  wxPoint m_position;
+  wxSingleInstanceChecker *m_checker;
 
   DECLARE_EVENT_TABLE()
 };

@@ -48,6 +48,8 @@
 #include <multiplexer.h>
 #include "config.h"
 #include <cstdio>
+#include "ocpn_frame.h"
+#include "idents.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

@@ -45,12 +45,14 @@
 #include "wx/sound.h"
 
 #include "dychart.h"
-#include "chart1.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "OCPN_Sound.h"
 #include "AIS_Bitstring.h"
 #include "AISTargetListDialog.h"
+
+//  FWD definitions
+class ChartCanvas;
 
 //    Constants
 #ifndef PI

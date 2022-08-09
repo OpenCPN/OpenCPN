@@ -50,7 +50,6 @@
 #include "navutil.h"
 #include "kml.h"
 #include "chartdb.h"
-#include "chart1.h"
 #include "cutil.h"
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
@@ -73,6 +72,7 @@
 #include "s52plib.h"
 
 #include "ais.h"
+#include "ocpn_frame.h"
 
 #include <vector>
 

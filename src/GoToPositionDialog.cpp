@@ -34,6 +34,7 @@
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 
 extern MyFrame* gFrame;
 

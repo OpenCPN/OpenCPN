@@ -44,6 +44,7 @@
 #include <wx/timectrl.h>
 
 #include "dychart.h"
+#include "idents.h"
 
 #include <stdlib.h>
 //#include <math.h>
@@ -55,7 +56,6 @@
 #include <wx/progdlg.h>
 
 #include "config.h"
-#include "chart1.h"
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
@@ -81,6 +81,7 @@
 #include "Track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
+#include "ocpn_frame.h"
 
 #include "s52plib.h"
 #include "cm93.h"

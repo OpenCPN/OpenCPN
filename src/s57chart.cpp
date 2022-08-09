@@ -66,6 +66,7 @@
 #include "gui_lib.h"
 #include "logger.h"
 #include "Quilt.h"
+#include "ocpn_frame.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -132,7 +133,7 @@ static jmp_buf env_ogrf;  // the context saved by setjmp();
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST(ListOfPI_S57Obj); 
+WX_DEFINE_LIST(ListOfPI_S57Obj);
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 

@@ -55,6 +55,7 @@
 #include "Route.h"
 #include "chcanv.h"
 #include "svg_utils.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

@@ -36,7 +36,6 @@
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
 
-#include "chart1.h"  // for enum types
 #include "ocpndc.h"
 #include "undo.h"
 
@@ -53,6 +52,9 @@ class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
 class ocpnCompass;
+class TimedPopupWin;
+class Track;
+class ocpnFloatingToolbarDialog;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);

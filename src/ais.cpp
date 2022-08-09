@@ -43,7 +43,6 @@
 #include "FontMgr.h"
 #include "dychart.h"
 #include "ais.h"
-#include "chart1.h"
 #include "navutil.h"  // for Select
 #include "georef.h"
 #include "styles.h"
@@ -56,6 +55,7 @@
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 
 extern double gLat, gLon, gSog, gCog;
 extern MyFrame *gFrame;

@@ -91,6 +91,7 @@ class OCPNStopWatch {
 #include "emboss_data.h"
 #include "Route.h"
 #include "mbtiles.h"
+#include "ocpn_frame.h"  //FIXME (dave) for color
 #include <vector>
 #include <algorithm>
 

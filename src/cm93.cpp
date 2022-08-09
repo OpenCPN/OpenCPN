@@ -58,6 +58,7 @@
 #include "DetailSlider.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"
 
 #include <stdio.h>
 

@@ -847,6 +847,7 @@ set(
   include/gui_lib.h
   include/gshhs.h
   include/Hyperlink.h
+  include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
   include/kml.h
@@ -868,6 +869,7 @@ set(
   include/ocpCursor.h
   include/OCP_DataStreamInput_Thread.h
   include/OCPN_DataStreamEvent.h
+  include/ocpn_frame.h
   include/ocpndc.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h

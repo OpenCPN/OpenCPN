@@ -60,6 +60,7 @@
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "PluginPaths.h"
+#include "ocpn_frame.h"
 #include <string>
 #include <vector>
 
@@ -105,6 +106,7 @@
 
 #include <cstdlib>
 
+class MyApp;
 DECLARE_APP(MyApp)
 
 void appendOSDirSlash(wxString *pString);

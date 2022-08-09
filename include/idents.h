@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
+ * Purpose:
  * Author:   David Register
  *
  ***************************************************************************
@@ -23,81 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __CHART1_H__
-#define __CHART1_H__
+#ifndef __IDENTS_H
+#define __IDENTS_H
 
-#include "wx/print.h"
-#include "wx/datetime.h"
-#include <wx/cmdline.h>
-#include <wx/snglinst.h>
-#include <wx/power.h>
-#include <wx/clrpicker.h>
-
-#ifdef __WXMSW__
-#include "wx/msw/private.h"
-#endif
-
-#include "config.h"
-
-#include "ocpn_types.h"
-#include "viewport.h"
-#include "nmea0183.h"
-#include "chartdbs.h"
-#include "s52s57.h"
-#include "SencManager.h"
-#include "observable_msg.h"
-
-#include "gdal/cpl_error.h"
-#include "SignalKEventHandler.h"
-
-//    Global Static error reporting function
-extern "C" void MyCPLErrorHandler(CPLErr eErrClass, int nError,
-                                  const char *pszErrorMsg);
-
-wxColour GetGlobalColor(wxString colorName);
-enum DialogColor {
-  DLG_BACKGROUND,
-  DLG_SELECTED_BACKGROUND,
-  DLG_UNSELECTED_BACKGROUND,
-  DLG_ACCENT,
-  DLG_SELECTED_ACCENT,
-  DLG_UNSELECTED_ACCENT,
-  DLG_TEXT,
-  DLG_HIGHLIGHT
-};
-wxColour GetDialogColor(DialogColor color);
-
-int GetApplicationMemoryUse(void);
-
-// Helper to create menu label + hotkey string when registering menus
-wxString _menuText(wxString name, wxString shortcut);
-
-// The point for anchor watch should really be a class...
-double AnchorDistFix(double const d, double const AnchorPointMinDist,
-                     double const AnchorPointMaxDist);  //  pjotrc 2010.02.22
-
-bool TestGLCanvas(wxString prog_dir);
-bool ReloadLocale();
-void ApplyLocale(void);
-
-void LoadS57();
-
-class NMEA_Msg_Container;
-WX_DECLARE_STRING_HASH_MAP(NMEA_Msg_Container *, MsgPriorityHash);
-
-//    Fwd definitions
-class OCPN_NMEAEvent;
-class ChartCanvas;
-class ocpnFloatingToolbarDialog;
-class OCPN_MsgEvent;
-class options;
-class Track;
-class OCPN_ThreadMessageEvent;
-class wxHtmlWindow;
-
-//----------------------------------------------------------------------------
-//   constants
-//----------------------------------------------------------------------------
 
 #define TIMER_GFRAME_1 999
 
@@ -211,11 +139,35 @@ enum {
   ID_CMD_CLOSE_ALL_DIALOGS,
 
   ID_MENU_SHOW_NAVOBJECTS,
+};
+
+//      A global definition for window, timer and other ID's as needed.
+enum {
+  ID_NMEA_WINDOW = wxID_HIGHEST,
+  ID_AIS_WINDOW,
+  INIT_TIMER,
+  FRAME_TIMER_1,
+  FRAME_TIMER_2,
+  TIMER_AIS1,
+  TIMER_DSC,
+  TIMER_AISAUDIO,
+  AIS_SOCKET_Isa,
+  FRAME_TIMER_DOG,
+  FRAME_TC_TIMER,
+  FRAME_COG_TIMER,
+  MEMORY_FOOTPRINT_TIMER,
+  BELLS_TIMER,
+  ID_NMEA_THREADMSG,
+  RESIZE_TIMER,
+  TOOLBAR_ANIMATE_TIMER,
+  RECAPTURE_TIMER
 
 };
 
+
 enum { TIME_TYPE_UTC = 1, TIME_TYPE_LMT, TIME_TYPE_COMPUTER };
 
+#if 0
 //      Command identifiers for wxCommandEvents coming from the outside world.
 //      Removed from enum to facilitate constant definition
 #define ID_CMD_APPLY_SETTINGS 300
@@ -267,6 +219,7 @@ class AIS_Target_Data;
 
 bool isSingleChart(ChartBase *chart);
 
+#if 0
 //      A class to contain NMEA messages, their receipt time, and their source
 //      priority
 class NMEA_Msg_Container {
@@ -275,6 +228,7 @@ public:
   int current_priority;
   wxString stream_name;
 };
+#endif
 
 class OCPN_ThreadMessageEvent : public wxEvent {
 public:
@@ -318,6 +272,7 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
+#if 0
 class MyFrame : public wxFrame {
   friend class SignalKEventHandler;
 
@@ -647,6 +602,9 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
+#endif
+
+#if 0
 //--------------------------------------------------------------------
 //          Printing Support
 //--------------------------------------------------------------------
@@ -667,29 +625,8 @@ public:
 private:
   wxBitmap m_GLbmp;
 };
+#endif
 
-//      A global definition for window, timer and other ID's as needed.
-enum {
-  ID_NMEA_WINDOW = wxID_HIGHEST,
-  ID_AIS_WINDOW,
-  INIT_TIMER,
-  FRAME_TIMER_1,
-  FRAME_TIMER_2,
-  TIMER_AIS1,
-  TIMER_DSC,
-  TIMER_AISAUDIO,
-  AIS_SOCKET_Isa,
-  FRAME_TIMER_DOG,
-  FRAME_TC_TIMER,
-  FRAME_COG_TIMER,
-  MEMORY_FOOTPRINT_TIMER,
-  BELLS_TIMER,
-  ID_NMEA_THREADMSG,
-  RESIZE_TIMER,
-  TOOLBAR_ANIMATE_TIMER,
-  RECAPTURE_TIMER
-
-};
 
 //-----------------------------------------------------------------------
 //          Dummy Text Control for global key events
@@ -733,5 +670,7 @@ private:
 
   DECLARE_EVENT_TABLE()
 };
+
+#endif
 
 #endif

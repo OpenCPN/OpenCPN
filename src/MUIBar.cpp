@@ -43,6 +43,8 @@
 #include "styles.h"
 #include "navutil.h"
 #include "svg_utils.h"
+#include "idents.h"
+#include "ocpn_frame.h"   //FIXME (dave) for color only
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

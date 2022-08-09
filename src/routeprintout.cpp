@@ -62,9 +62,8 @@
 #include <signal.h>
 #include <setjmp.h>
 #endif
-
-#include "chart1.h"
 #include "routeprintout.h"
+
 #include "printtable.h"
 #include "wx28compat.h"
 #include "Track.h"

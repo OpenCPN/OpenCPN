@@ -42,6 +42,7 @@
 #include "OCPNPlatform.h"
 #include "RoutePoint.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 
 static AIS_Decoder *s_p_sort_decoder;
 

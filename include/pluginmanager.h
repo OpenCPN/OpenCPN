@@ -31,6 +31,8 @@
 #include <wx/dynarray.h>
 #include <wx/dynlib.h>
 
+#include <memory>
+
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
 #endif
@@ -38,14 +40,14 @@
 #include "config.h"
 
 #include "ocpn_plugin.h"
-#include "chart1.h"  // for MyFrame
 //#include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
 #include "chartimg.h"
 #include "catalog_parser.h"
 #include "plugin_blacklist.h"
 #include "observable.h"
-
+#include "AIS_Target_Data.h"
+#include "comm_navmsg.h"
 #include "s57chart.h"  // for Object list
 #include "semantic_vers.h"
 
@@ -85,7 +87,7 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
 class PluginListPanel;
 class PluginPanel;
 class pluginUtilHandler;
-
+class MyFrame;
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event

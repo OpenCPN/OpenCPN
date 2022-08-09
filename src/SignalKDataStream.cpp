@@ -58,8 +58,9 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 #include "easywsclient.hpp"
-#include "chart1.h"
 #include "wxServDisc.h"
+#include "ocpn_frame.h"
+
 
 #if defined(__WXMSW__) && !defined(__MINGW32__)
 #include <Ws2tcpip.h>  // for ip_mreq

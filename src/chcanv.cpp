@@ -54,7 +54,6 @@
 #include "thumbwin.h"
 #include "chartdb.h"
 #include "chartimg.h"
-#include "chart1.h"
 #include "cutil.h"
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
@@ -92,6 +91,8 @@
 #include "CanvasConfig.h"
 #include "CanvasOptions.h"
 #include "mbtiles.h"
+#include "ocpn_frame.h"
+#include "idents.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

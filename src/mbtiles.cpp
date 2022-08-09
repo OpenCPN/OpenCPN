@@ -58,9 +58,9 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 
 #include "mbtiles.h"
-#include "chart1.h"
 #include "chcanv.h"
 #include "glChartCanvas.h"
+#include "ocpn_frame.h"
 
 //  Missing from MSW include files
 #ifdef _MSC_VER

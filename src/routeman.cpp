@@ -55,6 +55,7 @@
 #include "AIS_Decoder.h"
 #include "wx28compat.h"
 #include "Route.h"
+#include "ocpn_app.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -64,6 +65,7 @@
 #include "Track.h"
 #include "chcanv.h"
 #include "svg_utils.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

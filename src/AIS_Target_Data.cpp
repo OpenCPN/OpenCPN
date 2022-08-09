@@ -25,6 +25,8 @@
 #include "AIS_Target_Data.h"
 #include <unordered_map>
 
+#include "ocpn_frame.h"
+
 extern bool bGPSValid;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
@@ -931,7 +933,7 @@ wxString AIS_Target_Data::Get_class_string(bool b_short) {
 }
 
 wxString AIS_Target_Data::GetNatureofDistress(int dscnature) {
-  // Natures of distress from: Rec. ITU-R M.493-10. 
+  // Natures of distress from: Rec. ITU-R M.493-10.
   wxString dscDistressType[] = { _("Fire, explosion"), _("Floding"),
                                      _("Collision"), _("Grounding"),
                  _("Listing, in danger of capsazing"), _("Sinking"),
@@ -940,7 +942,7 @@ wxString AIS_Target_Data::GetNatureofDistress(int dscnature) {
                  _("Man overboard"), _T("-"), _("EPIRB emission") };
   if (dscnature >= 0 && dscnature < 13)
     return dscDistressType[dscnature];
-  
+
   return wxEmptyString;
 }
 

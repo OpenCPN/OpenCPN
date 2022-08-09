@@ -64,6 +64,7 @@
 #include "wx/jsonval.h"
 #include "wx/jsonwriter.h"
 #include "wx/jsonreader.h"
+#include "nmea0183.h"
 
 extern PlugInManager *g_pi_manager;
 extern wxString g_GPS_Ident;

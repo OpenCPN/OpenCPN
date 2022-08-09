@@ -44,7 +44,7 @@
 #include "dychart.h"
 #include "androidUTIL.h"
 #include "OCPN_DataStreamEvent.h"
-#include "chart1.h"
+// #include "chart1.h"
 #include "AISTargetQueryDialog.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetListDialog.h"

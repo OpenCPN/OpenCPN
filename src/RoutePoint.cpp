@@ -41,6 +41,7 @@
 #include "gui_lib.h"
 #include "Route.h"
 #include "svg_utils.h"
+#include "ocpn_frame.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;

@@ -35,6 +35,7 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"  //FIXME (dave) for color
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;

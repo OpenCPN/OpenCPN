@@ -27,7 +27,6 @@
 #include <wx/html/htmlwin.h>
 
 #include "AISTargetQueryDialog.h"
-#include "chart1.h"
 #include "chcanv.h"
 #include "navutil.h"
 #include "ais.h"
@@ -39,6 +38,7 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 #include "RoutePoint.h"
+#include "ocpn_frame.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;

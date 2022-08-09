@@ -83,7 +83,7 @@ millions of points.
 #include "navutil.h"
 #include "Select.h"
 #include "chcanv.h"
-
+#include "ocpn_frame.h"  //FIXME (dave) for color
 #include "pluginmanager.h"
 
 #ifdef ocpnUSE_GL

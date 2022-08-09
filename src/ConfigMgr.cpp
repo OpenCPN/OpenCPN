@@ -46,7 +46,6 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
-#include "chart1.h"
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
@@ -71,6 +70,7 @@
 #include "Track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
+#include "ocpn_frame.h"
 
 #include "s52plib.h"
 #include "cm93.h"

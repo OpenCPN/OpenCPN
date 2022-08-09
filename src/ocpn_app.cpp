@@ -79,78 +79,56 @@
 #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
+#include <wx/cmdline.h>
+
+#include "ocpn_app.h"
+#include "ocpn_frame.h"
 
 #include "AboutFrameImpl.h"
 #include "about.h"
-#include "AIS_Decoder.h"
-#include "ais.h"
 #include "AISTargetAlertDialog.h"
-#include "AIS_Target_Data.h"
-#include "AISTargetListDialog.h"
 #include "AISTargetQueryDialog.h"
 #include "CanvasConfig.h"
-#include "chart1.h"
 #include "chartdb.h"
-#include "chartimg.h"  // for ChartBaseBSB
 #include "chcanv.h"
 #include "cm93.h"
-#include "compass.h"
 #include "concanv.h"
 #include "config.h"
 #include "ConfigMgr.h"
-#include "cutil.h"
-#include "datastream.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "gdal/cpl_csv.h"
 #include "glTexCache.h"
-#include "gshhs.h"
-#include "gui_lib.h"
-#include "iENCToolbar.h"
 #include "Layer.h"
 #include "logger.h"
 #include "MarkInfo.h"
-#include "MUIBar.h"
 #include "multiplexer.h"
 #include "NavObjectCollection.h"
 #include "navutil.h"
-#include "NMEALogWindow.h"
-#include "OCP_DataStreamInput_Thread.h"
 #include "OCPN_AUIManager.h"
-#include "OCPN_DataStreamEvent.h"
 #include "OCPNPlatform.h"
-#include "OCPN_SignalKEvent.h"
-#include "OCPN_Sound.h"
 #include "options.h"
-#include "piano.h"
 #include "PluginHandler.h"
-#include "pluginmanager.h"
-#include "Quilt.h"
 #include "Route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
-#include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
-#include "s52utils.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
 #include "safe_mode.h"
 #include "Select.h"
-#include "SignalKEventHandler.h"
 #include "SoundFactory.h"
 #include "styles.h"
-#include "SystemCmdSound.h"
 #include "tcmgr.h"
 #include "thumbwin.h"
-#include "toolbar.h"
 #include "Track.h"
 #include "TrackPropDlg.h"
-#include "usb_devices.h"
-#include "comm_drv_registry.h"
-#include "comm_navmsg_bus.h"
-#include "N2KParser.h"
-#include "comm_util.h"
+//#include "usb_devices.h"
+//#include "comm_drv_registry.h"
+//#include "comm_navmsg_bus.h"
+//#include "N2KParser.h"
+//#include "comm_util.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -181,9 +159,7 @@ void RedirectIOToConsole();
 #include "androidUTIL.h"
 #endif
 
-#ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
-#endif
 
 static void UpdatePositionCalculatedSogCog();
 
@@ -283,7 +259,6 @@ TCMgr *ptcmgr;
 bool g_bshowToolbar = true;
 bool g_bexpert = true;
 bool g_bBasicMenus = false;
-;
 
 bool bDrawCurrentValues;
 
@@ -589,30 +564,6 @@ int osMajor, osMinor;
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 bool g_bHasHwClock;
 
-#ifdef __WXMSW__
-// System color control support
-
-typedef DWORD(WINAPI *SetSysColors_t)(DWORD, DWORD *, DWORD *);
-typedef DWORD(WINAPI *GetSysColor_t)(DWORD);
-
-SetSysColors_t pSetSysColors;
-GetSysColor_t pGetSysColor;
-
-void SaveSystemColors(void);
-void RestoreSystemColors(void);
-
-DWORD color_3dface;
-DWORD color_3dhilite;
-DWORD color_3dshadow;
-DWORD color_3ddkshadow;
-DWORD color_3dlight;
-DWORD color_activecaption;
-DWORD color_gradientactivecaption;
-DWORD color_captiontext;
-DWORD color_windowframe;
-DWORD color_inactiveborder;
-
-#endif
 
 // AIS Global configuration
 bool g_bShowAIS;
@@ -651,7 +602,6 @@ int g_WplAction;
 
 int g_nAIS_activity_timer;
 
-DummyTextCtrl *g_pDummyTextCtrl;
 bool g_bEnableZoomToCursor;
 
 bool g_bTrackActive;
@@ -763,7 +713,6 @@ bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;
 
-//                        OpenGL Globals
 int g_GPU_MemSize;
 
 wxString g_uiStyle;
@@ -788,8 +737,6 @@ int g_sticky_chart;
 int g_sticky_projection;
 
 bool g_benableUDPNullHeader;
-
-extern options *g_pOptions;
 
 int n_NavMessageShown;
 wxString g_config_version_string;
@@ -963,16 +910,6 @@ public:
 #include "bitmaps/opencpn.xpm"
 #endif
 
-//------------------------------------------------------------------------------
-//              Local constants
-//------------------------------------------------------------------------------
-// enum {
-//     ID_PIANO_DISABLE_QUILT_CHART = 32000, ID_PIANO_ENABLE_QUILT_CHART
-// };
-
-//------------------------------------------------------------------------------
-//              Fwd Refs
-//------------------------------------------------------------------------------
 
 
 wxString newPrivateFileName(wxString home_locn, const char *name,
@@ -2111,7 +2048,7 @@ int MyApp::OnExit() {
     delete g_pGroupArray;
   }
 
-  delete pDummyChart;
+  //delete pDummyChart;
 
   wxLogMessage(_T("opencpn::MyApp exiting cleanly...\n"));
   wxLog::FlushActive();
@@ -2149,7 +2086,10 @@ int MyApp::OnExit() {
 #endif
 
     //      Restore any changed system colors
+
+
 #ifdef __WXMSW__
+void RestoreSystemColors(void);
   RestoreSystemColors();
 #endif
 
@@ -2213,6 +2153,7 @@ void MyCPLErrorHandler(CPLErr eErrClass, int nError, const char *pszErrorMsg)
   wxLogMessage(str);
 }
 
+#include "ocpn_frame.h"
 //----------------------------------------------------------------------------------------------------------
 //      Printing Framework Support
 //----------------------------------------------------------------------------------------------------------

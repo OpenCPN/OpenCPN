@@ -136,9 +136,8 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "toolbar.h"
 #include "Track.h"
 #include "update_mgr.h"
-//#include "cat_settings.h"
 #include "svg_utils.h"
-//#include "observable.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include <dlfcn.h>

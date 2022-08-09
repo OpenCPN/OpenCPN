@@ -70,7 +70,8 @@
 #include "config.h"
 
 #include "dychart.h"
-#include "chart1.h"
+#include "ocpn_frame.h"
+#include "idents.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
