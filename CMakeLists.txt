@@ -962,7 +962,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
 )
- 
+
 
 set(
   SRCS
@@ -991,7 +991,6 @@ set(
   src/comm_drv_registry.cpp
   src/comm_navmsg.cpp
   src/comm_util.cpp
-  src/chart1.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
   src/chartdbs.cpp
@@ -1034,8 +1033,10 @@ set(
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
   src/OCP_DataStreamInput_Thread.cpp
+  src/ocpn_app.cpp
   src/OCPN_AUIManager.cpp
   src/OCPN_DataStreamEvent.cpp
+  src/ocpn_frame.cpp
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
