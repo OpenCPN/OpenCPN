@@ -23,8 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __OFRAME_H
-#define __OFRAME_H
+#ifndef _OFRAME_H
+#define _OFRAME_H
 
 //FIXME (dave) Re-check all includes after refactor of comm stuff to ocpn_app
 

@@ -23,8 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __OCPN_APP_H
-#define __OCPN_APP_H
+#ifndef _OCPN_APP_H
+#define _OCPN_APP_H
 
 #include "wx/wxprec.h"
 

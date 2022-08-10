@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef __OCPNTYPES_H__
-#define __OCPNTYPES_H__
+#ifndef _OCPNTYPES_H__
+#define _OCPNTYPES_H__
 
 typedef struct _S52color {
   char colName[20];
@@ -107,4 +107,4 @@ typedef struct {
   bool arrival;
 } ActiveLegDat;
 
-#endif
+#endif    //  _OCPNTYPES_H__
