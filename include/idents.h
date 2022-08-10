@@ -606,23 +606,6 @@ private:
 
 #endif   // 0
 
-
-//-----------------------------------------------------------------------
-//          Dummy Text Control for global key events
-//-----------------------------------------------------------------------
-class DummyTextCtrl : public wxTextCtrl {
-public:
-  DummyTextCtrl(wxWindow *parent, wxWindowID id);
-  void OnChar(wxKeyEvent &event);
-  void OnMouseEvent(wxMouseEvent &event);
-
-  wxTimer m_MouseWheelTimer;
-  int m_mouse_wheel_oneshot;
-  int m_last_wheel_dir;
-
-  DECLARE_EVENT_TABLE()
-};
-
 #endif
 
 #endif  // _IDENTS_H__

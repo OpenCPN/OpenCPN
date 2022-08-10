@@ -645,23 +645,4 @@ enum {
 };
 #endif
 
-#if 0
-//FIXME (dave)  Study this.  Where should it live
-//-----------------------------------------------------------------------
-//          Dummy Text Control for global key events
-//-----------------------------------------------------------------------
-class DummyTextCtrl : public wxTextCtrl {
-public:
-  DummyTextCtrl(wxWindow *parent, wxWindowID id);
-  void OnChar(wxKeyEvent &event);
-  void OnMouseEvent(wxMouseEvent &event);
-
-  wxTimer m_MouseWheelTimer;
-  int m_mouse_wheel_oneshot;
-  int m_last_wheel_dir;
-
-  DECLARE_EVENT_TABLE()
-};
-#endif    // 0
-
 #endif    // _OFRAME_H
