@@ -35,6 +35,7 @@
 #include <stdint.h>
 
 #include "config.h"
+#include "RolloverWin.h"
 
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling

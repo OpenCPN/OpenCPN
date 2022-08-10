@@ -115,6 +115,7 @@
 // #include "gdal/cpl_csv.h"
 // #include "glTexCache.h"
 // #include "gshhs.h"
+#include "GoToPositionDialog.h"
 #include "gui_lib.h"
 #include "iENCToolbar.h"
 #include "Layer.h"
