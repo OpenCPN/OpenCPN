@@ -393,7 +393,7 @@ TEST(Guernsey, play_log) {
 TEST(FindDriver, lookup) {
    std::vector<DriverPtr> drivers;
    std::vector<std::string> ifaces {"foo", "bar", "foobar"};
-   for (const auto iface : ifaces) {
+   for (const auto& iface : ifaces) {
      drivers.push_back(std::make_shared<SillyDriver>(SillyDriver(iface)));
    }
    auto found = FindDriver(drivers, "bar");
