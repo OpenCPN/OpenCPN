@@ -874,6 +874,7 @@ set(
   include/ocpn_pixel.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
+  include/ocpn_print.h
   include/OCPNRegion.h
   include/OCPN_SignalKEvent.h
   include/ocpn_types.h
@@ -1038,6 +1039,7 @@ set(
   src/OCPN_AUIManager.cpp
   src/OCPN_DataStreamEvent.cpp
   src/ocpn_frame.cpp
+  src/ocpn_print.cpp
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp

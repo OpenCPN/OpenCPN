@@ -37,6 +37,7 @@
 #endif
 
 #include "ocpn_types.h"
+#include "ocpn_print.h"
 #include "gui_lib.h"
 // #include "viewport.h"
 #include "nmea0183.h"
@@ -617,27 +618,6 @@ private:
   ObservedVarListener listener_N0183_AIVDO;
 
   DECLARE_EVENT_TABLE()
-};
-
-//--------------------------------------------------------------------
-//          Printing Support
-//--------------------------------------------------------------------
-
-class MyPrintout : public wxPrintout {
-public:
-  MyPrintout(const wxChar *title = _T("My printout")) : wxPrintout(title) {}
-  virtual bool OnPrintPage(int page);
-  virtual bool HasPage(int page);
-  virtual bool OnBeginDocument(int startPage, int endPage);
-  virtual void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
-                           int *selPageTo);
-
-  void DrawPageOne(wxDC *dc);
-
-  void GenerateGLbmp(void);
-
-private:
-  wxBitmap m_GLbmp;
 };
 
 #if 0

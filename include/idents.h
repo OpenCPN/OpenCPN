@@ -27,6 +27,7 @@
 #define _IDENTS_H__
 
 #include "gui_lib.h"
+#include "ocpn_print.h"
 
 #define TIMER_GFRAME_1 999
 
@@ -604,29 +605,6 @@ private:
 };
 
 #endif   // 0
-
-#if 0
-//--------------------------------------------------------------------
-//          Printing Support
-//--------------------------------------------------------------------
-
-class MyPrintout : public wxPrintout {
-public:
-  MyPrintout(const wxChar *title = _T("My printout")) : wxPrintout(title) {}
-  virtual bool OnPrintPage(int page);
-  virtual bool HasPage(int page);
-  virtual bool OnBeginDocument(int startPage, int endPage);
-  virtual void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
-                           int *selPageTo);
-
-  void DrawPageOne(wxDC *dc);
-
-  void GenerateGLbmp(void);
-
-private:
-  wxBitmap m_GLbmp;
-};
-#endif    // 0
 
 
 //-----------------------------------------------------------------------
