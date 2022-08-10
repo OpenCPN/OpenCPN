@@ -26,13 +26,14 @@
 #ifndef _OCPN_APP_H
 #define _OCPN_APP_H
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
+#include <wx/app.h>
+#include <wx/cmdline.h>
+#include <wx/event.h>
 #include <wx/snglinst.h>
+#endif  // precompiled headers
 
 class Track;
 
@@ -40,9 +41,9 @@ class MyApp : public wxApp {
 public:
   bool OnInit();
   int OnExit();
-  void OnInitCmdLine(wxCmdLineParser &parser);
-  bool OnCmdLineParsed(wxCmdLineParser &parser);
-  void OnActivateApp(wxActivateEvent &event);
+  void OnInitCmdLine(wxCmdLineParser& parser);
+  bool OnCmdLineParsed(wxCmdLineParser& parser);
+  void OnActivateApp(wxActivateEvent& event);
 
 #ifdef LINUX_CRASHRPT
   //! fatal exeption handling
@@ -57,7 +58,7 @@ public:
 
   Track* TrackOff(void);
 
-  wxSingleInstanceChecker *m_checker;
+  wxSingleInstanceChecker* m_checker;
 
   DECLARE_EVENT_TABLE()
 };
