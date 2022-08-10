@@ -24,8 +24,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __CHCANV_H__
-#define __CHCANV_H__
+#ifndef _CHCANV_H__
+#define _CHCANV_H__
 
 #include "bbox.h"
 
@@ -960,4 +960,4 @@ wxString minutesToHoursDays(float timeInMinutes);
 #define wxFIXED_MINSIZE 0
 #endif
 
-#endif
+#endif  //  _CHCANV_H__
