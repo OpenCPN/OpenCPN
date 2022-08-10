@@ -806,7 +806,6 @@ set(
   include/catalog_mgr.h
   include/catalog_parser.h
   include/cat_settings.h
-  include/chart1.h
   include/ChartDataInputStream.h
   include/chartdb.h
   include/chartdbs.h
