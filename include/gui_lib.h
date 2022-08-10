@@ -97,4 +97,32 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
+//----------------------------------------------------------------------------
+// Generic Auto Timed Window
+// Belongs to the creator, not deleted automatically on application close
+//----------------------------------------------------------------------------
+
+class TimedPopupWin : public wxWindow {
+public:
+  TimedPopupWin(wxWindow *parent, int timeout = -1);
+  ~TimedPopupWin();
+
+  void OnPaint(wxPaintEvent &event);
+
+  void SetBitmap(wxBitmap &bmp);
+  wxBitmap *GetBitmap() { return m_pbm; }
+  void OnTimer(wxTimerEvent &event);
+  bool IsActive() { return isActive; }
+  void IsActive(bool state) { isActive = state; }
+
+private:
+  wxBitmap *m_pbm;
+  wxTimer m_timer_timeout;
+  int m_timeout_sec;
+  bool isActive;
+
+  DECLARE_EVENT_TABLE()
+};
+
+
 #endif  // MESSAGE_BOX_H

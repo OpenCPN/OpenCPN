@@ -23,9 +23,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __IDENTS_H
-#define __IDENTS_H
+#ifndef _IDENTS_H__
+#define _IDENTS_H__
 
+#include "gui_lib.h"
 
 #define TIMER_GFRAME_1 999
 
@@ -602,7 +603,7 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif   // 0
 
 #if 0
 //--------------------------------------------------------------------
@@ -625,7 +626,7 @@ public:
 private:
   wxBitmap m_GLbmp;
 };
-#endif
+#endif    // 0
 
 
 //-----------------------------------------------------------------------
@@ -644,33 +645,6 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
-//----------------------------------------------------------------------------
-// Generic Auto Timed Window
-// Belongs to the creator, not deleted automatically on application close
-//----------------------------------------------------------------------------
-
-class TimedPopupWin : public wxWindow {
-public:
-  TimedPopupWin(wxWindow *parent, int timeout = -1);
-  ~TimedPopupWin();
-
-  void OnPaint(wxPaintEvent &event);
-
-  void SetBitmap(wxBitmap &bmp);
-  wxBitmap *GetBitmap() { return m_pbm; }
-  void OnTimer(wxTimerEvent &event);
-  bool IsActive() { return isActive; }
-  void IsActive(bool state) { isActive = state; }
-
-private:
-  wxBitmap *m_pbm;
-  wxTimer m_timer_timeout;
-  int m_timeout_sec;
-  bool isActive;
-
-  DECLARE_EVENT_TABLE()
-};
-
 #endif
 
-#endif
+#endif  // _IDENTS_H__
