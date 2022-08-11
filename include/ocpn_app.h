@@ -41,7 +41,7 @@ class Track;
 
 class MyApp : public wxApp {
 public:
-  ~MyApp() {};
+  ~MyApp(){};
 
   bool OnInit();
   int OnExit();

@@ -26,7 +26,7 @@
 #ifndef _OFRAME_H
 #define _OFRAME_H
 
-//FIXME (dave) Re-check all includes after refactor of comm stuff to ocpn_app
+// FIXME (dave) Re-check all includes after refactor of comm stuff to ocpn_app
 
 #include "wx/print.h"
 #include <wx/power.h>
@@ -101,7 +101,7 @@ class ArrayOfCDI;
 #define ID_CM93ZOOMG 102
 
 //    ToolBar Constants
-//const int ID_TOOLBAR = 500;
+// const int ID_TOOLBAR = 500;
 #if 0
 enum {
   // The following constants represent the toolbar items (some are also used in
@@ -134,7 +134,7 @@ enum {
 };
 #endif
 
-//static const long TOOLBAR_STYLE = wxTB_FLAT | wxTB_DOCKABLE | wxTB_TEXT;
+// static const long TOOLBAR_STYLE = wxTB_FLAT | wxTB_DOCKABLE | wxTB_TEXT;
 
 #if 0
 enum {
@@ -213,7 +213,7 @@ enum {
 };
 #endif
 
-//enum { TIME_TYPE_UTC = 1, TIME_TYPE_LMT, TIME_TYPE_COMPUTER };
+// enum { TIME_TYPE_UTC = 1, TIME_TYPE_LMT, TIME_TYPE_COMPUTER };
 
 //      Command identifiers for wxCommandEvents coming from the outside world.
 //      Removed from enum to facilitate constant definition
@@ -533,8 +533,8 @@ private:
   void FilterCogSog(void);
 
   void ApplyGlobalColorSchemetoStatusBar(void);
-  void PostProcessNMEA(bool pos_valid, bool sog_valid,
-                       bool cog_valid, const wxString &sfixtime);
+  void PostProcessNMEA(bool pos_valid, bool sog_valid, bool cog_valid,
+                       const wxString &sfixtime);
 
   bool ScrubGroupArray();
   wxString GetGroupName(int igroup);
@@ -620,4 +620,4 @@ enum {
 };
 #endif
 
-#endif    // _OFRAME_H
+#endif  // _OFRAME_H

@@ -24,7 +24,6 @@
  **************************************************************************/
 #include "config.h"
 
-
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
@@ -55,10 +54,10 @@
 // #include <signal.h>
 // #endif
 //
- #ifdef OCPN_HAVE_X11
-   #include <X11/Xatom.h>
-   #include <X11/Xlib.h>
- #endif
+#ifdef OCPN_HAVE_X11
+#include <X11/Xatom.h>
+#include <X11/Xlib.h>
+#endif
 //
 // #include <wx/apptrait.h>
 // #include <wx/arrimpl.cpp>
@@ -102,7 +101,7 @@
 #include "chcanv.h"
 #include "cm93.h"
 #include "compass.h"
- #include "concanv.h"
+#include "concanv.h"
 // #include "config.h"
 #include "ConfigMgr.h"
 // #include "cutil.h"
@@ -135,11 +134,11 @@
 #include "pluginmanager.h"
 // #include "Quilt.h"
 // #include "Route.h"
- #include "routemanagerdialog.h"
+#include "routemanagerdialog.h"
 #include "routeman.h"
 // #include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
- #include "s52plib.h"
+#include "s52plib.h"
 // #include "s52utils.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
@@ -195,9 +194,6 @@
 //
 static void UpdatePositionCalculatedSogCog();
 
-
-
-
 //------------------------------------------------------------------------------
 //      Fwd Declarations
 //------------------------------------------------------------------------------
@@ -242,8 +238,8 @@ extern wxLocale *plocale_def_lang;
 #endif
 
 extern OCPNPlatform *g_Platform;
-extern BasePlatform *g_BasePlatform;   // points to g_platform, handles brain-dead MS linker.
-
+extern BasePlatform
+    *g_BasePlatform;  // points to g_platform, handles brain-dead MS linker.
 
 extern s52plib *ps52plib;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
@@ -297,7 +293,7 @@ extern bool g_bCruising;
 extern double g_COGAvg;
 extern int g_COGAvgSec;
 extern ActiveTrack *g_pActiveTrack;
-extern std::vector<Track*> g_TrackList;
+extern std::vector<Track *> g_TrackList;
 extern double gQueryVar;
 extern wxPrintData *g_printData;
 extern wxPageSetupData *g_pageSetupData;
@@ -394,8 +390,6 @@ extern wxArrayPtrVoid *UserColorTableArray;
 extern wxArrayPtrVoid *UserColourHashTableArray;
 extern wxColorHashMap *pcurrent_user_color_hash;
 
-
-
 // probable move to ocpn_app
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
@@ -428,7 +422,6 @@ extern int g_MemFootSec;
 extern int g_MemFootMB;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
-
 
 #ifdef __WXMSW__
 // System color control support
@@ -585,7 +578,6 @@ float g_selection_radius_touch_mm = 10.0;
 
 
 S57ClassRegistrar *g_poRegistrar;
-
 
 #ifdef __WXOSX__
 #include "macutils.h"
@@ -837,7 +829,6 @@ int g_memUsed;
 
 ChartCanvas *g_overlayCanvas;
 
-
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
@@ -853,7 +844,6 @@ DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
 #endif
 
 #endif
-
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -881,9 +871,6 @@ static bool LoadAllPlugIns(bool load_enabled) {
   g_Platform->HideBusySpinner();
   return b;
 }
-
-
-
 
 //------------------------------------------------------------------------------
 //    PNG Icon resources
@@ -998,7 +985,6 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
 #endif
 }
 
-
 bool isSingleChart(ChartBase *chart) {
   if (chart == nullptr) return false;
 
@@ -1011,7 +997,6 @@ bool isSingleChart(ChartBase *chart) {
   }
   return false;
 }
-
 
 #if defined(__WXGTK__) && defined(OCPN_HAVE_X11)
 
@@ -1086,8 +1071,6 @@ static bool isTransparentToolbarInOpenGLOK(void) {
 #endif
 }
 
-
-
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
@@ -1100,34 +1083,36 @@ EVT_CLOSE(MyFrame::OnCloseWindow)
 EVT_MENU(wxID_EXIT, MyFrame::OnExit)
 EVT_SIZE(MyFrame::OnSize)
 EVT_MOVE(MyFrame::OnMove)
-EVT_ICONIZE(MyFrame::OnIconize) EVT_MENU(-1, MyFrame::OnToolLeftClick)
-    EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
-        EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
-            EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
-                EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
-                    EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
-                        EVT_MAXIMIZE(MyFrame::OnMaximize)
-                            EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED,
-                                        MyFrame::RequestNewToolbarArgEvent)
-                                EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
-    // EVT_TIMER(RESIZE_TIMER, MyFrame::OnResizeTimer)
-    EVT_TIMER(RECAPTURE_TIMER, MyFrame::OnRecaptureTimer)
-        EVT_TIMER(TOOLBAR_ANIMATE_TIMER, MyFrame::OnToolbarAnimateTimer)
-            EVT_COMMAND(wxID_ANY, BELLS_PLAYED_EVTYPE, MyFrame::OnBellsFinished)
+EVT_ICONIZE(MyFrame::OnIconize)
+EVT_MENU(-1, MyFrame::OnToolLeftClick)
+EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
+EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
+EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
+EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
+EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
+EVT_MAXIMIZE(MyFrame::OnMaximize)
+EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED,
+            MyFrame::RequestNewToolbarArgEvent)
+EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
+// EVT_TIMER(RESIZE_TIMER, MyFrame::OnResizeTimer)
+EVT_TIMER(RECAPTURE_TIMER, MyFrame::OnRecaptureTimer)
+EVT_TIMER(TOOLBAR_ANIMATE_TIMER, MyFrame::OnToolbarAnimateTimer)
+EVT_COMMAND(wxID_ANY, BELLS_PLAYED_EVTYPE, MyFrame::OnBellsFinished)
+
 #ifdef wxHAS_POWER_EVENTS
-                EVT_POWER_SUSPENDING(MyFrame::OnSuspending)
-                    EVT_POWER_SUSPENDED(MyFrame::OnSuspended)
-                        EVT_POWER_SUSPEND_CANCEL(MyFrame::OnSuspendCancel)
-                            EVT_POWER_RESUME(MyFrame::OnResume)
+EVT_POWER_SUSPENDING(MyFrame::OnSuspending)
+EVT_POWER_SUSPENDED(MyFrame::OnSuspended)
+EVT_POWER_SUSPEND_CANCEL(MyFrame::OnSuspendCancel)
+EVT_POWER_RESUME(MyFrame::OnResume)
 #endif  // wxHAS_POWER_EVENTS
 
-                                END_EVENT_TABLE()
+END_EVENT_TABLE()
 
-    /*
-     * Direct callback from completed sound, possibly in an interrupt
-     * context. Just post an event to be processed in main thread.
-     */
-    static void onBellsFinishedCB(void *ptr) {
+/*
+ * Direct callback from completed sound, possibly in an interrupt
+ * context. Just post an event to be processed in main thread.
+ */
+static void onBellsFinishedCB(void *ptr) {
   auto framePtr = static_cast<MyFrame *>(ptr);
   if (framePtr) {
     wxCommandEvent ev(BELLS_PLAYED_EVTYPE);
@@ -1512,7 +1497,6 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
 
   if (ChartData) ChartData->ApplyColorSchemeToCachedCharts(cs);
 
-
   if (g_options) {
     g_options->SetColorScheme(cs);
   }
@@ -1625,7 +1609,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   for (unsigned int i = 1; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) {
-      //pthumbwin = NULL;  // TODO
+      // pthumbwin = NULL;  // TODO
       cc->DestroyToolbar();
       cc->Destroy();
     }
@@ -2222,7 +2206,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   if (ChartData) ChartData->PurgeCache();
 
   // pthumbwin is a canvas child
-  //pthumbwin = NULL;
+  // pthumbwin = NULL;
 
   // Finally ready to destroy the canvases
   g_focusCanvas = NULL;
@@ -2630,7 +2614,7 @@ void MyFrame::ODoSetSize(void) {
   //     }
 
   // FIXME (dave)  Thumbwins are gone...
-  //if (pthumbwin) pthumbwin->SetMaxSize(GetClientSize());
+  // if (pthumbwin) pthumbwin->SetMaxSize(GetClientSize());
 
   //  Reset the options dialog size logic
   options_lastWindowSize = wxSize(0, 0);
@@ -4374,8 +4358,7 @@ int MyFrame::DoOptionsDialog() {
   //  This is necessary to force a manual change to charts page,
   //  in order to properly refresh the chart directory list.
   //  Root cause:  In Android, trouble with clearing the wxScrolledWindow
-  if (options_lastPage == 1)
-    options_lastPage = 0;
+  if (options_lastPage == 1) options_lastPage = 0;
 #endif
 
   options_subpage = g_options->lastSubPage;
@@ -5381,15 +5364,16 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, wxCommandEvent);
 
 void MyFrame::InitAppMsgBusListener() {
-
-  auto& msgbus = AppMsgBus::getInstance();
-  listener_BasicNavData = msgbus.get_listener(EVT_BASIC_NAV_DATA, this, "BasicNavData");
+  auto &msgbus = AppMsgBus::getInstance();
+  listener_BasicNavData =
+      msgbus.get_listener(EVT_BASIC_NAV_DATA, this, "BasicNavData");
 
   Bind(EVT_BASIC_NAV_DATA, [&](wxCommandEvent ev) {
-       auto message = get_appmsg_ptr(ev);
-       auto basicnav_msg = std::dynamic_pointer_cast<const BasicNavDataMsg>(message);
-       //HandleBasicNav( basicnav_msg );
-     });
+    auto message = get_appmsg_ptr(ev);
+    auto basicnav_msg =
+        std::dynamic_pointer_cast<const BasicNavDataMsg>(message);
+    // HandleBasicNav( basicnav_msg );
+  });
 }
 
 //    Manage the application memory footprint on a periodic schedule
@@ -5653,13 +5637,12 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     GPSData.kHdt = gHdt;
     GPSData.nSats = g_SatsInView;
 
-    wxDateTime tCheck( (time_t) m_fixtime);
+    wxDateTime tCheck((time_t)m_fixtime);
 
     if (tCheck.IsValid())
       GPSData.FixTime = m_fixtime;
     else
       GPSData.FixTime = wxDateTime::Now().GetTicks();
-
 
     g_pi_manager->SendPositionFixToAllPlugIns(&GPSData);
   }
@@ -6575,7 +6558,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
 
     wxJSONValue v;
     v[_T("Track_ID")] = trk_id;
-    for (Track* ptrack : g_TrackList) {
+    for (Track *ptrack : g_TrackList) {
       wxString name = wxEmptyString;
       if (ptrack->m_GUID == trk_id) {
         name = ptrack->GetName();
@@ -6954,7 +6937,7 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
   bool sog_valid = false;
   bool bis_recognized_sentence = true;
 
-  wxString str_buf;// = event.ProcessNMEA4Tags();
+  wxString str_buf;  // = event.ProcessNMEA4Tags();
 
   if (g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug)) {
     g_total_NMEAerror_messages++;
@@ -6966,20 +6949,20 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
   //  The message must be at least reasonably formed...
   if ((str_buf[0] != '$') && (str_buf[0] != '!')) return;
 
-//   if (event.GetStream()) {
-//     if (!event.GetStream()->ChecksumOK(event.GetNMEAString())) {
-//       if (g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug)) {
-//         g_total_NMEAerror_messages++;
-//         wxString msg(_T(">>>>>>NMEA Sentence Checksum Bad..."));
-//         msg.Append(str_buf);
-//         wxLogMessage(msg);
-//       }
-//       return;
-//     }
-//   }
+  //   if (event.GetStream()) {
+  //     if (!event.GetStream()->ChecksumOK(event.GetNMEAString())) {
+  //       if (g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug)) {
+  //         g_total_NMEAerror_messages++;
+  //         wxString msg(_T(">>>>>>NMEA Sentence Checksum Bad..."));
+  //         msg.Append(str_buf);
+  //         wxLogMessage(msg);
+  //       }
+  //       return;
+  //     }
+  //   }
 
-//   bool b_accept = EvalPriority(str_buf, event.GetStream());
-//   if (!b_accept) return;
+  //   bool b_accept = EvalPriority(str_buf, event.GetStream());
+  //   if (!b_accept) return;
 
   m_NMEA0183 << str_buf;
 
@@ -7000,43 +6983,48 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
 #if 1
       switch (id) {
         case RMC:
-//           if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
-//             pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
-//
-//
-//             if (!g_own_ship_sog_cog_calc ){
-//               if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
-//                 gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-//                 sog_valid = true;
-//               }
-//               if(!std::isnan(gSog) && (gSog > 0)){
-//                 gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-//                 cog_valid = true;
-//               }
-//               else{
-//                 gCog = NAN;
-//                 cog_valid = true;
-//               }
-//             }
-//
-//             // Any device sending VAR=0.0 can be assumed to not really know
-//             // what the actual variation is, so in this case we use WMM if
-//             // available
-//             if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
-//                 0.0 != m_NMEA0183.Rmc.MagneticVariation) {
-//               if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
-//                 gVar = m_NMEA0183.Rmc.MagneticVariation;
-//               else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
-//                 gVar = -m_NMEA0183.Rmc.MagneticVariation;
-//
-//               g_bVAR_Rx = true;
-//               gVAR_Watchdog = gps_watchdog_timeout_ticks;
-//             }
-//
-//             sfixtime = m_NMEA0183.Rmc.UTCTime;
-//             gRmcTime = sfixtime;
-//             gRmcDate = m_NMEA0183.Rmc.Date;
-//           }
+          //           if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
+          //             pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
+          //
+          //
+          //             if (!g_own_ship_sog_cog_calc ){
+          //               if
+          //               (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
+          //                 gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+          //                 sog_valid = true;
+          //               }
+          //               if(!std::isnan(gSog) && (gSog > 0)){
+          //                 gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+          //                 cog_valid = true;
+          //               }
+          //               else{
+          //                 gCog = NAN;
+          //                 cog_valid = true;
+          //               }
+          //             }
+          //
+          //             // Any device sending VAR=0.0 can be assumed to not
+          //             really know
+          //             // what the actual variation is, so in this case we use
+          //             WMM if
+          //             // available
+          //             if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
+          //                 0.0 != m_NMEA0183.Rmc.MagneticVariation) {
+          //               if (m_NMEA0183.Rmc.MagneticVariationDirection ==
+          //               East)
+          //                 gVar = m_NMEA0183.Rmc.MagneticVariation;
+          //               else if (m_NMEA0183.Rmc.MagneticVariationDirection ==
+          //               West)
+          //                 gVar = -m_NMEA0183.Rmc.MagneticVariation;
+          //
+          //               g_bVAR_Rx = true;
+          //               gVAR_Watchdog = gps_watchdog_timeout_ticks;
+          //             }
+          //
+          //             sfixtime = m_NMEA0183.Rmc.UTCTime;
+          //             gRmcTime = sfixtime;
+          //             gRmcDate = m_NMEA0183.Rmc.Date;
+          //           }
           break;
 
         case HDT:
@@ -7233,7 +7221,7 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
     }
   }
 
-  if (g_own_ship_sog_cog_calc){
+  if (g_own_ship_sog_cog_calc) {
     sog_valid = true;
     cog_valid = true;
   }
@@ -7242,8 +7230,8 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
     PostProcessNMEA(pos_valid, sog_valid, cog_valid, sfixtime);
 }
 
-void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
-                              bool cog_valid, const wxString &sfixtime) {
+void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid, bool cog_valid,
+                              const wxString &sfixtime) {
   if (cog_valid) {
     //    Maintain average COG for Course Up Mode
     if (!std::isnan(gCog)) {
@@ -7348,22 +7336,20 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid,
     wxString sogcog;
     if (!std::isnan(gSog))
       sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
-                  toUsrSpeed(gSog));
+                    toUsrSpeed(gSog));
     else
-      sogcog.Printf(_T("SOG --- ")) ;
+      sogcog.Printf(_T("SOG --- "));
 
     wxString cogs;
-      // We show COG only if SOG is > 0
-    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)){
+    // We show COG only if SOG is > 0
+    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)) {
       if (g_bShowTrue)
         cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
       if (g_bShowMag)
-        cogs << wxString::Format(wxString("COG %03d%c(M)  "),
-                               (int)GetMag(gCog), 0x00B0);
-      }
-    else
+        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)GetMag(gCog),
+                                 0x00B0);
+    } else
       cogs.Printf(("COG ---%c"), 0x00B0);
-
 
     sogcog.Append(cogs);
     SetStatusText(sogcog, STAT_FIELD_SOGCOG);
@@ -8016,7 +8002,7 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
   }
 
   SetMasterToolbarItemState(ID_TRACK, g_bTrackActive);
-  if(g_bTrackActive) {
+  if (g_bTrackActive) {
     g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
   }
 
@@ -8132,7 +8118,6 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
   }
   return bret;
 }
-
 
 /*************************************************************************
  * Global color management routines
@@ -9311,8 +9296,8 @@ void LoadS57() {
   g_SencThreadManager = new SENCThreadManager();
 
   //      Set up a useable CPL library error handler for S57 stuff
-  //FIXME (dave) Verify after moving LoadS57
-  //CPLSetErrorHandler(MyCPLErrorHandler);
+  // FIXME (dave) Verify after moving LoadS57
+  // CPLSetErrorHandler(MyCPLErrorHandler);
 
   //      Init the s57 chart object, specifying the location of the required csv
   //      files
@@ -9717,4 +9702,3 @@ void ParseAllENC(wxWindow *parent) {
 
   delete prog;
 }
-
