@@ -54,7 +54,10 @@ public:
    * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
    */
   ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
-                                   const std::string& key);
+                                   const AppMsg& msg);
+
+  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
+                                   AppMsg::Type type);
 
   /**
    * Set the priority for a given data source providing data.

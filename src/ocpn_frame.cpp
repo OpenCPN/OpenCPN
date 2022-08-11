@@ -5365,8 +5365,8 @@ wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, wxCommandEvent);
 
 void MyFrame::InitAppMsgBusListener() {
   auto &msgbus = AppMsgBus::getInstance();
-  listener_BasicNavData =
-      msgbus.get_listener(EVT_BASIC_NAV_DATA, this, "BasicNavData");
+  AppMsg msg(AppMsg::Type::BasicNavData);
+  listener_BasicNavData = msgbus.get_listener(EVT_BASIC_NAV_DATA, this, msg);
 
   Bind(EVT_BASIC_NAV_DATA, [&](wxCommandEvent ev) {
     auto message = get_appmsg_ptr(ev);

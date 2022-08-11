@@ -15,6 +15,7 @@
 #include "comm_appmsg_bus.h"
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
+#include "observable_msg.h"
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -174,8 +175,7 @@ public:
   public:
     Sink() {
       auto& a = AppMsgBus::getInstance();
-      AppMsg msg(AppMsg::Type::GnssFix);
-      listener = a.get_listener(EVT_FOO, this, msg.key());
+      listener = a.get_listener(EVT_FOO, this, AppMsg::Type::GnssFix);
 
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_appmsg_ptr(ev);

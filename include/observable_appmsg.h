@@ -4,10 +4,9 @@
 #define _OBSERVABLE_APPMSG_H
 
 #include <memory>
+#include <string>
 
 #include <wx/event.h>
-#include "comm_navmsg_bus.h"
-#include "comm_pointer_msg.h"
 #include "comm_appmsg.h"
 
 
