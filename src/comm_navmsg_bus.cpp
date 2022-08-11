@@ -32,8 +32,8 @@
 using namespace std;
 
 ObservedVarListener NavMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
-                                            const string& key) {
-  ObservableMsg om(key);
+                                            const NavMsg& msg) {
+  ObservableMsg om(msg.key());
   return om.get_listener(eh, et);
 }
 

@@ -99,7 +99,7 @@ public:
     Sink() {
       auto& t = NavMsgBus::getInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listener = t.get_listener(EVT_FOO, this, n2k_msg.key());
+      listener = t.get_listener(EVT_FOO, this, n2k_msg);
 
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -138,7 +138,7 @@ public:
     Sink() {
       auto& t = NavMsgBus::getInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listeners.push_back(t.get_listener(EVT_FOO, this, n2k_msg.key()));
+      listeners.push_back(t.get_listener(EVT_FOO, this, n2k_msg));
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
         auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
@@ -216,8 +216,7 @@ public:
         +  "Guernesey-1659560590623.input.txt";
     auto driver =
         make_shared<FileCommDriver>("/tmp/output.txt", path, msgbus);
-    auto listener = msgbus.get_listener(EVT_FOO, this,
-                                        Nmea0183Msg("GPGLL").key());
+    auto listener = msgbus.get_listener(EVT_FOO, this, Nmea0183Msg("GPGLL"));
     Bind(EVT_FOO, [&log](wxCommandEvent ev) {
       auto message = get_navmsg_ptr(ev);
       auto n0183_msg = dynamic_pointer_cast<const Nmea0183Msg>(message);

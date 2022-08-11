@@ -1055,7 +1055,7 @@ void PlugInManager::InitCommListeners(void) {
 
   //NMEA0183, all
   Nmea0183Msg n0183_msg("", "");
-  m_listener_N0183_all = msgbus.get_listener(EVT_N0183_PLUGIN, this, n0183_msg.key());
+  m_listener_N0183_all = msgbus.get_listener(EVT_N0183_PLUGIN, this, n0183_msg);
 
   Bind(EVT_N0183_PLUGIN, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);

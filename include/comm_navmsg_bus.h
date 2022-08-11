@@ -46,11 +46,11 @@ public:
 
   /**
    * Return a listening object which generates wxEventType events sent to
-   * wxEvtHandler when a message with given key is received. The events
+   * wxEvtHandler when a given message type is received. The events
    * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
    */
   ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
-                                   const std::string& key);
+                                   const NavMsg& msg);
 
   void notify(std::unique_ptr<const NavMsg> message);
 

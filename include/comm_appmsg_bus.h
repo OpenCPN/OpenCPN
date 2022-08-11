@@ -45,17 +45,18 @@
 class AppMsgBus {
 public:
 
-  /** Send message to everyone listening to it. */
+  /** Send message to everyone listening to given message type. */
   void notify(std::shared_ptr<const AppMsg> msg);
   
   /**
    * Return a listening object which generates wxEventType events sent to
-   * wxEvtHandler when a message with given key is received. The events
+   * wxEvtHandler when a message of given type is received. The events
    * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
    */
   ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
                                    const AppMsg& msg);
 
+  /** Convenience overload. */
   ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
                                    AppMsg::Type type);
 

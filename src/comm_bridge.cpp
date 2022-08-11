@@ -198,7 +198,7 @@ void CommBridge::InitCommListeners() {
   //----------------------------------
   Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
 
-  listener_N2K_129029 = msgbus.get_listener(EVT_N2K_129029, this, n2k_msg_129029.key());
+  listener_N2K_129029 = msgbus.get_listener(EVT_N2K_129029, this, n2k_msg_129029);
 
   Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -209,7 +209,7 @@ void CommBridge::InitCommListeners() {
   // COG SOG rapid   PGN 129026
   //-----------------------------
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
-  listener_N2K_129026 = msgbus.get_listener(EVT_N2K_129026, this, n2k_msg_129026.key());
+  listener_N2K_129026 = msgbus.get_listener(EVT_N2K_129026, this, n2k_msg_129026);
    Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
          auto message = get_navmsg_ptr(ev);
          auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
@@ -220,7 +220,7 @@ void CommBridge::InitCommListeners() {
   //NMEA0183
   //RMC
   Nmea0183Msg n0183_msg_RMC("RMC", "");
-  listener_N0183_RMC = msgbus.get_listener(EVT_N0183_RMC, this, n0183_msg_RMC.key());
+  listener_N0183_RMC = msgbus.get_listener(EVT_N0183_RMC, this, n0183_msg_RMC);
 
   Bind(EVT_N0183_RMC, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -230,7 +230,7 @@ void CommBridge::InitCommListeners() {
 
   //HDT
   Nmea0183Msg n0183_msg_HDT("HDT", "");
-  listener_N0183_HDT = msgbus.get_listener(EVT_N0183_HDT, this, n0183_msg_HDT.key());
+  listener_N0183_HDT = msgbus.get_listener(EVT_N0183_HDT, this, n0183_msg_HDT);
 
   Bind(EVT_N0183_HDT, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -240,7 +240,7 @@ void CommBridge::InitCommListeners() {
 
   //HDG
   Nmea0183Msg n0183_msg_HDG("HDG", "");
-  listener_N0183_HDG = msgbus.get_listener(EVT_N0183_HDG, this, n0183_msg_HDG.key());
+  listener_N0183_HDG = msgbus.get_listener(EVT_N0183_HDG, this, n0183_msg_HDG);
 
   Bind(EVT_N0183_HDG, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -250,7 +250,7 @@ void CommBridge::InitCommListeners() {
 
   //HDM
   Nmea0183Msg n0183_msg_HDM("HDM", "");
-  listener_N0183_HDM = msgbus.get_listener(EVT_N0183_HDM, this, n0183_msg_HDM.key());
+  listener_N0183_HDM = msgbus.get_listener(EVT_N0183_HDM, this, n0183_msg_HDM);
 
   Bind(EVT_N0183_HDM, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -260,7 +260,7 @@ void CommBridge::InitCommListeners() {
 
   //VTG
   Nmea0183Msg n0183_msg_VTG("VTG", "");
-  listener_N0183_VTG = msgbus.get_listener(EVT_N0183_VTG, this, n0183_msg_VTG.key());
+  listener_N0183_VTG = msgbus.get_listener(EVT_N0183_VTG, this, n0183_msg_VTG);
 
   Bind(EVT_N0183_VTG, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -270,7 +270,7 @@ void CommBridge::InitCommListeners() {
 
   //GSV
   Nmea0183Msg n0183_msg_GSV("GSV", "");
-  listener_N0183_GSV = msgbus.get_listener(EVT_N0183_GSV, this, n0183_msg_GSV.key());
+  listener_N0183_GSV = msgbus.get_listener(EVT_N0183_GSV, this, n0183_msg_GSV);
 
   Bind(EVT_N0183_GSV, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -280,7 +280,7 @@ void CommBridge::InitCommListeners() {
 
   //GGA
   Nmea0183Msg n0183_msg_GGA("GGA", "");
-  listener_N0183_GGA = msgbus.get_listener(EVT_N0183_GGA, this, n0183_msg_GGA.key());
+  listener_N0183_GGA = msgbus.get_listener(EVT_N0183_GGA, this, n0183_msg_GGA);
 
   Bind(EVT_N0183_GGA, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -290,7 +290,7 @@ void CommBridge::InitCommListeners() {
 
   //GLL
   Nmea0183Msg n0183_msg_GLL("GLL", "");
-  listener_N0183_GLL = msgbus.get_listener(EVT_N0183_GLL, this, n0183_msg_GLL.key());
+  listener_N0183_GLL = msgbus.get_listener(EVT_N0183_GLL, this, n0183_msg_GLL);
 
   Bind(EVT_N0183_GLL, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -300,7 +300,7 @@ void CommBridge::InitCommListeners() {
 
   //AIVDO
   Nmea0183Msg n0183_msg_AIVDO("AIVDO", "");
-  listener_N0183_AIVDO = msgbus.get_listener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO.key());
+  listener_N0183_AIVDO = msgbus.get_listener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO);
 
   Bind(EVT_N0183_AIVDO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
