@@ -40,9 +40,8 @@ void AppMsgBus::notify(std::shared_ptr<const AppMsg> msg) {
   ObservableAppMsg om(msg->key());
   om.notify(msg);
 }
-AppMsgBus* AppMsgBus::getInstance() {
-  static AppMsgBus* instance = 0;
 
-  if (!instance) instance = new AppMsgBus();
+AppMsgBus& AppMsgBus::getInstance() {
+  static AppMsgBus instance;
   return instance;
 }

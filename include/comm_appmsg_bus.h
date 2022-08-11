@@ -62,7 +62,7 @@ public:
    */
   void set_priority(AppMsg::Type data, const NavAddr& src, unsigned prio);
 
-  static AppMsgBus* getInstance();
+  static AppMsgBus& getInstance();
 };
 
 #endif  // APP_MSG_BUS_H

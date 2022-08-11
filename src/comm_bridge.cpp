@@ -280,8 +280,8 @@ bool CommBridge::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg 
   m_decoder.DecodeRMC(str, msg);
 
   // Notify the AppMsgBus of new data available
-  auto msgbus = AppMsgBus::getInstance();
-  msgbus->notify(std::move(msg));
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
 
   return true;
 }

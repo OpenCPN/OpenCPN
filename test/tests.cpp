@@ -165,16 +165,17 @@ public:
     Source() {
       Position pos(65.2211, 21.4433, Position::Type::NW);
       auto fix = std::make_shared<GnssFix>(pos, 1659345030);
-      AppMsgBus::getInstance()->notify(std::move(fix));
+
+      AppMsgBus::getInstance().notify(std::move(fix));
     }
   };
 
   class Sink: public wxEvtHandler {
   public:
     Sink() {
-      auto a = AppMsgBus::getInstance();
+      auto& a = AppMsgBus::getInstance();
       AppMsg msg(AppMsg::Type::GnssFix);
-      listener = a->get_listener(EVT_FOO, this, msg.key());
+      listener = a.get_listener(EVT_FOO, this, msg.key());
 
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_appmsg_ptr(ev);
