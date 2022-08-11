@@ -521,20 +521,7 @@ public:
   void setHeadingMagnetic(double heading);
   void setMagneticVariation(double var);
 
-  void InitCommListeners();
-
-  bool HandleN2K_129029( std::shared_ptr <const Nmea2000Msg> n2k_msg );
-  bool HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg );
-
-  bool HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_HDT( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_HDG( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_HDM( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_VTG( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_AIVDO( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+  void InitAppMsgBusListener();
 
 private:
   void CheckToolbarPosition();
@@ -603,19 +590,7 @@ private:
 
   SignalKEventHandler m_signalKHandler;
 
-  //  comm event listeners
-  ObservedVarListener listener_N2K_129029;
-  ObservedVarListener listener_N2K_129026;
-
-  ObservedVarListener listener_N0183_RMC;
-  ObservedVarListener listener_N0183_HDT;
-  ObservedVarListener listener_N0183_HDG;
-  ObservedVarListener listener_N0183_HDM;
-  ObservedVarListener listener_N0183_VTG;
-  ObservedVarListener listener_N0183_GSV;
-  ObservedVarListener listener_N0183_GGA;
-  ObservedVarListener listener_N0183_GLL;
-  ObservedVarListener listener_N0183_AIVDO;
+  ObservedVarListener listener_BasicNavData;
 
   DECLARE_EVENT_TABLE()
 };

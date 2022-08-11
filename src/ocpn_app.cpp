@@ -126,6 +126,8 @@
 #include "thumbwin.h"
 #include "Track.h"
 #include "TrackPropDlg.h"
+
+#include "comm_bridge.h"
 //#include "usb_devices.h"
 //#include "comm_drv_registry.h"
 //#include "comm_navmsg_bus.h"
@@ -1984,6 +1986,9 @@ bool MyApp::OnInit() {
   }
   CheckDongleAccess(gFrame);
 #endif
+
+  // Initialize the CommBridge
+  m_comm_bridge.Initialize();
 
   return TRUE;
 }

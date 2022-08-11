@@ -47,8 +47,8 @@ public:
   enum class Type {NE, NW, SE, SW, Undef};
 
   const Type type;
-  const double lat;
-  const double lon;
+  double lat;
+  double lon;
 
   std::string to_string() const {
     std::stringstream buf;
@@ -97,7 +97,7 @@ protected:
   AppMsg& operator=(const AppMsg&) = default;
 };
 
-enum class AppMsg::Type {GnssFix, AisData, DataPrioNeeded, CustomMsg, Undef};
+enum class AppMsg::Type {BasicNavData, GnssFix, AisData, DataPrioNeeded, CustomMsg, Undef};
 
 
 /**
@@ -114,7 +114,7 @@ public:
 class GnssFix: public AppMsg {
 public:
   enum class Quality {none, gnss, differential };
-  const Position pos;
+  Position pos;
   const time_t time;
   Quality quality;
   int satellites_used;
@@ -130,6 +130,21 @@ public:
   }
 };
 
+class BasicNavDataMsg: public AppMsg {
+public:
+  Position pos;
+  double sog;
+  double cog;
+  double var;
+  double hdt;
+  time_t time;
+
+  BasicNavDataMsg(double lat, double lon, double SOG, double COG, double VAR,
+               double HDT, time_t t )
+    : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
+    pos(lat, lon), sog(SOG), cog(COG), var(VAR), hdt(HDT), time(t){};
+
+};
 
 /** AIS data point for a vessel. */
 class AisData: public AppMsg {

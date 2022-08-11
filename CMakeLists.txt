@@ -813,6 +813,7 @@ set(
   include/chcanv.h
   include/ChInfoWin.h
   include/comm_appmsg.h
+  include/comm_bridge.h
   include/comm_pointer_msg.h
   include/comm_driver.h
   include/comm_drv_n0183.h
@@ -985,6 +986,8 @@ set(
   src/CanvasOptions.cpp
   src/catalog_mgr.cpp
   src/cat_settings.cpp
+  src/comm_bridge.cpp
+  src/comm_decoder.cpp
   src/comm_drv_n2k.cpp
   src/comm_drv_n2k_serial.cpp
   src/comm_drv_n0183.cpp
