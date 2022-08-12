@@ -986,22 +986,22 @@ set(
   src/CanvasOptions.cpp
   src/catalog_mgr.cpp
   src/cat_settings.cpp
-  src/comm_bridge.cpp
-  src/comm_decoder.cpp
-  src/comm_drv_n2k.cpp
-  src/comm_drv_n2k_serial.cpp
-  src/comm_drv_n0183.cpp
-  src/comm_drv_n0183_net.cpp
-  src/comm_drv_n0183_serial.cpp
-  src/comm_drv_registry.cpp
-  src/comm_navmsg.cpp
-  src/comm_util.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
   src/chartdbs.cpp
   src/chartimg.cpp
   src/chcanv.cpp
   src/ChInfoWin.cpp
+  src/comm_bridge.cpp
+  src/comm_decoder.cpp
+  src/comm_drv_n0183.cpp
+  src/comm_drv_n0183_net.cpp
+  src/comm_drv_n0183_serial.cpp
+  src/comm_drv_n2k.cpp
+  src/comm_drv_n2k_serial.cpp
+  src/comm_drv_registry.cpp
+  src/comm_navmsg.cpp
+  src/comm_util.cpp
   src/compass.cpp
   src/concanv.cpp
   src/ConfigMgr.cpp
@@ -1019,8 +1019,8 @@ set(
   src/geodesic.cpp
   src/georef.cpp
   src/GoToPositionDialog.cpp
-  src/gui_lib.cpp
   src/gshhs.cpp
+  src/gui_lib.cpp
   src/Hyperlink.cpp
   src/IDX_entry.cpp
   src/iENCToolbar.cpp
@@ -1041,21 +1041,21 @@ set(
   src/ocpn_app.cpp
   src/OCPN_AUIManager.cpp
   src/OCPN_DataStreamEvent.cpp
-  src/ocpn_frame.cpp
-  src/ocpn_print.cpp
   src/ocpndc.cpp
+  src/ocpn_frame.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
-  src/ocpn_plugin.cpp
   src/OCPNPlatform.cpp
+  src/ocpn_plugin.cpp
+  src/ocpn_print.cpp
   src/OCPNRegion.cpp
   src/OCPN_SignalKEvent.cpp
   src/options.cpp
   src/piano.cpp
+  src/plugin_blacklist.cpp
   src/pluginmanager.cpp
   src/PluginPaths.cpp
   src/PositionParser.cpp
-  src/plugin_blacklist.cpp
   src/printtable.cpp
   src/Quilt.cpp
   src/RolloverWin.cpp
@@ -1077,6 +1077,7 @@ set(
   src/SignalKEventHandler.cpp
   src/Station_Data.cpp
   src/styles.cpp
+  src/svg_utils.cpp
   src/TCDataFactory.cpp
   src/TCDataSource.cpp
   src/TCDS_Ascii_Harmonic.cpp
@@ -1093,12 +1094,6 @@ set(
   src/undo.cpp
   src/update_mgr.cpp
   src/viewport.cpp
-  src/svg_utils.cpp
-  src/comm_drv_n2k.cpp
-  src/comm_drv_n2k_serial.cpp
-  src/comm_drv_n0183.cpp
-  src/comm_drv_n0183_serial.cpp
-  src/comm_drv_registry.cpp
 )
 
 set(SRCS ${SRCS} ${MODEL_SRC})
