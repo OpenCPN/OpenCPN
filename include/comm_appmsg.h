@@ -27,7 +27,6 @@
 #ifndef _APP_MSG_H
 #define _APP_MSG_H
 
-#include <chrono>
 #include <memory>
 #include <iomanip>
 
@@ -123,7 +122,6 @@ public:
     pos(p), time(t), quality(q), satellites_used(s_used) {};
 
   std::string to_string() const {
-    using namespace std::chrono;
     std::stringstream buf;
     buf << pos.to_string() << " " << TimeToString(time);
     return  buf.str();
