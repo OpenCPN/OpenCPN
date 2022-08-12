@@ -168,7 +168,7 @@ public:
 
         gps_watchdog(value){};
 
-  int gps_watchdog;
+  const int gps_watchdog;
 };
 
 /** AIS data point for a vessel. */
