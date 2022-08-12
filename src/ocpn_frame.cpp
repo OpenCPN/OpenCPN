@@ -40,7 +40,6 @@
 
 #include "ocpn_frame.h"
 #include "idents.h"
-#include "comm_appmsg_bus.h"
 
 #ifdef __WXMSW__
 #include <math.h>
@@ -5362,18 +5361,257 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, wxCommandEvent);
+wxDEFINE_EVENT(EVT_GPS_WATCHDOG, wxCommandEvent);
 
 void MyFrame::InitAppMsgBusListener() {
   auto &msgbus = AppMsgBus::getInstance();
-  AppMsg msg(AppMsg::Type::BasicNavData);
-  listener_BasicNavData = msgbus.get_listener(EVT_BASIC_NAV_DATA, this, msg);
+
+  //  BasicNavData
+  AppMsg msg_basic(AppMsg::Type::BasicNavData);
+  listener_BasicNavData = msgbus.get_listener(EVT_BASIC_NAV_DATA, this, msg_basic);
 
   Bind(EVT_BASIC_NAV_DATA, [&](wxCommandEvent ev) {
     auto message = get_appmsg_ptr(ev);
-    auto basicnav_msg =
-        std::dynamic_pointer_cast<const BasicNavDataMsg>(message);
-    // HandleBasicNav( basicnav_msg );
+    auto basicnav_msg = std::dynamic_pointer_cast<const BasicNavDataMsg>(message);
+    HandleBasicNavMsg( basicnav_msg );
   });
+
+  //  GPS Watchdog expiry status
+  AppMsg msg_watchdog(AppMsg::Type::GPSWatchdog);
+  listener_GPSWatchdog = msgbus.get_listener(EVT_GPS_WATCHDOG, this, msg_watchdog);
+
+  Bind(EVT_GPS_WATCHDOG, [&](wxCommandEvent ev) {
+    auto message = get_appmsg_ptr(ev);
+    auto msg = std::dynamic_pointer_cast<const GPSWatchdogMsg>(message);
+    HandleGPSWatchdogMsg( msg );
+  });
+
+}
+
+void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
+
+  if(msg->gps_watchdog <= 0){
+    bool last_bGPSValid = bGPSValid;
+    bGPSValid = false;
+    if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
+  }
+}
+
+void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
+
+#if 0
+  if (cog_valid) {
+    //    Maintain average COG for Course Up Mode
+    if (!std::isnan(gCog)) {
+      if (g_COGAvgSec > 0) {
+        //    Make a hole
+        for (int i = g_COGAvgSec - 1; i > 0; i--) COGTable[i] = COGTable[i - 1];
+        COGTable[0] = gCog;
+
+        double sum = 0., count = 0;
+        for (int i = 0; i < g_COGAvgSec; i++) {
+          double adder = COGTable[i];
+          if (std::isnan(adder)) continue;
+
+          if (fabs(adder - g_COGAvg) > 180.) {
+            if ((adder - g_COGAvg) > 0.)
+              adder -= 360.;
+            else
+              adder += 360.;
+          }
+
+          sum += adder;
+          count++;
+        }
+        sum /= count;
+
+        if (sum < 0.)
+          sum += 360.;
+        else if (sum >= 360.)
+          sum -= 360.;
+
+        g_COGAvg = sum;
+      } else
+        g_COGAvg = gCog;
+    }
+
+    FilterCogSog();
+  }
+#endif
+
+  //    If gSog is greater than some threshold, we determine that we are
+  //    "cruising"
+  if (gSog > 3.0) g_bCruising = true;
+
+  //    Here is the one place we try to create gHdt from gHdm and gVar,
+  //    but only if NMEA HDT sentence is not being received
+
+#if 0
+  if (!g_bHDT_Rx) {
+    if (!std::isnan(gHdm)) {
+      // Set gVar if needed from manual entry. gVar will be overwritten if
+      // WMM plugin is available
+      if (std::isnan(gVar) && (g_UserVar != 0.0)) gVar = g_UserVar;
+      gHdt = gHdm + gVar;
+      if (gHdt < 0)
+        gHdt += 360.0;
+      else if (gHdt >= 360)
+        gHdt -= 360.0;
+      gHDT_Watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+#endif
+
+  //      Maintain the validity flags
+  bool last_bGPSValid = bGPSValid;
+  bGPSValid = true;
+  if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
+
+  //      Show a little heartbeat tick in StatusWindow0 on NMEA events
+  //      But no faster than 10 hz.
+  unsigned long uiCurrentTickCount;
+  m_MMEAeventTime.SetToCurrent();
+  uiCurrentTickCount =
+      m_MMEAeventTime.GetMillisecond() / 100;  // tenths of a second
+  uiCurrentTickCount += m_MMEAeventTime.GetTicks() * 10;
+  if (uiCurrentTickCount > m_ulLastNMEATicktime + 1) {
+    m_ulLastNMEATicktime = uiCurrentTickCount;
+
+    if (tick_idx++ > 6) tick_idx = 0;
+  }
+
+  //    Show gLat/gLon in StatusWindow0
+
+  if (NULL != GetStatusBar()) {
+    if (1/*pos_valid*/) {
+      char tick_buf[2];
+      tick_buf[0] = nmea_tick_chars[tick_idx];
+      tick_buf[1] = 0;
+
+      wxString s1(tick_buf, wxConvUTF8);
+      s1 += _(" Ship ");
+      s1 += toSDMM(1, gLat);
+      s1 += _T("   ");
+      s1 += toSDMM(2, gLon);
+
+      if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
+    }
+
+    wxString sogcog;
+    if (!std::isnan(gSog))
+      sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
+                    toUsrSpeed(gSog));
+    else
+      sogcog.Printf(_T("SOG --- "));
+
+    wxString cogs;
+    // We show COG only if SOG is > 0
+    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)) {
+      if (g_bShowTrue)
+        cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
+      if (g_bShowMag)
+        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)GetMag(gCog),
+                                 0x00B0);
+    } else
+      cogs.Printf(("COG ---%c"), 0x00B0);
+
+    sogcog.Append(cogs);
+    SetStatusText(sogcog, STAT_FIELD_SOGCOG);
+  }
+
+#if 0
+#ifdef ocpnUPDATE_SYSTEM_TIME
+
+  //      Use the fix time to update the local system clock, only once per
+  //      session
+  if (!m_bTimeIsSet) {
+    if (!s_bSetSystemTime) {
+      m_bTimeIsSet = true;
+      return;
+    }
+    wxDateTime Fix_Time(wxDateTime::Now());
+
+    if (6 == sfixtime.Len() ||
+        6 == sfixtime.find('.')) {  // perfectly recognised format?
+      wxString a;
+      long b;
+      a = sfixtime.Mid(0, 2);
+      if (a.ToLong(&b)) Fix_Time.SetHour((wxDateTime::wxDateTime_t)b);
+      a = sfixtime.Mid(2, 2);
+      if (a.ToLong(&b)) Fix_Time.SetMinute((wxDateTime::wxDateTime_t)b);
+      a = sfixtime.Mid(4, 2);
+      if (a.ToLong(&b)) Fix_Time.SetSecond((wxDateTime::wxDateTime_t)b);
+    } else
+      return;  // not a good sfixtime format
+
+    time_t TimeOff = Fix_Time.GetTicks() - wxDateTime::Now().GetTicks();
+
+    if (g_bHasHwClock) {  // if a realtime hardwareclock isavailable we only
+                          // check for time and a max of 2 hours of to prevent
+                          // bogus info from some gps devices
+      if ((abs(TimeOff) > 20) && (abs(TimeOff) < 7200)) {
+        wxString msg;
+        msg.Printf(_T("Setting system time, delta t is %d seconds"), TimeOff);
+        wxLogMessage(msg);
+#ifdef __WXMSW__
+        //      Fix up the fix_time to convert to GMT
+        Fix_Time = Fix_Time.ToGMT();
+
+        //    Code snippet following borrowed from wxDateCtrl, MSW
+        const wxDateTime::Tm tm(Fix_Time.GetTm());
+        SYSTEMTIME stm;
+        stm.wYear = (WXWORD)tm.year;
+        stm.wMonth = (WXWORD)(tm.mon - wxDateTime::Jan + 1);
+        stm.wDay = tm.mday;
+        stm.wDayOfWeek = 0;
+        stm.wHour = Fix_Time.GetHour();
+        stm.wMinute = tm.min;
+        stm.wSecond = tm.sec;
+        stm.wMilliseconds = 0;
+
+        ::SetSystemTime(&stm);  // in GMT
+#else
+        //      This contortion sets the system date/time on POSIX host
+        //      Requires the following line in /etc/sudoers
+        //      "nav ALL=NOPASSWD:/bin/date *" (where nav is your username)
+        //      or "%sudo ALL=NOPASSWD:/bin/date *"
+        wxString CommandStr("sudo /bin/date +%T --utc --set=\"");
+        CommandStr.Append(Fix_Time.Format("%T"));
+        CommandStr.Append("\"");
+        msg.Printf(_T("Linux command is:"));
+        msg += CommandStr;
+        wxLogMessage(msg);
+        wxExecute(CommandStr, wxEXEC_ASYNC);
+#endif  //__WXMSW__
+      }
+      m_bTimeIsSet = true;
+    } else {  // no hw-clock set both date and time
+      if (gRmcDate.Len() == 6) {
+#if !defined(__WXMSW__)  // not for windows
+        wxString a;
+        long b;
+        Fix_Time.SetMonth((wxDateTime::Month)2);
+        a = gRmcDate.Mid(0, 2);
+        if (a.ToLong(&b)) Fix_Time.SetDay(b);
+        a = gRmcDate.Mid(2, 2);
+        if (a.ToLong(&b)) Fix_Time.SetMonth((wxDateTime::Month)(b - 1));
+        a = gRmcDate.Mid(4, 2);
+        if (a.ToLong(&b))
+          Fix_Time.SetYear(b + 2000);  // TODO fix this before the year 2100
+        wxString msg;
+        wxString CommandStr("sudo /bin/date --utc --set=\"");
+        CommandStr.Append(Fix_Time.Format("%D %T\""));
+        msg.Printf(_T("Set Date/Time, Linux command is: %s"), CommandStr);
+        wxLogMessage(msg);
+        wxExecute(CommandStr, wxEXEC_ASYNC);
+#endif  // !__WXMSW__
+        m_bTimeIsSet = true;
+      }
+    }
+  }
+#endif  // ocpnUPDATE_SYSTEM_TIME
+#endif
+
 }
 
 //    Manage the application memory footprint on a periodic schedule
@@ -5573,57 +5811,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     }
   }
 
-  //  Update and check watchdog timer for GPS data source
-  gGPS_Watchdog--;
-  if (gGPS_Watchdog <= 0) {
-    bGPSValid = false;
-    if (gGPS_Watchdog == 0) {
-      wxString msg;
-      msg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
-                 gLon);
-      wxLogMessage(msg);
-      // There is no valid fix, we need to invalidate the fix time
-      m_fixtime = -1;
-    }
-    gSog = NAN;
-    gCog = NAN;
-    gRmcDate.Empty();
-    gRmcTime.Empty();
-  }
-
-  //  Update and check watchdog timer for Mag Heading data source
-  gHDx_Watchdog--;
-  if (gHDx_Watchdog <= 0) {
-    gHdm = NAN;
-    if (g_nNMEADebug && (gHDx_Watchdog == 0))
-      wxLogMessage(_T("   ***HDx Watchdog timeout..."));
-  }
-
-  //  Update and check watchdog timer for True Heading data source
-  gHDT_Watchdog--;
-  if (gHDT_Watchdog <= 0) {
-    g_bHDT_Rx = false;
-    gHdt = NAN;
-    if (g_nNMEADebug && (gHDT_Watchdog == 0))
-      wxLogMessage(_T("   ***HDT Watchdog timeout..."));
-  }
-
-  //  Update and check watchdog timer for Magnetic Variation data source
-  gVAR_Watchdog--;
-  if (gVAR_Watchdog <= 0) {
-    g_bVAR_Rx = false;
-    if (g_nNMEADebug && (gVAR_Watchdog == 0))
-      wxLogMessage(_T("   ***VAR Watchdog timeout..."));
-  }
-  //  Update and check watchdog timer for GSV, GGA and SignalK (Satellite data)
-  gSAT_Watchdog--;
-  if (gSAT_Watchdog <= 0) {
-    g_bSatValid = false;
-    g_SatsInView = 0;
-    g_priSats = 99;
-    if (g_nNMEADebug && (gSAT_Watchdog == 0))
-      wxLogMessage(_T("   ***SAT Watchdog timeout..."));
-  }
 
   //    Build and send a Position Fix event to PlugIns
   if (g_pi_manager) {
@@ -6931,6 +7118,7 @@ void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event) {
 }
 
 void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
+#if 0
   wxString sfixtime;
   bool pos_valid = false;
   bool cog_valid = false;
@@ -7228,8 +7416,10 @@ void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {
 
   if (bis_recognized_sentence)
     PostProcessNMEA(pos_valid, sog_valid, cog_valid, sfixtime);
+#endif
 }
 
+#if 0
 void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid, bool cog_valid,
                               const wxString &sfixtime) {
   if (cog_valid) {
@@ -7446,6 +7636,7 @@ void MyFrame::PostProcessNMEA(bool pos_valid, bool sog_valid, bool cog_valid,
   }
 #endif  // ocpnUPDATE_SYSTEM_TIME
 }
+#endif
 
 void MyFrame::FilterCogSog(void) {
   if (g_bfilter_cogsog && !g_own_ship_sog_cog_calc) {

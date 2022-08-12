@@ -155,7 +155,9 @@ void SignalKEventHandler::updateItem(wxJSONValue &item,
 }
 
 void SignalKEventHandler::updateNavigationPosition(
-    wxJSONValue &value, const wxString &sfixtime) const {
+    wxJSONValue &value, const wxString &sfixtime) const
+    {
+#if 0
   if ((value.HasMember("latitude" && value["latitude"].IsDouble())) &&
       (value.HasMember("longitude") && value["longitude"].IsDouble())) {
     // wxLogMessage(_T(" ***** Position Update"));
@@ -166,24 +168,31 @@ void SignalKEventHandler::updateNavigationPosition(
   } else {
     bGPSValid_SK = false;
   }
+#endif
 }
 
 void SignalKEventHandler::updateNavigationSpeedOverGround(
-    wxJSONValue &value, const wxString &sfixtime) const {
+    wxJSONValue &value, const wxString &sfixtime) const
+    {
+#if 0
   double sog_ms = value.AsDouble();
   double sog_knot = sog_ms * ms_to_knot_factor;
   // wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
   m_frame->setSpeedOverGround(sog_knot);
   m_frame->PostProcessNMEA(false, true, false, sfixtime);
+#endif
 }
 
 void SignalKEventHandler::updateNavigationCourseOverGround(
-    wxJSONValue &value, const wxString &sfixtime) const {
+    wxJSONValue &value, const wxString &sfixtime) const
+    {
+#if 0
   double cog_rad = value.AsDouble();
   double cog_deg = GEODESIC_RAD2DEG(cog_rad);
   // wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
   m_frame->setCourseOverGround(cog_deg);
   m_frame->PostProcessNMEA(false, false, true, sfixtime);
+#endif
 }
 
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,

@@ -97,7 +97,7 @@ protected:
   AppMsg& operator=(const AppMsg&) = default;
 };
 
-enum class AppMsg::Type {BasicNavData, GnssFix, AisData, DataPrioNeeded, CustomMsg, Undef};
+enum class AppMsg::Type {BasicNavData, GPSWatchdog, GnssFix, AisData, DataPrioNeeded, CustomMsg, Undef};
 
 
 /**
@@ -144,6 +144,15 @@ public:
     : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
     pos(lat, lon), sog(SOG), cog(COG), var(VAR), hdt(HDT), time(t){};
 
+};
+
+class GPSWatchdogMsg: public AppMsg {
+public:
+  int gps_watchdog;
+
+  GPSWatchdogMsg(int value)
+  : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
+  gps_watchdog(value) {};
 };
 
 /** AIS data point for a vessel. */

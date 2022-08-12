@@ -1069,11 +1069,11 @@ void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg )
   std::string s = n0183_msg->payload;
   wxString sentence(s.c_str());
   if (s[0] == '$') {
-    printf("Send to all: %s", s.c_str());
+    //printf("Send to all: %s", s.c_str());
     SendNMEASentenceToAllPlugIns(sentence);
   }
   else if (s[0] == '!'){
-    printf("AIS to all: %s", s.c_str());
+    //printf("AIS to all: %s", s.c_str());
     SendAISSentenceToAllPlugIns(sentence);
   }
 }

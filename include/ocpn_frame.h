@@ -46,7 +46,7 @@
 #include "SencManager.h"
 #include "observable_msg.h"
 #include "SignalKEventHandler.h"
-
+#include "comm_appmsg_bus.h"
 #include "bbox.h"
 
 wxColour GetGlobalColor(wxString colorName);
@@ -441,6 +441,9 @@ public:
   void OnFrameTCTimer(wxTimerEvent &event);
   void OnFrameCOGTimer(wxTimerEvent &event);
 
+  void HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg);
+  void HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg);
+
   void ChartsRefresh();
 
   bool CheckGroup(int igroup);
@@ -591,33 +594,10 @@ private:
   SignalKEventHandler m_signalKHandler;
 
   ObservedVarListener listener_BasicNavData;
+  ObservedVarListener listener_GPSWatchdog;
 
   DECLARE_EVENT_TABLE()
 };
 
-#if 0
-//      A global definition for window, timer and other ID's as needed.
-enum {
-  ID_NMEA_WINDOW = wxID_HIGHEST,
-  ID_AIS_WINDOW,
-  INIT_TIMER,
-  FRAME_TIMER_1,
-  FRAME_TIMER_2,
-  TIMER_AIS1,
-  TIMER_DSC,
-  TIMER_AISAUDIO,
-  AIS_SOCKET_Isa,
-  FRAME_TIMER_DOG,
-  FRAME_TC_TIMER,
-  FRAME_COG_TIMER,
-  MEMORY_FOOTPRINT_TIMER,
-  BELLS_TIMER,
-  ID_NMEA_THREADMSG,
-  RESIZE_TIMER,
-  TOOLBAR_ANIMATE_TIMER,
-  RECAPTURE_TIMER
-
-};
-#endif
 
 #endif  // _OFRAME_H

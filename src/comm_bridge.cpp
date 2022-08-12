@@ -32,6 +32,7 @@
 
 #include "comm_bridge.h"
 #include "comm_appmsg_bus.h"
+#include "idents.h"
 
 // #include "comm_util.h"
 // #include "comm_drv_n2k_serial.h"
@@ -58,8 +59,21 @@ wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 
 
 extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
+extern wxString gRmcDate, gRmcTime;
+extern int g_nNMEADebug;
+extern int g_priSats, g_SatsInView;
+extern bool g_bSatValid;
+extern bool g_bHDT_Rx, g_bVAR_Rx;
+extern double g_UserVar;
+extern int gps_watchdog_timeout_ticks;
+
 
 // CommBridge implementation
+
+BEGIN_EVENT_TABLE(CommBridge, wxEvtHandler)
+EVT_TIMER(WATCHDOG_TIMER, CommBridge::OnWatchdogTimer)
+END_EVENT_TABLE()
+
 
 CommBridge::CommBridge() {
 
@@ -69,10 +83,108 @@ CommBridge::~CommBridge() {}
 
 bool CommBridge::Initialize() {
 
+  // Clear the watchdogs
+  PresetWatchdogs();
+
+  m_watchdog_timer.SetOwner(this, WATCHDOG_TIMER);
+  m_watchdog_timer.Start(1000, wxTIMER_CONTINUOUS);
+
   // Initialize the comm listeners
   InitCommListeners();
 
   return true;
+}
+
+void CommBridge::PresetWatchdogs(){
+  m_watchdogs.gps_watchdog = 5;
+  m_watchdogs.var_watchdog = 5;
+  m_watchdogs.hdx_watchdog = 5;
+  m_watchdogs.hdt_watchdog = 5;
+  m_watchdogs.sat_watchdog = 5;
+}
+
+void CommBridge::OnWatchdogTimer(wxTimerEvent &event) {
+
+  //  Update and check watchdog timer for GPS data source
+  m_watchdogs.gps_watchdog--;
+  if (m_watchdogs.gps_watchdog <= 0) {
+    //bGPSValid = false;
+    if (m_watchdogs.gps_watchdog == 0) {
+
+      // Send AppMsg telling of watchdog expiry
+      auto msg = std::make_shared<GPSWatchdogMsg>(m_watchdogs.gps_watchdog);
+      auto& msgbus = AppMsgBus::getInstance();
+      msgbus.notify(std::move(msg));
+
+      wxString logmsg;
+      logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
+                 gLon);
+      wxLogMessage(logmsg);
+      //FIXME (dave)
+      // There is no valid fix, we need to invalidate the fix time
+      //m_fixtime = -1;
+    }
+    gSog = NAN;
+    gCog = NAN;
+    gRmcDate.Empty();
+    gRmcTime.Empty();
+  }
+
+  //  Update and check watchdog timer for Mag Heading data source
+  m_watchdogs.hdx_watchdog--;
+  if (m_watchdogs.hdx_watchdog <= 0) {
+    gHdm = NAN;
+    if (g_nNMEADebug && (m_watchdogs.hdx_watchdog == 0))
+      wxLogMessage(_T("   ***HDx Watchdog timeout..."));
+  }
+
+  //  Update and check watchdog timer for True Heading data source
+  m_watchdogs.hdt_watchdog--;
+  if (m_watchdogs.hdt_watchdog <= 0) {
+    g_bHDT_Rx = false;
+    gHdt = NAN;
+    if (g_nNMEADebug && (m_watchdogs.hdt_watchdog == 0))
+      wxLogMessage(_T("   ***HDT Watchdog timeout..."));
+  }
+
+  //  Update and check watchdog timer for Magnetic Variation data source
+  m_watchdogs.var_watchdog--;
+  if (m_watchdogs.var_watchdog <= 0) {
+    g_bVAR_Rx = false;
+    if (g_nNMEADebug && (m_watchdogs.var_watchdog == 0))
+      wxLogMessage(_T("   ***VAR Watchdog timeout..."));
+  }
+  //  Update and check watchdog timer for GSV, GGA and SignalK (Satellite data)
+  m_watchdogs.sat_watchdog--;
+  if (m_watchdogs.sat_watchdog <= 0) {
+    g_bSatValid = false;
+    g_SatsInView = 0;
+    g_priSats = 99;
+    if (g_nNMEADebug && (m_watchdogs.sat_watchdog == 0))
+      wxLogMessage(_T("   ***SAT Watchdog timeout..."));
+  }
+}
+
+void CommBridge::MakeHDTFromHDM(){
+  //    Here is the one place we try to create gHdt from gHdm and gVar,
+  //    but only if NMEA HDT sentence is not being received
+
+  if (!g_bHDT_Rx) {
+    if (!std::isnan(gHdm)) {
+      // Set gVar if needed from manual entry. gVar will be overwritten if
+      // WMM plugin is available
+      if (std::isnan(gVar) && (g_UserVar != 0.0)) gVar = g_UserVar;
+      gHdt = gHdm + gVar;
+      if (!std::isnan(gHdt)) {
+        if (gHdt < 0)
+          gHdt += 360.0;
+        else if (gHdt >= 360)
+          gHdt -= 360.0;
+      }
+
+      m_watchdogs.hdt_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
 }
 
 
@@ -271,13 +383,13 @@ bool CommBridge::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg 
 
   printf("HandleN0183_RMC \n");
 
-  // Populate a comm_appmsg with current global values
+  std::string str = n0183_msg->payload;
+  if(!m_decoder.DecodeRMC(str, m_watchdogs))
+    return false;
+
+   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-
-  std::string str = n0183_msg->payload;
-  m_decoder.DecodeRMC(str, msg);
 
   // Notify the AppMsgBus of new data available
   auto& msgbus = AppMsgBus::getInstance();
@@ -287,215 +399,117 @@ bool CommBridge::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg 
 }
 
 bool CommBridge::HandleN0183_HDT( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-#if 0
   std::string str = n0183_msg->payload;
-
-  wxString sentence(str.c_str());
-  wxString sentence3 = ProcessNMEA4Tags(sentence);
-
-  //FIXME Evaluate priority here?
-  m_NMEA0183 << sentence3;
-
-  if (!m_NMEA0183.PreParse())
-    return false;
-  if (!m_NMEA0183.Parse())
+  if(!m_decoder.DecodeHDT(str, m_watchdogs))
     return false;
 
-  gHdt = m_NMEA0183.Hdt.DegreesTrue;
-  if (!std::isnan(m_NMEA0183.Hdt.DegreesTrue)) {
-    g_bHDT_Rx = true;
-    gHDT_Watchdog = gps_watchdog_timeout_ticks;
-  }
-  PostProcessNMEA(false, false, false, "");
-#endif
+   // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
+            gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
+
   return true;
 }
 
 bool CommBridge::HandleN0183_HDG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-#if 0
   std::string str = n0183_msg->payload;
-
-  wxString sentence(str.c_str());
-  wxString sentence3 = ProcessNMEA4Tags(sentence);
-
-  //FIXME Evaluate priority here?
-  m_NMEA0183 << sentence3;
-
-  if (!m_NMEA0183.PreParse())
-    return false;
-  if (!m_NMEA0183.Parse())
+  if(!m_decoder.DecodeHDG(str, m_watchdogs))
     return false;
 
-  gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-  if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees))
-    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+   // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
+            gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
-  // Any device sending VAR=0.0 can be assumed to not really know
-  // what the actual variation is, so in this case we use WMM if
-  // available
-  if ((!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees)) &&
-              0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees) {
-    if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
-      gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
-    else if (m_NMEA0183.Hdg.MagneticVariationDirection == West)
-      gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
 
-    g_bVAR_Rx = true;
-    gVAR_Watchdog = gps_watchdog_timeout_ticks;
-  }
-  PostProcessNMEA(false, false, false, "");
-#endif
   return true;
 }
 
 bool CommBridge::HandleN0183_HDM( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-#if 0
-  printf("HandleN0183_HDM \n");
-    std::string str = n0183_msg->payload;
-
-  wxString sentence(str.c_str());
-  wxString sentence3 = ProcessNMEA4Tags(sentence);
-
-  //FIXME Evaluate priority here?
-  m_NMEA0183 << sentence3;
-
-  if (!m_NMEA0183.PreParse())
-    return false;
-  if (!m_NMEA0183.Parse())
+  std::string str = n0183_msg->payload;
+  if(!m_decoder.DecodeHDM(str, m_watchdogs))
     return false;
 
-  gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-  if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic))
-    gHDx_Watchdog = gps_watchdog_timeout_ticks;
-  PostProcessNMEA(false, false, false, "");
-#endif
+  MakeHDTFromHDM();
+
+   // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
+            gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
 
   return true;
 }
 
 bool CommBridge::HandleN0183_VTG( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-#if 0
-  bool bsog_valid = false;
-  bool bcog_valid = false;
-
   std::string str = n0183_msg->payload;
-
-  wxString sentence(str.c_str());
-  wxString sentence3 = ProcessNMEA4Tags(sentence);
-
-  //FIXME Evaluate priority here?
-  m_NMEA0183 << sentence3;
-
-  if (!m_NMEA0183.PreParse())
-    return false;
-  if (!m_NMEA0183.Parse())
+  if(!m_decoder.DecodeVTG(str, m_watchdogs))
     return false;
 
-  // should we allow either Sog or Cog but not both to be valid?
-  if (!g_own_ship_sog_cog_calc &&
-      !std::isnan(m_NMEA0183.Vtg.SpeedKnots)){
-    gSog = m_NMEA0183.Vtg.SpeedKnots;
-    bsog_valid = true;
-  }
+   // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
+            gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
-  if (!g_own_ship_sog_cog_calc &&
-      !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue)){
-    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
-    bcog_valid = true;
-  }
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
 
-  if (!g_own_ship_sog_cog_calc &&
-      !std::isnan(m_NMEA0183.Vtg.SpeedKnots) &&
-      !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue)) {
-    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
-    bcog_valid = true;
-  }
-  PostProcessNMEA(false, bsog_valid, bcog_valid, "");
-#endif
   return true;
 }
 
 bool CommBridge::HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-#if 0
   std::string str = n0183_msg->payload;
-
-  wxString sentence(str.c_str());
-  wxString sentence3 = ProcessNMEA4Tags(sentence);
-
-  //FIXME Evaluate priority here?
-  m_NMEA0183 << sentence3;
-
-  if (!m_NMEA0183.PreParse())
-    return false;
-  if (!m_NMEA0183.Parse())
+  if(!m_decoder.DecodeGSV(str, m_watchdogs))
     return false;
 
-  if (g_priSats >= 4) {
-    if (m_NMEA0183.Gsv.MessageNumber == 1) {
-      // Some GNSS print SatsInView in message #1 only
-      setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
-      g_priSats = 4;
-    }
-  }
-  PostProcessNMEA(false, false, false, "");
-#endif
+   // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
+            gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
+
   return true;
+
 }
 
 bool CommBridge::HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-#if 0
   std::string str = n0183_msg->payload;
-
-  wxString sentence(str.c_str());
-  wxString sentence3 = ProcessNMEA4Tags(sentence);
-
-  //FIXME Evaluate priority here?
-  m_NMEA0183 << sentence3;
-
-  if (!m_NMEA0183.PreParse())
-    return false;
-  if (!m_NMEA0183.Parse())
+  if(!m_decoder.DecodeGGA(str, m_watchdogs))
     return false;
 
-  bool pos_valid = false;
-  wxString sfixtime;
-  if (m_NMEA0183.Gga.GPSQuality > 0) {
-    pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
-    sfixtime = m_NMEA0183.Gga.UTCTime;
-    if (g_priSats >= 1) {
-      setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
-      g_priSats = 1;
-    }
-  }
-  PostProcessNMEA(pos_valid, false, false, sfixtime);
-#endif
+   // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
+            gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
+
   return true;
 }
 
 bool CommBridge::HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
-#if 0
   std::string str = n0183_msg->payload;
-
-  wxString sentence(str.c_str());
-  wxString sentence3 = sentence; //ProcessNMEA4Tags(sentence);
-
-  //FIXME Evaluate priority here?
-  m_NMEA0183 << sentence3;
-
-  if (!m_NMEA0183.PreParse())
-    return false;
-  if (!m_NMEA0183.Parse())
+  if(!m_decoder.DecodeGLL(str, m_watchdogs))
     return false;
 
-  bool pos_valid = false;
-  wxString sfixtime;
+   // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(gLat, gLon,
+            gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
-  if (m_NMEA0183.Gll.IsDataValid == NTrue) {
-    pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
-    sfixtime = m_NMEA0183.Gll.UTCTime;
-  }
-  PostProcessNMEA(pos_valid, false, false, sfixtime);
-#endif
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::getInstance();
+  msgbus.notify(std::move(msg));
+
   return true;
 }
 

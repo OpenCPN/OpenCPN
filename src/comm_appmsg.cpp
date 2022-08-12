@@ -62,6 +62,7 @@ std::string AppMsg::TypeToString(const AppMsg::Type t) const {
     case AppMsg::Type::CustomMsg: return "custom-msg"; break;
     case AppMsg::Type::DataPrioNeeded: return "data-prio-needed"; break;
     case AppMsg::Type::GnssFix: return "gnss-fix"; break;
+    case AppMsg::Type::GPSWatchdog: return "gps-watchdog"; break;
     case AppMsg::Type::Undef: return "??"; break;
   }
   return "????";  // Not reached, for the compiler.

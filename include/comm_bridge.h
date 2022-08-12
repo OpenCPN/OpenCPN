@@ -57,8 +57,12 @@ public:
   bool HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg );
   bool HandleN0183_AIVDO( std::shared_ptr <const Nmea0183Msg> n0183_msg );
 
-  void PostProcessNMEA(bool pos_valid, bool sog_valid,
-                       bool cog_valid, const wxString &sfixtime);
+  void OnWatchdogTimer(wxTimerEvent &event);
+  void PresetWatchdogs();
+  void MakeHDTFromHDM();
+
+  Watchdogs m_watchdogs;
+  wxTimer m_watchdog_timer;
 
     //  comm event listeners
   ObservedVarListener listener_N2K_129029;
@@ -75,6 +79,9 @@ public:
   ObservedVarListener listener_N0183_AIVDO;
 
   CommDecoder m_decoder;
+
+  DECLARE_EVENT_TABLE()
+
 };
 
 #endif  // _COMM_BRIDGE_H
