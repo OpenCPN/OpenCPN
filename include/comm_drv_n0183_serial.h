@@ -33,16 +33,16 @@
 #include "comm_drv_n0183.h"
 #include "ConnectionParams.h"
 
-class commDriverN0183SerialThread;  // Internal
+class CommDriverN0183SerialThread;  // Internal
 
-class commDriverN0183SerialEvent;  // Internal
+class CommDriverN0183SerialEvent;  // Internal
 
-class commDriverN0183Serial : public commDriverN0183, public wxEvtHandler {
+class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
 
 public:
-  commDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
+  CommDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
 
-  virtual ~commDriverN0183Serial();
+  virtual ~CommDriverN0183Serial();
 
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
@@ -59,10 +59,10 @@ public:
   void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
   bool IsSecThreadActive() const { return m_bsec_thread_active; }
 
-  void SetSecondaryThread(commDriverN0183SerialThread* secondary_Thread) {
+  void SetSecondaryThread(CommDriverN0183SerialThread* secondary_Thread) {
     m_pSecondary_Thread = secondary_Thread;
   }
-  commDriverN0183SerialThread* GetSecondaryThread() {
+  CommDriverN0183SerialThread* GetSecondaryThread() {
     return m_pSecondary_Thread;
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
@@ -73,12 +73,12 @@ private:
   std::string m_BaudRate;
   int m_handshake;
 
-  commDriverN0183SerialThread* m_pSecondary_Thread;
+  CommDriverN0183SerialThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
 
   ConnectionParams m_params;
   DriverListener& m_listener;
-  void handle_N0183_MSG(commDriverN0183SerialEvent& event);
+  void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
 };
 
 #endif  // guard

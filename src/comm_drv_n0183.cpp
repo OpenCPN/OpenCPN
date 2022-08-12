@@ -26,12 +26,12 @@
 #include "comm_drv_n0183.h"
 
 
-commDriverN0183::commDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
+CommDriverN0183::CommDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 
-commDriverN0183::commDriverN0183(NavAddr::Bus b, const std::string& s) : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
+CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s) : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
 
-commDriverN0183::~commDriverN0183() {}
+CommDriverN0183::~CommDriverN0183() {}
 
-void commDriverN0183::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
+void CommDriverN0183::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
-void commDriverN0183::Activate() {}
+void CommDriverN0183::Activate() {}

@@ -44,16 +44,16 @@
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
 
-class commDriverN2KSerialThread;    // fwd
-class commDriverN2KSerialEvent;
+class CommDriverN2KSerialThread;    // fwd
+class CommDriverN2KSerialEvent;
 
-class commDriverN2KSerial : public commDriverN2K, public wxEvtHandler {
+class CommDriverN2KSerial : public CommDriverN2K, public wxEvtHandler {
 public:
-  commDriverN2KSerial();
-  commDriverN2KSerial(const ConnectionParams *params,
+  CommDriverN2KSerial();
+  CommDriverN2KSerial(const ConnectionParams *params,
                       DriverListener& listener);
 
-  virtual ~commDriverN2KSerial();
+  virtual ~CommDriverN2KSerial();
 
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
@@ -71,15 +71,15 @@ public:
   void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
   bool IsSecThreadActive() const { return m_bsec_thread_active; }
 
-  void SetSecondaryThread(commDriverN2KSerialThread *secondary_Thread) {
+  void SetSecondaryThread(CommDriverN2KSerialThread *secondary_Thread) {
     m_pSecondary_Thread = secondary_Thread;
   }
-  commDriverN2KSerialThread *GetSecondaryThread() {
+  CommDriverN2KSerialThread *GetSecondaryThread() {
     return m_pSecondary_Thread;
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
-  void handle_N2K_SERIAL_RAW( commDriverN2KSerialEvent &event );
+  void handle_N2K_SERIAL_RAW( CommDriverN2KSerialEvent &event );
 
 private:
   bool m_bok;
@@ -87,7 +87,7 @@ private:
   std::string m_BaudRate;
   int m_handshake;
 
-  commDriverN2KSerialThread *m_pSecondary_Thread;
+  CommDriverN2KSerialThread *m_pSecondary_Thread;
   bool m_bsec_thread_active;
 
   ConnectionParams m_params;

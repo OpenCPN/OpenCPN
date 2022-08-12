@@ -53,14 +53,14 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
       switch (params->Protocol) {
          case PROTO_NMEA2000:
          {
-           auto driver = std::make_shared<commDriverN2KSerial>(params, msgbus);
+           auto driver = std::make_shared<CommDriverN2KSerial>(params, msgbus);
            registry.Activate(driver);
            return driver;
            break;
          }
          default:
          {
-           auto driver = std::make_shared<commDriverN0183Serial>(params, msgbus);
+           auto driver = std::make_shared<CommDriverN0183Serial>(params, msgbus);
            registry.Activate(driver);
            return driver;
 
@@ -73,7 +73,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
 //           return new SignalKDataStream(input_consumer, params);
         default:
         {
-          auto driver = std::make_shared<commDriverN0183Net>(params, msgbus);
+          auto driver = std::make_shared<CommDriverN0183Net>(params, msgbus);
           registry.Activate(driver);
           return driver;
           break;

@@ -42,7 +42,7 @@ typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
-class commDriverN0183Serial;  // fwd
+class CommDriverN0183Serial;  // fwd
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
@@ -79,15 +79,15 @@ private:
   mutable std::mutex m_mutex;
 };
 
-class commDriverN0183SerialEvent;  // fwd
+class CommDriverN0183SerialEvent;  // fwd
 
-class commDriverN0183SerialThread : public wxThread {
+class CommDriverN0183SerialThread : public wxThread {
 public:
-  commDriverN0183SerialThread(commDriverN0183Serial *Launcher,
+  CommDriverN0183SerialThread(CommDriverN0183Serial *Launcher,
                               const wxString &PortName,
                               const wxString &strBaudRate);
 
-  ~commDriverN0183SerialThread(void);
+  ~CommDriverN0183SerialThread(void);
   void *Entry();
   bool SetOutMsg(const wxString &msg);
   void OnExit(void);
@@ -102,7 +102,7 @@ private:
   size_t WriteComPortPhysical(char *msg);
   size_t WriteComPortPhysical(const wxString &string);
 
-  commDriverN0183Serial *m_pParentDriver;
+  CommDriverN0183Serial *m_pParentDriver;
   wxString m_PortName;
   wxString m_FullPortName;
 
@@ -175,14 +175,14 @@ private:
   bool full_ = 0;
 };
 
-class commDriverN0183SerialEvent;
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, commDriverN0183SerialEvent);
+class CommDriverN0183SerialEvent;
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
 
-class commDriverN0183SerialEvent : public wxEvent {
+class CommDriverN0183SerialEvent : public wxEvent {
 public:
-  commDriverN0183SerialEvent(wxEventType commandType = wxEVT_COMMDRIVER_N0183_SERIAL, int id = 0)
+  CommDriverN0183SerialEvent(wxEventType commandType = wxEVT_COMMDRIVER_N0183_SERIAL, int id = 0)
       : wxEvent(id, commandType){};
-  ~commDriverN0183SerialEvent(){};
+  ~CommDriverN0183SerialEvent(){};
 
   // accessors
   void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
@@ -192,8 +192,8 @@ public:
 
   // required for sending with wxPostEvent()
   wxEvent *Clone() const {
-    commDriverN0183SerialEvent *newevent =
-        new commDriverN0183SerialEvent(*this);
+    CommDriverN0183SerialEvent *newevent =
+        new CommDriverN0183SerialEvent(*this);
     newevent->m_payload = this->m_payload;
     return newevent;
   };
@@ -206,11 +206,11 @@ private:
 //========================================================================
 /*    commdriverN0183Serial implementation
  * */
-  wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, commDriverN0183SerialEvent);
+  wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
 
-commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
+CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams *params,
                                              DriverListener& listener)
-    :  commDriverN0183(NavAddr::Bus::N0183, ((ConnectionParams *)params)->GetStrippedDSPort()),
+    :  CommDriverN0183(NavAddr::Bus::N0183, ((ConnectionParams *)params)->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
@@ -221,17 +221,17 @@ commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &commDriverN0183Serial::handle_N0183_MSG, this);
+  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG, this);
 
   Open();
 
 }
 
-commDriverN0183Serial::~commDriverN0183Serial() {
+CommDriverN0183Serial::~CommDriverN0183Serial() {
   Close();
 }
 
-bool commDriverN0183Serial::Open() {
+bool CommDriverN0183Serial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
 
@@ -239,14 +239,14 @@ bool commDriverN0183Serial::Open() {
       comx.BeforeFirst(' ');  // strip off any description provided by Windows
 
   //    Kick off the  RX thread
-  SetSecondaryThread(new commDriverN0183SerialThread(this, comx, m_BaudRate));
+  SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
   SetThreadRunFlag(1);
   GetSecondaryThread()->Run();
 
   return true;
 }
 
-void commDriverN0183Serial::Close() {
+void CommDriverN0183Serial::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
 
@@ -280,14 +280,14 @@ void commDriverN0183Serial::Close() {
 }
 
 
-void commDriverN0183Serial::Activate() {
+void CommDriverN0183Serial::Activate() {
   CommDriverRegistry::getInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 
 
-void commDriverN0183Serial::handle_N0183_MSG(
-    commDriverN0183SerialEvent &event) {
+void CommDriverN0183Serial::handle_N0183_MSG(
+    CommDriverN0183SerialEvent &event) {
 
   auto p = event.GetPayload();
   std::vector<unsigned char> *payload = p.get();
@@ -324,8 +324,8 @@ void commDriverN0183Serial::handle_N0183_MSG(
 
 #define DS_RX_BUFFER_SIZE 4096
 
-commDriverN0183SerialThread::commDriverN0183SerialThread(
-    commDriverN0183Serial *Launcher, const wxString &PortName,
+CommDriverN0183SerialThread::CommDriverN0183SerialThread(
+    CommDriverN0183Serial *Launcher, const wxString &PortName,
     const wxString &strBaudRate) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
@@ -344,13 +344,13 @@ commDriverN0183SerialThread::commDriverN0183SerialThread(
   Create();
 }
 
-commDriverN0183SerialThread::~commDriverN0183SerialThread(void) {
+CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {
   delete[] rx_buffer;
 }
 
-void commDriverN0183SerialThread::OnExit(void) {}
+void CommDriverN0183SerialThread::OnExit(void) {}
 
-bool commDriverN0183SerialThread::OpenComPortPhysical(const wxString &com_name,
+bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString &com_name,
                                                       int baud_rate) {
   try {
     m_serial.setPort(com_name.ToStdString());
@@ -364,7 +364,7 @@ bool commDriverN0183SerialThread::OpenComPortPhysical(const wxString &com_name,
   return m_serial.isOpen();
 }
 
-void commDriverN0183SerialThread::CloseComPortPhysical() {
+void CommDriverN0183SerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
   } catch (std::exception &e) {
@@ -373,14 +373,14 @@ void commDriverN0183SerialThread::CloseComPortPhysical() {
   }
 }
 
-void commDriverN0183SerialThread::ThreadMessage(const wxString &msg) {
+void CommDriverN0183SerialThread::ThreadMessage(const wxString &msg) {
   //    Signal the main program thread
 //   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
 //   event.SetSString(std::string(msg.mb_str()));
 //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
-size_t commDriverN0183SerialThread::WriteComPortPhysical(char *msg) {
+size_t CommDriverN0183SerialThread::WriteComPortPhysical(char *msg) {
   if (m_serial.isOpen()) {
     ssize_t status;
     try {
@@ -397,7 +397,7 @@ size_t commDriverN0183SerialThread::WriteComPortPhysical(char *msg) {
 }
 
 #ifdef __WXMSW__
-void *commDriverN0183SerialThread::Entry() {
+void *CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   int nl_found = 0;
   wxString msg;
@@ -507,7 +507,7 @@ void *commDriverN0183SerialThread::Entry() {
             //    but we should handle it anyway
             if (vec->at(0) == '\r') vec->erase(vec->begin());
 
-            commDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+            CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
             Nevent.SetPayload(buffer);
             m_pParentDriver->AddPendingEvent(Nevent);
 
@@ -551,7 +551,7 @@ void *commDriverN0183SerialThread::Entry() {
 }
 
 #else  // MSW
-void *commDriverN0183SerialThread::Entry() {
+void *CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   bool nl_found = false;
   wxString msg;
@@ -647,7 +647,7 @@ void *commDriverN0183SerialThread::Entry() {
           //    but we should handle it anyway
           if (vec->at(0) == '\r') vec->erase(vec->begin());
 
-          commDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+          CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
           Nevent.SetPayload(buffer);
           m_pParentDriver->AddPendingEvent(Nevent);
         }
@@ -694,7 +694,7 @@ void *commDriverN0183SerialThread::Entry() {
 //----------------------------------------------------------------------------------
 #if 0
 #ifndef __WXMSW__
-void *commDriverN0183SerialThread::Entry() {
+void *CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   bool nl_found = false;
   wxString msg;
@@ -798,7 +798,7 @@ void *commDriverN0183SerialThread::Entry() {
 
 //          evt.SetClientData( d_voidPtr /*temp_buf*/ );
 //          m_pParentDriver->m_EventHandler.AddPendingEvent(evt);
-          commDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
+          CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
           Nevent.SetPayload(buffer);
           m_pParentDriver->m_EventHandler.AddPendingEvent(Nevent);
 

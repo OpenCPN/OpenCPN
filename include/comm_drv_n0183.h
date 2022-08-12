@@ -27,12 +27,12 @@
 
 #include "comm_driver.h"
 
-class commDriverN0183 : public AbstractCommDriver {
+class CommDriverN0183 : public AbstractCommDriver {
 public:
-  commDriverN0183();
-  commDriverN0183(NavAddr::Bus b, const std::string& s);
+  CommDriverN0183();
+  CommDriverN0183(NavAddr::Bus b, const std::string& s);
 
-  virtual ~commDriverN0183();
+  virtual ~CommDriverN0183();
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) override;
 
