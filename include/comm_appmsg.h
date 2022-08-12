@@ -58,6 +58,7 @@ public:
 
   const double lat;      // signed value
   const double lon;      // signed value
+  const Type type;
 
 private:
   std::string TypeToStr(const Type t) const;
@@ -71,7 +72,6 @@ private:
   /** Returned signed long  deduced from t. */
   double TypeToLong(Type t, double lon);
 
-  const Type type;
 };
 
 
@@ -153,12 +153,12 @@ public:
         hdt(HDT),
         time(t){};
 
-  Position pos;
-  double sog;
-  double cog;
-  double var;
-  double hdt;
-  time_t time;
+  const Position pos;
+  const double sog;
+  const double cog;
+  const double var;
+  const double hdt;
+  const time_t time;
 };
 
 class GPSWatchdogMsg : public AppMsg {
