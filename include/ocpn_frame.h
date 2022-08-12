@@ -593,8 +593,8 @@ private:
 
   SignalKEventHandler m_signalKHandler;
 
-  ObservedVarListener listener_BasicNavData;
-  ObservedVarListener listener_GPSWatchdog;
+  ObservedVarListener listener_basic_navdata;
+  ObservedVarListener listener_gps_watchdog;
 
   DECLARE_EVENT_TABLE()
 };
