@@ -62,14 +62,12 @@
 
 #include "dychart.h"
 
-
 #include "OCPN_DataStreamEvent.h"
 #include "OCP_DataStreamInput_Thread.h"
 #include "GarminProtocolHandler.h"
 
 #include "comm_drv_n0183_net.h"
 #include "comm_navmsg_bus.h"
-
 
 #define N_DOG_TIMEOUT 5
 
@@ -91,9 +89,8 @@ public:
   std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
-  wxEvent *Clone() const {
-    CommDriverN0183NetEvent *newevent =
-        new CommDriverN0183NetEvent(*this);
+  wxEvent* Clone() const {
+    CommDriverN0183NetEvent* newevent = new CommDriverN0183NetEvent(*this);
     newevent->m_payload = this->m_payload;
     return newevent;
   };
@@ -113,11 +110,12 @@ EVT_SOCKET(DS_SERVERSOCKET_ID, CommDriverN0183Net::OnServerSocketEvent)
 EVT_TIMER(TIMER_SOCKET + 1, CommDriverN0183Net::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
 
-//CommDriverN0183Net::CommDriverN0183Net() : CommDriverN0183() {}
+// CommDriverN0183Net::CommDriverN0183Net() : CommDriverN0183() {}
 
-CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams *params,
+CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
                                        DriverListener& listener)
-    : CommDriverN0183(NavAddr::Bus::N0183, ((ConnectionParams *)params)->GetStrippedDSPort()),
+    : CommDriverN0183(NavAddr::Bus::N0183,
+                      ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
       m_net_port(wxString::Format(wxT("%i"), params->NetworkPort)),
@@ -139,7 +137,6 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams *params,
   m_socket_timer.SetOwner(this, TIMER_SOCKET);
   m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
 
-
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::handle_N0183_MSG, this);
 
@@ -148,37 +145,31 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams *params,
 
 CommDriverN0183Net::~CommDriverN0183Net() {}
 
-
-void CommDriverN0183Net::handle_N0183_MSG(
-    CommDriverN0183NetEvent &event) {
+void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
   auto p = event.GetPayload();
-  std::vector<unsigned char> *payload = p.get();
+  std::vector<unsigned char>* payload = p.get();
 
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  //FIXME
-  //    if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
-  //      if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
+  // FIXME
+  //     if (stream) bpass = stream->SentencePassesFilter(message,
+  //     FILTER_INPUT);
+  //       if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')){   // Sanity check
+  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
     std::string identifier;
     // We notify based on Mnemonic only, ignoring the Talker ID
     identifier = full_sentence.substr(3, 3);
 
-    auto msg =
-      std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
+    auto msg = std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
     m_listener.Notify(std::move(msg));
 
     // Also notify for "all" N0183 messages, to support plugin API
-    auto msg_all =
-      std::make_unique<const Nmea0183Msg>("", full_sentence);
+    auto msg_all = std::make_unique<const Nmea0183Msg>("", full_sentence);
     m_listener.Notify(std::move(msg_all));
-
   }
 }
-
-
 
 void CommDriverN0183Net::Open(void) {
 #ifdef __UNIX__
@@ -363,7 +354,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
       if (!event.GetSocket()->Error()) {
         size_t count = event.GetSocket()->LastCount();
         if (count) {
-          if (1/*FIXME !g_benableUDPNullHeader*/) {
+          if (1 /*FIXME !g_benableUDPNullHeader*/) {
             data[count] = 0;
             m_sock_buffer += (&data.front());
           } else {
@@ -421,8 +412,9 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
               if (nmea_line.size()) {
                 //    Copy the message into a vector for tranmittal upstream
                 auto buffer = std::make_shared<std::vector<unsigned char>>();
-                std::vector<unsigned char> *vec = buffer.get();
-                std::copy(nmea_line.begin(), nmea_line.end(), std::back_inserter(*vec));
+                std::vector<unsigned char>* vec = buffer.get();
+                std::copy(nmea_line.begin(), nmea_line.end(),
+                          std::back_inserter(*vec));
 
                 Nevent.SetPayload(buffer);
                 AddPendingEvent(Nevent);
@@ -510,7 +502,7 @@ void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
 
       if (GetSock()) {
         GetSock()->SetTimeout(2);
-//        GetSock()->SetFlags(wxSOCKET_BLOCK);
+        //        GetSock()->SetFlags(wxSOCKET_BLOCK);
         GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
         int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
         if (GetPortType() != DS_TYPE_INPUT) {
@@ -603,7 +595,6 @@ void CommDriverN0183Net::Close() {
 
   m_socket_timer.Stop();
   m_socketread_watchdog_timer.Stop();
-
 }
 
 bool CommDriverN0183Net::SetOutputSocketOptions(wxSocketBase* tsock) {
@@ -629,12 +620,8 @@ bool CommDriverN0183Net::SetOutputSocketOptions(wxSocketBase* tsock) {
           ret);
 }
 
-bool CommDriverN0183Net::ChecksumOK( const std::string &sentence )
-{
-    if (!m_bchecksumCheck)
-        return true;
+bool CommDriverN0183Net::ChecksumOK(const std::string& sentence) {
+  if (!m_bchecksumCheck) return true;
 
-    return CheckSumCheck(sentence);
-
+  return CheckSumCheck(sentence);
 }
-

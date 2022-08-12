@@ -28,7 +28,8 @@
 
 #include "comm_appmsg.h"
 
-double PosPartsToDegrees(float degrees, float minutes, float percent_of_minute) {
+double PosPartsToDegrees(float degrees, float minutes,
+                         float percent_of_minute) {
   return degrees + minutes / 60 + percent_of_minute / 6000;
 }
 
@@ -48,22 +49,35 @@ std::string TimeToString(const time_t t) {
 std::string DegreesToString(double degrees) {
   using namespace std;
   std::stringstream buf;
-  buf << setw(2) <<  static_cast<int>(trunc(degrees)) << "\u00B0"
-      << static_cast<int>(trunc(degrees * 100)) % 100 << ","
-      << setw(2) << (static_cast<int>(trunc(degrees * 10000))% 10000) % 100;
+  buf << setw(2) << static_cast<int>(trunc(degrees)) << "\u00B0"
+      << static_cast<int>(trunc(degrees * 100)) % 100 << "," << setw(2)
+      << (static_cast<int>(trunc(degrees * 10000)) % 10000) % 100;
   return buf.str();
 }
 
-
 std::string AppMsg::TypeToString(const AppMsg::Type t) const {
   switch (t) {
-    case AppMsg::Type::AisData: return "ais-data"; break;
-    case AppMsg::Type::BasicNavData: return "basic-nav-data"; break;
-    case AppMsg::Type::CustomMsg: return "custom-msg"; break;
-    case AppMsg::Type::DataPrioNeeded: return "data-prio-needed"; break;
-    case AppMsg::Type::GnssFix: return "gnss-fix"; break;
-    case AppMsg::Type::GPSWatchdog: return "gps-watchdog"; break;
-    case AppMsg::Type::Undef: return "??"; break;
+    case AppMsg::Type::AisData:
+      return "ais-data";
+      break;
+    case AppMsg::Type::BasicNavData:
+      return "basic-nav-data";
+      break;
+    case AppMsg::Type::CustomMsg:
+      return "custom-msg";
+      break;
+    case AppMsg::Type::DataPrioNeeded:
+      return "data-prio-needed";
+      break;
+    case AppMsg::Type::GnssFix:
+      return "gnss-fix";
+      break;
+    case AppMsg::Type::GPSWatchdog:
+      return "gps-watchdog";
+      break;
+    case AppMsg::Type::Undef:
+      return "??";
+      break;
   }
   return "????";  // Not reached, for the compiler.
 }

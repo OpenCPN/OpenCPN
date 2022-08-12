@@ -23,7 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -38,7 +37,8 @@ extern int gps_watchdog_timeout_ticks;
 extern wxString gRmcDate, gRmcTime;
 extern bool g_bHDT_Rx, g_bVAR_Rx;
 
-bool CommDecoder::ParsePosition(const LATLONG &Position, double&lat, double& lon) {
+bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,
+                                double& lon) {
   bool ll_valid = true;
   double llt = Position.Latitude.Latitude;
 
@@ -67,7 +67,6 @@ bool CommDecoder::ParsePosition(const LATLONG &Position, double&lat, double& lon
 }
 
 bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -81,19 +80,17 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs) {
       gLat = tlat;
       gLon = tlon;
       dogs.gps_watchdog = gps_watchdog_timeout_ticks;
-    }
-    else
+    } else
       return false;
 
-    //FIXME (dave) if (!g_own_ship_sog_cog_calc )
+    // FIXME (dave) if (!g_own_ship_sog_cog_calc )
     {
-      if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)){
+      if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
         gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
       }
-      if(!std::isnan(gSog) && (gSog > 0)){
+      if (!std::isnan(gSog) && (gSog > 0)) {
         gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-      }
-      else{
+      } else {
         gCog = NAN;
       }
     }
@@ -101,7 +98,7 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs) {
     // what the actual variation is, so in this case we use WMM if
     // available
     if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
-                0.0 != m_NMEA0183.Rmc.MagneticVariation) {
+        0.0 != m_NMEA0183.Rmc.MagneticVariation) {
       if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
         gVar = m_NMEA0183.Rmc.MagneticVariation;
       else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
@@ -114,15 +111,13 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs) {
 
     gRmcTime = m_NMEA0183.Rmc.UTCTime;
     gRmcDate = m_NMEA0183.Rmc.Date;
-  }
-  else
+  } else
     return false;
 
   return true;
 }
 
 bool CommDecoder::DecodeHDM(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -138,7 +133,6 @@ bool CommDecoder::DecodeHDM(std::string s, Watchdogs& dogs) {
 }
 
 bool CommDecoder::DecodeHDT(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -156,7 +150,6 @@ bool CommDecoder::DecodeHDT(std::string s, Watchdogs& dogs) {
 }
 
 bool CommDecoder::DecodeHDG(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -172,7 +165,7 @@ bool CommDecoder::DecodeHDG(std::string s, Watchdogs& dogs) {
   // what the actual variation is, so in this case we use WMM if
   // available
   if ((!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees)) &&
-              0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees) {
+      0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees) {
     if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
       gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
     else if (m_NMEA0183.Hdg.MagneticVariationDirection == West)
@@ -186,7 +179,6 @@ bool CommDecoder::DecodeHDG(std::string s, Watchdogs& dogs) {
 }
 
 bool CommDecoder::DecodeVTG(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -194,10 +186,9 @@ bool CommDecoder::DecodeVTG(std::string s, Watchdogs& dogs) {
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
 
-  //FIXME (dave)if (g_own_ship_sog_cog_calc) return false;
+  // FIXME (dave)if (g_own_ship_sog_cog_calc) return false;
 
-  if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots))
-    gSog = m_NMEA0183.Vtg.SpeedKnots;
+  if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots)) gSog = m_NMEA0183.Vtg.SpeedKnots;
 
   if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots) &&
       !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue)) {
@@ -208,7 +199,6 @@ bool CommDecoder::DecodeVTG(std::string s, Watchdogs& dogs) {
 }
 
 bool CommDecoder::DecodeGLL(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -222,18 +212,15 @@ bool CommDecoder::DecodeGLL(std::string s, Watchdogs& dogs) {
       gLat = tlat;
       gLon = tlon;
       dogs.gps_watchdog = gps_watchdog_timeout_ticks;
-    }
-    else
+    } else
       return false;
-  }
-  else
+  } else
     return false;
 
   return true;
 }
 
 bool CommDecoder::DecodeGSV(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -241,20 +228,19 @@ bool CommDecoder::DecodeGSV(std::string s, Watchdogs& dogs) {
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
 
-//Fixme (dave)
-//  if (g_priSats >= 4) {
-//    if (m_NMEA0183.Gsv.MessageNumber == 1) {
-//      // Some GNSS print SatsInView in message #1 only
-//      setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
-//      g_priSats = 4;
-//    }
-//  }
+  // Fixme (dave)
+  //   if (g_priSats >= 4) {
+  //     if (m_NMEA0183.Gsv.MessageNumber == 1) {
+  //       // Some GNSS print SatsInView in message #1 only
+  //       setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
+  //       g_priSats = 4;
+  //     }
+  //   }
 
   return true;
 }
 
 bool CommDecoder::DecodeGGA(std::string s, Watchdogs& dogs) {
-
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -268,20 +254,16 @@ bool CommDecoder::DecodeGGA(std::string s, Watchdogs& dogs) {
       gLat = tlat;
       gLon = tlon;
       dogs.gps_watchdog = gps_watchdog_timeout_ticks;
-    }
-    else
+    } else
       return false;
 
-//FIXME (dave)
-//    if (g_priSats >= 1) {
-//      setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
-//      g_priSats = 1;
-//    }
-  }
-  else
+    // FIXME (dave)
+    //     if (g_priSats >= 1) {
+    //       setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
+    //       g_priSats = 1;
+    //     }
+  } else
     return false;
 
   return true;
 }
-
-

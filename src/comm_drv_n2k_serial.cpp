@@ -44,12 +44,12 @@ public:
     return m_queque.empty();
   }
 
-  const T &front() {
+  const T& front() {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_queque.front();
   }
 
-  void push(const T &value) {
+  void push(const T& value) {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_queque.push(value);
   }
@@ -116,43 +116,42 @@ private:
   bool full_ = 0;
 };
 
-
-class CommDriverN2KSerialEvent;     //fwd
+class CommDriverN2KSerialEvent;  // fwd
 
 class CommDriverN2KSerialThread : public wxThread {
 public:
-  CommDriverN2KSerialThread(CommDriverN2KSerial *Launcher,
-                             const wxString &PortName,
-                             const wxString &strBaudRate);
+  CommDriverN2KSerialThread(CommDriverN2KSerial* Launcher,
+                            const wxString& PortName,
+                            const wxString& strBaudRate);
 
   ~CommDriverN2KSerialThread(void);
-  void *Entry();
-  bool SetOutMsg(const wxString &msg);
+  void* Entry();
+  bool SetOutMsg(const wxString& msg);
   void OnExit(void);
 
 private:
 #ifndef __OCPN__ANDROID__
   serial::Serial m_serial;
 #endif
-  void ThreadMessage(const wxString &msg);
-  bool OpenComPortPhysical(const wxString &com_name, int baud_rate);
+  void ThreadMessage(const wxString& msg);
+  bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
   void CloseComPortPhysical();
-  size_t WriteComPortPhysical(char *msg);
-  size_t WriteComPortPhysical(const wxString &string);
+  size_t WriteComPortPhysical(char* msg);
+  size_t WriteComPortPhysical(const wxString& string);
 
-  CommDriverN2KSerial *m_pParentDriver;
+  CommDriverN2KSerial* m_pParentDriver;
   wxString m_PortName;
   wxString m_FullPortName;
 
-  unsigned char *put_ptr;
-  unsigned char *tak_ptr;
+  unsigned char* put_ptr;
+  unsigned char* tak_ptr;
 
-  unsigned char *rx_buffer;
+  unsigned char* rx_buffer;
 
   int m_baud;
   int m_n_timeout;
 
-  n2k_atomic_queue<char *> out_que;
+  n2k_atomic_queue<char*> out_que;
 
 #ifdef __WXMSW__
   HANDLE m_hSerialComm;
@@ -162,7 +161,6 @@ private:
 
 class CommDriverN2KSerialEvent;
 wxDECLARE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, CommDriverN2KSerialEvent);
-
 
 class CommDriverN2KSerialEvent : public wxEvent {
 public:
@@ -177,8 +175,8 @@ public:
   std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
-  wxEvent *Clone() const {
-    CommDriverN2KSerialEvent *newevent = new CommDriverN2KSerialEvent(*this);
+  wxEvent* Clone() const {
+    CommDriverN2KSerialEvent* newevent = new CommDriverN2KSerialEvent(*this);
     newevent->m_payload = this->m_payload;
     return newevent;
   };
@@ -187,27 +185,27 @@ private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
-
 //========================================================================
 /*    commdriverN2KSerial implementation
  * */
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, CommDriverN2KSerialEvent);
 
-CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams *params,
+CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
                                          DriverListener& listener)
-    : CommDriverN2K(NavAddr::Bus::N2000, ((ConnectionParams *)params)->GetStrippedDSPort()),
+    : CommDriverN2K(NavAddr::Bus::N2000,
+                    ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
       m_params(*params),
-      m_listener(listener)
-  {
+      m_listener(listener) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N2K_SERIAL, &CommDriverN2KSerial::handle_N2K_SERIAL_RAW, this);
+  Bind(wxEVT_COMMDRIVER_N2K_SERIAL, &CommDriverN2KSerial::handle_N2K_SERIAL_RAW,
+       this);
 
   Open();
 }
@@ -229,21 +227,20 @@ bool CommDriverN2KSerial::Open() {
   return true;
 }
 
-
 void CommDriverN2KSerial::Activate() {
   CommDriverRegistry::getInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 
 void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
-    CommDriverN2KSerialEvent &event) {
+    CommDriverN2KSerialEvent& event) {
   auto p = event.GetPayload();
 
-  std::vector<unsigned char> *payload = p.get();
+  std::vector<unsigned char>* payload = p.get();
 
   // extract PGN
   uint64_t pgn = 0;
-  unsigned char *c = (unsigned char *)&pgn;
+  unsigned char* c = (unsigned char*)&pgn;
   *c++ = payload->at(3);
   *c++ = payload->at(4);
   *c++ = payload->at(5);
@@ -306,8 +303,8 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
 #define DS_RX_BUFFER_SIZE 4096
 
 CommDriverN2KSerialThread::CommDriverN2KSerialThread(
-    CommDriverN2KSerial *Launcher, const wxString &PortName,
-    const wxString &strBaudRate) {
+    CommDriverN2KSerial* Launcher, const wxString& PortName,
+    const wxString& strBaudRate) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
@@ -331,14 +328,14 @@ CommDriverN2KSerialThread::~CommDriverN2KSerialThread(void) {
 
 void CommDriverN2KSerialThread::OnExit(void) {}
 
-bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString &com_name,
+bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString& com_name,
                                                     int baud_rate) {
   try {
     m_serial.setPort(com_name.ToStdString());
     m_serial.setBaudrate(baud_rate);
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception &e) {
+  } catch (std::exception& e) {
     // std::cerr << "Unhandled Exception while opening serial port: " <<
     // e.what() << std::endl;
   }
@@ -348,21 +345,21 @@ bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString &com_name,
 void CommDriverN2KSerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
-  } catch (std::exception &e) {
+  } catch (std::exception& e) {
     // std::cerr << "Unhandled Exception while closing serial port: " <<
     // e.what() << std::endl;
   }
 }
 
-void CommDriverN2KSerialThread::ThreadMessage(const wxString &msg) {
+void CommDriverN2KSerialThread::ThreadMessage(const wxString& msg) {
   //    Signal the main program thread
-//   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
-//   event.SetSString(std::string(msg.mb_str()));
-//   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
+  //   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
+  //   event.SetSString(std::string(msg.mb_str()));
+  //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
 #ifndef __WXMSW__
-void *CommDriverN2KSerialThread::Entry() {
+void* CommDriverN2KSerialThread::Entry() {
   bool not_done = true;
   bool nl_found = false;
   wxString msg;
@@ -396,7 +393,7 @@ void *CommDriverN2KSerialThread::Entry() {
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(&next_byte, 1);
-      } catch (std::exception &e) {
+      } catch (std::exception& e) {
         // std::cerr << "Serial read exception: " << e.what() << std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
@@ -433,9 +430,9 @@ void *CommDriverN2KSerialThread::Entry() {
           //    Copy the message into a std::vector
 
           auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char> *vec = buffer.get();
+          std::vector<unsigned char>* vec = buffer.get();
 
-          unsigned char *tptr;
+          unsigned char* tptr;
           tptr = tak_ptr;
 
           while ((tptr != put_ptr)) {
@@ -519,7 +516,7 @@ void *CommDriverN2KSerialThread::Entry() {
 }
 
 #else
-void *CommDriverN2KSerialThread::Entry() {
+void* CommDriverN2KSerialThread::Entry() {
   bool not_done = true;
   bool nl_found = false;
   wxString msg;
@@ -556,7 +553,7 @@ void *CommDriverN2KSerialThread::Entry() {
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(rdata, 200);
-      } catch (std::exception &e) {
+      } catch (std::exception& e) {
         // std::cerr << "Serial read exception: " << e.what() << std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
@@ -592,7 +589,8 @@ void *CommDriverN2KSerialThread::Entry() {
           if (bGotESC) {
             if (ESCAPE == next_byte) {
               *put_ptr++ = next_byte;
-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
+              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                put_ptr = rx_buffer;
               bGotESC = false;
             }
           }
@@ -602,9 +600,9 @@ void *CommDriverN2KSerialThread::Entry() {
             //    Copy the message into a std::vector
 
             auto buffer = std::make_shared<std::vector<unsigned char>>();
-            std::vector<unsigned char> *vec = buffer.get();
+            std::vector<unsigned char>* vec = buffer.get();
 
-            unsigned char *tptr;
+            unsigned char* tptr;
             tptr = tak_ptr;
 
             while ((tptr != put_ptr)) {
@@ -617,7 +615,8 @@ void *CommDriverN2KSerialThread::Entry() {
             bGotESC = false;
 
             // Message is finished
-            // Send the captured raw data vector pointer to the thread's "parent"
+            // Send the captured raw data vector pointer to the thread's
+            // "parent"
             //  thereby releasing the thread for further data capture
             CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
             Nevent.SetPayload(buffer);
@@ -628,7 +627,8 @@ void *CommDriverN2KSerialThread::Entry() {
 
             if (!bGotESC) {
               *put_ptr++ = next_byte;
-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
+              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                put_ptr = rx_buffer;
             }
           }
         }
@@ -646,13 +646,13 @@ void *CommDriverN2KSerialThread::Entry() {
               bInMsg = true;
 
               *put_ptr++ = next_byte;
-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
+              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                put_ptr = rx_buffer;
             }
           }
         }
       }  // if newdata > 0
-    } //while
-
+    }    // while
 
     //      Check for any pending output message
 #if 0

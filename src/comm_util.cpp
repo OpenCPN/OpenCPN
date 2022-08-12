@@ -42,7 +42,8 @@
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
-std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *params) {
+std::shared_ptr<AbstractCommDriver> MakeCommDriver(
+    const ConnectionParams* params) {
   wxLogMessage(
       wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
 
@@ -51,28 +52,25 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
   switch (params->Type) {
     case SERIAL:
       switch (params->Protocol) {
-         case PROTO_NMEA2000:
-         {
-           auto driver = std::make_shared<CommDriverN2KSerial>(params, msgbus);
-           registry.Activate(driver);
-           return driver;
-           break;
-         }
-         default:
-         {
-           auto driver = std::make_shared<CommDriverN0183Serial>(params, msgbus);
-           registry.Activate(driver);
-           return driver;
+        case PROTO_NMEA2000: {
+          auto driver = std::make_shared<CommDriverN2KSerial>(params, msgbus);
+          registry.Activate(driver);
+          return driver;
+          break;
+        }
+        default: {
+          auto driver = std::make_shared<CommDriverN0183Serial>(params, msgbus);
+          registry.Activate(driver);
+          return driver;
 
-           break;
-         }
+          break;
+        }
       }
     case NETWORK:
       switch (params->NetProtocol) {
-//FIXME         case SIGNALK:
-//           return new SignalKDataStream(input_consumer, params);
-        default:
-        {
+          // FIXME         case SIGNALK:
+          //            return new SignalKDataStream(input_consumer, params);
+        default: {
           auto driver = std::make_shared<CommDriverN0183Net>(params, msgbus);
           registry.Activate(driver);
           return driver;
@@ -80,7 +78,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
         }
       }
 
-#if 0  //FIXME
+#if 0  // FIXME
     case INTERNAL_GPS:
       return new InternalGPSDataStream(input_consumer, params);
     case INTERNAL_BT:
@@ -91,7 +89,6 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *param
       break;
   }
   return NULL;
-
 }
 
 bool StopAndRemoveCommDriver(std::string ident) {
@@ -99,8 +96,7 @@ bool StopAndRemoveCommDriver(std::string ident) {
   const std::vector<DriverPtr>& drivers = registry.GetDrivers();
   DriverPtr target_driver = FindDriver(drivers, ident);
 
-  if(!target_driver)
-    return false;
+  if (!target_driver) return false;
 
   // Deactivate the driver, and the last reference in shared_ptr
   // will be removed.
@@ -113,7 +109,7 @@ bool StopAndRemoveCommDriver(std::string ident) {
 //----------------------------------------------------------------------------------
 //     Strip NMEA V4 tags from NMEA0183 message
 //----------------------------------------------------------------------------------
-wxString ProcessNMEA4Tags( wxString& msg ) {
+wxString ProcessNMEA4Tags(wxString& msg) {
   int idxFirst = msg.Find('\\');
 
   if (wxNOT_FOUND == idxFirst) return msg;
@@ -130,5 +126,3 @@ wxString ProcessNMEA4Tags( wxString& msg ) {
 
   return msg;
 }
-
-

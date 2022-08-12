@@ -25,10 +25,10 @@
 
 #include "comm_drv_n0183.h"
 
-
 CommDriverN0183::CommDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 
-CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s) : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
+CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s)
+    : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
 
 CommDriverN0183::~CommDriverN0183() {}
 

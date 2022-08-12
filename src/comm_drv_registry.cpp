@@ -53,7 +53,7 @@ CommDriverRegistry& CommDriverRegistry::getInstance() {
   return instance;
 }
 
-const std::shared_ptr<AbstractCommDriver>kNoDriver(nullptr);
+const std::shared_ptr<AbstractCommDriver> kNoDriver(nullptr);
 
 const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
                            const std::string& iface) {
