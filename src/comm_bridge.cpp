@@ -113,8 +113,8 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent &event) {
 
       // Send AppMsg telling of watchdog expiry
       auto msg = std::make_shared<GPSWatchdogMsg>(m_watchdogs.gps_watchdog);
-      auto& msgbus = AppMsgBus::getInstance();
-      msgbus.notify(std::move(msg));
+      auto& msgbus = AppMsgBus::GetInstance();
+      msgbus.Notify(std::move(msg));
 
       wxString logmsg;
       logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
@@ -192,13 +192,13 @@ void CommBridge::InitCommListeners() {
 
   // Initialize the comm listeners
 
-  auto& msgbus = NavMsgBus::getInstance();
+  auto& msgbus = NavMsgBus::GetInstance();
 
   // GNSS Position Data PGN  129029
   //----------------------------------
   Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
 
-  listener_N2K_129029 = msgbus.get_listener(EVT_N2K_129029, this, n2k_msg_129029);
+  listener_N2K_129029 = msgbus.GetListener(EVT_N2K_129029, this, n2k_msg_129029);
 
   Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -209,7 +209,7 @@ void CommBridge::InitCommListeners() {
   // COG SOG rapid   PGN 129026
   //-----------------------------
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
-  listener_N2K_129026 = msgbus.get_listener(EVT_N2K_129026, this, n2k_msg_129026);
+  listener_N2K_129026 = msgbus.GetListener(EVT_N2K_129026, this, n2k_msg_129026);
    Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
          auto message = get_navmsg_ptr(ev);
          auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
@@ -220,7 +220,7 @@ void CommBridge::InitCommListeners() {
   //NMEA0183
   //RMC
   Nmea0183Msg n0183_msg_RMC("RMC", "");
-  listener_N0183_RMC = msgbus.get_listener(EVT_N0183_RMC, this, n0183_msg_RMC);
+  listener_N0183_RMC = msgbus.GetListener(EVT_N0183_RMC, this, n0183_msg_RMC);
 
   Bind(EVT_N0183_RMC, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -230,7 +230,7 @@ void CommBridge::InitCommListeners() {
 
   //HDT
   Nmea0183Msg n0183_msg_HDT("HDT", "");
-  listener_N0183_HDT = msgbus.get_listener(EVT_N0183_HDT, this, n0183_msg_HDT);
+  listener_N0183_HDT = msgbus.GetListener(EVT_N0183_HDT, this, n0183_msg_HDT);
 
   Bind(EVT_N0183_HDT, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -240,7 +240,7 @@ void CommBridge::InitCommListeners() {
 
   //HDG
   Nmea0183Msg n0183_msg_HDG("HDG", "");
-  listener_N0183_HDG = msgbus.get_listener(EVT_N0183_HDG, this, n0183_msg_HDG);
+  listener_N0183_HDG = msgbus.GetListener(EVT_N0183_HDG, this, n0183_msg_HDG);
 
   Bind(EVT_N0183_HDG, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -250,7 +250,7 @@ void CommBridge::InitCommListeners() {
 
   //HDM
   Nmea0183Msg n0183_msg_HDM("HDM", "");
-  listener_N0183_HDM = msgbus.get_listener(EVT_N0183_HDM, this, n0183_msg_HDM);
+  listener_N0183_HDM = msgbus.GetListener(EVT_N0183_HDM, this, n0183_msg_HDM);
 
   Bind(EVT_N0183_HDM, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -260,7 +260,7 @@ void CommBridge::InitCommListeners() {
 
   //VTG
   Nmea0183Msg n0183_msg_VTG("VTG", "");
-  listener_N0183_VTG = msgbus.get_listener(EVT_N0183_VTG, this, n0183_msg_VTG);
+  listener_N0183_VTG = msgbus.GetListener(EVT_N0183_VTG, this, n0183_msg_VTG);
 
   Bind(EVT_N0183_VTG, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -270,7 +270,7 @@ void CommBridge::InitCommListeners() {
 
   //GSV
   Nmea0183Msg n0183_msg_GSV("GSV", "");
-  listener_N0183_GSV = msgbus.get_listener(EVT_N0183_GSV, this, n0183_msg_GSV);
+  listener_N0183_GSV = msgbus.GetListener(EVT_N0183_GSV, this, n0183_msg_GSV);
 
   Bind(EVT_N0183_GSV, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -280,7 +280,7 @@ void CommBridge::InitCommListeners() {
 
   //GGA
   Nmea0183Msg n0183_msg_GGA("GGA", "");
-  listener_N0183_GGA = msgbus.get_listener(EVT_N0183_GGA, this, n0183_msg_GGA);
+  listener_N0183_GGA = msgbus.GetListener(EVT_N0183_GGA, this, n0183_msg_GGA);
 
   Bind(EVT_N0183_GGA, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -290,7 +290,7 @@ void CommBridge::InitCommListeners() {
 
   //GLL
   Nmea0183Msg n0183_msg_GLL("GLL", "");
-  listener_N0183_GLL = msgbus.get_listener(EVT_N0183_GLL, this, n0183_msg_GLL);
+  listener_N0183_GLL = msgbus.GetListener(EVT_N0183_GLL, this, n0183_msg_GLL);
 
   Bind(EVT_N0183_GLL, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -300,7 +300,7 @@ void CommBridge::InitCommListeners() {
 
   //AIVDO
   Nmea0183Msg n0183_msg_AIVDO("AIVDO", "");
-  listener_N0183_AIVDO = msgbus.get_listener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO);
+  listener_N0183_AIVDO = msgbus.GetListener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO);
 
   Bind(EVT_N0183_AIVDO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -392,8 +392,8 @@ bool CommBridge::HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 }
@@ -408,8 +408,8 @@ bool CommBridge::HandleN0183_HDT( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 }
@@ -424,8 +424,8 @@ bool CommBridge::HandleN0183_HDG( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 }
@@ -442,8 +442,8 @@ bool CommBridge::HandleN0183_HDM( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 }
@@ -458,8 +458,8 @@ bool CommBridge::HandleN0183_VTG( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 }
@@ -474,8 +474,8 @@ bool CommBridge::HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 
@@ -491,8 +491,8 @@ bool CommBridge::HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 }
@@ -507,8 +507,8 @@ bool CommBridge::HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg 
             gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
 
   // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::getInstance();
-  msgbus.notify(std::move(msg));
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
 
   return true;
 }

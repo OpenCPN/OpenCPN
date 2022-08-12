@@ -49,16 +49,17 @@ public:
    * wxEvtHandler when a given message type is received. The events
    * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
    */
-  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
-                                   const NavMsg& msg);
+  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
+                                  const NavMsg& msg);
 
-  void notify(std::unique_ptr<const NavMsg> message);
+  void Notify(std::unique_ptr<const NavMsg> message);
 
   /* DriverListener implementation: */
-  void notify(const AbstractCommDriver& driver);
+  void Notify(const AbstractCommDriver& driver);
 
   /* Singleton implementation. */
-  static NavMsgBus& getInstance();
+  static NavMsgBus& GetInstance();
+
   NavMsgBus& operator=(NavMsgBus&) = delete;
   NavMsgBus(const NavMsgBus&) = delete;
 

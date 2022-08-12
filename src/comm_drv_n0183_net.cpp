@@ -168,12 +168,12 @@ void commDriverN0183Net::handle_N0183_MSG(
 
     auto msg =
       std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
-    m_listener.notify(std::move(msg));
+    m_listener.Notify(std::move(msg));
 
     // Also notify for "all" N0183 messages, to support plugin API
     auto msg_all =
       std::make_unique<const Nmea0183Msg>("", full_sentence);
-    m_listener.notify(std::move(msg_all));
+    m_listener.Notify(std::move(msg_all));
 
   }
 }

@@ -46,19 +46,19 @@ class AppMsgBus {
 public:
 
   /** Send message to everyone listening to given message type. */
-  void notify(std::shared_ptr<const AppMsg> msg);
+  void Notify(std::shared_ptr<const AppMsg> msg);
   
   /**
    * Return a listening object which generates wxEventType events sent to
    * wxEvtHandler when a message of given type is received. The events
    * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
    */
-  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
-                                   const AppMsg& msg);
+  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
+                                  const AppMsg& msg);
 
   /** Convenience overload. */
-  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
-                                   AppMsg::Type type);
+  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
+                                  AppMsg::Type type);
 
   /**
    * Set the priority for a given data source providing data.
@@ -66,7 +66,7 @@ public:
    */
   void set_priority(AppMsg::Type data, const NavAddr& src, unsigned prio);
 
-  static AppMsgBus& getInstance();
+  static AppMsgBus& GetInstance();
 };
 
 #endif  // APP_MSG_BUS_H

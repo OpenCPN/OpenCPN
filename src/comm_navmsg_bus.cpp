@@ -31,22 +31,22 @@
 
 using namespace std;
 
-ObservedVarListener NavMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
+ObservedVarListener NavMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
                                             const NavMsg& msg) {
   ObservableMsg om(msg.key());
-  return om.get_listener(eh, et);
+  return om.GetListener(eh, et);
 }
 
-void NavMsgBus::notify(std::unique_ptr<const NavMsg> msg) {
+void NavMsgBus::Notify(std::unique_ptr<const NavMsg> msg) {
   std::shared_ptr<const NavMsg> shared_msg = std::move(msg);
   ObservableMsg om(shared_msg->key());
   om.notify(shared_msg);
 }
 
-NavMsgBus& NavMsgBus::getInstance() {
+NavMsgBus& NavMsgBus::GetInstance() {
   static NavMsgBus instance;
   return instance;
 }
 
 /** Handle changes in driver list. */
-void NavMsgBus::notify(AbstractCommDriver const&) {}
+void NavMsgBus::Notify(AbstractCommDriver const&) {}

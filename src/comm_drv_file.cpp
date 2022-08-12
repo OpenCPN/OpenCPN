@@ -35,8 +35,8 @@
 #include "ocpn_utils.h"
 
 class VoidDriverListener : public DriverListener {
-  virtual void notify(std::unique_ptr<const NavMsg> message) {}
-  virtual void notify(const AbstractCommDriver& driver) {}
+  virtual void Notify(std::unique_ptr<const NavMsg> message) {}
+  virtual void Notify(const AbstractCommDriver& driver) {}
 };
 
 static VoidDriverListener kVoidDriverListener;
@@ -112,7 +112,7 @@ void FileCommDriver::Activate() {
     while (getline(f, line)) {
       auto msg = LineToMessage(line);
       if (msg->bus != NavAddr::Bus::Undef)
-        listener.notify(move(msg));
+        listener.Notify(move(msg));
     }
   }
 }

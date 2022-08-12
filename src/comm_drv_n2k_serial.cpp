@@ -250,7 +250,7 @@ void commDriverN2KSerial::handle_N2K_SERIAL_RAW(
   // memcpy(&v, &data[3], 1);
 
   auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload);
-  m_listener.notify(std::move(msg));
+  m_listener.Notify(std::move(msg));
 
 #if 0  // Debug output
   size_t packetLength = (size_t)data->at(1);
