@@ -42,6 +42,12 @@
 /** The raw message layer, a singleton. */
 class NavMsgBus : public DriverListener {
 public:
+  /* Singleton implementation. */
+  static NavMsgBus& GetInstance();
+
+  NavMsgBus& operator=(NavMsgBus&) = delete;
+  NavMsgBus(const NavMsgBus&) = delete;
+
   void SendMessage(const NavMsg& message, const NavAddr& address);
 
   /**
@@ -56,12 +62,6 @@ public:
 
   /* DriverListener implementation: */
   void Notify(const AbstractCommDriver& driver);
-
-  /* Singleton implementation. */
-  static NavMsgBus& GetInstance();
-
-  NavMsgBus& operator=(NavMsgBus&) = delete;
-  NavMsgBus(const NavMsgBus&) = delete;
 
 private:
   NavMsgBus() = default;

@@ -77,17 +77,17 @@ public:
 class AppMsg {
 public:
   enum class Type;
-  const Type type;
-  const std::string name;  // Must be unique, probably using TypeToString().
-  NavAddr source;
-  unsigned short prio;     // Initially 0, modified using set_priority
+  AppMsg(AppMsg::Type t)
+    : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
 
   virtual std::string key() const { return std::string("@!appmsg-") + name; }
 
   std::string TypeToString(const Type t) const;
 
-  AppMsg(AppMsg::Type t)
-    : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
+  const Type type;
+  const std::string name;  // Must be unique, probably using TypeToString().
+  NavAddr source;
+  unsigned short prio;     // Initially 0, modified using set_priority
 
 protected:
   AppMsg(AppMsg::Type tp, const std::string& nm, NavAddr src)
@@ -113,10 +113,7 @@ public:
 class GnssFix: public AppMsg {
 public:
   enum class Quality {none, gnss, differential };
-  Position pos;
-  const time_t time;
-  Quality quality;
-  int satellites_used;
+
   GnssFix(Position p, time_t t, Quality q = Quality::none, int s_used = -1)
     : AppMsg(AppMsg::Type::GnssFix, "gnss-fix", NavAddr()),
     pos(p), time(t), quality(q), satellites_used(s_used) {};
@@ -126,31 +123,36 @@ public:
     buf << pos.to_string() << " " << TimeToString(time);
     return  buf.str();
   }
+
+  Position pos;
+  const time_t time;
+  Quality quality;
+  int satellites_used;
 };
 
 class BasicNavDataMsg: public AppMsg {
 public:
+  BasicNavDataMsg(double lat, double lon, double SOG, double COG, double VAR,
+               double HDT, time_t t )
+    : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
+    pos(lat, lon), sog(SOG), cog(COG), var(VAR), hdt(HDT), time(t){};
+
   Position pos;
   double sog;
   double cog;
   double var;
   double hdt;
   time_t time;
-
-  BasicNavDataMsg(double lat, double lon, double SOG, double COG, double VAR,
-               double HDT, time_t t )
-    : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
-    pos(lat, lon), sog(SOG), cog(COG), var(VAR), hdt(HDT), time(t){};
-
 };
 
 class GPSWatchdogMsg: public AppMsg {
 public:
-  int gps_watchdog;
-
   GPSWatchdogMsg(int value)
   : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
+
   gps_watchdog(value) {};
+
+  int gps_watchdog;
 };
 
 /** AIS data point for a vessel. */
@@ -178,14 +180,15 @@ public:
  * pointer neds to be casted to the proper type on the receiving side.
  */
 class CustomMsg: public AppMsg {
-  const std::string id;   // Must be unique.
-  std::shared_ptr<const void> payload;
+  CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
+    : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
 
   std::string key() const override {
     return std::string("@##_appmsg-custom-") + id;
   }
-  CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
-    : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
+
+  const std::string id;   // Must be unique.
+  std::shared_ptr<const void> payload;
 };
 
 #endif  // APP_MSG_H

@@ -50,8 +50,6 @@ public:
   bool Open();
   void Close();
 
-  int m_Thread_run_flag;
-
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
   //    be safely called or polled, e.g. wxThread->Destroy();
@@ -66,6 +64,8 @@ public:
     return m_pSecondary_Thread;
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
+
+  int m_Thread_run_flag;
 
 private:
   bool m_bok;

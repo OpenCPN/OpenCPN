@@ -62,8 +62,6 @@ public:
 
   bool Open();
 
-  int m_Thread_run_flag;
-
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
   //    be safely called or polled, e.g. wxThread->Destroy();
@@ -81,6 +79,8 @@ public:
 
   void handle_N2K_SERIAL_RAW( CommDriverN2KSerialEvent &event );
 
+  int m_Thread_run_flag;
+
 private:
   bool m_bok;
   std::string m_portstring;
@@ -92,7 +92,6 @@ private:
 
   ConnectionParams m_params;
   DriverListener& m_listener;
-
 };
 
 
