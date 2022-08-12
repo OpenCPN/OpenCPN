@@ -72,7 +72,6 @@
 #include "dsPortType.h"
 //#include "datastream.h"
 
-
 #ifdef __WXMSW__
 #include <windows.h>
 #include <dbt.h>
@@ -82,11 +81,9 @@
 class CommDriverN0183NetEvent;  // Internal
 
 class CommDriverN0183Net : public CommDriverN0183, public wxEvtHandler {
-
 public:
   CommDriverN0183Net();
-  CommDriverN0183Net(const ConnectionParams* params,
-                     DriverListener& listener);
+  CommDriverN0183Net(const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN0183Net();
 
@@ -143,7 +140,7 @@ private:
 
   ConnectionType GetConnectionType() const { return m_connection_type; }
 
-  bool ChecksumOK(const std::string &sentence);
+  bool ChecksumOK(const std::string& sentence);
   void SetOk(bool ok) { m_bok = ok; };
 
   wxString m_net_port;
@@ -170,7 +167,6 @@ private:
   bool m_bok;
 
   DECLARE_EVENT_TABLE()
-
 };
 
 #endif  // guard

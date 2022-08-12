@@ -50,7 +50,9 @@ struct N2kName {
   N2kName(uint64_t name) : value(name) {}
 
   std::string to_string() const {
-    std::stringstream ss; ss << value; return ss.str();
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
   }
 
   uint64_t value;
@@ -70,11 +72,17 @@ struct N2kName {
  */
 struct N2kId {
   std::string to_string() const {
-    std::stringstream ss; ss << value; return ss.str();
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
   }
 
   static uint64_t StringToId(const std::string& s) {
-    std::stringstream ss; uint64_t id; ss << s; ss >> id; return id;
+    std::stringstream ss;
+    uint64_t id;
+    ss << s;
+    ss >> id;
+    return id;
   }
 
   N2kId(uint64_t id) : value(id){};
@@ -89,29 +97,27 @@ private:
 /** Where messages are sent to or received from. */
 class NavAddr {
 public:
-  enum class Bus {N0183, Signalk, N2000, Onenet, TestBus, Undef};
+  enum class Bus { N0183, Signalk, N2000, Onenet, TestBus, Undef };
 
   NavAddr(Bus b, const std::string& i) : bus(b), iface(i){};
-  NavAddr() : bus(Bus::Undef), iface("") {};
+  NavAddr() : bus(Bus::Undef), iface(""){};
 
   std::string to_string() const {
-     return NavAddr::BusToString(bus) + " " + iface;
+    return NavAddr::BusToString(bus) + " " + iface;
   }
   static std::string BusToString(Bus b);
   static Bus StringToBus(const std::string& s);
 
   Bus bus;
-  const std::string iface;  /**< Physical device for 0183, else a unique
-                                 string */
+  const std::string iface; /**< Physical device for 0183, else a unique
+                                string */
 };
-
 
 class NavAddr0183 : public NavAddr {
 public:
-  NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface) {};
+  NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface){};
 
   std::string to_string() const { return iface; }
-
 };
 
 class NavAddr2000 : public NavAddr {
@@ -147,7 +153,6 @@ protected:
   NavMsg(const NavAddr::Bus& _bus) : bus(_bus){};
 };
 
-
 /**
  * See: https://github.com/OpenCPN/OpenCPN/issues/2729#issuecomment-1179506343
  */
@@ -157,9 +162,7 @@ public:
   Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
       : NavMsg(NavAddr::Bus::N2000), id(_id), payload(_payload) {}
 
-  std::string key() const {
-    return std::string("n2000-") + id.to_string();
-  };
+  std::string key() const { return std::string("n2000-") + id.to_string(); };
 
   /** Print "bus key id payload" */
   std::string to_string() const;
@@ -200,7 +203,6 @@ public:
   std::vector<std::string> warnings;
   std::string key() const { return std::string("signalK"); };
 };
-
 
 /** An invalid message, error return value. */
 class NullNavMsg : public NavMsg {

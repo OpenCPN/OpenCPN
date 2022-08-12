@@ -33,7 +33,7 @@
 #ifndef _COMM_DECODER_H
 #define _COMM_DECODER_H
 
-typedef struct{
+typedef struct {
   int gps_watchdog;
   int var_watchdog;
   int hdx_watchdog;
@@ -47,7 +47,6 @@ public:
   CommDecoder(){};
   ~CommDecoder(){};
 
-
   // NMEA decoding, by sentence.
   // Each method updates the global variable set
   bool DecodeRMC(std::string s, Watchdogs& dogs);
@@ -59,13 +58,9 @@ public:
   bool DecodeGGA(std::string s, Watchdogs& dogs);
   bool DecodeGLL(std::string s, Watchdogs& dogs);
 
-
-  bool ParsePosition(const LATLONG &Position, double&lat, double& lon);
+  bool ParsePosition(const LATLONG& Position, double& lat, double& lon);
 
   NMEA0183 m_NMEA0183;  // Used to parse messages from NMEA threads
-
 };
-
-
 
 #endif  // _COMM_DECODER_H

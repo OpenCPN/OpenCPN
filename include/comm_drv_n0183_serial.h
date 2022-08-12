@@ -38,7 +38,6 @@ class CommDriverN0183SerialThread;  // Internal
 class CommDriverN0183SerialEvent;  // Internal
 
 class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
-
 public:
   CommDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
 

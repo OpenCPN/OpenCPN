@@ -28,7 +28,6 @@
 #include "comm_driver.h"
 
 class CommDriverN2K : public AbstractCommDriver {
-
 public:
   CommDriverN2K();
   CommDriverN2K(NavAddr::Bus b, const std::string& s);
@@ -38,5 +37,4 @@ public:
   virtual void SetListener(std::shared_ptr<DriverListener> l) override;
 };
 
-#endif    //guard
-
+#endif  // guard

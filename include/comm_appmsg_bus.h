@@ -7,7 +7,7 @@
  *           decoded messages.
  *
  *           Message definitions are in comm_appmsg.h
- *          
+ *
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -29,7 +29,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 #ifndef _APP_MSG_BUS_H
 #define _APP_MSG_BUS_H
 
@@ -40,14 +39,12 @@
 #include "comm_appmsg.h"
 #include "observable_appmsg.h"
 
-
 /** Application layer messaging, a singleton. */
 class AppMsgBus {
 public:
-
   /** Send message to everyone listening to given message type. */
   void Notify(std::shared_ptr<const AppMsg> msg);
-  
+
   /**
    * Return a listening object which generates wxEventType events sent to
    * wxEvtHandler when a message of given type is received. The events

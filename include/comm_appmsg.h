@@ -34,16 +34,15 @@
 
 #include "comm_driver.h"
 
-
 double PosPartsToDegrees(float degrees, float minutes, float percent_of_minute);
 
 std::string DegreesToString(double degrees);
 
 std::string TimeToString(const time_t time);
 
-class Position{
+class Position {
 public:
-  enum class Type {NE, NW, SE, SW, Undef};
+  enum class Type { NE, NW, SE, SW, Undef };
 
   const Type type;
   double lat;
@@ -52,33 +51,42 @@ public:
   std::string to_string() const {
     std::stringstream buf;
     const std::string NE(TypeToStr(type));
-    auto  lat_s = DegreesToString(lat);
-    auto  lon_s = DegreesToString(lon);
+    auto lat_s = DegreesToString(lat);
+    auto lon_s = DegreesToString(lon);
     buf << lat_s << NE[0] << " " << lon_s << NE[1];
     return buf.str();
   }
 
   Position(double _lat, double _lon, Type t = Type::Undef)
-    : type(t), lat(_lat), lon(_lon) {}
-  Position() : type(Type::Undef), lat(0), lon(0) {};
+      : type(t), lat(_lat), lon(_lon) {}
+  Position() : type(Type::Undef), lat(0), lon(0){};
 
   std::string TypeToStr(const Type t) const {
     switch (t) {
-      case Type::NE:  return "NE"; break;
-      case Type::NW:  return "NW"; break;
-      case Type::SE:  return "SE"; break;
-      case Type::SW:  return "SW"; break;
-      default: return "??"; break;
+      case Type::NE:
+        return "NE";
+        break;
+      case Type::NW:
+        return "NW";
+        break;
+      case Type::SE:
+        return "SE";
+        break;
+      case Type::SW:
+        return "SW";
+        break;
+      default:
+        return "??";
+        break;
     }
   }
 };
-
 
 class AppMsg {
 public:
   enum class Type;
   AppMsg(AppMsg::Type t)
-    : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
+      : type(t), name(TypeToString(t)), source(NavAddr()), prio(0){};
 
   virtual std::string key() const { return std::string("@!appmsg-") + name; }
 
@@ -87,41 +95,51 @@ public:
   const Type type;
   const std::string name;  // Must be unique, probably using TypeToString().
   NavAddr source;
-  unsigned short prio;     // Initially 0, modified using set_priority
+  unsigned short prio;  // Initially 0, modified using set_priority
 
 protected:
   AppMsg(AppMsg::Type tp, const std::string& nm, NavAddr src)
-    : type(tp), name(nm), source(src), prio(0) {};
+      : type(tp), name(nm), source(src), prio(0){};
 
   AppMsg& operator=(const AppMsg&) = default;
 };
 
-enum class AppMsg::Type {BasicNavData, GPSWatchdog, GnssFix, AisData, DataPrioNeeded, CustomMsg, Undef};
-
+enum class AppMsg::Type {
+  BasicNavData,
+  GPSWatchdog,
+  GnssFix,
+  AisData,
+  DataPrioNeeded,
+  CustomMsg,
+  Undef
+};
 
 /**
  * Issued when there are multiple sources providing 'what' with priority == 0.
  * Should result in GUI actions eventually calling set_priority()
  */
-class DataPrioNeeded: public AppMsg {
+class DataPrioNeeded : public AppMsg {
 public:
   AppMsg::Type what;
   std::vector<NavAddr> sources;
 };
 
 /** GPS, Galileo, etc. position data point. */
-class GnssFix: public AppMsg {
+class GnssFix : public AppMsg {
 public:
-  enum class Quality {none, gnss, differential };
+  enum class Quality { none, gnss, differential };
 
   GnssFix(Position p, time_t t, Quality q = Quality::none, int s_used = -1)
-    : AppMsg(AppMsg::Type::GnssFix, "gnss-fix", NavAddr()),
-    pos(p), time(t), quality(q), satellites_used(s_used) {};
+      : AppMsg(AppMsg::Type::GnssFix, "gnss-fix", NavAddr()),
+        pos(p),
+        time(t),
+        quality(q),
+        satellites_used(s_used){};
 
   std::string to_string() const {
     std::stringstream buf;
     buf << pos.to_string() << " " << TimeToString(time);
-    return  buf.str();
+    return buf.str();
   }
 
   Position pos;
@@ -130,12 +148,17 @@ public:
   int satellites_used;
 };
 
-class BasicNavDataMsg: public AppMsg {
+class BasicNavDataMsg : public AppMsg {
 public:
   BasicNavDataMsg(double lat, double lon, double SOG, double COG, double VAR,
-               double HDT, time_t t )
-    : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
-    pos(lat, lon), sog(SOG), cog(COG), var(VAR), hdt(HDT), time(t){};
+                  double HDT, time_t t)
+      : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
+        pos(lat, lon),
+        sog(SOG),
+        cog(COG),
+        var(VAR),
+        hdt(HDT),
+        time(t){};
 
   Position pos;
   double sog;
@@ -145,49 +168,48 @@ public:
   time_t time;
 };
 
-class GPSWatchdogMsg: public AppMsg {
+class GPSWatchdogMsg : public AppMsg {
 public:
   GPSWatchdogMsg(int value)
-  : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
+      : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
 
-  gps_watchdog(value) {};
+        gps_watchdog(value){};
 
   int gps_watchdog;
 };
 
 /** AIS data point for a vessel. */
-class AisData: public AppMsg {
+class AisData : public AppMsg {
 public:
   time_t time;
   Position pos;
-  float sog;             // Speed over ground, knots.
-  float cog;             // Course over ground, 0..360 degrees.
-  float heading;         // Magnetic sensor, 0..360 degrees.
-  float rate_of_turn;    // Degrees per minute, "-" means bow turns to port.
-  uint8_t type;          // https://api.vtexplorer.com/docs/ref-aistypes.html
+  float sog;           // Speed over ground, knots.
+  float cog;           // Course over ground, 0..360 degrees.
+  float heading;       // Magnetic sensor, 0..360 degrees.
+  float rate_of_turn;  // Degrees per minute, "-" means bow turns to port.
+  uint8_t type;        // https://api.vtexplorer.com/docs/ref-aistypes.html
   std::string name;
   std::string callsign;
-  std::string dest;      // Destination port
+  std::string dest;  // Destination port
   int length;
   int beam;
   int draft;
-  uint8_t status;        // https://api.vtexplorer.com/docs/ref-navstat.html
+  uint8_t status;  // https://api.vtexplorer.com/docs/ref-navstat.html
 };
-
 
 /**
  * A generic message containing a const pointer to basically anything, the
  * pointer neds to be casted to the proper type on the receiving side.
  */
-class CustomMsg: public AppMsg {
+class CustomMsg : public AppMsg {
   CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
-    : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
+      : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
 
   std::string key() const override {
     return std::string("@##_appmsg-custom-") + id;
   }
 
-  const std::string id;   // Must be unique.
+  const std::string id;  // Must be unique.
   std::shared_ptr<const void> payload;
 };
 

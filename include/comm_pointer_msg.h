@@ -32,10 +32,10 @@
 
 #include "wx/event.h"
 
-template<typename T>
+template <typename T>
 class PointerMsg {
 public:
-  PointerMsg(std::shared_ptr<T> p) : ptr(p) {};
+  PointerMsg(std::shared_ptr<T> p) : ptr(p){};
 
   /** Retrieve the pointer contained in an instance and delete instance. */
   static std::shared_ptr<T> get_pointer(wxCommandEvent ev) {
@@ -50,6 +50,5 @@ private:
   std::shared_ptr<T> operator=(std::shared_ptr<T>&) = delete;
   std::shared_ptr<T> ptr;
 };
-
 
 #endif  // _COMM_POINTER_MSG_H__

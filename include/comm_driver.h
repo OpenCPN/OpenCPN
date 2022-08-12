@@ -54,10 +54,9 @@ public:
 
 /** Common interface for all drivers.  */
 class AbstractCommDriver
-  : public std::enable_shared_from_this<const AbstractCommDriver> {
+    : public std::enable_shared_from_this<const AbstractCommDriver> {
 public:
-
-  AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil") {};
+  AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil"){};
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) = 0;
 
@@ -67,9 +66,8 @@ public:
   /**
    * Set the entity which will receive incoming data. By default, such
    * data is ignored
-  */
+   */
   virtual void SetListener(std::shared_ptr<DriverListener> l) {}
-
 
   /**
    * Create a new virtual interface using a new instance of this driver.
@@ -87,11 +85,9 @@ public:
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
 protected:
-  AbstractCommDriver(NavAddr::Bus b) : bus(b) {};
-  AbstractCommDriver(NavAddr::Bus b, const std::string& s)
-    : bus(b), iface(s) {};
+  AbstractCommDriver(NavAddr::Bus b) : bus(b){};
+  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){};
 };
-
 
 /**
  * Nmea2000 drivers are responsible for address claiming, exposing a stable
@@ -102,7 +98,6 @@ protected:
  */
 class N2kDriver : public AbstractCommDriver {
 public:
-
   /** @return address to given name on this n2k bus. */
   NavAddr GetAddress(N2kName name);
 };
@@ -113,7 +108,6 @@ public:
  * separate driver instance.
  */
 class Nmea0183Driver : public AbstractCommDriver {
-
   /** @return address to this bus i. e., physical interface. */
   NavAddr GetAddress();
 };
