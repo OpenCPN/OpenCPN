@@ -164,9 +164,8 @@ public:
   class Source {
   public:
     Source() {
-      Position pos(65.2211, 21.4433, Position::Type::NW);
+      Position pos(65.2211, 21.4433, Position::Type::NE);
       auto fix = std::make_shared<GnssFix>(pos, 1659345030);
-
       AppMsgBus::GetInstance().Notify(std::move(fix));
     }
   };
@@ -287,7 +286,7 @@ TEST(Messaging, AppMsg) {
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   AppmsgCliApp app;
-  EXPECT_EQ(s_result, string("65°22,11N 21°44,33W"));
+  EXPECT_EQ(s_result, string("65°22,11N 21°44,33E"));
   EXPECT_EQ(s_apptype, AppMsg::Type::GnssFix);
 };
 

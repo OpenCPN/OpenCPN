@@ -42,45 +42,38 @@ std::string TimeToString(const time_t time);
 
 class Position {
 public:
-  enum class Type { NE, NW, SE, SW, Undef };
+  enum class Type { NE, NW, SE, SW };
+
+  /** Construct a position from positive lat/long values and Position::Type */
+  Position(double _lat, double _lon, Type t);
+
+  /** Construct a position with signed lat/long defining Type.*/
+  Position(double _lat, double _lon);
+
+  /** Construct a (0,0) position. */
+  Position();
+
+  /** Return utf string like 65°25,11N 21°12,01E */
+  std::string to_string() const;
+
+  const double lat;      // signed value
+  const double lon;      // signed value
+
+private:
+  std::string TypeToStr(const Type t) const;
+
+  /** Deduce type from signed lat/lon. */
+  Type LatLongToType(double lat, double lon);
+
+  /** Returned signed latitude deduced from t. */
+  double TypeToLat(Type t, double lat);
+
+  /** Returned signed long  deduced from t. */
+  double TypeToLong(Type t, double lon);
 
   const Type type;
-  double lat;
-  double lon;
-
-  std::string to_string() const {
-    std::stringstream buf;
-    const std::string NE(TypeToStr(type));
-    auto lat_s = DegreesToString(lat);
-    auto lon_s = DegreesToString(lon);
-    buf << lat_s << NE[0] << " " << lon_s << NE[1];
-    return buf.str();
-  }
-
-  Position(double _lat, double _lon, Type t = Type::Undef)
-      : type(t), lat(_lat), lon(_lon) {}
-  Position() : type(Type::Undef), lat(0), lon(0){};
-
-  std::string TypeToStr(const Type t) const {
-    switch (t) {
-      case Type::NE:
-        return "NE";
-        break;
-      case Type::NW:
-        return "NW";
-        break;
-      case Type::SE:
-        return "SE";
-        break;
-      case Type::SW:
-        return "SW";
-        break;
-      default:
-        return "??";
-        break;
-    }
-  }
 };
+
 
 class AppMsg {
 public:
