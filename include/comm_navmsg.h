@@ -55,6 +55,14 @@ struct N2kName {
     return ss.str();
   }
 
+  static uint64_t Parse(const std::string& s) {
+    std::stringstream ss;
+    uint64_t id;
+    ss << s;
+    ss >> id;
+    return id;
+  }
+
   uint64_t value;
   uint32_t GetNumber() const;         /**< 21 bits */
   uint16_t GetManufacturer() const;   /**< 9 bits */
@@ -66,33 +74,6 @@ struct N2kName {
   uint8_t GetIndustryGroup() const;   /**< 4 bits */
 };
 
-/**
- * The n2k message id as defined by the J/1939 standard. See
- * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
- */
-struct N2kId {
-  std::string to_string() const {
-    std::stringstream ss;
-    ss << value;
-    return ss.str();
-  }
-
-  static uint64_t StringToId(const std::string& s) {
-    std::stringstream ss;
-    uint64_t id;
-    ss << s;
-    ss >> id;
-    return id;
-  }
-
-  N2kId(uint64_t id) : value(id){};
-  uint8_t get_prio() const;    /**< 3 bits */
-  uint32_t get_png() const;    /**< a. k. a. PNG, 17 bits */
-  uint32_t get_source() const; /**< Source address,  8 bits */
-
-private:
-  uint64_t value;
-};
 
 /** Where messages are sent to or received from. */
 class NavAddr {
@@ -158,16 +139,16 @@ protected:
  */
 class Nmea2000Msg : public NavMsg {
 public:
-  Nmea2000Msg(const N2kId& _id) : NavMsg(NavAddr::Bus::N2000), id(_id) {}
-  Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
-      : NavMsg(NavAddr::Bus::N2000), id(_id), payload(_payload) {}
+  Nmea2000Msg(const N2kName& n) : NavMsg(NavAddr::Bus::N2000), name(n) {}
+  Nmea2000Msg(const N2kName& n, const std::vector<unsigned char>& _payload)
+      : NavMsg(NavAddr::Bus::N2000), name(n), payload(_payload) {}
 
-  std::string key() const { return std::string("n2000-") + id.to_string(); };
+  std::string key() const { return std::string("n2000-") + name.to_string(); };
 
   /** Print "bus key id payload" */
   std::string to_string() const;
 
-  N2kId id;
+  N2kName name;
   std::vector<unsigned char> payload;
 };
 

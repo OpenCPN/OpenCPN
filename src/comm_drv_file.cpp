@@ -82,9 +82,9 @@ static unique_ptr<const NavMsg> LineToMessage(const string& line) {
   switch (bus) {
     case NavAddr::Bus::N2000:
       if (true) {  // Create a separate scope.
-        N2kId id(N2kId::StringToId(words[2]));
+        N2kName name(N2kName::Parse(words[2]));
         vector<unsigned char> payload(HexToChar(words[3]));
-        return make_unique<Nmea2000Msg>(id, payload);
+        return make_unique<Nmea2000Msg>(name, payload);
       }
       break;
     case NavAddr::Bus::N0183:

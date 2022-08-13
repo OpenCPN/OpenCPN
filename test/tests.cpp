@@ -251,7 +251,7 @@ public:
 
     auto base_ptr = message.get();
     auto n2k_msg = dynamic_cast<const Nmea2000Msg*>(base_ptr);
-    s_result3 = n2k_msg->id.to_string();
+    s_result3 = n2k_msg->name.to_string();
 
     stringstream ss;
     std::for_each(n2k_msg->payload.begin(), n2k_msg->payload.end(),
