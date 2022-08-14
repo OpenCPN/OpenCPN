@@ -207,7 +207,7 @@ void CommBridge::InitCommListeners() {
 
   // NMEA0183
   // RMC
-  Nmea0183Msg n0183_msg_RMC("RMC", "");
+  Nmea0183Msg n0183_msg_RMC("RMC");
   listener_N0183_RMC = msgbus.GetListener(EVT_N0183_RMC, this, n0183_msg_RMC);
 
   Bind(EVT_N0183_RMC, [&](wxCommandEvent ev) {
@@ -217,7 +217,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // HDT
-  Nmea0183Msg n0183_msg_HDT("HDT", "");
+  Nmea0183Msg n0183_msg_HDT("HDT");
   listener_N0183_HDT = msgbus.GetListener(EVT_N0183_HDT, this, n0183_msg_HDT);
 
   Bind(EVT_N0183_HDT, [&](wxCommandEvent ev) {
@@ -227,7 +227,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // HDG
-  Nmea0183Msg n0183_msg_HDG("HDG", "");
+  Nmea0183Msg n0183_msg_HDG("HDG");
   listener_N0183_HDG = msgbus.GetListener(EVT_N0183_HDG, this, n0183_msg_HDG);
 
   Bind(EVT_N0183_HDG, [&](wxCommandEvent ev) {
@@ -237,7 +237,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // HDM
-  Nmea0183Msg n0183_msg_HDM("HDM", "");
+  Nmea0183Msg n0183_msg_HDM("HDM");
   listener_N0183_HDM = msgbus.GetListener(EVT_N0183_HDM, this, n0183_msg_HDM);
 
   Bind(EVT_N0183_HDM, [&](wxCommandEvent ev) {
@@ -247,7 +247,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // VTG
-  Nmea0183Msg n0183_msg_VTG("VTG", "");
+  Nmea0183Msg n0183_msg_VTG("VTG");
   listener_N0183_VTG = msgbus.GetListener(EVT_N0183_VTG, this, n0183_msg_VTG);
 
   Bind(EVT_N0183_VTG, [&](wxCommandEvent ev) {
@@ -257,7 +257,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // GSV
-  Nmea0183Msg n0183_msg_GSV("GSV", "");
+  Nmea0183Msg n0183_msg_GSV("GSV");
   listener_N0183_GSV = msgbus.GetListener(EVT_N0183_GSV, this, n0183_msg_GSV);
 
   Bind(EVT_N0183_GSV, [&](wxCommandEvent ev) {
@@ -267,7 +267,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // GGA
-  Nmea0183Msg n0183_msg_GGA("GGA", "");
+  Nmea0183Msg n0183_msg_GGA("GGA");
   listener_N0183_GGA = msgbus.GetListener(EVT_N0183_GGA, this, n0183_msg_GGA);
 
   Bind(EVT_N0183_GGA, [&](wxCommandEvent ev) {
@@ -277,7 +277,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // GLL
-  Nmea0183Msg n0183_msg_GLL("GLL", "");
+  Nmea0183Msg n0183_msg_GLL("GLL");
   listener_N0183_GLL = msgbus.GetListener(EVT_N0183_GLL, this, n0183_msg_GLL);
 
   Bind(EVT_N0183_GLL, [&](wxCommandEvent ev) {
@@ -287,7 +287,7 @@ void CommBridge::InitCommListeners() {
   });
 
   // AIVDO
-  Nmea0183Msg n0183_msg_AIVDO("AIVDO", "");
+  Nmea0183Msg n0183_msg_AIVDO("AIVDO");
   listener_N0183_AIVDO =
       msgbus.GetListener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO);
 

@@ -193,8 +193,7 @@ wxDEFINE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, CommDriverN2KSerialEvent);
 
 CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
                                          DriverListener& listener)
-    : CommDriverN2K(NavAddr::Bus::N2000,
-                    ((ConnectionParams*)params)->GetStrippedDSPort()),
+    : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
@@ -232,6 +231,12 @@ void CommDriverN2KSerial::Activate() {
   // TODO: Read input data.
 }
 
+static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
+  uint64_t name;
+  memcpy(&name, reinterpret_cast<const void*>(payload.data()), sizeof(name));
+  return name;
+}
+
 void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
     CommDriverN2KSerialEvent& event) {
   auto p = event.GetPayload();
@@ -246,7 +251,9 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
   *c++ = payload->at(5);
   // memcpy(&v, &data[3], 1);
 
-  auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload);
+  auto name = PayloadToName(*payload);
+  auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload,
+                                                 GetAddress(name));
   m_listener.Notify(std::move(msg));
 
 #if 0  // Debug output

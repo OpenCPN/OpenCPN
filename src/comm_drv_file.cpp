@@ -53,6 +53,10 @@ FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
 FileCommDriver::FileCommDriver(const string& opath)
     : FileCommDriver(opath, "", kVoidDriverListener) {}
 
+std::shared_ptr<NavAddr> FileCommDriver::GetAddress() {
+    return std::make_shared<NavAddr>(NavAddrTest(output_path));
+}
+
 void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
   ofstream f;
   f.open(output_path, ios::app);
@@ -76,7 +80,8 @@ static vector<unsigned char> HexToChar(string hex) {
   return chars;
 }
 
-static unique_ptr<const NavMsg> LineToMessage(const string& line) {
+static unique_ptr<const NavMsg> LineToMessage(const string& line,
+                                              std::shared_ptr<NavAddr> src) {
   auto words = ocpn::split(line.c_str(), " ");
   NavAddr::Bus bus = NavAddr::StringToBus(words[0]);
   switch (bus) {
@@ -84,13 +89,13 @@ static unique_ptr<const NavMsg> LineToMessage(const string& line) {
       if (true) {  // Create a separate scope.
         N2kName name(N2kName::Parse(words[2]));
         vector<unsigned char> payload(HexToChar(words[3]));
-        return make_unique<Nmea2000Msg>(name, payload);
+        return make_unique<Nmea2000Msg>(name, payload, src);
       }
       break;
     case NavAddr::Bus::N0183:
       if (true) {  // Create a separate scope.
         const string id(words[2]);
-        return make_unique<Nmea0183Msg>(id, words[3]);
+        return make_unique<Nmea0183Msg>(id, words[3], src);
       }
       break;
     default:
@@ -107,7 +112,7 @@ void FileCommDriver::Activate() {
     ifstream f(input_path);
     string line;
     while (getline(f, line)) {
-      auto msg = LineToMessage(line);
+      auto msg = LineToMessage(line, GetAddress());
       if (msg->bus != NavAddr::Bus::Undef) listener.Notify(move(msg));
     }
   }

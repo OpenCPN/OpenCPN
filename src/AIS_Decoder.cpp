@@ -272,7 +272,7 @@ void AIS_Decoder::InitCommListeners(void) {
 
   //NMEA0183
   //VDM
-  Nmea0183Msg n0183_msg_VDM("VDM", "");
+  Nmea0183Msg n0183_msg_VDM("VDM");
   listener_N0183_VDM = msgbus.GetListener(EVT_N0183_VDM, this, n0183_msg_VDM);
 
   Bind(EVT_N0183_VDM, [&](wxCommandEvent ev) {
@@ -282,7 +282,7 @@ void AIS_Decoder::InitCommListeners(void) {
       });
 
   //FRPOS
-  Nmea0183Msg n0183_msg_FRPOS("FRPOS", "");
+  Nmea0183Msg n0183_msg_FRPOS("FRPOS");
   listener_N0183_FRPOS = msgbus.GetListener(EVT_N0183_FRPOS, this, n0183_msg_FRPOS);
 
   Bind(EVT_N0183_FRPOS, [&](wxCommandEvent ev) {
@@ -292,7 +292,7 @@ void AIS_Decoder::InitCommListeners(void) {
       });
 
   //CD
-  Nmea0183Msg n0183_msg_CD("CD ", "");
+  Nmea0183Msg n0183_msg_CD("CD ");
   listener_N0183_CD = msgbus.GetListener(EVT_N0183_CD, this, n0183_msg_CD);
 
   Bind(EVT_N0183_CD, [&](wxCommandEvent ev) {
@@ -302,7 +302,7 @@ void AIS_Decoder::InitCommListeners(void) {
       });
 
   //TLL
-  Nmea0183Msg n0183_msg_TLL("TLL", "");
+  Nmea0183Msg n0183_msg_TLL("TLL");
   listener_N0183_TLL = msgbus.GetListener(EVT_N0183_TLL, this, n0183_msg_TLL);
 
   Bind(EVT_N0183_TLL, [&](wxCommandEvent ev) {
@@ -312,7 +312,7 @@ void AIS_Decoder::InitCommListeners(void) {
       });
 
   //TTM
-  Nmea0183Msg n0183_msg_TTM("TTM", "");
+  Nmea0183Msg n0183_msg_TTM("TTM");
   listener_N0183_TTM = msgbus.GetListener(EVT_N0183_TTM, this, n0183_msg_TTM);
 
   Bind(EVT_N0183_TTM, [&](wxCommandEvent ev) {
@@ -322,7 +322,7 @@ void AIS_Decoder::InitCommListeners(void) {
       });
 
   //OSD
-  Nmea0183Msg n0183_msg_OSD("OSD", "");
+  Nmea0183Msg n0183_msg_OSD("OSD");
   listener_N0183_OSD = msgbus.GetListener(EVT_N0183_OSD, this, n0183_msg_OSD);
 
   Bind(EVT_N0183_OSD, [&](wxCommandEvent ev) {

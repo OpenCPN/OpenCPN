@@ -50,6 +50,8 @@ public:
 
   void Activate() override;
 
+  virtual std::shared_ptr<NavAddr> GetAddress();
+
 private:
   std::string output_path;
   std::string input_path;

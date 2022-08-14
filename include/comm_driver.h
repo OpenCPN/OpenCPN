@@ -99,7 +99,7 @@ protected:
 class N2kDriver : public AbstractCommDriver {
 public:
   /** @return address to given name on this n2k bus. */
-  NavAddr GetAddress(N2kName name);
+  std::shared_ptr<NavAddr> GetAddress(N2kName name);
 };
 
 /**
@@ -108,8 +108,9 @@ public:
  * separate driver instance.
  */
 class Nmea0183Driver : public AbstractCommDriver {
+
   /** @return address to this bus i. e., physical interface. */
-  NavAddr GetAddress();
+  std::shared_ptr<NavAddr> GetAddress();
 };
 
 #endif  // DRIVER_API_H

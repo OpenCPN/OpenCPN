@@ -41,6 +41,7 @@ std::string s_result3;
 NavAddr::Bus s_bus;
 AppMsg::Type s_apptype;
 
+auto shared_navaddr_none = std::make_shared<NavAddr>(NavAddrNone());
 
 class MsgCliApp : public wxAppConsole {
 public:
@@ -67,7 +68,8 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto n2k_msg = std::make_shared<const Nmea2000Msg>(id, payload);
+      auto n2k_msg = std::make_shared<const Nmea2000Msg>(id, payload,
+                                                         shared_navaddr_none);
       ObservableMsg observable("1234");
       observable.notify(n2k_msg);
     }
@@ -89,7 +91,8 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto msg = std::make_unique<Nmea2000Msg>(id, payload);
+      auto msg = std::make_unique<Nmea2000Msg>(id, payload,
+                                               shared_navaddr_none);
       NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
@@ -128,7 +131,8 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto msg = std::make_unique<Nmea2000Msg>(id, payload);
+      auto msg = std::make_unique<Nmea2000Msg>(id, payload,
+                                               shared_navaddr_none);
       NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
@@ -323,7 +327,7 @@ TEST(Navmsg2000, to_string) {
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
-  auto msg = std::make_shared<Nmea2000Msg>(id, payload);
+  auto msg = std::make_shared<Nmea2000Msg>(id, payload, shared_navaddr_none);
   EXPECT_EQ(string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"),
             msg->to_string());
 }
@@ -343,7 +347,7 @@ TEST(FileDriver, output) {
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
-  Nmea2000Msg msg(id, payload);
+  Nmea2000Msg msg(id, payload, shared_navaddr_none);
   remove("/tmp/output.txt");
   driver->SendMessage(msg, NavAddr());
   std::ifstream f("/tmp/output.txt");
@@ -359,7 +363,7 @@ TEST(FileDriver, input) {
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
-  Nmea2000Msg msg(id, payload);
+  Nmea2000Msg msg(id, payload, shared_navaddr_none);
   remove("/tmp/output.txt");
   driver->SendMessage(msg, NavAddr());
 
