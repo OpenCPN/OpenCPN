@@ -146,7 +146,9 @@ commDriverN0183Net::commDriverN0183Net(const ConnectionParams *params,
   Open();
 }
 
-commDriverN0183Net::~commDriverN0183Net() {}
+commDriverN0183Net::~commDriverN0183Net() {
+  Close();
+}
 
 
 void commDriverN0183Net::handle_N0183_MSG(
