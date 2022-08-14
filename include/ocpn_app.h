@@ -32,8 +32,9 @@
 #include <wx/app.h>
 #include <wx/cmdline.h>
 #include <wx/event.h>
-#include <wx/snglinst.h>
 #endif  // precompiled headers
+
+#include <wx/snglinst.h>
 
 #include "comm_bridge.h"
 
