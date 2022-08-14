@@ -72,23 +72,20 @@
 #include "dsPortType.h"
 //#include "datastream.h"
 
-
 #ifdef __WXMSW__
 #include <windows.h>
 #include <dbt.h>
 #include <initguid.h>
 #endif
 
-class commDriverN0183NetEvent;  // Internal
+class CommDriverN0183NetEvent;  // Internal
 
-class commDriverN0183Net : public commDriverN0183, public wxEvtHandler {
-
+class CommDriverN0183Net : public CommDriverN0183, public wxEvtHandler {
 public:
-  commDriverN0183Net();
-  commDriverN0183Net(const ConnectionParams* params,
-                     DriverListener& listener);
+  CommDriverN0183Net();
+  CommDriverN0183Net(const ConnectionParams* params, DriverListener& listener);
 
-  virtual ~commDriverN0183Net();
+  virtual ~CommDriverN0183Net();
 
   void Open();
   void Close();
@@ -107,7 +104,7 @@ private:
   ConnectionParams m_params;
   DriverListener& m_listener;
 
-  void handle_N0183_MSG(commDriverN0183NetEvent& event);
+  void handle_N0183_MSG(CommDriverN0183NetEvent& event);
   wxString GetNetPort() const { return m_net_port; }
   wxIPV4address GetAddr() const { return m_addr; }
   wxTimer* GetSocketThreadWatchdogTimer() {
@@ -143,7 +140,7 @@ private:
 
   ConnectionType GetConnectionType() const { return m_connection_type; }
 
-  bool ChecksumOK(const std::string &sentence);
+  bool ChecksumOK(const std::string& sentence);
   void SetOk(bool ok) { m_bok = ok; };
 
   wxString m_net_port;
@@ -170,7 +167,6 @@ private:
   bool m_bok;
 
   DECLARE_EVENT_TABLE()
-
 };
 
 #endif  // guard

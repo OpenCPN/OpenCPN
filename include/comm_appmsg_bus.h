@@ -7,7 +7,7 @@
  *           decoded messages.
  *
  *           Message definitions are in comm_appmsg.h
- *          
+ *
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -29,7 +29,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 #ifndef _APP_MSG_BUS_H
 #define _APP_MSG_BUS_H
 
@@ -40,24 +39,23 @@
 #include "comm_appmsg.h"
 #include "observable_appmsg.h"
 
-
 /** Application layer messaging, a singleton. */
 class AppMsgBus {
 public:
+  /** Send message to everyone listening to given message type. */
+  void Notify(std::shared_ptr<const AppMsg> msg);
 
-  /** Send message to everyone listening to it. */
-  void notify(std::shared_ptr<const AppMsg> msg);
-  
   /**
    * Return a listening object which generates wxEventType events sent to
-   * wxEvtHandler when a message with given key is received. The events
+   * wxEvtHandler when a message of given type is received. The events
    * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
    */
-  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
-                                   const AppMsg& msg);
+  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
+                                  const AppMsg& msg);
 
-  ObservedVarListener get_listener(wxEventType et, wxEvtHandler* eh,
-                                   AppMsg::Type type);
+  /** Convenience overload. */
+  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
+                                  AppMsg::Type type);
 
   /**
    * Set the priority for a given data source providing data.
@@ -65,7 +63,7 @@ public:
    */
   void set_priority(AppMsg::Type data, const NavAddr& src, unsigned prio);
 
-  static AppMsgBus& getInstance();
+  static AppMsgBus& GetInstance();
 };
 
 #endif  // APP_MSG_BUS_H

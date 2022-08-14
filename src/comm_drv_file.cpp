@@ -35,8 +35,8 @@
 #include "ocpn_utils.h"
 
 class VoidDriverListener : public DriverListener {
-  virtual void notify(std::unique_ptr<const NavMsg> message) {}
-  virtual void notify(const AbstractCommDriver& driver) {}
+  virtual void Notify(std::unique_ptr<const NavMsg> message) {}
+  virtual void Notify(const AbstractCommDriver& driver) {}
 };
 
 static VoidDriverListener kVoidDriverListener;
@@ -48,13 +48,10 @@ FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
     : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
       output_path(opath),
       input_path(ipath),
-      listener(l) {
-}
-
+      listener(l) {}
 
 FileCommDriver::FileCommDriver(const string& opath)
     : FileCommDriver(opath, "", kVoidDriverListener) {}
-
 
 void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
   ofstream f;
@@ -70,11 +67,11 @@ void FileCommDriver::SendMessage(const NavMsg& msg, const NavAddr& addr) {
 static vector<unsigned char> HexToChar(string hex) {
   if (hex.size() % 2 == 1) hex = string("0") + hex;
   vector<unsigned char> chars;
-  for (size_t i = 0; i <hex.size(); i += 2) {
-     istringstream ss(hex.substr(i, 2));
-     unsigned ival;
-     ss >> std::hex >> ival;
-     chars.push_back(static_cast<unsigned char>(ival));
+  for (size_t i = 0; i < hex.size(); i += 2) {
+    istringstream ss(hex.substr(i, 2));
+    unsigned ival;
+    ss >> std::hex >> ival;
+    chars.push_back(static_cast<unsigned char>(ival));
   }
   return chars;
 }
@@ -84,24 +81,24 @@ static unique_ptr<const NavMsg> LineToMessage(const string& line) {
   NavAddr::Bus bus = NavAddr::StringToBus(words[0]);
   switch (bus) {
     case NavAddr::Bus::N2000:
-      if (true) {    // Create a separate scope.
-        N2kId id(N2kId::StringToId(words[2]));
+      if (true) {  // Create a separate scope.
+        N2kName name(N2kName::Parse(words[2]));
         vector<unsigned char> payload(HexToChar(words[3]));
-        return make_unique<Nmea2000Msg>(id, payload);
+        return make_unique<Nmea2000Msg>(name, payload);
       }
       break;
     case NavAddr::Bus::N0183:
-      if (true) {    // Create a separate scope.
+      if (true) {  // Create a separate scope.
         const string id(words[2]);
         return make_unique<Nmea0183Msg>(id, words[3]);
       }
       break;
     default:
-std::cerr << "Cannot parse line: \"" << line << "\"\n" << flush;
+      std::cerr << "Cannot parse line: \"" << line << "\"\n" << flush;
       return make_unique<NullNavMsg>();
       break;
   }
-  return make_unique<NullNavMsg>();   // for the compiler.
+  return make_unique<NullNavMsg>();  // for the compiler.
 }
 
 void FileCommDriver::Activate() {
@@ -111,9 +108,7 @@ void FileCommDriver::Activate() {
     string line;
     while (getline(f, line)) {
       auto msg = LineToMessage(line);
-      if (msg->bus != NavAddr::Bus::Undef)
-        listener.notify(move(msg));
+      if (msg->bus != NavAddr::Bus::Undef) listener.Notify(move(msg));
     }
   }
 }
-

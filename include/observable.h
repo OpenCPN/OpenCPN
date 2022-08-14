@@ -76,7 +76,7 @@ public:
   const std::string key;
 
   /** Shorthand for ObservedVarListener(this, handler, event_type) CTOR: */
-  ObservedVarListener get_listener(wxEvtHandler* handler, wxEventType ev);
+  ObservedVarListener GetListener(wxEvtHandler* handler, wxEventType ev);
 
 protected:
   /**
@@ -170,7 +170,7 @@ private:
  *    public:
  *      Gui:Gui(Model& model) {
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        change_listener = model.change.get_listener(this, EVT_FOO);
+ *        change_listener = model.change.GetListener(this, EVT_FOO);
  *        Bind(EVT_FOO, [&](wxCommandEvent ev) {
  *          auto s = ev.GetString();    s -> "new value"
  *          ... do something;
@@ -219,7 +219,7 @@ private:
  *
  *        // expert sends a wxCommandEvent of type EVT_FOO to this on changes:
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        expert_listener = expert.get_listener(this, EVT_FOO);
+ *        expert_listener = expert.GetListener(this, EVT_FOO);
  *
  *        // Handle  EVT_FOO as any event when it arrives, for example:
  *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });
@@ -274,7 +274,7 @@ private:
  *
  *        // compat_os sends a wxCommandEvent type EVT_FOO to this on changes:
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        compat_os_listener = compat_os.get_listener(this, EVT_FOO);)
+ *        compat_os_listener = compat_os.GetListener(this, EVT_FOO);)
  *
  *        // Handle  EVT_FOO as any event when it arrives, for example:
  *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });

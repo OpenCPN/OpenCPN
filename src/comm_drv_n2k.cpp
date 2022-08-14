@@ -28,12 +28,12 @@
 /*    commdriverN2K implementation
  * */
 
-commDriverN2K::commDriverN2K() : AbstractCommDriver(NavAddr::Bus::N2000) {}
-commDriverN2K::commDriverN2K(NavAddr::Bus b, const std::string& s)
+CommDriverN2K::CommDriverN2K() : AbstractCommDriver(NavAddr::Bus::N2000) {}
+CommDriverN2K::CommDriverN2K(NavAddr::Bus b, const std::string& s)
     : AbstractCommDriver(NavAddr::Bus::N2000, s) {}
 
-commDriverN2K::~commDriverN2K() {}
+CommDriverN2K::~CommDriverN2K() {}
 
-void commDriverN2K::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
+void CommDriverN2K::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
-void commDriverN2K::SetListener(std::shared_ptr<DriverListener> l) {};
+void CommDriverN2K::SetListener(std::shared_ptr<DriverListener> l){};

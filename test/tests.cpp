@@ -50,7 +50,7 @@ public:
   public:
     Sink() {
       ObservableMsg observable("1234");
-      listener = observable.get_listener(this, EVT_BAR);
+      listener = observable.GetListener(this, EVT_BAR);
       Bind(EVT_BAR, [&](wxCommandEvent ev) {
         auto msg = get_navmsg_ptr(ev);
         auto n2000_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
@@ -90,16 +90,16 @@ public:
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
       auto msg = std::make_unique<Nmea2000Msg>(id, payload);
-      NavMsgBus::getInstance().notify(std::move(msg));
+      NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
 
   class Sink: public wxEvtHandler {
   public:
     Sink() {
-      auto& t = NavMsgBus::getInstance();
+      auto& t = NavMsgBus::GetInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listener = t.get_listener(EVT_FOO, this, n2k_msg.key());
+      listener = t.GetListener(EVT_FOO, this, n2k_msg);
 
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -129,16 +129,16 @@ public:
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
       auto msg = std::make_unique<Nmea2000Msg>(id, payload);
-      NavMsgBus::getInstance().notify(std::move(msg));
+      NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
 
   class Sink: public wxEvtHandler {
   public:
     Sink() {
-      auto& t = NavMsgBus::getInstance();
+      auto& t = NavMsgBus::GetInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listeners.push_back(t.get_listener(EVT_FOO, this, n2k_msg.key()));
+      listeners.push_back(t.GetListener(EVT_FOO, this, n2k_msg));
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
         auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
@@ -164,18 +164,17 @@ public:
   class Source {
   public:
     Source() {
-      Position pos(65.2211, 21.4433, Position::Type::NW);
+      Position pos(65.2211, 21.4433, Position::Type::NE);
       auto fix = std::make_shared<GnssFix>(pos, 1659345030);
-
-      AppMsgBus::getInstance().notify(std::move(fix));
+      AppMsgBus::GetInstance().Notify(std::move(fix));
     }
   };
 
   class Sink: public wxEvtHandler {
   public:
     Sink() {
-      auto& a = AppMsgBus::getInstance();
-      listener = a.get_listener(EVT_FOO, this, AppMsg::Type::GnssFix);
+      auto& a = AppMsgBus::GetInstance();
+      listener = a.GetListener(EVT_FOO, this, AppMsg::Type::GnssFix);
 
       Bind(EVT_FOO, [&](wxCommandEvent ev) {
         auto message = get_appmsg_ptr(ev);
@@ -210,14 +209,13 @@ const static string kSEP("/");
 class GuernseyApp: public wxAppConsole {
 public:
   GuernseyApp(vector<string>& log) : wxAppConsole() {
-    auto& msgbus = NavMsgBus::getInstance();
+    auto& msgbus = NavMsgBus::GetInstance();
     string path("..");
     path += kSEP + ".." +  kSEP + "test" + kSEP + "testdata" + kSEP
         +  "Guernesey-1659560590623.input.txt";
     auto driver =
         make_shared<FileCommDriver>("/tmp/output.txt", path, msgbus);
-    auto listener = msgbus.get_listener(EVT_FOO, this,
-                                        Nmea0183Msg("GPGLL").key());
+    auto listener = msgbus.GetListener(EVT_FOO, this, Nmea0183Msg("GPGLL"));
     Bind(EVT_FOO, [&log](wxCommandEvent ev) {
       auto message = get_navmsg_ptr(ev);
       auto n0183_msg = dynamic_pointer_cast<const Nmea0183Msg>(message);
@@ -248,12 +246,12 @@ public:
 class SillyListener: public DriverListener {
 public:
   /** Handle a received message. */
-  virtual void notify(std::unique_ptr<const NavMsg> message)  {
+  virtual void Notify(std::unique_ptr<const NavMsg> message)  {
     s_result2 = NavAddr::BusToString(message->bus);
 
     auto base_ptr = message.get();
     auto n2k_msg = dynamic_cast<const Nmea2000Msg*>(base_ptr);
-    s_result3 = n2k_msg->id.to_string();
+    s_result3 = n2k_msg->name.to_string();
 
     stringstream ss;
     std::for_each(n2k_msg->payload.begin(), n2k_msg->payload.end(),
@@ -262,7 +260,7 @@ public:
   }
 
   /** Handle driver status change. */
-  virtual void notify(const AbstractCommDriver& driver) {}
+  virtual void Notify(const AbstractCommDriver& driver) {}
 };
 
 
@@ -288,7 +286,7 @@ TEST(Messaging, AppMsg) {
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   AppmsgCliApp app;
-  EXPECT_EQ(s_result, string("65°22,11N 21°44,33W"));
+  EXPECT_EQ(s_result, string("65°22,11N 21°44,33E"));
   EXPECT_EQ(s_apptype, AppMsg::Type::GnssFix);
 };
 

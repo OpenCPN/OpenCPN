@@ -27,7 +27,6 @@
 #ifndef _APP_MSG_H
 #define _APP_MSG_H
 
-#include <chrono>
 #include <memory>
 #include <iomanip>
 
@@ -35,159 +34,176 @@
 
 #include "comm_driver.h"
 
-
 double PosPartsToDegrees(float degrees, float minutes, float percent_of_minute);
 
 std::string DegreesToString(double degrees);
 
 std::string TimeToString(const time_t time);
 
-class Position{
+class Position {
 public:
-  enum class Type {NE, NW, SE, SW, Undef};
+  enum class Type { NE, NW, SE, SW };
 
+  /** Construct a position from positive lat/long values and Position::Type */
+  Position(double _lat, double _lon, Type t);
+
+  /** Construct a position with signed lat/long defining Type.*/
+  Position(double _lat, double _lon);
+
+  /** Construct a (0,0) position. */
+  Position();
+
+  /** Return utf string like 65°25,11N 21°12,01E */
+  std::string to_string() const;
+
+  const double lat;      // signed value
+  const double lon;      // signed value
   const Type type;
-  double lat;
-  double lon;
 
-  std::string to_string() const {
-    std::stringstream buf;
-    const std::string NE(TypeToStr(type));
-    auto  lat_s = DegreesToString(lat);
-    auto  lon_s = DegreesToString(lon);
-    buf << lat_s << NE[0] << " " << lon_s << NE[1];
-    return buf.str();
-  }
+private:
+  std::string TypeToStr(const Type t) const;
 
-  Position(double _lat, double _lon, Type t = Type::Undef)
-    : type(t), lat(_lat), lon(_lon) {}
-  Position() : type(Type::Undef), lat(0), lon(0) {};
+  /** Deduce type from signed lat/lon. */
+  Type LatLongToType(double lat, double lon);
 
-  std::string TypeToStr(const Type t) const {
-    switch (t) {
-      case Type::NE:  return "NE"; break;
-      case Type::NW:  return "NW"; break;
-      case Type::SE:  return "SE"; break;
-      case Type::SW:  return "SW"; break;
-      default: return "??"; break;
-    }
-  }
+  /** Returned signed latitude deduced from t. */
+  double TypeToLat(Type t, double lat);
+
+  /** Returned signed long  deduced from t. */
+  double TypeToLong(Type t, double lon);
+
 };
 
 
 class AppMsg {
 public:
   enum class Type;
-  const Type type;
-  const std::string name;  // Must be unique, probably using TypeToString().
-  NavAddr source;
-  unsigned short prio;     // Initially 0, modified using set_priority
+  AppMsg(AppMsg::Type t)
+      : type(t), name(TypeToString(t)), source(NavAddr()), prio(0){};
 
   virtual std::string key() const { return std::string("@!appmsg-") + name; }
 
   std::string TypeToString(const Type t) const;
 
-  AppMsg(AppMsg::Type t)
-    : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
+  const Type type;
+  const std::string name;  // Must be unique, probably using TypeToString().
+  NavAddr source;
+  unsigned short prio;  // Initially 0, modified using set_priority
 
 protected:
   AppMsg(AppMsg::Type tp, const std::string& nm, NavAddr src)
-    : type(tp), name(nm), source(src), prio(0) {};
+      : type(tp), name(nm), source(src), prio(0){};
 
   AppMsg& operator=(const AppMsg&) = default;
 };
 
-enum class AppMsg::Type {BasicNavData, GPSWatchdog, GnssFix, AisData, DataPrioNeeded, CustomMsg, Undef};
-
+enum class AppMsg::Type {
+  BasicNavData,
+  GPSWatchdog,
+  GnssFix,
+  AisData,
+  DataPrioNeeded,
+  CustomMsg,
+  Undef
+};
 
 /**
  * Issued when there are multiple sources providing 'what' with priority == 0.
  * Should result in GUI actions eventually calling set_priority()
  */
-class DataPrioNeeded: public AppMsg {
+class DataPrioNeeded : public AppMsg {
 public:
   AppMsg::Type what;
   std::vector<NavAddr> sources;
 };
 
 /** GPS, Galileo, etc. position data point. */
-class GnssFix: public AppMsg {
+class GnssFix : public AppMsg {
 public:
-  enum class Quality {none, gnss, differential };
+  enum class Quality { none, gnss, differential };
+
+  GnssFix(Position p, time_t t, Quality q = Quality::none, int s_used = -1)
+      : AppMsg(AppMsg::Type::GnssFix, "gnss-fix", NavAddr()),
+        pos(p),
+        time(t),
+        quality(q),
+        satellites_used(s_used){};
+
+  std::string to_string() const {
+    std::stringstream buf;
+    buf << pos.to_string() << " " << TimeToString(time);
+    return buf.str();
+  }
+
   Position pos;
   const time_t time;
   Quality quality;
   int satellites_used;
-  GnssFix(Position p, time_t t, Quality q = Quality::none, int s_used = -1)
-    : AppMsg(AppMsg::Type::GnssFix, "gnss-fix", NavAddr()),
-    pos(p), time(t), quality(q), satellites_used(s_used) {};
-
-  std::string to_string() const {
-    using namespace std::chrono;
-    std::stringstream buf;
-    buf << pos.to_string() << " " << TimeToString(time);
-    return  buf.str();
-  }
 };
 
-class BasicNavDataMsg: public AppMsg {
+class BasicNavDataMsg : public AppMsg {
 public:
-  Position pos;
-  double sog;
-  double cog;
-  double var;
-  double hdt;
-  time_t time;
-
   BasicNavDataMsg(double lat, double lon, double SOG, double COG, double VAR,
-               double HDT, time_t t )
-    : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
-    pos(lat, lon), sog(SOG), cog(COG), var(VAR), hdt(HDT), time(t){};
+                  double HDT, time_t t)
+      : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
+        pos(lat, lon),
+        sog(SOG),
+        cog(COG),
+        var(VAR),
+        hdt(HDT),
+        time(t){};
 
+  const Position pos;
+  const double sog;
+  const double cog;
+  const double var;
+  const double hdt;
+  const time_t time;
 };
 
-class GPSWatchdogMsg: public AppMsg {
+class GPSWatchdogMsg : public AppMsg {
 public:
-  int gps_watchdog;
-
   GPSWatchdogMsg(int value)
-  : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
-  gps_watchdog(value) {};
+      : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
+
+        gps_watchdog(value){};
+
+  const int gps_watchdog;
 };
 
 /** AIS data point for a vessel. */
-class AisData: public AppMsg {
+class AisData : public AppMsg {
 public:
   time_t time;
   Position pos;
-  float sog;             // Speed over ground, knots.
-  float cog;             // Course over ground, 0..360 degrees.
-  float heading;         // Magnetic sensor, 0..360 degrees.
-  float rate_of_turn;    // Degrees per minute, "-" means bow turns to port.
-  uint8_t type;          // https://api.vtexplorer.com/docs/ref-aistypes.html
+  float sog;           // Speed over ground, knots.
+  float cog;           // Course over ground, 0..360 degrees.
+  float heading;       // Magnetic sensor, 0..360 degrees.
+  float rate_of_turn;  // Degrees per minute, "-" means bow turns to port.
+  uint8_t type;        // https://api.vtexplorer.com/docs/ref-aistypes.html
   std::string name;
   std::string callsign;
-  std::string dest;      // Destination port
+  std::string dest;  // Destination port
   int length;
   int beam;
   int draft;
-  uint8_t status;        // https://api.vtexplorer.com/docs/ref-navstat.html
+  uint8_t status;  // https://api.vtexplorer.com/docs/ref-navstat.html
 };
-
 
 /**
  * A generic message containing a const pointer to basically anything, the
  * pointer neds to be casted to the proper type on the receiving side.
  */
-class CustomMsg: public AppMsg {
-  const std::string id;   // Must be unique.
-  std::shared_ptr<const void> payload;
+class CustomMsg : public AppMsg {
+  CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
+      : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
 
   std::string key() const override {
     return std::string("@##_appmsg-custom-") + id;
   }
-  CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
-    : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
+
+  const std::string id;  // Must be unique.
+  std::shared_ptr<const void> payload;
 };
 
 #endif  // APP_MSG_H

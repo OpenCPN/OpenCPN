@@ -47,11 +47,23 @@
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kName {
-  uint64_t value;
   N2kName(uint64_t name) : value(name) {}
+
   std::string to_string() const {
-    std::stringstream ss; ss << value; return ss.str();
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
   }
+
+  static uint64_t Parse(const std::string& s) {
+    std::stringstream ss;
+    uint64_t id;
+    ss << s;
+    ss >> id;
+    return id;
+  }
+
+  uint64_t value;
   uint32_t GetNumber() const;         /**< 21 bits */
   uint16_t GetManufacturer() const;   /**< 9 bits */
   uint8_t GetDevInstanceLow() const;  /**< 3 bits */
@@ -62,54 +74,31 @@ struct N2kName {
   uint8_t GetIndustryGroup() const;   /**< 4 bits */
 };
 
-/**
- * The n2k message id as defined by the J/1939 standard. See
- * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
- */
-struct N2kId {
-  N2kId(uint64_t id) : value(id){};
-  uint8_t get_prio() const;    /**< 3 bits */
-  uint32_t get_png() const;    /**< a. k. a. PNG, 17 bits */
-  uint32_t get_source() const; /**< Source address,  8 bits */
-
-  std::string to_string() const {
-    std::stringstream ss; ss << value; return ss.str();
-  }
-
-  static uint64_t StringToId(const std::string& s) {
-    std::stringstream ss; uint64_t id; ss << s; ss >> id; return id;
-  }
-private:
-  uint64_t value;
-};
 
 /** Where messages are sent to or received from. */
 class NavAddr {
 public:
-  enum class Bus {N0183, Signalk, N2000, Onenet, TestBus, Undef};
+  enum class Bus { N0183, Signalk, N2000, Onenet, TestBus, Undef };
 
   NavAddr(Bus b, const std::string& i) : bus(b), iface(i){};
-  NavAddr() : bus(Bus::Undef), iface("") {};
+  NavAddr() : bus(Bus::Undef), iface(""){};
 
+  std::string to_string() const {
+    return NavAddr::BusToString(bus) + " " + iface;
+  }
   static std::string BusToString(Bus b);
   static Bus StringToBus(const std::string& s);
 
-  std::string to_string() const {
-     return NavAddr::BusToString(bus) + " " + iface;
-  }
-
   Bus bus;
-  const std::string iface;  /**< Physical device for 0183, else a unique
-                                 string */
+  const std::string iface; /**< Physical device for 0183, else a unique
+                                string */
 };
-
 
 class NavAddr0183 : public NavAddr {
 public:
-  NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface) {};
+  NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface){};
 
   std::string to_string() const { return iface; }
-
 };
 
 class NavAddr2000 : public NavAddr {
@@ -145,24 +134,21 @@ protected:
   NavMsg(const NavAddr::Bus& _bus) : bus(_bus){};
 };
 
-
 /**
  * See: https://github.com/OpenCPN/OpenCPN/issues/2729#issuecomment-1179506343
  */
 class Nmea2000Msg : public NavMsg {
 public:
-  Nmea2000Msg(const N2kId& _id) : NavMsg(NavAddr::Bus::N2000), id(_id) {}
-  Nmea2000Msg(const N2kId& _id, const std::vector<unsigned char>& _payload)
-      : NavMsg(NavAddr::Bus::N2000), id(_id), payload(_payload) {}
+  Nmea2000Msg(const N2kName& n) : NavMsg(NavAddr::Bus::N2000), name(n) {}
+  Nmea2000Msg(const N2kName& n, const std::vector<unsigned char>& _payload)
+      : NavMsg(NavAddr::Bus::N2000), name(n), payload(_payload) {}
 
-  std::string key() const {
-    return std::string("n2000-") + id.to_string();
-  };
+  std::string key() const { return std::string("n2000-") + name.to_string(); };
 
   /** Print "bus key id payload" */
   std::string to_string() const;
 
-  N2kId id;
+  N2kName name;
   std::vector<unsigned char> payload;
 };
 
@@ -198,7 +184,6 @@ public:
   std::vector<std::string> warnings;
   std::string key() const { return std::string("signalK"); };
 };
-
 
 /** An invalid message, error return value. */
 class NullNavMsg : public NavMsg {

@@ -36,13 +36,12 @@
 #include "serial/serial.h"
 #endif
 
-
 typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_EMPTY,
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
-class commDriverN0183Serial;  // fwd
+class CommDriverN0183Serial;  // fwd
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
@@ -59,12 +58,12 @@ public:
     return m_queque.empty();
   }
 
-  const T &front() {
+  const T& front() {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_queque.front();
   }
 
-  void push(const T &value) {
+  void push(const T& value) {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_queque.push(value);
   }
@@ -79,49 +78,48 @@ private:
   mutable std::mutex m_mutex;
 };
 
-class commDriverN0183SerialEvent;  // fwd
+class CommDriverN0183SerialEvent;  // fwd
 
-class commDriverN0183SerialThread : public wxThread {
+class CommDriverN0183SerialThread : public wxThread {
 public:
-  commDriverN0183SerialThread(commDriverN0183Serial *Launcher,
-                              const wxString &PortName,
-                              const wxString &strBaudRate);
+  CommDriverN0183SerialThread(CommDriverN0183Serial* Launcher,
+                              const wxString& PortName,
+                              const wxString& strBaudRate);
 
-  ~commDriverN0183SerialThread(void);
-  void *Entry();
-  bool SetOutMsg(const wxString &msg);
+  ~CommDriverN0183SerialThread(void);
+  void* Entry();
+  bool SetOutMsg(const wxString& msg);
   void OnExit(void);
 
 private:
 #ifndef __ANDROID__
   serial::Serial m_serial;
 #endif
-  void ThreadMessage(const wxString &msg);
-  bool OpenComPortPhysical(const wxString &com_name, int baud_rate);
+  void ThreadMessage(const wxString& msg);
+  bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
   void CloseComPortPhysical();
-  size_t WriteComPortPhysical(char *msg);
-  size_t WriteComPortPhysical(const wxString &string);
+  size_t WriteComPortPhysical(char* msg);
+  size_t WriteComPortPhysical(const wxString& string);
 
-  commDriverN0183Serial *m_pParentDriver;
+  CommDriverN0183Serial* m_pParentDriver;
   wxString m_PortName;
   wxString m_FullPortName;
 
-  unsigned char *put_ptr;
-  unsigned char *tak_ptr;
+  unsigned char* put_ptr;
+  unsigned char* tak_ptr;
 
-  unsigned char *rx_buffer;
+  unsigned char* rx_buffer;
 
   int m_baud;
   int m_n_timeout;
 
-  n0183_atomic_queue<char *> out_que;
+  n0183_atomic_queue<char*> out_que;
 
 #ifdef __WXMSW__
   HANDLE m_hSerialComm;
   bool m_nl_found;
 #endif
 };
-
 
 template <class T>
 class circular_buffer {
@@ -175,14 +173,15 @@ private:
   bool full_ = 0;
 };
 
-class commDriverN0183SerialEvent;
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, commDriverN0183SerialEvent);
+class CommDriverN0183SerialEvent;
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
 
-class commDriverN0183SerialEvent : public wxEvent {
+class CommDriverN0183SerialEvent : public wxEvent {
 public:
-  commDriverN0183SerialEvent(wxEventType commandType = wxEVT_COMMDRIVER_N0183_SERIAL, int id = 0)
+  CommDriverN0183SerialEvent(
+      wxEventType commandType = wxEVT_COMMDRIVER_N0183_SERIAL, int id = 0)
       : wxEvent(id, commandType){};
-  ~commDriverN0183SerialEvent(){};
+  ~CommDriverN0183SerialEvent(){};
 
   // accessors
   void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
@@ -191,9 +190,9 @@ public:
   std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
-  wxEvent *Clone() const {
-    commDriverN0183SerialEvent *newevent =
-        new commDriverN0183SerialEvent(*this);
+  wxEvent* Clone() const {
+    CommDriverN0183SerialEvent* newevent =
+        new CommDriverN0183SerialEvent(*this);
     newevent->m_payload = this->m_payload;
     return newevent;
   };
@@ -202,36 +201,33 @@ private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
-
 //========================================================================
 /*    commdriverN0183Serial implementation
  * */
-  wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, commDriverN0183SerialEvent);
+wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
 
-commDriverN0183Serial::commDriverN0183Serial(const ConnectionParams *params,
+CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                                              DriverListener& listener)
-    :  commDriverN0183(NavAddr::Bus::N0183, ((ConnectionParams *)params)->GetStrippedDSPort()),
+    : CommDriverN0183(NavAddr::Bus::N0183,
+                      ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
       m_params(*params),
-      m_listener(listener){
-
+      m_listener(listener) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &commDriverN0183Serial::handle_N0183_MSG, this);
+  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
+       this);
 
   Open();
-
 }
 
-commDriverN0183Serial::~commDriverN0183Serial() {
-  Close();
-}
+CommDriverN0183Serial::~CommDriverN0183Serial() { Close(); }
 
-bool commDriverN0183Serial::Open() {
+bool CommDriverN0183Serial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
 
@@ -239,14 +235,14 @@ bool commDriverN0183Serial::Open() {
       comx.BeforeFirst(' ');  // strip off any description provided by Windows
 
   //    Kick off the  RX thread
-  SetSecondaryThread(new commDriverN0183SerialThread(this, comx, m_BaudRate));
+  SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
   SetThreadRunFlag(1);
   GetSecondaryThread()->Run();
 
   return true;
 }
 
-void commDriverN0183Serial::Close() {
+void CommDriverN0183Serial::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
 
@@ -273,50 +269,45 @@ void commDriverN0183Serial::Close() {
   }
 
   //  FIXME Kill off the Garmin handler, if alive
-//  if (m_GarminHandler) {
- //   m_GarminHandler->Close();
- //   delete m_GarminHandler;
-//  }
+  //  if (m_GarminHandler) {
+  //   m_GarminHandler->Close();
+  //   delete m_GarminHandler;
+  //  }
 }
 
-
-void commDriverN0183Serial::Activate() {
+void CommDriverN0183Serial::Activate() {
   CommDriverRegistry::getInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 
-
-void commDriverN0183Serial::handle_N0183_MSG(
-    commDriverN0183SerialEvent &event) {
-
+void CommDriverN0183Serial::handle_N0183_MSG(
+    CommDriverN0183SerialEvent& event) {
   auto p = event.GetPayload();
-  std::vector<unsigned char> *payload = p.get();
+  std::vector<unsigned char>* payload = p.get();
 
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  //FIXME
+  // FIXME
+  //     if (stream) bpass = stream->SentencePassesFilter(message,
+  //     FILTER_INPUT);
+  //       if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
+
+  // FIXME
   //    if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
   //      if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
-    //FIXME
-  //    if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
-  //      if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
-
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')){   // Sanity check
+  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
     std::string identifier;
     // We notify based on Mnemonic only, ignoring the Talker ID
     identifier = full_sentence.substr(3, 3);
 
-    auto msg =
-      std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
-    m_listener.notify(std::move(msg));
+    auto msg = std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
+    m_listener.Notify(std::move(msg));
 
     // Also notify for "all" N0183 messages, to support plugin API
-    auto msg_all =
-      std::make_unique<const Nmea0183Msg>("", full_sentence);
-    m_listener.notify(std::move(msg_all));
-
+    auto msg_all = std::make_unique<const Nmea0183Msg>("", full_sentence);
+    m_listener.Notify(std::move(msg_all));
   }
 }
 
@@ -324,9 +315,9 @@ void commDriverN0183Serial::handle_N0183_MSG(
 
 #define DS_RX_BUFFER_SIZE 4096
 
-commDriverN0183SerialThread::commDriverN0183SerialThread(
-    commDriverN0183Serial *Launcher, const wxString &PortName,
-    const wxString &strBaudRate) {
+CommDriverN0183SerialThread::CommDriverN0183SerialThread(
+    CommDriverN0183Serial* Launcher, const wxString& PortName,
+    const wxString& strBaudRate) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
@@ -344,48 +335,48 @@ commDriverN0183SerialThread::commDriverN0183SerialThread(
   Create();
 }
 
-commDriverN0183SerialThread::~commDriverN0183SerialThread(void) {
+CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {
   delete[] rx_buffer;
 }
 
-void commDriverN0183SerialThread::OnExit(void) {}
+void CommDriverN0183SerialThread::OnExit(void) {}
 
-bool commDriverN0183SerialThread::OpenComPortPhysical(const wxString &com_name,
+bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
                                                       int baud_rate) {
   try {
     m_serial.setPort(com_name.ToStdString());
     m_serial.setBaudrate(baud_rate);
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception &e) {
+  } catch (std::exception& e) {
     // std::cerr << "Unhandled Exception while opening serial port: " <<
     // e.what() << std::endl;
   }
   return m_serial.isOpen();
 }
 
-void commDriverN0183SerialThread::CloseComPortPhysical() {
+void CommDriverN0183SerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
-  } catch (std::exception &e) {
+  } catch (std::exception& e) {
     // std::cerr << "Unhandled Exception while closing serial port: " <<
     // e.what() << std::endl;
   }
 }
 
-void commDriverN0183SerialThread::ThreadMessage(const wxString &msg) {
+void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
   //    Signal the main program thread
-//   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
-//   event.SetSString(std::string(msg.mb_str()));
-//   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
+  //   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
+  //   event.SetSString(std::string(msg.mb_str()));
+  //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
-size_t commDriverN0183SerialThread::WriteComPortPhysical(char *msg) {
+size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
   if (m_serial.isOpen()) {
     ssize_t status;
     try {
-      status = m_serial.write((uint8_t *)msg, strlen(msg));
-    } catch (std::exception &e) {
+      status = m_serial.write((uint8_t*)msg, strlen(msg));
+    } catch (std::exception& e) {
       // std::cerr << "Unhandled Exception while writing to serial port: " <<
       // e.what() << std::endl;
       return -1;
@@ -397,7 +388,7 @@ size_t commDriverN0183SerialThread::WriteComPortPhysical(char *msg) {
 }
 
 #ifdef __WXMSW__
-void *commDriverN0183SerialThread::Entry() {
+void* CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   int nl_found = 0;
   wxString msg;
@@ -431,7 +422,7 @@ void *commDriverN0183SerialThread::Entry() {
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(rdata, 200);
-      } catch (std::exception &e) {
+      } catch (std::exception& e) {
         // std::cerr << "Serial read exception: " << e.what() << std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
@@ -462,7 +453,7 @@ void *commDriverN0183SerialThread::Entry() {
 
       //    Found a NL char, thus end of message?
       if (nl_found) {
-        unsigned char *tptr;
+        unsigned char* tptr;
 
         bool done = false;
         while (!done) {
@@ -473,7 +464,7 @@ void *commDriverN0183SerialThread::Entry() {
 
           //    Copy the message into a vector for tranmittal upstream
           auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char> *vec = buffer.get();
+          std::vector<unsigned char>* vec = buffer.get();
 
           tptr = tak_ptr;
 
@@ -507,7 +498,7 @@ void *commDriverN0183SerialThread::Entry() {
             //    but we should handle it anyway
             if (vec->at(0) == '\r') vec->erase(vec->begin());
 
-            commDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+            CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
             Nevent.SetPayload(buffer);
             m_pParentDriver->AddPendingEvent(Nevent);
 
@@ -524,7 +515,7 @@ void *commDriverN0183SerialThread::Entry() {
 
     while (b_qdata) {
       //  Take a copy of message
-      char *qmsg = out_que.front();
+      char* qmsg = out_que.front();
       out_que.pop();
       // m_outCritical.Leave();
       char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
@@ -551,7 +542,7 @@ void *commDriverN0183SerialThread::Entry() {
 }
 
 #else  // MSW
-void *commDriverN0183SerialThread::Entry() {
+void* CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   bool nl_found = false;
   wxString msg;
@@ -581,7 +572,7 @@ void *commDriverN0183SerialThread::Entry() {
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(&next_byte, 1);
-      } catch (std::exception &e) {
+      } catch (std::exception& e) {
         // std::cerr << "Serial read exception: " << e.what() << std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
@@ -612,12 +603,12 @@ void *commDriverN0183SerialThread::Entry() {
 
       //    Found a NL char, thus end of message?
       if (nl_found) {
-        unsigned char *tptr;
+        unsigned char* tptr;
 
         //    Copy the message into a temporary _buffer
 
         auto buffer = std::make_shared<std::vector<unsigned char>>();
-        std::vector<unsigned char> *vec = buffer.get();
+        std::vector<unsigned char>* vec = buffer.get();
 
         tptr = tak_ptr;
         // ptmpbuf = temp_buf;
@@ -647,7 +638,7 @@ void *commDriverN0183SerialThread::Entry() {
           //    but we should handle it anyway
           if (vec->at(0) == '\r') vec->erase(vec->begin());
 
-          commDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+          CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
           Nevent.SetPayload(buffer);
           m_pParentDriver->AddPendingEvent(Nevent);
         }
@@ -694,7 +685,7 @@ void *commDriverN0183SerialThread::Entry() {
 //----------------------------------------------------------------------------------
 #if 0
 #ifndef __WXMSW__
-void *commDriverN0183SerialThread::Entry() {
+void *CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   bool nl_found = false;
   wxString msg;
@@ -798,7 +789,7 @@ void *commDriverN0183SerialThread::Entry() {
 
 //          evt.SetClientData( d_voidPtr /*temp_buf*/ );
 //          m_pParentDriver->m_EventHandler.AddPendingEvent(evt);
-          commDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
+          CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
           Nevent.SetPayload(buffer);
           m_pParentDriver->m_EventHandler.AddPendingEvent(Nevent);
 

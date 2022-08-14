@@ -35,7 +35,6 @@
 #define _COMM_BRIDGE_H
 
 class CommBridge : public wxEvtHandler {
-
 public:
   CommBridge();
 
@@ -44,27 +43,27 @@ public:
   bool Initialize();
   void InitCommListeners();
 
-  bool HandleN2K_129029( std::shared_ptr <const Nmea2000Msg> n2k_msg );
-  bool HandleN2K_129026( std::shared_ptr <const Nmea2000Msg> n2k_msg );
+  bool HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg);
+  bool HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg);
 
-  bool HandleN0183_RMC( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_HDT( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_HDG( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_HDM( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_VTG( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_GSV( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_GGA( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_GLL( std::shared_ptr <const Nmea0183Msg> n0183_msg );
-  bool HandleN0183_AIVDO( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+  bool HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_AIVDO(std::shared_ptr<const Nmea0183Msg> n0183_msg);
 
-  void OnWatchdogTimer(wxTimerEvent &event);
+  void OnWatchdogTimer(wxTimerEvent& event);
   void PresetWatchdogs();
   void MakeHDTFromHDM();
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
 
-    //  comm event listeners
+  //  comm event listeners
   ObservedVarListener listener_N2K_129029;
   ObservedVarListener listener_N2K_129026;
 
@@ -81,7 +80,6 @@ public:
   CommDecoder m_decoder;
 
   DECLARE_EVENT_TABLE()
-
 };
 
 #endif  // _COMM_BRIDGE_H

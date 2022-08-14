@@ -29,12 +29,11 @@
 #include "ConnectionParams.h"
 #include "comm_driver.h"
 
-typedef std::shared_ptr<const AbstractCommDriver> DriverPtr;
-
-std::shared_ptr<AbstractCommDriver> MakeCommDriver(const ConnectionParams *params);
+std::shared_ptr<AbstractCommDriver> MakeCommDriver(
+    const ConnectionParams* params);
 
 bool StopAndRemoveCommDriver(std::string ident);
 
-wxString ProcessNMEA4Tags( wxString& msg );
+wxString ProcessNMEA4Tags(wxString& msg);
 
 #endif  // _COMM_UTIL_H

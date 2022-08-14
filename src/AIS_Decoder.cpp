@@ -268,12 +268,12 @@ AIS_Decoder::~AIS_Decoder(void) {
 void AIS_Decoder::InitCommListeners(void) {
   // Initialize the comm listeners
 
-  auto& msgbus = NavMsgBus::getInstance();
+  auto& msgbus = NavMsgBus::GetInstance();
 
   //NMEA0183
   //VDM
   Nmea0183Msg n0183_msg_VDM("VDM", "");
-  listener_N0183_VDM = msgbus.get_listener(EVT_N0183_VDM, this, n0183_msg_VDM.key());
+  listener_N0183_VDM = msgbus.GetListener(EVT_N0183_VDM, this, n0183_msg_VDM);
 
   Bind(EVT_N0183_VDM, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -283,7 +283,7 @@ void AIS_Decoder::InitCommListeners(void) {
 
   //FRPOS
   Nmea0183Msg n0183_msg_FRPOS("FRPOS", "");
-  listener_N0183_FRPOS = msgbus.get_listener(EVT_N0183_FRPOS, this, n0183_msg_FRPOS.key());
+  listener_N0183_FRPOS = msgbus.GetListener(EVT_N0183_FRPOS, this, n0183_msg_FRPOS);
 
   Bind(EVT_N0183_FRPOS, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -293,7 +293,7 @@ void AIS_Decoder::InitCommListeners(void) {
 
   //CD
   Nmea0183Msg n0183_msg_CD("CD ", "");
-  listener_N0183_CD = msgbus.get_listener(EVT_N0183_CD, this, n0183_msg_CD.key());
+  listener_N0183_CD = msgbus.GetListener(EVT_N0183_CD, this, n0183_msg_CD);
 
   Bind(EVT_N0183_CD, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -303,7 +303,7 @@ void AIS_Decoder::InitCommListeners(void) {
 
   //TLL
   Nmea0183Msg n0183_msg_TLL("TLL", "");
-  listener_N0183_TLL = msgbus.get_listener(EVT_N0183_TLL, this, n0183_msg_TLL.key());
+  listener_N0183_TLL = msgbus.GetListener(EVT_N0183_TLL, this, n0183_msg_TLL);
 
   Bind(EVT_N0183_TLL, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -313,7 +313,7 @@ void AIS_Decoder::InitCommListeners(void) {
 
   //TTM
   Nmea0183Msg n0183_msg_TTM("TTM", "");
-  listener_N0183_TTM = msgbus.get_listener(EVT_N0183_TTM, this, n0183_msg_TTM.key());
+  listener_N0183_TTM = msgbus.GetListener(EVT_N0183_TTM, this, n0183_msg_TTM);
 
   Bind(EVT_N0183_TTM, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -323,7 +323,7 @@ void AIS_Decoder::InitCommListeners(void) {
 
   //OSD
   Nmea0183Msg n0183_msg_OSD("OSD", "");
-  listener_N0183_OSD = msgbus.get_listener(EVT_N0183_OSD, this, n0183_msg_OSD.key());
+  listener_N0183_OSD = msgbus.GetListener(EVT_N0183_OSD, this, n0183_msg_OSD);
 
   Bind(EVT_N0183_OSD, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);

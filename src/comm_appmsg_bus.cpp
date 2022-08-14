@@ -25,25 +25,24 @@
 
 #include "comm_appmsg_bus.h"
 
-ObservedVarListener AppMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
-                                            const AppMsg& msg) {
+ObservedVarListener AppMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
+                                           const AppMsg& msg) {
   ObservableAppMsg oam(msg.key());
-  return oam.get_listener(eh, et);
+  return oam.GetListener(eh, et);
 }
 
-ObservedVarListener AppMsgBus::get_listener(wxEventType et, wxEvtHandler* eh,
-                                            AppMsg::Type type) {
+ObservedVarListener AppMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
+                                           AppMsg::Type type) {
   AppMsg msg(type);
-  return get_listener(et, eh, msg);
+  return GetListener(et, eh, msg);
 }
 
-
-void AppMsgBus::notify(std::shared_ptr<const AppMsg> msg) {
+void AppMsgBus::Notify(std::shared_ptr<const AppMsg> msg) {
   ObservableAppMsg om(msg->key());
   om.notify(msg);
 }
 
-AppMsgBus& AppMsgBus::getInstance() {
+AppMsgBus& AppMsgBus::GetInstance() {
   static AppMsgBus instance;
   return instance;
 }

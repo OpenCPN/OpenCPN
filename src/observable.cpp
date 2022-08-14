@@ -98,7 +98,7 @@ const void ObservedVar::notify() { notify("", 0); }
 
 using Listener = ObservedVarListener;
 
-Listener ObservedVar::get_listener(wxEvtHandler* eh, wxEventType ev) {
+Listener ObservedVar::GetListener(wxEvtHandler* eh, wxEventType ev) {
   return Listener(this, eh, ev);
 }
 

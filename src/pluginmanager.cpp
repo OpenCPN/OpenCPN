@@ -1051,11 +1051,11 @@ void PlugInManager::InitCommListeners(void) {
   // Initialize the comm listener to support
   // void SetNMEASentence(wxString &sentence);
 
-  auto& msgbus = NavMsgBus::getInstance();
+  auto& msgbus = NavMsgBus::GetInstance();
 
   //NMEA0183, all
   Nmea0183Msg n0183_msg("", "");
-  m_listener_N0183_all = msgbus.get_listener(EVT_N0183_PLUGIN, this, n0183_msg.key());
+  m_listener_N0183_all = msgbus.GetListener(EVT_N0183_PLUGIN, this, n0183_msg);
 
   Bind(EVT_N0183_PLUGIN, [&](wxCommandEvent ev) {
         auto message = get_navmsg_ptr(ev);
@@ -1099,42 +1099,42 @@ void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::getInstance();
 
   evt_blacklisted_plugin_listener =
-    loader->evt_blacklisted_plugin.get_listener(this, EVT_BLACKLISTED_PLUGIN);
+    loader->evt_blacklisted_plugin.GetListener(this, EVT_BLACKLISTED_PLUGIN);
   Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent& ev) {
     m_blacklist_ui->message(ev.GetString().ToStdString()); });
 
   evt_deactivate_plugin_listener =
-    loader->evt_deactivate_plugin.get_listener(this, EVT_DEACTIVATE_PLUGIN);
+    loader->evt_deactivate_plugin.GetListener(this, EVT_DEACTIVATE_PLUGIN);
   Bind(EVT_DEACTIVATE_PLUGIN, [&](wxCommandEvent& ev) {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnPluginDeactivate(pic); });
 
   evt_incompatible_plugin_listener =
-    loader->evt_incompatible_plugin.get_listener(this,
+    loader->evt_incompatible_plugin.GetListener(this,
                                                  EVT_INCOMPATIBLE_PLUGIN);
   Bind(EVT_INCOMPATIBLE_PLUGIN,
        [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
   evt_pluglist_change_listener =
-    loader->evt_pluglist_change.get_listener(this, EVT_PLUGLIST_CHANGE);
+    loader->evt_pluglist_change.GetListener(this, EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
     if (m_listPanel) m_listPanel->ReloadPluginPanels();
     g_options->itemBoxSizerPanelPlugins->Layout(); });
 
   evt_load_directory_listener =
-    loader->evt_load_directory.get_listener(this, EVT_LOAD_DIRECTORY);
+    loader->evt_load_directory.GetListener(this, EVT_LOAD_DIRECTORY);
   Bind(EVT_LOAD_DIRECTORY, [&](wxCommandEvent&) {
     pConfig->SetPath("/PlugIns/");
     SetPluginOrder(pConfig->Read("PluginOrder", wxEmptyString)); });
 
   evt_load_plugin_listener =
-    loader->evt_load_plugin.get_listener(this, EVT_LOAD_PLUGIN);
+    loader->evt_load_plugin.GetListener(this, EVT_LOAD_PLUGIN);
   Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent& ev) {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnLoadPlugin(pic); });
 
   evt_version_incompatible_plugin_listener =
-    loader->evt_version_incompatible_plugin.get_listener(
+    loader->evt_version_incompatible_plugin.GetListener(
       this,
       EVT_VERSION_INCOMPATIBLE_PLUGIN);
   Bind(EVT_VERSION_INCOMPATIBLE_PLUGIN, [&](wxCommandEvent& ev) {
@@ -1144,25 +1144,25 @@ void PlugInManager::HandlePluginLoaderEvents() {
     event_message_box(msg, ev); });
 
   evt_unreadable_plugin_listener =
-    loader->evt_blacklisted_plugin.get_listener(this, EVT_UNREADABLE_PLUGIN);
+    loader->evt_blacklisted_plugin.GetListener(this, EVT_UNREADABLE_PLUGIN);
   Bind(EVT_UNREADABLE_PLUGIN, [&](wxCommandEvent& ev) {
     static const wxString msg =
       _("Unreadable Plugin library %s detected, check file permissions:\n\n");
     event_message_box(msg, ev); });
 
   evt_incompatible_plugin_listener =
-    loader->evt_incompatible_plugin.get_listener(this,
+    loader->evt_incompatible_plugin.GetListener(this,
                                                  EVT_INCOMPATIBLE_PLUGIN);
   Bind(EVT_INCOMPATIBLE_PLUGIN,
        [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
   evt_update_chart_types_listener =
-    loader->evt_update_chart_types.get_listener(this, EVT_UPDATE_CHART_TYPES);
+    loader->evt_update_chart_types.GetListener(this, EVT_UPDATE_CHART_TYPES);
   Bind(EVT_UPDATE_CHART_TYPES,
        [&](wxCommandEvent& ev) { UpDateChartDataTypes(); });
 
   evt_plugin_loadall_finalize_listener =
-    loader->evt_plugin_loadall_finalize.get_listener(this, EVT_PLUGIN_LOADALL_FINALIZE);
+    loader->evt_plugin_loadall_finalize.GetListener(this, EVT_PLUGIN_LOADALL_FINALIZE);
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
@@ -1179,14 +1179,14 @@ void PlugInManager::HandlePluginHandlerEvents() {
   auto loader = PluginLoader::getInstance();
 
   evt_download_failed_listener =
-    loader->evt_update_chart_types.get_listener(this, EVT_DOWNLOAD_FAILED);
+    loader->evt_update_chart_types.GetListener(this, EVT_DOWNLOAD_FAILED);
   Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
       wxString message = _("Please check system log for more info.");
       OCPNMessageBox(gFrame, message, _("Installation error"),
                      wxICON_ERROR | wxOK | wxCENTRE); });
 
   evt_download_ok_listener =
-    loader->evt_update_chart_types.get_listener(this, EVT_DOWNLOAD_OK);
+    loader->evt_update_chart_types.GetListener(this, EVT_DOWNLOAD_OK);
   Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent& ev) {
     wxString message(ev.GetString());
     message += _(" successfully installed from cache");
@@ -3920,7 +3920,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 
   GlobalVar<wxString> catalog(&g_catalog_channel);
   wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
-  catalog_listener = catalog.get_listener(this, EVT_CATALOG_CHANGE);
+  catalog_listener = catalog.GetListener(this, EVT_CATALOG_CHANGE);
   Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
 
 #else  // Android
