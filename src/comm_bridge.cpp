@@ -74,6 +74,9 @@ CommBridge::CommBridge() {}
 CommBridge::~CommBridge() {}
 
 bool CommBridge::Initialize() {
+
+  InitializePriorityContainers();
+
   // Clear the watchdogs
   PresetWatchdogs();
 
@@ -117,6 +120,11 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     gCog = NAN;
     gRmcDate.Empty();
     gRmcTime.Empty();
+
+    // shift the active priority to the next lower priority source
+    position_priority.active_priority ++;
+    position_priority.active_source.clear();
+    printf("Position dog timeout\n");
   }
 
   //  Update and check watchdog timer for Mag Heading data source
@@ -367,10 +375,24 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 }
 
 bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
-  printf("HandleN0183_RMC \n");
+  //printf("HandleN0183_RMC \n");
 
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeRMC(str, m_watchdogs)) return false;
+
+  NavData temp_data;
+  if (!m_decoder.DecodeRMC(str, m_watchdogs, temp_data))
+    return false;
+
+  std::string key = "N0183-RMC-";
+  std::string mnemonic = str.substr(1,5);
+  std::string source = n0183_msg->source->to_string();
+  key += mnemonic;
+
+  if (EvalPriorityPosition(key, source, n0183_msg)) {
+     gLat = temp_data.gLat;
+     gLon = temp_data.gLon;
+     m_watchdogs.gps_watchdog = gps_watchdog_timeout_ticks;
+  }
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -546,33 +568,58 @@ bool CommBridge::HandleN0183_AIVDO(
 //
 //   EvalPriorityPos(key, n0183_msg);
 
-bool CommBridge::EvalPriorityPos(std::string priority_key, std::shared_ptr <const NavMsg> msg) {
+void CommBridge::InitializePriorityContainers(){
+  position_priority.active_priority = 0;
+}
+
+bool CommBridge::EvalPriorityPosition(std::string priority_key,
+                                 std::string source,
+                                 std::shared_ptr <const NavMsg> msg) {
 
   // Fetch the established priority for the message
   int this_priority;
-  auto it = pos_priority_map.find(priority_key);
+
+  std::string this_key = priority_key;
+  this_key += source;
+  printf("This Key: %s\n", this_key.c_str());
+
+  auto it = pos_priority_map.find(this_key);
   if (it == pos_priority_map.end()) {
     // Not found, so make it default highest priority
-    pos_priority_map[priority_key] = 0;
+    pos_priority_map[this_key] = 0;
   }
 
-  this_priority = pos_priority_map[priority_key];
-
-
-
+  this_priority = pos_priority_map[this_key];
 
   //Incoming message priority lower than currently active priority?
   //  If so, drop the message
-  if ( this_priority > position_priority.active_priority)
+  if ( this_priority > position_priority.active_priority){
+    printf("      Drop low priority: %s %d %d \n", source.c_str(), this_priority, position_priority.active_priority);
     return false;
-
-/*
-  // Do we see two sources with the same priority?
-  if (msg.Source != pos_prio.ActiveSource){
-    // activate GUI to select
-    // or auto adjust the priority of the this message down
   }
 
+
+  // Do we see two sources with the same priority?
+  // If so, we take the first one, and deprioritize this one.
+
+  if (position_priority.active_source.size()){
+    if (source != position_priority.active_source){
+
+      // Auto adjust the priority of the this message down
+      pos_priority_map[this_key] = 1;
+      printf("          Lowering priority: %s\n", source.c_str());
+      return false;
+    }
+  }
+
+
+  // Update the records
+  position_priority.active_source = source;
+  printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
+
+  return true;
+
+/*
   //  For N0183 message, has the Mnemonic changed?
   //  Example:  RMC and AIVDO from same source.
   if (msg.isN0183){

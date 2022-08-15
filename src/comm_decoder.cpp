@@ -66,7 +66,7 @@ bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,
   return ll_valid;
 }
 
-bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -77,21 +77,21 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs) {
   if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
     double tlat, tlon;
     if (ParsePosition(m_NMEA0183.Rmc.Position, tlat, tlon)) {
-      gLat = tlat;
-      gLon = tlon;
-      dogs.gps_watchdog = gps_watchdog_timeout_ticks;
+      temp_data.gLat = tlat;
+      temp_data.gLon = tlon;
+      //dogs.gps_watchdog = gps_watchdog_timeout_ticks;
     } else
       return false;
 
     // FIXME (dave) if (!g_own_ship_sog_cog_calc )
     {
       if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
-        gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+        temp_data.gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
       }
-      if (!std::isnan(gSog) && (gSog > 0)) {
-        gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+      if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0)) {
+        temp_data.gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
       } else {
-        gCog = NAN;
+        temp_data.gCog = NAN;
       }
     }
     // Any device sending VAR=0.0 can be assumed to not really know
@@ -100,9 +100,9 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs) {
     if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
         0.0 != m_NMEA0183.Rmc.MagneticVariation) {
       if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
-        gVar = m_NMEA0183.Rmc.MagneticVariation;
+        temp_data.gVar = m_NMEA0183.Rmc.MagneticVariation;
       else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
-        gVar = -m_NMEA0183.Rmc.MagneticVariation;
+        temp_data.gVar = -m_NMEA0183.Rmc.MagneticVariation;
 
       dogs.var_watchdog = gps_watchdog_timeout_ticks;
 

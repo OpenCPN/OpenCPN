@@ -42,6 +42,15 @@ typedef struct {
 
 } Watchdogs;
 
+typedef struct{
+  double gLat;
+  double gLon;
+  double gSog;
+  double gCog;
+  double gHdt;
+  double gVar;
+} NavData;
+
 class CommDecoder {
 public:
   CommDecoder(){};
@@ -49,7 +58,7 @@ public:
 
   // NMEA decoding, by sentence.
   // Each method updates the global variable set
-  bool DecodeRMC(std::string s, Watchdogs& dogs);
+  bool DecodeRMC(std::string s, Watchdogs& dogs, NavData& temp_data);
   bool DecodeHDM(std::string s, Watchdogs& dogs);
   bool DecodeHDT(std::string s, Watchdogs& dogs);
   bool DecodeHDG(std::string s, Watchdogs& dogs);

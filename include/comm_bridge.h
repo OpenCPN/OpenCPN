@@ -37,7 +37,9 @@
 
 typedef struct{
   int active_priority;
+  std::string active_source;
 } PriorityContainer;
+
 
 class CommBridge : public wxEvtHandler {
 public:
@@ -65,7 +67,9 @@ public:
   void PresetWatchdogs();
   void MakeHDTFromHDM();
   void InitializePriorityContainers();
-  bool EvalPriorityPos(std::string priority_key, std::shared_ptr <const NavMsg> msg);
+  bool EvalPriorityPosition(std::string priority_key,
+                       std::string source,
+                       std::shared_ptr <const NavMsg> msg);
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
