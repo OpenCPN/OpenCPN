@@ -26,6 +26,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "observable_msg.h"
 #include "comm_navmsg.h"
@@ -33,6 +34,10 @@
 
 #ifndef _COMM_BRIDGE_H
 #define _COMM_BRIDGE_H
+
+typedef struct{
+  int active_priority;
+} PriorityContainer;
 
 class CommBridge : public wxEvtHandler {
 public:
@@ -59,6 +64,8 @@ public:
   void OnWatchdogTimer(wxTimerEvent& event);
   void PresetWatchdogs();
   void MakeHDTFromHDM();
+  void InitializePriorityContainers();
+  bool EvalPriorityPos(std::string priority_key, std::shared_ptr <const NavMsg> msg);
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
@@ -78,6 +85,9 @@ public:
   ObservedVarListener listener_N0183_AIVDO;
 
   CommDecoder m_decoder;
+
+  PriorityContainer position_priority;
+  std::unordered_map<std::string, int> pos_priority_map;
 
   DECLARE_EVENT_TABLE()
 };

@@ -538,3 +538,63 @@ bool CommBridge::HandleN0183_AIVDO(
 #endif
   return true;
 }
+
+
+//   std::string mnemonic = str.substr(1,5);
+//   std::string key = "N0183-RMC-";
+//   key += mnemonic;
+//
+//   EvalPriorityPos(key, n0183_msg);
+
+bool CommBridge::EvalPriorityPos(std::string priority_key, std::shared_ptr <const NavMsg> msg) {
+
+  // Fetch the established priority for the message
+  int this_priority;
+  auto it = pos_priority_map.find(priority_key);
+  if (it == pos_priority_map.end()) {
+    // Not found, so make it default highest priority
+    pos_priority_map[priority_key] = 0;
+  }
+
+  this_priority = pos_priority_map[priority_key];
+
+
+
+
+  //Incoming message priority lower than currently active priority?
+  //  If so, drop the message
+  if ( this_priority > position_priority.active_priority)
+    return false;
+
+/*
+  // Do we see two sources with the same priority?
+  if (msg.Source != pos_prio.ActiveSource){
+    // activate GUI to select
+    // or auto adjust the priority of the this message down
+  }
+
+  //  For N0183 message, has the Mnemonic changed?
+  //  Example:  RMC and AIVDO from same source.
+  if (msg.isN0183){
+    if (msg.Mnemonnic  == pos_prio.ActiveMnemonic){
+      return true;
+    }
+    else {
+      //auto adjust the priority of the this message down
+      //and drop it
+      return false;
+    }
+  }
+  else{
+    if (msg.PGN == pos_prio.ActivePGN){
+      return true;
+    }
+    else {
+      //auto adjust the priority of the this message down
+      //and drop it
+      return false;
+    }
+  }
+*/
+  return false;
+}
