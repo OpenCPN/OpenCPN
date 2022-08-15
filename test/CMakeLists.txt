@@ -16,7 +16,12 @@ enable_testing ()
 
 set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 
-add_executable(tests tests.cpp ${MODEL_SRC} ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp)
+add_executable(tests
+  tests.cpp
+  ${MODEL_SRC}
+  ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
+  ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
+)
 
 target_include_directories(
   tests
@@ -48,3 +53,6 @@ endif ()
 target_link_libraries(tests PRIVATE GTest::gtest_main)
 include(GoogleTest)
 gtest_discover_tests(tests)
+
+
+add_test(NAME tests COMMAND tests)
