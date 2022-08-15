@@ -90,21 +90,20 @@ bool CommBridge::Initialize() {
 }
 
 void CommBridge::PresetWatchdogs() {
-  m_watchdogs.gps_watchdog = 5;
-  m_watchdogs.var_watchdog = 5;
-  m_watchdogs.hdx_watchdog = 5;
-  m_watchdogs.hdt_watchdog = 5;
-  m_watchdogs.sat_watchdog = 5;
+  m_watchdogs.position_watchdog = 5;
+  m_watchdogs.velocity_watchdog = 5;
+  m_watchdogs.variation_watchdog = 5;
+  m_watchdogs.heading_watchdog = 5;
+  m_watchdogs.satellite_watchdog = 5;
 }
 
 void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   //  Update and check watchdog timer for GPS data source
-  m_watchdogs.gps_watchdog--;
-  if (m_watchdogs.gps_watchdog <= 0) {
-    // bGPSValid = false;
-    if (m_watchdogs.gps_watchdog == 0) {
+  m_watchdogs.position_watchdog--;
+  if (m_watchdogs.position_watchdog <= 0) {
+    if (m_watchdogs.position_watchdog == 0) {
       // Send AppMsg telling of watchdog expiry
-      auto msg = std::make_shared<GPSWatchdogMsg>(m_watchdogs.gps_watchdog);
+      auto msg = std::make_shared<GPSWatchdogMsg>(m_watchdogs.position_watchdog);
       auto& msgbus = AppMsgBus::GetInstance();
       msgbus.Notify(std::move(msg));
 
@@ -122,42 +121,45 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     gRmcTime.Empty();
 
     // shift the active priority to the next lower priority source
-    position_priority.active_priority ++;
-    position_priority.active_source.clear();
+    active_priority_position.active_priority++;
+    active_priority_position.active_source.clear();
+    active_priority_position.active_identifier.clear();
+
     printf("Position dog timeout\n");
+    printf("Shifting to priority %d\n", active_priority_position.active_priority);
   }
 
   //  Update and check watchdog timer for Mag Heading data source
-  m_watchdogs.hdx_watchdog--;
-  if (m_watchdogs.hdx_watchdog <= 0) {
-    gHdm = NAN;
-    if (g_nNMEADebug && (m_watchdogs.hdx_watchdog == 0))
-      wxLogMessage(_T("   ***HDx Watchdog timeout..."));
-  }
+//   m_watchdogs.hdx_watchdog--;
+//   if (m_watchdogs.hdx_watchdog <= 0) {
+//     gHdm = NAN;
+//     if (g_nNMEADebug && (m_watchdogs.hdx_watchdog == 0))
+//       wxLogMessage(_T("   ***HDx Watchdog timeout..."));
+//   }
 
   //  Update and check watchdog timer for True Heading data source
-  m_watchdogs.hdt_watchdog--;
-  if (m_watchdogs.hdt_watchdog <= 0) {
+  m_watchdogs.heading_watchdog--;
+  if (m_watchdogs.heading_watchdog <= 0) {
     g_bHDT_Rx = false;
     gHdt = NAN;
-    if (g_nNMEADebug && (m_watchdogs.hdt_watchdog == 0))
+    if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
       wxLogMessage(_T("   ***HDT Watchdog timeout..."));
   }
 
   //  Update and check watchdog timer for Magnetic Variation data source
-  m_watchdogs.var_watchdog--;
-  if (m_watchdogs.var_watchdog <= 0) {
+  m_watchdogs.variation_watchdog--;
+  if (m_watchdogs.variation_watchdog <= 0) {
     g_bVAR_Rx = false;
-    if (g_nNMEADebug && (m_watchdogs.var_watchdog == 0))
+    if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
       wxLogMessage(_T("   ***VAR Watchdog timeout..."));
   }
   //  Update and check watchdog timer for GSV, GGA and SignalK (Satellite data)
-  m_watchdogs.sat_watchdog--;
-  if (m_watchdogs.sat_watchdog <= 0) {
+  m_watchdogs.satellite_watchdog--;
+  if (m_watchdogs.satellite_watchdog <= 0) {
     g_bSatValid = false;
     g_SatsInView = 0;
     g_priSats = 99;
-    if (g_nNMEADebug && (m_watchdogs.sat_watchdog == 0))
+    if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0))
       wxLogMessage(_T("   ***SAT Watchdog timeout..."));
   }
 }
@@ -179,7 +181,7 @@ void CommBridge::MakeHDTFromHDM() {
           gHdt -= 360.0;
       }
 
-      m_watchdogs.hdt_watchdog = gps_watchdog_timeout_ticks;
+      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
     }
   }
 }
@@ -251,7 +253,7 @@ void CommBridge::InitCommListeners() {
   Bind(EVT_N0183_HDM, [&](wxCommandEvent ev) {
     auto message = get_navmsg_ptr(ev);
     auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_HDM(n0183_msg);
+    //HandleN0183_HDM(n0183_msg);
   });
 
   // VTG
@@ -261,7 +263,7 @@ void CommBridge::InitCommListeners() {
   Bind(EVT_N0183_VTG, [&](wxCommandEvent ev) {
     auto message = get_navmsg_ptr(ev);
     auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_VTG(n0183_msg);
+    //HandleN0183_VTG(n0183_msg);
   });
 
   // GSV
@@ -380,18 +382,24 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
 
   NavData temp_data;
-  if (!m_decoder.DecodeRMC(str, m_watchdogs, temp_data))
+  if (!m_decoder.DecodeRMC(str, temp_data))
     return false;
 
-  std::string key = "N0183-RMC-";
-  std::string mnemonic = str.substr(1,5);
-  std::string source = n0183_msg->source->to_string();
-  key += mnemonic;
+  if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
+    gLat = temp_data.gLat;
+    gLon = temp_data.gLon;
+    m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+  }
 
-  if (EvalPriorityPosition(key, source, n0183_msg)) {
-     gLat = temp_data.gLat;
-     gLon = temp_data.gLon;
-     m_watchdogs.gps_watchdog = gps_watchdog_timeout_ticks;
+  if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
+    gSog = temp_data.gSog;
+    gCog = temp_data.gCog;
+    m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+  }
+
+  if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
+    gVar = temp_data.gVar;
+    m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
   }
 
   // Populate a comm_appmsg with current global values
@@ -407,7 +415,15 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 bool CommBridge::HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeHDT(str, m_watchdogs)) return false;
+  NavData temp_data;
+  if (!m_decoder.DecodeHDT(str, temp_data))
+    return false;
+
+  if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
+     gHdt = temp_data.gHdt;
+     m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+  }
+
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -422,7 +438,25 @@ bool CommBridge::HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeHDG(str, m_watchdogs)) return false;
+  NavData temp_data;
+  if (!m_decoder.DecodeHDG(str, temp_data)) return false;
+
+  int n_both = 0;
+  if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
+     gHdm = temp_data.gHdm;
+     m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+    n_both++;
+  }
+
+  if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
+     gVar = temp_data.gVar;
+     m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+     n_both++;
+  }
+
+  if (n_both == 2)
+    MakeHDTFromHDM();
+
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -437,9 +471,14 @@ bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 bool CommBridge::HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeHDM(str, m_watchdogs)) return false;
+  NavData temp_data;
+  if (!m_decoder.DecodeHDM(str, temp_data)) return false;
 
-  MakeHDTFromHDM();
+  if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
+    gHdm = temp_data.gHdm;
+    MakeHDTFromHDM();
+    m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+  }
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -454,7 +493,14 @@ bool CommBridge::HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeVTG(str, m_watchdogs)) return false;
+  NavData temp_data;
+  if (!m_decoder.DecodeVTG(str, temp_data)) return false;
+
+  if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
+    gSog = temp_data.gSog;
+    gCog = temp_data.gCog;
+    m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+  }
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -469,7 +515,8 @@ bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 bool CommBridge::HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeGSV(str, m_watchdogs)) return false;
+  NavData temp_data;
+  if (!m_decoder.DecodeGSV(str, temp_data)) return false;
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -484,7 +531,14 @@ bool CommBridge::HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeGGA(str, m_watchdogs)) return false;
+  NavData temp_data;
+  if (!m_decoder.DecodeGGA(str, temp_data)) return false;
+
+  if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
+     gLat = temp_data.gLat;
+     gLon = temp_data.gLon;
+     m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+  }
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -499,7 +553,14 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 bool CommBridge::HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
-  if (!m_decoder.DecodeGLL(str, m_watchdogs)) return false;
+  NavData temp_data;
+  if (!m_decoder.DecodeGLL(str, temp_data)) return false;
+
+  if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
+     gLat = temp_data.gLat;
+     gLon = temp_data.gLon;
+     m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+  }
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -562,86 +623,142 @@ bool CommBridge::HandleN0183_AIVDO(
 }
 
 
-//   std::string mnemonic = str.substr(1,5);
-//   std::string key = "N0183-RMC-";
-//   key += mnemonic;
-//
-//   EvalPriorityPos(key, n0183_msg);
 
 void CommBridge::InitializePriorityContainers(){
-  position_priority.active_priority = 0;
+  active_priority_position.active_priority = 0;
+  active_priority_velocity.active_priority = 0;
+  active_priority_heading.active_priority = 0;
+  active_priority_variation.active_priority = 0;
 }
 
-bool CommBridge::EvalPriorityPosition(std::string priority_key,
-                                 std::string source,
-                                 std::shared_ptr <const NavMsg> msg) {
+bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
+                                      PriorityContainer& active_priority,
+                                      std::unordered_map<std::string, int>& priority_map) {
 
   // Fetch the established priority for the message
   int this_priority;
 
-  std::string this_key = priority_key;
-  this_key += source;
+  std::string source = msg->source->to_string();
+  std::string listener_key = msg->key();
+
+  std::string this_key = listener_key + source;
   printf("This Key: %s\n", this_key.c_str());
 
-  auto it = pos_priority_map.find(this_key);
-  if (it == pos_priority_map.end()) {
-    // Not found, so make it default highest priority
-    pos_priority_map[this_key] = 0;
+  std::string this_identifier;
+  if(msg->bus == NavAddr::Bus::N0183){
+    auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
+    if (msg_0183){
+      this_identifier = msg_0183->id;
+    }
+  }
+  else if(msg->bus == NavAddr::Bus::N2000){
+    auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+    if (msg_n2k){
+      this_identifier = msg_n2k->name.to_string();
+    }
   }
 
-  this_priority = pos_priority_map[this_key];
+  auto it = priority_map.find(this_key);
+  if (it == priority_map.end()) {
+    // Not found, so make it default highest priority
+    priority_map[this_key] = 0;
+  }
+
+  this_priority = priority_map[this_key];
+
 
   //Incoming message priority lower than currently active priority?
   //  If so, drop the message
-  if ( this_priority > position_priority.active_priority){
-    printf("      Drop low priority: %s %d %d \n", source.c_str(), this_priority, position_priority.active_priority);
+  if (this_priority > active_priority.active_priority){
+    printf("      Drop low priority: %s %d %d \n", source.c_str(), this_priority, active_priority.active_priority);
     return false;
+  }
+
+  // A channel returning, after being watchdogged out.
+  if (this_priority < active_priority.active_priority){
+    active_priority.active_priority = this_priority;
+    active_priority.active_source = source;
+    active_priority.active_identifier = this_identifier;
+    printf("  Restoring high priority: %s %d\n", source.c_str(), this_priority);
+    return true;
   }
 
 
   // Do we see two sources with the same priority?
   // If so, we take the first one, and deprioritize this one.
 
-  if (position_priority.active_source.size()){
-    if (source != position_priority.active_source){
+  if (active_priority.active_source.size()){
+    if (source != active_priority.active_source){
 
       // Auto adjust the priority of the this message down
-      pos_priority_map[this_key] = 1;
-      printf("          Lowering priority: %s\n", source.c_str());
+      //First, find the lowest priority in use in this map
+      int lowest_priority = -10;     // safe enough
+      for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
+        if (it->second > lowest_priority)
+          lowest_priority = it->second;
+      }
+
+      priority_map[this_key] = lowest_priority + 1;
+      printf("          Lowering priority: %s :%d\n", source.c_str(), priority_map[this_key]);
       return false;
+    }
+  }
+
+  //  For N0183 message, has the Mnemonic (id) changed?
+  //  Example:  RMC and AIVDO from same source.
+
+
+  if(msg->bus == NavAddr::Bus::N0183){
+    auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
+    if (msg_0183){
+      if (active_priority.active_identifier.size()){
+        if (this_identifier  != active_priority.active_identifier){
+          //auto adjust the priority of the this message down
+          //and drop it
+
+          int lowest_priority = -10;     // safe enough
+          for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
+            if (it->second > lowest_priority)
+              lowest_priority = it->second;
+          }
+
+          priority_map[this_key] = lowest_priority + 1;
+
+          return false;
+        }
+      }
+    }
+  }
+
+  //  Similar for n2k PGN...
+
+  else if(msg->bus == NavAddr::Bus::N2000){
+    auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+    if (msg_n2k){
+      if (active_priority.active_identifier.size()){
+        if (this_identifier != active_priority.active_identifier){
+          //auto adjust the priority of the this message down
+          //and drop it
+
+          int lowest_priority = -10;     // safe enough
+          for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
+            if (it->second > lowest_priority)
+              lowest_priority = it->second;
+          }
+
+          priority_map[this_key] = lowest_priority + 1;
+
+          return false;
+        }
+      }
     }
   }
 
 
   // Update the records
-  position_priority.active_source = source;
+  active_priority.active_source = source;
+  active_priority.active_identifier = this_identifier;
   printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
 
   return true;
-
-/*
-  //  For N0183 message, has the Mnemonic changed?
-  //  Example:  RMC and AIVDO from same source.
-  if (msg.isN0183){
-    if (msg.Mnemonnic  == pos_prio.ActiveMnemonic){
-      return true;
-    }
-    else {
-      //auto adjust the priority of the this message down
-      //and drop it
-      return false;
-    }
-  }
-  else{
-    if (msg.PGN == pos_prio.ActivePGN){
-      return true;
-    }
-    else {
-      //auto adjust the priority of the this message down
-      //and drop it
-      return false;
-    }
-  }
-*/
-  return false;
 }

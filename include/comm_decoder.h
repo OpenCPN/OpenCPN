@@ -33,14 +33,6 @@
 #ifndef _COMM_DECODER_H
 #define _COMM_DECODER_H
 
-typedef struct {
-  int gps_watchdog;
-  int var_watchdog;
-  int hdx_watchdog;
-  int hdt_watchdog;
-  int sat_watchdog;
-
-} Watchdogs;
 
 typedef struct{
   double gLat;
@@ -48,6 +40,7 @@ typedef struct{
   double gSog;
   double gCog;
   double gHdt;
+  double gHdm;
   double gVar;
 } NavData;
 
@@ -58,14 +51,14 @@ public:
 
   // NMEA decoding, by sentence.
   // Each method updates the global variable set
-  bool DecodeRMC(std::string s, Watchdogs& dogs, NavData& temp_data);
-  bool DecodeHDM(std::string s, Watchdogs& dogs);
-  bool DecodeHDT(std::string s, Watchdogs& dogs);
-  bool DecodeHDG(std::string s, Watchdogs& dogs);
-  bool DecodeVTG(std::string s, Watchdogs& dogs);
-  bool DecodeGSV(std::string s, Watchdogs& dogs);
-  bool DecodeGGA(std::string s, Watchdogs& dogs);
-  bool DecodeGLL(std::string s, Watchdogs& dogs);
+  bool DecodeRMC(std::string s, NavData& temp_data);
+  bool DecodeHDM(std::string s, NavData& temp_data);
+  bool DecodeHDT(std::string s, NavData& temp_data);
+  bool DecodeHDG(std::string s, NavData& temp_data);
+  bool DecodeVTG(std::string s, NavData& temp_data);
+  bool DecodeGSV(std::string s, NavData& temp_data);
+  bool DecodeGGA(std::string s, NavData& temp_data);
+  bool DecodeGLL(std::string s, NavData& temp_data);
 
   bool ParsePosition(const LATLONG& Position, double& lat, double& lon);
 

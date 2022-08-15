@@ -38,8 +38,17 @@
 typedef struct{
   int active_priority;
   std::string active_source;
+  std::string active_identifier;
 } PriorityContainer;
 
+typedef struct {
+  int position_watchdog;
+  int variation_watchdog;
+  int heading_watchdog;
+  int velocity_watchdog;
+  int satellite_watchdog;
+
+} Watchdogs;
 
 class CommBridge : public wxEvtHandler {
 public:
@@ -67,9 +76,9 @@ public:
   void PresetWatchdogs();
   void MakeHDTFromHDM();
   void InitializePriorityContainers();
-  bool EvalPriorityPosition(std::string priority_key,
-                       std::string source,
-                       std::shared_ptr <const NavMsg> msg);
+  bool EvalPriority(std::shared_ptr <const NavMsg> msg,
+                            PriorityContainer& active_priority,
+                            std::unordered_map<std::string, int>& priority_map);
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
@@ -90,8 +99,15 @@ public:
 
   CommDecoder m_decoder;
 
-  PriorityContainer position_priority;
-  std::unordered_map<std::string, int> pos_priority_map;
+  PriorityContainer active_priority_position;
+  PriorityContainer active_priority_velocity;
+  PriorityContainer active_priority_heading;
+  PriorityContainer active_priority_variation;
+
+  std::unordered_map<std::string, int> priority_map_position;
+  std::unordered_map<std::string, int> priority_map_velocity;
+  std::unordered_map<std::string, int> priority_map_heading;
+  std::unordered_map<std::string, int> priority_map_variation;
 
   DECLARE_EVENT_TABLE()
 };

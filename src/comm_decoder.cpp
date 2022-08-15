@@ -32,7 +32,7 @@
 #include "comm_decoder.h"
 #include "comm_util.h"
 
-extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
+//extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 extern int gps_watchdog_timeout_ticks;
 extern wxString gRmcDate, gRmcTime;
 extern bool g_bHDT_Rx, g_bVAR_Rx;
@@ -66,7 +66,7 @@ bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,
   return ll_valid;
 }
 
-bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs, NavData& temp_data) {
+bool CommDecoder::DecodeRMC(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -79,7 +79,6 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs, NavData& temp_data) 
     if (ParsePosition(m_NMEA0183.Rmc.Position, tlat, tlon)) {
       temp_data.gLat = tlat;
       temp_data.gLon = tlon;
-      //dogs.gps_watchdog = gps_watchdog_timeout_ticks;
     } else
       return false;
 
@@ -104,8 +103,6 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs, NavData& temp_data) 
       else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
         temp_data.gVar = -m_NMEA0183.Rmc.MagneticVariation;
 
-      dogs.var_watchdog = gps_watchdog_timeout_ticks;
-
       g_bVAR_Rx = true;
     }
 
@@ -117,7 +114,7 @@ bool CommDecoder::DecodeRMC(std::string s, Watchdogs& dogs, NavData& temp_data) 
   return true;
 }
 
-bool CommDecoder::DecodeHDM(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeHDM(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -125,14 +122,12 @@ bool CommDecoder::DecodeHDM(std::string s, Watchdogs& dogs) {
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
 
-  gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-  if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic))
-    dogs.hdx_watchdog = gps_watchdog_timeout_ticks;
+  temp_data.gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
 
   return true;
 }
 
-bool CommDecoder::DecodeHDT(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeHDT(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -140,16 +135,15 @@ bool CommDecoder::DecodeHDT(std::string s, Watchdogs& dogs) {
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
 
-  gHdt = m_NMEA0183.Hdt.DegreesTrue;
+  temp_data.gHdt = m_NMEA0183.Hdt.DegreesTrue;
   if (!std::isnan(m_NMEA0183.Hdt.DegreesTrue)) {
     g_bHDT_Rx = true;
-    dogs.hdt_watchdog = gps_watchdog_timeout_ticks;
   }
 
   return true;
 }
 
-bool CommDecoder::DecodeHDG(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeHDG(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -157,9 +151,7 @@ bool CommDecoder::DecodeHDG(std::string s, Watchdogs& dogs) {
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
 
-  gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-  if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees))
-    dogs.hdx_watchdog = gps_watchdog_timeout_ticks;
+  temp_data.gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
 
   // Any device sending VAR=0.0 can be assumed to not really know
   // what the actual variation is, so in this case we use WMM if
@@ -167,18 +159,17 @@ bool CommDecoder::DecodeHDG(std::string s, Watchdogs& dogs) {
   if ((!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees)) &&
       0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees) {
     if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
-      gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
+      temp_data.gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
     else if (m_NMEA0183.Hdg.MagneticVariationDirection == West)
-      gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
+      temp_data.gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
 
     g_bVAR_Rx = true;
-    dogs.var_watchdog = gps_watchdog_timeout_ticks;
   }
 
   return true;
 }
 
-bool CommDecoder::DecodeVTG(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeVTG(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -188,17 +179,17 @@ bool CommDecoder::DecodeVTG(std::string s, Watchdogs& dogs) {
 
   // FIXME (dave)if (g_own_ship_sog_cog_calc) return false;
 
-  if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots)) gSog = m_NMEA0183.Vtg.SpeedKnots;
+  if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots)) temp_data.gSog = m_NMEA0183.Vtg.SpeedKnots;
 
   if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots) &&
       !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue)) {
-    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+    temp_data.gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
   }
 
   return true;
 }
 
-bool CommDecoder::DecodeGLL(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeGLL(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -209,9 +200,8 @@ bool CommDecoder::DecodeGLL(std::string s, Watchdogs& dogs) {
   if (m_NMEA0183.Gll.IsDataValid == NTrue) {
     double tlat, tlon;
     if (ParsePosition(m_NMEA0183.Gll.Position, tlat, tlon)) {
-      gLat = tlat;
-      gLon = tlon;
-      dogs.gps_watchdog = gps_watchdog_timeout_ticks;
+      temp_data.gLat = tlat;
+      temp_data.gLon = tlon;
     } else
       return false;
   } else
@@ -220,7 +210,7 @@ bool CommDecoder::DecodeGLL(std::string s, Watchdogs& dogs) {
   return true;
 }
 
-bool CommDecoder::DecodeGSV(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeGSV(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -240,7 +230,7 @@ bool CommDecoder::DecodeGSV(std::string s, Watchdogs& dogs) {
   return true;
 }
 
-bool CommDecoder::DecodeGGA(std::string s, Watchdogs& dogs) {
+bool CommDecoder::DecodeGGA(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -251,9 +241,8 @@ bool CommDecoder::DecodeGGA(std::string s, Watchdogs& dogs) {
   if (m_NMEA0183.Gga.GPSQuality > 0) {
     double tlat, tlon;
     if (ParsePosition(m_NMEA0183.Gga.Position, tlat, tlon)) {
-      gLat = tlat;
-      gLon = tlon;
-      dogs.gps_watchdog = gps_watchdog_timeout_ticks;
+      temp_data.gLat = tlat;
+      temp_data.gLon = tlon;
     } else
       return false;
 
