@@ -5696,7 +5696,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
   if (m_cmscale >= 7) return false;
 
   wxColour col;
-  //#ifdef ocpnUSE_GL
+  #ifdef ocpnUSE_GL
+  return false;
+  #else
   ViewPort nvp;
   bool secondpass = false;
   glChartCanvas *glcc = cc->GetglCanvas();
@@ -5848,6 +5850,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
   }
 #endif
   return true;
+  
+  #endif //ocpnUSE_GL
 }
 
 bool cm93compchart::RenderCellOutlinesOnDC(ocpnDC &dc, ViewPort &vp,
