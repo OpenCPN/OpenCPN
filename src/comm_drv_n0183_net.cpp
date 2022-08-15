@@ -143,7 +143,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   Open();
 }
 
-commDriverN0183Net::~commDriverN0183Net() {
+CommDriverN0183Net::~CommDriverN0183Net() {
   Close();
 }
 
