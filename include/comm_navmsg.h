@@ -111,11 +111,28 @@ public:
   const N2kName name;
 };
 
+class NavAddrNone : public NavAddr {
+public:
+  NavAddrNone()
+      : NavAddr(NavAddr::Bus::Undef, "navaddr-undef") {};
+
+  std::string to_string() const { return "navaddr-undef"; }
+};
+
 /** There is only support for a single signalK bus. */
 class NavAddrSignalK : public NavAddr {
 public:
   NavAddrSignalK() : NavAddr(NavAddr::Bus::Signalk, "signalK"){};
 };
+
+class NavAddrTest : public NavAddr {
+public:
+  NavAddrTest(std::string output_path)
+      : NavAddr(NavAddr::Bus::TestBus, "Test"),  name(output_path) {};
+
+  const std::string name;
+};
+
 
 /** Actual data sent between application and transport layer */
 class NavMsg {
@@ -130,8 +147,11 @@ public:
 
   const NavAddr::Bus bus;
 
+  std::shared_ptr<NavAddr> source;
+
 protected:
-  NavMsg(const NavAddr::Bus& _bus) : bus(_bus){};
+  NavMsg(const NavAddr::Bus& _bus, std::shared_ptr<NavAddr> src)
+      : bus(_bus), source(src) {};
 };
 
 /**
@@ -139,9 +159,14 @@ protected:
  */
 class Nmea2000Msg : public NavMsg {
 public:
-  Nmea2000Msg(const N2kName& n) : NavMsg(NavAddr::Bus::N2000), name(n) {}
-  Nmea2000Msg(const N2kName& n, const std::vector<unsigned char>& _payload)
-      : NavMsg(NavAddr::Bus::N2000), name(n), payload(_payload) {}
+  Nmea2000Msg(const N2kName& n)
+      : NavMsg(NavAddr::Bus::N2000, std::make_shared<NavAddr>(NavAddrNone())),
+        name(n) {}
+  Nmea2000Msg(const N2kName& n, std::shared_ptr<NavAddr> src)
+      : NavMsg(NavAddr::Bus::N2000, src), name(n) {}
+  Nmea2000Msg(const N2kName& n, const std::vector<unsigned char>& _payload,
+              std::shared_ptr<NavAddr> src)
+      : NavMsg(NavAddr::Bus::N2000, src), name(n), payload(_payload) {}
 
   std::string key() const { return std::string("n2000-") + name.to_string(); };
 
@@ -155,11 +180,16 @@ public:
 /** A regular Nmea0183 message. */
 class Nmea0183Msg : public NavMsg {
 public:
-  Nmea0183Msg() : NavMsg(NavAddr::Bus::N0183) {}
-  Nmea0183Msg(const std::string _id) : NavMsg(NavAddr::Bus::N0183), id(_id) {}
 
-  Nmea0183Msg(const std::string _id, const std::string _payload)
-      : NavMsg(NavAddr::Bus::N0183), id(_id), payload(_payload) {}
+  Nmea0183Msg()
+      : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone()))
+        {}
+  Nmea0183Msg(const std::string& _id)
+      : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone())),
+      id(_id) {}
+  Nmea0183Msg(const std::string _id, const std::string _payload,
+              std::shared_ptr<NavAddr> src)
+     : NavMsg(NavAddr::Bus::N0183, src), id(_id), payload(_payload) {}
 
   std::string key() const { return std::string("n0183-") + id; };
 
@@ -174,7 +204,10 @@ public:
 /** A parsed SignalK message over ipv4 */
 class SignalkMsg : public NavMsg {
 public:
-  SignalkMsg(int _depth) : NavMsg(NavAddr::Bus::Signalk), depth(_depth) {}
+  SignalkMsg(int _depth)
+      : NavMsg(NavAddr::Bus::Signalk,
+               std::make_shared<NavAddr>(NavAddrNone())),
+        depth(_depth) {}
 
   struct in_addr dest;
   struct in_addr src;
@@ -188,7 +221,9 @@ public:
 /** An invalid message, error return value. */
 class NullNavMsg : public NavMsg {
 public:
-  NullNavMsg() : NavMsg(NavAddr::Bus::Undef) {}
+  NullNavMsg()
+      : NavMsg(NavAddr::Bus::Undef, std::make_shared<NavAddr>(NavAddrNone()))
+        {}
 
   std::string key() const { return "navmsg-undef"; }
 };

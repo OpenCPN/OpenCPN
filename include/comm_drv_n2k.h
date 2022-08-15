@@ -29,12 +29,13 @@
 
 class CommDriverN2K : public AbstractCommDriver {
 public:
-  CommDriverN2K();
-  CommDriverN2K(NavAddr::Bus b, const std::string& s);
+  CommDriverN2K(const std::string& s = "n2k0" );
+
   virtual ~CommDriverN2K();
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) override;
   virtual void SetListener(std::shared_ptr<DriverListener> l) override;
+  virtual std::shared_ptr<NavAddr> GetAddress(const N2kName& name);
 };
 
 #endif  // guard

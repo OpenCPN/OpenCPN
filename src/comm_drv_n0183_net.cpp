@@ -164,11 +164,11 @@ void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
     // We notify based on Mnemonic only, ignoring the Talker ID
     identifier = full_sentence.substr(3, 3);
 
-    auto msg = std::make_unique<const Nmea0183Msg>(identifier, full_sentence);
+    auto msg = std::make_unique<const Nmea0183Msg>(identifier, full_sentence, GetAddress());
     m_listener.Notify(std::move(msg));
 
     // Also notify for "all" N0183 messages, to support plugin API
-    auto msg_all = std::make_unique<const Nmea0183Msg>("", full_sentence);
+    auto msg_all = std::make_unique<const Nmea0183Msg>("", full_sentence, GetAddress());
     m_listener.Notify(std::move(msg_all));
   }
 }

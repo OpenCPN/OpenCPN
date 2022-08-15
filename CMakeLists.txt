@@ -1799,12 +1799,14 @@ if (UNIX)
   endif ()
 endif (UNIX)
 
-add_subdirectory(test)
-add_custom_target(run-tests
-  COMMAND ctest
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-)
-add_dependencies(run-tests tests)
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.14)
+  add_subdirectory(test)
+  add_custom_target(run-tests
+    COMMAND ctest
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+  )
+  add_dependencies(run-tests tests)
+endif ()
 
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
