@@ -102,7 +102,7 @@ typedef struct {
   wxFont *key;
 } TexFontCache;
 
-#define TXF_CACHE 8
+#define CACHE 8
 static TexFontCache s_txf[TXF_CACHE];
 #endif
 
@@ -1315,8 +1315,6 @@ void s52plib::FlushSymbolCaches(void) {
     glDeleteLists(list, 1);
   }
   m_CARC_DL_hashmap.clear();
-#endif
-#endif
 
   // Flush all texFonts
   TexFont *f_cache = 0;
@@ -1328,6 +1326,9 @@ void s52plib::FlushSymbolCaches(void) {
       s_txf[i].key = 0;
     }
   }
+  
+#endif
+#endif
 }
 
 void s52plib::DestroyPattRules(RuleHash *rh) { DestroyRules(rh); }
