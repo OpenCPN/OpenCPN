@@ -25,7 +25,12 @@ add_executable(tests
 
 target_include_directories(
   tests
-  PRIVATE ${PROJECT_SOURCE_DIR}/../include ${CMAKE_BINARY_DIR}/include
+  PRIVATE
+  ${PROJECT_SOURCE_DIR}/../include
+  ${CMAKE_BINARY_DIR}/include
+  ${PROJECT_SOURCE_DIR}/../libs/sound/include
+  ${PROJECT_SOURCE_DIR}/../libs/sound/include
+  ${PROJECT_SOURCE_DIR}/../buildandroid/libcurl/include
 )
 
 target_link_libraries(tests PRIVATE ${wxWidgets_LIBRARIES})
