@@ -39,6 +39,7 @@ class ObservedEvt;
 
 wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
 
+/** Adds a std::shared<void> element to wxCommandEvent. */
 class ObservedEvt : public wxCommandEvent {
 public:
   ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)
@@ -102,11 +103,16 @@ public:
 
 protected:
   /**
-   * Notify all listeners: send them a 'type' wxCommandEvent message
+   * Notify all listeners: send them a 'type' ObservedEvt message
    * as defined by listen() with optional data available using GetString()
    * and/or GetClientData().
    */
-  const void notify(const std::string& s, void* client_data);
+  const void notify(std::shared_ptr<void> ptr, const std::string& s,
+                    int num, void* client_data);
+
+  const void notify(const std::string& s, void* client_data) {
+      notify(nullptr, s, 0, client_data);
+  }
 
 private:
   /** Set object to send ev_type to listener on variable changes. */

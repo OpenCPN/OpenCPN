@@ -84,12 +84,15 @@ bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   return true;
 }
 
-const void ObservedVar::notify(const std::string& s, void* client_data) {
+const void ObservedVar::notify(std::shared_ptr<void> ptr, const std::string& s,
+                              int num, void* client_data) {
   auto& listeners = singleton->listeners;
   for (auto l = listeners.begin(); l != listeners.end(); l++) {
     auto evt = new ObservedEvt(l->second);
+    evt->SetSharedPtr(ptr);
     evt->SetClientData(client_data);
     evt->SetString(s.c_str());  // Better safe than sorry: force a deep copy
+    evt->SetInt(num);
     wxQueueEvent(l->first, evt);
   }
 }
