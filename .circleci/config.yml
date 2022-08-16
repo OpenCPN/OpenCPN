@@ -88,11 +88,13 @@ workflows:
             branches:
               only:
                 - master
+                - comm
       - build-focal:
           filters:
             branches:
               only:
                 - master
+                - comm
       - build-flatpak:
           filters:
             branches:
@@ -104,8 +106,10 @@ workflows:
             branches:
               only:
                 - master
+                - comm
       - build-android-armhf:
           filters:
             branches:
               only:
                 - master
+                - comm
