@@ -31,8 +31,8 @@ wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
 
-wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
-wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
+wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
+wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
 
 std::string s_result;
 std::string s_result2;
@@ -52,9 +52,9 @@ public:
     Sink() {
       ObservableMsg observable("1234");
       listener = observable.GetListener(this, EVT_BAR);
-      Bind(EVT_BAR, [&](wxCommandEvent ev) {
-        auto msg = get_navmsg_ptr(ev);
-        auto n2000_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+      Bind(EVT_BAR, [&](ObservedEvt ev) {
+        auto msg = ev.GetSharedPtr();
+        auto n2000_msg = std::static_pointer_cast<const Nmea2000Msg>(msg);
         std::string s(n2000_msg->payload.begin(), n2000_msg->payload.end());
         s_result = s;
         s_bus = n2000_msg->bus;
@@ -104,9 +104,9 @@ public:
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
       listener = t.GetListener(EVT_FOO, this, n2k_msg);
 
-      Bind(EVT_FOO, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
         s_bus = n2k_msg->bus;
@@ -143,12 +143,12 @@ public:
       auto& t = NavMsgBus::GetInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
       listeners.push_back(t.GetListener(EVT_FOO, this, n2k_msg));
-      Bind(EVT_FOO, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
-        s_bus = message->bus;
+        s_bus = n2k_msg->bus;
       });
     }
     std::vector<ObservedVarListener> listeners;
@@ -220,9 +220,9 @@ public:
     auto driver =
         make_shared<FileCommDriver>("test-output.txt", path, msgbus);
     auto listener = msgbus.GetListener(EVT_FOO, this, Nmea0183Msg("GPGLL"));
-    Bind(EVT_FOO, [&log](wxCommandEvent ev) {
-      auto message = get_navmsg_ptr(ev);
-      auto n0183_msg = dynamic_pointer_cast<const Nmea0183Msg>(message);
+    Bind(EVT_FOO, [&log](ObservedEvt ev) {
+      auto ptr = ev.GetSharedPtr();
+      auto n0183_msg = static_pointer_cast<const Nmea0183Msg>(ptr);
       log.push_back(n0183_msg->to_string());
     });
     driver->Activate();

@@ -113,6 +113,7 @@ protected:
   const void notify(const std::string& s, void* client_data) {
       notify(nullptr, s, 0, client_data);
   }
+  const void notify(std::shared_ptr<const void> p) { notify(p, "", 0, 0); }
 
 private:
   /** Set object to send ev_type to listener on variable changes. */
