@@ -34,6 +34,28 @@
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);
 
+/* The event use by  notify/listen. */
+class ObservedEvt;
+
+wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
+
+class ObservedEvt : public wxCommandEvent {
+public:
+  ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)
+    : wxCommandEvent(commandType, id) {}
+  ObservedEvt(const ObservedEvt& event)
+    : wxCommandEvent(event) {this->m_shared_ptr = event.m_shared_ptr; }
+
+  wxEvent* Clone() const { return new ObservedEvt(*this); }
+
+  std::shared_ptr<void> GetSharedPtr() const { return m_shared_ptr; }
+
+  void SetSharedPtr(std::shared_ptr<void> p) { m_shared_ptr = p; }
+
+private:
+  std::shared_ptr<void> m_shared_ptr;
+};
+
 
 class ObservedVar;
 class ObservedVarListener;
@@ -91,7 +113,6 @@ private:
   void listen(wxEvtHandler* listener, wxEventType ev_type);
 
   ListenersByKey* const singleton;
-
 
   friend class ObservedVarListener;
 };
