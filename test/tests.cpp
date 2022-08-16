@@ -250,7 +250,7 @@ public:
 class SillyListener: public DriverListener {
 public:
   /** Handle a received message. */
-  virtual void Notify(std::unique_ptr<const NavMsg> message)  {
+  virtual void Notify(std::shared_ptr<const NavMsg> message)  {
     s_result2 = NavAddr::BusToString(message->bus);
 
     auto base_ptr = message.get();
