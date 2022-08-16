@@ -33,9 +33,6 @@
 #include "comm_navmsg_bus.h"
 
 
-/** Return the message pointer available in wxCommandEvent.GetClientData() */
-std::shared_ptr<const NavMsg> get_navmsg_ptr(wxCommandEvent ev);
-
 class ObservableMsg : public ObservedVar {
 public:
   ObservableMsg(const std::string key) : ObservedVar(key){};

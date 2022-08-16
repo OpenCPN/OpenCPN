@@ -180,10 +180,11 @@ public:
       auto& a = AppMsgBus::GetInstance();
       listener = a.GetListener(EVT_FOO, this, AppMsg::Type::GnssFix);
 
-      Bind(EVT_FOO, [&](wxCommandEvent ev) {
-        auto message = get_appmsg_ptr(ev);
-        std::cout << message->TypeToString(message->type) << "\n";
-        auto fix = std::dynamic_pointer_cast<const GnssFix>(message);
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto msg = std::static_pointer_cast<const AppMsg>(ptr);
+        std::cout << msg->TypeToString(msg->type) << "\n";
+        auto fix = std::static_pointer_cast<const GnssFix>(msg);
         if (fix == 0) {
           std::cerr << "Cannot cast pointer\n" << std::flush;
         } else {
