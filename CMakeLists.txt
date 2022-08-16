@@ -953,8 +953,6 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
-  ${CMAKE_SOURCE_DIR}/src/observable_msg.cpp
-  ${CMAKE_SOURCE_DIR}/src/observable_appmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp

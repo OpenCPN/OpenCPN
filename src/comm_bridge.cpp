@@ -186,6 +186,7 @@ void CommBridge::MakeHDTFromHDM() {
   }
 }
 
+// FIXME (leamas)  Move to some header, but which?
 template <typename T>
 std::shared_ptr<const T> UnpackEvtPointer(ObservedEvt ev) {
   return std::static_pointer_cast<const T>(ev.GetSharedPtr());

@@ -38,10 +38,9 @@ public:
   ObservableMsg(const std::string key) : ObservedVar(key){};
 
   /* Send message to all listeners. */
-  void notify(std::shared_ptr<const NavMsg> msg);
-
-protected:
-  void notify(NavMsg* msg);
+  void notify(std::shared_ptr<const NavMsg> msg) {
+    ObservedVar::notify(std::dynamic_pointer_cast<const void>(msg));
+  }
 };
 
 #endif  // OBSERVABLE_MSG_H
