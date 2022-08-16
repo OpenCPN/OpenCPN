@@ -35,7 +35,7 @@
 #include "ocpn_utils.h"
 
 class VoidDriverListener : public DriverListener {
-  virtual void Notify(std::unique_ptr<const NavMsg> message) {}
+  virtual void Notify(std::shared_ptr<const NavMsg> message) {}
   virtual void Notify(const AbstractCommDriver& driver) {}
 };
 
@@ -80,7 +80,7 @@ static vector<unsigned char> HexToChar(string hex) {
   return chars;
 }
 
-static unique_ptr<const NavMsg> LineToMessage(const string& line,
+static shared_ptr<const NavMsg> LineToMessage(const string& line,
                                               std::shared_ptr<NavAddr> src) {
   auto words = ocpn::split(line.c_str(), " ");
   NavAddr::Bus bus = NavAddr::StringToBus(words[0]);
@@ -89,21 +89,21 @@ static unique_ptr<const NavMsg> LineToMessage(const string& line,
       if (true) {  // Create a separate scope.
         N2kName name(N2kName::Parse(words[2]));
         vector<unsigned char> payload(HexToChar(words[3]));
-        return make_unique<Nmea2000Msg>(name, payload, src);
+        return make_shared<Nmea2000Msg>(name, payload, src);
       }
       break;
     case NavAddr::Bus::N0183:
       if (true) {  // Create a separate scope.
         const string id(words[2]);
-        return make_unique<Nmea0183Msg>(id, words[3], src);
+        return make_shared<Nmea0183Msg>(id, words[3], src);
       }
       break;
     default:
       std::cerr << "Cannot parse line: \"" << line << "\"\n" << flush;
-      return make_unique<NullNavMsg>();
+      return make_shared<NullNavMsg>();
       break;
   }
-  return make_unique<NullNavMsg>();  // for the compiler.
+  return make_shared<NullNavMsg>();  // for the compiler.
 }
 
 void FileCommDriver::Activate() {
@@ -113,7 +113,7 @@ void FileCommDriver::Activate() {
     string line;
     while (getline(f, line)) {
       auto msg = LineToMessage(line, GetAddress());
-      if (msg->bus != NavAddr::Bus::Undef) listener.Notify(move(msg));
+      if (msg->bus != NavAddr::Bus::Undef) listener.Notify(msg);
     }
   }
 }
