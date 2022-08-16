@@ -1439,7 +1439,7 @@ if (OCPN_USE_CURL)
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
     target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
+#    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -1800,12 +1800,15 @@ if (UNIX)
 endif (UNIX)
 
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.14)
-  add_subdirectory(test)
-  add_custom_target(run-tests
-    COMMAND ctest
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-  )
-  add_dependencies(run-tests tests)
+# FIXME (dave)
+  if (NOT QT_ANDROID)
+    add_subdirectory(test)
+    add_custom_target(run-tests
+      COMMAND ctest
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+    )
+    add_dependencies(run-tests tests)
+  endif (NOT QT_ANDROID)
 endif ()
 
 # If we build for windows systems, we also include the resource file containing

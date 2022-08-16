@@ -161,9 +161,9 @@ void RedirectIOToConsole();
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
-#endif
-
+#else
 #include "serial/serial.h"
+#endif
 
 static void UpdatePositionCalculatedSogCog();
 
@@ -1931,12 +1931,15 @@ bool MyApp::OnInit() {
       (g_AndroidVersionCode != androidGetVersionCode())) {
     // qDebug() << "Showing NavWarning";
     wxMilliSleep(500);
+    //FIXME (dave)  Move to frame
+/*
     if (wxID_CANCEL == ShowNavWarning()) {
       qDebug() << "Closing due to NavWarning Cancel";
       gFrame->Close();
       androidTerminate();
       return true;
     }
+*/
     n_NavMessageShown = 1;
   }
 

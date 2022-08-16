@@ -116,7 +116,7 @@
 #include "Layer.h"
 // #include "logger.h"
 #include "MarkInfo.h"
-// #include "MUIBar.h"
+#include "MUIBar.h"
 #include "multiplexer.h"
 #include "NavObjectCollection.h"
 #include "navutil.h"
@@ -183,9 +183,9 @@
 // #include "crashprint.h"
 // #endif
 //
-// #ifdef __OCPN__ANDROID__
-// #include "androidUTIL.h"
-// #endif
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
 //
 // #ifdef OCPN_USE_NEWSERIAL
 // #include "serial/serial.h"

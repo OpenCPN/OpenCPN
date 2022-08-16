@@ -44,7 +44,6 @@
 #include "dychart.h"
 #include "androidUTIL.h"
 #include "OCPN_DataStreamEvent.h"
-// #include "chart1.h"
 #include "AISTargetQueryDialog.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetListDialog.h"
@@ -80,6 +79,7 @@
 #include "SerialDataStream.h"
 #include "gui_lib.h"
 #include "AndroidSound.h"
+#include "idents.h"
 
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"

@@ -37,6 +37,7 @@
 #include "ocpn_plugin.h"
 #include "chcanv.h"
 #include "linmath.h"
+#include "ocpn_frame.h"
 
 #ifdef __MSVC__
 #include <windows.h>
