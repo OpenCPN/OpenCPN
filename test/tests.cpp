@@ -15,7 +15,8 @@
 #include "comm_appmsg_bus.h"
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
-#include "observable_msg.h"
+#include "observable_navmsg.h"
+#include "observable_confvar.h"
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;

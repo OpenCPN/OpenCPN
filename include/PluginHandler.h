@@ -68,7 +68,7 @@
 #include <archive.h>
 
 #include "catalog_parser.h"
-#include "observable.h"
+#include "observable_evtvar.h"
 
 bool isRegularFile(const char* path);
 

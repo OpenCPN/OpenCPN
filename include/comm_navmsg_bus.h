@@ -34,7 +34,7 @@
 #include <wx/jsonreader.h>
 
 #include "comm_driver.h"
-#include "observable_msg.h"
+#include "observable_navmsg.h"
 
 #ifndef _NAVMSG_BUS_H__
 #define _NAVMSG_BUS_H__

@@ -36,17 +36,6 @@ std::string ptr_key(const void* ptr) {
   return oss.str();
 }
 
-/**
- * Add >> support for wxString, for some reason missing in wxWidgets 3.0,
- * required by ConfigVar::get()
- */
-std::istream& operator>>(std::istream& input, wxString& ws) {
-  std::string s;
-  input >> s;
-  ws.Append(s);
-  return input;
-}
-
 /* ListenersByKey implementation. */
 
 ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
@@ -106,56 +95,27 @@ Listener ObservedVar::GetListener(wxEvtHandler* eh, wxEventType ev) {
   return Listener(this, eh, ev);
 }
 
+/* ObservedVarListener implementation. */
 
-/* EventVar implementation. */
-
-std::string EventVar::autokey() {
-  static  std::atomic<unsigned long> last_ix(0);
-  return std::string("!@%/+") + std::to_string(last_ix++);
-}
-
-
-/* ConfigVar implementation. */
-
-template <typename T>
-ConfigVar<T>::ConfigVar(const std::string& section_, const std::string& key_,
-                        wxConfigBase* cb)
-    : ObservedVar(section_ + "/" + key_),
-      section(section_),
-      key(key_),
-      config(cb) {}
-
-template <typename T>
-const T ConfigVar<T>::get(const T& default_val) {
-  std::istringstream iss;
-  config->SetPath(section);
-  auto value = config->Read(key, "").ToStdString();
-  iss.str(value);
-  T r;
-  iss >> r;
-  return iss.fail() ? default_val : r;
-}
-
-template <typename T>
-void ConfigVar<T>::set(const T& arg) {
-  std::ostringstream oss;
-  oss << arg;
-  if (oss.fail()) {
-    wxLogWarning("Cannot dump failed buffer for key %s:%s", section.c_str(),
-                 key.c_str());
-    return;
+void ObservedVarListener::listen() {
+  if (key != "") {
+    assert(listener);
+    ObservedVar var(key);
+    var.listen(listener, ev_type);
   }
-  config->SetPath(section);
-  if (!config->Write(key.c_str(), oss.str().c_str())) {
-    wxLogWarning("Error writing buffer to key %s:%s", section.c_str(),
-                 key.c_str());
-  }
-  ObservedVar::notify();
 }
 
-/* Explicitly instantiate the ConfigVar types supported. */
-template class ConfigVar<bool>;
-template class ConfigVar<double>;
-template class ConfigVar<int>;
-template class ConfigVar<std::string>;
-template class ConfigVar<wxString>;
+void ObservedVarListener::unlisten() {
+  if (key != "") {
+    assert(listener);
+    ObservedVar var(key);
+    var.unlisten(listener, ev_type);
+  }
+}
+
+void ObservedVarListener::copy(const ObservedVarListener& other) {
+  listener = other.listener;
+  key = other.key;
+  ev_type = other.ev_type;
+  listen();
+}

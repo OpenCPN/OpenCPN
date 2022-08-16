@@ -28,13 +28,12 @@
 #include <string>
 #include <vector>
 
-#include <wx/config.h>
 #include <wx/event.h>
 
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);
 
-/* The event use by  notify/listen. */
+/** The event used by notify/listen. */
 class ObservedEvt;
 
 wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
@@ -60,7 +59,6 @@ private:
 
 class ObservedVar;
 class ObservedVarListener;
-
 
 /**
  *  Private helper class. Basically a singleton map of listeners where
@@ -133,7 +131,6 @@ private:
  */
 class ObservedVarListener final {
 public:
-
   /** Default constructor, does not listen to anything. */
   ObservedVarListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
 
@@ -151,187 +148,13 @@ public:
   }
 
 private:
-  void listen() {
-    if (key != "") {
-      assert(listener);
-      ObservedVar var(key);
-      var.listen(listener, ev_type);
-    }
-  }
-
-  void unlisten() {
-    if (key != "") {
-      assert(listener);
-      ObservedVar var(key);
-      var.unlisten(listener, ev_type);
-    }
-  }
-
-  void copy(const ObservedVarListener& other) {
-    listener = other.listener;
-    key = other.key;
-    ev_type = other.ev_type;
-    listen();
-  }
+  void listen();
+  void unlisten();
+  void copy(const ObservedVarListener& other);
 
   std::string key;
   wxEvtHandler* listener;
   wxEventType ev_type;
-};
-
-
-/**
- * Generic event handling between MVC Model and Controller based on a
- * shared EventVar variable
- *
- *  Model usage:
- *
- *   class Model: ...
- *   public:
- *     EventVar change;
- *
- *     void some_method() {
- *       ...
- *       change.notify("new value")
- *     }
- *
- *  Controller/GUI usage:
- *
- *    class Gui: public wxEvtHandler {
- *    public:
- *      Gui:Gui(Model& model) {
- *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        change_listener = model.change.GetListener(this, EVT_FOO);
- *        Bind(EVT_FOO, [&](wxCommandEvent ev) {
- *          auto s = ev.GetString();    s -> "new value"
- *          ... do something;
- *        });
- *      }
- *
- *    private:
- *      ObservedVarListener change_listener;
- *    }
- */
-class EventVar : public ObservedVar {
-public:
-  EventVar() : ObservedVar(autokey()) {}
-
-  /** Notify all listeners, no data supplied. */
-  const void notify() { ObservedVar::notify("", 0); }
-
-  /** Notify all listeners about variable change with ClientData. */
-  const void notify(void* data) { ObservedVar::notify("", data); }
-
-  /** Notify all listeners about variable change with a string. */
-  const void notify(const std::string& s) { ObservedVar::notify(s, 0); }
-
-private:
-  std::string autokey();
-};
-
-
-/**
- *  Wrapper for configuration variables which lives in a wxBaseConfig
- *  object. Supports int, bool, double, std::string and wxString. Besides
- *  basic set()/get() also provides notification events when value changes.
- *
- *  Client usage when reading, setting a value and notifying listeners:
- *
- *    ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
- *    bool old_value = expert.get(false);
- *    expert.set(false);
- *
- *  Client usage, listening to value changes.
- *
- *    class Foo: public wxEventHandler {
- *    public:
- *      Foo(...) {
- *        ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
- *
- *        // expert sends a wxCommandEvent of type EVT_FOO to this on changes:
- *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        expert_listener = expert.GetListener(this, EVT_FOO);
- *
- *        // Handle  EVT_FOO as any event when it arrives, for example:
- *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });
- *        ...
- *      }
- *    private:
- *      ObservedVarListener expert_listener;
- *      ...
- *    }
- *
- */
-template <typename T = std::string>
-class ConfigVar : public ObservedVar {
-public:
-  ConfigVar(const std::string& section_, const std::string& key_,
-            wxConfigBase* cb);
-
-  void set(const T& arg);
-
-  const T get(const T& default_val);
-
-private:
-  ConfigVar();  // not implemented
-
-  const std::string section;
-  const std::string key;
-  wxConfigBase* const config;
-};
-
-
-/**
- *  Wrapper for global variable, supports notification events when value
- *  changes.
- *
- *  Client usage, writing a value + notifying listeners:
- *
- *    GlobalVar<wxString> compat_os(&g_compatOS);
- *    compat_os.set("ubuntu-gtk3-x86_64");
- *
- *  Client usage, modifying a value + notifying listeners:
- *
- *    GlobalVar<wxString> plugin_array_var(&plugin_array);
- *    plugin_array.Add(new_pic);
- *    plugin_array_var.notify();
- *
- *  Client usage, listening to value changes:
- *
- *    class Foo: public wxEvtHandler {
- *    public:
- *      Foo(...) {
- *        GlobalVar<wxString> compat_os(&g_compatOS);
- *
- *        // compat_os sends a wxCommandEvent type EVT_FOO to this on changes:
- *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        compat_os_listener = compat_os.GetListener(this, EVT_FOO);)
- *
- *        // Handle  EVT_FOO as any event when it arrives, for example:
- *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });
- *        ...
- *      }
- *    private:
- *      ObservedVarListener compat_os_listener;
- *      ...
- *    }
- */
-template <typename T>
-class GlobalVar : public ObservedVar {
-public:
-  GlobalVar(T* ptr) : ObservedVar(ptr_key(ptr)), variable(ptr) {}
-
-  void set(const T& arg) {
-    *variable = arg;
-    ObservedVar::notify();
-  }
-
-  const T get() { return *variable; }
-
-private:
-  GlobalVar();  // not implemented
-
-  T* const variable;
 };
 
 #endif  // OBSERVABLE_H

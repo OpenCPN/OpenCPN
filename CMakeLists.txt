@@ -863,8 +863,10 @@ set(
   include/NetworkDataStream.h
   include/NMEALogWindow.h
   include/observable.h
+  include/observable_confvar.h
+  include/observable_globvar.h
   include/observable_appmsg.h
-  include/observable_msg.h
+  include/observable_navmsg.h
   include/ocpCursor.h
   include/OCP_DataStreamInput_Thread.h
   include/OCPN_DataStreamEvent.h
@@ -953,6 +955,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
+  ${CMAKE_SOURCE_DIR}/src/observable_confvar.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp

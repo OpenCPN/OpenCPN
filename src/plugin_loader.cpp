@@ -60,6 +60,8 @@
 #include "BasePlatform.h"
 #include "ocpn_utils.h"
 #include "logger.h"
+#include "observable_confvar.h"
+#include "observable_evtvar.h"
 #include "plugin_cache.h"
 #include "PluginHandler.h"
 #include "PluginPaths.h"
