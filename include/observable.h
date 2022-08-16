@@ -49,12 +49,12 @@ public:
 
   wxEvent* Clone() const { return new ObservedEvt(*this); }
 
-  std::shared_ptr<void> GetSharedPtr() const { return m_shared_ptr; }
+  std::shared_ptr<const void> GetSharedPtr() const { return m_shared_ptr; }
 
-  void SetSharedPtr(std::shared_ptr<void> p) { m_shared_ptr = p; }
+  void SetSharedPtr(std::shared_ptr<const void> p) { m_shared_ptr = p; }
 
 private:
-  std::shared_ptr<void> m_shared_ptr;
+  std::shared_ptr<const void> m_shared_ptr;
 };
 
 
@@ -107,7 +107,7 @@ protected:
    * as defined by listen() with optional data available using GetString()
    * and/or GetClientData().
    */
-  const void notify(std::shared_ptr<void> ptr, const std::string& s,
+  const void notify(std::shared_ptr<const void> ptr, const std::string& s,
                     int num, void* client_data);
 
   const void notify(const std::string& s, void* client_data) {
