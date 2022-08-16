@@ -117,13 +117,13 @@ wxString GetShipNameFromFile(int);
 
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-wxDEFINE_EVENT(EVT_N0183_VDO, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_VDM, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_FRPOS, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_CD, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_TLL, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_TTM, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_OSD, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_FRPOS, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_CD, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_TLL, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_TTM, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_OSD, ObservedEvt);
 
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
 EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
@@ -275,9 +275,9 @@ void AIS_Decoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_VDM("VDM");
   listener_N0183_VDM = msgbus.GetListener(EVT_N0183_VDM, this, n0183_msg_VDM);
 
-  Bind(EVT_N0183_VDM, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+  Bind(EVT_N0183_VDM, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
 
@@ -285,9 +285,9 @@ void AIS_Decoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_FRPOS("FRPOS");
   listener_N0183_FRPOS = msgbus.GetListener(EVT_N0183_FRPOS, this, n0183_msg_FRPOS);
 
-  Bind(EVT_N0183_FRPOS, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+  Bind(EVT_N0183_FRPOS, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
 
@@ -295,9 +295,9 @@ void AIS_Decoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_CD("CD ");
   listener_N0183_CD = msgbus.GetListener(EVT_N0183_CD, this, n0183_msg_CD);
 
-  Bind(EVT_N0183_CD, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+  Bind(EVT_N0183_CD, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
 
@@ -305,9 +305,9 @@ void AIS_Decoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_TLL("TLL");
   listener_N0183_TLL = msgbus.GetListener(EVT_N0183_TLL, this, n0183_msg_TLL);
 
-  Bind(EVT_N0183_TLL, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+  Bind(EVT_N0183_TLL, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
 
@@ -315,9 +315,9 @@ void AIS_Decoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_TTM("TTM");
   listener_N0183_TTM = msgbus.GetListener(EVT_N0183_TTM, this, n0183_msg_TTM);
 
-  Bind(EVT_N0183_TTM, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+  Bind(EVT_N0183_TTM, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
 
@@ -325,9 +325,9 @@ void AIS_Decoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_OSD("OSD");
   listener_N0183_OSD = msgbus.GetListener(EVT_N0183_OSD, this, n0183_msg_OSD);
 
-  Bind(EVT_N0183_OSD, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
+  Bind(EVT_N0183_OSD, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
 }
