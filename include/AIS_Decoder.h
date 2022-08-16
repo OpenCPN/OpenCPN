@@ -31,7 +31,7 @@
 #include <unordered_map>
 #include "OCPN_DataStreamEvent.h"
 #include "comm_navmsg.h"
-#include "observable_msg.h"
+#include "observable_navmsg.h"
 
 #define TRACKTYPE_DEFAULT 0
 #define TRACKTYPE_ALWAYS 1

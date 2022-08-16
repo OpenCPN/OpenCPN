@@ -35,7 +35,7 @@
 #include "config.h"
 
 #include "catalog_parser.h"
-#include "observable.h"
+#include "observable_evtvar.h"
 #include "ocpn_plugin.h"
 #include "semantic_vers.h"
 

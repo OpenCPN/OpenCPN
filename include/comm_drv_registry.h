@@ -27,6 +27,7 @@
 #define _COMMDRIVERREGISTRY_H__
 
 #include "comm_driver.h"
+#include "observable_evtvar.h"
 
 class ConnectionParams;
 

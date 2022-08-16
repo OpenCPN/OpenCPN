@@ -123,7 +123,7 @@ extern GLuint g_raster_format;
 #include "ConfigMgr.h"
 
 #include "SignalKDataStream.h"
-#include "observable.h"
+#include "observable_globvar.h"
 #include "ser_ports.h"
 #include "svg_utils.h"
 
