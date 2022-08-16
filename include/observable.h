@@ -67,16 +67,19 @@ class ObservedVarListener;
  *  singletons are managed by key, one for each key value.
  */
 class ListenersByKey {
+public:
+  ListenersByKey() {}
 
 private:
-  static ListenersByKey* getInstance(const std::string& key);
-  std::vector<std::pair<wxEvtHandler*, wxEventType>>  listeners;
+  static ListenersByKey& getInstance(const std::string& key);
 
-  ListenersByKey() {}
   ListenersByKey(const ListenersByKey&) = delete;
-  void operator=(const ListenersByKey&) = delete;
+  ListenersByKey& operator=(const ListenersByKey&) = default;
 
-  friend class ObservedVar;
+  std::vector<std::pair<wxEvtHandler*, wxEventType>> listeners;
+
+friend class ObservedVar;
+friend ListenersByKey& getInstance(const std::string& key);
 };
 
 
@@ -119,7 +122,7 @@ private:
   /** Set object to send ev_type to listener on variable changes. */
   void listen(wxEvtHandler* listener, wxEventType ev_type);
 
-  ListenersByKey* const singleton;
+  ListenersByKey& singleton;
 
   friend class ObservedVarListener;
 };

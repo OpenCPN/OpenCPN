@@ -49,11 +49,11 @@ std::istream& operator>>(std::istream& input, wxString& ws) {
 
 /* ListenersByKey implementation. */
 
-ListenersByKey* ListenersByKey::getInstance(const std::string& key) {
-  static std::unordered_map<std::string, ListenersByKey*> instances;
+ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
+  static std::unordered_map<std::string, ListenersByKey> instances;
 
   if (instances.find(key) == instances.end()) {
-    instances[key] = new ListenersByKey();
+    instances[key] = ListenersByKey();
   }
   return instances[key];
 }
@@ -64,18 +64,18 @@ ListenersByKey* ListenersByKey::getInstance(const std::string& key) {
 using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
 void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
-  const auto& listeners = singleton->listeners;
+  const auto& listeners = singleton.listeners;
   ev_pair keys(listener, ev_type);
   auto found = std::find(listeners.begin(), listeners.end(), keys);
   if (found != listeners.end()) {
       wxLogWarning("Duplicate listener, key: %s, listener: %s, ev_type: %d",
                    key, ptr_key(listener), ev_type);
   }
-  singleton->listeners.push_back(ev_pair(listener, ev_type));
+  singleton.listeners.push_back(ev_pair(listener, ev_type));
 }
 
 bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
-  auto& listeners = singleton->listeners;
+  auto& listeners = singleton.listeners;
 
   ev_pair keys(listener, ev_type);
   auto found = std::find(listeners.begin(), listeners.end(), keys);
@@ -87,7 +87,7 @@ bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
 const void ObservedVar::notify(std::shared_ptr<const void> ptr,
                                const std::string& s, int num,
                                void* client_data) {
-  auto& listeners = singleton->listeners;
+  auto& listeners = singleton.listeners;
   for (auto l = listeners.begin(); l != listeners.end(); l++) {
     auto evt = new ObservedEvt(l->second);
     evt->SetSharedPtr(ptr);
