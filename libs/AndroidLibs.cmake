@@ -34,7 +34,7 @@ if (NOT EXISTS ${_master_base})
 endif ()
 
 # testing
-set(_master_base "/home/dsr/Projects/OCPNAndroidCoreBuildSupport")
+#set(_master_base "/home/dsr/Projects/OCPNAndroidCoreBuildSupport")
 
 # Setup directories and libraries
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
@@ -57,6 +57,8 @@ else ()
   set(Qt_Base ${_master_base}/qt5)
   set(Qt_Build build_arm32_19_O3/qtbase)
 endif ()
+
+message(STATUS "Android Build wx include directories: support file base:  ${_wx_setup}")
 
 include_directories(
   ${_qt_include}
