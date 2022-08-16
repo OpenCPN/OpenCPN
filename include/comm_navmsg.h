@@ -187,7 +187,7 @@ public:
   Nmea0183Msg(const std::string& _id)
       : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone())),
       id(_id) {}
-  Nmea0183Msg(const std::string _id, const std::string _payload,
+  Nmea0183Msg(const std::string& _id, const std::string& _payload,
               std::shared_ptr<NavAddr> src)
      : NavMsg(NavAddr::Bus::N0183, src), id(_id), payload(_payload) {}
 
