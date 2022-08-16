@@ -62,6 +62,7 @@ extern bool g_bSatValid;
 extern bool g_bHDT_Rx, g_bVAR_Rx;
 extern double g_UserVar;
 extern int gps_watchdog_timeout_ticks;
+extern int sat_watchdog_timeout_ticks;
 
 // CommBridge implementation
 
@@ -128,14 +129,6 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     printf("Position dog timeout\n");
     printf("Shifting to priority %d\n", active_priority_position.active_priority);
   }
-
-  //  Update and check watchdog timer for Mag Heading data source
-//   m_watchdogs.hdx_watchdog--;
-//   if (m_watchdogs.hdx_watchdog <= 0) {
-//     gHdm = NAN;
-//     if (g_nNMEADebug && (m_watchdogs.hdx_watchdog == 0))
-//       wxLogMessage(_T("   ***HDx Watchdog timeout..."));
-//   }
 
   //  Update and check watchdog timer for True Heading data source
   m_watchdogs.heading_watchdog--;
@@ -253,7 +246,7 @@ void CommBridge::InitCommListeners() {
   Bind(EVT_N0183_HDM, [&](wxCommandEvent ev) {
     auto message = get_navmsg_ptr(ev);
     auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    //HandleN0183_HDM(n0183_msg);
+    HandleN0183_HDM(n0183_msg);
   });
 
   // VTG
@@ -263,7 +256,7 @@ void CommBridge::InitCommListeners() {
   Bind(EVT_N0183_VTG, [&](wxCommandEvent ev) {
     auto message = get_navmsg_ptr(ev);
     auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    //HandleN0183_VTG(n0183_msg);
+    HandleN0183_VTG(n0183_msg);
   });
 
   // GSV
@@ -385,18 +378,21 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   if (!m_decoder.DecodeRMC(str, temp_data))
     return false;
 
+  printf("<position>\n");
   if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
     gLat = temp_data.gLat;
     gLon = temp_data.gLon;
     m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
   }
 
+  printf("<velocity>\n");
   if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
     gSog = temp_data.gSog;
     gCog = temp_data.gCog;
     m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
   }
 
+  printf("<variation>\n");
   if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
     gVar = temp_data.gVar;
     m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
@@ -409,6 +405,7 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Notify the AppMsgBus of new data available
   auto& msgbus = AppMsgBus::GetInstance();
   msgbus.Notify(std::move(msg));
+  printf("\n");
 
   return true;
 }
@@ -496,7 +493,8 @@ bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   NavData temp_data;
   if (!m_decoder.DecodeVTG(str, temp_data)) return false;
 
-  if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
+    printf("<velocity>\n");
+    if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
     gSog = temp_data.gSog;
     gCog = temp_data.gCog;
     m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
@@ -509,7 +507,7 @@ bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Notify the AppMsgBus of new data available
   auto& msgbus = AppMsgBus::GetInstance();
   msgbus.Notify(std::move(msg));
-
+  printf("\n");
   return true;
 }
 
@@ -517,6 +515,13 @@ bool CommBridge::HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
   if (!m_decoder.DecodeGSV(str, temp_data)) return false;
+
+  if (EvalPriority(n0183_msg, active_priority_satellites, priority_map_satellites)) {
+    g_SatsInView = temp_data.n_satellites;
+    g_bSatValid = true;
+
+    m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+  }
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -538,6 +543,13 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
      gLat = temp_data.gLat;
      gLon = temp_data.gLon;
      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+  }
+
+  if (EvalPriority(n0183_msg, active_priority_satellites, priority_map_satellites)) {
+    g_SatsInView = temp_data.n_satellites;
+    g_bSatValid = true;
+
+    m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
   }
 
   // Populate a comm_appmsg with current global values
@@ -629,6 +641,7 @@ void CommBridge::InitializePriorityContainers(){
   active_priority_velocity.active_priority = 0;
   active_priority_heading.active_priority = 0;
   active_priority_variation.active_priority = 0;
+  active_priority_satellites.active_priority = 0;
 }
 
 bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
@@ -666,6 +679,9 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
 
   this_priority = priority_map[this_key];
 
+  for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
+        printf("               priority_map:  %s  %d\n", it->first.c_str(), it->second);
+  }
 
   //Incoming message priority lower than currently active priority?
   //  If so, drop the message
@@ -723,6 +739,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
           }
 
           priority_map[this_key] = lowest_priority + 1;
+          printf("          Lowering priority: %s :%d\n", source.c_str(), priority_map[this_key]);
 
           return false;
         }
@@ -747,6 +764,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
           }
 
           priority_map[this_key] = lowest_priority + 1;
+          printf("          Lowering priority: %s :%d\n", source.c_str(), priority_map[this_key]);
 
           return false;
         }

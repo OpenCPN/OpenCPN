@@ -103,11 +103,13 @@ public:
   PriorityContainer active_priority_velocity;
   PriorityContainer active_priority_heading;
   PriorityContainer active_priority_variation;
+  PriorityContainer active_priority_satellites;
 
   std::unordered_map<std::string, int> priority_map_position;
   std::unordered_map<std::string, int> priority_map_velocity;
   std::unordered_map<std::string, int> priority_map_heading;
   std::unordered_map<std::string, int> priority_map_variation;
+  std::unordered_map<std::string, int> priority_map_satellites;
 
   DECLARE_EVENT_TABLE()
 };

@@ -42,6 +42,7 @@ typedef struct{
   double gHdt;
   double gHdm;
   double gVar;
+  int n_satellites;
 } NavData;
 
 class CommDecoder {

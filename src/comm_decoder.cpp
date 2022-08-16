@@ -218,6 +218,9 @@ bool CommDecoder::DecodeGSV(std::string s, NavData& temp_data) {
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
 
+  if (m_NMEA0183.Gsv.MessageNumber == 1)
+    temp_data.n_satellites = m_NMEA0183.Gsv.SatsInView;
+
   // Fixme (dave)
   //   if (g_priSats >= 4) {
   //     if (m_NMEA0183.Gsv.MessageNumber == 1) {
@@ -246,11 +249,8 @@ bool CommDecoder::DecodeGGA(std::string s, NavData& temp_data) {
     } else
       return false;
 
-    // FIXME (dave)
-    //     if (g_priSats >= 1) {
-    //       setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
-    //       g_priSats = 1;
-    //     }
+    temp_data.n_satellites = m_NMEA0183.Gga.NumberOfSatellitesInUse;
+
   } else
     return false;
 
