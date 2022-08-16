@@ -1,9 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Container  which carries a shared_ptr through wxWidgets event
- *           handling which only allows simple objects which can be represented
- *           by a void*.
+ * Purpose:  notify()/listen() interface class for raw NavMsg messages.
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -25,30 +23,24 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _COMM_POINTER_MSG_H__
-#define _COMM_POINTER_MSG_H__
+
+#ifndef _OBSERVABLE_MSG_H
+#define _OBSERVABLE_MSG_H
 
 #include <memory>
 
-#include "wx/event.h"
+#include <wx/event.h>
+#include "comm_navmsg_bus.h"
 
-template <typename T>
-class PointerMsg {
+
+class ObservableMsg : public ObservedVar {
 public:
-  PointerMsg(std::shared_ptr<T> p) : ptr(p){};
+  ObservableMsg(const std::string key) : ObservedVar(key){};
 
-  /** Retrieve the pointer contained in an instance and delete instance. */
-  static std::shared_ptr<T> get_pointer(wxCommandEvent ev) {
-    auto msg = static_cast<PointerMsg<T>*>(ev.GetClientData());
-    auto ptr = std::move(msg->ptr);
-    delete msg;
-    return ptr;
-  };
-
-private:
-  PointerMsg() = delete;
-  std::shared_ptr<T> operator=(std::shared_ptr<T>&) = delete;
-  std::shared_ptr<T> ptr;
+  /* Send message to all listeners. */
+  void notify(std::shared_ptr<const NavMsg> msg) {
+    ObservedVar::notify(std::dynamic_pointer_cast<const void>(msg));
+  }
 };
 
-#endif  // _COMM_POINTER_MSG_H__
+#endif  // OBSERVABLE_MSG_H

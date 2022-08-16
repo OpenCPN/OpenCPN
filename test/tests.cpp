@@ -15,7 +15,8 @@
 #include "comm_appmsg_bus.h"
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
-#include "observable_msg.h"
+#include "observable_navmsg.h"
+#include "observable_confvar.h"
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -31,8 +32,8 @@ wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
 
-wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
-wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
+wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
+wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
 
 std::string s_result;
 std::string s_result2;
@@ -52,9 +53,9 @@ public:
     Sink() {
       ObservableMsg observable("1234");
       listener = observable.GetListener(this, EVT_BAR);
-      Bind(EVT_BAR, [&](wxCommandEvent ev) {
-        auto msg = get_navmsg_ptr(ev);
-        auto n2000_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+      Bind(EVT_BAR, [&](ObservedEvt ev) {
+        auto msg = ev.GetSharedPtr();
+        auto n2000_msg = std::static_pointer_cast<const Nmea2000Msg>(msg);
         std::string s(n2000_msg->payload.begin(), n2000_msg->payload.end());
         s_result = s;
         s_bus = n2000_msg->bus;
@@ -104,9 +105,9 @@ public:
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
       listener = t.GetListener(EVT_FOO, this, n2k_msg);
 
-      Bind(EVT_FOO, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
         s_bus = n2k_msg->bus;
@@ -143,12 +144,12 @@ public:
       auto& t = NavMsgBus::GetInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
       listeners.push_back(t.GetListener(EVT_FOO, this, n2k_msg));
-      Bind(EVT_FOO, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
-        s_bus = message->bus;
+        s_bus = n2k_msg->bus;
       });
     }
     std::vector<ObservedVarListener> listeners;
@@ -180,10 +181,11 @@ public:
       auto& a = AppMsgBus::GetInstance();
       listener = a.GetListener(EVT_FOO, this, AppMsg::Type::GnssFix);
 
-      Bind(EVT_FOO, [&](wxCommandEvent ev) {
-        auto message = get_appmsg_ptr(ev);
-        std::cout << message->TypeToString(message->type) << "\n";
-        auto fix = std::dynamic_pointer_cast<const GnssFix>(message);
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto msg = std::static_pointer_cast<const AppMsg>(ptr);
+        std::cout << msg->TypeToString(msg->type) << "\n";
+        auto fix = std::static_pointer_cast<const GnssFix>(msg);
         if (fix == 0) {
           std::cerr << "Cannot cast pointer\n" << std::flush;
         } else {
@@ -220,9 +222,9 @@ public:
     auto driver =
         make_shared<FileCommDriver>("test-output.txt", path, msgbus);
     auto listener = msgbus.GetListener(EVT_FOO, this, Nmea0183Msg("GPGLL"));
-    Bind(EVT_FOO, [&log](wxCommandEvent ev) {
-      auto message = get_navmsg_ptr(ev);
-      auto n0183_msg = dynamic_pointer_cast<const Nmea0183Msg>(message);
+    Bind(EVT_FOO, [&log](ObservedEvt ev) {
+      auto ptr = ev.GetSharedPtr();
+      auto n0183_msg = static_pointer_cast<const Nmea0183Msg>(ptr);
       log.push_back(n0183_msg->to_string());
     });
     driver->Activate();
@@ -250,7 +252,7 @@ public:
 class SillyListener: public DriverListener {
 public:
   /** Handle a received message. */
-  virtual void Notify(std::unique_ptr<const NavMsg> message)  {
+  virtual void Notify(std::shared_ptr<const NavMsg> message)  {
     s_result2 = NavAddr::BusToString(message->bus);
 
     auto base_ptr = message.get();

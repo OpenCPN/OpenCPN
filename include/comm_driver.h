@@ -46,7 +46,7 @@ class AbstractCommDriver;  // forward
 class DriverListener {
 public:
   /** Handle a received message. */
-  virtual void Notify(std::unique_ptr<const NavMsg> message) = 0;
+  virtual void Notify(std::shared_ptr<const NavMsg> message) = 0;
 
   /** Handle driver status change. */
   virtual void Notify(const AbstractCommDriver& driver) = 0;

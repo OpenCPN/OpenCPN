@@ -44,7 +44,7 @@
 // #include "chartdbs.h"
 #include "s52s57.h"
 #include "SencManager.h"
-#include "observable_msg.h"
+#include "observable_navmsg.h"
 #include "SignalKEventHandler.h"
 #include "comm_appmsg_bus.h"
 #include "bbox.h"

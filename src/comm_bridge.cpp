@@ -41,18 +41,18 @@
 // #include "comm_drv_registry.h"
 
 //  comm event definitions
-wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N2K_129026, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
 
-wxDEFINE_EVENT(EVT_N0183_RMC, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_HDT, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_HDG, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_HDM, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_VTG, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_GSV, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_GGA, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_GLL, wxCommandEvent);
-wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_RMC, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_HDT, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_HDG, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_HDM, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_VTG, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_GSV, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_GGA, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_GLL, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_AIVDO, ObservedEvt);
 
 extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 extern wxString gRmcDate, gRmcTime;
@@ -179,6 +179,13 @@ void CommBridge::MakeHDTFromHDM() {
   }
 }
 
+// FIXME (leamas)  Move to some header, but which?
+template <typename T>
+std::shared_ptr<const T> UnpackEvtPointer(ObservedEvt ev) {
+  return std::static_pointer_cast<const T>(ev.GetSharedPtr());
+}
+
+
 void CommBridge::InitCommListeners() {
   // Initialize the comm listeners
 
@@ -191,10 +198,8 @@ void CommBridge::InitCommListeners() {
   listener_N2K_129029 =
       msgbus.GetListener(EVT_N2K_129029, this, n2k_msg_129029);
 
-  Bind(EVT_N2K_129029, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
-    HandleN2K_129029(n2k_msg);
+  Bind(EVT_N2K_129029, [&](ObservedEvt ev) {
+    HandleN2K_129029(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // COG SOG rapid   PGN 129026
@@ -202,10 +207,8 @@ void CommBridge::InitCommListeners() {
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
   listener_N2K_129026 =
       msgbus.GetListener(EVT_N2K_129026, this, n2k_msg_129026);
-  Bind(EVT_N2K_129026, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n2k_msg = std::dynamic_pointer_cast<const Nmea2000Msg>(message);
-    HandleN2K_129026(n2k_msg);
+  Bind(EVT_N2K_129026, [&](ObservedEvt ev) {
+    HandleN2K_129026(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // NMEA0183
@@ -213,80 +216,64 @@ void CommBridge::InitCommListeners() {
   Nmea0183Msg n0183_msg_RMC("RMC");
   listener_N0183_RMC = msgbus.GetListener(EVT_N0183_RMC, this, n0183_msg_RMC);
 
-  Bind(EVT_N0183_RMC, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_RMC(n0183_msg);
+  Bind(EVT_N0183_RMC, [&](ObservedEvt ev) {
+    HandleN0183_RMC(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDT
   Nmea0183Msg n0183_msg_HDT("HDT");
   listener_N0183_HDT = msgbus.GetListener(EVT_N0183_HDT, this, n0183_msg_HDT);
 
-  Bind(EVT_N0183_HDT, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_HDT(n0183_msg);
+  Bind(EVT_N0183_HDT, [&](ObservedEvt ev) {
+    HandleN0183_HDT(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDG
   Nmea0183Msg n0183_msg_HDG("HDG");
   listener_N0183_HDG = msgbus.GetListener(EVT_N0183_HDG, this, n0183_msg_HDG);
 
-  Bind(EVT_N0183_HDG, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_HDG(n0183_msg);
+  Bind(EVT_N0183_HDG, [&](ObservedEvt ev) {
+    HandleN0183_HDG(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDM
   Nmea0183Msg n0183_msg_HDM("HDM");
   listener_N0183_HDM = msgbus.GetListener(EVT_N0183_HDM, this, n0183_msg_HDM);
 
-  Bind(EVT_N0183_HDM, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_HDM(n0183_msg);
+  Bind(EVT_N0183_HDM, [&](ObservedEvt ev) {
+    HandleN0183_HDM(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // VTG
   Nmea0183Msg n0183_msg_VTG("VTG");
   listener_N0183_VTG = msgbus.GetListener(EVT_N0183_VTG, this, n0183_msg_VTG);
 
-  Bind(EVT_N0183_VTG, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_VTG(n0183_msg);
+  Bind(EVT_N0183_VTG, [&](ObservedEvt ev) {
+    HandleN0183_VTG(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GSV
   Nmea0183Msg n0183_msg_GSV("GSV");
   listener_N0183_GSV = msgbus.GetListener(EVT_N0183_GSV, this, n0183_msg_GSV);
 
-  Bind(EVT_N0183_GSV, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_GSV(n0183_msg);
+  Bind(EVT_N0183_GSV, [&](ObservedEvt ev) {
+    HandleN0183_GSV(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GGA
   Nmea0183Msg n0183_msg_GGA("GGA");
   listener_N0183_GGA = msgbus.GetListener(EVT_N0183_GGA, this, n0183_msg_GGA);
 
-  Bind(EVT_N0183_GGA, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_GGA(n0183_msg);
+  Bind(EVT_N0183_GGA, [&](ObservedEvt ev) {
+    HandleN0183_GGA(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GLL
   Nmea0183Msg n0183_msg_GLL("GLL");
   listener_N0183_GLL = msgbus.GetListener(EVT_N0183_GLL, this, n0183_msg_GLL);
 
-  Bind(EVT_N0183_GLL, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_GLL(n0183_msg);
+  Bind(EVT_N0183_GLL, [&](ObservedEvt ev) {
+    HandleN0183_GLL(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // AIVDO
@@ -294,10 +281,8 @@ void CommBridge::InitCommListeners() {
   listener_N0183_AIVDO =
       msgbus.GetListener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO);
 
-  Bind(EVT_N0183_AIVDO, [&](wxCommandEvent ev) {
-    auto message = get_navmsg_ptr(ev);
-    auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-    HandleN0183_AIVDO(n0183_msg);
+  Bind(EVT_N0183_AIVDO, [&](ObservedEvt ev) {
+    HandleN0183_AIVDO(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 }
 

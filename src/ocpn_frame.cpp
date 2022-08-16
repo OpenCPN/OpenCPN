@@ -5360,30 +5360,32 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   RefreshAllCanvas(true);
 }
 
-wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, wxCommandEvent);
-wxDEFINE_EVENT(EVT_GPS_WATCHDOG, wxCommandEvent);
+wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
+wxDEFINE_EVENT(EVT_GPS_WATCHDOG, ObservedEvt);
 
 void MyFrame::InitAppMsgBusListener() {
   auto &msgbus = AppMsgBus::GetInstance();
 
   //  BasicNavData
   AppMsg msg_basic(AppMsg::Type::BasicNavData);
-  listener_basic_navdata = msgbus.GetListener(EVT_BASIC_NAV_DATA, this, msg_basic);
+  listener_basic_navdata = msgbus.GetListener(EVT_BASIC_NAV_DATA, this,
+                                              msg_basic);
 
-  Bind(EVT_BASIC_NAV_DATA, [&](wxCommandEvent ev) {
-    auto message = get_appmsg_ptr(ev);
-    auto basicnav_msg = std::dynamic_pointer_cast<const BasicNavDataMsg>(message);
+  Bind(EVT_BASIC_NAV_DATA, [&](ObservedEvt ev) {
+    auto ptr = ev.GetSharedPtr();
+    auto basicnav_msg = std::static_pointer_cast<const BasicNavDataMsg>(ptr);
     HandleBasicNavMsg( basicnav_msg );
   });
 
   //  GPS Watchdog expiry status
   AppMsg msg_watchdog(AppMsg::Type::GPSWatchdog);
-  listener_gps_watchdog = msgbus.GetListener(EVT_GPS_WATCHDOG, this, msg_watchdog);
+  listener_gps_watchdog = msgbus.GetListener(EVT_GPS_WATCHDOG, this,
+                                             msg_watchdog);
 
-  Bind(EVT_GPS_WATCHDOG, [&](wxCommandEvent ev) {
-    auto message = get_appmsg_ptr(ev);
-    auto msg = std::dynamic_pointer_cast<const GPSWatchdogMsg>(message);
-    HandleGPSWatchdogMsg( msg );
+  Bind(EVT_GPS_WATCHDOG, [&](ObservedEvt ev) {
+    auto ptr = ev.GetSharedPtr();
+    auto msg = std::static_pointer_cast<const GPSWatchdogMsg>(ptr);
+    HandleGPSWatchdogMsg(msg);
   });
 
 }

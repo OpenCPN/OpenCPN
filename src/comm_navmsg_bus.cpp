@@ -24,7 +24,7 @@
  **************************************************************************/
 
 #include "comm_navmsg_bus.h"
-#include "observable_msg.h"
+#include "observable_navmsg.h"
 
 // FIXME(leamas) test junk
 #include "ConnectionParams.h"
@@ -37,10 +37,9 @@ ObservedVarListener NavMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
   return om.GetListener(eh, et);
 }
 
-void NavMsgBus::Notify(std::unique_ptr<const NavMsg> msg) {
-  std::shared_ptr<const NavMsg> shared_msg = std::move(msg);
-  ObservableMsg om(shared_msg->key());
-  om.notify(shared_msg);
+void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
+  ObservableMsg om(msg->key());
+  om.notify(msg);
 }
 
 NavMsgBus& NavMsgBus::GetInstance() {

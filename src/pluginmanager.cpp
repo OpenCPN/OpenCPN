@@ -108,7 +108,8 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "mygeom.h"
 #include "NavObjectCollection.h"
 #include "navutil.h"
-#include "observable.h"
+#include "observable_confvar.h"
+#include "observable_globvar.h"
 #include "OCPN_AUIManager.h"
 #include "OCPN_DataStreamEvent.h"
 #include "ocpndc.h"
@@ -239,7 +240,7 @@ enum { CurlThreadId = wxID_HIGHEST + 1 };
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 
-wxDEFINE_EVENT(EVT_N0183_PLUGIN, wxCommandEvent);
+wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 
 /**
  * Handle messages for blacklisted plugins. Messages are deferred until
@@ -1057,11 +1058,10 @@ void PlugInManager::InitCommListeners(void) {
   Nmea0183Msg n0183_msg("");
   m_listener_N0183_all = msgbus.GetListener(EVT_N0183_PLUGIN, this, n0183_msg);
 
-  Bind(EVT_N0183_PLUGIN, [&](wxCommandEvent ev) {
-        auto message = get_navmsg_ptr(ev);
-        auto n0183_msg = std::dynamic_pointer_cast<const Nmea0183Msg>(message);
-        HandleN0183( n0183_msg );
-      });
+  Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+        HandleN0183(n0183_msg); });
 }
 
 void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {

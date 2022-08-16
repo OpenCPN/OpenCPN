@@ -34,7 +34,7 @@
 #include <wx/jsonreader.h>
 
 #include "comm_driver.h"
-#include "observable_msg.h"
+#include "observable_navmsg.h"
 
 #ifndef _NAVMSG_BUS_H__
 #define _NAVMSG_BUS_H__
@@ -58,7 +58,7 @@ public:
   ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
                                   const NavMsg& msg);
 
-  void Notify(std::unique_ptr<const NavMsg> message);
+  void Notify(std::shared_ptr<const NavMsg> message);
 
   /* DriverListener implementation: */
   void Notify(const AbstractCommDriver& driver);

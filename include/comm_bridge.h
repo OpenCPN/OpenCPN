@@ -28,7 +28,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "observable_msg.h"
+#include "observable_navmsg.h"
 #include "comm_navmsg.h"
 #include "comm_decoder.h"
 
