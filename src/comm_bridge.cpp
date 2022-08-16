@@ -186,6 +186,12 @@ void CommBridge::MakeHDTFromHDM() {
   }
 }
 
+template <typename T>
+std::shared_ptr<const T> UnpackEvtPointer(ObservedEvt ev) {
+  return std::static_pointer_cast<const T>(ev.GetSharedPtr());
+}
+
+
 void CommBridge::InitCommListeners() {
   // Initialize the comm listeners
 
@@ -199,9 +205,7 @@ void CommBridge::InitCommListeners() {
       msgbus.GetListener(EVT_N2K_129029, this, n2k_msg_129029);
 
   Bind(EVT_N2K_129029, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
-    HandleN2K_129029(n2k_msg);
+    HandleN2K_129029(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // COG SOG rapid   PGN 129026
@@ -210,9 +214,7 @@ void CommBridge::InitCommListeners() {
   listener_N2K_129026 =
       msgbus.GetListener(EVT_N2K_129026, this, n2k_msg_129026);
   Bind(EVT_N2K_129026, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
-    HandleN2K_129026(n2k_msg);
+    HandleN2K_129026(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // NMEA0183
@@ -221,9 +223,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_RMC = msgbus.GetListener(EVT_N0183_RMC, this, n0183_msg_RMC);
 
   Bind(EVT_N0183_RMC, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183_RMC(n0183_msg);
+    HandleN0183_RMC(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDT
@@ -231,9 +231,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_HDT = msgbus.GetListener(EVT_N0183_HDT, this, n0183_msg_HDT);
 
   Bind(EVT_N0183_HDT, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183_HDT(n0183_msg);
+    HandleN0183_HDT(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDG
@@ -241,9 +239,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_HDG = msgbus.GetListener(EVT_N0183_HDG, this, n0183_msg_HDG);
 
   Bind(EVT_N0183_HDG, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183_HDG(n0183_msg);
+    HandleN0183_HDG(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDM
@@ -251,9 +247,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_HDM = msgbus.GetListener(EVT_N0183_HDM, this, n0183_msg_HDM);
 
   Bind(EVT_N0183_HDM, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    //HandleN0183_HDM(n0183_msg);
+    //HandleN0183_HDM(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // VTG
@@ -261,9 +255,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_VTG = msgbus.GetListener(EVT_N0183_VTG, this, n0183_msg_VTG);
 
   Bind(EVT_N0183_VTG, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    //HandleN0183_VTG(n0183_msg);
+    //HandleN0183_VTG(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GSV
@@ -271,9 +263,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_GSV = msgbus.GetListener(EVT_N0183_GSV, this, n0183_msg_GSV);
 
   Bind(EVT_N0183_GSV, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183_GSV(n0183_msg);
+    HandleN0183_GSV(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GGA
@@ -281,9 +271,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_GGA = msgbus.GetListener(EVT_N0183_GGA, this, n0183_msg_GGA);
 
   Bind(EVT_N0183_GGA, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183_GGA(n0183_msg);
+    HandleN0183_GGA(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GLL
@@ -291,9 +279,7 @@ void CommBridge::InitCommListeners() {
   listener_N0183_GLL = msgbus.GetListener(EVT_N0183_GLL, this, n0183_msg_GLL);
 
   Bind(EVT_N0183_GLL, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183_GLL(n0183_msg);
+    HandleN0183_GLL(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // AIVDO
@@ -302,9 +288,7 @@ void CommBridge::InitCommListeners() {
       msgbus.GetListener(EVT_N0183_AIVDO, this, n0183_msg_AIVDO);
 
   Bind(EVT_N0183_AIVDO, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183_AIVDO(n0183_msg);
+    HandleN0183_AIVDO(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 }
 
