@@ -9,6 +9,6 @@ std::shared_ptr<const NavMsg> get_navmsg_ptr(wxCommandEvent ev) {
 /* ObservableMsg implementation */
 
 void ObservableMsg::notify(std::shared_ptr<const NavMsg> msg) {
-  auto boxed_msg = new PointerMsg<const NavMsg>(msg);
-  ObservedVar::notify("", boxed_msg);
+  auto voidptr = std::dynamic_pointer_cast<const void>(msg);
+  ObservedVar::notify(voidptr, "", 0, 0);
 }
