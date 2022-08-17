@@ -18,11 +18,26 @@ On non-windows platforms, `make run-tests `can be used instead.
 Running tests on Windows
 -------------------------
 
-Unfortunately, things are a little more convoluted on windows. Steps as
-follows after completing a regular build:
+Unfortunately, things are a little more convoluted on Windows. To work
+%PATH% must include both the cmake binary directory and the path to
+_buildwin_
+
+The cmake binary directory contains cmake.exe. If cmake can be invoked
+on the command line, this means %PATH% already contains this directory.
+If not it can be added on a standard install using
+
+    > set PATH=%PATH%;C:\Program Files\CMake\bin
+
+The _buildwin_ directory can be added either as an absolute path or a
+relative one. If relative, it is rooted in _build\test_ and added using
+
+    > set PATH=%PATH%;..\..\buildwin
+
+Once %PATH% is set up tests are run using
 
     > cd build
-    > cmake --build . --config RelWithDebInfo --target tests
-    > cd test
-    > set PATH=%PATH%..\..\buildwin
-    > ctest -C RelWithDebInfo
+    > cmake --build . --target=run-tests --config RelWithDebInfo
+
+Common error is test.exe failing with message `Result: Exit code 0xc0000135`.
+This is usually caused by test.exe not being able to load the shared
+libraries in _buildwin_. Check that _buildwin_ is part pf %PATH%, see above.

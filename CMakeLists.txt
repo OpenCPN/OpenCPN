@@ -1804,7 +1804,7 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.14)
   if (NOT QT_ANDROID)
     add_subdirectory(test)
     add_custom_target(run-tests
-      COMMAND ctest
+      COMMAND ctest  -C $<CONFIG>
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
     )
     add_dependencies(run-tests tests)
