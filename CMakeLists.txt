@@ -821,6 +821,7 @@ set(
   include/comm_drv_n0183_serial.h
   include/comm_drv_n2k.h
   include/comm_drv_n2k_serial.h
+  include/comm_drv_n2k_socketcan.h
   include/comm_drv_registry.h
   include/comm_drv_file.h
   include/comm_navmsg.h
@@ -1097,6 +1098,11 @@ set(
 )
 
 set(SRCS ${SRCS} ${MODEL_SRC})
+
+if (LINUX AND NOT QT_ANDROID)
+  set( HDRS ${HDRS}  include/comm_drv_n2k_socketcan.h )
+  set( SRCS ${SRCS}  src/comm_drv_n2k_socketcan.cpp )
+endif ()
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
