@@ -32,6 +32,31 @@ wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
 
+/* comm_bridge context. */
+
+double gCog;
+double gHdm;
+double gHdt;
+double gLat;
+double gLon;
+double gSog;
+double gVar;
+int  g_bHDT_Rx;
+double g_UserVar;
+int gps_watchdog_timeout_ticks;
+int g_nNMEADebug;
+int g_NMEAAPBPrecision;
+bool g_bVAR_Rx;
+int g_SatsInView;
+bool g_bSatValid;
+int g_priSats;
+int sat_watchdog_timeout_ticks = 12;
+
+wxString g_TalkerIdText;
+
+wxString gRmcTime;
+wxString gRmcDate;
+
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
 

@@ -75,6 +75,31 @@ wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
 
+/* comm_bridge context. */
+
+double gCog;
+double gHdm;
+double gHdt;
+double gLat;
+double gLon;
+double gSog;
+double gVar;
+double g_UserVar;
+int gps_watchdog_timeout_ticks;
+bool g_bHDT_Rx;
+int g_nNMEADebug;
+bool g_bSatValid;
+bool g_bVAR_Rx;
+int g_NMEAAPBPrecision;
+int g_SatsInView;
+int g_priSats;
+int sat_watchdog_timeout_ticks = 12;
+
+wxString gRmcTime;
+wxString gRmcDate;
+
+wxString g_TalkerIdText;
+
 namespace safe_mode { bool get_mode() { return false; } }
 
 static const char* USAGE = R"""(

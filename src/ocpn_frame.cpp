@@ -84,7 +84,8 @@
 #include "glChartCanvas.h"
 #include "plugin_loader.h"
 #include "timers.h"
-#include "comm_util.h"  //FIXME(dave) this one goes away
+#include "comm_drv_factory.h"  //FIXME(dave) this one goes away
+#include "comm_util.h"  //FIXME(leamas) perhaps also this?
 
 #include "AboutFrameImpl.h"
 #include "about.h"

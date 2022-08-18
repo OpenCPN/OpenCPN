@@ -57,6 +57,7 @@
 #include <wx/regex.h>
 #include <wx/textwrapper.h>
 #include "SignalKDataStream.h"
+#include "comm_drv_factory.h"
 #include "comm_util.h"
 
 #if wxCHECK_VERSION(2, 9, \

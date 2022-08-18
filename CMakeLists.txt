@@ -821,6 +821,7 @@ set(
   include/comm_drv_n2k.h
   include/comm_drv_n2k_serial.h
   include/comm_drv_registry.h
+  include/comm_drv_factory.h
   include/comm_drv_file.h
   include/comm_navmsg.h
   include/comm_navmsg_bus.h
@@ -950,8 +951,11 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_appmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_bridge.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_decoder.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
   ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
@@ -992,8 +996,7 @@ set(
   src/chartimg.cpp
   src/chcanv.cpp
   src/ChInfoWin.cpp
-  src/comm_bridge.cpp
-  src/comm_decoder.cpp
+  src/comm_drv_factory.cpp
   src/comm_drv_n0183.cpp
   src/comm_drv_n0183_net.cpp
   src/comm_drv_n0183_serial.cpp
@@ -1001,7 +1004,6 @@ set(
   src/comm_drv_n2k_serial.cpp
   src/comm_drv_registry.cpp
   src/comm_navmsg.cpp
-  src/comm_util.cpp
   src/compass.cpp
   src/concanv.cpp
   src/ConfigMgr.cpp

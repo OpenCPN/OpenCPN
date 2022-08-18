@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Implement comm_util.h -- communication driver utilities
+ * Purpose:
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -22,55 +22,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include <vector>
 
-// FIXME  Why is this needed?
-#ifdef __MSVC__
-#include "winsock2.h"
-#include "wx/msw/winundef.h"
-#endif
+#ifndef _COMM_DRV_FACTORY
+#define _COMM_DRV_FACTORY
 
-#include "wx/wxprec.h"
+#include "ConnectionParams.h"
+#include "comm_driver.h"
 
-#ifndef WX_PRECOMP
-#include "wx/string.h"
-#endif  // precompiled headers
+std::shared_ptr<AbstractCommDriver> MakeCommDriver(
+    const ConnectionParams* params);
 
-#include "comm_util.h"
-#include "comm_drv_registry.h"
-
-bool StopAndRemoveCommDriver(std::string ident) {
-  auto& registry = CommDriverRegistry::getInstance();
-  const std::vector<DriverPtr>& drivers = registry.GetDrivers();
-  DriverPtr target_driver = FindDriver(drivers, ident);
-
-  if (!target_driver) return false;
-
-  // Deactivate the driver, and the last reference in shared_ptr
-  // will be removed.
-  // The driver DTOR will be called in due course.
-  registry.Deactivate(target_driver);
-
-  return true;
-}
-
-//----------------------------------------------------------------------------------
-//     Strip NMEA V4 tags from NMEA0183 message
-//----------------------------------------------------------------------------------
-wxString ProcessNMEA4Tags(wxString& msg) {
-  int idxFirst = msg.Find('\\');
-
-  if (wxNOT_FOUND == idxFirst) return msg;
-
-  if (idxFirst < (int)msg.Length() - 1) {
-    int idxSecond = msg.Mid(idxFirst + 1).Find('\\') + 1;
-    if (wxNOT_FOUND != idxSecond) {
-      if (idxSecond < (int)msg.Length() - 1) {
-        // wxString tag = msg.Mid(idxFirst+1, (idxSecond - idxFirst) -1);
-        return msg.Mid(idxSecond + 1);
-      }
-    }
-  }
-
-  return msg;
-}
+#endif  // _COMM_UTIL_H

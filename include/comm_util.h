@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Misc driver utilities
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -25,12 +25,6 @@
 
 #ifndef _COMM_UTIL_H
 #define _COMM_UTIL_H
-
-#include "ConnectionParams.h"
-#include "comm_driver.h"
-
-std::shared_ptr<AbstractCommDriver> MakeCommDriver(
-    const ConnectionParams* params);
 
 bool StopAndRemoveCommDriver(std::string ident);
 

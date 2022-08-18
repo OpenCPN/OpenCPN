@@ -39,6 +39,7 @@ if (DEFINED LIBELF_LIBRARY)
 endif ()
 target_link_libraries(tests PRIVATE ocpn::wxjson)
 target_link_libraries(tests PRIVATE ocpn::libarchive)
+target_link_libraries(tests PRIVATE ocpn::nmea0183)
 
 if (DEFINED CURL_LIBRARIES)
   target_link_libraries(tests PRIVATE ${CURL_LIBRARIES})
