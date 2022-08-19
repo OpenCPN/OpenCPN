@@ -181,23 +181,25 @@ public:
 class Nmea0183Msg : public NavMsg {
 public:
 
-  Nmea0183Msg()
-      : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone()))
-        {}
-  Nmea0183Msg(const std::string& _id)
-      : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone())),
-      id(_id) {}
-  Nmea0183Msg(const std::string& _id, const std::string& _payload,
+  Nmea0183Msg(const std::string& id, const std::string& _payload,
               std::shared_ptr<NavAddr> src)
-     : NavMsg(NavAddr::Bus::N0183, src), id(_id), payload(_payload) {}
+     : NavMsg(NavAddr::Bus::N0183, src), talker(id.substr(0, 2)),
+         type(id.substr(2, 3)), payload(_payload) {}
+   Nmea0183Msg()
+       : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone()))
+       {}
+   Nmea0183Msg(const std::string& id)
+       : Nmea0183Msg(id.size() <= 3 ? std::string("??") + id : id, "",
+                     std::make_shared<NavAddr>(NavAddrNone())) {}
 
-  std::string key() const { return std::string("n0183-") + id; };
+  std::string key() const { return std::string("n0183-") + type; };
 
   std::string to_string() const {
-    return NavMsg::to_string() + " " + id + " " + payload + "\n";
+    return NavMsg::to_string() + " " + talker + type + " " + payload + "\n";
   }
 
-  std::string id;      /**<  For example 'GPGGA'  */
+  std::string talker;    /**< For example GP */
+  std::string type;      /**<  For example 'GGA'  */
   std::string payload; /**< Complete NMEA0183 sentence, including prefix */
 };
 

@@ -1569,6 +1569,7 @@ private:
 
 #endif  // OBSERVABLE_EVT_H
 
+class ObservedVarListener; 
 
 struct NMEA2000Id {
   const uint64_t id;
@@ -1602,7 +1603,6 @@ std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev);
 
 /** Return payload in a recieved n0183 message of type id in ev. */
 std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev);
-
 
 struct NavDataId  {
   const int type;

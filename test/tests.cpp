@@ -13,6 +13,7 @@
 
 #include "BasePlatform.h"
 #include "comm_appmsg_bus.h"
+#include "comm_bridge.h"
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
 #include "observable_navmsg.h"
@@ -257,6 +258,23 @@ public:
   }
 };
 
+class PriorityApp: public wxAppConsole {
+public:
+  PriorityApp(string inputfile) : wxAppConsole() {
+    auto& msgbus = NavMsgBus::GetInstance();
+std::cerr << "PriorityApp, navmsg bus: " << reinterpret_cast<uint64_t>(&msgbus) << "\n " << std::flush;
+    string path("..");
+    path += kSEP + ".." +  kSEP + "test" + kSEP + "testdata" + kSEP
+      + inputfile;
+    auto driver =
+      make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
+    CommBridge comm_bridge;
+    comm_bridge.Initialize();
+    driver->Activate();
+    ProcessPendingEvents();
+  }
+};
+
 
 class SillyDriver: public AbstractCommDriver {
 public:
@@ -416,13 +434,11 @@ TEST(Listeners, vector) {
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
 
-
 TEST(Guernsey, play_log) {
   vector<string> log;
   GuernseyApp app(log);
-  EXPECT_EQ(log.size(), 14522);
+  EXPECT_EQ(log.size(), 14524);
 }
-
 
 TEST(FindDriver, lookup) {
    std::vector<DriverPtr> drivers;
@@ -450,4 +466,10 @@ TEST(Registry, persistence) {
     EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
     EXPECT_EQ(registry.GetDrivers()[start_size]->iface, string("silly"));
     EXPECT_EQ(registry.GetDrivers()[start_size]->bus, NavAddr::Bus::TestBus);
+}
+
+TEST(Priority, framework) {
+  PriorityApp app("stupan.se-10112-tcp.log.input");
+  EXPECT_NEAR(gLat, 57.6460, 0.001);
+  EXPECT_NEAR(gLon, 11.7130, 0.001);
 }
