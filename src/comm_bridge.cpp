@@ -637,7 +637,8 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
   if(msg->bus == NavAddr::Bus::N0183){
     auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
     if (msg_0183){
-      this_identifier = msg_0183->type;
+      this_identifier = msg_0183->talker;
+      this_identifier += msg_0183->type;
     }
   }
   else if(msg->bus == NavAddr::Bus::N2000){
