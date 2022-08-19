@@ -256,3 +256,54 @@ bool CommDecoder::DecodeGGA(std::string s, NavData& temp_data) {
 
   return true;
 }
+
+
+//---------------------------------------------------------------------
+// NMEA2000 PGN Decode
+//---------------------------------------------------------------------
+
+bool CommDecoder::DecodePGN129026(std::vector<unsigned char> v,  NavData& temp_data) {
+
+  unsigned char SID;
+  tN2kHeadingReference ref;
+  double COG, SOG;
+
+  if (ParseN2kPGN129026(v, SID, ref, COG, SOG)) {
+    temp_data.gCog = COG;
+    temp_data.gSog = SOG;
+    return true;
+  }
+
+  return false;
+}
+
+bool CommDecoder::DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_data) {
+  unsigned char SID;
+  uint16_t DaysSince1970;
+  double SecondsSinceMidnight;
+  double Latitude, Longitude, Altitude;
+  tN2kGNSStype GNSStype;
+  tN2kGNSSmethod GNSSmethod;
+  unsigned char nSatellites;
+  double HDOP, PDOP, GeoidalSeparation;
+  unsigned char nReferenceStations;
+  tN2kGNSStype ReferenceStationType;
+  uint16_t ReferenceSationID;
+  double AgeOfCorrection;
+
+  if (ParseN2kPGN129029(v, SID, DaysSince1970, SecondsSinceMidnight,
+                        Latitude, Longitude, Altitude,
+                        GNSStype, GNSSmethod,
+                        nSatellites, HDOP, PDOP, GeoidalSeparation,
+                        nReferenceStations, ReferenceStationType, ReferenceSationID,
+                        AgeOfCorrection
+                        )) {
+    temp_data.gLat = Latitude;
+    temp_data.gLon = Longitude;
+    temp_data.n_satellites = nSatellites;
+
+    return true;
+  }
+
+  return false;
+}

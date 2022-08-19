@@ -24,14 +24,16 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef _COMM_DECODER_H
+#define _COMM_DECODER_H
+
 #include <memory>
 #include <string>
 
 #include "comm_appmsg.h"
 #include "nmea0183.h"
+#include "N2KParser.h"
 
-#ifndef _COMM_DECODER_H
-#define _COMM_DECODER_H
 
 
 typedef struct{
@@ -50,8 +52,7 @@ public:
   CommDecoder(){};
   ~CommDecoder(){};
 
-  // NMEA decoding, by sentence.
-  // Each method updates the global variable set
+  // NMEA0183 decoding, by sentence.
   bool DecodeRMC(std::string s, NavData& temp_data);
   bool DecodeHDM(std::string s, NavData& temp_data);
   bool DecodeHDT(std::string s, NavData& temp_data);
@@ -64,6 +65,11 @@ public:
   bool ParsePosition(const LATLONG& Position, double& lat, double& lon);
 
   NMEA0183 m_NMEA0183;  // Used to parse messages from NMEA threads
+
+  // NMEA2000 decoding, by PGN
+  bool DecodePGN129026(std::vector<unsigned char> v,  NavData& temp_data);
+  bool DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_data);
+
 };
 
 #endif  // _COMM_DECODER_H

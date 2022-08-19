@@ -287,8 +287,7 @@ void CommBridge::InitCommListeners() {
 }
 
 bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-#if 0
-  printf("   HandleN2K_129029\n");
+  //printf("   HandleN2K_129029\n");
 
   std::vector<unsigned char> v = n2k_msg->payload;
 
@@ -299,58 +298,46 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   *c++ = v.at(4);
   *c++ = v.at(5);
 
-  unsigned char SID;
-  uint16_t DaysSince1970;
-  double SecondsSinceMidnight;
-  double Latitude, Longitude, Altitude;
-  tN2kGNSStype GNSStype;
-  tN2kGNSSmethod GNSSmethod;
-  unsigned char nSatellites;
-  double HDOP, PDOP, GeoidalSeparation;
-  unsigned char nReferenceStations;
-  tN2kGNSStype ReferenceStationType;
-  uint16_t ReferenceSationID;
-  double AgeOfCorrection;
+  NavData temp_data;
+  if (!m_decoder.DecodePGN129029(v, temp_data))
+    return false;
 
-  if (ParseN2kPGN129029(v, SID, DaysSince1970, SecondsSinceMidnight,
-                        Latitude, Longitude, Altitude,
-                        GNSStype, GNSSmethod,
-                        nSatellites, HDOP, PDOP, GeoidalSeparation,
-                        nReferenceStations, ReferenceStationType, ReferenceSationID,
-                        AgeOfCorrection
-                        )) {
-    setPosition(Latitude, Longitude);
-    PostProcessNMEA(true, false, false, "");
-    setSatelitesInView(nSatellites);
-  }
+  gLat = temp_data.gLat;
+  gLon = temp_data.gLon;
+  g_SatsInView = temp_data.n_satellites;
+  g_bSatValid = true;
 
-#endif
+    // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(
+      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
+
   return true;
 }
 
 bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-#if 0
- // std::cout << "HandleN2K_129026\n" ;
+  std::cout << "HandleN2K_129026\n" ;
 
   std::vector<unsigned char> v = n2k_msg->payload;
 
-  // extract and verify PGN
-  uint64_t pgn = 0;
-  unsigned char *c = (unsigned char *)&pgn;
-  *c++ = v.at(3);
-  *c++ = v.at(4);
-  *c++ = v.at(5);
+  NavData temp_data;
+  if (!m_decoder.DecodePGN129026(v, temp_data))
+    return false;
 
-  unsigned char SID;
-  tN2kHeadingReference ref;
-  double COG, SOG;
+  gSog = temp_data.gSog;
+  gCog = temp_data.gCog;
 
-  if (ParseN2kPGN129026(v, SID, ref, COG, SOG)) {
-    setCourseOverGround(COG);
-    setSpeedOverGround(SOG);
-    PostProcessNMEA(false, true, true, "");
-  }
-#endif
+    // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(
+      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
+
   return true;
 }
 
