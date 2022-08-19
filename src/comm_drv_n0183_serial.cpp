@@ -351,8 +351,8 @@ bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
   } catch (std::exception& e) {
-    // std::cerr << "Unhandled Exception while opening serial port: " <<
-    // e.what() << std::endl;
+     std::cerr << "Unhandled Exception while opening serial port: " <<
+     e.what() << std::endl;
   }
   return m_serial.isOpen();
 }
@@ -361,8 +361,8 @@ void CommDriverN0183SerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
   } catch (std::exception& e) {
-    // std::cerr << "Unhandled Exception while closing serial port: " <<
-    // e.what() << std::endl;
+     std::cerr << "Unhandled Exception while closing serial port: " <<
+     e.what() << std::endl;
   }
 }
 
@@ -379,8 +379,8 @@ size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
     try {
       status = m_serial.write((uint8_t*)msg, strlen(msg));
     } catch (std::exception& e) {
-      // std::cerr << "Unhandled Exception while writing to serial port: " <<
-      // e.what() << std::endl;
+      std::cerr << "Unhandled Exception while writing to serial port: " <<
+      e.what() << std::endl;
       return -1;
     }
     return status;
@@ -395,7 +395,6 @@ void* CommDriverN0183SerialThread::Entry() {
   int nl_found = 0;
   wxString msg;
   circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
-  circular_buffer<uint8_t> circle_temp(DS_RX_BUFFER_SIZE);
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_PortName, m_baud)) {
@@ -425,7 +424,7 @@ void* CommDriverN0183SerialThread::Entry() {
       try {
         newdata = m_serial.read(rdata, 200);
       } catch (std::exception& e) {
-        // std::cerr << "Serial read exception: " << e.what() << std::endl;
+        std::cerr << "Serial read exception: " << e.what() << std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
           // the port so that the reconnection logic kicks in and tries to fix
@@ -448,15 +447,13 @@ void* CommDriverN0183SerialThread::Entry() {
 
     if (newdata > 0) {
       nl_found = 0;
-      for (int i = 0; i < newdata; i++) {
+      for (unsigned int i = 0; i < newdata; i++) {
         circle.put(rdata[i]);
         if (0x0a == rdata[i]) nl_found++;
       }
 
       //    Found a NL char, thus end of message?
       if (nl_found) {
-        unsigned char* tptr;
-
         bool done = false;
         while (!done) {
           if (circle.empty()) {
@@ -468,29 +465,14 @@ void* CommDriverN0183SerialThread::Entry() {
           auto buffer = std::make_shared<std::vector<unsigned char>>();
           std::vector<unsigned char>* vec = buffer.get();
 
-          tptr = tak_ptr;
-
-          while ((*tptr != 0x0a) && (tptr != put_ptr)) {
-            vec->push_back(*tptr++);
-
-            if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
-          }
-
-#if 1
           uint8_t take_byte = circle.get();
           while ((take_byte != 0x0a) && !circle.empty()) {
-            circle_temp.put(take_byte);
+            vec->push_back(take_byte);
             take_byte = circle.get();
           }
-#endif
 
           if (take_byte == 0x0a) {
-            vec->push_back(*tptr++);
-            if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
-
-            vec->push_back('\0');
-
-            tak_ptr = tptr;
+            vec->push_back(take_byte);
 
             //    Message is ready to parse and send out
             //    Messages may be coming in as <blah blah><lf><cr>.
@@ -575,7 +557,7 @@ void* CommDriverN0183SerialThread::Entry() {
       try {
         newdata = m_serial.read(&next_byte, 1);
       } catch (std::exception& e) {
-        // std::cerr << "Serial read exception: " << e.what() << std::endl;
+        std::cerr << "Serial read exception: " << e.what() << std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
           // the port so that the reconnection logic kicks in and tries to fix
