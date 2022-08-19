@@ -1604,5 +1604,26 @@ std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev);
 std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev);
 
 
+struct NavDataId  {
+  const int type;
+  NavDataId() { type = 0; }
+}
+std::unique_ptr<ObservedVarListener> GetListener(NavDataId id,
+                                                 ObservedEvt ev,
+                                                 wxEvtHandler handler);
+/** Available decoded data for plugins. */
+struct  PluginNavdata{
+  double lat;
+  double lon;
+  double sog;
+  double cog;
+  double var;
+  double hdt;
+  time_t time;
+};
+
+/** Return decoded data available in ev */
+PluginNavdata GetEventNavdata(ObservedEvt ev);
+
 
 #endif  //_PLUGIN_H_

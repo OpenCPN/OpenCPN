@@ -2,8 +2,14 @@
 
 Since TBD, opencpn has a new system for handling messages in plugins. The new
 model is based on that a plugin subscribes to the messages it is interested
-in rather then the old model where plugins get all messages. Handling of
-messages consists of six steps:
+in rather then the old model where plugins get all messages.
+
+The new system is the only way to handle the new NMEA2000 devices. For N0183
+devices a compatiblity layer is installed which makes tings work as earlier.
+However, the new system can be used also for nmea0183 where it offers more
+flexibility when handling messages.
+
+Handling of messages consists of six steps:
 
 1. Define the type of message to work with
 2. Declare a listening object.
@@ -48,7 +54,7 @@ Then, in the constructor set up the listening:
 Notes
 
 ①:: This is the type of message we are listening to. There are similar types
-    for NMEA2000 and SignalK.
+    for NMEA2000 , SignalK and decoded navigation data (la, long, etc.)
 
 ②:: Boiler-plate code, makes sure the listener is destroyed together with
     the plugin. It is important that the listener is declared in the class,
@@ -72,20 +78,17 @@ Notes
 
 ## Epilog: Using the lambda
 
-The last step above was 
+The last step above was
 `Bind(EVT_SHIPDRIVER [](wxCommandEvent ev) { HandleGPGA(ev); })`. The part
 between the curly braces is actually a C++ lambda expression. There is no
-need to dive into this to get something running, but it offers far larger 
-possibilities than to just call a function. Actually, if written like 
+need to dive into this to get something running, but it offers far larger
+possibilities than to just call a function. Actually, if written like
 `Bind(EVT_SHIPDRIVER [&](wxCommandEvent ev) { ... })` any code could
 be written between the braces.
 
 The interesting part here is that the `[&]` prefix makes this code "see"
 anything defined in the plugin. This is a convenient way to access plugin
-variables in the handler, something which otherwise is a problem. 
+variables in the handler, something which otherwise is a problem.
 
 To get the feeling one need to experiment. But then again, C++ lambdas
 is a complex step which is not necessary to get something running.
-
-
-
