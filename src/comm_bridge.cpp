@@ -43,6 +43,7 @@
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
 
 wxDEFINE_EVENT(EVT_N0183_RMC, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_HDT, ObservedEvt);
@@ -211,6 +212,17 @@ void CommBridge::InitCommListeners() {
     HandleN2K_129026(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
+  // Heading rapid   PGN 127250
+  //-----------------------------
+  Nmea2000Msg n2k_msg_127250(static_cast<uint64_t>(127250));
+  listener_N2K_127250 =
+      msgbus.GetListener(EVT_N2K_127250, this, n2k_msg_127250);
+  Bind(EVT_N2K_127250, [&](ObservedEvt ev) {
+    HandleN2K_127250(UnpackEvtPointer<Nmea2000Msg>(ev));
+  });
+
+
+
   // NMEA0183
   // RMC
   Nmea0183Msg n0183_msg_RMC("RMC");
@@ -333,6 +345,31 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   gSog = temp_data.gSog;
   gCog = temp_data.gCog;
   m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+
+    // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(
+      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
+
+  return true;
+}
+
+bool CommBridge::HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  NavData temp_data;
+  if (!m_decoder.DecodePGN127250(v, temp_data))
+    return false;
+
+  gHdt = temp_data.gHdt;
+  m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+
+  gVar = temp_data.gVar;
+  m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
 
     // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(

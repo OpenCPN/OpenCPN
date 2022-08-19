@@ -308,3 +308,19 @@ bool CommDecoder::DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_d
 
   return false;
 }
+
+bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_data) {
+
+  unsigned char SID;
+  double Heading, Deviation, Variation;
+  tN2kHeadingReference ref;
+
+  if (ParseN2kPGN127250(v, SID, Heading, Deviation, Variation, ref)){
+    temp_data.gHdt = Heading;
+    temp_data.gVar = Variation;
+    return true;
+  }
+
+  return false;
+}
+

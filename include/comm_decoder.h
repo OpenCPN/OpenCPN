@@ -69,6 +69,7 @@ public:
   // NMEA2000 decoding, by PGN
   bool DecodePGN129026(std::vector<unsigned char> v,  NavData& temp_data);
   bool DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_data);
+  bool DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_data);
 
 };
 

@@ -114,4 +114,11 @@ bool ParseN2kPGN129026(std::vector<unsigned char> &v, unsigned char &SID,
 
 }
 
+bool ParseN2kPGN127250(std::vector<unsigned char> &v, unsigned char &SID,
+                       double &Heading, double &Deviation, double &Variation, tN2kHeadingReference &ref) {
 
+  tN2kMsg msg = MakeN2kMsg(v);
+
+  return ParseN2kPGN127250(msg, SID, Heading, Deviation, Variation, ref);
+
+}
