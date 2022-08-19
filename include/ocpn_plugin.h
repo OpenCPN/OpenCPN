@@ -1606,8 +1606,9 @@ std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev);
 
 struct NavDataId  {
   const int type;
-  NavDataId() { type = 0; }
-}
+  NavDataId() : type(0) {}
+};
+
 std::unique_ptr<ObservedVarListener> GetListener(NavDataId id,
                                                  ObservedEvt ev,
                                                  wxEvtHandler handler);
