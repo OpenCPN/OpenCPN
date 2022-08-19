@@ -1540,13 +1540,43 @@ extern DECL_EXP wxString GetActiveRouteGUID(void);	// if no active route, return
 /* Listening to messages. */
 class ObservedVarListener;
 
+/** The event used by notify/listen. */
+class ObservedEvt;
+
+// This is a verbatim copy from observable_evt.h, don't define twice.
+#ifndef OBSERVABLE_EVT_H
+#define OBSERVABLE_EVT_H
+
+wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
+
+/** Adds a std::shared<void> element to wxCommandEvent. */
+class ObservedEvt : public wxCommandEvent {
+public:
+  ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)
+    : wxCommandEvent(commandType, id) {}
+  ObservedEvt(const ObservedEvt& event)
+    : wxCommandEvent(event) {this->m_shared_ptr = event.m_shared_ptr; }
+
+  wxEvent* Clone() const { return new ObservedEvt(*this); }
+
+  std::shared_ptr<const void> GetSharedPtr() const { return m_shared_ptr; }
+
+  void SetSharedPtr(std::shared_ptr<const void> p) { m_shared_ptr = p; }
+
+private:
+  std::shared_ptr<const void> m_shared_ptr;
+};
+
+#endif  // OBSERVABLE_EVT_H
+
+
 struct NMEA2000Id {
   const uint64_t id;
   NMEA2000Id(int value) : id(static_cast<uint64_t>(value)) {};
 };
 
 std::unique_ptr<ObservedVarListener> GetListener(NMEA2000Id id,
-                                                 wxCommandEvent ev,
+                                                 ObservedEvt ev,
                                                  wxEvtHandler handler);
 
 struct NMEA0183Id {
@@ -1555,7 +1585,7 @@ struct NMEA0183Id {
 };
 
 std::unique_ptr<ObservedVarListener> GetListener(NMEA0183Id id,
-                                                 wxCommandEvent ev,
+                                                 ObservedEvt ev,
                                                  wxEvtHandler handler);
 
 struct SignalkId {
@@ -1564,14 +1594,14 @@ struct SignalkId {
 };
 
 std::unique_ptr<ObservedVarListener> GetListener(SignalkId id,
-                                                 wxCommandEvent ev,
+                                                 ObservedEvt ev,
                                                  wxEvtHandler handler);
 
 /** Return payload in a recieved n2000 message of type id in ev. */
-std::vector<uint8_t> GetN200Payload(NMEA2000Id id, wxCommandEvent ev); 
+std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev);
 
 /** Return payload in a recieved n0183 message of type id in ev. */
-std::string GetN0183Payload(NMEA0183Id id, wxCommandEvent ev);
+std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev);
 
 
 

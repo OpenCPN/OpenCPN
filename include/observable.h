@@ -31,7 +31,9 @@
 
 #include <wx/event.h>
 
+#ifndef OBSERVABLE_EVT_H  // Could be defined from copy in ocpn_plugin.h
 #include "observable_evt.h"
+#endif
 
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);

@@ -21,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
 
-#ifndef OBSERVABLE_EVT_H
+#ifndef OBSERVABLE_EVT_H      // Guard also used in ocpn_plugin.h
 #define OBSERVABLE_EVT_H
 
 #include <memory>
