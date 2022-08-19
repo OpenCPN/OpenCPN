@@ -26,35 +26,17 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <wx/event.h>
 
+#ifndef OBSERVABLE_EVT_H  // Could be defined from copy in ocpn_plugin.h
+#include "observable_evt.h"
+#endif
+
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);
-
-/** The event used by notify/listen. */
-class ObservedEvt;
-
-wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
-
-/** Adds a std::shared<void> element to wxCommandEvent. */
-class ObservedEvt : public wxCommandEvent {
-public:
-  ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)
-    : wxCommandEvent(commandType, id) {}
-  ObservedEvt(const ObservedEvt& event)
-    : wxCommandEvent(event) {this->m_shared_ptr = event.m_shared_ptr; }
-
-  wxEvent* Clone() const { return new ObservedEvt(*this); }
-
-  std::shared_ptr<const void> GetSharedPtr() const { return m_shared_ptr; }
-
-  void SetSharedPtr(std::shared_ptr<const void> p) { m_shared_ptr = p; }
-
-private:
-  std::shared_ptr<const void> m_shared_ptr;
-};
 
 
 class ObservedVar;
