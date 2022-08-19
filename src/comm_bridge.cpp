@@ -304,8 +304,11 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
   gLat = temp_data.gLat;
   gLon = temp_data.gLon;
+  m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+
   g_SatsInView = temp_data.n_satellites;
   g_bSatValid = true;
+  m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
 
     // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -319,7 +322,7 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 }
 
 bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-  std::cout << "HandleN2K_129026\n" ;
+  //std::cout << "HandleN2K_129026\n" ;
 
   std::vector<unsigned char> v = n2k_msg->payload;
 
@@ -329,6 +332,7 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
   gSog = temp_data.gSog;
   gCog = temp_data.gCog;
+  m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
 
     // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
