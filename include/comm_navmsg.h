@@ -191,6 +191,9 @@ public:
    Nmea0183Msg(const std::string& id)
        : Nmea0183Msg(id.size() <= 3 ? std::string("??") + id : id, "",
                      std::make_shared<NavAddr>(NavAddrNone())) {}
+   Nmea0183Msg(const Nmea0183Msg& other, const std::string& t)
+       : NavMsg(NavAddr::Bus::N0183, other.source), talker(other.talker),
+         type(t), payload(other.payload) {}
 
   std::string key() const { return std::string("n0183-") + type; };
 
