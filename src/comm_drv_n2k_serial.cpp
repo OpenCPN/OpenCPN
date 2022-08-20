@@ -209,7 +209,9 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   Open();
 }
 
-CommDriverN2KSerial::~CommDriverN2KSerial() {}
+CommDriverN2KSerial::~CommDriverN2KSerial() {
+  Close();
+}
 
 bool CommDriverN2KSerial::Open() {
   wxString comx;
@@ -224,6 +226,33 @@ bool CommDriverN2KSerial::Open() {
   GetSecondaryThread()->Run();
 
   return true;
+}
+
+void CommDriverN2KSerial::Close() {
+  wxLogMessage(
+      wxString::Format(_T("Closing N2K Driver %s"), m_portstring.c_str()));
+
+  //    Kill off the Secondary RX Thread if alive
+  if (m_pSecondary_Thread) {
+    if (m_bsec_thread_active)  // Try to be sure thread object is still alive
+    {
+      wxLogMessage(_T("Stopping Secondary Thread"));
+
+      m_Thread_run_flag = 0;
+      int tsec = 10;
+      while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
+
+      wxString msg;
+      if (m_Thread_run_flag < 0)
+        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+      else
+        msg.Printf(_T("Not Stopped after 10 sec."));
+      wxLogMessage(msg);
+    }
+
+    m_pSecondary_Thread = NULL;
+    m_bsec_thread_active = false;
+  }
 }
 
 void CommDriverN2KSerial::Activate() {

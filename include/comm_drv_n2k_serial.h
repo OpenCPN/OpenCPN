@@ -60,6 +60,7 @@ public:
   void SetListener(std::shared_ptr<DriverListener> l) override{};
 
   bool Open();
+  void Close();
 
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
