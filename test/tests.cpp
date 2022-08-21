@@ -42,7 +42,6 @@ double gLat;
 double gLon;
 double gSog;
 double gVar;
-int  g_bHDT_Rx;
 double g_UserVar;
 int gps_watchdog_timeout_ticks;
 int g_nNMEADebug;
