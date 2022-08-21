@@ -185,20 +185,25 @@ public:
               std::shared_ptr<NavAddr> src)
      : NavMsg(NavAddr::Bus::N0183, src), talker(id.substr(0, 2)),
          type(id.substr(2, 3)), payload(_payload) {}
-   Nmea0183Msg()
-       : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone()))
-       {}
-   Nmea0183Msg(const std::string& id)
-       : Nmea0183Msg(id.size() <= 3 ? std::string("??") + id : id, "",
-                     std::make_shared<NavAddr>(NavAddrNone())) {}
-   Nmea0183Msg(const Nmea0183Msg& other, const std::string& t)
-       : NavMsg(NavAddr::Bus::N0183, other.source), talker(other.talker),
-         type(t), payload(other.payload) {}
+  Nmea0183Msg()
+     : NavMsg(NavAddr::Bus::N0183, std::make_shared<NavAddr>(NavAddrNone()))
+     {}
+  Nmea0183Msg(const std::string& id)
+     : Nmea0183Msg(id.size() <= 3 ? std::string("??") + id : id, "",
+                   std::make_shared<NavAddr>(NavAddrNone())) {}
+  Nmea0183Msg(const Nmea0183Msg& other, const std::string& t)
+     : NavMsg(NavAddr::Bus::N0183, other.source), talker(other.talker),
+       type(t), payload(other.payload) {}
 
   std::string key() const { return std::string("n0183-") + type; };
 
   std::string to_string() const {
     return NavMsg::to_string() + " " + talker + type + " " + payload + "\n";
+  }
+
+  /** Return key which should be used to listen to given message type. */
+  static std::string MessageKey(const char* type = "ALL") {
+    return std::string("n0183-") + type;
   }
 
   std::string talker;    /**< For example GP */
