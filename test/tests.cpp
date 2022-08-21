@@ -149,6 +149,43 @@ public:
   }
 };
 
+class All0183App: public wxAppConsole {
+public:
+  class Source {
+  public:
+    Source() {
+      std::string payload("payload data");
+      std::string id("GPGGA");
+      auto msg1 = std::make_unique<Nmea0183Msg>(id, payload,
+                                                shared_navaddr_none);
+      auto msg_all = std::make_unique<const Nmea0183Msg>(*msg1, "ALL");
+      NavMsgBus::GetInstance().Notify(std::move(msg_all));
+    }
+  };
+
+  class Sink: public wxEvtHandler {
+  public:
+    Sink() {
+      auto& t = NavMsgBus::GetInstance();
+      listener = t.GetListener(EVT_FOO, this, Nmea0183Msg::MessageKey("ALL"));
+
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+        s_result = msg->payload;
+        s_bus = msg->bus;
+      });
+    }
+    ObservedVarListener listener;
+  };
+
+  All0183App() : wxAppConsole() {
+    Sink sink;
+    Source source;
+    ProcessPendingEvents();
+  }
+};
+
 
 class ListenerCliApp: public wxAppConsole {
 public:
@@ -329,6 +366,15 @@ TEST(Messaging, NavMsg) {
   EXPECT_EQ(s_result, string("payload data"));
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
+
+TEST(Messaging, All0183) {
+  s_result = "";
+  s_bus = NavAddr::Bus::Undef;
+  All0183App app;
+  EXPECT_EQ(s_result, string("payload data"));
+  EXPECT_EQ(NavAddr::Bus::N0183, s_bus);
+};
+
 
 #ifndef _MSC_VER
 // FIXME (leamas) Fails on string representation of UTF degrees 0x00B0 on Win
