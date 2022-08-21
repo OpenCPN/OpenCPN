@@ -314,17 +314,20 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (!m_decoder.DecodePGN129029(v, temp_data))
     return false;
 
-  if (EvalPriority(n2k_msg, active_priority_position, priority_map_position)) {
-    gLat = temp_data.gLat;
-    gLon = temp_data.gLon;
-    m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+  if (!N2kIsNA(temp_data.gLat) && !N2kIsNA(temp_data.gLon)){
+    if (EvalPriority(n2k_msg, active_priority_position, priority_map_position)) {
+      gLat = temp_data.gLat;
+      gLon = temp_data.gLon;
+      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
-  if (EvalPriority(n2k_msg, active_priority_satellites, priority_map_satellites)) {
-    g_SatsInView = temp_data.n_satellites;
-    g_bSatValid = true;
-
-    m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+  if (!N2kIsNA(temp_data.n_satellites)){
+    if (EvalPriority(n2k_msg, active_priority_satellites, priority_map_satellites)) {
+      g_SatsInView = temp_data.n_satellites;
+      g_bSatValid = true;
+      m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+    }
   }
 
     // Populate a comm_appmsg with current global values
@@ -347,10 +350,15 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (!m_decoder.DecodePGN129026(v, temp_data))
     return false;
 
-  if (EvalPriority(n2k_msg, active_priority_velocity, priority_map_velocity)) {
-    gSog = temp_data.gSog;
-    gCog = temp_data.gCog;
-    m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+  if (!N2kIsNA(temp_data.gSog) && !N2kIsNA(temp_data.gCog)){
+    if (EvalPriority(n2k_msg, active_priority_velocity, priority_map_velocity)) {
+      gSog = temp_data.gSog;
+      gCog = temp_data.gCog;
+      m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+  //FIXME (dave) How to notify user of errors?
+  else{
   }
 
     // Populate a comm_appmsg with current global values
@@ -372,14 +380,18 @@ bool CommBridge::HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (!m_decoder.DecodePGN127250(v, temp_data))
     return false;
 
-  if (EvalPriority(n2k_msg, active_priority_heading, priority_map_heading)) {
-     gHdt = temp_data.gHdt;
-     m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+  if (!N2kIsNA(temp_data.gHdt)){
+    if (EvalPriority(n2k_msg, active_priority_heading, priority_map_heading)) {
+      gHdt = temp_data.gHdt;
+      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
-  if (EvalPriority(n2k_msg, active_priority_variation, priority_map_variation)) {
-    gVar = temp_data.gVar;
-    m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+  if (!N2kIsNA(temp_data.gVar)){
+    if (EvalPriority(n2k_msg, active_priority_variation, priority_map_variation)) {
+      gVar = temp_data.gVar;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
     // Populate a comm_appmsg with current global values
