@@ -4532,7 +4532,7 @@ msgstr "0.05"
 
 #: src/MarkInfo.cpp:636 src/navutil.cpp:4239
 msgid "NMi"
-msgstr "Nds"
+msgstr "M"
 
 #: src/MarkInfo.cpp:636 src/navutil.cpp:4245
 msgid "km"
