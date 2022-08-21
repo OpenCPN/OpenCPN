@@ -18,6 +18,8 @@
 #include "comm_drv_registry.h"
 #include "observable_navmsg.h"
 #include "observable_confvar.h"
+#include "ocpn_types.h"
+#include "AIS_Decoder.h"
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -299,7 +301,6 @@ class PriorityApp: public wxAppConsole {
 public:
   PriorityApp(string inputfile) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
-std::cerr << "PriorityApp, navmsg bus: " << reinterpret_cast<uint64_t>(&msgbus) << "\n " << std::flush;
     string path("..");
     path += kSEP + ".." +  kSEP + "test" + kSEP + "testdata" + kSEP
       + inputfile;
@@ -309,6 +310,33 @@ std::cerr << "PriorityApp, navmsg bus: " << reinterpret_cast<uint64_t>(&msgbus) 
     comm_bridge.Initialize();
     driver->Activate();
     ProcessPendingEvents();
+  }
+};
+
+const char* const GPGGA_1 =
+  "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
+const char* const GPGGA_2 =
+  "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
+class PriorityApp2: public wxAppConsole {
+public:
+  PriorityApp2() : wxAppConsole() {
+    auto& msgbus = NavMsgBus::GetInstance();
+    CommBridge comm_bridge;
+    comm_bridge.Initialize();
+
+    auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
+    auto m1 = std::make_shared<const Nmea0183Msg>(Nmea0183Msg("GPGGA",
+                                                              GPGGA_1, addr1));
+    auto addr2 = std::make_shared<NavAddr>(NavAddr0183("interface2"));
+    auto m2 = std::make_shared<const Nmea0183Msg>(Nmea0183Msg("GPGGA",
+                                                              GPGGA_2, addr2));
+    msgbus.Notify(m1);
+    msgbus.Notify(m2);
+    ProcessPendingEvents();
+
+    Position p = Position::ParseGGA("5759.097,N,01144.345,E");
+    EXPECT_NEAR(gLat, p.lat, 0.0001);
+    EXPECT_NEAR(gLon, p.lon, 0.0001);
   }
 };
 
@@ -514,14 +542,21 @@ TEST(Registry, persistence) {
     EXPECT_EQ(registry.GetDrivers()[start_size]->bus, NavAddr::Bus::TestBus);
 }
 
-TEST(Priority, framework) {
+TEST(Position, ParseGGA) {
+  Position p = Position::ParseGGA("5800.602,N,01145.789,E");
+  EXPECT_NEAR(p.lat, 58.010033, 0.0001);
+  EXPECT_NEAR(p.lon, 11.763150, 0.0001);
+}
+
+TEST(Priority, Framework) {
   PriorityApp app("stupan.se-10112-tcp.log.input");
   EXPECT_NEAR(gLat, 57.6460, 0.001);
   EXPECT_NEAR(gLon, 11.7130, 0.001);
 }
 
-TEST(Position, ParseGGA) {
-  Position p = Position::ParseGGA("5800.602,N,01145.789,E");
-  EXPECT_NEAR(p.lat, 58.010033, 0.0001);
-  EXPECT_NEAR(p.lon, 11.763150, 0.0001);
+TEST(Priority, DifferentSource) {
+  PriorityApp2 app;
+  Position p = Position::ParseGGA("5759.097,N,01144.345,E");
+  EXPECT_NEAR(p.lat, 57.98495, 0.001);
+  EXPECT_NEAR(p.lon, 11.73908, 0.001);
 }

@@ -39,6 +39,7 @@ if (DEFINED LIBELF_LIBRARY)
 endif ()
 target_link_libraries(tests PRIVATE ocpn::wxjson)
 target_link_libraries(tests PRIVATE ocpn::libarchive)
+target_link_libraries(tests PRIVATE ocpn::gdal)
 target_link_libraries(tests PRIVATE ocpn::nmea0183)
 target_link_libraries(tests PRIVATE ocpn::N2KParser)
 
