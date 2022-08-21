@@ -316,8 +316,8 @@ bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_d
   tN2kHeadingReference ref;
 
   if (ParseN2kPGN127250(v, SID, Heading, Deviation, Variation, ref)){
-    temp_data.gHdt = Heading;
-    temp_data.gVar = Variation;
+    temp_data.gHdt = Heading * 180. / M_PI;
+    temp_data.gVar = Variation * 180. / M_PI;
     return true;
   }
 
