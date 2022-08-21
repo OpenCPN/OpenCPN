@@ -1055,7 +1055,7 @@ void PlugInManager::InitCommListeners(void) {
   auto& msgbus = NavMsgBus::GetInstance();
 
   //NMEA0183, all
-  Nmea0183Msg n0183_msg("");
+  Nmea0183Msg n0183_msg("XXALL");
   m_listener_N0183_all = msgbus.GetListener(EVT_N0183_PLUGIN, this, n0183_msg);
 
   Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
