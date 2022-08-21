@@ -58,6 +58,13 @@ public:
   ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
                                   const NavMsg& msg);
 
+  /**
+   * Overload for listening object generating events when a message with
+   * given key is received.
+   */
+  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
+                                  const std::string& key);
+
   void Notify(std::shared_ptr<const NavMsg> message);
 
   /* DriverListener implementation: */

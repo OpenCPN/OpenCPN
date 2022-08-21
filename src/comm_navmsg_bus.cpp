@@ -33,13 +33,17 @@ using namespace std;
 
 ObservedVarListener NavMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
                                            const NavMsg& msg) {
-  ObservableMsg om(msg.key());
-  return om.GetListener(eh, et);
+  return ObservableMsg(msg.key()).GetListener(eh, et);
 }
 
+ObservedVarListener NavMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
+                                           const std::string& key) {
+  return ObservableMsg(key).GetListener(eh, et);
+}
+
+
 void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  ObservableMsg om(msg->key());
-  om.notify(msg);
+  ObservableMsg(msg->key()).notify(msg);
 }
 
 NavMsgBus& NavMsgBus::GetInstance() {
