@@ -59,6 +59,7 @@
 #endif
 
 #include "datastream.h"
+#include "chartdbs.h"
 #include "pluginmanager.h"  // FIXME: Refactor
 
 #ifndef __OCPN__ANDROID__

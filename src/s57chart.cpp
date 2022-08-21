@@ -47,6 +47,7 @@
 #include "cutil.h"
 #include "georef.h"
 #include "navutil.h"  // for LogMessageOnce
+#include "navutil_base.h"
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
 #include "s52utils.h"

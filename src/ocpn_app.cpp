@@ -107,6 +107,7 @@
 #include "multiplexer.h"
 #include "NavObjectCollection.h"
 #include "navutil.h"
+#include "navutil_base.h"
 #include "OCPN_AUIManager.h"
 #include "OCPNPlatform.h"
 #include "options.h"
@@ -126,6 +127,7 @@
 #include "thumbwin.h"
 #include "Track.h"
 #include "TrackPropDlg.h"
+#include "AISTargetListDialog.h"
 
 #include "comm_bridge.h"
 //#include "usb_devices.h"

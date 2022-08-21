@@ -49,6 +49,7 @@
 #include "routeman.h"
 #include "piano.h"
 #include "navutil.h"
+#include "navutil_base.h"
 #include "kml.h"
 #include "concanv.h"
 #include "thumbwin.h"

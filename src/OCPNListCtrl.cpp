@@ -24,6 +24,7 @@
 
 #include "OCPNListCtrl.h"
 #include "AIS_Target_Data.h"
+#include "navutil_base.h"
 
 extern wxString g_AisTargetList_column_spec;
 extern wxString g_AisTargetList_column_order;

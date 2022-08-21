@@ -108,6 +108,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "mygeom.h"
 #include "NavObjectCollection.h"
 #include "navutil.h"
+#include "navutil_base.h"
 #include "observable_confvar.h"
 #include "observable_globvar.h"
 #include "OCPN_AUIManager.h"

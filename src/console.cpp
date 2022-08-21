@@ -100,6 +100,11 @@ wxString gRmcDate;
 
 wxString g_TalkerIdText;
 
+// navutil_base context
+int g_iDistanceFormat = 0;
+int g_iSDMMFormat = 0;
+int g_iSpeedFormat = 0;
+
 namespace safe_mode { bool get_mode() { return false; } }
 
 static const char* USAGE = R"""(

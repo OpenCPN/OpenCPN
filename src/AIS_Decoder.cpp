@@ -50,6 +50,7 @@
 #include <cstdio>
 #include "ocpn_frame.h"
 #include "idents.h"
+#include "navutil_base.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

@@ -42,6 +42,7 @@
 #include "styles.h"
 #include "MarkInfo.h"
 #include "navutil.h"  // for Route
+#include "navutil_base.h"
 #include "georef.h"
 #include "gui_lib.h"
 #include "routeman.h"

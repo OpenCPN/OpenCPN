@@ -69,6 +69,7 @@
 #include "Track.h"
 #include "Route.h"
 #include "gui_lib.h"
+#include "navutil_base.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1

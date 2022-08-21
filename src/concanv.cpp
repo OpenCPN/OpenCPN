@@ -45,6 +45,7 @@
 #include "styles.h"
 #include "routeman.h"
 #include "navutil.h"
+#include "navutil_base.h"
 #include "FontMgr.h"
 #include "wx28compat.h"
 #include "Route.h"

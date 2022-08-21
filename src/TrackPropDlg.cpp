@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include "navutil.h"
+#include "navutil_base.h"
 #include "georef.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"

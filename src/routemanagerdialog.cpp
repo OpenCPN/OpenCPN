@@ -54,6 +54,7 @@
 #include "Track.h"
 #include "Route.h"
 #include "chcanv.h"
+#include "navutil_base.h"
 #include "svg_utils.h"
 #include "ocpn_frame.h"
 

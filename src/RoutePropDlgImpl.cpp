@@ -31,6 +31,7 @@
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
 #include "chcanv.h"
+#include "navutil_base.h"
 #include "tcmgr.h"
 #include "ocpn_plugin.h"
 #include "gui_lib.h"

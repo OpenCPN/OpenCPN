@@ -121,6 +121,7 @@
 #include "multiplexer.h"
 #include "NavObjectCollection.h"
 #include "navutil.h"
+#include "navutil_base.h"
 #include "NMEALogWindow.h"
 // #include "OCP_DataStreamInput_Thread.h"
 // #include "OCPN_AUIManager.h"

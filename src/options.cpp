@@ -103,6 +103,7 @@ extern GLuint g_raster_format;
 
 #include "usb_devices.h"
 #include "navutil.h"
+#include "navutil_base.h"
 
 #include "s52plib.h"
 #include "s52utils.h"

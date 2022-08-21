@@ -60,6 +60,13 @@ wxString g_TalkerIdText;
 wxString gRmcTime;
 wxString gRmcDate;
 
+// navutil_base context
+
+int g_iDistanceFormat = 0;
+int g_iSDMMFormat = 0;
+int g_iSpeedFormat = 0;
+
+
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
 

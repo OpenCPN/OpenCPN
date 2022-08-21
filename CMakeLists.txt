@@ -861,6 +861,7 @@ set(
   include/multiplexer.h
   include/NavObjectCollection.h
   include/navutil.h
+  include/navutil_base.h
   include/NetworkDataStream.h
   include/NMEALogWindow.h
   include/observable.h
@@ -958,6 +959,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
   ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
   ${CMAKE_SOURCE_DIR}/src/observable_confvar.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
