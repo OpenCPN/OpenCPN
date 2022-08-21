@@ -50,6 +50,7 @@ int g_NMEAAPBPrecision;
 bool g_bVAR_Rx;
 int g_SatsInView;
 bool g_bSatValid;
+bool g_bHDT_Rx;
 int g_priSats;
 int sat_watchdog_timeout_ticks = 12;
 
