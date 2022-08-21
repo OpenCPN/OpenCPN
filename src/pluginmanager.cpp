@@ -1054,8 +1054,8 @@ void PlugInManager::InitCommListeners(void) {
 
   auto& msgbus = NavMsgBus::GetInstance();
 
-  m_listener_N0183_all = msgbus.GetListener(EVT_N0183_PLUGIN, this, "ALL");
-
+  m_listener_N0183_all = msgbus.GetListener(EVT_N0183_PLUGIN, this,
+                                            Nmea0183Msg::MessageKey("ALL"));
   Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
