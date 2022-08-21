@@ -519,3 +519,9 @@ TEST(Priority, framework) {
   EXPECT_NEAR(gLat, 57.6460, 0.001);
   EXPECT_NEAR(gLon, 11.7130, 0.001);
 }
+
+TEST(Position, ParseGGA) {
+  Position p = Position::ParseGGA("5800.602,N,01145.789,E");
+  EXPECT_NEAR(p.lat, 58.010033, 0.0001);
+  EXPECT_NEAR(p.lon, 11.763150, 0.0001);
+}

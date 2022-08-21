@@ -27,6 +27,7 @@
 #include <iomanip>
 
 #include "comm_appmsg.h"
+#include "ocpn_utils.h"
 
 /* Free functions. */
 
@@ -66,7 +67,7 @@ Position::Position(double _lat, double _lon, Type t)
 Position::Position(double _lat, double _lon)
     : lat(_lat), lon(_lon), type(LatLongToType(_lat, _lon)) {};
 
-Position::Position() : lat(0), lon(0), type(Type::NE) {};
+Position::Position() : lat(0), lon(0), type(Type::Undef) {};
 
 std::string Position::to_string() const {
   std::stringstream buf;
@@ -91,7 +92,10 @@ std::string  Position::TypeToStr(const Type t) const {
     case Type::SW:
       return "SW";
       break;
-  }
+    case Type::Undef:
+      return "Undefined";
+      break;
+   }
   return "??";     // Not reached, but compiler complains.
 }
 
@@ -108,6 +112,35 @@ double Position::TypeToLat(Type t, double lat) {
 
 double Position::TypeToLong(Type t, double lon) {
   return t == Type::NE || t == Type::SE ? lon : -lon;
+}
+
+/** Parse string like 5800.588 which is 58 degrees 00.588 minutes. */
+static double GgaPartToDouble(const std::string& s) {
+  size_t dotpos = s.find('.');
+  if (dotpos < 2) return nan("");
+  auto degrees = s.substr(0, dotpos - 2);
+  auto minutes = s.substr(dotpos - 2);
+  return std::stod(degrees) + std::stod(minutes)/60;
+
+}
+
+Position Position::ParseGGA(const std::string gga) {
+  auto parts = ocpn::split(gga.c_str(), ",");
+  if (parts.size() != 4) {
+    return Position();
+  }
+  double lat = GgaPartToDouble(parts[0]);
+  if (parts[1] == "S")
+    lat = -lat;
+  else if (parts[1] != "N")
+    lat = nan("");
+  double lon = GgaPartToDouble(parts[2]);
+  if (parts[3] == "W")
+    lon = -lon;
+  else if (parts[3] != "E")
+    lon = nan("");
+
+  return lat != nan("") && lon != nan("") ? Position(lat, lon) : Position();
 }
 
 

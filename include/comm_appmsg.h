@@ -42,7 +42,7 @@ std::string TimeToString(const time_t time);
 
 class Position {
 public:
-  enum class Type { NE, NW, SE, SW };
+  enum class Type { NE, NW, SE, SW, Undef };
 
   /** Construct a position from positive lat/long values and Position::Type */
   Position(double _lat, double _lon, Type t);
@@ -50,8 +50,11 @@ public:
   /** Construct a position with signed lat/long defining Type.*/
   Position(double _lat, double _lon);
 
-  /** Construct a (0,0) position. */
+  /** Construct a (0,0) position, type == Undef. */
   Position();
+
+
+  bool IsValid() const { return type != Type::Undef;  }
 
   /** Return utf string like 65°25,11N 21°12,01E */
   std::string to_string() const;
@@ -59,6 +62,13 @@ public:
   const double lat;      // signed value
   const double lon;      // signed value
   const Type type;
+
+  /**
+   * Parse a GGA string like "5800.588,N,01145.776,E" as present in
+   * GGA and  other n0183 messages.
+   * @return Position where IsValid() is false on errors, else true.
+   */
+  static Position ParseGGA(const std::string gga);
 
 private:
   std::string TypeToStr(const Type t) const;
