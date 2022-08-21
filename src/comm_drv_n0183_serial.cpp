@@ -308,8 +308,9 @@ void CommDriverN0183Serial::handle_N0183_MSG(
 
     // Also notify for "all" N0183 messages, to support plugin API using
     // original talker id
-    auto msg_all = std::make_unique<const Nmea0183Msg>(*msg, "ALL");
-    m_listener.Notify(std::move(msg_all));
+    // FIXME
+    //auto msg_all = std::make_unique<const Nmea0183Msg>(*msg, "ALL");
+    //m_listener.Notify(std::move(msg_all));
   }
 }
 
