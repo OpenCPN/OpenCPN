@@ -37,11 +37,14 @@
 
 #include "comm_util.h"
 #include "comm_drv_n2k_serial.h"
-#include "comm_drv_n2k_socketcan.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
+
+#ifndef __WXMSW__
+#include "comm_drv_n2k_socketcan.h"
+#endif
 
 std::shared_ptr<AbstractCommDriver> MakeCommDriver(
     const ConnectionParams* params) {
@@ -79,6 +82,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
         }
       }
 
+#ifndef __WXMSW__
     case SOCKETCAN:
     {
       auto driver = std::make_shared<CommDriverN2KSocketCAN>(params, msgbus);
@@ -86,8 +90,9 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
       return driver;
       break;
     }
+#endif
 
-#if 0  // FIXME
+#if 0  // FIXME (dave)
     case INTERNAL_GPS:
       return new InternalGPSDataStream(input_consumer, params);
     case INTERNAL_BT:

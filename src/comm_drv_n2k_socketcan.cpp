@@ -116,6 +116,8 @@ private:
   bool full_ = 0;
 };
 
+#define NOT_FOUND -1
+#define CONST_MAX_MESSAGES 100
 
 // Decodes a 29 bit CAN header from an int
 void DecodeCanHeader(const int canId, CanHeader *header) {
@@ -133,6 +135,17 @@ void DecodeCanHeader(const int canId, CanHeader *header) {
 
 class CommDriverN2KSocketCANEvent;  // fwd
 
+// Buffer used to re-assemble sequences of multi frame Fast Packet messages
+typedef struct FastMessageEntry {
+	unsigned char isFree; // indicate whether this entry is free
+	unsigned long long timeArrived; // time of last message in microseconds.
+	CanHeader header; // the header of the message. Used to "map" the incoming fast message fragments
+	unsigned int sid; // message sequence identifier, used to check if a received message is the next message in the sequence
+	unsigned int expectedLength; // total data length obtained from first frame
+	unsigned int cursor; // cursor into the current position in the below data
+	unsigned char *data; // pointer to memory allocated for the data. Note: must be freed when IsFree is set to TRUE.
+} FastMessageEntry;
+
 class CommDriverN2KSocketCANThread : public wxThread {
 public:
   CommDriverN2KSocketCANThread(CommDriverN2KSocketCAN* Launcher,
@@ -145,14 +158,10 @@ public:
   void OnExit(void);
 
 private:
-#ifndef __OCPN__ANDROID__
-  serial::Serial m_serial;
-#endif
   void ThreadMessage(const wxString& msg);
-  bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
-  void CloseComPortPhysical();
-  size_t WriteComPortPhysical(char* msg);
-  size_t WriteComPortPhysical(const wxString& string);
+
+  bool IsFastMessage(const CanHeader header);
+  int MapFindMatchingEntry(const CanHeader header, const unsigned char sid);
 
   CommDriverN2KSocketCAN* m_pParentDriver;
   wxString m_PortName;
@@ -163,20 +172,22 @@ private:
 
   unsigned char* rx_buffer;
 
-  int m_baud;
   int m_n_timeout;
 
   n2k_atomic_queue<char*> out_que;
 
-	// CAN connection variables
-	struct sockaddr_can can_address;
-	// Interface Request
-	struct ifreq can_request;
-	// Socket Descriptor
-	int can_socket;
-	int flags;
-	// Socket Timeouts
-	struct timeval socketTimeout;
+  // The Fast Packet buffer - used to reassemble Fast packet messages
+  FastMessageEntry fastMessages[CONST_MAX_MESSAGES];
+
+  // CAN connection variables
+  struct sockaddr_can can_address;
+  // Interface Request
+  struct ifreq can_request;
+  // Socket Descriptor
+  int can_socket;
+  int flags;
+  // Socket Timeouts
+  struct timeval socketTimeout;
   fd_set readFD;
 };
 
@@ -343,10 +354,6 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
   put_ptr = rx_buffer;  // local circular queue
   tak_ptr = rx_buffer;
 
-  m_baud = 4800;  // default
-  long lbaud;
-  if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
-
   Create();
 }
 
@@ -356,28 +363,6 @@ CommDriverN2KSocketCANThread::~CommDriverN2KSocketCANThread(void) {
 
 void CommDriverN2KSocketCANThread::OnExit(void) {}
 
-bool CommDriverN2KSocketCANThread::OpenComPortPhysical(const wxString& com_name,
-                                                    int baud_rate) {
-  try {
-    m_serial.setPort(com_name.ToStdString());
-    m_serial.setBaudrate(baud_rate);
-    m_serial.open();
-    m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception& e) {
-    // std::cerr << "Unhandled Exception while opening serial port: " <<
-    // e.what() << std::endl;
-  }
-  return m_serial.isOpen();
-}
-
-void CommDriverN2KSocketCANThread::CloseComPortPhysical() {
-  try {
-    m_serial.close();
-  } catch (std::exception& e) {
-    // std::cerr << "Unhandled Exception while closing serial port: " <<
-    // e.what() << std::endl;
-  }
-}
 
 void CommDriverN2KSocketCANThread::ThreadMessage(const wxString& msg) {
   //    Signal the main program thread
@@ -484,6 +469,35 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
           DecodeCanHeader(canSocketFrame.can_id,&header);
 
+          if (IsFastMessage(header) == TRUE) {
+            int position;
+            position = MapFindMatchingEntry(header, canSocketFrame.data[0]);
+#if 0
+            // No existing fast message
+            if (position == NOT_FOUND) {
+              // Find a free slot
+              position = MapFindFreeEntry();
+              // No free slots, exit
+              if (position == NOT_FOUND) {
+                //return;
+              }
+            // Insert the first frame of the fast message
+              else {
+                MapInsertEntry(header, payload, position);
+              }
+            }
+        // An existing fast message is present, append the frame
+            else {
+              MapAppendEntry(header, payload, position);
+            }
+#endif
+          }
+
+  // This is a single frame message, parse it
+//   else {
+//     ParseMessage(header, payload);
+//   }
+
           auto buffer = std::make_shared<std::vector<unsigned char>>();
           std::vector<unsigned char>* vec = buffer.get();
 
@@ -513,7 +527,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
           // BUG BUG just filter on known 8 byte PGN's of interest to OCPN
           // Position (rapid update), COG/SOG (rapid update), Heading,
 
-          if (/*(header.pgn == 129025) ||*/ (header.pgn == 129026) || (header.pgn == 127250)) {
+          if ((header.pgn == 129025) || (header.pgn == 129026) || (header.pgn == 127250)) {
             printf("PGN:  %d\n", header.pgn);
 
             CommDriverN2KSocketCANEvent frameReceivedEvent(wxEVT_COMMDRIVER_N2K_SOCKETCAN, 0);
@@ -527,144 +541,36 @@ void* CommDriverN2KSocketCANThread::Entry() {
 	} // while
 
 
-#if 0
-  //    The main loop
-  static size_t retries = 0;
-
-  bool bInMsg = false;
-  bool bGotESC = false;
-  bool bGotSOT = false;
-
-  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) not_done = false;  // smooth exit
-
-    uint8_t next_byte = 0;
-    size_t newdata = -1;
-    if (m_serial.isOpen()) {
-      try {
-        newdata = m_serial.read(&next_byte, 1);
-      } catch (std::exception& e) {
-        // std::cerr << "Serial read exception: " << e.what() << std::endl;
-        if (10 < retries++) {
-          // We timed out waiting for the next character 10 times, let's close
-          // the port so that the reconnection logic kicks in and tries to fix
-          // our connection.
-          CloseComPortPhysical();
-          retries = 0;
-        }
-      }
-    } else {
-      // Reconnection logic. Let's try to reopen the port while waiting longer
-      // every time (until we simply keep trying every 2.5 seconds)
-      // std::cerr << "Serial port seems closed." << std::endl;
-      wxMilliSleep(250 * retries);
-      CloseComPortPhysical();
-      if (OpenComPortPhysical(m_PortName, m_baud))
-        retries = 0;
-      else if (retries < 10)
-        retries++;
-    }
-
-    if (newdata == 1) {
-      if (bInMsg) {
-        if (bGotESC) {
-          if (ESCAPE == next_byte) {
-            *put_ptr++ = next_byte;
-            if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
-            bGotESC = false;
-          }
-        }
-
-        if (bGotESC && (ENDOFTEXT == next_byte)) {
-          // Process packet
-          //    Copy the message into a std::vector
-
-          auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char>* vec = buffer.get();
-
-          unsigned char* tptr;
-          tptr = tak_ptr;
-
-          while ((tptr != put_ptr)) {
-            vec->push_back(*tptr++);
-            if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
-          }
-
-          tak_ptr = tptr;
-          bInMsg = false;
-          bGotESC = false;
-
-          // Message is finished
-          // Send the captured raw data vector pointer to the thread's "parent"
-          //  thereby releasing the thread for further data capture
-          CommDriverN2KSocketCANEvent Nevent(wxEVT_COMMDRIVER_N2K_SOCKETCOMM, 0);
-          Nevent.SetPayload(buffer);
-          m_pParentDriver->AddPendingEvent(Nevent);
-
-        } else {
-          bGotESC = (next_byte == ESCAPE);
-
-          if (!bGotESC) {
-            *put_ptr++ = next_byte;
-            if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
-          }
-        }
-      }
-
-      else {
-        if (STARTOFTEXT == next_byte) {
-          bGotSOT = false;
-          if (bGotESC) {
-            bGotSOT = true;
-          }
-        } else {
-          bGotESC = (next_byte == ESCAPE);
-          if (bGotSOT) {
-            bGotSOT = false;
-            bInMsg = true;
-
-            *put_ptr++ = next_byte;
-            if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
-          }
-        }
-      }
-    }  // if newdata > 0
-
-    //      Check for any pending output message
-#if 0
-    bool b_qdata = !out_que.empty();
-
-    while (b_qdata) {
-      //  Take a copy of message
-      char *qmsg = out_que.front();
-      out_que.pop();
-      // m_outCritical.Leave();
-      char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
-      strncpy(msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH - 1);
-      free(qmsg);
-
-      if (static_cast<size_t>(-1) == WriteComPortPhysical(msg) &&
-          10 < retries++) {
-        // We failed to write the port 10 times, let's close the port so that
-        // the reconnection logic kicks in and tries to fix our connection.
-        retries = 0;
-        CloseComPortPhysical();
-      }
-
-      b_qdata = !out_que.empty();
-    }  // while b_qdata
-
-#endif
-  }  // while ((not_done)
-
-#endif
-
   // thread_exit:
-  CloseComPortPhysical();
   m_pParentDriver->SetSecThreadInActive();  // I am dead
   m_pParentDriver->m_Thread_run_flag = -1;
 
   return 0;
+}
+
+// Checks whether a frame is a single frame message or multiframe Fast Packet message
+bool CommDriverN2KSocketCANThread::IsFastMessage(const CanHeader header) {
+  static const unsigned int nmeafastMessages[] = { 65240, 126208, 126464, 126996, 126998, 127233, 127237, 127489, 127496, 127506, 128275, 129029, 129038, \
+  129039, 129040, 129041, 129284, 129285, 129540, 129793, 129794, 129795, 129797, 129798, 129801, 129802, 129808, 129809, 129810, 130065, 130074, 130323, \
+  130577, 130820, 130822, 130824 };
+  for (size_t i = 0; i < sizeof(nmeafastMessages)/sizeof(unsigned int); i++) {
+    if (nmeafastMessages[i] == (unsigned int)header.pgn) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+// Determine whether an entry with a matching header & sequence ID exists.
+// If not, then assume this is the first frame of a multi-frame Fast Message
+int CommDriverN2KSocketCANThread::MapFindMatchingEntry(const CanHeader header, const unsigned char sid) {
+  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
+    if (((sid & 0xE0) == (fastMessages[i].sid & 0xE0)) && (fastMessages[i].isFree == FALSE) && (fastMessages[i].header.pgn == header.pgn) &&
+      (fastMessages[i].header.source == header.source) && (fastMessages[i].header.destination == header.destination)) {
+      return i;
+    }
+  }
+  return NOT_FOUND;
 }
 
 #endif
