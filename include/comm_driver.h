@@ -77,7 +77,7 @@ public:
    * @return <CommStatus::ok, interface> on success else <error_code, message>.
    */
   virtual std::pair<CommStatus, std::string> Clone() {
-    // FIXME(leamas>: Requires unique interface support in DriverRegistry.
+    // FIXME(leamas): Requires unique interface support in DriverRegistry.
     return std::pair<CommStatus, std::string>(CommStatus::NotImplemented, "");
   }
 
@@ -87,30 +87,6 @@ public:
 protected:
   AbstractCommDriver(NavAddr::Bus b) : bus(b){};
   AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){};
-};
-
-/**
- * Nmea2000 drivers are responsible for address claiming, exposing a stable
- * n2k_name. It also handles fast packages fragmentation/defragmentation.
- *
- * Handling of list of attached devices and their human readable attributes
- * are NOT part of the driver.
- */
-class N2kDriver : public AbstractCommDriver {
-public:
-  /** @return address to given name on this n2k bus. */
-  std::shared_ptr<NavAddr> GetAddress(N2kName name);
-};
-
-/**
- * Nmea0183 has no means to address a node. OTOH, there could be more
- * than one physical interface handling it. Each interface has a
- * separate driver instance.
- */
-class Nmea0183Driver : public AbstractCommDriver {
-
-  /** @return address to this bus i. e., physical interface. */
-  std::shared_ptr<NavAddr> GetAddress();
 };
 
 #endif  // DRIVER_API_H
