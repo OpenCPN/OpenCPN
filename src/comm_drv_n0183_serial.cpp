@@ -302,14 +302,14 @@ void CommDriverN0183Serial::handle_N0183_MSG(
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
 
-    auto msg = std::make_unique<const Nmea0183Msg>(identifier, full_sentence,
+    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
                                                    GetAddress());
     m_listener.Notify(std::move(msg));
 
     // Also notify for "all" N0183 messages, to support plugin API using
     // original talker id
     // FIXME
-    //auto msg_all = std::make_unique<const Nmea0183Msg>(*msg, "ALL");
+    //auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
     //m_listener.Notify(std::move(msg_all));
   }
 }

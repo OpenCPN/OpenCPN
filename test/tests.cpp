@@ -165,9 +165,9 @@ public:
     Source() {
       std::string payload("payload data");
       std::string id("GPGGA");
-      auto msg1 = std::make_unique<Nmea0183Msg>(id, payload,
+      auto msg1 = std::make_shared<Nmea0183Msg>(id, payload,
                                                 shared_navaddr_none);
-      auto msg_all = std::make_unique<const Nmea0183Msg>(*msg1, "ALL");
+      auto msg_all = std::make_shared<const Nmea0183Msg>(*msg1, "ALL");
       NavMsgBus::GetInstance().Notify(std::move(msg_all));
     }
   };
