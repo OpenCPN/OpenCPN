@@ -302,6 +302,14 @@ std::string ConnectionParams::GetStrippedDSPort() {
                             NetworkAddress.c_str(), NetworkPort);
     return t.ToStdString();
 
+  } else if (Type == SOCKETCAN) {
+    return "socketCAN";
+    //FIXME (dave)
+    //wxString proto = NetworkProtocolToString(NetProtocol);
+    //wxString t = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
+    //                        NetworkAddress.c_str(), NetworkPort);
+    //return t.ToStdString();
+
   } else if (Type == INTERNAL_BT) {
     return Port.ToStdString();
   } else

@@ -67,6 +67,7 @@ public:
   NMEA0183 m_NMEA0183;  // Used to parse messages from NMEA threads
 
   // NMEA2000 decoding, by PGN
+  bool DecodePGN129025(std::vector<unsigned char> v,  NavData& temp_data);
   bool DecodePGN129026(std::vector<unsigned char> v,  NavData& temp_data);
   bool DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_data);
   bool DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_data);

@@ -105,6 +105,14 @@ bool ParseN2kPGN129029(std::vector<unsigned char> &v, unsigned char &SID, uint16
                      );
 }
 
+bool ParseN2kPGN129025(std::vector<unsigned char> &v, double &Latitude, double &Longitude) {
+
+  tN2kMsg msg = MakeN2kMsg(v);
+
+  return ParseN2kPGN129025(msg, Latitude, Longitude);
+}
+
+
 bool ParseN2kPGN129026(std::vector<unsigned char> &v, unsigned char &SID,
                        tN2kHeadingReference &ref, double &COG, double &SOG) {
 

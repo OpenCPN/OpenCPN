@@ -37,6 +37,7 @@
 
 #include "comm_util.h"
 #include "comm_drv_n2k_serial.h"
+#include "comm_drv_n2k_socketcan.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
 #include "comm_navmsg_bus.h"
@@ -77,6 +78,14 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
           break;
         }
       }
+
+    case SOCKETCAN:
+    {
+      auto driver = std::make_shared<CommDriverN2KSocketCAN>(params, msgbus);
+      registry.Activate(driver);
+      return driver;
+      break;
+    }
 
 #if 0  // FIXME
     case INTERNAL_GPS:

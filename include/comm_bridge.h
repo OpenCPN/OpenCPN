@@ -60,6 +60,7 @@ public:
   void InitCommListeners();
 
   bool HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg);
+  bool HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg);
   bool HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg);
   bool HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg);
 
@@ -86,6 +87,7 @@ public:
 
   //  comm event listeners
   ObservedVarListener listener_N2K_129029;
+  ObservedVarListener listener_N2K_129025;
   ObservedVarListener listener_N2K_129026;
   ObservedVarListener listener_N2K_127250;
 

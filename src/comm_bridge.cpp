@@ -42,6 +42,7 @@
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129025, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
 
@@ -203,6 +204,15 @@ void CommBridge::InitCommListeners() {
     HandleN2K_129029(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
+  // Position rapid   PGN 129025
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129025(static_cast<uint64_t>(129025));
+  listener_N2K_129025 =
+      msgbus.GetListener(EVT_N2K_129025, this, n2k_msg_129025);
+  Bind(EVT_N2K_129025, [&](ObservedEvt ev) {
+    HandleN2K_129025(UnpackEvtPointer<Nmea2000Msg>(ev));
+  });
+
   // COG SOG rapid   PGN 129026
   //-----------------------------
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
@@ -328,6 +338,36 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
       g_bSatValid = true;
       m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
     }
+  }
+
+    // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(
+      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
+
+  return true;
+}
+
+bool CommBridge::HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  NavData temp_data;
+  if (!m_decoder.DecodePGN129025(v, temp_data))
+    return false;
+
+  if (!N2kIsNA(temp_data.gLat) && !N2kIsNA(temp_data.gLon)){
+    if (EvalPriority(n2k_msg, active_priority_position, priority_map_position)) {
+      gLat = temp_data.gLat;
+      gLon = temp_data.gLon;
+      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+  //FIXME (dave) How to notify user of errors?
+  else{
   }
 
     // Populate a comm_appmsg with current global values

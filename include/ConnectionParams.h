@@ -41,7 +41,8 @@ typedef enum {
   SERIAL = 0,
   NETWORK = 1,
   INTERNAL_GPS = 2,
-  INTERNAL_BT = 3
+  INTERNAL_BT = 3,
+  SOCKETCAN = 4
 } ConnectionType;
 
 typedef enum {

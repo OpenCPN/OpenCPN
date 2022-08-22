@@ -324,3 +324,16 @@ bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_d
   return false;
 }
 
+bool CommDecoder::DecodePGN129025(std::vector<unsigned char> v,  NavData& temp_data) {
+
+  double Latitude, Longitude;
+
+  if (ParseN2kPGN129025(v, Latitude, Longitude)){
+
+    temp_data.gLat = Latitude;
+    temp_data.gLon = Longitude;
+    return true;
+  }
+
+  return false;
+}
