@@ -77,7 +77,7 @@ std::string s_result3;
 NavAddr::Bus s_bus;
 AppMsg::Type s_apptype;
 
-auto shared_navaddr_none = std::make_shared<NavAddr>(NavAddrNone());
+auto shared_navaddr_none = std::make_shared<NavAddr>();
 
 class MsgCliApp : public wxAppConsole {
 public:
