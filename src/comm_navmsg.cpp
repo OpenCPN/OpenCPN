@@ -69,6 +69,8 @@ static std::string CharToString(unsigned char c) {
   return ss.str();
 }
 
+const std::string Nmea0183Msg::key_prefix = "n0183-";
+
 std::string Nmea2000Msg::to_string() const {
   std::string s;
   std::for_each(payload.begin(), payload.end(),

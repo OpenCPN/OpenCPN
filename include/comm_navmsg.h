@@ -173,33 +173,39 @@ public:
               std::shared_ptr<const NavAddr> src)
       : NavMsg(NavAddr::Bus::N0183, src),
         talker(id.substr(0, 2)),
-        type(id.substr(2, 3)),
+        type(id.substr(2)),
         payload(_payload) {}
+
   Nmea0183Msg()
-      : NavMsg(NavAddr::Bus::N0183, std::make_shared<const NavAddr>()) {}
+      : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
+
   Nmea0183Msg(const std::string& id)
       : Nmea0183Msg(id.size() <= 3 ? std::string("??") + id : id, "",
                     std::make_shared<const NavAddr>()) {}
+
   Nmea0183Msg(const Nmea0183Msg& other, const std::string& t)
       : NavMsg(NavAddr::Bus::N0183, other.source),
         talker(other.talker),
         type(t),
         payload(other.payload) {}
 
-  std::string key() const { return std::string("n0183-") + type; };
+  std::string key() const { return Nmea0183Msg::key_prefix + type; };
 
   std::string to_string() const {
-    return NavMsg::to_string() + " " + talker + type + " " + payload + "\n";
+    return NavMsg::to_string() + " " + talker + type + " " + payload;
   }
 
   /** Return key which should be used to listen to given message type. */
   static std::string MessageKey(const char* type = "ALL") {
-    return std::string("n0183-") + type;
+    return Nmea0183Msg::key_prefix + type;
   }
 
-  std::string talker;  /**< For example GP */
-  std::string type;    /**<  For example 'GGA'  */
-  std::string payload; /**< Complete NMEA0183 sentence, including prefix */
+  const std::string talker;  /**< For example 'GP' */
+  const std::string type;    /**< For example 'GGA' */
+  const std::string payload; /**< Complete NMEA0183 sentence, also prefix */
+
+private:
+  static const std::string key_prefix;
 };
 
 /** A parsed SignalK message over ipv4 */

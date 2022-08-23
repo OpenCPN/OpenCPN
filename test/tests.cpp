@@ -501,7 +501,7 @@ TEST(Listeners, vector) {
 TEST(Guernsey, play_log) {
   vector<string> log;
   GuernseyApp app(log);
-  EXPECT_EQ(log.size(), 14524);
+  EXPECT_EQ(log.size(), 14522);
 }
 
 TEST(FindDriver, lookup) {
