@@ -302,10 +302,10 @@ void CommDriverN0183Serial::handle_N0183_MSG(
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin API using
-    // original talker id
+    // notify message listener and also "ALL" N0183 messages, to support plugin
+    // API using original talker id
     auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
-                                                  GetAddress());
+                                                   GetAddress());
     auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
     m_listener.Notify(std::move(msg));
     m_listener.Notify(std::move(msg_all));
@@ -350,8 +350,8 @@ bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
   } catch (std::exception& e) {
-//      std::cerr << "Unhandled Exception while opening serial port: " <<
-//      e.what() << std::endl;
+    //      std::cerr << "Unhandled Exception while opening serial port: " <<
+    //      e.what() << std::endl;
   }
   return m_serial.isOpen();
 }
@@ -360,8 +360,8 @@ void CommDriverN0183SerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
   } catch (std::exception& e) {
-//      std::cerr << "Unhandled Exception while closing serial port: " <<
-//      e.what() << std::endl;
+    //      std::cerr << "Unhandled Exception while closing serial port: " <<
+    //      e.what() << std::endl;
   }
 }
 
@@ -378,8 +378,8 @@ size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
     try {
       status = m_serial.write((uint8_t*)msg, strlen(msg));
     } catch (std::exception& e) {
-//       std::cerr << "Unhandled Exception while writing to serial port: " <<
-//       e.what() << std::endl;
+      //       std::cerr << "Unhandled Exception while writing to serial port: "
+      //       << e.what() << std::endl;
       return -1;
     }
     return status;
@@ -423,7 +423,8 @@ void* CommDriverN0183SerialThread::Entry() {
       try {
         newdata = m_serial.read(rdata, 200);
       } catch (std::exception& e) {
-//        std::cerr << "Serial read exception: " << e.what() << std::endl;
+        //        std::cerr << "Serial read exception: " << e.what() <<
+        //        std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
           // the port so that the reconnection logic kicks in and tries to fix
@@ -556,7 +557,8 @@ void* CommDriverN0183SerialThread::Entry() {
       try {
         newdata = m_serial.read(&next_byte, 1);
       } catch (std::exception& e) {
-//        std::cerr << "Serial read exception: " << e.what() << std::endl;
+        //        std::cerr << "Serial read exception: " << e.what() <<
+        //        std::endl;
         if (10 < retries++) {
           // We timed out waiting for the next character 10 times, let's close
           // the port so that the reconnection logic kicks in and tries to fix
@@ -664,4 +666,3 @@ void* CommDriverN0183SerialThread::Entry() {
 #endif  // MSW
 
 #endif  // Android
-

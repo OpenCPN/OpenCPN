@@ -143,9 +143,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   Open();
 }
 
-CommDriverN0183Net::~CommDriverN0183Net() {
-  Close();
-}
+CommDriverN0183Net::~CommDriverN0183Net() { Close(); }
 
 void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
   auto p = event.GetPayload();
@@ -164,9 +162,12 @@ void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
     // We notify based on Mnemonic only, ignoring the Talker ID
     identifier = full_sentence.substr(3, 3);
 
-    // Notify listener for msg and also "all" N0183 messages to support plugin API
-    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence, GetAddress());
-    auto msg_all = std::make_shared<const Nmea0183Msg>("", full_sentence, GetAddress());
+    // Notify listener for msg and also "all" N0183 messages to support plugin
+    // API
+    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
+                                                   GetAddress());
+    auto msg_all =
+        std::make_shared<const Nmea0183Msg>("", full_sentence, GetAddress());
 
     m_listener.Notify(std::move(msg));
     m_listener.Notify(std::move(msg_all));

@@ -29,7 +29,9 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
-namespace safe_mode { bool get_mode() { return false; } }
+namespace safe_mode {
+bool get_mode() { return false; }
+}  // namespace safe_mode
 
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
@@ -66,7 +68,6 @@ int g_iDistanceFormat = 0;
 int g_iSDMMFormat = 0;
 int g_iSpeedFormat = 0;
 
-
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
 
@@ -81,9 +82,10 @@ auto shared_navaddr_none = std::make_shared<NavAddr>();
 
 class MsgCliApp : public wxAppConsole {
 public:
-  class Sink:  public wxEvtHandler {
+  class Sink : public wxEvtHandler {
   private:
     ObservedVarListener listener;
+
   public:
     Sink() {
       ObservableMsg observable("1234");
@@ -104,8 +106,8 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto n2k_msg = std::make_shared<const Nmea2000Msg>(id, payload,
-                                                         shared_navaddr_none);
+      auto n2k_msg =
+          std::make_shared<const Nmea2000Msg>(id, payload, shared_navaddr_none);
       ObservableMsg observable("1234");
       observable.notify(n2k_msg);
     }
@@ -118,8 +120,7 @@ public:
   }
 };
 
-
-class TransportCliApp: public wxAppConsole {
+class TransportCliApp : public wxAppConsole {
 public:
   class Source {
   public:
@@ -127,13 +128,13 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto msg = std::make_unique<Nmea2000Msg>(id, payload,
-                                               shared_navaddr_none);
+      auto msg =
+          std::make_unique<Nmea2000Msg>(id, payload, shared_navaddr_none);
       NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
 
-  class Sink: public wxEvtHandler {
+  class Sink : public wxEvtHandler {
   public:
     Sink() {
       auto& t = NavMsgBus::GetInstance();
@@ -158,21 +159,21 @@ public:
   }
 };
 
-class All0183App: public wxAppConsole {
+class All0183App : public wxAppConsole {
 public:
   class Source {
   public:
     Source() {
       std::string payload("payload data");
       std::string id("GPGGA");
-      auto msg1 = std::make_shared<Nmea0183Msg>(id, payload,
-                                                shared_navaddr_none);
+      auto msg1 =
+          std::make_shared<Nmea0183Msg>(id, payload, shared_navaddr_none);
       auto msg_all = std::make_shared<const Nmea0183Msg>(*msg1, "ALL");
       NavMsgBus::GetInstance().Notify(std::move(msg_all));
     }
   };
 
-  class Sink: public wxEvtHandler {
+  class Sink : public wxEvtHandler {
   public:
     Sink() {
       auto& t = NavMsgBus::GetInstance();
@@ -195,8 +196,7 @@ public:
   }
 };
 
-
-class ListenerCliApp: public wxAppConsole {
+class ListenerCliApp : public wxAppConsole {
 public:
   class Source {
   public:
@@ -204,13 +204,13 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto msg = std::make_unique<Nmea2000Msg>(id, payload,
-                                               shared_navaddr_none);
+      auto msg =
+          std::make_unique<Nmea2000Msg>(id, payload, shared_navaddr_none);
       NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
 
-  class Sink: public wxEvtHandler {
+  class Sink : public wxEvtHandler {
   public:
     Sink() {
       auto& t = NavMsgBus::GetInstance();
@@ -234,10 +234,8 @@ public:
   }
 };
 
-
-class AppmsgCliApp: public wxAppConsole {
+class AppmsgCliApp : public wxAppConsole {
 public:
-
   class Source {
   public:
     Source() {
@@ -247,7 +245,7 @@ public:
     }
   };
 
-  class Sink: public wxEvtHandler {
+  class Sink : public wxEvtHandler {
   public:
     Sink() {
       auto& a = AppMsgBus::GetInstance();
@@ -284,15 +282,14 @@ const static string kSEP("\\");
 const static string kSEP("/");
 #endif
 
-class GuernseyApp: public wxAppConsole {
+class GuernseyApp : public wxAppConsole {
 public:
   GuernseyApp(vector<string>& log) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
     string path("..");
-    path += kSEP + ".." +  kSEP + "test" + kSEP + "testdata" + kSEP
-        +  "Guernesey-1659560590623.input.txt";
-    auto driver =
-        make_shared<FileCommDriver>("test-output.txt", path, msgbus);
+    path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP +
+            "Guernesey-1659560590623.input.txt";
+    auto driver = make_shared<FileCommDriver>("test-output.txt", path, msgbus);
     auto listener = msgbus.GetListener(EVT_FOO, this, Nmea0183Msg("GPGLL"));
     Bind(EVT_FOO, [&log](ObservedEvt ev) {
       auto ptr = ev.GetSharedPtr();
@@ -304,15 +301,13 @@ public:
   }
 };
 
-class PriorityApp: public wxAppConsole {
+class PriorityApp : public wxAppConsole {
 public:
   PriorityApp(string inputfile) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
     string path("..");
-    path += kSEP + ".." +  kSEP + "test" + kSEP + "testdata" + kSEP
-      + inputfile;
-    auto driver =
-      make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
+    path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP + inputfile;
+    auto driver = make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
     CommBridge comm_bridge;
     comm_bridge.Initialize();
     driver->Activate();
@@ -321,10 +316,10 @@ public:
 };
 
 const char* const GPGGA_1 =
-  "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
+    "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
 const char* const GPGGA_2 =
-  "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
-class PriorityApp2: public wxAppConsole {
+    "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
+class PriorityApp2 : public wxAppConsole {
 public:
   PriorityApp2() : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
@@ -332,11 +327,11 @@ public:
     comm_bridge.Initialize();
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
-    auto m1 = std::make_shared<const Nmea0183Msg>(Nmea0183Msg("GPGGA",
-                                                              GPGGA_1, addr1));
+    auto m1 = std::make_shared<const Nmea0183Msg>(
+        Nmea0183Msg("GPGGA", GPGGA_1, addr1));
     auto addr2 = std::make_shared<NavAddr>(NavAddr0183("interface2"));
-    auto m2 = std::make_shared<const Nmea0183Msg>(Nmea0183Msg("GPGGA",
-                                                              GPGGA_2, addr2));
+    auto m2 = std::make_shared<const Nmea0183Msg>(
+        Nmea0183Msg("GPGGA", GPGGA_2, addr2));
     msgbus.Notify(m1);
     msgbus.Notify(m2);
     ProcessPendingEvents();
@@ -347,27 +342,22 @@ public:
   }
 };
 
-
-class SillyDriver: public AbstractCommDriver {
+class SillyDriver : public AbstractCommDriver {
 public:
-
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
-  SillyDriver(const string& s)
-      : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
+  SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
 
   virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) {}
 
   virtual void SetListener(DriverListener& listener) {}
 
-  virtual void Activate() {};
+  virtual void Activate(){};
 };
 
-
-
-class SillyListener: public DriverListener {
+class SillyListener : public DriverListener {
 public:
   /** Handle a received message. */
-  virtual void Notify(std::shared_ptr<const NavMsg> message)  {
+  virtual void Notify(std::shared_ptr<const NavMsg> message) {
     s_result2 = NavAddr::BusToString(message->bus);
 
     auto base_ptr = message.get();
@@ -376,14 +366,13 @@ public:
 
     stringstream ss;
     std::for_each(n2k_msg->payload.begin(), n2k_msg->payload.end(),
-                  [&ss](unsigned char c) {ss << static_cast<char>(c); });
+                  [&ss](unsigned char c) { ss << static_cast<char>(c); });
     s_result = ss.str();
   }
 
   /** Handle driver status change. */
   virtual void Notify(const AbstractCommDriver& driver) {}
 };
-
 
 TEST(Messaging, ObservableMsg) {
   s_result = "";
@@ -392,7 +381,6 @@ TEST(Messaging, ObservableMsg) {
   EXPECT_EQ(s_result, string("payload data"));
   EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
 };
-
 
 TEST(Messaging, NavMsg) {
   s_result = "";
@@ -410,7 +398,6 @@ TEST(Messaging, All0183) {
   EXPECT_EQ(NavAddr::Bus::N0183, s_bus);
 };
 
-
 #ifndef _MSC_VER
 // FIXME (leamas) Fails on string representation of UTF degrees 0x00B0 on Win
 TEST(Messaging, AppMsg) {
@@ -422,7 +409,6 @@ TEST(Messaging, AppMsg) {
 };
 
 #endif
-
 
 TEST(Drivers, Registry) {
   auto driver = std::make_shared<const SillyDriver>();
@@ -439,18 +425,20 @@ TEST(Drivers, Registry) {
 
   /* Add another one, should be accepted */
   auto driver2 = std::make_shared<const SillyDriver>("orvar");
-  registry.Activate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  registry.Activate(
+      std::static_pointer_cast<const AbstractCommDriver>(driver2));
   EXPECT_EQ(registry.GetDrivers().size(), 2);
 
   /* Remove one, leaving one in place. */
-  registry.Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  registry.Deactivate(
+      std::static_pointer_cast<const AbstractCommDriver>(driver2));
   EXPECT_EQ(registry.GetDrivers().size(), 1);
 
   /* Remove it again, should be ignored. */
-  registry.Deactivate(std::static_pointer_cast<const AbstractCommDriver>(driver2));
+  registry.Deactivate(
+      std::static_pointer_cast<const AbstractCommDriver>(driver2));
   EXPECT_EQ(registry.GetDrivers().size(), 1);
 }
-
 
 TEST(Navmsg2000, to_string) {
   std::string s("payload data");
@@ -461,7 +449,6 @@ TEST(Navmsg2000, to_string) {
             msg->to_string());
 }
 
-
 TEST(FileDriver, Registration) {
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
   auto& registry = CommDriverRegistry::getInstance();
@@ -470,7 +457,6 @@ TEST(FileDriver, Registration) {
   auto drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
 }
-
 
 TEST(FileDriver, output) {
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
@@ -487,7 +473,6 @@ TEST(FileDriver, output) {
             string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"));
 }
 
-
 TEST(FileDriver, input) {
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
   std::string s("payload data");
@@ -499,14 +484,12 @@ TEST(FileDriver, input) {
 
   SillyListener listener;
   auto indriver = std::make_shared<FileCommDriver>("/tmp/foo.txt",
-                                                   "test-output.txt",
-                                                   listener);
+                                                   "test-output.txt", listener);
   indriver->Activate();
   EXPECT_EQ(s_result2, string("nmea2000"));
   EXPECT_EQ(s_result3, string("1234"));
   EXPECT_EQ(s_result, string("payload data"));
 }
-
 
 TEST(Listeners, vector) {
   s_result = "";
@@ -522,31 +505,31 @@ TEST(Guernsey, play_log) {
 }
 
 TEST(FindDriver, lookup) {
-   std::vector<DriverPtr> drivers;
-   std::vector<std::string> ifaces {"foo", "bar", "foobar"};
-   for (const auto& iface : ifaces) {
-     drivers.push_back(std::make_shared<SillyDriver>(SillyDriver(iface)));
-   }
-   auto found = FindDriver(drivers, "bar");
-   EXPECT_EQ(found->iface, string("bar"));
-   found = FindDriver(drivers, "baz");
-   EXPECT_FALSE(found);
+  std::vector<DriverPtr> drivers;
+  std::vector<std::string> ifaces{"foo", "bar", "foobar"};
+  for (const auto& iface : ifaces) {
+    drivers.push_back(std::make_shared<SillyDriver>(SillyDriver(iface)));
+  }
+  auto found = FindDriver(drivers, "bar");
+  EXPECT_EQ(found->iface, string("bar"));
+  found = FindDriver(drivers, "baz");
+  EXPECT_FALSE(found);
 }
 
 TEST(Registry, persistence) {
-    int start_size = 0;
-    if (true) {  // a scope
-      auto driver = std::make_shared<const SillyDriver>();
-      auto& registry = CommDriverRegistry::getInstance();
-      start_size =  registry.GetDrivers().size();
-      registry.Activate(
-        std::static_pointer_cast<const AbstractCommDriver>(driver));
-    }
+  int start_size = 0;
+  if (true) {  // a scope
+    auto driver = std::make_shared<const SillyDriver>();
     auto& registry = CommDriverRegistry::getInstance();
-    auto drivers = registry.GetDrivers();
-    EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
-    EXPECT_EQ(registry.GetDrivers()[start_size]->iface, string("silly"));
-    EXPECT_EQ(registry.GetDrivers()[start_size]->bus, NavAddr::Bus::TestBus);
+    start_size = registry.GetDrivers().size();
+    registry.Activate(
+        std::static_pointer_cast<const AbstractCommDriver>(driver));
+  }
+  auto& registry = CommDriverRegistry::getInstance();
+  auto drivers = registry.GetDrivers();
+  EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
+  EXPECT_EQ(registry.GetDrivers()[start_size]->iface, string("silly"));
+  EXPECT_EQ(registry.GetDrivers()[start_size]->bus, NavAddr::Bus::TestBus);
 }
 
 TEST(Position, ParseGGA) {
