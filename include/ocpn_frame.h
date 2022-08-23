@@ -48,6 +48,7 @@
 #include "SignalKEventHandler.h"
 #include "comm_appmsg_bus.h"
 #include "bbox.h"
+#include "OCPN_Sound.h"                // FIXME(leamas) refactor
 
 wxColour GetGlobalColor(wxString colorName);
 enum DialogColor {
@@ -178,6 +179,11 @@ private:
   std::string m_string;
 };
 
+typedef struct _AisInfoCtx {
+  const AIS_Target_Data* palert_target;
+} AisInfoCtx;
+
+
 class MyFrame : public wxFrame {
   friend class SignalKEventHandler;
 
@@ -226,6 +232,7 @@ public:
   void selectChartDisplay(int type, int family);
   void applySettingsString(wxString settings);
   void setStringVP(wxString VPS);
+  void ShowAisInfo(const AisInfoCtx& ctx);    // FIXME(leamas)
   void InvalidateAllGL();
   void RefreshAllCanvas(bool bErase = true);
   void CancelAllMouseRoute();
@@ -342,8 +349,8 @@ public:
   void TouchAISActive(void);
   void UpdateAISTool(void);
 
-  void ActivateAISMOBRoute(AIS_Target_Data *ptarget);
-  void UpdateAISMOBRoute(AIS_Target_Data *ptarget);
+  void ActivateAISMOBRoute(const AIS_Target_Data *ptarget);
+  void UpdateAISMOBRoute(const AIS_Target_Data *ptarget);
 
   wxStatusBar *m_pStatusBar;
   wxMenuBar *m_pMenuBar;
@@ -435,6 +442,7 @@ private:
   bool GetMasterToolItemShow(int toolid);
   void OnToolbarAnimateTimer(wxTimerEvent &event);
   bool CollapseGlobalToolbar();
+   bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };  //FIXME(leamas) refactor
 
   int m_StatusBarFieldCount;
 
@@ -471,12 +479,15 @@ private:
   time_t m_fixtime;
   wxMenu *piano_ctx_menu;
   bool b_autofind;
-
+  OcpnSound* m_AIS_Sound;    // FIXME(leamas) refactor.
+  bool m_bAIS_AlertPlaying;  // FIXME(leamas) refactor.
   time_t m_last_track_rotation_ts;
   wxRect m_mainlast_tb_rect;
   wxTimer ToolbarAnimateTimer;
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;
+
+  bool m_bAIS_Audio_Alert_On;
 
   SignalKEventHandler m_signalKHandler;
 
