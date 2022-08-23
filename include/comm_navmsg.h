@@ -204,9 +204,6 @@ public:
   const std::string talker;  /**< For example 'GP' */
   const std::string type;    /**< For example 'GGA' */
   const std::string payload; /**< Complete NMEA0183 sentence, also prefix */
-
-private:
-  static const std::string key_prefix;
 };
 
 /** A parsed SignalK message over ipv4 */
