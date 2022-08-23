@@ -189,7 +189,7 @@ public:
         type(t),
         payload(other.payload) {}
 
-  std::string key() const { return Nmea0183Msg::key_prefix + type; };
+  std::string key() const { return Nmea0183Msg::MessageKey(type.c_str()); };
 
   std::string to_string() const {
     return NavMsg::to_string() + " " + talker + type + " " + payload;
@@ -197,7 +197,8 @@ public:
 
   /** Return key which should be used to listen to given message type. */
   static std::string MessageKey(const char* type = "ALL") {
-    return Nmea0183Msg::key_prefix + type;
+    static const char* const prefix = "n0183-";
+    return std::string(prefix) + type;
   }
 
   const std::string talker;  /**< For example 'GP' */
