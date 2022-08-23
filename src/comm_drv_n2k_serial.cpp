@@ -475,7 +475,7 @@ void* CommDriverN2KSerialThread::Entry() {
     if (TestDestroy()) not_done = false;  // smooth exit
 
     uint8_t next_byte = 0;
-    size_t newdata = -1;
+    int newdata = 0;
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(&next_byte, 1);
@@ -638,7 +638,7 @@ void* CommDriverN2KSerialThread::Entry() {
     if (TestDestroy()) not_done = false;  // smooth exit
 
     uint8_t next_byte = 0;
-    size_t newdata = -1;
+    int newdata = -1;
     uint8_t rdata[2000];
 
     if (m_serial.isOpen()) {

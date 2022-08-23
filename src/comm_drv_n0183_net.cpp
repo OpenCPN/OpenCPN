@@ -159,16 +159,14 @@ void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
 
   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
     std::string identifier;
-    // We notify based on Mnemonic only, ignoring the Talker ID
-    identifier = full_sentence.substr(3, 3);
+    // We notify based on full message, including the Talker ID
+    identifier = full_sentence.substr(1, 5);
 
-    // Notify listener for msg and also "all" N0183 messages to support plugin
-    // API
+    // notify message listener and also "ALL" N0183 messages, to support plugin
+    // API using original talker id
     auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
                                                    GetAddress());
-    auto msg_all =
-        std::make_shared<const Nmea0183Msg>("", full_sentence, GetAddress());
-
+    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
     m_listener.Notify(std::move(msg));
     m_listener.Notify(std::move(msg_all));
   }
