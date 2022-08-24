@@ -286,24 +286,24 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
                                                  GetAddress(name));
   m_listener.Notify(std::move(msg));
 
-#if 0  // Debug output
-  size_t packetLength = (size_t)data->at(1);
-  size_t vector_length = data->size();
+#if 1  // Debug output
+  size_t packetLength = (size_t)payload->at(1);
+  size_t vector_length = payload->size();
 
   printf("Payload Length: %ld\n", vector_length);
 
   // extract PGN
   uint32_t v = 0;
   unsigned char *t = (unsigned char *)&v;
-  *t++ = data->at(3);
-  *t++ = data->at(4);
-  *t++ = data->at(5);
+  *t++ = payload->at(3);
+  *t++ = payload->at(4);
+  *t++ = payload->at(5);
   //memcpy(&v, &data[3], 1);
 
   printf("PGN: %d\n", v);
 
   for(size_t i=0; i< vector_length ; i++){
-    printf("%02X ", data->at(i));
+    printf("%02X ", payload->at(i));
   }
   printf("\n\n");
 #endif
@@ -531,6 +531,10 @@ void* CommDriverN2KSerialThread::Entry() {
           tak_ptr = tptr;
           bInMsg = false;
           bGotESC = false;
+
+//           for (unsigned int i = 0; i < vec->size(); i++)
+//             printf("%02X ", vec->at(i));
+//           printf("\n");
 
           // Message is finished
           // Send the captured raw data vector pointer to the thread's "parent"
