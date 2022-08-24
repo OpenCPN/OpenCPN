@@ -32,6 +32,7 @@
 #include "OCPN_DataStreamEvent.h"
 #include "comm_navmsg.h"
 #include "observable_navmsg.h"
+#include "observable_evtvar.h"
 
 #define TRACKTYPE_DEFAULT 0
 #define TRACKTYPE_ALWAYS 1
@@ -94,6 +95,12 @@ public:
   void DeletePersistentTrack(Track *track);
   std::map<int, Track *> m_persistent_tracks;
   bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
+
+  /**
+   * Notified when AIS user dialogs should update. Event contains a
+   * AIS_Target_data pointer.
+   */
+  EventVar ais_info_update;
 
 private:
   void OnActivate(wxActivateEvent &event);

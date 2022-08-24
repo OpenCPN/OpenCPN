@@ -6,6 +6,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -59,8 +60,16 @@ extern wxString g_SART_sound_file;
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
     wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-    wxPostEvent(g_pAIS, ev);
+    wxPostEvent(g_pAIS, ev);   // FIXME(leamas): Review sound handling.
   }
+}
+
+AisInfoGui::AisInfoGui() {
+  wxDEFINE_EVENT(EVT_AIS_GUI_UPDATE, wxCommandEvent);
+  ais_updates = g_pAIS->ais_info_update.GetListener(this, EVT_AIS_GUI_UPDATE);
+  Bind(EVT_AIS_GUI_UPDATE, [&](wxCommandEvent ev) {
+    auto palert_target = static_cast<AIS_Target_Data*>(ev.GetClientData());
+    ShowAisInfo(palert_target); });
 }
 
 void AisInfoGui::ShowAisInfo(AIS_Target_Data* palert_target) {
@@ -93,8 +102,7 @@ void AisInfoGui::ShowAisInfo(AIS_Target_Data* palert_target) {
                                 _("AIS Alert"));
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        const_cast<AIS_Target_Data*>(palert_target)->dtAlertExpireTime 
-            = wxDateTime::Now() + alertLifeTime;
+        palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
         g_Platform->PositionAISAlert(pAISAlertDialog);
   
         g_pais_alert_dialog_active = pAISAlertDialog;
@@ -153,8 +161,7 @@ void AisInfoGui::ShowAisInfo(AIS_Target_Data* palert_target) {
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        const_cast<AIS_Target_Data*>(palert_target)->dtAlertExpireTime =
-            wxDateTime::Now() + alertLifeTime;
+        palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
       }
       //  In "expiry delay"?
       else if (!palert_target->b_in_ack_timeout &&
