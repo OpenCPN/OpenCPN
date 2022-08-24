@@ -182,7 +182,6 @@ void AisInfoGui::ShowAisInfo(AIS_Target_Data* palert_target) {
     }
   }
 
-
   //    At this point, the audio flag is set
   //    Honor the global flag
   if (!g_bAIS_CPA_Alert_Audio) m_bAIS_Audio_Alert_On = false;

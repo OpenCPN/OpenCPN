@@ -1195,7 +1195,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //    Establish my children
   g_pMUX = new Multiplexer();
 
-  g_pAIS = new AIS_Decoder(this);
+  g_pAIS = new AIS_Decoder();
 
   g_pMUX->SetAISHandler(g_pAIS);
   g_pMUX->SetGPSHandler(this);
