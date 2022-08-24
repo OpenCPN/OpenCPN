@@ -477,8 +477,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
     FD_SET(can_socket, &readFD);
 
     // Set the timeout
-    //FIXME Too long, maybe 5 secs?
-    socketTimeout.tv_sec = 500;
+    socketTimeout.tv_sec = 5;
     socketTimeout.tv_usec = 0;
 
     if (select((can_socket + 1), &readFD, NULL, NULL, &socketTimeout) != -1)	{
@@ -486,7 +485,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
         recvbytes = read(can_socket, &canSocketFrame, sizeof(struct can_frame));
         if (recvbytes) {
 
-          int position;
+          int position = -1;
           bool bReady = false;
 
           DecodeCanHeader(canSocketFrame.can_id,&header);
@@ -514,7 +513,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
           // This is a single frame message, parse it
           else {
-            bReady = false;
+            bReady = true;
           }
 
           if (bReady){
@@ -523,7 +522,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
           // Populate the vector
 
-            if (header.pgn == 129029){
+            if (position >= 0){     // re-assembled fast message
               printf("PGN:  %d\n", header.pgn);
 
               vec->push_back(0x93);
@@ -538,62 +537,43 @@ void* CommDriverN2KSocketCANThread::Entry() {
               vec->push_back(0xFF);
               vec->push_back(0xFF);
               vec->push_back(0xFF);
-              vec->push_back(fastMessages[position].expectedLength); //.dlc has been deprecated
+              vec->push_back(fastMessages[position].expectedLength);
               for (size_t n = 0; n < fastMessages[position].expectedLength; n++)
                 vec->push_back(fastMessages[position].data[n]);
 
-              for(int i=0; i<vec->size(); i++){
-                printf("%02x ", vec->at(i));
-              }
-              printf("\n");
+              // Clear the message assembly buffer
+              free(fastMessages[position].data);
+              fastMessages[position].isFree = TRUE;
+              fastMessages[position].data = NULL;
 
-              CommDriverN2KSocketCANEvent frameReceivedEvent(wxEVT_COMMDRIVER_N2K_SOCKETCAN, 0);
-              frameReceivedEvent.SetPayload(buffer);
-              m_pParentDriver->AddPendingEvent(frameReceivedEvent);
-
+//               for(size_t i=0; i<vec->size(); i++){
+//                 printf("%02x ", vec->at(i));
+//               }
+//               printf("\n");
+            }
+            else {        // single frame message
+              vec->push_back(0x93);
+              vec->push_back(0x12); // Won't append Actisense CRC
+              vec->push_back(header.priority);
+              vec->push_back(header.pgn & 0xFF);
+              vec->push_back((header.pgn >> 8) & 0xFF);
+              vec->push_back((header.pgn >> 16) & 0xFF);
+              vec->push_back(header.destination);
+              vec->push_back(header.source);
+              vec->push_back(0xFF); // Fixme (dave) generate the time fields
+              vec->push_back(0xFF);
+              vec->push_back(0xFF);
+              vec->push_back(0xFF);
+              vec->push_back(sizeof(struct can_frame));
+              for (size_t n = 0; n < sizeof(struct can_frame); n++)
+                vec->push_back(canSocketFrame.data[n]);
             }
 
-          int yyp = 4;
-
-#if 0
-          auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char>* vec = buffer.get();
-
-          //unsigned char buffer[40];
-
-          // Populate the buffer
-
-          vec->push_back(0x93);
-          vec->push_back(0x12); // Won't append Actisense CRC
-          vec->push_back(header.priority);
-          vec->push_back(header.pgn & 0xFF);
-          vec->push_back((header.pgn >> 8) & 0xFF);
-          vec->push_back((header.pgn >> 16) & 0xFF);
-          vec->push_back(header.destination);
-          vec->push_back(header.source);
-          vec->push_back(0xFF); // BUG BUG Could generate the time fields
-          vec->push_back(0xFF);
-          vec->push_back(0xFF);
-          vec->push_back(0xFF);
-          vec->push_back(sizeof(struct can_frame)); //.dlc has been deprecated
-          for (size_t n = 0; n < sizeof(struct can_frame); n++)
-            vec->push_back(canSocketFrame.data[n]);
-          //memcpy(&buffer[12], canSocketFrame.data, sizeof(struct can_frame));
-          // BUG BUG Could calculate a CRC to keep Dave/Alec happy
-
-
-          // BUG BUG just filter on known 8 byte PGN's of interest to OCPN
-          // Position (rapid update), COG/SOG (rapid update), Heading,
-
-          if ((header.pgn == 129025) || (header.pgn == 129026) || (header.pgn == 127250)) {
-            printf("PGN:  %d\n", header.pgn);
 
             CommDriverN2KSocketCANEvent frameReceivedEvent(wxEVT_COMMDRIVER_N2K_SOCKETCAN, 0);
             frameReceivedEvent.SetPayload(buffer);
             m_pParentDriver->AddPendingEvent(frameReceivedEvent);
 
-          } // supported pgn's
-#endif
           }  //bReady
 
         } // recv bytes
@@ -690,19 +670,15 @@ void CommDriverN2KSocketCANThread::MapInsertEntry(const CanHeader header,
     fastMessages[position].header = header;
     fastMessages[position].timeArrived = GetTimeInMicroseconds();;
     fastMessages[position].isFree = FALSE;
-    // Remember to free after we have processed the final frame
     fastMessages[position].data = (unsigned char *)malloc(totalDataLength);
     memcpy(&fastMessages[position].data[0], &data[2], 6);
-    // First frame of a multi-frame Fast Message contains six data bytes, position the cursor ready for next message
+    // First frame of a multi-frame Fast Message contains six data bytes.
+    // Position the cursor ready for next message
     fastMessages[position].cursor = 6;
 
     // Fusion, using fast messages to sends frames less than eight bytes
     if (fastMessages[position].expectedLength <= 6) {
-      //ParseMessage(header, fastMessages[position].data);
-      // Clear the entry
-      free(fastMessages[position].data);
-      fastMessages[position].isFree = true;
-      fastMessages[position].data = NULL;
+      bReady = true;
     }
   }
   // No further processing is performed if this is not a start frame.
@@ -725,14 +701,8 @@ int CommDriverN2KSocketCANThread::MapAppendEntry(const CanHeader header,
     fastMessages[position].cursor += 7;
     // Is this the last message ?
     if (fastMessages[position].cursor >= fastMessages[position].expectedLength) {
-      // Mark as ready for parsing
+      // Mark as ready for further processing
       bReady = true;
-      int yyp = 4;
-      ///ParseMessage(header, fastMessages[position].data);
-      // Clear the entry
-//       free(fastMessages[position].data);
-//       fastMessages[position].isFree = TRUE;
-//       fastMessages[position].data = NULL;
     }
     return TRUE;
   }
@@ -746,7 +716,7 @@ int CommDriverN2KSocketCANThread::MapAppendEntry(const CanHeader header,
     fastMessages[position].data = NULL;
     // And now insert it
     MapInsertEntry(header, data, position, bReady);
-    // BUG BUG Should update the dropped frame stats
+    // FIXME (dave) Should update the dropped frame stats
     return TRUE;
   }
   else {
@@ -776,10 +746,10 @@ int CommDriverN2KSocketCANThread::MapAppendEntry(const CanHeader header,
 
 // Initialize each entry in the Fast Message Map
 void CommDriverN2KSocketCANThread::MapInitialize(void) {
-	for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
-		fastMessages[i].isFree = TRUE;
-		fastMessages[i].data = NULL;
-	}
+  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
+    fastMessages[i].isFree = TRUE;
+    fastMessages[i].data = NULL;
+  }
 }
 
 #endif
