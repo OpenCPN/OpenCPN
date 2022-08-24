@@ -26,6 +26,7 @@
 #include <vector>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
+#include <sys/time.h>
 
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_navmsg_bus.h"
@@ -118,33 +119,42 @@ private:
 
 #define NOT_FOUND -1
 #define CONST_MAX_MESSAGES 100
+#define CONST_TIME_EXCEEDED 250
 
 // Decodes a 29 bit CAN header from an int
 void DecodeCanHeader(const int canId, CanHeader *header) {
-	unsigned char buf[4];
-	buf[0] = canId & 0xFF;
-	buf[1] = (canId >> 8) & 0xFF;
-	buf[2] = (canId >> 16) & 0xFF;
-	buf[3] = (canId >> 24) & 0xFF;
+  unsigned char buf[4];
+  buf[0] = canId & 0xFF;
+  buf[1] = (canId >> 8) & 0xFF;
+  buf[2] = (canId >> 16) & 0xFF;
+  buf[3] = (canId >> 24) & 0xFF;
 
-	header->source = buf[0];
-	header->destination = buf[2] < 240 ? buf[1] : 255;
-	header->pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
-	header->priority = (buf[3] & 0x1c) >> 2;
+  header->source = buf[0];
+  header->destination = buf[2] < 240 ? buf[1] : 255;
+  header->pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
+  header->priority = (buf[3] & 0x1c) >> 2;
 }
 
 class CommDriverN2KSocketCANEvent;  // fwd
 
 // Buffer used to re-assemble sequences of multi frame Fast Packet messages
 typedef struct FastMessageEntry {
-	unsigned char isFree; // indicate whether this entry is free
-	unsigned long long timeArrived; // time of last message in microseconds.
-	CanHeader header; // the header of the message. Used to "map" the incoming fast message fragments
-	unsigned int sid; // message sequence identifier, used to check if a received message is the next message in the sequence
-	unsigned int expectedLength; // total data length obtained from first frame
-	unsigned int cursor; // cursor into the current position in the below data
-	unsigned char *data; // pointer to memory allocated for the data. Note: must be freed when IsFree is set to TRUE.
+  unsigned char isFree; // indicate whether this entry is free
+  unsigned long long timeArrived; // time of last message in microseconds.
+  CanHeader header; // the header of the message. Used to "map" the incoming fast message fragments
+  unsigned int sid; // message sequence identifier, used to check if a received message is the next message in the sequence
+  unsigned int expectedLength; // total data length obtained from first frame
+  unsigned int cursor; // cursor into the current position in the below data
+  unsigned char *data; // pointer to memory allocated for the data. Note: must be freed when IsFree is set to TRUE.
 } FastMessageEntry;
+
+unsigned long long GetTimeInMicroseconds() {
+#if (defined (__APPLE__) && defined (__MACH__)) || defined (__LINUX__)
+  struct timeval currentTime;
+  gettimeofday(&currentTime, NULL);
+  return (currentTime.tv_sec * 1e6 ) + currentTime.tv_usec;
+#endif
+}
 
 class CommDriverN2KSocketCANThread : public wxThread {
 public:
@@ -162,6 +172,11 @@ private:
 
   bool IsFastMessage(const CanHeader header);
   int MapFindMatchingEntry(const CanHeader header, const unsigned char sid);
+  int MapFindFreeEntry(void);
+  int MapGarbageCollector(void);
+  void MapInsertEntry(const CanHeader header, const unsigned char *data, const int position, bool& bReady);
+  int MapAppendEntry(const CanHeader header, const unsigned char *data, const int position, bool& bReady);
+  void MapInitialize(void);
 
   CommDriverN2KSocketCAN* m_pParentDriver;
   wxString m_PortName;
@@ -178,6 +193,8 @@ private:
 
   // The Fast Packet buffer - used to reassemble Fast packet messages
   FastMessageEntry fastMessages[CONST_MAX_MESSAGES];
+  int droppedFrames;
+	wxDateTime droppedFrameTime;
 
   // CAN connection variables
   struct sockaddr_can can_address;
@@ -354,6 +371,8 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
   put_ptr = rx_buffer;  // local circular queue
   tak_ptr = rx_buffer;
 
+  MapInitialize();
+
   Create();
 }
 
@@ -467,37 +486,76 @@ void* CommDriverN2KSocketCANThread::Entry() {
         recvbytes = read(can_socket, &canSocketFrame, sizeof(struct can_frame));
         if (recvbytes) {
 
+          int position;
+          bool bReady = false;
+
           DecodeCanHeader(canSocketFrame.can_id,&header);
 
           if (IsFastMessage(header) == TRUE) {
-            int position;
             position = MapFindMatchingEntry(header, canSocketFrame.data[0]);
-#if 0
             // No existing fast message
             if (position == NOT_FOUND) {
               // Find a free slot
               position = MapFindFreeEntry();
               // No free slots, exit
               if (position == NOT_FOUND) {
-                //return;
+                //FIXME (dave) return;
               }
             // Insert the first frame of the fast message
               else {
-                MapInsertEntry(header, payload, position);
+                MapInsertEntry(header, canSocketFrame.data, position, bReady);
               }
             }
         // An existing fast message is present, append the frame
             else {
-              MapAppendEntry(header, payload, position);
+              MapAppendEntry(header, canSocketFrame.data, position, bReady);
             }
-#endif
           }
 
-  // This is a single frame message, parse it
-//   else {
-//     ParseMessage(header, payload);
-//   }
+          // This is a single frame message, parse it
+          else {
+            bReady = false;
+          }
 
+          if (bReady){
+            auto buffer = std::make_shared<std::vector<unsigned char>>();
+            std::vector<unsigned char>* vec = buffer.get();
+
+          // Populate the vector
+
+            if (header.pgn == 129029){
+              printf("PGN:  %d\n", header.pgn);
+
+              vec->push_back(0x93);
+              vec->push_back(fastMessages[position].expectedLength + 11);
+              vec->push_back(header.priority);
+              vec->push_back(header.pgn & 0xFF);
+              vec->push_back((header.pgn >> 8) & 0xFF);
+              vec->push_back((header.pgn >> 16) & 0xFF);
+              vec->push_back(header.destination);
+              vec->push_back(header.source);
+              vec->push_back(0xFF); // FIXME (dave) Could generate the time fields
+              vec->push_back(0xFF);
+              vec->push_back(0xFF);
+              vec->push_back(0xFF);
+              vec->push_back(fastMessages[position].expectedLength); //.dlc has been deprecated
+              for (size_t n = 0; n < fastMessages[position].expectedLength; n++)
+                vec->push_back(fastMessages[position].data[n]);
+
+              for(int i=0; i<vec->size(); i++){
+                printf("%02x ", vec->at(i));
+              }
+              printf("\n");
+
+              CommDriverN2KSocketCANEvent frameReceivedEvent(wxEVT_COMMDRIVER_N2K_SOCKETCAN, 0);
+              frameReceivedEvent.SetPayload(buffer);
+              m_pParentDriver->AddPendingEvent(frameReceivedEvent);
+
+            }
+
+          int yyp = 4;
+
+#if 0
           auto buffer = std::make_shared<std::vector<unsigned char>>();
           std::vector<unsigned char>* vec = buffer.get();
 
@@ -535,10 +593,13 @@ void* CommDriverN2KSocketCANThread::Entry() {
             m_pParentDriver->AddPendingEvent(frameReceivedEvent);
 
           } // supported pgn's
+#endif
+          }  //bReady
+
         } // recv bytes
-			} //FDISSET
-		} // select
-	} // while
+      } //FDISSET
+    } // select
+  } // while
 
 
   // thread_exit:
@@ -571,6 +632,154 @@ int CommDriverN2KSocketCANThread::MapFindMatchingEntry(const CanHeader header, c
     }
   }
   return NOT_FOUND;
+}
+
+// Find first free entry in fastMessages
+int CommDriverN2KSocketCANThread::MapFindFreeEntry(void) {
+  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
+    if (fastMessages[i].isFree == TRUE) {
+      return i;
+    }
+  }
+  // Could also run the Garbage Collection routine in a separate thread, would require locking etc.
+  // But this will look for stale entries in case there are no free entries
+  // If there are no free entries, then indicative that we are receiving more Fast messages
+  // than I anticipated.
+  int staleEntries;
+  staleEntries = MapGarbageCollector();
+  if (staleEntries == 0) {
+    return NOT_FOUND;
+    // FIXME (dave) Log this so as to increase the number of FastMessages that may be received
+    //  wxLogError(_T("socketCan Device, No free entries in Fast Message Map"));
+  }
+  else {
+    return MapFindFreeEntry();
+  }
+}
+
+int CommDriverN2KSocketCANThread::MapGarbageCollector(void) {
+  int staleEntries;
+  staleEntries = 0;
+  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
+    if ((fastMessages[i].isFree == FALSE) && (GetTimeInMicroseconds() - fastMessages[i].timeArrived > CONST_TIME_EXCEEDED)) {
+      staleEntries++;
+      free(fastMessages[i].data);
+      fastMessages[i].isFree = TRUE;
+    }
+  }
+	return staleEntries;
+}
+
+// Insert the first message of a sequence of fast messages
+void CommDriverN2KSocketCANThread::MapInsertEntry(const CanHeader header,
+                                                  const unsigned char *data,
+                                                  const int position, bool& bReady) {
+  // first message of fast packet
+  // data[0] Sequence Identifier (sid)
+  // data[1] Length of data bytes
+  // data[2..7] 6 data bytes
+
+  // Ensure that this is indeed the first frame of a fast message
+  if ((data[0] & 0x1F) == 0) {
+    int totalDataLength; // will also include padding as we memcpy all of the frame, because I'm lazy
+    totalDataLength = (unsigned int)data[1];
+    totalDataLength += 7 - ((totalDataLength - 6) % 7);
+
+    fastMessages[position].sid = (unsigned int)data[0];
+    fastMessages[position].expectedLength = (unsigned int)data[1];
+    fastMessages[position].header = header;
+    fastMessages[position].timeArrived = GetTimeInMicroseconds();;
+    fastMessages[position].isFree = FALSE;
+    // Remember to free after we have processed the final frame
+    fastMessages[position].data = (unsigned char *)malloc(totalDataLength);
+    memcpy(&fastMessages[position].data[0], &data[2], 6);
+    // First frame of a multi-frame Fast Message contains six data bytes, position the cursor ready for next message
+    fastMessages[position].cursor = 6;
+
+    // Fusion, using fast messages to sends frames less than eight bytes
+    if (fastMessages[position].expectedLength <= 6) {
+      //ParseMessage(header, fastMessages[position].data);
+      // Clear the entry
+      free(fastMessages[position].data);
+      fastMessages[position].isFree = true;
+      fastMessages[position].data = NULL;
+    }
+  }
+  // No further processing is performed if this is not a start frame.
+  // A start frame may have been dropped and we received a subsequent frame
+}
+
+// Append subsequent messages of a sequence of fast messages
+// Subsequent messages of fast packet
+// data[0] Sequence Identifier (sid)
+// data[1..7] 7 data bytes
+int CommDriverN2KSocketCANThread::MapAppendEntry(const CanHeader header,
+                                                 const unsigned char *data,
+                                                 const int position, bool& bReady) {
+  // Check that this is the next message in the sequence
+  bReady = false;
+  if ((fastMessages[position].sid + 1) == data[0]) {
+    memcpy(&fastMessages[position].data[fastMessages[position].cursor], &data[1], 7);
+    fastMessages[position].sid = data[0];
+    // Subsequent messages contains seven data bytes (last message may be padded with 0xFF)
+    fastMessages[position].cursor += 7;
+    // Is this the last message ?
+    if (fastMessages[position].cursor >= fastMessages[position].expectedLength) {
+      // Mark as ready for parsing
+      bReady = true;
+      int yyp = 4;
+      ///ParseMessage(header, fastMessages[position].data);
+      // Clear the entry
+//       free(fastMessages[position].data);
+//       fastMessages[position].isFree = TRUE;
+//       fastMessages[position].data = NULL;
+    }
+    return TRUE;
+  }
+  else if ((data[0] & 0x1F) == 0) {
+    // We've found a matching entry, however this is a start frame, therefore
+    // we've missed an end frame, and now we have a start frame with the same id (top 3 bits).
+    // The id has obviously rolled over. Should really double check that (data[0] & 0xE0)
+    // Clear the entry as we don't want to leak memory, prior to inserting a start frame
+    free(fastMessages[position].data);
+    fastMessages[position].isFree = TRUE;
+    fastMessages[position].data = NULL;
+    // And now insert it
+    MapInsertEntry(header, data, position, bReady);
+    // BUG BUG Should update the dropped frame stats
+    return TRUE;
+  }
+  else {
+    // This is not the next frame in the sequence and not a start frame
+    // We've dropped an intermedite frame, so free the slot and do no further processing
+    free(fastMessages[position].data);
+    fastMessages[position].isFree = TRUE;
+    fastMessages[position].data = NULL;
+    // Dropped Frame Statistics
+    if (droppedFrames == 0) {
+      droppedFrameTime = wxDateTime::Now();
+      droppedFrames += 1;
+    }
+    else {
+      droppedFrames += 1;
+    }
+    // FIXME (dave)
+//     if ((droppedFrames > CONST_DROPPEDFRAME_THRESHOLD) && (wxDateTime::Now() < (droppedFrameTime +  wxTimeSpan::Seconds(CONST_DROPPEDFRAME_PERIOD) ) ) ) {
+//       wxLogError(_T("TwoCan Device, Dropped Frames rate exceeded"));
+//       wxLogError(wxString::Format(_T("Frame: Source: %d Destination: %d Priority: %d PGN: %d"),header.source, header.destination, header.priority, header.pgn));
+//       droppedFrames = 0;
+//     }
+    return FALSE;
+
+  }
+}
+
+// Initialize each entry in the Fast Message Map
+void CommDriverN2KSocketCANThread::MapInitialize(void) {
+	for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
+		fastMessages[i].isFree = TRUE;
+		fastMessages[i].data = NULL;
+	}
 }
 
 #endif
