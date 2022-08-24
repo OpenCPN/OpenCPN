@@ -799,6 +799,7 @@ set(
   include/AIS_Target_Data.h
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
+  include/ais_info_gui.h
   include/BasePlatform.h
   include/bbox.h
   include/canvasMenu.h
@@ -986,6 +987,7 @@ set(
   src/AIS_Target_Data.cpp
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
+  src/ais_info_gui.cpp
   src/BasePlatform.cpp
   src/bbox.cpp
   src/CanvasConfig.cpp
