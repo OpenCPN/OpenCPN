@@ -102,6 +102,8 @@ modules:
           - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
           - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH
       build-options:
+          build-args:
+            - --share=network
           cxxflags: -DFLATPAK
           cflags: -DFLATPAK
           env:
