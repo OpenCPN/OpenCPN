@@ -31,6 +31,8 @@
 #include <windows.h>
 #endif
 
+#include <memory>
+
 #include <wx/listbook.h>
 #include <wx/dirctrl.h>
 #include <wx/spinctrl.h>
@@ -39,6 +41,7 @@
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
 #include <wx/colourdata.h>
+#include "connections_dialog.h"
 
 #if wxUSE_TIMEPICKCTRL
 #include <wx/timectrl.h>
@@ -58,7 +61,7 @@
 #include "scrollingdialog.h"
 #endif
 
-#include "datastream.h"
+//#include "datastream.h"
 #include "chartdbs.h"
 #include "pluginmanager.h"  // FIXME: Refactor
 
@@ -70,7 +73,7 @@
 class wxGenericDirCtrl;
 class MyConfig;
 class ChartGroupsUI;
-class ConnectionParams;
+//class ConnectionParams;
 class PluginListPanel;
 class ChartGroupArray;
 class ChartGroup;
@@ -352,9 +355,9 @@ public:
   void OnChartsPageChange(wxListbookEvent &event);
   void OnChartDirListSelect(wxCommandEvent &event);
   void OnUnitsChoice(wxCommandEvent &event);
-  void OnScanBTClick(wxCommandEvent &event);
-  void onBTScanTimer(wxTimerEvent &event);
-  void StopBTScan(void);
+//   void OnScanBTClick(wxCommandEvent &event);
+//   void onBTScanTimer(wxTimerEvent &event);
+//   void StopBTScan(void);
 
   void UpdateWorkArrayFromDisplayPanel(void);
   ArrayOfCDI GetSelectedChartDirs();
@@ -371,7 +374,6 @@ public:
   void OnConfigMouseSelected(wxMouseEvent &event);
   void OnDialogInit(wxInitDialogEvent& event);
 
-  void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
 
   bool GetNeedNew() { return m_bneedNew; }
   void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
@@ -431,6 +433,7 @@ public:
   int k_tides;
 
   // For the GPS page
+#if 0
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
   wxButton *m_btnOutputStcList, *m_sdbSizerDlgButtonsOK;
   wxButton *m_sdbSizerDlgButtonsApply, *m_sdbSizerDlgButtonsCancel;
@@ -453,11 +456,14 @@ public:
   wxScrolledWindow *m_scrollWinConnections;
   wxBoxSizer *boxSizerConnections;
   ConnectionParams *mSelectedConnection;
+#endif
 
   // For the Display\Units page
   wxStaticText *itemStaticTextUserVar;
   wxStaticText *itemStaticTextUserVar2;
+  wxButton *m_configDeleteButton, *m_configApplyButton;
 
+#if 0
   wxGridSizer *gSizerNetProps, *gSizerSerProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
@@ -469,7 +475,10 @@ public:
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
   wxButton *m_configDeleteButton, *m_configApplyButton, *m_ButtonSKDiscover;
   wxStaticText *m_StaticTextSKServerStatus;
+#endif
 
+  // FIXME Remove to next -----------, already copied to connections_dialog
+#if 0
   void OnSelectDatasource(wxListEvent &event);
   void OnAddDatasourceClick(wxCommandEvent &event);
   void OnRemoveDatasourceClick(wxCommandEvent &event);
@@ -496,13 +505,14 @@ public:
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(wxString stat);
+#endif
+
+//------------------------------------------------------------
   void OnAISRolloverClick(wxCommandEvent &event);
   void UpdateChartDirList();
 
   void OnCanvasConfigSelectClick(int ID, bool selected);
 
-  bool connectionsaved;
-  bool m_connection_enabled;
 
   bool b_haveWMM;
   bool b_oldhaveWMM;
@@ -679,8 +689,6 @@ private:
   void CreatePanel_Ownship(size_t parent, int border_size,
                            int group_item_spacing);
   void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_NMEA_Compact(size_t parent, int border_size,
-                                int group_item_spacing);
   void CreatePanel_ChartsLoad(size_t parent, int border_size,
                               int group_item_spacing);
   void CreatePanel_VectorCharts(size_t parent, int border_size,
@@ -715,35 +723,28 @@ private:
   wxImageList *m_topImgList;
 
   wxScrolledWindow *m_pNMEAForm;
-  void ShowNMEACommon(bool visible);
+//   void ShowNMEACommon(bool visible);
+//
+//   void ShowNMEASerial(bool visible);
+//   void ShowNMEANet(bool visible);
+//   void ShowNMEAGPS(bool visible);
+//   void ShowNMEABT(bool visible);
 
-  void ShowNMEASerial(bool visible);
-  void ShowNMEANet(bool visible);
-  void ShowNMEAGPS(bool visible);
-  void ShowNMEABT(bool visible);
+//   void SetNMEAFormToSerial(void);
+//   void SetNMEAFormToNet(void);
+//   void SetNMEAFormToGPS(void);
+//   void SetNMEAFormToBT(void);
 
-  void SetNMEAFormToSerial(void);
-  void SetNMEAFormToNet(void);
-  void SetNMEAFormToGPS(void);
-  void SetNMEAFormToBT(void);
-
-  void ClearNMEAForm(void);
-  bool m_bNMEAParams_shown;
+  //void ClearNMEAForm(void);
 
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
-  void SetConnectionParams(ConnectionParams *cp);
-  void SetDefaultConnectionParams(void);
-  void SetDSFormRWStates();
-  void SetDSFormOptionVizStates();
-  void FillSourceList();
-  void UpdateSourceList(bool bResort);
-  bool SortSourceList(void);
+//   void SetConnectionParams(ConnectionParams *cp);
+//   void SetDefaultConnectionParams(void);
+//   void SetDSFormRWStates();
+//   void SetDSFormOptionVizStates();
 
   ObservedVarListener compat_os_listener;
-  ConnectionParams *CreateConnectionParamsFromSelectedItem();
-  ConnectionParams *UpdateConnectionParamsFromSelectedItem(
-      ConnectionParams *pConnectionParams);
 
   int m_screenConfig;
 
@@ -752,12 +753,9 @@ private:
   wxFont smallFont;
   //  wxFont *dialogFont;
   wxSize m_small_button_size;
-  wxTimer m_BTScanTimer;
-  wxArrayString m_BTscan_results;
 
   bool m_bcompact;
-  int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
-  int m_btlastResultCount;
+  int m_fontHeight, m_scrollRate;
   bool m_bfontChanged;
   bool m_bVectorInit;
 
@@ -768,6 +766,8 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
+
+  std::shared_ptr<ConnectionsDialog>comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };
@@ -854,30 +854,6 @@ private:
   wxBoxSizer *m_topSizer;
 
   DECLARE_EVENT_TABLE()
-};
-
-class SentenceListDlg : private Uncopyable, public wxDialog {
-public:
-  explicit SentenceListDlg(wxWindow *parent, FilterDirection dir, ListType type,
-                           const wxArrayString &list);
-  wxString GetSentences(void);
-
-private:
-  void OnAddClick(wxCommandEvent &event);
-  void OnDeleteClick(wxCommandEvent &event);
-  void OnCLBSelect(wxCommandEvent &event);
-  void OnCheckAllClick(wxCommandEvent &event);
-  void OnClearAllClick(wxCommandEvent &event);
-
-  void Populate(const wxArrayString &list);
-  wxString GetBoxLabel(void) const;
-
-  wxCheckListBox *m_clbSentences;
-  wxButton *m_btnDel;
-
-  ListType m_type;
-  FilterDirection m_dir;
-  wxArrayString m_sentences;
 };
 
 #ifdef ocpnUSE_GL

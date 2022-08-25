@@ -35,7 +35,7 @@
 #endif  // precompiled headers
 
 class ConnectionParams;
-class options;
+class ConnectionsDialog;
 
 typedef enum {
   SERIAL = 0,
@@ -69,7 +69,7 @@ public:
   ConnectionParamsPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos,
                         const wxSize &size,
                         ConnectionParams *p_itemConnectionParams,
-                        options *pContainer);
+                        ConnectionsDialog *pContainer);
   ~ConnectionParamsPanel();
 
   void OnSelected(wxMouseEvent &event);
@@ -85,7 +85,7 @@ public:
   ConnectionParams *m_pConnectionParams;
 
 private:
-  options *m_pContainer;
+  ConnectionsDialog *m_pContainer;
   bool m_bSelected;
   wxStaticText *m_pName;
   wxColour m_boxColour;

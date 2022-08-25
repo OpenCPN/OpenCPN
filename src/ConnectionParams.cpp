@@ -34,6 +34,7 @@
 
 #include "ocpn_plugin.h"
 #include "options.h"
+#include "connections_dialog.h"
 #include "ocpn_frame.h"
 
 #if !wxUSE_XLOCALE && wxCHECK_VERSION(3, 0, 0)
@@ -335,7 +336,7 @@ END_EVENT_TABLE()
 
 ConnectionParamsPanel::ConnectionParamsPanel(
     wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size,
-    ConnectionParams *p_itemConnectionParams, options *pContainer)
+    ConnectionParams *p_itemConnectionParams, ConnectionsDialog *pContainer)
     : wxPanel(parent, id, pos, size, wxBORDER_NONE) {
   m_pContainer = pContainer;
   m_pConnectionParams = p_itemConnectionParams;

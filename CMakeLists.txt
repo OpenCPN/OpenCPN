@@ -830,6 +830,7 @@ set(
   include/compass.h
   include/concanv.h
   include/ConnectionParams.h
+  include/connections_dialog.h
   include/cutil.h
   include/datastream.h
   include/DepthFont.h
@@ -1011,6 +1012,7 @@ set(
   src/concanv.cpp
   src/ConfigMgr.cpp
   src/ConnectionParams.cpp
+  src/connections_dialog.cpp
   src/cutil.cpp
   src/datastream.cpp
   src/DepthFont.cpp

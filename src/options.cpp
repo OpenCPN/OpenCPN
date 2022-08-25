@@ -1576,12 +1576,12 @@ EVT_CHOICE(ID_DEPTHUNITSCHOICE, options::OnUnitsChoice)
 EVT_BUTTON(ID_CLEARLIST, options::OnButtonClearClick)
 EVT_BUTTON(ID_SELECTLIST, options::OnButtonSelectClick)
 EVT_BUTTON(ID_SETSTDLIST, options::OnButtonSetStd)
-EVT_CHECKBOX(ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick)
+// FIXME MoveEVT_CHECKBOX(ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick)
 EVT_CHOICE(ID_SHIPICONTYPE, options::OnShipTypeSelect)
 EVT_CHOICE(ID_RADARRINGS, options::OnRadarringSelect)
 EVT_CHOICE(ID_OPWAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect)
 EVT_CHAR_HOOK(options::OnCharHook)
-EVT_TIMER(ID_BT_SCANTIMER, options::onBTScanTimer)
+// FIXME MoveEVT_TIMER(ID_BT_SCANTIMER, options::onBTScanTimer)
 
 END_EVENT_TABLE()
 
@@ -1748,9 +1748,6 @@ void options::Init(void) {
   m_pagePlugins = -1;
   m_pageConnections = -1;
 
-  m_buttonScanBT = 0;
-  m_stBTPairs = 0;
-  m_choiceBTDataSources = 0;
 
   auto loader = PluginLoader::getInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
@@ -1766,8 +1763,10 @@ void options::Init(void) {
   // for deferred loading
   m_pPlugInCtrl = NULL;
   m_PluginCatalogMgrPanel = NULL;
+
   m_pNMEAForm = NULL;
-  mSelectedConnection = NULL;
+  //FIXME Do this in CTOR of connections dialog
+  //mSelectedConnection = NULL;
 
 #ifdef __OCPN__ANDROID__
   m_scrollRate = 1;
@@ -1775,8 +1774,9 @@ void options::Init(void) {
   m_scrollRate = 15;
 #endif
 
-  m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
-  m_BTscanning = 0;
+  //FIXME (dave) move
+  //m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
+  //m_BTscanning = 0;
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
 
@@ -1949,6 +1949,7 @@ bool options::DeletePluginPage(wxScrolledWindow* page) {
   return FALSE;
 }
 
+#if 0
 void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                                        int group_item_spacing) {
   m_pNMEAForm = AddPage(parent, _("NMEA"));
@@ -2569,11 +2570,14 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   ShowNMEANet(FALSE);
   connectionsaved = TRUE;
 }
-
+#endif
 void options::CreatePanel_NMEA(size_t parent, int border_size,
                                int group_item_spacing) {
   m_pNMEAForm = AddPage(parent, _("NMEA"));
 
+  comm_dialog = std::make_shared<ConnectionsDialog>(m_pNMEAForm, this);
+
+#if 0
   wxBoxSizer* bSizer4 = new wxBoxSizer(wxVERTICAL);
   m_pNMEAForm->SetSizer(bSizer4);
   m_pNMEAForm->SetSizeHints(wxDefaultSize, wxDefaultSize);
@@ -3281,6 +3285,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   ShowNMEASerial(true);
   ShowNMEANet(true);
   connectionsaved = TRUE;
+#endif
 }
 
 #if 0
@@ -3317,13 +3322,7 @@ void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
 }
 #endif
 
-void options::EnableConnection(ConnectionParams* conn, bool value) {
-  if (conn) {
-    conn->bEnabled = value;
-    conn->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
-    m_connection_enabled = conn->bEnabled;
-  }
-}
+
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,
                                   int group_item_spacing) {
@@ -7621,7 +7620,6 @@ void options::SetInitialSettings(void) {
 
   pScreenMM->SetValue(screenmm);
 
-  m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
 
   pDepthUnitSelect->SetSelection(g_nDepthUnitDisplay);
   UpdateOptionsUnits();  // sets depth values using the user's unit preference
@@ -7633,35 +7631,12 @@ void options::SetInitialSettings(void) {
   s.Printf(_T("%d"), g_nAutoHideToolbar);
   pToolbarHideSecs->SetValue(s);
 
-  m_cbNMEADebug->SetValue(false);
-  if (NMEALogWindow::Get().GetTTYWindow()) {
-    if (NMEALogWindow::Get().GetTTYWindow()->IsShown()) {
-      m_cbNMEADebug->SetValue(true);
-    }
-  }
 
   //  Serial ports
 
   delete m_pSerialArray;
   m_pSerialArray = NULL;
   m_pSerialArray = EnumerateSerialPorts();
-
-  if (m_pSerialArray) {
-    m_comboPort->Clear();
-    for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
-      m_comboPort->Append(m_pSerialArray->Item(i));
-    }
-  }
-
-  //  On some platforms, the global connections list may be changed outside of
-  //  the options dialog. Pick up any changes here, and re-populate the dialog
-  //  list.
-  FillSourceList();
-
-  //  Reset the touch flag...
-  connectionsaved = true;
-
-  SetSelectedConnectionPanel(nullptr);
 
   m_bForceNewToolbaronCancel = false;
 }
@@ -7918,6 +7893,7 @@ void options::OnSyncCogPredClick(wxCommandEvent &event) {
   }
 }
 
+#if 0
 void options::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
     NMEALogWindow::Get().DestroyWindow();
@@ -7939,7 +7915,7 @@ void options::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
     Raise();
   }
 }
-
+#endif
 void options::OnShipTypeSelect(wxCommandEvent& event) {
   realSizes->ShowItems(m_pShipIconType->GetSelection() != 0);
   dispOptions->Layout();
@@ -8169,6 +8145,7 @@ void options::UpdateWorkArrayFromDisplayPanel(void) {
   }
 }
 
+#if 0
 ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   if (!m_bNMEAParams_shown) return NULL;
 
@@ -8311,10 +8288,11 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(
 
   return pConnectionParams;
 }
+#endif
 
 void options::OnApplyClick(wxCommandEvent& event) {
   //::wxBeginBusyCursor();
-  StopBTScan();
+  //FIXME This function is in ConnectionsDialog StopBTScan();
 
   // Start with the stuff that requires intelligent validation.
 
@@ -8435,6 +8413,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_config_display_size_manual = pRBSizeManual->GetValue();
 
   // Connections page.
+  comm_dialog.get()->ApplySettings();
+
+#if 0
+
   g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
 
   long filter_val = 1;
@@ -8549,6 +8531,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
       m_cbFurunoGP3X->GetValue() ? _T( "FurunoGP3X" ) : _T( "Generic" );
 
   // End of Connections page
+#endif
+
   if (pCDOOutlines) g_bShowOutlines = pCDOOutlines->GetValue();
   if (pSDisplayGrid) g_bDisplayGrid = pSDisplayGrid->GetValue();
 
@@ -8806,9 +8790,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // if(m_bVisitLang)
   //  pWayPointMan->ReloadAllIcons();
 
-  g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
-
-  g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
+  //FIXME Move these two
+  //g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
+  //g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
 
   if (g_bopengl != pOpenGL->GetValue()) m_returnChanges |= GL_CHANGED;
   g_bopengl = pOpenGL->GetValue();
@@ -10546,6 +10530,7 @@ void options::OnRemoveTideDataLocation(wxCommandEvent& event) {
   }
 }
 
+#if 0
 void options::OnValChange(wxCommandEvent& event) { event.Skip(); }
 
 void options::OnScanBTClick(wxCommandEvent& event) {
@@ -10945,8 +10930,8 @@ void options::SetConnectionParams(ConnectionParams* cp) {
     m_rbOAccept->SetValue(TRUE);
   else
     m_rbOIgnore->SetValue(TRUE);
-  m_tcInputStc->SetValue(StringArrayToString(cp->InputSentenceList));
-  m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
+  m_tcInputStc->SetValue(StringArrayToStringCD(cp->InputSentenceList));
+  m_tcOutputStc->SetValue(StringArrayToStringCD(cp->OutputSentenceList));
   m_choiceBaudRate->Select(
       m_choiceBaudRate->FindString(wxString::Format(_T( "%d" ), cp->Baudrate)));
   m_choiceSerialProtocol->Select(cp->Protocol);  // TODO
@@ -11298,7 +11283,18 @@ void options::OnCbOutput(wxCommandEvent& event) {
   m_stTalkerIdText->Enable(checked);
   m_TalkerIdText->Enable(checked);
 }
+#endif
 
+wxString StringArrayToStringCD(wxArrayString arr) {
+  wxString ret = wxEmptyString;
+  for (size_t i = 0; i < arr.Count(); i++) {
+    if (i > 0) ret.Append(_T(","));
+    ret.Append(arr[i]);
+  }
+  return ret;
+}
+
+#if 0
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
                                  ListType type, const wxArrayString& list)
     : wxDialog(parent, wxID_ANY, _("Sentence Filter"), wxDefaultPosition,
@@ -11399,7 +11395,7 @@ wxString SentenceListDlg::GetSentences(void) {
     if (m_clbSentences->IsChecked(i))
       retString.Add(m_clbSentences->GetString(i));
   }
-  return StringArrayToString(retString);
+  return StringArrayToStringCD(retString);
 }
 
 void SentenceListDlg::OnCLBSelect(wxCommandEvent& e) {
@@ -11473,6 +11469,8 @@ void SentenceListDlg::OnCheckAllClick(wxCommandEvent& event) {
   for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
     m_clbSentences->Check(i, TRUE);
 }
+
+#endif
 
 // OpenGLOptionsDlg
 enum { ID_BUTTON_REBUILD, ID_BUTTON_CLEAR };
