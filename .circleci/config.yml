@@ -101,12 +101,7 @@ workflows:
               only:
                 - flatpak
                 - master
-      - build-macos:
-          filters:
-            branches:
-              only:
-                - master
-                - comm
+      # build-macos: Disabled for now, see #2752
       - build-android-armhf:
           filters:
             branches:
