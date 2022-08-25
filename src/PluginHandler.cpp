@@ -51,6 +51,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #undef Yield  // from win.h, conflicts with mingw headers
 #endif
 
+#include "config.h"
 #include "catalog_parser.h"
 #include "catalog_handler.h"
 #include "Downloader.h"
