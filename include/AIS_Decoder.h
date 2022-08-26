@@ -25,14 +25,15 @@
 #ifndef __AIS_DECODER_H__
 #define __AIS_DECODER_H__
 
-#include "ais.h"
-#include "OCPN_SignalKEvent.h"
 #include <map>
 #include <unordered_map>
-#include "OCPN_DataStreamEvent.h"
+
+#include "ais.h"
 #include "comm_navmsg.h"
-#include "observable_navmsg.h"
 #include "observable_evtvar.h"
+#include "observable_navmsg.h"
+#include "OCPN_DataStreamEvent.h"
+#include "OCPN_SignalKEvent.h"
 
 #define TRACKTYPE_DEFAULT 0
 #define TRACKTYPE_ALWAYS 1
@@ -100,7 +101,22 @@ public:
    * Notified when AIS user dialogs should update. Event contains a
    * AIS_Target_data pointer.
    */
-  EventVar ais_info_update;
+  EventVar info_update;
+
+  /** Notified when gFrame->TouchAISActive() should be invoked */
+  EventVar touch_state;
+
+  /** Notified when new AIS wp is created. Contains a RoutePoint* pointer. */
+  EventVar new_ais_wp;
+
+  /** Notified on new track creation. Contains a Track* pointer. */
+  EventVar new_track;
+
+  /** Notified when about to delete track. Contains a MMSIProperties* ptr */
+  EventVar delete_track;
+
+  /** A JSON message should be sent. Contains a AisTargetData* pointer. */
+  EventVar plugin_msg;
 
 private:
   void OnActivate(wxActivateEvent &event);
@@ -117,7 +133,6 @@ private:
   void UpdateOneTrack(AIS_Target_Data *ptarget);
   void BuildERIShipTypeHash(void);
   AIS_Target_Data *ProcessDSx(const wxString &str, bool b_take_dsc = false);
-  void SendJSONMsg(AIS_Target_Data *pTarget);
 
   wxString DecodeDSEExpansionCharacters(wxString dseData);
   void getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,

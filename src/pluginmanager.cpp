@@ -243,6 +243,44 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 
+static void SendAisJsonMessage(AIS_Target_Data* pTarget) {
+  //  Only send messages if someone is listening...
+  if (!g_pi_manager->GetJSONMessageTargetCount()) return;
+
+  // Do JSON message to all Plugin to inform of target
+  wxJSONValue jMsg;
+
+  wxLongLong t = ::wxGetLocalTimeMillis();
+
+  jMsg[wxS("Source")] = wxS("AIS_Decoder");
+  jMsg[wxT("Type")] = wxT("Information");
+  jMsg[wxT("Msg")] = wxS("AIS Target");
+  jMsg[wxT("MsgId")] = t.GetValue();
+  jMsg[wxS("lat")] = pTarget->Lat;
+  jMsg[wxS("lon")] = pTarget->Lon;
+  jMsg[wxS("sog")] = pTarget->SOG;
+  jMsg[wxS("cog")] = pTarget->COG;
+  jMsg[wxS("hdg")] = pTarget->HDG;
+  jMsg[wxS("mmsi")] = pTarget->MMSI;
+  jMsg[wxS("class")] = pTarget->Class;
+  jMsg[wxS("ownship")] = pTarget->b_OwnShip;
+  jMsg[wxS("active")] = pTarget->b_active;
+  jMsg[wxS("lost")] = pTarget->b_lost;
+  wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
+  for (size_t i = 0; i < l_ShipName.Len(); i++) {
+    if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
+  }
+  jMsg[wxS("shipname")] = l_ShipName;
+  wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
+  for (size_t i = 0; i < l_CallSign.Len(); i++) {
+    if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
+  }
+  jMsg[wxS("callsign")] = l_CallSign;
+  jMsg[wxS("removed")] = pTarget->b_removed;
+  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
+}
+
+
 /**
  * Handle messages for blacklisted plugins. Messages are deferred until
  * show_deferred_messages() is invoked, signaling that the UI is ready.
@@ -1082,6 +1120,7 @@ void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg )
  * evt_foo.notify() calls.
  */
 
+wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_INCOMPATIBLE_PLUGIN, wxCommandEvent);
@@ -1093,6 +1132,7 @@ wxDEFINE_EVENT(EVT_UNREADABLE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UPDATE_CHART_TYPES, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
+
 
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::getInstance();
@@ -1165,6 +1205,11 @@ void PlugInManager::HandlePluginLoaderEvents() {
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
+  evt_ais_json_listener = g_pAIS->plugin_msg.GetListener(this,
+                                                         EVT_PLUGMGR_AIS_MSG);
+  Bind(EVT_PLUGMGR_AIS_MSG,  [&](wxCommandEvent& ev) {
+    auto pTarget = static_cast<AIS_Target_Data*>(ev.GetClientData());
+    SendAisJsonMessage(pTarget); });
 }
 
 /**

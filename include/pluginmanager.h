@@ -295,6 +295,7 @@ private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin *plugin);
 
+  ObservedVarListener evt_ais_json_listener;
   ObservedVarListener evt_blacklisted_plugin_listener;
   ObservedVarListener evt_deactivate_plugin_listener;
   ObservedVarListener evt_download_failed_listener;

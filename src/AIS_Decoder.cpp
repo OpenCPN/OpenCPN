@@ -22,40 +22,42 @@
  ***************************************************************************
  */
 #include <fstream>
+#include <cstdio>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
+#include "wx/datetime.h"
+#include "wx/event.h"
+#include "wx/jsonreader.h"
+#include "wx/log.h"
+#include "wx/string.h"
+#include "wx/textfile.h"
+#include "wx/timer.h"
 #include "wx/tokenzr.h"
 
-#include "SoundFactory.h"
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
-#include "AISTargetAlertDialog.h"
-#include "Select.h"
-#include "georef.h"
 #include "geodesic.h"
+#include "georef.h"
+#include "idents.h"
+#include "multiplexer.h"
+#include "navutil_base.h"
 #include "OCPN_DataStreamEvent.h"
 #include "OCPN_SignalKEvent.h"
-#include "OCPNPlatform.h"
-#include "routemanagerdialog.h"
 #include "RoutePoint.h"
-#include "chcanv.h"
-#include "pluginmanager.h"
+#include "Select.h"
+#include "SoundFactory.h"
 #include "Track.h"
-#include <multiplexer.h>
-#include "config.h"
-#include <cstdio>
-#include "ocpn_frame.h"
-#include "idents.h"
-#include "navutil_base.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
+
+class AISTargetAlertDialog;
 
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
@@ -75,21 +77,13 @@ extern double g_RemoveLost_Mins;
 extern double g_AISShowTracks_Mins;
 extern bool g_bHideMoored;
 extern double g_ShowMoored_Kts;
-extern wxString g_sAIS_Alert_Sound_File;
 extern bool g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool g_bAIS_ACK_Timeout;
 extern double g_AckTimeout_Mins;
-extern bool g_bShowAreaNotices;
 extern bool g_bDrawAISSize;
-extern bool g_bDrawAISRealtime;
-extern double g_AIS_RealtPred_Kts;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
 extern bool g_bAllowShowScaled;
 extern bool g_bShowScaled;
 extern bool g_bInlandEcdis;
-extern int g_iSoundDeviceIndex;
-extern bool g_bWplUsePosition;
 extern int g_WplAction;
 extern double gLat;
 extern double gLon;
@@ -101,12 +95,8 @@ extern bool g_bAIS_CPA_Alert_Audio;
 extern ArrayOfMMSIProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
 extern wxString AISTargetNameFileName;
-extern MyConfig *pConfig;
 extern wxString g_default_wp_icon;
-extern RouteManagerDialog *pRouteManagerDialog;
 extern std::vector<Track*> g_TrackList;
-extern OCPNPlatform *g_Platform;
-extern PlugInManager *g_pi_manager;
 extern Multiplexer *g_pMUX;
 extern AIS_Decoder *g_pAIS;
 
@@ -131,6 +121,8 @@ EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
 EVT_TIMER(TIMER_DSC, AIS_Decoder::OnTimerDSC)
 EVT_COMMAND(wxID_ANY, SOUND_PLAYED_EVTYPE, AIS_Decoder::OnSoundFinishedAISAudio)
 END_EVENT_TABLE()
+
+static const double ms_to_knot_factor = 1.9438444924406;
 
 static int n_msgs;
 static int n_msg1;
@@ -336,10 +328,7 @@ bool AIS_Decoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg
   std::string str = n0183_msg->payload;
   wxString sentence(str.c_str());
   Decode(sentence);
-
-  //FIXME  Should be a better way to do this...
-  gFrame->TouchAISActive();
-
+  touch_state.notify();
   return true;
 }
 
@@ -1168,16 +1157,7 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
                                        aprs_name_str, wxEmptyString);
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
       pSelect->AddSelectableRoutePoint(aprs_lat, aprs_lon, pWP);
-      pConfig->AddNewWayPoint(pWP, -1);  // , -1 use auto next num
-      if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-        pRouteManagerDialog->UpdateWptListCtrl();
-      if (gFrame->GetPrimaryCanvas()) {
-        gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-            Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-        gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
-        gFrame->RefreshAllCanvas(false);
-        gFrame->InvalidateAllGL();
-      }
+      new_ais_wp.notify(pWP);
     }
   } else if (str.Mid(1, 5).IsSameAs(_T("FRPOS"))) {
     // parse a GpsGate Position message            $FRPOS,.....
@@ -1563,7 +1543,7 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
         if (pTargetData->b_show_track) UpdateOneTrack(pTargetData);
       }
       // TODO add ais message call
-      SendJSONMsg(pTargetData);
+      plugin_msg.notify(pTargetData);
     } else {
       //             printf("Unrecognised AIS message ID: %d\n",
       //             pTargetData->MID);
@@ -2691,7 +2671,7 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
                                   wxDateTime::Now().FormatISODate().c_str(),
                                   wxDateTime::Now().FormatISOTime().c_str()));
       g_TrackList.push_back(t);
-      pConfig->AddNewTrack(t);
+      new_track.notify(t);
       m_persistent_tracks[ptarget->MMSI] = t;
     } else {
       t = m_persistent_tracks[ptarget->MMSI];
@@ -3112,7 +3092,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
         td->HDG = 511.0;
         td->ROTAIS = -128;
 
-        SendJSONMsg(td);
+        plugin_msg.notify(td);
 
         long mmsi_long = td->MMSI;
         pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
@@ -3122,7 +3102,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
         //      or a lost ARPA target.
         if (target_static_age > removelost_Mins * 60 * 3 || b_arpalost) {
           td->b_removed = true;
-          SendJSONMsg(td);
+          plugin_msg.notify(td);
           remove_array.push_back(td->MMSI);  // Add this target to removal list
         }
       }
@@ -3136,7 +3116,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
         if (props->m_bignore) {
           remove_array.push_back(td->MMSI);  // Add this target to removal list
           td->b_removed = true;
-          SendJSONMsg(td);
+          plugin_msg.notify(td);
         }
         break;
       }
@@ -3235,7 +3215,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
       audioType = AISAUDIO_DSC;
     }
     // Show the alert
-    ais_info_update.notify(palert_target);  
+    info_update.notify(palert_target);
   }
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }
@@ -3464,41 +3444,4 @@ wxString GetShipNameFromFile(int nmmsi) {
     infile.close();
   }
   return name;
-}
-
-void AIS_Decoder::SendJSONMsg(AIS_Target_Data *pTarget) {
-  //  Only send messages if someone is listening...
-  if (!g_pi_manager->GetJSONMessageTargetCount()) return;
-
-  // Do JSON message to all Plugin to inform of target
-  wxJSONValue jMsg;
-
-  wxLongLong t = ::wxGetLocalTimeMillis();
-
-  jMsg[wxS("Source")] = wxS("AIS_Decoder");
-  jMsg[wxT("Type")] = wxT("Information");
-  jMsg[wxT("Msg")] = wxS("AIS Target");
-  jMsg[wxT("MsgId")] = t.GetValue();
-  jMsg[wxS("lat")] = pTarget->Lat;
-  jMsg[wxS("lon")] = pTarget->Lon;
-  jMsg[wxS("sog")] = pTarget->SOG;
-  jMsg[wxS("cog")] = pTarget->COG;
-  jMsg[wxS("hdg")] = pTarget->HDG;
-  jMsg[wxS("mmsi")] = pTarget->MMSI;
-  jMsg[wxS("class")] = pTarget->Class;
-  jMsg[wxS("ownship")] = pTarget->b_OwnShip;
-  jMsg[wxS("active")] = pTarget->b_active;
-  jMsg[wxS("lost")] = pTarget->b_lost;
-  wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
-  for (size_t i = 0; i < l_ShipName.Len(); i++) {
-    if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
-  }
-  jMsg[wxS("shipname")] = l_ShipName;
-  wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
-  for (size_t i = 0; i < l_CallSign.Len(); i++) {
-    if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
-  }
-  jMsg[wxS("callsign")] = l_CallSign;
-  jMsg[wxS("removed")] = pTarget->b_removed;
-  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
 }
