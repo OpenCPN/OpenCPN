@@ -5145,12 +5145,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
-      {
-      ConnectionParams cp;
-      cp.Type = SOCKETCAN;
-      auto driver = MakeCommDriver(&cp);
-      }
-
       console = new ConsoleCanvas(gFrame);  // the console
       console->SetColorScheme(global_color_scheme);
       break;

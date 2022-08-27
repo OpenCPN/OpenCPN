@@ -7638,6 +7638,8 @@ void options::SetInitialSettings(void) {
   m_pSerialArray = NULL;
   m_pSerialArray = EnumerateSerialPorts();
 
+  comm_dialog->SetInitialSettings();
+
   m_bForceNewToolbaronCancel = false;
 }
 

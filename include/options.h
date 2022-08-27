@@ -380,6 +380,8 @@ public:
   int GetScrollRate() { return m_scrollRate; }
   void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
 
+  wxArrayString *GetSerialArray(){ return m_pSerialArray; }
+
   // Should we show tooltips?
   static bool ShowToolTips(void);
 

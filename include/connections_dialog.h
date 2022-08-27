@@ -59,6 +59,7 @@ public:
   void OnTypeNetSelected(wxCommandEvent &event);
   void OnTypeGPSSelected(wxCommandEvent &event);
   void OnTypeBTSelected(wxCommandEvent &event);
+  void OnTypeCANSelected(wxCommandEvent &event);
 
   void OnNetProtocolSelected(wxCommandEvent &event);
   void OnBaudrateChoice(wxCommandEvent &event) { OnConnValChange(event); }
@@ -92,12 +93,14 @@ public:
   void SetNMEAFormToNet(void);
   void SetNMEAFormToGPS(void);
   void SetNMEAFormToBT(void);
+  void SetNMEAFormToCAN(void);
 
   void ShowNMEACommon(bool visible);
   void ShowNMEASerial(bool visible);
   void ShowNMEANet(bool visible);
   void ShowNMEAGPS(bool visible);
   void ShowNMEABT(bool visible);
+  void ShowNMEACAN(bool visible);
 
   void OnScanBTClick(wxCommandEvent &event);
   void onBTScanTimer(wxTimerEvent &event);
@@ -128,16 +131,16 @@ public:
   wxRadioButton *m_rbTypeInternalBT, *m_rbNetProtoTCP, *m_rbNetProtoUDP;
   wxRadioButton *m_rbNetProtoGPSD, *m_rbIAccept, *m_rbIIgnore, *m_rbOAccept;
   wxRadioButton *m_rbNetProtoSignalK;
-  wxRadioButton *m_rbOIgnore;
+  wxRadioButton *m_rbOIgnore, *m_rbTypeCAN;
   wxStaticText *m_stBTPairs, *m_stNetProto, *m_stNetAddr, *m_stNetPort;
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
   wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
-  wxStaticText *m_stNetComment, *m_stSerialComment;
+  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource;
   wxTextCtrl *m_tNetComment, *m_tSerialComment;
   wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
-  wxChoice *m_choicePriority, *m_choicePrecision;
+  wxChoice *m_choicePriority, *m_choicePrecision, *m_choiceCANSource;
   wxScrolledWindow *m_scrollWinConnections;
   wxBoxSizer *boxSizerConnections;
   ConnectionParams *mSelectedConnection;
@@ -148,6 +151,7 @@ public:
   int m_btNoChangeCounter, m_btlastResultCount, m_BTscanning;
   wxArrayString m_BTscan_results;
   wxTimer m_BTScanTimer;
+  wxArrayString m_choice_CANSource_choices;
 
 };
 

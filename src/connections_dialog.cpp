@@ -89,7 +89,6 @@ ConnectionsDialog::ConnectionsDialog(wxScrolledWindow *container, options *paren
 ConnectionsDialog::~ConnectionsDialog() {
 }
 
-//FIXME (dave)  need to call this after page is setup
 void ConnectionsDialog::SetInitialSettings(void) {
   m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
 
@@ -100,25 +99,21 @@ void ConnectionsDialog::SetInitialSettings(void) {
     }
   }
 
-  //FIXME must do this
-//     if (m_pSerialArray) {
-//     m_comboPort->Clear();
-//     for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
-//       m_comboPort->Append(m_pSerialArray->Item(i));
-//     }
-//   }
+  if (m_parent->GetSerialArray()) {
+    m_comboPort->Clear();
+    for (size_t i = 0; i < m_parent->GetSerialArray()->Count(); i++) {
+      m_comboPort->Append(m_parent->GetSerialArray()->Item(i));
+    }
+  }
 
   //  On some platforms, the global connections list may be changed outside of
   //  the options dialog. Pick up any changes here, and re-populate the dialog
   //  list.
-//   FillSourceList();
-//
-//   //  Reset the touch flag...
-//   connectionsaved = true;
-//
-//   SetSelectedConnectionPanel(nullptr);
+   FillSourceList();
 
-
+   //  Reset the touch flag...
+   connectionsaved = true;
+   SetSelectedConnectionPanel(nullptr);
 }
 
 void ConnectionsDialog::RecalculateSize(void) {
@@ -314,6 +309,16 @@ void ConnectionsDialog::Init(){
   m_rbTypeNet = new wxRadioButton(m_container, wxID_ANY, _("Network"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   bSizer15->Add(m_rbTypeNet, 0, wxALL, 5);
+
+
+  m_rbTypeCAN = new wxRadioButton(m_container, wxID_ANY, "socketCAN",
+                                  wxDefaultPosition, wxDefaultSize, 0);
+
+  //FIXME(dave)
+#if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+  bSizer15->Add(m_rbTypeCAN, 0, wxALL, 5);
+#else
+#endif
 
   if (OCPNPlatform::hasInternalGPS()) {
     m_rbTypeInternalGPS =
@@ -511,6 +516,21 @@ void ConnectionsDialog::Init(){
   m_choicePriority->SetSelection(9);
   fgSizer1->Add(m_choicePriority, 0, wxEXPAND | wxTOP, 5);
 
+  m_stCANSource = new wxStaticText(m_container, wxID_ANY, _("socketCAN Source"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+  m_stCANSource->Wrap(-1);
+  fgSizer1->Add(m_stCANSource, 0, wxALL, 5);
+
+  wxString choice_CANSource_choices[] = {"can0", "slcan0", "vcan0"};
+  int choice_CANSource_nchoices =
+      sizeof(choice_CANSource_choices) / sizeof(wxString);
+  m_choiceCANSource = new wxChoice(
+      m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      choice_CANSource_nchoices, choice_CANSource_choices, 0);
+  m_choiceCANSource->SetSelection(0);
+  m_choiceCANSource->Enable(TRUE);
+  fgSizer1->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
+
   gSizerSerProps->Add(fgSizer1, 0, wxEXPAND, 5);
 
   wxFlexGridSizer* fgSizer5;
@@ -682,7 +702,6 @@ void ConnectionsDialog::Init(){
 #endif
   bSizer4->Add(bSizerOuterContainer, 1, wxEXPAND, 5);
 
-#if 1
   m_buttonAdd->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(ConnectionsDialog::OnAddDatasourceClick),
                        NULL, this);
@@ -695,6 +714,10 @@ void ConnectionsDialog::Init(){
                           NULL, this);
   m_rbTypeNet->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                        wxCommandEventHandler(ConnectionsDialog::OnTypeNetSelected), NULL,
+                       this);
+
+  m_rbTypeCAN->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+                       wxCommandEventHandler(ConnectionsDialog::OnTypeCANSelected), NULL,
                        this);
 
   if (m_rbTypeInternalGPS)
@@ -737,6 +760,9 @@ void ConnectionsDialog::Init(){
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(ConnectionsDialog::OnProtocolChoice), NULL, this);
   m_choicePriority->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
+                            wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
+                            NULL, this);
+  m_choiceCANSource->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                             wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
                             NULL, this);
   m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -856,7 +882,6 @@ void ConnectionsDialog::Init(){
 //  m_lcSources->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
 
 //  m_lcSources->Refresh();
-#endif
 #endif
   FillSourceList();
 
@@ -988,6 +1013,11 @@ void ConnectionsDialog::OnTypeNetSelected(wxCommandEvent& event) {
   SetNMEAFormToNet();
 }
 
+void ConnectionsDialog::OnTypeCANSelected(wxCommandEvent& event) {
+  OnConnValChange(event);
+  SetNMEAFormToCAN();
+}
+
 void ConnectionsDialog::OnTypeGPSSelected(wxCommandEvent& event) {
   OnConnValChange(event);
   SetNMEAFormToGPS();
@@ -1010,8 +1040,9 @@ void ConnectionsDialog::OnUploadFormatChange(wxCommandEvent& event) {
 #endif
 
 void ConnectionsDialog::ShowNMEACommon(bool visible) {
-  m_rbTypeSerial->Show(visible);
-  m_rbTypeNet->Show(visible);
+  m_rbTypeSerial->Show(TRUE);
+  m_rbTypeNet->Show(TRUE);
+  m_rbTypeCAN->Show(TRUE);
   if (m_rbTypeInternalGPS) m_rbTypeInternalGPS->Show(visible);
   if (m_rbTypeInternalBT) m_rbTypeInternalBT->Show(visible);
   m_rbIAccept->Show(visible);
@@ -1077,6 +1108,11 @@ void ConnectionsDialog::ShowNMEASerial(bool visible) {
 
 void ConnectionsDialog::ShowNMEAGPS(bool visible) {}
 
+void ConnectionsDialog::ShowNMEACAN(bool visible) {
+  m_stCANSource->Show(visible);
+  m_choiceCANSource->Show(visible);
+}
+
 void ConnectionsDialog::ShowNMEABT(bool visible) {
   if (visible) {
     if (m_buttonScanBT) m_buttonScanBT->Show();
@@ -1102,6 +1138,7 @@ void ConnectionsDialog::SetNMEAFormToSerial(void) {
   ShowNMEAGPS(FALSE);
   ShowNMEABT(FALSE);
   ShowNMEASerial(TRUE);
+  ShowNMEACAN(FALSE);
 
   m_container->FitInside();
   // Fit();
@@ -1115,6 +1152,21 @@ void ConnectionsDialog::SetNMEAFormToNet(void) {
   ShowNMEAGPS(FALSE);
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
+  ShowNMEACAN(FALSE);
+
+  m_container->FitInside();
+  // Fit();
+  RecalculateSize();
+  SetDSFormRWStates();
+}
+
+void ConnectionsDialog::SetNMEAFormToCAN(void) {
+  ShowNMEACommon(FALSE);
+  ShowNMEANet(FALSE);
+  ShowNMEAGPS(FALSE);
+  ShowNMEABT(FALSE);
+  ShowNMEASerial(FALSE);
+  ShowNMEACAN(TRUE);
   m_container->FitInside();
   // Fit();
   RecalculateSize();
@@ -1127,6 +1179,8 @@ void ConnectionsDialog::SetNMEAFormToGPS(void) {
   ShowNMEAGPS(TRUE);
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
+  ShowNMEACAN(FALSE);
+
   m_container->FitInside();
   // Fit();
   RecalculateSize();
@@ -1140,6 +1194,8 @@ void ConnectionsDialog::SetNMEAFormToBT(void) {
   ShowNMEAGPS(FALSE);
   ShowNMEABT(TRUE);
   ShowNMEASerial(FALSE);
+  ShowNMEACAN(FALSE);
+
   m_container->FitInside();
   // Fit();
   RecalculateSize();
@@ -1152,6 +1208,8 @@ void ConnectionsDialog::ClearNMEAForm(void) {
   ShowNMEAGPS(FALSE);
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
+  ShowNMEACAN(FALSE);
+
   m_container->FitInside();
   // Fit();
   RecalculateSize();
@@ -1184,9 +1242,12 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     m_cbCheckSKDiscover->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
+  }
 
-  } else if (m_rbNetProtoGPSD->GetValue()) {
+  if (m_rbTypeCAN->GetValue()) {
     m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
     m_cbInput->Hide();
     m_cbOutput->Hide();
     sbSizerOutFilter->GetStaticBox()->Hide();
@@ -1198,34 +1259,57 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     m_choicePrecision->Hide();
     m_stTalkerIdText->Hide();
     m_TalkerIdText->Hide();
-    m_cbCheckSKDiscover->Hide();
-    m_ButtonSKDiscover->Hide();
-    m_StaticTextSKServerStatus->Hide();
-
-  } else if (m_rbNetProtoSignalK->GetValue()) {
-    // here
-    m_cbInput->Hide();
-    m_cbOutput->Hide();
     m_cbCheckCRC->Hide();
-    m_stPrecision->Hide();
-    m_choicePrecision->Hide();
-    m_stTalkerIdText->Hide();
-    m_TalkerIdText->Hide();
     sbSizerInFilter->GetStaticBox()->Hide();
     m_rbIAccept->Hide();
     m_rbIIgnore->Hide();
     sbSizerOutFilter->GetStaticBox()->Hide();
     m_rbOAccept->Hide();
     m_rbOIgnore->Hide();
-    m_tcInputStc->Hide();
-    m_btnInputStcList->Hide();
-    m_tcOutputStc->Hide();
-    m_btnOutputStcList->Hide();
+  }
 
-  } else {
-    m_cbCheckSKDiscover->Hide();
-    m_ButtonSKDiscover->Hide();
-    m_StaticTextSKServerStatus->Hide();
+  if (m_rbTypeNet->GetValue()) {
+    if (m_rbNetProtoGPSD->GetValue()) {
+      m_cbCheckSKDiscover->Hide();
+      m_cbInput->Hide();
+      m_cbOutput->Hide();
+      sbSizerOutFilter->GetStaticBox()->Hide();
+      m_rbOAccept->Hide();
+      m_rbOIgnore->Hide();
+      m_tcOutputStc->Hide();
+      m_btnOutputStcList->Hide();
+      m_stPrecision->Hide();
+      m_choicePrecision->Hide();
+      m_stTalkerIdText->Hide();
+      m_TalkerIdText->Hide();
+      m_cbCheckSKDiscover->Hide();
+      m_ButtonSKDiscover->Hide();
+      m_StaticTextSKServerStatus->Hide();
+
+    } else if (m_rbNetProtoSignalK->GetValue()) {
+      m_cbInput->Hide();
+      m_cbOutput->Hide();
+      m_cbCheckCRC->Hide();
+      m_stPrecision->Hide();
+      m_choicePrecision->Hide();
+      m_stTalkerIdText->Hide();
+      m_TalkerIdText->Hide();
+      sbSizerInFilter->GetStaticBox()->Hide();
+      m_rbIAccept->Hide();
+      m_rbIIgnore->Hide();
+      sbSizerOutFilter->GetStaticBox()->Hide();
+      m_rbOAccept->Hide();
+      m_rbOIgnore->Hide();
+      m_tcInputStc->Hide();
+      m_btnInputStcList->Hide();
+      m_tcOutputStc->Hide();
+      m_btnOutputStcList->Hide();
+
+    } else {
+      m_cbCheckSKDiscover->Hide();
+      m_ButtonSKDiscover->Hide();
+      m_StaticTextSKServerStatus->Hide();
+    }
   }
 }
 
@@ -1322,6 +1406,10 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
   } else if (cp->Type == NETWORK) {
     m_rbTypeNet->SetValue(TRUE);
     SetNMEAFormToNet();
+  } else if (cp->Type == SOCKETCAN) {
+    m_rbTypeCAN->SetValue(TRUE);
+    SetNMEAFormToCAN();
+
   } else if (cp->Type == INTERNAL_GPS) {
     if (m_rbTypeInternalGPS) m_rbTypeInternalGPS->SetValue(TRUE);
     SetNMEAFormToGPS();
@@ -1393,6 +1481,7 @@ void ConnectionsDialog::SetDefaultConnectionParams(void) {
   m_rbTypeSerial->SetValue(bserial);
   m_rbTypeNet->SetValue(!bserial);
   bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
+  m_rbTypeCAN->SetValue(FALSE);
 #endif
 
   m_connection_enabled = TRUE;
@@ -1760,7 +1849,8 @@ void ConnectionsDialog::ApplySettings(){
 }
 
 ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(void) {
-  if (!m_bNMEAParams_shown) return NULL;
+  //FIXME (dave)  How could this happen?
+  //if (!m_bNMEAParams_shown) return NULL;
 
   //  Special encoding for deleted connection
   if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
@@ -1781,11 +1871,13 @@ ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(void
   //  TCP clients, GPSD and UDP output sockets require an address
   else if (m_rbTypeNet->GetValue()) {
     if (wxAtoi(m_tNetPort->GetValue()) == 0) {
-      m_tNetPort->SetValue(_T("2947"));  // reset to default
+      m_tNetPort->SetValue(_T("10110"));  // reset to default
     }
     if (m_tNetAddress->GetValue() == wxEmptyString) {
       m_tNetAddress->SetValue(_T("0.0.0.0"));
     }
+  }
+  else if (m_rbTypeCAN->GetValue()){
   }
 
   ConnectionParams* pConnectionParams = new ConnectionParams();
@@ -1813,24 +1905,28 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->Type = INTERNAL_GPS;
   else if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue())
     pConnectionParams->Type = INTERNAL_BT;
+  else if (m_rbTypeCAN && m_rbTypeCAN->GetValue())
+    pConnectionParams->Type = SOCKETCAN;
 
-  //  Save the existing addr/port to allow closing of existing port
-  pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
-  pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
-  pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
+  if (m_rbTypeNet->GetValue()){
+    //  Save the existing addr/port to allow closing of existing port
+    pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
+    pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
+    pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
 
-  pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
-  pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
-  if (m_rbNetProtoTCP->GetValue())
-    pConnectionParams->NetProtocol = TCP;
-  else if (m_rbNetProtoUDP->GetValue())
-    pConnectionParams->NetProtocol = UDP;
-  else if (m_rbNetProtoGPSD->GetValue())
-    pConnectionParams->NetProtocol = GPSD;
-  else if (m_rbNetProtoSignalK->GetValue())
-    pConnectionParams->NetProtocol = SIGNALK;
-  else
-    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
+    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
+    if (m_rbNetProtoTCP->GetValue())
+      pConnectionParams->NetProtocol = TCP;
+    else if (m_rbNetProtoUDP->GetValue())
+      pConnectionParams->NetProtocol = UDP;
+    else if (m_rbNetProtoGPSD->GetValue())
+      pConnectionParams->NetProtocol = GPSD;
+    else if (m_rbNetProtoSignalK->GetValue())
+      pConnectionParams->NetProtocol = SIGNALK;
+    else
+      pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+  }
 
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
   pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection();
@@ -1865,10 +1961,6 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     CheckSerialAccess(m_parent, pConnectionParams->Port.ToStdString());
 #endif
 
-//   if ((pConnectionParams->Type != INTERNAL_GPS) &&
-//       (pConnectionParams->Type != INTERNAL_BT))
-//     CheckDeviceAccess(pConnectionParams->Port);
-
   pConnectionParams->bEnabled = m_connection_enabled;
   pConnectionParams->b_IsSetup = FALSE;
 
@@ -1891,6 +1983,14 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     pConnectionParams->Baudrate = 0;
     //        pConnectionParams->SetAuxParameterStr(m_choiceBTDataSources->GetStringSelection());
+  }
+
+  if (pConnectionParams->Type == SOCKETCAN) {
+    pConnectionParams->NetworkAddress = _T("");
+    pConnectionParams->NetworkPort = 0;
+    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+    pConnectionParams->Baudrate = 0;
+    pConnectionParams->socketCAN_port = m_choiceCANSource->GetString(m_choiceCANSource->GetSelection());
   }
 
   if (pConnectionParams->Type == SERIAL) {

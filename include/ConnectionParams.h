@@ -121,6 +121,7 @@ public:
 
   DataProtocol Protocol;
   wxString Port;
+  wxString socketCAN_port;
   int Baudrate;
   bool ChecksumCheck;
   bool Garmin;
