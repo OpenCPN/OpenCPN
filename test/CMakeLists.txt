@@ -42,6 +42,7 @@ target_link_libraries(tests PRIVATE ocpn::libarchive)
 target_link_libraries(tests PRIVATE ocpn::gdal)
 target_link_libraries(tests PRIVATE ocpn::nmea0183)
 target_link_libraries(tests PRIVATE ocpn::N2KParser)
+target_link_libraries(tests PRIVATE ocpn::iso8211)
 
 if (DEFINED CURL_LIBRARIES)
   target_link_libraries(tests PRIVATE ${CURL_LIBRARIES})
