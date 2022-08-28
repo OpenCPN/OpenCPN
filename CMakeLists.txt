@@ -829,7 +829,6 @@ set(
   include/comm_util.h
   include/compass.h
   include/concanv.h
-  include/connection_panel.h
   include/ConnectionParams.h
   include/connections_dialog.h
   include/cutil.h
@@ -960,7 +959,6 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
-  ${CMAKE_SOURCE_DIR}/src/ConnectionParams.cpp
   ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
@@ -1013,7 +1011,6 @@ set(
   src/compass.cpp
   src/concanv.cpp
   src/ConfigMgr.cpp
-  src/connection_panel.cpp
   src/ConnectionParams.cpp
   src/connections_dialog.cpp
   src/cutil.cpp
