@@ -41,6 +41,7 @@
 #endif
 
 #include "connections_dialog.h"
+#include "connection_panel.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"    // FIXME for GetOCPNScaledFont_PlugIn
