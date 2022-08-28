@@ -74,6 +74,11 @@ wxString StringArrayToString(wxArrayString arr) {
 //          ConnectionsDialog Implementation
 //------------------------------------------------------------------------------
 
+BEGIN_EVENT_TABLE(ConnectionsDialog, wxEvtHandler)
+EVT_TIMER(ID_BT_SCANTIMER, ConnectionsDialog::onBTScanTimer)
+END_EVENT_TABLE()
+
+
 // Define constructors
 ConnectionsDialog::ConnectionsDialog() {}
 
@@ -381,11 +386,7 @@ void ConnectionsDialog::Init(){
     m_choiceBTDataSources->Hide();
     bSizer15a->Add(m_choiceBTDataSources, 1, wxEXPAND | wxTOP, 5);
 
-    // FIXME Move to Connect section
-//     m_buttonScanBT->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-//                             wxCommandEventHandler(options::OnScanBTClick), NULL,
-//                             this);
-  } else
+   } else
     m_rbTypeInternalBT = NULL;
 
   gSizerNetProps = new wxGridSizer(0, 2, 0, 0);
@@ -833,56 +834,11 @@ void ConnectionsDialog::Init(){
                             wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
                             NULL, this);
 
-#if 0
-//   m_lcSources->Connect(wxEVT_LEFT_DOWN,
-//                        wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
-//                        NULL, this);
-// #if wxCHECK_VERSION(2, 9, 0)
-//   m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
-//                        wxListEventHandler(options::OnConnectionToggleEnable),
-//                        NULL, this);
-// #endif
+  if (m_buttonScanBT)
+    m_buttonScanBT->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                             wxCommandEventHandler(ConnectionsDialog::OnScanBTClick), NULL,
+                             this);
 
-  wxString columns[] = {_("Enable"),   _("Type"),       _("DataPort"),
-                        _("Priority"), _("Parameters"), _("Connection"),
-                        _("Filters")};
-  for (int i = 0; i < 7; ++i) {
-    wxListItem col;
-    col.SetId(i);
-    col.SetText(columns[i]);
-//    m_lcSources->InsertColumn(i, col);
-  }
-
-  //  Build the image list
-  wxImageList* imglist = new wxImageList(16, 16, TRUE, 1);
-  wxBitmap unchecked_bmp(16, 16), checked_bmp(16, 16);
-  wxMemoryDC renderer_dc;
-
-  // Unchecked
-  renderer_dc.SelectObject(unchecked_bmp);
-  renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(
-      GetBackgroundColour(), wxBRUSHSTYLE_SOLID));
-  renderer_dc.Clear();
-  wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16),
-                                       0);
-
-  // Checked
-  renderer_dc.SelectObject(checked_bmp);
-  renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(
-      GetBackgroundColour(), wxBRUSHSTYLE_SOLID));
-  renderer_dc.Clear();
-  wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16),
-                                       wxCONTROL_CHECKED);
-
-  // Deselect the renderer Object
-  renderer_dc.SelectObject(wxNullBitmap);
-
-  imglist->Add(unchecked_bmp);
-  imglist->Add(checked_bmp);
-//  m_lcSources->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
-
-//  m_lcSources->Refresh();
-#endif
   FillSourceList();
 
   ShowNMEACommon(true);

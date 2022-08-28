@@ -153,6 +153,8 @@ public:
   wxTimer m_BTScanTimer;
   wxArrayString m_choice_CANSource_choices;
 
+  DECLARE_EVENT_TABLE()
+
 };
 
 
@@ -178,6 +180,7 @@ private:
   ListType m_type;
   FilterDirection m_dir;
   wxArrayString m_sentences;
+
 };
 
 

@@ -61,7 +61,6 @@
 #include "scrollingdialog.h"
 #endif
 
-//#include "datastream.h"
 #include "chartdbs.h"
 #include "pluginmanager.h"  // FIXME: Refactor
 
@@ -355,9 +354,6 @@ public:
   void OnChartsPageChange(wxListbookEvent &event);
   void OnChartDirListSelect(wxCommandEvent &event);
   void OnUnitsChoice(wxCommandEvent &event);
-//   void OnScanBTClick(wxCommandEvent &event);
-//   void onBTScanTimer(wxTimerEvent &event);
-//   void StopBTScan(void);
 
   void UpdateWorkArrayFromDisplayPanel(void);
   ArrayOfCDI GetSelectedChartDirs();
@@ -412,8 +408,6 @@ public:
   wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
-  //  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis,
-  //  *pRollover;
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxCheckBox *pZoomButtons;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
@@ -434,82 +428,11 @@ public:
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;
 
-  // For the GPS page
-#if 0
-  wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
-  wxButton *m_btnOutputStcList, *m_sdbSizerDlgButtonsOK;
-  wxButton *m_sdbSizerDlgButtonsApply, *m_sdbSizerDlgButtonsCancel;
-  wxStaticBoxSizer *sbSizerConnectionProps, *sbSizerInFilter;
-  wxStaticBoxSizer *sbSizerOutFilter;
-  wxRadioButton *m_rbTypeSerial, *m_rbTypeNet, *m_rbTypeInternalGPS;
-  wxRadioButton *m_rbTypeInternalBT, *m_rbNetProtoTCP, *m_rbNetProtoUDP;
-  wxRadioButton *m_rbNetProtoGPSD, *m_rbIAccept, *m_rbIIgnore, *m_rbOAccept;
-  wxRadioButton *m_rbNetProtoSignalK;
-  wxRadioButton *m_rbOIgnore;
-  wxStaticText *m_stBTPairs, *m_stNetProto, *m_stNetAddr, *m_stNetPort;
-  wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
-  wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
-  wxStaticText *m_stTalkerIdText;
-  wxStaticText *m_stNetComment, *m_stSerialComment;
-  wxTextCtrl *m_tNetComment, *m_tSerialComment;
-  wxStaticBox *m_sbConnEdit;
-  wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
-  wxChoice *m_choicePriority, *m_choicePrecision;
-  wxScrolledWindow *m_scrollWinConnections;
-  wxBoxSizer *boxSizerConnections;
-  ConnectionParams *mSelectedConnection;
-#endif
-
   // For the Display\Units page
   wxStaticText *itemStaticTextUserVar;
   wxStaticText *itemStaticTextUserVar2;
   wxButton *m_configDeleteButton, *m_configApplyButton;
 
-#if 0
-  wxGridSizer *gSizerNetProps, *gSizerSerProps;
-  wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
-  wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
-  wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
-      *m_cbCheckSKDiscover;
-  wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
-  wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
-  wxComboBox *m_comboPort;
-  wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton *m_configDeleteButton, *m_configApplyButton, *m_ButtonSKDiscover;
-  wxStaticText *m_StaticTextSKServerStatus;
-#endif
-
-  // FIXME Remove to next -----------, already copied to connections_dialog
-#if 0
-  void OnSelectDatasource(wxListEvent &event);
-  void OnAddDatasourceClick(wxCommandEvent &event);
-  void OnRemoveDatasourceClick(wxCommandEvent &event);
-
-  void OnTypeSerialSelected(wxCommandEvent &event);
-  void OnTypeNetSelected(wxCommandEvent &event);
-  void OnTypeGPSSelected(wxCommandEvent &event);
-  void OnTypeBTSelected(wxCommandEvent &event);
-
-  void OnNetProtocolSelected(wxCommandEvent &event);
-  void OnBaudrateChoice(wxCommandEvent &event) { OnConnValChange(event); }
-  void OnProtocolChoice(wxCommandEvent &event) { OnConnValChange(event); }
-  void OnCrcCheck(wxCommandEvent &event) { OnConnValChange(event); }
-  void OnRbAcceptInput(wxCommandEvent &event);
-  void OnRbIgnoreInput(wxCommandEvent &event);
-  void OnBtnIStcs(wxCommandEvent &event);
-  void OnCbInput(wxCommandEvent &event);
-  void OnCbOutput(wxCommandEvent &event);
-  void OnRbOutput(wxCommandEvent &event);
-  void OnBtnOStcs(wxCommandEvent &event);
-  void OnConnValChange(wxCommandEvent &event);
-  void OnValChange(wxCommandEvent &event);
-  void OnUploadFormatChange(wxCommandEvent &event);
-  void EnableConnection(ConnectionParams *conn, bool value);
-  void OnDiscoverButton(wxCommandEvent &event);
-  void UpdateDiscoverStatus(wxString stat);
-#endif
-
-//------------------------------------------------------------
   void OnAISRolloverClick(wxCommandEvent &event);
   void UpdateChartDirList();
 
@@ -524,11 +447,7 @@ public:
   wxBoxSizer *vectorPanel;
   wxScrolledWindow *ps57Ctl;
 
-  // #if defined(__WXMSW__) || defined(__WXOSX__)
-  //   wxCheckListBox *ps57CtlListBox;
-  // #else
   OCPNCheckedListCtrl *ps57CtlListBox;
-  // #endif
 
   wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
   wxButton *itemButtonClearList, *itemButtonSelectList, *itemButtonSetStd;
@@ -725,26 +644,7 @@ private:
   wxImageList *m_topImgList;
 
   wxScrolledWindow *m_pNMEAForm;
-//   void ShowNMEACommon(bool visible);
-//
-//   void ShowNMEASerial(bool visible);
-//   void ShowNMEANet(bool visible);
-//   void ShowNMEAGPS(bool visible);
-//   void ShowNMEABT(bool visible);
-
-//   void SetNMEAFormToSerial(void);
-//   void SetNMEAFormToNet(void);
-//   void SetNMEAFormToGPS(void);
-//   void SetNMEAFormToBT(void);
-
-  //void ClearNMEAForm(void);
-
   void resetMarStdList(bool bsetConfig, bool bsetStd);
-
-//   void SetConnectionParams(ConnectionParams *cp);
-//   void SetDefaultConnectionParams(void);
-//   void SetDSFormRWStates();
-//   void SetDSFormOptionVizStates();
 
   ObservedVarListener compat_os_listener;
 
