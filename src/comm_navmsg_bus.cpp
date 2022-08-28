@@ -27,7 +27,7 @@
 #include "observable_navmsg.h"
 
 // FIXME(leamas) test junk
-#include "ConnectionParams.h"
+#include "conn_params.h"
 
 using namespace std;
 

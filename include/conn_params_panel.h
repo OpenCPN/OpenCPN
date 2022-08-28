@@ -25,8 +25,8 @@
 #include <dsPortType.h>
 #endif
 
-#ifndef __CONNECTIONPARAMS_H__
-#define __CONNECTIONPARAMS_H__
+#ifndef __CONN_PARAMS_PANEL_H__
+#define __CONN_PARAMS_PANEL_H__
 
 #include "wx/wxprec.h"
 
@@ -34,35 +34,9 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-class ConnectionParams;
+#include "conn_params.h"
+
 class options;
-
-typedef enum {
-  SERIAL = 0,
-  NETWORK = 1,
-  INTERNAL_GPS = 2,
-  INTERNAL_BT = 3,
-  SOCKETCAN = 4
-} ConnectionType;
-
-typedef enum {
-  TCP = 0,
-  UDP = 1,
-  GPSD = 2,
-  SIGNALK = 3,
-  PROTO_UNDEFINED = 4
-} NetworkProtocol;
-
-typedef enum { WHITELIST = 0, BLACKLIST = 1 } ListType;
-
-typedef enum { FILTER_INPUT = 0, FILTER_OUTPUT = 1 } FilterDirection;
-
-typedef enum {
-  PROTO_NMEA0183 = 0,
-  PROTO_NMEA2000 = 1
-} DataProtocol;
-
-#define CONN_ENABLE_ID 47621
 
 class ConnectionParamsPanel : public wxPanel {
 public:
@@ -104,61 +78,5 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-class ConnectionParams {
-public:
-  ConnectionParams();
-  ~ConnectionParams();
-  ConnectionParams(const wxString &configStr);
 
-  ConnectionType Type;
-  NetworkProtocol NetProtocol;
-  wxString NetworkAddress;
-  int NetworkPort;
-
-  wxString LastNetworkAddress;
-  int LastNetworkPort;
-  NetworkProtocol LastNetProtocol;
-
-  DataProtocol Protocol;
-  wxString Port;
-  int Baudrate;
-  bool ChecksumCheck;
-  bool Garmin;
-  bool GarminUpload;
-  bool FurunoGP3X;
-  bool AutoSKDiscover;
-  dsPortType IOSelect;
-  ListType InputSentenceListType;
-  wxArrayString InputSentenceList;
-  ListType OutputSentenceListType;
-  wxArrayString OutputSentenceList;
-  int Priority;
-  bool bEnabled;
-  wxString UserComment;
-
-  wxString Serialize() const;
-  void Deserialize(const wxString &configStr);
-
-  wxString GetSourceTypeStr() const;
-  wxString GetAddressStr() const;
-  wxString GetParametersStr() const;
-  wxString GetIOTypeValueStr() const;
-  wxString GetFiltersStr() const;
-  wxString GetDSPort() const;
-  wxString GetLastDSPort() const;
-  wxString GetPortStr() const { return Port; }
-  void SetPortStr(wxString str) { Port = str; }
-  std::string GetStrippedDSPort();
-
-
-  bool Valid;
-  bool b_IsSetup;
-  ConnectionParamsPanel *m_optionsPanel;
-
-private:
-  wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
-};
-
-WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
-
-#endif
+#endif  // __CONN_PARAMS_PANEL_H__

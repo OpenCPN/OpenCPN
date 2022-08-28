@@ -31,7 +31,7 @@
 #include "wx/event.h"
 
 #include "comm_drv_n0183.h"
-#include "ConnectionParams.h"
+#include "conn_params.h"
 
 class CommDriverN0183SerialThread;  // Internal
 

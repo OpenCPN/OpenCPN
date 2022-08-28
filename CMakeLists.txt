@@ -813,6 +813,7 @@ set(
   include/chartimg.h
   include/chcanv.h
   include/ChInfoWin.h
+  include/color_handler.h
   include/comm_appmsg.h
   include/comm_bridge.h
   include/comm_driver.h
@@ -830,7 +831,8 @@ set(
   include/comm_util.h
   include/compass.h
   include/concanv.h
-  include/ConnectionParams.h
+  include/conn_params.h
+  include/conn_params_panel.h
   include/cutil.h
   include/datastream.h
   include/DepthFont.h
@@ -958,6 +960,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
@@ -1000,6 +1003,7 @@ set(
   src/chartimg.cpp
   src/chcanv.cpp
   src/ChInfoWin.cpp
+  src/color_handler.cpp
   src/comm_drv_factory.cpp
   src/comm_drv_n0183.cpp
   src/comm_drv_n0183_net.cpp
@@ -1011,7 +1015,7 @@ set(
   src/compass.cpp
   src/concanv.cpp
   src/ConfigMgr.cpp
-  src/ConnectionParams.cpp
+  src/conn_params_panel.cpp
   src/cutil.cpp
   src/datastream.cpp
   src/DepthFont.cpp

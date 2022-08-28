@@ -52,7 +52,7 @@
 #include "styles.h"
 #include "navutil.h"
 #include "ocpn_utils.h"
-#include "ConnectionParams.h"
+#include "conn_params.h"
 #include "FontMgr.h"
 #include "s52s57.h"
 #include "options.h"

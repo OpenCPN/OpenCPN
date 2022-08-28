@@ -28,7 +28,7 @@
 #include "Route.h"
 #include "RoutePoint.h"
 #include "ser_ports.h"
-#include "ConnectionParams.h"
+#include "conn_params.h"
 #include "OCPNPlatform.h"
 
 extern OCPNPlatform* g_Platform;

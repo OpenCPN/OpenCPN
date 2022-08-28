@@ -56,9 +56,11 @@
 #include <wx/statline.h>
 #include <wx/regex.h>
 #include <wx/textwrapper.h>
+
 #include "SignalKDataStream.h"
 #include "comm_drv_factory.h"
 #include "comm_util.h"
+#include "conn_params_panel.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */

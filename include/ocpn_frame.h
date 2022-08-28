@@ -38,6 +38,7 @@
 
 #include "ocpn_types.h"
 #include "ocpn_print.h"
+#include "color_handler.h"
 #include "gui_lib.h"
 // #include "viewport.h"
 #include "nmea0183.h"
@@ -50,16 +51,6 @@
 #include "bbox.h"
 
 wxColour GetGlobalColor(wxString colorName);
-enum DialogColor {
-  DLG_BACKGROUND,
-  DLG_SELECTED_BACKGROUND,
-  DLG_UNSELECTED_BACKGROUND,
-  DLG_ACCENT,
-  DLG_SELECTED_ACCENT,
-  DLG_UNSELECTED_ACCENT,
-  DLG_TEXT,
-  DLG_HIGHLIGHT
-};
 wxColour GetDialogColor(DialogColor color);
 
 int GetApplicationMemoryUse(void);

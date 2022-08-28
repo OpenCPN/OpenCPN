@@ -39,7 +39,7 @@
 #include <wx/thread.h>
 
 #include "comm_drv_n2k.h"
-#include "ConnectionParams.h"
+#include "conn_params.h"
 
 #ifndef __OCPN__ANDROID__
 #include "serial/serial.h"

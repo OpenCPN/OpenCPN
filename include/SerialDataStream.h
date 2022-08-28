@@ -63,7 +63,7 @@
 #include <initguid.h>
 #endif
 #include <string>
-#include "ConnectionParams.h"
+#include "conn_params.h"
 #include "dsPortType.h"
 #include "datastream.h"
 
