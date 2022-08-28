@@ -941,7 +941,6 @@ set(
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
-  ${CMAKE_BINARY_DIR}/include/config.h
   include/svg_utils.h
 )
 
