@@ -159,8 +159,7 @@ unsigned long long GetTimeInMicroseconds() {
 class CommDriverN2KSocketCANThread : public wxThread {
 public:
   CommDriverN2KSocketCANThread(CommDriverN2KSocketCAN* Launcher,
-                            const wxString& PortName,
-                            const wxString& strBaudRate);
+                            const wxString& PortName);
 
   ~CommDriverN2KSocketCANThread(void);
   void* Entry();
@@ -180,7 +179,6 @@ private:
 
   CommDriverN2KSocketCAN* m_pParentDriver;
   wxString m_PortName;
-  wxString m_FullPortName;
 
   unsigned char* put_ptr;
   unsigned char* tak_ptr;
@@ -261,14 +259,8 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 
 bool CommDriverN2KSocketCAN::Open() {
-  wxString comx;
-  comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
-
-  comx =
-      comx.BeforeFirst(' ');  // strip off any description provided by Windows
-
   //    Kick off the  RX thread
-  SetSecondaryThread(new CommDriverN2KSocketCANThread(this, comx, "220"));
+  SetSecondaryThread(new CommDriverN2KSocketCANThread(this, m_params.socketCAN_port));
   SetThreadRunFlag(1);
   GetSecondaryThread()->Run();
 
@@ -359,12 +351,10 @@ void CommDriverN2KSocketCAN::handle_N2K_SocketCAN_RAW(
 #define DS_RX_BUFFER_SIZE 4096
 
 CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
-    CommDriverN2KSocketCAN* Launcher, const wxString& PortName,
-    const wxString& strBaudRate) {
+    CommDriverN2KSocketCAN* Launcher, const wxString& PortName) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
-  m_FullPortName = _T("Serial:") + PortName;
 
   rx_buffer = new unsigned char[DS_RX_BUFFER_SIZE + 1];
 
@@ -410,8 +400,8 @@ void* CommDriverN2KSocketCANThread::Entry() {
     return 0;
   }
 
-  // (eg. Native Interface CAN0, Serial Interface SLCAN0, Virtual Interface VCAN0)
-  std::string port_name("vcan0");
+  // eg. Native Interface "can0", Serial Interface "slcan0", Virtual Interface "vcan0"
+  std::string port_name(m_PortName);
   strcpy(can_request.ifr_name, port_name.c_str());
 
   // Get the index of the interface

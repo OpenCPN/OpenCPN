@@ -1016,6 +1016,7 @@ set(
   src/concanv.cpp
   src/ConfigMgr.cpp
   src/conn_params_panel.cpp
+  src/connections_dialog.cpp
   src/cutil.cpp
   src/datastream.cpp
   src/DepthFont.cpp

@@ -34,6 +34,8 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+class ConnectionParams;
+class ConnectionsDialog;
 
 typedef enum {
   SERIAL = 0,
@@ -81,6 +83,7 @@ public:
 
   DataProtocol Protocol;
   wxString Port;
+  wxString socketCAN_port;
   int Baudrate;
   bool ChecksumCheck;
   bool Garmin;
