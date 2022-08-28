@@ -22,22 +22,37 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <X11/Xlib.h>
 
 #include <wx/wxprec.h>
+
 
 #include <wx/button.h>
 #include <wx/dcclient.h>
 #include <wx/fontdata.h>
 #include <wx/fontdlg.h>
-#include <wx/generic/fontdlgg.h>
 #include <wx/settings.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/tokenzr.h>
 
-#include <X11/Xlib.h>
 
 #include "x11_font_picker.h"
+
+// This enum lives in the generic implementation only, not used on any
+// opencpn platform, duplicated here.
+#ifdef X11_FONTDLG_BAD_TYPE
+enum
+{
+    wxID_FONT_UNDERLINE = 3000,
+    wxID_FONT_STYLE,
+    wxID_FONT_WEIGHT,
+    wxID_FONT_FAMILY,
+    wxID_FONT_COLOUR,
+    wxID_FONT_SIZE
+};
+#endif
+
 
 
 //-----------------------------------------------------------------------------

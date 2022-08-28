@@ -34,6 +34,10 @@
 #include <wx/fontdlg.h>
 #include <wx/window.h>
 
+// Force the inclusion of types only defined in the unused generig fontdlg
+// implementation
+#define X11_FONTDLG_BAD_TYPE 1
+
 class WXDLLEXPORT MyFontPreviewer;
 
 class WXDLLEXPORT X11FontPicker : public wxFontDialogBase {
