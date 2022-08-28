@@ -48,8 +48,6 @@
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
-#include <wx/fontdata.h>
-#include <wx/fontdlg.h>
 #include <wx/stdpaths.h>
 #include "wx/tokenzr.h"
 #include <wx/mediactrl.h>
