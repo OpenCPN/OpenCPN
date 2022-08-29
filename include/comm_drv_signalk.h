@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Implements comm_drv_registry.h
+ * Purpose:
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -22,46 +22,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include <algorithm>
-#include <memory>
+#ifndef _COMMDRIVERSIGNALK_H
+#define _COMMDRIVERSIGNALK_H
 
 #include "comm_driver.h"
-#include "comm_drv_registry.h"
 
-using DriverPtr = std::shared_ptr<const AbstractCommDriver>;
+class CommDriverSignalK : public AbstractCommDriver {
+public:
+  CommDriverSignalK(const std::string& s = "sk0" );
 
-void CommDriverRegistry::Activate(DriverPtr driver) {
-  auto found = std::find(drivers.begin(), drivers.end(), driver);
-  if (found != drivers.end()) return;
-  drivers.push_back(driver);
-  evt_driverlist_change.notify();
+  virtual ~CommDriverSignalK();
+
+  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) override;
+  virtual void SetListener(std::shared_ptr<DriverListener> l) override;
+  virtual std::shared_ptr<NavAddr> GetAddress(const NavAddrSignalK& name);
 };
 
-void CommDriverRegistry::Deactivate(DriverPtr driver) {
-  auto found = std::find(drivers.begin(), drivers.end(), driver);
-  if (found == drivers.end()) return;
-  drivers.erase(found);
-  evt_driverlist_change.notify();
-}
-
-const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() {
-  return drivers;
-};
-
-void CommDriverRegistry::CloseAllDrivers() {
-  drivers.clear();
-}
-
-CommDriverRegistry& CommDriverRegistry::getInstance() {
-  static CommDriverRegistry instance;
-  return instance;
-}
-
-const std::shared_ptr<AbstractCommDriver> kNoDriver(nullptr);
-
-const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
-                           const std::string& iface) {
-  auto func = [iface](const DriverPtr d) { return d->iface == iface; };
-  auto found = std::find_if(drivers.begin(), drivers.end(), func);
-  return found != drivers.end() ? *found : kNoDriver;
-}
+#endif  // guard

@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,8 +24,8 @@
  **************************************************************************/
 // Originally by balp on 2018-07-28.
 
-#ifndef OPENCPN_SIGNALKDATASTREAM_H
-#define OPENCPN_SIGNALKDATASTREAM_H
+#ifndef _SIGNALK_NET_H
+#define _SIGNALK_NET_H
 
 #include "wx/wxprec.h"
 
@@ -34,99 +34,82 @@
 #endif  // precompiled header
 
 #include <wx/datetime.h>
+#include <wx/socket.h>
 
-#ifdef __WXGTK__
-// newer versions of glib define its own GSocket but we unfortunately use this
-// name in our own (semi-)public header and so can't change it -- rename glib
-// one instead
-//#include <gtk/gtk.h>
-#define GSocket GlibGSocket
-#include "wx/socket.h"
-#undef GSocket
-#else
-#include "wx/socket.h"
-#endif
-
-#ifndef __WXMSW__
-#include <sys/socket.h>  // needed for (some) Mac builds
-#include <netinet/in.h>
-#endif
-
-#ifdef __WXMSW__
-#include <windows.h>
-#include <dbt.h>
-#include <initguid.h>
-#endif
 #include <string>
 #include "conn_params.h"
-#include "dsPortType.h"
-#include "datastream.h"
+#include "comm_drv_signalk.h"
 
 #define SIGNALK_SOCKET_ID 5011
 #define N_DOG_TIMEOUT 5             // seconds
 #define N_DOG_TIMEOUT_RECONNECT 10  // seconds
 
-class WebSocketThreadOBS;
+#define TIMER_SOCKET 9006
+
+static const double ms_to_knot_factor = 1.9438444924406;
+
+class WebSocketThread;
 class OCPN_WebSocketMessageHandler;
+class CommDriverSignalKNetEvent;
 
-class SignalKDataStream : public DataStream {
+class CommDriverSignalKNet : public CommDriverSignalK, public wxEvtHandler {
 public:
-  SignalKDataStream(wxEvtHandler *input_consumer,
-                    const ConnectionParams *params);
-  virtual ~SignalKDataStream();
+  CommDriverSignalKNet(const ConnectionParams *params, DriverListener& l);
+  virtual ~CommDriverSignalKNet();
 
+  void Open();
   void Close();
   static bool DiscoverSKServer(wxString &ip, int &port, int tSec);
   static bool DiscoverSKServer(std::string serviceIdent, wxString &ip,
                                int &port, int tSec);
 
+
   void SetThreadRunning(bool active) { m_threadActive = active; }
+  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
   void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
   void SetWatchdog(int n) { m_dog_value = n; }
 
-private:
-  void Open();
-  void OpenTCPSocket();
+/** Register driver and possibly do other post-ctor steps. */
+  void Activate() override;
+
+  void handle_SK_sentence(CommDriverSignalKNetEvent& event);
+  void handleUpdate(wxJSONValue &update);
+  void updateItem(wxJSONValue &item, wxString &sfixtime);
+
   void OpenWebSocket();
   void CloseWebSocket();
   bool IsThreadRunning() { return m_threadActive; }
 
-  const ConnectionParams *m_params;
-  wxSocketBase *m_sock;
-  void SetSock(wxSocketBase *sock) { m_sock = sock; }
-  wxSocketBase *GetSock() const { return m_sock; }
+  std::string m_self;
+  std::string m_context;
 
+  bool m_bsec_thread_active;
+
+  int m_Thread_run_flag;
+  ConnectionParams m_params;
+  DriverListener& m_listener;
+
+private:
   wxIPV4address m_addr;
   wxIPV4address GetAddr() const { return m_addr; }
 
-  bool m_brx_connect_event;
-  void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
-  bool GetBrxConnectEvent() { return m_brx_connect_event; }
+   int m_dog_value;
 
-  int m_dog_value;
-  wxTimer m_socket_timer;
-  wxTimer *GetSocketTimer() { return &m_socket_timer; }
-
-  wxTimer m_socketread_watchdog_timer;
-  wxTimer *GetSocketThreadWatchdogTimer() {
-    return &m_socketread_watchdog_timer;
-  }
+   wxTimer m_socketread_watchdog_timer;
+   wxTimer *GetSocketThreadWatchdogTimer() {
+     return &m_socketread_watchdog_timer;
+   }
 
   OCPN_WebSocketMessageHandler *m_eventHandler;
   bool m_useWebSocket;
   bool m_threadActive;
 
-  NetworkProtocol GetProtocol() { return m_params->NetProtocol; }
-  std::string m_sock_buffer;
-
-  void OnTimerSocket(wxTimerEvent &event);
-  void OnSocketEvent(wxSocketEvent &event);
-  void OnSocketReadWatchdogTimer(wxTimerEvent &event);
+  bool m_bGPSValid_SK;
 
   bool SetOutputSocketOptions(wxSocketBase *sock);
 
-  WebSocketThreadOBS *m_wsThread;
-  DECLARE_EVENT_TABLE()
+  WebSocketThread *m_wsThread;
+
 };
 
-#endif  // OPENCPN_SIGNALKDATASTREAM_H
+#endif  // _SIGNALK_NET_H

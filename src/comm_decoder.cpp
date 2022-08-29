@@ -33,6 +33,7 @@
 
 #include "comm_decoder.h"
 #include "comm_util.h"
+#include "geodesic.h"
 
 extern int gps_watchdog_timeout_ticks;
 extern wxString gRmcDate, gRmcTime;
@@ -345,3 +346,144 @@ bool CommDecoder::DecodePGN129025(std::vector<unsigned char> v,  NavData& temp_d
 
   return false;
 }
+
+bool CommDecoder::DecodeSignalK(std::string s, NavData& temp_data){
+  wxJSONReader jsonReader;
+  wxJSONValue root;
+
+  std::string msgTerminated = s;
+  msgTerminated.append("\r\n");
+
+  int errors = jsonReader.Parse(msgTerminated, &root);
+  if (errors > 0)
+    return false;
+
+  if (root.HasMember("updates") && root["updates"].IsArray()) {
+    wxJSONValue &updates = root["updates"];
+    for (int i = 0; i < updates.Size(); ++i) {
+      handleUpdate(updates[i], temp_data);
+    }
+  }
+
+  return true;
+}
+
+void CommDecoder::handleUpdate(wxJSONValue &update, NavData& temp_data) {
+  wxString sfixtime = "";
+
+  if (update.HasMember("timestamp")) {
+    sfixtime = update["timestamp"].AsString();
+  }
+  if (update.HasMember("values") && update["values"].IsArray()) {
+    for (int j = 0; j < update["values"].Size(); ++j) {
+      wxJSONValue &item = update["values"][j];
+      updateItem(item, sfixtime, temp_data);
+    }
+  }
+}
+
+void CommDecoder::updateItem(wxJSONValue &item,
+                             wxString &sfixtime, NavData& temp_data) {
+  bool bposValid = false;
+  if (item.HasMember("path") && item.HasMember("value")) {
+    const wxString &update_path = item["path"].AsString();
+    wxJSONValue &value = item["value"];
+
+    if (update_path == _T("navigation.position") && !value.IsNull()) {
+      bposValid = updateNavigationPosition(value, sfixtime, temp_data);
+    } else if (update_path == _T("navigation.speedOverGround") &&
+               /*bposValid &&*/ !value.IsNull()) {
+      updateNavigationSpeedOverGround(value, sfixtime, temp_data);
+    } else if (update_path == _T("navigation.courseOverGroundTrue") &&
+               /*bposValid &&*/ !value.IsNull()) {
+      updateNavigationCourseOverGround(value, sfixtime, temp_data);
+    } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
+    }
+    else if (update_path ==
+             _T("navigation.gnss.satellites"))  // From GGA sats in use
+    {
+      /*if (g_priSats >= 2)*/ updateGnssSatellites(value, sfixtime, temp_data);
+    } else if (update_path ==
+               _T("navigation.gnss.satellitesInView"))  // From GSV sats in view
+    {
+      /*if (g_priSats >= 3)*/ updateGnssSatellites(value, sfixtime, temp_data);
+    } else if (update_path == _T("navigation.headingTrue")) {
+      if(!value.IsNull())
+        updateHeadingTrue(value, sfixtime, temp_data);
+    } else if (update_path == _T("navigation.headingMagnetic")) {
+      if(!value.IsNull())
+        updateHeadingMagnetic(value, sfixtime, temp_data);
+    } else if (update_path == _T("navigation.magneticVariation")) {
+      if(!value.IsNull())
+        updateMagneticVariance(value, sfixtime, temp_data);
+    } else {
+      // wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"),
+      // update_path));
+    }
+  }
+}
+
+bool CommDecoder::updateNavigationPosition(
+    wxJSONValue &value, const wxString &sfixtime, NavData& temp_data) {
+  if ((value.HasMember("latitude" && value["latitude"].IsDouble())) &&
+      (value.HasMember("longitude") && value["longitude"].IsDouble())) {
+    // wxLogMessage(_T(" ***** Position Update"));
+    temp_data.gLat = value["latitude"].AsDouble();
+    temp_data.gLon = value["longitude"].AsDouble();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+void CommDecoder::updateNavigationSpeedOverGround(
+    wxJSONValue &value, const wxString &sfixtime, NavData& temp_data){
+  double sog_ms = value.AsDouble();
+  double sog_knot = sog_ms * 1.9438444924406;   // m/s to knots
+  // wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
+  temp_data.gSog = sog_knot;
+}
+
+void CommDecoder::updateNavigationCourseOverGround(
+  wxJSONValue &value, const wxString &sfixtime, NavData& temp_data) {
+  double cog_rad = value.AsDouble();
+  double cog_deg = GEODESIC_RAD2DEG(cog_rad);
+  // wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
+  temp_data.gCog = cog_deg;
+}
+
+void CommDecoder::updateGnssSatellites(wxJSONValue &value,
+                                       const wxString &sfixtime,
+                                       NavData& temp_data) {
+#if 0
+  if (value.IsInt()) {
+    if (value.AsInt() > 0) {
+      m_frame->setSatelitesInView(value.AsInt());
+      g_priSats = 2;
+    }
+  } else if ((value.HasMember("count") && value["count"].IsInt())) {
+    m_frame->setSatelitesInView(value["count"].AsInt());
+    g_priSats = 3;
+  }
+#endif
+}
+
+void CommDecoder::updateHeadingTrue(wxJSONValue &value,
+                                    const wxString &sfixtime,
+                                    NavData& temp_data) {
+  temp_data.gHdt = GEODESIC_RAD2DEG(value.AsDouble());
+}
+
+void CommDecoder::updateHeadingMagnetic(
+    wxJSONValue &value, const wxString &sfixtime,
+    NavData& temp_data) {
+  temp_data.gHdm = GEODESIC_RAD2DEG(value.AsDouble());
+}
+
+void CommDecoder::updateMagneticVariance(
+    wxJSONValue &value, const wxString &sfixtime,
+    NavData& temp_data) {
+  temp_data.gVar = GEODESIC_RAD2DEG(value.AsDouble());
+}
+

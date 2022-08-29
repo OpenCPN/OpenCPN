@@ -72,6 +72,24 @@ public:
   bool DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_data);
   bool DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_data);
 
+  // SignalK
+  bool DecodeSignalK(std::string s, NavData& temp_data);
+  void handleUpdate(wxJSONValue &update, NavData& temp_data);
+  void updateItem(wxJSONValue &item, wxString &sfixtime, NavData& temp_data);
+  bool updateNavigationPosition(wxJSONValue &value,
+                                const wxString &sfixtime, NavData& temp_data);
+  void updateNavigationSpeedOverGround(wxJSONValue &value,
+                                       const wxString &sfixtime, NavData& temp_data);
+  void updateNavigationCourseOverGround(wxJSONValue &value,
+                                        const wxString &sfixtime, NavData& temp_data);
+  void updateGnssSatellites(wxJSONValue &value, const wxString &sfixtime, NavData& temp_data);
+  void updateHeadingTrue(wxJSONValue &value, const wxString &sfixtime, NavData& temp_data);
+  void updateHeadingMagnetic(wxJSONValue &value,
+                             const wxString &sfixtime, NavData& temp_data);
+  void updateMagneticVariance(wxJSONValue &value,
+                              const wxString &sfixtime, NavData& temp_data);
+
+
 };
 
 #endif  // _COMM_DECODER_H

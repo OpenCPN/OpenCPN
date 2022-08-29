@@ -127,9 +127,9 @@ OCPN_WebSocketMessageHandler::~OCPN_WebSocketMessageHandler() {
 }
 
 BEGIN_EVENT_TABLE(SignalKDataStream, wxEvtHandler)
-EVT_TIMER(TIMER_SOCKET + 2, SignalKDataStream::OnTimerSocket)
-EVT_SOCKET(SIGNALK_SOCKET_ID, SignalKDataStream::OnSocketEvent)
-EVT_TIMER(TIMER_SOCKET + 3, SignalKDataStream::OnSocketReadWatchdogTimer)
+//EVT_TIMER(TIMER_SOCKET + 2, SignalKDataStream::OnTimerSocket)
+//EVT_SOCKET(SIGNALK_SOCKET_ID, SignalKDataStream::OnSocketEvent)
+//EVT_TIMER(TIMER_SOCKET + 3, SignalKDataStream::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
 
 SignalKDataStream::SignalKDataStream(wxEvtHandler *input_consumer,
@@ -194,7 +194,9 @@ void SignalKDataStream::Open(void) {
     }
 
     OpenWebSocket();
-  } else {
+  }
+#if 0
+  else {
     std::string serviceIdent =
         std::string("_signalk-ws._tcp.local");  // Works for node.js server
     if (m_params->AutoSKDiscover) {
@@ -211,6 +213,7 @@ void SignalKDataStream::Open(void) {
 
     OpenTCPSocket();
   }
+#endif
 }
 
 bool SignalKDataStream::DiscoverSKServer(std::string serviceIdent, wxString &ip,
@@ -300,7 +303,7 @@ bool SignalKDataStream::DiscoverSKServer(std::string serviceIdent, wxString &ip,
   // wxString addr = addrscan.getResults().at(0).ip;
 #endif
 }
-
+#if 0
 void SignalKDataStream::OpenTCPSocket() {
   wxLogMessage(wxString::Format(_T("Opening Signal K TCPSocket client: %s"),
                                 m_params->GetDSPort().c_str()));
@@ -509,6 +512,7 @@ bool SignalKDataStream::SetOutputSocketOptions(wxSocketBase *sock) {
                           sizeof(outbuf_size)) &&
           ret);
 }
+#endif
 
 void SignalKDataStream::Close() {
   if (m_useWebSocket) {
@@ -532,9 +536,9 @@ void SignalKDataStream::Close() {
 
 //      WebSocket implementation
 
-class WebSocketThread : public wxThread {
+class WebSocketThreadOBS : public wxThread {
 public:
-  WebSocketThread(SignalKDataStream *parent, wxIPV4address address,
+  WebSocketThreadOBS(SignalKDataStream *parent, wxIPV4address address,
                   wxEvtHandler *consumer);
   virtual void *Entry();
 
@@ -546,7 +550,7 @@ private:
   SignalKDataStream *m_parentStream;
 };
 
-WebSocketThread::WebSocketThread(SignalKDataStream *parent,
+WebSocketThreadOBS::WebSocketThreadOBS(SignalKDataStream *parent,
                                  wxIPV4address address,
                                  wxEvtHandler *consumer) {
   m_address = address;
@@ -554,7 +558,7 @@ WebSocketThread::WebSocketThread(SignalKDataStream *parent,
   m_parentStream = parent;
 }
 
-void *WebSocketThread::Entry() {
+void *WebSocketThreadOBS::Entry() {
   using easywsclient::WebSocket;
 
   m_parentStream->SetThreadRunning(true);
@@ -599,7 +603,7 @@ void *WebSocketThread::Entry() {
   return 0;
 }
 
-void WebSocketThread::HandleMessage(const std::string &message) {
+void WebSocketThreadOBS::HandleMessage(const std::string &message) {
   if (s_wsConsumer) {
     OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, message);
     s_wsConsumer->AddPendingEvent(signalKEvent);
@@ -613,7 +617,7 @@ void SignalKDataStream::OpenWebSocket() {
 
   // Start a thread to run the client without blocking
 
-  m_wsThread = new WebSocketThread(this, GetAddr(), m_eventHandler);
+  m_wsThread = new WebSocketThreadOBS(this, GetAddr(), m_eventHandler);
   if (m_wsThread->Create() != wxTHREAD_NO_ERROR) {
     wxLogError(wxT("Can't create WebSocketThread!"));
 

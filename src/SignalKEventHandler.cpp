@@ -38,7 +38,7 @@
 #include "ocpn_frame.h"
 
 extern PlugInManager *g_pi_manager;
-wxString g_ownshipMMSI_SK;
+//wxString g_ownshipMMSI_SK;
 bool bGPSValid_SK;
 extern int g_priSats;
 
@@ -72,7 +72,6 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event) {
     else
       m_self =
           _T("vessels.") + (root["self"].AsString());  // for Node.js server
-    g_ownshipMMSI_SK = m_self;
   }
 
   if (root.HasMember("context") && root["context"].IsString()) {

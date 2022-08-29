@@ -33,13 +33,6 @@
 #include "comm_appmsg_bus.h"
 #include "idents.h"
 
-// #include "comm_util.h"
-// #include "comm_drv_n2k_serial.h"
-// #include "comm_drv_n0183_serial.h"
-// #include "comm_drv_n0183_net.h"
-// #include "comm_navmsg_bus.h"
-// #include "comm_drv_registry.h"
-
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129025, ObservedEvt);
@@ -56,6 +49,8 @@ wxDEFINE_EVENT(EVT_N0183_GGA, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_GLL, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_AIVDO, ObservedEvt);
 
+wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
+
 extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 extern wxString gRmcDate, gRmcTime;
 extern int g_nNMEADebug;
@@ -65,6 +60,19 @@ extern bool g_bHDT_Rx, g_bVAR_Rx;
 extern double g_UserVar;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
+extern wxString g_ownshipMMSI_SK;
+
+
+void ClearNavData(NavData &d){
+  d.gLat = NAN;
+  d.gLon = NAN;
+  d.gSog = NAN;
+  d.gCog = NAN;
+  d.gHdt = NAN;
+  d.gHdm = NAN;
+  d.gVar = NAN;
+  d.n_satellites = -1;
+}
 
 // CommBridge implementation
 
@@ -306,6 +314,16 @@ void CommBridge::InitCommListeners() {
   Bind(EVT_N0183_AIVDO, [&](ObservedEvt ev) {
     HandleN0183_AIVDO(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
+
+  // SignalK
+  SignalkMsg sk_msg;
+  listener_SignalK =
+      msgbus.GetListener(EVT_SIGNALK, this, sk_msg);
+
+  Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
+    HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
+  });
+
 }
 
 bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
@@ -710,6 +728,72 @@ bool CommBridge::HandleN0183_AIVDO(
   return true;
 }
 
+bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
+  std::string str = sK_msg->raw_message;
+
+  //  Here we ignore messages involving contexts other than ownship
+  if (sK_msg->context_self != sK_msg->context)
+    return false;
+
+  //g_ownshipMMSI_SK = sK_msg->context_self;
+
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodeSignalK(str, temp_data)) return false;
+
+
+  if (!std::isnan(temp_data.gLat) && !std::isnan(temp_data.gLon)){
+    if (EvalPriority(sK_msg, active_priority_position, priority_map_position)) {
+      gLat = temp_data.gLat;
+      gLon = temp_data.gLon;
+      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+
+  if (!std::isnan(temp_data.gSog)){
+    if (EvalPriority(sK_msg, active_priority_velocity, priority_map_velocity)) {
+    gSog = temp_data.gSog;
+    if((gSog > 0) && !std::isnan(temp_data.gCog))
+      gCog = temp_data.gCog;
+    m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+
+  if (!std::isnan(temp_data.gHdt)){
+    if (EvalPriority(sK_msg, active_priority_heading, priority_map_heading)) {
+      gHdt = temp_data.gHdt;
+      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+
+  if (!std::isnan(temp_data.gHdm)){
+    if (EvalPriority(sK_msg, active_priority_heading, priority_map_heading)) {
+      gHdm = temp_data.gHdm;
+      MakeHDTFromHDM();
+      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+
+  if (!std::isnan(temp_data.gVar)){
+    if (EvalPriority(sK_msg, active_priority_variation, priority_map_variation)) {
+      gVar = temp_data.gVar;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+
+
+  // Populate a comm_appmsg with current global values
+  auto msg = std::make_shared<BasicNavDataMsg>(
+      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+
+  // Notify the AppMsgBus of new data available
+  auto& msgbus = AppMsgBus::GetInstance();
+  msgbus.Notify(std::move(msg));
+
+
+  return true;
+}
 
 
 void CommBridge::InitializePriorityContainers(){
@@ -745,6 +829,13 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
     auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
     if (msg_n2k){
       this_identifier = msg_n2k->name.to_string();
+    }
+  }
+
+  else if(msg->bus == NavAddr::Bus::Signalk){
+    auto msg_sk = std::dynamic_pointer_cast<const SignalkMsg>(msg);
+    if (msg_sk){
+      this_identifier = "signalK";
     }
   }
 

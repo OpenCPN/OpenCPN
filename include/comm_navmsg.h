@@ -209,14 +209,25 @@ public:
 /** A parsed SignalK message over ipv4 */
 class SignalkMsg : public NavMsg {
 public:
-  SignalkMsg(int _depth)
-      : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
-        depth(_depth) {}
+  SignalkMsg()
+        : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
+
+  SignalkMsg(std::string _context_self, std::string _context,
+                  std::string _raw_message)
+        : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
+        depth(0),
+        context_self(_context_self),
+        context(_context),
+        raw_message(_raw_message){};
 
   struct in_addr dest;
   struct in_addr src;
   wxJSONValue* root;
-  const int depth;
+  int depth;
+  std::string context_self;
+  std::string context;
+  std::string raw_message;
+
   std::vector<std::string> errors;
   std::vector<std::string> warnings;
   std::string key() const { return std::string("signalK"); };

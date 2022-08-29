@@ -380,6 +380,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
 }
 
 void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event) {
+#if 0   // Handled in pluginmanager, OK to delete.
   if (m_aisconsumer) m_aisconsumer->AddPendingEvent(event);
   if (m_gpsconsumer) m_gpsconsumer->AddPendingEvent(event);
 
@@ -392,6 +393,7 @@ void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event) {
   int errors = jsonReader.Parse(msgTerminated, &root);
   if (errors == 0)
     g_pi_manager->SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
+#endif
 }
 
 void Multiplexer::SaveStreamProperties(DataStream *stream) {

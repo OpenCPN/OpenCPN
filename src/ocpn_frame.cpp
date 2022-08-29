@@ -160,6 +160,7 @@
 // #include "comm_navmsg_bus.h"
 #include "N2KParser.h"
 // #include "comm_util.h"
+#include "comm_drv_registry.h"
 //
 // #ifdef __linux__
 // #include "udev_rule_mgr.h"
@@ -2253,6 +2254,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   delete g_pMUX;
   g_pMUX = NULL;
+
+  // Close and delete all comm drivers
+  auto& registry = CommDriverRegistry::getInstance();
+  registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {

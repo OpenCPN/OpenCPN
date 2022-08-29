@@ -271,6 +271,7 @@ public:
 
   void InitCommListeners(void);
   void HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+  void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);
 
@@ -311,6 +312,7 @@ private:
   ObservedVarListener evt_version_incompatible_plugin_listener;
 
   ObservedVarListener m_listener_N0183_all;
+  ObservedVarListener m_listener_SignalK;
 
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);

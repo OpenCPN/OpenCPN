@@ -115,6 +115,7 @@ wxDEFINE_EVENT(EVT_N0183_CD, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TLL, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TTM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_OSD, ObservedEvt);
+wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
 EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
@@ -203,8 +204,8 @@ AIS_Decoder::AIS_Decoder() : m_signalk_selfid("") {
   //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
   //FIXME delete Connect(wxEVT_OCPN_DATASTREAM,
   //        (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS);
-  Connect(EVT_OCPN_SIGNALKSTREAM,
-          (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtSignalK);
+//   Connect(EVT_OCPN_SIGNALKSTREAM,
+//           (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtSignalK);
   InitCommListeners();
 }
 
@@ -321,6 +322,18 @@ void AIS_Decoder::InitCommListeners(void) {
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
+
+  //SignalK
+  SignalkMsg sk_msg;
+  listener_SignalK =
+      msgbus.GetListener(EVT_SIGNALK, this, sk_msg);
+
+  //FIXME (dave) Use UnpackEvtPointer(), whenever it lands
+  Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
+    //HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
+    HandleSignalK(std::static_pointer_cast<const SignalkMsg>(ev.GetSharedPtr()));
+  });
+
 }
 
 
@@ -331,6 +344,14 @@ bool AIS_Decoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg
   touch_state.notify();
   return true;
 }
+
+// void AIS_Decoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
+//   std::string msgTerminated = sK_msg->raw_message;;
+//   wxString sentence(msgTerminated.c_str());
+//   Decode(sentence);
+//   touch_state.notify();
+//   return true;
+// }
 
 void AIS_Decoder::BuildERIShipTypeHash(void) {
   make_hash_ERI(8000, _("Vessel, type unknown"));
@@ -441,13 +462,16 @@ void AIS_Decoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
 #endif
 
 //----------------------------------------------------------------------------------
-//     Handle events from SignalK DataStream
+//     Handle events from SignalK
 //----------------------------------------------------------------------------------
-void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event) {
+void AIS_Decoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   wxJSONReader jsonReader;
   wxJSONValue root;
 
-  std::string msgTerminated = event.GetString();
+  std::string msgTerminated = sK_msg->raw_message;;
+  //wxString sentence(msgTerminated.c_str());
+
+  //std::string msgTerminated = event.GetString();
   msgTerminated.append("\r\n");
 
   int errors = jsonReader.Parse(msgTerminated, &root);

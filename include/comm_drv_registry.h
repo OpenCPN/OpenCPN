@@ -48,6 +48,9 @@ public:
   /** Remove driver from list of active drivers. */
   void Deactivate(DriverPtr driver);
 
+  /** Close and destroy all drivers completely. */
+  void CloseAllDrivers();
+
   /** @return List of all activated drivers. */
   const std::vector<DriverPtr>& GetDrivers();
 

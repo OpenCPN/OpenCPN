@@ -39,6 +39,7 @@
 #include "comm_drv_n2k_serial.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
+#include "comm_drv_signalk_net.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
@@ -72,8 +73,12 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
       }
     case NETWORK:
       switch (params->NetProtocol) {
-          // FIXME         case SIGNALK:
-          //            return new SignalKDataStream(input_consumer, params);
+        case SIGNALK: {
+          auto driver = std::make_shared<CommDriverSignalKNet>(params, msgbus);
+          registry.Activate(driver);
+          return driver;
+          break;
+        }
         default: {
           auto driver = std::make_shared<CommDriverN0183Net>(params, msgbus);
           registry.Activate(driver);

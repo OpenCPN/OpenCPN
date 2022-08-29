@@ -823,6 +823,7 @@ set(
   include/comm_drv_n2k.h
   include/comm_drv_n2k_serial.h
   include/comm_drv_n2k_socketcan.h
+  include/comm_drv_signalk_net.h
   include/comm_drv_registry.h
   include/comm_drv_factory.h
   include/comm_drv_file.h
@@ -1011,6 +1012,8 @@ set(
   src/comm_drv_n2k.cpp
   src/comm_drv_n2k_serial.cpp
   src/comm_drv_registry.cpp
+  src/comm_drv_signalk.cpp
+  src/comm_drv_signalk_net.cpp
   src/comm_navmsg.cpp
   src/compass.cpp
   src/concanv.cpp

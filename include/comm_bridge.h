@@ -74,6 +74,8 @@ public:
   bool HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg);
   bool HandleN0183_AIVDO(std::shared_ptr<const Nmea0183Msg> n0183_msg);
 
+  bool HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
+
   void OnWatchdogTimer(wxTimerEvent& event);
   void PresetWatchdogs();
   void MakeHDTFromHDM();
@@ -100,6 +102,8 @@ public:
   ObservedVarListener listener_N0183_GGA;
   ObservedVarListener listener_N0183_GLL;
   ObservedVarListener listener_N0183_AIVDO;
+
+  ObservedVarListener listener_SignalK;
 
   CommDecoder m_decoder;
 

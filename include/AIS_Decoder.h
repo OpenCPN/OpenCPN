@@ -146,6 +146,7 @@ private:
 
   void InitCommListeners(void);
   bool HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+  void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxString m_signalk_selfid;
   std::unordered_map<int, AIS_Target_Data *> AISTargetList;
@@ -159,6 +160,7 @@ private:
   ObservedVarListener listener_N0183_TLL;
   ObservedVarListener listener_N0183_TTM;
   ObservedVarListener listener_N0183_OSD;
+  ObservedVarListener listener_SignalK;
 
   bool m_busy;
   wxTimer TimerAIS;
