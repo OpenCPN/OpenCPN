@@ -285,12 +285,12 @@ void CommDriverN2KSocketCAN::handle_N2K_SocketCAN_RAW(
   std::vector<unsigned char>* payload = p.get();
 
   // extract PGN
-  uint64_t pgn = 0;
+  uint32_t pgn = 0;
   unsigned char* c = (unsigned char*)&pgn;
+
   *c++ = payload->at(3);
   *c++ = payload->at(4);
   *c++ = payload->at(5);
-  // memcpy(&v, &data[3], 1);
 
   auto name = PayloadToName(*payload);
   auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload,
@@ -362,7 +362,6 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
   tak_ptr = rx_buffer;
 
   MapInitialize();
-
   Create();
 }
 
@@ -450,7 +449,6 @@ void* CommDriverN2KSocketCANThread::Entry() {
     return 0;
   }
 
-
   m_pParentDriver->SetSecThreadActive();  // I am alive
 
     // The main loop
@@ -513,7 +511,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
           // Populate the vector
 
             if (position >= 0){     // re-assembled fast message
-              printf("PGN:  %d\n", header.pgn);
+              //printf("PGN:  %d\n", header.pgn);
 
               vec->push_back(0x93);
               vec->push_back(fastMessages[position].expectedLength + 11);
@@ -530,20 +528,17 @@ void* CommDriverN2KSocketCANThread::Entry() {
               vec->push_back(fastMessages[position].expectedLength);
               for (size_t n = 0; n < fastMessages[position].expectedLength; n++)
                 vec->push_back(fastMessages[position].data[n]);
+              vec->push_back(0x55);     // CRC dummy
+
 
               // Clear the message assembly buffer
               free(fastMessages[position].data);
               fastMessages[position].isFree = TRUE;
               fastMessages[position].data = NULL;
-
-//               for(size_t i=0; i<vec->size(); i++){
-//                 printf("%02x ", vec->at(i));
-//               }
-//               printf("\n");
             }
             else {        // single frame message
               vec->push_back(0x93);
-              vec->push_back(0x12); // Won't append Actisense CRC
+              vec->push_back(0x13);
               vec->push_back(header.priority);
               vec->push_back(header.pgn & 0xFF);
               vec->push_back((header.pgn >> 8) & 0xFF);
@@ -554,11 +549,11 @@ void* CommDriverN2KSocketCANThread::Entry() {
               vec->push_back(0xFF);
               vec->push_back(0xFF);
               vec->push_back(0xFF);
-              vec->push_back(sizeof(struct can_frame));
-              for (size_t n = 0; n < sizeof(struct can_frame); n++)
+              vec->push_back(CAN_MAX_DLEN);   // nominally 8
+              for (size_t n = 0; n < CAN_MAX_DLEN; n++)
                 vec->push_back(canSocketFrame.data[n]);
+              vec->push_back(0x55);     // CRC dummy, not checked
             }
-
 
             CommDriverN2KSocketCANEvent frameReceivedEvent(wxEVT_COMMDRIVER_N2K_SOCKETCAN, 0);
             frameReceivedEvent.SetPayload(buffer);
