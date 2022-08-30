@@ -4,5 +4,5 @@
 0004-Allow-loading-GPX-TrackPoint-with-unspecified-timest.patch
 0005-Disable-buttons-in-case-no-more-user-defined-chart-g.patch
 0006-Tracking-can-be-started-before-the-main-toolbar-is-c.patch
-0008-Take-out-a-doubled-definition-of-the-serial-Datastre.patch
-0009-Do-not-process-NULL-SignalK-nav-data.patch
+0007-Take-out-a-doubled-definition-of-the-serial-Datastre.patch
+0008-Do-not-process-NULL-SignalK-nav-data.patch

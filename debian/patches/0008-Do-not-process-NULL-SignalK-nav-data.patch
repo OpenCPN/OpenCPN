@@ -1,17 +1,15 @@
-From 316ae9305698dfef1a76fc1093263d2060c70ce2 Mon Sep 17 00:00:00 2001
 From: transmitterdan <transmitterdan@noisp.com>
 Date: Sat, 29 Jan 2022 07:55:06 -0600
 Subject: [PATCH] Do not process NULL SignalK nav data.
 
 Bug:  https://github.com/OpenCPN/OpenCPN/issues/2750
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/316ae930569
-
 ---
  src/SignalKEventHandler.cpp | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/SignalKEventHandler.cpp b/src/SignalKEventHandler.cpp
-index 95af48afa..788f82ebd 100644
+index bb1c0e7..57a6877 100644
 --- a/src/SignalKEventHandler.cpp
 +++ b/src/SignalKEventHandler.cpp
 @@ -112,13 +112,13 @@ void SignalKEventHandler::updateItem(wxJSONValue &item,
@@ -31,6 +29,3 @@ index 95af48afa..788f82ebd 100644
        updateNavigationCourseOverGround(value, sfixtime);
      } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
      }  // Ignore magnetic COG as OpenCPN don't handle yet.
--- 
-2.37.1
-

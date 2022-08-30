@@ -1,13 +1,11 @@
 From: Hakan <momo@stupan.se>
 Date: Sun, 29 May 2022 17:21:49 +0200
-Subject: Take out a doubled definition of the serial Datastream variable: dstr
+Subject: Take out a doubled definition of the serial Datastream variable:
+ dstr
 
 Closes: #2705
 
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/ad298173
-
-
-
 ---
  src/multiplexer.cpp | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
