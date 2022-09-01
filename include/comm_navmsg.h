@@ -215,7 +215,6 @@ public:
   SignalkMsg(std::string _context_self, std::string _context,
                   std::string _raw_message)
         : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
-        depth(0),
         context_self(_context_self),
         context(_context),
         raw_message(_raw_message){};
@@ -223,7 +222,6 @@ public:
   struct in_addr dest;
   struct in_addr src;
   wxJSONValue* root;
-  int depth;
   std::string context_self;
   std::string context;
   std::string raw_message;
