@@ -1,3 +1,15 @@
+opencpn (5.6.2+dfsg-2) unstable; urgency=medium
+
+  * New bugfix release.
+  * New patches, all applied upstream:
+     - Fix upstream bug https://github.com/OpenCPN/OpenCPN/issues/2750
+     - Handle tracking started before toolbar exists
+     - Chart groups out of bounds access fix.
+     - Allow GPX track point without time.
+  * d/copyright: Remove more files when repackaging
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 01 Sep 2022 14:33:43 +0200
+
 opencpn (5.6.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release.
