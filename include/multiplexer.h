@@ -36,7 +36,6 @@
 #include "pluginmanager.h"  // for PlugInManager
 #include "datastream.h"
 #include "OCPN_DataStreamEvent.h"
-#include "OCPN_SignalKEvent.h"
 
 class RoutePoint;
 class Route;
@@ -70,9 +69,6 @@ public:
                      SendToGpsDlg *dialog);
   int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
                         SendToGpsDlg *dialog);
-
-  void OnEvtStream(OCPN_DataStreamEvent &event);
-  void OnEvtSignalK(OCPN_SignalKEvent &event);
 
   void LogOutputMessage(const wxString &msg, wxString stream_name,
                         bool b_filter);

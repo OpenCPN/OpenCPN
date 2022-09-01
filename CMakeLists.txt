@@ -885,7 +885,6 @@ set(
   include/ocpn_plugin.h
   include/ocpn_print.h
   include/OCPNRegion.h
-  include/OCPN_SignalKEvent.h
   include/ocpn_types.h
   include/ocpn_utils.h
   include/options.h
@@ -918,8 +917,6 @@ set(
   include/semantic_vers.h
   include/SendToGpsDlg.h
   include/SerialDataStream.h
-  include/SignalKDataStream.h
-  include/SignalKEventHandler.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -1063,7 +1060,6 @@ set(
   src/ocpn_plugin.cpp
   src/ocpn_print.cpp
   src/OCPNRegion.cpp
-  src/OCPN_SignalKEvent.cpp
   src/options.cpp
   src/piano.cpp
   src/plugin_blacklist.cpp
@@ -1087,8 +1083,6 @@ set(
   src/SendToGpsDlg.cpp
   src/SerialDataStream.cpp
   src/ser_ports.cpp
-  src/SignalKDataStream.cpp
-  src/SignalKEventHandler.cpp
   src/Station_Data.cpp
   src/styles.cpp
   src/svg_utils.cpp

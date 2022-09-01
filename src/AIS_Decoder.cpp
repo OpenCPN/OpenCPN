@@ -46,7 +46,6 @@
 #include "multiplexer.h"
 #include "navutil_base.h"
 #include "OCPN_DataStreamEvent.h"
-#include "OCPN_SignalKEvent.h"
 #include "RoutePoint.h"
 #include "Select.h"
 #include "SoundFactory.h"

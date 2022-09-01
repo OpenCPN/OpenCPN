@@ -32,8 +32,6 @@
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "observable_navmsg.h"
-#include "OCPN_DataStreamEvent.h"
-#include "OCPN_SignalKEvent.h"
 
 #define TRACKTYPE_DEFAULT 0
 #define TRACKTYPE_ALWAYS 1
@@ -78,8 +76,6 @@ public:
 
   ~AIS_Decoder(void);
 
-  void OnEvtAIS(OCPN_DataStreamEvent &event);
-  void OnEvtSignalK(OCPN_SignalKEvent &event);
   AIS_Error Decode(const wxString &str);
   std::unordered_map<int, AIS_Target_Data *> &GetTargetList(void) {
     return AISTargetList;

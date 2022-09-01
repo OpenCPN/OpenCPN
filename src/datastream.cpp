@@ -67,7 +67,6 @@
 #include "datastream.h"
 #include "NetworkDataStream.h"
 #include "SerialDataStream.h"
-#include "SignalKDataStream.h"
 
 #include "OCPN_DataStreamEvent.h"
 #include "OCP_DataStreamInput_Thread.h"
@@ -165,7 +164,7 @@ DataStream *makeDataStream(wxEvtHandler *input_consumer,
     case NETWORK:
       switch (params->NetProtocol) {
         case SIGNALK:
-          return new SignalKDataStream(input_consumer, params);
+//          return new SignalKDataStream(input_consumer, params);
         default:
           return new NetworkDataStream(input_consumer, params);
       }
@@ -589,7 +588,7 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
                 if (fs == sentence.Mid(1, 5))
                     return listype;
                 break;
-            default:   
+            default:
 	        // TODO: regex patterns like ".GPZ.." or 6-character patterns
 		//       are rejected in the connection settings dialogue currently
 		//       experts simply edit .opencpn/opncpn.config
@@ -597,7 +596,7 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
                 if (re.Matches(sentence.Mid(0, 8)))
                 {
                     return listype;
-                }    
+                }
                 break;
         }
     }

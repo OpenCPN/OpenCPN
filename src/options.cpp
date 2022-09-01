@@ -59,7 +59,6 @@
 #include <wx/regex.h>
 #include <wx/textwrapper.h>
 
-#include "SignalKDataStream.h"
 #include "comm_drv_factory.h"
 #include "comm_util.h"
 #include "conn_params_panel.h"
@@ -128,7 +127,6 @@ extern GLuint g_raster_format;
 #include "OCPNPlatform.h"
 #include "ConfigMgr.h"
 
-#include "SignalKDataStream.h"
 #include "observable_globvar.h"
 #include "ser_ports.h"
 #include "svg_utils.h"

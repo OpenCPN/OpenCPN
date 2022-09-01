@@ -128,7 +128,6 @@
 // #include "OCPN_AUIManager.h"
 // #include "OCPN_DataStreamEvent.h"
 #include "OCPNPlatform.h"
-#include "OCPN_SignalKEvent.h"
 #include "OCPN_Sound.h"
 #include "options.h"
 // #include "piano.h"
@@ -1127,9 +1126,9 @@ static void onBellsFinishedCB(void *ptr) {
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
     : wxFrame(frame, -1, title, pos, size,
-              style),  // wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
+              style)  // wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
       // wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
-      m_signalKHandler(this) {
+      {
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
 
@@ -1203,10 +1202,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   g_pMUX->SetGPSHandler(this);
   //  Create/connect a dynamic event handler slot
   wxLogMessage(" **** Connect stuff");
-  Connect(wxEVT_OCPN_DATASTREAM,
-          (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtOCPN_NMEA);
-  Connect(EVT_OCPN_SIGNALKSTREAM,
-          (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtOCPN_SignalK);
 
   b_autofind = false;
 
@@ -7122,9 +7117,6 @@ bool MyFrame::ParsePosition(const LATLONG &Position) {
   }
 
   return ll_valid;
-}
-void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event) {
-  m_signalKHandler.OnEvtOCPN_SignalK(event);
 }
 
 void MyFrame::OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event) {

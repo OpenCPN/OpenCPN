@@ -58,7 +58,6 @@
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
 #endif
-#include "OCPN_SignalKEvent.h"
 #include "datastream.h"
 #include "SerialDataStream.h"
 #include "wx/jsonval.h"
@@ -117,18 +116,17 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 Multiplexer::Multiplexer() : params_save(NULL) {
   m_aisconsumer = NULL;
   m_gpsconsumer = NULL;
-  Connect(wxEVT_OCPN_DATASTREAM,
-          (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
-  Connect(EVT_OCPN_SIGNALKSTREAM,
-          (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtSignalK);
+//FIXME (dave) remove
+//   Connect(wxEVT_OCPN_DATASTREAM,
+//           (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
+//   Connect(EVT_OCPN_SIGNALKSTREAM,
+//           (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtSignalK);
 
   m_pdatastreams = new wxArrayOfDataStreams();
   if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = wxT("Generic");
 }
 
 Multiplexer::~Multiplexer() {
-  Disconnect(wxEVT_OCPN_DATASTREAM,
-             (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
   ClearStreams();
   delete m_pdatastreams;
 }
@@ -278,6 +276,7 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler) {
   m_gpsconsumer = handler;
 }
 
+#if 0
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
   wxString message = event.ProcessNMEA4Tags();
   std::string goodMessage(message);
@@ -378,7 +377,9 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
   }
   delete goodEvent;
 }
+#endif
 
+#if 0
 void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event) {
 #if 0   // Handled in pluginmanager, OK to delete.
   if (m_aisconsumer) m_aisconsumer->AddPendingEvent(event);
@@ -395,6 +396,7 @@ void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event) {
     g_pi_manager->SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
 #endif
 }
+#endif
 
 void Multiplexer::SaveStreamProperties(DataStream *stream) {
   if (stream) {
