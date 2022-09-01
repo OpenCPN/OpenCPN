@@ -782,6 +782,14 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     }
   }
 
+  if (temp_data.n_satellites > 0){
+    if (EvalPriority(sK_msg, active_priority_satellites, priority_map_satellites)) {
+      g_SatsInView = temp_data.n_satellites;
+      g_bSatValid = true;
+
+      m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+    }
+  }
 
   // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(

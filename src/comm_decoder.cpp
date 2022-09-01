@@ -402,11 +402,11 @@ void CommDecoder::updateItem(wxJSONValue &item,
     else if (update_path ==
              _T("navigation.gnss.satellites"))  // From GGA sats in use
     {
-      /*if (g_priSats >= 2)*/ updateGnssSatellites(value, sfixtime, temp_data);
+      updateGnssSatellites(value, sfixtime, temp_data);
     } else if (update_path ==
                _T("navigation.gnss.satellitesInView"))  // From GSV sats in view
     {
-      /*if (g_priSats >= 3)*/ updateGnssSatellites(value, sfixtime, temp_data);
+      updateGnssSatellites(value, sfixtime, temp_data);
     } else if (update_path == _T("navigation.headingTrue")) {
       if(!value.IsNull())
         updateHeadingTrue(value, sfixtime, temp_data);
@@ -456,17 +456,14 @@ void CommDecoder::updateNavigationCourseOverGround(
 void CommDecoder::updateGnssSatellites(wxJSONValue &value,
                                        const wxString &sfixtime,
                                        NavData& temp_data) {
-#if 0
+
   if (value.IsInt()) {
     if (value.AsInt() > 0) {
-      m_frame->setSatelitesInView(value.AsInt());
-      g_priSats = 2;
+      temp_data.n_satellites = value.AsInt();
     }
   } else if ((value.HasMember("count") && value["count"].IsInt())) {
-    m_frame->setSatelitesInView(value["count"].AsInt());
-    g_priSats = 3;
+    temp_data.n_satellites = value["count"].AsInt();
   }
-#endif
 }
 
 void CommDecoder::updateHeadingTrue(wxJSONValue &value,
