@@ -23,9 +23,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifdef USE_MOCK_DEFS
+#include "mock_defs.h"
 
-#ifndef __TRACK_H__
-#define __TRACK_H__
+#elif ! defined(_TRACK_H__)
+#define _TRACK_H__
 
 #include <wx/progdlg.h>
 

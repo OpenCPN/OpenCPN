@@ -32,6 +32,7 @@
 #include "wx/datetime.h"
 #include "wx/event.h"
 #include "wx/jsonreader.h"
+#include "wx/jsonwriter.h"
 #include "wx/log.h"
 #include "wx/string.h"
 #include "wx/textfile.h"
@@ -60,7 +61,6 @@ class AISTargetAlertDialog;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
 extern Select *pSelect;
-extern MyFrame *gFrame;
 extern bool bGPSValid;
 extern bool g_bCPAMax;
 extern double g_CPAMax_NM;
@@ -90,6 +90,9 @@ extern double gSog;
 extern double gHdt;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
+extern int g_iDistanceFormat;
+extern int g_iSpeedFormat;
+
 extern ArrayOfMMSIProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
 extern wxString AISTargetNameFileName;
@@ -1048,11 +1051,11 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
     }
 
     if (arpa_distunit == _T("K")) {
-      arpa_dist = fromUsrDistance(arpa_dist, DISTANCE_KM);
-      arpa_sog = fromUsrSpeed(arpa_sog, SPEED_KMH);
+      arpa_dist = fromUsrDistance(arpa_dist, DISTANCE_KM, g_iDistanceFormat);
+      arpa_sog = fromUsrSpeed(arpa_sog, SPEED_KMH, g_iSpeedFormat);
     } else if (arpa_distunit == _T("S")) {
-      arpa_dist = fromUsrDistance(arpa_dist, DISTANCE_MI);
-      arpa_sog = fromUsrSpeed(arpa_sog, SPEED_MPH);
+      arpa_dist = fromUsrDistance(arpa_dist, DISTANCE_MI, g_iDistanceFormat);
+      arpa_sog = fromUsrSpeed(arpa_sog, SPEED_MPH, g_iSpeedFormat);
     }
 
     mmsi = arpa_mmsi =
@@ -2748,15 +2751,18 @@ void AIS_Decoder::DeletePersistentTrack(Track *track) {
                 props->m_bPersistentTrack = false;
                 td->b_mPropPersistTrack = false;
               }
+#ifndef USE_MOCK_DEFS
               if (wxID_NO ==
                   OCPNMessageBox(
                     NULL,
                     _("This AIS target has Persistent tracking selected by MMSI properties\n"
                       "A Persistent track recording will therefore be restarted for this target.\n\n"
                       "Do you instead want to stop Persistent tracking for this target?"),
-                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60)) {
+                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60))
+              {
                 props->m_bPersistentTrack = true;
               }
+#endif    // FIXME(leamas) move to event var, no dialogs in here.
             }
             break;
           }

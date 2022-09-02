@@ -22,9 +22,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifdef USE_MOCK_DEFS
+#include "mock_defs.h"
 
-#ifndef __MULTIPLEXER_H__
-#define __MULTIPLEXER_H__
+#elif ! defined(_MULTIPLEXER_H__)
+#define _MULTIPLEXER_H__
 
 
 #include "wx/wxprec.h"

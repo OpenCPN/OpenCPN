@@ -21,7 +21,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __SELECT_H__
+#ifdef USE_MOCK_DEFS
+#include "mock_defs.h"
+
+#elif ! defined(__SELECT_H__)
 #define __SELECT_H__
 
 #include "SelectItem.h"
@@ -37,10 +40,10 @@
 #define SELTYPE_TRACKSEGMENT 0x0100
 #define SELTYPE_DRAGHANDLE 0x0200
 
+class RoutePoint;
 class TrackPoint;
 class Track;
 class Route;
-class RoutePoint;
 class ChartCanvas;
 
 class Select {
