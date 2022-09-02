@@ -19,14 +19,17 @@ set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 add_executable(tests
   tests.cpp
   ${MODEL_SRC}
+  ${UNITTEST_SRC}
   ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
   ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
 )
 
+target_compile_definitions(tests PUBLIC CLIAPP USE_MOCK_DEFS)
 target_include_directories(
   tests
   PRIVATE
   ${PROJECT_SOURCE_DIR}/../include
+  ${PROJECT_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/include
   ${PROJECT_SOURCE_DIR}/../libs/sound/include
   ${PROJECT_SOURCE_DIR}/../libs/sound/include

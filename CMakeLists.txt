@@ -942,6 +942,7 @@ set(
 set(MODEL_SRC
   # Testable sources without GUI dependencies.
   ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
+  ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
@@ -966,25 +967,29 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/PluginPaths.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
+  ${CMAKE_SOURCE_DIR}/src/SelectItem.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
 )
 
+set(UNITTEST_SRC
+  # Sources buildable with mock definitions
+  ${CMAKE_SOURCE_DIR}/src/AIS_Bitstring.cpp
+  ${CMAKE_SOURCE_DIR}/src/AIS_Decoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/AIS_Target_Data.cpp
+  ${CMAKE_SOURCE_DIR}/src/georef.cpp
+)
 
 set(
   SRCS
   src/about.cpp
   src/AboutFrame.cpp
   src/AboutFrameImpl.cpp
-  src/AIS_Bitstring.cpp
   src/ais.cpp
-  src/AIS_Decoder.cpp
   src/AISTargetAlertDialog.cpp
-  src/AIS_Target_Data.cpp
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
   src/ais_info_gui.cpp
   src/BasePlatform.cpp
-  src/bbox.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
@@ -1022,7 +1027,6 @@ set(
   src/GarminProtocolHandler.cpp
   src/garmin_wrapper.h
   src/geodesic.cpp
-  src/georef.cpp
   src/GoToPositionDialog.cpp
   src/gshhs.cpp
   src/gui_lib.cpp
@@ -1070,7 +1074,6 @@ set(
   src/S57QueryDialog.cpp
   src/safe_mode.cpp
   src/Select.cpp
-  src/SelectItem.cpp
   src/SendToGpsDlg.cpp
   src/ser_ports.cpp
   src/Station_Data.cpp
@@ -1094,7 +1097,7 @@ set(
   src/viewport.cpp
 )
 
-set(SRCS ${SRCS} ${MODEL_SRC})
+set(SRCS ${SRCS} ${MODEL_SRC} ${UNITTEST_SRC})
 
 if (LINUX AND NOT QT_ANDROID)
   set( HDRS ${HDRS}  include/comm_drv_n2k_socketcan.h )
