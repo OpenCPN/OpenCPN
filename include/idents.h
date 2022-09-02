@@ -170,6 +170,11 @@ enum {
 
 enum { TIME_TYPE_UTC = 1, TIME_TYPE_LMT, TIME_TYPE_COMPUTER };
 
+#define DS_SOCKET_ID             5001
+#define DS_SERVERSOCKET_ID       5002
+#define DS_ACTIVESERVERSOCKET_ID 5003
+
+
 #if 0
 //      Command identifiers for wxCommandEvents coming from the outside world.
 //      Removed from enum to facilitate constant definition

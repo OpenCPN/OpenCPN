@@ -47,11 +47,15 @@
 #include <netinet/tcp.h>
 #endif
 
+#ifdef __WXMSW__
+	#include <windows.h>
+	#include <winioctl.h>
+	#include <initguid.h>
+	#include "setupapi.h"
+#endif
+
 #include "dychart.h"
 
-#include "datastream.h"
-#include "OCPN_DataStreamEvent.h"
-#include "OCP_DataStreamInput_Thread.h"
 #include "garmin_wrapper.h"
 #include "GarminProtocolHandler.h"
 #include "nmea0183.h"
@@ -139,7 +143,7 @@ BEGIN_EVENT_TABLE(GarminProtocolHandler, wxEvtHandler)
 EVT_TIMER(TIMER_GARMIN1, GarminProtocolHandler::OnTimerGarmin1)
 END_EVENT_TABLE()
 
-GarminProtocolHandler::GarminProtocolHandler(DataStream *parent,
+GarminProtocolHandler::GarminProtocolHandler(void *parent,
                                              wxEvtHandler *MessageTarget,
                                              bool bsel_usb) {
   m_pparent = parent;
@@ -177,13 +181,17 @@ GarminProtocolHandler::GarminProtocolHandler(DataStream *parent,
 
   //  Not using USB, so try a Garmin port open and device ident
   if (!m_busb) {
-    m_port = m_pparent->GetPort().AfterFirst(':');  // strip "Serial:"
+
+    //FIXME (dave)
+    //m_port = m_pparent->GetPort().AfterFirst(':');  // strip "Serial:"
 
     // Start handler thread
-    m_garmin_serial_thread =
-        new GARMIN_Serial_Thread(this, m_pparent, m_pMainEventHandler, m_port);
-    m_Thread_run_flag = 1;
-    m_garmin_serial_thread->Run();
+
+    // FIXME (dave)
+    //m_garmin_serial_thread =
+      //  new GARMIN_Serial_Thread(this, m_pparent, m_pMainEventHandler, m_port);
+    //m_Thread_run_flag = 1;
+    //m_garmin_serial_thread->Run();
   }
 
   TimerGarmin1.SetOwner(this, TIMER_GARMIN1);
@@ -271,9 +279,10 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent &event) {
         gusb_cmd_send((const garmin_usb_packet *)pvt_on, sizeof(pvt_on));
 
         //    Start the pump
-        m_garmin_usb_thread =
-            new GARMIN_USB_Thread(this, m_pparent, m_pMainEventHandler,
-                                  (wxIntPtr)m_usb_handle, m_max_tx_size);
+        // FIXME (dave)
+        //m_garmin_usb_thread =
+        //    new GARMIN_USB_Thread(this, m_pparent, m_pMainEventHandler,
+        //                          (wxIntPtr)m_usb_handle, m_max_tx_size);
         m_Thread_run_flag = 1;
         m_garmin_usb_thread->Run();
       }
@@ -707,6 +716,8 @@ D800_Pvt_Data_Type_Aligned mypvt;
 //    Garmin GRMN Mode serial device
 //
 //-------------------------------------------------------------------------------------------------------------
+//FIXME (dave) implement using comm
+#if 0
 GARMIN_Serial_Thread::GARMIN_Serial_Thread(GarminProtocolHandler *parent,
                                            DataStream *GParentStream,
                                            wxEvtHandler *MessageTarget,
@@ -849,11 +860,13 @@ thread_exit:
   m_parent->m_Thread_run_flag = -1;  // in GarminProtocolHandler
   return 0;
 }
+#endif
 
 //-------------------------------------------------------------------------------------------------------------
 //    GARMIN_USB_Thread Implementation
 //-------------------------------------------------------------------------------------------------------------
-
+// FIXME (dave) implement using comm
+#if 0
 GARMIN_USB_Thread::GARMIN_USB_Thread(GarminProtocolHandler *parent,
                                      DataStream *GParentStream,
                                      wxEvtHandler *MessageTarget,
@@ -1058,3 +1071,4 @@ int GARMIN_USB_Thread::gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz) {
 
   return ret_val;
 }
+#endif

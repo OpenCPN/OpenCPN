@@ -45,7 +45,6 @@
 #include "idents.h"
 #include "multiplexer.h"
 #include "navutil_base.h"
-#include "OCPN_DataStreamEvent.h"
 #include "RoutePoint.h"
 #include "Select.h"
 #include "SoundFactory.h"
@@ -1368,11 +1367,13 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
               gps_watchdog_timeout_ticks =
                   60;  // increase watchdog time up to 1 minute
               // add the changed sentence into nmea stream
-              OCPN_DataStreamEvent event(wxEVT_OCPN_DATASTREAM, 0);
-              std::string s = std::string(aivdostr.mb_str());
-              event.SetNMEAString(s);
-              event.SetStream(NULL);
-              g_pMUX->AddPendingEvent(event);
+
+              //FIXME (dave) What is this all about?
+//               OCPN_DataStreamEvent event(wxEVT_OCPN_DATASTREAM, 0);
+//               std::string s = std::string(aivdostr.mb_str());
+//               event.SetNMEAString(s);
+//               event.SetStream(NULL);
+//               g_pMUX->AddPendingEvent(event);
             }
           }
           return AIS_NoError;

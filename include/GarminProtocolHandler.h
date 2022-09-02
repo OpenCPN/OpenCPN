@@ -61,10 +61,10 @@
 #include <dbt.h>
 #include <initguid.h>
 #endif
+
 #include <string>
 #include "conn_params.h"
 #include "dsPortType.h"
-#include "datastream.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -202,7 +202,7 @@ class GARMIN_USB_Thread;
 
 class GarminProtocolHandler : public wxEvtHandler {
 public:
-  GarminProtocolHandler(DataStream *parent, wxEvtHandler *MessageTarget,
+  GarminProtocolHandler(/*FIXME dave DataStream*/void *parent, wxEvtHandler *MessageTarget,
                         bool bsel_usb);
   ~GarminProtocolHandler();
 
@@ -218,7 +218,7 @@ public:
   bool FindGarminDeviceInterface();
 
   wxEvtHandler *m_pMainEventHandler;
-  DataStream *m_pparent;
+  void *m_pparent;
 
   int m_max_tx_size;
   int m_receive_state;
@@ -267,7 +267,7 @@ public:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_Serial_Thread : public wxThread {
 public:
-  GARMIN_Serial_Thread(GarminProtocolHandler *parent, DataStream *GParentStream,
+  GARMIN_Serial_Thread(GarminProtocolHandler *parent, void *GParentStream,
                        wxEvtHandler *MessageTarget, wxString port);
   ~GARMIN_Serial_Thread(void);
   void *Entry();
@@ -276,7 +276,7 @@ public:
 private:
   wxEvtHandler *m_pMessageTarget;
   GarminProtocolHandler *m_parent;
-  DataStream *m_parent_stream;
+  void *m_parent_stream;
 
   wxString m_port;
   bool m_bconnected;
@@ -293,14 +293,14 @@ private:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_USB_Thread : public wxThread {
 public:
-  GARMIN_USB_Thread(GarminProtocolHandler *parent, DataStream *GParentStream,
+  GARMIN_USB_Thread(GarminProtocolHandler *parent, void *GParentStream,
                     wxEvtHandler *MessageTarget, unsigned int device_handle,
                     size_t max_tx_size);
   ~GARMIN_USB_Thread(void);
   void *Entry();
 
 private:
-  DataStream *m_parent_stream;
+  void *m_parent_stream;
 
   int gusb_win_get(garmin_usb_packet *ibuf, size_t sz);
   int gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz);

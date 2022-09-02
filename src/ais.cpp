@@ -46,7 +46,6 @@
 #include "navutil.h"  // for Select
 #include "georef.h"
 #include "styles.h"
-#include "datastream.h"
 #include "Select.h"
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"

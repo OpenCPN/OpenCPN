@@ -67,7 +67,6 @@
 #include "chartbase.h"
 #include "ocpndc.h"
 #include "geodesic.h"
-#include "datastream.h"
 #include "multiplexer.h"
 #include "ais.h"
 #include "Route.h"
@@ -83,6 +82,7 @@
 #include "chartdb.h"
 #include "CanvasConfig.h"
 #include "ocpn_frame.h"
+#include "conn_params.h"
 
 #include "s52plib.h"
 #include "cm93.h"

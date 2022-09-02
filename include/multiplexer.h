@@ -34,14 +34,12 @@
 #endif  // precompiled headers
 
 #include "pluginmanager.h"  // for PlugInManager
-#include "datastream.h"
-#include "OCPN_DataStreamEvent.h"
 
 class RoutePoint;
 class Route;
 class SendToGpsDlg;
+class ConnectionParams;
 
-WX_DEFINE_ARRAY(DataStream *, wxArrayOfDataStreams);
 
 //      Garmin interface private error codes
 #define ERR_GARMIN_INITIALIZE -1
@@ -51,15 +49,6 @@ class Multiplexer : public wxEvtHandler {
 public:
   Multiplexer();
   ~Multiplexer();
-  void AddStream(DataStream *stream);
-  void StopAllStreams();
-  void ClearStreams();
-  void StartAllStreams();
-
-  DataStream *FindStream(const wxString &port);
-  void StopAndRemoveStream(DataStream *stream);
-  void SaveStreamProperties(DataStream *stream);
-  bool CreateAndRestoreSavedStreamProperties();
 
   void SendNMEAMessage(const wxString &msg);
   void SetAISHandler(wxEvtHandler *handler);
@@ -78,7 +67,6 @@ public:
                        bool b_filter, bool b_error = false);
 
 private:
-  wxArrayOfDataStreams *m_pdatastreams;
 
   wxEvtHandler *m_aisconsumer;
   wxEvtHandler *m_gpsconsumer;

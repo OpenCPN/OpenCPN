@@ -94,6 +94,7 @@
 #include "mbtiles.h"
 #include "ocpn_frame.h"
 #include "idents.h"
+#include "conn_params.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -12527,7 +12528,6 @@ wxString ChartCanvas::FindValidUploadPort() {
         port << _T("Serial:") << cp->Port;
     }
   }
-
   return port;
 }
 

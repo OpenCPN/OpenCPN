@@ -85,7 +85,6 @@ extern GLuint g_raster_format;
 #include "chartdbs.h"
 #include "options.h"
 #include "styles.h"
-#include "datastream.h"
 #include "multiplexer.h"
 #include "FontMgr.h"
 #include "OCPN_Sound.h"

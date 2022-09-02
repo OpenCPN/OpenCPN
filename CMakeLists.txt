@@ -835,7 +835,6 @@ set(
   include/conn_params.h
   include/conn_params_panel.h
   include/cutil.h
-  include/datastream.h
   include/DepthFont.h
   include/DetailSlider.h
   include/Downloader.h
@@ -867,7 +866,6 @@ set(
   include/NavObjectCollection.h
   include/navutil.h
   include/navutil_base.h
-  include/NetworkDataStream.h
   include/NMEALogWindow.h
   include/observable.h
   include/observable_confvar.h
@@ -875,8 +873,6 @@ set(
   include/observable_appmsg.h
   include/observable_navmsg.h
   include/ocpCursor.h
-  include/OCP_DataStreamInput_Thread.h
-  include/OCPN_DataStreamEvent.h
   include/ocpn_frame.h
   include/ocpndc.h
   include/OCPNListCtrl.h
@@ -916,7 +912,6 @@ set(
   include/SelectItem.h
   include/semantic_vers.h
   include/SendToGpsDlg.h
-  include/SerialDataStream.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -1018,7 +1013,6 @@ set(
   src/conn_params_panel.cpp
   src/connections_dialog.cpp
   src/cutil.cpp
-  src/datastream.cpp
   src/DepthFont.cpp
   src/DetailSlider.cpp
   src/download_mgr.cpp
@@ -1045,13 +1039,10 @@ set(
   src/multiplexer.cpp
   src/NavObjectCollection.cpp
   src/navutil.cpp
-  src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
-  src/OCP_DataStreamInput_Thread.cpp
   src/ocpn_app.cpp
   src/OCPN_AUIManager.cpp
-  src/OCPN_DataStreamEvent.cpp
   src/ocpndc.cpp
   src/ocpn_frame.cpp
   src/OCPNListCtrl.cpp
@@ -1081,7 +1072,6 @@ set(
   src/Select.cpp
   src/SelectItem.cpp
   src/SendToGpsDlg.cpp
-  src/SerialDataStream.cpp
   src/ser_ports.cpp
   src/Station_Data.cpp
   src/styles.cpp

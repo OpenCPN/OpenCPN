@@ -112,7 +112,6 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "observable_confvar.h"
 #include "observable_globvar.h"
 #include "OCPN_AUIManager.h"
-#include "OCPN_DataStreamEvent.h"
 #include "ocpndc.h"
 #include "ocpn_pixel.h"
 #include "OCPNPlatform.h"
@@ -3055,12 +3054,15 @@ bool AddLocaleCatalog(wxString catalog) {
 }
 
 void PushNMEABuffer(wxString buf) {
+  //FIXME (dave) Implement using comm...
+#if 0
   OCPN_DataStreamEvent event(wxEVT_OCPN_DATASTREAM, 0);
   std::string s = std::string(buf.mb_str());
   event.SetNMEAString(s);
   event.SetStream(NULL);
 
   g_pMUX->AddPendingEvent(event);
+#endif
 }
 
 wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom) {

@@ -62,14 +62,31 @@
 
 #include "dychart.h"
 
-#include "OCPN_DataStreamEvent.h"
-#include "OCP_DataStreamInput_Thread.h"
 #include "GarminProtocolHandler.h"
 
 #include "comm_drv_n0183_net.h"
 #include "comm_navmsg_bus.h"
+#include "idents.h"
 
 #define N_DOG_TIMEOUT 5
+
+// FIXME (dave)  This should be in some more "common" space, but where?
+bool CheckSumCheck(const std::string &sentence) {
+  size_t check_start = sentence.find('*');
+  if (check_start == wxString::npos || check_start > sentence.size() - 3)
+    return false;  // * not found, or it didn't have 2 characters following it.
+
+  std::string check_str = sentence.substr(check_start + 1, 2);
+  unsigned long checksum = strtol(check_str.c_str(), 0, 16);
+  if (checksum == 0L && check_str != "00") return false;
+
+  unsigned char calculated_checksum = 0;
+  for (std::string::const_iterator i = sentence.begin() + 1;
+       i != sentence.end() && *i != '*'; ++i)
+    calculated_checksum ^= static_cast<unsigned char>(*i);
+
+  return calculated_checksum == checksum;
+}
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_NET, CommDriverN0183NetEvent);
 

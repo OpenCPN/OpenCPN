@@ -1210,8 +1210,9 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   Connect(wxEVT_OCPN_MSG,
           (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtPlugInMessage);
 
-  Connect(wxEVT_OCPN_THREADMSG,
-          (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtTHREADMSG);
+  //FIXME (dave)
+  //Connect(wxEVT_OCPN_THREADMSG,
+  //        (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtTHREADMSG);
 
   //  And from the thread SENC creator
   Connect(wxEVT_OCPN_BUILDSENCTHREAD,
@@ -1272,13 +1273,12 @@ MyFrame::~MyFrame() {
   delete pRouteList;
   pRouteList = NULL;
 
-  Disconnect(wxEVT_OCPN_DATASTREAM,
-             (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtOCPN_NMEA);
   Disconnect(
       wxEVT_OCPN_MSG,
       (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtPlugInMessage);
-  Disconnect(wxEVT_OCPN_THREADMSG,
-             (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtTHREADMSG);
+  //FIXME (dave)  Was in some datastream file?
+  //Disconnect(wxEVT_OCPN_THREADMSG,
+  //           (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtTHREADMSG);
 }
 
 void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
@@ -6921,6 +6921,7 @@ void MyFrame::OnEvtTHREADMSG(OCPN_ThreadMessageEvent &event) {
   wxLogMessage(wxString(event.GetSString().c_str(), wxConvUTF8));
 }
 
+#if 0
 bool MyFrame::EvalPriority(const wxString &message, DataStream *pDS) {
   bool bret = true;
   wxString msg_type = message.Mid(1, 5);
@@ -6996,6 +6997,8 @@ bool MyFrame::EvalPriority(const wxString &message, DataStream *pDS) {
   }
   return bret;
 }
+
+#endif
 
 static void UpdatePositionCalculatedSogCog() {
   wxDateTime now = wxDateTime::Now();
@@ -8008,11 +8011,14 @@ void MyFrame::OnResume(wxPowerEvent &WXUNUSED(event)) {
     wxLogMessage(_T("Restarting streams."));
     //       printf("   Restarting streams\n");
     g_last_resume_ticks = now.GetTicks();
+//FIXME (dave)
+#if 0
     if (g_pMUX) {
       g_pMUX->ClearStreams();
 
       g_pMUX->StartAllStreams();
     }
+#endif
   }
 
   //  If OpenGL is enabled, Windows Resume does not properly refresh the

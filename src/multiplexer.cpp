@@ -44,7 +44,6 @@
 #include "multiplexer.h"
 #include "navutil.h"
 #include "NMEALogWindow.h"
-#include "OCPN_DataStreamEvent.h"
 #include "Route.h"
 
 #ifdef __linux__
@@ -52,18 +51,16 @@
 #endif
 
 #include "gui_lib.h"
-#include "NetworkDataStream.h"
 #include "SendToGpsDlg.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
 #endif
-#include "datastream.h"
-#include "SerialDataStream.h"
 #include "wx/jsonval.h"
 #include "wx/jsonwriter.h"
 #include "wx/jsonreader.h"
 #include "nmea0183.h"
+#include "conn_params.h"
 
 extern PlugInManager *g_pi_manager;
 extern wxString g_GPS_Ident;
@@ -122,66 +119,67 @@ Multiplexer::Multiplexer() : params_save(NULL) {
 //   Connect(EVT_OCPN_SIGNALKSTREAM,
 //           (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtSignalK);
 
-  m_pdatastreams = new wxArrayOfDataStreams();
+  //m_pdatastreams = new wxArrayOfDataStreams();
   if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = wxT("Generic");
 }
 
 Multiplexer::~Multiplexer() {
-  ClearStreams();
-  delete m_pdatastreams;
 }
 
-void Multiplexer::AddStream(DataStream *stream) { m_pdatastreams->Add(stream); }
+//void Multiplexer::AddStream(DataStream *stream) { m_pdatastreams->Add(stream); }
 
-void Multiplexer::StopAllStreams() {
-  for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
-    m_pdatastreams->Item(i)->Close();
-  }
-}
+// void Multiplexer::StopAllStreams() {
+//   for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
+//     m_pdatastreams->Item(i)->Close();
+//   }
+// }
 
-void Multiplexer::ClearStreams() {
-  for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
-    delete m_pdatastreams->Item(i);  // Implicit Close(), see datastream dtor
-  }
-  m_pdatastreams->Clear();
-}
+// void Multiplexer::ClearStreams() {
+//   for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
+//     delete m_pdatastreams->Item(i);  // Implicit Close(), see datastream dtor
+//   }
+//   m_pdatastreams->Clear();
+// }
 
 
-DataStream *Multiplexer::FindStream(const wxString &port) {
-  for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
-    DataStream *stream = m_pdatastreams->Item(i);
-    if (stream && stream->GetConnectionType() == INTERNAL_BT) {
-      if (is_same_device(stream->GetPort(), port.AfterFirst(';')))
-        return stream;
-    } else if (stream && is_same_device(stream->GetPort(), port))
-      return stream;
-  }
-  return NULL;
-}
+// DataStream *Multiplexer::FindStream(const wxString &port) {
+//   for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
+//     DataStream *stream = m_pdatastreams->Item(i);
+//     if (stream && stream->GetConnectionType() == INTERNAL_BT) {
+//       if (is_same_device(stream->GetPort(), port.AfterFirst(';')))
+//         return stream;
+//     } else if (stream && is_same_device(stream->GetPort(), port))
+//       return stream;
+//   }
+//   return NULL;
+// }
 
-void Multiplexer::StopAndRemoveStream(DataStream *stream) {
-  if (stream) stream->Close();
+// void Multiplexer::StopAndRemoveStream(DataStream *stream) {
+//   if (stream) stream->Close();
+//
+//   if (m_pdatastreams) {
+//     int index = m_pdatastreams->Index(stream);
+//     if (wxNOT_FOUND != index) m_pdatastreams->RemoveAt(index);
+//   }
+// }
 
-  if (m_pdatastreams) {
-    int index = m_pdatastreams->Index(stream);
-    if (wxNOT_FOUND != index) m_pdatastreams->RemoveAt(index);
-  }
-}
-
-void Multiplexer::StartAllStreams(void) {
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
-    if (cp->bEnabled) {
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
-      if (cp->GetDSPort().Contains(_T("Serial"))) {
-        CheckSerialAccess(0, cp->Port.ToStdString());
-      }
-#endif
-      AddStream(makeDataStream(this, cp));
-      cp->b_IsSetup = true;
-    }
-  }
-}
+// void Multiplexer::StartAllStreams(void) {
+// // FIXME (dave) Verify by test
+// #if 0
+//   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
+//     ConnectionParams *cp = g_pConnectionParams->Item(i);
+//     if (cp->bEnabled) {
+// #if defined(__linux__) && !defined(__OCPN__ANDROID__)
+//       if (cp->GetDSPort().Contains(_T("Serial"))) {
+//         CheckSerialAccess(0, cp->Port.ToStdString());
+//       }
+// #endif
+//       AddStream(makeDataStream(this, cp));
+//       cp->b_IsSetup = true;
+//     }
+//   }
+// #endif
+// }
 
 void Multiplexer::LogOutputMessageColor(const wxString &msg,
                                         const wxString &stream_name,
@@ -241,6 +239,8 @@ void Multiplexer::LogInputMessage(const wxString &msg,
 }
 
 void Multiplexer::SendNMEAMessage(const wxString &msg) {
+//FIXME (dave) Implement using comm...
+#if 0
   // Send to all the outputs
   for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
     DataStream *s = m_pdatastreams->Item(i);
@@ -266,6 +266,7 @@ void Multiplexer::SendNMEAMessage(const wxString &msg) {
   }
   // Send to plugins
   if (g_pi_manager) g_pi_manager->SendNMEASentenceToAllPlugIns(msg);
+#endif
 }
 
 void Multiplexer::SetAISHandler(wxEvtHandler *handler) {
@@ -398,25 +399,33 @@ void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event) {
 }
 #endif
 
-void Multiplexer::SaveStreamProperties(DataStream *stream) {
-  if (stream) {
-    wxLogMessage(
-        wxString::Format(_T("SaveStreamProperties %s"),
-                         stream->GetConnectionParams()->GetDSPort().c_str()));
-    params_save = stream->GetConnectionParams();
-  }
-}
+// void Multiplexer::SaveStreamProperties(DataStream *stream) {
+//   //FIXME (dave) Implement using comm...
+// #if 0
+//   if (stream) {
+//     wxLogMessage(
+//         wxString::Format(_T("SaveStreamProperties %s"),
+//                          stream->GetConnectionParams()->GetDSPort().c_str()));
+//     params_save = stream->GetConnectionParams();
+//   }
+// #endif
+// }
 
-bool Multiplexer::CreateAndRestoreSavedStreamProperties() {
-  wxLogMessage(wxString::Format(_T("CreateAndRestoreSavedStreamProperties %s"),
-                                params_save->GetDSPort().c_str()));
-  AddStream(makeDataStream(this, params_save));
-  return true;
-}
+// bool Multiplexer::CreateAndRestoreSavedStreamProperties() {
+//   //FIXME (dave) Implement using comm...
+// #if 0
+//   wxLogMessage(wxString::Format(_T("CreateAndRestoreSavedStreamProperties %s"),
+//                                 params_save->GetDSPort().c_str()));
+//   AddStream(makeDataStream(this, params_save));
+// #endif
+//   return true;
+// }
 
 int Multiplexer::SendRouteToGPS(Route *pr, const wxString &com_name,
                                 bool bsend_waypoints, SendToGpsDlg *dialog) {
   int ret_val = 0;
+  //FIXME (dave)  Implement using comm
+#if 0
 
   if (g_GPS_Ident == _T("FurunoGP3X")) {
     if (pr->pRoutePointList->GetCount() > 30) {
@@ -1056,12 +1065,14 @@ ret_point_1:
   if (b_restoreStream) {
     if (old_stream) CreateAndRestoreSavedStreamProperties();
   }
-
+#endif
   return ret_val;
 }
 
 int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
                                    SendToGpsDlg *dialog) {
+  //FIXME (dave) implement using comm
+#if 0
   int ret_val = 0;
 
   bool b_restoreStream = false;
@@ -1389,4 +1400,6 @@ ret_point:
   }
 
   return ret_val;
+#endif
+  return 0;
 }
