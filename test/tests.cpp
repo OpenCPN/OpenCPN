@@ -608,7 +608,6 @@ TEST(Priority, DifferentSource) {
 
 
 TEST(AIS, AISVDO) {
-  // FIXME(leamas) testdata is out of the blue, no idea what the actual pos is.
   const char* AISVDO_1 = "AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
   g_pAIS = new AIS_Decoder;
@@ -616,7 +615,7 @@ TEST(AIS, AISVDO) {
   auto found = g_pAIS->GetTargetList().find(MMSI);
   EXPECT_NE(found, g_pAIS->GetTargetList().end());
   if (found != g_pAIS->GetTargetList().end()) {
-    EXPECT_NEAR(found->second->Lat, 57.123456, 0.0001);
-    EXPECT_NEAR(found->second->Lon, 10.123456, 0.0001);
+    EXPECT_NEAR(found->second->Lat, 57.985758, 0.0001);
+    EXPECT_NEAR(found->second->Lon, 11.740108, 0.0001);
   }
 }
