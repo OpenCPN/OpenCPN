@@ -89,6 +89,7 @@ public:
 
   void Open();
   void Close();
+  ConnectionParams GetParams() const { return m_params; }
 
   bool SetOutputSocketOptions(wxSocketBase* tsock);
   bool SendSentenceNetwork(const wxString& payload);
@@ -99,6 +100,8 @@ public:
   void OpenNetworkTCP(unsigned int addr);
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+
+  void SendMessage(const NavMsg& msg, const NavAddr& addr) const;
 
 private:
   ConnectionParams m_params;

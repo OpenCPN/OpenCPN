@@ -827,6 +827,7 @@ set(
   include/comm_drv_registry.h
   include/comm_drv_factory.h
   include/comm_drv_file.h
+  include/comm_n0183_output.h
   include/comm_navmsg.h
   include/comm_navmsg_bus.h
   include/comm_util.h
@@ -1006,6 +1007,7 @@ set(
   src/comm_drv_registry.cpp
   src/comm_drv_signalk.cpp
   src/comm_drv_signalk_net.cpp
+  src/comm_n0183_output.cpp
   src/comm_navmsg.cpp
   src/compass.cpp
   src/concanv.cpp

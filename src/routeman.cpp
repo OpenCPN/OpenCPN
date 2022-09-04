@@ -49,7 +49,7 @@
 #include "TrackPropDlg.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
-#include "multiplexer.h"
+#include "comm_n0183_output.h"
 #include "MarkIcon.h"
 #include "cutil.h"
 #include "AIS_Decoder.h"
@@ -102,7 +102,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint *pAnchorWatchPoint1;
 extern RoutePoint *pAnchorWatchPoint2;
 extern int g_route_line_width;
-extern Multiplexer *g_pMUX;
+extern COMM_N0183_OUT *g_comm_out;
 extern AIS_Decoder *g_pAIS;
 
 extern PlugInManager *g_pi_manager;
@@ -723,7 +723,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmb.FAAModeIndicator = "A";
     m_NMEA0183.Rmb.Write(snt);
 
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    g_comm_out->SendNMEAMessage(snt.Sentence);
   }
 
   // RMC
@@ -774,7 +774,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
     m_NMEA0183.Rmc.Write(snt);
 
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    g_comm_out->SendNMEAMessage(snt.Sentence);
   }
 
   // APB
@@ -840,7 +840,7 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Apb.Write(snt);
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    g_comm_out->SendNMEAMessage(snt.Sentence);
   }
 
   // XTE
@@ -862,7 +862,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Xte.CrossTrackUnits = _T("N");
 
     m_NMEA0183.Xte.Write(snt);
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    g_comm_out->SendNMEAMessage(snt.Sentence);
   }
 
   return true;

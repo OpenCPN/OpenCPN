@@ -128,6 +128,7 @@
 #include "Track.h"
 #include "TrackPropDlg.h"
 #include "AISTargetListDialog.h"
+#include "comm_n0183_output.h"
 
 #include "comm_bridge.h"
 //#include "usb_devices.h"
@@ -457,6 +458,7 @@ wxDateTime last_own_ship_sog_cog_calc_ts;
 double last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
 
 Multiplexer *g_pMUX;
+COMM_N0183_OUT *g_comm_out;
 
 AIS_Decoder *g_pAIS;
 bool g_bAIS_CPA_Alert;

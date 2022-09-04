@@ -28,7 +28,7 @@
 
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
-
+#include <wx/regex.h>
 #include <wx/statline.h>
 #include "conn_params.h"
 
@@ -303,3 +303,55 @@ wxString ConnectionParams::GetLastDSPort() const {
   }
 }
 
+bool ConnectionParams::SentencePassesFilter(const wxString& sentence, FilterDirection direction)
+{
+    wxArrayString filter;
+    bool listype = false;
+
+    if (direction == FILTER_INPUT)
+    {
+        filter = InputSentenceList;
+        if (InputSentenceListType == WHITELIST)
+            listype = true;
+    }
+    else
+    {
+        filter = OutputSentenceList;
+        if (OutputSentenceListType == WHITELIST)
+            listype = true;
+    }
+    if (filter.Count() == 0) //Empty list means everything passes
+        return true;
+
+    wxString fs;
+    for (size_t i = 0; i < filter.Count(); i++)
+    {
+        fs = filter[i];
+        switch (fs.Length())
+        {
+            case 2:
+                if (fs == sentence.Mid(1, 2))
+                    return listype;
+                break;
+            case 3:
+                if (fs == sentence.Mid(3, 3))
+                    return listype;
+                break;
+            case 5:
+                if (fs == sentence.Mid(1, 5))
+                    return listype;
+                break;
+            default:
+	        // TODO: regex patterns like ".GPZ.." or 6-character patterns
+		//       are rejected in the connection settings dialogue currently
+		//       experts simply edit .opencpn/opncpn.config
+                wxRegEx  re(fs);
+                if (re.Matches(sentence.Mid(0, 8)))
+                {
+                    return listype;
+                }
+                break;
+        }
+    }
+    return !listype;
+}

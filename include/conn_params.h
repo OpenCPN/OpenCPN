@@ -113,6 +113,7 @@ public:
   void SetPortStr(wxString str) { Port = str; }
   std::string GetStrippedDSPort();
 
+  bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
 
   bool Valid;
   bool b_IsSetup;

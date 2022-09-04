@@ -29,7 +29,7 @@
 #include "ocpndc.h"
 #include "cutil.h"
 #include "navutil.h"
-#include "multiplexer.h"
+#include "comm_n0183_output.h"
 #include "Select.h"
 #include "georef.h"
 #include "OCPNPlatform.h"
@@ -42,7 +42,7 @@ extern Routeman *g_pRouteMan;
 extern int g_route_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
-extern Multiplexer *g_pMUX;
+extern COMM_N0183_OUT *g_comm_out;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
@@ -1245,9 +1245,9 @@ int Route::SendToGPS(const wxString &com_name, bool bsend_waypoints,
                      SendToGpsDlg *dialog) {
   int result = 0;
 
-  if (g_pMUX) {
+  if (g_comm_out) {
     ::wxBeginBusyCursor();
-    result = g_pMUX->SendRouteToGPS(this, com_name, bsend_waypoints, dialog);
+    result = g_comm_out->SendRouteToGPS(this, com_name, bsend_waypoints, dialog);
     ::wxEndBusyCursor();
   }
 

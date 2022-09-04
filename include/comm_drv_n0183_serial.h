@@ -66,6 +66,9 @@ public:
 
   int m_Thread_run_flag;
 
+  ConnectionParams GetParams() const { return m_params; }
+
+
 private:
   bool m_bok;
   std::string m_portstring;

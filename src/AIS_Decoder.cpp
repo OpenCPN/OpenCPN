@@ -37,6 +37,8 @@
 #include "wx/textfile.h"
 #include "wx/timer.h"
 #include "wx/tokenzr.h"
+#include <wx/json_defs.h>
+#include <wx/jsonwriter.h>
 
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
@@ -49,6 +51,7 @@
 #include "Select.h"
 #include "SoundFactory.h"
 #include "Track.h"
+#include "ocpn_frame.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

@@ -345,6 +345,12 @@ void CommDriverN0183Net::OnTimerSocket(wxTimerEvent& event) {
   }
 }
 
+void CommDriverN0183Net::SendMessage(const NavMsg& msg, const NavAddr& addr) const {
+
+  //FIXME (dave) Send the message here
+}
+
+
 void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
   //#define RD_BUF_SIZE    200
 #define RD_BUF_SIZE \

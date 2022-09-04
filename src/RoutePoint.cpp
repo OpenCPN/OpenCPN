@@ -29,7 +29,7 @@
 #include "routeman.h"
 #include "chcanv.h"
 #include "RoutePoint.h"
-#include "multiplexer.h"
+#include "comm_n0183_output.h"
 #include "navutil.h"
 #include "FontMgr.h"
 #include "cutil.h"
@@ -48,7 +48,7 @@ extern bool g_bIsNewLayer;
 extern int g_LayerIdx;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
-extern Multiplexer *g_pMUX;
+extern COMM_N0183_OUT *g_comm_out;
 extern MyFrame *gFrame;
 extern bool g_btouch;
 extern ocpnStyle::StyleManager *g_StyleManager;
@@ -1262,7 +1262,7 @@ bool RoutePoint::IsSame(RoutePoint *pOtherRP) {
 
 bool RoutePoint::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
   int result = 0;
-  if (g_pMUX) result = g_pMUX->SendWaypointToGPS(this, com_name, dialog);
+  if (g_comm_out) result = g_comm_out->SendWaypointToGPS(this, com_name, dialog);
 
   wxString msg;
   if (0 == result)

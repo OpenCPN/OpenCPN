@@ -42,6 +42,8 @@
 #include <wx/dir.h>
 #include <wx/listbook.h>
 #include <wx/timectrl.h>
+#include <wx/bmpcbox.h>
+#include <wx/tglbtn.h>
 
 #include "dychart.h"
 #include "idents.h"

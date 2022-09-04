@@ -160,6 +160,8 @@
 #include "N2KParser.h"
 // #include "comm_util.h"
 #include "comm_drv_registry.h"
+#include "comm_n0183_output.h"
+
 //
 // #ifdef __linux__
 // #include "udev_rule_mgr.h"
@@ -424,6 +426,7 @@ extern int g_MemFootSec;
 extern int g_MemFootMB;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
+extern COMM_N0183_OUT *g_comm_out;
 
 #ifdef __WXMSW__
 // System color control support
@@ -1198,8 +1201,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   g_pAIS = new AIS_Decoder();
 
-  g_pMUX->SetAISHandler(g_pAIS);
-  g_pMUX->SetGPSHandler(this);
   //  Create/connect a dynamic event handler slot
   wxLogMessage(" **** Connect stuff");
 
@@ -2242,7 +2243,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   pBaseConfig = NULL;
 
   if (g_pAIS) {
-    if (g_pMUX) g_pMUX->SetAISHandler(NULL);
     delete g_pAIS;
     g_pAIS = NULL;
   }

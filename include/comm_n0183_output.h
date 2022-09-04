@@ -23,8 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _MULTIPLEXER_H
-#define _MULTIPLEXER_H
+#ifndef _COMMN0183_OUT_H
+#define _COMMN0183_OUT_H
 
 
 #include "wx/wxprec.h"
@@ -33,27 +33,34 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-//#include "pluginmanager.h"  // for PlugInManager
-#include "observable_navmsg.h"
-#include "comm_navmsg.h"
+#include "pluginmanager.h"  // for PlugInManager
+
+class RoutePoint;
+class Route;
+class SendToGpsDlg;
+class ConnectionParams;
 
 
-class Multiplexer : public wxEvtHandler {
+//      Garmin interface private error codes
+#define ERR_GARMIN_INITIALIZE -1
+#define ERR_GARMIN_GENERAL -2
+
+class COMM_N0183_OUT : public wxEvtHandler {
 public:
-  Multiplexer();
-  ~Multiplexer();
+  COMM_N0183_OUT();
+  ~COMM_N0183_OUT();
 
-  void LogOutputMessage(const wxString &msg, wxString stream_name,
-                        bool b_filter);
-  void LogOutputMessageColor(const wxString &msg, const wxString &stream_name,
-                             const wxString &color);
-  void LogInputMessage(const wxString &msg, const wxString &stream_name,
-                       bool b_filter, bool b_error = false);
+  void SendNMEAMessage(const wxString &msg);
+
+  int SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints,
+                     SendToGpsDlg *dialog);
+  int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
+                        SendToGpsDlg *dialog);
 
 private:
-  ObservedVarListener m_listener_N0183_all;
 
-  void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
 
+  //      A set of temporarily saved parameters
+  const ConnectionParams *params_save;
 };
-#endif  // _MULTIPLEXER_H
+#endif  // _COMMN0183_OUT_H
