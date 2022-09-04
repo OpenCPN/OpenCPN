@@ -546,6 +546,8 @@ TEST(FindDriver, lookup) {
   EXPECT_EQ(found->iface, string("bar"));
   found = FindDriver(drivers, "baz");
   EXPECT_FALSE(found);
+  auto file_drv = std::dynamic_pointer_cast<const FileCommDriver>(found);
+  EXPECT_EQ(file_drv.get(), nullptr);
 }
 
 TEST(Registry, persistence) {
