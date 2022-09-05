@@ -31,6 +31,7 @@
 
 #include "comm_bridge.h"
 #include "comm_appmsg_bus.h"
+#include "comm_drv_registry.h"
 #include "idents.h"
 
 //  comm event definitions
@@ -48,6 +49,8 @@ wxDEFINE_EVENT(EVT_N0183_GSV, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_GGA, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_GLL, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_AIVDO, ObservedEvt);
+
+wxDEFINE_EVENT(EVT_DRIVER_CHANGE, wxCommandEvent);
 
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
@@ -96,6 +99,12 @@ bool CommBridge::Initialize() {
 
   // Initialize the comm listeners
   InitCommListeners();
+
+  // Initialize a listener for driver state changes
+  driver_change_listener = CommDriverRegistry::getInstance()
+            .evt_driverlist_change.GetListener(this, EVT_DRIVER_CHANGE);
+  Bind(EVT_DRIVER_CHANGE, [&](wxCommandEvent ev) {
+       OnDriverStateChange(); });
 
   return true;
 }
@@ -198,7 +207,6 @@ std::shared_ptr<const T> UnpackEvtPointer(ObservedEvt ev) {
 
 void CommBridge::InitCommListeners() {
   // Initialize the comm listeners
-
   auto& msgbus = NavMsgBus::GetInstance();
 
   // GNSS Position Data PGN  129029
@@ -325,6 +333,13 @@ void CommBridge::InitCommListeners() {
   });
 
 }
+
+void CommBridge::OnDriverStateChange(){
+
+  // Reset all "first-come" priority states
+  InitializePriorityContainers();
+}
+
 
 bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   //printf("   HandleN2K_129029\n");
@@ -805,11 +820,30 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
 
 
 void CommBridge::InitializePriorityContainers(){
+  printf("clear()\n");
   active_priority_position.active_priority = 0;
   active_priority_velocity.active_priority = 0;
   active_priority_heading.active_priority = 0;
   active_priority_variation.active_priority = 0;
   active_priority_satellites.active_priority = 0;
+
+  active_priority_position.active_source.clear();
+  active_priority_velocity.active_source.clear();
+  active_priority_heading.active_source.clear();
+  active_priority_variation.active_source.clear();
+  active_priority_satellites.active_source.clear();
+
+  active_priority_position.active_identifier.clear();
+  active_priority_velocity.active_identifier.clear();
+  active_priority_heading.active_identifier.clear();
+  active_priority_variation.active_identifier.clear();
+  active_priority_satellites.active_identifier.clear();
+
+  priority_map_position.clear();
+  priority_map_velocity.clear();
+  priority_map_heading.clear();
+  priority_map_variation.clear();
+  priority_map_satellites.clear();
 }
 
 bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,

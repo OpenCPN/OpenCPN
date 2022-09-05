@@ -76,6 +76,8 @@ public:
 
   bool HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
+  void OnDriverStateChange();
+
   void OnWatchdogTimer(wxTimerEvent& event);
   void PresetWatchdogs();
   void MakeHDTFromHDM();
@@ -104,6 +106,8 @@ public:
   ObservedVarListener listener_N0183_AIVDO;
 
   ObservedVarListener listener_SignalK;
+
+  ObservedVarListener driver_change_listener;
 
   CommDecoder m_decoder;
 
