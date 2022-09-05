@@ -206,7 +206,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg){
   std::string source = n0183_msg->source->iface;
 
   auto& registry = CommDriverRegistry::getInstance();
-  const std::vector<std::shared_ptr<const AbstractCommDriver>>& drivers = registry.GetDrivers();
+  const auto& drivers = registry.GetDrivers();
   std::shared_ptr<const AbstractCommDriver> target_driver = FindDriver(drivers, source);
   std::string interface_message = target_driver->iface;
 
@@ -215,20 +215,20 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg){
   // Iterate on the active drivers, looking for...
 
   for (unsigned int i=0 ; i < drivers.size() ; i++) {
-    const std::shared_ptr<const AbstractCommDriver> driver = drivers[i];
+    const std::shared_ptr<AbstractCommDriver> driver = drivers[i];
     if (driver->bus == NavAddr::Bus::N0183){
        std::string interface = driver->iface;
 
       ConnectionParams params;
-      std::shared_ptr<const CommDriverN0183Serial> drv_serial = std::dynamic_pointer_cast<const CommDriverN0183Serial>(driver);
+      auto drv_serial = std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
       if (drv_serial){
-          params = drv_serial->GetParams();
+        params = drv_serial->GetParams();
       }
       else {
-        const std::shared_ptr<const CommDriverN0183Net> drv_net = std::dynamic_pointer_cast<const CommDriverN0183Net>(driver);
-         if (drv_net){
+        auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(driver);
+        if (drv_net){
           params = drv_net->GetParams();
-         }
+        }
       }
 
       //  Allow re-transmit on same port (if type is SERIAL),
@@ -244,7 +244,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg){
             const NavAddr0183 dest(interface);
             const std::string type("type");   // what is this?
             const Nmea0183Msg msg(*n0183_msg, type);
-            //driver->SendMessage(msg, dest);
+            driver->SendMessage(msg, dest);
             bout_filter = false;
           }
         }

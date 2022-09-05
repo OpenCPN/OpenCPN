@@ -28,8 +28,6 @@
 #include "comm_driver.h"
 #include "comm_drv_registry.h"
 
-using DriverPtr = std::shared_ptr<const AbstractCommDriver>;
-
 void CommDriverRegistry::Activate(DriverPtr driver) {
   auto found = std::find(drivers.begin(), drivers.end(), driver);
   if (found != drivers.end()) return;

@@ -54,7 +54,7 @@ public:
 
 /** Common interface for all drivers.  */
 class AbstractCommDriver
-    : public std::enable_shared_from_this<const AbstractCommDriver> {
+    : public std::enable_shared_from_this<AbstractCommDriver> {
 public:
   AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil"){};
 

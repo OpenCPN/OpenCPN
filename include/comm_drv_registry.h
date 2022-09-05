@@ -36,7 +36,7 @@ class ConnectionParams;
  * activated, transport layer finds them.
  */
 
-typedef std::shared_ptr<const AbstractCommDriver> DriverPtr;
+typedef std::shared_ptr<AbstractCommDriver> DriverPtr;
 
 class CommDriverRegistry final {
 public:
