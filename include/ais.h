@@ -51,6 +51,7 @@
 #include "AIS_Bitstring.h"
 #include "AISTargetListDialog.h"
 #include "AIS_Target_Data.h"
+#include "AIS_Defs.h"
 
 //  FWD definitions
 class ChartCanvas;
@@ -80,18 +81,6 @@ enum {
   tlTCPA
 };  // AISTargetListCtrl Columns;
 
-typedef enum AIS_Error {
-  AIS_NoError = 0,
-  AIS_Partial,
-  AIS_NMEAVDX_TOO_LONG,
-  AIS_NMEAVDX_CHECKSUM_BAD,
-  AIS_NMEAVDX_BAD,
-  AIS_NO_SERIAL,
-  AIS_NO_TCP,
-  AIS_GENERIC_ERROR,
-  AIS_INCOMPLETE_MULTIPART
-} _AIS_Error;
-
 //      Describe NavStatus variable
 // IMO Circ. 289 Area Notices, based on libais
 const size_t AIS8_001_22_NUM_NAMES = 128;
@@ -113,8 +102,5 @@ WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
 void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp);
 void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp);
 bool AnyAISTargetsOnscreen(ChartCanvas *cc, ViewPort &vp);
-
-WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
-                    AIS_Target_Name_Hash);
 
 #endif

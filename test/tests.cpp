@@ -21,6 +21,44 @@
 #include "ocpn_types.h"
 #include "AIS_Decoder.h"
 
+class AISTargetAlertDialog;
+class Multiplexer;
+
+bool g_bAIS_ACK_Timeout;
+bool g_bAIS_CPA_Alert_Suppress_Moored;
+bool g_bCPAMax;
+bool g_bCPAWarn;
+bool g_bHideMoored;
+bool g_bTCPA_Max;
+double g_AckTimeout_Mins;
+double g_CPAMax_NM;
+double g_CPAWarn_NM;
+double g_ShowMoored_Kts;
+double g_TCPA_Max;
+bool g_bShowMag;
+bool g_bShowTrue;
+bool bGPSValid;
+bool g_bInlandEcdis;
+bool g_bRemoveLost;
+bool g_bMarkLost;
+bool g_bShowScaled;
+bool g_bAllowShowScaled;
+bool g_bAISRolloverShowCOG;
+bool g_bAISRolloverShowCPA;
+bool g_bAISShowTracks;
+bool g_bAISRolloverShowClass;
+
+Multiplexer* g_pMUX;
+std::vector<Track*> g_TrackList;
+int g_WplAction;
+AISTargetAlertDialog* g_pais_alert_dialog_active;
+wxString AISTargetNameFileName;
+double g_AISShowTracks_Mins;
+bool g_bAIS_CPA_Alert;
+Route *pAISMOBRoute;
+double g_RemoveLost_Mins;
+double g_MarkLost_Mins;
+
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
 wxString g_winPluginDir;
@@ -36,6 +74,7 @@ bool get_mode() { return false; }
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
+AIS_Decoder* g_pAIS;
 
 /* comm_bridge context. */
 
@@ -315,32 +354,41 @@ public:
   }
 };
 
-const char* const GPGGA_1 =
-    "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
-const char* const GPGGA_2 =
-    "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
 class PriorityApp2 : public wxAppConsole {
 public:
-  PriorityApp2() : wxAppConsole() {
+  PriorityApp2(const char* msg1, const char* msg2) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
     CommBridge comm_bridge;
     comm_bridge.Initialize();
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
     auto m1 = std::make_shared<const Nmea0183Msg>(
-        Nmea0183Msg("GPGGA", GPGGA_1, addr1));
+        Nmea0183Msg("GPGGA", msg1, addr1));
     auto addr2 = std::make_shared<NavAddr>(NavAddr0183("interface2"));
     auto m2 = std::make_shared<const Nmea0183Msg>(
-        Nmea0183Msg("GPGGA", GPGGA_2, addr2));
+        Nmea0183Msg("GPGGA", msg2, addr2));
     msgbus.Notify(m1);
     msgbus.Notify(m2);
     ProcessPendingEvents();
 
-    Position p = Position::ParseGGA("5759.097,N,01144.345,E");
-    EXPECT_NEAR(gLat, p.lat, 0.0001);
-    EXPECT_NEAR(gLon, p.lon, 0.0001);
   }
 };
+
+class AisApp : public wxAppConsole {
+public:
+  AisApp(const char* msg) : wxAppConsole() {
+    auto& msgbus = NavMsgBus::GetInstance();
+    CommBridge comm_bridge;
+    comm_bridge.Initialize();
+
+    auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
+    auto m = std::make_shared<const Nmea0183Msg>(
+        Nmea0183Msg("!AIVDO", msg, addr1));
+    msgbus.Notify(m);
+    ProcessPendingEvents();
+  }
+};
+
 
 class SillyDriver : public AbstractCommDriver {
 public:
@@ -514,6 +562,8 @@ TEST(FindDriver, lookup) {
   EXPECT_EQ(found->iface, string("bar"));
   found = FindDriver(drivers, "baz");
   EXPECT_FALSE(found);
+  auto file_drv = std::dynamic_pointer_cast<const FileCommDriver>(found);
+  EXPECT_EQ(file_drv.get(), nullptr);
 }
 
 TEST(Registry, persistence) {
@@ -545,8 +595,27 @@ TEST(Priority, Framework) {
 }
 
 TEST(Priority, DifferentSource) {
-  PriorityApp2 app;
+  const char* const GPGGA_1 =
+    "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
+  const char* const GPGGA_2 =
+    "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
+  g_pAIS = new AIS_Decoder;
+  PriorityApp2 app(GPGGA_1, GPGGA_2);
   Position p = Position::ParseGGA("5759.097,N,01144.345,E");
-  EXPECT_NEAR(p.lat, 57.98495, 0.001);
-  EXPECT_NEAR(p.lon, 11.73908, 0.001);
+  EXPECT_NEAR(gLat, p.lat, 0.0001);
+  EXPECT_NEAR(gLon, p.lon, 0.0001);
+}
+
+
+TEST(AIS, AISVDO) {
+  const char* AISVDO_1 = "AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
+  int MMSI = 123456;
+  g_pAIS = new AIS_Decoder;
+  AisApp app(AISVDO_1);
+  auto found = g_pAIS->GetTargetList().find(MMSI);
+  EXPECT_NE(found, g_pAIS->GetTargetList().end());
+  if (found != g_pAIS->GetTargetList().end()) {
+    EXPECT_NEAR(found->second->Lat, 57.985758, 0.0001);
+    EXPECT_NEAR(found->second->Lon, 11.740108, 0.0001);
+  }
 }

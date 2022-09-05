@@ -34,8 +34,10 @@ extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
 extern bool g_bShowMag;
 extern bool g_bShowTrue;
-extern MyFrame *gFrame;
+//extern MyFrame *gFrame;
 extern bool g_bAISShowTracks;
+extern double gVar;
+extern double g_UserVar;
 
 static std::unordered_map<int, wxString> s_ERI_hash;
 
@@ -115,6 +117,21 @@ wxString ais_get_status(int index) {
       _("AtoN Real(Off Position)")};
 
   return ais_status[index];
+}
+
+// FIXME(leamas) This is a verbatim copy from gFrame, must be a better way.
+static double GetMag(double a) {
+  if (!std::isnan(gVar)) {
+    if ((a - gVar) > 360.)
+      return (a - gVar - 360.);
+    else
+      return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
+  } else {
+    if ((a - g_UserVar) > 360.)
+      return (a - g_UserVar - 360.);
+    else
+      return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
+  }
 }
 
 
@@ -603,7 +620,7 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
         wxString magString, trueString;
         if (g_bShowMag)
           magString << wxString::Format(wxString("%03d%c(M)"),
-                                        (int)gFrame->GetMag(crs), 0x00B0);
+                                        GetMag(crs), 0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
@@ -668,7 +685,7 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
     wxString magString, trueString;
     if (g_bShowMag)
       magString << wxString::Format(wxString("%03d%c(M)"),
-                                    (int)gFrame->GetMag(Brg), 0x00B0);
+                                    GetMag(Brg), 0x00B0);
     if (g_bShowTrue)
       trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
 
@@ -843,7 +860,7 @@ wxString AIS_Target_Data::GetRolloverString(void) {
         wxString magString, trueString;
         if (g_bShowMag)
           magString << wxString::Format(wxString("%03d%c(M)  "),
-                                        (int)gFrame->GetMag(crs), 0x00B0);
+                                        GetMag(crs), 0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 

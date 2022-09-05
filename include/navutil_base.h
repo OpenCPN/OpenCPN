@@ -47,6 +47,8 @@ extern wxString FormatDistanceAdaptive(double distance);
 
 extern double toUsrDistance(double nm_distance, int unit = -1);
 extern wxString getUsrDistanceUnit(int unit = -1);
+extern double fromUsrDistance(double usr_distance, int unit, int default_val);
+extern double fromUsrSpeed(double usr_speed, int unit, int default_val);
 
 
 

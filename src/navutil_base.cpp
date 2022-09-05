@@ -35,6 +35,7 @@
 #include "navutil_base.h"
 
 #include "navutil_base.h"
+#include "vector2D.h"
 
 extern int g_iSDMMFormat;
 extern int g_iSpeedFormat;
@@ -283,4 +284,127 @@ wxString FormatDistanceAdaptive(double distance) {
   return result;
 }
 
+/**************************************************************************/
+/*          Converts the speed from the units selected by user to knots   */
+/**************************************************************************/
+double fromUsrSpeed(double usr_speed, int unit, int default_val) {
+  double ret = NAN;
 
+  if (unit == -1) unit = default_val;
+  switch (unit) {
+    case SPEED_KTS:  // kts
+      ret = usr_speed;
+      break;
+    case SPEED_MPH:  // mph
+      ret = usr_speed / 1.15078;
+      break;
+    case SPEED_KMH:  // km/h
+      ret = usr_speed / 1.852;
+      break;
+    case SPEED_MS:  // m/s
+      ret = usr_speed / 0.514444444;
+      break;
+  }
+  return ret;
+}
+
+/**************************************************************************/
+/*          Converts the distance from the units selected by user to NMi  */
+/**************************************************************************/
+double fromUsrDistance(double usr_distance, int unit, int default_val) {
+  double ret = NAN;
+  if (unit == -1) unit = default_val;
+  switch (unit) {
+    case DISTANCE_NMI:  // Nautical miles
+      ret = usr_distance;
+      break;
+    case DISTANCE_MI:  // Statute miles
+      ret = usr_distance / 1.15078;
+      break;
+    case DISTANCE_KM:
+      ret = usr_distance / 1.852;
+      break;
+    case DISTANCE_M:
+      ret = usr_distance / 1852;
+      break;
+    case DISTANCE_FT:
+      ret = usr_distance / 6076.12;
+      break;
+  }
+  return ret;
+}
+
+//---------------------------------------------------------------------------------
+//          Vector Stuff for Hit Test Algorithm
+//---------------------------------------------------------------------------------
+double vGetLengthOfNormal(pVector2D a, pVector2D b, pVector2D n) {
+  vector2D c, vNormal;
+  vNormal.x = 0;
+  vNormal.y = 0;
+  //
+  // Obtain projection vector.
+  //
+  // c = ((a * b)/(|b|^2))*b
+  //
+  c.x = b->x * (vDotProduct(a, b) / vDotProduct(b, b));
+  c.y = b->y * (vDotProduct(a, b) / vDotProduct(b, b));
+  //
+  // Obtain perpendicular projection : e = a - c
+  //
+  vSubtractVectors(a, &c, &vNormal);
+  //
+  // Fill PROJECTION structure with appropriate values.
+  //
+  *n = vNormal;
+
+  return (vVectorMagnitude(&vNormal));
+}
+
+double vDotProduct(pVector2D v0, pVector2D v1) {
+  double dotprod;
+
+  dotprod =
+      (v0 == NULL || v1 == NULL) ? 0.0 : (v0->x * v1->x) + (v0->y * v1->y);
+
+  return (dotprod);
+}
+
+pVector2D vAddVectors(pVector2D v0, pVector2D v1, pVector2D v) {
+  if (v0 == NULL || v1 == NULL)
+    v = (pVector2D)NULL;
+  else {
+    v->x = v0->x + v1->x;
+    v->y = v0->y + v1->y;
+  }
+  return (v);
+}
+
+pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v) {
+  if (v0 == NULL || v1 == NULL)
+    v = (pVector2D)NULL;
+  else {
+    v->x = v0->x - v1->x;
+    v->y = v0->y - v1->y;
+  }
+  return (v);
+}
+
+double vVectorSquared(pVector2D v0) {
+  double dS;
+
+  if (v0 == NULL)
+    dS = 0.0;
+  else
+    dS = ((v0->x * v0->x) + (v0->y * v0->y));
+  return (dS);
+}
+
+double vVectorMagnitude(pVector2D v0) {
+  double dMagnitude;
+
+  if (v0 == NULL)
+    dMagnitude = 0.0;
+  else
+    dMagnitude = sqrt(vVectorSquared(v0));
+  return (dMagnitude);
+}

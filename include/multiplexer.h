@@ -22,10 +22,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifdef USE_MOCK_DEFS
+#include "mock_defs.h"
 
-#ifndef _MULTIPLEXER_H
-#define _MULTIPLEXER_H
-
+#elif ! defined(_MULTIPLEXER_H__)
+#define _MULTIPLEXER_H__
 
 #include "wx/wxprec.h"
 
@@ -56,4 +57,4 @@ private:
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
 
 };
-#endif  // _MULTIPLEXER_H
+#endif  // _MULTIPLEXER_H__

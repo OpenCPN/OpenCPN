@@ -21,8 +21,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __ROUTEPOINT_H__
-#define __ROUTEPOINT_H__
+#ifdef USE_MOCK_DEFS
+#include "mock_defs.h"
+
+#elif ! defined(_ROUTEPOINT_H__)
+#define _ROUTEPOINT_H__
 
 #include <wx/string.h>
 #include <wx/datetime.h>
@@ -260,4 +263,4 @@ private:
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
 
-#endif
+#endif  //  _ROUTEPOINT_H__
