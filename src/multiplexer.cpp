@@ -203,21 +203,12 @@ void Multiplexer::SendNMEAMessage(const wxString &msg) {
 void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg){
 
   // Find the driver that originated this message
-  std::string source = n0183_msg->source->iface;
 
-  auto& registry = CommDriverRegistry::getInstance();
-  const auto& drivers = registry.GetDrivers();
-  std::shared_ptr<const AbstractCommDriver> target_driver = FindDriver(drivers, source);
-  std::string interface_message = target_driver->iface;
+  const auto& drivers = CommDriverRegistry::getInstance().GetDrivers();
+  auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
-  wxString message(n0183_msg->payload.c_str());
-
-  // Iterate on the active drivers, looking for...
-
-  for (unsigned int i=0 ; i < drivers.size() ; i++) {
-    const std::shared_ptr<AbstractCommDriver> driver = drivers[i];
+  for (auto& driver: drivers) {
     if (driver->bus == NavAddr::Bus::N0183){
-       std::string interface = driver->iface;
 
       ConnectionParams params;
       auto drv_serial = std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
@@ -233,18 +224,15 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg){
 
       //  Allow re-transmit on same port (if type is SERIAL),
       //  or any any other NMEA0183 port supporting output
-      if ((params.Type == SERIAL) || (interface != interface_message)) {
+      if (params.Type == SERIAL || driver->iface != target_driver->iface) {
         if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
             params.IOSelect == DS_TYPE_OUTPUT) {
 
           bool bout_filter = true;
-
           bool bxmit_ok = true;
-          if (params.SentencePassesFilter(message, FILTER_OUTPUT)) {
-            const NavAddr0183 dest(interface);
-            const std::string type("type");   // what is this?
-            const Nmea0183Msg msg(*n0183_msg, type);
-            driver->SendMessage(msg, dest);
+          if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
+                                          FILTER_OUTPUT)) {
+            driver->SendMessage(*n0183_msg, NavAddr0183(driver->iface));
             bout_filter = false;
           }
         }
