@@ -50,7 +50,6 @@
 #include "udev_rule_mgr.h"
 #endif
 
-
 extern wxString g_GPS_Ident;
 extern bool g_b_legacy_input_filter_behaviour;
 
@@ -96,21 +95,20 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 #endif  // HAVE_READLINK
 
 Multiplexer::Multiplexer() {
+  auto &msgbus = NavMsgBus::GetInstance();
 
-  auto& msgbus = NavMsgBus::GetInstance();
-
-  m_listener_N0183_all = msgbus.GetListener(EVT_N0183_MUX, this,
-                                            Nmea0183Msg::MessageKey("ALL"));
+  m_listener_N0183_all =
+      msgbus.GetListener(EVT_N0183_MUX, this, Nmea0183Msg::MessageKey("ALL"));
   Bind(EVT_N0183_MUX, [&](ObservedEvt ev) {
-        auto ptr = ev.GetSharedPtr();
-        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-        HandleN0183(n0183_msg); });
+    auto ptr = ev.GetSharedPtr();
+    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+    HandleN0183(n0183_msg);
+  });
 
   if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = wxT("Generic");
 }
 
-Multiplexer::~Multiplexer() {
-}
+Multiplexer::~Multiplexer() {}
 
 void Multiplexer::LogOutputMessageColor(const wxString &msg,
                                         const wxString &stream_name,
@@ -168,7 +166,7 @@ void Multiplexer::LogInputMessage(const wxString &msg,
     NMEALogWindow::Get().Add(ss);
   }
 }
-//FIXME (dave) Implement using comm...
+// FIXME (dave) Implement using comm...
 #if 0
 void Multiplexer::SendNMEAMessage(const wxString &msg) {
   // Send to all the outputs
@@ -200,24 +198,22 @@ void Multiplexer::SendNMEAMessage(const wxString &msg) {
 }
 #endif
 
-void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg){
-
+void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Find the driver that originated this message
 
   const auto& drivers = CommDriverRegistry::getInstance().GetDrivers();
   auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
-  for (auto& driver: drivers) {
-    if (driver->bus == NavAddr::Bus::N0183){
-
+  for (auto& driver : drivers) {
+    if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params;
-      auto drv_serial = std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
-      if (drv_serial){
+      auto drv_serial =
+          std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
+      if (drv_serial) {
         params = drv_serial->GetParams();
-      }
-      else {
+      } else {
         auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(driver);
-        if (drv_net){
+        if (drv_net) {
           params = drv_net->GetParams();
         }
       }
@@ -226,8 +222,8 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg){
       //  or any any other NMEA0183 port supporting output
       if (params.Type == SERIAL || driver->iface != target_driver->iface) {
         if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
-            params.IOSelect == DS_TYPE_OUTPUT) {
-
+            params.IOSelect == DS_TYPE_OUTPUT)
+        {
           bool bout_filter = true;
           bool bxmit_ok = true;
           if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
@@ -318,5 +314,3 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
   delete goodEvent;
 }
 #endif
-
-
