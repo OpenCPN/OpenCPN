@@ -68,7 +68,8 @@ public:
 
   ConnectionParams GetParams() const { return m_params; }
 
-  void SendMessage(const NavMsg& msg, const NavAddr& addr);
+  void SendMessage(std::shared_ptr<const NavMsg> msg,
+                   std::shared_ptr<const NavAddr> addr) override;
 
 private:
   bool m_bok;

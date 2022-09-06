@@ -280,7 +280,8 @@ void CommDriverN0183Serial::Activate() {
   // TODO: Read input data.
 }
 
-void CommDriverN0183Serial::SendMessage(const NavMsg& msg, const NavAddr& addr) {
+void CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                        std::shared_ptr<const NavAddr> addr) {
 
   //FIXME (dave) Send the message here
   int yyp = 0;

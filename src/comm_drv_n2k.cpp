@@ -33,7 +33,8 @@ CommDriverN2K::CommDriverN2K(const std::string& s)
 
 CommDriverN2K::~CommDriverN2K() {}
 
-void CommDriverN2K::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
+void CommDriverN2K::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                std::shared_ptr<const NavAddr> addr) {}
 
 void CommDriverN2K::SetListener(std::shared_ptr<DriverListener> l){};
 

@@ -395,7 +395,8 @@ public:
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
   SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
 
-  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) {}
+  virtual void SendMessage(std::shared_ptr<const NavMsg> msg,
+                           std::shared_ptr<const NavAddr> addr) {}
 
   virtual void SetListener(DriverListener& listener) {}
 
@@ -513,7 +514,9 @@ TEST(FileDriver, output) {
   auto id = static_cast<uint64_t>(1234);
   Nmea2000Msg msg(id, payload, shared_navaddr_none);
   remove("test-output.txt");
-  driver->SendMessage(msg, NavAddr());
+
+  driver->SendMessage(std::make_shared<const Nmea2000Msg>(msg),
+                      std::make_shared<const NavAddr>());
   std::ifstream f("test-output.txt");
   stringstream ss;
   ss << f.rdbuf();
@@ -528,7 +531,8 @@ TEST(FileDriver, input) {
   auto id = static_cast<uint64_t>(1234);
   Nmea2000Msg msg(id, payload, shared_navaddr_none);
   remove("test-output.txt");
-  driver->SendMessage(msg, NavAddr());
+  driver->SendMessage(std::make_shared<Nmea2000Msg>(msg),
+                      std::make_shared<NavAddr>());
 
   SillyListener listener;
   auto indriver = std::make_shared<FileCommDriver>("/tmp/foo.txt",

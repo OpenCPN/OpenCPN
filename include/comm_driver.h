@@ -58,7 +58,8 @@ class AbstractCommDriver
 public:
   AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil"){};
 
-  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) = 0;
+  virtual void SendMessage(std::shared_ptr<const NavMsg> msg,
+                           std::shared_ptr<const NavAddr> addr) = 0;
 
   /** Register driver in  the driver Registry. */
   virtual void Activate() = 0;

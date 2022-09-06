@@ -48,7 +48,8 @@ public:
   NavMsgBus& operator=(NavMsgBus&) = delete;
   NavMsgBus(const NavMsgBus&) = delete;
 
-  void SendMessage(const NavMsg& message, const NavAddr& address);
+  void SendMessage(std::shared_ptr<const NavMsg> message,
+                   std::shared_ptr<const NavAddr> address);
 
   /**
    * Return a listening object which generates wxEventType events sent to
