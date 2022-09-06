@@ -113,7 +113,7 @@ wxString ConnectionParams::Serialize() const {
 }
 
 ConnectionParams::ConnectionParams() {
-  Type = SERIAL;
+  Type = UNKNOWN;
   NetProtocol = TCP;
   NetworkAddress = wxEmptyString;
   NetworkPort = 0;
