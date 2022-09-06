@@ -204,6 +204,61 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   const auto& drivers = CommDriverRegistry::getInstance().GetDrivers();
   auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
+  wxString fmsg;
+
+  // Send to the Debug Window, if open
+  //  Special formatting for non-printable characters helps debugging NMEA
+  //  problems
+  if (NMEALogWindow::Get().Active()) {
+    std::string str = n0183_msg->payload;
+
+    // Get the params for the driver sending this message
+      ConnectionParams params;
+      auto drv_serial =
+          std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
+      if (drv_serial) {
+        params = drv_serial->GetParams();
+      } else {
+        auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(target_driver);
+        if (drv_net) {
+          params = drv_net->GetParams();
+        }
+      }
+
+    // Check to see if the message passes the source's input filter
+    bool bpass = true;
+    bpass = params.SentencePassesFilter(n0183_msg->payload.c_str(),
+                                        FILTER_INPUT);
+
+    bool b_error = false;
+    for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+      if (isprint(*it))
+        fmsg += *it;
+      else {
+        wxString bin_print;
+        bin_print.Printf(_T("<0x%02X>"), *it);
+        fmsg += bin_print;
+        if ((*it != 0x0a) && (*it != 0x0d)) b_error = true;
+      }
+    }
+
+    // FIXME (dave)  Check this.  Processed elsewhere?
+    //wxString message = event.ProcessNMEA4Tags();
+
+    // FIXME (dave)  Flag checksum errors, but fix and process the sentence anyway
+    //std::string goodMessage(message);
+    //bool checksumOK = CheckSumCheck(event.GetNMEAString());
+    //if (!checksumOK) {
+    //goodMessage = stream->FixChecksum(goodMessage);
+    //goodEvent->SetNMEAString(goodMessage);
+    //}
+
+
+    wxString port(n0183_msg->source->iface);
+    LogInputMessage(fmsg, port, !bpass, b_error);
+  }
+
+  // Perform multiplexer output functions
   for (auto& driver : drivers) {
     if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params;
@@ -217,6 +272,9 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
           params = drv_net->GetParams();
         }
       }
+
+      // FIXME (dave)   Think about this.  Probably OK to drop this undocumented legacy setting
+      //if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
       //  Allow re-transmit on same port (if type is SERIAL),
       //  or any any other NMEA0183 port supporting output
@@ -232,86 +290,19 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
                                 std::make_shared<NavAddr0183>(driver->iface));
             bout_filter = false;
           }
+
+          // Send to the Debug Window, if open
+          if (!bout_filter) {
+            if (bxmit_ok)
+              LogOutputMessageColor(fmsg, driver->iface, _T("<BLUE>"));
+            else
+              LogOutputMessageColor(fmsg, driver->iface, _T("<RED>"));
+          } else
+             LogOutputMessageColor(fmsg, driver->iface, _T("<CORAL>"));
+
         }
       }
     }
   }
 }
 
-#if 0
-void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
-  wxString message = event.ProcessNMEA4Tags();
-  std::string goodMessage(message);
-  OCPN_DataStreamEvent *goodEvent = static_cast <OCPN_DataStreamEvent*>(event.Clone());
-  bool checksumOK = CheckSumCheck(event.GetNMEAString());
-  DataStream *stream = event.GetStream();
-
-  if (!checksumOK) {
-    goodMessage = stream->FixChecksum(goodMessage);
-    goodEvent->SetNMEAString(goodMessage);
-  }
-
-  wxString port(_T("Virtual:"));
-  if (stream) port = wxString(stream->GetPort());
-
-  if (!message.IsEmpty()) {
-    // if it passes the source's input filter
-    bool bpass = true;
-    if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
-
-    // Send to the Debug Window, if open
-    //  Special formatting for non-printable characters helps debugging NMEA
-    //  problems
-    if (NMEALogWindow::Get().Active()) {
-      std::string str = event.GetNMEAString();
-      wxString fmsg;
-
-      bool b_error = false;
-      for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
-        if (isprint(*it))
-          fmsg += *it;
-        else {
-          wxString bin_print;
-          bin_print.Printf(_T("<0x%02X>"), *it);
-          fmsg += bin_print;
-          if ((*it != 0x0a) && (*it != 0x0d)) b_error = true;
-        }
-      }
-      LogInputMessage(fmsg, port, !bpass, b_error);
-    }
-
-    if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
-
-      //FIXME  TODO
-      // Send to all the other outputs
-      for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
-        DataStream *s = m_pdatastreams->Item(i);
-        if (s->IsOk()) {
-          if ((s->GetConnectionType() == SERIAL) || (s->GetPort() != port)) {
-            if (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT ||
-                s->GetIoSelect() == DS_TYPE_OUTPUT) {
-              bool bout_filter = true;
-
-              bool bxmit_ok = true;
-              if (s->SentencePassesFilter(message, FILTER_OUTPUT)) {
-                bxmit_ok = s->SendSentence(message);
-                bout_filter = false;
-              }
-
-              // Send to the Debug Window, if open
-              if (!bout_filter) {
-                if (bxmit_ok)
-                  LogOutputMessageColor(message, s->GetPort(), _T("<BLUE>"));
-                else
-                  LogOutputMessageColor(message, s->GetPort(), _T("<RED>"));
-              } else
-                LogOutputMessageColor(message, s->GetPort(), _T("<CORAL>"));
-            }
-          }
-        }
-      }
-    }
-  }
-  delete goodEvent;
-}
-#endif
