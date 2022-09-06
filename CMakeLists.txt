@@ -814,6 +814,7 @@ set(
   include/chcanv.h
   include/ChInfoWin.h
   include/color_handler.h
+  include/comm_ais.h
   include/comm_appmsg.h
   include/comm_bridge.h
   include/comm_driver.h
@@ -946,6 +947,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp

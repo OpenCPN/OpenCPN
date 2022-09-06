@@ -34,7 +34,7 @@
 #include "comm_drv_registry.h"
 #include "idents.h"
 #include "ocpn_types.h"
-#include "AIS_Decoder.h"
+#include "comm_ais.h"
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -66,7 +66,6 @@ extern double g_UserVar;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 extern wxString g_ownshipMMSI_SK;
-extern AIS_Decoder *g_pAIS;
 
 
 void ClearNavData(NavData &d){
@@ -700,9 +699,7 @@ bool CommBridge::HandleN0183_AIVDO(
   wxString sentence(str.c_str());
 
   AIS_Error nerr = AIS_GENERIC_ERROR;
-  wxString VDO_accumulator;
-   if (g_pAIS)
-     nerr = g_pAIS->DecodeSingleVDO(sentence, &gpd, &VDO_accumulator);
+  nerr = DecodeSingleVDO(sentence, &gpd);
 
   if (nerr == AIS_NoError) {
 
