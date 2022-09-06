@@ -795,6 +795,7 @@ set(
   include/AIS_Bitstring.h
   include/AIS_Decoder.h
   include/ais.h
+  include/ais_msg_decoder.h
   include/AISTargetAlertDialog.h
   include/AIS_Target_Data.h
   include/AISTargetListDialog.h
@@ -942,6 +943,7 @@ set(
 
 set(MODEL_SRC
   # Testable sources without GUI dependencies.
+  ${CMAKE_SOURCE_DIR}/src/ais_msg_decoder.cpp
   ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
   ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
