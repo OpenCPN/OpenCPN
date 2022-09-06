@@ -78,6 +78,9 @@ private:
   mutable std::mutex m_mutex;
 };
 
+#define OUT_QUEUE_LENGTH                20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
+
 class CommDriverN0183SerialEvent;  // fwd
 
 class CommDriverN0183SerialThread : public wxThread {
@@ -283,9 +286,40 @@ void CommDriverN0183Serial::Activate() {
 void CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
 
-  //FIXME (dave) Send the message here
-  int yyp = 0;
+  auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
+  wxString sentence(msg_0183->payload.c_str());
+
+#ifdef __OCPN__ANDROID__
+    wxString payload = sentence;
+    if( !sentence.EndsWith(_T("\r\n")) )
+        payload += _T("\r\n");
+
+    if(IsOk()){
+        wxString port = GetPort().AfterFirst(':');
+        androidWriteSerial( port, payload );
+        return IsOk();
+    }
+    else
+        return false;
+#endif
+    if( GetSecondaryThread() ) {
+        if( IsSecThreadActive() )
+        {
+            int retry = 10;
+            while( retry ) {
+                if( GetSecondaryThread()->SetOutMsg( sentence ))
+                    return; // true;
+                else
+                    retry--;
+            }
+            return; // false;   // could not send after several tries....
+        }
+        else
+            return; // false;
+    }
+    return; // true;
 }
+
 
 
 void CommDriverN0183Serial::handle_N0183_MSG(
@@ -371,6 +405,21 @@ void CommDriverN0183SerialThread::CloseComPortPhysical() {
     //      std::cerr << "Unhandled Exception while closing serial port: " <<
     //      e.what() << std::endl;
   }
+}
+
+bool CommDriverN0183SerialThread::SetOutMsg(const wxString &msg)
+{
+  if(out_que.size() < OUT_QUEUE_LENGTH){
+    wxCharBuffer buf = msg.ToUTF8();
+    if(buf.data()){
+      char *qmsg = (char *)malloc(strlen(buf.data()) +1);
+      strcpy(qmsg, buf.data());
+      out_que.push(qmsg);
+      return true;
+    }
+  }
+
+    return false;
 }
 
 void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
@@ -640,7 +689,6 @@ void* CommDriverN0183SerialThread::Entry() {
     }    // if newdata > 0
 
     //      Check for any pending output message
-#if 0
     bool b_qdata = !out_que.empty();
 
     while (b_qdata) {
@@ -662,8 +710,8 @@ void* CommDriverN0183SerialThread::Entry() {
 
       b_qdata = !out_que.empty();
     }  // while b_qdata
-#endif
   }
+
   // thread_exit:
   CloseComPortPhysical();
   m_pParentDriver->SetSecThreadInActive();  // I am dead
