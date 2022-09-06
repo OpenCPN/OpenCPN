@@ -36,6 +36,7 @@
 #define _COMM_BRIDGE_H
 
 typedef struct{
+  std::string pcclass;
   int active_priority;
   std::string active_source;
   std::string active_identifier;
