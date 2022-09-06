@@ -3054,15 +3054,26 @@ bool AddLocaleCatalog(wxString catalog) {
 }
 
 void PushNMEABuffer(wxString buf) {
-  //FIXME (dave) Implement using comm...
-#if 0
-  OCPN_DataStreamEvent event(wxEVT_OCPN_DATASTREAM, 0);
-  std::string s = std::string(buf.mb_str());
-  event.SetNMEAString(s);
-  event.SetStream(NULL);
 
-  g_pMUX->AddPendingEvent(event);
-#endif
+  std::string full_sentence = buf.ToStdString();
+
+   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+    std::string identifier;
+    // We notify based on full message, including the Talker ID
+    identifier = full_sentence.substr(1, 5);
+
+    // notify message listener and also "ALL" N0183 messages, to support plugin
+    // API using original talker id
+    auto address = std::make_shared<NavAddr0183>("virtual");
+    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
+                                                   address);
+    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
+
+    auto& msgbus = NavMsgBus::GetInstance();
+
+    msgbus.Notify(std::move(msg));
+    msgbus.Notify(std::move(msg_all));
+  }
 }
 
 wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom) {
