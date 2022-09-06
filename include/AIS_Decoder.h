@@ -28,10 +28,15 @@
 #include <map>
 #include <unordered_map>
 
-#include "ais.h"
+#include "AIS_Defs.h"
+#include "AIS_Target_Data.h"
+#include "AIS_Bitstring.h"
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "observable_navmsg.h"
+#include "ocpn_types.h"
+#include "Track.h"
+#include "OCPN_Sound.h"
 
 #define TRACKTYPE_DEFAULT 0
 #define TRACKTYPE_ALWAYS 1

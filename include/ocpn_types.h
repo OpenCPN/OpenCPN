@@ -30,6 +30,11 @@
 #ifndef _OCPNTYPES_H__
 #define _OCPNTYPES_H__
 
+#include <wx/colour.h>
+#include <wx/dynarray.h>
+#include <wx/hashmap.h>
+#include <wx/string.h>
+
 typedef struct _S52color {
   char colName[20];
   unsigned char R;

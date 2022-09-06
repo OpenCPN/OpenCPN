@@ -28,6 +28,7 @@
 
 #include "gui_lib.h"
 #include "ocpn_print.h"
+#include "AIS_Defs.h"
 
 #define TIMER_GFRAME_1 999
 
@@ -143,32 +144,6 @@ enum {
   ID_MENU_SHOW_NAVOBJECTS,
 };
 
-//      A global definition for window, timer and other ID's as needed.
-enum {
-  ID_NMEA_WINDOW = wxID_HIGHEST,
-  ID_AIS_WINDOW,
-  INIT_TIMER,
-  FRAME_TIMER_1,
-  FRAME_TIMER_2,
-  TIMER_AIS1,
-  TIMER_DSC,
-  TIMER_AISAUDIO,
-  AIS_SOCKET_Isa,
-  FRAME_TIMER_DOG,
-  FRAME_TC_TIMER,
-  FRAME_COG_TIMER,
-  MEMORY_FOOTPRINT_TIMER,
-  BELLS_TIMER,
-  ID_NMEA_THREADMSG,
-  RESIZE_TIMER,
-  TOOLBAR_ANIMATE_TIMER,
-  RECAPTURE_TIMER,
-  WATCHDOG_TIMER
-
-};
-
-
-enum { TIME_TYPE_UTC = 1, TIME_TYPE_LMT, TIME_TYPE_COMPUTER };
 
 #define DS_SOCKET_ID             5001
 #define DS_SERVERSOCKET_ID       5002

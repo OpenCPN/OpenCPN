@@ -23,6 +23,7 @@
  */
 #include <fstream>
 #include <cstdio>
+#include <algorithm>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -45,7 +46,6 @@
 #include "AIS_Target_Data.h"
 #include "geodesic.h"
 #include "georef.h"
-#include "idents.h"
 #include "multiplexer.h"
 #include "navutil_base.h"
 #include "RoutePoint.h"

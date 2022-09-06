@@ -29,6 +29,7 @@
 #include "AIS_Target_Data.h"
 #include "FontMgr.h"
 #include "ocpn_types.h"
+#include "navutil.h"
 #include "Select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"

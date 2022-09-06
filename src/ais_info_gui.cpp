@@ -24,6 +24,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <wx/colour.h>
 #include <wx/datetime.h>
 #include <wx/event.h>
 #include <wx/string.h>
