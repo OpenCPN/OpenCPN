@@ -101,7 +101,7 @@ public:
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
 
-  void SendMessage(const NavMsg& msg, const NavAddr& addr) const;
+  void SendMessage(const NavMsg& msg, const NavAddr& addr);
 
 private:
   ConnectionParams m_params;

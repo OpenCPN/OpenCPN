@@ -32,6 +32,4 @@ CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s)
 
 CommDriverN0183::~CommDriverN0183() {}
 
-void CommDriverN0183::SendMessage(const NavMsg& msg, const NavAddr& addr) {}
-
 void CommDriverN0183::Activate() {}

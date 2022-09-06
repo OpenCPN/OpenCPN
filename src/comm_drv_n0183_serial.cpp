@@ -280,6 +280,13 @@ void CommDriverN0183Serial::Activate() {
   // TODO: Read input data.
 }
 
+void CommDriverN0183Serial::SendMessage(const NavMsg& msg, const NavAddr& addr) {
+
+  //FIXME (dave) Send the message here
+  int yyp = 0;
+}
+
+
 void CommDriverN0183Serial::handle_N0183_MSG(
     CommDriverN0183SerialEvent& event) {
   auto p = event.GetPayload();

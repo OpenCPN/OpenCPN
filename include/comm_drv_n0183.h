@@ -34,7 +34,7 @@ public:
 
   virtual ~CommDriverN0183();
 
-  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) override;
+  virtual void SendMessage(const NavMsg& msg, const NavAddr& addr) = 0;
 
   void SetListener(std::shared_ptr<DriverListener> l) override {}
 

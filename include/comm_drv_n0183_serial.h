@@ -68,6 +68,7 @@ public:
 
   ConnectionParams GetParams() const { return m_params; }
 
+  void SendMessage(const NavMsg& msg, const NavAddr& addr);
 
 private:
   bool m_bok;
