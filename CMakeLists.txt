@@ -2929,7 +2929,7 @@ if (NOT TARGET uninstall)
   )
 endif ()
 
-if (NOT QT_ANDROID)
+if (FALSE)
   #
   # Piggy-back the console application on the main setup.
   #
