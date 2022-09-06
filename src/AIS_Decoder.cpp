@@ -1030,7 +1030,7 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
     arpa_distunit = tkz.GetNextToken();  // 10)Speed/ dist unit
     token = tkz.GetNextToken();          // 11) Target name
     if (token == wxEmptyString)
-      token = wxString::Format(_T("ARPA %d"), arpa_tgt_num);
+      token = wxString::Format(_T("ARPA %ld"), arpa_tgt_num);
     int len = wxMin(token.Length(), 20);
     strncpy(arpa_name_str, token.mb_str(), len);
     arpa_name_str[len] = 0;
