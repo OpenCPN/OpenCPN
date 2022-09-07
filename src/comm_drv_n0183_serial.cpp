@@ -249,6 +249,14 @@ void CommDriverN0183Serial::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
 
+  // FIXME (dave)
+  // If port is opened, and then closed immediately,
+  // the secondary thread may not stop quickly enough.
+  // It can then crash trying to send an event to its "parent".
+
+  Unbind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
+       this);
+
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
@@ -601,6 +609,8 @@ void* CommDriverN0183SerialThread::Entry() {
   }
 
   m_pParentDriver->SetSecThreadActive();  // I am alive
+
+  wxSleep(1);
 
   //    The main loop
   static size_t retries = 0;
