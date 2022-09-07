@@ -62,6 +62,10 @@
 #include "PluginHandler.h"
 #include "comm_navmsg_bus.h"
 #include "comm_appmsg_bus.h"
+#include "Track.h"
+
+class AISTargetAlertDialog;
+class Multiplexer;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -74,6 +78,41 @@ wxString g_compatOsVersion = PKG_TARGET_VERSION;
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
+
+bool g_bAIS_ACK_Timeout;
+bool g_bAIS_CPA_Alert_Suppress_Moored;
+bool g_bCPAMax;
+bool g_bCPAWarn;
+bool g_bHideMoored;
+bool g_bTCPA_Max;
+double g_AckTimeout_Mins;
+double g_CPAMax_NM;
+double g_CPAWarn_NM;
+double g_ShowMoored_Kts;
+double g_TCPA_Max;
+bool g_bShowMag;
+bool g_bShowTrue;
+bool bGPSValid;
+bool g_bInlandEcdis;
+bool g_bRemoveLost;
+bool g_bMarkLost;
+bool g_bShowScaled;
+bool g_bAllowShowScaled;
+bool g_bAISRolloverShowCOG;
+bool g_bAISRolloverShowCPA;
+bool g_bAISShowTracks;
+bool g_bAISRolloverShowClass;
+bool g_bAIS_CPA_Alert;
+double g_RemoveLost_Mins;
+double g_MarkLost_Mins;
+double g_AISShowTracks_Mins;
+
+std::vector<Track*> g_TrackList;
+wxString AISTargetNameFileName;
+AISTargetAlertDialog* g_pais_alert_dialog_active;
+Route* pAISMOBRoute;
+int g_WplAction;
+Select* pSelectAIS;
 
 /* comm_bridge context. */
 
