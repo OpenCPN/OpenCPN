@@ -2933,7 +2933,10 @@ endif ()
 
 #
 # Piggy-back the console application on the main setup.
+# Note that cli apps are not supported on Android
 #
+if (NOT QT_ANDROID)
+
 set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
 add_executable(opencpn-cmd ${SRC_CONSOLE})
@@ -2968,3 +2971,5 @@ if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
   target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
 endif ()
 install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
+
+endif (NOT QT_ANDROID)
