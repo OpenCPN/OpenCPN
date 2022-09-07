@@ -20,6 +20,7 @@
 #include "observable_confvar.h"
 #include "ocpn_types.h"
 #include "AIS_Decoder.h"
+#include "Select.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;
@@ -75,6 +76,7 @@ wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
 AIS_Decoder* g_pAIS;
+Select* pSelectAIS;
 
 /* comm_bridge context. */
 
