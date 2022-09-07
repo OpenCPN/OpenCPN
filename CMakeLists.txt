@@ -2936,40 +2936,37 @@ endif ()
 # Note that cli apps are not supported on Android
 #
 if (NOT QT_ANDROID)
-
-set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
-
-add_executable(opencpn-cmd ${SRC_CONSOLE})
-
-target_include_directories(
-  opencpn-cmd
-  PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/test/include
-)
-
-target_compile_definitions(opencpn-cmd PUBLIC CLIAPP USE_MOCK_DEFS)
-
-
-if (TARGET ocpn::wxcurl)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)
-else ()
-  target_link_libraries(opencpn-cmd PRIVATE ${SYS_WXCURL_LIBRARIES})
-endif ()
-
-target_link_libraries(opencpn-cmd PRIVATE ${wxWidgets_LIBRARIES})
-if (TARGET ocpn::wxsvg)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
-endif ()
-target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
-if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
-  target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
-  target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
-endif ()
-install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
-
+  set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
+  
+  add_executable(opencpn-cmd ${SRC_CONSOLE})
+  
+  target_include_directories(
+    opencpn-cmd
+    PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/test/include
+  )
+  
+  target_compile_definitions(opencpn-cmd PUBLIC CLIAPP USE_MOCK_DEFS)
+  
+  if (TARGET ocpn::wxcurl)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)
+  else ()
+    target_link_libraries(opencpn-cmd PRIVATE ${SYS_WXCURL_LIBRARIES})
+  endif ()
+  
+  target_link_libraries(opencpn-cmd PRIVATE ${wxWidgets_LIBRARIES})
+  if (TARGET ocpn::wxsvg)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
+  endif ()
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
+  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
+    target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
+    target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
+  endif ()
+  install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif (NOT QT_ANDROID)
