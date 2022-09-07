@@ -121,6 +121,8 @@ AppMsg::Type s_apptype;
 
 auto shared_navaddr_none = std::make_shared<NavAddr>();
 
+wxLogStderr defaultLog;
+
 class MsgCliApp : public wxAppConsole {
 public:
   class Sink : public wxEvtHandler {
@@ -426,6 +428,7 @@ public:
 };
 
 TEST(Messaging, ObservableMsg) {
+  wxLog::SetActiveTarget(&defaultLog);
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   MsgCliApp app;
@@ -434,6 +437,7 @@ TEST(Messaging, ObservableMsg) {
 };
 
 TEST(Messaging, NavMsg) {
+  wxLog::SetActiveTarget(&defaultLog);
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   TransportCliApp app;
@@ -442,6 +446,7 @@ TEST(Messaging, NavMsg) {
 };
 
 TEST(Messaging, All0183) {
+  wxLog::SetActiveTarget(&defaultLog);
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   All0183App app;
@@ -452,6 +457,7 @@ TEST(Messaging, All0183) {
 #ifndef _MSC_VER
 // FIXME (leamas) Fails on string representation of UTF degrees 0x00B0 on Win
 TEST(Messaging, AppMsg) {
+  wxLog::SetActiveTarget(&defaultLog);
   s_result = "";
   s_bus = NavAddr::Bus::Undef;
   AppmsgCliApp app;
@@ -462,6 +468,7 @@ TEST(Messaging, AppMsg) {
 #endif
 
 TEST(Drivers, Registry) {
+  wxLog::SetActiveTarget(&defaultLog);
   auto driver = std::make_shared<SillyDriver>();
   auto& registry = CommDriverRegistry::getInstance();
   registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver));
@@ -492,6 +499,7 @@ TEST(Drivers, Registry) {
 }
 
 TEST(Navmsg2000, to_string) {
+  wxLog::SetActiveTarget(&defaultLog);
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
@@ -501,6 +509,7 @@ TEST(Navmsg2000, to_string) {
 }
 
 TEST(FileDriver, Registration) {
+  wxLog::SetActiveTarget(&defaultLog);
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
   auto& registry = CommDriverRegistry::getInstance();
   int start_size = registry.GetDrivers().size();
@@ -510,6 +519,7 @@ TEST(FileDriver, Registration) {
 }
 
 TEST(FileDriver, output) {
+  wxLog::SetActiveTarget(&defaultLog);
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
@@ -527,6 +537,7 @@ TEST(FileDriver, output) {
 }
 
 TEST(FileDriver, input) {
+  wxLog::SetActiveTarget(&defaultLog);
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
@@ -546,6 +557,7 @@ TEST(FileDriver, input) {
 }
 
 TEST(Listeners, vector) {
+  wxLog::SetActiveTarget(&defaultLog);
   s_result = "";
   ListenerCliApp app;
   EXPECT_EQ(s_result, string("payload data"));
@@ -553,12 +565,14 @@ TEST(Listeners, vector) {
 };
 
 TEST(Guernsey, play_log) {
+  wxLog::SetActiveTarget(&defaultLog);
   vector<string> log;
   GuernseyApp app(log);
   EXPECT_EQ(log.size(), 14522);
 }
 
 TEST(FindDriver, lookup) {
+  wxLog::SetActiveTarget(&defaultLog);
   std::vector<DriverPtr> drivers;
   std::vector<std::string> ifaces{"foo", "bar", "foobar"};
   for (const auto& iface : ifaces) {
@@ -573,6 +587,7 @@ TEST(FindDriver, lookup) {
 }
 
 TEST(Registry, persistence) {
+  wxLog::SetActiveTarget(&defaultLog);
   int start_size = 0;
   if (true) {  // a scope
     auto driver = std::make_shared<SillyDriver>();
@@ -589,18 +604,21 @@ TEST(Registry, persistence) {
 }
 
 TEST(Position, ParseGGA) {
+  wxLog::SetActiveTarget(&defaultLog);
   Position p = Position::ParseGGA("5800.602,N,01145.789,E");
   EXPECT_NEAR(p.lat, 58.010033, 0.0001);
   EXPECT_NEAR(p.lon, 11.763150, 0.0001);
 }
 
 TEST(Priority, Framework) {
+  wxLog::SetActiveTarget(&defaultLog);
   PriorityApp app("stupan.se-10112-tcp.log.input");
   EXPECT_NEAR(gLat, 57.6460, 0.001);
   EXPECT_NEAR(gLon, 11.7130, 0.001);
 }
 
 TEST(Priority, DifferentSource) {
+  wxLog::SetActiveTarget(&defaultLog);
   const char* const GPGGA_1 =
     "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
   const char* const GPGGA_2 =
@@ -614,6 +632,7 @@ TEST(Priority, DifferentSource) {
 
 
 TEST(AIS, AISVDO) {
+  wxLog::SetActiveTarget(&defaultLog);
   const char* AISVDO_1 = "AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
   g_pAIS = new AIS_Decoder;
