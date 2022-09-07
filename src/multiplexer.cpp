@@ -242,9 +242,6 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
       }
     }
 
-    // FIXME (dave)  Check this.  Processed elsewhere?
-    //wxString message = event.ProcessNMEA4Tags();
-
     // FIXME (dave)  Flag checksum errors, but fix and process the sentence anyway
     //std::string goodMessage(message);
     //bool checksumOK = CheckSumCheck(event.GetNMEAString());
