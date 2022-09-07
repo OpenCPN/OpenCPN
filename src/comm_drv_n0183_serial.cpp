@@ -339,9 +339,9 @@ void CommDriverN0183Serial::handle_N0183_MSG(
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  // FIXME
-  //     if (stream) bpass = stream->SentencePassesFilter(message,
-  //     FILTER_INPUT);
+  xif (!m_params.stream->SentencePassesFilter(message, FILTER_INPUT))
+    return;
+
   //       if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
   // FIXME
