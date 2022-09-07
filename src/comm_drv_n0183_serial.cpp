@@ -36,6 +36,10 @@
 #include "serial/serial.h"
 #endif
 
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
 typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_EMPTY,
   DS_RX_BUFFER_FULL
@@ -302,13 +306,10 @@ void CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
     if( !sentence.EndsWith(_T("\r\n")) )
         payload += _T("\r\n");
 
-    if(IsOk()){
-        wxString port = GetPort().AfterFirst(':');
-        androidWriteSerial( port, payload );
-        return IsOk();
-    }
-    else
-        return false;
+
+    wxString port = m_params.GetStrippedDSPort(); //GetPort().AfterFirst(':');
+    androidWriteSerial( port, payload );
+    return;
 #endif
     if( GetSecondaryThread() ) {
         if( IsSecThreadActive() )
