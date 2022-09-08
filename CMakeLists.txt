@@ -943,6 +943,7 @@ set(
 
 set(MODEL_SRC
   # Testable sources without GUI dependencies.
+  ${CMAKE_SOURCE_DIR}/src/AIS_Decoder.cpp
   ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
   ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
@@ -978,7 +979,6 @@ set(MODEL_SRC
 set(UNITTEST_SRC
   # Sources buildable with mock definitions
   ${CMAKE_SOURCE_DIR}/src/AIS_Bitstring.cpp
-  ${CMAKE_SOURCE_DIR}/src/AIS_Decoder.cpp
   ${CMAKE_SOURCE_DIR}/src/AIS_Target_Data.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
 )

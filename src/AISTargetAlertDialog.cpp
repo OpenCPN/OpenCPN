@@ -24,17 +24,20 @@
 
 #include <wx/html/htmlwin.h>
 
-#include "AISTargetAlertDialog.h"
+
 #include "AIS_Decoder.h"
+#include "AISTargetAlertDialog.h"
 #include "AIS_Target_Data.h"
-#include "FontMgr.h"
-#include "ocpn_types.h"
-#include "Select.h"
-#include "routemanagerdialog.h"
-#include "OCPNPlatform.h"
-#include "RoutePoint.h"
 #include "chcanv.h"
+#include "FontMgr.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "ocpn_types.h"
+#include "ocpn_types.h"
+#include "routemanagerdialog.h"
+#include "RoutePoint.h"
+#include "Select.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

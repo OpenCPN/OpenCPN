@@ -26,6 +26,9 @@
 #ifndef _IDENTS_H__
 #define _IDENTS_H__
 
+#include <wx/event.h>
+#include <wx/toolbar.h>
+
 #include "gui_lib.h"
 #include "ocpn_print.h"
 

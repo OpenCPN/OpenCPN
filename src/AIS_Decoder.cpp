@@ -21,25 +21,25 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-#include <fstream>
+
+#include <algorithm>
 #include <cstdio>
+#include <fstream>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#include "wx/datetime.h"
-#include "wx/event.h"
-#include "wx/jsonreader.h"
-#include "wx/jsonwriter.h"
-#include "wx/log.h"
-#include "wx/string.h"
-#include "wx/textfile.h"
-#include "wx/timer.h"
-#include "wx/tokenzr.h"
-#include <wx/json_defs.h>
+#include <wx/datetime.h>
+#include <wx/event.h>
+#include <wx/jsonreader.h>
 #include <wx/jsonwriter.h>
+#include <wx/log.h>
+#include <wx/string.h>
+#include <wx/textfile.h>
+#include <wx/timer.h>
+#include <wx/tokenzr.h>
 
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
@@ -48,11 +48,11 @@
 #include "idents.h"
 #include "multiplexer.h"
 #include "navutil_base.h"
+#include "ocpn_frame.h"
 #include "RoutePoint.h"
 #include "Select.h"
 #include "SoundFactory.h"
 #include "Track.h"
-#include "ocpn_frame.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

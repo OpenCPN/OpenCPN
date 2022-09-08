@@ -22,20 +22,27 @@
  ***************************************************************************
  */
 
-#ifndef __AIS_DECODER_H__
-#define __AIS_DECODER_H__
+#ifndef _AIS_DECODER_H__
+#define _AIS_DECODER_H__
 
 #include <map>
 #include <unordered_map>
 
-#include "ais.h"
+#include <wx/datetime.h>
+#include <wx/jsonval.h>
+#include <wx/event.h>
+#include <wx/string.h>
+
+#include "AIS_Bitstring.h"
+#include "AIS_Defs.h"
+#include "AIS_Target_Data.h"
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "observable_navmsg.h"
+#include "OCPN_Sound.h"
+#include "ocpn_types.h"
+#include "Track.h"
 
-#define TRACKTYPE_DEFAULT 0
-#define TRACKTYPE_ALWAYS 1
-#define TRACKTYPE_NEVER 2
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,
@@ -184,4 +191,4 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif //  _AIS_DECODER_H__

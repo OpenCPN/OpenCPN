@@ -28,6 +28,10 @@
 #include <wx/hashmap.h>
 #include <wx/string.h>
 
+#define TRACKTYPE_DEFAULT 0
+#define TRACKTYPE_ALWAYS 1
+#define TRACKTYPE_NEVER 2
+
 typedef enum AIS_Error {
   AIS_NoError = 0,
   AIS_Partial,
