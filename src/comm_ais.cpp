@@ -147,8 +147,9 @@ bool Parse_VDXBitstring(AIS_Bitstring* bstr,
   now.MakeGMT();
   int message_ID = bstr->GetInt(1, 6);  // Parse on message ID
   ptd->MID = message_ID;
-  ptd->MMSI =
-      bstr->GetInt(9, 30);  // MMSI is always in the same spot in the bitstream
+
+  // MMSI is always in the same spot in the bitstream
+  ptd->MMSI = bstr->GetInt(9, 30);
 
   switch (message_ID) {
     case 1:  // Position Report
@@ -168,9 +169,8 @@ bool Parse_VDXBitstring(AIS_Bitstring* bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if ((lon_tentative <= 180.) && (lat_tentative <= 90.))
+          // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -194,13 +194,13 @@ bool Parse_VDXBitstring(AIS_Bitstring* bstr,
         rot_dir = -1.0;
       }
 
-      ptd->ROTIND = round(rot_dir * pow((((double)ptd->ROTAIS) / 4.733),
-                                          2));  // Convert to indicated ROT
+      // Convert to indicated ROT
+      ptd->ROTIND = round(rot_dir * pow((((double)ptd->ROTAIS) / 4.733), 2));
 
       ptd->m_utc_sec = bstr->GetInt(138, 6);
 
-      if ((1 == message_ID) ||
-          (2 == message_ID))  // decode SOTDMA per 7.6.7.2.2
+      if ((1 == message_ID) || (2 == message_ID))
+      // decode SOTDMA per 7.6.7.2.2
       {
         ptd->SyncState = bstr->GetInt(151, 2);
         ptd->SlotTO = bstr->GetInt(153, 2);
@@ -257,8 +257,8 @@ bool Parse_VDXBitstring(AIS_Bitstring* bstr,
     }
 
     case 18: {
-      ptd->NavStatus =
-          UNDEFINED;  // Class B targets have no status.  Enforce this...
+      // Class B targets have no status.  Enforce this...
+      ptd->NavStatus = UNDEFINED;
 
       ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
 
@@ -272,9 +272,8 @@ bool Parse_VDXBitstring(AIS_Bitstring* bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if ((lon_tentative <= 180.) && (lat_tentative <= 90.))
+          // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -306,7 +305,7 @@ bool Parse_VDXBitstring(AIS_Bitstring* bstr,
   if (b_posn_report) ptd->b_lost = false;
 
   if (true == parse_result) {
-    //      Revalidate the target under some conditions
+    // Revalidate the target under some conditions
     if (!ptd->b_active && !ptd->b_positionDoubtful && b_posn_report)
       ptd->b_active = true;
   }
