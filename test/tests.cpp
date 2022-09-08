@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 
 #include "BasePlatform.h"
+#include "comm_ais.h"
 #include "comm_appmsg_bus.h"
 #include "comm_bridge.h"
 #include "comm_drv_file.h"
@@ -19,6 +20,7 @@
 #include "observable_navmsg.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "AIS_Defs.h"
 #include "AIS_Decoder.h"
 #include "Select.h"
 
@@ -387,7 +389,7 @@ public:
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
     auto m = std::make_shared<const Nmea0183Msg>(
-        Nmea0183Msg("!AIVDO", msg, addr1));
+        Nmea0183Msg("AIVDO", msg, addr1));
     msgbus.Notify(m);
     ProcessPendingEvents();
   }
@@ -630,17 +632,30 @@ TEST(Priority, DifferentSource) {
   EXPECT_NEAR(gLon, p.lon, 0.0001);
 }
 
+TEST(AIS, Decoding) {
+  const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
+  GenericPosDatEx gpd;
+  AIS_Error status = DecodeSingleVDO(AISVDO_1, &gpd);
+  EXPECT_EQ(status, AIS_NoError);
+}
 
 TEST(AIS, AISVDO) {
   wxLog::SetActiveTarget(&defaultLog);
-  const char* AISVDO_1 = "AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
+  const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
   g_pAIS = new AIS_Decoder;
   AisApp app(AISVDO_1);
+
+  EXPECT_NEAR(gLat, 57.985758, 0.0001);
+  EXPECT_NEAR(gLon, 11.740108, 0.0001);
+}
+
+#if 0
+// FIXME (leamas) leaving for use in AIVDM test
   auto found = g_pAIS->GetTargetList().find(MMSI);
   EXPECT_NE(found, g_pAIS->GetTargetList().end());
   if (found != g_pAIS->GetTargetList().end()) {
     EXPECT_NEAR(found->second->Lat, 57.985758, 0.0001);
     EXPECT_NEAR(found->second->Lon, 11.740108, 0.0001);
   }
-}
+#endif
