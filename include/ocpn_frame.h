@@ -26,8 +26,6 @@
 #ifndef _OFRAME_H
 #define _OFRAME_H
 
-// FIXME (dave) Re-check all includes after refactor of comm stuff to ocpn_app
-
 #include "wx/print.h"
 #include <wx/power.h>
 
@@ -40,9 +38,6 @@
 #include "ocpn_print.h"
 #include "color_handler.h"
 #include "gui_lib.h"
-// #include "viewport.h"
-#include "nmea0183.h"
-// #include "chartdbs.h"
 #include "s52s57.h"
 #include "SencManager.h"
 #include "observable_navmsg.h"
@@ -67,17 +62,14 @@ void ApplyLocale(void);
 
 void LoadS57();
 
-class NMEA_Msg_Container;
-WX_DECLARE_STRING_HASH_MAP(NMEA_Msg_Container *, MsgPriorityHash);
 
 //    Fwd definitions
-class OCPN_NMEAEvent;
 class ChartCanvas;
 class ocpnFloatingToolbarDialog;
 class OCPN_MsgEvent;
 class options;
 class Track;
-class OCPN_ThreadMessageEvent;
+//class OCPN_ThreadMessageEvent;
 class wxHtmlWindow;
 class ArrayOfCDI;
 
@@ -142,15 +134,6 @@ class DataStream;
 class AIS_Target_Data;
 
 bool isSingleChart(ChartBase *chart);
-
-//      A class to contain NMEA messages, their receipt time, and their source
-//      priority
-class NMEA_Msg_Container {
-public:
-  wxDateTime receipt_time;
-  int current_priority;
-  wxString stream_name;
-};
 
 class OCPN_ThreadMessageEvent : public wxEvent {
 public:
@@ -243,11 +226,6 @@ public:
   bool SetGlobalToolbarViz(bool viz);
 
   void MouseEvent(wxMouseEvent &event);
-  //     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum
-  //     New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family =
-  //     CHART_FAMILY_DONTCARE); void SelectdbChart(int dbindex); void
-  //     SelectQuiltRefChart(int selected_index); void SelectQuiltRefdbChart(int
-  //     db_index, bool b_autoscale = true);
   void CenterView(ChartCanvas *cc, const LLBBox &bbox);
 
   void JumpToPosition(ChartCanvas *cc, double lat, double lon, double scale);
@@ -392,15 +370,6 @@ public:
   static void RebuildChartDatabase();
   void PositionIENCToolbar();
 
-  bool ParsePosition(const LATLONG &Position);
-  void setSatelitesInView(int no);
-  void setPosition(double lat, double lon);
-  void setSpeedOverGround(double sog);
-  void setCourseOverGround(double cog);
-  void setHeadingTrue(double heading);
-  void setHeadingMagnetic(double heading);
-  void setMagneticVariation(double var);
-
   void InitAppMsgBusListener();
 
 private:
@@ -413,8 +382,6 @@ private:
   void FilterCogSog(void);
 
   void ApplyGlobalColorSchemetoStatusBar(void);
-  void PostProcessNMEA(bool pos_valid, bool sog_valid, bool cog_valid,
-                       const wxString &sfixtime);
 
   bool ScrubGroupArray();
   wxString GetGroupName(int igroup);
@@ -428,12 +395,8 @@ private:
 
   int m_StatusBarFieldCount;
 
-  NMEA0183 m_NMEA0183;  // Used to parse messages from NMEA threads
-
-  wxDateTime m_MMEAeventTime;
-  unsigned long m_ulLastNMEATicktime;
-
-  wxMutex m_mutexNMEAEvent;  // Mutex to handle static data from NMEA threads
+   wxDateTime m_MMEAeventTime;
+   unsigned long m_ulLastNMEATicktime;
 
   wxString m_last_reported_chart_name;
   wxString m_last_reported_chart_pubdate;
@@ -454,9 +417,6 @@ private:
   bool bPrevQuilt;
   bool bPrevFullScreenQuilt;
   bool bPrevOGL;
-
-  MsgPriorityHash NMEA_Msg_Hash;
-  wxString m_VDO_accumulator;
 
   time_t m_fixtime;
   wxMenu *piano_ctx_menu;
