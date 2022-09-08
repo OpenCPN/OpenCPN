@@ -169,11 +169,6 @@ void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  // FIXME
-  //     if (stream) bpass = stream->SentencePassesFilter(message,
-  //     FILTER_INPUT);
-  //       if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
-
   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
     std::string identifier;
     // We notify based on full message, including the Talker ID
@@ -184,7 +179,9 @@ void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
     auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
                                                    GetAddress());
     auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-    m_listener.Notify(std::move(msg));
+
+    if (m_params.SentencePassesFilter(full_sentence, FILTER_INPUT))
+      m_listener.Notify(std::move(msg));
     m_listener.Notify(std::move(msg_all));
   }
 }

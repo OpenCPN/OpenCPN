@@ -339,15 +339,6 @@ void CommDriverN0183Serial::handle_N0183_MSG(
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  xif (!m_params.stream->SentencePassesFilter(message, FILTER_INPUT))
-    return;
-
-  //       if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
-
-  // FIXME
-  //    if (stream) bpass = stream->SentencePassesFilter(message, FILTER_INPUT);
-  //      if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
-
   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
     std::string identifier;
     // We notify based on full message, including the Talker ID
@@ -358,7 +349,10 @@ void CommDriverN0183Serial::handle_N0183_MSG(
     auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
                                                    GetAddress());
     auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-    m_listener.Notify(std::move(msg));
+
+    if (m_params.SentencePassesFilter(full_sentence, FILTER_INPUT))
+      m_listener.Notify(std::move(msg));
+
     m_listener.Notify(std::move(msg_all));
   }
 }
@@ -540,6 +534,11 @@ void* CommDriverN0183SerialThread::Entry() {
           if (take_byte == 0x0a) {
             vec->push_back(take_byte);
 
+          // Remove last element, if 0
+// FIXME (dave)  on Windows
+//           if (vec->back() == 0)
+//             vec->pop_back();
+
             //    Message is ready to parse and send out
             //    Messages may be coming in as <blah blah><lf><cr>.
             //    One example device is KVH1000 heading sensor.
@@ -678,8 +677,6 @@ void* CommDriverN0183SerialThread::Entry() {
           vec->push_back(*tptr++);
 
           if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
-
-          vec->push_back('\0');
 
           tak_ptr = tptr;
 

@@ -977,17 +977,18 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
     if (msg_n2k){
       if (active_priority.active_identifier.size()){
         if (this_identifier.compare(active_priority.active_identifier) != 0){
-          //auto adjust the priority of the this message down
+         // if necessary, auto adjust the priority of the this message down
           //and drop it
+          if (priority_map[this_key] == active_priority.active_priority){
+            int lowest_priority = -10;     // safe enough
+            for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
+              if (it->second > lowest_priority)
+                lowest_priority = it->second;
+            }
 
-          int lowest_priority = -10;     // safe enough
-          for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
-            if (it->second > lowest_priority)
-              lowest_priority = it->second;
+            priority_map[this_key] = lowest_priority + 1;
+            printf("          Lowering priority: %s :%d\n", source.c_str(), priority_map[this_key]);
           }
-
-          priority_map[this_key] = lowest_priority + 1;
-          printf("          Lowering priority: %s :%d\n", source.c_str(), priority_map[this_key]);
 
           return false;
         }
