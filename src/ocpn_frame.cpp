@@ -426,7 +426,7 @@ extern int g_MemFootSec;
 extern int g_MemFootMB;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
-extern COMM_N0183_OUT *g_comm_out;
+extern CommN0183Out *g_comm_out;
 
 #ifdef __WXMSW__
 // System color control support

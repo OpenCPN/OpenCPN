@@ -166,37 +166,6 @@ void Multiplexer::LogInputMessage(const wxString &msg,
     NMEALogWindow::Get().Add(ss);
   }
 }
-// FIXME (dave) Implement using comm...
-#if 0
-void Multiplexer::SendNMEAMessage(const wxString &msg) {
-  // Send to all the outputs
-  for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
-    DataStream *s = m_pdatastreams->Item(i);
-
-    if (s->IsOk() && (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT ||
-                      s->GetIoSelect() == DS_TYPE_OUTPUT)) {
-      bool bout_filter = true;
-
-      bool bxmit_ok = true;
-      if (s->SentencePassesFilter(msg, FILTER_OUTPUT)) {
-        bxmit_ok = s->SendSentence(msg);
-        bout_filter = false;
-      }
-      // Send to the Debug Window, if open
-      if (!bout_filter) {
-        if (bxmit_ok)
-          LogOutputMessageColor(msg, s->GetPort(), _T("<BLUE>"));
-        else
-          LogOutputMessageColor(msg, s->GetPort(), _T("<RED>"));
-      } else
-        LogOutputMessageColor(msg, s->GetPort(), _T("<CORAL>"));
-    }
-  }
-  // Send to plugins
-  if (g_pi_manager) g_pi_manager->SendNMEASentenceToAllPlugIns(msg);
-
-}
-#endif
 
 void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Find the driver that originated this message

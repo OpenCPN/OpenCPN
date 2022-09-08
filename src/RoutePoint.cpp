@@ -48,7 +48,7 @@ extern bool g_bIsNewLayer;
 extern int g_LayerIdx;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
-extern COMM_N0183_OUT *g_comm_out;
+extern CommN0183Out *g_comm_out;
 extern MyFrame *gFrame;
 extern bool g_btouch;
 extern ocpnStyle::StyleManager *g_StyleManager;

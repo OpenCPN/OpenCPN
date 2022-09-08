@@ -42,7 +42,7 @@ extern Routeman *g_pRouteMan;
 extern int g_route_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
-extern COMM_N0183_OUT *g_comm_out;
+extern CommN0183Out *g_comm_out;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;

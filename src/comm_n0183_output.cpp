@@ -168,7 +168,7 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 
 
 
-void COMM_N0183_OUT::SendNMEAMessage(const wxString &msg) {
+void CommN0183Out::SendNMEAMessage(const wxString &msg) {
 //FIXME (dave) Implement using comm...
 #if 0
   // Send to all the outputs
@@ -333,7 +333,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
 //   return true;
 // }
 
-int COMM_N0183_OUT::SendRouteToGPS(Route *pr, const wxString &com_name,
+int CommN0183Out::SendRouteToGPS(Route *pr, const wxString &com_name,
                                 bool bsend_waypoints, SendToGpsDlg *dialog) {
   int ret_val = 0;
   //FIXME (dave)  Implement using comm
@@ -981,7 +981,7 @@ ret_point_1:
   return ret_val;
 }
 
-int COMM_N0183_OUT::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
+int CommN0183Out::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
                                    SendToGpsDlg *dialog) {
   //FIXME (dave) implement using comm
 #if 0

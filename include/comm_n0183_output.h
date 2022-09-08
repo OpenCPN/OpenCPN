@@ -45,10 +45,10 @@ class ConnectionParams;
 #define ERR_GARMIN_INITIALIZE -1
 #define ERR_GARMIN_GENERAL -2
 
-class COMM_N0183_OUT : public wxEvtHandler {
+class CommN0183Out : public wxEvtHandler {
 public:
-  COMM_N0183_OUT();
-  ~COMM_N0183_OUT();
+  CommN0183Out();
+  ~CommN0183Out();
 
   void SendNMEAMessage(const wxString &msg);
 
