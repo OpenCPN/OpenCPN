@@ -85,9 +85,9 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #endif
 
 
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "ais.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "canvasMenu.h"
 #include "catalog_handler.h"
 #include "cat_settings.h"
@@ -96,7 +96,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "config.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "download_mgr.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -120,10 +120,10 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "options.h"
 #include "piano.h"
 #include "plugin_cache.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "plugin_loader.h"
 #include "pluginmanager.h"
-#include "PluginPaths.h"
+#include "plugin_paths.h"
 #include "Route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"

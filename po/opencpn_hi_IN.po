@@ -285,7 +285,7 @@ msgstr "आरक्षित १३"
 msgid "Reserved 14"
 msgstr "आरक्षित १४"
 
-#: src/ais.cpp:128 src/AIS_Target_Data.cpp:402 src/ConnectionParams.cpp:176
+#: src/ais.cpp:128 src/ais_target_data.cpp:402 src/ConnectionParams.cpp:176
 #: src/ConnectionParams.cpp:462 src/ConnectionParams.cpp:600
 #: src/ConnectionParams.cpp:913 src/ConnectionParams.cpp:941
 msgid "Undefined"
@@ -383,12 +383,12 @@ msgstr "सवारी जहाज़"
 msgid "Cargo Ship"
 msgstr "मालवाहक जहाज"
 
-#: src/ais.cpp:159 src/AIS_Decoder.cpp:341
+#: src/ais.cpp:159 src/ais_decoder.cpp:341
 msgid "Tanker"
 msgstr "टंकी"
 
-#: src/ais.cpp:160 src/AIS_Target_Data.cpp:388 src/AIS_Target_Data.cpp:685
-#: src/AIS_Target_Data.cpp:744 src/AIS_Target_Data.cpp:922 src/chartdbs.cpp:1418
+#: src/ais.cpp:160 src/ais_target_data.cpp:388 src/ais_target_data.cpp:685
+#: src/ais_target_data.cpp:744 src/ais_target_data.cpp:922 src/chartdbs.cpp:1418
 msgid "Unknown"
 msgstr "अनजान"
 
@@ -536,7 +536,7 @@ msgstr "संकट"
 msgid "ARPA radar target"
 msgstr "एआरपीए रडार लक्ष्य"
 
-#: src/ais.cpp:197 src/AIS_Target_Data.cpp:919
+#: src/ais.cpp:197 src/ais_target_data.cpp:919
 msgid "APRS Position Report"
 msgstr "एपीआरएस स्थिति रिपोर्ट"
 
@@ -616,7 +616,7 @@ msgstr ""
 msgid "?"
 msgstr ""
 
-#: src/ais.cpp:226 src/AIS_Target_Data.cpp:904
+#: src/ais.cpp:226 src/ais_target_data.cpp:904
 msgid "AtoN"
 msgstr ""
 
@@ -692,19 +692,19 @@ msgstr ""
 msgid "LtV/Rig"
 msgstr ""
 
-#: src/ais.cpp:258 src/AIS_Target_Data.cpp:908
+#: src/ais.cpp:258 src/ais_target_data.cpp:908
 msgid "Buddy"
 msgstr ""
 
-#: src/ais.cpp:259 src/AIS_Target_Data.cpp:911 src/AIS_Target_Data.cpp:913
+#: src/ais.cpp:259 src/ais_target_data.cpp:911 src/ais_target_data.cpp:913
 msgid "DSC"
 msgstr ""
 
-#: src/ais.cpp:261 src/AIS_Target_Data.cpp:917
+#: src/ais.cpp:261 src/ais_target_data.cpp:917
 msgid "ARPA"
 msgstr ""
 
-#: src/ais.cpp:262 src/AIS_Target_Data.cpp:919
+#: src/ais.cpp:262 src/ais_target_data.cpp:919
 msgid "APRS"
 msgstr ""
 
@@ -1100,1415 +1100,1415 @@ msgstr "अपरिभाषित (डिफ़ॉल्ट)"
 msgid "AIS Target Name"
 msgstr "एआईएस लक्ष्य नाम"
 
-#: src/AIS_Decoder.cpp:269
+#: src/ais_decoder.cpp:269
 msgid "Vessel, type unknown"
 msgstr "पोत, अज्ञात प्रकार"
 
-#: src/AIS_Decoder.cpp:270
+#: src/ais_decoder.cpp:270
 msgid "Freightbarge"
 msgstr "भाड़ा माल लादने की चौड़े पेंदे वाली नाव"
 
-#: src/AIS_Decoder.cpp:271
+#: src/ais_decoder.cpp:271
 msgid "Tankbarge"
 msgstr "टंकी माल लादने की चौड़े पेंदे वाली नाव"
 
-#: src/AIS_Decoder.cpp:272
+#: src/ais_decoder.cpp:272
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 msgstr "टंकी माल लादने की चौड़े पेंदे वाली नाव सूखी माल जैसे तरल (जैसे सीमेंट)"
 
-#: src/AIS_Decoder.cpp:273
+#: src/ais_decoder.cpp:273
 msgid "Service vessel, police patrol, port service"
 msgstr "सेवा पोत, पुलिस गश्ती, बंदरगाह सेवा"
 
-#: src/AIS_Decoder.cpp:274 src/AIS_Decoder.cpp:328
+#: src/ais_decoder.cpp:274 src/ais_decoder.cpp:328
 msgid "Pushboat, single"
 msgstr "पुशबोट, एकल"
 
-#: src/AIS_Decoder.cpp:275
+#: src/ais_decoder.cpp:275
 msgid "Object, not otherwise specified"
 msgstr "वस्तु, अन्यथा निर्दिष्ट नहीं है"
 
-#: src/AIS_Decoder.cpp:276
+#: src/ais_decoder.cpp:276
 msgid "Object, towed, not otherwise specified"
 msgstr "ऑब्जेक्ट, टूवेड, अन्यथा निर्दिष्ट नहीं"
 
-#: src/AIS_Decoder.cpp:277
+#: src/ais_decoder.cpp:277
 msgid "Bunkership"
 msgstr ""
 
-#: src/AIS_Decoder.cpp:278
+#: src/ais_decoder.cpp:278
 msgid "Motor freighter"
 msgstr "मोटर मालवाहक"
 
-#: src/AIS_Decoder.cpp:279
+#: src/ais_decoder.cpp:279
 msgid "Motor tanker"
 msgstr "मोटर टैंकर"
 
-#: src/AIS_Decoder.cpp:280
+#: src/ais_decoder.cpp:280
 msgid "Motor tanker, liquid cargo, type N"
 msgstr "मोटर टैंकर, तरल कार्गो, प्रकार एन"
 
-#: src/AIS_Decoder.cpp:281
+#: src/ais_decoder.cpp:281
 msgid "Motor tanker, liquid cargo, type C"
 msgstr "मोटर टैंकर, तरल कार्गो, प्रकार सी"
 
-#: src/AIS_Decoder.cpp:282
+#: src/ais_decoder.cpp:282
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 msgstr "मोटर टैंकर, शुष्क माल जैसे तरल (जैसे सीमेंट)"
 
-#: src/AIS_Decoder.cpp:283
+#: src/ais_decoder.cpp:283
 msgid "Container vessel"
 msgstr "कंटेनर पोत"
 
-#: src/AIS_Decoder.cpp:284
+#: src/ais_decoder.cpp:284
 msgid "Gas tanker"
 msgstr "गैस टैंकर"
 
-#: src/AIS_Decoder.cpp:285
+#: src/ais_decoder.cpp:285
 msgid "Motor freighter, tug"
 msgstr "मोटर मालवाहक, टाग"
 
-#: src/AIS_Decoder.cpp:286
+#: src/ais_decoder.cpp:286
 msgid "Motor tanker, tug"
 msgstr "मोटर टैंकर, टाग"
 
-#: src/AIS_Decoder.cpp:287
+#: src/ais_decoder.cpp:287
 msgid "Motor freighter with one or more ships alongside"
 msgstr "साथ में एक या अधिक जहाजों के साथ मोटर मालवाहक"
 
-#: src/AIS_Decoder.cpp:288
+#: src/ais_decoder.cpp:288
 msgid "Motor freighter with tanker"
 msgstr "टैंकर के साथ मोटर मालवाहक"
 
-#: src/AIS_Decoder.cpp:289
+#: src/ais_decoder.cpp:289
 msgid "Motor freighter pushing one or more freighters"
 msgstr "मोटर मालवाहक एक या अधिक मालवाहक को आगे बढ़ाते हैं"
 
-#: src/AIS_Decoder.cpp:290
+#: src/ais_decoder.cpp:290
 msgid "Motor freighter pushing at least one tank-ship"
 msgstr "मोटर मालवाहक कम से कम एक टैंक-जहाज को धक्का दे रहा है"
 
-#: src/AIS_Decoder.cpp:291
+#: src/ais_decoder.cpp:291
 msgid "Tug, freighter"
 msgstr "टग, मालवाहक"
 
-#: src/AIS_Decoder.cpp:292
+#: src/ais_decoder.cpp:292
 msgid "Tug, tanker"
 msgstr "टग, टैंकर"
 
-#: src/AIS_Decoder.cpp:293
+#: src/ais_decoder.cpp:293
 msgid "Tug freighter, coupled"
 msgstr "टग मालवाहक, युग्मित"
 
-#: src/AIS_Decoder.cpp:294
+#: src/ais_decoder.cpp:294
 msgid "Tug, freighter/tanker, coupled"
 msgstr "टग, माल ढुलाई / टैंकर, युग्मित"
 
-#: src/AIS_Decoder.cpp:295
+#: src/ais_decoder.cpp:295
 msgid "Tankbarge, liquid cargo, type N"
 msgstr "टैंकबार्ज, तरल कार्गो, प्रकार एन"
 
-#: src/AIS_Decoder.cpp:296
+#: src/ais_decoder.cpp:296
 msgid "Tankbarge, liquid cargo, type C"
 msgstr "टैंकबार्ज, तरल कार्गो, प्रकार सी"
 
-#: src/AIS_Decoder.cpp:297
+#: src/ais_decoder.cpp:297
 msgid "Freightbarge with containers"
 msgstr "कंटेनरों के साथ माल ढुलाई"
 
-#: src/AIS_Decoder.cpp:298
+#: src/ais_decoder.cpp:298
 msgid "Tankbarge, gas"
 msgstr "टैंकबार्ज, गैस"
 
-#: src/AIS_Decoder.cpp:299
+#: src/ais_decoder.cpp:299
 msgid "Pushtow, one cargo barge"
 msgstr "पुशूटो, एक कार्गो बजरा"
 
-#: src/AIS_Decoder.cpp:300
+#: src/ais_decoder.cpp:300
 msgid "Pushtow, two cargo barges"
 msgstr "पुशतो, दो कार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:301
+#: src/ais_decoder.cpp:301
 msgid "Pushtow, three cargo barges"
 msgstr "पुशतो, तीन कार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:302
+#: src/ais_decoder.cpp:302
 msgid "Pushtow, four cargo barges"
 msgstr "पुशतो, चारकार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:303
+#: src/ais_decoder.cpp:303
 msgid "Pushtow, five cargo barges"
 msgstr "पुशतो, पांच कार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:304
+#: src/ais_decoder.cpp:304
 msgid "Pushtow, six cargo barges"
 msgstr "पुशतो, छह कार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:305
+#: src/ais_decoder.cpp:305
 msgid "Pushtow, seven cargo barges"
 msgstr "पुशतो, सात कार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:306
+#: src/ais_decoder.cpp:306
 msgid "Pushtow, eight cargo barges"
 msgstr "पुशतो, आठ कार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:307
+#: src/ais_decoder.cpp:307
 msgid "Pushtow, nine or more barges"
 msgstr "पुशतो, नौ कार्गो बार्जियां"
 
-#: src/AIS_Decoder.cpp:308
+#: src/ais_decoder.cpp:308
 msgid "Pushtow, one tank/gas barge"
 msgstr "पुशूटो, एक टैंक / गैस बजरा"
 
-#: src/AIS_Decoder.cpp:310
+#: src/ais_decoder.cpp:310
 msgid "Pushtow, two barges at least one tanker or gas barge"
 msgstr "पुशूटो, कम से कम एक टैंकर या गैस बार्ज के दो बार्जियां"
 
-#: src/AIS_Decoder.cpp:312
+#: src/ais_decoder.cpp:312
 msgid "Pushtow, three barges at least one tanker or gas barge"
 msgstr "पुशतो, कम से कम एक टैंकर या गैस बार्गे में तीन बार्जियां"
 
-#: src/AIS_Decoder.cpp:314
+#: src/ais_decoder.cpp:314
 msgid "Pushtow, four barges at least one tanker or gas barge"
 msgstr "पुशटोव, कम से कम एक टैंकर या गैस बार्गे के चार बार्गियां"
 
-#: src/AIS_Decoder.cpp:316
+#: src/ais_decoder.cpp:316
 msgid "Pushtow, five barges at least one tanker or gas barge"
 msgstr "पुशूटो, कम से कम एक टैंकर या गैस बार्गे में पांच बार्जियां"
 
-#: src/AIS_Decoder.cpp:318
+#: src/ais_decoder.cpp:318
 msgid "Pushtow, six barges at least one tanker or gas barge"
 msgstr "पुशूटो, कम से कम एक टैंकर या गैस बार्गे में छह बार्गियां"
 
-#: src/AIS_Decoder.cpp:320
+#: src/ais_decoder.cpp:320
 msgid "Pushtow, seven barges at least one tanker or gas barge"
 msgstr "पुशटोव, गैस के कम से कम एक टैंकर के टैंक में सात बार्जियां"
 
-#: src/AIS_Decoder.cpp:322
+#: src/ais_decoder.cpp:322
 msgid "Pushtow, eight barges at least one tanker or gas barge"
 msgstr "पुशूटो, कम से कम एक टैंकर या गैस बार्गे पर आठ बार्जियां"
 
-#: src/AIS_Decoder.cpp:324
+#: src/ais_decoder.cpp:324
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 msgstr "पुशूटो, कम से कम एक टैंकर या गैस बार्गे नौ या अधिक बार्जियां"
 
-#: src/AIS_Decoder.cpp:325
+#: src/ais_decoder.cpp:325
 msgid "Tug, single"
 msgstr "टग, एकल"
 
-#: src/AIS_Decoder.cpp:326
+#: src/ais_decoder.cpp:326
 msgid "Tug, one or more tows"
 msgstr "टग, एक या अधिक टो"
 
-#: src/AIS_Decoder.cpp:327
+#: src/ais_decoder.cpp:327
 msgid "Tug, assisting a vessel or linked combination"
 msgstr "टग, एक पोत या लिंक किए गए संयोजन की सहायता करना"
 
-#: src/AIS_Decoder.cpp:329
+#: src/ais_decoder.cpp:329
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "यात्री जहाज, नौका, क्रूज जहाज, लाल क्रॉस जहाज"
 
-#: src/AIS_Decoder.cpp:330
+#: src/ais_decoder.cpp:330
 msgid "Ferry"
 msgstr "नौका"
 
-#: src/AIS_Decoder.cpp:331
+#: src/ais_decoder.cpp:331
 msgid "Red cross ship"
 msgstr "लाल क्रॉस जहाज"
 
-#: src/AIS_Decoder.cpp:332
+#: src/ais_decoder.cpp:332
 msgid "Cruise ship"
 msgstr "क्रूज जहाज"
 
-#: src/AIS_Decoder.cpp:333
+#: src/ais_decoder.cpp:333
 msgid "Passenger ship without accommodation"
 msgstr ""
 
-#: src/AIS_Decoder.cpp:334
+#: src/ais_decoder.cpp:334
 msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
 msgstr ""
 
-#: src/AIS_Decoder.cpp:336
+#: src/ais_decoder.cpp:336
 msgid "Fishing boat"
 msgstr "मछली पकड़ने की नाव"
 
-#: src/AIS_Decoder.cpp:337
+#: src/ais_decoder.cpp:337
 msgid "Barge, tanker, chemical"
 msgstr "बार्ज, टैंकर, रासायनिक"
 
-#: src/AIS_Decoder.cpp:338
+#: src/ais_decoder.cpp:338
 msgid "General cargo Vessel maritime"
 msgstr "सामान्य कार्गो पोत समुद्री"
 
-#: src/AIS_Decoder.cpp:339
+#: src/ais_decoder.cpp:339
 msgid "Unit carrier maritime"
 msgstr "मात्रक वाहक समुद्री"
 
-#: src/AIS_Decoder.cpp:340
+#: src/ais_decoder.cpp:340
 msgid "Bulk carrier maritime"
 msgstr "थोक वाहक समुद्री"
 
-#: src/AIS_Decoder.cpp:342
+#: src/ais_decoder.cpp:342
 msgid "Liquified gas tanker"
 msgstr "तरल गैस टैंकर"
 
-#: src/AIS_Decoder.cpp:343
+#: src/ais_decoder.cpp:343
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "आनंद शिल्प, 20 मीटर से अधिक लंबा"
 
-#: src/AIS_Decoder.cpp:344
+#: src/ais_decoder.cpp:344
 msgid "Fast ship"
 msgstr "तेज जहाज"
 
-#: src/AIS_Decoder.cpp:345
+#: src/ais_decoder.cpp:345
 msgid "Hydrofoil"
 msgstr "हीड्रोफ़ोइल"
 
-#: src/AIS_Decoder.cpp:1260
+#: src/ais_decoder.cpp:1260
 #, c-format
 msgid "%02X"
 msgstr ""
 
-#: src/AIS_Decoder.cpp:3084 src/options.cpp:6224
+#: src/ais_decoder.cpp:3084 src/options.cpp:6224
 msgid "AIS Alert"
 msgstr "एआईएस अलर्ट"
 
-#: src/AIS_Target_Data.cpp:330 src/AIS_Target_Data.cpp:726
+#: src/ais_target_data.cpp:330 src/ais_target_data.cpp:726
 #: src/OCPNListCtrl.cpp:121
 msgid "SAR Helicopter"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:330 src/AIS_Target_Data.cpp:726
+#: src/ais_target_data.cpp:330 src/ais_target_data.cpp:726
 #: src/OCPNListCtrl.cpp:121
 msgid "SAR Aircraft"
 msgstr "एसएआर विमान"
 
-#: src/AIS_Target_Data.cpp:336 src/AIS_Target_Data.cpp:347
+#: src/ais_target_data.cpp:336 src/ais_target_data.cpp:347
 #: src/AISTargetListDialog.cpp:569 src/options.cpp:1025 src/options.cpp:1348
 msgid "MMSI"
 msgstr "एमएमएसऑय"
 
-#: src/AIS_Target_Data.cpp:337 src/AIS_Target_Data.cpp:349
+#: src/ais_target_data.cpp:337 src/ais_target_data.cpp:349
 #: src/AISTargetListDialog.cpp:578
 msgid "Class"
 msgstr "कक्षा"
 
-#: src/AIS_Target_Data.cpp:339
+#: src/ais_target_data.cpp:339
 msgid "IMO"
 msgstr "ऑयएमओ"
 
-#: src/AIS_Target_Data.cpp:357
+#: src/ais_target_data.cpp:357
 msgid "Nation"
 msgstr "राष्ट्र"
 
-#: src/AIS_Target_Data.cpp:357
+#: src/ais_target_data.cpp:357
 msgid "Flag"
 msgstr "झंडा"
 
-#: src/AIS_Target_Data.cpp:369 src/AIS_Target_Data.cpp:764
+#: src/ais_target_data.cpp:369 src/ais_target_data.cpp:764
 #: src/AISTargetListDialog.cpp:147 src/AISTargetListDialog.cpp:162
 #: src/OCPNListCtrl.cpp:138
 msgid "Active"
 msgstr "सक्रिय"
 
-#: src/AIS_Target_Data.cpp:371 src/AIS_Target_Data.cpp:766
+#: src/ais_target_data.cpp:371 src/ais_target_data.cpp:766
 #: src/AISTargetListDialog.cpp:149 src/AISTargetListDialog.cpp:164
 #: src/OCPNListCtrl.cpp:140
 msgid "Testing"
 msgstr "परिक्षण"
 
-#: src/AIS_Target_Data.cpp:417
+#: src/ais_target_data.cpp:417
 msgid "Safety Broadcast Message"
 msgstr "सुरक्षा प्रसारण संदेश"
 
-#: src/AIS_Target_Data.cpp:493
+#: src/ais_target_data.cpp:493
 msgid " (Last Known)"
 msgstr " (अंतिम ज्ञात)"
 
-#: src/AIS_Target_Data.cpp:501 src/GoToPositionDialog.cpp:112
+#: src/ais_target_data.cpp:501 src/GoToPositionDialog.cpp:112
 #: src/routeprintout.cpp:107 src/routeprintout.cpp:376 src/trackprintout.cpp:87
 #: src/trackprintout.cpp:297
 msgid "Position"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:502
+#: src/ais_target_data.cpp:502
 msgid "Report Age"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:524
+#: src/ais_target_data.cpp:524
 msgid "Report as of"
 msgstr "के रूप में की रिपोर्ट"
 
-#: src/AIS_Target_Data.cpp:529 src/RoutePropDlgImpl.cpp:806
+#: src/ais_target_data.cpp:529 src/RoutePropDlgImpl.cpp:806
 #: src/TrackPropDlg.cpp:362 src/TrackPropDlg.cpp:1342
 msgid "Destination"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:530
+#: src/ais_target_data.cpp:530
 msgid "ETA (UTC)"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:592 src/AIS_Target_Data.cpp:598
+#: src/ais_target_data.cpp:592 src/ais_target_data.cpp:598
 msgid "Right"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:594 src/AIS_Target_Data.cpp:601
+#: src/ais_target_data.cpp:594 src/ais_target_data.cpp:601
 msgid "Left"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:635 src/options.cpp:5796 src/options.cpp:5938
+#: src/ais_target_data.cpp:635 src/options.cpp:5796 src/options.cpp:5938
 #: src/options.cpp:6082 src/options.cpp:6332 src/RoutePropDlg.cpp:325
 #: src/trackprintout.cpp:99 src/trackprintout.cpp:338 src/TrackPropDlg.cpp:306
 #: src/TrackPropDlg.cpp:1344
 msgid "Speed"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:636 src/routeprintout.cpp:110
+#: src/ais_target_data.cpp:636 src/routeprintout.cpp:110
 #: src/routeprintout.cpp:386 src/RoutePropDlg.cpp:337 src/trackprintout.cpp:90
 #: src/trackprintout.cpp:307
 msgid "Course"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:638
+#: src/ais_target_data.cpp:638
 msgid "Heading"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:646
+#: src/ais_target_data.cpp:646
 msgid "Turn Rate"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:650 src/AISTargetListDialog.cpp:614
+#: src/ais_target_data.cpp:650 src/AISTargetListDialog.cpp:614
 msgid "Range"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:651 src/RoutePropDlg.cpp:300 src/TrackPropDlg.cpp:301
+#: src/ais_target_data.cpp:651 src/RoutePropDlg.cpp:300 src/TrackPropDlg.cpp:301
 msgid "Bearing"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:662
+#: src/ais_target_data.cpp:662
 msgid "in "
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:665 src/AIS_Target_Data.cpp:811
+#: src/ais_target_data.cpp:665 src/ais_target_data.cpp:811
 #: src/AISTargetListDialog.cpp:640
 msgid "CPA"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:672 src/AIS_Target_Data.cpp:675
+#: src/ais_target_data.cpp:672 src/ais_target_data.cpp:675
 msgid "Inland Blue Flag"
 msgstr "अंतर्देशीय ब्लू फ्लैग"
 
-#: src/AIS_Target_Data.cpp:673 src/catalog_mgr.cpp:340
+#: src/ais_target_data.cpp:673 src/catalog_mgr.cpp:340
 msgid "Clear"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:676
+#: src/ais_target_data.cpp:676
 msgid "Set"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:687
+#: src/ais_target_data.cpp:687
 msgid "Altitude"
 msgstr "ऊंचाई"
 
-#: src/AIS_Target_Data.cpp:802 src/AIS_Target_Data.cpp:806
+#: src/ais_target_data.cpp:802 src/ais_target_data.cpp:806
 msgid " COG Unavailable"
 msgstr " कोग अनुपलब्ध है"
 
-#: src/AIS_Target_Data.cpp:812 src/navutil.cpp:4257
+#: src/ais_target_data.cpp:812 src/navutil.cpp:4257
 msgid "in"
 msgstr "में"
 
-#: src/AIS_Target_Data.cpp:813
+#: src/ais_target_data.cpp:813
 msgid "min"
 msgstr "मिनट"
 
-#: src/AIS_Target_Data.cpp:900
+#: src/ais_target_data.cpp:900
 msgid "A"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:902
+#: src/ais_target_data.cpp:902
 msgid "B"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:904
+#: src/ais_target_data.cpp:904
 msgid "Aid to Navigation"
 msgstr "नेविगेशन के लिए सहायता"
 
-#: src/AIS_Target_Data.cpp:906 src/CanvasOptions.cpp:318 src/options.cpp:4790
+#: src/ais_target_data.cpp:906 src/CanvasOptions.cpp:318 src/options.cpp:4790
 #: src/options.cpp:4986
 msgid "Base"
 msgstr "आधार"
 
-#: src/AIS_Target_Data.cpp:906
+#: src/ais_target_data.cpp:906
 msgid "Base Station"
 msgstr "नींव का अवस्थान"
 
-#: src/AIS_Target_Data.cpp:908
+#: src/ais_target_data.cpp:908
 msgid "GPSGate Buddy"
 msgstr "जीपीएसगेट बडी"
 
-#: src/AIS_Target_Data.cpp:911
+#: src/ais_target_data.cpp:911
 msgid "DSC Distress"
 msgstr "डीएससी संकट"
 
-#: src/AIS_Target_Data.cpp:913
+#: src/ais_target_data.cpp:913
 msgid "DSC Position Report"
 msgstr "डीएससी स्थिति रिपोर्ट"
 
-#: src/AIS_Target_Data.cpp:915
+#: src/ais_target_data.cpp:915
 msgid "SART"
 msgstr "सरत"
 
-#: src/AIS_Target_Data.cpp:922
+#: src/ais_target_data.cpp:922
 msgid "Unk"
 msgstr "उनक"
 
-#: src/AIS_Target_Data.cpp:954
+#: src/ais_target_data.cpp:954
 msgid "Albania"
 msgstr "अल्बानिया"
 
-#: src/AIS_Target_Data.cpp:956
+#: src/ais_target_data.cpp:956
 msgid "Andorra"
 msgstr "अंडोरा"
 
-#: src/AIS_Target_Data.cpp:958
+#: src/ais_target_data.cpp:958
 msgid "Austria"
 msgstr "ऑस्ट्रिया"
 
-#: src/AIS_Target_Data.cpp:960
+#: src/ais_target_data.cpp:960
 msgid "Azores"
 msgstr "अज़ोरेस"
 
-#: src/AIS_Target_Data.cpp:962
+#: src/ais_target_data.cpp:962
 msgid "Belgium"
 msgstr "बेल्जियम"
 
-#: src/AIS_Target_Data.cpp:964
+#: src/ais_target_data.cpp:964
 msgid "Belarus"
 msgstr "बेलोरूस"
 
-#: src/AIS_Target_Data.cpp:966
+#: src/ais_target_data.cpp:966
 msgid "Bulgaria"
 msgstr "बुल्गारिया"
 
-#: src/AIS_Target_Data.cpp:968
+#: src/ais_target_data.cpp:968
 msgid "Vatican City State"
 msgstr "वेटिकन सिटी राज्य"
 
-#: src/AIS_Target_Data.cpp:971 src/AIS_Target_Data.cpp:975
+#: src/ais_target_data.cpp:971 src/ais_target_data.cpp:975
 msgid "Cyprus"
 msgstr "साइप्रस"
 
-#: src/AIS_Target_Data.cpp:973 src/AIS_Target_Data.cpp:985
+#: src/ais_target_data.cpp:973 src/ais_target_data.cpp:985
 msgid "Germany"
 msgstr "जर्मनी"
 
-#: src/AIS_Target_Data.cpp:977
+#: src/ais_target_data.cpp:977
 msgid "Georgia"
 msgstr "जॉर्जिया"
 
-#: src/AIS_Target_Data.cpp:979
+#: src/ais_target_data.cpp:979
 msgid "Moldova"
 msgstr "मोलदोवा"
 
-#: src/AIS_Target_Data.cpp:981 src/AIS_Target_Data.cpp:998
-#: src/AIS_Target_Data.cpp:1030 src/AIS_Target_Data.cpp:1044
+#: src/ais_target_data.cpp:981 src/ais_target_data.cpp:998
+#: src/ais_target_data.cpp:1030 src/ais_target_data.cpp:1044
 msgid "Malta"
 msgstr "माल्टा"
 
-#: src/AIS_Target_Data.cpp:983
+#: src/ais_target_data.cpp:983
 msgid "Armenia"
 msgstr "आर्मीनिया"
 
-#: src/AIS_Target_Data.cpp:988
+#: src/ais_target_data.cpp:988
 msgid "Denmark"
 msgstr "डेनमार्क"
 
-#: src/AIS_Target_Data.cpp:990 src/AIS_Target_Data.cpp:992
+#: src/ais_target_data.cpp:990 src/ais_target_data.cpp:992
 msgid "Spain"
 msgstr "स्पेन"
 
-#: src/AIS_Target_Data.cpp:996
+#: src/ais_target_data.cpp:996
 msgid "France"
 msgstr "फ्रांस"
 
-#: src/AIS_Target_Data.cpp:1000
+#: src/ais_target_data.cpp:1000
 msgid "Finland"
 msgstr "फिनलैंड"
 
-#: src/AIS_Target_Data.cpp:1002
+#: src/ais_target_data.cpp:1002
 msgid "Faroe Islands"
 msgstr "फ़ैरो द्वीप"
 
-#: src/AIS_Target_Data.cpp:1007
+#: src/ais_target_data.cpp:1007
 msgid "Great Britain"
 msgstr "ग्रेट ब्रिटेन"
 
-#: src/AIS_Target_Data.cpp:1009
+#: src/ais_target_data.cpp:1009
 msgid "Gibraltar"
 msgstr "जिब्राल्टर"
 
-#: src/AIS_Target_Data.cpp:1011 src/AIS_Target_Data.cpp:1017
+#: src/ais_target_data.cpp:1011 src/ais_target_data.cpp:1017
 msgid "Greece"
 msgstr "यूनान"
 
-#: src/AIS_Target_Data.cpp:1013
+#: src/ais_target_data.cpp:1013
 msgid "Croatia"
 msgstr "क्रोएशिया"
 
-#: src/AIS_Target_Data.cpp:1019
+#: src/ais_target_data.cpp:1019
 msgid "Morocco"
 msgstr "मोरक्को"
 
-#: src/AIS_Target_Data.cpp:1021
+#: src/ais_target_data.cpp:1021
 msgid "Hungary"
 msgstr "हंगरी"
 
-#: src/AIS_Target_Data.cpp:1025
+#: src/ais_target_data.cpp:1025
 msgid "Netherlands"
 msgstr "नीदरलैंड"
 
-#: src/AIS_Target_Data.cpp:1027
+#: src/ais_target_data.cpp:1027
 msgid "Italy"
 msgstr "इटली"
 
-#: src/AIS_Target_Data.cpp:1032
+#: src/ais_target_data.cpp:1032
 msgid "Ireland"
 msgstr "आयरलैंड"
 
-#: src/AIS_Target_Data.cpp:1034
+#: src/ais_target_data.cpp:1034
 msgid "Iceland"
 msgstr "आइसलैंड"
 
-#: src/AIS_Target_Data.cpp:1036
+#: src/ais_target_data.cpp:1036
 msgid "Liechtenstein"
 msgstr "लिकटेंस्टीन"
 
-#: src/AIS_Target_Data.cpp:1038
+#: src/ais_target_data.cpp:1038
 msgid "Luxembourg"
 msgstr "लक्समबर्ग"
 
-#: src/AIS_Target_Data.cpp:1040
+#: src/ais_target_data.cpp:1040
 msgid "Monaco"
 msgstr "मोनाको"
 
-#: src/AIS_Target_Data.cpp:1042
+#: src/ais_target_data.cpp:1042
 msgid "Madeira"
 msgstr "मादेइरा"
 
-#: src/AIS_Target_Data.cpp:1048
+#: src/ais_target_data.cpp:1048
 msgid "Norway"
 msgstr "नॉर्वे"
 
-#: src/AIS_Target_Data.cpp:1050
+#: src/ais_target_data.cpp:1050
 msgid "Poland"
 msgstr "पोलैंड"
 
-#: src/AIS_Target_Data.cpp:1052
+#: src/ais_target_data.cpp:1052
 msgid "Montenegro"
 msgstr "मोंटेनेग्रो"
 
-#: src/AIS_Target_Data.cpp:1054
+#: src/ais_target_data.cpp:1054
 msgid "Portugal"
 msgstr "पुर्तगाल"
 
-#: src/AIS_Target_Data.cpp:1056
+#: src/ais_target_data.cpp:1056
 msgid "Romania"
 msgstr "रोमानिया"
 
-#: src/AIS_Target_Data.cpp:1059
+#: src/ais_target_data.cpp:1059
 msgid "Sweden"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1061
+#: src/ais_target_data.cpp:1061
 msgid "Slovak Republic"
 msgstr "स्लोवाक गणराज्य"
 
-#: src/AIS_Target_Data.cpp:1063
+#: src/ais_target_data.cpp:1063
 msgid "San Marino"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1065
+#: src/ais_target_data.cpp:1065
 msgid "Switzerland"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1067
+#: src/ais_target_data.cpp:1067
 msgid "Czech Republic"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1069
+#: src/ais_target_data.cpp:1069
 msgid "Turkey"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1071
+#: src/ais_target_data.cpp:1071
 msgid "Ukraine"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1073
+#: src/ais_target_data.cpp:1073
 msgid "Russian"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1075
+#: src/ais_target_data.cpp:1075
 msgid "Macedonia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1077
+#: src/ais_target_data.cpp:1077
 msgid "Latvia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1079
+#: src/ais_target_data.cpp:1079
 msgid "Estonia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1081
+#: src/ais_target_data.cpp:1081
 msgid "Lithuania"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1083
+#: src/ais_target_data.cpp:1083
 msgid "Slovenia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1085
+#: src/ais_target_data.cpp:1085
 msgid "Serbia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1087
+#: src/ais_target_data.cpp:1087
 msgid "Anguilla"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1089
+#: src/ais_target_data.cpp:1089
 msgid "Alaska"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1092
+#: src/ais_target_data.cpp:1092
 msgid "Antigua and Barbuda"
 msgstr "अंतिगुया और बार्बूडा"
 
-#: src/AIS_Target_Data.cpp:1094
+#: src/ais_target_data.cpp:1094
 msgid "Antilles"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1096
+#: src/ais_target_data.cpp:1096
 msgid "Aruba"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1099 src/AIS_Target_Data.cpp:1103
+#: src/ais_target_data.cpp:1099 src/ais_target_data.cpp:1103
 msgid "Bahamas"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1101
+#: src/ais_target_data.cpp:1101
 msgid "Bermuda"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1105
+#: src/ais_target_data.cpp:1105
 msgid "Belize"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1107
+#: src/ais_target_data.cpp:1107
 msgid "Barbados"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1109
+#: src/ais_target_data.cpp:1109
 msgid "Canada"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1111
+#: src/ais_target_data.cpp:1111
 msgid "Cayman Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1113
+#: src/ais_target_data.cpp:1113
 msgid "Costa Rica"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1115
+#: src/ais_target_data.cpp:1115
 msgid "Cuba"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1117
+#: src/ais_target_data.cpp:1117
 msgid "Dominica"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1119
+#: src/ais_target_data.cpp:1119
 msgid "Dominican Republic"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1121
+#: src/ais_target_data.cpp:1121
 msgid "Guadeloupe"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1123
+#: src/ais_target_data.cpp:1123
 msgid "Grenada"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1125
+#: src/ais_target_data.cpp:1125
 msgid "Greenland"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1127
+#: src/ais_target_data.cpp:1127
 msgid "Guatemala"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1129
+#: src/ais_target_data.cpp:1129
 msgid "Honduras"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1131
+#: src/ais_target_data.cpp:1131
 msgid "Haiti"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1133 src/AIS_Target_Data.cpp:1170
+#: src/ais_target_data.cpp:1133 src/ais_target_data.cpp:1170
 msgid "United States of America"
 msgstr "संयुक्त राज्य अमरीका"
 
-#: src/AIS_Target_Data.cpp:1135
+#: src/ais_target_data.cpp:1135
 msgid "Jamaica"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1137
+#: src/ais_target_data.cpp:1137
 msgid "Saint Kitts and Nevis"
 msgstr "संत किट्ट्स और नेविस"
 
-#: src/AIS_Target_Data.cpp:1139
+#: src/ais_target_data.cpp:1139
 msgid "Saint Lucia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1141
+#: src/ais_target_data.cpp:1141
 msgid "Mexico"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1143
+#: src/ais_target_data.cpp:1143
 msgid "Martinique"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1145
+#: src/ais_target_data.cpp:1145
 msgid "Montserrat"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1147
+#: src/ais_target_data.cpp:1147
 msgid "Nicaragua"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1155 src/AIS_Target_Data.cpp:1176
+#: src/ais_target_data.cpp:1155 src/ais_target_data.cpp:1176
 msgid "Panama"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1157
+#: src/ais_target_data.cpp:1157
 msgid "Puerto Rico"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1159
+#: src/ais_target_data.cpp:1159
 msgid "El Salvador"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1161
+#: src/ais_target_data.cpp:1161
 msgid "Saint Pierre and Miquelon"
 msgstr "सेंट पियरे और मिकेलॉन"
 
-#: src/AIS_Target_Data.cpp:1163
+#: src/ais_target_data.cpp:1163
 msgid "Trinidad and Tobago"
 msgstr "त्रिनिदाद और टोबैगो"
 
-#: src/AIS_Target_Data.cpp:1165
+#: src/ais_target_data.cpp:1165
 msgid "Turks and Caicos Islands"
 msgstr "तुर्क्स और कैकोज़ द्वीपसमूह"
 
-#: src/AIS_Target_Data.cpp:1180
+#: src/ais_target_data.cpp:1180
 msgid "Saint Vincent and the Grenadines"
 msgstr "संत विंसेंट अँड थे ग्रेनडीनेस"
 
-#: src/AIS_Target_Data.cpp:1182
+#: src/ais_target_data.cpp:1182
 msgid "British Virgin Islands"
 msgstr "ब्रिटिश वर्जिन आइसलैण्ड्स"
 
-#: src/AIS_Target_Data.cpp:1184
+#: src/ais_target_data.cpp:1184
 msgid "United States Virgin Islands"
 msgstr "संयुक्त राज्य वर्जिन द्वीप समूह"
 
-#: src/AIS_Target_Data.cpp:1186
+#: src/ais_target_data.cpp:1186
 msgid "Afghanistan"
 msgstr "अफ़ग़ानिस्तान"
 
-#: src/AIS_Target_Data.cpp:1188
+#: src/ais_target_data.cpp:1188
 msgid "Saudi Arabia"
 msgstr "सऊदी अरब"
 
-#: src/AIS_Target_Data.cpp:1190
+#: src/ais_target_data.cpp:1190
 msgid "Bangladesh"
 msgstr "बांग्लादेश"
 
-#: src/AIS_Target_Data.cpp:1192
+#: src/ais_target_data.cpp:1192
 msgid "Bahrain"
 msgstr "बहरीन"
 
-#: src/AIS_Target_Data.cpp:1194
+#: src/ais_target_data.cpp:1194
 msgid "Bhutan"
 msgstr "भूटान"
 
-#: src/AIS_Target_Data.cpp:1198
+#: src/ais_target_data.cpp:1198
 msgid "China"
 msgstr "चीन"
 
-#: src/AIS_Target_Data.cpp:1200
+#: src/ais_target_data.cpp:1200
 msgid "Taiwan"
 msgstr "ताइवान"
 
-#: src/AIS_Target_Data.cpp:1202
+#: src/ais_target_data.cpp:1202
 msgid "Sri Lanka"
 msgstr "श्री लंका"
 
-#: src/AIS_Target_Data.cpp:1204
+#: src/ais_target_data.cpp:1204
 msgid "India"
 msgstr "इंडिया"
 
-#: src/AIS_Target_Data.cpp:1206
+#: src/ais_target_data.cpp:1206
 msgid "Iran"
 msgstr "ईरान"
 
-#: src/AIS_Target_Data.cpp:1208
+#: src/ais_target_data.cpp:1208
 msgid "Azerbaijani Republic"
 msgstr "अज़रबैजानी गणतंत्र"
 
-#: src/AIS_Target_Data.cpp:1210
+#: src/ais_target_data.cpp:1210
 msgid "Iraq"
 msgstr "इराक"
 
-#: src/AIS_Target_Data.cpp:1212
+#: src/ais_target_data.cpp:1212
 msgid "Israel"
 msgstr "इजराइल"
 
-#: src/AIS_Target_Data.cpp:1214 src/AIS_Target_Data.cpp:1216
+#: src/ais_target_data.cpp:1214 src/ais_target_data.cpp:1216
 msgid "Japan"
 msgstr "जापान"
 
-#: src/AIS_Target_Data.cpp:1218
+#: src/ais_target_data.cpp:1218
 msgid "Turkmenistan"
 msgstr "तुर्कमेनिस्तान"
 
-#: src/AIS_Target_Data.cpp:1220
+#: src/ais_target_data.cpp:1220
 msgid "Kazakhstan"
 msgstr "कजाखस्तान"
 
-#: src/AIS_Target_Data.cpp:1222
+#: src/ais_target_data.cpp:1222
 msgid "Uzbekistan"
 msgstr "उज़्बेकिस्तान"
 
-#: src/AIS_Target_Data.cpp:1224
+#: src/ais_target_data.cpp:1224
 msgid "Jordan"
 msgstr "जॉर्डन"
 
-#: src/AIS_Target_Data.cpp:1227
+#: src/ais_target_data.cpp:1227
 msgid "Korea"
 msgstr "कोरिया"
 
-#: src/AIS_Target_Data.cpp:1229
+#: src/ais_target_data.cpp:1229
 msgid "Palestine"
 msgstr "फिलिस्तीन"
 
-#: src/AIS_Target_Data.cpp:1231
+#: src/ais_target_data.cpp:1231
 msgid "People's Rep. of Korea"
 msgstr "कोरिया की पीपुल्स रिप"
 
-#: src/AIS_Target_Data.cpp:1233
+#: src/ais_target_data.cpp:1233
 msgid "Kuwait"
 msgstr "कुवैट"
 
-#: src/AIS_Target_Data.cpp:1235
+#: src/ais_target_data.cpp:1235
 msgid "Lebanon"
 msgstr "लेबनान"
 
-#: src/AIS_Target_Data.cpp:1237
+#: src/ais_target_data.cpp:1237
 msgid "Kyrgyz Republic"
 msgstr "किर्गिज गणराज्य"
 
-#: src/AIS_Target_Data.cpp:1239
+#: src/ais_target_data.cpp:1239
 msgid "Macao"
 msgstr "मकाओ"
 
-#: src/AIS_Target_Data.cpp:1241
+#: src/ais_target_data.cpp:1241
 msgid "Maldives"
 msgstr "मालदीव"
 
-#: src/AIS_Target_Data.cpp:1243
+#: src/ais_target_data.cpp:1243
 msgid "Mongolia"
 msgstr "मंगोलिया"
 
-#: src/AIS_Target_Data.cpp:1245
+#: src/ais_target_data.cpp:1245
 msgid "Nepal"
 msgstr "नेपाल"
 
-#: src/AIS_Target_Data.cpp:1247
+#: src/ais_target_data.cpp:1247
 msgid "Oman"
 msgstr "ओमान"
 
-#: src/AIS_Target_Data.cpp:1249
+#: src/ais_target_data.cpp:1249
 msgid "Pakistan"
 msgstr "पाकिस्तान"
 
-#: src/AIS_Target_Data.cpp:1251
+#: src/ais_target_data.cpp:1251
 msgid "Qatar"
 msgstr "कतर"
 
-#: src/AIS_Target_Data.cpp:1253
+#: src/ais_target_data.cpp:1253
 msgid "Syrian Arab Republic"
 msgstr "सीरियाई अरब गणराज्य"
 
-#: src/AIS_Target_Data.cpp:1256
+#: src/ais_target_data.cpp:1256
 msgid "United Arab Emirates"
 msgstr "संयुक्त अरब अमीरात"
 
-#: src/AIS_Target_Data.cpp:1258
+#: src/ais_target_data.cpp:1258
 msgid "Tajikistan"
 msgstr "तजाकिस्तान"
 
-#: src/AIS_Target_Data.cpp:1261
+#: src/ais_target_data.cpp:1261
 msgid "Yemen"
 msgstr "यमन"
 
-#: src/AIS_Target_Data.cpp:1263
+#: src/ais_target_data.cpp:1263
 msgid "Hong Kong"
 msgstr "हॉगकॉग"
 
-#: src/AIS_Target_Data.cpp:1265
+#: src/ais_target_data.cpp:1265
 msgid "Bosnia and Herzegovina"
 msgstr "बोस्निया और हर्जेगोविना"
 
-#: src/AIS_Target_Data.cpp:1267
+#: src/ais_target_data.cpp:1267
 msgid "Adelie Land"
 msgstr "एडीली लैंड"
 
-#: src/AIS_Target_Data.cpp:1269
+#: src/ais_target_data.cpp:1269
 msgid "Australia"
 msgstr "ऑस्ट्रेलिया"
 
-#: src/AIS_Target_Data.cpp:1271
+#: src/ais_target_data.cpp:1271
 msgid "Myanmar"
 msgstr "म्यांमार"
 
-#: src/AIS_Target_Data.cpp:1273
+#: src/ais_target_data.cpp:1273
 msgid "Brunei Darussalam"
 msgstr "ब्रुनेई दारुस्सलाम"
 
-#: src/AIS_Target_Data.cpp:1275
+#: src/ais_target_data.cpp:1275
 msgid "Micronesia"
 msgstr "माइक्रोनेशिया"
 
-#: src/AIS_Target_Data.cpp:1277
+#: src/ais_target_data.cpp:1277
 msgid "Palau"
 msgstr "पलाऊ"
 
-#: src/AIS_Target_Data.cpp:1279
+#: src/ais_target_data.cpp:1279
 msgid "New Zealand"
 msgstr "न्यूजीलैंड"
 
-#: src/AIS_Target_Data.cpp:1282
+#: src/ais_target_data.cpp:1282
 msgid "Cambodia"
 msgstr "कंबोडिया"
 
-#: src/AIS_Target_Data.cpp:1284
+#: src/ais_target_data.cpp:1284
 msgid "Christmas Island"
 msgstr "क्रिसमस द्वीप"
 
-#: src/AIS_Target_Data.cpp:1286
+#: src/ais_target_data.cpp:1286
 msgid "Cook Islands"
 msgstr "कुक द्वीपसमूह"
 
-#: src/AIS_Target_Data.cpp:1288
+#: src/ais_target_data.cpp:1288
 msgid "Fiji"
 msgstr "फ़िजी"
 
-#: src/AIS_Target_Data.cpp:1290
+#: src/ais_target_data.cpp:1290
 msgid "Cocos (Keeling) Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1292
+#: src/ais_target_data.cpp:1292
 msgid "Indonesia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1294
+#: src/ais_target_data.cpp:1294
 msgid "Kiribati"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1296
+#: src/ais_target_data.cpp:1296
 msgid "Lao People's Dem. Rep."
 msgstr "लाओ पीपुल्स डेम रेप।"
 
-#: src/AIS_Target_Data.cpp:1298
+#: src/ais_target_data.cpp:1298
 msgid "Malaysia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1300
+#: src/ais_target_data.cpp:1300
 msgid "Northern Mariana Islands"
 msgstr "उत्तरी मरीयाना द्वीप समूह"
 
-#: src/AIS_Target_Data.cpp:1302
+#: src/ais_target_data.cpp:1302
 msgid "Marshall Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1304
+#: src/ais_target_data.cpp:1304
 msgid "New Caledonia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1306
+#: src/ais_target_data.cpp:1306
 msgid "Niue"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1308
+#: src/ais_target_data.cpp:1308
 msgid "Nauru"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1310
+#: src/ais_target_data.cpp:1310
 msgid "French Polynesia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1312
+#: src/ais_target_data.cpp:1312
 msgid "Philippines"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1314
+#: src/ais_target_data.cpp:1314
 msgid "East Timor"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1316
+#: src/ais_target_data.cpp:1316
 msgid "Papua New Guinea"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1318
+#: src/ais_target_data.cpp:1318
 msgid "Pitcairn Island"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1320
+#: src/ais_target_data.cpp:1320
 msgid "Solomon Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1322
+#: src/ais_target_data.cpp:1322
 msgid "American Samoa"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1324
+#: src/ais_target_data.cpp:1324
 msgid "Samoa"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1329
+#: src/ais_target_data.cpp:1329
 msgid "Singapore"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1331
+#: src/ais_target_data.cpp:1331
 msgid "Thailand"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1333
+#: src/ais_target_data.cpp:1333
 msgid "Tonga"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1335
+#: src/ais_target_data.cpp:1335
 msgid "Tuvalu"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1337
+#: src/ais_target_data.cpp:1337
 msgid "Viet Nam"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1340
+#: src/ais_target_data.cpp:1340
 msgid "Vanuatu"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1342
+#: src/ais_target_data.cpp:1342
 msgid "Wallis and Futuna Islands"
 msgstr "वालिस और फ़्यूचूना द्वीप समूह"
 
-#: src/AIS_Target_Data.cpp:1344
+#: src/ais_target_data.cpp:1344
 msgid "South Africa"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1346
+#: src/ais_target_data.cpp:1346
 msgid "Angola"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1348
+#: src/ais_target_data.cpp:1348
 msgid "Algeria"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1350
+#: src/ais_target_data.cpp:1350
 msgid "Saint Paul"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1352
+#: src/ais_target_data.cpp:1352
 msgid "Ascension Island"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1354
+#: src/ais_target_data.cpp:1354
 msgid "Burundi"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1356
+#: src/ais_target_data.cpp:1356
 msgid "Benin"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1358
+#: src/ais_target_data.cpp:1358
 msgid "Botswana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1360
+#: src/ais_target_data.cpp:1360
 msgid "Central African Republic"
 msgstr "केंद्रीय अफ्रीकन गणराज्य"
 
-#: src/AIS_Target_Data.cpp:1362
+#: src/ais_target_data.cpp:1362
 msgid "Cameroon"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1364
+#: src/ais_target_data.cpp:1364
 msgid "Congo"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1366
+#: src/ais_target_data.cpp:1366
 msgid "Comoros"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1368
+#: src/ais_target_data.cpp:1368
 msgid "Capo Verde"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1370
+#: src/ais_target_data.cpp:1370
 msgid "Crozet Archipelago"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1372
+#: src/ais_target_data.cpp:1372
 msgid "Ivory Coast"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1374
+#: src/ais_target_data.cpp:1374
 msgid "Comoros (Union of the)"
 msgstr "कोमोरोस (संघ)"
 
-#: src/AIS_Target_Data.cpp:1376
+#: src/ais_target_data.cpp:1376
 msgid "Djibouti"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1378
+#: src/ais_target_data.cpp:1378
 msgid "Egypt"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1380
+#: src/ais_target_data.cpp:1380
 msgid "Ethiopia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1382
+#: src/ais_target_data.cpp:1382
 msgid "Eritrea"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1384
+#: src/ais_target_data.cpp:1384
 msgid "Gabonese Republic"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1386
+#: src/ais_target_data.cpp:1386
 msgid "Ghana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1388
+#: src/ais_target_data.cpp:1388
 msgid "Gambia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1390
+#: src/ais_target_data.cpp:1390
 msgid "Guinea-Bissau"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1392
+#: src/ais_target_data.cpp:1392
 msgid "Equatorial Guinea"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1394
+#: src/ais_target_data.cpp:1394
 msgid "Guinea"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1396
+#: src/ais_target_data.cpp:1396
 msgid "Burkina Faso"
 msgstr "बुर्किना फासो"
 
-#: src/AIS_Target_Data.cpp:1398
+#: src/ais_target_data.cpp:1398
 msgid "Kenya"
 msgstr "केन्या"
 
-#: src/AIS_Target_Data.cpp:1400
+#: src/ais_target_data.cpp:1400
 msgid "Kerguelen Islands"
 msgstr "कार्गुलेन द्वीप समूह"
 
-#: src/AIS_Target_Data.cpp:1403
+#: src/ais_target_data.cpp:1403
 msgid "Liberia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1405
+#: src/ais_target_data.cpp:1405
 msgid "South Sudan (Republic of)"
 msgstr "दक्षिण सूडान (गणराज्य)"
 
-#: src/AIS_Target_Data.cpp:1407
+#: src/ais_target_data.cpp:1407
 msgid "Libya"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1409
+#: src/ais_target_data.cpp:1409
 msgid "Lesotho"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1411
+#: src/ais_target_data.cpp:1411
 msgid "Mauritius"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1413
+#: src/ais_target_data.cpp:1413
 msgid "Madagascar"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1415
+#: src/ais_target_data.cpp:1415
 msgid "Mali"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1417
+#: src/ais_target_data.cpp:1417
 msgid "Mozambique"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1419
+#: src/ais_target_data.cpp:1419
 msgid "Mauritania"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1421
+#: src/ais_target_data.cpp:1421
 msgid "Malawi"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1423
+#: src/ais_target_data.cpp:1423
 msgid "Niger"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1425
+#: src/ais_target_data.cpp:1425
 msgid "Nigeria"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1427
+#: src/ais_target_data.cpp:1427
 msgid "Namibia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1429
+#: src/ais_target_data.cpp:1429
 msgid "Reunion"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1431
+#: src/ais_target_data.cpp:1431
 msgid "Rwanda"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1433
+#: src/ais_target_data.cpp:1433
 msgid "Sudan"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1435
+#: src/ais_target_data.cpp:1435
 msgid "Senegal"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1437
+#: src/ais_target_data.cpp:1437
 msgid "Seychelles"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1439
+#: src/ais_target_data.cpp:1439
 msgid "Saint Helena"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1441
+#: src/ais_target_data.cpp:1441
 msgid "Somalia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1443
+#: src/ais_target_data.cpp:1443
 msgid "Sierra Leone"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1445
+#: src/ais_target_data.cpp:1445
 msgid "Sao Tome and Principe"
 msgstr "साओ टोमे और प्रिंसिपे"
 
-#: src/AIS_Target_Data.cpp:1447
+#: src/ais_target_data.cpp:1447
 msgid "Eswatini"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1449
+#: src/ais_target_data.cpp:1449
 msgid "Chad"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1451
+#: src/ais_target_data.cpp:1451
 msgid "Togolese Republic"
 msgstr "टोगोलीज गणराज्य"
 
-#: src/AIS_Target_Data.cpp:1453
+#: src/ais_target_data.cpp:1453
 msgid "Tunisia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1455 src/AIS_Target_Data.cpp:1461
+#: src/ais_target_data.cpp:1455 src/ais_target_data.cpp:1461
 msgid "Tanzania"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1457
+#: src/ais_target_data.cpp:1457
 msgid "Uganda"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1459
+#: src/ais_target_data.cpp:1459
 msgid "Dem Rep.of the Congo"
 msgstr "कांगो के प्रतिनिधि डेमोक्रेटिक"
 
-#: src/AIS_Target_Data.cpp:1463
+#: src/ais_target_data.cpp:1463
 msgid "Zambia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1465
+#: src/ais_target_data.cpp:1465
 msgid "Zimbabwe"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1467
+#: src/ais_target_data.cpp:1467
 msgid "Argentine Republic"
 msgstr "अर्जेंटीना गणराज्य"
 
-#: src/AIS_Target_Data.cpp:1469
+#: src/ais_target_data.cpp:1469
 msgid "Brazil"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1471
+#: src/ais_target_data.cpp:1471
 msgid "Bolivia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1473
+#: src/ais_target_data.cpp:1473
 msgid "Chile"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1475
+#: src/ais_target_data.cpp:1475
 msgid "Colombia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1477
+#: src/ais_target_data.cpp:1477
 msgid "Ecuador"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1479
+#: src/ais_target_data.cpp:1479
 msgid "Falkland Islands"
 msgstr "फ़ॉकलैंड आइलैंड"
 
-#: src/AIS_Target_Data.cpp:1481
+#: src/ais_target_data.cpp:1481
 msgid "France - Guiana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1483
+#: src/ais_target_data.cpp:1483
 msgid "Guyana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1485
+#: src/ais_target_data.cpp:1485
 msgid "Paraguay"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1487
+#: src/ais_target_data.cpp:1487
 msgid "Peru"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1489
+#: src/ais_target_data.cpp:1489
 msgid "Suriname"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1491
+#: src/ais_target_data.cpp:1491
 msgid "Uruguay"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1493
+#: src/ais_target_data.cpp:1493
 msgid "Venezuela"
 msgstr ""
 
@@ -4353,11 +4353,11 @@ msgstr ""
 msgid " successfully installed"
 msgstr ""
 
-#: src/download_mgr.cpp:576 src/PluginHandler.cpp:1164
+#: src/download_mgr.cpp:576 src/plugin_handler.cpp:1164
 msgid "Installation complete"
 msgstr ""
 
-#: src/download_mgr.cpp:592 src/PluginHandler.cpp:1155
+#: src/download_mgr.cpp:592 src/plugin_handler.cpp:1155
 msgid "Installation error"
 msgstr ""
 
@@ -6546,11 +6546,11 @@ msgstr "S57 सेल अपडेट विफल हुआ.\n"
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "ओपनसीपीएन S57 सेनसी फ़ाइल बनाएँ..."
 
-#: src/PluginHandler.cpp:1154
+#: src/plugin_handler.cpp:1154
 msgid "Please check system log for more info."
 msgstr ""
 
-#: src/PluginHandler.cpp:1163
+#: src/plugin_handler.cpp:1163
 msgid " successfully installed from cache"
 msgstr ""
 

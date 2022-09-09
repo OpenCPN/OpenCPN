@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include <unordered_map>
 
 #include "ocpn_frame.h"

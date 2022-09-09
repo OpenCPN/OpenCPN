@@ -49,7 +49,7 @@
 #include "Layer.h"
 #include "SendToGpsDlg.h"
 #include "TrackPropDlg.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
 #include "Route.h"

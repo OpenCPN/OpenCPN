@@ -1,8 +1,8 @@
 #include <sstream>
 
 #include "config.h"
-#include "BasePlatform.h"
-#include "PluginPaths.h"
+#include "base_platform.h"
+#include "plugin_paths.h"
 #include "ocpn_plugin.h"
 
 /*

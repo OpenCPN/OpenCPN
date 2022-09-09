@@ -52,7 +52,7 @@
 #include "comm_n0183_output.h"
 #include "MarkIcon.h"
 #include "cutil.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "wx28compat.h"
 #include "Route.h"
 #include "ocpn_app.h"

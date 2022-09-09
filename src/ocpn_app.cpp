@@ -111,7 +111,7 @@
 #include "OCPN_AUIManager.h"
 #include "OCPNPlatform.h"
 #include "options.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "Route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"

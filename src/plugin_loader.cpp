@@ -57,14 +57,14 @@
 
 #include "plugin_loader.h"
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "ocpn_utils.h"
 #include "logger.h"
 #include "observable_confvar.h"
 #include "observable_evtvar.h"
 #include "plugin_cache.h"
-#include "PluginHandler.h"
-#include "PluginPaths.h"
+#include "plugin_handler.h"
+#include "plugin_paths.h"
 #include "safe_mode.h"
 
 #ifdef __OCPN__ANDROID__

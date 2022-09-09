@@ -100,8 +100,8 @@ extern GLuint g_raster_format;
 #include "MarkInfo.h"
 
 #include "ais.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 
 #include "usb_devices.h"
 #include "navutil.h"

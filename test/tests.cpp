@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "comm_ais.h"
 #include "comm_appmsg_bus.h"
 #include "comm_bridge.h"
@@ -20,8 +20,8 @@
 #include "observable_navmsg.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
-#include "AIS_Defs.h"
-#include "AIS_Decoder.h"
+#include "ais_defs.h"
+#include "ais_decoder.h"
 #include "Select.h"
 
 class AISTargetAlertDialog;

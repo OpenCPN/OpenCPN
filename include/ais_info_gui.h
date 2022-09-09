@@ -21,7 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "OCPN_Sound.h"
 
 class AisInfoGui: public wxEvtHandler {

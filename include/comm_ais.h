@@ -25,9 +25,9 @@
 #ifndef _COMM_AIS_H__
 #define _COMM_AIS_H__
 
-#include "AIS_Target_Data.h"
-#include "AIS_Bitstring.h"
-#include "AIS_Defs.h"
+#include "ais_target_data.h"
+#include "ais_bitstring.h"
+#include "ais_defs.h"
 #include "ocpn_types.h"
 
 bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);

@@ -41,8 +41,8 @@
 #include <wx/timer.h>
 #include <wx/tokenzr.h>
 
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 #include "geodesic.h"
 #include "georef.h"
 #include "idents.h"

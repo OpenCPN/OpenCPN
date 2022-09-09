@@ -33,12 +33,12 @@
 
 #include "catalog_handler.h"
 #include "catalog_parser.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
 #include "ocpn_utils.h"
-#include "BasePlatform.h"
-#include "PluginHandler.h"
+#include "base_platform.h"
+#include "plugin_handler.h"
 
 #ifdef _WIN32
 static const std::string SEP("\\");

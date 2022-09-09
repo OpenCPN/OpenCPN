@@ -33,9 +33,9 @@
 #include <wx/event.h>
 #include <wx/string.h>
 
-#include "AIS_Bitstring.h"
-#include "AIS_Defs.h"
-#include "AIS_Target_Data.h"
+#include "ais_bitstring.h"
+#include "ais_defs.h"
+#include "ais_target_data.h"
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "observable_navmsg.h"

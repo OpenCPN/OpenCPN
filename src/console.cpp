@@ -50,16 +50,16 @@
 #include <wx/fileconf.h>
 #include <wx/string.h>
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "catalog_handler.h"
 #include "ocpn_utils.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "observable_navmsg.h"
 #include "observable_appmsg.h"
 #include "observable_evtvar.h"
 #include "comm_driver.h"
 #include "plugin_loader.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "comm_navmsg_bus.h"
 #include "comm_appmsg_bus.h"
 #include "Track.h"

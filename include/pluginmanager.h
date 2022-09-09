@@ -46,7 +46,7 @@
 #include "catalog_parser.h"
 #include "plugin_blacklist.h"
 #include "observable.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "comm_navmsg.h"
 #include "s57chart.h"  // for Object list
 #include "semantic_vers.h"

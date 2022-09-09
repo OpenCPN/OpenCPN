@@ -22,8 +22,8 @@
  ***************************************************************************
  */
 
-#ifndef __AIS_BITSTRING_H__
-#define __AIS_BITSTRING_H__
+#ifndef _AIS_BITSTRING_H__
+#define _AIS_BITSTRING_H__
 
 #define AIS_MAX_MESSAGE_LEN \
   (10 * 82)  // AIS Spec allows up to 9 sentences per message, 82 bytes each

@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "AIS_Bitstring.h"
+#include "ais_bitstring.h"
 #include <string.h>
 
 AIS_Bitstring::AIS_Bitstring(const char *str) {

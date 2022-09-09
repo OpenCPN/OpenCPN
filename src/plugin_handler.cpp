@@ -54,16 +54,16 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "config.h"
 #include "catalog_parser.h"
 #include "catalog_handler.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "logger.h"
 #include "navutil.h"
 #include "gui_lib.h"
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "ocpn_utils.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "plugin_cache.h"
 #include "plugin_loader.h"
-#include "PluginPaths.h"
+#include "plugin_paths.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");

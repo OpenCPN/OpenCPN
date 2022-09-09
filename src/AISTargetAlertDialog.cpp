@@ -25,9 +25,9 @@
 #include <wx/html/htmlwin.h>
 
 
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "AISTargetAlertDialog.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "navutil.h"

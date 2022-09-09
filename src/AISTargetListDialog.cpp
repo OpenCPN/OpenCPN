@@ -33,8 +33,8 @@
 
 #include "AISTargetListDialog.h"
 #include "ais.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 #include "OCPNListCtrl.h"
 #include "styles.h"
 #include "Select.h"

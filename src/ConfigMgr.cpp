@@ -64,7 +64,7 @@
 #include "Layer.h"
 #include "NavObjectCollection.h"
 #include "NMEALogWindow.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
 #include "chartdb.h"

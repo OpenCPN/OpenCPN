@@ -48,10 +48,10 @@
 #include "gui_lib.h"
 #include "navutil.h"
 #include "OCPN_Sound.h"
-#include "AIS_Bitstring.h"
+#include "ais_bitstring.h"
 #include "AISTargetListDialog.h"
-#include "AIS_Target_Data.h"
-#include "AIS_Defs.h"
+#include "ais_target_data.h"
+#include "ais_defs.h"
 
 //  FWD definitions
 class ChartCanvas;

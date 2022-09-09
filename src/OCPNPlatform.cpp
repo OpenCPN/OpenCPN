@@ -43,7 +43,7 @@
 
 #include "config.h"
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "dychart.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
@@ -59,7 +59,7 @@
 #include "Select.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
-#include "PluginPaths.h"
+#include "plugin_paths.h"
 #include "ocpn_frame.h"
 #include <string>
 #include <vector>

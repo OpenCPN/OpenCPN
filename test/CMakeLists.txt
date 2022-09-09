@@ -21,7 +21,7 @@ add_executable(tests
   ${MODEL_SRC}
   ${UNITTEST_SRC}
   ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
-  ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
+  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
 )
 
 target_compile_definitions(tests PUBLIC CLIAPP USE_MOCK_DEFS)

@@ -792,15 +792,15 @@ set(
   include/AboutFrame.h
   include/AboutFrameImpl.h
   include/about.h
-  include/AIS_Bitstring.h
-  include/AIS_Decoder.h
+  include/ais_bitstring.h
+  include/ais_decoder.h
   include/ais.h
   include/AISTargetAlertDialog.h
-  include/AIS_Target_Data.h
+  include/ais_target_data.h
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
   include/ais_info_gui.h
-  include/BasePlatform.h
+  include/base_platform.h
   include/bbox.h
   include/canvasMenu.h
   include/catalog_handler.h
@@ -839,7 +839,7 @@ set(
   include/cutil.h
   include/DepthFont.h
   include/DetailSlider.h
-  include/Downloader.h
+  include/downloader.h
   include/download_mgr.h
   include/dsPortType.h
   include/emboss_data.h
@@ -889,10 +889,10 @@ set(
   include/piano.h
   include/plugin_cache.h
   include/plugin_blacklist.h
-  include/PluginHandler.h
+  include/plugin_handler.h
   include/plugin_loader.h
+  include/plugin_paths.h
   include/pluginmanager.h
-  include/PluginPaths.h
   include/PositionParser.h
   include/printtable.h
   include/Quilt.h
@@ -943,8 +943,8 @@ set(
 
 set(MODEL_SRC
   # Testable sources without GUI dependencies.
-  ${CMAKE_SOURCE_DIR}/src/AIS_Decoder.cpp
-  ${CMAKE_SOURCE_DIR}/src/BasePlatform.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_decoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
   ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
@@ -960,7 +960,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
-  ${CMAKE_SOURCE_DIR}/src/Downloader.cpp
+  ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
@@ -968,9 +968,9 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
-  ${CMAKE_SOURCE_DIR}/src/PluginHandler.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
-  ${CMAKE_SOURCE_DIR}/src/PluginPaths.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
   ${CMAKE_SOURCE_DIR}/src/SelectItem.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
@@ -978,8 +978,8 @@ set(MODEL_SRC
 
 set(UNITTEST_SRC
   # Sources buildable with mock definitions
-  ${CMAKE_SOURCE_DIR}/src/AIS_Bitstring.cpp
-  ${CMAKE_SOURCE_DIR}/src/AIS_Target_Data.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_bitstring.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_target_data.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
 )
 
@@ -993,7 +993,7 @@ set(
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
   src/ais_info_gui.cpp
-  src/BasePlatform.cpp
+  src/base_platform.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
@@ -1063,7 +1063,7 @@ set(
   src/piano.cpp
   src/plugin_blacklist.cpp
   src/pluginmanager.cpp
-  src/PluginPaths.cpp
+  src/plugin_paths.cpp
   src/PositionParser.cpp
   src/printtable.cpp
   src/Quilt.cpp

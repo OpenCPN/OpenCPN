@@ -28,10 +28,10 @@
 #include <wx/event.h>
 #include <wx/string.h>
 
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "ais_info_gui.h"
 #include "AISTargetAlertDialog.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"

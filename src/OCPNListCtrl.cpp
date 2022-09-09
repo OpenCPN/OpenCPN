@@ -23,7 +23,7 @@
  */
 
 #include "OCPNListCtrl.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "navutil_base.h"
 
 extern wxString g_AisTargetList_column_spec;

@@ -286,7 +286,7 @@ msgstr "Reservado 13"
 msgid "Reserved 14"
 msgstr "Reservado 14"
 
-#: src/ais.cpp:128 src/AIS_Target_Data.cpp:402 src/ConnectionParams.cpp:176
+#: src/ais.cpp:128 src/ais_target_data.cpp:402 src/ConnectionParams.cpp:176
 #: src/ConnectionParams.cpp:462 src/ConnectionParams.cpp:600
 #: src/ConnectionParams.cpp:913 src/ConnectionParams.cpp:941
 msgid "Undefined"
@@ -384,12 +384,12 @@ msgstr "Barco de pasaxeiros"
 msgid "Cargo Ship"
 msgstr "Buque de carga"
 
-#: src/ais.cpp:159 src/AIS_Decoder.cpp:341
+#: src/ais.cpp:159 src/ais_decoder.cpp:341
 msgid "Tanker"
 msgstr "Buque tanque"
 
-#: src/ais.cpp:160 src/AIS_Target_Data.cpp:388 src/AIS_Target_Data.cpp:685
-#: src/AIS_Target_Data.cpp:744 src/AIS_Target_Data.cpp:922 src/chartdbs.cpp:1418
+#: src/ais.cpp:160 src/ais_target_data.cpp:388 src/ais_target_data.cpp:685
+#: src/ais_target_data.cpp:744 src/ais_target_data.cpp:922 src/chartdbs.cpp:1418
 msgid "Unknown"
 msgstr "Descoñecido"
 
@@ -537,7 +537,7 @@ msgstr "Socorro"
 msgid "ARPA radar target"
 msgstr "Branco radar ARPA"
 
-#: src/ais.cpp:197 src/AIS_Target_Data.cpp:919
+#: src/ais.cpp:197 src/ais_target_data.cpp:919
 msgid "APRS Position Report"
 msgstr "Informe de posición ARPS"
 
@@ -617,7 +617,7 @@ msgstr "M/T"
 msgid "?"
 msgstr "?"
 
-#: src/ais.cpp:226 src/AIS_Target_Data.cpp:904
+#: src/ais.cpp:226 src/ais_target_data.cpp:904
 msgid "AtoN"
 msgstr "AtoN"
 
@@ -693,19 +693,19 @@ msgstr "Estribor"
 msgid "LtV/Rig"
 msgstr "Barcofaro/Plat"
 
-#: src/ais.cpp:258 src/AIS_Target_Data.cpp:908
+#: src/ais.cpp:258 src/ais_target_data.cpp:908
 msgid "Buddy"
 msgstr "Compañeiro"
 
-#: src/ais.cpp:259 src/AIS_Target_Data.cpp:911 src/AIS_Target_Data.cpp:913
+#: src/ais.cpp:259 src/ais_target_data.cpp:911 src/ais_target_data.cpp:913
 msgid "DSC"
 msgstr "DSC"
 
-#: src/ais.cpp:261 src/AIS_Target_Data.cpp:917
+#: src/ais.cpp:261 src/ais_target_data.cpp:917
 msgid "ARPA"
 msgstr "ARPA"
 
-#: src/ais.cpp:262 src/AIS_Target_Data.cpp:919
+#: src/ais.cpp:262 src/ais_target_data.cpp:919
 msgid "APRS"
 msgstr "APRS"
 
@@ -1101,1415 +1101,1415 @@ msgstr "Sen definir (por defecto)"
 msgid "AIS Target Name"
 msgstr "Nome do branco AIS"
 
-#: src/AIS_Decoder.cpp:269
+#: src/ais_decoder.cpp:269
 msgid "Vessel, type unknown"
 msgstr "Buque, tipo descoñecido"
 
-#: src/AIS_Decoder.cpp:270
+#: src/ais_decoder.cpp:270
 msgid "Freightbarge"
 msgstr "Barcaza de carga"
 
-#: src/AIS_Decoder.cpp:271
+#: src/ais_decoder.cpp:271
 msgid "Tankbarge"
 msgstr "Barcaza cisterna"
 
-#: src/AIS_Decoder.cpp:272
+#: src/ais_decoder.cpp:272
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 msgstr "Barcaza cisterna, carga sólida pero fluída (p.ex cemento)"
 
-#: src/AIS_Decoder.cpp:273
+#: src/ais_decoder.cpp:273
 msgid "Service vessel, police patrol, port service"
 msgstr "Embarcación de servizo, policía, servizos portuarios"
 
-#: src/AIS_Decoder.cpp:274 src/AIS_Decoder.cpp:328
+#: src/ais_decoder.cpp:274 src/ais_decoder.cpp:328
 msgid "Pushboat, single"
 msgstr "Remolcador de empuxe, só"
 
-#: src/AIS_Decoder.cpp:275
+#: src/ais_decoder.cpp:275
 msgid "Object, not otherwise specified"
 msgstr "Obxecto, non especificado"
 
-#: src/AIS_Decoder.cpp:276
+#: src/ais_decoder.cpp:276
 msgid "Object, towed, not otherwise specified"
 msgstr "Obxecto, remolcado, non especificado"
 
-#: src/AIS_Decoder.cpp:277
+#: src/ais_decoder.cpp:277
 msgid "Bunkership"
 msgstr "Gabarra de combustibles"
 
-#: src/AIS_Decoder.cpp:278
+#: src/ais_decoder.cpp:278
 msgid "Motor freighter"
 msgstr "Cargueiro autopropulsado"
 
-#: src/AIS_Decoder.cpp:279
+#: src/ais_decoder.cpp:279
 msgid "Motor tanker"
 msgstr "Buque tanque autopropulsado"
 
-#: src/AIS_Decoder.cpp:280
+#: src/ais_decoder.cpp:280
 msgid "Motor tanker, liquid cargo, type N"
 msgstr "Buque tanque autopropulsado, carga líquida, tipo N"
 
-#: src/AIS_Decoder.cpp:281
+#: src/ais_decoder.cpp:281
 msgid "Motor tanker, liquid cargo, type C"
 msgstr "Buque tanque autopropulsado, carga líquida, tipo C"
 
-#: src/AIS_Decoder.cpp:282
+#: src/ais_decoder.cpp:282
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 msgstr "Buque tanque autopropulsado, carga sólida pero fluída (p. ex. cemento)"
 
-#: src/AIS_Decoder.cpp:283
+#: src/ais_decoder.cpp:283
 msgid "Container vessel"
 msgstr "Buque portacontedores"
 
-#: src/AIS_Decoder.cpp:284
+#: src/ais_decoder.cpp:284
 msgid "Gas tanker"
 msgstr "Gaseiro"
 
-#: src/AIS_Decoder.cpp:285
+#: src/ais_decoder.cpp:285
 msgid "Motor freighter, tug"
 msgstr "Cargueiro autopropulsado, remolcador"
 
-#: src/AIS_Decoder.cpp:286
+#: src/ais_decoder.cpp:286
 msgid "Motor tanker, tug"
 msgstr "Buque tanque autopropulsado, remolcador"
 
-#: src/AIS_Decoder.cpp:287
+#: src/ais_decoder.cpp:287
 msgid "Motor freighter with one or more ships alongside"
 msgstr "Cargueiro autopropulsado con un ou máis buques abarloados"
 
-#: src/AIS_Decoder.cpp:288
+#: src/ais_decoder.cpp:288
 msgid "Motor freighter with tanker"
 msgstr "Cargueiro autopropulsado con tanque"
 
-#: src/AIS_Decoder.cpp:289
+#: src/ais_decoder.cpp:289
 msgid "Motor freighter pushing one or more freighters"
 msgstr "Cargueiro autopropulsado empuxando un ou máis cargueiros"
 
-#: src/AIS_Decoder.cpp:290
+#: src/ais_decoder.cpp:290
 msgid "Motor freighter pushing at least one tank-ship"
 msgstr "Cargueiro autopropulsado empuxando polo menos un buque tanque"
 
-#: src/AIS_Decoder.cpp:291
+#: src/ais_decoder.cpp:291
 msgid "Tug, freighter"
 msgstr "Remolcador, cargueiro"
 
-#: src/AIS_Decoder.cpp:292
+#: src/ais_decoder.cpp:292
 msgid "Tug, tanker"
 msgstr "Remolcador, tanque"
 
-#: src/AIS_Decoder.cpp:293
+#: src/ais_decoder.cpp:293
 msgid "Tug freighter, coupled"
 msgstr "Remolcador e cargueiro, acoplados"
 
-#: src/AIS_Decoder.cpp:294
+#: src/ais_decoder.cpp:294
 msgid "Tug, freighter/tanker, coupled"
 msgstr "Remolcador e cargueiro/tanque, acoplados"
 
-#: src/AIS_Decoder.cpp:295
+#: src/ais_decoder.cpp:295
 msgid "Tankbarge, liquid cargo, type N"
 msgstr "Gabarra, carga líquida, tipo N"
 
-#: src/AIS_Decoder.cpp:296
+#: src/ais_decoder.cpp:296
 msgid "Tankbarge, liquid cargo, type C"
 msgstr "Gabarra, carga líquida, tipo C"
 
-#: src/AIS_Decoder.cpp:297
+#: src/ais_decoder.cpp:297
 msgid "Freightbarge with containers"
 msgstr "Barcaza de carga con contedores"
 
-#: src/AIS_Decoder.cpp:298
+#: src/ais_decoder.cpp:298
 msgid "Tankbarge, gas"
 msgstr "Gabarra, gas"
 
-#: src/AIS_Decoder.cpp:299
+#: src/ais_decoder.cpp:299
 msgid "Pushtow, one cargo barge"
 msgstr "Remolque empuxando, unha barcaza de carga"
 
-#: src/AIS_Decoder.cpp:300
+#: src/ais_decoder.cpp:300
 msgid "Pushtow, two cargo barges"
 msgstr "Remolque empuxando, dúas barcazas de carga"
 
-#: src/AIS_Decoder.cpp:301
+#: src/ais_decoder.cpp:301
 msgid "Pushtow, three cargo barges"
 msgstr "Remolque empuxando, tres barcazas de carga"
 
-#: src/AIS_Decoder.cpp:302
+#: src/ais_decoder.cpp:302
 msgid "Pushtow, four cargo barges"
 msgstr "Remolque empuxando, catro barcazas de carga"
 
-#: src/AIS_Decoder.cpp:303
+#: src/ais_decoder.cpp:303
 msgid "Pushtow, five cargo barges"
 msgstr "Remolque empuxando, cinco barcazas de carga"
 
-#: src/AIS_Decoder.cpp:304
+#: src/ais_decoder.cpp:304
 msgid "Pushtow, six cargo barges"
 msgstr "Remolque empuxando, seis barcazas de carga"
 
-#: src/AIS_Decoder.cpp:305
+#: src/ais_decoder.cpp:305
 msgid "Pushtow, seven cargo barges"
 msgstr "Remolque empuxando, sete barcazas de carga"
 
-#: src/AIS_Decoder.cpp:306
+#: src/ais_decoder.cpp:306
 msgid "Pushtow, eight cargo barges"
 msgstr "Remolque empuxando, oito barcazas de carga"
 
-#: src/AIS_Decoder.cpp:307
+#: src/ais_decoder.cpp:307
 msgid "Pushtow, nine or more barges"
 msgstr "Remolque empuxando, nove ou máis barcazas de carga"
 
-#: src/AIS_Decoder.cpp:308
+#: src/ais_decoder.cpp:308
 msgid "Pushtow, one tank/gas barge"
 msgstr "Remolque empuxando, unha gabarra tanque/gas"
 
-#: src/AIS_Decoder.cpp:310
+#: src/ais_decoder.cpp:310
 msgid "Pushtow, two barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, dúas barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:312
+#: src/ais_decoder.cpp:312
 msgid "Pushtow, three barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, tres barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:314
+#: src/ais_decoder.cpp:314
 msgid "Pushtow, four barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, catro barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:316
+#: src/ais_decoder.cpp:316
 msgid "Pushtow, five barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, cinco barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:318
+#: src/ais_decoder.cpp:318
 msgid "Pushtow, six barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, seis barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:320
+#: src/ais_decoder.cpp:320
 msgid "Pushtow, seven barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, sete barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:322
+#: src/ais_decoder.cpp:322
 msgid "Pushtow, eight barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, oito barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:324
+#: src/ais_decoder.cpp:324
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 msgstr "Remolque empuxando, nove ou máis barcazas polo menos unha gabarra tanque ou de gas"
 
-#: src/AIS_Decoder.cpp:325
+#: src/ais_decoder.cpp:325
 msgid "Tug, single"
 msgstr "Remolcador, só"
 
-#: src/AIS_Decoder.cpp:326
+#: src/ais_decoder.cpp:326
 msgid "Tug, one or more tows"
 msgstr "Remolcador, un ou máis remolques"
 
-#: src/AIS_Decoder.cpp:327
+#: src/ais_decoder.cpp:327
 msgid "Tug, assisting a vessel or linked combination"
 msgstr "Remolcador, asistindo a un buque ou remolcando abarloado"
 
-#: src/AIS_Decoder.cpp:329
+#: src/ais_decoder.cpp:329
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Buque de pasaxe, transbordador, cruceiro, buque da Cruz vermella"
 
-#: src/AIS_Decoder.cpp:330
+#: src/ais_decoder.cpp:330
 msgid "Ferry"
 msgstr "Transbordador"
 
-#: src/AIS_Decoder.cpp:331
+#: src/ais_decoder.cpp:331
 msgid "Red cross ship"
 msgstr "Barco da Cruz Vermella"
 
-#: src/AIS_Decoder.cpp:332
+#: src/ais_decoder.cpp:332
 msgid "Cruise ship"
 msgstr "Cruceiro"
 
-#: src/AIS_Decoder.cpp:333
+#: src/ais_decoder.cpp:333
 msgid "Passenger ship without accommodation"
 msgstr "Buque de pasaxe sen acomodación"
 
-#: src/AIS_Decoder.cpp:334
+#: src/ais_decoder.cpp:334
 msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
 msgstr "Buque, barco de traballos de mantemento, grúa flotante, cableiro, buque boia, draga"
 
-#: src/AIS_Decoder.cpp:336
+#: src/ais_decoder.cpp:336
 msgid "Fishing boat"
 msgstr "Barco de pesca"
 
-#: src/AIS_Decoder.cpp:337
+#: src/ais_decoder.cpp:337
 msgid "Barge, tanker, chemical"
 msgstr "Barcaza, tanque, produtos químicos"
 
-#: src/AIS_Decoder.cpp:338
+#: src/ais_decoder.cpp:338
 msgid "General cargo Vessel maritime"
 msgstr "Buque de carga xeral"
 
-#: src/AIS_Decoder.cpp:339
+#: src/ais_decoder.cpp:339
 msgid "Unit carrier maritime"
 msgstr "Unidade de transporte marítimo"
 
-#: src/AIS_Decoder.cpp:340
+#: src/ais_decoder.cpp:340
 msgid "Bulk carrier maritime"
 msgstr "Graneleiro marítimo"
 
-#: src/AIS_Decoder.cpp:342
+#: src/ais_decoder.cpp:342
 msgid "Liquified gas tanker"
 msgstr "Buque tanque de gas licuado"
 
-#: src/AIS_Decoder.cpp:343
+#: src/ais_decoder.cpp:343
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "Embarcación de recreo, máis de 20 metros"
 
-#: src/AIS_Decoder.cpp:344
+#: src/ais_decoder.cpp:344
 msgid "Fast ship"
 msgstr "Buque rápido"
 
-#: src/AIS_Decoder.cpp:345
+#: src/ais_decoder.cpp:345
 msgid "Hydrofoil"
 msgstr "Hidroala"
 
-#: src/AIS_Decoder.cpp:1260
+#: src/ais_decoder.cpp:1260
 #, c-format
 msgid "%02X"
 msgstr "%02X"
 
-#: src/AIS_Decoder.cpp:3084 src/options.cpp:6224
+#: src/ais_decoder.cpp:3084 src/options.cpp:6224
 msgid "AIS Alert"
 msgstr "Alerta AIS"
 
-#: src/AIS_Target_Data.cpp:330 src/AIS_Target_Data.cpp:726
+#: src/ais_target_data.cpp:330 src/ais_target_data.cpp:726
 #: src/OCPNListCtrl.cpp:121
 msgid "SAR Helicopter"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:330 src/AIS_Target_Data.cpp:726
+#: src/ais_target_data.cpp:330 src/ais_target_data.cpp:726
 #: src/OCPNListCtrl.cpp:121
 msgid "SAR Aircraft"
 msgstr "Aeronave SAR"
 
-#: src/AIS_Target_Data.cpp:336 src/AIS_Target_Data.cpp:347
+#: src/ais_target_data.cpp:336 src/ais_target_data.cpp:347
 #: src/AISTargetListDialog.cpp:569 src/options.cpp:1025 src/options.cpp:1348
 msgid "MMSI"
 msgstr "MMSI"
 
-#: src/AIS_Target_Data.cpp:337 src/AIS_Target_Data.cpp:349
+#: src/ais_target_data.cpp:337 src/ais_target_data.cpp:349
 #: src/AISTargetListDialog.cpp:578
 msgid "Class"
 msgstr "Clase"
 
-#: src/AIS_Target_Data.cpp:339
+#: src/ais_target_data.cpp:339
 msgid "IMO"
 msgstr "IMO"
 
-#: src/AIS_Target_Data.cpp:357
+#: src/ais_target_data.cpp:357
 msgid "Nation"
 msgstr "País"
 
-#: src/AIS_Target_Data.cpp:357
+#: src/ais_target_data.cpp:357
 msgid "Flag"
 msgstr "Bandeira"
 
-#: src/AIS_Target_Data.cpp:369 src/AIS_Target_Data.cpp:764
+#: src/ais_target_data.cpp:369 src/ais_target_data.cpp:764
 #: src/AISTargetListDialog.cpp:147 src/AISTargetListDialog.cpp:162
 #: src/OCPNListCtrl.cpp:138
 msgid "Active"
 msgstr "Activo"
 
-#: src/AIS_Target_Data.cpp:371 src/AIS_Target_Data.cpp:766
+#: src/ais_target_data.cpp:371 src/ais_target_data.cpp:766
 #: src/AISTargetListDialog.cpp:149 src/AISTargetListDialog.cpp:164
 #: src/OCPNListCtrl.cpp:140
 msgid "Testing"
 msgstr "Probando"
 
-#: src/AIS_Target_Data.cpp:417
+#: src/ais_target_data.cpp:417
 msgid "Safety Broadcast Message"
 msgstr "Mensaxe emitido de Seguridade"
 
-#: src/AIS_Target_Data.cpp:493
+#: src/ais_target_data.cpp:493
 msgid " (Last Known)"
 msgstr " (Último coñecido)"
 
-#: src/AIS_Target_Data.cpp:501 src/GoToPositionDialog.cpp:112
+#: src/ais_target_data.cpp:501 src/GoToPositionDialog.cpp:112
 #: src/routeprintout.cpp:107 src/routeprintout.cpp:376 src/trackprintout.cpp:87
 #: src/trackprintout.cpp:297
 msgid "Position"
 msgstr "Posición"
 
-#: src/AIS_Target_Data.cpp:502
+#: src/ais_target_data.cpp:502
 msgid "Report Age"
 msgstr "Antigüidade Informe"
 
-#: src/AIS_Target_Data.cpp:524
+#: src/ais_target_data.cpp:524
 msgid "Report as of"
 msgstr "Informe a partir de"
 
-#: src/AIS_Target_Data.cpp:529 src/RoutePropDlgImpl.cpp:806
+#: src/ais_target_data.cpp:529 src/RoutePropDlgImpl.cpp:806
 #: src/TrackPropDlg.cpp:362 src/TrackPropDlg.cpp:1342
 msgid "Destination"
 msgstr "Destino"
 
-#: src/AIS_Target_Data.cpp:530
+#: src/ais_target_data.cpp:530
 msgid "ETA (UTC)"
 msgstr "ETA (UTC)"
 
-#: src/AIS_Target_Data.cpp:592 src/AIS_Target_Data.cpp:598
+#: src/ais_target_data.cpp:592 src/ais_target_data.cpp:598
 msgid "Right"
 msgstr "Dereita"
 
-#: src/AIS_Target_Data.cpp:594 src/AIS_Target_Data.cpp:601
+#: src/ais_target_data.cpp:594 src/ais_target_data.cpp:601
 msgid "Left"
 msgstr "Esquerda"
 
-#: src/AIS_Target_Data.cpp:635 src/options.cpp:5796 src/options.cpp:5938
+#: src/ais_target_data.cpp:635 src/options.cpp:5796 src/options.cpp:5938
 #: src/options.cpp:6082 src/options.cpp:6332 src/RoutePropDlg.cpp:325
 #: src/trackprintout.cpp:99 src/trackprintout.cpp:338 src/TrackPropDlg.cpp:306
 #: src/TrackPropDlg.cpp:1344
 msgid "Speed"
 msgstr "Velocidade"
 
-#: src/AIS_Target_Data.cpp:636 src/routeprintout.cpp:110
+#: src/ais_target_data.cpp:636 src/routeprintout.cpp:110
 #: src/routeprintout.cpp:386 src/RoutePropDlg.cpp:337 src/trackprintout.cpp:90
 #: src/trackprintout.cpp:307
 msgid "Course"
 msgstr "Rumbo"
 
-#: src/AIS_Target_Data.cpp:638
+#: src/ais_target_data.cpp:638
 msgid "Heading"
 msgstr "Rumbo"
 
-#: src/AIS_Target_Data.cpp:646
+#: src/ais_target_data.cpp:646
 msgid "Turn Rate"
 msgstr "Velocidade de xiro"
 
-#: src/AIS_Target_Data.cpp:650 src/AISTargetListDialog.cpp:614
+#: src/ais_target_data.cpp:650 src/AISTargetListDialog.cpp:614
 msgid "Range"
 msgstr "Alcance"
 
-#: src/AIS_Target_Data.cpp:651 src/RoutePropDlg.cpp:300 src/TrackPropDlg.cpp:301
+#: src/ais_target_data.cpp:651 src/RoutePropDlg.cpp:300 src/TrackPropDlg.cpp:301
 msgid "Bearing"
 msgstr "Demora"
 
-#: src/AIS_Target_Data.cpp:662
+#: src/ais_target_data.cpp:662
 msgid "in "
 msgstr "en "
 
-#: src/AIS_Target_Data.cpp:665 src/AIS_Target_Data.cpp:811
+#: src/ais_target_data.cpp:665 src/ais_target_data.cpp:811
 #: src/AISTargetListDialog.cpp:640
 msgid "CPA"
 msgstr "CPA"
 
-#: src/AIS_Target_Data.cpp:672 src/AIS_Target_Data.cpp:675
+#: src/ais_target_data.cpp:672 src/ais_target_data.cpp:675
 msgid "Inland Blue Flag"
 msgstr "Bandeira azul augas interiores"
 
-#: src/AIS_Target_Data.cpp:673 src/catalog_mgr.cpp:340
+#: src/ais_target_data.cpp:673 src/catalog_mgr.cpp:340
 msgid "Clear"
 msgstr "Desmarcar"
 
-#: src/AIS_Target_Data.cpp:676
+#: src/ais_target_data.cpp:676
 msgid "Set"
 msgstr "Establecer"
 
-#: src/AIS_Target_Data.cpp:687
+#: src/ais_target_data.cpp:687
 msgid "Altitude"
 msgstr "Altitude"
 
-#: src/AIS_Target_Data.cpp:802 src/AIS_Target_Data.cpp:806
+#: src/ais_target_data.cpp:802 src/ais_target_data.cpp:806
 msgid " COG Unavailable"
 msgstr " COG Non dispoñible"
 
-#: src/AIS_Target_Data.cpp:812 src/navutil.cpp:4257
+#: src/ais_target_data.cpp:812 src/navutil.cpp:4257
 msgid "in"
 msgstr "en"
 
-#: src/AIS_Target_Data.cpp:813
+#: src/ais_target_data.cpp:813
 msgid "min"
 msgstr "min"
 
-#: src/AIS_Target_Data.cpp:900
+#: src/ais_target_data.cpp:900
 msgid "A"
 msgstr "A"
 
-#: src/AIS_Target_Data.cpp:902
+#: src/ais_target_data.cpp:902
 msgid "B"
 msgstr "B"
 
-#: src/AIS_Target_Data.cpp:904
+#: src/ais_target_data.cpp:904
 msgid "Aid to Navigation"
 msgstr "Axuda para a Navegación"
 
-#: src/AIS_Target_Data.cpp:906 src/CanvasOptions.cpp:318 src/options.cpp:4790
+#: src/ais_target_data.cpp:906 src/CanvasOptions.cpp:318 src/options.cpp:4790
 #: src/options.cpp:4986
 msgid "Base"
 msgstr "Base"
 
-#: src/AIS_Target_Data.cpp:906
+#: src/ais_target_data.cpp:906
 msgid "Base Station"
 msgstr "Estación Base"
 
-#: src/AIS_Target_Data.cpp:908
+#: src/ais_target_data.cpp:908
 msgid "GPSGate Buddy"
 msgstr "GPSGate Buddy"
 
-#: src/AIS_Target_Data.cpp:911
+#: src/ais_target_data.cpp:911
 msgid "DSC Distress"
 msgstr "Socorro DSC"
 
-#: src/AIS_Target_Data.cpp:913
+#: src/ais_target_data.cpp:913
 msgid "DSC Position Report"
 msgstr "Informe de posición DSC"
 
-#: src/AIS_Target_Data.cpp:915
+#: src/ais_target_data.cpp:915
 msgid "SART"
 msgstr "SART"
 
-#: src/AIS_Target_Data.cpp:922
+#: src/ais_target_data.cpp:922
 msgid "Unk"
 msgstr "Desc"
 
-#: src/AIS_Target_Data.cpp:954
+#: src/ais_target_data.cpp:954
 msgid "Albania"
 msgstr "Albania"
 
-#: src/AIS_Target_Data.cpp:956
+#: src/ais_target_data.cpp:956
 msgid "Andorra"
 msgstr "Andorra"
 
-#: src/AIS_Target_Data.cpp:958
+#: src/ais_target_data.cpp:958
 msgid "Austria"
 msgstr "Austria"
 
-#: src/AIS_Target_Data.cpp:960
+#: src/ais_target_data.cpp:960
 msgid "Azores"
 msgstr "Azores"
 
-#: src/AIS_Target_Data.cpp:962
+#: src/ais_target_data.cpp:962
 msgid "Belgium"
 msgstr "Bélxica"
 
-#: src/AIS_Target_Data.cpp:964
+#: src/ais_target_data.cpp:964
 msgid "Belarus"
 msgstr "Bielorrusia"
 
-#: src/AIS_Target_Data.cpp:966
+#: src/ais_target_data.cpp:966
 msgid "Bulgaria"
 msgstr "Bulgaria"
 
-#: src/AIS_Target_Data.cpp:968
+#: src/ais_target_data.cpp:968
 msgid "Vatican City State"
 msgstr "Cidade do Vaticano"
 
-#: src/AIS_Target_Data.cpp:971 src/AIS_Target_Data.cpp:975
+#: src/ais_target_data.cpp:971 src/ais_target_data.cpp:975
 msgid "Cyprus"
 msgstr "Chipre"
 
-#: src/AIS_Target_Data.cpp:973 src/AIS_Target_Data.cpp:985
+#: src/ais_target_data.cpp:973 src/ais_target_data.cpp:985
 msgid "Germany"
 msgstr "Alemaña"
 
-#: src/AIS_Target_Data.cpp:977
+#: src/ais_target_data.cpp:977
 msgid "Georgia"
 msgstr "Xeorxia"
 
-#: src/AIS_Target_Data.cpp:979
+#: src/ais_target_data.cpp:979
 msgid "Moldova"
 msgstr "Moldavia"
 
-#: src/AIS_Target_Data.cpp:981 src/AIS_Target_Data.cpp:998
-#: src/AIS_Target_Data.cpp:1030 src/AIS_Target_Data.cpp:1044
+#: src/ais_target_data.cpp:981 src/ais_target_data.cpp:998
+#: src/ais_target_data.cpp:1030 src/ais_target_data.cpp:1044
 msgid "Malta"
 msgstr "Malta"
 
-#: src/AIS_Target_Data.cpp:983
+#: src/ais_target_data.cpp:983
 msgid "Armenia"
 msgstr "Armenia"
 
-#: src/AIS_Target_Data.cpp:988
+#: src/ais_target_data.cpp:988
 msgid "Denmark"
 msgstr "Dinamarca"
 
-#: src/AIS_Target_Data.cpp:990 src/AIS_Target_Data.cpp:992
+#: src/ais_target_data.cpp:990 src/ais_target_data.cpp:992
 msgid "Spain"
 msgstr "España"
 
-#: src/AIS_Target_Data.cpp:996
+#: src/ais_target_data.cpp:996
 msgid "France"
 msgstr "Francia"
 
-#: src/AIS_Target_Data.cpp:1000
+#: src/ais_target_data.cpp:1000
 msgid "Finland"
 msgstr "Finlandia"
 
-#: src/AIS_Target_Data.cpp:1002
+#: src/ais_target_data.cpp:1002
 msgid "Faroe Islands"
 msgstr "Illas Feroe"
 
-#: src/AIS_Target_Data.cpp:1007
+#: src/ais_target_data.cpp:1007
 msgid "Great Britain"
 msgstr "Reino Unido"
 
-#: src/AIS_Target_Data.cpp:1009
+#: src/ais_target_data.cpp:1009
 msgid "Gibraltar"
 msgstr "Xibraltar"
 
-#: src/AIS_Target_Data.cpp:1011 src/AIS_Target_Data.cpp:1017
+#: src/ais_target_data.cpp:1011 src/ais_target_data.cpp:1017
 msgid "Greece"
 msgstr "Grecia"
 
-#: src/AIS_Target_Data.cpp:1013
+#: src/ais_target_data.cpp:1013
 msgid "Croatia"
 msgstr "Croacia"
 
-#: src/AIS_Target_Data.cpp:1019
+#: src/ais_target_data.cpp:1019
 msgid "Morocco"
 msgstr "Marrocos"
 
-#: src/AIS_Target_Data.cpp:1021
+#: src/ais_target_data.cpp:1021
 msgid "Hungary"
 msgstr "Hungría"
 
-#: src/AIS_Target_Data.cpp:1025
+#: src/ais_target_data.cpp:1025
 msgid "Netherlands"
 msgstr "Países Baixos"
 
-#: src/AIS_Target_Data.cpp:1027
+#: src/ais_target_data.cpp:1027
 msgid "Italy"
 msgstr "Italia"
 
-#: src/AIS_Target_Data.cpp:1032
+#: src/ais_target_data.cpp:1032
 msgid "Ireland"
 msgstr "Irlanda"
 
-#: src/AIS_Target_Data.cpp:1034
+#: src/ais_target_data.cpp:1034
 msgid "Iceland"
 msgstr "Islandia"
 
-#: src/AIS_Target_Data.cpp:1036
+#: src/ais_target_data.cpp:1036
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
 
-#: src/AIS_Target_Data.cpp:1038
+#: src/ais_target_data.cpp:1038
 msgid "Luxembourg"
 msgstr "Luxemburgo"
 
-#: src/AIS_Target_Data.cpp:1040
+#: src/ais_target_data.cpp:1040
 msgid "Monaco"
 msgstr "Mónaco"
 
-#: src/AIS_Target_Data.cpp:1042
+#: src/ais_target_data.cpp:1042
 msgid "Madeira"
 msgstr "Madeira"
 
-#: src/AIS_Target_Data.cpp:1048
+#: src/ais_target_data.cpp:1048
 msgid "Norway"
 msgstr "Noruega"
 
-#: src/AIS_Target_Data.cpp:1050
+#: src/ais_target_data.cpp:1050
 msgid "Poland"
 msgstr "Polonia"
 
-#: src/AIS_Target_Data.cpp:1052
+#: src/ais_target_data.cpp:1052
 msgid "Montenegro"
 msgstr "Montenegro"
 
-#: src/AIS_Target_Data.cpp:1054
+#: src/ais_target_data.cpp:1054
 msgid "Portugal"
 msgstr "Portugal"
 
-#: src/AIS_Target_Data.cpp:1056
+#: src/ais_target_data.cpp:1056
 msgid "Romania"
 msgstr "Romanía"
 
-#: src/AIS_Target_Data.cpp:1059
+#: src/ais_target_data.cpp:1059
 msgid "Sweden"
 msgstr "Suecia"
 
-#: src/AIS_Target_Data.cpp:1061
+#: src/ais_target_data.cpp:1061
 msgid "Slovak Republic"
 msgstr "Eslovaquia"
 
-#: src/AIS_Target_Data.cpp:1063
+#: src/ais_target_data.cpp:1063
 msgid "San Marino"
 msgstr "San Marino"
 
-#: src/AIS_Target_Data.cpp:1065
+#: src/ais_target_data.cpp:1065
 msgid "Switzerland"
 msgstr "Suíza"
 
-#: src/AIS_Target_Data.cpp:1067
+#: src/ais_target_data.cpp:1067
 msgid "Czech Republic"
 msgstr "República Checa"
 
-#: src/AIS_Target_Data.cpp:1069
+#: src/ais_target_data.cpp:1069
 msgid "Turkey"
 msgstr "Turquía"
 
-#: src/AIS_Target_Data.cpp:1071
+#: src/ais_target_data.cpp:1071
 msgid "Ukraine"
 msgstr "Ucraína"
 
-#: src/AIS_Target_Data.cpp:1073
+#: src/ais_target_data.cpp:1073
 msgid "Russian"
 msgstr "Rusia"
 
-#: src/AIS_Target_Data.cpp:1075
+#: src/ais_target_data.cpp:1075
 msgid "Macedonia"
 msgstr "Macedonia"
 
-#: src/AIS_Target_Data.cpp:1077
+#: src/ais_target_data.cpp:1077
 msgid "Latvia"
 msgstr "Letonia"
 
-#: src/AIS_Target_Data.cpp:1079
+#: src/ais_target_data.cpp:1079
 msgid "Estonia"
 msgstr "Estonia"
 
-#: src/AIS_Target_Data.cpp:1081
+#: src/ais_target_data.cpp:1081
 msgid "Lithuania"
 msgstr "Lituania"
 
-#: src/AIS_Target_Data.cpp:1083
+#: src/ais_target_data.cpp:1083
 msgid "Slovenia"
 msgstr "Eslovenia"
 
-#: src/AIS_Target_Data.cpp:1085
+#: src/ais_target_data.cpp:1085
 msgid "Serbia"
 msgstr "Serbia"
 
-#: src/AIS_Target_Data.cpp:1087
+#: src/ais_target_data.cpp:1087
 msgid "Anguilla"
 msgstr "Anguila"
 
-#: src/AIS_Target_Data.cpp:1089
+#: src/ais_target_data.cpp:1089
 msgid "Alaska"
 msgstr "Alaska"
 
-#: src/AIS_Target_Data.cpp:1092
+#: src/ais_target_data.cpp:1092
 msgid "Antigua and Barbuda"
 msgstr "Antiga e Barbuda"
 
-#: src/AIS_Target_Data.cpp:1094
+#: src/ais_target_data.cpp:1094
 msgid "Antilles"
 msgstr "Antillas"
 
-#: src/AIS_Target_Data.cpp:1096
+#: src/ais_target_data.cpp:1096
 msgid "Aruba"
 msgstr "Aruba"
 
-#: src/AIS_Target_Data.cpp:1099 src/AIS_Target_Data.cpp:1103
+#: src/ais_target_data.cpp:1099 src/ais_target_data.cpp:1103
 msgid "Bahamas"
 msgstr "Bahamas"
 
-#: src/AIS_Target_Data.cpp:1101
+#: src/ais_target_data.cpp:1101
 msgid "Bermuda"
 msgstr "Bermuda"
 
-#: src/AIS_Target_Data.cpp:1105
+#: src/ais_target_data.cpp:1105
 msgid "Belize"
 msgstr "Belize"
 
-#: src/AIS_Target_Data.cpp:1107
+#: src/ais_target_data.cpp:1107
 msgid "Barbados"
 msgstr "Barbados"
 
-#: src/AIS_Target_Data.cpp:1109
+#: src/ais_target_data.cpp:1109
 msgid "Canada"
 msgstr "Canadá"
 
-#: src/AIS_Target_Data.cpp:1111
+#: src/ais_target_data.cpp:1111
 msgid "Cayman Islands"
 msgstr "Illas Caimán"
 
-#: src/AIS_Target_Data.cpp:1113
+#: src/ais_target_data.cpp:1113
 msgid "Costa Rica"
 msgstr "Costa Rica"
 
-#: src/AIS_Target_Data.cpp:1115
+#: src/ais_target_data.cpp:1115
 msgid "Cuba"
 msgstr "Cuba"
 
-#: src/AIS_Target_Data.cpp:1117
+#: src/ais_target_data.cpp:1117
 msgid "Dominica"
 msgstr "Dominica"
 
-#: src/AIS_Target_Data.cpp:1119
+#: src/ais_target_data.cpp:1119
 msgid "Dominican Republic"
 msgstr "República Dominicana"
 
-#: src/AIS_Target_Data.cpp:1121
+#: src/ais_target_data.cpp:1121
 msgid "Guadeloupe"
 msgstr "Guadalupe"
 
-#: src/AIS_Target_Data.cpp:1123
+#: src/ais_target_data.cpp:1123
 msgid "Grenada"
 msgstr "Granada"
 
-#: src/AIS_Target_Data.cpp:1125
+#: src/ais_target_data.cpp:1125
 msgid "Greenland"
 msgstr "Groenlandia"
 
-#: src/AIS_Target_Data.cpp:1127
+#: src/ais_target_data.cpp:1127
 msgid "Guatemala"
 msgstr "Guatemala"
 
-#: src/AIS_Target_Data.cpp:1129
+#: src/ais_target_data.cpp:1129
 msgid "Honduras"
 msgstr "Honduras"
 
-#: src/AIS_Target_Data.cpp:1131
+#: src/ais_target_data.cpp:1131
 msgid "Haiti"
 msgstr "Haití"
 
-#: src/AIS_Target_Data.cpp:1133 src/AIS_Target_Data.cpp:1170
+#: src/ais_target_data.cpp:1133 src/ais_target_data.cpp:1170
 msgid "United States of America"
 msgstr "Estados Unidos de América"
 
-#: src/AIS_Target_Data.cpp:1135
+#: src/ais_target_data.cpp:1135
 msgid "Jamaica"
 msgstr "Xamaica"
 
-#: src/AIS_Target_Data.cpp:1137
+#: src/ais_target_data.cpp:1137
 msgid "Saint Kitts and Nevis"
 msgstr "San Cristovo e Neves"
 
-#: src/AIS_Target_Data.cpp:1139
+#: src/ais_target_data.cpp:1139
 msgid "Saint Lucia"
 msgstr "Santa Lucía"
 
-#: src/AIS_Target_Data.cpp:1141
+#: src/ais_target_data.cpp:1141
 msgid "Mexico"
 msgstr "México"
 
-#: src/AIS_Target_Data.cpp:1143
+#: src/ais_target_data.cpp:1143
 msgid "Martinique"
 msgstr "Martinica"
 
-#: src/AIS_Target_Data.cpp:1145
+#: src/ais_target_data.cpp:1145
 msgid "Montserrat"
 msgstr "Montserrat"
 
-#: src/AIS_Target_Data.cpp:1147
+#: src/ais_target_data.cpp:1147
 msgid "Nicaragua"
 msgstr "Nicaragua"
 
-#: src/AIS_Target_Data.cpp:1155 src/AIS_Target_Data.cpp:1176
+#: src/ais_target_data.cpp:1155 src/ais_target_data.cpp:1176
 msgid "Panama"
 msgstr "Panamá"
 
-#: src/AIS_Target_Data.cpp:1157
+#: src/ais_target_data.cpp:1157
 msgid "Puerto Rico"
 msgstr "Porto Rico"
 
-#: src/AIS_Target_Data.cpp:1159
+#: src/ais_target_data.cpp:1159
 msgid "El Salvador"
 msgstr "O Salvador"
 
-#: src/AIS_Target_Data.cpp:1161
+#: src/ais_target_data.cpp:1161
 msgid "Saint Pierre and Miquelon"
 msgstr "San Pedro e Miguelón"
 
-#: src/AIS_Target_Data.cpp:1163
+#: src/ais_target_data.cpp:1163
 msgid "Trinidad and Tobago"
 msgstr "Trinidad e Tobago"
 
-#: src/AIS_Target_Data.cpp:1165
+#: src/ais_target_data.cpp:1165
 msgid "Turks and Caicos Islands"
 msgstr "Illas Turks e Caicos"
 
-#: src/AIS_Target_Data.cpp:1180
+#: src/ais_target_data.cpp:1180
 msgid "Saint Vincent and the Grenadines"
 msgstr "San Vicente e Granadinas"
 
-#: src/AIS_Target_Data.cpp:1182
+#: src/ais_target_data.cpp:1182
 msgid "British Virgin Islands"
 msgstr "Illas Virxes Británicas"
 
-#: src/AIS_Target_Data.cpp:1184
+#: src/ais_target_data.cpp:1184
 msgid "United States Virgin Islands"
 msgstr "Illas Virxes Estadounidenses"
 
-#: src/AIS_Target_Data.cpp:1186
+#: src/ais_target_data.cpp:1186
 msgid "Afghanistan"
 msgstr "Afganistán"
 
-#: src/AIS_Target_Data.cpp:1188
+#: src/ais_target_data.cpp:1188
 msgid "Saudi Arabia"
 msgstr "Arabia Saudita"
 
-#: src/AIS_Target_Data.cpp:1190
+#: src/ais_target_data.cpp:1190
 msgid "Bangladesh"
 msgstr "Bangladesh"
 
-#: src/AIS_Target_Data.cpp:1192
+#: src/ais_target_data.cpp:1192
 msgid "Bahrain"
 msgstr "Bahrain"
 
-#: src/AIS_Target_Data.cpp:1194
+#: src/ais_target_data.cpp:1194
 msgid "Bhutan"
 msgstr "Bután"
 
-#: src/AIS_Target_Data.cpp:1198
+#: src/ais_target_data.cpp:1198
 msgid "China"
 msgstr "China"
 
-#: src/AIS_Target_Data.cpp:1200
+#: src/ais_target_data.cpp:1200
 msgid "Taiwan"
 msgstr "Taiwán"
 
-#: src/AIS_Target_Data.cpp:1202
+#: src/ais_target_data.cpp:1202
 msgid "Sri Lanka"
 msgstr "Sri Lanka"
 
-#: src/AIS_Target_Data.cpp:1204
+#: src/ais_target_data.cpp:1204
 msgid "India"
 msgstr "India"
 
-#: src/AIS_Target_Data.cpp:1206
+#: src/ais_target_data.cpp:1206
 msgid "Iran"
 msgstr "Irán"
 
-#: src/AIS_Target_Data.cpp:1208
+#: src/ais_target_data.cpp:1208
 msgid "Azerbaijani Republic"
 msgstr "Acerbaixán"
 
-#: src/AIS_Target_Data.cpp:1210
+#: src/ais_target_data.cpp:1210
 msgid "Iraq"
 msgstr "Iraq"
 
-#: src/AIS_Target_Data.cpp:1212
+#: src/ais_target_data.cpp:1212
 msgid "Israel"
 msgstr "Israel"
 
-#: src/AIS_Target_Data.cpp:1214 src/AIS_Target_Data.cpp:1216
+#: src/ais_target_data.cpp:1214 src/ais_target_data.cpp:1216
 msgid "Japan"
 msgstr "Xapón"
 
-#: src/AIS_Target_Data.cpp:1218
+#: src/ais_target_data.cpp:1218
 msgid "Turkmenistan"
 msgstr "Turcomenistán"
 
-#: src/AIS_Target_Data.cpp:1220
+#: src/ais_target_data.cpp:1220
 msgid "Kazakhstan"
 msgstr "Casaquistán"
 
-#: src/AIS_Target_Data.cpp:1222
+#: src/ais_target_data.cpp:1222
 msgid "Uzbekistan"
 msgstr "Uzbequistán"
 
-#: src/AIS_Target_Data.cpp:1224
+#: src/ais_target_data.cpp:1224
 msgid "Jordan"
 msgstr "Xordania"
 
-#: src/AIS_Target_Data.cpp:1227
+#: src/ais_target_data.cpp:1227
 msgid "Korea"
 msgstr "Corea do Sur"
 
-#: src/AIS_Target_Data.cpp:1229
+#: src/ais_target_data.cpp:1229
 msgid "Palestine"
 msgstr "Palestina"
 
-#: src/AIS_Target_Data.cpp:1231
+#: src/ais_target_data.cpp:1231
 msgid "People's Rep. of Korea"
 msgstr "Corea do Norte"
 
-#: src/AIS_Target_Data.cpp:1233
+#: src/ais_target_data.cpp:1233
 msgid "Kuwait"
 msgstr "Kuwait"
 
-#: src/AIS_Target_Data.cpp:1235
+#: src/ais_target_data.cpp:1235
 msgid "Lebanon"
 msgstr "Líbano"
 
-#: src/AIS_Target_Data.cpp:1237
+#: src/ais_target_data.cpp:1237
 msgid "Kyrgyz Republic"
 msgstr "Kirguizistán"
 
-#: src/AIS_Target_Data.cpp:1239
+#: src/ais_target_data.cpp:1239
 msgid "Macao"
 msgstr "Macau"
 
-#: src/AIS_Target_Data.cpp:1241
+#: src/ais_target_data.cpp:1241
 msgid "Maldives"
 msgstr "Maldivas"
 
-#: src/AIS_Target_Data.cpp:1243
+#: src/ais_target_data.cpp:1243
 msgid "Mongolia"
 msgstr "Mongolia"
 
-#: src/AIS_Target_Data.cpp:1245
+#: src/ais_target_data.cpp:1245
 msgid "Nepal"
 msgstr "Nepal"
 
-#: src/AIS_Target_Data.cpp:1247
+#: src/ais_target_data.cpp:1247
 msgid "Oman"
 msgstr "Omán"
 
-#: src/AIS_Target_Data.cpp:1249
+#: src/ais_target_data.cpp:1249
 msgid "Pakistan"
 msgstr "Pakistán"
 
-#: src/AIS_Target_Data.cpp:1251
+#: src/ais_target_data.cpp:1251
 msgid "Qatar"
 msgstr "Qatar"
 
-#: src/AIS_Target_Data.cpp:1253
+#: src/ais_target_data.cpp:1253
 msgid "Syrian Arab Republic"
 msgstr "Siria"
 
-#: src/AIS_Target_Data.cpp:1256
+#: src/ais_target_data.cpp:1256
 msgid "United Arab Emirates"
 msgstr "Emiratos Árabes Unidos"
 
-#: src/AIS_Target_Data.cpp:1258
+#: src/ais_target_data.cpp:1258
 msgid "Tajikistan"
 msgstr "Taxiquistán"
 
-#: src/AIS_Target_Data.cpp:1261
+#: src/ais_target_data.cpp:1261
 msgid "Yemen"
 msgstr "Iemen"
 
-#: src/AIS_Target_Data.cpp:1263
+#: src/ais_target_data.cpp:1263
 msgid "Hong Kong"
 msgstr "Hong Kong"
 
-#: src/AIS_Target_Data.cpp:1265
+#: src/ais_target_data.cpp:1265
 msgid "Bosnia and Herzegovina"
 msgstr "Bosnia e Hercegovina"
 
-#: src/AIS_Target_Data.cpp:1267
+#: src/ais_target_data.cpp:1267
 msgid "Adelie Land"
 msgstr "Terra Adelia"
 
-#: src/AIS_Target_Data.cpp:1269
+#: src/ais_target_data.cpp:1269
 msgid "Australia"
 msgstr "Australia"
 
-#: src/AIS_Target_Data.cpp:1271
+#: src/ais_target_data.cpp:1271
 msgid "Myanmar"
 msgstr "Myanmar"
 
-#: src/AIS_Target_Data.cpp:1273
+#: src/ais_target_data.cpp:1273
 msgid "Brunei Darussalam"
 msgstr "Brunei Darussalam"
 
-#: src/AIS_Target_Data.cpp:1275
+#: src/ais_target_data.cpp:1275
 msgid "Micronesia"
 msgstr "Micronesia"
 
-#: src/AIS_Target_Data.cpp:1277
+#: src/ais_target_data.cpp:1277
 msgid "Palau"
 msgstr "Palau"
 
-#: src/AIS_Target_Data.cpp:1279
+#: src/ais_target_data.cpp:1279
 msgid "New Zealand"
 msgstr "Nova Zelandia"
 
-#: src/AIS_Target_Data.cpp:1282
+#: src/ais_target_data.cpp:1282
 msgid "Cambodia"
 msgstr "Cambodja"
 
-#: src/AIS_Target_Data.cpp:1284
+#: src/ais_target_data.cpp:1284
 msgid "Christmas Island"
 msgstr "Illa de Nadal"
 
-#: src/AIS_Target_Data.cpp:1286
+#: src/ais_target_data.cpp:1286
 msgid "Cook Islands"
 msgstr "Illas Cook"
 
-#: src/AIS_Target_Data.cpp:1288
+#: src/ais_target_data.cpp:1288
 msgid "Fiji"
 msgstr "Fidxi"
 
-#: src/AIS_Target_Data.cpp:1290
+#: src/ais_target_data.cpp:1290
 msgid "Cocos (Keeling) Islands"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1292
+#: src/ais_target_data.cpp:1292
 msgid "Indonesia"
 msgstr "Indonesia"
 
-#: src/AIS_Target_Data.cpp:1294
+#: src/ais_target_data.cpp:1294
 msgid "Kiribati"
 msgstr "Kiribati"
 
-#: src/AIS_Target_Data.cpp:1296
+#: src/ais_target_data.cpp:1296
 msgid "Lao People's Dem. Rep."
 msgstr "Laos"
 
-#: src/AIS_Target_Data.cpp:1298
+#: src/ais_target_data.cpp:1298
 msgid "Malaysia"
 msgstr "Malaisia"
 
-#: src/AIS_Target_Data.cpp:1300
+#: src/ais_target_data.cpp:1300
 msgid "Northern Mariana Islands"
 msgstr "Illas Marianas do Norte"
 
-#: src/AIS_Target_Data.cpp:1302
+#: src/ais_target_data.cpp:1302
 msgid "Marshall Islands"
 msgstr "Illas Marshall"
 
-#: src/AIS_Target_Data.cpp:1304
+#: src/ais_target_data.cpp:1304
 msgid "New Caledonia"
 msgstr "Nova Caledonia"
 
-#: src/AIS_Target_Data.cpp:1306
+#: src/ais_target_data.cpp:1306
 msgid "Niue"
 msgstr "Niue"
 
-#: src/AIS_Target_Data.cpp:1308
+#: src/ais_target_data.cpp:1308
 msgid "Nauru"
 msgstr "Nauru"
 
-#: src/AIS_Target_Data.cpp:1310
+#: src/ais_target_data.cpp:1310
 msgid "French Polynesia"
 msgstr "Polinesia Francesa"
 
-#: src/AIS_Target_Data.cpp:1312
+#: src/ais_target_data.cpp:1312
 msgid "Philippines"
 msgstr "Filipinas"
 
-#: src/AIS_Target_Data.cpp:1314
+#: src/ais_target_data.cpp:1314
 msgid "East Timor"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1316
+#: src/ais_target_data.cpp:1316
 msgid "Papua New Guinea"
 msgstr "Papúa Nova Guinea"
 
-#: src/AIS_Target_Data.cpp:1318
+#: src/ais_target_data.cpp:1318
 msgid "Pitcairn Island"
 msgstr "Illas Pitcairn"
 
-#: src/AIS_Target_Data.cpp:1320
+#: src/ais_target_data.cpp:1320
 msgid "Solomon Islands"
 msgstr "Illas Salomón"
 
-#: src/AIS_Target_Data.cpp:1322
+#: src/ais_target_data.cpp:1322
 msgid "American Samoa"
 msgstr "Samoa Americana"
 
-#: src/AIS_Target_Data.cpp:1324
+#: src/ais_target_data.cpp:1324
 msgid "Samoa"
 msgstr "Samoa"
 
-#: src/AIS_Target_Data.cpp:1329
+#: src/ais_target_data.cpp:1329
 msgid "Singapore"
 msgstr "Singapur"
 
-#: src/AIS_Target_Data.cpp:1331
+#: src/ais_target_data.cpp:1331
 msgid "Thailand"
 msgstr "Tailandia"
 
-#: src/AIS_Target_Data.cpp:1333
+#: src/ais_target_data.cpp:1333
 msgid "Tonga"
 msgstr "Tonga"
 
-#: src/AIS_Target_Data.cpp:1335
+#: src/ais_target_data.cpp:1335
 msgid "Tuvalu"
 msgstr "Tuvalu"
 
-#: src/AIS_Target_Data.cpp:1337
+#: src/ais_target_data.cpp:1337
 msgid "Viet Nam"
 msgstr "Vietnam"
 
-#: src/AIS_Target_Data.cpp:1340
+#: src/ais_target_data.cpp:1340
 msgid "Vanuatu"
 msgstr "Vanuatu"
 
-#: src/AIS_Target_Data.cpp:1342
+#: src/ais_target_data.cpp:1342
 msgid "Wallis and Futuna Islands"
 msgstr "Illas Wallis e Futuna"
 
-#: src/AIS_Target_Data.cpp:1344
+#: src/ais_target_data.cpp:1344
 msgid "South Africa"
 msgstr "Suráfrica"
 
-#: src/AIS_Target_Data.cpp:1346
+#: src/ais_target_data.cpp:1346
 msgid "Angola"
 msgstr "Angola"
 
-#: src/AIS_Target_Data.cpp:1348
+#: src/ais_target_data.cpp:1348
 msgid "Algeria"
 msgstr "Alxeria"
 
-#: src/AIS_Target_Data.cpp:1350
+#: src/ais_target_data.cpp:1350
 msgid "Saint Paul"
 msgstr "San Pablo"
 
-#: src/AIS_Target_Data.cpp:1352
+#: src/ais_target_data.cpp:1352
 msgid "Ascension Island"
 msgstr "Illa Ascensión"
 
-#: src/AIS_Target_Data.cpp:1354
+#: src/ais_target_data.cpp:1354
 msgid "Burundi"
 msgstr "Burundi"
 
-#: src/AIS_Target_Data.cpp:1356
+#: src/ais_target_data.cpp:1356
 msgid "Benin"
 msgstr "Benin"
 
-#: src/AIS_Target_Data.cpp:1358
+#: src/ais_target_data.cpp:1358
 msgid "Botswana"
 msgstr "Botswana"
 
-#: src/AIS_Target_Data.cpp:1360
+#: src/ais_target_data.cpp:1360
 msgid "Central African Republic"
 msgstr "República Centroafricana"
 
-#: src/AIS_Target_Data.cpp:1362
+#: src/ais_target_data.cpp:1362
 msgid "Cameroon"
 msgstr "Camerún"
 
-#: src/AIS_Target_Data.cpp:1364
+#: src/ais_target_data.cpp:1364
 msgid "Congo"
 msgstr "Congo"
 
-#: src/AIS_Target_Data.cpp:1366
+#: src/ais_target_data.cpp:1366
 msgid "Comoros"
 msgstr "Comores"
 
-#: src/AIS_Target_Data.cpp:1368
+#: src/ais_target_data.cpp:1368
 msgid "Capo Verde"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1370
+#: src/ais_target_data.cpp:1370
 msgid "Crozet Archipelago"
 msgstr "Illas Crozet"
 
-#: src/AIS_Target_Data.cpp:1372
+#: src/ais_target_data.cpp:1372
 msgid "Ivory Coast"
 msgstr "Costa do Marfil"
 
-#: src/AIS_Target_Data.cpp:1374
+#: src/ais_target_data.cpp:1374
 msgid "Comoros (Union of the)"
 msgstr "Comores (Unión das)"
 
-#: src/AIS_Target_Data.cpp:1376
+#: src/ais_target_data.cpp:1376
 msgid "Djibouti"
 msgstr "Djibuti"
 
-#: src/AIS_Target_Data.cpp:1378
+#: src/ais_target_data.cpp:1378
 msgid "Egypt"
 msgstr "Exipto"
 
-#: src/AIS_Target_Data.cpp:1380
+#: src/ais_target_data.cpp:1380
 msgid "Ethiopia"
 msgstr "Etiopía"
 
-#: src/AIS_Target_Data.cpp:1382
+#: src/ais_target_data.cpp:1382
 msgid "Eritrea"
 msgstr "Eritrea"
 
-#: src/AIS_Target_Data.cpp:1384
+#: src/ais_target_data.cpp:1384
 msgid "Gabonese Republic"
 msgstr "República Gabonesa"
 
-#: src/AIS_Target_Data.cpp:1386
+#: src/ais_target_data.cpp:1386
 msgid "Ghana"
 msgstr "Ghana"
 
-#: src/AIS_Target_Data.cpp:1388
+#: src/ais_target_data.cpp:1388
 msgid "Gambia"
 msgstr "Gambia"
 
-#: src/AIS_Target_Data.cpp:1390
+#: src/ais_target_data.cpp:1390
 msgid "Guinea-Bissau"
 msgstr "Guinea-Bisau"
 
-#: src/AIS_Target_Data.cpp:1392
+#: src/ais_target_data.cpp:1392
 msgid "Equatorial Guinea"
 msgstr "Guinea Ecuatorial"
 
-#: src/AIS_Target_Data.cpp:1394
+#: src/ais_target_data.cpp:1394
 msgid "Guinea"
 msgstr "Guinea"
 
-#: src/AIS_Target_Data.cpp:1396
+#: src/ais_target_data.cpp:1396
 msgid "Burkina Faso"
 msgstr "Burkina Faso"
 
-#: src/AIS_Target_Data.cpp:1398
+#: src/ais_target_data.cpp:1398
 msgid "Kenya"
 msgstr "Kenya"
 
-#: src/AIS_Target_Data.cpp:1400
+#: src/ais_target_data.cpp:1400
 msgid "Kerguelen Islands"
 msgstr "Illas Kerguelen"
 
-#: src/AIS_Target_Data.cpp:1403
+#: src/ais_target_data.cpp:1403
 msgid "Liberia"
 msgstr "Liberia"
 
-#: src/AIS_Target_Data.cpp:1405
+#: src/ais_target_data.cpp:1405
 msgid "South Sudan (Republic of)"
 msgstr "Sudán do Sur"
 
-#: src/AIS_Target_Data.cpp:1407
+#: src/ais_target_data.cpp:1407
 msgid "Libya"
 msgstr "Libia"
 
-#: src/AIS_Target_Data.cpp:1409
+#: src/ais_target_data.cpp:1409
 msgid "Lesotho"
 msgstr "Lesoto"
 
-#: src/AIS_Target_Data.cpp:1411
+#: src/ais_target_data.cpp:1411
 msgid "Mauritius"
 msgstr "Mauricio"
 
-#: src/AIS_Target_Data.cpp:1413
+#: src/ais_target_data.cpp:1413
 msgid "Madagascar"
 msgstr "Madagascar"
 
-#: src/AIS_Target_Data.cpp:1415
+#: src/ais_target_data.cpp:1415
 msgid "Mali"
 msgstr "Malí"
 
-#: src/AIS_Target_Data.cpp:1417
+#: src/ais_target_data.cpp:1417
 msgid "Mozambique"
 msgstr "Mozambique"
 
-#: src/AIS_Target_Data.cpp:1419
+#: src/ais_target_data.cpp:1419
 msgid "Mauritania"
 msgstr "Mauritania"
 
-#: src/AIS_Target_Data.cpp:1421
+#: src/ais_target_data.cpp:1421
 msgid "Malawi"
 msgstr "Malaui"
 
-#: src/AIS_Target_Data.cpp:1423
+#: src/ais_target_data.cpp:1423
 msgid "Niger"
 msgstr "Níxer"
 
-#: src/AIS_Target_Data.cpp:1425
+#: src/ais_target_data.cpp:1425
 msgid "Nigeria"
 msgstr "Nixeria"
 
-#: src/AIS_Target_Data.cpp:1427
+#: src/ais_target_data.cpp:1427
 msgid "Namibia"
 msgstr "Namibia"
 
-#: src/AIS_Target_Data.cpp:1429
+#: src/ais_target_data.cpp:1429
 msgid "Reunion"
 msgstr "Reunión"
 
-#: src/AIS_Target_Data.cpp:1431
+#: src/ais_target_data.cpp:1431
 msgid "Rwanda"
 msgstr "Ruanda"
 
-#: src/AIS_Target_Data.cpp:1433
+#: src/ais_target_data.cpp:1433
 msgid "Sudan"
 msgstr "Sudán"
 
-#: src/AIS_Target_Data.cpp:1435
+#: src/ais_target_data.cpp:1435
 msgid "Senegal"
 msgstr "Senegal"
 
-#: src/AIS_Target_Data.cpp:1437
+#: src/ais_target_data.cpp:1437
 msgid "Seychelles"
 msgstr "Seixeles"
 
-#: src/AIS_Target_Data.cpp:1439
+#: src/ais_target_data.cpp:1439
 msgid "Saint Helena"
 msgstr "Santa Helena"
 
-#: src/AIS_Target_Data.cpp:1441
+#: src/ais_target_data.cpp:1441
 msgid "Somalia"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1443
+#: src/ais_target_data.cpp:1443
 msgid "Sierra Leone"
 msgstr "Serra Leoa"
 
-#: src/AIS_Target_Data.cpp:1445
+#: src/ais_target_data.cpp:1445
 msgid "Sao Tome and Principe"
 msgstr "San Tomé e Príncipe"
 
-#: src/AIS_Target_Data.cpp:1447
+#: src/ais_target_data.cpp:1447
 msgid "Eswatini"
 msgstr "Suazilandia"
 
-#: src/AIS_Target_Data.cpp:1449
+#: src/ais_target_data.cpp:1449
 msgid "Chad"
 msgstr "Chad"
 
-#: src/AIS_Target_Data.cpp:1451
+#: src/ais_target_data.cpp:1451
 msgid "Togolese Republic"
 msgstr "Togo"
 
-#: src/AIS_Target_Data.cpp:1453
+#: src/ais_target_data.cpp:1453
 msgid "Tunisia"
 msgstr "Tunisia"
 
-#: src/AIS_Target_Data.cpp:1455 src/AIS_Target_Data.cpp:1461
+#: src/ais_target_data.cpp:1455 src/ais_target_data.cpp:1461
 msgid "Tanzania"
 msgstr "Tanzania"
 
-#: src/AIS_Target_Data.cpp:1457
+#: src/ais_target_data.cpp:1457
 msgid "Uganda"
 msgstr "Uganda"
 
-#: src/AIS_Target_Data.cpp:1459
+#: src/ais_target_data.cpp:1459
 msgid "Dem Rep.of the Congo"
 msgstr "República Democrática do Congo"
 
-#: src/AIS_Target_Data.cpp:1463
+#: src/ais_target_data.cpp:1463
 msgid "Zambia"
 msgstr "Zambia"
 
-#: src/AIS_Target_Data.cpp:1465
+#: src/ais_target_data.cpp:1465
 msgid "Zimbabwe"
 msgstr "Cimbabue"
 
-#: src/AIS_Target_Data.cpp:1467
+#: src/ais_target_data.cpp:1467
 msgid "Argentine Republic"
 msgstr "Argentina"
 
-#: src/AIS_Target_Data.cpp:1469
+#: src/ais_target_data.cpp:1469
 msgid "Brazil"
 msgstr "Brasil"
 
-#: src/AIS_Target_Data.cpp:1471
+#: src/ais_target_data.cpp:1471
 msgid "Bolivia"
 msgstr "Bolivia"
 
-#: src/AIS_Target_Data.cpp:1473
+#: src/ais_target_data.cpp:1473
 msgid "Chile"
 msgstr "Chile"
 
-#: src/AIS_Target_Data.cpp:1475
+#: src/ais_target_data.cpp:1475
 msgid "Colombia"
 msgstr "Colombia"
 
-#: src/AIS_Target_Data.cpp:1477
+#: src/ais_target_data.cpp:1477
 msgid "Ecuador"
 msgstr "Ecuador"
 
-#: src/AIS_Target_Data.cpp:1479
+#: src/ais_target_data.cpp:1479
 msgid "Falkland Islands"
 msgstr "Illas Malvinas"
 
-#: src/AIS_Target_Data.cpp:1481
+#: src/ais_target_data.cpp:1481
 msgid "France - Guiana"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:1483
+#: src/ais_target_data.cpp:1483
 msgid "Guyana"
 msgstr "Güiana"
 
-#: src/AIS_Target_Data.cpp:1485
+#: src/ais_target_data.cpp:1485
 msgid "Paraguay"
 msgstr "Paraguai"
 
-#: src/AIS_Target_Data.cpp:1487
+#: src/ais_target_data.cpp:1487
 msgid "Peru"
 msgstr "Perú"
 
-#: src/AIS_Target_Data.cpp:1489
+#: src/ais_target_data.cpp:1489
 msgid "Suriname"
 msgstr "Suriname"
 
-#: src/AIS_Target_Data.cpp:1491
+#: src/ais_target_data.cpp:1491
 msgid "Uruguay"
 msgstr "Uruguai"
 
-#: src/AIS_Target_Data.cpp:1493
+#: src/ais_target_data.cpp:1493
 msgid "Venezuela"
 msgstr "Venezuela"
 
@@ -4359,11 +4359,11 @@ msgstr ""
 msgid " successfully installed"
 msgstr ""
 
-#: src/download_mgr.cpp:576 src/PluginHandler.cpp:1164
+#: src/download_mgr.cpp:576 src/plugin_handler.cpp:1164
 msgid "Installation complete"
 msgstr ""
 
-#: src/download_mgr.cpp:592 src/PluginHandler.cpp:1155
+#: src/download_mgr.cpp:592 src/plugin_handler.cpp:1155
 msgid "Installation error"
 msgstr ""
 
@@ -6572,11 +6572,11 @@ msgstr "Fallou a actualización das celas S57.\n"
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "Crear Ficheiro OpenCPN S57 SENC..."
 
-#: src/PluginHandler.cpp:1154
+#: src/plugin_handler.cpp:1154
 msgid "Please check system log for more info."
 msgstr ""
 
-#: src/PluginHandler.cpp:1163
+#: src/plugin_handler.cpp:1163
 msgid " successfully installed from cache"
 msgstr ""
 
