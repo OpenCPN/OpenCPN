@@ -72,7 +72,7 @@
 #include "glTextureDescriptor.h"
 #include "ChInfoWin.h"
 #include "Quilt.h"
-#include "SelectItem.h"
+#include "select_item.h"
 #include "Select.h"
 #include "SystemCmdSound.h"
 #include "FontMgr.h"
@@ -203,7 +203,7 @@ extern bool g_bTempShowMenuBar;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
 extern int g_Show_Target_Name_Scale;
 
@@ -3696,7 +3696,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
         this, m_cursor_lat, m_cursor_lon, SELTYPE_AISTARGET);
     if (pFind) {
       int FoundAIS_MMSI = (wxIntPtr)pFind->m_pData1;
-      AIS_Target_Data *ptarget =
+      AisTargetData *ptarget =
           g_pAIS->Get_Target_Data_From_MMSI(FoundAIS_MMSI);
 
       if (ptarget) {
@@ -9360,7 +9360,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     float vp_scale = GetVPScale();
 
     for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
-      AIS_Target_Data *target_data = target.second;
+      AisTargetData *target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (auto &ani : target_data->area_notices) {
           Ais8_001_22 &area_notice = ani.second;

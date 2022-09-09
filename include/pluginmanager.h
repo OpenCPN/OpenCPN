@@ -82,7 +82,7 @@
 
 //    Assorted static helper routines
 
-PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
+PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget);
 
 class PluginListPanel;
 class PluginPanel;

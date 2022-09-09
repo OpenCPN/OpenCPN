@@ -325,7 +325,7 @@ extern bool g_bresponsive;
 extern bool g_bGLexpert;
 
 extern int g_SENC_LOD_pixels;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -1836,7 +1836,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     }
   }
 
-  conf->SetPath(_T ( "/MMSIProperties" ));
+  conf->SetPath(_T ( "/MmsiProperties" ));
   int iPMax = conf->GetNumberOfEntries();
   if (iPMax) {
     wxString str, val;
@@ -1848,7 +1848,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
       bool bfound = false;
       for (unsigned int j = 0; j < g_MMSI_Props_Array.GetCount(); j++) {
-        MMSIProperties *pProps = g_MMSI_Props_Array.Item(j);
+        MmsiProperties *pProps = g_MMSI_Props_Array.Item(j);
         if (pProps->Serialize().IsSameAs(val)) {
           bfound = true;
           break;

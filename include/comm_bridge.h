@@ -24,16 +24,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef _COMM_BRIDGE_H
+#define _COMM_BRIDGE_H
+
 #include <memory>
 #include <string>
 #include <unordered_map>
 
-#include "observable_navmsg.h"
-#include "comm_navmsg.h"
 #include "comm_decoder.h"
+#include "comm_navmsg.h"
+#include "observable_navmsg.h"
 
-#ifndef _COMM_BRIDGE_H
-#define _COMM_BRIDGE_H
 
 typedef struct{
   std::string pcclass;

@@ -27,7 +27,7 @@
 class AisInfoGui: public wxEvtHandler {
   AisInfoGui();
 
-  void ShowAisInfo(AIS_Target_Data* palert_target);
+  void ShowAisInfo(AisTargetData* palert_target);
   bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
 
   bool m_bAIS_Audio_Alert_On;

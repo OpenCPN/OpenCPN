@@ -51,16 +51,16 @@ enum AISAudioSoundType {
   AISAUDIO_DSC
 };
 
-class MMSIProperties {
+class MmsiProperties {
 public:
-  MMSIProperties(){};
-  MMSIProperties(int mmsi) {
+  MmsiProperties(){};
+  MmsiProperties(int mmsi) {
     Init();
     MMSI = mmsi;
   }
-  MMSIProperties(wxString &spec);
+  MmsiProperties(wxString &spec);
 
-  ~MMSIProperties();
+  ~MmsiProperties();
 
   wxString Serialize();
 
@@ -75,26 +75,26 @@ public:
   wxString m_ShipName;
 };
 
-WX_DEFINE_ARRAY_PTR(MMSIProperties *, ArrayOfMMSIProperties);
+WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
 
-class AIS_Decoder : public wxEvtHandler {
+class AisDecoder : public wxEvtHandler {
 public:
-  AIS_Decoder();
+  AisDecoder();
 
-  ~AIS_Decoder(void);
+  ~AisDecoder(void);
 
-  AIS_Error Decode(const wxString &str);
-  std::unordered_map<int, AIS_Target_Data *> &GetTargetList(void) {
+  AisError Decode(const wxString &str);
+  std::unordered_map<int, AisTargetData *> &GetTargetList(void) {
     return AISTargetList;
   }
-  std::unordered_map<int, AIS_Target_Data *> &GetAreaNoticeSourcesList(void) {
+  std::unordered_map<int, AisTargetData *> &GetAreaNoticeSourcesList(void) {
     return AIS_AreaNotice_Sources;
   }
-  AIS_Target_Data *Get_Target_Data_From_MMSI(int mmsi);
+  AisTargetData *Get_Target_Data_From_MMSI(int mmsi);
   int GetNumTargets(void) { return m_n_targets; }
   bool IsAISSuppressed(void) { return m_bSuppressed; }
   bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
-  AIS_Error DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos,
+  AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos,
                             wxString *acc);
   void DeletePersistentTrack(Track *track);
   std::map<int, Track *> m_persistent_tracks;
@@ -115,7 +115,7 @@ public:
   /** Notified on new track creation. Contains a Track* pointer. */
   EventVar new_track;
 
-  /** Notified when about to delete track. Contains a MMSIProperties* ptr */
+  /** Notified when about to delete track. Contains a MmsiProperties* ptr */
   EventVar delete_track;
 
   /** A JSON message should be sent. Contains a AisTargetData* pointer. */
@@ -128,23 +128,23 @@ private:
   void OnTimerDSC(wxTimerEvent &event);
 
   bool NMEACheckSumOK(const wxString &str);
-  bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
+  bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd);
   void UpdateAllCPA(void);
-  void UpdateOneCPA(AIS_Target_Data *ptarget);
+  void UpdateOneCPA(AisTargetData *ptarget);
   void UpdateAllAlarms(void);
   void UpdateAllTracks(void);
-  void UpdateOneTrack(AIS_Target_Data *ptarget);
+  void UpdateOneTrack(AisTargetData *ptarget);
   void BuildERIShipTypeHash(void);
-  AIS_Target_Data *ProcessDSx(const wxString &str, bool b_take_dsc = false);
+  AisTargetData *ProcessDSx(const wxString &str, bool b_take_dsc = false);
 
   wxString DecodeDSEExpansionCharacters(wxString dseData);
-  void getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
-                    AIS_Target_Data *&pStaleTarget, bool &bnewtarget,
+  void getAISTarget(long mmsi, AisTargetData *&pTargetData,
+                    AisTargetData *&pStaleTarget, bool &bnewtarget,
                     int &last_report_ticks, wxDateTime &now);
-  void getMMSIProperties(AIS_Target_Data *&pTargetData);
-  void handleUpdate(AIS_Target_Data *pTargetData, bool bnewtarget,
+  void getMmsiProperties(AisTargetData *&pTargetData);
+  void handleUpdate(AisTargetData *pTargetData, bool bnewtarget,
                     wxJSONValue &update);
-  void updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,
+  void updateItem(AisTargetData *pTargetData, bool bnewtarget,
                   wxJSONValue &item, wxString &sfixtime) const;
 
   void InitCommListeners(void);
@@ -152,8 +152,8 @@ private:
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxString m_signalk_selfid;
-  std::unordered_map<int, AIS_Target_Data *> AISTargetList;
-  std::unordered_map<int, AIS_Target_Data *> AIS_AreaNotice_Sources;
+  std::unordered_map<int, AisTargetData *> AISTargetList;
+  std::unordered_map<int, AisTargetData *> AIS_AreaNotice_Sources;
   AIS_Target_Name_Hash *AISTargetNamesC;
   AIS_Target_Name_Hash *AISTargetNamesNC;
 
@@ -174,7 +174,7 @@ private:
   wxString sentence_accumulator;
   bool m_OK;
 
-  AIS_Target_Data *m_pLatestTargetData;
+  AisTargetData *m_pLatestTargetData;
 
   bool m_bAIS_Audio_Alert_On;
   wxTimer m_AIS_Audio_Alert_Timer;
@@ -182,7 +182,7 @@ private:
   int m_n_targets;
   bool m_bSuppressed;
   bool m_bGeneralAlert;
-  AIS_Target_Data *m_ptentative_dsctarget;
+  AisTargetData *m_ptentative_dsctarget;
   wxTimer m_dsc_timer;
   wxString m_dsc_last_string;
   std::vector<int> m_MMSI_MismatchVec;

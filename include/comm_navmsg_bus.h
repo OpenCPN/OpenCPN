@@ -27,6 +27,9 @@
 
 /* API handling raw partially decoded messages. */
 
+#ifndef _NAVMSG_BUS_H__
+#define _NAVMSG_BUS_H__
+
 #include <memory>
 #include <vector>
 
@@ -36,8 +39,6 @@
 #include "comm_driver.h"
 #include "observable_navmsg.h"
 
-#ifndef _NAVMSG_BUS_H__
-#define _NAVMSG_BUS_H__
 
 /** The raw message layer, a singleton. */
 class NavMsgBus : public DriverListener {

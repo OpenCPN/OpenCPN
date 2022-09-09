@@ -66,7 +66,7 @@
 #include "glTextureDescriptor.h"
 #include "ChInfoWin.h"
 #include "Quilt.h"
-#include "SelectItem.h"
+#include "select_item.h"
 #include "Select.h"
 #include "FontMgr.h"
 #include "ais_decoder.h"

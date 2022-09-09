@@ -460,7 +460,7 @@ double last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
 Multiplexer *g_pMUX;
 CommN0183Out *g_comm_out;
 
-AIS_Decoder *g_pAIS;
+AisDecoder *g_pAIS;
 bool g_bAIS_CPA_Alert;
 bool g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog *g_pais_alert_dialog_active;

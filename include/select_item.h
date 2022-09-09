@@ -22,8 +22,8 @@
  ***************************************************************************
  */
 
-#ifndef __SELECTITEM_H__
-#define __SELECTITEM_H__
+#ifndef _SELECTITEM_H__
+#define _SELECTITEM_H__
 
 #include <wx/list.h>
 

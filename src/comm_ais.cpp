@@ -34,7 +34,7 @@ static const long long lNaN = 0xfff8000000000000;
 //----------------------------------------------------------------------------------
 //      Decode a single AIVDO sentence to a Generic Position Report
 //----------------------------------------------------------------------------------
-AIS_Error DecodeSingleVDO(const wxString &str,
+AisError DecodeSingleVDO(const wxString &str,
                           GenericPosDatEx *pos) {
   //  Make some simple tests for validity
   if (str.Len() > 100) return AIS_NMEAVDX_TOO_LONG;
@@ -86,9 +86,9 @@ AIS_Error DecodeSingleVDO(const wxString &str,
   }
 
   //  Create the bit accessible string
-  AIS_Bitstring strbit(string_to_parse.mb_str());
+  AisBitstring strbit(string_to_parse.mb_str());
 
-  AIS_Target_Data TargetData;
+  AisTargetData TargetData;
 
   bool bdecode_result = Parse_VDXBitstring(&strbit, &TargetData);
 
@@ -138,8 +138,8 @@ AIS_Error DecodeSingleVDO(const wxString &str,
 //----------------------------------------------------------------------------
 //      Parse a NMEA VDM/VDO Bitstring
 //----------------------------------------------------------------------------
-bool Parse_VDXBitstring(AIS_Bitstring* bstr,
-                        AIS_Target_Data* ptd) {
+bool Parse_VDXBitstring(AisBitstring* bstr,
+                        AisTargetData* ptd) {
   bool parse_result = false;
   bool b_posn_report = false;
 

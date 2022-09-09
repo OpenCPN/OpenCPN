@@ -874,7 +874,7 @@ std::string PluginHandler::getMetadataPath() {
   return metadataPath;
 }
 
-static void parseMetadata(const std::string path, catalog_ctx& ctx) {
+static void parseMetadata(const std::string path, CatalogCtx& ctx) {
   using namespace std;
 
   wxLogMessage("PluginHandler: using metadata path: %s", path);
@@ -968,7 +968,7 @@ void PluginHandler::cleanup(const std::string& filelist,
 
 const std::vector<PluginMetadata> PluginHandler::getAvailable() {
   using namespace std;
-  catalog_ctx ctx;
+  CatalogCtx ctx;
 
   auto catalogHandler = CatalogHandler::getInstance();
 
@@ -1069,7 +1069,7 @@ bool PluginHandler::installPlugin(std::string path) {
     last_error_msg = os.str();
     return false;
   }
-  struct catalog_ctx ctx;
+  struct CatalogCtx ctx;
   std::ifstream istream(temp_path);
   std::stringstream buff;
   buff << istream.rdbuf();

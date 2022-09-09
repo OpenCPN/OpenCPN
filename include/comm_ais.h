@@ -30,9 +30,9 @@
 #include "ais_defs.h"
 #include "ocpn_types.h"
 
-bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
+bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd);
 
-AIS_Error DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos);
+AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos);
 
 bool NMEA_AISCheckSumOK(const wxString& str);
 

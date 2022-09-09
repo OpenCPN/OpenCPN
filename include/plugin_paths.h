@@ -1,8 +1,6 @@
 #include <string>
 #include <vector>
-#include <wx/filename.h>
-#include <wx/platinfo.h>
-#include <wx/string.h>
+
 
 /** Join a list of directories to a string. */
 std::string join(std::vector<std::string> v, char c);

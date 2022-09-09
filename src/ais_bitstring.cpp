@@ -25,7 +25,7 @@
 #include "ais_bitstring.h"
 #include <string.h>
 
-AIS_Bitstring::AIS_Bitstring(const char *str) {
+AisBitstring::AisBitstring(const char *str) {
   byte_length = strlen(str);
 
   for (int i = 0; i < byte_length; i++) {
@@ -33,11 +33,11 @@ AIS_Bitstring::AIS_Bitstring(const char *str) {
   }
 }
 
-int AIS_Bitstring::GetBitCount() { return byte_length * 6; }
+int AisBitstring::GetBitCount() { return byte_length * 6; }
 
 //  Convert printable characters to IEC 6 bit representation
 //  according to rules in IEC AIS Specification
-unsigned char AIS_Bitstring::to_6bit(const char c) {
+unsigned char AisBitstring::to_6bit(const char c) {
   if (c < 0x30) return (unsigned char)-1;
   if (c > 0x77) return (unsigned char)-1;
   if ((0x57 < c) && (c < 0x60)) return (unsigned char)-1;
@@ -53,7 +53,7 @@ unsigned char AIS_Bitstring::to_6bit(const char c) {
   return (unsigned char)(cp & 0x3f);
 }
 
-int AIS_Bitstring::GetInt(int sp, int len, bool signed_flag) {
+int AisBitstring::GetInt(int sp, int len, bool signed_flag) {
   int acc = 0;
   int s0p = sp - 1;  // to zero base
 
@@ -73,7 +73,7 @@ int AIS_Bitstring::GetInt(int sp, int len, bool signed_flag) {
   return acc;
 }
 
-int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len) {
+int AisBitstring::GetStr(int sp, int bit_len, char *dest, int max_len) {
   // char temp_str[85];
   char *temp_str = dest;
 

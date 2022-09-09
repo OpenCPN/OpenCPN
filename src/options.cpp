@@ -331,7 +331,7 @@ extern bool g_bGLexpert;
 extern wxArrayString TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
-extern AIS_Decoder* g_pAIS;
+extern AisDecoder* g_pAIS;
 
 options* g_pOptions;
 
@@ -880,7 +880,7 @@ void OCPNCheckedListCtrl::Clear() {
 // Helper for conditional file name separator
 void appendOSDirSlash(wxString* pString);
 
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ConfigCreateDialog
@@ -971,7 +971,7 @@ EVT_BUTTON(ID_MMSIEDIT_CANCEL, MMSIEditDialog::OnMMSIEditCancelClick)
 EVT_BUTTON(ID_MMSIEDIT_OK, MMSIEditDialog::OnMMSIEditOKClick)
 END_EVENT_TABLE()
 
-MMSIEditDialog::MMSIEditDialog(MMSIProperties* props, wxWindow* parent,
+MMSIEditDialog::MMSIEditDialog(MmsiProperties* props, wxWindow* parent,
                                wxWindowID id, const wxString& caption,
                                const wxPoint& pos, const wxSize& size,
                                long style)
@@ -1100,7 +1100,7 @@ void MMSIEditDialog::Persist() {
     m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
     if (m_props->m_ShipName == wxEmptyString) {
-      AIS_Target_Data* proptarget =
+      AisTargetData* proptarget =
           g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
       if (proptarget) {
         wxString s = proptarget->GetFullName();
@@ -1114,7 +1114,7 @@ void MMSIEditDialog::Persist() {
 }
 
 void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
-  // Update the MMSIProperties by the passed pointer
+  // Update the MmsiProperties by the passed pointer
   if (m_props) {
     long nmmsi;
     m_MMSICtl->GetValue().ToLong(&nmmsi);
@@ -1161,7 +1161,7 @@ MMSIListCtrl::~MMSIListCtrl(void) {}
 
 wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
-  MMSIProperties* props = g_MMSI_Props_Array[item];
+  MmsiProperties* props = g_MMSI_Props_Array[item];
 
   if (!props) return ret;
   switch (column) {
@@ -1210,8 +1210,8 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
 void MMSIListCtrl::OnListItemClick(wxListEvent& event) {}
 
 void MMSIListCtrl::OnListItemActivated(wxListEvent& event) {
-  MMSIProperties* props = g_MMSI_Props_Array.Item(event.GetIndex());
-  MMSIProperties* props_new = new MMSIProperties(*props);
+  MmsiProperties* props = g_MMSI_Props_Array.Item(event.GetIndex());
+  MmsiProperties* props_new = new MmsiProperties(*props);
 
   MMSIEditDialog* pd =
       new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
@@ -1253,13 +1253,13 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
 
 void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
   int context_item = m_context_item;
-  MMSIProperties* props = g_MMSI_Props_Array[context_item];
+  MmsiProperties* props = g_MMSI_Props_Array[context_item];
 
   if (!props) return;
 
   switch (event.GetId()) {
     case ID_DEF_MENU_MMSI_EDIT: {
-      MMSIProperties* props_new = new MMSIProperties(*props);
+      MmsiProperties* props_new = new MmsiProperties(*props);
       MMSIEditDialog* pd =
           new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
                              wxDefaultPosition, wxSize(200, 200));
@@ -1395,7 +1395,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
 MMSI_Props_Panel::~MMSI_Props_Panel(void) {}
 
 void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
-  MMSIProperties* props = new MMSIProperties(-1);
+  MmsiProperties* props = new MmsiProperties(-1);
 
   MMSIEditDialog* pd =
       new MMSIEditDialog(props, m_parent, -1, _("Add MMSI Properties"),
@@ -7071,13 +7071,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //   Update all the current targets
   if (g_pAIS) {
     for (const auto& it : g_pAIS->GetTargetList()) {
-      AIS_Target_Data* pAISTarget = it.second;
+      AisTargetData* pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = g_bAISShowTracks;
         // Check for exceptions in MMSI properties
         for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
           if (pAISTarget->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-            MMSIProperties *props = g_MMSI_Props_Array[i];
+            MmsiProperties *props = g_MMSI_Props_Array[i];
             if (TRACKTYPE_NEVER == props->TrackType) {
               pAISTarget->b_show_track = false;
               break;

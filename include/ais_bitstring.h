@@ -27,9 +27,9 @@
 
 #define AIS_MAX_MESSAGE_LEN \
   (10 * 82)  // AIS Spec allows up to 9 sentences per message, 82 bytes each
-class AIS_Bitstring {
+class AisBitstring {
 public:
-  AIS_Bitstring(const char *str);
+  AisBitstring(const char *str);
   unsigned char to_6bit(const char c);
 
   /// sp is starting bit, 1-based

@@ -1,12 +1,12 @@
 // testing
-#ifndef __WXBOUNDINGBOX_H__
-#define __WXBOUNDINGBOX_H__
+#ifndef _WXBOUNDINGBOX_H__
+#define _WXBOUNDINGBOX_H__
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
 
-#include "wx/geometry.h"
+#include <wx/geometry.h>
 
 enum OVERLAP { _IN, _ON, _OUT };
 
@@ -135,4 +135,4 @@ private:
   bool m_valid;
 };
 
-#endif
+#endif  // _WXBOUNDINGBOX_H__

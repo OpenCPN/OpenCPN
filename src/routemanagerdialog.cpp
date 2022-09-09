@@ -87,7 +87,7 @@ extern double gLat, gLon;
 extern double gCog, gSog;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
 extern bool g_bOverruleScaMin;
 

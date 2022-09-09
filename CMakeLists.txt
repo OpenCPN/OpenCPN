@@ -911,7 +911,7 @@ set(
   include/S57Sector.h
   include/safe_mode.h
   include/Select.h
-  include/SelectItem.h
+  include/select_item.h
   include/semantic_vers.h
   include/SendToGpsDlg.h
   include/Station_Data.h
@@ -975,7 +975,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
-  ${CMAKE_SOURCE_DIR}/src/SelectItem.cpp
+  ${CMAKE_SOURCE_DIR}/src/select_item.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
 )
 

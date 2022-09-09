@@ -26,7 +26,9 @@
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <vector>
+
 #include <wx/thread.h>
+#include <wx/log.h>
 
 #include "comm_drv_n0183_serial.h"
 #include "comm_navmsg_bus.h"

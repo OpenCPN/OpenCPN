@@ -65,7 +65,7 @@ class WVSChart;
 class MyFrame;
 class ChartBaseBSB;
 class ChartBase;
-class AIS_Target_Data;
+class AisTargetData;
 class S57ObjectTree;
 class S57ObjectDesc;
 class RolloverWin;

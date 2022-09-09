@@ -87,7 +87,7 @@ extern void pupHandler_PasteRoute();
 extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
@@ -346,7 +346,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     float vp_scale = parent->GetVPScale();
 
     for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
-      AIS_Target_Data *target_data = target.second;
+      AisTargetData *target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (auto &ani : target_data->area_notices) {
           Ais8_001_22 &area_notice = ani.second;
@@ -569,7 +569,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
     if (g_pAIS) {
       if (parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET)) {
-        AIS_Target_Data *myptarget =
+        AisTargetData *myptarget =
             g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if (!g_bBasicMenus && myptarget) {
           name = myptarget->GetFullName();
@@ -1318,14 +1318,14 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_DEF_MENU_AIS_CPA: {
-      AIS_Target_Data *myptarget =
+      AisTargetData *myptarget =
           g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->Toggle_AIS_CPA();
       break;
     }
 
     case ID_DEF_MENU_AISSHOWTRACK: {
-      AIS_Target_Data *myptarget =
+      AisTargetData *myptarget =
           g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->ToggleShowTrack();
       break;

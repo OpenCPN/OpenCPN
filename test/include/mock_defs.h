@@ -1,7 +1,7 @@
 #ifndef _UNITTEST_MOCK_DEFS
 #define _UNITTEST_MOCK_DEFS
 
-#include "SelectItem.h"
+#include "select_item.h"
 #include "vector2D.h"
 
 class AISTargetAlertDialog;

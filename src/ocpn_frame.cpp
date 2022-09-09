@@ -420,7 +420,7 @@ extern int g_priSats;
 extern int g_SatsInView;
 extern bool g_bSatValid;
 extern double g_UserVar;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern bool g_bUseGLL;
 extern int g_MemFootSec;
 extern int g_MemFootMB;
@@ -1199,7 +1199,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //    Establish my children
   g_pMUX = new Multiplexer();
 
-  g_pAIS = new AIS_Decoder();
+  g_pAIS = new AisDecoder();
 
   //  Create/connect a dynamic event handler slot
   wxLogMessage(" **** Connect stuff");
@@ -7058,7 +7058,7 @@ void MyFrame::LoadHarmonics() {
 
 Route *pAISMOBRoute;
 
-void MyFrame::ActivateAISMOBRoute(AIS_Target_Data *ptarget) {
+void MyFrame::ActivateAISMOBRoute(AisTargetData *ptarget) {
   if (!ptarget) return;
 
   //    The MOB point
@@ -7135,7 +7135,7 @@ void MyFrame::ActivateAISMOBRoute(AIS_Target_Data *ptarget) {
   wxLogMessage(mob_message);
 }
 
-void MyFrame::UpdateAISMOBRoute(AIS_Target_Data *ptarget) {
+void MyFrame::UpdateAISMOBRoute(AisTargetData *ptarget) {
   if (pAISMOBRoute && ptarget) {
     //   Update Current Ownship point
     RoutePoint *OwnPoint = pAISMOBRoute->GetPoint(1);

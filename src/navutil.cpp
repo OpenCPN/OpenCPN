@@ -396,7 +396,7 @@ extern bool g_bresponsive;
 extern bool g_bGLexpert;
 
 extern int g_SENC_LOD_pixels;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -1509,7 +1509,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "DefaultWPIcon" ), &g_default_wp_icon);
   Read(_T ( "DefaultRPIcon" ), &g_default_routepoint_icon);
 
-  SetPath(_T ( "/MMSIProperties" ));
+  SetPath(_T ( "/MmsiProperties" ));
   int iPMax = GetNumberOfEntries();
   if (iPMax) {
     g_MMSI_Props_Array.Empty();
@@ -1519,7 +1519,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     while (bCont) {
       pConfig->Read(str, &val);  // Get an entry
 
-      MMSIProperties *pProps = new MMSIProperties(val);
+      MmsiProperties *pProps = new MmsiProperties(val);
       g_MMSI_Props_Array.Add(pProps);
 
       bCont = pConfig->GetNextEntry(str, dummy);
@@ -2786,8 +2786,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "DefaultWPIcon" ), g_default_wp_icon);
   Write(_T ( "DefaultRPIcon" ), g_default_routepoint_icon);
 
-  DeleteGroup(_T ( "/MMSIProperties" ));
-  SetPath(_T ( "/MMSIProperties" ));
+  DeleteGroup(_T ( "/MmsiProperties" ));
+  SetPath(_T ( "/MmsiProperties" ));
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     wxString p;
     p.Printf(_T("Props%d"), i);

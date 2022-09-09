@@ -96,13 +96,13 @@ extern bool g_bAIS_CPA_Alert_Audio;
 extern int g_iDistanceFormat;
 extern int g_iSpeedFormat;
 
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
 extern wxString AISTargetNameFileName;
 extern wxString g_default_wp_icon;
 extern std::vector<Track*> g_TrackList;
 extern Multiplexer *g_pMUX;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 
 extern wxString g_CmdSoundString;
 
@@ -121,10 +121,10 @@ wxDEFINE_EVENT(EVT_N0183_TTM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_OSD, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
-EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
-EVT_TIMER(TIMER_DSC, AIS_Decoder::OnTimerDSC)
-EVT_COMMAND(wxID_ANY, SOUND_PLAYED_EVTYPE, AIS_Decoder::OnSoundFinishedAISAudio)
+BEGIN_EVENT_TABLE(AisDecoder, wxEvtHandler)
+EVT_TIMER(TIMER_AIS1, AisDecoder::OnTimerAIS)
+EVT_TIMER(TIMER_DSC, AisDecoder::OnTimerDSC)
+EVT_COMMAND(wxID_ANY, SOUND_PLAYED_EVTYPE, AisDecoder::OnSoundFinishedAISAudio)
 END_EVENT_TABLE()
 
 static const double ms_to_knot_factor = 1.9438444924406;
@@ -150,17 +150,17 @@ extern bool g_bAIS_DSC_Alert_Audio;
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
-    // auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
+    // auto aisDecoder = static_cast<AisDecoder*>(ptr);
     wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
     wxPostEvent(g_pAIS, ev);
   }
 }
 
-void AISshipNameCache(AIS_Target_Data *pTargetData,
+void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
 
-AIS_Decoder::AIS_Decoder() : m_signalk_selfid("") {
+AisDecoder::AisDecoder() : m_signalk_selfid("") {
   // Load cached AIS target names from a file
   AISTargetNamesC = new AIS_Target_Name_Hash;
   AISTargetNamesNC = new AIS_Target_Name_Hash;
@@ -207,15 +207,15 @@ AIS_Decoder::AIS_Decoder() : m_signalk_selfid("") {
 
   //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
   //FIXME delete Connect(wxEVT_OCPN_DATASTREAM,
-  //        (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS);
+  //        (wxObjectEventFunction)(wxEventFunction)&AisDecoder::OnEvtAIS);
 //   Connect(EVT_OCPN_SIGNALKSTREAM,
-//           (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtSignalK);
+//           (wxObjectEventFunction)(wxEventFunction)&AisDecoder::OnEvtSignalK);
   InitCommListeners();
 }
 
-AIS_Decoder::~AIS_Decoder(void) {
+AisDecoder::~AisDecoder(void) {
   for (const auto &it : GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
 
     delete td;
   }
@@ -261,7 +261,7 @@ AIS_Decoder::~AIS_Decoder(void) {
 #endif
 }
 
-void AIS_Decoder::InitCommListeners(void) {
+void AisDecoder::InitCommListeners(void) {
   // Initialize the comm listeners
 
   auto& msgbus = NavMsgBus::GetInstance();
@@ -341,7 +341,7 @@ void AIS_Decoder::InitCommListeners(void) {
 }
 
 
-bool AIS_Decoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
+bool AisDecoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
   std::string str = n0183_msg->payload;
   wxString sentence(str.c_str());
   Decode(sentence);
@@ -349,7 +349,7 @@ bool AIS_Decoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg
   return true;
 }
 
-// void AIS_Decoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
+// void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
 //   std::string msgTerminated = sK_msg->raw_message;;
 //   wxString sentence(msgTerminated.c_str());
 //   Decode(sentence);
@@ -357,7 +357,7 @@ bool AIS_Decoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg
 //   return true;
 // }
 
-void AIS_Decoder::BuildERIShipTypeHash(void) {
+void AisDecoder::BuildERIShipTypeHash(void) {
   make_hash_ERI(8000, _("Vessel, type unknown"));
   make_hash_ERI(8150, _("Freightbarge"));
   make_hash_ERI(8160, _("Tankbarge"));
@@ -442,7 +442,7 @@ void AIS_Decoder::BuildERIShipTypeHash(void) {
 //----------------------------------------------------------------------------------
 //     Handle events from AIS DataStream
 //----------------------------------------------------------------------------------
-void AIS_Decoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
+void AisDecoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
   wxString message = event.ProcessNMEA4Tags();
 
   int nr = 0;
@@ -468,7 +468,7 @@ void AIS_Decoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
 //----------------------------------------------------------------------------------
 //     Handle events from SignalK
 //----------------------------------------------------------------------------------
-void AIS_Decoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
+void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   wxJSONReader jsonReader;
   wxJSONValue root;
 
@@ -519,7 +519,7 @@ void AIS_Decoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   // Stop here if the target shall be ignored
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
-      MMSIProperties * props = g_MMSI_Props_Array[i];
+      MmsiProperties * props = g_MMSI_Props_Array[i];
       if (props->m_bignore) {
         return;
       }
@@ -530,19 +530,19 @@ void AIS_Decoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     wxJSONWriter writer;
     writer.Write(root, dbg);
 
-    wxString msg( _T("AIS_Decoder::OnEvtSignalK: ") );
+    wxString msg( _T("AisDecoder::OnEvtSignalK: ") );
     msg.append(dbg);
     wxLogMessage(msg);
 #endif
-  AIS_Target_Data *pTargetData = 0;
-  AIS_Target_Data *pStaleTarget = NULL;
+  AisTargetData *pTargetData = 0;
+  AisTargetData *pStaleTarget = NULL;
   bool bnewtarget = false;
   int last_report_ticks;
   wxDateTime now;
   getAISTarget(mmsi, pTargetData, pStaleTarget, bnewtarget, last_report_ticks,
                now);
   if (pTargetData) {
-    getMMSIProperties(pTargetData);
+    getMmsiProperties(pTargetData);
     if (root.HasMember(_T("updates")) && root[_T("updates")].IsArray()) {
       wxJSONValue &updates = root[_T("updates")];
       for (int i = 0; i < updates.Size(); ++i) {
@@ -559,7 +559,7 @@ void AIS_Decoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   }
 }
 
-void AIS_Decoder::handleUpdate(AIS_Target_Data *pTargetData, bool bnewtarget,
+void AisDecoder::handleUpdate(AisTargetData *pTargetData, bool bnewtarget,
                                wxJSONValue &update) {
   wxString sfixtime = "";
 
@@ -591,7 +591,7 @@ void AIS_Decoder::handleUpdate(AIS_Target_Data *pTargetData, bool bnewtarget,
   if (pTargetData->b_show_track) UpdateOneTrack(pTargetData);
 }
 
-void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,
+void AisDecoder::updateItem(AisTargetData *pTargetData, bool bnewtarget,
                              wxJSONValue &item, wxString &sfixtime) const {
   if (item.HasMember(_T("path")) && item.HasMember(_T("value"))) {
     const wxString &update_path = item[_T("path")].AsString();
@@ -785,7 +785,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,
       }
     } else {
       wxLogMessage(wxString::Format(
-          _T("** AIS_Decoder::updateItem: unhandled path %s"), update_path));
+          _T("** AisDecoder::updateItem: unhandled path %s"), update_path));
 #if 1
       wxString dbg;
       wxJSONWriter writer;
@@ -801,7 +801,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData, bool bnewtarget,
 //----------------------------------------------------------------------------------
 //      Decode a single AIVDO sentence to a Generic Position Report
 //----------------------------------------------------------------------------------
-AIS_Error AIS_Decoder::DecodeSingleVDO(const wxString &str,
+AisError AisDecoder::DecodeSingleVDO(const wxString &str,
                                        GenericPosDatEx *pos,
                                        wxString *accumulator) {
   //  Make some simple tests for validity
@@ -869,9 +869,9 @@ AIS_Error AIS_Decoder::DecodeSingleVDO(const wxString &str,
   }
 
   //  Create the bit accessible string
-  AIS_Bitstring strbit(string_to_parse.mb_str());
+  AisBitstring strbit(string_to_parse.mb_str());
 
-  AIS_Target_Data TargetData;
+  AisTargetData TargetData;
 
   bool bdecode_result = Parse_VDXBitstring(&strbit, &TargetData);
 
@@ -922,8 +922,8 @@ AIS_Error AIS_Decoder::DecodeSingleVDO(const wxString &str,
 //      Decode NMEA VDM/VDO/FRPOS/DSCDSE/TTM/TLL/OSD/RSD/TLB/WPL sentence to AIS
 //      Target(s)
 //----------------------------------------------------------------------------------------
-AIS_Error AIS_Decoder::Decode(const wxString &str) {
-  AIS_Error ret = AIS_GENERIC_ERROR;
+AisError AisDecoder::Decode(const wxString &str) {
+  AisError ret = AIS_GENERIC_ERROR;
   wxString string_to_parse;
 
   double gpsg_lat, gpsg_lon, gpsg_mins, gpsg_degs;
@@ -968,8 +968,8 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
   char aprs_name_str[21];
   double aprs_mins, aprs_degs;
 
-  AIS_Target_Data *pTargetData = 0;
-  AIS_Target_Data *pStaleTarget = NULL;
+  AisTargetData *pTargetData = 0;
+  AisTargetData *pStaleTarget = NULL;
   bool bnewtarget = false;
   int last_report_ticks;
 
@@ -1311,7 +1311,7 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
     if (!abuf.data())  // badly formed sentence?
       return AIS_GENERIC_ERROR;
 
-    AIS_Bitstring strbit(abuf.data());
+    AisBitstring strbit(abuf.data());
 
     //  Extract the MMSI
     if (!mmsi) mmsi = strbit.GetInt(9, 30);
@@ -1320,7 +1320,7 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AIS_Target_Data;
+      pTargetData = new AisTargetData;
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -1328,7 +1328,7 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
       pStaleTarget = pTargetData;  // save a pointer to stale data
     }
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-      MMSIProperties *props = g_MMSI_Props_Array[i];
+      MmsiProperties *props = g_MMSI_Props_Array[i];
       if (mmsi == props->MMSI) {
         // Check to see if this target has been flagged as a "follower"
         if (props->m_bFollower) follower_mmsi = mmsi;
@@ -1528,7 +1528,7 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
         // Or first decode for this target
         for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
           if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-            MMSIProperties *props = g_MMSI_Props_Array[i];
+            MmsiProperties *props = g_MMSI_Props_Array[i];
             pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
             break;
           }
@@ -1606,14 +1606,14 @@ AIS_Error AIS_Decoder::Decode(const wxString &str) {
   return ret;
 }
 
-void AIS_Decoder::getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
-                               AIS_Target_Data *&pStaleTarget, bool &bnewtarget,
+void AisDecoder::getAISTarget(long mmsi, AisTargetData *&pTargetData,
+                               AisTargetData *&pStaleTarget, bool &bnewtarget,
                                int &last_report_ticks, wxDateTime &now) {
   now = wxDateTime::Now();
   auto it = AISTargetList.find(mmsi);
   if (it == AISTargetList.end())  // not found
   {
-    pTargetData = new AIS_Target_Data;
+    pTargetData = new AisTargetData;
     bnewtarget = true;
     m_n_targets++;
   } else {
@@ -1634,10 +1634,10 @@ void AIS_Decoder::getAISTarget(long mmsi, AIS_Target_Data *&pTargetData,
     pSelectAIS->DeleteSelectablePoint((void *)mmsi, SELTYPE_AISTARGET);
 }
 
-void AIS_Decoder::getMMSIProperties(AIS_Target_Data *&pTargetData) {
+void AisDecoder::getMmsiProperties(AisTargetData *&pTargetData) {
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-      MMSIProperties * props = g_MMSI_Props_Array[i];
+      MmsiProperties * props = g_MMSI_Props_Array[i];
       pTargetData->b_isFollower = props->m_bFollower;
       pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
       if (TRACKTYPE_NEVER == props->TrackType) {
@@ -1651,7 +1651,7 @@ void AIS_Decoder::getMMSIProperties(AIS_Target_Data *&pTargetData) {
   }
 }
 
-AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
+AisTargetData *AisDecoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   double dsc_lat = 0.;
   double dsc_lon = 0.;
   double dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
@@ -1670,7 +1670,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
 
   int mmsi = 0;
 
-  AIS_Target_Data *pTargetData = NULL;
+  AisTargetData *pTargetData = NULL;
 
   // parse a DSC Position message            $CDDSx,.....
   //  Use a tokenizer to pull out the first 9 fields
@@ -1818,7 +1818,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
 
   //  Search the current AISTargetList for an MMSI match
   auto it = AISTargetList.find(mmsi);
-  AIS_Target_Data *pStaleTarget = NULL;
+  AisTargetData *pStaleTarget = NULL;
   if (it == AISTargetList.end()) {  // not found
   } else {
     pStaleTarget = it->second;  // find current entry
@@ -1828,7 +1828,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   if (dsc_mmsi) {
     //      Create a tentative target, but do not post it pending receipt of
     //      extended data
-    m_ptentative_dsctarget = new AIS_Target_Data;
+    m_ptentative_dsctarget = new AisTargetData;
 
     m_ptentative_dsctarget->PositionReportTicks = now.GetTicks();
     m_ptentative_dsctarget->StaticReportTicks = now.GetTicks();
@@ -1940,7 +1940,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
 }
 
 // DSE Expansion characters, decode table from ITU-R M.825
-wxString AIS_Decoder::DecodeDSEExpansionCharacters(wxString dseData) {
+wxString AisDecoder::DecodeDSEExpansionCharacters(wxString dseData) {
     wxString result;
     char lookupTable[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
@@ -1956,8 +1956,8 @@ wxString AIS_Decoder::DecodeDSEExpansionCharacters(wxString dseData) {
 //----------------------------------------------------------------------------
 //      Parse a NMEA VDM/VDO Bitstring
 //----------------------------------------------------------------------------
-bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
-                                     AIS_Target_Data *ptd) {
+bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
+                                     AisTargetData *ptd) {
   bool parse_result = false;
   bool b_posn_report = false;
 
@@ -2610,7 +2610,7 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr,
   return parse_result;
 }
 
-bool AIS_Decoder::NMEACheckSumOK(const wxString &str_in) {
+bool AisDecoder::NMEACheckSumOK(const wxString &str_in) {
   unsigned char checksum_value = 0;
   int sentence_hex_sum;
 
@@ -2651,25 +2651,25 @@ bool AIS_Decoder::NMEACheckSumOK(const wxString &str_in) {
   return false;
 }
 
-void AIS_Decoder::UpdateAllCPA(void) {
+void AisDecoder::UpdateAllCPA(void) {
   //    Iterate thru all the targets
   for (const auto &it : GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
 
     if (NULL != td) UpdateOneCPA(td);
   }
 }
 
-void AIS_Decoder::UpdateAllTracks(void) {
+void AisDecoder::UpdateAllTracks(void) {
   //    Iterate thru all the targets
   for (const auto &it : GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
 
     if (NULL != td) UpdateOneTrack(td);
   }
 }
 
-void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
+void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
   if (!ptarget->b_positionOnceValid) return;
   // Reject for unbelievable jumps (corrupted/bad data)
   if (ptarget->m_ptrack.size() > 0) {
@@ -2736,7 +2736,7 @@ void AIS_Decoder::UpdateOneTrack(AIS_Target_Data *ptarget) {
   }
 }
 
-void AIS_Decoder::DeletePersistentTrack(Track *track) {
+void AisDecoder::DeletePersistentTrack(Track *track) {
   for (std::map<int, Track *>::iterator iterator = m_persistent_tracks.begin();
        iterator != m_persistent_tracks.end(); iterator++) {
     if (iterator->second == track) {
@@ -2746,11 +2746,11 @@ void AIS_Decoder::DeletePersistentTrack(Track *track) {
       if (0 == m_persistent_tracks.count(mmsi)) {
         for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
           if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
-            MMSIProperties *props = g_MMSI_Props_Array[i];
+            MmsiProperties *props = g_MMSI_Props_Array[i];
             if (props->m_bPersistentTrack) {
               // Ask if mmsi props should be changed.
               // Avoid creation of a new track while messaging
-              if (AIS_Target_Data *td = Get_Target_Data_From_MMSI(mmsi)) {
+              if (AisTargetData *td = Get_Target_Data_From_MMSI(mmsi)) {
                 props->m_bPersistentTrack = false;
                 td->b_mPropPersistTrack = false;
               }
@@ -2776,12 +2776,12 @@ void AIS_Decoder::DeletePersistentTrack(Track *track) {
   }
 }
 
-void AIS_Decoder::UpdateAllAlarms(void) {
+void AisDecoder::UpdateAllAlarms(void) {
   m_bGeneralAlert = false;  // no alerts yet
 
   //    Iterate thru all the targets
   for (const auto &it : GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
 
     if (NULL != td) {
       //  Maintain General Alert
@@ -2888,7 +2888,7 @@ void AIS_Decoder::UpdateAllAlarms(void) {
   }
 }
 
-void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget) {
+void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
   ptarget->Range_NM = -1.;  // Defaults
   ptarget->Brg = -1.;
 
@@ -3022,13 +3022,13 @@ void AIS_Decoder::UpdateOneCPA(AIS_Target_Data *ptarget) {
   }
 }
 
-void AIS_Decoder::OnSoundFinishedAISAudio(wxCommandEvent &event) {
+void AisDecoder::OnSoundFinishedAISAudio(wxCommandEvent &event) {
   // By clearing this flag the main event loop will trigger repeated
   // sounds for as long as the alert condition remains.
   m_bAIS_AlertPlaying = false;
 }
 
-void AIS_Decoder::OnTimerDSC(wxTimerEvent &event) {
+void AisDecoder::OnTimerDSC(wxTimerEvent &event) {
   //  Timer expired, no CDDSE message was received, so accept the latest CDDSC
   //  message
   if (m_ptentative_dsctarget) {
@@ -3036,7 +3036,7 @@ void AIS_Decoder::OnTimerDSC(wxTimerEvent &event) {
   }
 }
 
-void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
+void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   TimerAIS.Stop();
 
   //    Scrub the target hash list
@@ -3045,13 +3045,13 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
   wxDateTime now = wxDateTime::Now();
   now.MakeGMT();
 
-  std::unordered_map<int, AIS_Target_Data *> &current_targets = GetTargetList();
+  std::unordered_map<int, AisTargetData *> &current_targets = GetTargetList();
 
   auto it = current_targets.begin();
   std::vector<int> remove_array;  // collector for MMSI of targets to be removed
 
   while (it != current_targets.end()) {
-    AIS_Target_Data *td = it->second;
+    AisTargetData *td = it->second;
 
     if (NULL == td)  // This should never happen, but I saw it once....
     {
@@ -3144,7 +3144,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
     // Remove any targets specified as to be "ignored", so that they won't
     // trigger phantom alerts (e.g. SARTs)
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-      MMSIProperties *props = g_MMSI_Props_Array[i];
+      MmsiProperties *props = g_MMSI_Props_Array[i];
       if (td->MMSI == props->MMSI) {
         if (props->m_bignore) {
           remove_array.push_back(td->MMSI);  // Add this target to removal list
@@ -3162,7 +3162,7 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
   for (unsigned int i = 0; i < remove_array.size(); i++) {
     auto itd = current_targets.find(remove_array[i]);
     if (itd != current_targets.end()) {
-      AIS_Target_Data *td = itd->second;
+      AisTargetData *td = itd->second;
       current_targets.erase(itd);
       delete td;
     }
@@ -3186,19 +3186,19 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
   //    Scan all targets, looking for SART, DSC Distress, and CPA incursions
   //    In the case of multiple targets of the same type, select the shortest
   //    range or shortest TCPA
-  AIS_Target_Data *palert_target = NULL;
+  AisTargetData *palert_target = NULL;
   int audioType = AISAUDIO_NONE;
 
   if (NULL == g_pais_alert_dialog_active) {
     pAISMOBRoute = NULL;    // Reset the AISMOB auto route.
     double tcpa_min = 1e6;  // really long
     double sart_range = 1e6;
-    AIS_Target_Data *palert_target_cpa = NULL;
-    AIS_Target_Data *palert_target_sart = NULL;
-    AIS_Target_Data *palert_target_dsc = NULL;
+    AisTargetData *palert_target_cpa = NULL;
+    AisTargetData *palert_target_sart = NULL;
+    AisTargetData *palert_target_dsc = NULL;
 
     for (it = current_targets.begin(); it != current_targets.end(); ++it) {
-      AIS_Target_Data *td = it->second;
+      AisTargetData *td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
           if (g_bAIS_CPA_Alert && td->b_active) {
@@ -3253,18 +3253,18 @@ void AIS_Decoder::OnTimerAIS(wxTimerEvent &event) {
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }
 
-AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI(int mmsi) {
+AisTargetData *AisDecoder::Get_Target_Data_From_MMSI(int mmsi) {
   if (AISTargetList.find(mmsi) == AISTargetList.end())
     return NULL;
   else
     return AISTargetList[mmsi];
 }
 
-ArrayOfMMSIProperties g_MMSI_Props_Array;
+ArrayOfMmsiProperties g_MMSI_Props_Array;
 
-//      MMSIProperties Implementation
+//      MmsiProperties Implementation
 
-MMSIProperties::MMSIProperties(wxString &spec) {
+MmsiProperties::MmsiProperties(wxString &spec) {
   Init();
   wxStringTokenizer tkz(spec, _T(";"));
   wxString s;
@@ -3313,9 +3313,9 @@ MMSIProperties::MMSIProperties(wxString &spec) {
   }
 }
 
-MMSIProperties::~MMSIProperties() {}
+MmsiProperties::~MmsiProperties() {}
 
-void MMSIProperties::Init(void) {
+void MmsiProperties::Init(void) {
   MMSI = -1;
   TrackType = TRACKTYPE_DEFAULT;
   m_bignore = false;
@@ -3326,7 +3326,7 @@ void MMSIProperties::Init(void) {
   m_ShipName = wxEmptyString;
 }
 
-wxString MMSIProperties::Serialize(void) {
+wxString MmsiProperties::Serialize(void) {
   wxString sMMSI;
   wxString s;
 
@@ -3373,7 +3373,7 @@ wxString MMSIProperties::Serialize(void) {
   return sMMSI;
 }
 
-void AISshipNameCache(AIS_Target_Data *pTargetData,
+void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi) {
   if (g_benableAISNameCache) {

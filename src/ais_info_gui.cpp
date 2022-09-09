@@ -48,9 +48,9 @@ wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern bool g_bAIS_DSC_Alert_Audio;
@@ -98,7 +98,7 @@ Do you instead want to stop Persistent Tracking for this target?
 )""";
 
 
-static void OnDeleteTrack(MMSIProperties* props) {
+static void OnDeleteTrack(MmsiProperties* props) {
   if (wxID_NO == OCPNMessageBox(NULL, kDeleteTrackPrompt, _("OpenCPN Info"),
                                 wxYES_NO | wxCENTER, 60))
   {
@@ -110,7 +110,7 @@ static void OnDeleteTrack(MMSIProperties* props) {
 AisInfoGui::AisInfoGui() {
   ais_info_listener = g_pAIS->info_update.GetListener(this, EVT_AIS_INFO);
   Bind(EVT_AIS_INFO, [&](wxCommandEvent ev) {
-       auto palert_target = static_cast<AIS_Target_Data*>(ev.GetClientData());
+       auto palert_target = static_cast<AisTargetData*>(ev.GetClientData());
        ShowAisInfo(palert_target); });
 
   ais_touch_listener = g_pAIS->touch_state.GetListener(this, EVT_AIS_TOUCH);
@@ -128,11 +128,11 @@ AisInfoGui::AisInfoGui() {
 
   ais_del_track_listener = g_pAIS->new_ais_wp.GetListener(this, EVT_AIS_DEL_TRACK);
   Bind(EVT_AIS_DEL_TRACK, [&](wxCommandEvent ev) {
-       auto t = static_cast< MMSIProperties*>(ev.GetClientData());
+       auto t = static_cast< MmsiProperties*>(ev.GetClientData());
        OnDeleteTrack(t); });
 }
 
-void AisInfoGui::ShowAisInfo(AIS_Target_Data* palert_target) {
+void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
    int audioType = AISAUDIO_NONE;
    if (palert_target) {
       bool b_jumpto = (palert_target->Class == AIS_SART) ||
@@ -179,10 +179,10 @@ void AisInfoGui::ShowAisInfo(AIS_Target_Data* palert_target) {
   else {
     // Find the target with shortest CPA, ignoring DSC and SART targets
     double tcpa_min = 1e6;  // really long
-    AIS_Target_Data *palert_target_lowestcpa = NULL;
+    AisTargetData *palert_target_lowestcpa = NULL;
     const auto& current_targets = g_pAIS->GetTargetList();
     for (auto& it : current_targets) {
-      AIS_Target_Data *td = it.second;
+      AisTargetData *td = it.second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
           if (g_bAIS_CPA_Alert && td->b_active) {

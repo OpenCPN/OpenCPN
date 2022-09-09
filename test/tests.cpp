@@ -77,7 +77,7 @@ bool get_mode() { return false; }
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
-AIS_Decoder* g_pAIS;
+AisDecoder* g_pAIS;
 Select* pSelectAIS;
 
 /* comm_bridge context. */
@@ -625,7 +625,7 @@ TEST(Priority, DifferentSource) {
     "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
   const char* const GPGGA_2 =
     "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
-  g_pAIS = new AIS_Decoder;
+  g_pAIS = new AisDecoder;
   PriorityApp2 app(GPGGA_1, GPGGA_2);
   Position p = Position::ParseGGA("5759.097,N,01144.345,E");
   EXPECT_NEAR(gLat, p.lat, 0.0001);
@@ -635,7 +635,7 @@ TEST(Priority, DifferentSource) {
 TEST(AIS, Decoding) {
   const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   GenericPosDatEx gpd;
-  AIS_Error status = DecodeSingleVDO(AISVDO_1, &gpd);
+  AisError status = DecodeSingleVDO(AISVDO_1, &gpd);
   EXPECT_EQ(status, AIS_NoError);
 }
 
@@ -643,7 +643,7 @@ TEST(AIS, AISVDO) {
   wxLog::SetActiveTarget(&defaultLog);
   const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
-  g_pAIS = new AIS_Decoder;
+  g_pAIS = new AisDecoder;
   AisApp app("AIVDO", AISVDO_1);
 
   EXPECT_NEAR(gLat, 57.985758, 0.0001);
@@ -654,7 +654,7 @@ TEST(AIS, AISVDM) {
   const char* AISVDM_1 = "!AIVDM,1,1,,A,1535SB002qOg@MVLTi@b;H8V08;?,0*47";
   int MMSI = 338781000;
 
-  g_pAIS = new AIS_Decoder;
+  g_pAIS = new AisDecoder;
   AisApp app("AIVDM", AISVDM_1);
   auto found = g_pAIS->GetTargetList().find(MMSI);
   EXPECT_NE(found, g_pAIS->GetTargetList().end());

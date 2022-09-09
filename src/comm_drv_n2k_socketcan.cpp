@@ -26,7 +26,10 @@
 #include <vector>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
+
 #include <sys/time.h>
+
+#include <wx/log.h>
 
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_navmsg_bus.h"

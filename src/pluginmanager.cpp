@@ -172,7 +172,7 @@ void catch_signals_PIM(int signo) {
 #endif
 
 extern MyConfig *pConfig;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern OCPN_AUIManager *g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
@@ -243,7 +243,7 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-static void SendAisJsonMessage(AIS_Target_Data* pTarget) {
+static void SendAisJsonMessage(AisTargetData* pTarget) {
   //  Only send messages if someone is listening...
   if (!g_pi_manager->GetJSONMessageTargetCount()) return;
 
@@ -252,7 +252,7 @@ static void SendAisJsonMessage(AIS_Target_Data* pTarget) {
 
   wxLongLong t = ::wxGetLocalTimeMillis();
 
-  jMsg[wxS("Source")] = wxS("AIS_Decoder");
+  jMsg[wxS("Source")] = wxS("AisDecoder");
   jMsg[wxT("Type")] = wxT("Information");
   jMsg[wxT("Msg")] = wxS("AIS Target");
   jMsg[wxT("MsgId")] = t.GetValue();
@@ -1231,7 +1231,7 @@ void PlugInManager::HandlePluginLoaderEvents() {
   evt_ais_json_listener = g_pAIS->plugin_msg.GetListener(this,
                                                          EVT_PLUGMGR_AIS_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG,  [&](wxCommandEvent& ev) {
-    auto pTarget = static_cast<AIS_Target_Data*>(ev.GetClientData());
+    auto pTarget = static_cast<AisTargetData*>(ev.GetClientData());
     SendAisJsonMessage(pTarget); });
 }
 
@@ -3023,14 +3023,14 @@ ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void) {
 
   //      Iterate over the AIS Target Hashmap
   for (const auto &it : g_pAIS->GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
     PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(td);
     pret->Add(ptarget);
   }
 
 //  Test one alarm target
 #if 0
-    AIS_Target_Data td;
+    AisTargetData td;
     td.n_alarm_state = AIS_ALARM_SET;
     PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(&td);
     pret->Add(ptarget);
@@ -3238,7 +3238,7 @@ bool DecodeSingleVDOMessage(const wxString &str, PlugIn_Position_Fix_Ex *pos,
   if (!pos) return false;
 
   GenericPosDatEx gpd;
-  AIS_Error nerr = AIS_GENERIC_ERROR;
+  AisError nerr = AIS_GENERIC_ERROR;
   if (g_pAIS) nerr = g_pAIS->DecodeSingleVDO(str, &gpd, accumulator);
   if (nerr == AIS_NoError) {
     pos->Lat = gpd.kLat;
@@ -3896,7 +3896,7 @@ void PlugInNormalizeViewport(PlugIn_ViewPort *vp, float lat, float lon) {
 //    PlugIn_AIS_Target Implementation
 //-------------------------------------------------------------------------------
 
-PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget) {
+PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget) {
   PlugIn_AIS_Target *pret = new PlugIn_AIS_Target;
 
   pret->MMSI = ptarget->MMSI;

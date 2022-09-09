@@ -22,19 +22,22 @@
  **************************************************************************/
 
 #ifdef __MINGW32__
-#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
+#undef IPV6STRICT  // mingw FTBFS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#include <wx/tokenzr.h>
+#include <wx/checklst.h>
+#include <wx/combobox.h>
 #include <wx/intl.h>
 #include <wx/regex.h>
 #include <wx/statline.h>
+#include <wx/tokenzr.h>
+
 #include "conn_params.h"
 
+#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 #include "options.h"
-#include "ocpn_frame.h"
 
 #if !wxUSE_XLOCALE && wxCHECK_VERSION(3, 0, 0)
 #define wxAtoi(arg) atoi(arg)

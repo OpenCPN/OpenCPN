@@ -131,7 +131,7 @@ class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
 class OCPN_SignalKEvent;
 class DataStream;
-class AIS_Target_Data;
+class AisTargetData;
 
 bool isSingleChart(ChartBase *chart);
 
@@ -310,8 +310,8 @@ public:
   void TouchAISActive(void);
   void UpdateAISTool(void);
 
-  void ActivateAISMOBRoute(AIS_Target_Data *ptarget);
-  void UpdateAISMOBRoute(AIS_Target_Data *ptarget);
+  void ActivateAISMOBRoute(AisTargetData *ptarget);
+  void UpdateAISMOBRoute(AisTargetData *ptarget);
 
   wxStatusBar *m_pStatusBar;
   wxMenuBar *m_pMenuBar;

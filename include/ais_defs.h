@@ -32,7 +32,7 @@
 #define TRACKTYPE_ALWAYS 1
 #define TRACKTYPE_NEVER 2
 
-typedef enum AIS_Error {
+typedef enum AisError {
   AIS_NoError = 0,
   AIS_Partial,
   AIS_NMEAVDX_TOO_LONG,
@@ -42,7 +42,7 @@ typedef enum AIS_Error {
   AIS_NO_TCP,
   AIS_GENERIC_ERROR,
   AIS_INCOMPLETE_MULTIPART
-} _AIS_Error;
+} _AisError;
 
 WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
                     AIS_Target_Name_Hash);

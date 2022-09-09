@@ -91,10 +91,10 @@ extern wxString ais8_001_22_notice_names[];
 
 //---------------------------------------------------------------------------------
 //
-//  AIS_Decoder Helpers
+//  AisDecoder Helpers
 //
 //---------------------------------------------------------------------------------
-WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
+WX_DEFINE_SORTED_ARRAY(AisTargetData *, ArrayOfAISTarget);
 
 //      Implement the AISTargetList as a wxHashMap
 

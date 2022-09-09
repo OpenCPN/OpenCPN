@@ -26,6 +26,10 @@
 #ifndef _COMM_UTIL_H
 #define _COMM_UTIL_H
 
+#include <string>
+
+#include <wx/string.h>
+
 bool StopAndRemoveCommDriver(std::string ident);
 
 wxString ProcessNMEA4Tags(wxString& msg);
