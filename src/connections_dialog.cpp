@@ -319,11 +319,10 @@ void ConnectionsDialog::Init(){
 
   m_rbTypeCAN = new wxRadioButton(m_container, wxID_ANY, "socketCAN",
                                   wxDefaultPosition, wxDefaultSize, 0);
-
-  //FIXME(dave)
 #if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
   bSizer15->Add(m_rbTypeCAN, 0, wxALL, 5);
 #else
+  m_rbTypeCAN->Hide();
 #endif
 
   if (OCPNPlatform::hasInternalGPS()) {
@@ -999,7 +998,9 @@ void ConnectionsDialog::OnUploadFormatChange(wxCommandEvent& event) {
 void ConnectionsDialog::ShowNMEACommon(bool visible) {
   m_rbTypeSerial->Show(TRUE);
   m_rbTypeNet->Show(TRUE);
+#if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
   m_rbTypeCAN->Show(TRUE);
+#endif
   if (m_rbTypeInternalGPS) m_rbTypeInternalGPS->Show(visible);
   if (m_rbTypeInternalBT) m_rbTypeInternalBT->Show(visible);
   m_rbIAccept->Show(visible);
