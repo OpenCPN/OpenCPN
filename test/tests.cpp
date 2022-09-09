@@ -382,14 +382,14 @@ public:
 
 class AisApp : public wxAppConsole {
 public:
-  AisApp(const char* msg) : wxAppConsole() {
+  AisApp(const char* type, const char* msg) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
     CommBridge comm_bridge;
     comm_bridge.Initialize();
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
     auto m = std::make_shared<const Nmea0183Msg>(
-        Nmea0183Msg("AIVDO", msg, addr1));
+        Nmea0183Msg(type, msg, addr1));
     msgbus.Notify(m);
     ProcessPendingEvents();
   }
@@ -644,18 +644,22 @@ TEST(AIS, AISVDO) {
   const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
   g_pAIS = new AIS_Decoder;
-  AisApp app(AISVDO_1);
+  AisApp app("AIVDO", AISVDO_1);
 
   EXPECT_NEAR(gLat, 57.985758, 0.0001);
   EXPECT_NEAR(gLon, 11.740108, 0.0001);
 }
 
-#if 0
-// FIXME (leamas) leaving for use in AIVDM test
+TEST(AIS, AISVDM) {
+  const char* AISVDM_1 = "!AIVDM,1,1,,A,1535SB002qOg@MVLTi@b;H8V08;?,0*47";
+  int MMSI = 338781000;
+
+  g_pAIS = new AIS_Decoder;
+  AisApp app("AIVDM", AISVDM_1);
   auto found = g_pAIS->GetTargetList().find(MMSI);
   EXPECT_NE(found, g_pAIS->GetTargetList().end());
   if (found != g_pAIS->GetTargetList().end()) {
-    EXPECT_NEAR(found->second->Lat, 57.985758, 0.0001);
-    EXPECT_NEAR(found->second->Lon, 11.740108, 0.0001);
+    EXPECT_NEAR(found->second->Lat, 49.93760, 0.0001);
+    EXPECT_NEAR(found->second->Lon, -3.65751, 0.0001);
   }
-#endif
+}
