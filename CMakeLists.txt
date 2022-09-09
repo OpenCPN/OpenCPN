@@ -943,7 +943,9 @@ set(
 
 set(MODEL_SRC
   # Testable sources without GUI dependencies.
+  ${CMAKE_SOURCE_DIR}/src/ais_bitstring.cpp
   ${CMAKE_SOURCE_DIR}/src/ais_decoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_target_data.cpp
   ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
   ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
@@ -961,6 +963,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
+  ${CMAKE_SOURCE_DIR}/src/georef.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
@@ -974,13 +977,6 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
   ${CMAKE_SOURCE_DIR}/src/SelectItem.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
-)
-
-set(UNITTEST_SRC
-  # Sources buildable with mock definitions
-  ${CMAKE_SOURCE_DIR}/src/ais_bitstring.cpp
-  ${CMAKE_SOURCE_DIR}/src/ais_target_data.cpp
-  ${CMAKE_SOURCE_DIR}/src/georef.cpp
 )
 
 set(
@@ -1101,7 +1097,7 @@ set(
   src/viewport.cpp
 )
 
-set(SRCS ${SRCS} ${MODEL_SRC} ${UNITTEST_SRC})
+set(SRCS ${SRCS} ${MODEL_SRC})
 
 if (LINUX AND NOT QT_ANDROID)
   set( HDRS ${HDRS}  include/comm_drv_n2k_socketcan.h )
