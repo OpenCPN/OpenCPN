@@ -788,7 +788,7 @@ wxRect ViewPort::GetVPRectIntersect(size_t n, float *llpoints) {
 
   float *pfp = llpoints;
 
-  wxBoundingBox point_box;
+  BoundingBox point_box;
   for (unsigned int ip = 0; ip < n; ip++) {
     point_box.Expand(pfp[1], pfp[0]);
     pfp += 2;

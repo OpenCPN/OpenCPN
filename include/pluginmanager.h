@@ -521,7 +521,7 @@ public:
 
   ~S52PLIB_Context(){};
 
-  wxBoundingBox BBObj;  // lat/lon BBox of the rendered object
+  BoundingBox BBObj;  // lat/lon BBox of the rendered object
   bool bBBObj_valid;    // set after the BBObj has been calculated once.
 
   Rules *CSrules;  // per object conditional symbology

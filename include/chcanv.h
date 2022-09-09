@@ -75,7 +75,7 @@ class Route;
 class TCWin;
 class RoutePoint;
 class SelectItem;
-class wxBoundingBox;
+class BoundingBox;
 class ocpnBitmap;
 class WVSChart;
 class MyFrame;

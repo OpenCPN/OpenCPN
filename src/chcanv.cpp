@@ -4491,7 +4491,7 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
       if (pc) {
         //      If m_singleChart is not on the screen, unbound the zoomout
         LLBBox viewbox = VPoint.GetBBox();
-        //                wxBoundingBox chart_box;
+        //                BoundingBox chart_box;
         int current_index = ChartData->FinddbIndex(pc->GetFullPath());
         double max_allowed_scale;
 
@@ -5809,7 +5809,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
   //    Another draw test ,based on pixels, assuming the ship icon is a fixed
   //    nominal size and is just barely outside the viewport        ....
-  wxBoundingBox bb_screen(0, 0, GetVP().pix_width, GetVP().pix_height);
+  BoundingBox bb_screen(0, 0, GetVP().pix_width, GetVP().pix_height);
 
   // TODO: fix to include actual size of boat that will be rendered
   int img_height = 0;
@@ -9365,7 +9365,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
         for (auto &ani : target_data->area_notices) {
           Ais8_001_22 &area_notice = ani.second;
 
-          wxBoundingBox bbox;
+          BoundingBox bbox;
 
           for (Ais8_001_22_SubAreaList::iterator sa =
                    area_notice.sub_areas.begin();

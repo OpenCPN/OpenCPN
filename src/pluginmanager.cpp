@@ -6410,7 +6410,7 @@ void CreateCompatibleS57Object(PI_S57Obj *pObj, S57Obj *cobj,
   S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
 
   if (pContext->bBBObj_valid)
-    // this is ugly because plugins still use wxBoundingBox
+    // this is ugly because plugins still use BoundingBox
     cobj->BBObj.Set(pContext->BBObj.GetMinY(), pContext->BBObj.GetMinX(),
                     pContext->BBObj.GetMaxY(), pContext->BBObj.GetMaxX());
 
@@ -6531,9 +6531,9 @@ void UpdatePIObjectPlibContext(PI_S57Obj *pObj, S57Obj *cobj,
   pContext->rText = cobj->rText;
 
   if (cobj->BBObj.GetValid()) {
-    // ugly as plugins still use wxBoundingBox
+    // ugly as plugins still use BoundingBox
     pContext->BBObj =
-        wxBoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
+        BoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
                       cobj->BBObj.GetMaxLon(), cobj->BBObj.GetMaxLat());
     pContext->bBBObj_valid = true;
   }
