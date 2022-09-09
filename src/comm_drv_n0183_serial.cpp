@@ -268,6 +268,8 @@ void CommDriverN0183Serial::Close() {
       wxLogMessage(_T("Stopping Secondary Thread"));
 
       m_Thread_run_flag = 0;
+      m_pSecondary_Thread->Delete();
+
       int tsec = 10;
       while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
 
@@ -473,7 +475,7 @@ void* CommDriverN0183SerialThread::Entry() {
   static size_t retries = 0;
 
   while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) not_done = false;  // smooth exit
+    if (TestDestroy()) goto thread_exit; //not_done = false;  // smooth exit
 
     uint8_t next_byte = 0;
     int newdata = 0;
@@ -582,7 +584,8 @@ void* CommDriverN0183SerialThread::Entry() {
       b_qdata = !out_que.empty();
     }  // while b_qdata
   }
-  // thread_exit:
+
+thread_exit:
   CloseComPortPhysical();
   m_pParentDriver->SetSecThreadInActive();  // I am dead
   m_pParentDriver->m_Thread_run_flag = -1;
