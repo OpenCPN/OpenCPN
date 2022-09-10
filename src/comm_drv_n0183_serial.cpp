@@ -112,20 +112,10 @@ private:
   wxString m_PortName;
   wxString m_FullPortName;
 
-  unsigned char* put_ptr;
-  unsigned char* tak_ptr;
-
-  unsigned char* rx_buffer;
-
   int m_baud;
-  int m_n_timeout;
 
   n0183_atomic_queue<char*> out_que;
 
-#ifdef __WXMSW__
-  HANDLE m_hSerialComm;
-  bool m_nl_found;
-#endif
 };
 
 template <class T>
@@ -263,12 +253,13 @@ void CommDriverN0183Serial::Close() {
 
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
+    m_pSecondary_Thread->Delete();
+
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
     {
       wxLogMessage(_T("Stopping Secondary Thread"));
 
       m_Thread_run_flag = 0;
-      m_pSecondary_Thread->Delete();
 
       int tsec = 10;
       while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
@@ -371,11 +362,6 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   m_PortName = PortName;
   m_FullPortName = _T("Serial:") + PortName;
 
-  rx_buffer = new unsigned char[DS_RX_BUFFER_SIZE + 1];
-
-  put_ptr = rx_buffer;  // local circular queue
-  tak_ptr = rx_buffer;
-
   m_baud = 4800;  // default
   long lbaud;
   if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
@@ -383,9 +369,7 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   Create();
 }
 
-CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {
-  delete[] rx_buffer;
-}
+CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
 
 void CommDriverN0183SerialThread::OnExit(void) {}
 
@@ -450,9 +434,9 @@ size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
   }
 }
 
-#ifdef __WXMSW__
 void* CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
+  m_pParentDriver->SetSecThreadActive();  // I am alive
   int nl_found = 0;
   wxString msg;
   circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
@@ -469,16 +453,15 @@ void* CommDriverN0183SerialThread::Entry() {
     // expected device name).
   }
 
-  m_pParentDriver->SetSecThreadActive();  // I am alive
 
   //    The main loop
   static size_t retries = 0;
 
   while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) goto thread_exit; //not_done = false;  // smooth exit
+    if (TestDestroy()) goto thread_exit;
 
     uint8_t next_byte = 0;
-    int newdata = 0;
+    unsigned int newdata = 0;
     uint8_t rdata[2000];
 
     if (m_serial.isOpen()) {
@@ -536,10 +519,7 @@ void* CommDriverN0183SerialThread::Entry() {
           if (take_byte == 0x0a) {
             vec->push_back(take_byte);
 
-          // Remove last element, if 0
-// FIXME (dave)  on Windows
-//           if (vec->back() == 0)
-//             vec->pop_back();
+            if (TestDestroy()) goto thread_exit;
 
             //    Message is ready to parse and send out
             //    Messages may be coming in as <blah blah><lf><cr>.
@@ -592,144 +572,5 @@ thread_exit:
 
   return 0;
 }
-
-#else  // MSW
-void* CommDriverN0183SerialThread::Entry() {
-  bool not_done = true;
-  bool nl_found = false;
-  wxString msg;
-
-  //    Request the com port from the comm manager
-  if (!OpenComPortPhysical(m_PortName, m_baud)) {
-    wxString msg(_T("NMEA input device open failed: "));
-    msg.Append(m_PortName);
-    ThreadMessage(msg);
-    // goto thread_exit; // This means we will not be trying to connect = The
-    // device must be connected when the thread is created. Does not seem to be
-    // needed/what we want as the reconnection logic is able to pick it up
-    // whenever it actually appears (Of course given it appears with the
-    // expected device name).
-  }
-
-  m_pParentDriver->SetSecThreadActive();  // I am alive
-
-  wxSleep(1);
-
-  //    The main loop
-  static size_t retries = 0;
-
-  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) not_done = false;  // smooth exit
-
-    uint8_t next_byte = 0;
-    int newdata = -1;
-    if (m_serial.isOpen()) {
-      try {
-        newdata = m_serial.read(&next_byte, 1);
-      } catch (std::exception& e) {
-        //        std::cerr << "Serial read exception: " << e.what() <<
-        //        std::endl;
-        if (10 < retries++) {
-          // We timed out waiting for the next character 10 times, let's close
-          // the port so that the reconnection logic kicks in and tries to fix
-          // our connection.
-          CloseComPortPhysical();
-          retries = 0;
-        }
-      }
-    } else {
-      // Reconnection logic. Let's try to reopen the port while waiting longer
-      // every time (until we simply keep trying every 2.5 seconds)
-      // std::cerr << "Serial port seems closed." << std::endl;
-      wxMilliSleep(250 * retries);
-      CloseComPortPhysical();
-      if (OpenComPortPhysical(m_PortName, m_baud))
-        retries = 0;
-      else if (retries < 10)
-        retries++;
-    }
-
-    if (newdata == 1) {
-      nl_found = false;
-      *put_ptr++ = next_byte;
-      if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE) put_ptr = rx_buffer;
-
-      if (0x0a == next_byte) nl_found = true;
-
-      //    Found a NL char, thus end of message?
-      if (nl_found) {
-        unsigned char* tptr;
-
-        //    Copy the message into a temporary _buffer
-
-        auto buffer = std::make_shared<std::vector<unsigned char>>();
-        std::vector<unsigned char>* vec = buffer.get();
-
-        tptr = tak_ptr;
-        // ptmpbuf = temp_buf;
-
-        while ((*tptr != 0x0a) && (tptr != put_ptr)) {
-          //*ptmpbuf++ = *tptr++;
-          vec->push_back(*tptr++);
-
-          if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
-        }
-        if ((*tptr == 0x0a) && (tptr != put_ptr))  // well formed sentence
-        {
-          //*ptmpbuf++ = *tptr++;
-          vec->push_back(*tptr++);
-
-          if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
-
-          tak_ptr = tptr;
-
-          //    Message is ready to parse and send out
-          //    Messages may be coming in as <blah blah><lf><cr>.
-          //    One example device is KVH1000 heading sensor.
-          //    If that happens, the first character of a new captured message
-          //    will the <cr>, and we need to discard it. This is out of spec,
-          //    but we should handle it anyway
-          if (vec->at(0) == '\r') vec->erase(vec->begin());
-
-          CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-          Nevent.SetPayload(buffer);
-          m_pParentDriver->AddPendingEvent(Nevent);
-        }
-
-      }  // if nl
-    }    // if newdata > 0
-
-    //      Check for any pending output message
-    bool b_qdata = !out_que.empty();
-
-    while (b_qdata) {
-      //  Take a copy of message
-      char *qmsg = out_que.front();
-      out_que.pop();
-      // m_outCritical.Leave();
-      char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
-      strncpy(msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH - 1);
-      free(qmsg);
-
-      if (static_cast<size_t>(-1) == WriteComPortPhysical(msg) &&
-          10 < retries++) {
-        // We failed to write the port 10 times, let's close the port so that
-        // the reconnection logic kicks in and tries to fix our connection.
-        retries = 0;
-        CloseComPortPhysical();
-      }
-
-      b_qdata = !out_que.empty();
-    }  // while b_qdata
-  }
-
-  // thread_exit:
-  CloseComPortPhysical();
-  m_pParentDriver->SetSecThreadInActive();  // I am dead
-  m_pParentDriver->m_Thread_run_flag = -1;
-
-  return 0;
-}
-#endif  // MSW
 
 #endif  // Android
