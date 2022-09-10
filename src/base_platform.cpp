@@ -55,7 +55,7 @@
 
 #include "config.h"
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "logger.h"
 #include "ocpn_utils.h"
 #include "ocpn_plugin.h"

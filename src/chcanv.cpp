@@ -72,12 +72,12 @@
 #include "glTextureDescriptor.h"
 #include "ChInfoWin.h"
 #include "Quilt.h"
-#include "SelectItem.h"
+#include "select_item.h"
 #include "Select.h"
 #include "SystemCmdSound.h"
 #include "FontMgr.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
 #include "compass.h"
@@ -203,7 +203,7 @@ extern bool g_bTempShowMenuBar;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
 extern int g_Show_Target_Name_Scale;
 
@@ -3696,7 +3696,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
         this, m_cursor_lat, m_cursor_lon, SELTYPE_AISTARGET);
     if (pFind) {
       int FoundAIS_MMSI = (wxIntPtr)pFind->m_pData1;
-      AIS_Target_Data *ptarget =
+      AisTargetData *ptarget =
           g_pAIS->Get_Target_Data_From_MMSI(FoundAIS_MMSI);
 
       if (ptarget) {
@@ -4491,7 +4491,7 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
       if (pc) {
         //      If m_singleChart is not on the screen, unbound the zoomout
         LLBBox viewbox = VPoint.GetBBox();
-        //                wxBoundingBox chart_box;
+        //                BoundingBox chart_box;
         int current_index = ChartData->FinddbIndex(pc->GetFullPath());
         double max_allowed_scale;
 
@@ -5809,7 +5809,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
   //    Another draw test ,based on pixels, assuming the ship icon is a fixed
   //    nominal size and is just barely outside the viewport        ....
-  wxBoundingBox bb_screen(0, 0, GetVP().pix_width, GetVP().pix_height);
+  BoundingBox bb_screen(0, 0, GetVP().pix_width, GetVP().pix_height);
 
   // TODO: fix to include actual size of boat that will be rendered
   int img_height = 0;
@@ -9360,12 +9360,12 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     float vp_scale = GetVPScale();
 
     for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
-      AIS_Target_Data *target_data = target.second;
+      AisTargetData *target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (auto &ani : target_data->area_notices) {
           Ais8_001_22 &area_notice = ani.second;
 
-          wxBoundingBox bbox;
+          BoundingBox bbox;
 
           for (Ais8_001_22_SubAreaList::iterator sa =
                    area_notice.sub_areas.begin();

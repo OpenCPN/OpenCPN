@@ -29,7 +29,7 @@
 #include <wx/filename.h>
 #include <wx/log.h>
 
-#include "Downloader.h"
+#include "downloader.h"
 
 /** Dummy curl callback on received data from remote. */
 static size_t throw_cb(void* ptr, size_t size, size_t nmemb, void* data) {

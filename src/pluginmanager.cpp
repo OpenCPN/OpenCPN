@@ -85,9 +85,9 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #endif
 
 
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "ais.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "canvasMenu.h"
 #include "catalog_handler.h"
 #include "cat_settings.h"
@@ -96,7 +96,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "config.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "download_mgr.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -120,10 +120,10 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "options.h"
 #include "piano.h"
 #include "plugin_cache.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "plugin_loader.h"
 #include "pluginmanager.h"
-#include "PluginPaths.h"
+#include "plugin_paths.h"
 #include "Route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
@@ -172,7 +172,7 @@ void catch_signals_PIM(int signo) {
 #endif
 
 extern MyConfig *pConfig;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern OCPN_AUIManager *g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
@@ -243,7 +243,7 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-static void SendAisJsonMessage(AIS_Target_Data* pTarget) {
+static void SendAisJsonMessage(AisTargetData* pTarget) {
   //  Only send messages if someone is listening...
   if (!g_pi_manager->GetJSONMessageTargetCount()) return;
 
@@ -252,7 +252,7 @@ static void SendAisJsonMessage(AIS_Target_Data* pTarget) {
 
   wxLongLong t = ::wxGetLocalTimeMillis();
 
-  jMsg[wxS("Source")] = wxS("AIS_Decoder");
+  jMsg[wxS("Source")] = wxS("AisDecoder");
   jMsg[wxT("Type")] = wxT("Information");
   jMsg[wxT("Msg")] = wxS("AIS Target");
   jMsg[wxT("MsgId")] = t.GetValue();
@@ -1231,7 +1231,7 @@ void PlugInManager::HandlePluginLoaderEvents() {
   evt_ais_json_listener = g_pAIS->plugin_msg.GetListener(this,
                                                          EVT_PLUGMGR_AIS_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG,  [&](wxCommandEvent& ev) {
-    auto pTarget = static_cast<AIS_Target_Data*>(ev.GetClientData());
+    auto pTarget = static_cast<AisTargetData*>(ev.GetClientData());
     SendAisJsonMessage(pTarget); });
 }
 
@@ -3023,14 +3023,14 @@ ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void) {
 
   //      Iterate over the AIS Target Hashmap
   for (const auto &it : g_pAIS->GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
     PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(td);
     pret->Add(ptarget);
   }
 
 //  Test one alarm target
 #if 0
-    AIS_Target_Data td;
+    AisTargetData td;
     td.n_alarm_state = AIS_ALARM_SET;
     PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(&td);
     pret->Add(ptarget);
@@ -3238,7 +3238,7 @@ bool DecodeSingleVDOMessage(const wxString &str, PlugIn_Position_Fix_Ex *pos,
   if (!pos) return false;
 
   GenericPosDatEx gpd;
-  AIS_Error nerr = AIS_GENERIC_ERROR;
+  AisError nerr = AIS_GENERIC_ERROR;
   if (g_pAIS) nerr = g_pAIS->DecodeSingleVDO(str, &gpd, accumulator);
   if (nerr == AIS_NoError) {
     pos->Lat = gpd.kLat;
@@ -3896,7 +3896,7 @@ void PlugInNormalizeViewport(PlugIn_ViewPort *vp, float lat, float lon) {
 //    PlugIn_AIS_Target Implementation
 //-------------------------------------------------------------------------------
 
-PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget) {
+PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget) {
   PlugIn_AIS_Target *pret = new PlugIn_AIS_Target;
 
   pret->MMSI = ptarget->MMSI;
@@ -6410,7 +6410,7 @@ void CreateCompatibleS57Object(PI_S57Obj *pObj, S57Obj *cobj,
   S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
 
   if (pContext->bBBObj_valid)
-    // this is ugly because plugins still use wxBoundingBox
+    // this is ugly because plugins still use BoundingBox
     cobj->BBObj.Set(pContext->BBObj.GetMinY(), pContext->BBObj.GetMinX(),
                     pContext->BBObj.GetMaxY(), pContext->BBObj.GetMaxX());
 
@@ -6531,9 +6531,9 @@ void UpdatePIObjectPlibContext(PI_S57Obj *pObj, S57Obj *cobj,
   pContext->rText = cobj->rText;
 
   if (cobj->BBObj.GetValid()) {
-    // ugly as plugins still use wxBoundingBox
+    // ugly as plugins still use BoundingBox
     pContext->BBObj =
-        wxBoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
+        BoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
                       cobj->BBObj.GetMaxLon(), cobj->BBObj.GetMaxLat());
     pContext->bBBObj_valid = true;
   }

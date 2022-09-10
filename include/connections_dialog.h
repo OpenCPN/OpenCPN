@@ -27,7 +27,13 @@
 #ifndef _CONNECT_DIALOG_H
 #define _CONNECT_DIALOG_H
 
+#include <wx/checkbox.h>
 #include <wx/listctrl.h>
+#include <wx/radiobut.h>
+#include <wx/stattext.h>
+#include <wx/timer.h>
+
+
 #include "conn_params.h"
 #include "comm_util.h"
 class options;

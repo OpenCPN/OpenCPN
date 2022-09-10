@@ -47,8 +47,8 @@
 #include "georef.h"
 #include "styles.h"
 #include "Select.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
 #include "wx28compat.h"
@@ -61,7 +61,7 @@ extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 
 int g_ais_cog_predictor_width;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
@@ -93,7 +93,7 @@ int g_ScaledNumWeightRange;
 int g_ScaledNumWeightSizeOfT;
 int g_ScaledSizeMinimal;
 
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern float g_ShipScaleFactorExp;
 
@@ -293,7 +293,7 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   float vp_scale = vp.view_scale_ppm;
 
   for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
-    AIS_Target_Data *target_data = target.second;
+    AisTargetData *target_data = target.second;
     if (!target_data->area_notices.empty()) {
       if (!b_pens_set) {
         pen_save = dc.GetPen();
@@ -402,7 +402,7 @@ static void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
 }
 
 static void AtoN_Diamond(ocpnDC &dc, int x, int y, int radius,
-                         AIS_Target_Data *td) {
+                         AisTargetData *td) {
   //    Constants?
   wxPen pen_save = dc.GetPen();
 
@@ -718,7 +718,7 @@ static void AISSetMetrics() {
   AIS_width_target_outline = 1.2 * AIS_nominal_line_width_pix;
 }
 
-static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
+static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                           ChartCanvas *cp) {
   //      Target data must be valid
   if (NULL == td) return;
@@ -1615,7 +1615,7 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
   bool b_forceshow = false;
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     if (td->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-      MMSIProperties *props = g_MMSI_Props_Array[i];
+      MmsiProperties *props = g_MMSI_Props_Array[i];
       if (TRACKTYPE_NEVER == props->TrackType) {
         b_noshow = true;
         break;
@@ -1702,7 +1702,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   if (go) {
     for (const auto &it : current_targets) {
       // calculate the importancefactor for each target
-      AIS_Target_Data *td = it.second;
+      AisTargetData *td = it.second;
       double So, Cpa, Rang, Siz = 0.0;
       So = g_ScaledNumWeightSOG / 12 *
            td->SOG;  // 0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
@@ -1738,7 +1738,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   if (cp != NULL) {
     if (cp->GetAttenAIS()) {
       for (const auto &it : current_targets) {
-        AIS_Target_Data *td = it.second;
+        AisTargetData *td = it.second;
         if (vp.GetBBox().Contains(td->Lat, td->Lon)) {
           if (td->importance > AISImportanceSwitchPoint) {
             Array[LowestInd] = td->importance;
@@ -1761,7 +1761,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   //    Draw all targets in three pass loop, sorted on SOG, GPSGate & DSC on top
   //    This way, fast targets are not obscured by slow/stationary targets
   for (const auto &it : current_targets) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
     if ((td->SOG < g_ShowMoored_Kts) &&
         !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
       AISDrawTarget(td, dc, vp, cp);
@@ -1769,7 +1769,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   }
 
   for (const auto &it : current_targets) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
     if ((td->SOG >= g_ShowMoored_Kts) &&
         !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
       AISDrawTarget(td, dc, vp, cp);  // yes this is a doubling of code;(
@@ -1778,7 +1778,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   }
 
   for (const auto &it : current_targets) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
     if ((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))
       AISDrawTarget(td, dc, vp, cp);
   }
@@ -1791,7 +1791,7 @@ bool AnyAISTargetsOnscreen(ChartCanvas *cc, ViewPort &vp) {
 
   //      Iterate over the AIS Target Hashmap
   for (const auto &it : g_pAIS->GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
     if (vp.GetBBox().Contains(td->Lat, td->Lon)) return true;  // yep
   }
 

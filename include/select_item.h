@@ -1,9 +1,9 @@
-/***************************************************************************
+/******************************************************************************
  *
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,33 +22,32 @@
  ***************************************************************************
  */
 
-#ifndef _AIS_DEFS_H__
-#define _AIS_DEFS_H__
+#ifndef _SELECTITEM_H__
+#define _SELECTITEM_H__
 
-#include <wx/hashmap.h>
-#include <wx/string.h>
+#include <wx/list.h>
 
-#define TRACKTYPE_DEFAULT 0
-#define TRACKTYPE_ALWAYS 1
-#define TRACKTYPE_NEVER 2
+class SelectItem {
+public:
+  SelectItem();
+  ~SelectItem();
 
-typedef enum AIS_Error {
-  AIS_NoError = 0,
-  AIS_Partial,
-  AIS_NMEAVDX_TOO_LONG,
-  AIS_NMEAVDX_CHECKSUM_BAD,
-  AIS_NMEAVDX_BAD,
-  AIS_NO_SERIAL,
-  AIS_NO_TCP,
-  AIS_GENERIC_ERROR,
-  AIS_INCOMPLETE_MULTIPART
-} _AIS_Error;
+  int GetUserData(void);
+  void SetUserData(int data);
 
-WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
-                    AIS_Target_Name_Hash);
+  float m_slat;
+  float m_slon;
+  float m_slat2;
+  float m_slon2;
+  int m_seltype;
+  bool m_bIsSelected;
+  const void *m_pData1;
+  void *m_pData2;
+  void *m_pData3;
+  int m_Data4;
+};
 
+WX_DECLARE_LIST(SelectItem,
+                SelectableItemList);  // establish class as list member
 
-#define TIMER_AIS_MSEC 998
-#define TIMER_AIS_AUDIO_MSEC 2000
-
-#endif  //  _AIS_DEFS_H__
+#endif

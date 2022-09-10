@@ -19,8 +19,8 @@ src/about.cpp
 src/AboutFrame.cpp
 src/AboutFrameImpl.cpp
 src/ais.cpp
-src/AIS_Decoder.cpp
-src/AIS_Target_Data.cpp
+src/ais-decoder.cpp
+src/ais_target_data.cpp
 src/AISTargetAlertDialog.cpp
 src/AISTargetListDialog.cpp
 src/AISTargetQueryDialog.cpp
@@ -56,7 +56,7 @@ src/OCPNListCtrl.cpp
 src/OCPNPlatform.cpp
 src/options.cpp
 src/Osenc.cpp
-src/PluginHandler.cpp
+src/plugin_handler.cpp
 src/pluginmanager.cpp
 src/RolloverWin.cpp
 src/Route.cpp

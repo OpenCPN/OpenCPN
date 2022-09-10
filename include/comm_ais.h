@@ -25,14 +25,14 @@
 #ifndef _COMM_AIS_H__
 #define _COMM_AIS_H__
 
-#include "AIS_Target_Data.h"
-#include "AIS_Bitstring.h"
-#include "AIS_Defs.h"
+#include "ais_target_data.h"
+#include "ais_bitstring.h"
+#include "ais_defs.h"
 #include "ocpn_types.h"
 
-bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
+bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd);
 
-AIS_Error DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos);
+AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos);
 
 bool NMEA_AISCheckSumOK(const wxString& str);
 

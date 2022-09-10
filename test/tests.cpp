@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "comm_ais.h"
 #include "comm_appmsg_bus.h"
 #include "comm_bridge.h"
@@ -20,8 +20,8 @@
 #include "observable_navmsg.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
-#include "AIS_Defs.h"
-#include "AIS_Decoder.h"
+#include "ais_defs.h"
+#include "ais_decoder.h"
 #include "Select.h"
 
 class AISTargetAlertDialog;
@@ -77,7 +77,7 @@ bool get_mode() { return false; }
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
-AIS_Decoder* g_pAIS;
+AisDecoder* g_pAIS;
 Select* pSelectAIS;
 
 /* comm_bridge context. */
@@ -382,14 +382,14 @@ public:
 
 class AisApp : public wxAppConsole {
 public:
-  AisApp(const char* msg) : wxAppConsole() {
+  AisApp(const char* type, const char* msg) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
     CommBridge comm_bridge;
     comm_bridge.Initialize();
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
     auto m = std::make_shared<const Nmea0183Msg>(
-        Nmea0183Msg("AIVDO", msg, addr1));
+        Nmea0183Msg(type, msg, addr1));
     msgbus.Notify(m);
     ProcessPendingEvents();
   }
@@ -625,7 +625,7 @@ TEST(Priority, DifferentSource) {
     "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
   const char* const GPGGA_2 =
     "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
-  g_pAIS = new AIS_Decoder;
+  g_pAIS = new AisDecoder;
   PriorityApp2 app(GPGGA_1, GPGGA_2);
   Position p = Position::ParseGGA("5759.097,N,01144.345,E");
   EXPECT_NEAR(gLat, p.lat, 0.0001);
@@ -635,7 +635,7 @@ TEST(Priority, DifferentSource) {
 TEST(AIS, Decoding) {
   const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   GenericPosDatEx gpd;
-  AIS_Error status = DecodeSingleVDO(AISVDO_1, &gpd);
+  AisError status = DecodeSingleVDO(AISVDO_1, &gpd);
   EXPECT_EQ(status, AIS_NoError);
 }
 
@@ -643,19 +643,23 @@ TEST(AIS, AISVDO) {
   wxLog::SetActiveTarget(&defaultLog);
   const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
-  g_pAIS = new AIS_Decoder;
-  AisApp app(AISVDO_1);
+  g_pAIS = new AisDecoder;
+  AisApp app("AIVDO", AISVDO_1);
 
   EXPECT_NEAR(gLat, 57.985758, 0.0001);
   EXPECT_NEAR(gLon, 11.740108, 0.0001);
 }
 
-#if 0
-// FIXME (leamas) leaving for use in AIVDM test
+TEST(AIS, AISVDM) {
+  const char* AISVDM_1 = "!AIVDM,1,1,,A,1535SB002qOg@MVLTi@b;H8V08;?,0*47";
+  int MMSI = 338781000;
+
+  g_pAIS = new AisDecoder;
+  AisApp app("AIVDM", AISVDM_1);
   auto found = g_pAIS->GetTargetList().find(MMSI);
   EXPECT_NE(found, g_pAIS->GetTargetList().end());
   if (found != g_pAIS->GetTargetList().end()) {
-    EXPECT_NEAR(found->second->Lat, 57.985758, 0.0001);
-    EXPECT_NEAR(found->second->Lon, 11.740108, 0.0001);
+    EXPECT_NEAR(found->second->Lat, 49.93760, 0.0001);
+    EXPECT_NEAR(found->second->Lon, -3.65751, 0.0001);
   }
-#endif
+}

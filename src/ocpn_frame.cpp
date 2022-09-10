@@ -90,10 +90,10 @@
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "color_handler.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "ais.h"
 #include "AISTargetAlertDialog.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "AISTargetListDialog.h"
 #include "AISTargetQueryDialog.h"
 #include "CanvasConfig.h"
@@ -131,7 +131,7 @@
 #include "OCPN_Sound.h"
 #include "options.h"
 // #include "piano.h"
-// #include "PluginHandler.h"
+// #include "plugin_handler.h"
 #include "pluginmanager.h"
 // #include "Quilt.h"
 // #include "Route.h"
@@ -420,7 +420,7 @@ extern int g_priSats;
 extern int g_SatsInView;
 extern bool g_bSatValid;
 extern double g_UserVar;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern bool g_bUseGLL;
 extern int g_MemFootSec;
 extern int g_MemFootMB;
@@ -1199,7 +1199,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //    Establish my children
   g_pMUX = new Multiplexer();
 
-  g_pAIS = new AIS_Decoder();
+  g_pAIS = new AisDecoder();
 
   //  Create/connect a dynamic event handler slot
   wxLogMessage(" **** Connect stuff");
@@ -7058,7 +7058,7 @@ void MyFrame::LoadHarmonics() {
 
 Route *pAISMOBRoute;
 
-void MyFrame::ActivateAISMOBRoute(AIS_Target_Data *ptarget) {
+void MyFrame::ActivateAISMOBRoute(AisTargetData *ptarget) {
   if (!ptarget) return;
 
   //    The MOB point
@@ -7135,7 +7135,7 @@ void MyFrame::ActivateAISMOBRoute(AIS_Target_Data *ptarget) {
   wxLogMessage(mob_message);
 }
 
-void MyFrame::UpdateAISMOBRoute(AIS_Target_Data *ptarget) {
+void MyFrame::UpdateAISMOBRoute(AisTargetData *ptarget) {
   if (pAISMOBRoute && ptarget) {
     //   Update Current Ownship point
     RoutePoint *OwnPoint = pAISMOBRoute->GetPoint(1);

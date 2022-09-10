@@ -54,16 +54,16 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "config.h"
 #include "catalog_parser.h"
 #include "catalog_handler.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "logger.h"
 #include "navutil.h"
 #include "gui_lib.h"
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "ocpn_utils.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "plugin_cache.h"
 #include "plugin_loader.h"
-#include "PluginPaths.h"
+#include "plugin_paths.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -874,7 +874,7 @@ std::string PluginHandler::getMetadataPath() {
   return metadataPath;
 }
 
-static void parseMetadata(const std::string path, catalog_ctx& ctx) {
+static void parseMetadata(const std::string path, CatalogCtx& ctx) {
   using namespace std;
 
   wxLogMessage("PluginHandler: using metadata path: %s", path);
@@ -968,7 +968,7 @@ void PluginHandler::cleanup(const std::string& filelist,
 
 const std::vector<PluginMetadata> PluginHandler::getAvailable() {
   using namespace std;
-  catalog_ctx ctx;
+  CatalogCtx ctx;
 
   auto catalogHandler = CatalogHandler::getInstance();
 
@@ -1069,7 +1069,7 @@ bool PluginHandler::installPlugin(std::string path) {
     last_error_msg = os.str();
     return false;
   }
-  struct catalog_ctx ctx;
+  struct CatalogCtx ctx;
   std::ifstream istream(temp_path);
   std::stringstream buff;
   buff << istream.rdbuf();

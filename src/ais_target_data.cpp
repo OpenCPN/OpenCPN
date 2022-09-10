@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include <unordered_map>
 
 #include "ocpn_frame.h"
@@ -135,7 +135,7 @@ static double GetMag(double a) {
 }
 
 
-AIS_Target_Data::AIS_Target_Data() {
+AisTargetData::AisTargetData() {
   strncpy(ShipName, "Unknown             ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
   strncpy(Destination, "                    ", SHIP_NAME_LEN);
@@ -225,7 +225,7 @@ AIS_Target_Data::AIS_Target_Data() {
     last_scale[i] = 50;
 }
 
-void AIS_Target_Data::CloneFrom(AIS_Target_Data *q) {
+void AisTargetData::CloneFrom(AisTargetData *q) {
   strncpy(ShipName, q->ShipName, SHIP_NAME_LEN);
   strncpy(CallSign, q->CallSign, 8);
   strncpy(Destination, q->Destination, SHIP_NAME_LEN);
@@ -310,9 +310,9 @@ void AIS_Target_Data::CloneFrom(AIS_Target_Data *q) {
   altitude = q->altitude;
 }
 
-AIS_Target_Data::~AIS_Target_Data() { m_ptrack.clear(); }
+AisTargetData::~AisTargetData() { m_ptrack.clear(); }
 
-wxString AIS_Target_Data::GetFullName(void) {
+wxString AisTargetData::GetFullName(void) {
   wxString retName;
   if (b_nameValid) {
     wxString shipName = trimAISField(ShipName);
@@ -330,7 +330,7 @@ wxString AIS_Target_Data::GetFullName(void) {
   return retName;
 }
 
-wxString AIS_Target_Data::BuildQueryResult(void) {
+wxString AisTargetData::BuildQueryResult(void) {
   wxString html;
   wxDateTime now = wxDateTime::Now();
 
@@ -760,7 +760,7 @@ wxString AIS_Target_Data::BuildQueryResult(void) {
   return html;
 }
 
-wxString AIS_Target_Data::GetRolloverString(void) {
+wxString AisTargetData::GetRolloverString(void) {
   wxString result;
   wxString t;
   if (b_nameValid) {
@@ -884,7 +884,7 @@ wxString AIS_Target_Data::GetRolloverString(void) {
   return result;
 }
 
-wxString AIS_Target_Data::Get_vessel_type_string(bool b_short) {
+wxString AisTargetData::Get_vessel_type_string(bool b_short) {
   int i = 19;
   if (Class == AIS_ATON) {
     i = ShipType + 20;
@@ -963,7 +963,7 @@ wxString AIS_Target_Data::Get_vessel_type_string(bool b_short) {
     return ais_get_short_type(i);
 }
 
-wxString AIS_Target_Data::Get_class_string(bool b_short) {
+wxString AisTargetData::Get_class_string(bool b_short) {
   switch (Class) {
     case AIS_CLASS_A:
       return _("A");
@@ -992,7 +992,7 @@ wxString AIS_Target_Data::Get_class_string(bool b_short) {
   }
 }
 
-wxString AIS_Target_Data::GetNatureofDistress(int dscnature) {
+wxString AisTargetData::GetNatureofDistress(int dscnature) {
   // Natures of distress from: Rec. ITU-R M.493-10.
   wxString dscDistressType[] = { _("Fire, explosion"), _("Floding"),
                                      _("Collision"), _("Grounding"),
@@ -1006,17 +1006,17 @@ wxString AIS_Target_Data::GetNatureofDistress(int dscnature) {
   return wxEmptyString;
 }
 
-void AIS_Target_Data::Toggle_AIS_CPA(void) {
+void AisTargetData::Toggle_AIS_CPA(void) {
   b_show_AIS_CPA = !b_show_AIS_CPA ? true : false;
 }
 
-void AIS_Target_Data::ToggleShowTrack(void) {
+void AisTargetData::ToggleShowTrack(void) {
   b_show_track = !b_show_track ? true : false;
 }
 
 // Get country name and code according to ITU 2019-02
 // (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
-wxString AIS_Target_Data::GetCountryCode(
+wxString AisTargetData::GetCountryCode(
     bool
         b_CntryLongStr)  // false = Short country code, true = Full country name
 {

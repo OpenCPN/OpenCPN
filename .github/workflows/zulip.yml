@@ -1,0 +1,34 @@
+---
+# yamllint disable rule:truthy
+
+on:
+  workflow_run:
+    workflows: [CMake, Flatpak]
+    types: [completed]
+
+jobs:
+  on-anything:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "GITHUB_ACTOR=$GITHUB_ACTOR" >> $GITHUB_ENV
+      - run: echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
+      - name: Tell Zulip
+        uses: zulip/github-actions-zulip/send-message@v1
+        env:
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          GIT_COMMIT: ${{ github.event.workflow_run.head_commit.id }}
+          GIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+          JOB_URL: ${{ github.event.workflow_run.html_url }}
+          REPO_URL: ${{ github.event.workflow_run.head_repository.html_url }}
+        with:
+          email: github-actions-bot@opencpn.zulipchat.com
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          organization-url: 'https://opencpn.zulipchat.com'
+          type: 'stream'
+          to: 'CI'
+          topic: 'OpenCPN'
+          content: |
+            Build completed: [${{ env.CONCLUSION }}](${{ env.JOB_URL }})
+            -  Started by: ${{ env.GITHUB_ACTOR }}
+            -  last commit: [${{ env.SHORT_SHA }}, ${{ env.GIT_MESSAGE }}](
+               ${{ env.REPO_URL }}/commit/${{ env.GIT_COMMIT }})

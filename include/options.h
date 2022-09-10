@@ -77,7 +77,7 @@ class PluginListPanel;
 class ChartGroupArray;
 class ChartGroup;
 class MMSI_Props_Panel;
-class MMSIProperties;
+class MmsiProperties;
 class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
 class OCPNIconCombo;
@@ -828,7 +828,7 @@ public:
 
 class MMSIEditDialog : private Uncopyable, public wxDialog {
 public:
-  explicit MMSIEditDialog(MMSIProperties *props, wxWindow *parent,
+  explicit MMSIEditDialog(MmsiProperties *props, wxWindow *parent,
                           wxWindowID id = wxID_ANY,
                           const wxString &caption = wxEmptyString,
                           const wxPoint &pos = wxDefaultPosition,
@@ -841,7 +841,7 @@ public:
   void OnMMSIEditOKClick(wxCommandEvent &event);
   void OnCtlUpdated(wxCommandEvent &event);
 
-  MMSIProperties *m_props;
+  MmsiProperties *m_props;
   wxTextCtrl *m_MMSICtl, m_ShipNameCtl;  // Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;

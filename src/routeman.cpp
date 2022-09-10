@@ -52,7 +52,7 @@
 #include "comm_n0183_output.h"
 #include "MarkIcon.h"
 #include "cutil.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "wx28compat.h"
 #include "Route.h"
 #include "ocpn_app.h"
@@ -103,7 +103,7 @@ extern RoutePoint *pAnchorWatchPoint1;
 extern RoutePoint *pAnchorWatchPoint2;
 extern int g_route_line_width;
 extern CommN0183Out *g_comm_out;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 
 extern PlugInManager *g_pi_manager;
 extern ocpnStyle::StyleManager *g_StyleManager;

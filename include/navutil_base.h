@@ -26,6 +26,8 @@
 #ifndef _NAVUTIL_BASE__
 #define _NAVUTIL_BASE__
 
+#include <wx/string.h>
+
 
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 
@@ -49,7 +51,5 @@ extern double toUsrDistance(double nm_distance, int unit = -1);
 extern wxString getUsrDistanceUnit(int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit, int default_val);
 extern double fromUsrSpeed(double usr_speed, int unit, int default_val);
-
-
 
 #endif   // _NAVUTIL_BASE__

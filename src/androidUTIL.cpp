@@ -276,7 +276,7 @@ extern bool g_bUIexpert;
 extern wxArrayString TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 
 extern options *g_pOptions;
 

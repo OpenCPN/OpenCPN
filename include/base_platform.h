@@ -26,6 +26,9 @@
 #ifndef BASEPLATFORM_H
 #define BASEPLATFORM_H
 
+#include <stdio.h>
+#include <vector>
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -38,8 +41,6 @@
 #include <wx/colourdata.h>
 #include <wx/colordlg.h>
 
-#include <stdio.h>
-#include <vector>
 
 #define PLATFORM_CAP_PLUGINS 1
 #define PLATFORM_CAP_FASTPAN 2

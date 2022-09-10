@@ -1,27 +1,27 @@
 // testing
-#ifndef __WXBOUNDINGBOX_H__
-#define __WXBOUNDINGBOX_H__
+#ifndef _WXBOUNDINGBOX_H__
+#define _WXBOUNDINGBOX_H__
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
 
-#include "wx/geometry.h"
+#include <wx/geometry.h>
 
 enum OVERLAP { _IN, _ON, _OUT };
 
-// Purpose   The wxBoundingBox class stores one wxBoundingBox.
-// The wxBoundingBox is defined by two coordiates,
+// Purpose   The BoundingBox class stores one BoundingBox.
+// The BoundingBox is defined by two coordiates,
 // a upperleft coordinate and a lowerright coordinate.
-class wxBoundingBox {
+class BoundingBox {
 public:
-  wxBoundingBox();
-  wxBoundingBox(const wxBoundingBox&);
-  wxBoundingBox(const wxPoint2DDouble&);
-  wxBoundingBox(double xmin, double ymin, double xmax, double ymax);
-  virtual ~wxBoundingBox();
+  BoundingBox();
+  BoundingBox(const BoundingBox&);
+  BoundingBox(const wxPoint2DDouble&);
+  BoundingBox(double xmin, double ymin, double xmax, double ymax);
+  virtual ~BoundingBox();
 
-  bool And(wxBoundingBox*, double Marge = 0);
+  bool And(BoundingBox*, double Marge = 0);
 
   void EnLarge(const double Marge);
   void Shrink(const double Marge);
@@ -29,13 +29,13 @@ public:
   void Expand(const wxPoint2DDouble&, const wxPoint2DDouble&);
   void Expand(const wxPoint2DDouble&);
   void Expand(double x, double y);
-  void Expand(const wxBoundingBox& bbox);
+  void Expand(const BoundingBox& bbox);
 
-  OVERLAP Intersect(const wxBoundingBox&, double Marge = 0) const;
+  OVERLAP Intersect(const BoundingBox&, double Marge = 0) const;
 
   /* this routine is used very heavily, so this is a lightweight
      version for when we only care if the other box is out */
-  virtual inline bool IntersectOut(const wxBoundingBox& other) const {
+  virtual inline bool IntersectOut(const BoundingBox& other) const {
     return (m_minx > other.m_maxx) || (m_maxx < other.m_minx) ||
            (m_maxy < other.m_miny) || (m_miny > other.m_maxy);
   }
@@ -65,8 +65,8 @@ public:
   inline double GetMaxX() const { return m_maxx; };
   inline double GetMaxY() const { return m_maxy; };
 
-  wxBoundingBox& operator+(wxBoundingBox&);
-  wxBoundingBox& operator=(const wxBoundingBox&);
+  BoundingBox& operator+(BoundingBox&);
+  BoundingBox& operator=(const BoundingBox&);
 
 protected:
   // bounding box in world
@@ -77,7 +77,7 @@ protected:
   bool m_validbbox;
 };
 
-//    A class derived from wxBoundingBox
+//    A class derived from BoundingBox
 //    that is assummed to be a geographic area, with coordinates
 //    expressed in Lat/Lon.
 //    This class understands the International Date Line (E/W Longitude)
@@ -135,4 +135,4 @@ private:
   bool m_valid;
 };
 
-#endif
+#endif  // _WXBOUNDINGBOX_H__

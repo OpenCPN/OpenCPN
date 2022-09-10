@@ -22,24 +22,33 @@
  ***************************************************************************
  */
 
-#ifndef __AIS_BITSTRING_H__
-#define __AIS_BITSTRING_H__
+#ifndef _AIS_DEFS_H__
+#define _AIS_DEFS_H__
 
-#define AIS_MAX_MESSAGE_LEN \
-  (10 * 82)  // AIS Spec allows up to 9 sentences per message, 82 bytes each
-class AIS_Bitstring {
-public:
-  AIS_Bitstring(const char *str);
-  unsigned char to_6bit(const char c);
+#include <wx/hashmap.h>
+#include <wx/string.h>
 
-  /// sp is starting bit, 1-based
-  int GetInt(int sp, int len, bool signed_flag = false);
-  int GetStr(int sp, int bit_len, char *dest, int max_len);
-  int GetBitCount();
+#define TRACKTYPE_DEFAULT 0
+#define TRACKTYPE_ALWAYS 1
+#define TRACKTYPE_NEVER 2
 
-private:
-  unsigned char bitbytes[AIS_MAX_MESSAGE_LEN];
-  int byte_length;
-};
+typedef enum AisError {
+  AIS_NoError = 0,
+  AIS_Partial,
+  AIS_NMEAVDX_TOO_LONG,
+  AIS_NMEAVDX_CHECKSUM_BAD,
+  AIS_NMEAVDX_BAD,
+  AIS_NO_SERIAL,
+  AIS_NO_TCP,
+  AIS_GENERIC_ERROR,
+  AIS_INCOMPLETE_MULTIPART
+} _AisError;
 
-#endif
+WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
+                    AIS_Target_Name_Hash);
+
+
+#define TIMER_AIS_MSEC 998
+#define TIMER_AIS_AUDIO_MSEC 2000
+
+#endif  //  _AIS_DEFS_H__

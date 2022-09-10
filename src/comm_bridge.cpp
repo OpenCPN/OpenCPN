@@ -697,7 +697,7 @@ bool CommBridge::HandleN0183_AIVDO(
   GenericPosDatEx gpd;
   wxString sentence(str.c_str());
 
-  AIS_Error nerr = AIS_GENERIC_ERROR;
+  AisError nerr = AIS_GENERIC_ERROR;
   nerr = DecodeSingleVDO(sentence, &gpd);
 
   if (nerr == AIS_NoError) {

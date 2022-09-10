@@ -1,9 +1,9 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,32 +22,24 @@
  ***************************************************************************
  */
 
-#ifndef __SELECTITEM_H__
-#define __SELECTITEM_H__
+#ifndef _AIS_BITSTRING_H__
+#define _AIS_BITSTRING_H__
 
-#include <wx/list.h>
-
-class SelectItem {
+#define AIS_MAX_MESSAGE_LEN \
+  (10 * 82)  // AIS Spec allows up to 9 sentences per message, 82 bytes each
+class AisBitstring {
 public:
-  SelectItem();
-  ~SelectItem();
+  AisBitstring(const char *str);
+  unsigned char to_6bit(const char c);
 
-  int GetUserData(void);
-  void SetUserData(int data);
+  /// sp is starting bit, 1-based
+  int GetInt(int sp, int len, bool signed_flag = false);
+  int GetStr(int sp, int bit_len, char *dest, int max_len);
+  int GetBitCount();
 
-  float m_slat;
-  float m_slon;
-  float m_slat2;
-  float m_slon2;
-  int m_seltype;
-  bool m_bIsSelected;
-  const void *m_pData1;
-  void *m_pData2;
-  void *m_pData3;
-  int m_Data4;
+private:
+  unsigned char bitbytes[AIS_MAX_MESSAGE_LEN];
+  int byte_length;
 };
-
-WX_DECLARE_LIST(SelectItem,
-                SelectableItemList);  // establish class as list member
 
 #endif

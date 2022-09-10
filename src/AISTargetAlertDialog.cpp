@@ -25,9 +25,9 @@
 #include <wx/html/htmlwin.h>
 
 
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "AISTargetAlertDialog.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "navutil.h"
@@ -133,7 +133,7 @@ void AISTargetAlertDialog::Init() {
 }
 
 bool AISTargetAlertDialog::Create(int target_mmsi, wxWindow *parent,
-                                  AIS_Decoder *pdecoder, bool b_jumpto,
+                                  AisDecoder *pdecoder, bool b_jumpto,
                                   bool b_createWP, bool b_ack, wxWindowID id,
                                   const wxString &caption, const wxPoint &pos,
                                   const wxSize &size, long style)
@@ -227,9 +227,9 @@ void AISTargetAlertDialog::CreateControls() {
 }
 
 bool AISTargetAlertDialog::GetAlertText() {
-  //    Search the parent AIS_Decoder's target list for specified mmsi
+  //    Search the parent AisDecoder's target list for specified mmsi
   if (m_pdecoder) {
-    AIS_Target_Data *td_found =
+    AisTargetData *td_found =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
 
     if (td_found) {
@@ -328,7 +328,7 @@ void AISTargetAlertDialog::SetColorScheme(void) {
 void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
   //    Acknowledge any existing Alert, and dismiss the dialog
   if (m_pdecoder) {
-    AIS_Target_Data *td =
+    AisTargetData *td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       if (AIS_ALERT_SET == td->n_alert_state) {
@@ -351,7 +351,7 @@ void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
 void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
   //    Acknowledge the Alert, and dismiss the dialog
   if (m_pdecoder) {
-    AIS_Target_Data *td =
+    AisTargetData *td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       if (AIS_ALERT_SET == td->n_alert_state ) {
@@ -371,7 +371,7 @@ void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
 }
 void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AIS_Target_Data *td =
+    AisTargetData *td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       RoutePoint *pWP = new RoutePoint(td->Lat, td->Lon, g_default_wp_icon,
@@ -396,7 +396,7 @@ void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
 void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
   //    Set the suppress audio flag
   if (m_pdecoder) {
-    AIS_Target_Data *td =
+    AisTargetData *td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) td->b_suppress_audio = true;
   }
@@ -404,7 +404,7 @@ void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
 
 void AISTargetAlertDialog::OnIdJumptoClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AIS_Target_Data *td =
+    AisTargetData *td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td)
       gFrame->JumpToPosition(gFrame->GetFocusCanvas(), td->Lat, td->Lon,

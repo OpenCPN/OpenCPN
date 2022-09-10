@@ -48,10 +48,10 @@
 #include "gui_lib.h"
 #include "navutil.h"
 #include "OCPN_Sound.h"
-#include "AIS_Bitstring.h"
+#include "ais_bitstring.h"
 #include "AISTargetListDialog.h"
-#include "AIS_Target_Data.h"
-#include "AIS_Defs.h"
+#include "ais_target_data.h"
+#include "ais_defs.h"
 
 //  FWD definitions
 class ChartCanvas;
@@ -91,10 +91,10 @@ extern wxString ais8_001_22_notice_names[];
 
 //---------------------------------------------------------------------------------
 //
-//  AIS_Decoder Helpers
+//  AisDecoder Helpers
 //
 //---------------------------------------------------------------------------------
-WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
+WX_DEFINE_SORTED_ARRAY(AisTargetData *, ArrayOfAISTarget);
 
 //      Implement the AISTargetList as a wxHashMap
 

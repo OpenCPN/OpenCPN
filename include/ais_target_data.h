@@ -138,10 +138,10 @@ struct Ais8_001_22 {
 };
 
 
-class AIS_Target_Data {
+class AisTargetData {
 public:
-  AIS_Target_Data();
-  ~AIS_Target_Data();
+  AisTargetData();
+  ~AisTargetData();
 
   wxString BuildQueryResult(void);
   wxString GetRolloverString(void);
@@ -152,7 +152,7 @@ public:
   wxString GetNatureofDistress(int dscnature);
   void Toggle_AIS_CPA(void);
   void ToggleShowTrack(void);
-  void CloneFrom(AIS_Target_Data* q);
+  void CloneFrom(AisTargetData* q);
 
   int MID;
   int MMSI;

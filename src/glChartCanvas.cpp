@@ -2545,7 +2545,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
 
   //    Another draw test ,based on pixels, assuming the ship icon is a fixed
   //    nominal size and is just barely outside the viewport        ....
-  wxBoundingBox bb_screen(0, 0, m_pParentCanvas->GetVP().pix_width,
+  BoundingBox bb_screen(0, 0, m_pParentCanvas->GetVP().pix_width,
                           m_pParentCanvas->GetVP().pix_height);
 
   // TODO: fix to include actual size of boat that will be rendered

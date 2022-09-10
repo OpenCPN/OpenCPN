@@ -46,7 +46,7 @@
 #include "catalog_parser.h"
 #include "plugin_blacklist.h"
 #include "observable.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "comm_navmsg.h"
 #include "s57chart.h"  // for Object list
 #include "semantic_vers.h"
@@ -82,7 +82,7 @@
 
 //    Assorted static helper routines
 
-PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
+PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget);
 
 class PluginListPanel;
 class PluginPanel;
@@ -521,7 +521,7 @@ public:
 
   ~S52PLIB_Context(){};
 
-  wxBoundingBox BBObj;  // lat/lon BBox of the rendered object
+  BoundingBox BBObj;  // lat/lon BBox of the rendered object
   bool bBBObj_valid;    // set after the BBObj has been calculated once.
 
   Rules *CSrules;  // per object conditional symbology

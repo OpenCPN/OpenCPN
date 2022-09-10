@@ -27,7 +27,7 @@
 #include <wx/filename.h>
 #include <wx/filefn.h>
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "plugin_cache.h"
 #include "ocpn_utils.h"
 

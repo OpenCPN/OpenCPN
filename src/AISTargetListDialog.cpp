@@ -33,8 +33,8 @@
 
 #include "AISTargetListDialog.h"
 #include "ais.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 #include "OCPNListCtrl.h"
 #include "styles.h"
 #include "Select.h"
@@ -44,7 +44,7 @@
 #include "chcanv.h"
 #include "ocpn_frame.h"
 
-static AIS_Decoder *s_p_sort_decoder;
+static AisDecoder *s_p_sort_decoder;
 
 extern int g_AisTargetList_count;
 extern bool g_bAisTargetList_sortReverse;
@@ -71,8 +71,8 @@ END_EVENT_TABLE()
 
 static bool g_bsort_once;
 
-static int ItemCompare(AIS_Target_Data *pAISTarget1,
-                       AIS_Target_Data *pAISTarget2) {
+static int ItemCompare(AisTargetData *pAISTarget1,
+                       AisTargetData *pAISTarget2) {
   wxString s1, s2;
   double n1 = 0.;
   double n2 = 0.;
@@ -81,8 +81,8 @@ static int ItemCompare(AIS_Target_Data *pAISTarget1,
   //    Don't sort unless requested
   if (!g_bAisTargetList_autosort && !g_bsort_once) return 0;
 
-  AIS_Target_Data *t1 = pAISTarget1;
-  AIS_Target_Data *t2 = pAISTarget2;
+  AisTargetData *t1 = pAISTarget1;
+  AisTargetData *t2 = pAISTarget2;
 
   if (t1->Class == AIS_SART) {
     if (t2->Class == AIS_DSC)
@@ -303,9 +303,9 @@ static int ItemCompare(AIS_Target_Data *pAISTarget1,
 
 static int ArrayItemCompareMMSI(int MMSI1, int MMSI2) {
   if (s_p_sort_decoder) {
-    AIS_Target_Data *pAISTarget1 =
+    AisTargetData *pAISTarget1 =
         s_p_sort_decoder->Get_Target_Data_From_MMSI(MMSI1);
-    AIS_Target_Data *pAISTarget2 =
+    AisTargetData *pAISTarget2 =
         s_p_sort_decoder->Get_Target_Data_From_MMSI(MMSI2);
 
     if (pAISTarget1 && pAISTarget2)
@@ -317,7 +317,7 @@ static int ArrayItemCompareMMSI(int MMSI1, int MMSI2) {
 }
 
 AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
-                                         AIS_Decoder *pdecoder)
+                                         AisDecoder *pdecoder)
     : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1 /*780, 250*/),
               wxBORDER_NONE) {
   m_pparent = parent;
@@ -841,7 +841,7 @@ void AISTargetListDialog::UpdateButtons() {
   m_pButtonInfo->Enable(enable);
 
   if (m_pdecoder && item != -1) {
-    AIS_Target_Data *pAISTargetSel =
+    AisTargetData *pAISTargetSel =
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
     if (pAISTargetSel && (!pAISTargetSel->b_positionOnceValid)) enable = false;
   }
@@ -875,7 +875,7 @@ void AISTargetListDialog::OnTargetQuery(wxCommandEvent &event) {
   if (selItemID == -1) return;
 
   if (m_pdecoder) {
-    AIS_Target_Data *pAISTarget =
+    AisTargetData *pAISTarget =
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
     if (pAISTarget) DoTargetQuery(pAISTarget->MMSI);
   }
@@ -932,7 +932,7 @@ void AISTargetListDialog::OnTargetScrollTo(wxCommandEvent &event) {
                                                  wxLIST_STATE_SELECTED);
   if (selItemID == -1) return;
 
-  AIS_Target_Data *pAISTarget = NULL;
+  AisTargetData *pAISTarget = NULL;
   if (m_pdecoder)
     pAISTarget =
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
@@ -949,7 +949,7 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
                                                  wxLIST_STATE_SELECTED);
   if (selItemID == -1) return;
 
-  AIS_Target_Data *pAISTarget = NULL;
+  AisTargetData *pAISTarget = NULL;
   if (m_pdecoder)
     pAISTarget =
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
@@ -974,7 +974,7 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
 void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
     for (const auto &it : m_pdecoder->GetTargetList()) {
-      AIS_Target_Data *pAISTarget = it.second;
+      AisTargetData *pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = true;
       }
@@ -986,7 +986,7 @@ void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
 void AISTargetListDialog::OnHideAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
     for (const auto &it : m_pdecoder->GetTargetList()) {
-      AIS_Target_Data *pAISTarget = it.second;
+      AisTargetData *pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = false;
       }
@@ -1001,7 +1001,7 @@ void AISTargetListDialog::OnToggleTrack(wxCommandEvent &event) {
                                                  wxLIST_STATE_SELECTED);
   if (selItemID == -1) return;
 
-  AIS_Target_Data *pAISTarget = NULL;
+  AisTargetData *pAISTarget = NULL;
   if (m_pdecoder)
     pAISTarget =
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
@@ -1033,7 +1033,7 @@ void AISTargetListDialog::OnLimitRange(wxCommandEvent &event) {
   UpdateAISTargetList();
 }
 
-AIS_Target_Data *AISTargetListDialog::GetpTarget(unsigned int list_item) {
+AisTargetData *AISTargetListDialog::GetpTarget(unsigned int list_item) {
   if (m_pdecoder)
     return m_pdecoder->Get_Target_Data_From_MMSI(
         m_pMMSI_array->Item(list_item));
@@ -1062,7 +1062,7 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
 
     for (auto it = current_targets.begin(); it != current_targets.end();
          ++it, ++index) {
-      AIS_Target_Data *pAISTarget = it->second;
+      AisTargetData *pAISTarget = it->second;
       item.SetId(index);
 
       if (NULL != pAISTarget) {
@@ -1136,7 +1136,7 @@ void AISTargetListDialog::UpdateNVAISTargetList(void) {
 
     for (auto it = current_targets.begin(); it != current_targets.end();
          ++it, ++index) {
-      AIS_Target_Data *pAISTarget = it->second;
+      AisTargetData *pAISTarget = it->second;
       item.SetId(index);
 
       if (NULL != pAISTarget) {

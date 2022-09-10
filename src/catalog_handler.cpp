@@ -33,12 +33,12 @@
 
 #include "catalog_handler.h"
 #include "catalog_parser.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
 #include "ocpn_utils.h"
-#include "BasePlatform.h"
-#include "PluginHandler.h"
+#include "base_platform.h"
+#include "plugin_handler.h"
 
 #ifdef _WIN32
 static const std::string SEP("\\");
@@ -140,7 +140,7 @@ catalog_status CatalogHandler::DownloadCatalog(std::string& filePath,
 }
 
 catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
-                                              catalog_ctx* ctx) {
+                                              CatalogCtx* ctx) {
   std::string url;
 
   bool ok = ::ParseCatalog(xml, ctx);
@@ -179,7 +179,7 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
 
 catalog_status CatalogHandler::ParseCatalog(const std::string xml,
                                             bool latest) {
-  catalog_ctx ctx;
+  CatalogCtx ctx;
   auto status = DoParseCatalog(xml, &ctx);
   if (status == ServerStatus::OK && latest) {
     this->latest_data.version = ctx.version;
@@ -235,7 +235,7 @@ void CatalogHandler::LoadCatalogData(const std::string& path,
     std::string xml((std::istreambuf_iterator<char>(file)),
                     std::istreambuf_iterator<char>());
     file.close();
-    catalog_ctx ctx;
+    CatalogCtx ctx;
     auto status = DoParseCatalog(xml, &ctx);
     if (status == ServerStatus::OK) {
       data.version = ctx.version;

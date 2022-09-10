@@ -23,6 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef _COMM_DRV_FILE_H
+#define _COMM_DRV_FILE_H
+
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -33,8 +36,6 @@
 
 #include "comm_driver.h"
 
-#ifndef _COMM_DRV_FILE_H
-#define _COMM_DRV_FILE_H
 
 /** Read and write data to/from files test driver  */
 class FileCommDriver : public AbstractCommDriver {
