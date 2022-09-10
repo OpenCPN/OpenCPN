@@ -3,8 +3,16 @@
 
 on:
   workflow_run:
-    workflows: [CMake, Flatpak]
+    # workflows: [CMake, Flatpak]
     types: [completed]
+
+env:
+  CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+  GIT_COMMIT: ${{ github.event.workflow_run.head_commit.id }}
+  GIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+  JOB_URL: ${{ github.event.workflow_run.html_url }}
+  JOB_NAME: ${{ github.event.workflow_run.name }}
+  REPO_URL: ${{ github.event.workflow_run.head_repository.html_url }}
 
 jobs:
   on-anything:
@@ -14,12 +22,6 @@ jobs:
       - run: echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
       - name: Tell Zulip
         uses: zulip/github-actions-zulip/send-message@v1
-        env:
-          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          GIT_COMMIT: ${{ github.event.workflow_run.head_commit.id }}
-          GIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
-          JOB_URL: ${{ github.event.workflow_run.html_url }}
-          REPO_URL: ${{ github.event.workflow_run.head_repository.html_url }}
         with:
           email: github-actions-bot@opencpn.zulipchat.com
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -28,7 +30,8 @@ jobs:
           to: 'CI'
           topic: 'OpenCPN'
           content: |
-            Build completed: [${{ env.CONCLUSION }}](${{ env.JOB_URL }})
+            Workflow ${{ env.JOB_NAME }} completed: [
+            ${{ env.CONCLUSION }}](${{ env.JOB_URL }})
             -  Started by: ${{ env.GITHUB_ACTOR }}
             -  last commit: [${{ env.SHORT_SHA }}, ${{ env.GIT_MESSAGE }}](
                ${{ env.REPO_URL }}/commit/${{ env.GIT_COMMIT }})
