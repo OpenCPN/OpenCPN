@@ -545,20 +545,19 @@ bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   NavData temp_data;
   if (!m_decoder.DecodeHDG(str, temp_data)) return false;
 
-  int n_both = 0;
+  bool bHDM = false;
   if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
      gHdm = temp_data.gHdm;
      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
-    n_both++;
+     bHDM = true;
   }
 
   if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
      gVar = temp_data.gVar;
      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
-     n_both++;
   }
 
-  if (n_both == 2)
+  if (bHDM)
     MakeHDTFromHDM();
 
 
