@@ -1775,7 +1775,7 @@ void ConnectionsDialog::ApplySettings(){
     // Connection is new, or edited, or disabled
 
     // Terminate and remove any existing driver, if present in registry
-    StopAndRemoveCommDriver(cp->GetStrippedDSPort());
+    StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
 
 #if 0  //FIXME
     //  Try to stop any previous stream to avoid orphans
