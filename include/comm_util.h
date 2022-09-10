@@ -26,7 +26,9 @@
 #ifndef _COMM_UTIL_H
 #define _COMM_UTIL_H
 
-bool StopAndRemoveCommDriver(std::string ident);
+#include "comm_navmsg.h"
+
+bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus = NavAddr::Bus::Undef);
 
 wxString ProcessNMEA4Tags(wxString& msg);
 

@@ -25,10 +25,10 @@
 #include <vector>
 
 // FIXME  Why is this needed?
-#ifdef __MSVC__
-#include "winsock2.h"
-#include "wx/msw/winundef.h"
-#endif
+//#ifdef __MSVC__
+//#include "winsock2.h"
+//#include "wx/msw/winundef.h"
+//#endif
 
 #include "wx/wxprec.h"
 
@@ -39,10 +39,10 @@
 #include "comm_util.h"
 #include "comm_drv_registry.h"
 
-bool StopAndRemoveCommDriver(std::string ident) {
+bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus _bus) {
   auto& registry = CommDriverRegistry::getInstance();
   const std::vector<DriverPtr>& drivers = registry.GetDrivers();
-  DriverPtr target_driver = FindDriver(drivers, ident);
+  DriverPtr target_driver = FindDriver(drivers, ident, _bus);
 
   if (!target_driver) return false;
 

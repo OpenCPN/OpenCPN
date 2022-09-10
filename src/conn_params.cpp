@@ -355,3 +355,17 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence, FilterDire
     }
     return !listype;
 }
+
+NavAddr::Bus ConnectionParams::GetCommProtocol(){
+  switch (Protocol){
+    case PROTO_NMEA0183:
+      return NavAddr::Bus::N0183;
+    case PROTO_NMEA2000:
+      return NavAddr::Bus::N2000;
+    default:
+      return NavAddr::Bus::Undef;
+  }
+}
+
+
+

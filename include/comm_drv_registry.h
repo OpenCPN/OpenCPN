@@ -73,6 +73,7 @@ private:
  * @return First found driver or shared_ptr<>(nullptr), which is false.
  */
 const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
-                           const std::string& iface);
+                           const std::string& iface,
+                           const NavAddr::Bus _bus = NavAddr::Bus::Undef);
 
 #endif  // guard
