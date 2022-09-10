@@ -224,6 +224,10 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     LogInputMessage(fmsg, port, !bpass, b_error);
   }
 
+  // Do not mux-out anything coming from a "virtual" or plugin stream
+  if (!target_driver)
+    return;
+
   // Perform multiplexer output functions
   for (auto& driver : drivers) {
     if (driver->bus == NavAddr::Bus::N0183) {
