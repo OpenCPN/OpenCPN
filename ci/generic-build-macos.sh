@@ -44,7 +44,7 @@ port info zstd || {
     sudo make install
     cd ..
 
-    sudo port -d selfupdate
+    #sudo port -d selfupdate
 }
 
     # add our local ports to the sources.conf
