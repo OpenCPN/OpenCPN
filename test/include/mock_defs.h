@@ -1,6 +1,8 @@
 #ifndef _UNITTEST_MOCK_DEFS
 #define _UNITTEST_MOCK_DEFS
 
+#include <wx/event.h>
+
 #include "select_item.h"
 #include "vector2D.h"
 
