@@ -486,6 +486,8 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
 
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeRMC(str, temp_data))
     return false;
 
@@ -520,6 +522,8 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 bool CommBridge::HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeHDT(str, temp_data))
     return false;
 
@@ -543,6 +547,8 @@ bool CommBridge::HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeHDG(str, temp_data)) return false;
 
   bool bHDM = false;
@@ -575,6 +581,8 @@ bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 bool CommBridge::HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeHDM(str, temp_data)) return false;
 
   if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
@@ -597,6 +605,8 @@ bool CommBridge::HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeVTG(str, temp_data)) return false;
 
     if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
@@ -619,13 +629,17 @@ bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 bool CommBridge::HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeGSV(str, temp_data)) return false;
 
   if (EvalPriority(n0183_msg, active_priority_satellites, priority_map_satellites)) {
-    g_SatsInView = temp_data.n_satellites;
-    g_bSatValid = true;
+    if (temp_data.n_satellites >= 0){
+      g_SatsInView = temp_data.n_satellites;
+      g_bSatValid = true;
 
-    m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+      m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+    }
   }
 
   // Populate a comm_appmsg with current global values
@@ -642,6 +656,8 @@ bool CommBridge::HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeGGA(str, temp_data)) return false;
 
   if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
@@ -651,10 +667,12 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   }
 
   if (EvalPriority(n0183_msg, active_priority_satellites, priority_map_satellites)) {
-    g_SatsInView = temp_data.n_satellites;
-    g_bSatValid = true;
+    if (temp_data.n_satellites >= 0){
+      g_SatsInView = temp_data.n_satellites;
+      g_bSatValid = true;
 
-    m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+      m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+    }
   }
 
   // Populate a comm_appmsg with current global values
@@ -671,6 +689,8 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 bool CommBridge::HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodeGLL(str, temp_data)) return false;
 
   if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
