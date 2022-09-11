@@ -24,10 +24,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#pragma once
-#include <tinyxml.h>
+#ifndef _STYLES_H__
+#define _STYLES_H__
+
+#include <wx/bitmap.h>
+#include <wx/colour.h>
+#include <wx/dynarray.h>
+#include <wx/gdicmn.h>
+#include <wx/string.h>
 
 #include "ocpn_types.h"
+#include "tinyxml.h"
 
 enum StyleToolIconTypes {
   TOOLICON_NORMAL,
@@ -231,3 +238,5 @@ private:
 };
 
 }  // namespace ocpnStyle
+
+#endif   // _STYLES_H__
