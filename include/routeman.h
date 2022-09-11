@@ -23,13 +23,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __ROUTEMAN_H__
-#define __ROUTEMAN_H__
+#ifndef _ROUTEMAN_H__
+#define _ROUTEMAN_H__
 
+#include <wx/bitmap.h>
+#include <wx/brush.h>
+#include <wx/dynarray.h>
 #include <wx/imaglist.h>
-#include "styles.h"
-#include "Select.h"
+#include <wx/pen.h>
+#include <wx/string.h>
+
+#include "chcanv.h"
 #include "nmea0183.h"
+#include "Select.h"
+#include "styles.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -237,4 +244,4 @@ private:
   ColorScheme m_cs;
 };
 
-#endif
+#endif // _ROUTEMAN_H__
