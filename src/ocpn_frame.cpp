@@ -427,6 +427,8 @@ extern int g_MemFootMB;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
 extern CommN0183Out *g_comm_out;
+extern int g_memUsed;
+
 
 #ifdef __WXMSW__
 // System color control support
@@ -828,7 +830,6 @@ bool g_useMUI;
 
 int g_AndroidVersionCode;
 
-int g_memUsed;
 
 
 
