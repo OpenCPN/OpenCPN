@@ -43,7 +43,7 @@
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
-#ifndef __WXMSW__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 #include "comm_drv_n2k_socketcan.h"
 #endif
 
