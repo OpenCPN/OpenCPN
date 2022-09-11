@@ -694,3 +694,20 @@ wxString BasePlatform::GetPluginDataPath() {
   wxLogMessage("Using plugin data path: %s", m_pluginDataPath.mb_str().data());
   return m_pluginDataPath;
 }
+
+
+#ifdef __ANDROID__
+void BasePlatform::ShowBusySpinner() { androidShowBusyIcon(); }
+#elif defined(CLIAPP)
+void BasePlatform::ShowBusySpinner() { }
+#else
+void BasePlatform::ShowBusySpinner() { ::wxBeginBusyCursor(); }
+#endif
+
+#ifdef __ANDROID__
+void BasePlatform::HideBusySpinner() { androidHideBusyIcon(); }
+#elif defined(CLIAPP)
+void BasePlatform::HideBusySpinner() { }
+#else
+void BasePlatform::HideBusySpinner() { ::wxEndBusyCursor(); }
+#endif

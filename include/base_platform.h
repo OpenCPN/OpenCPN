@@ -115,6 +115,10 @@ public:
 
   wxString NormalizePath(const wxString& full_path);
 
+
+  void ShowBusySpinner();
+  void HideBusySpinner();
+
 protected:
   bool DetectOSDetail(OCPN_OSDetail* detail);
 
