@@ -26,6 +26,8 @@
 #ifndef _COMMDRIVERN2KSOCKETCAN_H
 #define _COMMDRIVERN2KSOCKETCAN_H
 
+#ifndef __WXMAC__
+
 // SocketCAN
 #include <sys/ioctl.h>
 #include <sys/select.h>
@@ -112,5 +114,6 @@ private:
   ConnectionParams m_params;
   DriverListener& m_listener;
 };
+#endif  // WXMAC
 
 #endif  // guard

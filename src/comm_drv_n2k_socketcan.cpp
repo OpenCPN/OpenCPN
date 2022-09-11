@@ -23,6 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef __WXMAC__
+
 #include <vector>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
@@ -773,3 +775,4 @@ void CommDriverN2KSocketCANThread::MapInitialize(void) {
 
 #endif
 #endif
+#endif   //__WXMAC__
