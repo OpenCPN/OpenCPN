@@ -123,7 +123,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   //  Update and check watchdog timer for GPS data source
   m_watchdogs.position_watchdog--;
   if (m_watchdogs.position_watchdog <= 0) {
-    if (m_watchdogs.position_watchdog == 0) {
+    if (m_watchdogs.position_watchdog % 5 == 0) {
       // Send AppMsg telling of watchdog expiry
       auto msg = std::make_shared<GPSWatchdogMsg>(m_watchdogs.position_watchdog);
       auto& msgbus = AppMsgBus::GetInstance();
@@ -142,14 +142,20 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     gRmcDate.Empty();
     gRmcTime.Empty();
 
-    // shift the active priority to the next lower priority source
-    active_priority_position.active_priority++;
+    // Are there any other lower priority sources?
+    // If so, adopt that one.
+    for (auto it = priority_map_position.begin(); it != priority_map_position.end(); it++) {
+      if (it->second > active_priority_position.active_priority){
+          active_priority_position.active_priority = it->second;
+          break;
+      }
+    }
+
     active_priority_position.active_source.clear();
     active_priority_position.active_identifier.clear();
-
-    printf("Position dog timeout\n");
-    printf("Shifting to priority %d\n", active_priority_position.active_priority);
   }
+
+  //FIXME (dave) Do we need to bump the current priority for these watchdogs?
 
   //  Update and check watchdog timer for True Heading data source
   m_watchdogs.heading_watchdog--;
@@ -167,6 +173,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
       wxLogMessage(_T("   ***VAR Watchdog timeout..."));
   }
+
   //  Update and check watchdog timer for GSV, GGA and SignalK (Satellite data)
   m_watchdogs.satellite_watchdog--;
   if (m_watchdogs.satellite_watchdog <= 0) {
@@ -193,9 +200,10 @@ void CommBridge::MakeHDTFromHDM() {
           gHdt += 360.0;
         else if (gHdt >= 360)
           gHdt -= 360.0;
+
+        m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
       }
 
-      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
     }
   }
 }
@@ -503,9 +511,11 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
   }
 
-  if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
-    gVar = temp_data.gVar;
-    m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+  if (!std::isnan(temp_data.gVar)){
+    if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
+      gVar = temp_data.gVar;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
   // Populate a comm_appmsg with current global values
@@ -558,9 +568,11 @@ bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
      bHDM = true;
   }
 
-  if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
-     gVar = temp_data.gVar;
-     m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+  if (!std::isnan(temp_data.gVar)){
+    if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
+      gVar = temp_data.gVar;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
   if (bHDM)
