@@ -1448,9 +1448,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       arpa_sog = fromUsrSpeed(arpa_sog, SPEED_MPH, g_iSpeedFormat);
     }
 
-    mmsi = arpa_mmsi =
-        199200000 +
-        arpa_tgt_num;  // 199 is INMARSAT-A MID, should not occur ever in AIS
+    mmsi = arpa_mmsi = 199200000 + arpa_tgt_num;
+                       // 199 is INMARSAT-A MID, should not occur ever in AIS
                        // stream + we make sure we are out of the hashes for
                        // GPSGate buddies by being above 1992*
   } else if (str.Mid(3, 3).IsSameAs(_T("TLL"))) {
@@ -1562,9 +1561,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         hash += (int)(aprs_name_str[i]);
         while (hash >= 100000) hash = hash / 100000;
       }
-      mmsi = aprs_mmsi =
-          199300000 +
-          hash;  // 199 is INMARSAT-A MID, should not occur ever in AIS stream +
+      mmsi = aprs_mmsi = 199300000 + hash;
+                 // 199 is INMARSAT-A MID, should not occur ever in AIS stream +
                  // we make sure we are out of the hashes for GPSGate buddies
                  // and ARPA by being above 1993*
     } else if (1 == g_WplAction) {  // Create mark
@@ -1640,9 +1638,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       hash += (int)(token[i]);
       while (hash >= 100000) hash = hash / 100000;
     }
-    gpsg_mmsi =
-        199000000 +
-        hash;  // 199 is INMARSAT-A MID, should not occur ever in AIS stream
+    // 199 is INMARSAT-A MID, should not occur ever in AIS stream
+    gpsg_mmsi = 199000000 + hash;
     mmsi = gpsg_mmsi;
   } else if (!str.Mid(3, 2).IsSameAs(_T("VD"))) {
     return AIS_NMEAVDX_BAD;
