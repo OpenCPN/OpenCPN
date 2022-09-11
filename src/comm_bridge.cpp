@@ -41,6 +41,7 @@ wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129025, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
 
 wxDEFINE_EVENT(EVT_N0183_RMC, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_HDT, ObservedEvt);
@@ -67,6 +68,7 @@ extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 extern wxString g_ownshipMMSI_SK;
 
+bool debug_priority;
 
 void ClearNavData(NavData &d){
   d.gLat = NAN;
@@ -257,6 +259,14 @@ void CommBridge::InitCommListeners() {
     HandleN2K_127250(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
+  // GNSS Satellites in View   PGN 129540
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129540(static_cast<uint64_t>(129540));
+  listener_N2K_129540 =
+      msgbus.GetListener(EVT_N2K_129540, this, n2k_msg_129540);
+  Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
+    HandleN2K_129540(UnpackEvtPointer<Nmea2000Msg>(ev));
+  });
 
 
   // NMEA0183
@@ -348,6 +358,8 @@ void CommBridge::OnDriverStateChange(){
 
   // Reset all "first-come" priority states
   InitializePriorityContainers();
+
+  g_bHDT_Rx = false;
 }
 
 
@@ -364,6 +376,8 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   *c++ = v.at(5);
 
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodePGN129029(v, temp_data))
     return false;
 
@@ -375,13 +389,13 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     }
   }
 
-  if (!N2kIsNA(temp_data.n_satellites)){
-    if (EvalPriority(n2k_msg, active_priority_satellites, priority_map_satellites)) {
-      g_SatsInView = temp_data.n_satellites;
-      g_bSatValid = true;
-      m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
-    }
-  }
+   if (temp_data.n_satellites >= 0){
+     if (EvalPriority(n2k_msg, active_priority_satellites, priority_map_satellites)) {
+       g_SatsInView = temp_data.n_satellites;
+       g_bSatValid = true;
+       m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+     }
+   }
 
     // Populate a comm_appmsg with current global values
   auto msg = std::make_shared<BasicNavDataMsg>(
@@ -399,6 +413,8 @@ bool CommBridge::HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodePGN129025(v, temp_data))
     return false;
 
@@ -425,11 +441,12 @@ bool CommBridge::HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 }
 
 bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-  //std::cout << "HandleN2K_129026\n" ;
 
   std::vector<unsigned char> v = n2k_msg->payload;
 
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodePGN129026(v, temp_data))
     return false;
 
@@ -460,6 +477,8 @@ bool CommBridge::HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   NavData temp_data;
+  ClearNavData(temp_data);
+
   if (!m_decoder.DecodePGN127250(v, temp_data))
     return false;
 
@@ -488,9 +507,28 @@ bool CommBridge::HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   return true;
 }
 
-bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
-  //printf("HandleN0183_RMC \n");
+bool CommBridge::HandleN2K_129540(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodePGN129540(v, temp_data))
+    return false;
+
+   if (temp_data.n_satellites >= 0){
+    if (EvalPriority(n2k_msg, active_priority_satellites, priority_map_satellites)) {
+      g_SatsInView = temp_data.n_satellites;
+      g_bSatValid = true;
+      m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+    }
+  }
+
+  return true;
+}
+
+bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string str = n0183_msg->payload;
 
   NavData temp_data;
@@ -881,8 +919,8 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
                                       PriorityContainer& active_priority,
                                       std::unordered_map<std::string, int>& priority_map) {
 
-  printf("\n<%s>\n", active_priority.pcclass.c_str());
-  printf("Active priority: %d\n", active_priority.active_priority);
+  if (debug_priority) printf("\n<%s>\n", active_priority.pcclass.c_str());
+  if (debug_priority) printf("Active priority: %d\n", active_priority.active_priority);
 
   // Fetch the established priority for the message
   int this_priority;
@@ -914,7 +952,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
   }
 
   std::string this_key = listener_key + this_identifier + source;
-  printf("This Key: %s\n", this_key.c_str());
+  if (debug_priority) printf("This Key: %s\n", this_key.c_str());
 
   auto it = priority_map.find(this_key);
   if (it == priority_map.end()) {
@@ -925,13 +963,14 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
   this_priority = priority_map[this_key];
 
   for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
-        printf("               priority_map:  %s  %d\n", it->first.c_str(), it->second);
+        if (debug_priority) printf("               priority_map:  %s  %d\n", it->first.c_str(), it->second);
   }
 
   //Incoming message priority lower than currently active priority?
   //  If so, drop the message
   if (this_priority > active_priority.active_priority){
-    printf("      Drop low priority: %s %d %d \n", source.c_str(), this_priority, active_priority.active_priority);
+    if (debug_priority)  printf("      Drop low priority: %s %d %d \n", source.c_str(), this_priority,
+                                  active_priority.active_priority);
     return false;
   }
 
@@ -940,7 +979,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
     active_priority.active_priority = this_priority;
     active_priority.active_source = source;
     active_priority.active_identifier = this_identifier;
-    printf("  Restoring high priority: %s %d\n", source.c_str(), this_priority);
+    if (debug_priority) printf("  Restoring high priority: %s %d\n", source.c_str(), this_priority);
     return true;
   }
 
@@ -950,8 +989,8 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
 
   if (active_priority.active_source.size()){
 
-    printf("source: %s\n", source.c_str());
-    printf("active_source: %s\n", active_priority.active_source.c_str());
+    if (debug_priority) printf("source: %s\n", source.c_str());
+    if (debug_priority) printf("active_source: %s\n", active_priority.active_source.c_str());
 
     if (source.compare(active_priority.active_source) != 0){
 
@@ -964,7 +1003,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
       }
 
       priority_map[this_key] = lowest_priority + 1;
-      printf("          Lowering priority A: %s :%d\n", source.c_str(), priority_map[this_key]);
+      if (debug_priority) printf("          Lowering priority A: %s :%d\n", source.c_str(), priority_map[this_key]);
       return false;
     }
   }
@@ -978,8 +1017,8 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
     if (msg_0183){
       if (active_priority.active_identifier.size()){
 
-        printf("this_identifier: %s\n", this_identifier.c_str());
-        printf("active_priority.active_identifier: %s\n", active_priority.active_identifier.c_str());
+        if (debug_priority) printf("this_identifier: %s\n", this_identifier.c_str());
+        if (debug_priority) printf("active_priority.active_identifier: %s\n", active_priority.active_identifier.c_str());
 
         if (this_identifier.compare(active_priority.active_identifier) != 0){
           // if necessary, auto adjust the priority of the this message down
@@ -992,7 +1031,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
             }
 
             priority_map[this_key] = lowest_priority + 1;
-            printf("          Lowering priority B: %s :%d\n", source.c_str(), priority_map[this_key]);
+            if (debug_priority) printf("          Lowering priority B: %s :%d\n", source.c_str(), priority_map[this_key]);
           }
 
           return false;
@@ -1018,7 +1057,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
             }
 
             priority_map[this_key] = lowest_priority + 1;
-            printf("          Lowering priority: %s :%d\n", source.c_str(), priority_map[this_key]);
+            if (debug_priority) printf("          Lowering priority: %s :%d\n", source.c_str(), priority_map[this_key]);
           }
 
           return false;
@@ -1031,7 +1070,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
   // Update the records
   active_priority.active_source = source;
   active_priority.active_identifier = this_identifier;
-  printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
+  if (debug_priority) printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
 
   return true;
 }

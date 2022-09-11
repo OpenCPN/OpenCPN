@@ -130,3 +130,12 @@ bool ParseN2kPGN127250(std::vector<unsigned char> &v, unsigned char &SID,
   return ParseN2kPGN127250(msg, SID, Heading, Deviation, Variation, ref);
 
 }
+
+bool ParseN2kPGN129540(std::vector<unsigned char> &v, unsigned char &SID,
+                       tN2kRangeResidualMode &Mode, uint8_t &nSats) {
+
+  tN2kMsg msg = MakeN2kMsg(v);
+
+  return ParseN2kPGN129540(msg, SID, Mode, nSats);
+
+}

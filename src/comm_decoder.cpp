@@ -301,7 +301,17 @@ bool CommDecoder::DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_d
                         )) {
     temp_data.gLat = Latitude;
     temp_data.gLon = Longitude;
-    temp_data.n_satellites = nSatellites;
+
+    // Some devices produce "0" satelites for PGN 129029, even with a vaild fix
+    //  One supposes that PGN 129540 should be used instead
+    //  Here we decide that if a fix is valid, nSatellites must be > 0 to be
+    //  reported in this PGN 129029
+    if ( (GNSSmethod == N2kGNSSm_GNSSfix) ||
+         (GNSSmethod == N2kGNSSm_DGNSS) ||
+         (GNSSmethod == N2kGNSSm_PreciseGNSS)){
+      if (nSatellites > 0)
+        temp_data.n_satellites = nSatellites;
+    }
 
     return true;
   }
@@ -332,6 +342,21 @@ bool CommDecoder::DecodePGN129025(std::vector<unsigned char> v,  NavData& temp_d
 
     temp_data.gLat = Latitude;
     temp_data.gLon = Longitude;
+    return true;
+  }
+
+  return false;
+}
+
+bool CommDecoder::DecodePGN129540(std::vector<unsigned char> v,  NavData& temp_data) {
+
+  unsigned char SID;
+  tN2kHeadingReference ref;
+  uint8_t NumberOfSVs;;
+  tN2kRangeResidualMode Mode;
+
+  if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)) {
+    temp_data.n_satellites = NumberOfSVs;
     return true;
   }
 
