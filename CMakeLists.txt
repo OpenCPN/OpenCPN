@@ -2812,12 +2812,12 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
-  install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
-    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
-  )
+#  install(
+#    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+#    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+#    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+#      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+#  )
   set(
     LIBS
     "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
