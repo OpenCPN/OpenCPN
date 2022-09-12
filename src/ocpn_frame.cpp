@@ -5397,6 +5397,7 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 }
 
 void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
+  m_fixtime = msg->time;
 
 #if 0
   if (cog_valid) {
