@@ -79,6 +79,14 @@ public:
   /** Notify all listeners about variable change with a string. */
   const void notify(const std::string& s) { ObservedVar::notify(s, 0); }
 
+  /**
+   * Notify all listeners about variable change with shared_ptr,
+   * a string and an optional number.
+   */
+  const void notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
+      ObservedVar::notify(p, s, n, 0);
+  }
+
 private:
   std::string autokey() {
     static  std::atomic<unsigned long> last_ix(0);
