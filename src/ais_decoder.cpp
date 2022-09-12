@@ -53,6 +53,7 @@
 #include "Select.h"
 #include "SoundFactory.h"
 #include "Track.h"
+#include "N2KParser.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -120,6 +121,10 @@ wxDEFINE_EVENT(EVT_N0183_TLL, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TTM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_OSD, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129038, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129039, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129041, ObservedEvt);
+
 
 BEGIN_EVENT_TABLE(AisDecoder, wxEvtHandler)
 EVT_TIMER(TIMER_AIS1, AisDecoder::OnTimerAIS)
@@ -147,6 +152,14 @@ extern wxString g_AIS_sound_file;
 extern bool g_bAIS_GCPA_Alert_Audio;
 extern bool g_bAIS_SART_Alert_Audio;
 extern bool g_bAIS_DSC_Alert_Audio;
+
+static inline double GeodesicRadToDeg(double rads) {
+  return rads * 180.0 / M_PI;
+}
+
+static inline double MS2KNOTS(double ms) {
+  return ms * 1.9438444924406;
+}
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
@@ -338,13 +351,129 @@ void AisDecoder::InitCommListeners(void) {
     HandleSignalK(std::static_pointer_cast<const SignalkMsg>(ev.GetSharedPtr()));
   });
 
+    // AIS Class A   PGN 129038
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129038(static_cast<uint64_t>(129038));
+  listener_N2K_129038 =
+      msgbus.GetListener(EVT_N2K_129038, this, n2k_msg_129038);
+  Bind(EVT_N2K_129038, [&](ObservedEvt ev) {
+    //HandleN2K_129038(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129038(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+  });
+
+    // AIS Class B   PGN 129039
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129039(static_cast<uint64_t>(129039));
+  listener_N2K_129039 =
+      msgbus.GetListener(EVT_N2K_129039, this, n2k_msg_129039);
+  Bind(EVT_N2K_129039, [&](ObservedEvt ev) {
+    //HandleN2K_129039(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129039(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+  });
+
+    // AIS ATON   PGN 129041
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129041(static_cast<uint64_t>(129041));
+  listener_N2K_129041 =
+      msgbus.GetListener(EVT_N2K_129041, this, n2k_msg_129041);
+  Bind(EVT_N2K_129041, [&](ObservedEvt ev) {
+    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129041(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+  });
+
 }
 
 
 bool AisDecoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg ){
   std::string str = n0183_msg->payload;
   wxString sentence(str.c_str());
-  Decode(sentence);
+  DecodeN0183(sentence);
+  touch_state.notify();
+  return true;
+}
+
+bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  uint8_t MessageID;
+  tN2kAISRepeat Repeat;
+  uint32_t UserID;
+  double Latitude;
+  double Longitude;
+  bool Accuracy;
+  bool RAIM;
+  uint8_t Seconds;
+  double COG;
+  double SOG;
+  double Heading;
+  double ROT;
+  tN2kAISNavStatus NavStat = N2kaisns_Under_Way_Motoring;
+
+  if (ParseN2kPGN129038(v, MessageID, Repeat, UserID,
+                        Latitude, Longitude, Accuracy, RAIM, Seconds,
+                        COG, SOG, Heading, ROT, NavStat)) {
+
+    // Is this target already in the global target list?
+    //  Search the current AISTargetList for an MMSI match
+    int mmsi = UserID;
+    long mmsi_long = mmsi;
+    AisTargetData *pTargetData = 0;
+    bool bnewtarget = false;
+
+    auto it = AISTargetList.find(mmsi);
+    if (it == AISTargetList.end())  // not found
+    {
+      pTargetData = new AisTargetData;
+      bnewtarget = true;
+      m_n_targets++;
+    } else {
+      pTargetData = it->second;    // find current entry
+    }
+
+    //Populate the target_data
+    pTargetData->MID = MessageID;
+    pTargetData->MMSI = mmsi;
+    pTargetData->Class = AIS_CLASS_A;
+    pTargetData->NavStatus = (ais_nav_status)NavStat;
+    pTargetData->SOG = MS2KNOTS(SOG);
+    pTargetData->COG = GeodesicRadToDeg(COG);
+    pTargetData->HDG = GeodesicRadToDeg(Heading);
+    pTargetData->Lon = Longitude;
+    pTargetData->Lat = Latitude;
+    pTargetData->ROTAIS = ROT;
+
+    double rot_dir = 1.0;
+
+    //FIXME (dave)
+//     if (ROT == 128)
+//       pTargetData->ROTAIS = -128;  // not available codes as -128
+//     else if ((ROT & 0x80) == 0x80) {
+//       pTargetData->ROTAIS = ROT - 256;  // convert to twos complement
+//       rot_dir = -1.0;
+//     }
+//
+//     pTargetData->ROTIND = round(rot_dir * pow((ROT / 4.733), 2));
+
+    pTargetData->b_positionOnceValid = true;
+    CommitAISTarget(pTargetData, "", true, bnewtarget);
+
+    touch_state.notify();
+    return true;
+  }
+  else
+    return false;
+}
+
+bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  touch_state.notify();
+  return true;
+}
+
+bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
+  std::vector<unsigned char> v = n2k_msg->payload;
+
   touch_state.notify();
   return true;
 }
@@ -922,7 +1051,8 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str,
 //      Decode NMEA VDM/VDO/FRPOS/DSCDSE/TTM/TLL/OSD/RSD/TLB/WPL sentence to AIS
 //      Target(s)
 //----------------------------------------------------------------------------------------
-AisError AisDecoder::Decode(const wxString &str) {
+
+AisError AisDecoder::DecodeN0183(const wxString &str) {
   AisError ret = AIS_GENERIC_ERROR;
   wxString string_to_parse;
 
@@ -1513,7 +1643,24 @@ AisError AisDecoder::Decode(const wxString &str) {
   }
 
   if (pTargetData) {
-    //  pTargetData is valid, either new or existing. Continue processing
+    //  pTargetData is valid, either new or existing. Commit to GUI
+    CommitAISTarget(pTargetData, str, bdecode_result, bnewtarget);
+  }
+
+  n_msgs++;
+#ifdef AIS_DEBUG
+  if ((n_msgs % 10000) == 0)
+    printf("n_msgs %10d m_n_targets: %6d  n_msg1: %10d  n_msg5+24: %10d \n",
+           n_msgs, m_n_targets, n_msg1, n_msg5 + n_msg24);
+#endif
+
+  return ret;
+}
+
+void AisDecoder::CommitAISTarget(AisTargetData *pTargetData,
+                                  const wxString &str,
+                                  bool message_valid,
+                                  bool new_target){
 
     m_pLatestTargetData = pTargetData;
 
@@ -1522,7 +1669,7 @@ AisError AisDecoder::Decode(const wxString &str) {
     else {
       // set  mmsi-props to default values
       pTargetData->b_OwnShip = false;
-      if (0 == m_persistent_tracks.count(mmsi)) {
+      if (0 == m_persistent_tracks.count(pTargetData->MMSI)) {
         // Normal target
         pTargetData->b_PersistTrack = false;
         // Or first decode for this target
@@ -1541,10 +1688,10 @@ AisError AisDecoder::Decode(const wxString &str) {
 
     //  If the message was decoded correctly
     //  Update the AIS Target information
-    if (bdecode_result) {
+    if (message_valid) {
       // Print to name cache only if not mmsi = 0
-      if (mmsi) {
-        AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
+      if (pTargetData->MMSI) {
+        AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, pTargetData->MMSI);
       }
       AISTargetList[pTargetData->MMSI] =
           pTargetData;  // update the hash table entry
@@ -1577,7 +1724,7 @@ AisError AisDecoder::Decode(const wxString &str) {
     } else {
       //             printf("Unrecognised AIS message ID: %d\n",
       //             pTargetData->MID);
-      if (bnewtarget) {
+      if (new_target) {
         delete pTargetData;  // this target is not going to be used
         m_n_targets--;
       } else {
@@ -1594,17 +1741,10 @@ AisError AisDecoder::Decode(const wxString &str) {
         }
       }
     }
-  }
 
-  n_msgs++;
-#ifdef AIS_DEBUG
-  if ((n_msgs % 10000) == 0)
-    printf("n_msgs %10d m_n_targets: %6d  n_msg1: %10d  n_msg5+24: %10d \n",
-           n_msgs, m_n_targets, n_msg1, n_msg5 + n_msg24);
-#endif
-
-  return ret;
 }
+
+
 
 void AisDecoder::getAISTarget(long mmsi, AisTargetData *&pTargetData,
                                AisTargetData *&pStaleTarget, bool &bnewtarget,

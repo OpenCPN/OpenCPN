@@ -620,7 +620,7 @@ wxString AisTargetData::BuildQueryResult(void) {
         wxString magString, trueString;
         if (g_bShowMag)
           magString << wxString::Format(wxString("%03d%c(M)"),
-                                        GetMag(crs), 0x00B0);
+                                        (int)GetMag(COG), 0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
@@ -685,7 +685,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     wxString magString, trueString;
     if (g_bShowMag)
       magString << wxString::Format(wxString("%03d%c(M)"),
-                                    GetMag(Brg), 0x00B0);
+                                    (int)GetMag(Brg), 0x00B0);
     if (g_bShowTrue)
       trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
 
@@ -860,7 +860,7 @@ wxString AisTargetData::GetRolloverString(void) {
         wxString magString, trueString;
         if (g_bShowMag)
           magString << wxString::Format(wxString("%03d%c(M)  "),
-                                        GetMag(crs), 0x00B0);
+                                        (int)GetMag(COG), 0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
