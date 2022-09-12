@@ -25,6 +25,7 @@
 #include "NavObjectCollection.h"
 #include "routeman.h"
 #include "navutil.h"
+#include "navutil_base.h"
 #include "Select.h"
 #include "Track.h"
 #include "Route.h"
