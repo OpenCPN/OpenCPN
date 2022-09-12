@@ -103,6 +103,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "georef.h"
 #include "ocpn_pixel.h"
 #include "gshhs.h"
+#include "json_event.h"
 #include "logger.h"
 #include "multiplexer.h"
 #include "mygeom.h"
@@ -1078,6 +1079,13 @@ PlugInManager::PlugInManager(MyFrame *parent) {
   m_listPanel = NULL;
   m_blacklist = blacklist_factory();
   m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
+
+  wxDEFINE_EVENT(EVT_JSON_TO_ALL_PLUGINS, ObservedEvt);
+  evt_json_to_all_plugins_listener =
+      JsonEvent::getInstance().GetListener(this, EVT_JSON_TO_ALL_PLUGINS);
+  Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
+    auto json = std::static_pointer_cast<const wxJSONValue>(ev.GetSharedPtr());
+    SendJSONMessageToAllPlugins(ev.GetString(), *json); });
   HandlePluginLoaderEvents();
   InitCommListeners();
 

@@ -310,6 +310,7 @@ private:
   ObservedVarListener evt_update_chart_types_listener;
   ObservedVarListener evt_version_incompatible_listener;
   ObservedVarListener evt_version_incompatible_plugin_listener;
+  ObservedVarListener evt_json_to_all_plugins_listener;
 
   ObservedVarListener m_listener_N0183_all;
   ObservedVarListener m_listener_SignalK;
