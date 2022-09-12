@@ -35,6 +35,7 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include <wx/gdicmn.h>
 #include <wx/log.h>
 #include <wx/stdpaths.h>
 #include <wx/clrpicker.h>
@@ -115,6 +116,11 @@ public:
 
   wxString NormalizePath(const wxString& full_path);
 
+  virtual wxSize getDisplaySize();
+  virtual double GetDisplaySizeMM();
+  virtual double GetDisplayDPmm();
+  virtual unsigned int GetSelectRadiusPix();
+ 
 
   void ShowBusySpinner();
   void HideBusySpinner();
@@ -137,6 +143,10 @@ protected:
   FILE* flog;
   wxLog* m_Oldlogger;
   wxString large_log_message;
+
+  wxSize m_displaySize;
+  wxSize m_displaySizeMM;
+  int m_displaySizeMMOverride;
 };
 
 #endif  //  BASEPLATFORM_H

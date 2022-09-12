@@ -109,9 +109,9 @@ public:
   wxSize getDisplaySize();
   double GetDisplaySizeMM();
   double GetDisplayAreaCM2();
+  virtual double GetDisplayDPmm();
 
   void SetDisplaySizeMM(double size);
-  double GetDisplayDPmm();
   unsigned int GetSelectRadiusPix();
   double GetToolbarScaleFactor(int GUIScaleFactor);
   double GetCompassScaleFactor(int GUIScaleFactor);
@@ -175,9 +175,6 @@ private:
 
   wxString m_SData_Dir;
 
-  wxSize m_displaySize;
-  wxSize m_displaySizeMM;
-  int m_displaySizeMMOverride;
 
   int m_monitorWidth, m_monitorHeight;
   bool m_bdisableWindowsDisplayEnum;

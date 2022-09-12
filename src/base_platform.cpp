@@ -83,6 +83,9 @@ void appendOSDirSlash(wxString* pString);
 extern wxString g_winPluginDir;
 
 extern bool g_bportable;
+extern bool g_btouch;
+extern float g_selection_radius_mm;
+extern float g_selection_radius_touch_mm;
 
 extern wxLog* g_logger;
 
@@ -711,3 +714,80 @@ void BasePlatform::HideBusySpinner() { }
 #else
 void BasePlatform::HideBusySpinner() { ::wxEndBusyCursor(); }
 #endif
+
+// getDisplaySize
+
+#ifdef CLIAPP
+wxSize BasePlatform::getDisplaySize() { return wxSize(); }
+
+#elif defined(__ANDROID__)
+wxSize BasePlatform::getDisplaySize() { return getAndroidDisplayDimensions(); }
+
+#else
+wxSize BasePlatform::getDisplaySize() {
+  if (m_displaySize.x < 10)
+    m_displaySize = ::wxGetDisplaySize();  // default, for most platforms
+  return m_displaySize;
+}
+#endif
+
+// GetDisplaySizeMM
+
+#ifdef CLIAPP
+double BasePlatform::GetDisplaySizeMM() { return 1.0; }
+
+#else
+double BasePlatform::GetDisplaySizeMM() {
+
+  if (m_displaySizeMMOverride > 0) return m_displaySizeMMOverride;
+
+  if (m_displaySizeMM.x < 1) m_displaySizeMM = wxGetDisplaySizeMM();
+
+  double ret = m_displaySizeMM.GetWidth();
+
+#ifdef __WXMSW__
+  int w, h;
+
+  if (!m_bdisableWindowsDisplayEnum) {
+    if (GetWindowsMonitorSize(&w, &h) && (w > 100)) {  // sanity check
+      m_displaySizeMM == wxSize(w, h);
+      ret = w;
+    } else
+      m_bdisableWindowsDisplayEnum = true;  // disable permanently
+  }
+#endif
+
+#ifdef __WXOSX__
+  ret = GetMacMonitorSize();
+#endif
+
+#ifdef __ANDROID__
+  ret = GetAndroidDisplaySize();
+#endif
+
+  wxLogDebug("Detected display size (horizontal): %d mm", (int)ret);
+  return ret;
+}
+#endif   // CLIAPP
+
+
+#ifdef CLIAPP
+double BasePlatform::GetDisplayDPmm() { return 1.0; }
+
+#elif defined(__ANDROID__)
+double BasePlatform::GetDisplayDPmm() { return getAndroidDPmm(); }
+
+#else
+double BasePlatform::GetDisplayDPmm() {
+  double r = getDisplaySize().x;  // dots
+  return r / GetDisplaySizeMM();
+}
+#endif
+
+
+unsigned int BasePlatform::GetSelectRadiusPix() {
+  return GetDisplayDPmm() *
+         (g_btouch ? g_selection_radius_touch_mm : g_selection_radius_mm);
+}
+
+
