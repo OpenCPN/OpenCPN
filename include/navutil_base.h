@@ -26,6 +26,7 @@
 #ifndef _NAVUTIL_BASE__
 #define _NAVUTIL_BASE__
 
+#include <wx/datetime.h>
 #include <wx/string.h>
 
 
@@ -52,4 +53,5 @@ extern wxString getUsrDistanceUnit(int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit, int default_val);
 extern double fromUsrSpeed(double usr_speed, int unit, int default_val);
 
+const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime);
 #endif   // _NAVUTIL_BASE__

@@ -43,6 +43,7 @@
 #include "vector2D.h"
 #include "select_item.h"
 #include "ocpndc.h"
+#include "navutil_base.h"
 
 
 enum { TEMPERATURE_C = 0, TEMPERATURE_F = 1, TEMPERATURE_K = 2 };
@@ -108,7 +109,6 @@ RoutePoint *WaypointExists(const wxString &guid);
 Route *RouteExists(const wxString &guid);
 Route *RouteExists(Route *pTentRoute);
 Track *TrackExists(const wxString &guid);
-const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime);
 
 void ExportGPX(wxWindow *parent, bool bviz_only = false, bool blayer = false);
 void UI_ImportGPX(wxWindow *parent, bool islayer = false,
