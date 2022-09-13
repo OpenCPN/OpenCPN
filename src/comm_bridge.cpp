@@ -135,14 +135,6 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
       logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
                     gLon);
       wxLogMessage(logmsg);
-
-      //  There is no valid fix, we need to invalidate the fix time
-      auto msgb = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, (time_t)0);
-
-      // Notify the AppMsgBus
-      auto& msgbusb = AppMsgBus::GetInstance();
-      msgbusb.Notify(std::move(msgb));
     }
 
     gSog = NAN;

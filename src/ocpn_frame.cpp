@@ -5392,6 +5392,7 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
   if(msg->gps_watchdog <= 0){
     bool last_bGPSValid = bGPSValid;
     bGPSValid = false;
+    m_fixtime = 0;    // Invalidate fix time
     if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
   }
 }
