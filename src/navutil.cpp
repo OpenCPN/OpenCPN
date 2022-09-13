@@ -1669,7 +1669,7 @@ void MyConfig::LoadNavObjects() {
     // We crashed last time :(
     // That's why this file still exists...
     // Let's reconstruct the unsaved changes
-    NavObjectChanges *pNavObjectChangesSet = new NavObjectChanges();
+    auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
     pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
 
     //  Remove the file before applying the changes,
@@ -1683,11 +1683,9 @@ void MyConfig::LoadNavObjects() {
       pNavObjectChangesSet->ApplyChanges();
       UpdateNavObj();
     }
-
-    delete pNavObjectChangesSet;
   }
-
-  m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
+  m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
 }
 
 bool MyConfig::LoadLayers(wxString &path) {
@@ -2851,7 +2849,7 @@ static wxFileName exportFileName(wxWindow *parent,
 
 bool MyConfig::IsChangesFileDirty() {
   if (m_pNavObjectChangesSet) {
-    return m_pNavObjectChangesSet->m_bdirty;
+    return m_pNavObjectChangesSet->IsDirty();
   } else {
     return true;
   }

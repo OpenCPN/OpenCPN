@@ -22,14 +22,17 @@
  ***************************************************************************
  */
 
-#ifndef __NAVOBJECTCOLLECTION_H__
-#define __NAVOBJECTCOLLECTION_H__
+#ifndef _NAVOBJECTCOLLECTION_H__
+#define _NAVOBJECTCOLLECTION_H__
+
+#include <memory>
+#include <vector>
+
+#include <wx/checkbox.h>
+#include <wx/string.h>
 
 #include "pugixml.hpp"
-#include <wx/string.h>
-#include <wx/checkbox.h>
 #include "bbox.h"
-#include <vector>
 
 class Track;
 class TrackPoint;
@@ -111,9 +114,25 @@ public:
 };
 
 class NavObjectChanges : public NavObjectCollection1 {
+friend class  MyConfig;
 public:
-  NavObjectChanges();
-  NavObjectChanges(wxString file_name);
+  static std::unique_ptr<NavObjectChanges> getTempInstance() {
+    return std::unique_ptr<NavObjectChanges>(new NavObjectChanges());
+  }
+
+  static NavObjectChanges* getInstance() {
+    static NavObjectChanges* instance = 0;
+    if (!instance) instance = new NavObjectChanges();
+    return instance;
+  }
+
+  void Init(const wxString& path) {
+      m_filename = path;
+      m_changes_file = fopen(m_filename.mb_str(), "a");
+  }
+
+  NavObjectChanges(const NavObjectChanges&) = delete;
+  void operator=(const NavObjectChanges&) = delete;
   ~NavObjectChanges();
 
   void AddRoute(Route *pr, const char *action);  // support "changes" file set
@@ -123,10 +142,15 @@ public:
                      const wxString &parent_GUID);
 
   bool ApplyChanges(void);
+  bool IsDirty() { return m_bdirty; }
+
+private:
+  NavObjectChanges();
+  NavObjectChanges(wxString file_name);
 
   wxString m_filename;
   FILE *m_changes_file;
   bool m_bdirty;
 };
 
-#endif
+#endif  // _NAVOBJECTCOLLECTION_H__
