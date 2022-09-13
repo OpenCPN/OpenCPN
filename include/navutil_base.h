@@ -43,6 +43,16 @@ enum {
   DISTANCE_CM
 };
 
+class GpxDocument {
+public:
+  static wxString GetUUID(void);
+  static void SeedRandom();
+
+private:
+  static int GetRandomNumber(int min, int max);
+};
+
+
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern double toUsrSpeed(double kts_speed, int unit = -1);
 extern wxString getUsrSpeedUnit(int unit = -1);
@@ -54,4 +64,9 @@ extern double fromUsrDistance(double usr_distance, int unit, int default_val);
 extern double fromUsrSpeed(double usr_speed, int unit, int default_val);
 
 const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime);
+
+extern wxString formatTimeDelta(wxTimeSpan span);
+extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
+extern wxString formatTimeDelta(wxLongLong secs);
+
 #endif   // _NAVUTIL_BASE__

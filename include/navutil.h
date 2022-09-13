@@ -186,13 +186,4 @@ public:
 void SwitchInlandEcdisMode(bool Switch);
 
 
-class GpxDocument {
-public:
-  static wxString GetUUID(void);
-  static void SeedRandom();
-
-private:
-  static int GetRandomNumber(int min, int max);
-};
-
 #endif

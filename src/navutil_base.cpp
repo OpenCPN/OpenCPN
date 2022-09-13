@@ -490,4 +490,85 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
     return NULL;
 }
 
+wxString formatTimeDelta(wxTimeSpan span) {
+  wxString timeStr;
+  int days = span.GetDays();
+  span -= wxTimeSpan::Days(days);
+  int hours = span.GetHours();
+  span -= wxTimeSpan::Hours(hours);
+  double minutes = (double)span.GetSeconds().ToLong() / 60.0;
+  span -= wxTimeSpan::Minutes(span.GetMinutes());
+  int seconds = (double)span.GetSeconds().ToLong();
+
+  timeStr =
+      (days ? wxString::Format(_("%dd "), days) : _T("")) +
+      (hours || days
+           ? wxString::Format(_("%2dH %2dM"), hours, (int)round(minutes))
+           : wxString::Format(_("%2dM %2dS"), (int)floor(minutes), seconds));
+
+  return timeStr;
+}
+
+wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime) {
+  wxString timeStr;
+  if (startTime.IsValid() && endTime.IsValid()) {
+    wxTimeSpan span = endTime - startTime;
+    return formatTimeDelta(span);
+  } else {
+    return _("N/A");
+  }
+}
+
+wxString formatTimeDelta(wxLongLong secs) {
+  wxString timeStr;
+
+  wxTimeSpan span(0, 0, secs);
+  return formatTimeDelta(span);
+}
+
+// RFC4122 version 4 compliant random UUIDs generator.
+wxString GpxDocument::GetUUID(void) {
+  wxString str;
+  struct {
+    int time_low;
+    int time_mid;
+    int time_hi_and_version;
+    int clock_seq_hi_and_rsv;
+    int clock_seq_low;
+    int node_hi;
+    int node_low;
+  } uuid;
+
+  uuid.time_low = GetRandomNumber(
+      0, 2147483647);  // FIXME: the max should be set to something like
+                       // MAXINT32, but it doesn't compile un gcc...
+  uuid.time_mid = GetRandomNumber(0, 65535);
+  uuid.time_hi_and_version = GetRandomNumber(0, 65535);
+  uuid.clock_seq_hi_and_rsv = GetRandomNumber(0, 255);
+  uuid.clock_seq_low = GetRandomNumber(0, 255);
+  uuid.node_hi = GetRandomNumber(0, 65535);
+  uuid.node_low = GetRandomNumber(0, 2147483647);
+
+  /* Set the two most significant bits (bits 6 and 7) of the
+   * clock_seq_hi_and_rsv to zero and one, respectively. */
+  uuid.clock_seq_hi_and_rsv = (uuid.clock_seq_hi_and_rsv & 0x3F) | 0x80;
+
+  /* Set the four most significant bits (bits 12 through 15) of the
+   * time_hi_and_version field to 4 */
+  uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
+
+  str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
+             uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
+             uuid.clock_seq_low, uuid.node_hi, uuid.node_low);
+
+  return str;
+}
+
+int GpxDocument::GetRandomNumber(int range_min, int range_max) {
+  long u = (long)wxRound(
+      ((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) +
+      range_min);
+  return (int)u;
+}
+
 
