@@ -5,7 +5,7 @@ model is based on that a plugin subscribes to the messages it is interested
 in rather then the old model where plugins get all messages.
 
 The new system is the only way to handle the new NMEA2000 devices. For N0183
-devices a compatiblity layer is installed which makes tings work as earlier.
+devices a compatiblity layer is installed which makes things work as earlier.
 However, the new system can be used also for nmea0183 where it offers more
 flexibility when handling messages.
 

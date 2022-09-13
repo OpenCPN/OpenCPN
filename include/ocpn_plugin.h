@@ -1577,7 +1577,7 @@ struct NMEA2000Id {
 };
 
 std::unique_ptr<ObservedVarListener> GetListener(NMEA2000Id id,
-                                                 ObservedEvt ev,
+                                                 wxEventType ev,
                                                  wxEvtHandler handler);
 
 struct NMEA0183Id {
@@ -1586,7 +1586,7 @@ struct NMEA0183Id {
 };
 
 std::unique_ptr<ObservedVarListener> GetListener(NMEA0183Id id,
-                                                 ObservedEvt ev,
+                                                 wxEventType ev,
                                                  wxEvtHandler handler);
 
 struct SignalkId {
@@ -1595,7 +1595,7 @@ struct SignalkId {
 };
 
 std::unique_ptr<ObservedVarListener> GetListener(SignalkId id,
-                                                 ObservedEvt ev,
+                                                 wxEventType ev,
                                                  wxEvtHandler handler);
 
 /** Return payload in a recieved n2000 message of type id in ev. */
@@ -1610,7 +1610,7 @@ struct NavDataId  {
 };
 
 std::unique_ptr<ObservedVarListener> GetListener(NavDataId id,
-                                                 ObservedEvt ev,
+                                                 wxEventType ev,
                                                  wxEvtHandler handler);
 /** Available decoded data for plugins. */
 struct  PluginNavdata{
