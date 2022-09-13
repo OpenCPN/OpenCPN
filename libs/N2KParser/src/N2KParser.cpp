@@ -151,3 +151,61 @@ bool ParseN2kPGN129038(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
                         COG, SOG, Heading, ROT, NavStatus);
 }
 
+bool ParseN2kPGN129039(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+                        double &Latitude, double &Longitude, bool &Accuracy, bool &RAIM, uint8_t &Seconds, double &COG,
+                        double &SOG, tN2kAISTransceiverInformation &AISTransceiverInformation, double &Heading,
+                        tN2kAISUnit &Unit, bool &Display, bool &DSC, bool &Band, bool &Msg22, tN2kAISMode &Mode, bool &State)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN129039(msg, MessageID, Repeat, UserID,
+                        Latitude, Longitude, Accuracy, RAIM, Seconds, COG,
+                        SOG, AISTransceiverInformation, Heading,
+                        Unit, Display, DSC, Band, Msg22, Mode, State);
+}
+
+
+
+bool ParseN2kPGN129794(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+                        uint32_t &IMOnumber, char *Callsign, char *Name, uint8_t &VesselType, double &Length,
+                        double &Beam, double &PosRefStbd, double &PosRefBow, uint16_t &ETAdate, double &ETAtime,
+                        double &Draught, char *Destination, tN2kAISVersion &AISversion, tN2kGNSStype &GNSStype,
+                        tN2kAISDTE &DTE, tN2kAISTranceiverInfo &AISinfo)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN129794(msg, MessageID, Repeat, UserID,
+                        IMOnumber, Callsign, Name, VesselType, Length,
+                        Beam, PosRefStbd, PosRefBow, ETAdate, ETAtime,
+                        Draught, Destination, AISversion, GNSStype,
+                        DTE, AISinfo);
+}
+
+bool ParseN2kPGN129809(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID, char *Name)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN129809(msg, MessageID, Repeat, UserID, Name);
+}
+
+
+bool ParseN2kPGN129810(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+                      uint8_t &VesselType, char *Vendor, char *Callsign, double &Length, double &Beam,
+                      double &PosRefStbd, double &PosRefBow, uint32_t &MothershipID)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN129810(msg, MessageID, Repeat, UserID,
+                      VesselType, Vendor, Callsign, Length, Beam,
+                      PosRefStbd, PosRefBow, MothershipID);
+}
+
+bool ParseN2kPGN129041(std::vector<unsigned char> &v, tN2kAISAtoNReportData &N2kData)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN129041(msg, N2kData);
+}
+
+
+

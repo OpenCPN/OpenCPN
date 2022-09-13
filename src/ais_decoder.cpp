@@ -124,7 +124,9 @@ wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129038, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129039, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129041, ObservedEvt);
-
+wxDEFINE_EVENT(EVT_N2K_129794, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129809, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129810, ObservedEvt);
 
 BEGIN_EVENT_TABLE(AisDecoder, wxEvtHandler)
 EVT_TIMER(TIMER_AIS1, AisDecoder::OnTimerAIS)
@@ -381,6 +383,36 @@ void AisDecoder::InitCommListeners(void) {
     HandleN2K_129041(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
   });
 
+      // AIS static data class A PGN 129794
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129794(static_cast<uint64_t>(129794));
+  listener_N2K_129794 =
+      msgbus.GetListener(EVT_N2K_129794, this, n2k_msg_129794);
+  Bind(EVT_N2K_129794, [&](ObservedEvt ev) {
+    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129794(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+  });
+
+      // AIS static data class B part A PGN 129809
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129809(static_cast<uint64_t>(129809));
+  listener_N2K_129809 =
+      msgbus.GetListener(EVT_N2K_129809, this, n2k_msg_129809);
+  Bind(EVT_N2K_129809, [&](ObservedEvt ev) {
+    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129809(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+  });
+
+      // AIS static data class B part B PGN 129810
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129810(static_cast<uint64_t>(129810));
+  listener_N2K_129810 =
+      msgbus.GetListener(EVT_N2K_129810, this, n2k_msg_129810);
+  Bind(EVT_N2K_129810, [&](ObservedEvt ev) {
+    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129810(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+  });
+
 }
 
 
@@ -472,6 +504,27 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 }
 
 bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  touch_state.notify();
+  return true;
+}
+
+bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  touch_state.notify();
+  return true;
+}
+
+bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  touch_state.notify();
+  return true;
+}
+
+bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   std::vector<unsigned char> v = n2k_msg->payload;
 
   touch_state.notify();
