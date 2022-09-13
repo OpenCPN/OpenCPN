@@ -2812,8 +2812,8 @@ void MyConfig::UpdateNavObj(bool bRecreate) {
   }
 
   if (bRecreate) {
-    delete m_pNavObjectChangesSet;
-    m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    m_pNavObjectChangesSet->reset();
+    m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
   }
 }
 
