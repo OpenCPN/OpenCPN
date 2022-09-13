@@ -39,13 +39,6 @@ extern int gps_watchdog_timeout_ticks;
 extern wxString gRmcDate, gRmcTime;
 extern bool g_bHDT_Rx, g_bVAR_Rx;
 
-static inline double GeodesicRadToDeg(double rads) {
-  return rads * 180.0 / M_PI;
-}
-
-static inline double MS2KNOTS(double ms) {
-  return ms * 1.9438444924406;
-}
 
 bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,
                                 double& lon) {
@@ -270,8 +263,8 @@ bool CommDecoder::DecodePGN129026(std::vector<unsigned char> v,  NavData& temp_d
   double COG, SOG;
 
   if (ParseN2kPGN129026(v, SID, ref, COG, SOG)) {
-    temp_data.gCog = GeodesicRadToDeg(COG);
-    temp_data.gSog = MS2KNOTS(SOG);
+    temp_data.gCog = COG;
+    temp_data.gSog = SOG;
     return true;
   }
 
@@ -326,8 +319,8 @@ bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_d
   tN2kHeadingReference ref;
 
   if (ParseN2kPGN127250(v, SID, Heading, Deviation, Variation, ref)){
-    temp_data.gHdt = GeodesicRadToDeg(Heading);
-    temp_data.gVar = GeodesicRadToDeg(Variation);
+    temp_data.gHdt = Heading;
+    temp_data.gVar = Variation;
     return true;
   }
 

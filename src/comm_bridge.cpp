@@ -81,6 +81,14 @@ void ClearNavData(NavData &d){
   d.n_satellites = -1;
 }
 
+static inline double GeodesicRadToDeg(double rads) {
+  return rads * 180.0 / M_PI;
+}
+
+static inline double MS2KNOTS(double ms) {
+  return ms * 1.9438444924406;
+}
+
 // CommBridge implementation
 
 BEGIN_EVENT_TABLE(CommBridge, wxEvtHandler)
@@ -450,8 +458,8 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
   if (!N2kIsNA(temp_data.gSog) && !N2kIsNA(temp_data.gCog)){
     if (EvalPriority(n2k_msg, active_priority_velocity, priority_map_velocity)) {
-      gSog = temp_data.gSog;
-      gCog = temp_data.gCog;
+      gSog = MS2KNOTS(temp_data.gSog);
+      gCog = GeodesicRadToDeg(temp_data.gCog);
       m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
     }
   }
@@ -482,14 +490,14 @@ bool CommBridge::HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
   if (!N2kIsNA(temp_data.gHdt)){
     if (EvalPriority(n2k_msg, active_priority_heading, priority_map_heading)) {
-      gHdt = temp_data.gHdt;
+      gHdt = GeodesicRadToDeg(temp_data.gHdt);
       m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
     }
   }
 
   if (!N2kIsNA(temp_data.gVar)){
     if (EvalPriority(n2k_msg, active_priority_variation, priority_map_variation)) {
-      gVar = temp_data.gVar;
+      gVar = GeodesicRadToDeg(temp_data.gVar);
       m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
     }
   }
