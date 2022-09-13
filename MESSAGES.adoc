@@ -7,7 +7,7 @@ in rather then the old model where plugins get all messages.
 The new system is the only way to handle the new NMEA2000 devices. For N0183
 devices a compatiblity layer is installed which makes things work as earlier.
 However, the new system can be used also for nmea0183 where it offers more
-flexibility when handling messages.
+flexibility and performance.
 
 Handling of messages consists of six steps:
 
@@ -35,7 +35,7 @@ plugin _ShipDriver_pi.h_ header as an example:
 
 Then declare a method which handles the message, something like this:
 
-     ④ void HandleGPGA(wxCommandEvent ev) {
+     ④ void HandleGPGA(ObservedEvt ev) {
      ①      NMEA0183 id("GPGGA");
             std::string payload = GetN0183Payload(id, ev)
             ...
@@ -47,14 +47,14 @@ Then, in the constructor set up the listening:
          {
          ...
      ①   NMEA0183Id id("GPGGA");
-     ③   wxDEFINE_EVENT(wxDEFINE_EVENT(EVT_SHIPDRIVER, wxCommandEvent);
+     ③   wxDEFINE_EVENT(EVT_SHIPDRIVER, ObservedEvt);
      ⑤   listener = std::move(GetListener(id, EVT_SHIPDRIVER, this);
      ⑥   Bind(EVT_SHIPDRIVER [](wxCommandEvent ev) { HandleGPGA(ev); });
 
-Notes
+Notes:
 
 ①:: This is the type of message we are listening to. There are similar types
-    for NMEA2000 , SignalK and decoded navigation data (la, long, etc.)
+    for NMEA2000 , SignalK and decoded navigation data (lat, long, etc.)
 
 ②:: Boiler-plate code, makes sure the listener is destroyed together with
     the plugin. It is important that the listener is declared in the class,
