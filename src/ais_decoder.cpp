@@ -496,10 +496,79 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     return false;
 }
 
+  // AIS position reports for Class B
 bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   std::vector<unsigned char> v = n2k_msg->payload;
 
-  touch_state.notify();
+// Input:
+//  - N2kMsg                NMEA2000 message to decode
+// bool ParseN2kPGN129039(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+//                         double &Latitude, double &Longitude, bool &Accuracy, bool &RAIM, uint8_t &Seconds, double &COG,
+//                         double &SOG, tN2kAISTransceiverInformation &AISTransceiverInformation, double &Heading,
+//                         tN2kAISUnit &Unit, bool &Display, bool &DSC, bool &Band, bool &Msg22, tN2kAISMode &Mode, bool &State);
+
+  uint8_t MessageID;
+  tN2kAISRepeat Repeat;
+  uint32_t UserID;
+  double Latitude;
+  double Longitude;
+  bool Accuracy;
+  bool RAIM;
+  uint8_t Seconds;
+  double COG;
+  double SOG;
+  double Heading;
+  tN2kAISNavStatus NavStat = N2kaisns_Under_Way_Motoring;
+  tN2kAISTransceiverInformation AISTransceiverInformation;
+  tN2kAISUnit Unit;
+  bool DSC, Band, Msg22, State, Display;
+  tN2kAISMode Mode;
+
+  if (ParseN2kPGN129039(v, MessageID, Repeat, UserID,
+                         Latitude, Longitude, Accuracy, RAIM, Seconds, COG,
+                         SOG, AISTransceiverInformation, Heading,
+                         Unit, Display, DSC, Band, Msg22, Mode, State)) {
+
+    // Is this target already in the global target list?
+    //  Search the current AISTargetList for an MMSI match
+    int mmsi = UserID;
+    long mmsi_long = mmsi;
+    AisTargetData *pTargetData = 0;
+    bool bnewtarget = false;
+
+    auto it = AISTargetList.find(mmsi);
+    if (it == AISTargetList.end())  // not found
+    {
+      pTargetData = new AisTargetData;
+      bnewtarget = true;
+      m_n_targets++;
+    } else {
+      pTargetData = it->second;    // find current entry
+    }
+
+    //Populate the target_data
+    pTargetData->MID = MessageID;
+    pTargetData->MMSI = mmsi;
+    pTargetData->Class = AIS_CLASS_B;
+    pTargetData->NavStatus = (ais_nav_status)NavStat;
+    pTargetData->SOG = MS2KNOTS(SOG);
+    if (!N2kIsNA(COG))
+      pTargetData->COG = GeodesicRadToDeg(COG);
+    if (!N2kIsNA(Heading))
+      pTargetData->HDG = GeodesicRadToDeg(Heading);
+    pTargetData->Lon = Longitude;
+    pTargetData->Lat = Latitude;
+
+    pTargetData->b_positionOnceValid = true;
+    CommitAISTarget(pTargetData, "", true, bnewtarget);
+
+    touch_state.notify();
+    return true;
+  }
+  else
+    return false;
+
+
   return true;
 }
 
@@ -510,26 +579,162 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   return true;
 }
 
+//AIS static data class A
 bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   std::vector<unsigned char> v = n2k_msg->payload;
 
-  touch_state.notify();
-  return true;
-}
+  uint8_t MessageID;
+  tN2kAISRepeat Repeat;
+  uint32_t UserID;
+  uint32_t IMOnumber;
+  char Callsign[21];
+  char Name[21];
+  uint8_t VesselType;
+  double Length;
+  double Beam;
+  double PosRefStbd;
+  double PosRefBow;
+  uint16_t ETAdate;
+  double ETAtime;
+  double Draught;
+  char Destination[21];
+  tN2kAISVersion AISversion;
+  tN2kGNSStype GNSStype;
+  tN2kAISDTE DTE;
+  tN2kAISTranceiverInfo AISinfo;
 
+
+  if (ParseN2kPGN129794(v, MessageID, Repeat, UserID,
+                        IMOnumber, Callsign, Name, VesselType, Length,
+                        Beam, PosRefStbd, PosRefBow, ETAdate, ETAtime,
+                        Draught, Destination, AISversion, GNSStype,
+                        DTE, AISinfo) )
+    {
+    // Is this target already in the global target list?
+    //  Search the current AISTargetList for an MMSI match
+    int mmsi = UserID;
+    long mmsi_long = mmsi;
+    AisTargetData *pTargetData = 0;
+    bool bnewtarget = false;
+
+    auto it = AISTargetList.find(mmsi);
+    if (it == AISTargetList.end())  // not found
+    {
+      pTargetData = new AisTargetData;
+      bnewtarget = true;
+      m_n_targets++;
+    } else {
+      pTargetData = it->second;    // find current entry
+    }
+
+    //Populate the target_data
+      strncpy(pTargetData->ShipName, Name, 20);
+      pTargetData->b_nameValid = true;
+
+      //FIXME (dave) Populate more fiddly static data
+
+      CommitAISTarget(pTargetData, "", true, bnewtarget);
+      touch_state.notify();
+      return true;
+
+  }
+  else
+    return false;
+}
+// AIS static data class B part A
 bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   std::vector<unsigned char> v = n2k_msg->payload;
 
-  touch_state.notify();
-  return true;
+  uint8_t MessageID;
+  tN2kAISRepeat Repeat;
+  uint32_t UserID;
+  char Name[20];
+
+  if (ParseN2kPGN129809(v, MessageID, Repeat, UserID, Name))
+  {
+    // Is this target already in the global target list?
+    //  Search the current AISTargetList for an MMSI match
+    int mmsi = UserID;
+    long mmsi_long = mmsi;
+    AisTargetData *pTargetData = 0;
+    bool bnewtarget = false;
+
+    auto it = AISTargetList.find(mmsi);
+    if (it == AISTargetList.end())  // not found
+    {
+      pTargetData = new AisTargetData;
+      bnewtarget = true;
+      m_n_targets++;
+    } else {
+      pTargetData = it->second;    // find current entry
+    }
+
+    //Populate the target_data
+      strncpy(pTargetData->ShipName, Name, 20);
+      pTargetData->b_nameValid = true;
+
+      //FIXME (dave) Populate more fiddly static data
+
+      CommitAISTarget(pTargetData, "", true, bnewtarget);
+      touch_state.notify();
+      return true;
+
+  }
+  else
+    return false;
 }
 
+
+// AIS static data class B part B
 bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   std::vector<unsigned char> v = n2k_msg->payload;
 
-  touch_state.notify();
-  return true;
+  uint8_t MessageID;
+  tN2kAISRepeat Repeat;
+  uint32_t UserID;
+  uint8_t VesselType;
+  char Vendor[20];
+  char Callsign[20];
+  double Length;
+  double Beam;
+  double PosRefStbd;
+  double PosRefBow;
+  uint32_t MothershipID;
+
+  if (ParseN2kPGN129810(v, MessageID, Repeat, UserID,
+                      VesselType, Vendor, Callsign, Length, Beam,
+                      PosRefStbd, PosRefBow, MothershipID))
+  {
+    // Is this target already in the global target list?
+    //  Search the current AISTargetList for an MMSI match
+    int mmsi = UserID;
+    long mmsi_long = mmsi;
+    AisTargetData *pTargetData = 0;
+    bool bnewtarget = false;
+
+    auto it = AISTargetList.find(mmsi);
+    if (it == AISTargetList.end())  // not found
+    {
+      pTargetData = new AisTargetData;
+      bnewtarget = true;
+      m_n_targets++;
+    } else {
+      pTargetData = it->second;    // find current entry
+    }
+
+    //Populate the target_data
+
+      //FIXME (dave) Populate more fiddly static data
+
+      CommitAISTarget(pTargetData, "", true, bnewtarget);
+      touch_state.notify();
+      return true;
+
+  }
+  else
+    return false;
 }
+
 
 // void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
 //   std::string msgTerminated = sK_msg->raw_message;;
