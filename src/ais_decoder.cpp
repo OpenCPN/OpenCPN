@@ -472,6 +472,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->HDG = GeodesicRadToDeg(Heading);
     pTargetData->Lon = Longitude;
     pTargetData->Lat = Latitude;
+
     pTargetData->ROTAIS = ROT;
 
     double rot_dir = 1.0;
@@ -486,7 +487,10 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 //
 //     pTargetData->ROTIND = round(rot_dir * pow((ROT / 4.733), 2));
 
+    pTargetData->b_active = true;
+    pTargetData->b_lost = false;
     pTargetData->b_positionOnceValid = true;
+
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.notify();
@@ -560,6 +564,9 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->Lat = Latitude;
 
     pTargetData->b_positionOnceValid = true;
+    pTargetData->b_active = true;
+    pTargetData->b_lost = false;
+
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.notify();
@@ -628,15 +635,15 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     }
 
     //Populate the target_data
-      strncpy(pTargetData->ShipName, Name, 20);
-      pTargetData->b_nameValid = true;
+    strncpy(pTargetData->ShipName, Name, 20);
+    pTargetData->b_nameValid = true;
 
-      //FIXME (dave) Populate more fiddly static data
+    //FIXME (dave) Populate more fiddly static data
 
-      CommitAISTarget(pTargetData, "", true, bnewtarget);
-      touch_state.notify();
-      return true;
+    CommitAISTarget(pTargetData, "", true, bnewtarget);
 
+    touch_state.notify();
+    return true;
   }
   else
     return false;
@@ -670,14 +677,14 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     }
 
     //Populate the target_data
-      strncpy(pTargetData->ShipName, Name, 20);
-      pTargetData->b_nameValid = true;
+    strncpy(pTargetData->ShipName, Name, 20);
+    pTargetData->b_nameValid = true;
 
-      //FIXME (dave) Populate more fiddly static data
+    //FIXME (dave) Populate more fiddly static data
 
-      CommitAISTarget(pTargetData, "", true, bnewtarget);
-      touch_state.notify();
-      return true;
+    CommitAISTarget(pTargetData, "", true, bnewtarget);
+    touch_state.notify();
+    return true;
 
   }
   else
@@ -726,10 +733,10 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
       //FIXME (dave) Populate more fiddly static data
 
-      CommitAISTarget(pTargetData, "", true, bnewtarget);
-      touch_state.notify();
-      return true;
+    CommitAISTarget(pTargetData, "", true, bnewtarget);
 
+    touch_state.notify();
+    return true;
   }
   else
     return false;
