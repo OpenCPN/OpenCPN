@@ -152,7 +152,7 @@ bool ParseN2kPGN129540(std::vector<unsigned char> &v, unsigned char& SID, tN2kRa
 // Return:
 //   true  - if function succeeds.
 //   false - when called with wrong message or SVIndex in second function is out of range.
-bool ParseN2kPGN129540(const tN2kMsg& N2kMsg, uint8_t SVIndex, tSatelliteInfo& SatelliteInfo);
+bool ParseN2kPGN129540(std::vector<unsigned char> &v, uint8_t SVIndex, tSatelliteInfo& SatelliteInfo);
 
 //*****************************************************************************
 // Lat/lon rapid
