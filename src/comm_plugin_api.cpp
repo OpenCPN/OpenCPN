@@ -30,12 +30,6 @@
 #include "ocpn_plugin.h"
 #include "comm_navmsg_bus.h"
 
-// FIXME (leamas)  Move to some header, but which?
-template <typename T>
-std::shared_ptr<const T> UnpackEvtPointer(ObservedEvt ev) {
-  return std::static_pointer_cast<const T>(ev.GetSharedPtr());
-}
-
 std::unique_ptr<ObservedVarListener> GetListener(NMEA2000Id id, wxEventType ev,
                                                  wxEvtHandler* handler) {
   return std::make_unique<ObservedVarListener>(
