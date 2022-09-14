@@ -42,6 +42,7 @@
 #include "icons.h"
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
+#include "N2KParser.h"
 
 wxFont *g_pFontTitle;
 wxFont *g_pFontData;
@@ -69,6 +70,7 @@ static const long long lNaN = 0xfff8000000000000;
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
 #endif
+
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -546,6 +548,17 @@ int dashboard_pi::Init(void) {
     SaveConfig();
   }
 
+  // initialize NavMsg listeners
+    // GNSS Satellites in View   PGN 129540
+  //-----------------------------
+    wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
+    NMEA2000Id id_129540 = NMEA2000Id(129540);
+    listener = std::move(GetListener(id_129540, EVT_N2K_129540, this));
+
+    Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
+      HandleN2K_129540(ev);
+    });
+
   Start(1000, wxTIMER_CONTINUOUS);
 
   return (WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |
@@ -593,6 +606,42 @@ double GetJsonDouble(wxJSONValue &value) {
     return d_ret;
   }
   return nan("");
+}
+
+void dashboard_pi::HandleN2K_129540(ObservedEvt ev){
+  NMEA2000Id id_129540(129540);
+  std::vector<uint8_t>v = GetN2000Payload(id_129540, ev);
+
+  unsigned char SID;
+  tN2kRangeResidualMode Mode;
+  uint8_t NumberOfSVs;
+
+  // Get the number of visible satellites
+  if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)){
+
+    // Step through each satellite, one-by-one
+    for(uint8_t index=0 ; index < NumberOfSVs; index++){
+      tSatelliteInfo SatelliteInfo;
+      if (ParseN2kPGN129540(v, index, SatelliteInfo)){
+        // Here we can get each specific satellite info from the struct tSatelliteInfo
+
+        // Struct looks like this:
+        //struct tSatelliteInfo {
+        //unsigned char PRN;
+        //double Elevation;
+        //double Azimuth;
+        //double SNR;
+        //double RangeResiduals;
+        //tN2kPRNUsageStatus UsageStatus;
+        //};
+
+        // For example:
+        double snr = SatelliteInfo.SNR;
+
+        // Apply results to Dashboard data structures as required.
+      }
+    }
+  }
 }
 
 void dashboard_pi::Notify() {
@@ -2059,7 +2108,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         else if (talkerID.Contains(_T("BEIDOU")))
           talkerID = _T("GI");
       }
-    } 
+    }
     else if (update_path ==
                _T("navigation.gnss.satellitesInView")) {  // GNSS satellites in
                                                           // view

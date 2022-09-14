@@ -200,6 +200,10 @@ private:
   void ParseSignalK(wxString &msg);
   void handleSKUpdate(wxJSONValue &update);
   void updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime);
+  void HandleN2K_129540(ObservedEvt ev);
+
+  std::unique_ptr<ObservedVarListener> listener;
+
   wxString m_self;
 
   wxFileConfig *m_pconfig;
