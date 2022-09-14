@@ -626,19 +626,20 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev){
         // Here we can get each specific satellite info from the struct tSatelliteInfo
 
         // Struct looks like this:
+
         //struct tSatelliteInfo {
-        //unsigned char PRN;
-        //double Elevation;
-        //double Azimuth;
-        //double SNR;
-        //double RangeResiduals;
-        //tN2kPRNUsageStatus UsageStatus;
-        //};
+        //  unsigned char PRN;
+        //  double Elevation;
+        //  double Azimuth;
+        //  double SNR;
+        //  double RangeResiduals;
+        //  tN2kPRNUsageStatus UsageStatus;
+        //  };
 
         // For example:
         double snr = SatelliteInfo.SNR;
 
-        // Apply results to Dashboard data structures as required.
+        // Apply results to Dashboard data structures as required, and update instrument.
       }
     }
   }
