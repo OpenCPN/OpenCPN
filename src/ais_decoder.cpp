@@ -163,14 +163,6 @@ static inline double MS2KNOTS(double ms) {
   return ms * 1.9438444924406;
 }
 
-static void onSoundFinished(void *ptr) {
-  if (!g_bquiting) {
-    // auto aisDecoder = static_cast<AisDecoder*>(ptr);
-    wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-    wxPostEvent(g_pAIS, ev);
-  }
-}
-
 void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
@@ -1576,11 +1568,14 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
                  // we make sure we are out of the hashes for GPSGate buddies
                  // and ARPA by being above 1993*
     } else if (1 == g_WplAction) {  // Create mark
-      RoutePoint *pWP = new RoutePoint(aprs_lat, aprs_lon, g_default_wp_icon,
-                                       aprs_name_str, wxEmptyString);
-      pWP->m_bIsolatedMark = true;  // This is an isolated mark
-      pSelect->AddSelectableRoutePoint(aprs_lat, aprs_lon, pWP);
-      new_ais_wp.notify(pWP);
+
+      //FIXME (dave) This is a GUI thing...
+
+//       RoutePoint *pWP = new RoutePoint(aprs_lat, aprs_lon, g_default_wp_icon,
+//                                        aprs_name_str, wxEmptyString);
+//       pWP->m_bIsolatedMark = true;  // This is an isolated mark
+//       pSelect->AddSelectableRoutePoint(aprs_lat, aprs_lon, pWP);
+//       new_ais_wp.notify(pWP);
     }
   } else if (str.Mid(1, 5).IsSameAs(_T("FRPOS"))) {
     // parse a GpsGate Position message            $FRPOS,.....
@@ -3116,8 +3111,9 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
     TrackPoint *tp1 =
         t->AddNewPoint(point, wxDateTime(ptrackpoint.m_time).ToUTC());
     if (tp) {
-      pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
-                                         tp1->m_lon, tp, tp1, t);
+      //Fixme (dave)  This is GUI related.
+//       pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
+//                                          tp1->m_lon, tp, tp1, t);
     }
 
     // We do not want dependency on the GUI here, do we?
