@@ -30,7 +30,7 @@ plugin _ShipDriver_pi.h_ header as an example:
             ~ShipDriver_pi(void);
             ...
         private:
-     ②      std::unique_ptr<ObservedVarListener> listener;
+     ②      std::shared_ptr<ObservedVarListener> listener;
             ...
 
 Then declare a method which handles the message, something like this:
@@ -48,7 +48,7 @@ Then, in the constructor set up the listening:
          ...
      ①   NMEA0183Id id("GPGGA");
      ③   wxDEFINE_EVENT(EVT_SHIPDRIVER, ObservedEvt);
-     ⑤   listener = std::move(GetListener(id, EVT_SHIPDRIVER, this));
+     ⑤   listener = GetListener(id, EVT_SHIPDRIVER, this);
      ⑥   Bind(EVT_SHIPDRIVER [](ObservedEvt ev) { HandleGPGA(ev); });
 
 Notes:
@@ -68,8 +68,7 @@ Notes:
     `payload` string. From here it can be processed as required.
 
 ⑤:: This activates the listener. From this points system sends us an
-    _EVT_SHIPDRIVER_ for each received GPGGA message. `std::move()` is
-    boilerplate code required to assign a `unique_ptr`.
+    _EVT_SHIPDRIVER_ for each received GPGGA message.
 
 ⑥:: This is the final piece in the puzzle. It defines what should happen when
     the _EVT_SHIPDRIVER_ arrives.  From this point all incoming GPGGA

@@ -30,21 +30,21 @@
 #include "ocpn_plugin.h"
 #include "comm_navmsg_bus.h"
 
-std::unique_ptr<ObservedVarListener> GetListener(NMEA2000Id id, wxEventType ev,
+std::shared_ptr<ObservedVarListener> GetListener(NMEA2000Id id, wxEventType ev,
                                                  wxEvtHandler* handler) {
-  return std::make_unique<ObservedVarListener>(
+  return std::make_shared<ObservedVarListener>(
       NavMsgBus::GetInstance().GetListener(ev, handler, Nmea2000Msg(id.id)));
 }
 
-std::unique_ptr<ObservedVarListener> GetListener(NMEA0183Id id, wxEventType ev,
+std::shared_ptr<ObservedVarListener> GetListener(NMEA0183Id id, wxEventType ev,
                                                  wxEvtHandler* handler) {
-  return std::make_unique<ObservedVarListener>(
+  return std::make_shared<ObservedVarListener>(
       NavMsgBus::GetInstance().GetListener(ev, handler, Nmea0183Msg(id.id)));
 }
 
-std::unique_ptr<ObservedVarListener> GetListener(SignalkId id, wxEventType ev,
+std::shared_ptr<ObservedVarListener> GetListener(SignalkId id, wxEventType ev,
                                                  wxEvtHandler* handler) {
-  return std::make_unique<ObservedVarListener>(
+  return std::make_shared<ObservedVarListener>(
       NavMsgBus::GetInstance().GetListener(ev, handler, SignalkMsg()));
 }
 
