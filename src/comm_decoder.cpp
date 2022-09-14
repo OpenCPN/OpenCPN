@@ -265,6 +265,7 @@ bool CommDecoder::DecodePGN129026(std::vector<unsigned char> v,  NavData& temp_d
   if (ParseN2kPGN129026(v, SID, ref, COG, SOG)) {
     temp_data.gCog = COG;
     temp_data.gSog = SOG;
+    temp_data.SID = SID;
     return true;
   }
 
@@ -294,6 +295,7 @@ bool CommDecoder::DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_d
                         )) {
     temp_data.gLat = Latitude;
     temp_data.gLon = Longitude;
+    temp_data.SID = SID;
 
     // Some devices produce "0" satelites for PGN 129029, even with a vaild fix
     //  One supposes that PGN 129540 should be used instead
@@ -321,6 +323,7 @@ bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_d
   if (ParseN2kPGN127250(v, SID, Heading, Deviation, Variation, ref)){
     temp_data.gHdt = Heading;
     temp_data.gVar = Variation;
+    temp_data.SID = SID;
     return true;
   }
 
@@ -350,6 +353,7 @@ bool CommDecoder::DecodePGN129540(std::vector<unsigned char> v,  NavData& temp_d
 
   if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)) {
     temp_data.n_satellites = NumberOfSVs;
+    temp_data.SID = SID;
     return true;
   }
 
