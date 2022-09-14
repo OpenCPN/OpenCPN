@@ -1536,6 +1536,7 @@ extern DECL_EXP wxString GetActiveRouteGUID(void);	// if no active route, return
 
 // API 1.18  listen-notify
 
+#include "observable.h"
 
 /* Listening to messages. */
 class ObservedVarListener;
@@ -1569,7 +1570,7 @@ private:
 
 #endif  // OBSERVABLE_EVT_H
 
-class ObservedVarListener; 
+class ObservedVarListener;
 
 struct NMEA2000Id {
   const uint64_t id;
@@ -1578,7 +1579,7 @@ struct NMEA2000Id {
 
 std::unique_ptr<ObservedVarListener> GetListener(NMEA2000Id id,
                                                  wxEventType ev,
-                                                 wxEvtHandler handler);
+                                                 wxEvtHandler* handler);
 
 struct NMEA0183Id {
   const std::string id;
