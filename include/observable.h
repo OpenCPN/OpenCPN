@@ -31,6 +31,18 @@
 
 #include <wx/event.h>
 
+#ifndef DECL_EXP
+#if defined(__WXMSW__) || defined(__CYGWIN__)
+#define DECL_EXP __declspec(dllexport)
+#elif defined __GNUC__ && __GNUC__ >= 4
+#define DECL_EXP __attribute__((visibility("default")))
+#elif defined __WXOSX__
+#define DECL_EXP __attribute__((visibility("default")))
+#else
+#define DECL_EXP
+#endif
+#endif
+
 #ifndef OBSERVABLE_EVT_H  // Could be defined from copy in ocpn_plugin.h
 #include "observable_evt.h"
 #endif
@@ -111,7 +123,7 @@ private:
 /**
  *  Keeps listening over it's lifespan, removes itself on destruction.
  */
-class ObservedVarListener final {
+class DECL_EXP ObservedVarListener final {
 public:
   /** Default constructor, does not listen to anything. */
   ObservedVarListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
