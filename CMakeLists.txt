@@ -1820,7 +1820,7 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.14)
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
     )
     add_dependencies(run-tests tests)
-  endif (NOT QT_ANDROID)
+  endif ()
 endif ()
 
 # If we build for windows systems, we also include the resource file containing
@@ -2966,4 +2966,4 @@ if (NOT QT_ANDROID AND NOT APPLE)
     target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
   endif ()
   install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
-endif (NOT QT_ANDROID)
+endif ()
