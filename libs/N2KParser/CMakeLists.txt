@@ -13,5 +13,12 @@ set (SRC
 add_library(N2KPARSER STATIC ${SRC})
 add_library(ocpn::N2KParser ALIAS N2KPARSER)
 
-set_property(TARGET N2KPARSER PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_include_directories(N2KPARSER PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(
+    N2KPARSER PRIVATE
+      -fvisibility=default -Wno-unknown-pragmas -fPIC
+  )
+endif ()
+target_include_directories(
+  N2KPARSER PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
