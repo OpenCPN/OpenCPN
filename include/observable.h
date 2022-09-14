@@ -31,21 +31,18 @@
 
 #include <wx/event.h>
 
+#include "observable_evt.h"
+
 #ifndef DECL_EXP
-#if defined(__WXMSW__) || defined(__CYGWIN__)
+#if defined(_MSC_VER) || defined(__CYGWIN__)
 #define DECL_EXP __declspec(dllexport)
-#elif defined __GNUC__ && __GNUC__ >= 4
-#define DECL_EXP __attribute__((visibility("default")))
-#elif defined __WXOSX__
+#elif defined(__GNUC__) || defined(__clang__)
 #define DECL_EXP __attribute__((visibility("default")))
 #else
 #define DECL_EXP
 #endif
-#endif
+#endif    // DECL_EXP
 
-#ifndef OBSERVABLE_EVT_H  // Could be defined from copy in ocpn_plugin.h
-#include "observable_evt.h"
-#endif
 
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);
