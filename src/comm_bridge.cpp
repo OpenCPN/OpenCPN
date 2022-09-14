@@ -28,6 +28,7 @@
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif  // precompiled headers
+#include "wx/tokenzr.h"
 
 #include "comm_bridge.h"
 #include "comm_appmsg_bus.h"
@@ -68,7 +69,7 @@ extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 extern wxString g_ownshipMMSI_SK;
 
-bool debug_priority;
+bool debug_priority = 1;
 
 void ClearNavData(NavData &d){
   d.gLat = NAN;
@@ -79,6 +80,7 @@ void ClearNavData(NavData &d){
   d.gHdm = NAN;
   d.gVar = NAN;
   d.n_satellites = -1;
+  d.SID = 0;
 }
 
 static inline double GeodesicRadToDeg(double rads) {
@@ -450,13 +452,19 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     return false;
 
   if (!N2kIsNA(temp_data.gSog) && !N2kIsNA(temp_data.gCog)){
-    if (EvalPriority(n2k_msg, active_priority_velocity, priority_map_velocity)) {
+
+    // Require COG/SOG to come from the same device as is providing position.
+    //Check the Message Source Address.
+    //If same as Source Address of highest position priority, then accept it.
+
+    unsigned char n_source = n2k_msg->payload.at(7);
+
+    if( n_source == active_priority_position.active_source_address){
       gSog = MS2KNOTS(temp_data.gSog);
       gCog = GeodesicRadToDeg(temp_data.gCog);
       m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
     }
   }
-  //FIXME (dave) How to notify user of errors?
   else{
   }
 
@@ -907,6 +915,12 @@ void CommBridge::InitializePriorityContainers(){
   active_priority_variation.pcclass = "variation";
   active_priority_satellites.pcclass = "satellites";
 
+  active_priority_position.active_source_address = -1;
+  active_priority_velocity.active_source_address = -1;
+  active_priority_heading.active_source_address = -1;
+  active_priority_variation.active_source_address = -1;
+  active_priority_satellites.active_source_address = -1;
+
   priority_map_position.clear();
   priority_map_velocity.clear();
   priority_map_heading.clear();
@@ -914,21 +928,13 @@ void CommBridge::InitializePriorityContainers(){
   priority_map_satellites.clear();
 }
 
-bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
-                                      PriorityContainer& active_priority,
-                                      std::unordered_map<std::string, int>& priority_map) {
-
-  if (debug_priority) printf("\n<%s>\n", active_priority.pcclass.c_str());
-  if (debug_priority) printf("Active priority: %d\n", active_priority.active_priority);
-
-  // Fetch the established priority for the message
-  int this_priority;
-
+std::string CommBridge::GetPriorityKey(std::shared_ptr <const NavMsg> msg){
   std::string source = msg->source->to_string();
   std::string listener_key = msg->key();
 
 
   std::string this_identifier;
+  std::string this_address("0");
   if(msg->bus == NavAddr::Bus::N0183){
     auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
     if (msg_0183){
@@ -940,9 +946,12 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
     auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
     if (msg_n2k){
       this_identifier = msg_n2k->name.to_string();
+      unsigned char n_source = msg_n2k->payload.at(7);
+      char ss[4];
+      sprintf(ss,"%d",n_source);
+      this_address = std::string(ss);
     }
   }
-
   else if(msg->bus == NavAddr::Bus::Signalk){
     auto msg_sk = std::dynamic_pointer_cast<const SignalkMsg>(msg);
     if (msg_sk){
@@ -950,8 +959,31 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
     }
   }
 
-  std::string this_key = listener_key + this_identifier + source;
+
+  return  source + ":" + this_address + ";" + this_identifier;
+
+}
+
+bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
+                                      PriorityContainer& active_priority,
+                                      std::unordered_map<std::string, int>& priority_map) {
+
+  std::string this_key = GetPriorityKey(msg);
   if (debug_priority) printf("This Key: %s\n", this_key.c_str());
+
+  // Pull some identifiers from the unique key
+  wxStringTokenizer tkz(this_key, _T(";"));
+  wxString wxs_this_source = tkz.GetNextToken();
+  std::string source = wxs_this_source.ToStdString();
+  wxString wxs_this_identifier = tkz.GetNextToken();
+  std::string this_identifier = wxs_this_identifier.ToStdString();
+
+  wxStringTokenizer tka(wxs_this_source, _T(":"));
+  tka.GetNextToken();
+  int source_address = atoi(tka.GetNextToken().ToStdString().c_str());
+
+  // Fetch the established priority for the message
+  int this_priority;
 
   auto it = priority_map.find(this_key);
   if (it == priority_map.end()) {
@@ -978,6 +1010,8 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
     active_priority.active_priority = this_priority;
     active_priority.active_source = source;
     active_priority.active_identifier = this_identifier;
+    active_priority.active_source_address = source_address;
+
     if (debug_priority) printf("  Restoring high priority: %s %d\n", source.c_str(), this_priority);
     return true;
   }
@@ -1069,6 +1103,7 @@ bool CommBridge::EvalPriority(std::shared_ptr <const NavMsg> msg,
   // Update the records
   active_priority.active_source = source;
   active_priority.active_identifier = this_identifier;
+  active_priority.active_source_address = source_address;
   if (debug_priority) printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
 
   return true;

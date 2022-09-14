@@ -41,6 +41,7 @@ typedef struct{
   int active_priority;
   std::string active_source;
   std::string active_identifier;
+  int active_source_address;
 } PriorityContainer;
 
 typedef struct {
@@ -88,6 +89,7 @@ public:
   bool EvalPriority(std::shared_ptr <const NavMsg> msg,
                             PriorityContainer& active_priority,
                             std::unordered_map<std::string, int>& priority_map);
+  std::string GetPriorityKey(std::shared_ptr <const NavMsg> msg);
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
