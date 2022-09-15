@@ -33,6 +33,8 @@
 
 class s52plib;
 
+WX_DECLARE_STRING_HASH_MAP(wxRect, symbolGraphicsHashMap);
+
 class Lookup {
 public:
   int RCID;
@@ -105,10 +107,9 @@ public:
   ~ChartSymbols(void);
   bool LoadConfigFile(s52plib *plibArg, const wxString &path);
 
-  void InitializeGlobals(void);
+  void InitializeTables(void);
   void DeleteGlobals(void);
   int LoadRasterFileForColorTable(int tableNo, bool flush = false);
-  wxArrayPtrVoid *GetColorTables();
   int FindColorTable(const wxString &tableName);
   S52color *GetColor(const char *colorName, int fromTable);
   wxColor GetwxColor(const wxString &colorName, int fromTable);
@@ -119,13 +120,14 @@ public:
   wxSize GLTextureSize();
   void SetColorTableIndex(int index);
 
-  wxArrayPtrVoid *colorTables;
+  wxArrayPtrVoid m_colorTables;
   unsigned int rasterSymbolsTexture;
   wxSize rasterSymbolsTextureSize;
   wxBitmap rasterSymbols;
   int rasterSymbolsLoadedColorMapNumber;
   wxString configFileDirectory;
   int ColorTableIndex;
+  symbolGraphicsHashMap m_symbolGraphicLocations;
 
 private:
   void ProcessVectorTag(TiXmlElement *subNodes, SymbolSizeInfo_t &vectorSize);

@@ -47,39 +47,29 @@ extern bool g_bopengl;
 extern GLenum g_texture_rectangle_format;
 #endif
 
-WX_DECLARE_STRING_HASH_MAP(wxRect, symbolGraphicsHashMap);
-
-symbolGraphicsHashMap *symbolGraphicLocations;
 //--------------------------------------------------------------------------------------
 
 ChartSymbols::ChartSymbols(void) {}
 
 ChartSymbols::~ChartSymbols(void) {}
 
-void ChartSymbols::InitializeGlobals(void) {
-  if (!colorTables) colorTables = new wxArrayPtrVoid;
-  if (!symbolGraphicLocations)
-    symbolGraphicLocations = new symbolGraphicsHashMap;
+void ChartSymbols::InitializeTables(void) {
   rasterSymbolsLoadedColorMapNumber = -1;
   ColorTableIndex = 0;
 }
 
 void ChartSymbols::DeleteGlobals(void) {
-  (*symbolGraphicLocations).clear();
-  delete symbolGraphicLocations;
-  symbolGraphicLocations = NULL;
+  m_symbolGraphicLocations.clear();
 
-  for (unsigned int i = 0; i < colorTables->GetCount(); i++) {
-    colTable *ct = (colTable *)colorTables->Item(i);
+  for (unsigned int i = 0; i < m_colorTables.GetCount(); i++) {
+    colTable *ct = (colTable *)m_colorTables.Item(i);
     delete ct->tableName;
     ct->colors.clear();
     ct->wxColors.clear();
     delete ct;
   }
 
-  colorTables->Clear();
-  delete colorTables;
-  colorTables = NULL;
+  m_colorTables.Clear();
 }
 
 void ChartSymbols::ProcessColorTables(pugi::xml_node &node) {
@@ -128,7 +118,7 @@ void ChartSymbols::ProcessColorTables(pugi::xml_node &node) {
         colorNode = colorNode.next_sibling();
       }
 
-      colorTables->Add((void *)colortable);
+      m_colorTables.Add((void *)colortable);
     }
   }
 }
@@ -177,7 +167,7 @@ void ChartSymbols::ProcessColorTables(TiXmlElement *colortableNodes) {
       colorNode = colorNode->NextSiblingElement();
     }
 
-    colorTables->Add((void *)colortable);
+    m_colorTables.Add((void *)colortable);
   }
 }
 
@@ -933,7 +923,7 @@ void ChartSymbols::BuildPattern(OCPNPattern &pattern) {
   patt->pos.patt.bnbox_y.SBXR = patternSize.origin.y;
 
   wxRect graphicsLocation(pattern.bitmapSize.graphics, pattern.bitmapSize.size);
-  (*symbolGraphicLocations)[pattern.name] = graphicsLocation;
+  m_symbolGraphicLocations[pattern.name] = graphicsLocation;
 
   // check if key already there
 
@@ -1121,7 +1111,7 @@ void ChartSymbols::BuildSymbol(ChartSymbol &symbol) {
   symb->pos.symb.bnbox_y.SBXR = symbolSize.origin.y;
 
   wxRect graphicsLocation(symbol.bitmapSize.graphics, symbol.bitmapSize.size);
-  (*symbolGraphicLocations)[symbol.name] = graphicsLocation;
+  m_symbolGraphicLocations[symbol.name] = graphicsLocation;
 
   // Already something here with same key? Then free its strings, otherwise they
   // leak.
@@ -1241,7 +1231,7 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
     if (rasterSymbols.IsOk()) return true;
   }
 
-  colTable *coltab = (colTable *)colorTables->Item(tableNo);
+  colTable *coltab = (colTable *)m_colorTables.Item(tableNo);
 
   wxString filename = configFileDirectory + wxFileName::GetPathSeparator() +
                       coltab->rasterFileName;
@@ -1315,18 +1305,19 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
 }
 
 // Convenience method for old s52plib code.
-wxArrayPtrVoid *ChartSymbols::GetColorTables() { return colorTables; }
+//FIXME (dave) remove, header too
+//wxArrayPtrVoid *ChartSymbols::GetColorTables() { return colorTables; }
 
 S52color *ChartSymbols::GetColor(const char *colorName, int fromTable) {
   colTable *colortable;
   wxString key(colorName, wxConvUTF8, 5);
-  colortable = (colTable *)colorTables->Item(fromTable);
+  colortable = (colTable *)m_colorTables.Item(fromTable);
   return &(colortable->colors[key]);
 }
 
 wxColor ChartSymbols::GetwxColor(const wxString &colorName, int fromTable) {
   colTable *colortable;
-  colortable = (colTable *)colorTables->Item(fromTable);
+  colortable = (colTable *)m_colorTables.Item(fromTable);
   wxColor c = colortable->wxColors[colorName];
   return c;
 }
@@ -1337,8 +1328,8 @@ wxColor ChartSymbols::GetwxColor(const char *colorName, int fromTable) {
 }
 
 int ChartSymbols::FindColorTable(const wxString &tableName) {
-  for (unsigned int i = 0; i < colorTables->GetCount(); i++) {
-    colTable *ct = (colTable *)colorTables->Item(i);
+  for (unsigned int i = 0; i < m_colorTables.GetCount(); i++) {
+    colTable *ct = (colTable *)m_colorTables.Item(i);
     if (tableName.IsSameAs(*ct->tableName)) {
       return i;
     }
@@ -1354,7 +1345,7 @@ wxString ChartSymbols::HashKey(const char *symbolName) {
 }
 
 wxImage ChartSymbols::GetImage(const char *symbolName) {
-  wxRect bmArea = (*symbolGraphicLocations)[HashKey(symbolName)];
+  wxRect bmArea = m_symbolGraphicLocations[HashKey(symbolName)];
   if (rasterSymbols.IsOk()) {
     wxBitmap bitmap = rasterSymbols.GetSubBitmap(bmArea);
     return bitmap.ConvertToImage();
@@ -1364,7 +1355,7 @@ wxImage ChartSymbols::GetImage(const char *symbolName) {
 
 unsigned int ChartSymbols::GetGLTextureRect(wxRect &rect,
                                             const char *symbolName) {
-  rect = (*symbolGraphicLocations)[HashKey(symbolName)];
+  rect = m_symbolGraphicLocations[HashKey(symbolName)];
   return rasterSymbolsTexture;
 }
 

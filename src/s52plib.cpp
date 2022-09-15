@@ -344,7 +344,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_txf_ready = false;
   m_txf = NULL;
 
-  m_chartSymbols.InitializeGlobals();
+  m_chartSymbols.InitializeTables();
 
   m_bOK = !(S52_load_Plib(PLib, b_forceLegacy) == 0);
 
