@@ -549,15 +549,26 @@ int dashboard_pi::Init(void) {
   }
 
   // initialize NavMsg listeners
+    // GNSS Position Data   PGN 129029
+  wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
+  NMEA2000Id id_129029 = NMEA2000Id(129029);
+  listener_129029 = std::move(GetListener(id_129029, EVT_N2K_129029, this));
+
+  Bind(EVT_N2K_129029, [&](ObservedEvt ev) {
+    HandleN2K_129029(ev);
+  });
+
     // GNSS Satellites in View   PGN 129540
-  //-----------------------------
+    //-----------------------------
     wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
     NMEA2000Id id_129540 = NMEA2000Id(129540);
-    listener = std::move(GetListener(id_129540, EVT_N2K_129540, this));
+    listener_129540 = std::move(GetListener(id_129540, EVT_N2K_129540, this));
 
     Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
       HandleN2K_129540(ev);
     });
+
+    
 
   Start(1000, wxTIMER_CONTINUOUS);
 
@@ -608,42 +619,7 @@ double GetJsonDouble(wxJSONValue &value) {
   return nan("");
 }
 
-void dashboard_pi::HandleN2K_129540(ObservedEvt ev){
-  NMEA2000Id id_129540(129540);
-  std::vector<uint8_t>v = GetN2000Payload(id_129540, ev);
 
-  unsigned char SID;
-  tN2kRangeResidualMode Mode;
-  uint8_t NumberOfSVs;
-
-  // Get the number of visible satellites
-  if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)){
-
-    // Step through each satellite, one-by-one
-    for(uint8_t index=0 ; index < NumberOfSVs; index++){
-      tSatelliteInfo SatelliteInfo;
-      if (ParseN2kPGN129540(v, index, SatelliteInfo)){
-        // Here we can get each specific satellite info from the struct tSatelliteInfo
-
-        // Struct looks like this:
-
-        //struct tSatelliteInfo {
-        //  unsigned char PRN;
-        //  double Elevation;
-        //  double Azimuth;
-        //  double SNR;
-        //  double RangeResiduals;
-        //  tN2kPRNUsageStatus UsageStatus;
-        //  };
-
-        // For example:
-        double snr = SatelliteInfo.SNR;
-
-        // Apply results to Dashboard data structures as required, and update instrument.
-      }
-    }
-  }
-}
 
 void dashboard_pi::Notify() {
   SendUtcTimeToAllInstruments(mUTCDateTime);
@@ -857,6 +833,7 @@ void dashboard_pi::SendSatInfoToAllInstruments(int cnt, int seq, wxString talk,
   }
 }
 
+// NMEA 0183 N0183.....
 void dashboard_pi::SetNMEASentence(wxString &sentence) {
   m_NMEA0183 << sentence;
 
@@ -1778,6 +1755,95 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
   }
 }
 
+// NMEA2000, N2K..........
+wxString talker_N2k = wxEmptyString;
+void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
+  NMEA2000Id id_129029(129029);
+  std::vector<uint8_t>v = GetN2000Payload(id_129029, ev);
+
+  unsigned char SID;
+  uint16_t DaysSince1970;
+  double SecondsSinceMidnight;
+  double Latitude, Longitude, Altitude;
+  tN2kGNSStype GNSStype;
+  tN2kGNSSmethod GNSSmethod;
+  unsigned char nSatellites;
+  double HDOP, PDOP, GeoidalSeparation;
+  unsigned char nReferenceStations;
+  tN2kGNSStype ReferenceStationType;
+  uint16_t ReferenceSationID;
+  double AgeOfCorrection;
+
+  // Get used satellite system
+  if (ParseN2kPGN129029(v, SID, DaysSince1970, SecondsSinceMidnight,
+                        Latitude, Longitude, Altitude,
+                        GNSStype, GNSSmethod,
+                        nSatellites, HDOP, PDOP, GeoidalSeparation,
+                        nReferenceStations, ReferenceStationType, ReferenceSationID,
+                        AgeOfCorrection)) {
+    switch (GNSStype) {
+      case 0: talker_N2k = "GP"; break;  //GPS
+      case 1: talker_N2k = "GL"; break;  //GLONASS
+      case 2: talker_N2k = "GPSGLONAS"; break;
+      case 3: talker_N2k = "GP"; break;
+      case 4: talker_N2k = "GPSGLONAS"; break;
+      case 5: talker_N2k = "Chayka"; break;
+      case 8: talker_N2k = "GA"; break;  //Galileo
+      default: talker_N2k = wxEmptyString;
+    }
+  }
+}
+
+void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
+  NMEA2000Id id_129540(129540);
+  std::vector<uint8_t>v = GetN2000Payload(id_129540, ev);
+
+  unsigned char SID;
+  tN2kRangeResidualMode Mode;
+  uint8_t NumberOfSVs;
+
+  // Get the GNSS status data
+  if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)) {
+    //wxLogMessage(wxString::Format(_T(" ***** PGN129540: SID: %d"), (int)SID));
+
+    if (NumberOfSVs) {
+      // Step through each satellite, one-by-one
+      // Arrange to max three messages with up to 4 sats each like N0183 GSV
+      SAT_INFO N2K_SatInfo[4];
+      int iPRN = 0;
+      int iSNR = 0;
+      double dElevRad = 0;
+      double dAzimRad = 0;
+      int idx = 0;
+      uint8_t index = 0;
+      for (int iMesNum = 0; iMesNum < 3; iMesNum++) {
+        for (idx = 0; idx < 4; idx++) {
+          tSatelliteInfo SatelliteInfo;
+          index = idx + 4 * iMesNum;
+          if (index >= NumberOfSVs -1) break;
+          if (ParseN2kPGN129540(v, index, SatelliteInfo)) {
+            iPRN = (int)SatelliteInfo.PRN;
+            dElevRad = SatelliteInfo.Elevation;
+            dAzimRad = SatelliteInfo.Azimuth;
+            iSNR = (int)SatelliteInfo.SNR;
+
+            N2K_SatInfo[idx].SatNumber = iPRN;
+            N2K_SatInfo[idx].ElevationDegrees = GEODESIC_RAD2DEG(dElevRad);
+            N2K_SatInfo[idx].AzimuthDegreesTrue = GEODESIC_RAD2DEG(dAzimRad);
+            N2K_SatInfo[idx].SignalToNoiseRatio = iSNR;
+          }
+        }
+        // Send to GPS.cpp
+        if (idx > 0) {            
+          SendSatInfoToAllInstruments(NumberOfSVs, iMesNum + 1, talker_N2k, N2K_SatInfo);
+          //mPriSatStatus = 2;
+          mSatStatus_Wdog = gps_watchdog_timeout_ticks;
+        }
+      }
+    }
+  }
+}
+// Signal K.......
 void dashboard_pi::ParseSignalK(wxString &msg) {
   wxJSONValue root;
   wxJSONReader jsonReader;
@@ -2099,7 +2165,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         talkerID = (value.AsString()); //Like "Combined GPS/GLONASS"
         talkerID.MakeUpper();
         if (( talkerID.Contains(_T("GPS")) ) && ( talkerID.Contains(_T("GLONASS")) ))
-          talkerID = _T("GPS+GLONASS");
+          talkerID = _T("GPSGLONAS");
         else if (talkerID.Contains(_T("GPS")))
           talkerID = _T("GP");
         else if (talkerID.Contains(_T("GLONASS")))
@@ -2284,6 +2350,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     }
   }
 }
+
 
 void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   if (mPriPosition >= 1) {
