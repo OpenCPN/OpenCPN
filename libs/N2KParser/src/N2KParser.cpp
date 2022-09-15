@@ -215,5 +215,48 @@ bool ParseN2kPGN129041(std::vector<unsigned char> &v, tN2kAISAtoNReportData &N2k
     return ParseN2kPGN129041(msg, N2kData);
 }
 
+// Water depth
+bool ParseN2kPGN128267(std::vector<unsigned char> &v, unsigned char &SID,
+                       double &DepthBelowTransducer, double &Offset, double &Range)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN128267(msg, SID,
+                       DepthBelowTransducer, Offset, Range);
+}
+
+// Wind Speed
+bool ParseN2kPGN130306(std::vector<unsigned char> &v, unsigned char &SID,
+                       double &WindSpeed, double &WindAngle, tN2kWindReference &WindReference)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN130306(msg, SID,
+                       WindSpeed, WindAngle, WindReference);
+}
+
+// Outside Environmental parameters
+bool ParseN2kPGN130310(std::vector<unsigned char> &v, unsigned char &SID, double &WaterTemperature,
+                     double &OutsideAmbientAirTemperature, double &AtmosphericPressure)
+{
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN130310(msg, SID, WaterTemperature,
+                     OutsideAmbientAirTemperature, AtmosphericPressure);
+}
+
+bool ParseN2kPGN130577(std::vector<unsigned char> &v,tN2kDataMode &DataMode,
+                       tN2kHeadingReference &CogReference,unsigned char &SID,double &COG,
+                       double &SOG,double &Heading,double &SpeedThroughWater,
+                       double &Set,double &Drift)
+{
+     tN2kMsg msg = MakeN2kMsg(v);
+
+     return ParseN2kPGN130577(msg, DataMode,
+                       CogReference, SID, COG,
+                       SOG, Heading, SpeedThroughWater,
+                       Set, Drift);
+}
+
 
 
