@@ -171,13 +171,9 @@ public:
   bool IsGLCapable();
 
 private:
-  bool GetWindowsMonitorSize(int *width, int *height);
-
   wxString m_SData_Dir;
 
 
-  int m_monitorWidth, m_monitorHeight;
-  bool m_bdisableWindowsDisplayEnum;
 };
 
 //      Private colourPicker control

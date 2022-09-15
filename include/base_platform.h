@@ -147,6 +147,12 @@ protected:
   wxSize m_displaySize;
   wxSize m_displaySizeMM;
   int m_displaySizeMMOverride;
+
+#ifdef _MSC_VER
+  bool GetWindowsMonitorSize(int *width, int *height);
+#endif
+  int m_monitorWidth, m_monitorHeight;
+  bool m_bdisableWindowsDisplayEnum;
 };
 
 #endif  //  BASEPLATFORM_H
