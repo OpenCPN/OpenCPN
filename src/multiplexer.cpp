@@ -174,6 +174,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
   wxString fmsg;
+  bool bpass_input_filter = true;
 
   // Send to the Debug Window, if open
   //  Special formatting for non-printable characters helps debugging NMEA
@@ -195,8 +196,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
       }
 
     // Check to see if the message passes the source's input filter
-    bool bpass = true;
-    bpass = params.SentencePassesFilter(n0183_msg->payload.c_str(),
+    bpass_input_filter = params.SentencePassesFilter(n0183_msg->payload.c_str(),
                                         FILTER_INPUT);
 
     bool b_error = false;
@@ -221,7 +221,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 
     wxString port(n0183_msg->source->iface);
-    LogInputMessage(fmsg, port, !bpass, b_error);
+    LogInputMessage(fmsg, port, !bpass_input_filter, b_error);
   }
 
   // Do not mux-out anything coming from a "virtual" or plugin stream
@@ -243,33 +243,33 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
         }
       }
 
-      // FIXME (dave)   Think about this.  Probably OK to drop this undocumented legacy setting
-      //if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
+      if ((g_b_legacy_input_filter_behaviour && !bpass_input_filter) ||
+           bpass_input_filter) {
 
       //  Allow re-transmit on same port (if type is SERIAL),
       //  or any any other NMEA0183 port supporting output
-      if (params.Type == SERIAL || driver->iface != target_driver->iface) {
-        if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
-            params.IOSelect == DS_TYPE_OUTPUT)
-        {
-          bool bout_filter = true;
-          bool bxmit_ok = true;
-          if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
+        if (params.Type == SERIAL || driver->iface != target_driver->iface) {
+          if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
+              params.IOSelect == DS_TYPE_OUTPUT)
+          {
+            bool bout_filter = true;
+            bool bxmit_ok = true;
+            if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
                                           FILTER_OUTPUT)) {
-            driver->SendMessage(n0183_msg,
+              driver->SendMessage(n0183_msg,
                                 std::make_shared<NavAddr0183>(driver->iface));
-            bout_filter = false;
+              bout_filter = false;
+            }
+
+            // Send to the Debug Window, if open
+            if (!bout_filter) {
+              if (bxmit_ok)
+                LogOutputMessageColor(fmsg, driver->iface, _T("<BLUE>"));
+              else
+                LogOutputMessageColor(fmsg, driver->iface, _T("<RED>"));
+            } else
+              LogOutputMessageColor(fmsg, driver->iface, _T("<CORAL>"));
           }
-
-          // Send to the Debug Window, if open
-          if (!bout_filter) {
-            if (bxmit_ok)
-              LogOutputMessageColor(fmsg, driver->iface, _T("<BLUE>"));
-            else
-              LogOutputMessageColor(fmsg, driver->iface, _T("<RED>"));
-          } else
-             LogOutputMessageColor(fmsg, driver->iface, _T("<CORAL>"));
-
         }
       }
     }
