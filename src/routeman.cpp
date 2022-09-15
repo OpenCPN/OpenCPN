@@ -1060,7 +1060,7 @@ void Routeman::DeleteTrack(Track *pTrack) {
       pTrackPropDialog->Hide();
     }
 
-    if (pTrack == g_pActiveTrack) {
+    if (pTrack == g_pActiveTrack && g_pActiveTrack->IsRunning()) {
       pTrack = m_pparent_app->TrackOff();
     }
     //    Remove the track from associated lists
