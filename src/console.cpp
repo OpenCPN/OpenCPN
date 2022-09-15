@@ -106,6 +106,9 @@ bool g_bAIS_CPA_Alert;
 double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
 double g_AISShowTracks_Mins;
+float g_selection_radius_mm;
+float g_selection_radius_touch_mm;
+bool g_btouch;
 
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;

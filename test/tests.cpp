@@ -61,6 +61,9 @@ bool g_bAIS_CPA_Alert;
 Route *pAISMOBRoute;
 double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
+float g_selection_radius_mm;
+float g_selection_radius_touch_mm;
+bool g_btouch;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
