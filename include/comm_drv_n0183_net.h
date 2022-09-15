@@ -26,11 +26,6 @@
 #ifndef _COMMDRIVERN0183NET_H
 #define _COMMDRIVERN0183NET_H
 
-#ifdef __MSVC__
-#include "winsock2.h"
-#include "wx/msw/winundef.h"
-#endif
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -38,10 +33,6 @@
 #endif  // precompiled header
 
 #include "comm_drv_n0183.h"
-
-#if defined(__WXMSW__)
-#include <ws2tcpip.h>
-#endif
 
 #include <wx/datetime.h>
 
@@ -62,23 +53,8 @@
 #include <netinet/in.h>
 #endif
 
-#ifdef __WXMSW__
-#include <windows.h>
-#include <dbt.h>
-#include <initguid.h>
-#endif
-#include <string>
-#include "conn_params.h"
-#include "dsPortType.h"
-//#include "datastream.h"
-
-#ifdef __WXMSW__
-#include <windows.h>
-#include <dbt.h>
-#include <initguid.h>
-#endif
-
 class CommDriverN0183NetEvent;  // Internal
+class MrqContainer;
 
 class CommDriverN0183Net : public CommDriverN0183, public wxEvtHandler {
 public:
@@ -123,14 +99,6 @@ private:
   void SetMulticast(bool multicast) { m_is_multicast = multicast; }
   bool GetMulticast() const { return m_is_multicast; }
 
-  void SetMrqAddr(unsigned int addr) {
-    m_mrq.imr_multiaddr.s_addr = addr;
-    m_mrq.imr_interface.s_addr = INADDR_ANY;
-  }
-  struct ip_mreq& GetMrq() {
-    return m_mrq;
-  }
-
   wxSocketBase* GetSock() const { return m_sock; }
   NetworkProtocol GetProtocol() { return m_net_protocol; }
   void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
@@ -154,7 +122,8 @@ private:
   wxSocketBase* m_tsock;
   wxSocketServer* m_socket_server;
   bool m_is_multicast;
-  struct ip_mreq m_mrq;
+  MrqContainer  *m_mrq_container;
+
   int m_txenter;
   int m_dog_value;
   std::string m_sock_buffer;

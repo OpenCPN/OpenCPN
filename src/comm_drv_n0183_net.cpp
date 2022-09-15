@@ -32,6 +32,7 @@
 #ifdef __MSVC__
 #include "winsock2.h"
 #include "wx/msw/winundef.h"
+#include <ws2tcpip.h>
 #endif
 
 #include "wx/wxprec.h"
@@ -87,6 +88,15 @@ bool CheckSumCheck(const std::string &sentence) {
 
   return calculated_checksum == checksum;
 }
+
+class MrqContainer{
+public:
+  struct ip_mreq m_mrq;
+  void SetMrqAddr(unsigned int addr) {
+    m_mrq.imr_multiaddr.s_addr = addr;
+    m_mrq.imr_interface.s_addr = INADDR_ANY;
+  }
+};
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_NET, CommDriverN0183NetEvent);
 
@@ -157,10 +167,15 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::handle_N0183_MSG, this);
 
+  m_mrq_container = new MrqContainer;
+
   Open();
 }
 
-CommDriverN0183Net::~CommDriverN0183Net() { Close(); }
+CommDriverN0183Net::~CommDriverN0183Net() {
+  delete m_mrq_container;
+  Close();
+}
 
 void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
   auto p = event.GetPayload();
@@ -231,9 +246,9 @@ void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
     // Test if address is IPv4 multicast
     if ((ntohl(addr) & 0xf0000000) == 0xe0000000) {
       SetMulticast(true);
-      SetMrqAddr(addr);
-      GetSock()->SetOption(IPPROTO_IP, IP_ADD_MEMBERSHIP, &GetMrq(),
-                           sizeof(GetMrq()));
+      m_mrq_container->SetMrqAddr(addr);
+      GetSock()->SetOption(IPPROTO_IP, IP_ADD_MEMBERSHIP, &m_mrq_container->m_mrq,
+                           sizeof(m_mrq_container->m_mrq));
     }
 
     GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
@@ -600,7 +615,8 @@ void CommDriverN0183Net::Close() {
   //    Kill off the TCP Socket if alive
   if (m_sock) {
     if (m_is_multicast)
-      m_sock->SetOption(IPPROTO_IP, IP_DROP_MEMBERSHIP, &m_mrq, sizeof(m_mrq));
+      m_sock->SetOption(IPPROTO_IP, IP_DROP_MEMBERSHIP, &m_mrq_container->m_mrq,
+                        sizeof(m_mrq_container->m_mrq));
     m_sock->Notify(FALSE);
     m_sock->Destroy();
   }
