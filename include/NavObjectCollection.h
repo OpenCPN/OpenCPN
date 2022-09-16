@@ -33,6 +33,7 @@
 
 #include "pugixml.hpp"
 #include "bbox.h"
+#include "observable_evtvar.h"
 
 class Track;
 class TrackPoint;
@@ -81,6 +82,16 @@ class RoutePoint;
 #define RT_OUT_ACTION_UPD 1 << 3
 #define RT_OUT_NO_RTPTS 1 << 4
 
+
+bool WptIsInRouteList(RoutePoint *pr);
+RoutePoint *WaypointExists(const wxString &name, double lat, double lon);
+RoutePoint *WaypointExists(const wxString &guid);
+Route *RouteExists(const wxString &guid);
+Route *RouteExists(Route *pTentRoute);
+Track *TrackExists(const wxString &guid);
+
+Route *FindRouteContainingWaypoint(RoutePoint *pWP);
+
 class NavObjectCollection1 : public pugi::xml_document {
 public:
   NavObjectCollection1();
@@ -111,10 +122,12 @@ public:
 
   LLBBox BBox;
   pugi::xml_node m_gpx_root;
+  bool m_bSkipChangeSetUpdate;
 };
 
 class NavObjectChanges : public NavObjectCollection1 {
 friend class  MyConfig;
+
 public:
   static std::unique_ptr<NavObjectChanges> getTempInstance() {
     return std::unique_ptr<NavObjectChanges>(new NavObjectChanges());
@@ -141,11 +154,39 @@ public:
   void AddTrackPoint(TrackPoint *pWP, const char *action,
                      const wxString &parent_GUID);
 
+  virtual void AddNewRoute(Route *pr);
+  virtual void UpdateRoute(Route *pr);
+  virtual void DeleteConfigRoute(Route *pr);
+
+  virtual void AddNewTrack(Track *pt);
+  virtual void UpdateTrack(Track *pt);
+  virtual void DeleteConfigTrack(Track *pt);
+
+  virtual void AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
+  virtual void UpdateWayPoint(RoutePoint *pWP);
+  virtual void DeleteWayPoint(RoutePoint *pWP);
+  virtual void AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID);
+
   bool ApplyChanges(void);
   bool IsDirty() { return m_bdirty; }
 
+  /**
+   * Notified when Routeman (?) should delete a track. Event contains a
+   * shared_ptr<Track>
+   */
+  EventVar evt_delete_track;
+  /**
+   * Notified when Routeman (?) should delete a Route*. Event contains a
+   * shared_ptr<Route>
+   */
+  EventVar evt_delete_route;
+
+
 private:
-  NavObjectChanges();
+  NavObjectChanges() : NavObjectCollection1() {
+    m_changes_file = 0;
+    m_bdirty = false;
+  }
   NavObjectChanges(wxString file_name);
 
   wxString m_filename;

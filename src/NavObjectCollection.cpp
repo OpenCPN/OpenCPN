@@ -24,7 +24,6 @@
 
 #include "NavObjectCollection.h"
 #include "routeman.h"
-#include "navutil.h"
 #include "navutil_base.h"
 #include "Select.h"
 #include "Track.h"
@@ -36,14 +35,13 @@
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
-extern MyConfig *pConfig;
 
 extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
-// extern bool g_bIsNewLayer;
 
-NavObjectCollection1::NavObjectCollection1() : pugi::xml_document() {}
+NavObjectCollection1::NavObjectCollection1() 
+    : pugi::xml_document(), m_bSkipChangeSetUpdate(false) {}
 
 NavObjectCollection1::~NavObjectCollection1() {}
 
@@ -1084,7 +1082,7 @@ static bool GPXCreateRoute(pugi::xml_node node, Route *pRoute) {
   return true;
 }
 
-static bool InsertRouteA(Route *pTentRoute) {
+static bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   if (!pTentRoute) return false;
 
   bool bAddroute = true;
@@ -1135,9 +1133,9 @@ static bool InsertRouteA(Route *pTentRoute) {
         prp->m_bIsInRoute =
             false;  // Take this point out of this (and only) track/route
         if (!prp->IsShared()) {
-          pConfig->m_bSkipChangeSetUpdate = true;
-          pConfig->DeleteWayPoint(prp);
-          pConfig->m_bSkipChangeSetUpdate = false;
+          navobj->m_bSkipChangeSetUpdate = true;
+          NavObjectChanges::getInstance()->DeleteWayPoint(prp);
+          navobj->m_bSkipChangeSetUpdate = false;
           delete prp;
         }
       }
@@ -1189,16 +1187,16 @@ static bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
   return bAddtrack;
 }
 
-static void UpdateRouteA(Route *pTentRoute) {
+static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   if (!pTentRoute) return;
   if (pTentRoute->GetnPoints() < 2) return;
 
   // first delete the route to be modified if exists
   Route *pExisting = ::RouteExists(pTentRoute->m_GUID);
   if (pExisting) {
-    pConfig->m_bSkipChangeSetUpdate = true;
+    navobj->m_bSkipChangeSetUpdate = true;
     g_pRouteMan->DeleteRoute(pExisting);
-    pConfig->m_bSkipChangeSetUpdate = false;
+    navobj->m_bSkipChangeSetUpdate = false;
   }
 
   // create a new route
@@ -1257,6 +1255,25 @@ static void UpdateRouteA(Route *pTentRoute) {
   //    Do the (deferred) calculation of BBox
   pChangeRoute->FinalizeForRendering();
 }
+
+Route* FindRouteContainingWaypoint(RoutePoint *pWP) {
+  wxRouteListNode *node = pRouteList->GetFirst();
+  while (node) {
+    Route *proute = node->GetData();
+
+    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
+    while (pnode) {
+      RoutePoint *prp = pnode->GetData();
+      if (prp == pWP) return proute;
+      pnode = pnode->GetNext();
+    }
+
+    node = node->GetNext();
+  }
+
+  return NULL;  // not found
+}
+
 
 bool NavObjectCollection1::CreateNavObjGPXPoints(void) {
   //    Iterate over the Routepoint list, creating Nodes for
@@ -1400,7 +1417,6 @@ bool NavObjectCollection1::SaveFile(const wxString filename) {
   save_file(filename.fn_str(), "  ");
   return true;
 }
-
 bool NavObjectCollection1::LoadAllGPXObjects(bool b_full_viz,
                                              int &wpt_duplicates,
                                              bool b_compute_bbox) {
@@ -1433,7 +1449,7 @@ bool NavObjectCollection1::LoadAllGPXObjects(bool b_full_viz,
       }
     } else if (!strcmp(object.name(), "rte")) {
       Route *pRoute = GPXLoadRoute1(object, b_full_viz, false, false, 0, false);
-      if (InsertRouteA(pRoute) && b_compute_bbox && pRoute->IsVisible()) {
+      if (InsertRouteA(pRoute, this) && b_compute_bbox && pRoute->IsVisible()) {
         BBox.Expand(pRoute->GetBBox());
       }
     }
@@ -1441,6 +1457,7 @@ bool NavObjectCollection1::LoadAllGPXObjects(bool b_full_viz,
 
   return true;
 }
+
 
 int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id,
                                                    bool b_layerviz,
@@ -1473,7 +1490,7 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id,
         Route *pRoute =
             GPXLoadRoute1(object, true, true, b_layerviz, layer_id, false);
         n_obj++;
-        InsertRouteA(pRoute);
+        InsertRouteA(pRoute, this);
       }
     }
   }
@@ -1481,22 +1498,15 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id,
   return n_obj;
 }
 
-NavObjectChanges::NavObjectChanges() : NavObjectCollection1() {
-  m_changes_file = 0;
-  m_bdirty = false;
-}
-
 NavObjectChanges::NavObjectChanges(wxString file_name)
     : NavObjectCollection1() {
   m_filename = file_name;
-
   m_changes_file = fopen(m_filename.mb_str(), "a");
   m_bdirty = false;
 }
 
 NavObjectChanges::~NavObjectChanges() {
   if (m_changes_file) fclose(m_changes_file);
-
   if (::wxFileExists(m_filename)) ::wxRemoveFile(m_filename);
 }
 
@@ -1618,7 +1628,9 @@ bool NavObjectChanges::ApplyChanges(void) {
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {
-          if (pExisting) g_pRouteMan->DeleteTrack(pExisting);
+          if (pExisting) {
+            evt_delete_track.notify(std::make_shared<Track>(*pExisting), "");
+          }
         }
 
         else if (!strcmp(child.first_child().value(), "add")) {
@@ -1638,19 +1650,19 @@ bool NavObjectChanges::ApplyChanges(void) {
         pugi::xml_node child = xchild.child("opencpn:action");
 
         if (!strcmp(child.first_child().value(), "add")) {
-          ::UpdateRouteA(pRoute);
+          ::UpdateRouteA(pRoute, this);
         }
 
         else if (!strcmp(child.first_child().value(), "update")) {
-          ::UpdateRouteA(pRoute);
+          ::UpdateRouteA(pRoute, this);
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {
           Route *pExisting = RouteExists(pRoute->m_GUID);
           if (pExisting) {
-            pConfig->m_bSkipChangeSetUpdate = true;
-            g_pRouteMan->DeleteRoute(pExisting);
-            pConfig->m_bSkipChangeSetUpdate = false;
+            m_bSkipChangeSetUpdate = true;
+            evt_delete_route.notify(std::make_shared<Route>(*pExisting), "");
+            m_bSkipChangeSetUpdate = false;
           }
         }
 
@@ -1694,4 +1706,147 @@ bool NavObjectChanges::ApplyChanges(void) {
   }
 
   return true;
+}
+
+
+void NavObjectChanges::AddNewRoute(Route *pr) {
+  //    if( pr->m_bIsInLayer )
+  //        return true;
+  if (!m_bSkipChangeSetUpdate) AddRoute(pr, "add");
+}
+
+void NavObjectChanges::UpdateRoute(Route *pr) {
+  //    if( pr->m_bIsInLayer ) return true;
+  if (!m_bSkipChangeSetUpdate) AddRoute(pr, "update");
+}
+
+void NavObjectChanges::DeleteConfigRoute(Route *pr) {
+  //    if( pr->m_bIsInLayer )
+  //        return true;
+  if (!m_bSkipChangeSetUpdate) AddRoute(pr, "delete");
+}
+
+void NavObjectChanges::AddNewTrack(Track *pt) {
+  if (!pt->m_bIsInLayer && !m_bSkipChangeSetUpdate) AddTrack(pt, "add");
+}
+
+void NavObjectChanges::UpdateTrack(Track *pt) {
+  if (pt->m_bIsInLayer && !m_bSkipChangeSetUpdate) AddTrack(pt, "update");
+}
+
+void NavObjectChanges::DeleteConfigTrack(Track *pt) {
+  if (!pt->m_bIsInLayer && !m_bSkipChangeSetUpdate) AddTrack(pt, "delete");
+}
+
+void NavObjectChanges::AddNewWayPoint(RoutePoint *pWP, int crm) {
+  if (!pWP->m_bIsInLayer && pWP->m_bIsolatedMark && !m_bSkipChangeSetUpdate)
+    AddWP(pWP, "add");
+}
+
+void NavObjectChanges::UpdateWayPoint(RoutePoint *pWP) {
+  if (!pWP->m_bIsInLayer && !m_bSkipChangeSetUpdate) AddWP(pWP, "update");
+}
+
+void NavObjectChanges::DeleteWayPoint(RoutePoint *pWP) {
+  if (!pWP->m_bIsInLayer && !m_bSkipChangeSetUpdate) AddWP(pWP, "delete");
+}
+
+void NavObjectChanges::AddNewTrackPoint(TrackPoint *pWP,
+                                        const wxString &parent_GUID) {
+  if (!m_bSkipChangeSetUpdate) AddTrackPoint(pWP, "add", parent_GUID);
+}
+
+RoutePoint *WaypointExists(const wxString &name, double lat, double lon) {
+  RoutePoint *pret = NULL;
+  //    if( g_bIsNewLayer ) return NULL;
+  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  while (node) {
+    RoutePoint *pr = node->GetData();
+
+    //        if( pr->m_bIsInLayer ) return NULL;
+
+    if (name == pr->GetName()) {
+      if (fabs(lat - pr->m_lat) < 1.e-6 && fabs(lon - pr->m_lon) < 1.e-6) {
+        pret = pr;
+        break;
+      }
+    }
+    node = node->GetNext();
+  }
+
+  return pret;
+}
+
+RoutePoint *WaypointExists(const wxString &guid) {
+  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  while (node) {
+    RoutePoint *pr = node->GetData();
+
+    //        if( pr->m_bIsInLayer ) return NULL;
+
+    if (guid == pr->m_GUID) {
+      return pr;
+    }
+    node = node->GetNext();
+  }
+
+  return NULL;
+}
+
+bool WptIsInRouteList(RoutePoint *pr) {
+  bool IsInList = false;
+
+  wxRouteListNode *node1 = pRouteList->GetFirst();
+  while (node1) {
+    Route *pRoute = node1->GetData();
+    RoutePointList *pRoutePointList = pRoute->pRoutePointList;
+
+    wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
+    RoutePoint *prp;
+
+    while (node2) {
+      prp = node2->GetData();
+
+      if (pr->IsSame(prp)) {
+        IsInList = true;
+        break;
+      }
+
+      node2 = node2->GetNext();
+    }
+    node1 = node1->GetNext();
+  }
+  return IsInList;
+}
+
+Route *RouteExists(const wxString &guid) {
+  wxRouteListNode *route_node = pRouteList->GetFirst();
+
+  while (route_node) {
+    Route *proute = route_node->GetData();
+
+    if (guid == proute->m_GUID) return proute;
+
+    route_node = route_node->GetNext();
+  }
+  return NULL;
+}
+
+Route *RouteExists(Route *pTentRoute) {
+  wxRouteListNode *route_node = pRouteList->GetFirst();
+  while (route_node) {
+    Route *proute = route_node->GetData();
+
+    if (proute->IsEqualTo(pTentRoute)) return proute;
+
+    route_node = route_node->GetNext();  // next route
+  }
+  return NULL;
+}
+
+Track *TrackExists(const wxString &guid) {
+  for (Track* ptrack : g_TrackList) {
+    if (guid == ptrack->m_GUID) return ptrack;
+  }
+  return NULL;
 }
