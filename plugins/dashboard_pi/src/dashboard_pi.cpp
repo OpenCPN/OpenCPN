@@ -481,7 +481,7 @@ int dashboard_pi::Init(void) {
   mVar_Watchdog = 2;
   mMWVA_Watchdog = 2;
   mMWVT_Watchdog = 2;
-  mDPT_DBT_Watchdog = 2;
+  mDPT_DBT_Watchdog = 2; // Depth
   mSTW_Watchdog = 2;
   mWTP_Watchdog = 2;
   mRSA_Watchdog = 2;
@@ -549,7 +549,18 @@ int dashboard_pi::Init(void) {
   }
 
   // initialize NavMsg listeners
-    // GNSS Position Data   PGN 129029
+  //-----------------------------
+
+  // Depth Data   PGN 128267
+  wxDEFINE_EVENT(EVT_N2K_128267, ObservedEvt);
+  NMEA2000Id id_128267 = NMEA2000Id(128267);
+  listener_128267 = std::move(GetListener(id_128267, EVT_N2K_128267, this));
+
+  Bind(EVT_N2K_128267, [&](ObservedEvt ev) {
+    HandleN2K_128267(ev);
+  });
+
+  // GNSS Position Data   PGN 129029
   wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
   NMEA2000Id id_129029 = NMEA2000Id(129029);
   listener_129029 = std::move(GetListener(id_129029, EVT_N2K_129029, this));
@@ -558,16 +569,14 @@ int dashboard_pi::Init(void) {
     HandleN2K_129029(ev);
   });
 
-    // GNSS Satellites in View   PGN 129540
-    //-----------------------------
-    wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
-    NMEA2000Id id_129540 = NMEA2000Id(129540);
-    listener_129540 = std::move(GetListener(id_129540, EVT_N2K_129540, this));
+  // GNSS Satellites in View   PGN 129540
+  wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
+  NMEA2000Id id_129540 = NMEA2000Id(129540);
+  listener_129540 = std::move(GetListener(id_129540, EVT_N2K_129540, this));
 
-    Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
-      HandleN2K_129540(ev);
-    });
-
+  Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
+    HandleN2K_129540(ev);
+  });
     
 
   Start(1000, wxTIMER_CONTINUOUS);
@@ -839,7 +848,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
 
   if (m_NMEA0183.PreParse()) {
     if (m_NMEA0183.LastSentenceIDReceived == _T("DBT")) {
-      if (mPriDepth >= 4) {
+      if (mPriDepth >= 5) {
         if (m_NMEA0183.Parse()) {
           /*
            double m_NMEA0183.Dbt.DepthFeet;
@@ -859,7 +868,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 OCPN_DBP_STC_DPT,
                 toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
                 getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
-            mPriDepth = 4;
+            mPriDepth = 5;
             mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -867,7 +876,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("DPT")) {
-      if (mPriDepth >= 3) {
+      if (mPriDepth >= 4) {
         if (m_NMEA0183.Parse()) {
           /*
            double m_NMEA0183.Dpt.DepthMeters
@@ -883,7 +892,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 OCPN_DBP_STC_DPT,
                 toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
                 getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
-            mPriDepth = 3;
+            mPriDepth = 4;
             mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -1755,7 +1764,35 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
   }
 }
 
-// NMEA2000, N2K..........
+// NMEA2000, N2K
+//...............
+
+void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
+  NMEA2000Id id_128267(128267);
+  std::vector<uint8_t>v = GetN2000Payload(id_128267, ev);
+
+  unsigned char SID;
+  double DepthBelowTransducer, Offset, Range;
+  
+  if (mPriDepth >= 1) {
+    // Get water depth
+    if (ParseN2kPGN128267(v, SID, DepthBelowTransducer, Offset, Range)) {
+      if (!std::isnan(DepthBelowTransducer)){
+        double depth = DepthBelowTransducer;
+        // Set prio to sensor's offset
+        if (!std::isnan(Offset)) depth += Offset;
+        else (depth += g_dDashDBTOffset);
+
+        SendSentenceToAllInstruments(OCPN_DBP_STC_DPT,
+          toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
+          getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
+        mPriDepth = 1;
+        mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
+      }
+    }
+  }
+}
+
 wxString talker_N2k = wxEmptyString;
 void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
   NMEA2000Id id_129029(129029);
@@ -2088,11 +2125,11 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("environment.depth.belowSurface")) {
-      if (mPriDepth >= 1) {
+      if (mPriDepth >= 2) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
 
-        mPriDepth = 1;
+        mPriDepth = 2;
         depth += g_dDashDBTOffset;
         depth /= 1852.0;
         SendSentenceToAllInstruments(
@@ -2102,11 +2139,11 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("environment.depth.belowTransducer")) {
-      if (mPriDepth >= 2) {
+      if (mPriDepth >= 3) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
 
-        mPriDepth = 2;
+        mPriDepth = 3;
         depth += g_dDashDBTOffset;
         depth /= 1852.0;
         SendSentenceToAllInstruments(
