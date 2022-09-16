@@ -93,6 +93,7 @@
 #include "shaders.h"
 #endif
 
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glx.h>

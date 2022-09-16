@@ -26,19 +26,21 @@
 
 #include "config.h"
 
-#include "wx/wx.h"
+#include <wx/jsonreader.h>
+#include <wx/jsonval.h>
+#include <wx/jsonwriter.h>
 #include <wx/tokenzr.h>
 
+#include "comm_driver.h"
+#include "comm_drv_factory.h"
+#include "comm_drv_n0183_net.h"
+#include "comm_drv_n0183_serial.h"
+#include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
-#include "Route.h"
+#include "conn_params.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
-#include "conn_params.h"
-#include "comm_driver.h"
-#include "comm_drv_registry.h"
-#include "comm_drv_n0183_serial.h"
-#include "comm_drv_n0183_net.h"
-#include "comm_drv_factory.h"
+#include "Route.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
