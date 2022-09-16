@@ -21,11 +21,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifdef USE_MOCK_DEFS
-#include "mock_defs.h"
-
-#elif ! defined(__SELECT_H__)
-#define __SELECT_H__
+#ifndef _SELECT_H__
+#define _SELECT_H__
 
 #include "select_item.h"
 
@@ -44,7 +41,12 @@ class RoutePoint;
 class TrackPoint;
 class Track;
 class Route;
-class ChartCanvas;
+
+struct SelectCtx {
+  const bool show_nav_objects;
+  const double scale;
+  SelectCtx(bool s, double _scale) : show_nav_objects(s), scale(_scale) {}
+};
 
 class Select {
 public:
@@ -64,9 +66,9 @@ public:
                                  float slon2, TrackPoint *pTrackPointAdd1,
                                  TrackPoint *pTrackPointAdd2, Track *pTrack);
 
-  SelectItem *FindSelection(ChartCanvas *cc, float slat, float slon,
+  SelectItem *FindSelection(SelectCtx& ctx, float slat, float slon,
                             int fseltype);
-  SelectableItemList FindSelectionList(ChartCanvas *cc, float slat, float slon,
+  SelectableItemList FindSelectionList(SelectCtx& ctx, float slat, float slon,
                                        int fseltype);
 
   bool DeleteAllSelectableRouteSegments(Route *);
@@ -79,7 +81,7 @@ public:
   bool DeletePointSelectableTrackSegments(TrackPoint *pt);
   bool IsSegmentSelected(float a, float b, float c, float d, float slat,
                          float slon);
-  bool IsSelectableSegmentSelected(ChartCanvas *cc, float slat, float slon,
+  bool IsSelectableSegmentSelected(SelectCtx& ctx, float slat, float slon,
                                    SelectItem *pFindSel);
 
   //    Generic Point Support
@@ -100,11 +102,11 @@ public:
   SelectableItemList *GetSelectList() { return pSelectList; }
 
 private:
-  void CalcSelectRadius(ChartCanvas *cc);
+  void CalcSelectRadius(SelectCtx& ctx);
 
   SelectableItemList *pSelectList;
   int pixelRadius;
   float selectRadius;
 };
 
-#endif
+#endif // _SELECT_H__

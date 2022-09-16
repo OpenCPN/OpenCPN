@@ -89,8 +89,11 @@ class OCPNStopWatch {
 #include "mipmap/mipmap.h"
 #include "chartimg.h"
 #include "Track.h"
+#include "track_gui.h"
 #include "emboss_data.h"
 #include "Route.h"
+#include "route_gui.h"
+#include "route_point_gui.h"
 #include "mbtiles.h"
 #include "ocpn_frame.h"  //FIXME (dave) for color
 #include <vector>
@@ -1828,7 +1831,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
     if (pActiveTrack && pActiveTrack->IsRunning()) continue;
 
-    pTrackDraw->Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
+    TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
   }
 
   for (wxRouteListNode *node = pRouteList->GetFirst(); node;
@@ -1843,7 +1846,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
     /* defer rendering routes being edited until later */
     if (pRouteDraw->m_bIsBeingEdited) continue;
 
-    pRouteDraw->DrawGL(vp, m_pParentCanvas);
+    RouteGui(*pRouteDraw).DrawGL(vp, m_pParentCanvas);
   }
 
   /* Waypoints not drawn as part of routes, and not being edited */
@@ -1854,7 +1857,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
       RoutePoint *pWP = pnode->GetData();
       if (pWP && (!pWP->m_bRPIsBeingEdited) && (!pWP->m_bIsInRoute))
         if (vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
-          pWP->DrawGL(vp, m_pParentCanvas);
+          RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas);
     }
   }
 }
@@ -1865,9 +1868,8 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
   for (Track* pTrackDraw : g_TrackList) {
     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
     if (pActiveTrack && pActiveTrack->IsRunning())
-      pTrackDraw->Draw(m_pParentCanvas, dc, vp,
-                       vp.GetBBox());  // We need Track::Draw() to dynamically
-                                       // render last (ownship) point.
+      TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox()); 
+    // We need Track::Draw() to dynamically render last (ownship) point.
   }
 
   for (wxRouteListNode *node = pRouteList->GetFirst(); node;
@@ -1889,7 +1891,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
     if (drawit) {
       const LLBBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
       if (!vp_box.IntersectOut(test_box))
-        pRouteDraw->DrawGL(vp, m_pParentCanvas);
+        RouteGui(*pRouteDraw).DrawGL(vp, m_pParentCanvas);
     }
   }
 
@@ -1900,7 +1902,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
          pnode; pnode = pnode->GetNext()) {
       RoutePoint *pWP = pnode->GetData();
       if (pWP && pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute)
-        pWP->DrawGL(vp, m_pParentCanvas);
+        RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas);
     }
   }
 }

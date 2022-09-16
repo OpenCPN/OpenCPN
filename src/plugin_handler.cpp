@@ -64,6 +64,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "plugin_cache.h"
 #include "plugin_loader.h"
 #include "plugin_paths.h"
+#include "Select.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");

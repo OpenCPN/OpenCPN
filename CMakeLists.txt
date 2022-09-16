@@ -898,9 +898,12 @@ set(
   include/Quilt.h
   include/RolloverWin.h
   include/Route.h
+  include/route_gui.h
   include/routemanagerdialog.h
   include/routeman.h
+  include/routeman_gui.h
   include/RoutePoint.h
+  include/route_point_gui.h
   include/routeprintout.h
   include/RoutePropDlg.h
   include/RoutePropDlgImpl.h
@@ -928,6 +931,7 @@ set(
   include/timers.h
   include/toolbar.h
   include/Track.h
+  include/track_gui.h
   include/trackprintout.h
   include/TrackPropDlg.h
   include/TTYScroll.h
@@ -935,6 +939,7 @@ set(
   include/undo.h
   include/update_mgr.h
   include/usb_devices.h
+  include/waypointman_gui.h
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
@@ -957,15 +962,27 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_appmsg_bus.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_bridge.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_decoder.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_factory.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_net.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_serial.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_serial.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk_net.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_n0183_output.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
+  ${CMAKE_SOURCE_DIR}/src/Hyperlink.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${CMAKE_SOURCE_DIR}/src/NavObjectCollection.cpp
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
   ${CMAKE_SOURCE_DIR}/src/observable_confvar.cpp
@@ -976,8 +993,13 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
+  ${CMAKE_SOURCE_DIR}/src/Route.cpp
+  ${CMAKE_SOURCE_DIR}/src/RoutePoint.cpp
+  ${CMAKE_SOURCE_DIR}/src/routeman.cpp
+  ${CMAKE_SOURCE_DIR}/src/Select.cpp
   ${CMAKE_SOURCE_DIR}/src/select_item.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
+  ${CMAKE_SOURCE_DIR}/src/Track.cpp
 )
 
 set(
@@ -1012,7 +1034,6 @@ set(
   src/comm_drv_registry.cpp
   src/comm_drv_signalk.cpp
   src/comm_drv_signalk_net.cpp
-  src/comm_n0183_output.cpp
   src/comm_navmsg.cpp
   src/compass.cpp
   src/concanv.cpp
@@ -1031,7 +1052,6 @@ set(
   src/GoToPositionDialog.cpp
   src/gshhs.cpp
   src/gui_lib.cpp
-  src/Hyperlink.cpp
   src/IDX_entry.cpp
   src/iENCToolbar.cpp
   src/kml.cpp
@@ -1042,7 +1062,6 @@ set(
   src/mbtiles.cpp
   src/MUIBar.cpp
   src/multiplexer.cpp
-  src/NavObjectCollection.cpp
   src/navutil.cpp
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
@@ -1065,16 +1084,15 @@ set(
   src/printtable.cpp
   src/Quilt.cpp
   src/RolloverWin.cpp
-  src/Route.cpp
   src/routemanagerdialog.cpp
-  src/routeman.cpp
-  src/RoutePoint.cpp
+  src/routeman_gui.cpp
+  src/route_gui.cpp
+  src/route_point_gui.cpp
   src/routeprintout.cpp
   src/RoutePropDlg.cpp
   src/RoutePropDlgImpl.cpp
   src/S57QueryDialog.cpp
   src/safe_mode.cpp
-  src/Select.cpp
   src/SendToGpsDlg.cpp
   src/ser_ports.cpp
   src/Station_Data.cpp
@@ -1088,30 +1106,30 @@ set(
   src/TCWin.cpp
   src/thumbwin.cpp
   src/toolbar.cpp
-  src/Track.cpp
+  src/track_gui.cpp
   src/trackprintout.cpp
   src/TrackPropDlg.cpp
   src/TTYScroll.cpp
   src/TTYWindow.cpp
   src/undo.cpp
   src/update_mgr.cpp
+  src/waypointman_gui.cpp
   src/viewport.cpp
 )
 
-set(SRCS ${SRCS} ${MODEL_SRC})
 
-if (LINUX AND NOT QT_ANDROID)
-  set( HDRS ${HDRS}  include/comm_drv_n2k_socketcan.h )
-  set( SRCS ${SRCS}  src/comm_drv_n2k_socketcan.cpp )
+if (LINUX)
+  list(APPEND HDRS include/comm_drv_n2k_socketcan.h )
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_socketcan.cpp)
 endif ()
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
-  set(SRCS ${SRCS} src/garmin_wrapper.cpp)
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/garmin_wrapper.cpp)
 endif ()
 
-if (LINUX AND NOT QT_ANDROID)
+if (LINUX)
   list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
   list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
 endif ()
@@ -1139,6 +1157,8 @@ SET(SRC_TINYXML
   src/tinyxmlparser.cpp
   include/tinyxml.h
 )
+
+set(SRCS ${SRCS} ${MODEL_SRC})
 
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
@@ -2964,6 +2984,9 @@ if (NOT QT_ANDROID AND NOT APPLE)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
   if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
     target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
     target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")

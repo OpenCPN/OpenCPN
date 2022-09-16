@@ -48,6 +48,7 @@
 #include <wx/app.h>
 #include <wx/hashset.h>
 #include <wx/hashmap.h>
+#include <wx/jsonval.h>
 #include <wx/uri.h>
 #include <wx/zipstrm.h>
 #include <wx/zstream.h>
@@ -128,6 +129,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "Route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
+#include "routeman_gui.h"
 #include "s52plib.h"
 #include "s52utils.h"
 #include "safe_mode.h"
@@ -138,6 +140,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "toolbar.h"
 #include "Track.h"
 #include "update_mgr.h"
+#include "waypointman_gui.h"
 #include "svg_utils.h"
 #include "ocpn_frame.h"
 #include "comm_drv_registry.h"
@@ -1082,14 +1085,20 @@ PlugInManager::PlugInManager(MyFrame *parent) {
 
   wxDEFINE_EVENT(EVT_JSON_TO_ALL_PLUGINS, ObservedEvt);
   evt_json_to_all_plugins_listener =
-      JsonEvent::getInstance().GetListener(this, EVT_JSON_TO_ALL_PLUGINS);
+      g_pRouteMan->json_msg.GetListener(this, EVT_JSON_TO_ALL_PLUGINS);
   Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
     auto json = std::static_pointer_cast<const wxJSONValue>(ev.GetSharedPtr());
     SendJSONMessageToAllPlugins(ev.GetString(), *json); });
+
+  wxDEFINE_EVENT(EVT_LEGINFO_TO_ALL_PLUGINS, ObservedEvt);
+  evt_routeman_leginfo_listener =
+      g_pRouteMan->json_leg_info.GetListener(this, EVT_LEGINFO_TO_ALL_PLUGINS);
+  Bind(EVT_LEGINFO_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
+    auto ptr = UnpackEvtPointer<ActiveLegDat>(ev);
+    SendActiveLegInfoToAllPlugIns(ptr.get());  });
+
   HandlePluginLoaderEvents();
   InitCommListeners();
-
-  auto loader = PluginLoader::getInstance();
 }
 PlugInManager::~PlugInManager() {
 #if !defined(__OCPN__ANDROID__) && defined (OCPN_USE_CURL)
@@ -1178,6 +1187,7 @@ void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
  */
 
 wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, wxCommandEvent);
+wxDEFINE_EVENT(EVT_PLUGMGR_ROUTEMAN_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_INCOMPATIBLE_PLUGIN, wxCommandEvent);
@@ -1264,9 +1274,14 @@ void PlugInManager::HandlePluginLoaderEvents() {
 
   evt_ais_json_listener = g_pAIS->plugin_msg.GetListener(this,
                                                          EVT_PLUGMGR_AIS_MSG);
+  evt_routeman_json_listener = g_pRouteMan->json_msg.GetListener(this,
+                                                         EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG,  [&](wxCommandEvent& ev) {
     auto pTarget = static_cast<AisTargetData*>(ev.GetClientData());
     SendAisJsonMessage(pTarget); });
+  Bind(EVT_PLUGMGR_ROUTEMAN_MSG,  [&](ObservedEvt& ev) {
+    auto msg = UnpackEvtPointer<wxJSONValue>(ev);
+    SendJSONMessageToAllPlugins(ev.GetString(), *msg); });
 }
 
 /**
@@ -2352,7 +2367,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
   }
 }
 
-void PlugInManager::SendActiveLegInfoToAllPlugIns(ActiveLegDat *leg_info) {
+void PlugInManager::SendActiveLegInfoToAllPlugIns(const ActiveLegDat *leg_info) {
   Plugin_Active_Leg_Info leg;
   leg.Btw = leg_info->Btw;
   leg.Dtw = leg_info->Dtw;
@@ -3477,7 +3492,7 @@ wxString GetNewGUID(void) { return GpxDocument::GetUUID(); }
 
 bool AddCustomWaypointIcon(wxBitmap *pimage, wxString key,
                            wxString description) {
-  pWayPointMan->ProcessIcon(*pimage, key, description);
+  WayPointmanGui(*pWayPointMan).ProcessIcon(*pimage, key, description);
   return true;
 }
 
@@ -3609,8 +3624,10 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint *pwaypoint) {
 
     if (prp) prp->ReLoadIcon();
 
-    SelectItem *pFind = pSelect->FindSelection(
-        gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT);
+    auto canvas = gFrame->GetPrimaryCanvas();
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectItem *pFind = pSelect->FindSelection(ctx, lat_save, lon_save,
+                                               SELTYPE_ROUTEPOINT);
     if (pFind) {
       pFind->m_slat = pwaypoint->m_lat;  // update the SelectList entry
       pFind->m_slon = pwaypoint->m_lon;
@@ -3856,7 +3873,7 @@ bool DeletePlugInTrack(wxString &GUID) {
   //  Find the Route
   Track *pTrack = g_pRouteMan->FindTrackByGUID(GUID);
   if (pTrack) {
-    g_pRouteMan->DeleteTrack(pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
     b_found = true;
   }
 
@@ -3875,7 +3892,7 @@ bool UpdatePlugInTrack(PlugIn_Track *ptrack) {
 
   if (b_found) {
     bool b_permanent = (pTrack->m_btemp == false);
-    g_pRouteMan->DeleteTrack(pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
 
     b_found = AddPlugInTrack(ptrack, b_permanent);
   }
@@ -8127,8 +8144,10 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint) {
 
     if (prp) prp->ReLoadIcon();
 
-    SelectItem *pFind = pSelect->FindSelection(
-        gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT);
+    auto canvas = gFrame->GetPrimaryCanvas();
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectItem *pFind = pSelect->FindSelection(ctx, lat_save, lon_save,
+                                               SELTYPE_ROUTEPOINT);
     if (pFind) {
       pFind->m_slat = pwaypoint->m_lat;  // update the SelectList entry
       pFind->m_slon = pwaypoint->m_lon;

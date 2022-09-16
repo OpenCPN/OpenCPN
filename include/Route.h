@@ -21,14 +21,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __ROUTE_H__
-#define __ROUTE_H__
+#ifndef _ROUTE_H__
+#define _ROUTE_H__
 
 #include <wx/object.h>
 #include <wx/list.h>
 #include "wx28compat.h"
 
-#include "viewport.h"
 #include "RoutePoint.h"
 #include "wx28compat.h"
 #include "bbox.h"
@@ -62,17 +61,15 @@ const int StyleValues[] = {-1,          wxSOLID,      wxDOT,
                            wxLONG_DASH, wxSHORT_DASH, wxDOT_DASH};
 const int WidthValues[] = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-class ocpnDC;
-class ChartCanvas;
 class HyperlinkList;
-class SendToGpsDlg;
 
 class Route : public wxObject {
+friend class RouteGui;
+
 public:
   Route();
   ~Route();
 
-  virtual void Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box);
   virtual int GetnPoints(void) { return pRoutePointList->GetCount(); }
 
   void AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence = true,
@@ -90,14 +87,6 @@ public:
   RoutePoint *InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
                                bool bRenamePoints = false);
 
-  void DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
-                      wxPoint *rpn);
-  void DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1, wxPoint *rp2,
-                   ViewPort &vp, bool bdraw_arrow);
-
-  void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas);
-  void DrawGL(ViewPort &vp, ChartCanvas *canvas);
-  void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas);
 
   RoutePoint *GetLastPoint();
   void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -107,7 +96,6 @@ public:
   void UpdateSegmentDistance(RoutePoint *prp0, RoutePoint *prp,
                              double planspeed = -1.0);
   void UpdateSegmentDistances(double planspeed = -1.0);
-  void CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas, wxRect *prect);
   LLBBox &GetBBox();
   void SetHiLite(int width) { m_hiliteWidth = width; }
   void Reverse(bool bRenamePoints = false);
@@ -121,10 +109,6 @@ public:
                   const wxString &suffix,
                   const bool duplicate_first_point = false);
   void ClearHighlights(void);
-  void RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb, ViewPort &vp,
-                     bool bdraw_arrow, int hilite_width = 0);
-  void RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
-                             ViewPort &vp);
 
   void SetVisible(bool visible = true, bool includeWpts = true);
   void SetListed(bool visible = true);
@@ -136,9 +120,6 @@ public:
   bool ContainsSharedWP();
   void SetSharedWPViz(bool sharedWPVIZ) { m_bsharedWPViz = sharedWPVIZ; }
   bool GetSharedWPViz() { return m_bsharedWPViz; }
-
-  int SendToGPS(const wxString &com_name, bool bsend_waypoints,
-                SendToGpsDlg *dialog);
 
   double GetRouteArrivalRadius(void) { return m_ArrivalRadius; }
   void SetRouteArrivalRadius(double radius) { m_ArrivalRadius = radius; }
@@ -196,4 +177,4 @@ private:
 
 WX_DECLARE_LIST(Route, RouteList);  // establish class Route as list member
 
-#endif
+#endif  // _ROUTE_H__

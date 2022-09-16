@@ -152,7 +152,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   if ((route->GetnPoints() == 2) && (cc->m_routeState == 0))
     noRouteLeftToRedo = true;
 
-  g_pRouteMan->RemovePointFromRoute(point, route, cc);
+  g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
     pConfig->DeleteWayPoint(point);

@@ -27,7 +27,10 @@
 #include "garmin_gps.h"
 #include "gpsserial.h"
 #include "Route.h"
+
+#ifndef CLIAPP
 #include "gui_lib.h"
+#endif
 
 #define GPS_DEBUG
 
@@ -289,6 +292,7 @@ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
     }
     GPS_Diag("Using route number: %d", route_number);
 
+#ifndef CLIAPP   // FIXME (leamas) Use a callback
     //  Ask the user if it is all right to overwrite
     if (!bfound_empty) {
       int rv = OCPNMessageBox(
@@ -296,6 +300,7 @@ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
           _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
       if (rv != wxID_OK) return 0;
     }
+#endif
   }
 
   // Based on the route transfer protocol create the array of transfer packets

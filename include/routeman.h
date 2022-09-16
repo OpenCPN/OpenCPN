@@ -26,6 +26,8 @@
 #ifndef _ROUTEMAN_H__
 #define _ROUTEMAN_H__
 
+#include <functional>
+
 #include <wx/bitmap.h>
 #include <wx/brush.h>
 #include <wx/dynarray.h>
@@ -33,10 +35,13 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
-#include "chcanv.h"
+#include "MarkIcon.h"
 #include "nmea0183.h"
+#include "ocpn_types.h"
+#include "observable_evtvar.h"
+#include "Route.h"
+#include "RoutePoint.h"
 #include "Select.h"
-#include "styles.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -47,38 +52,43 @@
 
 extern bool g_bPluginHandleAutopilotRoute;
 
-//----------------------------------------------------------------------------
-//    forward class declarations
-//----------------------------------------------------------------------------
-
-class Route;
-class RoutePoint;
-class RoutePointList;
-class MyApp;
-
 //    List definitions for Waypoint Manager Icons
 
 class markicon_bitmap_list_type;
 class markicon_key_list_type;
 class markicon_description_list_type;
-class MarkIcon;
+
 WX_DEFINE_SORTED_ARRAY(MarkIcon *, SortedArrayOfMarkIcon);
 WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
+
+// Callbacks for RoutePropDlg
+struct RoutePropDlgCtx {
+  std::function<void(Route*)> SetRouteAndUpdate;
+  std::function<void(Route*, RoutePoint*)> SetEnroutePoint;
+  std::function<void(Route*)> Hide;
+  RoutePropDlgCtx() :
+      SetRouteAndUpdate([&](Route* r) {}),
+      SetEnroutePoint([&](Route* r, RoutePoint* rt) {}),
+      Hide([&](Route* r) {})
+      { }
+};
 
 //----------------------------------------------------------------------------
 //   Routeman
 //----------------------------------------------------------------------------
-
+//
 class Routeman {
+
+friend class RoutemanGui;
+
 public:
-  Routeman(MyApp *parent);
+  Routeman(struct RoutePropDlgCtx ctx,
+           std::function<void()> RouteMgrDlgUpdateListCtrl);
   ~Routeman();
 
   bool DeleteRoute(Route *pRoute);
   void DeleteAllRoutes(void);
-  void DeleteAllTracks(void);
 
-  void DeleteTrack(Track *pTrack);
 
   bool IsRouteValid(Route *pRoute);
 
@@ -88,7 +98,7 @@ public:
   Route *FindVisibleRouteContainingWaypoint(RoutePoint *pWP);
   wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
   bool DoesRouteContainSharedPoints(Route *pRoute);
-  void RemovePointFromRoute(RoutePoint *point, Route *route, ChartCanvas *cc);
+  void RemovePointFromRoute(RoutePoint *point, Route *route, int route_state);
 
   bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
   bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
@@ -96,11 +106,9 @@ public:
   RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon,
                                     double cog, double sog);
 
-  bool UpdateProgress();
   bool UpdateAutopilot();
   bool DeactivateRoute(bool b_arrival = false);
   bool IsAnyRouteActive(void) { return (pActiveRoute != NULL); }
-  void SetColorScheme(ColorScheme cs);
 
   Route *GetpActiveRoute() { return pActiveRoute; }
   RoutePoint *GetpActivePoint() { return pActivePoint; }
@@ -114,6 +122,7 @@ public:
   double GetCurrentSegmentCourse() { return CurrentSegmentCourse; }
   int GetXTEDir() { return XTEDir; }
 
+  void SetColorScheme(ColorScheme cs, double displayDPmm);
   wxPen *GetRoutePen(void) { return m_pRoutePen; }
   wxPen *GetTrackPen(void) { return m_pTrackPen; }
   wxPen *GetSelectedRoutePen(void) { return m_pSelectedRoutePen; }
@@ -131,10 +140,17 @@ public:
 
   bool m_bDataValid;
 
-private:
-  void DoAdvance(void);
+  /**
+   * Notified with message targeting all plugins. Contains a message type
+   * string and a wxJSONValue shared_ptr.
+   */
+  EventVar json_msg;
 
-  MyApp *m_pparent_app;
+  /** Notified with a shared_ptr<ActiveLegDat>, leg info to all plugins.  */
+  EventVar json_leg_info;
+
+private:
+
   Route *pActiveRoute;
   RoutePoint *pActivePoint;
   double RouteBrgToActivePoint;  // TODO all these need to be doubles
@@ -166,6 +182,8 @@ private:
 
   double m_arrival_min;
   int m_arrival_test;
+  struct RoutePropDlgCtx m_prop_dlg_ctx;
+  std::function<void()> m_route_mgr_dlg_update_list_ctrl;
 };
 
 //----------------------------------------------------------------------------
@@ -173,6 +191,9 @@ private:
 //----------------------------------------------------------------------------
 
 class WayPointman {
+
+friend class WayPointmanGui;
+
 public:
   WayPointman();
   ~WayPointman();
@@ -190,16 +211,11 @@ public:
                                      double radius_meters,
                                      const wxString &guid);
   bool IsReallyVisible(RoutePoint *pWP);
-  void SetColorScheme(ColorScheme cs);
   bool SharedWptsExist();
   void DeleteAllWaypoints(bool b_delete_used);
   RoutePoint *FindRoutePointByGUID(const wxString &guid);
   void DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset = true);
   void ClearRoutePointFonts(void);
-  void ProcessIcons(ocpnStyle::Style *style);
-  void ProcessDefaultIcons();
-  void ReloadAllIcons();
-  void ReloadRoutepointIcons();
 
   bool DoesIconExist(const wxString &icon_key) const;
   wxBitmap GetIconBitmapForList(int index, int height);
@@ -213,18 +229,10 @@ public:
   bool RemoveRoutePoint(RoutePoint *prp);
   RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
 
-  MarkIcon *ProcessIcon(wxBitmap pimage, const wxString &key,
-                        const wxString &description);
 
 private:
-  MarkIcon *ProcessLegacyIcon(wxString fileName, const wxString &key,
-                              const wxString &description);
-  MarkIcon *ProcessExtendedIcon(wxImage &image, const wxString &key,
-                                const wxString &description);
-  wxRect CropImageOnAlpha(wxImage &image);
   wxImage CreateDimImage(wxImage &image, double factor);
 
-  void ProcessUserIcons(ocpnStyle::Style *style);
   RoutePointList *m_pWayPointList;
   wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 

@@ -238,7 +238,7 @@ public:
 
   void SendNMEASentenceToAllPlugIns(const wxString &sentence);
   void SendPositionFixToAllPlugIns(GenericPosDatEx *ppos);
-  void SendActiveLegInfoToAllPlugIns(ActiveLegDat *infos);
+  void SendActiveLegInfoToAllPlugIns(const ActiveLegDat *infos);
   void SendAISSentenceToAllPlugIns(const wxString &sentence);
   void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
   void SendMessageToAllPlugins(const wxString &message_id,
@@ -311,6 +311,8 @@ private:
   ObservedVarListener evt_version_incompatible_listener;
   ObservedVarListener evt_version_incompatible_plugin_listener;
   ObservedVarListener evt_json_to_all_plugins_listener;
+  ObservedVarListener evt_routeman_json_listener;
+  ObservedVarListener evt_routeman_leginfo_listener;
 
   ObservedVarListener m_listener_N0183_all;
   ObservedVarListener m_listener_SignalK;

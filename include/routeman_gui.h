@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
+ * Purpose:  Routeman drawing stuff
+ * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,36 +22,25 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _MULTIPLEXER_H__
-#define _MULTIPLEXER_H__
 
-#include "wx/wxprec.h"
+#ifndef _ROUTEMAN_GUI_H
+#define _ROUTEMAN_GUI_H
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include "routeman.h"
 
-//#include "pluginmanager.h"  // for PlugInManager
-#include "observable_navmsg.h"
-#include "comm_navmsg.h"
-
-
-class Multiplexer : public wxEvtHandler {
+class RoutemanGui {
 public:
-  Multiplexer();
-  ~Multiplexer();
+  RoutemanGui(Routeman& routeman) : m_routeman(routeman) {}
 
-  void LogOutputMessage(const wxString &msg, wxString stream_name,
-                        bool b_filter);
-  void LogOutputMessageColor(const wxString &msg, const wxString &stream_name,
-                             const wxString &color);
-  void LogInputMessage(const wxString &msg, const wxString &stream_name,
-                       bool b_filter, bool b_error = false);
+  void DeleteAllTracks();
+  void DeleteTrack(Track *pTrack);
+  bool UpdateProgress(); 
 
 private:
-  ObservedVarListener m_listener_N0183_all;
+  void DoAdvance(void);
 
-  void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-
+  Routeman& m_routeman;
 };
-#endif  // _MULTIPLEXER_H__
+
+
+#endif   // _ROUTEMAN_GUI_H

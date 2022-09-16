@@ -85,8 +85,7 @@
 #include "plugin_loader.h"
 #include "timers.h"
 #include "comm_drv_factory.h"  //FIXME(dave) this one goes away
-#include "comm_util.h"  //FIXME(leamas) perhaps also this?
-
+#include "comm_util.h"  //FIXME(leamas) perhaps also this?).
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "color_handler.h"
@@ -137,6 +136,7 @@
 // #include "Route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
+#include "route_point_gui.h"
 // #include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
@@ -152,9 +152,11 @@
 #include "tcmgr.h"
 // #include "thumbwin.h"
 #include "toolbar.h"
+#include "routeman_gui.h"
 #include "Track.h"
 #include "TrackPropDlg.h"
 // #include "usb_devices.h"
+#include "waypointman_gui.h"
 // #include "comm_drv_registry.h"
 // #include "comm_navmsg_bus.h"
 #include "N2KParser.h"
@@ -1492,8 +1494,9 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
     }
   }
 
-  if (pWayPointMan) pWayPointMan->SetColorScheme(cs);
-
+  if (pWayPointMan)
+    WayPointmanGui(*pWayPointMan).SetColorScheme(cs,
+                                                 g_Platform->GetDisplayDPmm());
   if (ChartData) ChartData->ApplyColorSchemeToCachedCharts(cs);
 
   if (g_options) {
@@ -1505,7 +1508,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
   }
 
   if (g_pRouteMan) {
-    g_pRouteMan->SetColorScheme(cs);
+    g_pRouteMan->SetColorScheme(cs, g_Platform->GetDisplayDPmm());
   }
 
   if (g_pMarkInfoDialog) {
@@ -1890,8 +1893,8 @@ bool MyFrame::DropMarker(bool atOwnShip) {
   pWP->m_bIsolatedMark = true;  // This is an isolated mark
   pSelect->AddSelectableRoutePoint(lat, lon, pWP);
   pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
-  if (!pWP->IsVisibleSelectable(GetCanvasUnderMouse()))
-    pWP->ShowScaleWarningMessage(GetCanvasUnderMouse());
+  if (!RoutePointGui(*pWP).IsVisibleSelectable(GetCanvasUnderMouse()))
+    RoutePointGui(*pWP).ShowScaleWarningMessage(GetCanvasUnderMouse());
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
   //     undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent,
@@ -3433,13 +3436,13 @@ Track *MyFrame::TrackOff(bool do_add_point) {
     g_pActiveTrack->Stop(do_add_point);
 
     if (g_pActiveTrack->GetnPoints() < 2) {
-      g_pRouteMan->DeleteTrack(g_pActiveTrack);
+      RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
       return_val = NULL;
     } else {
       if (g_bTrackDaily) {
         Track *pExtendTrack = g_pActiveTrack->DoExtendDaily();
         if (pExtendTrack) {
-          g_pRouteMan->DeleteTrack(g_pActiveTrack);
+          RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
           return_val = pExtendTrack;
         }
       }
@@ -4630,8 +4633,7 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   //  S52_CHANGED is a byproduct of a change in the chart object render scale
   //  So, applies to RoutePoint icons also
   if (rr & S52_CHANGED) {
-    //  Reload Icons
-    pWayPointMan->ReloadAllIcons();
+    WayPointmanGui(*pWayPointMan).ReloadAllIcons(g_Platform->GetDisplayDPmm());
   }
 
   pConfig->UpdateSettings();
@@ -4663,7 +4665,9 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     }
 #endif
 
-  g_pRouteMan->SetColorScheme(global_color_scheme);  // reloads pens and brushes
+  // reload pens and brushes
+  g_pRouteMan->SetColorScheme(global_color_scheme,
+                              g_Platform->GetDisplayDPmm());
 
   //    Stuff the Filter tables
   double stuffcog = NAN;
@@ -5094,8 +5098,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       // Load the waypoints.. both of these routines are very slow to execute
       // which is why they have been to defered until here
       pWayPointMan = new WayPointman();
-      pWayPointMan->SetColorScheme(global_color_scheme);
-
+      WayPointmanGui(*pWayPointMan).SetColorScheme(global_color_scheme,
+                                                   g_Platform->GetDisplayDPmm());
       // Reload the ownship icon from UserIcons, if present
       for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
         ChartCanvas *cc = g_canvasArray.Item(i);
@@ -5153,7 +5157,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       RequestNewMasterToolbar();
       // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
       // Reload all icons, to be sure.
-      if (pWayPointMan) pWayPointMan->ReloadRoutepointIcons();
+      if (pWayPointMan) WayPointmanGui(*pWayPointMan).ReloadRoutepointIcons();
 
       if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, false);
 
@@ -5987,7 +5991,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   nBlinkerTick++;
 
   // This call sends autopilot output strings to output ports.
-  bool bactiveRouteUpdate = g_pRouteMan->UpdateProgress();
+
+  bool bactiveRouteUpdate = RoutemanGui(*g_pRouteMan).UpdateProgress();
 
   // For each canvas....
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -8625,7 +8630,6 @@ void ApplyLocale() {
   }
 
   if (console) console->SetColorScheme(global_color_scheme);
-
   if (g_pais_query_dialog_active) {
     g_pais_query_dialog_active->Destroy();
     g_pais_query_dialog_active = NULL;

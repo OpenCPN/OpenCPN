@@ -23,10 +23,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifdef USE_MOCK_DEFS
-#include "mock_defs.h"
-
-#elif ! defined(_TRACK_H__)
+#ifndef _TRACK_H__
 #define _TRACK_H__
 
 #include <wx/progdlg.h>
@@ -36,7 +33,6 @@
 #include <vector>
 
 #include "bbox.h"
-#include "ocpndc.h"
 #include "Route.h"
 #include "vector2D.h"
 
@@ -60,7 +56,6 @@ public:
 
   wxDateTime GetCreateTime(void);
   void SetCreateTime(wxDateTime dt);
-  void Draw(ChartCanvas *cc, ocpnDC &dc);
   const char *GetTimeString() { return m_timestring; }
   bool HasValidTimestamp() {
     if (m_timestring == NULL ||
@@ -72,6 +67,7 @@ public:
   double m_lat, m_lon;
   int m_GPXTrkSegNo;
 
+
 private:
   void SetCreateTime(wxString ts);
   char *m_timestring;
@@ -82,11 +78,12 @@ private:
 //----------------------------------------------------------------------------
 
 class Track {
+friend class TrackGui;
+
 public:
   Track();
   virtual ~Track();
 
-  void Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box);
   int GetnPoints(void) { return TrackPoints.size(); }
 
   void SetVisible(bool visible = true) { m_bVisible = visible; }
@@ -155,8 +152,8 @@ public:
              const wxString &suffix);
 
 protected:
-  void Segments(ChartCanvas *cc, std::list<std::list<wxPoint> > &pointlists,
-                const LLBBox &box, double scale);
+//  void Segments(ChartCanvas *cc, std::list<std::list<wxPoint> > &pointlists,
+//                const LLBBox &box, double scale);
   void DouglasPeuckerReducer(std::vector<TrackPoint *> &list,
                              std::vector<bool> &keeplist, int from, int to,
                              double delta);
@@ -168,22 +165,22 @@ protected:
   std::vector<std::vector<SubTrack> > SubTracks;
 
 private:
-  void GetPointLists(ChartCanvas *cc,
-                     std::list<std::list<wxPoint> > &pointlists, ViewPort &VP,
-                     const LLBBox &box);
+//  void GetPointLists(ChartCanvas *cc,
+//                     std::list<std::list<wxPoint> > &pointlists, ViewPort &VP,
+//                     const LLBBox &box);
   void Finalize();
   double ComputeScale(int left, int right);
   void InsertSubTracks(LLBBox &box, int level, int pos);
-
-  void AddPointToList(ChartCanvas *cc,
-                      std::list<std::list<wxPoint> > &pointlists, int n);
-  void AddPointToLists(ChartCanvas *cc,
-                       std::list<std::list<wxPoint> > &pointlists, int &last,
-                       int n);
-
-  void Assemble(ChartCanvas *cc, std::list<std::list<wxPoint> > &pointlists,
-                const LLBBox &box, double scale, int &last, int level, int pos);
-
+//
+//  void AddPointToList(ChartCanvas *cc,
+//                      std::list<std::list<wxPoint> > &pointlists, int n);
+//  void AddPointToLists(ChartCanvas *cc,
+//                       std::list<std::list<wxPoint> > &pointlists, int &last,
+//                       int n);
+//
+//  void Assemble(ChartCanvas *cc, std::list<std::list<wxPoint> > &pointlists,
+//                const LLBBox &box, double scale, int &last, int level, int pos);
+//
   wxString m_TrackNameString;
 };
 

@@ -21,10 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifdef USE_MOCK_DEFS
-#include "mock_defs.h"
-
-#elif ! defined(_ROUTEPOINT_H__)
+#ifndef _ROUTEPOINT_H__
 #define _ROUTEPOINT_H__
 
 #include <wx/string.h>
@@ -32,9 +29,9 @@
 #include <wx/gdicmn.h>
 #include <wx/gauge.h>
 #include <wx/clrpicker.h>
+
 #include "Hyperlink.h"
 #include "bbox.h"
-#include "viewport.h"
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
 #define SCAMIN_MIN \
@@ -43,12 +40,10 @@
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
 
-class ocpnDC;
-class wxDC;
-class ChartCanvas;
-class SendToGpsDlg;
 
 class RoutePoint {
+friend class RoutePointGui;
+
 public:
   RoutePoint(double lat, double lon, const wxString &icon_ident,
              const wxString &name, const wxString &pGUID = wxEmptyString,
@@ -56,14 +51,11 @@ public:
   RoutePoint(RoutePoint *orig);
   RoutePoint();
   virtual ~RoutePoint(void);
-  void Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn = NULL,
-            bool boverride_viz = false);
-  void ReLoadIcon(void);
+  void ReLoadIcon() { m_IconIsDirty = true; }
 
   void SetPosition(double lat, double lon);
   double GetLatitude() { return m_lat; };
   double GetLongitude() { return m_lon; };
-  void CalculateDCRect(wxDC &dc, ChartCanvas *canvas, wxRect *prect);
   LLBBox &GetBBox() { return m_wpBBox; }
 
   bool IsSame(RoutePoint *pOtherRP);  // toh, 2009.02.11
@@ -76,7 +68,7 @@ public:
 
   bool IsSharedInVisibleRoute(void);
 
-  bool IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz = false);
+  bool IsVisibleSelectable(double scale_val, bool boverrideViz = false);
   void SetVisible(bool viz = true) { m_bIsVisible = viz; }
   void SetListed(bool viz = true) { m_bIsListed = viz; }
   void SetNameShown(bool viz = true) { m_bShowName = viz; }
@@ -88,9 +80,7 @@ public:
   void SetCreateTime(wxDateTime dt);
 
   wxString GetIconName(void) { return m_IconName; }
-  wxBitmap *GetIconBitmap() { return m_pbmIcon; }
   void SetIconName(wxString name) { m_IconName = name; }
-  int GetIconImageIndex();
 
   void *GetSelectNode(void) { return m_SelectNode; }
   void SetSelectNode(void *node) { m_SelectNode = node; }
@@ -141,14 +131,7 @@ public:
   long GetScaMax() { return m_ScaMax; };
   bool GetUseSca() { return b_UseScamin; };
   void SetUseSca(bool value) { b_UseScamin = value; };
-  bool SendToGPS(const wxString &com_name, SendToGpsDlg *dialog);
-  void EnableDragHandle(bool bEnable);
   bool IsDragHandleEnabled() { return m_bDrawDragHandle; }
-  wxPoint2DDouble GetDragHandlePoint(ChartCanvas *canvas);
-  void SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon);
-  void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
-  void PresetDragOffset(ChartCanvas *canvas, int x, int y);
-  void ShowScaleWarningMessage(ChartCanvas *canvas);
   void SetPlannedSpeed(double spd);
   double GetPlannedSpeed();
   wxDateTime GetETD();
@@ -177,6 +160,7 @@ public:
   bool m_bIsVisible;  // true if should be drawn, false if invisible
   bool m_bIsListed;
   bool m_bIsActive;
+  bool m_IconIsDirty;
   wxString m_MarkDescription;
   wxString m_GUID;
 
@@ -205,13 +189,12 @@ public:
 
   bool m_bShowWaypointRangeRings;
   int m_iWaypointRangeRingsNumber;
+
   float m_fWaypointRangeRingsStep;
   int m_iWaypointRangeRingsStepUnits;
   wxColour m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
-  void DrawGL(ViewPort &vp, ChartCanvas *canvas,
-              bool use_cached_screen_coords = false, bool bVizOverride = false);
   unsigned int m_iTextTexture;
   int m_iTextTextureWidth, m_iTextTextureHeight;
 
@@ -230,7 +213,6 @@ public:
   wxDateTime m_CreateTimeX;
 
 private:
-  wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
 
   wxString m_MarkName;
   wxBitmap *m_pbmIcon;

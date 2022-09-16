@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
+ * Purpose:  WaypoinrMan drawing stuff
+ * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,36 +22,35 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _MULTIPLEXER_H__
-#define _MULTIPLEXER_H__
 
-#include "wx/wxprec.h"
+#ifndef _WAYPOINT_GUI_H__
+#define _WAYPOINT_GUI_H__
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include "routeman.h"
+#include "styles.h"
 
-//#include "pluginmanager.h"  // for PlugInManager
-#include "observable_navmsg.h"
-#include "comm_navmsg.h"
-
-
-class Multiplexer : public wxEvtHandler {
+class WayPointmanGui {
 public:
-  Multiplexer();
-  ~Multiplexer();
+  WayPointmanGui(WayPointman& waypoint_man) : m_waypoint_man(waypoint_man) {}
 
-  void LogOutputMessage(const wxString &msg, wxString stream_name,
-                        bool b_filter);
-  void LogOutputMessageColor(const wxString &msg, const wxString &stream_name,
-                             const wxString &color);
-  void LogInputMessage(const wxString &msg, const wxString &stream_name,
-                       bool b_filter, bool b_error = false);
+  void SetColorScheme(ColorScheme cs, double displayDPmm);
+  void ReloadAllIcons(double displayDPmm);
+  void ProcessDefaultIcons(double displayDPmm);
+  void ProcessIcons(ocpnStyle::Style *style, double displayDPmm);
+  void ProcessUserIcons(ocpnStyle::Style *style, double displayDPmm);
+  MarkIcon *ProcessIcon(wxBitmap pimage, const wxString &key,
+                        const wxString &description);
+  void ReloadRoutepointIcons();
 
 private:
-  ObservedVarListener m_listener_N0183_all;
-
-  void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-
+  MarkIcon *ProcessLegacyIcon(wxString fileName, const wxString &key,
+                              const wxString &description,
+                              double displayDPmm);
+  MarkIcon *ProcessExtendedIcon(wxImage &image, const wxString &key,
+                                const wxString &description);
+  wxRect CropImageOnAlpha(wxImage &image);
+  WayPointman& m_waypoint_man;
 };
-#endif  // _MULTIPLEXER_H__
+
+
+#endif   // _WAYPOINT_GUI_H__

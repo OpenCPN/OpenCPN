@@ -27,6 +27,8 @@
 #include "SendToGpsDlg.h"
 #include "Route.h"
 #include "RoutePoint.h"
+#include "route_point_gui.h"
+#include "route_gui.h"
 #include "ser_ports.h"
 #include "conn_params.h"
 #include "OCPNPlatform.h"
@@ -227,8 +229,8 @@ void SendToGpsDlg::OnSendClick(wxCommandEvent& event) {
   if (src.Lower().Find(_T("Bluetooth")) != wxNOT_FOUND) destPort = src;
 
   //    And send it out
-  if (m_pRoute) m_pRoute->SendToGPS(destPort, true, this);
-  if (m_pRoutePoint) m_pRoutePoint->SendToGPS(destPort, this);
+  if (m_pRoute) RouteGui(*m_pRoute).SendToGPS(destPort, true, this);
+  if (m_pRoutePoint) RoutePointGui(*m_pRoutePoint).SendToGPS(destPort, this);
 
   //    Show( false );
   //    event.Skip();

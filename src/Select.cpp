@@ -25,19 +25,16 @@
 #include "Select.h"
 #include "georef.h"
 #include "vector2D.h"
-#include "navutil.h"
-#include "chcanv.h"
+#include "NavObjectCollection.h"
 #include "Track.h"
-#include "routeman.h"
 #include "Route.h"
-#include "OCPNPlatform.h"
+#include "base_platform.h"
 
-extern Routeman *g_pRouteMan;
-extern OCPNPlatform *g_Platform;
+extern BasePlatform *g_BasePlatform;
 
 Select::Select() {
   pSelectList = new SelectableItemList;
-  pixelRadius = g_Platform->GetSelectRadiusPix();
+  pixelRadius = g_BasePlatform->GetSelectRadiusPix();
 }
 
 Select::~Select() {
@@ -508,16 +505,16 @@ bool Select::IsSegmentSelected(float a, float b, float c, float d, float slat,
   return false;
 }
 
-void Select::CalcSelectRadius(ChartCanvas *cc) {
-  selectRadius = pixelRadius / (cc->GetCanvasTrueScale() * 1852 * 60);
+void Select::CalcSelectRadius(SelectCtx& ctx) {
+  selectRadius = pixelRadius / (ctx.scale * 1852 * 60);
 }
 
-SelectItem *Select::FindSelection(ChartCanvas *cc, float slat, float slon,
+SelectItem *Select::FindSelection(SelectCtx& ctx, float slat, float slon,
                                   int fseltype) {
   float a, b, c, d;
   SelectItem *pFindSel;
 
-  CalcSelectRadius(cc);
+  CalcSelectRadius(ctx);
 
   //    Iterate on the list
   wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -560,7 +557,7 @@ find_ok:
   return pFindSel;
 }
 
-bool Select::IsSelectableSegmentSelected(ChartCanvas *cc, float slat,
+bool Select::IsSelectableSegmentSelected(SelectCtx& ctx, float slat,
                                          float slon, SelectItem *pFindSel) {
   bool valid = false;
   wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -577,7 +574,7 @@ bool Select::IsSelectableSegmentSelected(ChartCanvas *cc, float slat,
     // not in the list anymore
     return false;
   }
-  CalcSelectRadius(cc);
+  CalcSelectRadius(ctx);
 
   float a = pFindSel->m_slat;
   float b = pFindSel->m_slat2;
@@ -587,25 +584,25 @@ bool Select::IsSelectableSegmentSelected(ChartCanvas *cc, float slat,
   return IsSegmentSelected(a, b, c, d, slat, slon);
 }
 
-static bool is_selectable_wp(ChartCanvas *cc, RoutePoint *wp) {
-  if (cc->m_bShowNavobjects) return true;
+static bool is_selectable_wp(SelectCtx ctx, RoutePoint *wp) {
+  if (ctx.show_nav_objects) return true;
 
   if (wp->m_bIsActive) return true;
 
   Route *rte;
-  rte = g_pRouteMan->FindRouteContainingWaypoint(wp);
+  rte = FindRouteContainingWaypoint(wp);
   if (rte && rte->IsActive()) return true;
 
   return false;
 }
 
-SelectableItemList Select::FindSelectionList(ChartCanvas *cc, float slat,
+SelectableItemList Select::FindSelectionList(SelectCtx& ctx, float slat,
                                              float slon, int fseltype) {
   float a, b, c, d;
   SelectItem *pFindSel;
   SelectableItemList ret_list;
 
-  CalcSelectRadius(cc);
+  CalcSelectRadius(ctx);
 
   //    Iterate on the list
   wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -617,8 +614,8 @@ SelectableItemList Select::FindSelectionList(ChartCanvas *cc, float slat,
         case SELTYPE_ROUTEPOINT:
           if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
               (fabs(slon - pFindSel->m_slon) < selectRadius))
-            if (is_selectable_wp(cc, (RoutePoint *)pFindSel->m_pData1))
-              if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(cc))
+            if (is_selectable_wp(ctx, (RoutePoint *)pFindSel->m_pData1))
+              if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.scale))
                 ret_list.Append(pFindSel);
           break;
         case SELTYPE_TIDEPOINT:
@@ -627,7 +624,7 @@ SelectableItemList Select::FindSelectionList(ChartCanvas *cc, float slat,
         case SELTYPE_DRAGHANDLE:
           if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
               (fabs(slon - pFindSel->m_slon) < selectRadius)) {
-            if (is_selectable_wp(cc, (RoutePoint *)pFindSel->m_pData1))
+            if (is_selectable_wp(ctx, (RoutePoint *)pFindSel->m_pData1))
               ret_list.Append(pFindSel);
           }
           break;
@@ -639,7 +636,7 @@ SelectableItemList Select::FindSelectionList(ChartCanvas *cc, float slat,
           d = pFindSel->m_slon2;
 
           if (IsSegmentSelected(a, b, c, d, slat, slon)) {
-            if (cc->m_bShowNavobjects ||
+            if (ctx.show_nav_objects ||
                 (fseltype == SELTYPE_ROUTESEGMENT &&
                  ((Route *)pFindSel->m_pData3)->m_bRtIsActive)) {
               ret_list.Append(pFindSel);

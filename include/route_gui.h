@@ -1,11 +1,12 @@
+
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
+ * Purpose:  Route drawing stuff
+ * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,36 +23,43 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _MULTIPLEXER_H__
-#define _MULTIPLEXER_H__
 
-#include "wx/wxprec.h"
+#ifndef _ROUTE_GUI_H
+#define _ROUTE_GUI_H
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/gdicmn.h>
+#include <wx/dc.h>
 
-//#include "pluginmanager.h"  // for PlugInManager
-#include "observable_navmsg.h"
-#include "comm_navmsg.h"
+#include "bbox.h"
+#include "chcanv.h"
+#include "ocpndc.h"
+#include "Route.h"
+#include "viewport.h"
 
+class SendToGpsDlg;
 
-class Multiplexer : public wxEvtHandler {
+class RouteGui {
 public:
-  Multiplexer();
-  ~Multiplexer();
+  RouteGui(Route& route) : m_route(route) {}
+  virtual void Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box);
+  void DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
+                      wxPoint *rpn);
+  void DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1, wxPoint *rp2,
+                   ViewPort &vp, bool bdraw_arrow);
 
-  void LogOutputMessage(const wxString &msg, wxString stream_name,
-                        bool b_filter);
-  void LogOutputMessageColor(const wxString &msg, const wxString &stream_name,
-                             const wxString &color);
-  void LogInputMessage(const wxString &msg, const wxString &stream_name,
-                       bool b_filter, bool b_error = false);
+  void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas);
+  void DrawGL(ViewPort &vp, ChartCanvas *canvas);
+  void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas);
+  void CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas, wxRect *prect);
+  void RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb, ViewPort &vp,
+                     bool bdraw_arrow, int hilite_width = 0);
+  void RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
+                             ViewPort &vp);
+  int SendToGPS(const wxString &com_name, bool bsend_waypoints,
+                SendToGpsDlg *dialog);
 
 private:
-  ObservedVarListener m_listener_N0183_all;
-
-  void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-
+  Route& m_route;
 };
-#endif  // _MULTIPLEXER_H__
+
+#endif   // _ROUTE_GUI_H

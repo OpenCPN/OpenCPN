@@ -53,6 +53,7 @@
 #include "Select.h"
 #include "SoundFactory.h"
 #include "Track.h"
+#include "track_gui.h"
 #include "N2KParser.h"
 
 #if !defined(NAN)

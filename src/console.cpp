@@ -52,6 +52,8 @@
 
 #include "base_platform.h"
 #include "catalog_handler.h"
+#include "comm_navmsg_bus.h"
+#include "comm_appmsg_bus.h"
 #include "ocpn_utils.h"
 #include "downloader.h"
 #include "observable_navmsg.h"
@@ -60,12 +62,13 @@
 #include "comm_driver.h"
 #include "plugin_loader.h"
 #include "plugin_handler.h"
-#include "comm_navmsg_bus.h"
-#include "comm_appmsg_bus.h"
+#include "routeman.h"
 #include "Track.h"
+#include "Select.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;
+class Select;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -108,7 +111,7 @@ double g_MarkLost_Mins;
 double g_AISShowTracks_Mins;
 float g_selection_radius_mm;
 float g_selection_radius_touch_mm;
-bool g_btouch;
+
 
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;
@@ -116,6 +119,8 @@ AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
+wxString g_GPS_Ident;
+bool g_bGarminHostUpload;
 
 /* comm_bridge context. */
 
@@ -141,6 +146,46 @@ wxString gRmcTime;
 wxString gRmcDate;
 
 wxString g_TalkerIdText;
+
+Select* pSelect;
+double g_n_arrival_circle_radius;
+double g_PlanSpeed;
+bool g_bTrackDaily;
+int g_trackFilterMax;
+wxString g_default_routepoint_icon;
+double g_TrackDeltaDistance;
+float g_fWaypointRangeRingsStep;
+float g_ChartScaleFactorExp;
+wxString g_default_wp_icon;
+bool g_btouch;
+int g_iWaypointRangeRingsNumber;
+int g_iWaypointRangeRingsStepUnits;
+wxColour g_colourWaypointRangeRingsColour;
+bool g_bUseWptScaMin;
+int g_iWpt_ScaMin;
+int g_LayerIdx;
+bool g_bOverruleScaMin;
+int g_nTrackPrecision;
+bool g_bIsNewLayer;
+RouteList *pRouteList;
+WayPointman* pWayPointMan;
+int g_route_line_width;
+int g_track_line_width;
+RoutePoint* pAnchorWatchPoint1 = 0;
+RoutePoint* pAnchorWatchPoint2 = 0;
+bool g_bAllowShipToActive;
+wxRect g_blink_rect;
+int g_maxWPNameLength;
+bool g_bMagneticAPB;
+
+Routeman* g_pRouteMan;
+
+
+static void InitRouteman() {
+  struct RoutePropDlgCtx ctx;
+  auto RouteMgrDlgUpdateListCtrl = [&]() {};
+  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl);
+}
 
 // navutil_base context
 int g_iDistanceFormat = 0;
@@ -218,6 +263,10 @@ public:
     g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
     pBaseConfig = new wxFileConfig("", "", config_file);
+    pSelect = new Select();
+    pRouteList = new RouteList;
+    InitRouteman();
+    pWayPointMan = new WayPointman();
   }
 
   void list_plugins() {

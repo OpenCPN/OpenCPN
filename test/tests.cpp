@@ -17,9 +17,11 @@
 #include "comm_bridge.h"
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
+//#include "comm_n0183_output.h"
 #include "observable_navmsg.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "routeman.h"
 #include "ais_defs.h"
 #include "ais_decoder.h"
 #include "Select.h"
@@ -63,7 +65,8 @@ double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
 float g_selection_radius_mm;
 float g_selection_radius_touch_mm;
-bool g_btouch;
+wxString g_GPS_Ident;
+bool g_bGarminHostUpload;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -72,6 +75,64 @@ wxConfigBase* pBaseConfig = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
+
+double gCog;
+double gHdm;
+double gHdt;
+double gLat;
+double gLon;
+double gSog;
+double gVar;
+double g_UserVar;
+int gps_watchdog_timeout_ticks;
+bool g_bHDT_Rx;
+int g_nNMEADebug;
+bool g_bSatValid;
+bool g_bVAR_Rx;
+int g_NMEAAPBPrecision;
+int g_SatsInView;
+int g_priSats;
+int sat_watchdog_timeout_ticks = 12;
+
+wxString gRmcTime;
+wxString gRmcDate;
+
+wxString g_TalkerIdText;
+
+Select* pSelect;
+double g_n_arrival_circle_radius;
+double g_PlanSpeed;
+bool g_bTrackDaily;
+int g_trackFilterMax;
+wxString g_default_routepoint_icon;
+double g_TrackDeltaDistance;
+float g_fWaypointRangeRingsStep;
+float g_ChartScaleFactorExp;
+wxString g_default_wp_icon;
+bool g_btouch;
+int g_iWaypointRangeRingsNumber;
+int g_iWaypointRangeRingsStepUnits;
+wxColour g_colourWaypointRangeRingsColour;
+bool g_bUseWptScaMin;
+int g_iWpt_ScaMin;
+int g_LayerIdx;
+bool g_bOverruleScaMin;
+int g_nTrackPrecision;
+bool g_bIsNewLayer;
+RouteList *pRouteList;
+WayPointman* pWayPointMan;
+int g_route_line_width;
+int g_track_line_width;
+RoutePoint* pAnchorWatchPoint1 = 0;
+RoutePoint* pAnchorWatchPoint2 = 0;
+bool g_bAllowShipToActive;
+wxRect g_blink_rect;
+int g_maxWPNameLength;
+bool g_bMagneticAPB;
+
+Routeman* g_pRouteMan;
+
+
 
 namespace safe_mode {
 bool get_mode() { return false; }
@@ -85,28 +146,6 @@ Select* pSelectAIS;
 
 /* comm_bridge context. */
 
-double gCog;
-double gHdm;
-double gHdt;
-double gLat;
-double gLon;
-double gSog;
-double gVar;
-double g_UserVar;
-int gps_watchdog_timeout_ticks;
-int g_nNMEADebug;
-int g_NMEAAPBPrecision;
-bool g_bVAR_Rx;
-int g_SatsInView;
-bool g_bSatValid;
-bool g_bHDT_Rx;
-int g_priSats;
-int sat_watchdog_timeout_ticks = 12;
-
-wxString g_TalkerIdText;
-
-wxString gRmcTime;
-wxString gRmcDate;
 
 // navutil_base context
 
@@ -386,6 +425,7 @@ public:
 class AisApp : public wxAppConsole {
 public:
   AisApp(const char* type, const char* msg) : wxAppConsole() {
+    SetAppName("opencpn_unittests");
     auto& msgbus = NavMsgBus::GetInstance();
     CommBridge comm_bridge;
     comm_bridge.Initialize();
@@ -657,7 +697,9 @@ TEST(AIS, AISVDM) {
   const char* AISVDM_1 = "!AIVDM,1,1,,A,1535SB002qOg@MVLTi@b;H8V08;?,0*47";
   int MMSI = 338781000;
 
+  g_BasePlatform = new BasePlatform();
   g_pAIS = new AisDecoder;
+  pSelect = new Select();
   AisApp app("AIVDM", AISVDM_1);
   auto found = g_pAIS->GetTargetList().find(MMSI);
   EXPECT_NE(found, g_pAIS->GetTargetList().end());

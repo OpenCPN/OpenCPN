@@ -28,6 +28,7 @@
 #include "navutil_base.h"
 #include "georef.h"
 #include "routeman.h"
+#include "routeman_gui.h"
 #include "routemanagerdialog.h"
 #include "trackprintout.h"
 #include "pluginmanager.h"
@@ -1287,7 +1288,7 @@ void TrackPropDlg::OnExtendBtnClick(wxCommandEvent& event) {
     m_pExtendTrack->Clone(m_pTrack, begin, m_pTrack->GetnPoints(), _("_plus"));
     pSelect->AddAllSelectableTrackSegments(m_pExtendTrack);
     pSelect->DeleteAllSelectableTrackSegments(m_pTrack);
-    g_pRouteMan->DeleteTrack(m_pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(m_pTrack);
 
     SetTrackAndUpdate(m_pExtendTrack);
     UpdateProperties();
@@ -1319,7 +1320,7 @@ void TrackPropDlg::OnSplitBtnClick(wxCommandEvent& event) {
     pConfig->DeleteConfigTrack(m_pTrack);
 
     pSelect->DeleteAllSelectableTrackSegments(m_pTrack);
-    g_pRouteMan->DeleteTrack(m_pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(m_pTrack);
     pSelect->AddAllSelectableTrackSegments(pTail);
     pSelect->AddAllSelectableTrackSegments(pHead);
 
