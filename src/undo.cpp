@@ -45,10 +45,12 @@
 #include "routemanagerdialog.h"
 #include "undo.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 #include "Route.h"
 
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
+extern MyFrame* gFrame;
 extern Select* pSelect;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern WayPointman* pWayPointMan;
@@ -153,6 +155,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
     noRouteLeftToRedo = true;
 
   g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);
+  gFrame->InvalidateAllGL();
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
     pConfig->DeleteWayPoint(point);
