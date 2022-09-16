@@ -516,7 +516,6 @@ MyConfig::MyConfig(const wxString &LocalFileName)
   m_pNavObjectInputSet = NULL;
   m_pNavObjectChangesSet = NULL;
 
-  m_bSkipChangeSetUpdate = false;
 }
 
 void MyConfig::CreateRotatingNavObjBackup() {
@@ -1834,56 +1833,45 @@ bool MyConfig::LoadChartDirArray(ArrayOfCDI &ChartDirArray) {
   return true;
 }
 
-void MyConfig::AddNewRoute(Route *pr) {
-  //    if( pr->m_bIsInLayer )
-  //        return true;
-  if (!m_bSkipChangeSetUpdate) m_pNavObjectChangesSet->AddRoute(pr, "add");
+void MyConfig::AddNewRoute(Route *r) { 
+  m_pNavObjectChangesSet->AddNewRoute(r);
 }
 
-void MyConfig::UpdateRoute(Route *pr) {
-  //    if( pr->m_bIsInLayer ) return true;
-  if (!m_bSkipChangeSetUpdate) m_pNavObjectChangesSet->AddRoute(pr, "update");
+void MyConfig::UpdateRoute(Route *r) {
+  m_pNavObjectChangesSet->UpdateRoute(r);
 }
 
 void MyConfig::DeleteConfigRoute(Route *pr) {
-  //    if( pr->m_bIsInLayer )
-  //        return true;
-  if (!m_bSkipChangeSetUpdate) m_pNavObjectChangesSet->AddRoute(pr, "delete");
+  m_pNavObjectChangesSet->DeleteConfigRoute(pr);
 }
 
 void MyConfig::AddNewTrack(Track *pt) {
-  if (!pt->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrack(pt, "add");
+    m_pNavObjectChangesSet->AddNewTrack(pt);
 }
 
 void MyConfig::UpdateTrack(Track *pt) {
-  if (pt->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrack(pt, "update");
+    m_pNavObjectChangesSet->UpdateTrack(pt);
 }
 
 void MyConfig::DeleteConfigTrack(Track *pt) {
-  if (!pt->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrack(pt, "delete");
+    m_pNavObjectChangesSet->DeleteConfigTrack(pt);
 }
 
 void MyConfig::AddNewWayPoint(RoutePoint *pWP, int crm) {
-  if (!pWP->m_bIsInLayer && pWP->m_bIsolatedMark && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddWP(pWP, "add");
+    m_pNavObjectChangesSet->AddNewWayPoint(pWP);
 }
 
 void MyConfig::UpdateWayPoint(RoutePoint *pWP) {
-  if (!pWP->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddWP(pWP, "update");
+    m_pNavObjectChangesSet->UpdateWayPoint(pWP);
 }
 
 void MyConfig::DeleteWayPoint(RoutePoint *pWP) {
-  if (!pWP->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddWP(pWP, "delete");
+    m_pNavObjectChangesSet->DeleteWayPoint(pWP);
 }
 
-void MyConfig::AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID) {
-  if (!m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrackPoint(pWP, "add", parent_GUID);
+void MyConfig::AddNewTrackPoint(TrackPoint *pWP,
+                                const wxString &parent_GUID) {
+    m_pNavObjectChangesSet->AddNewTrackPoint(pWP, parent_GUID);
 }
 
 bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
@@ -3206,9 +3194,6 @@ void SwitchInlandEcdisMode(bool Switch) {
 //          Static GPX Support Routines
 //
 //-------------------------------------------------------------------------
-
-
-
 // This function formats the input date/time into a valid GPX ISO 8601
 // time string specified in the UTC time zone.
 

@@ -55,9 +55,6 @@ extern double fromUsrSpeed(double usr_speed, int unit = -1);
 extern double toUsrTemp(double cel_temp, int unit = -1);
 extern double fromUsrTemp(double usr_temp, int unit = -1);
 extern wxString getUsrTempUnit(int unit = -1);
-extern wxString formatTimeDelta(wxTimeSpan span);
-extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
-extern wxString formatTimeDelta(wxLongLong secs);
 extern wxString formatAngle(double angle);
 
 extern void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
@@ -102,6 +99,13 @@ class Track;
 // b_props_explicit = false, bool b_props_minimal = false ); GpxRteElement
 // *CreateGPXRte ( Route *pRoute ); GpxTrkElement *CreateGPXTrk ( Route *pRoute
 // );
+
+bool WptIsInRouteList(RoutePoint *pr);
+RoutePoint *WaypointExists(const wxString &name, double lat, double lon);
+RoutePoint *WaypointExists(const wxString &guid);
+Route *RouteExists(const wxString &guid);
+Route *RouteExists(Route *pTentRoute);
+Track *TrackExists(const wxString &guid);
 
 void ExportGPX(wxWindow *parent, bool bviz_only = false, bool blayer = false);
 void UI_ImportGPX(wxWindow *parent, bool islayer = false,
@@ -180,7 +184,6 @@ public:
 
   NavObjectChanges *m_pNavObjectChangesSet;
   NavObjectCollection1 *m_pNavObjectInputSet;
-  bool m_bSkipChangeSetUpdate;
 };
 
 void SwitchInlandEcdisMode(bool Switch);
