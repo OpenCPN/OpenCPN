@@ -33,34 +33,18 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "pluginmanager.h"  // for PlugInManager
-
 class RoutePoint;
 class Route;
-class SendToGpsDlg;
-class ConnectionParams;
-
 
 //      Garmin interface private error codes
 #define ERR_GARMIN_INITIALIZE -1
 #define ERR_GARMIN_GENERAL -2
 
-class CommN0183Out : public wxEvtHandler {
-public:
-  CommN0183Out();
-  ~CommN0183Out();
+void SendNMEAMessage(const wxString &msg);
 
-  void SendNMEAMessage(const wxString &msg);
+int SendRouteToGPS_N0183(Route *pr, const wxString &com_name, bool bsend_waypoints
+                     /*SendToGpsDlg *dialog*/);
+int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name
+                        /*SendToGpsDlg *dialog*/);
 
-  int SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints,
-                     SendToGpsDlg *dialog);
-  int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
-                        SendToGpsDlg *dialog);
-
-private:
-
-
-  //      A set of temporarily saved parameters
-  const ConnectionParams *params_save;
-};
 #endif  // _COMMN0183_OUT_H

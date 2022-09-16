@@ -48,7 +48,6 @@ extern bool g_bIsNewLayer;
 extern int g_LayerIdx;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
-extern CommN0183Out *g_comm_out;
 extern MyFrame *gFrame;
 extern bool g_btouch;
 extern ocpnStyle::StyleManager *g_StyleManager;
@@ -1262,7 +1261,7 @@ bool RoutePoint::IsSame(RoutePoint *pOtherRP) {
 
 bool RoutePoint::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
   int result = 0;
-  if (g_comm_out) result = g_comm_out->SendWaypointToGPS(this, com_name, dialog);
+  result = SendWaypointToGPS_N0183(this, com_name/*, dialog*/);
 
   wxString msg;
   if (0 == result)

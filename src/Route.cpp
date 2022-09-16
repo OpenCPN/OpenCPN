@@ -36,13 +36,13 @@
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"  //FIXME (dave) for color
+#include "chartbase.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern int g_route_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
-extern CommN0183Out *g_comm_out;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
@@ -1245,9 +1245,9 @@ int Route::SendToGPS(const wxString &com_name, bool bsend_waypoints,
                      SendToGpsDlg *dialog) {
   int result = 0;
 
-  if (g_comm_out) {
+  {
     ::wxBeginBusyCursor();
-    result = g_comm_out->SendRouteToGPS(this, com_name, bsend_waypoints, dialog);
+    result = SendRouteToGPS_N0183(this, com_name, bsend_waypoints/*, dialog*/);
     ::wxEndBusyCursor();
   }
 

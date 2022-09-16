@@ -426,7 +426,6 @@ extern int g_MemFootSec;
 extern int g_MemFootMB;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
-extern CommN0183Out *g_comm_out;
 extern int g_memUsed;
 
 

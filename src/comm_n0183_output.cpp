@@ -61,8 +61,13 @@
 #include "wx/jsonreader.h"
 #include "nmea0183.h"
 #include "conn_params.h"
+#include "comm_util.h"
+#include "comm_driver.h"
+#include "comm_drv_registry.h"
+#include "comm_drv_n0183_serial.h"
+#include "comm_drv_factory.h"
 
-extern PlugInManager *g_pi_manager;
+//extern PlugInManager *g_pi_manager;
 extern wxString g_GPS_Ident;
 extern bool g_bGarminHostUpload;
 extern bool g_bWplUsePosition;
@@ -168,7 +173,7 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 
 
 
-void CommN0183Out::SendNMEAMessage(const wxString &msg) {
+void SendNMEAMessage(const wxString &msg) {
 //FIXME (dave) Implement using comm...
 #if 0
   // Send to all the outputs
@@ -333,8 +338,8 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent &event) {
 //   return true;
 // }
 
-int CommN0183Out::SendRouteToGPS(Route *pr, const wxString &com_name,
-                                bool bsend_waypoints, SendToGpsDlg *dialog) {
+int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
+                                bool bsend_waypoints/*, SendToGpsDlg *dialog*/) {
   int ret_val = 0;
   //FIXME (dave)  Implement using comm
 #if 0
@@ -981,30 +986,172 @@ ret_point_1:
   return ret_val;
 }
 
-int CommN0183Out::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
-                                   SendToGpsDlg *dialog) {
-  //FIXME (dave) implement using comm
-#if 0
-  int ret_val = 0;
+std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_name,
+                                                           std::shared_ptr<AbstractCommDriver> &old_driver,
+                                                           ConnectionParams &params_save,
+                                                           bool &btempStream, bool &b_restoreStream){
 
-  bool b_restoreStream = false;
-  bool btempStream = false;
-  DataStream *dstr = NULL;
-  DataStream *old_stream = NULL;
+  std::shared_ptr<AbstractCommDriver> driver;
+  auto& registry = CommDriverRegistry::getInstance();
+  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
 
   if (com_name.Lower().StartsWith("serial")) {
-    old_stream = FindStream(com_name);
-    wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
-    if (old_stream) {
-      SaveStreamProperties(old_stream);
-      StopAndRemoveStream(old_stream);
+    wxString comx = com_name.AfterFirst(':');  // strip "Serial:"
+    comx = comx.BeforeFirst(' ');  // strip off any description provided by Windows
+
+    old_driver = FindDriver(drivers, comx.ToStdString());
+    wxLogDebug("Looking for old stream %s", com_name);
+
+    if (old_driver) {
+      auto drv_serial_n0183 =
+         std::dynamic_pointer_cast<CommDriverN0183Serial>(old_driver);
+      if (drv_serial_n0183) {
+        params_save = drv_serial_n0183->GetParams();
+      }
+      registry.Deactivate(old_driver);
+
       b_restoreStream = true;
     }
+
   } else {
-    dstr = FindStream(com_name);
+    driver = FindDriver(drivers, com_name.ToStdString());
   }
 
+  if (com_name.Lower().StartsWith("serial")) {
+      //  If the port was temporarily closed, reopen as I/O type
+      //  Otherwise, open another port using default properties
+    int baud;
+
+    if (old_driver) {
+      baud = params_save.Baudrate;
+    } else {
+      baud = 4800;
+    }
+
+    ConnectionParams cp;
+    cp.Type = SERIAL;
+    cp.SetPortStr(com_name);
+    cp.Baudrate = baud;
+    cp.IOSelect = DS_TYPE_INPUT_OUTPUT;
+
+    driver = MakeCommDriver(&cp);
+    btempStream = true;
+
+#ifdef __OCPN__ANDROID__
+      wxMilliSleep(1000);
+#else
+      //  Wait up to 1 seconds for Datastream secondary thread to come up
+#if 0
+      int timeout = 0;
+      while (!dstr->IsSecThreadActive() && (timeout < 50)) {
+        wxMilliSleep(100);
+        timeout++;
+      }
+
+      if (!dstr->IsSecThreadActive()) {
+        wxString msg(_T("-->GPS Port:"));
+        msg += com_name;
+        msg += _T(" ...Could not be opened for writing");
+        wxLogMessage(msg);
+
+        dstr->Close();
+        goto ret_point;
+      }
+#endif
+#endif
+    }
+#if 0
+    else if (com_name.Find("Bluetooth") != wxNOT_FOUND) {
+      if (dstr == NULL) {
+        ConnectionParams *pConnectionParams = new ConnectionParams();
+        pConnectionParams->Type = INTERNAL_BT;
+        wxStringTokenizer tkz(com_name, _T(";"));
+        wxString name = tkz.GetNextToken();
+        wxString mac = tkz.GetNextToken();
+
+        pConnectionParams->NetworkAddress = name;
+        pConnectionParams->Port = mac;
+        pConnectionParams->NetworkPort = 0;
+        pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+        pConnectionParams->Baudrate = 0;
+
+        dstr = makeDataStream(this, pConnectionParams);
+
+        btempStream = true;
+      }
+    }
+
+    else if (com_name.Lower().StartsWith("udp") ||
+             com_name.Lower().StartsWith("tcp")) {
+      if (dstr == NULL) {
+        NetworkProtocol protocol = UDP;
+        if (com_name.Lower().StartsWith("tcp")) protocol = TCP;
+        wxStringTokenizer tkz(com_name, _T(":"));
+        wxString token = tkz.GetNextToken();
+        wxString address = tkz.GetNextToken();
+        token = tkz.GetNextToken();
+        long port;
+        token.ToLong(&port);
+
+        NetworkDataStream *streamNew =
+            new NetworkDataStream(this, protocol, address, port);
+        if (streamNew->IsOk()) dstr = (DataStream *)streamNew;
+        btempStream = true;
+      }
+
+      if (com_name.Lower().StartsWith("tcp")) {
+        // new tcp connections must wait for connect
+        wxString msg = _("Connecting to ");
+        msg += com_name;
+        dialog->SetMessage(msg);
+        dialog->GetProgressGauge()->Pulse();
+
+        NetworkDataStream *streamTest = (NetworkDataStream *)dstr;
+        int loopCount = 10;  // seconds
+        bool bconnected = false;
+        while (!bconnected && (loopCount > 0)) {
+          if (streamTest->GetSock()->IsConnected()) {
+            bconnected = true;
+            break;
+          }
+          dialog->GetProgressGauge()->Pulse();
+          wxYield();
+          wxSleep(1);
+          loopCount--;
+        }
+        if (bconnected) {
+          msg = _("Connected to ");
+          msg += com_name;
+          dialog->SetMessage(msg);
+        } else {
+          if (btempStream) {
+            dstr->Close();
+            delete dstr;
+          }
+          return 1;
+        }
+      }
+  }
+#endif
+  return driver;
+}
+
+int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGpsDlg *dialog*/) {
+  int ret_val = 0;
+
+  ConnectionParams params_save;
+  bool b_restoreStream = false;
+  bool btempStream = false;
+  std::shared_ptr<AbstractCommDriver> old_driver;
+  std::shared_ptr<AbstractCommDriver> driver;
+  auto& registry = CommDriverRegistry::getInstance();
+
+  driver = CreateOutputConnection(com_name, old_driver,
+                                  params_save, btempStream, b_restoreStream);
+  auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
+
 #ifdef USE_GARMINHOST
+  //FIXME (dave)
 #ifdef __WXMSW__
   if (com_name.Upper().Matches(_T("*GARMIN*")))  // Garmin USB Mode
   {
@@ -1116,120 +1263,13 @@ int CommN0183Out::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
 #endif  // USE_GARMINHOST
 
   {  // Standard NMEA mode
-    if (com_name.Lower().StartsWith("serial")) {
-      //  If the port was temporarily closed, reopen as I/O type
-      //  Otherwise, open another port using default properties
-      wxString baud;
-
-      if (old_stream) {
-        baud = wxString::Format(wxT("%i"), params_save->Baudrate);
-        ;
-      } else {
-        baud = _T("4800");
-      }
-
-      dstr = makeSerialDataStream(this, SERIAL, com_name, baud,
-                                  DS_TYPE_INPUT_OUTPUT, 0, false);
-      btempStream = true;
-
-#ifdef __OCPN__ANDROID__
-      wxMilliSleep(1000);
-#else
-      //  Wait up to 1 seconds for Datastream secondary thread to come up
-      int timeout = 0;
-      while (!dstr->IsSecThreadActive() && (timeout < 50)) {
-        wxMilliSleep(100);
-        timeout++;
-      }
-
-      if (!dstr->IsSecThreadActive()) {
-        wxString msg(_T("-->GPS Port:"));
-        msg += com_name;
-        msg += _T(" ...Could not be opened for writing");
-        wxLogMessage(msg);
-
-        dstr->Close();
-        goto ret_point;
-      }
-#endif
-    } else if (com_name.Find("Bluetooth") != wxNOT_FOUND) {
-      if (dstr == NULL) {
-        ConnectionParams *pConnectionParams = new ConnectionParams();
-        pConnectionParams->Type = INTERNAL_BT;
-        wxStringTokenizer tkz(com_name, _T(";"));
-        wxString name = tkz.GetNextToken();
-        wxString mac = tkz.GetNextToken();
-
-        pConnectionParams->NetworkAddress = name;
-        pConnectionParams->Port = mac;
-        pConnectionParams->NetworkPort = 0;
-        pConnectionParams->NetProtocol = PROTO_UNDEFINED;
-        pConnectionParams->Baudrate = 0;
-
-        dstr = makeDataStream(this, pConnectionParams);
-
-        btempStream = true;
-      }
-    }
-
-    else if (com_name.Lower().StartsWith("udp") ||
-             com_name.Lower().StartsWith("tcp")) {
-      if (dstr == NULL) {
-        NetworkProtocol protocol = UDP;
-        if (com_name.Lower().StartsWith("tcp")) protocol = TCP;
-        wxStringTokenizer tkz(com_name, _T(":"));
-        wxString token = tkz.GetNextToken();
-        wxString address = tkz.GetNextToken();
-        token = tkz.GetNextToken();
-        long port;
-        token.ToLong(&port);
-
-        NetworkDataStream *streamNew =
-            new NetworkDataStream(this, protocol, address, port);
-        if (streamNew->IsOk()) dstr = (DataStream *)streamNew;
-        btempStream = true;
-      }
-
-      if (com_name.Lower().StartsWith("tcp")) {
-        // new tcp connections must wait for connect
-        wxString msg = _("Connecting to ");
-        msg += com_name;
-        dialog->SetMessage(msg);
-        dialog->GetProgressGauge()->Pulse();
-
-        NetworkDataStream *streamTest = (NetworkDataStream *)dstr;
-        int loopCount = 10;  // seconds
-        bool bconnected = false;
-        while (!bconnected && (loopCount > 0)) {
-          if (streamTest->GetSock()->IsConnected()) {
-            bconnected = true;
-            break;
-          }
-          dialog->GetProgressGauge()->Pulse();
-          wxYield();
-          wxSleep(1);
-          loopCount--;
-        }
-        if (bconnected) {
-          msg = _("Connected to ");
-          msg += com_name;
-          dialog->SetMessage(msg);
-        } else {
-          if (btempStream) {
-            dstr->Close();
-            delete dstr;
-          }
-          return 1;
-        }
-      }
-    }
 
     SENTENCE snt;
     NMEA0183 oNMEA0183;
     oNMEA0183.TalkerID = _T ( "EC" );
 
-    if (dialog && dialog->GetProgressGauge())
-      dialog->GetProgressGauge()->SetRange(100);
+//FIXME     if (dialog && dialog->GetProgressGauge())
+//       dialog->GetProgressGauge()->SetRange(100);
 
     if (g_GPS_Ident == _T("Generic")) {
       if (prp->m_lat < 0.)
@@ -1267,8 +1307,14 @@ int CommN0183Out::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
       oNMEA0183.GPwpl.Write(snt);
     }
 
-    if (dstr->SendSentence(snt.Sentence))
-      LogOutputMessage(snt.Sentence, dstr->GetPort(), false);
+    auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
+    auto msg_out = std::make_shared<Nmea0183Msg>(std::string("ECWPL"),
+                                             snt.Sentence.ToStdString(),
+                                             address);
+
+    drv_n0183->SendMessage(msg_out, address);
+
+    //LogOutputMessage(snt.Sentence, com_name, false);
 
     wxString msg(_T("-->GPS Port:"));
     msg += com_name;
@@ -1281,8 +1327,8 @@ int CommN0183Out::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
       wxString term;
       term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
-      if (dstr->SendSentence(term))
-        LogOutputMessage(term, dstr->GetPort(), false);
+      //driver->SendSentence(term);
+      //LogOutputMessage(term, dstr->GetPort(), false);
 
       wxString msg(_T("-->GPS Port:"));
       msg += com_name;
@@ -1292,26 +1338,27 @@ int CommN0183Out::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name,
       wxLogMessage(msg);
     }
 
-    if (dialog && dialog->GetProgressGauge()) {
-      dialog->GetProgressGauge()->SetValue(100);
-      dialog->GetProgressGauge()->Refresh();
-      dialog->GetProgressGauge()->Update();
-    }
+//     if (dialog && dialog->GetProgressGauge()) {
+//       dialog->GetProgressGauge()->SetValue(100);
+//       dialog->GetProgressGauge()->Refresh();
+//       dialog->GetProgressGauge()->Update();
+//     }
 
     wxMilliSleep(500);
 
     //  All finished with the temp port
-    if (btempStream) dstr->Close();
+    if (btempStream)
+      registry.Deactivate(driver);
 
     ret_val = 0;
   }
 
 ret_point:
   if (b_restoreStream) {
-    if (old_stream) CreateAndRestoreSavedStreamProperties();
+    if (old_driver){
+      MakeCommDriver(&params_save);
+    }
   }
 
   return ret_val;
-#endif
-  return 0;
 }

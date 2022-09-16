@@ -102,7 +102,6 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint *pAnchorWatchPoint1;
 extern RoutePoint *pAnchorWatchPoint2;
 extern int g_route_line_width;
-extern CommN0183Out *g_comm_out;
 extern AisDecoder *g_pAIS;
 
 extern PlugInManager *g_pi_manager;
@@ -723,7 +722,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmb.FAAModeIndicator = "A";
     m_NMEA0183.Rmb.Write(snt);
 
-    g_comm_out->SendNMEAMessage(snt.Sentence);
+    SendNMEAMessage(snt.Sentence);
   }
 
   // RMC
@@ -774,7 +773,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
     m_NMEA0183.Rmc.Write(snt);
 
-    g_comm_out->SendNMEAMessage(snt.Sentence);
+    SendNMEAMessage(snt.Sentence);
   }
 
   // APB
@@ -840,7 +839,7 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Apb.Write(snt);
-    g_comm_out->SendNMEAMessage(snt.Sentence);
+    SendNMEAMessage(snt.Sentence);
   }
 
   // XTE
@@ -862,7 +861,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Xte.CrossTrackUnits = _T("N");
 
     m_NMEA0183.Xte.Write(snt);
-    g_comm_out->SendNMEAMessage(snt.Sentence);
+    SendNMEAMessage(snt.Sentence);
   }
 
   return true;
