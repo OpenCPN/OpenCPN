@@ -22,16 +22,26 @@
  ***************************************************************************
  */
 
+#include <wx/arrstr.h>
+#include <wx/button.h>
 #include <wx/combobox.h>
+#include <wx/dialog.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
+#include <wx/gdicmn.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/window.h>
 
-#include "SendToGpsDlg.h"
-#include "Route.h"
-#include "RoutePoint.h"
-#include "route_point_gui.h"
-#include "route_gui.h"
-#include "ser_ports.h"
 #include "conn_params.h"
 #include "OCPNPlatform.h"
+#include "route_gui.h"
+#include "Route.h"
+#include "route_point_gui.h"
+#include "RoutePoint.h"
+#include "SendToGpsDlg.h"
+#include "ser_ports.h"
 
 extern OCPNPlatform* g_Platform;
 extern wxString g_uploadConnection;
