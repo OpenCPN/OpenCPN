@@ -48,12 +48,10 @@
 #include "idents.h"
 #include "multiplexer.h"
 #include "navutil_base.h"
-#include "ocpn_frame.h"
 #include "RoutePoint.h"
 #include "Select.h"
 #include "SoundFactory.h"
 #include "Track.h"
-#include "track_gui.h"
 #include "N2KParser.h"
 
 #if !defined(NAN)
