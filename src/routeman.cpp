@@ -24,10 +24,6 @@
  **************************************************************************/
 #include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
@@ -40,46 +36,29 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 #include <wx/stdpaths.h>
-#include <wx/apptrait.h>
-
-#include "OCPNPlatform.h"
 #include <wx/tokenzr.h>
 
 #include "ais_decoder.h"
 #include "base_platform.h"
+#include "chcanv.h"
 #include "comm_n0183_output.h"
 #include "concanv.h"
 #include "cutil.h"
 #include "dychart.h"
 #include "georef.h"
 #include "MarkIcon.h"
-#include "navutil.h"
-#include "navutil_base.h"
 #include "NavObjectCollection.h"
+#include "navutil_base.h"
+#include "navutil.h"
 #include "ocpn_app.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "Route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
-#include "svg_utils.h"
-#include "Track.h"
-#include "chcanv.h"
-#include "svg_utils.h"
-#include "ocpn_frame.h"
-
-#include "ais_decoder.h"
-#include "base_platform.h"
-#include "comm_n0183_output.h"
-#include "cutil.h"
-#include "dychart.h"
-#include "georef.h"
-#include "MarkIcon.h"
-#include "navutil_base.h"
-#include "NavObjectCollection.h"
-#include "Route.h"
-#include "routeman.h"
 #include "svg_utils.h"
 #include "Track.h"
 
