@@ -24,61 +24,57 @@
  **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-#include "wx/image.h"
-#include <wx/graphics.h>
-#include <wx/listbook.h>
-#include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
-
-#include "config.h"
-#include "dychart.h"
-
+#include <wx/clipbrd.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
 #include <wx/listimpl.cpp>
+#include <wx/menu.h>
 
-#include "canvasMenu.h"
-
-#include "chcanv.h"
-#include "TCWin.h"
-#include "georef.h"
-#include "styles.h"
-#include "routeman.h"
-#include "navutil.h"
-#include "kml.h"
-#include "chartdb.h"
-#include "cutil.h"
-#include "MarkInfo.h"
-#include "RoutePropDlgImpl.h"
-#include "TrackPropDlg.h"
-#include "tcmgr.h"
-#include "routemanagerdialog.h"
-#include "routeman_gui.h"
-#include "route_point_gui.h"
-#include "pluginmanager.h"
-#include "undo.h"
-#include "tide_time.h"
-#include "Quilt.h"
 #include "FontMgr.h"
+#include "MarkInfo.h"
+#include "Quilt.h"
+#include "Route.h"
+#include "RoutePropDlgImpl.h"
+#include "SendToGpsDlg.h"
+#include "TCWin.h"
+#include "Track.h"
+#include "TrackPropDlg.h"
+#include "ais.h"
 #include "ais_decoder.h"
 #include "ais_target_data.h"
-#include "SendToGpsDlg.h"
-#include "Track.h"
-#include "track_gui.h"
-#include "Route.h"
-#include "route_gui.h"
-
+#include "canvasMenu.h"
+#include "chartdb.h"
+#include "chcanv.h"
 #include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#include "ais.h"
+#include "config.h"
+#include "cutil.h"
+#include "dychart.h"
+#include "georef.h"
+#include "kml.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
+#include "pluginmanager.h"
+#include "route_gui.h"
+#include "route_point_gui.h"
+#include "routeman.h"
+#include "routeman_gui.h"
+#include "routemanagerdialog.h"
+#include "s52plib.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "styles.h"
+#include "tcmgr.h"
+#include "tide_time.h"
+#include "track_gui.h"
+#include "undo.h"
 
-#include <vector>
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
