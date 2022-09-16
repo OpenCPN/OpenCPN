@@ -24,21 +24,90 @@
  ***************************************************************************
  */
 
-#include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include <wx/tokenzr.h>
-
+#include <algorithm>
 #include <stdint.h>
+#include <vector>
 
+#include <wx/arrimpl.cpp>
+#include <wx/brush.h>
+#include <wx/colour.h>
+#include <wx/dcmemory.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/glcanvas.h>
+#include <wx/image.h>
+#include <wx/jsonval.h>
+#include <wx/log.h>
+#include <wx/pen.h>
+#include <wx/progdlg.h>
+#include <wx/stopwatch.h>
+#include <wx/string.h>
+#include <wx/tokenzr.h>
+#include <wx/utils.h>
+#include <wx/window.h>
+
+#include "ais.h"
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "ChInfoWin.h"
+#include "cm93.h"  // for chart outline draw
+#include "compass.h"
 #include "config.h"
+#include "dychart.h"
+#include "emboss_data.h"
+#include "FontMgr.h"
+#include "glChartCanvas.h"
+#include "glTexCache.h"
+#include "gshhs.h"
+#include "lz4.h"
+#include "mbtiles.h"
+#include "mipmap/mipmap.h"
+#include "navutil.h"
+#include "ocpn_frame.h"  //FIXME (dave) for color
+#include "OCPNPlatform.h"
+#include "piano.h"
+#include "pluginmanager.h"
+#include "Quilt.h"
 #include "RolloverWin.h"
+#include "route_gui.h"
+#include "Route.h"
+#include "routeman.h"
+#include "route_point_gui.h"
+#include "s52plib.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "tcmgr.h"
+#include "TexFont.h"
+#include "thumbwin.h"
+#include "toolbar.h"
+#include "track_gui.h"
+#include "Track.h"
 
-#if defined(__UNIX__) && \
-    !defined(__WXOSX__)  // high resolution stopwatch for profiling
+#ifdef USE_ANDROID_GLES2
+#include <GLES2/gl2.h>
+#include "linmath.h"
+#include "shaders.h"
+#endif
+
+#include "androidUTIL.h"
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glx.h>
+#endif
+
+#ifndef GL_ETC1_RGB8_OES
+#define GL_ETC1_RGB8_OES 0x8D64
+#endif
+
+#ifndef GL_DEPTH_STENCIL_ATTACHMENT
+#define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
+#endif
+
+#if defined(__UNIX__) &&  !defined(__WXOSX__) 
+// high resolution stopwatch for profiling
 class OCPNStopWatch {
  public:
   OCPNStopWatch() { Reset(); }
@@ -56,60 +125,8 @@ class OCPNStopWatch {
 };
 #endif
 
-#if defined(__OCPN__ANDROID__)
-#include "androidUTIL.h"
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glx.h>
-#endif
 
-#include "dychart.h"
-
-#include "glChartCanvas.h"
-#include "chcanv.h"
-#include "s52plib.h"
-#include "Quilt.h"
-#include "pluginmanager.h"
-#include "routeman.h"
-#include "chartbase.h"
-#include "chartimg.h"
-#include "ChInfoWin.h"
-#include "thumbwin.h"
-#include "chartdb.h"
-#include "navutil.h"
-#include "TexFont.h"
-#include "glTexCache.h"
-#include "gshhs.h"
-#include "ais.h"
-#include "OCPNPlatform.h"
-#include "toolbar.h"
-#include "piano.h"
-#include "tcmgr.h"
-#include "compass.h"
-#include "FontMgr.h"
-#include "mipmap/mipmap.h"
-#include "chartimg.h"
-#include "Track.h"
-#include "track_gui.h"
-#include "emboss_data.h"
-#include "Route.h"
-#include "route_gui.h"
-#include "route_point_gui.h"
-#include "mbtiles.h"
-#include "ocpn_frame.h"  //FIXME (dave) for color
-#include <vector>
-#include <algorithm>
-
-#ifndef GL_ETC1_RGB8_OES
-#define GL_ETC1_RGB8_OES 0x8D64
-#endif
-
-#include "cm93.h"  // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#include "lz4.h"
-
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 //  arm gcc compiler has a lot of trouble passing doubles as function aruments.
 //  We don't really need double precision here, so fix with a (faster) macro.
 extern "C" void glOrthof(float left, float right, float bottom, float top,
@@ -120,21 +137,7 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 
 #endif
 
-#include "cm93.h"  // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#ifdef USE_ANDROID_GLES2
-#include <GLES2/gl2.h>
-#include "linmath.h"
-#include "shaders.h"
-#endif
-
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
-
-#ifndef GL_DEPTH_STENCIL_ATTACHMENT
-#define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
-#endif
 
 extern s52plib *ps52plib;
 extern bool g_bopengl;
@@ -222,7 +225,6 @@ typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
                                                   GLint *data);
 PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
-#include <wx/arrimpl.cpp>
 // WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
 GLuint g_raster_format = GL_RGB;
