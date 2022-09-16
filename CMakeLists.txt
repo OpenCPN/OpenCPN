@@ -846,6 +846,7 @@ set(
   include/FlexHash.h
   include/FontDesc.h
   include/FontMgr.h
+  include/garmin_wrapper.h
   include/GarminProtocolHandler.h
   include/geodesic.h
   include/georef.h
@@ -1047,7 +1048,6 @@ set(
   src/FontDesc.cpp
   src/FontMgr.cpp
   src/GarminProtocolHandler.cpp
-  src/garmin_wrapper.h
   src/geodesic.cpp
   src/GoToPositionDialog.cpp
   src/gshhs.cpp
