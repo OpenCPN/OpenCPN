@@ -44,6 +44,8 @@
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "routeman.h"
+#include "routeman_gui.h"
+#include "route_point_gui.h"
 #include "georef.h"
 #include "chartbase.h"
 #include "Layer.h"
@@ -53,8 +55,6 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 #include "Route.h"
-#include "routeman_gui.h"
-#include "route_point_gui.h"
 #include "chcanv.h"
 #include "navutil_base.h"
 #include "svg_utils.h"
@@ -2380,8 +2380,8 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
 
     if (!wp->IsSharedInVisibleRoute()) {
       wp->SetVisible(!wp->IsVisible());
-      m_pWptListCtrl->SetItemImage(clicked_index,
-                                   RoutePointGui(*wp).GetIconImageIndex());
+      m_pWptListCtrl->SetItemImage(clicked_index, RoutePointGui(*wp).GetIconImageIndex());
+
       pConfig->UpdateWayPoint(wp);
     }
 
