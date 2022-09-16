@@ -426,6 +426,10 @@ class AisApp : public wxAppConsole {
 public:
   AisApp(const char* type, const char* msg) : wxAppConsole() {
     SetAppName("opencpn_unittests");
+    g_BasePlatform = new BasePlatform();
+    pSelectAIS = new Select();
+    pSelect = new Select();
+    g_pAIS = new AisDecoder;
     auto& msgbus = NavMsgBus::GetInstance();
     CommBridge comm_bridge;
     comm_bridge.Initialize();
@@ -697,9 +701,6 @@ TEST(AIS, AISVDM) {
   const char* AISVDM_1 = "!AIVDM,1,1,,A,1535SB002qOg@MVLTi@b;H8V08;?,0*47";
   int MMSI = 338781000;
 
-  g_BasePlatform = new BasePlatform();
-  g_pAIS = new AisDecoder;
-  pSelect = new Select();
   AisApp app("AIVDM", AISVDM_1);
   auto found = g_pAIS->GetTargetList().find(MMSI);
   EXPECT_NE(found, g_pAIS->GetTargetList().end());
