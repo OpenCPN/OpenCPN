@@ -3,7 +3,9 @@
 
 on:
   workflow_run:
-    # workflows: [CMake, Flatpak]
+    # Must restrict to given workflows:
+    # https://github.com/community/community/discussions/16059
+    workflows: [CMake, Flatpak]
     types: [completed]
 
 env:
