@@ -2,11 +2,33 @@
 // C++ code generated with wxFormBuilder (version Oct 26 2018)
 // http://www.wxformbuilder.org/
 //
-// PLEASE DO *NOT* EDIT THIS FILE!
+// PLEASE DO *NOT* EDIT THIS FILE!  //did that. despite warning.
 ///////////////////////////////////////////////////////////////////////////
 
-#include "RoutePropDlg.h"
+#include <wx/button.h>
+#include <wx/choice.h>
+#include <wx/dataview.h>
+#include <wx/datectrl.h>
+#include <wx/datetime.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/menuitem.h>
+#include <wx/notebook.h>
+#include <wx/scrolwin.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
+#include <wx/timectrl.h>
+#include <wx/window.h>
+
 #include "gui_lib.h"
+#include "NavObjectCollection.h"
+#include "ocpn_types.h"
+#include "routeman_gui.h"
+#include "routeman.h"
+#include "RoutePropDlg.h"
+#include "styles.h"
 
 #if wxCHECK_VERSION(3, 1, 2)
 #define CELL_EDITABLE wxDATAVIEW_CELL_EDITABLE
@@ -20,6 +42,9 @@ BEGIN_EVENT_TABLE(RoutePropDlg, wxFrame)
 EVT_CHAR(RoutePropDlg::OnKeyChar)
 #endif
 END_EVENT_TABLE()
+
+
+extern Routeman *g_pRouteMan;
 
 RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                            const wxString& title, const wxPoint& pos,
@@ -574,6 +599,21 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_sdbSizerBtnsOK->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RoutePropDlg::BtnsOnOKButtonClick), NULL, this);
+
+  auto navobj = NavObjectChanges::getInstance();
+  wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_TRK, ObservedEvt);
+  navobj_del_track_listener =
+    navobj->evt_delete_track.GetListener(this, EVT_ROUTEMAN_DEL_TRK);
+  Bind(EVT_ROUTEMAN_DEL_TRK, [&](ObservedEvt& ev) {
+    auto t = std::const_pointer_cast<Track>(UnpackEvtPointer<Track>(ev));
+    RoutemanGui(*g_pRouteMan).DeleteTrack(t.get()); });
+
+  wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_ROUTE, ObservedEvt);
+  navobj_del_route_listener =
+    navobj->evt_delete_route.GetListener(this, EVT_ROUTEMAN_DEL_ROUTE);
+  Bind(EVT_ROUTEMAN_DEL_ROUTE, [&](ObservedEvt& ev) {
+    auto r = std::const_pointer_cast<Route>(UnpackEvtPointer<Route>(ev));
+    g_pRouteMan->DeleteRoute(r.get()); });
 }
 
 RoutePropDlg::~RoutePropDlg() {
