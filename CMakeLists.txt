@@ -2943,6 +2943,9 @@ if (NOT QT_ANDROID AND NOT APPLE)
   )
 
   target_compile_definitions(opencpn-cmd PUBLIC CLIAPP USE_MOCK_DEFS)
+  if (MSVC)
+    target_link_libraries(opencpn-cmd PRIVATE setupapi.lib psapi.lib)
+  endif ()
 
   if (TARGET ocpn::wxcurl)
     target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)

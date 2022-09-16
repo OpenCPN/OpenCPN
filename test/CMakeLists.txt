@@ -24,6 +24,9 @@ add_executable(tests
 )
 
 target_compile_definitions(tests PUBLIC CLIAPP USE_MOCK_DEFS)
+if (MSVC)
+  target_link_libraries(tests PRIVATE setupapi.lib psapi.lib)
+endif ()
 target_include_directories(
   tests
   PRIVATE
