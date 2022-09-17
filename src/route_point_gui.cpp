@@ -620,8 +620,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
 
     float scale = 1.0;
 
-    float ws = ws * scale;
-    float hs = hs * scale;
+    float ws = w * scale;
+    float hs = h * scale;
     float xs = x - ws / 2.;
     float ys = y - hs / 2.;
     float u = (float)w / m_point.m_dragIconTextureWidth,
