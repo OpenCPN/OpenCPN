@@ -71,8 +71,12 @@ if (HAVE_LIBUDEV)
   target_link_libraries(tests PRIVATE ocpn::libudev)
 endif ()
 if (LIBLZMA_FOUND)
-  target_link_libraries(tests PRIVATE LibLZMA::LibLZMA)
+  if (TARGET LibLZMA::LibLZMA)
+    target_link_libraries(opencpn-cmd PRIVATE LibLZMA::LibLZMA)
+  else ()
+    target_link_libraries(opencpn-cmd PRIVATE ${LIBLZMA_LIBRARIES})
 endif ()
+
 
 target_link_libraries(tests PRIVATE GTest::gtest_main)
 include(GoogleTest)
