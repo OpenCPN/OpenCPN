@@ -80,7 +80,7 @@ tN2kMsg MakeN2kMsg(std::vector<unsigned char> &v) {
     Msg.Clear();
   }
 
-  for (int j=0; i<v.size()-1; i++, j++) Msg.Data[j]=Buf[i];
+  for (int j=0; i<static_cast<int>(v.size())-1; i++, j++) Msg.Data[j]=Buf[i];
 
   return Msg;
 }
