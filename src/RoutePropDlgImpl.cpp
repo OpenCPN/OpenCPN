@@ -904,7 +904,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
         RoutePoint* pRP = m_pRoute->GetPoint(
             static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
 
-        g_pRouteMan->RemovePointFromRoute(pRP, m_pRoute, NULL);
+        g_pRouteMan->RemovePointFromRoute(pRP, m_pRoute, 0);
         gFrame->InvalidateAllGL();
         UpdatePoints();
       }
