@@ -197,6 +197,21 @@ wxColor s_regionColor;
 bool g_b_EnableVBO;
 bool g_b_needFinish;  // Need glFinish() call on each frame?
 
+// MacOS has some missing parts:
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+#ifndef APIENTRYP
+#define APIENTRYP APIENTRY *
+#endif
+#ifndef GLAPI
+#define GLAPI extern
+#endif
+
+#ifndef GL_COMPRESSED_RGB_FXT1_3DFX
+#define GL_COMPRESSED_RGB_FXT1_3DFX  0x86B0
+#endif
+
 PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
@@ -1871,7 +1886,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
   for (Track* pTrackDraw : g_TrackList) {
     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
     if (pActiveTrack && pActiveTrack->IsRunning())
-      TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox()); 
+      TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
     // We need Track::Draw() to dynamically render last (ownship) point.
   }
 
