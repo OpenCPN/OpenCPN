@@ -722,7 +722,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmb.FAAModeIndicator = "A";
     m_NMEA0183.Rmb.Write(snt);
 
-    SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   // RMC
@@ -773,7 +773,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
     m_NMEA0183.Rmc.Write(snt);
 
-    SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   // APB
@@ -839,7 +839,7 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Apb.Write(snt);
-    SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   // XTE
@@ -861,7 +861,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Xte.CrossTrackUnits = _T("N");
 
     m_NMEA0183.Xte.Write(snt);
-    SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   return true;
