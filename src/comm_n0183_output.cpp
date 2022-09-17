@@ -190,8 +190,9 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
         msg += _T(" ...Could not be opened for writing");
         wxLogMessage(msg);
       }
-#endif
+
     }
+#endif
   }
     else if (com_name.Find("Bluetooth") != wxNOT_FOUND) {
       if (!driver) {
