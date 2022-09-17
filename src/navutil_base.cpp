@@ -28,9 +28,11 @@
 /**************************************************************************/
 
 
+#include <wx/datetime.h>
 #include <wx/math.h>
 #include <wx/string.h>
 #include <wx/translation.h>
+#include <wx/utils.h>
 
 #include "navutil_base.h"
 

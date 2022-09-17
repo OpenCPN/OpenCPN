@@ -25,6 +25,8 @@
 #ifndef _COMM_AIS_H__
 #define _COMM_AIS_H__
 
+#include <wx/string.h>
+
 #include "ais_target_data.h"
 #include "ais_bitstring.h"
 #include "ais_defs.h"

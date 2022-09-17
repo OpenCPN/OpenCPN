@@ -53,7 +53,7 @@ extern wxWindow* gFrame;
 static wxBitmap* LoadSVG(const wxString filename, unsigned int width,
                          unsigned int height) {
   if (!gFrame) return new wxBitmap(width, height);  // We are headless.
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return loadAndroidSVG(filename, width, height);
 #elif defined(ocpnUSE_SVG)
   wxSVGDocument svgDoc;

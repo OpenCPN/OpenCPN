@@ -29,10 +29,10 @@
 #include <stdio.h>
 #include <vector>
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/gdicmn.h>

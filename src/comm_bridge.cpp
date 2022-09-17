@@ -23,12 +23,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-#include "wx/tokenzr.h"
+#include <wx/event.h>
+#include <wx/string.h>
+#include <wx/tokenzr.h>
 
 #include "comm_bridge.h"
 #include "comm_appmsg_bus.h"

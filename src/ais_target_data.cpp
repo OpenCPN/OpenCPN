@@ -21,10 +21,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-
-#include "ais_target_data.h"
 #include <unordered_map>
 
+#include <wx/datetime.h>
+#include <wx/string.h>
+
+#include "ais_target_data.h"
 #include "ocpn_frame.h"
 #include "navutil_base.h"
 

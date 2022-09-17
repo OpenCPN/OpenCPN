@@ -27,7 +27,7 @@
 #include <fstream>
 #include <string>
 
-#include "wx/log.h"
+#include <wx/log.h>
 
 #include "comm_driver.h"
 #include "comm_drv_registry.h"

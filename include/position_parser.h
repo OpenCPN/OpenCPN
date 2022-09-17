@@ -21,8 +21,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __positionparser_h__
-#define __positionparser_h__
+#ifndef _positionparser_h__
+#define _positionparser_h__
 
 #include <wx/string.h>
 

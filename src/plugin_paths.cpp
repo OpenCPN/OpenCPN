@@ -5,9 +5,9 @@
 #include <wx/string.h>
 
 #include "config.h"
-#include "plugin_paths.h"
 #include "base_platform.h"
 #include "ocpn_plugin.h"
+#include "plugin_paths.h"
 
 /*
  * The user-writable paths for libraries, binaries and plugin data,

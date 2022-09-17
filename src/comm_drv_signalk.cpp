@@ -23,10 +23,14 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <memory>
+#include <string>
+
 #include "comm_drv_signalk_net.h"
 
-/*    commdriverSignalk implementation
- * */
+
+
+/* commdriverSignalk implementation */
 
 CommDriverSignalK::CommDriverSignalK(const std::string& s)
     : AbstractCommDriver(NavAddr::Bus::Signalk, s) {}

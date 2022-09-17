@@ -24,18 +24,21 @@
 #ifndef _ROUTEPOINT_H__
 #define _ROUTEPOINT_H__
 
-#include <wx/string.h>
-#include <wx/datetime.h>
-#include <wx/gdicmn.h>
-#include <wx/gauge.h>
+#include <wx/bitmap.h>
 #include <wx/clrpicker.h>
+#include <wx/datetime.h>
+#include <wx/font.h>
+#include <wx/gauge.h>
+#include <wx/gdicmn.h>
+#include <wx/string.h>
 
-#include "hyperlink.h"
 #include "bbox.h"
+#include "hyperlink.h"
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
-#define SCAMIN_MIN \
-  800  // minimal allowed ScaMin setting. prevents always hiding
+
+// minimal allowed ScaMin setting. prevents always hiding
+#define SCAMIN_MIN  800 
 
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"

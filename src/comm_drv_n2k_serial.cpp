@@ -132,7 +132,7 @@ public:
   void OnExit(void);
 
 private:
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   serial::Serial m_serial;
 #endif
   void ThreadMessage(const wxString& msg);

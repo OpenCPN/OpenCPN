@@ -27,10 +27,10 @@
 #define _COMMN0183_OUT_H
 
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 class RoutePoint;
@@ -47,4 +47,4 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name, bool bsend_waypoin
 int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name
                         /*SendToGpsDlg *dialog*/);
 
-#endif  // _COMMN0183_OUT_H
+#endif  // _COMMN0183>>UT_H

@@ -25,6 +25,9 @@
 #ifndef _COMMDRIVERN0183_H__
 #define _COMMDRIVERN0183_H__
 
+#include <memory>
+#include <string>
+
 #include "comm_driver.h"
 
 class CommDriverN0183 : public AbstractCommDriver {
@@ -45,4 +48,4 @@ public:
   void Activate() override;
 };
 
-#endif  // guard
+#endif  // guarstring

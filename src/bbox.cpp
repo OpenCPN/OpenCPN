@@ -9,6 +9,9 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#include <wx/gdicmn.h>
+#include <wx/utils.h>
+
 #include "bbox.h"
 
 BoundingBox::BoundingBox() {

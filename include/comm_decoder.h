@@ -30,6 +30,9 @@
 #include <memory>
 #include <string>
 
+#include <wx/jsonval.h>
+#include <wx/string.h>
+
 #include "comm_appmsg.h"
 #include "nmea0183.h"
 #include "N2KParser.h"

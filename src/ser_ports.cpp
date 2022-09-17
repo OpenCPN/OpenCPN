@@ -24,8 +24,8 @@
  **************************************************************************/
 
 #ifdef __MSVC__
-#include "winsock2.h"
-#include "wx/msw/winundef.h"
+#include <winsock2.h>
+#include <wx/msw/winundef.h>
 #endif
 
 #include "config.h"
@@ -41,19 +41,20 @@
 #include <unordered_set>
 #include <vector>
 
+#include <wx/arrstr.h>
+#include <wx/log.h>
+#include <wx/utils.h>
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
 
-#include <wx/arrstr.h>
-#include <wx/log.h>
-#include <wx/utils.h>
 
 #ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
@@ -553,7 +554,7 @@ wxArrayString* EnumerateSerialPorts(void) {
 
 wxArrayString* EnumerateSerialPorts(void) { return EnumerateUdevSerialPorts(); }
 
-#elif defined(__OCPN__ANDROID__)
+#elif defined(__ANDROID__)
 
 wxArrayString* EnumerateSerialPorts(void) {
   return androidGetSerialPortsArray();

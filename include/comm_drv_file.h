@@ -31,9 +31,6 @@
 #include <vector>
 #include <string>
 
-#include <wx/event.h>
-#include <wx/jsonreader.h>
-
 #include "comm_driver.h"
 
 

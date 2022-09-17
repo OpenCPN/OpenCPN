@@ -76,14 +76,16 @@ millions of points.
 #include <string>
 #include <vector>
 
-#include "wx/colour.h"
-#include "wx/datetime.h"
-#include "wx/event.h"
-#include "wx/jsonval.h"
-#include "wx/pen.h"
+#include <wx/colour.h>
+#include <wx/datetime.h>
+#include <wx/event.h>
+#include <wx/jsonval.h>
+#include <wx/pen.h>
 #include <wx/progdlg.h>
-#include "wx/string.h"
-#include "wx/utils.h"
+#include <wx/string.h>
+#include <wx/utils.h>
+
+#include "track.h"
 
 #include "chartbase.h"
 #include "georef.h"
@@ -93,7 +95,6 @@ millions of points.
 #include "route.h"
 #include "routeman.h"
 #include "select.h"
-#include "track.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;

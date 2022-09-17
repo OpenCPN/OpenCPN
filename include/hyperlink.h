@@ -22,8 +22,8 @@
  ***************************************************************************
  */
 
-#ifndef __HYPERLINK_H__
-#define __HYPERLINK_H__
+#ifndef _HYPERLINK_H__
+#define _HYPERLINK_H__
 
 #include <wx/string.h>
 #include <wx/list.h>

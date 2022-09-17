@@ -23,13 +23,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "wx/math.h"
+#include <wx/jsonreader.h>
+#include <wx/jsonval.h>
+#include <wx/log.h>
+#include <wx/math.h>
+#include <wx/string.h>
 
 #include "comm_decoder.h"
 #include "comm_util.h"

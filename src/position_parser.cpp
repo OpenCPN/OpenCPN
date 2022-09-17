@@ -22,6 +22,7 @@
  **************************************************************************/
 
 #include <wx/tokenzr.h>
+#include <wx/string.h>
 #include <wx/regex.h>
 
 #include "position_parser.h"

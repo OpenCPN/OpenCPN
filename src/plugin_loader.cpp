@@ -36,7 +36,7 @@
 #include <gelf.h>
 #endif
 
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__)
 #include <wordexp.h>
 #endif
 
@@ -67,7 +67,7 @@
 #include "plugin_paths.h"
 #include "safe_mode.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <dlfcn.h>
 #endif
@@ -424,7 +424,7 @@ bool PluginLoader::LoadPlugInDirectory(const wxString& plugin_dir,
 #endif
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   get_flags = wxDIR_FILES;  // No subdirs, especially "/files" where PlugIns are
                             // initially placed in APK
 #endif
@@ -1099,7 +1099,7 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
 
   //  But Android Plugins do not include the wxlib specification in their ELF
   //  file. So we assume Android Plugins are compatible....
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return true;
 #endif
 

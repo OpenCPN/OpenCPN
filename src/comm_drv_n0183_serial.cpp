@@ -27,8 +27,11 @@
 #include <queue>  // std::queue
 #include <vector>
 
-#include <wx/thread.h>
+#include <wx/event.h>
 #include <wx/log.h>
+#include <wx/string.h>
+#include <wx/thread.h>
+#include <wx/utils.h>
 
 #include "comm_drv_n0183_serial.h"
 #include "comm_navmsg_bus.h"
@@ -296,7 +299,7 @@ void CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   wxString sentence(msg_0183->payload.c_str());
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString payload = sentence;
     if( !sentence.EndsWith(_T("\r\n")) )
         payload += _T("\r\n");

@@ -25,14 +25,14 @@
 
 // FIXME  Why is this needed?
 #ifdef __MSVC__
-#include "winsock2.h"
-#include "wx/msw/winundef.h"
+#include <winsock2.h>
+#include <wx/msw/winundef.h>
 #endif
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include "comm_util.h"
@@ -43,7 +43,7 @@
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
-#if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
 #include "comm_drv_n2k_socketcan.h"
 #endif
 
@@ -87,7 +87,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
         }
       }
 
-#if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
     case SOCKETCAN:
     {
       auto driver = std::make_shared<CommDriverN2KSocketCAN>(params, msgbus);

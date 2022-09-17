@@ -24,9 +24,13 @@
 #ifndef _ROUTE_H__
 #define _ROUTE_H__
 
-#include <wx/object.h>
+#include <wx/colour.h>
+#include <wx/datetime.h>
+#include <wx/gdicmn.h>
 #include <wx/list.h>
-#include "wx28compat.h"
+#include <wx/object.h>
+#include <wx/pen.h>
+#include <wx/string.h>
 
 #include "route_point.h"
 #include "wx28compat.h"

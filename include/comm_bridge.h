@@ -31,6 +31,10 @@
 #include <string>
 #include <unordered_map>
 
+#include <wx/event.h>
+#include <wx/log.h>
+#include <wx/timer.h>
+
 #include "comm_decoder.h"
 #include "comm_navmsg.h"
 #include "observable_navmsg.h"

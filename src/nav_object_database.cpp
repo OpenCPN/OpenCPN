@@ -21,6 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include <wx/string.h>
 
 #include "nav_object_database.h"
 #include "routeman.h"
@@ -29,7 +30,7 @@
 #include "track.h"
 #include "route.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <QDebug>
 #endif
 

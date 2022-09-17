@@ -45,8 +45,6 @@
 #include <archive_entry.h>
 typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
-//#include <expat.h>
-
 #if defined(__MINGW32__) && defined(Yield)
 #undef Yield  // from win.h, conflicts with mingw headers
 #endif

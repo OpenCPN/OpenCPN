@@ -22,6 +22,9 @@
  ***************************************************************************
  */
 
+#include <wx/list.h>
+#include <wx/gdicmn.h>
+
 #include "select.h"
 #include "georef.h"
 #include "vector2D.h"

@@ -23,17 +23,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 #include <vector>
+#include <string>
 
-// FIXME  Why is this needed?
-//#ifdef __MSVC__
-//#include "winsock2.h"
-//#include "wx/msw/winundef.h"
-//#endif
-
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/string.h"
+#include <wx/string.h>
 #endif  // precompiled headers
 
 #include "comm_util.h"

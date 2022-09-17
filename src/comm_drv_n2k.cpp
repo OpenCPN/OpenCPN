@@ -22,12 +22,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <string>
+#include <memory>
 
 #include "comm_drv_n2k.h"
 
-/*    commdriverN2K implementation
- * */
 
+
+/* commdriverN2K implementation */
 CommDriverN2K::CommDriverN2K(const std::string& s)
     : AbstractCommDriver(NavAddr::Bus::N2000, s) {}
 

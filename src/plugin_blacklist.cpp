@@ -31,6 +31,7 @@
 #include <vector>
 
 #include <wx/translation.h>
+#include <wx/log.h>
 
 #include "logger.h"
 

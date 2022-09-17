@@ -25,6 +25,8 @@
 #ifndef _COMMDRIVERSIGNALK_H
 #define _COMMDRIVERSIGNALK_H
 
+#include <memory>
+
 #include "comm_driver.h"
 
 class CommDriverSignalK : public AbstractCommDriver {

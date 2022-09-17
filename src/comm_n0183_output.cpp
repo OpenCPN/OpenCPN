@@ -173,7 +173,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
     driver = MakeCommDriver(&cp);
     btempStream = true;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       wxMilliSleep(1000);
 #else
     auto drv_serial_n0183 =

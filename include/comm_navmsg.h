@@ -32,7 +32,7 @@
 #include <netinet/in.h>
 #endif
 
-#include <wx/jsonreader.h>
+#include <wx/jsonval.h>
 
 #ifndef _DRIVER_NAVMSG_H
 #define _DRIVER_NAVMSG_H
