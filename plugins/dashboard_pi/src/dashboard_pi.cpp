@@ -469,7 +469,8 @@ int dashboard_pi::Init(void) {
   mPriWDN = 99;  // True hist. wind
   mPriDepth = 99;
   mPriSTW = 99;
-  mPriWTP = 99;
+  mPriWTP = 99;  // Water temp
+  mPriATMP = 99; // Air temp
   mPriSatStatus = 99;
   mPriSatUsed = 99;
   mPriAlt = 99;
@@ -581,6 +582,14 @@ int dashboard_pi::Init(void) {
   listener_130306 = std::move(GetListener(id_130306, EVT_N2K_130306, this));
   Bind(EVT_N2K_130306, [&](ObservedEvt ev) {
     HandleN2K_130306(ev);
+  });
+
+  // Envorinment   PGN 130310
+  wxDEFINE_EVENT(EVT_N2K_130310, ObservedEvt);
+  NMEA2000Id id_130310 = NMEA2000Id(130310);
+  listener_130310 = std::move(GetListener(id_130310, EVT_N2K_130310, this));
+  Bind(EVT_N2K_130310, [&](ObservedEvt ev) {
+    HandleN2K_130310(ev);
   });
     
 
@@ -910,7 +919,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 mPriPosition, mPriSatUsed,
                 m_NMEA0183.Gga.NumberOfSatellitesInUse,
                 m_NMEA0183.Gga.AntennaAltitudeMeters);
-      if (mPriAlt >= 2 && (mPriPosition >= 1 || mPriSatUsed >= 1)) {
+      if (mPriAlt >= 3 && (mPriPosition >= 1 || mPriSatUsed >= 1)) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gga.GPSQuality > 0 &&
               m_NMEA0183.Gga.NumberOfSatellitesInUse >= 5) {
@@ -918,7 +927,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             // typically less accurate than lon and lat.
             double alt = m_NMEA0183.Gga.AntennaAltitudeMeters;
             SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, alt, _T("m"));
-            mPriAlt = 2;
+            mPriAlt = 3;
             mALT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -1141,7 +1150,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               _T("hPa"));  // Convert to hpa befor sending to instruments.
           mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
         }
-        if (mPriATMP >= 4) {
+        if (mPriATMP >= 5) {
           double airtemp = m_NMEA0183.Mda.AirTemp;
           if (airtemp < 999.0) {
             SendSentenceToAllInstruments(
@@ -1149,15 +1158,15 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               toUsrTemp_Plugin(airtemp, g_iDashTempUnit),
               getUsrTempUnit_Plugin(g_iDashTempUnit));
             mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
-            mPriATMP = 4;
+            mPriATMP = 5;
           }
         }
       }
 
     } else if (m_NMEA0183.LastSentenceIDReceived == _T("MTW")) {
-      if (mPriWTP >= 3) {
+      if (mPriWTP >= 4) {
         if (m_NMEA0183.Parse()) {
-          mPriWTP = 3;
+          mPriWTP = 4;
           SendSentenceToAllInstruments(
               OCPN_DBP_STC_TMP,
               toUsrTemp_Plugin(m_NMEA0183.Mtw.Temperature, g_iDashTempUnit),
@@ -1596,8 +1605,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                   _T("ENV_OUTAIR_T") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                   _T("ENV_OUTSIDE_T")) {
-            if (mPriATMP >= 2) {
-              mPriATMP = 2;
+            if (mPriATMP >= 4) {
+              mPriATMP = 4;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(xdrdata, g_iDashTempUnit),
                   getUsrTempUnit_Plugin(g_iDashTempUnit));
@@ -1655,8 +1664,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           // Nasa style water temp
           if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
               _T("ENV_WATER_T")) {
-            if (mPriWTP >= 2) {
-              mPriWTP = 2;
+            if (mPriWTP >= 3) {
+              mPriWTP = 3;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_TMP,
                   toUsrTemp_Plugin(
@@ -1833,6 +1842,12 @@ void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
       case 8: talker_N2k = "GA"; break;  //Galileo
       default: talker_N2k = wxEmptyString;
     }
+    if (std::isnan(Altitude)) return;
+    if (mPriAlt >= 1) {
+      SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, Altitude, _T("m"));
+      mPriAlt = 1;
+      mALT_Watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 }
 
@@ -1988,6 +2003,45 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
         mMWVT_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
+  }
+}
+
+void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
+  NMEA2000Id id_130310(130310);
+  std::vector<uint8_t>v = GetN2000Payload(id_130310, ev);
+  unsigned char SID;
+  double WaterTemperature, OutsideAmbientAirTemperature, AtmosphericPressure;
+
+  // Outside Environmental parameters
+  if (ParseN2kPGN130310(v, SID, WaterTemperature,
+                        OutsideAmbientAirTemperature, AtmosphericPressure)) {
+    if (mPriWTP >= 1) {
+      double m_wtemp KELVIN2C(WaterTemperature);
+      if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
+        SendSentenceToAllInstruments(
+          OCPN_DBP_STC_TMP, toUsrTemp_Plugin(m_wtemp, g_iDashTempUnit),
+          getUsrTempUnit_Plugin(g_iDashTempUnit));
+        mPriWTP =1;
+        mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
+      }
+    }
+    
+    if (mPriATMP >= 1) {
+      if (std::isnan(OutsideAmbientAirTemperature)) return;
+      double m_airtemp = KELVIN2C(OutsideAmbientAirTemperature);
+      if (m_airtemp > -60 && m_airtemp < 100) {
+        SendSentenceToAllInstruments(
+          OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(m_airtemp, g_iDashTempUnit),
+          getUsrTempUnit_Plugin(g_iDashTempUnit));
+        mPriATMP = 1;
+        mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+      }
+    }
+
+    if (std::isnan(AtmosphericPressure)) return;
+    double m_press = PA2HPA(AtmosphericPressure);
+    SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
+    mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
   }
 }
 
@@ -2264,7 +2318,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("environment.water.temperature")) {
-      if (mPriWTP >= 1) {
+      if (mPriWTP >= 2) {
         double m_wtemp = GetJsonDouble(value);
         if (std::isnan(m_wtemp)) return;
 
@@ -2273,7 +2327,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           SendSentenceToAllInstruments(
             OCPN_DBP_STC_TMP, toUsrTemp_Plugin(m_wtemp, g_iDashTempUnit),
             getUsrTempUnit_Plugin(g_iDashTempUnit));
-          mPriWTP = 1;
+          mPriWTP = 2;
           mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
@@ -2394,12 +2448,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         }
       }
     } else if (update_path == _T("navigation.gnss.antennaAltitude")) {
-      if (mPriAlt >= 1) {
+      if (mPriAlt >= 2) {
         double m_alt = GetJsonDouble(value);
         if (std::isnan(m_alt)) return;
 
         SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, m_alt, _T("m"));
-        mPriAlt = 1;
+        mPriAlt = 2;
         mALT_Watchdog = gps_watchdog_timeout_ticks;
       }
 
@@ -2415,7 +2469,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         mUTC_Watchdog = gps_watchdog_timeout_ticks;
       }
     } else if (update_path == _T("environment.outside.temperature")) {
-      if (mPriATMP >= 3) {
+      if (mPriATMP >= 2) {
         double m_airtemp = GetJsonDouble(value);
         if (std::isnan(m_airtemp)) return;
 
@@ -2424,7 +2478,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           SendSentenceToAllInstruments(
               OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(m_airtemp, g_iDashTempUnit),
               getUsrTempUnit_Plugin(g_iDashTempUnit));
-          mPriATMP = 3;
+          mPriATMP = 2;
           mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
