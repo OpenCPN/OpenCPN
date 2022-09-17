@@ -40,7 +40,7 @@
 #include "conn_params.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
-#include "Route.h"
+#include "route.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"

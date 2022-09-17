@@ -24,7 +24,7 @@
 #include "routeman.h"
 #include "ais_defs.h"
 #include "ais_decoder.h"
-#include "Select.h"
+#include "select.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;

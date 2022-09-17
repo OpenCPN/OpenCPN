@@ -41,7 +41,7 @@
 #include "observable_navmsg.h"
 #include "OCPN_Sound.h"
 #include "ocpn_types.h"
-#include "Track.h"
+#include "track.h"
 
 
 enum AISAudioSoundType {

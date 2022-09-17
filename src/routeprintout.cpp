@@ -66,8 +66,8 @@
 
 #include "printtable.h"
 #include "wx28compat.h"
-#include "Track.h"
-#include "Route.h"
+#include "track.h"
+#include "route.h"
 #include "gui_lib.h"
 #include "navutil_base.h"
 

@@ -30,7 +30,7 @@
 #include <wx/gauge.h>
 #include <wx/clrpicker.h>
 
-#include "Hyperlink.h"
+#include "hyperlink.h"
 #include "bbox.h"
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'

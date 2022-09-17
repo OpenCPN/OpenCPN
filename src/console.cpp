@@ -63,8 +63,8 @@
 #include "plugin_loader.h"
 #include "plugin_handler.h"
 #include "routeman.h"
-#include "Track.h"
-#include "Select.h"
+#include "track.h"
+#include "select.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;

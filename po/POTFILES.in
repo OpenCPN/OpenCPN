@@ -12,7 +12,7 @@ include/RoutePropDlg.h
 include/RoutePropDlgImpl.h
 include/S57QueryDialog.h
 include/SendToGpsDlg.h
-include/Track.h
+include/track.h
 include/trackprintout.h
 include/TrackPropDlg.h
 src/about.cpp
@@ -59,10 +59,10 @@ src/Osenc.cpp
 src/plugin_handler.cpp
 src/pluginmanager.cpp
 src/RolloverWin.cpp
-src/Route.cpp
+src/route.cpp
 src/routeman.cpp
 src/routemanagerdialog.cpp
-src/RoutePoint.cpp
+src/route_point.cpp
 src/routeprintout.cpp
 src/RoutePropDlg.cpp
 src/RoutePropDlgImpl.cpp

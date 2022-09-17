@@ -67,7 +67,7 @@
 #include "ChInfoWin.h"
 #include "Quilt.h"
 #include "select_item.h"
-#include "Select.h"
+#include "select.h"
 #include "FontMgr.h"
 #include "ais_decoder.h"
 #include "ais_target_data.h"

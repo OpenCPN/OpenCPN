@@ -33,10 +33,10 @@
 #include "cutil.h"
 #include "georef.h"
 #include "georef.h"
-#include "NavObjectCollection.h"
-#include "Route.h"
+#include "nav_object_database.h"
+#include "route.h"
 #include "routeman.h"
-#include "Select.h"
+#include "select.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;

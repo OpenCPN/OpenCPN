@@ -33,7 +33,7 @@
 #include "bbox.h"
 #include "chcanv.h"
 #include "ocpndc.h"
-#include "Route.h"
+#include "route.h"
 #include "viewport.h"
 
 class SendToGpsDlg;

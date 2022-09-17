@@ -37,10 +37,10 @@
 #include "ais_target_data.h"
 #include "OCPNListCtrl.h"
 #include "styles.h"
-#include "Select.h"
+#include "select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
-#include "RoutePoint.h"
+#include "route_point.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
 

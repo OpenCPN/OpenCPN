@@ -37,9 +37,9 @@
 #include "conn_params.h"
 #include "OCPNPlatform.h"
 #include "route_gui.h"
-#include "Route.h"
+#include "route.h"
 #include "route_point_gui.h"
-#include "RoutePoint.h"
+#include "route_point.h"
 #include "SendToGpsDlg.h"
 #include "ser_ports.h"
 

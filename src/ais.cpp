@@ -46,7 +46,7 @@
 #include "navutil.h"  // for Select
 #include "georef.h"
 #include "styles.h"
-#include "Select.h"
+#include "select.h"
 #include "ais_decoder.h"
 #include "ais_target_data.h"
 #include "AISTargetAlertDialog.h"

@@ -56,7 +56,7 @@
 #include "FontMgr.h"
 #include "s52s57.h"
 #include "options.h"
-#include "Select.h"
+#include "select.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "plugin_paths.h"

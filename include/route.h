@@ -28,7 +28,7 @@
 #include <wx/list.h>
 #include "wx28compat.h"
 
-#include "RoutePoint.h"
+#include "route_point.h"
 #include "wx28compat.h"
 #include "bbox.h"
 

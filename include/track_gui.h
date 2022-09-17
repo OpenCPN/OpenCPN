@@ -31,7 +31,7 @@
 #include "bbox.h"
 #include "chcanv.h"
 #include "ocpndc.h"
-#include "Track.h"
+#include "track.h"
 #include "viewport.h"
 
 class TrackPointGui {

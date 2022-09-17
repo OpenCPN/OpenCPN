@@ -82,7 +82,7 @@ msgstr "İlave nesne bilgisi"
 msgid "Send to GPS"
 msgstr "GPS'ye gönder"
 
-#: include/Track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
+#: include/track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
 #: src/chart1.cpp:8478
 msgid "(Unnamed Track)"
 msgstr "(Adsız Seyirizi)"
@@ -220,7 +220,7 @@ msgstr "Daha fazla bilgi için opencpn.org web sitesini ziyaret etmek ister misi
 #: src/options.cpp:11660 src/options.cpp:11673 src/pluginmanager.cpp:539
 #: src/pluginmanager.cpp:1234 src/pluginmanager.cpp:2278
 #: src/pluginmanager.cpp:2338 src/pluginmanager.cpp:2381
-#: src/pluginmanager.cpp:2417 src/Route.cpp:1262 src/RoutePoint.cpp:1280
+#: src/pluginmanager.cpp:2417 src/route.cpp:1262 src/route_point.cpp:1280
 #: src/tcmgr.cpp:692
 msgid "OpenCPN Info"
 msgstr "OpenCPN Hakkında"
@@ -6789,15 +6789,15 @@ msgstr "AISRollover"
 msgid "TideCurrentGraphRollover"
 msgstr "GelgitAkıntıÇizelgeUzantısı"
 
-#: src/Route.cpp:1255
+#: src/route.cpp:1255
 msgid "Route Transmitted."
 msgstr "Yol İletildi."
 
-#: src/Route.cpp:1258
+#: src/route.cpp:1258
 msgid "Error on Route Upload.  Garmin GPS not connected"
 msgstr "Rota Yükleme hatası. Garmin GPS bağlı değil"
 
-#: src/Route.cpp:1260
+#: src/route.cpp:1260
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Rota yükleme hatası. Lütfen günlük dosyalarını kontrol et..."
 
@@ -7071,32 +7071,32 @@ msgstr "Dosya OpenCPN'ın katman dizininden de silinir."
 msgid "(Unnamed Layer)"
 msgstr "(Adsız Etiket)"
 
-#: src/RoutePoint.cpp:636 src/RoutePoint.cpp:637 src/RoutePoint.cpp:800
-#: src/RoutePoint.cpp:801
+#: src/route_point.cpp:636 src/route_point.cpp:637 src/route_point.cpp:800
+#: src/route_point.cpp:801
 msgid "Marks"
 msgstr "İşaretler"
 
-#: src/RoutePoint.cpp:1272
+#: src/route_point.cpp:1272
 msgid "Waypoint(s) Transmitted."
 msgstr "Seyirnokta(lar)ı "
 
-#: src/RoutePoint.cpp:1275
+#: src/route_point.cpp:1275
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "Seyirnoktası yüklenirken hata oluştu. Lütfen kayıt dosyalarını kontrol edin..."
 
-#: src/RoutePoint.cpp:1277
+#: src/route_point.cpp:1277
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Seyirnoktası yüklenirken hata oluştu. Lütfen kayıt dosyalarını kontrol edin..."
 
-#: src/RoutePoint.cpp:1347
+#: src/route_point.cpp:1347
 msgid "The ScaMin value for new waypoints is set to"
 msgstr ""
 
-#: src/RoutePoint.cpp:1348
+#: src/route_point.cpp:1348
 msgid "but current chartscale is"
 msgstr "ama şu anki chartscale"
 
-#: src/RoutePoint.cpp:1350
+#: src/route_point.cpp:1350
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "Bu nedenle yeni geçiş noktası bu yakınlaştırma düzeyinde görünür olmaz."
 

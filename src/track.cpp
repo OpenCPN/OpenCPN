@@ -88,12 +88,12 @@ millions of points.
 #include "chartbase.h"
 #include "georef.h"
 #include "json_event.h"
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "navutil_base.h"
-#include "Route.h"
+#include "route.h"
 #include "routeman.h"
-#include "Select.h"
-#include "Track.h"
+#include "select.h"
+#include "track.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;

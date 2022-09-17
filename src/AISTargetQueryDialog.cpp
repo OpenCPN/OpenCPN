@@ -33,11 +33,11 @@
 #include "FontMgr.h"
 #include "ais_target_data.h"
 #include "ais_decoder.h"
-#include "Select.h"
+#include "select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
-#include "Track.h"
-#include "RoutePoint.h"
+#include "track.h"
+#include "route_point.h"
 #include "ocpn_frame.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;

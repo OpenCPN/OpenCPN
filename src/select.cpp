@@ -22,12 +22,12 @@
  ***************************************************************************
  */
 
-#include "Select.h"
+#include "select.h"
 #include "georef.h"
 #include "vector2D.h"
-#include "NavObjectCollection.h"
-#include "Track.h"
-#include "Route.h"
+#include "nav_object_database.h"
+#include "track.h"
+#include "route.h"
 #include "base_platform.h"
 
 extern BasePlatform *g_BasePlatform;

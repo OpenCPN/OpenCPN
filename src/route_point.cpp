@@ -34,10 +34,10 @@
 #include "georef.h"
 #include "glChartCanvas.h"
 #include "navutil_base.h"
-#include "Route.h"
+#include "route.h"
 #include "routeman.h"
-#include "RoutePoint.h"
-#include "Select.h"
+#include "route_point.h"
+#include "select.h"
 #include "wx28compat.h"
 
 #include <wx/listimpl.cpp>

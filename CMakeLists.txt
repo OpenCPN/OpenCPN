@@ -807,7 +807,7 @@ set(
   include/catalog_mgr.h
   include/catalog_parser.h
   include/cat_settings.h
-  include/ChartDataInputStream.h
+  include/chartdata_input_stream.h
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
@@ -853,7 +853,7 @@ set(
   include/GoToPositionDialog.h
   include/gui_lib.h
   include/gshhs.h
-  include/Hyperlink.h
+  include/hyperlink.h
   include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
@@ -866,7 +866,7 @@ set(
   include/MarkInfo.h
   include/mbtiles.h
   include/multiplexer.h
-  include/NavObjectCollection.h
+  include/nav_object_database.h
   include/navutil.h
   include/navutil_base.h
   include/NMEALogWindow.h
@@ -894,16 +894,16 @@ set(
   include/plugin_loader.h
   include/plugin_paths.h
   include/pluginmanager.h
-  include/PositionParser.h
+  include/position_parser.h
   include/printtable.h
   include/Quilt.h
   include/RolloverWin.h
-  include/Route.h
+  include/route.h
   include/route_gui.h
   include/routemanagerdialog.h
   include/routeman.h
   include/routeman_gui.h
-  include/RoutePoint.h
+  include/route_point.h
   include/route_point_gui.h
   include/routeprintout.h
   include/RoutePropDlg.h
@@ -914,7 +914,7 @@ set(
   include/S57QueryDialog.h
   include/S57Sector.h
   include/safe_mode.h
-  include/Select.h
+  include/select.h
   include/select_item.h
   include/semantic_vers.h
   include/SendToGpsDlg.h
@@ -931,7 +931,7 @@ set(
   include/tide_time.h
   include/timers.h
   include/toolbar.h
-  include/Track.h
+  include/track.h
   include/track_gui.h
   include/trackprintout.h
   include/TrackPropDlg.h
@@ -956,7 +956,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
-  ${CMAKE_SOURCE_DIR}/src/ChartDataInputStream.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartdata_input_stream.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
@@ -983,9 +983,9 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
-  ${CMAKE_SOURCE_DIR}/src/Hyperlink.cpp
+  ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
-  ${CMAKE_SOURCE_DIR}/src/NavObjectCollection.cpp
+  ${CMAKE_SOURCE_DIR}/src/nav_object_database.cpp
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/observable.cpp
   ${CMAKE_SOURCE_DIR}/src/observable_confvar.cpp
@@ -996,16 +996,16 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
-  ${CMAKE_SOURCE_DIR}/src/PositionParser.cpp
+  ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
-  ${CMAKE_SOURCE_DIR}/src/Route.cpp
-  ${CMAKE_SOURCE_DIR}/src/RoutePoint.cpp
+  ${CMAKE_SOURCE_DIR}/src/route.cpp
+  ${CMAKE_SOURCE_DIR}/src/route_point.cpp
   ${CMAKE_SOURCE_DIR}/src/routeman.cpp
-  ${CMAKE_SOURCE_DIR}/src/Select.cpp
+  ${CMAKE_SOURCE_DIR}/src/select.cpp
   ${CMAKE_SOURCE_DIR}/src/select_item.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
   ${CMAKE_SOURCE_DIR}/src/ser_ports.cpp
-  ${CMAKE_SOURCE_DIR}/src/Track.cpp
+  ${CMAKE_SOURCE_DIR}/src/track.cpp
 )
 
 set(

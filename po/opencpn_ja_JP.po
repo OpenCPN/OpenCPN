@@ -82,7 +82,7 @@ msgstr "付加情報"
 msgid "Send to GPS"
 msgstr "GPS に送信"
 
-#: include/Track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
+#: include/track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
 #: src/chart1.cpp:8478
 msgid "(Unnamed Track)"
 msgstr "(無名の航跡)"
@@ -221,7 +221,7 @@ msgstr "さらに情報が必要ならウェブサイト opencpn.org へ"
 #: src/options.cpp:11660 src/options.cpp:11673 src/pluginmanager.cpp:539
 #: src/pluginmanager.cpp:1234 src/pluginmanager.cpp:2278
 #: src/pluginmanager.cpp:2338 src/pluginmanager.cpp:2381
-#: src/pluginmanager.cpp:2417 src/Route.cpp:1262 src/RoutePoint.cpp:1280
+#: src/pluginmanager.cpp:2417 src/route.cpp:1262 src/route_point.cpp:1280
 #: src/tcmgr.cpp:692
 msgid "OpenCPN Info"
 msgstr "OpenCPN の情報"
@@ -6793,15 +6793,15 @@ msgstr "AIS情報表示機能"
 msgid "TideCurrentGraphRollover"
 msgstr "潮汐潮流グラフ ロールオーバー"
 
-#: src/Route.cpp:1255
+#: src/route.cpp:1255
 msgid "Route Transmitted."
 msgstr "ルートが送信されました。"
 
-#: src/Route.cpp:1258
+#: src/route.cpp:1258
 msgid "Error on Route Upload.  Garmin GPS not connected"
 msgstr "ルートのアップロード時のエラーです。 ガーミンの GPS が接続されていません。"
 
-#: src/Route.cpp:1260
+#: src/route.cpp:1260
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "ルートのアップロード時のエラーです。 ログファイルを確認してください."
 
@@ -7075,32 +7075,32 @@ msgstr "ファイルはOpenCPNのレイヤーフォルダからも削除され�
 msgid "(Unnamed Layer)"
 msgstr "(無名レイヤー)"
 
-#: src/RoutePoint.cpp:636 src/RoutePoint.cpp:637 src/RoutePoint.cpp:800
-#: src/RoutePoint.cpp:801
+#: src/route_point.cpp:636 src/route_point.cpp:637 src/route_point.cpp:800
+#: src/route_point.cpp:801
 msgid "Marks"
 msgstr "マーク"
 
-#: src/RoutePoint.cpp:1272
+#: src/route_point.cpp:1272
 msgid "Waypoint(s) Transmitted."
 msgstr "通過点を送信"
 
-#: src/RoutePoint.cpp:1275
+#: src/route_point.cpp:1275
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "通過点情報のアップロード時のエラーです。 ガーミンの GPS が接続されていません。"
 
-#: src/RoutePoint.cpp:1277
+#: src/route_point.cpp:1277
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "通過点情報のアップロード時のエラーです。 ログファイルを確認してください."
 
-#: src/RoutePoint.cpp:1347
+#: src/route_point.cpp:1347
 msgid "The ScaMin value for new waypoints is set to"
 msgstr ""
 
-#: src/RoutePoint.cpp:1348
+#: src/route_point.cpp:1348
 msgid "but current chartscale is"
 msgstr "しかし現在のチャート表示縮尺は"
 
-#: src/RoutePoint.cpp:1350
+#: src/route_point.cpp:1350
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "結果として新しい通過点はこの拡大率では表示されません。"
 

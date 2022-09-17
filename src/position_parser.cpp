@@ -24,7 +24,7 @@
 #include <wx/tokenzr.h>
 #include <wx/regex.h>
 
-#include "PositionParser.h"
+#include "position_parser.h"
 #include "navutil_base.h"
 
 PositionParser::PositionParser(const wxString& src) {

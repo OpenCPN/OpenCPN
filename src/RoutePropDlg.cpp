@@ -23,7 +23,7 @@
 #include <wx/window.h>
 
 #include "gui_lib.h"
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "ocpn_types.h"
 #include "routeman_gui.h"
 #include "routeman.h"

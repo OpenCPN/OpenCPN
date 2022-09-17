@@ -82,7 +82,7 @@ msgstr "추가 객체 정보"
 msgid "Send to GPS"
 msgstr "GPS로 보내기"
 
-#: include/Track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
+#: include/track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
 #: src/chart1.cpp:8478
 msgid "(Unnamed Track)"
 msgstr "(이름 없는 트랙)"
@@ -220,7 +220,7 @@ msgstr "더 많은 정보를 위해 opencpn.org 웹사이트를 방문하시겠�
 #: src/options.cpp:11660 src/options.cpp:11673 src/pluginmanager.cpp:539
 #: src/pluginmanager.cpp:1234 src/pluginmanager.cpp:2278
 #: src/pluginmanager.cpp:2338 src/pluginmanager.cpp:2381
-#: src/pluginmanager.cpp:2417 src/Route.cpp:1262 src/RoutePoint.cpp:1280
+#: src/pluginmanager.cpp:2417 src/route.cpp:1262 src/route_point.cpp:1280
 #: src/tcmgr.cpp:692
 msgid "OpenCPN Info"
 msgstr "OpenCPN 정보"
@@ -6809,15 +6809,15 @@ msgstr "선박자동식별시스템(AIS)지연변경"
 msgid "TideCurrentGraphRollover"
 msgstr "조류해류그래프지연변경"
 
-#: src/Route.cpp:1255
+#: src/route.cpp:1255
 msgid "Route Transmitted."
 msgstr "경로가 전송됨"
 
-#: src/Route.cpp:1258
+#: src/route.cpp:1258
 msgid "Error on Route Upload.  Garmin GPS not connected"
 msgstr "경로 업로드에 오류. Garmin GPS가 연결되지 않음"
 
-#: src/Route.cpp:1260
+#: src/route.cpp:1260
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "경로 업로드에 오류. 로그 파일을 확인하십시오..."
 
@@ -7092,32 +7092,32 @@ msgstr "파일은 OpenCPN의 레이어 디렉토리에서도 삭제됩니다."
 msgid "(Unnamed Layer)"
 msgstr "(이름 없는 레이어)"
 
-#: src/RoutePoint.cpp:636 src/RoutePoint.cpp:637 src/RoutePoint.cpp:800
-#: src/RoutePoint.cpp:801
+#: src/route_point.cpp:636 src/route_point.cpp:637 src/route_point.cpp:800
+#: src/route_point.cpp:801
 msgid "Marks"
 msgstr "표시"
 
-#: src/RoutePoint.cpp:1272
+#: src/route_point.cpp:1272
 msgid "Waypoint(s) Transmitted."
 msgstr "경유지가 전송되었습니다."
 
-#: src/RoutePoint.cpp:1275
+#: src/route_point.cpp:1275
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "경유지 업로드 오류. Garmin GPS가 연결되지 않음"
 
-#: src/RoutePoint.cpp:1277
+#: src/route_point.cpp:1277
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "경유지 업로드 오류. 로그 파일을 확인하십시오..."
 
-#: src/RoutePoint.cpp:1347
+#: src/route_point.cpp:1347
 msgid "The ScaMin value for new waypoints is set to"
 msgstr "새 경유지에 대한 최소축척(ScaMin) 값이 다음으로 설정됩니다."
 
-#: src/RoutePoint.cpp:1348
+#: src/route_point.cpp:1348
 msgid "but current chartscale is"
 msgstr "그러나 현재 해도 축척은"
 
-#: src/RoutePoint.cpp:1350
+#: src/route_point.cpp:1350
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "따라서 이 확대/축소 수준에서는 새 경유지가 표시되지 않습니다."
 

@@ -35,7 +35,7 @@
 
 #include "base_platform.h"
 #include "MarkIcon.h"
-#include "RoutePoint.h"
+#include "route_point.h"
 #include "styles.h"
 #include "svg_utils.h"
 #include "waypointman_gui.h"

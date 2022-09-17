@@ -22,12 +22,12 @@
  ***************************************************************************
  */
 
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "routeman.h"
 #include "navutil_base.h"
-#include "Select.h"
-#include "Track.h"
-#include "Route.h"
+#include "select.h"
+#include "track.h"
+#include "route.h"
 
 #ifdef __OCPN__ANDROID__
 #include <QDebug>

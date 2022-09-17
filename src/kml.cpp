@@ -45,8 +45,8 @@
 #include "navutil.h"
 #include "tinyxml.h"
 #include "kml.h"
-#include "Track.h"
-#include "Route.h"
+#include "track.h"
+#include "route.h"
 #include "ocpn_frame.h"
 
 extern MyFrame* gFrame;

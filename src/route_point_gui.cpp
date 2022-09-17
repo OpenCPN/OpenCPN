@@ -15,7 +15,7 @@
 #include "glChartCanvas.h"
 #include "viewport.h"
 #include "OCPNPlatform.h"
-#include "Route.h"
+#include "route.h"
 #include "waypointman_gui.h"
 #include "svg_utils.h"
 #include "styles.h"

@@ -26,7 +26,7 @@
 #include "gpsapp.h"
 #include "garmin_gps.h"
 #include "gpsserial.h"
-#include "Route.h"
+#include "route.h"
 
 #ifndef CLIAPP
 #include "gui_lib.h"

@@ -82,7 +82,7 @@ msgstr "Info de obxecto extra"
 msgid "Send to GPS"
 msgstr "Enviar ó GPS"
 
-#: include/Track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
+#: include/track.h:124 src/chart1.cpp:5117 src/chart1.cpp:8359
 #: src/chart1.cpp:8478
 msgid "(Unnamed Track)"
 msgstr "(Derrota sen nome)"
@@ -221,7 +221,7 @@ msgstr "Queres visitar o sitio web opencpn.org para máis información?"
 #: src/options.cpp:11660 src/options.cpp:11673 src/pluginmanager.cpp:539
 #: src/pluginmanager.cpp:1234 src/pluginmanager.cpp:2278
 #: src/pluginmanager.cpp:2338 src/pluginmanager.cpp:2381
-#: src/pluginmanager.cpp:2417 src/Route.cpp:1262 src/RoutePoint.cpp:1280
+#: src/pluginmanager.cpp:2417 src/route.cpp:1262 src/route_point.cpp:1280
 #: src/tcmgr.cpp:692
 msgid "OpenCPN Info"
 msgstr "Información OpenCPN"
@@ -6807,15 +6807,15 @@ msgstr "Info do AIS ó pasar o rato por encima"
 msgid "TideCurrentGraphRollover"
 msgstr "Info gráfico de mareas e correntes"
 
-#: src/Route.cpp:1255
+#: src/route.cpp:1255
 msgid "Route Transmitted."
 msgstr "Ruta transmitida."
 
-#: src/Route.cpp:1258
+#: src/route.cpp:1258
 msgid "Error on Route Upload.  Garmin GPS not connected"
 msgstr "Erro cargando a ruta. O GPS Garmin non está conectado."
 
-#: src/Route.cpp:1260
+#: src/route.cpp:1260
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Erro cargando a ruta. Por favor comprobe os ficheiros de rexistro..."
 
@@ -7090,32 +7090,32 @@ msgstr "O arquivo tamén será eliminado do directorio de capas de OpenCPN."
 msgid "(Unnamed Layer)"
 msgstr "(Capa sen nome)"
 
-#: src/RoutePoint.cpp:636 src/RoutePoint.cpp:637 src/RoutePoint.cpp:800
-#: src/RoutePoint.cpp:801
+#: src/route_point.cpp:636 src/route_point.cpp:637 src/route_point.cpp:800
+#: src/route_point.cpp:801
 msgid "Marks"
 msgstr "Marcas"
 
-#: src/RoutePoint.cpp:1272
+#: src/route_point.cpp:1272
 msgid "Waypoint(s) Transmitted."
 msgstr "Waypoint(s) transmitidos."
 
-#: src/RoutePoint.cpp:1275
+#: src/route_point.cpp:1275
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "Erro na Carga do Waypoint. O GPS Garmin non está conectado"
 
-#: src/RoutePoint.cpp:1277
+#: src/route_point.cpp:1277
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Erro na Carga do Waypoint. Por favor comprobe o ficheiro de rexistro..."
 
-#: src/RoutePoint.cpp:1347
+#: src/route_point.cpp:1347
 msgid "The ScaMin value for new waypoints is set to"
 msgstr "O valor mínimo da escala para novas marcas está establecido en"
 
-#: src/RoutePoint.cpp:1348
+#: src/route_point.cpp:1348
 msgid "but current chartscale is"
 msgstr "pero a escala actual é"
 
-#: src/RoutePoint.cpp:1350
+#: src/route_point.cpp:1350
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "Polo tanto, a nova marca non será visible neste nivel de zoom."
 

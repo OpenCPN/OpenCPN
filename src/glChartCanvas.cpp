@@ -75,7 +75,7 @@
 #include "Quilt.h"
 #include "RolloverWin.h"
 #include "route_gui.h"
-#include "Route.h"
+#include "route.h"
 #include "routeman.h"
 #include "route_point_gui.h"
 #include "s52plib.h"
@@ -85,7 +85,7 @@
 #include "thumbwin.h"
 #include "toolbar.h"
 #include "track_gui.h"
-#include "Track.h"
+#include "track.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>

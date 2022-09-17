@@ -37,7 +37,7 @@
 #include "OCPNPlatform.h"
 #include "navutil.h"
 #include "routemanagerdialog.h"
-#include "RoutePoint.h"
+#include "route_point.h"
 #include "SoundFactory.h"
 #include "undo.h"
 

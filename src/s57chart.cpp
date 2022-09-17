@@ -52,7 +52,7 @@
 #include "ocpndc.h"
 #include "s52utils.h"
 #include "wx28compat.h"
-#include "ChartDataInputStream.h"
+#include "chartdata_input_stream.h"
 
 #include "gdal/cpl_csv.h"
 #include "setjmp.h"

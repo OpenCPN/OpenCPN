@@ -39,9 +39,9 @@
 #include "nmea0183.h"
 #include "ocpn_types.h"
 #include "observable_evtvar.h"
-#include "Route.h"
-#include "RoutePoint.h"
-#include "Select.h"
+#include "route.h"
+#include "route_point.h"
+#include "select.h"
 
 //----------------------------------------------------------------------------
 //   constants

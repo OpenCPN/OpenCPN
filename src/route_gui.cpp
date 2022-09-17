@@ -16,7 +16,7 @@
 #include "route_point_gui.h"
 #include "glChartCanvas.h"
 
-#include "Route.h"
+#include "route.h"
 
 extern Routeman* g_pRouteMan;
 extern wxColour g_colourTrackLineColour;

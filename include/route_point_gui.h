@@ -30,7 +30,7 @@
 
 #include "chcanv.h"
 #include "ocpndc.h"
-#include "RoutePoint.h"
+#include "route_point.h"
 #include "viewport.h"
 
 class SendToGpsDlg;

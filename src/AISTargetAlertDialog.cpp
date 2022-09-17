@@ -36,8 +36,8 @@
 #include "ocpn_types.h"
 #include "ocpn_types.h"
 #include "routemanagerdialog.h"
-#include "RoutePoint.h"
-#include "Select.h"
+#include "route_point.h"
+#include "select.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

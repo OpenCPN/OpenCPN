@@ -33,7 +33,7 @@
 #include <vector>
 
 #include "bbox.h"
-#include "Route.h"
+#include "route.h"
 #include "vector2D.h"
 
 class HyperlinkList;

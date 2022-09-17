@@ -54,7 +54,7 @@
 #include "pluginmanager.h"  // for PlugInManager
 #include "OCPNPlatform.h"
 #include "wx28compat.h"
-#include "ChartDataInputStream.h"
+#include "chartdata_input_stream.h"
 #include "DetailSlider.h"
 #include "chcanv.h"
 #include "gui_lib.h"

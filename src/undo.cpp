@@ -46,7 +46,7 @@
 #include "undo.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
-#include "Route.h"
+#include "route.h"
 
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
