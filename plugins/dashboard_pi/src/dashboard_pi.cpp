@@ -591,7 +591,14 @@ int dashboard_pi::Init(void) {
   Bind(EVT_N2K_130310, [&](ObservedEvt ev) {
     HandleN2K_130310(ev);
   });
-    
+  
+  // Direction data (Speed through water) PGN 130577
+  wxDEFINE_EVENT(EVT_N2K_130577, ObservedEvt);
+  NMEA2000Id id_130577 = NMEA2000Id(130577);
+  listener_130577 = std::move(GetListener(id_130577, EVT_N2K_130577, this));
+  Bind(EVT_N2K_130577, [&](ObservedEvt ev) {
+    HandleN2K_130577(ev);
+  });
 
   Start(1000, wxTIMER_CONTINUOUS);
 
@@ -1442,7 +1449,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("VHW")) {
-      if (mPriHeadingT >= 4 || mPriHeadingM >= 5 || mPriSTW >= 2) {
+      if (mPriHeadingT >= 4 || mPriHeadingM >= 5 || mPriSTW >= 3) {
         if (m_NMEA0183.Parse()) {
           if (mPriHeadingT >= 4) {
             if (!std::isnan(m_NMEA0183.Vhw.DegreesTrue)) {
@@ -1462,8 +1469,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
           }
           if (!std::isnan(m_NMEA0183.Vhw.Knots)) {
-            if (mPriSTW >= 2) {
-              mPriSTW = 2;
+            if (mPriSTW >= 3) {
+              mPriSTW = 3;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_STW,
                   toUsrSpeed_Plugin(m_NMEA0183.Vhw.Knots, g_iDashSpeedUnit),
@@ -2045,6 +2052,30 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
   }
 }
 
+void dashboard_pi::HandleN2K_130577(ObservedEvt ev) {
+  NMEA2000Id id_130577(130577);
+  std::vector<uint8_t>v = GetN2000Payload(id_130577, ev);
+  unsigned char SID;
+  tN2kDataMode DataMode;
+  tN2kHeadingReference CogReference;
+  double SOG, COG, Heading, SpeedThroughWater, Set, Drift;
+
+  // Get Direction data
+  if (ParseN2kPGN130577(v, DataMode, CogReference, SID, COG, SOG, Heading,
+                        SpeedThroughWater, Set, Drift)) {
+
+    if (std::isnan(SpeedThroughWater)) return;
+    if (mPriSTW >= 1) {
+      double stw_knots = MS2KNOTS(SpeedThroughWater);
+      SendSentenceToAllInstruments(
+        OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
+        getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+      mPriSTW = 1;
+      mSTW_Watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+}
+
 // Signal K.......
 void dashboard_pi::ParseSignalK(wxString &msg) {
   wxJSONValue root;
@@ -2177,7 +2208,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("navigation.speedThroughWater")) {
-      if (mPriSTW >= 1) {
+      if (mPriSTW >= 2) {
         double stw_knots = GetJsonDouble(value);
         if (std::isnan(stw_knots)) return;
 
@@ -2185,7 +2216,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         SendSentenceToAllInstruments(
           OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
           getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-        mPriSTW = 1;
+        mPriSTW = 2;
         mSTW_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
