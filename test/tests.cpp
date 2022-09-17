@@ -67,6 +67,8 @@ float g_selection_radius_mm;
 float g_selection_radius_touch_mm;
 wxString g_GPS_Ident;
 bool g_bGarminHostUpload;
+int g_nCOMPortCheck = 32;
+bool g_benableUDPNullHeader;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;

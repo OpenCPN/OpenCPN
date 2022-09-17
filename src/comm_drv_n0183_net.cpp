@@ -63,7 +63,7 @@
 
 #include "dychart.h"
 
-#include "GarminProtocolHandler.h"
+#include "garmin_protocol_mgr.h"
 
 #include "comm_drv_n0183_net.h"
 #include "comm_navmsg_bus.h"

@@ -28,13 +28,25 @@
  *
  */
 
-#ifndef __GARMINPROTOCOLHANDLER_H__
-#define __GARMINPROTOCOLHANDLER_H__
+#ifndef _GARMINPROTOCOLHANDLER_H__
+#define _GARMINPROTOCOLHANDLER_H__
 
-#include "wx/wxprec.h"
+#include <string>
+
+#ifndef __WXMSW__
+#include <sys/socket.h>  // needed for (some) Mac builds
+#include <netinet/in.h>
+#else
+#include <windows.h>
+#include <dbt.h>
+#include <initguid.h>
+#endif
+
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled header
 
 #include <wx/datetime.h>
@@ -45,24 +57,13 @@
 // one instead
 //#include <gtk/gtk.h>
 #define GSocket GlibGSocket
-#include "wx/socket.h"
+#include <wx/socket.h>
 #undef GSocket
 #else
-#include "wx/socket.h"
+#include <wx/socket.h>
 #endif
 
-#ifndef __WXMSW__
-#include <sys/socket.h>  // needed for (some) Mac builds
-#include <netinet/in.h>
-#endif
 
-#ifdef __WXMSW__
-#include <windows.h>
-#include <dbt.h>
-#include <initguid.h>
-#endif
-
-#include <string>
 #include "conn_params.h"
 #include "dsPortType.h"
 

@@ -178,7 +178,7 @@
 // #endif
 //
 // #ifdef __WXMSW__
-// #include "GarminProtocolHandler.h"  // Used for port probing on Windows
+// #include "garmin_protocol_mgr.h"  // Used for port probing on Windows
 // void RedirectIOToConsole();
 // #endif
 //

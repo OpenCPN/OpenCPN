@@ -29,42 +29,47 @@
  ***************************************************************************
  *
  */
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include "wx/tokenzr.h"
-#include <wx/datetime.h>
 
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
-#ifndef __WXMSW__
+#include <vector>
+
+#ifndef _MSC_VER
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 #endif
 
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include <wx/datetime.h>
+#include <wx/event.h>
+#include <wx/log.h>
+#include <wx/string.h>
+#include <wx/tokenzr.h>
+#include <wx/utils.h>
+
 #ifdef __WXMSW__
-	#include <windows.h>
-	#include <winioctl.h>
-	#include <initguid.h>
-	#include "setupapi.h"
+#include <windows.h>
+#include <winioctl.h>
+#include <initguid.h>
+#include <setupapi.h>
 #endif
 
 #include "dychart.h"
-
 #include "garmin_wrapper.h"
-#include "GarminProtocolHandler.h"
+#include "garmin_protocol_mgr.h"
 #include "nmea0183.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
-#include <vector>
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

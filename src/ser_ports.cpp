@@ -108,7 +108,7 @@
 #endif
 
 #include "gui_lib.h"
-#include "GarminProtocolHandler.h"
+#include "garmin_protocol_mgr.h"
 
 #ifdef __WXMSW__
 DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,

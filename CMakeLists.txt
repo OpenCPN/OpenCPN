@@ -847,7 +847,7 @@ set(
   include/FontDesc.h
   include/FontMgr.h
   include/garmin_wrapper.h
-  include/GarminProtocolHandler.h
+  include/garmin_protocol_mgr.h
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
@@ -981,6 +981,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
+  ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
   ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
   ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
@@ -1040,7 +1041,6 @@ set(
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
-  src/GarminProtocolHandler.cpp
   src/GoToPositionDialog.cpp
   src/gshhs.cpp
   src/gui_lib.cpp
