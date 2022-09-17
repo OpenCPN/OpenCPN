@@ -29,7 +29,7 @@
  * */
 
 CommDriverSignalK::CommDriverSignalK(const std::string& s)
-    : AbstractCommDriver(NavAddr::Bus::N2000, s) {}
+    : AbstractCommDriver(NavAddr::Bus::Signalk, s) {}
 
 CommDriverSignalK::~CommDriverSignalK() {}
 
