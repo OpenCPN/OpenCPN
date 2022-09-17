@@ -38,7 +38,7 @@
 #define PLUGIN_VERSION_MINOR 2
 
 #define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 6
+#define MY_API_VERSION_MINOR 8
 
 #include <wx/notebook.h>
 #include <wx/fileconf.h>
@@ -148,7 +148,7 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-class dashboard_pi : public wxTimer, opencpn_plugin_16 {
+class dashboard_pi : public wxTimer, opencpn_plugin_18 {
 public:
   dashboard_pi(void *ppimgr);
   ~dashboard_pi(void);
@@ -170,7 +170,7 @@ public:
 
   //    The optional method overrides
   void SetNMEASentence(wxString &sentence);
-  void SetPositionFix(PlugIn_Position_Fix &pfix);
+  void SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix);
   void SetCursorLatLon(double lat, double lon);
   int GetToolbarToolCount(void);
   void OnToolbarToolCallback(int id);
@@ -201,10 +201,18 @@ private:
   void handleSKUpdate(wxJSONValue &update);
   void updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime);
 
+  void HandleN2K_128267(ObservedEvt ev);
   void HandleN2K_129029(ObservedEvt ev);
   void HandleN2K_129540(ObservedEvt ev);
+  void HandleN2K_130306(ObservedEvt ev);
+  void HandleN2K_130310(ObservedEvt ev);
+  void HandleN2K_130577(ObservedEvt ev);
+  std::shared_ptr<ObservedVarListener> listener_128267;
   std::shared_ptr<ObservedVarListener> listener_129029;
   std::shared_ptr<ObservedVarListener> listener_129540;
+  std::shared_ptr<ObservedVarListener> listener_130306;
+  std::shared_ptr<ObservedVarListener> listener_130310;
+  std::shared_ptr<ObservedVarListener> listener_130577;
 
   wxString m_self;
 

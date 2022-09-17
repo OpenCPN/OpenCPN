@@ -57,7 +57,7 @@ int g_iDashDistanceUnit;
 int g_iDashWindSpeedUnit;
 int g_iUTCOffset;
 double g_dDashDBTOffset;
-bool g_iDashUsetruewinddata;
+bool g_bDBtrueWindGround;
 double g_dHDT;
 double g_dSOG, g_dCOG;
 int g_iDashTempUnit;
@@ -440,7 +440,7 @@ wxString MakeName() { return _T("DASH_") + GetUUID(); }
 //---------------------------------------------------------------------------------------------------------
 
 dashboard_pi::dashboard_pi(void *ppimgr)
-    : wxTimer(this), opencpn_plugin_16(ppimgr) {
+    : wxTimer(this), opencpn_plugin_18(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 }
@@ -469,7 +469,8 @@ int dashboard_pi::Init(void) {
   mPriWDN = 99;  // True hist. wind
   mPriDepth = 99;
   mPriSTW = 99;
-  mPriWTP = 99;
+  mPriWTP = 99;  // Water temp
+  mPriATMP = 99; // Air temp
   mPriSatStatus = 99;
   mPriSatUsed = 99;
   mPriAlt = 99;
@@ -481,7 +482,7 @@ int dashboard_pi::Init(void) {
   mVar_Watchdog = 2;
   mMWVA_Watchdog = 2;
   mMWVT_Watchdog = 2;
-  mDPT_DBT_Watchdog = 2;
+  mDPT_DBT_Watchdog = 2; // Depth
   mSTW_Watchdog = 2;
   mWTP_Watchdog = 2;
   mRSA_Watchdog = 2;
@@ -549,26 +550,55 @@ int dashboard_pi::Init(void) {
   }
 
   // initialize NavMsg listeners
-    // GNSS Position Data   PGN 129029
+  //-----------------------------
+
+  // Depth Data   PGN 128267
+  wxDEFINE_EVENT(EVT_N2K_128267, ObservedEvt);
+  NMEA2000Id id_128267 = NMEA2000Id(128267);
+  listener_128267 = std::move(GetListener(id_128267, EVT_N2K_128267, this));
+  Bind(EVT_N2K_128267, [&](ObservedEvt ev) {
+    HandleN2K_128267(ev);
+  });
+
+  // GNSS Position Data   PGN 129029
   wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
   NMEA2000Id id_129029 = NMEA2000Id(129029);
   listener_129029 = std::move(GetListener(id_129029, EVT_N2K_129029, this));
-
   Bind(EVT_N2K_129029, [&](ObservedEvt ev) {
     HandleN2K_129029(ev);
   });
 
-    // GNSS Satellites in View   PGN 129540
-    //-----------------------------
-    wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
-    NMEA2000Id id_129540 = NMEA2000Id(129540);
-    listener_129540 = std::move(GetListener(id_129540, EVT_N2K_129540, this));
+  // GNSS Satellites in View   PGN 129540
+  wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
+  NMEA2000Id id_129540 = NMEA2000Id(129540);
+  listener_129540 = std::move(GetListener(id_129540, EVT_N2K_129540, this));
+  Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
+    HandleN2K_129540(ev);
+  });
+  
+  // Wind   PGN 130306
+  wxDEFINE_EVENT(EVT_N2K_130306, ObservedEvt);
+  NMEA2000Id id_130306 = NMEA2000Id(130306);
+  listener_130306 = std::move(GetListener(id_130306, EVT_N2K_130306, this));
+  Bind(EVT_N2K_130306, [&](ObservedEvt ev) {
+    HandleN2K_130306(ev);
+  });
 
-    Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
-      HandleN2K_129540(ev);
-    });
-
-    
+  // Envorinment   PGN 130310
+  wxDEFINE_EVENT(EVT_N2K_130310, ObservedEvt);
+  NMEA2000Id id_130310 = NMEA2000Id(130310);
+  listener_130310 = std::move(GetListener(id_130310, EVT_N2K_130310, this));
+  Bind(EVT_N2K_130310, [&](ObservedEvt ev) {
+    HandleN2K_130310(ev);
+  });
+  
+  // Direction data (Speed through water) PGN 130577
+  wxDEFINE_EVENT(EVT_N2K_130577, ObservedEvt);
+  NMEA2000Id id_130577 = NMEA2000Id(130577);
+  listener_130577 = std::move(GetListener(id_130577, EVT_N2K_130577, this));
+  Bind(EVT_N2K_130577, [&](ObservedEvt ev) {
+    HandleN2K_130577(ev);
+  });
 
   Start(1000, wxTIMER_CONTINUOUS);
 
@@ -839,7 +869,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
 
   if (m_NMEA0183.PreParse()) {
     if (m_NMEA0183.LastSentenceIDReceived == _T("DBT")) {
-      if (mPriDepth >= 4) {
+      if (mPriDepth >= 5) {
         if (m_NMEA0183.Parse()) {
           /*
            double m_NMEA0183.Dbt.DepthFeet;
@@ -859,7 +889,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 OCPN_DBP_STC_DPT,
                 toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
                 getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
-            mPriDepth = 4;
+            mPriDepth = 5;
             mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -867,7 +897,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("DPT")) {
-      if (mPriDepth >= 3) {
+      if (mPriDepth >= 4) {
         if (m_NMEA0183.Parse()) {
           /*
            double m_NMEA0183.Dpt.DepthMeters
@@ -883,7 +913,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 OCPN_DBP_STC_DPT,
                 toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
                 getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
-            mPriDepth = 3;
+            mPriDepth = 4;
             mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -896,7 +926,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 mPriPosition, mPriSatUsed,
                 m_NMEA0183.Gga.NumberOfSatellitesInUse,
                 m_NMEA0183.Gga.AntennaAltitudeMeters);
-      if (mPriAlt >= 2 && (mPriPosition >= 1 || mPriSatUsed >= 1)) {
+      if (mPriAlt >= 3 && (mPriPosition >= 1 || mPriSatUsed >= 1)) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gga.GPSQuality > 0 &&
               m_NMEA0183.Gga.NumberOfSatellitesInUse >= 5) {
@@ -904,7 +934,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             // typically less accurate than lon and lat.
             double alt = m_NMEA0183.Gga.AntennaAltitudeMeters;
             SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, alt, _T("m"));
-            mPriAlt = 2;
+            mPriAlt = 3;
             mALT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -1011,7 +1041,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("HDG")) {
-      if (mPriVar >= 3 || mPriHeadingM >= 2 || mPriHeadingT >= 6) {
+      if (mPriVar >= 3 || mPriHeadingM >= 3 || mPriHeadingT >= 7) {
         if (m_NMEA0183.Parse()) {
           if (mPriVar >= 3) {
             // Any device sending VAR=0.0 can be assumed to not really know
@@ -1028,9 +1058,9 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                            _T("\u00B0"));
             }
           }
-          if (mPriHeadingM >= 2) {
+          if (mPriHeadingM >= 3) {
             if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees)) {
-              mPriHeadingM = 2;
+              mPriHeadingM = 3;
               mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
               SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm,
                                            _T("\u00B0"));
@@ -1042,8 +1072,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           //      If Variation is available, no higher priority HDT is
           //      available, then calculate and propagate calculated HDT
           if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees)) {
-            if (!std::isnan(mVar) && (mPriHeadingT >= 6)) {
-              mPriHeadingT = 6;
+            if (!std::isnan(mVar) && (mPriHeadingT >= 7)) {
+              mPriHeadingT = 7;
               double heading = mHdm + mVar;
               if (heading < 0)
                 heading += 360;
@@ -1059,11 +1089,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("HDM")) {
-      if (mPriHeadingM >= 3 || mPriHeadingT >= 4) {
+      if (mPriHeadingM >= 4 || mPriHeadingT >= 5) {
         if (m_NMEA0183.Parse()) {
-          if (mPriHeadingM >= 3) {
+          if (mPriHeadingM >= 4) {
             if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic)) {
-              mPriHeadingM = 3;
+              mPriHeadingM = 4;
               mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
               SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm,
                                            _T("\u00B0M"));
@@ -1074,8 +1104,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           //      If Variation is available, no higher priority HDT is
           //      available, then calculate and propagate calculated HDT
           if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic)) {
-            if (!std::isnan(mVar) && (mPriHeadingT >= 4)) {
-              mPriHeadingT = 4;
+            if (!std::isnan(mVar) && (mPriHeadingT >= 5)) {
+              mPriHeadingT = 5;
               double heading = mHdm + mVar;
               if (heading < 0)
                 heading += 360;
@@ -1091,12 +1121,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("HDT")) {
-      if (mPriHeadingT >= 2) {
+      if (mPriHeadingT >= 3) {
         if (m_NMEA0183.Parse()) {
           if (!std::isnan(m_NMEA0183.Hdt.DegreesTrue)) {
             SendSentenceToAllInstruments(
                 OCPN_DBP_STC_HDT, m_NMEA0183.Hdt.DegreesTrue, _T("\u00B0T"));
-            mPriHeadingT = 2;
+            mPriHeadingT = 3;
             mHDT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -1127,7 +1157,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               _T("hPa"));  // Convert to hpa befor sending to instruments.
           mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
         }
-        if (mPriATMP >= 4) {
+        if (mPriATMP >= 5) {
           double airtemp = m_NMEA0183.Mda.AirTemp;
           if (airtemp < 999.0) {
             SendSentenceToAllInstruments(
@@ -1135,15 +1165,15 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               toUsrTemp_Plugin(airtemp, g_iDashTempUnit),
               getUsrTempUnit_Plugin(g_iDashTempUnit));
             mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
-            mPriATMP = 4;
+            mPriATMP = 5;
           }
         }
       }
 
     } else if (m_NMEA0183.LastSentenceIDReceived == _T("MTW")) {
-      if (mPriWTP >= 3) {
+      if (mPriWTP >= 4) {
         if (m_NMEA0183.Parse()) {
-          mPriWTP = 3;
+          mPriWTP = 4;
           SendSentenceToAllInstruments(
               OCPN_DBP_STC_TMP,
               toUsrTemp_Plugin(m_NMEA0183.Mtw.Temperature, g_iDashTempUnit),
@@ -1174,11 +1204,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
     // NMEA 0183 standard Wind Direction and Speed, with respect to north.
     else if (m_NMEA0183.LastSentenceIDReceived == _T("MWD")) {
-      if (mPriWDN >= 3) {
+      if (mPriWDN >= 6) {
         if (m_NMEA0183.Parse()) {
           // Option for True vs Magnetic
           wxString windunit;
-          mPriWDN = 3;
+          mPriWDN = 6;
           if (!std::isnan(
                   m_NMEA0183.Mwd.WindAngleTrue)) {  // if WindAngleTrue is
                                                     // available, use it ...
@@ -1213,7 +1243,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     // NMEA 0183 standard Wind Speed and Angle, in relation to the vessel's
     // bow/centerline.
     else if (m_NMEA0183.LastSentenceIDReceived == _T("MWV")) {
-      if (mPriAWA >= 3 || mPriTWA >= 3 || mPriWDN >= 4) {
+      if (mPriAWA >= 4 || mPriTWA >= 4 || mPriWDN >= 5) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Mwv.IsDataValid == NTrue) {
             // MWV windspeed has different units. Form it to knots to fit
@@ -1227,8 +1257,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             if (m_NMEA0183.Mwv.Reference ==
                 _T("R"))  // Relative (apparent wind)
             {
-              if (mPriAWA >= 3) {
-                mPriAWA = 3;
+              if (mPriAWA >= 4) {
+                mPriAWA = 4;
                 wxString m_awaunit;
                 double m_awaangle;
                 if (m_NMEA0183.Mwv.WindAngle > 180) {
@@ -1252,19 +1282,19 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               // then using simple vector math, we can calculate true wind
               // direction and speed. If there is no higher priority source for
               // WDN, then do so here, and update the appropriate instruments.
-              if (mPriWDN >= 5) {
+              if (mPriWDN >= 8) {
                 CalculateAndUpdateTWDS(
                     m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor,
                     m_NMEA0183.Mwv.WindAngle);
-                mPriWDN = 5;
+                mPriWDN = 8;
                 mWDN_Watchdog = gps_watchdog_timeout_ticks;
                 mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               }
             } else if (m_NMEA0183.Mwv.Reference ==
                        _T("T"))  // Theoretical (aka True)
             {
-              if (mPriTWA >= 3) {
-                mPriTWA = 3;
+              if (mPriTWA >= 4) {
+                mPriTWA = 4;
                 wxString m_twaunit;
                 double m_twaangle;
                 bool b_R = false;
@@ -1279,7 +1309,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle,
                                              m_twaunit);
 
-                if (mPriWDN >= 4) {
+                if (mPriWDN >= 7) {
                   // MWV has wind angle relative to the bow.
                   // Wind history use angle relative to north.
                   // If no TWD with higher priority is present
@@ -1293,7 +1323,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                     }
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir,
                                                  _T("\u00B0"));
-                    mPriWDN = 4;
+                    mPriWDN = 7;
                     mWDN_Watchdog = gps_watchdog_timeout_ticks;
                   }
                 }
@@ -1419,19 +1449,19 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("VHW")) {
-      if (mPriHeadingT >= 3 || mPriHeadingM >= 4 || mPriSTW >= 2) {
+      if (mPriHeadingT >= 4 || mPriHeadingM >= 5 || mPriSTW >= 3) {
         if (m_NMEA0183.Parse()) {
-          if (mPriHeadingT >= 3) {
+          if (mPriHeadingT >= 4) {
             if (!std::isnan(m_NMEA0183.Vhw.DegreesTrue)) {
-              mPriHeadingT = 3;
+              mPriHeadingT = 4;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_HDT, m_NMEA0183.Vhw.DegreesTrue, _T("\u00B0T"));
               mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
-          if (mPriHeadingM >= 4) {
+          if (mPriHeadingM >= 5) {
             if (!std::isnan(m_NMEA0183.Vhw.DegreesMagnetic)) {
-              mPriHeadingM = 4;
+              mPriHeadingM = 5;
               SendSentenceToAllInstruments(OCPN_DBP_STC_HDM,
                                            m_NMEA0183.Vhw.DegreesMagnetic,
                                            _T("\u00B0M"));
@@ -1439,8 +1469,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
           }
           if (!std::isnan(m_NMEA0183.Vhw.Knots)) {
-            if (mPriSTW >= 2) {
-              mPriSTW = 2;
+            if (mPriSTW >= 3) {
+              mPriSTW = 3;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_STW,
                   toUsrSpeed_Plugin(m_NMEA0183.Vhw.Knots, g_iDashSpeedUnit),
@@ -1483,10 +1513,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
      * to the vessel's heading, and wind speed measured relative to the moving
      * vessel. */
     else if (m_NMEA0183.LastSentenceIDReceived == _T("VWR")) {
-      if (mPriAWA >= 2) {
+      if (mPriAWA >= 3) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Vwr.WindDirectionMagnitude < 200) {
-            mPriAWA = 2;
+            mPriAWA = 3;
 
             wxString awaunit;
             awaunit = m_NMEA0183.Vwr.DirectionOfWind == Left ? _T("\u00B0L")
@@ -1510,12 +1540,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           // then using simple vector math, we can calculate true wind direction
           // and speed. If there is no higher priority source for WDN, then do
           // so here, and update the appropriate instruments.
-          if (mPriWDN >= 6) {
+          if (mPriWDN >= 9) {
             double awa = m_NMEA0183.Vwr.WindDirectionMagnitude;
             if (m_NMEA0183.Vwr.DirectionOfWind == Left)
               awa = 360. - m_NMEA0183.Vwr.WindDirectionMagnitude;
             CalculateAndUpdateTWDS(m_NMEA0183.Vwr.WindSpeedKnots, awa);
-            mPriWDN = 6;
+            mPriWDN = 9;
             mMWVT_Watchdog = gps_watchdog_timeout_ticks;
             mWDN_Watchdog = gps_watchdog_timeout_ticks;
           }
@@ -1529,10 +1559,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
      * at the vessel if it were
      * stationary relative to the water and heading in the same direction. */
     else if (m_NMEA0183.LastSentenceIDReceived == _T("VWT")) {
-      if (mPriTWA >= 2) {
+      if (mPriTWA >= 3) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Vwt.WindDirectionMagnitude < 200) {
-            mPriTWA = 2;
+            mPriTWA = 3;
             wxString vwtunit;
             vwtunit = m_NMEA0183.Vwt.DirectionOfWind == Left ? _T("\u00B0L")
                                                              : _T("\u00B0R");
@@ -1582,8 +1612,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                   _T("ENV_OUTAIR_T") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                   _T("ENV_OUTSIDE_T")) {
-            if (mPriATMP >= 2) {
-              mPriATMP = 2;
+            if (mPriATMP >= 4) {
+              mPriATMP = 4;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(xdrdata, g_iDashTempUnit),
                   getUsrTempUnit_Plugin(g_iDashTempUnit));
@@ -1641,8 +1671,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           // Nasa style water temp
           if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
               _T("ENV_WATER_T")) {
-            if (mPriWTP >= 2) {
-              mPriWTP = 2;
+            if (mPriWTP >= 3) {
+              mPriWTP = 3;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_TMP,
                   toUsrTemp_Plugin(
@@ -1755,7 +1785,35 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
   }
 }
 
-// NMEA2000, N2K..........
+// NMEA2000, N2K
+//...............
+
+void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
+  NMEA2000Id id_128267(128267);
+  std::vector<uint8_t>v = GetN2000Payload(id_128267, ev);
+
+  unsigned char SID;
+  double DepthBelowTransducer, Offset, Range;
+  
+  if (mPriDepth >= 1) {
+    // Get water depth
+    if (ParseN2kPGN128267(v, SID, DepthBelowTransducer, Offset, Range)) {
+      if (!std::isnan(DepthBelowTransducer)){
+        double depth = DepthBelowTransducer;
+        // Set prio to sensor's offset
+        if (!std::isnan(Offset)) depth += Offset;
+        else (depth += g_dDashDBTOffset);
+
+        SendSentenceToAllInstruments(OCPN_DBP_STC_DPT,
+          toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
+          getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
+        mPriDepth = 1;
+        mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
+      }
+    }
+  }
+}
+
 wxString talker_N2k = wxEmptyString;
 void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
   NMEA2000Id id_129029(129029);
@@ -1790,6 +1848,12 @@ void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
       case 5: talker_N2k = "Chayka"; break;
       case 8: talker_N2k = "GA"; break;  //Galileo
       default: talker_N2k = wxEmptyString;
+    }
+    if (std::isnan(Altitude)) return;
+    if (mPriAlt >= 1) {
+      SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, Altitude, _T("m"));
+      mPriAlt = 1;
+      mALT_Watchdog = gps_watchdog_timeout_ticks;
     }
   }
 }
@@ -1843,6 +1907,175 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
     }
   }
 }
+
+// Wind   PGN 130306
+void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
+  NMEA2000Id id_130306(130306);
+  std::vector<uint8_t>v = GetN2000Payload(id_130306, ev);
+  unsigned char SID;
+  double WindSpeed, WindAngle;
+  tN2kWindReference WindReference;
+
+  // Get wind data
+  if (ParseN2kPGN130306(v, SID, WindSpeed, WindAngle, WindReference)) {
+
+    if (!std::isnan(WindSpeed) && !std::isnan(WindAngle)) {
+      double m_twaangle, m_twaspeed_kn;
+      bool sendTrueWind = false;
+
+      switch (WindReference) {
+        case 0: // N2kWind direction True North
+          if (mPriWDN >= 1) {
+            double m_twdT = GEODESIC_RAD2DEG(WindAngle);
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
+            mPriWDN = 1;
+            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+          }
+          break;
+        case 1:  // N2kWind direction Magnetic North
+          if (mPriWDN >= 2) {
+            double m_twdT = GEODESIC_RAD2DEG(WindAngle);
+            // Make it true if variation is available
+            if (!std::isnan(mVar)) {
+              m_twdT = (m_twdT) + mVar;
+              if (m_twdT > 360.) {
+                m_twdT -= 360;
+              }
+              else if (m_twdT < 0.) {
+                m_twdT += 360;
+              }
+            }
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
+            mPriWDN = 2;
+            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+          }
+          break;
+        case 2: // N2kWind_Apparent_centerline
+          if (mPriAWA >= 1) {
+            // Angle
+            double m_awaangle = GEODESIC_RAD2DEG(WindAngle);  // negative to port
+            wxString m_awaunit = _T("\u00B0R");
+            if (m_awaangle < 0) {
+              m_awaunit = _T("\u00B0L");
+              m_awaangle *= -1;
+            }
+            SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle, m_awaunit);
+            // Speed
+            double m_awaspeed_kn = MS2KNOTS(WindSpeed);
+            SendSentenceToAllInstruments(
+              OCPN_DBP_STC_AWS,
+              toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
+              getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+            mPriAWA = 1;
+            mMWVA_Watchdog = gps_watchdog_timeout_ticks;
+          }
+          break;
+        case 3: // N2kWind_True_centerline_boat(ground)
+          if (mPriTWA >= 1 && g_bDBtrueWindGround) {
+            m_twaangle = GEODESIC_RAD2DEG(WindAngle);
+            m_twaspeed_kn = MS2KNOTS(WindSpeed);
+            sendTrueWind = true;
+          }
+          break;
+        case 4: // N2kWind_True_Centerline__water
+          if (mPriTWA >= 1 && !g_bDBtrueWindGround) {
+            m_twaangle = GEODESIC_RAD2DEG(WindAngle);
+            m_twaspeed_kn = MS2KNOTS(WindSpeed);
+            sendTrueWind = true;
+          }
+          break;
+        case 6: // N2kWind_Error
+          break;
+        case 7: // N2kWind_Unavailable
+          break;
+        default: break;
+      }
+
+      if (sendTrueWind) {
+        // Wind angle
+        wxString m_twaunit = _T("\u00B0R");
+        if (m_twaangle < 0) {
+          m_twaunit = _T("\u00B0L");
+          m_twaangle *= -1;
+        }
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
+        // Wind speed
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
+                                      toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
+                                      getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2,
+                                      toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
+                                      getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+        mPriTWA = 1;
+        mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+      }
+    }
+  }
+}
+
+void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
+  NMEA2000Id id_130310(130310);
+  std::vector<uint8_t>v = GetN2000Payload(id_130310, ev);
+  unsigned char SID;
+  double WaterTemperature, OutsideAmbientAirTemperature, AtmosphericPressure;
+
+  // Outside Environmental parameters
+  if (ParseN2kPGN130310(v, SID, WaterTemperature,
+                        OutsideAmbientAirTemperature, AtmosphericPressure)) {
+    if (mPriWTP >= 1) {
+      double m_wtemp KELVIN2C(WaterTemperature);
+      if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
+        SendSentenceToAllInstruments(
+          OCPN_DBP_STC_TMP, toUsrTemp_Plugin(m_wtemp, g_iDashTempUnit),
+          getUsrTempUnit_Plugin(g_iDashTempUnit));
+        mPriWTP =1;
+        mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
+      }
+    }
+    
+    if (mPriATMP >= 1) {
+      if (std::isnan(OutsideAmbientAirTemperature)) return;
+      double m_airtemp = KELVIN2C(OutsideAmbientAirTemperature);
+      if (m_airtemp > -60 && m_airtemp < 100) {
+        SendSentenceToAllInstruments(
+          OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(m_airtemp, g_iDashTempUnit),
+          getUsrTempUnit_Plugin(g_iDashTempUnit));
+        mPriATMP = 1;
+        mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+      }
+    }
+
+    if (std::isnan(AtmosphericPressure)) return;
+    double m_press = PA2HPA(AtmosphericPressure);
+    SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
+    mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
+  }
+}
+
+void dashboard_pi::HandleN2K_130577(ObservedEvt ev) {
+  NMEA2000Id id_130577(130577);
+  std::vector<uint8_t>v = GetN2000Payload(id_130577, ev);
+  unsigned char SID;
+  tN2kDataMode DataMode;
+  tN2kHeadingReference CogReference;
+  double SOG, COG, Heading, SpeedThroughWater, Set, Drift;
+
+  // Get Direction data
+  if (ParseN2kPGN130577(v, DataMode, CogReference, SID, COG, SOG, Heading,
+                        SpeedThroughWater, Set, Drift)) {
+
+    if (std::isnan(SpeedThroughWater)) return;
+    if (mPriSTW >= 1) {
+      double stw_knots = MS2KNOTS(SpeedThroughWater);
+      SendSentenceToAllInstruments(
+        OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
+        getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+      mPriSTW = 1;
+      mSTW_Watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+}
+
 // Signal K.......
 void dashboard_pi::ParseSignalK(wxString &msg) {
   wxJSONValue root;
@@ -1941,41 +2174,41 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
                                    _T("\u00B0"));
     }
     else if (update_path == _T("navigation.headingTrue")) {
-      if (mPriHeadingT >= 1) {
+      if (mPriHeadingT >= 2) {
         double hdt = GetJsonDouble(value);
         if (std::isnan(hdt)) return;
 
         hdt = GEODESIC_RAD2DEG(hdt);
         SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, _T("\u00B0T"));
-        mPriHeadingT = 1;
+        mPriHeadingT = 2;
         mHDT_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
     else if (update_path == _T("navigation.headingMagnetic")) {
-      if (mPriHeadingM >= 1) {
+      if (mPriHeadingM >= 2) {
         double hdm = GetJsonDouble(value);
         if (std::isnan(hdm)) return;
 
         hdm = GEODESIC_RAD2DEG(hdm);
         SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
-        mPriHeadingM = 1;
+        mPriHeadingM = 2;
         mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
         // If no higher priority HDT, calculate it here.
-        if (mPriHeadingT >= 5 && ( !std::isnan(mVar) )) {
+        if (mPriHeadingT >= 6 && ( !std::isnan(mVar) )) {
           double heading = hdm + mVar;
           if (heading < 0)
             heading += 360;
           else if (heading >= 360.0)
             heading -= 360;
           SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
-          mPriHeadingT = 5;
+          mPriHeadingT = 6;
           mHDT_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
     }
     else if (update_path == _T("navigation.speedThroughWater")) {
-      if (mPriSTW >= 1) {
+      if (mPriSTW >= 2) {
         double stw_knots = GetJsonDouble(value);
         if (std::isnan(stw_knots)) return;
 
@@ -1983,7 +2216,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         SendSentenceToAllInstruments(
           OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
           getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-        mPriSTW = 1;
+        mPriSTW = 2;
         mSTW_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
@@ -2001,7 +2234,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("environment.wind.angleApparent")) {
-      if (mPriAWA >= 1) {
+      if (mPriAWA >= 2) {
         double m_awaangle = GetJsonDouble(value);
         if (std::isnan(m_awaangle)) return;
 
@@ -2012,12 +2245,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           m_awaangle *= -1;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle, m_awaunit);
-        mPriAWA = 1;  // Set prio only here. No need to catch speed if no angle.
+        mPriAWA = 2;  // Set prio only here. No need to catch speed if no angle.
         mMWVA_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
     else if (update_path == _T("environment.wind.speedApparent")) {
-      if (mPriAWA >= 1) {
+      if (mPriAWA >= 2) {
         double m_awaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_awaspeed_kn)) return;
 
@@ -2029,10 +2262,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (( update_path == _T("environment.wind.angleTrueWater") &&
-              !g_iDashUsetruewinddata ) ||
+              !g_bDBtrueWindGround ) ||
               ( update_path == _T("environment.wind.angleTrueGround") &&
-               g_iDashUsetruewinddata )) {
-      if (mPriTWA >= 1) {
+               g_bDBtrueWindGround )) {
+      if (mPriTWA >= 2) {
         double m_twaangle = GetJsonDouble(value);
         if (std::isnan(m_twaangle)) return;
 
@@ -2044,10 +2277,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           m_twaangle *= -1;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
-        mPriTWA = 1;  // Set prio only here. No need to catch speed if no angle.
+        mPriTWA = 2;  // Set prio only here. No need to catch speed if no angle.
         mMWVT_Watchdog = gps_watchdog_timeout_ticks;
 
-        if (mPriWDN >= 3) {
+        if (mPriWDN >= 5) {
           // m_twaangle_raw has wind angle relative to the bow.
           // Wind history use angle relative to north.
           // If no TWD with higher priority is present and
@@ -2062,17 +2295,17 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir,
                                          _T("\u00B0"));
-            mPriWDN = 3;
+            mPriWDN = 5;
             mWDN_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
       }
     }
     else if (( update_path == _T("environment.wind.speedTrue") &&
-              !g_iDashUsetruewinddata ) ||
+              !g_bDBtrueWindGround ) ||
               ( update_path == _T("environment.wind.speedOverGround") &&
-               g_iDashUsetruewinddata )) {
-      if (mPriTWA >= 1) {
+               g_bDBtrueWindGround )) {
+      if (mPriTWA >= 2) {
         double m_twaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_twaspeed_kn)) return;
 
@@ -2088,20 +2321,6 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("environment.depth.belowSurface")) {
-      if (mPriDepth >= 1) {
-        double depth = GetJsonDouble(value);
-        if (std::isnan(depth)) return;
-
-        mPriDepth = 1;
-        depth += g_dDashDBTOffset;
-        depth /= 1852.0;
-        SendSentenceToAllInstruments(
-          OCPN_DBP_STC_DPT, toUsrDistance_Plugin(depth, g_iDashDepthUnit),
-          getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
-        mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
-      }
-    }
-    else if (update_path == _T("environment.depth.belowTransducer")) {
       if (mPriDepth >= 2) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
@@ -2115,8 +2334,22 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
+    else if (update_path == _T("environment.depth.belowTransducer")) {
+      if (mPriDepth >= 3) {
+        double depth = GetJsonDouble(value);
+        if (std::isnan(depth)) return;
+
+        mPriDepth = 3;
+        depth += g_dDashDBTOffset;
+        depth /= 1852.0;
+        SendSentenceToAllInstruments(
+          OCPN_DBP_STC_DPT, toUsrDistance_Plugin(depth, g_iDashDepthUnit),
+          getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
+        mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
+      }
+    }
     else if (update_path == _T("environment.water.temperature")) {
-      if (mPriWTP >= 1) {
+      if (mPriWTP >= 2) {
         double m_wtemp = GetJsonDouble(value);
         if (std::isnan(m_wtemp)) return;
 
@@ -2125,7 +2358,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           SendSentenceToAllInstruments(
             OCPN_DBP_STC_TMP, toUsrTemp_Plugin(m_wtemp, g_iDashTempUnit),
             getUsrTempUnit_Plugin(g_iDashTempUnit));
-          mPriWTP = 1;
+          mPriWTP = 2;
           mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
@@ -2246,12 +2479,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         }
       }
     } else if (update_path == _T("navigation.gnss.antennaAltitude")) {
-      if (mPriAlt >= 1) {
+      if (mPriAlt >= 2) {
         double m_alt = GetJsonDouble(value);
         if (std::isnan(m_alt)) return;
 
         SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, m_alt, _T("m"));
-        mPriAlt = 1;
+        mPriAlt = 2;
         mALT_Watchdog = gps_watchdog_timeout_ticks;
       }
 
@@ -2267,7 +2500,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         mUTC_Watchdog = gps_watchdog_timeout_ticks;
       }
     } else if (update_path == _T("environment.outside.temperature")) {
-      if (mPriATMP >= 1) {
+      if (mPriATMP >= 2) {
         double m_airtemp = GetJsonDouble(value);
         if (std::isnan(m_airtemp)) return;
 
@@ -2276,31 +2509,39 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           SendSentenceToAllInstruments(
               OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(m_airtemp, g_iDashTempUnit),
               getUsrTempUnit_Plugin(g_iDashTempUnit));
-          mPriATMP = 1;
+          mPriATMP = 2;
           mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
     } else if (update_path ==
                _T("environment.wind.directionTrue")) {  // relative true north
-      if (mPriWDN >= 1) {
+      if (mPriWDN >= 3) {
         double m_twdT = GetJsonDouble(value);
         if (std::isnan(m_twdT)) return;
 
         m_twdT = GEODESIC_RAD2DEG(m_twdT);
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
-        mPriWDN = 1;
+        mPriWDN = 3;
         mWDN_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path ==
-               _T("environment.wind.directionMagnetic")) {  // relative magn
-                                                            // north
-      if (mPriWDN >= 2) {
+    } else if (update_path == _T("environment.wind.directionMagnetic")) {
+      // relative magn north
+      if (mPriWDN >= 4) {
         double m_twdM = GetJsonDouble(value);
         if (std::isnan(m_twdM)) return;
-
         m_twdM = GEODESIC_RAD2DEG(m_twdM);
+        // Make it true if variation is available
+        if (!std::isnan(mVar)) {
+          m_twdM = (m_twdM) + mVar;
+          if (m_twdM > 360.) {
+            m_twdM -= 360;
+          }
+          else if (m_twdM < 0.) {
+            m_twdM += 360;
+          }
+        }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, _T("\u00B0M"));
-        mPriWDN = 2;
+        mPriWDN = 4;
         mWDN_Watchdog = gps_watchdog_timeout_ticks;
       }
     } else if (update_path == _T("navigation.trip.log")) {  // m
@@ -2352,7 +2593,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
 }
 
 
-void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
+void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
+
   if (mPriPosition >= 1) {
     mPriPosition = 1;
     SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, pfix.Lat, _T("SDMM"));
@@ -2397,6 +2639,25 @@ void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
       mPriSatUsed = 1;
       mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
     }
+  }
+  if (mPriHeadingT >= 1) {
+    double hdt = pfix.Hdt;
+    if (std::isnan(hdt)) return;
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, _T("\u00B0T"));
+    mPriHeadingT = 1;
+    mHDT_Watchdog = gps_watchdog_timeout_ticks;
+  }
+  if (mPriHeadingM >= 1) {
+    double hdm = pfix.Hdm;
+    if (std::isnan(hdm) && !std::isnan(pfix.Hdt) && !std::isnan(pfix.Var)) {
+      hdm = pfix.Hdt - pfix.Var;
+      if (hdm < 0) hdm += 360;
+      else if (hdm >= 360.0) hdm -= 360;
+    }
+    if (std::isnan(hdm)) return;
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
+    mPriHeadingM = 1;
+    mHDx_Watchdog = gps_watchdog_timeout_ticks;
   }
 }
 
@@ -2689,7 +2950,7 @@ bool dashboard_pi::LoadConfig(void) {
 
     pConf->Read(_T("DistanceUnit"), &g_iDashDistanceUnit, 0);
     pConf->Read(_T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0);
-    pConf->Read(_T("UseSignKtruewind"), &g_iDashUsetruewinddata, 0);
+    pConf->Read(_T("UseSignKtruewind"), &g_bDBtrueWindGround, 0);
     pConf->Read(_T("TemperatureUnit"), &g_iDashTempUnit, 0);
 
     pConf->Read(_T("UTCOffset"), &g_iUTCOffset, 0);
@@ -2807,7 +3068,7 @@ bool dashboard_pi::SaveConfig(void) {
     pConf->Write(_T("DistanceUnit"), g_iDashDistanceUnit);
     pConf->Write(_T("WindSpeedUnit"), g_iDashWindSpeedUnit);
     pConf->Write(_T("UTCOffset"), g_iUTCOffset);
-    pConf->Write(_T("UseSignKtruewind"), g_iDashUsetruewinddata);
+    pConf->Write(_T("UseSignKtruewind"), g_bDBtrueWindGround);
     pConf->Write(_T("TemperatureUnit"), g_iDashTempUnit);
 
     pConf->Write(_T("DashboardCount" ),
@@ -3427,8 +3688,8 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 
   m_pUseTrueWinddata = new wxCheckBox(
       itemPanelNotebook02, wxID_ANY,
-      _("Use SignalK true wind data over ground.\n(Instead of through water)"));
-  m_pUseTrueWinddata->SetValue(g_iDashUsetruewinddata);
+      _("Use N2K & SignalK true wind data over ground.\n(Instead of through water)"));
+  m_pUseTrueWinddata->SetValue(g_bDBtrueWindGround);
   itemFlexGridSizer04->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
 
   wxStdDialogButtonSizer *DialogButtonSizer =
@@ -3500,7 +3761,7 @@ void DashboardPreferencesDialog::SaveDashboardConfig() {
   g_iDashDepthUnit = m_pChoiceDepthUnit->GetSelection() + 3;
   g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
   g_iDashWindSpeedUnit = m_pChoiceWindSpeedUnit->GetSelection();
-  g_iDashUsetruewinddata = m_pUseTrueWinddata->GetValue();
+  g_bDBtrueWindGround = m_pUseTrueWinddata->GetValue();
   g_iDashTempUnit = m_pChoiceTempUnit->GetSelection();
   if (curSel != -1) {
     DashboardWindowContainer *cont = m_Config.Item(curSel);
