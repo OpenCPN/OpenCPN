@@ -1199,7 +1199,10 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
 
   //    Establish my children
-  g_pMUX = new Multiplexer();
+  struct MuxLogCallbacks log_callbacks;
+  log_callbacks.log_is_active = []() { return NMEALogWindow::Get().Active(); };
+  log_callbacks.log_message = [](const std::string& s) { NMEALogWindow::Get().Add(s); };
+  g_pMUX = new Multiplexer(log_callbacks);
 
   g_pAIS = new AisDecoder();
 

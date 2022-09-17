@@ -28,6 +28,7 @@
 
 #include <wx/datetime.h>
 #include <wx/string.h>
+#include <wx/utils.h>
 
 
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
@@ -69,4 +70,5 @@ extern wxString formatTimeDelta(wxTimeSpan span);
 extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
 extern wxString formatTimeDelta(wxLongLong secs);
 
+extern double fromDMM(wxString sdms);
 #endif   // _NAVUTIL_BASE__

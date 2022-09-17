@@ -25,7 +25,7 @@
 #include <wx/regex.h>
 
 #include "PositionParser.h"
-#include "navutil.h"
+#include "navutil_base.h"
 
 PositionParser::PositionParser(const wxString& src) {
   parsedOk = false;

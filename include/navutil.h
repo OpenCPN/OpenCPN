@@ -67,7 +67,6 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour col1,
                  wxColour back_color, wxColour text_color, wxColour uitext,
                  wxColour udkrd, wxColour gridline);
 
-extern double fromDMM(wxString sdms);
 
 class Route;
 class NavObjectCollection;

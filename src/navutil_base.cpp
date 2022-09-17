@@ -571,4 +571,92 @@ int GpxDocument::GetRandomNumber(int range_min, int range_max) {
   return (int)u;
 }
 
+/****************************************************************************/
+// Modified from the code posted by Andy Ross at
+//     http://www.mail-archive.com/flightgear-devel@flightgear.org/msg06702.html
+// Basically, it looks for a list of decimal numbers embedded in the
+// string and uses the first three as degree, minutes and seconds.  The
+// presence of a "S" or "W character indicates that the result is in a
+// hemisphere where the final answer must be negated.  Non-number
+// characters are treated as whitespace separating numbers.
+//
+// So there are lots of bogus strings you can feed it to get a bogus
+// answer, but that's not surprising.  It does, however, correctly parse
+// all the well-formed strings I can thing of to feed it.  I've tried all
+// the following:
+//
+// 37°54.204' N
+// N37 54 12
+// 37°54'12"
+// 37.9034
+// 122°18.621' W
+// 122w 18 37
+// -122.31035
+/****************************************************************************/
+double fromDMM(wxString sdms) {
+  wchar_t buf[64];
+  char narrowbuf[64];
+  int i, len, top = 0;
+  double stk[32], sign = 1;
+
+  // First round of string modifications to accomodate some known strange
+  // formats
+  wxString replhelper;
+  replhelper = wxString::FromUTF8("´·");  // UKHO PDFs
+  sdms.Replace(replhelper, _T("."));
+  replhelper =
+      wxString::FromUTF8("\"·");  // Don't know if used, but to make sure
+  sdms.Replace(replhelper, _T("."));
+  replhelper = wxString::FromUTF8("·");
+  sdms.Replace(replhelper, _T("."));
+
+  replhelper =
+      wxString::FromUTF8("s. š.");  // Another example: cs.wikipedia.org
+                                    // (someone was too active translating...)
+  sdms.Replace(replhelper, _T("N"));
+  replhelper = wxString::FromUTF8("j. š.");
+  sdms.Replace(replhelper, _T("S"));
+  sdms.Replace(_T("v. d."), _T("E"));
+  sdms.Replace(_T("z. d."), _T("W"));
+
+  // If the string contains hemisphere specified by a letter, then '-' is for
+  // sure a separator...
+  sdms.UpperCase();
+  if (sdms.Contains(_T("N")) || sdms.Contains(_T("S")) ||
+      sdms.Contains(_T("E")) || sdms.Contains(_T("W")))
+    sdms.Replace(_T("-"), _T(" "));
+
+  wcsncpy(buf, sdms.wc_str(wxConvUTF8), 63);
+  buf[63] = 0;
+  len = wxMin(wcslen(buf), sizeof(narrowbuf) - 1);
+  ;
+
+  for (i = 0; i < len; i++) {
+    wchar_t c = buf[i];
+    if ((c >= '0' && c <= '9') || c == '-' || c == '.' || c == '+') {
+      narrowbuf[i] = c;
+      continue; /* Digit characters are cool as is */
+    }
+    if (c == ',') {
+      narrowbuf[i] = '.'; /* convert to decimal dot */
+      continue;
+    }
+    if ((c | 32) == 'w' || (c | 32) == 's')
+      sign = -1;      /* These mean "negate" (note case insensitivity) */
+    narrowbuf[i] = 0; /* Replace everything else with nuls */
+  }
+
+  /* Build a stack of doubles */
+  stk[0] = stk[1] = stk[2] = 0;
+  for (i = 0; i < len; i++) {
+    while (i < len && narrowbuf[i] == 0) i++;
+    if (i != len) {
+      stk[top++] = atof(narrowbuf + i);
+      i += strlen(narrowbuf + i);
+    }
+  }
+
+  return sign * (stk[0] + (stk[1] + stk[2] / 60) / 60);
+}
+
 

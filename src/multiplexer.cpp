@@ -40,7 +40,6 @@
 
 #include "wx/wx.h"
 #include "multiplexer.h"
-#include "NMEALogWindow.h"
 #include "conn_params.h"
 #include "comm_drv_registry.h"
 #include "comm_drv_n0183_serial.h"
@@ -94,7 +93,7 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 
 #endif  // HAVE_READLINK
 
-Multiplexer::Multiplexer() {
+Multiplexer::Multiplexer(MuxLogCallbacks cb) : m_log_callbacks(cb) {
   auto &msgbus = NavMsgBus::GetInstance();
 
   m_listener_N0183_all =
@@ -113,7 +112,7 @@ Multiplexer::~Multiplexer() {}
 void Multiplexer::LogOutputMessageColor(const wxString &msg,
                                         const wxString &stream_name,
                                         const wxString &color) {
-  if (NMEALogWindow::Get().Active()) {
+  if (m_log_callbacks.log_is_active()) {
     wxDateTime now = wxDateTime::Now();
     wxString ss;
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
@@ -126,7 +125,7 @@ void Multiplexer::LogOutputMessageColor(const wxString &msg,
     ss.Append(msg);
     ss.Prepend(color);
 
-    NMEALogWindow::Get().Add(ss);
+    m_log_callbacks.log_message(ss.ToStdString());
   }
 }
 
@@ -141,7 +140,7 @@ void Multiplexer::LogOutputMessage(const wxString &msg, wxString stream_name,
 void Multiplexer::LogInputMessage(const wxString &msg,
                                   const wxString &stream_name, bool b_filter,
                                   bool b_error) {
-  if (NMEALogWindow::Get().Active()) {
+  if (m_log_callbacks.log_is_active()) {
     wxDateTime now = wxDateTime::Now();
     wxString ss;
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
@@ -162,8 +161,7 @@ void Multiplexer::LogInputMessage(const wxString &msg,
       else
         ss.Prepend(_T("<GREEN>"));
     }
-
-    NMEALogWindow::Get().Add(ss);
+    m_log_callbacks.log_message(ss.ToStdString());
   }
 }
 
@@ -179,7 +177,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Send to the Debug Window, if open
   //  Special formatting for non-printable characters helps debugging NMEA
   //  problems
-  if (NMEALogWindow::Get().Active()) {
+  if (m_log_callbacks.log_is_active()) {
     std::string str = n0183_msg->payload;
 
     // Get the params for the driver sending this message

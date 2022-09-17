@@ -956,6 +956,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
+  ${CMAKE_SOURCE_DIR}/src/ChartDataInputStream.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
@@ -980,6 +981,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
+  ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
   ${CMAKE_SOURCE_DIR}/src/Hyperlink.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
@@ -989,10 +991,12 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/observable_confvar.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
+  ${CMAKE_SOURCE_DIR}/src/PositionParser.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
   ${CMAKE_SOURCE_DIR}/src/Route.cpp
   ${CMAKE_SOURCE_DIR}/src/RoutePoint.cpp
@@ -1000,6 +1004,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/Select.cpp
   ${CMAKE_SOURCE_DIR}/src/select_item.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
+  ${CMAKE_SOURCE_DIR}/src/ser_ports.cpp
   ${CMAKE_SOURCE_DIR}/src/Track.cpp
 )
 
@@ -1013,29 +1018,17 @@ set(
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
   src/ais_info_gui.cpp
-  src/base_platform.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
   src/catalog_mgr.cpp
   src/cat_settings.cpp
-  src/ChartDataInputStream.cpp
   src/chartdb.cpp
   src/chartdbs.cpp
   src/chartimg.cpp
   src/chcanv.cpp
   src/ChInfoWin.cpp
   src/color_handler.cpp
-  src/comm_drv_factory.cpp
-  src/comm_drv_n0183.cpp
-  src/comm_drv_n0183_net.cpp
-  src/comm_drv_n0183_serial.cpp
-  src/comm_drv_n2k.cpp
-  src/comm_drv_n2k_serial.cpp
-  src/comm_drv_registry.cpp
-  src/comm_drv_signalk.cpp
-  src/comm_drv_signalk_net.cpp
-  src/comm_navmsg.cpp
   src/compass.cpp
   src/concanv.cpp
   src/ConfigMgr.cpp
@@ -1048,7 +1041,6 @@ set(
   src/FontDesc.cpp
   src/FontMgr.cpp
   src/GarminProtocolHandler.cpp
-  src/geodesic.cpp
   src/GoToPositionDialog.cpp
   src/gshhs.cpp
   src/gui_lib.cpp
@@ -1077,10 +1069,8 @@ set(
   src/OCPNRegion.cpp
   src/options.cpp
   src/piano.cpp
-  src/plugin_blacklist.cpp
   src/pluginmanager.cpp
   src/plugin_paths.cpp
-  src/PositionParser.cpp
   src/printtable.cpp
   src/Quilt.cpp
   src/RolloverWin.cpp
@@ -1094,7 +1084,6 @@ set(
   src/S57QueryDialog.cpp
   src/safe_mode.cpp
   src/SendToGpsDlg.cpp
-  src/ser_ports.cpp
   src/Station_Data.cpp
   src/styles.cpp
   src/svg_utils.cpp
@@ -2991,5 +2980,12 @@ if (NOT QT_ANDROID AND NOT APPLE)
     target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
     target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
   endif ()
+  if (HAVE_LIBUDEV)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)
+  endif ()
+  if (LIBLZMA_FOUND)
+    target_link_libraries(opencpn-cmd PRIVATE LibLZMA::LibLZMA)
+  endif ()
+
   install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()
