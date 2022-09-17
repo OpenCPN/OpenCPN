@@ -440,7 +440,7 @@ wxString MakeName() { return _T("DASH_") + GetUUID(); }
 //---------------------------------------------------------------------------------------------------------
 
 dashboard_pi::dashboard_pi(void *ppimgr)
-    : wxTimer(this), opencpn_plugin_16(ppimgr) {
+    : wxTimer(this), opencpn_plugin_18(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 }
@@ -1025,7 +1025,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("HDG")) {
-      if (mPriVar >= 3 || mPriHeadingM >= 2 || mPriHeadingT >= 6) {
+      if (mPriVar >= 3 || mPriHeadingM >= 3 || mPriHeadingT >= 7) {
         if (m_NMEA0183.Parse()) {
           if (mPriVar >= 3) {
             // Any device sending VAR=0.0 can be assumed to not really know
@@ -1042,9 +1042,9 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                            _T("\u00B0"));
             }
           }
-          if (mPriHeadingM >= 2) {
+          if (mPriHeadingM >= 3) {
             if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees)) {
-              mPriHeadingM = 2;
+              mPriHeadingM = 3;
               mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
               SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm,
                                            _T("\u00B0"));
@@ -1056,8 +1056,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           //      If Variation is available, no higher priority HDT is
           //      available, then calculate and propagate calculated HDT
           if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees)) {
-            if (!std::isnan(mVar) && (mPriHeadingT >= 6)) {
-              mPriHeadingT = 6;
+            if (!std::isnan(mVar) && (mPriHeadingT >= 7)) {
+              mPriHeadingT = 7;
               double heading = mHdm + mVar;
               if (heading < 0)
                 heading += 360;
@@ -1073,11 +1073,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("HDM")) {
-      if (mPriHeadingM >= 3 || mPriHeadingT >= 4) {
+      if (mPriHeadingM >= 4 || mPriHeadingT >= 5) {
         if (m_NMEA0183.Parse()) {
-          if (mPriHeadingM >= 3) {
+          if (mPriHeadingM >= 4) {
             if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic)) {
-              mPriHeadingM = 3;
+              mPriHeadingM = 4;
               mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
               SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm,
                                            _T("\u00B0M"));
@@ -1088,8 +1088,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           //      If Variation is available, no higher priority HDT is
           //      available, then calculate and propagate calculated HDT
           if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic)) {
-            if (!std::isnan(mVar) && (mPriHeadingT >= 4)) {
-              mPriHeadingT = 4;
+            if (!std::isnan(mVar) && (mPriHeadingT >= 5)) {
+              mPriHeadingT = 5;
               double heading = mHdm + mVar;
               if (heading < 0)
                 heading += 360;
@@ -1105,12 +1105,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("HDT")) {
-      if (mPriHeadingT >= 2) {
+      if (mPriHeadingT >= 3) {
         if (m_NMEA0183.Parse()) {
           if (!std::isnan(m_NMEA0183.Hdt.DegreesTrue)) {
             SendSentenceToAllInstruments(
                 OCPN_DBP_STC_HDT, m_NMEA0183.Hdt.DegreesTrue, _T("\u00B0T"));
-            mPriHeadingT = 2;
+            mPriHeadingT = 3;
             mHDT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -1433,19 +1433,19 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("VHW")) {
-      if (mPriHeadingT >= 3 || mPriHeadingM >= 4 || mPriSTW >= 2) {
+      if (mPriHeadingT >= 4 || mPriHeadingM >= 5 || mPriSTW >= 2) {
         if (m_NMEA0183.Parse()) {
-          if (mPriHeadingT >= 3) {
+          if (mPriHeadingT >= 4) {
             if (!std::isnan(m_NMEA0183.Vhw.DegreesTrue)) {
-              mPriHeadingT = 3;
+              mPriHeadingT = 4;
               SendSentenceToAllInstruments(
                   OCPN_DBP_STC_HDT, m_NMEA0183.Vhw.DegreesTrue, _T("\u00B0T"));
               mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
-          if (mPriHeadingM >= 4) {
+          if (mPriHeadingM >= 5) {
             if (!std::isnan(m_NMEA0183.Vhw.DegreesMagnetic)) {
-              mPriHeadingM = 4;
+              mPriHeadingM = 5;
               SendSentenceToAllInstruments(OCPN_DBP_STC_HDM,
                                            m_NMEA0183.Vhw.DegreesMagnetic,
                                            _T("\u00B0M"));
@@ -2089,35 +2089,35 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
                                    _T("\u00B0"));
     }
     else if (update_path == _T("navigation.headingTrue")) {
-      if (mPriHeadingT >= 1) {
+      if (mPriHeadingT >= 2) {
         double hdt = GetJsonDouble(value);
         if (std::isnan(hdt)) return;
 
         hdt = GEODESIC_RAD2DEG(hdt);
         SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, _T("\u00B0T"));
-        mPriHeadingT = 1;
+        mPriHeadingT = 2;
         mHDT_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
     else if (update_path == _T("navigation.headingMagnetic")) {
-      if (mPriHeadingM >= 1) {
+      if (mPriHeadingM >= 2) {
         double hdm = GetJsonDouble(value);
         if (std::isnan(hdm)) return;
 
         hdm = GEODESIC_RAD2DEG(hdm);
         SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
-        mPriHeadingM = 1;
+        mPriHeadingM = 2;
         mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
         // If no higher priority HDT, calculate it here.
-        if (mPriHeadingT >= 5 && ( !std::isnan(mVar) )) {
+        if (mPriHeadingT >= 6 && ( !std::isnan(mVar) )) {
           double heading = hdm + mVar;
           if (heading < 0)
             heading += 360;
           else if (heading >= 360.0)
             heading -= 360;
           SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
-          mPriHeadingT = 5;
+          mPriHeadingT = 6;
           mHDT_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
@@ -2508,7 +2508,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
 }
 
 
-void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
+void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
+
   if (mPriPosition >= 1) {
     mPriPosition = 1;
     SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, pfix.Lat, _T("SDMM"));
@@ -2553,6 +2554,25 @@ void dashboard_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
       mPriSatUsed = 1;
       mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
     }
+  }
+  if (mPriHeadingT >= 1) {
+    double hdt = pfix.Hdt;
+    if (std::isnan(hdt)) return;
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, _T("\u00B0T"));
+    mPriHeadingT = 1;
+    mHDT_Watchdog = gps_watchdog_timeout_ticks;
+  }
+  if (mPriHeadingM >= 1) {
+    double hdm = pfix.Hdm;
+    if (std::isnan(hdm) && !std::isnan(pfix.Hdt) && !std::isnan(pfix.Var)) {
+      hdm = pfix.Hdt - pfix.Var;
+      if (hdm < 0) hdm += 360;
+      else if (hdm >= 360.0) hdm -= 360;
+    }
+    if (std::isnan(hdm)) return;
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
+    mPriHeadingM = 1;
+    mHDx_Watchdog = gps_watchdog_timeout_ticks;
   }
 }
 

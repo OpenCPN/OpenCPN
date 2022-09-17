@@ -38,7 +38,7 @@
 #define PLUGIN_VERSION_MINOR 2
 
 #define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 6
+#define MY_API_VERSION_MINOR 8
 
 #include <wx/notebook.h>
 #include <wx/fileconf.h>
@@ -148,7 +148,7 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-class dashboard_pi : public wxTimer, opencpn_plugin_16 {
+class dashboard_pi : public wxTimer, opencpn_plugin_18 {
 public:
   dashboard_pi(void *ppimgr);
   ~dashboard_pi(void);
@@ -170,7 +170,7 @@ public:
 
   //    The optional method overrides
   void SetNMEASentence(wxString &sentence);
-  void SetPositionFix(PlugIn_Position_Fix &pfix);
+  void SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix);
   void SetCursorLatLon(double lat, double lon);
   int GetToolbarToolCount(void);
   void OnToolbarToolCallback(int id);
