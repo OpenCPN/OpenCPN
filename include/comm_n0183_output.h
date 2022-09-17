@@ -40,7 +40,7 @@ class Route;
 #define ERR_GARMIN_INITIALIZE -1
 #define ERR_GARMIN_GENERAL -2
 
-void SendNMEAMessage(const wxString &msg);
+void BroadcastNMEA0183Message(const wxString &msg);
 
 int SendRouteToGPS_N0183(Route *pr, const wxString &com_name, bool bsend_waypoints
                      /*SendToGpsDlg *dialog*/);

@@ -360,6 +360,9 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence, FilterDire
 }
 
 NavAddr::Bus ConnectionParams::GetCommProtocol(){
+  if ((Type == NETWORK) && (NetProtocol == SIGNALK) )
+      return NavAddr::Bus::Signalk;
+
   switch (Protocol){
     case PROTO_NMEA0183:
       return NavAddr::Bus::N0183;

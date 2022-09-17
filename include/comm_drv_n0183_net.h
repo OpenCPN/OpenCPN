@@ -79,6 +79,7 @@ public:
 
   void SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
+  wxSocketBase* GetSock() const { return m_sock; }
 
 private:
   ConnectionParams m_params;
@@ -99,7 +100,6 @@ private:
   void SetMulticast(bool multicast) { m_is_multicast = multicast; }
   bool GetMulticast() const { return m_is_multicast; }
 
-  wxSocketBase* GetSock() const { return m_sock; }
   NetworkProtocol GetProtocol() { return m_net_protocol; }
   void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
   bool GetBrxConnectEvent() { return m_brx_connect_event; }
