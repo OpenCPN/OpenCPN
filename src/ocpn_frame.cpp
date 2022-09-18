@@ -5463,6 +5463,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
 #endif
 
   //      Maintain the validity flags
+  m_b_new_data = true;
   bool last_bGPSValid = bGPSValid;
   bGPSValid = true;
   if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
@@ -6016,7 +6017,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
       if (!bGPSValid) cc->SetOwnShipState(SHIP_INVALID);
 
-      if (bGPSValid != m_last_bGPSValid) {
+      if ((bGPSValid != m_last_bGPSValid) || m_b_new_data) {
         if (!g_bopengl) cc->UpdateShips();
 
         bnew_view = true;  // force a full Refresh()
@@ -6133,6 +6134,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   }
 
 #endif
+
+  // Reset pending next AppMsgBus notification
+  m_b_new_data = false;
 
   if (g_unit_test_2)
     FrameTimer1.Start(TIMER_GFRAME_1 * 3, wxTIMER_CONTINUOUS);

@@ -427,6 +427,7 @@ private:
   wxTimer ToolbarAnimateTimer;
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;
+  bool m_b_new_data;
 
   ObservedVarListener listener_basic_navdata;
   ObservedVarListener listener_gps_watchdog;
