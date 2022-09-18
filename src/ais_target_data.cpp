@@ -121,23 +121,7 @@ wxString ais_get_status(int index) {
   return ais_status[index];
 }
 
-// FIXME(leamas) This is a verbatim copy from gFrame, must be a better way.
-static double GetMag(double a) {
-  if (!std::isnan(gVar)) {
-    if ((a - gVar) > 360.)
-      return (a - gVar - 360.);
-    else
-      return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-  } else {
-    if ((a - g_UserVar) > 360.)
-      return (a - g_UserVar - 360.);
-    else
-      return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-  }
-}
-
-
-AisTargetData::AisTargetData() {
+AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   strncpy(ShipName, "Unknown             ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
   strncpy(Destination, "                    ", SHIP_NAME_LEN);
@@ -622,7 +606,8 @@ wxString AisTargetData::BuildQueryResult(void) {
         wxString magString, trueString;
         if (g_bShowMag)
           magString << wxString::Format(wxString("%03d%c(M)"),
-                                        (int)GetMag(COG), 0x00B0);
+                                        static_cast<int>(m_callbacks.get_mag(COG)),
+                                        0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 
@@ -687,7 +672,8 @@ wxString AisTargetData::BuildQueryResult(void) {
     wxString magString, trueString;
     if (g_bShowMag)
       magString << wxString::Format(wxString("%03d%c(M)"),
-                                    (int)GetMag(Brg), 0x00B0);
+                                    static_cast<int>(m_callbacks.get_mag(COG)),
+                                    0x00B0);
     if (g_bShowTrue)
       trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
 
@@ -862,7 +848,8 @@ wxString AisTargetData::GetRolloverString(void) {
         wxString magString, trueString;
         if (g_bShowMag)
           magString << wxString::Format(wxString("%03d%c(M)  "),
-                                        (int)GetMag(COG), 0x00B0);
+                                        static_cast<int>(m_callbacks.get_mag(COG)),
+                                        0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
 

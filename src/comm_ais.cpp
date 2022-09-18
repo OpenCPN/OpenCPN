@@ -22,6 +22,7 @@
  ***************************************************************************
  */
 #include <cmath>
+#include <memory>
 
 #include <wx/tokenzr.h>
 #include <wx/string.h>
@@ -91,38 +92,39 @@ AisError DecodeSingleVDO(const wxString &str,
   //  Create the bit accessible string
   AisBitstring strbit(string_to_parse.mb_str());
 
-  AisTargetData TargetData;
+  auto TargetData = std::make_unique<AisTargetData>(
+     *AisTargetDataMaker::GetInstance().GetTargetData());
 
-  bool bdecode_result = Parse_VDXBitstring(&strbit, &TargetData);
+  bool bdecode_result = Parse_VDXBitstring(&strbit, TargetData.get());
 
   if (bdecode_result) {
-    switch (TargetData.MID) {
+    switch (TargetData->MID) {
       case 1:
       case 2:
       case 3:
       case 18: {
-        if (!TargetData.b_positionDoubtful) {
-          pos->kLat = TargetData.Lat;
-          pos->kLon = TargetData.Lon;
+        if (!TargetData->b_positionDoubtful) {
+          pos->kLat = TargetData->Lat;
+          pos->kLon = TargetData->Lon;
         } else {
           pos->kLat = NAN;
           pos->kLon = NAN;
         }
 
-        if (TargetData.COG == 360.0)
+        if (TargetData->COG == 360.0)
           pos->kCog = NAN;
         else
-          pos->kCog = TargetData.COG;
+          pos->kCog = TargetData->COG;
 
-        if (TargetData.SOG > 102.2)
+        if (TargetData->SOG > 102.2)
           pos->kSog = NAN;
         else
-          pos->kSog = TargetData.SOG;
+          pos->kSog = TargetData->SOG;
 
-        if ((int)TargetData.HDG == 511)
+        if ((int)TargetData->HDG == 511)
           pos->kHdt = NAN;
         else
-          pos->kHdt = TargetData.HDG;
+          pos->kHdt = TargetData->HDG;
 
         //  VDO messages do not contain variation or magnetic heading
         pos->kVar = NAN;

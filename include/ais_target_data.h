@@ -25,6 +25,7 @@
 #ifndef __AIS_TARGET_DATA_H__
 #define __AIS_TARGET_DATA_H__
 
+#include <functional>
 #include <vector>
 
 #include <wx/string.h>
@@ -137,10 +138,16 @@ struct Ais8_001_22 {
   Ais8_001_22_SubAreaList sub_areas;
 };
 
+struct AisTargetCallbacks {
+  std::function<double(double)> get_mag;
+  AisTargetCallbacks(): get_mag([](double a) { return 1.0; }) {}
+};
+
 
 class AisTargetData {
+friend class AisTargetDataMaker;
+
 public:
-  AisTargetData();
   ~AisTargetData();
 
   wxString BuildQueryResult(void);
@@ -254,11 +261,41 @@ public:
                                                 // the max number of chartcanvas
   wxDateTime dtAlertExpireTime;
   long dsc_NatureOfDistress;
+
+private:
+  AisTargetData(AisTargetCallbacks callbacks);
+  AisTargetCallbacks m_callbacks;
 };
+
+/**
+ * Singleton factory. Unless SetCallbacks() is invoked GetTargetData()
+ * returns an object with default, dummy callbacks.
+ */
+
+class AisTargetDataMaker {
+public:
+  static AisTargetDataMaker& GetInstance() {
+    static AisTargetDataMaker instance;
+    return instance;
+  }
+
+  AisTargetDataMaker(const AisTargetDataMaker&) = delete;
+  AisTargetDataMaker& operator=(const AisTargetDataMaker&) = delete;
+
+
+  AisTargetData* GetTargetData() { return new AisTargetData(m_callbacks); }
+  void SetCallbacks(AisTargetCallbacks callbacks) { m_callbacks = callbacks; }
+
+private:
+  AisTargetDataMaker() : m_callbacks(AisTargetCallbacks()) {}
+  AisTargetCallbacks m_callbacks;
+};
+
 
 wxString trimAISField(char *data);
 wxString ais_get_status(int index);
 
 wxString ais_get_type(int index);
 wxString ais_get_short_type(int index);
+
 #endif

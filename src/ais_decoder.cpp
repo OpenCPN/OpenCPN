@@ -446,7 +446,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -539,7 +539,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -712,7 +712,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -756,7 +756,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -811,7 +811,7 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -1355,38 +1355,39 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str,
   //  Create the bit accessible string
   AisBitstring strbit(string_to_parse.mb_str());
 
-  AisTargetData TargetData;
+  auto TargetData = std::make_unique<AisTargetData>(
+          *AisTargetDataMaker::GetInstance().GetTargetData());
 
-  bool bdecode_result = Parse_VDXBitstring(&strbit, &TargetData);
+  bool bdecode_result = Parse_VDXBitstring(&strbit, TargetData.get());
 
   if (bdecode_result) {
-    switch (TargetData.MID) {
+    switch (TargetData->MID) {
       case 1:
       case 2:
       case 3:
       case 18: {
-        if (!TargetData.b_positionDoubtful) {
-          pos->kLat = TargetData.Lat;
-          pos->kLon = TargetData.Lon;
+        if (!TargetData->b_positionDoubtful) {
+          pos->kLat = TargetData->Lat;
+          pos->kLon = TargetData->Lon;
         } else {
           pos->kLat = NAN;
           pos->kLon = NAN;
         }
 
-        if (TargetData.COG == 360.0)
+        if (TargetData->COG == 360.0)
           pos->kCog = NAN;
         else
-          pos->kCog = TargetData.COG;
+          pos->kCog = TargetData->COG;
 
-        if (TargetData.SOG > 102.2)
+        if (TargetData->SOG > 102.2)
           pos->kSog = NAN;
         else
-          pos->kSog = TargetData.SOG;
+          pos->kSog = TargetData->SOG;
 
-        if ((int)TargetData.HDG == 511)
+        if ((int)TargetData->HDG == 511)
           pos->kHdt = NAN;
         else
-          pos->kHdt = TargetData.HDG;
+          pos->kHdt = TargetData->HDG;
 
         //  VDO messages do not contain variation or magnetic heading
         pos->kVar = NAN;
@@ -1805,7 +1806,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -2108,7 +2109,7 @@ void AisDecoder::getAISTarget(long mmsi, AisTargetData *&pTargetData,
   auto it = AISTargetList.find(mmsi);
   if (it == AISTargetList.end())  // not found
   {
-    pTargetData = new AisTargetData;
+    pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
     bnewtarget = true;
     m_n_targets++;
   } else {
@@ -2323,7 +2324,7 @@ AisTargetData *AisDecoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   if (dsc_mmsi) {
     //      Create a tentative target, but do not post it pending receipt of
     //      extended data
-    m_ptentative_dsctarget = new AisTargetData;
+    m_ptentative_dsctarget = AisTargetDataMaker::GetInstance().GetTargetData();
 
     m_ptentative_dsctarget->PositionReportTicks = now.GetTicks();
     m_ptentative_dsctarget->StaticReportTicks = now.GetTicks();
