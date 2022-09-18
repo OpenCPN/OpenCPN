@@ -166,7 +166,8 @@ void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
 
-AisDecoder::AisDecoder() : m_signalk_selfid("") {
+AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
+    : m_signalk_selfid(""), m_callbacks(callbacks) {
   // Load cached AIS target names from a file
   AISTargetNamesC = new AIS_Target_Name_Hash;
   AISTargetNamesNC = new AIS_Target_Name_Hash;
@@ -3251,18 +3252,9 @@ void AisDecoder::DeletePersistentTrack(Track *track) {
                 props->m_bPersistentTrack = false;
                 td->b_mPropPersistTrack = false;
               }
-#ifndef USE_MOCK_DEFS
-              if (wxID_NO ==
-                  OCPNMessageBox(
-                    NULL,
-                    _("This AIS target has Persistent tracking selected by MMSI properties\n"
-                      "A Persistent track recording will therefore be restarted for this target.\n\n"
-                      "Do you instead want to stop Persistent tracking for this target?"),
-                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60))
-              {
+              if (!m_callbacks.confirm_stop_track()) {
                 props->m_bPersistentTrack = true;
               }
-#endif    // FIXME(leamas) move to event var, no dialogs in here.
             }
             break;
           }
