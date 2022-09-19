@@ -453,6 +453,9 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
       pTargetData = it->second;    // find current entry
     }
 
+    wxDateTime now = wxDateTime::Now();
+    now.MakeUTC();
+
     //Populate the target_data
     pTargetData->MMSI = mmsi;
     pTargetData->MID = MessageID;
@@ -482,6 +485,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
     pTargetData->b_positionOnceValid = true;
+    pTargetData->PositionReportTicks = now.GetTicks();
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
@@ -542,6 +546,9 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
       pTargetData = it->second;    // find current entry
     }
 
+    wxDateTime now = wxDateTime::Now();
+    now.MakeUTC();
+
     //Populate the target_data
     pTargetData->MMSI = mmsi;
     pTargetData->MID = MessageID;
@@ -559,6 +566,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_positionOnceValid = true;
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
+    pTargetData->PositionReportTicks = now.GetTicks();
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
