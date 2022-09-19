@@ -640,6 +640,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
         if (offpos) pTargetData->NavStatus += 1;
     }
 
+    data.AtoNName[34] = 0;
     strncpy(pTargetData->ShipName, data.AtoNName, 34);
     pTargetData->b_nameValid = true;
 
@@ -712,6 +713,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
+    Name[20] = 0;
     strncpy(pTargetData->ShipName, Name, 20);
     pTargetData->b_nameValid = true;
 
@@ -732,7 +734,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   uint8_t MessageID;
   tN2kAISRepeat Repeat;
   uint32_t UserID;
-  char Name[20];
+  char Name[21];
 
   if (ParseN2kPGN129809(v, MessageID, Repeat, UserID, Name))
   {
@@ -755,6 +757,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
+    Name[20] = 0;
     strncpy(pTargetData->ShipName, Name, 20);
     pTargetData->b_nameValid = true;
 
