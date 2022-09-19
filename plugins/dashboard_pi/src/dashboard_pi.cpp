@@ -474,6 +474,7 @@ int dashboard_pi::Init(void) {
   mPriSatStatus = 99;
   mPriSatUsed = 99;
   mPriAlt = 99;
+  mPriRSA = 99;  //Rudder angle
   m_config_version = -1;
   mHDx_Watchdog = 2;
   mHDT_Watchdog = 2;
@@ -551,6 +552,14 @@ int dashboard_pi::Init(void) {
 
   // initialize NavMsg listeners
   //-----------------------------
+
+  // Rudder data PGN 127245
+  wxDEFINE_EVENT(EVT_N2K_127245, ObservedEvt);
+  NMEA2000Id id_127245 = NMEA2000Id(127245);
+  listener_127245 = std::move(GetListener(id_127245, EVT_N2K_127245, this));
+  Bind(EVT_N2K_127245, [&](ObservedEvt ev) {
+    HandleN2K_127245(ev);
+  });
 
   // Depth Data   PGN 128267
   wxDEFINE_EVENT(EVT_N2K_128267, ObservedEvt);
@@ -756,6 +765,7 @@ void dashboard_pi::Notify() {
   }
   mRSA_Watchdog--;
   if (mRSA_Watchdog <= 0) {
+    mPriRSA = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, NAN, "-");
     mRSA_Watchdog = gps_watchdog_timeout_ticks;
   }
@@ -1436,15 +1446,19 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("RSA")) {
-      if (m_NMEA0183.Parse()) {
-        if (m_NMEA0183.Rsa.IsStarboardDataValid == NTrue) {
-          SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,
-                                       m_NMEA0183.Rsa.Starboard, _T("\u00B0"));
-        } else if (m_NMEA0183.Rsa.IsPortDataValid == NTrue) {
-          SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, -m_NMEA0183.Rsa.Port,
-                                       _T("\u00B0"));
+      if (mPriRSA >= 3) {
+        if (m_NMEA0183.Parse()) {
+          if (m_NMEA0183.Rsa.IsStarboardDataValid == NTrue) {
+            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,
+                                         m_NMEA0183.Rsa.Starboard, _T("\u00B0"));
+          }
+          else if (m_NMEA0183.Rsa.IsPortDataValid == NTrue) {
+            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, -m_NMEA0183.Rsa.Port,
+                                         _T("\u00B0"));
+          }
+          mRSA_Watchdog = gps_watchdog_timeout_ticks;
+          mPriRSA = 3;
         }
-        mRSA_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
 
@@ -1663,9 +1677,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             // XDR Rudder Angle
             else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                      _T("RUDDER")) {
-              SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
-                                           _T("\u00B0"));
-              mRSA_Watchdog = gps_watchdog_timeout_ticks;
+              if (mPriRSA > 4) {
+                SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
+                                             _T("\u00B0"));
+                mRSA_Watchdog = gps_watchdog_timeout_ticks;
+                mPriRSA = 4;
+              }
             }
           }
           // Nasa style water temp
@@ -1786,6 +1803,27 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
 
 // NMEA2000, N2K
 //...............
+
+// Rudder data PGN 127245
+void dashboard_pi::HandleN2K_127245(ObservedEvt ev) {
+  NMEA2000Id id_127245(127245);
+  std::vector<uint8_t>v = GetN2000Payload(id_127245, ev);
+  double RudderPosition, AngleOrder;
+  unsigned char Instance;
+  tN2kRudderDirectionOrder RudderDirectionOrder;
+
+  if (mPriRSA >= 1) {
+    // Get rudder position
+    if (ParseN2kPGN127245(v, RudderPosition, Instance, RudderDirectionOrder, AngleOrder)) {
+      if (!N2kIsNA(RudderPosition)) {
+        double m_rudangle = GEODESIC_RAD2DEG(RudderPosition);
+        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
+        mRSA_Watchdog = gps_watchdog_timeout_ticks;
+        mPriRSA = 1;
+      }
+    }
+  }
+}
 
 void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
   NMEA2000Id id_128267(128267);
@@ -2387,12 +2425,15 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     }
 
     else if (update_path == _T("steering.rudderAngle")) {  // ->port
-      double m_rudangle = GetJsonDouble(value);
-      if (std::isnan(m_rudangle)) return;
+      if (mPriRSA >= 2) {
+        double m_rudangle = GetJsonDouble(value);
+        if (std::isnan(m_rudangle)) return;
 
-      m_rudangle = GEODESIC_RAD2DEG(m_rudangle);
-      SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
-      mRSA_Watchdog = gps_watchdog_timeout_ticks;
+        m_rudangle = GEODESIC_RAD2DEG(m_rudangle);
+        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
+        mRSA_Watchdog = gps_watchdog_timeout_ticks;
+        mPriRSA = 2;
+      }
     }
     else if (update_path ==
              _T("navigation.gnss.satellites")) {  // GNSS satellites in use

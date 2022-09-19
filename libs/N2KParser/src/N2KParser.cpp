@@ -122,6 +122,16 @@ bool ParseN2kPGN129026(std::vector<unsigned char> &v, unsigned char &SID,
 
 }
 
+// Rudder
+bool ParseN2kPGN127245(std::vector<unsigned char> &v, double &RudderPosition, unsigned char &Instance,
+                       tN2kRudderDirectionOrder &RudderDirectionOrder, double &AngleOrder) {
+
+  tN2kMsg msg = MakeN2kMsg(v);
+
+  return ParseN2kPGN127245(msg, RudderPosition, Instance,
+                           RudderDirectionOrder, AngleOrder);
+}
+
 bool ParseN2kPGN127250(std::vector<unsigned char> &v, unsigned char &SID,
                        double &Heading, double &Deviation, double &Variation, tN2kHeadingReference &ref) {
 
