@@ -201,12 +201,14 @@ private:
   void handleSKUpdate(wxJSONValue &update);
   void updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime);
 
+  void HandleN2K_127245(ObservedEvt ev);
   void HandleN2K_128267(ObservedEvt ev);
   void HandleN2K_129029(ObservedEvt ev);
   void HandleN2K_129540(ObservedEvt ev);
   void HandleN2K_130306(ObservedEvt ev);
   void HandleN2K_130310(ObservedEvt ev);
   void HandleN2K_130577(ObservedEvt ev);
+  std::shared_ptr<ObservedVarListener> listener_127245;
   std::shared_ptr<ObservedVarListener> listener_128267;
   std::shared_ptr<ObservedVarListener> listener_129029;
   std::shared_ptr<ObservedVarListener> listener_129540;
@@ -230,7 +232,7 @@ private:
   short mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
   // Prio: Pos from O, SK gnss.satellites, GGA sats in use, SK gnss
   // satellitesinView, GSV sats in view
-  short mPriSatUsed, mPriAlt;
+  short mPriSatUsed, mPriAlt, mPriRSA;
   double mVar;
   // FFU
   int mSatsInView;

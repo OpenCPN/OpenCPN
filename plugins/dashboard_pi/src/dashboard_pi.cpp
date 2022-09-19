@@ -474,6 +474,7 @@ int dashboard_pi::Init(void) {
   mPriSatStatus = 99;
   mPriSatUsed = 99;
   mPriAlt = 99;
+  mPriRSA = 99;  //Rudder angle
   m_config_version = -1;
   mHDx_Watchdog = 2;
   mHDT_Watchdog = 2;
@@ -551,6 +552,14 @@ int dashboard_pi::Init(void) {
 
   // initialize NavMsg listeners
   //-----------------------------
+
+  // Rudder data PGN 127245
+  wxDEFINE_EVENT(EVT_N2K_127245, ObservedEvt);
+  NMEA2000Id id_127245 = NMEA2000Id(127245);
+  listener_127245 = std::move(GetListener(id_127245, EVT_N2K_127245, this));
+  Bind(EVT_N2K_127245, [&](ObservedEvt ev) {
+    HandleN2K_127245(ev);
+  });
 
   // Depth Data   PGN 128267
   wxDEFINE_EVENT(EVT_N2K_128267, ObservedEvt);
@@ -756,6 +765,7 @@ void dashboard_pi::Notify() {
   }
   mRSA_Watchdog--;
   if (mRSA_Watchdog <= 0) {
+    mPriRSA = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, NAN, "-");
     mRSA_Watchdog = gps_watchdog_timeout_ticks;
   }
@@ -1436,15 +1446,19 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("RSA")) {
-      if (m_NMEA0183.Parse()) {
-        if (m_NMEA0183.Rsa.IsStarboardDataValid == NTrue) {
-          SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,
-                                       m_NMEA0183.Rsa.Starboard, _T("\u00B0"));
-        } else if (m_NMEA0183.Rsa.IsPortDataValid == NTrue) {
-          SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, -m_NMEA0183.Rsa.Port,
-                                       _T("\u00B0"));
+      if (mPriRSA >= 3) {
+        if (m_NMEA0183.Parse()) {
+          if (m_NMEA0183.Rsa.IsStarboardDataValid == NTrue) {
+            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,
+                                         m_NMEA0183.Rsa.Starboard, _T("\u00B0"));
+          }
+          else if (m_NMEA0183.Rsa.IsPortDataValid == NTrue) {
+            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, -m_NMEA0183.Rsa.Port,
+                                         _T("\u00B0"));
+          }
+          mRSA_Watchdog = gps_watchdog_timeout_ticks;
+          mPriRSA = 3;
         }
-        mRSA_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
 
@@ -1663,9 +1677,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             // XDR Rudder Angle
             else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                      _T("RUDDER")) {
-              SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
-                                           _T("\u00B0"));
-              mRSA_Watchdog = gps_watchdog_timeout_ticks;
+              if (mPriRSA > 4) {
+                SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
+                                             _T("\u00B0"));
+                mRSA_Watchdog = gps_watchdog_timeout_ticks;
+                mPriRSA = 4;
+              }
             }
           }
           // Nasa style water temp
@@ -1759,7 +1776,6 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
 
     // calculate the True Wind Angle
     double twd = atan2(twdy, twdx) * 180. / PI;
-
     if (twd < 0)
       SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, -twd, _T("\u00B0L"));
     else
@@ -1788,6 +1804,27 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
 // NMEA2000, N2K
 //...............
 
+// Rudder data PGN 127245
+void dashboard_pi::HandleN2K_127245(ObservedEvt ev) {
+  NMEA2000Id id_127245(127245);
+  std::vector<uint8_t>v = GetN2000Payload(id_127245, ev);
+  double RudderPosition, AngleOrder;
+  unsigned char Instance;
+  tN2kRudderDirectionOrder RudderDirectionOrder;
+
+  if (mPriRSA >= 1) {
+    // Get rudder position
+    if (ParseN2kPGN127245(v, RudderPosition, Instance, RudderDirectionOrder, AngleOrder)) {
+      if (!N2kIsNA(RudderPosition)) {
+        double m_rudangle = GEODESIC_RAD2DEG(RudderPosition);
+        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
+        mRSA_Watchdog = gps_watchdog_timeout_ticks;
+        mPriRSA = 1;
+      }
+    }
+  }
+}
+
 void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
   NMEA2000Id id_128267(128267);
   std::vector<uint8_t>v = GetN2000Payload(id_128267, ev);
@@ -1798,7 +1835,7 @@ void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
   if (mPriDepth >= 1) {
     // Get water depth
     if (ParseN2kPGN128267(v, SID, DepthBelowTransducer, Offset, Range)) {
-      if (!std::isnan(DepthBelowTransducer)){
+      if (!N2kIsNA(DepthBelowTransducer)) {
         double depth = DepthBelowTransducer;
         // Set prio to sensor's offset
         if (!std::isnan(Offset)) depth += Offset;
@@ -1849,11 +1886,12 @@ void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
       case 8: talker_N2k = "GA"; break;  //Galileo
       default: talker_N2k = wxEmptyString;
     }
-    if (std::isnan(Altitude)) return;
-    if (mPriAlt >= 1) {
-      SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, Altitude, _T("m"));
-      mPriAlt = 1;
-      mALT_Watchdog = gps_watchdog_timeout_ticks;
+    if (!N2kIsNA(Altitude)) {
+      if (mPriAlt >= 1) {
+        SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, Altitude, _T("m"));
+        mPriAlt = 1;
+        mALT_Watchdog = gps_watchdog_timeout_ticks;
+      }
     }
   }
 }
@@ -1868,9 +1906,8 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
 
   // Get the GNSS status data
   if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)) {
-    //wxLogMessage(wxString::Format(_T(" ***** PGN129540: SID: %d"), (int)SID));
 
-    if (NumberOfSVs) {
+    if (!N2kIsNA(NumberOfSVs)) {
       // Step through each satellite, one-by-one
       // Arrange to max three messages with up to 4 sats each like N0183 GSV
       SAT_INFO N2K_SatInfo[4];
@@ -1919,7 +1956,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
   // Get wind data
   if (ParseN2kPGN130306(v, SID, WindSpeed, WindAngle, WindReference)) {
 
-    if (!std::isnan(WindSpeed) && !std::isnan(WindAngle)) {
+    if (!N2kIsNA(WindSpeed) && !N2kIsNA(WindAngle)) {
       double m_twaangle, m_twaspeed_kn;
       bool sendTrueWind = false;
 
@@ -1952,22 +1989,31 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
           break;
         case 2: // N2kWind_Apparent_centerline
           if (mPriAWA >= 1) {
+            double m_awaangle, m_awaspeed_kn;
             // Angle
-            double m_awaangle = GEODESIC_RAD2DEG(WindAngle);  // negative to port
+            m_awaangle = GEODESIC_RAD2DEG(WindAngle);
+            // Should be negative to port
+            if (m_awaangle > 180.0) m_awaangle -= 360.0;
             wxString m_awaunit = _T("\u00B0R");
             if (m_awaangle < 0) {
               m_awaunit = _T("\u00B0L");
-              m_awaangle *= -1;
+              m_awaangle *= -1.0;
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle, m_awaunit);
             // Speed
-            double m_awaspeed_kn = MS2KNOTS(WindSpeed);
-            SendSentenceToAllInstruments(
-              OCPN_DBP_STC_AWS,
+            m_awaspeed_kn = MS2KNOTS(WindSpeed);
+            SendSentenceToAllInstruments(OCPN_DBP_STC_AWS,
               toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
               getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
             mPriAWA = 1;
             mMWVA_Watchdog = gps_watchdog_timeout_ticks;
+
+            // If not N2K true wind data are recently received calculate it.
+            if (mPriTWA != 1) {
+              CalculateAndUpdateTWDS(m_awaspeed_kn, m_awaangle *=-1.0);
+              mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+              mWDN_Watchdog = gps_watchdog_timeout_ticks;
+            }
           }
           break;
         case 3: // N2kWind_True_centerline_boat(ground)
@@ -2023,8 +2069,8 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
   if (ParseN2kPGN130310(v, SID, WaterTemperature,
                         OutsideAmbientAirTemperature, AtmosphericPressure)) {
     if (mPriWTP >= 1) {
-      double m_wtemp KELVIN2C(WaterTemperature);
-      if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
+      if (!N2kIsNA(WaterTemperature)) {
+        double m_wtemp KELVIN2C(WaterTemperature);
         SendSentenceToAllInstruments(
           OCPN_DBP_STC_TMP, toUsrTemp_Plugin(m_wtemp, g_iDashTempUnit),
           getUsrTempUnit_Plugin(g_iDashTempUnit));
@@ -2034,21 +2080,23 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
     }
     
     if (mPriATMP >= 1) {
-      if (std::isnan(OutsideAmbientAirTemperature)) return;
-      double m_airtemp = KELVIN2C(OutsideAmbientAirTemperature);
-      if (m_airtemp > -60 && m_airtemp < 100) {
-        SendSentenceToAllInstruments(
-          OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(m_airtemp, g_iDashTempUnit),
-          getUsrTempUnit_Plugin(g_iDashTempUnit));
-        mPriATMP = 1;
-        mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+      if (!N2kIsNA(OutsideAmbientAirTemperature)) {
+        double m_airtemp = KELVIN2C(OutsideAmbientAirTemperature);
+        if (m_airtemp > -60 && m_airtemp < 100) {
+          SendSentenceToAllInstruments(
+            OCPN_DBP_STC_ATMP, toUsrTemp_Plugin(m_airtemp, g_iDashTempUnit),
+            getUsrTempUnit_Plugin(g_iDashTempUnit));
+          mPriATMP = 1;
+          mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+        }
       }
     }
 
-    if (std::isnan(AtmosphericPressure)) return;
-    double m_press = PA2HPA(AtmosphericPressure);
-    SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
-    mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
+    if (!N2kIsNA(AtmosphericPressure)) {
+      double m_press = PA2HPA(AtmosphericPressure);
+      SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
+      mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
+    }
   }
 }
 
@@ -2063,15 +2111,16 @@ void dashboard_pi::HandleN2K_130577(ObservedEvt ev) {
   // Get Direction data
   if (ParseN2kPGN130577(v, DataMode, CogReference, SID, COG, SOG, Heading,
                         SpeedThroughWater, Set, Drift)) {
-
-    if (std::isnan(SpeedThroughWater)) return;
-    if (mPriSTW >= 1) {
-      double stw_knots = MS2KNOTS(SpeedThroughWater);
-      SendSentenceToAllInstruments(
-        OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
-        getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-      mPriSTW = 1;
-      mSTW_Watchdog = gps_watchdog_timeout_ticks;
+    
+    if (!N2kIsNA(SpeedThroughWater)) {
+      if (mPriSTW >= 1) {
+        double stw_knots = MS2KNOTS(SpeedThroughWater);
+        SendSentenceToAllInstruments(
+          OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
+          getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+        mPriSTW = 1;
+        mSTW_Watchdog = gps_watchdog_timeout_ticks;
+      }
     }
   }
 }
@@ -2376,12 +2425,15 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     }
 
     else if (update_path == _T("steering.rudderAngle")) {  // ->port
-      double m_rudangle = GetJsonDouble(value);
-      if (std::isnan(m_rudangle)) return;
+      if (mPriRSA >= 2) {
+        double m_rudangle = GetJsonDouble(value);
+        if (std::isnan(m_rudangle)) return;
 
-      m_rudangle = GEODESIC_RAD2DEG(m_rudangle);
-      SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
-      mRSA_Watchdog = gps_watchdog_timeout_ticks;
+        m_rudangle = GEODESIC_RAD2DEG(m_rudangle);
+        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
+        mRSA_Watchdog = gps_watchdog_timeout_ticks;
+        mPriRSA = 2;
+      }
     }
     else if (update_path ==
              _T("navigation.gnss.satellites")) {  // GNSS satellites in use
