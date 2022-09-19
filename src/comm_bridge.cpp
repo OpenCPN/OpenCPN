@@ -68,7 +68,7 @@ extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 extern wxString g_ownshipMMSI_SK;
 
-bool debug_priority = 1;
+bool debug_priority = 0;
 
 void ClearNavData(NavData &d){
   d.gLat = NAN;
