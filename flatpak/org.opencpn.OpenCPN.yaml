@@ -108,6 +108,8 @@ modules:
           cflags: -DFLATPAK
           env:
             BUILD_NUMBER: "0"
+      run-tests: true
+      test-rule: "run-tests"
       post-install:
           - install -d /app/extensions
           - sed -i '/^Exec=/s/=.*/=opencpn.sh/' /app/share/applications/opencpn.desktop
