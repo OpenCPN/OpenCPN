@@ -49,7 +49,6 @@
 #include "gdal/cpl_csv.h"
 #include "DepthFont.h"
 
-#include "s57chart.h"
 #include <wx/image.h>
 #include <wx/tokenzr.h>
 #include <wx/fileconf.h>
@@ -5125,7 +5124,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
 
     unsigned char *vbo_point =
         (unsigned char *)
-            rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();
+            rzRules->obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
     ;
     line_segment_element *ls = rzRules->obj->m_ls_list;
 
@@ -9013,9 +9012,9 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp)
     float x_origin = rzRules->obj->x_origin;
 
     if (rzRules->obj->m_chart_context->chart) {  // not a PlugIn Chart
-      if (((int)rzRules->obj->m_chart_context->chart->GetChartType() ==
+      if (((int)rzRules->obj->m_chart_context->chart_type ==
            (int)PI_CHART_TYPE_CM93) ||
-          ((int)rzRules->obj->m_chart_context->chart->GetChartType() ==
+          ((int)rzRules->obj->m_chart_context->chart_type ==
            (int)PI_CHART_TYPE_CM93COMP)) {
         //      We may need to translate object coordinates by 360 degrees to
         //      conform.
@@ -9432,9 +9431,9 @@ int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules, ViewPort *v
     float x_origin = rzRules->obj->x_origin;
 
     if (rzRules->obj->m_chart_context->chart) {  // not a PlugIn Chart
-      if (((int)rzRules->obj->m_chart_context->chart->GetChartType() ==
+      if (((int)rzRules->obj->m_chart_context->chart_type  ==
            (int)PI_CHART_TYPE_CM93) ||
-          ((int)rzRules->obj->m_chart_context->chart->GetChartType() ==
+          ((int)rzRules->obj->m_chart_context->chart_type  ==
            (int)PI_CHART_TYPE_CM93COMP)) {
         //      We may need to translate object coordinates by 360 degrees to
         //      conform.

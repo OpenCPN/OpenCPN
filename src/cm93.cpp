@@ -2081,6 +2081,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
       m_this_chart_context->pRigidATONArray = pRigidATONArray;
       m_this_chart_context->chart = this;
+      m_this_chart_context->chart_type = GetChartType();
+
       m_this_chart_context->safety_contour = 1e6;  // to be evaluated later
       m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
 
