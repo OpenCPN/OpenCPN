@@ -46,7 +46,6 @@
 #include "chartsymbols.h"
 #include "TexFont.h"
 #include "ocpn_plugin.h"
-#include "gdal/cpl_csv.h"
 #include "DepthFont.h"
 
 #include <wx/image.h>
@@ -125,109 +124,6 @@ S52_TextC::~S52_TextC() {
   }
 }
 
-//      In GDAL-1.2.0, CSVGetField is not exported.......
-//      So, make my own simplified copy
-/************************************************************************/
-/*                           MyCSVGetField()                            */
-/*                                                                      */
-/************************************************************************/
-
-const char *MyPLIBCSVGetField(const char *pszFilename,
-                              const char *pszKeyFieldName,
-                              const char *pszKeyFieldValue,
-                              CSVCompareCriteria eCriteria,
-                              const char *pszTargetField)
-
-{
-  char **papszRecord;
-  int iTargetField;
-
-  /* -------------------------------------------------------------------- */
-  /*      Find the correct record.                                        */
-  /* -------------------------------------------------------------------- */
-  papszRecord = CSVScanFileByName(pszFilename, pszKeyFieldName,
-                                  pszKeyFieldValue, eCriteria);
-
-  if (papszRecord == NULL) return "";
-
-  /* -------------------------------------------------------------------- */
-  /*      Figure out which field we want out of this.                     */
-  /* -------------------------------------------------------------------- */
-  iTargetField = CSVGetFileFieldId(pszFilename, pszTargetField);
-  if (iTargetField < 0) return "";
-
-  if (iTargetField >= CSLCount(papszRecord)) return "";
-
-  return (papszRecord[iTargetField]);
-}
-
-wxString GetS57AttributeDecode(wxString &att, int ival) {
-  wxString ret_val = _T("");
-
-  wxString s57data_dir = *GetpSharedDataLocation();
-  s57data_dir += _T("s57data");
-
-  if (!s57data_dir.Len()) return ret_val;
-
-  //  Get the attribute code from the acronym
-  const char *att_code;
-
-  wxString file = s57data_dir;
-  file.Append(_T("/s57attributes.csv"));
-
-  if (!wxFileName::FileExists(file)) {
-    wxString msg(_T("   Could not open "));
-    msg.Append(file);
-    wxLogMessage(msg);
-
-    return ret_val;
-  }
-
-  att_code = MyPLIBCSVGetField(file.mb_str(), "Acronym",  // match field
-                               att.mb_str(),              // match value
-                               CC_ExactString, "Code");   // return field
-
-  // Now, get a nice description from s57expectedinput.csv
-  //  This will have to be a 2-d search, using ID field and Code field
-
-  // Ingest, and get a pointer to the ingested table for "Expected Input" file
-  wxString ei_file = s57data_dir;
-  ei_file.Append(_T("/s57expectedinput.csv"));
-
-  if (!wxFileName::FileExists(ei_file)) {
-    wxString msg(_T("   Could not open "));
-    msg.Append(ei_file);
-    wxLogMessage(msg);
-
-    return ret_val;
-  }
-
-  CSVTable *psTable = CSVAccess(ei_file.mb_str());
-  CSVIngest(ei_file.mb_str());
-
-  char **papszFields = NULL;
-  int bSelected = FALSE;
-
-  /* -------------------------------------------------------------------- */
-  /*      Scan from in-core lines.                                        */
-  /* -------------------------------------------------------------------- */
-  int iline = 0;
-  while (!bSelected && iline + 1 < psTable->nLineCount) {
-    iline++;
-    papszFields = CSVSplitLine(psTable->papszLines[iline]);
-
-    if (!strcmp(papszFields[0], att_code)) {
-      if (atoi(papszFields[1]) == ival) {
-        ret_val = wxString(papszFields[2], wxConvUTF8);
-        bSelected = TRUE;
-      }
-    }
-
-    CSLDestroy(papszFields);
-  }
-
-  return ret_val;
-}
 
 //-----------------------------------------------------------------------------
 //      Comparison Function for LUPArray sorting
@@ -344,6 +240,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_txf = NULL;
 
   m_chartSymbols.InitializeTables();
+  InitializeNatsurHash();
 
   m_bOK = !(S52_load_Plib(PLib, b_forceLegacy) == 0);
 
@@ -442,6 +339,27 @@ s52plib::~s52plib() {
 
   delete HPGL;
 }
+
+void s52plib::InitializeNatsurHash() {
+  std::unordered_map<int, std::string> surmap({
+                                                  {1, "mud"},
+                                                  {2, "clay"},
+                                                  {3, "silt"},
+                                                  {4, "sand"},
+                                                  {5, "stone"},
+                                                  {6, "gravel"},
+                                                  {7, "pebbles"},
+                                                  {8, "cobbles"},
+                                                  {9, "rock"},
+                                                  {11, "lava"},
+                                                  {14, "coral"},
+                                                  {17, "shells"},
+                                                  {18, "boulder"},
+                                                  {56, "Bo"},
+                                                  {51, "Wd"}  });
+  m_natsur_hash = surmap;
+}
+
 
 void s52plib::SetOCPNVersion(int major, int minor, int patch) {
   m_coreVersionMajor = major;
@@ -1570,14 +1488,10 @@ char *s52plib::_getParamVal(ObjRazRules *rzRules, char *str, char *buf, int bsz)
         wxString token = tkz.GetNextToken();
         long i;
         if (token.ToLong(&i)) {
-          wxString nat;
-          if (!m_natsur_hash[i].IsEmpty())  // entry available?
-            nat = m_natsur_hash[i];
-          else {
-            nat = GetS57AttributeDecode(natsur_att, (int)i);
-            m_natsur_hash[i] = nat;  // cache the entry
-          }
+          std::string snat;
+          snat = m_natsur_hash[(int)i];
 
+          wxString nat(snat.c_str());
           if (!nat.IsEmpty())
             result += nat;  // value from ENC
           else

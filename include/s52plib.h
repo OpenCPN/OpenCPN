@@ -39,6 +39,7 @@ class wxGLContext;
 #include "chartsymbols.h"
 
 #include <wx/dcgraph.h>  // supplemental, for Mac
+#include <unordered_map>
 
 // Correct some deficincies in MacOS OpenGL include files
 #ifdef __WXOSX__
@@ -89,7 +90,6 @@ typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
 class RuleHash;
 
 WX_DECLARE_HASH_MAP(wxString, Rule *, wxStringHash, wxStringEqual, RuleHash);
-WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual, MyNatsurHash);
 
 WX_DEFINE_SORTED_ARRAY(LUPrec *, wxArrayOfLUPrec);
 
@@ -331,8 +331,9 @@ public:
   std::vector<wxString> OBJLDescriptions;
 
   RuleHash *_symb_sym;         // symbol symbolisation rules
-  MyNatsurHash m_natsur_hash;  // hash table for cacheing NATSUR string values
-                               // from int attributes
+  std::unordered_map<int, std::string> m_natsur_hash;
+                                // hash table for cacheing NATSUR string values
+                                // from int attributes
 
   int m_myConfig;
 
@@ -349,6 +350,7 @@ private:
 
   void PLIB_LoadS57Config();
 
+  void InitializeNatsurHash();
   bool PreloadOBJLFromCSV(const wxString &csv_file);
 
   int DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp);
