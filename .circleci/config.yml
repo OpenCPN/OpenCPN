@@ -37,10 +37,10 @@ jobs:
        - checkout
        - restore_cache:
           keys:
-            - macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
+            - macos-cache-v1-{{checksum "CMakeLists.txt"}}
        - run: ci/generic-build-macos.sh
        - save_cache:
-          key: macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
+          key: macos-cache-v1-{{checksum "CMakeLists.txt"}}
           paths:
             - /usr/local/bin
             - /usr/local/include
