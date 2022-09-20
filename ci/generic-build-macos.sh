@@ -47,6 +47,8 @@ port info zstd || {
     #sudo port -d selfupdate
 }
 
+sudo port rev-upgrade
+
     # add our local ports to the sources.conf
 sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
 
