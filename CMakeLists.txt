@@ -173,6 +173,8 @@ cmake_dependent_option(
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
+option(-DOCPN_BUILD_TEST "Enable test subproject build" ON)
+
 set(
   OCPN_WXWIDGETS_FORCE_VERSION
   CACHE STRING "Force usage of a specific wxWidgets version."
@@ -1820,17 +1822,18 @@ if (UNIX)
   endif ()
 endif (UNIX)
 
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.14)
-# FIXME (dave)
-  if (NOT QT_ANDROID AND NOT APPLE)
-    add_subdirectory(test)
-    add_custom_target(run-tests
-      COMMAND ctest  -C $<CONFIG>
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-    )
-    add_dependencies(run-tests tests)
+if (OCPN_BUILD_TEST)
+  if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.14)
+    if (NOT QT_ANDROID AND NOT APPLE)
+      add_subdirectory(test)
+      add_custom_target(run-tests
+        COMMAND ctest  -C $<CONFIG>
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+      )
+      add_dependencies(run-tests tests)
+    endif ()
   endif ()
-endif ()
+endif (OCPN_BUILD_TEST)
 
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
