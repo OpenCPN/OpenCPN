@@ -15,7 +15,7 @@ export macosx_deployment_target=10.10
 export PATH=/opt/local/bin:$PATH
 
 # allow caching of macports state in $HOME    "/Users/distiller/project/opt_local_cache"
-udo mkdir -p ${HOME}/project/opt_local_cache
+sudo mkdir -p ${HOME}/project/opt_local_cache
 sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 
 curl -k -o /tmp/opt_macports.tar.xz  \
