@@ -16,7 +16,7 @@ export PATH=/opt/local/bin:$PATH
 
 # allow caching of macports state in $HOME    "/Users/distiller/project/opt_local_cache"
 udo mkdir -p ${HOME}/project/opt_local_cache
-udo ln -s ${HOME}/project/opt_local_cache /opt/local
+sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 
 curl -k -o /tmp/opt_macports.tar.xz  \
     https://download.opencpn.org/s/FpPXeWqEif8cLCT/download
