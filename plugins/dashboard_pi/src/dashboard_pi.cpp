@@ -475,6 +475,7 @@ int dashboard_pi::Init(void) {
   mPriSatUsed = 99;
   mPriAlt = 99;
   mPriRSA = 99;  //Rudder angle
+  mPriPitchRoll = 99; //Pitch and roll
   m_config_version = -1;
   mHDx_Watchdog = 2;
   mHDT_Watchdog = 2;
@@ -559,6 +560,14 @@ int dashboard_pi::Init(void) {
   listener_127245 = std::move(GetListener(id_127245, EVT_N2K_127245, this));
   Bind(EVT_N2K_127245, [&](ObservedEvt ev) {
     HandleN2K_127245(ev);
+  });
+
+  // Roll Pitch   PGN 127257
+  wxDEFINE_EVENT(EVT_N2K_127257, ObservedEvt);
+  NMEA2000Id id_127257 = NMEA2000Id(127257);
+  listener_127257 = std::move(GetListener(id_127257, EVT_N2K_127257, this));
+  Bind(EVT_N2K_127257, [&](ObservedEvt ev) {
+    HandleN2K_127257(ev);
   });
 
   // Depth Data   PGN 128267
@@ -798,11 +807,13 @@ void dashboard_pi::Notify() {
   }
   mPITCH_Watchdog--;
   if (mPITCH_Watchdog <= 0) {
+    mPriPitchRoll = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, NAN, _T("-"));
     mPITCH_Watchdog = gps_watchdog_timeout_ticks;
   }
   mHEEL_Watchdog--;
   if (mHEEL_Watchdog <= 0) {
+    mPriPitchRoll = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, NAN, _T("-"));
     mHEEL_Watchdog = gps_watchdog_timeout_ticks;
   }
@@ -1648,31 +1659,41 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH") ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                     _T("PITCH")) {
-              if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                xdrunit = _T("\u00B0\u2191") + _("Up");
-              } else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                xdrunit = _T("\u00B0\u2193") + _("Down");
-                xdrdata *= -1;
-              } else {
-                xdrunit = _T("\u00B0");
+              if (mPriPitchRoll >= 3) {
+                if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                  xdrunit = _T("\u00B0\u2191") + _("Up");
+                }
+                else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                  xdrunit = _T("\u00B0\u2193") + _("Down");
+                  xdrdata *= -1;
+                }
+                else {
+                  xdrunit = _T("\u00B0");
+                }
+                SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata,
+                                             xdrunit);
+                mPITCH_Watchdog = gps_watchdog_timeout_ticks;
+                mPriPitchRoll = 3;
               }
-              SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata,
-                                           xdrunit);
-              mPITCH_Watchdog = gps_watchdog_timeout_ticks;
             }
             // XDR Heel
             else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                      _T("ROLL")) {
-              if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                xdrunit = _T("\u00B0\u003E") + _("Stbd");
-              } else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                xdrunit = _T("\u00B0\u003C") + _("Port");
-                xdrdata *= -1;
-              } else {
-                xdrunit = _T("\u00B0");
+              if (mPriPitchRoll >= 3) {
+                if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                  xdrunit = _T("\u00B0\u003E") + _("Stbd");
+                }
+                else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                  xdrunit = _T("\u00B0\u003C") + _("Port");
+                  xdrdata *= -1;
+                }
+                else {
+                  xdrunit = _T("\u00B0");
+                }
+                SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
+                mHEEL_Watchdog = gps_watchdog_timeout_ticks;
+                mPriPitchRoll = 3;
               }
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
-              mHEEL_Watchdog = gps_watchdog_timeout_ticks;
             }
             // XDR Rudder Angle
             else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
@@ -1820,6 +1841,42 @@ void dashboard_pi::HandleN2K_127245(ObservedEvt ev) {
         SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, _T("\u00B0"));
         mRSA_Watchdog = gps_watchdog_timeout_ticks;
         mPriRSA = 1;
+      }
+    }
+  }
+}
+
+// Roll Pitch data PGN 127257
+void dashboard_pi::HandleN2K_127257(ObservedEvt ev) {
+  NMEA2000Id id_127257(127257);
+  std::vector<uint8_t>v = GetN2000Payload(id_127257, ev);
+  unsigned char SID;
+  double Yaw, Pitch, Roll;
+
+  // Get roll and pitch
+  if (ParseN2kPGN127257(v, SID, Yaw, Pitch, Roll)) {
+    if (mPriPitchRoll >= 1) {
+      if (!N2kIsNA(Pitch)) {
+        double m_pitch = GEODESIC_RAD2DEG(Pitch);
+        wxString p_unit = _T("\u00B0\u2191") + _("Up");
+        if (m_pitch < 0) {
+          p_unit = _T("\u00B0\u2193") + _("Down");
+          m_pitch *= -1;
+        }
+        SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
+        mPITCH_Watchdog = gps_watchdog_timeout_ticks;
+        mPriPitchRoll = 1;
+      }
+      if (!N2kIsNA(Roll)) {
+        double m_heel = GEODESIC_RAD2DEG(Roll);
+        wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
+        if (m_heel < 0) {
+          h_unit = _T("\u00B0\u003C") + _("Port");
+          m_heel *= -1;
+        }
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
+        mHEEL_Watchdog = gps_watchdog_timeout_ticks;
+        mPriPitchRoll = 1;
       }
     }
   }
@@ -2620,25 +2677,29 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
       mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
     } else if (update_path == _T("navigation.attitude")) {  // rad
-      if (value["roll"].AsString() != "0") {
-        double m_heel = GEODESIC_RAD2DEG(value["roll"].AsDouble());
-        wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
-        if (m_heel < 0) {
-          h_unit = _T("\u00B0\u003C") + _("Port");
-          m_heel *= -1;
+      if (mPriPitchRoll >= 2) {
+        if (value["roll"].AsString() != "0") {
+          double m_heel = GEODESIC_RAD2DEG(value["roll"].AsDouble());
+          wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
+          if (m_heel < 0) {
+            h_unit = _T("\u00B0\u003C") + _("Port");
+            m_heel *= -1;
+          }
+          SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
+          mHEEL_Watchdog = gps_watchdog_timeout_ticks;
+          mPriPitchRoll = 2;
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
-        mHEEL_Watchdog = gps_watchdog_timeout_ticks;
-      }
-      if (value["pitch"].AsString() != "0") {
-        double m_pitch = GEODESIC_RAD2DEG(value["pitch"].AsDouble());
-        wxString p_unit = _T("\u00B0\u2191") + _("Up");
-        if (m_pitch < 0) {
-          p_unit = _T("\u00B0\u2193") + _("Down");
-          m_pitch *= -1;
+        if (value["pitch"].AsString() != "0") {
+          double m_pitch = GEODESIC_RAD2DEG(value["pitch"].AsDouble());
+          wxString p_unit = _T("\u00B0\u2191") + _("Up");
+          if (m_pitch < 0) {
+            p_unit = _T("\u00B0\u2193") + _("Down");
+            m_pitch *= -1;
+          }
+          SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
+          mPITCH_Watchdog = gps_watchdog_timeout_ticks;
+          mPriPitchRoll = 2;
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
-        mPITCH_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
   }
