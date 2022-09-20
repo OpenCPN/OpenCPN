@@ -1822,14 +1822,14 @@ endif (UNIX)
 
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.14)
 # FIXME (dave)
-  if (NOT QT_ANDROID AND NOT APPLE)
-    add_subdirectory(test)
-    add_custom_target(run-tests
-      COMMAND ctest  -C $<CONFIG>
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-    )
-    add_dependencies(run-tests tests)
-  endif ()
+#  if (NOT QT_ANDROID AND NOT APPLE)
+#    add_subdirectory(test)
+#    add_custom_target(run-tests
+#      COMMAND ctest  -C $<CONFIG>
+#      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+#    )
+#    add_dependencies(run-tests tests)
+#  endif ()
 endif ()
 
 # If we build for windows systems, we also include the resource file containing
