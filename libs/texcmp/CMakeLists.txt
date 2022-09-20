@@ -9,7 +9,7 @@ if (NOT CMAKE_MODULE_PATH)
 endif ()
 
 include(FindPkgConfig)
-#include(CompilerSupport)
+include(CompilerSupport)
 
 set(SRC
     squish/alpha.cpp

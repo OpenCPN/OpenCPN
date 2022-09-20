@@ -11,7 +11,7 @@ endif ()
 include(GetArch)
 GetArch()
 
-#include(CompilerSupport)
+include(CompilerSupport)
 
 set(SRC
   include/mipmap/mipmap.h
