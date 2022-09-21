@@ -54,17 +54,13 @@ sudo port -d selfupdate
 #sudo port rev-upgrade
 
     # add our local ports to the sources.conf
-#sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
+sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
 
 # rebuild the port index
 pushd buildosx/macports/ports
-#  portindex
+  portindex
 popd
 
-# Remove any leftover libcurl coming from earlier cached macports build
-# rm /opt/local/lib/libcurl.4.dylib
-#sudo rm /opt/local/lib/libcurl.a
-#sudo rm -rf /opt/local/include/curl
 
 # Install curl to get the TLS certificate bundle
 ##sudo port -q install curl
@@ -77,17 +73,17 @@ popd
 #  n.b.  ORDER IS IMPORTANT
 
 #try non-local ports
-#sudo port -q install OCPN_openssl
-#sudo port -q install OCPN_libpixman
+sudo port -q install OCPN_openssl
+sudo port -q install OCPN_libpixman
 
-#sudo port -fq install OCPN_cairo
+sudo port -fq install OCPN_cairo
 
-#sudo port -q install zstd
+sudo port -q install zstd
 
-#sudo port -fN deactivate libarchive
-#sudo port -q install OCPN_libarchive
+sudo port -fN deactivate libarchive
+sudo port -q install OCPN_libarchive
 
-#sudo port -q -f install OCPN_libpng
+sudo port -q -f install OCPN_libpng
 
 
 
@@ -107,9 +103,9 @@ brew list --versions python3 || {
 
 #exit 0
 
-sudo port -q install libarchive
-sudo port -q install freetype
-sudo port -q install cairo
+#sudo port -q install libarchive
+#sudo port -q install freetype
+#sudo port -q install cairo
 
 
 for pkg in python3  cmake ; do
