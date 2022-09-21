@@ -85,7 +85,7 @@ popd
 
 #sudo port -q -f install OCPN_libpng
 
-sudo port install libarchive
+sudo port -q install libarchive
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
