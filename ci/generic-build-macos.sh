@@ -80,7 +80,7 @@ sudo port -fq install OCPN_cairo
 
 sudo port -q install zstd
 
-sudo port -fN deactivate libarchive
+#sudo port -fN deactivate libarchive
 sudo port -q install OCPN_libarchive
 
 sudo port -q -f install OCPN_libpng
