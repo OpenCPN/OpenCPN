@@ -47,6 +47,7 @@ jobs:
             - /usr/local/lib
             - /usr/local/opt
             - opt_local_cache
+            - /opt/local/bin
        - run: ci/generic-upload.sh
    build-flatpak:
      working_directory: ~/OpenCPN
