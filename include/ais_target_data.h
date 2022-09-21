@@ -22,8 +22,8 @@
  ***************************************************************************
  */
 
-#ifndef __AIS_TARGET_DATA_H__
-#define __AIS_TARGET_DATA_H__
+#ifndef _AIS_TARGET_DATA_H__
+#define _AIS_TARGET_DATA_H__
 
 #include <functional>
 #include <vector>
@@ -32,7 +32,8 @@
 #include <wx/datetime.h>
 #include <unordered_map>
 
-#define SHIP_NAME_LEN 21
+#define SHIP_NAME_LEN 35
+#define DESTINATION_LEN 21
 #define CALL_SIGN_LEN 8
 #define EURO_VIN_LEN 9
 
@@ -202,7 +203,7 @@ public:
 
   double Draft;
 
-  char Destination[21];
+  char Destination[DESTINATION_LEN];
 
   time_t PositionReportTicks;
   time_t StaticReportTicks;

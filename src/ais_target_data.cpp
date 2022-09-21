@@ -124,7 +124,7 @@ wxString ais_get_status(int index) {
 AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   strncpy(ShipName, "Unknown             ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
-  strncpy(Destination, "                    ", SHIP_NAME_LEN);
+  strncpy(Destination, "                    ", DESTINATION_LEN);
   ShipNameExtension[0] = 0;
   b_show_AIS_CPA = false;
 
@@ -214,7 +214,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
 void AisTargetData::CloneFrom(AisTargetData *q) {
   strncpy(ShipName, q->ShipName, SHIP_NAME_LEN);
   strncpy(CallSign, q->CallSign, 8);
-  strncpy(Destination, q->Destination, SHIP_NAME_LEN);
+  strncpy(Destination, q->Destination, DESTINATION_LEN);
   ShipNameExtension[0] = 0;
   b_show_AIS_CPA = q->b_show_AIS_CPA;
   ;
