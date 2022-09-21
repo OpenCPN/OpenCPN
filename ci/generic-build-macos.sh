@@ -47,6 +47,8 @@ port info zstd || {
     sudo port -d selfupdate
 }
 
+sudo port -d selfupdate
+
 #sudo port rev-upgrade
 
     # add our local ports to the sources.conf
