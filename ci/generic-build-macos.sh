@@ -25,6 +25,8 @@ sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 ls ${HOME}/project/opt_local_cache || echo "OK"
 ls ${HOME}/project/opt_local_cache/bin || echo "OK"
 
+ls /opt/local/bin || echo "OK"
+
 #sudo mkdir -p /opt/local/share/curl
 #sudo cp buildosx/cacert.pem /opt/local/share/curl/curl-ca-bundle.crt
 #sudo mkdir -p /opt/local/etc/openssl
