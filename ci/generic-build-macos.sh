@@ -158,7 +158,7 @@ make install # Dunno why the second is needed but it is, otherwise
 
 sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 
-make create-pkg
+#make create-pkg
 make create-dmg
 
 # Install the stuff needed by upload.
