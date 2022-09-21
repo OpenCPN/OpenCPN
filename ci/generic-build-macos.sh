@@ -44,17 +44,17 @@ port info zstd || {
     sudo make install
     cd ..
 
-    #sudo port -d selfupdate
+    sudo port -d selfupdate
 }
 
-sudo port rev-upgrade
+#sudo port rev-upgrade
 
     # add our local ports to the sources.conf
-sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
+#sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
 
 # rebuild the port index
 pushd buildosx/macports/ports
-  portindex
+#  portindex
 popd
 
 # Remove any leftover libcurl coming from earlier cached macports build
@@ -72,17 +72,20 @@ popd
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
 
-sudo port -q install OCPN_openssl
-sudo port -q install OCPN_libpixman
+#try non-local ports
+#sudo port -q install OCPN_openssl
+#sudo port -q install OCPN_libpixman
 
-sudo port -fq install OCPN_cairo
+#sudo port -fq install OCPN_cairo
 
-sudo port -q install zstd
+#sudo port -q install zstd
 
 #sudo port -fN deactivate libarchive
-sudo port -q install OCPN_libarchive
+#sudo port -q install OCPN_libarchive
 
-sudo port -q -f install OCPN_libpng
+#sudo port -q -f install OCPN_libpng
+
+sudo port install libarchive
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
