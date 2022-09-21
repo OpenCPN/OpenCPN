@@ -175,7 +175,7 @@ cmake_dependent_option(
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
-if (QT_ANDROID OR APPLE OR ${CMAKE_VERSION} VERSION_LESS 3.14)
+if (QT_ANDROID OR ${CMAKE_VERSION} VERSION_LESS 3.14)
   set(OCPN_BUILD_TEST OFF)
 else ()
   option(OCPN_BUILD_TEST "Enable test subproject build" ON)
@@ -1136,6 +1136,11 @@ if (LINUX)
   list(APPEND HDRS include/x11_font_picker.h)
 endif ()
 
+if (APPLE)
+  list(APPEND HDRS include/macutils.h )
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/macutils.c)
+endif ()
+
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   list(APPEND HDRS include/crashprint.h)
   list(APPEND SRCS src/crashprint.cpp)
@@ -1905,10 +1910,6 @@ if (OCPN_BUNDLE_TCDATA)
     data/tcdata/README.harmonics
   )
 endif (OCPN_BUNDLE_TCDATA)
-
-if (APPLE)
-  target_sources(${PACKAGE_NAME} PRIVATE include/macutils.h src/macutils.c)
-endif ()
 
 # Mac has trouble finding libgobject-2.0.dylib We look for it explicitely
 if (xAPPLE)
