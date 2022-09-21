@@ -105,7 +105,7 @@ brew list --versions python3 || {
         #fetch --unshallow
 }
 
-exit 0
+#exit 0
 
 sudo port -q install libarchive
 sudo port -q install freetype
