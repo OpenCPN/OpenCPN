@@ -1,3 +1,4 @@
+
 # ---------------------------------------------------------------------------
 # Author:      Dave Register DEB
 # config from: antonm - Anton Martchukov <anton@martchukov.com>
@@ -1368,6 +1369,7 @@ if (UNIX)
     if (APPLE)
       if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
         #Only needed if we build with wxSVG implementation of SVG support
+        message(STATUS "Building with wxSVG support")
         find_package(Freetype REQUIRED)
         target_link_libraries(${PACKAGE_NAME} PRIVATE Freetype::Freetype)
         find_package(Fontconfig REQUIRED)

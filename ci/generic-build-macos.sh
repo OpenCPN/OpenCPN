@@ -89,11 +89,7 @@ popd
 
 #sudo port -q -f install OCPN_libpng
 
-sudo port -q install libarchive
-sudo port -q install freetype
-sudo port -q install cairo
 
-exit 0
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
@@ -108,6 +104,13 @@ brew list --versions python3 || {
     #git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask" \
         #fetch --unshallow
 }
+
+exit 0
+
+sudo port -q install libarchive
+sudo port -q install freetype
+sudo port -q install cairo
+
 
 for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
