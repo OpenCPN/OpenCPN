@@ -57,6 +57,8 @@ before_build:
 build_script:
   # - cmake --build . --config debug
   - cmake --build . --target opencpn --config RelWithDebInfo
+  - SET PATH=..\buildwin;%PATH%
+  - cmake --build . --target run-tests --config RelWithDebInfo
   - cmake --build . --target package --config RelWithDebInfo
 
 deploy_script:
