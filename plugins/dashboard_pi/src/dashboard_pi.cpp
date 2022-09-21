@@ -1264,7 +1264,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     // NMEA 0183 standard Wind Speed and Angle, in relation to the vessel's
     // bow/centerline.
     else if (m_NMEA0183.LastSentenceIDReceived == _T("MWV")) {
-      if (mPriAWA >= 4 || mPriTWA >= 4 || mPriWDN >= 5) {
+      if (mPriAWA >= 4 || mPriTWA >= 5 || mPriWDN >= 5) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Mwv.IsDataValid == NTrue) {
             // MWV windspeed has different units. Form it to knots to fit
@@ -1314,8 +1314,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             } else if (m_NMEA0183.Mwv.Reference ==
                        _T("T"))  // Theoretical (aka True)
             {
-              if (mPriTWA >= 4) {
-                mPriTWA = 4;
+              if (mPriTWA >= 5) {
+                mPriTWA = 5;
                 wxString m_twaunit;
                 double m_twaangle;
                 bool b_R = false;
@@ -1584,10 +1584,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
      * at the vessel if it were
      * stationary relative to the water and heading in the same direction. */
     else if (m_NMEA0183.LastSentenceIDReceived == _T("VWT")) {
-      if (mPriTWA >= 3) {
+      if (mPriTWA >= 4) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Vwt.WindDirectionMagnitude < 200) {
-            mPriTWA = 3;
+            mPriTWA = 4;
             wxString vwtunit;
             vwtunit = m_NMEA0183.Vwt.DirectionOfWind == Left ? _T("\u00B0L")
                                                              : _T("\u00B0R");
@@ -2027,7 +2027,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
           }
           break;
         case 1:  // N2kWind direction Magnetic North
-          if (mPriWDN >= 2) {
+          if (mPriWDN >= 1) {
             double m_twdT = GEODESIC_RAD2DEG(WindAngle);
             // Make it true if variation is available
             if (!std::isnan(mVar)) {
@@ -2040,7 +2040,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               }
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
-            mPriWDN = 2;
+            mPriWDN = 1;
             mWDN_Watchdog = gps_watchdog_timeout_ticks;
           }
           break;
@@ -2068,6 +2068,8 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
             // If not N2K true wind data are recently received calculate it.
             if (mPriTWA != 1) {
               CalculateAndUpdateTWDS(m_awaspeed_kn, m_awaangle *=-1.0);
+              mPriTWA = 2;
+              mPriWDN = 2;
               mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               mWDN_Watchdog = gps_watchdog_timeout_ticks;
             }
@@ -2411,7 +2413,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
               !g_bDBtrueWindGround ) ||
               ( update_path == _T("environment.wind.speedOverGround") &&
                g_bDBtrueWindGround )) {
-      if (mPriTWA >= 2) {
+      if (mPriTWA >= 3) {
         double m_twaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_twaspeed_kn)) return;
 
@@ -2427,11 +2429,11 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("environment.depth.belowSurface")) {
-      if (mPriDepth >= 2) {
+      if (mPriDepth >= 3) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
 
-        mPriDepth = 2;
+        mPriDepth = 3;
         depth += g_dDashDBTOffset;
         depth /= 1852.0;
         SendSentenceToAllInstruments(
