@@ -86,6 +86,8 @@ popd
 #sudo port -q -f install OCPN_libpng
 
 sudo port -q install libarchive
+sudo port -q install freetype
+sudo port -q install cairo
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
