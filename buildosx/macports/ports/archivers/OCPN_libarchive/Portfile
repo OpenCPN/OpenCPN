@@ -1,6 +1,7 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem 1.0
+PortGroup clang_dependency 1.0
 
 name             OCPN_libarchive
 
@@ -25,7 +26,7 @@ checksums        rmd160  7b8ef3e9fe2e606ef67f070ba428fa56640dc1e6 \
 homepage         https://libarchive.org/
 master_sites     ${homepage}downloads/
 distname         libarchive-3.5.2
-
+ 
 depends_lib      port:bzip2 port:zlib port:libxml2 port:xz \
                  port:lzo2 port:libiconv \
                  port:lz4 port:zstd
