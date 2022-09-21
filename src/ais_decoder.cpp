@@ -166,7 +166,8 @@ void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
 
-AisDecoder::AisDecoder() : m_signalk_selfid("") {
+AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
+    : m_signalk_selfid(""), m_callbacks(callbacks) {
   // Load cached AIS target names from a file
   AISTargetNamesC = new AIS_Target_Name_Hash;
   AISTargetNamesNC = new AIS_Target_Name_Hash;
@@ -446,7 +447,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -539,7 +540,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -620,7 +621,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -649,7 +650,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     }
 
     data.AtoNName[34] = 0;
-    strncpy(pTargetData->ShipName, data.AtoNName, 34);
+    strncpy(pTargetData->ShipName, data.AtoNName, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
 
     pTargetData->Class = AIS_ATON;
@@ -680,7 +681,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   uint32_t UserID;
   uint32_t IMOnumber;
   char Callsign[21];
-  char Name[21];
+  char Name[SHIP_NAME_LEN];
   uint8_t VesselType;
   double Length;
   double Beam;
@@ -689,7 +690,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   uint16_t ETAdate;
   double ETAtime;
   double Draught;
-  char Destination[21];
+  char Destination[DESTINATION_LEN];
   tN2kAISVersion AISversion;
   tN2kGNSStype GNSStype;
   tN2kAISDTE DTE;
@@ -712,7 +713,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -721,8 +722,8 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
-    Name[20] = 0;
-    strncpy(pTargetData->ShipName, Name, 20);
+    Name[SHIP_NAME_LEN] = 0;
+    strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
 
     //FIXME (dave) Populate more fiddly static data
@@ -756,7 +757,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -765,8 +766,8 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
-    Name[20] = 0;
-    strncpy(pTargetData->ShipName, Name, 20);
+    Name[SHIP_NAME_LEN] = 0;
+    strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
 
     //FIXME (dave) Populate more fiddly static data
@@ -811,7 +812,7 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -1214,7 +1215,9 @@ void AisDecoder::updateItem(AisTargetData *pTargetData, bool bnewtarget,
       }
     } else if (update_path == _T("navigation.destination.commonName")) {
       const wxString &destination = value.AsString();
-      strncpy(pTargetData->Destination, destination.c_str(), 20);
+      pTargetData->Destination[0] = '\0';
+      strncpy(pTargetData->Destination, destination.c_str(),
+              DESTINATION_LEN - 1);
     } else if (update_path == _T("navigation.specialManeuver")) {
       if (_T("not available") != value.AsString() && pTargetData->IMO < 1) {
         const wxString &bluesign = value.AsString();
@@ -1240,7 +1243,7 @@ void AisDecoder::updateItem(AisTargetData *pTargetData, bool bnewtarget,
     } else if (update_path == _T("")) {
       if (value.HasMember(_T("name"))) {
         const wxString &name = value[_T("name")].AsString();
-        strncpy(pTargetData->ShipName, name.c_str(), 20);
+        strncpy(pTargetData->ShipName, name.c_str(), SHIP_NAME_LEN - 1);
         pTargetData->b_nameValid = true;
         pTargetData->MID = 123;  // Indicates a name from SignalK
       } else if (value.HasMember(_T("registrations"))) {
@@ -1355,38 +1358,39 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str,
   //  Create the bit accessible string
   AisBitstring strbit(string_to_parse.mb_str());
 
-  AisTargetData TargetData;
+  auto TargetData = std::make_unique<AisTargetData>(
+          *AisTargetDataMaker::GetInstance().GetTargetData());
 
-  bool bdecode_result = Parse_VDXBitstring(&strbit, &TargetData);
+  bool bdecode_result = Parse_VDXBitstring(&strbit, TargetData.get());
 
   if (bdecode_result) {
-    switch (TargetData.MID) {
+    switch (TargetData->MID) {
       case 1:
       case 2:
       case 3:
       case 18: {
-        if (!TargetData.b_positionDoubtful) {
-          pos->kLat = TargetData.Lat;
-          pos->kLon = TargetData.Lon;
+        if (!TargetData->b_positionDoubtful) {
+          pos->kLat = TargetData->Lat;
+          pos->kLon = TargetData->Lon;
         } else {
           pos->kLat = NAN;
           pos->kLon = NAN;
         }
 
-        if (TargetData.COG == 360.0)
+        if (TargetData->COG == 360.0)
           pos->kCog = NAN;
         else
-          pos->kCog = TargetData.COG;
+          pos->kCog = TargetData->COG;
 
-        if (TargetData.SOG > 102.2)
+        if (TargetData->SOG > 102.2)
           pos->kSog = NAN;
         else
-          pos->kSog = TargetData.SOG;
+          pos->kSog = TargetData->SOG;
 
-        if ((int)TargetData.HDG == 511)
+        if ((int)TargetData->HDG == 511)
           pos->kHdt = NAN;
         else
-          pos->kHdt = TargetData.HDG;
+          pos->kHdt = TargetData->HDG;
 
         //  VDO messages do not contain variation or magnetic heading
         pos->kVar = NAN;
@@ -1805,7 +1809,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
     {
-      pTargetData = new AisTargetData;
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
     } else {
@@ -1903,7 +1907,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         pTargetData->SOG = gpsg_sog;
         pTargetData->ShipType = 52;  // buddy
         pTargetData->Class = AIS_GPSG_BUDDY;
-        memcpy(pTargetData->ShipName, gpsg_name_str, SHIP_NAME_LEN);
+        memcpy(pTargetData->ShipName, gpsg_name_str, sizeof(gpsg_name_str));
         pTargetData->b_nameValid = true;
         pTargetData->b_active = true;
         pTargetData->b_lost = false;
@@ -1942,7 +1946,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         pTargetData->ShipType = 55;  // arpa
         pTargetData->Class = AIS_ARPA;
 
-        memcpy(pTargetData->ShipName, arpa_name_str, SHIP_NAME_LEN);
+        memcpy(pTargetData->ShipName, arpa_name_str, sizeof(arpa_name_str));
         if (arpa_status != _T("Q"))
           pTargetData->b_nameValid = true;
         else
@@ -1972,7 +1976,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         pTargetData->b_positionOnceValid = true;
         pTargetData->ShipType = 56;  // aprs
         pTargetData->Class = AIS_APRS;
-        memcpy(pTargetData->ShipName, aprs_name_str, SHIP_NAME_LEN);
+        memcpy(pTargetData->ShipName, aprs_name_str, sizeof(aprs_name_str));
         pTargetData->b_nameValid = true;
         pTargetData->b_active = true;
         pTargetData->b_lost = false;
@@ -2108,7 +2112,7 @@ void AisDecoder::getAISTarget(long mmsi, AisTargetData *&pTargetData,
   auto it = AISTargetList.find(mmsi);
   if (it == AISTargetList.end())  // not found
   {
-    pTargetData = new AisTargetData;
+    pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
     bnewtarget = true;
     m_n_targets++;
   } else {
@@ -2323,7 +2327,7 @@ AisTargetData *AisDecoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
   if (dsc_mmsi) {
     //      Create a tentative target, but do not post it pending receipt of
     //      extended data
-    m_ptentative_dsctarget = new AisTargetData;
+    m_ptentative_dsctarget = AisTargetDataMaker::GetInstance().GetTargetData();
 
     m_ptentative_dsctarget->PositionReportTicks = now.GetTicks();
     m_ptentative_dsctarget->StaticReportTicks = now.GetTicks();
@@ -2375,7 +2379,8 @@ AisTargetData *AisDecoder::ProcessDSx(const wxString &str, bool b_take_dsc) {
             ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
         if (dse_shipName.length() > 0) {
             memset(m_ptentative_dsctarget->ShipName,'\0',SHIP_NAME_LEN);
-            snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(), "%s", dse_shipName.ToAscii().data());
+            snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(),
+                    "%s", dse_shipName.ToAscii().data());
         }
         m_ptentative_dsctarget->COG = dse_cog;
         m_ptentative_dsctarget->SOG = dse_sog;
@@ -2640,7 +2645,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
       ptd->m_utc_sec = bstr->GetInt(134, 6);
       // From bit 140 and forward data as of mes 5
-      bstr->GetStr(144, 120, &ptd->ShipName[0], 20);
+      bstr->GetStr(144, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
       ptd->b_nameValid = true;
       if (!ptd->b_isDSCtarget) {
         ptd->ShipType = (unsigned char)bstr->GetInt(264, 8);
@@ -2756,7 +2761,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->IMO = bstr->GetInt(41, 30);
 
         bstr->GetStr(71, 42, &ptd->CallSign[0], 7);
-        bstr->GetStr(113, 120, &ptd->ShipName[0], 20);
+        bstr->GetStr(113, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
         ptd->b_nameValid = true;
         if (!ptd->b_isDSCtarget) {
           ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
@@ -2774,7 +2779,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
 
         ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
 
-        bstr->GetStr(303, 120, &ptd->Destination[0], 20);
+        bstr->GetStr(303, 120, &ptd->Destination[0], DESTINATION_LEN - 1);
 
         ptd->StaticReportTicks = now.GetTicks();
 
@@ -2787,7 +2792,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
     case 24: {  // Static data report
       int part_number = bstr->GetInt(39, 2);
       if (0 == part_number) {
-        bstr->GetStr(41, 120, &ptd->ShipName[0], 20);
+        bstr->GetStr(41, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
         ptd->b_nameValid = true;
         parse_result = true;
         n_msg24++;
@@ -2911,9 +2916,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         if (offpos) ptd->NavStatus += 1;
       }
 
-      bstr->GetStr(
-          44, 120, &ptd->ShipName[0],
-          20);  // short name only, extension wont fit in Ship structure
+      bstr->GetStr( 44, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
+      // short name only, extension wont fit in Ship structure
 
       if (bstr->GetBitCount() > 276) {
         int nx = ((bstr->GetBitCount() - 272) / 6) * 6;
@@ -3250,18 +3254,9 @@ void AisDecoder::DeletePersistentTrack(Track *track) {
                 props->m_bPersistentTrack = false;
                 td->b_mPropPersistTrack = false;
               }
-#ifndef USE_MOCK_DEFS
-              if (wxID_NO ==
-                  OCPNMessageBox(
-                    NULL,
-                    _("This AIS target has Persistent tracking selected by MMSI properties\n"
-                      "A Persistent track recording will therefore be restarted for this target.\n\n"
-                      "Do you instead want to stop Persistent tracking for this target?"),
-                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60))
-              {
+              if (!m_callbacks.confirm_stop_track()) {
                 props->m_bPersistentTrack = true;
               }
-#endif    // FIXME(leamas) move to event var, no dialogs in here.
             }
             break;
           }
@@ -3948,7 +3943,8 @@ void AISshipNameCache(AisTargetData *pTargetData,
           (*AISTargetNamesNC)[mmsi] = ship_name;
         }
         if (g_bUseOnlyConfirmedAISName) {  // copy back previous name
-          strncpy(pTargetData->ShipName, "Unknown             ", SHIP_NAME_LEN);
+          pTargetData->ShipName[SHIP_NAME_LEN] ='\0';
+          strncpy(pTargetData->ShipName, "Unknown             ", SHIP_NAME_LEN - 1);
         }
       }
     }

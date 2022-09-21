@@ -431,7 +431,7 @@ public:
     g_BasePlatform = new BasePlatform();
     pSelectAIS = new Select();
     pSelect = new Select();
-    g_pAIS = new AisDecoder;
+    g_pAIS = new AisDecoder(AisDecoderCallbacks());
     auto& msgbus = NavMsgBus::GetInstance();
     CommBridge comm_bridge;
     comm_bridge.Initialize();
@@ -674,7 +674,6 @@ TEST(Priority, DifferentSource) {
     "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
   const char* const GPGGA_2 =
     "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
-  g_pAIS = new AisDecoder;
   PriorityApp2 app(GPGGA_1, GPGGA_2);
   Position p = Position::ParseGGA("5759.097,N,01144.345,E");
   EXPECT_NEAR(gLat, p.lat, 0.0001);
@@ -692,7 +691,6 @@ TEST(AIS, AISVDO) {
   wxLog::SetActiveTarget(&defaultLog);
   const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
-  g_pAIS = new AisDecoder;
   AisApp app("AIVDO", AISVDO_1);
 
   EXPECT_NEAR(gLat, 57.985758, 0.0001);

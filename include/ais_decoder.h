@@ -77,9 +77,14 @@ public:
 
 WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
 
+struct AisDecoderCallbacks {
+    std::function<bool()> confirm_stop_track;
+    AisDecoderCallbacks() : confirm_stop_track([]() { return true; } ) {}
+};
+
 class AisDecoder : public wxEvtHandler {
 public:
-  AisDecoder();
+  AisDecoder(AisDecoderCallbacks callbacks);
 
   ~AisDecoder(void);
 
@@ -184,6 +189,7 @@ private:
   bool m_busy;
   wxTimer TimerAIS;
   wxFrame *m_parent_frame;
+  AisDecoderCallbacks m_callbacks;
 
   int nsentences;
   int isentence;

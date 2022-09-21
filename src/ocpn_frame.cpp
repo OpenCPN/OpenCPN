@@ -1204,7 +1204,16 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   log_callbacks.log_message = [](const std::string& s) { NMEALogWindow::Get().Add(s); };
   g_pMUX = new Multiplexer(log_callbacks);
 
-  g_pAIS = new AisDecoder();
+  struct AisDecoderCallbacks  ais_callbacks;
+  ais_callbacks.confirm_stop_track = []() {
+    int r = OCPNMessageBox(NULL,
+       _("This AIS target has Persistent tracking selected by MMSI properties\n"
+         "A Persistent track recording will therefore be restarted for this target.\n\n"
+         "Do you instead want to stop Persistent tracking for this target?"),
+       _("OpenCPN Info"), wxYES_NO | wxCENTER, 60);
+    return r == wxID_OK;
+  };
+  g_pAIS = new AisDecoder(ais_callbacks);
 
   //  Create/connect a dynamic event handler slot
   wxLogMessage(" **** Connect stuff");
