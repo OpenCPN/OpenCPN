@@ -72,17 +72,11 @@ popd
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
 
-#try non-local ports
-sudo port -q install OCPN_openssl
+sudo port -fq install OCPN_openssl
 sudo port -q install OCPN_libpixman
-
 sudo port -fq install OCPN_cairo
-
 sudo port -q install zstd
-
-#sudo port -fN deactivate libarchive
 sudo port -q install OCPN_libarchive
-
 sudo port -q -f install OCPN_libpng
 
 
