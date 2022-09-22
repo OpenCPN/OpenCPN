@@ -181,8 +181,8 @@ elseif (APPLE)
   else ()
     # TODO This is a hack, due to the way libarchive is built and installed in
     # CI build environment
-    set(LibArchive_INCLUDE_DIRS /opt/local/include)
-    set(LibArchive_LIBRARIES /opt/local/lib/libarchive.dylib)
+    set(LibArchive_INCLUDE_DIRS /usr/local/opt/libarchive/include )
+    set(LibArchive_LIBRARIES /usr/local/opt/libarchive/lib/libarchive.dylib )
     set(LibArchive_FOUND 1)
   endif ()
 else ()
