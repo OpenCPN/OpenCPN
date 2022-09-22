@@ -120,8 +120,10 @@ brew install libarchive
 brew install freetype
 brew install cairo
 
+# Make sure cmake finds libarchive from Brew install
 pushd /usr/local/include
     ln -sf /usr/local/opt/libarchive/include/archive.h .
+    ln -sf /usr/local/opt/libarchive/include/archive_entry.h .
     cd ../lib
 #    ln -sf  /opt/local/lib/libarchive.13.dylib .
     ln -sf  /usr/local/opt/libarchive/lib/libarchive.dylib .
@@ -131,7 +133,7 @@ popd
 # export CPPFLAGS="-I/usr/local/opt/libarchive/include"
 
 
-# Make sure cmake finds libarchive
+# Make sure cmake finds libarchive from Macports install
 pushd /usr/local/include
 #    ln -sf /opt/local/include/archive.h .
 #    ln -sf /opt/local/include/archive_entry.h .
