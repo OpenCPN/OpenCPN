@@ -44,13 +44,15 @@ if (APPLE)
     set(LibArchive_INCLUDE_DIRS /usr/local/opt/libarchive/include )
     set(LibArchive_LIBRARIES /usr/local/opt/libarchive/lib/libarchive.dylib )
     set(LibArchive_FOUND 1)
+    target_include_directories(_archive_if INTERFACE ${LibArchive_INCLUDE_DIRS})
+    target_link_libraries(_archive_if INTERFACE ${LibArchive_LIBRARIES})
 
+    message(STATUS "libarchive header directory: ${LibArchive_INCLUDE_DIRS}")
+    message(STATUS "libarchive library directory: ${LibArchive_LIBRARIES}")
+    return ()
   endif ()
 endif ()
 
 find_package(LibArchive REQUIRED)
 target_include_directories(_archive_if INTERFACE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(_archive_if INTERFACE ${LibArchive_LIBRARIES})
-
-message(STATUS "libarchive header directory: ${LibArchive_INCLUDE_DIRS}")
-message(STATUS "libarchive library directory: ${LibArchive_LIBRARIES}")
