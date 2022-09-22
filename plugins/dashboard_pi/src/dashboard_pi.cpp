@@ -475,6 +475,7 @@ int dashboard_pi::Init(void) {
   mPriSatUsed = 99;
   mPriAlt = 99;
   mPriRSA = 99;  //Rudder angle
+  mPriPitchRoll = 99; //Pitch and roll
   m_config_version = -1;
   mHDx_Watchdog = 2;
   mHDT_Watchdog = 2;
@@ -559,6 +560,14 @@ int dashboard_pi::Init(void) {
   listener_127245 = std::move(GetListener(id_127245, EVT_N2K_127245, this));
   Bind(EVT_N2K_127245, [&](ObservedEvt ev) {
     HandleN2K_127245(ev);
+  });
+
+  // Roll Pitch   PGN 127257
+  wxDEFINE_EVENT(EVT_N2K_127257, ObservedEvt);
+  NMEA2000Id id_127257 = NMEA2000Id(127257);
+  listener_127257 = std::move(GetListener(id_127257, EVT_N2K_127257, this));
+  Bind(EVT_N2K_127257, [&](ObservedEvt ev) {
+    HandleN2K_127257(ev);
   });
 
   // Depth Data   PGN 128267
@@ -798,11 +807,13 @@ void dashboard_pi::Notify() {
   }
   mPITCH_Watchdog--;
   if (mPITCH_Watchdog <= 0) {
+    mPriPitchRoll = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, NAN, _T("-"));
     mPITCH_Watchdog = gps_watchdog_timeout_ticks;
   }
   mHEEL_Watchdog--;
   if (mHEEL_Watchdog <= 0) {
+    mPriPitchRoll = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, NAN, _T("-"));
     mHEEL_Watchdog = gps_watchdog_timeout_ticks;
   }
@@ -1253,7 +1264,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     // NMEA 0183 standard Wind Speed and Angle, in relation to the vessel's
     // bow/centerline.
     else if (m_NMEA0183.LastSentenceIDReceived == _T("MWV")) {
-      if (mPriAWA >= 4 || mPriTWA >= 4 || mPriWDN >= 5) {
+      if (mPriAWA >= 4 || mPriTWA >= 5 || mPriWDN >= 5) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Mwv.IsDataValid == NTrue) {
             // MWV windspeed has different units. Form it to knots to fit
@@ -1303,8 +1314,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             } else if (m_NMEA0183.Mwv.Reference ==
                        _T("T"))  // Theoretical (aka True)
             {
-              if (mPriTWA >= 4) {
-                mPriTWA = 4;
+              if (mPriTWA >= 5) {
+                mPriTWA = 5;
                 wxString m_twaunit;
                 double m_twaangle;
                 bool b_R = false;
@@ -1573,10 +1584,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
      * at the vessel if it were
      * stationary relative to the water and heading in the same direction. */
     else if (m_NMEA0183.LastSentenceIDReceived == _T("VWT")) {
-      if (mPriTWA >= 3) {
+      if (mPriTWA >= 4) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Vwt.WindDirectionMagnitude < 200) {
-            mPriTWA = 3;
+            mPriTWA = 4;
             wxString vwtunit;
             vwtunit = m_NMEA0183.Vwt.DirectionOfWind == Left ? _T("\u00B0L")
                                                              : _T("\u00B0R");
@@ -1648,31 +1659,41 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH") ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                     _T("PITCH")) {
-              if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                xdrunit = _T("\u00B0\u2191") + _("Up");
-              } else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                xdrunit = _T("\u00B0\u2193") + _("Down");
-                xdrdata *= -1;
-              } else {
-                xdrunit = _T("\u00B0");
+              if (mPriPitchRoll >= 3) {
+                if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                  xdrunit = _T("\u00B0\u2191") + _("Up");
+                }
+                else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                  xdrunit = _T("\u00B0\u2193") + _("Down");
+                  xdrdata *= -1;
+                }
+                else {
+                  xdrunit = _T("\u00B0");
+                }
+                SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata,
+                                             xdrunit);
+                mPITCH_Watchdog = gps_watchdog_timeout_ticks;
+                mPriPitchRoll = 3;
               }
-              SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata,
-                                           xdrunit);
-              mPITCH_Watchdog = gps_watchdog_timeout_ticks;
             }
             // XDR Heel
             else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                      _T("ROLL")) {
-              if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                xdrunit = _T("\u00B0\u003E") + _("Stbd");
-              } else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                xdrunit = _T("\u00B0\u003C") + _("Port");
-                xdrdata *= -1;
-              } else {
-                xdrunit = _T("\u00B0");
+              if (mPriPitchRoll >= 3) {
+                if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                  xdrunit = _T("\u00B0\u003E") + _("Stbd");
+                }
+                else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                  xdrunit = _T("\u00B0\u003C") + _("Port");
+                  xdrdata *= -1;
+                }
+                else {
+                  xdrunit = _T("\u00B0");
+                }
+                SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
+                mHEEL_Watchdog = gps_watchdog_timeout_ticks;
+                mPriPitchRoll = 3;
               }
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
-              mHEEL_Watchdog = gps_watchdog_timeout_ticks;
             }
             // XDR Rudder Angle
             else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
@@ -1825,6 +1846,42 @@ void dashboard_pi::HandleN2K_127245(ObservedEvt ev) {
   }
 }
 
+// Roll Pitch data PGN 127257
+void dashboard_pi::HandleN2K_127257(ObservedEvt ev) {
+  NMEA2000Id id_127257(127257);
+  std::vector<uint8_t>v = GetN2000Payload(id_127257, ev);
+  unsigned char SID;
+  double Yaw, Pitch, Roll;
+
+  // Get roll and pitch
+  if (ParseN2kPGN127257(v, SID, Yaw, Pitch, Roll)) {
+    if (mPriPitchRoll >= 1) {
+      if (!N2kIsNA(Pitch)) {
+        double m_pitch = GEODESIC_RAD2DEG(Pitch);
+        wxString p_unit = _T("\u00B0\u2191") + _("Up");
+        if (m_pitch < 0) {
+          p_unit = _T("\u00B0\u2193") + _("Down");
+          m_pitch *= -1;
+        }
+        SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
+        mPITCH_Watchdog = gps_watchdog_timeout_ticks;
+        mPriPitchRoll = 1;
+      }
+      if (!N2kIsNA(Roll)) {
+        double m_heel = GEODESIC_RAD2DEG(Roll);
+        wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
+        if (m_heel < 0) {
+          h_unit = _T("\u00B0\u003C") + _("Port");
+          m_heel *= -1;
+        }
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
+        mHEEL_Watchdog = gps_watchdog_timeout_ticks;
+        mPriPitchRoll = 1;
+      }
+    }
+  }
+}
+
 void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
   NMEA2000Id id_128267(128267);
   std::vector<uint8_t>v = GetN2000Payload(id_128267, ev);
@@ -1970,7 +2027,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
           }
           break;
         case 1:  // N2kWind direction Magnetic North
-          if (mPriWDN >= 2) {
+          if (mPriWDN >= 1) {
             double m_twdT = GEODESIC_RAD2DEG(WindAngle);
             // Make it true if variation is available
             if (!std::isnan(mVar)) {
@@ -1983,7 +2040,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               }
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
-            mPriWDN = 2;
+            mPriWDN = 1;
             mWDN_Watchdog = gps_watchdog_timeout_ticks;
           }
           break;
@@ -2011,6 +2068,8 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
             // If not N2K true wind data are recently received calculate it.
             if (mPriTWA != 1) {
               CalculateAndUpdateTWDS(m_awaspeed_kn, m_awaangle *=-1.0);
+              mPriTWA = 2;
+              mPriWDN = 2;
               mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               mWDN_Watchdog = gps_watchdog_timeout_ticks;
             }
@@ -2354,7 +2413,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
               !g_bDBtrueWindGround ) ||
               ( update_path == _T("environment.wind.speedOverGround") &&
                g_bDBtrueWindGround )) {
-      if (mPriTWA >= 2) {
+      if (mPriTWA >= 3) {
         double m_twaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_twaspeed_kn)) return;
 
@@ -2370,11 +2429,11 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       }
     }
     else if (update_path == _T("environment.depth.belowSurface")) {
-      if (mPriDepth >= 2) {
+      if (mPriDepth >= 3) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
 
-        mPriDepth = 2;
+        mPriDepth = 3;
         depth += g_dDashDBTOffset;
         depth /= 1852.0;
         SendSentenceToAllInstruments(
@@ -2620,25 +2679,29 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
       mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
     } else if (update_path == _T("navigation.attitude")) {  // rad
-      if (value["roll"].AsString() != "0") {
-        double m_heel = GEODESIC_RAD2DEG(value["roll"].AsDouble());
-        wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
-        if (m_heel < 0) {
-          h_unit = _T("\u00B0\u003C") + _("Port");
-          m_heel *= -1;
+      if (mPriPitchRoll >= 2) {
+        if (value["roll"].AsString() != "0") {
+          double m_heel = GEODESIC_RAD2DEG(value["roll"].AsDouble());
+          wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
+          if (m_heel < 0) {
+            h_unit = _T("\u00B0\u003C") + _("Port");
+            m_heel *= -1;
+          }
+          SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
+          mHEEL_Watchdog = gps_watchdog_timeout_ticks;
+          mPriPitchRoll = 2;
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
-        mHEEL_Watchdog = gps_watchdog_timeout_ticks;
-      }
-      if (value["pitch"].AsString() != "0") {
-        double m_pitch = GEODESIC_RAD2DEG(value["pitch"].AsDouble());
-        wxString p_unit = _T("\u00B0\u2191") + _("Up");
-        if (m_pitch < 0) {
-          p_unit = _T("\u00B0\u2193") + _("Down");
-          m_pitch *= -1;
+        if (value["pitch"].AsString() != "0") {
+          double m_pitch = GEODESIC_RAD2DEG(value["pitch"].AsDouble());
+          wxString p_unit = _T("\u00B0\u2191") + _("Up");
+          if (m_pitch < 0) {
+            p_unit = _T("\u00B0\u2193") + _("Down");
+            m_pitch *= -1;
+          }
+          SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
+          mPITCH_Watchdog = gps_watchdog_timeout_ticks;
+          mPriPitchRoll = 2;
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
-        mPITCH_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
   }
