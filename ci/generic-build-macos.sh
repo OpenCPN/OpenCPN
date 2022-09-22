@@ -73,11 +73,16 @@ popd
 #  n.b.  ORDER IS IMPORTANT
 
 sudo port -fq install OCPN_openssl
+
 sudo port -fN deactivate libpixman
 sudo port -q install OCPN_libpixman
+
 sudo port -fq install OCPN_cairo
 sudo port -q install zstd
+
+sudo port -fN deactivate libarchive
 sudo port -q install OCPN_libarchive
+
 sudo port -q -f install OCPN_libpng
 
 
@@ -98,6 +103,7 @@ brew list --versions python3 || {
 
 #exit 0
 
+# Does not work for Mojave and earlier
 #sudo port -q install libarchive
 #sudo port -q install freetype
 #sudo port -q install cairo
