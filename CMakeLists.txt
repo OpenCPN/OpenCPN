@@ -410,6 +410,7 @@ if (APPLE)
       "-Wno-deprecated"
       "-Wno-deprecated-declarations"
       "-Wno-unknown-pragmas"
+      "-Wno-unknown-warning-option"
       "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
   endif ()
