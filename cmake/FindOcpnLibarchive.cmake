@@ -38,3 +38,6 @@ endif ()
 find_package(LibArchive REQUIRED)
 target_include_directories(_archive_if INTERFACE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(_archive_if INTERFACE ${LibArchive_LIBRARIES})
+
+message(STATUS "libarchive header directory: ${LibArchive_INCLUDE_DIRS}")
+message(STATUS "libarchive library directory: ${LibArchive_LIBRARIES}")
