@@ -722,7 +722,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
-    Name[SHIP_NAME_LEN] = 0;
+    Name[sizeof(Name) - 1] = 0;
     strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
 
@@ -766,7 +766,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
-    Name[SHIP_NAME_LEN] = 0;
+    Name[sizeof(Name) - 1] = 0;
     strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
 
@@ -3943,7 +3943,7 @@ void AISshipNameCache(AisTargetData *pTargetData,
           (*AISTargetNamesNC)[mmsi] = ship_name;
         }
         if (g_bUseOnlyConfirmedAISName) {  // copy back previous name
-          pTargetData->ShipName[SHIP_NAME_LEN] ='\0';
+          pTargetData->ShipName[SHIP_NAME_LEN - 1] ='\0';
           strncpy(pTargetData->ShipName, "Unknown             ", SHIP_NAME_LEN - 1);
         }
       }
