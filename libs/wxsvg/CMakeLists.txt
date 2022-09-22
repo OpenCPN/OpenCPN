@@ -94,7 +94,9 @@ set(SRC
 
 add_library(WXSVG STATIC ${SRC})
 add_library(ocpn::wxsvg ALIAS WXSVG)
-set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(WXSVG PRIVATE -fvisibility=default -fPIC)
+endif ()
 
 
    # CMake has trouble finding libgobject-2.0.so, as required for static wxsvg library.

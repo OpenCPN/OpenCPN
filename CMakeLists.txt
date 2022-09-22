@@ -85,6 +85,7 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
+set(CMAKE_CXX_VISIBILITY_PRESET=hidden)
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
@@ -1688,6 +1689,10 @@ target_link_libraries(
     ocpn::tinyxml
 )
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(S57ENC PRIVATE -fvisibility=default)
+endif ()
+
 if (OCPN_USE_CURL AND NOT QT_ANDROID)
   target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
 endif ()
@@ -1727,6 +1732,9 @@ set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_link_libraries(SYMBOLS PRIVATE ocpn::tinyxml)
 target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(SYMBOLS PRIVATE -fvisibility=default)
+endif ()
 
 # Compile texcompression support library
 if (OPENGL_FOUND)
