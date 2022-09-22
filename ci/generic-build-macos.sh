@@ -122,11 +122,11 @@ brew install cairo
 
 # Make sure cmake finds libarchive from Brew install
 pushd /usr/local/include
-    ln -sf /usr/local/opt/libarchive/include/archive.h .
-    ln -sf /usr/local/opt/libarchive/include/archive_entry.h .
-    cd ../lib
+#    ln -sf /usr/local/opt/libarchive/include/archive.h .
+#    ln -sf /usr/local/opt/libarchive/include/archive_entry.h .
+#    cd ../lib
 #    ln -sf  /opt/local/lib/libarchive.13.dylib .
-    ln -sf  /usr/local/opt/libarchive/lib/libarchive.dylib .
+#    ln -sf  /usr/local/opt/libarchive/lib/libarchive.dylib .
 popd
 
 # export LDFLAGS="-L/usr/local/opt/libarchive/lib"

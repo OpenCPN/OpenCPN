@@ -38,7 +38,12 @@ if (APPLE)
     #libarchive library directory: /Applications/Xcode-13.4.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/lib/libarchive.tbd
 
     #try this:
-    list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt")
+    #list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt")
+
+    # or this, very explicit, same as chardldr_pi
+    set(LibArchive_INCLUDE_DIRS /usr/local/opt/libarchive/include )
+    set(LibArchive_LIBRARIES /usr/local/opt/libarchive/lib/libarchive.dylib )
+    set(LibArchive_FOUND 1)
 
   endif ()
 endif ()
