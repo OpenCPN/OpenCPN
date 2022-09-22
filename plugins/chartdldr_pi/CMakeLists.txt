@@ -107,8 +107,8 @@ if (APPLE)
   # with the system-wide one (which in turn does not provide includes...) We do
   # not want the systemwide vrsion as it is too old and misses support for many
   # archive formats
-  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
+  #list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+  #list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
 endif ()
 
 if (CMAKE_HOST_WIN32)
