@@ -71,19 +71,19 @@ popd
 
 # install the local port libraries
 #  n.b.  ORDER IS IMPORTANT
+# does not work on Mojave and earlier
+#sudo port -fq install OCPN_openssl
 
-sudo port -fq install OCPN_openssl
+#sudo port -fN deactivate libpixman
+#sudo port -q install OCPN_libpixman
 
-sudo port -fN deactivate libpixman
-sudo port -q install OCPN_libpixman
+#sudo port -fq install OCPN_cairo
+#sudo port -q install zstd
 
-sudo port -fq install OCPN_cairo
-sudo port -q install zstd
+#sudo port -fN deactivate libarchive
+#sudo port -q install OCPN_libarchive
 
-sudo port -fN deactivate libarchive
-sudo port -q install OCPN_libarchive
-
-sudo port -q -f install OCPN_libpng
+#sudo port -q -f install OCPN_libpng
 
 
 
@@ -114,13 +114,17 @@ for pkg in python3  cmake ; do
     brew link --overwrite $pkg || :
 done
 
+brew install libarchive
+brew install freetype
+brew install cairo
+
 # Make sure cmake finds libarchive
 pushd /usr/local/include
-    ln -sf /opt/local/include/archive.h .
-    ln -sf /opt/local/include/archive_entry.h .
-    cd ../lib
-    ln -sf  /opt/local/lib/libarchive.13.dylib .
-    ln -sf  /opt/local/lib/libarchive.dylib .
+#    ln -sf /opt/local/include/archive.h .
+#    ln -sf /opt/local/include/archive_entry.h .
+#    cd ../lib
+#    ln -sf  /opt/local/lib/libarchive.13.dylib .
+#    ln -sf  /opt/local/lib/libarchive.dylib .
 popd
 
 if brew list --cask --versions packages; then
