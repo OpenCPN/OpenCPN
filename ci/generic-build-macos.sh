@@ -114,6 +114,8 @@ for pkg in python3  cmake ; do
     brew link --overwrite $pkg || :
 done
 
+# This does not work on Mojave and earlier, libarchive problem
+# But it is fast...
 brew install libarchive
 brew install freetype
 brew install cairo
