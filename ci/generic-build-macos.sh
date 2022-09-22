@@ -73,6 +73,7 @@ popd
 #  n.b.  ORDER IS IMPORTANT
 
 sudo port -fq install OCPN_openssl
+sudo port -fN deactivate libpixman
 sudo port -q install OCPN_libpixman
 sudo port -fq install OCPN_cairo
 sudo port -q install zstd
