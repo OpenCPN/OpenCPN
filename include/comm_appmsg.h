@@ -103,8 +103,6 @@ public:
 protected:
   AppMsg(AppMsg::Type tp, const std::string& nm, NavAddr src)
       : type(tp), name(nm), source(src), prio(0){};
-
-  AppMsg& operator=(const AppMsg&) = default;
 };
 
 enum class AppMsg::Type {
@@ -138,6 +136,7 @@ public:
         time(t),
         quality(q),
         satellites_used(s_used){};
+  virtual ~GnssFix() = default;
 
   std::string to_string() const {
     std::stringstream buf;
@@ -163,6 +162,8 @@ public:
         hdt(HDT),
         time(t){};
 
+  virtual ~BasicNavDataMsg() = default;
+
   const Position pos;
   const double sog;
   const double cog;
@@ -175,8 +176,9 @@ class GPSWatchdogMsg : public AppMsg {
 public:
   GPSWatchdogMsg(int value)
       : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
-
         gps_watchdog(value){};
+
+  virtual ~GPSWatchdogMsg() = default;
 
   const int gps_watchdog;
 };

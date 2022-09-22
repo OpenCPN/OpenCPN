@@ -95,7 +95,7 @@ Route *FindRouteContainingWaypoint(RoutePoint *pWP);
 class NavObjectCollection1 : public pugi::xml_document {
 public:
   NavObjectCollection1();
-  ~NavObjectCollection1();
+  virtual ~NavObjectCollection1();
 
   bool CreateNavObjGPXPoints(void);
   bool CreateNavObjGPXRoutes(void);

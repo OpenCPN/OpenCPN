@@ -156,6 +156,7 @@ public:
   Nmea2000Msg(const N2kName& n, const std::vector<unsigned char>& _payload,
               std::shared_ptr<const NavAddr> src)
       : NavMsg(NavAddr::Bus::N2000, src), name(n), payload(_payload) {}
+  virtual ~Nmea2000Msg() = default;
 
   std::string key() const { return std::string("n2000-") + name.to_string(); };
 
@@ -189,6 +190,8 @@ public:
         type(t),
         payload(other.payload) {}
 
+  virtual ~Nmea0183Msg() = default;
+
   std::string key() const { return Nmea0183Msg::MessageKey(type.c_str()); };
 
   std::string to_string() const {
@@ -219,6 +222,8 @@ public:
         context(_context),
         raw_message(_raw_message){};
 
+  virtual ~SignalkMsg() = default;
+
   struct in_addr dest;
   struct in_addr src;
   wxJSONValue* root;
@@ -236,6 +241,8 @@ class NullNavMsg : public NavMsg {
 public:
   NullNavMsg()
       : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
+
+  virtual ~NullNavMsg() = default;
 
   std::string key() const { return "navmsg-undef"; }
 };

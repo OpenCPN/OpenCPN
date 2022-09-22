@@ -449,6 +449,7 @@ class SillyDriver : public AbstractCommDriver {
 public:
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
   SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
+  virtual ~SillyDriver() = default;
 
   virtual void SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) {}
