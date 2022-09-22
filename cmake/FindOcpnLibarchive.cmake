@@ -31,7 +31,15 @@ if (APPLE)
   else ()
     #  TODO This is a hack, due to the way libarchive is built and
     #  installed in CI build environment
-    list(APPEND CMAKE_PREFIX_PATH "/opt/local")
+
+    #list(APPEND CMAKE_PREFIX_PATH "/opt/local")
+    # this results in:
+    #libarchive header directory: /usr/local/include
+    #libarchive library directory: /Applications/Xcode-13.4.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/usr/lib/libarchive.tbd
+
+    #try this:
+    list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt")
+
   endif ()
 endif ()
 
