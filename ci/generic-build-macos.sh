@@ -12,20 +12,17 @@ export MACOSX_DEPLOYMENT_TARGET=10.10
 export macosx_deployment_target=10.10
 
 # allow shell to find Macports executable
-export PATH=/opt/local/bin:$PATH
+#export PATH=/opt/local/bin:$PATH
 
 # allow caching of macports state in $HOME    "/Users/distiller/project/opt_local_cache"
-sudo mkdir -p ${HOME}/project/opt_local_cache
-sudo ln -s ${HOME}/project/opt_local_cache /opt/local
+#sudo mkdir -p ${HOME}/project/opt_local_cache
+#sudo ln -s ${HOME}/project/opt_local_cache /opt/local
 
-# curl -k -o /tmp/opt_macports.tar.xz  \
-#     https://download.opencpn.org/s/FpPXeWqEif8cLCT/download
-# sudo tar -C / -xJf /tmp/opt_macports.tar.xz
 
-ls ${HOME}/project/opt_local_cache || echo "OK"
-ls ${HOME}/project/opt_local_cache/bin || echo "OK"
+#ls ${HOME}/project/opt_local_cache || echo "OK"
+#ls ${HOME}/project/opt_local_cache/bin || echo "OK"
 
-ls /opt/local/bin || echo "OK"
+#ls /opt/local/bin || echo "OK"
 
 #sudo mkdir -p /opt/local/share/curl
 #sudo cp buildosx/cacert.pem /opt/local/share/curl/curl-ca-bundle.crt
@@ -37,29 +34,29 @@ ls /opt/local/bin || echo "OK"
 #sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "buildosx/ISRGROOTX1.pem"
 
 # Check if the cache is with us. If not, re-install macports
-port info zstd || {
-    curl -k -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
-    tar xf MacPorts-2.7.1.tar.bz2
-    cd MacPorts-2.7.1/
-    ./configure
-    make
-    sudo make install
-    cd ..
+#port info zstd || {
+#    curl -k -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.1.tar.bz2
+#    tar xf MacPorts-2.7.1.tar.bz2
+#    cd MacPorts-2.7.1/
+#    ./configure
+#    make
+#    sudo make install
+#    cd ..
 
-    sudo port -d selfupdate
-}
+#    sudo port -d selfupdate
+#}
 
-sudo port -d selfupdate
+#sudo port -d selfupdate
 
 #sudo port rev-upgrade
 
     # add our local ports to the sources.conf
-sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
+#sudo cp buildosx/macports/sources.conf /opt/local/etc/macports
 
 # rebuild the port index
-pushd buildosx/macports/ports
-  portindex
-popd
+#pushd buildosx/macports/ports
+#  portindex
+#popd
 
 
 # Install curl to get the TLS certificate bundle
@@ -103,11 +100,6 @@ brew list --versions python3 || {
 
 #exit 0
 
-# Does not work for Mojave and earlier
-#sudo port -q install libarchive
-#sudo port -q install freetype
-#sudo port -q install cairo
-
 
 
 # build libarchive, for legacy compatibility.
@@ -124,36 +116,12 @@ cd ..
 
 
 
-# This does not work on Mojave and earlier, libarchive problem
-# But it is fast...
-#brew install libarchive
 brew install freetype
 brew install cairo
 brew install zstd
 brew install xz
 brew install lz4
 
-# Make sure cmake finds libarchive from Brew install
-#pushd /usr/local/include
-#    ln -sf /usr/local/opt/libarchive/include/archive.h .
-#    ln -sf /usr/local/opt/libarchive/include/archive_entry.h .
-#    cd ../lib
-#    ln -sf  /opt/local/lib/libarchive.13.dylib .
-#    ln -sf  /usr/local/opt/libarchive/lib/libarchive.dylib .
-#popd
-
-# export LDFLAGS="-L/usr/local/opt/libarchive/lib"
-# export CPPFLAGS="-I/usr/local/opt/libarchive/include"
-
-
-# Make sure cmake finds libarchive from Macports install
-pushd /usr/local/include
-#    ln -sf /opt/local/include/archive.h .
-#    ln -sf /opt/local/include/archive_entry.h .
-#    cd ../lib
-#    ln -sf  /opt/local/lib/libarchive.13.dylib .
-#    ln -sf  /opt/local/lib/libarchive.dylib .
-popd
 
 for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
@@ -168,9 +136,6 @@ if brew list --cask --versions packages; then
 else
     brew install --cask packages
 fi
-
-#wget -q https://download.opencpn.org/s/MCiRiq4fJcKD56r/download \
-#    -O /tmp/wx315_opencpn50_macos1010.tar.xz
 
 curl -k -o /tmp/wx315_opencpn50_macos1010.tar.xz  \
     https://download.opencpn.org/s/MCiRiq4fJcKD56r/download
