@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Options Dialog
@@ -1558,6 +1558,8 @@ EVT_BUTTON(ID_APPLY, options::OnApplyClick)
 EVT_BUTTON(xID_OK, options::OnXidOkClick)
 EVT_BUTTON(wxID_CANCEL, options::OnCancelClick)
 EVT_BUTTON(ID_BUTTONFONTCHOOSE, options::OnChooseFont)
+EVT_BUTTON(ID_BUTTONECDISHELP, options::OnButtonEcdisHelp)
+
 EVT_CHOICE(ID_CHOICE_FONTELEMENT, options::OnFontChoice)
 EVT_CLOSE(options::OnClose)
 
@@ -6025,6 +6027,7 @@ BEGIN_EVENT_TABLE(OCPNSoundPanel, wxPanel)
 EVT_BUTTON(ID_SELECTSOUND, OCPNSoundPanel::OnButtonSelectSound)
 EVT_BUTTON(ID_TESTSOUND, OCPNSoundPanel::OnButtonTestSound)
 
+
 END_EVENT_TABLE()
 
 OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size,
@@ -6762,11 +6765,17 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #endif
 
   pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,
-                                _("Use Inland ECDIS V2.3"));
+                                _("Use Inland ECDIS"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
+
+  wxButton* itemEcdisHelp =
+      new wxButton(itemPanelFont, ID_BUTTONECDISHELP, _("Inland ECDIS Manual"),
+                   wxDefaultPosition, wxDefaultSize, 0);
+  miscOptions->Add(itemEcdisHelp, 0, wxALL, border_size);
 
 #ifdef __OCPN__ANDROID__
   pInlandEcdis->Hide();
+  itemEcdisHelp->Hide();
 #endif
 
   miscOptions->AddSpacer(10);
@@ -9304,6 +9313,33 @@ void options::OnButtonmigrateClick(wxCommandEvent& event) {
   g_migrateDialog->Raise();
   g_migrateDialog->ShowModal();
 #endif
+}
+
+void options::OnButtonEcdisHelp(wxCommandEvent& event) {
+
+  wxString testFile = "/doc/iECDIS/index.html";
+
+  if (!::wxFileExists(testFile)) {
+    wxString msg = _("The Inland ECDIS Manual is not available locally.");
+    msg += _T("\n");
+    msg +=
+        _("Would you like to visit the iECDIS Manual website for more "
+          "information?");
+
+    if (wxID_YES ==
+        OCPNMessageBox(NULL, msg, _("Inland ECDIS Manual"), wxYES_NO | wxCENTER, 60)) {
+      wxLaunchDefaultBrowser(_T("https://opencpn-manuals.github.io/inland-ecdis"));
+    }
+  } else {
+#ifdef __WXMSW__
+    wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
+                           testFile);
+#else
+    wxLaunchDefaultBrowser(_T("file://") + *GetpSharedDataLocation() +
+                           testFile);
+#endif
+  }
+
 }
 
 void options::OnButtoncompressClick(wxCommandEvent& event) {

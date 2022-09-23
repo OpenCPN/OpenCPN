@@ -99,6 +99,7 @@ enum {
   ID_BUTTONDELETE,
   ID_BUTTONCOMPRESS,
   ID_BUTTONFONTCHOOSE,
+  ID_BUTTONECDISHELP,
   ID_BUTTONFONTCOLOR,
   ID_BUTTONGROUP,
   ID_BUTTONREBUILD,
@@ -309,6 +310,7 @@ public:
   void OnButtonParseENC(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
   void OnButtonmigrateClick(wxCommandEvent &event);
+  void OnButtonEcdisHelp(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
   void OnApplyClick(wxCommandEvent &event);
   void OnXidOkClick(wxCommandEvent &event);
