@@ -204,6 +204,7 @@ private:
   void HandleN2K_127245(ObservedEvt ev);
   void HandleN2K_127257(ObservedEvt ev);
   void HandleN2K_128267(ObservedEvt ev);
+  void HandleN2K_128275(ObservedEvt ev);
   void HandleN2K_129029(ObservedEvt ev);
   void HandleN2K_129540(ObservedEvt ev);
   void HandleN2K_130306(ObservedEvt ev);
@@ -212,6 +213,7 @@ private:
   std::shared_ptr<ObservedVarListener> listener_127245;
   std::shared_ptr<ObservedVarListener> listener_127257;
   std::shared_ptr<ObservedVarListener> listener_128267;
+  std::shared_ptr<ObservedVarListener> listener_128275;
   std::shared_ptr<ObservedVarListener> listener_129029;
   std::shared_ptr<ObservedVarListener> listener_129540;
   std::shared_ptr<ObservedVarListener> listener_130306;
