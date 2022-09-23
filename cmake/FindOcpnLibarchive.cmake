@@ -40,10 +40,16 @@ if (APPLE)
     #try this:
     #list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt")
 
-    # or this, very explicit, same as chardldr_pi
-    set(LibArchive_INCLUDE_DIRS /usr/local/opt/libarchive/include )
-    set(LibArchive_LIBRARIES /usr/local/opt/libarchive/lib/libarchive.dylib )
+    # or this, very explicit for Brew install of libarchive, same as chardldr_pi
+    #set(LibArchive_INCLUDE_DIRS /usr/local/opt/libarchive/include )
+    #set(LibArchive_LIBRARIES /usr/local/opt/libarchive/lib/libarchive.dylib )
+    #set(LibArchive_FOUND 1)
+
+    # or this, for local build of libarchive
+    set(LibArchive_INCLUDE_DIRS /usr/local/include )
+    set(LibArchive_LIBRARIES /usr/local/lib/libarchive.13.dylib )
     set(LibArchive_FOUND 1)
+
     target_include_directories(_archive_if INTERFACE ${LibArchive_INCLUDE_DIRS})
     target_link_libraries(_archive_if INTERFACE ${LibArchive_LIBRARIES})
 

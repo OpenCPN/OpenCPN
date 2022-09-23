@@ -109,25 +109,33 @@ brew list --versions python3 || {
 #sudo port -q install cairo
 
 
-for pkg in python3  cmake ; do
-    brew list --versions $pkg || brew install $pkg || brew install $pkg || :
-    brew link --overwrite $pkg || :
-done
+
+# build libarchive, for legacy compatibility.
+curl -k -o libarchive-3.3.3.tar.gz  \
+    https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
+tar zxf libarchive-3.3.3.tar.gz
+cd libarchive-3.3.3
+./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat
+# installs to /usr/local
+sudo make install
+cd ..
+
+
 
 # This does not work on Mojave and earlier, libarchive problem
 # But it is fast...
-brew install libarchive
+#brew install libarchive
 brew install freetype
 brew install cairo
 
 # Make sure cmake finds libarchive from Brew install
-pushd /usr/local/include
+#pushd /usr/local/include
 #    ln -sf /usr/local/opt/libarchive/include/archive.h .
 #    ln -sf /usr/local/opt/libarchive/include/archive_entry.h .
 #    cd ../lib
 #    ln -sf  /opt/local/lib/libarchive.13.dylib .
 #    ln -sf  /usr/local/opt/libarchive/lib/libarchive.dylib .
-popd
+#popd
 
 # export LDFLAGS="-L/usr/local/opt/libarchive/lib"
 # export CPPFLAGS="-I/usr/local/opt/libarchive/include"
@@ -141,6 +149,11 @@ pushd /usr/local/include
 #    ln -sf  /opt/local/lib/libarchive.13.dylib .
 #    ln -sf  /opt/local/lib/libarchive.dylib .
 popd
+
+for pkg in python3  cmake ; do
+    brew list --versions $pkg || brew install $pkg || brew install $pkg || :
+    brew link --overwrite $pkg || :
+done
 
 if brew list --cask --versions packages; then
     version=$(pkg_version packages '--cask')
