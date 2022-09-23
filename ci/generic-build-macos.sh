@@ -129,6 +129,9 @@ cd ..
 #brew install libarchive
 brew install freetype
 brew install cairo
+brew install zstd
+brew install xz
+brew install lz4
 
 # Make sure cmake finds libarchive from Brew install
 #pushd /usr/local/include
