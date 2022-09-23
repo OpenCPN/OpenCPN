@@ -1908,6 +1908,33 @@ void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
   }
 }
 
+
+void dashboard_pi::HandleN2K_128275(ObservedEvt ev) {
+  NMEA2000Id id_128275(128275);
+  std::vector<uint8_t>v = GetN2000Payload(id_128275, ev);
+  uint16_t DaysSince1970;
+  double SecondsSinceMidnight;
+  uint32_t Log, TripLog;
+
+  // Get log & Trip log
+  if (ParseN2kPGN128275(v, DaysSince1970, SecondsSinceMidnight, Log, TripLog)) {
+
+    if (!N2kIsNA(Log)) {
+      double m_slog = METERS2NM((double)Log);
+      SendSentenceToAllInstruments( OCPN_DBP_STC_VLW2,
+                              toUsrDistance_Plugin(m_slog, g_iDashDistanceUnit),
+                              getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
+    }
+  }
+  if (!N2kIsNA(TripLog)) {
+    double m_tlog = METERS2NM((double)TripLog);
+    SendSentenceToAllInstruments(
+      OCPN_DBP_STC_VLW1, toUsrDistance_Plugin(m_tlog, g_iDashDistanceUnit),
+      getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
+  }
+}
+
+
 wxString talker_N2k = wxEmptyString;
 void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
   NMEA2000Id id_129029(129029);
