@@ -577,6 +577,14 @@ int dashboard_pi::Init(void) {
   Bind(EVT_N2K_128267, [&](ObservedEvt ev) {
     HandleN2K_128267(ev);
   });
+  
+  // Distance log
+  wxDEFINE_EVENT(EVT_N2K_128275, ObservedEvt);
+  NMEA2000Id id_128275 = NMEA2000Id(128275);
+  listener_128275 = std::move(GetListener(id_128275, EVT_N2K_128275, this));
+  Bind(EVT_N2K_128275, [&](ObservedEvt ev) {
+    HandleN2K_128275(ev);
+  });
 
   // GNSS Position Data   PGN 129029
   wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
