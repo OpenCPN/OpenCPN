@@ -159,6 +159,16 @@ bool ParseN2kPGN127257(std::vector<unsigned char> &v, unsigned char &SID,
 
 }
 
+bool ParseN2kPGN128259(std::vector<unsigned char> &v, unsigned char &SID,
+                       double &WaterReferenced, double &GroundReferenced,
+                       tN2kSpeedWaterReferenceType &SWRT) {
+
+  tN2kMsg msg = MakeN2kMsg(v);
+
+  return ParseN2kPGN128259(msg, SID, WaterReferenced, GroundReferenced, SWRT);
+
+}
+
 bool ParseN2kPGN129540(std::vector<unsigned char> &v, unsigned char &SID,
                        tN2kRangeResidualMode &Mode, uint8_t &nSats) {
 
@@ -271,19 +281,6 @@ bool ParseN2kPGN130310(std::vector<unsigned char> &v, unsigned char &SID, double
 
     return ParseN2kPGN130310(msg, SID, WaterTemperature,
                      OutsideAmbientAirTemperature, AtmosphericPressure);
-}
-
-bool ParseN2kPGN130577(std::vector<unsigned char> &v,tN2kDataMode &DataMode,
-                       tN2kHeadingReference &CogReference,unsigned char &SID,double &COG,
-                       double &SOG,double &Heading,double &SpeedThroughWater,
-                       double &Set,double &Drift)
-{
-     tN2kMsg msg = MakeN2kMsg(v);
-
-     return ParseN2kPGN130577(msg, DataMode,
-                       CogReference, SID, COG,
-                       SOG, Heading, SpeedThroughWater,
-                       Set, Drift);
 }
 
 

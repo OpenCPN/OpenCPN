@@ -570,6 +570,14 @@ int dashboard_pi::Init(void) {
     HandleN2K_127257(ev);
   });
 
+  // Speed through water PGN 128259
+  wxDEFINE_EVENT(EVT_N2K_128259, ObservedEvt);
+  NMEA2000Id id_128259 = NMEA2000Id(128259);
+  listener_128259 = std::move(GetListener(id_128259, EVT_N2K_128259, this));
+  Bind(EVT_N2K_128259, [&](ObservedEvt ev) {
+    HandleN2K_128259(ev);
+  });
+
   // Depth Data   PGN 128267
   wxDEFINE_EVENT(EVT_N2K_128267, ObservedEvt);
   NMEA2000Id id_128267 = NMEA2000Id(128267);
@@ -616,14 +624,6 @@ int dashboard_pi::Init(void) {
   listener_130310 = std::move(GetListener(id_130310, EVT_N2K_130310, this));
   Bind(EVT_N2K_130310, [&](ObservedEvt ev) {
     HandleN2K_130310(ev);
-  });
-  
-  // Direction data (Speed through water) PGN 130577
-  wxDEFINE_EVENT(EVT_N2K_130577, ObservedEvt);
-  NMEA2000Id id_130577 = NMEA2000Id(130577);
-  listener_130577 = std::move(GetListener(id_130577, EVT_N2K_130577, this));
-  Bind(EVT_N2K_130577, [&](ObservedEvt ev) {
-    HandleN2K_130577(ev);
   });
 
   Start(1000, wxTIMER_CONTINUOUS);
@@ -1942,6 +1942,28 @@ void dashboard_pi::HandleN2K_128275(ObservedEvt ev) {
   }
 }
 
+void dashboard_pi::HandleN2K_128259(ObservedEvt ev) {
+  NMEA2000Id id_128259(128259);
+  std::vector<uint8_t>v = GetN2000Payload(id_128259, ev);
+  unsigned char SID;
+  double WaterReferenced, GroundReferenced ;
+  tN2kSpeedWaterReferenceType SWRT;
+
+  // Get speed through water
+  if (ParseN2kPGN128259( v, SID, WaterReferenced, GroundReferenced, SWRT)) {
+
+    if (!N2kIsNA(WaterReferenced)) {
+      if (mPriSTW >= 1) {
+        double stw_knots = MS2KNOTS(WaterReferenced);
+          SendSentenceToAllInstruments(
+            OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
+            getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+          mPriSTW = 1;
+          mSTW_Watchdog = gps_watchdog_timeout_ticks;
+      }
+    }
+  }
+}
 
 wxString talker_N2k = wxEmptyString;
 void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
@@ -2190,31 +2212,6 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
       double m_press = PA2HPA(AtmosphericPressure);
       SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
       mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
-    }
-  }
-}
-
-void dashboard_pi::HandleN2K_130577(ObservedEvt ev) {
-  NMEA2000Id id_130577(130577);
-  std::vector<uint8_t>v = GetN2000Payload(id_130577, ev);
-  unsigned char SID;
-  tN2kDataMode DataMode;
-  tN2kHeadingReference CogReference;
-  double SOG, COG, Heading, SpeedThroughWater, Set, Drift;
-
-  // Get Direction data
-  if (ParseN2kPGN130577(v, DataMode, CogReference, SID, COG, SOG, Heading,
-                        SpeedThroughWater, Set, Drift)) {
-    
-    if (!N2kIsNA(SpeedThroughWater)) {
-      if (mPriSTW >= 1) {
-        double stw_knots = MS2KNOTS(SpeedThroughWater);
-        SendSentenceToAllInstruments(
-          OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
-          getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-        mPriSTW = 1;
-        mSTW_Watchdog = gps_watchdog_timeout_ticks;
-      }
     }
   }
 }
