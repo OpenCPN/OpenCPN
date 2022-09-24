@@ -159,6 +159,16 @@ bool ParseN2kPGN127257(std::vector<unsigned char> &v, unsigned char &SID,
 
 }
 
+bool ParseN2kPGN128259(std::vector<unsigned char> &v, unsigned char &SID,
+                       double &WaterReferenced, double &GroundReferenced,
+                       tN2kSpeedWaterReferenceType &SWRT) {
+
+  tN2kMsg msg = MakeN2kMsg(v);
+
+  return ParseN2kPGN128259(msg, SID, WaterReferenced, GroundReferenced, SWRT);
+
+}
+
 bool ParseN2kPGN129540(std::vector<unsigned char> &v, unsigned char &SID,
                        tN2kRangeResidualMode &Mode, uint8_t &nSats) {
 
