@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Options Dialog
@@ -9321,21 +9321,21 @@ void options::OnButtonEcdisHelp(wxCommandEvent& event) {
 
   if (!::wxFileExists(testFile)) {
     wxString msg = _("The Inland ECDIS Manual is not available locally.");
-    msg += _T("\n");
+    msg += "\n";
     msg +=
         _("Would you like to visit the iECDIS Manual website for more "
           "information?");
 
     if (wxID_YES ==
         OCPNMessageBox(NULL, msg, _("Inland ECDIS Manual"), wxYES_NO | wxCENTER, 60)) {
-      wxLaunchDefaultBrowser(_T("https://opencpn-manuals.github.io/inland-ecdis"));
+      wxLaunchDefaultBrowser("https://opencpn-manuals.github.io/inland-ecdis");
     }
   } else {
 #ifdef __WXMSW__
-    wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
+    wxLaunchDefaultBrowser("file:///" + *GetpSharedDataLocation() +
                            testFile);
 #else
-    wxLaunchDefaultBrowser(_T("file://") + *GetpSharedDataLocation() +
+    wxLaunchDefaultBrowser("file://" + *GetpSharedDataLocation() +
                            testFile);
 #endif
   }
@@ -9971,7 +9971,7 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("English (U.S.)", wxConvUTF8);
   } else if (lang_canonical == _T("cs_CZ")) {
     dir_suffix = _T("cs");
-    return_string = wxString("Čeština", wxConvUTF8);
+    return_string = wxString("Cestina", wxConvUTF8);
   } else if (lang_canonical == _T("da_DK")) {
     dir_suffix = _T("da");
     return_string = wxString("Dansk", wxConvUTF8);
@@ -9983,10 +9983,10 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("Eesti", wxConvUTF8);
   } else if (lang_canonical == _T("es_ES")) {
     dir_suffix = _T("es");
-    return_string = wxString("Español", wxConvUTF8);
+    return_string = wxString("Espa�ol", wxConvUTF8);
   } else if (lang_canonical == _T("fr_FR")) {
     dir_suffix = _T("fr");
-    return_string = wxString("Français", wxConvUTF8);
+    return_string = wxString("Fran�ais", wxConvUTF8);
   } else if (lang_canonical == _T("it_IT")) {
     dir_suffix = _T("it");
     return_string = wxString("Italiano", wxConvUTF8);
@@ -9998,13 +9998,13 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("Polski", wxConvUTF8);
   } else if (lang_canonical == _T("pt_PT")) {
     dir_suffix = _T("pt_PT");
-    return_string = wxString("Português", wxConvUTF8);
+    return_string = wxString("Portugu�s", wxConvUTF8);
   } else if (lang_canonical == _T("pt_BR")) {
     dir_suffix = _T("pt_BR");
-    return_string = wxString("Português Brasileiro", wxConvUTF8);
+    return_string = wxString("Portugu�s Brasileiro", wxConvUTF8);
   } else if (lang_canonical == _T("ru_RU")) {
     dir_suffix = _T("ru");
-    return_string = wxString("Русский", wxConvUTF8);
+    return_string = wxString("???????", wxConvUTF8);
   } else if (lang_canonical == _T("sv_SE")) {
     dir_suffix = _T("sv");
     return_string = wxString("Svenska", wxConvUTF8);
@@ -10016,16 +10016,16 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     return_string = wxString("Norsk", wxConvUTF8);
   } else if (lang_canonical == _T("tr_TR")) {
     dir_suffix = _T("tr_TR");
-    return_string = wxString("Türkçe", wxConvUTF8);
+    return_string = wxString("T�rk�e", wxConvUTF8);
   } else if (lang_canonical == _T("el_GR")) {
     dir_suffix = _T("el_GR");
-    return_string = wxString("Ελληνικά", wxConvUTF8);
+    return_string = wxString("????????", wxConvUTF8);
   } else if (lang_canonical == _T("hu_HU")) {
     dir_suffix = _T("hu_HU");
     return_string = wxString("Magyar", wxConvUTF8);
   } else if (lang_canonical == _T("zh_TW")) {
     dir_suffix = _T("zh_TW");
-    return_string = wxString("正體字", wxConvUTF8);
+    return_string = wxString("???", wxConvUTF8);
   } else if (lang_canonical == _T("zh_CN")) {
     dir_suffix = _T("zh_CN");
     return_string = wxString("Simplified Chinese", wxConvUTF8);
