@@ -568,6 +568,8 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
     pTargetData->PositionReportTicks = now.GetTicks();
+    pTargetData->b_OwnShip =
+        AISTransceiverInformation == tN2kAISTransceiverInformation::N2kaisown_information_not_broadcast;
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
@@ -725,6 +727,8 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     Name[sizeof(Name) - 1] = 0;
     strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
+    pTargetData->b_OwnShip =
+      AISinfo == tN2kAISTranceiverInfo::N2kaisti_Own_information_not_broadcast;
 
     //FIXME (dave) Populate more fiddly static data
 
