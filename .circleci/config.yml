@@ -37,16 +37,14 @@ jobs:
        - checkout
        - restore_cache:
           keys:
-            - macos-cache-v1-{{checksum "CMakeLists.txt"}}
+            - macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
        - run: ci/generic-build-macos.sh
        - save_cache:
-          key: macos-cache-v1-{{checksum "CMakeLists.txt"}}
+          key: macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
           paths:
             - /usr/local/bin
             - /usr/local/include
             - /usr/local/lib
-            - /usr/local/opt
-            - /Users/distiller/project/opt_local_cache
        - run: ci/generic-upload.sh
    build-flatpak:
      working_directory: ~/OpenCPN
