@@ -109,8 +109,8 @@ tar zxf libarchive-3.3.3.tar.gz
 cd libarchive-3.3.3
 ./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat
 # installs to /usr/local
-sudo rm /usr/local/include/archive.h
-sudo rm /usr/local/include/archive_entry.h
+sudo rm -f /usr/local/include/archive.h
+sudo rm -f /usr/local/include/archive_entry.h
 sudo make install
 cd ..
 
