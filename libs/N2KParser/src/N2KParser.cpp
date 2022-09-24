@@ -283,18 +283,5 @@ bool ParseN2kPGN130310(std::vector<unsigned char> &v, unsigned char &SID, double
                      OutsideAmbientAirTemperature, AtmosphericPressure);
 }
 
-bool ParseN2kPGN130577(std::vector<unsigned char> &v,tN2kDataMode &DataMode,
-                       tN2kHeadingReference &CogReference,unsigned char &SID,double &COG,
-                       double &SOG,double &Heading,double &SpeedThroughWater,
-                       double &Set,double &Drift)
-{
-     tN2kMsg msg = MakeN2kMsg(v);
-
-     return ParseN2kPGN130577(msg, DataMode,
-                       CogReference, SID, COG,
-                       SOG, Heading, SpeedThroughWater,
-                       Set, Drift);
-}
-
 
 
