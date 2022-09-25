@@ -174,13 +174,17 @@ public:
 
 class GPSWatchdogMsg : public AppMsg {
 public:
-  GPSWatchdogMsg(int value)
+  enum class WDSource { position, velocity, heading, var, sats };
+
+  GPSWatchdogMsg(WDSource _source, int value)
       : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
-        gps_watchdog(value){};
+        gps_watchdog(value),
+        wd_source(_source){};
 
   virtual ~GPSWatchdogMsg() = default;
 
   const int gps_watchdog;
+  const WDSource wd_source;
 };
 
 /** AIS data point for a vessel. */

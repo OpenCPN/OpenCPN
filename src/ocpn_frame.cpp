@@ -288,7 +288,6 @@ extern TCMgr *ptcmgr;
 extern bool g_bShowTrue;
 extern bool g_bShowMag;
 extern char nmea_tick_chars[];
-extern int tick_idx;
 extern RoutePoint *pAnchorWatchPoint1;
 extern RoutePoint *pAnchorWatchPoint2;
 extern double AnchorPointMinDist;
@@ -1264,6 +1263,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   m_resizeTimer.SetOwner(this, RESIZE_TIMER);
   m_recaptureTimer.SetOwner(this, RECAPTURE_TIMER);
+  m_tick_idx = 0;
+
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
@@ -5404,11 +5405,18 @@ void MyFrame::InitAppMsgBusListener() {
 
 void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 
-  if(msg->gps_watchdog <= 0){
-    bool last_bGPSValid = bGPSValid;
-    bGPSValid = false;
-    m_fixtime = 0;    // Invalidate fix time
-    if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
+  if (msg->gps_watchdog <= 0){
+    if (msg->wd_source == GPSWatchdogMsg::WDSource::position){
+      bool last_bGPSValid = bGPSValid;
+      bGPSValid = false;
+      m_fixtime = 0;    // Invalidate fix time
+      if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
+    }
+    else if (msg->wd_source == GPSWatchdogMsg::WDSource::velocity){
+      m_b_new_data = true;    // Force update on next tick
+    }
+
+    UpdateStatusBar();
   }
 }
 
@@ -5459,24 +5467,6 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   //    "cruising"
   if (gSog > 3.0) g_bCruising = true;
 
-  //    Here is the one place we try to create gHdt from gHdm and gVar,
-  //    but only if NMEA HDT sentence is not being received
-
-#if 0
-  if (!g_bHDT_Rx) {
-    if (!std::isnan(gHdm)) {
-      // Set gVar if needed from manual entry. gVar will be overwritten if
-      // WMM plugin is available
-      if (std::isnan(gVar) && (g_UserVar != 0.0)) gVar = g_UserVar;
-      gHdt = gHdm + gVar;
-      if (gHdt < 0)
-        gHdt += 360.0;
-      else if (gHdt >= 360)
-        gHdt -= 360.0;
-      gHDT_Watchdog = gps_watchdog_timeout_ticks;
-    }
-  }
-#endif
 
   //      Maintain the validity flags
   m_b_new_data = true;
@@ -5484,57 +5474,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   bGPSValid = true;
   if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
 
-  //      Show a little heartbeat tick in StatusWindow0 on NMEA events
-  //      But no faster than 10 hz.
-  unsigned long uiCurrentTickCount;
-  m_MMEAeventTime.SetToCurrent();
-  uiCurrentTickCount =
-      m_MMEAeventTime.GetMillisecond() / 100;  // tenths of a second
-  uiCurrentTickCount += m_MMEAeventTime.GetTicks() * 10;
-  if (uiCurrentTickCount > m_ulLastNMEATicktime + 1) {
-    m_ulLastNMEATicktime = uiCurrentTickCount;
-
-    if (tick_idx++ > 6) tick_idx = 0;
-  }
-
-  //    Show gLat/gLon in StatusWindow0
-
-  if (NULL != GetStatusBar()) {
-    if (1/*pos_valid*/) {
-      char tick_buf[2];
-      tick_buf[0] = nmea_tick_chars[tick_idx];
-      tick_buf[1] = 0;
-
-      wxString s1(tick_buf, wxConvUTF8);
-      s1 += _(" Ship ");
-      s1 += toSDMM(1, gLat);
-      s1 += _T("   ");
-      s1 += toSDMM(2, gLon);
-
-      if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
-    }
-
-    wxString sogcog;
-    if (!std::isnan(gSog))
-      sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
-                    toUsrSpeed(gSog));
-    else
-      sogcog.Printf(_T("SOG --- "));
-
-    wxString cogs;
-    // We show COG only if SOG is > 0
-    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)) {
-      if (g_bShowTrue)
-        cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
-      if (g_bShowMag)
-        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)GetMag(gCog),
-                                 0x00B0);
-    } else
-      cogs.Printf(("COG ---%c"), 0x00B0);
-
-    sogcog.Append(cogs);
-    SetStatusText(sogcog, STAT_FIELD_SOGCOG);
-  }
+  UpdateStatusBar();
 
 #if 0
 #ifdef ocpnUPDATE_SYSTEM_TIME
@@ -5630,6 +5570,62 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
 #endif
 
 }
+
+void MyFrame::UpdateStatusBar() {
+  //      Show a little heartbeat tick in StatusWindow0 on NMEA events
+  //      But no faster than 10 hz.
+  unsigned long uiCurrentTickCount;
+  m_MMEAeventTime.SetToCurrent();
+  uiCurrentTickCount =
+      m_MMEAeventTime.GetMillisecond() / 100;  // tenths of a second
+  uiCurrentTickCount += m_MMEAeventTime.GetTicks() * 10;
+  if (uiCurrentTickCount > m_ulLastNMEATicktime + 1) {
+    m_ulLastNMEATicktime = uiCurrentTickCount;
+
+    if (m_tick_idx++ > 6) m_tick_idx = 0;
+  }
+
+  //    Show gLat/gLon in StatusWindow0
+
+  if (NULL != GetStatusBar()) {
+    if (1/*pos_valid*/) {
+      char tick_buf[2];
+      tick_buf[0] = nmea_tick_chars[m_tick_idx];
+      tick_buf[1] = 0;
+
+      wxString s1(tick_buf, wxConvUTF8);
+      s1 += _(" Ship ");
+      s1 += toSDMM(1, gLat);
+      s1 += _T("   ");
+      s1 += toSDMM(2, gLon);
+
+      if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
+    }
+
+    wxString sogcog;
+    if (!std::isnan(gSog))
+      sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
+                    toUsrSpeed(gSog));
+    else
+      sogcog.Printf(_T("SOG --- "));
+
+    wxString cogs;
+    // We show COG only if SOG is > 0
+    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)) {
+      if (g_bShowTrue)
+        cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
+      if (g_bShowMag)
+        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)GetMag(gCog),
+                                 0x00B0);
+    } else
+      cogs.Printf(("COG ---%c"), 0x00B0);
+
+    sogcog.Append(cogs);
+    SetStatusText(sogcog, STAT_FIELD_SOGCOG);
+  }
+
+}
+
 
 //    Manage the application memory footprint on a periodic schedule
 void MyFrame::OnMemFootTimer(wxTimerEvent &event) {

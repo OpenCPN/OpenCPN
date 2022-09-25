@@ -738,7 +738,6 @@ bool g_bAIS_DSC_Alert_Audio;
 bool g_bAnchor_Alert_Audio;
 
 char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
-int tick_idx;
 
 int g_sticky_chart;
 int g_sticky_projection;

@@ -376,6 +376,7 @@ private:
   void CheckToolbarPosition();
   void ODoSetSize(void);
   void DoCOGSet(void);
+  void UpdateStatusBar(void);
 
   void UpdateAllToolbars(ColorScheme cs);
 
@@ -395,8 +396,9 @@ private:
 
   int m_StatusBarFieldCount;
 
-   wxDateTime m_MMEAeventTime;
-   unsigned long m_ulLastNMEATicktime;
+  wxDateTime m_MMEAeventTime;
+  unsigned long m_ulLastNMEATicktime;
+  int m_tick_idx;
 
   wxString m_last_reported_chart_name;
   wxString m_last_reported_chart_pubdate;

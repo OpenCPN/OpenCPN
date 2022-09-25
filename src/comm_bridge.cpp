@@ -136,7 +136,8 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   if (m_watchdogs.position_watchdog <= 0) {
     if (m_watchdogs.position_watchdog % 5 == 0) {
       // Send AppMsg telling of watchdog expiry
-      auto msg = std::make_shared<GPSWatchdogMsg>(m_watchdogs.position_watchdog);
+      auto msg = std::make_shared<GPSWatchdogMsg>(GPSWatchdogMsg::WDSource::position,
+                                                  m_watchdogs.position_watchdog);
       auto& msgbus = AppMsgBus::GetInstance();
       msgbus.Notify(std::move(msg));
 
@@ -165,6 +166,22 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   }
 
   //FIXME (dave) Do we need to bump the current priority for these watchdogs?
+
+  //  Update and check watchdog timer for SOG/COG data source
+  m_watchdogs.velocity_watchdog--;
+  if (m_watchdogs.velocity_watchdog <= 0) {
+    gSog = NAN;
+    gCog = NAN;
+    if (g_nNMEADebug && (m_watchdogs.velocity_watchdog == 0))
+      wxLogMessage(_T("   ***Velocity Watchdog timeout..."));
+    if (m_watchdogs.velocity_watchdog % 5 == 0) {
+      // Send AppMsg telling of watchdog expiry
+      auto msg = std::make_shared<GPSWatchdogMsg>(GPSWatchdogMsg::WDSource::velocity,
+                                                  m_watchdogs.velocity_watchdog);
+      auto& msgbus = AppMsgBus::GetInstance();
+      msgbus.Notify(std::move(msg));
+    }
+  }
 
   //  Update and check watchdog timer for True Heading data source
   m_watchdogs.heading_watchdog--;
