@@ -284,4 +284,14 @@ bool ParseN2kPGN130310(std::vector<unsigned char> &v, unsigned char &SID, double
 }
 
 
+// AIS Base Station position/time report
+bool ParseN2kPGN129793(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+                        double &Longitude, double &Latitude, unsigned int &SecondsSinceMidnight,
+                        unsigned int &DaysSinceEpoch)
+{
+  tN2kMsg msg = MakeN2kMsg(v);
 
+  return ParseN2kPGN129793(msg, MessageID, Repeat, UserID,
+                        Longitude, Latitude,
+                        SecondsSinceMidnight, DaysSinceEpoch);
+}

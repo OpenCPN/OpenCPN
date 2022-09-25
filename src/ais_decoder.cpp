@@ -126,6 +126,7 @@ wxDEFINE_EVENT(EVT_N2K_129041, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129794, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129809, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129810, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_129793, ObservedEvt);
 
 BEGIN_EVENT_TABLE(AisDecoder, wxEvtHandler)
 EVT_TIMER(TIMER_AIS1, AisDecoder::OnTimerAIS)
@@ -403,6 +404,16 @@ void AisDecoder::InitCommListeners(void) {
   Bind(EVT_N2K_129810, [&](ObservedEvt ev) {
     //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
     HandleN2K_129810(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+  });
+
+  // AIS Base Station report PGN 129793
+  //-----------------------------
+  Nmea2000Msg n2k_msg_129793(static_cast<uint64_t>(129793));
+  listener_N2K_129793 =
+      msgbus.GetListener(EVT_N2K_129793, this, n2k_msg_129793);
+  Bind(EVT_N2K_129793, [&](ObservedEvt ev) {
+    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129793(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
   });
 
 }
@@ -837,6 +848,63 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     return false;
 }
 
+// AIS Base Station Report
+bool AisDecoder::HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  uint8_t MessageID;
+  tN2kAISRepeat Repeat;
+  uint32_t UserID;
+  double Longitude;
+  double Latitude;
+  unsigned int SecondsSinceMidnight;
+  unsigned int DaysSinceEpoch;
+
+  if (ParseN2kPGN129793(v, MessageID, Repeat, UserID,
+                        Longitude, Latitude,
+                        SecondsSinceMidnight, DaysSinceEpoch))
+  {
+    wxDateTime now = wxDateTime::Now();
+    now.MakeUTC();
+
+    // Is this target already in the global target list?
+    //  Search the current AISTargetList for an MMSI match
+    int mmsi = UserID;
+    long mmsi_long = mmsi;
+    AisTargetData *pTargetData = 0;
+    bool bnewtarget = false;
+
+    auto it = AISTargetList.find(mmsi);
+    if (it == AISTargetList.end())  // not found
+    {
+      pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
+      bnewtarget = true;
+      m_n_targets++;
+    } else {
+      pTargetData = it->second;    // find current entry
+    }
+
+    //Populate the target_data
+    pTargetData->MMSI = mmsi;
+    pTargetData->Class = AIS_BASE;
+
+    pTargetData->Lon = Longitude;
+    pTargetData->Lat = Latitude;
+    pTargetData->b_positionDoubtful = false;
+    pTargetData->b_positionOnceValid = true;  // Got the position at least once
+    pTargetData->PositionReportTicks = now.GetTicks();
+
+
+      //FIXME (dave) Populate more fiddly static data
+
+    CommitAISTarget(pTargetData, "", true, bnewtarget);
+
+    touch_state.notify();
+    return true;
+  }
+  else
+    return false;
+}
 
 // void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
 //   std::string msgTerminated = sK_msg->raw_message;;

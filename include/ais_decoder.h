@@ -164,6 +164,7 @@ private:
   bool HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg );
   bool HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg );
   bool HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg );
+  bool HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg );
 
   wxString m_signalk_selfid;
   std::unordered_map<int, AisTargetData *> AISTargetList;
@@ -185,6 +186,7 @@ private:
   ObservedVarListener listener_N2K_129794;
   ObservedVarListener listener_N2K_129809;
   ObservedVarListener listener_N2K_129810;
+  ObservedVarListener listener_N2K_129793;
 
   bool m_busy;
   wxTimer TimerAIS;

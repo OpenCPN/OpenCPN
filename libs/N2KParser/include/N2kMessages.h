@@ -2024,4 +2024,8 @@ inline bool ParseN2kDirectionData(const tN2kMsg &N2kMsg,tN2kDataMode &DataMode, 
 }
 
 
+bool ParseN2kPGN129793(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+                        double &Longitude, double &Latitude, unsigned int &SecondsSinceMidnight,
+                        unsigned int &DaysSinceEpoch);
+
 #endif

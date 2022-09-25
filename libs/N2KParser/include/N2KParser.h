@@ -863,6 +863,10 @@ bool ParseN2kPGN128778(
 
 bool ParseN2kPGN130576(std::vector<unsigned char> &v, int8_t &PortTrimTab, int8_t &StbdTrimTab);
 
-#endif  //guard
 
+bool ParseN2kPGN129793(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+                        double &Longitude, double &Latitude,
+                        unsigned int &SecondsSinceMidnight, unsigned int &DaysSinceEpoch);
+
+#endif  //guard
 

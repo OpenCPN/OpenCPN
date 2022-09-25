@@ -1566,6 +1566,30 @@ bool AppendN2kPGN129285(tN2kMsg &N2kMsg, uint16_t ID, char* Name, double Latitud
         return false;
 }
 
+bool ParseN2kPGN129793(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
+                        double &Longitude, double &Latitude, unsigned int &SecondsSinceMidnight,
+                        unsigned int &DaysSinceEpoch)
+{
+    if (N2kMsg.PGN!=129793L) return false;
+
+    int Index=0;
+    unsigned char vb;
+
+    vb=N2kMsg.GetByte(Index); MessageID=(vb & 0x3f); Repeat=(tN2kAISRepeat)(vb>>6 & 0x03);
+    UserID=N2kMsg.Get4ByteUInt(Index);
+    Longitude=N2kMsg.Get4ByteDouble(1e-07, Index);
+    Latitude=N2kMsg.Get4ByteDouble(1e-07, Index);
+
+    vb=N2kMsg.GetByte(Index);   //PositionAccuracy/RAIN/Reserved
+    SecondsSinceMidnight=N2kMsg.Get4ByteUInt(Index);
+    vb = N2kMsg.GetByte(Index);
+    vb = N2kMsg.GetByte(Index);
+    vb = N2kMsg.GetByte(Index);
+    DaysSinceEpoch = N2kMsg.Get2ByteUInt(Index);
+
+    return true;
+}
+
 //*****************************************************************************
 // AIS static data A
 void SetN2kPGN129794(tN2kMsg &N2kMsg, uint8_t MessageID, tN2kAISRepeat Repeat, uint32_t UserID,
