@@ -35,7 +35,6 @@
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
 
-#include "chart1.h"  // for enum types
 #include "ocpndc.h"
 #include "undo.h"
 
@@ -48,7 +47,6 @@
 #include "timers.h"
 #include "emboss_data.h"
 
-//#include "s57chart.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -61,13 +59,13 @@ class Route;
 class TCWin;
 class RoutePoint;
 class SelectItem;
-class wxBoundingBox;
+class BoundingBox;
 class ocpnBitmap;
 class WVSChart;
 class MyFrame;
 class ChartBaseBSB;
 class ChartBase;
-class AIS_Target_Data;
+class AisTargetData;
 class S57ObjectTree;
 class S57ObjectDesc;
 class RolloverWin;
@@ -75,6 +73,7 @@ class Quilt;
 class PixelCache;
 class ChInfoWin;
 class glChartCanvas;
+class Track;
 
 //----------------------------------------------------------------------------
 // CanvasMenuHandler

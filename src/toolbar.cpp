@@ -36,13 +36,14 @@
 #include "navutil.h"
 #include "styles.h"
 #include "toolbar.h"
-#include "chart1.h"
 #include "pluginmanager.h"
 #include "FontMgr.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "svg_utils.h"
+#include "idents.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

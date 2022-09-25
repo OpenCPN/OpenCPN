@@ -24,31 +24,37 @@
  **************************************************************************/
 
 #ifdef __MSVC__
-#include "winsock2.h"
-#include "wx/msw/winundef.h"
+#include <winsock2.h>
+#include <wx/msw/winundef.h>
 #endif
 
 #include "config.h"
 
 #include <iostream>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <regex>
+#pragma GCC diagnostic pop
+
 #include <string>
 #include <unordered_set>
 #include <vector>
+
+#include <wx/arrstr.h>
+#include <wx/log.h>
+#include <wx/utils.h>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
 
-#include <wx/arrstr.h>
-#include <wx/log.h>
-#include <wx/utils.h>
 
 #ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
@@ -102,7 +108,7 @@
 #endif
 
 #include "gui_lib.h"
-#include "GarminProtocolHandler.h"
+#include "garmin_protocol_mgr.h"
 
 #ifdef __WXMSW__
 DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
@@ -548,7 +554,7 @@ wxArrayString* EnumerateSerialPorts(void) {
 
 wxArrayString* EnumerateSerialPorts(void) { return EnumerateUdevSerialPorts(); }
 
-#elif defined(__OCPN__ANDROID__)
+#elif defined(__ANDROID__)
 
 wxArrayString* EnumerateSerialPorts(void) {
   return androidGetSerialPortsArray();

@@ -46,7 +46,6 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
-#include "chart1.h"
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
@@ -57,20 +56,20 @@
 #include "chartbase.h"
 #include "ocpndc.h"
 #include "geodesic.h"
-#include "datastream.h"
 #include "multiplexer.h"
 #include "ais.h"
-#include "Route.h"
-#include "Select.h"
+#include "route.h"
+#include "select.h"
 #include "FontMgr.h"
 #include "Layer.h"
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "NMEALogWindow.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "OCPNPlatform.h"
-#include "Track.h"
+#include "track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
+#include "ocpn_frame.h"
 
 #include "s52plib.h"
 #include "cm93.h"
@@ -326,7 +325,7 @@ extern bool g_bresponsive;
 extern bool g_bGLexpert;
 
 extern int g_SENC_LOD_pixels;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -1837,7 +1836,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     }
   }
 
-  conf->SetPath(_T ( "/MMSIProperties" ));
+  conf->SetPath(_T ( "/MmsiProperties" ));
   int iPMax = conf->GetNumberOfEntries();
   if (iPMax) {
     wxString str, val;
@@ -1849,7 +1848,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
       bool bfound = false;
       for (unsigned int j = 0; j < g_MMSI_Props_Array.GetCount(); j++) {
-        MMSIProperties *pProps = g_MMSI_Props_Array.Item(j);
+        MmsiProperties *pProps = g_MMSI_Props_Array.Item(j);
         if (pProps->Serialize().IsSameAs(val)) {
           bfound = true;
           break;

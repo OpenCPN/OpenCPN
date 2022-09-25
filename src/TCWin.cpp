@@ -14,8 +14,10 @@
 #include "FontMgr.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "RolloverWin.h"
 #include "navutil.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;

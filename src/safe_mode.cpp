@@ -6,7 +6,7 @@
 #include <wx/filename.h>
 #include <wx/sizer.h>
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 #include "ocpn_utils.h"
 #include "gui_lib.h"
 

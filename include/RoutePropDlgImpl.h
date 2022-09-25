@@ -26,7 +26,7 @@
 #define _ROUTEPROPDLGIMPL_H_
 
 #include "RoutePropDlg.h"
-#include "Route.h"
+#include "route.h"
 #include <wx/dataview.h>
 #include <wx/dvrenderers.h>
 #include "ocpn_types.h"

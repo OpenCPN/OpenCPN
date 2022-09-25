@@ -40,7 +40,7 @@
 #include "navutil.h"
 #include "TrackPropDlg.h"
 #include "printtable.h"
-#include "chart1.h"
+#include "ocpn_frame.h"
 
 class MyTrackPrintout : public MyPrintout {
 public:

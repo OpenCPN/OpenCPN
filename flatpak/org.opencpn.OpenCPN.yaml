@@ -102,10 +102,14 @@ modules:
           - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
           - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH
       build-options:
+          build-args:
+            - --share=network
           cxxflags: -DFLATPAK
           cflags: -DFLATPAK
           env:
             BUILD_NUMBER: "0"
+      run-tests: true
+      test-rule: "run-tests"
       post-install:
           - install -d /app/extensions
           - sed -i '/^Exec=/s/=.*/=opencpn.sh/' /app/share/applications/opencpn.desktop

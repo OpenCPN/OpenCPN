@@ -42,8 +42,11 @@
 #include <wx/dir.h>
 #include <wx/listbook.h>
 #include <wx/timectrl.h>
+#include <wx/bmpcbox.h>
+#include <wx/tglbtn.h>
 
 #include "dychart.h"
+#include "idents.h"
 
 #include <stdlib.h>
 //#include <math.h>
@@ -55,8 +58,8 @@
 #include <wx/progdlg.h>
 
 #include "config.h"
-#include "chart1.h"
 #include "navutil.h"
+#include "navutil_base.h"
 #include "chcanv.h"
 #include "georef.h"
 #include "cutil.h"
@@ -66,21 +69,22 @@
 #include "chartbase.h"
 #include "ocpndc.h"
 #include "geodesic.h"
-#include "datastream.h"
 #include "multiplexer.h"
 #include "ais.h"
-#include "Route.h"
-#include "Select.h"
+#include "route.h"
+#include "select.h"
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "Layer.h"
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "NMEALogWindow.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "OCPNPlatform.h"
-#include "Track.h"
+#include "track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
+#include "ocpn_frame.h"
+#include "conn_params.h"
 
 #include "s52plib.h"
 #include "cm93.h"
@@ -392,7 +396,7 @@ extern bool g_bresponsive;
 extern bool g_bGLexpert;
 
 extern int g_SENC_LOD_pixels;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -512,7 +516,6 @@ MyConfig::MyConfig(const wxString &LocalFileName)
   m_pNavObjectInputSet = NULL;
   m_pNavObjectChangesSet = NULL;
 
-  m_bSkipChangeSetUpdate = false;
 }
 
 void MyConfig::CreateRotatingNavObjBackup() {
@@ -1505,7 +1508,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "DefaultWPIcon" ), &g_default_wp_icon);
   Read(_T ( "DefaultRPIcon" ), &g_default_routepoint_icon);
 
-  SetPath(_T ( "/MMSIProperties" ));
+  SetPath(_T ( "/MmsiProperties" ));
   int iPMax = GetNumberOfEntries();
   if (iPMax) {
     g_MMSI_Props_Array.Empty();
@@ -1515,7 +1518,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     while (bCont) {
       pConfig->Read(str, &val);  // Get an entry
 
-      MMSIProperties *pProps = new MMSIProperties(val);
+      MmsiProperties *pProps = new MmsiProperties(val);
       g_MMSI_Props_Array.Add(pProps);
 
       bCont = pConfig->GetNextEntry(str, dummy);
@@ -1665,7 +1668,7 @@ void MyConfig::LoadNavObjects() {
     // We crashed last time :(
     // That's why this file still exists...
     // Let's reconstruct the unsaved changes
-    NavObjectChanges *pNavObjectChangesSet = new NavObjectChanges();
+    auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
     pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
 
     //  Remove the file before applying the changes,
@@ -1679,11 +1682,9 @@ void MyConfig::LoadNavObjects() {
       pNavObjectChangesSet->ApplyChanges();
       UpdateNavObj();
     }
-
-    delete pNavObjectChangesSet;
   }
-
-  m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
+  m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
 }
 
 bool MyConfig::LoadLayers(wxString &path) {
@@ -1832,56 +1833,45 @@ bool MyConfig::LoadChartDirArray(ArrayOfCDI &ChartDirArray) {
   return true;
 }
 
-void MyConfig::AddNewRoute(Route *pr) {
-  //    if( pr->m_bIsInLayer )
-  //        return true;
-  if (!m_bSkipChangeSetUpdate) m_pNavObjectChangesSet->AddRoute(pr, "add");
+void MyConfig::AddNewRoute(Route *r) { 
+  m_pNavObjectChangesSet->AddNewRoute(r);
 }
 
-void MyConfig::UpdateRoute(Route *pr) {
-  //    if( pr->m_bIsInLayer ) return true;
-  if (!m_bSkipChangeSetUpdate) m_pNavObjectChangesSet->AddRoute(pr, "update");
+void MyConfig::UpdateRoute(Route *r) {
+  m_pNavObjectChangesSet->UpdateRoute(r);
 }
 
 void MyConfig::DeleteConfigRoute(Route *pr) {
-  //    if( pr->m_bIsInLayer )
-  //        return true;
-  if (!m_bSkipChangeSetUpdate) m_pNavObjectChangesSet->AddRoute(pr, "delete");
+  m_pNavObjectChangesSet->DeleteConfigRoute(pr);
 }
 
 void MyConfig::AddNewTrack(Track *pt) {
-  if (!pt->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrack(pt, "add");
+    m_pNavObjectChangesSet->AddNewTrack(pt);
 }
 
 void MyConfig::UpdateTrack(Track *pt) {
-  if (pt->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrack(pt, "update");
+    m_pNavObjectChangesSet->UpdateTrack(pt);
 }
 
 void MyConfig::DeleteConfigTrack(Track *pt) {
-  if (!pt->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrack(pt, "delete");
+    m_pNavObjectChangesSet->DeleteConfigTrack(pt);
 }
 
 void MyConfig::AddNewWayPoint(RoutePoint *pWP, int crm) {
-  if (!pWP->m_bIsInLayer && pWP->m_bIsolatedMark && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddWP(pWP, "add");
+    m_pNavObjectChangesSet->AddNewWayPoint(pWP);
 }
 
 void MyConfig::UpdateWayPoint(RoutePoint *pWP) {
-  if (!pWP->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddWP(pWP, "update");
+    m_pNavObjectChangesSet->UpdateWayPoint(pWP);
 }
 
 void MyConfig::DeleteWayPoint(RoutePoint *pWP) {
-  if (!pWP->m_bIsInLayer && !m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddWP(pWP, "delete");
+    m_pNavObjectChangesSet->DeleteWayPoint(pWP);
 }
 
-void MyConfig::AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID) {
-  if (!m_bSkipChangeSetUpdate)
-    m_pNavObjectChangesSet->AddTrackPoint(pWP, "add", parent_GUID);
+void MyConfig::AddNewTrackPoint(TrackPoint *pWP,
+                                const wxString &parent_GUID) {
+    m_pNavObjectChangesSet->AddNewTrackPoint(pWP, parent_GUID);
 }
 
 bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
@@ -2782,8 +2772,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "DefaultWPIcon" ), g_default_wp_icon);
   Write(_T ( "DefaultRPIcon" ), g_default_routepoint_icon);
 
-  DeleteGroup(_T ( "/MMSIProperties" ));
-  SetPath(_T ( "/MMSIProperties" ));
+  DeleteGroup(_T ( "/MmsiProperties" ));
+  SetPath(_T ( "/MmsiProperties" ));
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     wxString p;
     p.Printf(_T("Props%d"), i);
@@ -2810,8 +2800,8 @@ void MyConfig::UpdateNavObj(bool bRecreate) {
   }
 
   if (bRecreate) {
-    delete m_pNavObjectChangesSet;
-    m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    m_pNavObjectChangesSet->reset();
+    m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
   }
 }
 
@@ -2847,7 +2837,7 @@ static wxFileName exportFileName(wxWindow *parent,
 
 bool MyConfig::IsChangesFileDirty() {
   if (m_pNavObjectChangesSet) {
-    return m_pNavObjectChangesSet->m_bdirty;
+    return m_pNavObjectChangesSet->IsDirty();
   } else {
     return true;
   }
@@ -3204,933 +3194,12 @@ void SwitchInlandEcdisMode(bool Switch) {
 //          Static GPX Support Routines
 //
 //-------------------------------------------------------------------------
-RoutePoint *WaypointExists(const wxString &name, double lat, double lon) {
-  RoutePoint *pret = NULL;
-  //    if( g_bIsNewLayer ) return NULL;
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
-    //        if( pr->m_bIsInLayer ) return NULL;
-
-    if (name == pr->GetName()) {
-      if (fabs(lat - pr->m_lat) < 1.e-6 && fabs(lon - pr->m_lon) < 1.e-6) {
-        pret = pr;
-        break;
-      }
-    }
-    node = node->GetNext();
-  }
-
-  return pret;
-}
-
-RoutePoint *WaypointExists(const wxString &guid) {
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
-    //        if( pr->m_bIsInLayer ) return NULL;
-
-    if (guid == pr->m_GUID) {
-      return pr;
-    }
-    node = node->GetNext();
-  }
-
-  return NULL;
-}
-
-bool WptIsInRouteList(RoutePoint *pr) {
-  bool IsInList = false;
-
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
-    RoutePointList *pRoutePointList = pRoute->pRoutePointList;
-
-    wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
-    RoutePoint *prp;
-
-    while (node2) {
-      prp = node2->GetData();
-
-      if (pr->IsSame(prp)) {
-        IsInList = true;
-        break;
-      }
-
-      node2 = node2->GetNext();
-    }
-    node1 = node1->GetNext();
-  }
-  return IsInList;
-}
-
-Route *RouteExists(const wxString &guid) {
-  wxRouteListNode *route_node = pRouteList->GetFirst();
-
-  while (route_node) {
-    Route *proute = route_node->GetData();
-
-    if (guid == proute->m_GUID) return proute;
-
-    route_node = route_node->GetNext();
-  }
-  return NULL;
-}
-
-Route *RouteExists(Route *pTentRoute) {
-  wxRouteListNode *route_node = pRouteList->GetFirst();
-  while (route_node) {
-    Route *proute = route_node->GetData();
-
-    if (proute->IsEqualTo(pTentRoute)) return proute;
-
-    route_node = route_node->GetNext();  // next route
-  }
-  return NULL;
-}
-
-Track *TrackExists(const wxString &guid) {
-  for (Track* ptrack : g_TrackList) {
-    if (guid == ptrack->m_GUID) return ptrack;
-  }
-  return NULL;
-}
-
 // This function formats the input date/time into a valid GPX ISO 8601
 // time string specified in the UTC time zone.
 
 wxString FormatGPXDateTime(wxDateTime dt) {
   //      return dt.Format(wxT("%Y-%m-%dT%TZ"), wxDateTime::GMT0);
   return dt.Format(wxT("%Y-%m-%dT%H:%M:%SZ"));
-}
-
-// This function parses a string containing a GPX time representation
-// and returns a wxDateTime containing the UTC corresponding to the
-// input. The function return value is a pointer past the last valid
-// character parsed (if successful) or NULL (if the string is invalid).
-//
-// Valid GPX time strings are in ISO 8601 format as follows:
-//
-//   [-]<YYYY>-<MM>-<DD>T<hh>:<mm>:<ss>Z|(+|-<hh>:<mm>)
-//
-// For example, 2010-10-30T14:34:56Z and 2010-10-30T14:34:56-04:00
-// are the same time. The first is UTC and the second is EDT.
-
-const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
-  long sign, hrs_west, mins_west;
-  const wxChar *end;
-
-  // Skip any leading whitespace
-  while (isspace(*datetime)) datetime++;
-
-  // Skip (and ignore) leading hyphen
-  if (*datetime == wxT('-')) datetime++;
-
-  // Parse and validate ISO 8601 date/time string
-  if ((end = dt.ParseFormat(datetime, wxT("%Y-%m-%dT%T"))) != NULL) {
-    // Invalid date/time
-    if (*end == 0) return NULL;
-
-    // ParseFormat outputs in UTC if the controlling
-    // wxDateTime class instance has not been initialized.
-
-    // Date/time followed by UTC time zone flag, so we are done
-    else if (*end == wxT('Z')) {
-      end++;
-      return end;
-    }
-
-    // Date/time followed by given number of hrs/mins west of UTC
-    else if (*end == wxT('+') || *end == wxT('-')) {
-      // Save direction from UTC
-      if (*end == wxT('+'))
-        sign = 1;
-      else
-        sign = -1;
-      end++;
-
-      // Parse hrs west of UTC
-      if (isdigit(*end) && isdigit(*(end + 1)) && *(end + 2) == wxT(':')) {
-        // Extract and validate hrs west of UTC
-        wxString(end).ToLong(&hrs_west);
-        if (hrs_west > 12) return NULL;
-        end += 3;
-
-        // Parse mins west of UTC
-        if (isdigit(*end) && isdigit(*(end + 1))) {
-          // Extract and validate mins west of UTC
-          wxChar mins[3];
-          mins[0] = *end;
-          mins[1] = *(end + 1);
-          mins[2] = 0;
-          wxString(mins).ToLong(&mins_west);
-          if (mins_west > 59) return NULL;
-
-          // Apply correction
-          dt -= sign * wxTimeSpan(hrs_west, mins_west, 0, 0);
-          return end + 2;
-        } else
-          // Missing mins digits
-          return NULL;
-      } else
-        // Missing hrs digits or colon
-        return NULL;
-    } else
-      // Unknown field after date/time (not UTC, not hrs/mins
-      //  west of UTC)
-      return NULL;
-  } else
-    // Invalid ISO 8601 date/time
-    return NULL;
-}
-
-//---------------------------------------------------------------------------------
-//          Private Font Manager and Helpers
-//---------------------------------------------------------------------------------
-#include <wx/fontdlg.h>
-#include <wx/fontenum.h>
-#include "wx/encinfo.h"
-
-#ifdef __WXX11__
-#include "/usr/X11R6/include/X11/Xlib.h"
-
-//-----------------------------------------------------------------------------
-// helper class - MyFontPreviewer
-//-----------------------------------------------------------------------------
-
-class MyFontPreviewer : public wxWindow {
-public:
-  MyFontPreviewer(wxWindow *parent, const wxSize &sz = wxDefaultSize)
-      : wxWindow(parent, wxID_ANY, wxDefaultPosition, sz) {}
-
-private:
-  void OnPaint(wxPaintEvent &event);
-  DECLARE_EVENT_TABLE()
-};
-
-BEGIN_EVENT_TABLE(MyFontPreviewer, wxWindow)
-EVT_PAINT(MyFontPreviewer::OnPaint)
-END_EVENT_TABLE()
-
-void MyFontPreviewer::OnPaint(wxPaintEvent &WXUNUSED(event)) {
-  wxPaintDC dc(this);
-
-  wxSize size = GetSize();
-  wxFont font = GetFont();
-
-  dc.SetPen(*wxBLACK_PEN);
-  dc.SetBrush(*wxWHITE_BRUSH);
-  dc.DrawRectangle(0, 0, size.x, size.y);
-
-  if (font.Ok()) {
-    dc.SetFont(font);
-    // Calculate vertical centre
-    long w, h;
-    dc.GetTextExtent(wxT("X"), &w, &h);
-    dc.SetTextForeground(GetForegroundColour());
-    dc.SetClippingRegion(2, 2, size.x - 4, size.y - 4);
-    dc.DrawText(GetName(), 10, size.y / 2 - h / 2);
-    dc.DestroyClippingRegion();
-  }
-}
-
-//-----------------------------------------------------------------------------
-// X11FontPicker
-//-----------------------------------------------------------------------------
-
-IMPLEMENT_DYNAMIC_CLASS(X11FontPicker, wxDialog)
-
-BEGIN_EVENT_TABLE(X11FontPicker, wxDialog)
-EVT_CHECKBOX(wxID_FONT_UNDERLINE, X11FontPicker::OnChangeFont)
-EVT_CHOICE(wxID_FONT_STYLE, X11FontPicker::OnChangeFont)
-EVT_CHOICE(wxID_FONT_WEIGHT, X11FontPicker::OnChangeFont)
-EVT_CHOICE(wxID_FONT_FAMILY, X11FontPicker::OnChangeFace)
-EVT_CHOICE(wxID_FONT_COLOUR, X11FontPicker::OnChangeFont)
-EVT_CHOICE(wxID_FONT_SIZE, X11FontPicker::OnChangeFont)
-
-EVT_CLOSE(X11FontPicker::OnCloseWindow)
-END_EVENT_TABLE()
-
-#define SCALEABLE_SIZES 11
-static wxString scaleable_pointsize[SCALEABLE_SIZES] = {
-    wxT("6"),  wxT("8"),  wxT("10"), wxT("12"), wxT("14"), wxT("16"),
-    wxT("18"), wxT("20"), wxT("24"), wxT("30"), wxT("36")};
-
-#define NUM_COLS 49
-static wxString wxColourDialogNames[NUM_COLS] = {wxT("ORANGE"),
-                                                 wxT("GOLDENROD"),
-                                                 wxT("WHEAT"),
-                                                 wxT("SPRING GREEN"),
-                                                 wxT("SKY BLUE"),
-                                                 wxT("SLATE BLUE"),
-                                                 wxT("MEDIUM VIOLET RED"),
-                                                 wxT("PURPLE"),
-
-                                                 wxT("RED"),
-                                                 wxT("YELLOW"),
-                                                 wxT("MEDIUM SPRING GREEN"),
-                                                 wxT("PALE GREEN"),
-                                                 wxT("CYAN"),
-                                                 wxT("LIGHT STEEL BLUE"),
-                                                 wxT("ORCHID"),
-                                                 wxT("LIGHT MAGENTA"),
-
-                                                 wxT("BROWN"),
-                                                 wxT("YELLOW"),
-                                                 wxT("GREEN"),
-                                                 wxT("CADET BLUE"),
-                                                 wxT("MEDIUM BLUE"),
-                                                 wxT("MAGENTA"),
-                                                 wxT("MAROON"),
-                                                 wxT("ORANGE RED"),
-
-                                                 wxT("FIREBRICK"),
-                                                 wxT("CORAL"),
-                                                 wxT("FOREST GREEN"),
-                                                 wxT("AQUARAMINE"),
-                                                 wxT("BLUE"),
-                                                 wxT("NAVY"),
-                                                 wxT("THISTLE"),
-                                                 wxT("MEDIUM VIOLET RED"),
-
-                                                 wxT("INDIAN RED"),
-                                                 wxT("GOLD"),
-                                                 wxT("MEDIUM SEA GREEN"),
-                                                 wxT("MEDIUM BLUE"),
-                                                 wxT("MIDNIGHT BLUE"),
-                                                 wxT("GREY"),
-                                                 wxT("PURPLE"),
-                                                 wxT("KHAKI"),
-
-                                                 wxT("BLACK"),
-                                                 wxT("MEDIUM FOREST GREEN"),
-                                                 wxT("KHAKI"),
-                                                 wxT("DARK GREY"),
-                                                 wxT("SEA GREEN"),
-                                                 wxT("LIGHT GREY"),
-                                                 wxT("MEDIUM SLATE BLUE"),
-                                                 wxT("WHITE") wxT("SIENNA")};
-
-/*
- * Generic X11FontPicker
- */
-
-void X11FontPicker::Init() {
-  m_useEvents = false;
-  m_previewer = NULL;
-  Create(m_parent);
-}
-
-X11FontPicker::~X11FontPicker() {}
-
-void X11FontPicker::OnCloseWindow(wxCloseEvent &WXUNUSED(event)) {
-  EndModal(wxID_CANCEL);
-}
-
-bool X11FontPicker::DoCreate(wxWindow *parent) {
-  if (!wxDialog::Create(parent, wxID_ANY, _T ( "Choose Font" ),
-                        wxDefaultPosition, wxDefaultSize,
-                        wxDEFAULT_DIALOG_STYLE, _T ( "fontdialog" ))) {
-    wxFAIL_MSG(wxT("wxFontDialog creation failed"));
-    return false;
-  }
-
-  InitializeAllAvailableFonts();
-  InitializeFont();
-  CreateWidgets();
-
-  // sets initial font in preview area
-  wxCommandEvent dummy;
-  OnChangeFont(dummy);
-
-  return true;
-}
-
-int X11FontPicker::ShowModal() {
-  int ret = wxDialog::ShowModal();
-
-  if (ret != wxID_CANCEL) {
-    dialogFont = *pPreviewFont;
-    m_fontData.m_chosenFont = dialogFont;
-  }
-
-  return ret;
-}
-
-void X11FontPicker::InitializeAllAvailableFonts() {
-  // get the Array of all fonts facenames
-  wxString pattern;
-  pattern.Printf(wxT("-*-*-*-*-*-*-*-*-*-*-*-*-iso8859-1"));
-
-  int nFonts;
-  char **list =
-      XListFonts((Display *)wxGetDisplay(), pattern.mb_str(), 32767, &nFonts);
-
-  pFaceNameArray = new wxArrayString;
-  unsigned int jname;
-  for (int i = 0; i < nFonts; i++) {
-    wxStringTokenizer st(wxString(list[i]), _T ( "-" ));
-    st.GetNextToken();
-    st.GetNextToken();
-    wxString facename = st.GetNextToken();
-    for (jname = 0; jname < pFaceNameArray->GetCount(); jname++) {
-      if (facename == pFaceNameArray->Item(jname)) break;
-    }
-    if (jname >= pFaceNameArray->GetCount()) {
-      pFaceNameArray->Add(facename);
-    }
-  }
-}
-
-// This should be application-settable
-static bool ShowToolTips() { return false; }
-
-void X11FontPicker::CreateWidgets() {
-  // layout
-
-  bool is_pda = (wxSystemSettings::GetScreenType() <= wxSYS_SCREEN_PDA);
-  int noCols, noRows;
-  if (is_pda) {
-    noCols = 2;
-    noRows = 3;
-  } else {
-    noCols = 3;
-    noRows = 2;
-  }
-
-  wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
-  this->SetSizer(itemBoxSizer2);
-  this->SetAutoLayout(TRUE);
-
-  wxBoxSizer *itemBoxSizer3 = new wxBoxSizer(wxVERTICAL);
-  itemBoxSizer2->Add(itemBoxSizer3, 1, wxEXPAND | wxALL, 5);
-
-  wxFlexGridSizer *itemGridSizer4 = new wxFlexGridSizer(noRows, noCols, 0, 0);
-  itemBoxSizer3->Add(itemGridSizer4, 0, wxEXPAND, 5);
-
-  wxBoxSizer *itemBoxSizer5 = new wxBoxSizer(wxVERTICAL);
-  itemGridSizer4->Add(itemBoxSizer5, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND,
-                      5);
-  wxStaticText *itemStaticText6 =
-      new wxStaticText(this, wxID_STATIC, _("&Font family:"), wxDefaultPosition,
-                       wxDefaultSize, 0);
-  itemBoxSizer5->Add(itemStaticText6, 0,
-                     wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-
-  wxChoice *itemChoice7 =
-      new wxChoice(this, wxID_FONT_FAMILY, wxDefaultPosition, wxDefaultSize,
-                   *pFaceNameArray, 0);
-  itemChoice7->SetHelpText(_("The font family."));
-  if (ShowToolTips()) itemChoice7->SetToolTip(_("The font family."));
-  itemBoxSizer5->Add(itemChoice7, 0, wxALIGN_LEFT | wxALL, 5);
-
-  wxBoxSizer *itemBoxSizer8 = new wxBoxSizer(wxVERTICAL);
-  itemGridSizer4->Add(itemBoxSizer8, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND,
-                      5);
-  wxStaticText *itemStaticText9 = new wxStaticText(
-      this, wxID_STATIC, _("&Style:"), wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer8->Add(itemStaticText9, 0,
-                     wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-
-  wxChoice *itemChoice10 =
-      new wxChoice(this, wxID_FONT_STYLE, wxDefaultPosition, wxDefaultSize);
-  itemChoice10->SetHelpText(_("The font style."));
-  if (ShowToolTips()) itemChoice10->SetToolTip(_("The font style."));
-  itemBoxSizer8->Add(itemChoice10, 0, wxALIGN_LEFT | wxALL, 5);
-
-  wxBoxSizer *itemBoxSizer11 = new wxBoxSizer(wxVERTICAL);
-  itemGridSizer4->Add(itemBoxSizer11, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND,
-                      5);
-  wxStaticText *itemStaticText12 = new wxStaticText(
-      this, wxID_STATIC, _("&Weight:"), wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer11->Add(itemStaticText12, 0,
-                      wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-
-  wxChoice *itemChoice13 =
-      new wxChoice(this, wxID_FONT_WEIGHT, wxDefaultPosition, wxDefaultSize);
-  itemChoice13->SetHelpText(_("The font weight."));
-  if (ShowToolTips()) itemChoice13->SetToolTip(_("The font weight."));
-  itemBoxSizer11->Add(itemChoice13, 0, wxALIGN_LEFT | wxALL, 5);
-
-  wxBoxSizer *itemBoxSizer14 = new wxBoxSizer(wxVERTICAL);
-  itemGridSizer4->Add(itemBoxSizer14, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND,
-                      5);
-  if (m_fontData.GetEnableEffects()) {
-    wxStaticText *itemStaticText15 = new wxStaticText(
-        this, wxID_STATIC, _("C&olour:"), wxDefaultPosition, wxDefaultSize, 0);
-    itemBoxSizer14->Add(itemStaticText15, 0,
-                        wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-
-    wxSize colourSize = wxDefaultSize;
-    if (is_pda) colourSize.x = 100;
-
-    wxChoice *itemChoice16 =
-        new wxChoice(this, wxID_FONT_COLOUR, wxDefaultPosition, colourSize,
-                     NUM_COLS, wxColourDialogNames, 0);
-    itemChoice16->SetHelpText(_("The font colour."));
-    if (ShowToolTips()) itemChoice16->SetToolTip(_("The font colour."));
-    itemBoxSizer14->Add(itemChoice16, 0, wxALIGN_LEFT | wxALL, 5);
-  }
-
-  wxBoxSizer *itemBoxSizer17 = new wxBoxSizer(wxVERTICAL);
-  itemGridSizer4->Add(itemBoxSizer17, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND,
-                      5);
-  wxStaticText *itemStaticText18 =
-      new wxStaticText(this, wxID_STATIC, _("&Point size:"), wxDefaultPosition,
-                       wxDefaultSize, 0);
-  itemBoxSizer17->Add(itemStaticText18, 0,
-                      wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-
-  wxChoice *pc =
-      new wxChoice(this, wxID_FONT_SIZE, wxDefaultPosition, wxDefaultSize);
-  pc->SetHelpText(_("The font point size."));
-  if (ShowToolTips()) pc->SetToolTip(_("The font point size."));
-  itemBoxSizer17->Add(pc, 0, wxALIGN_LEFT | wxALL, 5);
-
-  if (m_fontData.GetEnableEffects()) {
-    wxBoxSizer *itemBoxSizer20 = new wxBoxSizer(wxVERTICAL);
-    itemGridSizer4->Add(itemBoxSizer20, 0,
-                        wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-    wxCheckBox *itemCheckBox21 =
-        new wxCheckBox(this, wxID_FONT_UNDERLINE, _("&Underline"),
-                       wxDefaultPosition, wxDefaultSize, 0);
-    itemCheckBox21->SetValue(FALSE);
-    itemCheckBox21->SetHelpText(_("Whether the font is underlined."));
-    if (ShowToolTips())
-      itemCheckBox21->SetToolTip(_("Whether the font is underlined."));
-    itemBoxSizer20->Add(itemCheckBox21, 0, wxALIGN_LEFT | wxALL, 5);
-  }
-
-  if (!is_pda)
-    itemBoxSizer3->Add(5, 5, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
-
-  wxStaticText *itemStaticText23 = new wxStaticText(
-      this, wxID_STATIC, _("Preview:"), wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer3->Add(itemStaticText23, 0,
-                     wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
-
-  MyFontPreviewer *itemWindow24 = new MyFontPreviewer(this, wxSize(400, 80));
-  m_previewer = itemWindow24;
-  itemWindow24->SetHelpText(_("Shows the font preview."));
-  if (ShowToolTips()) itemWindow24->SetToolTip(_("Shows the font preview."));
-  itemBoxSizer3->Add(itemWindow24, 0, wxEXPAND, 5);
-
-  wxBoxSizer *itemBoxSizer25 = new wxBoxSizer(wxHORIZONTAL);
-  itemBoxSizer3->Add(itemBoxSizer25, 0, wxEXPAND, 5);
-  itemBoxSizer25->Add(5, 5, 1, wxEXPAND | wxALL, 5);
-
-  wxButton *itemButton28 = new wxButton(this, wxID_CANCEL, _("Cancel"),
-                                        wxDefaultPosition, wxDefaultSize, 0);
-
-  if (ShowToolTips())
-    itemButton28->SetToolTip(_("Click to cancel the font selection."));
-  itemBoxSizer25->Add(itemButton28, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-
-  wxButton *itemButton27 = new wxButton(this, wxID_OK, _("&OK"),
-                                        wxDefaultPosition, wxDefaultSize, 0);
-  itemButton27->SetDefault();
-  itemButton27->SetHelpText(_("Click to confirm the font selection."));
-  if (ShowToolTips())
-    itemButton27->SetToolTip(_("Click to confirm the font selection."));
-  itemBoxSizer25->Add(itemButton27, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-
-  familyChoice = (wxChoice *)FindWindow(wxID_FONT_FAMILY);
-  styleChoice = (wxChoice *)FindWindow(wxID_FONT_STYLE);
-  weightChoice = (wxChoice *)FindWindow(wxID_FONT_WEIGHT);
-  colourChoice = (wxChoice *)FindWindow(wxID_FONT_COLOUR);
-  pointSizeChoice = (wxChoice *)FindWindow(wxID_FONT_SIZE);
-  underLineCheckBox = (wxCheckBox *)FindWindow(wxID_FONT_UNDERLINE);
-
-  //    Get readable font items
-  wxString gotfontnative = dialogFont.GetNativeFontInfoDesc();
-  wxStringTokenizer st(gotfontnative, _T ( "-" ));
-  st.GetNextToken();
-  st.GetNextToken();
-  wxString facename = st.GetNextToken();
-  wxString weight = st.GetNextToken();
-  st.GetNextToken();
-  st.GetNextToken();
-  st.GetNextToken();
-  st.GetNextToken();
-  wxString pointsize = st.GetNextToken();
-
-  int ptsz = atoi(pointsize.mb_str());
-  pointsize.Printf(_T ( "%d" ), ptsz / 10);
-
-  SetChoiceOptionsFromFacename(facename);
-
-  familyChoice->SetStringSelection(facename);
-  weightChoice->SetStringSelection(weight);
-  pointSizeChoice->SetStringSelection(pointsize);
-
-  m_previewer->SetFont(dialogFont);
-  m_previewer->SetName(_T( "ABCDEFGabcdefg12345" ));
-
-  //    m_previewer->Refresh();
-
-  //    familyChoice->SetStringSelection(
-  //    wxFontFamilyIntToString(dialogFont.GetFamily()) );
-  //    styleChoice->SetStringSelection(wxFontStyleIntToString(dialogFont.GetStyle()));
-  //    weightChoice->SetStringSelection(wxFontWeightIntToString(dialogFont.GetWeight()));
-
-  /*
-   if (colourChoice)
-   {
-   wxString name(wxTheColourDatabase->FindName(m_fontData.GetColour()));
-   if (name.length())
-   colourChoice->SetStringSelection(name);
-   else
-   colourChoice->SetStringSelection(wxT("BLACK"));
-   }
-
-   if (underLineCheckBox)
-   {
-   underLineCheckBox->SetValue(dialogFont.GetUnderlined());
-   }
-
-   //    pointSizeChoice->SetSelection(dialogFont.GetPointSize()-1);
-   pointSizeChoice->SetSelection(0);
-
-   #if !defined(__SMARTPHONE__) && !defined(__POCKETPC__)
-   GetSizer()->SetItemMinSize(m_previewer, is_pda ? 100 : 430, is_pda ? 40 :
-   100); GetSizer()->SetSizeHints(this); GetSizer()->Fit(this);
-
-   Centre(wxBOTH);
-   #endif
-   */
-
-  // Don't block events any more
-  m_useEvents = true;
-}
-
-void X11FontPicker::OnChangeFace(wxCommandEvent &WXUNUSED(event)) {
-  if (!m_useEvents) return;
-
-  //    Capture the current selections
-  wxString facename = familyChoice->GetStringSelection();
-  wxString pointsize = pointSizeChoice->GetStringSelection();
-  wxString weight = weightChoice->GetStringSelection();
-
-  SetChoiceOptionsFromFacename(facename);
-
-  //    Reset the choices
-  familyChoice->SetStringSelection(facename);
-  weightChoice->SetStringSelection(weight);
-  pointSizeChoice->SetStringSelection(pointsize);
-
-  //    And make the font change
-  DoFontChange();
-}
-
-void X11FontPicker::SetChoiceOptionsFromFacename(const wxString &facename) {
-  //    Get a list of matching fonts
-  char face[101];
-  strncpy(face, facename.mb_str(), 100);
-  face[100] = '\0';
-
-  char pattern[100];
-  sprintf(pattern, "-*-%s-*-*-*-*-*-*-*-*-*-*-iso8859-1", face);
-  //    wxString pattern;
-  //    pattern.Printf(wxT("-*-%s-*-*-*-*-*-*-*-*-*-*-iso8859-1"),
-  //    facename.mb_str());
-
-  int nFonts;
-  char **list = XListFonts((Display *)wxGetDisplay(), pattern, 32767, &nFonts);
-
-  //    First, look thru all the point sizes looking for "0" to indicate
-  //    scaleable (e.g. TrueType) font
-  bool scaleable = false;
-  for (int i = 0; i < nFonts; i++) {
-    wxStringTokenizer st(wxString(list[i]), _T ( "-" ));
-    st.GetNextToken();
-    st.GetNextToken();
-    st.GetNextToken();
-    st.GetNextToken();
-    st.GetNextToken();
-    st.GetNextToken();
-    st.GetNextToken();
-    wxString pointsize = st.GetNextToken();
-
-    if (pointsize.IsSameAs(_T ( "0" ))) {
-      scaleable = true;
-      break;
-    }
-  }
-
-  // make different pointsize selections for scaleable fonts
-  wxArrayString PointSizeArray;
-
-  if (scaleable) {
-    for (int j = 0; j < SCALEABLE_SIZES; j++)
-      PointSizeArray.Add(scaleable_pointsize[j]);
-  }
-
-  else {
-    // Get the Point Sizes Array
-    unsigned int jname;
-    for (int i = 0; i < nFonts; i++) {
-      //                  printf("%s\n", list[i]);
-      wxStringTokenizer st(wxString(list[i]), _T ( "-" ));
-      st.GetNextToken();
-      st.GetNextToken();
-      st.GetNextToken();
-      st.GetNextToken();
-      st.GetNextToken();
-      st.GetNextToken();
-      st.GetNextToken();
-      wxString pointsize = st.GetNextToken();
-      //           printf("%s\n",facename.mb_str());
-      for (jname = 0; jname < PointSizeArray.GetCount(); jname++) {
-        if (pointsize == PointSizeArray[jname]) break;
-      }
-      if (jname >= PointSizeArray.GetCount()) {
-        PointSizeArray.Add(pointsize);
-        //                        printf("Added %s\n", pointsize.mb_str());
-      }
-    }
-  }
-  pointSizeChoice->Clear();
-  pointSizeChoice->Append(PointSizeArray);
-  pointSizeChoice->SetSelection(0);
-
-  // Get the Weight Array
-  wxArrayString WeightArray;
-  for (int i = 0; i < nFonts; i++) {
-    //            printf("%s\n", list[i]);
-    wxStringTokenizer st(wxString(list[i]), _T ( "-" ));
-    st.GetNextToken();
-    st.GetNextToken();
-    st.GetNextToken();
-    wxString weight = st.GetNextToken();
-    //           printf("%s\n",facename.mb_str());
-    unsigned int jname;
-    for (jname = 0; jname < WeightArray.GetCount(); jname++) {
-      if (weight == WeightArray[jname]) break;
-    }
-    if (jname >= WeightArray.GetCount()) {
-      WeightArray.Add(weight);
-      //                  printf("Added weight %s\n", weight.mb_str());
-    }
-  }
-
-  weightChoice->Clear();
-  weightChoice->Append(WeightArray);
-  weightChoice->SetSelection(0);
-}
-
-void X11FontPicker::InitializeFont() {
-  int fontFamily = wxSWISS;
-  int fontWeight = wxNORMAL;
-  int fontStyle = wxNORMAL;
-  int fontSize = 12;
-  bool fontUnderline = false;
-
-  wxString fontnative;
-  if (m_fontData.m_initialFont.Ok()) {
-    fontnative = m_fontData.m_initialFont.GetNativeFontInfoDesc();
-    fontFamily = m_fontData.m_initialFont.GetFamily();
-    fontWeight = m_fontData.m_initialFont.GetWeight();
-    fontStyle = m_fontData.m_initialFont.GetStyle();
-    fontSize = m_fontData.m_initialFont.GetPointSize();
-    fontUnderline = m_fontData.m_initialFont.GetUnderlined();
-  }
-
-  //      printf("Init Fetching    %s\n", fontnative.mb_str());
-
-  wxFont tFont =
-      wxFont(fontSize, fontFamily, fontStyle, fontWeight, fontUnderline);
-
-  wxFont *pdialogFont = tFont.New(fontnative);
-
-  //    Confirm
-  /*
-   wxNativeFontInfo *i = (wxNativeFontInfo *)pdialogFont->GetNativeFontInfo();
-
-   XFontStruct *xfont = (XFontStruct*) pdialogFont->GetFontStruct( 1.0, (Display
-   *)wxGetDisplay() ); unsigned long ret; XGetFontProperty(xfont, 18, &ret);
-   char* x = XGetAtomName((Display *)wxGetDisplay(), ret);
-   printf(" Init Got %s\n", x);
-   */
-
-  dialogFont = *pdialogFont;
-}
-
-void X11FontPicker::OnChangeFont(wxCommandEvent &WXUNUSED(event)) {
-  if (!m_useEvents) return;
-
-  DoFontChange();
-}
-
-void X11FontPicker::DoFontChange(void) {
-  wxString facename = familyChoice->GetStringSelection();
-  wxString pointsize = pointSizeChoice->GetStringSelection();
-  wxString weight = weightChoice->GetStringSelection();
-
-  char font_x[200];
-  sprintf(font_x, "-*-%s-%s-r-normal-*-*-%s0-*-*-*-*-iso8859-1",
-          facename.mb_str(), weight.mb_str(), pointsize.mb_str());
-  wxString font_xlfd(font_x, wxConvUTF8);
-
-  //                  printf("Fetching    %s\n", font_xlfd.mb_str());
-
-  XFontStruct *test =
-      XLoadQueryFont((Display *)wxGetDisplay(), font_xlfd.mb_str());
-
-  //    Confirm
-  /*
-   unsigned long ret0;
-   if(test)
-   {
-   XGetFontProperty(test, 18, &ret0);
-   char* x = XGetAtomName((Display *)wxGetDisplay(), ret0);
-   printf("FGot %s\n", x);
-   }
-   */
-  if (test) {
-    font_xlfd.Prepend("0;");
-    wxFont *ptf = new wxFont;
-    pPreviewFont = ptf->New(font_xlfd);
-
-    /*
-     wxNativeFontInfo *i = (wxNativeFontInfo
-     *)pPreviewFont->GetNativeFontInfo();
-
-     XFontStruct *xfont = (XFontStruct*) pPreviewFont->GetFontStruct( 1.0,
-     (Display *)wxGetDisplay() ); unsigned long ret; XGetFontProperty(xfont, 18,
-     &ret); char* x = XGetAtomName((Display *)wxGetDisplay(), ret); printf("Got
-     %s\n", x);
-     */
-    m_previewer->SetName(_T( "ABCDEFGabcdefg12345" ));
-    m_previewer->SetFont(*pPreviewFont);
-    m_previewer->Refresh();
-  }
-
-  else {
-    wxString err(_T ( "No Font:" ));
-    err.Append(font_xlfd);
-    m_previewer->SetName(err);
-    m_previewer->SetFont(*pPreviewFont);
-    m_previewer->Refresh();
-  }
-
-  /*
-   int fontFamily = wxFontFamilyStringToInt(WXSTRINGCAST
-   familyChoice->GetStringSelection()); int fontWeight =
-   wxFontWeightStringToInt(WXSTRINGCAST weightChoice->GetStringSelection()); int
-   fontStyle = wxFontStyleStringToInt(WXSTRINGCAST
-   styleChoice->GetStringSelection()); int fontSize =
-   wxAtoi(pointSizeChoice->GetStringSelection());
-   // Start with previous underline setting, we want to retain it even if we
-   can't edit it
-   // dialogFont is always initialized because of the call to InitializeFont
-   int fontUnderline = dialogFont.GetUnderlined();
-
-   if (underLineCheckBox)
-   {
-   fontUnderline = underLineCheckBox->GetValue();
-   }
-
-   dialogFont = wxFont(fontSize, fontFamily, fontStyle, fontWeight,
-   (fontUnderline != 0)); m_previewer->SetFont(dialogFont);
-
-   if ( colourChoice )
-   {
-   if ( !colourChoice->GetStringSelection().empty() )
-   {
-   wxColour col = wxTheColourDatabase->Find(colourChoice->GetStringSelection());
-   if (col.Ok())
-   {
-   m_fontData.m_fontColour = col;
-   }
-   }
-   }
-   // Update color here so that we can also use the color originally passed in
-   // (EnableEffects may be false)
-   if (m_fontData.m_fontColour.Ok())
-   m_previewer->SetForegroundColour(m_fontData.m_fontColour);
-
-   m_previewer->Refresh();
-   */
-}
-
-#endif  //__WXX11__
-
-//---------------------------------------------------------------------------------
-//          Vector Stuff for Hit Test Algorithm
-//---------------------------------------------------------------------------------
-double vGetLengthOfNormal(pVector2D a, pVector2D b, pVector2D n) {
-  vector2D c, vNormal;
-  vNormal.x = 0;
-  vNormal.y = 0;
-  //
-  // Obtain projection vector.
-  //
-  // c = ((a * b)/(|b|^2))*b
-  //
-  c.x = b->x * (vDotProduct(a, b) / vDotProduct(b, b));
-  c.y = b->y * (vDotProduct(a, b) / vDotProduct(b, b));
-  //
-  // Obtain perpendicular projection : e = a - c
-  //
-  vSubtractVectors(a, &c, &vNormal);
-  //
-  // Fill PROJECTION structure with appropriate values.
-  //
-  *n = vNormal;
-
-  return (vVectorMagnitude(&vNormal));
-}
-
-double vDotProduct(pVector2D v0, pVector2D v1) {
-  double dotprod;
-
-  dotprod =
-      (v0 == NULL || v1 == NULL) ? 0.0 : (v0->x * v1->x) + (v0->y * v1->y);
-
-  return (dotprod);
-}
-
-pVector2D vAddVectors(pVector2D v0, pVector2D v1, pVector2D v) {
-  if (v0 == NULL || v1 == NULL)
-    v = (pVector2D)NULL;
-  else {
-    v->x = v0->x + v1->x;
-    v->y = v0->y + v1->y;
-  }
-  return (v);
-}
-
-pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v) {
-  if (v0 == NULL || v1 == NULL)
-    v = (pVector2D)NULL;
-  else {
-    v->x = v0->x - v1->x;
-    v->y = v0->y - v1->y;
-  }
-  return (v);
-}
-
-double vVectorSquared(pVector2D v0) {
-  double dS;
-
-  if (v0 == NULL)
-    dS = 0.0;
-  else
-    dS = ((v0->x * v0->x) + (v0->y * v0->y));
-  return (dS);
-}
-
-double vVectorMagnitude(pVector2D v0) {
-  double dMagnitude;
-
-  if (v0 == NULL)
-    dMagnitude = 0.0;
-  else
-    dMagnitude = sqrt(vVectorSquared(v0));
-  return (dMagnitude);
 }
 
 /**************************************************************************/
@@ -4157,41 +3226,6 @@ bool LogMessageOnce(const wxString &msg) {
 /**************************************************************************/
 
 /**************************************************************************/
-/*          Converts the distance to the units selected by user           */
-/**************************************************************************/
-double toUsrDistance(double nm_distance, int unit) {
-  double ret = NAN;
-  if (unit == -1) unit = g_iDistanceFormat;
-  switch (unit) {
-    case DISTANCE_NMI:  // Nautical miles
-      ret = nm_distance;
-      break;
-    case DISTANCE_MI:  // Statute miles
-      ret = nm_distance * 1.15078;
-      break;
-    case DISTANCE_KM:
-      ret = nm_distance * 1.852;
-      break;
-    case DISTANCE_M:
-      ret = nm_distance * 1852;
-      break;
-    case DISTANCE_FT:
-      ret = nm_distance * 6076.12;
-      break;
-    case DISTANCE_FA:
-      ret = nm_distance * 1012.68591;
-      break;
-    case DISTANCE_IN:
-      ret = nm_distance * 72913.4;
-      break;
-    case DISTANCE_CM:
-      ret = nm_distance * 185200;
-      break;
-  }
-  return ret;
-}
-
-/**************************************************************************/
 /*          Converts the distance from the units selected by user to NMi  */
 /**************************************************************************/
 double fromUsrDistance(double usr_distance, int unit) {
@@ -4216,65 +3250,6 @@ double fromUsrDistance(double usr_distance, int unit) {
   }
   return ret;
 }
-
-/**************************************************************************/
-/*          Returns the abbreviation of user selected distance unit       */
-/**************************************************************************/
-wxString getUsrDistanceUnit(int unit) {
-  wxString ret;
-  if (unit == -1) unit = g_iDistanceFormat;
-  switch (unit) {
-    case DISTANCE_NMI:  // Nautical miles
-      ret = _("NMi");
-      break;
-    case DISTANCE_MI:  // Statute miles
-      ret = _("mi");
-      break;
-    case DISTANCE_KM:
-      ret = _("km");
-      break;
-    case DISTANCE_M:
-      ret = _("m");
-      break;
-    case DISTANCE_FT:
-      ret = _("ft");
-      break;
-    case DISTANCE_FA:
-      ret = _("fa");
-      break;
-    case DISTANCE_IN:
-      ret = _("in");
-      break;
-    case DISTANCE_CM:
-      ret = _("cm");
-      break;
-  }
-  return ret;
-}
-
-/**************************************************************************/
-/*          Converts the speed to the units selected by user              */
-/**************************************************************************/
-double toUsrSpeed(double kts_speed, int unit) {
-  double ret = NAN;
-  if (unit == -1) unit = g_iSpeedFormat;
-  switch (unit) {
-    case SPEED_KTS:  // kts
-      ret = kts_speed;
-      break;
-    case SPEED_MPH:  // mph
-      ret = kts_speed * 1.15078;
-      break;
-    case SPEED_KMH:  // km/h
-      ret = kts_speed * 1.852;
-      break;
-    case SPEED_MS:  // m/s
-      ret = kts_speed * 0.514444444;
-      break;
-  }
-  return ret;
-}
-
 /**************************************************************************/
 /*          Converts the speed from the units selected by user to knots   */
 /**************************************************************************/
@@ -4297,30 +3272,6 @@ double fromUsrSpeed(double usr_speed, int unit) {
   }
   return ret;
 }
-
-/**************************************************************************/
-/*          Returns the abbreviation of user selected speed unit          */
-/**************************************************************************/
-wxString getUsrSpeedUnit(int unit) {
-  wxString ret;
-  if (unit == -1) unit = g_iSpeedFormat;
-  switch (unit) {
-    case SPEED_KTS:  // kts
-      ret = _("kts");
-      break;
-    case SPEED_MPH:  // mph
-      ret = _("mph");
-      break;
-    case SPEED_KMH:
-      ret = _("km/h");
-      break;
-    case SPEED_MS:
-      ret = _("m/s");
-      break;
-  }
-  return ret;
-}
-
 /**************************************************************************/
 /*    Converts the temperature to the units selected by user              */
 /**************************************************************************/
@@ -4379,258 +3330,6 @@ wxString getUsrTempUnit(int unit) {
       break;
   }
   return ret;
-}
-
-wxString formatTimeDelta(wxTimeSpan span) {
-  wxString timeStr;
-  int days = span.GetDays();
-  span -= wxTimeSpan::Days(days);
-  int hours = span.GetHours();
-  span -= wxTimeSpan::Hours(hours);
-  double minutes = (double)span.GetSeconds().ToLong() / 60.0;
-  span -= wxTimeSpan::Minutes(span.GetMinutes());
-  int seconds = (double)span.GetSeconds().ToLong();
-
-  timeStr =
-      (days ? wxString::Format(_("%dd "), days) : _T("")) +
-      (hours || days
-           ? wxString::Format(_("%2dH %2dM"), hours, (int)round(minutes))
-           : wxString::Format(_("%2dM %2dS"), (int)floor(minutes), seconds));
-
-  return timeStr;
-}
-
-wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime) {
-  wxString timeStr;
-  if (startTime.IsValid() && endTime.IsValid()) {
-    wxTimeSpan span = endTime - startTime;
-    return formatTimeDelta(span);
-  } else {
-    return _("N/A");
-  }
-}
-
-wxString formatTimeDelta(wxLongLong secs) {
-  wxString timeStr;
-
-  wxTimeSpan span(0, 0, secs);
-  return formatTimeDelta(span);
-}
-
-wxString FormatDistanceAdaptive(double distance) {
-  wxString result;
-  int unit = g_iDistanceFormat;
-  double usrDistance = toUsrDistance(distance, unit);
-  if (usrDistance < 0.1 &&
-      (unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI)) {
-    unit = (unit == DISTANCE_MI) ? DISTANCE_FT : DISTANCE_M;
-    usrDistance = toUsrDistance(distance, unit);
-  }
-  wxString format;
-  if (usrDistance < 5.0) {
-    format = _T("%1.2f ");
-  } else if (usrDistance < 100.0) {
-    format = _T("%2.1f ");
-  } else if (usrDistance < 1000.0) {
-    format = _T("%3.0f ");
-  } else {
-    format = _T("%4.0f ");
-  }
-  result << wxString::Format(format, usrDistance) << getUsrDistanceUnit(unit);
-  return result;
-}
-
-/**************************************************************************/
-/*          Formats the coordinates to string                             */
-/**************************************************************************/
-wxString toSDMM(int NEflag, double a, bool hi_precision) {
-  wxString s;
-  double mpy;
-  short neg = 0;
-  int d;
-  long m;
-  double ang = a;
-  char c = 'N';
-
-  if (a < 0.0) {
-    a = -a;
-    neg = 1;
-  }
-  d = (int)a;
-  if (neg) d = -d;
-  if (NEflag) {
-    if (NEflag == 1) {
-      c = 'N';
-
-      if (neg) {
-        d = -d;
-        c = 'S';
-      }
-    } else if (NEflag == 2) {
-      c = 'E';
-
-      if (neg) {
-        d = -d;
-        c = 'W';
-      }
-    }
-  }
-
-  switch (g_iSDMMFormat) {
-    case 0:
-      mpy = 600.0;
-      if (hi_precision) mpy = mpy * 1000;
-
-      m = (long)wxRound((a - (double)d) * mpy);
-
-      if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
-      {
-        if (hi_precision)
-          s.Printf(_T ( "%d%c %02ld.%04ld'" ), d, 0x00B0, m / 10000, m % 10000);
-        else
-          s.Printf(_T ( "%d%c %02ld.%01ld'" ), d, 0x00B0, m / 10, m % 10);
-      } else {
-        if (hi_precision)
-          if (NEflag == 1)
-            s.Printf(_T ( "%02d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
-                     (m % 10000), c);
-          else
-            s.Printf(_T ( "%03d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
-                     (m % 10000), c);
-        else if (NEflag == 1)
-          s.Printf(_T ( "%02d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
-        else
-          s.Printf(_T ( "%03d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
-      }
-      break;
-    case 1:
-      if (hi_precision)
-        s.Printf(_T ( "%03.6f" ),
-                 ang);  // cca 11 cm - the GPX precision is higher, but as we
-                        // use hi_precision almost everywhere it would be a
-                        // little too much....
-      else
-        s.Printf(_T ( "%03.4f" ), ang);  // cca 11m
-      break;
-    case 2:
-      m = (long)((a - (double)d) * 60);
-      mpy = 10.0;
-      if (hi_precision) mpy = mpy * 100;
-      long sec = (long)((a - (double)d - (((double)m) / 60)) * 3600 * mpy);
-
-      if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
-      {
-        if (hi_precision)
-          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 1000,
-                   sec % 1000);
-        else
-          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 10, sec % 10);
-      } else {
-        if (hi_precision)
-          if (NEflag == 1)
-            s.Printf(_T ( "%02d%c %02ld' %02ld.%03ld\" %c" ), d, 0x00B0, m,
-                     sec / 1000, sec % 1000, c);
-          else
-            s.Printf(_T ( "%03d%c %02ld' %02ld.%03ld\" %c" ), d, 0x00B0, m,
-                     sec / 1000, sec % 1000, c);
-        else if (NEflag == 1)
-          s.Printf(_T ( "%02d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m, sec / 10,
-                   sec % 10, c);
-        else
-          s.Printf(_T ( "%03d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m, sec / 10,
-                   sec % 10, c);
-      }
-      break;
-  }
-  return s;
-}
-
-/****************************************************************************/
-// Modified from the code posted by Andy Ross at
-//     http://www.mail-archive.com/flightgear-devel@flightgear.org/msg06702.html
-// Basically, it looks for a list of decimal numbers embedded in the
-// string and uses the first three as degree, minutes and seconds.  The
-// presence of a "S" or "W character indicates that the result is in a
-// hemisphere where the final answer must be negated.  Non-number
-// characters are treated as whitespace separating numbers.
-//
-// So there are lots of bogus strings you can feed it to get a bogus
-// answer, but that's not surprising.  It does, however, correctly parse
-// all the well-formed strings I can thing of to feed it.  I've tried all
-// the following:
-//
-// 37°54.204' N
-// N37 54 12
-// 37°54'12"
-// 37.9034
-// 122°18.621' W
-// 122w 18 37
-// -122.31035
-/****************************************************************************/
-double fromDMM(wxString sdms) {
-  wchar_t buf[64];
-  char narrowbuf[64];
-  int i, len, top = 0;
-  double stk[32], sign = 1;
-
-  // First round of string modifications to accomodate some known strange
-  // formats
-  wxString replhelper;
-  replhelper = wxString::FromUTF8("´·");  // UKHO PDFs
-  sdms.Replace(replhelper, _T("."));
-  replhelper =
-      wxString::FromUTF8("\"·");  // Don't know if used, but to make sure
-  sdms.Replace(replhelper, _T("."));
-  replhelper = wxString::FromUTF8("·");
-  sdms.Replace(replhelper, _T("."));
-
-  replhelper =
-      wxString::FromUTF8("s. š.");  // Another example: cs.wikipedia.org
-                                    // (someone was too active translating...)
-  sdms.Replace(replhelper, _T("N"));
-  replhelper = wxString::FromUTF8("j. š.");
-  sdms.Replace(replhelper, _T("S"));
-  sdms.Replace(_T("v. d."), _T("E"));
-  sdms.Replace(_T("z. d."), _T("W"));
-
-  // If the string contains hemisphere specified by a letter, then '-' is for
-  // sure a separator...
-  sdms.UpperCase();
-  if (sdms.Contains(_T("N")) || sdms.Contains(_T("S")) ||
-      sdms.Contains(_T("E")) || sdms.Contains(_T("W")))
-    sdms.Replace(_T("-"), _T(" "));
-
-  wcsncpy(buf, sdms.wc_str(wxConvUTF8), 63);
-  buf[63] = 0;
-  len = wxMin(wcslen(buf), sizeof(narrowbuf) - 1);
-  ;
-
-  for (i = 0; i < len; i++) {
-    wchar_t c = buf[i];
-    if ((c >= '0' && c <= '9') || c == '-' || c == '.' || c == '+') {
-      narrowbuf[i] = c;
-      continue; /* Digit characters are cool as is */
-    }
-    if (c == ',') {
-      narrowbuf[i] = '.'; /* convert to decimal dot */
-      continue;
-    }
-    if ((c | 32) == 'w' || (c | 32) == 's')
-      sign = -1;      /* These mean "negate" (note case insensitivity) */
-    narrowbuf[i] = 0; /* Replace everything else with nuls */
-  }
-
-  /* Build a stack of doubles */
-  stk[0] = stk[1] = stk[2] = 0;
-  for (i = 0; i < len; i++) {
-    while (i < len && narrowbuf[i] == 0) i++;
-    if (i != len) {
-      stk[top++] = atof(narrowbuf + i);
-      i += strlen(narrowbuf + i);
-    }
-  }
-
-  return sign * (stk[0] + (stk[1] + stk[2] / 60) / 60);
 }
 
 wxString formatAngle(double angle) {
@@ -4742,51 +3441,6 @@ void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
 #endif
 #endif
   }
-}
-
-// RFC4122 version 4 compliant random UUIDs generator.
-wxString GpxDocument::GetUUID(void) {
-  wxString str;
-  struct {
-    int time_low;
-    int time_mid;
-    int time_hi_and_version;
-    int clock_seq_hi_and_rsv;
-    int clock_seq_low;
-    int node_hi;
-    int node_low;
-  } uuid;
-
-  uuid.time_low = GetRandomNumber(
-      0, 2147483647);  // FIXME: the max should be set to something like
-                       // MAXINT32, but it doesn't compile un gcc...
-  uuid.time_mid = GetRandomNumber(0, 65535);
-  uuid.time_hi_and_version = GetRandomNumber(0, 65535);
-  uuid.clock_seq_hi_and_rsv = GetRandomNumber(0, 255);
-  uuid.clock_seq_low = GetRandomNumber(0, 255);
-  uuid.node_hi = GetRandomNumber(0, 65535);
-  uuid.node_low = GetRandomNumber(0, 2147483647);
-
-  /* Set the two most significant bits (bits 6 and 7) of the
-   * clock_seq_hi_and_rsv to zero and one, respectively. */
-  uuid.clock_seq_hi_and_rsv = (uuid.clock_seq_hi_and_rsv & 0x3F) | 0x80;
-
-  /* Set the four most significant bits (bits 12 through 15) of the
-   * time_hi_and_version field to 4 */
-  uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
-
-  str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
-             uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
-             uuid.clock_seq_low, uuid.node_hi, uuid.node_low);
-
-  return str;
-}
-
-int GpxDocument::GetRandomNumber(int range_min, int range_max) {
-  long u = (long)wxRound(
-      ((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) +
-      range_min);
-  return (int)u;
 }
 
 void GpxDocument::SeedRandom() {

@@ -58,6 +58,8 @@ else ()
   set(Qt_Build build_arm32_19_O3/qtbase)
 endif ()
 
+message(STATUS "Android Build wx include directories: support file base:  ${_wx_setup}")
+
 include_directories(
   ${_qt_include}
   ${_qt_include}/QtWidgets

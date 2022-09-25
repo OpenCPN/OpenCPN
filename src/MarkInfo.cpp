@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  MarkProperties Support
@@ -42,6 +42,7 @@
 #include "styles.h"
 #include "MarkInfo.h"
 #include "navutil.h"  // for Route
+#include "navutil_base.h"
 #include "georef.h"
 #include "gui_lib.h"
 #include "routeman.h"
@@ -49,13 +50,13 @@
 #include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
 #include "chcanv.h"
-#include "PositionParser.h"
+#include "position_parser.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
-#include "Route.h"
-#include "chart1.h"
+#include "route.h"
 #include "TCWin.h"
 #include "svg_utils.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -96,7 +97,6 @@ WX_DECLARE_LIST(wxBitmap, BitmapList);
 WX_DEFINE_LIST(BitmapList);
 
 #include <wx/arrimpl.cpp>
-#include <chart1.h>
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
 #define EXTENDED_PROP_PAGE 2  // Index of the extended properties page

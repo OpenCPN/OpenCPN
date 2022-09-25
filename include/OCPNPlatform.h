@@ -49,7 +49,7 @@
 #include <wx/validate.h>
 #include <wx/window.h>
 
-#include "BasePlatform.h"
+#include "base_platform.h"
 
 class MyConfig;
 class ArrayOfCDI;
@@ -109,9 +109,9 @@ public:
   wxSize getDisplaySize();
   double GetDisplaySizeMM();
   double GetDisplayAreaCM2();
+  virtual double GetDisplayDPmm();
 
   void SetDisplaySizeMM(double size);
-  double GetDisplayDPmm();
   unsigned int GetSelectRadiusPix();
   double GetToolbarScaleFactor(int GUIScaleFactor);
   double GetCompassScaleFactor(int GUIScaleFactor);
@@ -171,16 +171,9 @@ public:
   bool IsGLCapable();
 
 private:
-  bool GetWindowsMonitorSize(int *width, int *height);
-
   wxString m_SData_Dir;
 
-  wxSize m_displaySize;
-  wxSize m_displaySizeMM;
-  int m_displaySizeMMOverride;
 
-  int m_monitorWidth, m_monitorHeight;
-  bool m_bdisableWindowsDisplayEnum;
 };
 
 //      Private colourPicker control

@@ -41,6 +41,7 @@
 #include "CanvasOptions.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
+#include "s52s57.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

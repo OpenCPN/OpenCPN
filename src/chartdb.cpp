@@ -38,10 +38,10 @@
 #include "config.h"
 #include "chartdb.h"
 #include "chartimg.h"
-#include "chart1.h"
 #include "thumbwin.h"
 #include "mbtiles.h"
 #include "CanvasConfig.h"
+#include "ocpn_frame.h"  //FIXME (dave) LoadS57
 #ifdef __OCPN__ANDROID__
  #include "androidUTIL.h"
 #endif

@@ -27,9 +27,9 @@
 #include <wx/dcclient.h>
 
 #include "ChInfoWin.h"
-#include "chart1.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
+#include "ocpn_frame.h"   //FIXME (dave) color
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

@@ -24,20 +24,91 @@
  ***************************************************************************
  */
 
-#include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include <wx/tokenzr.h>
-
+#include <algorithm>
 #include <stdint.h>
+#include <vector>
 
+#include <wx/arrimpl.cpp>
+#include <wx/brush.h>
+#include <wx/colour.h>
+#include <wx/dcmemory.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/glcanvas.h>
+#include <wx/image.h>
+#include <wx/jsonval.h>
+#include <wx/log.h>
+#include <wx/pen.h>
+#include <wx/progdlg.h>
+#include <wx/stopwatch.h>
+#include <wx/string.h>
+#include <wx/tokenzr.h>
+#include <wx/utils.h>
+#include <wx/window.h>
+
+#include "ais.h"
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "ChInfoWin.h"
+#include "cm93.h"  // for chart outline draw
+#include "compass.h"
 #include "config.h"
+#include "dychart.h"
+#include "emboss_data.h"
+#include "FontMgr.h"
+#include "glChartCanvas.h"
+#include "glTexCache.h"
+#include "gshhs.h"
+#include "lz4.h"
+#include "mbtiles.h"
+#include "mipmap/mipmap.h"
+#include "navutil.h"
+#include "ocpn_frame.h"  //FIXME (dave) for color
+#include "OCPNPlatform.h"
+#include "piano.h"
+#include "pluginmanager.h"
+#include "Quilt.h"
+#include "RolloverWin.h"
+#include "route_gui.h"
+#include "route.h"
+#include "routeman.h"
+#include "route_point_gui.h"
+#include "s52plib.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "tcmgr.h"
+#include "TexFont.h"
+#include "thumbwin.h"
+#include "toolbar.h"
+#include "track_gui.h"
+#include "track.h"
 
-#if defined(__UNIX__) && \
-    !defined(__WXOSX__)  // high resolution stopwatch for profiling
+#ifdef USE_ANDROID_GLES2
+#include <GLES2/gl2.h>
+#include "linmath.h"
+#include "shaders.h"
+#endif
+
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glx.h>
+#endif
+
+#ifndef GL_ETC1_RGB8_OES
+#define GL_ETC1_RGB8_OES 0x8D64
+#endif
+
+#ifndef GL_DEPTH_STENCIL_ATTACHMENT
+#define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
+#endif
+
+#if defined(__UNIX__) &&  !defined(__WXOSX__) 
+// high resolution stopwatch for profiling
 class OCPNStopWatch {
  public:
   OCPNStopWatch() { Reset(); }
@@ -55,56 +126,8 @@ class OCPNStopWatch {
 };
 #endif
 
-#if defined(__OCPN__ANDROID__)
-#include "androidUTIL.h"
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glx.h>
-#endif
 
-#include "dychart.h"
-
-#include "glChartCanvas.h"
-#include "chcanv.h"
-#include "s52plib.h"
-#include "Quilt.h"
-#include "pluginmanager.h"
-#include "routeman.h"
-#include "chartbase.h"
-#include "chartimg.h"
-#include "ChInfoWin.h"
-#include "thumbwin.h"
-#include "chartdb.h"
-#include "navutil.h"
-#include "TexFont.h"
-#include "glTexCache.h"
-#include "gshhs.h"
-#include "ais.h"
-#include "OCPNPlatform.h"
-#include "toolbar.h"
-#include "piano.h"
-#include "tcmgr.h"
-#include "compass.h"
-#include "FontMgr.h"
-#include "mipmap/mipmap.h"
-#include "chartimg.h"
-#include "Track.h"
-#include "emboss_data.h"
-#include "Route.h"
-#include "mbtiles.h"
-#include <vector>
-#include <algorithm>
-
-#ifndef GL_ETC1_RGB8_OES
-#define GL_ETC1_RGB8_OES 0x8D64
-#endif
-
-#include "cm93.h"  // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#include "lz4.h"
-
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 //  arm gcc compiler has a lot of trouble passing doubles as function aruments.
 //  We don't really need double precision here, so fix with a (faster) macro.
 extern "C" void glOrthof(float left, float right, float bottom, float top,
@@ -115,21 +138,7 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 
 #endif
 
-#include "cm93.h"  // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#ifdef USE_ANDROID_GLES2
-#include <GLES2/gl2.h>
-#include "linmath.h"
-#include "shaders.h"
-#endif
-
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
-
-#ifndef GL_DEPTH_STENCIL_ATTACHMENT
-#define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
-#endif
 
 extern s52plib *ps52plib;
 extern bool g_bopengl;
@@ -188,6 +197,21 @@ wxColor s_regionColor;
 bool g_b_EnableVBO;
 bool g_b_needFinish;  // Need glFinish() call on each frame?
 
+// MacOS has some missing parts:
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+#ifndef APIENTRYP
+#define APIENTRYP APIENTRY *
+#endif
+#ifndef GLAPI
+#define GLAPI extern
+#endif
+
+#ifndef GL_COMPRESSED_RGB_FXT1_3DFX
+#define GL_COMPRESSED_RGB_FXT1_3DFX  0x86B0
+#endif
+
 PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
@@ -217,7 +241,6 @@ typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
                                                   GLint *data);
 PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
-#include <wx/arrimpl.cpp>
 // WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
 GLuint g_raster_format = GL_RGB;
@@ -1826,7 +1849,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
     if (pActiveTrack && pActiveTrack->IsRunning()) continue;
 
-    pTrackDraw->Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
+    TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
   }
 
   for (wxRouteListNode *node = pRouteList->GetFirst(); node;
@@ -1841,7 +1864,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
     /* defer rendering routes being edited until later */
     if (pRouteDraw->m_bIsBeingEdited) continue;
 
-    pRouteDraw->DrawGL(vp, m_pParentCanvas);
+    RouteGui(*pRouteDraw).DrawGL(vp, m_pParentCanvas);
   }
 
   /* Waypoints not drawn as part of routes, and not being edited */
@@ -1852,7 +1875,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
       RoutePoint *pWP = pnode->GetData();
       if (pWP && (!pWP->m_bRPIsBeingEdited) && (!pWP->m_bIsInRoute))
         if (vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
-          pWP->DrawGL(vp, m_pParentCanvas);
+          RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas);
     }
   }
 }
@@ -1863,9 +1886,8 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
   for (Track* pTrackDraw : g_TrackList) {
     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
     if (pActiveTrack && pActiveTrack->IsRunning())
-      pTrackDraw->Draw(m_pParentCanvas, dc, vp,
-                       vp.GetBBox());  // We need Track::Draw() to dynamically
-                                       // render last (ownship) point.
+      TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
+    // We need Track::Draw() to dynamically render last (ownship) point.
   }
 
   for (wxRouteListNode *node = pRouteList->GetFirst(); node;
@@ -1887,7 +1909,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
     if (drawit) {
       const LLBBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
       if (!vp_box.IntersectOut(test_box))
-        pRouteDraw->DrawGL(vp, m_pParentCanvas);
+        RouteGui(*pRouteDraw).DrawGL(vp, m_pParentCanvas);
     }
   }
 
@@ -1898,7 +1920,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
          pnode; pnode = pnode->GetNext()) {
       RoutePoint *pWP = pnode->GetData();
       if (pWP && pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute)
-        pWP->DrawGL(vp, m_pParentCanvas);
+        RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas);
     }
   }
 }
@@ -2543,7 +2565,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
 
   //    Another draw test ,based on pixels, assuming the ship icon is a fixed
   //    nominal size and is just barely outside the viewport        ....
-  wxBoundingBox bb_screen(0, 0, m_pParentCanvas->GetVP().pix_width,
+  BoundingBox bb_screen(0, 0, m_pParentCanvas->GetVP().pix_width,
                           m_pParentCanvas->GetVP().pix_height);
 
   // TODO: fix to include actual size of boat that will be rendered

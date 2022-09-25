@@ -32,6 +32,8 @@
 #include <vector>
 #include <deque>
 
+class ChartCanvas;
+
 enum UndoType {
   Undo_CreateWaypoint,
   Undo_DeleteWaypoint,

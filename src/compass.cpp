@@ -36,6 +36,7 @@
 
 #include "dychart.h"
 #include "glChartCanvas.h"
+#include "ocpn_frame.h"     // FIXME (dave) colorschemes
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool bGPSValid;

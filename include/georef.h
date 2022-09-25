@@ -30,12 +30,11 @@
 
  */
 
-#ifndef __GEOREF_H__
-#define __GEOREF_H__
+#ifndef _GEOREF_H__
+#define _GEOREF_H__
 
 #include <stdio.h>
 #include <string.h>
-//#include <math.h>
 #include <ctype.h>
 
 //------------------------
@@ -269,4 +268,4 @@ typedef struct {
   int n_par;
 } lm_data_type;
 
-#endif
+#endif   // guard

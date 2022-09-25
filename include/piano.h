@@ -27,7 +27,6 @@
 #ifndef __statwin_H__
 #define __statwin_H__
 
-#include "chart1.h"
 
 //----------------------------------------------------------------------------
 //   constants

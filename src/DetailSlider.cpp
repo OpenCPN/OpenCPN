@@ -32,11 +32,11 @@
 #include <wx/slider.h>
 
 #include "DetailSlider.h"
-#include "chart1.h"
 #include "chcanv.h"
 #include "OCPNPlatform.h"
 #include "options.h"
 #include "chartdb.h"
+#include "ocpn_frame.h"
 
 extern bool g_bShowDetailSlider;
 extern PopUpDSlide* pPopupDetailSlider;

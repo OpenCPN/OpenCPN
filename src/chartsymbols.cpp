@@ -791,7 +791,7 @@ void ChartSymbols::BuildLineStyle(LineStyle &lineStyle) {
 
   if (NULL == lnstmp)
     (*plib->_line_sym)[lineStyle.name] = lnst;
-  else if (lnst->name.LINM != lnstmp->name.LINM)
+  else if (strncmp(lnst->name.LINM, lnstmp->name.LINM, 8))
     (*plib->_line_sym)[lineStyle.name] = lnst;
 }
 
@@ -954,7 +954,7 @@ void ChartSymbols::BuildPattern(OCPNPattern &pattern) {
     (*plib->_patt_sym)[pattern.name] = patt;  // insert in hash table
   } else  // already something here with same key...
   {       // if the pattern names are not identical
-    if (patt->name.PANM != pattmp->name.PANM) {
+    if (strncmp(patt->name.PANM, pattmp->name.PANM, 8)) {
       (*plib->_patt_sym)[pattern.name] = patt;  // replace the pattern
       plib->DestroyPatternRuleNode(
           pattmp);  // remember to free to replaced node

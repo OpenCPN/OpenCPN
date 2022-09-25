@@ -28,6 +28,7 @@ cmake $WEBVIEW_OPT  $EXTRA_BUILD_OPTS\
     -DOCPN_USE_BUNDLED_LIBS=OFF \
     ..
 make -sj2
+make run-tests
 make package
 
 sudo apt-get install python3-pip python3-setuptools

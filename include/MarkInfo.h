@@ -30,7 +30,7 @@
  * Includes
  */
 #include "wx/listctrl.h"
-#include "chart1.h"        // for ColorScheme
+#include "ocpn_frame.h"        //FIXME (dave ) // for ColorScheme
 #include "wx/hyperlink.h"  // toh, 2009.02.08
 #include <wx/choice.h>
 #include <wx/tglbtn.h>
@@ -42,7 +42,7 @@
 #include <wx/gbsizer.h>
 #include <wx/spinctrl.h>
 #include "LinkPropDlg.h"
-#include "Hyperlink.h"
+#include "hyperlink.h"
 #include <wx/htmllbox.h>
 #include <wx/datectrl.h>
 #include <wx/timectrl.h>

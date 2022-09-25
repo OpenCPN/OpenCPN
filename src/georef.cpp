@@ -35,6 +35,8 @@
 #include <ctype.h>
 #include <math.h>
 
+#include <wx/debug.h>
+
 #include "georef.h"
 #include "cutil.h"
 

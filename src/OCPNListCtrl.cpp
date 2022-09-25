@@ -23,7 +23,8 @@
  */
 
 #include "OCPNListCtrl.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
+#include "navutil_base.h"
 
 extern wxString g_AisTargetList_column_spec;
 extern wxString g_AisTargetList_column_order;
@@ -62,7 +63,7 @@ wxString OCPNListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
 
   if (m_parent->m_pListCtrlAISTargets) {
-    AIS_Target_Data* pAISTarget = m_parent->GetpTarget(item);
+    AisTargetData* pAISTarget = m_parent->GetpTarget(item);
     if (pAISTarget) ret = GetTargetColumnData(pAISTarget, column);
   }
 
@@ -73,7 +74,7 @@ int OCPNListCtrl::OnGetItemColumnImage(long item, long column) const {
   return -1;
 }
 
-wxString OCPNListCtrl::GetTargetColumnData(AIS_Target_Data* pAISTarget,
+wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
                                            long column) const {
   wxString ret;
 

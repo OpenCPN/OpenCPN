@@ -30,7 +30,7 @@
 #include "TTYWindow.h"
 #include "TTYScroll.h"
 #include "WindowDestroyListener.h"
-#include "chart1.h"
+#include "ocpn_frame.h"   //FIXME (dave) color
 
 IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
 
