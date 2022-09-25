@@ -522,6 +522,7 @@ void ConnectionsDialog::Init(){
   m_stCANSource->Wrap(-1);
   fgSizer1->Add(m_stCANSource, 0, wxALL, 5);
 
+  // FIXME (dave)  Query actual interfaces available, disable others.
   wxString choice_CANSource_choices[] = {"can0", "slcan0", "vcan0"};
   int choice_CANSource_nchoices =
       sizeof(choice_CANSource_choices) / sizeof(wxString);
@@ -1234,8 +1235,10 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       sbSizerOutFilter->GetStaticBox()->Hide();
       m_rbOAccept->Hide();
       m_rbOIgnore->Hide();
+      m_tcInputStc->Hide();
       m_tcOutputStc->Hide();
       m_btnOutputStcList->Hide();
+      m_btnInputStcList->Hide();
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
       m_stTalkerIdText->Hide();
