@@ -2095,11 +2095,15 @@ void AisDecoder::CommitAISTarget(AisTargetData *pTargetData,
 
     m_pLatestTargetData = pTargetData;
 
-    if (str.Mid(3, 3).IsSameAs(_T("VDO")))
-      pTargetData->b_OwnShip = true;
-    else {
+    if (!str.IsEmpty()) {       // NMEA0183 message
+      if (str.Mid(3, 3).IsSameAs(_T("VDO")))
+        pTargetData->b_OwnShip = true;
+      else
+        pTargetData->b_OwnShip = false;
+    }
+
+    if (!pTargetData->b_OwnShip) {
       // set  mmsi-props to default values
-      pTargetData->b_OwnShip = false;
       if (0 == m_persistent_tracks.count(pTargetData->MMSI)) {
         // Normal target
         pTargetData->b_PersistTrack = false;
