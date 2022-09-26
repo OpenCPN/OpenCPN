@@ -263,6 +263,8 @@ private:
   int mPITCH_Watchdog;
   int mHEEL_Watchdog;
   int mALT_Watchdog;
+  int mLOG_Watchdog;
+  int mTrLOG_Watchdog;
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;
