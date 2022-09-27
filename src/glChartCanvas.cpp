@@ -1106,7 +1106,7 @@ void glChartCanvas::SetupOpenGL() {
     //m_b_DisableFBO = true;
 #endif
 
-  m_b_DisableFBO = true;
+  //m_b_DisableFBO = true;
 
   //      Maybe build FBO(s)
   BuildFBO();
@@ -4392,10 +4392,10 @@ void glChartCanvas::Render() {
         m_fbo_sheight = sy;
 
         // Do not need to clear screen, especially annoying on pinch zoom
-        //wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-        //glClearColor( color.Red() / 256., color.Green() / 256. ,
-        //color.Blue()/ 256. ,1.0 );
-        //glClear(GL_COLOR_BUFFER_BIT);
+        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+        glClearColor( color.Red() / 256., color.Green() / 256. ,
+        color.Blue()/ 256. ,1.0 );
+        glClear(GL_COLOR_BUFFER_BIT);
 
         RenderCharts(m_gldc, screen_region);
 
