@@ -1918,7 +1918,7 @@ void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
       if (!N2kIsNA(DepthBelowTransducer)) {
         double depth = DepthBelowTransducer;
         // Set prio to sensor's offset
-        if (!std::isnan(Offset)) depth += Offset;
+        if (!std::isnan(Offset) && !N2kIsNA(Offset)) depth += Offset;
         else (depth += g_dDashDBTOffset);
 
         SendSentenceToAllInstruments(OCPN_DBP_STC_DPT,
