@@ -443,10 +443,12 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
   double Heading;
   double ROT;
   tN2kAISNavStatus NavStat = N2kaisns_Under_Way_Motoring;
+  tN2kAISTransceiverInformation AISTransceiverInformation;
+
 
   if (ParseN2kPGN129038(v, MessageID, Repeat, UserID,
                         Latitude, Longitude, Accuracy, RAIM, Seconds,
-                        COG, SOG, Heading, ROT, NavStat)) {
+                        COG, SOG, Heading, ROT, NavStat, AISTransceiverInformation)) {
 
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
@@ -494,6 +496,8 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 //
 //     pTargetData->ROTIND = round(rot_dir * pow((ROT / 4.733), 2));
 
+    pTargetData->b_OwnShip =
+        AISTransceiverInformation == tN2kAISTransceiverInformation::N2kaisown_information_not_broadcast;
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
     pTargetData->b_positionOnceValid = true;

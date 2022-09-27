@@ -1294,7 +1294,9 @@ void SetN2kPGN129038(tN2kMsg &N2kMsg, uint8_t MessageID, tN2kAISRepeat Repeat, u
 
 bool ParseN2kPGN129038(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
                         double &Latitude, double &Longitude, bool &Accuracy, bool &RAIM, uint8_t &Seconds,
-                        double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus)
+                        double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus,
+                        tN2kAISTransceiverInformation &AISTransceiverInformation
+                      )
 {
     if (N2kMsg.PGN!=129038L) return false;
 
@@ -1311,6 +1313,7 @@ bool ParseN2kPGN129038(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat 
     vb=N2kMsg.GetByte(Index); // Communication State (19 bits)
     vb=N2kMsg.GetByte(Index);
     vb=N2kMsg.GetByte(Index); // AIS transceiver information (5 bits)
+    AISTransceiverInformation = (tN2kAISTransceiverInformation)((vb >> 3) & 0x1f);
     Heading=N2kMsg.Get2ByteUDouble(1e-04, Index);
     ROT=N2kMsg.Get2ByteDouble(3.125E-05, Index); // 1e-3/32.0
     vb=N2kMsg.GetByte(Index); NavStatus=(tN2kAISNavStatus)(vb & 0x0f);
