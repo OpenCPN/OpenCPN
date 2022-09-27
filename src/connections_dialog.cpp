@@ -1922,6 +1922,9 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     CheckSerialAccess(m_parent, pConnectionParams->Port.ToStdString());
 #endif
 
+  if (m_rbTypeCAN && m_rbTypeCAN->GetValue())
+    pConnectionParams->Protocol = PROTO_NMEA2000;
+
   pConnectionParams->bEnabled = m_connection_enabled;
   pConnectionParams->b_IsSetup = FALSE;
 
