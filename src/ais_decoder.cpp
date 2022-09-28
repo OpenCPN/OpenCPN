@@ -476,11 +476,11 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->MMSI = mmsi;
     pTargetData->Class = AIS_CLASS_A;
     pTargetData->NavStatus = (ais_nav_status)NavStat;
-    pTargetData->SOG = MS2KNOTS(SOG);
-    pTargetData->COG = GeodesicRadToDeg(COG);
-    pTargetData->HDG = GeodesicRadToDeg(Heading);
-    pTargetData->Lon = Longitude;
-    pTargetData->Lat = Latitude;
+    if (!N2kIsNA(SOG)) pTargetData->SOG = MS2KNOTS(SOG);
+    if (!N2kIsNA(COG)) pTargetData->COG = GeodesicRadToDeg(COG);
+    if (!N2kIsNA(Heading)) pTargetData->HDG = GeodesicRadToDeg(Heading);
+    if (!N2kIsNA(Longitude)) pTargetData->Lon = Longitude;
+    if (!N2kIsNA(Latitude)) pTargetData->Lat = Latitude;
 
     pTargetData->ROTAIS = ROT;
 
@@ -571,13 +571,11 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->MMSI = mmsi;
     pTargetData->Class = AIS_CLASS_B;
     pTargetData->NavStatus = (ais_nav_status)NavStat;
-    pTargetData->SOG = MS2KNOTS(SOG);
-    if (!N2kIsNA(COG))
-      pTargetData->COG = GeodesicRadToDeg(COG);
-    if (!N2kIsNA(Heading))
-      pTargetData->HDG = GeodesicRadToDeg(Heading);
-    pTargetData->Lon = Longitude;
-    pTargetData->Lat = Latitude;
+    if (!N2kIsNA(SOG)) pTargetData->SOG = MS2KNOTS(SOG);
+    if (!N2kIsNA(COG)) pTargetData->COG = GeodesicRadToDeg(COG);
+    if (!N2kIsNA(Heading)) pTargetData->HDG = GeodesicRadToDeg(Heading);
+    if(!N2kIsNA(Longitude)) pTargetData->Lon = Longitude;
+    if (!N2kIsNA(Latitude)) pTargetData->Lat = Latitude;
 
     pTargetData->b_positionOnceValid = true;
     pTargetData->b_active = true;
@@ -672,8 +670,8 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     pTargetData->Class = AIS_ATON;
 
-    pTargetData->Lon = data.Longitude;
-    pTargetData->Lat = data.Latitude;
+    if (!N2kIsNA(data.Longitude)) pTargetData->Lon = data.Longitude;
+    if (!N2kIsNA(data.Latitude)) pTargetData->Lat = data.Latitude;
     pTargetData->b_positionDoubtful = false;
     pTargetData->b_positionOnceValid = true;  // Got the position at least once
     pTargetData->PositionReportTicks = now.GetTicks();
@@ -892,8 +890,8 @@ bool AisDecoder::HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->MMSI = mmsi;
     pTargetData->Class = AIS_BASE;
 
-    pTargetData->Lon = Longitude;
-    pTargetData->Lat = Latitude;
+    if (!N2kIsNA(Longitude)) pTargetData->Lon = Longitude;
+    if (!N2kIsNA(Latitude)) pTargetData->Lat = Latitude;
     pTargetData->b_positionDoubtful = false;
     pTargetData->b_positionOnceValid = true;  // Got the position at least once
     pTargetData->PositionReportTicks = now.GetTicks();
