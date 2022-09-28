@@ -1918,7 +1918,7 @@ void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
       if (!N2kIsNA(DepthBelowTransducer)) {
         double depth = DepthBelowTransducer;
         // Set prio to sensor's offset
-        if (!std::isnan(Offset)) depth += Offset;
+        if (!std::isnan(Offset) && !N2kIsNA(Offset)) depth += Offset;
         else (depth += g_dDashDBTOffset);
 
         SendSentenceToAllInstruments(OCPN_DBP_STC_DPT,
@@ -2151,7 +2151,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
           break;
         case 3: // N2kWind_True_centerline_boat(ground)
           if (mPriTWA >= 1 && g_bDBtrueWindGround) {
-            m_twaangle = GEODESIC_RAD2DEG(WindAngle);
+            m_twaangle = GEODESIC_RAD2DEG(WindAngle);            
             m_twaspeed_kn = MS2KNOTS(WindSpeed);
             sendTrueWind = true;
           }
@@ -2172,11 +2172,13 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
 
       if (sendTrueWind) {
         // Wind angle
+        // Should be negative to port
+        if (m_twaangle > 180.0) { m_twaangle -= 360.0; }
         wxString m_twaunit = _T("\u00B0R");
         if (m_twaangle < 0) {
           m_twaunit = _T("\u00B0L");
-          m_twaangle *= -1;
-        }
+          m_twaangle *= -1.0;
+        }        
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
         // Wind speed
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
