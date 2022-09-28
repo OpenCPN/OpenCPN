@@ -2871,8 +2871,15 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
         if (std::isnan(q.m_x)) continue;
 
         double *p = new double[6];
-        p[0] = q.m_x, p[1] = q.m_y, p[2] = 0;
-        //p[0] = wxRound(q.m_x), p[1] = wxRound(q.m_y), p[2] = 0;
+
+        //p[0] = q.m_x, p[1] = q.m_y, p[2] = 0;
+        // It is reasonable to use wxRound() here,
+        // since we are working with pixel coordinates at this point
+        p[0] = wxRound(q.m_x), p[1] = wxRound(q.m_y), p[2] = 0;
+
+        //wxPoint pt = vp.GetPixFromLL(lat, lon);
+        //p[0] = pt.x, p[1] = pt.y, p[2] = 0;
+
         gluTessVertex(tobj, p, p);
         combine_work_data.push_back(p);
       }
@@ -3241,14 +3248,14 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
 
           } else if (chart->GetChartFamily() == CHART_FAMILY_VECTOR) {
             if (chart->GetChartType() == CHART_TYPE_CM93COMP) {
-              //RenderNoDTA(vp, get_region);
+              RenderNoDTA(vp, get_region);
               chart->RenderRegionViewOnGL(*m_pcontext, vp, rect_region,
                                           get_region);
             } else {
               s57chart *Chs57 = dynamic_cast<s57chart *>(chart);
               if (Chs57) {
                 if (Chs57->m_RAZBuilt) {
-                  //RenderNoDTA(vp, get_region);
+                  RenderNoDTA(vp, get_region);
                   Chs57->RenderRegionViewOnGLNoText(*m_pcontext, vp,
                                                     rect_region, get_region);
                   DisableClipRegion();
@@ -3532,7 +3539,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region,
                                 int transparency) {
-  wxColour color = wxColour(255,0,0); //GetGlobalColor(_T ( "NODTA" ));
+  wxColour color = GetGlobalColor(_T ( "NODTA" ));
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (color.IsOk())
     glColor4ub(color.Red(), color.Green(), color.Blue(), transparency);
@@ -3548,11 +3555,8 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region,
 #endif
 
   DrawRegion(vp, region);
-
-  //glDisable(GL_BLEND);
 }
 
-//void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart) {}
 
 /* render world chart, but only in this rectangle */
 void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
@@ -4210,10 +4214,8 @@ void glChartCanvas::Render() {
 
       if (b_full) accelerated_pan = false;
 
-      //accelerated_pan = false;
 
       if (accelerated_pan) {
-        // qDebug() << "AccPan";
         if ((dx != 0) || (dy != 0)) {   // Anything to do?
 
           // calculate the new regions to render
@@ -4238,12 +4240,6 @@ void glChartCanvas::Render() {
           else if (dx < 0)
             update_region.Union(wxRect(0, 0, -dx + fluff, VPoint.pix_height));
 
-          // Clear the color buffers, can be useful for debugging
-          wxColour color = GetGlobalColor(_T ( "NODTA" ));
-          glClearColor(color.Red() / 256., color.Green() / 256.,
-                       color.Blue() / 256., 1.0);
-          //glClear(GL_COLOR_BUFFER_BIT);
-
           m_cache_page = !m_cache_page; /* page flip */
 
           // Bind the destination (target frame) texture to the frame buffer
@@ -4251,29 +4247,24 @@ void glChartCanvas::Render() {
                                  GL_TEXTURE_2D,
                                  m_cache_tex[m_cache_page], 0);
 
-          //glClear(GL_COLOR_BUFFER_BIT);
-
-#if 0  // maybe for __WXMSW__??
-
-          // Bind the source (previous frame) texture to the frame buffer
-          glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
-                                 g_texture_rectangle_format,
-                                 m_cache_tex[!m_cache_page], 0);
-
-          glReadBuffer(GL_COLOR_ATTACHMENT1);
-          glDrawBuffer(GL_COLOR_ATTACHMENT0);
-          glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fb0);
-           glBlitFramebuffer(0, 0, sx+dx, sy-dy,
-                             -dx, dy, sx, sy,
-                             GL_COLOR_BUFFER_BIT, GL_LINEAR);
-#else
+          // Before rendering anything, clear the color buffers
+//           wxColour color = GetGlobalColor(_T ( "NODTA" ));
+//           glClearColor(color.Red() / 256., color.Green() / 256.,
+//                        color.Blue() / 256., 1.0);
+//           glClear(GL_COLOR_BUFFER_BIT);
 
 
-          // Render the cached texture as quad to FBO(m_blit_tex) with offsets
+          // First render the new content into the update region
+          RenderCharts(m_gldc, update_region);
+          glDisable(g_texture_rectangle_format);
+          glUseProgram(0);
+
+
+          // Next, render the cached texture as quad to FBO(m_blit_tex) with offsets
           glBindTexture(GL_TEXTURE_2D, m_cache_tex[!m_cache_page]);
           glEnable(GL_TEXTURE_2D);
 
-          //dx = dy = 0;
+           // Blit the existing content onto the alternate FBO, at the correct location
           float x1, x2, y1, y2;
 
           if (dx > 0)
@@ -4365,15 +4356,6 @@ void glChartCanvas::Render() {
           glBindTexture(g_texture_rectangle_format, 0);
 
 
-#endif
-          // Clear the color buffers, can be useful for debugging
-          //wxColour color = GetGlobalColor(_T ( "NODTA" ));
-          //glClearColor(color.Red() / 256., color.Green() / 256.,
-          //             color.Blue() / 256., 1.0);
-          //glClear(GL_COLOR_BUFFER_BIT);
-
-          // Render the new content
-          RenderCharts(m_gldc, update_region);
           glDisable(g_texture_rectangle_format);
           glUseProgram(0);
         }
@@ -4391,11 +4373,14 @@ void glChartCanvas::Render() {
         m_fbo_swidth = sx;
         m_fbo_sheight = sy;
 
-        // Do not need to clear screen, especially annoying on pinch zoom
-        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-        glClearColor( color.Red() / 256., color.Green() / 256. ,
-        color.Blue()/ 256. ,1.0 );
-        glClear(GL_COLOR_BUFFER_BIT);
+        //FIXME (dave) test on Android
+        // This can be annoying on Android pinch zoom
+
+        // Clear the screen to NODTA color
+//         wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+//         glClearColor( color.Red() / 256., color.Green() / 256. ,
+//         color.Blue()/ 256. ,1.0 );
+        //glClear(GL_COLOR_BUFFER_BIT);
 
         RenderCharts(m_gldc, screen_region);
 
