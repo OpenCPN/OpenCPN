@@ -667,7 +667,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     data.AtoNName[34] = 0;
     strncpy(pTargetData->ShipName, data.AtoNName, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
-
+    pTargetData->MID = 124;  // Indicates a name from n2k
     pTargetData->Class = AIS_ATON;
 
     if (!N2kIsNA(data.Longitude)) pTargetData->Lon = data.Longitude;
@@ -740,8 +740,16 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     Name[sizeof(Name) - 1] = 0;
     strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
+    pTargetData->MID = 124;  // Indicates a name from n2k
+
     pTargetData->b_OwnShip =
       AISinfo == tN2kAISTranceiverInfo::N2kaisti_Own_information_not_broadcast;
+
+    pTargetData->DimA = PosRefBow;
+    pTargetData->DimB = Length - PosRefBow;
+    pTargetData->DimC = Beam - PosRefStbd;
+    pTargetData->DimD = PosRefStbd;
+    pTargetData->Draft = Draught;
 
     //FIXME (dave) Populate more fiddly static data
 
@@ -786,6 +794,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     Name[sizeof(Name) - 1] = 0;
     strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
+    pTargetData->MID = 124;  // Indicates a name from n2k
 
     //FIXME (dave) Populate more fiddly static data
 
@@ -3972,7 +3981,8 @@ void AISshipNameCache(AisTargetData *pTargetData,
     // else there IS a valid name, lets check if it is in one of the hash lists.
     else if ((pTargetData->MID == 5) || (pTargetData->MID == 24) ||
              (pTargetData->MID == 19) ||
-             (pTargetData->MID == 123)) {  // 123: Has got a name from SignalK
+             (pTargetData->MID == 123) ||   // 123: Has got a name from SignalK
+             (pTargetData->MID == 124) ) {  // 124: Has got a name from n2k
       //  This message contains ship static data, so has a name field
       pTargetData->b_nameFromCache = false;
       ship_name = trimAISField(pTargetData->ShipName);
