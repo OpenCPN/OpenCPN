@@ -25,6 +25,7 @@
 #include "OCPN_Sound.h"
 
 class AisInfoGui: public wxEvtHandler {
+public:
   AisInfoGui();
 
   void ShowAisInfo(AisTargetData* palert_target);

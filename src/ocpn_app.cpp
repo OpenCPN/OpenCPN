@@ -88,6 +88,8 @@
 #include "about.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
+#include "ais_info_gui.h"
+
 #include "CanvasConfig.h"
 #include "chartdb.h"
 #include "chcanv.h"
@@ -460,6 +462,8 @@ double last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
 Multiplexer *g_pMUX;
 
 AisDecoder *g_pAIS;
+AisInfoGui *g_pAISGUI;
+
 bool g_bAIS_CPA_Alert;
 bool g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog *g_pais_alert_dialog_active;

@@ -3817,7 +3817,8 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       audioType = AISAUDIO_DSC;
     }
     // Show the alert
-    info_update.notify(palert_target);
+    if (palert_target)
+      info_update.notify(palert_target);
   }
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }

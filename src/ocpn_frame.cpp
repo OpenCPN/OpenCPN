@@ -95,6 +95,7 @@
 #include "ais_target_data.h"
 #include "AISTargetListDialog.h"
 #include "AISTargetQueryDialog.h"
+#include "ais_info_gui.h"
 #include "CanvasConfig.h"
 #include "chartdb.h"
 // #include "chartimg.h"  // for ChartBaseBSB
@@ -422,6 +423,8 @@ extern int g_SatsInView;
 extern bool g_bSatValid;
 extern double g_UserVar;
 extern AisDecoder *g_pAIS;
+extern AisInfoGui *g_pAISGUI;
+
 extern bool g_bUseGLL;
 extern int g_MemFootSec;
 extern int g_MemFootMB;
@@ -1213,6 +1216,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
     return r == wxID_OK;
   };
   g_pAIS = new AisDecoder(ais_callbacks);
+
+  g_pAISGUI = new AisInfoGui();
 
   //  Create/connect a dynamic event handler slot
   wxLogMessage(" **** Connect stuff");
