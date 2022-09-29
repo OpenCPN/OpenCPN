@@ -39,7 +39,6 @@
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "observable_navmsg.h"
-#include "OCPN_Sound.h"
 #include "ocpn_types.h"
 #include "track.h"
 
@@ -129,7 +128,6 @@ public:
 private:
   void OnActivate(wxActivateEvent &event);
   void OnTimerAIS(wxTimerEvent &event);
-  void OnSoundFinishedAISAudio(wxCommandEvent &event);
   void OnTimerDSC(wxTimerEvent &event);
 
   bool NMEACheckSumOK(const wxString &str);
@@ -202,7 +200,6 @@ private:
 
   bool m_bAIS_Audio_Alert_On;
   wxTimer m_AIS_Audio_Alert_Timer;
-  OcpnSound *m_AIS_Sound;
   int m_n_targets;
   bool m_bSuppressed;
   bool m_bGeneralAlert;

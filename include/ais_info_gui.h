@@ -31,6 +31,8 @@ public:
   void ShowAisInfo(AisTargetData* palert_target);
   bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
 
+  void OnSoundFinishedAISAudio(wxCommandEvent &event);
+
   bool m_bAIS_Audio_Alert_On;
   bool m_bAIS_AlertPlaying;
   OcpnSound* m_AIS_Sound;

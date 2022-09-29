@@ -110,8 +110,6 @@ bool g_benableAISNameCache;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 
-wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
-
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_FRPOS, ObservedEvt);
@@ -131,7 +129,6 @@ wxDEFINE_EVENT(EVT_N2K_129793, ObservedEvt);
 BEGIN_EVENT_TABLE(AisDecoder, wxEvtHandler)
 EVT_TIMER(TIMER_AIS1, AisDecoder::OnTimerAIS)
 EVT_TIMER(TIMER_DSC, AisDecoder::OnTimerDSC)
-EVT_COMMAND(wxID_ANY, SOUND_PLAYED_EVTYPE, AisDecoder::OnSoundFinishedAISAudio)
 END_EVENT_TABLE()
 
 static const double ms_to_knot_factor = 1.9438444924406;
@@ -201,7 +198,6 @@ AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
 
   g_pais_alert_dialog_active = NULL;
   m_bAIS_Audio_Alert_On = false;
-  m_AIS_Sound = 0;
 
   m_n_targets = 0;
 
@@ -3598,12 +3594,6 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
 
     if (ptarget->TCPA < 0) ptarget->bCPA_Valid = false;
   }
-}
-
-void AisDecoder::OnSoundFinishedAISAudio(wxCommandEvent &event) {
-  // By clearing this flag the main event loop will trigger repeated
-  // sounds for as long as the alert condition remains.
-  m_bAIS_AlertPlaying = false;
 }
 
 void AisDecoder::OnTimerDSC(wxTimerEvent &event) {
