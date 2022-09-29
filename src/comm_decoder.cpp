@@ -325,7 +325,13 @@ bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_d
   tN2kHeadingReference ref;
 
   if (ParseN2kPGN127250(v, SID, Heading, Deviation, Variation, ref)){
-    temp_data.gHdt = Heading;
+    temp_data.gHdt = N2kDoubleNA;
+    temp_data.gHdm = N2kDoubleNA;
+    if (ref == tN2kHeadingReference::N2khr_true)
+      temp_data.gHdt = Heading;
+    else if (ref == tN2kHeadingReference::N2khr_magnetic)
+      temp_data.gHdm = Heading;
+
     temp_data.gVar = Variation;
     temp_data.SID = SID;
     return true;
