@@ -752,21 +752,18 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     Destination[sizeof(Destination) - 1] = 0;
     strncpy(pTargetData->Destination, Destination, DESTINATION_LEN - 1);
 
-    //FIXME date time conversion
-    /***************
-    From ParseN2k PGN 129794
-    We have: uint16_t ETAdate  and  double ETAtime;
-    printf("ETADate: %d  EATTime; %f\n", ETAdate, ETAtime);
+    if (!N2kIsNA(ETAdate) && !N2kIsNA(ETAtime)) {
+      long secs = (ETAdate * 24 * 3600) + wxRound(ETAtime);
+      wxDateTime t((time_t)secs);
+      if (t.IsValid()) {
+        wxDateTime tz = t.ToUTC();
+        pTargetData->ETA_Mo = tz.GetMonth() + 1;
+        pTargetData->ETA_Day = tz.GetDay();
+        pTargetData->ETA_Hr = tz.GetHour();
+        pTargetData->ETA_Min = tz.GetMinute();
+      }
+    }
 
-    Result:  Name: ADA   ETADate: 19465  EATTime; 61200.000000
-     Should equal: Date: April 18 Time: 17:00
-      or ETA_Mo = 4  ETA_Day = 18 ETA_Hr = 17  ETA_min = 00
-
-    Result2: Name: RON  ETADate: 19408  EATTime; 39420.000000
-     Should equal: Date: Feb 20  Time: 10:57
-     or ETA_Mo = 2  ETA_Day = 20 ETA_Hr = 10  ETA_min = 57
-    ***********/
-    
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.notify();
