@@ -746,9 +746,27 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->DimC = Beam - PosRefStbd;
     pTargetData->DimD = PosRefStbd;
     pTargetData->Draft = Draught;
+    pTargetData->IMO = IMOnumber;
+    strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
+    pTargetData->ShipType = (unsigned char)VesselType;
+    Destination[sizeof(Destination) - 1] = 0;
+    strncpy(pTargetData->Destination, Destination, DESTINATION_LEN - 1);
 
-    //FIXME (dave) Populate more fiddly static data
+    //FIXME date time conversion
+    /***************
+    From ParseN2k PGN 129794
+    We have: uint16_t ETAdate  and  double ETAtime;
+    printf("ETADate: %d  EATTime; %f\n", ETAdate, ETAtime);
 
+    Result:  Name: ADA   ETADate: 19465  EATTime; 61200.000000
+     Should equal: Date: April 18 Time: 17:00
+      or ETA_Mo = 4  ETA_Day = 18 ETA_Hr = 17  ETA_min = 00
+
+    Result2: Name: RON  ETADate: 19408  EATTime; 39420.000000
+     Should equal: Date: Feb 20  Time: 10:57
+     or ETA_Mo = 2  ETA_Day = 20 ETA_Hr = 10  ETA_min = 57
+    ***********/
+    
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.notify();
@@ -791,8 +809,6 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
     pTargetData->b_nameValid = true;
     pTargetData->MID = 124;  // Indicates a name from n2k
-
-    //FIXME (dave) Populate more fiddly static data
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
     touch_state.notify();
@@ -843,8 +859,12 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
-
-      //FIXME (dave) Populate more fiddly static data
+    pTargetData->DimA = PosRefBow;
+    pTargetData->DimB = Length - PosRefBow;
+    pTargetData->DimC = Beam - PosRefStbd;
+    pTargetData->DimD = PosRefStbd;
+    strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
+    pTargetData->ShipType = (unsigned char)VesselType;
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
