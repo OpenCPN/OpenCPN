@@ -53,13 +53,13 @@
 #include "SoundFactory.h"
 #include "track.h"
 #include "N2KParser.h"
+#include "AISTargetAlertDialog.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
 
-class AISTargetAlertDialog;
 
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
@@ -3832,10 +3832,15 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       palert_target = palert_target_dsc;
       audioType = AISAUDIO_DSC;
     }
-    // Show the alert
-    if (palert_target)
-      info_update.notify(palert_target);
   }
+  else {                // Alert is currently shown
+    palert_target = Get_Target_Data_From_MMSI(
+        g_pais_alert_dialog_active->Get_Dialog_MMSI());
+  }
+    // Show or update the alert
+  if (palert_target)
+    info_update.notify(palert_target);
+
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }
 

@@ -149,7 +149,10 @@ void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
 
 void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
    int audioType = AISAUDIO_NONE;
-   if (palert_target) {
+   if (!palert_target) return;
+
+   // If no alert dialog shown yet...
+   if (!g_pais_alert_dialog_active) {
       bool b_jumpto = (palert_target->Class == AIS_SART) ||
                       (palert_target->Class == AIS_DSC);
       bool b_createWP = palert_target->Class == AIS_DSC;
