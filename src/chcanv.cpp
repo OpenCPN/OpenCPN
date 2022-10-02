@@ -210,6 +210,8 @@ extern bool g_bShowCompassWin;
 extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
 extern int g_Show_Target_Name_Scale;
+extern bool g_bCPAWarn;
+extern bool g_bTCPA_Max;
 
 extern MyFrame *gFrame;
 
@@ -3051,6 +3053,11 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
         case 'V':
           m_bShowNavobjects = !m_bShowNavobjects;
           Refresh(true);
+          break;
+
+        case 'W': // W Toggle CPA alarm
+          ToggleCPAWarn();
+          
           break;
 
         case 1:  // Ctrl A
@@ -6528,6 +6535,25 @@ void ChartCanvas::UpdateAIS() {
 
   //  Save this rectangle for next time
   ais_draw_rect = ais_rect;
+}
+
+void ChartCanvas::ToggleCPAWarn() {
+  g_bCPAWarn = !g_bCPAWarn;
+  wxString mess = _("ON");
+  if (!g_bCPAWarn) {
+    g_bTCPA_Max = false;
+    mess = _("OFF");
+  }
+  else { g_bTCPA_Max = true; }
+  // Print to status bar if available.
+  if (STAT_FIELD_SCALE >= 4 && parent_frame->GetStatusBar()) {
+    parent_frame->SetStatusText(_("CPA alarm ") + mess, STAT_FIELD_SCALE);
+  }
+  else {
+    OCPNMessageBox(this,
+                    _("CPA Alarm is switched") + _T(" ") + mess.MakeLower(),
+                    _("CPA") + _T(" ") + mess, 4, 4);
+  }
 }
 
 void ChartCanvas::OnActivate(wxActivateEvent &event) { ReloadVP(); }
