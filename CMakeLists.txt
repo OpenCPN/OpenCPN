@@ -1131,20 +1131,15 @@ if (LINUX)
   list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
 endif ()
 
-if (LINUX)
-  list(APPEND SRCS src/x11_font_picker.cpp)
-  list(APPEND HDRS include/x11_font_picker.h)
-endif ()
-
 if (APPLE)
   list(APPEND HDRS include/macutils.h )
   list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/macutils.c)
 endif ()
 
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
+if (LINUX AND OCPN_USE_CRASHREPORT)
   list(APPEND HDRS include/crashprint.h)
   list(APPEND SRCS src/crashprint.cpp)
-endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
+endif ()
 
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
