@@ -54,22 +54,33 @@ using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
 void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
   const auto& listeners = singleton.listeners;
-  ev_pair keys(listener, ev_type);
-  auto found = std::find(listeners.begin(), listeners.end(), keys);
-  if (found != listeners.end()) {
-      wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
-                   key, ptr_key(listener), ev_type);
+  ev_pair key_pair(listener, ev_type);
+  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
+    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
+    if (count > 2) {
+        // There are two occurences when assigning, the source is assumed
+        // to go away and remove one occurence.
+        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
+                     key, ptr_key(listener), ev_type);
+    }
   }
-  singleton.listeners.push_back(ev_pair(listener, ev_type));
+  singleton.listeners.push_back(key_pair);
 }
 
 bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   auto& listeners = singleton.listeners;
 
-  ev_pair keys(listener, ev_type);
-  auto found = std::find(listeners.begin(), listeners.end(), keys);
+  ev_pair key_pair(listener, ev_type);
+  auto found = std::find(listeners.begin(), listeners.end(), key_pair);
   if (found == listeners.end()) return false;
   listeners.erase(found);
+  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
+    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
+    if (count > 1) {
+        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
+                     key, ptr_key(listener), ev_type);
+    }
+  }
   return true;
 }
 
