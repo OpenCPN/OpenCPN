@@ -86,7 +86,7 @@ void MyFontPreviewer::OnPaint(wxPaintEvent &WXUNUSED(event)) {
   if (font.Ok()) {
     dc.SetFont(font);
     // Calculate vertical centre
-    long w, h;
+    wxCoord w, h;
     dc.GetTextExtent(wxT("X"), &w, &h);
     dc.SetTextForeground(GetForegroundColour());
     dc.SetClippingRegion(2, 2, size.x - 4, size.y - 4);
@@ -484,7 +484,7 @@ void X11FontPicker::OnChangeFace(wxCommandEvent &WXUNUSED(event)) {
 }
 
 void X11FontPicker::SetChoiceOptionsFromFacename(const wxString &facename) {
- 
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat="
 #pragma GCC diagnostic ignored "-Wformat-overflow"
