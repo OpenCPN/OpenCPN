@@ -344,6 +344,9 @@ public:
 
   ChartSymbols m_chartSymbols;
 
+  void PLIB_LoadS57GlobalConfig();
+  void PLIB_LoadS57ObjectConfig();
+
 private:
   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
   bool S52_flush_Plib();

@@ -31,6 +31,8 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include "dychart.h"
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -303,7 +305,6 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_useScissors = false;
   m_useFBO = false;
   m_useVBO = false;
-  m_TextureFormat = -1;
   m_useGLSL = false;
   m_TextureFormat = -1;
   m_GLMinCartographicLineWidth = 1.0;
@@ -379,7 +380,6 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
   m_useScissors = b_useScissors;
   m_useFBO = b_useFBO;
   m_useVBO = b_useVBO;
-  m_TextureFormat = nTextureFormat;
   m_useGLSL = true;
   m_TextureFormat = nTextureFormat;
   m_GLMinCartographicLineWidth = MinCartographicLineWidth;
@@ -1930,7 +1930,6 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
         }
 
         if (bdraw) {
-extern GLenum g_texture_rectangle_format;
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
           int draw_width = ptext->text_width;
@@ -2061,6 +2060,9 @@ extern GLenum g_texture_rectangle_format;
           GLint matlocf = glGetUniformLocation(S52texture_2D_shader_program,
                                                "TransformMatrix");
           glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+
+          glDisableVertexAttribArray(mPosAttrib);
+          glDisableVertexAttribArray(mUvAttrib);
 
           glDisable(GL_TEXTURE_2D);
           glDisable(GL_BLEND);
@@ -3242,6 +3244,11 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
           glGetUniformLocation(S52texture_2D_shader_program, "TransformMatrix");
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
 
+      // Clean up the GL state
+      glDisableVertexAttribArray(mPosAttrib);
+      glDisableVertexAttribArray(mUvAttrib);
+      glUseProgram(0);
+
 #endif  // GLES2
       glDisable(m_TextureFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
@@ -3731,6 +3738,10 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
           S52texture_2D_ColorMod_shader_program, "TransformMatrix");
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
 
+      // Restore GL state
+      glDisableVertexAttribArray(mPosAttrib);
+      glDisableVertexAttribArray(mUvAttrib);
+
 #endif  // GLES2
       glDisable(m_TextureFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
@@ -4109,6 +4120,8 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   GLint matlocf =
       glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
   glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+  glDisableVertexAttribArray(pos);
+  glUseProgram(0);
 #endif
 
   glDisable(GL_LINE_STIPPLE);
@@ -4335,6 +4348,7 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   // Must be cm93
   S52color *c;
   int w;
+  GLint pos = 0;
 
   char *str = (char *)rules->INSTstr;
   c = getColor(str + 7);  // Colour
@@ -4467,7 +4481,7 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
     glUseProgram(S52color_tri_shader_program);
 
     float fBuf[4];
-    GLint pos = glGetAttribLocation(S52color_tri_shader_program, "position");
+    pos = glGetAttribLocation(S52color_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), fBuf);
     glEnableVertexAttribArray(pos);
 
@@ -4583,8 +4597,11 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
             lastvalid = false;
         } else
           lastvalid = false;
-      }
-    }
+      }  //for
+    }   //for
+
+    glDisableVertexAttribArray(pos);
+
 #ifdef ocpnUSE_GL
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
@@ -4986,6 +5003,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
 
   // Get pointers to the attributes in the program.
   GLint mPosAttrib = glGetAttribLocation(S52Dash_shader_program, "position");
+  glEnableVertexAttribArray(mPosAttrib);
 
   GLint startPos = glGetUniformLocation(S52Dash_shader_program, "startPos");
   GLint texWidth = glGetUniformLocation(S52Dash_shader_program, "texWidth");
@@ -5129,7 +5147,9 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules,
     }
   }
 
-//    delete odc;
+  glUseProgram(0);
+  glDisableVertexAttribArray(mPosAttrib);
+
 #endif
   return 1;
 }
@@ -5991,6 +6011,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           glEnableVertexAttribArray(pos);
 
           glDrawArrays(GL_LINES, 0, 2);
+          glDisableVertexAttribArray(pos);
           glUseProgram(0);
 
 #else
@@ -6071,6 +6092,8 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           glEnableVertexAttribArray(pos);
 
           glDrawArrays(GL_LINES, 0, 2);
+          glDisableVertexAttribArray(pos);
+
           glUseProgram(0);
 
 #else
@@ -6473,6 +6496,9 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   GLint matlocf =
       glGetUniformLocation(S52ring_shader_program, "TransformMatrix");
   glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+  glUseProgram(0);
+  glDisableVertexAttribArray(mPosAttrib);
+
 
   //    Draw the sector legs directly on the target DC
   if (sector_radius > 0) {
@@ -8670,11 +8696,6 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp)
 #ifdef ocpnUSE_GL
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
-  GLint id;
-  glGetIntegerv(GL_CURRENT_PROGRAM,&id);
-
-  //glUseProgram(0);
-  //return 0;
   GLenum reset_err = glGetError();
 
   S52color *c;
@@ -9006,13 +9027,16 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp)
 
     }  // while
 
-    if (b_useVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    if (b_useVBO)
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     mat4x4 IM;
     mat4x4_identity(IM);
     GLint matlocf =
         glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
     glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+
+    glDisableVertexAttribArray(pos);
     glUseProgram(0);
 
     if (b_useVBO && b_temp_vbo) {
@@ -9032,7 +9056,7 @@ int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules, ViewPort *v
 //  GLint id;
 //  glGetIntegerv(GL_CURRENT_PROGRAM,&id);
 
-  GLenum reset_err = glGetError();
+  //GLenum reset_err = glGetError();
 
   S52color *c;
   char *str = (char *)rules->INSTstr;
@@ -9062,7 +9086,7 @@ int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules, ViewPort *v
 
   if (rzRules->obj->pPolyTessGeo) {
     bool b_temp_vbo = false;
-    bool b_transform = false;
+    //bool b_transform = false;
 
     // Set up the OpenGL transform matrix for this object
     // We transform from SENC SM vertex data to screen.
@@ -9403,7 +9427,6 @@ int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules, ViewPort *v
         box = p_tp->tri_box;
 
       if (!BBView.IntersectOut(box)) {
-//#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
         if (b_useVBO) {
@@ -9612,7 +9635,6 @@ void RotateToViewPort(const ViewPort &vp) {
 }
 
 int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
-//#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   return RenderToGLAP_GLSL(rzRules, rules, vp);
 #else
@@ -9891,7 +9913,7 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp) {
   } else {
     // restore clipping region
     glPopMatrix();
-    SetGLClipRect(*vp, m_last_clip_rect);
+    //SetGLClipRect(*vp, m_last_clip_rect);
 
     glPushMatrix();
     RotateToViewPort(*vp);
@@ -9981,8 +10003,8 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules,
                   vp->m_projection_type == PROJECTION_MERCATOR;
 
   if (rzRules->obj->pPolyTessGeo) {
-    bool b_temp_vbo = false;
-    bool b_transform = false;
+    //bool b_temp_vbo = false;
+    //bool b_transform = false;
 
     // perform deferred tesselation
     if (!rzRules->obj->pPolyTessGeo->IsOk())
@@ -10286,6 +10308,7 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules,
         glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
     glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
     glUseProgram(0);
+    glDisableVertexAttribArray(pos);
 
 
   }  // if pPolyTessGeo
@@ -10503,7 +10526,7 @@ render_canvas_parms *s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules,
     int width = (int)dwidth + 1;
     int height = (int)dheight + 1;
 
-    float render_scale = 1.0;
+    //float render_scale = 1.0;
 #ifdef sUSE_ANDROID_GLES2
     int width_pot = width;
     int height_pot = height;
@@ -11430,96 +11453,129 @@ void s52plib::PLIB_LoadS57Config() {
   }
 }
 
+void s52plib::PLIB_LoadS57GlobalConfig()
+{
+    //    Get a pointer to the opencpn configuration object
+    wxFileConfig *pconfig = GetOCPNConfigObject();
+
+    int read_int;
+    double dval;
+
+    pconfig->SetPath( _T ( "/Settings" ) );
+
+    pconfig->SetPath( _T ( "/Settings/GlobalState" ) );
+
+    pconfig->Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
+    SetShowS57ImportantTextOnly( !( read_int == 0 ) );
+
+    pconfig->Read( _T ( "nSymbolStyle" ), &read_int, (enum _LUPname) PAPER_CHART );
+    m_nSymbolStyle = (LUPname) read_int;
+
+    pconfig->Read( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
+    m_nBoundaryStyle = (LUPname) read_int;
+
+    pconfig->Read( _T ( "bShowMeta" ), &read_int, 0 );
+    m_bShowMeta = !( read_int == 0 );
+
+    pconfig->Read( _T ( "bUseSCAMIN" ), &read_int, 1 );
+    m_bUseSCAMIN = !( read_int == 0 );
+
+    pconfig->Read( _T ( "bDeClutterText" ), &read_int, 0 );
+    m_bDeClutterText = !( read_int == 0 );
+
+    pconfig->Read( _T ( "bShowNationalText" ), &read_int, 0 );
+    m_bShowNationalTexts = !( read_int == 0 );
+
+    if( pconfig->Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
+        S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
+        S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
+    }
+
+    if( pconfig->Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam(
+        S52_MAR_SHALLOW_CONTOUR, dval );
+
+    if( pconfig->Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(
+        S52_MAR_DEEP_CONTOUR, dval );
+
+    if( pconfig->Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam(
+        S52_MAR_TWO_SHADES, dval );
+
+    UpdateMarinerParams();
+
+    pconfig->SetPath( _T ( "/Settings/GlobalState" ) );
+    pconfig->Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    read_int = wxMax(read_int, 0);                      // qualify value
+    read_int = wxMin(read_int, 2);
+    m_nDepthUnitDisplay = read_int;
+
+}
+
+
+void s52plib::PLIB_LoadS57ObjectConfig()
+{
+    //    Get a pointer to the opencpn configuration object
+    wxFileConfig *pconfig = GetOCPNConfigObject();
+
+    //int read_int;
+    //double dval;
+
+    //    S57 Object Class Visibility
+
+    OBJLElement *pOLE;
+
+    pconfig->SetPath( _T ( "/Settings/ObjectFilter" ) );
+
+    int iOBJMax = pconfig->GetNumberOfEntries();
+    if( iOBJMax ) {
+
+        wxString str;
+        long val;
+        long dummy;
+
+        wxString sObj;
+
+        bool bCont = pconfig->GetFirstEntry( str, dummy );
+        while( bCont ) {
+            pconfig->Read( str, &val );              // Get an Object Viz
+
+            bool bNeedNew = true;
+
+            if( str.StartsWith( _T ( "viz" ), &sObj ) ) {
+                for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
+                    pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
+                    if( !strncmp( pOLE->OBJLName, sObj.mb_str(), 6 ) ) {
+                        pOLE->nViz = val;
+                        bNeedNew = false;
+                        break;
+                    }
+                }
+
+                if( bNeedNew ) {
+                    pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
+                    strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
+                    pOLE->nViz = 1;
+
+                    pOBJLArray->Add( (void *) pOLE );
+                }
+            }
+            bCont = pconfig->GetNextEntry( str, dummy );
+        }
+    }
+}
+
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender(void) { PrepareForRender(NULL); }
 
 void s52plib::PrepareForRender(ViewPort *vp) {
   m_benableGLLS = true;  // default is to always use RenderToGLLS (VBO support)
 
-//#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   void PrepareS52ShaderUniforms(ViewPort * vp);
   if (m_useGLSL && vp) PrepareS52ShaderUniforms(vp);
 #endif
 
-#ifdef BUILDING_PLUGIN
-  // Has the core S52PLIB configuration changed?
-  //  If it has, reload from global preferences file, and other dynamic status
-  //  information. This additional step is only necessary for Plugin chart
-  //  rendering, as core directly sets options and updates State Hash as needed.
-
-  int core_config = PI_GetPLIBStateHash();
-  if (core_config != m_myConfig) {
-    g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
-
-    //  If a modern (> OCPN 4.4) version of the core is active,
-    //  we may rely upon having been updated on S52PLIB state by means of PlugIn
-    //  messaging scheme.
-    if (((m_coreVersionMajor == 4) && (m_coreVersionMinor >= 5)) ||
-        m_coreVersionMajor > 4) {
-      // Retain compatibility with O4.8.x
-      if ((m_coreVersionMajor == 4) && (m_coreVersionMinor < 9)) {
-        // First, we capture some temporary values that were set by messaging,
-        // but would be overwritten by config read
-        bool bTextOn = m_bShowS57Text;
-        bool bSoundingsOn = m_bShowSoundg;
-        enum _DisCat old = m_nDisplayCategory;
-
-        PLIB_LoadS57Config();
-
-        //  And then reset the temp values that were overwritten by config load
-        m_bShowS57Text = bTextOn;
-        m_bShowSoundg = bSoundingsOn;
-        m_nDisplayCategory = old;
-      } else
-        PLIB_LoadS57GlobalConfig();
-
-      // Pick up any changes in Mariner's Standard object list
-      PLIB_LoadS57ObjectConfig();
-
-      // Detect and manage "LIGHTS" toggle
-      bool bshow_lights = !m_lightsOff;
-      if (!bshow_lights)  // On, going off
-        AddObjNoshow("LIGHTS");
-      else {  // Off, going on
-        RemoveObjNoshow("LIGHTS");
-      }
-
-      const char *categories[] = {"ACHBRT", "ACHARE", "CBLSUB", "PIPARE",
-                                  "PIPSOL", "TUNNEL", "SBDARE"};
-      unsigned int num = sizeof(categories) / sizeof(categories[0]);
-
-      // Handle Anchor area toggle
-      if ((m_nDisplayCategory == OTHER) ||
-          (m_nDisplayCategory == MARINERS_STANDARD)) {
-        bool bAnchor = m_anchorOn;
-
-        if (!bAnchor) {
-          for (unsigned int c = 0; c < num; c++) AddObjNoshow(categories[c]);
-        } else {
-          for (unsigned int c = 0; c < num; c++) RemoveObjNoshow(categories[c]);
-
-          //  Force the USER STANDARD object list anchor detail items ON
-          unsigned int cnt = 0;
-          for (unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++) {
-            OBJLElement *pOLE = (OBJLElement *)(pOBJLArray->Item(iPtr));
-            for (unsigned int c = 0; c < num; c++) {
-              if (!strncmp(pOLE->OBJLName, categories[c], 6)) {
-                pOLE->nViz = 1;  // force on
-                cnt++;
-                break;
-              }
-            }
-            if (cnt == num) break;
-          }
-        }
-      }
-    }
-    m_myConfig = PI_GetPLIBStateHash();
-  }
-
-#endif  // BUILDING_PLUGIN
+  m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
 
   // Reset the LIGHTS declutter machine
   lastLightLat = 0;
@@ -11820,6 +11876,10 @@ void s52plib::DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2,
 
     glDrawArrays(GL_LINES, 0, 2);
   }
+
+  glUseProgram(0);
+  glDisableVertexAttribArray(pos);
+
 #endif
 }
 
@@ -11927,7 +11987,7 @@ void RenderFromHPGL::SetPen() {
                          5.0));  // 0.2 mm nominal, but not less than 1 pixel
     // qDebug() << nominal_line_width_pix;
     line_width =
-        wxMax(1/*g_GLMinSymbolLineWidth*/, (float)penWidth * nominal_line_width_pix);
+        wxMax(1/*m_GLMinSymbolLineWidth*/, (float)penWidth * nominal_line_width_pix);
     glLineWidth(line_width);
 #endif
 
@@ -11992,6 +12052,9 @@ void RenderFromHPGL::Line(wxPoint from, wxPoint to) {
     glEnableVertexAttribArray(pos);
 
     glDrawArrays(GL_LINES, 0, 2);
+    glUseProgram(0);
+    glDisableVertexAttribArray(pos);
+
 #else
     glBegin(GL_LINES);
     glVertex2i(from.x, from.y);
@@ -12439,6 +12502,9 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       } else if (n == 3) {
         glDrawArrays(GL_TRIANGLES, 0, 3);
       }
+
+      glDisableVertexAttribArray(mPosAttrib);
+
     }
 
 #else
@@ -13207,10 +13273,10 @@ bool shadersLoaded = false;
 
 bool loadS52Shaders() {
   bool ret_val = true;
-  GLint success;
+  //GLint success;
 
   enum Consts { INFOLOG_LEN = 512 };
-  GLchar infoLog[INFOLOG_LEN];
+  //GLchar infoLog[INFOLOG_LEN];
 
   // Are the shaders ready?
   if(shadersLoaded)
