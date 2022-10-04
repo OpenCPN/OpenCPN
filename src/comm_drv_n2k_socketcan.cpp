@@ -40,6 +40,8 @@
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
+#define DS_RX_BUFFER_SIZE 4096
+
 template <typename T>
 class n2k_atomic_queue {
 public:
@@ -173,7 +175,6 @@ public:
   CommDriverN2KSocketCANThread(CommDriverN2KSocketCAN* Launcher,
                                const wxString& PortName);
 
-  ~CommDriverN2KSocketCANThread(void);
   void* Entry();
   bool SetOutMsg(const wxString& msg);
   void OnExit(void);
@@ -197,7 +198,7 @@ private:
   unsigned char* put_ptr;
   unsigned char* tak_ptr;
 
-  unsigned char* rx_buffer;
+  unsigned char rx_buffer[DS_RX_BUFFER_SIZE + 1];
 
   int m_n_timeout;
 
@@ -388,7 +389,6 @@ void CommDriverN2KSocketCAN::handle_N2K_SocketCAN_RAW(
 // data (len):      08 70 EB 14 E8 8E 52 D2
 // packet CRC:      0xBB
 
-#define DS_RX_BUFFER_SIZE 4096
 
 CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
     CommDriverN2KSocketCAN* Launcher, const wxString& PortName) {
@@ -396,17 +396,11 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
 
   m_PortName = PortName;
 
-  rx_buffer = new unsigned char[DS_RX_BUFFER_SIZE + 1];
-
   put_ptr = rx_buffer;  // local circular queue
   tak_ptr = rx_buffer;
 
   MapInitialize();
   Create();
-}
-
-CommDriverN2KSocketCANThread::~CommDriverN2KSocketCANThread(void) {
-  delete[] rx_buffer;
 }
 
 void CommDriverN2KSocketCANThread::OnExit(void) {}
