@@ -23,13 +23,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include <vector>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
+#include <thread>
+#include <vector>
 
 #include <sys/time.h>
 
+#include <wx/datetime.h>
+#include <wx/event.h>
 #include <wx/log.h>
+#include <wx/string.h>
+#include <wx/utils.h>
 
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_navmsg_bus.h"
