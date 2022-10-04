@@ -284,25 +284,22 @@ bool CommDriverN2KSocketCAN::Open() {
 }
 
 void CommDriverN2KSocketCAN::Close() {
-  wxLogMessage(wxString::Format(_T("Closing N2K socketCAN: %s"),
-                                m_params.socketCAN_port.c_str()));
+  wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
 
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
     {
-      wxLogMessage(_T("Stopping Secondary Thread"));
+      wxLogMessage("Stopping Secondary Thread");
 
       m_Thread_run_flag = 0;
       int tsec = 10;
       while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
 
-      wxString msg;
       if (m_Thread_run_flag < 0)
-        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+        wxLogMessage("Stopped in %d sec.", 10 - tsec);
       else
-        msg.Printf(_T("Not Stopped after 10 sec."));
-      wxLogMessage(msg);
+        wxLogMessage("Not Stopped after 10 sec.");
     }
 
     m_pSecondary_Thread = NULL;
@@ -435,9 +432,8 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
   can_socket = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (can_socket < 0) {
-    wxString msg(_T("SocketCAN socket create failed: "));
-    msg.Append(m_PortName);
-    ThreadMessage(msg);
+    wxString msg("SocketCAN socket create failed: ");
+    ThreadMessage(msg + m_PortName);
     return 0;
   }
 
@@ -448,9 +444,8 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
   // Get the index of the interface
   if (ioctl(can_socket, SIOCGIFINDEX, &can_request) < 0) {
-    wxString msg(_T("SocketCAN socket IOCTL (SIOCGIFINDEX) failed: "));
-    msg.Append(m_PortName);
-    ThreadMessage(msg);
+    wxString msg("SocketCAN socket IOCTL (SIOCGIFINDEX) failed: ");
+    ThreadMessage(msg + m_PortName);
     return 0;
   }
 
@@ -459,17 +454,14 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
   // Check if the interface is UP
   if (ioctl(can_socket, SIOCGIFFLAGS, &can_request) < 0) {
-    wxString msg(_T("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: "));
-    msg.Append(m_PortName);
-    ThreadMessage(msg);
+    wxString msg("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: ");
+    ThreadMessage(msg + m_PortName);
     return 0;
   }
 
   if ((can_request.ifr_flags & IFF_UP)) {
-    wxString msg(_T("socketCan interface is UP"));
-    ThreadMessage(msg);
+    ThreadMessage(wxString("socketCan interface is UP"));
   } else {
-    wxString msg(_T("socketCan Socket interface is DOWN"));
     return 0;
   }
 
@@ -485,11 +477,11 @@ void* CommDriverN2KSocketCANThread::Entry() {
              sizeof(socketTimeout));
 
   // and then bind
-  if (bind(can_socket, (struct sockaddr*)&can_address, sizeof(can_address)) <
-      0) {
-    wxString msg(_T("SocketCAN socket bind() failed: "));
-    msg.Append(m_PortName);
-    ThreadMessage(msg);
+  int r =
+    bind(can_socket, (struct sockaddr*)&can_address, sizeof(can_address));
+  if (r < 0) {
+    wxString("SocketCAN socket bind() failed: ");
+    ThreadMessage(wxString("SocketCAN socket bind() failed: ") + m_PortName);
     return 0;
   }
 
