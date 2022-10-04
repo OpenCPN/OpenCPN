@@ -170,7 +170,7 @@ unsigned long long GetTimeInMicroseconds() {
 #endif
 }
 
-class CommDriverN2KSocketCANThread : public wxThread {
+class CommDriverN2KSocketCANThread {
 public:
   CommDriverN2KSocketCANThread(CommDriverN2KSocketCAN* Launcher,
                                const wxString& PortName);
@@ -279,7 +279,8 @@ bool CommDriverN2KSocketCAN::Open() {
   SetSecondaryThread(
       new CommDriverN2KSocketCANThread(this, m_params.socketCAN_port));
   SetThreadRunFlag(1);
-  GetSecondaryThread()->Run();
+  std::thread t(&CommDriverN2KSocketCANThread::Entry, GetSecondaryThread());
+  t.detach();
 
   return true;
 }
@@ -302,7 +303,7 @@ void CommDriverN2KSocketCAN::Close() {
       else
         wxLogMessage("Not Stopped after 10 sec.");
     }
-
+    delete m_pSecondary_Thread;
     m_pSecondary_Thread = NULL;
     m_bsec_thread_active = false;
   }
@@ -400,7 +401,6 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
   tak_ptr = rx_buffer;
 
   MapInitialize();
-  Create();
 }
 
 void CommDriverN2KSocketCANThread::OnExit(void) {}
@@ -483,10 +483,6 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
   // The main loop
   while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) {
-      not_done = false;
-    }
-
     // Read from the socket
 
     // Set the file descriptor

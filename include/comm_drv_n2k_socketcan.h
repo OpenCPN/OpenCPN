@@ -26,6 +26,14 @@
 #ifndef _COMMDRIVERN2KSOCKETCAN_H
 #define _COMMDRIVERN2KSOCKETCAN_H
 
+#ifdef _MSC_VER
+#error "This file can not be compiled on Windows."
+#endif
+
+#include <memory>
+#include <string>
+#include <thread>
+
 // SocketCAN
 #include <sys/ioctl.h>
 #include <sys/select.h>
@@ -35,15 +43,12 @@
 #include <linux/can/raw.h>
 #include <unistd.h>
 
-
-#include <wx/thread.h>
+#ifndef __ANDROID__
+#include "serial/serial.h"
+#endif
 
 #include "comm_drv_n2k.h"
 #include "conn_params.h"
-
-#ifndef __OCPN__ANDROID__
-#include "serial/serial.h"
-#endif
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
