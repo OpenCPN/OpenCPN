@@ -233,6 +233,8 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_HyperlinkList = new HyperlinkList;
   m_IconIsDirty = true;
 
+  m_iTextTexture = 0;
+
   if (!pGUID.IsEmpty())
     m_GUID = pGUID;
   else
