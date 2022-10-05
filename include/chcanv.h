@@ -238,6 +238,7 @@ public:
   void UpdateShips();
   void UpdateAIS();
   void UpdateAlerts();  // pjotrc 2010.02.22
+  void ToggleCPAWarn();
 
   bool IsMeasureActive() { return m_bMeasure_Active; }
   wxBitmap &GetTideBitmap() { return m_cTideBitmap; }

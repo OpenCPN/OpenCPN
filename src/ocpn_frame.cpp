@@ -423,6 +423,7 @@ extern bool g_bSatValid;
 extern double g_UserVar;
 extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
+extern bool g_bCPAWarn;
 
 extern bool g_bUseGLL;
 extern int g_MemFootSec;
@@ -2874,6 +2875,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_MENU_AIS_CPAWARNING: {
+      if (GetPrimaryCanvas()) GetPrimaryCanvas()->ToggleCPAWarn();
+      SetMenubarItemState(ID_MENU_AIS_CPAWARNING, g_bCPAWarn);
+      break;
+    }
+
     case wxID_PREFERENCES:
     case ID_SETTINGS: {
       g_MainToolbar->HideTooltip();
@@ -3947,6 +3954,7 @@ void MyFrame::RegisterGlobalMenuItems() {
   ais_menu->AppendCheckItem(ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks"));
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs"));
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms"));
+  ais_menu->AppendCheckItem(ID_MENU_AIS_CPAWARNING, _menuText(_("Show CPA Warnings"), _T("W")));
   ais_menu->AppendSeparator();
   ais_menu->Append(ID_MENU_AIS_TARGETLIST, _("AIS target list") + _T("..."));
   m_pMenuBar->Append(ais_menu, _("&AIS"));
@@ -4024,6 +4032,7 @@ void MyFrame::UpdateGlobalMenuItems() {
   m_pMenuBar->FindItem(ID_MENU_AIS_TRACKS)->Check(g_bAISShowTracks);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPADIALOG)->Check(g_bAIS_CPA_Alert);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPASOUND)->Check(g_bAIS_CPA_Alert_Audio);
+  m_pMenuBar->FindItem(ID_MENU_AIS_CPAWARNING)->Check(g_bCPAWarn);
   m_pMenuBar->FindItem(ID_MENU_SHOW_NAVOBJECTS)
       ->Check(GetPrimaryCanvas()->m_bShowNavobjects);
 
@@ -4087,6 +4096,7 @@ void MyFrame::UpdateGlobalMenuItems(ChartCanvas *cc) {
   m_pMenuBar->FindItem(ID_MENU_AIS_TRACKS)->Check(g_bAISShowTracks);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPADIALOG)->Check(g_bAIS_CPA_Alert);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPASOUND)->Check(g_bAIS_CPA_Alert_Audio);
+  m_pMenuBar->FindItem(ID_MENU_AIS_CPAWARNING)->Check(g_bCPAWarn);
   m_pMenuBar->FindItem(ID_MENU_SHOW_NAVOBJECTS)->Check(cc->m_bShowNavobjects);
   m_pMenuBar->FindItem(ID_MENU_SHOW_TIDES)->Check(cc->GetbShowTide());
   m_pMenuBar->FindItem(ID_MENU_SHOW_CURRENTS)->Check(cc->GetbShowCurrent());
