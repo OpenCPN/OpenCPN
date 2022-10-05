@@ -62,7 +62,7 @@ extern wxString gRmcDate, gRmcTime;
 extern int g_nNMEADebug;
 extern int g_priSats, g_SatsInView;
 extern bool g_bSatValid;
-extern bool g_bHDT_Rx, g_bVAR_Rx;
+extern bool g_bVAR_Rx;
 extern double g_UserVar;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
@@ -186,7 +186,6 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   //  Update and check watchdog timer for True Heading data source
   m_watchdogs.heading_watchdog--;
   if (m_watchdogs.heading_watchdog <= 0) {
-    g_bHDT_Rx = false;
     gHdt = NAN;
     if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
       wxLogMessage(_T("   ***HDT Watchdog timeout..."));
@@ -213,22 +212,20 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
 
 void CommBridge::MakeHDTFromHDM() {
   //    Here is the one place we try to create gHdt from gHdm and gVar,
-  //    but only if NMEA HDT sentence is not being received
 
-  if (!g_bHDT_Rx) {
-    if (!std::isnan(gHdm)) {
-      // Set gVar if needed from manual entry. gVar will be overwritten if
-      // WMM plugin is available
-      if (std::isnan(gVar) && (g_UserVar != 0.0)) gVar = g_UserVar;
-      gHdt = gHdm + gVar;
-      if (!std::isnan(gHdt)) {
-        if (gHdt < 0)
-          gHdt += 360.0;
-        else if (gHdt >= 360)
-          gHdt -= 360.0;
 
-        m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
-      }
+  if (!std::isnan(gHdm)) {
+    // Set gVar if needed from manual entry. gVar will be overwritten if
+    // WMM plugin is available
+    if (std::isnan(gVar) && (g_UserVar != 0.0)) gVar = g_UserVar;
+    gHdt = gHdm + gVar;
+    if (!std::isnan(gHdt)) {
+      if (gHdt < 0)
+        gHdt += 360.0;
+      else if (gHdt >= 360)
+        gHdt -= 360.0;
+
+      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
     }
   }
 }
@@ -375,7 +372,6 @@ void CommBridge::OnDriverStateChange(){
   // Reset all "first-come" priority states
   InitializePriorityContainers();
 
-  g_bHDT_Rx = false;
 }
 
 

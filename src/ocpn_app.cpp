@@ -389,7 +389,6 @@ bool bGPSValid;
 int gHDx_Watchdog;
 int gHDT_Watchdog;
 int gVAR_Watchdog;
-bool g_bHDT_Rx;
 bool g_bVAR_Rx;
 
 int gSAT_Watchdog;
@@ -1875,7 +1874,6 @@ bool MyApp::OnInit() {
   g_priSats = 99;
 
   //  Most likely installations have no ownship heading information
-  g_bHDT_Rx = false;
   g_bVAR_Rx = false;
 
   //  Start up a new track if enabled in config file

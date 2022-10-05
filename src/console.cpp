@@ -135,7 +135,6 @@ double gSog;
 double gVar;
 double g_UserVar;
 int gps_watchdog_timeout_ticks;
-bool g_bHDT_Rx;
 int g_nNMEADebug;
 bool g_bSatValid;
 bool g_bVAR_Rx;

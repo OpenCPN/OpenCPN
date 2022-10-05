@@ -415,7 +415,6 @@ extern int gGPS_Watchdog;
 extern int gHDx_Watchdog;
 extern int gHDT_Watchdog;
 extern int gVAR_Watchdog;
-extern bool g_bHDT_Rx;
 extern bool g_bVAR_Rx;
 extern int gSAT_Watchdog;
 extern int g_priSats;

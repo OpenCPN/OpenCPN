@@ -41,7 +41,7 @@
 
 extern int gps_watchdog_timeout_ticks;
 extern wxString gRmcDate, gRmcTime;
-extern bool g_bHDT_Rx, g_bVAR_Rx;
+extern bool g_bVAR_Rx;
 
 
 bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,
@@ -143,9 +143,6 @@ bool CommDecoder::DecodeHDT(std::string s, NavData& temp_data) {
   if (!m_NMEA0183.Parse()) return false;
 
   temp_data.gHdt = m_NMEA0183.Hdt.DegreesTrue;
-  if (!std::isnan(m_NMEA0183.Hdt.DegreesTrue)) {
-    g_bHDT_Rx = true;
-  }
 
   return true;
 }
