@@ -411,7 +411,7 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
     m_waypoint_man.m_pIconArray->Add(pmi);
   }
 
-  size = m_waypoint_man.m_pLegacyIconArray->GetCount();
+  size = m_waypoint_man.m_pExtendedIconArray->GetCount();
   for (unsigned int i = 0; i < size; i++) {
     pmi = (MarkIcon *) m_waypoint_man.m_pExtendedIconArray->Item(i);
 
