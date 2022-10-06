@@ -139,7 +139,7 @@ public:
     ConnectionParams params;
     params.socketCAN_port = "vcan0";
     params.Type = SOCKETCAN;
-    auto driver = std::make_shared<CommDriverN2KSocketCAN>(&params, msgbus);
+    auto driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
     driver->Activate();
     ProcessPendingEvents();
     int0 = registry.GetDrivers().size() - start_size;

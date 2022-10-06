@@ -90,7 +90,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
     case SOCKETCAN:
     {
-      auto driver = std::make_shared<CommDriverN2KSocketCAN>(params, msgbus);
+      auto driver = CommDriverN2KSocketCAN::Create(params, msgbus);
       registry.Activate(driver);
       return driver;
       break;

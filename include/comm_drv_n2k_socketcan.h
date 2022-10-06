@@ -67,14 +67,20 @@ typedef struct CanHeader {
   int pgn;
 } CanHeader;
 
-
 class CommDriverN2KSocketCANThread;  // fwd
 class CommDriverN2KSocketCANEvent;
 
 class CommDriverN2KSocketCAN : public CommDriverN2K, public wxEvtHandler {
 public:
-  CommDriverN2KSocketCAN();
-  CommDriverN2KSocketCAN(const ConnectionParams* params, DriverListener& listener);
+  static std::shared_ptr<CommDriverN2KSocketCAN> Create() {
+    return std::shared_ptr<CommDriverN2KSocketCAN>(
+        new CommDriverN2KSocketCAN());
+  }
+  static std::shared_ptr<CommDriverN2KSocketCAN> Create(
+      const ConnectionParams* params, DriverListener& listener) {
+    return std::shared_ptr<CommDriverN2KSocketCAN>(
+        new CommDriverN2KSocketCAN(params, listener));
+  }
 
   virtual ~CommDriverN2KSocketCAN();
 
@@ -106,6 +112,10 @@ public:
   int m_Thread_run_flag;
 
 private:
+  CommDriverN2KSocketCAN();
+  CommDriverN2KSocketCAN(const ConnectionParams* params,
+                         DriverListener& listener);
+
   bool m_bok;
   std::string m_portstring;
   std::string m_BaudRate;
