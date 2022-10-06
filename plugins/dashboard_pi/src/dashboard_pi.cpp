@@ -2057,7 +2057,7 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
             iPRN = (int)SatelliteInfo.PRN;
             dElevRad = SatelliteInfo.Elevation;
             dAzimRad = SatelliteInfo.Azimuth;
-            iSNR = (int)SatelliteInfo.SNR;
+            iSNR = N2kIsNA(SatelliteInfo.SNR) ? 0 : (int)SatelliteInfo.SNR;
 
             N2K_SatInfo[idx].SatNumber = iPRN;
             N2K_SatInfo[idx].ElevationDegrees = GEODESIC_RAD2DEG(dElevRad);
