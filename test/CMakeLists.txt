@@ -18,6 +18,7 @@ set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 
 add_executable(tests
   tests.cpp
+  n2k_tests.cpp
   ${MODEL_SRC}
   ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
   ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
