@@ -307,6 +307,10 @@ void CommDriverN2KSocketCAN::Close() {
     m_pSecondary_Thread = NULL;
     m_bsec_thread_active = false;
   }
+  auto& registry = CommDriverRegistry::getInstance();
+  if (FindDriver(registry.GetDrivers(), iface, bus)) {
+    registry.Deactivate(shared_from_this());
+  }
 }
 
 void CommDriverN2KSocketCAN::Activate() {
