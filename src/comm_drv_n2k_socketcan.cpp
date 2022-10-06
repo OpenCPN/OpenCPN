@@ -22,7 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+#include <algorithm>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <thread>
@@ -394,7 +394,6 @@ void CommDriverN2KSocketCAN::handle_N2K_SocketCAN_RAW(
 // data (len):      08 70 EB 14 E8 8E 52 D2
 // packet CRC:      0xBB
 
-
 CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
     CommDriverN2KSocketCAN* Launcher, const wxString& PortName) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
@@ -475,8 +474,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
              sizeof(socketTimeout));
 
   // and then bind
-  int r =
-    bind(can_socket, (struct sockaddr*)&can_address, sizeof(can_address));
+  int r = bind(can_socket, (struct sockaddr*)&can_address, sizeof(can_address));
   if (r < 0) {
     wxString("SocketCAN socket bind() failed: ");
     ThreadMessage(wxString("SocketCAN socket bind() failed: ") + m_PortName);
@@ -604,17 +602,18 @@ void* CommDriverN2KSocketCANThread::Entry() {
 // Checks whether a frame is a single frame message or multiframe Fast Packet
 // message
 bool CommDriverN2KSocketCANThread::IsFastMessage(const CanHeader header) {
-  static const unsigned int nmeafastMessages[] = {
-      65240,  126208, 126464, 126996, 126998, 127233, 127237, 127489, 127496,
-      127506, 128275, 129029, 129038, 129039, 129040, 129041, 129284, 129285,
-      129540, 129793, 129794, 129795, 129797, 129798, 129801, 129802, 129808,
-      129809, 129810, 130065, 130074, 130323, 130577, 130820, 130822, 130824};
-  for (size_t i = 0; i < sizeof(nmeafastMessages) / sizeof(unsigned int); i++) {
-    if (nmeafastMessages[i] == (unsigned int)header.pgn) {
-      return TRUE;
-    }
-  }
-  return FALSE;
+  static const std::vector<unsigned> haystack = {
+      // All known multiframe fast messages
+      65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
+      127496u, 127506u, 128275u, 129029u, 129038u, 129039u, 129040u, 129041u,
+      129284u, 129285u, 129540u, 129793u, 129794u, 129795u, 129797u, 129798u,
+      129801u, 129802u, 129808u, 129809u, 129810u, 130065u, 130074u, 130323u,
+      130577u, 130820u, 130822u, 130824u};
+
+  unsigned needle = static_cast<unsigned>(header.pgn);
+  auto found = std::find_if(haystack.begin(), haystack.end(),
+                            [needle](unsigned i) { return i == needle; });
+  return found != haystack.end();
 }
 
 // Determine whether an entry with a matching header & sequence ID exists.
