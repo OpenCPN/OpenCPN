@@ -7338,8 +7338,9 @@ bool PI_PLIBObjectRenderCheck(PI_S57Obj *pObj, PlugIn_ViewPort *vp) {
     rzRules.child = NULL;
     rzRules.next = NULL;
 
+    //FIXME (plib)
     if (pContext->LUP)
-      return ps52plib->ObjectRenderCheck(&rzRules, &cvp);
+      return ps52plib->ObjectRenderCheck(&rzRules);
     else
       return false;
   } else
@@ -7712,7 +7713,8 @@ int PI_PLIBRenderObjectToDC(wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp) {
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    ps52plib->RenderObjectToDC(pdc, &rzRules, &cvp);
+    //FIXME (plib)
+    ps52plib->RenderObjectToDC(pdc, &rzRules);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);
@@ -7788,7 +7790,8 @@ int PI_PLIBRenderAreaToDC(wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp,
 
   if (pContext->LUP) {
     //  Do the render
-    ps52plib->RenderAreaToDC(pdc, &rzRules, &cvp, &pb_spec);
+    //FIXME (plib)
+    ps52plib->RenderAreaToDC(pdc, &rzRules, &pb_spec);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);
@@ -7857,7 +7860,8 @@ int PI_PLIBRenderAreaToGL(const wxGLContext &glcc, PI_S57Obj *pObj,
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    ps52plib->RenderAreaToGL(glcc, &rzRules, &cvp);
+    //FIXME (plib)
+    ps52plib->RenderAreaToGL(glcc, &rzRules);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);
@@ -7894,7 +7898,8 @@ int PI_PLIBRenderObjectToGL(const wxGLContext &glcc, PI_S57Obj *pObj,
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    ps52plib->RenderObjectToGL(glcc, &rzRules, &cvp);
+    //FIXME (plib)
+    ps52plib->RenderObjectToGL(glcc, &rzRules);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);

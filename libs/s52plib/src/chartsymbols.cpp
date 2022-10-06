@@ -22,7 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include "config.h"
+//#include "config.h"
 
 #include "wx/wxprec.h"
 
@@ -33,7 +33,7 @@
 #include <wx/filename.h>
 #include <stdlib.h>
 
-#include "dychart.h"
+#include "../../include/dychart.h"
 #include "chartsymbols.h"
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>

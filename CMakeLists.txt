@@ -245,6 +245,8 @@ option(OCPN_USE_SYSTEM_LIBARCHIVE
   "Use the libarchive version provided by the system on MacOS" ON
 )
 
+add_definitions(-D__OCPN_USE_GLEW__)
+
 if (WIN32)
   set(cmd_snd_default OFF)
 else ()
@@ -678,7 +680,6 @@ if (OPENGL_FOUND)
     #message(STATUS "+++GLEW: " ${GLEW_INCLUDE_DIRS})
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
     link_libraries(${CMAKE_SOURCE_DIR}/buildwin/glew32.lib )
-
   else (CMAKE_HOST_WIN32)
     if (NOT APPLE)
       find_package(GLEW REQUIRED)
@@ -1588,6 +1589,9 @@ else (TINYXML_FOUND)
 endif (TINYXML_FOUND)
 set(TIXML_USE_STL 1) # -> config.h
 
+add_subdirectory(libs/s52plib)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
+
 message(STATUS "S57 ENC support: enabled")
 set(
   SRC_S57ENC
@@ -1595,8 +1599,6 @@ set(
   include/mygeom.h
   include/ogr_s57.h
   include/Osenc.h
-  include/s52plib.h
-  include/s52utils.h
   include/s57chart.h
   include/s57RegistrarMgr.h
   include/SencManager.h
@@ -1606,9 +1608,6 @@ set(
   src/ogrs57datasource.cpp
   src/ogrs57layer.cpp
   src/Osenc.cpp
-  src/s52cnsy.cpp
-  src/s52plib.cpp
-  src/s52utils.cpp
   src/s57chart.cpp
   src/s57classregistrar.cpp
   src/s57featuredefns.cpp
@@ -1649,6 +1648,7 @@ if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
 endif ()
 
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/libs/s52plib/src)
 
 set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
@@ -1662,13 +1662,13 @@ else (OCPN_USE_GARMINHOST)
 endif (OCPN_USE_GARMINHOST)
 
 # Chart Symbols library
-set(SRC_SYMBOLS src/chartsymbols.cpp include/chartsymbols.h)
+#set(SRC_SYMBOLS src/chartsymbols.cpp include/chartsymbols.h)
 
-add_library(SYMBOLS STATIC ${SRC_SYMBOLS})
-set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_link_libraries(SYMBOLS PRIVATE ocpn::tinyxml)
-target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
+#add_library(SYMBOLS STATIC ${SRC_SYMBOLS})
+#set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+#target_link_libraries(SYMBOLS PRIVATE ocpn::tinyxml)
+#target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
+#target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
 
 # Compile texcompression support library
 if (OPENGL_FOUND)
