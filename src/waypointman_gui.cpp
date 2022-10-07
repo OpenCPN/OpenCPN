@@ -385,10 +385,15 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
 
     if (fn.GetExt().Lower() == _T("svg")) {
       unsigned int w, h;
+
       SVGDocumentPixelSize(name, w, h);
       w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
                                    // icons, 15px (approx 3mm) be it
-      bm_size = SVGPixelsToDisplay(w);
+
+      //FIXME (dave)
+      //  There are troubles with Windows screen physical size calculation
+      bm_size = w * g_ChartScaleFactorExp; //= SVGPixelsToDisplay(w);
+
       wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
       if (bmp.IsOk()) {
         wxImage iconSVG = bmp.ConvertToImage();
