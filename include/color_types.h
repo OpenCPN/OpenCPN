@@ -1,9 +1,11 @@
 /******************************************************************************
  *
- * Project:  OpenCPN
+ * Project:  OpenCP
+ * Purpose:  Color Types
+ * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2022 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,65 +22,37 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
+ *
  */
 
-#ifndef __GLTEXTUREDESCRIPTOR_H__
-#define __GLTEXTUREDESCRIPTOR_H__
+#ifndef _COLORTYPES_H_
+#define _COLORTYPES_H_
 
-#include "wx/wxprec.h"
+typedef struct _S52color {
+  char colName[20];
+  unsigned char R;
+  unsigned char G;
+  unsigned char B;
+} S52color;
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+WX_DECLARE_STRING_HASH_MAP(S52color, colorHashMap);
+WX_DECLARE_STRING_HASH_MAP(wxColour, wxColorHashMap);
 
-#if defined(__OCPN__ANDROID__)
-#include <GLES2/gl2.h>
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glew.h>
-#endif
+typedef enum ColorScheme {
+  GLOBAL_COLOR_SCHEME_RGB,
+  GLOBAL_COLOR_SCHEME_DAY,
+  GLOBAL_COLOR_SCHEME_DUSK,
+  GLOBAL_COLOR_SCHEME_NIGHT,
+  N_COLOR_SCHEMES
+} _ColorScheme;
 
-#include "dychart.h"
-#include "ocpn_types.h"
-#include "color_types.h"
+typedef struct _colTable {
+  wxString *tableName;
+  wxString rasterFileName;
+  wxArrayPtrVoid *color;
+  colorHashMap colors;
+  wxColorHashMap wxColors;
+} colTable;
 
-#define CA_READ 0
-#define CA_WRITE 1
-
-#define GPU_TEXTURE_UNKNOWN 0
-#define GPU_TEXTURE_UNCOMPRESSED 1
-#define GPU_TEXTURE_COMPRESSED 2
-
-class glTexFactory;
-class glTextureDescriptor {
-public:
-  glTextureDescriptor();
-  ~glTextureDescriptor();
-  void FreeAll();
-  void FreeMap();
-  void FreeComp();
-  void FreeCompComp();
-
-  size_t GetMapArrayAlloc(void);
-  size_t GetCompArrayAlloc(void);
-  size_t GetCompCompArrayAlloc(void);
-
-  bool IsCompCompArrayComplete(int base_level);
-
-  GLuint tex_name;
-  int level_min;
-  int x;
-  int y;
-  int nGPU_compressed;
-  ColorScheme m_colorscheme;
-
-  int tex_mem_used;
-
-  unsigned char *map_array[10];
-  unsigned char *comp_array[10];
-  unsigned char *compcomp_array[10];
-  int compcomp_size[10];
-
-  int compdata_ticks;
-};
 
 #endif

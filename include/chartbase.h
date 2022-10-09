@@ -30,6 +30,7 @@
 
 #include "bbox.h"
 #include "ocpn_types.h"
+#include "color_types.h"
 #include "LLRegion.h"
 
 //----------------------------------------------------------------------------

@@ -834,7 +834,6 @@ set(
   include/AIS_Target_Data.h
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
-  include/bbox.h
   include/canvasMenu.h
   include/catalog_handler.h
   include/catalog_mgr.h
@@ -873,7 +872,6 @@ set(
   include/kml.h
   include/Layer.h
   include/LinkPropDlg.h
-  include/LLRegion.h
   include/logger.h
   include/MarkIcon.h
   include/MarkInfo.h
@@ -967,7 +965,6 @@ set(
   src/AIS_Target_Data.cpp
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
-  src/bbox.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
@@ -1008,7 +1005,6 @@ set(
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
-  src/LLRegion.cpp
   src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
@@ -1589,6 +1585,9 @@ else (TINYXML_FOUND)
 endif (TINYXML_FOUND)
 set(TIXML_USE_STL 1) # -> config.h
 
+add_subdirectory(libs/geoprim)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::geoprim)
+
 add_subdirectory(libs/s52plib)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
 
@@ -1596,7 +1595,6 @@ message(STATUS "S57 ENC support: enabled")
 set(
   SRC_S57ENC
   include/cm93.h
-  include/mygeom.h
   include/ogr_s57.h
   include/Osenc.h
   include/s57chart.h
@@ -1649,6 +1647,7 @@ endif ()
 
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/libs/s52plib/src)
+target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/libs/geoprim/src)
 
 set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)

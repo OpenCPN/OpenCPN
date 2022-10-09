@@ -41,6 +41,7 @@
 #include <algorithm>
 
 #include "gdal/ogr_api.h"
+#include "s52s57.h"
 #include "s57chart.h"
 #include "cm93.h"
 #include "s52plib.h"

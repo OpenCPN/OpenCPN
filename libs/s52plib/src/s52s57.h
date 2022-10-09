@@ -28,8 +28,8 @@
 #ifndef _S52S57_H_
 #define _S52S57_H_
 
-#include "../../include/bbox.h"
-#include "../../include/ocpn_types.h"
+#include "bbox.h"
+#include "../../../include/color_types.h"
 
 #include <vector>
 

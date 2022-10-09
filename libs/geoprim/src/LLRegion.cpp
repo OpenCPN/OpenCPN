@@ -29,10 +29,24 @@
 #include <string.h>
 #include <math.h>
 
-#include "dychart.h"
+#if defined(__OCPN__ANDROID__)
+ //#include <GLES2/gl2.h>
+ #include <qopengl.h>
+ #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+ #include <GLES2/gl2.h>
+#elif defined(__MSVC__)
+ #include "glew.h"
+#elif defined(__WXOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glu.h>
+ typedef void (*  _GLUfuncptr)();
+ #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+ #include <GL/glew.h>
+ #include <GL/glu.h>
+#endif
 
 #include "LLRegion.h"
-#include "logger.h"
 
 static inline double cross(const contour_pt &v1, const contour_pt &v2) {
   return v1.y * v2.x - v1.x * v2.y;
@@ -282,7 +296,7 @@ static void /*APIENTRY*/ LLcombineCallback(GLdouble coords[3],
 static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  LOG_INFO("Tessellation Error: %s\n", estring);
+  //LOG_INFO("Tessellation Error: %s\n", estring);
   // exit (0);
 }
 

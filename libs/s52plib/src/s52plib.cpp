@@ -31,23 +31,23 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "../../include/dychart.h"
+//#include "../../include/dychart.h"
 
 #include <math.h>
 #include <stdlib.h>
 
-#include "config.h"
+//#include "config.h"
 
-#include "../../include/georef.h"
-//#include "../../include/viewport.h"
+#include "../../../include/georef.h"
 
 #include "s52plib.h"
-#include "../../include/mygeom.h"
+#include "mygeom.h"
 #include "s52utils.h"
 #include "chartsymbols.h"
-#include "../../include/TexFont.h"
-#include "../../include/ocpn_plugin.h"
-#include "../../include/DepthFont.h"
+#include "../../../include/TexFont.h"
+#include "../../../include/ocpn_plugin.h"
+//#include "../../include/DepthFont.h"
+#include "../../../include/cutil.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>

@@ -31,6 +31,7 @@
 #include <stdint.h>
 
 #include "ocpn_types.h"
+#include "color_types.h"
 #include "bbox.h"
 #include "viewport.h"
 

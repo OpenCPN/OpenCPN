@@ -28,6 +28,7 @@
 #include <wx/sizer.h>
 
 #include "ocpn_types.h"
+#include "color_types.h"
 
 #define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT
 

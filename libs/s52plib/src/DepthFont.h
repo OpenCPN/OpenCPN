@@ -1,9 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
+ * Purpose:  OpenGL text rendering
+ * Author:   David Register, Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2020 David Register                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,54 +23,46 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __ROLLOVERWIN_H__
-#define __ROLLOVERWIN_H__
+#ifndef __DEPTHFONT_H__
+#define __DEPTHFONT_H__
 
-#include <wx/window.h>
-#include <wx/timer.h>
-#include "ocpn_types.h"
-#include "color_types.h"
+#include <wx/font.h>
 
-class ocpnDC;
+#define SOUND_MAX_GLYPH 50
 
-// constants for rollovers fonts
-enum { AIS_ROLLOVER = 1, LEG_ROLLOVER = 2, TC_ROLLOVER = 3 };
-
-class RolloverWin : public wxWindow {
-public:
-  RolloverWin(wxWindow *parent, int timeout = -1, bool maincanvas = true);
-  ~RolloverWin();
-
-  void OnPaint(wxPaintEvent &event);
-  void Draw(ocpnDC &dc);
-
-  void SetColorScheme(ColorScheme cs);
-  void SetString(const wxString &s) { m_string = s; }
-  void SetPosition(wxPoint pt) { m_position = pt; }
-  void SetBitmap(int rollover);
-  wxBitmap *GetBitmap() { return m_pbm; }
-  void SetBestPosition(int x, int y, int off_x, int off_y, int rollover,
-                       wxSize parent_size);
-  void OnTimer(wxTimerEvent &event);
-  void OnMouseEvent(wxMouseEvent &event);
-  void SetMousePropogation(int level) { m_mmouse_propogate = level; }
-  bool IsActive() { return isActive; }
-  void IsActive(bool state) { isActive = state; }
-
-private:
-  wxString m_string;
-  wxSize m_size;
-  wxPoint m_position;
-  wxBitmap *m_pbm;
-  wxTimer m_timer_timeout;
-  int m_timeout_sec;
-  int m_mmouse_propogate;
-  unsigned int m_texture;
-  bool isActive;
-  wxFont *m_plabelFont;
-  bool m_bmaincanvas;
-
-  DECLARE_EVENT_TABLE()
+struct SoundTexGlyphInfo {
+  int x, y, width, height;
+  float advance;
 };
 
-#endif
+class DepthFont {
+public:
+  DepthFont();
+  ~DepthFont();
+
+  void Build(wxFont *font, double scale);
+  void Delete();
+
+  bool IsBuilt() { return m_built; }
+  unsigned int GetTexture() { return texobj; }
+  bool GetGLTextureRect(wxRect &texrect, int symIndex);
+  wxSize GLTextureSize() { return wxSize(tex_w, tex_h); };
+  double GetScale() { return m_scaleFactor; }
+
+private:
+  wxFont m_font;
+
+  SoundTexGlyphInfo tgi[SOUND_MAX_GLYPH];
+
+  unsigned int texobj;
+  int tex_w, tex_h;
+  int m_maxglyphw;
+  int m_maxglyphh;
+  bool m_built;
+
+  float m_dx;
+  float m_dy;
+  double m_scaleFactor;
+};
+
+#endif  // guard

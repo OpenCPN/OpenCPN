@@ -29,8 +29,8 @@
 
 #include "s52s57.h"
 #include <tinyxml.h>
-#include "../../include/pugixml.hpp"
-
+//#include "pugixml.hpp"
+#include "/home/dsr/Projects/opencpn/include/pugixml.hpp"
 class s52plib;
 
 WX_DECLARE_STRING_HASH_MAP(wxRect, symbolGraphicsHashMap);

@@ -28,7 +28,7 @@
 
 #include <wx/wx.h>
 #include <wx/progdlg.h>
-#include "bbox.h"
+#include "s52s57.h"
 #include "chartbase.h"
 #include "wx/dir.h"
 #include "wx/filename.h"
@@ -44,7 +44,6 @@
 #include "S57ClassRegistrar.h"
 #include "S57Light.h"
 #include "S57Sector.h"
-#include "s52s57.h"  //types
 #include "OCPNRegion.h"
 #include "ocpndc.h"
 #include "viewport.h"

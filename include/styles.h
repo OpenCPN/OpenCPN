@@ -28,6 +28,7 @@
 #include <tinyxml.h>
 
 #include "ocpn_types.h"
+#include "color_types.h"
 
 enum StyleToolIconTypes {
   TOOLICON_NORMAL,

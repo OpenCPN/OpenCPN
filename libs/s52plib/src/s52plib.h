@@ -27,15 +27,32 @@
 #define _S52PLIB_H_
 
 #include <vector>
-#include "../../include/dychart.h"
+//#include "../../include/dychart.h"
+
+#if defined(__OCPN__ANDROID__)
+ //#include <GLES2/gl2.h>
+ #include <qopengl.h>
+ #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+ #include <GLES2/gl2.h>
+#elif defined(__MSVC__)
+ #include "glew.h"
+#elif defined(__WXOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glu.h>
+ typedef void (*  _GLUfuncptr)();
+ #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+ #include <GL/glew.h>
+ #include <GL/glu.h>
+#endif
 
 #include "s52s57.h"  //types
 
 class wxGLContext;
 
-#include "../../include/LLRegion.h"
-#include "../../include/ocpn_types.h"
-#include "../../include/DepthFont.h"
+#include "LLRegion.h"
+//#include "../../include/ocpn_types.h"
+#include "DepthFont.h"
 #include "chartsymbols.h"
 
 #include <wx/dcgraph.h>  // supplemental, for Mac
