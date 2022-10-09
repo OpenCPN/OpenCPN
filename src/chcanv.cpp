@@ -4562,7 +4562,7 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
 }
 
 void ChartCanvas::RotateCanvas(double dir) {
-  SetUpMode(NORTH_UP_MODE);
+  //SetUpMode(NORTH_UP_MODE);
 
   if (g_bsmoothpanzoom) {
     if (StartTimedMovement()) {
