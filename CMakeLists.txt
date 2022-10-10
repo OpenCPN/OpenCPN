@@ -1143,13 +1143,6 @@ IF(QT_ANDROID)
   SET(SRCS ${SRCS} src/shaders.cpp)
 ENDIF(QT_ANDROID)
 
-SET(SRC_TINYXML
-  src/tinyxml.cpp
-  src/tinyxmlerror.cpp
-  src/tinyxmlparser.cpp
-  include/tinyxml.h
-)
-
 set(SRCS ${SRCS} ${MODEL_SRC})
 
 if (APPLE)
@@ -1625,19 +1618,8 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
 add_subdirectory(libs/wxJSON)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 
-
-if (TINYXML_FOUND)
-  message(STATUS "Building with system tinyxml")
-  add_library(TINYXML INTERFACE)
-  target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
-  target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
-  add_library(ocpn::tinyxml ALIAS TINYXML)
-else (TINYXML_FOUND)
-  add_subdirectory(libs/tinyxml)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
-  message(STATUS "Building with bundled tinyxml")
-endif (TINYXML_FOUND)
-set(TIXML_USE_STL 1) # -> config.h
+add_subdirectory(libs/tinyxml)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
 message(STATUS "S57 ENC support: enabled")
 set(

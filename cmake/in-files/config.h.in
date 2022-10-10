@@ -24,11 +24,6 @@
 #cmakedefine ocpnUSE_GLES
 
 
-#ifndef TIXML_USE_STL
-#cmakedefine TIXML_USE_STL
-#endif
-
-
 #cmakedefine OPENGL_FOUND
 #undef HAVE_UNISTD_H
 #cmakedefine OCPN_USE_UDEV_PORTS
