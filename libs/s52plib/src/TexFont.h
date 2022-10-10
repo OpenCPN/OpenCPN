@@ -62,6 +62,7 @@ public:
 private:
   void GetTextExtent(const char *string, int *width, int *height);
   void RenderGlyph(int c);
+  bool CreateShader( void );
 
   wxFont m_font;
   bool m_blur;
@@ -77,6 +78,7 @@ private:
   float m_dx;
   float m_dy;
   wxColor m_color;
+  GLint m_shader;
 };
 
 TexFont *GetTexFont(wxFont *key);

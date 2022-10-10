@@ -1504,12 +1504,10 @@ if (OPENGL_FOUND)
     include/glTextureDescriptor.h
     include/glTexCache.h
     include/glTextureManager.h
-    include/TexFont.h
     src/glTextureDescriptor.cpp
     src/glTexCache.cpp
     src/glChartCanvas.cpp
     src/glTextureManager.cpp
-    src/TexFont.cpp
   )
 endif ()
 
@@ -1600,7 +1598,6 @@ set(
   include/s57chart.h
   include/s57RegistrarMgr.h
   include/SencManager.h
-  include/TexFont.h
   src/cm93.cpp
   src/mygeom.cpp
   src/ogrs57datasource.cpp
@@ -1613,7 +1610,6 @@ set(
   src/s57reader.cpp
   src/s57RegistrarMgr.cpp
   src/SencManager.cpp
-  src/TexFont.cpp
 )
 add_library(S57ENC STATIC ${SRC_S57ENC})
 target_link_libraries(

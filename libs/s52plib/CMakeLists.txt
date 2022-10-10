@@ -13,6 +13,8 @@ SET(SRC
     src/s52plib.cpp
     src/s52cnsy.cpp
     src/s52utils.cpp
+    src/s52shaders.cpp
+    src/TexFont.cpp
     )
 
 if (NOT wxWidgets_INCLUDE_DIRS)

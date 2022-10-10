@@ -31,12 +31,9 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-//#include "../../include/dychart.h"
-
 #include <math.h>
 #include <stdlib.h>
 
-//#include "config.h"
 
 #include "../../../include/georef.h"
 
@@ -44,9 +41,8 @@
 #include "mygeom.h"
 #include "s52utils.h"
 #include "chartsymbols.h"
-#include "../../../include/TexFont.h"
+#include "TexFont.h"
 #include "../../../include/ocpn_plugin.h"
-//#include "../../include/DepthFont.h"
 #include "../../../include/cutil.h"
 
 #include <wx/image.h>
@@ -58,7 +54,6 @@
 #define PROJECTION_MERCATOR 1
 #endif
 
-//#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 #include "linmath.h"
 #endif
@@ -13088,6 +13083,7 @@ void PLIBDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 #endif
 #endif
 }
+#if 0
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
@@ -13203,11 +13199,11 @@ private:
     S52_GLShaderProgram(GLuint programId) : programId_(programId) { }
     GLuint programId_;
 };
+#endif
 
 
 
-
-
+#if 0
 
 // Simple colored triangle shader
 
@@ -13847,6 +13843,9 @@ bool loadS52Shaders() {
 
   return ret_val;
 }
+#endif
+
+#endif
 
 void PrepareS52ShaderUniforms(VPointCompat *vp) {
 
@@ -13915,4 +13914,4 @@ void PrepareS52ShaderUniforms(VPointCompat *vp) {
   glUseProgram(0);
 }
 
-#endif
+

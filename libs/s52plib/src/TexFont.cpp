@@ -25,10 +25,27 @@
 
 #include <wx/wx.h>
 
-#include "dychart.h"
+#if defined(__OCPN__ANDROID__)
+ //#include <GLES2/gl2.h>
+ #include <qopengl.h>
+ #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+ #include <GLES2/gl2.h>
+#elif defined(__MSVC__)
+ #include "glew.h"
+#elif defined(__WXOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glu.h>
+ typedef void (*  _GLUfuncptr)();
+ #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+ #include <GL/glew.h>
+ #include <GL/glu.h>
+#endif
+
 #include "TexFont.h"
-#include "shaders.h"
+#include "s52shaders.h"
 #include "linmath.h"
+extern GLint S52texture_2D_ColorMod_shader_program;
 
 
 TexFont::TexFont() {
@@ -259,11 +276,12 @@ void TexFont::RenderGlyph(int c) {
   coords[6] = 0;
   coords[7] = h;
 
-  GLShaderProgram *shader = ptexture_2DA_shader_program[0];
-  shader->Bind();
+  glUseProgram(S52texture_2D_ColorMod_shader_program);
 
    // Set up the texture sampler to texture unit 0
-  shader->SetUniform1i("uTex", 0);
+  GLint texUni =
+          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "uTex");
+  glUniform1i(texUni, 0);
 
   float colorv[4];
   colorv[0] = m_color.Red() / float(256);
@@ -271,7 +289,9 @@ void TexFont::RenderGlyph(int c) {
   colorv[2] = m_color.Blue() / float(256);
   colorv[3] = 0;
 
-  shader->SetUniform4fv("color", colorv);
+  GLint colloc =
+          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "color");
+  glUniform4fv(colloc, 1, colorv);
 
   // Rotate
   float angle = 0;
@@ -283,7 +303,9 @@ void TexFont::RenderGlyph(int c) {
   Q[3][0] = m_dx;
   Q[3][1] = m_dy;
 
-  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
+  GLint matloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,
+                                          "TransformMatrix");
+  glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
 
 // For some reason, glDrawElements is busted on Android
 // So we do this a hard ugly way, drawing two triangles...
@@ -312,12 +334,25 @@ void TexFont::RenderGlyph(int c) {
   tco1[6] = uv[4];
   tco1[7] = uv[5];
 
-  shader->SetAttributePointerf("aPos", co1);
-  shader->SetAttributePointerf("aUV", tco1);
+  //shader->SetAttributePointerf("aPos", co1);
+  //shader->SetAttributePointerf("aUV", tco1);
+
+  GLint mPosAttrib = glGetAttribLocation(
+          S52texture_2D_ColorMod_shader_program, "position");
+  GLint mUvAttrib =
+          glGetAttribLocation(S52texture_2D_ColorMod_shader_program, "aUV");
+
+  glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
+      // ... and enable it.
+  glEnableVertexAttribArray(mPosAttrib);
+
+  glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
+      // ... and enable it.
+  glEnableVertexAttribArray(mUvAttrib);
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  shader->UnBind();
+  glUseProgram(0);
 
 #endif
 
@@ -381,5 +416,7 @@ void TexFont::RenderString(const char *string, int x, int y) {
 void TexFont::RenderString(const wxString &string, int x, int y) {
   RenderString((const char *)string.ToUTF8(), x, y);
 }
+
+
 
 //#endif     //#ifdef ocpnUSE_GL
