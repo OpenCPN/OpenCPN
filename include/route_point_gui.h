@@ -37,7 +37,7 @@ class SendToGpsDlg;
 
 class RoutePointGui {
 public:
-  RoutePointGui(RoutePoint& point) : m_point(point) { ReLoadIcon(); }
+  RoutePointGui(RoutePoint& point) : m_point(point) { /*ReLoadIcon();*/ }
 
   void Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn = 0,
             bool boverride_viz = false);
