@@ -10,7 +10,6 @@
 #include "comm_bridge.h"
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
-#include "comm_drv_n2k_socketcan.h"
 #include "conn_params.h"
 #include "observable_navmsg.h"
 #include "observable_confvar.h"
@@ -19,6 +18,10 @@
 #include "ais_defs.h"
 #include "ais_decoder.h"
 #include "select.h"
+
+#ifdef __linux__
+#include "comm_drv_n2k_socketcan.h"
+#endif
 
 class AISTargetAlertDialog;
 class Multiplexer;
@@ -96,6 +99,7 @@ extern AisDecoder* g_pAIS;
 
 int int0 = -1;
 int int1 = -1;
+int int2 = -1;
 
 class N2kTest: public testing::Test {
 public:
@@ -124,7 +128,7 @@ protected:
   }
 };
 
-
+#ifdef __linux__    // linux-only socketcan driver setup
 class N2kTestDriverRegistry : public wxAppConsole {
 public:
   N2kTestDriverRegistry() : wxAppConsole() {};
@@ -145,11 +149,15 @@ public:
     int0 = registry.GetDrivers().size() - start_size;
     driver->Close();
     int1 = registry.GetDrivers().size() - start_size;
+    registry.CloseAllDrivers();
+    int2 = registry.GetDrivers().size();
     return true;
   }
 };
 
+#endif
 
+#ifdef __linux__    // Based on linux-only socketcan driver
 class DriverRegistry: public N2kTest  {
 public:
   DriverRegistry(): N2kTest() { app = new N2kTestDriverRegistry(); }
@@ -158,4 +166,6 @@ public:
 TEST_F(DriverRegistry, RegisterDriver) {
   EXPECT_EQ(int0, 1);   // Driver activated and registered
   EXPECT_EQ(int1, 0);   // Driver closed.
+  EXPECT_EQ(int2, 0);   // All drivers closed.
 }
+#endif
