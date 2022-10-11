@@ -32,12 +32,12 @@
 
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
+#include <thread>
 #include <vector>
 
 #include <wx/event.h>
 #include <wx/log.h>
 #include <wx/string.h>
-#include <wx/thread.h>
 #include <wx/utils.h>
 
 #include "comm_drv_n0183_serial.h"
@@ -99,7 +99,7 @@ private:
 
 class CommDriverN0183SerialEvent;  // fwd
 
-class CommDriverN0183SerialThread : public wxThread {
+class CommDriverN0183SerialThread {
 public:
   CommDriverN0183SerialThread(CommDriverN0183Serial* Launcher,
                               const wxString& PortName,
@@ -240,14 +240,14 @@ bool CommDriverN0183Serial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
 
-  comx =
-      comx.BeforeFirst(' ');  // strip off any description provided by Windows
+  // strip off any description provided by Windows
+  comx = comx.BeforeFirst(' ');
 
   //    Kick off the  RX thread
   SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
   SetThreadRunFlag(1);
-  GetSecondaryThread()->Run();
-
+  std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
+  t.detach();
   return true;
 }
 
@@ -265,7 +265,6 @@ void CommDriverN0183Serial::Close() {
 
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
-    m_pSecondary_Thread->Delete();
 
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
     {
@@ -284,6 +283,7 @@ void CommDriverN0183Serial::Close() {
       wxLogMessage(msg);
     }
 
+    delete m_pSecondary_Thread;
     m_pSecondary_Thread = NULL;
     m_bsec_thread_active = false;
   }
@@ -377,8 +377,6 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   m_baud = 4800;  // default
   long lbaud;
   if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
-
-  Create();
 }
 
 CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
@@ -470,7 +468,7 @@ void* CommDriverN0183SerialThread::Entry() {
   static size_t retries = 0;
 
   while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) goto thread_exit;
+    if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
 
     uint8_t next_byte = 0;
     unsigned int newdata = 0;
@@ -531,7 +529,7 @@ void* CommDriverN0183SerialThread::Entry() {
           if (take_byte == 0x0a) {
             vec->push_back(take_byte);
 
-            if (TestDestroy()) goto thread_exit;
+            if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
 
             //    Message is ready to parse and send out
             //    Messages may be coming in as <blah blah><lf><cr>.
