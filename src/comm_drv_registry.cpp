@@ -54,6 +54,7 @@ const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() {
 };
 
 void CommDriverRegistry::CloseAllDrivers() {
+  for (auto& it : drivers) Deactivate(it);
   drivers.clear();
 }
 
