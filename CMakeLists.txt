@@ -855,7 +855,6 @@ set(
   include/comm_drv_n0183_serial.h
   include/comm_drv_n2k.h
   include/comm_drv_n2k_serial.h
-  include/comm_drv_n2k_socketcan.h
   include/comm_drv_signalk_net.h
   include/comm_drv_registry.h
   include/comm_drv_factory.h
