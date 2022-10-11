@@ -43,16 +43,18 @@
 #endif
 
 #include "TexFont.h"
-#include "s52shaders.h"
 #include "linmath.h"
-extern GLint S52texture_2D_ColorMod_shader_program;
 
+GLint m_TexFontShader;
 
 TexFont::TexFont() {
   texobj = 0;
   m_blur = false;
   m_built = false;
   m_color = wxColor(0, 0, 0);
+
+  m_shadersLoaded = false;
+
 }
 
 TexFont::~TexFont() { Delete(); }
@@ -253,6 +255,9 @@ void TexFont::RenderGlyph(int c) {
   glTranslatef(tgic.advance, 0.0, 0.0);
 #else
 
+  if(!m_TexFontShader)
+    return;
+
   float uv[8];
   float coords[8];
 
@@ -276,11 +281,11 @@ void TexFont::RenderGlyph(int c) {
   coords[6] = 0;
   coords[7] = h;
 
-  glUseProgram(S52texture_2D_ColorMod_shader_program);
+  glUseProgram(m_TexFontShader);
 
    // Set up the texture sampler to texture unit 0
   GLint texUni =
-          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "uTex");
+          glGetUniformLocation(m_TexFontShader, "uTex");
   glUniform1i(texUni, 0);
 
   float colorv[4];
@@ -290,7 +295,7 @@ void TexFont::RenderGlyph(int c) {
   colorv[3] = 0;
 
   GLint colloc =
-          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "color");
+          glGetUniformLocation(m_TexFontShader, "color");
   glUniform4fv(colloc, 1, colorv);
 
   // Rotate
@@ -303,7 +308,7 @@ void TexFont::RenderGlyph(int c) {
   Q[3][0] = m_dx;
   Q[3][1] = m_dy;
 
-  GLint matloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,
+  GLint matloc = glGetUniformLocation(m_TexFontShader,
                                           "TransformMatrix");
   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
 
@@ -338,9 +343,9 @@ void TexFont::RenderGlyph(int c) {
   //shader->SetAttributePointerf("aUV", tco1);
 
   GLint mPosAttrib = glGetAttribLocation(
-          S52texture_2D_ColorMod_shader_program, "position");
+          m_TexFontShader, "position");
   GLint mUvAttrib =
-          glGetAttribLocation(S52texture_2D_ColorMod_shader_program, "aUV");
+          glGetAttribLocation(m_TexFontShader, "aUV");
 
   glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
       // ... and enable it.
@@ -414,8 +419,168 @@ void TexFont::RenderString(const char *string, int x, int y) {
 }
 
 void TexFont::RenderString(const wxString &string, int x, int y) {
+  LoadTexFontShaders();
   RenderString((const char *)string.ToUTF8(), x, y);
 }
+
+void TexFont::PrepareShader(int width, int height, double rotation){
+  if(!m_TexFontShader)
+    LoadTexFontShaders();
+
+  mat4x4 m;
+  float vp_transform[16];
+  mat4x4_identity(m);
+  mat4x4_scale_aniso((float(*)[4])vp_transform, m, 2.0 / (float)width,
+                     -2.0 / (float)height, 1.0);
+  // Rotate
+  mat4x4 Q;
+  mat4x4_rotate_Z(Q, (float(*)[4])vp_transform, rotation);
+  mat4x4_translate_in_place(Q, -width / 2.0, -height / 2.0, 0);
+
+  mat4x4 I;
+  mat4x4_identity(I);
+
+  glUseProgram(m_TexFontShader);
+  GLint matloc = glGetUniformLocation(m_TexFontShader, "MVMatrix");
+  glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+  GLint transloc =
+      glGetUniformLocation(m_TexFontShader, "TransformMatrix");
+  glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+}
+
+
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+
+#ifdef USE_ANDROID_GLES2
+const GLchar* TexFont_preamble =
+"\n";
+#else
+const GLchar* TexFont_preamble =
+"#version 120\n"
+"#define precision\n"
+"#define lowp\n"
+"#define mediump\n"
+"#define highp\n";
+#endif
+
+
+// 2D texture shader with color modulation, used for colored text
+static const GLchar *TexFont_vertex_shader_source =
+    "precision highp float;\n"
+    "attribute vec2 position;\n"
+    "attribute vec2 aUV;\n"
+    "uniform mat4 MVMatrix;\n"
+    "uniform mat4 TransformMatrix;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
+    "   //varCoord = aUV.st;\n"
+    "   varCoord = aUV;\n"
+    "}\n";
+
+static const GLchar *TexFont_fragment_shader_source =
+    "precision highp float;\n"
+    "uniform sampler2D uTex;\n"
+    "uniform vec4 color;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   vec4 col=texture2D(uTex, varCoord);\n"
+    "   gl_FragColor = color;\n"
+    "   gl_FragColor.a = col.a;\n"
+    "}\n";
+
+
+
+
+#include "s52shaders.h"
+
+bool TexFont::LoadTexFontShaders() {
+  bool ret_val = true;
+
+  enum Consts { INFOLOG_LEN = 512 };
+  GLchar infoLog[INFOLOG_LEN];
+
+  int success;
+
+  // Are the shaders ready?
+  if(m_TexFontShader)
+    return true;
+
+
+  if (!m_TexFontShader) {
+
+    auto shaderProgram = S52_GLShaderProgram::Builder()
+     .addShaderFromSource(TexFont_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(TexFont_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
+
+    m_TexFontShader = shaderProgram.programId();
+
+  }
+
+#if 0
+  if (!m_TexFontVertexShader) {
+    /* Vertex shader */
+    m_TexFontVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(m_TexFontVertexShader, 1,
+                   &TexFont_vertex_shader_source, NULL);
+    glCompileShader(m_TexFontVertexShader);
+    glGetShaderiv(m_TexFontVertexShader, GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(m_TexFontVertexShader, INFOLOG_LEN,
+                         NULL, infoLog);
+      //        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
+      //        infoLog);
+      ret_val = false;
+    }
+  }
+
+
+  if (!m_TexFontFragmentShader) {
+    /* Fragment shader */
+    m_TexFontFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(m_TexFontFragmentShader, 1,
+                   &TexFont_fragment_shader_source, NULL);
+    glCompileShader(m_TexFontFragmentShader);
+    glGetShaderiv(m_TexFontFragmentShader, GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      glGetShaderInfoLog(m_TexFontFragmentShader, INFOLOG_LEN,
+                         NULL, infoLog);
+      //        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
+      //        infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!m_TexFontShader) {
+    /* Link shaders */
+    m_TexFontShader = glCreateProgram();
+    glAttachShader(m_TexFontShader,
+                   m_TexFontVertexShader);
+    glAttachShader(m_TexFontShader,
+                   m_TexFontFragmentShader);
+    glLinkProgram(m_TexFontShader);
+    glGetProgramiv(m_TexFontShader, GL_LINK_STATUS,
+                   &success);
+    if (!success) {
+      glGetProgramInfoLog(m_TexFontShader, INFOLOG_LEN,
+                          NULL, infoLog);
+      //        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+#endif
+
+  m_shadersLoaded = true;
+
+  return ret_val;
+}
+
+
+#endif
+
 
 
 

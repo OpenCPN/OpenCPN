@@ -137,6 +137,9 @@ public:
 
 #endif
   int m_canvasIndex;
+#ifdef ocpnUSE_GL
+  TexFont m_texfont;
+#endif
 
 protected:
   bool ConfigurePen();
@@ -157,9 +160,6 @@ protected:
   wxColour m_textforegroundcolour;
   wxFont m_font;
 
-#ifdef ocpnUSE_GL
-  TexFont m_texfont;
-#endif
   bool m_buseTex;
 
 #if wxUSE_GRAPHICS_CONTEXT

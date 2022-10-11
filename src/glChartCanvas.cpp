@@ -5814,7 +5814,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
       shader->UnBind();
 
-
+      m_gldc.m_texfont.PrepareShader(vp.pix_width, vp.pix_height, vp.rotation);
 
 #endif
     }

@@ -53,6 +53,7 @@ class wxGLContext;
 #include "LLRegion.h"
 #include "DepthFont.h"
 #include "chartsymbols.h"
+#include "TexFont.h"
 
 #include <wx/dcgraph.h>  // supplemental, for Mac
 #include <unordered_map>
@@ -172,6 +173,11 @@ public:
   wxRect rv_rect;
   double ref_scale;
 };
+
+typedef struct {
+  TexFont *cache;
+  wxFont *key;
+} TexFontCache;
 
 //-----------------------------------------------------------------------------
 //    s52plib definition
@@ -580,6 +586,10 @@ private:
 
   VPointCompat  vp_plib;
   LLBBox BBox;
+  #define TXF_CACHE 8
+  TexFontCache s_txf[TXF_CACHE];
+
+
 
 };
 

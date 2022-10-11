@@ -102,17 +102,7 @@ bool loadS52Shaders();
 //      Simple and fast CRC32 calculator
 unsigned int crc32buf(unsigned char *buf, size_t len);
 
-#ifdef ocpnUSE_GL
-typedef struct {
-  TexFont cache;
-  wxFont *key;
-} TexFontCache;
 
-#define TXF_CACHE 8
-static TexFontCache s_txf[TXF_CACHE];
-#endif
-
-//#ifdef USE_ANDROID_GLES2
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
 GLint S52color_tri_shader_program;
@@ -338,6 +328,15 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   SetGLLineSmoothing(true);
 
   m_displayScale = 1.0;
+
+  // Clear the TexFont cache
+  TexFont *f_cache = 0;
+  unsigned int i;
+  for (i = 0; i < TXF_CACHE; i++) {
+     s_txf[i].key = 0;
+     s_txf[i].cache = 0;
+  }
+
 
 }
 
@@ -1279,7 +1278,7 @@ void s52plib::FlushSymbolCaches(void) {
   unsigned int i;
   for (i = 0; i < TXF_CACHE; i++) {
     if (s_txf[i].key != 0) {
-      f_cache = &s_txf[i].cache;
+      f_cache = s_txf[i].cache;
       f_cache->Delete();
       s_txf[i].key = 0;
     }
@@ -2124,7 +2123,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
       unsigned int i;
       for (i = 0; i < TXF_CACHE; i++) {
         if (s_txf[i].key == ptext->pFont) {
-          f_cache = &s_txf[i].cache;
+          f_cache = s_txf[i].cache;
           break;
         }
         if (s_txf[i].key == 0) {
@@ -2136,7 +2135,10 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
       }
       if (f_cache == 0) {
         s_txf[i].key = ptext->pFont;
-        f_cache = &s_txf[i].cache;
+        if(s_txf[i].cache)
+          delete s_txf[i].cache;
+        s_txf[i].cache = new TexFont();
+        f_cache = s_txf[i].cache;
         f_cache->Build(*ptext->pFont);
       }
 
@@ -4925,8 +4927,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
 #endif
-
-  //    ocpnDC *odc = new ocpnDC(*cc1->GetglCanvas());
 
   S52color *c;
 
@@ -11598,7 +11598,19 @@ void s52plib::PrepareForRender(VPointCompat *vp) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   void PrepareS52ShaderUniforms(VPointCompat * vp);
-  if (m_useGLSL && vp) PrepareS52ShaderUniforms(vp);
+  if (m_useGLSL && vp){
+    PrepareS52ShaderUniforms(vp);
+
+    // Prepare TexFont shader
+    unsigned int i;
+    for (unsigned int i = 0; i < TXF_CACHE; i++) {
+      if(s_txf[i].cache)
+        s_txf[i].cache->PrepareShader(vp->pix_width, vp->pix_height, vp->rotation);
+    }
+  }
+
+
+
 #endif
 
   m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();

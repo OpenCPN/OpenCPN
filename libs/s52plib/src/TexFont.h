@@ -54,15 +54,16 @@ public:
   void Delete();
 
   void GetTextExtent(const wxString &string, int *width, int *height);
-  void RenderString(const char *string, int x = 0, int y = 0);
-  void RenderString(const wxString &string, int x = 0, int y = 0);
+  void RenderString(const char *string, int x=0, int y=0);
+  void RenderString(const wxString &string, int x=0, int y=0);
   bool IsBuilt() { return m_built; }
   void SetColor(wxColor &color) { m_color = color; }
+  void PrepareShader(int width, int height, double rotation);
 
 private:
   void GetTextExtent(const char *string, int *width, int *height);
   void RenderGlyph(int c);
-  bool CreateShader( void );
+  bool LoadTexFontShaders();
 
   wxFont m_font;
   bool m_blur;
@@ -78,7 +79,9 @@ private:
   float m_dx;
   float m_dy;
   wxColor m_color;
-  GLint m_shader;
+
+  bool m_shadersLoaded;
+
 };
 
 TexFont *GetTexFont(wxFont *key);
