@@ -35,6 +35,7 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "line_clip.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;

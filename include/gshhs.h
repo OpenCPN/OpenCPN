@@ -46,6 +46,7 @@
 //#include "ocpndc.h"
 #include "viewport.h"
 #include "cutil.h"
+#include "poly_math.h"
 
 #ifdef __MSVC__
 #pragma warning(disable : 4251)  // relates to std::string fpath

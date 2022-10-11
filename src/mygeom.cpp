@@ -47,7 +47,7 @@
 
 #include "mygeom.h"
 #include "georef.h"
-
+#include "LOD_reduce.h"
 #include "dychart.h"
 
 #include <stdio.h>

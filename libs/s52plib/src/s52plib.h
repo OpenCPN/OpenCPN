@@ -51,7 +51,6 @@
 class wxGLContext;
 
 #include "LLRegion.h"
-//#include "../../include/ocpn_types.h"
 #include "DepthFont.h"
 #include "chartsymbols.h"
 

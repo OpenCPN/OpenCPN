@@ -56,6 +56,7 @@
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
+#include "line_clip.h"
 
 extern double gLat, gLon, gSog, gCog;
 extern MyFrame *gFrame;

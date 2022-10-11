@@ -23,66 +23,24 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
+ *
  */
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <math.h>
-#include <ctype.h>
 
-#include "cutil.h"
+#ifndef __LODREDUCE_H__
+#define __LODREDUCE_H__
 
+#include <vector>
 
-double round_msvc(double x) { return (floor(x + 0.5)); }
-
-#ifdef __MSVC__
-#include <windows.h>
-#include <float.h>  // for _clear87()
-
-extern long __stdcall MyUnhandledExceptionFilter(
-    struct _EXCEPTION_POINTERS *ExceptionInfo) {
-  //    return EXCEPTION_EXECUTE_HANDLER ;        // terminates the app
-
-  switch (ExceptionInfo->ExceptionRecord->ExceptionCode) {
-    case EXCEPTION_FLT_DENORMAL_OPERAND:
-    case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-    case EXCEPTION_FLT_INEXACT_RESULT:
-    case EXCEPTION_FLT_INVALID_OPERATION:
-    case EXCEPTION_FLT_OVERFLOW:
-    case EXCEPTION_FLT_STACK_CHECK:
-    case EXCEPTION_FLT_UNDERFLOW:
-      _clear87();
-      return EXCEPTION_CONTINUE_EXECUTION;  // retry
-
-    default:
-      return EXCEPTION_CONTINUE_SEARCH;  // standard fatal dialog box
-  }
-}
-#endif
-
-/*          Replacement for __MSVC__ in absence of snprintf or _snprintf  */
-#ifdef __MSVC__
-extern int mysnprintf(char *buffer, int count, const char *format, ...) {
-  int ret;
-
-  va_list arg;
-  va_start(arg, format);
-  ret = _vsnprintf(buffer, count, format, arg);
-
-  va_end(arg);
-  return ret;
-}
-#endif
-
-int NextPow2(int size) {
-  int n = size - 1;  // compute dimensions needed as next larger power of 2
-  int shift = 1;
-  while ((n + 1) & n) {
-    n |= n >> shift;
-    shift <<= 1;
-  }
-
-  return n + 1;
-}
+void DouglasPeucker(double *PointList, int fp, int lp,
+                               double epsilon, std::vector<int> *keep);
+void DouglasPeuckerF(float *PointList, int fp, int lp,
+                                double epsilon, std::vector<int> *keep);
+void DouglasPeuckerM(double *PointList, int fp, int lp,
+                                double epsilon, std::vector<int> *keep);
+void DouglasPeuckerFI(float *PointList, int fp, int lp,
+                                 double epsilon, std::vector<bool> &keep);
+void DouglasPeuckerDI(double *PointList, int fp, int lp,
+                                 double epsilon, std::vector<bool> &keep);
 
 
+#endif    // guard

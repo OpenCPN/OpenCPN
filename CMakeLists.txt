@@ -945,7 +945,6 @@ set(
   include/undo.h
   include/update_mgr.h
   include/usb_devices.h
-  include/vector2D.h
   include/viewport.h
   include/shaders.h
   include/WindowDestroyListener.h

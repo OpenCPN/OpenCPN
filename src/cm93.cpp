@@ -58,6 +58,7 @@
 #include "DetailSlider.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "line_clip.h"
 
 #include <stdio.h>
 

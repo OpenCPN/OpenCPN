@@ -98,6 +98,7 @@
 #include "CanvasConfig.h"
 #include "CanvasOptions.h"
 #include "mbtiles.h"
+#include "line_clip.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
