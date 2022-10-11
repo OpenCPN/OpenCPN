@@ -272,7 +272,9 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
   Open();
 }
 
-CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() { Close(); }
+CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {
+  if (m_pSecondary_Thread) Close();
+}
 
 bool CommDriverN2KSocketCAN::Open() {
   //    Kick off the  RX thread
