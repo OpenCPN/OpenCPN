@@ -4,9 +4,17 @@ if (TARGET ocpn::tinyxml)
   return ()
 endif ()
 
-if (NOT APPLE)
+if (APPLE)
   # TinyXML from Homebrew is not good enough for our GpxDocument needs We
   # should probably replace it with pugixml completely anyway...
+  set(USE_BUNDLED_TINYXML ON)
+elseif (COMMAND use_bundled_lib)
+  use_bundled_lib(USE_BUNDLED_TINYXML tinyxml)
+else ()
+  set (USE_BUNDLED_TINYXML OFF)
+endif ()
+
+if (NOT USE_BUNDLED_TINYXML)
   find_package(TinyXML)
 endif ()
 
