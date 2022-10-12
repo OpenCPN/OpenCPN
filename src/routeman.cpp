@@ -24,61 +24,63 @@
  **************************************************************************/
 #include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include "wx/image.h"
-#include "wx/tokenzr.h"
-#include <wx/progdlg.h>
-
-#include "dychart.h"
-
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
 #include <time.h>
 
-#include <wx/listimpl.cpp>
-
-#include "styles.h"
-#include "routeman.h"
-#include "concanv.h"
-#include "navutil.h"
-#include "georef.h"
-#include "RoutePropDlgImpl.h"
-#include "TrackPropDlg.h"
-#include "routemanagerdialog.h"
-#include "pluginmanager.h"
-#include "multiplexer.h"
-#include "MarkIcon.h"
-#include "cutil.h"
-#include "AIS_Decoder.h"
-#include "wx28compat.h"
-#include "Route.h"
-
+#include <wx/apptrait.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
+#include <wx/image.h>
+#include <wx/jsonval.h>
+#include <wx/listimpl.cpp>
+#include <wx/progdlg.h>
 #include <wx/stdpaths.h>
-#include <wx/apptrait.h>
-#include "OCPNPlatform.h"
-#include "Track.h"
-#include "chcanv.h"
-#include "svg_utils.h"
+#include <wx/tokenzr.h>
 
-#ifdef __OCPN__ANDROID__
+#include "ais_decoder.h"
+#include "base_platform.h"
+#include "chcanv.h"
+#include "comm_n0183_output.h"
+#include "concanv.h"
+#include "cutil.h"
+#include "dychart.h"
+#include "georef.h"
+#include "MarkIcon.h"
+#include "nav_object_database.h"
+#include "navutil_base.h"
+#include "navutil.h"
+#include "ocpn_app.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "pluginmanager.h"
+#include "route.h"
+#include "routemanagerdialog.h"
+#include "routeman.h"
+#include "RoutePropDlgImpl.h"
+#include "styles.h"
+#include "svg_utils.h"
+#include "track.h"
+
+#ifndef CLIAPP
+#include "color_handler.h"
+#include "concanv.h"
+#include "gui_lib.h"
+#endif
+
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
-void appendOSDirSlash(wxString *pString);
-
-extern MyFrame *gFrame;
-extern OCPNPlatform *g_Platform;
+#ifndef CLIAPP
 extern ConsoleCanvas *console;
+#endif
 
+extern BasePlatform* g_BasePlatform;
+extern AisDecoder *g_pAIS;
 extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
-extern MyConfig *pConfig;
 extern Routeman *g_pRouteMan;
 
 extern wxRect g_blink_rect;
@@ -91,20 +93,11 @@ extern bool g_bMagneticAPB;
 extern RoutePoint *pAnchorWatchPoint1;
 extern RoutePoint *pAnchorWatchPoint2;
 
-extern TrackPropDlg *pTrackPropDialog;
 extern ActiveTrack *g_pActiveTrack;
 extern int g_track_line_width;
 
-extern RoutePropDlgImpl *pRoutePropDialog;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern int g_route_line_width;
-extern Multiplexer *g_pMUX;
-extern AIS_Decoder *g_pAIS;
 
-extern PlugInManager *g_pi_manager;
-extern ocpnStyle::StyleManager *g_StyleManager;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route *pAISMOBRoute;
 extern bool g_btouch;
@@ -130,16 +123,15 @@ WX_DEFINE_LIST(markicon_description_list_type);
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);
 
-static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
-  return (mi1->icon_name.CmpNoCase(mi2->icon_name));
-}
 
 //--------------------------------------------------------------------------------
 //      Routeman   "Route Manager"
 //--------------------------------------------------------------------------------
 
-Routeman::Routeman(MyApp *parent) {
-  m_pparent_app = parent;
+Routeman::Routeman(struct RoutePropDlgCtx ctx,
+                   std::function<void()> dlg_update_list_ctrl) {
+  m_prop_dlg_ctx = ctx;
+  m_route_mgr_dlg_update_list_ctrl = dlg_update_list_ctrl;
   pActiveRoute = NULL;
   pActivePoint = NULL;
   pRouteActivatePoint = NULL;
@@ -229,7 +221,7 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining(RoutePoint *pWP) {
 }
 
 void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
-                                    ChartCanvas *cc) {
+                                    int route_state) {
   //  Rebuild the route selectables
   pSelect->DeleteAllSelectableRoutePoints(route);
   pSelect->DeleteAllSelectableRouteSegments(route);
@@ -238,19 +230,19 @@ void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
 
   //  Check for 1 point routes. If we are creating a route, this is an undo, so
   //  keep the 1 point.
-  if (cc && (route->GetnPoints() <= 1) && (cc->m_routeState == 0)) {
-    pConfig->DeleteConfigRoute(route);
+  if (route->GetnPoints() <= 1 && route_state == 0) {
+    NavObjectChanges::getInstance()->DeleteConfigRoute(route);
     g_pRouteMan->DeleteRoute(route);
     route = NULL;
   }
   //  Add this point back into the selectables
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
 
-  if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
-    pRoutePropDialog->SetRouteAndUpdate(route, true);
-  }
+  //if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+  //  pRoutePropDialog->SetRouteAndUpdate(route, true);
+  //}
+  m_prop_dlg_ctx.SetRouteAndUpdate(route);
 
-  gFrame->InvalidateAllGL();
 }
 
 RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
@@ -289,8 +281,7 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   wxJSONValue v;
   v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
   v[_T("GUID")] = pRouteToActivate->m_GUID;
-  wxString msg_id(_T("OCPN_RTE_ACTIVATED"));
-  g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+  json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ACTIVATED");
   if (g_bPluginHandleAutopilotRoute) return true;
 
   pActiveRoute = pRouteToActivate;
@@ -312,7 +303,9 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
 
   m_bDataValid = false;
 
+#ifndef CLIAPP
   console->ShowWithFreshFonts();
+#endif
 
   return true;
 }
@@ -323,8 +316,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   v[_T("GUID")] = pRP_target->m_GUID;
   v[_T("WP_activated")] = pRP_target->GetName();
 
-  wxString msg_id(_T("OCPN_WPT_ACTIVATED"));
-  g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+  json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ACTIVATED");
 
   if (g_bPluginHandleAutopilotRoute) return true;
 
@@ -384,11 +376,12 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   m_arrival_test = 0;
 
   //    Update the RouteProperties Dialog, if currently shown
-  if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
-    if (pRoutePropDialog->GetRoute() == pA) {
-      pRoutePropDialog->SetEnroutePoint(pActivePoint);
-    }
-  }
+  ///  if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
+  ///    if (pRoutePropDialog->GetRoute() == pA) {
+  ///      pRoutePropDialog->SetEnroutePoint(pActivePoint);
+  ///    }
+  ///  }
+  m_prop_dlg_ctx.SetEnroutePoint(pA, pActivePoint);
   return true;
 }
 
@@ -424,190 +417,18 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     m_arrival_test = 0;
 
     //    Update the RouteProperties Dialog, if currently shown
-    if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
-      if (pRoutePropDialog->GetRoute() == pr) {
-        pRoutePropDialog->SetEnroutePoint(pActivePoint);
-      }
-    }
+    /// if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
+    ///   if (pRoutePropDialog->GetRoute() == pr) {
+    ///     pRoutePropDialog->SetEnroutePoint(pActivePoint);
+    ///   }
+    /// }
+    m_prop_dlg_ctx.SetEnroutePoint(pr, pActivePoint);
 
-    wxString msg_id(_T("OCPN_WPT_ARRIVED"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
-
+    json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ARRIVED");
     return true;
   }
 
   return false;
-}
-
-bool Routeman::UpdateProgress() {
-  bool bret_val = false;
-
-  if (pActiveRoute) {
-    //      Update bearing, range, and crosstrack error
-
-    //  Bearing is calculated as Mercator Sailing, i.e. a  cartographic
-    //  "bearing"
-    double north, east;
-    toSM(pActivePoint->m_lat, pActivePoint->m_lon, gLat, gLon, &east, &north);
-    double a = atan(north / east);
-    if (fabs(pActivePoint->m_lon - gLon) < 180.) {
-      if (pActivePoint->m_lon > gLon)
-        CurrentBrgToActivePoint = 90. - (a * 180 / PI);
-      else
-        CurrentBrgToActivePoint = 270. - (a * 180 / PI);
-    } else {
-      if (pActivePoint->m_lon > gLon)
-        CurrentBrgToActivePoint = 270. - (a * 180 / PI);
-      else
-        CurrentBrgToActivePoint = 90. - (a * 180 / PI);
-    }
-
-    //      Calculate range using Great Circle Formula
-
-    double d5 =
-        DistGreatCircle(gLat, gLon, pActivePoint->m_lat, pActivePoint->m_lon);
-    CurrentRngToActivePoint = d5;
-
-    //      Get the XTE vector, normal to current segment
-    vector2D va, vb, vn;
-
-    double brg1, dist1, brg2, dist2;
-    DistanceBearingMercator(pActivePoint->m_lat, pActivePoint->m_lon,
-                            pActiveRouteSegmentBeginPoint->m_lat,
-                            pActiveRouteSegmentBeginPoint->m_lon, &brg1,
-                            &dist1);
-    vb.x = dist1 * sin(brg1 * PI / 180.);
-    vb.y = dist1 * cos(brg1 * PI / 180.);
-
-    DistanceBearingMercator(pActivePoint->m_lat, pActivePoint->m_lon, gLat,
-                            gLon, &brg2, &dist2);
-    va.x = dist2 * sin(brg2 * PI / 180.);
-    va.y = dist2 * cos(brg2 * PI / 180.);
-
-    double sdelta = vGetLengthOfNormal(&va, &vb, &vn);  // NM
-    CurrentXTEToActivePoint = sdelta;
-
-    //    Calculate the distance to the arrival line, which is perpendicular to
-    //    the current route segment Taking advantage of the calculated normal
-    //    from current position to route segment vn
-    vector2D vToArriveNormal;
-    vSubtractVectors(&va, &vn, &vToArriveNormal);
-
-    CurrentRangeToActiveNormalCrossing = vVectorMagnitude(&vToArriveNormal);
-
-    //          Compute current segment course
-    //          Using simple Mercater projection
-    double x1, y1, x2, y2;
-    toSM(pActiveRouteSegmentBeginPoint->m_lat,
-         pActiveRouteSegmentBeginPoint->m_lon,
-         pActiveRouteSegmentBeginPoint->m_lat,
-         pActiveRouteSegmentBeginPoint->m_lon, &x1, &y1);
-
-    toSM(pActivePoint->m_lat, pActivePoint->m_lon,
-         pActiveRouteSegmentBeginPoint->m_lat,
-         pActiveRouteSegmentBeginPoint->m_lon, &x2, &y2);
-
-    double e1 = atan2((x2 - x1), (y2 - y1));
-    CurrentSegmentCourse = e1 * 180 / PI;
-    if (CurrentSegmentCourse < 0) CurrentSegmentCourse += 360;
-
-    //      Compute XTE direction
-    double h = atan(vn.y / vn.x);
-    if (vn.x > 0)
-      CourseToRouteSegment = 90. - (h * 180 / PI);
-    else
-      CourseToRouteSegment = 270. - (h * 180 / PI);
-
-    h = CurrentBrgToActivePoint - CourseToRouteSegment;
-    if (h < 0) h = h + 360;
-
-    if (h > 180)
-      XTEDir = 1;
-    else
-      XTEDir = -1;
-
-    // Allow DirectShipToActivePoint line (distance XTE in mm is > 3 (arbitrary)
-    // or when active point is the first
-    if (g_bShowShipToActive) {
-      if (pActiveRoute->GetIndexOf(pActivePoint) == 1)
-        g_bAllowShipToActive = true;
-      else {
-        // compute XTE in pixels
-        double tlat, tlon;
-        wxPoint r, r1;
-        ll_gc_ll(gLat, gLon, CourseToRouteSegment,
-                 (CurrentXTEToActivePoint / 1.852), &tlat, &tlon);
-        gFrame->GetFocusCanvas()->GetCanvasPointPix(gLat, gLon, &r1);
-        gFrame->GetFocusCanvas()->GetCanvasPointPix(tlat, tlon, &r);
-        double xtepix =
-            sqrt(pow((double)(r1.x - r.x), 2) + pow((double)(r1.y - r.y), 2));
-        // xte in mm
-        double xtemm = xtepix / gFrame->GetFocusCanvas()->GetPixPerMM();
-        // allow display (or not)
-        g_bAllowShipToActive = (xtemm > 3.0) ? true : false;
-      }
-    }
-
-    //      Determine Arrival
-
-    bool bDidArrival = false;
-
-    // Special signal:  if ArrivalRadius < 0, NEVER arrive...
-    //  Used for MOB auto-created routes.
-    if (pActivePoint->GetWaypointArrivalRadius() > 0) {
-      if (CurrentRangeToActiveNormalCrossing <=
-          pActivePoint->GetWaypointArrivalRadius()) {
-        m_bArrival = true;
-        UpdateAutopilot();
-
-        bDidArrival = true;
-        DoAdvance();
-
-      } else {
-        //      Test to see if we are moving away from the arrival point, and
-        //      have been moving away for 2 seconds.
-        //      If so, we should declare "Arrival"
-        if ((CurrentRangeToActiveNormalCrossing - m_arrival_min) >
-            pActivePoint->GetWaypointArrivalRadius()) {
-          if (++m_arrival_test > 2 && !g_bAdvanceRouteWaypointOnArrivalOnly) {
-            m_bArrival = true;
-            UpdateAutopilot();
-
-            bDidArrival = true;
-            DoAdvance();
-          }
-        } else
-          m_arrival_test = 0;
-      }
-    }
-
-    if (!bDidArrival)
-      m_arrival_min = wxMin(m_arrival_min, CurrentRangeToActiveNormalCrossing);
-
-    if (!bDidArrival)  // Only once on arrival
-      UpdateAutopilot();
-
-    bret_val = true;  // a route is active
-  }
-
-  m_bDataValid = true;
-
-  return bret_val;
-}
-
-void Routeman::DoAdvance(void) {
-  if (!ActivateNextPoint(pActiveRoute, false))  // at the end?
-  {
-    Route *pthis_route = pActiveRoute;
-    DeactivateRoute(true);  // this is an arrival
-
-    if (pthis_route->m_bDeleteOnArrival && !pthis_route->m_bIsBeingEdited) {
-      pConfig->DeleteConfigRoute(pthis_route);
-      DeleteRoute(pthis_route);
-    }
-
-    if (pRouteManagerDialog) pRouteManagerDialog->UpdateRouteListCtrl();
-  }
 }
 
 bool Routeman::DeactivateRoute(bool b_arrival) {
@@ -624,13 +445,11 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
     if (!b_arrival) {
       v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
       v[_T("GUID")] = pActiveRoute->m_GUID;
-      wxString msg_id(_T("OCPN_RTE_DEACTIVATED"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_DEACTIVATED");
     } else {
       v[_T("GUID")] = pActiveRoute->m_GUID;
       v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
-      wxString msg_id(_T("OCPN_RTE_ENDED"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ENDED");
     }
   }
 
@@ -641,9 +460,10 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 
   pActivePoint = NULL;
 
+#ifndef CLIAPP
   console->pCDI->ClearBackground();
-
   console->Show(false);
+#endif
 
   m_bDataValid = false;
 
@@ -675,7 +495,8 @@ bool Routeman::UpdateAutopilot() {
   }
   leg_info.wp_name = pActivePoint->GetName().Truncate(maxName);
   leg_info.arrival = m_bArrival;
-  g_pi_manager->SendActiveLegInfoToAllPlugIns(&leg_info);
+
+  json_leg_info.notify(std::make_shared<ActiveLegDat>(leg_info), "");
 
   // RMB
   {
@@ -721,7 +542,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmb.FAAModeIndicator = "A";
     m_NMEA0183.Rmb.Write(snt);
 
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   // RMC
@@ -772,7 +593,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
     m_NMEA0183.Rmc.Write(snt);
 
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   // APB
@@ -838,7 +659,7 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Apb.Write(snt);
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   // XTE
@@ -860,7 +681,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Xte.CrossTrackUnits = _T("N");
 
     m_NMEA0183.Xte.Write(snt);
-    g_pMUX->SendNMEAMessage(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence);
   }
 
   return true;
@@ -906,6 +727,9 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
 bool Routeman::DeleteRoute(Route *pRoute) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
+#ifdef CLIAPP
+      pAISMOBRoute = NULL;
+#else
       int ret = OCPNMessageBox(NULL,
                                _("You are trying to delete an active AIS MOB "
                                  "route, are you REALLY sure?"),
@@ -915,6 +739,7 @@ bool Routeman::DeleteRoute(Route *pRoute) {
         return false;
       else
         pAISMOBRoute = NULL;
+#endif
     }
     ::wxBeginBusyCursor();
 
@@ -924,19 +749,21 @@ bool Routeman::DeleteRoute(Route *pRoute) {
       ::wxEndBusyCursor();
       return false;
     }
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown()) &&
-        (pRoute == pRoutePropDialog->GetRoute())) {
-      pRoutePropDialog->Hide();
-    }
+    /// if (pRoutePropDialog && (pRoutePropDialog->IsShown()) &&
+    ///     (pRoute == pRoutePropDialog->GetRoute())) {
+    ///   pRoutePropDialog->Hide();
+    /// }
+    m_prop_dlg_ctx.Hide(pRoute);
 
-    pConfig->DeleteConfigRoute(pRoute);
+    NavObjectChanges::getInstance()->DeleteConfigRoute(pRoute);
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
     pRouteList->DeleteObject(pRoute);
 
-    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-      pRouteManagerDialog->UpdateRouteListCtrl();
+    m_route_mgr_dlg_update_list_ctrl();   // Update the RouteManagerDialog
+    ///if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+    ///  pRouteManagerDialog->UpdateRouteListCtrl();
 
     // walk the route, tentatively deleting/marking points used only by this
     // route
@@ -993,6 +820,9 @@ void Routeman::DeleteAllRoutes(void) {
   while (node) {
     Route *proute = node->GetData();
     if (proute == pAISMOBRoute) {
+#ifdef CLIAPP
+      pAISMOBRoute = NULL;
+#else
       ::wxEndBusyCursor();
       int ret = OCPNMessageBox(NULL,
                                _("You are trying to delete an active AIS MOB "
@@ -1003,89 +833,33 @@ void Routeman::DeleteAllRoutes(void) {
       else
         pAISMOBRoute = NULL;
       ::wxBeginBusyCursor();
+#endif
     }
 
     node = node->GetNext();
     if (proute->m_bIsInLayer) continue;
 
-    pConfig->m_bSkipChangeSetUpdate = true;
-    pConfig->DeleteConfigRoute(proute);
+    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
+    NavObjectChanges::getInstance()->DeleteConfigRoute(proute);
     DeleteRoute(proute);
-    pConfig->m_bSkipChangeSetUpdate = false;
+    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
   }
 
   ::wxEndBusyCursor();
 }
 
-void Routeman::DeleteAllTracks(void) {
-  ::wxBeginBusyCursor();
+#ifdef  CLIAPP
+wxColour GetGlobalColor(wxString name) { return *wxBLACK; }
+#endif
 
-  // Iterate on the RouteList, we delete from g_TrackList in DeleteTrack,
-  // bigger refactoring is viable, but for now, we simply make a copy
-  // that goes out of scope soon.
-  std::vector<Track*> to_del = g_TrackList;
-  for (Track *ptrack : to_del) {
-    if (ptrack->m_bIsInLayer) continue;
-
-    g_pAIS->DeletePersistentTrack(ptrack);
-    pConfig->m_bSkipChangeSetUpdate = true;
-    pConfig->DeleteConfigTrack(ptrack);
-    DeleteTrack(ptrack);
-    pConfig->m_bSkipChangeSetUpdate = false;
-  }
-
-  ::wxEndBusyCursor();
-}
-
-void Routeman::DeleteTrack(Track *pTrack) {
-  if (pTrack) {
-    if (pTrack->m_bIsInLayer) return;
-
-    ::wxBeginBusyCursor();
-
-    wxGenericProgressDialog *pprog = nullptr;
-
-    int count = pTrack->GetnPoints();
-    if (count > 10000) {
-      pprog = new wxGenericProgressDialog(
-          _("OpenCPN Track Delete"), _T("0/0"), count, NULL,
-          wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME |
-              wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
-      pprog->SetSize(400, wxDefaultCoord);
-      pprog->Centre();
-    }
-    if (TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&
-        (pTrackPropDialog->IsShown()) &&
-        (pTrack == pTrackPropDialog->GetTrack())) {
-      pTrackPropDialog->Hide();
-    }
-
-    if (pTrack == g_pActiveTrack && g_pActiveTrack->IsRunning()) {
-      pTrack = m_pparent_app->TrackOff();
-    }
-    //    Remove the track from associated lists
-    pSelect->DeleteAllSelectableTrackSegments(pTrack);
-    auto it = std::find(g_TrackList.begin(), g_TrackList.end(), pTrack);
-    if (it != g_TrackList.end()) {
-      g_TrackList.erase(it);
-    }
-    delete pTrack;
-
-    ::wxEndBusyCursor();
-
-    delete pprog;
-  }
-}
-
-void Routeman::SetColorScheme(ColorScheme cs) {
+void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
   // Re-Create the pens and colors
 
   int scaled_line_width = g_route_line_width;
   int track_scaled_line_width = g_track_line_width;
   if (g_btouch) {
-    double nominal_line_width_pix =
-        wxMax(1.5, floor(g_Platform->GetDisplayDPmm() /
-                         5.0));  // 0.2 mm nominal, but not less than 1 pixel
+    // 0.2 mm nominal, but not less than 1 pixel
+    double nominal_line_width_pix = wxMax(1.5, floor(displayDPmm / 5.0));
 
     double sline_width = wxMax(nominal_line_width_pix, g_route_line_width);
     sline_width *= g_ChartScaleFactorExp;
@@ -1173,7 +947,7 @@ WayPointman::WayPointman() {
 
   pmarkicon_image_list = NULL;
 
-  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  //ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   m_pIconArray = new ArrayOfMarkIcon;
   m_pLegacyIconArray = NULL;
   m_pExtendedIconArray = NULL;
@@ -1245,539 +1019,6 @@ bool WayPointman::RemoveRoutePoint(RoutePoint *prp) {
   return true;
 }
 
-void WayPointman::ProcessUserIcons(ocpnStyle::Style *style) {
-  wxString msg;
-  msg.Printf(_T("DPMM: %g   ScaleFactorExp: %g"), g_Platform->GetDisplayDPmm(),
-             g_ChartScaleFactorExp);
-  wxLogMessage(msg);
-
-  wxString UserIconPath = g_Platform->GetPrivateDataDir();
-  wxChar sep = wxFileName::GetPathSeparator();
-  if (UserIconPath.Last() != sep) UserIconPath.Append(sep);
-  UserIconPath.Append(_T("UserIcons/"));
-
-  wxLogMessage(_T("Looking for UserIcons at ") + UserIconPath);
-
-  if (wxDir::Exists(UserIconPath)) {
-    wxLogMessage(_T("Loading UserIcons from ") + UserIconPath);
-    wxArrayString FileList;
-
-    int n_files =
-        wxDir::GetAllFiles(UserIconPath, &FileList, _T(""), wxDIR_FILES);
-
-    for (int ifile = 0; ifile < n_files; ifile++) {
-      wxString name = FileList[ifile];
-
-      wxFileName fn(name);
-      wxString iconname = fn.GetName();
-      wxBitmap icon1;
-
-      if (fn.GetExt().Lower() == _T("xpm")) {
-        if (icon1.LoadFile(name, wxBITMAP_TYPE_XPM)) {
-          wxLogMessage(_T("Adding icon: ") + iconname);
-          ProcessIcon(icon1, iconname, iconname);
-        }
-      }
-      if (fn.GetExt().Lower() == _T("png")) {
-        if (icon1.LoadFile(name, wxBITMAP_TYPE_PNG)) {
-          wxLogMessage(_T("Adding icon: ") + iconname);
-          ProcessIcon(icon1, iconname, iconname);
-        }
-      }
-      if (fn.GetExt().Lower() == _T("svg")) {
-        unsigned int w, h;
-        SVGDocumentPixelSize(name, w, h);
-        w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
-                                     // icons, 15px (approx 3mm) be it
-        const unsigned int bm_size = SVGPixelsToDisplay(w);
-        wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size);
-        MarkIcon *pmi = ProcessIcon(iconSVG, iconname, iconname);
-        if (pmi) pmi->preScaled = true;
-      }
-    }
-  }
-}
-
-void WayPointman::ProcessIcons(ocpnStyle::Style *style) {
-  m_pIconArray->Clear();
-
-  ProcessDefaultIcons();
-
-  // Load user defined icons.
-  // Done after default icons are initialized,
-  // so that user may substitute an icon by using the same name in the Usericons
-  // file.
-  ProcessUserIcons(style);
-
-  if (NULL != pmarkicon_image_list) {
-    pmarkicon_image_list->RemoveAll();
-    delete pmarkicon_image_list;
-    pmarkicon_image_list = NULL;
-  }
-
-  // First find the largest bitmap size, to use as the base size for lists of
-  // icons
-  int w = 0;
-  int h = 0;
-
-  for (unsigned int i = 0; i < m_pIconArray->GetCount(); i++) {
-    MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(i);
-    w = wxMax(w, pmi->iconImage.GetWidth());
-    h = wxMax(h, pmi->iconImage.GetHeight());
-  }
-
-  m_bitmapSizeForList = wxMax(w, h);
-  m_bitmapSizeForList = wxMin(100, m_bitmapSizeForList);
-}
-
-void WayPointman::ProcessDefaultIcons() {
-  wxString iconDir = g_Platform->GetSharedDataDir();
-  appendOSDirSlash(&iconDir);
-  iconDir.append(_T("uidata"));
-  appendOSDirSlash(&iconDir);
-  iconDir.append(_T("markicons"));
-  appendOSDirSlash(&iconDir);
-
-  MarkIcon *pmi = 0;
-
-  // Add the legacy icons to their own sorted array
-  if (m_pLegacyIconArray)
-    m_pLegacyIconArray->Clear();
-  else
-    m_pLegacyIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
-
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-Empty.svg"), _T("empty"),
-                          _T("Empty"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-Triangle.svg"), _T("triangle"),
-                          _T("Triangle"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("1st-Active-Waypoint.svg"),
-                          _T("activepoint"), _T("Active WP"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Boarding-Location.svg"),
-                          _T("boarding"), _T("Boarding Location"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Airplane.svg"), _T("airplane"),
-                          _T("Airplane"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("1st-Anchorage.svg"), _T("anchorage"),
-                          _T("Anchorage"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-Anchor2.svg"), _T("anchor"),
-                          _T("Anchor"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Boundary.svg"), _T("boundary"),
-                          _T("Boundary Mark"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Buoy-TypeA.svg"), _T("bouy1"),
-                          _T("Bouy Type A"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Buoy-TypeB.svg"), _T("bouy2"),
-                          _T("Bouy Type B"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Activity-Campfire.svg"), _T("campfire"),
-                          _T("Campfire"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Activity-Camping.svg"), _T("camping"),
-                          _T("Camping Spot"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Sea-Floor-Coral.svg"), _T("coral"),
-                          _T("Coral"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Activity-Fishing.svg"), _T("fishhaven"),
-                          _T("Fish Haven"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Activity-Fishing.svg"), _T("fishing"),
-                          _T("Fishing Spot"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Activity-Fishing.svg"), _T("fish"),
-                          _T("Fish"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Mooring-Buoy.svg"), _T("float"),
-                          _T("Float"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Service-Food.svg"), _T("food"),
-                          _T("Food"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Service-Fuel-Pump-Diesel-Petrol.svg"),
-                          _T("fuel"), _T("Fuel"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-Green.svg"),
-                          _T("greenlite"), _T("Green Light"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Sea-Floor-Sea-Weed.svg"), _T("kelp"),
-                          _T("Kelp"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-TypeA.svg"), _T("light"),
-                          _T("Light Type A"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-TypeB.svg"), _T("light1"),
-                          _T("Light Type B"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-Vessel.svg"),
-                          _T("litevessel"), _T("litevessel"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("1st-Man-Overboard.svg"), _T("mob"),
-                          _T("MOB"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Mooring-Buoy.svg"), _T("mooring"),
-                          _T("Mooring Bouy"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Mooring-Buoy-Super.svg"),
-                          _T("oilbouy"), _T("Oil Bouy"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Oil-Platform.svg"),
-                          _T("platform"), _T("Platform"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-Red-Green.svg"),
-                          _T("redgreenlite"), _T("Red/Green Light"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-Red.svg"), _T("redlite"),
-                          _T("Red Light"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Rock-Exposed.svg"), _T("rock1"),
-                          _T("Rock (exposed)"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Rock-Awash.svg"), _T("rock2"),
-                          _T("Rock, (awash)"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Sandbar.svg"), _T("sand"),
-                          _T("Sand"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Activity-Diving-Scuba-Flag.svg"),
-                          _T("scuba"), _T("Scuba"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Sandbar.svg"), _T("shoal"),
-                          _T("Shoal"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Snag.svg"), _T("snag"),
-                          _T("Snag"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-Square.svg"), _T("square"),
-                          _T("Square"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("1st-Diamond.svg"), _T("diamond"),
-                          _T("Diamond"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-Circle.svg"), _T("circle"),
-                          _T("Circle"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Wreck1.svg"), _T("wreck1"),
-                          _T("Wreck A"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Wreck2.svg"), _T("wreck2"),
-                          _T("Wreck B"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-X-Small-Blue.svg"), _T("xmblue"),
-                          _T("Blue X"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-X-Small-Green.svg"),
-                          _T("xmgreen"), _T("Green X"));
-  if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Symbol-X-Small-Red.svg"), _T("xmred"),
-                          _T("Red X"));
-  if (pmi) pmi->preScaled = true;
-
-  // Add the extended icons to their own sorted array
-  if (m_pExtendedIconArray)
-    m_pExtendedIconArray->Clear();
-  else
-    m_pExtendedIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
-
-#if 0
-    wxArrayString FileList;
-    double bm_size = -1;
-
-    int n_files = wxDir::GetAllFiles( iconDir, &FileList );
-
-    // If the scale factor is not unity, measure the first icon in the list
-    //  So that we may apply the scale factor exactly to all
-    if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
-
-        for( int ifile = 0; ifile < n_files; ifile++ ) {
-            wxString name = FileList[ifile];
-
-            wxFileName fn( name );
-
-            if( fn.GetExt().Lower() == _T("svg") ) {
-                wxBitmap bmt = LoadSVG(name, -1, -1 );
-                bm_size = bmt.GetWidth() * g_ChartScaleFactorExp;
-                break;
-            }
-        }
-    }
-
-    for( int ifile = 0; ifile < n_files; ifile++ ) {
-        wxString name = FileList[ifile];
-
-        wxFileName fn( name );
-        wxString iconname = fn.GetName();
-        wxBitmap icon1;
-        if( fn.GetExt().Lower() == _T("svg") ) {
-            wxImage iconSVG = LoadSVG( name, (int)bm_size, (int)bm_size );
-            MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
-            if(pmi)
-                pmi->preScaled = true;
-        }
-    }
-#else
-
-  wxArrayString FileList;
-  double bm_size =
-      wxMax(4.0, floor(g_Platform->GetDisplayDPmm() *
-                       12.0));  // nominal size, but not less than 4 pixel
-  bm_size *= g_ChartScaleFactorExp;
-
-  int n_files = wxDir::GetAllFiles(iconDir, &FileList);
-
-  g_Platform->ShowBusySpinner();
-
-  for (int ifile = 0; ifile < n_files; ifile++) {
-    wxString name = FileList[ifile];
-
-    wxFileName fn(name);
-    wxString iconname = fn.GetName();
-    wxBitmap icon1;
-
-    if (fn.GetExt().Lower() == _T("svg")) {
-      unsigned int w, h;
-      SVGDocumentPixelSize(name, w, h);
-      w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
-                                   // icons, 15px (approx 3mm) be it
-      bm_size = SVGPixelsToDisplay(w);
-      wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
-      if (bmp.IsOk()) {
-        wxImage iconSVG = bmp.ConvertToImage();
-
-        MarkIcon *pmi = ProcessExtendedIcon(iconSVG, iconname, iconname);
-        if (pmi) pmi->preScaled = true;
-      } else {
-        wxLogMessage("Failed loading mark icon " + name);
-      }
-    }
-  }
-  g_Platform->HideBusySpinner();
-#endif
-
-  // Walk the two sorted lists, adding icons to the un-sorted master list
-
-  for (unsigned int i = 0; i < m_pLegacyIconArray->GetCount(); i++) {
-    pmi = (MarkIcon *)m_pLegacyIconArray->Item(i);
-    m_pIconArray->Add(pmi);
-  }
-
-  for (unsigned int i = 0; i < m_pExtendedIconArray->GetCount(); i++) {
-    pmi = (MarkIcon *)m_pExtendedIconArray->Item(i);
-
-    //  Do not add any icons from the extended array if they have already been
-    //  used as legacy substitutes
-    bool noAdd = false;
-    for (unsigned int j = 0; j < m_pLegacyIconArray->GetCount(); j++) {
-      MarkIcon *pmiLegacy = (MarkIcon *)m_pLegacyIconArray->Item(j);
-      if (pmiLegacy->icon_name.IsSameAs(pmi->icon_name)) {
-        noAdd = true;
-        break;
-      }
-    }
-    if (!noAdd) m_pIconArray->Add(pmi);
-  }
-}
-
-MarkIcon *WayPointman::ProcessIcon(wxBitmap pimage, const wxString &key,
-                                   const wxString &description) {
-  MarkIcon *pmi = 0;
-
-  bool newIcon = true;
-
-  // avoid adding duplicates
-  for (unsigned int i = 0; i < m_pIconArray->GetCount(); i++) {
-    pmi = (MarkIcon *)m_pIconArray->Item(i);
-    if (pmi->icon_name.IsSameAs(key)) {
-      newIcon = false;
-      delete pmi->piconBitmap;
-      break;
-    }
-  }
-
-  if (newIcon) {
-    pmi = new MarkIcon;
-    pmi->icon_name = key;  // Used for sorting
-    m_pIconArray->Add(pmi);
-  }
-
-  wxBitmap *pbm = new wxBitmap(pimage);
-  pmi->icon_name = key;
-  pmi->icon_description = description;
-  pmi->piconBitmap = NULL;
-  pmi->icon_texture = 0; /* invalidate */
-  pmi->preScaled = false;
-  pmi->iconImage = pbm->ConvertToImage();
-  pmi->m_blistImageOK = false;
-  delete pbm;
-
-  return pmi;
-}
-
-MarkIcon *WayPointman::ProcessExtendedIcon(wxImage &image, const wxString &key,
-                                           const wxString &description) {
-  MarkIcon *pmi = 0;
-
-  bool newIcon = true;
-
-  // avoid adding duplicates
-  for (unsigned int i = 0; i < m_pExtendedIconArray->GetCount(); i++) {
-    pmi = (MarkIcon *)m_pExtendedIconArray->Item(i);
-    if (pmi->icon_name.IsSameAs(key)) {
-      newIcon = false;
-      delete pmi->piconBitmap;
-      break;
-    }
-  }
-
-  if (newIcon) {
-    pmi = new MarkIcon;
-    pmi->icon_name = key;  // Used for sorting
-    m_pExtendedIconArray->Add(pmi);
-  }
-
-  wxRect rClip = CropImageOnAlpha(image);
-  wxImage imageClip = image.GetSubImage(rClip);
-
-  pmi->icon_name = key;
-  pmi->icon_description = description;
-  pmi->piconBitmap = NULL;
-  pmi->icon_texture = 0; /* invalidate */
-  pmi->preScaled = false;
-  pmi->iconImage = imageClip;
-  pmi->m_blistImageOK = false;
-
-  return pmi;
-}
-
-MarkIcon *WayPointman::ProcessLegacyIcon(wxString fileName, const wxString &key,
-                                         const wxString &description) {
-  double bm_size = -1.0;
-
-#ifndef ocpnUSE_wxBitmapBundle
-#ifndef __OCPN__ANDROID__
-  if (fabs(g_ChartScaleFactorExp - 1.0) > 0.1) {
-    wxBitmap img = LoadSVG(fileName, -1, -1);
-    bm_size = img.GetWidth() * g_ChartScaleFactorExp;
-  }
-#else
-  //  Set the onscreen size of the symbol
-  //  Compensate for various display resolutions
-  //  Develop empirically, making a "diamond" symbol about 4 mm square
-  //  Android uses "density buckets", so simple math produces poor results.
-  //  Thus, these factors have been empirically tweaked to provide good results
-  //  on a variety of devices
-  float nominal_legacy_icon_size_pixels =
-      wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));
-  float pix_factor =
-      nominal_legacy_icon_size_pixels / 68.0;  // legacy icon size
-
-  wxBitmap img = LoadSVG(fileName, -1, -1);
-  bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
-#endif
-#else
-  unsigned int w, h;
-  SVGDocumentPixelSize(fileName, w, h);
-  w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the icons,
-                               // 15px (approx 3mm) be it
-  bm_size = SVGPixelsToDisplay(w);
-#endif
-
-  wxImage image =
-      LoadSVG(fileName, (int)bm_size, (int)bm_size).ConvertToImage();
-
-  wxRect rClip = CropImageOnAlpha(image);
-  wxImage imageClip = image.GetSubImage(rClip);
-
-  MarkIcon *pmi = 0;
-
-  bool newIcon = true;
-
-  // avoid adding duplicates
-  for (unsigned int i = 0; i < m_pLegacyIconArray->GetCount(); i++) {
-    pmi = (MarkIcon *)m_pLegacyIconArray->Item(i);
-    if (pmi->icon_name.IsSameAs(key)) {
-      newIcon = false;
-      delete pmi->piconBitmap;
-      break;
-    }
-  }
-
-  if (newIcon) {
-    pmi = new MarkIcon;
-    pmi->icon_name = key;  // Used for sorting
-    m_pLegacyIconArray->Add(pmi);
-  }
-
-  pmi->icon_name = key;
-  pmi->icon_description = description;
-  pmi->piconBitmap = NULL;
-  pmi->icon_texture = 0; /* invalidate */
-  pmi->preScaled = false;
-  pmi->iconImage = imageClip;
-  pmi->m_blistImageOK = false;
-
-  return pmi;
-}
-
-wxRect WayPointman::CropImageOnAlpha(wxImage &image) {
-  const int w = image.GetWidth();
-  const int h = image.GetHeight();
-
-  wxRect rv = wxRect(0, 0, w, h);
-  if (!image.HasAlpha()) return rv;
-
-  unsigned char *pAlpha = image.GetAlpha();
-
-  int leftCrop = w;
-  int topCrop = h;
-  int rightCrop = w;
-  int bottomCrop = h;
-
-  // Horizontal
-  for (int i = 0; i < h; i++) {
-    int lineStartIndex = i * w;
-
-    int j = 0;
-    while ((j < w) && (pAlpha[lineStartIndex + j] == 0)) j++;
-    leftCrop = wxMin(leftCrop, j);
-
-    int k = w - 1;
-    while (k && (pAlpha[lineStartIndex + k] == 0)) k--;
-    rightCrop = wxMin(rightCrop, image.GetWidth() - k - 2);
-  }
-
-  // Vertical
-  for (int i = 0; i < w; i++) {
-    int columnStartIndex = i;
-
-    int j = 0;
-    while ((j < h) && (pAlpha[columnStartIndex + (j * w)] == 0)) j++;
-    topCrop = wxMin(topCrop, j);
-
-    int k = h - 1;
-    while (k && (pAlpha[columnStartIndex + (k * w)] == 0)) k--;
-    bottomCrop = wxMin(bottomCrop, h - k - 2);
-  }
-
-  int xcrop = wxMin(rightCrop, leftCrop);
-  int ycrop = wxMin(topCrop, bottomCrop);
-  int crop = wxMin(xcrop, ycrop);
-
-  rv.x = wxMax(crop, 0);
-  rv.width = wxMax(1, w - (2 * crop));
-  rv.width = wxMin(rv.width, w);
-  rv.y = rv.x;
-  rv.height = rv.width;
-
-  return rv;
-}
-
 wxImageList *WayPointman::Getpmarkicon_image_list(int nominal_height) {
   // Cached version available?
   if (pmarkicon_image_list && (nominal_height == m_iconListHeight)) {
@@ -1836,40 +1077,6 @@ wxImage WayPointman::CreateDimImage(wxImage &image, double factor) {
   }
 
   return wxImage(new_img);
-}
-
-void WayPointman::SetColorScheme(ColorScheme cs) {
-  m_cs = cs;
-  ReloadAllIcons();
-}
-
-void WayPointman::ReloadAllIcons() {
-  ProcessIcons(g_StyleManager->GetCurrentStyle());
-
-  for (unsigned int i = 0; i < m_pIconArray->GetCount(); i++) {
-    MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(i);
-    wxImage dim_image;
-    if (m_cs == GLOBAL_COLOR_SCHEME_DUSK) {
-      dim_image = CreateDimImage(pmi->iconImage, .50);
-      pmi->iconImage = dim_image;
-    } else if (m_cs == GLOBAL_COLOR_SCHEME_NIGHT) {
-      dim_image = CreateDimImage(pmi->iconImage, .20);
-      pmi->iconImage = dim_image;
-    }
-  }
-
-  ReloadRoutepointIcons();
-}
-
-void WayPointman::ReloadRoutepointIcons() {
-  //    Iterate on the RoutePoint list, requiring each to reload icon
-
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-    pr->ReLoadIcon();
-    node = node->GetNext();
-  }
 }
 
 bool WayPointman::DoesIconExist(const wxString &icon_key) const {
@@ -2343,8 +1550,8 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
 
 void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
   if (!b_update_changeset)
-    pConfig->m_bSkipChangeSetUpdate =
-        true;  // turn OFF change-set updating if requested
+    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
+    // turn OFF change-set updating if requested
 
   if (pRp) {
     // Get a list of all routes containing this point
@@ -2365,11 +1572,12 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
       for (unsigned int ir = 0; ir < proute_array->GetCount(); ir++) {
         Route *pr = (Route *)proute_array->Item(ir);
         if (pr->GetnPoints() < 2) {
-          bool prev_bskip = pConfig->m_bSkipChangeSetUpdate;
-          pConfig->m_bSkipChangeSetUpdate = true;
-          pConfig->DeleteConfigRoute(pr);
+          bool prev_bskip =
+              NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate;
+          NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
+          NavObjectChanges::getInstance()->DeleteConfigRoute(pr);
           g_pRouteMan->DeleteRoute(pr);
-          pConfig->m_bSkipChangeSetUpdate = prev_bskip;
+          NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = prev_bskip;
         }
       }
 
@@ -2377,8 +1585,8 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
     }
 
     // Now it is safe to delete the point
-    pConfig->DeleteWayPoint(pRp);
-    pConfig->m_bSkipChangeSetUpdate = false;
+    NavObjectChanges::getInstance()->DeleteWayPoint(pRp);
+    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
 
     pSelect->DeleteSelectableRoutePoint(pRp);
 

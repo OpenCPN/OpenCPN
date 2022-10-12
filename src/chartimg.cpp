@@ -55,7 +55,7 @@
 #include "config.h"
 #include "chartimg.h"
 #include "ocpn_pixel.h"
-#include "ChartDataInputStream.h"
+#include "chartdata_input_stream.h"
 
 #ifndef __WXMSW__
 #include <signal.h>

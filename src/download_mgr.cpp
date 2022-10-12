@@ -42,10 +42,10 @@
 
 #include "catalog_mgr.h"
 #include "download_mgr.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "OCPNPlatform.h"
 #include "picosha2.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "plugin_cache.h"
 #include "pluginmanager.h"
 #include "semantic_vers.h"

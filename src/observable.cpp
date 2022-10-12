@@ -36,24 +36,13 @@ std::string ptr_key(const void* ptr) {
   return oss.str();
 }
 
-/**
- * Add >> support for wxString, for some reason missing in wxWidgets 3.0,
- * required by ConfigVar::get()
- */
-std::istream& operator>>(std::istream& input, wxString& ws) {
-  std::string s;
-  input >> s;
-  ws.Append(s);
-  return input;
-}
+/* ListenersByKey implementation. */
 
-/* SingletonVar implementation. */
-
-SingletonVar* SingletonVar::getInstance(const std::string& key) {
-  static std::unordered_map<std::string, SingletonVar*> instances;
+ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
+  static std::unordered_map<std::string, ListenersByKey> instances;
 
   if (instances.find(key) == instances.end()) {
-    instances[key] = new SingletonVar();
+    instances[key] = ListenersByKey();
   }
   return instances[key];
 }
@@ -64,32 +53,47 @@ SingletonVar* SingletonVar::getInstance(const std::string& key) {
 using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
 void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
-  const auto& listeners = singleton->listeners;
-  ev_pair keys(listener, ev_type);
-  auto found = std::find(listeners.begin(), listeners.end(), keys);
-  if (found != listeners.end()) {
-      wxLogWarning("Duplicate listener, key: %s, listener: %s, ev_type: %d",
-                   key, ptr_key(listener), ev_type);
+  const auto& listeners = singleton.listeners;
+  ev_pair key_pair(listener, ev_type);
+  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
+    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
+    if (count > 2) {
+        // There are two occurences when assigning, the source is assumed
+        // to go away and remove one occurence.
+        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
+                     key, ptr_key(listener), ev_type);
+    }
   }
-  singleton->listeners.push_back(ev_pair(listener, ev_type));
+  singleton.listeners.push_back(key_pair);
 }
 
 bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
-  auto& listeners = singleton->listeners;
+  auto& listeners = singleton.listeners;
 
-  ev_pair keys(listener, ev_type);
-  auto found = std::find(listeners.begin(), listeners.end(), keys);
+  ev_pair key_pair(listener, ev_type);
+  auto found = std::find(listeners.begin(), listeners.end(), key_pair);
   if (found == listeners.end()) return false;
   listeners.erase(found);
+  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
+    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
+    if (count > 1) {
+        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
+                     key, ptr_key(listener), ev_type);
+    }
+  }
   return true;
 }
 
-const void ObservedVar::notify(const std::string& s, void* client_data) {
-  auto& listeners = singleton->listeners;
+const void ObservedVar::notify(std::shared_ptr<const void> ptr,
+                               const std::string& s, int num,
+                               void* client_data) {
+  auto& listeners = singleton.listeners;
   for (auto l = listeners.begin(); l != listeners.end(); l++) {
-    auto evt = new wxCommandEvent(l->second);
+    auto evt = new ObservedEvt(l->second);
+    evt->SetSharedPtr(ptr);
     evt->SetClientData(client_data);
     evt->SetString(s.c_str());  // Better safe than sorry: force a deep copy
+    evt->SetInt(num);
     wxQueueEvent(l->first, evt);
   }
 }
@@ -98,60 +102,31 @@ const void ObservedVar::notify() { notify("", 0); }
 
 using Listener = ObservedVarListener;
 
-Listener ObservedVar::get_listener(wxEvtHandler* eh, wxEventType ev) {
+Listener ObservedVar::GetListener(wxEvtHandler* eh, wxEventType ev) {
   return Listener(this, eh, ev);
 }
 
+/* ObservedVarListener implementation. */
 
-/* EventVar implementation. */
-
-std::string EventVar::autokey() {
-  static  std::atomic<unsigned long> last_ix(0);
-  return std::string("!@%/+") + std::to_string(last_ix++);
-}
-
-
-/* ConfigVar implementation. */
-
-template <typename T>
-ConfigVar<T>::ConfigVar(const std::string& section_, const std::string& key_,
-                        wxConfigBase* cb)
-    : ObservedVar(section_ + "/" + key_),
-      section(section_),
-      key(key_),
-      config(cb) {}
-
-template <typename T>
-const T ConfigVar<T>::get(const T& default_val) {
-  std::istringstream iss;
-  config->SetPath(section);
-  auto value = config->Read(key, "").ToStdString();
-  iss.str(value);
-  T r;
-  iss >> r;
-  return iss.fail() ? default_val : r;
-}
-
-template <typename T>
-void ConfigVar<T>::set(const T& arg) {
-  std::ostringstream oss;
-  oss << arg;
-  if (oss.fail()) {
-    wxLogWarning("Cannot dump failed buffer for key %s:%s", section.c_str(),
-                 key.c_str());
-    return;
+void ObservedVarListener::listen() {
+  if (key != "") {
+    assert(listener);
+    ObservedVar var(key);
+    var.listen(listener, ev_type);
   }
-  config->SetPath(section);
-  if (!config->Write(key.c_str(), oss.str().c_str())) {
-    wxLogWarning("Error writing buffer to key %s:%s", section.c_str(),
-                 key.c_str());
-  }
-  ObservedVar::notify();
 }
 
-/* Explicitly instantiate the ConfigVar types supported. */
-template class ConfigVar<bool>;
-template class ConfigVar<double>;
-template class ConfigVar<int>;
-template class ConfigVar<std::string>;
-template class ConfigVar<wxString>;
+void ObservedVarListener::unlisten() {
+  if (key != "") {
+    assert(listener);
+    ObservedVar var(key);
+    var.unlisten(listener, ev_type);
+  }
+}
+
+void ObservedVarListener::copy(const ObservedVarListener& other) {
+  listener = other.listener;
+  key = other.key;
+  ev_type = other.ev_type;
+  listen();
+}

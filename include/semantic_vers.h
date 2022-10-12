@@ -25,10 +25,11 @@
 #ifndef SEMANTIC_VERSION_H_GUARD
 #define SEMANTIC_VERSION_H_GUARD
 
-#include "config.h"
 #include <sstream>
 
-#undef major  // walk around gnu's major() and minor() macros.
+#include "config.h"
+
+#undef major  // work around gnu's major() and minor() macros.
 #undef minor
 
 /**

@@ -44,17 +44,21 @@
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "routeman.h"
+#include "routeman_gui.h"
+#include "route_point_gui.h"
 #include "georef.h"
 #include "chartbase.h"
 #include "Layer.h"
 #include "SendToGpsDlg.h"
 #include "TrackPropDlg.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "OCPNPlatform.h"
-#include "Track.h"
-#include "Route.h"
+#include "track.h"
+#include "route.h"
 #include "chcanv.h"
+#include "navutil_base.h"
 #include "svg_utils.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -85,7 +89,7 @@ extern double gLat, gLon;
 extern double gCog, gSog;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
 extern bool g_bOverruleScaMin;
 
@@ -1107,7 +1111,7 @@ void RouteManagerDialog::OnShowAllWpCBClicked(wxCommandEvent &event) {
     } else
       pRP->SetVisible(true);
 
-    m_pWptListCtrl->SetItemImage(item, pRP->GetIconImageIndex());
+    m_pWptListCtrl->SetItemImage(item, RoutePointGui(*pRP).GetIconImageIndex());
     pConfig->UpdateWayPoint(pRP);
   }
 
@@ -1825,7 +1829,7 @@ void RouteManagerDialog::OnTrkMenuSelected(wxCommandEvent &event) {
       for (auto const &deleteTrack : deleteList) {
         g_pAIS->DeletePersistentTrack(deleteTrack);
         pConfig->DeleteConfigTrack(deleteTrack);
-        g_pRouteMan->DeleteTrack(deleteTrack);
+        RoutemanGui(*g_pRouteMan).DeleteTrack(deleteTrack);
       }
 
       mergeList.clear();
@@ -2069,7 +2073,7 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
       if (track) {
         g_pAIS->DeletePersistentTrack(track);
         pConfig->DeleteConfigTrack(track);
-        g_pRouteMan->DeleteTrack(track);
+        RoutemanGui(*g_pRouteMan).DeleteTrack(track);
       }
     }
 
@@ -2147,7 +2151,7 @@ void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event) {
                      wxString(_("OpenCPN Alert")), wxYES_NO);
 
   if (dialog_ret == wxID_YES) {
-    g_pRouteMan->DeleteAllTracks();
+    RoutemanGui(*g_pRouteMan).DeleteAllTracks();
   }
 
   m_lastTrkItem = -1;
@@ -2205,7 +2209,7 @@ void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select,
 
       wxListItem li;
       li.SetId(index);
-      li.SetImage(rp->GetIconImageIndex());
+      li.SetImage(RoutePointGui(*rp).GetIconImageIndex());
       li.SetData(rp);
       li.SetText(_T(""));
       long idx = m_pWptListCtrl->InsertItem(li);
@@ -2293,7 +2297,7 @@ void RouteManagerDialog::UpdateWptListCtrlViz() {
     if (item == -1) break;
 
     RoutePoint *pRP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-    int imageIndex = pRP->GetIconImageIndex();
+    int imageIndex = RoutePointGui(*pRP).GetIconImageIndex();
 
     m_pWptListCtrl->SetItemImage(item, imageIndex);
   }
@@ -2376,7 +2380,7 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
 
     if (!wp->IsSharedInVisibleRoute()) {
       wp->SetVisible(!wp->IsVisible());
-      m_pWptListCtrl->SetItemImage(clicked_index, wp->GetIconImageIndex());
+      m_pWptListCtrl->SetItemImage(clicked_index, RoutePointGui(*wp).GetIconImageIndex());
 
       pConfig->UpdateWayPoint(wp);
     }
@@ -2856,7 +2860,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID)) {
       pTrack->m_bIsInLayer = false;
       pTrack->m_LayerID = 0;
-      g_pRouteMan->DeleteTrack(pTrack);
+      RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
     }
   }
 

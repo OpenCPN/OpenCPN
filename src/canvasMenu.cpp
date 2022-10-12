@@ -24,57 +24,57 @@
  **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-#include "wx/image.h"
-#include <wx/graphics.h>
-#include <wx/listbook.h>
-#include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
-
-#include "config.h"
-#include "dychart.h"
-
+#include <wx/clipbrd.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
 #include <wx/listimpl.cpp>
+#include <wx/menu.h>
 
-#include "canvasMenu.h"
-
-#include "chcanv.h"
-#include "TCWin.h"
-#include "georef.h"
-#include "styles.h"
-#include "routeman.h"
-#include "navutil.h"
-#include "kml.h"
-#include "chartdb.h"
-#include "chart1.h"
-#include "cutil.h"
-#include "MarkInfo.h"
-#include "RoutePropDlgImpl.h"
-#include "TrackPropDlg.h"
-#include "tcmgr.h"
-#include "routemanagerdialog.h"
-#include "pluginmanager.h"
-#include "undo.h"
-#include "tide_time.h"
-#include "Quilt.h"
 #include "FontMgr.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "MarkInfo.h"
+#include "Quilt.h"
+#include "route.h"
+#include "RoutePropDlgImpl.h"
 #include "SendToGpsDlg.h"
-#include "Track.h"
-#include "Route.h"
-
-#include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
+#include "TCWin.h"
+#include "track.h"
+#include "TrackPropDlg.h"
 #include "ais.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
+#include "canvasMenu.h"
+#include "chartdb.h"
+#include "chcanv.h"
+#include "cm93.h"      // for chart outline draw
+#include "config.h"
+#include "cutil.h"
+#include "dychart.h"
+#include "georef.h"
+#include "kml.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "pluginmanager.h"
+#include "route_gui.h"
+#include "route_point_gui.h"
+#include "routeman.h"
+#include "routeman_gui.h"
+#include "routemanagerdialog.h"
+#include "s52plib.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "styles.h"
+#include "tcmgr.h"
+#include "tide_time.h"
+#include "track_gui.h"
+#include "undo.h"
 
-#include <vector>
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -87,7 +87,7 @@ extern void pupHandler_PasteRoute();
 extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
@@ -346,11 +346,11 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     float vp_scale = parent->GetVPScale();
 
     for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
-      AIS_Target_Data *target_data = target.second;
+      AisTargetData *target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (auto &ani : target_data->area_notices) {
           Ais8_001_22 &area_notice = ani.second;
-          wxBoundingBox bbox;
+          BoundingBox bbox;
 
           for (Ais8_001_22_SubAreaList::iterator sa =
                    area_notice.sub_areas.begin();
@@ -569,7 +569,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
     if (g_pAIS) {
       if (parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET)) {
-        AIS_Target_Data *myptarget =
+        AisTargetData *myptarget =
             g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if (!g_bBasicMenus && myptarget) {
           name = myptarget->GetFullName();
@@ -1109,8 +1109,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
       pSelect->AddSelectableRoutePoint(zlat, zlon, pWP);
       pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
-      if (!pWP->IsVisibleSelectable(this->parent))
-        pWP->ShowScaleWarningMessage(parent);
+      if (!RoutePointGui(*pWP).IsVisibleSelectable(this->parent))
+        RoutePointGui(*pWP).ShowScaleWarningMessage(parent);
 
       if (RouteManagerDialog::getInstanceFlag()) {
         if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
@@ -1318,14 +1318,14 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_DEF_MENU_AIS_CPA: {
-      AIS_Target_Data *myptarget =
+      AisTargetData *myptarget =
           g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->Toggle_AIS_CPA();
       break;
     }
 
     case ID_DEF_MENU_AISSHOWTRACK: {
-      AIS_Target_Data *myptarget =
+      AisTargetData *myptarget =
           g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->ToggleShowTrack();
       break;
@@ -1592,7 +1592,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_WPT_MENU_SENDTOGPS:
       if (m_pFoundRoutePoint) {
         if (parent->m_active_upload_port.Length())
-          m_pFoundRoutePoint->SendToGPS(
+          RoutePointGui(*m_pFoundRoutePoint).SendToGPS(
               parent->m_active_upload_port.BeforeFirst(' '), NULL);
         else {
           SendToGpsDlg dlg;
@@ -1619,7 +1619,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_RT_MENU_SENDTOGPS:
       if (m_pSelectedRoute) {
         if (parent->m_active_upload_port.Length())
-          m_pSelectedRoute->SendToGPS(
+          RouteGui(*m_pSelectedRoute).SendToGPS(
               parent->m_active_upload_port.BeforeFirst(' '), true, NULL);
         else {
           SendToGpsDlg dlg;
@@ -1685,7 +1685,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       if (m_pSelectedRoute) {
         if (m_pSelectedRoute->m_bIsInLayer) break;
         g_pRouteMan->RemovePointFromRoute(m_pFoundRoutePoint, m_pSelectedRoute,
-                                          parent);
+                                          parent->m_routeState);
         gFrame->InvalidateAllGL();
         gFrame->RefreshAllCanvas();
       }
@@ -1735,7 +1735,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
             m_pSelectedTrack = parent->parent_frame->TrackOff();
         g_pAIS->DeletePersistentTrack(m_pSelectedTrack);
         pConfig->DeleteConfigTrack(m_pSelectedTrack);
-        g_pRouteMan->DeleteTrack(m_pSelectedTrack);
+
+        RoutemanGui(*g_pRouteMan).DeleteTrack(m_pSelectedTrack);
 
         if (TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&
             (pTrackPropDialog->IsShown()) &&

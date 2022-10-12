@@ -34,7 +34,6 @@
 #include "toolbar.h"
 #include "iENCToolbar.h"
 
-#include "chart1.h"
 #include "chcanv.h"
 #include "s52s57.h"
 #include "s52plib.h"
@@ -42,6 +41,7 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "svg_utils.h"
+#include "ocpn_frame.h"
 
 extern s52plib *ps52plib;
 extern MyFrame *gFrame;

@@ -31,6 +31,8 @@
 #include <wx/dynarray.h>
 #include <wx/dynlib.h>
 
+#include <memory>
+
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
 #endif
@@ -38,14 +40,14 @@
 #include "config.h"
 
 #include "ocpn_plugin.h"
-#include "chart1.h"  // for MyFrame
 //#include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
 #include "chartimg.h"
 #include "catalog_parser.h"
 #include "plugin_blacklist.h"
 #include "observable.h"
-
+#include "ais_target_data.h"
+#include "comm_navmsg.h"
 #include "s57chart.h"  // for Object list
 #include "semantic_vers.h"
 
@@ -80,12 +82,12 @@
 
 //    Assorted static helper routines
 
-PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
+PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget);
 
 class PluginListPanel;
 class PluginPanel;
 class pluginUtilHandler;
-
+class MyFrame;
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
@@ -236,7 +238,7 @@ public:
 
   void SendNMEASentenceToAllPlugIns(const wxString &sentence);
   void SendPositionFixToAllPlugIns(GenericPosDatEx *ppos);
-  void SendActiveLegInfoToAllPlugIns(ActiveLegDat *infos);
+  void SendActiveLegInfoToAllPlugIns(const ActiveLegDat *infos);
   void SendAISSentenceToAllPlugIns(const wxString &sentence);
   void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
   void SendMessageToAllPlugins(const wxString &message_id,
@@ -267,6 +269,10 @@ public:
   void UpdateManagedPlugins();
   bool CheckBlacklistedPlugin(const PluginMetadata plugin);
 
+  void InitCommListeners(void);
+  void HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+  void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
+
   wxArrayString GetPlugInChartClassNameArray(void);
 
   ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper *target,
@@ -290,6 +296,7 @@ private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin *plugin);
 
+  ObservedVarListener evt_ais_json_listener;
   ObservedVarListener evt_blacklisted_plugin_listener;
   ObservedVarListener evt_deactivate_plugin_listener;
   ObservedVarListener evt_download_failed_listener;
@@ -303,6 +310,13 @@ private:
   ObservedVarListener evt_update_chart_types_listener;
   ObservedVarListener evt_version_incompatible_listener;
   ObservedVarListener evt_version_incompatible_plugin_listener;
+  ObservedVarListener evt_json_to_all_plugins_listener;
+  ObservedVarListener evt_routeman_json_listener;
+  ObservedVarListener evt_routeman_leginfo_listener;
+
+  ObservedVarListener m_listener_N0183_all;
+  ObservedVarListener m_listener_SignalK;
+
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);
 
@@ -510,7 +524,7 @@ public:
 
   ~S52PLIB_Context(){};
 
-  wxBoundingBox BBObj;  // lat/lon BBox of the rendered object
+  BoundingBox BBObj;  // lat/lon BBox of the rendered object
   bool bBBObj_valid;    // set after the BBObj has been calculated once.
 
   Rules *CSrules;  // per object conditional symbology

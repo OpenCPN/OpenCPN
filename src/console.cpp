@@ -30,9 +30,12 @@
 #include <windows.h>
 #endif
 
-#include <iostream>
-#include <iomanip>
 #include <algorithm>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <memory>
 
 #include "wx/wxprec.h"
 
@@ -47,13 +50,25 @@
 #include <wx/fileconf.h>
 #include <wx/string.h>
 
+#include "base_platform.h"
 #include "catalog_handler.h"
+#include "comm_navmsg_bus.h"
+#include "comm_appmsg_bus.h"
 #include "ocpn_utils.h"
-#include "Downloader.h"
-#include "observable.h"
+#include "downloader.h"
+#include "observable_navmsg.h"
+#include "observable_appmsg.h"
+#include "observable_evtvar.h"
+#include "comm_driver.h"
 #include "plugin_loader.h"
-#include "PluginHandler.h"
-#include "BasePlatform.h"
+#include "plugin_handler.h"
+#include "routeman.h"
+#include "track.h"
+#include "select.h"
+
+class AISTargetAlertDialog;
+class Multiplexer;
+class Select;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
@@ -66,6 +81,117 @@ wxString g_compatOsVersion = PKG_TARGET_VERSION;
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;
+
+bool g_bAIS_ACK_Timeout;
+bool g_bAIS_CPA_Alert_Suppress_Moored;
+bool g_bCPAMax;
+bool g_bCPAWarn;
+bool g_bHideMoored;
+bool g_bTCPA_Max;
+double g_AckTimeout_Mins;
+double g_CPAMax_NM;
+double g_CPAWarn_NM;
+double g_ShowMoored_Kts;
+double g_TCPA_Max;
+bool g_bShowMag;
+bool g_bShowTrue;
+bool bGPSValid;
+bool g_bInlandEcdis;
+bool g_bRemoveLost;
+bool g_bMarkLost;
+bool g_bShowScaled;
+bool g_bAllowShowScaled;
+bool g_bAISRolloverShowCOG;
+bool g_bAISRolloverShowCPA;
+bool g_bAISShowTracks;
+bool g_bAISRolloverShowClass;
+bool g_bAIS_CPA_Alert;
+double g_RemoveLost_Mins;
+double g_MarkLost_Mins;
+double g_AISShowTracks_Mins;
+float g_selection_radius_mm;
+float g_selection_radius_touch_mm;
+int g_nCOMPortCheck = 32;
+bool g_benableUDPNullHeader;
+
+
+std::vector<Track*> g_TrackList;
+wxString AISTargetNameFileName;
+AISTargetAlertDialog* g_pais_alert_dialog_active;
+Route* pAISMOBRoute;
+int g_WplAction;
+Select* pSelectAIS;
+wxString g_GPS_Ident;
+bool g_bGarminHostUpload;
+
+/* comm_bridge context. */
+
+double gCog;
+double gHdm;
+double gHdt;
+double gLat;
+double gLon;
+double gSog;
+double gVar;
+double g_UserVar;
+int gps_watchdog_timeout_ticks;
+int g_nNMEADebug;
+bool g_bSatValid;
+bool g_bVAR_Rx;
+int g_NMEAAPBPrecision;
+int g_SatsInView;
+int g_priSats;
+int sat_watchdog_timeout_ticks = 12;
+
+wxString gRmcTime;
+wxString gRmcDate;
+
+wxString g_TalkerIdText;
+
+Select* pSelect;
+double g_n_arrival_circle_radius;
+double g_PlanSpeed;
+bool g_bTrackDaily;
+int g_trackFilterMax;
+wxString g_default_routepoint_icon;
+double g_TrackDeltaDistance;
+float g_fWaypointRangeRingsStep;
+float g_ChartScaleFactorExp;
+wxString g_default_wp_icon;
+bool g_btouch;
+int g_iWaypointRangeRingsNumber;
+int g_iWaypointRangeRingsStepUnits;
+wxColour g_colourWaypointRangeRingsColour;
+bool g_bUseWptScaMin;
+int g_iWpt_ScaMin;
+int g_LayerIdx;
+bool g_bOverruleScaMin;
+int g_nTrackPrecision;
+bool g_bIsNewLayer;
+RouteList *pRouteList;
+WayPointman* pWayPointMan;
+int g_route_line_width;
+int g_track_line_width;
+RoutePoint* pAnchorWatchPoint1 = 0;
+RoutePoint* pAnchorWatchPoint2 = 0;
+bool g_bAllowShipToActive;
+wxRect g_blink_rect;
+int g_maxWPNameLength;
+bool g_bMagneticAPB;
+
+Routeman* g_pRouteMan;
+
+
+static void InitRouteman() {
+  struct RoutePropDlgCtx ctx;
+  auto RouteMgrDlgUpdateListCtrl = [&]() {};
+  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl);
+}
+
+// navutil_base context
+int g_iDistanceFormat = 0;
+int g_iSDMMFormat = 0;
+int g_iSpeedFormat = 0;
 
 namespace safe_mode { bool get_mode() { return false; } }
 
@@ -112,6 +238,10 @@ static const char *const DOWNLOAD_REPO_PROTO =
     "https://raw.githubusercontent.com/OpenCPN/plugins/@branch@/"
     "ocpn-plugins.xml";
 
+wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
+wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
+
+
 class CliApp : public wxAppConsole {
 public:
   CliApp() : wxAppConsole() {
@@ -134,6 +264,10 @@ public:
     g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
     pBaseConfig = new wxFileConfig("", "", config_file);
+    pSelect = new Select();
+    pRouteList = new RouteList;
+    InitRouteman();
+    pWayPointMan = new WayPointman();
   }
 
   void list_plugins() {
@@ -211,14 +345,14 @@ public:
     g_BasePlatform->GetSharedDataDir();   // See #2619
     wxDEFINE_EVENT(EVT_FILE_NOTFOUND, wxCommandEvent);
     auto file_notfound_listener =
-        loader->evt_unreadable_plugin.get_listener(this, EVT_FILE_NOTFOUND);
+        loader->evt_unreadable_plugin.GetListener(this, EVT_FILE_NOTFOUND);
     Bind(EVT_FILE_NOTFOUND, [&](wxCommandEvent ev) {
       std::cerr << "Cannot open file: " << ev.GetString() << "\n";
     });
 
     wxDEFINE_EVENT(EVT_BAD_VERSION, wxCommandEvent);
     auto bad_version_listener =
-        loader->evt_version_incompatible_plugin.get_listener(this,
+        loader->evt_version_incompatible_plugin.GetListener(this,
                                                              EVT_BAD_VERSION);
     Bind(EVT_BAD_VERSION, [&](wxCommandEvent ev) {
       std::cerr << "Incompatible plugin version " << ev.GetString() << "\n";

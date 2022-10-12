@@ -22,12 +22,15 @@
  ***************************************************************************
  */
 
-#ifndef __DETAILSLIDE_H__
-#define __DETAILSLIDE_H__
+#ifndef __DETAILSLIDE_H
+#define __DETAILSLIDE_H
+
 
 #include <wx/dialog.h>
+#include <wx/frame.h>
+#include "chartdb.h"
+
 //#include "chcanv.h"
-#include "chart1.h"
 
 class PopUpDSlide : public wxFrame {
 public:

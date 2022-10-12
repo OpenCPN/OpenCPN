@@ -32,8 +32,8 @@
 #define ID_RCLK_UNDOCK 7035
 
 class OCPNListCtrl;
-class AIS_Decoder;
-class AIS_Target_Data;
+class AisDecoder;
+class AisTargetData;
 class wxWindow;
 class wxAuiManager;
 class wxButton;
@@ -51,7 +51,7 @@ class AISTargetListDialog : public wxPanel {
 
 public:
   AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
-                      AIS_Decoder *pdecoder);
+                      AisDecoder *pdecoder);
   ~AISTargetListDialog();
 
   void Shutdown(void);
@@ -63,10 +63,10 @@ public:
   void UpdateAISTargetList();  // Rebuild AIS target list
   void UpdateNVAISTargetList();
   void CopyMMSItoClipBoard(int);
-  AIS_Target_Data *GetpTarget(unsigned int list_item);
+  AisTargetData *GetpTarget(unsigned int list_item);
 
   OCPNListCtrl *m_pListCtrlAISTargets;
-  AIS_Decoder *m_pdecoder;
+  AisDecoder *m_pdecoder;
 
   ArrayOfMMSI *m_pMMSI_array;
 

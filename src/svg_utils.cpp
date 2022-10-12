@@ -44,7 +44,7 @@
 #endif
 
 #include "pugixml.hpp"
-#include "OCPNPlatform.h"
+#include "base_platform.h"
 
 wxBitmap LoadSVG(const wxString filename, const unsigned int width,
                  const unsigned int height, wxBitmap* default_bitmap,
@@ -153,18 +153,18 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
   return false;
 }
 
-extern OCPNPlatform* g_Platform;
+extern BasePlatform* g_BasePlatform;
 extern float g_ChartScaleFactorExp;
 
 unsigned int SVGPixelsToDisplay(unsigned int svg_px) {
-  return g_Platform->GetDisplayDPmm() * SVG_MM_TO_IN / SVG_IN_TO_PX * svg_px *
+  return g_BasePlatform->GetDisplayDPmm() * SVG_MM_TO_IN / SVG_IN_TO_PX * svg_px *
          g_ChartScaleFactorExp;
 }
 
 SVGBitmapCache::SVGBitmapCache() {
   wxFileName iconcachedir;
   iconcachedir.SetName("iconCache");
-  iconcachedir.SetPath(g_Platform->GetPrivateDataDir());
+  iconcachedir.SetPath(g_BasePlatform->GetPrivateDataDir());
   //  Create the cache dir here if necessary
   if (!wxDir::Exists(iconcachedir.GetFullPath())) {
     wxFileName::Mkdir(iconcachedir.GetFullPath());

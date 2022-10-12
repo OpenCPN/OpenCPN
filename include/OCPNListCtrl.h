@@ -39,7 +39,7 @@ public:
   wxString OnGetItemText(long item, long column) const;
   int OnGetItemColumnImage(long item, long column) const;
 
-  wxString GetTargetColumnData(AIS_Target_Data* pAISTarget, long column) const;
+  wxString GetTargetColumnData(AisTargetData* pAISTarget, long column) const;
 
   AISTargetListDialog* m_parent;
 };

@@ -34,10 +34,10 @@
 #include <wx/textctrl.h>
 
 #include "cat_settings.h"
-#include "observable.h"
+#include "observable_globvar.h"
 #include "ocpn_utils.h"
 #include "plugin_cache.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;

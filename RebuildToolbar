@@ -1,0 +1,144 @@
+src/androidUTIL.cpp:  //             g_MainToolbar->Show( !g_MainToolbar->IsShown() );
+src/androidUTIL.cpp:    wxPoint tbp = g_MainToolbar->GetPosition();
+src/androidUTIL.cpp:    g_maintoolbar_orient = g_MainToolbar->GetOrient();
+src/chart1.cpp:            (g_iENCToolbarPosY < g_maintoolbar_y + g_MainToolbar->GetSize().y))
+src/chart1.cpp:          posn = wxPoint(g_maintoolbar_x + g_MainToolbar->GetSize().x + 4,
+src/chart1.cpp:    //            g_MainToolbar->Hide();
+src/chart1.cpp:    if (g_MainToolbar->GetColorScheme() != cs) {
+src/chart1.cpp:      g_MainToolbar->SetColorScheme(cs);
+src/chart1.cpp:      // g_MainToolbar->DestroyToolBar();
+src/chart1.cpp:        g_MainToolbar->Hide();
+src/chart1.cpp:        g_MainToolbar->SetColorScheme(cs);
+src/chart1.cpp:        g_MainToolbar->Show();
+src/chart1.cpp:        g_MainToolbar->SetColorScheme(cs);
+src/chart1.cpp:    g_MainToolbar->GetFrameRelativePosition(&g_maintoolbar_x, &g_maintoolbar_y);
+src/chart1.cpp:  if (g_MainToolbar) g_MainToolbar->Destroy();
+src/chart1.cpp:    g_MainToolbar->RestoreRelativePosition(g_maintoolbar_x, g_maintoolbar_y);
+src/chart1.cpp:    g_MainToolbar->Realize();
+src/chart1.cpp:    g_MainToolbar->Show(!event.IsIconized());
+src/chart1.cpp:    bool bShow = g_MainToolbar->IsShown();
+src/chart1.cpp:    wxSize szBefore = g_MainToolbar->GetSize();
+src/chart1.cpp:      g_MainToolbar->Hide();
+src/chart1.cpp:    g_MainToolbar->RestoreRelativePosition(g_maintoolbar_x, g_maintoolbar_y);
+src/chart1.cpp:    // g_MainToolbar->SetGeometry(false, wxRect());
+src/chart1.cpp:    g_MainToolbar->SetGeometry(GetPrimaryCanvas()->GetCompass()->IsShown(),
+src/chart1.cpp:    g_MainToolbar->Realize();
+src/chart1.cpp:    if (szBefore != g_MainToolbar->GetSize()) g_MainToolbar->Refresh(true);
+src/chart1.cpp:    g_MainToolbar->Show(bShow);
+src/chart1.cpp:  if (g_MainToolbar) g_MainToolbar->HideTooltip();
+src/chart1.cpp:      g_MainToolbar->HideTooltip();
+src/chart1.cpp:      g_MainToolbar->HideTooltip();
+src/chart1.cpp:        if (g_MainToolbar->GetToolbar())
+src/chart1.cpp:          g_MainToolbar->GetToolbar()->SetToolShortHelp(ID_MASTERTOGGLE, tip);
+src/chart1.cpp:              g_MainToolbar->GetToolCount() -
+src/chart1.cpp:            g_MainToolbar->GetToolShowCount();  // Current state
+src/chart1.cpp:        g_MainToolbar->HideTooltip();
+src/chart1.cpp:  g_MainToolbar->HideTooltip();
+src/chart1.cpp:    if (g_MainToolbar->GetToolbar())
+src/chart1.cpp:      g_MainToolbar->GetToolbar()->SetToolShortHelp(ID_MASTERTOGGLE, tip);
+src/chart1.cpp:          g_MainToolbar->GetToolCount() -
+src/chart1.cpp:        g_MainToolbar->GetToolShowCount();  // Current state
+src/chart1.cpp:    if (m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount()) {
+src/chart1.cpp:      g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
+src/chart1.cpp:      g_MainToolbar->Realize();
+src/chart1.cpp:      g_MainToolbar->GetToolbar()->InvalidateBitmaps();
+src/chart1.cpp:      g_MainToolbar->Realize();
+src/chart1.cpp:      g_MainToolbar->Show();
+src/chart1.cpp:      g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
+src/chart1.cpp:      g_MainToolbar->Realize();
+src/chart1.cpp:      g_MainToolbar->GetToolbar()->InvalidateBitmaps();
+src/chart1.cpp:      g_MainToolbar->Realize();
+src/chart1.cpp:      g_MainToolbar->Show();
+src/chart1.cpp:  if (g_MainToolbar) g_MainToolbar->RefreshFadeTimer();
+src/chart1.cpp:    g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
+src/chart1.cpp:    g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Enable Tracking"));
+src/chart1.cpp:  if (g_MainToolbar && g_MainToolbar->GetToolbar())
+src/chart1.cpp:    g_MainToolbar->GetToolbar()->ToggleTool(tool_id, state);
+src/chart1.cpp:  if (g_MainToolbar && g_MainToolbar->GetToolbar()) {
+src/chart1.cpp:    g_MainToolbar->GetToolbar()->SetToolBitmaps(tool_id, bmp, bmpRollover);
+src/chart1.cpp:    wxRect rect = g_MainToolbar->GetToolbar()->GetToolRect(tool_id);
+src/chart1.cpp:    g_MainToolbar->GetToolbar()->RefreshRect(rect);
+src/chart1.cpp:  if (g_MainToolbar && g_MainToolbar->GetToolbar()) {
+src/chart1.cpp:    g_MainToolbar->GetToolbar()->SetToolBitmapsSVG(
+src/chart1.cpp:    wxRect rect = g_MainToolbar->GetToolbar()->GetToolRect(tool_id);
+src/chart1.cpp:    g_MainToolbar->GetToolbar()->RefreshRect(rect);
+src/chart1.cpp:  if (g_MainToolbar && g_MainToolbar->IsShown()) {
+src/chart1.cpp:    wxRect tb_rect = g_MainToolbar->GetScreenRect();
+src/chart1.cpp:    if (b_sub) g_MainToolbar->Submerge();
+src/chart1.cpp:  g_MainToolbar->Submerge();
+src/chart1.cpp:  if (g_MainToolbar) g_MainToolbar->DisableTooltips();
+src/chart1.cpp:  if (g_MainToolbar) g_MainToolbar->EnableTooltips();
+src/chart1.cpp:    g_MainToolbar->SetDockX(-1);
+src/chart1.cpp:    g_MainToolbar->SetDockY(-1);
+src/chart1.cpp:    g_MainToolbar->Surface();
+src/chart1.cpp:  if (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
+src/chart1.cpp:    if (IsFullScreen() && !g_bFullscreenToolbar) g_MainToolbar->Submerge();
+src/chart1.cpp:    g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
+src/chart1.cpp:    g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
+src/chart1.cpp:  if (g_MainToolbar->GetToolbar())
+src/chart1.cpp:    g_MainToolbar->GetToolbar()->ToggleTool(ID_ROUTE, false);
+src/chart1.cpp:      if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, false);
+src/chart1.cpp:      if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, false);
+src/chart1.cpp:        g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
+src/chart1.cpp:        g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
+src/chart1.cpp:      if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
+src/chart1.cpp:      g_MainToolbar->SetYAuxOffset(g_MainToolbar->GetToolSize().y * 15 / 10);
+src/chart1.cpp:      g_MainToolbar->SetDefaultPosition();
+src/chart1.cpp:      g_MainToolbar->Realize();
+src/chart1.cpp:      g_MainToolbar->SetYAuxOffset(0);
+src/chart1.cpp:      g_MainToolbar->SetDockY(-1);
+src/chart1.cpp:      g_MainToolbar->SetDefaultPosition();
+src/chart1.cpp:      g_MainToolbar->Realize();
+src/chart1.cpp:    if (g_MainToolbar && g_MainToolbar->GetToolbar())
+src/chart1.cpp:      g_MainToolbar->GetToolbar()->ToggleTool(ID_FOLLOW, cc->m_bFollow);
+src/chart1.cpp:  if (g_MainToolbar) g_MainToolbar->Raise();
+src/chart1.cpp:    b_reshow = g_MainToolbar->IsShown();
+src/chart1.cpp:    float ff = fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor);
+src/chart1.cpp:      g_MainToolbar->DestroyToolBar();
+src/chart1.cpp:    g_MainToolbar->SetCornerRadius(5);
+src/chart1.cpp:    g_MainToolbar->SetBackGroundColorString(_T("GREY3"));
+src/chart1.cpp:    g_MainToolbar->SetToolbarHideMethod(TOOLBAR_HIDE_TO_FIRST_TOOL);
+src/chart1.cpp:    g_MainToolbar->SetToolConfigString(g_toolbarConfig);
+src/chart1.cpp:    g_MainToolbar->EnableRolloverBitmaps(false);
+src/chart1.cpp:    g_MainToolbar->SetGrabberEnable(false);
+src/chart1.cpp:    g_MainToolbar->CreateConfigMenu();
+src/chart1.cpp:    // g_MainToolbar->MoveDialogInScreenCoords(wxPoint(g_maintoolbar_x,
+src/chart1.cpp:    if (g_MainToolbar->isSubmergedToGrabber()) {
+src/chart1.cpp:      g_MainToolbar->SubmergeToGrabber();
+src/chart1.cpp:      g_MainToolbar->RestoreRelativePosition(g_maintoolbar_x, g_maintoolbar_y);
+src/chart1.cpp:      g_MainToolbar->SetColorScheme(global_color_scheme);
+src/chart1.cpp:      g_MainToolbar->Show(b_reshow && g_bshowToolbar);
+src/chart1.cpp:    g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
+src/chart1.cpp:    g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
+src/chart1.cpp:    g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
+src/chart1.cpp:    g_MainToolbar->GetToolbar()->InvalidateBitmaps();
+src/chart1.cpp:    g_MainToolbar->Realize();
+src/chart1.cpp:  if (g_MainToolbar) tb = g_MainToolbar->GetToolbar();
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->AddToolItem(tic);
+src/chart1.cpp:  g_MainToolbar->RebuildToolbar();
+src/chart1.cpp:  g_MainToolbar->Realize();
+src/chart1.cpp:    g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
+src/chart1.cpp:  if (g_MainToolbar) tb = g_MainToolbar->GetToolbar();
+src/chart1.cpp:      g_MainToolbar->AddToolItem(tic);
+src/chcanv.cpp:  // g_MainToolbar->Raise();
+src/chcanv.cpp:  if (g_MainToolbar) g_MainToolbar->DisableTooltips();
+src/chcanv.cpp:  if (g_MainToolbar) g_MainToolbar->EnableTooltips();
+src/chcanv.cpp:    //            g_MainToolbar->UpdateRecoveryWindow(g_bshowToolbar);
+src/chcanv.cpp:      wxRect masterToolbarRect = g_MainToolbar->GetRect();
+src/glChartCanvas.cpp:  if (g_MainToolbar && g_MainToolbar->m_pRecoverwin) {
+src/glChartCanvas.cpp:    g_MainToolbar->m_pRecoverwin->GetPosition(&recoverx, &recovery);
+src/glChartCanvas.cpp:    if (g_MainToolbar->m_pRecoverwin->GetBitmap().IsOk())
+src/glChartCanvas.cpp:      m_gldc.DrawBitmap(g_MainToolbar->m_pRecoverwin->GetBitmap(), recoverx,
+src/pluginmanager.cpp:    v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetSize().x;
+src/pluginmanager.cpp:    v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetSize().y;
+src/pluginmanager.cpp:    v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetPosition().x;
+src/pluginmanager.cpp:    v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetPosition().y;
+src/pluginmanager.cpp:    return g_MainToolbar->GetRect();

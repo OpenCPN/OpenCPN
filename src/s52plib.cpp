@@ -7651,7 +7651,7 @@ bool s52plib::inter_tri_rect(wxPoint *ptp, render_canvas_parms *pb_spec) {
   //    Check all three points of triangle to see it any are within the render
   //    rectangle
 
-  wxBoundingBox rect(pb_spec->lclip, pb_spec->y, pb_spec->rclip,
+  BoundingBox rect(pb_spec->lclip, pb_spec->y, pb_spec->rclip,
                      pb_spec->y + pb_spec->height);
 
   for (int i = 0; i < 3; i++) {
@@ -10163,7 +10163,7 @@ render_canvas_parms *s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules,
     float fsf = 100 / canvas_pix_per_mm;
 
     // Base bounding box
-    wxBoundingBox box(
+    BoundingBox box(
         prule->pos.patt.bnbox_x.PBXC, prule->pos.patt.bnbox_y.PBXR,
         prule->pos.patt.bnbox_x.PBXC + prule->pos.patt.bnbox_w.PAHL,
         prule->pos.patt.bnbox_y.PBXR + prule->pos.patt.bnbox_h.PAVL);

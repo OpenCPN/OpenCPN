@@ -36,10 +36,9 @@
 #include "OCPNPlatform.h"
 
 #include "styles.h"
-#include "chart1.h"
 #include "wx28compat.h"
 #include "svg_utils.h"
-
+#include "ocpn_frame.h"   //FIXME (dave) color
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"

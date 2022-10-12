@@ -26,8 +26,8 @@
 #define LOGGER_H
 
 #include <fstream>
-#include <sstream>
 #include <ostream>
+#include <sstream>
 #include <string>
 
 #include <wx/log.h>

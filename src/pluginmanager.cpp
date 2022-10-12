@@ -48,6 +48,7 @@
 #include <wx/app.h>
 #include <wx/hashset.h>
 #include <wx/hashmap.h>
+#include <wx/jsonval.h>
 #include <wx/uri.h>
 #include <wx/zipstrm.h>
 #include <wx/zstream.h>
@@ -85,9 +86,9 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #endif
 
 
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "ais.h"
-#include "AIS_Target_Data.h"
+#include "ais_target_data.h"
 #include "canvasMenu.h"
 #include "catalog_handler.h"
 #include "cat_settings.h"
@@ -96,21 +97,23 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "config.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "download_mgr.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "georef.h"
 #include "ocpn_pixel.h"
 #include "gshhs.h"
+#include "json_event.h"
 #include "logger.h"
 #include "multiplexer.h"
 #include "mygeom.h"
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "navutil.h"
-#include "observable.h"
+#include "navutil_base.h"
+#include "observable_confvar.h"
+#include "observable_globvar.h"
 #include "OCPN_AUIManager.h"
-#include "OCPN_DataStreamEvent.h"
 #include "ocpndc.h"
 #include "ocpn_pixel.h"
 #include "OCPNPlatform.h"
@@ -119,13 +122,14 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "options.h"
 #include "piano.h"
 #include "plugin_cache.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "plugin_loader.h"
 #include "pluginmanager.h"
-#include "PluginPaths.h"
-#include "Route.h"
+#include "plugin_paths.h"
+#include "route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
+#include "routeman_gui.h"
 #include "s52plib.h"
 #include "s52utils.h"
 #include "safe_mode.h"
@@ -134,11 +138,14 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "SystemCmdSound.h"
 #include "styles.h"
 #include "toolbar.h"
-#include "Track.h"
+#include "track.h"
 #include "update_mgr.h"
-//#include "cat_settings.h"
+#include "waypointman_gui.h"
 #include "svg_utils.h"
-//#include "observable.h"
+#include "ocpn_frame.h"
+#include "comm_drv_registry.h"
+#include "comm_drv_n0183_serial.h"
+#include "comm_drv_n0183_net.h"
 
 #ifdef __OCPN__ANDROID__
 #include <dlfcn.h>
@@ -172,7 +179,7 @@ void catch_signals_PIM(int signo) {
 #endif
 
 extern MyConfig *pConfig;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern OCPN_AUIManager *g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
@@ -239,6 +246,47 @@ enum { CurlThreadId = wxID_HIGHEST + 1 };
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
+
+wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
+wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
+
+static void SendAisJsonMessage(AisTargetData* pTarget) {
+  //  Only send messages if someone is listening...
+  if (!g_pi_manager->GetJSONMessageTargetCount()) return;
+
+  // Do JSON message to all Plugin to inform of target
+  wxJSONValue jMsg;
+
+  wxLongLong t = ::wxGetLocalTimeMillis();
+
+  jMsg[wxS("Source")] = wxS("AisDecoder");
+  jMsg[wxT("Type")] = wxT("Information");
+  jMsg[wxT("Msg")] = wxS("AIS Target");
+  jMsg[wxT("MsgId")] = t.GetValue();
+  jMsg[wxS("lat")] = pTarget->Lat;
+  jMsg[wxS("lon")] = pTarget->Lon;
+  jMsg[wxS("sog")] = pTarget->SOG;
+  jMsg[wxS("cog")] = pTarget->COG;
+  jMsg[wxS("hdg")] = pTarget->HDG;
+  jMsg[wxS("mmsi")] = pTarget->MMSI;
+  jMsg[wxS("class")] = pTarget->Class;
+  jMsg[wxS("ownship")] = pTarget->b_OwnShip;
+  jMsg[wxS("active")] = pTarget->b_active;
+  jMsg[wxS("lost")] = pTarget->b_lost;
+  wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
+  for (size_t i = 0; i < l_ShipName.Len(); i++) {
+    if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
+  }
+  jMsg[wxS("shipname")] = l_ShipName;
+  wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
+  for (size_t i = 0; i < l_CallSign.Len(); i++) {
+    if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
+  }
+  jMsg[wxS("callsign")] = l_CallSign;
+  jMsg[wxS("removed")] = pTarget->b_removed;
+  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
+}
+
 
 /**
  * Handle messages for blacklisted plugins. Messages are deferred until
@@ -1034,8 +1082,23 @@ PlugInManager::PlugInManager(MyFrame *parent) {
   m_listPanel = NULL;
   m_blacklist = blacklist_factory();
   m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
+
+  wxDEFINE_EVENT(EVT_JSON_TO_ALL_PLUGINS, ObservedEvt);
+  evt_json_to_all_plugins_listener =
+      g_pRouteMan->json_msg.GetListener(this, EVT_JSON_TO_ALL_PLUGINS);
+  Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
+    auto json = std::static_pointer_cast<const wxJSONValue>(ev.GetSharedPtr());
+    SendJSONMessageToAllPlugins(ev.GetString(), *json); });
+
+  wxDEFINE_EVENT(EVT_LEGINFO_TO_ALL_PLUGINS, ObservedEvt);
+  evt_routeman_leginfo_listener =
+      g_pRouteMan->json_leg_info.GetListener(this, EVT_LEGINFO_TO_ALL_PLUGINS);
+  Bind(EVT_LEGINFO_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
+    auto ptr = UnpackEvtPointer<ActiveLegDat>(ev);
+    SendActiveLegInfoToAllPlugIns(ptr.get());  });
+
   HandlePluginLoaderEvents();
-  auto loader = PluginLoader::getInstance();
+  InitCommListeners();
 }
 PlugInManager::~PlugInManager() {
 #if !defined(__OCPN__ANDROID__) && defined (OCPN_USE_CURL)
@@ -1043,11 +1106,88 @@ PlugInManager::~PlugInManager() {
 #endif
 }
 
+void PlugInManager::InitCommListeners(void) {
+
+  // Initialize the comm listener to support
+  // void SetNMEASentence(wxString &sentence);
+
+  auto& msgbus = NavMsgBus::GetInstance();
+
+  m_listener_N0183_all = msgbus.GetListener(EVT_N0183_PLUGIN, this,
+                                            Nmea0183Msg::MessageKey("ALL"));
+  Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+        HandleN0183(n0183_msg); });
+
+  SignalkMsg sk_msg;
+  m_listener_SignalK =
+      msgbus.GetListener(EVT_SIGNALK, this, sk_msg);
+
+  //FIXME (dave) Use UnpackEvtPointer(), whenever it lands
+  Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
+    //HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
+    HandleSignalK(std::static_pointer_cast<const SignalkMsg>(ev.GetSharedPtr()));
+  });
+
+}
+
+void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {
+
+  std::string s = n0183_msg->payload;
+  wxString sentence(s.c_str());
+
+  if (s[0] == '$') {
+    const auto& drivers = CommDriverRegistry::getInstance().GetDrivers();
+    auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
+
+    bool bpass_input_filter = true;
+
+    // Get the params for the driver sending this message
+    ConnectionParams params;
+    auto drv_serial =
+        std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
+    if (drv_serial) {
+      params = drv_serial->GetParams();
+    } else {
+      auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(target_driver);
+      if (drv_net) {
+        params = drv_net->GetParams();
+      }
+    }
+
+    // Check to see if the message passes the source's input filter
+    bpass_input_filter = params.SentencePassesFilter(sentence,
+                                        FILTER_INPUT);
+
+    if (bpass_input_filter)
+      SendNMEASentenceToAllPlugIns(sentence);
+  }
+  else if (s[0] == '!'){
+    //printf("AIS to all: %s", s.c_str());
+    SendAISSentenceToAllPlugIns(sentence);
+  }
+}
+
+void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
+  wxJSONReader jsonReader;
+  wxJSONValue root;
+
+  std::string msgTerminated = sK_msg->raw_message;;
+
+  int errors = jsonReader.Parse(msgTerminated, &root);
+  if (errors == 0)
+    SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
+}
+
+
 /**
  * Set up actions to perform for messages generated by PluginLoader's
  * evt_foo.notify() calls.
  */
 
+wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, wxCommandEvent);
+wxDEFINE_EVENT(EVT_PLUGMGR_ROUTEMAN_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_INCOMPATIBLE_PLUGIN, wxCommandEvent);
@@ -1060,46 +1200,47 @@ wxDEFINE_EVENT(EVT_UPDATE_CHART_TYPES, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
 
+
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::getInstance();
 
   evt_blacklisted_plugin_listener =
-    loader->evt_blacklisted_plugin.get_listener(this, EVT_BLACKLISTED_PLUGIN);
+    loader->evt_blacklisted_plugin.GetListener(this, EVT_BLACKLISTED_PLUGIN);
   Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent& ev) {
     m_blacklist_ui->message(ev.GetString().ToStdString()); });
 
   evt_deactivate_plugin_listener =
-    loader->evt_deactivate_plugin.get_listener(this, EVT_DEACTIVATE_PLUGIN);
+    loader->evt_deactivate_plugin.GetListener(this, EVT_DEACTIVATE_PLUGIN);
   Bind(EVT_DEACTIVATE_PLUGIN, [&](wxCommandEvent& ev) {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnPluginDeactivate(pic); });
 
   evt_incompatible_plugin_listener =
-    loader->evt_incompatible_plugin.get_listener(this,
+    loader->evt_incompatible_plugin.GetListener(this,
                                                  EVT_INCOMPATIBLE_PLUGIN);
   Bind(EVT_INCOMPATIBLE_PLUGIN,
        [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
   evt_pluglist_change_listener =
-    loader->evt_pluglist_change.get_listener(this, EVT_PLUGLIST_CHANGE);
+    loader->evt_pluglist_change.GetListener(this, EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
     if (m_listPanel) m_listPanel->ReloadPluginPanels();
     g_options->itemBoxSizerPanelPlugins->Layout(); });
 
   evt_load_directory_listener =
-    loader->evt_load_directory.get_listener(this, EVT_LOAD_DIRECTORY);
+    loader->evt_load_directory.GetListener(this, EVT_LOAD_DIRECTORY);
   Bind(EVT_LOAD_DIRECTORY, [&](wxCommandEvent&) {
     pConfig->SetPath("/PlugIns/");
     SetPluginOrder(pConfig->Read("PluginOrder", wxEmptyString)); });
 
   evt_load_plugin_listener =
-    loader->evt_load_plugin.get_listener(this, EVT_LOAD_PLUGIN);
+    loader->evt_load_plugin.GetListener(this, EVT_LOAD_PLUGIN);
   Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent& ev) {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnLoadPlugin(pic); });
 
   evt_version_incompatible_plugin_listener =
-    loader->evt_version_incompatible_plugin.get_listener(
+    loader->evt_version_incompatible_plugin.GetListener(
       this,
       EVT_VERSION_INCOMPATIBLE_PLUGIN);
   Bind(EVT_VERSION_INCOMPATIBLE_PLUGIN, [&](wxCommandEvent& ev) {
@@ -1109,28 +1250,38 @@ void PlugInManager::HandlePluginLoaderEvents() {
     event_message_box(msg, ev); });
 
   evt_unreadable_plugin_listener =
-    loader->evt_blacklisted_plugin.get_listener(this, EVT_UNREADABLE_PLUGIN);
+    loader->evt_blacklisted_plugin.GetListener(this, EVT_UNREADABLE_PLUGIN);
   Bind(EVT_UNREADABLE_PLUGIN, [&](wxCommandEvent& ev) {
     static const wxString msg =
       _("Unreadable Plugin library %s detected, check file permissions:\n\n");
     event_message_box(msg, ev); });
 
   evt_incompatible_plugin_listener =
-    loader->evt_incompatible_plugin.get_listener(this,
+    loader->evt_incompatible_plugin.GetListener(this,
                                                  EVT_INCOMPATIBLE_PLUGIN);
   Bind(EVT_INCOMPATIBLE_PLUGIN,
        [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
   evt_update_chart_types_listener =
-    loader->evt_update_chart_types.get_listener(this, EVT_UPDATE_CHART_TYPES);
+    loader->evt_update_chart_types.GetListener(this, EVT_UPDATE_CHART_TYPES);
   Bind(EVT_UPDATE_CHART_TYPES,
        [&](wxCommandEvent& ev) { UpDateChartDataTypes(); });
 
   evt_plugin_loadall_finalize_listener =
-    loader->evt_plugin_loadall_finalize.get_listener(this, EVT_PLUGIN_LOADALL_FINALIZE);
+    loader->evt_plugin_loadall_finalize.GetListener(this, EVT_PLUGIN_LOADALL_FINALIZE);
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
+  evt_ais_json_listener = g_pAIS->plugin_msg.GetListener(this,
+                                                         EVT_PLUGMGR_AIS_MSG);
+  evt_routeman_json_listener = g_pRouteMan->json_msg.GetListener(this,
+                                                         EVT_PLUGMGR_ROUTEMAN_MSG);
+  Bind(EVT_PLUGMGR_AIS_MSG,  [&](wxCommandEvent& ev) {
+    auto pTarget = static_cast<AisTargetData*>(ev.GetClientData());
+    SendAisJsonMessage(pTarget); });
+  Bind(EVT_PLUGMGR_ROUTEMAN_MSG,  [&](ObservedEvt& ev) {
+    auto msg = UnpackEvtPointer<wxJSONValue>(ev);
+    SendJSONMessageToAllPlugins(ev.GetString(), *msg); });
 }
 
 /**
@@ -1144,14 +1295,14 @@ void PlugInManager::HandlePluginHandlerEvents() {
   auto loader = PluginLoader::getInstance();
 
   evt_download_failed_listener =
-    loader->evt_update_chart_types.get_listener(this, EVT_DOWNLOAD_FAILED);
+    loader->evt_update_chart_types.GetListener(this, EVT_DOWNLOAD_FAILED);
   Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
       wxString message = _("Please check system log for more info.");
       OCPNMessageBox(gFrame, message, _("Installation error"),
                      wxICON_ERROR | wxOK | wxCENTRE); });
 
   evt_download_ok_listener =
-    loader->evt_update_chart_types.get_listener(this, EVT_DOWNLOAD_OK);
+    loader->evt_update_chart_types.GetListener(this, EVT_DOWNLOAD_OK);
   Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent& ev) {
     wxString message(ev.GetString());
     message += _(" successfully installed from cache");
@@ -2216,7 +2367,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
   }
 }
 
-void PlugInManager::SendActiveLegInfoToAllPlugIns(ActiveLegDat *leg_info) {
+void PlugInManager::SendActiveLegInfoToAllPlugIns(const ActiveLegDat *leg_info) {
   Plugin_Active_Leg_Info leg;
   leg.Btw = leg_info->Btw;
   leg.Dtw = leg_info->Dtw;
@@ -2296,16 +2447,18 @@ void PlugInManager::PrepareAllPluginContextMenus() {
   }
 }
 
-void PlugInManager::SendSKConfigToAllPlugIns() {
-  // Send the current ownship MMSI, encoded as sK,  to all PlugIns
-  wxJSONValue v;
-  v[_T("self")] = g_ownshipMMSI_SK;
 
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(wxString(_T("OCPN_CORE_SIGNALK")), out);
-}
+//FIXME (dave) unused?
+// void PlugInManager::SendSKConfigToAllPlugIns() {
+//   // Send the current ownship MMSI, encoded as sK,  to all PlugIns
+//   wxJSONValue v;
+//   v[_T("self")] = g_ownshipMMSI_SK;
+//
+//   wxJSONWriter w;
+//   wxString out;
+//   w.Write(v, out);
+//   SendMessageToAllPlugins(wxString(_T("OCPN_CORE_SIGNALK")), out);
+// }
 
 void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Send the current run-time configuration to all PlugIns
@@ -2919,14 +3072,14 @@ ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void) {
 
   //      Iterate over the AIS Target Hashmap
   for (const auto &it : g_pAIS->GetTargetList()) {
-    AIS_Target_Data *td = it.second;
+    AisTargetData *td = it.second;
     PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(td);
     pret->Add(ptarget);
   }
 
 //  Test one alarm target
 #if 0
-    AIS_Target_Data td;
+    AisTargetData td;
     td.n_alarm_state = AIS_ALARM_SET;
     PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(&td);
     pret->Add(ptarget);
@@ -2950,12 +3103,26 @@ bool AddLocaleCatalog(wxString catalog) {
 }
 
 void PushNMEABuffer(wxString buf) {
-  OCPN_DataStreamEvent event(wxEVT_OCPN_DATASTREAM, 0);
-  std::string s = std::string(buf.mb_str());
-  event.SetNMEAString(s);
-  event.SetStream(NULL);
 
-  g_pMUX->AddPendingEvent(event);
+  std::string full_sentence = buf.ToStdString();
+
+   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+    std::string identifier;
+    // We notify based on full message, including the Talker ID
+    identifier = full_sentence.substr(1, 5);
+
+    // notify message listener and also "ALL" N0183 messages, to support plugin
+    // API using original talker id
+    auto address = std::make_shared<NavAddr0183>("virtual");
+    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
+                                                   address);
+    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
+
+    auto& msgbus = NavMsgBus::GetInstance();
+
+    msgbus.Notify(std::move(msg));
+    msgbus.Notify(std::move(msg_all));
+  }
 }
 
 wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom) {
@@ -3120,7 +3287,7 @@ bool DecodeSingleVDOMessage(const wxString &str, PlugIn_Position_Fix_Ex *pos,
   if (!pos) return false;
 
   GenericPosDatEx gpd;
-  AIS_Error nerr = AIS_GENERIC_ERROR;
+  AisError nerr = AIS_GENERIC_ERROR;
   if (g_pAIS) nerr = g_pAIS->DecodeSingleVDO(str, &gpd, accumulator);
   if (nerr == AIS_NoError) {
     pos->Lat = gpd.kLat;
@@ -3325,7 +3492,7 @@ wxString GetNewGUID(void) { return GpxDocument::GetUUID(); }
 
 bool AddCustomWaypointIcon(wxBitmap *pimage, wxString key,
                            wxString description) {
-  pWayPointMan->ProcessIcon(*pimage, key, description);
+  WayPointmanGui(*pWayPointMan).ProcessIcon(*pimage, key, description);
   return true;
 }
 
@@ -3457,8 +3624,10 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint *pwaypoint) {
 
     if (prp) prp->ReLoadIcon();
 
-    SelectItem *pFind = pSelect->FindSelection(
-        gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT);
+    auto canvas = gFrame->GetPrimaryCanvas();
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectItem *pFind = pSelect->FindSelection(ctx, lat_save, lon_save,
+                                               SELTYPE_ROUTEPOINT);
     if (pFind) {
       pFind->m_slat = pwaypoint->m_lat;  // update the SelectList entry
       pFind->m_slon = pwaypoint->m_lon;
@@ -3704,7 +3873,7 @@ bool DeletePlugInTrack(wxString &GUID) {
   //  Find the Route
   Track *pTrack = g_pRouteMan->FindTrackByGUID(GUID);
   if (pTrack) {
-    g_pRouteMan->DeleteTrack(pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
     b_found = true;
   }
 
@@ -3723,7 +3892,7 @@ bool UpdatePlugInTrack(PlugIn_Track *ptrack) {
 
   if (b_found) {
     bool b_permanent = (pTrack->m_btemp == false);
-    g_pRouteMan->DeleteTrack(pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
 
     b_found = AddPlugInTrack(ptrack, b_permanent);
   }
@@ -3778,7 +3947,7 @@ void PlugInNormalizeViewport(PlugIn_ViewPort *vp, float lat, float lon) {
 //    PlugIn_AIS_Target Implementation
 //-------------------------------------------------------------------------------
 
-PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget) {
+PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget) {
   PlugIn_AIS_Target *pret = new PlugIn_AIS_Target;
 
   pret->MMSI = ptarget->MMSI;
@@ -3885,7 +4054,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 
   GlobalVar<wxString> catalog(&g_catalog_channel);
   wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
-  catalog_listener = catalog.get_listener(this, EVT_CATALOG_CHANGE);
+  catalog_listener = catalog.GetListener(this, EVT_CATALOG_CHANGE);
   Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
 
 #else  // Android
@@ -6292,7 +6461,7 @@ void CreateCompatibleS57Object(PI_S57Obj *pObj, S57Obj *cobj,
   S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
 
   if (pContext->bBBObj_valid)
-    // this is ugly because plugins still use wxBoundingBox
+    // this is ugly because plugins still use BoundingBox
     cobj->BBObj.Set(pContext->BBObj.GetMinY(), pContext->BBObj.GetMinX(),
                     pContext->BBObj.GetMaxY(), pContext->BBObj.GetMaxX());
 
@@ -6413,9 +6582,9 @@ void UpdatePIObjectPlibContext(PI_S57Obj *pObj, S57Obj *cobj,
   pContext->rText = cobj->rText;
 
   if (cobj->BBObj.GetValid()) {
-    // ugly as plugins still use wxBoundingBox
+    // ugly as plugins still use BoundingBox
     pContext->BBObj =
-        wxBoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
+        BoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
                       cobj->BBObj.GetMaxLon(), cobj->BBObj.GetMaxLat());
     pContext->bBBObj_valid = true;
   }
@@ -7975,8 +8144,10 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint) {
 
     if (prp) prp->ReLoadIcon();
 
-    SelectItem *pFind = pSelect->FindSelection(
-        gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT);
+    auto canvas = gFrame->GetPrimaryCanvas();
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectItem *pFind = pSelect->FindSelection(ctx, lat_save, lon_save,
+                                               SELTYPE_ROUTEPOINT);
     if (pFind) {
       pFind->m_slat = pwaypoint->m_lat;  // update the SelectList entry
       pFind->m_slon = pwaypoint->m_lon;

@@ -39,7 +39,7 @@
 #include "pugixml.hpp"
 
 
-bool ParseCatalog(const std::string xml, catalog_ctx* ctx) {
+bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
   bool ok = true;
   PluginMetadata* plugin = 0;
 

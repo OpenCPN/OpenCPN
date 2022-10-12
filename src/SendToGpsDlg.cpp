@@ -22,14 +22,26 @@
  ***************************************************************************
  */
 
+#include <wx/arrstr.h>
+#include <wx/button.h>
 #include <wx/combobox.h>
+#include <wx/dialog.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
+#include <wx/gdicmn.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/window.h>
 
-#include "SendToGpsDlg.h"
-#include "Route.h"
-#include "RoutePoint.h"
-#include "ser_ports.h"
-#include "ConnectionParams.h"
+#include "conn_params.h"
 #include "OCPNPlatform.h"
+#include "route_gui.h"
+#include "route.h"
+#include "route_point_gui.h"
+#include "route_point.h"
+#include "SendToGpsDlg.h"
+#include "ser_ports.h"
 
 extern OCPNPlatform* g_Platform;
 extern wxString g_uploadConnection;
@@ -227,8 +239,8 @@ void SendToGpsDlg::OnSendClick(wxCommandEvent& event) {
   if (src.Lower().Find(_T("Bluetooth")) != wxNOT_FOUND) destPort = src;
 
   //    And send it out
-  if (m_pRoute) m_pRoute->SendToGPS(destPort, true, this);
-  if (m_pRoutePoint) m_pRoutePoint->SendToGPS(destPort, this);
+  if (m_pRoute) RouteGui(*m_pRoute).SendToGPS(destPort, true, this);
+  if (m_pRoutePoint) RoutePointGui(*m_pRoutePoint).SendToGPS(destPort, this);
 
   //    Show( false );
   //    event.Skip();

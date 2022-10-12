@@ -29,6 +29,7 @@
 #include <wx/font.h>
 #include <wx/html/htmlwin.h>
 #include <wx/msgdlg.h>
+#include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/window.h>
 
@@ -96,5 +97,50 @@ private:
 
   DECLARE_EVENT_TABLE()
 };
+
+//----------------------------------------------------------------------------
+// Generic Auto Timed Window
+// Belongs to the creator, not deleted automatically on application close
+//----------------------------------------------------------------------------
+
+class TimedPopupWin : public wxWindow {
+public:
+  TimedPopupWin(wxWindow *parent, int timeout = -1);
+  ~TimedPopupWin();
+
+  void OnPaint(wxPaintEvent &event);
+
+  void SetBitmap(wxBitmap &bmp);
+  wxBitmap *GetBitmap() { return m_pbm; }
+  void OnTimer(wxTimerEvent &event);
+  bool IsActive() { return isActive; }
+  void IsActive(bool state) { isActive = state; }
+
+private:
+  wxBitmap *m_pbm;
+  wxTimer m_timer_timeout;
+  int m_timeout_sec;
+  bool isActive;
+
+  DECLARE_EVENT_TABLE()
+};
+
+
+//-----------------------------------------------------------------------
+//          Dummy Text Control for global key events
+//-----------------------------------------------------------------------
+class DummyTextCtrl : public wxTextCtrl {
+public:
+  DummyTextCtrl(wxWindow *parent, wxWindowID id);
+  void OnChar(wxKeyEvent &event);
+  void OnMouseEvent(wxMouseEvent &event);
+
+  wxTimer m_MouseWheelTimer;
+  int m_mouse_wheel_oneshot;
+  int m_last_wheel_dir;
+
+  DECLARE_EVENT_TABLE()
+};
+
 
 #endif  // MESSAGE_BOX_H

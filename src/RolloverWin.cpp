@@ -31,10 +31,11 @@
 #include "ocpndc.h"
 #include "RolloverWin.h"
 #include "timers.h"
-#include "chart1.h"
 #include "navutil.h"
 #include "FontMgr.h"
 #include "ocpn_plugin.h"
+#include "ocpn_frame.h"   //FIXME (dave) color
+
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"

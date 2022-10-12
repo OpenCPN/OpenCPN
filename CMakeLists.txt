@@ -83,6 +83,7 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
+set(CMAKE_CXX_VISIBILITY_PRESET=hidden)
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
@@ -172,6 +173,12 @@ cmake_dependent_option(
 )
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
+
+if (QT_ANDROID OR ${CMAKE_VERSION} VERSION_LESS 3.14)
+  set(OCPN_BUILD_TEST OFF)
+else ()
+  option(OCPN_BUILD_TEST "Enable test subproject build" ON)
+endif ()
 
 set(
   OCPN_WXWIDGETS_FORCE_VERSION
@@ -401,6 +408,7 @@ if (APPLE)
       "-Wno-deprecated"
       "-Wno-deprecated-declarations"
       "-Wno-unknown-pragmas"
+      "-Wno-unknown-warning-option"
       "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
   endif ()
@@ -789,52 +797,72 @@ message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
 set(
   HDRS
-  include/observable.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
   include/about.h
-  include/AIS_Bitstring.h
-  include/AIS_Decoder.h
+  include/ais_bitstring.h
+  include/ais_decoder.h
   include/ais.h
   include/AISTargetAlertDialog.h
-  include/AIS_Target_Data.h
+  include/ais_target_data.h
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
-  include/BasePlatform.h
+  include/ais_info_gui.h
+  include/base_platform.h
   include/bbox.h
   include/canvasMenu.h
   include/catalog_handler.h
   include/catalog_mgr.h
   include/catalog_parser.h
   include/cat_settings.h
-  include/chart1.h
-  include/ChartDataInputStream.h
+  include/chartdata_input_stream.h
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
   include/chcanv.h
   include/ChInfoWin.h
+  include/color_handler.h
+  include/comm_ais.h
+  include/comm_appmsg.h
+  include/comm_bridge.h
+  include/comm_driver.h
+  include/comm_drv_n0183.h
+  include/comm_drv_n0183_net.h
+  include/comm_drv_n0183_serial.h
+  include/comm_drv_n2k.h
+  include/comm_drv_n2k_serial.h
+  include/comm_drv_n2k_socketcan.h
+  include/comm_drv_signalk_net.h
+  include/comm_drv_registry.h
+  include/comm_drv_factory.h
+  include/comm_drv_file.h
+  include/comm_n0183_output.h
+  include/comm_navmsg.h
+  include/comm_navmsg_bus.h
+  include/comm_util.h
   include/compass.h
   include/concanv.h
-  include/ConnectionParams.h
+  include/conn_params.h
+  include/conn_params_panel.h
   include/cutil.h
-  include/datastream.h
   include/DepthFont.h
   include/DetailSlider.h
-  include/Downloader.h
+  include/downloader.h
   include/download_mgr.h
   include/dsPortType.h
   include/emboss_data.h
   include/FlexHash.h
   include/FontDesc.h
   include/FontMgr.h
-  include/GarminProtocolHandler.h
+  include/garmin_wrapper.h
+  include/garmin_protocol_mgr.h
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
   include/gui_lib.h
   include/gshhs.h
-  include/Hyperlink.h
+  include/hyperlink.h
+  include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
   include/kml.h
@@ -846,38 +874,45 @@ set(
   include/MarkInfo.h
   include/mbtiles.h
   include/multiplexer.h
-  include/NavObjectCollection.h
+  include/nav_object_database.h
   include/navutil.h
-  include/NetworkDataStream.h
+  include/navutil_base.h
   include/NMEALogWindow.h
+  include/observable.h
+  include/observable_confvar.h
+  include/observable_globvar.h
+  include/observable_appmsg.h
+  include/observable_navmsg.h
   include/ocpCursor.h
-  include/OCP_DataStreamInput_Thread.h
-  include/OCPN_DataStreamEvent.h
+  include/ocpn_frame.h
   include/ocpndc.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
+  include/ocpn_print.h
   include/OCPNRegion.h
-  include/OCPN_SignalKEvent.h
   include/ocpn_types.h
   include/ocpn_utils.h
   include/options.h
   include/piano.h
   include/plugin_cache.h
   include/plugin_blacklist.h
-  include/PluginHandler.h
+  include/plugin_handler.h
   include/plugin_loader.h
+  include/plugin_paths.h
   include/pluginmanager.h
-  include/PluginPaths.h
-  include/PositionParser.h
+  include/position_parser.h
   include/printtable.h
   include/Quilt.h
   include/RolloverWin.h
-  include/Route.h
+  include/route.h
+  include/route_gui.h
   include/routemanagerdialog.h
   include/routeman.h
-  include/RoutePoint.h
+  include/routeman_gui.h
+  include/route_point.h
+  include/route_point_gui.h
   include/routeprintout.h
   include/RoutePropDlg.h
   include/RoutePropDlgImpl.h
@@ -887,13 +922,10 @@ set(
   include/S57QueryDialog.h
   include/S57Sector.h
   include/safe_mode.h
-  include/Select.h
-  include/SelectItem.h
+  include/select.h
+  include/select_item.h
   include/semantic_vers.h
   include/SendToGpsDlg.h
-  include/SerialDataStream.h
-  include/SignalKDataStream.h
-  include/SignalKEventHandler.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -907,7 +939,8 @@ set(
   include/tide_time.h
   include/timers.h
   include/toolbar.h
-  include/Track.h
+  include/track.h
+  include/track_gui.h
   include/trackprintout.h
   include/TrackPropDlg.h
   include/TTYScroll.h
@@ -915,122 +948,153 @@ set(
   include/undo.h
   include/update_mgr.h
   include/usb_devices.h
+  include/waypointman_gui.h
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
-  ${CMAKE_BINARY_DIR}/include/config.h
-  include/svg_utils.h)
+  include/svg_utils.h
+)
+
+set(MODEL_SRC
+  # Testable sources without GUI dependencies.
+  ${CMAKE_SOURCE_DIR}/src/ais_bitstring.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_decoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_target_data.cpp
+  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
+  ${CMAKE_SOURCE_DIR}/src/bbox.cpp
+  ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartdata_input_stream.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_appmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_bridge.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_decoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_factory.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_net.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_serial.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_serial.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk_net.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_n0183_output.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
+  ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
+  ${CMAKE_SOURCE_DIR}/src/cutil.cpp
+  ${CMAKE_SOURCE_DIR}/src/downloader.cpp
+  ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
+  ${CMAKE_SOURCE_DIR}/src/georef.cpp
+  ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
+  ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${CMAKE_SOURCE_DIR}/src/nav_object_database.cpp
+  ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
+  ${CMAKE_SOURCE_DIR}/src/observable.cpp
+  ${CMAKE_SOURCE_DIR}/src/observable_confvar.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
+  ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
+  ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
+  ${CMAKE_SOURCE_DIR}/src/route.cpp
+  ${CMAKE_SOURCE_DIR}/src/route_point.cpp
+  ${CMAKE_SOURCE_DIR}/src/routeman.cpp
+  ${CMAKE_SOURCE_DIR}/src/select.cpp
+  ${CMAKE_SOURCE_DIR}/src/select_item.cpp
+  ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
+  ${CMAKE_SOURCE_DIR}/src/ser_ports.cpp
+  ${CMAKE_SOURCE_DIR}/src/track.cpp
+)
 
 set(
   SRCS
-  src/observable.cpp
   src/about.cpp
   src/AboutFrame.cpp
   src/AboutFrameImpl.cpp
-  src/AIS_Bitstring.cpp
   src/ais.cpp
-  src/AIS_Decoder.cpp
   src/AISTargetAlertDialog.cpp
-  src/AIS_Target_Data.cpp
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
-  src/BasePlatform.cpp
-  src/bbox.cpp
+  src/ais_info_gui.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
-  src/catalog_handler.cpp
   src/catalog_mgr.cpp
-  src/catalog_parser.cpp
   src/cat_settings.cpp
-  src/chart1.cpp
-  src/ChartDataInputStream.cpp
   src/chartdb.cpp
   src/chartdbs.cpp
   src/chartimg.cpp
   src/chcanv.cpp
   src/ChInfoWin.cpp
+  src/color_handler.cpp
   src/compass.cpp
   src/concanv.cpp
   src/ConfigMgr.cpp
-  src/ConnectionParams.cpp
-  src/cutil.cpp
-  src/datastream.cpp
+  src/conn_params_panel.cpp
+  src/connections_dialog.cpp
   src/DepthFont.cpp
   src/DetailSlider.cpp
-  src/Downloader.cpp
   src/download_mgr.cpp
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
-  src/GarminProtocolHandler.cpp
-  src/garmin_wrapper.h
-  src/geodesic.cpp
-  src/georef.cpp
   src/GoToPositionDialog.cpp
-  src/gui_lib.cpp
   src/gshhs.cpp
-  src/Hyperlink.cpp
+  src/gui_lib.cpp
   src/IDX_entry.cpp
   src/iENCToolbar.cpp
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
   src/LLRegion.cpp
-  src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
   src/MUIBar.cpp
   src/multiplexer.cpp
-  src/NavObjectCollection.cpp
   src/navutil.cpp
-  src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
-  src/OCP_DataStreamInput_Thread.cpp
+  src/ocpn_app.cpp
   src/OCPN_AUIManager.cpp
-  src/OCPN_DataStreamEvent.cpp
   src/ocpndc.cpp
+  src/ocpn_frame.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
-  src/ocpn_plugin.cpp
   src/OCPNPlatform.cpp
-  src/OCPNRegion.cpp
-  src/OCPN_SignalKEvent.cpp
   src/ocpn_plugin.cpp
-  src/ocpn_utils.cpp
+  src/ocpn_print.cpp
+  src/OCPNRegion.cpp
   src/options.cpp
   src/piano.cpp
-  src/plugin_loader.cpp
-  src/PluginHandler.cpp
   src/pluginmanager.cpp
-  src/PluginPaths.cpp
-  src/PositionParser.cpp
-  src/plugin_blacklist.cpp
-  src/plugin_cache.cpp
+  src/plugin_paths.cpp
   src/printtable.cpp
-  src/pugixml.cpp
   src/Quilt.cpp
   src/RolloverWin.cpp
-  src/Route.cpp
   src/routemanagerdialog.cpp
-  src/routeman.cpp
-  src/RoutePoint.cpp
+  src/routeman_gui.cpp
+  src/route_gui.cpp
+  src/route_point_gui.cpp
   src/routeprintout.cpp
   src/RoutePropDlg.cpp
   src/RoutePropDlgImpl.cpp
   src/S57QueryDialog.cpp
   src/safe_mode.cpp
-  src/Select.cpp
-  src/SelectItem.cpp
-  src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
-  src/SerialDataStream.cpp
-  src/ser_ports.cpp
-  src/SignalKDataStream.cpp
-  src/SignalKEventHandler.cpp
   src/Station_Data.cpp
   src/styles.cpp
+  src/svg_utils.cpp
   src/TCDataFactory.cpp
   src/TCDataSource.cpp
   src/TCDS_Ascii_Harmonic.cpp
@@ -1039,31 +1103,43 @@ set(
   src/TCWin.cpp
   src/thumbwin.cpp
   src/toolbar.cpp
-  src/Track.cpp
+  src/track_gui.cpp
   src/trackprintout.cpp
   src/TrackPropDlg.cpp
   src/TTYScroll.cpp
   src/TTYWindow.cpp
   src/undo.cpp
   src/update_mgr.cpp
+  src/waypointman_gui.cpp
   src/viewport.cpp
-  src/svg_utils.cpp)
+)
+
+
+if (LINUX)
+  list(APPEND HDRS include/comm_drv_n2k_socketcan.h )
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_socketcan.cpp)
+endif ()
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
-  set(SRCS ${SRCS} src/garmin_wrapper.cpp)
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/garmin_wrapper.cpp)
 endif ()
 
-if (LINUX AND NOT QT_ANDROID)
+if (LINUX)
   list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
   list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
 endif ()
 
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
+if (APPLE)
+  list(APPEND HDRS include/macutils.h )
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/macutils.c)
+endif ()
+
+if (LINUX AND OCPN_USE_CRASHREPORT)
   list(APPEND HDRS include/crashprint.h)
   list(APPEND SRCS src/crashprint.cpp)
-endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
+endif ()
 
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
@@ -1079,6 +1155,8 @@ SET(SRC_TINYXML
   include/tinyxml.h
 )
 
+set(SRCS ${SRCS} ${MODEL_SRC})
+
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
@@ -1093,6 +1171,7 @@ endif ()
 if (QT_ANDROID)
   include(libs/AndroidLibs.cmake)
 endif ()
+
 
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
@@ -1295,6 +1374,7 @@ if (UNIX)
     if (APPLE)
       if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
         #Only needed if we build with wxSVG implementation of SVG support
+        message(STATUS "Building with wxSVG support")
         find_package(Freetype REQUIRED)
         target_link_libraries(${PACKAGE_NAME} PRIVATE Freetype::Freetype)
         find_package(Fontconfig REQUIRED)
@@ -1389,7 +1469,7 @@ if (OCPN_USE_CURL)
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
     target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
+#    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -1500,6 +1580,7 @@ if (OPENGL_FOUND)
   )
 endif ()
 
+
 # Building for QT_ANDROID involves a cross-building environment, So the include
 # directories, flags, etc must be stated explicitly without trying to locate
 # them on the host build system.
@@ -1602,6 +1683,10 @@ target_link_libraries(
     ocpn::tinyxml
 )
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(S57ENC PRIVATE -fvisibility=default)
+endif ()
+
 if (OCPN_USE_CURL AND NOT QT_ANDROID)
   target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
 endif ()
@@ -1612,6 +1697,8 @@ target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 add_subdirectory(libs/gdal)
 target_link_libraries(S57ENC PUBLIC ocpn::gdal)
 
+add_subdirectory(libs/N2KParser)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::N2KParser)
 
 if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
   target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
@@ -1639,6 +1726,9 @@ set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_link_libraries(SYMBOLS PRIVATE ocpn::tinyxml)
 target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(SYMBOLS PRIVATE -fvisibility=default)
+endif ()
 
 # Compile texcompression support library
 if (OPENGL_FOUND)
@@ -1746,6 +1836,17 @@ if (UNIX)
   endif ()
 endif (UNIX)
 
+if (OCPN_BUILD_TEST)
+  add_subdirectory(test)
+  add_custom_target(run-tests
+    COMMAND ctest  -C $<CONFIG>
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+  )
+  add_dependencies(run-tests tests)
+else ()
+  add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
+endif ()
+
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
 if (MSVC)
@@ -1811,10 +1912,6 @@ if (OCPN_BUNDLE_TCDATA)
     data/tcdata/README.harmonics
   )
 endif (OCPN_BUNDLE_TCDATA)
-
-if (APPLE)
-  target_sources(${PACKAGE_NAME} PRIVATE include/macutils.h src/macutils.c)
-endif ()
 
 # Mac has trouble finding libgobject-2.0.dylib We look for it explicitely
 if (xAPPLE)
@@ -2736,12 +2833,12 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
-  install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
-    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
-  )
+#  install(
+#    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+#    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+#    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+#      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+#  )
   set(
     LIBS
     "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
@@ -2851,36 +2948,24 @@ if (NOT TARGET uninstall)
   )
 endif ()
 
-if (NOT QT_ANDROID)
-  #
-  # Piggy-back the console application on the main setup.
-  #
-  set(SRC_CONSOLE
-    src/api_shim.cpp
-    src/BasePlatform.cpp
-    src/catalog_handler.cpp
-    src/catalog_parser.cpp
-    src/console.cpp
-    src/Downloader.cpp
-    src/logger.cpp
-    src/observable.cpp
-    src/ocpn_plugin.cpp
-    src/ocpn_utils.cpp
-    src/plugin_cache.cpp
-    src/PluginHandler.cpp
-    src/plugin_loader.cpp
-    src/PluginPaths.cpp
-    src/pugixml.cpp
-    src/semantic_vers.cpp
-  )
+#
+# Piggy-back the console application on the main setup.
+# Note that cli apps are not supported on Android
+#
+if (NOT QT_ANDROID AND NOT APPLE)
+  set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
+
   add_executable(opencpn-cmd ${SRC_CONSOLE})
 
   target_include_directories(
-    opencpn-cmd PRIVATE ${PROJECT_SOURCE_DIR}/include
+    opencpn-cmd
+    PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/test/include
   )
 
-  target_compile_definitions(opencpn-cmd PUBLIC CLIAPP)
-
+  target_compile_definitions(opencpn-cmd PUBLIC CLIAPP USE_MOCK_DEFS)
+  if (MSVC)
+    target_link_libraries(opencpn-cmd PRIVATE setupapi.lib psapi.lib)
+  endif ()
 
   if (TARGET ocpn::wxcurl)
     target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)
@@ -2898,9 +2983,25 @@ if (NOT QT_ANDROID)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
   if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
     target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
     target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
   endif ()
+  if (HAVE_LIBUDEV)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)
+  endif ()
+  if (LIBLZMA_FOUND)
+    if (TARGET LibLZMA::LibLZMA)
+      target_link_libraries(opencpn-cmd PRIVATE LibLZMA::LibLZMA)
+    else ()
+      target_link_libraries(opencpn-cmd PRIVATE ${LIBLZMA_LIBRARIES})
+    endif ()
+  endif ()
+
   install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()

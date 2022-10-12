@@ -38,7 +38,7 @@
 #define PLUGIN_VERSION_MINOR 2
 
 #define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 6
+#define MY_API_VERSION_MINOR 8
 
 #include <wx/notebook.h>
 #include <wx/fileconf.h>
@@ -148,7 +148,7 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-class dashboard_pi : public wxTimer, opencpn_plugin_16 {
+class dashboard_pi : public wxTimer, opencpn_plugin_18 {
 public:
   dashboard_pi(void *ppimgr);
   ~dashboard_pi(void);
@@ -170,7 +170,7 @@ public:
 
   //    The optional method overrides
   void SetNMEASentence(wxString &sentence);
-  void SetPositionFix(PlugIn_Position_Fix &pfix);
+  void SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix);
   void SetCursorLatLon(double lat, double lon);
   int GetToolbarToolCount(void);
   void OnToolbarToolCallback(int id);
@@ -200,6 +200,26 @@ private:
   void ParseSignalK(wxString &msg);
   void handleSKUpdate(wxJSONValue &update);
   void updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime);
+
+  void HandleN2K_127245(ObservedEvt ev);
+  void HandleN2K_127257(ObservedEvt ev);
+  void HandleN2K_128259(ObservedEvt ev);
+  void HandleN2K_128267(ObservedEvt ev);
+  void HandleN2K_128275(ObservedEvt ev);
+  void HandleN2K_129029(ObservedEvt ev);
+  void HandleN2K_129540(ObservedEvt ev);
+  void HandleN2K_130306(ObservedEvt ev);
+  void HandleN2K_130310(ObservedEvt ev);
+  std::shared_ptr<ObservedVarListener> listener_127245;
+  std::shared_ptr<ObservedVarListener> listener_127257;
+  std::shared_ptr<ObservedVarListener> listener_128259;
+  std::shared_ptr<ObservedVarListener> listener_128267;
+  std::shared_ptr<ObservedVarListener> listener_128275;
+  std::shared_ptr<ObservedVarListener> listener_129029;
+  std::shared_ptr<ObservedVarListener> listener_129540;
+  std::shared_ptr<ObservedVarListener> listener_130306;
+  std::shared_ptr<ObservedVarListener> listener_130310;
+
   wxString m_self;
 
   wxFileConfig *m_pconfig;
@@ -216,7 +236,7 @@ private:
   short mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
   // Prio: Pos from O, SK gnss.satellites, GGA sats in use, SK gnss
   // satellitesinView, GSV sats in view
-  short mPriSatUsed, mPriAlt;
+  short mPriSatUsed, mPriAlt, mPriRSA, mPriPitchRoll;
   double mVar;
   // FFU
   int mSatsInView;
@@ -243,6 +263,8 @@ private:
   int mPITCH_Watchdog;
   int mHEEL_Watchdog;
   int mALT_Watchdog;
+  int mLOG_Watchdog;
+  int mTrLOG_Watchdog;
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;

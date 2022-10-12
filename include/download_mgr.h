@@ -29,7 +29,7 @@
 #include <wx/progdlg.h>
 #include <wx/window.h>
 
-#include "Downloader.h"
+#include "downloader.h"
 #include "catalog_parser.h"
 
 // Accepted by PluginDownloadDialog, reloads plugin list.

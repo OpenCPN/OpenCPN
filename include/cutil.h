@@ -26,15 +26,16 @@
  *
  */
 
-#ifndef __CUTIL_H__
-#define __CUTIL_H__
+#ifndef _CUTIL_H__
+#define _CUTIL_H__
+
+#include <vector>
 
 #ifdef __MSVC__
 #include <windows.h>
 #endif
 
 #include <wx/dynarray.h>
-#include <vector>
 
 typedef struct {
   double x;

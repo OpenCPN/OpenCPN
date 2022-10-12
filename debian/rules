@@ -13,22 +13,26 @@ ifeq ($(DEB_BUILD_ARCH_CPU), arm)
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
             -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release                 \
+            -DOCPN_BUILD_TEST=OFF
 else ifeq ($(DEB_BUILD_ARCH_CPU), aarch64)
 	dh_auto_configure -- \
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
             -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release                 \
+            -DOCPN_BUILD_TEST=OFF
 else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
 	dh_auto_configure -- \
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
             -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release                 \
+            -DOCPN_BUILD_TEST=OFF
 else
 	dh_auto_configure -- \
 	    -DCMAKE_INSTALL_LIBDIR=lib                 \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release                 \
+            -DOCPN_BUILD_TEST=OFF
 
 endif
