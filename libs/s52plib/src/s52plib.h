@@ -27,8 +27,6 @@
 #define _S52PLIB_H_
 
 #include <vector>
-//#include "../../include/dychart.h"
-
 #if defined(__OCPN__ANDROID__)
  //#include <GLES2/gl2.h>
  #include <qopengl.h>
@@ -36,6 +34,8 @@
  #include <GLES2/gl2.h>
 #elif defined(__MSVC__)
  #include "glew.h"
+ #include <GL/glu.h>
+ typedef void (__stdcall * _GLUfuncptrA)(void);
 #elif defined(__WXOSX__)
  #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>
@@ -57,6 +57,20 @@ class wxGLContext;
 
 #include <wx/dcgraph.h>  // supplemental, for Mac
 #include <unordered_map>
+
+//    ChartType constants
+typedef enum S52_ChartTypeEnum {
+  S52_CHART_TYPE_UNKNOWN = 0,
+  S52_CHART_TYPE_DUMMY,
+  S52_CHART_TYPE_DONTCARE,
+  S52_CHART_TYPE_KAP,
+  S52_CHART_TYPE_GEO,
+  S52_CHART_TYPE_S57,
+  S52_CHART_TYPE_CM93,
+  S52_CHART_TYPE_CM93COMP,
+  S52_CHART_TYPE_PLUGIN,
+  S52_CHART_TYPE_MBTILES
+} _S52_ChartTypeEnum;
 
 // Correct some deficincies in MacOS OpenGL include files
 #ifdef __WXOSX__

@@ -1033,7 +1033,6 @@ set(
   src/plugin_blacklist.cpp
   src/plugin_cache.cpp
   src/printtable.cpp
-  src/pugixml.cpp
   src/Quilt.cpp
   src/RolloverWin.cpp
   src/Route.cpp
@@ -1588,6 +1587,9 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::geoprim)
 add_subdirectory(libs/s52plib)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
 
+add_subdirectory(libs/pugixml)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pugixml)
+
 message(STATUS "S57 ENC support: enabled")
 set(
   SRC_S57ENC
@@ -1640,9 +1642,11 @@ if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
   target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
 endif ()
 
+target_link_libraries(S57ENC PUBLIC ocpn::pugixml)
+target_link_libraries(S57ENC PUBLIC ocpn::geoprim)
+target_link_libraries(S57ENC PUBLIC ocpn::s52plib)
+
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/libs/s52plib/src)
-target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/libs/geoprim/src)
 
 set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)

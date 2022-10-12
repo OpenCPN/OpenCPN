@@ -28,9 +28,7 @@
 #define _CHARTSYMBOLS_H_
 
 #include "s52s57.h"
-#include <tinyxml.h>
-//#include "pugixml.hpp"
-#include "/home/dsr/Projects/opencpn/include/pugixml.hpp"
+#include "pugixml.hpp"
 class s52plib;
 
 WX_DECLARE_STRING_HASH_MAP(wxRect, symbolGraphicsHashMap);
@@ -131,12 +129,6 @@ public:
   symbolGraphicsHashMap m_symbolGraphicLocations;
 
 private:
-  void ProcessVectorTag(TiXmlElement *subNodes, SymbolSizeInfo_t &vectorSize);
-  void ProcessColorTables(TiXmlElement *colortableodes);
-  void ProcessLookups(TiXmlElement *lookupNodes);
-  void ProcessLinestyles(TiXmlElement *linestyleNodes);
-  void ProcessPatterns(TiXmlElement *patternNodes);
-  void ProcessSymbols(TiXmlElement *symbolNodes);
   void BuildLineStyle(LineStyle &lineStyle);
   void BuildLookup(Lookup &lookup);
   void BuildPattern(OCPNPattern &pattern);

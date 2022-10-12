@@ -50,10 +50,11 @@ static const double mercator_k0 = 0.9996;
 #include "s52utils.h"
 #include "chartsymbols.h"
 #include "TexFont.h"
-#include "../../../include/ocpn_plugin.h"
 #include "line_clip.h"
 #include "poly_math.h"
 #include "LOD_reduce.h"
+#include "linmath.h"
+
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>
@@ -64,9 +65,22 @@ static const double mercator_k0 = 0.9996;
 #define PROJECTION_MERCATOR 1
 #endif
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-#include "linmath.h"
+// Some methods that are required to be declared differently
+// depending on whether the library is build for core, or plugin
+#ifdef BUILDING_PLUGIN
+#include "ocpn_plugin.h"
+#else
+wxColour GetFontColour_PlugIn(wxString TextElement);
+extern "C" bool GetGlobalColor(wxString colorName, wxColour *pcolour);
+wxFont *FindOrCreateFont_PlugIn(
+    int point_size, wxFontFamily family, wxFontStyle style, wxFontWeight weight,
+    bool underline = false, const wxString &facename = wxEmptyString,
+    wxFontEncoding encoding = wxFONTENCODING_DEFAULT);
+wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size = 0);
+float GetOCPNChartScaleFactor_Plugin();
+extern "C" wxString *GetpSharedDataLocation();
 #endif
+
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -89,6 +103,9 @@ static const double mercator_k0 = 0.9996;
 
 float g_scaminScale;
 
+#ifndef __MSVC__
+#define _GLUfuncptrA _GLUfuncptr
+#endif
 
 void DrawAALine(wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
                 int dash, int space);
@@ -104,7 +121,6 @@ unsigned int crc32buf(unsigned char *buf, size_t len);
 
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
 GLint S52color_tri_shader_program;
 GLint S52texture_2D_shader_program;
 GLint S52texture_2D_ColorMod_shader_program;
@@ -137,6 +153,23 @@ S52_TextC::~S52_TextC() {
     glDeleteTextures(1, (GLuint *)(&this->texobj));
   }
 }
+
+// This is a verbatim copy of same struct found in ocpn_plugin.h
+// Used for some types of plugin charts
+class PI_line_segment_element {
+public:
+  size_t vbo_offset;
+  size_t n_points;
+  int priority;
+  float lat_max;  // segment bounding box
+  float lat_min;
+  float lon_max;
+  float lon_min;
+  int type;
+  void *private0;
+
+  PI_line_segment_element *next;
+};
 
 
 //-----------------------------------------------------------------------------
@@ -310,7 +343,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_coreVersionMinor = 6;
   m_coreVersionPatch = 0;
 
-  m_myConfig = PI_GetPLIBStateHash();
+  m_myConfig = GetStateHash();
 
   // GL Options/capabilities
   m_useStencil = false;
@@ -2409,8 +2442,8 @@ bool s52plib::TextRenderCheck(ObjRazRules *rzRules) {
   //    An optimization for CM93 charts.
   //    Don't show the text associated with some objects, since CM93 database
   //    includes _texto objects aplenty
-  if (((int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93) ||
-      ((int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93COMP)) {
+  if (((int)rzRules->obj->auxParm3 == (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93) ||
+      ((int)rzRules->obj->auxParm3 == (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93COMP)) {
     if (!strncmp(rzRules->obj->FeatureName, "BUAARE", 6))
       return false;
     else if (!strncmp(rzRules->obj->FeatureName, "SEAARE", 6))
@@ -5158,7 +5191,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
                 float start[2];
                 start[0] = x0;
-                start[1] = GetOCPNCanvasWindow()->GetSize().y - y0;
+                start[1] = vp_plib.pix_height - y0;
                 glUniform2fv(startPos, 1, start);
 
                 // Set the attribute mPosAttrib with the vertices in the screen
@@ -6457,7 +6490,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
       glGetUniformLocation(S52ring_shader_program, "circle_center");
   float ctrv[2];
   ctrv[0] = point.x;
-  ctrv[1] = GetOCPNCanvasWindow()->GetSize().y - point.y;
+  ctrv[1] = vp_plib.pix_height - point.y;
   glUniform2fv(centerloc, 1, ctrv);
 
   //  Circle color
@@ -8981,9 +9014,9 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
     if (rzRules->obj->m_chart_context->chart) {  // not a PlugIn Chart
       if (((int)rzRules->obj->m_chart_context->chart_type ==
-           (int)PI_CHART_TYPE_CM93) ||
+           (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93) ||
           ((int)rzRules->obj->m_chart_context->chart_type ==
-           (int)PI_CHART_TYPE_CM93COMP)) {
+           (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93COMP)) {
         //      We may need to translate object coordinates by 360 degrees to
         //      conform.
         if (BBView.GetMaxLon() >= 180.) {
@@ -9402,9 +9435,9 @@ int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules) {
 
     if (rzRules->obj->m_chart_context->chart) {  // not a PlugIn Chart
       if (((int)rzRules->obj->m_chart_context->chart_type  ==
-           (int)PI_CHART_TYPE_CM93) ||
+           (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93) ||
           ((int)rzRules->obj->m_chart_context->chart_type  ==
-           (int)PI_CHART_TYPE_CM93COMP)) {
+           (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93COMP)) {
         //      We may need to translate object coordinates by 360 degrees to
         //      conform.
         if (BBView.GetMaxLon() >= 180.) {
@@ -11360,6 +11393,7 @@ void s52plib::RemoveObjNoshow(const char *objcl) {
 
 void s52plib::ClearNoshow(void) { m_noshow_array.Clear(); }
 
+#if 0
 void s52plib::PLIB_LoadS57Config() {
   //    Get a pointer to the opencpn configuration object
   wxFileConfig *pconfig = GetOCPNConfigObject();
@@ -11588,6 +11622,7 @@ void s52plib::PLIB_LoadS57ObjectConfig()
         }
     }
 }
+#endif
 
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender(void) { PrepareForRender( &vp_plib); }
@@ -12910,13 +12945,13 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
     s_odc_tess_vertex_idx = 0;
 
     gluTessCallback(m_tobj, GLU_TESS_VERTEX_DATA,
-                    (_GLUfuncptr)&s52_vertexCallbackD_GLSL);
+                    (_GLUfuncptrA)s52_vertexCallbackD_GLSL);
     gluTessCallback(m_tobj, GLU_TESS_BEGIN_DATA,
-                    (_GLUfuncptr)&s52_beginCallbackD_GLSL);
+                    (_GLUfuncptrA)&s52_beginCallbackD_GLSL);
     gluTessCallback(m_tobj, GLU_TESS_END_DATA,
-                    (_GLUfuncptr)&s52_endCallbackD_GLSL);
+                    (_GLUfuncptrA)&s52_endCallbackD_GLSL);
     gluTessCallback(m_tobj, GLU_TESS_COMBINE_DATA,
-                    (_GLUfuncptr)&s52_combineCallbackD);
+                    (_GLUfuncptrA)&s52_combineCallbackD);
 
     gluTessNormal(m_tobj, 0, 0, 1);
     gluTessProperty(m_tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
