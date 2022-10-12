@@ -2022,6 +2022,8 @@ bool MyApp::OnInit() {
   // Initialize the CommBridge
   m_comm_bridge.Initialize();
 
+  m_RESTserver.StartServer();
+
   return TRUE;
 }
 

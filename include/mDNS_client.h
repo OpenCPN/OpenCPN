@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
+ * Purpose:
+ * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2022 by David S. Register                               *
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,53 +23,51 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _OCPN_APP_H
-#define _OCPN_APP_H
+#ifndef _RESTSERVER_H
+#define _RESTSERVER_H
 
-#include <wx/wxprec.h>
+#include <string>
 
-#ifndef WX_PRECOMP
-#include <wx/app.h>
-#include <wx/cmdline.h>
 #include <wx/event.h>
-#endif  // precompiled headers
 
-#include <wx/snglinst.h>
 
-#include "comm_bridge.h"
-#include "REST_server.h"
+class RESTServerThread;  // Internal
 
-class Track;
+class RESTServerEvent;  // Internal
 
-class MyApp : public wxApp {
+class RESTServer : public wxEvtHandler {
 public:
-  ~MyApp(){};
+  RESTServer();
 
-  bool OnInit();
-  int OnExit();
-  void OnInitCmdLine(wxCmdLineParser& parser);
-  bool OnCmdLineParsed(wxCmdLineParser& parser);
-  void OnActivateApp(wxActivateEvent& event);
+  virtual ~RESTServer();
 
-#ifdef LINUX_CRASHRPT
-  //! fatal exeption handling
-  void OnFatalException();
-#endif
+  bool StartServer();
+  void StopServer();
 
-#ifdef __WXMSW__
-  //  Catch malloc/new fail exceptions
-  //  All the rest will be caught be CrashRpt
-  bool OnExceptionInMainLoop();
-#endif
+  //    Secondary thread life toggle
+  //    Used to inform launching object (this) to determine if the thread can
+  //    be safely called or polled, e.g. wxThread->Destroy();
+  void SetSecThreadActive(void) { m_bsec_thread_active = true; }
+  void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
+  bool IsSecThreadActive() const { return m_bsec_thread_active; }
 
-  Track* TrackOff(void);
+  void SetSecondaryThread(RESTServerThread* secondary_Thread) {
+    m_pSecondary_Thread = secondary_Thread;
+  }
+  RESTServerThread* GetSecondaryThread() {
+    return m_pSecondary_Thread;
+  }
+  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
-  wxSingleInstanceChecker* m_checker;
-  CommBridge m_comm_bridge;
+  int m_Thread_run_flag;
 
-  RESTServer m_RESTserver;
 
-  DECLARE_EVENT_TABLE()
+private:
+
+  RESTServerThread* m_pSecondary_Thread;
+  bool m_bsec_thread_active;
+
+  //void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
 };
 
-#endif
+#endif  // guard

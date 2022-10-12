@@ -905,6 +905,7 @@ set(
   include/position_parser.h
   include/printtable.h
   include/Quilt.h
+  include/REST_server.h
   include/RolloverWin.h
   include/route.h
   include/route_gui.h
@@ -1007,6 +1008,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
+  ${CMAKE_SOURCE_DIR}/src/REST_server.cpp
   ${CMAKE_SOURCE_DIR}/src/route.cpp
   ${CMAKE_SOURCE_DIR}/src/route_point.cpp
   ${CMAKE_SOURCE_DIR}/src/routeman.cpp
@@ -1076,6 +1078,7 @@ set(
   src/ocpn_print.cpp
   src/OCPNRegion.cpp
   src/options.cpp
+  src/peer_client.cpp
   src/piano.cpp
   src/pluginmanager.cpp
   src/plugin_paths.cpp
@@ -1212,6 +1215,10 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 
 add_subdirectory(libs/picosha2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
+
+add_subdirectory(libs/mongoose)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mongoose)
+
 
 find_package(LIBUDEV)
 if (LIBUDEV_FOUND)
@@ -2988,6 +2995,7 @@ if (NOT QT_ANDROID AND NOT APPLE)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
   if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
     target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
     target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
