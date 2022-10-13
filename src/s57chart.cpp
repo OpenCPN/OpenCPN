@@ -208,7 +208,8 @@ static void PrepareForRender(ViewPort *pvp, s52plib *plib) {
                     pvp->chart_scale,
                     pvp->rv_rect,
                     pvp->GetBBox(),
-                    pvp->ref_scale
+                    pvp->ref_scale,
+                    GetOCPNCanvasWindow()->GetContentScaleFactor()
                       );
  plib->PrepareForRender();
 

@@ -186,6 +186,7 @@ public:
   double chart_scale;
   wxRect rv_rect;
   double ref_scale;
+  double display_scale;
 };
 
 typedef struct {
@@ -338,7 +339,7 @@ public:
                       double clat, double clon,
                       double chart_scale,
                       wxRect rv_rect, LLBBox &bbox,
-                      double ref_scale
+                      double ref_scale, double display_scale
                       );
 
 

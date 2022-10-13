@@ -420,7 +420,8 @@ void s52plib::SetVPointCompat(int pix_width,int pix_height,
                       double view_scale_ppm, double rotation,
                       double clat, double clon,
                       double chart_scale,
-                      wxRect rv_rect, LLBBox &bbox, double ref_scale
+                      wxRect rv_rect, LLBBox &bbox, double ref_scale,
+                      double display_scale
                       ) {
   vp_plib.pix_width = pix_width;
   vp_plib.pix_height = pix_height;
@@ -432,8 +433,7 @@ void s52plib::SetVPointCompat(int pix_width,int pix_height,
   vp_plib.rv_rect = rv_rect;
   BBox = bbox;
   vp_plib.ref_scale = ref_scale;
-
-  printf("rotate:  %g\n", vp_plib.rotation);
+  m_displayScale = display_scale;
 }
 
 
@@ -465,10 +465,10 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
 
 void s52plib::SetPPMM(float ppmm) {
 
-#ifdef __WXOSX__
-  // Support Mac Retina displays.
-  m_displayScale = GetOCPNCanvasWindow()->GetContentScaleFactor();
-#endif
+// #ifdef __WXOSX__
+//   // Support Mac Retina displays.
+//   m_displayScale = GetOCPNCanvasWindow()->GetContentScaleFactor();
+// #endif
 
   canvas_pix_per_mm = ppmm;
 
