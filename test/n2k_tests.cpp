@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <gtest/gtest.h>
 
 #include <wx/app.h>
@@ -167,5 +169,14 @@ TEST_F(DriverRegistry, RegisterDriver) {
   EXPECT_EQ(int0, 1);   // Driver activated and registered
   EXPECT_EQ(int1, 0);   // Driver closed.
   EXPECT_EQ(int2, 0);   // All drivers closed.
+}
+
+TEST(CanEnvironment, vcan0) {
+  char line[256];
+  FILE* f = popen("ip address show vcan0", "r");
+  char* r =  fgets(line, sizeof(line), f);
+  EXPECT_TRUE(r != 0)  << "The vcan0 device is not available (?) \n";
+  int i = pclose(f);
+  EXPECT_TRUE(i == 0)  << "Error running the ip(8) command\n";
 }
 #endif
