@@ -24,8 +24,8 @@
  **************************************************************************/
 
 #include <mutex>  // std::mutex
-#include <queue>  // std::queue
 #include <vector>
+#include <memory>
 
 #include <wx/event.h>
 #include <wx/log.h>
@@ -34,47 +34,9 @@
 #include <wx/utils.h>
 
 #include "REST_server.h"
+//#include "REST_server_gui.h"
 #include "mongoose.h"
 
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
-
-template <typename T>
-class n0183_atomic_queue {
-public:
-  size_t size() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.size();
-  }
-
-  bool empty() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.empty();
-  }
-
-  const T& front() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.front();
-  }
-
-  void push(const T& value) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.push(value);
-  }
-
-  void pop() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.pop();
-  }
-
-private:
-  std::queue<T> m_queque;
-  mutable std::mutex m_mutex;
-};
-
-#define OUT_QUEUE_LENGTH                20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
-
-class CommDriverN0183SerialEvent;  // fwd
 
 class RESTServerThread : public wxThread {
 public:
@@ -85,63 +47,10 @@ public:
   void OnExit(void);
 
 private:
-  RESTServer *m_pParentDriver;
+  RESTServer *m_pParent;
 
 };
 
-#if 0
-template <class T>
-class circular_buffer {
-public:
-  explicit circular_buffer(size_t size)
-      : buf_(std::unique_ptr<T[]>(new T[size])), max_size_(size) {}
-
-  void reset();
-  size_t capacity() const;
-  size_t size() const;
-
-  bool empty() const {
-    // if head and tail are equal, we are empty
-    return (!full_ && (head_ == tail_));
-  }
-
-  bool full() const {
-    // If tail is ahead the head by 1, we are full
-    return full_;
-  }
-
-  void put(T item) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    buf_[head_] = item;
-    if (full_) tail_ = (tail_ + 1) % max_size_;
-
-    head_ = (head_ + 1) % max_size_;
-
-    full_ = head_ == tail_;
-  }
-
-  T get() {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    if (empty()) return T();
-
-    // Read data and advance the tail (we now have a free space)
-    auto val = buf_[tail_];
-    full_ = false;
-    tail_ = (tail_ + 1) % max_size_;
-
-    return val;
-  }
-
-private:
-  std::mutex mutex_;
-  std::unique_ptr<T[]> buf_;
-  size_t head_ = 0;
-  size_t tail_ = 0;
-  const size_t max_size_;
-  bool full_ = 0;
-};
-#endif
 
 class RESTServerEvent;
 wxDECLARE_EVENT(wxEVT_RESTFUL_SERVER, RESTServerEvent);
@@ -153,30 +62,38 @@ public:
       : wxEvent(id, commandType){};
   ~RESTServerEvent(){};
 
+  // accessors
+  void SetPayload(std::shared_ptr<std::string> data) {
+    m_payload = data;
+  }
+  std::shared_ptr<std::string> GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
   wxEvent* Clone() const {
     RESTServerEvent* newevent =
         new RESTServerEvent(*this);
-    //newevent->m_payload = this->m_payload;
+    newevent->m_payload = this->m_payload;
     return newevent;
   };
 
 private:
+  std::shared_ptr<std::string> m_payload;
+
 };
+
+wxDEFINE_EVENT(wxEVT_RESTFUL_SERVER, RESTServerEvent);
 
 //========================================================================
 /*    RESTServer implementation
  * */
-//wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
 
 RESTServer::RESTServer()
     :  m_Thread_run_flag(-1)
 {
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  //Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
-    //   this);
+  Bind(wxEVT_RESTFUL_SERVER, &RESTServer::HandleServerMessage,
+       this);
 
 }
 
@@ -196,8 +113,8 @@ void RESTServer::StopServer() {
   wxLogMessage(
       wxString::Format(_T("Stopping REST service")));
 
-//  Unbind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
-//       this);
+  Unbind(wxEVT_RESTFUL_SERVER, &RESTServer::HandleServerMessage,
+       this);
 
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
@@ -223,7 +140,11 @@ void RESTServer::StopServer() {
     m_pSecondary_Thread = NULL;
     m_bsec_thread_active = false;
   }
+}
 
+void RESTServer::HandleServerMessage(
+    RESTServerEvent& event) {
+  auto p = event.GetPayload();
 }
 
 
@@ -235,6 +156,8 @@ static const char *s_https_addr = "https://0.0.0.0:8443";  // HTTPS port
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
 static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
+  RESTServer *parent = static_cast<RESTServer *>(fn_data);
+
   if (ev == MG_EV_ACCEPT && fn_data != NULL) {
 //     struct mg_tls_opts opts = {
 //         //.ca = "ca.pem",         // Uncomment to enable two-way SSL
@@ -261,11 +184,17 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
       mg_http_printf_chunk(c, "");  // Don't forget the last empty chunk
     } else if (mg_http_match_uri(hm, "/api/f2/*")) {
 
-      //printf("%s\n", hm->body.ptr);
       struct mg_str v = mg_http_var(hm->body, mg_str("content"));
       if(v.len){
         std::string xml_content(v.ptr, v.len);
-        printf("%s\n", xml_content.c_str());
+        //printf("%s\n", xml_content.c_str());
+
+        if (parent){
+          RESTServerEvent Nevent(wxEVT_RESTFUL_SERVER, 0);
+          auto buffer = std::make_shared<std::string>(xml_content);
+          Nevent.SetPayload(buffer);
+          parent->AddPendingEvent(Nevent);
+        }
       }
 
       mg_http_reply(c, 200, "", "{\"result\": \"%.*s\"}\n", (int) hm->uri.len,
@@ -277,7 +206,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 }
 
 RESTServerThread::RESTServerThread(RESTServer* Launcher) {
-  m_pParentDriver = Launcher;  // This thread's immediate "parent"
+  m_pParent = Launcher;  // This thread's immediate "parent"
 
   Create();
 }
@@ -288,23 +217,19 @@ void RESTServerThread::OnExit(void) {}
 
 void* RESTServerThread::Entry() {
   bool not_done = true;
-  m_pParentDriver->SetSecThreadActive();  // I am alive
+  m_pParent->SetSecThreadActive();  // I am alive
 
   struct mg_mgr mgr;                            // Event manager
   mg_log_set(MG_LL_DEBUG);                      // Set log level
   mg_mgr_init(&mgr);                            // Initialise event manager
-  mg_http_listen(&mgr, s_http_addr, fn, NULL);  // Create HTTP listener
+  mg_http_listen(&mgr, s_http_addr, fn, m_pParent);  // Create HTTP listener
   //mg_http_listen(&mgr, s_https_addr, fn, (void *) 1);  // HTTPS listener
   for (;;) mg_mgr_poll(&mgr, 1000);                    // Infinite event loop
   mg_mgr_free(&mgr);
 
-//   mg_mgr_init(&mgr, NULL);
-//   nc = mg_bind(&mgr, s_http_port, ev_handler);
-//   mg_set_protocol_http_websocket(nc);
-
 thread_exit:
-  m_pParentDriver->SetSecThreadInActive();  // I am dead
-  m_pParentDriver->m_Thread_run_flag = -1;
+  m_pParent->SetSecThreadInActive();  // I am dead
+  m_pParent->m_Thread_run_flag = -1;
 
   return 0;
 }

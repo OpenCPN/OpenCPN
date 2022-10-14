@@ -906,6 +906,7 @@ set(
   include/printtable.h
   include/Quilt.h
   include/REST_server.h
+  include/REST_server_gui.h
   include/RolloverWin.h
   include/route.h
   include/route_gui.h
@@ -1084,6 +1085,7 @@ set(
   src/plugin_paths.cpp
   src/printtable.cpp
   src/Quilt.cpp
+  src/REST_server_gui.cpp
   src/RolloverWin.cpp
   src/routemanagerdialog.cpp
   src/routeman_gui.cpp

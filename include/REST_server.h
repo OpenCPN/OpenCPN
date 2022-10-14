@@ -43,6 +43,8 @@ public:
   bool StartServer();
   void StopServer();
 
+  void HandleServerMessage(RESTServerEvent& event);
+
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
   //    be safely called or polled, e.g. wxThread->Destroy();
