@@ -25,6 +25,13 @@
 #include "comm_drv_n2k_socketcan.h"
 #endif
 
+#ifdef _MSC_VER
+const static std::string kSEP("\\");
+#else
+const static std::string kSEP("/");
+#endif
+
+
 class AISTargetAlertDialog;
 class Multiplexer;
 
@@ -165,6 +172,8 @@ public:
   DriverRegistry(): N2kTest() { app = new N2kTestDriverRegistry(); }
 };
 
+using namespace std;
+
 TEST_F(DriverRegistry, RegisterDriver) {
   EXPECT_EQ(int0, 1);   // Driver activated and registered
   EXPECT_EQ(int1, 0);   // Driver closed.
@@ -179,4 +188,16 @@ TEST(CanEnvironment, vcan0) {
   int i = pclose(f);
   EXPECT_TRUE(i == 0)  << "Error running the ip(8) command\n";
 }
-#endif
+
+TEST(CanEnvironment, canplayer) {
+  string path("..");
+  path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP +
+     "candump-2022-07-30_102821-head.log";
+  string cmd("canplayer -I ");
+  cmd += path + " vcan0=can0";
+  FILE* f = popen(cmd.c_str(), "r");
+  int i = pclose(f);
+  EXPECT_TRUE(i == 0)  << "Error running the canplayer command\n";
+}
+
+#endif    // __linux__
