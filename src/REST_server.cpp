@@ -261,8 +261,12 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
       mg_http_printf_chunk(c, "");  // Don't forget the last empty chunk
     } else if (mg_http_match_uri(hm, "/api/f2/*")) {
 
-      printf("%s\n", hm->body.ptr);
+      //printf("%s\n", hm->body.ptr);
       struct mg_str v = mg_http_var(hm->body, mg_str("content"));
+      if(v.len){
+        std::string xml_content(v.ptr, v.len);
+        printf("%s\n", xml_content.c_str());
+      }
 
       mg_http_reply(c, 200, "", "{\"result\": \"%.*s\"}\n", (int) hm->uri.len,
                     hm->uri.ptr);

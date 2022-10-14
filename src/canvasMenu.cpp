@@ -74,7 +74,7 @@
 #include "tide_time.h"
 #include "track_gui.h"
 #include "undo.h"
-
+#include "peer_client.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -165,6 +165,7 @@ enum {
   ID_RT_MENU_SENDTONEWGPS,
   ID_RT_MENU_SHOWNAMES,
   ID_RT_MENU_RESEQUENCE,
+  ID_RT_MENU_SENDTOPEER,
   ID_WP_MENU_SET_ANCHORWATCH,
   ID_WP_MENU_CLEAR_ANCHORWATCH,
   ID_DEF_MENU_AISTARGETLIST,
@@ -706,6 +707,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         MenuAppend1(menuRoute, ID_RT_MENU_SENDTONEWGPS, item);
       }
       //#endif
+      wxString itemstp = _("Send to...");
+      MenuAppend1(menuRoute, ID_RT_MENU_SENDTOPEER, itemstp);
+
     }
     // Eventually set this menu as the "focused context menu"
     if (menuFocus != menuAIS) menuFocus = menuRoute;
@@ -1638,6 +1642,17 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
         dlg.ShowModal();
+      }
+      break;
+
+     case ID_RT_MENU_SENDTOPEER:
+      if (m_pSelectedRoute) {
+        SendRoute("http://192.168.37.98:8000", m_pSelectedRoute);
+//         SendToGpsDlg dlg;
+//         dlg.SetRoute(m_pSelectedRoute);
+//
+//         dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
+//         dlg.ShowModal();
       }
       break;
 

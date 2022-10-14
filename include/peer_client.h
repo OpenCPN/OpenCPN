@@ -26,6 +26,9 @@
 #ifndef _PEERCLIENT_H
 #define _PEERCLIENT_H
 
-bool SendRoute();
+#include <string>
+#include "route.h"
+
+int SendRoute(std::string dest_ip_address, Route *route, bool overwrite = false);
 
 #endif  // guard

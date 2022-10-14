@@ -33,10 +33,14 @@
 // #include <wx/thread.h>
 // #include <wx/utils.h>
 
+#include <iostream>
+#include <sstream>
+
 #include "peer_client.h"
 
 #include "wx/curl/http.h"
 #include "wx/curl/thread.h"
+#include "nav_object_database.h"
 
 size_t wxcurl_string_write_UTF8(void* ptr, size_t size, size_t nmemb, void* pcharbuf)
 {
@@ -169,13 +173,24 @@ std::string wxCurlHTTPNoZIP::GetResponseBody() const
 
 }
 
-bool SendRoute() {
+int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
+{
+  if(!route)
+    return -1;
 
-    wxString url = "http://192.168.37.98:8000";
+  // Get XML representation of object.
+  NavObjectCollection1 *pgpx = new NavObjectCollection1;
+  pgpx->AddGPXRoute(route);
 
-    url += "/api/f2/teststring";
+  std::ostringstream stream;
+  //std::basic_ostream<char, std::char_traits<char> > os;
+  pgpx->save(stream, PUGIXML_TEXT(" "));
 
-    wxString content("content=<MyCOntent>");
+  wxString url(dest_ip_address.c_str());    //"http://192.168.37.98:8000";
+  url += "/api/f2/teststring";
+
+  wxString content("content=");
+  content += wxString(stream.str());
 
     wxString loginParms;
     loginParms += content;
