@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <mutex>
 #include <sstream>
 #include <unordered_map>
 
@@ -38,9 +39,12 @@ std::string ptr_key(const void* ptr) {
 
 /* ListenersByKey implementation. */
 
+
 ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
   static std::unordered_map<std::string, ListenersByKey> instances;
+  static std::mutex s_mutex;
 
+  std::lock_guard<std::mutex> lock(s_mutex);
   if (instances.find(key) == instances.end()) {
     instances[key] = ListenersByKey();
   }
@@ -53,7 +57,8 @@ ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
 using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
 void ObservedVar::Listen(wxEvtHandler* listener, wxEventType ev_type) {
-  const auto& listeners = singleton.listeners;
+  std::lock_guard<std::mutex> lock(m_mutex);
+  const auto& listeners = m_list.listeners;
   ev_pair key_pair(listener, ev_type);
   if (wxLog::GetLogLevel() <= wxLOG_Debug) {
     auto count = std::count(listeners.begin(), listeners.end(), key_pair);
@@ -64,11 +69,12 @@ void ObservedVar::Listen(wxEvtHandler* listener, wxEventType ev_type) {
                      key, ptr_key(listener), ev_type);
     }
   }
-  singleton.listeners.push_back(key_pair);
+  m_list.listeners.push_back(key_pair);
 }
 
 bool ObservedVar::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
-  auto& listeners = singleton.listeners;
+  std::lock_guard<std::mutex> lock(m_mutex);
+  auto& listeners = m_list.listeners;
 
   ev_pair key_pair(listener, ev_type);
   auto found = std::find(listeners.begin(), listeners.end(), key_pair);
@@ -87,7 +93,8 @@ bool ObservedVar::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
 const void ObservedVar::Notify(std::shared_ptr<const void> ptr,
                                const std::string& s, int num,
                                void* client_data) {
-  auto& listeners = singleton.listeners;
+  std::lock_guard<std::mutex> lock(m_mutex);
+  auto& listeners = m_list.listeners;
   for (auto l = listeners.begin(); l != listeners.end(); l++) {
     auto evt = new ObservedEvt(l->second);
     evt->SetSharedPtr(ptr);

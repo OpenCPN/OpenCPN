@@ -25,6 +25,7 @@
 #define OBSERVABLE_H
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -79,7 +80,7 @@ friend class ObservedVarListener;
 
 public:
   ObservedVar(const std::string& _key)
-      : key(_key), singleton(ListenersByKey::getInstance(_key)) {}
+      : key(_key), m_list(ListenersByKey::getInstance(_key)) {}
 
   /** Notify all listeners about variable change. */
   virtual const void Notify();
@@ -115,7 +116,9 @@ private:
   /** Set object to send ev_type to listener on variable changes. */
   void Listen(wxEvtHandler* listener, wxEventType ev_type);
 
-  ListenersByKey& singleton;
+  ListenersByKey& m_list;
+
+  mutable std::mutex m_mutex;
 };
 
 
