@@ -419,7 +419,7 @@ bool AisDecoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg 
   std::string str = n0183_msg->payload;
   wxString sentence(str.c_str());
   DecodeN0183(sentence);
-  touch_state.notify();
+  touch_state.Notify();
   return true;
 }
 
@@ -501,7 +501,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -582,7 +582,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -676,7 +676,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -766,7 +766,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -808,7 +808,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->MID = 124;  // Indicates a name from n2k
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
-    touch_state.notify();
+    touch_state.Notify();
     return true;
 
   }
@@ -865,7 +865,7 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -923,7 +923,7 @@ bool AisDecoder::HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -2179,7 +2179,7 @@ void AisDecoder::CommitAISTarget(AisTargetData *pTargetData,
         if (pTargetData->b_show_track) UpdateOneTrack(pTargetData);
       }
       // TODO add ais message call
-      plugin_msg.notify(pTargetData);
+      plugin_msg.Notify(pTargetData);
     } else {
       //             printf("Unrecognised AIS message ID: %d\n",
       //             pTargetData->MID);
@@ -3300,7 +3300,7 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
                                   wxDateTime::Now().FormatISODate().c_str(),
                                   wxDateTime::Now().FormatISOTime().c_str()));
       g_TrackList.push_back(t);
-      new_track.notify(t);
+      new_track.Notify(t);
       m_persistent_tracks[ptarget->MMSI] = t;
     } else {
       t = m_persistent_tracks[ptarget->MMSI];
@@ -3710,7 +3710,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         td->HDG = 511.0;
         td->ROTAIS = -128;
 
-        plugin_msg.notify(td);
+        plugin_msg.Notify(td);
 
         long mmsi_long = td->MMSI;
         pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
@@ -3720,7 +3720,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         //      or a lost ARPA target.
         if (target_static_age > removelost_Mins * 60 * 3 || b_arpalost) {
           td->b_removed = true;
-          plugin_msg.notify(td);
+          plugin_msg.Notify(td);
           remove_array.push_back(td->MMSI);  // Add this target to removal list
         }
       }
@@ -3734,7 +3734,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         if (props->m_bignore) {
           remove_array.push_back(td->MMSI);  // Add this target to removal list
           td->b_removed = true;
-          plugin_msg.notify(td);
+          plugin_msg.Notify(td);
         }
         break;
       }
@@ -3839,7 +3839,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   }
     // Show or update the alert
   if (palert_target)
-    info_update.notify(palert_target);
+    info_update.Notify(palert_target);
 
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }

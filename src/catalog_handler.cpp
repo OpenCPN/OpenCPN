@@ -195,7 +195,7 @@ bool CatalogHandler::SetActiveChannel(const char* channel) {
   for (auto c : channels) {
     if (c == channel) {
       GlobalVar<wxString> catalog_channel(&g_catalog_channel);
-      catalog_channel.set(channel);
+      catalog_channel.Set(channel);
       return true;
     }
   }

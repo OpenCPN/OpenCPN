@@ -38,8 +38,9 @@ class ObservedEvt : public wxCommandEvent {
 public:
   ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)
     : wxCommandEvent(commandType, id) {}
+
   ObservedEvt(const ObservedEvt& event)
-    : wxCommandEvent(event) {this->m_shared_ptr = event.m_shared_ptr; }
+    : wxCommandEvent(event) { this->m_shared_ptr = event.m_shared_ptr; }
 
   wxEvent* Clone() const { return new ObservedEvt(*this); }
 

@@ -53,7 +53,7 @@ ConfigVar<T>::ConfigVar(const std::string& section_, const std::string& key_,
       config(cb) {}
 
 template <typename T>
-const T ConfigVar<T>::get(const T& default_val) {
+const T ConfigVar<T>::Get(const T& default_val) {
   std::istringstream iss;
   config->SetPath(section);
   auto value = config->Read(key, "").ToStdString();
@@ -64,7 +64,7 @@ const T ConfigVar<T>::get(const T& default_val) {
 }
 
 template <typename T>
-void ConfigVar<T>::set(const T& arg) {
+void ConfigVar<T>::Set(const T& arg) {
   std::ostringstream oss;
   oss << arg;
   if (oss.fail()) {
@@ -77,7 +77,7 @@ void ConfigVar<T>::set(const T& arg) {
     wxLogWarning("Error writing buffer to key %s:%s", section.c_str(),
                  key.c_str());
   }
-  ObservedVar::notify();
+  ObservedVar::Notify();
 }
 
 /* Explicitly instantiate the ConfigVar types supported. */

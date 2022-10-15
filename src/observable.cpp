@@ -52,7 +52,7 @@ ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
 
 using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
-void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
+void ObservedVar::Listen(wxEvtHandler* listener, wxEventType ev_type) {
   const auto& listeners = singleton.listeners;
   ev_pair key_pair(listener, ev_type);
   if (wxLog::GetLogLevel() <= wxLOG_Debug) {
@@ -67,7 +67,7 @@ void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
   singleton.listeners.push_back(key_pair);
 }
 
-bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
+bool ObservedVar::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   auto& listeners = singleton.listeners;
 
   ev_pair key_pair(listener, ev_type);
@@ -84,7 +84,7 @@ bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   return true;
 }
 
-const void ObservedVar::notify(std::shared_ptr<const void> ptr,
+const void ObservedVar::Notify(std::shared_ptr<const void> ptr,
                                const std::string& s, int num,
                                void* client_data) {
   auto& listeners = singleton.listeners;
@@ -98,7 +98,7 @@ const void ObservedVar::notify(std::shared_ptr<const void> ptr,
   }
 }
 
-const void ObservedVar::notify() { notify("", 0); }
+const void ObservedVar::Notify() { Notify("", 0); }
 
 using Listener = ObservedVarListener;
 
@@ -112,15 +112,15 @@ void ObservedVarListener::listen() {
   if (key != "") {
     assert(listener);
     ObservedVar var(key);
-    var.listen(listener, ev_type);
+    var.Listen(listener, ev_type);
   }
 }
 
-void ObservedVarListener::unlisten() {
+void ObservedVarListener::Unlisten() {
   if (key != "") {
     assert(listener);
     ObservedVar var(key);
-    var.unlisten(listener, ev_type);
+    var.Unlisten(listener, ev_type);
   }
 }
 

@@ -45,7 +45,7 @@
  *
  *     void some_method() {
  *       ...
- *       change.notify("new value")
+ *       change.Notify("new value")
  *     }
  *
  *  Controller/GUI usage:
@@ -68,27 +68,27 @@
 
 class EventVar : public ObservedVar {
 public:
-  EventVar() : ObservedVar(autokey()) {}
+  EventVar() : ObservedVar(Autokey()) {}
 
   /** Notify all listeners, no data supplied. */
-  const void notify() { ObservedVar::notify("", 0); }
+  const void Notify() { ObservedVar::Notify("", 0); }
 
   /** Notify all listeners about variable change with ClientData. */
-  const void notify(void* data) { ObservedVar::notify("", data); }
+  const void Notify(void* data) { ObservedVar::Notify("", data); }
 
   /** Notify all listeners about variable change with a string. */
-  const void notify(const std::string& s) { ObservedVar::notify(s, 0); }
+  const void Notify(const std::string& s) { ObservedVar::Notify(s, 0); }
 
   /**
    * Notify all listeners about variable change with shared_ptr,
    * a string and an optional number.
    */
-  const void notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
-      ObservedVar::notify(p, s, n, 0);
+  const void Notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
+      ObservedVar::Notify(p, s, n, 0);
   }
 
 private:
-  std::string autokey() {
+  std::string Autokey() {
     static  std::atomic<unsigned long> last_ix(0);
     return std::string("!@%/+") + std::to_string(last_ix++);
   }

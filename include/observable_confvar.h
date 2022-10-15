@@ -40,8 +40,8 @@
  *  Client usage when reading, setting a value and notifying listeners:
  *
  *    ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
- *    bool old_value = expert.get(false);
- *    expert.set(false);
+ *    bool old_value = expert.Get(false);
+ *    expert.Set(false);
  *
  *  Client usage, listening to value changes.
  *
@@ -70,9 +70,9 @@ public:
   ConfigVar(const std::string& section_, const std::string& key_,
             wxConfigBase* cb);
 
-  void set(const T& arg);
+  void Set(const T& arg);
 
-  const T get(const T& default_val);
+  const T Get(const T& default_val);
 
 private:
   ConfigVar();  // not implemented

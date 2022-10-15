@@ -4032,7 +4032,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
   m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                               wxDefaultPosition, wxDefaultSize, 0);
   ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
-  if (expert.get(false)) {
+  if (expert.Get(false)) {
     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                        &CatalogMgrPanel::OnPluginSettingsButton, this);
   } else {

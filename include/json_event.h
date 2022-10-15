@@ -14,7 +14,7 @@ public:
 static JsonEvent& getInstance() { static JsonEvent instance; return instance; }
 
 void notify(const std::string& message, std::shared_ptr<void> msg_root) {
-    event.notify(msg_root, message, 0);
+    event.Notify(msg_root, message, 0);
 }
 
 ObservedVarListener GetListener(wxEvtHandler* handler, wxEventType ev) {

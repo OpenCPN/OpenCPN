@@ -52,10 +52,13 @@ class ObservedVar;
 class ObservedVarListener;
 
 /**
- *  Private helper class. Basically a singleton map of listeners where
- *  singletons are managed by key, one for each key value.
+ *  Private helper class. Basically a singleton map of listener lists
+ *  where lists are managed by key, one for each key value.
  */
 class ListenersByKey {
+friend class ObservedVar;
+friend ListenersByKey& getInstance(const std::string& key);
+
 public:
   ListenersByKey() {}
 
@@ -67,25 +70,25 @@ private:
 
   std::vector<std::pair<wxEvtHandler*, wxEventType>> listeners;
 
-friend class ObservedVar;
-friend ListenersByKey& getInstance(const std::string& key);
 };
 
 
 /**  The observable notify/listen basic nuts and bolts.  */
 class ObservedVar {
+friend class ObservedVarListener;
+
 public:
   ObservedVar(const std::string& _key)
       : key(_key), singleton(ListenersByKey::getInstance(_key)) {}
 
   /** Notify all listeners about variable change. */
-  virtual const void notify();
+  virtual const void Notify();
 
   /**
    * Remove window listening to ev from list of listeners.
    * @return true if such a listener existed, else false.
    */
-  bool unlisten(wxEvtHandler* listener, wxEventType ev);
+  bool Unlisten(wxEvtHandler* listener, wxEventType ev);
 
   /** The key used to create and clone. */
   const std::string key;
@@ -99,21 +102,20 @@ protected:
    * as defined by listen() with optional data available using GetString()
    * and/or GetClientData().
    */
-  const void notify(std::shared_ptr<const void> ptr, const std::string& s,
+  const void Notify(std::shared_ptr<const void> ptr, const std::string& s,
                     int num, void* client_data);
 
-  const void notify(const std::string& s, void* client_data) {
-      notify(nullptr, s, 0, client_data);
+  const void Notify(const std::string& s, void* client_data) {
+      Notify(nullptr, s, 0, client_data);
   }
-  const void notify(std::shared_ptr<const void> p) { notify(p, "", 0, 0); }
+
+  const void Notify(std::shared_ptr<const void> p) { Notify(p, "", 0, 0); }
 
 private:
   /** Set object to send ev_type to listener on variable changes. */
-  void listen(wxEvtHandler* listener, wxEventType ev_type);
+  void Listen(wxEvtHandler* listener, wxEventType ev_type);
 
   ListenersByKey& singleton;
-
-  friend class ObservedVarListener;
 };
 
 
@@ -131,16 +133,16 @@ public:
 
   ObservedVarListener(const ObservedVarListener& other) { copy(other); }
 
-  ~ObservedVarListener() { unlisten(); };
+  ~ObservedVarListener() { Unlisten(); };
 
   void operator=(const ObservedVarListener& other) {
-    unlisten();
+    Unlisten();
     copy(other);
   }
 
 private:
   void listen();
-  void unlisten();
+  void Unlisten();
   void copy(const ObservedVarListener& other);
 
   std::string key;

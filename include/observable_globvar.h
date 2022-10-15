@@ -39,13 +39,13 @@
  *  Client usage, writing a value + notifying listeners:
  *
  *    GlobalVar<wxString> compat_os(&g_compatOS);
- *    compat_os.set("ubuntu-gtk3-x86_64");
+ *    compat_os.Set("ubuntu-gtk3-x86_64");
  *
  *  Client usage, modifying a value + notifying listeners:
  *
  *    GlobalVar<wxString> plugin_array_var(&plugin_array);
  *    plugin_array.Add(new_pic);
- *    plugin_array_var.notify();
+ *    plugin_array_var.Notify();
  *
  *  Client usage, listening to value changes:
  *
@@ -72,12 +72,12 @@ class GlobalVar : public ObservedVar {
 public:
   GlobalVar(T* ptr) : ObservedVar(ptr_key(ptr)), variable(ptr) {}
 
-  void set(const T& arg) {
+  void Set(const T& arg) {
     *variable = arg;
-    ObservedVar::notify();
+    ObservedVar::Notify();
   }
 
-  const T get() { return *variable; }
+  const T Get() { return *variable; }
 
 private:
   GlobalVar();  // not implemented

@@ -197,7 +197,7 @@ public:
       auto n2k_msg =
           std::make_shared<const Nmea2000Msg>(id, payload, shared_navaddr_none);
       ObservableMsg observable("1234");
-      observable.notify(n2k_msg);
+      observable.Notify(n2k_msg);
     }
   };
 

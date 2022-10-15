@@ -241,8 +241,8 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled) {
   if (!load_enabled) UpdateManagedPlugins();
 
   // Some additional actions needed after all plugins are loaded.
-  evt_update_chart_types.notify();
-  evt_plugin_loadall_finalize.notify();
+  evt_update_chart_types.Notify();
+  evt_plugin_loadall_finalize.Notify();
 
   return any_dir_loaded;
 }
@@ -298,7 +298,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   ConfigVar<bool> enabled(path, "bEnabled", pBaseConfig);
 
   // only loading enabled plugins? check that it is enabled
-  if (load_enabled && !enabled.get(true)) {
+  if (load_enabled && !enabled.Get(true)) {
     wxLogMessage("Skipping not enabled candidate.");
     return true;
   }
@@ -326,18 +326,18 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
       pic->m_common_name = pic->m_pplugin->GetCommonName();
       pic->m_plugin_filename = plugin_file;
       pic->m_plugin_modification = plugin_modification;
-      pic->m_bEnabled = enabled.get(false);
+      pic->m_bEnabled = enabled.Get(false);
 
       if (safe_mode::get_mode()) {
         pic->m_bEnabled = false;
-        enabled.set(false);
+        enabled.Set(false);
       }
 #ifndef CLIAPP
       // The CLI has no graphics context, but plugins assumes there is.
       if (pic->m_bEnabled) {
         pic->m_cap_flag = pic->m_pplugin->Init();
         pic->m_bInitState = true;
-        evt_load_plugin.notify(pic);
+        evt_load_plugin.Notify(pic);
       }
 #endif
       wxLog::FlushActive();
@@ -390,7 +390,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
 // Helper function: loads all plugins from a single directory
 bool PluginLoader::LoadPlugInDirectory(const wxString& plugin_dir,
                                        bool load_enabled) {
-  evt_load_directory.notify();
+  evt_load_directory.Notify();
   m_plugin_location = plugin_dir;
 
   wxString msg("PlugInManager searching for PlugIns in location ");
@@ -534,7 +534,7 @@ bool PluginLoader::UpdatePlugIns() {
       pic->m_bInitState = false;
     }
   }
-  evt_update_chart_types.notify();
+  evt_update_chart_types.Notify();
   return bret;
 }
 
@@ -553,7 +553,7 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
     auto pic_copy =
       static_cast<PlugInContainer*>(malloc(sizeof(PlugInContainer)));
     memcpy(pic_copy, pic, sizeof(PlugInContainer));
-    evt_deactivate_plugin.notify(pic_copy);
+    evt_deactivate_plugin.Notify(pic_copy);
   }
   return true;
 }
@@ -780,7 +780,7 @@ void PluginLoader::UpdateManagedPlugins() {
     PlugInContainer* pic = i->second;
     plugin_array.Insert(pic, 0);
   }
-  evt_pluglist_change.notify();
+  evt_pluglist_change.Notify();
 }
 
 bool PluginLoader::UnLoadAllPlugIns() {
@@ -1192,7 +1192,7 @@ bool PluginLoader::CheckBlacklistedPlugin(opencpn_plugin* plugin) {
             PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(),
             major, minor);
       }
-      evt_blacklisted_plugin.notify(msg.ToStdString());
+      evt_blacklisted_plugin.Notify(msg.ToStdString());
       return PluginBlacklist[i].hard;
     }
   }
@@ -1223,7 +1223,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
   if (pic->m_library.IsLoaded()) pic->m_library.Unload();
 
   if (!wxIsReadable(plugin_file)) {
-    evt_unreadable_plugin.notify(plugin_file.ToStdString());
+    evt_unreadable_plugin.Notify(plugin_file.ToStdString());
     return 0;
   }
 
@@ -1259,7 +1259,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
       }
     }
 
-    evt_version_incompatible_plugin.notify(plugin_file.ToStdString());
+    evt_version_incompatible_plugin.Notify(plugin_file.ToStdString());
     wxLogMessage(msg);
     wxLogMessage("Jailing: %s", plugin_file.ToStdString().c_str());
     wxRenameFile(plugin_file, plugin_file + ".jail");
