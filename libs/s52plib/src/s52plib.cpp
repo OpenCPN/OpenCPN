@@ -333,6 +333,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_qualityOfDataOn = false;
 
   m_SoundingsScaleFactor = 1.0;
+  m_SoundingsFontSizeMM = 0;
 
   GenerateStateHash();
 
@@ -3534,25 +3535,43 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
   defaultHeight = 2.2;
 #endif
 
-  // calculate the required point size to give specified height
   int point_size = 6;
-  bool not_done = true;
-  wxScreenDC sdc;
   int charWidth, charHeight, charDescent;
-  while ((point_size < 20) && not_done) {
-    wxFont *tentativeFont = FindOrCreateFont_PlugIn(
-        point_size, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontWeight, false,
-        fontFacename);
-    sdc.GetTextExtent(_T("0"), &charWidth, &charHeight, &charDescent, NULL,
-                      tentativeFont);  // measure the text
-    double font_size_mm = (double)(charHeight - charDescent) / GetPPMM();
 
-    if (font_size_mm >= (defaultHeight * scale_factor)) {
-      not_done = false;
-      break;
+  if (abs(m_SoundingsFontSizeMM - (defaultHeight * scale_factor)) > .5) {
+
+    // Recalculate the required point size to give specified height
+    wxScreenDC sdc;
+
+    double font_size_mm = 0;
+    bool not_done = true;
+    while ((point_size < 20) && not_done) {
+      wxFont *tentativeFont = FindOrCreateFont_PlugIn(
+          point_size, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontWeight, false,
+          fontFacename);
+      sdc.GetTextExtent(_T("0"), &charWidth, &charHeight, &charDescent, NULL,
+                        tentativeFont);  // measure the text
+      double font_size_mm = (double)(charHeight - charDescent) / GetPPMM();
+
+      if (font_size_mm >= (defaultHeight * scale_factor)) {
+        not_done = false;
+        m_SoundingsPointSize = point_size;
+        m_SoundingsFontSizeMM = font_size_mm;
+        m_soundFont = tentativeFont;
+        break;
+      }
+      point_size++;
     }
-    point_size++;
   }
+  else {
+    if (m_pdc) {
+      wxScreenDC sdc;
+      sdc.GetTextExtent(_T("0"), &charWidth, &charHeight, &charDescent, NULL,
+                        m_soundFont);  // measure the text for DC mode
+    }
+    point_size = m_SoundingsPointSize;
+  }
+
 
   double postmult = m_SoundingsScaleFactor;
   if ((postmult <= 2.0) && (postmult >= 0.5)) {
@@ -3567,9 +3586,9 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
         (fabs(m_texSoundings.GetScale() - scale_factor) > 0.1)) {
       m_texSoundings.Delete();
 
-      m_soundFont = FindOrCreateFont_PlugIn(point_size, wxFONTFAMILY_SWISS,
-                                            wxFONTSTYLE_NORMAL, fontWeight,
-                                            false, fontFacename);
+       m_soundFont = FindOrCreateFont_PlugIn(point_size, wxFONTFAMILY_SWISS,
+                                             wxFONTSTYLE_NORMAL, fontWeight,
+                                             false, fontFacename);
       m_texSoundings.Build(m_soundFont,
                            scale_factor);  // texSounding owns the font
     }
@@ -3578,7 +3597,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                                           wxFONTSTYLE_NORMAL, fontWeight, false,
                                           fontFacename);
     m_pdc->SetFont(*m_soundFont);
-    charHeight -= charDescent;
   }
 
   int pivot_x;
@@ -3612,7 +3630,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
 
   } else {
     pivotWidth = charWidth;
-    pivotHeight = charHeight;
+    pivotHeight = charHeight - charDescent;
   }
 
   if (symPivot < 4) {

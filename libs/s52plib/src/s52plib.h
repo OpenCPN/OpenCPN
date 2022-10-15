@@ -360,6 +360,8 @@ public:
   bool m_bShowNationalTexts;
   int m_nSoundingFactor;
   double m_SoundingsScaleFactor;
+  int m_SoundingsPointSize;
+  double m_SoundingsFontSizeMM;
 
   double m_ChartScaleFactorExp;
   int m_chart_zoom_modifier_vector;
