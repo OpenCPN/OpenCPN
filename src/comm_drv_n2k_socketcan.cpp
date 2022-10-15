@@ -218,7 +218,6 @@ private:
   int flags;
   // Socket Timeouts
   struct timeval socketTimeout;
-  fd_set readFD;
 };
 
 class CommDriverN2KSocketCANEvent;
@@ -416,7 +415,6 @@ void CommDriverN2KSocketCANThread::ThreadMessage(const wxString& msg) {
 
 #ifndef __WXMSW__
 void* CommDriverN2KSocketCANThread::Entry() {
-  bool not_done = true;
   bool nl_found = false;
   wxString msg;
 
@@ -455,24 +453,12 @@ void* CommDriverN2KSocketCANThread::Entry() {
     return 0;
   }
 
-  if ((can_request.ifr_flags & IFF_UP)) {
+  if (can_request.ifr_flags & IFF_UP) {
     ThreadMessage(wxString("socketCan interface is UP"));
   } else {
     return 0;
   }
 
-  // Set to non blocking
-  fcntl(can_socket, F_SETFL, O_NONBLOCK);
-
-  // set the timeout values
-  socketTimeout.tv_sec = 0;
-  socketTimeout.tv_usec = 100;
-
-  // set the socket timeout
-  setsockopt(can_socket, SOL_SOCKET, SO_RCVTIMEO, &socketTimeout,
-             sizeof(socketTimeout));
-
-  // and then bind
   int r = bind(can_socket, (struct sockaddr*)&can_address, sizeof(can_address));
   if (r < 0) {
     wxString("SocketCAN socket bind() failed: ");
@@ -483,113 +469,110 @@ void* CommDriverN2KSocketCANThread::Entry() {
   m_pParentDriver->SetSecThreadActive();  // I am alive
 
   // The main loop
-  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    // Read from the socket
+  while (m_pParentDriver->m_Thread_run_flag > 0) {
+    recvbytes = read(can_socket, &canSocketFrame, sizeof(struct can_frame));
+    if (recvbytes == -1) {
+      if (errno == EAGAIN) {
+        wxLogMessage("can socket %s: EAGAIN (retrying)", m_PortName.c_str());
+        sleep(1);
+        continue;
+      } else {
+        wxLogWarning("can socket %s: fatal error %s", m_PortName.c_str(),
+                     strerror(errno));
+        return 0;  // FIXME (leamas)
+      }
+    }
+    if (recvbytes != 16) {
+      wxLogWarning("can socket %s: bad frame size: %d (ignored)", recvbytes);
+      sleep(1);
+      continue;
+    }
+    int position = -1;
+    bool bReady = false;
 
-    // Set the file descriptor
-    FD_ZERO(&readFD);
-    FD_SET(can_socket, &readFD);
+    DecodeCanHeader(canSocketFrame.can_id, &header);
 
-    // Set the timeout
-    socketTimeout.tv_sec = 5;
-    socketTimeout.tv_usec = 0;
+    if (IsFastMessage(header) == TRUE) {
+      position = MapFindMatchingEntry(header, canSocketFrame.data[0]);
+      // No existing fast message
+      if (position == NOT_FOUND) {
+        // Find a free slot
+        position = MapFindFreeEntry();
+        // No free slots, exit
+        if (position == NOT_FOUND) {
+          // FIXME (dave) return;
+        }
+        // Insert the first frame of the fast message
+        else {
+          MapInsertEntry(header, canSocketFrame.data, position, bReady);
+        }
+      }
+      // An existing fast message is present, append the frame
+      else {
+        MapAppendEntry(header, canSocketFrame.data, position, bReady);
+      }
+    }
 
-    if (select((can_socket + 1), &readFD, NULL, NULL, &socketTimeout) != -1) {
-      if (FD_ISSET(can_socket, &readFD)) {
-        recvbytes = read(can_socket, &canSocketFrame, sizeof(struct can_frame));
-        if (recvbytes) {
-          int position = -1;
-          bool bReady = false;
+    // This is a single frame message, parse it
+    else {
+      bReady = true;
+    }
 
-          DecodeCanHeader(canSocketFrame.can_id, &header);
+    if (bReady) {
+      auto buffer = std::make_shared<std::vector<unsigned char>>();
+      std::vector<unsigned char>* vec = buffer.get();
 
-          if (IsFastMessage(header) == TRUE) {
-            position = MapFindMatchingEntry(header, canSocketFrame.data[0]);
-            // No existing fast message
-            if (position == NOT_FOUND) {
-              // Find a free slot
-              position = MapFindFreeEntry();
-              // No free slots, exit
-              if (position == NOT_FOUND) {
-                // FIXME (dave) return;
-              }
-              // Insert the first frame of the fast message
-              else {
-                MapInsertEntry(header, canSocketFrame.data, position, bReady);
-              }
-            }
-            // An existing fast message is present, append the frame
-            else {
-              MapAppendEntry(header, canSocketFrame.data, position, bReady);
-            }
-          }
+      // Populate the vector
 
-          // This is a single frame message, parse it
-          else {
-            bReady = true;
-          }
+      if (position >= 0) {  // re-assembled fast message
+        // printf("PGN:  %d\n", header.pgn);
 
-          if (bReady) {
-            auto buffer = std::make_shared<std::vector<unsigned char>>();
-            std::vector<unsigned char>* vec = buffer.get();
+        vec->push_back(0x93);
+        vec->push_back(fastMessages[position].expectedLength + 11);
+        vec->push_back(header.priority);
+        vec->push_back(header.pgn & 0xFF);
+        vec->push_back((header.pgn >> 8) & 0xFF);
+        vec->push_back((header.pgn >> 16) & 0xFF);
+        vec->push_back(header.destination);
+        vec->push_back(header.source);
+        vec->push_back(0xFF);  // FIXME (dave) Could generate the time fields
+        vec->push_back(0xFF);
+        vec->push_back(0xFF);
+        vec->push_back(0xFF);
+        vec->push_back(fastMessages[position].expectedLength);
+        for (size_t n = 0; n < fastMessages[position].expectedLength; n++)
+          vec->push_back(fastMessages[position].data[n]);
+        vec->push_back(0x55);  // CRC dummy
 
-            // Populate the vector
+        // Clear the message assembly buffer
+        free(fastMessages[position].data);
+        fastMessages[position].isFree = TRUE;
+        fastMessages[position].data = NULL;
+      } else {  // single frame message
+        vec->push_back(0x93);
+        vec->push_back(0x13);
+        vec->push_back(header.priority);
+        vec->push_back(header.pgn & 0xFF);
+        vec->push_back((header.pgn >> 8) & 0xFF);
+        vec->push_back((header.pgn >> 16) & 0xFF);
+        vec->push_back(header.destination);
+        vec->push_back(header.source);
+        vec->push_back(0xFF);  // Fixme (dave) generate the time fields
+        vec->push_back(0xFF);
+        vec->push_back(0xFF);
+        vec->push_back(0xFF);
+        vec->push_back(CAN_MAX_DLEN);  // nominally 8
+        for (size_t n = 0; n < CAN_MAX_DLEN; n++)
+          vec->push_back(canSocketFrame.data[n]);
+        vec->push_back(0x55);  // CRC dummy, not checked
+      }
 
-            if (position >= 0) {  // re-assembled fast message
-              // printf("PGN:  %d\n", header.pgn);
-
-              vec->push_back(0x93);
-              vec->push_back(fastMessages[position].expectedLength + 11);
-              vec->push_back(header.priority);
-              vec->push_back(header.pgn & 0xFF);
-              vec->push_back((header.pgn >> 8) & 0xFF);
-              vec->push_back((header.pgn >> 16) & 0xFF);
-              vec->push_back(header.destination);
-              vec->push_back(header.source);
-              vec->push_back(
-                  0xFF);  // FIXME (dave) Could generate the time fields
-              vec->push_back(0xFF);
-              vec->push_back(0xFF);
-              vec->push_back(0xFF);
-              vec->push_back(fastMessages[position].expectedLength);
-              for (size_t n = 0; n < fastMessages[position].expectedLength; n++)
-                vec->push_back(fastMessages[position].data[n]);
-              vec->push_back(0x55);  // CRC dummy
-
-              // Clear the message assembly buffer
-              free(fastMessages[position].data);
-              fastMessages[position].isFree = TRUE;
-              fastMessages[position].data = NULL;
-            } else {  // single frame message
-              vec->push_back(0x93);
-              vec->push_back(0x13);
-              vec->push_back(header.priority);
-              vec->push_back(header.pgn & 0xFF);
-              vec->push_back((header.pgn >> 8) & 0xFF);
-              vec->push_back((header.pgn >> 16) & 0xFF);
-              vec->push_back(header.destination);
-              vec->push_back(header.source);
-              vec->push_back(0xFF);  // Fixme (dave) generate the time fields
-              vec->push_back(0xFF);
-              vec->push_back(0xFF);
-              vec->push_back(0xFF);
-              vec->push_back(CAN_MAX_DLEN);  // nominally 8
-              for (size_t n = 0; n < CAN_MAX_DLEN; n++)
-                vec->push_back(canSocketFrame.data[n]);
-              vec->push_back(0x55);  // CRC dummy, not checked
-            }
-
-            CommDriverN2KSocketCANEvent frameReceivedEvent(
-                wxEVT_COMMDRIVER_N2K_SOCKETCAN, 0);
-            frameReceivedEvent.SetPayload(buffer);
-            m_pParentDriver->AddPendingEvent(frameReceivedEvent);
-
-          }  // bReady
-
-        }  // recv bytes
-      }    // FDISSET
-    }      // select
-  }        // while
+      auto name = static_cast<uint64_t>(header.pgn);
+      auto src_addr = m_pParentDriver->GetAddress(name);
+      auto msg = std::make_unique<const Nmea2000Msg>(header.pgn, *buffer, src_addr);
+      m_pParentDriver->m_listener.Notify(std::move(msg));
+    }  // bReady
+  } // while
 
   // thread_exit:
   m_pParentDriver->SetSecThreadInActive();  // I am dead

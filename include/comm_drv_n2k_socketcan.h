@@ -71,6 +71,7 @@ class CommDriverN2KSocketCANThread;  // fwd
 class CommDriverN2KSocketCANEvent;
 
 class CommDriverN2KSocketCAN : public CommDriverN2K, public wxEvtHandler {
+friend class CommDriverN2KSocketCANThread;
 public:
   static std::shared_ptr<CommDriverN2KSocketCAN> Create() {
     return std::shared_ptr<CommDriverN2KSocketCAN>(
