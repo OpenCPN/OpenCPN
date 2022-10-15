@@ -23,9 +23,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include <mutex>  // std::mutex
+#include <mutex>
 #include <vector>
 #include <memory>
+#include <condition_variable>
+#include <thread>
 
 #include <wx/event.h>
 #include <wx/log.h>
@@ -34,8 +36,15 @@
 #include <wx/utils.h>
 
 #include "REST_server.h"
-//#include "REST_server_gui.h"
 #include "mongoose.h"
+#include "gui_lib.h"
+#include "REST_server_gui.h"
+
+
+//  Some global variables to handle thread syncronization
+int return_status;
+std::condition_variable return_status_condition;
+std::mutex mx;
 
 
 class RESTServerThread : public wxThread {
@@ -142,9 +151,27 @@ void RESTServer::StopServer() {
   }
 }
 
-void RESTServer::HandleServerMessage(
-    RESTServerEvent& event) {
+void RESTServer::HandleServerMessage(RESTServerEvent& event) {
   auto p = event.GetPayload();
+
+  // GUI dialogs can go here....
+  // Server thread is waiting for (return_status >= 0) on notify_one()
+  AcceptObjectDialog dialog1(NULL, wxID_ANY, _("OpenCPN Server Message"),
+    "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+
+  dialog1.SetMessage("someone has sent you a new route.\nAccept?");
+  dialog1.SetCheck1Message(_("Always accept objects from this source?"));
+
+  if (dialog1.ShowModal() == ID_STG_OK) {
+    return_status = 0;
+  }
+  else{
+    return_status = 1;
+  }
+
+
+  std::lock_guard<std::mutex> lock{mx};
+  return_status_condition.notify_one();
 }
 
 
@@ -189,12 +216,21 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
         std::string xml_content(v.ptr, v.len);
         //printf("%s\n", xml_content.c_str());
 
+        return_status = -1;
+
         if (parent){
           RESTServerEvent Nevent(wxEVT_RESTFUL_SERVER, 0);
           auto buffer = std::make_shared<std::string>(xml_content);
           Nevent.SetPayload(buffer);
           parent->AddPendingEvent(Nevent);
         }
+
+        std::unique_lock<std::mutex> lock{mx};
+        while (return_status < 0) { // !predicate
+          std::this_thread::sleep_for (std::chrono::milliseconds(100));
+          return_status_condition.wait(lock);
+        }
+        lock.unlock();
       }
 
       mg_http_reply(c, 200, "", "{\"result\": \"%.*s\"}\n", (int) hm->uri.len,
