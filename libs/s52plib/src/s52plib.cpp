@@ -9049,6 +9049,11 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
       }
     }
 
+    double ppg_scale_factor = ppg->sfactor;
+    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
+      ppg_scale_factor = 1.0;
+
+
     I[3][0] = -(rzRules->sm_transform_parms->easting_vp_center - x_origin) *
               vp_plib.view_scale_ppm;
     I[3][1] = -(rzRules->sm_transform_parms->northing_vp_center -
@@ -9056,8 +9061,8 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
               -vp_plib.view_scale_ppm;
 
     // Scale
-    I[0][0] *= vp_plib.view_scale_ppm * ppg->sfactor;
-    I[1][1] *= -vp_plib.view_scale_ppm * ppg->sfactor;
+    I[0][0] *= vp_plib.view_scale_ppm * ppg_scale_factor;
+    I[1][1] *= -vp_plib.view_scale_ppm * ppg_scale_factor;
 
     // Rotate
     mat4x4_rotate_Z(Q, I, angle);
@@ -9406,6 +9411,10 @@ int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules) {
 
     PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
+    double ppg_scale_factor = ppg->sfactor;
+    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
+      ppg_scale_factor = 1.0;
+
     TriPrim *p_tp = ppg->tri_prim_head;
     GLintptr vbo_offset = 0;
 
@@ -9477,8 +9486,8 @@ int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules) {
               -vp_plib.view_scale_ppm;
 
     // Scale
-    I[0][0] *= vp_plib.view_scale_ppm * ppg->sfactor;
-    I[1][1] *= -vp_plib.view_scale_ppm * ppg->sfactor;
+    I[0][0] *= vp_plib.view_scale_ppm * ppg_scale_factor;
+    I[1][1] *= -vp_plib.view_scale_ppm * ppg_scale_factor;
 
     // Rotate
     mat4x4_rotate_Z(Q, I, angle);
@@ -10243,6 +10252,9 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
     }
 
     PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+    double ppg_scale_factor = ppg->sfactor;
+    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
+      ppg_scale_factor = 1.0;
 
     TriPrim *p_tp = ppg->tri_prim_head;
     GLintptr vbo_offset = 0;
@@ -10327,8 +10339,8 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
               -vp_plib.view_scale_ppm;
 
     // Scale
-    I[0][0] *= vp_plib.view_scale_ppm * ppg->sfactor;
-    I[1][1] *= -vp_plib.view_scale_ppm * ppg->sfactor;
+    I[0][0] *= vp_plib.view_scale_ppm * ppg_scale_factor;
+    I[1][1] *= -vp_plib.view_scale_ppm * ppg_scale_factor;
 
     // Rotate
     mat4x4_rotate_Z(Q, I, angle);
