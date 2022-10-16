@@ -72,13 +72,6 @@ bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   auto found = std::find(listeners.begin(), listeners.end(), key_pair);
   if (found == listeners.end()) return false;
   listeners.erase(found);
-  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
-    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
-    if (count > 1) {
-      wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
-                   key, ptr_key(listener), ev_type);
-    }
-  }
   return true;
 }
 
