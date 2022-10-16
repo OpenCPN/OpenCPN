@@ -127,15 +127,17 @@ public:
   /** Default constructor, does not listen to anything. */
   ObservedVarListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
 
-  /** Set object to send wxEventType ev to handler on changes in key. */
-  void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
-
-  ObservedVarListener(const ObservedVarListener& other)
+  /** A listener can only be transferred using std::move(). */
+  ObservedVarListener(ObservedVarListener&& other)
       : key(other.key), listener(other.listener), ev_type(other.ev_type) {
+      other.Unlisten();
       Listen();
-      }
+  }
 
-  ~ObservedVarListener() { Unlisten(); };
+  ~ObservedVarListener() { Unlisten(); }
+
+  /** Set object to send wxEventType ev to listener on changes in key. */
+  void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
 
 private:
   void Listen();

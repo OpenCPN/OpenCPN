@@ -59,20 +59,15 @@ using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 void ObservedVar::Listen(wxEvtHandler* listener, wxEventType ev_type) {
   std::lock_guard<std::mutex> lock(m_mutex);
   const auto& listeners = m_list.listeners;
+
   ev_pair key_pair(listener, ev_type);
-  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
-    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
-    if (count > 2) {
-        // There are two occurences when assigning, the source is assumed
-        // to go away and remove one occurence.
-        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
-                     key, ptr_key(listener), ev_type);
-    }
-  }
+  auto found = std::find(listeners.begin(), listeners.end(), key_pair);
+  assert((found == listeners.end()) && "Duplicate listener");
   m_list.listeners.push_back(key_pair);
 }
 
 bool ObservedVar::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
+
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
 
@@ -95,6 +90,7 @@ const void ObservedVar::Notify(std::shared_ptr<const void> ptr,
                                void* client_data) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
+
   for (auto l = listeners.begin(); l != listeners.end(); l++) {
     auto evt = new ObservedEvt(l->second);
     evt->SetSharedPtr(ptr);
@@ -106,8 +102,6 @@ const void ObservedVar::Notify(std::shared_ptr<const void> ptr,
 }
 
 const void ObservedVar::Notify() { Notify("", 0); }
-
-using Listener = ObservedVarListener;
 
 /* ObservedVarListener implementation. */
 
@@ -133,5 +127,6 @@ void ObservedVarListener::Unlisten() {
     assert(listener);
     ObservedVar var(key);
     var.Unlisten(listener, ev_type);
+    key = "";
   }
 }

@@ -301,13 +301,11 @@ public:
   class Sink : public wxEvtHandler {
   public:
     Sink() {
-      if (true) {
-        auto& t = NavMsgBus::GetInstance();
-        ObservedVarListener listener;
-        Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-        listener.Listen(n2k_msg.key(), this, EVT_FOO);
-        listeners.push_back(listener);
-      } 
+      auto& t = NavMsgBus::GetInstance();
+      ObservedVarListener listener;
+      Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
+      listener.Listen(n2k_msg.key(), this, EVT_FOO);
+      listeners.push_back(std::move(listener));
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
