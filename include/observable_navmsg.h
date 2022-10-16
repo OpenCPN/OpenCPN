@@ -23,7 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 #ifndef _OBSERVABLE_MSG_H
 #define _OBSERVABLE_MSG_H
 
@@ -31,7 +30,6 @@
 
 #include <wx/event.h>
 #include "comm_navmsg_bus.h"
-
 
 class ObservableMsg : public Observable {
 public:

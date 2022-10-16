@@ -84,17 +84,16 @@ public:
    * a string and an optional number.
    */
   const void Notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
-      Observable::Notify(p, s, n, 0);
+    Observable::Notify(p, s, n, 0);
   }
 
   const std::string key;
 
 private:
   std::string Autokey() {
-    static  std::atomic<unsigned long> last_ix(0);
+    static std::atomic<unsigned long> last_ix(0);
     return std::string("!@%/+") + std::to_string(last_ix++);
   }
-
 };
 
 #endif  // _OBSERVABLE_EVTVAR_H

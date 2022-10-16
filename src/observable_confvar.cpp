@@ -30,7 +30,6 @@
 
 #include "observable_confvar.h"
 
-
 /**
  * Add >> support for wxString, for some reason missing in wxWidgets 3.0,
  * required by ConfigVar::get()

@@ -39,7 +39,6 @@ std::string ptr_key(const void* ptr) {
 
 /* ListenersByKey implementation. */
 
-
 ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
   static std::unordered_map<std::string, ListenersByKey> instances;
   static std::mutex s_mutex;
@@ -50,7 +49,6 @@ ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
   }
   return instances[key];
 }
-
 
 /* Observable implementation. */
 
@@ -67,7 +65,6 @@ void Observable::Listen(wxEvtHandler* listener, wxEventType ev_type) {
 }
 
 bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
-
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
 
@@ -78,16 +75,16 @@ bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   if (wxLog::GetLogLevel() <= wxLOG_Debug) {
     auto count = std::count(listeners.begin(), listeners.end(), key_pair);
     if (count > 1) {
-        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
-                     key, ptr_key(listener), ev_type);
+      wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
+                   key, ptr_key(listener), ev_type);
     }
   }
   return true;
 }
 
 const void Observable::Notify(std::shared_ptr<const void> ptr,
-                               const std::string& s, int num,
-                               void* client_data) {
+                              const std::string& s, int num,
+                              void* client_data) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
 
@@ -106,7 +103,7 @@ const void Observable::Notify() { Notify("", 0); }
 /* ObservableListener implementation. */
 
 void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
-                                 wxEventType e) {
+                                wxEventType e) {
   if (key != "") Unlisten();
   key = k;
   listener = l;

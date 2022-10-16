@@ -21,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
 
-#ifndef OBSERVABLE_EVT_H      // Guard also used in ocpn_plugin.h
+#ifndef OBSERVABLE_EVT_H  // Guard also used in ocpn_plugin.h
 #define OBSERVABLE_EVT_H
 
 #include <memory>
@@ -37,10 +37,11 @@ wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
 class ObservedEvt : public wxCommandEvent {
 public:
   ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)
-    : wxCommandEvent(commandType, id) {}
+      : wxCommandEvent(commandType, id) {}
 
-  ObservedEvt(const ObservedEvt& event)
-    : wxCommandEvent(event) { this->m_shared_ptr = event.m_shared_ptr; }
+  ObservedEvt(const ObservedEvt& event) : wxCommandEvent(event) {
+    this->m_shared_ptr = event.m_shared_ptr;
+  }
 
   wxEvent* Clone() const { return new ObservedEvt(*this); }
 
@@ -51,6 +52,5 @@ public:
 private:
   std::shared_ptr<const void> m_shared_ptr;
 };
-
 
 #endif  // OBSERVABLE_EVT_H

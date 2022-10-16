@@ -42,12 +42,10 @@
 #else
 #define DECL_EXP
 #endif
-#endif    // DECL_EXP
-
+#endif  // DECL_EXP
 
 /** Return address as printable string. */
 std::string ptr_key(const void* ptr);
-
 
 class Observable;
 class ObservableListener;
@@ -57,8 +55,8 @@ class ObservableListener;
  *  where lists are managed by key, one for each key value.
  */
 class ListenersByKey {
-friend class Observable;
-friend ListenersByKey& getInstance(const std::string& key);
+  friend class Observable;
+  friend ListenersByKey& getInstance(const std::string& key);
 
 public:
   ListenersByKey() {}
@@ -70,13 +68,11 @@ private:
   ListenersByKey& operator=(const ListenersByKey&) = default;
 
   std::vector<std::pair<wxEvtHandler*, wxEventType>> listeners;
-
 };
-
 
 /**  The observable notify/listen basic nuts and bolts.  */
 class Observable {
-friend class ObservableListener;
+  friend class ObservableListener;
 
 public:
   Observable(const std::string& _key)
@@ -104,7 +100,7 @@ protected:
                     int num, void* client_data);
 
   const void Notify(const std::string& s, void* client_data) {
-      Notify(nullptr, s, 0, client_data);
+    Notify(nullptr, s, 0, client_data);
   }
 
   const void Notify(std::shared_ptr<const void> p) { Notify(p, "", 0, 0); }
@@ -118,7 +114,6 @@ private:
   mutable std::mutex m_mutex;
 };
 
-
 /**
  *  Keeps listening over it's lifespan, removes itself on destruction.
  */
@@ -130,8 +125,8 @@ public:
   /** A listener can only be transferred using std::move(). */
   ObservableListener(ObservableListener&& other)
       : key(other.key), listener(other.listener), ev_type(other.ev_type) {
-      other.Unlisten();
-      Listen();
+    other.Unlisten();
+    Listen();
   }
 
   ~ObservableListener() { Unlisten(); }
@@ -153,6 +148,5 @@ template <typename T>
 std::shared_ptr<const T> UnpackEvtPointer(ObservedEvt ev) {
   return std::static_pointer_cast<const T>(ev.GetSharedPtr());
 }
-
 
 #endif  // OBSERVABLE_H
