@@ -320,9 +320,9 @@ typedef struct _chart_context {
   wxArrayPtrVoid *pFloatingATONArray;
   wxArrayPtrVoid *pRigidATONArray;
   s57chart *chart;
-  int chart_type;
   double safety_contour;
   float *vertex_buffer;
+  int chart_type;
 
 } chart_context;
 

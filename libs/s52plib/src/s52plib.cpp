@@ -4722,7 +4722,7 @@ public:
 };
 
 int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   S52color *c;
   int w;
@@ -4732,36 +4732,10 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
   wxColour color(c->R, c->G, c->B);
   w = atoi(str + 5);  // Width
 
-  double scale_factor = vp->ref_scale / vp->chart_scale;
+  double scale_factor = vp_plib.ref_scale / vp_plib.chart_scale;
   double scaled_line_width =
       wxMax((scale_factor), 1);
   bool b_wide_line = false;
-
-  wxPen wide_pen(*wxBLACK_PEN);
-  wxDash dashw[2];
-  dashw[0] = 3;
-  dashw[1] = 1;
-
-  if (b_wide_line) {
-    int w = wxMax(scaled_line_width, 2);  // looks better
-    w = wxMin(w, 50);                     // upper bound
-    wide_pen.SetWidth(w);
-    wide_pen.SetColour(color);
-
-    if (!strncmp(str, "DOTT", 4)) {
-      dashw[0] = 1;
-      wide_pen.SetStyle(wxPENSTYLE_USER_DASH);
-      wide_pen.SetDashes(2, dashw);
-    } else if (!strncmp(str, "DASH", 4)) {
-      wide_pen.SetStyle(wxPENSTYLE_USER_DASH);
-      if (m_pdc) {  // DC mode
-        dashw[0] = 1;
-        dashw[1] = 2;
-      }
-
-      wide_pen.SetDashes(2, dashw);
-    }
-  }
 
   wxPen thispen(color, w, wxPENSTYLE_SOLID);
   wxDash dash1[2];
@@ -4777,17 +4751,12 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
       thispen.SetStyle(wxPENSTYLE_SHORT_DASH);
     }
 
-    if (b_wide_line)
-      m_pdc->SetPen(wide_pen);
-    else
-      m_pdc->SetPen(thispen);
+    m_pdc->SetPen(thispen);
 
   }
 #ifdef ocpnUSE_GL
   else  // OpenGL mode
   {
-    glColor3ub(c->R, c->G, c->B);
-
     //    Set drawing width
     if (w > 1) {
       GLint parms[2];
@@ -4798,26 +4767,15 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
         glLineWidth(wxMax(m_GLMinCartographicLineWidth, w));
     } else
       glLineWidth(wxMax(m_GLMinCartographicLineWidth, 1));
-
-#ifndef ocpnUSE_GLES  // linestipple is emulated poorly
-    if (!strncmp(str, "DASH", 4)) {
-      glLineStipple(1, 0x3F3F);
-      glEnable(GL_LINE_STIPPLE);
-    } else if (!strncmp(str, "DOTT", 4)) {
-      glLineStipple(1, 0x3333);
-      glEnable(GL_LINE_STIPPLE);
-    } else
-      glDisable(GL_LINE_STIPPLE);
-#endif
   }
 #endif
 
   //    Get a true pixel clipping/bounding box from the vp
-  wxPoint pbb = vp->GetPixFromLL(vp->clat, vp->clon);
-  int xmin_ = pbb.x - (vp->rv_rect.width / 2) - (4 * scaled_line_width);
-  int xmax_ = xmin_ + vp->rv_rect.width + (8 * scaled_line_width);
-  int ymin_ = pbb.y - (vp->rv_rect.height / 2) - (4 * scaled_line_width);
-  int ymax_ = ymin_ + vp->rv_rect.height + (8 * scaled_line_width);
+  wxPoint pbb = GetPixFromLL(vp_plib.clat, vp_plib.clon);
+  int xmin_ = pbb.x - (vp_plib.rv_rect.width / 2) - (4 * scaled_line_width);
+  int xmax_ = xmin_ + vp_plib.rv_rect.width + (8 * scaled_line_width);
+  int ymin_ = pbb.y - (vp_plib.rv_rect.height / 2) - (4 * scaled_line_width);
+  int ymax_ = ymin_ + vp_plib.rv_rect.height + (8 * scaled_line_width);
 
   int x0, y0, x1, y1;
 
@@ -4827,19 +4785,35 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
   if (rzRules->obj->m_DPRI >= 0) priority_current = rzRules->obj->m_DPRI;
 
   if (rzRules->obj->m_ls_list_legacy) {
+#ifdef ocpnUSE_GL
+
+    glUseProgram(S52color_tri_shader_program);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    float colorv[4];
+    colorv[0] = color.Red() / float(256);
+    colorv[1] = color.Green() / float(256);
+    colorv[2] = color.Blue() / float(256);
+    colorv[3] = 1.0;  // transparency;
+
+    GLint colloc =
+         glGetUniformLocation(S52color_tri_shader_program, "color");
+    glUniform4fv(colloc, 1, colorv);
+
+    GLint pos =
+        glGetAttribLocation(S52color_tri_shader_program, "position");
+    glEnableVertexAttribArray(pos);
+
+#endif
     float *ppt;
-
     VE_Element *pedge;
-
     PI_connector_segment *pcs;
 
     unsigned char *vbo_point =
         (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer;
     PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
-
-#ifdef ocpnUSE_GL
-    if (!b_wide_line && !m_pdc) glBegin(GL_LINES);
-#endif
 
     while (ls) {
       if (ls->priority == priority_current) {
@@ -4856,12 +4830,12 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
         }
 
         wxPoint l;
-        GetPointPixSingle(rzRules, ppt[1], ppt[0], &l, vp);
+        GetPointPixSingle(rzRules, ppt[1], ppt[0], &l);
         ppt += 2;
 
         for (int ip = 0; ip < nPoints - 1; ip++) {
           wxPoint r;
-          GetPointPixSingle(rzRules, ppt[1], ppt[0], &r, vp);
+          GetPointPixSingle(rzRules, ppt[1], ppt[0], &r);
           //        Draw the edge as point-to-point
           x0 = l.x, y0 = l.y;
           x1 = r.x, y1 = r.y;
@@ -4878,11 +4852,16 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
               // simplified faster test, let opengl do the rest
               if ((x0 > xmin_ || x1 > xmin_) && (x0 < xmax_ || x1 < xmax_) &&
                   (y0 > ymin_ || y1 > ymin_) && (y0 < ymax_ || y1 < ymax_)) {
-                if (!b_wide_line) {
-                  glVertex2i(x0, y0);
-                  glVertex2i(x1, y1);
-                } else
-                  PLIBDrawGLThickLine(x0, y0, x1, y1, wide_pen, true);
+                float pts[4];
+                pts[0] = x0;
+                pts[1] = y0;
+                pts[2] = x1;
+                pts[3] = y1;
+
+                glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+                                      pts);
+
+                glDrawArrays(GL_LINES, 0, 2);
               }
             }
 #endif
@@ -4892,17 +4871,14 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
           ppt += 2;
         }
       }
-
       ls = ls->next;
     }
-#ifdef ocpnUSE_GL
-    if (!b_wide_line && !m_pdc) glEnd();
-#endif
-  }
 
 #ifdef ocpnUSE_GL
-  if (!m_pdc) glDisable(GL_LINE_STIPPLE);
+    glDisableVertexAttribArray(pos);
+    glUseProgram(0);
 #endif
+  }
 
 #endif
   return 1;

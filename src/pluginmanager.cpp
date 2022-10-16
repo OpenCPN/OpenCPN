@@ -7474,6 +7474,8 @@ void CreateCompatibleS57Object(PI_S57Obj *pObj, S57Obj *cobj,
     }
     cobj->m_chart_context->chart =
         0;  // note bene, this is always NULL for a PlugIn chart
+    cobj->m_chart_context->chart_type = S52_CHART_TYPE_PLUGIN;
+
   }
 }
 
