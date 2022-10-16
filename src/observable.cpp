@@ -107,16 +107,14 @@ void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
 void ObservableListener::Listen() {
   if (key != "") {
     assert(listener);
-    Observable var(key);
-    var.Listen(listener, ev_type);
+    Observable(key).Listen(listener, ev_type);
   }
 }
 
 void ObservableListener::Unlisten() {
   if (key != "") {
     assert(listener);
-    Observable var(key);
-    var.Unlisten(listener, ev_type);
+    Observable(key).Unlisten(listener, ev_type);
     key = "";
   }
 }
