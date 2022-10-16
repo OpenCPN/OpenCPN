@@ -646,7 +646,7 @@ private:
   wxScrolledWindow *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
-  ObservedVarListener compat_os_listener;
+  ObservableListener compat_os_listener;
 
   int m_screenConfig;
 

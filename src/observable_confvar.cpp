@@ -47,7 +47,7 @@ std::istream& operator>>(std::istream& input, wxString& ws) {
 template <typename T>
 ConfigVar<T>::ConfigVar(const std::string& section_, const std::string& key_,
                         wxConfigBase* cb)
-    : ObservedVar(section_ + "/" + key_),
+    : Observable(section_ + "/" + key_),
       section(section_),
       key(key_),
       config(cb) {}
@@ -77,7 +77,7 @@ void ConfigVar<T>::Set(const T& arg) {
     wxLogWarning("Error writing buffer to key %s:%s", section.c_str(),
                  key.c_str());
   }
-  ObservedVar::Notify();
+  Observable::Notify();
 }
 
 /* Explicitly instantiate the ConfigVar types supported. */

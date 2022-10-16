@@ -210,15 +210,15 @@ private:
   void HandleN2K_129540(ObservedEvt ev);
   void HandleN2K_130306(ObservedEvt ev);
   void HandleN2K_130310(ObservedEvt ev);
-  std::shared_ptr<ObservedVarListener> listener_127245;
-  std::shared_ptr<ObservedVarListener> listener_127257;
-  std::shared_ptr<ObservedVarListener> listener_128259;
-  std::shared_ptr<ObservedVarListener> listener_128267;
-  std::shared_ptr<ObservedVarListener> listener_128275;
-  std::shared_ptr<ObservedVarListener> listener_129029;
-  std::shared_ptr<ObservedVarListener> listener_129540;
-  std::shared_ptr<ObservedVarListener> listener_130306;
-  std::shared_ptr<ObservedVarListener> listener_130310;
+  std::shared_ptr<ObservableListener> listener_127245;
+  std::shared_ptr<ObservableListener> listener_127257;
+  std::shared_ptr<ObservableListener> listener_128259;
+  std::shared_ptr<ObservableListener> listener_128267;
+  std::shared_ptr<ObservableListener> listener_128275;
+  std::shared_ptr<ObservableListener> listener_129029;
+  std::shared_ptr<ObservableListener> listener_129540;
+  std::shared_ptr<ObservableListener> listener_130306;
+  std::shared_ptr<ObservableListener> listener_130310;
 
   wxString m_self;
 

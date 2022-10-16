@@ -52,11 +52,11 @@ ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
 }
 
 
-/* ObservedVar implementation. */
+/* Observable implementation. */
 
 using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
-void ObservedVar::Listen(wxEvtHandler* listener, wxEventType ev_type) {
+void Observable::Listen(wxEvtHandler* listener, wxEventType ev_type) {
   std::lock_guard<std::mutex> lock(m_mutex);
   const auto& listeners = m_list.listeners;
 
@@ -66,7 +66,7 @@ void ObservedVar::Listen(wxEvtHandler* listener, wxEventType ev_type) {
   m_list.listeners.push_back(key_pair);
 }
 
-bool ObservedVar::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
+bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
 
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
@@ -85,7 +85,7 @@ bool ObservedVar::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   return true;
 }
 
-const void ObservedVar::Notify(std::shared_ptr<const void> ptr,
+const void Observable::Notify(std::shared_ptr<const void> ptr,
                                const std::string& s, int num,
                                void* client_data) {
   std::lock_guard<std::mutex> lock(m_mutex);
@@ -101,11 +101,11 @@ const void ObservedVar::Notify(std::shared_ptr<const void> ptr,
   }
 }
 
-const void ObservedVar::Notify() { Notify("", 0); }
+const void Observable::Notify() { Notify("", 0); }
 
-/* ObservedVarListener implementation. */
+/* ObservableListener implementation. */
 
-void ObservedVarListener::Listen(const std::string& k, wxEvtHandler* l,
+void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
                                  wxEventType e) {
   if (key != "") Unlisten();
   key = k;
@@ -114,18 +114,18 @@ void ObservedVarListener::Listen(const std::string& k, wxEvtHandler* l,
   Listen();
 }
 
-void ObservedVarListener::Listen() {
+void ObservableListener::Listen() {
   if (key != "") {
     assert(listener);
-    ObservedVar var(key);
+    Observable var(key);
     var.Listen(listener, ev_type);
   }
 }
 
-void ObservedVarListener::Unlisten() {
+void ObservableListener::Unlisten() {
   if (key != "") {
     assert(listener);
-    ObservedVar var(key);
+    Observable var(key);
     var.Unlisten(listener, ev_type);
     key = "";
   }

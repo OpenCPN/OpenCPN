@@ -59,13 +59,13 @@
  *        ...
  *      }
  *    private:
- *      ObservedVarListener expert_listener;
+ *      ObservableListener expert_listener;
  *      ...
  *    }
  *
  */
 template <typename T = std::string>
-class ConfigVar : public ObservedVar {
+class ConfigVar : public Observable {
 public:
   ConfigVar(const std::string& section_, const std::string& key_,
             wxConfigBase* cb);

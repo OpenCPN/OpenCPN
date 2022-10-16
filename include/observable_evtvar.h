@@ -62,29 +62,29 @@
  *      }
  *
  *    private:
- *      ObservedVarListener change_listener;
+ *      ObservableListener change_listener;
  *    }
  */
 
-class EventVar : public ObservedVar {
+class EventVar : public Observable {
 public:
-  EventVar() : ObservedVar(Autokey()) {}
+  EventVar() : Observable(Autokey()) {}
 
   /** Notify all listeners, no data supplied. */
-  const void Notify() { ObservedVar::Notify("", 0); }
+  const void Notify() { Observable::Notify("", 0); }
 
   /** Notify all listeners about variable change with ClientData. */
-  const void Notify(void* data) { ObservedVar::Notify("", data); }
+  const void Notify(void* data) { Observable::Notify("", data); }
 
   /** Notify all listeners about variable change with a string. */
-  const void Notify(const std::string& s) { ObservedVar::Notify(s, 0); }
+  const void Notify(const std::string& s) { Observable::Notify(s, 0); }
 
   /**
    * Notify all listeners about variable change with shared_ptr,
    * a string and an optional number.
    */
   const void Notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
-      ObservedVar::Notify(p, s, n, 0);
+      Observable::Notify(p, s, n, 0);
   }
 
   const std::string key;

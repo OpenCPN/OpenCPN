@@ -30,7 +30,7 @@ plugin _ShipDriver_pi.h_ header as an example:
             ~ShipDriver_pi(void);
             ...
         private:
-     ②      std::shared_ptr<ObservedVarListener> listener;
+     ②      std::shared_ptr<ObservableListener> listener;
             ...
 
 Then declare a method which handles the message, something like this:

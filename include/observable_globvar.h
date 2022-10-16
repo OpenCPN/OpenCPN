@@ -63,18 +63,18 @@
  *        ...
  *      }
  *    private:
- *      ObservedVarListener compat_os_listener;
+ *      ObservableListener compat_os_listener;
  *      ...
  *    }
  */
 template <typename T>
-class GlobalVar : public ObservedVar {
+class GlobalVar : public Observable {
 public:
-  GlobalVar(T* ptr) : ObservedVar(ptr_key(ptr)), variable(ptr) {}
+  GlobalVar(T* ptr) : Observable(ptr_key(ptr)), variable(ptr) {}
 
   void Set(const T& arg) {
     *variable = arg;
-    ObservedVar::Notify();
+    Observable::Notify();
   }
 
   const T Get() { return *variable; }

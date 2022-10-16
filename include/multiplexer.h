@@ -59,7 +59,7 @@ public:
                        bool b_filter, bool b_error = false);
 
 private:
-  ObservedVarListener m_listener_N0183_all;
+  ObservableListener m_listener_N0183_all;
 
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
 

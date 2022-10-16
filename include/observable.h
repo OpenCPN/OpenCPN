@@ -49,15 +49,15 @@
 std::string ptr_key(const void* ptr);
 
 
-class ObservedVar;
-class ObservedVarListener;
+class Observable;
+class ObservableListener;
 
 /**
  *  Private helper class. Basically a singleton map of listener lists
  *  where lists are managed by key, one for each key value.
  */
 class ListenersByKey {
-friend class ObservedVar;
+friend class Observable;
 friend ListenersByKey& getInstance(const std::string& key);
 
 public:
@@ -75,11 +75,11 @@ private:
 
 
 /**  The observable notify/listen basic nuts and bolts.  */
-class ObservedVar {
-friend class ObservedVarListener;
+class Observable {
+friend class ObservableListener;
 
 public:
-  ObservedVar(const std::string& _key)
+  Observable(const std::string& _key)
       : key(_key), m_list(ListenersByKey::getInstance(_key)) {}
 
   /** Notify all listeners about variable change. */
@@ -122,19 +122,19 @@ private:
 /**
  *  Keeps listening over it's lifespan, removes itself on destruction.
  */
-class DECL_EXP ObservedVarListener final {
+class DECL_EXP ObservableListener final {
 public:
   /** Default constructor, does not listen to anything. */
-  ObservedVarListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
+  ObservableListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
 
   /** A listener can only be transferred using std::move(). */
-  ObservedVarListener(ObservedVarListener&& other)
+  ObservableListener(ObservableListener&& other)
       : key(other.key), listener(other.listener), ev_type(other.ev_type) {
       other.Unlisten();
       Listen();
   }
 
-  ~ObservedVarListener() { Unlisten(); }
+  ~ObservableListener() { Unlisten(); }
 
   /** Set object to send wxEventType ev to listener on changes in key. */
   void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);

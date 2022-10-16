@@ -33,13 +33,13 @@
 #include "comm_navmsg_bus.h"
 
 
-class ObservableMsg : public ObservedVar {
+class ObservableMsg : public Observable {
 public:
-  ObservableMsg(const std::string key) : ObservedVar(key){};
+  ObservableMsg(const std::string key) : Observable(key){};
 
   /* Send message to all listeners. */
   void Notify(std::shared_ptr<const NavMsg> msg) {
-    ObservedVar::Notify(std::dynamic_pointer_cast<const void>(msg));
+    Observable::Notify(std::dynamic_pointer_cast<const void>(msg));
   }
 };
 

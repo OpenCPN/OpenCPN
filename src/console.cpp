@@ -344,7 +344,7 @@ public:
     wxImage::AddHandler(new wxPNGHandler());
     g_BasePlatform->GetSharedDataDir();   // See #2619
     wxDEFINE_EVENT(EVT_FILE_NOTFOUND, wxCommandEvent);
-    ObservedVarListener file_notfound_listener;
+    ObservableListener file_notfound_listener;
     file_notfound_listener.Listen(loader->evt_unreadable_plugin.key,
                                   this, EVT_FILE_NOTFOUND);
     Bind(EVT_FILE_NOTFOUND, [&](wxCommandEvent ev) {
@@ -352,7 +352,7 @@ public:
     });
 
     wxDEFINE_EVENT(EVT_BAD_VERSION, wxCommandEvent);
-    ObservedVarListener bad_version_listener;
+    ObservableListener bad_version_listener;
     bad_version_listener.Listen(loader->evt_version_incompatible_plugin.key,
                                 this, EVT_BAD_VERSION);
     Bind(EVT_BAD_VERSION, [&](wxCommandEvent ev) {

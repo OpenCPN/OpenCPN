@@ -172,7 +172,7 @@ class MsgCliApp : public wxAppConsole {
 public:
   class Sink : public wxEvtHandler {
   private:
-    ObservedVarListener listener;
+    ObservableListener listener;
 
   public:
     Sink() {
@@ -237,7 +237,7 @@ public:
         s_bus = n2k_msg->bus;
       });
     }
-    ObservedVarListener listener;
+    ObservableListener listener;
   };
 
   TransportCliApp() : wxAppConsole() {
@@ -274,7 +274,7 @@ public:
         s_bus = msg->bus;
       });
     }
-    ObservedVarListener listener;
+    ObservableListener listener;
   };
 
   All0183App() : wxAppConsole() {
@@ -302,7 +302,7 @@ public:
   public:
     Sink() {
       auto& t = NavMsgBus::GetInstance();
-      ObservedVarListener listener;
+      ObservableListener listener;
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
       listener.Listen(n2k_msg.key(), this, EVT_FOO);
       listeners.push_back(std::move(listener));
@@ -314,7 +314,7 @@ public:
         s_bus = n2k_msg->bus;
       });
     }
-    std::vector<ObservedVarListener> listeners;
+    std::vector<ObservableListener> listeners;
   };
 
   ListenerCliApp() : wxAppConsole() {
@@ -354,7 +354,7 @@ public:
       });
     }
 
-    ObservedVarListener listener;
+    ObservableListener listener;
   };
 
   AppmsgCliApp() : wxAppConsole() {
@@ -390,7 +390,7 @@ public:
     ProcessPendingEvents();
   }
 
-  ObservedVarListener listener;
+  ObservableListener listener;
 };
 
 class PriorityApp : public wxAppConsole {

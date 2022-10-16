@@ -36,9 +36,9 @@ public:
   bool m_bAIS_Audio_Alert_On;
   bool m_bAIS_AlertPlaying;
   OcpnSound* m_AIS_Sound;
-  ObservedVarListener ais_info_listener;
-  ObservedVarListener ais_touch_listener;
-  ObservedVarListener ais_wp_listener;
-  ObservedVarListener ais_new_track_listener;
-  ObservedVarListener ais_del_track_listener;
+  ObservableListener ais_info_listener;
+  ObservableListener ais_touch_listener;
+  ObservableListener ais_wp_listener;
+  ObservableListener ais_new_track_listener;
+  ObservableListener ais_del_track_listener;
 };
