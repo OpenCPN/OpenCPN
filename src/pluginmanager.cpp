@@ -31,7 +31,7 @@
 #endif
 
 #include <typeinfo>
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__)
 #include <wordexp.h>
 #endif
 #include <wx/wx.h>
@@ -3999,7 +3999,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
       new wxStaticBoxSizer(itemStaticBoxSizer4Static, wxVERTICAL);
   topSizer->Add(itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2);
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   // First line
   m_catalogText = new wxStaticText(this, wxID_STATIC, _T(""));
   itemStaticBoxSizer4->Add(m_catalogText,
@@ -4052,10 +4052,10 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
   catalog_listener.Listen(catalog.key, this, EVT_CATALOG_CHANGE);
   Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
 
-#else  // Android
+#else  // __ANDROID__
   SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
   ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
-  if (!expert.get(false)) {
+  if (!expert.Get(false)) {
     m_updateButton =
         new wxButton(this, wxID_ANY, _("Update Plugin Catalog: master"),
                      wxDefaultPosition, wxDefaultSize, 0);
