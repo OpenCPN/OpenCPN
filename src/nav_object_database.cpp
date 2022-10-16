@@ -41,7 +41,7 @@ extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
 
-NavObjectCollection1::NavObjectCollection1() 
+NavObjectCollection1::NavObjectCollection1()
     : pugi::xml_document(), m_bSkipChangeSetUpdate(false) {}
 
 NavObjectCollection1::~NavObjectCollection1() {}
@@ -441,7 +441,7 @@ static Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
   return pTentTrack;
 }
 
-static Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
+Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id,
                             bool b_change) {
   wxString RouteName;
@@ -1083,7 +1083,7 @@ static bool GPXCreateRoute(pugi::xml_node node, Route *pRoute) {
   return true;
 }
 
-static bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
+bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   if (!pTentRoute) return false;
 
   bool bAddroute = true;

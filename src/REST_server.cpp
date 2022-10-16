@@ -39,12 +39,24 @@
 #include "mongoose.h"
 #include "gui_lib.h"
 #include "REST_server_gui.h"
+#include "pugixml.hpp"
+#include "route.h"
+#include "routeman.h"
+#include "nav_object_database.h"
 
+Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
+                            bool b_layer, bool b_layerviz, int layer_id,
+                            bool b_change);
+
+bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj);
+
+extern Routeman *g_pRouteMan;
 
 //  Some global variables to handle thread syncronization
 int return_status;
 std::condition_variable return_status_condition;
 std::mutex mx;
+
 
 
 class RESTServerThread : public wxThread {
@@ -153,9 +165,15 @@ void RESTServer::StopServer() {
 
 void RESTServer::HandleServerMessage(RESTServerEvent& event) {
   auto p = event.GetPayload();
+  std::string *payload = p.get();
 
-  // GUI dialogs can go here....
+  //printf("%s\n", payload->c_str());
+
   // Server thread is waiting for (return_status >= 0) on notify_one()
+  int return_stat = RESTServerResult::RESULT_GENERIC_ERROR;      // generic error
+
+#ifndef CLIAPP
+  // GUI dialogs can go here....
   AcceptObjectDialog dialog1(NULL, wxID_ANY, _("OpenCPN Server Message"),
     "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
 
@@ -163,12 +181,65 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
   dialog1.SetCheck1Message(_("Always accept objects from this source?"));
 
   if (dialog1.ShowModal() == ID_STG_OK) {
-    return_status = 0;
+    Route *pRoute = NULL;
+
+      // Load the GPX file
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_buffer(payload->c_str(), payload->size());
+    if (result.status == pugi::status_ok){
+      pugi::xml_node objects = doc.child("gpx");
+      for (pugi::xml_node object = objects.first_child(); object;
+        object = object.next_sibling()) {
+        if (!strcmp(object.name(), "rte")) {
+          pRoute = GPXLoadRoute1(object, true, false, false, 0, true);
+          // Check for duplicate GUID
+          if (g_pRouteMan){
+            bool b_add = true;
+            Route *duplicate = g_pRouteMan->FindRouteByGUID(pRoute->GetGUID());
+            if (duplicate){
+              AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
+                "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+
+              dialog2.SetMessage("The received route route already exists on this system.\nReplace?");
+              dialog2.SetCheck1Message(_("Always replace objects from this source?"));
+
+              if (dialog2.ShowModal() != ID_STG_OK){
+                b_add = false;
+                return_stat = RESTServerResult::RESULT_DUPLICATE_REJECTED;
+              }
+              else{
+                //  Remove the existing duplicate route before adding new route
+                g_pRouteMan->DeleteRoute(duplicate);
+              }
+            }
+
+            if (b_add)  {
+              // And here is the payoff....
+
+              // Add the route to the global list
+              NavObjectCollection1 pSet;
+
+              if (InsertRouteA(pRoute, &pSet))
+                return_stat = RESTServerResult::RESULT_NO_ERROR;
+              else
+                return_stat = RESTServerResult::RESULT_ROUTE_INSERT_ERROR;
+            }
+          }
+        }
+      }
+    }
   }
   else{
-    return_status = 1;
-  }
+    return_stat = RESTServerResult::RESULT_OBJECT_REJECTED;
 
+  }
+#else
+    // FIXME (leamas?)
+    // What should the CLI app do here?
+    return_stat = RESTServerResult::RESULT_GENERIC_ERROR;
+#endif
+
+  return_status = return_stat;
 
   std::lock_guard<std::mutex> lock{mx};
   return_status_condition.notify_one();

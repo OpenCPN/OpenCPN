@@ -30,6 +30,15 @@
 
 #include <wx/event.h>
 
+typedef enum RESTServerResult {
+  RESULT_NO_ERROR = 0,
+  RESULT_GENERIC_ERROR,
+  RESULT_OBJECT_REJECTED,
+  RESULT_DUPLICATE_REJECTED,
+  RESULT_ROUTE_INSERT_ERROR,
+} _RESTServerResult;
+
+
 class RESTServerThread;  // Internal
 
 class RESTServerEvent;  // Internal
