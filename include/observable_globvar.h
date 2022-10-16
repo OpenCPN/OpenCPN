@@ -56,7 +56,7 @@
  *
  *        // compat_os sends a wxCommandEvent type EVT_FOO to this on changes:
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        compat_os_listener = compat_os.GetListener(this, EVT_FOO);)
+ *        compat_os_listener.Listen(compat_os.key, this, EVT_FOO);)
  *
  *        // Handle  EVT_FOO as any event when it arrives, for example:
  *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });

@@ -52,7 +52,7 @@
  *
  *        // expert sends a wxCommandEvent of type EVT_FOO to this on changes:
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        expert_listener = expert.GetListener(this, EVT_FOO);
+ *        expert_listener.Listen(expert.key, this, EVT_FOO);
  *
  *        // Handle  EVT_FOO as any event when it arrives, for example:
  *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });

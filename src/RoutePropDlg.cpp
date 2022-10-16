@@ -602,15 +602,15 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   auto navobj = NavObjectChanges::getInstance();
   wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_TRK, ObservedEvt);
-  navobj_del_track_listener =
-    navobj->evt_delete_track.GetListener(this, EVT_ROUTEMAN_DEL_TRK);
+  navobj_del_track_listener.Listen(navobj->evt_delete_track.key, this, 
+                                   EVT_ROUTEMAN_DEL_TRK);
   Bind(EVT_ROUTEMAN_DEL_TRK, [&](ObservedEvt& ev) {
     auto t = std::const_pointer_cast<Track>(UnpackEvtPointer<Track>(ev));
     RoutemanGui(*g_pRouteMan).DeleteTrack(t.get()); });
 
   wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_ROUTE, ObservedEvt);
-  navobj_del_route_listener =
-    navobj->evt_delete_route.GetListener(this, EVT_ROUTEMAN_DEL_ROUTE);
+  navobj_del_route_listener.Listen(navobj->evt_delete_route.key, this, 
+                                   EVT_ROUTEMAN_DEL_ROUTE);
   Bind(EVT_ROUTEMAN_DEL_ROUTE, [&](ObservedEvt& ev) {
     auto r = std::const_pointer_cast<Route>(UnpackEvtPointer<Route>(ev));
     g_pRouteMan->DeleteRoute(r.get()); });

@@ -54,7 +54,7 @@
  *    public:
  *      Gui:Gui(Model& model) {
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        change_listener = model.change.GetListener(this, EVT_FOO);
+ *        change_listen.Listen(model.change.key, this, EVT_FOO);
  *        Bind(EVT_FOO, [&](wxCommandEvent ev) {
  *          auto s = ev.GetString();    s -> "new value"
  *          ... do something;
@@ -87,11 +87,14 @@ public:
       ObservedVar::Notify(p, s, n, 0);
   }
 
+  const std::string key;
+
 private:
   std::string Autokey() {
     static  std::atomic<unsigned long> last_ix(0);
     return std::string("!@%/+") + std::to_string(last_ix++);
   }
+
 };
 
 #endif  // _OBSERVABLE_EVTVAR_H

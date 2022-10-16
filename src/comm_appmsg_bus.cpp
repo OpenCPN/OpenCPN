@@ -25,18 +25,6 @@
 
 #include "comm_appmsg_bus.h"
 
-ObservedVarListener AppMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
-                                           const AppMsg& msg) {
-  ObservableAppMsg oam(msg.key());
-  return oam.GetListener(eh, et);
-}
-
-ObservedVarListener AppMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
-                                           AppMsg::Type type) {
-  AppMsg msg(type);
-  return GetListener(et, eh, msg);
-}
-
 void AppMsgBus::Notify(std::shared_ptr<const AppMsg> msg) {
   ObservableAppMsg om(msg->key());
   om.Notify(msg);

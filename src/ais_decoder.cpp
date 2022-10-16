@@ -273,8 +273,7 @@ void AisDecoder::InitCommListeners(void) {
   //NMEA0183
   //VDM
   Nmea0183Msg n0183_msg_VDM("VDM");
-  listener_N0183_VDM = msgbus.GetListener(EVT_N0183_VDM, this, n0183_msg_VDM);
-
+  listener_N0183_VDM.Listen(n0183_msg_VDM.key(), this, EVT_N0183_VDM);
   Bind(EVT_N0183_VDM, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -283,7 +282,7 @@ void AisDecoder::InitCommListeners(void) {
 
   //FRPOS
   Nmea0183Msg n0183_msg_FRPOS("FRPOS");
-  listener_N0183_FRPOS = msgbus.GetListener(EVT_N0183_FRPOS, this, n0183_msg_FRPOS);
+  listener_N0183_FRPOS.Listen(n0183_msg_FRPOS.key(), this, EVT_N0183_FRPOS);
 
   Bind(EVT_N0183_FRPOS, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
@@ -293,8 +292,7 @@ void AisDecoder::InitCommListeners(void) {
 
   //CD
   Nmea0183Msg n0183_msg_CD("CD ");
-  listener_N0183_CD = msgbus.GetListener(EVT_N0183_CD, this, n0183_msg_CD);
-
+  listener_N0183_CD.Listen(n0183_msg_CD.key(), this, EVT_N0183_CD);
   Bind(EVT_N0183_CD, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -303,7 +301,7 @@ void AisDecoder::InitCommListeners(void) {
 
   //TLL
   Nmea0183Msg n0183_msg_TLL("TLL");
-  listener_N0183_TLL = msgbus.GetListener(EVT_N0183_TLL, this, n0183_msg_TLL);
+  listener_N0183_TLL.Listen(n0183_msg_TLL.key(), this, EVT_N0183_TLL);
 
   Bind(EVT_N0183_TLL, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
@@ -312,19 +310,17 @@ void AisDecoder::InitCommListeners(void) {
       });
 
   //TTM
-  Nmea0183Msg n0183_msg_TTM("TTM");
-  listener_N0183_TTM = msgbus.GetListener(EVT_N0183_TTM, this, n0183_msg_TTM);
-
+  Nmea0183Msg n0183_msg_ttm("TTM");
+  listener_N0183_TTM.Listen(n0183_msg_ttm.key(), this, EVT_N0183_TTM);
   Bind(EVT_N0183_TTM, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-        HandleN0183_AIS( n0183_msg );
+        HandleN0183_AIS(n0183_msg);
       });
 
   //OSD
   Nmea0183Msg n0183_msg_OSD("OSD");
-  listener_N0183_OSD = msgbus.GetListener(EVT_N0183_OSD, this, n0183_msg_OSD);
-
+  listener_N0183_OSD.Listen(n0183_msg_OSD.key(), this, EVT_N0183_OSD);
   Bind(EVT_N0183_OSD, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -333,83 +329,65 @@ void AisDecoder::InitCommListeners(void) {
 
   //SignalK
   SignalkMsg sk_msg;
-  listener_SignalK =
-      msgbus.GetListener(EVT_SIGNALK, this, sk_msg);
-
-  //FIXME (dave) Use UnpackEvtPointer(), whenever it lands
+  listener_SignalK.Listen(sk_msg.key(), this, EVT_SIGNALK);
   Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
-    //HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
-    HandleSignalK(std::static_pointer_cast<const SignalkMsg>(ev.GetSharedPtr()));
+    HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
   });
 
     // AIS Class A   PGN 129038
   //-----------------------------
   Nmea2000Msg n2k_msg_129038(static_cast<uint64_t>(129038));
-  listener_N2K_129038 =
-      msgbus.GetListener(EVT_N2K_129038, this, n2k_msg_129038);
+  listener_N2K_129038.Listen(n2k_msg_129038.key(), this, EVT_N2K_129038);
   Bind(EVT_N2K_129038, [&](ObservedEvt ev) {
-    //HandleN2K_129038(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129038(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129038(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
     // AIS Class B   PGN 129039
   //-----------------------------
   Nmea2000Msg n2k_msg_129039(static_cast<uint64_t>(129039));
-  listener_N2K_129039 =
-      msgbus.GetListener(EVT_N2K_129039, this, n2k_msg_129039);
+  listener_N2K_129039.Listen(n2k_msg_129039.key(), this, EVT_N2K_129039);
   Bind(EVT_N2K_129039, [&](ObservedEvt ev) {
-    //HandleN2K_129039(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129039(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129039(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
     // AIS ATON   PGN 129041
   //-----------------------------
   Nmea2000Msg n2k_msg_129041(static_cast<uint64_t>(129041));
-  listener_N2K_129041 =
-      msgbus.GetListener(EVT_N2K_129041, this, n2k_msg_129041);
+  listener_N2K_129041.Listen(n2k_msg_129041.key(), this, EVT_N2K_129041);
   Bind(EVT_N2K_129041, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129041(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
       // AIS static data class A PGN 129794
   //-----------------------------
   Nmea2000Msg n2k_msg_129794(static_cast<uint64_t>(129794));
-  listener_N2K_129794 =
-      msgbus.GetListener(EVT_N2K_129794, this, n2k_msg_129794);
+  listener_N2K_129794.Listen(n2k_msg_129794.key(), this, EVT_N2K_129794);
   Bind(EVT_N2K_129794, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129794(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
       // AIS static data class B part A PGN 129809
   //-----------------------------
   Nmea2000Msg n2k_msg_129809(static_cast<uint64_t>(129809));
-  listener_N2K_129809 =
-      msgbus.GetListener(EVT_N2K_129809, this, n2k_msg_129809);
+  listener_N2K_129809.Listen(n2k_msg_129809.key(), this, EVT_N2K_129809);
   Bind(EVT_N2K_129809, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129809(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
-      // AIS static data class B part B PGN 129810
+  // AIS static data class B part B PGN 129810
   //-----------------------------
   Nmea2000Msg n2k_msg_129810(static_cast<uint64_t>(129810));
-  listener_N2K_129810 =
-      msgbus.GetListener(EVT_N2K_129810, this, n2k_msg_129810);
+  listener_N2K_129810.Listen(n2k_msg_129810.key(), this, EVT_N2K_129810);
   Bind(EVT_N2K_129810, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129810(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // AIS Base Station report PGN 129793
   //-----------------------------
   Nmea2000Msg n2k_msg_129793(static_cast<uint64_t>(129793));
-  listener_N2K_129793 =
-      msgbus.GetListener(EVT_N2K_129793, this, n2k_msg_129793);
+  listener_N2K_129793.Listen(n2k_msg_129793.key(), this, EVT_N2K_129793);
   Bind(EVT_N2K_129793, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129793(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
 }

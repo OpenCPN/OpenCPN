@@ -109,13 +109,18 @@ const void ObservedVar::Notify() { Notify("", 0); }
 
 using Listener = ObservedVarListener;
 
-Listener ObservedVar::GetListener(wxEvtHandler* eh, wxEventType ev) {
-  return Listener(this, eh, ev);
-}
-
 /* ObservedVarListener implementation. */
 
-void ObservedVarListener::listen() {
+void ObservedVarListener::Listen(const std::string& k, wxEvtHandler* l,
+                                 wxEventType e) {
+  if (key != "") Unlisten();
+  key = k;
+  listener = l;
+  ev_type = e;
+  Listen();
+}
+
+void ObservedVarListener::Listen() {
   if (key != "") {
     assert(listener);
     ObservedVar var(key);
@@ -129,11 +134,4 @@ void ObservedVarListener::Unlisten() {
     ObservedVar var(key);
     var.Unlisten(listener, ev_type);
   }
-}
-
-void ObservedVarListener::copy(const ObservedVarListener& other) {
-  listener = other.listener;
-  key = other.key;
-  ev_type = other.ev_type;
-  listen();
 }

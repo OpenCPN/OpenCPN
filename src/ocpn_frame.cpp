@@ -5395,8 +5395,7 @@ void MyFrame::InitAppMsgBusListener() {
 
   //  BasicNavData
   AppMsg msg_basic(AppMsg::Type::BasicNavData);
-  listener_basic_navdata = msgbus.GetListener(EVT_BASIC_NAV_DATA, this,
-                                              msg_basic);
+  listener_basic_navdata.Listen(msg_basic.name, this, EVT_BASIC_NAV_DATA);
 
   Bind(EVT_BASIC_NAV_DATA, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();
@@ -5406,8 +5405,7 @@ void MyFrame::InitAppMsgBusListener() {
 
   //  GPS Watchdog expiry status
   AppMsg msg_watchdog(AppMsg::Type::GPSWatchdog);
-  listener_gps_watchdog = msgbus.GetListener(EVT_GPS_WATCHDOG, this,
-                                             msg_watchdog);
+  listener_gps_watchdog.Listen(msg_watchdog.name, this, EVT_GPS_WATCHDOG);
 
   Bind(EVT_GPS_WATCHDOG, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();

@@ -177,7 +177,7 @@ public:
   public:
     Sink() {
       ObservableMsg observable("1234");
-      listener = observable.GetListener(this, EVT_BAR);
+      listener.Listen(observable.key, this, EVT_BAR);
       Bind(EVT_BAR, [&](ObservedEvt ev) {
         auto msg = ev.GetSharedPtr();
         auto n2000_msg = std::static_pointer_cast<const Nmea2000Msg>(msg);
@@ -227,7 +227,7 @@ public:
     Sink() {
       auto& t = NavMsgBus::GetInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listener = t.GetListener(EVT_FOO, this, n2k_msg);
+      listener.Listen(n2k_msg.key(), this, EVT_FOO);
 
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
@@ -265,7 +265,7 @@ public:
   public:
     Sink() {
       auto& t = NavMsgBus::GetInstance();
-      listener = t.GetListener(EVT_FOO, this, Nmea0183Msg::MessageKey("ALL"));
+      listener.Listen(Nmea0183Msg::MessageKey("ALL"), this, EVT_FOO);
 
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
@@ -301,9 +301,13 @@ public:
   class Sink : public wxEvtHandler {
   public:
     Sink() {
-      auto& t = NavMsgBus::GetInstance();
-      Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listeners.push_back(t.GetListener(EVT_FOO, this, n2k_msg));
+      if (true) {
+        auto& t = NavMsgBus::GetInstance();
+        ObservedVarListener listener;
+        Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
+        listener.Listen(n2k_msg.key(), this, EVT_FOO);
+        listeners.push_back(listener);
+      } 
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
@@ -320,6 +324,7 @@ public:
     Source source;
     ProcessPendingEvents();
   }
+
 };
 
 class AppmsgCliApp : public wxAppConsole {
@@ -336,9 +341,7 @@ public:
   class Sink : public wxEvtHandler {
   public:
     Sink() {
-      auto& a = AppMsgBus::GetInstance();
-      listener = a.GetListener(EVT_FOO, this, AppMsg::Type::GnssFix);
-
+      listener.Listen(AppMsg(AppMsg::Type::GnssFix).key(), this, EVT_FOO);
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto msg = std::static_pointer_cast<const AppMsg>(ptr);
@@ -352,6 +355,7 @@ public:
         }
       });
     }
+
     ObservedVarListener listener;
   };
 
@@ -378,7 +382,7 @@ public:
     path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP +
             "Guernesey-1659560590623.input.txt";
     auto driver = make_shared<FileCommDriver>("test-output.txt", path, msgbus);
-    auto listener = msgbus.GetListener(EVT_FOO, this, Nmea0183Msg("GPGLL"));
+    listener.Listen(Nmea0183Msg("GPGLL").key(), this, EVT_FOO);
     Bind(EVT_FOO, [&log](ObservedEvt ev) {
       auto ptr = ev.GetSharedPtr();
       auto n0183_msg = static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -387,6 +391,8 @@ public:
     driver->Activate();
     ProcessPendingEvents();
   }
+
+  ObservedVarListener listener;
 };
 
 class PriorityApp : public wxAppConsole {

@@ -96,8 +96,8 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 Multiplexer::Multiplexer(MuxLogCallbacks cb) : m_log_callbacks(cb) {
   auto &msgbus = NavMsgBus::GetInstance();
 
-  m_listener_N0183_all =
-      msgbus.GetListener(EVT_N0183_MUX, this, Nmea0183Msg::MessageKey("ALL"));
+  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
+                              EVT_N0183_MUX);
   Bind(EVT_N0183_MUX, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);

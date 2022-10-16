@@ -709,7 +709,7 @@ TrackPoint *Track::AddNewPoint(vector2D point, wxDateTime time) {
   v["lon"] = tPoint->m_lon;
   v["Track_ID"] = m_GUID;
   std::string msg_id("OCPN_TRK_POINT_ADDED");
-  JsonEvent::getInstance().notify(msg_id, std::make_shared<wxJSONValue>(v));
+  JsonEvent::getInstance().Notify(msg_id, std::make_shared<wxJSONValue>(v));
 
   return tPoint;
 }

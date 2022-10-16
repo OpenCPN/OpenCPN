@@ -30,24 +30,6 @@
 #include "ocpn_plugin.h"
 #include "comm_navmsg_bus.h"
 
-std::shared_ptr<ObservedVarListener> GetListener(NMEA2000Id id, wxEventType ev,
-                                                 wxEvtHandler* handler) {
-  return std::make_shared<ObservedVarListener>(
-      NavMsgBus::GetInstance().GetListener(ev, handler, Nmea2000Msg(id.id)));
-}
-
-std::shared_ptr<ObservedVarListener> GetListener(NMEA0183Id id, wxEventType ev,
-                                                 wxEvtHandler* handler) {
-  return std::make_shared<ObservedVarListener>(
-      NavMsgBus::GetInstance().GetListener(ev, handler, Nmea0183Msg(id.id)));
-}
-
-std::shared_ptr<ObservedVarListener> GetListener(SignalkId id, wxEventType ev,
-                                                 wxEvtHandler* handler) {
-  return std::make_shared<ObservedVarListener>(
-      NavMsgBus::GetInstance().GetListener(ev, handler, SignalkMsg()));
-}
-
 std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
   auto msg = UnpackEvtPointer<Nmea2000Msg>(ev);
   return msg->payload;

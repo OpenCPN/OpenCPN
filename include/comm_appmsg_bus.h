@@ -46,18 +46,6 @@ public:
   void Notify(std::shared_ptr<const AppMsg> msg);
 
   /**
-   * Return a listening object which generates wxEventType events sent to
-   * wxEvtHandler when a message of given type is received. The events
-   * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
-   */
-  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
-                                  const AppMsg& msg);
-
-  /** Convenience overload. */
-  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
-                                  AppMsg::Type type);
-
-  /**
    * Set the priority for a given data source providing data.
    * Higher priorities are preferred.
    */

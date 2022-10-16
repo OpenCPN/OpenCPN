@@ -94,9 +94,6 @@ public:
   /** The key used to create and clone. */
   const std::string key;
 
-  /** Shorthand for ObservedVarListener(this, handler, event_type) CTOR: */
-  ObservedVarListener GetListener(wxEvtHandler* handler, wxEventType ev);
-
 protected:
   /**
    * Notify all listeners: send them a 'type' ObservedEvt message
@@ -130,23 +127,19 @@ public:
   /** Default constructor, does not listen to anything. */
   ObservedVarListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
 
-  /** Set object to send wxEventType ev to handler on variable changes. */
-  ObservedVarListener(ObservedVar* v, wxEvtHandler* w, wxEventType ev)
-    : key(v->key), listener(w), ev_type(ev) { listen(); }
+  /** Set object to send wxEventType ev to handler on changes in key. */
+  void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
 
-  ObservedVarListener(const ObservedVarListener& other) { copy(other); }
+  ObservedVarListener(const ObservedVarListener& other)
+      : key(other.key), listener(other.listener), ev_type(other.ev_type) {
+      Listen();
+      }
 
   ~ObservedVarListener() { Unlisten(); };
 
-  void operator=(const ObservedVarListener& other) {
-    Unlisten();
-    copy(other);
-  }
-
 private:
-  void listen();
+  void Listen();
   void Unlisten();
-  void copy(const ObservedVarListener& other);
 
   std::string key;
   wxEvtHandler* listener;
