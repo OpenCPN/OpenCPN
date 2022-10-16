@@ -301,14 +301,12 @@ public:
   class Sink : public wxEvtHandler {
   public:
     Sink() {
-      auto& t = NavMsgBus::GetInstance();
       ObservableListener listener;
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
       listener.Listen(n2k_msg.key(), this, EVT_FOO);
       listeners.push_back(std::move(listener));
       Bind(EVT_FOO, [&](ObservedEvt ev) {
-        auto ptr = ev.GetSharedPtr();
-        auto n2k_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
+        auto n2k_msg = UnpackEvtPointer<Nmea2000Msg>(ev);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
         s_bus = n2k_msg->bus;
@@ -341,9 +339,7 @@ public:
     Sink() {
       listener.Listen(AppMsg(AppMsg::Type::GnssFix).key(), this, EVT_FOO);
       Bind(EVT_FOO, [&](ObservedEvt ev) {
-        auto ptr = ev.GetSharedPtr();
-        auto msg = std::static_pointer_cast<const AppMsg>(ptr);
-        std::cout << msg->TypeToString(msg->type) << "\n";
+        auto msg = UnpackEvtPointer<const AppMsg>(ev);
         auto fix = std::static_pointer_cast<const GnssFix>(msg);
         if (fix == 0) {
           std::cerr << "Cannot cast pointer\n" << std::flush;
