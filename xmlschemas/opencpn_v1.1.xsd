@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<xs:schema targetNamespace="http://github.com/Rasbats/OpenCPN/blob/master/xmlschemas/opencpn_v1.1.xsd" elementFormDefault="qualified">
+<xs:schema xmlns"http://www.w3.org/2001/XMLSchema" targetNamespace="http://github.com/Rasbats/OpenCPN/blob/master/xmlschemas/opencpn_v1.1.xsd" elementFormDefault="qualified">
     <xs:element name="guid" type="xs:string" />
     <xs:element name="viz" type="xs:boolean" />
     <xs:element name="planned_speed" type="xs:double" />
