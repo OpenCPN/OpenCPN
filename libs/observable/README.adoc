@@ -1,0 +1,44 @@
+# observable README
+
+This is a basic notify-listen framework on top of wxWidgets (wxW).
+
+There are three out of the box use cases:
+
+1:: The event variable depends on a variable which is visible on both
+    the listener and notifying side. It is described in the
+    *observable_evtvar.h* header.
+
+2:: The config variable mechanism allows for listening to configuraion
+    variable changes, and to notify about such changes. It is described
+    in the *observable_confvar.h* header
+
+3:: The global variable mechanism (sic!) allows for listening to global
+    variable changes and to notify about such changes. It is described in 
+    the *observable_globvar.h* header.
+
+The framework is developed in the opencpn project [1]. 
+
+## Extending
+
+It is easy to extend the framework to handle other types. The basic condition
+is that anything which should be handled by `Listen()` and `Notify()` must 
+be able to produce a key. The key is an unique string which is used to 
+synchronize the notify and listen side; the key used when listening must be 
+the same as used when notifying.
+
+The event variable described above uses an auto generated random key, this
+works since both sides knows about the same event variable.
+
+The config variable uses a key derived from the configuration value name.
+This works since both sides knows the name (path) to the configuration
+variable.
+
+In the OpenCPN project the framework is extended to handle messages. Each
+message is capable of generating a key based on it's type. This makes is
+possible to listen for specific message types as well as notifying when
+such a message is received.
+
+## Copyright and License
+
+This work is copyright (c) Alec Leamas 2021-2022. It is distributed under
+the GPL licence, version 2 or later. See the source files for details.
