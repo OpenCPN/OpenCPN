@@ -1063,6 +1063,7 @@ set(
   src/LLRegion.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
+  src/mDNS_query.c
   src/MUIBar.cpp
   src/multiplexer.cpp
   src/navutil.cpp
@@ -1820,7 +1821,7 @@ endif ()
 
 if (CMAKE_HOST_WIN32)
   target_link_libraries(
-    ${PACKAGE_NAME} PRIVATE setupapi.lib "GLU_static" psapi.lib # glu32.lib
+    ${PACKAGE_NAME} PRIVATE setupapi.lib "GLU_static" psapi.lib iphlpapi.lib # glu32.lib
   )
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)

@@ -75,6 +75,7 @@
 #include "track_gui.h"
 #include "undo.h"
 #include "peer_client.h"
+#include "mDNS_query.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1647,7 +1648,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
      case ID_RT_MENU_SENDTOPEER:
       if (m_pSelectedRoute) {
-        SendRoute("http://192.168.37.98:8000", m_pSelectedRoute);
+        send_dns_sd();
+        //SendRoute("http://192.168.37.98:8000", m_pSelectedRoute);
 //         SendToGpsDlg dlg;
 //         dlg.SetRoute(m_pSelectedRoute);
 //
