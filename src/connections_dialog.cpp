@@ -1568,11 +1568,7 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
     if ((index >= 0) && (cp)) {
       delete g_pConnectionParams->Item(index)->m_optionsPanel;
       g_pConnectionParams->RemoveAt(index);
-
-      //FIXME (dave)
-      //DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
-      //if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-      // delete mSelectedConnection->m_optionsPanel;
+      StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
       mSelectedConnection = NULL;
     }
   }
