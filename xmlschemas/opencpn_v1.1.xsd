@@ -1,47 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://github.com/Rasbats/OpenCPN/blob/master/xmlschemas" elementFormDefault="qualified">
-    <xs:element name="guid" type="xs:string" />
-    <xs:element name="viz" type="xs:boolean" />
-    <xs:element name="planned_speed" type="xs:double" />
-    <xs:element name="planned_departure" type="xs:string" />
-    <xs:element name="time_display" type="xs:string" />
-    <xs:element name="auto_name" type="xs:boolean" />
-    <xs:element name="shared" type="xs:boolean" />
-    <xs:element name="arrival_radius" type="xs:double" />
-    <xs:element name="waypoint_range_rings">
-        <xs:complexType>
-            <xs:attribute name="number" type="xs:integer" />
-            <xs:attribute name="step" type="xs:integer" />
-            <xs:attribute name="units" type="xs:integer" />
-            <xs:attribute name="visible" type="xs:boolean" />
-            <xs:attribute name="colour" type="xs:string" />
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="scale_min_max">
-        <xs:complexType>
-            <xs:attribute name="UseScale" type="xs:boolean" />
-            <xs:attribute name="ScaleMin" type="xs:integer" />
-            <xs:attribute name="ScaleMax" type="xs:integer" />
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="start" type="xs:string" />
-    <xs:element name="end" type="xs:string" />
-    <xs:element name="style">
-        <xs:complexType>
-            <xs:simpleContent>
-                <xs:extension base="xs:string">
-                    <xs:attribute name="width" type="xs:integer" />
-                </xs:extension>
-            </xs:simpleContent>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="viz_name" type="xs:boolean" />
-    <xs:element name="tidestation" type="xs:string" />
-    <xs:element name="rte_properties">
-        <xs:complexType>
-            <xs:attribute name="planned_speed" type="xs:string" />
-            <xs:attribute name="etd" type="xs:string" />
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="action" type="xs:boolean" />
-</xs:schema>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://github.com/Rasbats/OpenCPN/blob/master/xmlschemas" elementFormDefault="qualified">
+    <xsd:element name="guid" type="xsd:string" />
+    <xsd:element name="viz" type="xsd:boolean" />
+    <xsd:element name="planned_speed" type="xsd:double" />
+    <xsd:element name="planned_departure" type="xsd:string" />
+    <xsd:element name="time_display" type="xsd:string" />
+    <xsd:element name="auto_name" type="xsd:boolean" />
+    <xsd:element name="shared" type="xsd:boolean" />
+    <xsd:element name="arrival_radius" type="xsd:double" />
+    <xsd:element name="waypoint_range_rings">
+        <xsd:complexType>
+            <xsd:attribute name="number" type="xsd:integer" />
+            <xsd:attribute name="step" type="xsd:integer" />
+            <xsd:attribute name="units" type="xsd:integer" />
+            <xsd:attribute name="visible" type="xsd:boolean" />
+            <xsd:attribute name="colour" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="scale_min_max">
+        <xsd:complexType>
+            <xsd:attribute name="UseScale" type="xsd:boolean" />
+            <xsd:attribute name="ScaleMin" type="xsd:integer" />
+            <xsd:attribute name="ScaleMax" type="xsd:integer" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="start" type="xsd:string" />
+    <xsd:element name="end" type="xsd:string" />
+    <xsd:element name="style">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="xsd:string">
+                    <xsd:attribute name="width" type="xsd:integer" />
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="viz_name" type="xsd:boolean" />
+    <xsd:element name="tidestation" type="xsd:string" />
+    <xsd:element name="rte_properties">
+        <xsd:complexType>
+            <xsd:attribute name="planned_speed" type="xsd:string" />
+            <xsd:attribute name="etd" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="action" type="xsd:boolean" />
+</xsd:schema>
