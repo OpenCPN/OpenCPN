@@ -1,20 +1,27 @@
 # observable README
 
 This is a basic notify-listen framework on top of wxWidgets (wxW).
+It requires C++11.
 
 There are three out of the box use cases:
 
-1:: The event variable depends on a variable which is visible on both
-    the listener and notifying side. It is described in the
-    *observable_evtvar.h* header.
+* The event variable depends on a variable which is visible on both
+  the listener and notifying side. It is described in the
+  _observable_evtvar.h_ header.
 
-2:: The config variable mechanism allows for listening to configuraion
-    variable changes, and to notify about such changes. It is described
-    in the *observable_confvar.h* header
+* The config variable mechanism allows for listening to configuraion
+  variable changes, and to notify about such changes. It is described
+  in the _observable_confvar.h_ header
 
-3:: The global variable mechanism (sic!) allows for listening to global
-    variable changes and to notify about such changes. It is described in 
-    the *observable_globvar.h* header.
+* The global variable mechanism (sic!) allows for listening to global
+  variable changes and to notify about such changes. It is described in 
+  the _observable_globvar.h_ header.
+
+The notify event is based on wxCommandEvent and can thus optionally carry
+a string, a number and/or a pointer to the listening side. It has been 
+extended to also be able to carry a `shared_ptr<void>` which basically
+makes it possible to transfer any shared_ptr from the notifying side to
+the listeners.
 
 The framework is developed in the opencpn project [1]. 
 
@@ -42,3 +49,6 @@ such a message is received.
 
 This work is copyright (c) Alec Leamas 2021-2022. It is distributed under
 the GPL licence, version 2 or later. See the source files for details.
+
+
+[1] https://github.com/opencpn/OpenCPN
