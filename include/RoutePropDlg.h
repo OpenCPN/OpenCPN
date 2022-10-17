@@ -52,8 +52,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 class RoutePropDlg : public wxFrame {
 private:
-  ObservedVarListener navobj_del_track_listener;
-  ObservedVarListener navobj_del_route_listener;
+  ObservableListener navobj_del_track_listener;
+  ObservableListener navobj_del_route_listener;
 
 
 protected:

@@ -1607,7 +1607,7 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
 
   wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
   GlobalVar<wxString> compat_os(&g_compatOS);
-  compat_os_listener = compat_os.GetListener(this, EVT_COMPAT_OS_CHANGE);
+  compat_os_listener.Listen(compat_os.key, this, EVT_COMPAT_OS_CHANGE);
   Bind(EVT_COMPAT_OS_CHANGE, [&](wxCommandEvent&) {
     PluginLoader::getInstance()->LoadAllPlugIns(false);
     m_pPlugInCtrl->ReloadPluginPanels();

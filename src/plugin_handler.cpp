@@ -1176,10 +1176,10 @@ bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
     bool bOK = installPlugin(plugin, cacheFile);
     if (!bOK) {
       wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
-      evt_download_failed.notify(cacheFile);
+      evt_download_failed.Notify(cacheFile);
       return false;
     }
-    evt_download_ok.notify(plugin.name + " " + plugin.version);
+    evt_download_ok.Notify(plugin.name + " " + plugin.version);
     return true;
   }
   return false;

@@ -344,16 +344,17 @@ public:
     wxImage::AddHandler(new wxPNGHandler());
     g_BasePlatform->GetSharedDataDir();   // See #2619
     wxDEFINE_EVENT(EVT_FILE_NOTFOUND, wxCommandEvent);
-    auto file_notfound_listener =
-        loader->evt_unreadable_plugin.GetListener(this, EVT_FILE_NOTFOUND);
+    ObservableListener file_notfound_listener;
+    file_notfound_listener.Listen(loader->evt_unreadable_plugin.key,
+                                  this, EVT_FILE_NOTFOUND);
     Bind(EVT_FILE_NOTFOUND, [&](wxCommandEvent ev) {
       std::cerr << "Cannot open file: " << ev.GetString() << "\n";
     });
 
     wxDEFINE_EVENT(EVT_BAD_VERSION, wxCommandEvent);
-    auto bad_version_listener =
-        loader->evt_version_incompatible_plugin.GetListener(this,
-                                                             EVT_BAD_VERSION);
+    ObservableListener bad_version_listener;
+    bad_version_listener.Listen(loader->evt_version_incompatible_plugin.key,
+                                this, EVT_BAD_VERSION);
     Bind(EVT_BAD_VERSION, [&](wxCommandEvent ev) {
       std::cerr << "Incompatible plugin version " << ev.GetString() << "\n";
     });

@@ -45,7 +45,7 @@
  *
  *     void some_method() {
  *       ...
- *       change.notify("new value")
+ *       change.Notify("new value")
  *     }
  *
  *  Controller/GUI usage:
@@ -54,7 +54,7 @@
  *    public:
  *      Gui:Gui(Model& model) {
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        change_listener = model.change.GetListener(this, EVT_FOO);
+ *        change_listen.Listen(model.change.key, this, EVT_FOO);
  *        Bind(EVT_FOO, [&](wxCommandEvent ev) {
  *          auto s = ev.GetString();    s -> "new value"
  *          ... do something;
@@ -62,34 +62,36 @@
  *      }
  *
  *    private:
- *      ObservedVarListener change_listener;
+ *      ObservableListener change_listener;
  *    }
  */
 
-class EventVar : public ObservedVar {
+class EventVar : public Observable {
 public:
-  EventVar() : ObservedVar(autokey()) {}
+  EventVar() : Observable(Autokey()) {}
 
   /** Notify all listeners, no data supplied. */
-  const void notify() { ObservedVar::notify("", 0); }
+  const void Notify() { Observable::Notify("", 0); }
 
   /** Notify all listeners about variable change with ClientData. */
-  const void notify(void* data) { ObservedVar::notify("", data); }
+  const void Notify(void* data) { Observable::Notify("", data); }
 
   /** Notify all listeners about variable change with a string. */
-  const void notify(const std::string& s) { ObservedVar::notify(s, 0); }
+  const void Notify(const std::string& s) { Observable::Notify(s, 0); }
 
   /**
    * Notify all listeners about variable change with shared_ptr,
    * a string and an optional number.
    */
-  const void notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
-      ObservedVar::notify(p, s, n, 0);
+  const void Notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
+    Observable::Notify(p, s, n, 0);
   }
 
+  const std::string key;
+
 private:
-  std::string autokey() {
-    static  std::atomic<unsigned long> last_ix(0);
+  std::string Autokey() {
+    static std::atomic<unsigned long> last_ix(0);
     return std::string("!@%/+") + std::to_string(last_ix++);
   }
 };

@@ -1537,7 +1537,7 @@ extern DECL_EXP wxString GetActiveRouteGUID(void);	// if no active route, return
 // API 1.18  listen-notify
 
 /* Listening to messages. */
-class ObservedVarListener;
+class ObservableListener;
 
 /** The event used by notify/listen. */
 class ObservedEvt;
@@ -1568,14 +1568,14 @@ private:
 
 #endif  // OBSERVABLE_EVT_H
 
-class ObservedVarListener;
+class ObservableListener;
 
 struct NMEA2000Id {
   const uint64_t id;
   NMEA2000Id(int value) : id(static_cast<uint64_t>(value)) {};
 };
 
-extern DECL_EXP std::shared_ptr<ObservedVarListener> GetListener(NMEA2000Id id,
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NMEA2000Id id,
                                                  wxEventType ev,
                                                  wxEvtHandler* handler);
 
@@ -1584,7 +1584,7 @@ struct NMEA0183Id {
   NMEA0183Id(const std::string& s) : id(s) {};
 };
 
-extern DECL_EXP std::shared_ptr<ObservedVarListener> GetListener(NMEA0183Id id,
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NMEA0183Id id,
                                                  wxEventType ev,
                                                  wxEvtHandler* handler);
 
@@ -1593,7 +1593,7 @@ struct SignalkId {
   SignalkId(const std::string& s) : id(s) {};
 };
 
-extern DECL_EXP std::shared_ptr<ObservedVarListener> GetListener(SignalkId id,
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(SignalkId id,
                                                  wxEventType ev,
                                                  wxEvtHandler* handler);
 
@@ -1608,7 +1608,7 @@ struct NavDataId  {
   NavDataId() : type(0) {}
 };
 
-extern DECL_EXP std::unique_ptr<ObservedVarListener> GetListener(NavDataId id,
+extern DECL_EXP std::unique_ptr<ObservableListener> GetListener(NavDataId id,
                                                  wxEventType ev,
                                                  wxEvtHandler* handler);
 /** Available decoded data for plugins. */

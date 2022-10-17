@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <mutex>
 #include <sstream>
 #include <unordered_map>
 
@@ -38,56 +39,48 @@ std::string ptr_key(const void* ptr) {
 
 /* ListenersByKey implementation. */
 
-ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
+ListenersByKey& ListenersByKey::GetInstance(const std::string& key) {
   static std::unordered_map<std::string, ListenersByKey> instances;
+  static std::mutex s_mutex;
 
+  std::lock_guard<std::mutex> lock(s_mutex);
   if (instances.find(key) == instances.end()) {
     instances[key] = ListenersByKey();
   }
   return instances[key];
 }
 
-
-/* ObservedVar implementation. */
+/* Observable implementation. */
 
 using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
 
-void ObservedVar::listen(wxEvtHandler* listener, wxEventType ev_type) {
-  const auto& listeners = singleton.listeners;
+void Observable::Listen(wxEvtHandler* listener, wxEventType ev_type) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  const auto& listeners = m_list.listeners;
+
   ev_pair key_pair(listener, ev_type);
-  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
-    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
-    if (count > 2) {
-        // There are two occurences when assigning, the source is assumed
-        // to go away and remove one occurence.
-        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
-                     key, ptr_key(listener), ev_type);
-    }
-  }
-  singleton.listeners.push_back(key_pair);
+  auto found = std::find(listeners.begin(), listeners.end(), key_pair);
+  assert((found == listeners.end()) && "Duplicate listener");
+  m_list.listeners.push_back(key_pair);
 }
 
-bool ObservedVar::unlisten(wxEvtHandler* listener, wxEventType ev_type) {
-  auto& listeners = singleton.listeners;
+bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  auto& listeners = m_list.listeners;
 
   ev_pair key_pair(listener, ev_type);
   auto found = std::find(listeners.begin(), listeners.end(), key_pair);
   if (found == listeners.end()) return false;
   listeners.erase(found);
-  if (wxLog::GetLogLevel() <= wxLOG_Debug) {
-    auto count = std::count(listeners.begin(), listeners.end(), key_pair);
-    if (count > 1) {
-        wxLogMessage("Duplicate listener, key: %s, listener: %s, ev_type: %d",
-                     key, ptr_key(listener), ev_type);
-    }
-  }
   return true;
 }
 
-const void ObservedVar::notify(std::shared_ptr<const void> ptr,
-                               const std::string& s, int num,
-                               void* client_data) {
-  auto& listeners = singleton.listeners;
+const void Observable::Notify(std::shared_ptr<const void> ptr,
+                              const std::string& s, int num,
+                              void* client_data) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  auto& listeners = m_list.listeners;
+
   for (auto l = listeners.begin(); l != listeners.end(); l++) {
     auto evt = new ObservedEvt(l->second);
     evt->SetSharedPtr(ptr);
@@ -98,35 +91,30 @@ const void ObservedVar::notify(std::shared_ptr<const void> ptr,
   }
 }
 
-const void ObservedVar::notify() { notify("", 0); }
+const void Observable::Notify() { Notify("", 0); }
 
-using Listener = ObservedVarListener;
+/* ObservableListener implementation. */
 
-Listener ObservedVar::GetListener(wxEvtHandler* eh, wxEventType ev) {
-  return Listener(this, eh, ev);
+void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
+                                wxEventType e) {
+  if (key != "") Unlisten();
+  key = k;
+  listener = l;
+  ev_type = e;
+  Listen();
 }
 
-/* ObservedVarListener implementation. */
-
-void ObservedVarListener::listen() {
+void ObservableListener::Listen() {
   if (key != "") {
     assert(listener);
-    ObservedVar var(key);
-    var.listen(listener, ev_type);
+    Observable(key).Listen(listener, ev_type);
   }
 }
 
-void ObservedVarListener::unlisten() {
+void ObservableListener::Unlisten() {
   if (key != "") {
     assert(listener);
-    ObservedVar var(key);
-    var.unlisten(listener, ev_type);
+    Observable(key).Unlisten(listener, ev_type);
+    key = "";
   }
-}
-
-void ObservedVarListener::copy(const ObservedVarListener& other) {
-  listener = other.listener;
-  key = other.key;
-  ev_type = other.ev_type;
-  listen();
 }

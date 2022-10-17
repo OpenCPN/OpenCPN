@@ -1630,7 +1630,7 @@ bool NavObjectChanges::ApplyChanges(void) {
 
         else if (!strcmp(child.first_child().value(), "delete")) {
           if (pExisting) {
-            evt_delete_track.notify(std::make_shared<Track>(*pExisting), "");
+            evt_delete_track.Notify(std::make_shared<Track>(*pExisting), "");
           }
         }
 
@@ -1662,7 +1662,7 @@ bool NavObjectChanges::ApplyChanges(void) {
           Route *pExisting = RouteExists(pRoute->m_GUID);
           if (pExisting) {
             m_bSkipChangeSetUpdate = true;
-            evt_delete_route.notify(std::make_shared<Route>(*pExisting), "");
+            evt_delete_route.Notify(std::make_shared<Route>(*pExisting), "");
             m_bSkipChangeSetUpdate = false;
           }
         }

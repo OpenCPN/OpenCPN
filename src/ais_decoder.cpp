@@ -273,8 +273,7 @@ void AisDecoder::InitCommListeners(void) {
   //NMEA0183
   //VDM
   Nmea0183Msg n0183_msg_VDM("VDM");
-  listener_N0183_VDM = msgbus.GetListener(EVT_N0183_VDM, this, n0183_msg_VDM);
-
+  listener_N0183_VDM.Listen(n0183_msg_VDM.key(), this, EVT_N0183_VDM);
   Bind(EVT_N0183_VDM, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -283,7 +282,7 @@ void AisDecoder::InitCommListeners(void) {
 
   //FRPOS
   Nmea0183Msg n0183_msg_FRPOS("FRPOS");
-  listener_N0183_FRPOS = msgbus.GetListener(EVT_N0183_FRPOS, this, n0183_msg_FRPOS);
+  listener_N0183_FRPOS.Listen(n0183_msg_FRPOS.key(), this, EVT_N0183_FRPOS);
 
   Bind(EVT_N0183_FRPOS, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
@@ -293,8 +292,7 @@ void AisDecoder::InitCommListeners(void) {
 
   //CD
   Nmea0183Msg n0183_msg_CD("CD ");
-  listener_N0183_CD = msgbus.GetListener(EVT_N0183_CD, this, n0183_msg_CD);
-
+  listener_N0183_CD.Listen(n0183_msg_CD.key(), this, EVT_N0183_CD);
   Bind(EVT_N0183_CD, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -303,7 +301,7 @@ void AisDecoder::InitCommListeners(void) {
 
   //TLL
   Nmea0183Msg n0183_msg_TLL("TLL");
-  listener_N0183_TLL = msgbus.GetListener(EVT_N0183_TLL, this, n0183_msg_TLL);
+  listener_N0183_TLL.Listen(n0183_msg_TLL.key(), this, EVT_N0183_TLL);
 
   Bind(EVT_N0183_TLL, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
@@ -312,19 +310,17 @@ void AisDecoder::InitCommListeners(void) {
       });
 
   //TTM
-  Nmea0183Msg n0183_msg_TTM("TTM");
-  listener_N0183_TTM = msgbus.GetListener(EVT_N0183_TTM, this, n0183_msg_TTM);
-
+  Nmea0183Msg n0183_msg_ttm("TTM");
+  listener_N0183_TTM.Listen(n0183_msg_ttm.key(), this, EVT_N0183_TTM);
   Bind(EVT_N0183_TTM, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-        HandleN0183_AIS( n0183_msg );
+        HandleN0183_AIS(n0183_msg);
       });
 
   //OSD
   Nmea0183Msg n0183_msg_OSD("OSD");
-  listener_N0183_OSD = msgbus.GetListener(EVT_N0183_OSD, this, n0183_msg_OSD);
-
+  listener_N0183_OSD.Listen(n0183_msg_OSD.key(), this, EVT_N0183_OSD);
   Bind(EVT_N0183_OSD, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -333,83 +329,65 @@ void AisDecoder::InitCommListeners(void) {
 
   //SignalK
   SignalkMsg sk_msg;
-  listener_SignalK =
-      msgbus.GetListener(EVT_SIGNALK, this, sk_msg);
-
-  //FIXME (dave) Use UnpackEvtPointer(), whenever it lands
+  listener_SignalK.Listen(sk_msg.key(), this, EVT_SIGNALK);
   Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
-    //HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
-    HandleSignalK(std::static_pointer_cast<const SignalkMsg>(ev.GetSharedPtr()));
+    HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
   });
 
     // AIS Class A   PGN 129038
   //-----------------------------
   Nmea2000Msg n2k_msg_129038(static_cast<uint64_t>(129038));
-  listener_N2K_129038 =
-      msgbus.GetListener(EVT_N2K_129038, this, n2k_msg_129038);
+  listener_N2K_129038.Listen(n2k_msg_129038.key(), this, EVT_N2K_129038);
   Bind(EVT_N2K_129038, [&](ObservedEvt ev) {
-    //HandleN2K_129038(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129038(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129038(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
     // AIS Class B   PGN 129039
   //-----------------------------
   Nmea2000Msg n2k_msg_129039(static_cast<uint64_t>(129039));
-  listener_N2K_129039 =
-      msgbus.GetListener(EVT_N2K_129039, this, n2k_msg_129039);
+  listener_N2K_129039.Listen(n2k_msg_129039.key(), this, EVT_N2K_129039);
   Bind(EVT_N2K_129039, [&](ObservedEvt ev) {
-    //HandleN2K_129039(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129039(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129039(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
     // AIS ATON   PGN 129041
   //-----------------------------
   Nmea2000Msg n2k_msg_129041(static_cast<uint64_t>(129041));
-  listener_N2K_129041 =
-      msgbus.GetListener(EVT_N2K_129041, this, n2k_msg_129041);
+  listener_N2K_129041.Listen(n2k_msg_129041.key(), this, EVT_N2K_129041);
   Bind(EVT_N2K_129041, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129041(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
       // AIS static data class A PGN 129794
   //-----------------------------
   Nmea2000Msg n2k_msg_129794(static_cast<uint64_t>(129794));
-  listener_N2K_129794 =
-      msgbus.GetListener(EVT_N2K_129794, this, n2k_msg_129794);
+  listener_N2K_129794.Listen(n2k_msg_129794.key(), this, EVT_N2K_129794);
   Bind(EVT_N2K_129794, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129794(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
       // AIS static data class B part A PGN 129809
   //-----------------------------
   Nmea2000Msg n2k_msg_129809(static_cast<uint64_t>(129809));
-  listener_N2K_129809 =
-      msgbus.GetListener(EVT_N2K_129809, this, n2k_msg_129809);
+  listener_N2K_129809.Listen(n2k_msg_129809.key(), this, EVT_N2K_129809);
   Bind(EVT_N2K_129809, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129809(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
-      // AIS static data class B part B PGN 129810
+  // AIS static data class B part B PGN 129810
   //-----------------------------
   Nmea2000Msg n2k_msg_129810(static_cast<uint64_t>(129810));
-  listener_N2K_129810 =
-      msgbus.GetListener(EVT_N2K_129810, this, n2k_msg_129810);
+  listener_N2K_129810.Listen(n2k_msg_129810.key(), this, EVT_N2K_129810);
   Bind(EVT_N2K_129810, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129810(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // AIS Base Station report PGN 129793
   //-----------------------------
   Nmea2000Msg n2k_msg_129793(static_cast<uint64_t>(129793));
-  listener_N2K_129793 =
-      msgbus.GetListener(EVT_N2K_129793, this, n2k_msg_129793);
+  listener_N2K_129793.Listen(n2k_msg_129793.key(), this, EVT_N2K_129793);
   Bind(EVT_N2K_129793, [&](ObservedEvt ev) {
-    //HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
-    HandleN2K_129793(std::static_pointer_cast<const Nmea2000Msg>(ev.GetSharedPtr()));
+    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
 }
@@ -419,7 +397,7 @@ bool AisDecoder::HandleN0183_AIS( std::shared_ptr <const Nmea0183Msg> n0183_msg 
   std::string str = n0183_msg->payload;
   wxString sentence(str.c_str());
   DecodeN0183(sentence);
-  touch_state.notify();
+  touch_state.Notify();
   return true;
 }
 
@@ -501,7 +479,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -582,7 +560,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -676,7 +654,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -766,7 +744,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -808,7 +786,7 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->MID = 124;  // Indicates a name from n2k
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
-    touch_state.notify();
+    touch_state.Notify();
     return true;
 
   }
@@ -865,7 +843,7 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -923,7 +901,7 @@ bool AisDecoder::HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
-    touch_state.notify();
+    touch_state.Notify();
     return true;
   }
   else
@@ -2179,7 +2157,7 @@ void AisDecoder::CommitAISTarget(AisTargetData *pTargetData,
         if (pTargetData->b_show_track) UpdateOneTrack(pTargetData);
       }
       // TODO add ais message call
-      plugin_msg.notify(pTargetData);
+      plugin_msg.Notify(pTargetData);
     } else {
       //             printf("Unrecognised AIS message ID: %d\n",
       //             pTargetData->MID);
@@ -3300,7 +3278,7 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
                                   wxDateTime::Now().FormatISODate().c_str(),
                                   wxDateTime::Now().FormatISOTime().c_str()));
       g_TrackList.push_back(t);
-      new_track.notify(t);
+      new_track.Notify(t);
       m_persistent_tracks[ptarget->MMSI] = t;
     } else {
       t = m_persistent_tracks[ptarget->MMSI];
@@ -3710,7 +3688,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         td->HDG = 511.0;
         td->ROTAIS = -128;
 
-        plugin_msg.notify(td);
+        plugin_msg.Notify(td);
 
         long mmsi_long = td->MMSI;
         pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
@@ -3720,7 +3698,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         //      or a lost ARPA target.
         if (target_static_age > removelost_Mins * 60 * 3 || b_arpalost) {
           td->b_removed = true;
-          plugin_msg.notify(td);
+          plugin_msg.Notify(td);
           remove_array.push_back(td->MMSI);  // Add this target to removal list
         }
       }
@@ -3734,7 +3712,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         if (props->m_bignore) {
           remove_array.push_back(td->MMSI);  // Add this target to removal list
           td->b_removed = true;
-          plugin_msg.notify(td);
+          plugin_msg.Notify(td);
         }
         break;
       }
@@ -3839,7 +3817,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   }
     // Show or update the alert
   if (palert_target)
-    info_update.notify(palert_target);
+    info_update.Notify(palert_target);
 
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }

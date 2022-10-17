@@ -10,16 +10,14 @@
 
 #include "comm_appmsg.h"
 
-
-class ObservableAppMsg : public ObservedVar {
+class ObservableAppMsg : public Observable {
 public:
-  ObservableAppMsg(const std::string key) : ObservedVar(key) {};
+  ObservableAppMsg(const std::string key) : Observable(key){};
 
   /* Send message to all listeners. */
-  void notify(std::shared_ptr<const AppMsg> msg) {
-    ObservedVar::notify(std::dynamic_pointer_cast<const void>(msg));
+  void Notify(std::shared_ptr<const AppMsg> msg) {
+    Observable::Notify(std::dynamic_pointer_cast<const void>(msg));
   }
 };
-
 
 #endif  // OBSERVABLE_MSG_H

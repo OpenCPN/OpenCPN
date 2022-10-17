@@ -170,21 +170,21 @@ private:
   AIS_Target_Name_Hash *AISTargetNamesC;
   AIS_Target_Name_Hash *AISTargetNamesNC;
 
-  ObservedVarListener listener_N0183_VDM;
-  ObservedVarListener listener_N0183_FRPOS;
-  ObservedVarListener listener_N0183_CD;
-  ObservedVarListener listener_N0183_TLL;
-  ObservedVarListener listener_N0183_TTM;
-  ObservedVarListener listener_N0183_OSD;
-  ObservedVarListener listener_SignalK;
+  ObservableListener listener_N0183_VDM;
+  ObservableListener listener_N0183_FRPOS;
+  ObservableListener listener_N0183_CD;
+  ObservableListener listener_N0183_TLL;
+  ObservableListener listener_N0183_TTM;
+  ObservableListener listener_N0183_OSD;
+  ObservableListener listener_SignalK;
 
-  ObservedVarListener listener_N2K_129038;
-  ObservedVarListener listener_N2K_129039;
-  ObservedVarListener listener_N2K_129041;
-  ObservedVarListener listener_N2K_129794;
-  ObservedVarListener listener_N2K_129809;
-  ObservedVarListener listener_N2K_129810;
-  ObservedVarListener listener_N2K_129793;
+  ObservableListener listener_N2K_129038;
+  ObservableListener listener_N2K_129039;
+  ObservableListener listener_N2K_129041;
+  ObservableListener listener_N2K_129794;
+  ObservableListener listener_N2K_129809;
+  ObservableListener listener_N2K_129810;
+  ObservableListener listener_N2K_129793;
 
   bool m_busy;
   wxTimer TimerAIS;

@@ -431,8 +431,8 @@ private:
   wxTimer m_recaptureTimer;
   bool m_b_new_data;
 
-  ObservedVarListener listener_basic_navdata;
-  ObservedVarListener listener_gps_watchdog;
+  ObservableListener listener_basic_navdata;
+  ObservableListener listener_gps_watchdog;
 
   DECLARE_EVENT_TABLE()
 };

@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Project:  OpenCPN
- * Purpose: Notify/listen config var wrapper
+ * Purpose:  global variables listen/notify wrapper.
  *
  * Copyright (C) 2022 Alec Leamas
  *
@@ -21,65 +21,68 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
 
-#ifndef OBSERVABLE_CONFVAR_H
-#define OBSERVABLE_CONFVAR_H
+#ifndef _OBSERVABLE_GLOBVAR_H
+#define _OBSERVABLE_GLOBVAR_H
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <wx/config.h>
+#include <wx/event.h>
 
 #include "observable.h"
 
 /**
- *  Wrapper for configuration variables which lives in a wxBaseConfig
- *  object. Supports int, bool, double, std::string and wxString. Besides
- *  basic set()/get() also provides notification events when value changes.
+ *  Wrapper for global variable, supports notification events when value
+ *  changes.
  *
- *  Client usage when reading, setting a value and notifying listeners:
+ *  Client usage, writing a value + notifying listeners:
  *
- *    ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
- *    bool old_value = expert.get(false);
- *    expert.set(false);
+ *    GlobalVar<wxString> compat_os(&g_compatOS);
+ *    compat_os.Set("ubuntu-gtk3-x86_64");
  *
- *  Client usage, listening to value changes.
+ *  Client usage, modifying a value + notifying listeners:
  *
- *    class Foo: public wxEventHandler {
+ *    GlobalVar<wxString> plugin_array_var(&plugin_array);
+ *    plugin_array.Add(new_pic);
+ *    plugin_array_var.Notify();
+ *
+ *  Client usage, listening to value changes:
+ *
+ *    class Foo: public wxEvtHandler {
  *    public:
  *      Foo(...) {
- *        ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
+ *        GlobalVar<wxString> compat_os(&g_compatOS);
  *
- *        // expert sends a wxCommandEvent of type EVT_FOO to this on changes:
+ *        // compat_os sends a wxCommandEvent type EVT_FOO to this on changes:
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        expert_listener = expert.GetListener(this, EVT_FOO);
+ *        compat_os_listener.Listen(compat_os.key, this, EVT_FOO);)
  *
  *        // Handle  EVT_FOO as any event when it arrives, for example:
  *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });
  *        ...
  *      }
  *    private:
- *      ObservedVarListener expert_listener;
+ *      ObservableListener compat_os_listener;
  *      ...
  *    }
- *
  */
-template <typename T = std::string>
-class ConfigVar : public ObservedVar {
+template <typename T>
+class GlobalVar : public Observable {
 public:
-  ConfigVar(const std::string& section_, const std::string& key_,
-            wxConfigBase* cb);
+  GlobalVar(T* ptr) : Observable(ptr_key(ptr)), variable(ptr) {}
 
-  void set(const T& arg);
+  void Set(const T& arg) {
+    *variable = arg;
+    Observable::Notify();
+  }
 
-  const T get(const T& default_val);
+  const T Get() { return *variable; }
 
 private:
-  ConfigVar();  // not implemented
+  GlobalVar();  // not implemented
 
-  const std::string section;
-  const std::string key;
-  wxConfigBase* const config;
+  T* const variable;
 };
 
-#endif  // OBSERVABLE_CONFVAR_H
+#endif  // _OBSERVABLE_GLOBVAR_H

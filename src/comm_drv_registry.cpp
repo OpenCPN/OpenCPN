@@ -32,14 +32,14 @@ void CommDriverRegistry::Activate(DriverPtr driver) {
   auto found = std::find(drivers.begin(), drivers.end(), driver);
   if (found != drivers.end()) return;
   drivers.push_back(driver);
-  evt_driverlist_change.notify();
+  evt_driverlist_change.Notify();
 };
 
 void CommDriverRegistry::Deactivate(DriverPtr driver) {
   auto found = std::find(drivers.begin(), drivers.end(), driver);
   if (found == drivers.end()) return;
   drivers.erase(found);
-  evt_driverlist_change.notify();
+  evt_driverlist_change.Notify();
 }
 
 const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() {

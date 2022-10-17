@@ -878,9 +878,6 @@ set(
   include/navutil.h
   include/navutil_base.h
   include/NMEALogWindow.h
-  include/observable.h
-  include/observable_confvar.h
-  include/observable_globvar.h
   include/observable_appmsg.h
   include/observable_navmsg.h
   include/ocpCursor.h
@@ -996,8 +993,6 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/nav_object_database.cpp
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
-  ${CMAKE_SOURCE_DIR}/src/observable.cpp
-  ${CMAKE_SOURCE_DIR}/src/observable_confvar.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
@@ -1206,6 +1201,9 @@ endif ()
 # target_link_libraries(${PACKAGE_NAME} ocpn::gpsd) endif () ENDIF (NOT WIN32)
 
 find_package(Gettext REQUIRED)
+
+add_subdirectory(libs/observable)
+target_link_libraries(${PACKAGE_NAME} PRIVATE observable::observable)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
@@ -1681,6 +1679,7 @@ target_link_libraries(
     ocpn::wxjson
     ssl::sha1
     ocpn::tinyxml
+    observable::observable
 )
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
@@ -2977,20 +2976,22 @@ if (NOT QT_ANDROID AND NOT APPLE)
   if (TARGET ocpn::wxsvg)
     target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
   endif ()
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
+  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
+  target_link_libraries(opencpn-cmd PRIVATE observable::observable)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
-  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
-    target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
-    target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+
+  target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
+  target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
   endif ()
   if (HAVE_LIBUDEV)
     target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)

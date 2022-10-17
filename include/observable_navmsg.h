@@ -23,7 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 #ifndef _OBSERVABLE_MSG_H
 #define _OBSERVABLE_MSG_H
 
@@ -32,14 +31,13 @@
 #include <wx/event.h>
 #include "comm_navmsg_bus.h"
 
-
-class ObservableMsg : public ObservedVar {
+class ObservableMsg : public Observable {
 public:
-  ObservableMsg(const std::string key) : ObservedVar(key){};
+  ObservableMsg(const std::string key) : Observable(key){};
 
   /* Send message to all listeners. */
-  void notify(std::shared_ptr<const NavMsg> msg) {
-    ObservedVar::notify(std::dynamic_pointer_cast<const void>(msg));
+  void Notify(std::shared_ptr<const NavMsg> msg) {
+    Observable::Notify(std::dynamic_pointer_cast<const void>(msg));
   }
 };
 
