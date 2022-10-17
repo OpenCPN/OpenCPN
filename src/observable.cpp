@@ -39,7 +39,7 @@ std::string ptr_key(const void* ptr) {
 
 /* ListenersByKey implementation. */
 
-ListenersByKey& ListenersByKey::getInstance(const std::string& key) {
+ListenersByKey& ListenersByKey::GetInstance(const std::string& key) {
   static std::unordered_map<std::string, ListenersByKey> instances;
   static std::mutex s_mutex;
 

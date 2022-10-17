@@ -56,13 +56,13 @@ class ObservableListener;
  */
 class ListenersByKey {
   friend class Observable;
-  friend ListenersByKey& getInstance(const std::string& key);
+  friend ListenersByKey& GetInstance(const std::string& key);
 
 public:
   ListenersByKey() {}
 
 private:
-  static ListenersByKey& getInstance(const std::string& key);
+  static ListenersByKey& GetInstance(const std::string& key);
 
   ListenersByKey(const ListenersByKey&) = delete;
   ListenersByKey& operator=(const ListenersByKey&) = default;
@@ -76,7 +76,7 @@ class Observable {
 
 public:
   Observable(const std::string& _key)
-      : key(_key), m_list(ListenersByKey::getInstance(_key)) {}
+      : key(_key), m_list(ListenersByKey::GetInstance(_key)) {}
 
   /** Notify all listeners about variable change. */
   virtual const void Notify();
