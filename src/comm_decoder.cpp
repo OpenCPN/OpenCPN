@@ -354,7 +354,6 @@ bool CommDecoder::DecodePGN129025(std::vector<unsigned char> v,  NavData& temp_d
 bool CommDecoder::DecodePGN129540(std::vector<unsigned char> v,  NavData& temp_data) {
 
   unsigned char SID;
-  tN2kHeadingReference ref;
   uint8_t NumberOfSVs;;
   tN2kRangeResidualMode Mode;
 
