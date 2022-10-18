@@ -39,6 +39,11 @@ vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
   return msg->payload;
 }
 
+std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev) {
+  auto msg = UnpackEvtPointer<Nmea0183Msg>(ev);
+  return msg->payload;
+}
+
 shared_ptr<ObservableListener> GetListener(NMEA2000Id id, wxEventType et,
                                            wxEvtHandler* eh) {
   return make_shared<ObservableListener>(Nmea2000Msg(N2kName(id.id)).key(), eh,
