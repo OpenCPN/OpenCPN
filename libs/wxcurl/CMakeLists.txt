@@ -46,7 +46,9 @@ include(Curl)
 
 add_library(WXCURL STATIC ${SRC})
 add_library(ocpn::wxcurl ALIAS WXCURL)
-set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "-fvisibility=default")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "-fvisibility=default")
+endif ()
 target_include_directories(WXCURL
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC ${CURL_INCLUDE_DIRS}

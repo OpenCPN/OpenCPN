@@ -30,6 +30,7 @@
 
 #ifdef __MSVC__
 #include <io.h>
+#include <direct.h>
 #include <stdlib.h>
 #else
 #include <unistd.h>
@@ -74,7 +75,7 @@ bool exists(const std::string& name) {
 
 void mkdir(const std::string path) {
 #if defined(_WIN32) && !defined(__MINGW32__)
-  mkdir(path.c_str());
+  _mkdir(path.c_str());
 #elif defined(__MINGW32__)
   ::mkdir(path.c_str());
 #else
