@@ -162,6 +162,14 @@ public:
         hdt(HDT),
         time(t){};
 
+  BasicNavDataMsg()
+      : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
+        sog(0),
+        cog(0),
+        var(0),
+        hdt(0),
+        time(0){};
+
   virtual ~BasicNavDataMsg() = default;
 
   const Position pos;

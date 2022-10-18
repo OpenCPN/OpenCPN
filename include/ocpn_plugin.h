@@ -1570,6 +1570,7 @@ private:
 
 class ObservableListener;
 
+/** Facade for NavAddr2000. */
 struct NMEA2000Id {
   const uint64_t id;
   NMEA2000Id(int value) : id(static_cast<uint64_t>(value)) {};
@@ -1579,6 +1580,7 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NMEA2000Id id,
                                                  wxEventType ev,
                                                  wxEvtHandler* handler);
 
+/** Facade for NavAddr0183. */
 struct NMEA0183Id {
   const std::string id;
   NMEA0183Id(const std::string& s) : id(s) {};
@@ -1588,6 +1590,7 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NMEA0183Id id,
                                                  wxEventType ev,
                                                  wxEvtHandler* handler);
 
+/** Facade for NavAddrSignalK. */
 struct SignalkId {
   const std::string id;
   SignalkId(const std::string& s) : id(s) {};
@@ -1603,12 +1606,13 @@ extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt 
 /** Return payload in a recieved n0183 message of type id in ev. */
 extern DECL_EXP std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev);
 
+/** Facade for BasicNavDataMsg. */
 struct NavDataId  {
   const int type;
   NavDataId() : type(0) {}
 };
 
-extern DECL_EXP std::unique_ptr<ObservableListener> GetListener(NavDataId id,
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NavDataId id,
                                                  wxEventType ev,
                                                  wxEvtHandler* handler);
 /** Available decoded data for plugins. */
