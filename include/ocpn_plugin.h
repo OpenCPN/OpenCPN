@@ -629,7 +629,6 @@ public:
   Plugin_WaypointList *pWaypointList;
 };
 
-
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn CallBack API Definition
 //
@@ -1451,30 +1450,26 @@ extern DECL_EXP int GetLatLonFormat(void);
 // API 1.17
 extern "C" DECL_EXP void ZeroXTE();
 
-
 // Extended Waypoint manipulation API
 class DECL_EXP PlugIn_Waypoint_Ex {
 public:
   PlugIn_Waypoint_Ex();
-  PlugIn_Waypoint_Ex(double lat, double lon,
-                                 const wxString &icon_ident,
-                                 const wxString &wp_name,
-                                 const wxString &GUID = "",
-                                 const double ScaMin = 1e9,
-                                 const bool bNameVisible = false,
-                                 const int nRanges = 0,
-                                 const double RangeDistance = 1.0,
-                                 const wxColor RangeColor = wxColor( 255,0,0 ) );
+  PlugIn_Waypoint_Ex(double lat, double lon, const wxString &icon_ident,
+                     const wxString &wp_name, const wxString &GUID = "",
+                     const double ScaMin = 1e9, const bool bNameVisible = false,
+                     const int nRanges = 0, const double RangeDistance = 1.0,
+                     const wxColor RangeColor = wxColor(255, 0, 0));
   ~PlugIn_Waypoint_Ex();
   void InitDefaults();
 
-  bool GetFSStatus();     // return "free standing" status
-                          // To be a "free standing waypoint"(FSWP),
-                          // the RoutePoint will have been created by GUI dropping a point;
-                          // by importing a waypoint in a GPX file
-                          // or by the AddSingleWaypoint API.
+  bool GetFSStatus();  // return "free standing" status
+                       // To be a "free standing waypoint"(FSWP),
+                       // the RoutePoint will have been created by GUI dropping
+                       // a point; by importing a waypoint in a GPX file or by
+                       // the AddSingleWaypoint API.
 
-  int GetRouteMembershipCount();    // Return the number of routes to which this WP belongs
+  int GetRouteMembershipCount();  // Return the number of routes to which this
+                                  // WP belongs
 
   double m_lat;
   double m_lon;
@@ -1522,17 +1517,23 @@ extern DECL_EXP wxArrayString GetTrackGUIDArray(void);
 extern DECL_EXP bool GetSingleWaypointEx(wxString GUID,
                                          PlugIn_Waypoint_Ex *pwaypoint);
 
-extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint, bool b_permanent = true);
+extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint,
+                                         bool b_permanent = true);
 extern DECL_EXP bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint);
 
-extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute, bool b_permanent = true);
+extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute,
+                                      bool b_permanent = true);
 extern DECL_EXP bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute);
 
-extern DECL_EXP std::unique_ptr<PlugIn_Waypoint_Ex> GetWaypointEx_Plugin(const wxString &);
-extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString &);
+extern DECL_EXP std::unique_ptr<PlugIn_Waypoint_Ex> GetWaypointEx_Plugin(
+    const wxString &);
+extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(
+    const wxString &);
 
-extern DECL_EXP wxString GetActiveWaypointGUID(void);	// if no active waypoint, returns wxEmptyString
-extern DECL_EXP wxString GetActiveRouteGUID(void);	// if no active route, returns wxEmptyString
+extern DECL_EXP wxString
+GetActiveWaypointGUID(void);  // if no active waypoint, returns wxEmptyString
+extern DECL_EXP wxString
+GetActiveRouteGUID(void);  // if no active route, returns wxEmptyString
 
 // API 1.18  listen-notify
 
@@ -1552,11 +1553,12 @@ wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
 class ObservedEvt : public wxCommandEvent {
 public:
   ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)
-    : wxCommandEvent(commandType, id) {}
-  ObservedEvt(const ObservedEvt& event)
-    : wxCommandEvent(event) {this->m_shared_ptr = event.m_shared_ptr; }
+      : wxCommandEvent(commandType, id) {}
+  ObservedEvt(const ObservedEvt &event) : wxCommandEvent(event) {
+    this->m_shared_ptr = event.m_shared_ptr;
+  }
 
-  wxEvent* Clone() const { return new ObservedEvt(*this); }
+  wxEvent *Clone() const { return new ObservedEvt(*this); }
 
   std::shared_ptr<const void> GetSharedPtr() const { return m_shared_ptr; }
 
@@ -1573,50 +1575,47 @@ class ObservableListener;
 /** Facade for NavAddr2000. */
 struct NMEA2000Id {
   const uint64_t id;
-  NMEA2000Id(int value) : id(static_cast<uint64_t>(value)) {};
+  NMEA2000Id(int value) : id(static_cast<uint64_t>(value)){};
 };
 
-extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NMEA2000Id id,
-                                                 wxEventType ev,
-                                                 wxEvtHandler* handler);
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
+    NMEA2000Id id, wxEventType ev, wxEvtHandler *handler);
 
 /** Facade for NavAddr0183. */
 struct NMEA0183Id {
   const std::string id;
-  NMEA0183Id(const std::string& s) : id(s) {};
+  NMEA0183Id(const std::string &s) : id(s){};
 };
 
-extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NMEA0183Id id,
-                                                 wxEventType ev,
-                                                 wxEvtHandler* handler);
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
+    NMEA0183Id id, wxEventType ev, wxEvtHandler *handler);
 
 /** Facade for NavAddrSignalK. */
 struct SignalkId {
   const std::string id;
-  SignalkId(const std::string& s) : id(s) {};
+  SignalkId(const std::string &s) : id(s){};
 };
 
-extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(SignalkId id,
-                                                 wxEventType ev,
-                                                 wxEvtHandler* handler);
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
+    SignalkId id, wxEventType ev, wxEvtHandler *handler);
 
 /** Return payload in a recieved n2000 message of type id in ev. */
-extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev);
+extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id,
+                                                     ObservedEvt ev);
 
 /** Return payload in a recieved n0183 message of type id in ev. */
 extern DECL_EXP std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev);
 
 /** Facade for BasicNavDataMsg. */
-struct NavDataId  {
+struct NavDataId {
   const int type;
   NavDataId() : type(0) {}
 };
 
-extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(NavDataId id,
-                                                 wxEventType ev,
-                                                 wxEvtHandler* handler);
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
+    NavDataId id, wxEventType ev, wxEvtHandler *handler);
 /** Available decoded data for plugins. */
-struct  PluginNavdata{
+struct PluginNavdata {
   double lat;
   double lon;
   double sog;
@@ -1628,6 +1627,5 @@ struct  PluginNavdata{
 
 /** Return decoded data available in ev */
 extern DECL_EXP PluginNavdata GetEventNavdata(ObservedEvt ev);
-
 
 #endif  //_PLUGIN_H_
