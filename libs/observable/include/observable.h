@@ -122,6 +122,12 @@ public:
   /** Default constructor, does not listen to anything. */
   ObservableListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
 
+  /** Construct a listening object. */
+  ObservableListener(const std::string& k, wxEvtHandler* l, wxEventType e )
+      : key(k), listener(l), ev_type(e) {
+    Listen();
+  }
+
   /** A listener can only be transferred using std::move(). */
   ObservableListener(ObservableListener&& other)
       : key(other.key), listener(other.listener), ev_type(other.ev_type) {

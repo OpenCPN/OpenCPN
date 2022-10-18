@@ -23,14 +23,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 #include <memory>
+#include <sstream>
 #include <vector>
 
 #include <wx/event.h>
 
 #include "ocpn_plugin.h"
 #include "comm_navmsg_bus.h"
+#include "comm_appmsg.h"
 
-std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
+using namespace std;
+
+vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
   auto msg = UnpackEvtPointer<Nmea2000Msg>(ev);
   return msg->payload;
 }
@@ -38,4 +42,39 @@ std::vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
 std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev) {
   auto msg = UnpackEvtPointer<Nmea0183Msg>(ev);
   return msg->payload;
+}
+
+shared_ptr<ObservableListener> GetListener(NMEA2000Id id, wxEventType et,
+                                           wxEvtHandler* eh) {
+  return make_shared<ObservableListener>(Nmea2000Msg(N2kName(id.id)).key(), eh,
+                                         et);
+}
+
+std::shared_ptr<ObservableListener> GetListener(NMEA0183Id id, wxEventType et,
+                                                wxEvtHandler* eh) {
+  return make_shared<ObservableListener>(Nmea0183Msg(id.id).key(), eh, et);
+}
+
+shared_ptr<ObservableListener> GetListener(SignalkId id, wxEventType et,
+                                           wxEvtHandler* eh) {
+  return make_shared<ObservableListener>(SignalkMsg().key(), eh, et);
+}
+
+shared_ptr<ObservableListener> GetListener(NavDataId id, wxEventType et,
+                                           wxEvtHandler* eh) {
+  return make_shared<ObservableListener>(BasicNavDataMsg().key(), eh, et);
+}
+
+PluginNavdata GetEventNavdata(ObservedEvt ev) {
+  auto msg = UnpackEvtPointer<BasicNavDataMsg>(ev);
+  PluginNavdata data;
+
+  data.lat = msg->pos.lat;
+  data.lon = msg->pos.lon;
+  data.sog = msg->sog;
+  data.cog = msg->cog;
+  data.var = msg->var;
+  data.hdt = msg->hdt;
+  data.time = msg->time;
+  return data;
 }
