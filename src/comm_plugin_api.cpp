@@ -41,8 +41,8 @@ vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
 
 shared_ptr<ObservableListener> GetListener(NMEA2000Id id, wxEventType et,
                                            wxEvtHandler* eh) {
-  return make_shared<ObservableListener>(Nmea2000Msg(N2kName(id.id)).key(),
-                                         eh, et);
+  return make_shared<ObservableListener>(Nmea2000Msg(N2kName(id.id)).key(), eh,
+                                         et);
 }
 
 std::shared_ptr<ObservableListener> GetListener(NMEA0183Id id, wxEventType et,
@@ -58,4 +58,18 @@ shared_ptr<ObservableListener> GetListener(SignalkId id, wxEventType et,
 shared_ptr<ObservableListener> GetListener(NavDataId id, wxEventType et,
                                            wxEvtHandler* eh) {
   return make_shared<ObservableListener>(BasicNavDataMsg().key(), eh, et);
+}
+
+PluginNavdata GetEventNavdata(ObservedEvt ev) {
+  auto msg = UnpackEvtPointer<BasicNavDataMsg>(ev);
+  PluginNavdata data;
+
+  data.lat = msg->pos.lat;
+  data.lon = msg->pos.lon;
+  data.sog = msg->sog;
+  data.cog = msg->cog;
+  data.var = msg->var;
+  data.hdt = msg->hdt;
+  data.time = msg->time;
+  return data;
 }

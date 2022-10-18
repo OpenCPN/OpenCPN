@@ -1614,6 +1614,7 @@ struct NavDataId {
 
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     NavDataId id, wxEventType ev, wxEvtHandler *handler);
+
 /** Available decoded data for plugins. */
 struct PluginNavdata {
   double lat;
@@ -1625,7 +1626,7 @@ struct PluginNavdata {
   time_t time;
 };
 
-/** Return decoded data available in ev */
+/** Return BasicNavDataMsg decoded data available in ev */
 extern DECL_EXP PluginNavdata GetEventNavdata(ObservedEvt ev);
 
 #endif  //_PLUGIN_H_
