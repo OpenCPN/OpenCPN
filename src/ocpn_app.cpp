@@ -139,6 +139,8 @@
 //#include "N2KParser.h"
 //#include "comm_util.h"
 
+#include "mDNS_service.h"
+
 #ifdef __linux__
 #include "udev_rule_mgr.h"
 #endif
@@ -2023,6 +2025,12 @@ bool MyApp::OnInit() {
   m_comm_bridge.Initialize();
 
   m_RESTserver.StartServer();
+
+  wxString hostname = wxGetHostName();
+  if(hostname.IsEmpty())
+     hostname = wxGetUserName();
+
+  StartMDNSService(hostname.ToStdString(), "opencpn-object-control-service", 8000);
 
   return TRUE;
 }

@@ -44,6 +44,7 @@
 #include "route.h"
 #include "RoutePropDlgImpl.h"
 #include "SendToGpsDlg.h"
+#include "SendToPeerDlg.h"
 #include "TCWin.h"
 #include "track.h"
 #include "TrackPropDlg.h"
@@ -76,6 +77,7 @@
 #include "undo.h"
 #include "peer_client.h"
 #include "mDNS_query.h"
+#include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -112,6 +114,7 @@ extern bool g_bConfirmObjectDelete;
 extern WayPointman *pWayPointMan;
 extern MyConfig *pConfig;
 extern Select *pSelect;
+extern OCPNPlatform* g_Platform;
 
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
 
@@ -1648,13 +1651,15 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
      case ID_RT_MENU_SENDTOPEER:
       if (m_pSelectedRoute) {
-        send_dns_sd();
-        //SendRoute("http://192.168.37.98:8000", m_pSelectedRoute);
-//         SendToGpsDlg dlg;
-//         dlg.SetRoute(m_pSelectedRoute);
-//
-//         dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
-//         dlg.ShowModal();
+        g_Platform->ShowBusySpinner();
+        FindAllOCPNServers();
+        g_Platform->HideBusySpinner();
+
+        SendToPeerDlg dlg;
+        dlg.SetRoute(m_pSelectedRoute);
+
+        dlg.Create(NULL, -1, _("Send Route to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.ShowModal();
       }
       break;
 

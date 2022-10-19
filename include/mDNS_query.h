@@ -26,6 +26,21 @@
 #ifndef _MDNSQUERY_H
 #define _MDNSQUERY_H
 
-extern "C" int send_dns_sd(void);
+#include <string>
+#include <vector>
+
+typedef struct ocpn_DNS_record_t ocpn_DNS_record_t;
+
+struct ocpn_DNS_record_t {
+  std::string service_instance;
+  std::string hostname;
+  std::string ip;
+  std::string port;
+};
+
+
+
+extern  int send_dns_sd(void);
+extern  void FindAllOCPNServers();
 
 #endif  // guard

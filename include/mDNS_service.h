@@ -23,51 +23,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _RESTSERVER_H
-#define _RESTSERVER_H
+#ifndef _MDNSSERVICE_H
+#define _MDNSSERVICE_H
 
-#include <string>
+int StartMDNSService(std::string hostname,
+                     std::string service_name,
+                     int service_port);
 
-#include <wx/event.h>
-
-
-class RESTServerThread;  // Internal
-
-class RESTServerEvent;  // Internal
-
-class RESTServer : public wxEvtHandler {
-public:
-  RESTServer();
-
-  virtual ~RESTServer();
-
-  bool StartServer();
-  void StopServer();
-
-  //    Secondary thread life toggle
-  //    Used to inform launching object (this) to determine if the thread can
-  //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_bsec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_bsec_thread_active; }
-
-  void SetSecondaryThread(RESTServerThread* secondary_Thread) {
-    m_pSecondary_Thread = secondary_Thread;
-  }
-  RESTServerThread* GetSecondaryThread() {
-    return m_pSecondary_Thread;
-  }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
-
-  int m_Thread_run_flag;
-
-
-private:
-
-  RESTServerThread* m_pSecondary_Thread;
-  bool m_bsec_thread_active;
-
-  //void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
-};
+bool StopMDNSService();
 
 #endif  // guard

@@ -928,6 +928,7 @@ set(
   include/select_item.h
   include/semantic_vers.h
   include/SendToGpsDlg.h
+  include/SendToPeerDlg.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -1063,7 +1064,8 @@ set(
   src/LLRegion.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
-  src/mDNS_query.c
+  src/mDNS_query.cpp
+  src/mDNS_service.cpp
   src/MUIBar.cpp
   src/multiplexer.cpp
   src/navutil.cpp
@@ -1098,6 +1100,7 @@ set(
   src/S57QueryDialog.cpp
   src/safe_mode.cpp
   src/SendToGpsDlg.cpp
+  src/SendToPeerDlg.cpp
   src/Station_Data.cpp
   src/styles.cpp
   src/svg_utils.cpp
