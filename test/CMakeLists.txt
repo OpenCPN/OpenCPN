@@ -54,6 +54,7 @@ target_link_libraries(tests PRIVATE ocpn::serial)
 target_link_libraries(tests PRIVATE ocpn::easywsclient)
 target_link_libraries(tests PRIVATE ocpn::tinyxml)
 target_link_libraries(tests PRIVATE observable::observable)
+target_link_libraries(tests PRIVATE ocpn::mongoose)
 
 if (DEFINED CURL_LIBRARIES)
   target_link_libraries(tests PRIVATE ${CURL_LIBRARIES})

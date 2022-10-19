@@ -139,6 +139,8 @@
 //#include "N2KParser.h"
 //#include "comm_util.h"
 
+#include "mDNS_service.h"
+
 #ifdef __linux__
 #include "udev_rule_mgr.h"
 #endif
@@ -299,7 +301,7 @@ int g_mem_total, g_mem_used, g_mem_initial;
 
 bool s_bSetSystemTime;
 
-wxString *phost_name;
+wxString g_hostname;
 
 static unsigned int malloc_max;
 
@@ -1324,7 +1326,10 @@ bool MyApp::OnInit() {
   g_pais_query_dialog_active = NULL;
 
   //      Who am I?
-  phost_name = new wxString(::wxGetHostName());
+  g_hostname = ::wxGetHostName();
+  if(g_hostname.IsEmpty())
+     g_hostname = wxGetUserName();
+
 
   //      Initialize connection parameters array
   g_pConnectionParams = new wxArrayOfConnPrm();
@@ -2022,6 +2027,10 @@ bool MyApp::OnInit() {
   // Initialize the CommBridge
   m_comm_bridge.Initialize();
 
+  m_RESTserver.StartServer();
+
+  StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
+
   return TRUE;
 }
 
@@ -2094,7 +2103,6 @@ int MyApp::OnExit() {
 
   g_Platform->CloseLogFile();
 
-  delete phost_name;
   delete pInit_Chart_Dir;
 
   for (Track* track : g_TrackList) {

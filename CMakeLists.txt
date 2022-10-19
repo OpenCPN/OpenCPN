@@ -904,6 +904,8 @@ set(
   include/position_parser.h
   include/printtable.h
   include/Quilt.h
+  include/REST_server.h
+  include/REST_server_gui.h
   include/RolloverWin.h
   include/route.h
   include/route_gui.h
@@ -925,6 +927,7 @@ set(
   include/select_item.h
   include/semantic_vers.h
   include/SendToGpsDlg.h
+  include/SendToPeerDlg.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -1004,6 +1007,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
+  ${CMAKE_SOURCE_DIR}/src/REST_server.cpp
   ${CMAKE_SOURCE_DIR}/src/route.cpp
   ${CMAKE_SOURCE_DIR}/src/route_point.cpp
   ${CMAKE_SOURCE_DIR}/src/routeman.cpp
@@ -1057,6 +1061,8 @@ set(
   src/LLRegion.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
+  src/mDNS_query.cpp
+  src/mDNS_service.cpp
   src/MUIBar.cpp
   src/multiplexer.cpp
   src/navutil.cpp
@@ -1073,11 +1079,13 @@ set(
   src/ocpn_print.cpp
   src/OCPNRegion.cpp
   src/options.cpp
+  src/peer_client.cpp
   src/piano.cpp
   src/pluginmanager.cpp
   src/plugin_paths.cpp
   src/printtable.cpp
   src/Quilt.cpp
+  src/REST_server_gui.cpp
   src/RolloverWin.cpp
   src/routemanagerdialog.cpp
   src/routeman_gui.cpp
@@ -1089,6 +1097,7 @@ set(
   src/S57QueryDialog.cpp
   src/safe_mode.cpp
   src/SendToGpsDlg.cpp
+  src/SendToPeerDlg.cpp
   src/Station_Data.cpp
   src/styles.cpp
   src/svg_utils.cpp
@@ -1205,6 +1214,12 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 
 add_subdirectory(libs/picosha2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
+
+add_subdirectory(libs/mongoose)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mongoose)
+
+add_subdirectory(libs/mDNS)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mDNS)
 
 find_package(LIBUDEV)
 if (LIBUDEV_FOUND)
@@ -1794,7 +1809,7 @@ endif ()
 
 if (CMAKE_HOST_WIN32)
   target_link_libraries(
-    ${PACKAGE_NAME} PRIVATE setupapi.lib "GLU_static" psapi.lib # glu32.lib
+    ${PACKAGE_NAME} PRIVATE setupapi.lib "GLU_static" psapi.lib iphlpapi.lib # glu32.lib
   )
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
@@ -2972,6 +2987,7 @@ if (NOT QT_ANDROID AND NOT APPLE)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)

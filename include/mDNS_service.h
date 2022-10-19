@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
+ * Purpose:
+ * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2022 by David S. Register                               *
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,53 +23,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _OCPN_APP_H
-#define _OCPN_APP_H
+#ifndef _MDNSSERVICE_H
+#define _MDNSSERVICE_H
 
-#include <wx/wxprec.h>
+int StartMDNSService(std::string hostname,
+                     std::string service_name,
+                     int service_port);
 
-#ifndef WX_PRECOMP
-#include <wx/app.h>
-#include <wx/cmdline.h>
-#include <wx/event.h>
-#endif  // precompiled headers
+bool StopMDNSService();
 
-#include <wx/snglinst.h>
-
-#include "comm_bridge.h"
-#include "REST_server.h"
-
-class Track;
-
-class MyApp : public wxApp {
-public:
-  ~MyApp(){};
-
-  bool OnInit();
-  int OnExit();
-  void OnInitCmdLine(wxCmdLineParser& parser);
-  bool OnCmdLineParsed(wxCmdLineParser& parser);
-  void OnActivateApp(wxActivateEvent& event);
-
-#ifdef LINUX_CRASHRPT
-  //! fatal exeption handling
-  void OnFatalException();
-#endif
-
-#ifdef __WXMSW__
-  //  Catch malloc/new fail exceptions
-  //  All the rest will be caught be CrashRpt
-  bool OnExceptionInMainLoop();
-#endif
-
-  Track* TrackOff(void);
-
-  wxSingleInstanceChecker* m_checker;
-  CommBridge m_comm_bridge;
-
-  RESTServer m_RESTserver;
-
-  DECLARE_EVENT_TABLE()
-};
-
-#endif
+#endif  // guard
