@@ -33,6 +33,7 @@
 
 extern OCPNPlatform* g_Platform;
 extern std::vector<ocpn_DNS_record_t> g_DNS_cache;
+extern wxString g_hostname;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
 
@@ -97,6 +98,10 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
   //    Fill in the wxComboBox with all detected peers
   for (unsigned int i=0; i < g_DNS_cache.size(); i++){
     wxString item(g_DNS_cache[i].hostname.c_str());
+
+    //skip "self"
+    if(item.StartsWith(g_hostname))
+      continue;
     item += " {";
     item += g_DNS_cache[i].ip.c_str();
     item += "}";
@@ -121,7 +126,8 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
       m_PeerListBox->SetValue(g_uploadConnection);
   } else
 #endif
-    m_PeerListBox->SetSelection(0);
+
+  m_PeerListBox->SetSelection(0);
 
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
@@ -165,6 +171,9 @@ void SendToPeerDlg::SetMessage(wxString msg) {
 }
 
 void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
+  if (!m_pRoute)
+    Close();
+
   //    Get the selected peer information
   wxString peer_ip = m_PeerListBox->GetValue();
   int tail = peer_ip.Find('{');
@@ -179,8 +188,7 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
 
 
   //    And send it out
-  if (m_pRoute)
-    SendRoute(peer_ip.ToStdString(), m_pRoute, true);
+  int return_code = SendRoute(peer_ip.ToStdString(), m_pRoute, true);
 
   //if (m_pRoutePoint) RoutePointGui(*m_pRoutePoint).SendToGPS(destPort, this);
 

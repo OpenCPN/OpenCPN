@@ -1225,6 +1225,8 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
 add_subdirectory(libs/mongoose)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mongoose)
 
+add_subdirectory(libs/mDNS)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mDNS)
 
 find_package(LIBUDEV)
 if (LIBUDEV_FOUND)
