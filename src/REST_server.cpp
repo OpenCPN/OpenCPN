@@ -275,11 +275,11 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
     if (mg_http_match_uri(hm, "/api/rx_object")) {
 
-      struct mg_str v = mg_http_var(hm->body, mg_str("content"));
-      struct mg_str source = mg_http_var(hm->body, mg_str("source"));
+      struct mg_str source = mg_http_var(hm->query, mg_str("source"));
 
-      if(v.len){
-        std::string xml_content(v.ptr, v.len);
+      if(source.len && hm->body.len )
+      {
+        std::string xml_content(hm->body.ptr, hm->body.len);
         std::string source_peer(source.ptr, source.len);
         //printf("%s\n", xml_content.c_str());
 

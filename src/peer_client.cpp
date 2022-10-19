@@ -60,12 +60,6 @@ size_t wxcurl_string_write_UTF8(void* ptr, size_t size, size_t nmemb, void* pcha
     size_t iRealSize = size * nmemb;
     wxCharBuffer* pStr = (wxCharBuffer*) pcharbuf;
 
-//     if(pStr)
-//     {
-//         wxString str = wxString(*pStr, wxConvUTF8) + wxString((const char*)ptr, wxConvUTF8);
-//         *pStr = str.mb_str();
-//     }
-
     if(pStr)
     {
 #ifdef __WXMSW__
@@ -93,9 +87,8 @@ public:
 
    ~wxCurlHTTPNoZIP();
 
-   bool Post(wxInputStream& buffer, const wxString& szRemoteFile /*= wxEmptyString*/);
-   bool Post(const char* buffer, size_t size, const wxString& szRemoteFile /*= wxEmptyString*/);
-   std::string GetResponseBody() const;
+  bool Post(const char *url, const char *body_data);
+  std::string GetResponseBody() const;
 
 protected:
     void SetCurlHandleToDefaults(const wxString& relativeURL);
@@ -130,34 +123,31 @@ void wxCurlHTTPNoZIP::SetCurlHandleToDefaults(const wxString& relativeURL)
     }
 }
 
-bool wxCurlHTTPNoZIP::Post(const char* buffer, size_t size, const wxString& szRemoteFile /*= wxEmptyString*/)
-{
-    size_t bufSize = strlen(buffer);
-    wxMemoryInputStream inStream(buffer, bufSize);
-
-    return Post(inStream, szRemoteFile);
-}
-
-bool wxCurlHTTPNoZIP::Post(wxInputStream& buffer, const wxString& szRemoteFile /*= wxEmptyString*/)
+bool wxCurlHTTPNoZIP::Post(const char *url, const char *body_data)
 {
     curl_off_t iSize = 0;
 
-    if(m_pCURL && buffer.IsOk())
+    if(m_pCURL )
     {
-        SetCurlHandleToDefaults(szRemoteFile);
+        SetOpt(CURLOPT_ENCODING, "identity");               // No encoding, plain ASCII
 
         SetHeaders();
-        iSize = buffer.GetSize();
 
+        SetOpt(CURLOPT_URL, url);
+
+        iSize = strlen(body_data);
         if(iSize == (~(ssize_t)0))      // wxCurlHTTP does not know how to upload unknown length streams.
             return false;
 
+        SetOpt(CURLOPT_POSTFIELDSIZE, iSize);
+        SetOpt(CURLOPT_POSTFIELDS, body_data);
+
+
         SetOpt(CURLOPT_POST, TRUE);
         SetOpt(CURLOPT_POSTFIELDSIZE_LARGE, iSize);
-        SetStreamReadFunction(buffer);
+        //SetStreamReadFunction(buffer);
 
         //  Use a private data write trap function to handle UTF8 content
-        //SetStringWriteFunction(m_szResponseBody);
         SetOpt(CURLOPT_WRITEFUNCTION, wxcurl_string_write_UTF8);         // private function
         SetOpt(CURLOPT_WRITEDATA, (void*)&m_szResponseBody);
 
@@ -198,22 +188,15 @@ int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
   std::ostringstream stream;
   pgpx->save(stream, PUGIXML_TEXT(" "));
 
-  wxString url(dest_ip_address.c_str());    //"http://192.168.37.98:8000";
+  std::string url(dest_ip_address);    //"http://192.168.37.98:8000";
   url += "/api/rx_object";
-
-  wxString content("content=");
-  content += wxString(stream.str());
-
-  wxString server_params;
-  server_params += content;
-
-  server_params += _T("&source=") + g_hostname;
+  url += _T("?source=") + g_hostname;
 
   long iResponseCode =0;
   size_t res = 0;
   wxCurlHTTPNoZIP post;
-  post.SetOpt(CURLOPT_TIMEOUT, 10);
-  res = post.Post( loginParms, loginParms.Len(), url );
+  post.SetOpt(CURLOPT_TIMEOUT, 5);
+  res = post.Post( url.c_str(), stream.str().c_str() );
 
     // get the response code of the server
   post.GetInfo(CURLINFO_RESPONSE_CODE, &iResponseCode);
