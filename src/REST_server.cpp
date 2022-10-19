@@ -87,6 +87,9 @@ public:
   void SetPayload(std::shared_ptr<std::string> data) {
     m_payload = data;
   }
+  void SetSource(std::string source){
+    m_source_peer = source;
+  }
   std::shared_ptr<std::string> GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
@@ -94,11 +97,14 @@ public:
     RESTServerEvent* newevent =
         new RESTServerEvent(*this);
     newevent->m_payload = this->m_payload;
+    newevent->m_source_peer = this->m_source_peer;
     return newevent;
   };
 
-private:
   std::shared_ptr<std::string> m_payload;
+  std::string m_source_peer;
+private:
+
 
 };
 
@@ -177,7 +183,10 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
   AcceptObjectDialog dialog1(NULL, wxID_ANY, _("OpenCPN Server Message"),
     "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
 
-  dialog1.SetMessage("someone has sent you a new route.\nAccept?");
+  wxString hmsg(event.m_source_peer.c_str());
+  hmsg += " has sent you a new route.\nAccept?";
+
+  dialog1.SetMessage(hmsg);
   dialog1.SetCheck1Message(_("Always accept objects from this source?"));
 
   if (dialog1.ShowModal() == ID_STG_OK) {
@@ -248,7 +257,6 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 
 static const char *s_http_addr = "http://0.0.0.0:8000";    // HTTP port
 static const char *s_https_addr = "https://0.0.0.0:8443";  // HTTPS port
-//static const char *s_root_dir = ".";
 
 
 // We use the same event handler function for HTTP and HTTPS connections
@@ -265,26 +273,14 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 //     mg_tls_init(c, &opts);
   } else if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-    if (mg_http_match_uri(hm, "/api/stats")) {
-      // Print some statistics about currently established connections
-      mg_printf(c, "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n");
-      mg_http_printf_chunk(c, "ID PROTO TYPE      LOCAL           REMOTE\n");
-      for (struct mg_connection *t = c->mgr->conns; t != NULL; t = t->next) {
-        char loc[40], rem[40];
-        mg_http_printf_chunk(c, "%-3lu %4s %s %-15s %s\n", t->id,
-                             t->is_udp ? "UDP" : "TCP",
-                             t->is_listening  ? "LISTENING"
-                             : t->is_accepted ? "ACCEPTED "
-                                              : "CONNECTED",
-                             mg_straddr(&t->loc, loc, sizeof(loc)),
-                             mg_straddr(&t->rem, rem, sizeof(rem)));
-      }
-      mg_http_printf_chunk(c, "");  // Don't forget the last empty chunk
-    } else if (mg_http_match_uri(hm, "/api/f2/*")) {
+    if (mg_http_match_uri(hm, "/api/rx_object")) {
 
       struct mg_str v = mg_http_var(hm->body, mg_str("content"));
+      struct mg_str source = mg_http_var(hm->body, mg_str("source"));
+
       if(v.len){
         std::string xml_content(v.ptr, v.len);
+        std::string source_peer(source.ptr, source.len);
         //printf("%s\n", xml_content.c_str());
 
         return_status = -1;
@@ -293,6 +289,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
           RESTServerEvent Nevent(wxEVT_RESTFUL_SERVER, 0);
           auto buffer = std::make_shared<std::string>(xml_content);
           Nevent.SetPayload(buffer);
+          Nevent.SetSource(source_peer);
           parent->AddPendingEvent(Nevent);
         }
 
@@ -304,9 +301,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
         lock.unlock();
       }
 
-      mg_http_reply(c, 200, "", "{\"result\": \"%.*s\"}\n", (int) hm->uri.len,
-                    hm->uri.ptr);
-    } else {
+      mg_http_reply(c, 200, "", "{\"result\": %d}\n", return_status);
     }
   }
   (void) fn_data;
