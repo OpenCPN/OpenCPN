@@ -336,7 +336,7 @@ public:
   class Sink : public wxEvtHandler {
   public:
     Sink() {
-      listener.Listen(AppMsg(AppMsg::Type::GnssFix).key(), this, EVT_FOO);
+      listener.Listen(AppMsg(AppMsg::Type::GnssFix), this, EVT_FOO);
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto msg = UnpackEvtPointer<const AppMsg>(ev);
         auto fix = std::static_pointer_cast<const GnssFix>(msg);

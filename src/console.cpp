@@ -343,7 +343,7 @@ public:
     g_BasePlatform->GetSharedDataDir();   // See #2619
     wxDEFINE_EVENT(EVT_FILE_NOTFOUND, wxCommandEvent);
     ObservableListener file_notfound_listener;
-    file_notfound_listener.Listen(loader->evt_unreadable_plugin.key,
+    file_notfound_listener.Listen(loader->evt_unreadable_plugin,
                                   this, EVT_FILE_NOTFOUND);
     Bind(EVT_FILE_NOTFOUND, [&](wxCommandEvent ev) {
       std::cerr << "Cannot open file: " << ev.GetString() << "\n";
@@ -351,7 +351,7 @@ public:
 
     wxDEFINE_EVENT(EVT_BAD_VERSION, wxCommandEvent);
     ObservableListener bad_version_listener;
-    bad_version_listener.Listen(loader->evt_version_incompatible_plugin.key,
+    bad_version_listener.Listen(loader->evt_version_incompatible_plugin,
                                 this, EVT_BAD_VERSION);
     Bind(EVT_BAD_VERSION, [&](wxCommandEvent ev) {
       std::cerr << "Incompatible plugin version " << ev.GetString() << "\n";

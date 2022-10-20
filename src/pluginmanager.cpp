@@ -1085,14 +1085,14 @@ PlugInManager::PlugInManager(MyFrame *parent) {
   m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
 
   wxDEFINE_EVENT(EVT_JSON_TO_ALL_PLUGINS, ObservedEvt);
-  evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg.key, this,
+  evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg, this,
                                           EVT_JSON_TO_ALL_PLUGINS);
   Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
     auto json = std::static_pointer_cast<const wxJSONValue>(ev.GetSharedPtr());
     SendJSONMessageToAllPlugins(ev.GetString(), *json); });
 
   wxDEFINE_EVENT(EVT_LEGINFO_TO_ALL_PLUGINS, ObservedEvt);
-  evt_routeman_leginfo_listener.Listen(g_pRouteMan->json_leg_info.key, this,
+  evt_routeman_leginfo_listener.Listen(g_pRouteMan->json_leg_info, this,
                                        EVT_LEGINFO_TO_ALL_PLUGINS);
   Bind(EVT_LEGINFO_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
     auto ptr = UnpackEvtPointer<ActiveLegDat>(ev);
@@ -1122,7 +1122,7 @@ void PlugInManager::InitCommListeners(void) {
         HandleN0183(n0183_msg); });
 
   SignalkMsg sk_msg;
-  m_listener_SignalK.Listen(sk_msg.key(), this, EVT_SIGNALK);
+  m_listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
 
   Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
     HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
@@ -1202,42 +1202,42 @@ wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::getInstance();
 
-  evt_blacklisted_plugin_listener.Listen(loader->evt_blacklisted_plugin.key, 
+  evt_blacklisted_plugin_listener.Listen(loader->evt_blacklisted_plugin, 
                                          this, EVT_BLACKLISTED_PLUGIN);
   Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent& ev) {
     m_blacklist_ui->message(ev.GetString().ToStdString()); });
 
-  evt_deactivate_plugin_listener.Listen(loader->evt_deactivate_plugin.key,
+  evt_deactivate_plugin_listener.Listen(loader->evt_deactivate_plugin,
                                         this, EVT_DEACTIVATE_PLUGIN);
   Bind(EVT_DEACTIVATE_PLUGIN, [&](wxCommandEvent& ev) {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnPluginDeactivate(pic); });
 
-  evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin.key,
+  evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin,
                                           this, EVT_INCOMPATIBLE_PLUGIN);
   Bind(EVT_INCOMPATIBLE_PLUGIN,
        [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
-  evt_pluglist_change_listener.Listen(loader->evt_pluglist_change.key,
+  evt_pluglist_change_listener.Listen(loader->evt_pluglist_change,
                                       this, EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
     if (m_listPanel) m_listPanel->ReloadPluginPanels();
     g_options->itemBoxSizerPanelPlugins->Layout(); });
 
-  evt_load_directory_listener.Listen(loader->evt_load_directory.key, this,
+  evt_load_directory_listener.Listen(loader->evt_load_directory, this,
                                      EVT_LOAD_DIRECTORY);
   Bind(EVT_LOAD_DIRECTORY, [&](wxCommandEvent&) {
     pConfig->SetPath("/PlugIns/");
     SetPluginOrder(pConfig->Read("PluginOrder", wxEmptyString)); });
 
-  evt_load_plugin_listener.Listen(loader->evt_load_plugin.key, this,
+  evt_load_plugin_listener.Listen(loader->evt_load_plugin, this,
                                   EVT_LOAD_PLUGIN);
   Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent& ev) {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnLoadPlugin(pic); });
 
   evt_version_incompatible_plugin_listener.Listen(
-          loader->evt_version_incompatible_plugin.key, this,
+          loader->evt_version_incompatible_plugin, this,
           EVT_VERSION_INCOMPATIBLE_PLUGIN);
   Bind(EVT_VERSION_INCOMPATIBLE_PLUGIN, [&](wxCommandEvent& ev) {
     static const wxString msg =
@@ -1245,32 +1245,32 @@ void PlugInManager::HandlePluginLoaderEvents() {
         "of OpenCPN, please get an updated version.");
     event_message_box(msg, ev); });
 
-  evt_unreadable_plugin_listener.Listen(loader->evt_blacklisted_plugin.key, 
+  evt_unreadable_plugin_listener.Listen(loader->evt_blacklisted_plugin, 
                                         this, EVT_UNREADABLE_PLUGIN);
   Bind(EVT_UNREADABLE_PLUGIN, [&](wxCommandEvent& ev) {
     static const wxString msg =
       _("Unreadable Plugin library %s detected, check file permissions:\n\n");
     event_message_box(msg, ev); });
 
-  evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin.key,
+  evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin,
                                           this, EVT_INCOMPATIBLE_PLUGIN);
   Bind(EVT_INCOMPATIBLE_PLUGIN,
        [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
-  evt_update_chart_types_listener.Listen(loader->evt_update_chart_types.key,
+  evt_update_chart_types_listener.Listen(loader->evt_update_chart_types,
                                          this, EVT_UPDATE_CHART_TYPES);
   Bind(EVT_UPDATE_CHART_TYPES,
        [&](wxCommandEvent& ev) { UpDateChartDataTypes(); });
 
   evt_plugin_loadall_finalize_listener.Listen(
-          loader->evt_plugin_loadall_finalize.key, this,
+          loader->evt_plugin_loadall_finalize, this,
           EVT_PLUGIN_LOADALL_FINALIZE);
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
-  evt_ais_json_listener.Listen(g_pAIS->plugin_msg.key, this,
+  evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this,
                                EVT_PLUGMGR_AIS_MSG);
-  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg.key, this, 
+  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this, 
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG,  [&](wxCommandEvent& ev) {
     auto pTarget = static_cast<AisTargetData*>(ev.GetClientData());
@@ -1290,14 +1290,14 @@ wxDEFINE_EVENT(EVT_DOWNLOAD_OK, wxCommandEvent);
 void PlugInManager::HandlePluginHandlerEvents() {
   auto loader = PluginLoader::getInstance();
 
-  evt_download_failed_listener.Listen(loader->evt_update_chart_types.key, 
+  evt_download_failed_listener.Listen(loader->evt_update_chart_types, 
                                       this, EVT_DOWNLOAD_FAILED);
   Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
       wxString message = _("Please check system log for more info.");
       OCPNMessageBox(gFrame, message, _("Installation error"),
                      wxICON_ERROR | wxOK | wxCENTRE); });
 
-  evt_download_ok_listener.Listen(loader->evt_update_chart_types.key, this,
+  evt_download_ok_listener.Listen(loader->evt_update_chart_types, this,
                                   EVT_DOWNLOAD_OK);
   Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent& ev) {
     wxString message(ev.GetString());
