@@ -66,7 +66,7 @@
  *    }
  */
 
-class EventVar : public Observable, public KeyProvider {
+class EventVar : public Observable {
 public:
   EventVar() : Observable(Autokey()) {}
 
@@ -86,8 +86,6 @@ public:
   const void Notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
     Observable::Notify(p, s, n, 0);
   }
-
-  std::string GetKey() const { return key; }
 
 private:
   std::string Autokey() {

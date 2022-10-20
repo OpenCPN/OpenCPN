@@ -78,7 +78,7 @@ private:
 };
 
 /**  The observable notify/listen basic nuts and bolts.  */
-class Observable {
+class Observable : public KeyProvider {
   friend class ObservableListener;
 
 public:
@@ -97,6 +97,8 @@ public:
    * @return true if such a listener existed, else false.
    */
   bool Unlisten(wxEvtHandler* listener, wxEventType ev);
+
+  std::string GetKey() const { return key; }
 
   /** The key used to create and clone. */
   const std::string key;
