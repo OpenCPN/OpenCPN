@@ -50,6 +50,13 @@ std::string ptr_key(const void* ptr);
 class Observable;
 class ObservableListener;
 
+/** Interface implemented by classes which listens. */
+class KeyProvider {
+public:
+  virtual std::string GetKey() const = 0;
+};
+
+
 /**
  *  Private helper class. Basically a singleton map of listener lists
  *  where lists are managed by key, one for each key value.
@@ -77,6 +84,8 @@ class Observable {
 public:
   Observable(const std::string& _key)
       : key(_key), m_list(ListenersByKey::GetInstance(_key)) {}
+
+  Observable(const KeyProvider& kp)  : Observable(kp.GetKey()) {}
 
   /** Notify all listeners about variable change. */
   virtual const void Notify();
@@ -123,10 +132,13 @@ public:
   ObservableListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
 
   /** Construct a listening object. */
-  ObservableListener(const std::string& k, wxEvtHandler* l, wxEventType e )
+  ObservableListener(const std::string& k, wxEvtHandler* l, wxEventType e)
       : key(k), listener(l), ev_type(e) {
     Listen();
   }
+
+  ObservableListener(const KeyProvider& kp, wxEvtHandler* l, wxEventType e) :
+    ObservableListener(kp.GetKey(), l, e) {}
 
   /** A listener can only be transferred using std::move(). */
   ObservableListener(ObservableListener&& other)
@@ -142,6 +154,10 @@ public:
 
   /** Set object to send wxEventType ev to listener on changes in key. */
   void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
+
+  void Listen(const KeyProvider& kp, wxEvtHandler* l, wxEventType evt) {
+      Listen(kp.GetKey(), l, evt);
+  }
 
 private:
   void Listen();
