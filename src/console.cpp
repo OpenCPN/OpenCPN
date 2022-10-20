@@ -57,7 +57,6 @@
 #include "ocpn_utils.h"
 #include "downloader.h"
 #include "observable_navmsg.h"
-#include "observable_appmsg.h"
 #include "observable_evtvar.h"
 #include "comm_driver.h"
 #include "plugin_loader.h"

@@ -90,6 +90,8 @@ public:
   /** Notify all listeners about variable change. */
   virtual const void Notify();
 
+  const void Notify(std::shared_ptr<const void> p) { Notify(p, "", 0, 0); }
+
   /**
    * Remove window listening to ev from list of listeners.
    * @return true if such a listener existed, else false.
@@ -112,7 +114,6 @@ protected:
     Notify(nullptr, s, 0, client_data);
   }
 
-  const void Notify(std::shared_ptr<const void> p) { Notify(p, "", 0, 0); }
 
 private:
   /** Set object to send ev_type to listener on variable changes. */

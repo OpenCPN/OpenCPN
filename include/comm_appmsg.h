@@ -33,6 +33,7 @@
 #include <wx/event.h>
 
 #include "comm_driver.h"
+#include "observable.h"
 
 double PosPartsToDegrees(float degrees, float minutes, float percent_of_minute);
 
@@ -85,13 +86,15 @@ private:
 };
 
 
-class AppMsg {
+class AppMsg : public KeyProvider {
 public:
   enum class Type;
   AppMsg(AppMsg::Type t)
       : type(t), name(TypeToString(t)), source(NavAddr()), prio(0){};
 
   virtual std::string key() const { return std::string("@!appmsg-") + name; }
+
+  std::string GetKey() const { return key(); }
 
   std::string TypeToString(const Type t) const;
 

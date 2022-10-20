@@ -26,8 +26,7 @@
 #include "comm_appmsg_bus.h"
 
 void AppMsgBus::Notify(std::shared_ptr<const AppMsg> msg) {
-  ObservableAppMsg om(msg->key());
-  om.Notify(msg);
+  Observable(*msg).Notify(msg);
 }
 
 AppMsgBus& AppMsgBus::GetInstance() {
