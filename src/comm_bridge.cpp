@@ -82,6 +82,17 @@ void ClearNavData(NavData &d){
   d.SID = 0;
 }
 
+/**
+* Send BasicNavDataMsg based on global state in gLat, gLon, etc 
+* on appmsg_bus
+*/
+static void SendBasicNavdata() {
+  auto msg = std::make_shared<BasicNavDataMsg>(
+      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+  AppMsgBus::GetInstance().Notify(std::move(msg));
+}
+
+
 static inline double GeodesicRadToDeg(double rads) {
   return rads * 180.0 / M_PI;
 }
@@ -402,14 +413,7 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
      }
    }
 
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -434,14 +438,7 @@ bool CommBridge::HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   else{
   }
 
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -472,14 +469,7 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   else{
   }
 
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -516,15 +506,7 @@ bool CommBridge::HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     }
   }
 
-
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -577,14 +559,7 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -602,14 +577,7 @@ bool CommBridge::HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   }
 
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -637,15 +605,7 @@ bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   if (bHDM)
     MakeHDTFromHDM();
 
-
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -662,14 +622,7 @@ bool CommBridge::HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -686,14 +639,7 @@ bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -713,14 +659,7 @@ bool CommBridge::HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -746,14 +685,7 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -770,14 +702,7 @@ bool CommBridge::HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -816,14 +741,7 @@ bool CommBridge::HandleN0183_AIVDO(
       }
     }
 
-    // Populate a comm_appmsg with current global values
-    auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-    // Notify the AppMsgBus of new data available
-    auto& msgbus = AppMsgBus::GetInstance();
-    msgbus.Notify(std::move(msg));
-
+    SendBasicNavdata();
   }
   return true;
 }
@@ -891,15 +809,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
-
+  SendBasicNavdata();
   return true;
 }
 
