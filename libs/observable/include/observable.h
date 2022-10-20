@@ -135,6 +135,9 @@ public:
     Listen();
   }
 
+  ObservableListener(const ObservableListener& other) = delete;
+  ObservableListener& operator=(ObservableListener&) = delete;
+
   ~ObservableListener() { Unlisten(); }
 
   /** Set object to send wxEventType ev to listener on changes in key. */
