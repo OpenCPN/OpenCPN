@@ -4050,7 +4050,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
 
   GlobalVar<wxString> catalog(&g_catalog_channel);
   wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
-  catalog_listener.Listen(catalog.key, this, EVT_CATALOG_CHANGE);
+  catalog_listener.Listen(catalog, this, EVT_CATALOG_CHANGE);
   Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent &) { SetUpdateButtonLabel(); });
 
 #else  // __ANDROID__

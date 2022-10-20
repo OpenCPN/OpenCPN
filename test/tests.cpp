@@ -176,7 +176,7 @@ public:
   public:
     Sink() {
       Observable observable("1234");
-      listener.Listen(observable.key, this, EVT_BAR);
+      listener.Listen(observable, this, EVT_BAR);
       Bind(EVT_BAR, [&](ObservedEvt ev) {
         auto msg = ev.GetSharedPtr();
         auto n2000_msg = std::static_pointer_cast<const Nmea2000Msg>(msg);
