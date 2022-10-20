@@ -120,7 +120,6 @@ bool loadS52Shaders();
 unsigned int crc32buf(unsigned char *buf, size_t len);
 
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 GLint S52color_tri_shader_program;
 GLint S52texture_2D_shader_program;
 GLint S52texture_2D_ColorMod_shader_program;
@@ -128,8 +127,6 @@ GLint S52circle_filled_shader_program;
 GLint S52ring_shader_program;
 GLint S52Dash_shader_program;
 GLint S52AP_shader_program;
-
-#endif
 
 //    Implement all lists
 #include <wx/listimpl.cpp>
@@ -1129,36 +1126,6 @@ int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
   m_unused_color.B = 2;
   m_unused_wxColor.Set(2, 2, 2);
 
-#if 0
-    // First, honor the user attempt for force Lecagy mode.
-    // Next, try to load symbols using the newer XML/PNG format.
-    // If this fails, try Legacy S52RAZDS.RLE file.
-
-    if( b_forceLegacy ) {
-        RazdsParser parser;
-        useLegacyRaster = true;
-        if( parser.LoadFile( this, PLib ) ) {
-            wxString msg( _T("Loaded legacy PLIB data: ") );
-            msg += PLib;
-            wxLogMessage( msg );
-        } else
-            return 0;
-    } else {
-        ChartSymbols chartSymbols;
-        useLegacyRaster = false;
-        if( !chartSymbols.LoadConfigFile( this, PLib ) ) {
-            RazdsParser parser;
-            useLegacyRaster = true;
-            if( parser.LoadFile( this, PLib ) ) {
-                wxString msg( _T("Loaded legacy PLIB data: ") );
-                msg += PLib;
-                wxLogMessage( msg );
-            } else
-                return 0;
-        }
-    }
-#endif
-  useLegacyRaster = false;
   if (!m_chartSymbols.LoadConfigFile(this, PLib)) {
     wxString msg(_T("Could not load XML PLib symbol file: "));
     msg += PLib;
@@ -1296,17 +1263,6 @@ void s52plib::FlushSymbolCaches(void) {
   }
   m_CARC_hashmap.clear();
 
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  CARC_DL_Hash::iterator itd;
-  for (itd = m_CARC_DL_hashmap.begin(); itd != m_CARC_DL_hashmap.end(); ++itd) {
-    GLuint list = itd->second;
-    glDeleteLists(list, 1);
-  }
-  m_CARC_DL_hashmap.clear();
-#endif
-#endif
-
   // Flush all texFonts
   TexFont *f_cache = 0;
   unsigned int i;
@@ -1352,15 +1308,6 @@ bool s52plib::S52_flush_Plib() {
     delete[] buffer.data;
   }
   m_CARC_hashmap.clear();
-
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  CARC_DL_Hash::iterator itd;
-  for (itd = m_CARC_DL_hashmap.begin(); itd != m_CARC_DL_hashmap.end(); ++itd) {
-    GLuint list = itd->second;
-    glDeleteLists(list, 1);
-  }
-  m_CARC_DL_hashmap.clear();
-#endif
 
 #endif
 
@@ -2008,48 +1955,6 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
 
         if (bdraw) {
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-          int draw_width = ptext->text_width;
-          int draw_height = ptext->text_height;
-
-          glEnable(GL_BLEND);
-          glEnable(GL_TEXTURE_2D);
-
-          glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-          glBindTexture(GL_TEXTURE_2D, ptext->texobj);
-
-          glPushMatrix();
-          glTranslatef(xp, yp, 0);
-
-          /* undo previous rotation to make text level */
-          glRotatef(vp->rotation * 180 / PI, 0, 0, -1);
-
-          float tx1 = 0, tx2 = draw_width;
-          float ty1 = 0, ty2 = draw_height;
-
-          if (m_TextureFormat == GL_TEXTURE_2D) {
-            tx1 /= ptext->RGBA_width, tx2 /= ptext->RGBA_width;
-            ty1 /= ptext->RGBA_height, ty2 /= ptext->RGBA_height;
-          }
-
-          glBegin(GL_QUADS);
-
-          glTexCoord2f(tx1, ty1);
-          glVertex2i(0, 0);
-          glTexCoord2f(tx2, ty1);
-          glVertex2i(draw_width, 0);
-          glTexCoord2f(tx2, ty2);
-          glVertex2i(draw_width, draw_height);
-          glTexCoord2f(tx1, ty2);
-          glVertex2i(0, draw_height);
-
-          glEnd();
-
-          glPopMatrix();
-
-          glDisable(m_TextureFormat);
-          glDisable(GL_BLEND);
 #else
           glEnable(GL_BLEND);
           glEnable(GL_TEXTURE_2D);
@@ -2250,28 +2155,6 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
 
       if (bdraw) {
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-        wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
-        if (wcolor == *wxBLACK)
-          glColor3ub(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
-        else
-          glColor3ub(wcolor.Red(), wcolor.Green(), wcolor.Blue());
-
-        glEnable(GL_BLEND);
-        glEnable(GL_TEXTURE_2D);
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-        glPushMatrix();
-        glTranslatef(xp, yp, 0);
-
-        /* undo previous rotation to make text level */
-        glRotatef(vp->rotation * 180 / PI, 0, 0, -1);
-
-        f_cache->RenderString(ptext->frmtd);
-        glPopMatrix();
-
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
 #else
         glEnable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
@@ -3184,55 +3067,14 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       float tx2 = tx1 + w, ty2 = ty1 + h;
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-      if (m_TextureFormat == GL_TEXTURE_2D) {
-        wxSize size = m_chartSymbols.GLTextureSize();
-        tx1 /= size.x, tx2 /= size.x;
-        ty1 /= size.y, ty2 /= size.y;
-      }
-
-      {
-        glPushMatrix();
-
-        glTranslatef(r.x, r.y, 0);
-        glRotatef(vp->rotation * 180 / PI, 0, 0, -1);
-        glTranslatef(-pivot_x, -pivot_y, 0);
-        glScalef(scale_factor, scale_factor, 1);
-
-        glBegin(GL_QUADS);
-        glTexCoord2f(tx1, ty1);
-        glVertex2i(0, 0);
-        glTexCoord2f(tx2, ty1);
-        glVertex2i(w, 0);
-        glTexCoord2f(tx2, ty2);
-        glVertex2i(w, h);
-        glTexCoord2f(tx1, ty2);
-        glVertex2i(0, h);
-        glEnd();
-
-        glPopMatrix();
-      }
 #else
 
       if (m_TextureFormat == GL_TEXTURE_2D) {
         // Normalize the sybmol texture coordinates against the next higher POT
         // size
         wxSize size = m_chartSymbols.GLTextureSize();
-#if 0
-                                int i=1;
-                                while(i < size.x) i <<= 1;
-                                int rb_x = i;
-
-                                i=1;
-                                while(i < size.y) i <<= 1;
-                                int rb_y = i;
-
-#else
         int rb_x = size.x;
         int rb_y = size.y;
-#endif
-        // qDebug() << "texnorm" << rb_x << rb_y;
         tx1 /= rb_x, tx2 /= rb_x;
         ty1 /= rb_y, ty2 /= rb_y;
       }
@@ -3333,27 +3175,6 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       float ddx = pivot_x * cr + pivot_y * sr;
       float ddy = pivot_y * cr - pivot_x * sr;
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-      glColor4f(1, 1, 1, 1);
-
-      //  Since draw pixels is so slow, lets not draw anything we don't have to
-      wxRect sym_rect(r.x - ddx, r.y - ddy, b_width, b_height);
-      if (vp->rv_rect.Intersects(sym_rect)) {
-        glPushAttrib(GL_SCISSOR_BIT | GL_DEPTH_BUFFER_BIT |
-                     GL_STENCIL_BUFFER_BIT);
-
-        glDisable(GL_SCISSOR_TEST);
-        glDisable(GL_STENCIL_TEST);
-        glDisable(GL_DEPTH_TEST);
-
-        glRasterPos2f(r.x - ddx, r.y - ddy);
-        glPixelZoom(1, -1);
-        glDrawPixels(b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE,
-                     prule->pixelPtr);
-        glPixelZoom(1, 1);
-
-        glPopAttrib();
-      }
 #endif
     }
 
@@ -3689,40 +3510,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       float tx2 = tx1 + w, ty2 = ty1 + h;
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-      //            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE
-      //            );
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-      if (m_TextureFormat == GL_TEXTURE_2D) {
-        wxSize size = m_texSoundings.GLTextureSize();
-        tx1 /= size.x, tx2 /= size.x;
-        ty1 /= size.y, ty2 /= size.y;
-      }
-
-      glColor3ub(symColor.Red(), symColor.Green(), symColor.Blue());
-
-      {
-        glPushMatrix();
-
-        glTranslatef(r.x, r.y, 0);
-        glRotatef(vp->rotation * 180 / PI, 0, 0, -1);
-        glTranslatef(-pivot_x, -pivot_y, 0);
-        // glScalef(scale_factor, scale_factor, 1);
-
-        glBegin(GL_QUADS);
-        glTexCoord2f(tx1, ty1);
-        glVertex2i(0, 0);
-        glTexCoord2f(tx2, ty1);
-        glVertex2i(w, 0);
-        glTexCoord2f(tx2, ty2);
-        glVertex2i(w, h);
-        glTexCoord2f(tx1, ty2);
-        glVertex2i(0, h);
-        glEnd();
-
-        glPopMatrix();
-      }
 #else
 
       if (m_TextureFormat == GL_TEXTURE_2D) {
@@ -3840,27 +3627,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       float ddx = pivot_x * cr + pivot_y * sr;
       float ddy = pivot_y * cr - pivot_x * sr;
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-      glColor4f(1, 1, 1, 1);
-
-      //  Since draw pixels is so slow, lets not draw anything we don't have to
-      wxRect sym_rect(r.x - ddx, r.y - ddy, b_width, b_height);
-      if (vp_plib.rv_rect.Intersects(sym_rect)) {
-        glPushAttrib(GL_SCISSOR_BIT | GL_DEPTH_BUFFER_BIT |
-                     GL_STENCIL_BUFFER_BIT);
-
-        glDisable(GL_SCISSOR_TEST);
-        glDisable(GL_STENCIL_TEST);
-        glDisable(GL_DEPTH_TEST);
-
-        glRasterPos2f(r.x - ddx, r.y - ddy);
-        glPixelZoom(1, -1);
-        glDrawPixels(b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE,
-                     prule->pixelPtr);
-        glPixelZoom(1, 1);
-
-        glPopAttrib();
-      }
 #endif
     }
 
@@ -3888,8 +3654,6 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
     return RenderLS(rzRules, rules);
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  double scale_factor = vp->ref_scale / vp->chart_scale;
-  if (scale_factor > 10.0) return RenderLS(rzRules, rules, vp);
 #endif
 
   if (!rzRules->obj->m_chart_context->chart)
@@ -3906,31 +3670,15 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
     b_useVBO = true;
 
   if (!b_useVBO) {
-#if 0
-        if( rzRules->obj->m_chart_context->chart ){
-            vertex_buffer = rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();
-        }
-        else {
-            vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer;
-        }
-
-
-        if(!vertex_buffer)
-            return RenderLS(rzRules, rules, vp);    // this is where cm93 gets caught
-#else
     vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer;
-
-#endif
   }
 
 #ifdef ocpnUSE_GL
 
   char *str = (char *)rules->INSTstr;
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   if ((!strncmp(str, "DASH", 4)) || (!strncmp(str, "DOTT", 4)))
     return RenderLS_Dash_GLSL(rzRules, rules);
-#endif
 
   LLBBox BBView = GetBBox();
 
@@ -3951,8 +3699,6 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
   if (w > 1) int yyp = 4;
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  // linestipple is emulated poorly
-  glColor3ub(c->R, c->G, c->B);
 #endif
 
   //    Set drawing width
@@ -3989,40 +3735,9 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
 #endif
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  // linestipple is emulated poorly
-  if (!strncmp(str, "DASH", 4)) {
-    glLineStipple(1, 0x3F3F);
-    glEnable(GL_LINE_STIPPLE);
-  } else if (!strncmp(str, "DOTT", 4)) {
-    glLineStipple(1, 0x3333);
-    glEnable(GL_LINE_STIPPLE);
-  } else
-    glDisable(GL_LINE_STIPPLE);
 #endif
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  glColor3ub(c->R, c->G, c->B);
-
-  glPushMatrix();
-
-  // Set up the OpenGL transform matrix for this object
-  //  Transform from Simple Mercator (relative to chart reference point) to
-  //  screen coordinates.
-
-  //  First, the VP transform
-  glTranslatef(vp->pix_width / 2, vp->pix_height / 2, 0);
-  glScalef(vp->view_scale_ppm, -vp->view_scale_ppm, 0);
-  glTranslatef(-rzRules->sm_transform_parms->easting_vp_center,
-               -rzRules->sm_transform_parms->northing_vp_center, 0);
-
-  //  Next, the per-object transform
-  if (rzRules->obj->m_chart_context->chart) {
-    glTranslatef(rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
-    glScalef(rzRules->obj->x_rate, rzRules->obj->y_rate, 0);
-  }
-
-  glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-
 #endif
 
   //   Has line segment PBO been allocated for this chart?
@@ -4030,7 +3745,6 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
     glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
   }
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   glUseProgram(S52color_tri_shader_program);
 
   // Disable VBO's (vertex buffer objects) for attributes.
@@ -4095,8 +3809,6 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
     glEnableVertexAttribArray(pos);
   }
 
-#endif
-
   // from above ls_list is the first drawable segment
   while (ls_list) {
     if (ls_list->priority == priority_current) {
@@ -4147,30 +3859,13 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
         // render the segment
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-        if (b_useVBO) {
-          glVertexPointer(2, GL_FLOAT, 2 * sizeof(float),
-                          (GLvoid *)(seg_vbo_offset));
-          glDrawArrays(GL_LINE_STRIP, 0, point_count);
-        } else {
-          glVertexPointer(2, GL_FLOAT, 2 * sizeof(float),
-                          (unsigned char *)vertex_buffer + seg_vbo_offset);
-          glDrawArrays(GL_LINE_STRIP, 0, point_count);
-        }
 #else
-
-        //                unsigned char *buffer = (unsigned char *)vertex_buffer
-        //                + seg_vbo_offset; float *bufBase = (float *)buffer;
-        //                glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE,
-        //                2*sizeof(float), bufBase);
-        //                glEnableVertexAttribArray(pos);
-
         if (b_useVBO) {
           glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                                 (GLvoid *)(seg_vbo_offset));
           glEnableVertexAttribArray(pos);
           glDrawArrays(GL_LINE_STRIP, 0, point_count);
         } else {
-#if 1
           unsigned char *buffer = (unsigned char *)vertex_buffer;
           buffer += seg_vbo_offset;
           float *bufBase = (float *)buffer;
@@ -4178,18 +3873,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
                                 bufBase);
           glEnableVertexAttribArray(pos);
           glDrawArrays(GL_LINE_STRIP, 0, point_count);
-
-#else
-          unsigned char *buffer = (unsigned char *)vertex_buffer;
-          float *bufBase = (float *)buffer;
-          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                                bufBase);
-          glEnableVertexAttribArray(pos);
-          glDrawArrays(GL_LINE_STRIP, seg_vbo_offset / (2 * sizeof(float)),
-                       point_count);
-#endif
         }
-
 #endif
       }
     }
@@ -4199,8 +3883,6 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
   if (b_useVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  glDisableClientState(GL_VERTEX_ARRAY);  // deactivate vertex array
-  glPopMatrix();
 #else
   // Restore shader TransForm Matrix to identity.
   mat4x4 IM;
@@ -4292,9 +3974,6 @@ int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules) {
 #ifdef ocpnUSE_GL
   else  // OpenGL mode
   {
-#ifndef ocpnUSE_GLES
-    glColor3ub(c->R, c->G, c->B);
-#endif
     glDisable(GL_LINE_SMOOTH);
 
     //    Set drawing width
@@ -4307,17 +3986,6 @@ int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules) {
         glLineWidth(wxMax(m_GLMinCartographicLineWidth, w));
     } else
       glLineWidth(wxMax(m_GLMinCartographicLineWidth, 1));
-
-#ifndef ocpnUSE_GLES  // linestipple is emulated poorly
-    if (!strncmp(str, "DASH", 4)) {
-      glLineStipple(1, 0x3F3F);
-      glEnable(GL_LINE_STIPPLE);
-    } else if (!strncmp(str, "DOTT", 4)) {
-      glLineStipple(1, 0x3333);
-      glEnable(GL_LINE_STIPPLE);
-    } else
-      glDisable(GL_LINE_STIPPLE);
-#endif
 
 #ifndef __OCPN__ANDROID__
     if (w >= 2 && m_GLLineSmoothing) {
@@ -4349,12 +4017,6 @@ int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules) {
         (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer;
     line_segment_element *ls = rzRules->obj->m_ls_list;
 
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-    if (!m_pdc && !b_wide_line) glBegin(GL_LINES);
-#endif
-#endif
     while (ls) {
       if (ls->priority == priority_current) {
         int nPoints;
@@ -4385,22 +4047,6 @@ int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules) {
                                                ymin_, ymax_) != Invisible)
                 m_pdc->DrawLine(x0, y0, x1, y1);
             }
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-            else {
-              // simplified faster test, let opengl do the rest
-              if ((x0 > xmin_ || x1 > xmin_) && (x0 < xmax_ || x1 < xmax_) &&
-                  (y0 > ymin_ || y1 > ymin_) && (y0 < ymax_ || y1 < ymax_)) {
-                if (!b_wide_line) {
-                  glVertex2i(x0, y0);
-                  glVertex2i(x1, y1);
-                } else
-                  PLIBDrawGLThickLine(x0, y0, x1, y1, wide_pen, true);
-              }
-            }
-#endif
-#endif
           }
 
           l = r;
@@ -4410,12 +4056,6 @@ int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules) {
 
       ls = ls->next;
     }
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-    if (!m_pdc && !b_wide_line) glEnd();
-#endif
-#endif
   }
 
 #ifdef ocpnUSE_GL
@@ -4497,9 +4137,6 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
 #ifdef ocpnUSE_GL
   else  // OpenGL mode
   {
-#ifndef __OCPN__ANDROID__
-    glColor3ub(c->R, c->G, c->B);
-#endif
     glDisable(GL_LINE_SMOOTH);
 
     //    Set drawing width
@@ -4512,17 +4149,6 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
         glLineWidth(wxMax(m_GLMinCartographicLineWidth, w));
     } else
       glLineWidth(wxMax(m_GLMinCartographicLineWidth, 1));
-
-#ifndef ocpnUSE_GLES  // linestipple is emulated poorly
-    if (!strncmp(str, "DASH", 4)) {
-      glLineStipple(1, 0x3F3F);
-      glEnable(GL_LINE_STIPPLE);
-    } else if (!strncmp(str, "DOTT", 4)) {
-      glLineStipple(1, 0x3333);
-      glEnable(GL_LINE_STIPPLE);
-    } else
-      glDisable(GL_LINE_STIPPLE);
-#endif
 
 #ifndef __OCPN__ANDROID__
     if (w >= 2 && m_GLLineSmoothing) {
@@ -4560,10 +4186,6 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
     VC_Element *pnode;
 
 #ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-    if (!b_wide_line) glBegin(GL_LINES);
-#endif
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     glUseProgram(S52color_tri_shader_program);
@@ -4653,10 +4275,8 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
                                                  ymax_) != Invisible)
                   m_pdc->DrawLine(x0, y0, x1, y1);
               }
-#ifdef ocpnUSE_GL
               else {
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
                 fBuf[0] = x0;
                 fBuf[1] = y0;
@@ -4665,19 +4285,7 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
 
                 glDrawArrays(GL_LINES, 0, 2);
 
-#else
-                // simplified faster test, let opengl do the rest
-                if ((x0 > xmin_ || x1 > xmin_) && (x0 < xmax_ || x1 < xmax_) &&
-                    (y0 > ymin_ || y1 > ymin_) && (y0 < ymax_ || y1 < ymax_)) {
-                  if (!b_wide_line) {
-                    glVertex2i(x0, y0);
-                    glVertex2i(x1, y1);
-                  } else
-                    PLIBDrawGLThickLine(x0, y0, x1, y1, wide_pen, true);
-                }
-#endif
               }
-#endif
             }
 
             l = r;
@@ -4689,24 +4297,14 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
       }  //for
     }   //for
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     glDisableVertexAttribArray(pos);
-#endif
 
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-    if (!b_wide_line) glEnd();
-#endif
-#endif
   }
-#ifdef ocpnUSE_GL
   if (!m_pdc) {
     glDisable(GL_LINE_STIPPLE);
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
   }
-#endif
   return 1;
 }
 
@@ -4722,8 +4320,6 @@ public:
 };
 
 int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
   S52color *c;
   int w;
 
@@ -4754,7 +4350,6 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
     m_pdc->SetPen(thispen);
 
   }
-#ifdef ocpnUSE_GL
   else  // OpenGL mode
   {
     //    Set drawing width
@@ -4768,7 +4363,6 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
     } else
       glLineWidth(wxMax(m_GLMinCartographicLineWidth, 1));
   }
-#endif
 
   //    Get a true pixel clipping/bounding box from the vp
   wxPoint pbb = GetPixFromLL(vp_plib.clat, vp_plib.clon);
@@ -4785,7 +4379,6 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
   if (rzRules->obj->m_DPRI >= 0) priority_current = rzRules->obj->m_DPRI;
 
   if (rzRules->obj->m_ls_list_legacy) {
-#ifdef ocpnUSE_GL
 
     glUseProgram(S52color_tri_shader_program);
 
@@ -4806,7 +4399,6 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
         glGetAttribLocation(S52color_tri_shader_program, "position");
     glEnableVertexAttribArray(pos);
 
-#endif
     float *ppt;
     VE_Element *pedge;
     PI_connector_segment *pcs;
@@ -4847,7 +4439,6 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
                                                ymin_, ymax_) != Invisible)
                 m_pdc->DrawLine(x0, y0, x1, y1);
             }
-#ifdef ocpnUSE_GL
             else {
               // simplified faster test, let opengl do the rest
               if ((x0 > xmin_ || x1 > xmin_) && (x0 < xmax_ || x1 < xmax_) &&
@@ -4864,7 +4455,6 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
                 glDrawArrays(GL_LINES, 0, 2);
               }
             }
-#endif
           }
 
           l = r;
@@ -4874,19 +4464,15 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
       ls = ls->next;
     }
 
-#ifdef ocpnUSE_GL
     glDisableVertexAttribArray(pos);
     glUseProgram(0);
-#endif
   }
 
-#endif
   return 1;
 }
 
 // Line Simple Style, Dashed, using GLSL
 int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   //  Retrieve the current clipping rectangle
   wxRect clip_rect = wxRect(0, 0, vp_plib.pix_width, vp_plib.pix_height);
@@ -4898,62 +4484,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
     clip_rect.width = rect[2];
     clip_rect.height = rect[3];
   }
-  //printf("clip: %d %d %d %d\n",clip_rect.x, clip_rect.y, clip_rect.width, clip_rect.height);
-
-
-#if 0
-        GLuint format = GL_RGBA;
-        GLuint internalformat = format;
-        int stride = 4;
-
-        int tex_w = 32;
-        int dash = 16;
-        unsigned char bufDot[ 2 * tex_w * stride];
-        for(int i=0 ; i < tex_w ; i++){
-            bufDot[i * stride] = 255;
-            bufDot[i * stride +1] = 0;
-            bufDot[i * stride +2] = 0;
-            if(i < dash)
-                bufDot[i * stride + 3] = 255;
-            else
-                bufDot[i * stride + 3] = 0;
-
- //           bufDot[i * stride + 3] = 255;
-
-        }
-
-//         for(int i=0 ; i < sizeof(bufDot) ; i++){
-//             bufDot[i] = 255;
-//         }
-
- /*       for(int i=0 ; i < tex_w ; i++){
-            bufDot[i * stride] = 255;
-            bufDot[i * stride +1] = 0;
-            bufDot[i * stride +2] = 0;
-            if(i < dash)
-                bufDot[i * stride + 3] = 255;
-            else
-                bufDot[i * stride + 3] = 0;
-        }
- */
-        GLuint textureDot = -1;
-
-        glGenTextures( 1, &textureDot );
-        glBindTexture( GL_TEXTURE_2D, textureDot );
-
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST/*GL_LINEAR*/ );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-        glTexImage2D( GL_TEXTURE_2D, 0, internalformat, tex_w, 1, 0,  format, GL_UNSIGNED_BYTE, bufDot );
-
-        glEnable( GL_TEXTURE_2D );
-
-        glEnable( GL_BLEND );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-
-#endif
 
   S52color *c;
 
@@ -4966,43 +4496,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
   double scaled_line_width =
       wxMax((scale_factor), 1);
 
-#if 0
-  wxPen thispen(color, w, wxPENSTYLE_SOLID);
-
-  wxDash dash1[2];
-
-  if (!strncmp(str, "DOTT", 4)) {
-    thispen.SetStyle(wxPENSTYLE_USER_DASH);
-    dash1[0] = 1;
-    dash1[1] = 2;
-    thispen.SetDashes(2, dash1);
-  } else if (!strncmp(str, "DASH", 4)) {
-    thispen.SetStyle(wxPENSTYLE_USER_DASH);
-    dash1[0] = 2;
-    dash1[1] = 4;
-    thispen.SetDashes(2, dash1);
-  }
-
-  odc->SetPen( thispen );
-#endif
-
-  //    Set GL drawing width
-  /*
-          if( w > 1 ) {
-              GLint parms[2];
-              glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
-              if( w > parms[1] )
-                  glLineWidth( wxMax(g_GLMinCartographicLineWidth, parms[1]) );
-              else
-                  glLineWidth( wxMax(g_GLMinCartographicLineWidth, w) );
-          } else
-              glLineWidth( wxMax(g_GLMinCartographicLineWidth, 1) );
-
-          if(w >= 2){
-              glEnable( GL_LINE_SMOOTH );
-              glEnable( GL_BLEND );
-          }
-  */
 
   //    Set drawing width
 
@@ -5102,15 +4595,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
   mat4x4 I, Q;
   mat4x4_identity(I);
 
-  // mat4x4_rotate_Z(Q, I, vp->rotation);
-
-  // Translate
-  //             Q[3][0] = r.x-pivot_x;
-  //             Q[3][1] = r.y-pivot_y;
-
-  // mat4x4 X;
-  // mat4x4_mul(X, (float (*)[4])vp->vp_transform, Q);
-
   GLint matloc =
       glGetUniformLocation(S52Dash_shader_program, "TransformMatrix");
   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)I);
@@ -5120,8 +4604,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
     unsigned char *vbo_point =
         (unsigned char *)
-            rzRules->obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
-    ;
+            rzRules->obj->m_chart_context->vertex_buffer;
     line_segment_element *ls = rzRules->obj->m_ls_list;
 
     while (ls) {
@@ -5149,11 +4632,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
           // Do not draw null segments
           if ((x0 != x1) || (y0 != y1)) {
-#if 0
-                                if( cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_,
-                                    ymin_, ymax_ ) != Invisible )
-                                    odc->DrawLine( x0, y0, x1, y1, true );
-#else
 
             // segment must be at least on-screen....
             if ((x0 > xmin_ || x1 > xmin_) && (x0 < xmax_ || x1 < xmax_) &&
@@ -5198,8 +4676,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
                 glDrawArrays(GL_LINES, 0, 2);
               }
             }
-
-#endif
           }
 
           l = r;
@@ -5214,7 +4690,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
   glUseProgram(0);
   glDisableVertexAttribArray(mPosAttrib);
 
-#endif
   return 1;
 }
 
@@ -5963,14 +5438,9 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 
     }  // while
   }    // if pdc
-#ifdef ocpnUSE_GL
   else  // opengl
   {
     //    Set up the color
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-    glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
-#endif
 
     // Adjust line width up a bit, to improve render quality for
     // GL_BLEND/GL_LINE_SMOOTH
@@ -6038,8 +5508,6 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           }
 #endif
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
           glUseProgram(S52color_tri_shader_program);
 
           glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -6076,15 +5544,6 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           glDisableVertexAttribArray(pos);
           glUseProgram(0);
 
-#else
-          {
-            glBegin(GL_LINES);
-            glVertex2i(xst1, yst1);
-            glVertex2i((wxCoord)floor(xst2), (wxCoord)floor(yst2));
-            glEnd();
-          }
-#endif
-
           glDisable(GL_LINE_SMOOTH);
           glDisable(GL_BLEND);
         } else {
@@ -6120,16 +5579,10 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           }
 
 #endif
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
           glUseProgram(S52color_tri_shader_program);
 
           glBindBuffer(GL_ARRAY_BUFFER, 0);
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-          // GLint matloc =
-          // glGetUniformLocation(S52color_tri_shader_program,"MVMatrix");
-          // glUniformMatrix4fv( matloc, 1, GL_FALSE, (const
-          // GLfloat*)vp->vp_transform);
 
           float colorv[4];
           colorv[0] = color.Red() / float(256);
@@ -6158,15 +5611,6 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 
           glUseProgram(0);
 
-#else
-
-          {
-            glBegin(GL_LINES);
-            glVertex2i(xs, ys);
-            glVertex2i(ptp[iseg + inc].x, ptp[iseg + inc].y);
-            glEnd();
-          }
-#endif
           glDisable(GL_LINE_SMOOTH);
           glDisable(GL_BLEND);
         }
@@ -6177,7 +5621,6 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
     }  // while
 
   }  // opengl
-#endif
 }
 
 // Multipoint Sounding
@@ -6613,7 +6056,6 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules) {
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   char *str = (char *)rules->INSTstr;
   //    extract the parameters from the string
@@ -6716,7 +6158,7 @@ int s52plib::RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules) {
   if (rzRules->obj->Scamin > 10000000) {  // huge (unset) SCAMIN)
     float radius_meters_target = 200;
 
-    float radius_meters = (radius * canvas_pix_per_mm) / vp->view_scale_ppm;
+    float radius_meters = (radius * canvas_pix_per_mm) / vp_plib.view_scale_ppm;
 
     xscale = radius_meters_target / radius_meters;
     xscale = wxMin(xscale, 1.0);
@@ -6893,173 +6335,13 @@ int s52plib::RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules) {
     }  // instantiation
   }
 
-#ifdef ocpnUSE_GL
-  CARC_Buffer buffer;
-
-  if (!m_pdc)  // opengl
-  {
-    //    Is there not already an generated vbo the CARC_hashmap for this
-    //    object?
-    rad = (int)(radius * canvas_pix_per_mm);
-    if (m_CARC_hashmap.find(carc_hash) == m_CARC_hashmap.end()) {
-      if (sectr1 > sectr2) sectr2 += 360;
-
-      /* to ensure that the final segment lands exactly on sectr2 */
-
-      //    Draw wide outline arc
-      wxColour colorb = getwxColour(outline_color);
-      buffer.color[0][0] = colorb.Red();
-      buffer.color[0][1] = colorb.Green();
-      buffer.color[0][2] = colorb.Blue();
-      buffer.color[0][3] = 150;
-      buffer.line_width[0] =
-          wxMax(m_GLMinSymbolLineWidth, outline_width * scale_factor);
-
-      int steps = ceil((sectr2 - sectr1) / 12) + 1;  // max of 12 degree step
-      float step = (sectr2 - sectr1) / (steps - 1);
-
-      buffer.steps = steps;
-      buffer.size = 2 * (steps + 4);
-      buffer.data = new float[buffer.size];
-
-      int s = 0;
-      for (int i = 0; i < steps; i++) {
-        float a = (sectr1 + i * step) * M_PI / 180.0;
-        buffer.data[s++] = rad * sinf(a);
-        buffer.data[s++] = -rad * cosf(a);
-      }
-
-      //    Draw narrower color arc, overlaying the drawn outline.
-      colorb = getwxColour(arc_color);
-      buffer.color[1][0] = colorb.Red();
-      buffer.color[1][1] = colorb.Green();
-      buffer.color[1][2] = colorb.Blue();
-      buffer.color[1][3] = 150;
-      buffer.line_width[1] =
-          wxMax(m_GLMinSymbolLineWidth, (arc_width * scale_factor) + .8);
-
-      //    Draw the sector legs
-      if (sector_radius > 0) {
-        int leg_len = (int)(sector_radius * canvas_pix_per_mm);
-
-        // wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
-        wxColour c;
-        GetGlobalColor(_T ( "CHBLK" ), &c);
-
-        buffer.color[2][0] = c.Red();
-        buffer.color[2][1] = c.Green();
-        buffer.color[2][2] = c.Blue();
-        buffer.color[2][3] = c.Alpha();
-        // buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.5) *
-        // scale_factor;
-        buffer.line_width[2] = wxMax(
-            1.0, floor(GetPPMM() *
-                       0.2));  // 0.4 mm nominal, but not less than 1 pixel
-
-        float a = (sectr1 - 90) * PI / 180.;
-        buffer.data[s++] = 0;
-        buffer.data[s++] = 0;
-        buffer.data[s++] = leg_len * cosf(a);
-        buffer.data[s++] = leg_len * sinf(a);
-
-        a = (sectr2 - 90) * PI / 180.;
-        buffer.data[s++] = 0;
-        buffer.data[s++] = 0;
-        buffer.data[s++] = leg_len * cosf(a);
-        buffer.data[s++] = leg_len * sinf(a);
-      } else
-        buffer.line_width[2] = 0;
-
-      m_CARC_hashmap[carc_hash] = buffer;
-
-    } else
-      buffer = m_CARC_hashmap[carc_hash];
-
-    int border_fluff = 4;  // by how much should the blit bitmap be "fluffed"
-    bm_width = rad * 2 + (border_fluff * 2);
-    bm_height = rad * 2 + (border_fluff * 2);
-    bm_orgx = -bm_width / 2;
-    bm_orgy = -bm_height / 2;
-
-    prule->parm2 = bm_orgx;
-    prule->parm3 = bm_orgy;
-    prule->parm5 = bm_width;
-    prule->parm6 = bm_height;
-    prule->parm7 = xscale;
-
-  }  // instantiation
-#endif
-
   //  Render arcs at object's x/y
   wxPoint r;
-  GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp);
+  GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &r);
 
   //      Now render the symbol
   if (!m_pdc)  // opengl
   {
-#ifdef ocpnUSE_GL
-    glPushMatrix();
-    glTranslatef(r.x, r.y, 0);
-
-    //        glScalef(scale_factor, scale_factor, 1);
-    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), buffer.data);
-
-#ifndef __OCPN__ANDROID__
-    glEnable(GL_BLEND);
-    if (m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
-#endif
-    glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-
-    glColor3ubv(buffer.color[0]);
-    glLineWidth(buffer.line_width[0]);
-    glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
-
-    glColor3ubv(buffer.color[1]);
-    glLineWidth(buffer.line_width[1]);
-    glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
-
-    // qDebug() << buffer.line_width[0] << buffer.line_width[1] <<
-    // buffer.line_width[2];
-
-    if (buffer.line_width[2]) {
-#ifndef ocpnUSE_GLES  // linestipple is emulated poorly
-      glLineStipple(1, 0x3F3F);
-      glEnable(GL_LINE_STIPPLE);
-#endif
-      glColor3ubv(buffer.color[2]);
-      glLineWidth(buffer.line_width[2]);
-      glDrawArrays(GL_LINES, buffer.steps, 4);
-#ifndef ocpnUSE_GLES
-      glDisable(GL_LINE_STIPPLE);
-#endif
-    }
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
-
-    // Debug the symbol bounding box.....
-    /*
-            {
-                int x0 = rules->razRule->parm2;
-                int y0 = rules->razRule->parm3;
-
-                glLineWidth( 2 );
-                glColor4f( 0,0,0,0 );
-
-                glBegin( GL_LINE_STRIP );
-                glVertex2i( x0, y0 );
-                glVertex2i( x0 + b_width, y0 );
-                glVertex2i( x0 + b_width, y0 + b_height );
-                glVertex2i( x0, y0 + b_height);
-                glVertex2i( x0, y0 );
-                glEnd();
-            }
-            */
-
-    //        glTranslatef( -r.x, -r.y, 0 );
-    glPopMatrix();
-#endif
   } else {
     int b_width = prule->parm5;
     int b_height = prule->parm6;
@@ -7123,14 +6405,12 @@ int s52plib::RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules) {
   double latmin, lonmin, latmax, lonmax;
 
   GetPixPointSingleNoRotate(r.x + prule->parm2,
-                            r.y + prule->parm3 + prule->parm6, &latmin, &lonmin,
-                            vp);
+                            r.y + prule->parm3 + prule->parm6, &latmin, &lonmin);
   GetPixPointSingleNoRotate(r.x + prule->parm2 + prule->parm5,
-                            r.y + prule->parm3, &latmax, &lonmax, vp);
+                            r.y + prule->parm3, &latmax, &lonmax);
   LLBBox symbox;
   symbox.Set(latmin, lonmin, latmax, lonmax);
   rzRules->obj->BBObj.Expand(symbox);
-#endif
   return 1;
 }
 
@@ -9997,9 +9277,6 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
-//#ifdef USE_ANDROID_GLES2
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
   //    Get the pattern definition
   if ((rules->razRule->pixelPtr == NULL) ||
       (rules->razRule->parm1 != m_colortable_index) ||
@@ -10133,74 +9410,6 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
       //  Has a VBO been built for this object?
       if (1) {
         if (rzRules->obj->auxParm0 <= 0) {
-#if 0
-                        if(ppg_vbo->data_type != DATA_TYPE_SHORT){
-                            // We convert the vertex data from FLOAT to GL_SHORT to make the VBO smaller, but still keeping enough precision
-                            //  This requires a scale factor to reduce the range from existing  data to +/- 32K
-
-                            size_t np =  ppg_vbo->single_buffer_size / (2 * sizeof(float));
-                            np --;
-
-                            PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-                            TriPrim *p_tp = ppg->tri_prim_head;
-
-                            size_t npp = 0;
-                            while( p_tp ) {
-                                npp += p_tp->nVert;
-                                p_tp = (TriPrim *)p_tp->p_next;
-                            }
-
-                            //  Get the data range
-                            float * pRun = (float *)ppg_vbo->single_buffer;
-                            float north_max = -1e8;
-                            float north_min = 1e8;
-                            float east_max = -1e8;
-                            float east_min = 1e8;
-
-                            for( size_t i = 0 ; i < np ; i++){
-                                float east = *pRun++;
-                                float north = *pRun++;
-                                north_max = wxMax(north, north_max);
-                                north_min = wxMin(north, north_min);
-                                east_max = wxMax(east, east_max);
-                                east_min = wxMin(east, east_min);
-                            }
-
-                            float cfactx = wxMax(fabs(east_max), fabs(east_min));
-                            float cfacty = wxMax(fabs(north_max), fabs(north_min));
-                            float cfact = wxMax(cfactx, cfacty);
-
-                            float sfact = cfact / 32700.0;
-
-                            sfact = wxMax(sfact, 1.0);
-
-                            //  Copy/convert the data
-                            unsigned char *new_buf = (unsigned char *)malloc(np * 2 * sizeof(short));
-                            pRun = (float *)ppg_vbo->single_buffer;
-                            short *pd = (short *)new_buf;
-                            for( size_t i = 0 ; i < np ; i++){
-                                float east = *pRun++;
-                                float north = *pRun++;
-                                //                       short a = (east / sfact);
-                                //                       short b = (north / sfact);
-                                *pd++ = (east / sfact);
-                                *pd++ = (north / sfact);
-
-                            }
-
-                            // replace the buffer
-                            free(ppg_vbo->single_buffer);
-                            ppg_vbo->single_buffer = new_buf;
-                            ppg_vbo->single_buffer_size /= 2;
-
-                            // Record the scale/offset factors
-                            ppg_vbo->sfactor = sfact;
-                            ppg_vbo->soffset = 0.;
-
-                            ppg_vbo->data_type = DATA_TYPE_SHORT;
-
-                        }
-#endif
 
           GLuint vboId;
           // generate a new VBO and get the associated ID
@@ -10212,17 +9421,11 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
           glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
           // upload data to VBO
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-          glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-#endif
           glBufferData(GL_ARRAY_BUFFER, ppg_vbo->single_buffer_size,
                        ppg_vbo->single_buffer, GL_STATIC_DRAW);
 
         } else {
           glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-          glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-#endif
         }
       }
     }
@@ -10235,9 +9438,6 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
     TriPrim *p_tp = ppg->tri_prim_head;
     GLintptr vbo_offset = 0;
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-#endif
     //      Set up the stride sizes for the array
     int array_data_size = sizeof(float);
     GLint array_gl_type = GL_FLOAT;
@@ -10367,9 +9567,6 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
     if (b_useVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glDisableClientState(GL_VERTEX_ARRAY);  // deactivate vertex array
-#endif
     //  Restore the transform matrix to identity
     mat4x4 IM;
     mat4x4_identity(IM);
@@ -10382,111 +9579,11 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
   }  // if pPolyTessGeo
 
-#endif
   glDisable(GL_TEXTURE_2D);
 
   return 1;
 }
 
-void s52plib::RenderPolytessGL(ObjRazRules *rzRules,
-                               double z_clip_geom, wxPoint *ptp) {
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-  LLBBox BBView = vp->GetBBox();
-
-  //  Allow a little slop in calculating whether a triangle
-  //  is within the requested VPointCompat
-  double margin = BBView.GetLonRange() * .05;
-
-  int obj_xmin = 10000;
-  int obj_xmax = -10000;
-  int obj_ymin = 10000;
-  int obj_ymax = -10000;
-
-  PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-
-  TriPrim *p_tp = ppg->tri_prim_head;
-  while (p_tp) {
-    if (!BBView.IntersectOut(p_tp->tri_box)) {
-      //      Get and convert the points
-
-      wxPoint *pr = ptp;
-      if (ppg->data_type == DATA_TYPE_FLOAT) {
-        float *pvert_list = (float *)p_tp->p_vertex;
-
-        for (int iv = 0; iv < p_tp->nVert; iv++) {
-          float lon = *pvert_list++;
-          float lat = *pvert_list++;
-          GetPointPixSingle(rzRules, lat, lon, pr, vp);
-
-          obj_xmin = wxMin(obj_xmin, pr->x);
-          obj_xmax = wxMax(obj_xmax, pr->x);
-          obj_ymin = wxMin(obj_ymin, pr->y);
-          obj_ymax = wxMax(obj_ymax, pr->y);
-
-          pr++;
-        }
-      } else {
-        double *pvert_list = p_tp->p_vertex;
-
-        for (int iv = 0; iv < p_tp->nVert; iv++) {
-          double lon = *pvert_list++;
-          double lat = *pvert_list++;
-          GetPointPixSingle(rzRules, lat, lon, pr, vp);
-
-          obj_xmin = wxMin(obj_xmin, pr->x);
-          obj_xmax = wxMax(obj_xmax, pr->x);
-          obj_ymin = wxMin(obj_ymin, pr->y);
-          obj_ymax = wxMax(obj_ymax, pr->y);
-
-          pr++;
-        }
-      }
-
-      switch (p_tp->type) {
-        case PTG_TRIANGLE_FAN: {
-          glBegin(GL_TRIANGLE_FAN);
-          for (int it = 0; it < p_tp->nVert; it++)
-            glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
-          glEnd();
-          break;
-        }
-
-        case PTG_TRIANGLE_STRIP: {
-          glBegin(GL_TRIANGLE_STRIP);
-          for (int it = 0; it < p_tp->nVert; it++)
-            glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
-          glEnd();
-          break;
-        }
-        case PTG_TRIANGLES: {
-          glBegin(GL_TRIANGLES);
-          for (int it = 0; it < p_tp->nVert; it += 3) {
-            int xmin = wxMin(ptp[it].x, wxMin(ptp[it + 1].x, ptp[it + 2].x));
-            int xmax = wxMax(ptp[it].x, wxMax(ptp[it + 1].x, ptp[it + 2].x));
-            int ymin = wxMin(ptp[it].y, wxMin(ptp[it + 1].y, ptp[it + 2].y));
-            int ymax = wxMax(ptp[it].y, wxMax(ptp[it + 1].y, ptp[it + 2].y));
-
-            wxRect rect(xmin, ymin, xmax - xmin, ymax - ymin);
-            //                        if( rect.Intersects( m_render_rect ) )
-            {
-              glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
-              glVertex3f(ptp[it + 1].x, ptp[it + 1].y, z_clip_geom);
-              glVertex3f(ptp[it + 2].x, ptp[it + 2].y, z_clip_geom);
-            }
-          }
-          glEnd();
-          break;
-        }
-      }
-    }                     // if bbox
-    p_tp = p_tp->p_next;  // pick up the next in chain
-  }                       // while
-
-#endif
-#endif
-}
 
 #ifdef ocpnUSE_GL
 

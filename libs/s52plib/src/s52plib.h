@@ -322,9 +322,6 @@ public:
   int RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules);
   int RenderObjectToGLText(const wxGLContext &glcc, ObjRazRules *rzRules);
 
-  void RenderPolytessGL(ObjRazRules *rzRules, double z_clip_geom,
-                        wxPoint *ptp);
-
   bool EnableGLLS(bool benable);
 
   bool IsObjNoshow(const char *objcl);
