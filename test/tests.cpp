@@ -226,7 +226,7 @@ public:
     Sink() {
       auto& t = NavMsgBus::GetInstance();
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listener.Listen(n2k_msg.key(), this, EVT_FOO);
+      listener.Listen(n2k_msg, this, EVT_FOO);
 
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
@@ -302,7 +302,7 @@ public:
     Sink() {
       ObservableListener listener;
       Nmea2000Msg n2k_msg(static_cast<uint64_t>(1234));
-      listener.Listen(n2k_msg.key(), this, EVT_FOO);
+      listener.Listen(n2k_msg, this, EVT_FOO);
       listeners.push_back(std::move(listener));
       Bind(EVT_FOO, [&](ObservedEvt ev) {
         auto n2k_msg = UnpackEvtPointer<Nmea2000Msg>(ev);
@@ -375,7 +375,7 @@ public:
     path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP +
             "Guernesey-1659560590623.input.txt";
     auto driver = make_shared<FileCommDriver>("test-output.txt", path, msgbus);
-    listener.Listen(Nmea0183Msg("GPGLL").key(), this, EVT_FOO);
+    listener.Listen(Nmea0183Msg("GPGLL"), this, EVT_FOO);
     Bind(EVT_FOO, [&log](ObservedEvt ev) {
       auto ptr = ev.GetSharedPtr();
       auto n0183_msg = static_pointer_cast<const Nmea0183Msg>(ptr);
