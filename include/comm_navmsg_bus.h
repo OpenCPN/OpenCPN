@@ -37,7 +37,6 @@
 #include <wx/jsonreader.h>
 
 #include "comm_driver.h"
-#include "observable_navmsg.h"
 
 
 /** The raw message layer, a singleton. */

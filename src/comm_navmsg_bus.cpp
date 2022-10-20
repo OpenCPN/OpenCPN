@@ -24,7 +24,6 @@
  **************************************************************************/
 
 #include "comm_navmsg_bus.h"
-#include "observable_navmsg.h"
 
 // FIXME(leamas) test junk
 #include "conn_params.h"
@@ -32,7 +31,7 @@
 using namespace std;
 
 void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  ObservableMsg(msg->key()).Notify(msg);
+  Observable(*msg).Notify(msg);
 }
 
 NavMsgBus& NavMsgBus::GetInstance() {

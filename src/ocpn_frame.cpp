@@ -164,6 +164,7 @@
 // #include "comm_util.h"
 #include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
+#include "comm_navmsg_bus.h"
 
 //
 // #ifdef __linux__

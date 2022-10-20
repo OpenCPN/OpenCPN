@@ -17,8 +17,7 @@
 #include "comm_bridge.h"
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
-//#include "comm_n0183_output.h"
-#include "observable_navmsg.h"
+#include "comm_navmsg_bus.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
 #include "routeman.h"
@@ -176,7 +175,7 @@ public:
 
   public:
     Sink() {
-      ObservableMsg observable("1234");
+      Observable observable("1234");
       listener.Listen(observable.key, this, EVT_BAR);
       Bind(EVT_BAR, [&](ObservedEvt ev) {
         auto msg = ev.GetSharedPtr();
@@ -196,7 +195,7 @@ public:
       auto id = static_cast<uint64_t>(1234);
       auto n2k_msg =
           std::make_shared<const Nmea2000Msg>(id, payload, shared_navaddr_none);
-      ObservableMsg observable("1234");
+      Observable observable("1234");
       observable.Notify(n2k_msg);
     }
   };

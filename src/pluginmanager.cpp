@@ -96,6 +96,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
+#include "comm_navmsg_bus.h"
 #include "config.h"
 #include "downloader.h"
 #include "download_mgr.h"

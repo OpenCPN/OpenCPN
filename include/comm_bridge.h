@@ -37,7 +37,6 @@
 
 #include "comm_decoder.h"
 #include "comm_navmsg.h"
-#include "observable_navmsg.h"
 
 
 typedef struct{

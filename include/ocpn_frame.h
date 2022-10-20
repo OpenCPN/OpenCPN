@@ -40,7 +40,6 @@
 #include "gui_lib.h"
 #include "s52s57.h"
 #include "SencManager.h"
-#include "observable_navmsg.h"
 #include "comm_appmsg_bus.h"
 #include "bbox.h"
 
