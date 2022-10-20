@@ -269,7 +269,7 @@ static const GLchar *S52AP_fragment_shader_source =
     "   if(mod(yp, 2.0) < 0.1) fstagger = 0.5;\n"
     "   float x = (gl_FragCoord.x - xOff) / texPOTWidth;\n"
     "   float y = (gl_FragCoord.y + yOff) / texPOTHeight;\n"
-    "   gl_FragColor = texture2D(uTex, vec2(x + fstagger, y));\n"
+    "   gl_FragColor = texture2D(uTex, vec2(x + fstagger, -y));\n"
     "}\n";
 #endif
 
