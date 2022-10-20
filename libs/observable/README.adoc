@@ -28,7 +28,7 @@ The framework is developed in the opencpn project [1].
 ## Extending
 
 It is easy to extend the framework to handle other types. The basic 
-condition is that anything which should use Listen() and/or Notify()
+condition is that anything which should use Listen() and Notify()
 should implement the KeyProvider interface. This is just the ability
 to return a unique, stable key.
 
