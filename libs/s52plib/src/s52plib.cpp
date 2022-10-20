@@ -110,8 +110,6 @@ float g_scaminScale;
 void DrawAALine(wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
                 int dash, int space);
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
-void PLIBDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
-                         bool b_hiqual);
 
 void LoadS57Config();
 bool loadS52Shaders();
@@ -1230,8 +1228,7 @@ void s52plib::DestroyRules(RuleHash *rh) {
 }
 
 void s52plib::FlushSymbolCaches(void) {
-  if (!useLegacyRaster)
-    m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true);
+  m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true);
 
   RuleHash *rh = _symb_sym;
 
@@ -1383,10 +1380,7 @@ void s52plib::SetPLIBColorScheme(wxString scheme) {
   }
   m_colortable_index = m_chartSymbols.FindColorTable(scheme);
 
-  //    if( !useLegacyRaster ) m_chartSymbols.LoadRasterFileForColorTable(
-  //    m_colortable_index );
-
-  if (!useLegacyRaster) m_chartSymbols.SetColorTableIndex(m_colortable_index);
+  m_chartSymbols.SetColorTableIndex(m_colortable_index);
 
   m_ColorScheme = scheme;
 }
@@ -1740,7 +1734,8 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
   wxCoord descent = 0;
   wxCoord exlead = 0;
 
-  double sfactor = 1; vp_plib.ref_scale / vp_plib.chart_scale;
+  //FIXME(plib)
+  double sfactor = 1; //vp_plib.ref_scale / vp_plib.chart_scale;
   double scale_factor = wxMax((sfactor) / 4., 1.);
 
   //FIXME (plib)
@@ -2410,56 +2405,48 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules,
       dc.GetTextExtent(_T("X"), &width, NULL, NULL, NULL, specFont);
       text->avgCharWidth = width;
 
-      //    If we have loaded a legacy S52 compliant PLIB,
-      //    then we should use the formal font selection as required by S52
-      //    specifications. Otherwise, we have our own plan...
+      int spec_weight_t = text->weight - 0x30;
+      wxFontWeight fontweight_t;
+      if (spec_weight_t < 5)
+        fontweight_t = wxFONTWEIGHT_LIGHT;
+      else if (spec_weight_t == 5)
+        fontweight_t = wxFONTWEIGHT_NORMAL;
+      else
+        fontweight_t = wxFONTWEIGHT_BOLD;
 
-      if (useLegacyRaster) {
-        text->pFont = specFont;
-      } else {
-        int spec_weight = text->weight - 0x30;
-        wxFontWeight fontweight;
-        if (spec_weight < 5)
-          fontweight = wxFONTWEIGHT_LIGHT;
-        else if (spec_weight == 5)
-          fontweight = wxFONTWEIGHT_NORMAL;
-        else
-          fontweight = wxFONTWEIGHT_BOLD;
-
-        wxFont sys_font = *wxNORMAL_FONT;
-        int default_size = sys_font.GetPointSize();
+      wxFont sys_font = *wxNORMAL_FONT;
+      int default_size = sys_font.GetPointSize();
 
 #ifdef __WXOSX__
-        default_size += 1;  // default to 1pt larger than system UI font
+      default_size += 1;  // default to 1pt larger than system UI font
 #else
-        default_size += 2;  // default to 2pt larger than system UI font
+      default_size += 2;  // default to 2pt larger than system UI font
 #endif
 
-        wxFont *templateFont =
-            GetOCPNScaledFont_PlugIn(_("ChartTexts"), default_size);
+      wxFont *templateFont =
+          GetOCPNScaledFont_PlugIn(_("ChartTexts"), default_size);
 
         // NOAA ENC fles requests font size up to 20 points, which looks very
         // disproportioned. Let's scale those sizes down to more reasonable
         // values.
-        int fontSize = text->bsize;
+      int fontSize = text->bsize;
 
-        if (fontSize > 18)
-          fontSize -= 8;
-        else if (fontSize > 13)
-          fontSize -= 3;
+      if (fontSize > 18)
+        fontSize -= 8;
+      else if (fontSize > 13)
+        fontSize -= 3;
 
-        // Now factor in the users selected font size.
-        fontSize += templateFont->GetPointSize() - 10;
+      // Now factor in the users selected font size.
+      fontSize += templateFont->GetPointSize() - 10;
 
-        // In no case should font size be less than 10, since it becomes
-        // unreadable
-        fontSize = wxMax(10, fontSize);
+      // In no case should font size be less than 10, since it becomes
+      // unreadable
+      fontSize = wxMax(10, fontSize);
 
-        text->pFont = FindOrCreateFont_PlugIn(
-            fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight,
+      text->pFont = FindOrCreateFont_PlugIn(
+            fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight_t,
             false, templateFont->GetFaceName());
-      }
-    }
+  }
 
     //  Render text at declared x/y of object
     wxPoint r;
@@ -2903,8 +2890,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     // Instantiate the symbol if necessary
     if ((prule->pixelPtr == NULL) || (prule->parm1 != m_colortable_index) ||
         b_dump_cache) {
-      Image = useLegacyRaster ? RuleXBMToImage(prule)
-                              : m_chartSymbols.GetImage(prule->name.SYNM);
+      Image =  m_chartSymbols.GetImage(prule->name.SYNM);
 
       // delete any old private data
       ClearRulesCache(prule);
@@ -2957,13 +2943,6 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         prule->parm2 = w;
         prule->parm3 = h;
       } else {
-        //      Make the masked Bitmap
-        if (useLegacyRaster) {
-          pbm = new wxBitmap(Image);
-          wxMask *pmask = new wxMask(*pbm, m_unused_wxColor);
-          pbm->SetMask(pmask);
-        }
-
         bool b_has_trans = false;
 #if (defined(__WXGTK__) || defined(__WXMAC__))
 
@@ -2998,11 +2977,9 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         }
 
 #else
-        if (!useLegacyRaster) {
-          pbm = new wxBitmap(Image, 32);  // windows
-          wxMask *pmask = new wxMask(*pbm, m_unused_wxColor);
-          pbm->SetMask(pmask);
-        }
+        pbm = new wxBitmap(Image, 32);  // windows
+        wxMask *pmask = new wxMask(*pbm, m_unused_wxColor);
+        pbm->SetMask(pmask);
 #endif
 
         //      Save the bitmap ptr and aux parms in the rule
@@ -4185,9 +4162,6 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
 
     VC_Element *pnode;
 
-#ifdef ocpnUSE_GL
-
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     glUseProgram(S52color_tri_shader_program);
 
     float fBuf[4];
@@ -4203,9 +4177,7 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
 
     GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
-#endif
 
-#endif
     for (int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++) {
       int seg_index = iseg * 3;
       index_run = &rzRules->obj->m_lsindex_array[seg_index];
@@ -4592,7 +4564,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   // Rotate
-  mat4x4 I, Q;
+  mat4x4 I;
   mat4x4_identity(I);
 
   GLint matloc =
@@ -5775,7 +5747,6 @@ int s52plib::RenderCARC(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   //    glDisable( GL_SCISSOR_TEST );
 
@@ -5988,7 +5959,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   glUniform1f(sector2loc, (se * PI / 180.));
 
   // Rotate and translate
-  mat4x4 I, Q;
+  mat4x4 I;
   mat4x4_identity(I);
 
   mat4x4_translate_in_place(I, r.x, r.y, 0);
@@ -6049,8 +6020,6 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   rzRules->obj->BBObj.Expand(symbox);
 
   //    glEnable( GL_SCISSOR_TEST );
-
-#endif
 
   return 1;
 }
@@ -8025,17 +7994,11 @@ void s52plib::RenderToBufferFilledPolygon(ObjRazRules *rzRules, S57Obj *obj,
 }
 
 int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   return RenderToGLAC_GLSL(rzRules, rules);
-#else
-  return RenderToGLAC_Direct(rzRules, rules);
-#endif
 }
 
 
 int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
-#ifdef ocpnUSE_GL
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
   GLenum reset_err = glGetError();
 
@@ -8295,13 +8258,13 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
         //      conform.
         if (BBView.GetMaxLon() >= 180.) {
           if (rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
-            x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+            x_origin += (float)(mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI);
         } else if ((BBView.GetMinLon() <= -180. &&
                     rzRules->obj->BBObj.GetMaxLon() >
                         BBView.GetMinLon() + 360.) ||
                    (rzRules->obj->BBObj.GetMaxLon() > 180 &&
                     BBView.GetMinLon() + 360 < rzRules->obj->BBObj.GetMaxLon()))
-          x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+          x_origin -= (float)(mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI);
       }
     }
 
@@ -8391,576 +8354,13 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
     }
   }  // if pPolyTessGeo
 
-#endif  //#ifdef ocpnUSE_GL
-#endif
   return 1;
 }
 
-int s52plib::RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules) {
-#ifdef ocpnUSE_GL
-//  GLint id;
-//  glGetIntegerv(GL_CURRENT_PROGRAM,&id);
 
-  //GLenum reset_err = glGetError();
 
-  S52color *c;
-  char *str = (char *)rules->INSTstr;
-
-  c = getColor(str);
-
-// #ifndef ocpnUSE_GLES  // linestipple is emulated poorly
-//   glColor3ub(c->R, c->G, c->B);
-// #endif
-
-  LLBBox BBView = GetBBox();
-  // please untangle this logic with the logic below
-  if (BBView.GetMaxLon() + 180 < vp_plib.clon)
-    BBView.Set(BBView.GetMinLat(), BBView.GetMinLon() + 360, BBView.GetMaxLat(),
-               BBView.GetMaxLon() + 360);
-  else if (BBView.GetMinLon() - 180 > vp_plib.clon)
-    BBView.Set(BBView.GetMinLat(), BBView.GetMinLon() - 360, BBView.GetMaxLat(),
-               BBView.GetMaxLon() - 360);
-
-  //  Allow a little slop in calculating whether a triangle
-  //  is within the requested VPointCompat
-  double margin = BBView.GetLonRange() * .05;
-  BBView.EnLarge(margin);
-
-  bool b_useVBO = m_useVBO && !rzRules->obj->auxParm1;
-
-  if (rzRules->obj->pPolyTessGeo) {
-    bool b_temp_vbo = false;
-    bool b_transform = false;
-
-    // Set up the OpenGL transform matrix for this object
-    // We transform from SENC SM vertex data to screen.
-
-//#ifndef USE_ANDROID_GLES2
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glColor3ub(c->R, c->G, c->B);
-
-    //  First, the VP transform
-    if (b_useVBO || vp->m_projection_type == PROJECTION_MERCATOR) {
-      b_transform = true;
-      glPushMatrix();
-
-      glTranslatef(vp->pix_width / 2, vp->pix_height / 2, 0);
-      glScalef(vp->view_scale_ppm, -vp->view_scale_ppm, 0);
-      glTranslatef(-rzRules->sm_transform_parms->easting_vp_center,
-                   -rzRules->sm_transform_parms->northing_vp_center, 0);
-      //  Next, the per-object transform
-
-      float x_origin = rzRules->obj->x_origin;
-
-      if (rzRules->obj->m_chart_context->chart) {  // not a PlugIn Chart
-        if (((int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93) ||
-            ((int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93COMP)) {
-          //      We may need to translate object coordinates by 360 degrees to
-          //      conform.
-          if (BBView.GetMaxLon() >= 180.) {
-            if (rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
-              x_origin +=
-                  (float)(mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI);
-          } else if ((BBView.GetMinLon() <= -180. &&
-                      rzRules->obj->BBObj.GetMaxLon() >
-                          BBView.GetMinLon() + 360.) ||
-                     (rzRules->obj->BBObj.GetMaxLon() > 180 &&
-                      BBView.GetMinLon() + 360 <
-                          rzRules->obj->BBObj.GetMaxLon()))
-            x_origin -=
-                (float)(mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI);
-        }
-      }
-
-      glTranslatef(x_origin, rzRules->obj->y_origin, 0);
-      glScalef(rzRules->obj->x_rate, rzRules->obj->y_rate, 0);
-    }
-#endif
-
-    // perform deferred tesselation
-    if (!rzRules->obj->pPolyTessGeo->IsOk()) {
-      rzRules->obj->pPolyTessGeo->BuildDeferredTess();
-    }
-
-    //  Get the vertex data
-    PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-
-    //  Has the input vertex buffer been converted to "single_alloc float"
-    //  model? and is it allowed?
-    if (!ppg_vbo->bsingle_alloc && (rzRules->obj->auxParm1 >= 0)) {
-      int data_size = sizeof(float);
-
-      //  First calculate the required total byte size
-      int total_byte_size = 0;
-      TriPrim *p_tp = ppg_vbo->tri_prim_head;
-      while (p_tp) {
-        total_byte_size += p_tp->nVert * 2 * data_size;
-        p_tp = p_tp->p_next;  // pick up the next in chain
-      }
-
-      float *vbuf = (float *)malloc(total_byte_size);
-      p_tp = ppg_vbo->tri_prim_head;
-
-      if (ppg_vbo->data_type == DATA_TYPE_DOUBLE) {  // DOUBLE to FLOAT
-        float *p_run = vbuf;
-        while (p_tp) {
-          float *pfbuf = p_run;
-          for (int i = 0; i < p_tp->nVert * 2; ++i) {
-            float x = (float)(p_tp->p_vertex[i]);
-            *p_run++ = x;
-          }
-
-          free(p_tp->p_vertex);
-          p_tp->p_vertex = (double *)pfbuf;
-
-          p_tp = p_tp->p_next;  // pick up the next in chain
-        }
-      } else {  // FLOAT to FLOAT
-        float *p_run = vbuf;
-        while (p_tp) {
-          memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(float));
-
-          free(p_tp->p_vertex);
-          p_tp->p_vertex = (double *)p_run;
-
-          p_run += p_tp->nVert * 2 * sizeof(float);
-
-          p_tp = p_tp->p_next;  // pick up the next in chain
-        }
-      }
-
-      ppg_vbo->bsingle_alloc = true;
-      ppg_vbo->single_buffer = (unsigned char *)vbuf;
-      ppg_vbo->single_buffer_size = total_byte_size;
-      ppg_vbo->data_type = DATA_TYPE_FLOAT;
-    }
-
-    if (b_useVBO) {
-      //  Has a VBO been built for this object?
-      if (1) {
-        glGetError();  // clear it
-
-        if (rzRules->obj->auxParm0 <= 0) {
-#ifdef xUSE_ANDROID_GLES2
-          if (ppg_vbo->data_type != DATA_TYPE_SHORT) {
-            // We convert the vertex data from FLOAT to GL_SHORT to make the VBO
-            // smaller, but still keeping enough precision
-            //  This requires a scale factor to reduce the range from existing
-            //  data to +/- 32K
-
-            size_t np = ppg_vbo->single_buffer_size / (2 * sizeof(float));
-            np--;
-
-            PolyTriGroup *ppg =
-                rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-            TriPrim *p_tp = ppg->tri_prim_head;
-
-            size_t npp = 0;
-            while (p_tp) {
-              npp += p_tp->nVert;
-              p_tp = (TriPrim *)p_tp->p_next;
-            }
-
-            //  Get the data range
-            float *pRun = (float *)ppg_vbo->single_buffer;
-            float north_max = -1e8;
-            float north_min = 1e8;
-            float east_max = -1e8;
-            float east_min = 1e8;
-
-            for (size_t i = 0; i < np; i++) {
-              float east = *pRun++;
-              float north = *pRun++;
-              north_max = wxMax(north, north_max);
-              north_min = wxMin(north, north_min);
-              east_max = wxMax(east, east_max);
-              east_min = wxMin(east, east_min);
-            }
-
-            float cfactx = wxMax(fabs(east_max), fabs(east_min));
-            float cfacty = wxMax(fabs(north_max), fabs(north_min));
-            float cfact = wxMax(cfactx, cfacty);
-
-            float sfact = cfact / 32700.0;
-
-            sfact = wxMax(sfact, 1.0);
-
-            //  Copy/convert the data
-            unsigned char *new_buf =
-                (unsigned char *)malloc(np * 2 * sizeof(short));
-            pRun = (float *)ppg_vbo->single_buffer;
-            short *pd = (short *)new_buf;
-            for (size_t i = 0; i < np; i++) {
-              float east = *pRun++;
-              float north = *pRun++;
-              //                       short a = (east / sfact);
-              //                       short b = (north / sfact);
-              *pd++ = (east / sfact);
-              *pd++ = (north / sfact);
-            }
-
-            // replace the buffer
-            free(ppg_vbo->single_buffer);
-            ppg_vbo->single_buffer = new_buf;
-            ppg_vbo->single_buffer_size /= 2;
-
-            // Record the scale/offset factors
-            ppg_vbo->sfactor = sfact;
-            ppg_vbo->soffset = 0.;
-
-            ppg_vbo->data_type = DATA_TYPE_SHORT;
-          }
-
-#endif
-          b_temp_vbo = (rzRules->obj->auxParm0 ==
-                        -5);  // Must we use a temporary VBO?  Probably slower
-                              // than simple glDrawArrays
-
-          GLuint vboId = 0;
-          // generate a new VBO and get the associated ID
-          glGenBuffers(1, &vboId);
-
-          rzRules->obj->auxParm0 = vboId;
-
-          // bind VBO in order to use
-          glBindBuffer(GL_ARRAY_BUFFER, vboId);
-          GLenum err = glGetError();
-          if (err) {
-            wxString msg;
-            msg.Printf(_T("VBO Error A: %d"), err);
-            wxLogMessage(msg);
-            return 0;
-          }
-
-          // upload data to VBO
-//#ifndef USE_ANDROID_GLES2
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-          glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-#endif
-          glBufferData(GL_ARRAY_BUFFER, ppg_vbo->single_buffer_size,
-                       ppg_vbo->single_buffer, GL_STATIC_DRAW);
-          err = glGetError();
-          if (err) {
-            wxString msg;
-            msg.Printf(_T("VBO Error B: %d"), err);
-            wxLogMessage(msg);
-            return 0;
-          }
-
-        } else {
-          glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
-          GLenum err = glGetError();
-          if (err) {
-            wxString msg;
-            msg.Printf(_T("VBO Error C: %d"), err);
-            wxLogMessage(msg);
-            return 0;
-          }
-
-//#ifndef USE_ANDROID_GLES2
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-          glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-#endif
-        }
-      }
-    }
-
-    PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-
-    double ppg_scale_factor = ppg->sfactor;
-    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
-      ppg_scale_factor = 1.0;
-
-    TriPrim *p_tp = ppg->tri_prim_head;
-    GLintptr vbo_offset = 0;
-
-//#ifndef USE_ANDROID_GLES2
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
-#endif
-    //      Set up the stride sizes for the array
-    int array_data_size = sizeof(float);
-    GLint array_gl_type = GL_FLOAT;
-
-    if (ppg->data_type == DATA_TYPE_DOUBLE) {
-      array_data_size = sizeof(double);
-      array_gl_type = GL_DOUBLE;
-    }
-
-    if (ppg->data_type == DATA_TYPE_SHORT) {
-      array_data_size = sizeof(short);
-      array_gl_type = GL_SHORT;
-    }
-
-//#ifdef USE_ANDROID_GLES2
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-    glUseProgram(S52color_tri_shader_program);
-
-    // Disable VBO's (vertex buffer objects) for attributes.
-    if (!b_useVBO) glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    GLint pos = glGetAttribLocation(S52color_tri_shader_program, "position");
-    glEnableVertexAttribArray(pos);
-
-    float angle = 0;
-
-    // Build Transform matrix
-    mat4x4 I, Q;
-    mat4x4_identity(I);
-
-    // Scale
-    I[0][0] *= rzRules->obj->x_rate;
-    I[1][1] *= rzRules->obj->y_rate;
-
-    // Translate
-    float x_origin = rzRules->obj->x_origin;
-
-    if (rzRules->obj->m_chart_context->chart) {  // not a PlugIn Chart
-      if (((int)rzRules->obj->m_chart_context->chart_type  ==
-           (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93) ||
-          ((int)rzRules->obj->m_chart_context->chart_type  ==
-           (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93COMP)) {
-        //      We may need to translate object coordinates by 360 degrees to
-        //      conform.
-        if (BBView.GetMaxLon() >= 180.) {
-          if (rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
-            x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-        } else if ((BBView.GetMinLon() <= -180. &&
-                    rzRules->obj->BBObj.GetMaxLon() >
-                        BBView.GetMinLon() + 360.) ||
-                   (rzRules->obj->BBObj.GetMaxLon() > 180 &&
-                    BBView.GetMinLon() + 360 < rzRules->obj->BBObj.GetMaxLon()))
-          x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-      }
-    }
-
-    I[3][0] = -(rzRules->sm_transform_parms->easting_vp_center - x_origin) *
-              vp_plib.view_scale_ppm;
-    I[3][1] = -(rzRules->sm_transform_parms->northing_vp_center -
-                rzRules->obj->y_origin) *
-              -vp_plib.view_scale_ppm;
-
-    // Scale
-    I[0][0] *= vp_plib.view_scale_ppm * ppg_scale_factor;
-    I[1][1] *= -vp_plib.view_scale_ppm * ppg_scale_factor;
-
-    // Rotate
-    mat4x4_rotate_Z(Q, I, angle);
-
-    // Translate
-    Q[3][0] += vp_plib.pix_width / 2;
-    Q[3][1] += vp_plib.pix_height / 2;
-
-    GLint matloc =
-        glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
-    glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
-
-    float colorv[4];
-    colorv[0] = c->R / float(256);
-    colorv[1] = c->G / float(256);
-    colorv[2] = c->B / float(256);
-    colorv[3] = 1.0;
-
-    GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
-    glUniform4fv(colloc, 1, colorv);
-
-#endif
-    while (p_tp) {
-      LLBBox box;
-      if (!rzRules->obj->m_chart_context->chart) {  // This is a PlugIn Chart
-        LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
-        box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
-      } else
-        box = p_tp->tri_box;
-
-      if (!BBView.IntersectOut(box)) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
-        if (b_useVBO) {
-          glVertexAttribPointer(pos, 2, array_gl_type, GL_FALSE, 0,
-                                (GLvoid *)(vbo_offset));
-          glDrawArrays(p_tp->type, 0, p_tp->nVert);
-        } else {
-          float *bufOffset = (float *)(&ppg->single_buffer[vbo_offset]);
-          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0, bufOffset);
-          glDrawArrays(p_tp->type, 0, p_tp->nVert);
-        }
-
-#else
-        if (b_useVBO) {
-          glVertexPointer(2, array_gl_type, 2 * array_data_size,
-                          (GLvoid *)(vbo_offset));
-          if (vbo_offset + p_tp->nVert * 2 * array_data_size <=
-              ppg_vbo->single_buffer_size)
-            glDrawArrays(p_tp->type, 0, p_tp->nVert);
-        } else {
-          if (vp->m_projection_type == PROJECTION_MERCATOR) {
-            glVertexPointer(2, array_gl_type, 2 * array_data_size,
-                            p_tp->p_vertex);
-            glDrawArrays(p_tp->type, 0, p_tp->nVert);
-          } else {
-            // temporary slow hack
-            glDisableClientState(GL_VERTEX_ARRAY);
-
-            glBegin(p_tp->type);
-            float *pvert_list = (float *)p_tp->p_vertex;
-            for (int i = 0; i < p_tp->nVert; i++) {
-              float lon = *pvert_list++;
-              float lat = *pvert_list++;
-              wxPoint r;
-              GetPointPixSingle(rzRules, lat, lon, &r, vp);
-
-              if (r.x != INVALID_COORD)
-                glVertex2i(r.x, r.y);
-              else if (p_tp->type != GL_TRIANGLE_FAN) {
-                glEnd();
-                glBegin(p_tp->type);
-                if (p_tp->type == GL_TRIANGLES)
-                  while (i % 3 < 2) i++;
-              }
-            }
-            glEnd();
-          }
-        }
-#endif
-      }
-
-      vbo_offset += p_tp->nVert * 2 * array_data_size;
-
-      // pick up the next in chain
-      if (!rzRules->obj->m_chart_context->chart) {  // This is a PlugIn Chart
-        LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
-        p_tp = (TriPrim *)p_ltp->p_next;
-      } else
-        p_tp = p_tp->p_next;
-
-    }  // while
-
-    if (b_useVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-
-//#ifndef USE_ANDROID_GLES2
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glDisableClientState(GL_VERTEX_ARRAY);  // deactivate vertex array
-
-    if (b_transform) glPopMatrix();
-#else
-    mat4x4 IM;
-    mat4x4_identity(IM);
-    GLint matlocf =
-        glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
-    glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
-    glUseProgram(0);
-#endif
-
-    if (b_useVBO && b_temp_vbo) {
-      glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
-      glDeleteBuffers(1, (unsigned int *)&rzRules->obj->auxParm0);
-      rzRules->obj->auxParm0 = 0;
-    }
-  }  // if pPolyTessGeo
-
-#endif  //#ifdef ocpnUSE_GL
-
-  return 1;
-}
 
 void s52plib::SetGLClipRect(const VPointCompat &vp, const wxRect &rect) {
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  bool b_clear = false;
-  bool s_b_useStencil = m_useStencil;
-
-#if 0
-    /* for some reason this causes an occasional bug in depth mode, I cannot
-     *       seem to solve it yet, so for now: */
-    if(s_b_useStencil && s_b_useScissorTest) {
-        wxRect vp_rect(0, 0, vp.pix_width, vp.pix_height);
-        if(rect != vp_rect) {
-            glEnable(GL_SCISSOR_TEST);
-            glScissor(rect.x, cc1->m_canvas_height-rect.height-rect.y, rect.width, rect.height);
-}
-
-if(b_clear) {
-    glBegin(GL_QUADS);
-    glVertex2i( rect.x, rect.y );
-    glVertex2i( rect.x + rect.width, rect.y );
-    glVertex2i( rect.x + rect.width, rect.y + rect.height );
-    glVertex2i( rect.x, rect.y + rect.height );
-    glEnd();
-}
-
-/* the code in s52plib depends on the depth buffer being
- *           initialized to this value, this code should go there instead and
- *           only a flag set here. */
-if(!s_b_useStencil) {
-    glClearDepth( 0.25 );
-    glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
-    glClear( GL_DEPTH_BUFFER_BIT );
-    glDepthMask( GL_FALSE );
-    glClearDepth( 1 ); // set back to default of 1
-    glDepthFunc( GL_GREATER );                          // Set the test value
-}
-return;
-}
-#endif
-  // slower way if there is no scissor support
-  if (!b_clear)
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE,
-                GL_FALSE);  // disable color buffer
-
-  if (s_b_useStencil) {
-    //    Create a stencil buffer for clipping to the region
-    glEnable(GL_STENCIL_TEST);
-    glStencilMask(0x1);  // write only into bit 0 of the stencil buffer
-    glClear(GL_STENCIL_BUFFER_BIT);
-
-    //    We are going to write "1" into the stencil buffer wherever the region
-    //    is valid
-    glStencilFunc(GL_ALWAYS, 1, 1);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-  } else  //  Use depth buffer for clipping
-  {
-    glEnable(GL_DEPTH_TEST);  // to enable writing to the depth buffer
-    glDepthFunc(GL_ALWAYS);   // to ensure everything you draw passes
-    glDepthMask(GL_TRUE);     // to allow writes to the depth buffer
-
-    glClear(GL_DEPTH_BUFFER_BIT);  // for a fresh start
-
-    //    Decompose the region into rectangles, and draw as quads
-    //    With z = 1
-    // dep buffer clear = 1
-    // 1 makes 0 in dep buffer, works
-    // 0 make .5 in depth buffer
-    // -1 makes 1 in dep buffer
-
-    //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
-    //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
-    //    Subsequent drawing at z=0 (depth = 0.5) will pass if using
-    //    glDepthFunc(GL_GREATER);
-    glTranslatef(0, 0, .5);
-  }
-
-  glBegin(GL_QUADS);
-  glVertex2i(rect.x, rect.y);
-  glVertex2i(rect.x + rect.width, rect.y);
-  glVertex2i(rect.x + rect.width, rect.y + rect.height);
-  glVertex2i(rect.x, rect.y + rect.height);
-  glEnd();
-
-  if (s_b_useStencil) {
-    //    Now set the stencil ops to subsequently render only where the stencil
-    //    bit is "1"
-    glStencilFunc(GL_EQUAL, 1, 1);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-  } else {
-    glDepthFunc(GL_GREATER);  // Set the test value
-    glDepthMask(GL_FALSE);    // disable depth buffer
-    glTranslatef(0, 0, -.5);  // reset translation
-  }
-
-  if (!b_clear)
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
-#endif
 }
 
 void RotateToViewPort(const VPointCompat &vp) {
@@ -8986,293 +8386,8 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   return RenderToGLAP_GLSL(rzRules, rules);
 #else
-
-#ifdef ocpnUSE_GL
-  if (rules->razRule == NULL) return 0;
-
-  int obj_xmin = 10000;
-  int obj_xmax = -10000;
-  int obj_ymin = 10000;
-  int obj_ymax = -10000;
-
-  double z_clip_geom = 1.0;
-  double z_tex_geom = 0.;
-
-  LLBBox BBView = vp->GetBBox();
-
-  wxPoint *ptp;
-  if (rzRules->obj->pPolyTessGeo) {
-    if (!rzRules->obj->pPolyTessGeo->IsOk()) {  // perform deferred tesselation
-      rzRules->obj->pPolyTessGeo->BuildDeferredTess();
-    }
-
-    ptp = (wxPoint *)malloc((rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1) *
-                            sizeof(wxPoint));
-  } else
-    return 0;
-
-  if (m_useStencilAP) {
-    glPushAttrib(GL_STENCIL_BUFFER_BIT);  // See comment below
-    //    Use masked bit "1" of the stencil buffer to create a stencil for the
-    //    area of interest
-
-    glEnable(GL_STENCIL_TEST);
-    glStencilMask(0x2);  // write only into bit 1 of the stencil buffer
-    glColorMask(false, false, false,
-                false);  // Disable writing to the color buffer
-    glClear(GL_STENCIL_BUFFER_BIT);
-
-    //    We are going to write "2" into the stencil buffer wherever the object
-    //    is valid
-    glStencilFunc(GL_ALWAYS, 2, 2);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-  } else {
-    glEnable(GL_DEPTH_TEST);  // to use the depth test
-    glDepthFunc(GL_GREATER);  // Respect global render mask in depth buffer
-    glDepthMask(GL_TRUE);     // to allow writes to the depth buffer
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE,
-                GL_FALSE);  // disable color buffer
-
-    glColor3f(1, 1, 0);
-
-    //  If we are using stencil for overall clipping, then we are only
-    //  using depth buffer for AreaPattern rendering
-    //  So, each AP render can start with a clear depth buffer
-
-    if (m_useStencil) {
-      glClearDepth(.26);
-      glClear(GL_DEPTH_BUFFER_BIT);  // for a fresh start
-    }
-    //    Overall chart clip buffer was set at z=0.5
-    //    Draw this clip geometry at z = .25, so still respecting the previously
-    //    established clip region Subsequent drawing to this area at z=.25  will
-    //    pass only this area if using glDepthFunc(GL_EQUAL);
-
-    z_clip_geom = .25;
-    z_tex_geom = .25;
-  }
-
-  PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-
-  TriPrim *p_tp = ppg->tri_prim_head;
-  while (p_tp) {
-    LLBBox box;
-    if (!rzRules->obj->m_chart_context->chart) {  // This is a PlugIn Chart
-      LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
-      box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
-    } else
-      box = p_tp->tri_box;
-
-    if (!BBView.IntersectOut(box)) {
-      //      Get and convert the points
-
-      wxPoint *pr = ptp;
-      if (ppg->data_type == DATA_TYPE_FLOAT) {
-        float *pvert_list = (float *)p_tp->p_vertex;
-
-        for (int iv = 0; iv < p_tp->nVert; iv++) {
-          float lon = *pvert_list++;
-          float lat = *pvert_list++;
-          GetPointPixSingle(rzRules, lat, lon, pr, vp);
-
-          obj_xmin = wxMin(obj_xmin, pr->x);
-          obj_xmax = wxMax(obj_xmax, pr->x);
-          obj_ymin = wxMin(obj_ymin, pr->y);
-          obj_ymax = wxMax(obj_ymax, pr->y);
-
-          pr++;
-        }
-      } else {
-        double *pvert_list = p_tp->p_vertex;
-
-        for (int iv = 0; iv < p_tp->nVert; iv++) {
-          double lon = *pvert_list++;
-          double lat = *pvert_list++;
-          GetPointPixSingle(rzRules, lat, lon, pr, vp);
-
-          obj_xmin = wxMin(obj_xmin, pr->x);
-          obj_xmax = wxMax(obj_xmax, pr->x);
-          obj_ymin = wxMin(obj_ymin, pr->y);
-          obj_ymax = wxMax(obj_ymax, pr->y);
-
-          pr++;
-        }
-      }
-
-      switch (p_tp->type) {
-        case PTG_TRIANGLE_FAN: {
-          glBegin(GL_TRIANGLE_FAN);
-          for (int it = 0; it < p_tp->nVert; it++)
-            glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
-          glEnd();
-          break;
-        }
-
-        case PTG_TRIANGLE_STRIP: {
-          glBegin(GL_TRIANGLE_STRIP);
-          for (int it = 0; it < p_tp->nVert; it++)
-            glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
-          glEnd();
-          break;
-        }
-        case PTG_TRIANGLES: {
-          glBegin(GL_TRIANGLES);
-          for (int it = 0; it < p_tp->nVert; it += 3) {
-            int xmin = wxMin(ptp[it].x, wxMin(ptp[it + 1].x, ptp[it + 2].x));
-            int xmax = wxMax(ptp[it].x, wxMax(ptp[it + 1].x, ptp[it + 2].x));
-            int ymin = wxMin(ptp[it].y, wxMin(ptp[it + 1].y, ptp[it + 2].y));
-            int ymax = wxMax(ptp[it].y, wxMax(ptp[it + 1].y, ptp[it + 2].y));
-
-            wxRect rect(xmin, ymin, xmax - xmin, ymax - ymin);
-            // if( rect.Intersects( m_render_rect ) )
-            {
-              glVertex3f(ptp[it].x, ptp[it].y, z_clip_geom);
-              glVertex3f(ptp[it + 1].x, ptp[it + 1].y, z_clip_geom);
-              glVertex3f(ptp[it + 2].x, ptp[it + 2].y, z_clip_geom);
-            }
-          }
-          glEnd();
-          break;
-        }
-      }
-    }  // if bbox
-
-    // pick up the next in chain
-    if (!rzRules->obj->m_chart_context->chart) {  // This is a PlugIn Chart
-      LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
-      p_tp = (TriPrim *)p_ltp->p_next;
-    } else
-      p_tp = p_tp->p_next;
-
-  }  // while
-
-  //        obj_xmin = 0;
-  //        obj_xmax = 2000;
-
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // re-enable color buffer
-
-  if (m_useStencilAP) {
-    //    Now set the stencil ops to subsequently render only where the stencil
-    //    bit is "2"
-    glStencilFunc(GL_EQUAL, 2, 2);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-  } else {
-    glDepthFunc(GL_EQUAL);  // Set the test value
-    glDepthMask(GL_FALSE);  // disable depth buffer
-  }
-  //    Get the pattern definition
-  if ((rules->razRule->pixelPtr == NULL) ||
-      (rules->razRule->parm1 != m_colortable_index) ||
-      (rules->razRule->parm0 != ID_GL_PATT_SPEC)) {
-    render_canvas_parms *patt_spec =
-        CreatePatternBufferSpec(rzRules, rules, vp, false, true);
-
-    ClearRulesCache(
-        rules->razRule);  //  Clear out any existing cached symbology
-
-    rules->razRule->pixelPtr = patt_spec;
-    rules->razRule->parm1 = m_colortable_index;
-    rules->razRule->parm0 = ID_GL_PATT_SPEC;
-  }
-
-  //  Render the Area using the pattern spec stored in the rules
-  render_canvas_parms *ppatt_spec =
-      (render_canvas_parms *)rules->razRule->pixelPtr;
-
-  //    Has the pattern been uploaded as a texture?
-  if (!ppatt_spec->OGL_tex_name) {
-    GLuint tex_name;
-    glGenTextures(1, &tex_name);
-    ppatt_spec->OGL_tex_name = tex_name;
-
-    glBindTexture(GL_TEXTURE_2D, tex_name);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ppatt_spec->w_pot,
-                 ppatt_spec->h_pot, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                 ppatt_spec->pix_buff);
-  }
-
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, ppatt_spec->OGL_tex_name);
-
-  glEnable(GL_BLEND);
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-  int h = ppatt_spec->height;
-  int w = ppatt_spec->width;
-  int xr = obj_xmin;
-  int yr = obj_ymin;
-
-  float ww = (float)ppatt_spec->width / (float)ppatt_spec->w_pot;
-  float hh = (float)ppatt_spec->height / (float)ppatt_spec->h_pot;
-  float x_stagger_off = 0;
-  if (ppatt_spec->b_stagger) x_stagger_off = (float)ppatt_spec->width / 2;
-  int yc = 0;
-
-  if (w > 0 && h > 0) {
-    while (yr < vp->pix_height) {
-      if (((yr + h) >= 0) && (yr <= obj_ymax)) {
-        xr = obj_xmin;  // reset
-        while (xr < vp->pix_width) {
-          int xp = xr;
-          if (yc & 1) xp += x_stagger_off;
-
-          //    Render a quad.
-          if (((xr + w) >= 0) && (xr <= obj_xmax)) {
-            glBegin(GL_QUADS);
-            glTexCoord2f(0, 0);
-            glVertex3f(xp, yr, z_tex_geom);
-            glTexCoord2f(ww, 0);
-            glVertex3f(xp + w, yr, z_tex_geom);
-            glTexCoord2f(ww, hh);
-            glVertex3f(xp + w, yr + h, z_tex_geom);
-            glTexCoord2f(0, hh);
-            glVertex3f(xp, yr + h, z_tex_geom);
-            glEnd();
-          }
-          xr += ppatt_spec->width;
-        }
-      }
-      yr += ppatt_spec->height;
-      yc++;
-    }
-  }
-
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_BLEND);
-
-  //    Restore the previous state
-
-  if (m_useStencilAP) {
-    //  Theoretically, it should be sufficient to simply reset the
-    //  StencilFunc()... But I found one platform where this does not work, and
-    //  we need to save and restore the entire STENCIL state.  I suspect bad GL
-    //  drivers here, but we do what must needs...
-    // glStencilFunc( GL_EQUAL, 1, 1 );
-
-    glPopAttrib();
-  } else {
-    // restore clipping region
-    glPopMatrix();
-    //SetGLClipRect(*vp, m_last_clip_rect);
-
-    glPushMatrix();
-    RotateToViewPort(*vp);
-    glDisable(GL_DEPTH_TEST);
-  }
-
-  free(ptp);
-#endif  // #ifdef ocpnUSE_GL
-
   return 1;
-#endif  // #ifdef USE_ANDROID_GLES2
+#endif  // #ifdef ocpnUSE_GLSL
 
 }
 
@@ -9657,8 +8772,7 @@ render_canvas_parms *s52plib::CreatePatternBufferSpec(ObjRazRules *rzRules,
 
   //      Create a wxImage of the pattern drawn on an "unused_color" field
   if (prule->definition.SYDF == 'R') {
-    Image = useLegacyRaster ? RuleXBMToImage(prule)
-                            : m_chartSymbols.GetImage(prule->name.PANM);
+    Image = m_chartSymbols.GetImage(prule->name.PANM);
   }
 
   else  // Vector
@@ -10733,23 +9847,16 @@ void s52plib::PrepareForRender(void) { PrepareForRender( &vp_plib); }
 void s52plib::PrepareForRender(VPointCompat *vp) {
   m_benableGLLS = true;  // default is to always use RenderToGLLS (VBO support)
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
   void PrepareS52ShaderUniforms(VPointCompat * vp);
   if (m_useGLSL && vp){
     PrepareS52ShaderUniforms(vp);
 
     // Prepare TexFont shader
-    unsigned int i;
     for (unsigned int i = 0; i < TXF_CACHE; i++) {
       if(s_txf[i].cache)
         s_txf[i].cache->PrepareShader(vp->pix_width, vp->pix_height, vp->rotation);
     }
   }
-
-
-
-#endif
 
   m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
 
@@ -10791,7 +9898,7 @@ void s52plib::SetAnchorOn(bool val) {
 
 void s52plib::SetQualityOfData(bool val) {
   int old_vis = GetQualityOfData();
-  if (old_vis == val) return;
+  if (old_vis == (int)val) return;
 
   if (old_vis && !val) {  // On, going off
     AddObjNoshow("M_QUAL");
@@ -10962,7 +10069,6 @@ void DrawAALine(wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
 
 void s52plib::DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2,
                            wxCoord y2) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   glLineWidth(pen.GetWidth());
 
   glUseProgram(S52color_tri_shader_program);
@@ -11056,7 +10162,6 @@ void s52plib::DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2,
   glUseProgram(0);
   glDisableVertexAttribArray(pos);
 
-#endif
 }
 
 /****************************************************************************/
@@ -11322,13 +10427,9 @@ void RenderFromHPGL::SetPen() {
   if (renderToOpenGl) {
     if (plib->GetGLPolygonSmoothing()) glEnable(GL_POLYGON_SMOOTH);
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glColor4ub(penColor.Red(), penColor.Green(), penColor.Blue(), transparency);
-#endif
     int line_width = wxMax(plib->m_GLMinSymbolLineWidth, (float)penWidth * 0.7);
     glLineWidth(line_width);
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     //  Scale the pen width dependent on the platform display resolution
     float nominal_line_width_pix =
         wxMax(1.0, floor(plib->GetPPMM() /
@@ -11337,7 +10438,6 @@ void RenderFromHPGL::SetPen() {
     line_width =
         wxMax(1/*m_GLMinSymbolLineWidth*/, (float)penWidth * nominal_line_width_pix);
     glLineWidth(line_width);
-#endif
 
 #ifndef __OCPN__ANDROID__
     if (line_width >= 2 && plib->GetGLLineSmoothing())
@@ -11364,21 +10464,10 @@ void RenderFromHPGL::Line(wxPoint from, wxPoint to) {
   }
 #ifdef ocpnUSE_GL
   if (renderToOpenGl) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     glUseProgram(S52color_tri_shader_program);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    //         mat4x4 Q;
-    //         mat4x4 X;
-    //         mat4x4_identity(Q);
-    //         mat4x4_mul(X, (float (*)[4])m_vp->vp_transform, Q);
-    //
-    // GLint matloc =
-    // glGetUniformLocation(S52color_tri_shader_program,"MVMatrix");
-    // glUniformMatrix4fv( matloc, 1, GL_FALSE, (const
-    // GLfloat*)cc1->GetpVP()->vp_transform);
 
     float colorv[4];
     colorv[0] = penColor.Red() / float(256);
@@ -11402,13 +10491,6 @@ void RenderFromHPGL::Line(wxPoint from, wxPoint to) {
     glDrawArrays(GL_LINES, 0, 2);
     glUseProgram(0);
     glDisableVertexAttribArray(pos);
-
-#else
-    glBegin(GL_LINES);
-    glVertex2i(from.x, from.y);
-    glVertex2i(to.x, to.y);
-    glEnd();
-#endif
   }
 #endif
 #if wxUSE_GRAPHICS_CONTEXT
@@ -11428,7 +10510,6 @@ void RenderFromHPGL::Circle(wxPoint center, int radius, bool filled) {
   }
 #ifdef ocpnUSE_GL
   if (renderToOpenGl) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     if (!m_vp)  // oops, forgot to set the VP parameters
       return;
 
@@ -11514,14 +10595,6 @@ void RenderFromHPGL::Circle(wxPoint center, int radius, bool filled) {
     //      Enable anti-aliased lines, at best quality
     glDisable(GL_BLEND);
 
-#else
-    int noSegments = 2 + (radius * 4);
-    if (noSegments > 200) noSegments = 200;
-    glBegin(GL_LINE_STRIP);
-    for (float a = 0; a <= 2 * M_PI; a += 2 * M_PI / noSegments)
-      glVertex2f(center.x + radius * sinf(a), center.y + radius * cosf(a));
-    glEnd();
-#endif
   }
 #endif
 #if wxUSE_GRAPHICS_CONTEXT
@@ -11550,22 +10623,12 @@ void RenderFromHPGL::Polygon() {
   }
 #ifdef ocpnUSE_GL
   if (renderToOpenGl) {
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
     penColor.Set(penColor.Red(), penColor.Green(), penColor.Blue(),
                  transparency);
     pen = wxThePenList->FindOrCreatePen(penColor, penWidth, wxPENSTYLE_SOLID);
     brush = wxTheBrushList->FindOrCreateBrush(penColor, wxBRUSHSTYLE_SOLID);
     DrawPolygon(noPoints, polygon, 0, 0, 1.0, 0);
 
-#else
-    glColor4ub(penColor.Red(), penColor.Green(), penColor.Blue(), transparency);
-
-    glBegin(GL_POLYGON);
-    for (int ip = 1; ip < noPoints; ip++)
-      glVertex2i(polygon[ip].x, polygon[ip].y);
-    glEnd();
-#endif
   }
 #endif  // OpenGL
 
@@ -11593,11 +10656,6 @@ void RenderFromHPGL::RotatePoint(wxPoint &point, wxPoint origin, double angle) {
 bool RenderFromHPGL::Render(char *str, char *col, wxPoint &r, wxPoint &pivot,
                             wxPoint origin, float scale, double rot_angle,
                             bool bSymbol) {
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  if (renderToOpenGl) glGetFloatv(GL_CURRENT_COLOR, m_currentColor);
-#endif
-#endif
 
   wxPoint lineStart;
   wxPoint lineEnd;
@@ -11723,13 +10781,7 @@ bool RenderFromHPGL::Render(char *str, char *col, wxPoint &r, wxPoint &pivot,
 #ifdef ocpnUSE_GL
   if (renderToOpenGl) {
     glDisable(GL_BLEND);
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     glUseProgram(0);
-#endif
-
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glColor4fv(m_currentColor);
-#endif
   }
 #endif
 
@@ -11742,7 +10794,6 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
                                  wxCoord yoffset, float scale, float angle) {
   //    if( 0 )
   // dc->DrawPolygon( n, points, xoffset, yoffset );
-#ifdef ocpnUSE_GL
   //       else
   {
 #ifdef __WXQT__
@@ -11756,8 +10807,6 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
     glEnable(GL_BLEND);
 
 #endif
-
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     // ConfigurePen();
     glLineWidth(pen->GetWidth());
@@ -11803,30 +10852,6 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
           glGetUniformLocation(S52color_tri_shader_program, "color");
       glUniform4fv(bcolloc, 1, bcolorv);
 
-///
-#if 0
-            wxWindow *win = GetOCPNCanvasWindow();
-            ChartCanvas *canvas = wxDynamicCast( win, ChartCanvas); //classname * wxDynamicCast(ptr, classname)
-
-            //ViewPort *pvp = (ViewPort *)&vp;
-            ViewPort *pvp = canvas->GetpVP();
-
-            // Rotate
-            mat4x4 I, Q;
-            mat4x4_identity(I);
-            mat4x4_rotate_Z(Q, I, angle);
-
-            // Translate
-            Q[3][0] = xoffset;
-            Q[3][1] = yoffset;
-
-            mat4x4 X;
-            mat4x4_mul(X, (float (*)[4])pvp->vp_transform, Q);
-
-            GLint matloc = glGetUniformLocation(S52color_tri_shader_program,"MVMatrix");
-            glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)X );
-///
-#endif
       // Perform the actual drawing.
       glDrawArrays(GL_LINE_LOOP, 0, n);
 
@@ -11857,36 +10882,10 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
     }
 
-#else
-
-    wxColour c = brush->GetColour();
-    glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
-
-    glEnable(GL_POLYGON_SMOOTH);
-    glBegin(GL_POLYGON);
-    for (int i = 0; i < n; i++)
-      glVertex2f((points[i].x * scale) + xoffset,
-                 (points[i].y * scale) + yoffset);
-    glEnd();
-    glDisable(GL_POLYGON_SMOOTH);
-
-    int width = pen->GetWidth();
-    glLineWidth(width);
-
-    glEnable(GL_LINE_SMOOTH);
-    glBegin(GL_LINE_LOOP);
-    for (int i = 0; i < n; i++)
-      glVertex2f((points[i].x * scale) + xoffset,
-                 (points[i].y * scale) + yoffset);
-    glEnd();
-    glDisable(GL_LINE_SMOOTH);
-#endif
-
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_POLYGON_SMOOTH);
     glDisable(GL_BLEND);
   }
-#endif
 }
 
 #ifdef ocpnUSE_GL
@@ -11905,46 +10904,9 @@ typedef union {
   } info;
 } GLvertex;
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-void s52DCcombineCallback(GLdouble coords[3], GLdouble *vertex_data[4],
-                                   GLfloat weight[4], GLdouble **dataOut) {
-  GLvertex *vertex;
-
-  vertex = new GLvertex();
-  s52gTesselatorVertices.Add(vertex);
-
-  vertex->info.x = coords[0];
-  vertex->info.y = coords[1];
-  vertex->info.z = coords[2];
-
-  for (int i = 3; i < 6; i++) {
-    vertex->data[i] =
-        weight[0] * vertex_data[0][i] + weight[1] * vertex_data[1][i];
-  }
-
-  *dataOut = &(vertex->data[0]);
-}
-
-void s52DCvertexCallback(GLvoid *arg) {
-  GLvertex *vertex;
-  vertex = (GLvertex *)arg;
-  glVertex2f((float)vertex->info.x, (float)vertex->info.y);
-}
-
-void s52DCerrorCallback(GLenum errorCode) {
-  const GLubyte *estring;
-  estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
-}
-
-void s52DCbeginCallback(GLenum type) { glBegin(type); }
-
-void s52DCendCallback() { glEnd(); }
-#endif
 
 // GLSL callbacks
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
 static std::list<double *> odc_combine_work_data;
 static void s52_combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
@@ -11991,7 +10953,6 @@ void s52_beginCallbackD_GLSL(GLenum mode, void *data) {
 void s52_endCallbackD_GLSL(void *data) {
 // qDebug() << "End" << s_odc_nvertex << s_odc_tess_buf_len <<
 // s_odc_tess_vertex_idx << s_odc_tess_vertex_idx_this; End 5 100 10 0
-#if 1
   RenderFromHPGL *plib = (RenderFromHPGL *)data;
 
   glUseProgram(S52color_tri_shader_program);
@@ -12021,9 +10982,7 @@ void s52_endCallbackD_GLSL(void *data) {
   glUniform4fv(colloc, 1, colorv);
 
   glDrawArrays(plib->s_odc_tess_mode, 0, plib->s_odc_nvertex);
-#endif
 }
-#endif
 
 #endif  //#ifdef ocpnUSE_GL
 
@@ -12031,7 +10990,6 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
                                             wxCoord xoffset, wxCoord yoffset) {
   //    if( 0 )
   // dc->DrawPolygon( n, points, xoffset, yoffset );
-#ifdef ocpnUSE_GL
   // else
   {
 #if !defined(ocpnUSE_GLES) || \
@@ -12043,7 +11001,6 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
       return;
     }
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     m_tobj = gluNewTess();
     s_odc_tess_vertex_idx = 0;
 
@@ -12096,919 +11053,7 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
     //             delete [] *i;
     //         odc_combine_work_data.clear();
   }
-#else
-    static GLUtesselator *tobj = NULL;
-    if (!tobj) tobj = gluNewTess();
-
-    gluTessCallback(tobj, GLU_TESS_VERTEX, (_GLUfuncptr)&s52DCvertexCallback);
-    gluTessCallback(tobj, GLU_TESS_BEGIN, (_GLUfuncptr)&s52DCbeginCallback);
-    gluTessCallback(tobj, GLU_TESS_END, (_GLUfuncptr)&s52DCendCallback);
-    gluTessCallback(tobj, GLU_TESS_COMBINE, (_GLUfuncptr)&s52DCcombineCallback);
-    gluTessCallback(tobj, GLU_TESS_ERROR, (_GLUfuncptr)&s52DCerrorCallback);
-
-    gluTessNormal(tobj, 0, 0, 1);
-    gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
-
-    wxColour c = brush->GetColour();
-    glColor4ub(c.Red(), c.Green(), c.Blue(), c.Alpha());
-
-    gluTessBeginPolygon(tobj, NULL);
-    gluTessBeginContour(tobj);
-
-    for (int i = 0; i < n; i++) {
-      GLvertex *vertex = new GLvertex();
-      s52gTesselatorVertices.Add(vertex);
-      vertex->info.x = (GLdouble)points[i].x;
-      vertex->info.y = (GLdouble)points[i].y;
-      vertex->info.z = (GLdouble)0.0;
-      vertex->info.r = (GLdouble)0.0;
-      vertex->info.g = (GLdouble)0.0;
-      vertex->info.b = (GLdouble)0.0;
-      gluTessVertex(tobj, (GLdouble *)vertex, (GLdouble *)vertex);
-    }
-    gluTessEndContour(tobj);
-    gluTessEndPolygon(tobj);
-
-    for (unsigned int i = 0; i < s52gTesselatorVertices.Count(); i++)
-      delete (GLvertex *)s52gTesselatorVertices.Item(i);
-    s52gTesselatorVertices.Clear();
-
-    gluDeleteTess(tobj);
-  }
-#endif
-#endif
 }
-
-#ifdef ocpnUSE_GL
-/* draw a half circle using triangles */
-void PLIBDrawEndCap(float x1, float y1, float t1, float angle) {
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  const int steps = 16;
-  float xa, ya;
-  bool first = true;
-  for (int i = 0; i <= steps; i++) {
-    float a = angle + M_PI / 2 + M_PI / steps * i;
-
-    float xb = x1 + t1 / 2 * cos(a);
-    float yb = y1 + t1 / 2 * sin(a);
-    if (first)
-      first = false;
-    else {
-      glVertex2f(x1, y1);
-      glVertex2f(xa, ya);
-      glVertex2f(xb, yb);
-    }
-    xa = xb, ya = yb;
-  }
-#endif
-}
-#endif
-
-// Draws a line between (x1,y1) - (x2,y2) with a start thickness of t1
-void PLIBDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
-                         bool b_hiqual) {
-#ifdef ocpnUSE_GL
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-  float angle = atan2f(y2 - y1, x2 - x1);
-  float t1 = pen.GetWidth();
-  float t2sina1 = t1 / 2 * sinf(angle);
-  float t2cosa1 = t1 / 2 * cosf(angle);
-
-  glBegin(GL_TRIANGLES);
-
-  //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in
-  //    the dash table. The first is assumed drawn, second is assumed space
-  wxDash *dashes;
-  int n_dashes = pen.GetDashes(&dashes);
-  if (n_dashes) {
-    float lpix = sqrtf(powf((float)(x1 - x2), 2) + powf((float)(y1 - y2), 2));
-    float lrun = 0.;
-    float xa = x1;
-    float ya = y1;
-    float ldraw = t1 * (unsigned char)dashes[0];
-    float lspace = t1 * (unsigned char)dashes[1];
-
-    if ((ldraw < 0) || (lspace < 0)) {
-      glEnd();
-      return;
-    }
-
-    while (lrun < lpix) {
-      //    Dash
-      float xb = xa + ldraw * cosf(angle);
-      float yb = ya + ldraw * sinf(angle);
-
-      if ((lrun + ldraw) >= lpix)  // last segment is partial draw
-      {
-        xb = x2;
-        yb = y2;
-      }
-
-      glVertex2f(xa + t2sina1, ya - t2cosa1);
-      glVertex2f(xb + t2sina1, yb - t2cosa1);
-      glVertex2f(xb - t2sina1, yb + t2cosa1);
-
-      glVertex2f(xb - t2sina1, yb + t2cosa1);
-      glVertex2f(xa - t2sina1, ya + t2cosa1);
-      glVertex2f(xa + t2sina1, ya - t2cosa1);
-
-      xa = xb;
-      ya = yb;
-      lrun += ldraw;
-
-      //    Space
-      xb = xa + lspace * cos(angle);
-      yb = ya + lspace * sin(angle);
-
-      xa = xb;
-      ya = yb;
-      lrun += lspace;
-    }
-  } else {
-    glVertex2f(x1 + t2sina1, y1 - t2cosa1);
-    glVertex2f(x2 + t2sina1, y2 - t2cosa1);
-    glVertex2f(x2 - t2sina1, y2 + t2cosa1);
-
-    glVertex2f(x2 - t2sina1, y2 + t2cosa1);
-    glVertex2f(x1 - t2sina1, y1 + t2cosa1);
-    glVertex2f(x1 + t2sina1, y1 - t2cosa1);
-
-    /* wx draws a nice rounded end in dc mode, so replicate
-     *           this for opengl mode, should this be done for the dashed mode
-     * case? */
-    if (pen.GetCap() == wxCAP_ROUND) {
-      PLIBDrawEndCap(x1, y1, t1, angle);
-      PLIBDrawEndCap(x2, y2, t1, angle + M_PI);
-    }
-  }
-
-  glEnd();
-#endif
-#endif
-}
-#if 0
-
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-
-#ifdef USE_ANDROID_GLES2
-//#include <GLES2/gl2.h>
-#endif
-
-#ifdef USE_ANDROID_GLES2
-const GLchar* S52_preamble =
-"\n";
-#else
-const GLchar* S52_preamble =
-"#version 120\n"
-"#define precision\n"
-"#define lowp\n"
-"#define mediump\n"
-"#define highp\n";
-#endif
-
-enum Consts { INFOLOG_LEN = 512 };
-
-class S52_GLShaderProgram
-{
-public:
-
-    class Builder {
-    public:
-        Builder() : linked_(false) {
-            programId_ = glCreateProgram();
-        }
-
-        Builder &addShaderFromSource(std::string const &shaderSource, GLenum shaderType) {
-            char const *shaderCStr = shaderSource.c_str();
-            GLuint shaderId = glCreateShader(shaderType);
-
-            GLchar const* files[] = { S52_preamble, shaderCStr };
-            GLint lengths[]       = { (GLint)strlen(S52_preamble),  (GLint)strlen(shaderCStr)  };
-
-            glShaderSource(shaderId, 2, files, lengths);
-            //glShaderSource(shaderId, 1, &shaderCStr, nullptr);
-
-            glCompileShader(shaderId);
-            glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-            if (!success) {
-              glGetShaderInfoLog(shaderId, INFOLOG_LEN, NULL, infoLog);
-              printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", infoLog);
-              //ret_val = false;
-            }
-
-            glAttachShader(programId_, shaderId);
-            return *this;
-        }
-
-        Builder &addShaderFromFile(std::string const &shaderFile, GLenum shaderType) {
-            std::ifstream fileName(shaderFile);
-            std::istreambuf_iterator<char> fileBegin(fileName), fileEnd;
-            std::string fileContents(fileBegin, fileEnd);
-            return addShaderFromSource(fileContents, shaderType);
-        }
-
-        S52_GLShaderProgram linkProgram() {
-            glLinkProgram(programId_);
-            glGetProgramiv( programId_, GL_LINK_STATUS, &linkSuccess); //requesting the status
-            if (linkSuccess == GL_FALSE) {
-              glGetProgramInfoLog(programId_, INFOLOG_LEN, NULL, infoLog);
-              printf("ERROR::SHADER::LINK_FAILED\n%s\n", infoLog);
-            }
-
-            S52_GLShaderProgram theProgram(programId_);
-            //deleteAttachedShaders(programId_);
-            linked_ = true;
-            return theProgram;
-        }
-
-        ~Builder() {
-             if(!linked_) {
-                 glDeleteProgram(programId_);
-             }
-         }
-    private:
-        GLuint programId_;
-        bool linked_;
-        GLint success;
-        GLint linkSuccess;
-        GLchar infoLog[INFOLOG_LEN];
-    };
-
-    S52_GLShaderProgram() : programId_(0) { }
-
-    S52_GLShaderProgram(S52_GLShaderProgram &&other) {
-        *this = std::move(other);
-    }
-
-    S52_GLShaderProgram &operator=(S52_GLShaderProgram &&other)
-    {
-        programId_ = other.programId_;
-        other.programId_ = 0;
-
-        if (other.programId_ != 0) {
-            glDeleteProgram(other.programId_);
-        }
-
-        return *this;
-    }
-
-    ~S52_GLShaderProgram() { }
-
-    GLuint programId() const { return programId_; }
-
-    S52_GLShaderProgram(S52_GLShaderProgram const &other) = delete;
-    S52_GLShaderProgram &operator=(S52_GLShaderProgram const &other) = delete;
-private:
-    S52_GLShaderProgram(GLuint programId) : programId_(programId) { }
-    GLuint programId_;
-};
-#endif
-
-
-
-#if 0
-
-// Simple colored triangle shader
-
-static const GLchar *S52color_tri_vertex_shader_source =
-    "attribute vec2 position;\n"
-    "uniform mat4 MVMatrix;\n"
-    "uniform mat4 TransformMatrix;\n"
-    "uniform vec4 color;\n"
-    "varying vec4 fragColor;\n"
-    "void main() {\n"
-    "   fragColor = color;\n"
-    "   gl_Position = MVMatrix * TransformMatrix  * vec4(position, 0.0, 1.0);\n"
-    "}\n";
-
-static const GLchar *S52color_tri_fragment_shader_source =
-    "precision highp float;\n"
-    "varying vec4 fragColor;\n"
-    "void main() {\n"
-    "   gl_FragColor = fragColor;\n"
-    "}\n";
-
-// Simple 2D texture shader
-static const GLchar *S52texture_2D_vertex_shader_source =
-    "attribute vec2 position;\n"
-    "attribute vec2 aUV;\n"
-    "uniform mat4 MVMatrix;\n"
-    "uniform mat4 TransformMatrix;\n"
-    "varying vec2 varCoord;\n"
-    "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
-    "   //varCoord = aUV.st;\n"
-    "   varCoord = aUV;\n"
-    "}\n";
-
-static const GLchar *S52texture_2D_fragment_shader_source =
-    "precision highp float;\n"
-    "uniform sampler2D uTex;\n"
-    "varying vec2 varCoord;\n"
-    "void main() {\n"
-    "   gl_FragColor = texture2D(uTex, varCoord);\n"
-    "}\n";
-
-// 2D texture shader with color modulation, used for colored text
-static const GLchar *S52texture_2D_ColorMod_vertex_shader_source =
-    "precision highp float;\n"
-    "attribute vec2 position;\n"
-    "attribute vec2 aUV;\n"
-    "uniform mat4 MVMatrix;\n"
-    "uniform mat4 TransformMatrix;\n"
-    "varying vec2 varCoord;\n"
-    "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
-    "   //varCoord = aUV.st;\n"
-    "   varCoord = aUV;\n"
-    "}\n";
-
-static const GLchar *S52texture_2D_ColorMod_fragment_shader_source =
-    "precision highp float;\n"
-    "uniform sampler2D uTex;\n"
-    "uniform vec4 color;\n"
-    "varying vec2 varCoord;\n"
-    "void main() {\n"
-    "   vec4 col=texture2D(uTex, varCoord);\n"
-    "   gl_FragColor = color;\n"
-    "   gl_FragColor.a = col.a;\n"
-    "}\n";
-
-//  Circle shader
-
-static const GLchar *S52circle_filled_vertex_shader_source =
-    "precision highp float;\n"
-    "attribute vec2 aPos;\n"
-    "uniform mat4 MVMatrix;\n"
-    "uniform mat4 TransformMatrix;\n"
-    "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
-    "}\n";
-
-static const GLchar *S52circle_filled_fragment_shader_source =
-    "precision highp float;\n"
-    "uniform float border_width;\n"
-    "uniform float circle_radius;\n"
-    "uniform vec4 circle_color;\n"
-    "uniform vec4 border_color;\n"
-    "uniform vec2 circle_center;\n"
-    "void main(){\n"
-    "float d = distance(gl_FragCoord.xy, circle_center);\n"
-    "if (d < (circle_radius - border_width)) { gl_FragColor = circle_color; }\n"
-    "else if (d < circle_radius) { gl_FragColor = border_color; }\n"
-    "else { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }\n"
-    "}\n";
-
-//  Ring shader
-
-static const GLchar *S52ring_vertex_shader_source =
-    "precision highp float;\n"
-    "attribute vec2 aPos;\n"
-    "uniform mat4 MVMatrix;\n"
-    "uniform mat4 TransformMatrix;\n"
-    "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
-    "}\n";
-
-static const GLchar *S52ring_fragment_shader_source =
-    "precision highp float;\n"
-    "uniform float border_width;\n"
-    "uniform float circle_radius;\n"
-    "uniform float ring_width;\n"
-    "uniform vec4 circle_color;\n"
-    "uniform vec4 border_color;\n"
-    "uniform vec2 circle_center;\n"
-    "uniform float sector_1;\n"
-    "uniform float sector_2;\n"
-
-    "void main(){\n"
-    "const float PI = 3.14159265358979323846264;\n"
-    "bool bdraw = false;\n"
-
-    "float angle = atan(gl_FragCoord.y-circle_center.y, "
-    "gl_FragCoord.x-circle_center.x);\n"
-    "angle = PI/2.0 - angle;\n"
-    "if(angle < 0.0) angle += PI * 2.0;\n"
-
-    "if(sector_2 > PI * 2.0){\n"
-    "    if((angle > sector_1) && (angle < (PI * 2.0) )){\n"
-    "        bdraw = true;\n"
-    "    }\n"
-    "    if(angle < sector_2 - (PI * 2.0)){\n"
-    "        bdraw = true;\n"
-    "    }\n"
-    "} else {\n"
-    "    if((angle > sector_1) && (angle < sector_2)){\n"
-    "        bdraw = true;\n"
-    "    }\n"
-    "}\n"
-
-    "if(bdraw){\n"
-    "   float d = distance(gl_FragCoord.xy, circle_center);\n"
-    "   if (d > circle_radius) {\n"
-    "       discard;\n"
-    "   } else if( d > (circle_radius - border_width)) {\n"
-    "       gl_FragColor = border_color;\n"
-    "   } else if( d > (circle_radius - border_width - ring_width)) {\n"
-    "       gl_FragColor = circle_color;\n"
-    "   } else if( d > (circle_radius - border_width - ring_width - "
-    "border_width)) {\n"
-    "       gl_FragColor = border_color;\n"
-    "   } else  {\n"
-    "       discard;\n"
-    "   }\n"
-    "} else{\n"
-    "   discard;\n"
-    "}\n"
-    "}\n";
-
-// Dash/Dot line shader
-static const GLchar *S52Dash_vertex_shader_source =
-    "attribute vec2 position;\n"
-    "uniform mat4 MVMatrix;\n"
-    "uniform mat4 TransformMatrix;\n"
-    "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
-    "}\n";
-
-static const GLchar *S52Dash_fragment_shader_source =
-    "precision highp float;\n"
-    "uniform sampler2D uTex;\n"
-    "uniform vec2 startPos;\n"
-    "uniform float texWidth;\n"
-    "uniform vec4 color;\n"
-    "void main() {\n"
-    "   float d = distance(gl_FragCoord.xy, startPos);\n"
-    "   float x = mod(d,texWidth) / texWidth;\n"
-    "   if(x < 0.66) gl_FragColor = color;\n"
-    "   else gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);\n"
-    "}\n";
-
-// Texture shader for Area Pattern
-static const GLchar *S52AP_vertex_shader_source =
-    "attribute vec2 position;\n"
-    "attribute vec2 aUV;\n"
-    "uniform mat4 MVMatrix;\n"
-    "uniform mat4 TransformMatrix;\n"
-    "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
-    "}\n";
-
-#if 0
-static const GLchar* S52AP_fragment_shader_source =
-    "precision highp float;\n"
-    "uniform sampler2D uTex;\n"
-    "uniform float texWidth;\n"
-    "uniform float texHeight;\n"
-    "uniform float texPOTWidth;\n"
-    "uniform float texPOTHeight;\n"
-    "uniform float staggerFactor;\n"
-    "uniform vec4 color;\n"
-    "uniform float xOff;\n"
-    "uniform float yOff;\n"
-    "void main() {\n"
-    "   float yp = floor((gl_FragCoord.y + yOff) / texHeight);\n"
-    "   float fstagger = 0.0;\n"
-    "   //if(mod(yp, 2.0) < 0.1) fstagger = staggerFactor;\n"
-    "   float xStag = xOff + (fstagger * texWidth);\n"
-    "   float x = mod((gl_FragCoord.x - xStag),texWidth) / texPOTWidth;\n"
-    "   float y = mod((gl_FragCoord.y + yOff),texHeight) / texPOTHeight;\n"
-     "   gl_FragColor = texture2D(uTex, vec2(x, (texHeight / texPOTHeight) - y));\n"
-    "}\n";
-#else
-
-static const GLchar *S52AP_fragment_shader_source =
-    "precision highp float;\n"
-    "uniform sampler2D uTex;\n"
-    "uniform float texWidth;\n"
-    "uniform float texHeight;\n"
-    "uniform float texPOTWidth;\n"
-    "uniform float texPOTHeight;\n"
-    "uniform float staggerFactor;\n"
-    "uniform vec4 color;\n"
-    "uniform float xOff;\n"
-    "uniform float yOff;\n"
-    "uniform float yOffM;\n"
-    "void main() {\n"
-    "   float yp = floor((gl_FragCoord.y + yOffM ) / texPOTHeight);\n"
-    "   float fstagger = 0.0;\n"
-    "   if(mod(yp, 2.0) < 0.1) fstagger = 0.5;\n"
-    "   float x = (gl_FragCoord.x - xOff) / texPOTWidth;\n"
-    "   float y = (gl_FragCoord.y + yOff) / texPOTHeight;\n"
-    "   gl_FragColor = texture2D(uTex, vec2(x + fstagger, y));\n"
-    "}\n";
-#endif
-
-GLint S52color_tri_fragment_shader;
-GLint S52color_tri_vertex_shader;
-
-GLint S52texture_2D_fragment_shader;
-GLint S52texture_2D_vertex_shader;
-
-GLint S52texture_2D_ColorMod_fragment_shader;
-GLint S52texture_2D_ColorMod_vertex_shader;
-
-GLint S52circle_filled_vertex_shader;
-GLint S52circle_filled_fragment_shader;
-
-GLint S52ring_vertex_shader;
-GLint S52ring_fragment_shader;
-
-GLint S52Dash_vertex_shader;
-GLint S52Dash_fragment_shader;
-
-GLint S52AP_vertex_shader;
-GLint S52AP_fragment_shader;
-
-bool shadersLoaded = false;
-
-bool loadS52Shaders() {
-  bool ret_val = true;
-  //GLint success;
-
-  enum Consts { INFOLOG_LEN = 512 };
-  //GLchar infoLog[INFOLOG_LEN];
-
-  // Are the shaders ready?
-  if(shadersLoaded)
-    return true;
-
-  // Simple colored triangle shader
-
-  if (!S52color_tri_vertex_shader) {
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(S52color_tri_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(S52color_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    S52color_tri_shader_program = shaderProgram.programId();
-  }
-
-
-  if (!S52texture_2D_shader_program) {
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(S52texture_2D_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(S52texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    S52texture_2D_shader_program = shaderProgram.programId();
-  }
-
-#if 0
-  // Simple 2D texture shader
-
-  if (!S52texture_2D_vertex_shader) {
-    /* Vertex shader */
-    S52texture_2D_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(S52texture_2D_vertex_shader, 1,
-                   &S52texture_2D_vertex_shader_source, NULL);
-    glCompileShader(S52texture_2D_vertex_shader);
-    glGetShaderiv(S52texture_2D_vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52texture_2D_vertex_shader, INFOLOG_LEN, NULL,
-                         infoLog);
-      //        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
-      //        infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52texture_2D_fragment_shader) {
-    /* Fragment shader */
-    S52texture_2D_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(S52texture_2D_fragment_shader, 1,
-                   &S52texture_2D_fragment_shader_source, NULL);
-    glCompileShader(S52texture_2D_fragment_shader);
-    glGetShaderiv(S52texture_2D_fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52texture_2D_fragment_shader, INFOLOG_LEN, NULL,
-                         infoLog);
-      //        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
-      //        infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52texture_2D_shader_program) {
-    /* Link shaders */
-    S52texture_2D_shader_program = glCreateProgram();
-    glAttachShader(S52texture_2D_shader_program, S52texture_2D_vertex_shader);
-    glAttachShader(S52texture_2D_shader_program, S52texture_2D_fragment_shader);
-    glLinkProgram(S52texture_2D_shader_program);
-    glGetProgramiv(S52texture_2D_shader_program, GL_LINK_STATUS, &success);
-    if (!success) {
-      glGetProgramInfoLog(S52texture_2D_shader_program, INFOLOG_LEN, NULL,
-                          infoLog);
-      //        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-      ret_val = false;
-    }
-  }
-#endif
-
-  // 2D texture shader with color Modulate
-  if (!S52texture_2D_ColorMod_shader_program) {
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(S52texture_2D_ColorMod_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(S52texture_2D_ColorMod_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    S52texture_2D_ColorMod_shader_program = shaderProgram.programId();
-  }
-
-#if 0
-  if (!S52texture_2D_ColorMod_vertex_shader) {
-    /* Vertex shader */
-    S52texture_2D_ColorMod_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(S52texture_2D_ColorMod_vertex_shader, 1,
-                   &S52texture_2D_ColorMod_vertex_shader_source, NULL);
-    glCompileShader(S52texture_2D_ColorMod_vertex_shader);
-    glGetShaderiv(S52texture_2D_ColorMod_vertex_shader, GL_COMPILE_STATUS,
-                  &success);
-    if (!success) {
-      glGetShaderInfoLog(S52texture_2D_ColorMod_vertex_shader, INFOLOG_LEN,
-                         NULL, infoLog);
-      //        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
-      //        infoLog);
-      ret_val = false;
-    }
-  }
-
-
-  if (!S52texture_2D_ColorMod_fragment_shader) {
-    /* Fragment shader */
-    S52texture_2D_ColorMod_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(S52texture_2D_ColorMod_fragment_shader, 1,
-                   &S52texture_2D_ColorMod_fragment_shader_source, NULL);
-    glCompileShader(S52texture_2D_ColorMod_fragment_shader);
-    glGetShaderiv(S52texture_2D_ColorMod_fragment_shader, GL_COMPILE_STATUS,
-                  &success);
-    if (!success) {
-      glGetShaderInfoLog(S52texture_2D_ColorMod_fragment_shader, INFOLOG_LEN,
-                         NULL, infoLog);
-      //        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
-      //        infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52texture_2D_ColorMod_shader_program) {
-    /* Link shaders */
-    S52texture_2D_ColorMod_shader_program = glCreateProgram();
-    glAttachShader(S52texture_2D_ColorMod_shader_program,
-                   S52texture_2D_ColorMod_vertex_shader);
-    glAttachShader(S52texture_2D_ColorMod_shader_program,
-                   S52texture_2D_ColorMod_fragment_shader);
-    glLinkProgram(S52texture_2D_ColorMod_shader_program);
-    glGetProgramiv(S52texture_2D_ColorMod_shader_program, GL_LINK_STATUS,
-                   &success);
-    if (!success) {
-      glGetProgramInfoLog(S52texture_2D_ColorMod_shader_program, INFOLOG_LEN,
-                          NULL, infoLog);
-      //        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-      ret_val = false;
-    }
-  }
-#endif
-
-  // Circle shader
-  if (!S52circle_filled_shader_program) {
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(S52circle_filled_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(S52circle_filled_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    S52circle_filled_shader_program = shaderProgram.programId();
-  }
-
-#if 0
-  if (!S52circle_filled_vertex_shader) {
-    /* Vertex shader */
-    S52circle_filled_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(S52circle_filled_vertex_shader, 1,
-                   &S52circle_filled_vertex_shader_source, NULL);
-    glCompileShader(S52circle_filled_vertex_shader);
-    glGetShaderiv(S52circle_filled_vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52circle_filled_vertex_shader, INFOLOG_LEN, NULL,
-                         infoLog);
-      //            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52circle_filled_fragment_shader) {
-    /* Fragment shader */
-    S52circle_filled_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(S52circle_filled_fragment_shader, 1,
-                   &S52circle_filled_fragment_shader_source, NULL);
-    glCompileShader(S52circle_filled_fragment_shader);
-    glGetShaderiv(S52circle_filled_fragment_shader, GL_COMPILE_STATUS,
-                  &success);
-    if (!success) {
-      glGetShaderInfoLog(S52circle_filled_fragment_shader, INFOLOG_LEN, NULL,
-                         infoLog);
-      //            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52circle_filled_shader_program) {
-    /* Link shaders */
-    S52circle_filled_shader_program = glCreateProgram();
-    glAttachShader(S52circle_filled_shader_program,
-                   S52circle_filled_vertex_shader);
-    glAttachShader(S52circle_filled_shader_program,
-                   S52circle_filled_fragment_shader);
-    glLinkProgram(S52circle_filled_shader_program);
-    glGetProgramiv(S52circle_filled_shader_program, GL_LINK_STATUS, &success);
-    if (!success) {
-      glGetProgramInfoLog(S52circle_filled_shader_program, INFOLOG_LEN, NULL,
-                          infoLog);
-      //            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-#endif
-
-  // Ring shader
-  if (!S52ring_shader_program) {
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(S52ring_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(S52ring_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    S52ring_shader_program = shaderProgram.programId();
-  }
-
-#if 0
-  if (!S52ring_vertex_shader) {
-    /* Vertex shader */
-    S52ring_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(S52ring_vertex_shader, 1, &S52ring_vertex_shader_source,
-                   NULL);
-    glCompileShader(S52ring_vertex_shader);
-    glGetShaderiv(S52ring_vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52ring_vertex_shader, INFOLOG_LEN, NULL, infoLog);
-      //           printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
-      //           infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52ring_fragment_shader) {
-    /* Fragment shader */
-    S52ring_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(S52ring_fragment_shader, 1, &S52ring_fragment_shader_source,
-                   NULL);
-    glCompileShader(S52ring_fragment_shader);
-    glGetShaderiv(S52ring_fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52ring_fragment_shader, INFOLOG_LEN, NULL, infoLog);
-      //            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52ring_shader_program) {
-    /* Link shaders */
-    S52ring_shader_program = glCreateProgram();
-    glAttachShader(S52ring_shader_program, S52ring_vertex_shader);
-    glAttachShader(S52ring_shader_program, S52ring_fragment_shader);
-    glLinkProgram(S52ring_shader_program);
-    glGetProgramiv(S52ring_shader_program, GL_LINK_STATUS, &success);
-    if (!success) {
-      glGetProgramInfoLog(S52ring_shader_program, INFOLOG_LEN, NULL, infoLog);
-      //            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-#endif
-
-  // Dash shader
-  if (!S52Dash_shader_program) {
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(S52Dash_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(S52Dash_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    S52Dash_shader_program = shaderProgram.programId();
-  }
-
-#if 0
-  if (!S52Dash_vertex_shader) {
-    /* Vertex shader */
-    S52Dash_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(S52Dash_vertex_shader, 1, &S52Dash_vertex_shader_source,
-                   NULL);
-    glCompileShader(S52Dash_vertex_shader);
-    glGetShaderiv(S52Dash_vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52ring_vertex_shader, INFOLOG_LEN, NULL, infoLog);
-      //            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52Dash_fragment_shader) {
-    /* Fragment shader */
-    S52Dash_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(S52Dash_fragment_shader, 1, &S52Dash_fragment_shader_source,
-                   NULL);
-    glCompileShader(S52Dash_fragment_shader);
-    glGetShaderiv(S52Dash_fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52Dash_fragment_shader, INFOLOG_LEN, NULL, infoLog);
-      //            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52Dash_shader_program) {
-    /* Link shaders */
-    S52Dash_shader_program = glCreateProgram();
-    glAttachShader(S52Dash_shader_program, S52Dash_vertex_shader);
-    glAttachShader(S52Dash_shader_program, S52Dash_fragment_shader);
-    glLinkProgram(S52Dash_shader_program);
-    glGetProgramiv(S52Dash_shader_program, GL_LINK_STATUS, &success);
-    if (!success) {
-      glGetProgramInfoLog(S52Dash_shader_program, INFOLOG_LEN, NULL, infoLog);
-      //            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-#endif
-
-  // AP shader
-    if (!S52AP_shader_program) {
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(S52AP_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(S52AP_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    S52AP_shader_program = shaderProgram.programId();
-  }
-
-#if 0
-  if (!S52AP_vertex_shader) {
-    /* Vertex shader */
-    S52AP_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(S52AP_vertex_shader, 1, &S52AP_vertex_shader_source, NULL);
-    glCompileShader(S52AP_vertex_shader);
-    glGetShaderiv(S52AP_vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52ring_vertex_shader, INFOLOG_LEN, NULL, infoLog);
-      //            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52AP_fragment_shader) {
-    /* Fragment shader */
-    S52AP_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(S52AP_fragment_shader, 1, &S52AP_fragment_shader_source,
-                   NULL);
-    glCompileShader(S52AP_fragment_shader);
-    glGetShaderiv(S52AP_fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(S52AP_fragment_shader, INFOLOG_LEN, NULL, infoLog);
-      //          printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
-      //          infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!S52AP_shader_program) {
-    /* Link shaders */
-    S52AP_shader_program = glCreateProgram();
-    glAttachShader(S52AP_shader_program, S52AP_vertex_shader);
-    glAttachShader(S52AP_shader_program, S52AP_fragment_shader);
-    glLinkProgram(S52AP_shader_program);
-    glGetProgramiv(S52AP_shader_program, GL_LINK_STATUS, &success);
-    if (!success) {
-      glGetProgramInfoLog(S52AP_shader_program, INFOLOG_LEN, NULL, infoLog);
-      //            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n",
-      //            infoLog);
-      ret_val = false;
-    }
-  }
-#endif
-  shadersLoaded = true;
-
-  return ret_val;
-}
-#endif
-
-#endif
 
 void PrepareS52ShaderUniforms(VPointCompat *vp) {
 

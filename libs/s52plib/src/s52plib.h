@@ -424,7 +424,6 @@ private:
 
   int RenderToGLAC(ObjRazRules *rzRules, Rules *rules);
   int RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules);
-  int RenderToGLAC_Direct(ObjRazRules *rzRules, Rules *rules);
 
   int RenderToGLAP(ObjRazRules *rzRules, Rules *rules);
   int RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules);
@@ -542,7 +541,6 @@ private:
   wxColor m_unused_wxColor;
 
   bool bUseRasterSym;
-  bool useLegacyRaster;
 
   wxDC *m_pdc;  // The current DC
 
