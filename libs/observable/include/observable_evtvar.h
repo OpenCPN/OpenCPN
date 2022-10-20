@@ -66,7 +66,7 @@
  *    }
  */
 
-class EventVar : public Observable {
+class EventVar : public Observable, public KeyProvider {
 public:
   EventVar() : Observable(Autokey()) {}
 
@@ -87,7 +87,7 @@ public:
     Observable::Notify(p, s, n, 0);
   }
 
-  const std::string key;
+  std::string GetKey() const { return key; }
 
 private:
   std::string Autokey() {
