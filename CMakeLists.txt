@@ -880,8 +880,6 @@ set(
   include/navutil.h
   include/navutil_base.h
   include/NMEALogWindow.h
-  include/observable_appmsg.h
-  include/observable_navmsg.h
   include/ocpCursor.h
   include/ocpn_frame.h
   include/ocpndc.h
