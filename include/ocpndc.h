@@ -32,15 +32,12 @@
 
 #include <vector>
 
-#ifdef USE_ANDROID_GLES2
+#include "dychart.h"
+
 #include "linmath.h"
-#endif
 
 #include "TexFont.h"
 
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
 
 class ViewPort;
 class GLUtesselator;
@@ -53,16 +50,18 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 //----------------------------------------------------------------------------
 
 class wxGLCanvas;
+class glChartCanvas;
 
 class ocpnDC {
 public:
+  ocpnDC(glChartCanvas &canvas);
   ocpnDC(wxGLCanvas &canvas);
   ocpnDC(wxDC &pdc);
   ocpnDC();
 
   ~ocpnDC();
 
-  void SetGLCanvas(wxGLCanvas *canvas) { glcanvas = canvas; }
+  void SetGLCanvas(glChartCanvas *canvas);
   void SetBackground(const wxBrush &brush);
   void SetPen(const wxPen &pen);
   void SetBrush(const wxBrush &brush);
@@ -81,6 +80,10 @@ public:
                 bool b_hiqual = true);
   void DrawLines(int n, wxPoint points[], wxCoord xoffset = 0,
                  wxCoord yoffset = 0, bool b_hiqual = true);
+  void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
+                     bool b_hiqual);
+  void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
+                      wxPen pen, bool b_hiqual);
 
   void StrokeLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
   void StrokeLine(wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
@@ -122,7 +125,7 @@ public:
   GLfloat *s_odc_tess_work_buf;
 #endif
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   int s_odc_tess_vertex_idx;
   int s_odc_tess_vertex_idx_this;
   int s_odc_tess_buf_len;
@@ -132,6 +135,10 @@ public:
   ViewPort *s_odc_tessVP;
   GLUtesselator *m_tobj;
 
+#endif
+  int m_canvasIndex;
+#ifdef ocpnUSE_GL
+  TexFont m_texfont;
 #endif
 
 protected:
@@ -144,16 +151,15 @@ protected:
   void drawrrhelperGLES2(wxCoord x0, wxCoord y0, wxCoord r, int quadrant,
                          int steps);
 
-  wxGLCanvas *glcanvas;
+  glChartCanvas *m_glchartCanvas;
+  wxGLCanvas *m_glcanvas;
+
   wxDC *dc;
   wxPen m_pen;
   wxBrush m_brush;
   wxColour m_textforegroundcolour;
   wxFont m_font;
 
-#ifdef ocpnUSE_GL
-  TexFont m_texfont;
-#endif
   bool m_buseTex;
 
 #if wxUSE_GRAPHICS_CONTEXT

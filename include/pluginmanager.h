@@ -33,10 +33,6 @@
 
 #include <memory>
 
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
-
 #include "config.h"
 
 #include "ocpn_plugin.h"

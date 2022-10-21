@@ -251,6 +251,8 @@ option(OCPN_USE_SYSTEM_LIBARCHIVE
   "Use the libarchive version provided by the system on MacOS" ON
 )
 
+add_definitions(-D__OCPN_USE_GLEW__)
+
 if (WIN32)
   set(cmd_snd_default OFF)
 else ()
@@ -643,6 +645,7 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
     message(STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
     message(STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     add_definitions(-DocpnUSE_GL)
+    add_definitions(-DocpnUSE_GLSL)
 
     # We need to remove GLU from the OPENGL_LIBRARIES list
     foreach (_currentLibFile ${OPENGL_LIBRARIES})
@@ -664,6 +667,25 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
     message(STATUS "OpenGL not found...")
   endif (OPENGL_FOUND)
 endif ()
+
+  # configure GLEW
+if (OPENGL_FOUND)
+  if (CMAKE_HOST_WIN32)
+    # Pull the the required items from local directory for Windows
+    #list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
+    #list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
+    #find_package(GLEW REQUIRED)
+    #message(STATUS "+++GLEW: " ${GLEW_INCLUDE_DIRS})
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
+    link_libraries(${CMAKE_SOURCE_DIR}/buildwin/glew32.lib )
+  else (CMAKE_HOST_WIN32)
+    if (NOT APPLE)
+      find_package(GLEW REQUIRED)
+      include_directories(${GLEW_INCLUDE_DIRS})
+      link_libraries(${GLEW_LIBRARIES})
+    endif (NOT APPLE)
+  endif (CMAKE_HOST_WIN32)
+endif (OPENGL_FOUND)
 
 if (NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins. These
@@ -811,7 +833,6 @@ set(
   include/AISTargetQueryDialog.h
   include/ais_info_gui.h
   include/base_platform.h
-  include/bbox.h
   include/canvasMenu.h
   include/catalog_handler.h
   include/catalog_mgr.h
@@ -870,7 +891,6 @@ set(
   include/kml.h
   include/Layer.h
   include/LinkPropDlg.h
-  include/LLRegion.h
   include/logger.h
   include/MarkIcon.h
   include/MarkInfo.h
@@ -949,8 +969,8 @@ set(
   include/update_mgr.h
   include/usb_devices.h
   include/waypointman_gui.h
-  include/vector2D.h
   include/viewport.h
+  include/shaders.h
   include/WindowDestroyListener.h
   include/svg_utils.h
 )
@@ -961,7 +981,6 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/ais_decoder.cpp
   ${CMAKE_SOURCE_DIR}/src/ais_target_data.cpp
   ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/bbox.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/chartdata_input_stream.cpp
@@ -1004,7 +1023,6 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
-  ${CMAKE_SOURCE_DIR}/src/pugixml.cpp
   ${CMAKE_SOURCE_DIR}/src/REST_server.cpp
   ${CMAKE_SOURCE_DIR}/src/route.cpp
   ${CMAKE_SOURCE_DIR}/src/route_point.cpp
@@ -1056,7 +1074,7 @@ set(
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
-  src/LLRegion.cpp
+  src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
   src/mDNS_query.cpp
@@ -1116,6 +1134,7 @@ set(
   src/update_mgr.cpp
   src/waypointman_gui.cpp
   src/viewport.cpp
+  src/shaders.cpp
 )
 
 
@@ -1123,6 +1142,9 @@ if (LINUX)
   list(APPEND HDRS include/comm_drv_n2k_socketcan.h )
   list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_socketcan.cpp)
 endif ()
+
+SET(HDRS ${HDRS} include/shaders.h)
+SET(SRCS ${SRCS} src/shaders.cpp)
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -1148,8 +1170,6 @@ endif ()
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
-  SET(HDRS ${HDRS} include/shaders.h)
-  SET(SRCS ${SRCS} src/shaders.cpp)
 ENDIF(QT_ANDROID)
 
 set(SRCS ${SRCS} ${MODEL_SRC})
@@ -1577,12 +1597,10 @@ if (OPENGL_FOUND)
     include/glTextureDescriptor.h
     include/glTexCache.h
     include/glTextureManager.h
-    include/TexFont.h
     src/glTextureDescriptor.cpp
     src/glTexCache.cpp
     src/glChartCanvas.cpp
     src/glTextureManager.cpp
-    src/TexFont.cpp
   )
 endif ()
 
@@ -1636,27 +1654,29 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
+add_subdirectory(libs/geoprim)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::geoprim)
+
+add_subdirectory(libs/s52plib)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
+
+add_subdirectory(libs/pugixml)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pugixml)
+
 message(STATUS "S57 ENC support: enabled")
 set(
   SRC_S57ENC
   include/cm93.h
-  include/mygeom.h
   include/ogr_s57.h
   include/Osenc.h
-  include/s52plib.h
-  include/s52utils.h
   include/s57chart.h
   include/s57RegistrarMgr.h
   include/SencManager.h
-  include/TexFont.h
   src/cm93.cpp
   src/mygeom.cpp
   src/ogrs57datasource.cpp
   src/ogrs57layer.cpp
   src/Osenc.cpp
-  src/s52cnsy.cpp
-  src/s52plib.cpp
-  src/s52utils.cpp
   src/s57chart.cpp
   src/s57classregistrar.cpp
   src/s57featuredefns.cpp
@@ -1664,7 +1684,6 @@ set(
   src/s57reader.cpp
   src/s57RegistrarMgr.cpp
   src/SencManager.cpp
-  src/TexFont.cpp
 )
 add_library(S57ENC STATIC ${SRC_S57ENC})
 target_link_libraries(
@@ -1701,6 +1720,10 @@ if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
   target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
 endif ()
 
+target_link_libraries(S57ENC PUBLIC ocpn::pugixml)
+target_link_libraries(S57ENC PUBLIC ocpn::geoprim)
+target_link_libraries(S57ENC PUBLIC ocpn::s52plib)
+
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
@@ -1715,16 +1738,8 @@ else (OCPN_USE_GARMINHOST)
 endif (OCPN_USE_GARMINHOST)
 
 # Chart Symbols library
-set(SRC_SYMBOLS src/chartsymbols.cpp include/chartsymbols.h)
+#set(SRC_SYMBOLS src/chartsymbols.cpp include/chartsymbols.h)
 
-add_library(SYMBOLS STATIC ${SRC_SYMBOLS})
-set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_link_libraries(SYMBOLS PRIVATE ocpn::tinyxml)
-target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
-  target_compile_options(SYMBOLS PRIVATE -fvisibility=default)
-endif ()
 
 # Compile texcompression support library
 if (OPENGL_FOUND)
@@ -2566,6 +2581,14 @@ if (MSVC AND OCPN_USE_CRASHREPORT)
   message(STATUS "CrashRpt bundled into the installer package...")
 endif (MSVC AND OCPN_USE_CRASHREPORT)
 
+# Install glew dll
+if (MSVC AND OCPN_USE_GL)
+  install(
+    FILES ${CMAKE_SOURCE_DIR}/buildwin/glew32.dll
+    DESTINATION ${PREFIX_PKGDATA}
+  )
+endif ()
+
 if (MINGW)
   install(SCRIPT ${CMAKE_SOURCE_DIR}/cmake/BundleMingwLibs.cmake)
 endif ()
@@ -2948,7 +2971,7 @@ endif ()
 # Piggy-back the console application on the main setup.
 # Note that cli apps are not supported on Android
 #
-if (NOT QT_ANDROID AND NOT APPLE)
+if ( QT_ANDROID AND NOT APPLE)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
@@ -2983,6 +3006,7 @@ if (NOT QT_ANDROID AND NOT APPLE)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::geoprim)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)

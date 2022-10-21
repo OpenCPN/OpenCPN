@@ -25,6 +25,12 @@
 #include "glTextureDescriptor.h"
 #include <wx/thread.h>
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 wxCriticalSection gs_critSect;
 
 glTextureDescriptor::glTextureDescriptor() {

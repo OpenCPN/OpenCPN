@@ -34,8 +34,6 @@
 
 #include <wx/statline.h>
 
-#include "dychart.h"
-
 #include "chcanv.h"
 #include "MUIBar.h"
 #include "OCPNPlatform.h"

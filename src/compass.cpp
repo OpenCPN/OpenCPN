@@ -34,7 +34,6 @@
 #include "chcanv.h"
 #include "styles.h"
 
-#include "dychart.h"
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"     // FIXME (dave) colorschemes
 
@@ -91,7 +90,7 @@ void ocpnCompass::Paint(ocpnDC& dc) {
       glBindTexture(GL_TEXTURE_2D, texobj);
       glEnable(GL_TEXTURE_2D);
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
       float coords[8];
       float uv[8];
 
@@ -115,7 +114,7 @@ void ocpnCompass::Paint(ocpnDC& dc) {
       coords[6] = m_rect.x;
       coords[7] = m_rect.y + m_rect.height;
 
-      m_parent->GetglCanvas()->RenderTextures(coords, uv, 4,
+      m_parent->GetglCanvas()->RenderTextures(dc, coords, uv, 4,
                                               m_parent->GetpVP());
 #else
 
@@ -189,7 +188,7 @@ void ocpnCompass::UpdateStatus(bool bnew) {
 
     //  We clear the texture so that any onPaint method will not use a stale
     //  texture
-#ifdef ocpnUSE_GLES
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     if (g_bopengl) {
       if (texobj) {
         glDeleteTextures(1, &texobj);
@@ -352,7 +351,7 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
                              radius);
     sdc.SelectObject(wxNullBitmap);
   }
-#ifndef ocpnUSE_GLES
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   m_StatBmp.SetMask(new wxMask(m_MaskBmp, *wxWHITE));
 #endif
 
@@ -440,7 +439,8 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
     m_lastgpsIconName = gpsIconName;
   }
 
-#if defined(ocpnUSE_GLES)  // GLES does not do ocpnDC::DrawBitmap(), so use
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+  // GLES does not do ocpnDC::DrawBitmap(), so use
                            // texture
   if (g_bopengl) {
     wxImage image = m_StatBmp.ConvertToImage();

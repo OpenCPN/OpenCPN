@@ -28,6 +28,12 @@
 #include <wx/dcmemory.h>
 #include <wx/dcscreen.h>
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 #include "ocpndc.h"
 #include "RolloverWin.h"
 #include "timers.h"

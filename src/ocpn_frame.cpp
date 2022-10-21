@@ -38,7 +38,6 @@
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-#include "ocpn_frame.h"
 #include "idents.h"
 
 #ifdef __WXMSW__
@@ -77,7 +76,10 @@
 // #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
-//
+
+#include "dychart.h"
+#include "ocpn_frame.h"
+
 #include "OCPN_AUIManager.h"
 #include "chartbase.h"
 #include "georef.h"
@@ -94,6 +96,13 @@
 #include "AISTargetAlertDialog.h"
 #include "ais_target_data.h"
 #include "AISTargetListDialog.h"
+#include "ais_decoder.h"
+#include "TrackPropDlg.h"
+//#include "gshhs.h"
+#include "cutil.h"
+#include "routemanagerdialog.h"
+#include "pluginmanager.h"
+#include "OCPNPlatform.h"
 #include "AISTargetQueryDialog.h"
 #include "ais_info_gui.h"
 #include "CanvasConfig.h"
@@ -107,7 +116,6 @@
 #include "ConfigMgr.h"
 // #include "cutil.h"
 // #include "datastream.h"
-// #include "dychart.h"
 #include "FontMgr.h"
 // #include "gdal/cpl_csv.h"
 // #include "glTexCache.h"
@@ -432,6 +440,7 @@ extern int g_MemFootMB;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
 extern int g_memUsed;
+extern int g_chart_zoom_modifier_vector;
 
 
 #ifdef __WXMSW__
@@ -589,6 +598,9 @@ float g_selection_radius_touch_mm = 10.0;
 
 
 S57ClassRegistrar *g_poRegistrar;
+
+extern float g_GLMinSymbolLineWidth;
+extern float g_GLMinCartographicLineWidth;
 
 #ifdef __WXOSX__
 #include "macutils.h"
@@ -5981,6 +5993,15 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     wxString sogcog(_T("SOG --- ") + getUsrSpeedUnit() + +_T("     ") +
                     _T(" COG ---\u00B0"));
     if (GetStatusBar()) SetStatusText(sogcog, STAT_FIELD_SOGCOG);
+  // update S52 PLIB scale factors
+  if (ps52plib){
+    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
+  }
+
+  if (g_MainToolbar) {
+    g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
+    g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
+  }
 
     gCog = 0.0;  // say speed is zero to kill ownship predictor
   }
@@ -8871,7 +8892,7 @@ void LoadS57() {
       ps52plib->SetGLOptions(
           glChartCanvas::s_b_useStencil, glChartCanvas::s_b_useStencilAP,
           glChartCanvas::s_b_useScissorTest, glChartCanvas::s_b_useFBO,
-          g_b_EnableVBO, g_texture_rectangle_format);
+          g_b_EnableVBO, g_texture_rectangle_format, 1, 1);
 #endif
 
   } else {

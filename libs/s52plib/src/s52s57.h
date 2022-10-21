@@ -29,7 +29,7 @@
 #define _S52S57_H_
 
 #include "bbox.h"
-#include "ocpn_types.h"
+#include "../../../include/color_types.h"
 
 #include <unordered_map>
 #include <vector>
@@ -325,6 +325,7 @@ struct chart_context {
   s57chart *chart;
   double safety_contour;
   float *vertex_buffer;
+  int chart_type;
 };
 
 class LineGeometryDescriptor {

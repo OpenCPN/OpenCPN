@@ -34,11 +34,12 @@
 
 #include "bbox.h"
 #include "hyperlink.h"
+#include "chcanv.h"
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
 
 // minimal allowed ScaMin setting. prevents always hiding
-#define SCAMIN_MIN  800 
+#define SCAMIN_MIN  800
 
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
@@ -198,6 +199,8 @@ public:
   wxColour m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
+  void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+              bool use_cached_screen_coords = false, bool bVizOverride = false);
   unsigned int m_iTextTexture;
   int m_iTextTextureWidth, m_iTextTextureHeight;
 
