@@ -1,6 +1,6 @@
 # observable README
 
-This is a basic notify-listen framework on top of wxWidgets (wxW).
+This is a basic, thread-safe notify-listen framework on top of wxWidgets.
 It requires C++11.
 
 There are three out of the box use cases:
@@ -27,11 +27,13 @@ The framework is developed in the opencpn project [1].
 
 ## Extending
 
-It is easy to extend the framework to handle other types. The basic condition
-is that anything which should be handled by `Listen()` and `Notify()` must 
-be able to produce a key. The key is an unique string which is used to 
-synchronize the notify and listen side; the key used when listening must be 
-the same as used when notifying.
+It is easy to extend the framework to handle other types. The basic 
+condition is that anything which should use Listen() and Notify()
+should implement the KeyProvider interface. This is just the ability
+to return a unique, stable key.
+
+Stated otherwise, the key used when invoking Listen() should be the
+same as when doing Notify().
 
 The event variable described above uses an auto generated random key, this
 works since both sides knows about the same event variable.
@@ -41,9 +43,9 @@ This works since both sides knows the name (path) to the configuration
 variable.
 
 In the OpenCPN project the framework is extended to handle messages. Each
-message is capable of generating a key based on it's type. This makes is
-possible to listen for specific message types as well as notifying when
-such a message is received.
+message implements the KeyProvider interface which generates a key based on
+the message "type". This makes it possible to listen for specific message
+types as well as notifying when such a message is received.
 
 ## Copyright and License
 

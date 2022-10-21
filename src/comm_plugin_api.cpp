@@ -46,23 +46,23 @@ std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev) {
 
 shared_ptr<ObservableListener> GetListener(NMEA2000Id id, wxEventType et,
                                            wxEvtHandler* eh) {
-  return make_shared<ObservableListener>(Nmea2000Msg(N2kName(id.id)).key(), eh,
+  return make_shared<ObservableListener>(Nmea2000Msg(N2kName(id.id)), eh,
                                          et);
 }
 
 std::shared_ptr<ObservableListener> GetListener(NMEA0183Id id, wxEventType et,
                                                 wxEvtHandler* eh) {
-  return make_shared<ObservableListener>(Nmea0183Msg(id.id).key(), eh, et);
+  return make_shared<ObservableListener>(Nmea0183Msg(id.id), eh, et);
 }
 
 shared_ptr<ObservableListener> GetListener(SignalkId id, wxEventType et,
                                            wxEvtHandler* eh) {
-  return make_shared<ObservableListener>(SignalkMsg().key(), eh, et);
+  return make_shared<ObservableListener>(SignalkMsg(), eh, et);
 }
 
 shared_ptr<ObservableListener> GetListener(NavDataId id, wxEventType et,
                                            wxEvtHandler* eh) {
-  return make_shared<ObservableListener>(BasicNavDataMsg().key(), eh, et);
+  return make_shared<ObservableListener>(BasicNavDataMsg(), eh, et);
 }
 
 PluginNavdata GetEventNavdata(ObservedEvt ev) {

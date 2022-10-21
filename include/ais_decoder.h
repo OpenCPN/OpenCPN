@@ -38,7 +38,6 @@
 #include "ais_target_data.h"
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
-#include "observable_navmsg.h"
 #include "ocpn_types.h"
 #include "track.h"
 

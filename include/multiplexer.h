@@ -33,7 +33,6 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "observable_navmsg.h"
 #include "comm_navmsg.h"
 
 struct MuxLogCallbacks {

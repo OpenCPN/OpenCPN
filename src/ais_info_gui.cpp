@@ -109,27 +109,27 @@ static void OnDeleteTrack(MmsiProperties* props) {
 
 
 AisInfoGui::AisInfoGui() {
-  ais_info_listener.Listen(g_pAIS->info_update.key, this, EVT_AIS_INFO);
+  ais_info_listener.Listen(g_pAIS->info_update, this, EVT_AIS_INFO);
 
   Bind(EVT_AIS_INFO, [&](wxCommandEvent ev) {
        auto palert_target = static_cast<AisTargetData*>(ev.GetClientData());
        ShowAisInfo(palert_target); });
 
-  ais_touch_listener.Listen(g_pAIS->touch_state.key, this, EVT_AIS_TOUCH);
+  ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
   Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
 
-  ais_wp_listener.Listen(g_pAIS->new_ais_wp.key, this, EVT_AIS_WP);
+  ais_wp_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_WP);
   Bind(EVT_AIS_WP, [&](wxCommandEvent ev) {
        auto pWP = static_cast<RoutePoint*>(ev.GetClientData());
        OnNewAisWaypoint(pWP); });
 
-  ais_new_track_listener.Listen(g_pAIS->new_ais_wp.key, this,
+  ais_new_track_listener.Listen(g_pAIS->new_ais_wp, this,
                                 EVT_AIS_NEW_TRACK);
   Bind(EVT_AIS_NEW_TRACK, [&](wxCommandEvent ev) {
        auto t = static_cast<Track*>(ev.GetClientData());
        pConfig->AddNewTrack(t); });
 
-  ais_del_track_listener.Listen(g_pAIS->new_ais_wp.key, this,
+  ais_del_track_listener.Listen(g_pAIS->new_ais_wp, this,
                                 EVT_AIS_DEL_TRACK);
   Bind(EVT_AIS_DEL_TRACK, [&](wxCommandEvent ev) {
        auto t = static_cast< MmsiProperties*>(ev.GetClientData());

@@ -32,6 +32,7 @@
 #include "comm_bridge.h"
 #include "comm_appmsg_bus.h"
 #include "comm_drv_registry.h"
+#include "comm_navmsg_bus.h"
 #include "idents.h"
 #include "ocpn_types.h"
 #include "comm_ais.h"
@@ -81,6 +82,17 @@ void ClearNavData(NavData &d){
   d.n_satellites = -1;
   d.SID = 0;
 }
+
+/**
+* Send BasicNavDataMsg based on global state in gLat, gLon, etc 
+* on appmsg_bus
+*/
+static void SendBasicNavdata() {
+  auto msg = std::make_shared<BasicNavDataMsg>(
+      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
+  AppMsgBus::GetInstance().Notify(std::move(msg));
+}
+
 
 static inline double GeodesicRadToDeg(double rads) {
   return rads * 180.0 / M_PI;
@@ -238,7 +250,7 @@ void CommBridge::InitCommListeners() {
   // GNSS Position Data PGN  129029
   //----------------------------------
   Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
-  listener_N2K_129029.Listen(n2k_msg_129029.key(), this, EVT_N2K_129029);
+  listener_N2K_129029.Listen(n2k_msg_129029, this, EVT_N2K_129029);
 
   Bind(EVT_N2K_129029, [&](ObservedEvt ev) {
     HandleN2K_129029(UnpackEvtPointer<Nmea2000Msg>(ev));
@@ -247,7 +259,7 @@ void CommBridge::InitCommListeners() {
   // Position rapid   PGN 129025
   //-----------------------------
   Nmea2000Msg n2k_msg_129025(static_cast<uint64_t>(129025));
-  listener_N2K_129025.Listen(n2k_msg_129025.key(), this, EVT_N2K_129025);
+  listener_N2K_129025.Listen(n2k_msg_129025, this, EVT_N2K_129025);
   Bind(EVT_N2K_129025, [&](ObservedEvt ev) {
     HandleN2K_129025(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
@@ -255,7 +267,7 @@ void CommBridge::InitCommListeners() {
   // COG SOG rapid   PGN 129026
   //-----------------------------
   Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
-  listener_N2K_129026.Listen(n2k_msg_129026.key(), this, EVT_N2K_129026);
+  listener_N2K_129026.Listen(n2k_msg_129026, this, EVT_N2K_129026);
   Bind(EVT_N2K_129026, [&](ObservedEvt ev) {
     HandleN2K_129026(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
@@ -263,7 +275,7 @@ void CommBridge::InitCommListeners() {
   // Heading rapid   PGN 127250
   //-----------------------------
   Nmea2000Msg n2k_msg_127250(static_cast<uint64_t>(127250));
-  listener_N2K_127250.Listen(n2k_msg_127250.key(), this, EVT_N2K_127250);
+  listener_N2K_127250.Listen(n2k_msg_127250, this, EVT_N2K_127250);
   Bind(EVT_N2K_127250, [&](ObservedEvt ev) {
     HandleN2K_127250(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
@@ -271,7 +283,7 @@ void CommBridge::InitCommListeners() {
   // GNSS Satellites in View   PGN 129540
   //-----------------------------
   Nmea2000Msg n2k_msg_129540(static_cast<uint64_t>(129540));
-  listener_N2K_129540.Listen(n2k_msg_129540.key(), this, EVT_N2K_129540);
+  listener_N2K_129540.Listen(n2k_msg_129540, this, EVT_N2K_129540);
   Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
     HandleN2K_129540(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
@@ -280,7 +292,7 @@ void CommBridge::InitCommListeners() {
   // NMEA0183
   // RMC
   Nmea0183Msg n0183_msg_RMC("RMC");
-  listener_N0183_RMC.Listen(n0183_msg_RMC.key(), this, EVT_N0183_RMC);
+  listener_N0183_RMC.Listen(n0183_msg_RMC, this, EVT_N0183_RMC);
 
   Bind(EVT_N0183_RMC, [&](ObservedEvt ev) {
     HandleN0183_RMC(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -288,7 +300,7 @@ void CommBridge::InitCommListeners() {
 
   // HDT
   Nmea0183Msg n0183_msg_HDT("HDT");
-  listener_N0183_HDT.Listen(n0183_msg_HDT.key(), this, EVT_N0183_HDT);
+  listener_N0183_HDT.Listen(n0183_msg_HDT, this, EVT_N0183_HDT);
 
   Bind(EVT_N0183_HDT, [&](ObservedEvt ev) {
     HandleN0183_HDT(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -296,7 +308,7 @@ void CommBridge::InitCommListeners() {
 
   // HDG
   Nmea0183Msg n0183_msg_HDG("HDG");
-  listener_N0183_HDG.Listen(n0183_msg_HDG.key(), this, EVT_N0183_HDG);
+  listener_N0183_HDG.Listen(n0183_msg_HDG, this, EVT_N0183_HDG);
 
   Bind(EVT_N0183_HDG, [&](ObservedEvt ev) {
     HandleN0183_HDG(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -304,7 +316,7 @@ void CommBridge::InitCommListeners() {
 
   // HDM
   Nmea0183Msg n0183_msg_HDM("HDM");
-  listener_N0183_HDM.Listen(n0183_msg_HDM.key(), this, EVT_N0183_HDM);
+  listener_N0183_HDM.Listen(n0183_msg_HDM, this, EVT_N0183_HDM);
 
   Bind(EVT_N0183_HDM, [&](ObservedEvt ev) {
     HandleN0183_HDM(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -312,7 +324,7 @@ void CommBridge::InitCommListeners() {
 
   // VTG
   Nmea0183Msg n0183_msg_VTG("VTG");
-  listener_N0183_VTG.Listen(n0183_msg_VTG.key(), this, EVT_N0183_VTG);
+  listener_N0183_VTG.Listen(n0183_msg_VTG, this, EVT_N0183_VTG);
 
   Bind(EVT_N0183_VTG, [&](ObservedEvt ev) {
     HandleN0183_VTG(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -320,7 +332,7 @@ void CommBridge::InitCommListeners() {
 
   // GSV
   Nmea0183Msg n0183_msg_GSV("GSV");
-  listener_N0183_GSV.Listen(n0183_msg_GSV.key(), this, EVT_N0183_GSV);
+  listener_N0183_GSV.Listen(n0183_msg_GSV, this, EVT_N0183_GSV);
 
   Bind(EVT_N0183_GSV, [&](ObservedEvt ev) {
     HandleN0183_GSV(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -328,7 +340,7 @@ void CommBridge::InitCommListeners() {
 
   // GGA
   Nmea0183Msg n0183_msg_GGA("GGA");
-  listener_N0183_GGA.Listen(n0183_msg_GGA.key(), this, EVT_N0183_GGA);
+  listener_N0183_GGA.Listen(n0183_msg_GGA, this, EVT_N0183_GGA);
 
   Bind(EVT_N0183_GGA, [&](ObservedEvt ev) {
     HandleN0183_GGA(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -336,7 +348,7 @@ void CommBridge::InitCommListeners() {
 
   // GLL
   Nmea0183Msg n0183_msg_GLL("GLL");
-  listener_N0183_GLL.Listen(n0183_msg_GLL.key(), this, EVT_N0183_GLL);
+  listener_N0183_GLL.Listen(n0183_msg_GLL, this, EVT_N0183_GLL);
 
   Bind(EVT_N0183_GLL, [&](ObservedEvt ev) {
     HandleN0183_GLL(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -344,7 +356,7 @@ void CommBridge::InitCommListeners() {
 
   // AIVDO
   Nmea0183Msg n0183_msg_AIVDO("AIVDO");
-  listener_N0183_AIVDO.Listen(n0183_msg_AIVDO.key(), this, EVT_N0183_AIVDO);
+  listener_N0183_AIVDO.Listen(n0183_msg_AIVDO, this, EVT_N0183_AIVDO);
 
   Bind(EVT_N0183_AIVDO, [&](ObservedEvt ev) {
     HandleN0183_AIVDO(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -352,7 +364,7 @@ void CommBridge::InitCommListeners() {
 
   // SignalK
   SignalkMsg sk_msg;
-  listener_SignalK.Listen(sk_msg.key(), this, EVT_SIGNALK);
+  listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
 
   Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
     HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
@@ -402,14 +414,7 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
      }
    }
 
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -434,14 +439,7 @@ bool CommBridge::HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   else{
   }
 
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -472,14 +470,7 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   else{
   }
 
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -516,15 +507,7 @@ bool CommBridge::HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     }
   }
 
-
-    // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -577,14 +560,7 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -602,14 +578,7 @@ bool CommBridge::HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   }
 
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -637,15 +606,7 @@ bool CommBridge::HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   if (bHDM)
     MakeHDTFromHDM();
 
-
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -662,14 +623,7 @@ bool CommBridge::HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -686,14 +640,7 @@ bool CommBridge::HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -713,14 +660,7 @@ bool CommBridge::HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -746,14 +686,7 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -770,14 +703,7 @@ bool CommBridge::HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
+  SendBasicNavdata();
   return true;
 }
 
@@ -816,14 +742,7 @@ bool CommBridge::HandleN0183_AIVDO(
       }
     }
 
-    // Populate a comm_appmsg with current global values
-    auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-    // Notify the AppMsgBus of new data available
-    auto& msgbus = AppMsgBus::GetInstance();
-    msgbus.Notify(std::move(msg));
-
+    SendBasicNavdata();
   }
   return true;
 }
@@ -891,15 +810,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     }
   }
 
-  // Populate a comm_appmsg with current global values
-  auto msg = std::make_shared<BasicNavDataMsg>(
-      gLat, gLon, gSog, gCog, gVar, gHdt, wxDateTime::Now().GetTicks());
-
-  // Notify the AppMsgBus of new data available
-  auto& msgbus = AppMsgBus::GetInstance();
-  msgbus.Notify(std::move(msg));
-
-
+  SendBasicNavdata();
   return true;
 }
 

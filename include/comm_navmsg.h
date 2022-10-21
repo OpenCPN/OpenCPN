@@ -23,6 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef _DRIVER_NAVMSG_H
+#define _DRIVER_NAVMSG_H
+
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -34,8 +37,8 @@
 
 #include <wx/jsonval.h>
 
-#ifndef _DRIVER_NAVMSG_H
-#define _DRIVER_NAVMSG_H
+#include "observable.h"
+
 
 /**
  * N2k uses CAN which defines the basic properties of messages.
@@ -125,7 +128,7 @@ public:
 };
 
 /** Actual data sent between application and transport layer */
-class NavMsg {
+class NavMsg : public KeyProvider {
 public:
   NavMsg() = delete;
 
@@ -134,6 +137,8 @@ public:
   virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + key();
   }
+
+  std::string GetKey() const { return key(); }
 
   const NavAddr::Bus bus;
 

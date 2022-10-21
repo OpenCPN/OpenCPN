@@ -54,7 +54,7 @@
  *    public:
  *      Gui:Gui(Model& model) {
  *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        change_listen.Listen(model.change.key, this, EVT_FOO);
+ *        change_listener.Listen(model.change, this, EVT_FOO);
  *        Bind(EVT_FOO, [&](wxCommandEvent ev) {
  *          auto s = ev.GetString();    s -> "new value"
  *          ... do something;
@@ -86,8 +86,6 @@ public:
   const void Notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
     Observable::Notify(p, s, n, 0);
   }
-
-  const std::string key;
 
 private:
   std::string Autokey() {
