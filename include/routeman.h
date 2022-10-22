@@ -86,7 +86,7 @@ public:
            std::function<void()> RouteMgrDlgUpdateListCtrl);
   ~Routeman();
 
-  bool DeleteRoute(Route *pRoute);
+  bool DeleteRoute(Route *pRoute, bool update_changefile = true);
   void DeleteAllRoutes(void);
 
 

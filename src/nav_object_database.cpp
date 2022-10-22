@@ -1196,7 +1196,7 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   Route *pExisting = ::RouteExists(pTentRoute->m_GUID);
   if (pExisting) {
     navobj->m_bSkipChangeSetUpdate = true;
-    g_pRouteMan->DeleteRoute(pExisting);
+    g_pRouteMan->DeleteRoute(pExisting, false);
     navobj->m_bSkipChangeSetUpdate = false;
   }
 
