@@ -81,7 +81,9 @@ ocpn_query_callback(int sock, const struct sockaddr* from, size_t addrlen, mdns_
                                 ((entry == MDNS_ENTRYTYPE_AUTHORITY) ? "authority" : "additional");
 	mdns_string_t entrystr =
 	    mdns_string_extract(data, size, &name_offset, entrybuffer, sizeof(entrybuffer));
-	if (rtype == MDNS_RECORDTYPE_PTR) {
+      bool is_ipv4 = from->sa_family == AF_INET;    // Only ipv4 responses are to be used.
+
+	if ((rtype == MDNS_RECORDTYPE_PTR) && is_ipv4) {
 		mdns_string_t namestr = mdns_record_parse_ptr(data, size, record_offset, record_length,
 		                                              namebuffer, sizeof(namebuffer));
 		printf("%.*s : %s %.*s PTR %.*s rclass 0x%x ttl %u length %d\n",
