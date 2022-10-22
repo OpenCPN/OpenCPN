@@ -5406,7 +5406,7 @@ void MyFrame::InitAppMsgBusListener() {
 
   //  GPS Watchdog expiry status
   AppMsg msg_watchdog(AppMsg::Type::GPSWatchdog);
-  listener_gps_watchdog.Listen(msg_watchdog.name, this, EVT_GPS_WATCHDOG);
+  listener_gps_watchdog.Listen(msg_watchdog.key(), this, EVT_GPS_WATCHDOG);
 
   Bind(EVT_GPS_WATCHDOG, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();
