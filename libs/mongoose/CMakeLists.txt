@@ -11,6 +11,8 @@ set (SRC
 add_library(MONGOOSE STATIC ${SRC})
 add_library(ocpn::mongoose ALIAS MONGOOSE)
 
+add_definitions(-DMG_ENABLE_OPENSSL)
+
 #set_property(TARGET MONGOOSE PROPERTY COMPILE_FLAGS "-fvisibility=default")
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
@@ -22,3 +24,9 @@ endif ()
 target_include_directories(
   MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+if (MSVC)
+target_include_directories(
+  MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../buildwin/include
+)
+endif (MSVC)

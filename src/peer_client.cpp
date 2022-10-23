@@ -151,6 +151,9 @@ bool wxCurlHTTPNoZIP::Post(const char *url, const char *body_data)
         SetOpt(CURLOPT_WRITEFUNCTION, wxcurl_string_write_UTF8);         // private function
         SetOpt(CURLOPT_WRITEDATA, (void*)&m_szResponseBody);
 
+        SetOpt(CURLOPT_CAINFO, "cert.pem");
+        SetOpt(CURLOPT_SSL_VERIFYPEER, 0);
+
         //curl_easy_setopt(m_pCURL, CURLOPT_XFERINFOFUNCTION, xferinfo);
         curl_easy_setopt(m_pCURL, CURLOPT_NOPROGRESS, 0L);
 
@@ -176,6 +179,33 @@ std::string wxCurlHTTPNoZIP::GetResponseBody() const
 
 }
 
+struct MemoryStruct {
+  char *memory;
+  size_t size;
+};
+
+static size_t
+WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+  size_t realsize = size * nmemb;
+  struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+
+  char *ptr = (char *)realloc(mem->memory, mem->size + realsize + 1);
+  if(!ptr) {
+    /* out of memory! */
+    printf("not enough memory (realloc returned NULL)\n");
+    return 0;
+  }
+
+  mem->memory = ptr;
+  memcpy(&(mem->memory[mem->size]), contents, realsize);
+  mem->size += realsize;
+  mem->memory[mem->size] = 0;
+
+  return realsize;
+}
+
+
 int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
 {
   if(!route)
@@ -184,16 +214,58 @@ int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
   // Get XML representation of object.
   NavObjectCollection1 *pgpx = new NavObjectCollection1;
   pgpx->AddGPXRoute(route);
-
   std::ostringstream stream;
   pgpx->save(stream, PUGIXML_TEXT(" "));
 
-  std::string url(dest_ip_address);    //"http://192.168.37.98:8000";
+  std::string url(dest_ip_address);
   url += "/api/rx_object";
   url += _T("?source=") + g_hostname;
 
-  long iResponseCode =0;
-  size_t res = 0;
+#if 1
+  struct MemoryStruct chunk;
+  chunk.memory = (char *)malloc(1);
+  chunk.size = 0;
+
+  CURL* c = curl_easy_init();
+  curl_easy_setopt(c, CURLOPT_ENCODING, "identity");               // No encoding, plain ASCII
+  curl_easy_setopt(c, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+
+  int iSize =  strlen(stream.str().c_str());
+  curl_easy_setopt(c, CURLOPT_POSTFIELDSIZE, iSize);
+  curl_easy_setopt(c, CURLOPT_COPYPOSTFIELDS, stream.str().c_str());
+
+  curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(c, CURLOPT_WRITEDATA, (void *)&chunk);
+
+  CURLcode result = curl_easy_perform(c);
+  long response_code = -1;
+
+  if(result == CURLE_OK)
+    curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
+
+  curl_easy_cleanup(c);
+
+  if(response_code == 200){
+    //printf("%s\n", post.GetResponseBody().c_str());
+
+    wxString body(chunk.memory);
+    wxJSONValue  root;
+    wxJSONReader reader;
+
+    int numErrors = reader.Parse( body, &root );
+    // Capture the result
+    int result = root["result"].AsInt();
+    if (result > 0){
+      wxString error_text = GetErrorText(result);
+      OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
+                         wxICON_ERROR | wxOK);
+      mdlg.ShowModal();
+    }
+  }
+
+#else
   wxCurlHTTPNoZIP post;
   post.SetOpt(CURLOPT_TIMEOUT, 5);
   res = post.Post( url.c_str(), stream.str().c_str() );
@@ -217,5 +289,7 @@ int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
       mdlg.ShowModal();
     }
   }
+#endif
+
   return true;
 }

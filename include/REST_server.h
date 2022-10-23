@@ -49,7 +49,7 @@ public:
 
   virtual ~RESTServer();
 
-  bool StartServer();
+  bool StartServer(std::string certificate_location);
   void StopServer();
 
   void HandleServerMessage(RESTServerEvent& event);
@@ -69,15 +69,18 @@ public:
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
+  std::string GetCertificateDirectory(){ return m_certificate_directory; }
   int m_Thread_run_flag;
 
+  std::string m_cert_file;
+  std::string m_key_file;
 
 private:
 
   RESTServerThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
+  std::string m_certificate_directory;
 
-  //void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
 };
 
 #endif  // guard

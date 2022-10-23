@@ -181,14 +181,17 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
     peer_ip = peer_ip.Mid(tail+1);
   peer_ip = peer_ip.BeforeFirst('}');
   peer_ip += ":";
-  peer_ip += "8000";
+  peer_ip += "8443";
+
+  std::string peer_address("https://");
+  peer_address += peer_ip.ToStdString();
 
 
    //g_uploadConnection = src;  // save for persistence
 
 
   //    And send it out
-  int return_code = SendRoute(peer_ip.ToStdString(), m_pRoute, true);
+  int return_code = SendRoute(peer_address, m_pRoute, true);
 
   //if (m_pRoutePoint) RoutePointGui(*m_pRoutePoint).SendToGPS(destPort, this);
 
