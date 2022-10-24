@@ -24,6 +24,7 @@
  **************************************************************************/
 
 #include <algorithm>
+#include <memory>
 
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS 1
@@ -49,7 +50,7 @@
 #include "mDNS_query.h"
 
 // Static data structs
-std::vector<ocpn_DNS_record_t> g_DNS_cache;
+std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 
 
 
@@ -100,21 +101,27 @@ ocpn_query_callback(int sock, const struct sockaddr* from, size_t addrlen, mdns_
     std::string ip = from.substr(0, r);
 
     //  Search for this record in the cache
-    auto func = [srv](const ocpn_DNS_record_t record) {
-      return !record.service_instance.compare(srv);
+    auto func = [srv](const std::shared_ptr<ocpn_DNS_record_t> record) {
+      return !record->service_instance.compare(srv);
       };
     auto found = std::find_if(g_DNS_cache.begin(), g_DNS_cache.end(), func);
 
+    std::shared_ptr<ocpn_DNS_record_t>entry;
+
     if (found == g_DNS_cache.end()){
       // Add a record
-      ocpn_DNS_record_t new_record;
-      new_record.service_instance = srv;
-      new_record.hostname = hostname;
-      new_record.ip = ip;
-      new_record.port = "8000";
-
-      g_DNS_cache.push_back(new_record);
+      entry = std::make_shared<ocpn_DNS_record_t>();
+      g_DNS_cache.push_back(entry);
     }
+    else
+      entry = *found;
+
+    // Update the cache entry
+    entry->service_instance = srv;
+    entry->hostname = hostname;
+    entry->ip = ip;
+    entry->port = "8000";
+
   }
 
 

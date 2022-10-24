@@ -21,6 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include <memory>
 
 #include "OCPNPlatform.h"
 #include "route_gui.h"
@@ -32,7 +33,7 @@
 #include "peer_client.h"
 
 extern OCPNPlatform* g_Platform;
-extern std::vector<ocpn_DNS_record_t> g_DNS_cache;
+extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxString g_hostname;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
@@ -97,13 +98,13 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
 
   //    Fill in the wxComboBox with all detected peers
   for (unsigned int i=0; i < g_DNS_cache.size(); i++){
-    wxString item(g_DNS_cache[i].hostname.c_str());
+    wxString item(g_DNS_cache[i]->hostname.c_str());
 
     //skip "self"
     if(item.StartsWith(g_hostname))
       continue;
     item += " {";
-    item += g_DNS_cache[i].ip.c_str();
+    item += g_DNS_cache[i]->ip.c_str();
     item += "}";
     m_PeerListBox->Append(item);
   }
