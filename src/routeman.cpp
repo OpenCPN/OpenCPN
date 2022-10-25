@@ -724,7 +724,7 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
   return false;
 }
 
-bool Routeman::DeleteRoute(Route *pRoute, bool update_changefile) {
+bool Routeman::DeleteRoute(Route *pRoute) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
 #ifdef CLIAPP
@@ -755,8 +755,7 @@ bool Routeman::DeleteRoute(Route *pRoute, bool update_changefile) {
     /// }
     m_prop_dlg_ctx.Hide(pRoute);
 
-    if (update_changefile)
-      NavObjectChanges::getInstance()->DeleteConfigRoute(pRoute);
+    NavObjectChanges::getInstance()->DeleteConfigRoute(pRoute);
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
