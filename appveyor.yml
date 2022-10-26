@@ -48,8 +48,8 @@ before_build:
   - cd c:\project\opencpn
   - mkdir build
   - cd build
-  - ps: Start-FileDownload https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.1.zip
-  - cmd: 7z x -y OCPNWindowsCoreBuildSupport-0.1.zip -oc:\project\opencpn\buildwin
+  - ps: Start-FileDownload https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.1.zip -FileName OCPNWindowsCoreBuildSupport.zip
+  - cmd: 7z x -y OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwin
   - cmake -T v141_xp -DOCPN_CI_BUILD=ON ..
   # Add runtime test path:
   - cmd: SET PATH=%PATH%;c:\project\opencpn\buildwin
