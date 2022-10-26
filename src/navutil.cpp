@@ -1645,6 +1645,30 @@ void MyConfig::LoadS57Config() {
   }
 }
 
+/** Load changes from a pending changes file path. */
+static bool ReloadPendingChanges(const wxString& changes_path) {
+  wxULongLong size = wxFileName::GetSize(changes_path);
+
+  // We crashed last time :(
+  // That's why this file still exists...
+  // Let's reconstruct the unsaved changes
+  auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
+  pNavObjectChangesSet->Init(changes_path);
+  pNavObjectChangesSet->load_file(changes_path.fn_str());
+
+  //  Remove the file before applying the changes,
+  //  just in case the changes file itself causes a fault.
+  //  If it does fault, at least the next restart will proceed without fault.
+  if (::wxFileExists(changes_path))
+    ::wxRemoveFile(changes_path);
+
+  if (size == 0) return false;
+
+  wxLogMessage(_T("Applying NavObjChanges"));
+  pNavObjectChangesSet->ApplyChanges();
+  return  true;
+}
+
 void MyConfig::LoadNavObjects() {
   //      next thing to do is read tracks, etc from the NavObject XML file,
   wxLogMessage(_T("Loading navobjects from navobj.xml"));
@@ -1663,23 +1687,7 @@ void MyConfig::LoadNavObjects() {
   delete m_pNavObjectInputSet;
 
   if (::wxFileExists(m_sNavObjSetChangesFile)) {
-    wxULongLong size = wxFileName::GetSize(m_sNavObjSetChangesFile);
-
-    // We crashed last time :(
-    // That's why this file still exists...
-    // Let's reconstruct the unsaved changes
-    auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
-    pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
-
-    //  Remove the file before applying the changes,
-    //  just in case the changes file itself causes a fault.
-    //  If it does fault, at least the next restart will proceed without fault.
-    if (::wxFileExists(m_sNavObjSetChangesFile))
-      ::wxRemoveFile(m_sNavObjSetChangesFile);
-
-    if (size != 0) {
-      wxLogMessage(_T("Applying NavObjChanges"));
-      pNavObjectChangesSet->ApplyChanges();
+    if (ReloadPendingChanges(m_sNavObjSetChangesFile)) {
       UpdateNavObj();
     }
   }

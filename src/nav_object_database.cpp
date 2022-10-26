@@ -26,6 +26,7 @@
 #include "nav_object_database.h"
 #include "routeman.h"
 #include "navutil_base.h"
+#include "nav_object_database.h"
 #include "select.h"
 #include "track.h"
 #include "route.h"
@@ -1188,7 +1189,9 @@ static bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
   return bAddtrack;
 }
 
-static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
+static void UpdateRouteA(Route* pTentRoute,
+                         NavObjectCollection1* navobj,
+                         NavObjectChanges* nav_obj_changes) {
   if (!pTentRoute) return;
   if (pTentRoute->GetnPoints() < 2) return;
 
@@ -1196,7 +1199,7 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   Route *pExisting = ::RouteExists(pTentRoute->m_GUID);
   if (pExisting) {
     navobj->m_bSkipChangeSetUpdate = true;
-    g_pRouteMan->DeleteRoute(pExisting);
+    g_pRouteMan->DeleteRoute(pExisting, nav_obj_changes);
     navobj->m_bSkipChangeSetUpdate = false;
   }
 
@@ -1651,11 +1654,11 @@ bool NavObjectChanges::ApplyChanges(void) {
         pugi::xml_node child = xchild.child("opencpn:action");
 
         if (!strcmp(child.first_child().value(), "add")) {
-          ::UpdateRouteA(pRoute, this);
+          ::UpdateRouteA(pRoute, this, this);
         }
 
         else if (!strcmp(child.first_child().value(), "update")) {
-          ::UpdateRouteA(pRoute, this);
+          ::UpdateRouteA(pRoute, this, this);
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {

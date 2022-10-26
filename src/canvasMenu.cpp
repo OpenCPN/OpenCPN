@@ -61,6 +61,7 @@
 #include "georef.h"
 #include "kml.h"
 #include "navutil.h"
+#include "nav_object_database.h"
 #include "ocpn_frame.h"
 #include "pluginmanager.h"
 #include "route_gui.h"
@@ -1441,7 +1442,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         if (m_pSelectedRoute->m_bIsInLayer) break;
 
-        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute)) break;
+        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute,
+                                      NavObjectChanges::getInstance())) break;
 
         if(RouteManagerDialog::getInstanceFlag()){
           if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
@@ -1570,7 +1572,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       pSelect->DeleteAllSelectableRoutePoints(m_pSelectedRoute);
       pSelect->DeleteAllSelectableRouteSegments(m_pSelectedRoute);
-      g_pRouteMan->DeleteRoute(m_pSelectedRoute);
+      g_pRouteMan->DeleteRoute(m_pSelectedRoute,
+                               NavObjectChanges::getInstance());
       pSelect->AddAllSelectableRouteSegments(m_pTail);
       pSelect->AddAllSelectableRoutePoints(m_pTail);
       pSelect->AddAllSelectableRouteSegments(m_pHead);
