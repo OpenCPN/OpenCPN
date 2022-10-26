@@ -34,6 +34,8 @@
 #include <wx/string.h>
 #include <wx/thread.h>
 #include <wx/utils.h>
+#include <fstream>
+#include <string>
 
 #include "REST_server.h"
 #include "mongoose.h"
@@ -126,7 +128,12 @@ RESTServer::RESTServer()
 
 RESTServer::~RESTServer() { }
 
-bool RESTServer::StartServer() {
+bool RESTServer::StartServer(std::string certificate_location) {
+
+  m_certificate_directory = certificate_location;
+  m_cert_file = m_certificate_directory + std::string("cert.pem");       // Certificate PEM file
+  m_key_file = m_certificate_directory + std::string("key.pem");     // The key PEM file
+
 
   //    Kick off the  Server thread
   SetSecondaryThread(new RESTServerThread(this));
@@ -264,13 +271,15 @@ static const char *s_https_addr = "https://0.0.0.0:8443";  // HTTPS port
 static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   RESTServer *parent = static_cast<RESTServer *>(fn_data);
 
-  if (ev == MG_EV_ACCEPT && fn_data != NULL) {
-//     struct mg_tls_opts opts = {
-//         //.ca = "ca.pem",         // Uncomment to enable two-way SSL
-//         .cert = "server.pem",     // Certificate PEM file
-//         .certkey = "server.pem",  // This pem contains both cert and key
-//     };
-//     mg_tls_init(c, &opts);
+  if (ev == MG_EV_ACCEPT /*&& fn_data != NULL*/) {
+     struct mg_tls_opts opts;
+     memset(&opts, 0, sizeof(mg_tls_opts));
+
+     opts.ca = NULL; //"cert.pem";         // Uncomment to enable two-way SSL
+     opts.cert = parent->m_cert_file.c_str();       // Certificate PEM file
+     opts.certkey = parent->m_key_file.c_str();     // The key PEM file
+     opts.ciphers = NULL;
+     mg_tls_init(c, &opts);
   } else if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
     if (mg_http_match_uri(hm, "/api/rx_object")) {
@@ -282,6 +291,9 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
         std::string xml_content(hm->body.ptr, hm->body.len);
         std::string source_peer(source.ptr, source.len);
         //printf("%s\n", xml_content.c_str());
+
+       //std::ofstream b_stream("bodyfile",  std::fstream::out | std::fstream::binary);
+       //b_stream.write(hm->body.ptr, hm->body.len);
 
         return_status = -1;
 
@@ -324,7 +336,7 @@ void* RESTServerThread::Entry() {
   struct mg_mgr mgr;                            // Event manager
   mg_log_set(MG_LL_DEBUG);                      // Set log level
   mg_mgr_init(&mgr);                            // Initialise event manager
-  mg_http_listen(&mgr, s_http_addr, fn, m_pParent);  // Create HTTP listener
+  mg_http_listen(&mgr, s_https_addr, fn, m_pParent);  // Create HTTP listener
   //mg_http_listen(&mgr, s_https_addr, fn, (void *) 1);  // HTTPS listener
   for (;;) mg_mgr_poll(&mgr, 1000);                    // Infinite event loop
   mg_mgr_free(&mgr);

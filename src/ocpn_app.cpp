@@ -131,8 +131,10 @@
 #include "TrackPropDlg.h"
 #include "AISTargetListDialog.h"
 #include "comm_n0183_output.h"
-
 #include "comm_bridge.h"
+#include "certificates.h"
+#include "mDNS_query.h"
+
 //#include "usb_devices.h"
 //#include "comm_drv_registry.h"
 //#include "comm_navmsg_bus.h"
@@ -2027,7 +2029,18 @@ bool MyApp::OnInit() {
   // Initialize the CommBridge
   m_comm_bridge.Initialize();
 
-  m_RESTserver.StartServer();
+  std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
+
+  //FIXME (dave)  always 0?
+  std::string ipAddr = ipv4_addrs[0];
+
+  wxString data_dir = g_Platform->GetPrivateDataDir();
+  if (data_dir.Last() != wxFileName::GetPathSeparator())
+    data_dir.Append(wxFileName::GetPathSeparator());
+
+  make_certificate(ipAddr, data_dir.ToStdString());
+
+  m_RESTserver.StartServer(data_dir.ToStdString());
 
   StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
 

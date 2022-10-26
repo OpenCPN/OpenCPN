@@ -1,11 +1,12 @@
-/***************************************************************************
+
+/******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
+ * Purpose:  TLS Certificate support
+ * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,27 +22,14 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ *
+ *
+ *
+ */
+#ifndef _CERTIFICATES_H_
+#define _CERTIFICATES_H_
 
-#ifndef _MDNSQUERY_H
-#define _MDNSQUERY_H
+int make_certificate(std::string ip_v4, std::string destination_dir);
 
-#include <string>
-#include <vector>
-
-typedef struct ocpn_DNS_record_t ocpn_DNS_record_t;
-
-struct ocpn_DNS_record_t {
-  std::string service_instance;
-  std::string hostname;
-  std::string ip;
-  std::string port;
-};
-
-
-
-extern  int send_dns_sd(void);
-extern  void FindAllOCPNServers();
-extern std::vector<std::string> get_local_ipv4_addresses();
-
-#endif  // guard
+#endif

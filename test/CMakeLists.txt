@@ -81,6 +81,28 @@ if (LIBLZMA_FOUND)
   endif ()
 endif ()
 
+if (NOT WIN32)
+  find_package(OpenSSL)
+  if (OPENSSL_FOUND)
+    message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
+    target_link_libraries(tests PRIVATE ${OPENSSL_LIBRARIES})
+    add_definitions(-DMG_ENABLE_OPENSSL)
+  endif (OPENSSL_FOUND)
+else (NOT WIN32)
+    target_include_directories(
+      tests
+      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/include/openssl
+    )
+    target_link_libraries(
+      tests
+      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libssl.lib
+    )
+   target_link_libraries(
+      tests
+      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libcrypto.lib
+    )
+endif (NOT WIN32)
+
 
 target_link_libraries(tests PRIVATE GTest::gtest_main)
 include(GoogleTest)
