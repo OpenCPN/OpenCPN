@@ -1646,14 +1646,15 @@ if (NOT WIN32)
     add_definitions(-DMG_ENABLE_OPENSSL)
   endif (OPENSSL_FOUND)
  else (NOT APPLE)
+    message(STATUS "App: APPLE: Setting OpenSSL...")
     target_include_directories(
       ${PACKAGE_NAME}
-      PRIVATE /usr/local/opt/openssl@3/include
+      PRIVATE /usr/local/opt/openssl@3/include /usr/local/Cellar/openssl@3/3.0.5/include
     )
     target_link_libraries(
       ${PACKAGE_NAME}
-      PRIVATE /usr/local/opt/openssl@3/lib/libssl.lib
-      /usr/local/opt/openssl@3/lib/libcrypto.dylib
+      PRIVATE /usr/local/Cellar/openssl@3/3.0.5/lib/libcrypto.3.dylib
+      /usr/local/Cellar/openssl@3/3.0.5/lib/libssl.3.dylib
     )
  endif (NOT APPLE)
 else (NOT WIN32)
