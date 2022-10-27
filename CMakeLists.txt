@@ -1637,6 +1637,7 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
+if (FALSE)
 if (NOT WIN32)
  if (NOT APPLE)
   find_package(OpenSSL)
@@ -1676,6 +1677,7 @@ if (MSVC)
   install(FILES "buildwin/libssl-3.dll" DESTINATION ".")
   install(FILES "buildwin/libcrypto-3.dll" DESTINATION ".")
 endif (MSVC)
+endif (FALSE)
 
 
 message(STATUS "S57 ENC support: enabled")
