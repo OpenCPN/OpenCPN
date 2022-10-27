@@ -24,7 +24,7 @@ if (NOT WIN32)
     message(STATUS "Mongoose: APPLE: Setting OpenSSL...")
     target_include_directories(
       MONGOOSE
-      PUBLIC  /usr/local/Cellar/openssl@3/3.0.5/include
+      PUBLIC  /usr/local/opt/openssl@3/include
     )
     target_link_libraries(
       MONGOOSE
