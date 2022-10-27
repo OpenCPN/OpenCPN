@@ -1637,47 +1637,11 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
-if (FALSE)
-if (NOT WIN32)
- if (NOT APPLE)
-  find_package(OpenSSL)
-  if (OPENSSL_FOUND)
-    message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENSSL_LIBRARIES})
-    add_definitions(-DMG_ENABLE_OPENSSL)
-  endif (OPENSSL_FOUND)
- else (NOT APPLE)
-    message(STATUS "App: APPLE: Setting OpenSSL...")
-    target_include_directories(
-      ${PACKAGE_NAME}
-      PUBLIC /usr/local/Cellar/openssl@3/3.0.5/include
-    )
-    target_link_libraries(
-      ${PACKAGE_NAME}
-      PRIVATE /usr/local/Cellar/openssl@3/3.0.5/lib/libcrypto.3.dylib
-      /usr/local/Cellar/openssl@3/3.0.5/lib/libssl.3.dylib
-    )
- endif (NOT APPLE)
-else (NOT WIN32)
-    target_include_directories(
-      ${PACKAGE_NAME}
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/include/openssl
-    )
-    target_link_libraries(
-      ${PACKAGE_NAME}
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libssl.lib
-    )
-   target_link_libraries(
-      ${PACKAGE_NAME}
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libcrypto.lib
-    )
-endif (NOT WIN32)
 
 if (MSVC)
   install(FILES "buildwin/libssl-3.dll" DESTINATION ".")
   install(FILES "buildwin/libcrypto-3.dll" DESTINATION ".")
 endif (MSVC)
-endif (FALSE)
 
 
 message(STATUS "S57 ENC support: enabled")

@@ -36,7 +36,7 @@
 #include <openssl/x509v3.h>
 
 #ifdef __MSVC__
-#include "applink.c"
+#include "openssl/applink.c"
 #endif
 
 
