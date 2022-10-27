@@ -1638,12 +1638,24 @@ add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
 if (NOT WIN32)
+ if (NOT APPLE)
   find_package(OpenSSL)
   if (OPENSSL_FOUND)
     message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENSSL_LIBRARIES})
     add_definitions(-DMG_ENABLE_OPENSSL)
   endif (OPENSSL_FOUND)
+ else (NOT APPLE)
+    target_include_directories(
+      ${PACKAGE_NAME}
+      PRIVATE /usr/local/opt/openssl@3/include
+    )
+    target_link_libraries(
+      ${PACKAGE_NAME}
+      PRIVATE /usr/local/opt/openssl@3/lib/libssl.lib
+      /usr/local/opt/openssl@3/lib/libcrypto.dylib
+    )
+ endif (NOT APPLE)
 else (NOT WIN32)
     target_include_directories(
       ${PACKAGE_NAME}

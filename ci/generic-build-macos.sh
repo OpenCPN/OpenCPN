@@ -49,7 +49,7 @@ brew install cairo
 brew install zstd
 brew install xz
 brew install lz4
-
+brew install openssl
 
 for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
