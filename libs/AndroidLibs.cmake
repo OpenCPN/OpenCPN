@@ -46,6 +46,7 @@ if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
   set(_wxlibs  ${_master_base}/wxWidgets/libs/arm64/lib)
   set(Qt_Base ${_master_base}/qt5)
   set(Qt_Build build_arm64_O3/qtbase)
+  set(base_include ${_master_base}/include)
 
 else ()
   file(GLOB _wx_setup
@@ -56,11 +57,13 @@ else ()
   set(_wxlibs  ${_master_base}/wxWidgets/libs/armhf/lib)
   set(Qt_Base ${_master_base}/qt5)
   set(Qt_Build build_arm32_19_O3/qtbase)
+  set(base_include ${_master_base}/include)
 endif ()
 
 message(STATUS "Android Build wx include directories: support file base:  ${_wx_setup}")
 
 include_directories(
+  ${base_include}
   ${_qt_include}
   ${_qt_include}/QtWidgets
   ${_qt_include}/QtCore

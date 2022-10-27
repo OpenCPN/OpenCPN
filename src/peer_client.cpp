@@ -29,13 +29,14 @@
 
 #include "peer_client.h"
 
-#include "wx/curl/http.h"
-#include "wx/curl/thread.h"
+//#include "wx/curl/http.h"
+//#include "wx/curl/thread.h"
 #include "nav_object_database.h"
 #include <wx/json_defs.h>
 #include <wx/jsonreader.h>
 #include "REST_server.h"
 #include "gui_lib.h"
+#include <curl/curl.h>
 
 extern wxString g_hostname;
 
@@ -75,7 +76,7 @@ size_t wxcurl_string_write_UTF8(void* ptr, size_t size, size_t nmemb, void* pcha
     return iRealSize;
 }
 
-
+#if 0
 class wxCurlHTTPNoZIP : public wxCurlHTTP
 {
 public:
@@ -179,6 +180,8 @@ std::string wxCurlHTTPNoZIP::GetResponseBody() const
 
 }
 
+#endif
+
 struct MemoryStruct {
   char *memory;
   size_t size;
@@ -221,6 +224,8 @@ int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
   url += "/api/rx_object";
   url += _T("?source=") + g_hostname;
 
+#ifndef ANDROID
+//FIXME (dave)
 #if 1
   struct MemoryStruct chunk;
   chunk.memory = (char *)malloc(1);
@@ -290,6 +295,6 @@ int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
     }
   }
 #endif
-
+#endif //ANDROID
   return true;
 }

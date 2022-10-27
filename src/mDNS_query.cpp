@@ -271,6 +271,7 @@ std::vector<std::string> get_local_ipv4_addresses() {
 	// When sending, each socket can only send to one network interface
 	// Thus we need to open one socket for each interface and address family
 	int num_sockets = 0;
+#ifndef ANDROID
 
 #ifdef _WIN32
 
@@ -473,6 +474,8 @@ std::vector<std::string> get_local_ipv4_addresses() {
 	freeifaddrs(ifaddr);
 
 #endif
+
+#endif //ANDROID
 
 	return ret_vec;
 }
