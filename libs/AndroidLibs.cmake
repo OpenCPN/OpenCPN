@@ -16,7 +16,7 @@ set(_master_base ${OCPN_ANDROID_CACHEDIR}/OCPNAndroidCoreBuildSupport)
 message(STATUS "Android Build support file base:  ${OCPN_ANDROID_CACHEDIR}/OCPNAndroidCoreBuildSupport")
 
 
-if (NOT EXISTS ${OCPN_ANDROID_CACHEDIR}/support.zip)
+if (TRUE) #(NOT EXISTS ${OCPN_ANDROID_CACHEDIR}/support.zip)
   file(
     DOWNLOAD
       https://github.com/bdbcat/OCPNAndroidCoreBuildSupport/releases/download/v1.1/OCPNAndroidCoreBuildSupport.zip
@@ -26,7 +26,7 @@ if (NOT EXISTS ${OCPN_ANDROID_CACHEDIR}/support.zip)
     SHOW_PROGRESS
   )
 endif ()
-if (NOT EXISTS ${_master_base})
+if (TRUE) #(NOT EXISTS ${_master_base})
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E tar -xzf ${OCPN_ANDROID_CACHEDIR}/support.zip
     WORKING_DIRECTORY "${OCPN_ANDROID_CACHEDIR}"
