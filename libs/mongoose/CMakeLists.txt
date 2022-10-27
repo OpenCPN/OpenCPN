@@ -4,12 +4,48 @@ if (TARGET ocpn::mongoose)
     return ()
 endif ()
 
+
 set (SRC
   src/mongoose.c
   include/mongoose.h
 )
 add_library(MONGOOSE STATIC ${SRC})
 add_library(ocpn::mongoose ALIAS MONGOOSE)
+
+if (NOT WIN32)
+ if (NOT APPLE)
+  find_package(OpenSSL)
+  if (OPENSSL_FOUND)
+    message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
+    target_link_libraries(MONGOOSE PRIVATE ${OPENSSL_LIBRARIES})
+    add_definitions(-DMG_ENABLE_OPENSSL)
+  endif (OPENSSL_FOUND)
+ else (NOT APPLE)
+    message(STATUS "Mongoose: APPLE: Setting OpenSSL...")
+    target_include_directories(
+      MONGOOSE
+      PUBLIC  /usr/local/Cellar/openssl@3/3.0.5/include
+    )
+    target_link_libraries(
+      MONGOOSE
+      PRIVATE /usr/local/Cellar/openssl@3/3.0.5/lib/libcrypto.3.dylib
+      /usr/local/Cellar/openssl@3/3.0.5/lib/libssl.3.dylib
+    )
+ endif (NOT APPLE)
+else (NOT WIN32)
+    target_include_directories(
+      MONGOOSE
+      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/include/openssl
+    )
+    target_link_libraries(
+      MONGOOSE
+      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libssl.lib
+    )
+   target_link_libraries(
+      MONGOOSE
+      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libcrypto.lib
+    )
+endif (NOT WIN32)
 
 add_definitions(-DMG_ENABLE_OPENSSL)
 
