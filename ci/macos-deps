@@ -6,3 +6,4 @@ python
 wget
 libarchive
 cairo
+openssl
