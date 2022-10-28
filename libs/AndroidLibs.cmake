@@ -19,7 +19,7 @@ message(STATUS "Android Build support file base:  ${OCPN_ANDROID_CACHEDIR}/OCPNA
 if (TRUE) #(NOT EXISTS ${OCPN_ANDROID_CACHEDIR}/support.zip)
   file(
     DOWNLOAD
-      https://github.com/bdbcat/OCPNAndroidCoreBuildSupport/releases/download/v1.1/OCPNAndroidCoreBuildSupport.zip
+      https://github.com/bdbcat/OCPNAndroidCoreBuildSupport/releases/download/v1.2/OCPNAndroidCoreBuildSupport.zip
       ${OCPN_ANDROID_CACHEDIR}/support.zip
 #    EXPECTED_HASH
 #      SHA256=ac36afaf4f026e9b2624a963f5356f5b1fb2c45dec1134209333a8b46fb05ca0
@@ -46,7 +46,7 @@ if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
   set(_wxlibs  ${_master_base}/wxWidgets/libs/arm64/lib)
   set(Qt_Base ${_master_base}/qt5)
   set(Qt_Build build_arm64_O3/qtbase)
-  set(base_include ${_master_base}/include)
+  set(openssl_include ${_master_base}/openssl/arm64/include)
 
 else ()
   file(GLOB _wx_setup
@@ -57,7 +57,7 @@ else ()
   set(_wxlibs  ${_master_base}/wxWidgets/libs/armhf/lib)
   set(Qt_Base ${_master_base}/qt5)
   set(Qt_Build build_arm32_19_O3/qtbase)
-  set(base_include ${_master_base}/include)
+  set(openssl_include ${_master_base}/openssl/armhf/include)
 endif ()
 
 message(STATUS "Android Build wx include directories: support file base:  ${_wx_setup}")
@@ -71,6 +71,7 @@ include_directories(
   ${_qt_include}/QtOpenGL
   ${_qt_include}/QtTest
   ${_master_base}/wxWidgets/include/
+  ${openssl_include}
   ${_wx_setup}
 )
 target_link_libraries(${PACKAGE_NAME} PRIVATE
