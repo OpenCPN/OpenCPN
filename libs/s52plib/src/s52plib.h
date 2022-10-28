@@ -27,23 +27,101 @@
 #define _S52PLIB_H_
 
 #include <vector>
+#if defined(__OCPN__ANDROID__)
+ #include <qopengl.h>
+ #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+ #include <GLES2/gl2.h>
+#elif defined(__MSVC__)
+ #include "glew.h"
+ #include <GL/glu.h>
+ typedef void (__stdcall * _GLUfuncptrA)(void);
+#elif defined(__WXOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glu.h>
+ typedef void (*  _GLUfuncptr)();
+ #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+ #include <GL/glew.h>
+ #include <GL/glu.h>
+#endif
 
 #include "s52s57.h"  //types
 
 class wxGLContext;
 
 #include "LLRegion.h"
-#include "ocpn_types.h"
 #include "DepthFont.h"
+#include "chartsymbols.h"
+#include "TexFont.h"
 
 #include <wx/dcgraph.h>  // supplemental, for Mac
+#include <unordered_map>
+
+//    ChartType constants
+typedef enum S52_ChartTypeEnum {
+  S52_CHART_TYPE_UNKNOWN = 0,
+  S52_CHART_TYPE_DUMMY,
+  S52_CHART_TYPE_DONTCARE,
+  S52_CHART_TYPE_KAP,
+  S52_CHART_TYPE_GEO,
+  S52_CHART_TYPE_S57,
+  S52_CHART_TYPE_CM93,
+  S52_CHART_TYPE_CM93COMP,
+  S52_CHART_TYPE_PLUGIN,
+  S52_CHART_TYPE_MBTILES
+} _S52_ChartTypeEnum;
+
+// Correct some deficincies in MacOS OpenGL include files
+#ifdef __WXOSX__
+typedef void (*PFNGLGENBUFFERSPROC)(GLsizei n, GLuint *buffers);
+typedef void (*PFNGLBINDBUFFERPROC)(GLenum target, GLuint buffer);
+typedef void (*PFNGLDELETEBUFFERSPROC)(GLsizei n, const GLuint *buffers);
+typedef void (*PFNGLGETBUFFERPARAMETERIVPROC)(GLenum target, GLenum pname,
+                                              GLint *params);
+typedef void (*PFNGLDELETERENDERBUFFERSEXTPROC)(GLsizei n,
+                                                const GLuint *renderbuffers);
+typedef void (*PFNGLDELETEFRAMEBUFFERSEXTPROC)(GLsizei n,
+                                               const GLuint *framebuffers);
+typedef void (*PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC)(GLenum target, GLint level,
+                                                 GLint xoffset, GLsizei width,
+                                                 GLenum format,
+                                                 GLsizei imageSize,
+                                                 const GLvoid *data);
+typedef void (*PFNGLGETCOMPRESSEDTEXIMAGEPROC)(GLenum target, GLint level,
+                                               GLvoid *img);
+typedef GLenum (*PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)(GLenum target);
+typedef void (*PFNGLBINDRENDERBUFFEREXTPROC)(GLenum target,
+                                             GLuint renderbuffer);
+typedef void (*PFNGLBUFFERDATAPROC)(GLenum target, GLsizeiptr size,
+                                    const GLvoid *data, GLenum usage);
+typedef void (*PFNGLGENFRAMEBUFFERSEXTPROC)(GLsizei n, GLuint *framebuffers);
+typedef void (*PFNGLGENRENDERBUFFERSEXTPROC)(GLsizei n, GLuint *renderbuffers);
+typedef void (*PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)(GLenum target,
+                                                 GLenum attachment,
+                                                 GLenum textarget,
+                                                 GLuint texture, GLint level);
+typedef void (*PFNGLCOMPRESSEDTEXIMAGE2DPROC)(GLenum target, GLint level,
+                                              GLenum internalformat,
+                                              GLsizei width, GLsizei height,
+                                              GLint border, GLsizei imageSize,
+                                              const GLvoid *data);
+typedef void (*PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)(GLenum target,
+                                                    GLenum attachment,
+                                                    GLenum renderbuffertarget,
+                                                    GLuint renderbuffer);
+typedef void (*PFNGLRENDERBUFFERSTORAGEEXTPROC)(GLenum target,
+                                                GLenum internalformat,
+                                                GLsizei width, GLsizei height);
+typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
+#endif
+
+#define INVALID_COORD (-2147483647 - 1)
 
 //    wxWindows Hash Map Declarations
 #include <wx/hashmap.h>
 class RuleHash;
 
 WX_DECLARE_HASH_MAP(wxString, Rule *, wxStringHash, wxStringEqual, RuleHash);
-WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual, MyNatsurHash);
 
 WX_DEFINE_SORTED_ARRAY(LUPrec *, wxArrayOfLUPrec);
 
@@ -60,7 +138,6 @@ struct CARC_Buffer {
 WX_DECLARE_STRING_HASH_MAP(CARC_Buffer, CARC_Hash);
 WX_DECLARE_STRING_HASH_MAP(int, CARC_DL_Hash);
 
-class ViewPort;
 class PixelCache;
 
 class RenderFromHPGL;
@@ -96,6 +173,26 @@ private:
   LUPArrayIndexHash IndexHash;
 };
 
+class VPointCompat
+{
+public:
+  int pix_width;
+  int pix_height;
+  double view_scale_ppm;
+  double rotation;
+  double clat;
+  double clon;
+  double chart_scale;
+  wxRect rv_rect;
+  double ref_scale;
+  double display_scale;
+};
+
+typedef struct {
+  TexFont *cache;
+  wxFont *key;
+} TexFontCache;
+
 //-----------------------------------------------------------------------------
 //    s52plib definition
 //-----------------------------------------------------------------------------
@@ -130,14 +227,16 @@ public:
 
   void SetGLRendererString(const wxString &renderer);
   void SetGLOptions(bool b_useStencil, bool b_useStencilAP, bool b_useScissors,
-                    bool b_useFBO, bool b_useVBO, int nTextureFormat);
+                    bool b_useFBO, bool b_useVBO, int nTextureFormat,
+                    float MinCartographicLineWidth,
+                    float MinSymbolLineWidth);
 
-  bool ObjectRenderCheck(ObjRazRules *rzRules, ViewPort *vp);
-  bool ObjectRenderCheckRules(ObjRazRules *rzRules, ViewPort *vp,
+  bool ObjectRenderCheck(ObjRazRules *rzRules);
+  bool ObjectRenderCheckRules(ObjRazRules *rzRules,
                               bool check_noshow = false);
-  bool ObjectRenderCheckPos(ObjRazRules *rzRules, ViewPort *vp);
-  bool ObjectRenderCheckCat(ObjRazRules *rzRules, ViewPort *vp);
-  bool ObjectRenderCheckCS(ObjRazRules *rzRules, ViewPort *vp);
+  bool ObjectRenderCheckPos(ObjRazRules *rzRules);
+  bool ObjectRenderCheckCat(ObjRazRules *rzRules);
+  bool ObjectRenderCheckCS(ObjRazRules *rzRules);
   bool ObjectRenderCheckDates(ObjRazRules *rzRules);
 
   static void DestroyLUP(LUPrec *pLUP);
@@ -150,7 +249,7 @@ public:
   void RestoreColorScheme(void) {}
 
   //    Rendering stuff
-  void PrepareForRender(ViewPort *vp);
+  void PrepareForRender(VPointCompat *vp);
   void PrepareForRender(void);
   void AdjustTextList(int dx, int dy, int screenw, int screenh);
   void ClearTextList(void);
@@ -158,9 +257,9 @@ public:
   void FlushSymbolCaches();
 
   //    For DC's
-  int RenderObjectToDC(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp);
-  int RenderObjectToDCText(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp);
-  int RenderAreaToDC(wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp,
+  int RenderObjectToDC(wxDC *pdc, ObjRazRules *rzRules);
+  int RenderObjectToDCText(wxDC *pdc, ObjRazRules *rzRules);
+  int RenderAreaToDC(wxDC *pdc, ObjRazRules *rzRules,
                      render_canvas_parms *pb_spec);
 
   // Accessors
@@ -191,6 +290,8 @@ public:
   void SetQualityOfData(bool val);
   bool GetQualityOfData();
 
+  void SetGuiScaleFactors(double ChartScaleFactor, int chart_zoom_modifier_vector);
+
   int GetMajorVersion(void) { return m_VersionMajor; }
   int GetMinorVersion(void) { return m_VersionMinor; }
 
@@ -216,15 +317,9 @@ public:
   static void DestroyRulesChain(Rules *top);
 
   //    For OpenGL
-  int RenderObjectToGL(const wxGLContext &glcc, ObjRazRules *rzRules,
-                       ViewPort *vp);
-  int RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules,
-                     ViewPort *vp);
-  int RenderObjectToGLText(const wxGLContext &glcc, ObjRazRules *rzRules,
-                           ViewPort *vp);
-
-  void RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip_geom,
-                        wxPoint *ptp);
+  int RenderObjectToGL(const wxGLContext &glcc, ObjRazRules *rzRules);
+  int RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules);
+  int RenderObjectToGLText(const wxGLContext &glcc, ObjRazRules *rzRules);
 
   bool EnableGLLS(bool benable);
 
@@ -234,6 +329,15 @@ public:
   void ClearNoshow(void);
   void SaveObjNoshow() { m_saved_noshow = m_noshow_array; };
   void RestoreObjNoshow() { m_noshow_array = m_saved_noshow; };
+
+  void SetVPointCompat(int pix_width,int pix_height,
+                      double view_scale_ppm, double rotation,
+                      double clat, double clon,
+                      double chart_scale,
+                      wxRect rv_rect, LLBBox &bbox,
+                      double ref_scale, double display_scale
+                      );
+
 
   // Todo accessors
   LUPname m_nSymbolStyle;
@@ -252,6 +356,11 @@ public:
   bool m_bShowNationalTexts;
   int m_nSoundingFactor;
   double m_SoundingsScaleFactor;
+  int m_SoundingsPointSize;
+  double m_SoundingsFontSizeMM;
+
+  double m_ChartScaleFactorExp;
+  int m_chart_zoom_modifier_vector;
 
   int m_VersionMajor;
   int m_VersionMinor;
@@ -278,14 +387,21 @@ public:
   std::vector<wxString> OBJLDescriptions;
 
   RuleHash *_symb_sym;         // symbol symbolisation rules
-  MyNatsurHash m_natsur_hash;  // hash table for cacheing NATSUR string values
-                               // from int attributes
+  std::unordered_map<int, std::string> m_natsur_hash;
+                                // hash table for cacheing NATSUR string values
+                                // from int attributes
 
-  wxRect m_last_clip_rect;
   int m_myConfig;
 
   double lastLightLat;
   double lastLightLon;
+  float m_GLMinCartographicLineWidth;
+  float m_GLMinSymbolLineWidth;
+
+  ChartSymbols m_chartSymbols;
+
+  void PLIB_LoadS57GlobalConfig();
+  void PLIB_LoadS57ObjectConfig();
 
 private:
   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
@@ -293,80 +409,82 @@ private:
 
   void PLIB_LoadS57Config();
 
+  void InitializeNatsurHash();
   bool PreloadOBJLFromCSV(const wxString &csv_file);
 
-  int DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp);
-  int DoRenderObjectTextOnly(wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp);
+  int DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules);
+  int DoRenderObjectTextOnly(wxDC *pdcin, ObjRazRules *rzRules);
 
   //    Area Renderers
-  int RenderToBufferAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
+  int RenderToBufferAC(ObjRazRules *rzRules, Rules *rules,
                        render_canvas_parms *pb_spec);
-  int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
+  int RenderToBufferAP(ObjRazRules *rzRules, Rules *rules,
                        render_canvas_parms *pb_spec);
-  int RenderToGLAC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderToGLAP(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+
+  int RenderToGLAC(ObjRazRules *rzRules, Rules *rules);
+  int RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules);
+
+  int RenderToGLAP(ObjRazRules *rzRules, Rules *rules);
+  int RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules);
 
   //    Object Renderers
-  int RenderTX(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderTE(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderSY(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderLC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderMPS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderCARC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderTX(ObjRazRules *rzRules, Rules *rules);
+  int RenderTE(ObjRazRules *rzRules, Rules *rules);
+  int RenderSY(ObjRazRules *rzRules, Rules *rules);
+  int RenderLS(ObjRazRules *rzRules, Rules *rules);
+  int RenderLC(ObjRazRules *rzRules, Rules *rules);
+  int RenderMPS(ObjRazRules *rzRules, Rules *rules);
+  int RenderCARC(ObjRazRules *rzRules, Rules *rules);
   char *RenderCS(ObjRazRules *rzRules, Rules *rules);
-  int RenderGLLS(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderGLLC(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderGLLS(ObjRazRules *rzRules, Rules *rules);
+  int RenderGLLC(ObjRazRules *rzRules, Rules *rules);
 
-  int RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules);
+  int RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules);
 
   void UpdateOBJLArray(S57Obj *obj);
 
   int reduceLOD(double LOD_meters, int nPoints, double *source,
                 wxPoint2DDouble **dest, int *maskIn, int **maskOut);
 
-  int RenderLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderLCLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderGLLSLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderGLLCLegacy(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
-  int RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderLSLegacy(ObjRazRules *rzRules, Rules *rules);
+  int RenderLCLegacy(ObjRazRules *rzRules, Rules *rules);
+  int RenderGLLSLegacy(ObjRazRules *rzRules, Rules *rules);
+  int RenderGLLCLegacy(ObjRazRules *rzRules, Rules *rules);
+  int RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules);
+  int RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules);
 
-  int RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules, ViewPort *vp);
+  int RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules);
 
-  void DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
-                    ViewPort *vp);
+  void DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
 
   render_canvas_parms *CreatePatternBufferSpec(ObjRazRules *rzRules,
-                                               Rules *rules, ViewPort *vp,
+                                               Rules *rules,
                                                bool b_revrgb,
                                                bool b_pot = false);
 
   void RenderToBufferFilledPolygon(ObjRazRules *rzRules, S57Obj *obj,
                                    S52color *c, render_canvas_parms *pb_spec,
-                                   render_canvas_parms *patt_spec,
-                                   ViewPort *vp);
+                                   render_canvas_parms *patt_spec);
 
   void draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
                     int *mask, int npt, float sym_len, float sym_factor,
-                    Rule *draw_rule, ViewPort *vp);
+                    Rule *draw_rule);
 
-  bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r, ViewPort *vp,
+  bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
                   float rot_angle = 0.);
   bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-                          ViewPort *vp, float rot_angle = 0.);
+                          float rot_angle = 0.);
   bool RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-                            ViewPort *vp, wxColor symColor,
+                            wxColor symColor,
                             float rot_angle = 0.);
   wxImage RuleXBMToImage(Rule *prule);
 
   bool RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn,
-                  S57Obj *pobj, bool bCheckOverlap, ViewPort *vp);
+                  S57Obj *pobj, bool bCheckOverlap);
 
   bool CheckTextRectList(const wxRect &test_rect, S52_TextC *ptext);
-  int RenderT_All(ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool bTX);
+  int RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX);
 
   int PrioritizeLineFeature(ObjRazRules *rzRules, int npriority);
 
@@ -379,7 +497,7 @@ private:
   LUPrec *FindBestLUP(wxArrayOfLUPrec *LUPArray, unsigned int startIndex,
                       unsigned int count, S57Obj *pObj, bool bStrict);
 
-  void SetGLClipRect(const ViewPort &vp, const wxRect &rect);
+  void SetGLClipRect(const VPointCompat &vp, const wxRect &rect);
 
   char *_getParamVal(ObjRazRules *rzRules, char *str, char *buf, int bsz);
   S52_TextC *S52_PL_parseTX(ObjRazRules *rzRules, Rules *rules, char *cmd);
@@ -397,13 +515,19 @@ private:
   bool inter_tri_rect(wxPoint *ptp, render_canvas_parms *pb_spec);
 
   bool GetPointPixArray(ObjRazRules *rzRules, wxPoint2DDouble *pd, wxPoint *pp,
-                        int nv, ViewPort *vp);
+                        int nv);
   bool GetPointPixSingle(ObjRazRules *rzRules, float north, float east,
-                         wxPoint *r, ViewPort *vp);
-  void GetPixPointSingle(int pixx, int pixy, double *plat, double *plon,
-                         ViewPort *vp);
-  void GetPixPointSingleNoRotate(int pixx, int pixy, double *plat, double *plon,
-                                 ViewPort *vpt);
+                         wxPoint *r);
+  void GetPixPointSingle(int pixx, int pixy, double *plat, double *plon);
+  void GetPixPointSingleNoRotate(int pixx, int pixy, double *plat, double *plon);
+
+  void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
+  wxPoint GetPixFromLL(double lat, double lon);
+  wxPoint GetPixFromLLROT(double lat, double lon, double rotation);
+  wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
+  wxPoint2DDouble GetDoublePixFromLLROT(double lat, double lon, double rotation);
+
+  LLBBox &GetBBox() { return BBox; }
 
   wxString m_plib_file;
 
@@ -416,7 +540,6 @@ private:
   wxColor m_unused_wxColor;
 
   bool bUseRasterSym;
-  bool useLegacyRaster;
 
   wxDC *m_pdc;  // The current DC
 
@@ -468,8 +591,17 @@ private:
   bool m_GLLineSmoothing;
   bool m_GLPolygonSmoothing;
   wxFont *m_soundFont;
+  bool m_useGLSL;
 
   double m_displayScale;
+
+  VPointCompat  vp_plib;
+  LLBBox BBox;
+  #define TXF_CACHE 8
+  TexFontCache s_txf[TXF_CACHE];
+
+
+
 };
 
 #define HPGL_FILLED true
@@ -484,7 +616,7 @@ public:
 #if wxUSE_GRAPHICS_CONTEXT
   void SetTargetGCDC(wxGCDC *gdc);
 #endif
-  void SetVP(ViewPort *pVP) { m_vp = pVP; }
+  void SetVP(VPointCompat *pVP) { m_vp = pVP; }
   bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
               float scale, double rot_angle, bool bSymbol);
   wxBrush *getBrush() { return brush; }
@@ -534,7 +666,7 @@ private:
   bool renderToDC;
   bool renderToOpenGl;
   bool renderToGCDC;
-  ViewPort *m_vp;
+  VPointCompat *m_vp;
 
   float *workBuf;
   size_t workBufSize;

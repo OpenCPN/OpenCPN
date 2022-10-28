@@ -48,8 +48,8 @@ public:
                    ViewPort &vp, bool bdraw_arrow);
 
   void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas);
-  void DrawGL(ViewPort &vp, ChartCanvas *canvas);
-  void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas);
+  void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
+  void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
   void CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas, wxRect *prect);
   void RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb, ViewPort &vp,
                      bool bdraw_arrow, int hilite_width = 0);

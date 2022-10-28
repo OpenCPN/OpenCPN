@@ -41,7 +41,7 @@
 
 #include "pi_ocpndc.h"
 
-#include "TexFont.h"
+#include "pi_TexFont.h"
 
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Specification

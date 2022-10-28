@@ -61,8 +61,6 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 
-#include "dychart.h"
-
 #include "garmin_protocol_mgr.h"
 
 #include "comm_drv_n0183_net.h"

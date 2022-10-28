@@ -32,7 +32,6 @@
 #include "GribRequestDialog.h"
 #include "GribOverlayFactory.h"
 
-#include "TexFont.h"
 #include <unordered_map>
 
 #define RESOLUTIONS 4

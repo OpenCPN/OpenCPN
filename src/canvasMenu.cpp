@@ -57,7 +57,6 @@
 #include "cm93.h"      // for chart outline draw
 #include "config.h"
 #include "cutil.h"
-#include "dychart.h"
 #include "georef.h"
 #include "kml.h"
 #include "navutil.h"

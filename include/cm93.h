@@ -30,6 +30,7 @@
 
 #include "s57chart.h"
 #include "cutil.h"  // for types
+#include "poly_math.h"
 
 //    Some constants
 #define INDEX_m_sor 217  // cm93 dictionary index for object type _m_sor

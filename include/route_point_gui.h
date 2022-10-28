@@ -59,7 +59,7 @@ public:
   }
 
 #ifdef ocpnUSE_GL
-  void DrawGL(ViewPort &vp, ChartCanvas* canvas,
+  void DrawGL(ViewPort &vp, ChartCanvas* canvas, ocpnDC &dc,
               bool use_cached_screen_coords = false, bool vizOverride = false);
 #endif
 

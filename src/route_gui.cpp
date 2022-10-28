@@ -15,7 +15,7 @@
 #include "route_gui.h"
 #include "route_point_gui.h"
 #include "glChartCanvas.h"
-
+#include "line_clip.h"
 #include "route.h"
 
 extern Routeman* g_pRouteMan;
@@ -53,7 +53,6 @@ static void TestLongitude(double lon, double min, double max, bool &lonl,
       lonr = true;
   }
 }
-
 
 void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
   if (m_route.pRoutePointList->empty()) return;
@@ -105,14 +104,14 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
   RoutePoint *prp1 = node->GetData();
   node = node->GetNext();
 
-  if (m_route.m_bVisible || prp1->IsShared()) RoutePointGui(*prp1).Draw(dc, canvas, NULL);
+  if (m_route.m_bVisible || prp1->IsShared()) RoutePointGui(*prp1).Draw(dc, canvas, NULL); //prp1->Draw(dc, canvas, NULL);
 
   while (node) {
     RoutePoint *prp2 = node->GetData();
 
     bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
 
-    if (m_route.m_bVisible || prp2->IsShared()) RoutePointGui(*prp2).Draw(dc, canvas, &rpt2);
+    if (m_route.m_bVisible || prp2->IsShared()) RoutePointGui(*prp2).Draw(dc, canvas, &rpt2); //prp2->Draw(dc, canvas, &rpt2);
 
     if (m_route.m_bVisible) {
       //    Handle offscreen points
@@ -172,7 +171,7 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
 }
 
 void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
-                             ViewPort &vp, bool bdraw_arrow, int hilite_width) {
+                          ViewPort &vp, bool bdraw_arrow, int hilite_width) {
   //    Get the dc boundary
   int sx, sy;
   dc.GetSize(&sx, &sy);
@@ -257,6 +256,69 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
   }
 }
 
+void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
+                                  ViewPort &vp) {
+#ifdef ocpnUSE_GL
+  //    Draw a direction arrow
+  float icon_scale_factor = 100 * vp.view_scale_ppm;
+  icon_scale_factor = fmin(icon_scale_factor, 1.5);  // Sets the max size
+  icon_scale_factor = fmax(icon_scale_factor, .10);
+
+  //    Get the absolute line length
+  //    and constrain the arrow to be no more than xx% of the line length
+  float nom_arrow_size = 20.;
+  float max_arrow_to_leg = (float).20;
+  float lpp = sqrtf(powf((float)(xa - xb), 2) + powf((float)(ya - yb), 2));
+
+  float icon_size = icon_scale_factor * nom_arrow_size;
+  if (icon_size > (lpp * max_arrow_to_leg))
+    icon_scale_factor = (lpp * max_arrow_to_leg) / nom_arrow_size;
+
+  float theta = atan2f((float)yb - ya, (float)xb - xa);
+  theta -= (float)PI;
+
+  // icon_scale_factor = 5;
+  wxPoint pts[3];
+  // 0
+  pts[0].x = s_arrow_icon[0];
+  pts[0].y = s_arrow_icon[1];
+  pts[1].x = s_arrow_icon[2];
+  pts[1].y = s_arrow_icon[3];
+  pts[2].x = s_arrow_icon[6];
+  pts[2].y = s_arrow_icon[7];
+  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
+
+  // 1
+  pts[0].x = s_arrow_icon[2];
+  pts[0].y = s_arrow_icon[3];
+  pts[1].x = s_arrow_icon[4];
+  pts[1].y = s_arrow_icon[5];
+  pts[2].x = s_arrow_icon[6];
+  pts[2].y = s_arrow_icon[7];
+  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
+
+  // 2
+  pts[0].x = s_arrow_icon[0];
+  pts[0].y = -s_arrow_icon[1];
+  pts[1].x = s_arrow_icon[2];
+  pts[1].y = -s_arrow_icon[3];
+  pts[2].x = s_arrow_icon[6];
+  pts[2].y = -s_arrow_icon[7];
+  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
+
+  // 3
+  pts[0].x = s_arrow_icon[2];
+  pts[0].y = -s_arrow_icon[3];
+  pts[1].x = s_arrow_icon[4];
+  pts[1].y = -s_arrow_icon[5];
+  pts[2].x = s_arrow_icon[6];
+  pts[2].y = -s_arrow_icon[7];
+  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
+
+
+#endif
+}
+
 void RouteGui::DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
                            wxPoint *rpn) {
   if (iPoint <= m_route.GetnPoints())
@@ -264,7 +326,7 @@ void RouteGui::DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
 }
 
 void RouteGui::DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1,
-                           wxPoint *rp2, ViewPort &vp, bool bdraw_arrow) {
+                        wxPoint *rp2, ViewPort &vp, bool bdraw_arrow) {
   if (m_route.m_bRtIsSelected)
     dc.SetPen(*g_pRouteMan->GetSelectedRoutePen());
   else if (m_route.m_bRtIsActive)
@@ -273,6 +335,97 @@ void RouteGui::DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1,
     dc.SetPen(*g_pRouteMan->GetRoutePen());
 
   RenderSegment(dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow);
+}
+
+void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+#ifdef ocpnUSE_GL
+  if (m_route.pRoutePointList->empty()) return;
+
+  if (!vp.GetBBox().IntersectOut(m_route.GetBBox()) && m_route.m_bVisible)
+    DrawGLRouteLines(vp, canvas, dc);
+
+  /*  Route points  */
+  for (wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst(); node;
+       node = node->GetNext()) {
+    RoutePoint *prp = node->GetData();
+    // Inflate the bounding box a bit to ensure full drawing in accelerated pan
+    // mode.
+    // TODO this is a little extravagant, assumming a mark is always a large
+    // fixed lat/lon extent.
+    //  Maybe better to use the mark's drawn box, once it is known.
+    if (vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)) {
+      if (m_route.m_bVisible || prp->IsShared()) RoutePointGui(*prp).DrawGL(vp, canvas, dc);
+    }
+  }
+#endif
+}
+
+void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+#ifdef ocpnUSE_GL
+  //  Hiliting first
+  //  Being special case to draw something for a 1 point route....
+  if (m_route.m_hiliteWidth) {
+    wxColour y = GetGlobalColor(_T ( "YELO1" ));
+    wxColour hilt(y.Red(), y.Green(), y.Blue(), 128);
+
+    wxPen HiPen(hilt, m_route.m_hiliteWidth, wxPENSTYLE_SOLID);
+
+    dc.SetPen(HiPen);
+
+    DrawGLLines(vp, &dc, canvas);
+  }
+
+  /* determine color and width */
+  wxColour col;
+
+  int width = g_pRouteMan->GetRoutePen()->GetWidth();  // g_route_line_width;
+  if (m_route.m_width != wxPENSTYLE_INVALID) width = m_route.m_width;
+
+  if (m_route.m_bRtIsActive) {
+    col = g_pRouteMan->GetActiveRoutePen()->GetColour();
+  } else if (m_route.m_bRtIsSelected) {
+    col = g_pRouteMan->GetSelectedRoutePen()->GetColour();
+  } else {
+    if (m_route.m_Colour == wxEmptyString) {
+      col = g_pRouteMan->GetRoutePen()->GetColour();
+    } else {
+      for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
+           i++) {
+        if (m_route.m_Colour == ::GpxxColorNames[i]) {
+          col = ::GpxxColors[i];
+          break;
+        }
+      }
+    }
+  }
+
+  wxPenStyle style = wxPENSTYLE_SOLID;
+  if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
+  dc.SetPen(*wxThePenList->FindOrCreatePen(col, width, style));
+  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(col, wxBRUSHSTYLE_SOLID));
+
+  glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));
+
+  dc.SetGLStipple();
+
+  DrawGLLines(vp, &dc, canvas);
+
+  glDisable(GL_LINE_STIPPLE);
+
+  /* direction arrows.. could probably be further optimized for opengl */
+  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+  wxPoint rpt1, rpt2;
+  while (node) {
+    RoutePoint *prp = node->GetData();
+    canvas->GetCanvasPointPix(prp->m_lat, prp->m_lon, &rpt2);
+    if (node != m_route.pRoutePointList->GetFirst()) {
+      if (!prp->m_bIsActive || !g_bAllowShipToActive)
+        RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
+    }
+    rpt1 = rpt2;
+    node = node->GetNext();
+  }
+#endif
 }
 
 void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
@@ -289,7 +442,7 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
   canvas->GetDoubleCanvasPointPix(prp2->m_lat, prp2->m_lon, &lastpoint);
 
   // single point.. make sure it shows up for highlighting
-  if (m_route.GetnPoints() == 1 && dc) {  
+  if (m_route.GetnPoints() == 1 && dc) {
     canvas->GetDoubleCanvasPointPix(prp2->m_lat, prp2->m_lon, &r1);
     dc->DrawLine(r1.m_x, r1.m_y, r1.m_x + 2, r1.m_y + 2);
     return;
@@ -299,9 +452,6 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
   LLBBox bbox = vp.GetBBox();
 
   // dc is passed for thicker highlighted lines (performance not very important)
-#ifndef USE_ANDROID_GLES2
-  if (!dc) glBegin(GL_LINES);
-#endif
 
   for (node = node->GetNext(); node; node = node->GetNext()) {
     RoutePoint *prp1 = prp2;
@@ -382,25 +532,6 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
         } else
           dc->DrawLine(r1.m_x, r1.m_y, r2.m_x, r2.m_y);
       else {
-#ifndef USE_ANDROID_GLES2
-        glVertex2f(r1.m_x, r1.m_y);
-        if (adder) {
-          float adderc = cos(vp.rotation) * adder,
-                adders = sin(vp.rotation) * adder;
-          glVertex2f(r2.m_x + adderc, r2.m_y + adders);
-          glVertex2f(r1.m_x - adderc, r1.m_y - adders);
-        }
-        glVertex2f(r2.m_x, r2.m_y);
-
-        // cache screen position for arrows and points
-        if (!r1valid) {
-          prp1->m_pos_on_screen = !lat1l && !lat1r && !lon1l && !lon1r;
-          prp1->m_screen_pos = r1;
-        }
-
-        prp2->m_pos_on_screen = !lat2l && !lat2r && !lon2l && !lon2r;
-        prp2->m_screen_pos = r2;
-#endif
       }
 
       r1 = r2;
@@ -408,184 +539,6 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
     }
   }
 
-#ifndef USE_ANDROID_GLES2
-  if (!dc) glEnd();
-#endif
-
-#endif
-}
-
-void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas) {
-#ifdef ocpnUSE_GL
-  if (m_route.pRoutePointList->empty()) return;
-
-  if (!vp.GetBBox().IntersectOut(m_route.GetBBox()) && m_route.m_bVisible)
-    DrawGLRouteLines(vp, canvas);
-
-  /*  Route points  */
-  for (wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst(); node;
-       node = node->GetNext()) {
-    RoutePoint *prp = node->GetData();
-    // Inflate the bounding box a bit to ensure full drawing in accelerated pan
-    // mode.
-    // TODO this is a little extravagant, assumming a mark is always a large
-    // fixed lat/lon extent.
-    //  Maybe better to use the mark's drawn box, once it is known.
-    if (vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)) {
-      if (m_route.m_bVisible || prp->IsShared()) RoutePointGui(*prp).DrawGL(vp, canvas);
-    }
-  }
-#endif
-}
-
-void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas) {
-#ifdef ocpnUSE_GL
-  //  Hiliting first
-  //  Being special case to draw something for a 1 point route....
-  ocpnDC dc;
-  if (m_route.m_hiliteWidth) {
-    wxColour y = GetGlobalColor(_T ( "YELO1" ));
-    wxColour hilt(y.Red(), y.Green(), y.Blue(), 128);
-
-    wxPen HiPen(hilt, m_route.m_hiliteWidth, wxPENSTYLE_SOLID);
-
-    ocpnDC dc;
-    dc.SetPen(HiPen);
-
-    DrawGLLines(vp, &dc, canvas);
-  }
-
-  /* determine color and width */
-  wxColour col;
-
-  int width = g_pRouteMan->GetRoutePen()->GetWidth();  // g_route_line_width;
-  if (m_route.m_width != wxPENSTYLE_INVALID) width = m_route.m_width;
-
-  if (m_route.m_bRtIsActive) {
-    col = g_pRouteMan->GetActiveRoutePen()->GetColour();
-  } else if (m_route.m_bRtIsSelected) {
-    col = g_pRouteMan->GetSelectedRoutePen()->GetColour();
-  } else {
-    if (m_route.m_Colour == wxEmptyString) {
-      col = g_pRouteMan->GetRoutePen()->GetColour();
-    } else {
-      for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
-           i++) {
-        if (m_route.m_Colour == ::GpxxColorNames[i]) {
-          col = ::GpxxColors[i];
-          break;
-        }
-      }
-    }
-  }
-
-  wxPenStyle style = wxPENSTYLE_SOLID;
-  if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
-  dc.SetPen(*wxThePenList->FindOrCreatePen(col, width, style));
-  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(col, wxBRUSHSTYLE_SOLID));
-
-  glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));
-
-  dc.SetGLStipple();
-
-#ifdef USE_ANDROID_GLES2
-  DrawGLLines(vp, &dc, canvas);
-#else
-  glColor3ub(col.Red(), col.Green(), col.Blue());
-  DrawGLLines(vp, NULL, canvas);
-#endif
-
-  glDisable(GL_LINE_STIPPLE);
-
-  /* direction arrows.. could probably be further optimized for opengl */
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
-  wxPoint rpt1, rpt2;
-  while (node) {
-    RoutePoint *prp = node->GetData();
-    canvas->GetCanvasPointPix(prp->m_lat, prp->m_lon, &rpt2);
-    if (node != m_route.pRoutePointList->GetFirst()) {
-      if (!prp->m_bIsActive || !g_bAllowShipToActive)
-        RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
-    }
-    rpt1 = rpt2;
-    node = node->GetNext();
-  }
-#endif
-}
-
-void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
-                                     ViewPort &vp) {
-#ifdef ocpnUSE_GL
-  //    Draw a direction arrow
-  float icon_scale_factor = 100 * vp.view_scale_ppm;
-  icon_scale_factor = fmin(icon_scale_factor, 1.5);  // Sets the max size
-  icon_scale_factor = fmax(icon_scale_factor, .10);
-
-  //    Get the absolute line length
-  //    and constrain the arrow to be no more than xx% of the line length
-  float nom_arrow_size = 20.;
-  float max_arrow_to_leg = (float).20;
-  float lpp = sqrtf(powf((float)(xa - xb), 2) + powf((float)(ya - yb), 2));
-
-  float icon_size = icon_scale_factor * nom_arrow_size;
-  if (icon_size > (lpp * max_arrow_to_leg))
-    icon_scale_factor = (lpp * max_arrow_to_leg) / nom_arrow_size;
-
-  float theta = atan2f((float)yb - ya, (float)xb - xa);
-  theta -= (float)PI;
-
-#ifndef USE_ANDROID_GLES2
-  glPushMatrix();
-  glTranslatef(xb, yb, 0);
-  glScalef(icon_scale_factor, icon_scale_factor, 1);
-  glRotatef(theta * 180 / PI, 0, 0, 1);
-
-  glBegin(GL_POLYGON);
-  for (int i = 0; i < 14; i += 2)
-    glVertex2f(s_arrow_icon[i], s_arrow_icon[i + 1]);
-  glEnd();
-
-  glPopMatrix();
-#else
-  // icon_scale_factor = 5;
-  wxPoint pts[3];
-  // 0
-  pts[0].x = s_arrow_icon[0];
-  pts[0].y = s_arrow_icon[1];
-  pts[1].x = s_arrow_icon[2];
-  pts[1].y = s_arrow_icon[3];
-  pts[2].x = s_arrow_icon[6];
-  pts[2].y = s_arrow_icon[7];
-  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
-
-  // 1
-  pts[0].x = s_arrow_icon[2];
-  pts[0].y = s_arrow_icon[3];
-  pts[1].x = s_arrow_icon[4];
-  pts[1].y = s_arrow_icon[5];
-  pts[2].x = s_arrow_icon[6];
-  pts[2].y = s_arrow_icon[7];
-  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
-
-  // 2
-  pts[0].x = s_arrow_icon[0];
-  pts[0].y = -s_arrow_icon[1];
-  pts[1].x = s_arrow_icon[2];
-  pts[1].y = -s_arrow_icon[3];
-  pts[2].x = s_arrow_icon[6];
-  pts[2].y = -s_arrow_icon[7];
-  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
-
-  // 3
-  pts[0].x = s_arrow_icon[2];
-  pts[0].y = -s_arrow_icon[3];
-  pts[1].x = s_arrow_icon[4];
-  pts[1].y = -s_arrow_icon[5];
-  pts[2].x = s_arrow_icon[6];
-  pts[2].y = -s_arrow_icon[7];
-  dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
-
-#endif
 
 #endif
 }

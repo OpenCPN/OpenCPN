@@ -263,7 +263,6 @@ bool Route::ContainsSharedWP() {
 
 // FIXME (leamas): can this be moved to GUI?
 int s_arrow_icon[] = {0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0};
-
 void Route::ClearHighlights(void) {
   RoutePoint *prp = NULL;
   wxRoutePointListNode *node = pRoutePointList->GetFirst();

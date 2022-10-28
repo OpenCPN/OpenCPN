@@ -26,10 +26,9 @@
 #ifndef _CHARTBASE_H_
 #define _CHARTBASE_H_
 
-#include "dychart.h"
-
 #include "bbox.h"
 #include "ocpn_types.h"
+#include "color_types.h"
 #include "LLRegion.h"
 
 //----------------------------------------------------------------------------

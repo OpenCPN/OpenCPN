@@ -87,17 +87,14 @@ millions of points.
 
 #include "track.h"
 
-#include "chartbase.h"
 #include "georef.h"
 #include "json_event.h"
 #include "nav_object_database.h"
 #include "navutil_base.h"
-#include "route.h"
 #include "routeman.h"
 #include "select.h"
 
 extern WayPointman *pWayPointMan;
-extern Routeman *g_pRouteMan;
 extern Select *pSelect;
 extern double gLat, gLon;
 extern double g_PlanSpeed;
@@ -520,6 +517,7 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
 
 
 void Track::ClearHighlights() { m_HighlightedTrackPoint = -1; }
+
 
 TrackPoint *Track::GetPoint(int nWhichPoint) {
   if (nWhichPoint < (int)TrackPoints.size())
