@@ -307,7 +307,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
     wxString port = m_params.GetStrippedDSPort(); //GetPort().AfterFirst(':');
     androidWriteSerial( port, payload );
-    return;
+    return true;
 #endif
     if( GetSecondaryThread() ) {
         if( IsSecThreadActive() )
