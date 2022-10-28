@@ -449,8 +449,8 @@ public:
   SillyDriver(const string& s) : AbstractCommDriver(NavAddr::Bus::TestBus, s) {}
   virtual ~SillyDriver() = default;
 
-  virtual void SendMessage(std::shared_ptr<const NavMsg> msg,
-                           std::shared_ptr<const NavAddr> addr) {}
+  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
+                           std::shared_ptr<const NavAddr> addr) {return false;}
 
   virtual void SetListener(DriverListener& listener) {}
 

@@ -77,7 +77,7 @@ public:
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
 
-  void SendMessage(std::shared_ptr<const NavMsg> msg,
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
   wxSocketBase* GetSock() const { return m_sock; }
 

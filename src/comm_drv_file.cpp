@@ -57,16 +57,17 @@ std::shared_ptr<NavAddr> FileCommDriver::GetAddress() {
     return std::make_shared<NavAddr>(NavAddrTest(output_path));
 }
 
-void FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
+bool FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
                                  std::shared_ptr<const NavAddr> addr) {
   ofstream f;
   f.open(output_path, ios::app);
   if (!f.is_open()) {
     wxLogWarning("Cannot open file %s for writing", output_path.c_str());
-    return;
+    return false;
   }
   f << msg->to_string();
   f.close();
+  return true;
 }
 
 static vector<unsigned char> HexToChar(string hex) {

@@ -37,8 +37,8 @@ CommDriverSignalK::CommDriverSignalK(const std::string& s)
 
 CommDriverSignalK::~CommDriverSignalK() {}
 
-void CommDriverSignalK::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                    std::shared_ptr<const NavAddr> addr) {}
+bool CommDriverSignalK::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                    std::shared_ptr<const NavAddr> addr) { return false;}
 
 void CommDriverSignalK::SetListener(std::shared_ptr<DriverListener> l){};
 

@@ -46,7 +46,7 @@ public:
 
   virtual ~FileCommDriver() = default;
 
-  void SendMessage(std::shared_ptr<const NavMsg> msg,
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
   void Activate() override;

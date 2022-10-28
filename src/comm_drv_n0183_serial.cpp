@@ -293,7 +293,7 @@ void CommDriverN0183Serial::Activate() {
   // TODO: Read input data.
 }
 
-void CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
+bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
 
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
@@ -315,16 +315,16 @@ void CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
             int retry = 10;
             while( retry ) {
                 if( GetSecondaryThread()->SetOutMsg( sentence ))
-                    return; // true;
+                    return true;
                 else
                     retry--;
             }
-            return; // false;   // could not send after several tries....
+            return false;   // could not send after several tries....
         }
         else
-            return; // false;
+            return false;
     }
-    return; // true;
+    return true;
 }
 
 
