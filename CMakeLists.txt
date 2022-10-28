@@ -2977,7 +2977,7 @@ endif ()
 # Piggy-back the console application on the main setup.
 # Note that cli apps are not supported on Android
 #
-if ( NOT QT_ANDROID AND NOT APPLE)
+if (NOT QT_ANDROID AND NOT APPLE)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
@@ -3018,6 +3018,8 @@ if ( NOT QT_ANDROID AND NOT APPLE)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::pugixml)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::s52plib)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)

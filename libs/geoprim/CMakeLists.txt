@@ -19,6 +19,7 @@ SET(SRC
     src/poly_math.h
     src/LOD_reduce.cpp
     src/LOD_reduce.h
+    src/linmath.h
     )
 
 if (NOT wxWidgets_INCLUDE_DIRS)

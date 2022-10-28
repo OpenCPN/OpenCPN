@@ -103,9 +103,9 @@ extern "C" wxString *GetpSharedDataLocation();
 
 float g_scaminScale;
 
-#ifndef __MSVC__
+//#ifndef __MSVC__
 #define _GLUfuncptrA _GLUfuncptr
-#endif
+//#endif
 
 void DrawAALine(wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine,
                 int dash, int space);
