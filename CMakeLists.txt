@@ -2971,7 +2971,7 @@ endif ()
 # Piggy-back the console application on the main setup.
 # Note that cli apps are not supported on Android
 #
-if ( QT_ANDROID AND NOT APPLE)
+if ( NOT QT_ANDROID AND NOT APPLE)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
