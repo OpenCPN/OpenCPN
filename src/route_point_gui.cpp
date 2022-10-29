@@ -592,26 +592,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
     float u = (float)w / m_point.m_dragIconTextureWidth,
           v = (float)h / m_point.m_dragIconTextureWidth;
 
-#ifndef USE_ANDROID_GLES2
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glColor3f(1, 1, 1);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0);
-    glVertex2f(xs, ys);
-    glTexCoord2f(u, 0);
-    glVertex2f(xs + ws, ys);
-    glTexCoord2f(u, v);
-    glVertex2f(xs + ws, ys + hs);
-    glTexCoord2f(0, v);
-    glVertex2f(xs, ys + hs);
-    glEnd();
-
-#else
     float coords[8];
     float uv[8];
     // normal uv
@@ -635,7 +615,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 
     glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
-#endif
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   }

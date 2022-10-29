@@ -173,7 +173,7 @@ public:
   void RenderAllChartOutlines(ocpnDC &dc, ViewPort &VP);
   void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &VP);
 
-  void DrawEmboss(emboss_data *emboss);
+  void DrawEmboss(ocpnDC &dc, emboss_data *emboss);
   void ShipDraw(ocpnDC &dc);
 
   void SetupCompression();
