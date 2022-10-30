@@ -901,6 +901,7 @@ set(
   include/pluginmanager.h
   include/position_parser.h
   include/printtable.h
+  include/priority_gui.h
   include/Quilt.h
   include/REST_server.h
   include/REST_server_gui.h
@@ -1083,6 +1084,7 @@ set(
   src/pluginmanager.cpp
   src/plugin_paths.cpp
   src/printtable.cpp
+  src/priority_gui.cpp
   src/Quilt.cpp
   src/REST_server_gui.cpp
   src/RolloverWin.cpp

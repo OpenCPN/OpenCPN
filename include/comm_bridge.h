@@ -86,13 +86,15 @@ public:
   void OnDriverStateChange();
 
   void OnWatchdogTimer(wxTimerEvent& event);
-  void PresetWatchdogs();
-  void MakeHDTFromHDM();
-  void InitializePriorityContainers();
   bool EvalPriority(std::shared_ptr <const NavMsg> msg,
                             PriorityContainer& active_priority,
                             std::unordered_map<std::string, int>& priority_map);
   std::string GetPriorityKey(std::shared_ptr <const NavMsg> msg);
+
+  std::vector<std::string> GetPriorityMaps();
+  void ApplyPriorityMaps(std::vector<std::string> new_maps);
+  bool LoadConfig( void );
+  bool SaveConfig( void );
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
@@ -119,6 +121,19 @@ public:
   ObservableListener driver_change_listener;
 
   CommDecoder m_decoder;
+
+private:
+  void PresetWatchdogs();
+  void MakeHDTFromHDM();
+  void InitializePriorityContainers();
+  void PresetPriorityContainers();
+
+  std::string GetPriorityMap(std::unordered_map<std::string, int> &map);
+  void ApplyPriorityMap(std::unordered_map<std::string, int>& priority_map,
+                        wxString &new_prio, int category);
+  void ClearPriorityMaps();
+  void PresetPriorityContainer(PriorityContainer &pc,
+                        const std::unordered_map<std::string, int> &priority_map);
 
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;
