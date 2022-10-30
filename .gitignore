@@ -20,4 +20,5 @@ buildwin/*.dll
 buildwin/*.lib
 buildwin/*.exe
 buildwin/*.crt
+buildwin/*.*
 .DS_Store
