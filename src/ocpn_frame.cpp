@@ -38,6 +38,7 @@
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
+#include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "idents.h"
 
@@ -854,6 +855,8 @@ DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
 #endif
 
 #endif
+
+wxDECLARE_APP(MyApp);
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -2260,9 +2263,13 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pi_manager = NULL;
   }
 
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.SaveConfig();
+
   delete pConfig;  // All done
   pConfig = NULL;
   pBaseConfig = NULL;
+
 
   if (g_pAIS) {
     delete g_pAIS;

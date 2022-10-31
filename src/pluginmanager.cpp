@@ -3798,7 +3798,7 @@ bool DeletePlugInRoute(wxString &GUID) {
   //  Find the Route
   Route *pRoute = g_pRouteMan->FindRouteByGUID(GUID);
   if (pRoute) {
-    g_pRouteMan->DeleteRoute(pRoute);
+    g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
     b_found = true;
   }
   return b_found;
@@ -3813,7 +3813,7 @@ bool UpdatePlugInRoute(PlugIn_Route *proute) {
 
   if (b_found) {
     bool b_permanent = (pRoute->m_btemp == false);
-    g_pRouteMan->DeleteRoute(pRoute);
+    g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
 
     b_found = AddPlugInRoute(proute, b_permanent);
   }
@@ -8221,7 +8221,7 @@ bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute) {
 
   if (b_found) {
     bool b_permanent = (pRoute->m_btemp == false);
-    g_pRouteMan->DeleteRoute(pRoute);
+    g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
 
     b_found = AddPlugInRouteEx(proute, b_permanent);
   }

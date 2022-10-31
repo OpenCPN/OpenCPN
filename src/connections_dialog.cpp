@@ -50,6 +50,7 @@
 #include "comm_drv_factory.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
+#include "priority_gui.h"
 
 extern bool g_bMagneticAPB;
 extern bool g_bGarminHostUpload;
@@ -229,6 +230,13 @@ void ConnectionsDialog::Init(){
                      wxDefaultPosition, wxDefaultSize, 0);
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
+
+  m_cbPriorityDialog =
+      new wxCheckBox(m_container, wxID_ANY,
+                     _("Adjust communication priorities"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  m_cbPriorityDialog->SetValue(false);
+  bSizer161->Add(m_cbPriorityDialog, 0, wxALL, cb_space);
 
   bSizer151->Add(bSizer161, 1, wxEXPAND, 5);
   sbSizerGeneral->Add(bSizer151, 1, wxEXPAND, 5);
@@ -826,6 +834,10 @@ void ConnectionsDialog::Init(){
                         this);
   m_cbAPBMagnetic->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                            wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL,
+                           this);
+
+  m_cbPriorityDialog->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                           wxCommandEventHandler(ConnectionsDialog::OnPriorityDialog), NULL,
                            this);
 
   m_tNetComment->Connect(wxEVT_COMMAND_TEXT_UPDATED,
@@ -1961,6 +1973,14 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
 
   return pConnectionParams;
 }
+
+void ConnectionsDialog::OnPriorityDialog(wxCommandEvent &event){
+
+  PriorityDlg *pdlg = new PriorityDlg(m_parent);
+  pdlg->ShowModal();
+
+}
+
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
                                  ListType type, const wxArrayString& list)

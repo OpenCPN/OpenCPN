@@ -85,6 +85,7 @@ public:
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(wxString stat);
+  void OnPriorityDialog(wxCommandEvent &event);
 
   void SetConnectionParams(ConnectionParams *cp);
   void SetDefaultConnectionParams(void);
@@ -122,7 +123,7 @@ public:
   wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
       *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
-  wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
+  wxCheckBox *m_cbOutput, *m_cbAPBMagnetic, *m_cbPriorityDialog;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
   wxButton  *m_ButtonSKDiscover;

@@ -1352,7 +1352,7 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event) {
       Route *route = list.Item(i)->GetData();
       if (route) {
         pConfig->DeleteConfigRoute(route);
-        g_pRouteMan->DeleteRoute(route);
+        g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
       }
     }
 
@@ -1376,7 +1376,7 @@ void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event) {
 
     gFrame->CancelAllMouseRoute();
 
-    g_pRouteMan->DeleteAllRoutes();
+    g_pRouteMan->DeleteAllRoutes(NavObjectChanges::getInstance());
     // TODO Seth
     //            m_pSelectedRoute = NULL;
     //            m_pFoundRoutePoint = NULL;
@@ -2851,7 +2851,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->m_bIsInLayer = false;
       pRoute->m_LayerID = 0;
-      g_pRouteMan->DeleteRoute(pRoute);
+      g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
     }
     node1 = next_node;
   }

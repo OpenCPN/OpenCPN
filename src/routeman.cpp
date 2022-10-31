@@ -232,7 +232,7 @@ void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
   //  keep the 1 point.
   if (route->GetnPoints() <= 1 && route_state == 0) {
     NavObjectChanges::getInstance()->DeleteConfigRoute(route);
-    g_pRouteMan->DeleteRoute(route);
+    g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
     route = NULL;
   }
   //  Add this point back into the selectables
@@ -724,7 +724,7 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
   return false;
 }
 
-bool Routeman::DeleteRoute(Route *pRoute, bool update_changefile) {
+bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
 #ifdef CLIAPP
@@ -755,8 +755,7 @@ bool Routeman::DeleteRoute(Route *pRoute, bool update_changefile) {
     /// }
     m_prop_dlg_ctx.Hide(pRoute);
 
-    if (update_changefile)
-      NavObjectChanges::getInstance()->DeleteConfigRoute(pRoute);
+    nav_obj_changes->DeleteConfigRoute(pRoute);
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
@@ -813,7 +812,7 @@ bool Routeman::DeleteRoute(Route *pRoute, bool update_changefile) {
   return true;
 }
 
-void Routeman::DeleteAllRoutes(void) {
+void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
   ::wxBeginBusyCursor();
 
   //    Iterate on the RouteList
@@ -840,10 +839,10 @@ void Routeman::DeleteAllRoutes(void) {
     node = node->GetNext();
     if (proute->m_bIsInLayer) continue;
 
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-    NavObjectChanges::getInstance()->DeleteConfigRoute(proute);
-    DeleteRoute(proute);
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
+    nav_obj_changes->m_bSkipChangeSetUpdate = true;
+    nav_obj_changes->DeleteConfigRoute(proute);
+    DeleteRoute(proute, nav_obj_changes);
+    nav_obj_changes->m_bSkipChangeSetUpdate = false;
   }
 
   ::wxEndBusyCursor();
@@ -1577,7 +1576,7 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
               NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate;
           NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
           NavObjectChanges::getInstance()->DeleteConfigRoute(pr);
-          g_pRouteMan->DeleteRoute(pr);
+          g_pRouteMan->DeleteRoute(pr, NavObjectChanges::getInstance());
           NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = prev_bskip;
         }
       }

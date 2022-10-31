@@ -613,7 +613,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                                    EVT_ROUTEMAN_DEL_ROUTE);
   Bind(EVT_ROUTEMAN_DEL_ROUTE, [&](ObservedEvt& ev) {
     auto r = std::const_pointer_cast<Route>(UnpackEvtPointer<Route>(ev));
-    g_pRouteMan->DeleteRoute(r.get()); });
+    g_pRouteMan->DeleteRoute(r.get(), navobj); });
 }
 
 RoutePropDlg::~RoutePropDlg() {

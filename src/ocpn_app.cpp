@@ -2109,8 +2109,6 @@ int MyApp::OnExit() {
     delete g_pGroupArray;
   }
 
-  //delete pDummyChart;
-
   wxLogMessage(_T("opencpn::MyApp exiting cleanly...\n"));
   wxLog::FlushActive();
 

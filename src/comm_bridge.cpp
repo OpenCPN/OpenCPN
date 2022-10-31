@@ -28,6 +28,7 @@
 #include <wx/event.h>
 #include <wx/string.h>
 #include <wx/tokenzr.h>
+#include <wx/fileconf.h>
 
 #include "comm_bridge.h"
 #include "comm_appmsg_bus.h"
@@ -36,6 +37,7 @@
 #include "idents.h"
 #include "ocpn_types.h"
 #include "comm_ais.h"
+#include "OCPNPlatform.h"
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -68,6 +70,7 @@ extern double g_UserVar;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 extern wxString g_ownshipMMSI_SK;
+extern wxConfigBase *pBaseConfig;
 
 bool debug_priority = 0;
 
@@ -84,7 +87,7 @@ void ClearNavData(NavData &d){
 }
 
 /**
-* Send BasicNavDataMsg based on global state in gLat, gLon, etc 
+* Send BasicNavDataMsg based on global state in gLat, gLon, etc
 * on appmsg_bus
 */
 static void SendBasicNavdata() {
@@ -115,6 +118,10 @@ CommBridge::~CommBridge() {}
 bool CommBridge::Initialize() {
 
   InitializePriorityContainers();
+  ClearPriorityMaps();
+
+  LoadConfig();
+  PresetPriorityContainers();
 
   // Clear the watchdogs
   PresetWatchdogs();
@@ -131,6 +138,7 @@ bool CommBridge::Initialize() {
           EVT_DRIVER_CHANGE);
   Bind(EVT_DRIVER_CHANGE, [&](wxCommandEvent ev) {
        OnDriverStateChange(); });
+
 
   return true;
 }
@@ -374,14 +382,120 @@ void CommBridge::InitCommListeners() {
 
 void CommBridge::OnDriverStateChange(){
 
-  // Reset all "first-come" priority states
-  InitializePriorityContainers();
+  // Reset all active priority states
+  PresetPriorityContainers();
 
+}
+
+std::string CommBridge::GetPriorityMap(std::unordered_map<std::string, int> &map){
+
+  #define MAX_SOURCES 10
+  std::string sa[MAX_SOURCES];
+  std::string result;
+
+  for (auto& it: map) {
+    if ((it.second >= 0) && (it.second < MAX_SOURCES))
+      sa[it.second] = it.first;
+  }
+
+  //build the packed string result
+  for (int i=0 ; i < MAX_SOURCES ; i++){
+    if (sa[i].size()) {
+      result += sa[i];
+      result += "|";
+    }
+  }
+
+  return result;
+}
+
+
+
+std::vector<std::string> CommBridge::GetPriorityMaps(){
+
+  std::vector<std::string> result;
+
+  result.push_back(GetPriorityMap(priority_map_position));
+  result.push_back(GetPriorityMap(priority_map_velocity));
+  result.push_back(GetPriorityMap(priority_map_heading));
+  result.push_back(GetPriorityMap(priority_map_variation));
+  result.push_back(GetPriorityMap(priority_map_satellites));
+
+
+  return result;
+}
+
+void CommBridge::ApplyPriorityMap(std::unordered_map<std::string, int>& priority_map, wxString &new_prio, int category){
+  priority_map.clear();
+  wxStringTokenizer tk(new_prio, "|");
+  int index = 0;
+  while (tk.HasMoreTokens()) {
+    wxString entry = tk.GetNextToken();
+    std::string s_entry(entry.c_str());
+    priority_map[s_entry] = index;
+    index++;
+  }
+}
+
+
+void CommBridge::ApplyPriorityMaps(std::vector<std::string> new_maps){
+
+  wxString new_prio_string;
+
+  new_prio_string = wxString( new_maps[0].c_str());
+  ApplyPriorityMap(priority_map_position, new_prio_string, 0);
+
+  new_prio_string = wxString( new_maps[1].c_str());
+  ApplyPriorityMap(priority_map_velocity, new_prio_string, 1);
+
+  new_prio_string = wxString( new_maps[2].c_str());
+  ApplyPriorityMap(priority_map_heading, new_prio_string, 2);
+
+  new_prio_string = wxString( new_maps[3].c_str());
+  ApplyPriorityMap(priority_map_variation, new_prio_string, 3);
+
+  new_prio_string = wxString( new_maps[4].c_str());
+  ApplyPriorityMap(priority_map_satellites, new_prio_string, 4);
+}
+
+void CommBridge::PresetPriorityContainer(PriorityContainer &pc,
+                                         const std::unordered_map<std::string, int> &priority_map){
+  // Extract some info from the preloaded map
+  // Fine the key corresponding to priority 0, the highest
+  std::string key0;
+  for (auto& it: priority_map) {
+    if (it.second == 0)
+      key0 = it.first;
+  }
+
+  wxString this_key(key0.c_str());
+  wxStringTokenizer tkz(this_key, _T(";"));
+  wxString wxs_this_source = tkz.GetNextToken();
+  std::string source = wxs_this_source.ToStdString();
+  wxString wxs_this_identifier = tkz.GetNextToken();
+  std::string this_identifier = wxs_this_identifier.ToStdString();
+
+  wxStringTokenizer tka(wxs_this_source, _T(":"));
+  tka.GetNextToken();
+  int source_address = atoi(tka.GetNextToken().ToStdString().c_str());
+
+  pc.active_priority = 0;
+  pc.active_source = source;
+  pc.active_identifier = this_identifier;
+  pc.active_source_address = source_address;
+}
+
+
+void CommBridge::PresetPriorityContainers(){
+  PresetPriorityContainer(active_priority_position, priority_map_position);
+  PresetPriorityContainer(active_priority_velocity, priority_map_velocity);
+  PresetPriorityContainer(active_priority_heading, priority_map_heading);
+  PresetPriorityContainer(active_priority_variation, priority_map_variation);
+  PresetPriorityContainer(active_priority_satellites, priority_map_satellites);
 }
 
 
 bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-  //printf("   HandleN2K_129029\n");
 
   std::vector<unsigned char> v = n2k_msg->payload;
 
@@ -846,12 +960,79 @@ void CommBridge::InitializePriorityContainers(){
   active_priority_variation.active_source_address = -1;
   active_priority_satellites.active_source_address = -1;
 
-  priority_map_position.clear();
+ }
+
+void CommBridge::ClearPriorityMaps(){
+ priority_map_position.clear();
   priority_map_velocity.clear();
   priority_map_heading.clear();
   priority_map_variation.clear();
   priority_map_satellites.clear();
 }
+
+bool CommBridge::LoadConfig( void )
+{
+  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
+
+  if( pConf ) {
+    pConf->SetPath( _T ( "/Settings/CommPriority" ) );
+
+    std::vector<std::string> new_maps;
+    std::string s_prio;
+    wxString pri_string;
+
+    pConf->Read("PriorityPosition", &pri_string );
+    s_prio = std::string(pri_string.c_str());
+    new_maps.push_back(s_prio);
+
+    pConf->Read("PriorityVelocity", &pri_string );
+    s_prio = std::string(pri_string.c_str());
+    new_maps.push_back(s_prio);
+
+    pConf->Read("PriorityHeading", &pri_string );
+    s_prio = std::string(pri_string.c_str());
+    new_maps.push_back(s_prio);
+
+    pConf->Read("PriorityVariation", &pri_string );
+    s_prio = std::string(pri_string.c_str());
+    new_maps.push_back(s_prio);
+
+    pConf->Read("PrioritySatellites", &pri_string );
+    s_prio = std::string(pri_string.c_str());
+    new_maps.push_back(s_prio);
+
+    ApplyPriorityMaps(new_maps);
+  }
+  return true;
+}
+
+bool CommBridge::SaveConfig( void )
+{
+  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
+
+  if( pConf ) {
+    pConf->SetPath( _T ( "/Settings/CommPriority" ) );
+
+    wxString pri_string;
+    pri_string = wxString(GetPriorityMap(priority_map_position).c_str());
+    pConf->Write( "PriorityPosition", pri_string );
+
+    pri_string = wxString(GetPriorityMap(priority_map_velocity).c_str());
+    pConf->Write( "PriorityVelocity", pri_string );
+
+    pri_string = wxString(GetPriorityMap(priority_map_heading).c_str());
+    pConf->Write( "PriorityHeading", pri_string );
+
+    pri_string = wxString(GetPriorityMap(priority_map_variation).c_str());
+    pConf->Write( "PriorityVariation", pri_string );
+
+    pri_string = wxString(GetPriorityMap(priority_map_satellites).c_str());
+    pConf->Write( "PrioritySatellites", pri_string );
+  }
+
+  return true;
+}
+
 
 std::string CommBridge::GetPriorityKey(std::shared_ptr <const NavMsg> msg){
   std::string source = msg->source->to_string();
