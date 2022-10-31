@@ -134,6 +134,8 @@ private:
   void ClearPriorityMaps();
   void PresetPriorityContainer(PriorityContainer &pc,
                         const std::unordered_map<std::string, int> &priority_map);
+  void SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,
+                                         PriorityContainer &pc);
 
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;

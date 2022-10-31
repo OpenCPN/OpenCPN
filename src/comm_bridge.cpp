@@ -151,6 +151,22 @@ void CommBridge::PresetWatchdogs() {
   m_watchdogs.satellite_watchdog = 5;
 }
 
+void CommBridge::SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,
+                                         PriorityContainer &pc) {
+
+  int best_prio = 100;
+  for (auto it = map.begin(); it != map.end(); it++) {
+      if (it->second > pc.active_priority){
+        best_prio = wxMin(best_prio, it->second);
+      }
+    }
+
+    pc.active_priority = best_prio;
+    pc.active_source.clear();
+    pc.active_identifier.clear();
+
+}
+
 void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   //  Update and check watchdog timer for GPS data source
   m_watchdogs.position_watchdog--;
@@ -175,18 +191,17 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
-    for (auto it = priority_map_position.begin(); it != priority_map_position.end(); it++) {
-      if (it->second > active_priority_position.active_priority){
-          active_priority_position.active_priority = it->second;
-          break;
-      }
-    }
-
-    active_priority_position.active_source.clear();
-    active_priority_position.active_identifier.clear();
+    SelectNextLowerPriority(priority_map_position, active_priority_position);
+//     for (auto it = priority_map_position.begin(); it != priority_map_position.end(); it++) {
+//       if (it->second > active_priority_position.active_priority){
+//           active_priority_position.active_priority = it->second;
+//           break;
+//       }
+//     }
+//
+//     active_priority_position.active_source.clear();
+//     active_priority_position.active_identifier.clear();
   }
-
-  //FIXME (dave) Do we need to bump the current priority for these watchdogs?
 
   //  Update and check watchdog timer for SOG/COG data source
   m_watchdogs.velocity_watchdog--;
@@ -202,6 +217,9 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
       auto& msgbus = AppMsgBus::GetInstance();
       msgbus.Notify(std::move(msg));
     }
+    // Are there any other lower priority sources?
+    // If so, adopt that one.
+    SelectNextLowerPriority(priority_map_velocity, active_priority_velocity);
   }
 
   //  Update and check watchdog timer for True Heading data source
@@ -210,6 +228,10 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     gHdt = NAN;
     if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
       wxLogMessage(_T("   ***HDT Watchdog timeout..."));
+
+    // Are there any other lower priority sources?
+    // If so, adopt that one.
+    SelectNextLowerPriority(priority_map_heading, active_priority_heading);
   }
 
   //  Update and check watchdog timer for Magnetic Variation data source
@@ -218,6 +240,10 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     g_bVAR_Rx = false;
     if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
       wxLogMessage(_T("   ***VAR Watchdog timeout..."));
+
+    // Are there any other lower priority sources?
+    // If so, adopt that one.
+    SelectNextLowerPriority(priority_map_variation, active_priority_variation);
   }
 
   //  Update and check watchdog timer for GSV, GGA and SignalK (Satellite data)
@@ -228,6 +254,10 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     g_priSats = 99;
     if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0))
       wxLogMessage(_T("   ***SAT Watchdog timeout..."));
+
+    // Are there any other lower priority sources?
+    // If so, adopt that one.
+    SelectNextLowerPriority(priority_map_satellites, active_priority_satellites);
   }
 }
 
@@ -461,7 +491,7 @@ void CommBridge::ApplyPriorityMaps(std::vector<std::string> new_maps){
 void CommBridge::PresetPriorityContainer(PriorityContainer &pc,
                                          const std::unordered_map<std::string, int> &priority_map){
   // Extract some info from the preloaded map
-  // Fine the key corresponding to priority 0, the highest
+  // Find the key corresponding to priority 0, the highest
   std::string key0;
   for (auto& it: priority_map) {
     if (it.second == 0)
