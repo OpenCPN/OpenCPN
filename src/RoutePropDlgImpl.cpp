@@ -1059,7 +1059,7 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
 
     pSelect->DeleteAllSelectableRoutePoints(m_pRoute);
     pSelect->DeleteAllSelectableRouteSegments(m_pRoute);
-    g_pRouteMan->DeleteRoute(m_pRoute);
+    g_pRouteMan->DeleteRoute(m_pRoute, NavObjectChanges::getInstance());
     pSelect->AddAllSelectableRouteSegments(m_pTail);
     pSelect->AddAllSelectableRoutePoints(m_pTail);
     pSelect->AddAllSelectableRouteSegments(m_pHead);

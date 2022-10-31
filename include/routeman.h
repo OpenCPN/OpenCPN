@@ -36,6 +36,7 @@
 #include <wx/string.h>
 
 #include "MarkIcon.h"
+#include "nav_object_database.h"
 #include "nmea0183.h"
 #include "ocpn_types.h"
 #include "observable_evtvar.h"
@@ -86,8 +87,8 @@ public:
            std::function<void()> RouteMgrDlgUpdateListCtrl);
   ~Routeman();
 
-  bool DeleteRoute(Route *pRoute, bool update_changefile = true);
-  void DeleteAllRoutes(void);
+  bool DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes);
+  void DeleteAllRoutes(NavObjectChanges* nav_obj_changes);
 
 
   bool IsRouteValid(Route *pRoute);

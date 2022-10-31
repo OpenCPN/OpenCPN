@@ -225,7 +225,8 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
               }
               else{
                 //  Remove the existing duplicate route before adding new route
-                g_pRouteMan->DeleteRoute(duplicate);
+                g_pRouteMan->DeleteRoute(duplicate,
+                                         NavObjectChanges::getInstance());
               }
             }
 

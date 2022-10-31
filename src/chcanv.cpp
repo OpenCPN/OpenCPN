@@ -2573,7 +2573,8 @@ bool ChartCanvas::IsChartLargeEnoughToRender(ChartBase *chart, ViewPort &vp) {
 void ChartCanvas::StartMeasureRoute() {
   if (!m_routeState) {  // no measure tool if currently creating route
     if (m_bMeasure_Active) {
-      g_pRouteMan->DeleteRoute(m_pMeasureRoute);
+      g_pRouteMan->DeleteRoute(m_pMeasureRoute,
+                               NavObjectChanges::getInstance());
       m_pMeasureRoute = NULL;
     }
 
@@ -2591,7 +2592,7 @@ void ChartCanvas::CancelMeasureRoute() {
   m_nMeasureState = 0;
   m_bDrawingRoute = false;
 
-  g_pRouteMan->DeleteRoute(m_pMeasureRoute);
+  g_pRouteMan->DeleteRoute(m_pMeasureRoute, NavObjectChanges::getInstance());
   m_pMeasureRoute = NULL;
 
   SetCursor(*pCursorArrow);
@@ -10004,7 +10005,8 @@ void ChartCanvas::FinishRoute(void) {
       if (m_pMouseRoute->GetnPoints() > 1) {
         pConfig->AddNewRoute(m_pMouseRoute);
       } else {
-        g_pRouteMan->DeleteRoute(m_pMouseRoute);
+        g_pRouteMan->DeleteRoute(m_pMouseRoute,
+                                 NavObjectChanges::getInstance());
         m_pMouseRoute = NULL;
       }
     }

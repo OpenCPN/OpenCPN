@@ -283,7 +283,7 @@ void RoutemanGui::DoAdvance(void) {
 
     if (pthis_route->m_bDeleteOnArrival && !pthis_route->m_bIsBeingEdited) {
       NavObjectChanges::getInstance()->DeleteConfigRoute(pthis_route);
-      m_routeman.DeleteRoute(pthis_route);
+      m_routeman.DeleteRoute(pthis_route, NavObjectChanges::getInstance());
     }
 
     if (pRouteManagerDialog) pRouteManagerDialog->UpdateRouteListCtrl();
