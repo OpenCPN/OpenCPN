@@ -269,6 +269,14 @@ int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
       mdlg.ShowModal();
     }
   }
+  else{
+    wxString err_msg;
+    err_msg.Printf("Server HTTP response is: %ld", response_code);
+    OCPNMessageDialog mdlg(NULL, err_msg, wxString(_("OpenCPN Info")),
+                         wxICON_ERROR | wxOK);
+    mdlg.ShowModal();
+  }
+
 
 #else
   wxCurlHTTPNoZIP post;

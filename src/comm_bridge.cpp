@@ -192,15 +192,6 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     // Are there any other lower priority sources?
     // If so, adopt that one.
     SelectNextLowerPriority(priority_map_position, active_priority_position);
-//     for (auto it = priority_map_position.begin(); it != priority_map_position.end(); it++) {
-//       if (it->second > active_priority_position.active_priority){
-//           active_priority_position.active_priority = it->second;
-//           break;
-//       }
-//     }
-//
-//     active_priority_position.active_source.clear();
-//     active_priority_position.active_identifier.clear();
   }
 
   //  Update and check watchdog timer for SOG/COG data source
