@@ -86,58 +86,6 @@ private:
   mutable std::mutex m_mutex;
 };
 
-template <class T>
-class circular_buffer {
-public:
-  explicit circular_buffer(size_t size)
-      : buf_(std::unique_ptr<T[]>(new T[size])), max_size_(size) {}
-
-  void reset();
-  size_t capacity() const;
-  size_t size() const;
-
-  bool empty() const {
-    // if head and tail are equal, we are empty
-    return (!full_ && (head_ == tail_));
-  }
-
-  bool full() const {
-    // If tail is ahead the head by 1, we are full
-    return full_;
-  }
-
-  void put(T item) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    buf_[head_] = item;
-    if (full_) tail_ = (tail_ + 1) % max_size_;
-
-    head_ = (head_ + 1) % max_size_;
-
-    full_ = head_ == tail_;
-  }
-
-  T get() {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    if (empty()) return T();
-
-    // Read data and advance the tail (we now have a free space)
-    auto val = buf_[tail_];
-    full_ = false;
-    tail_ = (tail_ + 1) % max_size_;
-
-    return val;
-  }
-
-private:
-  std::mutex mutex_;
-  std::unique_ptr<T[]> buf_;
-  size_t head_ = 0;
-  size_t tail_ = 0;
-  const size_t max_size_;
-  bool full_ = 0;
-};
-
 #define NOT_FOUND -1
 #define CONST_MAX_MESSAGES 100
 #define CONST_TIME_EXCEEDED 250
