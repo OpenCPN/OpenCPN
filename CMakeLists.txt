@@ -833,6 +833,7 @@ set(
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
   include/ais_info_gui.h
+  include/atomic_queue.h
   include/base_platform.h
   include/canvasMenu.h
   include/catalog_handler.h

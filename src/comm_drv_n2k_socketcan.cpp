@@ -47,44 +47,10 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
+#include "atomic_queue.h"
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
-
-//#define DS_RX_BUFFER_SIZE 4096
-
-template <typename T>
-class n2k_atomic_queue {
-public:
-  size_t size() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.size();
-  }
-
-  bool empty() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.empty();
-  }
-
-  const T& front() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.front();
-  }
-
-  void push(const T& value) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.push(value);
-  }
-
-  void pop() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.pop();
-  }
-
-private:
-  std::queue<T> m_queque;
-  mutable std::mutex m_mutex;
-};
 
 #define NOT_FOUND -1
 #define CONST_MAX_MESSAGES 100
