@@ -3009,12 +3009,12 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pOpenGL = new wxCheckBox(m_ChartDisplayPage, ID_OPENGLBOX,
                              _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
-    pOpenGL->Enable(!g_bdisable_opengl);
+    pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
                                      _("OpenGL Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl);
+    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
 #ifdef __OCPN__ANDROID__
     pOpenGL->Hide();
@@ -3327,7 +3327,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     pOpenGL = new wxCheckBox(m_ChartDisplayPage, ID_OPENGLBOX,
                              _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
-    pOpenGL->Enable(!g_bdisable_opengl);
+    pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
 #ifdef __OCPN__ANDROID__
     pOpenGL->Disable();
@@ -3336,7 +3336,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
                                      _("Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl);
+    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     itemBoxSizerUI->Add(0, border_size * 3);
     /*
@@ -9020,16 +9020,14 @@ int OpenGLOptionsDlg::GetTextureMemorySize(void) const {
 }
 
 void OpenGLOptionsDlg::Populate(void) {
-  extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-  extern bool b_glEntryPointsSet;
 
   m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
   /* disable caching if unsupported */
-  if (b_glEntryPointsSet && !s_glCompressedTexImage2D) {
-    g_GLOptions.m_bTextureCompressionCaching = FALSE;
-    m_cbTextureCompression->Disable();
-    m_cbTextureCompression->SetValue(FALSE);
-  }
+//   if (b_glEntryPointsSet && !s_glCompressedTexImage2D) {
+//     g_GLOptions.m_bTextureCompressionCaching = FALSE;
+//     m_cbTextureCompression->Disable();
+//     m_cbTextureCompression->SetValue(FALSE);
+//   }
 
   m_cbTextureCompressionCaching->Show(g_bGLexpert);
   m_memorySize->Show(g_bGLexpert);

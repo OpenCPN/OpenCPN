@@ -36,9 +36,13 @@
 #include <wx/aui/aui.h>
 #include "wx/progdlg.h"
 
+// #if defined(__OCPN__ANDROID__)
+// #include <GLES2/gl2.h>
+// #elif defined(__WXQT__) || defined(__WXGTK__)
+// #include <GL/glew.h>
+// #endif
+
 #include "config.h"
-#include "dychart.h"
-#include "OCPNPlatform.h"
 
 #include <wx/listimpl.cpp>
 
@@ -99,6 +103,7 @@
 #include "idents.h"
 #include "conn_params.h"
 #include "route_gui.h"
+#include "line_clip.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -2666,7 +2671,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
   m_modkeys = event.GetModifiers();
 
-  int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
+  int panspeed = m_modkeys == wxMOD_ALT ? 1 : 100;
 
 #ifdef OCPN_ALT_MENUBAR
 #ifndef __WXOSX__
@@ -3058,7 +3063,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
         case 'W': // W Toggle CPA alarm
           ToggleCPAWarn();
-          
+
           break;
 
         case 1:  // Ctrl A
@@ -4576,7 +4581,7 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
 }
 
 void ChartCanvas::RotateCanvas(double dir) {
-  SetUpMode(NORTH_UP_MODE);
+  //SetUpMode(NORTH_UP_MODE);
 
   if (g_bsmoothpanzoom) {
     if (StartTimedMovement()) {

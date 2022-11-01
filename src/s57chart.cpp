@@ -98,20 +98,6 @@ void OpenCPN_OGRErrorHandler(
     CPLErr eErrClass, int nError,
     const char *pszErrorMsg);  // installed GDAL OGR library error handler
 
-#ifdef ocpnUSE_GL
-extern PFNGLGENBUFFERSPROC s_glGenBuffers;
-extern PFNGLBINDBUFFERPROC s_glBindBuffer;
-extern PFNGLBUFFERDATAPROC s_glBufferData;
-extern PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
-
-#ifndef USE_ANDROID_GLES2
-#define glGenBuffers(a, b) (s_glGenBuffers)(a, b);
-#define glBindBuffer(a, b) (s_glBindBuffer)(a, b);
-#define glBufferData(a, b, c, d) (s_glBufferData)(a, b, c, d);
-#define glDeleteBuffers(a, b) (s_glDeleteBuffers)(a, b);
-#endif
-
-#endif
 
 extern s52plib *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
@@ -209,6 +195,27 @@ unsigned long connector_key::hash() const {
 render_canvas_parms::render_canvas_parms() { pix_buff = NULL; }
 
 render_canvas_parms::~render_canvas_parms(void) {}
+
+static void PrepareForRender(ViewPort *pvp, s52plib *plib) {
+ if(!plib)
+   return;
+
+ plib->SetVPointCompat(
+                    pvp->pix_width,
+                    pvp->pix_height,
+                    pvp->view_scale_ppm,
+                    pvp->rotation,
+                    pvp->clat,
+                    pvp->clon,
+                    pvp->chart_scale,
+                    pvp->rv_rect,
+                    pvp->GetBBox(),
+                    pvp->ref_scale,
+                    GetOCPNCanvasWindow()->GetContentScaleFactor()
+                      );
+ plib->PrepareForRender();
+
+}
 
 //----------------------------------------------------------------------------------
 //      s57chart Implementation
@@ -319,7 +326,7 @@ s57chart::~s57chart() {
   m_vc_hash.clear();
 
 #ifdef ocpnUSE_GL
-  if (s_glDeleteBuffers && (m_LineVBO_name > 0))
+  if ((m_LineVBO_name > 0))
     glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
   free(m_this_chart_context);
@@ -1507,7 +1514,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
 
   SetVPParms(VPoint);
 
-  ps52plib->PrepareForRender((ViewPort *)&VPoint);
+ PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   if (m_plib_state_hash != ps52plib->GetStateHash()) {
     m_bLinePrioritySet = false;  // need to reset line priorities
@@ -1535,6 +1542,9 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
   // region always has either 1 or 2 rectangles (full screen or panning
   // rectangles)
   for (OCPNRegionIterator upd(RectRegion); upd.HaveRects(); upd.NextRect()) {
+    wxRect upr = upd.GetRect();
+    //printf("updRect: %d %d %d %d\n",upr.x, upr.y, upr.width, upr.height);
+
     LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
     chart_region.Intersect(Region);
 
@@ -1549,7 +1559,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         // rendering order is resolved
         //                glChartCanvas::SetClipRegion(cvp, chart_region);
         glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
-        ps52plib->m_last_clip_rect = upd.GetRect();
+        //ps52plib->m_last_clip_rect = upd.GetRect();
       } else {
 #ifdef OPT_USE_ANDROID_GLES2
 
@@ -1585,28 +1595,23 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         mat4x4_dup((float(*)[4])vp->vp_transform, Q);
 
 #else
-        // glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
-        glChartCanvas::SetClipRegion(cvp, chart_region);
+        glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+        //glChartCanvas::SetClipRegion(cvp, chart_region);
 
-        ps52plib->m_last_clip_rect = upd.GetRect();
+        //ps52plib->m_last_clip_rect = upd.GetRect();
 
 #endif
       }
 
 //            ps52plib->m_last_clip_rect = upd.GetRect();
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       glPushMatrix();  //    Adjust for rotation
 #endif
       glChartCanvas::RotateToViewPort(VPoint);
 
-      wxRect r = upd.GetRect();
-      // qDebug() << "Rect" << r.x << r.y << r.width << r.height;
-
-      // qDebug() << "Start DoRender" << sw.GetTime();
       DoRenderOnGL(glc, cvp);
-      // qDebug() << "End DoRender" << sw.GetTime();
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       glPopMatrix();
 #endif
       glChartCanvas::DisableClipRegion();
@@ -1642,7 +1647,7 @@ bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
       crnt = top;
       top = top->next;  // next object
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderAreaToGL(glc, crnt, &tvp);
+      ps52plib->RenderAreaToGL(glc, crnt);
     }
   }
 
@@ -1684,7 +1689,7 @@ bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
       crnt = top;
       top = top->next;  // next object
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToGL(glc, crnt, &tvp);
+      ps52plib->RenderObjectToGL(glc, crnt);
     }
   }
   // qDebug() << "Done Boundaries" << sw.GetTime();
@@ -1695,7 +1700,7 @@ bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToGL(glc, crnt, &tvp);
+      ps52plib->RenderObjectToGL(glc, crnt);
     }
   }
 
@@ -1711,7 +1716,7 @@ bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToGL(glc, crnt, &tvp);
+      ps52plib->RenderObjectToGL(glc, crnt);
     }
   }
   // qDebug() << "Done Points" << sw.GetTime();
@@ -1758,7 +1763,7 @@ bool s57chart::DoRenderOnGLText(const wxGLContext &glc,
       crnt = top;
       top = top->next;  // next object
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToGLText(glc, crnt, &tvp);
+      ps52plib->RenderObjectToGLText(glc, crnt);
     }
 
     top = razRules[i][2];  // LINES
@@ -1766,7 +1771,7 @@ bool s57chart::DoRenderOnGLText(const wxGLContext &glc,
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToGLText(glc, crnt, &tvp);
+      ps52plib->RenderObjectToGLText(glc, crnt);
     }
 
     if (ps52plib->m_nSymbolStyle == SIMPLIFIED)
@@ -1778,7 +1783,7 @@ bool s57chart::DoRenderOnGLText(const wxGLContext &glc,
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToGLText(glc, crnt, &tvp);
+      ps52plib->RenderObjectToGLText(glc, crnt);
     }
   }
 
@@ -1869,7 +1874,7 @@ bool s57chart::DoRenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
 
   if (Region != m_last_Region) force_new_view = true;
 
-  ps52plib->PrepareForRender((ViewPort *)&VPoint);
+  PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   if (m_plib_state_hash != ps52plib->GetStateHash()) {
     m_bLinePrioritySet = false;  // need to reset line priorities
@@ -1951,7 +1956,7 @@ bool s57chart::RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint) {
 
   SetVPParms(VPoint);
 
-  ps52plib->PrepareForRender((ViewPort *)&VPoint);
+  PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   if (m_plib_state_hash != ps52plib->GetStateHash()) {
     m_bLinePrioritySet = false;  // need to reset line priorities
@@ -2265,7 +2270,7 @@ int s57chart::DCRenderRect(wxMemoryDC &dcinput, const ViewPort &vp,
       crnt = top;
       top = top->next;  // next object
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderAreaToDC(&dcinput, crnt, &tvp, &pb_spec);
+      ps52plib->RenderAreaToDC(&dcinput, crnt, &pb_spec);
     }
   }
 
@@ -2329,7 +2334,7 @@ bool s57chart::DCRenderLPB(wxMemoryDC &dcinput, const ViewPort &vp,
       crnt = top;
       top = top->next;  // next object
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToDC(&dcinput, crnt, &tvp);
+      ps52plib->RenderObjectToDC(&dcinput, crnt);
     }
 
     top = razRules[i][2];  // LINES
@@ -2337,7 +2342,7 @@ bool s57chart::DCRenderLPB(wxMemoryDC &dcinput, const ViewPort &vp,
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToDC(&dcinput, crnt, &tvp);
+      ps52plib->RenderObjectToDC(&dcinput, crnt);
     }
 
     if (ps52plib->m_nSymbolStyle == SIMPLIFIED)
@@ -2349,7 +2354,7 @@ bool s57chart::DCRenderLPB(wxMemoryDC &dcinput, const ViewPort &vp,
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToDC(&dcinput, crnt, &tvp);
+      ps52plib->RenderObjectToDC(&dcinput, crnt);
     }
 
     //      Destroy Clipper
@@ -2382,7 +2387,7 @@ bool s57chart::DCRenderText(wxMemoryDC &dcinput, const ViewPort &vp) {
       crnt = top;
       top = top->next;  // next object
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToDCText(&dcinput, crnt, &tvp);
+      ps52plib->RenderObjectToDCText(&dcinput, crnt);
     }
 
     top = razRules[i][2];  // LINES
@@ -2390,7 +2395,7 @@ bool s57chart::DCRenderText(wxMemoryDC &dcinput, const ViewPort &vp) {
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToDCText(&dcinput, crnt, &tvp);
+      ps52plib->RenderObjectToDCText(&dcinput, crnt);
     }
 
     if (ps52plib->m_nSymbolStyle == SIMPLIFIED)
@@ -2402,7 +2407,7 @@ bool s57chart::DCRenderText(wxMemoryDC &dcinput, const ViewPort &vp) {
       crnt = top;
       top = top->next;
       crnt->sm_transform_parms = &vp_transform;
-      ps52plib->RenderObjectToDCText(&dcinput, crnt, &tvp);
+      ps52plib->RenderObjectToDCText(&dcinput, crnt);
     }
   }
 
@@ -4201,6 +4206,7 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   //  Set up the chart context
   m_this_chart_context = (chart_context *)calloc(sizeof(chart_context), 1);
   m_this_chart_context->chart = this;
+  m_this_chart_context->chart_type = GetChartType();
   m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
 
   //  Loop and populate all the objects
@@ -4533,7 +4539,7 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
             double sectrTest;
             bool hasSectors = GetDoubleAttr(top->obj, "SECTR1", sectrTest);
             if (hasSectors) {
-              if (ps52plib->ObjectRenderCheckCat(top, VPoint)) {
+              if (ps52plib->ObjectRenderCheckCat(top)) {
                 int attrCounter;
                 double valnmr = -1;
                 wxString curAttrName;
@@ -4629,7 +4635,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
         if (top->obj->npt ==
             1)  // Do not select Multipoint objects (SOUNDG) yet.
         {
-          if (ps52plib->ObjectRenderCheck(top, VPoint)) {
+          if (ps52plib->ObjectRenderCheck(top)) {
             if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
               ret_ptr->Append(top);
           }
@@ -4640,7 +4646,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
         if (top->child) {
           ObjRazRules *child_item = top->child;
           while (child_item != NULL) {
-            if (ps52plib->ObjectRenderCheck(child_item, VPoint)) {
+            if (ps52plib->ObjectRenderCheck(child_item)) {
               if (DoesLatLonSelectObject(lat, lon, select_radius,
                                          child_item->obj))
                 ret_ptr->Append(child_item);
@@ -4661,7 +4667,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
           (ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES) ? 3 : 4;
       top = razRules[i][area_boundary_type];  // Area nnn Boundaries
       while (top != NULL) {
-        if (ps52plib->ObjectRenderCheck(top, VPoint)) {
+        if (ps52plib->ObjectRenderCheck(top)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
             ret_ptr->Append(top);
         }
@@ -4675,7 +4681,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       top = razRules[i][2];  // Lines
 
       while (top != NULL) {
-        if (ps52plib->ObjectRenderCheck(top, VPoint)) {
+        if (ps52plib->ObjectRenderCheck(top)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
             ret_ptr->Append(top);
         }

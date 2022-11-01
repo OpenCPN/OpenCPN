@@ -29,6 +29,7 @@
 #include <wx/textctrl.h>
 
 #include "ocpn_types.h"
+#include "color_types.h"
 
 class ChartCanvas;
 

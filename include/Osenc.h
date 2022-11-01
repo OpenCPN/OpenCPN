@@ -37,6 +37,7 @@
 
 #include "gdal/cpl_csv.h"
 #include "ogr_s57.h"
+#include "s52s57.h"
 #include "chartbase.h"
 
 #include <string.h>

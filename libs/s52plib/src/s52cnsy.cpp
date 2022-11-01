@@ -36,11 +36,9 @@
 
 #include "wx/tokenzr.h"
 
-#include "s57chart.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "dychart.h"
-#include "cutil.h"
+#include "../../../include/cutil.h"
 
 bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
@@ -64,21 +62,21 @@ extern s52plib *ps52plib;
 wxString *CSQUAPNT01(S57Obj *obj);
 wxString *CSQUALIN01(S57Obj *obj);
 
-wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
-  S57Obj *obj = rzRules->obj;
-  if (obj->m_chart_context->chart)
-    return obj->m_chart_context->chart->pFloatingATONArray;
-  else
-    return obj->m_chart_context->pFloatingATONArray;
-}
+// wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
+//   S57Obj *obj = rzRules->obj;
+//   if (obj->m_chart_context->chart)
+//     return obj->m_chart_context->chart->pFloatingATONArray;
+//   else
+//     return obj->m_chart_context->pFloatingATONArray;
+// }
 
-wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
-  S57Obj *obj = rzRules->obj;
-  if (obj->m_chart_context->chart)
-    return obj->m_chart_context->chart->pRigidATONArray;
-  else
-    return obj->m_chart_context->pRigidATONArray;
-}
+// wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
+//   S57Obj *obj = rzRules->obj;
+//   if (obj->m_chart_context->chart)
+//     return obj->m_chart_context->chart->pRigidATONArray;
+//   else
+//     return obj->m_chart_context->pRigidATONArray;
+// }
 
 static void *CLRLIN01(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
@@ -546,10 +544,11 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
     // get area DEPARE & DRGARE that intersect this point/line/area
 
     std::list<S57Obj*> *pobj_list = NULL;
-
-    if (obj->m_chart_context->chart)
-      pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
-    else {
+//FIXME plib
+//     if (obj->m_chart_context->chart)
+//       pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
+//     else
+    {
       danger = false;
       //            wxString *ret_str = new wxString(udwhaz03str);
       //            return ret_str;
@@ -769,46 +768,21 @@ static void *DEPCNT02(void *param)
 
     if (drval1 <= safety_contour) {
       if (drval2 >= safety_contour) safe = TRUE;
-    } else {
-      double next_safe_contour = 1e6;
-      if (obj->m_chart_context->chart) {
-        next_safe_contour =
-            obj->m_chart_context->chart->GetCalculatedSafetyContour();
-        if (drval1 == next_safe_contour) safe = TRUE;
-      } else {
-        next_safe_contour = obj->m_chart_context->safety_contour;
-
-        if (fabs(drval1 - next_safe_contour) < 1e-4) safe = true;
-      }
-
-      //                  safe = FALSE;            //for debug
-      /*
-if (1 == S52_state)
-return NULL;
-else
-{
-S57_geo *geoTmp = geo;
-
-// get area DEPARE & DRGARE that intersect this line
-while (NULL != (geoTmp = S57_nextObj(geoTmp))) {
-      drval1str = S57_getAttVal(geoTmp, "DRVAL1");
-      drval1    = (NULL == drval1str) ? 0.0 : atof(drval1str->str);
-
-      if (NULL == drval1str) {
-            safe = TRUE;
-            break;
-      }
-
-      if (drval1 < S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR)) {
-            safe = TRUE;
-            break;
-      }
-}
-// debug trace
-//if (safe) PRINTF("** DEPARE: SAFE FOUND**\n");
-}
-      */
     }
+
+ //FIXME plib
+//     else {
+//       double next_safe_contour = 1e6;
+//       if (obj->m_chart_context->chart) {
+//         next_safe_contour =
+//             obj->m_chart_context->chart->GetCalculatedSafetyContour();
+//         if (drval1 == next_safe_contour) safe = TRUE;
+//       } else {
+//         next_safe_contour = obj->m_chart_context->safety_contour;
+//
+//         if (fabs(drval1 - next_safe_contour) < 1e-4) safe = true;
+//       }
+//    }
 
   } else {
     // continuation A (DEPCNT)
@@ -820,17 +794,20 @@ while (NULL != (geoTmp = S57_nextObj(geoTmp))) {
 
     if (valdco == safety_contour)
       safe = TRUE;  // this is useless !?!?
-    else {
-      double next_safe_contour = 1e6;
-      if (obj->m_chart_context->chart) {
-        next_safe_contour =
-            obj->m_chart_context->chart->GetCalculatedSafetyContour();
-        if (valdco == next_safe_contour) safe = TRUE;
-      } else {
-        next_safe_contour = obj->m_chart_context->safety_contour;
 
-        if (fabs(valdco - next_safe_contour) < 1e-4) safe = true;
-      }
+ // FIXME plib
+//     else {
+//       double next_safe_contour = 1e6;
+//       if (obj->m_chart_context->chart) {
+//         next_safe_contour =
+//             obj->m_chart_context->chart->GetCalculatedSafetyContour();
+//         if (valdco == next_safe_contour) safe = TRUE;
+//       } else {
+//         next_safe_contour = obj->m_chart_context->safety_contour;
+//
+//         if (fabs(valdco - next_safe_contour) < 1e-4) safe = true;
+//       }
+//    }
 
       /*
                         if (valdco > safety_contour)
@@ -861,7 +838,6 @@ while (NULL != (geoTmp = S57_nextObj(geoTmp))) {
                               }
 
       */
-    }
   }
 
   // Continuation B
@@ -1168,25 +1144,27 @@ static void *LIGHTS05(void *param)
 
     wxString ssym;
 
-    if (_atPtPos(obj, GetChartFloatingATONArray(rzRules),
-                 false))  // Is this LIGHTS feature colocated with ...ANY...
-                          // floating aid?
+    //FIXME plib
+//     if (_atPtPos(obj, GetChartFloatingATONArray(rzRules),
+//                  false))  // Is this LIGHTS feature colocated with ...ANY...
+//                           // floating aid?
+//     {
+//       flare_at_45 = false;
+//
+//       // TODO create LightArray in s57chart.
+//       //  Then, if another LIGHT object is colocated here, set flare_at_45
+//       /*            if(_atPtPos(obj, rzRules->chart->pLIGHTSArray, false)) // Is
+//          this LIGHTS feature colocated with another LIGHTS?
+//
+//
+//                   //    If the light is white, yellow, or orange, make it a
+//          flare at 45 degrees if(strpbrk(colist, "\001\005\011")) flare_at_45 =
+//          true;
+//       */
+//       ssym = _selSYcol(colist, 0, valnmr);  // flare
+//       b_isflare = true;
+//     } else
     {
-      flare_at_45 = false;
-
-      // TODO create LightArray in s57chart.
-      //  Then, if another LIGHT object is colocated here, set flare_at_45
-      /*            if(_atPtPos(obj, rzRules->chart->pLIGHTSArray, false)) // Is
-         this LIGHTS feature colocated with another LIGHTS?
-
-
-                  //    If the light is white, yellow, or orange, make it a
-         flare at 45 degrees if(strpbrk(colist, "\001\005\011")) flare_at_45 =
-         true;
-      */
-      ssym = _selSYcol(colist, 0, valnmr);  // flare
-      b_isflare = true;
-    } else {
       ssym = _selSYcol(colist, 1, valnmr);  // all round light
       b_isflare = false;
     }
@@ -2663,9 +2641,9 @@ static void *SEABED01(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
   //      S57Obj *obj = rzRules->obj;
 
-  CPLError((CPLErr)0, 0,
-           "s52csny : SEABED01 ERROR no conditional symbology for: %s\n",
-           rzRules->LUP->OBCL);
+//   CPLError((CPLErr)0, 0,
+//            "s52csny : SEABED01 ERROR no conditional symbology for: %s\n",
+//            rzRules->LUP->OBCL);
   return NULL;
 }
 
@@ -2809,10 +2787,10 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 
     if (depth_value < 10.0) {
       // can be above water (negative)
-      int fraction = (int)ABS((fabs(depth_value) - leading_digit) * 10);
+      int fraction = (int)abs((fabs(depth_value) - leading_digit) * 10);
 
       chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a,
-                   (int)ABS(leading_digit));
+                   (int)abs(leading_digit));
       sndfrm02.Append(wxString(temp_str, wxConvUTF8));
       if (fraction > 0) {
         chk_snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a,
@@ -3011,12 +2989,13 @@ static void *TOPMAR01(void *param)
     int floating = FALSE;  // not a floating platform
     int topshp = (!battr) ? 0 : top_int;
 
-    if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
-      floating = TRUE;
-    else
-        // FIXME: this test is wierd since it doesn't affect 'floating'
-        if (TRUE == _atPtPos(obj, GetChartRigidATONArray(rzRules), false))
-      floating = FALSE;
+    //FIXME plib
+//     if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
+//       floating = TRUE;
+//     else
+//         // FIXME: this test is wierd since it doesn't affect 'floating'
+//         if (TRUE == _atPtPos(obj, GetChartRigidATONArray(rzRules), false))
+//       floating = FALSE;
 
     if (floating) {
       // floating platform
@@ -3255,9 +3234,9 @@ static void *UDWHAZ03(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
   //      S57Obj *obj = rzRules->obj;
 
-  CPLError((CPLErr)0, 0,
-           "s52csny : UDWHAZ03 ERROR no conditional symbology for: %s\n",
-           rzRules->LUP->OBCL);
+//   CPLError((CPLErr)0, 0,
+//            "s52csny : UDWHAZ03 ERROR no conditional symbology for: %s\n",
+//            rzRules->LUP->OBCL);
   return NULL;
 }
 
@@ -3265,9 +3244,9 @@ static void *VESSEL01(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
   //      S57Obj *obj = rzRules->obj;
 
-  CPLError((CPLErr)0, 0,
-           "s52csny : VESSEL01 ERROR no conditional symbology for: %s\n",
-           rzRules->LUP->OBCL);
+//   CPLError((CPLErr)0, 0,
+//            "s52csny : VESSEL01 ERROR no conditional symbology for: %s\n",
+//            rzRules->LUP->OBCL);
   return NULL;
 }
 
@@ -3275,9 +3254,10 @@ static void *VRMEBL01(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
   //      S57Obj *obj = rzRules->obj;
 
-  CPLError((CPLErr)0, 0,
-           "s52csny : VRMEBL01 ERROR no conditional symbology for: %s\n",
-           rzRules->LUP->OBCL);
+//FIXME plib
+//   CPLError((CPLErr)0, 0,
+//            "s52csny : VRMEBL01 ERROR no conditional symbology for: %s\n",
+//            rzRules->LUP->OBCL);
   return NULL;
 }
 

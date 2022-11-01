@@ -44,7 +44,6 @@
 
 #include "wx/sound.h"
 
-#include "dychart.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "OCPN_Sound.h"

@@ -5300,7 +5300,7 @@ void PluginPanel::OnPaint(wxPaintEvent &event) {
     border = GetDialogColor(DLG_SELECTED_ACCENT);
   }
 
-  wxBrush b(color, wxSOLID);
+  wxBrush b(color, wxBRUSHSTYLE_SOLID);
   dc.SetBrush(b);
   dc.SetPen(wxPen(border, penWidth));
 
@@ -5913,7 +5913,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc,
 
           glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
 
-          ps52plib->m_last_clip_rect = upd.GetRect();
+          //ps52plib->m_last_clip_rect = upd.GetRect();
 
 #ifndef USE_ANDROID_GLES2
           glPushMatrix();  //    Adjust for rotation
@@ -5995,7 +5995,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(
 
           glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
 
-          ps52plib->m_last_clip_rect = upd.GetRect();
+          //ps52plib->m_last_clip_rect = upd.GetRect();
 #ifndef USE_ANDROID_GLES2
           glPushMatrix();  //    Adjust for rotation
 #endif
@@ -6366,8 +6366,24 @@ bool PI_PLIBObjectRenderCheck(PI_S57Obj *pObj, PlugIn_ViewPort *vp) {
     rzRules.child = NULL;
     rzRules.next = NULL;
 
-    if (pContext->LUP)
-      return ps52plib->ObjectRenderCheck(&rzRules, &cvp);
+    if (pContext->LUP){
+      ps52plib->SetVPointCompat(
+                    cvp.pix_width,
+                    cvp.pix_height,
+                    cvp.view_scale_ppm,
+                    cvp.rotation,
+                    cvp.clat,
+                    cvp.clon,
+                    cvp.chart_scale,
+                    cvp.rv_rect,
+                    cvp.GetBBox(),
+                    cvp.ref_scale,
+                    GetOCPNCanvasWindow()->GetContentScaleFactor()
+                      );
+      ps52plib->PrepareForRender();
+
+      return ps52plib->ObjectRenderCheck(&rzRules);
+    }
     else
       return false;
   } else
@@ -6486,6 +6502,8 @@ void CreateCompatibleS57Object(PI_S57Obj *pObj, S57Obj *cobj,
     }
     cobj->m_chart_context->chart =
         0;  // note bene, this is always NULL for a PlugIn chart
+    cobj->m_chart_context->chart_type = S52_CHART_TYPE_PLUGIN;
+
   }
 }
 
@@ -6740,7 +6758,23 @@ int PI_PLIBRenderObjectToDC(wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp) {
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    ps52plib->RenderObjectToDC(pdc, &rzRules, &cvp);
+    //FIXME (plib)
+    ps52plib->SetVPointCompat(
+                    cvp.pix_width,
+                    cvp.pix_height,
+                    cvp.view_scale_ppm,
+                    cvp.rotation,
+                    cvp.clat,
+                    cvp.clon,
+                    cvp.chart_scale,
+                    cvp.rv_rect,
+                    cvp.GetBBox(),
+                    cvp.ref_scale,
+                    GetOCPNCanvasWindow()->GetContentScaleFactor()
+                      );
+    ps52plib->PrepareForRender();
+
+    ps52plib->RenderObjectToDC(pdc, &rzRules);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);
@@ -6816,7 +6850,23 @@ int PI_PLIBRenderAreaToDC(wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp,
 
   if (pContext->LUP) {
     //  Do the render
-    ps52plib->RenderAreaToDC(pdc, &rzRules, &cvp, &pb_spec);
+    //FIXME (plib)
+    ps52plib->SetVPointCompat(
+                    cvp.pix_width,
+                    cvp.pix_height,
+                    cvp.view_scale_ppm,
+                    cvp.rotation,
+                    cvp.clat,
+                    cvp.clon,
+                    cvp.chart_scale,
+                    cvp.rv_rect,
+                    cvp.GetBBox(),
+                    cvp.ref_scale,
+                    GetOCPNCanvasWindow()->GetContentScaleFactor()
+                      );
+    ps52plib->PrepareForRender();
+
+    ps52plib->RenderAreaToDC(pdc, &rzRules, &pb_spec);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);
@@ -6885,7 +6935,23 @@ int PI_PLIBRenderAreaToGL(const wxGLContext &glcc, PI_S57Obj *pObj,
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    ps52plib->RenderAreaToGL(glcc, &rzRules, &cvp);
+    //FIXME (plib)
+    ps52plib->SetVPointCompat(
+                    cvp.pix_width,
+                    cvp.pix_height,
+                    cvp.view_scale_ppm,
+                    cvp.rotation,
+                    cvp.clat,
+                    cvp.clon,
+                    cvp.chart_scale,
+                    cvp.rv_rect,
+                    cvp.GetBBox(),
+                    cvp.ref_scale,
+                    GetOCPNCanvasWindow()->GetContentScaleFactor()
+                      );
+    ps52plib->PrepareForRender();
+
+    ps52plib->RenderAreaToGL(glcc, &rzRules);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);
@@ -6922,7 +6988,23 @@ int PI_PLIBRenderObjectToGL(const wxGLContext &glcc, PI_S57Obj *pObj,
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    ps52plib->RenderObjectToGL(glcc, &rzRules, &cvp);
+    //FIXME (plib)
+    ps52plib->SetVPointCompat(
+                    cvp.pix_width,
+                    cvp.pix_height,
+                    cvp.view_scale_ppm,
+                    cvp.rotation,
+                    cvp.clat,
+                    cvp.clon,
+                    cvp.chart_scale,
+                    cvp.rv_rect,
+                    cvp.GetBBox(),
+                    cvp.ref_scale,
+                    GetOCPNCanvasWindow()->GetContentScaleFactor()
+                      );
+    ps52plib->PrepareForRender();
+
+    ps52plib->RenderObjectToGL(glcc, &rzRules);
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext(pObj, &cobj, &rzRules);

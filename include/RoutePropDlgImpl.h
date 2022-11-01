@@ -30,6 +30,7 @@
 #include <wx/dataview.h>
 #include <wx/dvrenderers.h>
 #include "ocpn_types.h"
+#include "color_types.h"
 #include <cmath>
 #include "LinkPropDlg.h"
 

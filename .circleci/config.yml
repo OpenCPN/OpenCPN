@@ -86,29 +86,24 @@ workflows:
             branches:
               only:
                 - master
-                - comm
       - build-focal:
           filters:
             branches:
               only:
                 - master
-                - comm
       - build-flatpak:
           filters:
             branches:
               only:
                 - flatpak
                 - master
-                - comm
       - build-macos:
           filters:
             branches:
               only:
                 - master
-                - comm
       - build-android-armhf:
           filters:
             branches:
               only:
                 - master
-                - comm
