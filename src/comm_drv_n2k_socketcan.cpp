@@ -24,7 +24,6 @@
  **************************************************************************/
 
 // TODO:
-// - Refactor large thread loop
 // - Remove malloc/free
 // - Remove raw pointers
 // - Refactor buffer template to separate file.
@@ -32,9 +31,7 @@
 // - MAke varous Map...() functions return bReady.
 // - Clean up variable names.
 // - Make fastMessages a std::vector
-// - Remove socketTimeout
 // - Clean up :handle_N2K_SocketCAN_RAW
-// - Fis error feedback event var
 
 #include <algorithm>
 #include <mutex>  // std::mutex
@@ -54,7 +51,7 @@
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
-#define DS_RX_BUFFER_SIZE 4096
+//#define DS_RX_BUFFER_SIZE 4096
 
 template <typename T>
 class n2k_atomic_queue {
@@ -215,13 +212,6 @@ private:
   CommDriverN2KSocketCAN* m_pParentDriver;
   wxString m_PortName;
 
-  unsigned char* put_ptr;
-  unsigned char* tak_ptr;
-
-  unsigned char rx_buffer[DS_RX_BUFFER_SIZE + 1];
-
-  int m_n_timeout;
-
   n2k_atomic_queue<char*> out_que;
 
   // The Fast Packet buffer - used to reassemble Fast packet messages
@@ -236,8 +226,6 @@ private:
   // Socket Descriptor
   int can_socket;
   int flags;
-  // Socket Timeouts
-  struct timeval socketTimeout;
 };
 
 class CommDriverN2KSocketCANEvent;
@@ -417,9 +405,6 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
-
-  put_ptr = rx_buffer;  // local circular queue
-  tak_ptr = rx_buffer;
 
   MapInitialize();
 }
