@@ -26,12 +26,10 @@
 // TODO:
 // - Remove malloc/free
 // - Remove raw pointers
-// - Refactor buffer template to separate file.
 // - Clean up buffer variables
 // - MAke varous Map...() functions return bReady.
 // - Clean up variable names.
 // - Make fastMessages a std::vector
-// - Clean up :handle_N2K_SocketCAN_RAW
 
 #include <algorithm>
 #include <mutex>  // std::mutex
@@ -173,8 +171,6 @@ private:
 /*    CommDriverN2KSocketCAN implementation
  * */
 
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_N2K_SOCKETCAN, CommDriverN2KSocketCANEvent);
-
 CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
                                                DriverListener& listener)
     : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
@@ -185,10 +181,6 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
       m_params(*params),
       m_listener(listener) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
-
-  // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N2K_SOCKETCAN,
-       &CommDriverN2KSocketCAN::handle_N2K_SocketCAN_RAW, this);
 
   Open();
 }
@@ -242,48 +234,6 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
   uint64_t name;
   memcpy(&name, reinterpret_cast<const void*>(payload.data()), sizeof(name));
   return name;
-}
-
-void CommDriverN2KSocketCAN::handle_N2K_SocketCAN_RAW(
-    CommDriverN2KSocketCANEvent& event) {
-  auto p = event.GetPayload();
-
-  std::vector<unsigned char>* payload = p.get();
-
-  // extract PGN
-  uint32_t pgn = 0;
-  unsigned char* c = (unsigned char*)&pgn;
-
-  *c++ = payload->at(3);
-  *c++ = payload->at(4);
-  *c++ = payload->at(5);
-
-  auto name = PayloadToName(*payload);
-  auto msg =
-      std::make_unique<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
-  m_listener.Notify(std::move(msg));
-
-#if 0  // Debug output
-  size_t packetLength = (size_t)data->at(1);
-  size_t vector_length = data->size();
-
-  printf("Payload Length: %ld\n", vector_length);
-
-  // extract PGN
-  uint32_t v = 0;
-  unsigned char *t = (unsigned char *)&v;
-  *t++ = data->at(3);
-  *t++ = data->at(4);
-  *t++ = data->at(5);
-  //memcpy(&v, &data[3], 1);
-
-  printf("PGN: %d\n", v);
-
-  for(size_t i=0; i< vector_length ; i++){
-    printf("%02X ", data->at(i));
-  }
-  printf("\n\n");
-#endif
 }
 
 #ifndef __ANDROID__
