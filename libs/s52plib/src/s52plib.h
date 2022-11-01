@@ -358,7 +358,7 @@ public:
   double m_SoundingsScaleFactor;
   int m_SoundingsPointSize;
   double m_SoundingsFontSizeMM;
-
+  double m_soundFontDelta;
   double m_ChartScaleFactorExp;
   int m_chart_zoom_modifier_vector;
 

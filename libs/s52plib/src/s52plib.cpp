@@ -329,6 +329,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
 
   m_SoundingsScaleFactor = 1.0;
   m_SoundingsFontSizeMM = 0;
+  m_soundFontDelta = 0;
 
   GenerateStateHash();
 
@@ -3336,14 +3337,16 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
   int point_size = 6;
   int charWidth, charHeight, charDescent;
 
-  if (abs(m_SoundingsFontSizeMM - (defaultHeight * scale_factor)) > .5) {
+  double target = defaultHeight * scale_factor;
+
+  if (abs(m_SoundingsFontSizeMM - target) > (m_soundFontDelta + .5)) {
 
     // Recalculate the required point size to give specified height
     wxScreenDC sdc;
 
     double font_size_mm = 0;
     bool not_done = true;
-    while ((point_size < 20) && not_done) {
+    while ((point_size < 32) && not_done) {
       wxFont *tentativeFont = FindOrCreateFont_PlugIn(
           point_size, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, fontWeight, false,
           fontFacename);
@@ -3351,11 +3354,12 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                         tentativeFont);  // measure the text
       double font_size_mm = (double)(charHeight - charDescent) / GetPPMM();
 
-      if (font_size_mm >= (defaultHeight * scale_factor)) {
+      if (font_size_mm >= target) {
         not_done = false;
         m_SoundingsPointSize = point_size;
         m_SoundingsFontSizeMM = font_size_mm;
         m_soundFont = tentativeFont;
+        m_soundFontDelta = abs(font_size_mm - target);
         break;
       }
       point_size++;
