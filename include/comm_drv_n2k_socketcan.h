@@ -117,6 +117,7 @@ private:
   CommDriverN2KSocketCAN(const ConnectionParams* params,
                          DriverListener& listener);
 
+
   bool m_bok;
   std::string m_portstring;
   std::string m_BaudRate;

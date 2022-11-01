@@ -22,6 +22,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+// TODO:
+// - Refactor large thread loop
+// - Remove malloc/free
+// - Remove raw pointers
+// - Refactor buffer template to separate file.
+// - Clean up buffer variables
+// - MAke varous Map...() functions return bReady.
+// - Clean up variable names.
+// - Make fastMessages a std::vector
+// - Remove socketTimeout
+// - Clean up :handle_N2K_SocketCAN_RAW
+// - Fis error feedback event var
+
 #include <algorithm>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
@@ -191,6 +205,12 @@ private:
   int MapAppendEntry(const CanHeader header, const unsigned char* data,
                      const int position, bool& bReady);
   void MapInitialize(void);
+
+  void PushCompleteMsg(std::vector<unsigned char>& data,
+                       const CanHeader header, int position,
+                       const struct can_frame& socket_frame);
+  void PushFastMsgFragment(std::vector<unsigned char>& data,
+                           const CanHeader& header, int position);
 
   CommDriverN2KSocketCAN* m_pParentDriver;
   wxString m_PortName;
@@ -406,6 +426,51 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
 
 void CommDriverN2KSocketCANThread::OnExit(void) {}
 
+void CommDriverN2KSocketCANThread::PushCompleteMsg(
+     std::vector<unsigned char>& data, const CanHeader header, int position,
+     const struct can_frame& socket_frame) {
+  data.push_back(0x93);
+  data.push_back(0x13);
+  data.push_back(header.priority);
+  data.push_back(header.pgn & 0xFF);
+  data.push_back((header.pgn >> 8) & 0xFF);
+  data.push_back((header.pgn >> 16) & 0xFF);
+  data.push_back(header.destination);
+  data.push_back(header.source);
+  data.push_back(0xFF);  // FIXME (dave) generate the time fields
+  data.push_back(0xFF);
+  data.push_back(0xFF);
+  data.push_back(0xFF);
+  data.push_back(CAN_MAX_DLEN);  // nominally 8
+  for (size_t n = 0; n < CAN_MAX_DLEN; n++)
+    data.push_back(socket_frame.data[n]);
+  data.push_back(0x55);  // CRC dummy, not checked
+ }
+
+void CommDriverN2KSocketCANThread::PushFastMsgFragment(
+     std::vector<unsigned char>& data, const CanHeader& header,
+     int position) {
+  data.push_back(0x93);
+  data.push_back(fastMessages[position].expectedLength + 11);
+  data.push_back(header.priority);
+  data.push_back(header.pgn & 0xFF);
+  data.push_back((header.pgn >> 8) & 0xFF);
+  data.push_back((header.pgn >> 16) & 0xFF);
+  data.push_back(header.destination);
+  data.push_back(header.source);
+  data.push_back(0xFF);  // FIXME (dave) Could generate the time fields
+  data.push_back(0xFF);
+  data.push_back(0xFF);
+  data.push_back(0xFF);
+  data.push_back(fastMessages[position].expectedLength);
+  for (size_t n = 0; n < fastMessages[position].expectedLength; n++)
+    data.push_back(fastMessages[position].data[n]);
+  data.push_back(0x55);  // CRC dummy
+  free(fastMessages[position].data);
+  fastMessages[position].isFree = TRUE;
+  fastMessages[position].data = NULL;
+}
+
 void CommDriverN2KSocketCANThread::ThreadMessage(const wxString& msg) {
   //    Signal the main program thread
   //   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
@@ -494,81 +559,40 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
     if (IsFastMessage(header) == TRUE) {
       position = MapFindMatchingEntry(header, canSocketFrame.data[0]);
-      // No existing fast message
       if (position == NOT_FOUND) {
-        // Find a free slot
+        // Not an existing fast message, find a free slot
         position = MapFindFreeEntry();
-        // No free slots, exit
         if (position == NOT_FOUND) {
-          // FIXME (dave) return;
+          // No free slots, exit. FIXME (dave) return;
         }
-        // Insert the first frame of the fast message
         else {
+          // Insert the first frame of the fast message
           MapInsertEntry(header, canSocketFrame.data, position, bReady);
         }
       }
-      // An existing fast message is present, append the frame
       else {
+        // An existing fast message is present, append the frame
         MapAppendEntry(header, canSocketFrame.data, position, bReady);
       }
-    }
-
-    // This is a single frame message, parse it
-    else {
+    } else {
+      // This is a single frame message, parse it
       bReady = true;
     }
-
     if (bReady) {
-      auto buffer = std::make_shared<std::vector<unsigned char>>();
-      std::vector<unsigned char>* vec = buffer.get();
+      //auto buffer = std::make_shared<std::vector<unsigned char>>();
+      std::vector<unsigned char> vec;
 
-      // Populate the vector
-
-      if (position >= 0) {  // re-assembled fast message
-        // printf("PGN:  %d\n", header.pgn);
-
-        vec->push_back(0x93);
-        vec->push_back(fastMessages[position].expectedLength + 11);
-        vec->push_back(header.priority);
-        vec->push_back(header.pgn & 0xFF);
-        vec->push_back((header.pgn >> 8) & 0xFF);
-        vec->push_back((header.pgn >> 16) & 0xFF);
-        vec->push_back(header.destination);
-        vec->push_back(header.source);
-        vec->push_back(0xFF);  // FIXME (dave) Could generate the time fields
-        vec->push_back(0xFF);
-        vec->push_back(0xFF);
-        vec->push_back(0xFF);
-        vec->push_back(fastMessages[position].expectedLength);
-        for (size_t n = 0; n < fastMessages[position].expectedLength; n++)
-          vec->push_back(fastMessages[position].data[n]);
-        vec->push_back(0x55);  // CRC dummy
-
-        // Clear the message assembly buffer
-        free(fastMessages[position].data);
-        fastMessages[position].isFree = TRUE;
-        fastMessages[position].data = NULL;
-      } else {  // single frame message
-        vec->push_back(0x93);
-        vec->push_back(0x13);
-        vec->push_back(header.priority);
-        vec->push_back(header.pgn & 0xFF);
-        vec->push_back((header.pgn >> 8) & 0xFF);
-        vec->push_back((header.pgn >> 16) & 0xFF);
-        vec->push_back(header.destination);
-        vec->push_back(header.source);
-        vec->push_back(0xFF);  // Fixme (dave) generate the time fields
-        vec->push_back(0xFF);
-        vec->push_back(0xFF);
-        vec->push_back(0xFF);
-        vec->push_back(CAN_MAX_DLEN);  // nominally 8
-        for (size_t n = 0; n < CAN_MAX_DLEN; n++)
-          vec->push_back(canSocketFrame.data[n]);
-        vec->push_back(0x55);  // CRC dummy, not checked
+      if (position >= 0) {
+        // Re-assembled fast message
+        PushFastMsgFragment(vec, header, position);
+      } else {
+        // Single frame message
+        PushCompleteMsg(vec, header, position, canSocketFrame);
       }
 
       auto name = static_cast<uint64_t>(header.pgn);
       auto src_addr = m_pParentDriver->GetAddress(name);
+      auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
       auto msg = std::make_unique<const Nmea2000Msg>(header.pgn, *buffer, src_addr);
       m_pParentDriver->m_listener.Notify(std::move(msg));
     }  // bReady
