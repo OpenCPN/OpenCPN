@@ -29,6 +29,12 @@
 #include <wx/wx.h>
 #include <wx/thread.h>
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 #include "dychart.h"
 #include "viewport.h"
 #include "glTexCache.h"
@@ -79,7 +85,6 @@ extern arrayofCanvasPtr g_canvasArray;
 extern OCPNPlatform *g_Platform;
 extern ColorScheme global_color_scheme;
 
-extern PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 bool bthread_debug;
@@ -245,7 +250,6 @@ static void CompressDataETC(const unsigned char *data, int dim, int size,
 
 static bool CompressUsingGPU(const unsigned char *data, int dim, int size,
                              unsigned char *tex_data, int level, bool inplace) {
-  if (!s_glGetCompressedTexImage) return false;
 #ifndef USE_ANDROID_GLES2
 
   GLuint comp_tex;
@@ -273,7 +277,7 @@ static bool CompressUsingGPU(const unsigned char *data, int dim, int size,
     if (compressedSize != size) return false;
 
     // Read back the compressed texture.
-    s_glGetCompressedTexImage(GL_TEXTURE_2D, level, tex_data);
+    glGetCompressedTexImage(GL_TEXTURE_2D, level, tex_data);
   }
 
   if (!inplace) glDeleteTextures(1, &comp_tex);

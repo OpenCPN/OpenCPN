@@ -23,11 +23,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#pragma once
 
-#include "s52plib.h"
-#include <tinyxml.h>
+#ifndef _CHARTSYMBOLS_H_
+#define _CHARTSYMBOLS_H_
+
+#include "s52s57.h"
 #include "pugixml.hpp"
+class s52plib;
+
+WX_DECLARE_STRING_HASH_MAP(wxRect, symbolGraphicsHashMap);
 
 class Lookup {
 public:
@@ -101,27 +105,30 @@ public:
   ~ChartSymbols(void);
   bool LoadConfigFile(s52plib *plibArg, const wxString &path);
 
-  static void InitializeGlobals(void);
-  static void DeleteGlobals(void);
-  static int LoadRasterFileForColorTable(int tableNo, bool flush = false);
-  static wxArrayPtrVoid *GetColorTables();
-  static int FindColorTable(const wxString &tableName);
-  static S52color *GetColor(const char *colorName, int fromTable);
-  static wxColor GetwxColor(const wxString &colorName, int fromTable);
-  static wxColor GetwxColor(const char *colorName, int fromTable);
-  static wxString HashKey(const char *symbolName);
-  static wxImage GetImage(const char *symbolName);
-  static unsigned int GetGLTextureRect(wxRect &rect, const char *symbolName);
-  static wxSize GLTextureSize();
-  static void SetColorTableIndex(int index);
+  void InitializeTables(void);
+  void DeleteGlobals(void);
+  int LoadRasterFileForColorTable(int tableNo, bool flush = false);
+  int FindColorTable(const wxString &tableName);
+  S52color *GetColor(const char *colorName, int fromTable);
+  wxColor GetwxColor(const wxString &colorName, int fromTable);
+  wxColor GetwxColor(const char *colorName, int fromTable);
+  wxString HashKey(const char *symbolName);
+  wxImage GetImage(const char *symbolName);
+  unsigned int GetGLTextureRect(wxRect &rect, const char *symbolName);
+  wxSize GLTextureSize();
+  void SetColorTableIndex(int index);
+  void SetTextureFormat( int format){ m_texture_rectangle_format = format; }
+
+  wxArrayPtrVoid m_colorTables;
+  unsigned int rasterSymbolsTexture;
+  wxSize rasterSymbolsTextureSize;
+  wxBitmap rasterSymbols;
+  int rasterSymbolsLoadedColorMapNumber;
+  wxString configFileDirectory;
+  int ColorTableIndex;
+  symbolGraphicsHashMap m_symbolGraphicLocations;
 
 private:
-  void ProcessVectorTag(TiXmlElement *subNodes, SymbolSizeInfo_t &vectorSize);
-  void ProcessColorTables(TiXmlElement *colortableodes);
-  void ProcessLookups(TiXmlElement *lookupNodes);
-  void ProcessLinestyles(TiXmlElement *linestyleNodes);
-  void ProcessPatterns(TiXmlElement *patternNodes);
-  void ProcessSymbols(TiXmlElement *symbolNodes);
   void BuildLineStyle(LineStyle &lineStyle);
   void BuildLookup(Lookup &lookup);
   void BuildPattern(OCPNPattern &pattern);
@@ -136,6 +143,9 @@ private:
                         SymbolSizeInfo_t &vectorSize);
 
   pugi::xml_document m_symbolsDoc;
+  GLenum m_texture_rectangle_format;
 
   s52plib *plib;
 };
+
+#endif

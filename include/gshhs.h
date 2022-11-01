@@ -43,9 +43,11 @@
 #include <wx/geometry.h>
 
 #include "ocpn_types.h"
-#include "ocpndc.h"
+//#include "ocpndc.h"
 #include "viewport.h"
 #include "cutil.h"
+#include "poly_math.h"
+#include "color_types.h"
 
 #ifdef __MSVC__
 #pragma warning(disable : 4251)  // relates to std::string fpath
@@ -129,7 +131,7 @@ private:
   void DrawPolygonFilled(ocpnDC &pnt, contour_list *poly, double dx,
                          ViewPort &vp, wxColor const &color);
 #ifdef ocpnUSE_GL
-  void DrawPolygonFilledGL(contour_list *p, float_2Dpt **pv, int *pvc,
+  void DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv, int *pvc,
                            ViewPort &vp, wxColor const &color, bool idl);
 #endif
   void DrawPolygonContour(ocpnDC &pnt, contour_list *poly, double dx,

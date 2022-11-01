@@ -41,7 +41,6 @@
 
 #include "cutil.h"
 #include "FontMgr.h"
-#include "dychart.h"
 #include "ais.h"
 #include "navutil.h"  // for Select
 #include "georef.h"
@@ -55,6 +54,7 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
+#include "line_clip.h"
 
 extern double gLat, gLon, gSog, gCog;
 extern MyFrame *gFrame;
@@ -715,7 +715,7 @@ static void AISSetMetrics() {
   AIS_width_interceptline = 2 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_line = 1.5 * AIS_nominal_line_width_pix;
-  AIS_width_target_outline = 1.2 * AIS_nominal_line_width_pix;
+  AIS_width_target_outline = 1.5 * AIS_nominal_line_width_pix;
 }
 
 static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
@@ -1148,7 +1148,9 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         } else {
 #ifdef ocpnUSE_GL
 
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+
           glPushMatrix();
           glTranslated(PredPoint.x, PredPoint.y, 0);
           glScalef(AIS_scale_factor, AIS_scale_factor, AIS_scale_factor);
@@ -1358,7 +1360,9 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                        AIS_scale_factor);
     } else {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+
       wxColour c = target_brush.GetColour();
       glColor3ub(c.Red(), c.Green(), c.Blue());
 
@@ -1380,25 +1384,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       }
 
       glEnd();
-#else
-      dc.SetPen(target_outline_pen);
-      dc.DrawPolygon(nPoints, iconPoints, TargetPoint.x, TargetPoint.y,
-                     AIS_scale_factor);
-#endif
-
-      // Draw target outline, if not already done
-      // Depending on platform  (wx) capabilities, draw the nicest lines
-      // possible
-#if wxUSE_GRAPHICS_CONTEXT
-      glPopMatrix();
-
-      dc.SetPen(target_outline_pen);
-      dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
-      dc.StrokePolygon(nPoints, iconPoints, TargetPoint.x, TargetPoint.y,
-                       AIS_scale_factor);
-#else
       glLineWidth(AIS_width_target_outline);
-#ifndef USE_ANDROID_GLES2
+
       glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
 
       glBegin(GL_LINE_LOOP);
@@ -1407,10 +1394,11 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       glEnd();
       glPopMatrix();
 
+#else
+      dc.SetPen(target_outline_pen);
+      dc.DrawPolygon(nPoints, iconPoints, TargetPoint.x, TargetPoint.y,
+                     AIS_scale_factor);
 #endif
-
-#endif
-
 #endif
     }
     // Draw stroke "inverted v" for GPS Follower
@@ -1646,7 +1634,9 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     dc.SetPen(wxPen(c, 2 * AIS_nominal_line_width_pix));
 
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+
     if (!dc.GetDC()) {
       glLineWidth(2);
       glColor3ub(c.Red(), c.Green(), c.Blue());

@@ -31,7 +31,7 @@
 #ifndef _OCPN_PIXEL_H_
 #define _OCPN_PIXEL_H_
 
-#include "dychart.h"  // for configuration stuff
+//#include "dychart.h"  // for configuration stuff
 
 wxImage Image_Rotate(wxImage &base_image, double angle,
                      const wxPoint &centre_of_rotation, bool interpolating,

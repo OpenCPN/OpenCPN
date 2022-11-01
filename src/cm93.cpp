@@ -42,6 +42,7 @@
 #include <unordered_map>
 
 #include "gdal/ogr_api.h"
+#include "s52s57.h"
 #include "s57chart.h"
 #include "cm93.h"
 #include "s52plib.h"
@@ -59,6 +60,7 @@
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"
+#include "line_clip.h"
 
 #include <stdio.h>
 
@@ -88,7 +90,6 @@ extern PlugInManager *g_pi_manager;
 extern float g_GLMinSymbolLineWidth;
 
 extern bool g_b_EnableVBO;
-extern PFNGLBINDBUFFERPROC s_glBindBuffer;
 
 // TODO  These should be gotten from the ctor
 extern MyFrame *gFrame;
@@ -2084,6 +2085,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
       m_this_chart_context->pRigidATONArray = pRigidATONArray;
       m_this_chart_context->chart = this;
+      m_this_chart_context->chart_type = GetChartType();
+
       m_this_chart_context->safety_contour = 1e6;  // to be evaluated later
       m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
 
@@ -5722,9 +5725,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
     glDisable(GL_LINE_STIPPLE);
     dc.SetGLStipple();
 
-    if (g_b_EnableVBO) s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    if (g_b_EnableVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // use a viewport that allows the vertexes to be reused over many frames
@@ -5805,7 +5808,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
         if (vp.GetBBox().IntersectOut(mcd->m_covr_bbox)) continue;
 #ifdef ocpnUSE_GL
         if (g_bopengl) {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
           glColor3ub(col.Red(), col.Green(), col.Blue());
           RenderCellOutlinesOnGL(nvp, mcd);
 #endif
@@ -5815,7 +5818,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
 #define NORM_FACTOR 4096.0
             double ts =
                 40058986 * NORM_FACTOR; /* 360 degrees in normalized viewport */
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
             glColor3ub(col.Red(), col.Green(), col.Blue());
             glPushMatrix();
             glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
@@ -5838,7 +5841,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
 
 #ifdef ocpnUSE_GL
   if (g_bopengl) {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glPopMatrix();
 
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -5975,7 +5978,7 @@ void cm93compchart::RenderCellOutlinesOnGL(ViewPort &vp, M_COVR_Desc *mcd) {
     mcd->gl_screen_projection_type = vp.m_projection_type;
   }
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
 #if 1  // Push array (faster)
   glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), mcd->gl_screen_vertices);

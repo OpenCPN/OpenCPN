@@ -1719,8 +1719,10 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   //    figuratively "draw" charts until the ViewPort window is completely
   //    quilted over Add only those charts whose scale is smaller than the
   //    "reference scale"
+//  const LLRegion cvp_region = vp_local.GetLLRegion(
+//      wxRect(0, 0, vp_local.pix_width, vp_local.pix_height));
   const LLRegion cvp_region = vp_local.GetLLRegion(
-      wxRect(0, 0, vp_local.pix_width, vp_local.pix_height));
+      vp_local.rv_rect);
   LLRegion vp_region = cvp_region;
   unsigned int ir;
 

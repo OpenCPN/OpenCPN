@@ -29,6 +29,7 @@
 #include <wx/string.h>
 #include <wx/tokenzr.h>
 
+#include "dychart.h"
 #include "base_platform.h"
 #include "cutil.h"
 #include "georef.h"

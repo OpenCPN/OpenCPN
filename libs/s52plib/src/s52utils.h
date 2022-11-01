@@ -25,7 +25,11 @@
 #ifndef __S52UTILS_H__
 #define __S52UTILS_H__
 
-//#include <stdio.h>  // printf()
+inline int roundint(double x) {
+  int tmp = static_cast<int>(x);
+  tmp += (x - tmp >= .5) - (x - tmp <= -.5);
+  return tmp;
+}
 
 #ifdef SOLARIS
 // well should be cc

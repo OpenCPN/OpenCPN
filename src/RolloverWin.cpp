@@ -28,6 +28,12 @@
 #include <wx/dcmemory.h>
 #include <wx/dcscreen.h>
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 #include "ocpndc.h"
 #include "RolloverWin.h"
 #include "timers.h"
@@ -362,7 +368,7 @@ void RolloverWin::Draw(ocpnDC &dc) {
 
     ChartCanvas *pCanvas = wxDynamicCast(GetParent(), ChartCanvas);
     if (pCanvas)
-      pCanvas->GetglCanvas()->RenderTextures(coords, uv, 4, pCanvas->GetpVP());
+      pCanvas->GetglCanvas()->RenderTextures(dc, coords, uv, 4, pCanvas->GetpVP());
 
 #endif
     glDisable(g_texture_rectangle_format);

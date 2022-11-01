@@ -42,6 +42,8 @@
 #include "mbtiles.h"
 #include "mygeom.h"  // For DouglasPeucker();
 #include "FlexHash.h"
+#include "LOD_reduce.h"
+
 #ifndef UINT32
 #define UINT32 unsigned int
 #endif

@@ -28,8 +28,6 @@
  *
  */
 
-//#include "dychart.h"              // comment out because MSVC CRT Mem debug
-//breaks compile???
 
 #include "s52utils.h"
 //#include <stdio.h>        // FILE
