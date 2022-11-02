@@ -2158,7 +2158,7 @@ void AisDecoder::CommitAISTarget(AisTargetData *pTargetData,
         if (pTargetData->b_show_track) UpdateOneTrack(pTargetData);
       }
       // TODO add ais message call
-      plugin_msg.Notify(pTargetData);
+      plugin_msg.Notify(std::make_shared<AisTargetData>(*pTargetData), "");
     } else {
       //             printf("Unrecognised AIS message ID: %d\n",
       //             pTargetData->MID);
@@ -3615,13 +3615,12 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   std::vector<int> remove_array;  // collector for MMSI of targets to be removed
 
   while (it != current_targets.end()) {
-    AisTargetData *td = it->second;
-
-    if (NULL == td)  // This should never happen, but I saw it once....
+    if (it->second == NULL)  // This should never happen, but I saw it once....
     {
       current_targets.erase(it);
       break;  // leave the loop
     }
+    std::shared_ptr<AisTargetData> td(std::make_shared<AisTargetData>(*it->second));
 
     int target_posn_age = now.GetTicks() - td->PositionReportTicks;
     int target_static_age = now.GetTicks() - td->StaticReportTicks;
@@ -3689,7 +3688,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         td->HDG = 511.0;
         td->ROTAIS = -128;
 
-        plugin_msg.Notify(td);
+        plugin_msg.Notify(td, "");
 
         long mmsi_long = td->MMSI;
         pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
@@ -3699,7 +3698,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         //      or a lost ARPA target.
         if (target_static_age > removelost_Mins * 60 * 3 || b_arpalost) {
           td->b_removed = true;
-          plugin_msg.Notify(td);
+          plugin_msg.Notify(td, "");
           remove_array.push_back(td->MMSI);  // Add this target to removal list
         }
       }
@@ -3713,7 +3712,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         if (props->m_bignore) {
           remove_array.push_back(td->MMSI);  // Add this target to removal list
           td->b_removed = true;
-          plugin_msg.Notify(td);
+          plugin_msg.Notify(td, "");
         }
         break;
       }
