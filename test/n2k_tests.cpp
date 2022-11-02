@@ -325,20 +325,9 @@ private:
   ConnectionParams params;
 };
 
-
-
 #endif
 
 #ifdef __linux__    // Based on linux-only socketcan driver
-class DriverRegistry: public N2kTest  {
-public:
-  DriverRegistry(): N2kTest() { app = new N2kTestDriverRegistry(); }
-};
-
-class DriverProcessing: public N2kTest  {
-public:
-  DriverProcessing(): N2kTest() { app = new N2kTestDriverRegistry(); }
-};
 
 class LogProcessing: public N2kTest  {
 public:
@@ -346,8 +335,9 @@ public:
 };
 
 
-
-TEST_F(DriverRegistry, RegisterDriver) {
+TEST(DriverRegistry, RegisterDriver) {
+  N2kTestDriverRegistry app;
+  app.OnInit();
   EXPECT_EQ(int0, 1);   // Driver activated and registered
   EXPECT_EQ(int1, 0);   // Driver closed.
   EXPECT_EQ(int2, 0);   // All drivers closed.
@@ -375,8 +365,10 @@ TEST(CanEnvironment, canplayer) {
   EXPECT_TRUE(i == 0)  << "Error running the canplayer command\n";
 }
 
-TEST_F(DriverProcessing, base)
+TEST(DriverProcessing, base)
 {
+  N2kTestDriverRegistry app;
+  app.OnInit();
   EXPECT_EQ(int0, 1);
   EXPECT_EQ(int1, 0);
   EXPECT_EQ(int2, 0);
