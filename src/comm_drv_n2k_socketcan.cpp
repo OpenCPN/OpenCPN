@@ -67,8 +67,6 @@ void DecodeCanHeader(const int canId, CanHeader* header) {
   header->priority = (buf[3] & 0x1c) >> 2;
 }
 
-class CommDriverN2KSocketCANEvent;  // fwd
-
 // Buffer used to re-assemble sequences of multi frame Fast Packet messages
 typedef struct FastMessageEntry {
   unsigned char is_free;            // indicate whether this entry is free
@@ -136,33 +134,6 @@ private:
   // Socket Descriptor
   int can_socket;
   int flags;
-};
-
-class CommDriverN2KSocketCANEvent;
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N2K_SOCKETCAN, CommDriverN2KSocketCANEvent);
-
-class CommDriverN2KSocketCANEvent : public wxEvent {
-public:
-  CommDriverN2KSocketCANEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
-      : wxEvent(id, commandType){};
-  ~CommDriverN2KSocketCANEvent(){};
-
-  // accessors
-  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
-  }
-  std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
-
-  // required for sending with wxPostEvent()
-  wxEvent* Clone() const {
-    CommDriverN2KSocketCANEvent* newevent =
-        new CommDriverN2KSocketCANEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
-  };
-
-private:
-  std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
 //========================================================================
