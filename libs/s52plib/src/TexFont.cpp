@@ -357,6 +357,7 @@ void TexFont::RenderGlyph(int c) {
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+  glDisableVertexAttribArray(0);
   glUseProgram(0);
 
 #endif

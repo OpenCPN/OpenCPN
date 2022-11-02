@@ -102,7 +102,10 @@ public:
 
 
     void Bind() { glUseProgram(programId_); }
-    void UnBind() { glUseProgram(0); }
+    void UnBind() {
+      glDisableVertexAttribArray(0);
+      glUseProgram(0);
+    }
 
     void SetUniform1f( const std::string &name, float value) {
         GLint loc = getUniformLocation(name);
