@@ -222,7 +222,10 @@ void CommDriverN2KSocketCAN::Close() {
     m_pSecondary_Thread = NULL;
     m_bsec_thread_active = false;
   }
-  CommDriverRegistry::getInstance().Deactivate(shared_from_this());
+  // We cannot use shared_from_this() since we might be in the destructor.
+  auto& registry = CommDriverRegistry::getInstance();
+  auto me = FindDriver(registry.GetDrivers(), iface, bus);
+  registry.Deactivate(me);
 }
 
 void CommDriverN2KSocketCAN::Activate() {
