@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Low-level driver for socketcan devices (linux only).
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -119,7 +119,6 @@ private:
   CommDriverN2KSocketCAN();
   CommDriverN2KSocketCAN(const ConnectionParams* params,
                          DriverListener& listener);
-
 
   bool m_ok;
   std::string m_portstring;

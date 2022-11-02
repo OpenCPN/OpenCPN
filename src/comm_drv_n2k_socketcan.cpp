@@ -23,11 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-// TODO (leamas):
-// - Remove malloc/free
-// - Remove raw pointers
-// - Make varous Map...() functions return ready.
-// - Make fastMessages a std::vector
+// TODO (leamas): Re-implement parts which more or less emulates C++
+// memory handling, free slots, etc. Remove malloc/free and raw pointers.
 
 #include <algorithm>
 #include <mutex>  // std::mutex
