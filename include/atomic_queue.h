@@ -27,7 +27,7 @@
 #include <queue>
 
 template <typename T>
-class n2k_atomic_queue {
+class atomic_queue {
 public:
   size_t size() {
     std::lock_guard<std::mutex> lock(m_mutex);

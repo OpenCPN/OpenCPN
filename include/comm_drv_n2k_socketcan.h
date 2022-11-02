@@ -71,12 +71,15 @@ class CommDriverN2KSocketCANThread;  // fwd
 class CommDriverN2KSocketCANEvent;
 
 class CommDriverN2KSocketCAN : public CommDriverN2K, public wxEvtHandler {
+
 friend class CommDriverN2KSocketCANThread;
+
 public:
   static std::shared_ptr<CommDriverN2KSocketCAN> Create() {
     return std::shared_ptr<CommDriverN2KSocketCAN>(
         new CommDriverN2KSocketCAN());
   }
+
   static std::shared_ptr<CommDriverN2KSocketCAN> Create(
       const ConnectionParams* params, DriverListener& listener) {
     return std::shared_ptr<CommDriverN2KSocketCAN>(
@@ -96,21 +99,21 @@ public:
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
   //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_bsec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_bsec_thread_active; }
+  void SetSecThreadActive(void) { m_sec_thread_active = true; }
+  void SetSecThreadInActive(void) { m_sec_thread_active = false; }
+  bool IsSecThreadActive() const { return m_sec_thread_active; }
 
-  void SetSecondaryThread(CommDriverN2KSocketCANThread* secondary_Thread) {
-    m_pSecondary_Thread = secondary_Thread;
+  void SetSecondaryThread(CommDriverN2KSocketCANThread* thread) {
+    m_secondary_thread = thread;
   }
   CommDriverN2KSocketCANThread* GetSecondaryThread() {
-    return m_pSecondary_Thread;
+    return m_secondary_thread;
   }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
+  void SetThreadRunFlag(int run) { m_thread_run_flag = run; }
 
   void handle_N2K_SocketCAN_RAW(CommDriverN2KSocketCANEvent& event);
 
-  int m_Thread_run_flag;
+  int m_thread_run_flag;
 
 private:
   CommDriverN2KSocketCAN();
@@ -118,13 +121,13 @@ private:
                          DriverListener& listener);
 
 
-  bool m_bok;
+  bool m_ok;
   std::string m_portstring;
-  std::string m_BaudRate;
+  std::string m_baudrate;
   int m_handshake;
 
-  CommDriverN2KSocketCANThread* m_pSecondary_Thread;
-  bool m_bsec_thread_active;
+  CommDriverN2KSocketCANThread* m_secondary_thread;
+  bool m_sec_thread_active;
 
   ConnectionParams m_params;
   DriverListener& m_listener;
