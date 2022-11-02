@@ -251,7 +251,7 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-static void SendAisJsonMessage(AisTargetData* pTarget) {
+static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   //  Only send messages if someone is listening...
   if (!g_pi_manager->GetJSONMessageTargetCount()) return;
 
@@ -1184,7 +1184,7 @@ void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
  * evt_foo.notify() calls.
  */
 
-wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, wxCommandEvent);
+wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_PLUGMGR_ROUTEMAN_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
@@ -1272,8 +1272,8 @@ void PlugInManager::HandlePluginLoaderEvents() {
                                EVT_PLUGMGR_AIS_MSG);
   evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this, 
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
-  Bind(EVT_PLUGMGR_AIS_MSG,  [&](wxCommandEvent& ev) {
-    auto pTarget = static_cast<AisTargetData*>(ev.GetClientData());
+  Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt &ev) {
+    auto pTarget = UnpackEvtPointer<AisTargetData>(ev);
     SendAisJsonMessage(pTarget); });
   Bind(EVT_PLUGMGR_ROUTEMAN_MSG,  [&](ObservedEvt& ev) {
     auto msg = UnpackEvtPointer<wxJSONValue>(ev);
