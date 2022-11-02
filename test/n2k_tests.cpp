@@ -1,3 +1,7 @@
+#ifndef __linux__
+#error "This file can only be compiled on Linux."
+#endif
+
 #include <stdio.h>
 
 #include <gtest/gtest.h>
@@ -21,9 +25,7 @@
 #include "ais_decoder.h"
 #include "select.h"
 
-#ifdef __linux__
 #include "comm_drv_n2k_socketcan.h"
-#endif
 
 #ifdef _MSC_VER
 const static std::string kSEP("\\");
@@ -327,7 +329,6 @@ private:
 
 #endif
 
-#ifdef __linux__    // Based on linux-only socketcan driver
 
 class LogProcessing: public N2kTest  {
 public:
@@ -343,6 +344,7 @@ TEST(DriverRegistry, RegisterDriver) {
   EXPECT_EQ(int2, 0);   // All drivers closed.
 }
 
+#ifdef ENABLE_VCAN_TESTS
 TEST(CanEnvironment, vcan0) {
   char line[256];
   FILE* f = popen("ip address show vcan0", "r");
@@ -386,5 +388,4 @@ TEST(LogProcessing, base) {
   EXPECT_NEAR(gLon, 8.22156, 0.0001);
   CheckAisTargets();
 }
-
-#endif    // __linux__
+#endif  // ENABLE_VCAN_TESTS

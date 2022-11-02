@@ -16,13 +16,17 @@ enable_testing ()
 
 set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 
-add_executable(tests
+set(SRC
   tests.cpp
-  n2k_tests.cpp
   ${MODEL_SRC}
   ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
   ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
 )
+if (LINUX)
+  list(APPEND SRC n2k_tests.cpp)
+endif ()
+
+add_executable(tests ${SRC})
 
 target_compile_definitions(tests PUBLIC CLIAPP USE_MOCK_DEFS)
 if (MSVC)

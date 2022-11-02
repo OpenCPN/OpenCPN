@@ -180,6 +180,22 @@ else ()
   option(OCPN_BUILD_TEST "Enable test subproject build" ON)
 endif ()
 
+execute_process(
+  COMMAND "ip" "address" "show" "vcan0"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  OUTPUT_VARIABLE _VCAN_STDOUT
+  RESULT_VARIABLE _VCAN_RESULT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if ("${_VCAN_RESULT}" EQUAL 0)
+  set(ENABLE_VCAN_TESTS ON)
+  message(STATUS "tests using vcan0 are available.")
+else ()
+  set(ENABLE_VCAN_TESTS OFF)
+  message(STATUS "tests using vcan0 are NOT available: \"${_VCAN_STDERR}\"")
+endif ()
+
 set(
   OCPN_WXWIDGETS_FORCE_VERSION
   CACHE STRING "Force usage of a specific wxWidgets version."

@@ -18,6 +18,8 @@
 
 #cmakedefine OCPN_USE_NEWSERIAL
 
+#cmakedefine ENABLE_VCAN_TESTS
+
 // Enable dark mode on modern MacOS.
 #cmakedefine OCPN_USE_DARKMODE
 
