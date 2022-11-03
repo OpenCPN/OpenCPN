@@ -3969,7 +3969,8 @@ void glChartCanvas::Render() {
           b_whole_pixel = false;
 
         accelerated_pan =
-            b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
+            b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y
+            && (abs(dx) > 0 || (abs(dy) > 0));
       }
 
       //  FBO swapping has trouble with Retina display on MacOS Monterey.
@@ -3993,7 +3994,8 @@ void glChartCanvas::Render() {
 
 
       if (accelerated_pan) {
-        if ((dx != 0) || (dy != 0)) {   // Anything to do?
+        if ((dx != 0) || (dy != 0))
+        {   // Anything to do?
 
           // calculate the new regions to render
           // add extra pixels to avoid coordindate rounding issues at large
