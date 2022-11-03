@@ -413,6 +413,7 @@ private:
   bool m_bpersistent_quilt;
   int m_ChartUpdatePeriod;
   bool m_last_bGPSValid;
+  bool m_last_bVelocityValid;
 
   wxString prev_locale;
   bool bPrevQuilt;

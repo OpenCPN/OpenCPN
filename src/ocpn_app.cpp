@@ -389,6 +389,7 @@ int sat_watchdog_timeout_ticks;
 
 int gGPS_Watchdog;
 bool bGPSValid;
+bool bVelocityValid;
 
 int gHDx_Watchdog;
 int gHDT_Watchdog;
