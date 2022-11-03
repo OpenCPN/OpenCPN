@@ -296,7 +296,7 @@ void CommDriverN0183Serial::Close() {
 }
 
 void CommDriverN0183Serial::Activate() {
-  CommDriverRegistry::getInstance().Activate(shared_from_this());
+  CommDriverRegistry::GetInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 

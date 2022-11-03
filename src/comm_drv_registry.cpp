@@ -58,7 +58,7 @@ void CommDriverRegistry::CloseAllDrivers() {
   drivers.clear();
 }
 
-CommDriverRegistry& CommDriverRegistry::getInstance() {
+CommDriverRegistry& CommDriverRegistry::GetInstance() {
   static CommDriverRegistry instance;
   return instance;
 }

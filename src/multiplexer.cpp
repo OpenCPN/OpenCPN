@@ -169,7 +169,7 @@ void Multiplexer::LogInputMessage(const wxString &msg,
 void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Find the driver that originated this message
 
-  const auto& drivers = CommDriverRegistry::getInstance().GetDrivers();
+  const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
   auto source_driver = FindDriver(drivers, n0183_msg->source->iface);
 
   wxString fmsg;

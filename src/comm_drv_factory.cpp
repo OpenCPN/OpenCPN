@@ -53,7 +53,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
       wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
 
   auto& msgbus = NavMsgBus::GetInstance();
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   switch (params->Type) {
     case SERIAL:
       switch (params->Protocol) {

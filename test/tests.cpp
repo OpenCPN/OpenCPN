@@ -520,7 +520,7 @@ TEST(Messaging, AppMsg) {
 TEST(Drivers, Registry) {
   wxLog::SetActiveTarget(&defaultLog);
   auto driver = std::make_shared<SillyDriver>();
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver));
   auto drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), 1);
@@ -561,7 +561,7 @@ TEST(Navmsg2000, to_string) {
 TEST(FileDriver, Registration) {
   wxLog::SetActiveTarget(&defaultLog);
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   int start_size = registry.GetDrivers().size();
   driver->Activate();
   auto drivers = registry.GetDrivers();
@@ -641,12 +641,12 @@ TEST(Registry, persistence) {
   int start_size = 0;
   if (true) {  // a scope
     auto driver = std::make_shared<SillyDriver>();
-    auto& registry = CommDriverRegistry::getInstance();
+    auto& registry = CommDriverRegistry::GetInstance();
     start_size = registry.GetDrivers().size();
     registry.Activate(
         std::static_pointer_cast<AbstractCommDriver>(driver));
   }
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   auto drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
   EXPECT_EQ(registry.GetDrivers()[start_size]->iface, string("silly"));

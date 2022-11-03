@@ -96,7 +96,7 @@ public:
   void OnExit(void);
 
 private:
-  void ThreadMessage(const wxString& msg);
+  void ThreadMessage(const std::string& msg, int level = wxLOG_Message);
 
   bool IsFastMessage(const CanHeader header);
   int MapFindMatchingEntry(const CanHeader header, const unsigned char sid);
@@ -189,13 +189,13 @@ void CommDriverN2KSocketCAN::Close() {
     m_sec_thread_active = false;
   }
   // We cannot use shared_from_this() since we might be in the destructor.
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   auto me = FindDriver(registry.GetDrivers(), iface, bus);
   registry.Deactivate(me);
 }
 
 void CommDriverN2KSocketCAN::Activate() {
-  CommDriverRegistry::getInstance().Activate(shared_from_this());
+  CommDriverRegistry::GetInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
 
@@ -289,11 +289,11 @@ void CommDriverN2KSocketCANThread::PushFastMsgFragment(
   fastMessages[position].data = NULL;
 }
 
-void CommDriverN2KSocketCANThread::ThreadMessage(const wxString& msg) {
-  //    Signal the main program thread
-  //   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
-  //   event.SetSString(std::string(msg.mb_str()));
-  //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
+void CommDriverN2KSocketCANThread::ThreadMessage(const std::string& msg,
+                                                 int level) {
+  wxLogGeneric(level, wxString(msg.c_str()));
+  auto s = std::string("CommDriverN2KSocketCAN: ") + msg;
+  CommDriverRegistry::GetInstance().evt_driver_msg.Notify(level, s);
 }
 
 #ifndef __WXMSW__
@@ -309,8 +309,8 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
   can_socket = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (can_socket < 0) {
-    wxString msg("SocketCAN socket create failed: ");
-    ThreadMessage(msg + m_port_name);
+    std::string msg("SocketCAN socket create failed: ");
+    ThreadMessage(msg + m_port_name.ToStdString());
     return 0;
   }
 
@@ -321,8 +321,8 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
   // Get the index of the interface
   if (ioctl(can_socket, SIOCGIFINDEX, &can_request) < 0) {
-    wxString msg("SocketCAN socket IOCTL (SIOCGIFINDEX) failed: ");
-    ThreadMessage(msg + m_port_name);
+    std::string msg("SocketCAN socket IOCTL (SIOCGIFINDEX) failed: ");
+    ThreadMessage(msg + m_port_name.ToStdString());
     return 0;
   }
 
@@ -331,21 +331,21 @@ void* CommDriverN2KSocketCANThread::Entry() {
 
   // Check if the interface is UP
   if (ioctl(can_socket, SIOCGIFFLAGS, &can_request) < 0) {
-    wxString msg("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: ");
-    ThreadMessage(msg + m_port_name);
+      std::string msg("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: ");
+    ThreadMessage(msg + m_port_name.ToStdString());
     return 0;
   }
 
   if (can_request.ifr_flags & IFF_UP) {
-    ThreadMessage(wxString("socketCan interface is UP"));
+    ThreadMessage("socketCan interface is UP");
   } else {
     return 0;
   }
 
   int r = bind(can_socket, (struct sockaddr*)&can_address, sizeof(can_address));
   if (r < 0) {
-    wxString("SocketCAN socket bind() failed: ");
-    ThreadMessage(wxString("SocketCAN socket bind() failed: ") + m_port_name);
+    ThreadMessage(std::string("SocketCAN socket bind() failed: ")
+                  + m_port_name.ToStdString());
     return 0;
   }
 

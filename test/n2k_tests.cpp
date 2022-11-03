@@ -233,7 +233,7 @@ public:
   bool OnInit() {
     wxAppConsole::OnInit();
 
-    auto& registry = CommDriverRegistry::getInstance();
+    auto& registry = CommDriverRegistry::GetInstance();
     int start_size = registry.GetDrivers().size();
 
     auto& msgbus = NavMsgBus::GetInstance();
@@ -266,7 +266,7 @@ public:
     N2kTestData n2k_test_data;
 
     wxAppConsole::OnInit();
-    auto& registry = CommDriverRegistry::getInstance();
+    auto& registry = CommDriverRegistry::GetInstance();
     auto& msgbus = NavMsgBus::GetInstance();
     ConnectionParams params;
     params.socketCAN_port = "vcan0";
