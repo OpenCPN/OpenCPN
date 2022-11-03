@@ -26,7 +26,7 @@
 // TODO (leamas): Re-implement parts which more or less emulates C++
 // memory handling, free slots, etc. Remove malloc/free and raw pointers.
 
-#ifndef __linux__
+#if !defined(__linux__) || defined(__ANDROID__)
 #error "This file can only be compiled on Linux"
 #endif
 
@@ -103,6 +103,10 @@ private:
   void ThreadMessage(const std::string& msg, int level = wxLOG_Message);
 
   bool IsFastMessage(const CanHeader header);
+
+  int InitSocket(const std::string port_name);
+  void SocketMessage(const std::string& msg, const std::string& device); 
+
   int MapFindMatchingEntry(const CanHeader header, const unsigned char sid);
   int MapFindFreeEntry(void);
   int MapGarbageCollector(void);
@@ -128,13 +132,7 @@ private:
   int dropped_frames;
   wxDateTime dropped_frame_time;
 
-  // CAN connection variables
-  struct sockaddr_can can_address;
-  // Interface Request
-  struct ifreq can_request;
   // Socket Descriptor
-  int can_socket;
-  int flags;
 };
 
 //========================================================================
@@ -209,7 +207,6 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
   return name;
 }
 
-#ifndef __ANDROID__
 
 /**
  * This thread manages reading the N2K data stream provided by some N2K gateways
@@ -300,61 +297,77 @@ void CommDriverN2KSocketCANThread::ThreadMessage(const std::string& msg,
   CommDriverRegistry::GetInstance().evt_driver_msg.Notify(level, s);
 }
 
-void* CommDriverN2KSocketCANThread::Entry() {
-  bool nl_found = false;
-  wxString msg;
+void CommDriverN2KSocketCANThread::SocketMessage(const std::string& msg,
+                                                 const std::string& device) {
+  std::stringstream ss;
+  ss << msg << device << ": " << strerror(errno);
+  ThreadMessage(ss.str());
+}
 
+/**
+ * Initiate can socket
+ * @param port_name Name of device, for example "can0" (native) , "slcan0"
+ *                  (serial) or "vcan0" (virtual)
+ * @return positive socket number or -1 on errors.
+ */
+int CommDriverN2KSocketCANThread::InitSocket(const std::string port_name) {
+  int sock;
+
+  sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  if (sock < 0) {
+    SocketMessage("SocketCAN socket create failed: ",  port_name);
+    return -1;
+  }
+
+  struct ifreq can_request;
+  strcpy(can_request.ifr_name, port_name.c_str());
+
+  // Get the index of the interface
+  if (ioctl(sock, SIOCGIFINDEX, &can_request) < 0) {
+    SocketMessage("SocketCAN ioctl (SIOCGIFINDEX) failed: ", port_name);
+    return -1;
+  }
+
+  // Check if the interface is UP
+  struct sockaddr_can can_address;
+  can_address.can_family = AF_CAN;
+  can_address.can_ifindex = can_request.ifr_ifindex;
+  if (ioctl(sock, SIOCGIFFLAGS, &can_request) < 0) {
+    SocketMessage("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: ", port_name);
+    return -1;
+  }
+  if (can_request.ifr_flags & IFF_UP) {
+    ThreadMessage("socketCan interface is UP");
+  } else {
+    ThreadMessage("socketCan interface is NOT UP");
+    return -1;
+  }
+
+  int r = bind(sock, (struct sockaddr*)&can_address, sizeof(can_address));
+  if (r < 0) {
+    SocketMessage("SocketCAN socket bind() failed: ", port_name);
+    return -1;
+  }
+  return sock;
+}
+
+
+void* CommDriverN2KSocketCANThread::Entry() {
   CanHeader header;
   int recvbytes;
+  int can_socket;
   struct can_frame can_socket_frame;
 
   // Create and open the CAN socket
-
-  can_socket = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  can_socket = InitSocket(m_port_name.ToStdString());
   if (can_socket < 0) {
     std::string msg("SocketCAN socket create failed: ");
     ThreadMessage(msg + m_port_name.ToStdString());
     return 0;
   }
 
-  // eg. Native Interface "can0", Serial Interface "slcan0", Virtual Interface
-  // "vcan0"
-  std::string port_name(m_port_name);
-  strcpy(can_request.ifr_name, port_name.c_str());
-
-  // Get the index of the interface
-  if (ioctl(can_socket, SIOCGIFINDEX, &can_request) < 0) {
-    std::string msg("SocketCAN socket IOCTL (SIOCGIFINDEX) failed: ");
-    ThreadMessage(msg + m_port_name.ToStdString());
-    return 0;
-  }
-
-  can_address.can_family = AF_CAN;
-  can_address.can_ifindex = can_request.ifr_ifindex;
-
-  // Check if the interface is UP
-  if (ioctl(can_socket, SIOCGIFFLAGS, &can_request) < 0) {
-      std::string msg("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: ");
-    ThreadMessage(msg + m_port_name.ToStdString());
-    return 0;
-  }
-
-  if (can_request.ifr_flags & IFF_UP) {
-    ThreadMessage("socketCan interface is UP");
-  } else {
-    return 0;
-  }
-
-  int r = bind(can_socket, (struct sockaddr*)&can_address, sizeof(can_address));
-  if (r < 0) {
-    ThreadMessage(std::string("SocketCAN socket bind() failed: ")
-                  + m_port_name.ToStdString());
-    return 0;
-  }
-
-  m_parent_driver->SetSecThreadActive();  // I am alive
-
   // The main loop
+  m_parent_driver->SetSecThreadActive();
   while (m_parent_driver->m_thread_run_flag > 0) {
     recvbytes = read(can_socket, &can_socket_frame, sizeof(struct can_frame));
     if (recvbytes == -1) {
@@ -365,11 +378,12 @@ void* CommDriverN2KSocketCANThread::Entry() {
       } else {
         wxLogWarning("can socket %s: fatal error %s", m_port_name.c_str(),
                      strerror(errno));
-        return 0;  // FIXME (leamas)
+        return 0;
       }
     }
     if (recvbytes != 16) {
-      wxLogWarning("can socket %s: bad frame size: %d (ignored)", recvbytes);
+      wxLogWarning("can socket %s: bad frame size: %d (ignored)",
+                   m_port_name.c_str(), recvbytes);
       sleep(1);
       continue;
     }
@@ -396,8 +410,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
         MapAppendEntry(header, can_socket_frame.data, position, ready);
       }
     } else {
-      // This is a single frame message, parse it
-      ready = true;
+      ready = true;  // This is a single frame message, parse it
     }
     if (ready) {
       std::vector<unsigned char> vec;
@@ -409,7 +422,6 @@ void* CommDriverN2KSocketCANThread::Entry() {
         // Single frame message
         PushCompleteMsg(vec, header, position, can_socket_frame);
       }
-
       auto name = static_cast<uint64_t>(header.pgn);
       auto src_addr = m_parent_driver->GetAddress(name);
       auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
@@ -418,10 +430,8 @@ void* CommDriverN2KSocketCANThread::Entry() {
     }  // ready
   } // while
 
-  // thread_exit:
   m_parent_driver->SetSecThreadInActive();  // I am dead
   m_parent_driver->m_thread_run_flag = -1;
-
   return 0;
 }
 
@@ -605,5 +615,3 @@ void CommDriverN2KSocketCANThread::MapInitialize(void) {
     fastMessages[i].data = NULL;
   }
 }
-
-#endif
