@@ -95,7 +95,7 @@ public:
   CommDriverN2KSocketCANThread(CommDriverN2KSocketCAN* Launcher,
                                const wxString& PortName);
 
-  void* Entry();
+  void Entry();
   bool SetOutMsg(const wxString& msg);
   void OnExit(void);
 
@@ -105,7 +105,8 @@ private:
   bool IsFastMessage(const CanHeader header);
 
   int InitSocket(const std::string port_name);
-  void SocketMessage(const std::string& msg, const std::string& device); 
+  void SocketMessage(const std::string& msg, const std::string& device);
+  void HandleInput(const CanHeader& header, struct can_frame can_socket_frame);
 
   int MapFindMatchingEntry(const CanHeader header, const unsigned char sid);
   int MapFindFreeEntry(void);
@@ -351,8 +352,59 @@ int CommDriverN2KSocketCANThread::InitSocket(const std::string port_name) {
   return sock;
 }
 
+/**
+ * Handle a frame. A complete message or last part of a multipart fast
+ * message is sent to m_listener, basically making it available to upper
+ * layers. Otherwise, the fast message fragment is stored waiting for
+ * next fragment.
+ */
+void CommDriverN2KSocketCANThread::HandleInput(const CanHeader& header,
+                                               struct can_frame can_socket_frame) {
 
-void* CommDriverN2KSocketCANThread::Entry() {
+  int position = -1;
+  bool ready = false;
+
+  if (IsFastMessage(header) == true) {
+    position = MapFindMatchingEntry(header, can_socket_frame.data[0]);
+    if (position == NOT_FOUND) {
+      // Not an existing fast message, find a free slot
+      position = MapFindFreeEntry();
+      if (position == NOT_FOUND) {
+        // No free slots, exit. FIXME (dave) return;
+      }
+      else {
+        // Insert the first frame of the fast message
+        MapInsertEntry(header, can_socket_frame.data, position, ready);
+      }
+    }
+    else {
+      // An existing fast message is present, append the frame
+      MapAppendEntry(header, can_socket_frame.data, position, ready);
+    }
+  } else {
+    ready = true;  // This is a single frame message, parse it
+  }
+  if (ready) {
+    std::vector<unsigned char> vec;
+
+    if (position >= 0) {
+      // Re-assembled fast message
+      PushFastMsgFragment(vec, header, position);
+    } else {
+      // Single frame message
+      PushCompleteMsg(vec, header, position, can_socket_frame);
+    }
+    auto name = static_cast<uint64_t>(header.pgn);
+    auto src_addr = m_parent_driver->GetAddress(name);
+    auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
+    auto msg = std::make_unique<const Nmea2000Msg>(header.pgn, *buffer,
+                                                   src_addr);
+    m_parent_driver->m_listener.Notify(std::move(msg));
+  }
+}
+
+/** Worker thread main function. */
+void CommDriverN2KSocketCANThread::Entry() {
   CanHeader header;
   int recvbytes;
   int can_socket;
@@ -363,7 +415,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
   if (can_socket < 0) {
     std::string msg("SocketCAN socket create failed: ");
     ThreadMessage(msg + m_port_name.ToStdString());
-    return 0;
+    return;
   }
 
   // The main loop
@@ -378,7 +430,7 @@ void* CommDriverN2KSocketCANThread::Entry() {
       } else {
         wxLogWarning("can socket %s: fatal error %s", m_port_name.c_str(),
                      strerror(errno));
-        return 0;
+        return;
       }
     }
     if (recvbytes != 16) {
@@ -387,52 +439,12 @@ void* CommDriverN2KSocketCANThread::Entry() {
       sleep(1);
       continue;
     }
-    int position = -1;
-    bool ready = false;
-
     DecodeCanHeader(can_socket_frame.can_id, &header);
-
-    if (IsFastMessage(header) == true) {
-      position = MapFindMatchingEntry(header, can_socket_frame.data[0]);
-      if (position == NOT_FOUND) {
-        // Not an existing fast message, find a free slot
-        position = MapFindFreeEntry();
-        if (position == NOT_FOUND) {
-          // No free slots, exit. FIXME (dave) return;
-        }
-        else {
-          // Insert the first frame of the fast message
-          MapInsertEntry(header, can_socket_frame.data, position, ready);
-        }
-      }
-      else {
-        // An existing fast message is present, append the frame
-        MapAppendEntry(header, can_socket_frame.data, position, ready);
-      }
-    } else {
-      ready = true;  // This is a single frame message, parse it
-    }
-    if (ready) {
-      std::vector<unsigned char> vec;
-
-      if (position >= 0) {
-        // Re-assembled fast message
-        PushFastMsgFragment(vec, header, position);
-      } else {
-        // Single frame message
-        PushCompleteMsg(vec, header, position, can_socket_frame);
-      }
-      auto name = static_cast<uint64_t>(header.pgn);
-      auto src_addr = m_parent_driver->GetAddress(name);
-      auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
-      auto msg = std::make_unique<const Nmea2000Msg>(header.pgn, *buffer, src_addr);
-      m_parent_driver->m_listener.Notify(std::move(msg));
-    }  // ready
-  } // while
-
+    HandleInput(header, can_socket_frame);
+  }
   m_parent_driver->SetSecThreadInActive();  // I am dead
   m_parent_driver->m_thread_run_flag = -1;
-  return 0;
+  return;
 }
 
 // Checks whether a frame is a single frame message or multiframe Fast Packet
@@ -527,7 +539,7 @@ void CommDriverN2KSocketCANThread::MapInsertEntry(const CanHeader header,
     fastMessages[position].expected_length = (unsigned int)data[1];
     fastMessages[position].header = header;
     fastMessages[position].time_arrived = GetTimeInMicroseconds();
-    ;
+
     fastMessages[position].is_free = false;
     fastMessages[position].data = (unsigned char*)malloc(totalDataLength);
     memcpy(&fastMessages[position].data[0], &data[2], 6);
