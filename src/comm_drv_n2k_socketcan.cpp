@@ -117,9 +117,8 @@ private:
                      const int position, bool& ready);
   void MapInitialize(void);
 
-  void PushCompleteMsg(std::vector<unsigned char>& data,
-                       const CanHeader header, int position,
-                       const struct can_frame& socket_frame);
+  void PushCompleteMsg(std::vector<unsigned char>& data, const CanHeader header,
+                       int position, const struct can_frame& socket_frame);
   void PushFastMsgFragment(std::vector<unsigned char>& data,
                            const CanHeader& header, int position);
 
@@ -208,7 +207,6 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
   return name;
 }
 
-
 /**
  * This thread manages reading the N2K data stream provided by some N2K gateways
  * from the declared serial port.
@@ -247,8 +245,8 @@ CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
 void CommDriverN2KSocketCANThread::OnExit(void) {}
 
 void CommDriverN2KSocketCANThread::PushCompleteMsg(
-     std::vector<unsigned char>& data, const CanHeader header, int position,
-     const struct can_frame& socket_frame) {
+    std::vector<unsigned char>& data, const CanHeader header, int position,
+    const struct can_frame& socket_frame) {
   data.push_back(0x93);
   data.push_back(0x13);
   data.push_back(header.priority);
@@ -265,11 +263,10 @@ void CommDriverN2KSocketCANThread::PushCompleteMsg(
   for (size_t n = 0; n < CAN_MAX_DLEN; n++)
     data.push_back(socket_frame.data[n]);
   data.push_back(0x55);  // CRC dummy, not checked
- }
+}
 
 void CommDriverN2KSocketCANThread::PushFastMsgFragment(
-     std::vector<unsigned char>& data, const CanHeader& header,
-     int position) {
+    std::vector<unsigned char>& data, const CanHeader& header, int position) {
   data.push_back(0x93);
   data.push_back(fastMessages[position].expected_length + 11);
   data.push_back(header.priority);
@@ -316,7 +313,7 @@ int CommDriverN2KSocketCANThread::InitSocket(const std::string port_name) {
 
   sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (sock < 0) {
-    SocketMessage("SocketCAN socket create failed: ",  port_name);
+    SocketMessage("SocketCAN socket create failed: ", port_name);
     return -1;
   }
 
@@ -358,9 +355,8 @@ int CommDriverN2KSocketCANThread::InitSocket(const std::string port_name) {
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void CommDriverN2KSocketCANThread::HandleInput(const CanHeader& header,
-                                               struct can_frame can_socket_frame) {
-
+void CommDriverN2KSocketCANThread::HandleInput(
+    const CanHeader& header, struct can_frame can_socket_frame) {
   int position = -1;
   bool ready = false;
 
@@ -371,13 +367,11 @@ void CommDriverN2KSocketCANThread::HandleInput(const CanHeader& header,
       position = MapFindFreeEntry();
       if (position == NOT_FOUND) {
         // No free slots, exit. FIXME (dave) return;
-      }
-      else {
+      } else {
         // Insert the first frame of the fast message
         MapInsertEntry(header, can_socket_frame.data, position, ready);
       }
-    }
-    else {
+    } else {
       // An existing fast message is present, append the frame
       MapAppendEntry(header, can_socket_frame.data, position, ready);
     }
@@ -397,8 +391,8 @@ void CommDriverN2KSocketCANThread::HandleInput(const CanHeader& header,
     auto name = static_cast<uint64_t>(header.pgn);
     auto src_addr = m_parent_driver->GetAddress(name);
     auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
-    auto msg = std::make_unique<const Nmea2000Msg>(header.pgn, *buffer,
-                                                   src_addr);
+    auto msg =
+        std::make_unique<const Nmea2000Msg>(header.pgn, *buffer, src_addr);
     m_parent_driver->m_listener.Notify(std::move(msg));
   }
 }
