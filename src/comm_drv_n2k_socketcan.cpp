@@ -26,6 +26,10 @@
 // TODO (leamas): Re-implement parts which more or less emulates C++
 // memory handling, free slots, etc. Remove malloc/free and raw pointers.
 
+#ifndef __linux__
+#error "This file can only be compiled on Linux"
+#endif
+
 #include <algorithm>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
@@ -296,7 +300,6 @@ void CommDriverN2KSocketCANThread::ThreadMessage(const std::string& msg,
   CommDriverRegistry::GetInstance().evt_driver_msg.Notify(level, s);
 }
 
-#ifndef __WXMSW__
 void* CommDriverN2KSocketCANThread::Entry() {
   bool nl_found = false;
   wxString msg;
@@ -397,7 +400,6 @@ void* CommDriverN2KSocketCANThread::Entry() {
       ready = true;
     }
     if (ready) {
-      //auto buffer = std::make_shared<std::vector<unsigned char>>();
       std::vector<unsigned char> vec;
 
       if (position >= 0) {
@@ -604,5 +606,4 @@ void CommDriverN2KSocketCANThread::MapInitialize(void) {
   }
 }
 
-#endif
 #endif
