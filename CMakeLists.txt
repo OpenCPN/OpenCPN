@@ -1875,7 +1875,7 @@ endif (UNIX)
 if (OCPN_BUILD_TEST)
   add_subdirectory(test)
   add_custom_target(run-tests
-    COMMAND ctest  -C $<CONFIG>
+    COMMAND ctest  -C $<CONFIG> -E tests
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
   )
   add_dependencies(run-tests tests)
