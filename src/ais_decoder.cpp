@@ -2158,7 +2158,10 @@ void AisDecoder::CommitAISTarget(AisTargetData *pTargetData,
         if (pTargetData->b_show_track) UpdateOneTrack(pTargetData);
       }
       // TODO add ais message call
-      plugin_msg.Notify(std::make_shared<AisTargetData>(*pTargetData), "");
+      std::shared_ptr<wxJSONValue> p_JsonMsg(
+          new wxJSONValue(CreateAisJsonMessage(pTargetData)));
+      plugin_AISmsg.Notify(p_JsonMsg, "");
+      p_JsonMsg.reset();
     } else {
       //             printf("Unrecognised AIS message ID: %d\n",
       //             pTargetData->MID);
@@ -3688,7 +3691,10 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         td->HDG = 511.0;
         td->ROTAIS = -128;
 
-        plugin_msg.Notify(td, "");
+        std::shared_ptr<wxJSONValue> p_JsonMsg(
+          new wxJSONValue(CreateAisJsonMessage(td)));
+        plugin_AISmsg.Notify(p_JsonMsg, "");
+        p_JsonMsg.reset();
 
         long mmsi_long = td->MMSI;
         pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
@@ -3698,7 +3704,10 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         //      or a lost ARPA target.
         if (target_static_age > removelost_Mins * 60 * 3 || b_arpalost) {
           td->b_removed = true;
-          plugin_msg.Notify(td, "");
+          std::shared_ptr<wxJSONValue> p_JsonMsg(
+              new wxJSONValue(CreateAisJsonMessage(td)));
+          plugin_AISmsg.Notify(p_JsonMsg, "");
+          p_JsonMsg.reset();
           remove_array.push_back(td->MMSI);  // Add this target to removal list
         }
       }
@@ -3712,7 +3721,10 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         if (props->m_bignore) {
           remove_array.push_back(td->MMSI);  // Add this target to removal list
           td->b_removed = true;
-          plugin_msg.Notify(td, "");
+          std::shared_ptr<wxJSONValue> p_JsonMsg(
+              new wxJSONValue(CreateAisJsonMessage(td)));
+          plugin_AISmsg.Notify(p_JsonMsg, "");
+          p_JsonMsg.reset();
         }
         break;
       }

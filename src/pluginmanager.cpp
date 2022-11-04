@@ -251,7 +251,7 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
+static void SendAisJsonMessage(std::shared_ptr<const wxJSONValue> jMsg) {
   //  Only send messages if someone is listening...
   if (!g_pi_manager->GetJSONMessageTargetCount()) return;
 
@@ -1268,13 +1268,15 @@ void PlugInManager::HandlePluginLoaderEvents() {
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
-  evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this,
+  evt_ais_json_listener.Listen(g_pAIS->plugin_AISmsg, this,
                                EVT_PLUGMGR_AIS_MSG);
   evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this, 
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt &ev) {
-    auto pTarget = UnpackEvtPointer<AisTargetData>(ev);
-    SendAisJsonMessage(pTarget); });
+    auto pTarget = UnpackEvtPointer<wxJSONValue>(ev);
+    SendAisJsonMessage(pTarget);
+    pTarget.reset();
+  });
   Bind(EVT_PLUGMGR_ROUTEMAN_MSG,  [&](ObservedEvt& ev) {
     auto msg = UnpackEvtPointer<wxJSONValue>(ev);
     SendJSONMessageToAllPlugins(ev.GetString(), *msg); });
