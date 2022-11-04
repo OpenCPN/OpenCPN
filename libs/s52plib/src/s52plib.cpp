@@ -11022,10 +11022,8 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
     gluTessBeginContour(m_tobj);
 
     //               ViewPort *pvp = cc1->GetpVP();
-
+    double *p = new double [n * 3];
     for (int i = 0; i < n; i++) {
-      double *p = new double[6];
-
       //                     if(fabs(pvp->rotation) > 0.01){
       //                         float cx = pvp->pix_width/2.;
       //                         float cy = pvp->pix_height/2.;
@@ -11038,9 +11036,9 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
       //                         p[2] = 0;
       //                     }
       //                     else
-      p[0] = points[i].x, p[1] = points[i].y, p[2] = 0;
+      p[3 * i] = points[i].x, p[3 * i + 1] = points[i].y, p[3 * i + 2] = 0;
 
-      gluTessVertex(m_tobj, p, p);
+      gluTessVertex(m_tobj, p + 3 * i, p + 3 * i);
     }
 
     gluTessEndContour(m_tobj);
@@ -11048,6 +11046,7 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
     //}
 
     gluDeleteTess(m_tobj);
+    delete[] p;
 
     //         for(std::list<double*>::iterator i =
     //         odc_combine_work_data.begin(); i!=odc_combine_work_data.end();
