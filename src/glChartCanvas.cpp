@@ -4201,7 +4201,7 @@ void glChartCanvas::Render() {
 #endif
 
   if (useFBO) {
-#ifndef USE_ANDROID_GLES2
+#if 0  //#ifndef USE_ANDROID_GLES2
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fb0);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitFramebuffer(0, 0, sx, sy, 0, 0, sx, sy, GL_COLOR_BUFFER_BIT, GL_LINEAR);
@@ -4209,7 +4209,6 @@ void glChartCanvas::Render() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 #else
-
     // Render the cached texture as quad to screen
     glBindTexture(g_texture_rectangle_format, m_cache_tex[m_cache_page]);
     glEnable(g_texture_rectangle_format);
@@ -4229,8 +4228,6 @@ void glChartCanvas::Render() {
     tx = (m_fbo_offsetx + m_fbo_swidth) / divx;
     ty = (m_fbo_offsety + m_fbo_sheight) / divy;
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-#else
     float coords[8];
     float uv[8];
 
@@ -4255,8 +4252,6 @@ void glChartCanvas::Render() {
     coords[7] = sy;
 
     RenderTextures(gldc, coords, uv, 4, m_pParentCanvas->GetpVP());
-
-#endif
 #endif
 
     glDisable(g_texture_rectangle_format);
