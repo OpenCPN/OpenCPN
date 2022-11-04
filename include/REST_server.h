@@ -27,6 +27,7 @@
 #define _RESTSERVER_H
 
 #include <string>
+#include <unordered_map>
 
 #include <wx/event.h>
 
@@ -36,12 +37,13 @@ typedef enum RESTServerResult {
   RESULT_OBJECT_REJECTED,
   RESULT_DUPLICATE_REJECTED,
   RESULT_ROUTE_INSERT_ERROR,
+  RESULT_NEW_PIN_REQUESTED
 } _RESTServerResult;
 
 
 class RESTServerThread;  // Internal
-
 class RESTServerEvent;  // Internal
+class PINCreateDialog;
 
 class RESTServer : public wxEvtHandler {
 public:
@@ -76,10 +78,17 @@ public:
   std::string m_key_file;
 
 private:
+  bool LoadConfig( void );
+  bool SaveConfig( void );
 
   RESTServerThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
   std::string m_certificate_directory;
+  std::unordered_map<std::string, std::string> m_key_map;
+  PINCreateDialog *m_PINCreateDialog;
+  wxString m_sPIN;
+  int m_dPIN;
+  bool m_b_overwrite;
 
 };
 
