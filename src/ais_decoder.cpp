@@ -3656,7 +3656,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       current_targets.erase(it);
       break;  // leave the loop
     }
-    std::shared_ptr<AisTargetData> td(std::make_shared<AisTargetData>(*it->second));
+    AisTargetData *td = it->second;
 
     int target_posn_age = now.GetTicks() - td->PositionReportTicks;
     int target_static_age = now.GetTicks() - td->StaticReportTicks;
