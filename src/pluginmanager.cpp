@@ -254,38 +254,9 @@ wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 static void SendAisJsonMessage(std::shared_ptr<const wxJSONValue> jMsg) {
   //  Only send messages if someone is listening...
   if (!g_pi_manager->GetJSONMessageTargetCount()) return;
-
   // Do JSON message to all Plugin to inform of target
-  wxJSONValue jMsg;
-
-  wxLongLong t = ::wxGetLocalTimeMillis();
-
-  jMsg[wxS("Source")] = wxS("AisDecoder");
-  jMsg[wxT("Type")] = wxT("Information");
-  jMsg[wxT("Msg")] = wxS("AIS Target");
-  jMsg[wxT("MsgId")] = t.GetValue();
-  jMsg[wxS("lat")] = pTarget->Lat;
-  jMsg[wxS("lon")] = pTarget->Lon;
-  jMsg[wxS("sog")] = pTarget->SOG;
-  jMsg[wxS("cog")] = pTarget->COG;
-  jMsg[wxS("hdg")] = pTarget->HDG;
-  jMsg[wxS("mmsi")] = pTarget->MMSI;
-  jMsg[wxS("class")] = pTarget->Class;
-  jMsg[wxS("ownship")] = pTarget->b_OwnShip;
-  jMsg[wxS("active")] = pTarget->b_active;
-  jMsg[wxS("lost")] = pTarget->b_lost;
-  wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
-  for (size_t i = 0; i < l_ShipName.Len(); i++) {
-    if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
-  }
-  jMsg[wxS("shipname")] = l_ShipName;
-  wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
-  for (size_t i = 0; i < l_CallSign.Len(); i++) {
-    if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
-  }
-  jMsg[wxS("callsign")] = l_CallSign;
-  jMsg[wxS("removed")] = pTarget->b_removed;
-  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
+  wxJSONValue sentMsg = *jMsg;
+  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), sentMsg);
 }
 
 
