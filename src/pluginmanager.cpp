@@ -251,41 +251,11 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
+static void SendAisJsonMessage(std::shared_ptr<const wxJSONValue> msg) {
   //  Only send messages if someone is listening...
   if (!g_pi_manager->GetJSONMessageTargetCount()) return;
-
-  // Do JSON message to all Plugin to inform of target
-  wxJSONValue jMsg;
-
-  wxLongLong t = ::wxGetLocalTimeMillis();
-
-  jMsg[wxS("Source")] = wxS("AisDecoder");
-  jMsg[wxT("Type")] = wxT("Information");
-  jMsg[wxT("Msg")] = wxS("AIS Target");
-  jMsg[wxT("MsgId")] = t.GetValue();
-  jMsg[wxS("lat")] = pTarget->Lat;
-  jMsg[wxS("lon")] = pTarget->Lon;
-  jMsg[wxS("sog")] = pTarget->SOG;
-  jMsg[wxS("cog")] = pTarget->COG;
-  jMsg[wxS("hdg")] = pTarget->HDG;
-  jMsg[wxS("mmsi")] = pTarget->MMSI;
-  jMsg[wxS("class")] = pTarget->Class;
-  jMsg[wxS("ownship")] = pTarget->b_OwnShip;
-  jMsg[wxS("active")] = pTarget->b_active;
-  jMsg[wxS("lost")] = pTarget->b_lost;
-  wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
-  for (size_t i = 0; i < l_ShipName.Len(); i++) {
-    if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
-  }
-  jMsg[wxS("shipname")] = l_ShipName;
-  wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
-  for (size_t i = 0; i < l_CallSign.Len(); i++) {
-    if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
-  }
-  jMsg[wxS("callsign")] = l_CallSign;
-  jMsg[wxS("removed")] = pTarget->b_removed;
-  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
+  // Send ais target JSON message to all plugins
+  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), *msg);
 }
 
 
@@ -1268,13 +1238,13 @@ void PlugInManager::HandlePluginLoaderEvents() {
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
-  evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this,
+  evt_ais_json_listener.Listen(g_pAIS->pi_ais_evt, this,
                                EVT_PLUGMGR_AIS_MSG);
   evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this, 
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt &ev) {
-    auto pTarget = UnpackEvtPointer<AisTargetData>(ev);
-    SendAisJsonMessage(pTarget); });
+    SendAisJsonMessage(UnpackEvtPointer<wxJSONValue>(ev));
+  });
   Bind(EVT_PLUGMGR_ROUTEMAN_MSG,  [&](ObservedEvt& ev) {
     auto msg = UnpackEvtPointer<wxJSONValue>(ev);
     SendJSONMessageToAllPlugins(ev.GetString(), *msg); });

@@ -121,8 +121,9 @@ public:
   /** Notified when about to delete track. Contains a MmsiProperties* ptr */
   EventVar delete_track;
 
-  /** A JSON message should be sent. Contains a AisTargetData* pointer. */
-  EventVar plugin_msg;
+  /** Notified when a message containing AIS data in a wxJSONValue*
+      pointer should be sent to all plugins. */
+  EventVar pi_ais_evt;
 
 private:
   void OnActivate(wxActivateEvent &event);
