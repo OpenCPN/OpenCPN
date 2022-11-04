@@ -53,6 +53,8 @@
 #define CONST_MAX_MESSAGES 100
 #define CONST_TIME_EXCEEDED 250
 
+typedef struct can_frame CanFrame;
+
 // Decodes a 29 bit CAN header from an int
 void DecodeCanHeader(const int canId, CanHeader* header) {
   unsigned char buf[4];
@@ -106,7 +108,7 @@ private:
 
   int InitSocket(const std::string port_name);
   void SocketMessage(const std::string& msg, const std::string& device);
-  void HandleInput(const CanHeader& header, struct can_frame can_socket_frame);
+  void HandleInput(const CanHeader& header, CanFrame can_socket_frame);
 
   int MapFindMatchingEntry(const CanHeader header, const unsigned char sid);
   int MapFindFreeEntry(void);
@@ -118,7 +120,7 @@ private:
   void MapInitialize(void);
 
   void PushCompleteMsg(std::vector<unsigned char>& data, const CanHeader header,
-                       int position, const struct can_frame& socket_frame);
+                       int position, const CanFrame socket_frame);
   void PushFastMsgFragment(std::vector<unsigned char>& data,
                            const CanHeader& header, int position);
 
@@ -246,7 +248,7 @@ void CommDriverN2KSocketCANThread::OnExit(void) {}
 
 void CommDriverN2KSocketCANThread::PushCompleteMsg(
     std::vector<unsigned char>& data, const CanHeader header, int position,
-    const struct can_frame& socket_frame) {
+    const CanFrame socket_frame) {
   data.push_back(0x93);
   data.push_back(0x13);
   data.push_back(header.priority);
@@ -355,8 +357,8 @@ int CommDriverN2KSocketCANThread::InitSocket(const std::string port_name) {
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void CommDriverN2KSocketCANThread::HandleInput(
-    const CanHeader& header, struct can_frame can_socket_frame) {
+void CommDriverN2KSocketCANThread::HandleInput(const CanHeader& header,
+                                               CanFrame can_socket_frame) {
   int position = -1;
   bool ready = false;
 
@@ -402,7 +404,7 @@ void CommDriverN2KSocketCANThread::Entry() {
   CanHeader header;
   int recvbytes;
   int can_socket;
-  struct can_frame can_socket_frame;
+  CanFrame can_socket_frame;
 
   // Create and open the CAN socket
   can_socket = InitSocket(m_port_name.ToStdString());
@@ -415,7 +417,7 @@ void CommDriverN2KSocketCANThread::Entry() {
   // The main loop
   m_parent_driver->SetSecThreadActive();
   while (m_parent_driver->m_thread_run_flag > 0) {
-    recvbytes = read(can_socket, &can_socket_frame, sizeof(struct can_frame));
+    recvbytes = read(can_socket, &can_socket_frame, sizeof(CanFrame));
     if (recvbytes == -1) {
       if (errno == EAGAIN) {
         wxLogMessage("can socket %s: EAGAIN (retrying)", m_port_name.c_str());
