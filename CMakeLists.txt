@@ -1879,6 +1879,7 @@ if (UNIX)
 endif (UNIX)
 
 if (OCPN_BUILD_TEST)
+  add_subdirectory(libs/gtest)
   add_subdirectory(test)
   add_custom_target(run-tests
     COMMAND ctest  -C $<CONFIG> -E tests
