@@ -1069,9 +1069,13 @@ void glChartCanvas::SetupOpenGL() {
 #ifndef __OCPN__ANDROID__
 #ifndef __WXOSX__
   GLenum err = glewInit();
+#ifdef GLEW_ERROR_NO_GLX_DISPLAY
+  if (GLEW_OK != err && GLEW_ERROR_NO_GLX_DISPLAY != err)
+#else
   if (GLEW_OK != err)
+#endif
   {
-    printf("GLEW init failed: %s!n", glewGetErrorString(err));
+    printf("GLEW init failed: %s\n", glewGetErrorString(err));
     exit(1);
   }
   else
