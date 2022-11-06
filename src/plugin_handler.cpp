@@ -34,7 +34,10 @@
 #include <streambuf>
 #include <unordered_map>
 
-//#include <wx/jsonreader.h>
+#ifdef _WIN32
+#define _WINSOCKAPI_
+#endif
+
 #include <wx/dir.h>
 #include <wx/file.h>
 #include <wx/string.h>
