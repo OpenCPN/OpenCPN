@@ -29,16 +29,22 @@
 
 #include "peer_client.h"
 
-//#include "wx/curl/http.h"
-//#include "wx/curl/thread.h"
 #include "nav_object_database.h"
 #include <wx/json_defs.h>
 #include <wx/jsonreader.h>
+#include <wx/tokenzr.h>
+#include <wx/fileconf.h>
+
 #include "REST_server.h"
 #include "gui_lib.h"
 #include <curl/curl.h>
+#include "FontMgr.h"
+
+extern std::string PINtoRandomKeyString(int dpin);
 
 extern wxString g_hostname;
+extern MyFrame *gFrame;
+extern wxConfigBase *pBaseConfig;
 
 
 wxString GetErrorText(int result){
@@ -76,111 +82,6 @@ size_t wxcurl_string_write_UTF8(void* ptr, size_t size, size_t nmemb, void* pcha
     return iRealSize;
 }
 
-#if 0
-class wxCurlHTTPNoZIP : public wxCurlHTTP
-{
-public:
-    wxCurlHTTPNoZIP(const wxString& szURL = wxEmptyString,
-               const wxString& szUserName = wxEmptyString,
-               const wxString& szPassword = wxEmptyString,
-               wxEvtHandler* pEvtHandler = NULL, int id = wxID_ANY,
-               long flags = wxCURL_DEFAULT_FLAGS);
-
-   ~wxCurlHTTPNoZIP();
-
-  bool Post(const char *url, const char *body_data);
-  std::string GetResponseBody() const;
-
-protected:
-    void SetCurlHandleToDefaults(const wxString& relativeURL);
-
-};
-
-wxCurlHTTPNoZIP::wxCurlHTTPNoZIP(const wxString& szURL /*= wxEmptyString*/,
-                       const wxString& szUserName /*= wxEmptyString*/,
-                       const wxString& szPassword /*= wxEmptyString*/,
-                       wxEvtHandler* pEvtHandler /*= NULL*/,
-                       int id /*= wxID_ANY*/,
-                       long flags /*= wxCURL_DEFAULT_FLAGS*/)
-: wxCurlHTTP(szURL, szUserName, szPassword, pEvtHandler, id, flags)
-
-{
-}
-
-wxCurlHTTPNoZIP::~wxCurlHTTPNoZIP()
-{
-    ResetPostData();
-}
-
-void wxCurlHTTPNoZIP::SetCurlHandleToDefaults(const wxString& relativeURL)
-{
-    wxCurlBase::SetCurlHandleToDefaults(relativeURL);
-
-    SetOpt(CURLOPT_ENCODING, "identity");               // No encoding, plain ASCII
-
-    if(m_bUseCookies)
-    {
-        SetStringOpt(CURLOPT_COOKIEJAR, m_szCookieFile);
-    }
-}
-
-bool wxCurlHTTPNoZIP::Post(const char *url, const char *body_data)
-{
-    curl_off_t iSize = 0;
-
-    if(m_pCURL )
-    {
-        SetOpt(CURLOPT_ENCODING, "identity");               // No encoding, plain ASCII
-
-        SetHeaders();
-
-        SetOpt(CURLOPT_URL, url);
-
-        iSize = strlen(body_data);
-        if(iSize == (~(ssize_t)0))      // wxCurlHTTP does not know how to upload unknown length streams.
-            return false;
-
-        SetOpt(CURLOPT_POSTFIELDSIZE, iSize);
-        SetOpt(CURLOPT_POSTFIELDS, body_data);
-
-
-        SetOpt(CURLOPT_POST, TRUE);
-        SetOpt(CURLOPT_POSTFIELDSIZE_LARGE, iSize);
-        //SetStreamReadFunction(buffer);
-
-        //  Use a private data write trap function to handle UTF8 content
-        SetOpt(CURLOPT_WRITEFUNCTION, wxcurl_string_write_UTF8);         // private function
-        SetOpt(CURLOPT_WRITEDATA, (void*)&m_szResponseBody);
-
-        SetOpt(CURLOPT_CAINFO, "cert.pem");
-        SetOpt(CURLOPT_SSL_VERIFYPEER, 0);
-
-        //curl_easy_setopt(m_pCURL, CURLOPT_XFERINFOFUNCTION, xferinfo);
-        curl_easy_setopt(m_pCURL, CURLOPT_NOPROGRESS, 0L);
-
-        if(Perform())
-        {
-            ResetHeaders();
-            return IsResponseOk();
-        }
-    }
-
-    return false;
-}
-
-std::string wxCurlHTTPNoZIP::GetResponseBody() const
-{
-#ifndef __arm__
-    wxString s = wxString((const char *)m_szResponseBody, wxConvLibc);
-    return std::string(s.mb_str());
-
-#else
-    return std::string((const char *)m_szResponseBody);
-#endif
-
-}
-
-#endif
 
 struct MemoryStruct {
   char *memory;
@@ -208,8 +109,111 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   return realsize;
 }
 
+long PostSendObjectMessage( std::string url, std::ostringstream &body,
+                            MemoryStruct *response){
 
-int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
+  long response_code = -1;
+
+#ifdef ANDROID
+//FIXME (dave)
+
+#else
+  CURL* c = curl_easy_init();
+  curl_easy_setopt(c, CURLOPT_ENCODING, "identity");               // No encoding, plain ASCII
+  curl_easy_setopt(c, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+
+  int iSize =  strlen(body.str().c_str());
+  curl_easy_setopt(c, CURLOPT_POSTFIELDSIZE, iSize);
+  curl_easy_setopt(c, CURLOPT_COPYPOSTFIELDS, body.str().c_str());
+
+  curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(c, CURLOPT_WRITEDATA, (void *)response);
+
+  CURLcode result = curl_easy_perform(c);
+
+  if(result == CURLE_OK)
+    curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
+
+  curl_easy_cleanup(c);
+
+#endif
+  return response_code;
+}
+
+std::string GetClientKey( std::string &server_name )
+{
+  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
+
+  if( pConf ) {
+    pConf->SetPath( _T ( "/Settings/RESTClient" ) );
+
+    wxString key_string;
+
+    pConf->Read("ServerKeys", &key_string );
+    wxStringTokenizer st(key_string, _T(";"));
+    while (st.HasMoreTokens()) {
+      wxString s1 = st.GetNextToken();
+      wxString server_name_persisted = s1.BeforeFirst(':');
+      wxString server_key = s1.AfterFirst(':');
+
+      if (!server_name_persisted.ToStdString().compare(server_name))
+        return server_key.ToStdString();
+    }
+  }
+  return "1";
+}
+
+void SaveClientKey( std::string &server_name, std::string key )
+{
+  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
+
+  if( pConf ) {
+    pConf->SetPath( _T ( "/Settings/RESTClient" ) );
+
+    wxArrayString array;
+    wxString key_string;
+    pConf->Read("ServerKeys", &key_string );
+    wxStringTokenizer st(key_string, _T(";"));
+    while (st.HasMoreTokens()) {
+      wxString s1 = st.GetNextToken();
+      array.Add(s1);
+    }
+
+    bool b_updated = false;
+    for (unsigned int i=0; i<array.GetCount(); i++){
+      wxString s1 = array[i];
+      wxString server_name_persisted = s1.BeforeFirst(':');
+      wxString server_key = s1.AfterFirst(':');
+      if (server_name_persisted.IsSameAs(server_name.c_str())){
+        array[i] = server_name_persisted + ":" + key.c_str();
+        b_updated = true;
+        break;
+      }
+    }
+
+    if (!b_updated){
+      wxString new_entry = server_name.c_str() + wxString(":") + key.c_str();
+      array.Add(new_entry);
+    }
+
+    wxString key_string_updated;
+    for (unsigned int i=0; i<array.GetCount(); i++){
+      wxString s1 = array[i];
+      key_string_updated += s1;
+      key_string_updated += ";";
+    }
+
+    pConf->Write("ServerKeys", key_string_updated );
+
+  }
+  return ;
+}
+
+
+
+int SendRoute(std::string dest_ip_address, std::string server_name, Route *route, bool overwrite)
 {
   if(!route)
     return -1;
@@ -220,89 +224,169 @@ int SendRoute(std::string dest_ip_address, Route *route, bool overwrite)
   std::ostringstream stream;
   pgpx->save(stream, PUGIXML_TEXT(" "));
 
-  std::string url(dest_ip_address);
-  url += "/api/rx_object";
-  url += _T("?source=") + g_hostname;
+  bool apikey_ok = false;
+  bool b_cancel = false;
 
-#ifndef ANDROID
-//FIXME (dave)
-#if 1
-  struct MemoryStruct chunk;
-  chunk.memory = (char *)malloc(1);
-  chunk.size = 0;
+  while (!apikey_ok && b_cancel == false){
+    std::string api_key = GetClientKey(server_name);
 
-  CURL* c = curl_easy_init();
-  curl_easy_setopt(c, CURLOPT_ENCODING, "identity");               // No encoding, plain ASCII
-  curl_easy_setopt(c, CURLOPT_URL, url.c_str());
-  curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
-  curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+    std::string url(dest_ip_address);
+    url += "/api/rx_object";
+    url += std::string("?source=") + g_hostname;
+    url += std::string("&apikey=") + api_key;
 
-  int iSize =  strlen(stream.str().c_str());
-  curl_easy_setopt(c, CURLOPT_POSTFIELDSIZE, iSize);
-  curl_easy_setopt(c, CURLOPT_COPYPOSTFIELDS, stream.str().c_str());
+    struct MemoryStruct chunk;
+    chunk.memory = (char *)malloc(1);
+    chunk.size = 0;
 
-  curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-  curl_easy_setopt(c, CURLOPT_WRITEDATA, (void *)&chunk);
+    long response_code = PostSendObjectMessage( url, stream, &chunk);
 
-  CURLcode result = curl_easy_perform(c);
-  long response_code = -1;
+    if(response_code == 200){
+      wxString body(chunk.memory);
+      wxJSONValue  root;
+      wxJSONReader reader;
 
-  if(result == CURLE_OK)
-    curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
+      int numErrors = reader.Parse( body, &root );
+      // Capture the result
+      int result = root["result"].AsInt();
+      if (result > 0){
+        if (result == RESULT_NEW_PIN_REQUESTED){
 
-  curl_easy_cleanup(c);
+          // Show the dialog asking for PIN
+          PINConfirmDialog dlg((wxWindow *)gFrame, wxID_ANY, _("OpenCPN Server Message"),
+            "", wxDefaultPosition, wxDefaultSize, SYMBOL_PCD_STYLE );
 
-  if(response_code == 200){
-    //printf("%s\n", post.GetResponseBody().c_str());
+          wxString hmsg("The server ");
+          hmsg +=  "needs a PIN.\nPlease enter the PIN number from ";
+          hmsg += wxString("the server ");
+          hmsg += " to pair with this device.\n";
 
-    wxString body(chunk.memory);
-    wxJSONValue  root;
-    wxJSONReader reader;
+          dlg.SetMessage(hmsg);
+          dlg.SetText1Message("");
 
-    int numErrors = reader.Parse( body, &root );
-    // Capture the result
-    int result = root["result"].AsInt();
-    if (result > 0){
-      wxString error_text = GetErrorText(result);
-      OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
-                         wxICON_ERROR | wxOK);
+          if (dlg.ShowModal() == ID_PCD_OK) {
+            wxString PIN_tentative = dlg.GetText1Value();
+            unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
+            std::string new_api_key = PINtoRandomKeyString(dPIN);;
+
+            SaveClientKey(server_name, new_api_key);
+          }
+          else
+            b_cancel = true;
+        }
+        else{
+          wxString error_text = GetErrorText(result);
+          OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
+                          wxICON_ERROR | wxOK);
+          mdlg.ShowModal();
+          b_cancel = true;
+        }
+      }
+      else
+          apikey_ok = true;
+    }
+    else{
+      wxString err_msg;
+      err_msg.Printf("Server HTTP response is: %ld", response_code);
+      OCPNMessageDialog mdlg(NULL, err_msg, wxString(_("OpenCPN Info")),
+                          wxICON_ERROR | wxOK);
       mdlg.ShowModal();
+
+      b_cancel = true;
     }
   }
-  else{
-    wxString err_msg;
-    err_msg.Printf("Server HTTP response is: %ld", response_code);
-    OCPNMessageDialog mdlg(NULL, err_msg, wxString(_("OpenCPN Info")),
-                         wxICON_ERROR | wxOK);
-    mdlg.ShowModal();
-  }
-
-
-#else
-  wxCurlHTTPNoZIP post;
-  post.SetOpt(CURLOPT_TIMEOUT, 5);
-  res = post.Post( url.c_str(), stream.str().c_str() );
-
-    // get the response code of the server
-  post.GetInfo(CURLINFO_RESPONSE_CODE, &iResponseCode);
-  if(iResponseCode == 200){
-    printf("%s\n", post.GetResponseBody().c_str());
-
-    wxString body(post.GetResponseBody().c_str());
-    wxJSONValue  root;
-    wxJSONReader reader;
-
-    int numErrors = reader.Parse( body, &root );
-    // Capture the result
-    int result = root["result"].AsInt();
-    if (result > 0){
-      wxString error_text = GetErrorText(result);
-      OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
-                         wxICON_ERROR | wxOK);
-      mdlg.ShowModal();
-    }
-  }
-#endif
-#endif //ANDROID
   return true;
+}
+
+IMPLEMENT_DYNAMIC_CLASS(PINConfirmDialog, wxDialog)
+
+BEGIN_EVENT_TABLE(PINConfirmDialog, wxDialog)
+ EVT_BUTTON(ID_PCD_CANCEL, PINConfirmDialog::OnCancelClick)
+ EVT_BUTTON(ID_PCD_OK, PINConfirmDialog::OnOKClick)
+END_EVENT_TABLE()
+
+PINConfirmDialog::PINConfirmDialog() {
+  m_OKButton = NULL;
+  m_CancelButton = NULL;
+  premtext = NULL;
+}
+
+PINConfirmDialog::PINConfirmDialog(wxWindow* parent, wxWindowID id,
+                           const wxString& caption, const wxString& hint,
+                           const wxPoint& pos, const wxSize& size, long style) {
+  wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
+  SetFont( *pif );
+  Create(parent, id, caption, hint, pos, size, style);
+}
+
+PINConfirmDialog::~PINConfirmDialog() {
+  delete m_OKButton;
+  delete m_CancelButton;
+}
+
+bool PINConfirmDialog::Create(wxWindow* parent, wxWindowID id,
+                          const wxString& caption, const wxString& hint,
+                          const wxPoint& pos, const wxSize& size, long style) {
+  SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
+  wxDialog::Create(parent, id, caption, pos, size, style);
+
+  CreateControls(hint);
+  GetSizer()->Fit(this);
+  GetSizer()->SetSizeHints(this);
+  Centre();
+
+  return TRUE;
+}
+
+void PINConfirmDialog::CreateControls(const wxString& hint) {
+  PINConfirmDialog* itemDialog1 = this;
+
+   wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
+   SetSizer(itemBoxSizer2);
+
+
+  //    Add a reminder text box
+  itemBoxSizer2->AddSpacer(20);
+
+  premtext = new wxStaticText( this, -1, "A loooooooooooooooooooooooooooooooooooooooooooooong line\n");
+  itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxALL, 10);
+
+  m_pText1 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
+                                wxDefaultPosition, wxDefaultSize, wxTE_CENTRE);
+  itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
+
+
+  //    OK/Cancel/etc.
+  wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
+  itemBoxSizer2->Add(itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5);
+
+  m_CancelButton = new wxButton(itemDialog1, ID_PCD_CANCEL, _("Cancel"),
+                                wxDefaultPosition, wxDefaultSize, 0);
+  itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  m_OKButton = new wxButton(itemDialog1, ID_PCD_OK, "OK",
+                              wxDefaultPosition, wxDefaultSize, 0);
+  itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+  m_OKButton->SetDefault();
+}
+
+void PINConfirmDialog::SetMessage(const wxString &msg) {
+  if (premtext) {
+    premtext->SetLabel(msg);
+    premtext->Refresh(true);
+  }
+}
+
+void PINConfirmDialog::SetText1Message(const wxString &msg) {
+  m_pText1->ChangeValue(msg);
+  m_pText1->Show();
+  GetSizer()->Fit(this);
+}
+
+void PINConfirmDialog::OnOKClick(wxCommandEvent& event) {
+  EndModal(ID_PCD_OK);
+}
+
+void PINConfirmDialog::OnCancelClick(wxCommandEvent& event) {
+  EndModal(ID_PCD_CANCEL);
 }
