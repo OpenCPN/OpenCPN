@@ -83,4 +83,40 @@ private:
   wxString m_checkbox1_msg;
 };
 
+class PINCreateDialog : public wxDialog {
+  DECLARE_DYNAMIC_CLASS(PINCreateDialog)
+  DECLARE_EVENT_TABLE()
+
+public:
+  PINCreateDialog();
+  PINCreateDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
+               const wxString& hint, const wxPoint& pos, const wxSize& size,
+               long style);
+  ~PINCreateDialog();
+
+  bool Create(wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME,
+              const wxString& caption = SYMBOL_STG_TITLE,
+              const wxString& hint = SYMBOL_STG_TITLE,
+              const wxPoint& pos = SYMBOL_STG_POSITION,
+              const wxSize& size = SYMBOL_STG_SIZE,
+              long style = SYMBOL_STG_STYLE);
+  void SetMessage(const wxString &message);
+  void SetText1Message(const wxString &message);
+
+  wxString GetText1Value(){ return m_pText1->GetValue(); }
+
+private:
+  void CreateControls(const wxString& hint);
+
+  void OnCancelClick(wxCommandEvent& event);
+  void OnOKClick(wxCommandEvent& event);
+
+  wxButton* m_CancelButton;
+  wxButton* m_OKButton;
+  wxStaticText* premtext;
+  wxTextCtrl *m_pText1;
+  wxString m_checkbox1_msg;
+};
+
 #endif
+
