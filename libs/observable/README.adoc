@@ -1,7 +1,7 @@
 # observable README
 
-This is a basic, thread-safe notify-listen framework on top of wxWidgets.
-It requires C++11.
+This is a basic notify-listen framework on top of wxWidgets.  It requires
+C++11.
 
 There are three out of the box use cases:
 
@@ -14,33 +14,37 @@ There are three out of the box use cases:
   in the _observable_confvar.h_ header
 
 * The global variable mechanism (sic!) allows for listening to global
-  variable changes and to notify about such changes. It is described in 
+  variable changes and to notify about such changes. It is described in
   the _observable_globvar.h_ header.
 
 The notify event is based on wxCommandEvent and can thus optionally carry
-a string, a number and/or a pointer to the listening side. It has been 
+a string, a number and/or a pointer to the listening side. It has been
 extended to also be able to carry a `shared_ptr<void>` which basically
 makes it possible to transfer any shared_ptr from the notifying side to
 the listeners.
 
-The framework is developed in the opencpn project [1]. 
+Library is thread-safe in the sense that Notify() can be invoked from
+asynchronous worker threads. However, actual work performed by Listen()
+must be done in the main thread.
+
+The framework is developed in the opencpn project [1].
 
 ## Extending
 
-It is easy to extend the framework to handle other types. The basic 
+The framework can be extended to handle other types. The basic
 condition is that anything which should use Listen() and Notify()
 should implement the KeyProvider interface. This is just the ability
 to return a unique, stable key.
 
 Stated otherwise, the key used when invoking Listen() should be the
-same as when doing Notify().
+same as when doing Notify(). Examples includes:
 
-The event variable described above uses an auto generated random key, this
-works since both sides knows about the same event variable.
+* The event variable described above uses an auto generated random key,
+  this works since both sides knows about the same event variable.
 
-The config variable uses a key derived from the configuration value name.
-This works since both sides knows the name (path) to the configuration
-variable.
+* The config variable uses a key derived from the configuration value name.
+  This works since both sides knows the name (path) of the configuration
+  variable.
 
 In the OpenCPN project the framework is extended to handle messages. Each
 message implements the KeyProvider interface which generates a key based on
