@@ -28,6 +28,10 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
+
 #include <wx/arrstr.h>
 #include <wx/datetime.h>
 #include <wx/gdicmn.h>
