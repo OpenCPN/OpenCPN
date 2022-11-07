@@ -52,6 +52,10 @@ install:
   #- cmd: nmake -f makefile.vc BUILD=release SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
   #- cmd: nmake -f makefile.vc BUILD=debug SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
 
+  - cd ""C:\Program Files\CMake\share"
+  - dir
+
+  #-cmd: "C:\Program Files\CMake\share\cmake-3.24\Modules\FindwxWidgets.cmake"
 before_build:
   - cd c:\project\opencpn
   - mkdir build
