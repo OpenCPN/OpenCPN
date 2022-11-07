@@ -26,12 +26,12 @@
 #ifndef _OFRAME_H
 #define _OFRAME_H
 
-#include "wx/print.h"
+#include <wx/print.h>
 #include <wx/power.h>
 
 #include <memory>
 #ifdef __WXMSW__
-#include "wx/msw/private.h"
+#include <wx/msw/private.h>
 #endif
 
 #include "ocpn_types.h"

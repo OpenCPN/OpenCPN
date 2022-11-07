@@ -24,7 +24,7 @@
  **************************************************************************/
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <OCPN_AUIManager.h>
@@ -32,9 +32,9 @@
 #include "ocpn_frame.h"
 
 #ifdef __WXMSW__
-#include "wx/msw/wrapwin.h"
-#include "wx/msw/private.h"
-#include "wx/msw/dc.h"
+#include <wx/msw/wrapwin.h>
+#include <wx/msw/private.h>
+#include <wx/msw/dc.h>
 #endif
 
 // -- static utility functions --

@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 #include <wx/wxhtml.h>
 
 #include "S57QueryDialog.h"

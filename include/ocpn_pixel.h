@@ -121,7 +121,7 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
 
 //      Extended includes
 #ifdef __PIX_CACHE_X11IMAGE__
-#include "wx/x11/private.h"
+#include <wx/x11/private.h>
 
 //    For MIT-SHM Extensions
 #include <sys/ipc.h>
@@ -130,7 +130,7 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
 #endif
 
 #ifdef __WXMSW__
-#include "wx/msw/dib.h"  // for ocpnMemDC
+#include <wx/msw/dib.h>  // for ocpnMemDC
 #endif
 
 // ============================================================================
@@ -228,12 +228,12 @@ private:
 //-------------------------------------------------------------------------------
 
 #ifdef __WXMSW__
-#include "wx/msw/gdiimage.h"
-#include "wx/msw/dib.h"
+#include <wx/msw/gdiimage.h>
+#include <wx/msw/dib.h>
 #endif
 
 #ifdef __WXX11__
-#include "wx/x11/private.h"
+#include <wx/x11/private.h>
 #endif
 
 class WXDLLEXPORT wxDC;

@@ -40,7 +40,7 @@
 #define FORMAT_BITS GL_RGB
 
 #ifdef __OCPN__ANDROID__
-#include "wx/qt/private/wxQtGesture.h"
+#include <wx/qt/private/wxQtGesture.h>
 #endif
 
 class glTexFactory;

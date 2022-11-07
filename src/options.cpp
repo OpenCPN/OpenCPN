@@ -34,7 +34,7 @@
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -51,10 +51,10 @@
 #include <wx/fontdata.h>
 #include <wx/fontdlg.h>
 #include <wx/stdpaths.h>
-#include "wx/tokenzr.h"
+#include <wx/tokenzr.h>
 #include <wx/mediactrl.h>
-#include "wx/dir.h"
-#include "wx/odcombo.h"
+#include <wx/dir.h>
+#include <wx/odcombo.h>
 #include <wx/statline.h>
 #include <wx/regex.h>
 #include <wx/textwrapper.h>

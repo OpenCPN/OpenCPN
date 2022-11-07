@@ -36,18 +36,18 @@
 #include <assert.h>
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 //  Why are these not in wx/prec.h?
-#include "wx/dir.h"
-#include "wx/stream.h"
-#include "wx/wfstream.h"
-#include "wx/tokenzr.h"
-#include "wx/filename.h"
+#include <wx/dir.h>
+#include <wx/stream.h>
+#include <wx/wfstream.h>
+#include <wx/tokenzr.h>
+#include <wx/filename.h>
 #include <wx/image.h>
 #include <wx/fileconf.h>
 #include <sys/stat.h>

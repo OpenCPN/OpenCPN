@@ -27,7 +27,7 @@
 #include <windows.h>
 #endif
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include <wx/slider.h>
 

@@ -48,15 +48,15 @@
 #include "semantic_vers.h"
 
 // For widgets...
-#include "wx/hyperlink.h"
+#include <wx/hyperlink.h>
 #include <wx/choice.h>
 #include <wx/tglbtn.h>
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
-#include "wx/curl/http.h"
-#include "wx/curl/dialog.h"
+#include <wx/curl/http.h>
+#include <wx/curl/dialog.h>
 #endif
 #endif
 
