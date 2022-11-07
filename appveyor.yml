@@ -33,7 +33,9 @@ install:
 
   # Download and unzip wxwidgets, version 3.2.1
   - ps: Start-FileDownload https://download.opencpn.org/s/TCs36LDWtziNZtL/download -FileName wxWidgets-3.2.1.7z
-  - cmd: 7z x -y -bb1 wxWidgets-3.2.1.7z -o%WXWIN%
+  - cmd: 7z x -y wxWidgets-3.2.1.7z -oC:\wxWidgets-3.2.1
+  - cd C:\wxWidgets-3.2.1
+  - dir
 
   # some debugging information
   # - set   Displays sensitive password!
