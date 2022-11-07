@@ -14,8 +14,8 @@ test: OFF
 
 install:
   # VS2015 and earlier version - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86'
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
-
+  #- call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
   # set environment variables for wxWidgets
   - set WXWIN=C:\wxWidgets-3.2.1
   - set wxWidgets_ROOT_DIR=%WXWIN%
