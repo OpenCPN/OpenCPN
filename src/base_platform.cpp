@@ -337,6 +337,14 @@ wxString BasePlatform::GetWinPluginBaseDir() {
     return fn.GetFullPath();
   }
   wxString winPluginDir;
+  // Portable case: plugins directory is in the .exe folder
+  if (g_bportable) {
+    winPluginDir = (GetHomeDir() + _T("plugins"));
+    if (ocpn::exists(winPluginDir.ToStdString())) {
+      wxLogMessage("Using portable plugin dir: %s", winPluginDir);
+      return winPluginDir;
+    }
+  }
   // Standard case: c:\Users\%USERPROFILE%\AppData\Local
   bool ok = wxGetEnv(_T("LOCALAPPDATA"), &winPluginDir);
   if (!ok) {
