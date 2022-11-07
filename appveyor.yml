@@ -34,7 +34,7 @@ install:
 
   # Download and unzip wxwidgets, version 3.2.1
   - ps: Start-FileDownload https://download.opencpn.org/s/TCs36LDWtziNZtL/download -FileName wxWidgets-3.2.1.7z
-  - cmd: 7z x -y wxWidgets-3.2.1.7z -oC:\wxWidgets-3.2.1
+  - cmd: 7z x wxWidgets-3.2.1.7z -oC:\wxWidgets-3.2.1
 
   # some debugging information
   # - set   Displays sensitive password!
@@ -50,7 +50,7 @@ before_build:
   - mkdir build
   - cd build
   - ps: Start-FileDownload https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.2.zip -FileName OCPNWindowsCoreBuildSupport.zip
-  - cmd: 7z x -y OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwintemp
+  - cmd: 7z x OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwintemp
   - cmd: mkdir c:\projects\opencpn\buildwin
   - cmd: XCOPY c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.2\buildwin c:\project\opencpn\buildwin /s /y /q
 
