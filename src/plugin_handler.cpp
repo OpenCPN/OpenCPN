@@ -34,8 +34,10 @@
 #include <streambuf>
 #include <unordered_map>
 
-#ifdef _WIN32
-#define _WINSOCKAPI_
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
 #endif
 
 #include <wx/dir.h>
