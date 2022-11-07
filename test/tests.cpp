@@ -2,12 +2,13 @@
 #include "config.h"
 
 #include <algorithm>
-#include <iostream>
-#include <fstream>
 #include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <thread>
 
-#include "wx/event.h"
-#include "wx/app.h"
+#include <wx/event.h>
+#include <wx/app.h>
 
 #include <gtest/gtest.h>
 
@@ -159,6 +160,8 @@ wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
 std::string s_result;
 std::string s_result2;
 std::string s_result3;
+
+int int_result0;
 
 NavAddr::Bus s_bus;
 AppMsg::Type s_apptype;
@@ -442,6 +445,40 @@ public:
   }
 };
 
+class ObsTorture : public wxAppConsole {
+public:
+
+  class ObsListener : public wxEvtHandler {
+  public:
+    ObsListener(): wxEvtHandler() {
+      wxDEFINE_EVENT(EVT_OBS_NOTIFY, ObservedEvt);
+      m_listener.Listen("key1", this, EVT_OBS_NOTIFY);
+      Bind(EVT_OBS_NOTIFY, [&](ObservedEvt& o) { OnNotify(o); });
+    }
+
+  private:
+    void OnNotify(ObservedEvt& o) {
+      auto s = UnpackEvtPointer<std::string>(o);
+      EXPECT_TRUE(*s == "arg1");
+      int_result0++;
+    }
+
+    ObservableListener m_listener;
+  };
+
+  ObsTorture() {
+    ObsListener l1;
+    Observable o("key1");
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 10; i += 1) {
+        threads.push_back(std::thread([&]{
+           auto p = std::make_shared<const std::string>("arg1");
+           o.Notify(p); }));
+    }
+    for (auto& t : threads) t.join();
+    ProcessPendingEvents();
+  }
+};
 
 class SillyDriver : public AbstractCommDriver {
 public:
@@ -516,6 +553,16 @@ TEST(Messaging, AppMsg) {
 };
 
 #endif
+
+
+
+//static void p1() { ObsListener l1; l1.Start(); }
+
+TEST(Observable, torture) {
+  int_result0  = 0;
+  ObsTorture ot;
+  EXPECT_EQ(int_result0, 10);
+}
 
 TEST(Drivers, Registry) {
   wxLog::SetActiveTarget(&defaultLog);
