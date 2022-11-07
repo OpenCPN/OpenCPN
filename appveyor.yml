@@ -31,9 +31,9 @@ install:
   - ps: Start-FileDownload https://download.opencpn.org/s/54HsBDLNzRZLL6i/download -FileName nsis-3.04-setup.exe
   - cmd: nsis-3.04-setup.exe /S
 
-  # Download and unzip wxwidgets, version 3.1.2
-  - ps: Start-FileDownload https://download.opencpn.org/s/E2p4nLDzeqx4SdX/download -FileName wxWidgets-3.1.2.7z
-  - cmd: 7z x wxWidgets-3.1.2.7z -o%WXWIN% > null
+  # Download and unzip wxwidgets, version 3.2.1
+  - ps: Start-FileDownload https://download.opencpn.org/s/TCs36LDWtziNZtL/download -FileName wxWidgets-3.2.1.7z
+  - cmd: 7z x wxWidgets-3.2.1.7z -o%WXWIN% > null
 
   # some debugging information
   # - set   Displays sensitive password!
@@ -48,7 +48,7 @@ before_build:
   - cd c:\project\opencpn
   - mkdir build
   - cd build
-  - ps: Start-FileDownload https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.1.zip -FileName OCPNWindowsCoreBuildSupport.zip
+  - ps: Start-FileDownload https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.2.zip -FileName OCPNWindowsCoreBuildSupport.zip
   - cmd: 7z x -y OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwintemp
   - cmd: mkdir c:\projects\opencpn\buildwin
   - cmd: XCOPY c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.1\buildwin c:\project\opencpn\buildwin /s /y
