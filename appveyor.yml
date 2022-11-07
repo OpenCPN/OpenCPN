@@ -36,6 +36,12 @@ install:
   - cmd: 7z x -y wxWidgets-3.2.1.7z -oC:\wxWidgets-3.2.1
   - cd C:\wxWidgets-3.2.1
   - dir
+  - cd %wxWidgets_ROOT_DIR%
+  - dir
+  - cd lib
+  - dir
+  - cd %wxWidgets_LIB_DIR%
+  - dir
 
   # some debugging information
   # - set   Displays sensitive password!
