@@ -31,17 +31,17 @@
 
 #ifdef __MSVC__
 #include "winsock2.h"
-#include "wx/msw/winundef.h"
+#include <wx/msw/winundef.h>
 #include <ws2tcpip.h>
 #endif
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "wx/tokenzr.h"
+#include <wx/tokenzr.h>
 #include <wx/datetime.h>
 
 #include <stdlib.h>

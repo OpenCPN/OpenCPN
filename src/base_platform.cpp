@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include <cstdlib>
 #include <string>
@@ -49,7 +49,7 @@
 #include <wx/apptrait.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
-#include "wx/stdpaths.h"
+#include <wx/stdpaths.h>
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
 
@@ -281,7 +281,7 @@ wxString GetPluginDataDir(const char* plugin_name) {
     }
     tryDir.Close();
   }
-  wxLogMessage(_T("Warnińg: no data directory found, using \"\""));
+  wxLogMessage(_T("Warning: no data directory found, using \"\""));
   return "";
 }
 
