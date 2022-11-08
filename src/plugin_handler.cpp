@@ -335,9 +335,10 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   Host host(compatOS);
   Plugin plugin(metadata);
 
-  if (plugin.abi() == "msvc" || plugin.abi() == "darwin" ||
-      plugin.abi() == "darwin-wx315" || plugin.abi() == "android-armhf" ||
-      plugin.abi() == "android-arm64") {
+  if (plugin.abi() == "msvc" || plugin.abi() == "msvc-wx32" ||
+      plugin.abi() == "darwin" || plugin.abi() == "darwin-wx315" ||
+      plugin.abi() == "android-armhf" || plugin.abi() == "android-arm64")
+  {
     bool ok = plugin.abi() == host.abi();
     wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
     wxLogDebug(" ");
