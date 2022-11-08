@@ -3885,7 +3885,7 @@ int ChartBaseBSB::BSBScanScanline(wxInputStream *pinStream) {
 //      using /02 settings
 
 inline void memset_short(unsigned char *dst, unsigned char cbyte, int count) {
-#ifdef __MSVC__
+#if 0 //def __MSVC__
   __asm {
         pushf  // save Direction flag
         cld  // set direction "up"
