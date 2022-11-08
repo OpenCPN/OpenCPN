@@ -4669,8 +4669,8 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
 // Line Complex
 int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
-  //     if(rzRules->obj->Index != 7574)
-  //         return 0;
+//  if(rzRules->obj->Index != 139)
+//    return 0;
 
   // catch cm93 and legacy PlugIns (e.g.s63_pi)
   if (rzRules->obj->m_n_lsindex && !rzRules->obj->m_ls_list)
@@ -4682,16 +4682,17 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
                  (rules->razRule->pos.line.bnbox_x.LBXC -
                   rules->razRule->pos.line.pivot_x.LICL);
   float sym_len = isym_len * canvas_pix_per_mm / 100;
-  float sym_factor = 1.0;  /// 1.50;                        // gives nicer
-                           /// effect
+  float sym_factor = 1.0;  /// 1.50;    // gives nicer effect
 
   //      Create a color for drawing adjustments outside of HPGL renderer
   char *tcolptr = rules->razRule->colRef.LCRF;
   S52color *c = getColor(tcolptr + 1);  // +1 skips "n" in HPGL SPn format
   int w = 1;                            // arbitrary width
   wxColour color(c->R, c->G, c->B);
-  double LOD = 2.0 / vp_plib.view_scale_ppm;  // empirical value, by experiment
-  //LOD = 0;                                // wxMin(LOD, 10.0);
+
+  double meters_per_senc_unit = rzRules->obj->x_rate;     // meters per senc-unit
+  double lod_2pixel_meters = 2 / vp_plib.view_scale_ppm;    // LOD set to 2 pixels, nominal mercator projected
+  double LOD =  lod_2pixel_meters / meters_per_senc_unit;
 
   //  Get the current display priority
   //  Default comes from the LUP, unless overridden
@@ -4763,7 +4764,7 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
         for (int ip = 0; ip < nPoints; ip++) {
           wxPoint r;
           GetPointPixSingle(rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r);
-          if (1 /*(r.x != lp.x) || (r.y != lp.y)*/) {
+          if ((r.x != lp.x) || (r.y != lp.y)) {
             mask[index] = (ls->priority == priority_current) ? 1 : 0;
             ptp[index++] = r;
             pdp[idouble++] = ppt[vbo_index];
@@ -4882,7 +4883,7 @@ int s52plib::reduceLOD(double LOD_meters, int nPoints, double *source,
     index_keep.push_back(nPoints - 1);
     index_keep.push_back(nPoints - 2);
 
-    DouglasPeucker(source, 1, nPoints - 2, LOD_meters, &index_keep);
+    DouglasPeucker(source, 0, nPoints - 2, LOD_meters, &index_keep);
 
   } else {
     index_keep.resize(nPoints);
