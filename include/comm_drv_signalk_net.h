@@ -27,10 +27,10 @@
 #ifndef _SIGNALK_NET_H
 #define _SIGNALK_NET_H
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled header
 
 #include <wx/datetime.h>

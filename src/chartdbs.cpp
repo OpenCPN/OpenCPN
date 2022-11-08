@@ -23,18 +23,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <wx/arrimpl.cpp>
 #include <wx/encconv.h>
 #include <wx/regex.h>
 #include <wx/progdlg.h>
-#include "wx/tokenzr.h"
-#include "wx/dir.h"
+#include <wx/tokenzr.h>
+#include <wx/dir.h>
 
 #include "chartdbs.h"
 #include "chartbase.h"

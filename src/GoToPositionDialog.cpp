@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/button.h>

@@ -1,7 +1,7 @@
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
-#include "wx/listctrl.h"
+#include <wx/listctrl.h>
 #include <wx/choice.h>
 
 #include "TCWin.h"

@@ -22,10 +22,10 @@
 #ifndef garmin_wrapper_h
 #define garmin_wrapper_h
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled header
 
 #include "navutil.h"

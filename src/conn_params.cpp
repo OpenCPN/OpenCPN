@@ -21,6 +21,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBFS fix:  missing struct ip_mreq
 #include <windows.h>

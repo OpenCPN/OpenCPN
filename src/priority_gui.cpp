@@ -26,14 +26,14 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/app.h>
-#include "wx/tokenzr.h"
+#include <wx/tokenzr.h>
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -31,12 +31,12 @@
 #endif
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/app.h>
 #include <wx/apptrait.h>
-#include "wx/stdpaths.h"
+#include <wx/stdpaths.h>
 #include <wx/filename.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
@@ -380,7 +380,7 @@ void OCPNPlatform::Initialize_1(void) {
 
   // If this flag is specified, MiniDumpWriteDump function will scan the stack
   // memory of every thread looking for pointers that point to other readable
-  // memory pages in the process’ address space. type |=
+  // memory pages in the process' address space. type |=
   // MiniDumpWithIndirectlyReferencedMemory;
 
   info.uMiniDumpType = (MINIDUMP_TYPE)type;
