@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include "config.h"
 #include "Quilt.h"

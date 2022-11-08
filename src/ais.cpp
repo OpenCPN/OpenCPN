@@ -29,9 +29,9 @@
 #include <windows.h>
 #endif
 
-#include "wx/wx.h"
-#include "wx/tokenzr.h"
-#include "wx/datetime.h"
+#include <wx/wx.h>
+#include <wx/tokenzr.h>
+#include <wx/datetime.h>
 #include <wx/wfstream.h>
 #include <wx/imaglist.h>
 

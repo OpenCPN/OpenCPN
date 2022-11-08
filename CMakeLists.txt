@@ -711,6 +711,7 @@ if (NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
   endif ()
 
+  #find_package(wxWidgets 3.2 COMPONENTS ${wxWidgets_FIND_COMPONENTS} REQUIRED CONFIG)
   find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   if (wxWidgets_FOUND AND OCPN_USE_WEBVIEW)
     message(STATUS "Found wxWidgets webview add-on")

@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include <wx/bitmap.h>
 #include <wx/dcmemory.h>

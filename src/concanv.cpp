@@ -27,16 +27,16 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include "wx/datetime.h"
+#include <wx/datetime.h>
 
 #include "gui_lib.h"
 #include "concanv.h"
