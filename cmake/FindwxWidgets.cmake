@@ -178,6 +178,8 @@ set(wxWidgets_LIBRARIES    "")
 set(wxWidgets_LIBRARY_DIRS "")
 set(wxWidgets_CXX_FLAGS    "")
 
+    message("Look1")
+
 # DEPRECATED: This is a patch to support the DEPRECATED use of
 # wxWidgets_USE_LIBS.
 #
@@ -282,6 +284,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
     # Find wxWidgets multilib base libraries.
     find_library(WX_base${_DBG}
       NAMES
+      wxbase32${_UCD}${_DBG}
       wxbase31${_UCD}${_DBG}
       wxbase30${_UCD}${_DBG}
       wxbase29${_UCD}${_DBG}
@@ -296,6 +299,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
     foreach(LIB net odbc xml)
       find_library(WX_${LIB}${_DBG}
         NAMES
+        wxbase32${_UCD}${_DBG}_${LIB}
         wxbase31${_UCD}${_DBG}_${LIB}
         wxbase30${_UCD}${_DBG}_${LIB}
         wxbase29${_UCD}${_DBG}_${LIB}
@@ -329,6 +333,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
                 stc ribbon propgrid webview)
       find_library(WX_${LIB}${_DBG}
         NAMES
+        wx${_PF}${_UNV}32${_UCD}${_DBG}_${LIB}
         wx${_PF}${_UNV}31${_UCD}${_DBG}_${LIB}
         wx${_PF}${_UNV}30${_UCD}${_DBG}_${LIB}
         wx${_PF}${_UNV}29${_UCD}${_DBG}_${LIB}
@@ -391,40 +396,40 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
     DBG_MSG_V("Looking for ${${_LIBS}}")
     if(WX_USE_REL_AND_DBG)
       foreach(LIB ${${_LIBS}})
-        DBG_MSG_V("Searching for ${LIB} and ${LIB}d")
-        DBG_MSG_V("WX_${LIB}  : ${WX_${LIB}}")
-        DBG_MSG_V("WX_${LIB}d : ${WX_${LIB}d}")
+        message("Searching for ${LIB} and ${LIB}d")
+        message("WX_${LIB}  : ${WX_${LIB}}")
+        message("WX_${LIB}d : ${WX_${LIB}d}")
         if(WX_${LIB} AND WX_${LIB}d)
-          DBG_MSG_V("Found ${LIB} and ${LIB}d")
+          message("Found ${LIB} and ${LIB}d")
           list(APPEND wxWidgets_LIBRARIES
             debug ${WX_${LIB}d} optimized ${WX_${LIB}}
             )
           set(wxWidgets_${LIB}_FOUND TRUE)
         elseif(NOT wxWidgets_FIND_REQUIRED_${LIB})
-          DBG_MSG_V("- ignored optional missing WX_${LIB}=${WX_${LIB}} or WX_${LIB}d=${WX_${LIB}d}")
+          message("- ignored optional missing WX_${LIB}=${WX_${LIB}} or WX_${LIB}d=${WX_${LIB}d}")
         else()
-          DBG_MSG_V("- not found due to missing WX_${LIB}=${WX_${LIB}} or WX_${LIB}d=${WX_${LIB}d}")
+          message("- not found due to missing WX_${LIB}=${WX_${LIB}} or WX_${LIB}d=${WX_${LIB}d}")
           set(wxWidgets_FOUND FALSE)
         endif()
       endforeach()
     else()
       foreach(LIB ${${_LIBS}})
-        DBG_MSG_V("Searching for ${LIB}${_DBG}")
-        DBG_MSG_V("WX_${LIB}${_DBG} : ${WX_${LIB}${_DBG}}")
+        message("Searching for ${LIB}${_DBG}")
+        message("WX_${LIB}${_DBG} : ${WX_${LIB}${_DBG}}")
         if(WX_${LIB}${_DBG})
-          DBG_MSG_V("Found ${LIB}${_DBG}")
+          message("Found ${LIB}${_DBG}")
           list(APPEND wxWidgets_LIBRARIES ${WX_${LIB}${_DBG}})
           set(wxWidgets_${LIB}_FOUND TRUE)
         elseif(NOT wxWidgets_FIND_REQUIRED_${LIB})
-          DBG_MSG_V("- ignored optional missing WX_${LIB}${_DBG}=${WX_${LIB}${_DBG}}")
+          message("- ignored optional missing WX_${LIB}${_DBG}=${WX_${LIB}${_DBG}}")
         else()
-          DBG_MSG_V("- not found due to missing WX_${LIB}${_DBG}=${WX_${LIB}${_DBG}}")
-          set(wxWidgets_FOUND FALSE)
+          message("- not found due to missing WX_${LIB}${_DBG}=${WX_${LIB}${_DBG}}")
+          #set(wxWidgets_FOUND FALSE)
         endif()
       endforeach()
     endif()
 
-    DBG_MSG_V("OpenGL")
+    message("OpenGL")
     list(FIND ${_LIBS} gl WX_USE_GL)
     if(NOT WX_USE_GL EQUAL -1)
       DBG_MSG_V("- is required.")
@@ -439,6 +444,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
   #-------------------------------------------------------------------
 
   # Look for an installation tree.
+    message("Look2")
   find_path(wxWidgets_ROOT_DIR
     NAMES include/wx/wx.h
     PATHS
@@ -487,6 +493,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       wxWidgets
     DOC "wxWidgets base/installation directory"
     )
+    message("${wxWidgets_ROOT_DIR}")
 
   # If wxWidgets_ROOT_DIR changed, clear lib dir.
   if(NOT WX_ROOT_DIR STREQUAL wxWidgets_ROOT_DIR)
@@ -496,7 +503,10 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
         CACHE PATH "Cleared." FORCE)
   endif()
 
+  message("Look3  ${WX_ROOT_DIR}")
   if(WX_ROOT_DIR)
+      message("Look4  ${WX_ROOT_DIR}")
+
     # Select one default tree inside the already determined wx tree.
     # Prefer static/shared order usually consistent with build
     # settings.
@@ -514,7 +524,9 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
         set(_WX_ARCH _x64)
       endif()
     endif()
+    set (BUILD_SHARED_LIBS "1")
     if(BUILD_SHARED_LIBS)
+    message("Look5 ${WX_ROOT_DIR}/lib/${_WX_TOOL}${_WX_ARCH}_dll ")
       find_path(wxWidgets_LIB_DIR
         NAMES
           qtu/wx/setup.h
@@ -541,6 +553,8 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
         DOC "Path to wxWidgets libraries"
         NO_DEFAULT_PATH
         )
+            message("Look6 ${wxWidgets_LIB_DIR} ")
+
     else()
       find_path(wxWidgets_LIB_DIR
         NAMES
@@ -584,7 +598,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       # If building shared libs, define WXUSINGDLL to use dllimport.
       if(WX_LIB_DIR MATCHES "[dD][lL][lL]")
         set(wxWidgets_DEFINITIONS WXUSINGDLL)
-        DBG_MSG_V("detected SHARED/DLL tree WX_LIB_DIR=${WX_LIB_DIR}")
+        message("detected SHARED/DLL tree WX_LIB_DIR=${WX_LIB_DIR}")
       endif()
 
       # Search for available configuration types.
@@ -596,7 +610,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
           set(WX_CONFIGURATION ${CFG})
         endif()
       endforeach()
-      DBG_MSG_V("WX_CONFIGURATION_LIST=${WX_CONFIGURATION_LIST}")
+      message("WX_CONFIGURATION_LIST=${WX_CONFIGURATION_LIST}")
 
       if(WX_CONFIGURATION)
         set(wxWidgets_FOUND TRUE)
@@ -635,7 +649,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
           set(wxWidgets_INCLUDE_DIRS
             ${WX_LIB_DIR}/${wxWidgets_CONFIGURATION})
         else()
-          DBG_MSG("wxWidgets_FOUND FALSE because ${WX_LIB_DIR}/${wxWidgets_CONFIGURATION}/wx/setup.h does not exists.")
+          message("wxWidgets_FOUND FALSE because ${WX_LIB_DIR}/${wxWidgets_CONFIGURATION}/wx/setup.h does not exists.")
           set(wxWidgets_FOUND FALSE)
         endif()
 
@@ -643,7 +657,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
         if(EXISTS ${WX_ROOT_DIR}/include/wx/wx.h)
           list(APPEND wxWidgets_INCLUDE_DIRS ${WX_ROOT_DIR}/include)
         else()
-          DBG_MSG("wxWidgets_FOUND FALSE because WX_ROOT_DIR=${WX_ROOT_DIR} has no ${WX_ROOT_DIR}/include/wx/wx.h")
+          message("wxWidgets_FOUND FALSE because WX_ROOT_DIR=${WX_ROOT_DIR} has no ${WX_ROOT_DIR}/include/wx/wx.h")
           set(wxWidgets_FOUND FALSE)
         endif()
 
@@ -818,7 +832,7 @@ else()
 
       else()
         set(wxWidgets_FOUND FALSE)
-        DBG_MSG_V(
+        message(
           "${wxWidgets_CONFIG_EXECUTABLE} --cxxflags FAILED with RET=${RET}")
       endif()
 
@@ -871,7 +885,7 @@ else()
 
       else()
         set(wxWidgets_FOUND FALSE)
-        DBG_MSG("${wxWidgets_CONFIG_EXECUTABLE} --libs ${_cmp_req} ${_cmp_opt} FAILED with RET=${RET}")
+        message("${wxWidgets_CONFIG_EXECUTABLE} --libs ${_cmp_req} ${_cmp_opt} FAILED with RET=${RET}")
       endif()
       unset(_cmp_req)
       unset(_cmp_opt)
@@ -943,6 +957,7 @@ endif()
 
 # Check that all libraries are present, as wx-config does not check it
 set(_wx_lib_missing "")
+message("lookLibs ${wxWidgets_LIBRARY_DIRS}")
 foreach(_wx_lib_ ${wxWidgets_LIBRARIES})
   if("${_wx_lib_}" MATCHES "^-l(.*)")
     set(_wx_lib_name "${CMAKE_MATCH_1}")
@@ -957,7 +972,7 @@ endforeach()
 
 if (_wx_lib_missing)
   string(REPLACE ";" " " _wx_lib_missing "${_wx_lib_missing}")
-  DBG_MSG_V("wxWidgets not found due to following missing libraries: ${_wx_lib_missing}")
+  message("wxWidgets not found due to following missing libraries: ${_wx_lib_missing}")
   set(wxWidgets_FOUND FALSE)
   unset(wxWidgets_LIBRARIES)
 endif()
@@ -988,12 +1003,12 @@ if(wxWidgets_FOUND)
 endif()
 
 # Debug output:
-DBG_MSG("wxWidgets_FOUND           : ${wxWidgets_FOUND}")
-DBG_MSG("wxWidgets_INCLUDE_DIRS    : ${wxWidgets_INCLUDE_DIRS}")
-DBG_MSG("wxWidgets_LIBRARY_DIRS    : ${wxWidgets_LIBRARY_DIRS}")
-DBG_MSG("wxWidgets_LIBRARIES       : ${wxWidgets_LIBRARIES}")
-DBG_MSG("wxWidgets_CXX_FLAGS       : ${wxWidgets_CXX_FLAGS}")
-DBG_MSG("wxWidgets_USE_FILE        : ${wxWidgets_USE_FILE}")
+message("wxWidgets_FOUND           : ${wxWidgets_FOUND}")
+message("wxWidgets_INCLUDE_DIRS    : ${wxWidgets_INCLUDE_DIRS}")
+message("wxWidgets_LIBRARY_DIRS    : ${wxWidgets_LIBRARY_DIRS}")
+message("wxWidgets_LIBRARIES       : ${wxWidgets_LIBRARIES}")
+message("wxWidgets_CXX_FLAGS       : ${wxWidgets_CXX_FLAGS}")
+message("wxWidgets_USE_FILE        : ${wxWidgets_USE_FILE}")
 
 #=====================================================================
 #=====================================================================
