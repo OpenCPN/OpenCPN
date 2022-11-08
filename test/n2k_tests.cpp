@@ -299,8 +299,6 @@ public:
     delete g_pAIS;
     g_pAIS = new AisDecoder(AisDecoderCallbacks());
     auto& msgbus = NavMsgBus::GetInstance();
-std::cerr << "N2kRunLog, gSog: " << gSog << "\n";
-std::cerr << "N2kRunLog, gCog: " << gCog << "\n";
     params.socketCAN_port = "vcan0";
     params.Type = SOCKETCAN;
     driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
@@ -310,13 +308,10 @@ std::cerr << "N2kRunLog, gCog: " << gCog << "\n";
   }
 
   int OnRun() {
-std::cerr << "N2kRunLog: OnRun: enter\n"  << std::flush;
     FILE* f = RunRecordedBuffer();
     int i = pclose(f);
     EXPECT_TRUE(i == 0)  << "Error running the canplayer command\n";
     ProcessPendingEvents();
-std::cerr << "N2kRunLog, gSog: " << gSog << "\n";
-std::cerr << "N2kRunLog, gCog: " << gCog << "\n";
     driver->Close();
     return 0;
   }
