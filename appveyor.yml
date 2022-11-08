@@ -25,8 +25,9 @@ install:
   - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin;C:\Program Files\Git\bin;c:\cygwin\bin
   - cd C:\
   - dir
-
-  - cmd: C:\Python36 --version
+  - cd C:\Python36
+  - dir
+  - cmd: C:\Python36\python3.6 --version
 
   # install dependencies:
   - choco install poedit
