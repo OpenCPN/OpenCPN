@@ -6,8 +6,8 @@ if [ -z "$CLOUDSMITH_API_KEY" ]; then
     echo 'Cannot deploy to cloudsmith: missing $CLOUDSMITH_API_KEY'
 else
     echo 'Deploying to cloudsmith'
-    python36 -m ensurepip
-    python36 -m pip install cloudsmith-cli
+    C:\python36 -m ensurepip
+    C:\python36 -m pip install cloudsmith-cli
     sed -i '/#!/s|/usr|/c/cygwin|' /c/cygwin/bin/cloudsmith
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
