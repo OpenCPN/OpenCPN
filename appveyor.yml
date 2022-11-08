@@ -23,6 +23,9 @@ install:
   - set wxWidgets_ROOT_DIR=%WXWIN%
   - set wxWidgets_LIB_DIR=%WXWIN%\lib\vc_dll
   - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin;C:\Program Files\Git\bin;c:\cygwin\bin
+  - cd C:\
+  - dir
+
   - cmd: C:\Python36 --version
 
   # install dependencies:
