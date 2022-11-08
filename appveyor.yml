@@ -27,7 +27,7 @@ install:
   - dir
   - cd C:\Python36
   - dir
-  - cmd: C:\Python36\python3.6 --version
+  - cmd: C:\Python36\python --version
 
   # install dependencies:
   - choco install poedit
