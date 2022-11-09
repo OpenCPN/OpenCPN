@@ -26,53 +26,15 @@
 #ifndef _COMMDRIVERN2KSOCKETCAN_H
 #define _COMMDRIVERN2KSOCKETCAN_H
 
-#ifdef _MSC_VER
-#error "This file can not be compiled on Windows."
-#endif
-
 #include <memory>
 #include <string>
-#include <thread>
-
-// SocketCAN
-#include <sys/ioctl.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <linux/can.h>
-#include <linux/can/raw.h>
-#include <unistd.h>
-
-#ifndef __ANDROID__
-#include "serial/serial.h"
-#endif
 
 #include "comm_drv_n2k.h"
 #include "conn_params.h"
 
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
-
-#define ESCAPE 0x10
-#define STARTOFTEXT 0x02
-#define ENDOFTEXT 0x03
-
-#define MsgTypeN2kData 0x93
-#define MsgTypeN2kRequest 0x94
-
-// CAN v2.0 29 bit header as used by NMEA 2000
-typedef struct CanHeader {
-  unsigned char priority;
-  unsigned char source;
-  unsigned char destination;
-  int pgn;
-} CanHeader;
-
-class CommDriverN2KSocketCanImpl;
-
 class CommDriverN2KSocketCAN : public CommDriverN2K, public wxEvtHandler {
 
 public:
-  static std::shared_ptr<CommDriverN2KSocketCAN> Create();
   static std::shared_ptr<CommDriverN2KSocketCAN> Create(
       const ConnectionParams* params, DriverListener& listener);
 
@@ -86,26 +48,16 @@ public:
   virtual bool Open() = 0;
   virtual void Close() = 0;
 
-  //    Secondary thread life toggle
-  //    Used to inform launching object (this) to determine if the thread can
-  //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_sec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_sec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_sec_thread_active; }
-
 protected:
   CommDriverN2KSocketCAN(const ConnectionParams* params,
                          DriverListener& listener);
+  ConnectionParams m_params;
+  DriverListener& m_listener;
 
-  int m_thread_run_flag;
+private:
   bool m_ok;
   std::string m_portstring;
   std::string m_baudrate;
-
-  bool m_sec_thread_active;
-
-  ConnectionParams m_params;
-  DriverListener& m_listener;
 };
 
 #endif  // guard

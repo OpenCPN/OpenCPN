@@ -31,29 +31,62 @@
 #endif
 
 #include <algorithm>
-#include <mutex>  // std::mutex
-#include <queue>  // std::queue
+#include <atomic>
+#include <mutex>
+#include <queue>
 #include <thread>
 #include <vector>
 
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
 #include <sys/time.h>
+#include <unistd.h>
+
+#ifndef __ANDROID__
+#include "serial/serial.h"
+#endif
 
 #include <wx/datetime.h>
-#include <wx/event.h>
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/utils.h>
 
 #include "atomic_queue.h"
 #include "comm_drv_n2k_socketcan.h"
-#include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
+#include "comm_navmsg_bus.h"
 
 #define NOT_FOUND -1
 #define CONST_MAX_MESSAGES 100
 #define CONST_TIME_EXCEEDED 250
 
 typedef struct can_frame CanFrame;
+
+// CAN v2.0 29 bit header as used by NMEA 2000
+typedef struct CanHeader {
+  unsigned char priority;
+  unsigned char source;
+  unsigned char destination;
+  int pgn;
+} CanHeader;
+
+// Buffer used to re-assemble sequences of multi frame Fast Packet messages
+typedef struct FastMessageEntry {
+  unsigned char is_free;            // indicate whether this entry is free
+  unsigned long long time_arrived;  // time of last message in microseconds.
+  CanHeader header;  // the header of the message. Used to "map" the incoming
+                     // fast message fragments
+  unsigned int sid;  // message sequence identifier, used to check if a received
+                     // message is the next message in the sequence
+  unsigned int expected_length;  // total data length obtained from first frame
+  unsigned int cursor;  // cursor into the current position in the below data
+  unsigned char* data;  // pointer to memory allocated for the data. Note: must
+                        // be freed when IsFree is set to true.
+} FastMessageEntry;
+
 
 // Decodes a 29 bit CAN header from an int
 void DecodeCanHeader(const int canId, CanHeader* header) {
@@ -70,20 +103,6 @@ void DecodeCanHeader(const int canId, CanHeader* header) {
   header->priority = (buf[3] & 0x1c) >> 2;
 }
 
-// Buffer used to re-assemble sequences of multi frame Fast Packet messages
-typedef struct FastMessageEntry {
-  unsigned char is_free;            // indicate whether this entry is free
-  unsigned long long time_arrived;  // time of last message in microseconds.
-  CanHeader header;  // the header of the message. Used to "map" the incoming
-                     // fast message fragments
-  unsigned int sid;  // message sequence identifier, used to check if a received
-                     // message is the next message in the sequence
-  unsigned int expected_length;  // total data length obtained from first frame
-  unsigned int cursor;  // cursor into the current position in the below data
-  unsigned char* data;  // pointer to memory allocated for the data. Note: must
-                        // be freed when IsFree is set to true.
-} FastMessageEntry;
-
 unsigned long long GetTimeInMicroseconds() {
 #if (defined(__APPLE__) && defined(__MACH__)) || defined(__LINUX__)
   struct timeval currentTime;
@@ -92,16 +111,43 @@ unsigned long long GetTimeInMicroseconds() {
 #endif
 }
 
-class WorkerThread {
-public:
-  WorkerThread(CommDriverN2KSocketCAN* Launcher,
-                               const wxString& PortName);
 
-  void Entry();
-  bool SetOutMsg(const wxString& msg);
-  void OnExit(void);
+class CommDriverN2KSocketCanImpl;    // fwd
+
+/**
+ * Manages reading the N2K data stream provided by some N2K gateways from the
+ * declared serial port.
+ *
+ * Commonly used raw format is actually inherited from an old paketizing format:
+ * <10><02><application data><CRC (1)><10><03>
+ *
+ * Actisense application data, from NGT-1 to PC
+ * <data code=93><length (1)><priority (1)><PGN (3)><destination(1)><source
+ * (1)><time (4)><len (1)><data (len)>
+ *
+ * As applied to a real application data element, after extraction from packet
+ * format: 93 13 02 01 F8 01 FF 01 76 C2 52 00 08 08 70 EB 14 E8 8E 52 D2 BB 10
+ *
+ * length (1):      0x13
+ * priority (1);    0x02
+ * PGN (3):         0x01 0xF8 0x01
+ * destination(1):  0xFF
+ * source (1):      0x01
+ * time (4):        0x76 0xC2 0x52 0x00
+ * len (1):         0x08
+ * data (len):      08 70 EB 14 E8 8E 52 D2
+ * packet CRC:      0xBB
+ */
+class Worker {
+public:
+  Worker(CommDriverN2KSocketCAN* parent, const wxString& PortName);
+
+  bool StartThread();
+  void StopThread();
 
 private:
+  void Entry();
+
   void ThreadMessage(const std::string& msg, int level = wxLOG_Message);
 
   bool IsFastMessage(const CanHeader header);
@@ -127,42 +173,36 @@ private:
   CommDriverN2KSocketCanImpl* m_parent_driver;
   wxString m_port_name;
 
+  std::atomic<int> m_run_flag;
+
   atomic_queue<char*> out_que;
 
   // The Fast Packet buffer - used to reassemble Fast packet messages
   FastMessageEntry fastMessages[CONST_MAX_MESSAGES];
   int dropped_frames;
   wxDateTime dropped_frame_time;
-
-  // Socket Descriptor
 };
 
 
 class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN  {
-friend class WorkerThread;
+friend class Worker;
 
 public:
   CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
-      : CommDriverN2KSocketCAN(p, l),  m_worker_thread(NULL) {
+      : CommDriverN2KSocketCAN(p, l), m_worker(this, p->socketCAN_port) {
     Open();
   }
 
-  ~CommDriverN2KSocketCanImpl() { if (m_worker_thread) Close(); }
+  ~CommDriverN2KSocketCanImpl() { Close(); }
 
   bool Open();
   void Close();
 
-  void SetSecondaryThread(WorkerThread* thread) { m_worker_thread = thread; }
-
-  WorkerThread* GetSecondaryThread() { return m_worker_thread; }
-
-  void SetThreadRunFlag(int run) { m_thread_run_flag = run; }
-
 private:
-  WorkerThread* m_worker_thread;
-  int m_thread_run_flag;
+  Worker m_worker;
 };
 
+// Static CommDriverN2KSocketCAN factory implementation.
 
 std::shared_ptr<CommDriverN2KSocketCAN> CommDriverN2KSocketCAN::Create(
     const ConnectionParams* params, DriverListener& listener) {
@@ -170,41 +210,15 @@ std::shared_ptr<CommDriverN2KSocketCAN> CommDriverN2KSocketCAN::Create(
       new CommDriverN2KSocketCanImpl(params, listener));
 }
 
-//    CommDriverN2KSocketCanImpl implementation
 
-bool CommDriverN2KSocketCanImpl::Open() {
-  //    Kick off the  RX thread
-  SetSecondaryThread(
-      new WorkerThread(this, m_params.socketCAN_port));
-  SetThreadRunFlag(1);
-  std::thread t(&WorkerThread::Entry, GetSecondaryThread());
-  t.detach();
+// CommDriverN2KSocketCanImpl implementation
 
-  return true;
-}
+bool CommDriverN2KSocketCanImpl::Open() { return m_worker.StartThread(); }
 
 void CommDriverN2KSocketCanImpl::Close() {
   wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
+  m_worker.StopThread();
 
-  //    Kill off the Secondary RX Thread if alive
-  if (m_worker_thread) {
-    if (m_sec_thread_active)  // Try to be sure thread object is still alive
-    {
-      wxLogMessage("Stopping Secondary Thread");
-
-      m_thread_run_flag = 0;
-      int tsec = 10;
-      while ((m_thread_run_flag >= 0) && (tsec--)) wxSleep(1);
-
-      if (m_thread_run_flag < 0)
-        wxLogMessage("Stopped in %d sec.", 10 - tsec);
-      else
-        wxLogMessage("Not Stopped after 10 sec.");
-    }
-    delete m_worker_thread;
-    m_worker_thread = NULL;
-    m_sec_thread_active = false;
-  }
   // We cannot use shared_from_this() since we might be in the destructor.
   auto& registry = CommDriverRegistry::GetInstance();
   auto me = FindDriver(registry.GetDrivers(), iface, bus);
@@ -212,21 +226,16 @@ void CommDriverN2KSocketCanImpl::Close() {
 }
 
 
-
-//========================================================================
-//    CommDriverN2KSocketCAN implementation
-//
+// CommDriverN2KSocketCAN implementation
 
 CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
                                                DriverListener& listener)
     : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
-      m_thread_run_flag(-1),
+      m_params(*params),
+      m_listener(listener),
       m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_params(*params),
-      m_listener(listener) {
-  m_baudrate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
-}
+      m_baudrate(wxString::Format("%i", params->Baudrate)) {}
 
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 
@@ -235,54 +244,23 @@ void CommDriverN2KSocketCAN::Activate() {
   // TODO: Read input data.
 }
 
-static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
-  uint64_t name;
-  memcpy(&name, reinterpret_cast<const void*>(payload.data()), sizeof(name));
-  return name;
-}
 
-/**
- * This thread manages reading the N2K data stream provided by some N2K gateways
- * from the declared serial port.
- *
- */
+// Worker implementation
 
-// Commonly used raw format is actually inherited from an old paketizing format:
-// <10><02><application data><CRC (1)><10><03>
+Worker::Worker(CommDriverN2KSocketCAN* parent, const wxString& port_name) {
 
-// Actisense application data, from NGT-1 to PC
-// <data code=93><length (1)><priority (1)><PGN (3)><destination(1)><source
-// (1)><time (4)><len (1)><data (len)>
-
-// As applied to a real application data element, after extraction from packet
-// format: 93 13 02 01 F8 01 FF 01 76 C2 52 00 08 08 70 EB 14 E8 8E 52 D2 BB 10
-
-// length (1):      0x13
-// priority (1);    0x02
-// PGN (3):         0x01 0xF8 0x01
-// destination(1):  0xFF
-// source (1):      0x01
-// time (4):        0x76 0xC2 0x52 0x00
-// len (1):         0x08
-// data (len):      08 70 EB 14 E8 8E 52 D2
-// packet CRC:      0xBB
-
-WorkerThread::WorkerThread(
-    CommDriverN2KSocketCAN* launcher, const wxString& port_name) {
-
-  m_parent_driver = dynamic_cast<CommDriverN2KSocketCanImpl*>(launcher);
+  m_parent_driver = dynamic_cast<CommDriverN2KSocketCanImpl*>(parent);
   assert(m_parent_driver != 0);
 
-  m_port_name = port_name;
+  m_run_flag = -1;
+  m_port_name = port_name.Clone();
 
   MapInitialize();
 }
 
-void WorkerThread::OnExit(void) {}
-
-void WorkerThread::PushCompleteMsg(
-    std::vector<unsigned char>& data, const CanHeader header, int position,
-    const CanFrame socket_frame) {
+void Worker::PushCompleteMsg(std::vector<unsigned char>& data,
+                             const CanHeader header, int position,
+                             const CanFrame socket_frame) {
   data.push_back(0x93);
   data.push_back(0x13);
   data.push_back(header.priority);
@@ -301,8 +279,8 @@ void WorkerThread::PushCompleteMsg(
   data.push_back(0x55);  // CRC dummy, not checked
 }
 
-void WorkerThread::PushFastMsgFragment(
-    std::vector<unsigned char>& data, const CanHeader& header, int position) {
+void Worker::PushFastMsgFragment(std::vector<unsigned char>& data,
+                                 const CanHeader& header, int position) {
   data.push_back(0x93);
   data.push_back(fastMessages[position].expected_length + 11);
   data.push_back(header.priority);
@@ -324,15 +302,13 @@ void WorkerThread::PushFastMsgFragment(
   fastMessages[position].data = NULL;
 }
 
-void WorkerThread::ThreadMessage(const std::string& msg,
-                                                 int level) {
+void Worker::ThreadMessage(const std::string& msg, int level) {
   wxLogGeneric(level, wxString(msg.c_str()));
   auto s = std::string("CommDriverN2KSocketCAN: ") + msg;
   CommDriverRegistry::GetInstance().evt_driver_msg.Notify(level, s);
 }
 
-void WorkerThread::SocketMessage(const std::string& msg,
-                                                 const std::string& device) {
+void Worker::SocketMessage(const std::string& msg, const std::string& device) {
   std::stringstream ss;
   ss << msg << device << ": " << strerror(errno);
   ThreadMessage(ss.str());
@@ -344,7 +320,7 @@ void WorkerThread::SocketMessage(const std::string& msg,
  *                  (serial) or "vcan0" (virtual)
  * @return positive socket number or -1 on errors.
  */
-int WorkerThread::InitSocket(const std::string port_name) {
+int Worker::InitSocket(const std::string port_name) {
   int sock;
 
   sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -391,8 +367,7 @@ int WorkerThread::InitSocket(const std::string port_name) {
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void WorkerThread::HandleInput(const CanHeader& header,
-                                               CanFrame can_socket_frame) {
+void Worker::HandleInput(const CanHeader& header, CanFrame can_socket_frame) {
   int position = -1;
   bool ready = false;
 
@@ -434,13 +409,12 @@ void WorkerThread::HandleInput(const CanHeader& header,
 }
 
 /** Worker thread main function. */
-void WorkerThread::Entry() {
+void Worker::Entry() {
   CanHeader header;
   int recvbytes;
   int can_socket;
   CanFrame can_socket_frame;
 
-  // Create and open the CAN socket
   can_socket = InitSocket(m_port_name.ToStdString());
   if (can_socket < 0) {
     std::string msg("SocketCAN socket create failed: ");
@@ -449,8 +423,7 @@ void WorkerThread::Entry() {
   }
 
   // The main loop
-  m_parent_driver->SetSecThreadActive();
-  while (m_parent_driver->m_thread_run_flag > 0) {
+  while (m_run_flag > 0) {
     recvbytes = read(can_socket, &can_socket_frame, sizeof(CanFrame));
     if (recvbytes == -1) {
       if (errno == EAGAIN) {
@@ -472,14 +445,38 @@ void WorkerThread::Entry() {
     DecodeCanHeader(can_socket_frame.can_id, &header);
     HandleInput(header, can_socket_frame);
   }
-  m_parent_driver->SetSecThreadInActive();  // I am dead
-  m_parent_driver->m_thread_run_flag = -1;
+  m_run_flag = -1;
   return;
 }
 
+bool Worker::StartThread() {
+  m_run_flag = 1; 
+  std::thread t(&Worker::Entry, this);
+  t.detach();
+  return true;
+}
+
+void Worker::StopThread() {
+  if (m_run_flag < 0) {
+    wxLogMessage("Attempt to stop already dead thread (ignored).");
+    return;
+  }
+  wxLogMessage("Stopping Worker Thread");
+
+  m_run_flag = 0;
+  int tsec = 10;
+  while ((m_run_flag >= 0) && (tsec--)) wxSleep(1);
+
+  if (m_run_flag < 0)
+    wxLogMessage("StopThread: Stopped in %d sec.", 10 - tsec);
+  else
+    wxLogWarning("StopThread: Not Stopped after 10 sec.");
+}
+ 
+
 // Checks whether a frame is a single frame message or multiframe Fast Packet
 // message
-bool WorkerThread::IsFastMessage(const CanHeader header) {
+bool Worker::IsFastMessage(const CanHeader header) {
   static const std::vector<unsigned> haystack = {
       // All known multiframe fast messages
       65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
@@ -496,8 +493,8 @@ bool WorkerThread::IsFastMessage(const CanHeader header) {
 
 // Determine whether an entry with a matching header & sequence ID exists.
 // If not, then assume this is the first frame of a multi-frame Fast Message
-int WorkerThread::MapFindMatchingEntry(
-    const CanHeader header, const unsigned char sid) {
+int Worker::MapFindMatchingEntry(const CanHeader header,
+                                 const unsigned char sid) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     if (((sid & 0xE0) == (fastMessages[i].sid & 0xE0)) &&
         (fastMessages[i].is_free == false) &&
@@ -511,7 +508,7 @@ int WorkerThread::MapFindMatchingEntry(
 }
 
 // Find first free entry in fastMessages
-int WorkerThread::MapFindFreeEntry(void) {
+int Worker::MapFindFreeEntry(void) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     if (fastMessages[i].is_free == true) {
       return i;
@@ -533,7 +530,7 @@ int WorkerThread::MapFindFreeEntry(void) {
   }
 }
 
-int WorkerThread::MapGarbageCollector(void) {
+int Worker::MapGarbageCollector(void) {
   int staleEntries;
   staleEntries = 0;
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
@@ -549,10 +546,8 @@ int WorkerThread::MapGarbageCollector(void) {
 }
 
 // Insert the first message of a sequence of fast messages
-void WorkerThread::MapInsertEntry(const CanHeader header,
-                                                  const unsigned char* data,
-                                                  const int position,
-                                                  bool& ready) {
+void Worker::MapInsertEntry(const CanHeader header, const unsigned char* data,
+                            const int position, bool& ready) {
   // first message of fast packet
   // data[0] Sequence Identifier (sid)
   // data[1] Length of data bytes
@@ -590,10 +585,8 @@ void WorkerThread::MapInsertEntry(const CanHeader header,
 // Subsequent messages of fast packet
 // data[0] Sequence Identifier (sid)
 // data[1..7] 7 data bytes
-int WorkerThread::MapAppendEntry(const CanHeader header,
-                                                 const unsigned char* data,
-                                                 const int position,
-                                                 bool& ready) {
+int Worker::MapAppendEntry(const CanHeader header, const unsigned char* data,
+                           const int position, bool& ready) {
   // Check that this is the next message in the sequence
   ready = false;
   if ((fastMessages[position].sid + 1) == data[0]) {
@@ -651,7 +644,7 @@ int WorkerThread::MapAppendEntry(const CanHeader header,
 }
 
 // Initialize each entry in the Fast Message Map
-void WorkerThread::MapInitialize(void) {
+void Worker::MapInitialize(void) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     fastMessages[i].is_free = true;
     fastMessages[i].data = NULL;
