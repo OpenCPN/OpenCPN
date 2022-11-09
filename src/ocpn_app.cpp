@@ -30,10 +30,10 @@
 #include <windows.h>
 #endif
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #ifdef __WXMSW__
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
@@ -956,7 +956,7 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
-#include "wx/dynlib.h"
+#include <wx/dynlib.h>
 
 #if wxUSE_CMDLINE_PARSER
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {

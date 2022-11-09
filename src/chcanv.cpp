@@ -24,17 +24,17 @@
  **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
-#include "wx/image.h"
+#include <wx/image.h>
 #include <wx/graphics.h>
 #include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
-#include "wx/progdlg.h"
+#include <wx/progdlg.h>
 
 // #if defined(__OCPN__ANDROID__)
 // #include <GLES2/gl2.h>

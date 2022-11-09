@@ -18,6 +18,9 @@
 
 // includes
 #ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+#ifndef WX_PRECOMP
     #include <wx/log.h>
 #endif
 

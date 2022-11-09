@@ -30,7 +30,7 @@
 
 #include <wx/datetime.h>
 #include <wx/treectrl.h>
-#include "wx/dirctrl.h"
+#include <wx/dirctrl.h>
 #include <wx/sound.h>
 #include <wx/grid.h>
 #include <wx/wxhtml.h>

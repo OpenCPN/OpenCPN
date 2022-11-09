@@ -24,16 +24,16 @@
  **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/stopwatch.h>
 #include <wx/regex.h>
-#include "wx/tokenzr.h"
-#include "wx/dir.h"
+#include <wx/tokenzr.h>
+#include <wx/dir.h>
 
 #include "dychart.h"
 

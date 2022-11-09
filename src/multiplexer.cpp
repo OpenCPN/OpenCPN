@@ -25,7 +25,7 @@
 
 #ifdef __MSVC__
 #include "winsock2.h"
-#include "wx/msw/winundef.h"
+#include <wx/msw/winundef.h>
 #endif
 
 #include "config.h"
@@ -38,7 +38,7 @@
 #error Using readlink(3) requires libgen.h which cannot be found.
 #endif
 
-#include "wx/wx.h"
+#include <wx/wx.h>
 #include "multiplexer.h"
 #include "conn_params.h"
 #include "comm_drv_registry.h"

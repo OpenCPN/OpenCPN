@@ -26,7 +26,7 @@
 #ifndef _TOOLBAR_H__
 #define _TOOLBAR_H__
 
-#include "wx/tbarbase.h"
+#include <wx/tbarbase.h>
 #include <wx/dynarray.h>
 #include "styles.h"
 #include <vector>
