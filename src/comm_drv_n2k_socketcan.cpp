@@ -74,19 +74,6 @@ typedef struct CanHeader {
 } CanHeader;
 
 // Buffer used to re-assemble sequences of multi frame Fast Packet messages
-typedef struct FastMessageEntry {
-  unsigned char is_free;            // indicate whether this entry is free
-  unsigned long long time_arrived;  // time of last message in microseconds.
-  CanHeader header;  // the header of the message. Used to "map" the incoming
-                     // fast message fragments
-  unsigned int sid;  // message sequence identifier, used to check if a received
-                     // message is the next message in the sequence
-  unsigned int expected_length;  // total data length obtained from first frame
-  unsigned int cursor;  // cursor into the current position in the below data
-  unsigned char* data;  // pointer to memory allocated for the data. Note: must
-                        // be freed when IsFree is set to true.
-} FastMessageEntry;
-
 
 // Decodes a 29 bit CAN header from an int
 void DecodeCanHeader(const int canId, CanHeader* header) {
@@ -111,6 +98,44 @@ unsigned long long GetTimeInMicroseconds() {
 #endif
 }
 
+/** Track fast message fragments forming a complete message. */
+class FastMessageMap {
+
+public:
+  class Entry {
+  public:
+    unsigned char is_free;            // indicate whether this entry is free
+    unsigned long long time_arrived;  // time of last message in microseconds.
+    CanHeader header;  // the header of the message. Used to "map" the incoming
+                       // fast message fragments
+    unsigned int sid;  // message sequence identifier, used to check if a
+                       // received message is the next message in the sequence
+    unsigned int expected_length;  // total data length from first frame
+    unsigned int cursor;  // cursor into the current position in the below data
+    unsigned char* data;  // pointer to allocated data memory. Note: must
+                          // be freed when IsFree is set to true.
+  };
+
+  FastMessageMap() : dropped_frames(0) { Initialize(); }
+
+  Entry operator[](int i) const { return fastMessages[i]; }
+  Entry& operator[](int i) { return fastMessages[i]; }
+
+  int FindMatchingEntry(const CanHeader header, const unsigned char sid);
+  int FindFreeEntry(void);
+  int GarbageCollector(void);
+  void InsertEntry(const CanHeader header, const unsigned char* data,
+                   int position, bool& ready);
+  int AppendEntry(const CanHeader header, const unsigned char* data,
+                  int position, bool& ready);
+  void Initialize(void);
+
+  int dropped_frames;
+  wxDateTime dropped_frame_time;
+
+private:
+  Entry fastMessages[CONST_MAX_MESSAGES];
+};
 
 class CommDriverN2KSocketCanImpl;    // fwd
 
@@ -156,15 +181,6 @@ private:
   void SocketMessage(const std::string& msg, const std::string& device);
   void HandleInput(const CanHeader& header, CanFrame can_socket_frame);
 
-  int MapFindMatchingEntry(const CanHeader header, const unsigned char sid);
-  int MapFindFreeEntry(void);
-  int MapGarbageCollector(void);
-  void MapInsertEntry(const CanHeader header, const unsigned char* data,
-                      const int position, bool& ready);
-  int MapAppendEntry(const CanHeader header, const unsigned char* data,
-                     const int position, bool& ready);
-  void MapInitialize(void);
-
   void PushCompleteMsg(std::vector<unsigned char>& data, const CanHeader header,
                        int position, const CanFrame socket_frame);
   void PushFastMsgFragment(std::vector<unsigned char>& data,
@@ -172,18 +188,13 @@ private:
 
   CommDriverN2KSocketCanImpl* m_parent_driver;
   wxString m_port_name;
-
   std::atomic<int> m_run_flag;
-
   atomic_queue<char*> out_que;
 
-  // The Fast Packet buffer - used to reassemble Fast packet messages
-  FastMessageEntry fastMessages[CONST_MAX_MESSAGES];
-  int dropped_frames;
-  wxDateTime dropped_frame_time;
+  FastMessageMap fast_messages;
 };
 
-
+/** Local driver implementation, not visible outside this file.*/
 class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN  {
 friend class Worker;
 
@@ -248,14 +259,11 @@ void CommDriverN2KSocketCAN::Activate() {
 // Worker implementation
 
 Worker::Worker(CommDriverN2KSocketCAN* parent, const wxString& port_name) {
-
   m_parent_driver = dynamic_cast<CommDriverN2KSocketCanImpl*>(parent);
   assert(m_parent_driver != 0);
 
   m_run_flag = -1;
   m_port_name = port_name.Clone();
-
-  MapInitialize();
 }
 
 void Worker::PushCompleteMsg(std::vector<unsigned char>& data,
@@ -282,7 +290,7 @@ void Worker::PushCompleteMsg(std::vector<unsigned char>& data,
 void Worker::PushFastMsgFragment(std::vector<unsigned char>& data,
                                  const CanHeader& header, int position) {
   data.push_back(0x93);
-  data.push_back(fastMessages[position].expected_length + 11);
+  data.push_back(fast_messages[position].expected_length + 11);
   data.push_back(header.priority);
   data.push_back(header.pgn & 0xFF);
   data.push_back((header.pgn >> 8) & 0xFF);
@@ -293,13 +301,13 @@ void Worker::PushFastMsgFragment(std::vector<unsigned char>& data,
   data.push_back(0xFF);
   data.push_back(0xFF);
   data.push_back(0xFF);
-  data.push_back(fastMessages[position].expected_length);
-  for (size_t n = 0; n < fastMessages[position].expected_length; n++)
-    data.push_back(fastMessages[position].data[n]);
+  data.push_back(fast_messages[position].expected_length);
+  for (size_t n = 0; n < fast_messages[position].expected_length; n++)
+    data.push_back(fast_messages[position].data[n]);
   data.push_back(0x55);  // CRC dummy
-  free(fastMessages[position].data);
-  fastMessages[position].is_free = true;
-  fastMessages[position].data = NULL;
+  free(fast_messages[position].data);
+  fast_messages[position].is_free = true;
+  fast_messages[position].data = NULL;
 }
 
 void Worker::ThreadMessage(const std::string& msg, int level) {
@@ -372,19 +380,22 @@ void Worker::HandleInput(const CanHeader& header, CanFrame can_socket_frame) {
   bool ready = false;
 
   if (IsFastMessage(header) == true) {
-    position = MapFindMatchingEntry(header, can_socket_frame.data[0]);
+    position = fast_messages.FindMatchingEntry(header,
+                                               can_socket_frame.data[0]);
     if (position == NOT_FOUND) {
       // Not an existing fast message, find a free slot
-      position = MapFindFreeEntry();
+      position = fast_messages.FindFreeEntry();
       if (position == NOT_FOUND) {
         // No free slots, exit. FIXME (dave) return;
       } else {
         // Insert the first frame of the fast message
-        MapInsertEntry(header, can_socket_frame.data, position, ready);
+        fast_messages.InsertEntry(header, can_socket_frame.data, position,
+                                  ready);
       }
     } else {
       // An existing fast message is present, append the frame
-      MapAppendEntry(header, can_socket_frame.data, position, ready);
+      fast_messages.AppendEntry(header, can_socket_frame.data, position,
+                                ready);
     }
   } else {
     ready = true;  // This is a single frame message, parse it
@@ -491,10 +502,10 @@ bool Worker::IsFastMessage(const CanHeader header) {
   return found != haystack.end();
 }
 
-// Determine whether an entry with a matching header & sequence ID exists.
-// If not, then assume this is the first frame of a multi-frame Fast Message
-int Worker::MapFindMatchingEntry(const CanHeader header,
-                                 const unsigned char sid) {
+//  FastMessage implementation
+
+int FastMessageMap::FindMatchingEntry(const CanHeader header,
+                                      const unsigned char sid) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     if (((sid & 0xE0) == (fastMessages[i].sid & 0xE0)) &&
         (fastMessages[i].is_free == false) &&
@@ -507,8 +518,7 @@ int Worker::MapFindMatchingEntry(const CanHeader header,
   return NOT_FOUND;
 }
 
-// Find first free entry in fastMessages
-int Worker::MapFindFreeEntry(void) {
+int FastMessageMap::FindFreeEntry(void) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     if (fastMessages[i].is_free == true) {
       return i;
@@ -519,18 +529,18 @@ int Worker::MapFindFreeEntry(void) {
   // no free entries If there are no free entries, then indicative that we are
   // receiving more Fast messages than I anticipated.
   int staleEntries;
-  staleEntries = MapGarbageCollector();
+  staleEntries = GarbageCollector();
   if (staleEntries == 0) {
     return NOT_FOUND;
     // FIXME (dave) Log this so as to increase the number of FastMessages that
     // may be received
     //  wxLogError(_T("socketCan Device, No free entries in Fast Message Map"));
   } else {
-    return MapFindFreeEntry();
+    return FindFreeEntry();
   }
 }
 
-int Worker::MapGarbageCollector(void) {
+int FastMessageMap::GarbageCollector(void) {
   int staleEntries;
   staleEntries = 0;
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
@@ -545,9 +555,9 @@ int Worker::MapGarbageCollector(void) {
   return staleEntries;
 }
 
-// Insert the first message of a sequence of fast messages
-void Worker::MapInsertEntry(const CanHeader header, const unsigned char* data,
-                            const int position, bool& ready) {
+void FastMessageMap::InsertEntry(const CanHeader header,
+                                 const unsigned char* data, int position,
+                                 bool& ready) {
   // first message of fast packet
   // data[0] Sequence Identifier (sid)
   // data[1] Length of data bytes
@@ -581,12 +591,9 @@ void Worker::MapInsertEntry(const CanHeader header, const unsigned char* data,
   // A start frame may have been dropped and we received a subsequent frame
 }
 
-// Append subsequent messages of a sequence of fast messages
-// Subsequent messages of fast packet
-// data[0] Sequence Identifier (sid)
-// data[1..7] 7 data bytes
-int Worker::MapAppendEntry(const CanHeader header, const unsigned char* data,
-                           const int position, bool& ready) {
+int FastMessageMap::AppendEntry(const CanHeader header,
+                                const unsigned char* data, int position,
+                                bool& ready) {
   // Check that this is the next message in the sequence
   ready = false;
   if ((fastMessages[position].sid + 1) == data[0]) {
@@ -613,7 +620,7 @@ int Worker::MapAppendEntry(const CanHeader header, const unsigned char* data,
     fastMessages[position].is_free = true;
     fastMessages[position].data = NULL;
     // And now insert it
-    MapInsertEntry(header, data, position, ready);
+    InsertEntry(header, data, position, ready);
     // FIXME (dave) Should update the dropped frame stats
     return true;
   } else {
@@ -643,8 +650,7 @@ int Worker::MapAppendEntry(const CanHeader header, const unsigned char* data,
   }
 }
 
-// Initialize each entry in the Fast Message Map
-void Worker::MapInitialize(void) {
+void FastMessageMap::Initialize(void) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     fastMessages[i].is_free = true;
     fastMessages[i].data = NULL;
