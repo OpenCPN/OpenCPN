@@ -229,18 +229,20 @@ static bool Expired(FastMessageMap::Entry entry) {
 }
 
 /** Decode a 29 bit CAN header from an int. */
-static void DecodeCanHeader(const int can_id, CanHeader* header) {
+static CanHeader DecodeCanHeader(const int can_id) {
+  CanHeader header;
   unsigned char buf[4];
   buf[0] = can_id & 0xFF;
   buf[1] = (can_id >> 8) & 0xFF;
   buf[2] = (can_id >> 16) & 0xFF;
   buf[3] = (can_id >> 24) & 0xFF;
 
-  header->source = buf[0];
-  header->destination = buf[2] < 240 ? buf[1] : 255;
-  header->pgn =
+  header.source = buf[0];
+  header.destination = buf[2] < 240 ? buf[1] : 255;
+  header.pgn =
       (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
-  header->priority = (buf[3] & 0x1c) >> 2;
+  header.priority = (buf[3] & 0x1c) >> 2;
+  return header;
 }
 
 
@@ -488,7 +490,7 @@ void Worker::Entry() {
       sleep(1);
       continue;
     }
-    DecodeCanHeader(can_socket_frame.can_id, &header);
+    header = DecodeCanHeader(can_socket_frame.can_id);
     HandleInput(header, can_socket_frame);
   }
   m_run_flag = -1;
