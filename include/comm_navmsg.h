@@ -108,9 +108,13 @@ public:
   NavAddr2000(const std::string& iface, const N2kName& _name)
       : NavAddr(NavAddr::Bus::N2000, iface), name(_name){};
 
+  NavAddr2000(const std::string& iface, unsigned char _address)
+      : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address) {};
+
   std::string to_string() const { return name.to_string(); }
 
   const N2kName name;
+  unsigned char address;
 };
 
 /** There is only support for a single signalK bus. */

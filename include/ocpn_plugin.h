@@ -1629,4 +1629,14 @@ struct PluginNavdata {
 /** Return BasicNavDataMsg decoded data available in ev */
 extern DECL_EXP PluginNavdata GetEventNavdata(ObservedEvt ev);
 
+/** Plugin API supporting direct access to comm drivers for output purposes */
+
+/** A struct defining information available for a comm driver */
+typedef struct CommDriverInfo{
+    std::string protocol;
+    std::string port_identifier;
+    std::string device_identifier;
+    int sub_address;
+} CommDriverInfo;
+
 #endif  //_PLUGIN_H_
