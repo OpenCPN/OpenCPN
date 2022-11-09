@@ -114,6 +114,7 @@ public:
     unsigned int cursor;  // cursor into the current position in the below data
     unsigned char* data;  // pointer to allocated data memory. Note: must
                           // be freed when IsFree is set to true.
+    Entry(): is_free(true), data(0) {}
   };
 
   FastMessageMap() : dropped_frames(0) { Initialize(); }
@@ -134,7 +135,7 @@ public:
   wxDateTime dropped_frame_time;
 
 private:
-  Entry fastMessages[CONST_MAX_MESSAGES];
+  std::vector<Entry> fastMessages;
 };
 
 class CommDriverN2KSocketCanImpl;    // fwd
@@ -652,7 +653,6 @@ int FastMessageMap::AppendEntry(const CanHeader header,
 
 void FastMessageMap::Initialize(void) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
-    fastMessages[i].is_free = true;
-    fastMessages[i].data = NULL;
+    fastMessages.push_back(Entry());
   }
 }
