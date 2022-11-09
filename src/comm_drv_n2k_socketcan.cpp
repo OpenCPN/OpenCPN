@@ -23,9 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-// TODO (leamas): Re-implement parts which more or less emulates C++
-// memory handling, free slots, etc. Remove malloc/free and raw pointers.
-
 #if !defined(__linux__) || defined(__ANDROID__)
 #error "This file can only be compiled on Linux"
 #endif
@@ -44,7 +41,6 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <unistd.h>
 
 #ifndef __ANDROID__
 #include "serial/serial.h"
@@ -75,8 +71,6 @@ static const std::chrono::milliseconds kEntryMaxAge(100s);
 // Read timeout in worker main loop (seconds)
 static const int kSocketTimeoutSeconds = 2;
 
-// Run garbage collection
-
 typedef struct can_frame CanFrame;
 
 // CAN v2.0 29 bit header as used by NMEA 2000
@@ -105,15 +99,14 @@ void DecodeCanHeader(const int canId, CanHeader* header) {
 }
 
 /** Track fast message fragments forming a complete message. */
-using TimePoint = std::chrono::time_point<std::chrono::system_clock, 
+using TimePoint = std::chrono::time_point<std::chrono::system_clock,
                                           std::chrono::duration<double>>;
 class FastMessageMap {
 
 public:
   class Entry {
   public:
-    Entry(): time_arrived(std::chrono::system_clock::now()), data(0) {}
-    ~Entry() { if (data) { free(data); data = 0; }}
+    Entry(): time_arrived(std::chrono::system_clock::now()) {}
 
     TimePoint time_arrived;  // time of last message in microseconds.
     CanHeader header;  // the header of the message. Used to "map" the incoming
@@ -122,8 +115,7 @@ public:
                        // received message is the next message in the sequence
     unsigned int expected_length;  // total data length from first frame
     unsigned int cursor;  // cursor into the current position in the below data
-    unsigned char* data;  // pointer to allocated data memory. Note: must
-                          // be freed when IsFree is set to true.
+    std::vector<unsigned char> data;  // Received data
   };
 
   FastMessageMap() : dropped_frames(0) {}
@@ -145,7 +137,7 @@ public:
 
 private:
   void CheckGc() {
-      if (std::chrono::system_clock::now() - last_gc_run > kGcInterval || 
+      if (std::chrono::system_clock::now() - last_gc_run > kGcInterval ||
           fastMessages.size() > kGcThreshold) {
         GarbageCollector();
         last_gc_run = std::chrono::system_clock::now();
@@ -583,7 +575,7 @@ void FastMessageMap::InsertEntry(const CanHeader header,
     fastMessages[position].header = header;
     fastMessages[position].time_arrived = std::chrono::system_clock::now();
 
-    fastMessages[position].data = (unsigned char*)malloc(totalDataLength);
+    fastMessages[position].data.resize(totalDataLength);
     memcpy(&fastMessages[position].data[0], &data[2], 6);
     // First frame of a multi-frame Fast Message contains six data bytes.
     // Position the cursor ready for next message
