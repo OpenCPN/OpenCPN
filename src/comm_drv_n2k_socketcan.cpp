@@ -60,7 +60,6 @@
 #include "comm_navmsg_bus.h"
 
 #define NOT_FOUND -1
-#define CONST_MAX_MESSAGES 100
 #define CONST_TIME_EXCEEDED 250
 
 typedef struct can_frame CanFrame;
@@ -104,7 +103,9 @@ class FastMessageMap {
 public:
   class Entry {
   public:
-    unsigned char is_free;            // indicate whether this entry is free
+    Entry(): data(0) {}
+    ~Entry() { if (data) { free(data); data = 0; }}
+
     unsigned long long time_arrived;  // time of last message in microseconds.
     CanHeader header;  // the header of the message. Used to "map" the incoming
                        // fast message fragments
@@ -114,13 +115,12 @@ public:
     unsigned int cursor;  // cursor into the current position in the below data
     unsigned char* data;  // pointer to allocated data memory. Note: must
                           // be freed when IsFree is set to true.
-    Entry(): is_free(true), data(0) {}
   };
 
-  FastMessageMap() : dropped_frames(0) { Initialize(); }
+  FastMessageMap() : dropped_frames(0) {}
 
-  Entry operator[](int i) const { return fastMessages[i]; }
-  Entry& operator[](int i) { return fastMessages[i]; }
+  Entry operator[](int i) const { return fastMessages[i]; }  // getter
+  Entry& operator[](int i) { return fastMessages[i]; }  // setter
 
   int FindMatchingEntry(const CanHeader header, const unsigned char sid);
   int FindFreeEntry(void);
@@ -129,7 +129,7 @@ public:
                    int position, bool& ready);
   int AppendEntry(const CanHeader header, const unsigned char* data,
                   int position, bool& ready);
-  void Initialize(void);
+  void Remove(int pos);
 
   int dropped_frames;
   wxDateTime dropped_frame_time;
@@ -306,9 +306,7 @@ void Worker::PushFastMsgFragment(std::vector<unsigned char>& data,
   for (size_t n = 0; n < fast_messages[position].expected_length; n++)
     data.push_back(fast_messages[position].data[n]);
   data.push_back(0x55);  // CRC dummy
-  free(fast_messages[position].data);
-  fast_messages[position].is_free = true;
-  fast_messages[position].data = NULL;
+  fast_messages.Remove(position);
 }
 
 void Worker::ThreadMessage(const std::string& msg, int level) {
@@ -507,9 +505,8 @@ bool Worker::IsFastMessage(const CanHeader header) {
 
 int FastMessageMap::FindMatchingEntry(const CanHeader header,
                                       const unsigned char sid) {
-  for (int i = 0; i < fastMessages.size(); i++) {
+  for (unsigned i = 0; i < fastMessages.size(); i++) {
     if (((sid & 0xE0) == (fastMessages[i].sid & 0xE0)) &&
-        (fastMessages[i].is_free == false) &&
         (fastMessages[i].header.pgn == header.pgn) &&
         (fastMessages[i].header.source == header.source) &&
         (fastMessages[i].header.destination == header.destination)) {
@@ -527,13 +524,11 @@ int FastMessageMap::FindFreeEntry(void) {
 int FastMessageMap::GarbageCollector(void) {
   int staleEntries;
   staleEntries = 0;
-  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
-    if ((fastMessages[i].is_free == false) &&
-        (GetTimeInMicroseconds() - fastMessages[i].time_arrived >
+  for (int i = 0; i < fastMessages.size(); i++) {
+    if ((GetTimeInMicroseconds() - fastMessages[i].time_arrived >
          CONST_TIME_EXCEEDED)) {
       staleEntries++;
       free(fastMessages[i].data);
-      fastMessages[i].is_free = true;
     }
   }
   return staleEntries;
@@ -559,7 +554,6 @@ void FastMessageMap::InsertEntry(const CanHeader header,
     fastMessages[position].header = header;
     fastMessages[position].time_arrived = GetTimeInMicroseconds();
 
-    fastMessages[position].is_free = false;
     fastMessages[position].data = (unsigned char*)malloc(totalDataLength);
     memcpy(&fastMessages[position].data[0], &data[2], 6);
     // First frame of a multi-frame Fast Message contains six data bytes.
@@ -600,9 +594,8 @@ int FastMessageMap::AppendEntry(const CanHeader header,
     // (top 3 bits). The id has obviously rolled over. Should really double
     // check that (data[0] & 0xE0) Clear the entry as we don't want to leak
     // memory, prior to inserting a start frame
-    free(fastMessages[position].data);
-    fastMessages[position].is_free = true;
-    fastMessages[position].data = NULL;
+    fastMessages.erase(fastMessages.begin() + position);
+    position = FindFreeEntry();
     // And now insert it
     InsertEntry(header, data, position, ready);
     // FIXME (dave) Should update the dropped frame stats
@@ -611,9 +604,7 @@ int FastMessageMap::AppendEntry(const CanHeader header,
     // This is not the next frame in the sequence and not a start frame
     // We've dropped an intermedite frame, so free the slot and do no further
     // processing
-    free(fastMessages[position].data);
-    fastMessages[position].is_free = true;
-    fastMessages[position].data = NULL;
+    fastMessages.erase(fastMessages.begin() + position);
     // Dropped Frame Statistics
     if (dropped_frames == 0) {
       dropped_frame_time = wxDateTime::Now();
@@ -634,8 +625,6 @@ int FastMessageMap::AppendEntry(const CanHeader header,
   }
 }
 
-void FastMessageMap::Initialize(void) {
-  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
-    fastMessages.push_back(Entry());
-  }
+void FastMessageMap::Remove(int pos) {
+  fastMessages.erase(fastMessages.begin() + pos);
 }
