@@ -92,9 +92,9 @@ unsigned long long GetTimeInMicroseconds() {
 #endif
 }
 
-class CommDriverN2KSocketCANThread {
+class WorkerThread {
 public:
-  CommDriverN2KSocketCANThread(CommDriverN2KSocketCAN* Launcher,
+  WorkerThread(CommDriverN2KSocketCAN* Launcher,
                                const wxString& PortName);
 
   void Entry();
@@ -124,7 +124,7 @@ private:
   void PushFastMsgFragment(std::vector<unsigned char>& data,
                            const CanHeader& header, int position);
 
-  CommDriverN2KSocketCAN* m_parent_driver;
+  CommDriverN2KSocketCanImpl* m_parent_driver;
   wxString m_port_name;
 
   atomic_queue<char*> out_que;
@@ -137,44 +137,57 @@ private:
   // Socket Descriptor
 };
 
-//========================================================================
-/*    CommDriverN2KSocketCAN implementation
- * */
 
-CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
-                                               DriverListener& listener)
-    : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
-      m_thread_run_flag(-1),
-      m_ok(false),
-      m_portstring(params->GetDSPort()),
-      m_secondary_thread(NULL),
-      m_params(*params),
-      m_listener(listener) {
-  m_baudrate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
+class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN  {
+friend class WorkerThread;
 
-  Open();
+public:
+  CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
+      : CommDriverN2KSocketCAN(p, l),  m_worker_thread(NULL) {
+    Open();
+  }
+
+  ~CommDriverN2KSocketCanImpl() { if (m_worker_thread) Close(); }
+
+  bool Open();
+  void Close();
+
+  void SetSecondaryThread(WorkerThread* thread) { m_worker_thread = thread; }
+
+  WorkerThread* GetSecondaryThread() { return m_worker_thread; }
+
+  void SetThreadRunFlag(int run) { m_thread_run_flag = run; }
+
+private:
+  WorkerThread* m_worker_thread;
+  int m_thread_run_flag;
+};
+
+
+std::shared_ptr<CommDriverN2KSocketCAN> CommDriverN2KSocketCAN::Create(
+    const ConnectionParams* params, DriverListener& listener) {
+  return std::shared_ptr<CommDriverN2KSocketCAN>(
+      new CommDriverN2KSocketCanImpl(params, listener));
 }
 
-CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {
-  if (m_secondary_thread) Close();
-}
+//    CommDriverN2KSocketCanImpl implementation
 
-bool CommDriverN2KSocketCAN::Open() {
+bool CommDriverN2KSocketCanImpl::Open() {
   //    Kick off the  RX thread
   SetSecondaryThread(
-      new CommDriverN2KSocketCANThread(this, m_params.socketCAN_port));
+      new WorkerThread(this, m_params.socketCAN_port));
   SetThreadRunFlag(1);
-  std::thread t(&CommDriverN2KSocketCANThread::Entry, GetSecondaryThread());
+  std::thread t(&WorkerThread::Entry, GetSecondaryThread());
   t.detach();
 
   return true;
 }
 
-void CommDriverN2KSocketCAN::Close() {
+void CommDriverN2KSocketCanImpl::Close() {
   wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
 
   //    Kill off the Secondary RX Thread if alive
-  if (m_secondary_thread) {
+  if (m_worker_thread) {
     if (m_sec_thread_active)  // Try to be sure thread object is still alive
     {
       wxLogMessage("Stopping Secondary Thread");
@@ -188,8 +201,8 @@ void CommDriverN2KSocketCAN::Close() {
       else
         wxLogMessage("Not Stopped after 10 sec.");
     }
-    delete m_secondary_thread;
-    m_secondary_thread = NULL;
+    delete m_worker_thread;
+    m_worker_thread = NULL;
     m_sec_thread_active = false;
   }
   // We cannot use shared_from_this() since we might be in the destructor.
@@ -197,6 +210,25 @@ void CommDriverN2KSocketCAN::Close() {
   auto me = FindDriver(registry.GetDrivers(), iface, bus);
   registry.Deactivate(me);
 }
+
+
+
+//========================================================================
+//    CommDriverN2KSocketCAN implementation
+//
+
+CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
+                                               DriverListener& listener)
+    : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
+      m_thread_run_flag(-1),
+      m_ok(false),
+      m_portstring(params->GetDSPort()),
+      m_params(*params),
+      m_listener(listener) {
+  m_baudrate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
+}
+
+CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 
 void CommDriverN2KSocketCAN::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
@@ -235,18 +267,20 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
 // data (len):      08 70 EB 14 E8 8E 52 D2
 // packet CRC:      0xBB
 
-CommDriverN2KSocketCANThread::CommDriverN2KSocketCANThread(
+WorkerThread::WorkerThread(
     CommDriverN2KSocketCAN* launcher, const wxString& port_name) {
-  m_parent_driver = launcher;  // This thread's immediate "parent"
+
+  m_parent_driver = dynamic_cast<CommDriverN2KSocketCanImpl*>(launcher);
+  assert(m_parent_driver != 0);
 
   m_port_name = port_name;
 
   MapInitialize();
 }
 
-void CommDriverN2KSocketCANThread::OnExit(void) {}
+void WorkerThread::OnExit(void) {}
 
-void CommDriverN2KSocketCANThread::PushCompleteMsg(
+void WorkerThread::PushCompleteMsg(
     std::vector<unsigned char>& data, const CanHeader header, int position,
     const CanFrame socket_frame) {
   data.push_back(0x93);
@@ -267,7 +301,7 @@ void CommDriverN2KSocketCANThread::PushCompleteMsg(
   data.push_back(0x55);  // CRC dummy, not checked
 }
 
-void CommDriverN2KSocketCANThread::PushFastMsgFragment(
+void WorkerThread::PushFastMsgFragment(
     std::vector<unsigned char>& data, const CanHeader& header, int position) {
   data.push_back(0x93);
   data.push_back(fastMessages[position].expected_length + 11);
@@ -290,14 +324,14 @@ void CommDriverN2KSocketCANThread::PushFastMsgFragment(
   fastMessages[position].data = NULL;
 }
 
-void CommDriverN2KSocketCANThread::ThreadMessage(const std::string& msg,
+void WorkerThread::ThreadMessage(const std::string& msg,
                                                  int level) {
   wxLogGeneric(level, wxString(msg.c_str()));
   auto s = std::string("CommDriverN2KSocketCAN: ") + msg;
   CommDriverRegistry::GetInstance().evt_driver_msg.Notify(level, s);
 }
 
-void CommDriverN2KSocketCANThread::SocketMessage(const std::string& msg,
+void WorkerThread::SocketMessage(const std::string& msg,
                                                  const std::string& device) {
   std::stringstream ss;
   ss << msg << device << ": " << strerror(errno);
@@ -310,7 +344,7 @@ void CommDriverN2KSocketCANThread::SocketMessage(const std::string& msg,
  *                  (serial) or "vcan0" (virtual)
  * @return positive socket number or -1 on errors.
  */
-int CommDriverN2KSocketCANThread::InitSocket(const std::string port_name) {
+int WorkerThread::InitSocket(const std::string port_name) {
   int sock;
 
   sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -357,7 +391,7 @@ int CommDriverN2KSocketCANThread::InitSocket(const std::string port_name) {
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void CommDriverN2KSocketCANThread::HandleInput(const CanHeader& header,
+void WorkerThread::HandleInput(const CanHeader& header,
                                                CanFrame can_socket_frame) {
   int position = -1;
   bool ready = false;
@@ -400,7 +434,7 @@ void CommDriverN2KSocketCANThread::HandleInput(const CanHeader& header,
 }
 
 /** Worker thread main function. */
-void CommDriverN2KSocketCANThread::Entry() {
+void WorkerThread::Entry() {
   CanHeader header;
   int recvbytes;
   int can_socket;
@@ -445,7 +479,7 @@ void CommDriverN2KSocketCANThread::Entry() {
 
 // Checks whether a frame is a single frame message or multiframe Fast Packet
 // message
-bool CommDriverN2KSocketCANThread::IsFastMessage(const CanHeader header) {
+bool WorkerThread::IsFastMessage(const CanHeader header) {
   static const std::vector<unsigned> haystack = {
       // All known multiframe fast messages
       65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
@@ -462,7 +496,7 @@ bool CommDriverN2KSocketCANThread::IsFastMessage(const CanHeader header) {
 
 // Determine whether an entry with a matching header & sequence ID exists.
 // If not, then assume this is the first frame of a multi-frame Fast Message
-int CommDriverN2KSocketCANThread::MapFindMatchingEntry(
+int WorkerThread::MapFindMatchingEntry(
     const CanHeader header, const unsigned char sid) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     if (((sid & 0xE0) == (fastMessages[i].sid & 0xE0)) &&
@@ -477,7 +511,7 @@ int CommDriverN2KSocketCANThread::MapFindMatchingEntry(
 }
 
 // Find first free entry in fastMessages
-int CommDriverN2KSocketCANThread::MapFindFreeEntry(void) {
+int WorkerThread::MapFindFreeEntry(void) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     if (fastMessages[i].is_free == true) {
       return i;
@@ -499,7 +533,7 @@ int CommDriverN2KSocketCANThread::MapFindFreeEntry(void) {
   }
 }
 
-int CommDriverN2KSocketCANThread::MapGarbageCollector(void) {
+int WorkerThread::MapGarbageCollector(void) {
   int staleEntries;
   staleEntries = 0;
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
@@ -515,7 +549,7 @@ int CommDriverN2KSocketCANThread::MapGarbageCollector(void) {
 }
 
 // Insert the first message of a sequence of fast messages
-void CommDriverN2KSocketCANThread::MapInsertEntry(const CanHeader header,
+void WorkerThread::MapInsertEntry(const CanHeader header,
                                                   const unsigned char* data,
                                                   const int position,
                                                   bool& ready) {
@@ -556,7 +590,7 @@ void CommDriverN2KSocketCANThread::MapInsertEntry(const CanHeader header,
 // Subsequent messages of fast packet
 // data[0] Sequence Identifier (sid)
 // data[1..7] 7 data bytes
-int CommDriverN2KSocketCANThread::MapAppendEntry(const CanHeader header,
+int WorkerThread::MapAppendEntry(const CanHeader header,
                                                  const unsigned char* data,
                                                  const int position,
                                                  bool& ready) {
@@ -617,7 +651,7 @@ int CommDriverN2KSocketCANThread::MapAppendEntry(const CanHeader header,
 }
 
 // Initialize each entry in the Fast Message Map
-void CommDriverN2KSocketCANThread::MapInitialize(void) {
+void WorkerThread::MapInitialize(void) {
   for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
     fastMessages[i].is_free = true;
     fastMessages[i].data = NULL;

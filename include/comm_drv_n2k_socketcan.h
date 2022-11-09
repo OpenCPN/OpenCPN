@@ -67,24 +67,14 @@ typedef struct CanHeader {
   int pgn;
 } CanHeader;
 
-class CommDriverN2KSocketCANThread;  // fwd
-class CommDriverN2KSocketCANEvent;
+class CommDriverN2KSocketCanImpl;
 
 class CommDriverN2KSocketCAN : public CommDriverN2K, public wxEvtHandler {
 
-friend class CommDriverN2KSocketCANThread;
-
 public:
-  static std::shared_ptr<CommDriverN2KSocketCAN> Create() {
-    return std::shared_ptr<CommDriverN2KSocketCAN>(
-        new CommDriverN2KSocketCAN());
-  }
-
+  static std::shared_ptr<CommDriverN2KSocketCAN> Create();
   static std::shared_ptr<CommDriverN2KSocketCAN> Create(
-      const ConnectionParams* params, DriverListener& listener) {
-    return std::shared_ptr<CommDriverN2KSocketCAN>(
-        new CommDriverN2KSocketCAN(params, listener));
-  }
+      const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN2KSocketCAN();
 
@@ -93,8 +83,8 @@ public:
 
   void SetListener(std::shared_ptr<DriverListener> l) override{};
 
-  bool Open();
-  void Close();
+  virtual bool Open() = 0;
+  virtual void Close() = 0;
 
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
@@ -103,29 +93,15 @@ public:
   void SetSecThreadInActive(void) { m_sec_thread_active = false; }
   bool IsSecThreadActive() const { return m_sec_thread_active; }
 
-  void SetSecondaryThread(CommDriverN2KSocketCANThread* thread) {
-    m_secondary_thread = thread;
-  }
-  CommDriverN2KSocketCANThread* GetSecondaryThread() {
-    return m_secondary_thread;
-  }
-  void SetThreadRunFlag(int run) { m_thread_run_flag = run; }
-
-  void handle_N2K_SocketCAN_RAW(CommDriverN2KSocketCANEvent& event);
-
-  int m_thread_run_flag;
-
-private:
-  CommDriverN2KSocketCAN();
+protected:
   CommDriverN2KSocketCAN(const ConnectionParams* params,
                          DriverListener& listener);
 
+  int m_thread_run_flag;
   bool m_ok;
   std::string m_portstring;
   std::string m_baudrate;
-  int m_handshake;
 
-  CommDriverN2KSocketCANThread* m_secondary_thread;
   bool m_sec_thread_active;
 
   ConnectionParams m_params;
