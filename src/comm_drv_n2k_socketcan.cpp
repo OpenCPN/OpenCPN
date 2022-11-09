@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n2k.h -- Nmea2000 serial driver.
+ * Purpose:  Implement comm_drv_socketcan.h -- socketcan driver.
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -57,23 +57,26 @@
 
 using namespace std::chrono_literals;
 
+using TimePoint = std::chrono::time_point<std::chrono::system_clock,
+                                          std::chrono::duration<double>>;
+
 static const int kNotFound = -1;
 
-// Number of fast messsages stored triggering Garbage Collection.
+/// Number of fast messsages stored triggering Garbage Collection.
 static const int kGcThreshold = 100;
 
-// Max time between garbage collection runs.
+/// Max time between garbage collection runs.
 static const std::chrono::milliseconds kGcInterval(10s);
 
-// Max entry age before garbage collected
+/// Max entry age before garbage collected
 static const std::chrono::milliseconds kEntryMaxAge(100s);
 
-// Read timeout in worker main loop (seconds)
+/// Read timeout in worker main loop (seconds)
 static const int kSocketTimeoutSeconds = 2;
 
 typedef struct can_frame CanFrame;
 
-// CAN v2.0 29 bit header as used by NMEA 2000
+/// CAN v2.0 29 bit header as used by NMEA 2000
 typedef struct CanHeader {
   unsigned char priority;
   unsigned char source;
@@ -81,26 +84,8 @@ typedef struct CanHeader {
   int pgn;
 } CanHeader;
 
-// Buffer used to re-assemble sequences of multi frame Fast Packet messages
 
-// Decodes a 29 bit CAN header from an int
-void DecodeCanHeader(const int canId, CanHeader* header) {
-  unsigned char buf[4];
-  buf[0] = canId & 0xFF;
-  buf[1] = (canId >> 8) & 0xFF;
-  buf[2] = (canId >> 16) & 0xFF;
-  buf[3] = (canId >> 24) & 0xFF;
-
-  header->source = buf[0];
-  header->destination = buf[2] < 240 ? buf[1] : 255;
-  header->pgn =
-      (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
-  header->priority = (buf[3] & 0x1c) >> 2;
-}
-
-/** Track fast message fragments forming a complete message. */
-using TimePoint = std::chrono::time_point<std::chrono::system_clock,
-                                          std::chrono::duration<double>>;
+/** Track fast message fragments eventually forming complete messages. */
 class FastMessageMap {
 
 public:
@@ -108,45 +93,59 @@ public:
   public:
     Entry(): time_arrived(std::chrono::system_clock::now()) {}
 
-    TimePoint time_arrived;  // time of last message in microseconds.
-    CanHeader header;  // the header of the message. Used to "map" the incoming
-                       // fast message fragments
-    unsigned int sid;  // message sequence identifier, used to check if a
-                       // received message is the next message in the sequence
-    unsigned int expected_length;  // total data length from first frame
-    unsigned int cursor;  // cursor into the current position in the below data
-    std::vector<unsigned char> data;  // Received data
+    TimePoint time_arrived;  ///< time of last message.
+
+    /// Can header, used to "map" the incoming fast message fragments
+    CanHeader header;
+
+    /// Sequence identifier, used to check if a received message is the
+    /// next message in the sequence
+    unsigned int sid;
+
+    unsigned int expected_length;  ///< total data length from first frame
+    unsigned int cursor;  ///< cursor into the current position in data.
+    std::vector<unsigned char> data;  ///< Received data
   };
 
   FastMessageMap() : dropped_frames(0) {}
 
-  Entry operator[](int i) const { return fastMessages[i]; }  // getter
-  Entry& operator[](int i) { return fastMessages[i]; }  // setter
+  Entry operator[](int i) const { return entries[i]; }  /// Getter
+  Entry& operator[](int i) { return entries[i]; }  /// Setter
 
+  /** Return index to entry matching header and sid or -1 if not found. */
   int FindMatchingEntry(const CanHeader header, const unsigned char sid);
+
+  /** Allocate a new, fresh entry and return index to it. */
   int FindFreeEntry(void);
-  int GarbageCollector(void);
-  void InsertEntry(const CanHeader header, const unsigned char* data,
-                   int position, bool& ready);
-  int AppendEntry(const CanHeader header, const unsigned char* data,
-                  int position, bool& ready);
+
+  /** Insert a new entry, first part of a multipart message. */
+  bool InsertEntry(const CanHeader header, const unsigned char* data,
+                   int index);
+
+  /** Append fragment to existing multipart message. */
+  bool AppendEntry(const CanHeader hdr, const unsigned char* data, int index);
+
+  /** Remove entry at pos. */
   void Remove(int pos);
 
-  int dropped_frames;
-  TimePoint dropped_frame_time;
 
 private:
+  int GarbageCollector(void);
+
   void CheckGc() {
       if (std::chrono::system_clock::now() - last_gc_run > kGcInterval ||
-          fastMessages.size() > kGcThreshold) {
+          entries.size() > kGcThreshold) {
         GarbageCollector();
         last_gc_run = std::chrono::system_clock::now();
       }
   }
 
-  std::vector<Entry> fastMessages;
+  std::vector<Entry> entries;
   TimePoint  last_gc_run;
+  int dropped_frames;
+  TimePoint dropped_frame_time;
 };
+
 
 class CommDriverN2KSocketCanImpl;    // fwd
 
@@ -223,6 +222,28 @@ public:
 private:
   Worker m_worker;
 };
+
+static bool Expired(FastMessageMap::Entry entry) {
+   auto age = std::chrono::system_clock::now() - entry.time_arrived;
+   return age > kEntryMaxAge;
+}
+
+/** Decode a 29 bit CAN header from an int. */
+static void DecodeCanHeader(const int can_id, CanHeader* header) {
+  unsigned char buf[4];
+  buf[0] = can_id & 0xFF;
+  buf[1] = (can_id >> 8) & 0xFF;
+  buf[2] = (can_id >> 16) & 0xFF;
+  buf[3] = (can_id >> 24) & 0xFF;
+
+  header->source = buf[0];
+  header->destination = buf[2] < 240 ? buf[1] : 255;
+  header->pgn =
+      (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
+  header->priority = (buf[3] & 0x1c) >> 2;
+}
+
+
 
 // Static CommDriverN2KSocketCAN factory implementation.
 
@@ -346,10 +367,9 @@ int Worker::InitSocket(const std::string port_name) {
     return -1;
   }
 
+  // Get the index of the interface
   struct ifreq can_request;
   strcpy(can_request.ifr_name, port_name.c_str());
-
-  // Get the index of the interface
   if (ioctl(sock, SIOCGIFINDEX, &can_request) < 0) {
     SocketMessage("SocketCAN ioctl (SIOCGIFINDEX) failed: ", port_name);
     return -1;
@@ -397,23 +417,20 @@ int Worker::InitSocket(const std::string port_name) {
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void Worker::HandleInput(const CanHeader& header, CanFrame can_socket_frame) {
+void Worker::HandleInput(const CanHeader& header, CanFrame socket_frame) {
   int position = -1;
   bool ready = false;
 
   if (IsFastMessage(header) == true) {
-    position = fast_messages.FindMatchingEntry(header,
-                                               can_socket_frame.data[0]);
+    position = fast_messages.FindMatchingEntry(header, socket_frame.data[0]);
     if (position == kNotFound) {
       // Not an existing fast message, create a new slot.
       position = fast_messages.FindFreeEntry();
       // Insert the first frame of the fast message
-      fast_messages.InsertEntry(header, can_socket_frame.data, position,
-                                ready);
+      ready = fast_messages.InsertEntry(header, socket_frame.data, position);
     } else {
       // An existing fast message is present, append the frame
-      fast_messages.AppendEntry(header, can_socket_frame.data, position,
-                                ready);
+      ready = fast_messages.AppendEntry(header, socket_frame.data, position);
     }
   } else {
     ready = true;  // This is a single frame message, parse it
@@ -426,13 +443,13 @@ void Worker::HandleInput(const CanHeader& header, CanFrame can_socket_frame) {
       PushFastMsgFragment(vec, header, position);
     } else {
       // Single frame message
-      PushCompleteMsg(vec, header, position, can_socket_frame);
+      PushCompleteMsg(vec, header, position, socket_frame);
     }
     auto name = static_cast<uint64_t>(header.pgn);
     auto src_addr = m_parent_driver->GetAddress(name);
     auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
-    auto msg =
-        std::make_unique<const Nmea2000Msg>(header.pgn, *buffer, src_addr);
+    auto msg = std::make_unique<const Nmea2000Msg>(header.pgn, *buffer,
+                                                   src_addr);
     m_parent_driver->m_listener.Notify(std::move(msg));
   }
 }
@@ -524,11 +541,11 @@ bool Worker::IsFastMessage(const CanHeader header) {
 
 int FastMessageMap::FindMatchingEntry(const CanHeader header,
                                       const unsigned char sid) {
-  for (unsigned i = 0; i < fastMessages.size(); i++) {
-    if (((sid & 0xE0) == (fastMessages[i].sid & 0xE0)) &&
-        (fastMessages[i].header.pgn == header.pgn) &&
-        (fastMessages[i].header.source == header.source) &&
-        (fastMessages[i].header.destination == header.destination)) {
+  for (unsigned i = 0; i < entries.size(); i++) {
+    if (((sid & 0xE0) == (entries[i].sid & 0xE0)) &&
+        (entries[i].header.pgn == header.pgn) &&
+        (entries[i].header.source == header.source) &&
+        (entries[i].header.destination == header.destination)) {
       return i;
     }
   }
@@ -536,27 +553,21 @@ int FastMessageMap::FindMatchingEntry(const CanHeader header,
 }
 
 int FastMessageMap::FindFreeEntry(void) {
-  fastMessages.push_back(Entry());
-  return fastMessages.size() - 1;
-}
-
-static bool Expired(FastMessageMap::Entry entry) {
-   auto age = std::chrono::system_clock::now() - entry.time_arrived;
-   return age > kEntryMaxAge;
+  entries.push_back(Entry());
+  return entries.size() - 1;
 }
 
 int FastMessageMap::GarbageCollector(void) {
   std::vector<unsigned> stale_entries;
-  for (unsigned i = 0; i < fastMessages.size(); i++) {
-    if (Expired(fastMessages[i])) stale_entries.push_back(i);
+  for (unsigned i = 0; i < entries.size(); i++) {
+    if (Expired(entries[i])) stale_entries.push_back(i);
   }
   for (auto i : stale_entries) Remove(i);
   return stale_entries.size();
 }
 
-void FastMessageMap::InsertEntry(const CanHeader header,
-                                 const unsigned char* data, int position,
-                                 bool& ready) {
+bool FastMessageMap::InsertEntry(const CanHeader header,
+                                 const unsigned char* data, int index) {
   // first message of fast packet
   // data[0] Sequence Identifier (sid)
   // data[1] Length of data bytes
@@ -570,62 +581,54 @@ void FastMessageMap::InsertEntry(const CanHeader header,
     totalDataLength = (unsigned int)data[1];
     totalDataLength += 7 - ((totalDataLength - 6) % 7);
 
-    fastMessages[position].sid = (unsigned int)data[0];
-    fastMessages[position].expected_length = (unsigned int)data[1];
-    fastMessages[position].header = header;
-    fastMessages[position].time_arrived = std::chrono::system_clock::now();
+    entries[index].sid = (unsigned int)data[0];
+    entries[index].expected_length = (unsigned int)data[1];
+    entries[index].header = header;
+    entries[index].time_arrived = std::chrono::system_clock::now();
 
-    fastMessages[position].data.resize(totalDataLength);
-    memcpy(&fastMessages[position].data[0], &data[2], 6);
+    entries[index].data.resize(totalDataLength);
+    memcpy(&entries[index].data[0], &data[2], 6);
     // First frame of a multi-frame Fast Message contains six data bytes.
     // Position the cursor ready for next message
-    fastMessages[position].cursor = 6;
+    entries[index].cursor = 6;
 
     // Fusion, using fast messages to sends frames less than eight bytes
-    if (fastMessages[position].expected_length <= 6) {
-      ready = true;
-    }
+    return entries[index].expected_length <= 6;
   }
+  return false;
   // No further processing is performed if this is not a start frame.
   // A start frame may have been dropped and we received a subsequent frame
 }
 
-int FastMessageMap::AppendEntry(const CanHeader header,
-                                const unsigned char* data, int position,
-                                bool& ready) {
+bool FastMessageMap::AppendEntry(const CanHeader header,
+                                 const unsigned char* data, int position) {
   // Check that this is the next message in the sequence
-  ready = false;
-  if ((fastMessages[position].sid + 1) == data[0]) {
-    memcpy(&fastMessages[position].data[fastMessages[position].cursor],
+  if ((entries[position].sid + 1) == data[0]) {
+    memcpy(&entries[position].data[entries[position].cursor],
            &data[1], 7);
-    fastMessages[position].sid = data[0];
+    entries[position].sid = data[0];
     // Subsequent messages contains seven data bytes (last message may be padded
     // with 0xFF)
-    fastMessages[position].cursor += 7;
+    entries[position].cursor += 7;
     // Is this the last message ?
-    if (fastMessages[position].cursor >=
-        fastMessages[position].expected_length) {
-      // Mark as ready for further processing
-      ready = true;
-    }
-    return true;
+    return entries[position].cursor >= entries[position].expected_length;
   } else if ((data[0] & 0x1F) == 0) {
     // We've found a matching entry, however this is a start frame, therefore
     // we've missed an end frame, and now we have a start frame with the same id
     // (top 3 bits). The id has obviously rolled over. Should really double
     // check that (data[0] & 0xE0) Clear the entry as we don't want to leak
     // memory, prior to inserting a start frame
-    fastMessages.erase(fastMessages.begin() + position);
+    entries.erase(entries.begin() + position);
     position = FindFreeEntry();
     // And now insert it
-    InsertEntry(header, data, position, ready);
+    InsertEntry(header, data, position);
     // FIXME (dave) Should update the dropped frame stats
     return true;
   } else {
     // This is not the next frame in the sequence and not a start frame
     // We've dropped an intermedite frame, so free the slot and do no further
     // processing
-    fastMessages.erase(fastMessages.begin() + position);
+    entries.erase(entries.begin() + position);
     // Dropped Frame Statistics
     if (dropped_frames == 0) {
       dropped_frame_time = std::chrono::system_clock::now();
@@ -647,5 +650,5 @@ int FastMessageMap::AppendEntry(const CanHeader header,
 }
 
 void FastMessageMap::Remove(int pos) {
-  fastMessages.erase(fastMessages.begin() + pos);
+  entries.erase(entries.begin() + pos);
 }
