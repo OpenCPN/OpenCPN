@@ -331,13 +331,16 @@ PluginHandler::PluginHandler() {}
 
 bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
+
+  static const std::vector<std::string> simple_abis = {"msvc", "msvc-wx32",
+  "darwin", "darwin-wx315", "android-armhf", "android-arm64"};
+
   auto compatOS = CompatOs::getInstance();
   Host host(compatOS);
   Plugin plugin(metadata);
 
-  if (plugin.abi() == "msvc" || plugin.abi() == "darwin" ||
-      plugin.abi() == "darwin-wx315" || plugin.abi() == "android-armhf" ||
-      plugin.abi() == "android-arm64") {
+  auto found = std::find(simple_abis.begin(), simple_abis.end(), plugin.abi());
+  if (found != simple_abis.end()) {
     bool ok = plugin.abi() == host.abi();
     wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
     wxLogDebug(" ");
