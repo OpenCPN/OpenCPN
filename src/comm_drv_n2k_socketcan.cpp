@@ -507,7 +507,7 @@ bool Worker::IsFastMessage(const CanHeader header) {
 
 int FastMessageMap::FindMatchingEntry(const CanHeader header,
                                       const unsigned char sid) {
-  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
+  for (int i = 0; i < fastMessages.size(); i++) {
     if (((sid & 0xE0) == (fastMessages[i].sid & 0xE0)) &&
         (fastMessages[i].is_free == false) &&
         (fastMessages[i].header.pgn == header.pgn) &&
@@ -520,25 +520,8 @@ int FastMessageMap::FindMatchingEntry(const CanHeader header,
 }
 
 int FastMessageMap::FindFreeEntry(void) {
-  for (int i = 0; i < CONST_MAX_MESSAGES; i++) {
-    if (fastMessages[i].is_free == true) {
-      return i;
-    }
-  }
-  // Could also run the Garbage Collection routine in a separate thread, would
-  // require locking etc. But this will look for stale entries in case there are
-  // no free entries If there are no free entries, then indicative that we are
-  // receiving more Fast messages than I anticipated.
-  int staleEntries;
-  staleEntries = GarbageCollector();
-  if (staleEntries == 0) {
-    return NOT_FOUND;
-    // FIXME (dave) Log this so as to increase the number of FastMessages that
-    // may be received
-    //  wxLogError(_T("socketCan Device, No free entries in Fast Message Map"));
-  } else {
-    return FindFreeEntry();
-  }
+  fastMessages.push_back(Entry());
+  return fastMessages.size() - 1; 
 }
 
 int FastMessageMap::GarbageCollector(void) {
