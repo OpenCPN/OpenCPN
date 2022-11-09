@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -49,7 +50,6 @@
 #include "serial/serial.h"
 #endif
 
-#include <wx/datetime.h>
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/utils.h>
@@ -59,8 +59,23 @@
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
 
-#define NOT_FOUND -1
-#define CONST_TIME_EXCEEDED 250
+using namespace std::chrono_literals;
+
+static const int kNotFound = -1;
+
+// Number of fast messsages stored triggering Garbage Collection.
+static const int kGcThreshold = 100;
+
+// Max time between garbage collection runs.
+static const std::chrono::milliseconds kGcInterval(10s);
+
+// Max entry age before garbage collected
+static const std::chrono::milliseconds kEntryMaxAge(100s);
+
+// Read timeout in worker main loop (seconds)
+static const int kSocketTimeoutSeconds = 2;
+
+// Run garbage collection
 
 typedef struct can_frame CanFrame;
 
@@ -89,24 +104,18 @@ void DecodeCanHeader(const int canId, CanHeader* header) {
   header->priority = (buf[3] & 0x1c) >> 2;
 }
 
-unsigned long long GetTimeInMicroseconds() {
-#if (defined(__APPLE__) && defined(__MACH__)) || defined(__LINUX__)
-  struct timeval currentTime;
-  gettimeofday(&currentTime, NULL);
-  return (currentTime.tv_sec * 1e6) + currentTime.tv_usec;
-#endif
-}
-
 /** Track fast message fragments forming a complete message. */
+using TimePoint = std::chrono::time_point<std::chrono::system_clock, 
+                                          std::chrono::duration<double>>;
 class FastMessageMap {
 
 public:
   class Entry {
   public:
-    Entry(): data(0) {}
+    Entry(): time_arrived(std::chrono::system_clock::now()), data(0) {}
     ~Entry() { if (data) { free(data); data = 0; }}
 
-    unsigned long long time_arrived;  // time of last message in microseconds.
+    TimePoint time_arrived;  // time of last message in microseconds.
     CanHeader header;  // the header of the message. Used to "map" the incoming
                        // fast message fragments
     unsigned int sid;  // message sequence identifier, used to check if a
@@ -132,10 +141,19 @@ public:
   void Remove(int pos);
 
   int dropped_frames;
-  wxDateTime dropped_frame_time;
+  TimePoint dropped_frame_time;
 
 private:
+  void CheckGc() {
+      if (std::chrono::system_clock::now() - last_gc_run > kGcInterval || 
+          fastMessages.size() > kGcThreshold) {
+        GarbageCollector();
+        last_gc_run = std::chrono::system_clock::now();
+      }
+  }
+
   std::vector<Entry> fastMessages;
+  TimePoint  last_gc_run;
 };
 
 class CommDriverN2KSocketCanImpl;    // fwd
@@ -360,7 +378,20 @@ int Worker::InitSocket(const std::string port_name) {
     return -1;
   }
 
-  int r = bind(sock, (struct sockaddr*)&can_address, sizeof(can_address));
+  // Set the timeout
+  struct timeval tv;
+  tv.tv_sec = kSocketTimeoutSeconds;
+  tv.tv_usec = 0;
+  int r = setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,
+                     sizeof tv);
+  if (r < 0) {
+    SocketMessage("SocketCAN setsockopt SO_RCVTIMEO failed on device: ",
+                  port_name);
+    return -1;
+  }
+
+  // ... and bind
+  r = bind(sock, (struct sockaddr*)&can_address, sizeof(can_address));
   if (r < 0) {
     SocketMessage("SocketCAN socket bind() failed: ", port_name);
     return -1;
@@ -381,16 +412,12 @@ void Worker::HandleInput(const CanHeader& header, CanFrame can_socket_frame) {
   if (IsFastMessage(header) == true) {
     position = fast_messages.FindMatchingEntry(header,
                                                can_socket_frame.data[0]);
-    if (position == NOT_FOUND) {
-      // Not an existing fast message, find a free slot
+    if (position == kNotFound) {
+      // Not an existing fast message, create a new slot.
       position = fast_messages.FindFreeEntry();
-      if (position == NOT_FOUND) {
-        // No free slots, exit. FIXME (dave) return;
-      } else {
-        // Insert the first frame of the fast message
-        fast_messages.InsertEntry(header, can_socket_frame.data, position,
-                                  ready);
-      }
+      // Insert the first frame of the fast message
+      fast_messages.InsertEntry(header, can_socket_frame.data, position,
+                                ready);
     } else {
       // An existing fast message is present, append the frame
       fast_messages.AppendEntry(header, can_socket_frame.data, position,
@@ -460,7 +487,7 @@ void Worker::Entry() {
 }
 
 bool Worker::StartThread() {
-  m_run_flag = 1; 
+  m_run_flag = 1;
   std::thread t(&Worker::Entry, this);
   t.detach();
   return true;
@@ -482,7 +509,7 @@ void Worker::StopThread() {
   else
     wxLogWarning("StopThread: Not Stopped after 10 sec.");
 }
- 
+
 
 // Checks whether a frame is a single frame message or multiframe Fast Packet
 // message
@@ -513,25 +540,26 @@ int FastMessageMap::FindMatchingEntry(const CanHeader header,
       return i;
     }
   }
-  return NOT_FOUND;
+  return kNotFound;
 }
 
 int FastMessageMap::FindFreeEntry(void) {
   fastMessages.push_back(Entry());
-  return fastMessages.size() - 1; 
+  return fastMessages.size() - 1;
+}
+
+static bool Expired(FastMessageMap::Entry entry) {
+   auto age = std::chrono::system_clock::now() - entry.time_arrived;
+   return age > kEntryMaxAge;
 }
 
 int FastMessageMap::GarbageCollector(void) {
-  int staleEntries;
-  staleEntries = 0;
-  for (int i = 0; i < fastMessages.size(); i++) {
-    if ((GetTimeInMicroseconds() - fastMessages[i].time_arrived >
-         CONST_TIME_EXCEEDED)) {
-      staleEntries++;
-      free(fastMessages[i].data);
-    }
+  std::vector<unsigned> stale_entries;
+  for (unsigned i = 0; i < fastMessages.size(); i++) {
+    if (Expired(fastMessages[i])) stale_entries.push_back(i);
   }
-  return staleEntries;
+  for (auto i : stale_entries) Remove(i);
+  return stale_entries.size();
 }
 
 void FastMessageMap::InsertEntry(const CanHeader header,
@@ -542,6 +570,7 @@ void FastMessageMap::InsertEntry(const CanHeader header,
   // data[1] Length of data bytes
   // data[2..7] 6 data bytes
 
+  CheckGc();
   // Ensure that this is indeed the first frame of a fast message
   if ((data[0] & 0x1F) == 0) {
     int totalDataLength;  // will also include padding as we memcpy all of the
@@ -552,7 +581,7 @@ void FastMessageMap::InsertEntry(const CanHeader header,
     fastMessages[position].sid = (unsigned int)data[0];
     fastMessages[position].expected_length = (unsigned int)data[1];
     fastMessages[position].header = header;
-    fastMessages[position].time_arrived = GetTimeInMicroseconds();
+    fastMessages[position].time_arrived = std::chrono::system_clock::now();
 
     fastMessages[position].data = (unsigned char*)malloc(totalDataLength);
     memcpy(&fastMessages[position].data[0], &data[2], 6);
@@ -607,7 +636,7 @@ int FastMessageMap::AppendEntry(const CanHeader header,
     fastMessages.erase(fastMessages.begin() + position);
     // Dropped Frame Statistics
     if (dropped_frames == 0) {
-      dropped_frame_time = wxDateTime::Now();
+      dropped_frame_time = std::chrono::system_clock::now();
       dropped_frames += 1;
     } else {
       dropped_frames += 1;
