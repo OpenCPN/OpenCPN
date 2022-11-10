@@ -112,7 +112,7 @@ public:
   int FindMatchingEntry(const CanHeader header, const unsigned char sid);
 
   /** Allocate a new, fresh entry and return index to it. */
-  int FindFreeEntry(void);
+  int AddNewEntry(void);
 
   /** Insert a new entry, first part of a multipart message. */
   bool InsertEntry(const CanHeader header, const unsigned char* data,
@@ -183,15 +183,16 @@ private:
 
   int InitSocket(const std::string port_name);
   void SocketMessage(const std::string& msg, const std::string& device);
-  void HandleInput(const CanHeader& header, CanFrame can_socket_frame);
+  void HandleInput(CanFrame frame);
 
-  void PushCompleteMsg(std::vector<unsigned char>& data, const CanHeader header,
-                       int position, const CanFrame socket_frame);
-  void PushFastMsgFragment(std::vector<unsigned char>& data,
-                           const CanHeader& header, int position);
+  std::vector<unsigned char> PushCompleteMsg(const CanHeader header,
+                                             int position,
+                                             const CanFrame frame);
+  std::vector<unsigned char> PushFastMsgFragment(const CanHeader& header,
+                                                 int position);
 
-  CommDriverN2KSocketCanImpl* m_parent_driver;
-  wxString m_port_name;
+  CommDriverN2KSocketCanImpl* const m_parent_driver;
+  const wxString m_port_name;
   std::atomic<int> m_run_flag;
   FastMessageMap fast_messages;
 };
@@ -279,17 +280,17 @@ void CommDriverN2KSocketCAN::Activate() {
 
 // Worker implementation
 
-Worker::Worker(CommDriverN2KSocketCAN* parent, const wxString& port_name) {
-  m_parent_driver = dynamic_cast<CommDriverN2KSocketCanImpl*>(parent);
+Worker::Worker(CommDriverN2KSocketCAN* parent, const wxString& port_name)
+    : m_parent_driver(dynamic_cast<CommDriverN2KSocketCanImpl*>(parent)),
+      m_port_name(port_name.Clone()),
+      m_run_flag(-1) {
   assert(m_parent_driver != 0);
-
-  m_run_flag = -1;
-  m_port_name = port_name.Clone();
 }
 
-void Worker::PushCompleteMsg(std::vector<unsigned char>& data,
-                             const CanHeader header, int position,
-                             const CanFrame socket_frame) {
+std::vector<unsigned char> Worker::PushCompleteMsg(const CanHeader header,
+                                                   int position,
+                                                   const CanFrame frame) {
+  std::vector<unsigned char> data;
   data.push_back(0x93);
   data.push_back(0x13);
   data.push_back(header.priority);
@@ -303,13 +304,14 @@ void Worker::PushCompleteMsg(std::vector<unsigned char>& data,
   data.push_back(0xFF);
   data.push_back(0xFF);
   data.push_back(CAN_MAX_DLEN);  // nominally 8
-  for (size_t n = 0; n < CAN_MAX_DLEN; n++)
-    data.push_back(socket_frame.data[n]);
+  for (size_t n = 0; n < CAN_MAX_DLEN; n++) data.push_back(frame.data[n]);
   data.push_back(0x55);  // CRC dummy, not checked
+  return data;
 }
 
-void Worker::PushFastMsgFragment(std::vector<unsigned char>& data,
-                                 const CanHeader& header, int position) {
+std::vector<unsigned char> Worker::PushFastMsgFragment(const CanHeader& header,
+                                                       int position) {
+  std::vector<unsigned char> data;
   data.push_back(0x93);
   data.push_back(fast_messages[position].expected_length + 11);
   data.push_back(header.priority);
@@ -327,6 +329,7 @@ void Worker::PushFastMsgFragment(std::vector<unsigned char>& data,
     data.push_back(fast_messages[position].data[n]);
   data.push_back(0x55);  // CRC dummy
   fast_messages.Remove(position);
+  return data;
 }
 
 void Worker::ThreadMessage(const std::string& msg, int level) {
@@ -348,18 +351,16 @@ void Worker::SocketMessage(const std::string& msg, const std::string& device) {
  * @return positive socket number or -1 on errors.
  */
 int Worker::InitSocket(const std::string port_name) {
-  int sock;
-
-  sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  int sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (sock < 0) {
     SocketMessage("SocketCAN socket create failed: ", port_name);
     return -1;
   }
 
   // Get the index of the interface
-  struct ifreq can_request;
-  strcpy(can_request.ifr_name, port_name.c_str());
-  if (ioctl(sock, SIOCGIFINDEX, &can_request) < 0) {
+  struct ifreq if_request;
+  strcpy(if_request.ifr_name, port_name.c_str());
+  if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
     SocketMessage("SocketCAN ioctl (SIOCGIFINDEX) failed: ", port_name);
     return -1;
   }
@@ -367,19 +368,19 @@ int Worker::InitSocket(const std::string port_name) {
   // Check if the interface is UP
   struct sockaddr_can can_address;
   can_address.can_family = AF_CAN;
-  can_address.can_ifindex = can_request.ifr_ifindex;
-  if (ioctl(sock, SIOCGIFFLAGS, &can_request) < 0) {
+  can_address.can_ifindex = if_request.ifr_ifindex;
+  if (ioctl(sock, SIOCGIFFLAGS, &if_request) < 0) {
     SocketMessage("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: ", port_name);
     return -1;
   }
-  if (can_request.ifr_flags & IFF_UP) {
+  if (if_request.ifr_flags & IFF_UP) {
     ThreadMessage("socketCan interface is UP");
   } else {
     ThreadMessage("socketCan interface is NOT UP");
     return -1;
   }
 
-  // Set the timeout
+  // Set the timeout and bind
   struct timeval tv;
   tv.tv_sec = kSocketTimeoutSeconds;
   tv.tv_usec = 0;
@@ -390,8 +391,6 @@ int Worker::InitSocket(const std::string port_name) {
                   port_name);
     return -1;
   }
-
-  // ... and bind
   r = bind(sock, (struct sockaddr*)&can_address, sizeof(can_address));
   if (r < 0) {
     SocketMessage("SocketCAN socket bind() failed: ", port_name);
@@ -406,51 +405,46 @@ int Worker::InitSocket(const std::string port_name) {
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void Worker::HandleInput(const CanHeader& header, CanFrame socket_frame) {
+void Worker::HandleInput(CanFrame frame) {
   int position = -1;
-  bool ready = false;
+  bool ready = true;
 
-  if (IsFastMessage(header) == true) {
-    position = fast_messages.FindMatchingEntry(header, socket_frame.data[0]);
+  CanHeader header = DecodeCanHeader(frame.can_id);
+  if (IsFastMessage(header)) {
+    position = fast_messages.FindMatchingEntry(header, frame.data[0]);
     if (position == kNotFound) {
-      // Not an existing fast message, create new slot, insert first frame
-      position = fast_messages.FindFreeEntry();
-      ready = fast_messages.InsertEntry(header, socket_frame.data, position);
+      // Not an existing fast message: create new entry and insert first frame
+      position = fast_messages.AddNewEntry();
+      ready = fast_messages.InsertEntry(header, frame.data, position);
     } else {
-      // An existing fast message is present, append the frame
-      ready = fast_messages.AppendEntry(header, socket_frame.data, position);
+      // An existing fast message entry is present, append the frame
+      ready = fast_messages.AppendEntry(header, frame.data, position);
     }
-  } else {
-    ready = true;  // This is a single frame message, parse it
   }
   if (ready) {
     std::vector<unsigned char> vec;
-
     if (position >= 0) {
       // Re-assembled fast message
-      PushFastMsgFragment(vec, header, position);
+      vec = PushFastMsgFragment(header, position);
     } else {
       // Single frame message
-      PushCompleteMsg(vec, header, position, socket_frame);
+      vec = PushCompleteMsg(header, position, frame);
     }
-    auto name = static_cast<uint64_t>(header.pgn);
+    auto name = N2kName(static_cast<uint64_t>(header.pgn));
     auto src_addr = m_parent_driver->GetAddress(name);
-    auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
-    auto msg =
-        std::make_unique<const Nmea2000Msg>(header.pgn, *buffer, src_addr);
+    auto msg = std::make_shared<const Nmea2000Msg>(name, vec, src_addr);
     m_parent_driver->m_listener.Notify(std::move(msg));
   }
 }
 
 /** Worker thread main function. */
 void Worker::Entry() {
-  CanHeader header;
   int recvbytes;
-  int can_socket;
-  CanFrame can_socket_frame;
+  int socket;
+  CanFrame frame;
 
-  can_socket = InitSocket(m_port_name.ToStdString());
-  if (can_socket < 0) {
+  socket = InitSocket(m_port_name.ToStdString());
+  if (socket < 0) {
     std::string msg("SocketCAN socket create failed: ");
     ThreadMessage(msg + m_port_name.ToStdString());
     return;
@@ -458,17 +452,13 @@ void Worker::Entry() {
 
   // The main loop
   while (m_run_flag > 0) {
-    recvbytes = read(can_socket, &can_socket_frame, sizeof(CanFrame));
+    recvbytes = read(socket, &frame, sizeof(frame));
     if (recvbytes == -1) {
-      if (errno == EAGAIN) {
-        wxLogMessage("can socket %s: EAGAIN (retrying)", m_port_name.c_str());
-        sleep(1);
-        continue;
-      } else {
-        wxLogWarning("can socket %s: fatal error %s", m_port_name.c_str(),
-                     strerror(errno));
-        return;
-      }
+      if (errno == EAGAIN || errno == EWOULDBLOCK) continue;  // timeout
+
+      wxLogWarning("can socket %s: fatal error %s", m_port_name.c_str(),
+                   strerror(errno));
+      break;
     }
     if (recvbytes != 16) {
       wxLogWarning("can socket %s: bad frame size: %d (ignored)",
@@ -476,8 +466,7 @@ void Worker::Entry() {
       sleep(1);
       continue;
     }
-    header = DecodeCanHeader(can_socket_frame.can_id);
-    HandleInput(header, can_socket_frame);
+    HandleInput(frame);
   }
   m_run_flag = -1;
   return;
@@ -539,7 +528,7 @@ int FastMessageMap::FindMatchingEntry(const CanHeader header,
   return kNotFound;
 }
 
-int FastMessageMap::FindFreeEntry(void) {
+int FastMessageMap::AddNewEntry(void) {
   entries.push_back(Entry());
   return entries.size() - 1;
 }
@@ -605,7 +594,7 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
     // check that (data[0] & 0xE0) Clear the entry as we don't want to leak
     // memory, prior to inserting a start frame
     entries.erase(entries.begin() + position);
-    position = FindFreeEntry();
+    position = AddNewEntry();
     // And now insert it
     InsertEntry(header, data, position);
     // FIXME (dave) Should update the dropped frame stats
