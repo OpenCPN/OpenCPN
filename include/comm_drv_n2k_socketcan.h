@@ -33,7 +33,6 @@
 #include "conn_params.h"
 
 class CommDriverN2KSocketCAN : public CommDriverN2K, public wxEvtHandler {
-
 public:
   static std::shared_ptr<CommDriverN2KSocketCAN> Create(
       const ConnectionParams* params, DriverListener& listener);

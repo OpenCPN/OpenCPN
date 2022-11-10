@@ -82,14 +82,12 @@ typedef struct CanHeader {
   int pgn;
 } CanHeader;
 
-
 /** Track fast message fragments eventually forming complete messages. */
 class FastMessageMap {
-
 public:
   class Entry {
   public:
-    Entry(): time_arrived(std::chrono::system_clock::now()) {}
+    Entry() : time_arrived(std::chrono::system_clock::now()) {}
 
     TimePoint time_arrived;  ///< time of last message.
 
@@ -108,7 +106,7 @@ public:
   FastMessageMap() : dropped_frames(0) {}
 
   Entry operator[](int i) const { return entries[i]; }  /// Getter
-  Entry& operator[](int i) { return entries[i]; }  /// Setter
+  Entry& operator[](int i) { return entries[i]; }       /// Setter
 
   /** Return index to entry matching header and sid or -1 if not found. */
   int FindMatchingEntry(const CanHeader header, const unsigned char sid);
@@ -126,27 +124,24 @@ public:
   /** Remove entry at pos. */
   void Remove(int pos);
 
-
 private:
   int GarbageCollector(void);
 
   void CheckGc() {
     if (std::chrono::system_clock::now() - last_gc_run > kGcInterval ||
-        entries.size() > kGcThreshold)
-    {
+        entries.size() > kGcThreshold) {
       GarbageCollector();
       last_gc_run = std::chrono::system_clock::now();
     }
   }
 
   std::vector<Entry> entries;
-  TimePoint  last_gc_run;
+  TimePoint last_gc_run;
   int dropped_frames;
   TimePoint dropped_frame_time;
 };
 
-
-class CommDriverN2KSocketCanImpl;    // fwd
+class CommDriverN2KSocketCanImpl;  // fwd
 
 /**
  * Manages reading the N2K data stream provided by some N2K gateways from the
@@ -202,8 +197,8 @@ private:
 };
 
 /** Local driver implementation, not visible outside this file.*/
-class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN  {
-friend class Worker;
+class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN {
+  friend class Worker;
 
 public:
   CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
@@ -221,8 +216,8 @@ private:
 };
 
 static bool Expired(FastMessageMap::Entry entry) {
-   auto age = std::chrono::system_clock::now() - entry.time_arrived;
-   return age > kEntryMaxAge;
+  auto age = std::chrono::system_clock::now() - entry.time_arrived;
+  return age > kEntryMaxAge;
 }
 
 /** Decode a 29 bit CAN header from an int. */
@@ -242,7 +237,6 @@ static CanHeader DecodeCanHeader(const int can_id) {
   return header;
 }
 
-
 // Static CommDriverN2KSocketCAN factory implementation.
 
 std::shared_ptr<CommDriverN2KSocketCAN> CommDriverN2KSocketCAN::Create(
@@ -250,7 +244,6 @@ std::shared_ptr<CommDriverN2KSocketCAN> CommDriverN2KSocketCAN::Create(
   return std::shared_ptr<CommDriverN2KSocketCAN>(
       new CommDriverN2KSocketCanImpl(params, listener));
 }
-
 
 // CommDriverN2KSocketCanImpl implementation
 
@@ -265,7 +258,6 @@ void CommDriverN2KSocketCanImpl::Close() {
   auto me = FindDriver(registry.GetDrivers(), iface, bus);
   registry.Deactivate(me);
 }
-
 
 // CommDriverN2KSocketCAN implementation
 
@@ -284,7 +276,6 @@ void CommDriverN2KSocketCAN::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
   // TODO: Read input data.
 }
-
 
 // Worker implementation
 
@@ -392,8 +383,8 @@ int Worker::InitSocket(const std::string port_name) {
   struct timeval tv;
   tv.tv_sec = kSocketTimeoutSeconds;
   tv.tv_usec = 0;
-  int r = setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,
-                     sizeof tv);
+  int r =
+      setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
   if (r < 0) {
     SocketMessage("SocketCAN setsockopt SO_RCVTIMEO failed on device: ",
                   port_name);
@@ -422,9 +413,8 @@ void Worker::HandleInput(const CanHeader& header, CanFrame socket_frame) {
   if (IsFastMessage(header) == true) {
     position = fast_messages.FindMatchingEntry(header, socket_frame.data[0]);
     if (position == kNotFound) {
-      // Not an existing fast message, create a new slot.
+      // Not an existing fast message, create new slot, insert first frame
       position = fast_messages.FindFreeEntry();
-      // Insert the first frame of the fast message
       ready = fast_messages.InsertEntry(header, socket_frame.data, position);
     } else {
       // An existing fast message is present, append the frame
@@ -446,8 +436,8 @@ void Worker::HandleInput(const CanHeader& header, CanFrame socket_frame) {
     auto name = static_cast<uint64_t>(header.pgn);
     auto src_addr = m_parent_driver->GetAddress(name);
     auto buffer = std::make_shared<std::vector<unsigned char>>(vec);
-    auto msg = std::make_unique<const Nmea2000Msg>(header.pgn, *buffer,
-                                                   src_addr);
+    auto msg =
+        std::make_unique<const Nmea2000Msg>(header.pgn, *buffer, src_addr);
     m_parent_driver->m_listener.Notify(std::move(msg));
   }
 }
@@ -517,7 +507,6 @@ void Worker::StopThread() {
     wxLogWarning("StopThread: Not Stopped after 10 sec.");
 }
 
-
 // Checks whether a frame is a single frame message or multiframe Fast Packet
 // message
 bool Worker::IsFastMessage(const CanHeader header) {
@@ -567,7 +556,7 @@ int FastMessageMap::GarbageCollector(void) {
 bool FastMessageMap::InsertEntry(const CanHeader header,
                                  const unsigned char* data, int index) {
   // first message of fast packet
-  //data[0] Sequence Identifier (sid)
+  // data[0] Sequence Identifier (sid)
   // data[1] Length of data bytes
   // data[2..7] 6 data bytes
 
@@ -575,7 +564,7 @@ bool FastMessageMap::InsertEntry(const CanHeader header,
   // Ensure that this is indeed the first frame of a fast message
   if ((data[0] & 0x1F) == 0) {
     int total_data_len;  // will also include padding as we memcpy all of the
-                          // frame, because I'm lazy
+                         // frame, because I'm lazy
     total_data_len = static_cast<unsigned int>(data[1]);
     total_data_len += 7 - ((total_data_len - 6) % 7);
 
@@ -602,8 +591,7 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
                                  const unsigned char* data, int position) {
   // Check that this is the next message in the sequence
   if ((entries[position].sid + 1) == data[0]) {
-    memcpy(&entries[position].data[entries[position].cursor],
-           &data[1], 7);
+    memcpy(&entries[position].data[entries[position].cursor], &data[1], 7);
     entries[position].sid = data[0];
     // Subsequent messages contains seven data bytes (last message may be padded
     // with 0xFF)
@@ -647,6 +635,4 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
   }
 }
 
-void FastMessageMap::Remove(int pos) {
-  entries.erase(entries.begin() + pos);
-}
+void FastMessageMap::Remove(int pos) { entries.erase(entries.begin() + pos); }
