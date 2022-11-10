@@ -1202,7 +1202,7 @@ wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::getInstance();
 
-  evt_blacklisted_plugin_listener.Listen(loader->evt_blacklisted_plugin, 
+  evt_blacklisted_plugin_listener.Listen(loader->evt_blacklisted_plugin,
                                          this, EVT_BLACKLISTED_PLUGIN);
   Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent& ev) {
     m_blacklist_ui->message(ev.GetString().ToStdString()); });
@@ -1245,7 +1245,7 @@ void PlugInManager::HandlePluginLoaderEvents() {
         "of OpenCPN, please get an updated version.");
     event_message_box(msg, ev); });
 
-  evt_unreadable_plugin_listener.Listen(loader->evt_blacklisted_plugin, 
+  evt_unreadable_plugin_listener.Listen(loader->evt_blacklisted_plugin,
                                         this, EVT_UNREADABLE_PLUGIN);
   Bind(EVT_UNREADABLE_PLUGIN, [&](wxCommandEvent& ev) {
     static const wxString msg =
@@ -1270,7 +1270,7 @@ void PlugInManager::HandlePluginLoaderEvents() {
 
   evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this,
                                EVT_PLUGMGR_AIS_MSG);
-  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this, 
+  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this,
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt &ev) {
     auto pTarget = UnpackEvtPointer<AisTargetData>(ev);
@@ -1290,7 +1290,7 @@ wxDEFINE_EVENT(EVT_DOWNLOAD_OK, wxCommandEvent);
 void PlugInManager::HandlePluginHandlerEvents() {
   auto loader = PluginLoader::getInstance();
 
-  evt_download_failed_listener.Listen(loader->evt_update_chart_types, 
+  evt_download_failed_listener.Listen(loader->evt_update_chart_types,
                                       this, EVT_DOWNLOAD_FAILED);
   Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
       wxString message = _("Please check system log for more info.");
@@ -5916,7 +5916,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc,
           //ps52plib->m_last_clip_rect = upd.GetRect();
 
 #ifndef USE_ANDROID_GLES2
-          glPushMatrix();  //    Adjust for rotation
+//          glPushMatrix();  //    Adjust for rotation
 #endif
           glChartCanvas::RotateToViewPort(VPoint);
 
@@ -5929,7 +5929,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc,
                                            glChartCanvas::s_b_useStencil);
 
 #ifndef USE_ANDROID_GLES2
-          glPopMatrix();
+//          glPopMatrix();
 #endif
           glChartCanvas::DisableClipRegion();
 
@@ -5958,7 +5958,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(
     PlugInChartBaseGL *ppicb = dynamic_cast<PlugInChartBaseGL *>(m_ppicb);
     if (!Region.Empty() && ppicb_x) {
 #ifndef USE_ANDROID_GLES2
-      glPushMatrix();  //    Adjust for rotation
+//      glPushMatrix();  //    Adjust for rotation
 #endif
 
       // Start with a clean slate
@@ -5974,7 +5974,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(
                                           glChartCanvas::s_b_useStencil);
 
 #ifndef USE_ANDROID_GLES2
-      glPopMatrix();
+//      glPopMatrix();
 #endif
       delete r;
 
