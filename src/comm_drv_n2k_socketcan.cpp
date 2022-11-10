@@ -133,11 +133,12 @@ private:
   int GarbageCollector(void);
 
   void CheckGc() {
-      if (std::chrono::system_clock::now() - last_gc_run > kGcInterval ||
-          entries.size() > kGcThreshold) {
-        GarbageCollector();
-        last_gc_run = std::chrono::system_clock::now();
-      }
+    if (std::chrono::system_clock::now() - last_gc_run > kGcInterval ||
+        entries.size() > kGcThreshold)
+    {
+      GarbageCollector();
+      last_gc_run = std::chrono::system_clock::now();
+    }
   }
 
   std::vector<Entry> entries;
@@ -571,7 +572,7 @@ int FastMessageMap::GarbageCollector(void) {
 bool FastMessageMap::InsertEntry(const CanHeader header,
                                  const unsigned char* data, int index) {
   // first message of fast packet
-  // data[0] Sequence Identifier (sid)
+  //data[0] Sequence Identifier (sid)
   // data[1] Length of data bytes
   // data[2..7] 6 data bytes
 
@@ -580,11 +581,11 @@ bool FastMessageMap::InsertEntry(const CanHeader header,
   if ((data[0] & 0x1F) == 0) {
     int total_data_len;  // will also include padding as we memcpy all of the
                           // frame, because I'm lazy
-    total_data_len = (unsigned int)data[1];
+    total_data_len = static_cast<unsigned int>(data[1]);
     total_data_len += 7 - ((total_data_len - 6) % 7);
 
-    entries[index].sid = (unsigned int)data[0];
-    entries[index].expected_length = (unsigned int)data[1];
+    entries[index].sid = static_cast<unsigned int>(data[0]);
+    entries[index].expected_length = static_cast<unsigned int>(data[1]);
     entries[index].header = header;
     entries[index].time_arrived = std::chrono::system_clock::now();
 
