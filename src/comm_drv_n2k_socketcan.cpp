@@ -31,7 +31,6 @@
 #include <atomic>
 #include <chrono>
 #include <mutex>
-#include <queue>
 #include <thread>
 #include <vector>
 
@@ -50,7 +49,6 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
-#include "atomic_queue.h"
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
@@ -200,8 +198,6 @@ private:
   CommDriverN2KSocketCanImpl* m_parent_driver;
   wxString m_port_name;
   std::atomic<int> m_run_flag;
-  atomic_queue<char*> out_que;
-
   FastMessageMap fast_messages;
 };
 
@@ -245,7 +241,6 @@ static CanHeader DecodeCanHeader(const int can_id) {
   header.priority = (buf[3] & 0x1c) >> 2;
   return header;
 }
-
 
 
 // Static CommDriverN2KSocketCAN factory implementation.
