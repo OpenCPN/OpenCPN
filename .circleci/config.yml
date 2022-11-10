@@ -102,6 +102,7 @@ workflows:
             branches:
               only:
                 - master
+                - wx321mac
       - build-android-armhf:
           filters:
             branches:
