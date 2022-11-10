@@ -578,17 +578,17 @@ bool FastMessageMap::InsertEntry(const CanHeader header,
   CheckGc();
   // Ensure that this is indeed the first frame of a fast message
   if ((data[0] & 0x1F) == 0) {
-    int totalDataLength;  // will also include padding as we memcpy all of the
+    int total_data_len;  // will also include padding as we memcpy all of the
                           // frame, because I'm lazy
-    totalDataLength = (unsigned int)data[1];
-    totalDataLength += 7 - ((totalDataLength - 6) % 7);
+    total_data_len = (unsigned int)data[1];
+    total_data_len += 7 - ((total_data_len - 6) % 7);
 
     entries[index].sid = (unsigned int)data[0];
     entries[index].expected_length = (unsigned int)data[1];
     entries[index].header = header;
     entries[index].time_arrived = std::chrono::system_clock::now();
 
-    entries[index].data.resize(totalDataLength);
+    entries[index].data.resize(total_data_len);
     memcpy(&entries[index].data[0], &data[2], 6);
     // First frame of a multi-frame Fast Message contains six data bytes.
     // Position the cursor ready for next message
