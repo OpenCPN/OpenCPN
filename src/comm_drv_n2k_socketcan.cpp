@@ -75,19 +75,30 @@ static const int kSocketTimeoutSeconds = 2;
 typedef struct can_frame CanFrame;
 
 /// CAN v2.0 29 bit header as used by NMEA 2000
-typedef struct CanHeader {
+class CanHeader {
+public:
+  CanHeader() : priority('\0'), source('\0'), destination('\0'), pgn(-1) {};
+
+  /** Construct a CanHeader by parsing a frame */
+  CanHeader(CanFrame frame);
+
+  /** Return true if header reflects a multipart fast message. */
+  bool IsFastMessage() const;
+
   unsigned char priority;
   unsigned char source;
   unsigned char destination;
   int pgn;
-} CanHeader;
+};
 
 /** Track fast message fragments eventually forming complete messages. */
 class FastMessageMap {
 public:
   class Entry {
   public:
-    Entry() : time_arrived(std::chrono::system_clock::now()) {}
+    Entry()
+        : time_arrived(std::chrono::system_clock::now()),
+          sid(0), expected_length(0), cursor(0) {}
 
     TimePoint time_arrived;  ///< time of last message.
 
@@ -179,8 +190,6 @@ private:
 
   void ThreadMessage(const std::string& msg, int level = wxLOG_Message);
 
-  bool IsFastMessage(const CanHeader header);
-
   int InitSocket(const std::string port_name);
   void SocketMessage(const std::string& msg, const std::string& device);
   void HandleInput(CanFrame frame);
@@ -221,22 +230,6 @@ static bool Expired(FastMessageMap::Entry entry) {
   return age > kEntryMaxAge;
 }
 
-/** Decode a 29 bit CAN header from an int. */
-static CanHeader DecodeCanHeader(const int can_id) {
-  CanHeader header;
-  unsigned char buf[4];
-  buf[0] = can_id & 0xFF;
-  buf[1] = (can_id >> 8) & 0xFF;
-  buf[2] = (can_id >> 16) & 0xFF;
-  buf[3] = (can_id >> 24) & 0xFF;
-
-  header.source = buf[0];
-  header.destination = buf[2] < 240 ? buf[1] : 255;
-  header.pgn =
-      (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
-  header.priority = (buf[3] & 0x1c) >> 2;
-  return header;
-}
 
 // Static CommDriverN2KSocketCAN factory implementation.
 
@@ -245,6 +238,38 @@ std::shared_ptr<CommDriverN2KSocketCAN> CommDriverN2KSocketCAN::Create(
   return std::shared_ptr<CommDriverN2KSocketCAN>(
       new CommDriverN2KSocketCanImpl(params, listener));
 }
+
+
+// CanHeader implementation
+
+CanHeader::CanHeader(const CanFrame frame) {
+  unsigned char buf[4];
+  buf[0] = frame.can_id & 0xFF;
+  buf[1] = (frame.can_id >> 8) & 0xFF;
+  buf[2] = (frame.can_id >> 16) & 0xFF;
+  buf[3] = (frame.can_id >> 24) & 0xFF;
+
+  source = buf[0];
+  destination = buf[2] < 240 ? buf[1] : 255;
+  pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
+  priority = (buf[3] & 0x1c) >> 2;
+}
+
+bool CanHeader::IsFastMessage() const {
+  static const std::vector<unsigned> haystack = {
+      // All known multiframe fast messages
+      65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
+      127496u, 127506u, 128275u, 129029u, 129038u, 129039u, 129040u, 129041u,
+      129284u, 129285u, 129540u, 129793u, 129794u, 129795u, 129797u, 129798u,
+      129801u, 129802u, 129808u, 129809u, 129810u, 130065u, 130074u, 130323u,
+      130577u, 130820u, 130822u, 130824u};
+
+  unsigned needle = static_cast<unsigned>(pgn);
+  auto found = std::find_if(haystack.begin(), haystack.end(),
+                            [needle](unsigned i) { return i == needle; });
+  return found != haystack.end();
+}
+
 
 // CommDriverN2KSocketCanImpl implementation
 
@@ -357,7 +382,7 @@ int Worker::InitSocket(const std::string port_name) {
     return -1;
   }
 
-  // Get the index of the interface
+  // Get the interface index
   struct ifreq if_request;
   strcpy(if_request.ifr_name, port_name.c_str());
   if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
@@ -365,7 +390,7 @@ int Worker::InitSocket(const std::string port_name) {
     return -1;
   }
 
-  // Check if the interface is UP
+  // Check if interface is UP
   struct sockaddr_can can_address;
   can_address.can_family = AF_CAN;
   can_address.can_ifindex = if_request.ifr_ifindex;
@@ -380,7 +405,7 @@ int Worker::InitSocket(const std::string port_name) {
     return -1;
   }
 
-  // Set the timeout and bind
+  // Set timeout and bind
   struct timeval tv;
   tv.tv_sec = kSocketTimeoutSeconds;
   tv.tv_usec = 0;
@@ -409,8 +434,8 @@ void Worker::HandleInput(CanFrame frame) {
   int position = -1;
   bool ready = true;
 
-  CanHeader header = DecodeCanHeader(frame.can_id);
-  if (IsFastMessage(header)) {
+  CanHeader header(frame);
+  if (header.IsFastMessage()) {
     position = fast_messages.FindMatchingEntry(header, frame.data[0]);
     if (position == kNotFound) {
       // Not an existing fast message: create new entry and insert first frame
@@ -494,23 +519,6 @@ void Worker::StopThread() {
     wxLogMessage("StopThread: Stopped in %d sec.", 10 - tsec);
   else
     wxLogWarning("StopThread: Not Stopped after 10 sec.");
-}
-
-// Checks whether a frame is a single frame message or multiframe Fast Packet
-// message
-bool Worker::IsFastMessage(const CanHeader header) {
-  static const std::vector<unsigned> haystack = {
-      // All known multiframe fast messages
-      65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
-      127496u, 127506u, 128275u, 129029u, 129038u, 129039u, 129040u, 129041u,
-      129284u, 129285u, 129540u, 129793u, 129794u, 129795u, 129797u, 129798u,
-      129801u, 129802u, 129808u, 129809u, 129810u, 130065u, 130074u, 130323u,
-      130577u, 130820u, 130822u, 130824u};
-
-  unsigned needle = static_cast<unsigned>(header.pgn);
-  auto found = std::find_if(haystack.begin(), haystack.end(),
-                            [needle](unsigned i) { return i == needle; });
-  return found != haystack.end();
 }
 
 //  FastMessage implementation
