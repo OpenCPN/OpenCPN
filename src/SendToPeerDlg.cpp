@@ -101,12 +101,12 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
     wxString item(g_DNS_cache[i]->hostname.c_str());
 
     //skip "self"
-    if(item.StartsWith(g_hostname))
-      continue;
-    item += " {";
-    item += g_DNS_cache[i]->ip.c_str();
-    item += "}";
-    m_PeerListBox->Append(item);
+    if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+      item += " {";
+      item += g_DNS_cache[i]->ip.c_str();
+      item += "}";
+      m_PeerListBox->Append(item);
+    }
   }
 
 
