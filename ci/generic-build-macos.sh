@@ -66,7 +66,7 @@ else
 fi
 
 curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
-    https://download.opencpn.org/s/qRPr2ByMgH4X7aZ/download
+    https://download.opencpn.org/s/otGrAiayxXrAi5f/download
 tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
