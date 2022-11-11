@@ -30,7 +30,7 @@ jobs:
        - run: ci/generic-upload.sh
    build-macos:
      macos:
-       xcode: "13.4.1"
+       xcode: "11.1"
      environment:
        - OCPN_TARGET:  macos
      steps:
