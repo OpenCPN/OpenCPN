@@ -491,7 +491,7 @@ void CommDriverN2KSerialThread::ThreadMessage(const wxString& msg) {
 
 size_t CommDriverN2KSerialThread::WriteComPortPhysical(std::vector<unsigned char> msg) {
   if (m_serial.isOpen()) {
-    ssize_t status;
+    ssize_t status = 0;
     try {
       for (size_t i = 0; i < msg.size(); i++)
         printf("%02X ", msg.at(i));
@@ -915,18 +915,18 @@ std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg){
   ActisenseMsgBuf[msgIdx++]=ESCAPE;
   ActisenseMsgBuf[msgIdx++]=STARTOFTEXT;
   AddByteEscapedToBuf(MsgTypeN2kTX,msgIdx,ActisenseMsgBuf,byteSum);
-  AddByteEscapedToBuf(msg.DataLen+11,msgIdx,ActisenseMsgBuf,byteSum); //length does not include escaped chars
+  AddByteEscapedToBuf(msg.DataLen+6,msgIdx,ActisenseMsgBuf,byteSum); //length does not include escaped chars
   AddByteEscapedToBuf(msg.Priority,msgIdx,ActisenseMsgBuf,byteSum);
   AddByteEscapedToBuf(_PGN & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _PGN>>=8;
   AddByteEscapedToBuf(_PGN & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _PGN>>=8;
   AddByteEscapedToBuf(_PGN & 0xff,msgIdx,ActisenseMsgBuf,byteSum);
   AddByteEscapedToBuf(msg.Destination,msgIdx,ActisenseMsgBuf,byteSum);
-  AddByteEscapedToBuf(msg.Source,msgIdx,ActisenseMsgBuf,byteSum);
+  //AddByteEscapedToBuf(msg.Source,msgIdx,ActisenseMsgBuf,byteSum);
   // Time?
-  AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _MsgTime>>=8;
-  AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _MsgTime>>=8;
-  AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _MsgTime>>=8;
-  AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum);
+  //AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _MsgTime>>=8;
+  //AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _MsgTime>>=8;
+  //AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _MsgTime>>=8;
+  //AddByteEscapedToBuf(_MsgTime & 0xff,msgIdx,ActisenseMsgBuf,byteSum);
   AddByteEscapedToBuf(msg.DataLen,msgIdx,ActisenseMsgBuf,byteSum);
 
 
