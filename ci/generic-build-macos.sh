@@ -67,6 +67,7 @@ fi
 
 curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
     https://download.opencpn.org/s/Djqm4SXzYjF8nBw/download
+tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
