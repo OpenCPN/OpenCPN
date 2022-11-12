@@ -753,6 +753,8 @@ bool Quilt::IsQuiltDelta(ViewPort &vp) {
 
   if (m_vp_quilt.m_projection_type != vp.m_projection_type) return true;
 
+  if (m_vp_quilt.rotation != vp.rotation) return true;
+
   //    Has the quilt shifted by more than one pixel in any direction?
   wxPoint cp_last, cp_this;
 

@@ -8371,7 +8371,7 @@ void RotateToViewPort(const VPointCompat &vp) {
   bool g_bskew_comp = true;
 
   float angle = vp.rotation;
-  if (g_bskew_comp) angle -= vp.skew;
+  //if (g_bskew_comp) angle -= vp.skew;
 
   if (fabs(angle) > 0.0001) {
     //    Rotations occur around 0,0, so translate to rotate around screen

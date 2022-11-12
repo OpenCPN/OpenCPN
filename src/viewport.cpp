@@ -816,6 +816,7 @@ void ViewPort::SetBoxes(void) {
   //  "virtual" pixel window size to ensure that enough chart data is fatched
   //  and available to fill the rotated screen.
   rv_rect = wxRect(0, 0, pix_width, pix_height);
+  printf("set boxes\n");
 
   //  Specify the minimum required rectangle in unrotated screen space which
   //  will supply full screen data after specified rotation

@@ -140,7 +140,7 @@ public:
   wxRect rv_rect;
 
 //#ifdef USE_ANDROID_GLES2
-  float vp_transform[16];
+  float vp_matrix_transform[16];
   float norm_transform[16];
 //#endif
 

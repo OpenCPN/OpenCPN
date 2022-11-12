@@ -579,10 +579,10 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   mat4x4 m;
   ViewPort *vp = m_pParentCanvas->GetpVP();
   mat4x4_identity(m);
-  mat4x4_scale_aniso((float(*)[4])vp->vp_transform, m,
+  mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
                      1.0);
-  mat4x4_translate_in_place((float(*)[4])vp->vp_transform, -vp->pix_width / 2,
+  mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
                             -vp->pix_height / 2, 0);
 #endif
 }
@@ -2799,7 +2799,7 @@ static void combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
   *dataOut = vertex;
 }
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+//#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 void vertexCallbackD_GLSL(GLvoid *vertex) {
   // Grow the work buffer if necessary
   if (s_tess_vertex_idx > s_tess_buf_len - 8) {
@@ -2833,7 +2833,7 @@ void endCallbackD_GLSL() {
   GLShaderProgram *shader = pStaticShader;
   shader->Bind();
 
-  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_transform);
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_matrix_transform);
 
   mat4x4 identityMatrix;
   mat4x4_identity(identityMatrix);
@@ -2855,8 +2855,23 @@ void endCallbackD_GLSL() {
   shader->UnBind();
 
 }
-#else
-#endif
+//#else
+void vertexCallbackD(GLvoid *vertex)
+{
+    glVertex3dv( (GLdouble *)vertex);
+}
+
+void beginCallbackD( GLenum mode)
+{
+    glBegin( mode );
+}
+
+void endCallbackD()
+{
+    glEnd();
+}
+
+//#endif
 
 void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
   float lat_dist, lon_dist;
@@ -3199,10 +3214,20 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
         if (!get_region.Empty()) {
           if (chart->GetChartFamily() == CHART_FAMILY_RASTER) {
             ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB *>(chart);
-            if (Patch_Ch_BSB) {
-              SetClipRegion(vp, pqp->ActiveRegion /*pqp->quilt_region*/);
-              RenderRasterChartRegionGL(chart, vp, get_region);
+            if (Patch_Ch_BSB ) {
+
+              SetClipRegion(vp, get_region /*pqp->quilt_region*/);
+              RenderRasterChartRegionGL(chart, vp, pqp->ActiveRegion);
               DisableClipRegion();
+              if(pqp->dbIndex == 1383){
+                s_regionColor = wxColor(100, 0, 0, 10);
+                //DrawRegion(vp, pqp->ActiveRegion);
+              }
+              else{
+                s_regionColor = wxColor(0, 100, 0, 10);
+                //DrawRegion(vp, pqp->ActiveRegion);
+              }
+
               b_rendered = true;
             } else if (chart->GetChartType() == CHART_TYPE_MBTILES) {
               SetClipRegion(vp, pqp->ActiveRegion /*pqp->quilt_region*/);
@@ -3479,6 +3504,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
       RenderWorldChart(dc, cvp, rect, world_view);
     }
   }
+
+  if(abs(vp.rotation > 0))
+    int yyp = 4;
 
   if (vp.b_quilt)
     RenderQuiltViewGL(vp, rect_region);
@@ -3989,7 +4017,7 @@ void glChartCanvas::Render() {
       if (m_displayScale > 1)
          accelerated_pan = false;
 
-      //accelerated_pan = false;
+      accelerated_pan = false;
 
       // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
@@ -4140,7 +4168,7 @@ void glChartCanvas::Render() {
           glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
           // restore the shader matrix
-          shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)VPoint.vp_transform);
+          shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)VPoint.vp_matrix_transform);
 
           shader->UnBind();
           glBindTexture(g_texture_rectangle_format, 0);
@@ -4167,12 +4195,14 @@ void glChartCanvas::Render() {
         // This can be annoying on Android pinch zoom
 
         // Clear the screen to NODTA color
-//         wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-//         glClearColor( color.Red() / 256., color.Green() / 256. ,
-//         color.Blue()/ 256. ,1.0 );
-        //glClear(GL_COLOR_BUFFER_BIT);
+         wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+         glClearColor( color.Red() / 256., color.Green() / 256. ,
+         color.Blue()/ 256. ,1.0 );
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        RenderCharts(m_gldc, screen_region);
+        OCPNRegion rscreen_region(VPoint.rv_rect);
+
+        RenderCharts(m_gldc, rscreen_region);
 
         m_cache_page = !m_cache_page; /* page flip */
 
@@ -5221,7 +5251,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       GLShaderProgram *shader = pcolor_tri_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5244,7 +5274,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = ptexture_2D_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5258,7 +5288,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = pcircle_filled_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5273,7 +5303,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = ptexture_2DA_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5284,7 +5314,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = pAALine_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->UnBind();
 
       m_gldc.m_texfont.PrepareShader(vp.pix_width, vp.pix_height, vp.rotation);
@@ -5400,7 +5430,7 @@ void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
       GLShaderProgram *shader = pcolor_tri_shader_program[GetCanvasIndex()];
       shader->Bind();
 
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_pParentCanvas->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       float colorv[4];
       colorv[0] = color.Red() / float(256);

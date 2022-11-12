@@ -217,7 +217,7 @@ public:
   void SetupCanvasQuiltMode(void);
   void ApplyCanvasConfig(canvasConfig *pcc);
 
-  void SetVPRotation(double angle) { VPoint.rotation = angle; }
+  bool SetVPRotation(double angle);
   double GetVPRotation(void) { return GetVP().rotation; }
   double GetVPSkew(void) { return GetVP().skew; }
   double GetVPTilt(void) { return GetVP().tilt; }
