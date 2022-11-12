@@ -198,13 +198,16 @@ public:
   // Debian version. To be removed, see  #2512.
   bool is_ubuntu_plugin_compatible(const Plugin& plugin) const {
     static const std::vector<std::string> debian_versions = {
+        // clang-format: off
         // Assuming Debian 10 users sticks to gtk2:
         "10;ubuntu-x86_64;18.04",
         "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64;22.04",
+        "11;ubuntu-x86_64-wx32;22.04",
+        "12;ubuntu-x86_64;23.04",
+        "12;ubuntu-x86_64;23.10",
         "12;ubuntu-x86_64;24.04",
         "sid;ubuntu-x86_64;24.04"
-    };
+    };   // clang-format: on
     if (ocpn::startswith(m_abi, "debian-x86_64")) {
       wxLogDebug("Checking for ubuntu plugin on a debian-x86_64 host");
       const std::string host_version =
@@ -224,9 +227,16 @@ public:
   bool is_debian_plugin_compatible(const Plugin& plugin) const {
     if (!ocpn::startswith(m_abi, "ubuntu")) return false;
     static const std::vector<std::string> compat_versions = {
+        // clang-format: off
         // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64;22.04", "sid;ubuntu-gtk3-x86_64;20.04"};
+        "10;ubuntu-x86_64;18.04",
+        "11;ubuntu-gtk3-x86_64;20.04",
+        "11;ubuntu-x86_64-wx32;22.04",
+        "12;ubuntu-x86_64;23.04",
+        "12;ubuntu-x86_64;23.10",
+        "12;ubuntu-x86_64;24.04",
+        "sid;ubuntu-x86_64;24.04"
+    };    // clang-format: on
     if (ocpn::startswith(plugin.abi(), "debian-x86_64")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
       const std::string compat_version =
