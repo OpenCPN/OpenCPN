@@ -2646,10 +2646,12 @@ void ChartCanvas::OnKeyChar(wxKeyEvent &event) {
     switch (key_char) {
       case ']':
         RotateCanvas(1);
+        Refresh();
         break;
 
       case '[':
         RotateCanvas(-1);
+        Refresh();
         break;
 
       case '\\':
@@ -4579,7 +4581,7 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
 
   m_bzooming = false;
 }
-
+int rot;
 void ChartCanvas::RotateCanvas(double dir) {
   //SetUpMode(NORTH_UP_MODE);
 
@@ -4981,6 +4983,11 @@ bool ChartCanvas::SetViewPoint(double lat, double lon) {
                       VPoint.rotation);
 }
 
+bool ChartCanvas::SetVPRotation(double angle) {
+  return SetViewPoint(VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew,
+                      angle);
+}
+
 bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
                                double skew, double rotation, int projection,
                                bool b_adjust, bool b_refresh) {
@@ -5009,6 +5016,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
   VPoint.skew = skew;
   VPoint.clat = lat;
   VPoint.clon = lon;
+  VPoint.rotation = rotation;
   VPoint.view_scale_ppm = scale_ppm;
   if (projection != PROJECTION_UNKNOWN)
     VPoint.SetProjectionType(projection);
@@ -5030,7 +5038,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
       VPoint.m_projection_type == PROJECTION_TRANSVERSE_MERCATOR)
     VPoint.view_scale_ppm = wxMax(VPoint.view_scale_ppm, 2e-4);
 
-  SetVPRotation(rotation);
+  //SetVPRotation(rotation);
 
   if (!g_bopengl)  // tilt is not possible without opengl
     VPoint.tilt = 0;
@@ -5319,7 +5327,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
   VPoint.chart_scale = 1.0;  // fallback default value
 
-  if (!VPoint.GetBBox().GetValid()) VPoint.SetBoxes();
+  /*if (!VPoint.GetBBox().GetValid())*/ VPoint.SetBoxes();
 
   if (VPoint.GetBBox().GetValid()) {
     //      Update the viewpoint reference scale

@@ -1484,17 +1484,8 @@ bool s57chart::RenderViewOnGLTextOnly(const wxGLContext &glc,
 
   SetVPParms(VPoint);
 
-#ifndef USE_ANDROID_GLES2
-  glPushMatrix();  //    Adjust for rotation
-#endif
-  glChartCanvas::RotateToViewPort(VPoint);
-
   glChartCanvas::DisableClipRegion();
   DoRenderOnGLText(glc, VPoint);
-
-#ifndef USE_ANDROID_GLES2
-  glPopMatrix();
-#endif
 
 #endif
   return true;
@@ -1598,22 +1589,11 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
         //glChartCanvas::SetClipRegion(cvp, chart_region);
 
-        //ps52plib->m_last_clip_rect = upd.GetRect();
-
 #endif
       }
 
-//            ps52plib->m_last_clip_rect = upd.GetRect();
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-      glPushMatrix();  //    Adjust for rotation
-#endif
-      glChartCanvas::RotateToViewPort(VPoint);
-
       DoRenderOnGL(glc, cvp);
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-      glPopMatrix();
-#endif
       glChartCanvas::DisableClipRegion();
     }
   }

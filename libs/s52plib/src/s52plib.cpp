@@ -1777,9 +1777,12 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
     // don't necessarily have the glyphs in our font, or if we do we would need
     // a hashmap to cache and extract them And we also do this if the text is to
     // be scaled up artificially.
-#ifdef __OCPN__ANDROID__
+
+    //Fixme (dave)
+    // We also do this the hard way for rotation of strings.  Very slow.
+//#ifdef __OCPN__ANDROID__
     if (fabs(vp_plib.rotation) > .01) b_force_no_texture = true;
-#endif
+//#endif
     if ((ptext->bspecial_char) || b_force_no_texture) {
       if (!ptext->texobj)  // is texture ready?
       {
@@ -8371,7 +8374,7 @@ void RotateToViewPort(const VPointCompat &vp) {
   bool g_bskew_comp = true;
 
   float angle = vp.rotation;
-  if (g_bskew_comp) angle -= vp.skew;
+  //if (g_bskew_comp) angle -= vp.skew;
 
   if (fabs(angle) > 0.0001) {
     //    Rotations occur around 0,0, so translate to rotate around screen

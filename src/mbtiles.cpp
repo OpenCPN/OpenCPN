@@ -1004,7 +1004,7 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
    // Set up the texture sampler to texture unit 0
     shader->SetUniform1i("uTex", 0);
 
-    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)vp.vp_transform);
+    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)vp.vp_matrix_transform);
 
     float co1[8];
     float tco1[8];

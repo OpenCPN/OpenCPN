@@ -579,10 +579,10 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   mat4x4 m;
   ViewPort *vp = m_pParentCanvas->GetpVP();
   mat4x4_identity(m);
-  mat4x4_scale_aniso((float(*)[4])vp->vp_transform, m,
+  mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
                      1.0);
-  mat4x4_translate_in_place((float(*)[4])vp->vp_transform, -vp->pix_width / 2,
+  mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
                             -vp->pix_height / 2, 0);
 #endif
 }
@@ -2037,131 +2037,132 @@ void glChartCanvas::GridDraw() {
   }
 
   // draw text labels
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_BLEND);
-  for (lat = startlat; lat < nlat; lat += gridlatMajor) {
-    if (fabs(lat - wxRound(lat)) < 1e-5) lat = wxRound(lat);
+  if( abs(vp.rotation) < .1){
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    for (lat = startlat; lat < nlat; lat += gridlatMajor) {
+      if (fabs(lat - wxRound(lat)) < 1e-5) lat = wxRound(lat);
 
-    wxString st =
-        CalcGridText(lat, gridlatMajor, true);  // get text for grid line
-    int iy;
-    m_gridfont.GetTextExtent(st, 0, &iy);
+      wxString st =
+          CalcGridText(lat, gridlatMajor, true);  // get text for grid line
+      int iy;
+      m_gridfont.GetTextExtent(st, 0, &iy);
 
-    if (straight_latitudes) {
+      if (straight_latitudes) {
+        wxPoint r, s;
+        m_pParentCanvas->GetCanvasPointPix(lat, elon, &r);
+        m_pParentCanvas->GetCanvasPointPix(lat, wlon, &s);
+
+        float x = 0, y = -1;
+        y = (float)(r.y * s.x - s.y * r.x) / (s.x - r.x);
+        if (y < 0 || y > h) {
+          y = h - iy;
+          x = (float)(r.x * s.y - s.x * r.y + (s.x - r.x) * y) / (s.y - r.y);
+        }
+
+        m_gridfont.RenderString(st, x, y);
+      } else {
+        // iteratively attempt to find where the latitude line crosses x=0
+        wxPoint2DDouble r;
+        double y1, y2, lat1, lon1, lat2, lon2;
+
+        y1 = 0, y2 = vp.pix_height;
+        double error = vp.pix_width, lasterror;
+        int maxiters = 10;
+        do {
+          m_pParentCanvas->GetCanvasPixPoint(0, y1, lat1, lon1);
+          m_pParentCanvas->GetCanvasPixPoint(0, y2, lat2, lon2);
+
+          double y = y1 + (lat1 - lat) * (y2 - y1) / (lat1 - lat2);
+
+          m_pParentCanvas->GetDoubleCanvasPointPix(
+              lat, lon1 + (y1 - y) * (lon2 - lon1) / (y1 - y2), &r);
+
+          if (fabs(y - y1) < fabs(y - y2))
+            y1 = y;
+          else
+            y2 = y;
+
+          lasterror = error;
+          error = fabs(r.m_x);
+          if (--maxiters == 0) break;
+        } while (error > 1 && error < lasterror);
+
+        if (error < 1 && r.m_y >= 0 && r.m_y <= vp.pix_height - iy)
+          r.m_x = 0;
+        else
+          // just draw at center longitude
+          m_pParentCanvas->GetDoubleCanvasPointPix(lat, vp.clon, &r);
+
+        m_gridfont.RenderString(st, r.m_x, r.m_y);
+      }
+    }
+
+    for (lon = startlon; lon < elon; lon += gridlonMajor) {
+      if (fabs(lon - wxRound(lon)) < 1e-5) lon = wxRound(lon);
+
       wxPoint r, s;
-      m_pParentCanvas->GetCanvasPointPix(lat, elon, &r);
-      m_pParentCanvas->GetCanvasPointPix(lat, wlon, &s);
+      m_pParentCanvas->GetCanvasPointPix(nlat, lon, &r);
+      m_pParentCanvas->GetCanvasPointPix(slat, lon, &s);
 
-      float x = 0, y = -1;
-      y = (float)(r.y * s.x - s.y * r.x) / (s.x - r.x);
-      if (y < 0 || y > h) {
-        y = h - iy;
-        x = (float)(r.x * s.y - s.x * r.y + (s.x - r.x) * y) / (s.y - r.y);
-      }
+      float xlon = lon;
+      if (xlon > 180.0)
+        xlon -= 360.0;
+      else if (xlon <= -180.0)
+        xlon += 360.0;
 
-      m_gridfont.RenderString(st, x, y);
-    } else {
-      // iteratively attempt to find where the latitude line crosses x=0
-      wxPoint2DDouble r;
-      double y1, y2, lat1, lon1, lat2, lon2;
+      wxString st = CalcGridText(xlon, gridlonMajor, false);
+      int ix;
+      m_gridfont.GetTextExtent(st, &ix, 0);
 
-      y1 = 0, y2 = vp.pix_height;
-      double error = vp.pix_width, lasterror;
-      int maxiters = 10;
-      do {
-        m_pParentCanvas->GetCanvasPixPoint(0, y1, lat1, lon1);
-        m_pParentCanvas->GetCanvasPixPoint(0, y2, lat2, lon2);
+      if (straight_longitudes) {
+        float x = -1, y = 0;
+        x = (float)(r.x * s.y - s.x * r.y) / (s.y - r.y);
+        if (x < 0 || x > w) {
+          x = w - ix;
+          y = (float)(r.y * s.x - s.y * r.x + (s.y - r.y) * x) / (s.x - r.x);
+        }
 
-        double y = y1 + (lat1 - lat) * (y2 - y1) / (lat1 - lat2);
+        m_gridfont.RenderString(st, x, y);
+      } else {
+        // iteratively attempt to find where the latitude line crosses x=0
+        wxPoint2DDouble r;
+        double x1, x2, lat1, lon1, lat2, lon2;
 
-        m_pParentCanvas->GetDoubleCanvasPointPix(
-            lat, lon1 + (y1 - y) * (lon2 - lon1) / (y1 - y2), &r);
+        x1 = 0, x2 = vp.pix_width;
+        double error = vp.pix_height, lasterror;
+        do {
+          m_pParentCanvas->GetCanvasPixPoint(x1, 0, lat1, lon1);
+          m_pParentCanvas->GetCanvasPixPoint(x2, 0, lat2, lon2);
 
-        if (fabs(y - y1) < fabs(y - y2))
-          y1 = y;
+          double x = x1 + (lon1 - lon) * (x2 - x1) / (lon1 - lon2);
+
+          m_pParentCanvas->GetDoubleCanvasPointPix(
+              lat1 + (x1 - x) * (lat2 - lat1) / (x1 - x2), lon, &r);
+
+          if (fabs(x - x1) < fabs(x - x2))
+            x1 = x;
+          else
+            x2 = x;
+
+          lasterror = error;
+          error = fabs(r.m_y);
+        } while (error > 1 && error < lasterror);
+
+        if (error < 1 && r.m_x >= 0 && r.m_x <= vp.pix_width - ix)
+          r.m_y = 0;
         else
-          y2 = y;
+          // failure, instead just draw the text at center latitude
+          m_pParentCanvas->GetDoubleCanvasPointPix(
+              wxMin(wxMax(vp.clat, slat), nlat), lon, &r);
 
-        lasterror = error;
-        error = fabs(r.m_x);
-        if (--maxiters == 0) break;
-      } while (error > 1 && error < lasterror);
-
-      if (error < 1 && r.m_y >= 0 && r.m_y <= vp.pix_height - iy)
-        r.m_x = 0;
-      else
-        // just draw at center longitude
-        m_pParentCanvas->GetDoubleCanvasPointPix(lat, vp.clon, &r);
-
-      m_gridfont.RenderString(st, r.m_x, r.m_y);
-    }
-  }
-
-  for (lon = startlon; lon < elon; lon += gridlonMajor) {
-    if (fabs(lon - wxRound(lon)) < 1e-5) lon = wxRound(lon);
-
-    wxPoint r, s;
-    m_pParentCanvas->GetCanvasPointPix(nlat, lon, &r);
-    m_pParentCanvas->GetCanvasPointPix(slat, lon, &s);
-
-    float xlon = lon;
-    if (xlon > 180.0)
-      xlon -= 360.0;
-    else if (xlon <= -180.0)
-      xlon += 360.0;
-
-    wxString st = CalcGridText(xlon, gridlonMajor, false);
-    int ix;
-    m_gridfont.GetTextExtent(st, &ix, 0);
-
-    if (straight_longitudes) {
-      float x = -1, y = 0;
-      x = (float)(r.x * s.y - s.x * r.y) / (s.y - r.y);
-      if (x < 0 || x > w) {
-        x = w - ix;
-        y = (float)(r.y * s.x - s.y * r.x + (s.y - r.y) * x) / (s.x - r.x);
+        m_gridfont.RenderString(st, r.m_x, r.m_y);
       }
-
-      m_gridfont.RenderString(st, x, y);
-    } else {
-      // iteratively attempt to find where the latitude line crosses x=0
-      wxPoint2DDouble r;
-      double x1, x2, lat1, lon1, lat2, lon2;
-
-      x1 = 0, x2 = vp.pix_width;
-      double error = vp.pix_height, lasterror;
-      do {
-        m_pParentCanvas->GetCanvasPixPoint(x1, 0, lat1, lon1);
-        m_pParentCanvas->GetCanvasPixPoint(x2, 0, lat2, lon2);
-
-        double x = x1 + (lon1 - lon) * (x2 - x1) / (lon1 - lon2);
-
-        m_pParentCanvas->GetDoubleCanvasPointPix(
-            lat1 + (x1 - x) * (lat2 - lat1) / (x1 - x2), lon, &r);
-
-        if (fabs(x - x1) < fabs(x - x2))
-          x1 = x;
-        else
-          x2 = x;
-
-        lasterror = error;
-        error = fabs(r.m_y);
-      } while (error > 1 && error < lasterror);
-
-      if (error < 1 && r.m_x >= 0 && r.m_x <= vp.pix_width - ix)
-        r.m_y = 0;
-      else
-        // failure, instead just draw the text at center latitude
-        m_pParentCanvas->GetDoubleCanvasPointPix(
-            wxMin(wxMax(vp.clat, slat), nlat), lon, &r);
-
-      m_gridfont.RenderString(st, r.m_x, r.m_y);
     }
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
   }
-
-  glDisable(GL_TEXTURE_2D);
-
-  glDisable(GL_BLEND);
 }
 
 void glChartCanvas::DrawEmboss(ocpnDC &dc, emboss_data *emboss) {
@@ -2771,23 +2772,6 @@ void glChartCanvas::DrawCloseMessage(wxString msg) {
 #endif
 }
 
-void glChartCanvas::RotateToViewPort(const ViewPort &vp) {
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-  float angle = vp.rotation;
-
-  if (fabs(angle) > 0.0001) {
-    //    Rotations occur around 0,0, so translate to rotate around screen
-    //    center
-    float xt = vp.pix_width / 2.0, yt = vp.pix_height / 2.0;
-
-    glTranslatef(xt, yt, 0);
-    glRotatef(angle * 180. / PI, 0, 0, 1);
-    glTranslatef(-xt, -yt, 0);
-  }
-#endif
-}
-
 GLShaderProgram *pStaticShader;
 
 static std::list<double *> combine_work_data;
@@ -2833,7 +2817,7 @@ void endCallbackD_GLSL() {
   GLShaderProgram *shader = pStaticShader;
   shader->Bind();
 
-  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_transform);
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)s_tessVP.vp_matrix_transform);
 
   mat4x4 identityMatrix;
   mat4x4_identity(identityMatrix);
@@ -2856,6 +2840,21 @@ void endCallbackD_GLSL() {
 
 }
 #else
+void vertexCallbackD(GLvoid *vertex)
+{
+    glVertex3dv( (GLdouble *)vertex);
+}
+
+void beginCallbackD( GLenum mode)
+{
+    glBegin( mode );
+}
+
+void endCallbackD()
+{
+    glEnd();
+}
+
 #endif
 
 void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
@@ -3199,10 +3198,12 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
         if (!get_region.Empty()) {
           if (chart->GetChartFamily() == CHART_FAMILY_RASTER) {
             ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB *>(chart);
-            if (Patch_Ch_BSB) {
-              SetClipRegion(vp, pqp->ActiveRegion /*pqp->quilt_region*/);
-              RenderRasterChartRegionGL(chart, vp, get_region);
+            if (Patch_Ch_BSB ) {
+
+              SetClipRegion(vp, get_region /*pqp->quilt_region*/);
+              RenderRasterChartRegionGL(chart, vp, pqp->ActiveRegion);
               DisableClipRegion();
+
               b_rendered = true;
             } else if (chart->GetChartType() == CHART_TYPE_MBTILES) {
               SetClipRegion(vp, pqp->ActiveRegion /*pqp->quilt_region*/);
@@ -3989,7 +3990,10 @@ void glChartCanvas::Render() {
       if (m_displayScale > 1)
          accelerated_pan = false;
 
-      //accelerated_pan = false;
+      // FIXME (dave) There are some display artifact troubles using accPan on rotation.
+      //  Especially seen on sparse RNC rendering
+      if(fabs(VPoint.rotation) > 0)
+        accelerated_pan = false;
 
       // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
@@ -4140,7 +4144,7 @@ void glChartCanvas::Render() {
           glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
           // restore the shader matrix
-          shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)VPoint.vp_transform);
+          shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)VPoint.vp_matrix_transform);
 
           shader->UnBind();
           glBindTexture(g_texture_rectangle_format, 0);
@@ -4167,12 +4171,14 @@ void glChartCanvas::Render() {
         // This can be annoying on Android pinch zoom
 
         // Clear the screen to NODTA color
-//         wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-//         glClearColor( color.Red() / 256., color.Green() / 256. ,
-//         color.Blue()/ 256. ,1.0 );
-        //glClear(GL_COLOR_BUFFER_BIT);
+         wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+         glClearColor( color.Red() / 256., color.Green() / 256. ,
+         color.Blue()/ 256. ,1.0 );
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        RenderCharts(m_gldc, screen_region);
+        OCPNRegion rscreen_region(VPoint.rv_rect);
+
+        RenderCharts(m_gldc, rscreen_region);
 
         m_cache_page = !m_cache_page; /* page flip */
 
@@ -5221,7 +5227,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       GLShaderProgram *shader = pcolor_tri_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5244,7 +5250,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = ptexture_2D_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5258,7 +5264,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = pcircle_filled_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5273,7 +5279,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = ptexture_2DA_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
@@ -5284,7 +5290,7 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
 
       shader = pAALine_shader_program[GetCanvasIndex()];
       shader->Bind();
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->UnBind();
 
       m_gldc.m_texfont.PrepareShader(vp.pix_width, vp.pix_height, vp.rotation);
@@ -5400,7 +5406,7 @@ void glChartCanvas::RenderColorRect(wxRect r, wxColor & color) {
       GLShaderProgram *shader = pcolor_tri_shader_program[GetCanvasIndex()];
       shader->Bind();
 
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_pParentCanvas->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       float colorv[4];
       colorv[0] = color.Red() / float(256);

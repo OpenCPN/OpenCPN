@@ -371,7 +371,7 @@ void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     mat4x4 I;
     mat4x4_identity(I);
 
-    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform);
+    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
     shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
 
 //     GLint matloc =
@@ -619,7 +619,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
       shader->SetUniform1f("uLineWidth", pen_width);
       shader->SetUniform1f("uBlendFactor", 2.0);
 
@@ -794,7 +794,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
       shader->SetUniform1f("uLineWidth", m_pen.GetWidth());
       shader->SetUniform1f("uBlendFactor", 2.0);
 
@@ -998,7 +998,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 
     mat4x4 X;
     mat4x4_mul(
-        X, (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform, Q);
+        X, (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform, Q);
     shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
 
 
@@ -1168,7 +1168,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       mat4x4 X;
       mat4x4_mul(
-          X, (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform,
+          X, (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform,
           Q);
 
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
@@ -1201,7 +1201,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Restore the default matrix
       //TODO  This will not work for multicanvas
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       shader->UnBind();
 
@@ -1242,7 +1242,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       mat4x4 X;
       mat4x4_mul(
-          X, (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform,
+          X, (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform,
           Q);
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
 
@@ -1264,7 +1264,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       }
 
       // Restore the default matrix
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       shader->UnBind();
 
@@ -1284,7 +1284,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Restore the default matrix
       //TODO  This will not work for multicanvas
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_transform);
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       shader->UnBind();
     }
@@ -1484,6 +1484,7 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
     //         odc_combine_work_data.clear();
   }
 #else
+#if 0
     static GLUtesselator *tobj = NULL;
     if (!tobj) tobj = gluNewTess();
 
@@ -1521,7 +1522,10 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
     gTesselatorVertices.Clear();
 
     gluDeleteTess(tobj);
-  }
+#endif
+
+ }
+
 #endif
 #endif
 }

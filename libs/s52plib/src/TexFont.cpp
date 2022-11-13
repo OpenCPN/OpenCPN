@@ -396,6 +396,8 @@ void TexFont::RenderString(const char *string, int x, int y) {
   glPopMatrix();
   glPopMatrix();
 #else
+  //FIXME (dave)  this is awful code, drawing chars glyph at a time.
+  //FIXME (dave)  Also, need to render string at an angle....
   m_dx = x;
   m_dy = y;
 
