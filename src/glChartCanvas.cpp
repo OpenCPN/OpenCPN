@@ -2783,7 +2783,7 @@ static void combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
   *dataOut = vertex;
 }
 
-//#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 void vertexCallbackD_GLSL(GLvoid *vertex) {
   // Grow the work buffer if necessary
   if (s_tess_vertex_idx > s_tess_buf_len - 8) {
@@ -2839,7 +2839,7 @@ void endCallbackD_GLSL() {
   shader->UnBind();
 
 }
-//#else
+#else
 void vertexCallbackD(GLvoid *vertex)
 {
     glVertex3dv( (GLdouble *)vertex);
@@ -2855,7 +2855,7 @@ void endCallbackD()
     glEnd();
 }
 
-//#endif
+#endif
 
 void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
   float lat_dist, lon_dist;
@@ -3480,9 +3480,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
       RenderWorldChart(dc, cvp, rect, world_view);
     }
   }
-
-  if(abs(vp.rotation > 0))
-    int yyp = 4;
 
   if (vp.b_quilt)
     RenderQuiltViewGL(vp, rect_region);
