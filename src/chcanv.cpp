@@ -4598,7 +4598,6 @@ void ChartCanvas::RotateCanvas(double dir) {
 }
 
 void ChartCanvas::DoRotateCanvas(double rotation) {
-  printf("do rotate %d\n", rot++);
   while (rotation < 0) rotation += 2 * PI;
   while (rotation > 2 * PI) rotation -= 2 * PI;
 

@@ -104,7 +104,6 @@ public:
   static ViewPort NormalizedViewPort(const ViewPort &vp, float lat = 0,
                                      float lon = 0);
 
-  static void RotateToViewPort(const ViewPort &vp);
   static void DrawRegion(ViewPort &vp, const LLRegion &region);
   static void SetClipRegion(ViewPort &vp, const LLRegion &region);
   static void SetClipRect(const ViewPort &vp, const wxRect &rect,
