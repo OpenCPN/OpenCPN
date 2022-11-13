@@ -4017,7 +4017,10 @@ void glChartCanvas::Render() {
       if (m_displayScale > 1)
          accelerated_pan = false;
 
-      accelerated_pan = false;
+      // FIXME (dave) There are some display artifact troubles using accPan on rotation.
+      //  Especially seen on sparse RNC rendering
+      if(fabs(VPoint.rotation) > 0)
+        accelerated_pan = false;
 
       // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
