@@ -221,27 +221,6 @@ public:
     return false;
   }
 
-  // Check the plugin for host run-time ID match.
-  // This test is necessary for cross-built hosts.
-  // For example, Ubuntu PPA builds for armhf define PKG_TARGET as ubuntu-armhf
-  // But run-time reports as raspbian on "Raspberry Pi OS".
-  bool is_plugin_compatible_runtime(const Plugin& plugin) const {
-    OCPN_OSDetail* os_detail = g_BasePlatform->GetOSDetail();
-    const std::string host_osd_abi =
-        os_detail->osd_ID + "-" + os_detail->osd_arch;
-    wxLogDebug("Checking for compatible run-time, host_osd_abi: %s : %s",
-               host_osd_abi, os_detail->osd_version);
-    wxLogDebug("   plugin_abi + version: %s %s", plugin.abi(),
-               plugin.major_version());
-    if (host_osd_abi == plugin.abi()) {
-      wxLogDebug("   plugin_version: %s", major_version());
-      if (os_detail->osd_version == plugin.major_version()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   const std::string& abi() const { return m_abi; }
 
   const std::string& abi_version() const { return m_abi_version; }
@@ -324,13 +303,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
     rv = true;
     wxLogDebug("Found Debian version matching Ubuntu host");
   }
-#ifdef ocpnARM
-  // TODO  This conditional may not be needed.  Test on O57+
-  else if (host.is_plugin_compatible_runtime(plugin)) {
-    rv = true;
-    wxLogDebug("Found host OCPN_OSDetail run-time match");
-  }
-#endif
   DEBUG_LOG << "Plugin compatibility check Final: "
             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
