@@ -4,9 +4,6 @@ jobs:
    build-focal:
      docker:
        - image: circleci/buildpack-deps:focal-scm
-         auth:
-           username: $DOCKER_USER
-           password: $DOCKER_PW
      environment:
        - OCPN_TARGET:  focal
      steps:
@@ -17,9 +14,6 @@ jobs:
    build-jammy:
      docker:
        - image: cimg/base:edge-22.04
-         auth:
-           username: $DOCKER_USER
-           password: $DOCKER_PW
      environment:
        - OCPN_TARGET:  jammy
      steps:
