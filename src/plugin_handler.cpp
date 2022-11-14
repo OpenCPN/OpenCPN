@@ -199,15 +199,13 @@ public:
     if (!ocpn::startswith(m_abi, "ubuntu")) return false;
     static const std::vector<std::string> compat_versions = {
         // clang-format: off
-        // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04",
         "11;ubuntu-gtk3-x86_64;20.04",
         "11;ubuntu-x86_64-wx32;22.04",
         "12;ubuntu-x86_64;23.04",
         "12;ubuntu-x86_64;23.10",
         "12;ubuntu-x86_64;24.04",
         "sid;ubuntu-x86_64;24.04"
-    };    // clang-format: on
+    };  // clang-format: on
     if (ocpn::startswith(plugin.abi(), "debian-x86_64")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
       const std::string compat_version =
