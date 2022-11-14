@@ -57,6 +57,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 class wxGLContext;
 
@@ -1630,13 +1631,67 @@ struct PluginNavdata {
 extern DECL_EXP PluginNavdata GetEventNavdata(ObservedEvt ev);
 
 /** Plugin API supporting direct access to comm drivers for output purposes */
+/*
+ * Plugins may access comm ports for direct output.
+ * The general program flow for a plugin may look something like this pseudo-code:
+ * 1.  Plugin will query OCPN core for a list of active comm drivers.
+ * 2.  Plugin will inspect the list, and query OCPN core for driver attributes.
+ * 3.  Plugin will select a comm driver with appropriate attributes for output.
+ * 4.  Plugin will register a list of PGNs expected to be transmitted (N2K specific)
+ * 5.  Plugin may then send a payload buffer to a specific comm driver for output as soon as possible.
+ *
+ * The mechanism for specifying a particular comm driver uses the notion of "handles".
+ * Each active comm driver has an associated opaque handle, managed by OCPN core.
+ * All references by a plugin to a driver are by means of its handle.
+ * Handles should be considered to be "opaque", meaning that the exact contents of the
+ * handle are of no specific value to the plugin, and only have meaning to the OCPN core
+ * management of drivers.
+ */
 
-/** A struct defining information available for a comm driver */
-typedef struct CommDriverInfo{
-    std::string protocol;
-    std::string port_identifier;
-    std::string device_identifier;
-    int sub_address;
-} CommDriverInfo;
+/** Definition of OCPN DriverHandle  */
+typedef std::string DriverHandle;
+
+/** Query OCPN core for a list of active drivers  */
+extern DECL_EXP std::vector<DriverHandle> GetActiveDrivers();
+
+/** Query a specific driver for attributes  */
+/* Driver attributes are available from OCPN core as a hash map of tag->attribute pairs.
+ * There is a defined set of common tags guaranteed for every driver.
+ * Both tags and attributes are defined as std::string.
+ * Here is the list of common tag-attribute pairs.
+ *
+ * Tag              Attribute definition
+ * ----------       --------------------
+ * "protocol"       Comm bus device protocol, such as "NMEA0183", "NMEA2000"
+ *
+ *
+ */
+
+/**  Query driver attributes  */
+extern DECL_EXP const std::unordered_map<std::string, std::string>&
+        GetAttributes(DriverHandle handle);
+
+/* Writing to a specific driver  */
+
+/* Comm drivers on bus protocols other than NMEA2000 may write directly to the port
+ * using  a simple call.  The physical write operation will be queued, and executed
+ * in order as bandwidth allows.
+ * Return value is number of bytes queued for transmission.
+ */
+extern DECL_EXP int WriteCommDriver( DriverHandle handle,
+                                     const std::shared_ptr <std::vector<uint8_t>> &payload);
+
+/** NMEA2000 protocol requires a specific destination bus address to receive the payload */
+extern DECL_EXP int WriteCommDriverN2K( DriverHandle handle, int CANAddress, const std::shared_ptr <std::vector<uint8_t>> &payload);
+
+/** Special NMEA2000 requirements
+ * NMEA2000 bus protocol device management requires that devices writing on the bus must inform
+ * all bus listeners of the specific PGNs that may be transmitted by this device.
+ * Once configured, this bus management process will be handled transparently by the OCPN core drivers.
+ * It is only necessary for plugins wishing to write to the NMEA2000 bus to register the specific PGNs
+ * that they anticipate using, with the selected driver.
+ */
+extern DECL_EXP bool RegisterTXPGNs( DriverHandle handle, std::vector<int> &pgn_list);
+
 
 #endif  //_PLUGIN_H_
