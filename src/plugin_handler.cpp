@@ -193,35 +193,6 @@ public:
     return plugin.major_version() == m_major_version;
   }
 
-  // clang-format off
-  // Test if plugin abi is a Ubuntu version compatible with hosts's
-  // Debian version. To be removed, see  #2512.
-  bool is_ubuntu_plugin_compatible(const Plugin& plugin) const {
-    static const std::vector<std::string> debian_versions = {
-        // clang-format: off
-        // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04",
-        "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64-wx32;22.04",
-        "12;ubuntu-x86_64;23.04",
-        "12;ubuntu-x86_64;23.10",
-        "12;ubuntu-x86_64;24.04",
-        "sid;ubuntu-x86_64;24.04"
-    };   // clang-format: on
-    if (ocpn::startswith(m_abi, "debian-x86_64")) {
-      wxLogDebug("Checking for ubuntu plugin on a debian-x86_64 host");
-      const std::string host_version =
-          m_major_version + ";" + plugin.abi() + ";" + plugin.abi_version();
-      for (auto& v : debian_versions) {
-        if (host_version == v) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  // clang-format on
-
   // Test if plugin abi is a Debian version compatible with host's Ubuntu
   // abi version on a x86_64 platform.
   bool is_debian_plugin_compatible(const Plugin& plugin) const {
@@ -349,9 +320,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   if (host.abi() == plugin.abi() && host.is_version_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found matching abi version %s", plugin.abi_version());
-  } else if (host.is_ubuntu_plugin_compatible(plugin)) {
-    rv = true;
-    wxLogDebug("Found Ubuntu version matching Debian host");
   } else if (host.is_debian_plugin_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found Debian version matching Ubuntu host");
