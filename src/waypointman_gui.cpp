@@ -489,7 +489,7 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   SVGDocumentPixelSize(fileName, w, h);
   w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the icons,
                                // 15px (approx 3mm) be it
-  bm_size = SVGPixelsToDisplay(w);
+  bm_size = w * g_ChartScaleFactorExp; //SVGPixelsToDisplay(w);
 #endif
 
   wxImage image =

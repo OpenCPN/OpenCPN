@@ -2441,7 +2441,7 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules,
         fontSize -= 3;
 
       // Now factor in the users selected font size.
-      fontSize += templateFont->GetPointSize() - 10;
+      fontSize += templateFont->GetPointSize() - 8;
 
       // In no case should font size be less than 10, since it becomes
       // unreadable
