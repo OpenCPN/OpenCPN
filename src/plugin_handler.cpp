@@ -250,23 +250,6 @@ public:
     return false;
   }
 
-  // Plugin and host abi differs. Check if plugin is compatible anyway
-  // by comparing the plugin abi with the list of abis similar to the
-  // host abi. Typically a host on a Ubuntu derivative which might be
-  // compatible with a plugin built for the derivative's Ubuntu base.
-  bool is_similar_plugin_compatible(const Plugin& plugin) const {
-    OCPN_OSDetail* os_detail = g_BasePlatform->GetOSDetail();
-    for (auto& name_like : os_detail->osd_names_like) {
-      const std::string osd_abi = name_like + "-" + os_detail->osd_arch;
-      if (osd_abi == plugin.abi()) {
-        if (is_version_compatible(plugin)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   // Check the plugin for host run-time ID match.
   // This test is necessary for cross-built hosts.
   // For example, Ubuntu PPA builds for armhf define PKG_TARGET as ubuntu-armhf
@@ -366,9 +349,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   if (host.abi() == plugin.abi() && host.is_version_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found matching abi version %s", plugin.abi_version());
-  } else if (host.is_similar_plugin_compatible(plugin)) {
-    rv = true;
-    wxLogDebug("Found similar abi");
   } else if (host.is_ubuntu_plugin_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found Ubuntu version matching Debian host");
