@@ -10,6 +10,11 @@ sudo apt-get install -q devscripts equivs
 mk-build-deps ./ci/control --install --root-cmd=sudo --remove
 sudo apt-get --allow-unauthenticated install -f
 
+if [ "$OCPN_TARGET" = "jammy" ]; then
+  sudo add-apt-repository -y ppa:leamas-alec/wxwidgets
+  sudo apt update
+fi
+
 rm -rf build && mkdir build && cd build
 cmake $WEBVIEW_OPT  $EXTRA_BUILD_OPTS\
     -DCMAKE_INSTALL_PREFIX=/usr \
