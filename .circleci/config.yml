@@ -1,9 +1,9 @@
 ---
 version: 2
 jobs:
-   build-bionic:
+   build-focal:
      docker:
-       - image: circleci/buildpack-deps:bionic-scm
+       - image: circleci/buildpack-deps:focal-scm
          auth:
            username: $DOCKER_USER
            password: $DOCKER_PW
@@ -14,9 +14,9 @@ jobs:
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
-   build-focal:
+   build-jammy:
      docker:
-       - image: circleci/buildpack-deps:focal-scm
+       - image: cimg/base:edge-22.04
          auth:
            username: $DOCKER_USER
            password: $DOCKER_PW
@@ -81,12 +81,12 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - build-bionic:
+      - build-focal:
           filters:
             branches:
               only:
                 - master
-      - build-focal:
+      - build-jammy:
           filters:
             branches:
               only:
