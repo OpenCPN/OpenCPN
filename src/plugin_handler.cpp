@@ -193,13 +193,18 @@ public:
     return plugin.major_version() == m_major_version;
   }
 
+  // clang-format off
   // Test if plugin abi is a Ubuntu version compatible with hosts's
   // Debian version. To be removed, see  #2512.
   bool is_ubuntu_plugin_compatible(const Plugin& plugin) const {
     static const std::vector<std::string> debian_versions = {
         // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64;22.04", "sid;ubuntu-gtk3-x86_64;20.04"};
+        "10;ubuntu-x86_64;18.04",
+        "11;ubuntu-gtk3-x86_64;20.04",
+        "11;ubuntu-x86_64;22.04",
+        "12;ubuntu-x86_64;24.04",
+        "sid;ubuntu-x86_64;24.04"
+    };
     if (ocpn::startswith(m_abi, "debian-x86_64")) {
       wxLogDebug("Checking for ubuntu plugin on a debian-x86_64 host");
       const std::string host_version =
@@ -212,6 +217,7 @@ public:
     }
     return false;
   }
+  // clang-format on
 
   // Test if plugin abi is a Debian version compatible with host's Ubuntu
   // abi version on a x86_64 platform.

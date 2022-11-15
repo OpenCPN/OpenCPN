@@ -68,7 +68,7 @@ public:
    * Set the entity which will receive incoming data. By default, such
    * data is ignored
    */
-  virtual void SetListener(std::shared_ptr<DriverListener> l) {}
+  virtual void SetListener(DriverListener& l) {}
 
   /**
    * Create a new virtual interface using a new instance of this driver.

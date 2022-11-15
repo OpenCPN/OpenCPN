@@ -139,7 +139,7 @@ bool CommBridge::Initialize() {
 
   // Initialize a listener for driver state changes
   driver_change_listener.Listen(
-          CommDriverRegistry::getInstance().evt_driverlist_change.key, this,
+          CommDriverRegistry::GetInstance().evt_driverlist_change.key, this,
           EVT_DRIVER_CHANGE);
   Bind(EVT_DRIVER_CHANGE, [&](wxCommandEvent ev) {
        OnDriverStateChange(); });

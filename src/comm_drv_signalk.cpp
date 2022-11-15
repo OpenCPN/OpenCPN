@@ -40,7 +40,7 @@ CommDriverSignalK::~CommDriverSignalK() {}
 bool CommDriverSignalK::SendMessage(std::shared_ptr<const NavMsg> msg,
                                     std::shared_ptr<const NavAddr> addr) { return false;}
 
-void CommDriverSignalK::SetListener(std::shared_ptr<DriverListener> l){};
+void CommDriverSignalK::SetListener(DriverListener& l){};
 
 std::shared_ptr<NavAddr> CommDriverSignalK::GetAddress(const NavAddrSignalK& name) {
     return std::make_shared<NavAddr>(NavAddrSignalK());

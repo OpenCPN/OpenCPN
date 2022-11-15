@@ -83,6 +83,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx321_opencpn50_macos1010/lib/wx/config/osx_cocoa-unicode-3.2 \
   -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx321_opencpn50_macos1010" \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
+  -DOCPN_BUILD_TEST=OFF \
   ..
 make -sj$(sysctl -n hw.physicalcpu)
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS

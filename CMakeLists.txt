@@ -180,6 +180,22 @@ else ()
   option(OCPN_BUILD_TEST "Enable test subproject build" ON)
 endif ()
 
+execute_process(
+  COMMAND "ip" "address" "show" "vcan0"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  OUTPUT_VARIABLE _VCAN_STDOUT
+  RESULT_VARIABLE _VCAN_RESULT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if ("${_VCAN_RESULT}" EQUAL 0)
+  set(ENABLE_VCAN_TESTS ON)
+  message(STATUS "tests using vcan0 are available.")
+else ()
+  set(ENABLE_VCAN_TESTS OFF)
+  message(STATUS "tests using vcan0 are NOT available: \"${_VCAN_STDERR}\"")
+endif ()
+
 set(
   OCPN_WXWIDGETS_FORCE_VERSION
   CACHE STRING "Force usage of a specific wxWidgets version."
@@ -833,6 +849,7 @@ set(
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
   include/ais_info_gui.h
+  include/atomic_queue.h
   include/base_platform.h
   include/canvasMenu.h
   include/catalog_handler.h
@@ -855,7 +872,6 @@ set(
   include/comm_drv_n0183_serial.h
   include/comm_drv_n2k.h
   include/comm_drv_n2k_serial.h
-  include/comm_drv_n2k_socketcan.h
   include/comm_drv_signalk_net.h
   include/comm_drv_registry.h
   include/comm_drv_factory.h
@@ -1859,7 +1875,7 @@ endif (UNIX)
 if (OCPN_BUILD_TEST)
   add_subdirectory(test)
   add_custom_target(run-tests
-    COMMAND ctest  -C $<CONFIG>
+    COMMAND ctest  -C $<CONFIG> -E tests
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
   )
   add_dependencies(run-tests tests)

@@ -40,7 +40,7 @@ typedef std::shared_ptr<AbstractCommDriver> DriverPtr;
 
 class CommDriverRegistry final {
 public:
-  CommDriverRegistry() {}
+  static CommDriverRegistry& GetInstance();
 
   /** Add driver to list of active drivers. */
   void Activate(DriverPtr driver);
@@ -54,7 +54,6 @@ public:
   /** @return List of all activated drivers. */
   const std::vector<DriverPtr>& GetDrivers();
 
-  static CommDriverRegistry& getInstance();
 
   // FIXME (Dave)
   //  Stub method, to pretest drivers.
@@ -64,7 +63,19 @@ public:
   /** Notified by all driverlist updates. */
   EventVar evt_driverlist_change;
 
+  /**
+   *  Notified for messages from drivers. The generated event contains:
+   *  - A wxLogLevel stored as an int.
+   *  - A string is with a prefix from originating driver class name e. g.,
+   *    "CommDriverN2KSerial:  Something happened"
+   */
+  EventVar evt_driver_msg;
+
 private:
+  CommDriverRegistry()  = default;
+  CommDriverRegistry(const CommDriverRegistry&) = delete;
+  CommDriverRegistry& operator=(const CommDriverRegistry&) = delete;
+
   std::vector<DriverPtr> drivers;
 };
 
