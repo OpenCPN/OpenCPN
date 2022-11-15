@@ -1136,7 +1136,7 @@ void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg )
   wxString sentence(s.c_str());
 
   if (s[0] == '$') {
-    const auto& drivers = CommDriverRegistry::getInstance().GetDrivers();
+    const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
     auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
     bool bpass_input_filter = true;
