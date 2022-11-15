@@ -37,13 +37,10 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <net/if.h>
+#include <serial/serial.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-
-#ifndef __ANDROID__
-#include "serial/serial.h"
-#endif
 
 #include <wx/log.h>
 #include <wx/string.h>
@@ -100,7 +97,12 @@ public:
         : time_arrived(std::chrono::system_clock::now()),
           sid(0), expected_length(0), cursor(0) {}
 
-    TimePoint time_arrived;  ///< time of last message.
+    bool IsExpired() const {
+      auto age = std::chrono::system_clock::now() - time_arrived;
+      return age > kEntryMaxAge;
+    }
+
+    TimePoint time_arrived;  ///< time of last fragment.
 
     /// Can header, used to "map" the incoming fast message fragments
     CanHeader header;
@@ -188,7 +190,7 @@ public:
 private:
   void Entry();
 
-  void ThreadMessage(const std::string& msg, int level = wxLOG_Message);
+  void ThreadMessage(const std::string& msg, wxLogLevel l = wxLOG_Message);
 
   int InitSocket(const std::string port_name);
   void SocketMessage(const std::string& msg, const std::string& device);
@@ -224,11 +226,6 @@ public:
 private:
   Worker m_worker;
 };
-
-static bool Expired(FastMessageMap::Entry entry) {
-  auto age = std::chrono::system_clock::now() - entry.time_arrived;
-  return age > kEntryMaxAge;
-}
 
 
 // Static CommDriverN2KSocketCAN factory implementation.
@@ -300,8 +297,9 @@ CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 
 void CommDriverN2KSocketCAN::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
-  // TODO: Read input data.
+  // TODO(dave) Finally decide if thread should start here or in CTOR
 }
+
 
 // Worker implementation
 
@@ -357,7 +355,7 @@ std::vector<unsigned char> Worker::PushFastMsgFragment(const CanHeader& header,
   return data;
 }
 
-void Worker::ThreadMessage(const std::string& msg, int level) {
+void Worker::ThreadMessage(const std::string& msg, wxLogLevel level) {
   wxLogGeneric(level, wxString(msg.c_str()));
   auto s = std::string("CommDriverN2KSocketCAN: ") + msg;
   CommDriverRegistry::GetInstance().evt_driver_msg.Notify(level, s);
@@ -544,7 +542,7 @@ int FastMessageMap::AddNewEntry(void) {
 int FastMessageMap::GarbageCollector(void) {
   std::vector<unsigned> stale_entries;
   for (unsigned i = 0; i < entries.size(); i++) {
-    if (Expired(entries[i])) stale_entries.push_back(i);
+    if (entries[i].IsExpired()) stale_entries.push_back(i);
   }
   for (auto i : stale_entries) Remove(i);
   return stale_entries.size();
