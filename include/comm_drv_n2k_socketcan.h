@@ -42,7 +42,7 @@ public:
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
 
-  void SetListener(std::shared_ptr<DriverListener> l) override{};
+  void SetListener(DriverListener& l) override { m_listener = l; }
 
   virtual bool Open() = 0;
   virtual void Close() = 0;
