@@ -27,6 +27,7 @@
 
 #include <map>
 #include <unordered_map>
+#include <memory>
 
 #include <wx/datetime.h>
 #include <wx/jsonval.h>
@@ -87,13 +88,13 @@ public:
   ~AisDecoder(void);
 
   AisError DecodeN0183(const wxString &str);
-  std::unordered_map<int, AisTargetData *> &GetTargetList(void) {
+  std::unordered_map<int, std::shared_ptr <AisTargetData>> &GetTargetList(void) {
     return AISTargetList;
   }
-  std::unordered_map<int, AisTargetData *> &GetAreaNoticeSourcesList(void) {
+  std::unordered_map<int, std::shared_ptr <AisTargetData>> &GetAreaNoticeSourcesList(void) {
     return AIS_AreaNotice_Sources;
   }
-  AisTargetData *Get_Target_Data_From_MMSI(int mmsi);
+  std::shared_ptr<AisTargetData> Get_Target_Data_From_MMSI(int mmsi);
   int GetNumTargets(void) { return m_n_targets; }
   bool IsAISSuppressed(void) { return m_bSuppressed; }
   bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
@@ -130,25 +131,25 @@ private:
   void OnTimerDSC(wxTimerEvent &event);
 
   bool NMEACheckSumOK(const wxString &str);
-  bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd);
+  bool Parse_VDXBitstring(AisBitstring *bstr, std::shared_ptr<AisTargetData> ptd);
   void UpdateAllCPA(void);
   void UpdateOneCPA(AisTargetData *ptarget);
   void UpdateAllAlarms(void);
   void UpdateAllTracks(void);
   void UpdateOneTrack(AisTargetData *ptarget);
   void BuildERIShipTypeHash(void);
-  AisTargetData *ProcessDSx(const wxString &str, bool b_take_dsc = false);
+  std::shared_ptr<AisTargetData> ProcessDSx(const wxString &str, bool b_take_dsc = false);
 
   wxString DecodeDSEExpansionCharacters(wxString dseData);
-  void getAISTarget(long mmsi, AisTargetData *&pTargetData,
-                    AisTargetData *&pStaleTarget, bool &bnewtarget,
+  void getAISTarget(long mmsi, std::shared_ptr<AisTargetData> &pTargetData,
+                    std::shared_ptr<AisTargetData> &pStaleTarget, bool &bnewtarget,
                     int &last_report_ticks, wxDateTime &now);
-  void getMmsiProperties(AisTargetData *&pTargetData);
-  void handleUpdate(AisTargetData *pTargetData, bool bnewtarget,
+  void getMmsiProperties(std::shared_ptr<AisTargetData> &pTargetData);
+  void handleUpdate(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
                     wxJSONValue &update);
-  void updateItem(AisTargetData *pTargetData, bool bnewtarget,
+  void updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
                   wxJSONValue &item, wxString &sfixtime) const;
-  void CommitAISTarget( AisTargetData *pTargetData,
+  void CommitAISTarget( std::shared_ptr<AisTargetData> pTargetData,
                         const wxString &str, bool message_valid,
                         bool new_target);
   void InitCommListeners(void);
@@ -164,8 +165,8 @@ private:
   bool HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg );
 
   wxString m_signalk_selfid;
-  std::unordered_map<int, AisTargetData *> AISTargetList;
-  std::unordered_map<int, AisTargetData *> AIS_AreaNotice_Sources;
+  std::unordered_map<int, std::shared_ptr<AisTargetData>> AISTargetList;
+  std::unordered_map<int, std::shared_ptr<AisTargetData>> AIS_AreaNotice_Sources;
   AIS_Target_Name_Hash *AISTargetNamesC;
   AIS_Target_Name_Hash *AISTargetNamesNC;
 
@@ -195,14 +196,14 @@ private:
   wxString sentence_accumulator;
   bool m_OK;
 
-  AisTargetData *m_pLatestTargetData;
+  std::shared_ptr<AisTargetData> m_pLatestTargetData;
 
   bool m_bAIS_Audio_Alert_On;
   wxTimer m_AIS_Audio_Alert_Timer;
   int m_n_targets;
   bool m_bSuppressed;
   bool m_bGeneralAlert;
-  AisTargetData *m_ptentative_dsctarget;
+  std::shared_ptr<AisTargetData> m_ptentative_dsctarget;
   wxTimer m_dsc_timer;
   wxString m_dsc_last_string;
   std::vector<int> m_MMSI_MismatchVec;

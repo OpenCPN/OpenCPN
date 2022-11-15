@@ -106,7 +106,7 @@ void AISTargetQueryDialog::OnKey(wxKeyEvent &ke) {
 
 void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
   if (m_MMSI != 0) {  //  Faulty MMSI could be reported as 0
-    AisTargetData *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+    auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
     if (td) {
       wxString n0 = wxString::Format(wxT("%s"), td->ShipName);
       n0.Replace(_T("@"), _T(" "));
@@ -134,7 +134,7 @@ void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
 
 void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
   if (m_MMSI != 0) {  //  Faulty MMSI could be reported as 0
-    AisTargetData *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+    auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
     if (td) {
       if (td->b_PersistTrack)  // The target was tracked and the user wants to
                                // stop it
@@ -238,13 +238,13 @@ bool AISTargetQueryDialog::Create(wxWindow *parent, wxWindowID id,
 void AISTargetQueryDialog::SetMMSI(int mmsi) {
   m_MMSI = mmsi;
 
-  AisTargetData *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
-  AdjustBestSize(td);
+  auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+  AdjustBestSize(td.get());
 }
 
 void AISTargetQueryDialog::RecalculateSize() {
-  AisTargetData *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
-  AdjustBestSize(td);
+  auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+  AdjustBestSize(td.get());
   return;
 }
 
@@ -306,7 +306,7 @@ void AISTargetQueryDialog::UpdateText() {
   int scroll_x, scroll_y;
   m_pQueryTextCtl->GetViewStart(&scroll_x, &scroll_y);
 
-  AisTargetData *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+  auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
   //    AdjustBestSize(td);
 
   DimeControl(this);
@@ -323,7 +323,7 @@ void AISTargetQueryDialog::UpdateText() {
     m_createWptBtn->Enable(td->b_positionOnceValid);
     m_createTrkBtn->Enable(td->b_show_track);
 
-    RenderHTMLQuery(td);
+    RenderHTMLQuery(td.get());
   }
 
 #ifdef __WXQT__

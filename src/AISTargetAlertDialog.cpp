@@ -236,8 +236,7 @@ void AISTargetAlertDialog::CreateControls() {
 bool AISTargetAlertDialog::GetAlertText() {
   //    Search the parent AisDecoder's target list for specified mmsi
   if (m_pdecoder) {
-    AisTargetData *td_found =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td_found = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
 
     if (td_found) {
       m_alert_text = td_found->BuildQueryResult();
@@ -335,8 +334,7 @@ void AISTargetAlertDialog::SetColorScheme(void) {
 void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
   //    Acknowledge any existing Alert, and dismiss the dialog
   if (m_pdecoder) {
-    AisTargetData *td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       if (AIS_ALERT_SET == td->n_alert_state) {
         td->m_ack_time = wxDateTime::Now();
@@ -358,8 +356,7 @@ void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
 void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
   //    Acknowledge the Alert, and dismiss the dialog
   if (m_pdecoder) {
-    AisTargetData *td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td =  m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       if (AIS_ALERT_SET == td->n_alert_state ) {
         td->m_ack_time = wxDateTime::Now();
@@ -378,8 +375,7 @@ void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
 }
 void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AisTargetData *td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td =  m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       RoutePoint *pWP = new RoutePoint(td->Lat, td->Lon, g_default_wp_icon,
                                        wxEmptyString, wxEmptyString);
@@ -403,7 +399,7 @@ void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
 void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
   //    Set the suppress audio flag
   if (m_pdecoder) {
-    AisTargetData *td =
+    auto td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) td->b_suppress_audio = true;
   }
@@ -411,7 +407,7 @@ void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
 
 void AISTargetAlertDialog::OnIdJumptoClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AisTargetData *td =
+    auto td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td)
       gFrame->JumpToPosition(gFrame->GetFocusCanvas(), td->Lat, td->Lon,

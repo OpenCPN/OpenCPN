@@ -3716,8 +3716,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_AISTARGET);
     if (pFind) {
       int FoundAIS_MMSI = (wxIntPtr)pFind->m_pData1;
-      AisTargetData *ptarget =
-          g_pAIS->Get_Target_Data_From_MMSI(FoundAIS_MMSI);
+      auto ptarget = g_pAIS->Get_Target_Data_From_MMSI(FoundAIS_MMSI);
 
       if (ptarget) {
         showAISRollover = true;
@@ -9418,7 +9417,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     float vp_scale = GetVPScale();
 
     for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
-      AisTargetData *target_data = target.second;
+      auto target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (auto &ani : target_data->area_notices) {
           Ais8_001_22 &area_notice = ani.second;

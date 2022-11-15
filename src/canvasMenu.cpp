@@ -351,7 +351,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     float vp_scale = parent->GetVPScale();
 
     for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
-      AisTargetData *target_data = target.second;
+      auto target_data = target.second;
       if (!target_data->area_notices.empty()) {
         for (auto &ani : target_data->area_notices) {
           Ais8_001_22 &area_notice = ani.second;
@@ -574,8 +574,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
     if (g_pAIS) {
       if (parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET)) {
-        AisTargetData *myptarget =
-            g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
+        auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if (!g_bBasicMenus && myptarget) {
           name = myptarget->GetFullName();
           if (name.IsEmpty()) name.Printf(_T("%d"), m_FoundAIS_MMSI);
@@ -1326,15 +1325,13 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_DEF_MENU_AIS_CPA: {
-      AisTargetData *myptarget =
-          g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
+      auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->Toggle_AIS_CPA();
       break;
     }
 
     case ID_DEF_MENU_AISSHOWTRACK: {
-      AisTargetData *myptarget =
-          g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
+      auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->ToggleShowTrack();
       break;
     }
