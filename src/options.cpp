@@ -1100,8 +1100,7 @@ void MMSIEditDialog::Persist() {
     m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
     if (m_props->m_ShipName == wxEmptyString) {
-      AisTargetData* proptarget =
-          g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
+      auto proptarget = g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
       if (proptarget) {
         wxString s = proptarget->GetFullName();
         m_props->m_ShipName = s;
@@ -7080,7 +7079,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //   Update all the current targets
   if (g_pAIS) {
     for (const auto& it : g_pAIS->GetTargetList()) {
-      AisTargetData* pAISTarget = it.second;
+      auto pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = g_bAISShowTracks;
         // Check for exceptions in MMSI properties

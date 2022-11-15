@@ -303,13 +303,13 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
 static int ArrayItemCompareMMSI(int MMSI1, int MMSI2) {
   if (s_p_sort_decoder) {
-    AisTargetData *pAISTarget1 =
+    std::shared_ptr<AisTargetData> pAISTarget1 =
         s_p_sort_decoder->Get_Target_Data_From_MMSI(MMSI1);
-    AisTargetData *pAISTarget2 =
+    std::shared_ptr<AisTargetData> pAISTarget2 =
         s_p_sort_decoder->Get_Target_Data_From_MMSI(MMSI2);
 
     if (pAISTarget1 && pAISTarget2)
-      return ItemCompare(pAISTarget1, pAISTarget2);
+      return ItemCompare(pAISTarget1.get(), pAISTarget2.get());
     else
       return 0;
   } else
@@ -703,7 +703,7 @@ void AISTargetListDialog::CreateControls() {
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnTargetScrollTo), NULL, this);
   bsRouteButtonsInner->Add(m_pButtonJumpTo, 0, wxEXPAND | wxALL, 0);
-  
+
   m_pButtonJumpTo_Close =
     new wxButton(winr, wxID_ANY, _("Center-Info-Close"), wxDefaultPosition,
                  wxDefaultSize, wxBU_AUTODRAW);
@@ -849,8 +849,7 @@ void AISTargetListDialog::UpdateButtons() {
   m_pButtonInfo->Enable(enable);
 
   if (m_pdecoder && item != -1) {
-    AisTargetData *pAISTargetSel =
-        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
+    auto pAISTargetSel =  m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
     if (pAISTargetSel && (!pAISTargetSel->b_positionOnceValid)) enable = false;
   }
   m_pButtonJumpTo->Enable(enable);
@@ -884,8 +883,7 @@ void AISTargetListDialog::OnTargetQuery(wxCommandEvent &event) {
   if (selItemID == -1) return;
 
   if (m_pdecoder) {
-    AisTargetData *pAISTarget =
-        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
+    auto pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
     if (pAISTarget) DoTargetQuery(pAISTarget->MMSI);
   }
 }
@@ -949,7 +947,7 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
                                                  wxLIST_STATE_SELECTED);
   if (selItemID == -1) return;
 
-  AisTargetData *pAISTarget = NULL;
+  std::shared_ptr<AisTargetData> pAISTarget = NULL;
   if (m_pdecoder)
     pAISTarget =
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
@@ -974,7 +972,7 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
 void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
     for (const auto &it : m_pdecoder->GetTargetList()) {
-      AisTargetData *pAISTarget = it.second;
+      auto pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = true;
       }
@@ -986,7 +984,7 @@ void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
 void AISTargetListDialog::OnHideAllTracks(wxCommandEvent &event) {
   if (m_pdecoder) {
     for (const auto &it : m_pdecoder->GetTargetList()) {
-      AisTargetData *pAISTarget = it.second;
+      auto pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = false;
       }
@@ -1001,7 +999,7 @@ void AISTargetListDialog::OnToggleTrack(wxCommandEvent &event) {
                                                  wxLIST_STATE_SELECTED);
   if (selItemID == -1) return;
 
-  AisTargetData *pAISTarget = NULL;
+  std::shared_ptr<AisTargetData> pAISTarget = NULL;
   if (m_pdecoder)
     pAISTarget =
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
@@ -1026,7 +1024,7 @@ void AISTargetListDialog::CenterToTarget(bool close) {
                                                  wxLIST_STATE_SELECTED);
   if (selItemID == -1) return;
 
-  AisTargetData *pAISTarget = NULL;
+  std::shared_ptr<AisTargetData> pAISTarget = NULL;
   if (m_pdecoder)
     pAISTarget =
     m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
@@ -1062,7 +1060,7 @@ void AISTargetListDialog::OnLimitRange(wxCommandEvent &event) {
   UpdateAISTargetList();
 }
 
-AisTargetData *AISTargetListDialog::GetpTarget(unsigned int list_item) {
+std::shared_ptr<AisTargetData> AISTargetListDialog::GetpTarget(unsigned int list_item) {
   if (m_pdecoder)
     return m_pdecoder->Get_Target_Data_From_MMSI(
         m_pMMSI_array->Item(list_item));
@@ -1091,7 +1089,7 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
 
     for (auto it = current_targets.begin(); it != current_targets.end();
          ++it, ++index) {
-      AisTargetData *pAISTarget = it->second;
+      auto pAISTarget = it->second;
       item.SetId(index);
 
       if (NULL != pAISTarget) {
@@ -1165,7 +1163,7 @@ void AISTargetListDialog::UpdateNVAISTargetList(void) {
 
     for (auto it = current_targets.begin(); it != current_targets.end();
          ++it, ++index) {
-      AisTargetData *pAISTarget = it->second;
+      auto pAISTarget = it->second;
       item.SetId(index);
 
       if (NULL != pAISTarget) {

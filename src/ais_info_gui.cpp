@@ -31,6 +31,8 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#include <memory>
+
 #include <wx/datetime.h>
 #include <wx/event.h>
 #include <wx/string.h>
@@ -118,9 +120,10 @@ static void OnDeleteTrack(MmsiProperties* props) {
 AisInfoGui::AisInfoGui() {
   ais_info_listener.Listen(g_pAIS->info_update, this, EVT_AIS_INFO);
 
-  Bind(EVT_AIS_INFO, [&](wxCommandEvent ev) {
-       auto palert_target = static_cast<AisTargetData*>(ev.GetClientData());
-       ShowAisInfo(palert_target); });
+  //FIXME (dave)
+//   Bind(EVT_AIS_INFO, [&](wxCommandEvent ev) {
+//        auto palert_target = static_cast<AisTargetData*>(ev.GetClientData());
+//        ShowAisInfo(palert_target); });
 
   ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
   Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
@@ -157,7 +160,7 @@ void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
   m_bAIS_AlertPlaying = false;
 }
 
-void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
+void AisInfoGui::ShowAisInfo(std::shared_ptr<AisTargetData> palert_target) {
    int audioType = AISAUDIO_NONE;
    if (!palert_target) return;
 
@@ -210,14 +213,14 @@ void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
     AisTargetData *palert_target_lowestcpa = NULL;
     const auto& current_targets = g_pAIS->GetTargetList();
     for (auto& it : current_targets) {
-      AisTargetData *td = it.second;
+      auto td = it.second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
           if (g_bAIS_CPA_Alert && td->b_active) {
             if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
               if (td->TCPA < tcpa_min) {
                 tcpa_min = td->TCPA;
-                palert_target_lowestcpa = td;
+                palert_target_lowestcpa = td.get();
               }
             }
           }
@@ -308,9 +311,9 @@ void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       if (palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI) {
         if (pAISMOBRoute)
-          gFrame->UpdateAISMOBRoute(palert_target);
+          gFrame->UpdateAISMOBRoute(palert_target.get());
         else
-          gFrame->ActivateAISMOBRoute(palert_target);
+          gFrame->ActivateAISMOBRoute(palert_target.get());
         break;
       }
     }

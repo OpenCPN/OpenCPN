@@ -25,6 +25,8 @@
 #ifndef __AISTARGETLISTDIALOG_H__
 #define __AISTARGETLISTDIALOG_H__
 
+#include <memory>
+
 #include <wx/panel.h>
 #include <wx/checkbox.h>
 
@@ -64,7 +66,7 @@ public:
   void UpdateNVAISTargetList();
   void CopyMMSItoClipBoard(int);
   void CenterToTarget(bool);
-  AisTargetData *GetpTarget(unsigned int list_item);
+  std::shared_ptr<AisTargetData> GetpTarget(unsigned int list_item);
 
   OCPNListCtrl *m_pListCtrlAISTargets;
   AisDecoder *m_pdecoder;

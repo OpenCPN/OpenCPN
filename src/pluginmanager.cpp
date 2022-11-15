@@ -3068,8 +3068,8 @@ ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void) {
 
   //      Iterate over the AIS Target Hashmap
   for (const auto &it : g_pAIS->GetTargetList()) {
-    AisTargetData *td = it.second;
-    PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(td);
+    auto td = it.second;
+    PlugIn_AIS_Target *ptarget = Create_PI_AIS_Target(td.get());
     pret->Add(ptarget);
   }
 
