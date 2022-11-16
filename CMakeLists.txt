@@ -739,6 +739,12 @@ if (NOT QT_ANDROID)
   endif (MSYS)
   include(${wxWidgets_USE_FILE})
 
+  if (wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.1.6")
+    add_definitions("-DWX316PLUS")
+  endif()
+
+
+
   # As of cmake 3.11.2, these libraries are missing in list despite that we
   # looked for them. This is a nasty fix which might fail miserably. Assumption:
   # All builds using GTK uses unicode and wxWidgets 3.0
