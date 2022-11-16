@@ -3339,6 +3339,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
 
   int point_size = 6;
   int charWidth, charHeight, charDescent;
+  charWidth = 1;
 
   double target = defaultHeight * scale_factor;
 
