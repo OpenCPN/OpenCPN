@@ -8894,9 +8894,11 @@ void LoadS57() {
     pConfig->LoadS57Config();
     ps52plib->SetPLIBColorScheme(global_color_scheme);
 
-    if (gFrame->GetPrimaryCanvas())
+    if (gFrame->GetPrimaryCanvas()){
       ps52plib->SetPPMM(gFrame->GetPrimaryCanvas()->GetPixPerMM());
-
+      double dpi_factor = g_BasePlatform->GetDisplayDPIMult(gFrame->GetPrimaryCanvas());
+      ps52plib->SetDPIFactor(dpi_factor);
+    }
 #ifdef ocpnUSE_GL
 
     // Setup PLIB OpenGL options, if enabled

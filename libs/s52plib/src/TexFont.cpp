@@ -59,7 +59,7 @@ TexFont::TexFont() {
 
 TexFont::~TexFont() { Delete(); }
 
-void TexFont::Build(wxFont &font, bool blur) {
+void TexFont::Build(wxFont &font, double dpi_factor, bool blur) {
   /* avoid rebuilding if the parameters are the same */
   if (m_built && (font == m_font) && (blur == m_blur)) return;
 
@@ -77,7 +77,7 @@ void TexFont::Build(wxFont &font, bool blur) {
     wxCoord gw, gh;
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("Â°");
+      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
     else
       text = wxString::Format(_T("%c"), i);
     wxCoord descent, exlead;
@@ -88,6 +88,8 @@ void TexFont::Build(wxFont &font, bool blur) {
     tgi[i].height = gh;
 
     tgi[i].advance = gw;
+    tgi[i].advance *= dpi_factor;
+
 
     m_maxglyphw = wxMax(tgi[i].width, m_maxglyphw);
     m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
@@ -138,7 +140,7 @@ void TexFont::Build(wxFont &font, bool blur) {
 
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("Â°");
+      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
     else
       text = wxString::Format(_T("%c"), i);
 

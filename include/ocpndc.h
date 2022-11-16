@@ -120,6 +120,7 @@ public:
   void DestroyClippingRegion() {}
 
   wxDC *GetDC() const { return dc; }
+  void SetDPIFactor(double factor){ m_dpi_factor = factor; }
 
 #ifdef ocpnUSE_GL
   GLfloat *s_odc_tess_work_buf;
@@ -169,6 +170,8 @@ protected:
   float *workBuf;
   size_t workBufSize;
   unsigned int workBufIndex;
+  double m_dpi_factor;
+
 };
 
 #endif

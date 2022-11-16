@@ -91,6 +91,7 @@ ocpnDC::ocpnDC(glChartCanvas &canvas)
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
   m_canvasIndex = m_glchartCanvas->GetCanvasIndex();
+  m_dpi_factor = 1.0;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   s_odc_tess_vertex_idx = 0;
@@ -116,6 +117,7 @@ ocpnDC::ocpnDC(wxGLCanvas &canvas)
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
   m_canvasIndex = 0;
+  m_dpi_factor = 1.0;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   s_odc_tess_vertex_idx = 0;
@@ -146,6 +148,8 @@ ocpnDC::ocpnDC(wxDC &pdc)
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
   m_canvasIndex = 0;
+  m_dpi_factor = 1.0;
+
 }
 
 ocpnDC::ocpnDC()
@@ -158,6 +162,7 @@ ocpnDC::ocpnDC()
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
   m_canvasIndex = 0;
+  m_dpi_factor = 1.0;
 }
 
 ocpnDC::~ocpnDC() {
@@ -1640,7 +1645,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
     wxCoord h = 0;
 
     if (m_buseTex) {
-      m_texfont.Build(m_font);  // make sure the font is ready
+      m_texfont.Build(m_font, m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(text, &w, &h);
       m_texfont.SetColor(m_textforegroundcolour);
 
@@ -1832,7 +1837,7 @@ void ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
 
     if (m_buseTex) {
 #ifdef ocpnUSE_GL
-      m_texfont.Build(f);  // make sure the font is ready
+      m_texfont.Build(f, m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(string, w, h);
 #else
       wxMemoryDC temp_dc;
