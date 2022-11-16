@@ -222,6 +222,7 @@ extern bool g_running;
 extern unsigned int g_canvasConfig;
 extern ChartCanvas *g_focusCanvas;
 extern ChartCanvas *g_overlayCanvas;
+extern BasePlatform *g_BasePlatform;
 
 ocpnGLOptions g_GLOptions;
 
@@ -1928,13 +1929,16 @@ void glChartCanvas::GridDraw() {
   wxColour GridColor = GetGlobalColor(_T ( "SNDG1" ));
 
   if (!m_gridfont.IsBuilt()) {
+    double dpi_factor = g_BasePlatform->GetDisplayDPIMult(this);
     wxFont *dFont = FontMgr::Get().GetFont(_("ChartTexts"), 0);
     wxFont font = *dFont;
     font.SetPointSize(8);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
+    font.Scale( 1.0 / dpi_factor);
 
-    m_gridfont.Build(font, 1);
+    m_gridfont.Build(font, dpi_factor);
   }
+  m_gridfont.SetColor(GridColor);
 
   w = vp.pix_width;
   h = vp.pix_height;
@@ -1989,7 +1993,7 @@ void glChartCanvas::GridDraw() {
     for (lon = wlon; lon < elon + lon_step / 2; lon += lon_step) {
       m_pParentCanvas->GetDoubleCanvasPointPix(lat, lon, &r);
       if (!std::isnan(s.m_x) && !std::isnan(r.m_x)) {
-        gldc.DrawLine(s.m_x, s.m_y, r.m_x, r.m_y, true);
+        gldc.DrawLine(s.m_x, s.m_y, r.m_x, r.m_y, false);
       }
       s = r;
     }
@@ -2002,7 +2006,7 @@ void glChartCanvas::GridDraw() {
       wxPoint r;
       m_pParentCanvas->GetCanvasPointPix(lat, (elon + wlon) / 2, &r);
       gldc.DrawLine(0, r.y, 10, r.y, true);
-      gldc.DrawLine(w - 10, r.y, w, r.y, true);
+      gldc.DrawLine(w - 10, r.y, w, r.y, false);
 
       lat = lat + gridlatMinor;
     }
@@ -2019,7 +2023,7 @@ void glChartCanvas::GridDraw() {
       m_pParentCanvas->GetDoubleCanvasPointPix(lat, lon, &r);
 
       if (!std::isnan(s.m_x) && !std::isnan(r.m_x)) {
-        gldc.DrawLine(s.m_x, s.m_y, r.m_x, r.m_y, true);
+        gldc.DrawLine(s.m_x, s.m_y, r.m_x, r.m_y, false);
       }
       s = r;
     }
@@ -2031,8 +2035,8 @@ void glChartCanvas::GridDraw() {
          lon += gridlonMinor) {
       wxPoint r;
       m_pParentCanvas->GetCanvasPointPix((nlat + slat) / 2, lon, &r);
-      gldc.DrawLine(r.x, 0, r.x, 10, true);
-      gldc.DrawLine(r.x, h - 10, r.x, h, true);
+      gldc.DrawLine(r.x, 0, r.x, 10, false);
+      gldc.DrawLine(r.x, h - 10, r.x, h, false);
     }
   }
 
