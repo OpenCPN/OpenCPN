@@ -21,15 +21,29 @@ if (GTEST_LIB AND GTEST_MAIN AND GTEST_HDR)
   target_link_libraries(_OCPN_GTEST_IF INTERFACE ${GTEST_LIB})
   target_link_libraries(_OCPN_GTEST_IF INTERFACE ${GTEST_MAIN})
 else ()
-  message(STATUS "Downloading and building gtest from source")
-  include(FetchContent)
-  set(CMAKE_CXX_STANDARD 14)
-  FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG release-1.12.1
+  find_path(GTEST_SRC_LOCATION
+    NAMES googlemock/src/gmock-all.cc googletest/src/gtest-all.cc
+    HINTS ENV GTEST_SRC_ROOT
+    PATHS "/usr/src/googletest"
+    NO_DEFAULT_PATH
   )
+  include(FetchContent)
+  if (GTEST_SRC_LOCATION)
+    message(STATUS "Building gtest from installed sources")
+    FetchContent_Declare(
+      googletest
+      URL ${GTEST_SRC_LOCATION}
+    )
+  else ()
+    message(STATUS "Downloading and building gtest from source")
+    FetchContent_Declare(
+      googletest
+      GIT_REPOSITORY https://github.com/google/googletest.git
+      GIT_TAG release-1.12.1
+    )
+  endif ()
+  set(CMAKE_CXX_STANDARD 14)
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
-  target_link_libraries(_OCPN_GTEST_IF GTest::gtest_main)
-endif ()  
+  target_link_libraries(_OCPN_GTEST_IF INTERFACE GTest::gtest_main)
+endif ()
