@@ -797,6 +797,15 @@ double BasePlatform::GetDisplayDPmm() {
 #endif
 
 
+double BasePlatform::GetDisplayDPIMult(wxWindow *win) {
+  double rv = 1.0;
+#ifdef __WXMSW__
+  if (win)
+    rv = (double)(win->ToDIP(100))/100.;
+#endif
+  return rv;
+}
+
 unsigned int BasePlatform::GetSelectRadiusPix() {
   return GetDisplayDPmm() *
          (g_btouch ? g_selection_radius_touch_mm : g_selection_radius_mm);

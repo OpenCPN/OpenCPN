@@ -218,6 +218,8 @@ int CanvasMenuHandler::GetNextContextMenuId() {
          100;  // Allowing for 100 dynamic menu item identifiers
 }
 
+wxFont CanvasMenuHandler::m_scaledFont;
+
 // Define a constructor for my canvas
 CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
                                      Route *selectedRoute, Track *selectedTrack,
@@ -232,6 +234,10 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
   m_pFoundRoutePoint = selectedPoint;
   m_FoundAIS_MMSI = selectedAIS_MMSI;
   m_pIDXCandidate = selectedTCIndex;
+  if (!m_scaledFont.IsOk()){
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
+    m_scaledFont = *qFont;
+  }
 }
 
 CanvasMenuHandler::~CanvasMenuHandler() {}
@@ -240,7 +246,7 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
-void PrepareMenuItem( wxMenuItem *item ){
+void CanvasMenuHandler::PrepareMenuItem( wxMenuItem *item ){
 #if defined(__WXMSW__)
   wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
   item->SetBackgroundColour(ctrl_back_color);
@@ -249,11 +255,11 @@ void PrepareMenuItem( wxMenuItem *item ){
 #endif
 }
 
-void MenuPrepend1(wxMenu *menu, int id, wxString label) {
+void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-  item->SetFont(*qFont);
+  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+    item->SetFont(m_scaledFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -267,12 +273,11 @@ void MenuPrepend1(wxMenu *menu, int id, wxString label) {
   menu->Prepend(item);
 }
 
-void MenuAppend1(wxMenu *menu, int id, wxString label) {
+void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-
-  wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-  item->SetFont(*qFont);
+  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+    item->SetFont(m_scaledFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -286,9 +291,13 @@ void MenuAppend1(wxMenu *menu, int id, wxString label) {
   if (g_btouch) menu->AppendSeparator();
 }
 
-void SetMenuItemFont1(wxMenuItem *item) {
-#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
+#if defined(__WXMSW__)
+  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+    item->SetFont(m_scaledFont);
+#endif
 
+#if defined(__OCPN__ANDROID__)
   wxFont *qFont = GetOCPNScaledFont(_("Menu"));
   item->SetFont(*qFont);
 #endif
@@ -961,8 +970,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                          (*it)->GetHelp(), (*it)->GetKind());
 
 #ifdef __WXMSW__
-        wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-        pmi->SetFont( *qFont);
+        if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+          pmi->SetFont(m_scaledFont);
 #endif
         PrepareMenuItem( pmi );
         submenu->Append(pmi);
@@ -979,8 +988,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-    pmi->SetFont( *qFont);
+    if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+      pmi->SetFont(m_scaledFont);
 #endif
 
     PrepareMenuItem( pmi );

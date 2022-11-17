@@ -210,11 +210,12 @@ static const GLchar *S52Dash_fragment_shader_source =
     "uniform sampler2D uTex;\n"
     "uniform vec2 startPos;\n"
     "uniform float texWidth;\n"
+    "uniform float dashFactor;\n"
     "uniform vec4 color;\n"
     "void main() {\n"
     "   float d = distance(gl_FragCoord.xy, startPos);\n"
     "   float x = mod(d,texWidth) / texWidth;\n"
-    "   if(x < 0.66) gl_FragColor = color;\n"
+    "   if(x < dashFactor) gl_FragColor = color;\n"
     "   else gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);\n"
     "}\n";
 

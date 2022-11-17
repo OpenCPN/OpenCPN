@@ -366,7 +366,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
      s_txf[i].key = 0;
      s_txf[i].cache = 0;
   }
-
+  m_dpifactor = 1.0;
 
 }
 
@@ -458,6 +458,10 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
   m_GLMinCartographicLineWidth = MinCartographicLineWidth;
   m_GLMinSymbolLineWidth = MinSymbolLineWidth;
 
+}
+
+void s52plib::SetDPIFactor( double factor) {
+  m_dpifactor = factor;
 }
 
 void s52plib::SetPPMM(float ppmm) {
@@ -2077,7 +2081,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
           delete s_txf[i].cache;
         s_txf[i].cache = new TexFont();
         f_cache = s_txf[i].cache;
-        f_cache->Build(*ptext->pFont);
+        f_cache->Build(*ptext->pFont, m_dpifactor);
       }
 
       int w, h;
@@ -3339,6 +3343,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
 
   int point_size = 6;
   int charWidth, charHeight, charDescent;
+  charWidth = 1;
 
   double target = defaultHeight * scale_factor;
 
@@ -4464,10 +4469,10 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
   S52color *c;
 
-  char *str = (char *)rules->INSTstr;
-  c = getColor(str + 7);  // Colour
+  char *instr_str = (char *)rules->INSTstr;
+  c = getColor(instr_str + 7);  // Colour
   wxColour color(c->R, c->G, c->B);
-  int w = atoi(str + 5);  // Width
+  int w = atoi(instr_str + 5);  // Width
 
   double scale_factor = vp_plib.ref_scale / vp_plib.chart_scale;
   double scaled_line_width =
@@ -4541,6 +4546,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
   GLint startPos = glGetUniformLocation(S52Dash_shader_program, "startPos");
   GLint texWidth = glGetUniformLocation(S52Dash_shader_program, "texWidth");
+  GLint dashFactor = glGetUniformLocation(S52Dash_shader_program, "dashFactor");
 
   float colorv[4];
   colorv[0] = color.Red() / float(256);
@@ -4554,15 +4560,20 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
   // Select the active texture unit.
   glActiveTexture(GL_TEXTURE0);
 
-  // Bind our texture to the texturing target.
-  //                            glBindTexture( GL_TEXTURE_2D, textureDot );
-
   // Set up the texture sampler to texture unit 0
   GLint texUni = glGetUniformLocation(S52Dash_shader_program, "uTex");
   glUniform1i(texUni, 0);
 
-  float width = GetPPMM() * 5.4;  // from s52 specs, 3.6mm dash, 1.8mm space // tex_w;
-  glUniform1f(texWidth, width);
+  if (!strncmp(instr_str, "DASH", 4)){
+   float width = GetPPMM() * 5.4;  // from s52 specs, 3.6mm dash, 1.8mm space // tex_w;
+   glUniform1f(texWidth, width);
+   glUniform1f(dashFactor, 0.66);
+  }
+  else {
+   float width = GetPPMM() * 1;
+   glUniform1f(texWidth, width);
+   glUniform1f(dashFactor, 0.5);
+  }
 
   // Disable VBO's (vertex buffer objects) for attributes.
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -8398,6 +8409,7 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
+
   //    Get the pattern definition
   if ((rules->razRule->pixelPtr == NULL) ||
       (rules->razRule->parm1 != m_colortable_index) ||
