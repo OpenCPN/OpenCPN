@@ -42,7 +42,7 @@
 #include "cutil.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
-#include "ocpn_frame.h"   //FIXME (dave) color
+#include "color_handler.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"

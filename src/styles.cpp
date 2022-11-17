@@ -38,7 +38,7 @@
 #include "styles.h"
 #include "wx28compat.h"
 #include "svg_utils.h"
-#include "ocpn_frame.h"   //FIXME (dave) color
+#include "color_handler.h"
 #include "tinyxml.h"
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
