@@ -220,7 +220,7 @@ CommDriverSignalKNet::~CommDriverSignalKNet() {
 }
 
 void CommDriverSignalKNet::Activate() {
-  CommDriverRegistry::getInstance().Activate(shared_from_this());
+  CommDriverRegistry::GetInstance().Activate(shared_from_this());
 }
 
 void CommDriverSignalKNet::Open(void) {

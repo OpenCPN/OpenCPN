@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  General purpose fifo queue.
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -22,30 +22,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _COMMDRIVERN0183_H__
-#define _COMMDRIVERN0183_H__
 
-#include <memory>
-#include <string>
+#include <mutex>
+#include <queue>
 
-#include "comm_driver.h"
-
-class CommDriverN0183 : public AbstractCommDriver {
+template <typename T>
+class atomic_queue {
 public:
-  CommDriverN0183();
-  CommDriverN0183(NavAddr::Bus b, const std::string& s);
+  size_t size() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_queue.size();
+  }
 
-  virtual ~CommDriverN0183();
+  bool empty() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_queue.empty();
+  }
 
-  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                           std::shared_ptr<const NavAddr> addr) override = 0;
+  const T& front() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_queue.front();
+  }
 
-  void SetListener(DriverListener& l) override {}
+  void push(const T& value) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_queue.push(value);
+  }
 
-  virtual std::shared_ptr<NavAddr> GetAddress() {
-      return std::make_shared<NavAddr>(NavAddr0183(iface)); }
+  void pop() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_queue.pop();
+  }
 
-  void Activate() override;
+private:
+  std::queue<T> m_queue;
+  mutable std::mutex m_mutex;
 };
-
-#endif  // guarstring

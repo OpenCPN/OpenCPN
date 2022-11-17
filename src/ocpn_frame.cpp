@@ -2295,7 +2295,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   g_pMUX = NULL;
 
   // Close and delete all comm drivers
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...

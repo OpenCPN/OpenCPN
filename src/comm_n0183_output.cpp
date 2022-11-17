@@ -88,7 +88,7 @@ void LogBroadcastOutputMessageColor(const wxString &msg,
 
 void BroadcastNMEA0183Message(const wxString &msg) {
 
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
 
   for (auto& driver : drivers) {
@@ -139,7 +139,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
                                                            bool &btempStream, bool &b_restoreStream){
 
   std::shared_ptr<AbstractCommDriver> driver;
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
 
   if (com_name.Lower().StartsWith("serial")) {
@@ -301,7 +301,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
   bool btempStream = false;
   std::shared_ptr<AbstractCommDriver> old_driver;
   std::shared_ptr<AbstractCommDriver> driver;
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
 
   driver = CreateOutputConnection(com_name, old_driver,
                                   params_save, btempStream, b_restoreStream);
@@ -857,7 +857,7 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
   bool btempStream = false;
   std::shared_ptr<AbstractCommDriver> old_driver;
   std::shared_ptr<AbstractCommDriver> driver;
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
 
   driver = CreateOutputConnection(com_name, old_driver,
                                   params_save, btempStream, b_restoreStream);

@@ -79,6 +79,8 @@ public:
   /** Notify all listeners about variable change with a string. */
   const void Notify(const std::string& s) { Observable::Notify(s, 0); }
 
+  /** Notify all listeners about variable change with a string and an int */
+  const void Notify(int n, const std::string& s) { Observable::Notify(0, s, n, 0); }
   /**
    * Notify all listeners about variable change with shared_ptr,
    * a string and an optional number.
