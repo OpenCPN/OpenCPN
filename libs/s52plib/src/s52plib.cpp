@@ -8017,9 +8017,6 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules) {
 
 int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
-  if(!strncmp(rzRules->obj->FeatureName, "OBS", 3))
-    int yyp = 4;
-
   GLenum reset_err = glGetError();
 
   S52color *c;
@@ -8412,9 +8409,6 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
-  return 0;
-  if(!strncmp(rzRules->obj->FeatureName, "OBS", 3))
-    int yyp = 4;
 
   //    Get the pattern definition
   if ((rules->razRule->pixelPtr == NULL) ||
