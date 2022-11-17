@@ -82,6 +82,8 @@ public:
     return std::pair<CommStatus, std::string>(CommStatus::NotImplemented, "");
   }
 
+  std::string Key() const { return NavAddr::BusToString(bus) + "!@!" + iface; }
+
   const NavAddr::Bus bus;
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */

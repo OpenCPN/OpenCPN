@@ -147,6 +147,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "comm_drv_registry.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
+#include "comm_drv_registry.h"
 
 #ifdef __OCPN__ANDROID__
 #include <dlfcn.h>
@@ -8383,3 +8384,20 @@ wxString GetActiveRouteGUID(
   else
     return rt->m_GUID;
 }
+
+/** Comm port plugin TX support methods  */
+
+std::vector<DriverHandle> GetActiveDrivers() {
+
+  std::vector<DriverHandle> result;
+
+  auto& registry = CommDriverRegistry::GetInstance();
+  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
+
+  for (auto& driver : drivers)
+    result.push_back(driver->Key());
+
+  return result;
+}
+
+
