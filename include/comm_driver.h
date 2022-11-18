@@ -28,6 +28,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "observable.h"
 #include "comm_navmsg.h"
@@ -87,9 +88,15 @@ public:
   const NavAddr::Bus bus;
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
+  std::unordered_map<std::string, std::string> attributes;
+
 protected:
-  AbstractCommDriver(NavAddr::Bus b) : bus(b){};
-  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){};
+  AbstractCommDriver(NavAddr::Bus b) : bus(b){
+    attributes["protocol"] = NavAddr::BusToString(bus);
+  };
+  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){
+    attributes["protocol"] = NavAddr::BusToString(bus);
+  };
 };
 
 #endif  // DRIVER_API_H
