@@ -8401,3 +8401,9 @@ std::vector<DriverHandle> GetActiveDrivers() {
 }
 
 
+const std::unordered_map<std::string, std::string>& GetAttributes(DriverHandle handle) {
+  auto& registry = CommDriverRegistry::GetInstance();
+  auto driver = FindDriver(registry.GetDrivers(), handle);
+
+  return driver->attributes;
+}
