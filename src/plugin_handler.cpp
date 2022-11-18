@@ -193,40 +193,19 @@ public:
     return plugin.major_version() == m_major_version;
   }
 
-  // clang-format off
-  // Test if plugin abi is a Ubuntu version compatible with hosts's
-  // Debian version. To be removed, see  #2512.
-  bool is_ubuntu_plugin_compatible(const Plugin& plugin) const {
-    static const std::vector<std::string> debian_versions = {
-        // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04",
-        "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64;22.04",
-        "12;ubuntu-x86_64;24.04",
-        "sid;ubuntu-x86_64;24.04"
-    };
-    if (ocpn::startswith(m_abi, "debian-x86_64")) {
-      wxLogDebug("Checking for ubuntu plugin on a debian-x86_64 host");
-      const std::string host_version =
-          m_major_version + ";" + plugin.abi() + ";" + plugin.abi_version();
-      for (auto& v : debian_versions) {
-        if (host_version == v) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  // clang-format on
-
   // Test if plugin abi is a Debian version compatible with host's Ubuntu
   // abi version on a x86_64 platform.
   bool is_debian_plugin_compatible(const Plugin& plugin) const {
     if (!ocpn::startswith(m_abi, "ubuntu")) return false;
     static const std::vector<std::string> compat_versions = {
-        // Assuming Debian 10 users sticks to gtk2:
-        "10;ubuntu-x86_64;18.04", "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64;22.04", "sid;ubuntu-gtk3-x86_64;20.04"};
+        // clang-format: off
+        "11;ubuntu-gtk3-x86_64;20.04",
+        "11;ubuntu-x86_64-wx32;22.04",
+        "12;ubuntu-x86_64;23.04",
+        "12;ubuntu-x86_64;23.10",
+        "12;ubuntu-x86_64;24.04",
+        "sid;ubuntu-x86_64;24.04"
+    };  // clang-format: on
     if (ocpn::startswith(plugin.abi(), "debian-x86_64")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
       const std::string compat_version =
@@ -235,44 +214,6 @@ public:
         if (compat_version == cv) {
           return true;
         }
-      }
-    }
-    return false;
-  }
-
-  // Plugin and host abi differs. Check if plugin is compatible anyway
-  // by comparing the plugin abi with the list of abis similar to the
-  // host abi. Typically a host on a Ubuntu derivative which might be
-  // compatible with a plugin built for the derivative's Ubuntu base.
-  bool is_similar_plugin_compatible(const Plugin& plugin) const {
-    OCPN_OSDetail* os_detail = g_BasePlatform->GetOSDetail();
-    for (auto& name_like : os_detail->osd_names_like) {
-      const std::string osd_abi = name_like + "-" + os_detail->osd_arch;
-      if (osd_abi == plugin.abi()) {
-        if (is_version_compatible(plugin)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  // Check the plugin for host run-time ID match.
-  // This test is necessary for cross-built hosts.
-  // For example, Ubuntu PPA builds for armhf define PKG_TARGET as ubuntu-armhf
-  // But run-time reports as raspbian on "Raspberry Pi OS".
-  bool is_plugin_compatible_runtime(const Plugin& plugin) const {
-    OCPN_OSDetail* os_detail = g_BasePlatform->GetOSDetail();
-    const std::string host_osd_abi =
-        os_detail->osd_ID + "-" + os_detail->osd_arch;
-    wxLogDebug("Checking for compatible run-time, host_osd_abi: %s : %s",
-               host_osd_abi, os_detail->osd_version);
-    wxLogDebug("   plugin_abi + version: %s %s", plugin.abi(),
-               plugin.major_version());
-    if (host_osd_abi == plugin.abi()) {
-      wxLogDebug("   plugin_version: %s", major_version());
-      if (os_detail->osd_version == plugin.major_version()) {
-        return true;
       }
     }
     return false;
@@ -356,23 +297,10 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   if (host.abi() == plugin.abi() && host.is_version_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found matching abi version %s", plugin.abi_version());
-  } else if (host.is_similar_plugin_compatible(plugin)) {
-    rv = true;
-    wxLogDebug("Found similar abi");
-  } else if (host.is_ubuntu_plugin_compatible(plugin)) {
-    rv = true;
-    wxLogDebug("Found Ubuntu version matching Debian host");
   } else if (host.is_debian_plugin_compatible(plugin)) {
     rv = true;
     wxLogDebug("Found Debian version matching Ubuntu host");
   }
-#ifdef ocpnARM
-  // TODO  This conditional may not be needed.  Test on O57+
-  else if (host.is_plugin_compatible_runtime(plugin)) {
-    rv = true;
-    wxLogDebug("Found host OCPN_OSDetail run-time match");
-  }
-#endif
   DEBUG_LOG << "Plugin compatibility check Final: "
             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
