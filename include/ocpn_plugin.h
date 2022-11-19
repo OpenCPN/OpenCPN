@@ -1536,7 +1536,20 @@ GetActiveWaypointGUID(void);  // if no active waypoint, returns wxEmptyString
 extern DECL_EXP wxString
 GetActiveRouteGUID(void);  // if no active route, returns wxEmptyString
 
-// API 1.18  listen-notify
+// API 1.18
+
+typedef enum _OBJECT_LAYER_REQ {
+  OBJECTS_ALL = 0,
+  OBJECTS_NO_LAYERS,
+  OBJECTS_ONLY_LAYERS
+} OBJECT_LAYER_REQ;
+
+//FIXME (dave)  Implement these
+extern DECL_EXP wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req);
+extern DECL_EXP wxArrayString GetTrackGUIDArray(OBJECT_LAYER_REQ req);
+extern DECL_EXP wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req);
+
+/**   listen-notify interface   */
 
 /* Listening to messages. */
 class ObservableListener;
