@@ -3638,6 +3638,9 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
 //   if (vp->m_projection_type != PROJECTION_MERCATOR)
 //     return RenderLS(rzRules, rules, vp);
 
+  //if(rzRules->obj->Index != 1779)
+    //return 0;
+
   if (!m_benableGLLS)  // root chart cannot support VBO model, for whatever
                        // reason
     return RenderLS(rzRules, rules);
@@ -4683,8 +4686,8 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
 // Line Complex
 int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
-//  if(rzRules->obj->Index != 139)
-//    return 0;
+  //if(rzRules->obj->Index != 1779)
+    //return 0;
 
   // catch cm93 and legacy PlugIns (e.g.s63_pi)
   if (rzRules->obj->m_n_lsindex && !rzRules->obj->m_ls_list)
@@ -4706,7 +4709,7 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
 
   double meters_per_senc_unit = rzRules->obj->x_rate;     // meters per senc-unit
   double lod_2pixel_meters = 2 / vp_plib.view_scale_ppm;    // LOD set to 2 pixels, nominal mercator projected
-  double LOD =  lod_2pixel_meters / meters_per_senc_unit;
+  double LOD = lod_2pixel_meters / meters_per_senc_unit;
 
   //  Get the current display priority
   //  Default comes from the LUP, unless overridden
@@ -4750,7 +4753,7 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
 
     int ndraw = 0;
     while (ls) {
-      if (1 /*ls->priority == priority_current*/) {
+      if ( ls->priority == priority_current) {
         // transcribe the segment in the proper order into the output buffer
         int nPoints;
         int idir = 1;
