@@ -40,7 +40,7 @@
 #include "navutil.h"
 #include "FontMgr.h"
 #include "ocpn_plugin.h"
-#include "ocpn_frame.h"   //FIXME (dave) color
+#include "color_handler.h"
 
 
 #ifdef ocpnUSE_GL

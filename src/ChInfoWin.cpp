@@ -29,7 +29,7 @@
 #include "ChInfoWin.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
-#include "ocpn_frame.h"   //FIXME (dave) color
+#include "color_handler.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

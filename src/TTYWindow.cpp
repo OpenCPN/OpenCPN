@@ -26,11 +26,13 @@
 #include <wx/statbox.h>
 #include <wx/bmpbuttn.h>
 #include <wx/dcmemory.h>
+#include <wx/dialog.h>
+#include <wx/settings.h>
 
 #include "TTYWindow.h"
 #include "TTYScroll.h"
 #include "WindowDestroyListener.h"
-#include "ocpn_frame.h"   //FIXME (dave) color
+#include "color_handler.h"
 
 IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
 
