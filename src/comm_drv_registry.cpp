@@ -80,3 +80,10 @@ const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
     return found != drivers.end() ? *found : kNoDriver;
   }
 }
+
+const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
+                           const std::string& key) {
+  auto func = [key](const DriverPtr d) { return d->Key() == key; };
+  auto found = std::find_if(drivers.begin(), drivers.end(), func);
+  return found != drivers.end() ? *found : kNoDriver;
+}

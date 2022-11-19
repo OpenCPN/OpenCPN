@@ -76,7 +76,7 @@
 #include "mbtiles.h"
 #include "mipmap/mipmap.h"
 #include "navutil.h"
-#include "ocpn_frame.h"  //FIXME (dave) for color
+#include "color_handler.h"
 #include "OCPNPlatform.h"
 #include "piano.h"
 #include "pluginmanager.h"

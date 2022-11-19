@@ -817,9 +817,6 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
   return false;
 }
 
-// Convenience method for old s52plib code.
-//FIXME (dave) remove, header too
-//wxArrayPtrVoid *ChartSymbols::GetColorTables() { return colorTables; }
 
 S52color *ChartSymbols::GetColor(const char *colorName, int fromTable) {
   colTable *colortable;

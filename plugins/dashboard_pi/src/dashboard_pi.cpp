@@ -48,6 +48,22 @@ wxFont *g_pFontTitle;
 wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
+
+wxFont g_FontTitle;
+wxFont g_FontData;
+wxFont g_FontLabel;
+wxFont g_FontSmall;
+
+wxFont *g_pUSFontTitle;
+wxFont *g_pUSFontData;
+wxFont *g_pUSFontLabel;
+wxFont *g_pUSFontSmall;
+
+wxFont g_USFontTitle;
+wxFont g_USFontData;
+wxFont g_USFontLabel;
+wxFont g_USFontSmall;
+
 int g_iDashSpeedMax;
 int g_iDashCOGDamp;
 int g_iDashSpeedUnit;
@@ -508,6 +524,11 @@ int dashboard_pi::Init(void) {
   g_pFontSmall = new wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
                             wxFONTWEIGHT_NORMAL);
 
+  g_pUSFontTitle = &g_USFontTitle;
+  g_pUSFontData = &g_USFontData;
+  g_pUSFontLabel = &g_USFontLabel;
+  g_pUSFontSmall = &g_USFontSmall;
+
   m_pauimgr = GetFrameAuiManager();
   m_pauimgr->Connect(wxEVT_AUI_PANE_CLOSE,
                      wxAuiManagerEventHandler(dashboard_pi::OnPaneClose), NULL,
@@ -587,7 +608,7 @@ int dashboard_pi::Init(void) {
   Bind(EVT_N2K_128267, [&](ObservedEvt ev) {
     HandleN2K_128267(ev);
   });
-  
+
   // Distance log
   wxDEFINE_EVENT(EVT_N2K_128275, ObservedEvt);
   NMEA2000Id id_128275 = NMEA2000Id(128275);
@@ -611,7 +632,7 @@ int dashboard_pi::Init(void) {
   Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
     HandleN2K_129540(ev);
   });
-  
+
   // Wind   PGN 130306
   wxDEFINE_EVENT(EVT_N2K_130306, ObservedEvt);
   NMEA2000Id id_130306 = NMEA2000Id(130306);
@@ -656,10 +677,10 @@ bool dashboard_pi::DeInit(void) {
     delete pdwc;
   }
 
-  delete g_pFontTitle;
-  delete g_pFontData;
-  delete g_pFontLabel;
-  delete g_pFontSmall;
+//   delete g_pFontTitle;
+//   delete g_pFontData;
+//   delete g_pFontLabel;
+//   delete g_pFontSmall;
 
   return true;
 }
@@ -833,7 +854,7 @@ void dashboard_pi::Notify() {
     SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, NAN, _T("-"));
     mALT_Watchdog = gps_watchdog_timeout_ticks;
   }
-  
+
   mLOG_Watchdog--;
   if (mLOG_Watchdog <= 0) {
     SendSentenceToAllInstruments(OCPN_DBP_STC_VLW2, NAN, _T("-"));
@@ -1911,7 +1932,7 @@ void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
 
   unsigned char SID;
   double DepthBelowTransducer, Offset, Range;
-  
+
   if (mPriDepth >= 1) {
     // Get water depth
     if (ParseN2kPGN128267(v, SID, DepthBelowTransducer, Offset, Range)) {
@@ -2066,7 +2087,7 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
           }
         }
         // Send to GPS.cpp
-        if (idx > 0) {            
+        if (idx > 0) {
           SendSatInfoToAllInstruments(NumberOfSVs, iMesNum + 1, talker_N2k, N2K_SatInfo);
           //mPriSatStatus = 2;
           mSatStatus_Wdog = gps_watchdog_timeout_ticks;
@@ -2151,7 +2172,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
           break;
         case 3: // N2kWind_True_centerline_boat(ground)
           if (mPriTWA >= 1 && g_bDBtrueWindGround) {
-            m_twaangle = GEODESIC_RAD2DEG(WindAngle);            
+            m_twaangle = GEODESIC_RAD2DEG(WindAngle);
             m_twaspeed_kn = MS2KNOTS(WindSpeed);
             sendTrueWind = true;
           }
@@ -2178,7 +2199,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
         if (m_twaangle < 0) {
           m_twaunit = _T("\u00B0L");
           m_twaangle *= -1.0;
-        }        
+        }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
         // Wind speed
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
@@ -2213,7 +2234,7 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
         mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
       }
     }
-    
+
     if (mPriATMP >= 1) {
       if (!N2kIsNA(OutsideAmbientAirTemperature)) {
         double m_airtemp = KELVIN2C(OutsideAmbientAirTemperature);
@@ -2894,14 +2915,30 @@ void dashboard_pi::ShowPreferencesDialog(wxWindow *parent) {
 #endif
 
   if (dialog->ShowModal() == wxID_OK) {
-    delete g_pFontTitle;
-    g_pFontTitle = new wxFont(dialog->m_pFontPickerTitle->GetSelectedFont());
-    delete g_pFontData;
-    g_pFontData = new wxFont(dialog->m_pFontPickerData->GetSelectedFont());
-    delete g_pFontLabel;
-    g_pFontLabel = new wxFont(dialog->m_pFontPickerLabel->GetSelectedFont());
-    delete g_pFontSmall;
-    g_pFontSmall = new wxFont(dialog->m_pFontPickerSmall->GetSelectedFont());
+    double scaler = 1.0;
+#ifdef __WXMSW__
+    scaler = (double)(GetOCPNCanvasWindow()->FromDIP(100))/100.;
+#endif
+
+    //delete g_pFontTitle;
+    g_pUSFontTitle = new wxFont(dialog->m_pFontPickerTitle->GetSelectedFont());
+    g_FontTitle = g_pUSFontTitle->Scaled(scaler);
+    g_USFontTitle = *g_pUSFontTitle;
+
+    //delete g_pFontData;
+    g_pUSFontData = new wxFont(dialog->m_pFontPickerData->GetSelectedFont());
+    g_FontData = g_pUSFontData->Scaled(scaler);
+    g_USFontData = *g_pUSFontData;
+
+    //delete g_pFontLabel;
+    g_pUSFontLabel = new wxFont(dialog->m_pFontPickerLabel->GetSelectedFont());
+    g_FontLabel = g_pUSFontLabel->Scaled(scaler);
+    g_USFontLabel = *g_pUSFontLabel;
+
+    //delete g_pFontSmall;
+    g_pUSFontSmall = new wxFont(dialog->m_pFontPickerSmall->GetSelectedFont());
+    g_FontSmall = g_pUSFontSmall->Scaled(scaler);
+    g_USFontSmall = *g_pUSFontSmall;
 
     // OnClose should handle that for us normally but it doesn't seems to do so
     // We must save changes first
@@ -3095,17 +3132,30 @@ bool dashboard_pi::LoadConfig(void) {
     SmallFont = _T("Roboto,14,-1,5,50,0,0,0,0,0");
 #endif
 
+    double scaler = 1.0;
+#ifdef __WXMSW__
+    scaler = (double)(GetOCPNCanvasWindow()->FromDIP(100))/100.;
+#endif
+
     pConf->Read(_T("FontTitle"), &config, TitleFont);
-    LoadFont(&g_pFontTitle, config);
+    LoadFont(&g_pUSFontTitle, config);
+    g_FontTitle = g_pUSFontTitle->Scaled(scaler);
+    g_pFontTitle = &g_FontTitle;
 
+    g_pFontData = &g_FontData;
     pConf->Read(_T("FontData"), &config, DataFont);
-    LoadFont(&g_pFontData, config);
+    LoadFont(&g_pUSFontData, config);
+    g_FontData = g_pUSFontData->Scaled(scaler);
 
+    g_pFontLabel = &g_FontLabel;
     pConf->Read(_T("FontLabel"), &config, LabelFont);
-    LoadFont(&g_pFontLabel, config);
+    LoadFont(&g_pUSFontLabel, config);
+    g_FontLabel = g_pUSFontLabel->Scaled(scaler);
 
+    g_pFontSmall = &g_FontSmall;
     pConf->Read(_T("FontSmall"), &config, SmallFont);
-    LoadFont(&g_pFontSmall, config);
+    LoadFont(&g_pUSFontSmall, config);
+    g_FontSmall = g_pUSFontSmall->Scaled(scaler);
 
     pConf->Read(_T("SpeedometerMax"), &g_iDashSpeedMax, 12);
     pConf->Read(_T("COGDamp"), &g_iDashCOGDamp, 0);
@@ -3219,13 +3269,18 @@ void dashboard_pi::LoadFont(wxFont **target, wxString native_info) {
 bool dashboard_pi::SaveConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
+  double scaler = 1.0;
+#ifdef __WXMSW__
+    scaler = (double)(GetOCPNCanvasWindow()->ToDIP(100))/100.;
+#endif
+
   if (pConf) {
     pConf->SetPath(_T("/PlugIns/Dashboard"));
     pConf->Write(_T("Version"), _T("2"));
-    pConf->Write(_T("FontTitle"), g_pFontTitle->GetNativeFontInfoDesc());
-    pConf->Write(_T("FontData"), g_pFontData->GetNativeFontInfoDesc());
-    pConf->Write(_T("FontLabel"), g_pFontLabel->GetNativeFontInfoDesc());
-    pConf->Write(_T("FontSmall"), g_pFontSmall->GetNativeFontInfoDesc());
+    pConf->Write(_T("FontTitle"), g_pUSFontTitle->GetNativeFontInfoDesc());
+    pConf->Write(_T("FontData"), g_pUSFontData->GetNativeFontInfoDesc());
+    pConf->Write(_T("FontLabel"), g_pUSFontLabel->GetNativeFontInfoDesc());
+    pConf->Write(_T("FontSmall"), g_pUSFontSmall->GetNativeFontInfoDesc());
 
     pConf->Write(_T("SpeedometerMax"), g_iDashSpeedMax);
     pConf->Write(_T("COGDamp"), g_iDashCOGDamp);
@@ -3645,7 +3700,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer03->Add(itemStaticText04, 0, wxEXPAND | wxALL, border_size);
   m_pFontPickerTitle =
-      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, *g_pFontTitle,
+      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, g_USFontTitle,
                            wxDefaultPosition, wxDefaultSize);
   itemFlexGridSizer03->Add(m_pFontPickerTitle, 0, wxALIGN_RIGHT | wxALL, 0);
 
@@ -3654,7 +3709,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer03->Add(itemStaticText05, 0, wxEXPAND | wxALL, border_size);
   m_pFontPickerData =
-      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, *g_pFontData,
+      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, g_USFontData,
                            wxDefaultPosition, wxDefaultSize);
   itemFlexGridSizer03->Add(m_pFontPickerData, 0, wxALIGN_RIGHT | wxALL, 0);
 
@@ -3663,7 +3718,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer03->Add(itemStaticText06, 0, wxEXPAND | wxALL, border_size);
   m_pFontPickerLabel =
-      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, *g_pFontLabel,
+      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, g_USFontLabel,
                            wxDefaultPosition, wxDefaultSize);
   itemFlexGridSizer03->Add(m_pFontPickerLabel, 0, wxALIGN_RIGHT | wxALL, 0);
 
@@ -3672,7 +3727,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer03->Add(itemStaticText07, 0, wxEXPAND | wxALL, border_size);
   m_pFontPickerSmall =
-      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, *g_pFontSmall,
+      new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, g_USFontSmall,
                            wxDefaultPosition, wxDefaultSize);
   itemFlexGridSizer03->Add(m_pFontPickerSmall, 0, wxALIGN_RIGHT | wxALL, 0);
   //      wxColourPickerCtrl

@@ -95,7 +95,7 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
         SVGDocumentPixelSize(name, w, h);
         w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
                                      // icons, 15px (approx 3mm) be it
-        const unsigned int bm_size = SVGPixelsToDisplay(w);
+        const unsigned int bm_size = w; //SVGPixelsToDisplay(w);
         wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size);
         MarkIcon *pmi = ProcessIcon(iconSVG, iconname, iconname);
         if (pmi) pmi->preScaled = true;
@@ -390,8 +390,6 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
       w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
                                    // icons, 15px (approx 3mm) be it
 
-      //FIXME (dave)
-      //  There are troubles with Windows screen physical size calculation
       bm_size = w * g_ChartScaleFactorExp; //= SVGPixelsToDisplay(w);
 
       wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
