@@ -353,7 +353,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
   while (token.Length()) {
     dc->GetTextExtent(token, &width, &height, NULL, NULL, g_pFontLabel);
 
-#ifdef __WXMSW__
+#if 0 //def __WXMSW__
     if (g_pFontLabel->GetPointSize() <= 12) {
       wxBitmap tbm(width, height, -1);
       wxMemoryDC tdc(tbm);
