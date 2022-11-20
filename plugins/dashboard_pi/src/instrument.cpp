@@ -209,7 +209,10 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc) {
   tdc.SetBackground(c2);
   tdc.Clear();
 
-  tdc.SetFont(*g_pFontData);
+  double scaler = (double)(GetOCPNCanvasWindow()->FromDIP(100))/100.;
+  wxFont sgpf = g_pFontData->Scaled(scaler);
+  tdc.SetFont(sgpf);
+
   GetGlobalColor(_T("DASHF"), &cl);
   tdc.SetTextForeground(cl);
 
@@ -307,7 +310,10 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc) {
   tdc.SetBackground(c2);
   tdc.Clear();
 
-  tdc.SetFont(*g_pFontData);
+  double scaler = (double)(GetOCPNCanvasWindow()->FromDIP(100))/100.;
+  wxFont sgpf = g_pFontData->Scaled(scaler);
+  tdc.SetFont(sgpf);
+
   GetGlobalColor(_T("DASHF"), &cl);
   tdc.SetTextForeground(cl);
 
