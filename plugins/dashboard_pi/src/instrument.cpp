@@ -127,7 +127,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
   if (!m_drawSoloInPane) {
     //  Windows GCDC does a terrible job of rendering small texts
     //  Workaround by using plain old DC for title box if text size is too small
-#ifdef __WXMSW__
+#if 0 //def __WXMSW__
     if (g_pFontTitle->GetPointSize() > 12)
 #endif
     {
@@ -145,7 +145,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
       dc.DrawText(m_title, 5, 0);
     }
 
-#ifdef __WXMSW__
+#if 0 //def __WXMSW__
     if (g_pFontTitle->GetPointSize() <= 12) {
       wxColour cl;
       GetGlobalColor(_T("DASHB"), &cl);
@@ -201,7 +201,7 @@ wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
 
 void DashboardInstrument_Single::Draw(wxGCDC* dc) {
   wxColour cl;
-#ifdef __WXMSW__
+#if 0 //def __WXMSW__
   wxBitmap tbm(dc->GetSize().x, m_DataHeight, -1);
   wxMemoryDC tdc(tbm);
   wxColour c2;
@@ -302,7 +302,7 @@ wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
 void DashboardInstrument_Position::Draw(wxGCDC* dc) {
   wxColour cl;
 
-#ifdef __WXMSW__
+#if 0 //def __WXMSW__
   wxBitmap tbm(dc->GetSize().x, m_DataHeight * 2, -1);
   wxMemoryDC tdc(tbm);
   wxColour c2;
