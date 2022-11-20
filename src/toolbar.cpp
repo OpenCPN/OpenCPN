@@ -1572,8 +1572,14 @@ void ToolTipWin::SetBitmap() {
   wxFont sFont = plabelFont->Scaled(1.0 / scaler);
 
   cdc.GetTextExtent(m_string, &w, &h, NULL, NULL, &sFont);
-  m_size.x = ToDIP(w + 8);
-  m_size.y = ToDIP(h + 4);
+
+  m_size.x = w + 8;
+  m_size.y = h + 4;
+
+#ifdef WX316PLUS
+  m_size.x = ToDIP(m_size.x);
+  m_size.y = ToDIP(m_size.y);
+#endif
 
   wxMemoryDC mdc;
 
@@ -1600,7 +1606,13 @@ void ToolTipWin::SetBitmap() {
   mdc.SetTextForeground(m_text_color);
   mdc.SetTextBackground(m_back_color);
 
-  mdc.DrawText(m_string, ToDIP(4), ToDIP(2));
+  int offx = 4;
+  int offy = 2;
+#ifdef WX316PLUS
+  offx = ToDIP(offx);
+  offy = ToDIP(offy);
+#endif
+  mdc.DrawText(m_string, offx, offy);
 
   SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
 }
