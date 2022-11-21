@@ -56,14 +56,23 @@ DashboardInstrument_Depth::DashboardInstrument_Depth(wxWindow* parent,
   }
 }
 
+double scale = 1.0;
+
 wxSize DashboardInstrument_Depth::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
   dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+
+#ifdef __WXMSW__
+  scale = (double)(GetOCPNCanvasWindow()->FromDIP(140)) / 100.;
+  scale = (scale - 1.0) / 2 + 1.0;  // soften scale factor
+  scale = wxMax(1.0, scale);
+#endif
+  
   if (orient == wxHORIZONTAL) {
-    return wxSize(DefaultWidth, wxMax(m_TitleHeight + 140, hint.y));
+    return wxSize(DefaultWidth, wxMax(m_TitleHeight + scale * 140, hint.y));
   } else {
-    return wxSize(wxMax(hint.x, DefaultWidth), m_TitleHeight + 140);
+    return wxSize(wxMax(hint.x, DefaultWidth), m_TitleHeight + scale * 140);
   }
 }
 
@@ -105,8 +114,8 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   pen.SetWidth(1);
   dc->SetPen(pen);
 
-  dc->DrawLine(3, 50, size.x - 3, 50);
-  dc->DrawLine(3, 140, size.x - 3, 140);
+  dc->DrawLine(3, scale * 40, size.x - 3, scale * 40);
+  dc->DrawLine(3, scale * 140, size.x - 3, scale * 140);
 
 #ifdef __WXMSW__
   pen.SetStyle(wxPENSTYLE_SHORT_DASH);
@@ -116,9 +125,9 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
 #endif
 
   dc->SetPen(pen);
-  dc->DrawLine(3, 65, size.x - 3, 65);
-  dc->DrawLine(3, 90, size.x - 3, 90);
-  dc->DrawLine(3, 115, size.x - 3, 115);
+  dc->DrawLine(3, scale * 65, size.x - 3, scale * 65);
+  dc->DrawLine(3, scale * 90, size.x - 3, scale * 90);
+  dc->DrawLine(3, scale * 115, size.x - 3, scale * 115);
 
   dc->SetFont(*g_pFontSmall);
 
@@ -133,7 +142,7 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   label.Printf(_T("%.0f ") + m_DepthUnit, 0.0);
   int width, height;
   dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-  dc->DrawText(label, size.x - width - 1, 40 - height);
+  dc->DrawText(label, size.x - width - 1, scale * 40 - height);
 
   label.Printf(_T("%.0f ") + m_DepthUnit, m_MaxDepth);
   dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
@@ -184,14 +193,14 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
   for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++) {
     points[idx].x = idx * ratioW + 3;
     if (m_ArrayDepth[idx])
-      points[idx].y = 40 + m_ArrayDepth[idx] * ratioH;
+      points[idx].y = scale * 40 + m_ArrayDepth[idx] * scale * ratioH;
     else
-      points[idx].y = 140;
+      points[idx].y = scale * 140;
   }
   points[DEPTH_RECORD_COUNT].x = size.x - 3;
-  points[DEPTH_RECORD_COUNT].y = 140;
+  points[DEPTH_RECORD_COUNT].y = scale * 140;
   points[DEPTH_RECORD_COUNT + 1].x = 3;
-  points[DEPTH_RECORD_COUNT + 1].y = 140;
+  points[DEPTH_RECORD_COUNT + 1].y = scale * 140;
   dc->DrawPolygon(DEPTH_RECORD_COUNT + 2, points);
 #endif
 
