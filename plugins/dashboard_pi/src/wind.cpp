@@ -25,21 +25,20 @@
  ***************************************************************************
  */
 
-#include "wind.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include "wind.h"
 
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif
 #include <cmath>
 
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
 #include "wx/tokenzr.h"
 
 // Display the arrow for MainValue (wind angle)
