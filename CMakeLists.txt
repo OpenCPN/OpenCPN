@@ -760,7 +760,6 @@ if (NOT QT_ANDROID)
   endif()
 
 
-
   # As of cmake 3.11.2, these libraries are missing in list despite that we
   # looked for them. This is a nasty fix which might fail miserably. Assumption:
   # All builds using GTK uses unicode and wxWidgets 3.0
