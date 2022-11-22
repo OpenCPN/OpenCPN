@@ -26,20 +26,18 @@
  ***************************************************************************
  */
 
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include "dial.h"
 #include "wx28compat.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
-#include <wx/wxprec.h>
-
 #ifdef __BORLANDC__
 #pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
 #endif
 
 #include <cmath>
@@ -247,21 +245,6 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
   wxPen pen;
   wxColor cl;
   GetGlobalColor(_T("DASHF"), &cl);
-
-#if 0 //def __WXMSW__
-  wxSize size = GetClientSize();
-  //        Create a new bitmap for this method graphics
-  wxBitmap tbm(size.x, size.y, -1);
-  wxMemoryDC tdc(tbm);
-
-  wxColour cback;
-  GetGlobalColor(_T("DASHB"), &cback);
-  tdc.SetBackground(cback);
-  tdc.Clear();
-  tdc.SetFont(*g_pFontSmall);
-  tdc.SetTextForeground(cl);
-#endif
-
   dc->SetFont(*g_pFontSmall);
   dc->SetTextForeground(cl);
 
@@ -279,13 +262,7 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
     wxString label =
         (m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
                                  : wxString::Format(_T("%d"), value));
-#if 0 //def __WXMSW__
-    if (g_pFontSmall->GetPointSize() <= 12)
-      tdc.GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-    else
-#endif
-      dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-
+    dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
     double halfW = width / 2;
     if (m_LabelOption == DIAL_LABEL_HORIZONTAL) {
       double halfH = height / 2;
@@ -295,12 +272,6 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
           m_cx + ((m_radius * 0.90) - delta) * cos(deg2rad(angle)) - halfW;
       TextPoint.y =
           m_cy + ((m_radius * 0.90) - delta) * sin(deg2rad(angle)) - halfH;
-
-#if 0 //def __WXMSW__
-      if (g_pFontSmall->GetPointSize() <= 12)
-        tdc.DrawText(label, TextPoint);
-      else
-#endif
         dc->DrawText(label, TextPoint);
 
     } else if (m_LabelOption == DIAL_LABEL_ROTATED) {
@@ -311,23 +282,11 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
       long double tmpangle = angle - rad2deg(asin(halfW / (0.90 * m_radius)));
       TextPoint.x = m_cx + m_radius * 0.90 * cos(deg2rad(tmpangle));
       TextPoint.y = m_cy + m_radius * 0.90 * sin(deg2rad(tmpangle));
-
-#if 0 //def __WXMSW__
-      if (g_pFontSmall->GetPointSize() <= 12)
-        tdc.DrawRotatedText(label, TextPoint, -90 - angle);
-      else
-#endif
-        dc->DrawRotatedText(label, TextPoint, -90 - angle);
+      dc->DrawRotatedText(label, TextPoint, -90 - angle);
     }
     offset++;
     value += m_LabelStep;
   }
-
-#if 0 //def __WXMSW__
-  tdc.SelectObject(wxNullBitmap);
-
-  if (g_pFontSmall->GetPointSize() <= 12) dc->DrawBitmap(tbm, 0, 0, false);
-#endif
 }
 
 void DashboardInstrument_Dial::DrawBackground(wxGCDC* dc) {
@@ -352,10 +311,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     if (unit == _T("\u00B0"))
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit == _T("\u00B0L"))  // No special display for now, might be
-                                     // XXÂ°< (as in text-only instrument)
+                                     // XX°< (as in text-only instrument)
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit ==
-             _T("\u00B0R"))  // No special display for now, might be >XXÂ°
+             _T("\u00B0R"))  // No special display for now, might be >XX°
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit == _T("\u00B0T"))
       text = wxString::Format(format, value) + DEGREE_SIGN + _T("T");
@@ -424,25 +383,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
   token = tkz.GetNextToken();
   while (token.Length()) {
     dc->GetTextExtent(token, &width, &height, NULL, NULL, g_pFontLabel);
-
-#if 0 //def __WXMSW__
-    if (g_pFontLabel->GetPointSize() <= 12) {
-      wxBitmap tbm(width, height, -1);
-      wxMemoryDC tdc(tbm);
-
-      tdc.SetBackground(c2);
-      tdc.Clear();
-      tdc.SetFont(*g_pFontLabel);
-      tdc.SetTextForeground(c3);
-
-      tdc.DrawText(token, 0, 0);
-      tdc.SelectObject(wxNullBitmap);
-
-      dc->DrawBitmap(tbm, TextPoint.x, TextPoint.y, false);
-    } else
-#endif
-      dc->DrawText(token, TextPoint.x, TextPoint.y);
-
+    dc->DrawText(token, TextPoint.x, TextPoint.y);
     TextPoint.y += height;
     token = tkz.GetNextToken();
   }
@@ -472,7 +413,7 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
   brush.SetColour(cl);
   dc->SetBrush(brush);
 
-  /* this is fix for a +/-180Â° round instrument, when m_MainValue is supplied as
+  /* this is fix for a +/-180° round instrument, when m_MainValue is supplied as
    * <0..180><L | R> for example TWA & AWA */
   double data;
   if (m_MainValueUnit == _T("\u00B0L"))
