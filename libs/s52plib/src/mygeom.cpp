@@ -32,6 +32,22 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#if defined(__OCPN__ANDROID__)
+ #include <qopengl.h>
+ #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+ #include <GLES2/gl2.h>
+#elif defined(__MSVC__)
+ #include "glew.h"
+#elif defined(__WXOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glu.h>
+ typedef void (*  _GLUfuncptr)();
+ #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+ #include <GL/glew.h>
+ #include <GL/glu.h>
+#endif
+
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
@@ -48,7 +64,6 @@
 #include "mygeom.h"
 #include "georef.h"
 #include "LOD_reduce.h"
-#include "dychart.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,17 +76,6 @@
 #ifdef __WXMSW__
 #include <windows.h>
 #endif
-
-// #if defined(__OCPN__ANDROID__)
-// #include <qopengl.h>
-// #include <GL/gl_private.h>  // this is a cut-down version of gl.h
-// #include <GLES2/gl2.h>
-// #elif defined(__WXQT__) || defined(__WXGTK__)
-// #define GL_GLEXT_PROTOTYPES
-// #include <GL/gl.h>
-// #include <GL/glext.h>
-// #include <GL/glu.h>
-// #endif
 
 static const double CM93_semimajor_axis_meters =
     6378388.0;  // CM93 semimajor axis

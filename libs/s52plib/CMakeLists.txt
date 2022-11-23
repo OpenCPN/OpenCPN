@@ -15,6 +15,7 @@ SET(SRC
     src/s52utils.cpp
     src/s52shaders.cpp
     src/TexFont.cpp
+    src/mygeom.cpp
     )
 
 if (NOT wxWidgets_INCLUDE_DIRS)
@@ -31,3 +32,7 @@ target_include_directories(S52PLIB PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_include_directories(S52PLIB PRIVATE ../geoprim/src)
 target_include_directories(S52PLIB PRIVATE ../pugixml)
 target_include_directories(S52PLIB PRIVATE ../../include)
+target_include_directories(S52PLIB PRIVATE ../gdal/include)
+target_include_directories(S52PLIB PRIVATE ../libtess2/Include)
+target_include_directories(S52PLIB PRIVATE ${CMAKE_BINARY_DIR}/include)
+

@@ -29,7 +29,7 @@
 #define _S52S57_H_
 
 #include "bbox.h"
-#include "../../../include/color_types.h"
+#include "color_types.h"
 
 #include <unordered_map>
 #include <vector>
@@ -322,7 +322,7 @@ struct chart_context {
   double ref_lon;
   wxArrayPtrVoid *pFloatingATONArray;
   wxArrayPtrVoid *pRigidATONArray;
-  s57chart *chart;
+  void *chart;
   double safety_contour;
   float *vertex_buffer;
   int chart_type;

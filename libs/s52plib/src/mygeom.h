@@ -26,6 +26,7 @@
  *
  */
 
+
 #ifndef __MYGEOM_H
 #define __MYGEOM_H
 
@@ -217,6 +218,7 @@ public:
   int GetnContours() { return m_ncnt; }
 
   int ErrorCode;
+  void GetRefPos( double *lat, double *lon);
   void Set_PolyTriGroup_head(PolyTriGroup *head) { m_ppg_head = head; }
   void Set_OK(bool bok) { m_bOK = bok; }
 
@@ -250,6 +252,7 @@ private:
   // int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
   // ref_lon);
   int BuildTessGLU(void);
+  int BuildTessGLFromXG(void);
 
   //  Data
 

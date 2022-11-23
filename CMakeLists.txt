@@ -1703,7 +1703,6 @@ set(
   include/s57RegistrarMgr.h
   include/SencManager.h
   src/cm93.cpp
-  src/mygeom.cpp
   src/ogrs57datasource.cpp
   src/ogrs57layer.cpp
   src/Osenc.cpp

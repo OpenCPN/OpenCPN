@@ -4790,7 +4790,7 @@ bool s57chart::DoesLatLonSelectObject(float lat, float lon, float select_radius,
           float *ppt;
           unsigned char *vbo_point =
               (unsigned char *)
-                  obj->m_chart_context->chart->GetLineVertexBuffer();
+                  obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
           line_segment_element *ls = obj->m_ls_list;
 
           while (ls && vbo_point) {

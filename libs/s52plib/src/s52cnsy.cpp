@@ -38,7 +38,6 @@
 
 #include "s52plib.h"
 #include "s52utils.h"
-#include "../../../include/cutil.h"
 
 bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
@@ -62,6 +61,7 @@ extern s52plib *ps52plib;
 wxString *CSQUAPNT01(S57Obj *obj);
 wxString *CSQUALIN01(S57Obj *obj);
 
+//FIXME (dave)
 // wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
 //   S57Obj *obj = rzRules->obj;
 //   if (obj->m_chart_context->chart)
