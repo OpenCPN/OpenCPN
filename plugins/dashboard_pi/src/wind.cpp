@@ -25,21 +25,20 @@
  ***************************************************************************
  */
 
-#include "wind.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include "wind.h"
 
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif
 #include <cmath>
 
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
 #include "wx/tokenzr.h"
 
 // Display the arrow for MainValue (wind angle)
@@ -192,7 +191,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc) {
   brush2.SetColour(cl);
   dc->SetBrush(brush2);
 
-  /* this is fix for a +/-180� round instrument, when m_MainValue is supplied as
+  /* this is fix for a +/-180? round instrument, when m_MainValue is supplied as
    * <0..180><L | R> for example TWA & AWA */
   if (m_MainValueTrueUnit == _T("\u00B0L"))
     data = 360 - m_MainValueTrue;
@@ -230,7 +229,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc) {
   brush.SetColour(cl);
   dc->SetBrush(brush);
 
-  /* this is fix for a +/-180� round instrument, when m_MainValue is supplied as
+  /* this is fix for a +/-180? round instrument, when m_MainValue is supplied as
    * <0..180><L | R> for example TWA & AWA */
   if (m_MainValueAppUnit == _T("\u00B0L"))
     data = 360 - m_MainValueApp;
@@ -276,10 +275,10 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
     if (unit == _T("\u00B0"))
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit == _T("\u00B0L"))  // No special display for now, might be
-                                     // XX�< (as in text-only instrument)
+                                     // XX?< (as in text-only instrument)
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit ==
-             _T("\u00B0R"))  // No special display for now, might be >XX�
+             _T("\u00B0R"))  // No special display for now, might be >XX?
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit == _T("\u00B0T"))
       text = wxString::Format(format, value) + DEGREE_SIGN + _T("T");
@@ -352,25 +351,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
   token = tkz.GetNextToken();
   while (token.Length()) {
     dc->GetTextExtent(token, &width, &height, NULL, NULL, g_pFontLabel);
-
-#if 0 //def __WXMSW__
-    if (g_pFontLabel->GetPointSize() <= 12) {
-      wxBitmap tbm(width, height, -1);
-      wxMemoryDC tdc(tbm);
-
-      tdc.SetBackground(c2);
-      tdc.Clear();
-      tdc.SetFont(*g_pFontLabel);
-      tdc.SetTextForeground(c3);
-
-      tdc.DrawText(token, 0, 0);
-      tdc.SelectObject(wxNullBitmap);
-
-      dc->DrawBitmap(tbm, TextPoint.x, TextPoint.y, false);
-    } else
-#endif
-      dc->DrawText(token, TextPoint.x, TextPoint.y);
-
+    dc->DrawText(token, TextPoint.x, TextPoint.y);
     TextPoint.y += height;
     token = tkz.GetNextToken();
   }
