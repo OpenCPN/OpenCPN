@@ -25,6 +25,12 @@
 #ifndef __S52UTILS_H__
 #define __S52UTILS_H__
 
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
+
 inline int roundint (double x)
 {
 #ifdef __WXOSX__
