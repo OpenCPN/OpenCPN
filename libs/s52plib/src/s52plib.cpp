@@ -354,8 +354,8 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_GLMinSymbolLineWidth = 1.0;
 
   m_display_size_mm = 300;
-  SetGLPolygonSmoothing(true);
-  SetGLLineSmoothing(true);
+  SetGLPolygonSmoothing(false);
+  SetGLLineSmoothing(false);
 
   m_displayScale = 1.0;
 
