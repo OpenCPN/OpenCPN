@@ -778,8 +778,10 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       DrawGLThickLines(n, points, xoffset, yoffset, m_pen, b_hiqual);
 
       if (b_hiqual) {
-        if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
-        //                SetGLStipple(m_pen.GetStyle());
+        glDisable(GL_LINE_STIPPLE);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_POLYGON_SMOOTH);
+        glDisable(GL_BLEND);
       }
 
       return;
@@ -828,6 +830,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
 
     if (b_hiqual) {
       glDisable(GL_LINE_STIPPLE);
+      glDisable(GL_LINE_SMOOTH);
       glDisable(GL_POLYGON_SMOOTH);
       glDisable(GL_BLEND);
     }

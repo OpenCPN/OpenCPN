@@ -8323,6 +8323,9 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
     GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
 
+    if (b_useVBO)
+      glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
+
     while (p_tp) {
       LLBBox box;
       if (!rzRules->obj->m_chart_context->chart) {  // This is a PlugIn Chart
