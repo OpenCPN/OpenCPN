@@ -27,6 +27,39 @@
 #ifndef _CHARTSYMBOLS_H_
 #define _CHARTSYMBOLS_H_
 
+#ifdef __OCPN_USE_GLEW__
+  #if defined(_WIN32)
+    #include "glew.h"
+  #elif defined(__WXQT__) || defined(__WXGTK__)
+   #include <GL/glew.h>
+  #endif
+#endif
+
+
+#if defined(__OCPN__ANDROID__)
+ //#include <GLES2/gl2.h>
+ #include <qopengl.h>
+ #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+ #include <GLES2/gl2.h>
+#elif defined(_WIN32)
+ #define GL_GLEXT_PROTOTYPES
+ #include <GL/gl.h>
+ #include <GL/glu.h>
+ //typedef void (__stdcall * _GLUfuncptr)(void);
+#elif defined(__WXOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glu.h>
+ typedef void (*  _GLUfuncptr)();
+ #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+ #define GL_GLEXT_PROTOTYPES
+ #include <GL/glu.h>
+ #include <GL/gl.h>
+ #include <GL/glx.h>
+#endif
+
+
+
 #include "s52s57.h"
 #include "pugixml.hpp"
 class s52plib;
