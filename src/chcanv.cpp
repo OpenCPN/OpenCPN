@@ -10575,18 +10575,16 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
     v[_T("OpenCPN S52PLIB SoundingsFactor")] = g_ENCSoundingScaleFactor;
 
     // Global options
-    /*
-            v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
-            v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
-            v[_T("OpenCPN S52PLIB ShowNationalText")] =
-       ps52plib->m_bShowNationalTexts; v[_T("OpenCPN S52PLIB
-       ShowImportantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
-            v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
-            v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
-            v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
-            v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam(
-       S52_MAR_TWO_SHADES );
-    */
+
+    v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
+    v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
+    v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
+    v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
+    v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+    v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
+    v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+    v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+
     wxJSONWriter w;
     wxString out;
     w.Write(v, out);
