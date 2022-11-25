@@ -626,7 +626,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
       shader->SetUniform1f("uLineWidth", pen_width);
-      shader->SetUniform1f("uBlendFactor", 2.0);
+      shader->SetUniform1f("uBlendFactor", 1.5);
 
       float vpx[2];
       int width = 0;

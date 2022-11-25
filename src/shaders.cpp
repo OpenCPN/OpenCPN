@@ -159,8 +159,12 @@ static const GLchar* AALine_fragment_shader_source =
     "    float w = uLineWidth;\n"
     "    if (d>w)\n"
     "      col.w = 0.0;\n"
-    "    else\n"
-    "      col.w *= pow(float((w-d)/w), uBlendFactor);\n"
+    "    else{\n"
+    "      if(float((w/2-d)/(w/2)) < .5){\n"
+    "        //col.w *= pow(float((w-d)/w), uBlendFactor);\n"
+    "        col.w *= pow(float((w/2-d)/(w/2)), uBlendFactor);\n"
+    "      }\n"
+    "    }\n"
     "    gl_FragColor = col;\n"
     "}\n";
 

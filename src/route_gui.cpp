@@ -286,6 +286,7 @@ void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
   pts[1].y = s_arrow_icon[3];
   pts[2].x = s_arrow_icon[6];
   pts[2].y = s_arrow_icon[7];
+
   dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
 
   // 1
@@ -413,6 +414,8 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   glDisable(GL_LINE_STIPPLE);
 
   /* direction arrows.. could probably be further optimized for opengl */
+  dc.SetPen(*wxThePenList->FindOrCreatePen(col, 1, wxPENSTYLE_SOLID));
+
   wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
   wxPoint rpt1, rpt2;
   while (node) {
