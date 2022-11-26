@@ -8897,7 +8897,7 @@ void LoadS57() {
     if (gFrame->GetPrimaryCanvas()){
       ps52plib->SetPPMM(gFrame->GetPrimaryCanvas()->GetPixPerMM());
       double dpi_factor = g_BasePlatform->GetDisplayDPIMult(gFrame->GetPrimaryCanvas());
-      ps52plib->SetDPIFactor(dpi_factor);
+      ps52plib->SetDIPFactor(dpi_factor);
     }
 #ifdef ocpnUSE_GL
 

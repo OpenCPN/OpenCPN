@@ -37,7 +37,7 @@ DepthFont::DepthFont() {
 
 DepthFont::~DepthFont() { Delete(); }
 
-void DepthFont::Build(wxFont *font, double scale) {
+void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
   /* avoid rebuilding if the parameters are the same */
   if (m_built && (*font == m_font)) return;
 
@@ -63,6 +63,7 @@ void DepthFont::Build(wxFont *font, double scale) {
     tgi[i].height = gh;  // - descent;
 
     tgi[i].advance = gw;
+    tgi[i].advance *= dip_factor;
 
     m_maxglyphw = wxMax(tgi[i].width, m_maxglyphw);
     m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);

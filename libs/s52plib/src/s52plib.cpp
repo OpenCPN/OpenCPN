@@ -366,7 +366,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
      s_txf[i].key = 0;
      s_txf[i].cache = 0;
   }
-  m_dpifactor = 1.0;
+  m_dipfactor = 1.0;
 
 }
 
@@ -460,8 +460,8 @@ void s52plib::SetGLOptions(bool b_useStencil, bool b_useStencilAP,
 
 }
 
-void s52plib::SetDPIFactor( double factor) {
-  m_dpifactor = factor;
+void s52plib::SetDIPFactor( double factor) {
+  m_dipfactor = factor;
 }
 
 void s52plib::SetPPMM(float ppmm) {
@@ -2081,7 +2081,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
           delete s_txf[i].cache;
         s_txf[i].cache = new TexFont();
         f_cache = s_txf[i].cache;
-        f_cache->Build(*ptext->pFont, m_dpifactor);
+        f_cache->Build(*ptext->pFont, m_dipfactor);
       }
 
       int w, h;
@@ -3400,7 +3400,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                                              wxFONTSTYLE_NORMAL, fontWeight,
                                              false, fontFacename);
       m_texSoundings.Build(m_soundFont,
-                           scale_factor);  // texSounding owns the font
+                           scale_factor, m_dipfactor);  // texSounding owns the font
     }
   } else {
     m_soundFont = FindOrCreateFont_PlugIn(point_size, wxFONTFAMILY_SWISS,
@@ -3453,6 +3453,8 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
     pivot_x = -(pivotWidth / 4);
     pivot_y = pivotHeight / 5;
   }
+  pivot_x *= m_dipfactor;
+  pivot_y *= m_dipfactor;
 
   //        Get the bounding box for the to-be-drawn symbol
   int b_width, b_height;

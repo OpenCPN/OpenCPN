@@ -204,7 +204,7 @@ public:
 
   void SetPPMM(float ppmm);
   float GetPPMM() { return canvas_pix_per_mm; }
-  void SetDPIFactor( double factor);
+  void SetDIPFactor( double factor);
 
   void SetOCPNVersion(int major, int minor, int patch);
 
@@ -362,7 +362,7 @@ public:
   double m_soundFontDelta;
   double m_ChartScaleFactorExp;
   int m_chart_zoom_modifier_vector;
-  double m_dpifactor;
+  double m_dipfactor;
 
   int m_VersionMajor;
   int m_VersionMinor;

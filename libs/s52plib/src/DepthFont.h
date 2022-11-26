@@ -40,7 +40,7 @@ public:
   DepthFont();
   ~DepthFont();
 
-  void Build(wxFont *font, double scale);
+  void Build(wxFont *font, double scale, double dip_factor = 1.0);
   void Delete();
 
   bool IsBuilt() { return m_built; }
