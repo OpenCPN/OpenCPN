@@ -1945,7 +1945,7 @@ bool MyApp::OnInit() {
   gFrame->FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 
   //      Start up the ViewPort Rotation angle Averaging Timer....
-  gFrame->FrameCOGTimer.Start(10, wxTIMER_CONTINUOUS);
+  gFrame->FrameCOGTimer.Start(2000, wxTIMER_CONTINUOUS);
 
   //    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."),
   //    init_sw.Time() ) );

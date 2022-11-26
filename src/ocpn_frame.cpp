@@ -5459,45 +5459,41 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   m_fixtime = msg->time;
 
-#if 0
-  if (cog_valid) {
     //    Maintain average COG for Course Up Mode
-    if (!std::isnan(gCog)) {
-      if (g_COGAvgSec > 0) {
-        //    Make a hole
-        for (int i = g_COGAvgSec - 1; i > 0; i--) COGTable[i] = COGTable[i - 1];
-        COGTable[0] = gCog;
+  if (!std::isnan(gCog)) {
+    if (g_COGAvgSec > 0) {
+      //    Make a hole
+      for (int i = g_COGAvgSec - 1; i > 0; i--) COGTable[i] = COGTable[i - 1];
+      COGTable[0] = gCog;
 
-        double sum = 0., count = 0;
-        for (int i = 0; i < g_COGAvgSec; i++) {
-          double adder = COGTable[i];
-          if (std::isnan(adder)) continue;
+      double sum = 0., count = 0;
+      for (int i = 0; i < g_COGAvgSec; i++) {
+        double adder = COGTable[i];
+        if (std::isnan(adder)) continue;
 
-          if (fabs(adder - g_COGAvg) > 180.) {
-            if ((adder - g_COGAvg) > 0.)
-              adder -= 360.;
-            else
-              adder += 360.;
-          }
-
-          sum += adder;
-          count++;
+        if (fabs(adder - g_COGAvg) > 180.) {
+          if ((adder - g_COGAvg) > 0.)
+            adder -= 360.;
+          else
+            adder += 360.;
         }
-        sum /= count;
 
-        if (sum < 0.)
-          sum += 360.;
-        else if (sum >= 360.)
-          sum -= 360.;
+        sum += adder;
+        count++;
+      }
+      sum /= count;
 
-        g_COGAvg = sum;
-      } else
-        g_COGAvg = gCog;
-    }
+      if (sum < 0.)
+        sum += 360.;
+      else if (sum >= 360.)
+        sum -= 360.;
 
-    FilterCogSog();
+      g_COGAvg = sum;
+    } else
+      g_COGAvg = gCog;
   }
-#endif
+
+  FilterCogSog();
 
   //    If gSog is greater than some threshold, we determine that we are
   //    "cruising"
@@ -6304,7 +6300,7 @@ void MyFrame::OnFrameCOGTimer(wxTimerEvent &event) {
 
   //    Restart the timer, max frequency is 10 hz.
   int period_ms = 100;
-  if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
+  //if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
   FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
 }
 
