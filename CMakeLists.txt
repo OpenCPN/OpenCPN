@@ -890,7 +890,6 @@ set(
   include/conn_params.h
   include/conn_params_panel.h
   include/cutil.h
-  include/DepthFont.h
   include/DetailSlider.h
   include/downloader.h
   include/download_mgr.h
@@ -1084,7 +1083,6 @@ set(
   src/ConfigMgr.cpp
   src/conn_params_panel.cpp
   src/connections_dialog.cpp
-  src/DepthFont.cpp
   src/DetailSlider.cpp
   src/download_mgr.cpp
   src/FlexHash.cpp
@@ -1214,7 +1212,7 @@ if (QT_ANDROID)
   include(libs/AndroidLibs.cmake)
 endif ()
 
-
+#
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(

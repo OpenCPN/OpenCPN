@@ -15,6 +15,7 @@ SET(SRC
     src/s52utils.cpp
     src/s52shaders.cpp
     src/TexFont.cpp
+    src/DepthFont.cpp
     src/mygeom.cpp
     )
 
