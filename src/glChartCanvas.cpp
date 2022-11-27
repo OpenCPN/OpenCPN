@@ -2430,8 +2430,6 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
 
       glEnable(GL_BLEND);
 
-      //            glEnableClientState(GL_VERTEX_ARRAY);
-
       int x = lShipMidPoint.x, y = lShipMidPoint.y;
 
       // Scale the generic icon to ChartScaleFactor, slightly softened....
@@ -3788,8 +3786,6 @@ void glChartCanvas::Render() {
   configureShaders(m_pParentCanvas->VPoint);
 #endif
 
-//   if (GetCanvasIndex() == 0)
-//     return;
 
 #ifdef USE_ANDROID_GLES2
 
@@ -3857,6 +3853,9 @@ void glChartCanvas::Render() {
 #endif
 
   OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+
+  // Force the GL window height to be even number, avoiding artifacts
+  gl_height -= gl_height & 1;
 
   glViewport(0, 0, (GLint)gl_width * m_displayScale,
              (GLint)gl_height * m_displayScale);
