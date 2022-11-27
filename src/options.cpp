@@ -8106,7 +8106,8 @@ void options::DoOnPageChange(size_t page) {
 
           //  Look explicitely to see if .mo is available
           wxString test_dir = lang_dir + lang_suffix;
-          if (!wxDir::Exists(test_dir)) continue;
+          if (!wxDir::Exists(test_dir))
+            continue;
 
           m_itemLangListBox->Append(loc_lang_name);
         }
@@ -8282,100 +8283,117 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   if (lang_canonical == _T("en_US")) {
     dir_suffix = _T("en");
     return_string = wxString("English (U.S.)", wxConvUTF8);
-  } else if (lang_canonical == _T("cs_CZ")) {
+
+  } else if ((lang_canonical == _T("cs_CZ")) || (lang_canonical == _T("cs"))) {
     dir_suffix = _T("cs");
-    return_string = wxString("Cestina", wxConvUTF8);
-  } else if (lang_canonical == _T("da_DK")) {
+    return_string = wxString("Čeština", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("da_DK")) || (lang_canonical == _T("da"))) {
     dir_suffix = _T("da");
     return_string = wxString("Dansk", wxConvUTF8);
-  } else if (lang_canonical == _T("de_DE")) {
+
+  } else if ((lang_canonical == _T("de_DE")) || (lang_canonical == _T("de"))) {
     dir_suffix = _T("de");
     return_string = wxString("Deutsch", wxConvUTF8);
-  } else if (lang_canonical == _T("et_EE")) {
+
+  } else if ((lang_canonical == _T("et_EE")) || (lang_canonical == _T("et"))) {
     dir_suffix = _T("et");
     return_string = wxString("Eesti", wxConvUTF8);
-  } else if (lang_canonical == _T("es_ES")) {
+
+  } else if ((lang_canonical == _T("es_ES")) || (lang_canonical == _T("es"))) {
     dir_suffix = _T("es");
-    return_string = wxString("Espa�ol", wxConvUTF8);
-  } else if (lang_canonical == _T("fr_FR")) {
+    return_string = wxString("Español", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("fr_FR")) || (lang_canonical == _T("fr"))) {
     dir_suffix = _T("fr");
-    return_string = wxString("Fran�ais", wxConvUTF8);
-  } else if (lang_canonical == _T("it_IT")) {
+    return_string = wxString("Français", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("it_IT")) || (lang_canonical == _T("it"))) {
     dir_suffix = _T("it");
     return_string = wxString("Italiano", wxConvUTF8);
-  } else if (lang_canonical == _T("nl_NL")) {
+
+  } else if ((lang_canonical == _T("nl_NL")) || (lang_canonical == _T("nl"))) {
     dir_suffix = _T("nl");
     return_string = wxString("Nederlands", wxConvUTF8);
-  } else if (lang_canonical == _T("pl_PL")) {
+
+  } else if ((lang_canonical == _T("pl_PL")) || (lang_canonical == _T("pl"))) {
     dir_suffix = _T("pl");
     return_string = wxString("Polski", wxConvUTF8);
-  } else if (lang_canonical == _T("pt_PT")) {
+
+  } else if ((lang_canonical == _T("pt_PT")) || (lang_canonical == _T("pt"))) {
     dir_suffix = _T("pt_PT");
-    return_string = wxString("Portugu�s", wxConvUTF8);
-  } else if (lang_canonical == _T("pt_BR")) {
+    return_string = wxString("Português", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("pt_BR")) || (lang_canonical == _T("pt_BR"))) {
     dir_suffix = _T("pt_BR");
-    return_string = wxString("Portugu�s Brasileiro", wxConvUTF8);
-  } else if (lang_canonical == _T("ru_RU")) {
+    return_string = wxString("Português  Brasileiro", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("ru_RU")) || (lang_canonical == _T("ru"))) {
     dir_suffix = _T("ru");
-    return_string = wxString("???????", wxConvUTF8);
-  } else if (lang_canonical == _T("sv_SE")) {
+    return_string = wxString("Русский", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("sv_SE")) || (lang_canonical == _T("sv"))) {
     dir_suffix = _T("sv");
     return_string = wxString("Svenska", wxConvUTF8);
-  } else if (lang_canonical == _T("fi_FI")) {
+
+  } else if ((lang_canonical == _T("fi_FI")) || (lang_canonical == _T("fi"))) {
     dir_suffix = _T("fi_FI");
     return_string = wxString("Suomi", wxConvUTF8);
-  } else if (lang_canonical == _T("nb_NO")) {
+
+  } else if ((lang_canonical == _T("nb_NO")) || (lang_canonical == _T("nb"))) {
     dir_suffix = _T("nb_NO");
     return_string = wxString("Norsk", wxConvUTF8);
-  } else if (lang_canonical == _T("tr_TR")) {
+
+  } else if ((lang_canonical == _T("tr_TR")) || (lang_canonical == _T("tr"))) {
     dir_suffix = _T("tr_TR");
-    return_string = wxString("T�rk�e", wxConvUTF8);
-  } else if (lang_canonical == _T("el_GR")) {
+    return_string = wxString("Türkçe", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("el_GR")) || (lang_canonical == _T("el"))) {
     dir_suffix = _T("el_GR");
-    return_string = wxString("????????", wxConvUTF8);
-  } else if (lang_canonical == _T("hu_HU")) {
+    return_string = wxString("Ελληνικά", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("hu_HU")) || (lang_canonical == _T("hu"))) {
     dir_suffix = _T("hu_HU");
     return_string = wxString("Magyar", wxConvUTF8);
-  } else if (lang_canonical == _T("zh_TW")) {
+
+  } else if ((lang_canonical == _T("zh_TW")) || (lang_canonical == _T("zh_TW"))) {
     dir_suffix = _T("zh_TW");
-    return_string = wxString("???", wxConvUTF8);
-  } else if (lang_canonical == _T("zh_CN")) {
-    dir_suffix = _T("zh_CN");
-    return_string = wxString("Simplified Chinese", wxConvUTF8);
-  } else if (lang_canonical == _T("ca_ES")) {
+    return_string = wxString("正體字", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("zh_CN")) || (lang_canonical == _T("zh_CN"))) {
+      dir_suffix = _T("zh_CN");
+      return_string = wxString("Simplified Chinese", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("ca_ES")) || (lang_canonical == _T("ca"))) {
     dir_suffix = _T("ca_ES");
     return_string = wxString("Catalan", wxConvUTF8);
-  } else if (lang_canonical == _T("gl_ES")) {
+
+  } else if ((lang_canonical == _T("gl_ES")) || (lang_canonical == _T("gl_ES"))) {
     dir_suffix = _T("gl_ES");
     return_string = wxString("Galician", wxConvUTF8);
-  } else if (lang_canonical == _T("ja_JP")) {
+
+  } else if ((lang_canonical == _T("ja_JP")) || (lang_canonical == _T("ja_JP"))) {
     dir_suffix = _T("ja_JP");
     return_string = wxString("Japanese", wxConvUTF8);
-  } else if (lang_canonical == _T("ar_SA")) {
-    dir_suffix = _T("ar_SA");
-    return_string = wxString("Arabic", wxConvUTF8);
-  } else if (lang_canonical == _T("vi_VN")) {
+
+  } else if ((lang_canonical == _T("vi_VN")) || (lang_canonical == _T("vi_VN"))) {
     dir_suffix = _T("vi_VN");
     return_string = wxString("Vietnamese", wxConvUTF8);
-  } else if (lang_canonical == _T("he_IL")) {
-    dir_suffix = _T("he_IL");
-    return_string = wxString("Hebrew", wxConvUTF8);
-  } else if (lang_canonical == _T("en_GB")) {
-    dir_suffix = _T("en_GB");
-    return_string = wxString("English (U.K.)", wxConvUTF8);
+
   } else {
     dir_suffix = lang_canonical;
     const wxLanguageInfo* info = wxLocale::FindLanguageInfo(lang_canonical);
-    if (info)
-      return_string = info->Description;
+    if(info)
+        return_string = info->Description;
     else
-      return_string = lang_canonical;
+        return_string = lang_canonical;
   }
 
   lang_dir = dir_suffix;
 #endif
   return return_string;
 }
+
 
 wxString GetOCPNKnownLanguage(const wxString lang_canonical) {
   wxString lang_dir;
