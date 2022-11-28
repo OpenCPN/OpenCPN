@@ -735,7 +735,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
       wxDash *dashes;
       int n_dashes = m_pen.GetDashes(&dashes);
-      if (0/*n_dashes*/) {
+      if (n_dashes) {
         float angle = atan2f((float)(y2 - y1), (float)(x2 - x1));
         float cosa = cosf(angle);
         float sina = sinf(angle);
