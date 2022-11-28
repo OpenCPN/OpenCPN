@@ -621,6 +621,8 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
     if (b_draw_thick)
       DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
+#if 0
+
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
@@ -700,6 +702,90 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         glDrawArrays(GL_LINES, 0, 2);
       }
       shader->UnBind();
+#else
+      GLShaderProgram *shader = pcolor_tri_shader_program[m_canvasIndex];
+      shader->Bind();
+
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      //shader->SetUniform1f("uLineWidth", pen_width);
+      //shader->SetUniform1f("uBlendFactor", 1.5);
+
+      float vpx[2];
+      int width = 0;
+      int height = 0;
+      GetSize(&width, &height);
+      vpx[0] = width;
+      vpx[1] = height;
+
+      //shader->SetUniform2fv("uViewPort", vpx);
+
+      float colorv[4];
+      colorv[0] = m_pen.GetColour().Red() / float(256);
+      colorv[1] = m_pen.GetColour().Green() / float(256);
+      colorv[2] = m_pen.GetColour().Blue() / float(256);
+      colorv[3] = 1.0;
+
+      shader->SetUniform4fv("color", colorv);
+
+      glLineWidth(wxMax(g_GLMinSymbolLineWidth, m_pen.GetWidth()));
+
+      float fBuf[4];
+      shader->SetAttributePointerf("position", fBuf);
+
+
+      wxDash *dashes;
+      int n_dashes = m_pen.GetDashes(&dashes);
+      if (0/*n_dashes*/) {
+        float angle = atan2f((float)(y2 - y1), (float)(x2 - x1));
+        float cosa = cosf(angle);
+        float sina = sinf(angle);
+        float t1 = m_pen.GetWidth();
+
+        float lpix = sqrtf(powf(x1 - x2, 2) + powf(y1 - y2, 2));
+        float lrun = 0.;
+        float xa = x1;
+        float ya = y1;
+        float ldraw = t1 * dashes[0];
+        float lspace = t1 * dashes[1];
+
+        ldraw = wxMax(ldraw, 4.0);
+        lspace = wxMax(lspace, 4.0);
+        lpix = wxMin(lpix, 2000.0);
+
+        while (lrun < lpix) {
+          //    Dash
+          float xb = xa + ldraw * cosa;
+          float yb = ya + ldraw * sina;
+
+          if ((lrun + ldraw) >= lpix)  // last segment is partial draw
+          {
+            xb = x2;
+            yb = y2;
+          }
+
+          fBuf[0] = xa;
+          fBuf[1] = ya;
+          fBuf[2] = xb;
+          fBuf[3] = yb;
+
+          glDrawArrays(GL_LINES, 0, 2);
+
+          xa = xa + (lspace + ldraw) * cosa;
+          ya = ya + (lspace + ldraw) * sina;
+          lrun += lspace + ldraw;
+        }
+      } else  // not dashed
+      {
+        fBuf[0] = x1;
+        fBuf[1] = y1;
+        fBuf[2] = x2;
+        fBuf[3] = y2;
+
+        glDrawArrays(GL_LINES, 0, 2);
+      }
+      shader->UnBind();
+
+#endif
 
     }
 
@@ -798,6 +884,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       workBuf[(i * 2) + 1] = points[i].y + yoffset;
     }
 
+#if 0
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
@@ -827,6 +914,28 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       glDrawArrays(GL_LINE_STRIP, 0, n);
 
       shader->UnBind();
+#else
+      GLShaderProgram *shader = pcolor_tri_shader_program[m_canvasIndex];
+      shader->Bind();
+
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+
+      float colorv[4];
+      colorv[0] = m_pen.GetColour().Red() / float(256);
+      colorv[1] = m_pen.GetColour().Green() / float(256);
+      colorv[2] = m_pen.GetColour().Blue() / float(256);
+      colorv[3] = 1.0;
+
+      shader->SetUniform4fv("color", colorv);
+
+      shader->SetAttributePointerf("position", workBuf);
+
+      glDrawArrays(GL_LINE_STRIP, 0, n);
+
+      shader->UnBind();
+
+#endif
+
 
     if (b_hiqual) {
       glDisable(GL_LINE_STIPPLE);
