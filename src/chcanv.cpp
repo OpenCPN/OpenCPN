@@ -6637,6 +6637,7 @@ void ChartCanvas::OnSize(wxSizeEvent &event) {
 
 #ifdef ocpnUSE_GL
   if (/*g_bopengl &&*/ m_glcc) {
+    //FIXME (dave)  This can go away?
     m_glcc->OnSize(event);
   }
 #endif

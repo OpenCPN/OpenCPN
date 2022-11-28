@@ -548,44 +548,23 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
     SetCurrent(*m_pcontext);
   }
 
-  /* expand opengl widget to fill viewport */
-  // if( GetSize() != m_pParentCanvas->GetSize() )
-  {
-    SetSize(m_pParentCanvas->GetSize());
-    if (m_bsetup) {
-      wxLogMessage(_T("BuildFBO 3"));
+  //SetSize(m_pParentCanvas->GetClientSize());
 
-      BuildFBO();
-    }
+  if (m_bsetup) {
+    wxLogMessage(_T("BuildFBO 3"));
+    BuildFBO();
   }
 
-  GetClientSize(&m_pParentCanvas->m_canvas_width,
-                &m_pParentCanvas->m_canvas_height);
-
-//#ifdef USE_ANDROID_GLES2
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-//qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex
-//         << m_pParentCanvas->m_canvas_width
-//         << m_pParentCanvas->m_canvas_height;
-
-//   if (m_pParentCanvas->m_canvasIndex > 0) {
-//     int xnew = gFrame->GetClientSize().x - m_pParentCanvas->m_canvas_width;
-//     // qDebug() << "XNEW" << xnew;
-//     // SetPosition(wxPoint(xnew, 0));
-//     SetSize(0/*xnew*/, 0, m_pParentCanvas->m_canvas_width,
-//             m_pParentCanvas->m_canvas_height);
-//   }
 
   //  Set the shader viewport transform matrix
-  mat4x4 m;
-  ViewPort *vp = m_pParentCanvas->GetpVP();
-  mat4x4_identity(m);
-  mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
-                     2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
-                     1.0);
-  mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
-                            -vp->pix_height / 2, 0);
-#endif
+   ViewPort *vp = m_pParentCanvas->GetpVP();
+   mat4x4 m;
+   mat4x4_identity(m);
+   mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
+                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
+                      1.0);
+   mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
+                             -vp->pix_height / 2, 0);
 }
 
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
@@ -3842,20 +3821,36 @@ void glChartCanvas::Render() {
   }
   wxPaintDC(this);
 
-  ViewPort VPoint = m_pParentCanvas->VPoint;
   ocpnDC gldc(*this);
 
   int gl_width, gl_height;
   m_pParentCanvas->GetClientSize(&gl_width, &gl_height);
 
+  if (gl_height & 1){
+    gl_height -= 1;
+    // Adjust the Viewport height
+    ViewPort *vp = m_pParentCanvas->GetpVP();
+    vp->pix_height = gl_height;
+
+   //  Set the shader viewport transform matrix
+   //  Using the adjusted height
+    mat4x4 m;
+    mat4x4_identity(m);
+    mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
+                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
+                      1.0);
+    mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
+                             -vp->pix_height / 2, 0);
+  }
+
+  ViewPort VPoint = m_pParentCanvas->VPoint;
+
+
 #ifdef __WXOSX__
   gl_height = m_pParentCanvas->GetClientSize().y;
 #endif
 
-  OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
-
-  // Force the GL window height to be even number, avoiding artifacts
-  gl_height -= gl_height & 1;
+  OCPNRegion screen_region(wxRect(0, 0, gl_width, gl_height));
 
   glViewport(0, 0, (GLint)gl_width * m_displayScale,
              (GLint)gl_height * m_displayScale);
@@ -4025,17 +4020,17 @@ void glChartCanvas::Render() {
           // Avoid rendering artifacts caused by Multi Sampling (MSAA)
           if (VPoint.chart_scale < 10000) fluff = 8;
 
-          if (dy > 0 && dy < VPoint.pix_height)
-            update_region.Union(wxRect(0, VPoint.pix_height - (dy + fluff),
-                                       VPoint.pix_width, dy + fluff));
+          if (dy > 0 && dy < gl_height)
+            update_region.Union(wxRect(0, gl_height - (dy + fluff),
+                                       gl_width, dy + fluff));
           else if (dy < 0)
-            update_region.Union(wxRect(0, 0, VPoint.pix_width, -dy + fluff));
+            update_region.Union(wxRect(0, 0, gl_width, -dy + fluff));
 
-          if (dx > 0 && dx < VPoint.pix_width)
-            update_region.Union(wxRect(VPoint.pix_width - (dx + fluff), 0,
-                                       dx + fluff, VPoint.pix_height));
+          if (dx > 0 && dx < gl_width)
+            update_region.Union(wxRect(gl_width - (dx + fluff), 0,
+                                       dx + fluff, gl_height));
           else if (dx < 0)
-            update_region.Union(wxRect(0, 0, -dx + fluff, VPoint.pix_height));
+            update_region.Union(wxRect(0, 0, -dx + fluff, gl_height));
 
           m_cache_page = !m_cache_page; /* page flip */
 
@@ -4180,7 +4175,6 @@ void glChartCanvas::Render() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         OCPNRegion rscreen_region(VPoint.rv_rect);
-
         RenderCharts(m_gldc, rscreen_region);
 
         m_cache_page = !m_cache_page; /* page flip */
