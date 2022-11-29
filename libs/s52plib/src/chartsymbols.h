@@ -28,11 +28,13 @@
 #define _CHARTSYMBOLS_H_
 
 #ifdef __OCPN_USE_GLEW__
+ #ifndef __OCPN__ANDROID__
   #if defined(_WIN32)
     #include "glew.h"
   #elif defined(__WXQT__) || defined(__WXGTK__)
    #include <GL/glew.h>
   #endif
+ #endif
 #endif
 
 
