@@ -4886,9 +4886,10 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       //   Notify all the AUI PlugIns so that they may syncronize with the
       //   Perspective
       g_pi_manager->NotifyAuiPlugIns();
-      g_pi_manager
-          ->ShowDeferredBlacklistMessages();  //  Give the use dialog on any
-                                              //  blacklisted PlugIns
+
+      //  Give the user dialog on any blacklisted PlugIns
+      g_pi_manager ->ShowDeferredBlacklistMessages();
+
       g_pi_manager->CallLateInit();
 
       //  If any PlugIn implements PlugIn Charts, we need to re-run the initial

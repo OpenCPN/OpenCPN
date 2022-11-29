@@ -37,6 +37,7 @@
 #include "catalog_parser.h"
 #include "observable_evtvar.h"
 #include "ocpn_plugin.h"
+#include "plugin_blacklist.h"
 #include "semantic_vers.h"
 
 
@@ -51,19 +52,6 @@ typedef struct {
                    // plugin
   bool mute_dialog;  // if true, don't warn the user by dialog.
 } BlackListedPlugin;
-
-const BlackListedPlugin PluginBlacklist[] = {
-    {_T("aisradar_pi"), 0, 95, true, true},
-    {_T("radar_pi"), 0, 95, true, true},  // GCC alias for aisradar_pi
-    {_T("watchdog_pi"), 1, 00, true, true},
-    {_T("squiddio_pi"), 0, 2, true, true},
-    {_T("objsearch_pi"), 0, 3, true, true},
-#ifdef __WXOSX__
-    {_T("s63_pi"), 0, 6, true, true},
-#endif
-    {_T("oesenc_pi"), 4, 2, true, true},
-
-};
 
 
 enum class PluginStatus {
@@ -189,12 +177,12 @@ public:
   ArrayOfPlugIns* GetPlugInArray() { return &plugin_array; }
   bool IsPlugInAvailable(wxString commonName);
   bool CheckPluginCompatibility(wxString plugin_file);
-  bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
 
 private:
   PluginLoader();
   bool LoadPlugInDirectory(const wxString &plugin_dir, bool load_enabled);
   bool LoadPluginCandidate(wxString file_name, bool load_enabled);
+  std::unique_ptr<AbstractBlacklist> m_blacklist;
   ArrayOfPlugIns plugin_array;
   wxString m_last_error_string;
   wxString m_plugin_location;
