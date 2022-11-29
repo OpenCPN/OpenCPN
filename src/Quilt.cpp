@@ -1642,6 +1642,17 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
   BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
 
+  // It can happen (in groups switch, or single->quilt mode) that there
+  // is no refchart known, but there are charts available in the piano.
+  // Detect this case, and build the quilt based on the smallest scale chart
+  // anywhere on screen.
+
+  if ((m_refchart_dbIndex < 0) && m_extended_stack_array.size()){
+    // Take the smallest scale chart in the array.
+    m_refchart_dbIndex = m_extended_stack_array.back();
+    BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
+  }
+
   //    It is possible that the reference chart is not really part of the
   //    visible quilt This can happen when the reference chart is panned
   //    off-screen in full screen quilt mode
