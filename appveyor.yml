@@ -39,7 +39,7 @@ install:
 
   - cmd: wget --version > nul 2>&1 || choco install -y wget
 
-  set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
+  - cmd: set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
   - cmd: wget -nv !GITHUB_DL!/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
   - cmd: 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
 
