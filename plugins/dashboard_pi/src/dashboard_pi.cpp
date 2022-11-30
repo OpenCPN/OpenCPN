@@ -801,7 +801,7 @@ void dashboard_pi::Notify() {
   if (mWTP_Watchdog <= 0) {
     mPriWTP = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, NAN, "-");
-    mWTP_Watchdog = gps_watchdog_timeout_ticks;
+    mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
   }
   mRSA_Watchdog--;
   if (mRSA_Watchdog <= 0) {
@@ -1241,7 +1241,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               OCPN_DBP_STC_TMP,
               toUsrTemp_Plugin(m_NMEA0183.Mtw.Temperature, g_iDashTempUnit),
               getUsrTempUnit_Plugin(g_iDashTempUnit));
-          mWTP_Watchdog = gps_watchdog_timeout_ticks;
+          mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
 
