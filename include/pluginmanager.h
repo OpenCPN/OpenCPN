@@ -186,9 +186,10 @@ public:
   virtual ~PlugInManager();
 
   bool RenderAllCanvasOverlayPlugIns(ocpnDC &dc, const ViewPort &vp,
-                                     int canvasIndex);
+                                     int canvasIndex, int priority);
   bool RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
-                                       const ViewPort &vp, int canvasIndex);
+                                       const ViewPort &vp, int canvasIndex,
+                                       int priority);
   void SendCursorLatLonToAllPlugIns(double lat, double lon);
   void SendViewPortToRequestingPlugIns(ViewPort &vp);
   void PrepareAllPluginContextMenus();

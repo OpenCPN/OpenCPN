@@ -2652,7 +2652,7 @@ void glChartCanvas::DrawFloatingOverlayObjects(ocpnDC &dc) {
   if (g_pi_manager) {
     g_pi_manager->SendViewPortToRequestingPlugIns(vp);
     g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
-        m_pcontext, vp, m_pParentCanvas->m_canvasIndex);
+        m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_LEGACY);
   }
 
   // all functions called with m_pParentCanvas-> are still slow because they go
@@ -2671,6 +2671,10 @@ void glChartCanvas::DrawFloatingOverlayObjects(ocpnDC &dc) {
   m_pParentCanvas->ScaleBarDraw(dc);
   s57_DrawExtendedLightSectors(dc, m_pParentCanvas->VPoint,
                                m_pParentCanvas->extendedSectorLegs);
+  if (g_pi_manager) {
+    g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
+        m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_OVER_SHIPS);
+  }
 }
 
 void glChartCanvas::DrawChartBar(ocpnDC &dc) {
@@ -4359,6 +4363,13 @@ void glChartCanvas::Render() {
   DrawEmboss(m_gldc, m_pParentCanvas->EmbossDepthScale());
   DrawEmboss(m_gldc, m_pParentCanvas->EmbossOverzoomIndicator(gldc));
 
+  if (g_pi_manager) {
+    ViewPort &vp = m_pParentCanvas->GetVP();
+    g_pi_manager->SendViewPortToRequestingPlugIns(vp);
+    g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
+        m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_OVER_EMBOSS);
+  }
+
   if (m_pParentCanvas->m_pTrackRolloverWin)
     m_pParentCanvas->m_pTrackRolloverWin->Draw(gldc);
 
@@ -4428,6 +4439,13 @@ void glChartCanvas::Render() {
 
   RenderGLAlertMessage();
 #endif
+
+  if (g_pi_manager) {
+    ViewPort &vp = m_pParentCanvas->GetVP();
+    g_pi_manager->SendViewPortToRequestingPlugIns(vp);
+    g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
+        m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_OVER_UI);
+  }
 
   // quiting?
   if (g_bquiting) DrawQuiting();

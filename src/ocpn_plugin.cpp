@@ -275,3 +275,19 @@ const char* opencpn_plugin_117::GetPlugInVersionPre() { return ""; };
 const char* opencpn_plugin_117::GetPlugInVersionBuild() { return ""; };
 
 void opencpn_plugin_117::SetActiveLegInfo(Plugin_Active_Leg_Info& leg_info) {}
+
+//    Opencpn_Plugin_118 Implementation
+opencpn_plugin_118::opencpn_plugin_118(void* pmgr) : opencpn_plugin_117(pmgr) {}
+
+bool opencpn_plugin_118::RenderGLOverlayMultiCanvas(wxGLContext* pcontext,
+                                                    PlugIn_ViewPort* vp,
+                                                    int max_canvas,
+						    int priority) {
+  return false;
+}
+
+bool opencpn_plugin_118::RenderOverlayMultiCanvas(wxDC& dc, PlugIn_ViewPort* vp,
+                                                  int max_canvas,
+						  int priority) {
+  return false;
+}

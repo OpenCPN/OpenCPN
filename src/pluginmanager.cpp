@@ -1378,6 +1378,7 @@ bool PlugInManager::CallLateInit(void) {
       case 115:
       case 116:
       case 117:
+      case 118:
         ProcessLateInit(pic);
         break;
     }
@@ -1448,7 +1449,8 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart,
           case 114:
           case 115:
           case 116:
-          case 117: {
+          case 117:
+          case 118: {
             opencpn_plugin_112 *ppi =
                 dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
             if (ppi)
@@ -1778,7 +1780,7 @@ bool PlugInManager::CheckBlacklistedPlugin(wxString name, int major, int minor) 
 
 bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
                                                   const ViewPort &vp,
-                                                  int canvasIndex) {
+                                                  int canvasIndex, int priority) {
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer *pic = plugin_array->Item(i);
@@ -1791,12 +1793,16 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
         {
           switch (pic->m_api_version) {
             case 106: {
+              if (priority > 0)
+                break;
               opencpn_plugin_16 *ppi =
                   dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
               if (ppi) ppi->RenderOverlay(*pdc, &pivp);
               break;
             }
             case 107: {
+              if (priority > 0)
+                break;
               opencpn_plugin_17 *ppi =
                   dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
               if (ppi) ppi->RenderOverlay(*pdc, &pivp);
@@ -1810,6 +1816,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             case 113:
             case 114:
             case 115: {
+              if (priority > 0)
+                break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) ppi->RenderOverlay(*pdc, &pivp);
@@ -1817,6 +1825,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             }
             case 116:
             case 117: {
+              if (priority > 0)
+                break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) {
@@ -1826,6 +1836,20 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
                   dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
               if (ppi116)
                 ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, canvasIndex);
+              break;
+            }
+            case 118: {
+              if (priority <= 0) {
+                opencpn_plugin_18 *ppi =
+                    dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                if (ppi) {
+                  ppi->RenderOverlay(*pdc, &pivp);
+                }
+              }
+              opencpn_plugin_118 *ppi118 =
+                  dynamic_cast<opencpn_plugin_118 *>(pic->m_pplugin);
+              if (ppi118)
+                ppi118->RenderOverlayMultiCanvas(*pdc, &pivp, canvasIndex, priority);
               break;
             }
             default:
@@ -1849,12 +1873,16 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
 
           switch (pic->m_api_version) {
             case 106: {
+              if (priority > 0)
+                break;
               opencpn_plugin_16 *ppi =
                   dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
               if (ppi) b_rendered = ppi->RenderOverlay(mdc, &pivp);
               break;
             }
             case 107: {
+              if (priority > 0)
+                break;
               opencpn_plugin_17 *ppi =
                   dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
               if (ppi) b_rendered = ppi->RenderOverlay(mdc, &pivp);
@@ -1868,6 +1896,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             case 113:
             case 114:
             case 115: {
+              if (priority > 0)
+                break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) b_rendered = ppi->RenderOverlay(*pdc, &pivp);
@@ -1875,6 +1905,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             }
             case 116:
             case 117: {
+              if (priority > 0)
+                break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) {
@@ -1885,6 +1917,22 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
               if (ppi116)
                 b_rendered = ppi116->RenderOverlayMultiCanvas(*pdc, &pivp,
                                                               g_canvasConfig);
+              break;
+            }
+            case 118: {
+              if (priority <= 0) {
+                opencpn_plugin_18 *ppi =
+                    dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                if (ppi) {
+                  b_rendered = ppi->RenderOverlay(*pdc, &pivp);
+                }
+              }
+              opencpn_plugin_118 *ppi118 =
+                  dynamic_cast<opencpn_plugin_118 *>(pic->m_pplugin);
+              if (ppi118)
+                b_rendered = ppi118->RenderOverlayMultiCanvas(*pdc, &pivp,
+                                                              g_canvasConfig,
+                                                              priority);
               break;
             }
             default: {
@@ -1912,7 +1960,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
 
 bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
                                                     const ViewPort &vp,
-                                                    int canvasIndex) {
+                                                    int canvasIndex, int priority) {
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer *pic = plugin_array->Item(i);
@@ -1922,6 +1970,8 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
 
         switch (pic->m_api_version) {
           case 107: {
+            if (priority > 0)
+                break;
             opencpn_plugin_17 *ppi =
                 dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
             if (ppi) ppi->RenderGLOverlay(pcontext, &pivp);
@@ -1936,6 +1986,8 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
           case 113:
           case 114:
           case 115: {
+            if (priority > 0)
+                break;
             opencpn_plugin_18 *ppi =
                 dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
             if (ppi) ppi->RenderGLOverlay(pcontext, &pivp);
@@ -1943,6 +1995,8 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
           }
           case 116:
           case 117: {
+            if (priority > 0)
+                break;
             opencpn_plugin_18 *ppi =
                 dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
             if (ppi) {
@@ -1952,6 +2006,21 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
                 dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
             if (ppi116) {
               ppi116->RenderGLOverlayMultiCanvas(pcontext, &pivp, canvasIndex);
+            }
+            break;
+          }
+          case 118: {
+            if (priority <= 0) {
+              opencpn_plugin_18 *ppi =
+                dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+              if (ppi) {
+                ppi->RenderGLOverlay(pcontext, &pivp);
+              }
+            }
+            opencpn_plugin_118 *ppi118 =
+                dynamic_cast<opencpn_plugin_118 *>(pic->m_pplugin);
+            if (ppi118) {
+              ppi118->RenderGLOverlayMultiCanvas(pcontext, &pivp, canvasIndex, priority);
             }
             break;
           }
@@ -1978,7 +2047,8 @@ bool PlugInManager::SendMouseEventToPlugins(wxMouseEvent &event) {
           case 114:
           case 115:
           case 116:
-          case 117: {
+          case 117:
+          case 118: {
             opencpn_plugin_112 *ppi =
                 dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
             if (ppi)
@@ -2008,7 +2078,8 @@ bool PlugInManager::SendKeyEventToPlugins(wxKeyEvent &event) {
             case 114:
             case 115:
             case 116:
-            case 117: {
+            case 117:
+            case 118: {
               opencpn_plugin_113 *ppi =
                   dynamic_cast<opencpn_plugin_113 *>(pic->m_pplugin);
               if (ppi && ppi->KeyboardEventHook(event)) bret = true;
@@ -2062,7 +2133,8 @@ void NotifySetupOptionsPlugin(const PlugInContainer *pic) {
         case 114:
         case 115:
         case 116:
-        case 117: {
+        case 117:
+        case 118: {
           opencpn_plugin_19 *ppi =
               dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
           if (ppi) {
@@ -2275,7 +2347,8 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id,
           case 114:
           case 115:
           case 116:
-          case 117: {
+          case 117:
+          case 118: {
             opencpn_plugin_18 *ppi =
                 dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
             if (ppi)
@@ -2350,7 +2423,8 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
           case 114:
           case 115:
           case 116:
-          case 117: {
+          case 117:
+          case 118: {
             opencpn_plugin_18 *ppi =
                 dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
             if (ppi) ppi->SetPositionFixEx(pfix_ex);
@@ -2387,7 +2461,8 @@ void PlugInManager::SendActiveLegInfoToAllPlugIns(const ActiveLegDat *leg_info) 
           case 115:
           case 116:
             break;
-          case 117: {
+          case 117:
+          case 118: {
             opencpn_plugin_117 *ppi =
                 dynamic_cast<opencpn_plugin_117 *>(pic->m_pplugin);
             if (ppi) ppi->SetActiveLegInfo(leg);
@@ -2430,7 +2505,8 @@ void PlugInManager::PrepareAllPluginContextMenus() {
       if (pic->m_cap_flag & INSTALLS_CONTEXTMENU_ITEMS) {
         switch (pic->m_api_version) {
           case 116:
-          case 117: {
+          case 117:
+          case 118: {
             opencpn_plugin_116 *ppi =
                 dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
             if (ppi) ppi->PrepareContextMenu(canvasIndex);

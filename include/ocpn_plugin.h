@@ -66,7 +66,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR 1
-#define API_VERSION_MINOR 17
+#define API_VERSION_MINOR 18
 
 //    Fwd Definitions
 class wxFileConfig;
@@ -103,6 +103,16 @@ class wxGLCanvas;
 #define WANTS_MOUSE_EVENTS 0x00080000
 #define WANTS_VECTOR_CHART_OBJECT_INFO 0x00100000
 #define WANTS_KEYBOARD_EVENTS 0x00200000
+
+//---------------------------------------------------------------------------------------------------------
+//
+//    Overlay priorities
+//
+//---------------------------------------------------------------------------------------------------------
+#define OVERLAY_LEGACY 0
+#define OVERLAY_OVER_SHIPS 64
+#define OVERLAY_OVER_EMBOSS 96
+#define OVERLAY_OVER_UI 128
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -565,6 +575,31 @@ public:
 
   /*Provide active leg data to plugins*/
   virtual void SetActiveLegInfo(Plugin_Active_Leg_Info &leg_info);
+};
+
+class DECL_EXP opencpn_plugin_118 : public opencpn_plugin_117 {
+public:
+  opencpn_plugin_118(void *pmgr);
+  /// Render plugin overlay over chart canvas in OpenGL mode
+  ///
+  /// \param pcontext Pointer to the OpenGL context
+  /// \param vp Pointer to the Viewport
+  /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
+  /// \param priority Priority, plugins only upgrading from older API versions should draw only
+  /// when priority is OVERLAY_LEGACY (0)
+  /// \return true if overlay was rendered, false otherwise
+  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
+                                          PlugIn_ViewPort *vp, int canvasIndex, int priority = -1);
+  /// Render plugin overlay over chart canvas in non-OpenGL mode
+  ///
+  /// \param dc Reference to the "device context"
+  /// \param vp Pointer to the Viewport
+  /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
+  /// \param priority Priority, plugins only upgrading from older API versions should draw only
+  /// when priority is OVERLAY_LEGACY (0)
+  /// \return true if overlay was rendered, false otherwise
+  virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                        int canvasIndex, int priority = -1);
 };
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
