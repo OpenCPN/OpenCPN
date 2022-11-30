@@ -39,11 +39,10 @@ install:
 
   - cmd: wget --version > nul 2>&1 || choco install -y wget
 
-  set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
-  - cmd: wget -nv !GITHUB_DL!/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
+  - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
   - cmd: 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
 
-  - cmd: wget -nv !GITHUB_DL!/v3.2.1/wxWidgets-3.2.1-headers.7z
+  - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxWidgets-3.2.1-headers.7z
   - cmd: 7z x -oC:\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
 
   # some debugging information
@@ -64,14 +63,14 @@ before_build:
   - cmd: mkdir c:\projects\opencpn\buildwin
   - cmd: XCOPY c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin c:\project\opencpn\buildwin /s /y /q
 
-  - cmake -T v143 -DOCPN_CI_BUILD=ON -DCMAKE_GENERATOR_PLATFORM=Win32 ..
+  - cmake -T v143 -DOCPN_CI_BUILD=ON -DCMAKE_GENERATOR_PLATFORM=Win32 -DOCPN_BUILD_TEST=OFF ..
   # Add runtime test path:
   - cmd: SET PATH=%PATH%;c:\project\opencpn\buildwin
 build_script:
   # - cmake --build . --config debug
   - cmake --build . --target opencpn --config RelWithDebInfo
   - SET PATH=..\buildwin;%PATH%
-  - cmake --build . --target run-tests --config RelWithDebInfo
+  #- cmake --build . --target run-tests --config RelWithDebInfo
   - cmake --build . --target package --config RelWithDebInfo
 
 deploy_script:
