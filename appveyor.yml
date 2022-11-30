@@ -63,7 +63,7 @@ before_build:
   - cmd: mkdir c:\projects\opencpn\buildwin
   - cmd: XCOPY c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin c:\project\opencpn\buildwin /s /y /q
 
-  - cmake -T v143 -DOCPN_CI_BUILD=ON -DCMAKE_GENERATOR_PLATFORM=Win32 ..
+  - cmake -T v143 -DOCPN_CI_BUILD=ON -DCMAKE_GENERATOR_PLATFORM=Win32 -DOCPN_BUILD_TEST=OFF ..
   # Add runtime test path:
   - cmd: SET PATH=%PATH%;c:\project\opencpn\buildwin
 build_script:
