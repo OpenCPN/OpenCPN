@@ -29,9 +29,9 @@ install:
   - choco install poedit
   - choco install git
 
-  # - choco install nsis-3.04 -x86
-  - ps: Start-FileDownload https://download.opencpn.org/s/54HsBDLNzRZLL6i/download -FileName nsis-3.04-setup.exe
-  - cmd: nsis-3.04-setup.exe /S
+  - choco install nsis-3.08 -x86
+  #- ps: Start-FileDownload https://download.opencpn.org/s/54HsBDLNzRZLL6i/download -FileName nsis-3.04-setup.exe
+  #- cmd: nsis-3.04-setup.exe /S
 
   # Download and unzip wxwidgets, version 3.2.1
   #- ps: Start-FileDownload https://download.opencpn.org/s/mKn7bczRPSJXBtF/download -FileName wxWidgets-3.2.1.7z
