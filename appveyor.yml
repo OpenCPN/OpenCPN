@@ -71,8 +71,8 @@ build_script:
   - cmake --build . --target opencpn --config RelWithDebInfo
   - SET PATH=..\buildwin;%PATH%
   #- cmake --build . --target run-tests --config RelWithDebInfo
-  - cmake --build . --target package --config RelWithDebInfo
-
+  #- cmake --build . --target package --config RelWithDebInfo
+  - cmake --build . --target package --config Release
 deploy_script:
   - |
       cd %APPVEYOR_BUILD_FOLDER%\ci
