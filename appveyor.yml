@@ -1,24 +1,24 @@
+---
 clone_folder: c:\project\opencpn
 shallow_clone: false
 clone_depth: 10
 
 image:
-- Visual Studio 2022
+  - Visual Studio 2022
 
 platform:
-# - x64
-- Win32
+  # - x64
+  - Win32
 
 configuration: RelWithDebInfo
 test: OFF
 
 install:
-  # VS2015 and earlier version - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86'
-  #- call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
-  #- call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - set "VS_BASE=C:\Program Files\Microsoft Visual Studio\2022"
+  - call "%VS_BASE%\Community\VC\Auxiliary\Build\vcvars32.bat"
 
-  - cmd: SET PATH=%PATH%;C:\Program Files (x86)\Poedit\Gettexttools\bin;C:\Program Files\Git\bin;c:\cygwin\bin
+  - cmd: SET PATH=%PATH%;C:\Program Files (x86)\Poedit\Gettexttools\bin
+  - cmd: SET PATH=%PATH%;C:\Program Files\Git\bin;c:\cygwin\bin
   - cmd: python --version
 
   # install dependencies:
@@ -31,38 +31,38 @@ install:
   - wget --version > null 2>&1 || choco install wget
   - set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
   - wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
-  - 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
+  - 7z x -y -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
   - wget -nv %GITHUB_DL%/v3.2.1/wxWidgets-3.2.1-headers.7z
-  - 7z x -oC:\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
+  - 7z x -y -oC:\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
   - wget %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  - 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
+  - 7z x -y -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
 
   # set environment variables
   - set WXWIN=C:\wxWidgets-3.2.1
   # Add path to resolve wxWidgets runtime deps
   - set PATH=%PATH%;%WXWIN%\lib\vc14x_dll
 
-  - ps: Start-FileDownload https://download.opencpn.org/s/54HsBDLNzRZLL6i/download -FileName nsis-3.04-setup.exe
-  - cmd: nsis-3.04-setup.exe /S
-
-  # some debugging information
-  # - set   Displays sensitive password!
-  # - cmake --help
-
-  # build wxWidgets - Disabled as we provide prebuilt WX to save time
-  #- cmd: cd %WXWIN%\build\msw\
-  #- cmd: nmake -f makefile.vc BUILD=release SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
-  #- cmd: nmake -f makefile.vc BUILD=debug SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
+  - ps: >
+      Start-FileDownload
+      https://download.opencpn.org/s/54HsBDLNzRZLL6i/download
+      -FileName nsis-3.04-setup.exe
+  - nsis-3.04-setup.exe /S
 
 before_build:
   - cd c:\project\opencpn
   - mkdir build
   - cd build
-  - ps: Start-FileDownload https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.3.zip -FileName OCPNWindowsCoreBuildSupport.zip
-  - cmd: 7z x OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwintemp
-  - cmd: mkdir c:\projects\opencpn\buildwin
-  - cmd: XCOPY c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin c:\project\opencpn\buildwin /s /y /q
-  ->
+  - ps: >
+      Start-FileDownload
+      https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.3.zip
+      -FileName OCPNWindowsCoreBuildSupport.zip
+  - 7z x OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwintemp
+  - mkdir c:\projects\opencpn\buildwin
+  - >
+    XCOPY
+    c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin
+    c:\project\opencpn\buildwin /s /y /q
+  - >
     cmake -T v143
     -DCMAKE_GENERATOR_PLATFORM=Win32
     -A Win32 -G "Visual Studio 17 2022"
@@ -73,8 +73,9 @@ before_build:
     -DOCPN_CI_BUILD=ON
     -DOCPN_BUILD_TEST=OFF
     ..
-  # Add runtime test path:
+  # Add runtime test path
   - cmd: SET PATH=%PATH%;c:\project\opencpn\buildwin
+
 build_script:
   # - cmake --build . --config debug
   - cmake --build . --target opencpn --config Release
@@ -84,4 +85,3 @@ deploy_script:
   - |
       cd %APPVEYOR_BUILD_FOLDER%\ci
       "\Program Files\Git\bin\bash" appveyor-upload.sh
-
