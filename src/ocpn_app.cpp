@@ -1064,6 +1064,16 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
 
 static wxStopWatch init_sw;
 
+MyApp::MyApp() {
+#ifdef __linux__
+// Handle e. g., wayland default display -- see #1166.
+
+  if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
+    setenv("GDK_BACKEND", "x11", 1);
+
+#endif   // __linux__
+}
+
 bool MyApp::OnInit() {
   if (!wxApp::OnInit()) return false;
 #ifdef __OCPN__ANDROID__
