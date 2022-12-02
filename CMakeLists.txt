@@ -2557,13 +2557,35 @@ endif (APPLE)
 # directory
 #
 if (WIN32 AND NOT UNIX)
-  if (OCPN_BUNDLE_WXDLLS)
-    file(
-      GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll"
-    )
-    install(FILES ${wxdll_files} DESTINATION ".")
-    message(STATUS "wxWidgets DLLs bundled into the installer package...")
-  endif (OCPN_BUNDLE_WXDLLS)
+  message(STATUS "wxWidgets DLLs bundled into the installer package: ...")
+
+  list(GET wxWidgets_LIBRARIES 0 first_file)
+  message(STATUS "first_file: ${first_file}")
+  get_filename_component(dll_dir ${first_file} DIRECTORY)
+
+  message(STATUS "dll_dir: ${dll_dir}")
+
+  file(
+      GLOB wxdll_files "${dll_dir}/wx*u_*.dll"
+  )
+  message(STATUS "wxdll_files: ${wxdll_files}")
+  install(FILES ${wxdll_files} DESTINATION ".")
+
+
+#  foreach (_current_wx_dllfile ${wxWidgets_LIBRARIES})
+#    if ("${_current_wx_dllfile}" MATCHES "vc14x_dll*.dll")
+#      message(STATUS "   Installing: ${_current_wx_dllfile}")
+#      install(FILES ${_current_wx_dllfile} DESTINATION ".")
+#    endif()
+#  endforeach (_current_wx_dllfile)
+
+#  if (OCPN_BUNDLE_WXDLLS)
+#    file(
+#      GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll"
+#    )
+#    install(FILES ${wxdll_files} DESTINATION ".")
+#    message(STATUS "wxWidgets DLLs bundled into the installer package...")
+#  endif (OCPN_BUNDLE_WXDLLS)
   if (OCPN_BUNDLE_VCDLLS)
     file(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
     install(FILES ${vcdll_files} DESTINATION ".")
