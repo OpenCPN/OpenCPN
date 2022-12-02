@@ -1,11 +1,12 @@
 #!/usr/bin/make -f
 
 include /usr/share/dpkg/architecture.mk
-#DEB_UPSTREAM_VERSION=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([0-9]:)*([^-]+).*,\2,p')
 
 %:
+	DEB_UPSTREAM_VERSIONA=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([0-9]:)*([^-]+).*,\2,p')
 	DEB_UPSTREAM_VERSION=12
 	echo $(DEB_UPSTREAM_VERSION)
+	echo $(DEB_UPSTREAM_VERSIONA)
 
 	dh $@
 
@@ -33,6 +34,7 @@ else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
             -DCMAKE_BUILD_TYPE=Release                 \
             -DOCPN_BUILD_TEST=OFF
 else
+	DEB_UPSTREAM_VERSION=12
 	ifeq ($(DEB_UPSTREAM_VERSION), 12)
 		dh_auto_configure -- \
 		-DCMAKE_INSTALL_LIBDIR=lib                 \
