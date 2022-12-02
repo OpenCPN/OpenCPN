@@ -54,6 +54,8 @@ else (APPLE)
   set(PACKAGE_NAME opencpn)
 endif (APPLE)
 
+add_definitions("-DRAPIDJSON_HAS_STDSTRING=1") 
+
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   message(STATUS "Building for wxQt-Android")
   set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
