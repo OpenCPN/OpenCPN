@@ -2563,7 +2563,7 @@ endif (APPLE)
 if (WIN32 AND NOT UNIX)
   message(STATUS "wxWidgets DLLs bundled into the installer package: ...")
 
-  list(GET wxWidgets_LIBRARIES 0 first_file)
+  list(GET wxWidgets_LIBRARIES 1 first_file)
   message(STATUS "first_file: ${first_file}")
   get_filename_component(dll_dir ${first_file} DIRECTORY)
 
