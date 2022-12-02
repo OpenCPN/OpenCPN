@@ -43,6 +43,9 @@ extern int g_iDashDepthUnit;   // use same unit for altitude
 #pragma hdrstop
 #endif
 
+int m_aDataHeight;
+int x_alabel, y_alabel, a_plotdown, a_plotup, a_plotheight;
+
 DashboardInstrument_Altitude::DashboardInstrument_Altitude(wxWindow* parent,
                                                      wxWindowID id,
                                                      wxString title)
@@ -61,10 +64,16 @@ wxSize DashboardInstrument_Altitude::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
   dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+  dc.GetTextExtent("15.7 Feet", &w, &m_aDataHeight, 0, 0, g_pFontData);
+  // Space for bottom(temp)text later.
+  dc.GetTextExtent("20.8 C", &x_alabel, &y_alabel, 0, 0, g_pFontLabel);
+  int y_total =
+      //  Title         Alt. data       plot area     air-temp
+      m_TitleHeight + m_aDataHeight + 4 * m_aDataHeight + y_alabel;
   if (orient == wxHORIZONTAL) {
-    return wxSize(DefaultWidth, wxMax(m_TitleHeight + 140, hint.y));
+    return wxSize(DefaultWidth, wxMax(y_total, hint.y));
   } else {
-    return wxSize(wxMax(hint.x, DefaultWidth), m_TitleHeight + 140);
+    return wxSize(wxMax(hint.x, DefaultWidth), y_total);
   }
 }
 
@@ -152,9 +161,12 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   pen.SetWidth(1);
   dc->SetPen(pen);
 
-  //dc->DrawLine(3,  44, size.x - 3,  44);
-  dc->DrawLine(3, 140, size.x - 3, 140);  // Base line
+  a_plotup = m_TitleHeight + m_aDataHeight;
+  a_plotdown = size.y - y_alabel;
+  a_plotheight = a_plotdown - a_plotup;
 
+  // dc->DrawLine(3,  44, size.x - 3,  44);
+  dc->DrawLine(3, a_plotdown, size.x - 3, a_plotdown);
 
 #ifdef __WXMSW__
   pen.SetStyle(wxPENSTYLE_SHORT_DASH);
@@ -165,10 +177,13 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
 
   // Grid lines
   dc->SetPen(pen);
-  dc->DrawLine(3,  44, size.x - 3,  44);
-  dc->DrawLine(3,  68, size.x - 3,  68);
-  dc->DrawLine(3,  92, size.x - 3,  92);
-  dc->DrawLine(3, 116, size.x - 3, 116);
+  dc->DrawLine(3, a_plotup, size.x - 3, a_plotup);
+  dc->DrawLine(3, a_plotup + a_plotheight / 4, size.x - 3,
+               a_plotup + a_plotheight / 4);
+  dc->DrawLine(3, a_plotup + a_plotheight * 2 / 4, size.x - 3,
+               a_plotup + a_plotheight * 2 / 4);
+  dc->DrawLine(3, a_plotup + a_plotheight * 3 / 4, size.x - 3,
+               a_plotup + a_plotheight * 3 / 4);
 
   dc->SetFont(*g_pFontSmall);
 
@@ -211,11 +226,11 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   label.Printf(_T("+/-%.1f %8.0f ") + m_AltitudeUnit, sqrt(varAltitude), m_MaxAltitude);
   int width, height;
   dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-  dc->DrawText(label, size.x - width - 1, 40 - height);
+  dc->DrawText(label, size.x - width - 1, a_plotup - height);
 
   label.Printf(_T("%.1f/ %8.0f ") + m_AltitudeUnit, m_Range/c_GridLines, m_MinAltitude);
   dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-  dc->DrawText(label, size.x - width - 1, size.y - height);
+  dc->DrawText(label, size.x - width - 1, a_plotdown);
 }
 
 void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
@@ -229,44 +244,47 @@ void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
   dc->SetBrush(brush);
   dc->SetPen(*wxTRANSPARENT_PEN);
 
-  double ratioH = 96.0 / m_Range;  // 140-44=96
+  double ratioH = double(a_plotheight) / m_Range;
   double ratioW = double(size.x - 6) / (ALTITUDE_RECORD_COUNT - 1);
   wxPoint points[ALTITUDE_RECORD_COUNT + 2];
 #ifdef __OCPN__ANDROID__
   int px = 3;
   points[0].x = px;
-  points[0].y = 140;
+  points[0].y = a_plotdown;
 
   for (int idx = 0; idx < ALTITUDE_RECORD_COUNT - 1; idx++) {
     points[1].x = points[0].x;
     if (m_ArrayAltitude[idx])
-      points[1].y = 140 - ( m_ArrayAltitude[idx] - m_MinAltitude) * ratioH ;
+      points[1].y =
+          a_plotdown - (m_ArrayAltitude[idx] - m_MinAltitude) * ratioH;
     else
-      points[1].y = 140;
+      points[1].y = a_plotdown;
 
     points[2].x = points[1].x + ratioW;
     if (m_ArrayAltitude[idx + 1])
-      points[2].y = 140 - ( m_ArrayAltitude[idx + 1]- m_MinAltitude) * ratioH;
+      points[2].y =
+          a_plotdown - (m_ArrayAltitude[idx + 1] - m_MinAltitude) * ratioH;
     else
-      points[2].y = 140;
+      points[2].y = a_plotdown;
 
     points[3].x = points[2].x;
-    points[3].y = 140;
+    points[3].y = a_plotdown;
     dc->DrawPolygon(4, points);
 
     points[0].x = points[2].x;
-    points[0].y = 140;
+    points[0].y = a_plotdown;
   }
 
 #else
   for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
     points[idx].x = idx * ratioW + 3;
-    points[idx].y = 140 -(m_ArrayAltitude[idx]-m_MinAltitude) * ratioH;
+    points[idx].y =
+        a_plotdown - (m_ArrayAltitude[idx] - m_MinAltitude) * ratioH;
   }
   points[ALTITUDE_RECORD_COUNT].x = size.x - 3;
-  points[ALTITUDE_RECORD_COUNT].y = 140;
+  points[ALTITUDE_RECORD_COUNT].y = a_plotdown;
   points[ALTITUDE_RECORD_COUNT + 1].x = 3;
-  points[ALTITUDE_RECORD_COUNT + 1].y = 140;
+  points[ALTITUDE_RECORD_COUNT + 1].y = a_plotdown;
   dc->DrawPolygon(ALTITUDE_RECORD_COUNT + 2, points);
 #endif
 
@@ -283,5 +301,5 @@ void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
   dc->SetFont(*g_pFontLabel);
   int width, height;
   dc->GetTextExtent(m_Temp, &width, &height, 0, 0, g_pFontLabel);
-  dc->DrawText(m_Temp, 0, size.y - height);
+  dc->DrawText(m_Temp, 3, a_plotdown);
 }
