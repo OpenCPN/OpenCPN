@@ -1,9 +1,7 @@
 #!/usr/bin/make -f
 
 include /usr/share/dpkg/architecture.mk
-DEB_UPSTREAM_VERSION=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([0-9]:)*([^-]+).*,\2,p')
 
-echo $(DEB_UPSTREAM_VERSION)
 
 %:
 	dh $@
@@ -32,17 +30,9 @@ else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
             -DCMAKE_BUILD_TYPE=Release                 \
             -DOCPN_BUILD_TEST=OFF
 else
-  ifeq ($(DEB_UPSTREAM_VERSION), 12)
 	dh_auto_configure -- \
 	    -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=Release                 \
-            -DOCPN_BUILD_TEST=OFF		       \
-            -DOCPN_TARGET_TUPLE="ubuntu-x86_64-wx32;22.04;x86_64"
-  else
- 	dh_auto_configure -- \
-	    -DCMAKE_INSTALL_LIBDIR=lib                 \
-            -DCMAKE_BUILD_TYPE=Release                 \
             -DOCPN_BUILD_TEST=OFF
-
 
 endif
