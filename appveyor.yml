@@ -7,81 +7,20 @@ image:
   - Visual Studio 2022
 
 platform:
-  # - x64
   - Win32
 
 configuration: RelWithDebInfo
-test: OFF
 
 install:
   - set "VS_BASE=C:\Program Files\Microsoft Visual Studio\2022"
   - call "%VS_BASE%\Community\VC\Auxiliary\Build\vcvars32.bat"
 
-  - cmd: SET PATH=%PATH%;C:\Program Files (x86)\Poedit\Gettexttools\bin
-  - cmd: SET PATH=%PATH%;C:\Program Files\Git\bin;c:\cygwin\bin
   - cmd: python --version
 
-  # install dependencies:
-  - choco install poedit
-  - choco install git
-
-  # - choco install nsis-3.04 -x86
-
-  # Download and unzip wxwidgets, version 3.2.1
-  - wget --version > null 2>&1 || choco install wget
-  - set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
-  - wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
-  - 7z x -y -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
-  - wget -nv %GITHUB_DL%/v3.2.1/wxWidgets-3.2.1-headers.7z
-  - 7z x -y -oC:\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
-  - wget %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  - 7z x -y -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-
-  # set environment variables
-  - set WXWIN=C:\wxWidgets-3.2.1
-  # Add path to resolve wxWidgets runtime deps
-  - set PATH=%PATH%;%WXWIN%\lib\vc14x_dll
-
-  - ps: >
-      Start-FileDownload
-      https://download.opencpn.org/s/54HsBDLNzRZLL6i/download
-      -FileName nsis-3.04-setup.exe
-  - nsis-3.04-setup.exe /S
-
-before_build:
-  - cd c:\project\opencpn
-  - mkdir build
-  - cd build
-  - ps: >
-      Start-FileDownload
-      https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.3.zip
-      -FileName OCPNWindowsCoreBuildSupport.zip
-  - 7z x OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwintemp
-  - mkdir c:\projects\opencpn\buildwin
-  - >
-    XCOPY
-    c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin
-    c:\project\opencpn\buildwin /s /y /q
-  - >
-    cmake -T v143
-    -DCMAKE_GENERATOR_PLATFORM=Win32
-    -A Win32 -G "Visual Studio 17 2022"
-    -DwxWidgets_ROOT_DIR=%WXWIN%
-    -DwxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_dll
-    -DwxWidgets_CONFIGURATION=mswu
-    -DCMAKE_BUILD_TYPE=Release
-    -DOCPN_CI_BUILD=ON
-    -DOCPN_BUILD_TEST=OFF
-    ..
-  # Add runtime test path
-  - cmd: SET PATH=%PATH%;c:\project\opencpn\buildwin
-
 build_script:
-  # - cmake --build . --config debug
-  - cmake --build . --target opencpn --config Release
-  - SET PATH=..\buildwin;%PATH%
-  - cmake --build . --target package --config Release
+  - call ci\appveyor.bat
+
 deploy_script:
   - |
-      cd %APPVEYOR_BUILD_FOLDER%\ci
-      "\Program Files\Git\bin\bash" appveyor-upload.sh
+    cd %APPVEYOR_BUILD_FOLDER%\ci
+    "\Program Files\Git\bin\bash" appveyor-upload.sh

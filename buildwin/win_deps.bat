@@ -1,6 +1,6 @@
 :: Download OpenCPN prebuilt dependencies
 ::
-@echo off
+@echo on
 setlocal enabledelayedexpansion
 
 :: Install Poedit if required
@@ -23,14 +23,14 @@ wget --version >nul 2>&1 || choco install -y wget
 :: If needed, download wxWidgets binary build.
 set "CACHE_DIR=%~dp0..\cache"
 if not exist !CACHE_DIR! (mkdir !CACHE_DIR!)
+set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
 if not exist cache\wxWidgets-3.2.1 (
-  set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
   wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
-  7z x -y -o!CACHE_DIR!\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
-  wget -nv !GITHUB_DL!/v3.2.1/wxWidgets-3.2.1-headers.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
+  wget -nv %GITHUB_DL%/v3.2.1/wxWidgets-3.2.1-headers.7z
   7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
-  wget %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  7z x -y -o!CACHE_DIR!\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
+  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
 )
 
 :: Create cache\wx-config.bat, paths to downloaded wxWidgets.
@@ -45,8 +45,8 @@ if not exist C:\ProgramData\chocolatey\lib\nsis (
 )
 
 :: Make sure the pre-compiled libraries are in place
-if not exist !CACHE_DIR!\buildwin\libcurl.dll (
-  set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
+set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
+if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   wget -nv -O !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
       %GH_DL_BASE%/archive/refs/tags/v0.3.zip
   7z x -y !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
