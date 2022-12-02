@@ -2576,20 +2576,6 @@ if (WIN32 AND NOT UNIX)
   install(FILES ${wxdll_files} DESTINATION ".")
 
 
-#  foreach (_current_wx_dllfile ${wxWidgets_LIBRARIES})
-#    if ("${_current_wx_dllfile}" MATCHES "vc14x_dll*.dll")
-#      message(STATUS "   Installing: ${_current_wx_dllfile}")
-#      install(FILES ${_current_wx_dllfile} DESTINATION ".")
-#    endif()
-#  endforeach (_current_wx_dllfile)
-
-#  if (OCPN_BUNDLE_WXDLLS)
-#    file(
-#      GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll"
-#    )
-#    install(FILES ${wxdll_files} DESTINATION ".")
-#    message(STATUS "wxWidgets DLLs bundled into the installer package...")
-#  endif (OCPN_BUNDLE_WXDLLS)
   if (OCPN_BUNDLE_VCDLLS)
     file(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
     install(FILES ${vcdll_files} DESTINATION ".")
