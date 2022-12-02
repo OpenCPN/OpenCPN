@@ -40,8 +40,9 @@
 
 #include <wx/datetime.h>
 #include <wx/event.h>
-#include <wx/jsonreader.h>
-#include <wx/jsonwriter.h>
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/textfile.h>
@@ -1036,31 +1037,25 @@ void AisDecoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
 //     Handle events from SignalK
 //----------------------------------------------------------------------------------
 void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
-  wxJSONReader jsonReader;
-  wxJSONValue root;
+  rapidjson::Document root;
 
-  std::string msgTerminated = sK_msg->raw_message;;
-  //wxString sentence(msgTerminated.c_str());
+  root.Parse(sK_msg->raw_message);
 
-  //std::string msgTerminated = event.GetString();
-  msgTerminated.append("\r\n");
+  if (root.HasParseError()) return;
 
-  int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors > 0) return;
-
-  if (root.HasMember(_T("self"))) {
+  if (root.HasMember("self")) {
     // m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
     m_signalk_selfid =
         (root["self"]
-             .AsString());  // Verified for OpenPlotter node.js server 1.20
+             .GetString());  // Verified for OpenPlotter node.js server 1.20
   }
   if (m_signalk_selfid.IsEmpty()) {
     return;  // Don't handle any messages (with out self) until we know how we
              // are
   }
   long mmsi = 0;
-  if (root.HasMember(_T("context")) && root[_T("context")].IsString()) {
-    auto context = root[_T("context")].AsString();
+  if (root.HasMember("context") && root["context"].IsString()) {
+    wxString context = root["context"].GetString();
     if (context == m_signalk_selfid) {
 #if 0
             wxLogMessage(_T("** Ignore context own ship.."));
@@ -1110,10 +1105,9 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
                now);
   if (pTargetData) {
     getMmsiProperties(pTargetData);
-    if (root.HasMember(_T("updates")) && root[_T("updates")].IsArray()) {
-      wxJSONValue &updates = root[_T("updates")];
-      for (int i = 0; i < updates.Size(); ++i) {
-        handleUpdate(pTargetData, bnewtarget, updates[i]);
+    if (root.HasMember("updates") && root["updates"].IsArray()) {
+      for (rapidjson::Value::ConstValueIterator itr = root["updates"].Begin(); itr != root["updates"].End(); ++itr) {
+        handleUpdate(pTargetData, bnewtarget, *itr);
       }
     }
     pTargetData->MMSI = mmsi;
@@ -1127,16 +1121,15 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
 }
 
 void AisDecoder::handleUpdate(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
-                               wxJSONValue &update) {
+                               const rapidjson::Value &update) {
   wxString sfixtime = "";
 
-  if (update.HasMember(_T("timestamp"))) {
-    sfixtime = update[_T("timestamp")].AsString();
+  if (update.HasMember("timestamp")) {
+    sfixtime = update["timestamp"].GetString();
   }
-  if (update.HasMember(_T("values")) && update[_T("values")].IsArray()) {
-    for (int j = 0; j < update[_T("values")].Size(); ++j) {
-      wxJSONValue &item = update[_T("values")][j];
-      updateItem(pTargetData, bnewtarget, item, sfixtime);
+  if (update.HasMember("values") && update["values"].IsArray()) {
+    for (rapidjson::Value::ConstValueIterator itr = update["values"].Begin(); itr != update["values"].End(); ++itr) {
+      updateItem(pTargetData, bnewtarget, *itr, sfixtime);
     }
   }
   wxDateTime now = wxDateTime::Now();
@@ -1159,16 +1152,15 @@ void AisDecoder::handleUpdate(std::shared_ptr<AisTargetData> pTargetData, bool b
 }
 
 void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
-                             wxJSONValue &item, wxString &sfixtime) const {
-  if (item.HasMember(_T("path")) && item.HasMember(_T("value"))) {
-    const wxString &update_path = item[_T("path")].AsString();
-    wxJSONValue &value = item[_T("value")];
+                             const rapidjson::Value &item, wxString &sfixtime) const {
+  if (item.HasMember("path") && item.HasMember("value")) {
+    const wxString &update_path = item["path"].GetString();
     if (update_path == _T("navigation.position")) {
-      if (value.HasMember(_T("latitude")) && value.HasMember(_T("longitude"))) {
+      if (item["value"].HasMember("latitude") && item["value"].HasMember("longitude")) {
         wxDateTime now = wxDateTime::Now();
         now.MakeUTC();
-        double lat = value[_T("latitude")].AsDouble();
-        double lon = value[_T("longitude")].AsDouble();
+        double lat = item["value"]["latitude"].GetDouble();
+        double lon = item["value"]["longitude"].GetDouble();
         pTargetData->PositionReportTicks = now.GetTicks();
         pTargetData->StaticReportTicks = now.GetTicks();
         pTargetData->Lat = lat;
@@ -1177,35 +1169,35 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         pTargetData->b_positionDoubtful = false;
       }
 
-      if (value.HasMember(_T("altitude"))) {
-        pTargetData->altitude = value[_T("altitude ")].AsInt();
+      if (item["value"].HasMember("altitude")) {
+        pTargetData->altitude = item["value"]["altitude "].GetInt();
       }
     } else if (update_path == _T("navigation.speedOverGround")) {
-      pTargetData->SOG = value.AsDouble() * ms_to_knot_factor;
+      pTargetData->SOG = item["value"].GetDouble() * ms_to_knot_factor;
     } else if (update_path == _T("navigation.courseOverGroundTrue")) {
-      pTargetData->COG = GEODESIC_RAD2DEG(value.AsDouble());
+      pTargetData->COG = GEODESIC_RAD2DEG(item["value"].GetDouble());
     } else if (update_path == _T("navigation.headingTrue")) {
-      pTargetData->HDG = GEODESIC_RAD2DEG(value.AsDouble());
+      pTargetData->HDG = GEODESIC_RAD2DEG(item["value"].GetDouble());
     } else if (update_path == _T("navigation.rateOfTurn")) {
-      pTargetData->ROTAIS = 4.733 * sqrt(value.AsDouble());
+      pTargetData->ROTAIS = 4.733 * sqrt(item["value"].GetDouble());
     } else if (update_path == _T("design.aisShipType")) {
-      if (value.HasMember(_T("id"))) {
+      if (item["value"].HasMember("id")) {
         if (!pTargetData->b_isDSCtarget) {
-          pTargetData->ShipType = value[_T("id")].AsUInt();
+          pTargetData->ShipType = item["value"]["id"].GetUint();
         }
       }
     } else if (update_path == _T("atonType")) {
-      if (value.HasMember(_T("id"))) {
-        pTargetData->ShipType = value[_T("id")].AsUInt();
+      if (item["value"].HasMember("id")) {
+        pTargetData->ShipType = item["value"]["id"].GetUint();
       }
     } else if (update_path == _T("virtual")) {
-      if (_T("true") == value.AsString()) {
+      if (item["value"].GetBool()) {
         pTargetData->NavStatus = ATON_VIRTUAL;
       } else {
         pTargetData->NavStatus = ATON_REAL;
       }
     } else if (update_path == _T("offPosition")) {
-      if (_T("true") == value.AsString()) {
+      if (item["value"].GetBool()) {
         if (ATON_REAL == pTargetData->NavStatus) {
           pTargetData->NavStatus = ATON_REAL_OFFPOSITION;
         } else if (ATON_VIRTUAL == pTargetData->NavStatus) {
@@ -1213,12 +1205,12 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         }
       }
     } else if (update_path == _T("design.draft")) {
-      if (value.HasMember(_T("maximum"))) {
-        pTargetData->Draft = value[_T("maximum")].AsDouble();
-        pTargetData->Euro_Draft = value[_T("maximum")].AsDouble();
+      if (item["value"].HasMember("maximum")) {
+        pTargetData->Draft = item["value"]["maximum"].GetDouble();
+        pTargetData->Euro_Draft = item["value"]["maximum"].GetDouble();
       }
-      if (value.HasMember(_T("current"))) {
-        double draft = value[_T("current")].AsDouble();
+      if (item["value"].HasMember("current")) {
+        double draft = item["value"]["current"].GetDouble();
         if (draft > 0) {
           pTargetData->Draft = draft;
           pTargetData->Euro_Draft = draft;
@@ -1226,14 +1218,16 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
       }
     } else if (update_path == _T("design.length")) {
       if (pTargetData->DimB == 0) {
-        if (value.HasMember(_T("overall"))) {
-          pTargetData->Euro_Length = value[_T("overall")].AsDouble();
-          pTargetData->DimA = value[_T("overall")].AsInt();
+        if (item["value"].HasMember("overall")) {
+          if (item["value"]["overall"].IsNumber()) {
+            pTargetData->Euro_Length = item["value"]["overall"].GetDouble();
+            pTargetData->DimA = item["value"]["overall"].GetDouble();
+          }
           pTargetData->DimB = 0;
         }
       }
     } else if (update_path == _T("sensors.ais.class")) {
-      auto aisclass = value.AsString();
+      wxString aisclass = item["value"].GetString();
       if (aisclass == _T("A")) {
         if(!pTargetData->b_isDSCtarget)
           pTargetData->Class = AIS_CLASS_A;
@@ -1250,24 +1244,31 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
     } else if (update_path == _T("sensors.ais.fromBow")) {
       if (pTargetData->DimB == 0 && pTargetData->DimA != 0) {
         int length = pTargetData->DimA;
-        pTargetData->DimA = value.AsInt();
-        pTargetData->DimB = length - value.AsInt();
+        if (item["value"].IsNumber()) {
+          pTargetData->DimA = item["value"].GetDouble();
+          pTargetData->DimB = length - item["value"].GetDouble();
+        }
       }
     } else if (update_path == _T("design.beam")) {
       if (pTargetData->DimD == 0) {
-        pTargetData->Euro_Beam = value.AsDouble();
-        pTargetData->DimC = value.AsInt();
+        if (item["value"].IsNumber()) {
+          pTargetData->Euro_Beam = item["value"].GetDouble();
+          pTargetData->DimC = item["value"].GetDouble();
+        }
         pTargetData->DimD = 0;
       }
     } else if (update_path == _T("sensors.ais.fromCenter")) {
       if (pTargetData->DimD == 0 && pTargetData->DimC != 0) {
         int beam = pTargetData->DimC;
         int center = beam / 2;
-        pTargetData->DimC = center + value.AsInt();
-        pTargetData->DimD = beam - pTargetData->DimC;
+        if (item["value"].IsNumber()) {
+          //FIXME (nohal): Dim* are int, but we have seen data streams with doubles in them...
+          pTargetData->DimC = center + item["value"].GetDouble();
+          pTargetData->DimD = beam - pTargetData->DimC;
+        }
       }
     } else if (update_path == _T("navigation.state")) {
-      auto state = value.AsString();
+      wxString state = item["value"].GetString();
       if (state == _T("motoring")) {
         pTargetData->NavStatus = UNDERWAY_USING_ENGINE;
       } else if (state == _T("anchored")) {
@@ -1296,13 +1297,13 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         pTargetData->NavStatus = UNDEFINED;
       }
     } else if (update_path == _T("navigation.destination.commonName")) {
-      const wxString &destination = value.AsString();
+      const wxString &destination = item["value"].GetString();
       pTargetData->Destination[0] = '\0';
       strncpy(pTargetData->Destination, destination.c_str(),
               DESTINATION_LEN - 1);
     } else if (update_path == _T("navigation.specialManeuver")) {
-      if (_T("not available") != value.AsString() && pTargetData->IMO < 1) {
-        const wxString &bluesign = value.AsString();
+      if (strcmp("not available", item["value"].GetString()) != 0 && pTargetData->IMO < 1) {
+        const wxString &bluesign = item["value"].GetString();
         if (_T("not engaged") == bluesign) {
           pTargetData->blue_paddle = 1;
         }
@@ -1313,32 +1314,33 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
             pTargetData->blue_paddle == 2 ? true : false;
       }
     } else if (update_path == _T("sensors.ais.designatedAreaCode")) {
-      if (value.AsInt() == 200) {
+      if (item["value"].GetInt() == 200) {
         pTargetData->b_hasInlandDac = true;
       }  // European inland
     } else if (update_path == _T("sensors.ais.functionalId")) {
-      if (value.AsInt() ==
+      if (item["value"].GetInt() ==
               10 &&  // "Inland ship static and voyage related data"
           pTargetData->b_hasInlandDac) {
         pTargetData->b_isEuroInland = true;
       }
     } else if (update_path == _T("")) {
-      if (value.HasMember(_T("name"))) {
-        const wxString &name = value[_T("name")].AsString();
+      if (item["value"].HasMember("name")) {
+        const wxString &name = item["value"]["name"].GetString();
         strncpy(pTargetData->ShipName, name.c_str(), SHIP_NAME_LEN - 1);
         pTargetData->b_nameValid = true;
         pTargetData->MID = 123;  // Indicates a name from SignalK
-      } else if (value.HasMember(_T("registrations"))) {
-        const wxString &imo = value[_T("registrations")][_T("imo")].AsString();
+      } else if (item["value"].HasMember("registrations")) {
+        const wxString &imo = item["value"]["registrations"]["imo"].GetString();
         pTargetData->IMO = wxAtoi(imo.Right(7));
-      } else if (value.HasMember(_T("communication"))) {
+      } else if (item["value"].HasMember("communication")) {
         const wxString &callsign =
-            value[_T("communication")][_T("callsignVhf")].AsString();
+            item["value"]["communication"]["callsignVhf"].GetString();
         strncpy(pTargetData->CallSign, callsign.c_str(), 7);
       }
-      if (value.HasMember("mmsi")) {
+      if (item["value"].HasMember("mmsi")) {
         long mmsi;
-        if (value[_T("mmsi")].AsString().ToLong(&mmsi)) {
+        wxString tmp = item["value"]["mmsi"].GetString(); 
+        if (tmp.ToLong(&mmsi)) {
           pTargetData->MMSI = mmsi;
 
           if (97 == mmsi / 10000000) {
@@ -1356,11 +1358,11 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
       wxLogMessage(wxString::Format(
           _T("** AisDecoder::updateItem: unhandled path %s"), update_path));
 #if 1
-      wxString dbg;
-      wxJSONWriter writer;
-      writer.Write(item, dbg);
+      rapidjson::StringBuffer buffer;
+      rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+      item.Accept(writer);
       wxString msg(_T("update: "));
-      msg.append(dbg);
+      msg.append(buffer.GetString());
       wxLogMessage(msg);
 #endif
     }
@@ -2352,7 +2354,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str, bool 
     token = tkz.GetNextToken();  // sentence number
     token = tkz.GetNextToken();  // query/rely flag
     token = tkz.GetNextToken();  // vessel MMSI
-    dse_mmsi = wxAtoi(token.Mid(0, 9)); // ITU-R M.493-10 §5.2
+    dse_mmsi = wxAtoi(token.Mid(0, 9)); // ITU-R M.493-10 ï¿½5.2
     //token.ToDouble(&dse_addr);
     //0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
 

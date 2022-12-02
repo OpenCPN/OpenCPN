@@ -35,8 +35,6 @@
 #include <netinet/in.h>
 #endif
 
-#include <wx/jsonval.h>
-
 #include "observable.h"
 
 
@@ -231,7 +229,7 @@ public:
 
   struct in_addr dest;
   struct in_addr src;
-  wxJSONValue* root;
+  //wxJSONValue* root;
   std::string context_self;
   std::string context;
   std::string raw_message;
