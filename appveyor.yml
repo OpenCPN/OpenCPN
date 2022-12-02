@@ -42,6 +42,9 @@ install:
   - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
   - cmd: 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
 
+  - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
+  - cmd: 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
+
   - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxWidgets-3.2.1-headers.7z
   - cmd: 7z x -oC:\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
 
