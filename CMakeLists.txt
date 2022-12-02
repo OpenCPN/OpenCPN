@@ -719,6 +719,10 @@ if (NOT QT_ANDROID)
     # Exclude wxexpat.lib, since we use our own version. Other things are
     # excluded as well, but we don't need them
     set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+
+    # build only for release/unicode configuration
+    set(wxWidgets_CONFIGURATION mswu)
+
   endif (MSVC)
 
   if (GTK2_FOUND)
