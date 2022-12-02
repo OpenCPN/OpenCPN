@@ -140,11 +140,11 @@ void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc) {
   bdc->Clear();
 
   wxSize size = GetClientSize();
-  m_cx = size.x / 2;
-  int availableHeight = size.y - m_TitleHeight - 6;
   int width, height;
   bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, g_pFontLabel);
-  m_cy = m_TitleHeight + 2;
+  m_cx = size.x / 2;
+  int availableHeight = size.y - m_TitleHeight - height;
+  m_cy = m_TitleHeight + height / 2;
   m_cy += availableHeight / 2;
   m_radius = availableHeight / 2.0 * 0.95;
 
