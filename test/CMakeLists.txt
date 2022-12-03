@@ -99,15 +99,15 @@ if (NOT WIN32)
 else (NOT WIN32)
     target_include_directories(
       tests
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/include/openssl
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
     )
     target_link_libraries(
       tests
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libssl.lib
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
     )
    target_link_libraries(
       tests
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libcrypto.lib
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
     )
 endif (NOT WIN32)
 

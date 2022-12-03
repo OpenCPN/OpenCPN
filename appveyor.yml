@@ -1,83 +1,26 @@
+---
 clone_folder: c:\project\opencpn
 shallow_clone: false
 clone_depth: 10
 
 image:
-- Visual Studio 2022
+  - Visual Studio 2022
 
 platform:
-# - x64
-- Win32
+  - Win32
 
 configuration: RelWithDebInfo
-test: OFF
 
 install:
-  # VS2015 and earlier version - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86'
-  #- call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
-  #- call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - set "VS_BASE=C:\Program Files\Microsoft Visual Studio\2022"
+  - call "%VS_BASE%\Community\VC\Auxiliary\Build\vcvars32.bat"
 
-  # set environment variables for wxWidgets
-  - set WXWIN=C:\wxWidgets-3.2.1
-  - set wxWidgets_ROOT_DIR=%WXWIN%
-  - set wxWidgets_LIB_DIR=%WXWIN%\lib\vc_dll
-  - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin;C:\Program Files\Git\bin;c:\cygwin\bin
   - cmd: python --version
 
-  # install dependencies:
-  - choco install poedit
-  - choco install git
-
-  - choco install nsis
-  #- ps: Start-FileDownload https://download.opencpn.org/s/54HsBDLNzRZLL6i/download -FileName nsis-3.04-setup.exe
-  #- cmd: nsis-3.04-setup.exe /S
-
-  # Download and unzip wxwidgets, version 3.2.1
-  #- ps: Start-FileDownload https://download.opencpn.org/s/mKn7bczRPSJXBtF/download -FileName wxWidgets-3.2.1.7z
-  #- cmd: 7z x wxWidgets-3.2.1.7z -oC:\wxWidgets-3.2.1
-
-  - cmd: wget --version > nul 2>&1 || choco install -y wget
-
-  - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
-  - cmd: 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
-
-  - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  - cmd: 7z x -oC:\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z -y
-
-  - cmd: wget -nv https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxWidgets-3.2.1-headers.7z
-  - cmd: 7z x -oC:\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
-
-  # some debugging information
-  # - set   Displays sensitive password!
-  # - cmake --help
-
-  # build wxWidgets - Disabled as we provide prebuilt WX to save time
-  #- cmd: cd %WXWIN%\build\msw\
-  #- cmd: nmake -f makefile.vc BUILD=release SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
-  #- cmd: nmake -f makefile.vc BUILD=debug SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
-
-before_build:
-  - cd c:\project\opencpn
-  - mkdir build
-  - cd build
-  - ps: Start-FileDownload https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.3.zip -FileName OCPNWindowsCoreBuildSupport.zip
-  - cmd: 7z x OCPNWindowsCoreBuildSupport.zip -oc:\project\opencpn\buildwintemp
-  - cmd: mkdir c:\projects\opencpn\buildwin
-  - cmd: XCOPY c:\project\opencpn\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin c:\project\opencpn\buildwin /s /y /q
-
-  - cmake -T v143 -DOCPN_CI_BUILD=ON -DCMAKE_GENERATOR_PLATFORM=Win32 -DOCPN_BUILD_TEST=OFF ..
-  # Add runtime test path:
-  - cmd: SET PATH=%PATH%;c:\project\opencpn\buildwin
 build_script:
-  # - cmake --build . --config debug
-  - cmake --build . --target opencpn --config RelWithDebInfo
-  - SET PATH=..\buildwin;%PATH%
-  #- cmake --build . --target run-tests --config RelWithDebInfo
-  #- cmake --build . --target package --config RelWithDebInfo
-  - cmake --build . --target package --config Release
+  - call ci\appveyor.bat
+
 deploy_script:
   - |
-      cd %APPVEYOR_BUILD_FOLDER%\ci
-      "\Program Files\Git\bin\bash" appveyor-upload.sh
-
+    cd %APPVEYOR_BUILD_FOLDER%\ci
+    "\Program Files\Git\bin\bash" appveyor-upload.sh
