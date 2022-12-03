@@ -199,17 +199,17 @@ public:
     if (!ocpn::startswith(m_abi, "ubuntu")) return false;
     static const std::vector<std::string> compat_versions = {
         // clang-format: off
-        "11;ubuntu-gtk3-x86_64;20.04",
-        "11;ubuntu-x86_64-wx32;22.04",
-        "12;ubuntu-x86_64;23.04",
-        "12;ubuntu-x86_64;23.10",
-        "12;ubuntu-x86_64;24.04",
-        "sid;ubuntu-x86_64;24.04"
-    };  // clang-format: on
-    if (ocpn::startswith(plugin.abi(), "debian-x86_64")) {
+        "debian-x86_64;11;ubuntu-gtk3-x86_64;20.04",
+        "debian-wx32-x86_64;11;ubuntu-wx32-x86_64;22.04",
+        "debian-x86_64;12;ubuntu-wx32-x86_64;23.04",
+        "debian-x86_64;12;ubuntu-wx32-x86_64;23.10",
+        "debian-x86_64;12;ubuntu-wx32-x86_64;24.04",
+        "debian-x86_64;sid;ubuntu-wx32-x86_64;24.04"
+     };  // clang-format: on
+    if (ocpn::startswith(plugin.abi(), "debian")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
       const std::string compat_version =
-          plugin.major_version() + ";" + m_abi + ";" + m_abi_version;
+      plugin.abi() + ";" + plugin.major_version() + ";" + m_abi + ";" + m_abi_version;
       for (auto& cv : compat_versions) {
         if (compat_version == cv) {
           return true;
@@ -267,7 +267,8 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
   } else if (ocpn::startswith(_name, "ubuntu")) {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
     if(wxv >= 32){
-      _name += std::string("-wx32");
+      auto tokens = ocpn::split(_name.c_str(), "-");
+      _name = std::string(tokens[0]) + std::string("-wx32-") + tokens[1];
     }
   }
 
