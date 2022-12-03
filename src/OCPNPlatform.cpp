@@ -576,6 +576,7 @@ void OCPNPlatform::Initialize_1(void) {
 #endif
   androidUtilInit();
 #endif
+
 }
 
 //  Called from MyApp() immediately before creation of MyFrame()

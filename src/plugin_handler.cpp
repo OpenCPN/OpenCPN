@@ -264,7 +264,13 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     if (g_compatOsVersion != "") {
       _version = g_compatOsVersion;
     }
+  } else if (ocpn::startswith(_name, "ubuntu")) {
+    int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
+    if(wxv >= 32){
+      _name += std::string("-wx32");
+    }
   }
+
   _name = ocpn::tolower(_name);
   _version = ocpn::tolower(_version);
 }
