@@ -121,7 +121,8 @@ wxString GetShipNameFromFile(int);
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_FRPOS, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_CD, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_CDDSC, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_CDDSE, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TLL, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TTM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_OSD, ObservedEvt);
@@ -298,10 +299,19 @@ void AisDecoder::InitCommListeners(void) {
         HandleN0183_AIS( n0183_msg );
       });
 
-  //CD
-  Nmea0183Msg n0183_msg_CD("CD ");
-  listener_N0183_CD.Listen(n0183_msg_CD, this, EVT_N0183_CD);
-  Bind(EVT_N0183_CD, [&](ObservedEvt ev) {
+  //CDDSC
+  Nmea0183Msg n0183_msg_CDDSC("CDDSC");
+  listener_N0183_CDDSC.Listen(n0183_msg_CDDSC, this, EVT_N0183_CDDSC);
+  Bind(EVT_N0183_CDDSC, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+        HandleN0183_AIS( n0183_msg );
+      });
+
+  //CDDSE
+  Nmea0183Msg n0183_msg_CDDSE("CDDSE");
+  listener_N0183_CDDSE.Listen(n0183_msg_CDDSE, this, EVT_N0183_CDDSE);
+  Bind(EVT_N0183_CDDSE, [&](ObservedEvt ev) {
         auto ptr = ev.GetSharedPtr();
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );

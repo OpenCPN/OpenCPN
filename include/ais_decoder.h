@@ -172,7 +172,8 @@ private:
 
   ObservableListener listener_N0183_VDM;
   ObservableListener listener_N0183_FRPOS;
-  ObservableListener listener_N0183_CD;
+  ObservableListener listener_N0183_CDDSC;
+  ObservableListener listener_N0183_CDDSE;
   ObservableListener listener_N0183_TLL;
   ObservableListener listener_N0183_TTM;
   ObservableListener listener_N0183_OSD;
