@@ -55,6 +55,7 @@ extern int m_DialogStyle;
 grib_pi *g_pi;
 bool g_bpause;
 float g_piGLMinSymbolLineWidth;
+float g_DIPfactor;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -119,6 +120,13 @@ int grib_pi::Init(void) {
   // Get a pointer to the opencpn display canvas, to use as a parent for the
   // GRIB dialog
   m_parent_window = GetOCPNCanvasWindow();
+
+  //Get dip factor for MSW et xWidgets 3.2.1
+  g_DIPfactor = 1;
+#ifdef __WXMSW__
+  if (m_parent_window)
+    g_DIPfactor = (double)(m_parent_window->ToDIP(100)) / 100.;
+#endif
 
   //      int m_height = GetChartbarHeight();
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled
@@ -376,7 +384,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
 
   bool starting = false;
 
-  double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn();
+  double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn() * g_DIPfactor;
   if (scale_factor != m_GUIScaleFactor) starting = true;
 
   if (!m_pGribCtrlBar) {
@@ -396,15 +404,18 @@ void grib_pi::OnToolbarToolCallback(int id) {
     wxMenuItem *table =
         new wxMenuItem(dummy, wxID_ANY, wxString(_("Weather table")),
                        wxEmptyString, wxITEM_NORMAL);
+/* Menu font do not work properly for MSW (wxWidgets 3.2.1)
 #ifdef __WXMSW__
     wxFont *qFont = OCPNGetFont(_("Menu"), 10);
     table->SetFont(*qFont);
 #endif
+*/
     m_MenuItem = AddCanvasContextMenuItem(table, this);
     SetCanvasContextMenuItemViz(m_MenuItem, false);
 
     // Create the drawing factory
     m_pGRIBOverlayFactory = new GRIBOverlayFactory(*m_pGribCtrlBar);
+    m_pGRIBOverlayFactory->SetMessageFont();
     m_pGRIBOverlayFactory->SetTimeZone(m_bTimeZone);
     m_pGRIBOverlayFactory->SetParentSize(m_display_width, m_display_height);
     m_pGRIBOverlayFactory->SetSettings(m_bGRIBUseHiDef, m_bGRIBUseGradualColors,
@@ -422,6 +433,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
   //    Toggle dialog?
   if (m_bShowGrib) {
     if (starting) {
+      m_pGRIBOverlayFactory->SetMessageFont();
       SetDialogFont(m_pGribCtrlBar);
       m_GUIScaleFactor = scale_factor;
       m_pGribCtrlBar->SetScaledBitmap(m_GUIScaleFactor);

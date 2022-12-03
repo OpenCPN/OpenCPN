@@ -72,6 +72,7 @@
 #include "qdebug.h"
 #endif
 
+extern float g_DIPfactor;
 extern float g_piGLMinSymbolLineWidth;
 wxArrayPtrVoid pi_gTesselatorVertices;
 
@@ -1892,7 +1893,9 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
     } else {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
-      sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
+      sdc.GetMultiLineTextExtent(text, &w, &h, NULL, &m_font); /*we need to handle multiline*/
+      w *= g_DIPfactor;
+      h *= g_DIPfactor;
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -2105,8 +2108,9 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
   if (w) *w = 100;
   if (h) *h = 100;
 
+  /*we need to handle multiline to get true w & h */
   if (dc)
-    dc->GetTextExtent(string, w, h, descent, externalLeading, font);
+    dc->GetMultiLineTextExtent(string, w, h, NULL, font);
   else {
     wxFont f = m_font;
     if (font) f = *font;
@@ -2117,11 +2121,15 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
       m_texfont.GetTextExtent(string, w, h);
 #else
       wxMemoryDC temp_dc;
-      temp_dc.GetTextExtent(string, w, h, descent, externalLeading, &f);
+      temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
+      if (w) (*w) *= g_DIPfactor;
+      if (h) (*h) *= g_DIPfactor;
 #endif
     } else {
       wxMemoryDC temp_dc;
-      temp_dc.GetTextExtent(string, w, h, descent, externalLeading, &f);
+      temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
+      if (w) (*w) *= g_DIPfactor;
+      if (h) (*h) *= g_DIPfactor;
     }
   }
 
