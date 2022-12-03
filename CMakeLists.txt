@@ -564,7 +564,7 @@ if (OCPN_CI_BUILD)
   if (NOT "${BUILD_NUMBER}" STREQUAL "")
     set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
   endif ()
-  set(VERSION_DATE "${DATE}")
+  string(STRIP "{DATE}" VERSION_DATE)
 endif (OCPN_CI_BUILD)
 
 set(
@@ -694,8 +694,10 @@ if (OPENGL_FOUND)
     #list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
     #find_package(GLEW REQUIRED)
     #message(STATUS "+++GLEW: " ${GLEW_INCLUDE_DIRS})
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
-    link_libraries(${CMAKE_SOURCE_DIR}/buildwin/glew32.lib )
+    include_directories(
+      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include/glew"
+    )
+    link_libraries(${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.lib )
   else (CMAKE_HOST_WIN32)
     if (NOT APPLE)
       find_package(GLEW REQUIRED)
@@ -760,24 +762,6 @@ if (NOT QT_ANDROID)
     )
   endif (MSYS)
   include(${wxWidgets_USE_FILE})
-
-  if (wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.1.6")
-    add_definitions("-DWX316PLUS")
-  endif()
-
-
-  # As of cmake 3.11.2, these libraries are missing in list despite that we
-  # looked for them. This is a nasty fix which might fail miserably. Assumption:
-  # All builds using GTK uses unicode and wxWidgets 3.0
-  if (GTK3_FOUND AND CMAKE_VERSION VERSION_LESS 3.12)
-    if (NOT wxWidgets_VERSION_STRING VERSION_GREATER "3.0")
-      message (STATUS " Patching ${wxWidgets_LIBRARIES}")
-      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
-      if (OPENGL_FOUND)
-        list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
-      endif ()
-    endif ()
-  endif ()
 
   message(STATUS "Found wxWidgets...")
   message(STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
@@ -1447,8 +1431,12 @@ endif (UNIX)
 
 # check for lzma support for reading compressed charts
 if (CMAKE_HOST_WIN32)
-  list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
-  list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include")
+  list(APPEND CMAKE_PREFIX_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin"
+  )
+  list(APPEND CMAKE_PREFIX_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include"
+  )
 endif (CMAKE_HOST_WIN32)
 if (OCPN_USE_LZMA)
   find_package(LibLZMA)
@@ -1464,15 +1452,15 @@ if (OCPN_USE_CURL)
   if (CMAKE_HOST_WIN32)
     install(
       FILES
-        "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt"
-        "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll"
-        "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll"
+        "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
+        "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
+        "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll"
       DESTINATION "."
     )
     if (MSVC)
       set(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
-      install(FILES "buildwin/libcurl.dll" DESTINATION ".")
-      install(FILES "buildwin/zlib1.dll" DESTINATION ".")
+      install(FILES "cache/buildwin/libcurl.dll" DESTINATION ".")
+      install(FILES "cache/buildwin/zlib1.dll" DESTINATION ".")
     endif (MSVC)
   else (CMAKE_HOST_WIN32)
     set(OCPN_USE_EXTERN_CURL ON)
@@ -1547,12 +1535,12 @@ if (OCPN_USE_SVG)
       include(OcpnFindExpat)
       if (CMAKE_HOST_WIN32)
         # On Windows, we have our own expat and cairo
-        file(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
+        file(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/gtk/*.dll")
         install(FILES ${gtkdll_files} DESTINATION ".")
         file(
           GLOB
             expatdll_files
-            "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/expat-2.2.5/*.dll"
         )
         install(FILES ${expatdll_files} DESTINATION ".")
         message(STATUS "GTK and Expat DLLs bundled into the installer package...")
@@ -1693,8 +1681,8 @@ add_subdirectory(libs/pugixml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pugixml)
 
 if (MSVC)
-  install(FILES "buildwin/libssl-3.dll" DESTINATION ".")
-  install(FILES "buildwin/libcrypto-3.dll" DESTINATION ".")
+  install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
+  install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
 endif (MSVC)
 
 message(STATUS "S57 ENC support: enabled")
@@ -2563,35 +2551,31 @@ endif (APPLE)
 # directory
 #
 if (WIN32 AND NOT UNIX)
-  message(STATUS "wxWidgets DLLs bundled into the installer package: ...")
-
-  list(GET wxWidgets_LIBRARIES 1 first_file)
-  message(STATUS "first_file: ${first_file}")
-  get_filename_component(dll_dir ${first_file} DIRECTORY)
-
-  message(STATUS "dll_dir: ${dll_dir}")
-
-  file(
-      GLOB wxdll_files "${dll_dir}/wx*u_*.dll"
-  )
-  message(STATUS "wxdll_files: ${wxdll_files}")
-  install(FILES ${wxdll_files} DESTINATION ".")
-
-
+  if (OCPN_BUNDLE_WXDLLS)
+    file(GLOB wxdll_files
+      "${wxWidgets_LIB_DIR}/wxmsw32u_*.dll"
+      "${wxWidgets_LIB_DIR}/wxbase32u_*.dll"
+    )
+    install(FILES ${wxdll_files} DESTINATION ".")
+    list(LENGTH "${wxdll_files}" wxdll_count)
+    message(STATUS
+      "${wxdll_count} wxWidgets DLLs bundled into the installer package..."
+    )
+  endif ()
   if (OCPN_BUNDLE_VCDLLS)
-    file(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
+    file(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/vc/*.dll")
     install(FILES ${vcdll_files} DESTINATION ".")
     message(
       STATUS "MSVC redistributable DLLs bundled into the installer package..."
     )
-  endif (OCPN_BUNDLE_VCDLLS)
+  endif ()
   if (BUNDLE_LIBARCHIVEDLLS)
     file(
       GLOB
         libarchivedll_files
-        "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/archive.dll"
-        "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/liblzma.dll"
-        "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/zlib1.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
     )
     install(FILES ${libarchivedll_files} DESTINATION ".")
     message(STATUS "LibArchive DLLs bundled into the installer package...")
@@ -2600,19 +2584,19 @@ endif (WIN32 AND NOT UNIX)
 
 if (MSVC AND OCPN_USE_CRASHREPORT)
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.dll
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/CrashRpt1403.dll
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashSender1403.exe
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/CrashSender1403.exe
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/crashrpt_lang.ini
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/crashrpt_lang.ini
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/dbghelp.dll
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/dbghelp.dll
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
@@ -2625,7 +2609,7 @@ endif (MSVC AND OCPN_USE_CRASHREPORT)
 # Install glew dll
 if (MSVC AND OCPN_USE_GL)
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/glew32.dll
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.dll
     DESTINATION ${PREFIX_PKGDATA}
   )
 endif ()
@@ -3083,15 +3067,15 @@ if (NOT WIN32)
 else (NOT WIN32)
     target_include_directories(
       opencpn-cmd
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/include/openssl
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
     )
     target_link_libraries(
       opencpn-cmd
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libssl.lib
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
     )
    target_link_libraries(
       opencpn-cmd
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/libcrypto.lib
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
     )
 endif (NOT WIN32)
 

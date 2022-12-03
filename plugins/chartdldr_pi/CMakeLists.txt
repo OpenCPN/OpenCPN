@@ -112,8 +112,8 @@ if (APPLE)
 endif ()
 
 if (CMAKE_HOST_WIN32)
-  list(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
-  list(APPEND CMAKE_PREFIX_PATH "../../buildwin")
+  list(APPEND CMAKE_PREFIX_PATH "../../cache/buildwin/include")
+  list(APPEND CMAKE_PREFIX_PATH "../../cache/buildwin")
 endif ()
 
 option(OCPN_USE_CHART_LIST "Use wxDATAVIEWLISTCTRL for chart downloader" OFF)
