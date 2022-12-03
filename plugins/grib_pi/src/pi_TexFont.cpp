@@ -41,6 +41,8 @@
 #include "pi_shaders.h"
 #endif
 
+extern float g_DIPfactor;
+
 TexFont::TexFont() {
   texobj = 0;
   m_blur = false;
@@ -68,13 +70,14 @@ void TexFont::Build(wxFont &font, bool blur) {
     wxCoord gw, gh;
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("Â°");
+      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
     else
       text = wxString::Format(_T("%c"), i);
     wxCoord descent, exlead;
     sdc.GetTextExtent(text, &gw, &gh, &descent, &exlead,
                       &font);  // measure the text
-
+    gw *= g_DIPfactor;
+    gh *= g_DIPfactor;
     tgi[i].width = gw;
     tgi[i].height = gh;
 
@@ -129,7 +132,7 @@ void TexFont::Build(wxFont &font, bool blur) {
 
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("Â°");
+      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
     else
       text = wxString::Format(_T("%c"), i);
 
@@ -190,12 +193,15 @@ void TexFont::Delete() {
 }
 
 void TexFont::GetTextExtent(const char *string, int *width, int *height) {
-  int w = 0, h = 0;
+  /*we need to handle multiline*/
+  int w = 0, wo = 0, h = 0;
 
   for (int i = 0; string[i]; i++) {
     unsigned char c = string[i];
     if (c == '\n') {
       h += tgi[(int)'A'].height;
+      wo = wxMax(w, wo);
+      w = 0;
       continue;
     }
     if (c == 0xc2 && (unsigned char)string[i + 1] == 0xb0) {
@@ -208,7 +214,7 @@ void TexFont::GetTextExtent(const char *string, int *width, int *height) {
     w += tgisi.advance;
     if (tgisi.height > h) h = tgisi.height;
   }
-  if (width) *width = w;
+  if (width) *width = wxMax(w, wo);
   if (height) *height = h;
 }
 
