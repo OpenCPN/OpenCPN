@@ -30,7 +30,7 @@
 #include <memory>
 #include <string>
 
-#include <wx/jsonval.h>
+#include "rapidjson/fwd.h"
 #include <wx/string.h>
 
 #include "comm_appmsg.h"
@@ -79,19 +79,19 @@ public:
 
   // SignalK
   bool DecodeSignalK(std::string s, NavData& temp_data);
-  void handleUpdate(wxJSONValue &update, NavData& temp_data);
-  void updateItem(wxJSONValue &item, wxString &sfixtime, NavData& temp_data);
-  bool updateNavigationPosition(wxJSONValue &value,
+  void handleUpdate(const rapidjson::Value &update, NavData& temp_data);
+  void updateItem(const rapidjson::Value &item, wxString &sfixtime, NavData& temp_data);
+  bool updateNavigationPosition(const rapidjson::Value &value,
                                 const wxString &sfixtime, NavData& temp_data);
-  void updateNavigationSpeedOverGround(wxJSONValue &value,
+  void updateNavigationSpeedOverGround(const rapidjson::Value &value,
                                        const wxString &sfixtime, NavData& temp_data);
-  void updateNavigationCourseOverGround(wxJSONValue &value,
+  void updateNavigationCourseOverGround(const rapidjson::Value &value,
                                         const wxString &sfixtime, NavData& temp_data);
-  void updateGnssSatellites(wxJSONValue &value, const wxString &sfixtime, NavData& temp_data);
-  void updateHeadingTrue(wxJSONValue &value, const wxString &sfixtime, NavData& temp_data);
-  void updateHeadingMagnetic(wxJSONValue &value,
+  void updateGnssSatellites(const rapidjson::Value &value, const wxString &sfixtime, NavData& temp_data);
+  void updateHeadingTrue(const rapidjson::Value &value, const wxString &sfixtime, NavData& temp_data);
+  void updateHeadingMagnetic(const rapidjson::Value &value,
                              const wxString &sfixtime, NavData& temp_data);
-  void updateMagneticVariance(wxJSONValue &value,
+  void updateMagneticVariance(const rapidjson::Value &value,
                               const wxString &sfixtime, NavData& temp_data);
 
 

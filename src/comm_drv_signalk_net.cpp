@@ -27,6 +27,8 @@
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 
+#include "rapidjson/document.h"
+
 #include "comm_drv_signalk_net.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
@@ -320,8 +322,7 @@ void CommDriverSignalKNet::CloseWebSocket() {
 void CommDriverSignalKNet::handle_SK_sentence(
     CommDriverSignalKNetEvent& event) {
 
-  wxJSONReader jsonReader;
-  wxJSONValue root;
+  rapidjson::Document root;
 
   //LOG_DEBUG("%s\n", msg.c_str());
 
@@ -329,33 +330,33 @@ void CommDriverSignalKNet::handle_SK_sentence(
   std::string msgTerminated = *msg;
   msgTerminated.append("\r\n");
 
-  int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors > 0) {
+  root.Parse(*msg);
+  if (root.HasParseError()) {
     wxLogMessage(wxString::Format(
         _T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
-        errors));
+        root.GetParseError()));
     return;
   }
 
   // Decode just enough of string to extract some identifiers
   // such as the sK version, "self" context, and target context
-  if (root.HasMember(_T("version"))) {
+  if (root.HasMember("version")) {
     wxString msg = _T("Connected to Signal K server version: ");
-    msg << (root[_T("version")].AsString());
+    msg << (root["version"].GetString());
     wxLogMessage(msg);
   }
 
   if (root.HasMember("self")) {
-    if (root["self"].AsString().StartsWith(_T("vessels.")))
-      m_self = (root["self"].AsString());  // for java server, and OpenPlotter
+    if (strncmp(root["self"].GetString(), "vessels.", 8) == 0)
+      m_self = (root["self"].GetString());  // for java server, and OpenPlotter
                                            // node.js server 1.20
     else
       m_self =
-          _T("vessels.") + (root["self"].AsString());  // for Node.js server
+          std::string("vessels.").append(root["self"].GetString());  // for Node.js server
   }
 
   if (root.HasMember("context") && root["context"].IsString()) {
-     m_context = root["context"].AsString();
+     m_context = root["context"].GetString();
   }
 
   //Notify all listeners
