@@ -201,10 +201,10 @@ public:
         // clang-format: off
         "debian-x86_64;11;ubuntu-gtk3-x86_64;20.04",
         "debian-wx32-x86_64;11;ubuntu-wx32-x86_64;22.04",
-        "debian-x86_64;12;ubuntu-wx32-x86_64;23.04",
-        "debian-x86_64;12;ubuntu-wx32-x86_64;23.10",
-        "debian-x86_64;12;ubuntu-wx32-x86_64;24.04",
-        "debian-x86_64;sid;ubuntu-wx32-x86_64;24.04"
+        "debian-x86_64;12;ubuntu-x86_64;23.04",
+        "debian-x86_64;12;ubuntu-x86_64;23.10",
+        "debian-x86_64;12;ubuntu-x86_64;24.04",
+        "debian-x86_64;sid;ubuntu-x86_64;24.04"
      };  // clang-format: on
     if (ocpn::startswith(plugin.abi(), "debian")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
@@ -264,7 +264,7 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     if (g_compatOsVersion != "") {
       _version = g_compatOsVersion;
     }
-  } else if (ocpn::startswith(_name, "ubuntu")) {
+  } else if (ocpn::startswith(_name, "ubuntu") && (_version == "22.04")) {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
     if(wxv >= 32){
       auto tokens = ocpn::split(_name.c_str(), "-");
