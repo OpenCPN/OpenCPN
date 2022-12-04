@@ -1232,7 +1232,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
          "A Persistent track recording will therefore be restarted for this target.\n\n"
          "Do you instead want to stop Persistent tracking for this target?"),
        _("OpenCPN Info"), wxYES_NO | wxCENTER, 60);
-    return r == wxID_OK;
+    return r == wxID_YES;
   };
   g_pAIS = new AisDecoder(ais_callbacks);
 
