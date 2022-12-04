@@ -76,6 +76,7 @@ extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 extern wxString g_ownshipMMSI_SK;
 extern wxConfigBase *pBaseConfig;
+wxString g_ownshipMMSI_SK;
 
 bool debug_priority = 0;
 
@@ -894,7 +895,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   if (sK_msg->context_self != sK_msg->context)
     return false;
 
-  //g_ownshipMMSI_SK = sK_msg->context_self;
+  g_ownshipMMSI_SK = sK_msg->context_self;
 
   NavData temp_data;
   ClearNavData(temp_data);
