@@ -1,18 +1,3 @@
-MACRO (TODAY RESULT)
-    IF (CMAKE_HOST_WIN32)
-        EXECUTE_PROCESS(COMMAND "cmd" "/C" "date /T" OUTPUT_VARIABLE ${RESULT})
-        string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
-               ${RESULT} ${${RESULT}})
-    ELSEIF(UNIX OR MINGW)
-        EXECUTE_PROCESS(COMMAND "date" "-u" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
-        string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
-               ${RESULT} ${${RESULT}})
-    ELSE ()
-        MESSAGE(SEND_ERROR "date not implemented")
-        SET(${RESULT} 000000)
-    ENDIF ()
-ENDMACRO (TODAY)
-
 MACRO (COMMIT_ID RESULT)
     # Get the latest abbreviated commit hash of the working branch
     execute_process(
