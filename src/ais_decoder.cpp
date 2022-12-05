@@ -1349,7 +1349,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
       }
       if (item["value"].HasMember("mmsi")) {
         long mmsi;
-        wxString tmp = item["value"]["mmsi"].GetString(); 
+        wxString tmp = item["value"]["mmsi"].GetString();
         if (tmp.ToLong(&mmsi)) {
           pTargetData->MMSI = mmsi;
 
@@ -3840,7 +3840,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   }
     // Show or update the alert
   if (palert_target)
-    info_update.Notify(palert_target.get());
+    info_update.Notify(palert_target, "");
 
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }

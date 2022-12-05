@@ -262,7 +262,6 @@ public:
   short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
                                                 // AIS_TARGETDATA_MAX_CANVAS is
                                                 // the max number of chartcanvas
-  wxDateTime dtAlertExpireTime;
   long dsc_NatureOfDistress;
 
 private:

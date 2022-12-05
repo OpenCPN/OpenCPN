@@ -309,8 +309,8 @@ public:
   void TouchAISActive(void);
   void UpdateAISTool(void);
 
-  void ActivateAISMOBRoute(AisTargetData *ptarget);
-  void UpdateAISMOBRoute(AisTargetData *ptarget);
+  void ActivateAISMOBRoute(const AisTargetData *ptarget);
+  void UpdateAISMOBRoute(const AisTargetData *ptarget);
 
   wxStatusBar *m_pStatusBar;
   wxMenuBar *m_pMenuBar;

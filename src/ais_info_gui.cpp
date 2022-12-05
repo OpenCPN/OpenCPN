@@ -51,7 +51,7 @@
 #include "undo.h"
 
 wxDEFINE_EVENT(EVT_AIS_DEL_TRACK, wxCommandEvent);
-wxDEFINE_EVENT(EVT_AIS_INFO, wxCommandEvent);
+wxDEFINE_EVENT(EVT_AIS_INFO, ObservedEvt);
 wxDEFINE_EVENT(EVT_AIS_NEW_TRACK, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
@@ -120,10 +120,11 @@ static void OnDeleteTrack(MmsiProperties* props) {
 AisInfoGui::AisInfoGui() {
   ais_info_listener.Listen(g_pAIS->info_update, this, EVT_AIS_INFO);
 
-  //FIXME (dave)
-//   Bind(EVT_AIS_INFO, [&](wxCommandEvent ev) {
-//        auto palert_target = static_cast<AisTargetData*>(ev.GetClientData());
-//        ShowAisInfo(palert_target); });
+  Bind(EVT_AIS_INFO, [&](ObservedEvt &ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto palert_target = std::static_pointer_cast<const AisTargetData>(ptr);
+        ShowAisInfo(palert_target); }
+       );
 
   ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
   Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
@@ -160,7 +161,7 @@ void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
   m_bAIS_AlertPlaying = false;
 }
 
-void AisInfoGui::ShowAisInfo(std::shared_ptr<AisTargetData> palert_target) {
+void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target) {
    int audioType = AISAUDIO_NONE;
    if (!palert_target) return;
 
@@ -191,12 +192,13 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<AisTargetData> palert_target) {
         pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS,
                                 b_jumpto, b_createWP, b_ack, -1,
                                 _("AIS Alert"));
+        g_pais_alert_dialog_active = pAISAlertDialog;
+
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        g_pais_alert_dialog_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
         g_Platform->PositionAISAlert(pAISAlertDialog);
 
-        g_pais_alert_dialog_active = pAISAlertDialog;
         pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
       }
 
@@ -252,11 +254,11 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<AisTargetData> palert_target) {
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        g_pais_alert_dialog_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
       }
       //  In "expiry delay"?
       else if (!palert_target->b_in_ack_timeout &&
-               (now.IsEarlierThan(palert_target->dtAlertExpireTime))) {
+               (now.IsEarlierThan(g_pais_alert_dialog_active->dtAlertExpireTime))) {
         g_pais_alert_dialog_active->UpdateText();
       } else {
         g_pais_alert_dialog_active->Close();

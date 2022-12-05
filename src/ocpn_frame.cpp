@@ -7121,7 +7121,7 @@ void MyFrame::LoadHarmonics() {
 
 Route *pAISMOBRoute;
 
-void MyFrame::ActivateAISMOBRoute(AisTargetData *ptarget) {
+void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   if (!ptarget) return;
 
   //    The MOB point
@@ -7198,7 +7198,7 @@ void MyFrame::ActivateAISMOBRoute(AisTargetData *ptarget) {
   wxLogMessage(mob_message);
 }
 
-void MyFrame::UpdateAISMOBRoute(AisTargetData *ptarget) {
+void MyFrame::UpdateAISMOBRoute(const AisTargetData *ptarget) {
   if (pAISMOBRoute && ptarget) {
     //   Update Current Ownship point
     RoutePoint *OwnPoint = pAISMOBRoute->GetPoint(1);

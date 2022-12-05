@@ -28,7 +28,7 @@ class AisInfoGui: public wxEvtHandler {
 public:
   AisInfoGui();
 
-  void ShowAisInfo(std::shared_ptr<AisTargetData> palert_target);
+  void ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target);
   bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
 
   void OnSoundFinishedAISAudio(wxCommandEvent &event);
