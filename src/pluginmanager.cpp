@@ -4949,8 +4949,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   wxBitmap bitmap;
   if (plugin_icon.IsOk()) {
     int nowSize = plugin_icon.GetWidth();
-    //if ((nowSize > iconSize) || ((iconSize / nowSize) > 1.5))
-      plugin_icon.Rescale(icon_scale, icon_scale, wxIMAGE_QUALITY_HIGH);
+    plugin_icon.Rescale(icon_scale, icon_scale, wxIMAGE_QUALITY_HIGH);
     bitmap = wxBitmap(plugin_icon);
   } else if (m_pPlugin->m_pluginStatus ==
              PluginStatus::ManagedInstallAvailable) {
