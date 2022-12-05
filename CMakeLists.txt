@@ -552,9 +552,10 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
 
+string(TIMESTAMP VERSION_DATE "%Y-%m-%d")
+string(TIMESTAMP UNIX_TIMESTAMP "%s")
 if (OCPN_CI_BUILD)
   include(Utils)
-  today(DATE)
   commit_id(COMMIT)
   build_num(BUILD_NUMBER)
   if (NOT "${OCPN_RELEASE}" STREQUAL "")
@@ -564,8 +565,7 @@ if (OCPN_CI_BUILD)
   if (NOT "${BUILD_NUMBER}" STREQUAL "")
     set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
   endif ()
-  string(STRIP "{DATE}" VERSION_DATE)
-endif (OCPN_CI_BUILD)
+endif ()
 
 set(
   PACKAGE_VERSION

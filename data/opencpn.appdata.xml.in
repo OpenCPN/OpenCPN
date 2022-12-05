@@ -33,7 +33,8 @@
     </p>
   </description>
   <releases>
-    <release version="@PACKAGE_VERSION@" date="@VERSION_DATE@">
+      <release version="@PACKAGE_VERSION@" date="@VERSION_DATE@"
+          timestamp="@UNIX_TIMESTAMP@">
       <description>
         <p>The latest upstream commit.</p>
       </description>
